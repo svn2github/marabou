@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMERegister.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbVMERegister.cxx,v 1.5 2006-02-23 09:28:50 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +44,7 @@ TMrbVMERegister::TMrbVMERegister(TMrbVMEModule * Module, Int_t NofChannels, TMrb
 //                 TMrbNamedX * RegDef            -- register index
 //                 Int_t AddrSet                  -- address offset to set bits
 //                 Int_t AddrClear                -- address offset to clear bits
-//                 Int_t AddrGet                  -- address offset to set contents
+//                 Int_t AddrGet                  -- address offset to get contents
 //                 Int_t InitValue                -- initial value
 //                 Int_t LowerLimit               -- lower limit
 //                 Int_t UpperLimit               -- upper limit

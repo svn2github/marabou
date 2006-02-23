@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.1 2004-11-05 12:26:50 marabou Exp $       
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.2 2006-02-23 09:28:50 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -23,6 +23,7 @@ namespace std {} using namespace std;
 #include "TMrbLogger.h"
 #include "TMrbConfig.h"
 #include "TMrbVMEChannel.h"
+#include "TMrbVMERegister.h"
 #include "TMrbSis_3820.h"
 
 #include "SetColor.h"
@@ -93,7 +94,7 @@ void TMrbSis_3820::DefineRegisters() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSis_3820::DefineRegisters
-// Purpose:        Define camac registers
+// Purpose:        Define module registers
 // Arguments:      --
 // Results:        --
 // Exceptions:
@@ -101,6 +102,42 @@ void TMrbSis_3820::DefineRegisters() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	TMrbNamedX * kp;
+	TMrbLofNamedX * bNames;
+	TMrbVMERegister * rp;
+
+// input mode
+	kp = new TMrbNamedX(TMrbSis_3820::kRegControlStatus, "InputMode");
+	rp = new TMrbVMERegister(this, 0, kp,
+								TMrbSis_3820::kOffsControlStatus,
+								TMrbSis_3820::kOffsControlStatus,
+								TMrbSis_3820::kOffsControlStatus,
+								1, 0, 4);
+	rp->SetFromResource(1);
+	kp->AssignObject(rp);
+	fLofRegisters.AddNamedX(kp);
+
+// output mode
+	kp = new TMrbNamedX(TMrbSis_3820::kRegControlStatus, "OutputMode");
+	rp = new TMrbVMERegister(this, 0, kp,
+								TMrbSis_3820::kOffsControlStatus,
+								TMrbSis_3820::kOffsControlStatus,
+								TMrbSis_3820::kOffsControlStatus,
+								0, 0, 1);
+	rp->SetFromResource(0);
+	kp->AssignObject(rp);
+	fLofRegisters.AddNamedX(kp);
+
+// lne source
+	kp = new TMrbNamedX(TMrbSis_3820::kRegControlStatus, "LNEsource");
+	rp = new TMrbVMERegister(this, 0, kp,
+								TMrbSis_3820::kOffsControlStatus,
+								TMrbSis_3820::kOffsControlStatus,
+								TMrbSis_3820::kOffsControlStatus,
+								1, 0, 4);
+	rp->SetFromResource(1);
+	kp->AssignObject(rp);
+	fLofRegisters.AddNamedX(kp);
 }
 
 Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) {
@@ -150,6 +187,9 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 				fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
+				fCodeTemplates.Substitute("$inputMode", (Int_t) this->Get("InputMode"));
+				fCodeTemplates.Substitute("$outputMode", (Int_t) this->Get("OutputMode"));
+				fCodeTemplates.Substitute("$lneSource", (Int_t) this->Get("LNESource"));
 				Int_t pat;
 				if (this->GetNofChannelsUsed() < 32) {
 					if (this->CheckIfPatternIsContiguous()) {
@@ -188,6 +228,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			break;
 		case TMrbConfig::kModuleReadModule:
 			{
+				if (this->Get("LNESource") == 0) {
+					fCodeTemplates.InitializeCode("%FSR%");
+					fCodeTemplates.Substitute("$moduleName", this->GetName());
+					fCodeTemplates.WriteCode(RdoStrm);
+				}
 				Int_t nofChannels = this->GetNofChannelsUsed();
 				if (nofChannels < 32) {
 					if (!this->CheckIfPatternIsContiguous()) {

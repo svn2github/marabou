@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.17 2005-12-14 08:33:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.18 2006-02-23 09:28:50 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -124,7 +124,7 @@ void TMrbXia_DGF_4C::DefineRegisters() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXia_DGF_4C::DefineRegisters
-// Purpose:        Define camac registers
+// Purpose:        Define module registers
 // Arguments:      --
 // Results:        --
 // Exceptions:

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSilena_4418T.cxx,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSilena_4418T.cxx,v 1.6 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -90,7 +90,7 @@ TMrbSilena_4418T::TMrbSilena_4418T(const Char_t * ModuleName, const Char_t * Mod
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
-				DefineRegisters();							// define camac regs
+				DefineRegisters();							// define module regs
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gDirectory->Append(this);
 				fZeroSuppression = kFALSE;
@@ -128,7 +128,7 @@ void TMrbSilena_4418T::DefineRegisters() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSilena_4418T::DefineRegisters
-// Purpose:        Define camac registers
+// Purpose:        Define module registers
 // Arguments:      --
 // Results:        --
 // Exceptions:

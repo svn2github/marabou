@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAdcd_9701.cxx,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbAdcd_9701.cxx,v 1.6 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -73,7 +73,7 @@ TMrbAdcd_9701::TMrbAdcd_9701(const Char_t * ModuleName, const Char_t * ModulePos
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
-				DefineRegisters();							// define camac regs
+				DefineRegisters();							// define module regs
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gDirectory->Append(this);
 				fBlockReadout = kTRUE;						// block readout only
@@ -88,7 +88,7 @@ void TMrbAdcd_9701::DefineRegisters() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAdcd_9701::DefineRegisters
-// Purpose:        Define camac registers
+// Purpose:        Define module registers
 // Arguments:      --
 // Results:        --
 // Exceptions:

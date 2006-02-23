@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V785.cxx,v 1.10 2005-05-19 12:49:10 marabou Exp $       
+// Revision:       $Id: TMrbCaen_V785.cxx,v 1.11 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -121,7 +121,7 @@ void TMrbCaen_V785::DefineRegisters() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCaen_V785::DefineRegisters
-// Purpose:        Define camac registers
+// Purpose:        Define module registers
 // Arguments:      --
 // Results:        --
 // Exceptions:

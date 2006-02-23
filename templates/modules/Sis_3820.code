@@ -33,6 +33,7 @@
 #define SIS_3820_R_KEY_FIFO_RESET		0x404L
 #define SIS_3820_R_KEY_TEST_PULSE		0x408L
 #define SIS_3820_R_KEY_COUNTER_CLEAR	0x40CL
+#define SIS_3820_R_KEY_VME_LNE			0x410L
 #define SIS_3820_R_KEY_OPER_ENABLE		0x418L
 #define SIS_3820_R_KEY_OPER_DISABLE		0x41CL
 #define SIS_3820_R_READ_FIFO			0xA00L
@@ -57,6 +58,7 @@
 #define SIS_3820_A_KEY_RESET(module)			((unsigned long *) (module + SIS_3820_R_KEY_RESET))
 #define SIS_3820_A_KEY_FIFO_RESET(module)		((unsigned long *) (module + SIS_3820_R_KEY_FIFO_RESET))
 #define SIS_3820_A_KEY_COUNTER_CLEAR(module)	((unsigned long *) (module + SIS_3820_R_KEY_COUNTER_CLEAR))
+#define SIS_3820_A_KEY_VME_LNE(module)			((unsigned long *) (module + SIS_3820_R_KEY_VME_LNE))
 #define SIS_3820_A_KEY_OPER_ENABLE(module)		((unsigned long *) (module + SIS_3820_R_KEY_OPER_ENABLE))
 #define SIS_3820_A_KEY_OPER_DISABLE(module)		((unsigned long *) (module + SIS_3820_R_KEY_OPER_DISABLE))
 
@@ -67,6 +69,7 @@
 #define SIS_3820_INHIBIT_COUNTING(module, b) 	*SIS_3820_A_INHIBIT_COUNTING(module) = b
 #define SIS_3820_WRITE_FIFO_THRESH(module, b)	*SIS_3820_A_FIFO_WC_THRESH(module) = 0
 #define SIS_3820_RESET(module)					*SIS_3820_A_KEY_RESET(module) = 0
+#define SIS_3820_VME_LNE(module)				*SIS_3820_A_KEY_VME_LNE(module) = 0
 #define SIS_3820_CLEAR_FIFO(module)				*SIS_3820_A_KEY_FIFO_RESET(module) = 0
 #define SIS_3820_OPER_ENABLE(module)			*SIS_3820_A_KEY_OPER_ENABLE(module) = 0
 #define SIS_3820_OPER_DISABLE(module)			*SIS_3820_A_KEY_OPER_DISABLE(module) = 0
@@ -104,7 +107,7 @@
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					SIS_3820_RESET($moduleName);
 					SIS_3820_CLEAR_FIFO($moduleName);
-					SIS_3820_SET_CTRL_BIT($moduleName, SIS_3820_CS_B_INPUT_MODE_1 | SIS_3820_CS_B_OUTPUT_MODE_0 | SIS_3820_CS_B_LNE_SOURCE_1);
+					SIS_3820_SET_CTRL_BIT($moduleName, SIS_3820_CS_B_INPUT_MODE_$inputMode | SIS_3820_CS_B_OUTPUT_MODE_$outputMode | SIS_3820_CS_B_LNE_SOURCE_$lneSource);
 					SIS_3820_WRITE_FIFO_THRESH($moduleName, 1);
 					SIS_3820_INHIBIT_COUNTING($moduleName, $unusedChannels);
 					SIS_3820_DISABLE_COPY($moduleName, $unusedChannels);
@@ -124,6 +127,7 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
+%FSR%					SIS_3820_KEY_VME_LNE($moduleName);				/* force scaler readout */
 %SH%					$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
 %SH%					if (($mnemoLC_sts & SIS_3820_IRQ_B_FIFO_THRESH) != 0) {
 %SH%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO);
