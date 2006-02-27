@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.112 2006-02-23 15:10:38 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.112 2006-02-23 15:10:38 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.113 2006-02-27 13:40:20 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.113 2006-02-27 13:40:20 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2797,6 +2797,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								evtNameUC(0,1).ToUpper();
 								if (!evt->IsReservedEvent()) {
 									anaTmpl.InitializeCode("%CX%");
+									anaTmpl.Substitute("$pointerName", evt->GetPointerName());
 									anaTmpl.WriteCode(anaStrm);
 								}
 								anaTmpl.InitializeCode("%C%");
