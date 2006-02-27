@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvtStart.cxx,v 1.2 2005-12-20 14:26:46 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvtStart.cxx,v 1.3 2006-02-27 12:15:21 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -104,6 +104,8 @@ Bool_t TUsrEvtStart::InitializeTree(TFile * RootFile) {
 
 	register TObject * obj;
 	TString name;
+
+	fTreeIn = NULL;
 
 	obj = RootFile->Get("Start");
 	if (obj == NULL) {
