@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrHit.cxx,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHit.cxx,v 1.2 2006-02-27 13:57:05 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -136,7 +136,7 @@ Double_t TUsrHit::GetCalEnergy(Bool_t Randomize) const {
 	Double_t gain, offset;
 	gMrbAnalyze->GetCalibration(fModuleNumber, fChannel, gain, offset);
 	Double_t e = fData[kHitEnergy];
-	if (Randomize) e += gRandom->Rndm() - 0.5;
+	if (Randomize && (gain != 1.0)) e += gRandom->Rndm() - 0.5;
 	return(e * gain + offset);
 }
 
@@ -156,7 +156,7 @@ Double_t TUsrHit::GetDCorrEnergy(Bool_t Randomize) const {
 	gMrbAnalyze->GetCalibration(fModuleNumber, fChannel, gain, offset);
 	gMrbAnalyze->GetDCorr(fModuleNumber, fChannel, dcfact);
 	Double_t e = fData[kHitEnergy];
-	if (Randomize) e += gRandom->Rndm() - 0.5;
+	if (Randomize && (gain != 1.0)) e += gRandom->Rndm() - 0.5;
 	return(dcfact * (e * gain + offset));
 }
 

@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.65 2006-02-15 08:27:53 Marabou Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.66 2006-02-27 13:57:05 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1941,6 +1941,9 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 				calFct->SetParameter(1, gain);
 				this->AddCalibrationToList(calFct, hle->GetParam()->GetIndex());
 				nofCalibs++;
+			} else {
+				gMrbLog->Wrn()	<< "No such histo - " << histoName << ", calibration omitted" << endl;
+				gMrbLog->Flush(this->ClassName(), "GetDCorr");
 			}
 		}
 		o = cal->GetTable()->After(o);
