@@ -34,11 +34,9 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
                $(HPRDIRI)/HprImage.h \
                $(HPRDIRI)/GroupOfGObjects.h \
  					$(HPRDIRI)/EditMarker.h \
- 					$(HPRDIRI)/ControlGraph.h \
- 					$(HPRDIRI)/ParallelGraph.h \
- 					$(HPRDIRI)/XSpline.h \
- 					$(HPRDIRI)/RailwaySleeper.h \
- 					$(HPRDIRI)/HprEditCommands.h 
+ 					$(HPRDIRI)/TSplineX.h \
+ 					$(HPRDIRI)/HprEditCommands.h \
+ 					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)
 HPRDEP      += $(MODDIRS)/main.d

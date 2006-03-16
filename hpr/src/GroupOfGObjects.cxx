@@ -11,7 +11,7 @@ namespace std {} using namespace std;
 #include "TText.h"
 #include "TEllipse.h"
 #include "TPolyLine.h"
-#include "XSpline.h"
+#include "TSplineX.h"
 #include "HprEditBits.h"
 #include "iostream"
 
@@ -272,8 +272,8 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          b->SetX1(xt);
          b->SetY1(yt);
 
-      } else if (clone->InheritsFrom("XSpline")) {
-         XSpline* b = ( XSpline*)clone;
+      } else if (clone->InheritsFrom("TSplineX")) {
+         TSplineX* b = ( TSplineX*)clone;
          TGraph* gr = (TGraph*)b->GetControlGraph();
          Double_t * x = gr->GetX();
          Double_t * y = gr->GetY();
@@ -377,8 +377,8 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
       if (clone) {
          if (!clone->InheritsFrom("TPad") || pad->InheritsFrom("TCanvas")) {
             pad->GetListOfPrimitives()->Add(clone, lnk->GetOption());
-            if (clone->InheritsFrom("XSpline")) {
-               XSpline* b = ( XSpline*)clone;
+            if (clone->InheritsFrom("TSplineX")) {
+               TSplineX* b = ( TSplineX*)clone;
                b->ComputeSpline();
             }
          }
@@ -499,8 +499,8 @@ void GroupOfGObjects::ShiftObjects(Double_t xoff, Double_t yoff, Bool_t shiftcut
          b->SetX1(b->GetX1() + xoff);
          b->SetY1(b->GetY1() + yoff);
 
-      } else if (obj->InheritsFrom("XSpline")) {
-         XSpline* b = ( XSpline*)obj;
+      } else if (obj->InheritsFrom("TSplineX")) {
+         TSplineX* b = ( TSplineX*)obj;
          ControlGraph* gr = b->GetControlGraph();
          Double_t * x = gr->GetX();
          Double_t * y = gr->GetY();
@@ -517,7 +517,7 @@ void GroupOfGObjects::ShiftObjects(Double_t xoff, Double_t yoff, Bool_t shiftcut
 
       } else if (obj->InheritsFrom("TGraph") 
                && strncmp(obj->GetName(), "ParellelG", 9)) {
-//       Parallel graphs are handled by its XSpline
+//       Parallel graphs are handled by its TSplineX
             cout << "Shift TGraph: " << obj->GetName() << endl;
 
          TGraph * b = (TGraph *)obj;

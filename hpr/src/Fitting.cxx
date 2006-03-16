@@ -1194,7 +1194,7 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
       if (hp->fFitOptNoDraw)
          fitopt += "0";
       cout << "fitopt.Data() " << fitopt.Data() << endl;
-      fSelHist->Fit(funcname, fitopt.Data());	//  here fitting is done
+      fSelHist->Fit(funcname, fitopt.Data(), "SAMES");	//  here fitting is done
       if (hp->fFitOptAddAll) {
          TList *lof = fSelHist->GetListOfFunctions();
          if (lof->GetSize() > 1) {

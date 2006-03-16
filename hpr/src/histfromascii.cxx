@@ -68,7 +68,14 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
 
    TRegexp endwithasc("asc$");
    Bool_t ok = kTRUE;
-   fGraphFile = GetString("Filename",fGraphFile.Data(), &ok, win,0,0,helpText);
+   Bool_t same_window = kFALSE;
+   if(win == fMainCanvas) 
+       fGraphFile = GetString("Filename",fGraphFile.Data(), 
+                &ok, win, 0, 0, helpText);
+   else
+       fGraphFile = GetString("Filename",fGraphFile.Data(), 
+                &ok, win, "Draw in same window", &same_window, helpText);
+
 //   fname = GetString("Filename",fname.Data(), &ok);
    if (!ok) {
       cout << " Canceled " << endl;
@@ -360,13 +367,27 @@ tryagain:
             else   {fWincurx = fWintopx; fWincury += fWinshifty;}
          }
          fNwindows++;
-         HTCanvas * cg = new HTCanvas(cname, htitle, fWincurx, fWincury,
-                                    fWinwidx_1dim, fWinwidy_1dim, this, 0, 0, graph);
-         fCanvasList->Add(cg);
          graph->SetName(hname);
          graph->SetTitle(htitle);
-         graph->Draw(fDrawOptGraph);
          graph->GetHistogram()->SetStats(kFALSE);
+//         cout << "gPad->GetName() " <<gPad->GetName() << endl;
+         if (same_window) {
+            TString oo(fDrawOptGraph);
+            Int_t inda = oo.Index("a", 0, TString::kIgnoreCase);
+            if (inda>=0) oo.Remove(inda,1);
+//            cout << "oo: " << oo<< endl;
+         
+            oo += "SAME";
+            graph->Draw(oo);
+            gPad->Modified();
+            gPad->Update();
+        } else {
+//            cout << "New graph: " << endl;
+            HTCanvas * cg = new HTCanvas(cname, htitle, fWincurx, fWincury,
+                            fWinwidx_1dim, fWinwidy_1dim, this, 0, 0, graph);
+            fCanvasList->Add(cg);
+            graph->Draw(fDrawOptGraph);
+         }
       }
    }
    return;

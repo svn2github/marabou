@@ -27,7 +27,7 @@
 #include "TGMrbGetTextAlignment.h"
 #include "HprImage.h"
 #include "HprEditBits.h"
-#include "XSpline.h"
+#include "TSplineX.h"
 #include <fstream>
 
 //______________________________________________________________________________
@@ -131,7 +131,7 @@ void HTCanvas::InitEditCommands()
    labels->Add(new TObjString("Text (Latex) from keyboard"));
    labels->Add(new TObjString("Insert compound object"));
    labels->Add(new TObjString("Draw an axis"));
-   labels->Add(new TObjString("Draw a XSpline"));
+   labels->Add(new TObjString("Draw a TSplineX"));
    labels->Add(new TObjString("Define a box shaped region"));
    labels->Add(new TObjString("Define polygone region"));
 
@@ -154,7 +154,7 @@ void HTCanvas::InitEditCommands()
    methods->Add(new TObjString("InsertTextK()"));
    methods->Add(new TObjString("InsertGObjects()"));
    methods->Add(new TObjString("InsertAxis()"));
-   methods->Add(new TObjString("InsertXSpline()"));
+   methods->Add(new TObjString("InsertTSplineX()"));
    methods->Add(new TObjString("DefineBox()"));
    methods->Add(new TObjString("DefinePolygone()"));
    methods->Add(new TObjString("MarkGObjects()"));
@@ -1380,25 +1380,25 @@ void HTCanvas::DrawEditGrid(Bool_t visible)
 }
 //______________________________________________________________________________
 
-void HTCanvas::RemoveXSplinesPolyLines()
+void HTCanvas::RemoveTSplineXsPolyLines()
 {
    TIter next(GetListOfPrimitives());
    TObject * obj;
    while ( (obj = next()) ){
-      if (obj->IsA() == XSpline::Class()) ((XSpline*)obj)->RemovePolyLines();
+      if (obj->IsA() == TSplineX::Class()) ((TSplineX*)obj)->RemovePolyLines();
    }
    Update();
 }
 //______________________________________________________________________________
 
-void HTCanvas::DrawXSplinesParallelGraphs()
+void HTCanvas::DrawTSplineXsParallelGraphs()
 {
    TIter next(GetListOfPrimitives());
    TObject * obj;
    while ( (obj = next()) ){
-      if (obj->IsA() == XSpline::Class()) {
-         ((XSpline*)obj)->SetComputeDone(kFALSE);
-         ((XSpline*)obj)->DrawParallelGraphs();
+      if (obj->IsA() == TSplineX::Class()) {
+         ((TSplineX*)obj)->SetComputeDone(kFALSE);
+         ((TSplineX*)obj)->DrawParallelGraphs();
       }
    }
    Update();
@@ -1411,7 +1411,7 @@ void HTCanvas::DrawControlGraphs()
    TObject * obj;
    this->cd();
    while ( (obj = next()) ){
-      if (obj->IsA() == XSpline::Class()) ((XSpline*)obj)->DrawControlPoints();
+      if (obj->IsA() == TSplineX::Class()) ((TSplineX*)obj)->DrawControlPoints();
    }
    Update();
 }
@@ -2004,12 +2004,12 @@ void HTCanvas::WritePrimitives()
    if (OpenWorkFile(fRootCanvas)) {
       RemoveEditGrid();
       RemoveControlGraphs();
-      RemoveXSplinesPolyLines();
+      RemoveTSplineXsPolyLines();
       RemoveParallelGraphs();
       Write(name.Data());
  //     GetListOfPrimitives()->Write(name.Data(), 1);
       CloseWorkFile();
-      DrawXSplinesParallelGraphs();
+      DrawTSplineXsParallelGraphs();
    }
 }
 //______________________________________________________________________________
@@ -2237,8 +2237,8 @@ tryagain:
       } else if (obj->IsA() == TGraph::Class() && !strncmp(obj->GetName(), "ParallelG", 9)) {
          cout << "Skip ParallelG" << endl;
 
-      } else if (obj->IsA() == XSpline::Class()) {
-         XSpline* b = ( XSpline*)obj;
+      } else if (obj->IsA() == TSplineX::Class()) {
+         TSplineX* b = ( TSplineX*)obj;
          ControlGraph* gr = b->GetControlGraph();
          Double_t * x = gr->GetX();
          if (!x) {
@@ -2250,7 +2250,7 @@ tryagain:
          if (cut->IsInside(x[0], y[0]) 
             |cut->IsInside(x[gr->GetN()-1], y[gr->GetN()-1])) {
             if (!markonly) {
-               b = (XSpline*)obj->Clone();
+               b = (TSplineX*)obj->Clone();
                gr = b->GetControlGraph();
                gr->SetParent(b);
                Double_t* xt = new Double_t[gr->GetN()];
@@ -2551,7 +2551,7 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
    row_lab->Add(new TObjString("Markers"));
    row_lab->Add(new TObjString("CurlyLines"));
    row_lab->Add(new TObjString("CurlyArcs"));
-   row_lab->Add(new TObjString("XSplines"));
+   row_lab->Add(new TObjString("TSplineXs"));
    
    static Int_t dox      = 1,
                 doy      = 1,
@@ -2727,7 +2727,7 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
          }
          b->GetParent()->SetComputeDone(kFALSE);
       } else if (obj->InheritsFrom("TGraph") 
-                 && !(obj->InheritsFrom("XSpline"))
+                 && !(obj->InheritsFrom("TSplineX"))
                  && !(obj->InheritsFrom("ControlGraph"))
                  && dograph) {
          TGraph * b = (TGraph *)obj;
@@ -3462,11 +3462,11 @@ tryagain:
 }
 //______________________________________________________________________________
 
-void HTCanvas::InsertXSpline()
+void HTCanvas::InsertTSplineX()
 {
    TList row_lab; 
    TList values;
-   row_lab.Add(new TObjString("Closed XSpline"));
+   row_lab.Add(new TObjString("Closed TSplineX"));
    row_lab.Add(new TObjString("Approximate"));
    row_lab.Add(new TObjString("Fix endpoints"));
    row_lab.Add(new TObjString("Precision"));
@@ -3526,7 +3526,7 @@ void HTCanvas::InsertXSpline()
    Bool_t ok; 
    Int_t itemwidth = 320;
 tryagain:
-   ok = GetStringExt("XSpline Params", NULL, itemwidth, fRootCanvas,
+   ok = GetStringExt("TSplineX Params", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, &row_lab, &values);
    if (!ok) return;
    Int_t vp = 0;
@@ -3602,7 +3602,7 @@ tryagain:
    Bool_t closed_spline;
    if (closed != 0) closed_spline = kTRUE;
    else             closed_spline = kFALSE;
-   XSpline* xsp = new XSpline(npoints, x, y);
+   TSplineX* xsp = new TSplineX(npoints, x, y);
    xsp->SetShapeFactors(npoints, shape_factors.GetArray());
    xsp->ComputeSpline(prec, closed_spline);
    xsp->SetLineColor(color);

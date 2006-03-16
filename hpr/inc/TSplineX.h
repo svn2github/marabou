@@ -5,11 +5,95 @@
 #include "TArrayD.h"
 #include "TArrow.h"
 #include "TMarker.h"
+#include "TPolyLine.h"
 #include "TStyle.h"
 #include "TVirtualPad.h"
 #include "Buttons.h"
-#include "ControlGraph.h"
-#include "ParallelGraph.h"
+#include <iostream>
+//#include "ControlGraph.h"
+//#include "ParallelGraph.h"
+
+class TSplineX;
+
+class RailwaySleeper : public  TPolyLine{
+private:
+   TSplineX * fParent; //!
+   Color_t fColor;
+public:
+   RailwaySleeper(){};
+   RailwaySleeper(Double_t * x, Double_t * y, TSplineX * parent, Color_t color = 1);
+//   ~RailwaySleeper(){std::cout << "dtor RailwaySleeper: " << this << std::endl; };
+   ~RailwaySleeper(){ };
+//   Int_t DistancetoPrimitive(Int_t px, Int_t py){return 9999;};
+   void ExecuteEvent(Int_t event, Int_t px, Int_t py);
+   Color_t GetSleeperColor() {return fColor;};
+   void SetColor(Color_t color); 
+   void SetSleeperColor(Color_t color);     // *MENU*
+   void Draw(Option_t * opt = "");
+ClassDef(RailwaySleeper,0)
+};
+//__________________________________________________________________
+
+class ControlGraph : public TGraph
+{
+private:
+   TSplineX *fParent;
+   TArrayF  fShapeFactors;
+   Int_t    fSelectedPoint;                 //!
+   Double_t fSelectedX;                     //!
+   Double_t fSelectedY;                     //!
+   Float_t  fSelectedShapeFactor;           //!
+   Int_t   fChangeShapeFactorsConjointly;  //!
+
+public:
+   ControlGraph (Int_t npoints = 0, Double_t*  x = NULL, Double_t* y = NULL);
+   virtual ~ControlGraph() {std::cout << "dtor ControlGraph(): " << this << std::endl;};
+   void ExecuteEvent(Int_t event, Int_t px, Int_t py);
+   void SetParent(TSplineX* parent); 
+   TSplineX  *GetParent(){return fParent;}; 
+   void SetAllShapeFactors(Int_t npoints, Float_t* sf);
+   Float_t   GetShapeFactorByPointNumber(Int_t ipoint) {return fShapeFactors[ipoint];};
+   Int_t     GetSelectedPoint() { return fSelectedPoint; };
+   Double_t  GetSelectedX()     { return fSelectedX; };
+   Double_t  GetSelectedY()     { return fSelectedY; };
+   Float_t   GetSelectedShapeFactor(){ return fSelectedShapeFactor; };
+
+   virtual void SetOneShapeFactor(Int_t ipoint, Double_t x, Double_t y, Float_t sfactor); // *MENU* *ARGS={ipoint=>fSelectedPoint,x=>fSelectedX,y=>fSelectedY,sfactor=>fSelectedShapeFactor}
+   Int_t InsertPoint();                                          // *MENU*
+   Int_t RemovePoint();                                          // *MENU*
+   virtual void EditControlGraph();    //  *MENU*
+   virtual void ControlGraphMixer();    //  *MENU*
+   virtual void Delete(Option_t *opt = " "); // *MENU*
+   void SetShapeFactors(Int_t id, Int_t ip, Int_t val);
+   void SetChangeShapeFactorsConjointly(Int_t val = 1);  // *MENU* *ARGS={val=>fChangeShapeFactorsConjointly}
+   Int_t  GetChangeShapeFactorsConjointly(); 
+
+   TGraph* AddPGraph(Double_t dist = 2, Color_t color=0, 
+                            Width_t width=0, Style_t style=0);   // *MENU*
+   ClassDef(ControlGraph, 1)
+};
+//__________________________________________________________________
+
+class ParallelGraph : public TGraph
+{
+private:
+   TGraph* fParent;
+   Double_t fDist;       // distance to parent
+   Bool_t fClosed;
+public:
+   ParallelGraph () {};
+   ParallelGraph (TGraph *parent, Double_t dist, Bool_t closed);
+   virtual ~ParallelGraph() {if (fParent) fParent->RecursiveRemove(this);};
+   void Compute ();
+   void ExecuteEvent(Int_t event, Int_t px, Int_t py);
+   TGraph *GetParent(){return fParent;}; 
+   Double_t GetDist(){return fDist;}; 
+   virtual void Delete(Option_t *opt = " "); // *MENU*
+   void CorrectForArrows(Double_t alength, Double_t aangle,Double_t aindent_angle,
+                                     Bool_t at_start, Bool_t at_end);
+   ClassDef(ParallelGraph, 0)
+};
+//__________________________________________________________________
 
 class ShapeFactor
 {
@@ -56,7 +140,7 @@ public:
 };
 //____________________________________________________________________________________
 
-class XSpline : public TGraph
+class TSplineX : public TGraph
 {
 protected:
    ShapeFactor*  fShapeFactorList;     //! pointer to linked list
@@ -107,10 +191,10 @@ private:
    void CopyControlPoints();
 
 public:
-   XSpline();
-   XSpline(Int_t npoints, Double_t *x, Double_t *y, 
+   TSplineX();
+   TSplineX(Int_t npoints, Double_t *x, Double_t *y, 
            Float_t *sf = 0, Float_t prec = 0.01, Bool_t closed = kFALSE);
-   virtual ~XSpline();
+   virtual ~TSplineX();
    void Remove() { delete this; } // *MENU*
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void RecursiveRemove(TObject * obj) {fPGraphs.Remove(obj);};
@@ -179,6 +263,6 @@ public:
    void SetArrowLength(Double_t length) {fArrowLength = length;}; //  *MENU*
    void SetArrowAngle(Double_t angle) {fArrowAngle = angle;}; //  *MENU*
    void SetArrowIndentAngle(Double_t angle) {fArrowIndentAngle = angle;}; //  *MENU*
-   ClassDef(XSpline, 1)
+   ClassDef(TSplineX, 1)
 };
 #endif

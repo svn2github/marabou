@@ -38,7 +38,7 @@ protected:
    TCanvas *filelist;                 // the main canvas
    TFile       *fRootFile;        // root file
    TH1 * fCurrentHist;
-   TRootCanvas *maincanvas;
+   TRootCanvas *fMainCanvas;
    TRootCanvas *lastcanvas;
    Bool_t fByTitle;
    Int_t fRebin, fRMethod;
@@ -184,6 +184,7 @@ protected:
    Bool_t  fSocketIsOpen;
    Bool_t  fAnyFromSocket;
    TGWindow * fLastWindow;
+   TGWindow * fcHprWindow;
 //  Graphics attributes
    
    Float_t      fDivMarginX;
@@ -293,6 +294,7 @@ protected:
    Float_t    fMarkerSize;           //Marker width
 
    Float_t    fTextSize ;            //Text size
+   Float_t    fTextAngle ;            //Text angle
    Short_t    fTextAlign;           //Text alignment
    Color_t    fTextColor;           //Text color index
    Font_t     fTextFont ;            //Text font number

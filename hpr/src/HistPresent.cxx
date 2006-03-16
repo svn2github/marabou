@@ -211,7 +211,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    activeHist= NULL;
    filelist = NULL;
    fControlBar = NULL;
-   maincanvas=0;
+   fMainCanvas=0;
    lastcanvas=0;
    
    fByTitle=kFALSE;
@@ -316,7 +316,7 @@ void HistPresent::ShowMain()
    nHists=0;
    cHPr = new HTCanvas("cHPr", "HistPresent",5,5, 250, 400, this, 0);
    cHPr->cd();
-   maincanvas = GetMyCanvas();
+   fMainCanvas = GetMyCanvas();
 
    Float_t  dy=0.068, y=1. - 6.5*dy - 0.001, x0=0.01, x1=0.97;
    TButton *b;
@@ -428,7 +428,7 @@ void HistPresent::ShowMain()
 
    cHPr->SetEditable(kFALSE);
    cHPr->Update();
-   CreateDefaultsDir(maincanvas); 
+   CreateDefaultsDir(fMainCanvas); 
 }
 //________________________________________________________________________________________
 
@@ -691,13 +691,13 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       if ( (fixnames(&rfile, kTRUE) )) {
          if (QuestionBox("File contains objects with illegal names\n\
 (see transcript output)\n\
-Should we create a new file with corrected names?", maincanvas)) { 
+Should we create a new file with corrected names?", fMainCanvas)) { 
             fixnames(&rfile, kFALSE);
 //               rfile->ls();
             TString mess("A new file: ");
             mess += rfile->GetName();
             mess += "\nhas been created\n Please redisplay filelist";
-            InfoBox(mess.Data(), maincanvas); 
+            InfoBox(mess.Data(), fMainCanvas); 
             rfile->Close();
             return;
          }
@@ -747,10 +747,10 @@ Should we create a new file with corrected names?", maincanvas)) {
       if (!fComSocket) {
          if (!fConnectedOnce) {
             *fHostToConnect = GetString("Host to connect", fHostToConnect->Data()
-                        ,&ok,maincanvas);
+                        ,&ok,fMainCanvas);
             if (!ok) return;
             fSocketToConnect = GetInteger("Socket to connect",fSocketToConnect
-                        ,&ok,maincanvas);
+                        ,&ok,fMainCanvas);
             if (!ok) return;
             fConnectedOnce = kTRUE;
          }
@@ -1420,7 +1420,7 @@ void HistPresent::GetFileSelMask(const char* bp)
 {
     Bool_t ok;
     *fFileSelMask = GetString(
-    "Edit File Selection Mask",(const char *)*fFileSelMask, &ok, maincanvas);
+    "Edit File Selection Mask",(const char *)*fFileSelMask, &ok, fMainCanvas);
 }
 //________________________________________________________________________________________
   
@@ -1432,7 +1432,7 @@ void HistPresent::GetHistSelMask(const char* bp)
     Bool_t ok;
     *fHistSelMask=GetString(
                   "Edit Hist Selection Mask",(const char *)*fHistSelMask, &ok,
-                  maincanvas, "Use Regexp syntax", &yesno, 
+                  fMainCanvas, "Use Regexp syntax", &yesno, 
                   Help_SelectionMask_text);
      if (!ok) return;
      if (yesno) fUseRegexp = 1;
@@ -1686,7 +1686,7 @@ void HistPresent::SetRebinValue(Int_t val)
 {
    Bool_t ok; 
    if (val == 0) {
-      Int_t i = GetInteger("Rebin value", fRebin, &ok, maincanvas);
+      Int_t i = GetInteger("Rebin value", fRebin, &ok, fMainCanvas);
       if (!ok || i <= 0) return;
       fRebinOth->SetTitle(Form("%d", i));
       fRebinOth->SetFillColor(3);
@@ -1722,7 +1722,7 @@ void HistPresent::SetRebinMethod()
 void HistPresent::SetOperateVal() 
 {
    Bool_t ok; 
-   Float_t fac = GetFloat("Factor", fOpfac, &ok, maincanvas);
+   Float_t fac = GetFloat("Factor", fOpfac, &ok, fMainCanvas);
    fOpfac = fac;
    fValButton->SetTitle(Form("%lg", fac));
 }
@@ -2245,7 +2245,7 @@ void HistPresent::CutsToASCII(const char* name, const char* bp)
    TString fname = name;
    fname(rname) ="wdw2D";
    Bool_t ok;
-   fname = GetString("Write ASCII-file with name",fname.Data(),  &ok, maincanvas,
+   fname = GetString("Write ASCII-file with name",fname.Data(),  &ok, fMainCanvas,
    0, 0, helpText);
    if (!ok) {
       cout << " Canceled " << endl;

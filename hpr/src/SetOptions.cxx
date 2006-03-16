@@ -253,6 +253,7 @@ void HistPresent::RestoreOptions()
 	fLineStyle        = env.GetValue("HistPresent.LineStyle",       1);
 	fLineWidth        = env.GetValue("HistPresent.LineWidth",       1);
 	fTextSize         = env.GetValue("HistPresent.TextSize" ,    0.02);
+	fTextAngle        = env.GetValue("HistPresent.TextAngle" ,      0);
 	fTextAlign        = env.GetValue("HistPresent.TextAlign",       1);
 	fTextColor        = env.GetValue("HistPresent.TextColor",       1);
 	fTextFont         = env.GetValue("HistPresent.TextFont" ,       62);
@@ -547,6 +548,7 @@ void HistPresent::SaveOptions()
 	env.SetValue("HistPresent.LineStyle",       fLineStyle       );
 	env.SetValue("HistPresent.LineWidth",       fLineWidth       );
 	env.SetValue("HistPresent.TextSize" ,       fTextSize        );
+	env.SetValue("HistPresent.TextAngle" ,      fTextAngle       );
 	env.SetValue("HistPresent.TextAlign",       fTextAlign       );
 	env.SetValue("HistPresent.TextColor",       fTextColor       );
 	env.SetValue("HistPresent.TextFont" ,       fTextFont        );
@@ -772,6 +774,7 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
       kLineStyle     ,
       kLineWidth     ,
       kTextSize      ,
+      kTextAngle      ,
       kTextAlign     ,
       kTextColor     ,
       kTextFont      ,
@@ -792,6 +795,7 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("LineStyle"));     
    row_lab->Add(new TObjString("LineWidth"));         
    row_lab->Add(new TObjString("TextSize "));         
+   row_lab->Add(new TObjString("TextAngle "));         
    row_lab->Add(new TObjString("TextAlign"));         
    row_lab->Add(new TObjString("TextColor"));         
    row_lab->Add(new TObjString("TextFont "));         
@@ -814,6 +818,7 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    AddObjString(fLineStyle, values, kAttLineS);     
    AddObjString(fLineWidth, values);
    AddObjString(fTextSize , values);
+   AddObjString(fTextAngle , values);
    AddObjString(fTextAlign, values, kAttAlign);
    AddObjString(fTextColor, values, kAttColor);
    AddObjString(fTextFont , values, kAttFont);
@@ -845,9 +850,11 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    fLineStyle     = GetInt(values, vp); vp++;
    fLineWidth     = GetInt(values, vp); vp++;
    fTextSize      = GetDouble(values, vp); vp++;
+   fTextAngle      = GetDouble(values, vp); vp++;
    fTextAlign     = GetInt(values, vp); vp++;
    fTextColor     = GetInt(values, vp); vp++;
-   fTextFont      = 10 * GetInt(values, vp) + 2; vp++;
+//   fTextFont      = 10 * GetInt(values, vp) + 2; vp++;
+   fTextFont      = GetInt(values, vp); vp++;
    fFillColor     = GetInt(values, vp); vp++;
    fFillStyle     = GetInt(values, vp); vp++;
    fMarkerColor   = GetInt(values, vp); vp++;
@@ -939,6 +946,7 @@ void HistPresent::SetGeneralAtt()
    gStyle->SetLineStyle(fLineStyle);    
    gStyle->SetLineWidth(fLineWidth);    
    gStyle->SetTextSize (fTextSize );    
+   gStyle->SetTextAngle(fTextAngle);    
    gStyle->SetTextAlign(fTextAlign);    
    gStyle->SetTextColor(fTextColor);    
    gStyle->SetTextFont (fTextFont );    

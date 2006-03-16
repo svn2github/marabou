@@ -119,8 +119,8 @@ public:
    void    RemoveEditGrid();
    void    RemoveControlGraphs();
    void    RemoveParallelGraphs();
-   void    RemoveXSplinesPolyLines();
-   void    DrawXSplinesParallelGraphs();
+   void    RemoveTSplineXsPolyLines();
+   void    DrawTSplineXsParallelGraphs();
    void    DrawControlGraphs();
    void    SetVisibilityOfEnclosingCuts(Bool_t visible);
    void    InsertHist();
@@ -128,7 +128,7 @@ public:
    void    GrabImage();
    void    InsertImage();
    void    InsertAxis();
-   void    InsertXSpline();
+   void    InsertTSplineX();
    void    WritePrimitives();
    void    DefineBox();
    void    DefinePolygone();
