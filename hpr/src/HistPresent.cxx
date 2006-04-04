@@ -3472,6 +3472,8 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    if (!c)  return;
    if (!c->TestBit(HTCanvas::kIsAEditorPage)) {
       c->Draw();
+      TGraph * og = FindGraph(gPad);
+      if (og) c->BuildHprMenus(this,0, og);
       return;
    }
    TString new_name(c->GetName());

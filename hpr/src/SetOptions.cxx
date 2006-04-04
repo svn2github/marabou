@@ -1690,7 +1690,7 @@ void HistPresent::SetGraphOptions(TGWindow * win, TCanvas * ca)
          fDrawOptGraph += cdrawopt[i];
    }
    if (ca) {
-      TGraph * gr = FindGraph(ca);
+      TGraph * gr = FindGraph((TPad*)ca);
       if (gr) {
          gr->SetDrawOption(fDrawOptGraph.Data());
          ca->Modified();

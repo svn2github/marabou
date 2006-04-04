@@ -10,7 +10,9 @@
 #include "TGWindow.h"
 #include "TRegexp.h"
 #include "HistPresent.h"
+#include "support.h"
 #include "TGMrbInputDialog.h"
+#include "TGMrbValuesAndText.h"
 #include "TGMrbTableFrame.h"
 #include <iostream>
 #include <fstream>
@@ -68,20 +70,91 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
 
    TRegexp endwithasc("asc$");
    Bool_t ok = kTRUE;
-   Bool_t same_window = kFALSE;
-   if(win == fMainCanvas) 
+   static Bool_t overlay = kFALSE;
+   static Bool_t sel_pad = kFALSE;
+   static Bool_t new_pad = kTRUE;
+   static Int_t xsize = 800;
+   static Int_t ysize = 800;
+   static Int_t xdiv = 1;
+   static Int_t ydiv = 1;
+   static Int_t draw_mark = 1;
+   static Int_t draw_line = 0;
+   static Style_t mstyle = 20;
+   static Color_t mcolor = 1;
+   static Double_t msize = 1;
+   static Style_t lstyle  = 1;
+   static Color_t lcolor = 1;
+   static Int_t   lwidth = 2;
+   if (mode == kGraph || mode == kGraphError|| mode == kGraphAsymmError) {
+      TList *row_lab = new TList(); 
+      TList *values  = new TList();
+      row_lab->Add(new TObjString("Name of Inputfile"));
+      row_lab->Add(new TObjString("Draw/Overlay in selected pad"));
+      row_lab->Add(new TObjString("Draw in a new canvas"));
+      row_lab->Add(new TObjString("X size of new canvas"));
+      row_lab->Add(new TObjString("Y size of new canvas"));
+      row_lab->Add(new TObjString("Div in X of new canvas"));
+      row_lab->Add(new TObjString("Div in Y of new canvas"));
+      row_lab->Add(new TObjString("Draw marker"));
+      row_lab->Add(new TObjString("Draw line"));
+      row_lab->Add(new TObjString("Marker style"));
+      row_lab->Add(new TObjString("Marker color"));
+      row_lab->Add(new TObjString("Marker size"));
+      row_lab->Add(new TObjString("Line style"));
+      row_lab->Add(new TObjString("Line color"));
+      row_lab->Add(new TObjString("Line width"));
+//      Int_t nrows = row_lab->GetSize();
+
+      AddObjString(fGraphFile.Data(), values);
+      AddObjString(sel_pad, values, kAttRadioB);
+      AddObjString(new_pad, values, kAttRadioB);
+      AddObjString(xsize, values);
+      AddObjString(ysize, values);
+      AddObjString(xdiv, values);
+      AddObjString(ydiv, values);
+      AddObjString(draw_mark, values, kAttCheckB);
+      AddObjString(draw_line, values, kAttCheckB);
+      AddObjString(mstyle,  values, kAttMarker);
+      AddObjString(mcolor, values, kAttColor);
+      AddObjString(msize, values);
+      AddObjString(lstyle, values, kAttLineS);
+      AddObjString(lcolor, values, kAttColor);
+      AddObjString(lwidth, values);
+      Int_t itemwidth = 280;
+      ok = GetStringExt("Graphs parameters", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, values);
+      if (!ok) return;
+      Int_t vp = 0;
+      fGraphFile = GetText(values, vp); vp++;
+      sel_pad = GetInt(values,   vp++);
+      new_pad = GetInt(values,   vp++);
+      xsize   = GetInt(values,   vp++);
+      ysize   = GetInt(values,   vp++);
+      xdiv    = GetInt(values,   vp++);
+      ydiv    = GetInt(values,   vp++);
+      draw_mark = GetInt(values,   vp++);
+      draw_line = GetInt(values,   vp++);
+      mstyle   = GetInt(values,   vp++);
+      mcolor  = GetInt(values,   vp++);
+      msize   = GetDouble(values, vp); vp++; 
+      lstyle = GetInt(values,   vp++);
+      lcolor = GetInt(values,   vp++);
+      lwidth = GetInt(values,   vp++);
+
+      TGraph * og = NULL;
+      if (sel_pad && gPad == NULL) { 
+         WarnBox("Please select a pad with middle mouse");
+         return;
+      }
+   } else {
        fGraphFile = GetString("Filename",fGraphFile.Data(), 
                 &ok, win, 0, 0, helpText);
-   else
-       fGraphFile = GetString("Filename",fGraphFile.Data(), 
-                &ok, win, "Draw in same window", &same_window, helpText);
-
+   }
 //   fname = GetString("Filename",fname.Data(), &ok);
    if (!ok) {
       cout << " Canceled " << endl;
       return; 
    } 
-
    ifstream infile;
    infile.open(fGraphFile.Data(), ios::in);
 	if (!infile.good()) {
@@ -360,33 +433,51 @@ tryagain:
          hname.Prepend("graph_asymm_err_");
       }
       if (graph) {
-         TString cname = hname;
-         cname.Prepend("C_");
-         if (fNwindows>0) {       // not the 1. time
-            if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
-            else   {fWincurx = fWintopx; fWincury += fWinshifty;}
-         }
-         fNwindows++;
          graph->SetName(hname);
          graph->SetTitle(htitle);
          graph->GetHistogram()->SetStats(kFALSE);
+         graph->SetMarkerStyle(mstyle);
+         graph->SetMarkerColor(mcolor);
+         graph->SetMarkerSize(msize);
+         graph->SetLineStyle(lstyle);
+         graph->SetLineColor(lcolor);
+         graph->SetLineWidth(lwidth);
+         TString drawopt(fDrawOptGraph);
+         if (draw_mark) drawopt+= "P";
+         if (draw_line) drawopt+= "L";
 //         cout << "gPad->GetName() " <<gPad->GetName() << endl;
-         if (same_window) {
-            TString oo(fDrawOptGraph);
-            Int_t inda = oo.Index("a", 0, TString::kIgnoreCase);
-            if (inda>=0) oo.Remove(inda,1);
-//            cout << "oo: " << oo<< endl;
-         
-            oo += "SAME";
-            graph->Draw(oo);
+         if (sel_pad) {
+            TGraph * og = FindGraph(gPad);
+            if (og != NULL) {
+            	TString oo(fDrawOptGraph);
+            	Int_t inda = drawopt.Index("a", 0, TString::kIgnoreCase);
+            	if (inda>=0) drawopt.Remove(inda,1);
+	//            cout << "oo: " << oo<< endl;
+
+            	drawopt += "SAME";
+            	graph->Draw(drawopt);
+            } else {
+               graph->Draw(drawopt);
+            }
             gPad->Modified();
             gPad->Update();
-        } else {
+         } else {
 //            cout << "New graph: " << endl;
+            TString cname = hname;
+            cname.Prepend("C_");
+            if (fNwindows>0) {       // not the 1. time
+               if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
+               else   {fWincurx = fWintopx; fWincury += fWinshifty;}
+            }
+            fNwindows++;
             HTCanvas * cg = new HTCanvas(cname, htitle, fWincurx, fWincury,
-                            fWinwidx_1dim, fWinwidy_1dim, this, 0, 0, graph);
+                            xsize, ysize, this, 0, 0, graph);
             fCanvasList->Add(cg);
-            graph->Draw(fDrawOptGraph);
+            if (xdiv > 1 || ydiv > 1) {
+               cg->Divide(xdiv, ydiv);
+               cg->cd(1);
+            }
+            graph->Draw(drawopt);
          }
       }
    }

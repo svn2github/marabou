@@ -78,6 +78,7 @@ public:
    HistPresent * GetHistPresent();
    FitHist     * GetFitHist();
    TList * GetHistList() {return fHistList;};
+   void BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr);
    Bool_t GetCommonRotate() {return fCommonRotate;};
    void   SetCommonRotate(Bool_t cr) {fCommonRotate = cr;};
    HTimer * GetHTimer() {return fTimer;};

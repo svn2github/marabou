@@ -876,3 +876,18 @@ void HTCanvas::SetLog(Int_t state)
     fHandleMenus->SetLog(state);
 
 }
+//______________________________________________________________________________
+void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)
+{
+   if (hpr) fHistPresent = hpr;
+   if (fh)  fFitHist = fh;
+   if (gr) fGraph= gr;
+
+   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph); 
+//   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
+   fHandleMenus->BuildMenus(); 
+   fCanvasImp->ShowEditor(kFALSE);
+   fCanvasImp->ShowToolBar(kFALSE);
+   fCanvasImp->ShowStatusBar(kFALSE);
+   fCanvasImp->ShowMenuBar(HasMenuBar());
+}

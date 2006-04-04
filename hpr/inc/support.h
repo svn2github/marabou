@@ -90,7 +90,7 @@ void     ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode,
 void     CalibrateAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
 void     RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
 void     Canvas2LP(TCanvas * canvas, Bool_t to_printer = kTRUE, TGWindow * = 0);
-void     Canvas2RootFile(TCanvas * canvas, TGWindow * win = 0);
+void     Canvas2RootFile(HTCanvas * canvas, TGWindow * win = 0);
 TEnv *   GetDefaults(const char *, Bool_t mustexist = kTRUE);
 TEnv *   GetDefaults(TString &, Bool_t mustexist = kTRUE);
 TH1 *    gethist( const char * hname, TSocket * sock);
@@ -104,12 +104,12 @@ TH1 * calhist(TH1 * hist, TF1 * calfunc,
               const char * origname =0);
 void     PrintGraph(TGraphErrors * gr); 
 Bool_t   IsInsideFrame(TCanvas * c, Int_t px, Int_t py);
-TGraph * FindGraph(TCanvas * ca);
+TGraph * FindGraph(TVirtualPad * ca);
 void     DrawColors();
 void     DrawFillStyles();
 void     DrawLineStyles();
 Bool_t   CreateDefaultsDir(TRootCanvas * mycanvas = 0, Bool_t checkonly = kFALSE);
-TGraph * FindGraph(HTCanvas * c); 
+//TGraph * FindGraph(HTCanvas * c); 
 void     WriteGraphasASCII(TGraph * g, TRootCanvas * mycanvas = 0);
 void     WriteOutGraph(TGraph * g, TRootCanvas * mycanvas = 0);
 Bool_t   fixnames(TFile * * infile, Bool_t checkonly);

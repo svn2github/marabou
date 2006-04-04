@@ -229,7 +229,6 @@ TLatex *GetPadLatex(TButton * pad)
    }
    return NULL;
 }
-
 //----------------------------------------------------------------------- 
 Bool_t is2dim(TH1 * hist)
 {
@@ -1181,11 +1180,12 @@ a shift value of 10 will only shift by 5 cm";
 }
 
 //_______________________________________________________________________________________
-void Canvas2RootFile(TCanvas * canvas, TGWindow * win)
+void Canvas2RootFile(HTCanvas * canvas, TGWindow * win)
 {
    TString hname = canvas->GetName();
    hname += ".canvas";
-   Bool_t ok;
+   Bool_t ok = kTRUE, toggle = kFALSE;
+
    TObject *obj;
    hname = GetString("Save canvas with name", hname.Data(), &ok, win);
    if (!ok)
@@ -1197,20 +1197,21 @@ void Canvas2RootFile(TCanvas * canvas, TGWindow * win)
       return;
    }
    if (OpenWorkFile(win)) {
-      if (canvas->GetAutoExec())
+      if (canvas->GetAutoExec()) {
          canvas->ToggleAutoExec();
-      TCanvas *nc =
-          new TCanvas(hname.Data(), canvas->GetTitle(), 50, 500, 720, 500);
-      TIter next(canvas->GetListOfPrimitives());
-      while ((obj = next())) {
-         gROOT->SetSelectedPad(nc);
-         nc->GetListOfPrimitives()->Add(obj->Clone());
+         toggle = kTRUE;
       }
-      if (nc->GetAutoExec())
-         nc->ToggleAutoExec();
-      nc->Write();
+ //     HTCanvas *nc =
+ //         new HTCanvas(hname.Data(), canvas->GetTitle(), 50, 500, 720, 500);
+ //     TIter next(canvas->GetListOfPrimitives());
+//      while ((obj = next())) {
+//         gROOT->SetSelectedPad(nc);
+//         nc->GetListOfPrimitives()->Add(obj->Clone());
+//      }
+      canvas->Write();
+      if (toggle) canvas->ToggleAutoExec();
       CloseWorkFile();
-      delete nc;
+//      delete nc;
    }
 }
 
@@ -1507,7 +1508,7 @@ Bool_t IsInsideFrame(TCanvas * c, Int_t px, Int_t py)
 }
 //_______________________________________________________________________________________
 
-TGraph * FindGraph(TCanvas * ca)
+TGraph * FindGraph(TVirtualPad * ca)
 {
    if (!ca) return NULL;
    TIter next(ca->GetListOfPrimitives());
@@ -1515,6 +1516,20 @@ TGraph * FindGraph(TCanvas * ca)
       if (obj->InheritsFrom("TGraph")) { 
           TGraph * g = (TGraph*)obj;
           return g;
+      }
+   }
+// look for subpads
+   TIter next1(ca->GetListOfPrimitives());
+   while (TObject * obj = next1()) {
+      if (obj->InheritsFrom("TPad")) { 
+          TPad * p = (TPad*)obj;
+          TIter next2(p->GetListOfPrimitives());
+          while (TObject * obj = next2()) {
+             if (obj->InheritsFrom("TGraph")) { 
+                TGraph * g = (TGraph*)obj;
+                return g;
+             }
+          }
       }
    }
    return NULL;
@@ -1782,7 +1797,7 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
    return fok;
 }
 //______________________________________________________________________________________
-
+/*
 TGraph * FindGraph(HTCanvas * c) 
 {
    cout << "FindGraph(HTCanvas * c) " << c << endl;
@@ -1798,7 +1813,7 @@ TGraph * FindGraph(HTCanvas * c)
    }
    return graph;
 }
-   
+*/  
 //______________________________________________________________________________________
 
 void WriteGraphasASCII(TGraph * g,  TRootCanvas * mycanvas)

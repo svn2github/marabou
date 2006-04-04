@@ -66,6 +66,7 @@
 #include "TMrbNamedArray.h"
 #include "TMrbArrayD.h"
 #include "TGMrbSliders.h"
+#include "TGMrbValuesAndText.h"
 
 //extern HistPresent* hp;
 extern TFile *fWorkfile;
@@ -1149,24 +1150,79 @@ void FitHist::Entire()
 
 void FitHist::RebinOne()
 {
-   static Int_t ngroup = 2;
-   if (fSelHist) {
-      Bool_t ok;
-      ngroup = GetInteger("Rebin value", ngroup, &ok, mycanvas);
-      if (!ok || ngroup <= 0)
-         return;
+   if (fSelHist == NULL) return;
+   static Int_t ngroupX = 2;
+   static Int_t ngroupY = 2;
+   Bool_t ok;
+   TH1 *newhist = NULL;
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
+   row_lab->Add(new TObjString("Name of rebinned hist"));
+   row_lab->Add(new TObjString("Title of rebinned hist"));
+   row_lab->Add(new TObjString("Rebin value X"));
+   if (is2dim(fSelHist))
+      row_lab->Add(new TObjString("Rebin value Y"));
+   TString title(fSelHist->GetTitle());
+   title += "_rebinned_by_";
+   TString name(fSelHist->GetName());
+   name += "_rebinned_by_";
+
+   AddObjString(name.Data(), values);
+   AddObjString(title.Data(), values);
+   AddObjString(ngroupX, values);
+   if (is2dim(fSelHist))
+      AddObjString(ngroupY, values);
+
+   Int_t itemwidth = 400;
+   ok = GetStringExt("Rebin parameters", NULL, itemwidth, mycanvas,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+   Int_t vp = 0;
+
+   name = GetText(values, vp); vp++;
+   title = GetText(values, vp); vp++;
+   ngroupX = GetInt(values,   vp++);
+   if (is2dim(fSelHist))
+      ngroupY = GetInt(values,   vp++);
+   title += ngroupX;
+   name  += ngroupX;
+   if (is2dim(fSelHist)) {
+//      cout << "nyi" << endl;
+      title += "_";
+      name  += "_";
+      title += ngroupY;
+      name  += ngroupY;
+
+      Int_t nbinsXnew = fSelHist->GetNbinsX() / ngroupX;
+      Int_t nbinsYnew = fSelHist->GetNbinsY() / ngroupY;
+      if (nbinsXnew * ngroupX != fSelHist->GetNbinsX()) {
+         nbinsXnew += 1;
+         TString warn("Warning: Number of bins X not multiple of ");
+         warn += ngroupX;
+         WarnBox(warn.Data());
+      }
+      if (nbinsYnew * ngroupY != fSelHist->GetNbinsY()) {
+         nbinsYnew += 1;
+         TString warn("Warning: Number of bins Y not multiple of ");
+         warn += ngroupY;
+         WarnBox(warn.Data());
+      }
+      TH2* h2 = (TH2*)fSelHist;
+      newhist = h2->Rebin2D(ngroupX, ngroupY, name.Data());
+   } else {
+      newhist = (TH1*)fSelHist->Clone();  
       Int_t first = fSelHist->GetXaxis()->GetFirst();
       Int_t last = fSelHist->GetXaxis()->GetLast();
-      fSelHist->Rebin(ngroup);
-      first /= ngroup;
-      last /= ngroup;
-      fSelHist->GetXaxis()->SetRange(first, last);
-      TString title(fSelHist->GetTitle());
-      title += "_rebinned_by_";
-      title += ngroup;
-      fSelHist->SetTitle(title);
-      cHist->Modified(kTRUE);
-      cHist->Update();
+      newhist->Rebin(ngroupX);
+      first /= ngroupX;
+      last /= ngroupY;
+      newhist->GetXaxis()->SetRange(first, last);
+      newhist->SetName(name);
+   }
+   if (newhist) {
+      newhist->SetTitle(title);
+      if (hp) hp->ShowHist(newhist);
+      else    newhist->Draw();
    }
 }
 //_______________________________________________________________________________________

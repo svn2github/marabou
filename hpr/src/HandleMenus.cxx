@@ -1109,7 +1109,7 @@ again:
                      break;
                   case kFHCanvasToFile:
 //                      fFitHist->WriteOutCanvas(); 
-                     Canvas2RootFile((TCanvas*)fHCanvas, fRootCanvas); 
+                     Canvas2RootFile(fHCanvas, fRootCanvas); 
                      break;
                   case kFHHistToASCII:
                      fFitHist->WriteHistasASCII(0); 
@@ -1523,6 +1523,7 @@ void HandleMenus::BuildMenus()
       if (fGraph) {
          fFileMenu->AddEntry("Graph_to_ROOT-File",      kFHGraphToFile);
          fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
+         fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
       }
       if (!edit_menus) {
          fFileMenu->AddEntry("Select ROOT file from any dir",  kFHSelAnyDir);
@@ -1649,7 +1650,7 @@ void HandleMenus::BuildMenus()
       	fDisplayMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
       	fDisplayMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
        	fDisplayMenu->AddEntry("Set Axis Range",      kFHAxisRange     );
-     	if(!is2dim)fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
+     	   fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
       	if (is2dim) {
       	   fDisplayMenu->AddSeparator();
             fDisplayMenu->AddEntry("Set User Contours",   kFHUserCont);
