@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.114 2006-05-11 12:56:58 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.114 2006-05-11 12:56:58 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.115 2006-05-11 13:36:10 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.115 2006-05-11 13:36:10 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2998,11 +2998,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
 									}
 								}
-								if (udc) {
-									anaTmpl.InitializeCode("%SP%");
-									anaTmpl.Substitute("$processEvent", method.Data());
-									anaTmpl.WriteCode(anaStrm);
-								}
+								anaTmpl.InitializeCode("%SP%");
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+								anaTmpl.Substitute("$processEvent", method.Data());
+								anaTmpl.WriteCode(anaStrm);
 							}
 							anaTmpl.InitializeCode("%E%");
 							anaTmpl.WriteCode(anaStrm);
