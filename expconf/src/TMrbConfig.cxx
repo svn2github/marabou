@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.113 2006-02-27 13:40:20 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.113 2006-02-27 13:40:20 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.114 2006-05-11 12:56:58 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.114 2006-05-11 12:56:58 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2983,7 +2983,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 													Int_t n = m.Index("::", 0);
 													if (n > 0) {
 														TString cl = m(0, n);
-														TString evtClass = evt->IsStartEvent() ? "TUsrEvtStart" : "TUsrEvtStop";
+														TString evtClass = evt->IsStartEvent() ? "TUsrEvtXstart" : "TUsrEvtXstop";
 														if (evtClass.CompareTo(cl.Data()) == 0) {
 															method = m(n + 2, m.Length() - n - 2);
 															udc = kTRUE;
