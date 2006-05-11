@@ -67,7 +67,7 @@
 #define SIS_3820_SET_CTRL_BIT(module, b)		*SIS_3820_A_STATUS(module) = b
 #define SIS_3820_DISABLE_COPY(module, b)		*SIS_3820_A_COPY_DISABLE(module) = b
 #define SIS_3820_INHIBIT_COUNTING(module, b) 	*SIS_3820_A_INHIBIT_COUNTING(module) = b
-#define SIS_3820_WRITE_FIFO_THRESH(module, b)	*SIS_3820_A_FIFO_WC_THRESH(module) = 0
+#define SIS_3820_WRITE_FIFO_THRESH(module, b)	*SIS_3820_A_FIFO_WC_THRESH(module) = b
 #define SIS_3820_RESET(module)					*SIS_3820_A_KEY_RESET(module) = 0
 #define SIS_3820_VME_LNE(module)				*SIS_3820_A_KEY_VME_LNE(module) = 0
 #define SIS_3820_CLEAR_FIFO(module)				*SIS_3820_A_KEY_FIFO_RESET(module) = 0
