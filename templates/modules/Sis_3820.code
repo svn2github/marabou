@@ -38,6 +38,7 @@
 #define SIS_3820_R_KEY_OPER_DISABLE		0x41CL
 #define SIS_3820_R_READ_FIFO			0xA00L
 
+
 #define SIS_3820_A_STATUS(module)				((unsigned long *) (module + SIS_3820_R_STATUS))
 #define SIS_3820_A_IDENT(module)				((unsigned long *) (module + SIS_3820_R_IDENT))
 #define SIS_3820_A_IRQSTATUS(module)			((unsigned long *) (module + SIS_3820_R_IRQSTATUS))
