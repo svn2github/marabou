@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3820        -- 32 chn 32 bit VME scaler
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3820.h,v 1.5 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3820.h,v 1.6 2006-05-16 08:09:37 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -54,8 +54,6 @@ class TMrbSis_3820 : public TMrbVMEScaler {
 		~TMrbSis_3820() {};												// default dtor
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex,
-												TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kTRUE); };
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		virtual inline const Char_t * GetMnemonic() const { return("sis_3820"); }; 	// module mnemonic
