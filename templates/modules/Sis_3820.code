@@ -128,7 +128,7 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-%FSR%					SIS_3820_KEY_VME_LNE($moduleName);				/* force scaler readout */
+%FSR%					SIS_3820_VME_LNE($moduleName);				/* force scaler readout */
 %SH%					$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
 %SH%					if (($mnemoLC_sts & SIS_3820_IRQ_B_FIFO_THRESH) != 0) {
 %SH%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO);
