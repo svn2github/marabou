@@ -256,8 +256,8 @@ protected:
    Float_t       fPadTopMargin;   
    Float_t       fPadLeftMargin;  
    Float_t       fPadRightMargin; 
-   Bool_t        fPadGridX;       
-   Bool_t        fPadGridY;       
+   Int_t         fPadGridX;       
+   Int_t         fPadGridY;       
    Int_t         fPadTickX;       
    Int_t         fPadTickY;  
 	Color_t       fFrameFillColor;    //pad frame fill color
@@ -266,10 +266,10 @@ protected:
 	Style_t       fFrameLineStyle;    //pad frame line style
 	Width_t       fFrameLineWidth;    //pad frame line width
 	Width_t       fFrameBorderSize;   //pad frame border size
-	Int_t         fFrameBorderMode;   //pad frame border mode
+	Short_t         fFrameBorderMode;   //pad frame border mode
 	Color_t       fCanvasColor;       //canvas color
 	Width_t       fCanvasBorderSize;  //canvas border size
-	Int_t         fCanvasBorderMode;  //canvas border mode
+   Short_t        fCanvasBorderMode;  //canvas border mode
 	Int_t         fCanvasDefH;        //default canvas height
 	Int_t         fCanvasDefW;        //default canvas width
 	Int_t         fCanvasDefX;        //default canvas top X position
@@ -303,23 +303,23 @@ protected:
 
    Float_t    fArrowAngle ;     // Arrow opening angle (degrees)
    Float_t    fArrowSize  ;     // Arrow Size
-   Int_t      fArrowFill  ;     // Arrow fill style
+   Style_t    fArrowFill  ;     // Arrow fill style
    Color_t    fArrowColor ;     // Arrow color (line + fill)
-   Int_t      fArrowWidth ;     // Arrow line width    
+   Width_t    fArrowWidth ;     // Arrow line width    
    Int_t      fArrowShape ;      //  Arrow shapes (e.g. -|>-)
-   Int_t      fArrowStyle ;     // Arrow line style
+   Style_t    fArrowStyle ;     // Arrow line style
 //   TString    fArrowOption;     // Arrow shapes (e.g. -|>-)
    Double_t   fCurlyWaveLength; // wavelength of sinusoid in percent of pad height
    Double_t   fCurlyAmplitude;  // amplitude of sinusoid in percent of pad height
    Color_t    fCurlyColor ;     // C  urly line color 
-   Int_t      fCurlyWidth ;     // Curly line width
-   Int_t      fCurlyStyle ;     // Curly line style
+   Width_t      fCurlyWidth ;     // Curly line width
+   Style_t      fCurlyStyle ;     // Curly line style
    Int_t      fIsCurly    ;     // true: Gluon, false: Gamma
    Color_t    fArcFillColor;
-   Int_t      fArcFillStyle;
+   Style_t    fArcFillStyle;
    Color_t    fArcLineColor;
-   Int_t      fArcLineStyle;
-   Int_t      fArcLineWidth;
+   Style_t    fArcLineStyle;
+   Width_t    fArcLineWidth;
  
    Int_t      fForceStyle;  
 
@@ -450,7 +450,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void MkClass(const char*, const char*, const char*, const char* l=0, const char* bp =0);  // display hist of leaf
 
    void CutsFromASCII(TGWindow * win = 0); 
-   void HistFromASCII(TGWindow * win = 0, EHfromASCIImode mode = kNotDefined); 
+   void HistFromASCII(TGWindow * win = 0); 
+   void GraphFromASCII(TGWindow * win = 0); 
    void NtupleFromASCII(TGWindow * win = 0); 
    void SaveMap(const char*, const char* bp =0);  
    void SaveFromSocket(const char*, const char* bp =0);  
@@ -487,6 +488,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void CleanWindowLists(TH1* hist);
 //   void RemoveFromLists(TObject * obj);
    void DinA4Page(Int_t form);
+   Int_t GetWindowPosition(Int_t * winx, Int_t * winy);
 
 ClassDef(HistPresent,0)      // A histogram presenter
 };

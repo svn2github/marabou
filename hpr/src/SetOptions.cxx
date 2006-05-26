@@ -606,10 +606,6 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    enum e_CurlySet { 
       kArrowAngle      ,
       kArrowSize       ,
-//      kArrowWidth      ,
-//      kArrowStyle      ,
-//      kArrowColor      ,
-//      kArrowFill       ,
       kArrowShape     ,
       kCurlyWaveLength ,
       kCurlyAmplitude  ,
@@ -621,37 +617,29 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    const char * ArrowOption[] = 
       {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
    TList *row_lab = new TList();
-   Int_t vp = 0;
-   row_lab->Add(new TObjString("ArrowAngle "));     
-   row_lab->Add(new TObjString("ArrowSize  "));     
-//   row_lab->Add(new TObjString("ArrowLineWidth"));     
-//   row_lab->Add(new TObjString("ArrowLineStyle"));     
-//   row_lab->Add(new TObjString("ArrowColor "));     
-//   row_lab->Add(new TObjString("ArrowFillStyle"));     
-   row_lab->Add(new TObjString("ArrowForm"));         
-   row_lab->Add(new TObjString("CurlyWaveLength"));         
-   row_lab->Add(new TObjString("CurlyAmplitude"));         
-   row_lab->Add(new TObjString("CurlyLineWidth"));     
-   row_lab->Add(new TObjString("CurlyLineStyle"));     
-   row_lab->Add(new TObjString("CurlyColor "));     
-   row_lab->Add(new TObjString("IsCurly    "));         
+   static void *valp[25];
+   Int_t ind = 0;
+   row_lab->Add(new TObjString("Float_Value_ArrowAngle "));     
+   row_lab->Add(new TObjString("Float_Value_ArrowSize  "));     
+   row_lab->Add(new TObjString("ArrowSelect_ArrowForm"));         
+   row_lab->Add(new TObjString("DoubleValue_CurlyWaveLength"));         
+   row_lab->Add(new TObjString("DoubleValue_CurlyAmplitude"));         
+   row_lab->Add(new TObjString("PlainShtVal_CurlyLineWidth"));     
+   row_lab->Add(new TObjString("LineSSelect_CurlyLineStyle"));     
+   row_lab->Add(new TObjString("ColorSelect_CurlyColor "));     
+   row_lab->Add(new TObjString("CheckButton_IsCurly    "));         
 
-   TList *values = new TList();
-   AddObjString(fArrowAngle ,values);
-   AddObjString(fArrowSize  ,values);
-//   AddObjString(fArrowWidth  ,values);
-//   AddObjString(fArrowStyle  ,values, kAttLineS);
-//   AddObjString(fArrowColor  ,values, kAttColor);
-//   AddObjString(fArrowFill  ,values, kAttFillS);
-   AddObjString(fArrowShape ,values, kAttArrow);
-   AddObjString(fCurlyWaveLength ,values);
-   AddObjString(fCurlyAmplitude  ,values);
-   AddObjString(fCurlyWidth  ,values);
-   AddObjString(fCurlyStyle  ,values, kAttLineS);
-   AddObjString(fCurlyColor  ,values, kAttColor);
-   AddObjString(fIsCurly     ,values);
+   valp[ind++] = &fArrowAngle ;
+   valp[ind++] = &fArrowSize  ;
+   valp[ind++] = &fArrowShape ;
+   valp[ind++] = &fCurlyWaveLength ;
+   valp[ind++] = &fCurlyAmplitude  ;
+   valp[ind++] = &fCurlyWidth  ;
+   valp[ind++] = &fCurlyStyle  ;
+   valp[ind++] = &fCurlyColor  ;
+   valp[ind++] = &fIsCurly     ;
 
-   Int_t nrows = values->GetSize();
+   Int_t nrows = row_lab->GetSize();
    TArrayI flag (nrows);
    for (Int_t i = 0; i < nrows; i++) {
       flag[i] = 0;
@@ -659,46 +647,13 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("Feynman diagrams", NULL, itemwidth, win,
-                      NULL, NULL, row_lab, values, 
+                      NULL, NULL, row_lab, valp, 
                       &flag, "Set all");
    if (!ok) return;
 
-   vp = 0;
-   fArrowAngle      = GetDouble(values, vp); vp++;
-   fArrowSize       = GetDouble(values, vp); vp++;
-//   fArrowWidth      = GetInt(values, vp); vp++;
-//   fArrowStyle      = GetInt(values, vp); vp++;
-//   fArrowColor      = GetInt(values, vp); vp++;
-//   fArrowFill       = GetInt(values, vp); vp++;
-   fArrowShape      = GetInt(values, vp); vp++;
-   fCurlyWaveLength = GetDouble(values, vp); vp++;
-   fCurlyAmplitude  = GetDouble(values, vp); vp++;
-   fCurlyWidth      = GetInt(values, vp); vp++;
-   fCurlyStyle      = GetInt(values, vp); vp++;
-   fCurlyColor      = GetInt(values, vp); vp++;
-   fIsCurly         = GetInt(values, vp); vp++;
-   // check ArrowShape
-/*
-   if      (fArrowOption.Contains("->-")) fArrowOption = "->-";
-   else if (fArrowOption.Contains("-<-")) fArrowOption = "-<-";
-   else if (fArrowOption.Contains("-|>-")) fArrowOption = "-|>-";
-   else if (fArrowOption.Contains("-<|-")) fArrowOption = "-<|-";
-   else if (fArrowOption.BeginsWith("<|") && fArrowOption.EndsWith("|>")) fArrowOption = "<|>";
-   else if (fArrowOption.BeginsWith("<")  && fArrowOption.EndsWith(">"))  fArrowOption = "<>";
-   else if (fArrowOption.BeginsWith("<|")) fArrowOption = "<|";
-   else if (fArrowOption.EndsWith("|>"))  fArrowOption = "|>";
-   else if (fArrowOption.BeginsWith("<"))  fArrowOption = "<";
-   else if (fArrowOption.EndsWith(">"))   fArrowOption = ">";
-   else                                   fArrowOption = "|>";
-*/
-//   cout << "fArrowShape " << fArrowShape << endl;
    SaveOptions();
    gEnv->SetValue("HistPresent.ArrowAngle" ,fArrowAngle);
    gEnv->SetValue("HistPresent.ArrowSize"  ,fArrowSize );
-//   gEnv->SetValue("HistPresent.ArrowWidth" ,fArrowWidth);
-//   gEnv->SetValue("HistPresent.ArrowStyle" ,fArrowStyle);
-//   gEnv->SetValue("HistPresent.ArrowColor" ,fArrowColor);
-//   gEnv->SetValue("HistPresent.ArrowFill"  ,fArrowFill );
    gEnv->SetValue("HistPresent.ArrowShape" ,fArrowShape);
    gEnv->SetValue("HistPresent.CurlyWaveLength" ,fCurlyWaveLength);
    gEnv->SetValue("HistPresent.CurlyAmplitude"  ,fCurlyAmplitude);
@@ -763,6 +718,9 @@ void HistPresent::SetCurlyAtt()
 	TArrow::SetDefaultAngle(fArrowAngle);
 	TArrow::SetDefaultArrowSize(fArrowSize);
 	TArrow::SetDefaultOption(ArrowOption[fArrowShape]);
+	gStyle->SetLineColor(fCurlyColor);
+	gStyle->SetLineStyle(fCurlyStyle);
+	gStyle->SetLineWidth(fCurlyWidth);
 #endif
 }
 //_______________________________________________________________________
@@ -789,82 +747,62 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
       kArcLineStyle	,
       kArcLineWidth	
    };
-
+  
+   static void *valp[25];
+   Int_t ind = 0;
    TList *row_lab = new TList();
-   row_lab->Add(new TObjString("LineColor"));     
-   row_lab->Add(new TObjString("LineStyle"));     
-   row_lab->Add(new TObjString("LineWidth"));         
-   row_lab->Add(new TObjString("TextSize "));         
-   row_lab->Add(new TObjString("TextAngle "));         
-   row_lab->Add(new TObjString("TextAlign"));         
-   row_lab->Add(new TObjString("TextColor"));         
-   row_lab->Add(new TObjString("TextFont "));         
-   row_lab->Add(new TObjString("FillColor"));         
-   row_lab->Add(new TObjString("FillStyle"));         
-   row_lab->Add(new TObjString("MarkerColor"));     
-   row_lab->Add(new TObjString("MarkerStyle"));     
-   row_lab->Add(new TObjString("MarkerSize"));         
-   row_lab->Add(new TObjString("ArcFillColor"));         
-   row_lab->Add(new TObjString("ArcFillStyle"));         
-   row_lab->Add(new TObjString("ArcLineColor"));     
-   row_lab->Add(new TObjString("ArcLineStyle"));     
-   row_lab->Add(new TObjString("ArcLineWidth"));         
+   row_lab->Add(new TObjString("ColorSelect_LineColor"));     
+   row_lab->Add(new TObjString("LineSSelect_LineStyle"));     
+   row_lab->Add(new TObjString("PlainShtVal_LineWidth"));         
+   row_lab->Add(new TObjString("Float_Value_TextSize "));         
+   row_lab->Add(new TObjString("Float_Value_TextAngle "));         
+   row_lab->Add(new TObjString("AlignSelect_TextAlign"));         
+   row_lab->Add(new TObjString("ColorSelect_TextColor"));         
+   row_lab->Add(new TObjString("CfontSelect_TextFont "));         
+   row_lab->Add(new TObjString("ColorSelect_FillColor"));         
+   row_lab->Add(new TObjString("Fill_Select_FillStyle"));         
+   row_lab->Add(new TObjString("ColorSelect_MarkerColor"));     
+   row_lab->Add(new TObjString("Mark_Select_MarkerStyle"));     
+   row_lab->Add(new TObjString("Float_Value_MarkerSize"));         
+   row_lab->Add(new TObjString("ColorSelect_ArcFillColor"));         
+   row_lab->Add(new TObjString("Fill_Select_ArcFillStyle"));         
+   row_lab->Add(new TObjString("ColorSelect_ArcLineColor"));     
+   row_lab->Add(new TObjString("LineSSelect_ArcLineStyle"));     
+   row_lab->Add(new TObjString("PlainShtVal_ArcLineWidth"));         
 
    Int_t nrows = row_lab->GetSize();
-   TList  * values = new TList;
-   Int_t vp = 0;
-
-   AddObjString(fLineColor, values, kAttColor);     
-   AddObjString(fLineStyle, values, kAttLineS);     
-   AddObjString(fLineWidth, values);
-   AddObjString(fTextSize , values);
-   AddObjString(fTextAngle , values);
-   AddObjString(fTextAlign, values, kAttAlign);
-   AddObjString(fTextColor, values, kAttColor);
-   AddObjString(fTextFont , values, kAttFont);
-   AddObjString(fFillColor, values, kAttColor);
-   AddObjString(fFillStyle, values, kAttFillS);
-   AddObjString(fMarkerColor, values, kAttColor);     
-   AddObjString(fMarkerStyle, values, kAttMarker);     
-   AddObjString(fMarkerSize, values);
-   AddObjString(fArcFillColor, values, kAttColor);
-   AddObjString(fArcFillStyle, values, kAttFillS);
-   AddObjString(fArcLineColor, values, kAttColor);
-   AddObjString(fArcLineStyle, values, kAttLineS);
-   AddObjString(fArcLineWidth, values); 
-   
+//   TList  * values = new TList;
+	valp[ind++] = &fLineColor;	 
+	valp[ind++] = &fLineStyle;	 
+	valp[ind++] = &fLineWidth;
+	valp[ind++] = &fTextSize;
+	valp[ind++] = &fTextAngle;
+	valp[ind++] = &fTextAlign;
+	valp[ind++] = &fTextColor;
+   fTextFont /= 10;
+	valp[ind++] = &fTextFont;
+	valp[ind++] = &fFillColor;
+	valp[ind++] = &fFillStyle;
+	valp[ind++] = &fMarkerColor;   
+	valp[ind++] = &fMarkerStyle;   
+	valp[ind++] = &fMarkerSize;
+	valp[ind++] = &fArcFillColor;
+	valp[ind++] = &fArcFillStyle;
+	valp[ind++] = &fArcLineColor;
+	valp[ind++] = &fArcLineStyle;
+	valp[ind++] = &fArcLineWidth;
    TArrayI flag (nrows);
    for (Int_t i = 0; i < nrows; i++) {
       flag[i] = 0;
    } 
-         
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("Graphics defaults", NULL, itemwidth, win,
-                      NULL, NULL, row_lab, values, 
-                      &flag, "Set all");
-   if (!ok) return;
+                      NULL, NULL, row_lab, valp, 
+                      &flag, "Set all", NULL, NULL, NULL);
+   fTextFont = 2 + 10 * fTextFont;
 
-   vp = 0;
-   fLineColor     = GetInt(values, vp); vp++;
-   fLineStyle     = GetInt(values, vp); vp++;
-   fLineWidth     = GetInt(values, vp); vp++;
-   fTextSize      = GetDouble(values, vp); vp++;
-   fTextAngle      = GetDouble(values, vp); vp++;
-   fTextAlign     = GetInt(values, vp); vp++;
-   fTextColor     = GetInt(values, vp); vp++;
-//   fTextFont      = 10 * GetInt(values, vp) + 2; vp++;
-   fTextFont      = GetInt(values, vp); vp++;
-   fFillColor     = GetInt(values, vp); vp++;
-   fFillStyle     = GetInt(values, vp); vp++;
-   fMarkerColor   = GetInt(values, vp); vp++;
-   fMarkerStyle   = GetInt(values, vp); vp++;
-   fMarkerSize    = GetDouble(values, vp); vp++;
-	fArcFillColor  = GetInt(values, vp); vp++;
-	fArcFillStyle  = GetInt(values, vp); vp++;
-	fArcLineColor  = GetInt(values, vp); vp++;
-	fArcLineStyle  = GetInt(values, vp); vp++;
-	fArcLineWidth  = GetInt(values, vp); vp++;
+   if (!ok) return;
    SaveOptions();
    SetGeneralAtt();
 
@@ -960,46 +898,36 @@ void HistPresent::SetGeneralAtt()
 
 void HistPresent::SetTitleAttributes(TGWindow * win, FitHist * fh)
 {
-   TList *values = new TList();
    TList *row_lab = new TList();
-   Int_t vp = 0;
-   row_lab->Add(new TObjString("TitleBackgroundColor"));     
-   row_lab->Add(new TObjString("TitleTextColor")); 
-   row_lab->Add(new TObjString("TitleBorderSize"));
-   row_lab->Add(new TObjString("TitleFont"));      
-   row_lab->Add(new TObjString("TitleFontSize"));  
-   row_lab->Add(new TObjString("TitleStyle"));     
-   row_lab->Add(new TObjString("TitleX"));         
-   row_lab->Add(new TObjString("TitleY"));         
-   row_lab->Add(new TObjString("TitleW"));         
-   row_lab->Add(new TObjString("TitleH"));  
+   static void *valp[25];
+   Int_t ind = 0;
+   row_lab->Add(new TObjString("ColorSelect_TitleBackgroundColor"));     
+   row_lab->Add(new TObjString("ColorSelect_TitleTextColor")); 
+   row_lab->Add(new TObjString("PlainShtVal_TitleBorderSize"));
+   row_lab->Add(new TObjString("CfontSelect_TitleFont"));      
+   row_lab->Add(new TObjString("Float_Value_TitleFontSize"));  
+   row_lab->Add(new TObjString("LineSSelect_TitleStyle"));     
+   row_lab->Add(new TObjString("Float_Value_TitleX"));         
+   row_lab->Add(new TObjString("Float_Value_TitleY"));         
+   row_lab->Add(new TObjString("Float_Value_TitleW"));         
+   row_lab->Add(new TObjString("Float_Value_TitleH"));  
 
-   AddObjString(fTitleColor,      values, kAttColor);     
-   AddObjString(fTitleTextColor,  values, kAttColor); 
-   AddObjString(fTitleBorderSize, values);
-   AddObjString(fTitleFont,       values, kAttFont);      
-   AddObjString(fTitleFontSize,   values);  
-   AddObjString(fTitleStyle,      values);     
-   AddObjString(fTitleX, values);         
-   AddObjString(fTitleY, values);         
-   AddObjString(fTitleW, values);         
-   AddObjString(fTitleH, values);  
+   valp[ind++] = &fTitleColor;     
+   valp[ind++] = &fTitleTextColor;
+   valp[ind++] = &fTitleBorderSize;
+   fTitleFont /= 10;
+   valp[ind++] = &fTitleFont;      
+   valp[ind++] = &fTitleFontSize; 
+   valp[ind++] = &fTitleStyle;    
+   valp[ind++] = &fTitleX;         
+   valp[ind++] = &fTitleY;         
+   valp[ind++] = &fTitleW;         
+   valp[ind++] = &fTitleH;  
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("Title Attr", NULL, itemwidth, win,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
-   vp = 0;
-   fTitleColor     = GetInt(values, vp); vp++;
-   fTitleTextColor = GetInt(values, vp); vp++;
-   fTitleBorderSize= GetInt(values, vp); vp++;
-   fTitleFont      = GetInt(values, vp); vp++;
-   fTitleFontSize  = GetDouble(values, vp); vp++;
-   fTitleStyle     = GetInt(values, vp); vp++;
-   fTitleX         = GetDouble(values, vp); vp++;
-   fTitleY         = GetDouble(values, vp); vp++;
-   fTitleW         = GetDouble(values, vp); vp++;
-   fTitleH         = GetDouble(values, vp); vp++;
    SaveOptions();
    SetTitleAtt();
 }
@@ -1022,92 +950,66 @@ void HistPresent::SetTitleAtt()
 
 void HistPresent::SetPadAttributes(TGWindow * win, FitHist * fh)
 {
-   TList *values = new TList();
    TList *row_lab = new TList();
-   Int_t vp = 0;
-   row_lab->Add(new TObjString("PadColor"));       
-   row_lab->Add(new TObjString("PadBorderSize"));  
-   row_lab->Add(new TObjString("PadBorderMode"));  
-   row_lab->Add(new TObjString("PadBottomMargin"));
-   row_lab->Add(new TObjString("PadTopMargin"));   
-   row_lab->Add(new TObjString("PadLeftMargin"));  
-   row_lab->Add(new TObjString("PadRightMargin")); 
-   row_lab->Add(new TObjString("PadGridX"));       
-   row_lab->Add(new TObjString("PadGridY"));       
-   row_lab->Add(new TObjString("PadTickX"));       
-   row_lab->Add(new TObjString("PadTickY"));
-   row_lab->Add(new TObjString("FrameFillColor"));   
-   row_lab->Add(new TObjString("FrameLineColor"));   
-   row_lab->Add(new TObjString("FrameFillStyle"));   
-   row_lab->Add(new TObjString("FrameLineStyle"));   
-   row_lab->Add(new TObjString("FrameLineWidth"));   
-   row_lab->Add(new TObjString("FrameBorderSize"));  
-   row_lab->Add(new TObjString("FrameBorderMode"));  
-   row_lab->Add(new TObjString("CanvasColor"));  	 
-   row_lab->Add(new TObjString("CanvasBorderSize")); 
-   row_lab->Add(new TObjString("CanvasBorderMode")); 
-   row_lab->Add(new TObjString("CanvasDefH"));		 
-   row_lab->Add(new TObjString("CanvasDefW"));		 
-   row_lab->Add(new TObjString("CanvasDefX"));		 
-   row_lab->Add(new TObjString("CanvasDefY"));		   
+   static void *valp[25];
+   Int_t ind = 0;
+   row_lab->Add(new TObjString("ColorSelect_PadColor"));       
+   row_lab->Add(new TObjString("PlainShtVal_PadBorderSize"));  
+   row_lab->Add(new TObjString("PlainIntVal_PadBorderMode"));  
+   row_lab->Add(new TObjString("Float_Value_PadBottomMargin"));
+   row_lab->Add(new TObjString("Float_Value_PadTopMargin"));   
+   row_lab->Add(new TObjString("Float_Value_PadLeftMargin"));  
+   row_lab->Add(new TObjString("Float_Value_PadRightMargin")); 
+   row_lab->Add(new TObjString("PlainIntVal_PadGridX"));       
+   row_lab->Add(new TObjString("PlainIntVal_PadGridY"));       
+   row_lab->Add(new TObjString("PlainIntVal_PadTickX"));       
+   row_lab->Add(new TObjString("PlainIntVal_PadTickY"));
+   row_lab->Add(new TObjString("ColorSelect_FrameFillColor"));   
+   row_lab->Add(new TObjString("ColorSelect_FrameLineColor"));   
+   row_lab->Add(new TObjString("Fill_Select_FrameFillStyle"));   
+   row_lab->Add(new TObjString("LineSSelect_FrameLineStyle"));   
+   row_lab->Add(new TObjString("PlainShtVal_FrameLineWidth"));   
+   row_lab->Add(new TObjString("PlainShtVal_FrameBorderSize"));  
+   row_lab->Add(new TObjString("PlainIntVal_FrameBorderMode"));  
+   row_lab->Add(new TObjString("ColorSelect_CanvasColor"));  	 
+   row_lab->Add(new TObjString("PlainShtVal_CanvasBorderSize")); 
+   row_lab->Add(new TObjString("PlainIntVal_CanvasBorderMode")); 
+   row_lab->Add(new TObjString("PlainIntVal_CanvasDefH"));		 
+   row_lab->Add(new TObjString("PlainIntVal_CanvasDefW"));		 
+   row_lab->Add(new TObjString("PlainIntVal_CanvasDefX"));		 
+   row_lab->Add(new TObjString("PlainIntVal_CanvasDefY"));		   
 
-   AddObjString(fPadColor, values, kAttColor);       
-   AddObjString(fPadBorderSize, values);  
-   AddObjString(fPadBorderMode, values);  
-   AddObjString(fPadBottomMargin, values);
-   AddObjString(fPadTopMargin, values);   
-   AddObjString(fPadLeftMargin, values);  
-   AddObjString(fPadRightMargin, values); 
-   AddObjString(fPadGridX, values);       
-   AddObjString(fPadGridY, values);       
-   AddObjString(fPadTickX, values);       
-   AddObjString(fPadTickY, values); 
-   AddObjString(fFrameFillColor, values, kAttColor);  
-   AddObjString(fFrameLineColor, values, kAttColor);  
-   AddObjString(fFrameFillStyle, values, kAttFillS);  
-   AddObjString(fFrameLineStyle, values, kAttLineS);  
-   AddObjString(fFrameLineWidth, values);  
-   AddObjString(fFrameBorderSize, values); 
-   AddObjString(fFrameBorderMode, values); 
-   AddObjString(fCanvasColor, values, kAttColor);  	
-   AddObjString(fCanvasBorderSize, values);
-   AddObjString(fCanvasBorderMode, values);
-   AddObjString(fCanvasDefH, values);		
-   AddObjString(fCanvasDefW, values);		
-   AddObjString(fCanvasDefX, values);		
-   AddObjString(fCanvasDefY, values);	
+   valp[ind++] = &fPadColor;       
+   valp[ind++] = &fPadBorderSize;
+   valp[ind++] = &fPadBorderMode; 
+   valp[ind++] = &fPadBottomMargin;
+   valp[ind++] = &fPadTopMargin;
+   valp[ind++] = &fPadLeftMargin; 
+   valp[ind++] = &fPadRightMargin;
+   valp[ind++] = &fPadGridX;      
+   valp[ind++] = &fPadGridY;      
+   valp[ind++] = &fPadTickX;     
+   valp[ind++] = &fPadTickY;
+   valp[ind++] = &fFrameFillColor; 
+   valp[ind++] = &fFrameLineColor; 
+   valp[ind++] = &fFrameFillStyle; 
+   valp[ind++] = &fFrameLineStyle; 
+   valp[ind++] = &fFrameLineWidth;
+   valp[ind++] = &fFrameBorderSize; 
+   valp[ind++] = &fFrameBorderMode; 
+   valp[ind++] = &fCanvasColor; 	
+   valp[ind++] = &fCanvasBorderSize;
+   valp[ind++] = &fCanvasBorderMode;
+   valp[ind++] = &fCanvasDefH;     
+   valp[ind++] = &fCanvasDefW;     
+   valp[ind++] = &fCanvasDefX;     
+   valp[ind++] = &fCanvasDefY;
 
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("Canvas, Pad, Frame", NULL, itemwidth, win,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
-   vp = 0;
-   fPadColor           = GetInt(values, vp); vp++;
-   fPadBorderSize      = GetInt(values, vp); vp++;
-   fPadBorderMode      = GetInt(values, vp); vp++;
-   fPadBottomMargin    = GetDouble(values, vp); vp++;
-   fPadTopMargin       = GetDouble(values, vp); vp++;
-   fPadLeftMargin      = GetDouble(values, vp); vp++;
-   fPadRightMargin     = GetDouble(values, vp); vp++;
-   fPadGridX           = GetDouble(values, vp); vp++;
-   fPadGridY           = GetDouble(values, vp); vp++;
-   fPadTickX           = GetInt(values, vp); vp++;
-   fPadTickY           = GetInt(values, vp); vp++;
-	fFrameFillColor      = GetInt(values, vp); vp++;
-	fFrameLineColor      = GetInt(values, vp); vp++;
-	fFrameFillStyle      = GetInt(values, vp); vp++;
-	fFrameLineStyle      = GetInt(values, vp); vp++;
-	fFrameLineWidth      = GetInt(values, vp); vp++;
-	fFrameBorderSize     = GetInt(values, vp); vp++;
-	fFrameBorderMode     = GetInt(values, vp); vp++;
-	fCanvasColor   	   = GetInt(values, vp); vp++;
-	fCanvasBorderSize    = GetInt(values, vp); vp++;
-	fCanvasBorderMode    = GetInt(values, vp); vp++;
-	fCanvasDefH 		   = GetInt(values, vp); vp++;
-	fCanvasDefW 		   = GetInt(values, vp); vp++;
-	fCanvasDefX 		   = GetInt(values, vp); vp++;
-	fCanvasDefY 		   = GetInt(values, vp); vp++;
    SaveOptions();
    SetPadAtt();
 }
@@ -1122,8 +1024,8 @@ void HistPresent::SetPadAtt()
    gStyle->SetPadTopMargin   (fPadTopMargin   ); 
    gStyle->SetPadLeftMargin  (fPadLeftMargin  ); 
    gStyle->SetPadRightMargin (fPadRightMargin ); 
-   gStyle->SetPadGridX       (fPadGridX       ); 
-   gStyle->SetPadGridY       (fPadGridY       ); 
+   gStyle->SetPadGridX       ((Bool_t)fPadGridX); 
+   gStyle->SetPadGridY       ((Bool_t)fPadGridY); 
    gStyle->SetPadTickX       (fPadTickX       ); 
    gStyle->SetPadTickY       (fPadTickY       ); 
    gStyle->SetFrameFillColor    (fFrameFillColor  );
@@ -1145,46 +1047,35 @@ void HistPresent::SetPadAtt()
 
 void HistPresent::SetHistAttributes(TGWindow * win, FitHist * fh)
 {
-   TList * values = new TList();
    TList *row_lab = new TList();
-   Int_t vp = 0;
-   row_lab->Add(new TObjString("HistFillColor")); 
-   row_lab->Add(new TObjString("HistLineColor"));  
-   row_lab->Add(new TObjString("HistFillStyle")); 
-   row_lab->Add(new TObjString("HistLineStyle"));  
-   row_lab->Add(new TObjString("HistLineWidth"));
-   row_lab->Add(new TObjString("EndErrorSize "));  
-   row_lab->Add(new TObjString("ErrorX")); 
-   row_lab->Add(new TObjString("FuncColor"));
-   row_lab->Add(new TObjString("FuncStyle"));  
-   row_lab->Add(new TObjString("FuncWidth")); 
+   static void *valp[25];
+   Int_t ind = 0;
+   row_lab->Add(new TObjString("ColorSelect_HistFillColor")); 
+   row_lab->Add(new TObjString("ColorSelect_HistLineColor"));  
+   row_lab->Add(new TObjString("Fill_Select_HistFillStyle")); 
+   row_lab->Add(new TObjString("LineSSelect_HistLineStyle"));  
+   row_lab->Add(new TObjString("PlainShtVal_HistLineWidth"));
+   row_lab->Add(new TObjString("Float_Value_EndErrorSize "));  
+   row_lab->Add(new TObjString("Float_Value_ErrorX")); 
+   row_lab->Add(new TObjString("ColorSelect_FuncColor"));
+   row_lab->Add(new TObjString("LineSSelect_FuncStyle"));  
+   row_lab->Add(new TObjString("PlainShtVal_FuncWidth")); 
    
-   AddObjString(fHistFillColor, values, kAttColor);
-   AddObjString(fHistLineColor, values, kAttColor);
-   AddObjString(fHistFillStyle, values, kAttFillS);
-   AddObjString(fHistLineStyle, values, kAttLineS);
-   AddObjString(fHistLineWidth, values);
-   AddObjString(fEndErrorSize, values);
-   AddObjString(fErrorX, values);      
-   AddObjString(fFuncColor, values, kAttColor);
-   AddObjString(fFuncStyle, values, kAttLineS);   
-   AddObjString(fFuncWidth, values);   
+   valp[ind++] = &fHistFillColor;
+   valp[ind++] = &fHistLineColor;
+   valp[ind++] = &fHistFillStyle;
+   valp[ind++] = &fHistLineStyle;
+   valp[ind++] = &fHistLineWidth;
+   valp[ind++] = &fEndErrorSize;
+   valp[ind++] = &fErrorX;     
+   valp[ind++] = &fFuncColor;
+   valp[ind++] = &fFuncStyle;  
+   valp[ind++] = &fFuncWidth;
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("Histograms, Functions", NULL, itemwidth, win,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
-   vp = 0;
-   fHistFillColor  = GetInt(values, vp); vp++;
-   fHistLineColor  = GetInt(values, vp); vp++;
-   fHistFillStyle  = GetInt(values, vp); vp++;
-   fHistLineStyle  = GetInt(values, vp); vp++;
-   fHistLineWidth  = GetInt(values, vp); vp++;
-   fEndErrorSize   = GetDouble(values, vp); vp++;
-   fErrorX         = GetDouble(values, vp); vp++;
-   fFuncColor      = GetInt(values, vp); vp++;
-   fFuncStyle      = GetInt(values, vp); vp++;
-   fFuncWidth      = GetInt(values, vp); vp++;
 
    SaveOptions();
    SetHistAtt();
@@ -1251,46 +1142,37 @@ void HistPresent::SetStatDefaults(TCanvas * c)
 
 void HistPresent::SetStatAttributes(TGWindow * win, FitHist * fh)
 {
-   TList *values = new TList();
    TList *row_lab = new TList();
-   Int_t vp = 0;
-   row_lab->Add(new TObjString("StatBackgroundColor")); 
-   row_lab->Add(new TObjString("StatTextColor "));  
-   row_lab->Add(new TObjString("StatBorderSize")); 
-   row_lab->Add(new TObjString("StatFont      "));  
-   row_lab->Add(new TObjString("StatFontSize  "));
-   row_lab->Add(new TObjString("StatStyle (0 transparent)"));  
-   row_lab->Add(new TObjString("StatX (upper right)")); 
-   row_lab->Add(new TObjString("StatY (upper right)"));
-   row_lab->Add(new TObjString("StatW         "));  
-   row_lab->Add(new TObjString("StatH         ")); 
+   static void *valp[25];
+   Int_t ind = 0;
+   row_lab->Add(new TObjString("ColorSelect_StatBackgroundColor")); 
+   row_lab->Add(new TObjString("ColorSelect_StatTextColor "));  
+   row_lab->Add(new TObjString("PlainShtVal_StatBorderSize")); 
+   row_lab->Add(new TObjString("CfontSelect_StatFont      "));  
+   row_lab->Add(new TObjString("Float_Value_StatFontSize  "));
+   row_lab->Add(new TObjString("Fill_Select_StatStyle (0 transparent)"));  
+   row_lab->Add(new TObjString("Float_Value_StatX (upper right)")); 
+   row_lab->Add(new TObjString("Float_Value_StatY (upper right)"));
+   row_lab->Add(new TObjString("Float_Value_StatW         "));  
+   row_lab->Add(new TObjString("Float_Value_StatH         ")); 
 
-   AddObjString(gStyle->GetStatColor(), values, kAttColor);     
-   AddObjString(gStyle->GetStatTextColor(), values, kAttColor); 
-   AddObjString(gStyle->GetStatBorderSize(), values);
-   AddObjString(gStyle->GetStatFont(), values, kAttFont);      
-   AddObjString(gStyle->GetStatFontSize(), values);  
-   AddObjString(gStyle->GetStatStyle(), values);     
-   AddObjString(gStyle->GetStatX(), values);         
-   AddObjString(gStyle->GetStatY(), values);         
-   AddObjString(gStyle->GetStatW(), values);         
-   AddObjString(gStyle->GetStatH(), values);
+   valp[ind++] = &fStatColor;	 
+   valp[ind++] = &fStatTextColor; 
+   valp[ind++] = &fStatBorderSize;
+   fStatFont /= 10;
+   valp[ind++] = &fStatFont;  	   
+   valp[ind++] = &fStatFontSize;  
+   valp[ind++] = &fStatStyle; 	 
+   valp[ind++] = &fStatX;  		 
+   valp[ind++] = &fStatY;  		 
+   valp[ind++] = &fStatW; 		 
+   valp[ind++] = &fStatH;  		 
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("Statbox", NULL, itemwidth, win,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
+   fStatFont       = 2 + 10 * fStatFont;
    if (!ok) return;
-   vp = 0;
-   fStatColor      = GetInt(values, vp++);
-   fStatTextColor  = GetInt(values, vp++);
-   fStatBorderSize = GetInt(values, vp++);
-   fStatFont       = GetInt(values, vp++);
-   fStatFontSize   = GetDouble(values, vp++);
-   fStatStyle      = GetInt(values, vp++);
-   fStatX          = GetDouble(values, vp++);
-   fStatY          = GetDouble(values, vp++);
-   fStatW          = GetDouble(values, vp++);
-   fStatH          = GetDouble(values, vp++);
    SetStatAtt();
    SaveOptions();
 }
@@ -1311,227 +1193,186 @@ void HistPresent::SetStatAtt()
 }
 //_______________________________________________________________________________
 
-void HistPresent::SetZaxisAttributes(TGWindow * win, FitHist * fh)
-{
-   TList *values = new TList();
-   TList *row_lab = new TList();
-   Int_t vp = 0;
-   Int_t div = TMath::Abs(fNdivisionsZ);
-   Int_t pdiv = div%100;
-   Int_t sdiv = (div/100)%100;
-   Int_t tdiv = (div/10000)%100;
-   Int_t optimize = 1;
-   if (fNdivisionsZ < 0) optimize = 0;
- 
-   row_lab->Add(new TObjString("Primary Div")); 
-   row_lab->Add(new TObjString("Secondary Div")); 
-   row_lab->Add(new TObjString("Tertiary Div")); 
-   row_lab->Add(new TObjString("Optimize Div")); 
-   row_lab->Add(new TObjString("AxisColorZ"));  
-   row_lab->Add(new TObjString("LabelColorZ")); 
-   row_lab->Add(new TObjString("LabelFontZ"));  
-   row_lab->Add(new TObjString("LabelOffsetZ"));
-   row_lab->Add(new TObjString("LabelSizeZ"));  
-   row_lab->Add(new TObjString("TickLengthZ")); 
-   row_lab->Add(new TObjString("TitleOffsetZ"));
-   row_lab->Add(new TObjString("TitleSizeZ"));  
-   row_lab->Add(new TObjString("TitleColorZ")); 
-   row_lab->Add(new TObjString("TitleFontZ"));  
-
-   AddObjString(pdiv, values);
-   AddObjString(sdiv, values);
-   AddObjString(tdiv, values);
-   AddObjString(optimize, values, kAttCheckB);
-   AddObjString(fAxisColorZ,  values, kAttColor) ;
-   AddObjString(fLabelColorZ, values, kAttColor);
-   AddObjString(fLabelFontZ,  values, kAttFont);
-   AddObjString(fLabelOffsetZ,values);
-   AddObjString(fLabelSizeZ,  values);
-   AddObjString(fTickLengthZ, values);
-   AddObjString(fTitleOffsetZ,values);
-   AddObjString(fTitleSizeZ,  values);
-   AddObjString(fTitleColorZ, values, kAttColor);
-   AddObjString(fTitleFontZ,  values, kAttFont);
-
-
-   Bool_t ok; 
-   Int_t itemwidth = 240;
-   ok = GetStringExt("Z Axis Att", NULL, itemwidth, win,
-                      NULL, NULL, row_lab, values);
-   if (!ok) return;
-
-   vp = 0;
-   
-   pdiv = GetInt(values, vp++);
-   sdiv = GetInt(values, vp++);
-   tdiv = GetInt(values, vp++);
-   optimize = GetInt(values, vp++);
-   fNdivisionsZ  = tdiv*10000 + sdiv*100 + pdiv;
-   if (optimize == 0) fNdivisionsZ *= -1;
-   fAxisColorZ   = GetInt(values, vp); vp++;
-   fLabelColorZ  = GetInt(values, vp); vp++;
-   fLabelFontZ   = GetInt(values, vp); vp++;
-   fLabelOffsetZ = GetDouble(values, vp); vp++;;
-   fLabelSizeZ   = GetDouble(values, vp); vp++;;
-   fTickLengthZ  = GetDouble(values, vp); vp++;;
-   fTitleOffsetZ = GetDouble(values, vp); vp++;;
-   fTitleSizeZ   = GetDouble(values, vp); vp++;;
-   fTitleColorZ  = GetInt(values, vp); vp++;
-   fTitleFontZ   = GetInt(values, vp); vp++;
-   SetAxisAtt();
-   row_lab->Delete();
-   values->Delete();
-   delete row_lab;
-   delete values;
-}
-//_______________________________________________________________________________
-
 void HistPresent::SetXaxisAttributes(TGWindow * win, FitHist * fh)
 {
-   TList *values = new TList();
    TList *row_lab = new TList();
-   Int_t vp = 0;
-   Int_t div = TMath::Abs(fNdivisionsX);
-   Int_t pdiv = div%100;
-   Int_t sdiv = (div/100)%100;
-   Int_t tdiv = (div/10000)%100;
-   Int_t optimize = 1;
+   static void *valp[25];
+   Int_t ind = 0;
+   static Int_t div = TMath::Abs(fNdivisionsX);
+   static Int_t pdiv = div%100;
+   static Int_t sdiv = (div/100)%100;
+   static Int_t tdiv = (div/10000)%100;
+   static Int_t optimize = 1;
    if (fNdivisionsX < 0) optimize = 0;
  
-   row_lab->Add(new TObjString("Primary Div")); 
-   row_lab->Add(new TObjString("Secondary Div")); 
-   row_lab->Add(new TObjString("Tertiary Div")); 
-   row_lab->Add(new TObjString("Optimize Div")); 
-   row_lab->Add(new TObjString("AxisColorX"));  
-   row_lab->Add(new TObjString("LabelColorX")); 
-   row_lab->Add(new TObjString("LabelFontX"));  
-   row_lab->Add(new TObjString("LabelOffsetX"));
-   row_lab->Add(new TObjString("LabelSizeX"));  
-   row_lab->Add(new TObjString("TickLengthX")); 
-   row_lab->Add(new TObjString("TitleOffsetX"));
-   row_lab->Add(new TObjString("TitleSizeX"));  
-   row_lab->Add(new TObjString("TitleColorX")); 
-   row_lab->Add(new TObjString("TitleFontX"));  
+   row_lab->Add(new TObjString("PlainIntVal_Primary Div")); 
+   row_lab->Add(new TObjString("PlainIntVal_Secondary Div")); 
+   row_lab->Add(new TObjString("PlainIntVal_Tertiary Div")); 
+   row_lab->Add(new TObjString("PlainIntVal_Optimize Div")); 
+   row_lab->Add(new TObjString("ColorSelect_AxisColorX"));  
+   row_lab->Add(new TObjString("ColorSelect_LabelColorX")); 
+   row_lab->Add(new TObjString("CfontSelect_LabelFontX"));  
+   row_lab->Add(new TObjString("Float_Value_LabelOffsetX"));
+   row_lab->Add(new TObjString("Float_Value_LabelSizeX"));  
+   row_lab->Add(new TObjString("Float_Value_TickLengthX")); 
+   row_lab->Add(new TObjString("Float_Value_TitleOffsetX"));
+   row_lab->Add(new TObjString("Float_Value_TitleSizeX"));  
+   row_lab->Add(new TObjString("ColorSelect_TitleColorX")); 
+   row_lab->Add(new TObjString("CfontSelect_TitleFontX"));  
 
-   AddObjString(pdiv, values);
-   AddObjString(sdiv, values);
-   AddObjString(tdiv, values);
-   AddObjString(optimize, values, kAttCheckB);
-   AddObjString(fAxisColorX,  values, kAttColor) ;
-   AddObjString(fLabelColorX, values, kAttColor);
-   AddObjString(fLabelFontX,  values, kAttFont);
-   AddObjString(fLabelOffsetX,values);
-   AddObjString(fLabelSizeX,  values);
-   AddObjString(fTickLengthX, values);
-   AddObjString(fTitleOffsetX,values);
-   AddObjString(fTitleSizeX,  values);
-   AddObjString(fTitleColorX, values, kAttColor);
-   AddObjString(fTitleFontX,  values, kAttFont);
+   valp[ind++] = &pdiv;
+   valp[ind++] = &sdiv;
+   valp[ind++] = &tdiv;
+   valp[ind++] = &optimize;
+   valp[ind++] = &fAxisColorX; 
+   valp[ind++] = &fLabelColorX;
+   fLabelFontX /= 10;
+   valp[ind++] = &fLabelFontX;
+   valp[ind++] = &fLabelOffsetX;
+   valp[ind++] = &fLabelSizeX;  
+   valp[ind++] = &fTickLengthX; 
+   valp[ind++] = &fTitleOffsetX;
+   valp[ind++] = &fTitleSizeX;  
+   valp[ind++] = &fTitleColorX;
+   fTitleFontX /= 10;
+   valp[ind++] = &fTitleFontX;
 
 
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("X Axis Att", NULL, itemwidth, win,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
 
-   vp = 0;
-   
-   pdiv = GetInt(values, vp++);
-   sdiv = GetInt(values, vp++);
-   tdiv = GetInt(values, vp++);
-   optimize = GetInt(values, vp++);
    fNdivisionsX  = tdiv*10000 + sdiv*100 + pdiv;
    if (optimize == 0) fNdivisionsX *= -1;
-   fAxisColorX   = GetInt(values, vp++);
-   fLabelColorX  = GetInt(values, vp++);
-   fLabelFontX   = GetInt(values, vp++);
-   fLabelOffsetX = GetDouble(values, vp++);
-   fLabelSizeX   = GetDouble(values, vp++);
-   fTickLengthX  = GetDouble(values, vp++);
-   fTitleOffsetX = GetDouble(values, vp++);
-   fTitleSizeX   = GetDouble(values, vp++);
-   fTitleColorX  = GetInt(values, vp++);
-   fTitleFontX   = GetInt(values, vp++);
+   fLabelFontX   = 2 + 10 * fLabelFontX;
+   fTitleFontX   = 2 + 10 * fTitleFontX;
    SetAxisAtt();
    row_lab->Delete();
-   values->Delete();
    delete row_lab;
-   delete values;
 }
 //_______________________________________________________________________________
 
 void HistPresent::SetYaxisAttributes(TGWindow * win, FitHist * fh)
 {
-   TList *values = new TList();
    TList *row_lab = new TList();
-   Int_t vp = 0;
-   Int_t div = TMath::Abs(fNdivisionsY);
-   Int_t pdiv = div%100;
-   Int_t sdiv = (div/100)%100;
-   Int_t tdiv = (div/10000)%100;
-   Int_t optimize = 1;
+   static void *valp[25];
+   Int_t ind = 0;
+   static Int_t div = TMath::Abs(fNdivisionsY);
+   static Int_t pdiv = div%100;
+   static Int_t sdiv = (div/100)%100;
+   static Int_t tdiv = (div/10000)%100;
+   static Int_t optimize = 1;
    if (fNdivisionsY < 0) optimize = 0;
  
-   row_lab->Add(new TObjString("Primary Div")); 
-   row_lab->Add(new TObjString("Secondary Div")); 
-   row_lab->Add(new TObjString("Tertiary Div")); 
-   row_lab->Add(new TObjString("Optimize Div")); 
-   row_lab->Add(new TObjString("AxisColorY"));  
-   row_lab->Add(new TObjString("LabelColorY")); 
-   row_lab->Add(new TObjString("LabelFontY"));  
-   row_lab->Add(new TObjString("LabelOffsetY"));
-   row_lab->Add(new TObjString("LabelSizeY"));  
-   row_lab->Add(new TObjString("TickLengthY")); 
-   row_lab->Add(new TObjString("TitleOffsetY"));
-   row_lab->Add(new TObjString("TitleSizeY"));  
-   row_lab->Add(new TObjString("TitleColorY")); 
-   row_lab->Add(new TObjString("TitleFontY"));  
+   row_lab->Add(new TObjString("PlainIntVal_Primary Div")); 
+   row_lab->Add(new TObjString("PlainIntVal_Secondary Div")); 
+   row_lab->Add(new TObjString("PlainIntVal_Tertiary Div")); 
+   row_lab->Add(new TObjString("PlainIntVal_Optimize Div")); 
+   row_lab->Add(new TObjString("ColorSelect_AxisColorY"));  
+   row_lab->Add(new TObjString("ColorSelect_LabelColorY")); 
+   row_lab->Add(new TObjString("CfontSelect_LabelFontY"));  
+   row_lab->Add(new TObjString("Float_Value_LabelOffsetY"));
+   row_lab->Add(new TObjString("Float_Value_LabelSizeY"));  
+   row_lab->Add(new TObjString("Float_Value_TickLengthY")); 
+   row_lab->Add(new TObjString("Float_Value_TitleOffsetY"));
+   row_lab->Add(new TObjString("Float_Value_TitleSizeY"));  
+   row_lab->Add(new TObjString("ColorSelect_TitleColorY")); 
+   row_lab->Add(new TObjString("CfontSelect_TitleFontY"));  
 
-   AddObjString(pdiv, values);
-   AddObjString(sdiv, values);
-   AddObjString(tdiv, values);
-   AddObjString(optimize, values, kAttCheckB);
-   AddObjString(fAxisColorY,  values, kAttColor) ;
-   AddObjString(fLabelColorY, values, kAttColor);
-   AddObjString(fLabelFontY,  values, kAttFont);
-   AddObjString(fLabelOffsetY,values);
-   AddObjString(fLabelSizeY,  values);
-   AddObjString(fTickLengthY, values);
-   AddObjString(fTitleOffsetY,values);
-   AddObjString(fTitleSizeY,  values);
-   AddObjString(fTitleColorY, values, kAttColor);
-   AddObjString(fTitleFontY,  values, kAttFont);
+   valp[ind++] = &pdiv;
+   valp[ind++] = &sdiv;
+   valp[ind++] = &tdiv;
+   valp[ind++] = &optimize;
+   valp[ind++] = &fAxisColorY; 
+   valp[ind++] = &fLabelColorY;
+   fLabelFontY /= 10;
+   valp[ind++] = &fLabelFontY;
+   valp[ind++] = &fLabelOffsetY;
+   valp[ind++] = &fLabelSizeY;  
+   valp[ind++] = &fTickLengthY; 
+   valp[ind++] = &fTitleOffsetY;
+   valp[ind++] = &fTitleSizeY;  
+   valp[ind++] = &fTitleColorY;
+   fTitleFontY /= 10;
+   valp[ind++] = &fTitleFontY;
 
 
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Y axis Att", NULL, itemwidth, win,
-                      NULL, NULL, row_lab, values);
+   ok = GetStringExt("Y Axis Att", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
 
-   vp = 0;
-   pdiv = GetInt(values, vp++);
-   sdiv = GetInt(values, vp++);
-   tdiv = GetInt(values, vp++);
-   optimize = GetInt(values, vp++);
    fNdivisionsY  = tdiv*10000 + sdiv*100 + pdiv;
    if (optimize == 0) fNdivisionsY *= -1;
-   fAxisColorY   = GetInt(values, vp++);
-   fLabelColorY  = GetInt(values, vp++);
-   fLabelFontY   = GetInt(values, vp++);
-   fLabelOffsetY = GetDouble(values, vp++);
-   fLabelSizeY   = GetDouble(values, vp++);
-   fTickLengthY  = GetDouble(values, vp++);
-   fTitleOffsetY = GetDouble(values, vp++);
-   fTitleSizeY   = GetDouble(values, vp++);
-   fTitleColorY  = GetInt(values, vp++);
-   fTitleFontY   = GetInt(values, vp++);
+   fLabelFontY   = 2 + 10 * fLabelFontY;
+   fTitleFontY   = 2 + 10 * fTitleFontY;
    SetAxisAtt();
    row_lab->Delete();
-   values->Delete();
    delete row_lab;
-   delete values;
+}
+//_______________________________________________________________________________
+
+void HistPresent::SetZaxisAttributes(TGWindow * win, FitHist * fh)
+{
+   TList *row_lab = new TList();
+   static void *valp[25];
+   Int_t ind = 0;
+   static Int_t div = TMath::Abs(fNdivisionsZ);
+   static Int_t pdiv = div%100;
+   static Int_t sdiv = (div/100)%100;
+   static Int_t tdiv = (div/10000)%100;
+   static Int_t optimize = 1;
+   if (fNdivisionsZ < 0) optimize = 0;
+ 
+   row_lab->Add(new TObjString("PlainIntVal_Primary Div")); 
+   row_lab->Add(new TObjString("PlainIntVal_Secondary Div")); 
+   row_lab->Add(new TObjString("PlainIntVal_Tertiary Div")); 
+   row_lab->Add(new TObjString("PlainIntVal_Optimize Div")); 
+   row_lab->Add(new TObjString("ColorSelect_AxisColorZ"));  
+   row_lab->Add(new TObjString("ColorSelect_LabelColorZ")); 
+   row_lab->Add(new TObjString("CfontSelect_LabelFontZ"));  
+   row_lab->Add(new TObjString("Float_Value_LabelOffsetZ"));
+   row_lab->Add(new TObjString("Float_Value_LabelSizeZ"));  
+   row_lab->Add(new TObjString("Float_Value_TickLengthZ")); 
+   row_lab->Add(new TObjString("Float_Value_TitleOffsetZ"));
+   row_lab->Add(new TObjString("Float_Value_TitleSizeZ"));  
+   row_lab->Add(new TObjString("ColorSelect_TitleColorZ")); 
+   row_lab->Add(new TObjString("CfontSelect_TitleFontZ"));  
+
+   valp[ind++] = &pdiv;
+   valp[ind++] = &sdiv;
+   valp[ind++] = &tdiv;
+   valp[ind++] = &optimize;
+   valp[ind++] = &fAxisColorZ; 
+   valp[ind++] = &fLabelColorZ;
+   fLabelFontZ /= 10;
+   valp[ind++] = &fLabelFontZ;
+   valp[ind++] = &fLabelOffsetZ;
+   valp[ind++] = &fLabelSizeZ;  
+   valp[ind++] = &fTickLengthZ; 
+   valp[ind++] = &fTitleOffsetZ;
+   valp[ind++] = &fTitleSizeZ;  
+   valp[ind++] = &fTitleColorZ;
+   fTitleFontZ /= 10;
+   valp[ind++] = &fTitleFontZ;
+
+
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Z Axis Att", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, valp);
+   if (!ok) return;
+
+   fNdivisionsZ  = tdiv*10000 + sdiv*100 + pdiv;
+   if (optimize == 0) fNdivisionsZ *= -1;
+   fLabelFontZ   = 2 + 10 * fLabelFontZ;
+   fTitleFontZ   = 2 + 10 * fTitleFontZ;
+   SetAxisAtt();
+   row_lab->Delete();
+   delete row_lab;
 }
 //_______________________________________________________________________
 
@@ -1690,9 +1531,15 @@ void HistPresent::SetGraphOptions(TGWindow * win, TCanvas * ca)
          fDrawOptGraph += cdrawopt[i];
    }
    if (ca) {
-      TGraph * gr = FindGraph((TPad*)ca);
-      if (gr) {
-         gr->SetDrawOption(fDrawOptGraph.Data());
+      TList logr;
+      Int_t ngr = FindGraphs((TPad*)ca, &logr);
+      if (ngr > 0) {
+         TIter next(&logr);
+         TObject * obj;
+         while ( obj = next() ) {
+            TGraph *gr =(TGraph*)obj;
+            gr->SetDrawOption(fDrawOptGraph.Data());
+         }
          ca->Modified();
          ca->Update();
       }

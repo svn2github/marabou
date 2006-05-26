@@ -36,6 +36,9 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
  					$(HPRDIRI)/EditMarker.h \
  					$(HPRDIRI)/TSplineX.h \
  					$(HPRDIRI)/HprEditCommands.h \
+ 					$(HPRDIRI)/HprNtuple.h \
+ 					$(HPRDIRI)/HprGraph.h \
+ 					$(HPRDIRI)/HprAscii2Hist.h \
  					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)

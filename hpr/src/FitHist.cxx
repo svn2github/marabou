@@ -1151,39 +1151,35 @@ void FitHist::Entire()
 void FitHist::RebinOne()
 {
    if (fSelHist == NULL) return;
+
+   static TString title(fSelHist->GetTitle());
+   title += "_rebinned_by_";
+   static TString name(fSelHist->GetName());
+   name += "_rebinned_by_";
+
    static Int_t ngroupX = 2;
    static Int_t ngroupY = 2;
    Bool_t ok;
    TH1 *newhist = NULL;
    TList *row_lab = new TList(); 
-   TList *values  = new TList();
-   row_lab->Add(new TObjString("Name of rebinned hist"));
-   row_lab->Add(new TObjString("Title of rebinned hist"));
-   row_lab->Add(new TObjString("Rebin value X"));
+   static void *valp[25];
+   Int_t ind = 0;
+   row_lab->Add(new TObjString("StringValue_Name of rebinned hist"));
+   row_lab->Add(new TObjString("StringValue_Title of rebinned hist"));
+   row_lab->Add(new TObjString("PlainIntVal_Rebin value X"));
    if (is2dim(fSelHist))
-      row_lab->Add(new TObjString("Rebin value Y"));
-   TString title(fSelHist->GetTitle());
-   title += "_rebinned_by_";
-   TString name(fSelHist->GetName());
-   name += "_rebinned_by_";
+      row_lab->Add(new TObjString("PlainIntVal_Rebin value Y"));
 
-   AddObjString(name.Data(), values);
-   AddObjString(title.Data(), values);
-   AddObjString(ngroupX, values);
+   valp[ind++] = &name;
+   valp[ind++] = &title;
+   valp[ind++] = &ngroupX;
    if (is2dim(fSelHist))
-      AddObjString(ngroupY, values);
+      valp[ind++] = &ngroupY;
 
    Int_t itemwidth = 400;
    ok = GetStringExt("Rebin parameters", NULL, itemwidth, mycanvas,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
-   Int_t vp = 0;
-
-   name = GetText(values, vp); vp++;
-   title = GetText(values, vp); vp++;
-   ngroupX = GetInt(values,   vp++);
-   if (is2dim(fSelHist))
-      ngroupY = GetInt(values,   vp++);
    title += ngroupX;
    name  += ngroupX;
    if (is2dim(fSelHist)) {
@@ -1574,65 +1570,42 @@ void FitHist::WriteHistasASCII(Int_t what)
 to the file.";
 // *INDENT-ON* 
 
-   if (is2dim(fSelHist)) {
-      WarnBox(" WriteHistasASCII: 2 dim not supported ");
+   if (is3dim(fSelHist)) {
+      WarnBox(" WriteHistasASCII: 3 dim not yet supported ");
       return;
    }
-   static Bool_t channels = kFALSE;
-   static Bool_t bincenters = kTRUE;
-   static Bool_t error_y  = kFALSE;
-   static Bool_t error_x  = kFALSE;
+   static Int_t channels = 0;
+   static Int_t bincenters = 1;
+   static Int_t errors  = 0;
 
 
-   TString fname = fSelHist->GetName();
+   static TString fname;
+//   fname = fSelHist->GetName();
+   fname = fHname;
    fname += ".ascii";
-   TOrdCollection *row_lab = new TOrdCollection(); 
-   TOrdCollection *values  = new TOrdCollection();
-   row_lab->Add(new TObjString("File name"));
-   row_lab->Add(new TObjString("Channel Numbers"));
-   row_lab->Add(new TObjString("Bin Centers"));
-   row_lab->Add(new TObjString("X Errors"));
-   row_lab->Add(new TObjString("Y Errors"));
 
-   values->Add(new TObjString(fname.Data()));
-   if (channels) 
-      values->Add(new TObjString("CheckButton_Down"));
-   else
-      values->Add(new TObjString("CheckButton_Up"));
-   if (bincenters) 
-      values->Add(new TObjString("CheckButton_Down"));
-   else
-      values->Add(new TObjString("CheckButton_Up"));
-   if (error_y) 
-      values->Add(new TObjString("CheckButton_Down"));
-   else
-      values->Add(new TObjString("CheckButton_Up"));
-   if (error_x) 
-      values->Add(new TObjString("CheckButton_Down"));
-   else
-      values->Add(new TObjString("CheckButton_Up"));
+   TList *row_lab = new TList(); 
+   static void *valp[50];
+   Int_t ind = 0;
+   Bool_t ok = kTRUE;
+;
+   row_lab->Add(new TObjString("StringValue_File name"));
+   valp[ind++] = &fname;
+   if (!is2dim(fSelHist)) {
+      row_lab->Add(new TObjString("CheckButton_Channel Numbers"));
+      valp[ind++] = &channels;
+      row_lab->Add(new TObjString("CheckButton_Bin Centers"));
+      valp[ind++] = &bincenters;
+   }
+   row_lab->Add(new TObjString("CheckButton_Errors"));
+   valp[ind++] = &errors;
 
-   Int_t ret = 0,  itemwidth=150, nrows = values->GetSize(); 
-   new TGMrbTableFrame(mycanvas, &ret, "Write hist as ASCII-file", 
-                        itemwidth, 1, nrows, values,
-                        0, row_lab, 0, 0, helpText);
-   if (ret < 0) {
+   Int_t   itemwidth=250,; 
+   ok = GetStringExt("Write hist as ASCII-file", NULL, itemwidth, mycanvas,
+                   NULL, NULL, row_lab, valp, NULL, NULL, &helpText[0]);
+   if (!ok) {
       return;
    }
-   fname = ((TObjString*)values->At(0))->GetString();
-   TString temp;
-   temp = ((TObjString*)values->At(1))->GetString();
-   if (temp.EndsWith("Down")) channels = kTRUE;
-   else                       channels = kFALSE;
-   temp = ((TObjString*)values->At(2))->GetString();
-   if (temp.EndsWith("Down")) bincenters = kTRUE;
-   else                       bincenters = kFALSE;
-   temp = ((TObjString*)values->At(3))->GetString();
-   if (temp.EndsWith("Down")) error_x = kTRUE;
-   else                       error_x = kFALSE;
-   temp = ((TObjString*)values->At(4))->GetString();
-   if (temp.EndsWith("Down")) error_y = kTRUE;
-   else                       error_y = kFALSE;
 
 
    if (!gSystem->AccessPathName((const char *) fname, kFileExists)) {
@@ -1648,26 +1621,45 @@ to the file.";
    ofstream outfile;
    outfile.open((const char *) fname);
 //   ofstream outfile((const char *)fname);
-   if (outfile) {
-      Int_t nbins = fSelHist->GetNbinsX();
-      for (Int_t i = 1; i <= nbins; i++) {
+   if (outfile.fail()) {
+      cout << "Opening: " << fname << " failed" << endl;
+      return;
+   }
+   Int_t nl = 0;
+   if (!is2dim(fSelHist)) {
+      Int_t nbinsX = fSelHist->GetNbinsX();
+      for (Int_t i = 1; i <= nbinsX; i++) {
          if (channels)
             outfile << i << "\t";
          if (bincenters)
             outfile << fSelHist->GetBinCenter(i) << "\t";
          outfile << fSelHist->GetBinContent(i); 
-         if (error_x) 
-            outfile << "\t" << 0.5 * fSelHist->GetBinWidth(i);
-         if (error_y) 
+         if (errors) 
             outfile << "\t" << fSelHist->GetBinError(i);
          outfile << endl;
+         nl++;
       }
-      outfile.close();
-      cout << fSelHist->GetNbinsX() << " bins written to: "
-          << (const char *) fname << endl;
+
    } else {
-      cout << " Cannot open: " << fname << endl;
+      Int_t nbinsX = fSelHist->GetNbinsX();
+      Int_t nbinsY = fSelHist->GetNbinsY();
+      TAxis * xa = fSelHist->GetXaxis();
+      TAxis * ya = fSelHist->GetYaxis();
+      for (Int_t i = 1; i <= nbinsX; i++) {
+         for (Int_t k = 1; k <= nbinsY; k++) {
+            outfile << xa->GetBinCenter(i) << "\t";
+            outfile << ya->GetBinCenter(k) << "\t";
+
+            outfile << fSelHist->GetCellContent(i,k); 
+            if (errors) 
+            outfile << "\t" << fSelHist->GetCellError(i,k);
+            outfile << endl;
+            nl++;
+         }
+      }
    }
+   cout << nl << " lines written to: " << (const char *) fname << endl;
+   outfile.close();
 };
 //_______________________________________________________________________________________
 
@@ -2706,6 +2698,151 @@ void FitHist::ProjectY()
 void FitHist::ProjectF()
 {
    ExpandProject(projectf);
+}
+
+//____________________________________________________________________________________ 
+
+// Fast Fourier Transform 
+
+void FitHist::FastFT()
+{
+   const char helpText[] =
+" This function allows to do discrete Fourier transforms of TH1 and TH2.\n\
+ Available transform types and flags are described below.\n\
+\n\
+ To extract more information about the transform, use the function\n\
+  TVirtualFFT::GetCurrentTransform() to get a pointer to the current\n\
+  transform object.\n\
+\n\
+ Parameters:\n\
+  1st - histogram for the output. If a null pointer is passed, a new histogram is created\n\
+  and returned, otherwise, the provided histogram is used and should be big enough\n\
+\n\
+  Options: option parameters consists of 3 parts:\n\
+    - option on what to return\n\
+   \"RE\" - returns a histogram of the real part of the output\n\
+   \"IM\" - returns a histogram of the imaginary part of the output\n\
+   \"MAG\"- returns a histogram of the magnitude of the output\n\
+   \"PH\" - returns a histogram of the phase of the output\n\
+\n\
+    - option of transform type\n\
+   \"R2C\"  - real to complex transforms - default\n\
+   \"R2HC\" - real to halfcomplex (special format of storing output data,\n\
+          results the same as for R2C)\n\
+   \"DHT\" - discrete Hartley transform\n\
+         real to real transforms (sine and cosine):\n\
+   \"R2R_0\", \"R2R_1\", \"R2R_2\", \"R2R_3\" - discrete cosine transforms of types I-IV\n\
+   \"R2R_4\", \"R2R_5\", \"R2R_6\", \"R2R_7\" - discrete sine transforms of types I-IV\n\
+    To specify the type of each dimension of a 2-dimensional real to real\n\
+    transform, use options of form \"R2R_XX\", for example, \"R2R_02\" for a transform,\n\
+    which is of type \"R2R_0\" in 1st dimension and  \"R2R_2\" in the 2nd.\n\
+\n\
+    - option of transform flag\n\
+    \"ES\" (from \"estimate\") - no time in preparing the transform, but probably sub-optimal\n\
+       performance\n\
+    \"M\" (from \"measure\")   - some time spend in finding the optimal way to do the transform\n\
+    \"P\" (from \"patient\")   - more time spend in finding the optimal way to do the transform\n\
+    \"EX\" (from \"exhaustive\") - the most optimal way is found\n\
+     This option should be chosen depending on how many transforms of the same size and\n\
+     type are going to be done. Planning is only done once, for the first transform of this\n\
+     size and type. Default is \"ES\".\n\
+";
+
+   static Int_t mag = 1, re = 0 , img = 0 , ph = 0,
+                r2c = 1, dht = 0, r2r = 0;
+   static TString opt_r2r("R2R_0");
+
+   static void *valp[50];
+   Int_t ind = 0;
+   Bool_t ok = kTRUE;
+   TList *row_lab = new TList(); 
+   row_lab->Add(new TObjString("CheckButton_Magnitude"));
+   row_lab->Add(new TObjString("CheckButton_Real Part"));
+   row_lab->Add(new TObjString("CheckButton_Imaginary Part"));
+   row_lab->Add(new TObjString("CheckButton_Phase"));
+   row_lab->Add(new TObjString("RadioButton_TType: Real to Complex"));
+   row_lab->Add(new TObjString("RadioButton_TType: Discrete Hartley"));
+//   row_lab->Add(new TObjString("RadioButton_TType: Real to Real"));
+//   row_lab->Add(new TObjString("StringValue_Option for Real to Real"));
+
+   valp[ind++] = &mag;
+   valp[ind++] = &re;
+   valp[ind++] = &img;
+   valp[ind++] = &ph;
+   valp[ind++] = &r2c;
+   valp[ind++] = &dht;
+//   valp[ind++] = &r2r;
+//   valp[ind++] = &opt_r2r;
+
+   Int_t itemwidth = 320;
+   ok = GetStringExt("FFT Parameters", NULL, itemwidth, mycanvas,
+                   NULL, NULL, row_lab, valp,
+                   NULL, NULL, &helpText[0]);
+
+   TString option;
+   TString name;
+   TString title;
+
+   if (r2c) option = "R2C";
+   if (dht) option = "DHT";
+//   if (r2r) option = opt_r2r;
+   if (mag != 0) {
+      TH1 * hresult = NULL;
+      name = fSelHist->GetName();
+      name = name + "_" + option + "_" + "MAG";
+      title = fSelHist->GetTitle();
+      title += "-Magnitude of FFT, ";
+      title += option;
+      option += " MAG";
+      cout << "Option: " << option << endl;
+      hresult = fSelHist->FFT(hresult, option);
+      hresult->SetName(name);
+      hresult->SetTitle(title);
+      hresult->SetStats(kFALSE);
+      if  (hp) hp->ShowHist(hresult);
+   }
+   if (re != 0) {
+      TH1 * hresult = NULL;
+      name = fSelHist->GetName();
+      name = name + "_" + option + "_" + "RE";
+      title = fSelHist->GetTitle();
+      title += "-Real part of FFT, ";
+      title += option;
+      option += " RE";
+      hresult = fSelHist->FFT(hresult, option);
+      hresult->SetName(name);
+      hresult->SetTitle(title);
+      hresult->SetStats(kFALSE);
+      if  (hp) hp->ShowHist(hresult);
+   }
+   if (img != 0) {
+      TH1 * hresult = NULL;
+      name = fSelHist->GetName();
+      name = name + "_" + option + "_" + "IM";
+      title = fSelHist->GetTitle();
+      title += "-Imaginary part of FFT, ";
+      title += option;
+      option += " IM";
+      hresult = fSelHist->FFT(hresult, option);
+      hresult->SetName(name);
+      hresult->SetTitle(title);
+      hresult->SetStats(kFALSE);
+      if  (hp) hp->ShowHist(hresult);
+   }
+   if (ph != 0) {
+      TH1 * hresult = NULL;
+      name = fSelHist->GetName();
+      name = name + "_" + option + "_" + "PH";
+      title = fSelHist->GetTitle();
+      title += "-Phase of FFT, ";
+      title += option;
+      option += " PH";
+      hresult = fSelHist->FFT(hresult, option);
+      hresult->SetName(name);
+      hresult->SetTitle(title);
+      hresult->SetStats(kFALSE);
+      if  (hp) hp->ShowHist(hresult);
+   }
 }
 
 //____________________________________________________________________________________ 

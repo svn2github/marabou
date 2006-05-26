@@ -3472,8 +3472,10 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    if (!c)  return;
    if (!c->TestBit(HTCanvas::kIsAEditorPage)) {
       c->Draw();
-      TGraph * og = FindGraph(gPad);
-      if (og) c->BuildHprMenus(this,0, og);
+      TList * logr = new TList();
+      Int_t ngr = FindGraphs(gPad, logr);
+      if (ngr > 0) c->BuildHprMenus(this,0, (TGraph*)logr->First());
+      delete logr;
       return;
    }
    TString new_name(c->GetName());
@@ -3697,6 +3699,22 @@ void HistPresent::SelectFromOtherDir()
    const char * filter[] = {"Root files", "*.root", 0, 0};
    fi->fFileTypes = filter;
    new  TGFileDialog(gClient->GetRoot(), GetMyCanvas(), kFDOpen, fi);
+   cout << "SelectFromOtherDir() " <<fi->fFilename << endl;
    if (fi->fFilename) ShowContents(fi->fFilename , "", NULL); 
    delete fi;
 }
+//________________________________________________________________
+
+Int_t HistPresent::GetWindowPosition(Int_t * winx, Int_t * winy)
+{
+   if (fNwindows>0) {       // not the 1. time
+      if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
+      else   {fWincurx = fWintopx; fWincury += fWinshifty;}
+   }
+   fNwindows++;
+   *winx = fWincurx;
+   *winy = fWincury;
+   return fNwindows;
+}
+  
+

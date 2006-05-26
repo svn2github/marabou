@@ -127,6 +127,7 @@ void HTCanvas::InitEditCommands()
    labels->Add(new TObjString("Insert histogram "));
    labels->Add(new TObjString("Insert graph"));
    labels->Add(new TObjString("Insert Function"));
+   labels->Add(new TObjString("Feynman diagram menu"));
    labels->Add(new TObjString("Text (Latex) from file"));
    labels->Add(new TObjString("Text (Latex) from keyboard"));
    labels->Add(new TObjString("Insert compound object"));
@@ -150,6 +151,7 @@ void HTCanvas::InitEditCommands()
    methods->Add(new TObjString("InsertHist()"));
    methods->Add(new TObjString("InsertGraph()"));
    methods->Add(new TObjString("InsertFunction()"));
+   methods->Add(new TObjString("FeynmanDiagMenu()"));
    methods->Add(new TObjString("InsertTextF()"));
    methods->Add(new TObjString("InsertTextK()"));
    methods->Add(new TObjString("InsertGObjects()"));
@@ -1474,41 +1476,34 @@ void HTCanvas::InsertHist()
       WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
       return;
    }   
+   static void *valp[25];
+   Int_t ind = 0;
 //      if (GetListOfPrimitives()->Contains(selected)) {
    TList *row_lab = new TList(); 
-   TList *values  = new TList();
    static TString fname;
    static TString gname;
-   TString drawopt;
-
-   row_lab->Add(new TObjString("Name of ROOT file"));
-   row_lab->Add(new TObjString("Name of Histogram"));
-   row_lab->Add(new TObjString("Select hist from Filelist"));
-   row_lab->Add(new TObjString("Scale factor for labels titles etc."));
-   row_lab->Add(new TObjString("Drawing option"));
-   
+   static TString drawopt;
    static Int_t select_from_list = 1;
    static Double_t scale = 1;
- 
-   AddObjString(fname.Data(), values);
-   AddObjString(gname.Data(), values);
-   AddObjString(select_from_list, values, kAttCheckB);
-   AddObjString(scale, values);
-   AddObjString(drawopt.Data(), values);
+
+   ind = 0;
+   row_lab->Add(new TObjString("StringValue_Name of ROOT file"));
+   valp[ind++] = &fname;
+   row_lab->Add(new TObjString("StringValue_Name of Histogram"));
+   valp[ind++] = &gname;
+   row_lab->Add(new TObjString("CheckButton_Select hist from Filelist"));
+   valp[ind++] = &select_from_list;
+   row_lab->Add(new TObjString("DoubleValue_Scale factor for labels titles etc."));
+   valp[ind++] = &scale;
+   row_lab->Add(new TObjString("StringValue_Drawing option"));
+   valp[ind++] = &drawopt;
    
    Bool_t ok; 
    Int_t itemwidth = 320;
 
    ok = GetStringExt("Insert Hist Params", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
-   Int_t vp = 0;
-   
-   fname    = GetText(values,   vp++);
-   gname    = GetText(values,   vp++);
-   select_from_list = GetInt(values,   vp++);
-   scale    = GetDouble(values,   vp++);
-   drawopt  = GetText(values,   vp++);
    TH1* hist = 0;
    
    if (select_from_list > 0) {
@@ -1615,42 +1610,34 @@ void HTCanvas::InsertGraph()
       return;
    }   
 //      if (GetListOfPrimitives()->Contains(selected)) {
+   static void *valp[25];
+   Int_t ind = 0;
    TList *row_lab = new TList(); 
-   TList *values  = new TList();
    static TString fname;
    static TString gname;
-   TString goption;
+   static TString goption;
+   static Int_t select_from_list = 1;
+   static Double_t scale = 1;
    if (fHistPresent) goption = fHistPresent->fDrawOptGraph;
    else goption = "AL";
 
-   row_lab->Add(new TObjString("Name of ROOT file"));
-   row_lab->Add(new TObjString("Name of TGraph"));
-   row_lab->Add(new TObjString("Select graph from Filelist"));
-   row_lab->Add(new TObjString("Scale factor for labels titles etc."));
-   row_lab->Add(new TObjString("Drawing option"));
-   
-   static Int_t select_from_list = 1;
-   static Double_t scale = 1;
- 
-   AddObjString(fname.Data(), values);
-   AddObjString(gname.Data(), values);
-   AddObjString(select_from_list, values, kAttCheckB);
-   AddObjString(scale, values);
-   AddObjString(goption.Data(), values);
-   
+   row_lab->Add(new TObjString("StringValue_Name of ROOT file"));
+   valp[ind++] = &fname;
+   row_lab->Add(new TObjString("StringValue_Name of TGraph"));
+   valp[ind++] = &gname;
+   row_lab->Add(new TObjString("CheckButton_Select graph from Filelist"));
+   valp[ind++] = &select_from_list;
+   row_lab->Add(new TObjString("DoubleValue_Scale factor for labels titles etc."));
+   valp[ind++] = &scale;
+   row_lab->Add(new TObjString("StringValue_Drawing option"));
+   valp[ind++] = &goption;
+    
    Bool_t ok; 
    Int_t itemwidth = 320;
 
    ok = GetStringExt("Insert Graph Params", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
-   Int_t vp = 0;
-   
-   fname    = GetText(values,   vp++);
-   gname    = GetText(values,   vp++);
-   select_from_list = GetInt(values,   vp++);
-   scale    = GetDouble(values,   vp++);
-   goption  = GetText(values,   vp++);
    TGraph* graph = 0;
    
    if (select_from_list > 0) {
@@ -1703,52 +1690,43 @@ void HTCanvas::InsertGraph()
 
 void HTCanvas::GrabImage()
 {
+   static void *valp[25];
+   Int_t ind = 0;
    TList *row_lab = new TList(); 
-   TList *values  = new TList();
-
-   row_lab->Add(new TObjString("Fixed size"));
-   row_lab->Add(new TObjString("Alignment"));
-   row_lab->Add(new TObjString("Delay [sec]"));
-   row_lab->Add(new TObjString("X Width"));
-   row_lab->Add(new TObjString("Y Width"));
-   row_lab->Add(new TObjString("Picture name"));
-   row_lab->Add(new TObjString("Ask for ok after grab"));
-   
    static Int_t fix_size = 1;
-   static Int_t align    = 11;
+   static Short_t align    = 11;
    static Int_t delay    = 1;
    static Int_t xw = 100;
    static Int_t yw = 100;
    static Int_t sernr = 0;
    static Int_t query_ok = 1;
-
-   TString pname("pict_");
+   static TString pname;
+   pname = "pict_";
    pname += sernr;
    pname += ".gif";
-  
-   AddObjString(fix_size, values, kAttCheckB);
-   AddObjString(align, values, kAttAlign);
-   AddObjString(delay, values);
-   AddObjString(xw, values);
-   AddObjString(yw, values);
-   AddObjString(pname.Data(), values);
-   AddObjString(query_ok, values, kAttCheckB);
 
+   row_lab->Add(new TObjString("CheckButton_Fixed size"));
+   valp[ind++] = &fix_size;
+   row_lab->Add(new TObjString("AlignSelect_Alignment"));
+   valp[ind++] = &align;
+   row_lab->Add(new TObjString("PlainIntVal_Delay [sec]"));
+   valp[ind++] = &delay;
+   row_lab->Add(new TObjString("PlainIntVal_X Width"));
+   valp[ind++] = &xw;
+   row_lab->Add(new TObjString("PlainIntVal_Y Width"));
+   valp[ind++] = &yw;
+   row_lab->Add(new TObjString("StringValue_Picture name"));
+   valp[ind++] = &sernr;
+   row_lab->Add(new TObjString("CheckButton_Ask for ok after grab"));
+   valp[ind++] = &query_ok;
+ 
    Int_t itemwidth = 320;
    Bool_t ok = kFALSE;
 
    ok = GetStringExt("Grab picture", NULL, itemwidth, fRootCanvas,
-                   NULL, NULL, row_lab, values);
+                   NULL, NULL, row_lab, valp);
    if (!ok) return;
 
-   Int_t vp = 0;
-   fix_size = GetInt(values,  vp++);
-   align    = GetInt(values,  vp++);
-   delay    = GetInt(values,  vp++);
-   xw = GetInt(values,  vp++);
-   yw = GetInt(values,  vp++);
-   pname     = GetText(values, vp++);
-   query_ok = GetInt(values,  vp++);
  
    cout << "Mark pick area" << endl;
 
@@ -1893,31 +1871,30 @@ void HTCanvas::InsertImage()
       }
    }
    TList *row_lab = new TList(); 
-   TList *values  = new TList();
-
-   row_lab->Add(new TObjString("Use a new pad"));
-   row_lab->Add(new TObjString("Preserve defined height"));
-   row_lab->Add(new TObjString("Preserve defined width"));
-   row_lab->Add(new TObjString("Preserve width and height"));
-   row_lab->Add(new TObjString("Offset X"));
-   row_lab->Add(new TObjString("Offset Y"));
-   
+   static void *valp[25];
+   Int_t ind = 0;
    static Int_t new_pad = 1;
    static Int_t fix_h = 0;
    static Int_t fix_w = 1;
    static Int_t fix_wh = 0;
    static Int_t offset_x = 0;
    static Int_t offset_y = 0;
- 
-   AddObjString(new_pad, values, kAttCheckB);
-   AddObjString(fix_h, values, kAttRadioB);
-   AddObjString(fix_w, values, kAttRadioB);
-   AddObjString(fix_wh, values,kAttRadioB);
-   AddObjString(offset_x, values);
-   AddObjString(offset_y, values);
+
+   row_lab->Add(new TObjString("CheckButton_Use a new pad"));
+   valp[ind++] = &new_pad;
+   row_lab->Add(new TObjString("RadioButton_Preserve defined height"));
+   valp[ind++] = &fix_h;
+   row_lab->Add(new TObjString("RadioButton_Preserve defined width"));
+   valp[ind++] = &fix_w;
+   row_lab->Add(new TObjString("RadioButton_Preserve width and height"));
+   valp[ind++] = &fix_wh;
+   row_lab->Add(new TObjString("PlainIntVal_Offset X"));
+   valp[ind++] = &offset_x;
+   row_lab->Add(new TObjString("PlainIntVal_Offset Y"));
+   valp[ind++] = &offset_y;
 
     ok = GetStringExt("Picture name", &name, itemwidth, fRootCanvas,
-                   hist_file, NULL, row_lab, values);
+                   hist_file, NULL, row_lab, valp);
    if (!ok) return;
 
 //      TImage *img = TImage::Open(name.Data());
@@ -1929,15 +1906,7 @@ void HTCanvas::InsertImage()
    }
    Double_t img_width = (Double_t )img->GetWidth();
    Double_t img_height = (Double_t )img->GetHeight();
-   Int_t vp = 0;
-   
-   new_pad = GetInt(values,   vp++);
-   fix_h = GetInt(values,   vp++);
-   fix_w = GetInt(values,   vp++);
-   fix_wh = GetInt(values,  vp++);
-   offset_x = GetInt(values,  vp++);
-   offset_y = GetInt(values,  vp++);
-   
+  
    if (new_pad) {
       pad = GetEmptyPad();
       if (pad) {
@@ -2319,24 +2288,18 @@ void HTCanvas::InsertGObjects(const char * objname)
       return;
    }
    static TString name;
-   TList *row_lab = new TList(); 
-   TList *values  = new TList();
-   row_lab->Add(new TObjString("Name of object"));
-   row_lab->Add(new TObjString("Scale factor NDC"));
-   row_lab->Add(new TObjString("Scale factor User"));
-   row_lab->Add(new TObjString("Angle[deg]"));
-   row_lab->Add(new TObjString("Alignment"));
-   row_lab->Add(new TObjString("X value"));
-   row_lab->Add(new TObjString("Y value"));
-   row_lab->Add(new TObjString("Draw enclosing cut"));
-
    static Double_t scaleNDC = 1;
    static Double_t scaleU = 1;
    static Double_t angle = 0;
-   static Int_t    align = 11;
-   Double_t        x0 = 0;
-   Double_t        y0 = 0;
+   static Short_t  align = 11;
+   static Double_t x0 = 0;
+   static Double_t y0 = 0;
    static Int_t    draw_cut = 1;
+
+   static void *valp[25];
+   Int_t ind = 0;
+
+   TList *row_lab = new TList(); 
 
    TMrbString temp;
    if (objname && strlen(objname) > 1) {
@@ -2345,30 +2308,29 @@ void HTCanvas::InsertGObjects(const char * objname)
       GroupOfGObjects * gg = (GroupOfGObjects *)fGObjectGroups->First();
       name = gg->GetName();
    }
+   row_lab->Add(new TObjString("StringValue_Name of object"));
+   valp[ind++] = &name;
+   row_lab->Add(new TObjString("DoubleValue_Scale factor NDC"));
+   valp[ind++] = &scaleNDC;
+   row_lab->Add(new TObjString("DoubleValue_Scale factor User"));
+   valp[ind++] = &scaleU;
+   row_lab->Add(new TObjString("DoubleValue_Angle[deg]"));
+   valp[ind++] = &angle;
+   row_lab->Add(new TObjString("AlignSelect_Alignment"));
+   valp[ind++] = &align;
+   row_lab->Add(new TObjString("DoubleValue_X value"));
+   valp[ind++] = &x0;
+   row_lab->Add(new TObjString("DoubleValue_Y value"));
+   valp[ind++] = &y0;
+   row_lab->Add(new TObjString("CheckButton_Draw enclosing cut"));
+   valp[ind++] = &draw_cut;
 
-   AddObjString(name.Data() , values);
-   AddObjString(scaleNDC , values);
-   AddObjString(scaleU   , values);
-   AddObjString(angle    , values);
-   AddObjString(align    , values, kAttAlign);
-   AddObjString(x0       , values);
-   AddObjString(y0       , values);
-   AddObjString(draw_cut , values, kAttCheckB);
+
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("Insert Compound Params", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
-   Int_t vp = 0;
-
-   name     = GetText(values, vp); vp++;
-   scaleNDC = GetDouble(values, vp); vp++;
-   scaleU   = GetDouble(values, vp); vp++; 
-   angle    = GetDouble(values, vp); vp++;  
-   align    = GetInt(values, vp); vp++;
-   x0       = GetDouble(values, vp); vp++;   
-   y0       = GetDouble(values, vp); vp++;  
-   draw_cut = GetInt(values, vp); vp++;
 
    GroupOfGObjects * gg = (GroupOfGObjects *)fGObjectGroups->FindObject(name); 
    if (!gg) {
@@ -2537,22 +2499,9 @@ void HTCanvas::ShowGallery()
 void HTCanvas::PutObjectsOnGrid(TList* list)
 {
    TList *row_lab = new TList(); 
-   TList *values  = new TList();
+   static void *valp[25];
+   Int_t ind = 0;
 
-   row_lab->Add(new TObjString("Align X"));
-   row_lab->Add(new TObjString("Align Y"));
-   row_lab->Add(new TObjString("Pads"));
-   row_lab->Add(new TObjString("Paves"));
-   row_lab->Add(new TObjString("Arrows"));
-   row_lab->Add(new TObjString("Lines,Axis"));
-   row_lab->Add(new TObjString("Graphs"));
-   row_lab->Add(new TObjString("Text"));
-   row_lab->Add(new TObjString("Arcs"));
-   row_lab->Add(new TObjString("Markers"));
-   row_lab->Add(new TObjString("CurlyLines"));
-   row_lab->Add(new TObjString("CurlyArcs"));
-   row_lab->Add(new TObjString("TSplineXs"));
-   
    static Int_t dox      = 1,
                 doy      = 1,
                 dopad    = 1,
@@ -2566,42 +2515,42 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
                 docurlyl = 1, 
                 docurlya = 1, 
                 doxspline = 1;
+
+   row_lab->Add(new TObjString("CheckButton_Align X"));
+   row_lab->Add(new TObjString("CheckButton_Align Y"));
+   row_lab->Add(new TObjString("CheckButton_Pads"));
+   row_lab->Add(new TObjString("CheckButton_Paves"));
+   row_lab->Add(new TObjString("CheckButton_Arrows"));
+   row_lab->Add(new TObjString("CheckButton_Lines,Axis"));
+   row_lab->Add(new TObjString("CheckButton_Graphs"));
+   row_lab->Add(new TObjString("CheckButton_Text"));
+   row_lab->Add(new TObjString("CheckButton_Arcs"));
+   row_lab->Add(new TObjString("CheckButton_Markers"));
+   row_lab->Add(new TObjString("CheckButton_CurlyLines"));
+   row_lab->Add(new TObjString("CheckButton_CurlyArcs"));
+   row_lab->Add(new TObjString("CheckButton_TSplineXs"));
+   
  
-   AddObjString(dox     , values, kAttCheckB);
-   AddObjString(doy     , values, kAttCheckB);
-   AddObjString(dopad   , values, kAttCheckB);
-   AddObjString(dopave   , values, kAttCheckB);
-   AddObjString(doarrow , values, kAttCheckB);
-   AddObjString(doline  , values, kAttCheckB);
-   AddObjString(dograph , values, kAttCheckB);
-   AddObjString(dotext  , values, kAttCheckB);
-   AddObjString(doarc   , values, kAttCheckB);
-   AddObjString(domark  , values, kAttCheckB);
-   AddObjString(docurlyl, values, kAttCheckB);
-   AddObjString(docurlya, values, kAttCheckB);
-   AddObjString(doxspline, values, kAttCheckB);
+   valp[ind++] = &dox     ; 
+   valp[ind++] = &doy     ; 
+   valp[ind++] = &dopad   ; 
+   valp[ind++] = &dopave   ;
+   valp[ind++] = &doarrow ; 
+   valp[ind++] = &doline  ; 
+   valp[ind++] = &dograph ; 
+   valp[ind++] = &dotext  ; 
+   valp[ind++] = &doarc   ; 
+   valp[ind++] = &domark  ; 
+   valp[ind++] = &docurlyl; 
+   valp[ind++] = &docurlya; 
+   valp[ind++] = &doxspline;
    
    Bool_t ok; 
    Int_t itemwidth = 320;
 
    ok = GetStringExt("Align Objects at Grid", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
-   Int_t vp = 0;
-   
-   dox     = GetInt(values,   vp++);
-   doy     = GetInt(values,   vp++);
-   dopad   = GetInt(values,   vp++);
-   dopave   = GetInt(values,   vp++);
-   doarrow = GetInt(values,   vp++);
-   doline  = GetInt(values,   vp++);
-   dograph = GetInt(values,   vp++);
-   dotext  = GetInt(values,   vp++);
-   doarc   = GetInt(values,   vp++);
-   domark   = GetInt(values,   vp++);
-   docurlyl= GetInt(values,   vp++);
-   docurlya= GetInt(values,   vp++);
-   doxspline = GetInt(values,   vp++);
 
    Double_t x1;
    Double_t y1;
@@ -3015,105 +2964,233 @@ TString lat2root(TString& cmd)
    while (cmd.Index(re_ovl) >= 0)cmd(re_ovl) = "#bar";
    return cmd;
 }
+
+//______________________________________________________________________________
+
+void HTCanvas::FeynmanDiagMenu()
+{
+ //  Int_t win_width = 160
+   static void *valp[25];
+   Int_t ind = 0;
+   TList * labels = new TList;
+   static TString fsp("FeynmanSetPars()");
+   static TString far("FeynmanArrow()");
+   static TString fwl("FeynmanWavyLine()");
+   static TString fcl("FeynmanCurlyLine()");
+   static TString fwa("FeynmanWavyArc()");
+   static TString fca("FeynmanCurlyArc()");
+   static TString fsl("FeynmanSolidLine()");
+   static TString fdl("FeynmanDashedLine()");
+   static TString ftx("FeynmanText()");
+
+   labels->Add(new TObjString("CommandButt_FeynmanSetPars()"));
+   valp[ind++] = &fsp;
+   labels->Add(new TObjString("CommandButt_FeynmanArrow()")); 	
+   valp[ind++] = &far;
+   labels->Add(new TObjString("CommandButt_FeynmanWavyLine()")); 
+   valp[ind++] = &fwl;
+   labels->Add(new TObjString("CommandButt_FeynmanCurlyLine()"));
+   valp[ind++] = &fcl;
+   labels->Add(new TObjString("PlainIntVal_Phi start"));
+   valp[ind++] = &fFeynmanPhi1;
+   labels->Add(new TObjString("PlainIntVal_Phi end"));
+   valp[ind++] = &fFeynmanPhi2;
+   labels->Add(new TObjString("CommandButt_FeynmanWavyArc()"));   
+   valp[ind++] = &fwa;
+   labels->Add(new TObjString("CommandButt_FeynmanCurlyArc()"));  
+   valp[ind++] = &fca;
+   labels->Add(new TObjString("CommandButt_FeynmanSolidLine()")); 
+   valp[ind++] = &fsl;
+   labels->Add(new TObjString("CommandButt_FeynmanDashedLine()"));
+   valp[ind++] = &fdl;
+   labels->Add(new TObjString("CommandButt_FeynmanText()"));  	 
+   valp[ind++] = &ftx;
+   Bool_t ok;
+   Int_t itemwidth = 320;
+
+   ok = GetStringExt("Feynman diagram", NULL, itemwidth, fRootCanvas,
+                      NULL, NULL, labels,valp,
+                      NULL, NULL, NULL, this, this->ClassName());
+}
+//______________________________________________________________________________
+
+void HTCanvas::FeynmanSetPars()
+{
+	if(fHistPresent){
+	   fHistPresent->SetCurlyAttributes(fRootCanvas, fFitHist);
+	   if(fFitHist)fFitHist->UpdateCanvas();
+	}
+};
+//______________________________________________________________________________
+
+void HTCanvas::FeynmanArrow()
+{   	
+   TArrow * a = (TArrow*)this->WaitPrimitive("TArrow");
+   if (a);
+};
+void HTCanvas::FeynmanWavyLine()
+{
+	TCurlyLine::SetDefaultIsCurly(kFALSE);
+   TCurlyLine * a = (TCurlyLine*)this->WaitPrimitive("TCurlyLine");
+   if (a);
+};
+void HTCanvas::FeynmanWavyArc()
+{
+	TCurlyArc::SetDefaultIsCurly(kFALSE);
+   TCurlyArc * a = (TCurlyArc*)this->WaitPrimitive("TCurlyArc");
+   a = (TCurlyArc *)gPad->GetListOfPrimitives()->Last();
+   a->SetPhimin(fFeynmanPhi1);
+   a->SetPhimax(fFeynmanPhi2);
+   Modified();
+   Update();
+};
+void HTCanvas::FeynmanCurlyLine()
+{
+	TCurlyLine::SetDefaultIsCurly(kTRUE);
+   TCurlyLine * a = (TCurlyLine*)this->WaitPrimitive("TCurlyLine");
+   if (a);
+};
+void HTCanvas::FeynmanCurlyArc()
+{
+	TCurlyArc::SetDefaultIsCurly(kTRUE);
+   TCurlyArc * a = (TCurlyArc*)this->WaitPrimitive("TCurlyArc");
+   a = (TCurlyArc *)gPad->GetListOfPrimitives()->Last();
+//   cout << "TCurlyArc" <<endl;
+   a->SetPhimin(fFeynmanPhi1);
+   a->SetPhimax(fFeynmanPhi2);
+   Modified();
+   Update();
+};
+void HTCanvas::FeynmanSolidLine()
+{
+   Style_t save = gStyle->GetLineStyle();
+   gStyle->SetLineStyle(kSolid);    
+   TLine * a = (TLine*)this->WaitPrimitive("TLine");
+   gStyle->SetLineStyle(save);    
+   if (a);
+};
+void HTCanvas::FeynmanDashedLine()
+{
+   Style_t save = gStyle->GetLineStyle();
+   gStyle->SetLineStyle(kDashed);    
+   TLine * a = (TLine*)this->WaitPrimitive("TLine");
+   gStyle->SetLineStyle(save);    
+   if (a);
+};
+void HTCanvas::FeynmanText()
+{
+//   TText * a = (TText*)this->WaitPrimitive("TText");
+//   if (a);
+   InsertText(kFALSE);
+};
+
+//______________________________________________________________________________
+
+void HTCanvas::InsertTextSaveDefaults()
+{
+}
+//______________________________________________________________________________
+
+void HTCanvas::InsertTextSetDefaults()
+{
+//   cout << "HTCanvas::InsertTextSetDefaults()" << endl;
+   fEditTextFileName = "latex.txt";
+   fEditTextFromFile = 0;
+   fEditTextX0 = 0;
+   fEditTextY0 = 0;
+   fEditTextDy = 10;
+   fEditTextAlign = 11; 
+   fEditTextColor = 1; 
+   fEditTextFont  = 6; 
+   fEditTextPrec  = 2; 
+   fEditTextSize = 0.02;
+   fEditTextAngle = 0;
+   fEditTextMarkCompound = 0;
+   fEditTextLatexFilter = 1;
+   fEditTextSeqNr = 0;
+}
 //______________________________________________________________________________
 
 void HTCanvas::InsertText(Bool_t from_file)
 {
+   static void *valp[25];
+   Int_t ind = 0;
 
+   fEditTextFromFile = (Int_t)from_file;
+
+   static TString excmd("InsertTextExecute()");
    TList *row_lab = new TList(); 
-   TList *values  = new TList();
-   if (from_file)
-      row_lab->Add(new TObjString("File Name with Latex"));
-   row_lab->Add(new TObjString("X Position"));
-   row_lab->Add(new TObjString("Y Position"));
-   row_lab->Add(new TObjString("Line spacing"));
-   row_lab->Add(new TObjString("Text size"));
-   row_lab->Add(new TObjString("Text font"));
-   row_lab->Add(new TObjString("Text precission"));
-   row_lab->Add(new TObjString("Text color"));
-   row_lab->Add(new TObjString("Text alignment"));
-   row_lab->Add(new TObjString("Text angle"));
-   row_lab->Add(new TObjString("Mark as compound"));
-   row_lab->Add(new TObjString("Apply latex filter"));
-   if (!from_file) row_lab->Add(new TObjString("Loop until cancel"));
-  
+ 
+   if (fEditTextFromFile) {
+      row_lab->Add(new TObjString("StringValue_File Name with text"));
+      valp[ind++] = &fEditTextFileName;
+      fEditTextMarkCompound = 1;
+   } else {
+      fEditTextMarkCompound = 0;
+   }
+   row_lab->Add(new TObjString("DoubleValue_X Position"));
+   valp[ind++] = &fEditTextX0;
+   row_lab->Add(new TObjString("DoubleValue+Y Position"));
+   valp[ind++] = &fEditTextY0;
+   row_lab->Add(new TObjString("DoubleValue_Line spacing"));
+   valp[ind++] = &fEditTextDy;
+   row_lab->Add(new TObjString("Float_Value+Size"));
+   valp[ind++] = &fEditTextSize;
+   row_lab->Add(new TObjString("CfontSelect_Font"));
+   valp[ind++] = &fEditTextFont;
+   row_lab->Add(new TObjString("PlainIntVal+Precission"));
+   valp[ind++] = &fEditTextPrec;
+   row_lab->Add(new TObjString("ColorSelect_Color"));
+   valp[ind++] = &fEditTextColor;
+   row_lab->Add(new TObjString("AlignSelect+Alignment"));
+   valp[ind++] = &fEditTextAlign;
+   row_lab->Add(new TObjString("Float_Value+Angle"));
+   valp[ind++] = &fEditTextAngle;
+   row_lab->Add(new TObjString("CheckButton_Mark as compound"));
+    valp[ind++] = &fEditTextMarkCompound;
+   row_lab->Add(new TObjString("CheckButton+Apply latex filter"));
+   valp[ind++] = &fEditTextLatexFilter;
+   row_lab->Add(new TObjString("CommandButt_InsertTextExecute"));
+   valp[ind++] = &excmd;
 
-   Double_t x0 =        0;
-   Double_t y0 =        0;
-   static Double_t dy = 10;
-   static Int_t    align = 11; 
-   static Int_t    color = 1; 
-   static Int_t    font  = 62; 
-   static Int_t    prec  = 2; 
-   static Double_t size = 0.02;
-   static Double_t angle = 0;
-   Int_t           markc = 0;
-   if (from_file)  markc = 1;
-   static Int_t    lfilter = 1;
-   static Int_t    text_seqnr = 0;
-   static Int_t    input_loop = 0;
-//   if (fHistPresent) {
-//      size = fHistPresent->fTextSize;
-//      font     = fHistPresent->fTextFont;
-//      color    = fHistPresent->fTextColor;
+//   if (!from_file) {
+//       row_lab->Add(new TObjString("CheckButton_Keep Dialog"));
+//       valp[ind++] = &keepdialog;
 //   }
-   static TString fname = "latex.txt";
-   TString text;
-   TString * tpointer = 0; 
+  
+   static TString text;
+//   TString * tpointer = 0; 
+   fEditTextPointer = NULL;
    const char * history = 0;
-   if (!from_file) {
-      tpointer = &text;
+   if (fEditTextFromFile == 0) {
+      fEditTextPointer = &text;
       const char hist_file[] = {"text_hist.txt"};
       history = hist_file;
       if (gROOT->GetVersionInt() < 40000) history = NULL;
    }
-
-   if (from_file)
-      AddObjString(fname.Data(), values);
-   AddObjString(x0, values);
-   AddObjString(y0, values);
-   AddObjString(dy, values);
-   AddObjString(size, values);
-   AddObjString(font,  values, kAttFont);
-   AddObjString(prec,  values);
-   AddObjString(color, values, kAttColor);
-   AddObjString(align, values, kAttAlign);
-   AddObjString(angle, values);
-   AddObjString(markc, values, kAttCheckB);
-   AddObjString(lfilter, values, kAttCheckB);
-   if (!from_file) AddObjString(input_loop, values, kAttCheckB);
-
+   fEditTextX0 = 0;
+   fEditTextY0 = 0;
    Bool_t ok; 
-   Int_t itemwidth = 320;
-loop:
-   ok = GetStringExt("Text (latex) string", tpointer, itemwidth, fRootCanvas,
-                      history, NULL, row_lab, values);
-   if (!ok) return;
-   Int_t vp = 0;
-   if (from_file)
-      fname    = GetText(values,   vp++);
+   Int_t itemwidth = 280;
+//loop:
+   ok = GetStringExt("Text (latex) string", fEditTextPointer, itemwidth, fRootCanvas,
+                      history, NULL, row_lab, valp,
+                      NULL, NULL, NULL, this, this->ClassName());
+//   if (!ok) return;
+}
+//______________________________________________________________________________
 
-   x0       = GetDouble(values, vp++);
-   y0       = GetDouble(values, vp++);
-   dy       = GetDouble(values, vp++);
-   size     = GetDouble(values, vp++);
-   font     = GetInt(values,    vp++);
-   prec     = GetInt(values,    vp++);
-   color    = GetInt(values,    vp++);
-   align    = GetInt(values,    vp++);
-   angle    = GetDouble(values, vp++);
-   markc    = GetInt(values,    vp++);
-   lfilter  = GetInt(values,    vp++);
-   if (!from_file) input_loop = GetInt(values,    vp++);
-   if (x0 == 0 && y0 == 0) {
+void HTCanvas::InsertTextExecute()
+{
+   if (fEditTextX0 == 0 && fEditTextY0 == 0) {
    	cout << "Mark position with left mouse" << endl;
    	fGetMouse = kTRUE;
 	   while (fGetMouse == kTRUE) {
    	   gSystem->ProcessEvents();
    	   gSystem->Sleep(10);
 	   }
-      x0 = fMouseX;
-      y0 = fMouseY;
+      fEditTextX0 = fMouseX;
+      fEditTextY0 = fMouseY;
       fMousePad->cd();
    }
 
@@ -3123,21 +3200,21 @@ loop:
    TString converted_line;
 
    TLatex  * latex;
-   Double_t xt = x0;
-   Double_t yt = y0;
+   Double_t xt = fEditTextX0;
+   Double_t yt = fEditTextY0;
    Double_t longestline = 0, th_first = 0, th_last = 0;
    TList llist;
-      Bool_t loop = kTRUE;
-   if (from_file) {
-      infile.open(fname.Data());
+   Bool_t loop = kTRUE;
+   if (fEditTextFromFile != 0) {
+      infile.open(fEditTextFileName.Data());
       if (!infile.good()){
-         cout << "Cant open: " << fname << endl;
+         cout << "Cant open: " << fEditTextFileName << endl;
          return;
       }
    }
    while(loop) {
 // read lines, concatinate lines ending with 
-      if (from_file) {
+      if (fEditTextFromFile != 0) {
       	line.ReadLine(infile);
       	if (infile.eof()) {
 	      	infile.close();
@@ -3154,20 +3231,22 @@ loop:
          	continue;
       	}
       } else {
-         cmd = tpointer->Data();
+         cmd = fEditTextPointer->Data();
+         cout << fEditTextPointer << " " << cmd.Data() << endl;
          loop = kFALSE;
       }
-      if (lfilter > 0) converted_line = lat2root(cmd);
+      if (fEditTextLatexFilter > 0) converted_line = lat2root(cmd);
       else             converted_line = cmd;
       latex = new TLatex(xt, yt, converted_line.Data());
-      latex->SetTextAlign(align);
-      latex->SetTextFont(font / 10 * 10 + prec);
-      latex->SetTextSize(size);
-      latex->SetTextAngle(angle);
-      latex->SetTextColor(color);
+      latex->SetTextAlign(fEditTextAlign);
+      latex->SetTextFont(fEditTextFont * 10 + fEditTextPrec);
+      latex->SetTextSize(fEditTextSize);
+      latex->SetTextColor(fEditTextColor);
       latex->Draw();
+      latex->SetTextAngle(fEditTextAngle);
       llist.Add(latex);
-      yt -= dy;
+      yt -= fEditTextDy;
+      latex->Dump();
 //      outfile << cmd << endl;
       cmd.Resize(0);
       if (latex->GetXsize() > longestline) longestline = latex->GetXsize();
@@ -3180,45 +3259,45 @@ loop:
       GroupOfGObjects * text_group = NULL;
       TString cname("text_obj_");
 
-      if (markc) {
+      if (fEditTextMarkCompound) {
          text_group = new GroupOfGObjects(cname.Data(), 0, 0, NULL);
-         cname += text_seqnr;
+         cname += fEditTextSeqNr;
       }
       Double_t yshift = 0;
-      if (align%10 == 1)yshift =  (nlines -1) * dy;
-      if (align%10 == 2)yshift =  (nlines  -1)* (0.5 * dy);
+      if (fEditTextAlign%10 == 1)yshift =  (nlines -1) * fEditTextDy;
+      if (fEditTextAlign%10 == 2)yshift =  (nlines  -1)* (0.5 * fEditTextDy);
       TIter next(&llist);
       while ( (latex = (TLatex*)next()) ) {
           latex->SetY(latex->GetY() + yshift);
           if (text_group) text_group->AddMember(latex, "");
       }
-      if (markc) {
-         yt += dy;        // last displayed line
+      if (fEditTextMarkCompound) {
+         yt += fEditTextDy;        // last displayed line
       	Double_t xenc[5];
       	Double_t yenc[5];
       	yenc[0] = yt + yshift;
-//      	if (align%10 == 1)yenc[0] -= 0.5 * th_last;
-      	if (align%10 == 2)yenc[0] -= 0.5 * th_last;
-      	if (align%10 == 3)yenc[0] -= th_last;
+//      	if (fEditTextAlign%10 == 1)yenc[0] -= 0.5 * th_last;
+      	if (fEditTextAlign%10 == 2)yenc[0] -= 0.5 * th_last;
+      	if (fEditTextAlign%10 == 3)yenc[0] -= th_last;
       	yenc[1] = yenc[0];
 
-      	yenc[2] = y0 + yshift;
-      	if (align%10 == 2)yenc[2] += 0.5 * th_first;
-      	if (align%10 == 1)yenc[2] += th_first;
+      	yenc[2] = fEditTextY0 + yshift;
+      	if (fEditTextAlign%10 == 2)yenc[2] += 0.5 * th_first;
+      	if (fEditTextAlign%10 == 1)yenc[2] += th_first;
       	yenc[3] = yenc[2];
       	yenc[4] = yenc[0];
 
-      	Int_t halign = align / 10;
+      	Int_t halign = fEditTextAlign / 10;
       	if (halign == 1) {
-         	xenc[0] = x0;
+         	xenc[0] = fEditTextX0;
          	xenc[1] = xenc[0] + longestline;
          	xenc[0] -= 0.001;
       	} else if (halign == 2) {
-         	xenc[0] = x0 + 0.5 * longestline;
+         	xenc[0] = fEditTextX0 + 0.5 * longestline;
          	xenc[1] = xenc[0] - longestline;
       	} else {
-         	xenc[0] = x0 - longestline;
-         	xenc[1] = x0 + 0.001;
+         	xenc[0] = fEditTextX0 - longestline;
+         	xenc[1] = fEditTextX0 + 0.001;
       	}
       	xenc[2] = xenc[1];
       	xenc[3] = xenc[0];
@@ -3231,16 +3310,18 @@ loop:
    }
    Modified();
    Update();
-   if (!from_file && input_loop == 1) goto loop;
+//   if (!from_file && keepdialog == 1) goto loop;
 }
 //______________________________________________________________________________
 
 void HTCanvas::InsertFunction()
 {
+   static void *valp[25];
+   Int_t ind = 0;
    static Int_t Npar = 3;
    static Double_t par[10] = {1, -.2, 4, 0, 0, 0, 0, 0, 0, 0};
    static TString func_name("fun1");
-   static TString new_func_name("ff");
+//   static TString new_func_name("ff");
    static TString xtitle("x");
    static TString ytitle("y");
    static Double_t from = 0;
@@ -3263,15 +3344,21 @@ void HTCanvas::InsertFunction()
       return;
    }
    TList *row_lab = new TList(); 
-   TList *values  = new TList();
+//   TList *values  = new TList();
 tryagain:
+   ind = 0;
    row_lab->Clear();
-   values->Clear();
-   row_lab->Add(new TObjString("Function Name"));
-   row_lab->Add(new TObjString("X axis title"));
-   row_lab->Add(new TObjString("Y axis title"));
-   row_lab->Add(new TObjString("Lower limit (from)"));
-   row_lab->Add(new TObjString("Upper limit (to)"));
+   row_lab->Add(new TObjString("StringValue_Function Name"));
+   valp[ind++] = &func_name;
+
+   row_lab->Add(new TObjString("StringValue_X axis title"));
+   valp[ind++] = &xtitle;
+   row_lab->Add(new TObjString("StringValue_Y axis title"));
+   valp[ind++] = &ytitle;
+   row_lab->Add(new TObjString("DoubleValue_Lower limit (from)"));
+   valp[ind++] = &from;
+   row_lab->Add(new TObjString("DoubleValue_Upper limit (to)"));
+   valp[ind++] = &to;
 
    TString text;
    TString * tpointer = 0; 
@@ -3286,52 +3373,29 @@ tryagain:
    } 
 
    if (gROOT->GetVersionInt() < 40000) history = NULL;
-
-   AddObjString(func_name.Data(), values);
-   AddObjString(xtitle.Data(), values);
-   AddObjString(ytitle.Data(), values);
-   AddObjString(from, values);
-   AddObjString(to,   values);
    for (Int_t i =0; i < Npar; i++) {
-      row_lab->Add(new TObjString(Form("Value of Parameter %d",i)));
-      AddObjString(par[i],   values);
+      row_lab->Add(new TObjString(Form("DoubleValue_Value of Parameter %d",i)));
+      valp[ind++] = &par[i];
    }
-   row_lab->Add(new TObjString("Drawing color"));
-   AddObjString(fcol, values, kAttColor);
-   row_lab->Add(new TObjString("Opacity of pad (0-100)"));
-   AddObjString(pad_opacity, values);
-   row_lab->Add(new TObjString("Use new(selected) pad"));
-   AddObjString(new_pad, values, kAttRadioB);
-   row_lab->Add(new TObjString("Use same (selected) pad"));
-   AddObjString(same_pad, values, kAttRadioB);
-   row_lab->Add(new TObjString("Create separate canvas"));
-   AddObjString(new_canvas, values, kAttRadioB);
+   row_lab->Add(new TObjString("ColorSelect_Drawing color"));
+   valp[ind++] = &fcol;
+   row_lab->Add(new TObjString("PlainIntVal_Opacity of pad (0-100)"));
+   valp[ind++] = &pad_opacity;
+   row_lab->Add(new TObjString("RadioButton_Use new(selected) pad"));
+   valp[ind++] = &new_pad;
+   row_lab->Add(new TObjString("RadioButton_Use same (selected) pad"));
+   valp[ind++] = &same_pad;
+   row_lab->Add(new TObjString("RadioButton_Create separate canvas"));
+   valp[ind++] = &new_canvas;
 
    Int_t itemwidth = 440;
    ok = GetStringExt("Function formula", tpointer, itemwidth, fRootCanvas,
-                      history, NULL, row_lab, values);
+                      history, NULL, row_lab, valp);
    if (!ok) return;
-   Int_t vp = 0;
 
-   new_func_name = GetText(values, vp++);
-   xtitle    = GetText(values, vp++);
-   ytitle    = GetText(values, vp++);
-   from      = GetDouble(values, vp++);
-   to        = GetDouble(values, vp++);
-   for (Int_t i =0; i < Npar; i++) {
-      par[i] = GetDouble(values, vp++);
-   }  
-   fcol        = GetInt(values, vp++);
-   pad_opacity = GetInt(values, vp++);
-   new_pad     = GetInt(values, vp++);
-   same_pad    = GetInt(values, vp++);
-   new_canvas  = GetInt(values, vp++);
-   if (new_func_name == func_name 
-       && gROOT->GetListOfFunctions()->FindObject(func_name)) {
+   if (gROOT->GetListOfFunctions()->FindObject(func_name))
       IncrementIndex(&func_name);
-   } else {
-      func_name = new_func_name;
-   }
+   
    if (gROOT->GetListOfFunctions()->FindObject(func_name)) {
       cout << "Function with name: " << func_name << " already exists"
            << endl;
@@ -3367,21 +3431,8 @@ or select \"Use same (selected) pad\"", fRootCanvas);
 
 void HTCanvas::InsertAxis()
 {
-   TList *row_lab = new TList(); 
-   TList *values  = new TList();
-   row_lab->Add(new TObjString("X Start"));
-   row_lab->Add(new TObjString("Y Start"));
-   row_lab->Add(new TObjString("X End"));
-   row_lab->Add(new TObjString("Y End"));
-
-   row_lab->Add(new TObjString("Axis Value at Start"));
-   row_lab->Add(new TObjString("Axis Value at End"));
-   row_lab->Add(new TObjString("N divisions"));
-   row_lab->Add(new TObjString("Logarithmic scale"));
-   row_lab->Add(new TObjString("Use Timeformat"));
-   row_lab->Add(new TObjString("Timeformat"));
-   row_lab->Add(new TObjString("Timeoffset"));
-
+   static void *valp[25];
+   Int_t ind = 0;
    Double_t x0 = 0;
    Double_t y0 = 0;
    Double_t x1 = 0;
@@ -3393,38 +3444,40 @@ void HTCanvas::InsertAxis()
    static Int_t    usetimeformat = 0;
    static Int_t    timezero = 0;
    TString chopt; 
-   TString tformat("H.%H M.%M S.%S"); 
+   static TString tformat("H.%H M.%M S.%S"); 
 
+   TList *row_lab = new TList(); 
+   row_lab->Add(new TObjString("DoubleValue_X Start"));
+   valp[ind++] = &x0;
+   row_lab->Add(new TObjString("DoubleValue_Y Start"));
+   valp[ind++] = &y0;
+   row_lab->Add(new TObjString("DoubleValue_X End"));
+   valp[ind++] = &x1;
+   row_lab->Add(new TObjString("DoubleValue_Y End"));
+   valp[ind++] = &y1;
 
-   AddObjString(x0, values);
-   AddObjString(y0, values);
-   AddObjString(x1, values);
-   AddObjString(y1, values);
-   AddObjString(wmin, values);
-   AddObjString(wmax, values);
-   AddObjString(ndiv, values);
-   AddObjString(logscale, values, kAttCheckB);
-   AddObjString(usetimeformat, values, kAttCheckB);
-   AddObjString(tformat.Data(), values);
-   AddObjString(timezero, values);
+   row_lab->Add(new TObjString("DoubleValue_Axis Value at Start"));
+   valp[ind++] = &wmin;
+   row_lab->Add(new TObjString("DoubleValue_Axis Value at End"));
+   valp[ind++] = &wmax;
+   row_lab->Add(new TObjString("PlainIntVal_N divisions"));
+   valp[ind++] = &ndiv;
+   row_lab->Add(new TObjString("CheckButton_Logarithmic scale"));
+   valp[ind++] = &logscale;
+   row_lab->Add(new TObjString("CheckButton_Use Timeformat"));
+   valp[ind++] = &usetimeformat;
+   row_lab->Add(new TObjString("StringValue_Timeformat"));
+   valp[ind++] = &tformat;
+   row_lab->Add(new TObjString("PlainIntVal_Timeoffset"));
+   valp[ind++] = &timezero;
+
 
    Bool_t ok; 
    Int_t itemwidth = 320;
 tryagain:
    ok = GetStringExt("Axis Params", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, row_lab, values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
-   Int_t vp = 0;
-   x0       = GetDouble(values, vp++);
-   y0       = GetDouble(values, vp++);
-   x1       = GetDouble(values, vp++);
-   y1       = GetDouble(values, vp++);
-   wmin       = GetDouble(values, vp++);
-   wmax       = GetDouble(values, vp++);
-   ndiv       = GetInt(values,    vp++);
-   logscale   = GetInt(values,    vp++);
-   usetimeformat = GetInt(values, vp++);
-   tformat       = GetText(values,vp++);
    if (usetimeformat > 0) chopt += "t";
    if (logscale   > 0) chopt += "G";
    
@@ -3464,35 +3517,17 @@ tryagain:
 
 void HTCanvas::InsertTSplineX()
 {
-   TList row_lab; 
-   TList values;
-   row_lab.Add(new TObjString("Closed TSplineX"));
-   row_lab.Add(new TObjString("Approximate"));
-   row_lab.Add(new TObjString("Fix endpoints"));
-   row_lab.Add(new TObjString("Precision"));
-   row_lab.Add(new TObjString("Show Controlpoints"));
-   row_lab.Add(new TObjString("Line color"));
-   row_lab.Add(new TObjString("Line width"));
-   row_lab.Add(new TObjString("Line style"));
-   row_lab.Add(new TObjString("Arrow at start"));
-   row_lab.Add(new TObjString("Arrow at end"));
-   row_lab.Add(new TObjString("Arrow length"));
-   row_lab.Add(new TObjString("Arrow angle"));
-   row_lab.Add(new TObjString("Arrow indent angle"));
-   row_lab.Add(new TObjString("Fill Arrow"));
-   row_lab.Add(new TObjString("Railway like (double line)"));
-   row_lab.Add(new TObjString("Railway: sleeper length"));
-   row_lab.Add(new TObjString("Railway: sleeper distance"));
-   row_lab.Add(new TObjString("Railway: gage"));
-
+   static void *valp[25];
+   Int_t ind = 0;
+   TList * row_lab = new TList(); 
    static Int_t closed = 0;
    static Int_t approx = 1;
    static Int_t fixends = 1;
    static Double_t prec = 0.2;
    static Int_t showcp  = 1;
-   static Int_t color  = gStyle->GetLineColor();
-   static Int_t lwidth = gStyle->GetLineWidth();
-   static Int_t lstyle  = gStyle->GetLineStyle();
+   static Color_t color  = gStyle->GetLineColor();
+   static Width_t lwidth = gStyle->GetLineWidth();
+   static Style_t lstyle  = gStyle->GetLineStyle();
    static Int_t    railway = 0;
    static Double_t filled  = 0;
    static Double_t empty  = 5;
@@ -3504,50 +3539,49 @@ void HTCanvas::InsertTSplineX()
    static Double_t arrow_angle  = 30;
    static Double_t arrow_indent_angle  = 0;
 
-   AddObjString(closed, &values, kAttCheckB);
-   AddObjString(approx, &values, kAttCheckB);
-   AddObjString(fixends, &values, kAttCheckB);
-   AddObjString(prec, &values);
-   AddObjString(showcp, &values, kAttCheckB);
-   AddObjString(color, &values, kAttColor);
-   AddObjString(lwidth, &values);
-   AddObjString(lstyle, &values, kAttLineS);
-   AddObjString(arrow_at_start, &values, kAttCheckB);
-   AddObjString(arrow_at_end, &values, kAttCheckB);
-   AddObjString(arrow_size, &values);
-   AddObjString(arrow_angle, &values);
-   AddObjString(arrow_indent_angle, &values);
-   AddObjString(arrow_filled, &values, kAttCheckB);
-   AddObjString(railway, &values, kAttCheckB);
-   AddObjString(filled, &values);
-   AddObjString(empty, &values);
-   AddObjString(gage, &values);
+   row_lab->Add(new TObjString("CheckButton_Closed TSplineX"));
+   valp[ind++] = &closed;
+   row_lab->Add(new TObjString("CheckButton_Approximate"));
+   valp[ind++] = &approx;
+   row_lab->Add(new TObjString("CheckButton_Fix endpoints"));
+   valp[ind++] = &fixends;
+   row_lab->Add(new TObjString("DoubleValue_Precision"));
+   valp[ind++] = &prec;
+   row_lab->Add(new TObjString("CheckButton_Show Controlpoints"));
+   valp[ind++] = &showcp;
+   row_lab->Add(new TObjString("ColorSelect_Line color"));
+   valp[ind++] = &color;
+   row_lab->Add(new TObjString("PlainShtVal_Line width"));
+   valp[ind++] = &lwidth;
+   row_lab->Add(new TObjString("LineSSelect_Line style"));
+   valp[ind++] = &lstyle;
+   row_lab->Add(new TObjString("CheckButton_Arrow at start"));
+   valp[ind++] = &arrow_at_start;
+   row_lab->Add(new TObjString("CheckButton_Arrow at end"));
+   valp[ind++] = &arrow_at_end;
+   row_lab->Add(new TObjString("DoubleValue_Arrow length"));
+   valp[ind++] = &arrow_size;
+   row_lab->Add(new TObjString("DoubleValue_Arrow angle"));
+   valp[ind++] = &arrow_angle;
+   row_lab->Add(new TObjString("DoubleValue_Arrow indent angle"));
+   valp[ind++] = &arrow_indent_angle;
+   row_lab->Add(new TObjString("CheckButton_Fill Arrow"));
+   valp[ind++] = &arrow_filled;
+   row_lab->Add(new TObjString("CheckButton_Railway like (double line)"));
+   valp[ind++] = &railway;
+   row_lab->Add(new TObjString("DoubleValue_Railway: sleeper length"));
+   valp[ind++] = &filled;
+   row_lab->Add(new TObjString("DoubleValue_Railway: sleeper distance"));
+   valp[ind++] = &empty;
+   row_lab->Add(new TObjString("DoubleValue_Railway: gage"));
+   valp[ind++] = &gage;
 
    Bool_t ok; 
    Int_t itemwidth = 320;
 tryagain:
    ok = GetStringExt("TSplineX Params", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, &row_lab, &values);
+                      NULL, NULL, row_lab, valp);
    if (!ok) return;
-   Int_t vp = 0;
-   closed = GetInt(&values, vp++);
-   approx = GetInt(&values, vp++);
-   fixends = GetInt(&values, vp++);
-   prec   = GetDouble(&values, vp++);
-   showcp = GetInt(&values, vp++);
-   color = GetInt(&values, vp++);
-   lwidth = GetInt(&values, vp++);
-   lstyle = GetInt(&values, vp++);
-   arrow_at_start = GetInt(&values, vp++);
-   arrow_at_end = GetInt(&values, vp++); 
-   arrow_size   = GetDouble(&values, vp++);
-   arrow_angle  = GetDouble(&values, vp++);
-   arrow_indent_angle  = GetDouble(&values, vp++);
-   arrow_filled   = GetInt(&values, vp++);
-   railway   = GetInt(&values, vp++);
-   filled   = GetDouble(&values, vp++);
-   empty   = GetDouble(&values, vp++);
-   gage  = GetDouble(&values, vp++);
 
   cout << "Input a  Polyline defining the controlpoints" << endl;
   TIter next(this->GetListOfPrimitives());

@@ -22,4 +22,7 @@
 #pragma link C++ class EditMarker;
 #pragma link C++ class TSplineX;
 #pragma link C++ class HprEditCommands;
+#pragma link C++ class HprNtuple;
+#pragma link C++ class HprGraph;
+#pragma link C++ class HprAscii2Hist;
 #endif			   

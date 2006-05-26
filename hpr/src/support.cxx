@@ -38,109 +38,6 @@
 #include <fstream>
 
 TSocket * gSocket = 0;
-//_______________________________________________________________________________
-   
-void AddObjString(Int_t val, TList * list, Int_t type)
-{
-   Int_t ival = val;
-   TString s;
-   if (type == kAttCheckB) {
-      s+= "CheckButton_";
-      if (val == 0) s += "Up";
-      else          s += "Down";
-   } else if (type == kAttRadioB) {
-      s+= "RadioButton_";
-      if (val == 0) s += "Up";
-      else          s += "Down";
-   } else {
-      if (type == kAttColor) {
-         s+= "ColorSelect_";        
-         TColor * color =  GetColorByInd(ival);
-         ival = 0;
-         if (color) ival = color->GetPixel();
-         else       cout << "Invalid color index: " << val << endl;
-      }
-      if (type == kAttAlign) s+= "AlignSelect_";
-      if (type == kAttLineS) s+= "LineSSelect_";
-      if (type == kAttFont ) { s+= "CfontSelect_"; ival /= 10; }
-      if (type == kAttArrow) s+= "ArrowSelect_";
-      if (type == kAttMarker)s+= "Mark_Select_";
-      if (type == kAttFillS) s+= "Fill_Select_";
-      s += ival;
-   }
-   list->Add(new TObjString(s.Data()));
-} 
-//_______________________________________________________________________________
-   
-void AddObjString(const char * text, TList * list)
-{
-   list->Add(new TObjString(text));
-} 
-//_______________________________________________________________________________
-   
-void AddObjString(Double_t val, TList * list)
-{
-   ostringstream buf;
-   buf << val;
-   list->Add(new TObjString(buf.str().c_str()));
-//   list->Add(new TObjString(Form("%lf", val)));
-} 
-//_______________________________________________________________________________
-
-const char * GetText(TList * list, Int_t pos) 
-{
-   return ((TObjString*)list->At(pos))->GetString();
-}   
-//_______________________________________________________________________________
-
-Double_t GetDouble(TList * list, Int_t pos) 
-{
-   TMrbString s;
-   s = ((TObjString*)list->At(pos))->GetString();
-   Double_t val;
-   if (!s.ToDouble(val)) {
-      cout << "Illegal doubel: " << s << endl;
-      val = 0;
-   }
-   return val;
-}   
-//_______________________________________________________________________________
-  
-Int_t GetInt(TList * list, Int_t pos)
-{
-   TMrbString s;
-   Int_t val;
-   Bool_t iscol = kFALSE;
-   Bool_t isfont = kFALSE;
-   s = ((TObjString*)list->At(pos))->GetString();
-   if (s.BeginsWith("CheckButton_") || s.BeginsWith("RadioButton_")) {
-      if (s.EndsWith("Down")) val = 1;
-      else                    val = 0;
-   } else {
-      if ( s.BeginsWith("ColorSelect_")) iscol = kTRUE;
-      if ( s.BeginsWith("CfontSelect_")) isfont = kTRUE;
-      if ( s.BeginsWith("ColorSelect_") || 
-           s.BeginsWith("AlignSelect_") ||
-           s.BeginsWith("LineSSelect_") ||
-           s.BeginsWith("CheckButton_") ||
-           s.BeginsWith("Mark_Select_") ||
-           s.BeginsWith("Fill_Select_") ||
-           s.BeginsWith("CfontSelect_") ||
-           s.BeginsWith("ArrowSelect_")) s.Remove(0,12);
-      if (!s.ToInteger(val)) {
-         cout << "Illegal integer: " << s << endl;
-         val = 0;
-      } else {
-         if (iscol) {
-           val =  TColor::GetColor((UInt_t)val);
-           if (!GetColorByInd(val)) val = 1;
-         }
-         if (isfont) val = val * 10 + 2;
-      } 
-   }    
-   return val;
-}   
-   
 //----------------------------------------------------------------------- 
 //  a command button
 
@@ -1013,13 +910,13 @@ a shift value of 10 will only shift by 5 cm";
    Bool_t ok;
    Int_t itemwidth = 320;
 //   ofstream hfile(hist_file);
-   Int_t plain;
-   Double_t xpaper;  // A4 and letter
-   Double_t ypaper;  // A4 24, letter 26
-   Double_t scale;
-   Double_t xshift;
-   Double_t yshift;
-   Int_t    view_ps;
+   static Int_t plain = 0;
+   static Double_t xpaper;  // A4 and letter
+   static Double_t ypaper;  // A4 24, letter 26
+   static Double_t scale;
+   static Double_t xshift;
+   static Double_t yshift;
+   static Int_t    view_ps;
 
    TEnv env(".rootrc");
    xpaper = env.GetValue("HistPresent.PaperSizeX", 20.);
@@ -1031,22 +928,23 @@ a shift value of 10 will only shift by 5 cm";
    plain  = env.GetValue("HistPresent.PlainStyle", 1);
 
    TList *row_lab = new TList(); 
-   TList *values  = new TList();
-   row_lab->Add(new TObjString("Force white background"));
-   row_lab->Add(new TObjString("Page size X [cm]"));
-   row_lab->Add(new TObjString("Page size Y [cm]"));   
-   row_lab->Add(new TObjString("Apply scale factor"));
-   row_lab->Add(new TObjString("Apply X shift[cm]"));
-   row_lab->Add(new TObjString("Apply Y shift[cm]"));
-   row_lab->Add(new TObjString("View ps file automatically"));
+   static void *valp[25];
+   Int_t ind = 0;
+   row_lab->Add(new TObjString("CheckButton_Force white background"));
+   row_lab->Add(new TObjString("DoubleValue_Page size X [cm]"));
+   row_lab->Add(new TObjString("DoubleValue_Page size Y [cm]"));   
+   row_lab->Add(new TObjString("DoubleValue_Apply scale factor"));
+   row_lab->Add(new TObjString("DoubleValue_Apply X shift[cm]"));
+   row_lab->Add(new TObjString("DoubleValue_Apply Y shift[cm]"));
+   row_lab->Add(new TObjString("CheckButton_View ps file automatically"));
 
-   AddObjString(plain, values, kAttCheckB);
-   AddObjString(xpaper, values);
-   AddObjString(ypaper, values);
-   AddObjString(scale, values);
-   AddObjString(xshift, values);
-   AddObjString(yshift, values);
-   AddObjString(view_ps, values, kAttCheckB);
+   valp[ind++] = &plain; 
+   valp[ind++] = &xpaper;
+   valp[ind++] = &ypaper;
+   valp[ind++] = &scale; 
+   valp[ind++] = &xshift;
+   valp[ind++] = &yshift;
+   valp[ind++] = &view_ps;
   
    static TString cmd_name;
    TString prompt;
@@ -1069,20 +967,12 @@ a shift value of 10 will only shift by 5 cm";
       prompt = "PS file name";
    } 
    ok = GetStringExt(prompt.Data(), &cmd_name, itemwidth, win,
-                   hist_file, NULL, row_lab, values,
+                   hist_file, NULL, row_lab, valp,
                    NULL, NULL, helpText_PS);
    if (!ok) {
       cout << "Printing canceled" << endl;
       return;
    }
-   Int_t vp = 0;
-   plain  = GetInt(values,    vp++);
-   xpaper = GetDouble(values, vp++);
-   ypaper = GetDouble(values, vp++);
-   scale  = GetDouble(values, vp++);
-   xshift = GetDouble(values, vp++);
-   yshift = GetDouble(values, vp++);
-   view_ps  = GetInt(values,  vp++);
 
    if (plain) {
       TList *l = ca->GetListOfPrimitives();
@@ -1507,15 +1397,16 @@ Bool_t IsInsideFrame(TCanvas * c, Int_t px, Int_t py)
    return kFALSE;
 }
 //_______________________________________________________________________________________
-
-TGraph * FindGraph(TVirtualPad * ca)
+Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads)
 {
-   if (!ca) return NULL;
+   if (!ca) return -1;
+   Int_t ngr = 0;
    TIter next(ca->GetListOfPrimitives());
    while (TObject * obj = next()) {
       if (obj->InheritsFrom("TGraph")) { 
-          TGraph * g = (TGraph*)obj;
-          return g;
+          ngr++;
+          if (logr) logr->Add(obj);
+          if (pads) pads->Add(ca);
       }
    }
 // look for subpads
@@ -1526,15 +1417,46 @@ TGraph * FindGraph(TVirtualPad * ca)
           TIter next2(p->GetListOfPrimitives());
           while (TObject * obj = next2()) {
              if (obj->InheritsFrom("TGraph")) { 
-                TGraph * g = (TGraph*)obj;
-                return g;
+                ngr++;
+                if (logr) logr->Add(obj);
+                if (pads) pads->Add(p);
              }
           }
       }
    }
-   return NULL;
+   return ngr;
 };
 
+//_______________________________________________________________________________________
+Int_t FindPaveStats(TVirtualPad * ca, TList * lops, TList * pads)
+{
+   if (!ca) return -1;
+   Int_t nps = 0;
+   TIter next(ca->GetListOfPrimitives());
+   while (TObject * obj = next()) {
+      if (obj->InheritsFrom("TPaveStats")) { 
+          nps++;
+          if (lops) lops->Add(obj);
+          if (pads) pads->Add(ca);
+      }
+   }
+// look for subpads
+   TIter next1(ca->GetListOfPrimitives());
+   while (TObject * obj = next1()) {
+      if (obj->InheritsFrom("TPad")) { 
+          TPad * p = (TPad*)obj;
+          TIter next2(p->GetListOfPrimitives());
+          while (TObject * obj = next2()) {
+             if (obj->InheritsFrom("TPaveStat")) { 
+                nps++;
+                if (lops) lops->Add(obj);
+                if (pads) pads->Add(p);
+             }
+          }
+      }
+   }
+   return nps;
+};
 //__________________________________________________________________
 
 void Show_Fonts()
@@ -1796,24 +1718,6 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
    }
    return fok;
 }
-//______________________________________________________________________________________
-/*
-TGraph * FindGraph(HTCanvas * c) 
-{
-   cout << "FindGraph(HTCanvas * c) " << c << endl;
-   TIter next(c->GetListOfPrimitives());
-   TObject * obj;
-   TGraph * graph = 0;
-   while ( (obj = next()) ) {
-      obj->Print();
-      if (obj->InheritsFrom("TGraph")) {
-        if (graph) cout << "Warning: more than 1 TGraph found" << endl;
-        else graph = (TGraph *)obj;
-      }
-   }
-   return graph;
-}
-*/  
 //______________________________________________________________________________________
 
 void WriteGraphasASCII(TGraph * g,  TRootCanvas * mycanvas)

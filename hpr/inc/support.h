@@ -36,9 +36,11 @@ void AddObjString(Int_t val, TList * list, Int_t type = 0);
 Int_t GetInt(TList * list, Int_t pos); 
 
 void AddObjString(Double_t val, TList * list); 
+void AddObjString(Float_t val, TList * list); 
 Double_t GetDouble(TList * list, Int_t pos); 
 
 void AddObjString(const char * text, TList * list);
+void AddCommand(const char * text, TList * list);
 const char * GetText(TList * list, Int_t pos); 
 
 //_______________________________________________________________________________
@@ -103,13 +105,13 @@ TH1 * calhist(TH1 * hist, TF1 * calfunc,
               Int_t  nbin_cal, Axis_t low_cal, Axis_t binw_cal,
               const char * origname =0);
 void     PrintGraph(TGraphErrors * gr); 
-Bool_t   IsInsideFrame(TCanvas * c, Int_t px, Int_t py);
-TGraph * FindGraph(TVirtualPad * ca);
+Bool_t   IsInsideFrame(TCanvas *c, Int_t px, Int_t py);
+Int_t    FindGraphs(TVirtualPad *ca, TList *logr=NULL, TList *pads=NULL);
+Int_t    FindPaveStats(TVirtualPad *ca, TList *lops=NULL, TList *pads=NULL);
 void     DrawColors();
 void     DrawFillStyles();
 void     DrawLineStyles();
 Bool_t   CreateDefaultsDir(TRootCanvas * mycanvas = 0, Bool_t checkonly = kFALSE);
-//TGraph * FindGraph(HTCanvas * c); 
 void     WriteGraphasASCII(TGraph * g, TRootCanvas * mycanvas = 0);
 void     WriteOutGraph(TGraph * g, TRootCanvas * mycanvas = 0);
 Bool_t   fixnames(TFile * * infile, Bool_t checkonly);

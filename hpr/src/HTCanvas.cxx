@@ -133,6 +133,8 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    SetName(name);
    SetTitle(title); // requires fCanvasImp set
    fTimer = NULL;
+   fFeynmanPhi1 = 0;
+   fFeynmanPhi2 = 180;
    fEditGridX = 0;
    fEditGridY = 0;
    fVisibleGridX = 0;
@@ -142,6 +144,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fUseEditGrid = kFALSE;
    fCommonRotate= kFALSE;
    fGetMouse = kFALSE;
+
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
    Build();
@@ -159,8 +162,8 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph); 
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
    fHandleMenus->BuildMenus(); 
-//   ToggleEventStatus();
-//   ToggleEventStatus();
+
+   InsertTextSetDefaults();
    fCanvasImp->ShowEditor(kFALSE);
    fCanvasImp->ShowToolBar(kFALSE);
    fCanvasImp->ShowStatusBar(kFALSE);

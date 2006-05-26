@@ -62,6 +62,25 @@ private:
    UInt_t         fOrigWw;
    UInt_t         fOrigWh;
 
+   Int_t          fFeynmanPhi1;
+   Int_t          fFeynmanPhi2;
+
+   TString        *fEditTextPointer;
+   TString        fEditTextFileName;
+   Int_t          fEditTextFromFile;
+   Double_t       fEditTextX0;
+   Double_t       fEditTextY0;
+   Double_t       fEditTextDy;
+   Size_t         fEditTextSize;
+   Float_t        fEditTextAngle;
+   Short_t        fEditTextAlign;
+   Color_t        fEditTextColor;
+   Font_t         fEditTextFont;
+   Int_t          fEditTextPrec;
+   Int_t          fEditTextMarkCompound;
+   Int_t          fEditTextLatexFilter;
+   Int_t          fEditTextSeqNr;
+
    void Build();
 //
 public:
@@ -129,6 +148,16 @@ public:
    void    GrabImage();
    void    InsertImage();
    void    InsertAxis();
+   void    FeynmanDiagMenu();
+   void    FeynmanSetPars();
+   void    FeynmanArrow();
+   void    FeynmanWavyLine();
+   void    FeynmanWavyArc();
+   void    FeynmanCurlyLine();
+   void    FeynmanCurlyArc();
+   void    FeynmanSolidLine();
+   void    FeynmanDashedLine();
+   void    FeynmanText();
    void    InsertTSplineX();
    void    WritePrimitives();
    void    DefineBox();
@@ -143,9 +172,12 @@ public:
    void    ShowGallery();
 //   void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
    void    InsertText(Bool_t);
-   void    InsertFunction();
+   void    InsertTextExecute();
+   void    InsertTextSetDefaults();
+   void    InsertTextSaveDefaults();
    void    InsertTextF(){InsertText(kTRUE);};
    void    InsertTextK(){InsertText(kFALSE);};
+   void    InsertFunction();
    TPad*   GetEmptyPad();
    void    ZoomIn();
    void    ZoomOut();
