@@ -26,7 +26,7 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
    // command to be executed by buttons and text entry widget
    char cmd[128];
    sprintf(cmd, 
-   "{long r__ptr=0x%x; ((TableOfLabels*)r__ptr)->ProcessMessage($MSG,$PARM1,$PARM2);}", this);
+   "{long r__ptr=0x%x; ((TableOfLabels*)r__ptr)->ProcessMessage($MSG,$PARM1,$PARM2);}", (UInt_t)this);
 
    fNcols = nc; 
    fNrows = nr;
