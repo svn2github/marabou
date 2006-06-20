@@ -25,9 +25,6 @@
 
 #include "mbsio.h"
 
-#define C_STYLE_PROTOS
-#include "mbsio_protos.h"
-
 /* include files needed by m.muench's tcp package */
 
 #include <netdb.h>
@@ -37,6 +34,9 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <unistd.h>
+
+#define C_STYLE_PROTOS
+#include "mbsio_protos.h"
 
 /* if you want to have remote tape access */
 
@@ -376,7 +376,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 
 		if (ctype & MBS_CTYPE_REMOTE) {
 			sprintf(loc_errbuf, "?NO_REM-[mbs_open_file]- %s: No REMOTE tape access", device);
-			_mbs_output_error();
+			_mbs_output_error(NULL);
 			return(NULL);
 		} else {
 			if (strcmp(device, "-") == 0) {
@@ -385,7 +385,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 			} else if ((input = fopen(device, "r")) == NULL) {
 				sprintf(loc_errbuf, "?SYSERR-[mbs_open_file]- %s: %s (%d)",
 													device, strerror(errno), errno);
-				_mbs_output_error();
+				_mbs_output_error(NULL);
 				return(NULL);
 			}
 			xp = device;
@@ -409,7 +409,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 ,
 				"?ILLMOD-[mbs_open_file]- %s: Illegal I/O mode \"%s\"",
 							device, connection);
-		_mbs_output_error();
+		_mbs_output_error(NULL);
 		return(NULL);
 	}
 
@@ -418,11 +418,11 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 		strcpy(host, device);
 		fno = _mbs_connect_to_server(host, ctype);
 		if (fno == -1) {
-			_mbs_output_error();
+			_mbs_output_error(NULL);
 			return(NULL);
 		}
 		if (_mbs_read_server_info(fno, &server_info) == NULL) {
-			_mbs_output_error();
+			_mbs_output_error(NULL);
 			return(NULL);
 		}
 		bufsiz = server_info.buf_size;
@@ -437,13 +437,14 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	{
 		sprintf(loc_errbuf, "?ALLOC-[mbs_open_file]- %s: Can't allocate data structure",
 															device);
-		_mbs_output_error();
+		_mbs_output_error(NULL);
 		return(NULL);
 	}
 
 	strcpy((char *) mbs->id, (char *) MBS_ID_WORD);
 	mbs->input = input;
 	mbs->fileno = fno;
+	mbs->filepos = -1;
 	mbs->cur_bufno_stream = bps;
 	strcpy((char *) mbs->device, (char *) device);
 	strcpy((char *) mbs->host, (char *) host);
@@ -465,7 +466,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	{
 		sprintf(loc_errbuf, "?ALLOC-[mbs_open_file]- %s: Can't allocate internal buffer",
 															device);
-		_mbs_output_error();
+		_mbs_output_error(NULL);
 		return(NULL);
 	}
 
@@ -517,7 +518,7 @@ int mbs_close_file(MBSDataIO *mbs) {
 		sprintf(loc_logbuf,
 			"[mbs_close_file]- %s: %d buffer(s), %d out of phase, %d event(s)",
 					mbs->device, mbs->nof_buffers, mbs->buf_oo_phase, mbs->nof_events);
-		_mbs_output_log();
+		_mbs_output_log(mbs);
 		fclose(log_out);
 	}
 
@@ -582,7 +583,7 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 						sprintf(loc_errbuf,
 				"?ILLSEQ-[_mbs_next_buffer]- %s: illegal buffer sequence - last=%d <> this=%d",
 							mbs->device, mbs->bufno_mbs, (mbs->poolpt)->bufno_mbs);
-						_mbs_output_error();
+						_mbs_output_error(mbs);
 					}
 				} else {
 					bh = (s_bufhe *) (mbs->poolpt)->data;
@@ -659,7 +660,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 		if (mbs->connection & MBS_CTYPE_REMOTE) {
 			sprintf(loc_errbuf, "?NO_REM-[_mbs_read_buffer]- %s: No REMOTE tape access",
 																mbs->device);
-			_mbs_output_error();
+			_mbs_output_error(mbs);
 			return(MBS_BTYPE_ABORT);
 		} else {
 			bytes_read = read(mbs->fileno, bpp->data, bytes);
@@ -669,7 +670,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 	} else {
 		if ((mbs->max_streams > 0) && (mbs->nof_streams > mbs->max_streams)) {
 			sprintf(loc_errbuf, "%%MXNSTR-[_mbs_read_buffer]- Max # of streams read: %d", mbs->max_streams);
-			_mbs_output_error();
+			_mbs_output_error(mbs);
 			mbs_close_file(mbs);
 			return(MBS_BTYPE_EOF);
 		} else if (mbs->connection & MBS_CTYPE_ASYNC) {
@@ -693,7 +694,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 	{
 		sprintf(loc_errbuf, "?INPERR-[_mbs_read_buffer]- %s (buf %d): %s (%d)",
 							mbs->device, mbs->cur_bufno, strerror(errno), errno);
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(MBS_BTYPE_ABORT);
 	}
 
@@ -704,7 +705,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 		sprintf(loc_errbuf,
 		"%%INPERR-[_mbs_read_buffer]- %s (buf %d): Short byte count %d (should be %d)",
 								mbs->device, mbs->cur_bufno, bytes_read, bytes);
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 	}
 
 	if (mbs->buf_to_be_dumped > 0 && mbs->nof_buffers % mbs->buf_to_be_dumped == 0) _mbs_dump_buffer(mbs);
@@ -793,7 +794,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 			sprintf(loc_errbuf,
 			"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt 1): Illegal event spanning - unexp frag on top",
 						mbs->device, mbs->cur_bufno);
-			_mbs_output_error();
+			_mbs_output_error(mbs);
 			mbs->buf_valid = FALSE;
 			return(MBS_ETYPE_ERROR);
 		}
@@ -844,7 +845,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 		sprintf(loc_errbuf,
 		"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt %d): Not a legal event type - %#x",
 					mbs->device, mbs->cur_bufno, mbs->evtno, etype);
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(etype);
 	}
 
@@ -865,7 +866,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 			sprintf(loc_errbuf,
 			"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt %d): Illegal event spanning - 2nd frag missing",
 						mbs->device, mbs->cur_bufno, mbs->evtno);
-			_mbs_output_error();
+			_mbs_output_error(mbs);
 			return(MBS_ETYPE_ABORT);
 		}
 
@@ -884,7 +885,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 		sprintf(loc_errbuf,
 		"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt %d): Illegal event fragmentation",
 					mbs->device, mbs->cur_bufno, mbs->evtno);
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(MBS_ETYPE_ABORT);
 	}
 
@@ -900,7 +901,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 						mbs->device, mbs->evtno_mbs,
 						((s_vehe *) mbs->evt_data)->l_count,
 						mbs->evtno_mbs);
-			_mbs_output_error();
+			_mbs_output_error(mbs);
 		return(MBS_ETYPE_ERROR);
 	}
 	mbs->evtno_mbs = ((s_vehe *) mbs->evt_data)->l_count;
@@ -949,8 +950,6 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	unsigned int (*s)();
 	int bytes_read, bytes_requested;
 
-	off_t filepos;
-
 	unsigned char eHdr[sizeof(s_evhe)];
 
 /**************************************************/
@@ -960,19 +959,19 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	bo = mbs->byte_order;
 
-	filepos = lseek(mbs->fileno, (off_t) 0, SEEK_CUR);
+	mbs->filepos = lseek(mbs->fileno, (off_t) 0, SEEK_CUR);
 
 	bytes_read = read(mbs->fileno, eHdr, sizeof(s_evhe));
 
 	if (bytes_read != sizeof(s_evhe)) {
-		lseek(mbs->fileno, filepos, SEEK_SET);
+		lseek(mbs->fileno, mbs->filepos, SEEK_SET);
 		return(MBS_ETYPE_WAIT);
 	} else if (bytes_read == 0) {
 		return(MBS_ETYPE_EOF);
 	} else if (bytes_read == -1) {
 		sprintf(loc_errbuf, "?INPERR-[_mbs_next_med_event]- %s (evt %d): %s (%d)",
 													mbs->device, mbs->evtno, strerror(errno), errno);
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(MBS_ETYPE_ABORT);
 	}
 
@@ -999,7 +998,7 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	bytes_read = read(mbs->fileno, mbs->evt_data + sizeof(s_evhe), bytes_requested);
 	if (bytes_read != bytes_requested) {
-		lseek(mbs->fileno, filepos, SEEK_SET);
+		lseek(mbs->fileno, mbs->filepos, SEEK_SET);
 		return(MBS_ETYPE_WAIT);
 	}
 
@@ -1015,7 +1014,7 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 		sprintf(loc_errbuf,
 		"?EVTERR-[_mbs_next_med_event]- %s (evt %d): Not a legal event type - %#x",
 														mbs->device, mbs->evtno, etype);
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(etype);
 	}
 
@@ -1181,7 +1180,7 @@ unsigned int mbs_next_sdata(MBSDataIO *mbs) {
 		sprintf(loc_errbuf,
 		"?EVTERR-[mbs_next_sdata]- %s (buf %d, evt %d, sevt %d): Not a legal subevent type - [%d, %d]",
 					mbs->device, mbs->cur_bufno, mbs->evtno, mbs->sevtno, stp, sstp);
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 	}
 	return(stype);
 }
@@ -1228,7 +1227,7 @@ unsigned int mbs_next_sevent(MBSDataIO *mbs) {
 		sprintf(loc_errbuf,
 		"?EVTERR-[mbs_next_sevent]- %s (buf %d, evt %d, sevt %d): Not a legal subevent type - [%d, %d]",
 					mbs->device, mbs->cur_bufno, mbs->evtno, mbs->sevtno, stp, sstp);
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(stype);
 	}
 
@@ -1436,7 +1435,7 @@ int mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
 			sprintf(loc_errbuf,
 				"?ILLFMT-[_mbs_show]- %s: Illegal show specs - %s",
 													mbs->device, show_elem);
-			_mbs_output_error();
+			_mbs_output_error(mbs);
 			return(FALSE);
 	}
 	if (s != NULL) (*s)(mbs, out);
@@ -1523,7 +1522,7 @@ int mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
 		mbs->slow_down = slow_down;
 	} else {
 		sprintf(loc_errbuf, "?NCSERV-[mbs_set_stream]- Not connected to MBS server");
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(FALSE);
 	}
 	return(TRUE);
@@ -1545,7 +1544,7 @@ int mbs_open_log(const char *logfile) {
 
 	if ((f = fopen(logfile, "a")) == NULL) {
 		sprintf(loc_errbuf, "?SYSERR-[mbs_open_log]- %s (%d)", strerror(errno), errno);
-		_mbs_output_error();
+		_mbs_output_error(NULL);
 		return(FALSE);
 	}
 	strcpy(log_file, logfile);
@@ -1569,7 +1568,7 @@ int mbs_open_med(const char *medfile) {
 
 	if ((f = fopen(medfile, "w")) == NULL) {
 		sprintf(loc_errbuf, "?SYSERR-[mbs_open_med]- %s (%d)", strerror(errno), errno);
-		_mbs_output_error();
+		_mbs_output_error(NULL);
 		return(FALSE);
 	}
 	strcpy(med_file, medfile);
@@ -1608,7 +1607,7 @@ int mbs_open_lmd(const char *lmdfile) {
 
 	if ((f = fopen(lmdfile, "w")) == NULL) {
 		sprintf(loc_errbuf, "?SYSERR-[mbs_open_lmd]- %s (%d)", strerror(errno), errno);
-		_mbs_output_error();
+		_mbs_output_error(NULL);
 		return(FALSE);
 	}
 	strcpy(lmd_file, lmdfile);
@@ -2243,7 +2242,7 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 				sprintf(loc_errbuf,
 "?ILLFMT-[_mbs_convert_data]- %s (buf %d): Can't determine byte ordering - %#x",
 									mbs->device, mbs->nof_buffers, bh->l_free[0]);
-				_mbs_output_error();
+				_mbs_output_error(mbs);
 				mbs->buftype = &buffer_type_error;
 				return(MBS_BTYPE_ABORT);
 			}
@@ -2258,7 +2257,7 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 			sprintf(loc_errbuf,
 	"?ILLFMT-[_mbs_convert_data]- %s (buf %d): Can't determine byte ordering - %#x",
 										mbs->device, mbs->nof_buffers, bh->l_free[0]);
-			_mbs_output_error();
+			_mbs_output_error(mbs);
 			mbs->buftype = &buffer_type_error;
 			return(MBS_BTYPE_ABORT);
 		}
@@ -2273,7 +2272,7 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 		sprintf(loc_errbuf,
 		"?ILLFMT-[_mbs_convert_data]- %s (buf %d): Not a legal buffer type - %#x",
 										mbs->device, mbs->nof_buffers, btype);
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		mbs->buftype = &buffer_type_error;
 		return(MBS_BTYPE_ABORT);
 	}
@@ -2526,11 +2525,11 @@ int _mbs_check_active(MBSDataIO *mbs) {
 
 	if (mbs == NULL || mbs->fileno == -1) {
 		sprintf(loc_errbuf, "?MBSNAC-[mbs_check_active]- MBSIO not active");
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(FALSE);
 	} else if (strncmp(mbs->id, MBS_ID_WORD, 15) != 0) {
 		sprintf(loc_errbuf, "?NMBSIO-[mbs_check_active]- Not a MBSIO struct");
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(FALSE);
 	} else {
 		return(TRUE);
@@ -2552,23 +2551,23 @@ int _mbs_check_dbase(MBSDataIO *mbs) {
 
 	if (mbs == NULL) {
 		sprintf(loc_errbuf, "?MBSDNV-[mbs_check_dbase]- data base not valid");
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(FALSE);
 	} else if (strncmp(mbs->id, MBS_ID_WORD, 15) != 0) {
 		sprintf(loc_errbuf, "?NMBSIO-[mbs_check_dbase]- Not a MBSIO struct");
-		_mbs_output_error();
+		_mbs_output_error(mbs);
 		return(FALSE);
 	} else {
 		return(TRUE);
 	}
 }
 
-void _mbs_output_error() {
+void _mbs_output_error(MBSDataIO *mbs) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_output_error
 // Purpose:        Output error message
-// Arguments:      --
+// Arguments:      MBSDataIO * mbs  -- pointer to mbs struct
 // Results:        --
 // Exceptions:     
 // Description:    Outputs an error message, either to stderr or to rem_errbuf.
@@ -2576,8 +2575,16 @@ void _mbs_output_error() {
 /////////////////////////////////////////////////////////////////////////// */
 
 	char datestr[MBS_L_STR];
+	char fposstr[MBS_L_STR];
 	time_t now;
+	off_t filepos;
 
+	if (mbs) filepos = mbs->filepos; else filepos = -1;
+
+	if (filepos >= 0) {
+		sprintf(fposstr, " (@ filepos = %d)", filepos);
+		strcat(loc_errbuf, fposstr);
+	}
 	if (rem_errbuf == NULL) {
 		fprintf(stderr, "%s\n", loc_errbuf);
 	} else {
@@ -2588,14 +2595,15 @@ void _mbs_output_error() {
 		strftime(datestr, MBS_L_STR, "%e-%b-%Y %H:%M:%S", localtime(&now));
 		fprintf(log_out, "%-18s: %s\n", datestr, loc_errbuf);
 	}
+	if (mbs->buf_to_be_dumped != 0)_mbs_dump_buffer(mbs);
 }
 
-void _mbs_output_log() {
+void _mbs_output_log(MBSDataIO *mbs) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_output_log
 // Purpose:        Output message to logfile
-// Arguments:      --
+// Arguments:      MBSDataIO * mbs  -- pointer to mbs struct
 // Results:        --
 // Exceptions:     
 // Description:    Outputs a message to the log channel.
@@ -2603,8 +2611,16 @@ void _mbs_output_log() {
 /////////////////////////////////////////////////////////////////////////// */
 
 	char datestr[MBS_L_STR];
+	char fposstr[MBS_L_STR];
 	time_t now;
+	off_t filepos;
 
+	if (mbs) filepos = mbs->filepos; else filepos = -1;
+
+	if (filepos >= 0) {
+		sprintf(fposstr, " (@ filepos = %d)", filepos);
+		strcat(loc_logbuf, fposstr);
+	}
 	if (log_out) {
 		now = time(NULL);
 		strftime(datestr, MBS_L_STR, "%e-%b-%Y %H:%M:%S", localtime(&now));
@@ -2881,7 +2897,7 @@ MBSBufferPool * _mbs_get_pool_pointer(MBSDataIO * mbs) {
 					sprintf(loc_errbuf, 
 						"?ALLOC-[_mbs_get_pool_pointer]- %s: Can't allocate internal buffer",
 														mbs->device);
-					_mbs_output_error();
+					_mbs_output_error(mbs);
 					return(NULL);
 				}
 			}
@@ -2891,7 +2907,7 @@ MBSBufferPool * _mbs_get_pool_pointer(MBSDataIO * mbs) {
 	sprintf(loc_errbuf, 
 		"?NOBUF-[_mbs_get_pool_pointer]- %s: Can't find empty slot in buffer pool",
 														mbs->device);
-	_mbs_output_error();
+	_mbs_output_error(mbs);
 	return(NULL);
 }
 
@@ -2977,13 +2993,32 @@ void _mbs_dump_buffer(MBSDataIO * mbs) {
 	register FILE * f;
 	char fname[MBS_L_STR];
 
-	sprintf(fname, "%s_buf_%d.dmp", mbs->device, mbs->cur_bufno);
-	if ((f = fopen(fname, "w")) != NULL) {
-		sprintf(loc_logbuf,
-			"%%BUFDMP-[_mbs_dump_buffers]- Dumping buffer #%d (%d bytes) to file \"%s\"",
-									mbs->cur_bufno, mbs->bufsiz, fname);
-		_mbs_output_log();
-		fwrite(mbs->bufpt, mbs->bufsiz, 1, f);
-		fclose(f);
+	char datestr[MBS_L_STR];
+	time_t now;
+
+	if (mbs->bufpt != NULL) {
+		sprintf(fname, "%s_buf_%d.dmp", mbs->device, mbs->cur_bufno);
+		if ((f = fopen(fname, "w")) != NULL) {
+			sprintf(loc_logbuf,
+				"%%BUFDMP-[_mbs_dump_buffer]- Dumping buffer #%d/%d (%d bytes) to file \"%s\"",
+								mbs->bufno_mbs, mbs->cur_bufno, mbs->bufsiz, fname);
+			_mbs_output_log(mbs);
+			fwrite(mbs->bufpt, mbs->bufsiz, 1, f);
+			fclose(f);
+		}
+	} else {
+		sprintf(loc_errbuf,
+			"?NO_BUF-[_mbs_dump_buffer]- Can't dump buffer - no buf addr present (buffer #%d/%d, %d bytes)",
+								mbs->bufno_mbs, mbs->cur_bufno, mbs->bufsiz);
+		if (rem_errbuf == NULL) {
+			fprintf(stderr, "%s\n", loc_errbuf);
+		} else {
+			strcpy(rem_errbuf, loc_errbuf);
+		}
+		if (log_out) {
+			time(&now);
+			strftime(datestr, MBS_L_STR, "%e-%b-%Y %H:%M:%S", localtime(&now));
+			fprintf(log_out, "%-18s: %s\n", datestr, loc_errbuf);
+		}
 	}
 }

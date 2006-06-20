@@ -277,6 +277,7 @@ ELEMENTS
 .	id					-- internal struct id: %MBS_RAW_DATA%
 .	input				-- input stream descr (fopen/fread)
 .	fileno				-- ... channel # (open/read)
+.	filepos             -- file position
 .	device				-- name of input dev
 .	host				-- host name
 .	connection			-- device type, MBS_DTYPE_xxxx
@@ -329,6 +330,7 @@ typedef struct {
 	char id[16];
 	FILE *input;
 	int fileno;
+	off_t filepos;
 	char device[MBS_L_STR];
 	char host[MBS_L_STR];
 	unsigned int connection;
