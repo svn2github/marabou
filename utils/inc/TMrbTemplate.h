@@ -8,7 +8,7 @@
 // Class:          TMrbTemplate     -- decode templates
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTemplate.h,v 1.10 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTemplate.h,v 1.11 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -82,6 +82,7 @@ class TMrbTemplate : public TObject {
 		Bool_t Substitute(const Char_t * ArgName, Double_t ArgValue);
 
 		Bool_t WriteCode(ostream & Out);									// write code buffer to output stream
+		const Char_t * CopyCode(TString & CodeString, const Char_t * Seperator = " ");	// copy code to string
 		inline Bool_t HasCode() const { return(fCodeBuffer.First() != NULL); };	// kTRUE if code exists
 		inline Bool_t IsExpanded() const { return(fExpansionBuffer.First() != NULL); };	// kTRUE if expansion exists
 

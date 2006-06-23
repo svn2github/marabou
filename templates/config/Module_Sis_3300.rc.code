@@ -1,0 +1,208 @@
+%%BeginOfCode%%
+%%Begin(Preamble)%%
+#___________________________________________________[MODULE PARAM DEFINITION]
+#////////////////////////////////////////////////////////////////////////////
+# Name:           Module_Sis_3300.rc.code
+# Purpose:        Param defs for SIS3300 flash ADC
+# Description:    File will be read on startup in MBS
+#                 (adopted from a tcl file written by L. Maier / E12)
+# Keywords:       
+#////////////////////////////////////////////////////////////////////////////
+
+SIS3300.ModuleName: 						$moduleName
+SIS3300.ModuleSerial: 						$moduleSerial
+
+SIS3300.VerboseMode:						FALSE
+SIS3300.DumpRegisters:						FALSE
+
+%%End(Preamble)%%
+
+%%Begin(ReadGroupHdr)%%
+
+# Channel group to be read out
+# this only affects the readout behaviour, but not e.g. trigger generation etc.
+
+%%End(ReadGroupHdr)%%
+%%Begin(ReadGroupLoop)%%
+SIS3300.$moduleName.Group$grp.Readout:		$readout
+%%End(ReadGroupLoop)%%
+
+%%Begin(Settings)%%
+
+# Use blocktransfer
+
+SIS3300.$moduleName.BlockXfer:			$blockXfer
+
+# Acquisition Mode
+#                 0 --> Single Event Mode (samples 1 event, number of samples is determined 
+#                       by pagesize)
+#
+#                 1 --> Multi Event Mode (samples events until page is full, 
+#                       number of samples is determined by pagesize)
+#
+#                 2 --> Gate Chaining Mode (needs a gate input on start lemo, samples 
+#                       from leading to trailing edge)
+#
+SIS3300.$moduleName.AcquisitionMode:		$acquisitionMode
+
+# Set the maximum number of events 
+# MultiEvent      defines the maximum number of events to be read from memory.
+#                 (sampling will NOT stop after having reached maxevents)
+# GateChain       sampling stops after maxevents
+#
+#                 maxevents = 0 ---> ignore
+
+SIS3300.$moduleName.MaxEvents:			$maxEvents
+
+# Pagesize / Number of samples per event
+# (not used in gate chaining mode)
+#                 0 --> 131072 / 128k samples
+#                 1 --> 16384 / 16k samples
+#                 2 --> 4096 / 4k samples
+#                 3 --> 2048 / 2k samples
+#                 4 --> 1024 / 1k samples
+#                 5 --> 512 samples
+#                 6 --> 256 samples
+#                 7 --> 128 samples
+
+SIS3300.$moduleName.PageSize: 			$pageSize
+
+# Clock source
+#                 0 --> internal 100 MHz clock
+#                 1 --> internal 50 MHz clock
+#                 2 --> internal 25 MHz clock
+#                 3 --> internal 12.5 MHz clock
+#                 4 --> internal 6.25 MHz clock
+#                 5 --> internal 3.125 MHz clock
+#                 6 --> external front panel clock
+#                 7 --> P2-clock Acquisition Mode
+
+SIS3300.$moduleName.ClockSource: 			$clockSource
+
+# Start and stop delays in ticks
+
+SIS3300.$moduleName.StartDelay: 			$startDelay
+SIS3300.$moduleName.StopDelay: 			$stopDelay
+
+# Send trigger to front panel user output 
+
+SIS3300.$moduleName.TriggerToUserOut: 	$triggerToUserOut
+
+# Invert trigger on front panel user output
+
+SIS3300.$moduleName.InvertTrigger: 		$invertTrigger
+
+# Route trigger to internal stop 
+
+SIS3300.$moduleName.RouteTriggerToStop: 	$routeTriggerToStop
+
+# Enable front panel Start/Stop signals
+
+SIS3300.$moduleName.StartStopEnable: 		$startStopEnable
+
+# Enable auto start
+
+SIS3300.$moduleName.AutoStartEnable: 		$autoStartEnable
+
+# Enable auto bank switch
+
+SIS3300.$moduleName.AutoBankEnable: 		$autoBankEnable
+
+# Send bank full to front panel 
+# (needs AutoBankEnable to be set TRUE)
+#                 1 --> user out
+#                 2 --> stop out
+#                 3 --> start out
+#                 0 --> disabled
+
+SIS3300.$moduleName.BankFullToFront: 		$bankFullToFront
+
+# Enable wrap around mode
+# (always set in self trigger mode)
+
+SIS3300.$moduleName.WrapAround: 			$wrapAround
+
+# Enable trigger armed
+# (i.e. trigger will only be generated while a bank is armed)
+
+SIS3300.$moduleName.TriggerOnBankArmed: 	$triggerOnBankArmed
+%%End(Settings)%%
+
+%%Begin(TriggerModeHdr)%%
+
+# Channel group trigger on/off
+#                 0 --> channel group does not generate trigger
+#                 1 --> channel group does generate trigger
+#                 2 --> even FIR mode
+#                       (i.e. trigger information even channels is stored at position of odd channels)
+#                 3 --> odd FIR mode
+#                       (i.e. trigger information odd channels is stored at position of even channels)
+
+%%End(TriggerModeHdr)%%
+%%Begin(TriggerModeLoop)%%
+SIS3300.$moduleName.Group$grp.TrigOn: 		$trigOn
+%%End(TriggerModeLoop)%%
+
+%%Begin(TriggerThreshHdr)%%
+
+# Trigger thresholds
+
+%%End(TriggerThreshHdr)%%
+%%Begin(TriggerThreshLoop)%%
+SIS3300.$moduleName.Chan$chn.TrigThresh: 	$trigThresh
+%%End(TriggerThreshLoop)%%
+
+%%Begin(TriggerSlopeHdr)%%
+
+# Trigger slope
+#                 0 --> disabled
+#                 1 --> negative
+#                 2 --> positive
+#                 3 --> bipolar
+
+%%End(TriggerSlopeHdr)%%
+%%Begin(TriggerSlopeLoop)%%
+SIS3300.$moduleName.Chan$chn.TrigSlope:  	$trigSlope
+%%End(TriggerSlopeLoop)%%
+%%Begin(PeakTimeHdr)%%
+
+# Peaking time for channel groups
+
+%%End(PeakTimeHdr)%%
+%%Begin(PeakTimeLoop)%%
+SIS3300.$moduleName.Group$grp.PeakTime:	 	$peakTime
+%%End(PeakTimeLoop)%%
+
+%%Begin(GapTimeHdr)%%
+
+# Gap time for channel groups
+
+%%End(GapTimeHdr)%%
+%%Begin(GapTimeLoop)%%
+SIS3300.$moduleName.Group$grp.GapTime:	 	$gapTime
+%%End(GapTimeLoop)%%
+
+%%Begin(PulseModeHdr)%%
+
+# Enable pulse mode for channel groups
+# (creates a pulsed trigger output) 
+#                 disable: gate as long as trigger condition is fullfilled
+#                 enabled : only short output pulse per trigger
+
+%%End(PulseModeHdr)%%
+%%Begin(PulseModeLoop)%%
+SIS3300.$moduleName.Group$grp.PulseMode:	 	$pulseMode
+%%End(PulseModeLoop)%%
+
+%%Begin(PulseLengthHdr)%%
+
+# Set pulse length for channel groups
+# (needs pulse mode to be enabled)
+# value: 0 - 15 (4 bits)
+
+%%End(PulseLengthHdr)%%
+%%Begin(PulseLengthLoop)%%
+SIS3300.$moduleName.Group$grp.PulseLength:	 $pulseLength
+%%End(PulseLengthLoop)%%
+%%EndOfCode%%
+%%MODULE_SETTINGS%%

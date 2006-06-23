@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_10_12.cxx,v 1.7 2005-05-25 09:33:54 marabou Exp $       
+// Revision:       $Id: TMrbSubevent_10_12.cxx,v 1.8 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -157,11 +157,12 @@ Bool_t TMrbSubevent_10_12::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 
 					TString mnemoLC = parentModule->GetMnemonic();
 					TString mnemoUC = mnemoLC;
-					mnemoUC.ToUpper();
+					mnemoUC(0,1).ToUpper();
 
 					Template.InitializeCode("%SMB%");
 					moduleNameUC = parentModule->GetName();
 					moduleNameUC(0,1).ToUpper();
+					Template.Substitute("$lng", 16);
 					Template.Substitute("$moduleNameLC", parentModule->GetName());
 					Template.Substitute("$moduleNameUC", moduleNameUC);
 					Template.Substitute("$moduleType", mnemoUC);
@@ -192,6 +193,7 @@ Bool_t TMrbSubevent_10_12::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 				}
 			}
 			Template.InitializeCode("%SME%");
+			Template.Substitute("$lng", 16);
 			Template.Substitute("$moduleNameLC", parentModule->GetName());
 			Template.Substitute("$moduleSerial", parentModule->GetSerial());
 			Template.WriteCode(RdoStrm);

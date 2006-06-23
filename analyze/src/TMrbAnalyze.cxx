@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.66 2006-02-27 13:57:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.67 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -482,6 +482,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 
 	ioSpec = (TMrbIOSpec *) fLofIOSpecs.First();
 	nofEntries = 0;
+	this->ClearHistograms("*", ioSpec);
 	while (ioSpec && this->TestRunStatus()) {
 		gMrbLog->Out() << "[" << nofEntries + 1 << "] ";
 		ioSpec->Print(gMrbLog->Out());
@@ -493,10 +494,10 @@ Int_t TMrbAnalyze::ProcessFileList() {
 			if (this->OpenRootFile(ioSpec)) {
 				this->ReloadParams(ioSpec);
 				if (this->WriteRootTree(ioSpec)) {
-					this->ClearHistograms("*", ioSpec);
 					this->ReplayEvents(ioSpec);
 					this->CloseRootTree(ioSpec);
 					this->SaveHistograms("*", ioSpec);
+					this->ClearHistograms("*", ioSpec);
 					nofEntries++;
 				}
 				if (!fFakeMode) {
@@ -519,12 +520,12 @@ Int_t TMrbAnalyze::ProcessFileList() {
 						gMrbLog->Flush(this->ClassName(), "ProcessFileList");
 					}
                 	if (this->WriteRootTree(ioSpec)) {
-						this->ClearHistograms("*", ioSpec);
 						gMrbTransport->ReadEvents(ioSpec->GetStopEvent());
 						if (inputMode == TMrbIOSpec::kInputMED) gMrbTransport->CloseMEDFile();
 						else									gMrbTransport->CloseLMDFile();
 						this->CloseRootTree(ioSpec);
 						this->SaveHistograms("*", ioSpec);
+						this->ClearHistograms("*", ioSpec);
 					}
 					this->SetRunStatus(TMrbAnalyze::M_RUNNING); 	// for some (unknown) reason we end up with status "PAUSING", so we have to revive it.
 				}

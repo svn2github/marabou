@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.25 2006-02-14 15:57:09 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.26 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -655,7 +655,9 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 		} else if (gMrbConfig->ExecUserMacro(&AnaStrm, this, analyzeTag->GetName())) {
 			continue;
 		} else {
-			switch (tagIdx = (TMrbConfig::EMrbAnalyzeTag) analyzeTag->GetIndex()) {
+			tagIdx = (TMrbConfig::EMrbAnalyzeTag) analyzeTag->GetIndex();
+			if (this->MakeSpecialAnalyzeCode(AnaStrm, tagIdx, anaTmpl)) continue;
+			switch (tagIdx) {
 				case TMrbConfig::kAnaSevtNameLC:
 					AnaStrm << anaTmpl.Encode(line, sevtNameLC) << endl;
 					break;
@@ -1252,6 +1254,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								if (paramStatus == TMrbConfig::kChannelSingle)	iniTag = "%S%";
 								else											iniTag = "%X%";
 								anaTmpl.InitializeCode(iniTag.Data());
+								anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
 								anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 								anaTmpl.Substitute("$paramNameLC", paramNameLC);
 								anaTmpl.Substitute("$paramNameUC", paramNameUC);
@@ -1328,6 +1331,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 	prefixUC = prefixLC;
 	prefixUC(0,1).ToUpper();
 	prependPrefix = this->PrefixToBePrepended() || gMrbConfig->LongParamNamesToBeUsed();
+
+	if (this->MakeSpecialAnalyzeCode(AnaStrm, TagIndex, Template)) return(kTRUE);
 
 	switch (TagIndex) {
 		case TMrbConfig::kAnaEventSetBranchStatus:

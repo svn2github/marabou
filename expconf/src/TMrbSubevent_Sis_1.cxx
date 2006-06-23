@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_1.cxx,v 1.3 2005-05-25 09:33:54 marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_1.cxx,v 1.4 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -49,7 +49,7 @@ TMrbSubevent_Sis_1::TMrbSubevent_Sis_1(const Char_t * SevtName, const Char_t * S
 // Description:    Create a new subevent of type [10,51]
 //                 used to store SIS list-mode data
 //
-//                 Data format as given by the producer (MBS) - same as [10,12]:
+//                 Data format as given by the producer (MBS) - same as [10,51]:
 //                 -  several modules per subevent possible
 //                 -  channel data 32 bit, arbitrary format
 //                    has to be decoded by use of module id & serial
@@ -155,11 +155,12 @@ Bool_t TMrbSubevent_Sis_1::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 
 					TString mnemoLC = parentModule->GetMnemonic();
 					TString mnemoUC = mnemoLC;
-					mnemoUC.ToUpper();
+					mnemoUC(0,1).ToUpper();
 
 					Template.InitializeCode("%SMB%");
 					moduleNameUC = parentModule->GetName();
 					moduleNameUC(0,1).ToUpper();
+					Template.Substitute("$lng", 16);
 					Template.Substitute("$moduleNameLC", parentModule->GetName());
 					Template.Substitute("$moduleNameUC", moduleNameUC);
 					Template.Substitute("$moduleType", mnemoUC);
@@ -190,6 +191,7 @@ Bool_t TMrbSubevent_Sis_1::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 				}
 			}
 			Template.InitializeCode("%SME%");
+			Template.Substitute("$lng", 16);
 			Template.Substitute("$moduleNameLC", parentModule->GetName());
 			Template.Substitute("$moduleSerial", parentModule->GetSerial());
 			Template.WriteCode(RdoStrm);

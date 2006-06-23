@@ -10,7 +10,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTemplate.cxx,v 1.8 2005-04-19 08:27:37 rudi Exp $       
+// Revision:       $Id: TMrbTemplate.cxx,v 1.9 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -327,7 +327,7 @@ Bool_t TMrbTemplate::WriteCode(ostream & Out) {
 // Arguments:      ostream &n Out        -- output stream
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Replace an argument by its value
+// Description:    Write expanded code to output stream
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -348,6 +348,42 @@ Bool_t TMrbTemplate::WriteCode(ostream & Out) {
 		code = (TObjString *) fExpansionBuffer.After((TObject *) code);
 	}
 	return(kTRUE);
+}
+
+const Char_t * TMrbTemplate::CopyCode(TString & CodeString, const Char_t * Separator) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTemplate::CopyCode
+// Purpose:        Copy code buffer to string
+// Arguments:      TString & CodeString        -- where to copy code
+//                 const Char_t * Separator    -- separator between lines
+// Results:        Char * CodeString           -- resulting string
+// Exceptions:
+// Description:    Copy expanded code to string
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjString * code;
+
+	if (!IsExpanded()) {
+		gMrbLog->Err()	<< "%%" << fTag.GetName()
+						<< "%%: Expansion buffer is empty (prefix = \"" << fPrefix << "\")" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyCode");
+		return(NULL);
+	} else if (fVerbose) {
+		gMrbLog->Out()	<< "%%" << fTag.GetName() << "%%: prefix = \"" << fPrefix << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyCode");
+	}
+
+	CodeString.Resize(0);
+
+	code = (TObjString *) fExpansionBuffer.First();
+	while (code) {
+		CodeString += code->String();
+		CodeString += Separator;
+		code = (TObjString *) fExpansionBuffer.After((TObject *) code);
+	}
+	return(CodeString.Data());
 }
 
 Bool_t TMrbTemplate::InitializeCode(const Char_t * Prefix) {

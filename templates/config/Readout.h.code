@@ -18,20 +18,6 @@
 %%EndOfCode%%
 %%USER_DEFINED_DEFINES%%
 
-#define UXS_N_VALS	5
-#define UXS_L_STR	128
-
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-/ Struct used by unix_string functions
-/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-typedef struct {
-	char name[UXS_L_STR];
-	int nvals;
-	char values[UXS_N_VALS][UXS_L_STR];
-	char curval[UXS_L_STR];
-} TUnixEntry;
-
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Device tables
 /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/

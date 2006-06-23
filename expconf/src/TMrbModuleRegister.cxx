@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModuleRegister.cxx,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbModuleRegister.cxx,v 1.6 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -120,6 +120,30 @@ Bool_t TMrbModuleRegister::SetFromResource(Int_t Value) {
 	else					return(this->Set(-1, regValue));
 }
 
+void TMrbModuleRegister::SetBoolean(Bool_t Flag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModuleRegister::SetBoolean
+// Purpose:        Set register to boolean
+// Arguments:      Bool_t Flag       -- kTRUE/kFALSE
+// Results:        --
+// Exceptions:
+// Description:    Denotes a register having boolean values
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Flag) {
+		if (fLowerLimit != 0 || fUpperLimit != 1) {
+			gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+							<< this->GetName() << ": Can't be set to boolean - limits are ["
+							<< fLowerLimit << "," << fUpperLimit << "], have to be [0,1]" << endl;
+			gMrbLog->Flush(this->ClassName(), "SetBoolean");
+			return;
+		}
+	}
+	fIsBoolean = Flag;
+}
+
 Bool_t TMrbModuleRegister::Set(Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -141,9 +165,15 @@ Bool_t TMrbModuleRegister::Set(Int_t Value) {
 	
 	if (this->IsCommon()) {
 		if (Value < fLowerLimit || Value > fUpperLimit) {
-			gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
-							<< this->GetName() << ": Value out of limits - " << Value
-							<< ", should be in [" << fLowerLimit << "," << fUpperLimit << "]" << endl;
+			if (this->IsBoolean()) {
+				gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+								<< this->GetName() << ": Value out of limits - " << Value
+								<< ", should be kTRUE or kFALSE" << endl;
+			} else {
+				gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+								<< this->GetName() << ": Value out of limits - " << Value
+								<< ", should be in [" << fLowerLimit << "," << fUpperLimit << "]" << endl;
+			}
 			gMrbLog->Flush(this->ClassName(), "Set");
 			return(kFALSE);
 		}
@@ -179,9 +209,15 @@ Bool_t TMrbModuleRegister::Set(Int_t Channel, Int_t Value) {
 	
 	if (this->IsPerChannel()) {
 		if (Value < fLowerLimit || Value > fUpperLimit) {
-			gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
-							<< this->GetName() << ": Value out of limits - " << Value
-							<< ", should be in [" << fLowerLimit << "," << fUpperLimit << "]" << endl;
+			if (this->IsBoolean()) {
+				gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+								<< this->GetName() << ": Value out of limits - " << Value
+								<< ", should be kTRUE or kFALSE" << endl;
+			} else {
+				gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+								<< this->GetName() << ": Value out of limits - " << Value
+								<< ", should be in [" << fLowerLimit << "," << fUpperLimit << "]" << endl;
+			}
 			gMrbLog->Flush(this->ClassName(), "Set");
 			return(kFALSE);
 		}

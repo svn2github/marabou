@@ -358,3 +358,41 @@
 						*evt.out32++ = dt_scaler_contents; \
 					} \
 					END_SUBEVENT()
+
+/*_____________________________________________________________________[MACRO]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           GETX, SETX, PTRX, SETBX, TSTBX, CLRBX
+// Purpose:        Get, set, pointer, test bit, clear bit (X=8, 16, 32)
+// Syntax:         GETX(base, offset)
+//                 SETX(base, offset, value)
+//                 PTRX(base, offset)
+//                 TSTBX(base, offset, bit)
+//                 SETBX(base, offset, bit)
+//                 CLRBX(base, offset, bit)
+// Arguments:      base           -- base address
+//                 offset         -- offset
+//                 value          -- value to be set
+//                 bit            -- bit to be set, cleard, tested
+// Results:        
+// Description:    Macros to simplify access operations.
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+#define GET8(module, offset)					*((volatile unsigned char *) (module + offset))
+#define GET16(module, offset)					*((volatile unsigned short *) (module + offset))
+#define GET32(module, offset)					*((volatile unsigned long *) (module + offset))
+#define SET8(module, offset, value) 			*((volatile unsigned char *) (module + offset)) = value
+#define SET16(module, offset, value) 			*((volatile unsigned short *) (module + offset)) = value
+#define SET32(module, offset, value) 			*((volatile unsigned long *) (module + offset)) = value
+#define PTR8(module, offset) 					((volatile unsigned char *) (module + offset))
+#define PTR16(module, offset) 					((volatile volatile unsigned short *) (module + offset))
+#define PTR32(module, offset) 					((volatile unsigned long *) (module + offset))
+#define TSTB8(module, offset, bit)				((GET8(module, offset) & (1 << bit)) != 0)
+#define TSTB16(module, offset, bit)				((GET16(module, offset) & (1 << bit)) != 0)
+#define TSTB32(module, offset, bit)				((GET32(module, offset) & (1 << bit)) != 0)
+#define SETB8(module, offset, bit)				*PTR8(module, offset) |= (1 << bit))
+#define SETB16(module, offset, bit)				*PTR16(module, offset) |= (1 << bit)
+#define SETB32(module, offset, bit)				*PTR32(module, offset) |= (1 << bit)
+#define CLRB8(module, offset, bit)				*PTR8(module, offset) &= ~(1 << bit)
+#define CLRB16(module, offset, bit)				*PTR16(module, offset) &= ~(1 << bit)
+#define CLRB32(module, offset, bit)				*PTR32(module, offset) &= ~(1 << bit)

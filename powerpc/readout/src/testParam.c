@@ -20,18 +20,11 @@
 
 #include "SetColor.h"
 
+#include "unix_string.h"
+#include "root_env.h"
+
 #include "err_mask_def.h"
 #include "errnum_def.h"
-
-#define UXS_N_VALS	5
-#define UXS_L_STR	128
-
-typedef struct {
-	char name[UXS_L_STR];
-	int nvals;
-	char values[UXS_N_VALS][UXS_L_STR];
-	char curval[UXS_L_STR];
-} TUnixEntry;
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Useful macro defs
@@ -76,22 +69,6 @@ extern volatile unsigned long * cc32_baseAddr;
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Prototypes
 /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-/* access to ROOT-style environment files */
-int root_env_read(char * file);
-int root_env_getval_i(char * resource, int ivalue);
-int root_env_getval_x(char * resource, int ivalue);
-double root_env_getval_f(char * resource, double dvalue);
-const char * root_env_getval_s(char * resource, char * svalue);
-int root_env_getval_b(char * resource, int bvalue);
-
-/* access files containing :-separated strings */
-int unix_string_read(char * file);
-TUnixEntry * unix_string_get_entry(int eno);
-int unix_string_getval_i(TUnixEntry * e, char * name, int vnum, int ivalue);
-double unix_string_getval_f(TUnixEntry * e, char * name, int vnum, double dvalue);
-const char * unix_string_getval_s(TUnixEntry * e, char * name, int vnum, char *  svalue);
-int unix_string_getval_b(TUnixEntry * e, const char * name, int vnum, int bvalue);
 
 /* camac controller */
 void cc32_init(unsigned long * physAddrCrate1, int nofCrates);

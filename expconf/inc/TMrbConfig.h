@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.67 2006-02-22 12:15:39 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.68 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -256,6 +256,7 @@ class TMrbConfig : public TNamed {
 									kRcEvtData,
 									kRcSevtData,
 									kRcModuleData,
+									kRcModuleSettings,
 									kRcUserGlobals
 								};
 
@@ -382,7 +383,10 @@ class TMrbConfig : public TNamed {
 									kModuleDefineGlobalsOnce,
 									kModuleDefineLocalVarsInit,
 									kModuleDefineLocalVarsReadout,
-									kModuleDefinePrototypes
+									kModuleDefinePrototypes,
+									kModuleDefineIncludePaths,
+									kModuleDefineLibraries,
+
 								};
 						
 		enum EMrbChannelStatus	{
@@ -461,36 +465,37 @@ class TMrbConfig : public TNamed {
 									kManufactCologne	=	BIT(25)
 								};
 
-		enum EMrbModuleID		{	kModuleSilena4418V		=   kManufactSilena + 1,  // modules ids
-									kModuleSilena4418T		=	kManufactSilena + 2,
-									kModuleUct8904			=	kManufactTUM + 3,
-									kModuleSen16P2047		=	kManufactSen + 4,
-									kModuleSilena7420Smdw	=	kManufactSilena + 5,
-									kModuleLeCroy2228A		=	kManufactLeCroy + 6,
-									kModuleLeCroy4434		=	kManufactLeCroy + 7,
-									kModuleAdcd9701 		=	kManufactTUM + 8,
-									kModuleSen2010			=	kManufactSen + 9,
-									kModuleNE9041			=	kManufactNE + 10,
-									kModuleCaenV260 		=	kManufactCaen + 11,
-									kModuleCaenV556 		=	kManufactCaen + 12,
-									kModuleCaenV785 		=	kManufactCaen + 13,
-									kModuleGanelec_Q1612F 	=	kManufactGanelec + 14,
-									kModuleOrtec_413A	 	=	kManufactOrtec + 15,
-									kModuleXia_DGF_4C	 	=	kManufactXia + 16,
-									kModuleAcromag_IP341	 =	kManufactAcromag + 17,
-									kModuleLeCroy4432		 =	kManufactLeCroy + 18,
-									kModuleLeCroy4448		 =	kManufactLeCroy + 19,
-									kModuleKinetics3655		 =	kManufactKinetics + 20,
-									kModuleCaenV775 		=	kManufactCaen + 21,
-									kModuleCaenV820 		=	kManufactCaen + 22,
-									kModuleMpiHD_IOReg 		=	kManufactMpiHD + 23,
-									kModuleSis_3600 		=	kManufactSis + 24,
-									kModuleSis_3801 		=	kManufactSis + 25,
-									kModuleSis_3820 		=	kManufactSis + 26,
-									kModuleLeCroy_1176		=	kManufactLeCroy + 27,
-									kModuleLeCroy_2280		=	kManufactLeCroy + 28,
-									kModuleCologne_CPTM		=	kManufactCologne + 29,
-									kModuleCaenV879 		=	kManufactCaen + 30,
+		enum EMrbModuleID		{	kModuleSilena4418V		=   kManufactSilena + 0x1,  // modules ids *** insert new modules at end of list !!! ***
+									kModuleSilena4418T		=	kManufactSilena + 0x2,
+									kModuleUct8904			=	kManufactTUM + 0x3,
+									kModuleSen16P2047		=	kManufactSen + 0x4,
+									kModuleSilena7420Smdw	=	kManufactSilena + 0x5,
+									kModuleLeCroy2228A		=	kManufactLeCroy + 0x6,
+									kModuleLeCroy4434		=	kManufactLeCroy + 0x7,
+									kModuleAdcd9701 		=	kManufactTUM + 0x8,
+									kModuleSen2010			=	kManufactSen + 0x9,
+									kModuleNE9041			=	kManufactNE + 0xa,
+									kModuleCaenV260 		=	kManufactCaen + 0xb,
+									kModuleCaenV556 		=	kManufactCaen + 0xc,
+									kModuleCaenV785 		=	kManufactCaen + 0xd,
+									kModuleGanelec_Q1612F 	=	kManufactGanelec + 0xe,
+									kModuleOrtec_413A	 	=	kManufactOrtec + 0xf,
+									kModuleXia_DGF_4C	 	=	kManufactXia + 0x10,
+									kModuleAcromag_IP341	 =	kManufactAcromag + 0x11,
+									kModuleLeCroy4432		 =	kManufactLeCroy + 0x12,
+									kModuleLeCroy4448		 =	kManufactLeCroy + 0x13,
+									kModuleKinetics3655		 =	kManufactKinetics + 0x14,
+									kModuleCaenV775 		=	kManufactCaen + 0x15,
+									kModuleCaenV820 		=	kManufactCaen + 0x16,
+									kModuleMpiHD_IOReg 		=	kManufactMpiHD + 0x17,
+									kModuleSis_3600 		=	kManufactSis + 0x18,
+									kModuleSis_3801 		=	kManufactSis + 0x19,
+									kModuleLeCroy_1176		=	kManufactLeCroy + 0x1a,
+									kModuleLeCroy_2280		=	kManufactLeCroy + 0x1b,
+									kModuleCologne_CPTM		=	kManufactCologne + 0x1c,
+									kModuleCaenV879 		=	kManufactCaen + 0x1d,
+									kModuleSis_3820 		=	kManufactSis + 0x1e,
+									kModuleSis_3300 		=	kManufactSis + 0x1f,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};
@@ -770,6 +775,8 @@ class TMrbConfig : public TNamed {
 		inline TObjArray * GetLofScalers(){ return(&fLofScalers); };
 		inline TObjArray * GetLofUserHistograms() { return(&fLofUserHistograms); };
 		inline TObjArray * GetLofXhits(){ return(&fLofXhits); };
+		inline TObjArray * GetLofRdoIncludes(){ return(&fLofRdoIncludes); };
+		inline TObjArray * GetLofRdoLibs(){ return(&fLofRdoLibs); };
 		inline TMrbLofNamedX * GetLofModuleIDs() { return(&fLofModuleIDs); };
 		inline TMrbLofNamedX * GetLofModuleTypes() { return(&fLofModuleTypes); };
 		inline TMrbLofNamedX * GetLofDataTypes() { return(&fLofDataTypes); };
@@ -897,6 +904,8 @@ class TMrbConfig : public TNamed {
 		TObjArray fLofHistoArrays;			// list of histogram arrays
 		TObjArray fLofHistoConditions;		// list of histogram booking conds
 		TObjArray fLofXhits;				// list of special hit objects
+		TObjArray fLofRdoIncludes;			// list of inlude paths for MBS
+		TObjArray fLofRdoLibs;				// list of special libraries for MBS
 		
 		Bool_t fConfigChecked;				// kTRUE if consistency check done
 		Bool_t fConfigOk;					// kTRUE config consistent

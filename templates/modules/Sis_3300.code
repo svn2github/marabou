@@ -1,0 +1,175 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           Sis_3300.code
+// Purpose:        Code for digitizing adc SIS 3300
+// Description:    Contains template code to operate a SIS 3300 module
+// Author:         R. Lutter
+// Revision:       
+// Date:           
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+#include "sis_3300.h"
+#include "sis_3300_protos.h"
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					s_$moduleName = sis_3300_alloc($baseAddrL, $moduleName, "$moduleName", $moduleSerial); /* allocate data struct */
+					sis_3300_module_info(s_$moduleName);						/* read module info */
+					sis_3300_fill_struct(s_$moduleName, "$settingsFile");		/* fill sis struct from environment data */
+					sis_3300_initialize(s_$moduleName); 						/* initialize module */
+
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+          			sis_3300_setUserLED(s_$moduleName, 1);
+          			if (s_$moduleName->autoBankSwitch) {
+						for ($mnemoLC_activeBank = 0; $mnemoLC_activeBank < 2; $mnemoLC_activeBank++) {
+							if (sis_3300_getBankFull(s_$moduleName, $mnemoLC_activeBank)) {
+								sis_3300_setUserOutput(s_$moduleName, 1);
+								evt.out32 += sis_3300_readout(s_$moduleName, $mnemoLC_activeBank, (uint32_t *) evt.out32);
+								sis_3300_setUserOutput(s_$moduleName, 0);
+							}
+						}
+					} else {
+            			sis_3300_disarmBank(s_$moduleName, $mnemoLC_activeBank);           /* arm the other bank active */ 
+						$mnemoLC_activeBank ^= 1;
+						sis_3300_armBank(s_$moduleName, $mnemoLC_activeBank);
+						sis_3300_startSampling(s_$moduleName);
+            			sis_3300_setUserOutput(s_$moduleName, 1);            /* readout bank */
+						evt.out32 += sis_3300_readout(s_$moduleName, $mnemoLC_activeBank ^ 1, (uint32_t *) evt.out32);
+						sis_3300_setUserOutput(s_$moduleName, 0);
+					}
+					sis_3300_setUserLED(s_$moduleName, 0);
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+					if (s_$moduleName->autoBankSwitch) {
+						sis_3300_startAutoBankSwitch(s_$moduleName);
+					} else {
+						$mnemoLC_activeBank = 0;
+						sis_3300_disarmBank(s_$moduleName, 1);
+						sis_3300_armBank(s_$moduleName, $mnemoLC_activeBank);
+						sis_3300_startSampling(s_$moduleName);
+					}
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+					if (s_$moduleName->autoBankSwitch) {
+						sis_3300_startAutoBankSwitch(s_$moduleName);
+					} else {
+						sis_3300_stopSampling(s_$moduleName);
+						sis_3300_disarmBank(s_$moduleName, 0);
+						sis_3300_disarmBank(s_$moduleName, 1);
+					}
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+static struct s_sis_3300 * s_$moduleName;
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	static int $mnemoLC_activeBank;
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+	-I/d1/miniball/sis3300test/sis_3300/inc
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+	-L/d1/miniball/sis3300test/sis_3300/lib -lsis_3300
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+

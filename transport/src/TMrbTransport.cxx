@@ -8,7 +8,7 @@
 //
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTransport.cxx,v 1.15 2005-12-20 14:26:47 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTransport.cxx,v 1.16 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -240,7 +240,8 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 				if (this->IsToBeStopped()) {
 					gMrbLog->Out()	<< "Detecting STOP flag" << endl;
 					gMrbLog->Flush(this->ClassName(), "ReadEvents");
-					eventType = MBS_ETYPE_EOF; break; 
+//					eventType = MBS_ETYPE_EOF; break; 
+					eventType = 12345; 
 				}
 			} while (eventType == MBS_ETYPE_WAIT);
 //			pthread_mutex_unlock(&global_data_mutex);

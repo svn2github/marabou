@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.2 2006-02-23 09:28:50 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.3 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -103,7 +103,6 @@ void TMrbSis_3820::DefineRegisters() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * kp;
-	TMrbLofNamedX * bNames;
 	TMrbVMERegister * rp;
 
 // input mode

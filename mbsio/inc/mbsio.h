@@ -136,6 +136,7 @@ SEE ALSO
 #define MBS_STYPE_VME_SIS_1			0x0033000a		// [51,10]
 #define MBS_STYPE_VME_SIS_2			0x0034000a		// [52,10]
 #define MBS_STYPE_VME_SIS_3			0x0035000a		// [53,10]
+#define MBS_STYPE_VME_SIS_33		0x0036000a		// [54,10]
 #define MBS_STYPE_CAMAC_CPTM		0x003d000a		// [61,10]
 #define MBS_STYPE_DATA_SHORT		0x0040000a		// [64,10]
 #define MBS_STYPE_DATA_INT			0x0041000a		// [65,10]
@@ -330,7 +331,7 @@ typedef struct {
 	char id[16];
 	FILE *input;
 	int fileno;
-	off_t filepos;
+	int filepos;
 	char device[MBS_L_STR];
 	char host[MBS_L_STR];
 	unsigned int connection;

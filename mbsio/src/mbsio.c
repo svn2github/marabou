@@ -60,7 +60,8 @@ int total = 0;
 void _mbs_show_bheader();
 void _mbs_show_evhe_10_1();
 void _mbs_show_sev_10_1();
-void _mbs_show_sev_10_11();
+void _mbs_show_sev_short();
+void _mbs_show_sev_long();
 void _mbs_show_sev_raw();
 void _mbs_copy_fheader();
 void _mbs_convert_bheader();
@@ -68,7 +69,8 @@ void _mbs_convert_eheader();
 void _mbs_convert_sheader();
 void _mbs_type_error();
 unsigned int *_mbs_unpack_sev_10_1();
-unsigned int *_mbs_unpack_sev_10_11();
+unsigned int *_mbs_unpack_sev_short();
+unsigned int *_mbs_unpack_sev_long();
 unsigned int *_mbs_unpack_sev_raw();
 
 void _mbs_show_sev_9000_1();
@@ -120,8 +122,8 @@ static MBSBufferElem sevent_types[] = {
 					"Data w/o Chn",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_2,
@@ -136,8 +138,8 @@ static MBSBufferElem sevent_types[] = {
 					"Data w/o Chn",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_TIME_STAMP,
@@ -160,104 +162,112 @@ static MBSBufferElem sevent_types[] = {
 					"XIA DGF-4C (1)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_DGF_2,
 					"XIA DGF-4C (2)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_DGF_3,
 					"XIA DGF-4C (3, time stamp)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_SILENA_1,
 					"Silena 4418 (1, zero suppr)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_SILENA_2,
 					"Silena 4418 (2, zero suppr)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_CAEN_1,
 					"Caen VME ADCs/TDCs (1)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_CAEN_2,
 					"Caen VME ADCs/TDCs (2)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_CAEN_3,
 					"Caen VME ADCs/TDCs (3)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_SIS_1,
 					"SIS VME modules (1)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_SIS_2,
 					"SIS VME modules (2)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_SIS_3,
 					"SIS VME modules (3)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
+					(void *) _mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_SIS_33,
+					"SIS 33xx VME modules",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_long,
+					(void *) _mbs_show_sev_long,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_DATA_SHORT,
 					"Plain data (16 bit)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_DATA_INT,
 					"Plain data (32 bit)",
 					sizeof(s_veshe),
 					0,
-					(void *) _mbs_unpack_sev_10_11,
-					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_DUMMY,
@@ -1903,11 +1913,11 @@ unsigned int *_mbs_unpack_sev_10_1(MBSDataIO *mbs) {
 	return((unsigned int *) mbs->sevt_data);
 }
 
-void _mbs_show_sev_10_11(MBSDataIO *mbs, FILE *out) {
+void _mbs_show_sev_short(MBSDataIO *mbs, FILE *out) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_show_sev_10_11
-// Purpose:        Output subevent data (type [10,11], CAMAC w/o ids)
+// Name:           _mbs_show_sev_short
+// Purpose:        Output subevent data (16 bit ints)
 // Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
 //                 FILE * out       -- stream to send output to
 // Results:        
@@ -1948,15 +1958,60 @@ void _mbs_show_sev_10_11(MBSDataIO *mbs, FILE *out) {
 	fprintf(out, "\n------------------------------------------------------------------------------\n");
 }
 
-unsigned int *_mbs_unpack_sev_10_11(MBSDataIO *mbs) {
+void _mbs_show_sev_long(MBSDataIO *mbs, FILE *out) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_unpack_sev_10_11
-// Purpose:        Unpack subevent (type [10,11] - CAMAC w/o ids)
+// Name:           _mbs_show_sev_long
+// Purpose:        Output subevent data (32 bit ints)
+// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
+//                 FILE * out       -- stream to send output to
+// Results:        
+// Exceptions:     
+// Description:    Decodes subevent data and outputs them to stdout
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	register int i;
+	s_veshe *sh;
+	unsigned int *dp;
+
+	if (out == NULL) out = stdout;
+
+	sh = (s_veshe *) mbs->sevtpt;
+
+	fprintf(out, "\n==============================================================================\n");
+	fprintf(out, "  SUBEVENT HEADER: %s, buf# %d (%d), evt# %d, sevt# %d",
+					mbs->device, mbs->nof_buffers, mbs->cur_bufno, mbs->evtno, mbs->sevtno);
+	fprintf(out, "\n==============================================================================\n");
+
+	fprintf(out, "  Header length        : %d bytes\n", sizeof(s_veshe));
+	fprintf(out, "  Data length          : %d words\n", sh->l_dlen);
+	fprintf(out, "  Type                 : %s [%d,%d]\n",
+							(mbs->sevttype)->descr, sh->i_type, sh->i_subtype);
+	fprintf(out, "  Control              : %d\n", sh->h_control);
+	fprintf(out, "  Subcrate             : %d\n", sh->h_subcrate);
+	fprintf(out, "  Subevent/Proc ID     : %d\n", sh->i_procid);
+	fprintf(out, "  # of data words      : %d\n", mbs->sevt_wc);
+	fprintf(out, "------------------------------------------------------------------------------\n");
+	fprintf(out, "  SUBEVENT DATA:");
+
+	dp = (unsigned int *) mbs->sevt_data;
+	for (i = 0; i < mbs->sevt_wc; i++, dp++) {
+		if ((i % 5) == 0) fprintf(out, "\n%10d: ", i + 1);
+		fprintf(out, "%8d", *dp);
+	}
+	fprintf(out, "\n------------------------------------------------------------------------------\n");
+}
+
+unsigned int *_mbs_unpack_sev_short(MBSDataIO *mbs) {
+/*________________________________________________________[C PRIVATE FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           _mbs_unpack_sev_short
+// Purpose:        Unpack subevent (16 bits ints)
 // Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
 // Results:        unsigned int * sevtpt   -- pointer to subevent data
 // Exceptions:     
-// Description:    Unpacks subevent data of type [10,11] (CAMAC w/o ids)
+// Description:    Unpacks subevent data consisting of 16 bit ints
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
@@ -1972,6 +2027,47 @@ unsigned int *_mbs_unpack_sev_10_11(MBSDataIO *mbs) {
 	mbs->sevt_wc = wc;
 	dp = mbs->sevtpt + sizeof(s_veshe);
 	bto_get_short((short *) dp, dp, wc, mbs->byte_order);
+
+	mwc = mbs->sevt_minwc;
+	if (mwc < wc) mwc = wc;
+	if (mwc <= mbs->sevtsiz) {
+		if (mbs->sevt_data == NULL) mbs->sevt_data = calloc(mwc, sizeof(unsigned short));
+		else memset(mbs->sevt_data, 0, mbs->sevtsiz * sizeof(unsigned short));
+	} else {
+		if (mbs->sevt_data != NULL) free(mbs->sevt_data);
+		mbs->sevt_data = calloc(mwc, sizeof(unsigned short));
+		mbs->sevtsiz = mwc;
+	}
+
+	memcpy(mbs->sevt_data, dp, wc * sizeof(unsigned short));
+
+	return((unsigned int *) mbs->sevt_data);
+}
+
+unsigned int *_mbs_unpack_sev_long(MBSDataIO *mbs) {
+/*________________________________________________________[C PRIVATE FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           _mbs_unpack_sev_long
+// Purpose:        Unpack subevent (32 bits ints)
+// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
+// Results:        unsigned int * sevtpt   -- pointer to subevent data
+// Exceptions:     
+// Description:    Unpacks subevent data consisting of 32 bit ints
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	s_veshe *sh;
+	char *dp;
+	int wc;
+	int mwc;
+
+	if (mbs->sevt_wc > 0) return((unsigned int *) mbs->sevt_data);
+
+	sh = (s_veshe *) mbs->sevtpt;
+	wc = (sh->l_dlen - (sizeof(s_veshe) - sizeof(s_evhe)) / sizeof(unsigned short));
+	mbs->sevt_wc = wc;
+	dp = mbs->sevtpt + sizeof(s_veshe);
+	bto_get_int32((int *) dp, dp, wc/2, mbs->byte_order);
 
 	mwc = mbs->sevt_minwc;
 	if (mwc < wc) mwc = wc;

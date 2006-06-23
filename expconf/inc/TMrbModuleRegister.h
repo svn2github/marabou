@@ -8,7 +8,7 @@
 // Class:          TMrbModuleRegister   -- base class to describe a set of module registers
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModuleRegister.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModuleRegister.h,v 1.8 2006-06-23 08:48:30 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -81,6 +81,8 @@ class TMrbModuleRegister : public TObject {
 		
 		inline void SetPatternMode(Bool_t Flag = kTRUE) { if (fLofBitNames) fPatternMode = Flag; };	// has bitwise value
 		inline Bool_t IsPatternMode() const { return(fPatternMode); };
+		void SetBoolean(Bool_t Flag = kTRUE);	// has boolean value
+		inline Bool_t IsBoolean() const { return(fIsBoolean); };
 		inline void SetLofBitNames(TMrbLofNamedX * BitNames) { fLofBitNames = BitNames; }; 	// list of bit names
 		inline Bool_t HasBitNames() const { return(fLofBitNames != NULL); };		// test if bit names given
 		inline TMrbLofNamedX * BitNames() { return(fLofBitNames); };		// list of bit names
@@ -99,6 +101,8 @@ class TMrbModuleRegister : public TObject {
 		EMrbRegisterAccess fAccessMode; 			// access mode
 		
 		Bool_t fPatternMode;						// kTRUE if bitwise value
+		Bool_t fIsBoolean;							// kTRUE if value boolean
+
 		TMrbLofNamedX * fLofBitNames;				// list of possible bit values
 
 		Int_t fInitValue;							// init value

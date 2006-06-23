@@ -1,12 +1,12 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// ame:            expconf/src/TMrbConfig.cxx
+// Name:            expconf/src/TMrbConfig.cxx
 // Purpose:        MARaBOU configuration: base class
 // Description:    Implements class methods to define a MARaBOU configuration
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.115 2006-05-11 13:36:10 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.115 2006-05-11 13:36:10 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.116 2006-06-23 08:48:30 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -122,45 +122,45 @@ const SMrbNamedXShort kMrbCNAFNames[] =
 
 const SMrbNamedXShort kMrbLofReadoutTags[] =
 							{
-								{TMrbConfig::kRdoPath,					"READOUT_PATH"				},
-								{TMrbConfig::kRdoFile,					"READOUT_FILE"				},
-								{TMrbConfig::kRdoInclude,				"READOUT_INCLUDE"			},
-								{TMrbConfig::kRdoLibs,					"READOUT_LIBS"				},
-								{TMrbConfig::kRdoPosix,					"READOUT_POSIX"				},
-								{TMrbConfig::kRdoPosixLib,				"POSIX_LIB"				},
+								{TMrbConfig::kRdoPath,						"READOUT_PATH"				},
+								{TMrbConfig::kRdoFile,						"READOUT_FILE"				},
+								{TMrbConfig::kRdoInclude,					"READOUT_INCLUDE"			},
+								{TMrbConfig::kRdoLibs,						"READOUT_LIBS"				},
+								{TMrbConfig::kRdoPosix,						"READOUT_POSIX"				},
+								{TMrbConfig::kRdoPosixLib,					"POSIX_LIB"					},
 								{TMrbConfig::kRdoLynxPlatform,				"GSI_LYNX_PLATFORM"			},
-								{TMrbConfig::kRdoDebug,					"DEBUG_READOUT"				},
-								{TMrbConfig::kRdoNameLC, 				"EXP_NAME_LC"				},
-								{TMrbConfig::kRdoNameUC, 				"EXP_NAME_UC"				},
-								{TMrbConfig::kRdoTitle,					"EXP_TITLE" 				},
-								{TMrbConfig::kRdoSetup,					"EXP_SETUP" 				},
-								{TMrbConfig::kRdoCreationDate,			"CREATION_DATE" 			},
-								{TMrbConfig::kRdoAuthor, 				"AUTHOR"					},
-								{TMrbConfig::kRdoUser,	 				"USER"						},
-								{TMrbConfig::kRdoCamacController,		"CAMAC_CONTROLLER"			},
-								{TMrbConfig::kRdoDefineTriggers, 		"DEFINE_TRIGGERS"			},
-								{TMrbConfig::kRdoDefinePointers, 		"DEFINE_POINTERS"			},
-								{TMrbConfig::kRdoDeviceTables,	 		"DEVICE_TABLES" 			},
-								{TMrbConfig::kRdoInitPointers,			"INIT_POINTERS" 			},
-								{TMrbConfig::kRdoInitEnvironment,		"INIT_ENVIRONMENT"			},
-								{TMrbConfig::kRdoInitCommonCode,		"INIT_COMMON_CODE"			},
-								{TMrbConfig::kRdoInitModules,			"INIT_MODULES"				},
-								{TMrbConfig::kRdoOnStartAcquisition,	"ON_START_ACQUISITION"		},
-								{TMrbConfig::kRdoOnStopAcquisition, 	"ON_STOP_ACQUISITION"		},
-								{TMrbConfig::kRdoOnTriggerXX,			"ON_TRIGGER_XX" 			},
-								{TMrbConfig::kRdoIgnoreTriggerXX,		"IGNORE_TRIGGER_XX" 		},
-								{TMrbConfig::kRdoWriteSetup,			"WRITE_SETUP "				},
-								{TMrbConfig::kRdoIncludesAndDefs,		"INCLUDES_AND_DEFS_READOUT" },
-								{TMrbConfig::kRdoClearModule,			"CLEAR_MODULE"				},
-								{TMrbConfig::kRdoUtilities,				"UTILITIES" 				},
-								{TMrbConfig::kRdoDefinePrototypes,		"DEFINE_PROTOTYPES" 		},
-								{TMrbConfig::kRdoDefineGlobals, 	 	"DEFINE_GLOBALS"		 	},
-								{TMrbConfig::kRdoDefineGlobalsOnce, 	"DEFINE_GLOBALS_ONCE_ONLY"	},
-								{TMrbConfig::kRdoDefineLocalVarsInit,	"DEFINE_LOCAL_VARS_INIT" 	},
-								{TMrbConfig::kRdoDefineLocalVarsReadout,"DEFINE_LOCAL_VARS_READOUT" },
-								{TMrbConfig::kRdoDefinePrototypes,		"DEFINE_PROTOTYPES" 		},
-								{TMrbConfig::kRdoUserDefinedDefines,	"USER_DEFINED_DEFINES" 	 	},
-								{0, 									NULL						}
+								{TMrbConfig::kRdoDebug,						"DEBUG_READOUT"				},
+								{TMrbConfig::kRdoNameLC, 					"EXP_NAME_LC"				},
+								{TMrbConfig::kRdoNameUC, 					"EXP_NAME_UC"				},
+								{TMrbConfig::kRdoTitle,						"EXP_TITLE" 				},
+								{TMrbConfig::kRdoSetup,						"EXP_SETUP" 				},
+								{TMrbConfig::kRdoCreationDate,				"CREATION_DATE" 			},
+								{TMrbConfig::kRdoAuthor, 					"AUTHOR"					},
+								{TMrbConfig::kRdoUser,	 					"USER"						},
+								{TMrbConfig::kRdoCamacController,			"CAMAC_CONTROLLER"			},
+								{TMrbConfig::kRdoDefineTriggers, 			"DEFINE_TRIGGERS"			},
+								{TMrbConfig::kRdoDefinePointers, 			"DEFINE_POINTERS"			},
+								{TMrbConfig::kRdoDeviceTables,	 			"DEVICE_TABLES" 			},
+								{TMrbConfig::kRdoInitPointers,				"INIT_POINTERS" 			},
+								{TMrbConfig::kRdoInitEnvironment,			"INIT_ENVIRONMENT"			},
+								{TMrbConfig::kRdoInitCommonCode,			"INIT_COMMON_CODE"			},
+								{TMrbConfig::kRdoInitModules,				"INIT_MODULES"				},
+								{TMrbConfig::kRdoOnStartAcquisition,		"ON_START_ACQUISITION"		},
+								{TMrbConfig::kRdoOnStopAcquisition, 		"ON_STOP_ACQUISITION"		},
+								{TMrbConfig::kRdoOnTriggerXX,				"ON_TRIGGER_XX" 			},
+								{TMrbConfig::kRdoIgnoreTriggerXX,			"IGNORE_TRIGGER_XX" 		},
+								{TMrbConfig::kRdoWriteSetup,				"WRITE_SETUP "				},
+								{TMrbConfig::kRdoIncludesAndDefs,			"INCLUDES_AND_DEFS_READOUT" },
+								{TMrbConfig::kRdoClearModule,				"CLEAR_MODULE"				},
+								{TMrbConfig::kRdoUtilities,					"UTILITIES" 				},
+								{TMrbConfig::kRdoDefinePrototypes,			"DEFINE_PROTOTYPES" 		},
+								{TMrbConfig::kRdoDefineGlobals, 	 		"DEFINE_GLOBALS"		 	},
+								{TMrbConfig::kRdoDefineGlobalsOnce, 		"DEFINE_GLOBALS_ONCE_ONLY"	},
+								{TMrbConfig::kRdoDefineLocalVarsInit,		"DEFINE_LOCAL_VARS_INIT" 	},
+								{TMrbConfig::kRdoDefineLocalVarsReadout,	"DEFINE_LOCAL_VARS_READOUT" },
+								{TMrbConfig::kRdoDefinePrototypes,			"DEFINE_PROTOTYPES" 		},
+								{TMrbConfig::kRdoUserDefinedDefines,		"USER_DEFINED_DEFINES" 	 	},
+								{0, 										NULL						}
 							};
 							
 //_________________________________________________________________________________________________________ special camac readout tags
@@ -190,6 +190,8 @@ const SMrbNamedXShort kMrbLofModuleTags[] =
 								{TMrbConfig::kModuleDefineLocalVarsInit,	"DEFINE_LOCAL_VARS_INIT" 	},
 								{TMrbConfig::kModuleDefineLocalVarsReadout, "DEFINE_LOCAL_VARS_READOUT" },
 								{TMrbConfig::kModuleDefinePrototypes,		"DEFINE_PROTOTYPES" 		},
+								{TMrbConfig::kModuleDefineIncludePaths,		"DEFINE_INCLUDE_PATHS" 		},
+								{TMrbConfig::kModuleDefineLibraries,		"DEFINE_LIBRARIES"	 		},
 								{0, 										NULL						}
 							};
 							
@@ -359,6 +361,7 @@ const SMrbNamedXShort kMrbLofRcFileTags[] =
 								{TMrbConfig::kRcEvtData,					"EVT_DATA"						},
 								{TMrbConfig::kRcSevtData,					"SEVT_DATA"						},
 								{TMrbConfig::kRcModuleData,					"MODULE_DATA"					},
+								{TMrbConfig::kRcModuleSettings,				"MODULE_SETTINGS"					},
 								{TMrbConfig::kRcUserGlobals,				"USER_GLOBALS"					},
 								{0, 										NULL							}
 							};
@@ -435,6 +438,7 @@ const SMrbNamedXShort kMrbLofModuleIDs[] =
 								{TMrbConfig::kModuleLeCroy4448,				"LeCroy_4448"					},
 								{TMrbConfig::kModuleKinetics3655,			"Kinetics_3655"					},
 								{TMrbConfig::kModuleMpiHD_IOReg,			"MpiHD_IOReg"					},
+								{TMrbConfig::kModuleSis_3300,				"Sis_3300"						},
 								{TMrbConfig::kModuleSis_3600,				"Sis_3600"						},
 								{TMrbConfig::kModuleSis_3801,				"Sis_3801"						},
 								{TMrbConfig::kModuleSis_3820,				"Sis_3820"						},
@@ -669,6 +673,9 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofHistoConditions.Delete();							// init list of histogram booking conds
 		fLofOnceOnlyTags.Delete();								// init list of once-only code files		
 		fLofXhits.Delete(); 									// init list of special hits		
+		fLofRdoIncludes.Delete(); 								// init list of MBS includes		
+		fLofRdoLibs.Delete(); 									// init list of MBS libs		
+
 		fUserMacroToBeCalled = kFALSE;							// don't call user macro per default
 		
 		fLofUserIncludes.SetName("User code to be included");
@@ -1443,14 +1450,49 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kRdoInclude:
 						{
-							TString iclPath = gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "/nfs/mbssys/include");
-							rdoStrm << rdoTmpl.Encode(line, iclPath.Data()) << endl;
+							module = (TMrbModule *) fLofModules.First();
+							TList onceOnly;
+							while (module) {
+								if (onceOnly.FindObject(module->ClassName()) == NULL) {
+									module->MakeReadoutCode(rdoStrm, kModuleDefineIncludePaths);
+								}
+								onceOnly.Add(new TNamed(module->ClassName(), ""));
+								module = (TMrbModule *) fLofModules.After(module);
+							}   
+							onceOnly.Delete();
+							TObjString * o = (TObjString *) fLofRdoIncludes.First();
+							TString iclPath = "";
+							while (o) {
+								iclPath += o->String();
+								iclPath += " ";
+								o = (TObjString *) fLofRdoIncludes.After(o);
+							}
+							iclPath += "-I";
+							iclPath += gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "/nfs/mbssys/include");
+							rdoStrm << rdoTmpl.Encode(line, iclPath.Data()) << endl << endl;
 						}
 						break;
 					case TMrbConfig::kRdoLibs:
 						{
-							TString libString = gEnv->GetValue("TMrbConfig.ReadoutLibs", "$(LIB)/lib_utils.a");
-							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl;
+							module = (TMrbModule *) fLofModules.First();
+							TList onceOnly;
+							while (module) {
+								if (onceOnly.FindObject(module->ClassName()) == NULL) {
+									module->MakeReadoutCode(rdoStrm, kModuleDefineLibraries);
+								}
+								onceOnly.Add(new TNamed(module->ClassName(), ""));
+								module = (TMrbModule *) fLofModules.After(module);
+							}   
+							onceOnly.Delete();
+							TObjString * o = (TObjString *) fLofRdoLibs.First();
+							TString libString = "";
+							while (o) {
+								libString += o->String();
+								libString += " ";
+								o = (TObjString *) fLofRdoLibs.After(o);
+							}
+							libString += gEnv->GetValue("TMrbConfig.ReadoutLibs", "$(LIB)/lib_utils.a");
+							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
 						}
 						break;
 					case TMrbConfig::kRdoPosix:
