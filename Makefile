@@ -62,9 +62,9 @@ ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
 MODULES      += polar
 endif
 
-ifeq ($(shell if [ -d snake ] ; then echo yes; fi), yes)
-MODULES      += snake
-endif
+#ifeq ($(shell if [ -d snake ] ; then echo yes; fi), yes)
+#MODULES      += snake
+#endif
 
 ##### ROOT libraries #####
 

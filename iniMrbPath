@@ -24,7 +24,7 @@ SYSMODE=y
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-#ROOTSYS=/usr/cern/Linux_rh7.2/root_new
+ROOTSYS=/cern/root/root_new
 MARABOU=`pwd`
 
 #____________________________[end editable section]___________________________
