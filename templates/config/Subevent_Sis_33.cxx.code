@@ -1,0 +1,372 @@
+%%BeginOfCode%%
+Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrSevt$sevtNameUC::FillSubevent
+// Purpose:        Fill local instance of subevent $sevtNameLC with MBS data
+// Arguments:      const UShort_t * SevtData   -- pointer to subevent data
+//                 Int_t SevtWC                -- word count
+//                 Int_t TimeStamp             -- time since last start
+//                                                in units of 100 microsecs
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Assigns MBS data to corresponding data members
+//                 of subevent $sevtNameLC.
+//                 Special version for SIS 33xx modules.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
+	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
+
+	recNo++;								// count this record	
+	if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, SevtWC);
+	Int_t wordsProcessed = 0; 			// words processed so far
+	UInt_t * dataPtr = (UInt_t *) SevtData;
+	Int_t eventsProcessed = 0;
+	Int_t evtNo = 0;
+
+	UInt_t * sevtStart = dataPtr;							// save ptr to begin of subevent 
+	while (SevtWC > 0) {									// subevent may contain several SIS modules
+		UInt_t * moduleStart = dataPtr;					// save ptr to begin of module
+		UInt_t header = *dataPtr++;						// header word
+		if ((header & kMrbSevt_10_12_B_Header) == 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed
+					<< ") : Wrong header - 0x" << setbase(16) << header << setbase(10)
+					<< setblack << endl;
+			return(kTRUE);
+		}
+		Int_t wc = *dataPtr++;							 // word count
+		if (wc <= 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong word count - " << wc
+					<< setblack << endl;
+			return(kTRUE);
+		}
+		Int_t moduleNumber = header & kMrbSevt_10_12_M_ModuleNumber;  // extract module number
+		if (moduleNumber <= 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed
+					<< ") : Wrong module number - " << moduleNumber
+					<< setblack << endl;
+			return(kTRUE);
+		}
+		
+		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
+		if (mle == NULL) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong module number - "
+					<< moduleNumber
+					<< setblack << endl;
+			return(kTRUE);
+		}
+
+		if (wc == 2) {			// header only, no real data, skip it
+			SevtWC -= wc * sizeof(Int_t) / sizeof(Short_t);
+			continue;
+		}
+
+		UInt_t acqMode = *dataPtr++;
+		UInt_t numEvts = *dataPtr++;
+		UInt_t pageSize = *dataPtr++;
+		UInt_t statusReg = *dataPtr++;
+		UInt_t acqStatusReg = *dataPtr++;
+
+		if (acqMode == 2) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong acquision mode", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong acquision mode - gate chaining not yet implemented"
+					<< setblack << endl;
+			return(kTRUE);
+		}
+  
+		UInt_t * tsBuf = dataPtr;				// start of time stamp buffer
+		UInt_t * trigBuf = tsBuf + *tsBuf;		// start of trigger buffer
+		UInt_t * evtBuf = trigBuf + *trigBuf;	// start of event data
+
+		for (Int_t evtNo = 0; evtNo < numEvts; evtNo++) {
+
+			UInt_t sisTstamp = (*(tsBuf + evtNo + 1)) & 0x00ffffff;		// get time stamp for this event
+  
+			UInt_t evtDir = *(trigBuf + evtNo + 1);	// get event entry
+  
+			UInt_t startData = pageSize * evtNo;
+			UInt_t stopData = evtDir & 0x0001ffff;
+			Bool_t wrapped = (evtDir & 0x80000) != 0;
+
+			UInt_t dataSize = wrapped ? pageSize : stopData - startData;
+      
+			while (dataPtr < dataPtr + wc - 2) {
+				UInt_t * next = dataPtr + (*dataPtr++);
+				UInt_t channelGrp = *dataPtr++;
+				UInt_t triggerMode = *dataPtr++;
+    
+				// read channelData
+				Int_t c = 0;
+				UInt_t val;
+				UInt_t p;
+				UInt_t mask0, mask1;
+				UInt_t omask0, omask1;
+				Int_t ch0 = channelGrp * 2;
+				Int_t ch1 = ch0 + 1;
+    
+				switch (triggerMode) {
+					case 0:
+					case 1:
+						mask0 = 0x0fff;
+						mask1 = 0x0fff;
+						omask0 = 0x4000;
+						omask1 = 0x4000;
+						break;
+					case 2:
+						mask0 = 0x0fff;
+						mask1 = 0xffff;
+						omask0 = 0x4000;
+						omask1 = 0x0000;
+						break;
+					case 3:
+						mask0 = 0xffff;
+						mask1 = 0x0fff;
+						omask0 = 0x0000;
+						omask1 = 0x4000;
+						break;
+				}
+    
+				UInt_t * pch0;
+				UInt_t * pch1;
+				Bool_t trig = (evtDir & (0x80000000 >> ch0)) != 0;
+				if (trig) {
+					this->SetTriggered(ch0, kTRUE);
+					pch0 = fChanDataT[ch0];
+				} else {
+					this->SetTriggered(ch0, kFALSE);
+					pch0 = fChanDataS[ch0];
+				}
+				trig = (evtDir & (0x80000000 >> ch1)) != 0;
+				if (trig) {
+					this->SetTriggered(ch1, kTRUE);
+ 					pch1 = fChanDataT[ch1];
+				} else {
+					this->SetTriggered(ch1, kFALSE);
+ 					pch1 = fChanDataS[ch1];
+				}
+  
+				this->SetSize(ch0, dataSize);
+				this->SetSize(ch1, dataSize);
+				
+				c = 0;  
+				if (wrapped) {
+					for (p = stopData; p < (startData + pageSize); p++, c++) {
+						val = *(dataPtr + p);
+						*(pch0 + c) = (val >> 16) & mask0;
+						this->SetOverflow(ch0, ((val >> 16) & omask0 != 0));        
+						*(pch1 + c) = val & mask1;
+						this->SetOverflow(ch0, ((val >> 16) & omask1 != 0));
+					}
+				}
+   
+				for (p = startData; p < stopData; p++, c++) {
+					val = *(dataPtr + p);
+					*(pch0 + c) = (val >> 16) & mask0;
+					this->SetOverflow(ch0, ((val >> 16) & omask0 != 0));        
+					*(pch1 + c) = val & mask1;
+					this->SetOverflow(ch0, ((val >> 16) & omask1 != 0));
+				}
+				dataPtr = next;
+			}
+		}
+		SevtWC -= wc * sizeof(Int_t) / sizeof(Short_t); // count for wc 32 bit words
+	}
+  
+	return(kTRUE);
+}			
+%%EndOfCode%%
+%%SEVT_FILL_SUBEVENT%%
+
+%%BeginOfCode%%
+%B%Bool_t TUsrSevt$sevtNameUC::BookHistograms() {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name:           TUsrSevt$sevtNameUC::BookHistograms
+%B%// Purpose:        Define histograms for subevent $sevtNameLC
+%B%// Arguments:      
+%B%// Results:        kTRUE/kFALSE
+%B%// Exceptions:     
+%B%// Description:    Instantiates histograms for subevent $sevtNameLC
+%B%//                 depending on trigger mode:
+%B%//                 1 histo per channel if in normal sample mode,
+%B%//                 2 histos if in FIR mode
+%B%//                 
+%B%// Keywords:       
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%C%	h$paramNameUC$type = new TH1F("h$paramNameUC$type", "$paramNameLC $xtype", $nofBins, 0.0, $pageSize.0);
+%E%
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%SEVT_BOOK_HISTOGRAMS%%
+
+%%BeginOfCode%%
+%B%Bool_t TUsrSevt$sevtNameUC::BookParams() {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name: 		  TUsrSevt$sevtNameUC::BookParams
+%B%// Purpose:  	  Fill param list for subevent $sevtNameLC
+%B%// Arguments:	  
+%B%// Results:  	  kTRUE/kFALSE
+%B%// Exceptions:	  
+%B%// Description:    Generates entries in the list of params.
+%B%//                 1 entry per channel in normal sample mode,
+%B%//                 2 entries in FIR mode.
+%B%// Keywords: 	  
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%B% 	memset(fChanDataS, sizeof(fChanDataS), 0);
+%B% 	memset(fChanDataT, sizeof(fChanDataT), 0);
+%C%	if (gMrbAnalyze->FindParam("$paramNameLC$type") == NULL) {
+%C% 		gMrbAnalyze->AddParamToList("$paramNameLC$type", (TObject *) $paramNameLC$type, kMrbModule$moduleNameUC, $paramIndex);
+%C% 		fChanData$type[$paramIndex] = $paramNameLC$type;
+%C% 		fDataSize[$paramIndex] = $pageSize;
+%C% 		fPageSize[$paramIndex] = $pageSize;
+%C% 	}
+%E%
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%SEVT_BOOK_PARAMS%%
+
+%%BeginOfCode%%
+%B%Bool_t TUsrSevt$sevtNameUC::FillHistograms() {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name:           TUsrSevt$sevtNameUC::FillHistograms
+%B%// Purpose:        Accumulate histograms for subevent $sevtNameLC
+%B%// Arguments:      
+%B%// Results:        kTRUE/kFALSE
+%B%// Exceptions:     
+%B%// Description:    Accumulates histos in multiscaling mode
+%B%// Keywords:       
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%C% 	for (Int_t i = 0; i < $pageSize; i++) h$paramNameUC$type->Fill((Axis_t) i, $paramNameLC$type[i]);
+%E%
+%E%	gMrbAnalyze->SetUpdateFlag(); 		// activate update handler
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%SEVT_FILL_HISTOGRAMS%%
+
+Bool_t TUsrSevt%%SEVT_NAME_UC%%::AddBranch(TTree * Tree) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrSevt%%SEVT_NAME_UC%%::AddBranch
+// Purpose:        Create a branch for subevent %%SEVT_NAME_LC%%
+// Arguments:      TTree * Tree      -- pointer to parent's tree struct
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Calls method TTree::Branch for this subevent.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t bufSize;
+	Int_t splitMode;
+
+	if (gMrbAnalyze->TreeToBeWritten()) {
+		bufSize = gMrbAnalyze->GetBranchSize();
+		splitMode = gMrbAnalyze->GetSplitLevel();
+		if (verboseMode) {
+			cout	<< this->ClassName() << "::AddBranch(): adding branch \"%%SEVT_NAME_LC%%\" to tree \""
+					<< Tree->GetName() << "\" (bufsiz="
+					<< bufSize
+					<< ", split=" << splitMode << ")"
+					<< endl;
+		}
+		fMyAddr = (TObject *) this; 		// we need a '**' ref to this object
+		Tree->Branch( 	"%%SEVT_NAME_LC%%", this->ClassName(),
+						&fMyAddr,
+						bufSize,
+						splitMode);
+	}
+	return(kTRUE);
+}
+
+%%BeginOfCode%%
+%LVB%Bool_t TUsrSevt$sevtNameUC::InitializeBranch(TTree * Tree) {
+%LVB%//________________________________________________________________[C++ METHOD]
+%LVB%//////////////////////////////////////////////////////////////////////////////
+%LVB%// Name:           TUsrSevt$sevtNameUC::InitializeBranch
+%LVB%// Purpose:        Initialize branch addresses for subevent $sevtNameLC
+%LVB%// Arguments:      TTree * Tree      -- pointer to parent's tree struct
+%LVB%// Results:        kTRUE/kFALSE
+%LVB%// Exceptions:     
+%LVB%// Description:    Set branch addresses for ALL data members (leaves)
+%LVB%//                 of subevent $sevtNameLC.
+%LVB%//                 >> Replay mode only <<
+%LVB%// Keywords:       
+%LVB%//////////////////////////////////////////////////////////////////////////////
+%LVB%
+%LVB%	Tree->GetEntry(0);						// dummy statement to activate branches (?)
+%LVB%
+%LVS%	Tree->SetBranchAddress("$prefix$paramNameLC", &$paramNameLC);	// $sevtNameLC.$paramNameLC
+%LVX%	Tree->SetBranchAddress("$prefix$paramNameLC[$indexRange]", $paramNameLC);	// $sevtNameLC.$paramNameLC
+%LVA%	Tree->SetBranchAddress("pData[$nofParams]", fData);
+%LVE%	Tree->SetBranchAddress("fTimeStamp", &fTimeStamp);		// (sub)event's time stamp
+%LVE%
+%LVE%	return(kTRUE);
+%LVE%}
+%BR%Bool_t TUsrSevt$sevtNameUC::InitializeBranch(TTree * Tree) {
+%BR%//________________________________________________________________[C++ METHOD]
+%BR%//////////////////////////////////////////////////////////////////////////////
+%BR%// Name:           TUsrSevt$sevtNameUC::InitializeBranch
+%BR%// Purpose:        Initialize branch addresses for subevent $sevtNameLC
+%BR%// Arguments:      TTree * Tree      -- pointer to parent's tree struct
+%BR%// Results:        kTRUE/kFALSE
+%BR%// Exceptions:     
+%BR%// Description:    Set branch address for subevent $sevtNameLC.
+%BR%//                 Subevent will be fetched from tree AS A WHOLE.
+%BR%//                 >> Replay mode only <<
+%BR%// Keywords:       
+%BR%//////////////////////////////////////////////////////////////////////////////
+%BR%
+%BR%	fBranch = Tree->GetBranch("$sevtNameLC");
+%BR%	fMyAddr = this;
+%BR%	fBranch->SetAddress(&fMyAddr);
+%BR%
+%BR%	return(kTRUE);
+%BR%}
+%%EndOfCode%%
+%%SEVT_INITIALIZE_BRANCH%%
+
+void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrSevt%%SEVT_NAME_UC%%::Reset
+// Purpose:        Reset subevent data
+// Arguments:      Int_t InitValue   -- initialization value
+//                 Bool_t DataOnly  -- reset data only if kTRUE (ignored)
+// Results:        --
+// Exceptions:     
+// Description:    Initializes subevent data with given value.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+%S% for (Int_t chn = 0; chn < TUsrSevt$sevtNameUC::kNofChannels; chn++) {
+%S% 	fChanTriggered[chn] = kFALSE;
+%S% 	fDataSize[chn] = 0;
+%S% }
+%%EndOfCode%%
+%%SEVT_RESET_DATA%%
+}
+
