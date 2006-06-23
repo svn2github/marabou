@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.34 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.35 2006-06-23 09:28:52 Marabou Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -660,7 +660,8 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 	if (hString.IsNull()) {
 		hString = gSystem->Getenv("HOSTNAME");
 		if (hString.IsNull()) {
-			gMrbLog->Err()	<< "Can't determine hostname - $HOSTNAME is empty" << endl;
+			gMrbLog->Err()	<< "Can't determine hostname - set .rootrc:TMbsSetup.DefaultHost properly" << endl;
+			gMrbLog->Err()	<< "Can't determine hostname - $HOSTNAME is empty (may be it's not exported)" << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 			isOK = kFALSE;
 		}
