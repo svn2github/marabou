@@ -75,6 +75,7 @@ GLOBAL($className,$varName,$varName("$varName", $varSize, $varInit));
 %ANX%GLOBAL(TObjArray,h$sevtNameUCArray,h$sevtNameUCArray); 			// array of ptrs to hists for subevent $sevtNameLC
 %AP%GLOBAL(TH1F *,h$prefix$paramNameUC,h$prefix$paramNameUC = NULL); 	// $evtNameLC: $sevtNameLC.$paramNameLC
 %APX%GLOBAL(TObjArray,h$sevtNameUCArray,h$sevtNameUCArray); 			// $evtNameLC: array of ptrs to hists for subevent $sevtNameLC
+%S2N%GLOBAL(TH2S *,h$paramNameUC,h$paramNameUC = NULL); 	// $sevtNameLC.$paramNameLC
 %UDH%
 %UDH%//_______________________________________________________________[GLOBAL DEFS]
 %UDH%//////////////////////////////////////////////////////////////////////////////

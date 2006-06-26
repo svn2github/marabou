@@ -69,8 +69,7 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TObject {
 
 		Int_t fTimeStamp;						// time stamp, same as fUniqueID
 
-		UInt_t * fChanDataS[kNofChannels];		// pointer to samples data
-		UInt_t * fChanDataT[kNofChannels];		// pointer to trigger data
+		UInt_t * fChanData[kNofChannels];		// pointer to samples data
 		Bool_t fChanTriggered[kNofChannels];	// kTRUE if channel triggered
 		Bool_t fChanOverflow[kNofChannels]; 	// channel has overflow
 		Int_t fDataSize[kNofChannels];			// size of data

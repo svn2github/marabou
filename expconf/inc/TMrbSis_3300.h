@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3300        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3300.h,v 1.1 2006-06-23 08:48:30 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.h,v 1.2 2006-06-26 10:18:11 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -132,22 +132,8 @@ class TMrbSis_3300 : public TMrbVMEModule {
 		inline void SetMaxEvents(Int_t Events) { fMaxEvents = Events; };
 		inline Int_t GetMaxEvents() { return(fMaxEvents); };
 
-		inline Bool_t SetPageSize(Int_t Size) {
-			Bool_t ok = this->Set(TMrbSis_3300::kRegPageSize, Size);
-			if (ok) {
-				fRange = this->GetChansPerPage();
-				this->SetBinning(fPointsPerBin);
-			}
-			return(ok);
-		};
-		inline Bool_t SetPageSize(Char_t * Size) {
-			Bool_t ok = this->Set(TMrbSis_3300::kRegPageSize, Size);
-			if (ok) {
-				fRange = this->GetChansPerPage();
-				this->SetBinning(fPointsPerBin);
-			}
-			return(ok);
-		};
+		inline Bool_t SetPageSize(Int_t Size) { return(this->Set(TMrbSis_3300::kRegPageSize, Size)); };
+		inline Bool_t SetPageSize(Char_t * Size) {	return(this->Set(TMrbSis_3300::kRegPageSize, Size)); };
 		inline Int_t GetPageSize() { return(this->Get(TMrbSis_3300::kRegPageSize)); };
 		Int_t GetChansPerPage();
 

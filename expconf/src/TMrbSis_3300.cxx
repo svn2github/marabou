@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.1 2006-06-23 09:05:11 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.2 2006-06-26 10:18:11 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -152,8 +152,6 @@ TMrbSis_3300::TMrbSis_3300(const Char_t * ModuleName, UInt_t BaseAddr) :
 				fTriggerArmed = kFALSE;
 
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
-
-				fRange = this->GetChansPerPage();
 
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gDirectory->Append(this);

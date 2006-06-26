@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.1 2006-06-23 09:05:11 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.2 2006-06-26 10:18:11 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -246,6 +246,9 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					}
 					type = type1;
 					tname = tname1;
+					Int_t nofXbins = module->GetChansPerPage() / module->GetBinning();
+					Int_t rangeY = module->GetRange();
+					Int_t nofYbins = rangeY / 4;
 					for (Int_t i = 0; i < pPerChn; i++) {
 						AnaTmpl.InitializeCode("%C%");
 						AnaTmpl.Substitute("$paramNameLC", paramNameLC);
@@ -255,7 +258,9 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$pageSize", module->GetChansPerPage());
-						AnaTmpl.Substitute("$nofBins", module->GetBinRange());
+						AnaTmpl.Substitute("$nofXbins", nofXbins);
+						AnaTmpl.Substitute("$nofYbins", nofYbins);
+						AnaTmpl.Substitute("$rangeY", rangeY);
 						AnaTmpl.Substitute("$paramIndex", pIdx++);
 						AnaTmpl.Substitute("$type", type);
 						AnaTmpl.Substitute("$xtype", tname);
@@ -321,7 +326,6 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$pageSize", module->GetChansPerPage());
-						AnaTmpl.Substitute("$nofBins", module->GetBinRange());
 						AnaTmpl.Substitute("$paramIndex", pIdx++);
 						AnaTmpl.Substitute("$type", type);
 						AnaTmpl.Substitute("$xtype", tname);
@@ -376,7 +380,7 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						paramNameUC(0,1).ToUpper();
 						paramNameLC += type;
 						paramNameUC += type;
-						AnaTmpl.InitializeCode("%SN%");
+						AnaTmpl.InitializeCode("%S2N%");
 						AnaTmpl.Substitute("$paramNameLC", paramNameLC);
 						AnaTmpl.Substitute("$paramNameUC", paramNameUC);
 						AnaTmpl.Substitute("$moduleNameLC", moduleNameLC);
@@ -384,7 +388,6 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$pageSize", module->GetChansPerPage());
-						AnaTmpl.Substitute("$nofBins", module->GetBinRange());
 						AnaTmpl.Substitute("$paramIndex", pIdx++);
 						AnaTmpl.Substitute("$type", type);
 						AnaTmpl.Substitute("$xtype", tname);

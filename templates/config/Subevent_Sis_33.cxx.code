@@ -106,6 +106,7 @@ Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 
 			UInt_t dataSize = wrapped ? pageSize : stopData - startData;
       
+			dataPtr = evtBuf;
 			while (dataPtr < dataPtr + wc - 2) {
 				UInt_t * next = dataPtr + (*dataPtr++);
 				UInt_t channelGrp = *dataPtr++;
@@ -142,24 +143,13 @@ Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 						break;
 				}
     
-				UInt_t * pch0;
-				UInt_t * pch1;
+				UInt_t * pch0 = fChanData[ch0];
+				UInt_t * pch1 = fChanData[ch1];
+
 				Bool_t trig = (evtDir & (0x80000000 >> ch0)) != 0;
-				if (trig) {
-					this->SetTriggered(ch0, kTRUE);
-					pch0 = fChanDataT[ch0];
-				} else {
-					this->SetTriggered(ch0, kFALSE);
-					pch0 = fChanDataS[ch0];
-				}
+				this->SetTriggered(ch0, trig);
 				trig = (evtDir & (0x80000000 >> ch1)) != 0;
-				if (trig) {
-					this->SetTriggered(ch1, kTRUE);
- 					pch1 = fChanDataT[ch1];
-				} else {
-					this->SetTriggered(ch1, kFALSE);
- 					pch1 = fChanDataS[ch1];
-				}
+				this->SetTriggered(ch1, trig);
   
 				this->SetSize(ch0, dataSize);
 				this->SetSize(ch1, dataSize);
@@ -210,7 +200,7 @@ Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 %B%// Keywords:       
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%C%	h$paramNameUC$type = new TH1F("h$paramNameUC$type", "$paramNameLC $xtype", $nofBins, 0.0, $pageSize.0);
+%C%	h$paramNameUC$type = new TH2S("h$paramNameUC$type", "$paramNameLC $xtype", $nofXbins, 0.0, $pageSize.0, $nofYbins, 0.0, $rangeY.0);
 %E%
 %E%	return(kTRUE);
 %E%}
@@ -232,11 +222,10 @@ Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 %B%// Keywords: 	  
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%B% 	memset(fChanDataS, sizeof(fChanDataS), 0);
-%B% 	memset(fChanDataT, sizeof(fChanDataT), 0);
+%B% 	memset(fChanData, sizeof(fChanData), 0);
 %C%	if (gMrbAnalyze->FindParam("$paramNameLC$type") == NULL) {
 %C% 		gMrbAnalyze->AddParamToList("$paramNameLC$type", (TObject *) $paramNameLC$type, kMrbModule$moduleNameUC, $paramIndex);
-%C% 		fChanData$type[$paramIndex] = $paramNameLC$type;
+%C% 		fChanData[$paramIndex] = $paramNameLC$type;
 %C% 		fDataSize[$paramIndex] = $pageSize;
 %C% 		fPageSize[$paramIndex] = $pageSize;
 %C% 	}
@@ -259,7 +248,7 @@ Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 %B%// Keywords:       
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%C% 	for (Int_t i = 0; i < $pageSize; i++) h$paramNameUC$type->Fill((Axis_t) i, $paramNameLC$type[i]);
+%C% 	for (Int_t i = 0; i < $pageSize; i++) h$paramNameUC$type->Fill((Axis_t) i, (Axis_t) $paramNameLC$type[i]);
 %E%
 %E%	gMrbAnalyze->SetUpdateFlag(); 		// activate update handler
 %E%	return(kTRUE);
@@ -363,8 +352,8 @@ void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 
 %%BeginOfCode%%
 %S% for (Int_t chn = 0; chn < TUsrSevt$sevtNameUC::kNofChannels; chn++) {
-%S% 	fChanTriggered[chn] = kFALSE;
-%S% 	fDataSize[chn] = 0;
+%S% 		fChanTriggered[chn] = kFALSE;
+%S% 		fChanOverflow[chn] = kFALSE;
 %S% }
 %%EndOfCode%%
 %%SEVT_RESET_DATA%%
