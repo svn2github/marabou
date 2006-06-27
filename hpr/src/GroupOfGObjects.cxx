@@ -286,7 +286,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
  //           xt[i] = x[i] + xoff;
  //          yt[i] = y[i] + yoff;
          }
-         b->SetControlPoints(gr->GetN(), xt, yt);
+         b->SetAllControlPoints(gr->GetN(), xt, yt);
          delete [] xt;
          delete [] yt;
 
@@ -379,7 +379,8 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
             pad->GetListOfPrimitives()->Add(clone, lnk->GetOption());
             if (clone->InheritsFrom("TSplineX")) {
                TSplineX* b = ( TSplineX*)clone;
-               b->ComputeSpline();
+               b->NeedReCompute();
+               b->Paint();
             }
          }
       }
@@ -510,8 +511,9 @@ void GroupOfGObjects::ShiftObjects(Double_t xoff, Double_t yoff, Bool_t shiftcut
             xt[i] = x[i] + xoff;
             yt[i] = y[i] + yoff;
          }
-         b->SetControlPoints(gr->GetN(), xt, yt);
-         b->ComputeSpline();
+         b->SetAllControlPoints(gr->GetN(), xt, yt);
+         b->NeedReCompute();
+         b->Paint();
          delete [] xt;
          delete [] yt;
 

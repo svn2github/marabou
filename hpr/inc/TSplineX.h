@@ -10,26 +10,35 @@
 #include "TVirtualPad.h"
 #include "Buttons.h"
 #include <iostream>
-//#include "ControlGraph.h"
-//#include "ParallelGraph.h"
 
 class TSplineX;
 
-class RailwaySleeper : public  TPolyLine{
+//_________________________________________________________________
+
+class PolyLineNoEdit: public  TPolyLine {
+public:
+   PolyLineNoEdit(){};
+   PolyLineNoEdit(Int_t np, Double_t * x = NULL, Double_t * y = NULL);
+   virtual ~PolyLineNoEdit() {};
+   Int_t DistancetoPrimitive(Int_t, Int_t){return 9999;};
+   void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+ClassDef(PolyLineNoEdit,0)
+};
+//__________________________________________________________________
+
+class RailwaySleeper : public  TPolyLine {
 private:
    TSplineX * fParent; //!
-   Color_t fColor;
+//   Color_t fColor;
 public:
    RailwaySleeper(){};
-   RailwaySleeper(Double_t * x, Double_t * y, TSplineX * parent, Color_t color = 1);
-//   ~RailwaySleeper(){std::cout << "dtor RailwaySleeper: " << this << std::endl; };
+   RailwaySleeper(Double_t * x, Double_t * y, TSplineX * parent = NULL,
+                  Color_t color = 1);
    ~RailwaySleeper(){ };
-//   Int_t DistancetoPrimitive(Int_t px, Int_t py){return 9999;};
+   Int_t DistancetoPrimitive(Int_t, Int_t){return 9999;};
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
-   Color_t GetSleeperColor() {return fColor;};
-   void SetColor(Color_t color); 
-   void SetSleeperColor(Color_t color);     // *MENU*
-   void Draw(Option_t * opt = "");
+   void Draw(Option_t * opt = "F");
+   void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
 ClassDef(RailwaySleeper,0)
 };
 //__________________________________________________________________
@@ -37,61 +46,82 @@ ClassDef(RailwaySleeper,0)
 class ControlGraph : public TGraph
 {
 private:
-   TSplineX *fParent;
+   TSplineX *fParent;                       //
    TArrayF  fShapeFactors;
    Int_t    fSelectedPoint;                 //!
    Double_t fSelectedX;                     //!
    Double_t fSelectedY;                     //!
    Float_t  fSelectedShapeFactor;           //!
-   Int_t   fChangeShapeFactorsConjointly;  //!
+   TArrayI fMixerValues;                    //!
+   TArrayI fMixerMinval;                    //!
+   TArrayI fMixerMaxval;                    //!
+   TArrayI fMixerFlags;                     //!
+ 
 
 public:
    ControlGraph (Int_t npoints = 0, Double_t*  x = NULL, Double_t* y = NULL);
    virtual ~ControlGraph() {std::cout << "dtor ControlGraph(): " << this << std::endl;};
+   Int_t DistancetoPrimitive(Int_t px, Int_t py);
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void SetParent(TSplineX* parent); 
    TSplineX  *GetParent(){return fParent;}; 
+   void SetLength(Int_t npoints) {Set(npoints);fShapeFactors.Set(npoints);};
    void SetAllShapeFactors(Int_t npoints, Float_t* sf);
-   Float_t   GetShapeFactorByPointNumber(Int_t ipoint) {return fShapeFactors[ipoint];};
+   Float_t   GetShapeFactor(Int_t ipoint) {return fShapeFactors[ipoint];};
    Int_t     GetSelectedPoint() { return fSelectedPoint; };
    Double_t  GetSelectedX()     { return fSelectedX; };
    Double_t  GetSelectedY()     { return fSelectedY; };
-   Float_t   GetSelectedShapeFactor(){ return fSelectedShapeFactor; };
+   Float_t   GetSelectedShapeFactor(){ return fSelectedShapeFactor;};
 
-   virtual void SetOneShapeFactor(Int_t ipoint, Double_t x, Double_t y, Float_t sfactor); // *MENU* *ARGS={ipoint=>fSelectedPoint,x=>fSelectedX,y=>fSelectedY,sfactor=>fSelectedShapeFactor}
-   Int_t InsertPoint();                                          // *MENU*
-   Int_t RemovePoint();                                          // *MENU*
-   virtual void EditControlGraph();    //  *MENU*
-   virtual void ControlGraphMixer();    //  *MENU*
-   virtual void Delete(Option_t *opt = " "); // *MENU*
-   void SetShapeFactors(Int_t id, Int_t ip, Int_t val);
-   void SetChangeShapeFactorsConjointly(Int_t val = 1);  // *MENU* *ARGS={val=>fChangeShapeFactorsConjointly}
-   Int_t  GetChangeShapeFactorsConjointly(); 
-
-   TGraph* AddPGraph(Double_t dist = 2, Color_t color=0, 
-                            Width_t width=0, Style_t style=0);   // *MENU*
+   void SetShapeFactor(Int_t ipoint, Int_t f100); 
+   void SetOneShapeFactor(Int_t ipoint, Double_t x, Double_t y, Float_t sfactor); // *MENU* *ARGS={ipoint=>fSelectedPoint,x=>fSelectedX,y=>fSelectedY,sfactor=>fSelectedShapeFactor}
+   void SetControlPoint(Int_t ipoint, Double_t x, Double_t y, Float_t sfactor); // *MENU* *ARGS={ipoint=>fSelectedPoint,x=>fSelectedX,y=>fSelectedY,sfactor=>fSelectedShapeFactor}
+   void GetControlPoint(Int_t ipoint, Double_t *x, Double_t *y, Float_t *sfactor); 
+   Int_t CG_InsertPoint();               // *MENU*
+   Int_t CG_RemovePoint();               // *MENU*
+//   virtual void EditControlGraph();    // *MENU*
+   virtual void ControlGraphMixer();     // *MENU*
+   void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
    ClassDef(ControlGraph, 1)
 };
 //__________________________________________________________________
 
-class ParallelGraph : public TGraph
+class ParallelGraph : public TPolyLine
 {
 private:
-   TGraph* fParent;
-   Double_t fDist;       // distance to parent
+   TSplineX* fParent;
+   ParallelGraph* fSlave;
+   Double_t fDistToSlave;    // distance to a partner 
+   ParallelGraph* fMaster;
+   Double_t fDist;           // distance to parent
    Bool_t fClosed;
+   Bool_t fIsRail;           // is part of a railway like track
 public:
    ParallelGraph () {};
-   ParallelGraph (TGraph *parent, Double_t dist, Bool_t closed);
-   virtual ~ParallelGraph() {if (fParent) fParent->RecursiveRemove(this);};
-   void Compute ();
-   void ExecuteEvent(Int_t event, Int_t px, Int_t py);
-   TGraph *GetParent(){return fParent;}; 
-   Double_t GetDist(){return fDist;}; 
-   virtual void Delete(Option_t *opt = " "); // *MENU*
-   void CorrectForArrows(Double_t alength, Double_t aangle,Double_t aindent_angle,
-                                     Bool_t at_start, Bool_t at_end);
-   ClassDef(ParallelGraph, 0)
+   ParallelGraph (TSplineX *parent, Double_t dist, Bool_t closed);
+   virtual ~ParallelGraph();
+   void    Compute();
+   void    Paint(Option_t * option = " ");
+   Int_t   DistancetoPrimitive(Int_t px, Int_t py);
+   void    ExecuteEvent(Int_t event, Int_t px, Int_t py);
+   TSplineX *GetParent(){return fParent;}; 
+   Double_t  GetDist(){return fDist;}; 
+   void      SetDist(Double_t d){fDist = d;};           // *MENU*
+   void   Remove();                                     // *MENU*
+   void   FillToSlave(Double_t dist = 0);               // *MENU*
+   void   ClearFillToSlave();                           // *MENU*
+   void   SetSlave(ParallelGraph* slave)   {fSlave = slave;};
+   void   SetMaster(ParallelGraph* master) {fMaster = master;};
+   Double_t  GetDistToSlave()              {return fDistToSlave;};
+   void      SetDistToSlave(Double_t d)    {fDistToSlave = d;};
+   ParallelGraph* GetSlave()               {return fSlave;};
+   ParallelGraph* GetMaster()              {return fMaster;};
+   Bool_t GetIsRail()                      {return fIsRail;};
+   void   SetIsRail(Bool_t israil = kTRUE) {fIsRail = israil;};
+   void   CorrectForArrows(Double_t alen, Double_t aangle, Double_t aind_angle,
+                           Bool_t at_start, Bool_t at_end);
+   void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+   ClassDef(ParallelGraph, 1)
 };
 //__________________________________________________________________
 
@@ -140,91 +170,72 @@ public:
 };
 //____________________________________________________________________________________
 
-class TSplineX : public TGraph
+class TSplineX : public TPolyLine
 {
-protected:
-   ShapeFactor*  fShapeFactorList;     //! pointer to linked list
-   ControlPoint* fControlPointList;    //! 
+
+friend class ControlGraph;
+friend class ParallelGraph;
+friend class HandleMenus;
+
+private:
+   ShapeFactor*  fShapeFactorList;   //! pointer to linked list
+   ControlPoint* fControlPointList;  //! 
+   Int_t         fNofControlPoints;
+   Int_t         fNpoints;           //! number of used points
+   Bool_t        fComputeDone;       //!
+   TArrayD       fX;                 //! result X
+   TArrayD       fY;                 //! result Y
+   ControlGraph  fCPGraph;           // Controlpoints
+   Bool_t        fCPDrawn;           //!
+   Style_t       fMStyle;            // markertype for ControlGraph
+   Size_t        fMSize;             // markersize for ControlGraph
+   ParallelGraph *fRailL;            // pointer to left rail, if railwaylike
+   ParallelGraph *fRailR;            // pointer to right rail
+   TObjArray     fPGraphs;           // pointer list to parallel lines
+   PolyLineNoEdit *fArrowAtStart;    //!
+   PolyLineNoEdit *fArrowAtEnd;      //!
+   TList         fDPolyLines;        //!
+
    Float_t       fPrec;
    Bool_t        fClosed;
-   Int_t         fNofControlPoints;
-   Int_t         fNpoints;           // number of used points
-   Bool_t        fReady; 
-   Bool_t        fComputeDone;     // !
-   TArrayD       fX;                 // result X
-   TArrayD       fY;                 // result Y
-   ControlGraph  fCPGraph;           // Controlpoints
-   Int_t         fMType;             // markertype for ControlGraph
-   Size_t        fMSize;             // markersize for ControlGraph
-   TObjArray     fPGraphs;           // pointer list to parallel lines
- //  TArrayD       fPDists;
    Int_t         fRailwaylike;
+   Double_t      fRailwayGage;
    Double_t      fFilledLength;      // draw like railway in maps
    Double_t      fEmptyLength;       // space in between
-   TGraph*       fArrowAtStart;
-   TGraph*       fArrowAtEnd;
+   Style_t       fLineStyle;
+   Width_t       fLineWidth;
+   Color_t       fLineColor;
+   Int_t         fParallelFill;
    Bool_t        fPaintArrowAtStart;
    Bool_t        fPaintArrowAtEnd;
    Int_t         fArrowFill;
    Double_t      fArrowLength;
    Double_t      fArrowAngle;
    Double_t      fArrowIndentAngle;
-   TList         fDPolyLines;        // !
-private:
-   void point_adding(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, 
+
+   void    point_adding(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, 
                                       ControlPoint *p2, ControlPoint *p3);
    Float_t step_computing(int k, ControlPoint *p0, ControlPoint *p1,
                                ControlPoint *p2, ControlPoint *p3, 
                                Double_t s1, Double_t s2, Float_t precision);
-   void spline_segment_computing(Float_t step, Int_t k, 
+   void    spline_segment_computing(Float_t step, Int_t k, 
                                  ControlPoint *p0, ControlPoint *p1, 
                                  ControlPoint *p2, ControlPoint *p3, 
                                  Double_t s1, Double_t s2);
-   Int_t op_spline(ControlPoint *cpoints, ShapeFactor *sfactors, Float_t precision);
-   Int_t cl_spline(ControlPoint *cpoints, ShapeFactor *sfactors, Float_t precision);
-   Int_t add_point(Double_t x, Double_t y);
-   Int_t add_closepoint();
-   void too_many_points();
-   void Delete_ShapeFactors();
-   void Delete_ControlPoints();
-   void SetGraph();
-   void CopyControlPoints();
+   Int_t   op_spline(ControlPoint *cpoints, ShapeFactor *sfactors, Float_t precision);
+   Int_t   cl_spline(ControlPoint *cpoints, ShapeFactor *sfactors, Float_t precision);
+   Int_t   add_point(Double_t x, Double_t y);
+   Int_t   add_closepoint();
+   void    too_many_points();
+   void    Delete_ShapeFactors();
+   void    Delete_ControlPoints();
+   void    SetGraph();
+   void    CopyControlPoints();
 
-public:
-   TSplineX();
-   TSplineX(Int_t npoints, Double_t *x, Double_t *y, 
-           Float_t *sf = 0, Float_t prec = 0.01, Bool_t closed = kFALSE);
-   virtual ~TSplineX();
-   void Remove() { delete this; } // *MENU*
-   void ExecuteEvent(Int_t event, Int_t px, Int_t py);
-   void RecursiveRemove(TObject * obj) {fPGraphs.Remove(obj);};
-   virtual void EditControlGraph();    //  *MENU*
-   void Print(Option_t * opt = " ") const{TGraph::Print();};    //  *MENU*
-   void DrawControlPoints(Int_t marker = 24, Size_t size = 1); // *MENU* *ARGS={marker=>fMType, size=>fMSize}
-   Int_t GetMType() {return fMType;};
-   Size_t GetMSize() {return fMSize;};
-   void SetMType(Int_t type) {fMType = type;};
-   void SetMSize(Size_t size) {fMSize = size;};
-   void SetControlPoints(Int_t npoints, Double_t* x, Double_t* y);
-   void SetShapeFactors(Int_t npoints, Float_t* sf);
-//   Int_t GetShapeFactors(Double_t* x) {;
-//   Int_t GetControlPoints(Double_t* x, Double_t* y);
-   Int_t GetNofControlPoints() {return fNofControlPoints;};
-   Int_t GetResult(Double_t*& x, Double_t*& y);
-   Int_t ComputeSpline(Float_t prec = -1, Bool_t open = kTRUE);
+protected:
 
-//   ParallelGraph* AddParallelGraphExt(ParallelGraph* ng = NULL, Double_t dist = 2, Color_t color=0, 
- //                           Width_t width=0, Style_t style=0);
-   ParallelGraph* AddParallelGraph(Double_t dist = 2, Color_t color=0, 
-                            Width_t width=0, Style_t style=0);   // *MENU*
-   TObjArray* GetParallelGraphs() {return &fPGraphs;};
-   void  DrawParallelGraphs();
-//   Double_t* GetParallelDists() {return fPDists.GetArray();};
-   ControlGraph* GetControlGraph() {return &fCPGraph;};
+   Int_t ComputeSpline();
 
-   void RemovePolyLines();
-//   Bool_t ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, 
-//                                Double_t dist, Bool_t closed);
    static Double_t Length(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
    static Double_t PhiOfLine(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
    static void Nextpoint(Double_t phi, Double_t x, Double_t y, 
@@ -233,36 +244,78 @@ public:
                         Double_t dist, Double_t* a,  Double_t* b);
    static void Midpoint(Double_t phi1, Double_t phi2, Double_t x, Double_t y, 
                         Double_t dist ,Double_t* a, Double_t* b);
-   void  SetRailwaylike(Int_t railway) {fRailwaylike = railway;};
-   Int_t GetRailwaylike() {return fRailwaylike;};
-   void  SetFilledLength(Double_t flen) {fFilledLength = flen;};
-   void  SetEmptyLength(Double_t elen) {fEmptyLength = elen;};
-   Double_t GetFilledLength() {return fFilledLength;};
-   Double_t GetEmptyLength() {return fEmptyLength;};
-   void Paint(Option_t * option = " ");
-   void SetComputeDone(Bool_t done) {fComputeDone = done;};
-   void SetColor(Color_t color);
-   void AddArrow(Int_t where, Double_t size, Double_t angle, Double_t indent_angle, Int_t filled);
-   void PaintArrow(Int_t where);
-   Bool_t   IsClosed()    {return fClosed;};
-   Int_t    GetArrowFill()   {return fArrowFill;};
-   Double_t GetArrowLength() {return fArrowLength;};
-   Double_t GetArrowAngle()  {return fArrowAngle;}; 
-   Double_t GetArrowIndentAngle() {return fArrowIndentAngle;}; 
 
-   void SetArrowFill(Int_t filled) {
-      if (filled > 0) {
-         if (fArrowAtStart)fArrowAtStart->SetFillStyle(1001);
-         if (fArrowAtEnd)fArrowAtEnd->SetFillStyle(1001);
-      } else {
-         if (fArrowAtStart)fArrowAtStart->SetFillStyle(0);
-         if (fArrowAtEnd)fArrowAtEnd->SetFillStyle(0);
-      }
-      fArrowFill = filled;
-   }; //  *MENU*
-   void SetArrowLength(Double_t length) {fArrowLength = length;}; //  *MENU*
-   void SetArrowAngle(Double_t angle) {fArrowAngle = angle;}; //  *MENU*
-   void SetArrowIndentAngle(Double_t angle) {fArrowIndentAngle = angle;}; //  *MENU*
+public:
+   TSplineX();
+   TSplineX(Int_t npoints, Double_t *x = NULL, Double_t *y = NULL, 
+           Float_t *sf = NULL, Float_t prec = 0.2, Bool_t closed = kFALSE);
+   virtual ~TSplineX();
+   Int_t   DistancetoPrimitive(Int_t px, Int_t py);
+   void    ExecuteEvent(Int_t event, Int_t px, Int_t py);
+//   void  EditControlGraph();                                        // *MENU*
+   void    RemovePolyLines();
+   void    ControlGraphMixer(){fCPGraph.ControlGraphMixer();};        // *MENU* 
+   void    Print(Option_t *) const{TPolyLine::Print();};              // *MENU*
+   void    DrawControlPoints(Style_t marker = 24, Size_t size = 1);   // *MENU* *ARGS={marker=>fMStyle, size=>fMSize}
+   void    RemoveControlPoints();                                     // *MENU* 
+   Style_t GetMStyle() {return fMStyle;};
+   Size_t  GetMSize()  {return fMSize;};
+   void    SetMStyle(Style_t type) {fMStyle = type;};
+   void    SetMSize(Size_t size)   {fMSize = size;};
+   void    SetAllControlPoints(Int_t npoints, Double_t* x, Double_t* y);
+   void    SetControlPoint(Int_t ip, Double_t x, Double_t y, Float_t sf)
+             {fCPGraph.SetControlPoint(ip, x, y, sf);}; 
+   void    GetControlPoint(Int_t ip, Double_t *x, Double_t *y, Float_t *sf)
+             {fCPGraph.GetControlPoint(ip, x, y, sf);};  
+   void    SetShapeFactors(Int_t npoints, Float_t* sf);
+   Int_t   GetNofControlPoints() {return fCPGraph.GetN();};
+   Bool_t  GetCPDrawn()         {return fCPDrawn;};
+   Int_t   GetResult(Double_t*& x, Double_t*& y);
+   void    SetIsClosed(Bool_t isclosed = kTRUE);                      // *MENU*
+   Bool_t  GetIsClosed()        {return fClosed;};
+
+   ControlGraph* GetControlGraph() {return &fCPGraph;};
+   TList*     GetDPolyLines() {return &fDPolyLines;};  
+
+   void Paint(Option_t * option = " ");
+   void PaintArrow(Int_t where);
+
+   void     DrawParallelGraphs();
+   ParallelGraph* AddParallelGraph(Double_t dist = 2, Color_t color=0,  
+                            Width_t width=0, Style_t style=0);        // *MENU*
+   TObjArray* GetParallelGraphs() {return &fPGraphs;};  
+
+   void     SetRailwaylike (Double_t gage = 4);                       // *MENU*
+   Int_t    IsRailwaylike()                {return fRailwaylike;};
+   void     SetRailwayGage (Double_t gage) {SetRailwaylike(gage);};   // *MENU*
+   Double_t GetRailwayGage ()              {return fRailwayGage;};    // *MENU*
+   void     SetFilledLength(Double_t flen) {fFilledLength = flen;};   // *MENU*
+   void     SetEmptyLength(Double_t elen)  {fEmptyLength = elen;};    // *MENU*
+   Double_t GetFilledLength()              {return fFilledLength;};
+   Double_t GetEmptyLength()               {return fEmptyLength;};
+   void     NeedReCompute()                {fComputeDone = kFALSE;};
+   void     SetSleeperColor(Color_t color);
+
+   Int_t    GetParallelFill()    {return fParallelFill;};
+   void     SetParallelFill(Int_t sf) {fParallelFill = sf;};          // *MENU*
+
+   void     AddArrow(Int_t where = 1, Double_t size = 10, Double_t angle = 30,
+                     Double_t indent_angle = 0, Int_t filled = 0);    // *MENU*
+   void     SetArrowLength(Double_t length) {fArrowLength = length;}; // *MENU*
+   void     SetArrowAngle(Double_t angle)   {fArrowAngle = angle;};   // *MENU*
+   void     SetArrowIndentAngle(Double_t a) {fArrowIndentAngle = a;}; // *MENU*
+   Double_t GetArrowLength()                {return fArrowLength;};
+   Double_t GetArrowAngle()                 {return fArrowAngle;}; 
+   Double_t GetArrowIndentAngle()           {return fArrowIndentAngle;}; 
+
+   void     SetPaintArrowAtStart(Bool_t ok) {fPaintArrowAtStart = ok;};
+   void     SetPaintArrowAtEnd(Bool_t ok)   {fPaintArrowAtEnd = ok;};
+   Bool_t   GetPaintArrowAtStart()          {return fPaintArrowAtStart;};
+   Bool_t   GetPaintArrowAtEnd()            {return fPaintArrowAtEnd;};
+   Int_t    GetArrowFill()                  {return fArrowFill;};
+   void     SetArrowFill(Bool_t filled);                              // *MENU*
+   void     SavePrimitive(ofstream &out, Option_t *option);
+
    ClassDef(TSplineX, 1)
 };
 #endif

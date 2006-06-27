@@ -1284,6 +1284,10 @@ void HTCanvas::DefinePolygone()
 
 void HTCanvas::ZoomIn()
 {
+   if (GetWw() > 15000 || GetWh() > 15000) {
+      cout << "No more zoom possible" << endl;
+      return;
+   }
    SetCanvasSize(GetWw() << 1, GetWh() << 1);
    Update();
 }
@@ -1389,7 +1393,7 @@ void HTCanvas::RemoveTSplineXsPolyLines()
    while ( (obj = next()) ){
       if (obj->IsA() == TSplineX::Class()) ((TSplineX*)obj)->RemovePolyLines();
    }
-   Update();
+//   Update();
 }
 //______________________________________________________________________________
 
@@ -1399,10 +1403,11 @@ void HTCanvas::DrawTSplineXsParallelGraphs()
    TObject * obj;
    while ( (obj = next()) ){
       if (obj->IsA() == TSplineX::Class()) {
-         ((TSplineX*)obj)->SetComputeDone(kFALSE);
+         ((TSplineX*)obj)->NeedReCompute();
          ((TSplineX*)obj)->DrawParallelGraphs();
       }
    }
+   Modified();
    Update();
 }
 //______________________________________________________________________________
@@ -1421,12 +1426,12 @@ void HTCanvas::DrawControlGraphs()
 
 void HTCanvas::RemoveControlGraphs()
 {
-   TList * lop = GetListOfPrimitives();
+   TIter next(GetListOfPrimitives());
    TObject * obj;
-   while ( (obj = lop->FindObject("ControlGraph")) ){
-      lop->Remove(obj);
+   this->cd();
+   while ( (obj = next()) ){
+      if (obj->IsA() == TSplineX::Class()) ((TSplineX*)obj)->RemoveControlPoints();
    }
-   Modified();
    Update();
 }
 //______________________________________________________________________________
@@ -1438,8 +1443,8 @@ void HTCanvas::RemoveParallelGraphs()
    while ( (obj = lop->FindObject("ParallelG")) ){
       lop->Remove(obj);
    }
-   Modified();
-   Update();
+//   Modified();
+//   Update();
 }
 //______________________________________________________________________________
 
@@ -1450,9 +1455,35 @@ void HTCanvas::RemoveEditGrid()
    while ( (obj = next()) ) {
       if (obj->GetUniqueID() == 0xaffec0c0) delete obj;
    }
-   Update();
+//   Update();
 }
 //______________________________________________________________________________
+
+void HTCanvas::WritePrimitives()
+{
+   Bool_t ok;
+   static Int_t sernr = 1;
+//   TString name = "drawing";
+   TString name = "p";
+   name += sernr++;
+   name =
+       GetString("Save picture with name", name.Data(), &ok,
+                 (TGWindow*)fRootCanvas);
+   if (!ok)
+      return;
+   if (OpenWorkFile(fRootCanvas)) {
+      RemoveEditGrid();
+      RemoveControlGraphs();
+      RemoveTSplineXsPolyLines();
+      RemoveParallelGraphs();
+      gPad->GetListOfPrimitives()->ls();
+      Write(name.Data());
+ //     GetListOfPrimitives()->Write(name.Data(), 1);
+      CloseWorkFile();
+      DrawTSplineXsParallelGraphs();
+   }
+}
+///______________________________________________________________________________
 
 void HTCanvas::SetVisibilityOfEnclosingCuts(Bool_t visible)
 {
@@ -1959,30 +1990,6 @@ void HTCanvas::InsertImage()
 
 //______________________________________________________________________________
 
-void HTCanvas::WritePrimitives()
-{
-   Bool_t ok;
-//   TString name = "drawing";
-   TString name = GetName();
-   name += "_pict";
-   name =
-       GetString("Save picture with name", name.Data(), &ok,
-                 (TGWindow*)fRootCanvas);
-   if (!ok)
-      return;
-   if (OpenWorkFile(fRootCanvas)) {
-      RemoveEditGrid();
-      RemoveControlGraphs();
-      RemoveTSplineXsPolyLines();
-      RemoveParallelGraphs();
-      Write(name.Data());
- //     GetListOfPrimitives()->Write(name.Data(), 1);
-      CloseWorkFile();
-      DrawTSplineXsParallelGraphs();
-   }
-}
-//______________________________________________________________________________
-
 Int_t HTCanvas::MarkGObjects()
 {
    return ExtractGObjects(kTRUE);
@@ -2228,7 +2235,7 @@ tryagain:
             	   xt[i] = x[i] - xoff;
                	yt[i] = y[i] - yoff;
                }
-               b->SetControlPoints(gr->GetN(), xt, yt);
+               b->SetAllControlPoints(gr->GetN(), xt, yt);
                delete [] xt;
                delete [] yt;
          	}
@@ -2674,7 +2681,7 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
             if (dox) x[i] = PutOnGridX(x[i]);
             if (doy) y[i] = PutOnGridY(y[i]);
          }
-         b->GetParent()->SetComputeDone(kFALSE);
+         b->GetParent()->NeedReCompute();
       } else if (obj->InheritsFrom("TGraph") 
                  && !(obj->InheritsFrom("TSplineX"))
                  && !(obj->InheritsFrom("ControlGraph"))
@@ -3246,7 +3253,7 @@ void HTCanvas::InsertTextExecute()
       latex->SetTextAngle(fEditTextAngle);
       llist.Add(latex);
       yt -= fEditTextDy;
-      latex->Dump();
+//      latex->Dump();
 //      outfile << cmd << endl;
       cmd.Resize(0);
       if (latex->GetXsize() > longestline) longestline = latex->GetXsize();
@@ -3310,6 +3317,8 @@ void HTCanvas::InsertTextExecute()
    }
    Modified();
    Update();
+   fEditTextX0 = 0;
+   fEditTextY0 = 0;
 //   if (!from_file && keepdialog == 1) goto loop;
 }
 //______________________________________________________________________________
@@ -3520,61 +3529,67 @@ void HTCanvas::InsertTSplineX()
    static void *valp[25];
    Int_t ind = 0;
    TList * row_lab = new TList(); 
-   static Int_t closed = 0;
-   static Int_t approx = 1;
-   static Int_t fixends = 1;
-   static Double_t prec = 0.2;
-   static Int_t showcp  = 1;
-   static Color_t color  = gStyle->GetLineColor();
-   static Width_t lwidth = gStyle->GetLineWidth();
-   static Style_t lstyle  = gStyle->GetLineStyle();
-   static Int_t    railway = 0;
-   static Double_t filled  = 0;
-   static Double_t empty  = 5;
-   static Double_t gage  = 2;
-   static Int_t   arrow_at_start = 0;
-   static Int_t   arrow_at_end = 0;
-   static Int_t   arrow_filled = 1;
-   static Double_t arrow_size  = 10;
-   static Double_t arrow_angle  = 30;
-   static Double_t arrow_indent_angle  = 0;
+   static Int_t    closed  = 0;
+   static Int_t    approx  = 1;
+   static Int_t    fixends = 1;
+   static Double_t prec    = 0.2;
+   static Int_t    showcp  = 1;
+   static Color_t  color   = gStyle->GetLineColor();
+   static Width_t  lwidth  = gStyle->GetLineWidth();
+   static Style_t  lstyle  = gStyle->GetLineStyle();
+   static Color_t  fcolor  = gStyle->GetFillColor();
+   static Style_t  fstyle  = gStyle->GetFillStyle();
+
+   static Double_t filled        = 0;
+   static Double_t empty         = 5;
+   static Double_t gage          = 4;
+   static Int_t    arrow_at_start = 0;
+   static Int_t    arrow_at_end  = 0;
+   static Int_t    arrow_filled  = 0;
+   static Double_t arrow_size    = 10;
+   static Double_t arrow_angle   = 30;
+   static Double_t arrow_indent_angle  = -30;
 
    row_lab->Add(new TObjString("CheckButton_Closed TSplineX"));
    valp[ind++] = &closed;
-   row_lab->Add(new TObjString("CheckButton_Approximate"));
+   row_lab->Add(new TObjString("CheckButton+Approximate"));
    valp[ind++] = &approx;
    row_lab->Add(new TObjString("CheckButton_Fix endpoints"));
    valp[ind++] = &fixends;
+   row_lab->Add(new TObjString("CheckButton+Show Controlpoints"));
+   valp[ind++] = &showcp;
    row_lab->Add(new TObjString("DoubleValue_Precision"));
    valp[ind++] = &prec;
-   row_lab->Add(new TObjString("CheckButton_Show Controlpoints"));
-   valp[ind++] = &showcp;
-   row_lab->Add(new TObjString("ColorSelect_Line color"));
+   row_lab->Add(new TObjString("ColorSelect+Line Col"));
    valp[ind++] = &color;
-   row_lab->Add(new TObjString("PlainShtVal_Line width"));
+   row_lab->Add(new TObjString("PlainShtVal_Line Width"));
    valp[ind++] = &lwidth;
-   row_lab->Add(new TObjString("LineSSelect_Line style"));
+   row_lab->Add(new TObjString("LineSSelect+Line Style"));
    valp[ind++] = &lstyle;
-   row_lab->Add(new TObjString("CheckButton_Arrow at start"));
+   row_lab->Add(new TObjString("CheckButton_Arrow@Start"));
    valp[ind++] = &arrow_at_start;
-   row_lab->Add(new TObjString("CheckButton_Arrow at end"));
+   row_lab->Add(new TObjString("CheckButton+Arrow@End"));
    valp[ind++] = &arrow_at_end;
-   row_lab->Add(new TObjString("DoubleValue_Arrow length"));
-   valp[ind++] = &arrow_size;
-   row_lab->Add(new TObjString("DoubleValue_Arrow angle"));
-   valp[ind++] = &arrow_angle;
-   row_lab->Add(new TObjString("DoubleValue_Arrow indent angle"));
-   valp[ind++] = &arrow_indent_angle;
    row_lab->Add(new TObjString("CheckButton_Fill Arrow"));
    valp[ind++] = &arrow_filled;
-   row_lab->Add(new TObjString("CheckButton_Railway like (double line)"));
-   valp[ind++] = &railway;
-   row_lab->Add(new TObjString("DoubleValue_Railway: sleeper length"));
-   valp[ind++] = &filled;
-   row_lab->Add(new TObjString("DoubleValue_Railway: sleeper distance"));
-   valp[ind++] = &empty;
-   row_lab->Add(new TObjString("DoubleValue_Railway: gage"));
+   row_lab->Add(new TObjString("DoubleValue+ArLength"));
+   valp[ind++] = &arrow_size;
+   row_lab->Add(new TObjString("DoubleValue_ArAngle"));
+   valp[ind++] = &arrow_angle;
+   row_lab->Add(new TObjString("DoubleValue+IndentAng"));
+   valp[ind++] = &arrow_indent_angle;
+//   row_lab->Add(new TObjString("CheckButton_Railway (double line)"));
+//   valp[ind++] = &railway;
+   row_lab->Add(new TObjString("DoubleValue_Railway Gage"));
    valp[ind++] = &gage;
+   row_lab->Add(new TObjString("DoubleValue_SleeperL"));
+   valp[ind++] = &filled;
+   row_lab->Add(new TObjString("DoubleValue+SleeperDist"));
+   valp[ind++] = &empty;
+   row_lab->Add(new TObjString("ColorSelect_Fill Color"));
+   valp[ind++] = &fcolor;
+   row_lab->Add(new TObjString("Fill_Select+Fill Style"));
+   valp[ind++] = &fstyle;
 
    Bool_t ok; 
    Int_t itemwidth = 320;
@@ -3605,18 +3620,9 @@ tryagain:
    Double_t* y = gr->GetY();
    Int_t npoints = gr->GetN();
 //  add an extra point in between
-   if (npoints == 2) {
-      Double_t x0 = x[0];
-      Double_t y0 = y[0];
-      Double_t x1 = x[1];
-      Double_t y1 = y[1];
-      npoints = 3;
-      gr->Set(npoints);
-      gr->SetPoint(0, x0, y0);
-      gr->SetPoint(2, x1, y1);
-      gr->SetPoint(1, 0.5 * (x1 + x0) , 0.5 * (y1 + y0));
-      x = gr->GetX();
-      y = gr->GetY();
+   if (npoints < 2) {
+      cout << "Need at least 2 points, try again" << endl;
+      goto tryagain;
    }
    TArrayF shape_factors(npoints);
    if ( (fixends == 0 || closed == 1) && approx == 1) {
@@ -3636,28 +3642,23 @@ tryagain:
    Bool_t closed_spline;
    if (closed != 0) closed_spline = kTRUE;
    else             closed_spline = kFALSE;
-   TSplineX* xsp = new TSplineX(npoints, x, y);
-   xsp->SetShapeFactors(npoints, shape_factors.GetArray());
-   xsp->ComputeSpline(prec, closed_spline);
+   TSplineX* xsp = 
+     new TSplineX(npoints, x, y, shape_factors.GetArray(), prec, closed_spline);
+   xsp->Draw("L");
+   xsp->SetFillColor(fcolor);
+   xsp->SetFillStyle(fstyle);
    xsp->SetLineColor(color);
    xsp->SetLineWidth(lwidth);
    xsp->SetLineStyle(lstyle);
-   xsp->SetRailwaylike(railway);
    xsp->SetFilledLength(filled);
    xsp->SetEmptyLength(empty);
+   if (gage > 0)xsp->SetRailwaylike(gage);
    if (showcp > 0) xsp->DrawControlPoints(0, 0);
-   xsp->Draw("L");
-   if (railway > 0 && gage > 0) {
-     xsp->AddParallelGraph( gage / 2, color, lwidth, lstyle); 
-     xsp->AddParallelGraph(-gage / 2, color, lwidth, lstyle); 
-   }
    Bool_t afilled;
    if (arrow_filled == 0) afilled = kFALSE;
    else                  afilled = kTRUE;
    if (arrow_at_start) xsp->AddArrow(0, arrow_size, arrow_angle, arrow_indent_angle, afilled);
    if (arrow_at_end)   xsp->AddArrow(1, arrow_size, arrow_angle, arrow_indent_angle, afilled);
-   xsp->ComputeSpline(prec, closed_spline);
-//   if (showcp > 0) xsp->DrawControlPoints(24, 0);
    delete gr;
    Modified();
    Update();

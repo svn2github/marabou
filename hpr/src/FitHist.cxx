@@ -2703,7 +2703,14 @@ void FitHist::ProjectF()
 //____________________________________________________________________________________ 
 
 // Fast Fourier Transform 
+#if ROOTVERSION < 51500
 
+void FitHist::FastFT()
+{
+    cout << "FFT not yet implemented" << endl;
+
+}
+#else
 void FitHist::FastFT()
 {
    const char helpText[] =
@@ -2844,7 +2851,7 @@ void FitHist::FastFT()
       if  (hp) hp->ShowHist(hresult);
    }
 }
-
+#endif
 //____________________________________________________________________________________ 
 
 // Rotate 2dim histograms

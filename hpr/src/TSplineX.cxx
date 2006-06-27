@@ -1,3 +1,4 @@
+
 /*
  * FIG : Facility for Interactive Generation of figures
  * Copyright (c) 1985-1988 by Supoj Sutanthavibul
@@ -36,6 +37,7 @@
 // #include "resources.h"
 // #include "mode.h"
 
+#include "Riostream.h"
 #include <math.h>
 #include "TSplineX.h"
 #include "iostream"
@@ -65,6 +67,7 @@ namespace std {} using namespace std;
 ClassImp(TSplineX)
 ClassImp(ControlGraph)
 ClassImp(ParallelGraph)
+ClassImp(PolyLineNoEdit)
 ClassImp(RailwaySleeper)
 
 //_______________________________________________________________________
@@ -457,11 +460,14 @@ void TSplineX::Midpoint(Double_t phi1, Double_t phi2, Double_t x, Double_t y,
 
 TSplineX::TSplineX()
 {
+   cout << "TSplineX: def ctor npoints " << GetLastPoint() + 1 << " " << endl;
    fControlPointList = 0;
    fShapeFactorList = 0;
-   fReady = kFALSE;
    fComputeDone = kFALSE;
-   cout << "TSplineX: def ctor npoints " << fNpoints << " " << endl;
+   fArrowAtStart = NULL;
+   fArrowAtEnd   = NULL;
+//   SetName("TSplineX");
+
 }
 //____________________________________________________________________________________
 
@@ -474,19 +480,27 @@ TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
 //   
    fControlPointList = 0;
    fShapeFactorList = 0;
-   fReady = kFALSE;
    fPrec = prec;
    fClosed = closed;
    fNofControlPoints = 0;
    fNpoints = 0;
-   fReady = kFALSE;
    fComputeDone = kFALSE;
+   fCPDrawn = kFALSE;
 //   fNP = 0;
+   fRailL = NULL;
+   fRailR = NULL;
    fRailwaylike = 0;
+   fRailwayGage = 0;
    fFilledLength = 0;
    fEmptyLength = 0;
-   fMType = 24;
+   fMStyle = 24;
    fMSize = 2;
+	fLineStyle = 1;
+	fLineWidth = 2;
+	fLineColor = 1;
+	fFillColor = 4;
+	fFillStyle = 1001;
+   fParallelFill = 0;
    fArrowAtStart = NULL;
    fArrowAtEnd   = NULL;
    fPaintArrowAtStart = kFALSE;
@@ -495,17 +509,55 @@ TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
    fArrowLength = 10;
    fArrowAngle  = 30;
    fArrowIndentAngle = 15;
-   SetName("TSplineX");
+//   SetName("TSplineX");
    fCPGraph.SetName("ControlGraph");
    fCPGraph.SetParent(this);
-   if (npoints > 0) {
-     if (x != NULL && y != NULL) SetControlPoints(npoints, x, y);
-     if (sf != NULL) SetShapeFactors(npoints, sf);
+   if (npoints > 2) fNofControlPoints = npoints;
+   else fNofControlPoints = 3; 
+   if (x && y && sf) {  
+   	TArrayF sf_temp(fNofControlPoints);
+   	if (npoints < 3) {
+      	cout << "WARNING: TSplineX needs minimum 3 points, inserted extra point" << endl;
+      	TArrayD x_temp(3);
+      	TArrayD y_temp(3);
+      	x_temp[0] = x[0];
+      	y_temp[0] = y[0];
+      	x_temp[1] = 0.5 * (x[0] + x[1]);
+      	y_temp[1] = 0.5 * (y[0] + y[1]);
+      	x_temp[2] = x[1];
+      	y_temp[2] = y[1];
+      	if (sf == NULL) {
+         	sf_temp[0] = -1;
+         	sf_temp[1] =  1;
+         	sf_temp[2] = -1;
+      	} else {
+         	sf_temp[0] = sf[0];
+         	sf_temp[1] =  1;
+         	sf_temp[2] = sf[1];
+      	}
+      	SetAllControlPoints(fNofControlPoints, x_temp.GetArray(), y_temp.GetArray());
+      	SetShapeFactors(fNofControlPoints, sf_temp.GetArray());
+   	} else {
+      	SetAllControlPoints(fNofControlPoints, x, y);
+      	if (sf != NULL) {
+         	SetShapeFactors(fNofControlPoints, sf);
+      	} else {
+         	sf_temp[0] = -1;
+         	sf_temp[fNofControlPoints-1] = -1;
+         	for (Int_t i = 1; i < fNofControlPoints - 1; i++) {
+            	sf_temp[i] = 1;
+         	}
+         	SetShapeFactors(fNofControlPoints, sf_temp.GetArray());
+      	}
+   	}
+	//   ComputeSpline();
+   } else {
+      fCPGraph.SetLength(fNofControlPoints);
    }
    gROOT->GetListOfCleanups()->Add(&fPGraphs);
    fPGraphs.Clear();
    fDPolyLines.Clear();
-   cout << "TSplineX: ctor npoints, fNP" << npoints << " "<< endl;
+   cout << "TSplineX* tsx =(TSplineX*)" << this << ";"<< endl;
 }
 //____________________________________________________________________________________
 
@@ -528,6 +580,48 @@ TSplineX::~TSplineX()
    cout << "exit ~TSplineX(): "<< this  << endl << flush;
 
 }
+//______________________________________________________________________________
+
+Int_t TSplineX::DistancetoPrimitive(Int_t px, Int_t py)
+{
+   // Compute distance from point px,py to points of a graph
+   // if railwaylike (double line) look inside
+   //
+//   cout << "TSplineX::Distan " << fNpoints << endl;
+   Int_t distance;
+
+   const Int_t big = 9999;
+   const Int_t kMaxDiff = 10;
+
+   // check if point is near one of the graph points
+   Int_t i, pxp, pyp, d;
+   distance = big;
+   if (fRailwaylike > 0 && fDPolyLines.GetSize() > 0) {
+      TPolyLine *pl = (TPolyLine*)fDPolyLines.At(0);
+      if (pl) {
+         Double_t xp = gPad->AbsPixeltoX(px);
+         Double_t yp = gPad->AbsPixeltoY(py);
+         if (TMath::IsInside(xp, yp, pl->GetLastPoint()+1, pl->GetX(), pl->GetY())) 
+            distance = 0;
+      }
+   } else {
+   // Somewhere on the graph points?
+   	for (i=0;i<fNpoints;i++) {
+      	pxp = gPad->XtoAbsPixel(gPad->XtoPad(fX[i]));
+      	pyp = gPad->YtoAbsPixel(gPad->YtoPad(fY[i]));
+      	d   = TMath::Abs(pxp-px) + TMath::Abs(pyp-py);
+      	if (d < distance) distance = d;
+   	}
+      if (distance < kMaxDiff) return distance;
+   // check if point is near the connecting line
+   	for (i=0;i<fNpoints-1;i++) {
+      	d = DistancetoLine(px, py, gPad->XtoPad(fX[i]), gPad->YtoPad(fY[i]), gPad->XtoPad(fX[i+1]), gPad->YtoPad(fY[i+1]));
+      	if (d < distance) distance = d;
+   	}
+   }
+   if (distance < kMaxDiff) return distance;
+   else                     return big;
+}
 //_____________________________________________________________________________________
 
 void TSplineX::SetShapeFactors(Int_t npoints, Float_t* s)
@@ -549,15 +643,29 @@ void TSplineX::SetShapeFactors(Int_t npoints, Float_t* s)
    if (fNofControlPoints != 0 && npoints != fNofControlPoints) {
       cout << "Number of ShapeFactors: " << npoints << " != " 
            << "Number of ControlPoints " << endl;
-      fReady = kFALSE;
       return;
    }
    fCPGraph.SetAllShapeFactors(npoints, s);
-   fReady = kTRUE;
 }
 //_____________________________________________________________________________________
 
-void TSplineX::SetControlPoints(Int_t npoints, Double_t* x, Double_t* y)
+void TSplineX::SetIsClosed(Bool_t isclosed)
+{
+   if (fClosed != isclosed) {
+      fClosed = isclosed;
+      if (fClosed) {
+         fCPGraph.SetShapeFactor(0, (Int_t)(100*fCPGraph.GetShapeFactor(1)));
+         fCPGraph.SetShapeFactor(fNofControlPoints-1, (Int_t)(100*fCPGraph.GetShapeFactor(1)));
+      } else {
+         fCPGraph.SetShapeFactor(0, -100);
+         fCPGraph.SetShapeFactor(fNofControlPoints-1, -100);
+      }
+      ComputeSpline();
+   }
+}
+//_____________________________________________________________________________________
+
+void TSplineX::SetAllControlPoints(Int_t npoints, Double_t* x, Double_t* y)
 {
 // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*Set ControlPoints-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 // 
@@ -567,37 +675,24 @@ void TSplineX::SetControlPoints(Int_t npoints, Double_t* x, Double_t* y)
    }
 
    fNofControlPoints = npoints;
-//   if (npoints == 2) fNofControlPoints = 3;
    fCPGraph.Set(fNofControlPoints);
    for (Int_t i = 0; i < npoints; i++) {
       fCPGraph.SetPoint(i, x[i], y[i]);
    }
-//  force a point in between
-//   if (npoints == 2) {
-//      fCPGraph.SetPoint(2, x[1], y[1]);
-//      fCPGraph.SetPoint(1, 0.5 * (x[0] + x[1]), 0.5 * (y[0] +y[1]));
-//   }
 }
 //_____________________________________________________________________________________
 
-Int_t TSplineX::ComputeSpline(Float_t prec, Bool_t closed)
+Int_t TSplineX::ComputeSpline()
 {
 // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*Compute the spline-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 //
 // prec: Controls the number of intermediate points
 // open: Open spline if TRUE otherwise closed
 //
-   if (!fReady) {
+   ControlGraph* cg = GetControlGraph();
+   if (cg->GetN() <= 0) {
       cout << "ShapeFactors not set" << endl;
       return -1;
-   }
-   if (prec == 0) {
-      cout << "Precision must be != 0" << endl;
-      return -1;
-   }
-   if (prec > 0) {
-      fPrec = prec;
-      fClosed = closed;
    }
 //   Dump();
    CopyControlPoints();
@@ -606,12 +701,26 @@ Int_t TSplineX::ComputeSpline(Float_t prec, Bool_t closed)
    else
       op_spline(fControlPointList, fShapeFactorList, fPrec);
    SetGraph();
-//   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
+   if (fRailL && fRailL) {
+      fRailL->Compute();
+      fRailR->Compute();
+      if (!gPad->GetListOfPrimitives()->FindObject(fRailL)) fRailL->Draw("L");
+      if (!gPad->GetListOfPrimitives()->FindObject(fRailR)) fRailR->Draw("L");
+      if (fPaintArrowAtStart || fPaintArrowAtEnd) { 
+         fRailL->CorrectForArrows( fArrowLength, fArrowAngle,fArrowIndentAngle,
+                                    fPaintArrowAtStart, fPaintArrowAtEnd);
+         fRailR->CorrectForArrows( fArrowLength, fArrowAngle,fArrowIndentAngle,
+                                    fPaintArrowAtStart, fPaintArrowAtEnd);
+      }
+   }
    if (fPGraphs.GetEntries() > 0) {
       for (Int_t i = 0; i <= fPGraphs.GetLast(); i++) {
          ParallelGraph * gr = (ParallelGraph*)fPGraphs[i];
          if (gr) {
+ //           cout << "gr->Compute(): " << fNpoints << endl;
             gr->Compute();
+            if (!gPad->GetListOfPrimitives()->FindObject(gr)) gr->Draw("L");
+
             if ((fPaintArrowAtStart || fPaintArrowAtEnd) 
                 && (fFilledLength <= 0 || fEmptyLength  <= 0))
               gr->CorrectForArrows( fArrowLength, fArrowAngle,fArrowIndentAngle,
@@ -619,7 +728,8 @@ Int_t TSplineX::ComputeSpline(Float_t prec, Bool_t closed)
          }
       }
    }
-   fComputeDone = kFALSE;
+//   fComputeDone = kFALSE;
+   fComputeDone = kTRUE;
 //   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
    gPad->Modified();
    gPad->Update();
@@ -633,23 +743,24 @@ Int_t TSplineX::GetResult(Double_t*& x, Double_t*& y)
 //
     x = fX.GetArray();
     y = fY.GetArray();
-    return fNpoints;
+    return GetLastPoint() + 1;
 }
 //_____________________________________________________________________________________
 
 void TSplineX::RemovePolyLines()
 {
+//  cout << "TSplineX::RemovePolyLines()" << endl;
    if (fDPolyLines.GetSize() > 0) {
       TIter next(&fDPolyLines);
       TObject* obj;
       TList * lop = gPad->GetListOfPrimitives();
-      lop->ls();
+//      lop->ls();
       while ( (obj=next()) ) {
-         if (lop->FindObject(obj)) cout << "lop->Remove(obj) " << obj<< endl;
+//         if (lop->FindObject(obj)) cout << "TSplineX::RemovePolyLines (lop->Remove(obj) " << obj<< endl;
          lop->Remove(obj);
       }
       fDPolyLines.Delete();
-      lop->ls();
+//      lop->ls();
    }
 }
 //_____________________________________________________________________________________
@@ -702,7 +813,7 @@ void TSplineX::CopyControlPoints()
       if (fControlPointList == 0) fControlPointList = p_cp;
       if (previous_cp != 0) previous_cp->SetNext(p_cp);
       previous_cp = p_cp;
-      ShapeFactor* p_sf = new ShapeFactor(fCPGraph.GetShapeFactorByPointNumber(i), (ShapeFactor*)0);
+      ShapeFactor* p_sf = new ShapeFactor(fCPGraph.GetShapeFactor(i), (ShapeFactor*)0);
       if (fShapeFactorList == 0) fShapeFactorList = p_sf;
       if (previous_sf != 0) previous_sf->SetNext(p_sf);
       previous_sf = p_sf;
@@ -758,31 +869,44 @@ void TSplineX::ExecuteEvent(Int_t event, Int_t px, Int_t py)
  
 void TSplineX::SetGraph()
 {
-   Set(fNpoints);
+   SetPolyLine(fNpoints);
    for (Int_t i = 0; i < fNpoints; i++) {
       SetPoint(i, fX[i], fY[i]);
    }
 }
 //_____________________________________________________________________________________
  
-void TSplineX::DrawControlPoints(Int_t marker,  Size_t size)
+void TSplineX::DrawControlPoints(Style_t marker,  Size_t size)
 {
    if (fCPGraph.GetN() <= 0) return;
    
-   if (marker != 0) fMType =  marker;
-   fCPGraph.SetMarkerStyle(fMType);
+   if (marker != 0) fMStyle =  marker;
+   fCPGraph.SetMarkerStyle(fMStyle);
    if (size > 0)  fMSize = size;
    fCPGraph.SetMarkerSize(fMSize);
-    cout << "DrawControlPoints marker " << marker<< " fMType " << fMType<<endl; 
+//    cout << "DrawControlPoints marker " << marker<< " fMStyle " << fMStyle<<endl; 
    fCPGraph.Draw("P");
+   fCPDrawn = kTRUE;
    gPad->Update();
 }
 //_____________________________________________________________________________________
-
+ 
+void TSplineX::RemoveControlPoints()
+{
+   if (fCPGraph.GetN() <= 0) return;
+   
+//    cout << "DrawControlPoints marker " << marker<< " fMStyle " << fMStyle<<endl; 
+   gPad->GetListOfPrimitives()->Remove(&fCPGraph);
+   fCPDrawn = kFALSE;
+   gPad->Update();
+}
+//_____________________________________________________________________________________
+/*
 void TSplineX::EditControlGraph() 
 {
     fCPGraph.EditControlGraph();
 }
+*/
 //_____________________________________________________________________________________
 
 ParallelGraph* TSplineX::AddParallelGraph(Double_t dist, Color_t color, Width_t width, Style_t style)
@@ -796,13 +920,16 @@ ParallelGraph* TSplineX::AddParallelGraph(Double_t dist, Color_t color, Width_t 
    else            pgraph->SetLineWidth(width);
    if (style <= 0) pgraph->SetLineStyle(this->GetLineStyle());
    else            pgraph->SetLineStyle(style);
-   pgraph->Draw("L");
+//   pgraph->Draw("L");
+   fComputeDone = kFALSE;
    return pgraph;
 }
 //_____________________________________________________________________________________
 
 void  TSplineX::DrawParallelGraphs()
 {
+   if (fRailL) fRailL->Draw("L");
+   if (fRailR) fRailR->Draw("L");
    for (Int_t i = 0; i < fPGraphs.GetEntries(); i++) {
       TGraph* gr = (TGraph*)fPGraphs[i];
       if (gr) gr->Draw("L");
@@ -810,15 +937,49 @@ void  TSplineX::DrawParallelGraphs()
 }
 //_____________________________________________________________________________________
  
+void TSplineX::SetRailwaylike(Double_t gage)
+{
+//   cout << "SetRailwaylike: " << gage << endl;
+   fRailwayGage = gage;
+   if (gage <= 0) {
+      fRailwaylike = 0;
+      if (fRailL) {delete fRailL; fRailL = NULL;}
+      if (fRailR) {delete fRailR; fRailR = NULL;}
+   } else {
+   	if (fRailL != NULL) {
+      	if (fRailL) fRailL->SetDist( gage / 2);
+      	if (fRailR) fRailR->SetDist(-gage / 2);
+   	} else {
+      	fRailwaylike = 1;
+      	fRailL = new ParallelGraph (this,  gage / 2 , fClosed); 
+         fRailL->SetLineColor(this->GetLineColor());
+         fRailL->SetLineWidth(this->GetLineWidth());
+         fRailL->SetLineStyle(this->GetLineStyle());
+         fRailL->SetIsRail();
+//         fRailL->Draw("L");
+      	fRailR = new ParallelGraph (this, -gage / 2 , fClosed); 
+         fRailR->SetLineColor(this->GetLineColor());
+         fRailR->SetLineWidth(this->GetLineWidth());
+         fRailR->SetLineStyle(this->GetLineStyle());
+         fRailR->SetIsRail();
+//         fRailR->Draw("L");
+   	} 
+   }
+   fComputeDone = kFALSE;
+   gPad->Modified();
+}
+//_____________________________________________________________________________________
+ 
 void TSplineX::Paint(Option_t * option)
 {
-//   cout << " TSplineX::Paint fComputeDone = ";
+//   cout << " TSplineX::Paint ComputeDone " ;
 //   if (fComputeDone) cout << " true" ;
-//  else              cout << " false" ;
-//  cout << endl;
+//   else              cout << " false" ;
+ //  cout << endl;
+   if (!fComputeDone) ComputeSpline();
 
    if (fRailwaylike <= 0)  {
-      TGraph::Paint(option);
+      TPolyLine::Paint(option);
       if (fArrowAtStart) { 
          fArrowAtStart->SetLineColor(GetLineColor());
          if (fArrowAtStart->GetFillStyle() != 0) 
@@ -834,8 +995,8 @@ void TSplineX::Paint(Option_t * option)
 
    } 
 
-   if (fComputeDone) return;
-   fComputeDone = kTRUE;
+//   if (fComputeDone) return;
+//   fComputeDone = kTRUE;
 
    if (fArrowAtStart) {
 //      fArrowSize  = fArrowAtStart->GetArrowSize();
@@ -856,21 +1017,6 @@ void TSplineX::Paint(Option_t * option)
       fArrowAtEnd = NULL;
    }
 
-   if (fFilledLength <= 0 || fEmptyLength <= 0 || fRailwaylike <= 0) {
-//  currently no arrays with railway sleepers allowed
-      if (fPaintArrowAtStart) PaintArrow(0);
-      if (fPaintArrowAtEnd)   PaintArrow(1);
-      return;
-   }
-   
-//  draw railway sleepers
-   ParallelGraph* lg = (ParallelGraph*)fPGraphs[0];
-   ParallelGraph* rg = (ParallelGraph*)fPGraphs[1];
-//   cout << "TSplineX::Paint " << lg << " " << rg  << endl;
-   if (lg->GetN() != rg->GetN() || lg->GetN() < 4) {
-      cout << "Not enough points on spline" << endl;
-      return;
-   }
 
    if (fDPolyLines.GetSize() > 0) {
       TIter next(&fDPolyLines);
@@ -879,7 +1025,88 @@ void TSplineX::Paint(Option_t * option)
       while ( (obj=next()) ) lop->Remove(obj); 
       fDPolyLines.Delete();
    }
-//   TPolyLine * pl;
+   if (fPaintArrowAtStart) PaintArrow(0);
+   if (fPaintArrowAtEnd)   PaintArrow(1);
+   
+   if (fRailwaylike > 0) {
+      if (fRailL == 0) SetRailwaylike(fRailwayGage);
+//  fill parallel graphs
+      ParallelGraph *lg = fRailL;
+      ParallelGraph *rg = fRailR;
+   	lg->SetLineColor(GetLineColor());
+   	rg->SetLineColor(GetLineColor());
+   	lg->SetLineWidth(GetLineWidth());
+   	rg->SetLineWidth(GetLineWidth());
+      Int_t npoints = 1;
+      npoints += lg->GetLastPoint()+1;
+      npoints += rg->GetLastPoint()+1;
+      if (fPaintArrowAtEnd) npoints += 3;
+      if (fPaintArrowAtStart) npoints += 3;
+      PolyLineNoEdit * pl = new PolyLineNoEdit(npoints);
+      Double_t * x = pl->GetX();
+      Double_t * y = pl->GetY();
+      Double_t * px = rg->GetX();
+      Double_t * py = rg->GetY();
+      Int_t n = 0;
+      for (Int_t i = 0; i < rg->GetLastPoint()+1; i++) {
+//         cout << n<< " " << px[i]<< " " << py[i] << endl;
+         pl->SetPoint(n, px[i], py[i]);
+         n++;
+      }
+      if (fPaintArrowAtEnd) {
+         px = fArrowAtEnd->GetX();
+         py = fArrowAtEnd->GetY();
+         for (Int_t i = 3; i >= 1; i--) {
+           pl->SetPoint(n, px[i], py[i]);
+           n++;
+         }
+      }
+      px = lg->GetX();
+      py = lg->GetY();
+      for (Int_t i = lg->GetLastPoint()+1 -1 ; i >= 0; i--) {
+//         cout << n<< " " << px[i]<< " " << py[i] << endl;
+         pl->SetPoint(n, px[i], py[i]);
+         n++;
+      }
+      if (fPaintArrowAtStart) {
+         px = fArrowAtStart->GetX();
+         py = fArrowAtStart->GetY();
+         for (Int_t i = 3; i >= 1; i--) {
+            pl->SetPoint(n, px[i], py[i]);
+            n++;
+         }
+      }
+      pl->SetPoint(n, x[0], y[0]);
+      pl->SetLineColor(GetLineColor());
+      pl->SetLineWidth(GetLineWidth());
+      fDPolyLines.Add(pl);
+      if (fParallelFill || GetFillStyle() != 0) {     
+         pl->SetFillStyle(GetFillStyle());
+         pl->SetFillColor(GetFillColor());
+         pl->Draw("F");
+         lg->Pop();
+         rg->Pop();
+         if (fPaintArrowAtEnd) fArrowAtEnd->Pop();
+         if (fPaintArrowAtStart) fArrowAtStart->Pop();
+      }
+//      pl->Dump();
+      gPad->Modified();
+      gPad->Update();
+   }
+
+   if (fFilledLength <= 0 || fEmptyLength <= 0 || fRailwaylike <= 0) {
+//  currently no arrays with railway sleepers allowed
+      return;
+   }
+   
+//  draw railway sleepers
+   ParallelGraph* lg = fRailL;
+   ParallelGraph* rg = fRailR;
+   cout << "TSplineX::Paint " << lg << " " << rg  << endl;
+   if (lg->GetLastPoint()+1 != rg->GetLastPoint()+1 || lg->GetLastPoint()+1 < 4) {
+      cout << "Not enough points on spline" << endl;
+      return;
+   }
    RailwaySleeper * pl;
    Double_t xp[5], yp[5];
    Int_t ip = 0;
@@ -907,9 +1134,10 @@ void TSplineX::Paint(Option_t * option)
    xcprev = xc[0];
    ycprev = yc[0];
    Bool_t within_gap = kFALSE;
+//   cout << "TSplineX::Paint " << fFilledLength << " " << fEmptyLength  << endl;
 
 //      draw a filled box with length fFilledLength
-   while (ip < GetN()- 2) {
+   while (ip < GetLastPoint() + 1 - 2) {
       if (needed <= available) {
          within_gap = kFALSE;
          phi = PhiOfLine( xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
@@ -958,7 +1186,7 @@ void TSplineX::Paint(Option_t * option)
                break;
             } else {
                ip += 1;
-               if (ip >= GetN()- 2) break; 
+               if (ip >= GetLastPoint() + 1 - 2) break; 
                needed -=   Length(xcprev, ycprev, xc[ip], yc[ip]);
                available = Length(xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
                xcprev = xc[ip];
@@ -994,7 +1222,7 @@ void TSplineX::Paint(Option_t * option)
       }
    }
   
-   ip = GetN()- 2;
+   ip = GetLastPoint() + 1 - 2;
    if ( !within_gap ) {
       xp[0] = xr[ip];
       yp[0] = yr[ip];
@@ -1023,7 +1251,7 @@ void TSplineX::Paint(Option_t * option)
 }
 //_____________________________________________________________________________________
 
-void TSplineX::SetColor(Color_t color)
+void TSplineX::SetSleeperColor(Color_t color)
 {
    SetLineColor(color);
 //   std::cout << "TSplineX::SetColor " << color << std::endl;
@@ -1031,7 +1259,8 @@ void TSplineX::SetColor(Color_t color)
       TIter next(&fDPolyLines);
       RailwaySleeper * rs;
       while ( (rs = (RailwaySleeper*)next()) ) {
-         rs->SetColor(color);
+         rs->SetLineColor(color);
+         rs->SetFillColor(color);
       }
       gPad->Update();
    }
@@ -1043,10 +1272,12 @@ void TSplineX::AddArrow(Int_t where, Double_t length,
 {
    if (where == 0) fPaintArrowAtStart = kTRUE;
    if (where == 1) fPaintArrowAtEnd = kTRUE;
-   fArrowLength = length;
-   fArrowAngle = angle;
+   fArrowLength      = length;
+   fArrowAngle       = angle;
    fArrowIndentAngle = indent_angle;
-   fArrowFill = filled;
+   fArrowFill        = filled;
+   fComputeDone      = kFALSE;
+   Paint();
 }
 //_____________________________________________________________________________________
 
@@ -1074,9 +1305,11 @@ void TSplineX::PaintArrow(Int_t where)
    Double_t p2 = 0.5 * fArrowAngle * deg2rad;
    Double_t a2 = fArrowIndentAngle *deg2rad;
 
-   TGraph * arrow = new TGraph(5);
-   Double_t *x = arrow->GetX();
-   Double_t *y = arrow->GetY();
+//   TGraph * arrow = new TGraph(5);
+//   Double_t *x = arrow->GetX();
+//   Double_t *y = arrow->GetY();
+   Double_t x[5], y[5];
+
    x[0] = x[4] = 0;
    y[0] = y[4] = 0;
    x[1] = - fArrowLength;
@@ -1096,23 +1329,164 @@ void TSplineX::PaintArrow(Int_t where)
       x[i] = xx + px2;
       y[i] = yy + py2;
    }
+   if (fRailwaylike && fArrowFill == 0) {
+//  connect array at end to parallel lines
+      ParallelGraph* lg = fRailL;
+      ParallelGraph* rg = fRailR;
+      xp = lg->GetX();
+      yp = lg->GetY();
+      np = lg->GetLastPoint()+1;
+   	if (where == 1) {
+   		px2 = xp[np-1];
+   		py2 = yp[np-1];
+   	} else {
+      	px1 = xp[0];
+   		py1 = yp[0];
+   	}
+      xp = rg->GetX();
+      yp = rg->GetY();
+      np = rg->GetLastPoint()+1;
+   	if (where == 1) {
+   		px1 = xp[np-1];
+   		py1 = yp[np-1];
+   	} else {
+      	px2 = xp[0];
+   		py2 = yp[0];
+   	}
+      Double_t px0 = x[0];
+      Double_t py0 = y[0];
+      Double_t px3 = x[3];
+      Double_t py3 = y[3];
+      Double_t px1o = x[1];
+      Double_t py1o = y[1];
+      x[0] = px2;
+      y[0] = py2;
+      x[1] = px3;
+      y[1] = py3;
+      x[2] = px0;
+      y[2] = py0;
+      x[3] = px1o;
+      y[3] = py1o;
+      x[4] = px1;
+      y[4] = py1;
+   }   
 
+   PolyLineNoEdit * arrow = new PolyLineNoEdit(5, &x[0], &y[0]);
    arrow->SetLineColor(GetLineColor());
    if (fArrowFill != 0) {
-      arrow->SetName("FilledArrow");
+//      arrow->SetName("FilledArrow");
       arrow->SetFillStyle(1001);
       arrow->SetFillColor(GetLineColor());
       arrow->Draw("F");
    } else {
-      arrow->SetName("OpenArrow");
+//      arrow->SetName("OpenArrow");
       arrow->SetFillStyle(0);
       arrow->SetLineWidth(GetLineWidth());
       arrow->Draw();
+//      arrow->Print();
    }
    if (where == 1) fArrowAtEnd = arrow;
    else            fArrowAtStart = arrow;
 }
-//____py2 = yp[0];_______________________________________________________________________
+//___________________________________________________________________________
+
+void TSplineX::SetArrowFill(Bool_t filled)
+{
+   if (filled) {
+      if (fArrowAtStart)fArrowAtStart->SetFillStyle(1001);
+      if (fArrowAtEnd)fArrowAtEnd->SetFillStyle(1001);
+   } else {
+      if (fArrowAtStart)fArrowAtStart->SetFillStyle(0);
+      if (fArrowAtEnd)fArrowAtEnd->SetFillStyle(0);
+   }
+   fArrowFill = filled;
+}; 
+//___________________________________________________________________________
+
+void TSplineX::SavePrimitive(ofstream &out, Option_t *)
+{
+   // Save primitive as a C++ statement(s) on output stream out
+
+   cout << "TSplineX::SavePrimitive: " << this << endl;
+   char quote = '"';
+   out<<"   "<<endl;
+   out<<"   Double_t *dum = 0;"<<endl;
+   out<<"   Float_t *fum = 0;"<<endl;
+   if (gROOT->ClassSaved(TSplineX::Class())) {
+      out<<"   ";
+   } else {
+      out<<"    TSplineX *";
+   }
+   
+   out<<"splinex = new TSplineX("<<GetNofControlPoints()<<",dum,dum,fum,"
+       << fPrec <<",";
+       if (fClosed) out << "kTRUE ";
+       else         out << "kFALSE";
+       out << ");"<<endl;
+
+   SaveFillAttributes(out,"splinex",0,0);
+   SaveLineAttributes(out,"splinex",0,0,0);
+
+   for (Int_t i=0;i<GetNofControlPoints();i++) {
+      Double_t x, y;
+      Float_t sf;
+      GetControlPoint(i, &x, &y, &sf);
+      out<<"   splinex->SetControlPoint("<< i << "," << x << "," << y << ","<< sf <<");"<<endl;
+   }
+   out<<"   splinex->SetRailwayGage("<<GetRailwayGage()<<");"<<endl;
+   out<<"   splinex->SetFilledLength("<<GetFilledLength()<<");"<<endl;
+   out<<"   splinex->SetEmptyLength("<<GetEmptyLength()<<");"<<endl;
+   if (fPaintArrowAtStart) 
+      out<<"   splinex->AddArrow(0,"
+   << fArrowLength << ","
+   << fArrowAngle << ","
+   << fArrowIndentAngle << ","
+   << fArrowFill << ");" << endl;
+   if (fPaintArrowAtEnd) 
+      out<<"   splinex->AddArrow(1,"
+   << fArrowLength << ","
+   << fArrowAngle << ","
+   << fArrowIndentAngle << ","
+   << fArrowFill << ");" << endl;
+
+//   out<<"   splinex->("<<
+   out<<"   splinex->Draw("
+      <<quote<<quote<<");"<<endl;
+//  Draw must be done before to add possible rails
+   Bool_t to_pgr_filled = kFALSE; 
+   if (fPGraphs.GetEntries() > 0) {
+      for (Int_t i = 0; i <= fPGraphs.GetLast(); i++) {
+         ParallelGraph * gr = (ParallelGraph*)fPGraphs[i];
+         gPad->GetListOfPrimitives()->Remove(gr);
+         if (gr && !gr->GetIsRail()) {
+            if (!gROOT->ClassSaved(ParallelGraph::Class()))
+               out<<"   ParallelGraph *pgr;" << endl;
+            out<<"   pgr = splinex->AddParallelGraph(" 
+               << gr->GetDist() << "," 
+               << gr->GetLineColor() << "," 
+               << gr->GetLineWidth() << "," 
+               << gr->GetLineStyle() << ");" << endl;
+            if (gr->GetDistToSlave() != 0) { 
+               out<<"   pgr->SetDistToSlave(" <<gr->GetDistToSlave()<< ");" <<endl;
+               out<<"   pgr->SetFillColor(" <<gr->GetFillColor()<< ");" <<endl;          
+               out<<"   pgr->SetFillStyle(" <<gr->GetFillStyle()<< ");" <<endl;          
+               to_pgr_filled = kTRUE; 
+            }
+         }          
+      }
+//    fill to parallel graph if needed
+      if (to_pgr_filled) {     
+         out << "   for (Int_t i = 0; i <= splinex->GetParallelGraphs()->GetLast(); i++) {" << endl;
+         out << "     pgr = (ParallelGraph*)(*(splinex->GetParallelGraphs()))[i];" << endl;
+         out << "     if (pgr->GetDistToSlave() != 0) pgr->FillToSlave(pgr->GetDistToSlave());" << endl;
+         out << "   }" << endl;
+      }
+   }
+//   RemoveControlPoints();
+//   RemovePolyLines();
+//   gPad->GetListOfPrimitives()->ls();
+}
+
 //___________________________________________________________________________
 //
 // ControlGraph, a helper class for TSplineXs,
@@ -1126,13 +1500,38 @@ ControlGraph::ControlGraph (Int_t npoints, Double_t*  x, Double_t* y) :
    fSelectedY = 0;
    fSelectedPoint = -1;
    fSelectedShapeFactor = -1;
-   fChangeShapeFactorsConjointly = 1;
 };
-//_____________________________________________________________________________________
-   
-void ControlGraph::Delete(Option_t *opt)
+//______________________________________________________________________________
+
+Int_t ControlGraph::DistancetoPrimitive(Int_t px, Int_t py)
 {
-   cout << "Cant delete ControlGraph, delete its TSplineX" << endl; 
+   // Compute distance from point px,py to points of a graph only.
+   //
+   Int_t distance;
+
+   // Somewhere on the graph points?
+   const Int_t big = 9999;
+   const Int_t kMaxDiff = 10;
+
+   // check if point is near one of the graph points
+   Int_t i, pxp, pyp, d;
+   distance = big;
+
+   for (i=0;i<fNpoints;i++) {
+      pxp = gPad->XtoAbsPixel(gPad->XtoPad(fX[i]));
+      pyp = gPad->YtoAbsPixel(gPad->YtoPad(fY[i]));
+      d   = TMath::Abs(pxp-px) + TMath::Abs(pyp-py);
+      if (d < distance) distance = d;
+   }
+   if (distance < kMaxDiff) return distance;
+    
+   if (fParent->DistancetoPrimitive(px, py) <= kMaxDiff) return big;
+//   else                     return big;
+   for (i=0;i<fNpoints-1;i++) {
+      d = DistancetoLine(px, py, gPad->XtoPad(fX[i]), gPad->YtoPad(fY[i]), gPad->XtoPad(fX[i+1]), gPad->YtoPad(fY[i+1]));
+      if (d < distance) distance = d;
+   }
+   return distance; 
 }
 //_____________________________________________________________________________________
    
@@ -1144,10 +1543,14 @@ void ControlGraph::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 // since the index can be computed from the position px, py
 // After return the ContextMenu will pop up
 //
-//   static Color_t color = fParent->GetLineColor();
-//   static Int_t  lwidth = fParent->GetLineWidth();
-//   static Int_t  lstyle = fParent->GetLineStyle();
-//   cout << event << " "<< px << " " << py << endl;
+/*
+   static Color_t  fcolor = fParent->GetFillColor();
+   static Style_t  fstyle = fParent->GetFillStyle();
+   static Color_t  color = fParent->GetLineColor();
+   static Style_t  lstyle = fParent->GetLineStyle();
+   static Width_t  lwidth = fParent->GetLineWidth();
+   cout <<  "Enter ExecuteEvent " << fParent->GetFillColor() << endl;
+*/
 
    if (event == kButton3Down) {
 //      cout << "kButton3Down " << endl;
@@ -1166,13 +1569,20 @@ void ControlGraph::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
    } else if (event == kButton3Up) {
       cout << "kButton3Up " << endl;
  
-//      if (GetLineColor() != color) fParent->SetLineColor(color);
-//      if (GetLineWidth() != lwidth) fParent->SetLineWidth(lwidth);
-//      if (GetLineStyle() != lstyle) fParent->SetLineStyle(lstyle);
    } else {
       TGraph::ExecuteEvent(event, px, py);
    }
+/*
+   cout <<  "After TGraph::ExecuteEvent " << fParent->GetFillColor() << endl;
+ 
+   if (fParent->GetFillColor() != fcolor) fParent->SetFillColor(fcolor);
+   if (fParent->GetFillStyle() != fstyle) fParent->SetFillStyle(fstyle);
+   if (fParent->GetLineColor() != color)  fParent->SetLineColor(color);
+   if (fParent->GetLineStyle() != lstyle) fParent->SetLineStyle(lstyle);
+   if (fParent->GetLineWidth() != lwidth) fParent->SetLineWidth(lwidth);
+*/
    if (event == kButton1Up && fParent) fParent->ComputeSpline();
+ //  cout <<  "exit ExecuteEvent " << fParent->GetFillColor() << endl;
 }
 //_____________________________________________________________________________________
    
@@ -1204,7 +1614,37 @@ void ControlGraph::SetOneShapeFactor(Int_t ipoint, Double_t x, Double_t y, Float
 }
 //_____________________________________________________________________________________
 
-Int_t ControlGraph::InsertPoint() 
+void ControlGraph::GetControlPoint(Int_t ipoint, Double_t *x, Double_t *y, Float_t *sfactor)
+{
+   if (ipoint >=0 && ipoint < fShapeFactors.GetSize() ) {
+      *sfactor = fShapeFactors[ipoint];
+      *x = fX[ipoint];
+      *y = fY[ipoint];
+   }
+}
+//_____________________________________________________________________________________
+
+void ControlGraph::SetControlPoint(Int_t ipoint, Double_t x, Double_t y, Float_t sfactor)
+{
+   if (ipoint >=0 && ipoint < fShapeFactors.GetSize() ) {
+      fShapeFactors[ipoint] = sfactor;
+      SetPoint(ipoint, x, y);
+//      cout << "Set ShapeFactor[" << ipoint << "] = " << sfactor << endl;
+   }
+}
+//_____________________________________________________________________________________
+
+void ControlGraph::SetShapeFactor(Int_t ip, Int_t val) 
+// this is invoked from ControlGraphMixer 
+// val = shapefactor * 100
+{
+   if (ip >= 0 && ip < fShapeFactors.GetSize()) {
+      fShapeFactors[ip] = (Float_t)val / 100.;
+      fParent->ComputeSpline();
+   }
+}
+//_____________________________________________________________________________________
+Int_t ControlGraph::CG_InsertPoint() 
 {
 // This method is invoked from the ContextMenu
 // When inserting a point also a ShapeFactor must be inserted 
@@ -1227,7 +1667,7 @@ Int_t ControlGraph::InsertPoint()
 }
 //_____________________________________________________________________________________
 
-Int_t ControlGraph::RemovePoint() 
+Int_t ControlGraph::CG_RemovePoint() 
 {
 // This method is invoked from the ContextMenu
 // When removing a point also its ShapeFactor must be removed 
@@ -1252,7 +1692,7 @@ Int_t ControlGraph::RemovePoint()
    return ipoint;
 }
 //_____________________________________________________________________________________
-
+/*
 void ControlGraph::EditControlGraph() 
 {
 // This method is invoked from the ContextMenu
@@ -1288,77 +1728,47 @@ void ControlGraph::EditControlGraph()
    }
    fParent->ComputeSpline();
 }
+*/
 //_____________________________________________________________________________________
 
 void ControlGraph::ControlGraphMixer() 
 {
 // This method is invoked from the ContextMenu
    if (!fParent) return;
-   TOrdCollection * row_lab = new TOrdCollection;
-//   col_lab->Add(new TObjString("cc"));
+   static TOrdCollection * row_lab = new TOrdCollection;
    Int_t nrows = GetN();
-   if (fChangeShapeFactorsConjointly > 0) 
-      nrows = 1;
-
-   TArrayI values(nrows);
-   TArrayI minval(nrows);
-   TArrayI maxval(nrows);
+	fMixerValues.Set(nrows); 
+	fMixerMinval.Set(nrows); 
+	fMixerMaxval.Set(nrows); 
+	fMixerFlags.Set(nrows);  
    Double_t * x = GetX();
    Double_t * y = GetY();
-//   TArrayI flags(nrows);
    for(Int_t i = 0; i < nrows; i++) {
-      values[i] = (Int_t) (100 * fShapeFactors[i]);
-      minval[i] = -100;
-      maxval[i] =  100;
+      fMixerValues[i] = (Int_t) (100 * fShapeFactors[i]);
+      fMixerMinval[i] = -100;
+      fMixerMaxval[i] =  100;
+      fMixerFlags[i] = 0;
+      if (fParent->GetIsClosed()) {
+         fMixerFlags[i] = 2;
+      } else {
+         if (i != 0 && i != nrows-1)fMixerFlags[i] = 2;
+      }
       Int_t ix = (Int_t)x[i];
       Int_t iy = (Int_t)y[i];
       row_lab->Add(new TObjString(Form("%d, %d", ix, iy)));
    }
-   if (fChangeShapeFactorsConjointly > 0) 
-      values[0] = (Int_t) (100 * fShapeFactors[1]);
-   TGMrbSliders * sliders = new TGMrbSliders("Set Shapefactors (*100)", nrows, 
-                       minval.GetArray(), maxval.GetArray(), values.GetArray(),
-                       row_lab, NULL, NULL);
-   sliders->Connect("SliderEvent(Int_t, Int_t, Int_t)",this->ClassName() , this, 
-               "SetShapeFactors(Int_t, Int_t, Int_t)");
+   TGMrbSliders * sliders = new TGMrbSliders("ControlGraphMixer", nrows, 
+                       fMixerMinval.GetArray(), fMixerMaxval.GetArray(), fMixerValues.GetArray(),
+                       row_lab, fMixerFlags.GetArray(), NULL);
+   sliders->Connect("SliderEvent(Int_t, Int_t)",this->ClassName() , this, 
+               "SetShapeFactor(Int_t, Int_t)");
 }
 //_____________________________________________________________________________________
 
-void ControlGraph::SetShapeFactors(Int_t id, Int_t ip, Int_t val) 
+PolyLineNoEdit::PolyLineNoEdit(Int_t np, Double_t * x, Double_t * y)
+                : TPolyLine(np, x, y)
 {
-//   cout << "SetShapeFactors: " << ip << " " << val << endl;
-   if (fChangeShapeFactorsConjointly > 0) {
-      Int_t from, to;
-      if (fParent->IsClosed()) {
-         from = 0;
-         to = GetN() - 1;
-      } else {
-         from = 1;
-         to = GetN() - 2;
-      }
-      for (Int_t i = from; i <= to; i++) {
-         fShapeFactors[i] = (Float_t)val / 100.;
-      }
-   } else {
-      fShapeFactors[ip] = (Float_t)val / 100.;
-   }
-   fParent->ComputeSpline();
 }
-//_____________________________________________________________________________________
-
-TGraph* ControlGraph::AddPGraph(Double_t dist, Color_t color, 
-                      Width_t width, Style_t style)
-{
-   if (fParent) return fParent->AddParallelGraph(dist, color, width, style);
-   else         return NULL;
-}
-//_____________________________________________________________________________________
-
-void ControlGraph::SetChangeShapeFactorsConjointly(Int_t val) {
-        fChangeShapeFactorsConjointly = val;}; 
-
-Int_t  ControlGraph::GetChangeShapeFactorsConjointly() {
-        return fChangeShapeFactorsConjointly;}; 
 //_____________________________________________________________________________________
 
 RailwaySleeper::RailwaySleeper(Double_t * x, Double_t * y, 
@@ -1373,16 +1783,16 @@ RailwaySleeper::RailwaySleeper(Double_t * x, Double_t * y,
 //_____________________________________________________________________________________
 void RailwaySleeper::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 {
-    fParent->ExecuteEvent(event, px,py);
+    if (fParent) fParent->ExecuteEvent(event, px,py);
 }
 //_____________________________________________________________________________________
 
 void RailwaySleeper::Draw(Option_t * opt)
 {
-   TPolyLine::Draw("F");
+   TPolyLine::Draw(opt);
 }
 //_____________________________________________________________________________________
-
+/*
 void RailwaySleeper::SetColor(Color_t color)
 {
    fColor = color;
@@ -1395,25 +1805,41 @@ void RailwaySleeper::SetSleeperColor(Color_t color)
    fColor = color;
    fParent->SetColor(color);
 }
+*/
 //_____________________________________________________________________________________
 //_____________________________________________________________________________________
 //
 //
-ParallelGraph::ParallelGraph (TGraph *ograph, Double_t dist, Bool_t closed)
+ParallelGraph::ParallelGraph (TSplineX *ograph, Double_t dist, Bool_t closed)
                : fParent(ograph), fDist(dist),fClosed(closed)  
 {
-   Compute();
+//   SetName("ParallelGraph");
+   fSlave = NULL;
+   fMaster = NULL;
+   fDistToSlave = 0;
+   fIsRail = kFALSE;
+//   Compute();
 }
+//_____________________________________________________________________________________
+
+ParallelGraph::~ParallelGraph() 
+{
+   if (fMaster) fMaster->SetSlave(NULL);
+   if (fParent) fParent->RecursiveRemove(this);
+};
+
 //_____________________________________________________________________________________
 
 void ParallelGraph::Compute()
 {
-   Int_t n = fParent->GetN();
-   if (fClosed && fParent->GetN() <= 2) {
-      cout << "Closed graph must have more then 2 points" << endl;
+   Int_t n = fParent->GetLastPoint() + 1;
+   if (n <= 0)fParent->ComputeSpline();
+ 
+   if (n <= 2) {
+      cout << "A TSplineX must have minimum 3 points" << endl;
       return;
    }
-   Set(n);
+   SetPolyLine(n);
    Double_t phi1, phi2;
    Double_t* xo = fParent->GetX();
    Double_t* yo = fParent->GetY();
@@ -1467,7 +1893,8 @@ void ParallelGraph::CorrectForArrows(Double_t alength, Double_t aangle,Double_t 
            * (1 - dabs / ay);
    Double_t* xp = this->GetX();
    Double_t* yp = this->GetY();
-   Int_t n = fParent->GetN();
+   Int_t n = fParent->GetLastPoint() + 1;
+//   cout << "CorrectForArrows:  " << this->GetLastPoint() + 1<< endl;
 
    if (at_end) {
       chop = reallength ;
@@ -1481,7 +1908,7 @@ void ParallelGraph::CorrectForArrows(Double_t alength, Double_t aangle,Double_t 
 //            cout << "yp[ip], ym  " << yp[ip] << " " << ym << endl;
             xp[ip] = xm;
             yp[ip] = ym;
-            this->Set(ip+1);
+            this->SetPolyLine(ip+1);
             break;
          } else {
             chop -= seglen;
@@ -1492,7 +1919,7 @@ void ParallelGraph::CorrectForArrows(Double_t alength, Double_t aangle,Double_t 
    }
    xp = this->GetX();
    yp = this->GetY();
-   n = this->GetN();
+   n = this->GetLastPoint()+1;
 //   cout << "n " << n << endl;
    if (at_start) {
       chop = reallength;
@@ -1520,8 +1947,8 @@ void ParallelGraph::CorrectForArrows(Double_t alength, Double_t aangle,Double_t 
             yp[i] = yp[ip]; 
             ip++;
          }
-//         cout << "nn " << nn << endl;
-         this->Set(nn);
+         cout << "nn " << nn << endl;
+         this->SetPolyLine(nn);
       }
    }
    return;
@@ -1529,8 +1956,9 @@ void ParallelGraph::CorrectForArrows(Double_t alength, Double_t aangle,Double_t 
 
 //_____________________________________________________________________________________
    
-void ParallelGraph::Delete(Option_t *opt)
+void ParallelGraph::Remove()
 {
+   if (fMaster) fMaster->SetSlave(NULL);
    delete this; 
 }
 //_____________________________________________________________________________________
@@ -1539,3 +1967,121 @@ void ParallelGraph::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 //  execute 
    if (fParent) fParent->ExecuteEvent(event, px, py);
 }
+//_____________________________________________________________________________________
+   
+Int_t ParallelGraph::DistancetoPrimitive(Int_t px, Int_t py)
+{
+   Int_t distance;
+
+   const Int_t big = 9999;
+   const Int_t kMaxDiff = 10;
+
+   // check if point is near one of the graph points
+   Int_t i, pxp, pyp, d;
+   distance = big;
+   if (fIsRail) {
+      return big;
+   } else {
+   // check if point is near one of the graph points
+   	for (i=0; i < GetLastPoint()+1; i++) {
+      	pxp = gPad->XtoAbsPixel(gPad->XtoPad(fX[i]));
+      	pyp = gPad->YtoAbsPixel(gPad->YtoPad(fY[i]));
+      	d   = TMath::Abs(pxp-px) + TMath::Abs(pyp-py);
+      	if (d < distance) distance = d;
+   	}
+      if (distance < kMaxDiff) return distance;
+   // check if point is near the connecting line
+   	for (i=0; i < GetLastPoint() +1 -1; i++) {
+      	d = DistancetoLine(px, py, gPad->XtoPad(fX[i]), gPad->YtoPad(fY[i]), gPad->XtoPad(fX[i+1]), gPad->YtoPad(fY[i+1]));
+      	if (d < distance) distance = d;
+   	}
+   }
+   if (distance < kMaxDiff) return distance;
+   else                     return big;
+}
+//_____________________________________________________________________________________
+   
+void ParallelGraph::ClearFillToSlave()
+{ 
+   fSlave = NULL;
+   if (fSlave) fSlave->SetMaster(NULL);
+   fParent->NeedReCompute();
+   fParent->Paint();
+}
+//_____________________________________________________________________________________
+   
+void ParallelGraph::FillToSlave(Double_t dist)
+{
+   TObjArray * pgl = fParent->GetParallelGraphs();
+   if (pgl->GetSize() < 2) {
+      cout << "No Partner available" << endl;
+      return;
+   }
+   Double_t mindist = 1e20;
+   TIter next(pgl);
+   ParallelGraph *pa;
+   while (pa = (ParallelGraph *)next()) {
+      if (pa == this) continue;
+      if (dist != 0) {
+         if (TMath::Abs(GetDist() -  pa->GetDist() - dist) < 0.1) {
+            fSlave = pa;
+            fDistToSlave = GetDist() -  pa->GetDist();
+            break;
+         }
+      } else {
+
+         if (TMath::Abs(GetDist() -  pa->GetDist()) < mindist) {
+            mindist = TMath::Abs(GetDist() -  pa->GetDist());
+            fDistToSlave = GetDist() -  pa->GetDist();
+            fSlave = pa;
+         }
+      }
+   }
+   if (fSlave) fSlave->SetMaster(this);
+   fParent->NeedReCompute();
+   fParent->Paint();
+}
+//_____________________________________________________________________________________
+
+void ParallelGraph::Paint(Option_t * option) 
+{
+//   Compute();
+   TPolyLine::Paint();
+//   fParent->GetDPolyLines()->Add(this);
+   if (option);
+   if (fSlave) {
+      cout <<  "ParallelGraph::Paint() to fSlave" << endl;
+      ParallelGraph * lg = this;
+      ParallelGraph * rg = fSlave;
+      Int_t npoints = 1;
+      npoints += lg->GetLastPoint()+1;
+      npoints += rg->GetLastPoint()+1;
+      PolyLineNoEdit * pl = new PolyLineNoEdit(npoints);
+      Double_t * x = pl->GetX();
+      Double_t * y = pl->GetY();
+      Double_t * px = rg->GetX();
+      Double_t * py = rg->GetY();
+      Int_t n = 0;
+      for (Int_t i = 0; i < rg->GetLastPoint()+1; i++) {
+         pl->SetPoint(n, px[i], py[i]);
+         n++;
+      }
+      px = lg->GetX();
+      py = lg->GetY();
+      for (Int_t i = lg->GetLastPoint()+1 -1 ; i >= 0; i--) {
+//         cout << n<< " " << px[i]<< " " << py[i] << endl;
+         pl->SetPoint(n, px[i], py[i]);
+         n++;
+      }
+      pl->SetPoint(n, x[0], y[0]);
+      pl->SetLineColor(GetLineColor());
+      pl->SetLineWidth(GetLineWidth());
+      fParent->GetDPolyLines()->Add(pl);
+      pl->SetFillStyle(GetFillStyle());
+      pl->SetFillColor(GetFillColor());
+      pl->Draw("F");
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//_____________________________________________________________________________________

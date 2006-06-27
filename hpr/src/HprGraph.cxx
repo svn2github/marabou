@@ -22,9 +22,11 @@ Input data can have the formats:\n\
 X, Y:                     simple graph, no errors\n\
 X, Y, Ex, Ey:             symmetric errors in X and Y\n\
 X, Y, Exl, Exu, Eyl, Eyu: asymmetric errors in X and Y\n\
-Select columns:           Select 2 columns to be used \n\
-                          as X, Y of a simple graph\n\
-                          columns are counted from 1\n\
+Select columns:\n\
+   Select 2 columns to be used as X, Y of a simple graph\n\
+   White space or comma are used as separators\n\
+   Unused columns may contain any characters \n\
+   Columns are counted from 1\n\
 The graph can be drawn / overlayed in a selected pad.\n\
 Default is to construct a new canvas\n\
 ";
@@ -37,6 +39,7 @@ Default is to construct a new canvas\n\
    fCommand = "Draw_The_Graph()";
    fCommandHead = "Show_Head_of_File()";
    RestoreDefaults();
+   fGraphSelPad = 0;    // start with new canvas as default
    TList *row_lab = new TList(); 
    row_lab->Add(new TObjString("RadioButton_Simple: X, Y no errors"));
    row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, Ex, Ey"));
@@ -237,10 +240,13 @@ void HprGraph::Draw_The_Graph()
                                        eyl.GetArray(),  eyh.GetArray());
       }
    if (graph) {
-      if (fGraphName.Length() <= 0)
+      if (fGraphName.Length() <= 0) {
          graph->SetName(fGraphFileName.Data());
-      else 
+         graph->SetTitle(fGraphFileName.Data());
+      } else  {
          graph->SetName(fGraphName.Data());
+         graph->SetTitle(fGraphName.Data());
+      }
 
 //      graph->SetTitle(graph->GetName());
       TString drawopt("A");           // draw axis as default

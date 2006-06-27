@@ -35,10 +35,12 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
                $(HPRDIRI)/GroupOfGObjects.h \
  					$(HPRDIRI)/EditMarker.h \
  					$(HPRDIRI)/TSplineX.h \
+ 					$(HPRDIRI)/TSplineXEditor.h \
  					$(HPRDIRI)/HprEditCommands.h \
  					$(HPRDIRI)/HprNtuple.h \
  					$(HPRDIRI)/HprGraph.h \
  					$(HPRDIRI)/HprAscii2Hist.h \
+ 					$(HPRDIRI)/TCurlyLineArrow.h \
  					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)

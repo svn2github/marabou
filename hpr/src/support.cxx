@@ -23,6 +23,7 @@
 #include "TObjString.h"
 #include "TList.h"
 #include "TRandom.h"
+#include "TASImage.h"
 
 #include "CmdListEntry.h"
 #include "FitHist.h"
@@ -892,7 +893,14 @@ directly to a printer. With Option\"Force white background\"\n\
 background of pads will be white. This is\n\
 recommended to save toner of printers.\n\
 \n\
-Papersize for A4 is X: 20, Y 26, for Letter 20, 24\n\
+Recipe to fill in forms (pdf):\n\
+Convert pdf -> png, find out size of png : Xw x Yw\n\
+file form.png\n\
+In Histpresent \"Open Edit Canvas A4\" use: \n\
+   Xwidth = Xw+4, Ywidth = Yw+28, X range = 210 mm\n\
+\n\
+In \"Picture to PS-file\" use:\n\
+Page size X: 21, Y 29.7, Shift X: -.8 Shift Y: -.1 cm \n\
 \n\
 Fine tuning of picture size and position on paper\n\
 may be done by setting Scale and shift values.\n\
@@ -917,6 +925,7 @@ a shift value of 10 will only shift by 5 cm";
    static Double_t xshift;
    static Double_t yshift;
    static Int_t    view_ps;
+   static Int_t    remove_picture = 0;
 
    TEnv env(".rootrc");
    xpaper = env.GetValue("HistPresent.PaperSizeX", 20.);
@@ -936,6 +945,7 @@ a shift value of 10 will only shift by 5 cm";
    row_lab->Add(new TObjString("DoubleValue_Apply scale factor"));
    row_lab->Add(new TObjString("DoubleValue_Apply X shift[cm]"));
    row_lab->Add(new TObjString("DoubleValue_Apply Y shift[cm]"));
+   row_lab->Add(new TObjString("CheckButton_Remove underlaid picture"));
    row_lab->Add(new TObjString("CheckButton_View ps file automatically"));
 
    valp[ind++] = &plain; 
@@ -944,6 +954,7 @@ a shift value of 10 will only shift by 5 cm";
    valp[ind++] = &scale; 
    valp[ind++] = &xshift;
    valp[ind++] = &yshift;
+   valp[ind++] = &remove_picture;
    valp[ind++] = &view_ps;
   
    static TString cmd_name;
@@ -974,6 +985,16 @@ a shift value of 10 will only shift by 5 cm";
       return;
    }
 
+   if (remove_picture) {
+      TList *l = ca->GetListOfPrimitives();
+      TIter next(l);
+      TObject *obj;
+      while (( obj = next()) ) {
+         if (obj->InheritsFrom("TASImage")) {
+            delete obj;
+         }
+      }
+   }
    if (plain) {
       TList *l = ca->GetListOfPrimitives();
       TIter next(l);
@@ -998,10 +1019,11 @@ a shift value of 10 will only shift by 5 cm";
       ca->GetFrame()->SetFillStyle(0);
       ca->SetBorderMode(0);
    }
-
+   cout << "xshift "  << xshift<< " yshift " << yshift << endl;
    gStyle->SetPaperSize((Float_t) xpaper, (Float_t) ypaper);
    if (scale != 1 || xshift != 0 || yshift != 0) {
-      TString extra_ps ;
+      TString extra_ps;
+      extra_ps = "";
       if (xshift != 0 || yshift != 0) {
 //    convert to points (* 4 to compensate for ROOTs .25)
          Int_t xp = (Int_t) (xshift * 4 * 72. / 2.54);         

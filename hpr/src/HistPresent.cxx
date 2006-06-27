@@ -3504,10 +3504,16 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    wh =  c->GetWindowHeight();
    wh =  c->GetWh();
 //   cout << "ww, wh: " << ww << " " << wh << endl;
-   HTCanvas * c1 = new HTCanvas(name, c->GetTitle(),
+   TString sname(name);
+   Int_t sem= sname.Last(';');    // chop off verion
+   if(sem >0)sname.Remove(sem);
+
+   HTCanvas * c1 = new HTCanvas(sname, c->GetTitle(),
                       c->GetWindowTopX(), c->GetWindowTopY(),
                       ww, wh, this, NULL, NULL, NULL, HTCanvas::kIsAEditorPage);
-
+  cout << "At HistPresent::c1 = new HTCanvas -= " 
+               << c1->GetName()  << endl;
+   
    Double_t x1, y1, x2, y2;
    c->GetRange(x1, y1, x2, y2);
    c1->Range(x1, y1, x2, y2);
@@ -3532,10 +3538,12 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
          if (obj->InheritsFrom("TPad")){
             lpads.Add(obj);
          } else {
-            obj->Dump();
+             cout << "At HistPresent::ShowCanvas -= " 
+               << obj->GetName()  << endl;
+//            obj->Dump();
             obj->SetDrawOption(obj->GetOption());
             obj->Draw(lnk->GetOption());
-            obj->Dump();
+//            obj->Dump();
          }
       }
       lnk = (TObjOptLink*)lnk->Next();

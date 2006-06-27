@@ -4,6 +4,7 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
+#pragma link C++ class PolyLineNoEdit;
 #pragma link C++ class RailwaySleeper;
 #pragma link C++ class ControlGraph;
 #pragma link C++ class ParallelGraph;
@@ -21,8 +22,12 @@
 #pragma link C++ class GroupOfGObjects;
 #pragma link C++ class EditMarker;
 #pragma link C++ class TSplineX;
+#pragma link C++ class TSplineXEditor;
+#pragma link C++ class ParallelGraphEditor;
 #pragma link C++ class HprEditCommands;
 #pragma link C++ class HprNtuple;
 #pragma link C++ class HprGraph;
 #pragma link C++ class HprAscii2Hist;
+#pragma link C++ class TCurlyLineArrow;
+#pragma link C++ class TCurlyLineWithArrow;
 #endif			   

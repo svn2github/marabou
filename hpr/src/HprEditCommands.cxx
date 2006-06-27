@@ -56,12 +56,11 @@ HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t win_width,
 
    // position relative to the parent window (which is the root window)
    Window_t wdum;
-   int      ax, ay;
+   Int_t      ax, ay;
 
    gVirtualX->TranslateCoordinates(fMyWindow->GetId(), this->GetParent()->GetId(),
-         0,
-         ((TGFrame *) fMyWindow)->GetHeight() - ( height),
-                          ax, ay, wdum);
+         0, ((TGFrame *) fMyWindow)->GetHeight() - ( height), ax, ay, wdum);
+   ax -= (Int_t)width;
 //         ((TGFrame *) fMyWindow)->GetWidth() - width >> 1,
 //   cout << "HprEditCommands Id: " << GetId() <<  endl;
    UInt_t ww, wh;
