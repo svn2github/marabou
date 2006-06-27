@@ -7,7 +7,7 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.46 2006-01-25 12:16:09 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.47 2006-06-27 08:36:48 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -58,6 +58,8 @@ class TMrbAnalyze : public TObject {
 		enum				{	kBranchBufferSize	=	32000		};
 
 		enum				{	kUpdateTime 	=	8				};
+
+		enum				{	kMaxPolyDegree	=	3				};
 
 		enum EMrbRunStatus	{	M_ABSENT,
 								M_STARTING,

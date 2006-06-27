@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.67 2006-06-23 08:48:30 Marabou Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.68 2006-06-27 08:36:48 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1876,6 +1876,28 @@ Double_t CalibLinear(Double_t * Xvalues, Double_t * Params) {
 	return(Params[0] + Params[1] * Xvalues[0]);
 }
 
+Double_t CalibPoly(Double_t * Xvalues, Double_t * Params) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           CalibPoly
+// Purpose:        Calibrate using a polynom of given degree
+// Arguments:      Double_t * Xvalues   -- array of x values
+//                 Double_t * Params    -- array of parameters
+// Results:        Double_t CalibResult -- resulting value
+// Exceptions:     
+// Description:    Evaluates CalibResult = polynom(Xvalues[0])
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Double_t xVal = Xvalues[0];
+	Double_t result = Params[0];
+	for (Int_t parNo = 1; parNo <= TMrbAnalyze::kMaxPolyDegree; parNo++) {
+		result += Params[parNo] * xVal;
+		xVal *= Xvalues[0];
+	}
+	return(result);
+}
+
 Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1888,6 +1910,8 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	TArrayD param(TMrbAnalyze::kMaxPolyDegree + 1);
+
 	if (gSystem->AccessPathName(CalibrationFile, (EAccessMode) F_OK)) {
 		gMrbLog->Err()	<< "Can't open calibration file - " << CalibrationFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
@@ -1896,6 +1920,27 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 
 	TEnv * cal = new TEnv(CalibrationFile);
 	Int_t nofCalibs = 0;
+	TString calType = cal->GetValue("Calib.Type", "linear");
+	Bool_t isLinear;
+	if (calType.CompareTo("linear") == 0) isLinear = kTRUE;
+	else if (calType.CompareTo("poly") == 0) isLinear = kFALSE;
+	else {
+		gMrbLog->Wrn()	<< "Unsupported calibration type - " << calType << ", no calibration" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
+		return(0);
+	}
+	Int_t calDegree = cal->GetValue("Calib.Degree", 1);
+	if (calDegree < 1 || calDegree > TMrbAnalyze::kMaxPolyDegree) {
+		gMrbLog->Err()	<< "Wrong polynomial degree - " << calDegree
+						<< " (should be in [1," << TMrbAnalyze::kMaxPolyDegree << "]), no calibration" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
+		return(-1);
+	}
+	if (isLinear && calDegree != 1) {
+		gMrbLog->Wrn()	<< "Wrong polynomial degree - " << calDegree << " (should be 1 for linear), ignored" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
+	}
+
 	TObject * o = cal->GetTable()->First();
 	while (o) {
 		TString oName = o->GetName();
@@ -1915,20 +1960,33 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 				resName += histoName;
 				resName += ".Xmax";
 				Double_t xmax = cal->GetValue(resName.Data(), 1.);
-				resName = "Calib.";
-				resName += histoName;
-				resName += ".Gain";
-				Double_t gain = cal->GetValue(resName.Data(), 1.);
-				resName = "Calib.";
-				resName += histoName;
-				resName += ".Offset";
-				Double_t offset = cal->GetValue(resName.Data(), 0.);
 				TString calName = histoName;
 				if (calName(0) == 'h') {
 					calName(0) = 'c';
 				} else {
 					calName(0,1).ToUpper();
 					calName.Prepend("h");
+				}
+				Double_t gain;
+				Double_t offset;
+				if (isLinear) {
+					resName = "Calib.";
+					resName += histoName;
+					resName += ".Gain";
+					gain = cal->GetValue(resName.Data(), 1.);
+					resName = "Calib.";
+					resName += histoName;
+					resName += ".Offset";
+					offset = cal->GetValue(resName.Data(), 0.);
+				} else {
+					param.Reset(0.);
+					for (Int_t parNo = 0; parNo <= calDegree; parNo++) {
+						resName = "Calib.";
+						resName += histoName;
+						resName += ".A";
+						resName += parNo;
+						param[parNo] = cal->GetValue(resName.Data(), 0.);
+					}
 				}
 				TF1 * calFct;
 				TMrbNamedX * nx = fCalibrationList.FindByName(calName.Data());
@@ -1937,14 +1995,19 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 					calFct = cle->GetAddress();
 					delete calFct;
 				}
-				calFct = new TF1(calName.Data(), CalibLinear, xmin, xmax, 2);
-				calFct->SetParameter(0, offset);
-				calFct->SetParameter(1, gain);
+				if (isLinear) {
+					calFct = new TF1(calName.Data(), CalibLinear, xmin, xmax, 2);
+					calFct->SetParameter(0, offset);
+					calFct->SetParameter(1, gain);
+				} else {
+					calFct = new TF1(calName.Data(), CalibPoly, xmin, xmax, TMrbAnalyze::kMaxPolyDegree + 1);
+					calFct->SetParameters(param.GetArray());
+				}
 				this->AddCalibrationToList(calFct, hle->GetParam()->GetIndex());
 				nofCalibs++;
 			} else {
 				gMrbLog->Wrn()	<< "No such histo - " << histoName << ", calibration omitted" << endl;
-				gMrbLog->Flush(this->ClassName(), "GetDCorr");
+				gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
 			}
 		}
 		o = cal->GetTable()->After(o);
