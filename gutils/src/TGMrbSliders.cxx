@@ -50,6 +50,7 @@ namespace std {} using namespace std;
 //                                                                       //
 //  TOrdCollection * RowLabels                                           //
 //  Int_t * flags   : if bit 1 set TextEntry is colored with value = hue //
+//                  : if bit 2 set, move sliders with bit 2 combined     //
 //  TGWindow *win   : pointer to parent window                           //  
 //  Int_t identifier : unique number passed in emit signal               //
 //                                                                       //
@@ -57,6 +58,8 @@ namespace std {} using namespace std;
 ///////////////////////////////////////////////////////////////////////////
 
 
+//________________________________________________________________________________________
+enum buttonId {kCOMBINED = 101};
 
 ClassImp(MyTimer)
 ClassImp(TGMrbSliders)
@@ -86,7 +89,7 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
                          const TGWindow *Win, const Int_t Identifier)
 							    : TGTransientFrame(gClient->GetRoot(), Win, 100, 100)
 {
-   ChangeOptions(kHorizontalFrame);
+//   ChangeOptions(kHorizontalFrame);
    fIdentifier = Identifier;
    fNValues = NValues; 
    
@@ -123,10 +126,11 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
    fTePointers  = new TGTextEntry * [NValues];
    fTbPointers  = new TGTextBuffer * [NValues];
    fSlPointers  = new TGHSlider * [NValues];
+   TGCompositeFrame *vframe = new TGCompositeFrame(this, 100, 200, kHorizontalFrame);
 
-   fLabelFrame = new TGVerticalFrame(this, 0, 0, 0);
-   fSliderFrame = new TGVerticalFrame(this, 0, 0, 0);
-   fValueFrame  = new TGVerticalFrame(this, 0, 0, 0);
+   fLabelFrame = new TGVerticalFrame(vframe, 0, 0, 0);
+   fSliderFrame = new TGVerticalFrame(vframe, 0, 0, 0);
+   fValueFrame  = new TGVerticalFrame(vframe, 0, 0, 0);
    for (Int_t i = 0; i < NValues; i++) {
       fSlPointers[i] = new TGHSlider(fSliderFrame, 100, kSlider1 | kScaleBoth, i);
       fTePointers[i] = new TGTextEntry(fValueFrame, 
@@ -149,9 +153,28 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
       label_fr->AddFrame(label, fLO4);
       fLabelFrame->AddFrame(label_fr, fBly);
    }
-   AddFrame(fValueFrame, fBfly1);
-   AddFrame(fSliderFrame, fBfly1);
-   AddFrame(fLabelFrame, fBfly1);
+   vframe->AddFrame(fValueFrame, fBfly1);
+   vframe->AddFrame(fSliderFrame, fBfly1);
+   vframe->AddFrame(fLabelFrame, fBfly1);
+   AddFrame(vframe, new TGLayoutHints(kLHintsTop | kLHintsCenterX , 2, 2, 2, 2));
+//  is combined change forseen
+   fCombined = kFALSE;
+   if (fFlags) { 
+      for (Int_t row = 0; row < fNValues; row++) { 
+         if (fFlags[row] & 2) fCombined = kTRUE; 
+      }
+   }
+   if (fCombined) {
+      TGHorizontalFrame *hf = new TGHorizontalFrame(this,150, 20, 0);
+      fWidgetList->AddFirst(hf);
+      fCombinedButton = new TGCheckButton(hf, 
+                    new TGHotString("Change combined"), kCOMBINED);
+      fCombinedButton->SetState(kButtonDown);
+      fWidgetList->Add(fCombinedButton);
+      fCombinedButton->Associate(this);
+      hf->AddFrame(fCombinedButton, new TGLayoutHints( 0 , 2, 2, 2, 2));
+      AddFrame(hf, new TGLayoutHints(kLHintsBottom | kLHintsCenterX , 2, 2, 2, 2));
+   }
 
    // set dialog title
    this->SetWindowName(Title);
@@ -181,7 +204,7 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
    Int_t wi = width;
    Int_t hi = height;
 // left of parent window
-   Int_t parents_width = ((TGFrame *) fMyWindow)->GetWidth();
+//   Int_t parents_width = ((TGFrame *) fMyWindow)->GetWidth();
    cout << " ax, ay " << ax << " " <<ay << endl;
 //   ax = ax -  parents_width / 2 -  width / 3;
    ax = ax - width / 2;
@@ -252,10 +275,27 @@ void TGMrbSliders::CloseWindow()
 
 Bool_t TGMrbSliders::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 {
+//    cout << "ProcessMessage : " << parm1 << endl;
+//    if (fCombined ) cout << " fCombined true" << endl;
+//    else  cout << " fCombined false" << endl;
    // Process slider messages.
 //   Float_t r, g, b;   
    Int_t row;
    switch (GET_MSG(msg)) {
+      case kC_COMMAND:
+//         switch (GET_SUBMSG(msg)) { 
+//            case kCM_BUTTON:
+            if (parm1 == kCOMBINED) {
+               if (fCombinedButton->GetState() == kButtonDown) {
+                  fCombined = kTRUE;
+               } else {
+                  fCombined = kFALSE;
+               }
+            }
+//            if (fCombined ) cout << " fCombined true" << endl;
+//            else  cout << " fCombined false" << endl;
+            break;
+//         }
       case kC_TEXTENTRY:
          switch (GET_SUBMSG(msg)) {
             case kTE_ENTER:
@@ -273,7 +313,7 @@ Bool_t TGMrbSliders::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
          switch (GET_SUBMSG(msg)) {
             case kSL_RELEASE:
                row = parm1%1000;
-               SliderEvent(fIdentifier, row, fVal[row]);
+               SliderEvent(row, fVal[row]);
                break;
             case kSL_POS:
                row = parm1%1000;
@@ -293,8 +333,27 @@ Bool_t TGMrbSliders::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 
 void  TGMrbSliders::Wakeup()
 {
-//   cout << "Wakeup()" << endl;
-   Float_t r, g, b;   
+//   if (fCombined) cout << "Wakeup()" << endl;
+   Float_t r, g, b; 
+//  did a value change which should be correlated with others
+   Int_t common_val = 0;
+   Bool_t changed = kFALSE;
+   for (Int_t row = 0; row < fNValues; row++) { 
+      if (fFlags && fFlags[row] & 2 &&  fVal[row] != fValPrev[row]) {
+         common_val = fVal[row];
+         changed = kTRUE; 
+      }
+   }
+   if (fCombined && changed) {
+   	for (Int_t row = 0; row < fNValues; row++) { 
+      	if (fFlags && fFlags[row] & 2) {
+            fSlPointers[row]->SetPosition(common_val);
+            fVal[row] = common_val;
+            fTbPointers[row]->Clear();
+            fTbPointers[row]->AddText(0, Form("%ld", common_val));
+      	}
+      }
+   }     
    for (Int_t row = 0; row < fNValues; row++) { 
       if (fVal[row] != fValPrev[row]) {
 //  optionally set color of text widget
@@ -305,21 +364,21 @@ void  TGMrbSliders::Wakeup()
          	fTePointers[row]->SetBackgroundColor(p); 
             fClient->NeedRedraw(fTePointers[row]);
       	}
+         fClient->NeedRedraw(fTePointers[row]);
          fValPrev[row] = fVal[row];
-         SliderEvent(fIdentifier, row, fVal[row]);
+         SliderEvent(row, fVal[row]);
       }
    }
 }
 //______________________________________________________________
 
-void  TGMrbSliders::SliderEvent(Int_t id, Int_t row, Int_t val)
+void  TGMrbSliders::SliderEvent(Int_t row, Int_t val)
 {
-   Long_t args[3];   // ident, row, value
-   args[0] = (Long_t)id;
-   args[1] = (Long_t)row;
-   args[2] = (Long_t)val;
+   Long_t args[2];   // row, value
+   args[0] = (Long_t)row;
+   args[1] = (Long_t)val;
 //   cout << "SliderEvent: Emit " << id << " " << row << " " << val << endl;
  
-   Emit("SliderEvent(Int_t, Int_t, Int_t)", args);
+   Emit("SliderEvent(Int_t, Int_t)", args);
 };
   

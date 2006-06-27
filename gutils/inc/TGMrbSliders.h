@@ -5,24 +5,42 @@
 #include "TSystem.h"
 #include <TQObject.h>
 #include "TGWindow.h"
+#include <TGButton.h>
 #include "TGFrame.h"
 #include "TGSlider.h"
 #include "TGTextEntry.h"
 #include <TList.h>
 #include "TColor.h"
 #include "TTimer.h"
-#include "MyTimer.h"
+//#include "MyTimer.h"
+
+
+class TGMrbSliders; 
+
+class MyTimer : public TTimer 
+{
+private:
+  TGMrbSliders * fSlider;
+public:  
+   MyTimer(Long_t ms, Bool_t synch, TGMrbSliders * slider);
+   virtual ~MyTimer(){};
+   Bool_t Notify();
+
+ClassDef(MyTimer,0)
+};
 
 class TGMrbSliders : public TGTransientFrame {
 
 private:
    Int_t fNValues;
-   Int_t * fVal;
-   Int_t * fValPrev;
-   Int_t * fFlags;
+   Int_t *fVal;
+   Int_t *fValPrev;
+   Int_t *fFlags;
    Int_t fIdentifier;
    const TGWindow * fMyWindow;
-   TList * fWidgetList;
+   TList *fWidgetList;
+   Bool_t fCombined;
+   TGCheckButton *fCombinedButton;
    TGTextEntry  ** fTePointers;
    TGTextBuffer ** fTbPointers;
    TGHSlider    ** fSlPointers;
@@ -41,7 +59,7 @@ public:
 
    virtual void CloseWindow();
    virtual Bool_t ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
-   void SliderEvent(Int_t, Int_t, Int_t);
+   void SliderEvent(Int_t, Int_t);
    void Wakeup();
 ClassDef(TGMrbSliders,0)		// [GraphUtils] A box with sliders
 };
