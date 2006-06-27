@@ -2703,7 +2703,7 @@ void FitHist::ProjectF()
 //____________________________________________________________________________________ 
 
 // Fast Fourier Transform 
-#if ROOTVERSION < 51500
+#if ROOTVERSION < 51100
 
 void FitHist::FastFT()
 {
