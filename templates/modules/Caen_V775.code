@@ -340,3 +340,14 @@ void caen_v775_reset(volatile unsigned char * module);
 	unsigned int caen_v775_hdr, caen_v775_data, caen_v775_id, caen_v775_chn;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+

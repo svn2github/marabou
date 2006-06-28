@@ -167,3 +167,14 @@ void $mnemoLC_module_info();
 
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+

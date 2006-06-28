@@ -203,3 +203,14 @@ void sis_3801_module_info(volatile unsigned char * module);
 	int $mnemoLC_hit;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+

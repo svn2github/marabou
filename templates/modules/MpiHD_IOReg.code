@@ -180,3 +180,14 @@ unsigned short mpiorl_bits;
 	unsigned short mpiorl_data;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+

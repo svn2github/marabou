@@ -337,3 +337,14 @@ void caen_V879_reset(volatile unsigned char * module);
 	unsigned int caen_V879_hdr, caen_V879_data, caen_V879_id, caen_V879_chn;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+
