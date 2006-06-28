@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.68 2006-06-27 08:36:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.69 2006-06-28 10:35:48 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1922,6 +1922,7 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 	Int_t nofCalibs = 0;
 	TString calType = cal->GetValue("Calib.Type", "linear");
 	Bool_t isLinear;
+	calType.ToLower();
 	if (calType.CompareTo("linear") == 0) isLinear = kTRUE;
 	else if (calType.CompareTo("poly") == 0) isLinear = kFALSE;
 	else {
