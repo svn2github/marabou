@@ -1,3 +1,4 @@
+#include "Riostream.h"
 #include "TCurlyLineArrow.h"
 #include "TPad.h"
 #include "iostream"
@@ -207,5 +208,40 @@ void TCurlyLineWithArrow::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 
 //      std::cout << "TCurlyLineWithArrow::Exit "<< GetStartX()<< std::endl;
       Paint();
+   }
+}
+//___________________________________________________________________________
+
+void TCurlyLineWithArrow::SavePrimitive(ofstream &out, Option_t *)
+{
+   // Save primitive as a C++ statement(s) on output stream out
+
+   cout << "TCurlyLineWithArrow::SavePrimitive: " << this << endl;
+   out<<"   "<<endl;
+   if (gROOT->ClassSaved(TCurlyLineWithArrow::Class())) {
+      out<<"   ";
+   } else {
+      out<<"    TCurlyLineWithArrow *";
+   }
+   
+   out<<"clwa = new TCurlyLineWithArrow("<< fX1  <<","<< fY1 <<","
+       << fX2 <<","<< fY2 <<"," << GetWaveLength()  <<","<< GetAmplitude()<<","
+       << fWhere<<","<<fDefaultArrowSize; 
+          out << ");"<<endl;
+
+   SaveLineAttributes(out,"clwa",0,0,0);
+   
+   out<<"clwa->Draw();"<<endl;  
+   if(fArrowStart) { 
+      out<<"clwa->GetArrowStart()->SetArrowSize(" <<
+         fArrowStart->GetArrowSize()<< ");"<<endl;
+      out<<"clwa->GetArrowStart()->SetAngle(" <<
+         fArrowStart->GetAngle()<< ");"<<endl;
+   }
+   if(fArrowEnd) { 
+      out<<"clwa->GetArrowEnd()->SetArrowSize(" <<
+         fArrowEnd->GetArrowSize()<< ");"<<endl;
+      out<<"clwa->GetArrowEnd()->SetAngle(" <<
+         fArrowEnd->GetAngle()<< ");"<<endl;
    }
 }
