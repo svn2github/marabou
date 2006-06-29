@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrHit.cxx,v 1.2 2006-02-27 13:57:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHit.cxx,v 1.3 2006-06-29 13:56:02 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -133,11 +133,13 @@ Double_t TUsrHit::GetCalEnergy(Bool_t Randomize) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Double_t gain, offset;
-	gMrbAnalyze->GetCalibration(fModuleNumber, fChannel, gain, offset);
+	TF1 * cal = gMrbAnalyze->GetCalibration(fModuleNumber, fChannel);
 	Double_t e = fData[kHitEnergy];
-	if (Randomize && (gain != 1.0)) e += gRandom->Rndm() - 0.5;
-	return(e * gain + offset);
+	if (cal) {
+		if (Randomize && (cal->GetParameter(1) != 1.0)) e += gRandom->Rndm() - 0.5;
+		e = cal->Eval(e);
+	}
+	return(e);
 }
 
 Double_t TUsrHit::GetDCorrEnergy(Bool_t Randomize) const {
@@ -152,12 +154,15 @@ Double_t TUsrHit::GetDCorrEnergy(Bool_t Randomize) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Double_t gain, offset, dcfact;
-	gMrbAnalyze->GetCalibration(fModuleNumber, fChannel, gain, offset);
+	Double_t dcfact;
+	TF1 * cal = gMrbAnalyze->GetCalibration(fModuleNumber, fChannel);
 	gMrbAnalyze->GetDCorr(fModuleNumber, fChannel, dcfact);
 	Double_t e = fData[kHitEnergy];
-	if (Randomize && (gain != 1.0)) e += gRandom->Rndm() - 0.5;
-	return(dcfact * (e * gain + offset));
+	if (cal) {
+		if (Randomize && (cal->GetParameter(1) != 1.0)) e += gRandom->Rndm() - 0.5;
+		e = cal->Eval(e);
+	}
+	return(dcfact * e);
 }
 
 void TUsrHit::Print(ostream & Out, Bool_t PrintNames) const {

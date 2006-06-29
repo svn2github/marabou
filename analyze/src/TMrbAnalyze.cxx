@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.69 2006-06-28 10:35:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.70 2006-06-29 13:56:01 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -50,6 +50,11 @@ extern TMrbLogger * gMrbLog;					// message logger
 extern TMrbLofUserVars * gMrbLofUserVars;		// list of user's vars and wdws
 
 extern TMrbTransport * gMrbTransport;			// transport data from MBS
+
+static const Char_t * calFmt1 = "%-15s%-15s%7d%7d%4d"; // format string for calibration printouts
+static const Char_t * calFmt1h = "%-15s%-15s%7s%7s%4s";
+static const Char_t * calFmt2 = "%14.4f";
+static const Char_t * calFmt2h = "%14s";
 
 ClassImp(TMrbAnalyze)							// implementation of user-specific classes
 
@@ -480,10 +485,10 @@ Int_t TMrbAnalyze::ProcessFileList() {
 	Int_t nofEntries;
 	TMrbIOSpec * ioSpec;
 
-	ioSpec = (TMrbIOSpec *) fLofIOSpecs.First();
 	nofEntries = 0;
 	this->ClearHistograms("*", ioSpec);
-	while (ioSpec && this->TestRunStatus()) {
+	TIterator * iter = fLofIOSpecs.MakeIterator();
+	while ((ioSpec = (TMrbIOSpec *) iter->Next()) && this->TestRunStatus()) {
 		gMrbLog->Out() << "[" << nofEntries + 1 << "] ";
 		ioSpec->Print(gMrbLog->Out());
 		gMrbLog->Flush(this->ClassName(), "ProcessFileList", setgreen);
@@ -535,7 +540,6 @@ Int_t TMrbAnalyze::ProcessFileList() {
 				gMrbLog->Flush(this->ClassName(), "ProcessFileList");
 			}
 		}
-		ioSpec = (TMrbIOSpec *) fLofIOSpecs.After(ioSpec);
 	}
 	return(nofEntries);
 }
@@ -1749,8 +1753,15 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double
 
 	TF1 * cal = this->GetCalibration(ModuleIndex, RelParamIndex);
 	if (cal) {
-		Gain = cal->GetParameter(1);
-		Offset = cal->GetParameter(0);
+		if (cal->GetParameter(0) == 1) {
+			Gain = cal->GetParameter(2);
+			Offset = cal->GetParameter(1);
+		} else {
+			gMrbLog->Err()	<< "Calibration not linear - module # " << ModuleIndex << ", param # " << RelParamIndex << endl;
+			gMrbLog->Flush(this->ClassName(), "GetCalibration");
+			Gain = 1.;
+			Offset = 0.;
+		}
 	} else {
 		Gain = 1.;
 		Offset = 0.;
@@ -1774,11 +1785,63 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t
 
 	TF1 * cal = this->GetCalibration(AbsParamIndex);
 	if (cal) {
-		Gain = cal->GetParameter(1);
-		Offset = cal->GetParameter(0);
+		if (cal->GetParameter(0) == 1) {
+			Gain = cal->GetParameter(2);
+			Offset = cal->GetParameter(1);
+		} else {
+			gMrbLog->Err()	<< "Calibration not linear - param # " << AbsParamIndex << endl;
+			gMrbLog->Flush(this->ClassName(), "GetCalibration");
+			Gain = 1.;
+			Offset = 0.;
+		}
 	} else {
 		Gain = 1.;
 		Offset = 0.;
+	}
+	return(cal);
+}
+
+TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, TArrayD & Coeffs) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetCalibration
+// Purpose:        Get gain and offset
+// Arguments:      Int_t ModuleIndex         -- module index
+//                 Int_t RelParamIndex       -- relative param index
+// Results:        TF1 * CalibrationAddr     -- address
+//                 TArrayD & Coeffs          -- calibration coefficients
+// Exceptions:     
+// Description:    Returns calibration coeffs.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Coeffs.Reset(0.);
+	TF1 * cal = this->GetCalibration(ModuleIndex, RelParamIndex);
+	if (cal) {
+		Int_t n = (Int_t) cal->GetParameter(0) + 2;
+		Coeffs.Set(n, cal->GetParameters());
+	}
+	return(cal);
+}
+
+TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex, TArrayD & Coeffs) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetCalibration
+// Purpose:        Get gain and offset
+// Arguments:      Int_t AbsParamIndex       -- absolute param/calib index
+// Results:        TF1 * CalibrationAddr     -- address
+//                 TArrayD & Coeffs          -- calibration coefficients
+// Exceptions:     
+// Description:    Returns calibration coeffs.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Coeffs.Reset(0.);
+	TF1 * cal = this->GetCalibration(AbsParamIndex);
+	if (cal) {
+		Int_t n = (Int_t) cal->GetParameter(0) + 2;
+		Coeffs.Set(n, cal->GetParameters());
 	}
 	return(cal);
 }
@@ -1859,23 +1922,6 @@ TMrbCalibrationListEntry * TMrbAnalyze::GetCalibrationListEntry(Int_t AbsParamIn
 	return((TMrbCalibrationListEntry *) nx->GetAssignedObject());
 }
 
-Double_t CalibLinear(Double_t * Xvalues, Double_t * Params) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           CalibLinear
-// Purpose:        Calibrate using a linear polynom
-// Arguments:      Double_t * Xvalues   -- array of x values
-//                 Double_t * Params    -- array of parameters
-// Results:        Double_t CalibResult -- resulting value
-// Exceptions:     
-// Description:    Evaluates CalibResult = Params[0] + Params[1] * Xvalues[0]
-//                 to be used in linear calibrations
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	return(Params[0] + Params[1] * Xvalues[0]);
-}
-
 Double_t CalibPoly(Double_t * Xvalues, Double_t * Params) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1890,8 +1936,9 @@ Double_t CalibPoly(Double_t * Xvalues, Double_t * Params) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Double_t xVal = Xvalues[0];
-	Double_t result = Params[0];
-	for (Int_t parNo = 1; parNo <= TMrbAnalyze::kMaxPolyDegree; parNo++) {
+	Int_t calDegree = (Int_t) Params[0];
+	Double_t result = Params[1];
+	for (Int_t parNo = 2; parNo <= calDegree + 1; parNo++) {
 		result += Params[parNo] * xVal;
 		xVal *= Xvalues[0];
 	}
@@ -1910,7 +1957,7 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TArrayD param(TMrbAnalyze::kMaxPolyDegree + 1);
+	TArrayD param;
 
 	if (gSystem->AccessPathName(CalibrationFile, (EAccessMode) F_OK)) {
 		gMrbLog->Err()	<< "Can't open calibration file - " << CalibrationFile << endl;
@@ -1931,9 +1978,9 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 		return(0);
 	}
 	Int_t calDegree = cal->GetValue("Calib.Degree", 1);
-	if (calDegree < 1 || calDegree > TMrbAnalyze::kMaxPolyDegree) {
+	if (calDegree < 1) {
 		gMrbLog->Err()	<< "Wrong polynomial degree - " << calDegree
-						<< " (should be in [1," << TMrbAnalyze::kMaxPolyDegree << "]), no calibration" << endl;
+						<< " (should be at least 1), no calibration" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
 		return(-1);
 	}
@@ -1941,6 +1988,10 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 		gMrbLog->Wrn()	<< "Wrong polynomial degree - " << calDegree << " (should be 1 for linear), ignored" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
 	}
+
+	param.Set(calDegree + 2); 	// n+1 params for degree n, param#0 holds degree itself
+	param.Reset(0.);
+	param[0] = calDegree; 		// param#0 is used to inform fct calibrate about polynomial degree
 
 	TObject * o = cal->GetTable()->First();
 	while (o) {
@@ -1966,26 +2017,23 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 					calName(0) = 'c';
 				} else {
 					calName(0,1).ToUpper();
-					calName.Prepend("h");
+					calName.Prepend("c");
 				}
-				Double_t gain;
-				Double_t offset;
 				if (isLinear) {
 					resName = "Calib.";
 					resName += histoName;
-					resName += ".Gain";
-					gain = cal->GetValue(resName.Data(), 1.);
+					resName += ".Offset";
+					param[1] = cal->GetValue(resName.Data(), 0.);
 					resName = "Calib.";
 					resName += histoName;
-					resName += ".Offset";
-					offset = cal->GetValue(resName.Data(), 0.);
+					resName += ".Gain";
+					param[2] = cal->GetValue(resName.Data(), 1.);
 				} else {
-					param.Reset(0.);
-					for (Int_t parNo = 0; parNo <= calDegree; parNo++) {
+					for (Int_t parNo = 1; parNo <= calDegree + 1; parNo++) {
 						resName = "Calib.";
 						resName += histoName;
 						resName += ".A";
-						resName += parNo;
+						resName += parNo - 1;
 						param[parNo] = cal->GetValue(resName.Data(), 0.);
 					}
 				}
@@ -1996,14 +2044,8 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 					calFct = cle->GetAddress();
 					delete calFct;
 				}
-				if (isLinear) {
-					calFct = new TF1(calName.Data(), CalibLinear, xmin, xmax, 2);
-					calFct->SetParameter(0, offset);
-					calFct->SetParameter(1, gain);
-				} else {
-					calFct = new TF1(calName.Data(), CalibPoly, xmin, xmax, TMrbAnalyze::kMaxPolyDegree + 1);
-					calFct->SetParameters(param.GetArray());
-				}
+				calFct = new TF1(calName.Data(), CalibPoly, xmin, xmax, calDegree + 2);
+				calFct->SetParameters(param.GetArray());
 				this->AddCalibrationToList(calFct, hle->GetParam()->GetIndex());
 				nofCalibs++;
 			} else {
@@ -2015,6 +2057,163 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 	}
 	delete cal;
 	return(nofCalibs);
+}
+
+void TMrbAnalyze::PrintCalibration(ostream & Out) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::PrintCalibration
+// Purpose:        Print calibration
+// Arguments:      Out           -- output stream
+// Results:        --
+// Exceptions:     
+// Description:    Preints calibration data
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * cal;
+	TIterator * iter = fCalibrationList.MakeIterator();
+	Bool_t printHdr = kTRUE;
+	while (cal = (TMrbNamedX *) iter->Next()) {
+		if (printHdr) {
+			Out << endl << "---------------------------------------------------------------------------------------------------------------" << endl;
+			Out << "Calibration data:" << endl;
+			Out << Form(calFmt1h, "Module", "Param", "Xmin", "Xmax", "Deg");
+			for (Int_t i = 0; i < 4; i++) {
+				TString coeff = "A";
+				coeff += i;
+				Out << Form(calFmt2h, coeff.Data());
+			}
+			Out << " ..." << endl;
+			Out << "---------------------------------------------------------------------------------------------------------------" << endl;
+		}
+		printHdr = kFALSE;
+		this->PrintCalibration(Out, cal);
+	}
+	Out << "---------------------------------------------------------------------------------------------------------------" << endl;
+}
+
+void TMrbAnalyze::PrintCalibration(ostream & Out, const Char_t * CalibrationName) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::PrintCalibration
+// Purpose:        Print calibration by its name
+// Arguments:      Out 		                    -- output
+//                 Char_t * CalibrationName     -- calibration name (=histo name)
+// Results:        --
+// Exceptions:     
+// Description:    Searches for a calibration function with specified name
+//                 Prints settings.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+
+	nx = fCalibrationList.FindByName(CalibrationName);
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "No such calibration - " << CalibrationName << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintCalibration");
+		return;
+	}
+	this->PrintCalibration(Out, nx);
+}
+
+void TMrbAnalyze::PrintCalibration(ostream & Out, Int_t AbsParamIndex) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::PrintCalibration
+// Purpose:        Print calibration by its name
+// Arguments:      Out 		                 -- output
+//                 Int_t AbsParamIndex       -- absolute param/calib index
+// Results:        --
+// Exceptions:     
+// Description:    Prints calibration data.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+
+	if (AbsParamIndex < 0 || AbsParamIndex > fCalibrationList.GetLast()) return;
+	nx = (TMrbNamedX *) fCalibrationList[AbsParamIndex];
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "No such calibration - param # " << AbsParamIndex << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintCalibration");
+		return;
+	}
+	this->PrintCalibration(Out, nx);
+}
+
+void TMrbAnalyze::PrintCalibration(ostream & Out, TMrbNamedX * CalX) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::PrintCalibration
+// Purpose:        Print calibration by its name
+// Arguments:      Out 		                 -- output
+//                 TMrbNameX CalX            -- calibration entry
+// Results:        --
+// Exceptions:     
+// Description:    Prints calibration data.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbCalibrationListEntry * cle = (TMrbCalibrationListEntry *) CalX->GetAssignedObject();
+	if (cle) {
+		TString mod = Form("%s (%d)", cle->GetModule()->GetName(), cle->GetModule()->GetIndex());
+		TString par = Form("%s (%d)", cle->GetParam()->GetName(), cle->GetParam()->GetIndex());
+		TF1 * cal = cle->GetAddress();
+		if (cal) {
+			TArrayD params;
+			Int_t n = (Int_t) cal->GetParameter(0);
+			Out << Form(calFmt1, mod.Data(), par.Data(), (Int_t) cal->GetXmin(), (Int_t) cal->GetXmax(), n);
+			n += 2;
+			params.Set(n, cal->GetParameters());
+			for (Int_t parNo = 1; parNo < n; parNo++) Out << Form(calFmt2, params[parNo]);
+			Out << endl;
+		}
+	}
+}
+
+void TMrbAnalyze::PrintCalibration(ostream & Out, Int_t ModuleIndex, Int_t RelParamIndex) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::PrintCalibration
+// Purpose:        Print calibration by its name
+// Arguments:      Int_t ModuleIndex          -- module index
+//                 Int_t RelParamIndex        -- relative param index
+// Results:        --
+// Exceptions:     
+// Description:    Prints calibration data.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	TMrbModuleListEntry * mle;
+	Int_t px;
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return;
+	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
+	if (RelParamIndex >= mle->GetNofParams()) return;
+	px = mle->GetIndexOfFirstParam() + RelParamIndex;
+	if (px < 0 || px > fCalibrationList.GetLast()) return;
+	nx = (TMrbNamedX *) fCalibrationList[px];
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "No such calibration - module # " << ModuleIndex << ", param # " << RelParamIndex << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintCalibration");
+		return;
+	}
+	TMrbCalibrationListEntry * cle = (TMrbCalibrationListEntry *) nx->GetAssignedObject();
+	if (cle) {
+		TString mod = Form("%s (%d)", cle->GetModule()->GetName(), cle->GetModule()->GetIndex());
+		TString par = Form("%s (%d)", cle->GetParam()->GetName(), cle->GetParam()->GetIndex());
+		TF1 * cal = cle->GetAddress();
+		if (cal) {
+			Int_t n = (Int_t) cal->GetParameter(0);
+			Out << Form(calFmt1, mod.Data(), par.Data(), n);
+			for (Int_t parNo = 1; parNo <= n + 1; parNo++) Out << Form(calFmt2, cal->GetParameter(parNo));
+			Out << endl;
+		}
+	}
 }
 
 TF1 * TMrbAnalyze::GetDCorr(const Char_t * DCorrName) const {

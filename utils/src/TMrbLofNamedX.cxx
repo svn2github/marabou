@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofNamedX.cxx,v 1.8 2005-10-20 14:16:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofNamedX.cxx,v 1.9 2006-06-29 13:56:02 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -179,14 +179,13 @@ void TMrbLofNamedX::AddNamedX(TMrbLofNamedX * LofNamedX) {
 
 	TMrbNamedX * namedX;
 
-	namedX = (TMrbNamedX *) LofNamedX->First();
-	while (namedX) {
+	TIterator * iter = LofNamedX->MakeIterator();
+	while (namedX = (TMrbNamedX *) iter->Next()) {
 		TMrbNamedX * nx = new TMrbNamedX( namedX->GetIndex(),
 									namedX->GetName(),
 									namedX->HasTitle() ? namedX->GetTitle() : NULL,
 									namedX->GetAssignedObject());
 		this->Add(nx);
-		namedX = (TMrbNamedX *) LofNamedX->After(namedX);
 	}
 }
 
@@ -249,11 +248,10 @@ void TMrbLofNamedX::Sort(Bool_t SortFlag) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx = (TMrbNamedX *) this->First();
-	while (nx) {
-		nx->SortByName(SortFlag);
-		nx = (TMrbNamedX *) this->After(nx);
-	}
+	TMrbNamedX * nx;
+
+	TIterator * iter = this->MakeIterator();
+	while (nx = (TMrbNamedX *) iter->Next()) nx->SortByName(SortFlag);
 	TObjArray::UnSort();
 	TObjArray::Sort();
 }
@@ -273,7 +271,6 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t nbits;
-	TMrbNamedX * xPnt;
 	TMrbNamedX * same;
 	Int_t index, n;
 	Bool_t negFlag;
@@ -290,9 +287,10 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 
 	base = this->IsPatternMode() ? 16 : 10;
 
-	xPnt = (TMrbNamedX *) First();
+	TMrbNamedX * xPnt;
+	TIterator * iter = this->MakeIterator();
 	if (fPatternMode) {
-		while (xPnt) {
+		while (xPnt = (TMrbNamedX *) iter->Next()) {
 			if ((xPnt->GetIndex() & Mask) == (UInt_t) xPnt->GetIndex()) {
 				Out << Prefix << xPnt->GetFullName(fullName);
 				index = xPnt->GetIndex();
@@ -335,16 +333,14 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 				}
 				Out << endl;
 			}
-			xPnt = (TMrbNamedX *) After(xPnt);
 		}
 	} else {
-		while (xPnt) {
+		while (xPnt = (TMrbNamedX *) iter->Next()) {
 			Out << Prefix;
 			xPnt->Print(Out, base, kFALSE);
 			same = this->FindByIndex(xPnt->GetIndex());
 			if (same != xPnt) Out << " (same as " << same->GetName() << ")";
 			Out << endl;
-			xPnt = (TMrbNamedX *) After(xPnt);
 		}
 	}
 }
@@ -365,17 +361,15 @@ void TMrbLofNamedX::PrintNames(ostream & Out, const Char_t * Prefix, UInt_t Mask
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * xPnt;
-
+	TIterator * iter = this->MakeIterator();
 	if (fPatternMode) {
-		xPnt = (TMrbNamedX *) First();
 		Out << Prefix;
-		while (xPnt) {
+		while (xPnt = (TMrbNamedX *) iter->Next()) {
 			if (xPnt->GetIndex() & TMrbLofNamedX::kPatternBit) {
 				if ((~xPnt->GetIndex() & Mask) == 0) Out << xPnt->GetName() << " ";
 			} else {
 				if ((xPnt->GetIndex() & Mask) == (UInt_t) xPnt->GetIndex()) Out << xPnt->GetName() << " ";
 			}
-			xPnt = (TMrbNamedX *) After(xPnt);
 		}
 		if (CrFlag) Out << endl; else Out << flush;
 	} else {
@@ -400,27 +394,22 @@ TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * xPnt;
-	TMrbNamedX * namedX;
 	TString shortName;
 	TString xName;
 	Int_t lng;
-	Bool_t dialogFlag;
 
-	TString::ECaseCompare cmp;
+	TString::ECaseCompare cmp = (FindMode & TMrbLofNamedX::kFindIgnoreCase) ? TString::kIgnoreCase : TString::kExact;
 
-	cmp = (FindMode & TMrbLofNamedX::kFindIgnoreCase) ? TString::kIgnoreCase : TString::kExact;
+	Bool_t dialogFlag = FindByDialog(shortName, ShortName, FindMode);
 
-	dialogFlag = FindByDialog(shortName, ShortName, FindMode);
+	TMrbNamedX * namedX = NULL;
 
-	namedX = NULL;
-
+	TMrbNamedX * xPnt;
 	for(;;) {
-		xPnt = (TMrbNamedX *) First();
-
+		TIterator * iter = this->MakeIterator();
 		if (FindMode & TMrbLofNamedX::kFindUnique) {
 			lng = shortName.Length();
-			while (xPnt) {
+			while (xPnt = (TMrbNamedX *) iter->Next()) {
 				xName = xPnt->GetName();
 				xName.Resize(lng);
 				if (xName.CompareTo(shortName, cmp) == 0) {
@@ -430,15 +419,11 @@ TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode
 					}
 					namedX = xPnt;
 				}
-				xPnt = (TMrbNamedX *) After(xPnt);
 			}
 		} else {
-			while (xPnt) {
+			while (xPnt = (TMrbNamedX *) iter->Next()) {
 				xName = xPnt->GetName();
-				if (xName.CompareTo(shortName, cmp) == 0) {
-					return(xPnt);
-				}
-				xPnt = (TMrbNamedX *) After(xPnt);
+				if (xName.CompareTo(shortName, cmp) == 0) return(xPnt);
 			}
 		}
 		if (dialogFlag && namedX == NULL) {
@@ -466,10 +451,9 @@ TMrbNamedX * TMrbLofNamedX::FindByIndex(Int_t Index, Int_t Mask) const {
 
 	TMrbNamedX * xPnt;
 
-	xPnt = (TMrbNamedX *) First();
-	while (xPnt) {
+	TIterator * iter = this->MakeIterator();
+	while (xPnt = (TMrbNamedX *) iter->Next()) {
 		if ((xPnt->GetIndex() & Mask) == Index) return(xPnt);
-		xPnt = (TMrbNamedX *) After(xPnt);
 	}
 	return(NULL);
 }
@@ -618,10 +602,6 @@ const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t cmpl;
-	UInt_t indexBits;
-	TMrbNamedX * index;
-
 	if (!fPatternMode) {
 		if (fName.IsNull()) {
 			gMrbLog->Err() << "Index list not in pattern mode" << endl;
@@ -632,6 +612,8 @@ const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString,
 		return("");
 	}
 
+	UInt_t indexBits;
+	Bool_t cmpl;
 	if (Pattern & (UInt_t) TMrbLofNamedX::kPatternBit) {
 		indexBits = ~Pattern;
 		cmpl = kTRUE;
@@ -640,16 +622,16 @@ const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString,
 		cmpl = kFALSE;
 	}
 
-	index = (TMrbNamedX *) this->First();
+	TMrbNamedX * index;
 	IndexString.Resize(0);
-	while (index) {
+	TIterator * iter = this->MakeIterator();
+	while (index = (TMrbNamedX *) iter->Next()) {
 		UInt_t ind = index->GetIndex();
 		if ((indexBits & ind) == ind) {
 			if (IndexString.Length() > 0) IndexString += Separator;
 			if (cmpl) IndexString += "~";
 			IndexString += index->GetName();
 		}
-		index = (TMrbNamedX *) this->After(index);
 	}
 	return(IndexString.Data());
 }
@@ -706,16 +688,11 @@ UInt_t TMrbLofNamedX::GetMask() const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * xPnt;
-	UInt_t mask;
-
 	if (!IsPatternMode()) return(0xffffffff);
 
-	xPnt = (TMrbNamedX *) First();
-	mask = 0;
-	while (xPnt) {
-		mask |= xPnt->GetIndex();
-		xPnt = (TMrbNamedX *) After(xPnt);
-	}
+	TMrbNamedX * xPnt;
+	UInt_t mask = 0;
+	TIterator * iter = this->MakeIterator();
+	while (xPnt = (TMrbNamedX *) iter->Next()) mask |= xPnt->GetIndex();
 	return(mask);
 }

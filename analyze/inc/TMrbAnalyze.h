@@ -7,7 +7,7 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.47 2006-06-27 08:36:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.48 2006-06-29 13:56:01 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -59,7 +59,7 @@ class TMrbAnalyze : public TObject {
 
 		enum				{	kUpdateTime 	=	8				};
 
-		enum				{	kMaxPolyDegree	=	3				};
+		enum				{	kMaxPolyDegree	=	5				};
 
 		enum EMrbRunStatus	{	M_ABSENT,
 								M_STARTING,
@@ -192,10 +192,22 @@ class TMrbAnalyze : public TObject {
 		TF1 * GetCalibration(Int_t AbsParamIndex) const;							// get calibration by absolute param index
 		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Gain, Double_t & Offset) const;
 		TF1 * GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t & Offset) const;
+		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, TArrayD & Coeffs) const;
+		TF1 * GetCalibration(Int_t AbsParamIndex, TArrayD & Coeffs) const;
 
 		TMrbCalibrationListEntry * GetCalibrationListEntry(Int_t ModuleIndex, Int_t RelParamIndex) const;
 		TMrbCalibrationListEntry * GetCalibrationListEntry(Int_t AbsParamIndex) const;
 
+		void PrintCalibration(ostream & Out) const;
+		void PrintCalibration(ostream & Out, Int_t ModuleIndex, Int_t RelParamIndex) const;
+		void PrintCalibration(ostream & Out, Int_t AbsParamIndex) const;
+		void PrintCalibration(ostream & Out, const Char_t * CalibrationName) const;
+		void PrintCalibration(ostream & Out, TMrbNamedX * CalX) const;
+		inline void PrintCalibration() const { this->PrintCalibration(cout); };
+		inline void PrintCalibration(Int_t ModuleIndex, Int_t RelParamIndex) const { this->PrintCalibration(cout, ModuleIndex, RelParamIndex); };
+		inline void PrintCalibration(Int_t AbsParamIndex) const { this->PrintCalibration(cout, AbsParamIndex); };
+		inline void PrintCalibration(const Char_t * CalibrationName) const { this->PrintCalibration(cout, CalibrationName); };
+	
 		Int_t ReadDCorrFromFile(const Char_t * DCorrFile);		// read calibration data from file
 		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
 		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t AbsParamIndex);
