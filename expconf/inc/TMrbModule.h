@@ -8,7 +8,7 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.13 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.h,v 1.14 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -112,6 +112,11 @@ class TMrbModule : public TNamed {
 		inline Int_t GetCrate() const { return(fCrate); };							// return crate number
 		inline Int_t GetSerial() const { return(fSerial); };  	 					// return unique module id
 
+		Bool_t SetMbsBranch(Int_t MbsBranchNo);							// mbs branch
+		Bool_t SetMbsBranch(const Char_t * MbsBranch, Int_t MbsBranchNo = -1);
+		inline TMrbNamedX * GetMbsBranch() { return(&fMbsBranch); };
+		inline Int_t GetMbsBranchNo() { return(fMbsBranch.GetIndex()); };
+
 		inline void SetTimeOffset(Int_t TimeOffset) { fTimeOffset = TimeOffset; };	// time offset
 		inline Int_t GetTimeOffset() const { return(fTimeOffset); };
 
@@ -176,6 +181,8 @@ class TMrbModule : public TNamed {
 
 		TMrbNamedX * fDataType;					// data type
 		Int_t fNofShortsPerChannel; 			// number of 16 bit words per channel
+
+		TMrbNamedX fMbsBranch;					// branch within MBS
 
 		Int_t fCrate;							// crate number
 

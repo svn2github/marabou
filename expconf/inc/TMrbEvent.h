@@ -8,7 +8,7 @@
 // Class:          TMrbEvent            -- event connected to a trigger
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEvent.h,v 1.8 2006-02-22 12:15:39 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.h,v 1.9 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -107,6 +107,11 @@ class TMrbEvent : public TNamed {
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
 		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
 		
+		Bool_t SetMbsBranch(Int_t MbsBranchNo);							// mbs branch
+		Bool_t SetMbsBranch(const Char_t * MbsBranch, Int_t MbsBranchNo = -1);
+		inline TMrbNamedX * GetMbsBranch() { return(&fMbsBranch); };
+		inline Int_t GetMbsBranchNo() { return(fMbsBranch.GetIndex()); };
+
 		inline Int_t GetNofSubevents() const { return(fNofSubevents); };					// number of subevents
 		inline TMrbLofNamedX * GetLofSubevents() { return(&fLofSubevents); };		// list of subevents
 		const Char_t * GetLofSubeventsAsString(TString & LofSubevents) const;
@@ -145,6 +150,8 @@ class TMrbEvent : public TNamed {
 		UInt_t fConfigOptions;  			// ... in MakeConfigCode()
 
 		Int_t fAutoSave;					// auto save after N bytes
+
+		TMrbNamedX fMbsBranch;				// branch within MBS
 
 		Bool_t fPrivateHistograms;			// kTRUE if private histograms to be accumualted
 		TString fPrefix;					// prefix to be prepended to private histos

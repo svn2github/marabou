@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.17 2006-02-22 12:15:39 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.18 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -185,6 +185,8 @@ TMrbEvent::TMrbEvent(Int_t Trigger, const Char_t * EvtName, const Char_t * EvtTi
 		
 		fSizeOfHitBuffer = 1000;
 		fHBHighWaterLimit = 0;
+
+		fMbsBranch.Set(-1, "none");
 
 		gMrbConfig->AddEvent(this);
 		gDirectory->Append(this);
@@ -1113,3 +1115,43 @@ const Char_t * TMrbEvent::GetLofSubeventsAsString(TString & LofSubevents) const 
 	return(LofSubevents.Data());
 }
 
+Bool_t TMrbEvent::SetMbsBranch(Int_t MbsBranchNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEvent::SetMbsBranch
+// Purpose:        Assign event to a mbs branch
+// Arguments:      Int_t MbsBranchNo         -- mbs branch number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Assigns event to a mbs branch.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!gMrbConfig->SetMbsBranch(fMbsBranch, NULL, MbsBranchNo)) {
+		gMrbLog->Err()	<< "Event " << this->GetName() << ": Can't set mbs branch" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+		return(kFALSE);
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbEvent::SetMbsBranch(const Char_t * MbsBranchName, Int_t MbsBranchNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEvent::SetMbsBranch
+// Purpose:        Assign event to a mbs branch
+// Arguments:      Char_t * MbsBranchName      -- branch name
+//                 Int_t MbsBranchNo           -- branch number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Assigns event to a mbs branch.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!gMrbConfig->SetMbsBranch(fMbsBranch, NULL, MbsBranchNo)) {
+		gMrbLog->Err()	<< "Event " << this->GetName() << ": Can't set mbs branch" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+		return(kFALSE);
+	}
+	return(kTRUE);
+}

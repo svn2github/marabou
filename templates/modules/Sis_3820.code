@@ -70,7 +70,7 @@
 #define SIS_3820_INHIBIT_COUNTING(module, b) 	*SIS_3820_A_INHIBIT_COUNTING(module) = b
 #define SIS_3820_WRITE_FIFO_THRESH(module, b)	*SIS_3820_A_FIFO_WC_THRESH(module) = b
 #define SIS_3820_RESET(module)					*SIS_3820_A_KEY_RESET(module) = 0
-#define SIS_3820_VME_LNE(module)				*SIS_3820_A_KEY_VME_LNE(module) = 0
+#define SIS_3820_KEY_VME_LNE(module)				*SIS_3820_A_KEY_VME_LNE(module) = 0
 #define SIS_3820_CLEAR_FIFO(module)				*SIS_3820_A_KEY_FIFO_RESET(module) = 0
 #define SIS_3820_OPER_ENABLE(module)			*SIS_3820_A_KEY_OPER_ENABLE(module) = 0
 #define SIS_3820_OPER_DISABLE(module)			*SIS_3820_A_KEY_OPER_DISABLE(module) = 0
@@ -92,7 +92,7 @@
 
 #define SIS_3820_B_SELECT_SDRAM_MODE			(0x1 << 12)
 
-#define SIS_3820_IRQ_B_FIFO_THRESH				(0x1 << 25)
+#define SIS_3820_FLAG_B_FIFO_THRESH				(0x1 << 17)
 
 %%EndOfCode%%
 %%MODULE_DEFS%%
@@ -110,8 +110,9 @@
 					SIS_3820_CLEAR_FIFO($moduleName);
 					SIS_3820_SET_CTRL_BIT($moduleName, SIS_3820_CS_B_INPUT_MODE_$inputMode | SIS_3820_CS_B_OUTPUT_MODE_$outputMode | SIS_3820_CS_B_LNE_SOURCE_$lneSource);
 					SIS_3820_WRITE_FIFO_THRESH($moduleName, 1);
-					SIS_3820_INHIBIT_COUNTING($moduleName, $unusedChannels);
-					SIS_3820_DISABLE_COPY($moduleName, $unusedChannels);
+					SIS_3820_INHIBIT_COUNTING($moduleName, 0xFFFFFFFF);
+					SIS_3820_DISABLE_COPY($moduleName, 0xFFFFFFFF);
+					SIS_3820_OPER_DISABLE($moduleName);
 					sis_3820_module_info($moduleName);
 
 %%EndOfCode%%
@@ -128,17 +129,20 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-%FSR%					SIS_3820_VME_LNE($moduleName);				/* force scaler readout */
+%SH%#if 0
 %SH%					$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
-%SH%					if (($mnemoLC_sts & SIS_3820_IRQ_B_FIFO_THRESH) != 0) {
+%SH%					if (($mnemoLC_sts & SIS_3820_FLAG_B_FIFO_THRESH) != 0) {
 %SH%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO);
 %SH%						RDO_BLT_32(32);
 %SH%					} else {
 %SH%						memset(evt.out32, 0, 32 * sizeof(unsigned long));
 %SH%						evt.out32 += 32;
 %SH%					}
+%SH%#endif
+%SH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO);	/* read scaler contents anyway */
+%SH%					RDO_BLT_32(32);
 %SHS%					$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
-%SHS%					if (($mnemoLC_sts & SIS_3820_IRQ_B_FIFO_THRESH) != 0) {
+%SHS%					if (($mnemoLC_sts & SIS_3820_FLAG_B_FIFO_THRESH) != 0) {
 %SHS%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO);
 %SHS%						RDO_BLT_32($nofChannels);
 %SHS%					} else {
@@ -148,7 +152,7 @@
 %MH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO); 	/* scaler $moduleName runs in multi-hit mode */
 %MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
 %MH%						$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName);
-%MH%						if (($mnemoLC_sts & SIS_3820_IRQ_B_FIFO_THRESH) != 0) RDO_BLT_32(32);
+%MH%						if (($mnemoLC_sts & SIS_3820_FLAG_B_FIFO_THRESH) != 0) RDO_BLT_32(32);
 %MH%						else break;
 %MH%					}
 %MH%					$mnemoLC_hit = ($fifoDepth - $mnemoLC_hit) * 32;
@@ -159,7 +163,7 @@
 %MHS%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO); 	/* scaler $moduleName runs in multi-hit mode */
 %MHS%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
 %MHS%						$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName);
-%MHS%						if (($mnemoLC_sts & SIS_3820_IRQ_B_FIFO_THRESH) != 0) RDO_BLT_32($nofChannels);
+%MHS%						if (($mnemoLC_sts & SIS_3820_FLAG_B_FIFO_THRESH) != 0) RDO_BLT_32($nofChannels);
 %MHS%						else break;
 %MHS%					}
 %MHS%					$mnemoLC_hit = ($fifoDepth - $mnemoLC_hit) * (32 - $nofChannels);
@@ -206,7 +210,10 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-					SIS_3820_OPER_ENABLE($moduleName);
+%S%					SIS_3820_OPER_ENABLE($moduleName);
+%S%					SIS_3820_INHIBIT_COUNTING($moduleName, $unusedChannels);
+%S%					SIS_3820_DISABLE_COPY($moduleName, $unusedChannels);
+%FSR%					SIS_3820_KEY_VME_LNE($moduleName);				/* force scaler readout */
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -216,7 +223,8 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-					SIS_3820_OPER_DISABLE($moduleName);
+%FSR%
+%S%
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 

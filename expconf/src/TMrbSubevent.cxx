@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.26 2006-06-23 08:48:30 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.27 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -121,6 +121,8 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 			fHitDataLength = 0;
 
 			fSoftModule = NULL;
+
+			fMbsBranch.Set(-1, "none");
 
 			fSerial = gMrbConfig->AssignSevtSerial();		// assign a unique id to be used by MBS
 			fCrate = Crate; 								// store crate number
@@ -2007,6 +2009,45 @@ Bool_t TMrbSubevent::UseXhit(const Char_t * HitName, Int_t DataLength) {
 	return(xHit != NULL);
 }
 
+Bool_t TMrbSubevent::SetMbsBranch(Int_t MbsBranchNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent::SetMbsBranch
+// Purpose:        Assign subevent to a mbs branch
+// Arguments:      Int_t MbsBranchNo         -- mbs branch number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Assigns subevent to a mbs branch.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
 
-void TMrbSubevent::Browse(TBrowser * Browser) {
+	if (!gMrbConfig->SetMbsBranch(fMbsBranch, NULL, MbsBranchNo)) {
+		gMrbLog->Err()	<< "Subevent " << this->GetName() << ": Can't set mbs branch" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+		return(kFALSE);
+	}
+	return(kTRUE);
 }
+
+Bool_t TMrbSubevent::SetMbsBranch(const Char_t * MbsBranchName, Int_t MbsBranchNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent::SetMbsBranch
+// Purpose:        Assign subevent to a mbs branch
+// Arguments:      Char_t * MbsBranchName      -- branch name
+//                 Int_t MbsBranchNo           -- branch number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Assigns subevent to a mbs branch.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!gMrbConfig->SetMbsBranch(fMbsBranch, NULL, MbsBranchNo)) {
+		gMrbLog->Err()	<< "Subevent " << this->GetName() << ": Can't set mbs branch" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+		return(kFALSE);
+	}
+	return(kTRUE);
+}
+
+void TMrbSubevent::Browse(TBrowser * Browser) {}

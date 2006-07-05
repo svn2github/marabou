@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.68 2006-06-23 08:48:30 Marabou Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.69 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -641,6 +641,9 @@ class TMrbConfig : public TNamed {
 			fNofScalers++;
 		};
 
+		Bool_t SetMbsBranch(TMrbNamedX & MbsBranch, const Char_t * MbsBranchName, Int_t MbsBranchNo);	// mbs branch
+		Int_t CheckMbsBranchAssignments();
+
 		TObject * FindParam(const Char_t * ParamName) const;							// find a param 
 
 		Bool_t HistogramExists(const Char_t * HistoName) const;						// check if histo exists
@@ -840,6 +843,7 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofHistoTypes;			//! ... histogram types
 		TMrbLofNamedX fLofGlobals;				//! list of global vars
 		TMrbLofNamedX fLofDefines;				//! list of #define statements
+		TMrbLofNamedX fLofMbsBranches;			//! list of mbs branches
 
 	protected:
 		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);

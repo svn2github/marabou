@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.15 2006-06-23 08:48:30 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.16 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -158,6 +158,11 @@ class TMrbSubevent : public TNamed {
 		inline void FillHistogramsIfTrueHitOnly(Bool_t Flag = kTRUE) { fHistosToBeFilledIfTrueHit = Flag; };
 		inline Bool_t HistosToBeFilledIfTrueHit() const { return(fHistosToBeFilledIfTrueHit); };
 
+		Bool_t SetMbsBranch(Int_t MbsBranchNo);							// mbs branch
+		Bool_t SetMbsBranch(const Char_t * MbsBranch, Int_t MbsBranchNo = -1);
+		inline TMrbNamedX * GetMbsBranch() { return(&fMbsBranch); };
+		inline Int_t GetMbsBranchNo() { return(fMbsBranch.GetIndex()); };
+
 		virtual inline Bool_t HasFixedLengthFormat() const { return(kTRUE); };		// fixed length data
 		virtual inline Bool_t AllowsMultipleModules() const { return(kTRUE); };		// format allows multiple modules
 		virtual inline Bool_t SerialToBeCreated() const { return(kTRUE); }			// create unique serial internally?
@@ -204,6 +209,8 @@ class TMrbSubevent : public TNamed {
 
 		Bool_t fHistosToBeAllocated;		// kTRUE if histograms to be allocated for all params
 		Bool_t fHistosToBeFilledIfTrueHit;	// fill histograms if is it true hit
+
+		TMrbNamedX fMbsBranch;				// branch within MBS
 
 		Int_t fNofEvents;					// list of parent events
 		TObjArray fLofEvents;

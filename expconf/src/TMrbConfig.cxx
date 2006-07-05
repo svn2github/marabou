@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.116 2006-06-23 08:48:30 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.117 2006-07-05 14:23:53 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -654,6 +654,9 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofDefines.Delete();
 		fLofDefines.SetName("#define");
 
+		fLofMbsBranches.Delete();
+		fLofMbsBranches.SetName("MBS branches");
+
 		this->GetAuthor();		 								// author's name
 
 		TDatime dt; 											// creation date
@@ -850,11 +853,9 @@ TObject * TMrbConfig::FindEvent(Int_t Trigger) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbEvent * evt;
-
-	evt = (TMrbEvent *) fLofEvents.First();
-	while (evt) {
+	TIterator * evtIter = fLofEvents.MakeIterator();
+	while (evt = (TMrbEvent *) evtIter->Next()) {
 		if (evt->GetTrigger() == Trigger) return(evt);
-		evt = (TMrbEvent *) fLofEvents.After(evt);
 	}
 	return(NULL);
 }
@@ -872,11 +873,9 @@ TObject * TMrbConfig::FindSubevent(Int_t SevtSerial) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbSubevent * sevt;
-
-	sevt= (TMrbSubevent *) fLofSubevents.First();
-	while (sevt) {
+	TIterator * sevtIter = fLofSubevents.MakeIterator();
+	while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 		if (sevt->GetSerial() == SevtSerial) return(sevt);
-		sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 	}
 	return(NULL);
 }
@@ -1066,10 +1065,9 @@ TObject * TMrbConfig::FindModuleBySerial(Int_t ModuleSerial) const {
 
 	TMrbModule * module;
 
-	module = (TMrbModule *) fLofModules.First();
-	while (module) {
+	TIterator * modIter = fLofModules.MakeIterator();
+	while (module = (TMrbModule *) modIter->Next()) {
 		if (module->GetSerial() == ModuleSerial) return(module);
-		module = (TMrbModule *) fLofModules.After(module);
 	}
 	return(NULL);
 }
@@ -1244,10 +1242,9 @@ TObject * TMrbConfig::FindParam(const Char_t * ParamName) const {
 	TMrbSubevent * sevt;
 	TObject * param;
 
-	sevt = (TMrbSubevent *) fLofSubevents.First();
-	while (sevt) {
+	TIterator * sevtIter = fLofSubevents.MakeIterator();
+	while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 		if ((param = sevt->FindParam(ParamName)) != NULL) return(param);
-		sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 	}
 	return(NULL);
 }
@@ -1265,17 +1262,18 @@ Bool_t TMrbConfig::HistogramExists(const Char_t * HistoName) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fLofUserHistograms.FindObject(HistoName)) return(kTRUE);
-	TMrbSubevent * sevt = (TMrbSubevent *) fLofSubevents.First();
-	while (sevt) {
-		TObject * param = sevt->GetLofParams()->First();
-		while (param) {
+
+	TMrbSubevent * sevt;
+	TIterator * sevtIter = fLofSubevents.MakeIterator();
+	while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+		TObject * param;
+		TIterator * paramIter = sevt->GetLofParams()->MakeIterator();
+		while (param = paramIter->Next()) {
 			TString pName = param->GetName();
 			pName(0,1).ToUpper();
 			pName.Prepend("h");
 			if (pName.CompareTo(HistoName) == 0) return(kTRUE);
-			param = sevt->GetLofParams()->After(param);
 		}
-		sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 	}
 	return(kFALSE);
 }
@@ -1372,20 +1370,19 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	packNames rdmk(cfile.Data(), "Readout.mk.code", ".mk", "Makefile (LynxOs)");
 	filesToCreate.Add((TObject *) &rdmk);
 
-	packNames * pp = (packNames *) filesToCreate.First();
-	while (pp) {
+	packNames * pp;
+	TIterator * ppIter = filesToCreate.MakeIterator();
+	while (pp  = (packNames *) ppIter->Next()) {
 		cf = pp->GetF() + pp->GetX();
 		if (((this->GetReadoutOptions() & kRdoOptOverwrite) == 0) && (gSystem->AccessPathName(cf) == 0)) {
 			gMrbLog->Err() << "File exists - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			continue;
 		}
 		rdoStrm.open(cf, ios::out);
 		if (!rdoStrm.good()) {	
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			continue;
 		}
 
@@ -1409,7 +1406,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 			gMrbLog->Flush();
 			gMrbLog->Err()	<< "            or       " << tf2 << endl;
 			gMrbLog->Flush();
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			rdoStrm.close();
 			continue;
 		}
@@ -1417,7 +1413,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 		rdoTemplateFile = fileSpec;
 
 		if (!rdoTmpl.Open(rdoTemplateFile, &fLofReadoutTags)) {
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			if (verboseMode) {
 				gMrbLog->Err()  << "Skipping template file - " << fileSpec << endl;
 				gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
@@ -1450,22 +1445,21 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kRdoInclude:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TList onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefineIncludePaths);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
-							TObjString * o = (TObjString *) fLofRdoIncludes.First();
+							TObjString * o;
 							TString iclPath = "";
-							while (o) {
+							TIterator * objIter = fLofRdoIncludes.MakeIterator();
+							while (o = (TObjString *) objIter->Next()) {
 								iclPath += o->String();
 								iclPath += " ";
-								o = (TObjString *) fLofRdoIncludes.After(o);
 							}
 							iclPath += "-I";
 							iclPath += gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "/nfs/mbssys/include");
@@ -1474,22 +1468,21 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kRdoLibs:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TList onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefineLibraries);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
-							TObjString * o = (TObjString *) fLofRdoLibs.First();
+							TObjString * o;
 							TString libString = "";
-							while (o) {
+							TIterator * objIter = fLofRdoIncludes.MakeIterator();
+							while (o = (TObjString *) objIter->Next()) {
 								libString += o->String();
 								libString += " ";
-								o = (TObjString *) fLofRdoLibs.After(o);
 							}
 							libString += gEnv->GetValue("TMrbConfig.ReadoutLibs", "$(LIB)/lib_utils.a");
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
@@ -1584,123 +1577,123 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						rdoStrm << rdoTmpl.Encode(line, fCreationDate) << endl;
 						break;
 					case TMrbConfig::kRdoDefinePointers:
-						module = (TMrbModule *) fLofModules.First();
-						while (module) {
-							if (module->IsVME()) {
-								if (module->GetNofSubDevices() <= 1) {
-									rdoTmpl.InitializeCode("%V%");
+						{
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->IsVME()) {
+									if (module->GetNofSubDevices() <= 1) {
+										rdoTmpl.InitializeCode("%V%");
+									} else {
+										rdoTmpl.InitializeCode("%VS%");
+										rdoTmpl.Substitute("$subDevice", module->GetSubDevice());
+									}
 								} else {
-									rdoTmpl.InitializeCode("%VS%");
-									rdoTmpl.Substitute("$subDevice", module->GetSubDevice());
+									rdoTmpl.InitializeCode("%C%");
 								}
-							} else {
-								rdoTmpl.InitializeCode("%C%");
-							}
-							rdoTmpl.Substitute("$moduleName", module->GetName());
-							if (module->IsCamac())
-									rdoTmpl.Substitute("$modulePosition", ((TMrbCamacModule *) module)->GetPosition());
-							else if (module->IsVME())
-									rdoTmpl.Substitute("$modulePosition", ((TMrbVMEModule *) module)->GetPosition());
-							else	rdoTmpl.Substitute("$modulePosition", "");
-							rdoTmpl.Substitute("$moduleTitle", module->GetTitle());
-							rdoTmpl.WriteCode(rdoStrm);
-							module = (TMrbModule *) fLofModules.After(module);
-						}
-						crate = this->FindCrate();
-						while (crate >= 0) {
-							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
-								Int_t cc = this->GetControllerType(crate);
-								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
-									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-									cc = TMrbConfig::kControllerCBV;
-								}
-								if (cc == TMrbConfig::kControllerCBV) rdoTmpl.InitializeCode("%CBV%");
-								else if (cc == TMrbConfig::kControllerCC32) rdoTmpl.InitializeCode("%CC32%");
-								rdoTmpl.Substitute("$crateNo", crate);
+								rdoTmpl.Substitute("$moduleName", module->GetName());
+								if (module->IsCamac())
+										rdoTmpl.Substitute("$modulePosition", ((TMrbCamacModule *) module)->GetPosition());
+								else if (module->IsVME())
+										rdoTmpl.Substitute("$modulePosition", ((TMrbVMEModule *) module)->GetPosition());
+								else	rdoTmpl.Substitute("$modulePosition", "");
+								rdoTmpl.Substitute("$moduleTitle", module->GetTitle());
 								rdoTmpl.WriteCode(rdoStrm);
 							}
-							crate = this->FindCrate(crate);
+							crate = this->FindCrate();
+							while (crate >= 0) {
+								if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
+									Int_t cc = this->GetControllerType(crate);
+									if (cc == TMrbConfig::kControllerUnused) {
+										gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
+										gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+										cc = TMrbConfig::kControllerCBV;
+									}
+									if (cc == TMrbConfig::kControllerCBV) rdoTmpl.InitializeCode("%CBV%");
+									else if (cc == TMrbConfig::kControllerCC32) rdoTmpl.InitializeCode("%CC32%");
+									rdoTmpl.Substitute("$crateNo", crate);
+									rdoTmpl.WriteCode(rdoStrm);
+								}
+								crate = this->FindCrate(crate);
+							}
 						}
 						break;
 					case TMrbConfig::kRdoDeviceTables:
-						rdoTmpl.InitializeCode("%MTA%");
-						rdoTmpl.WriteCode(rdoStrm);
-						module = (TMrbModule *) fLofModules.First();
-						while (module) {
-							rdoTmpl.InitializeCode("%MT%");
-							rdoTmpl.Substitute("$moduleNameLC", module->GetName());
-							moduleName = module->GetName();
-							moduleName(0,1).ToUpper();
-							rdoTmpl.Substitute("$moduleNameUC", moduleName.Data());
-							Int_t lam = (module->IsCamac()) ?
-										(Int_t) (0x1 << (((TMrbCamacModule *) module)->GetStation() - 1)) : 0;
-							rdoTmpl.Substitute("$lam", lam, 16);
-							rdoTmpl.Substitute("$crate", module->GetCrate());
-							Int_t station = (module->IsCamac()) ? ((TMrbCamacModule *) module)->GetStation() : 0;
-							rdoTmpl.Substitute("$station", station);
-							rdoTmpl.Substitute("$nofParams", module->GetNofChannels());
-							rdoTmpl.Substitute("$nofParUsed", module->GetNofChannelsUsed());
-							rdoTmpl.Substitute("$paramPattern", (Int_t) module->GetPatternOfChannelsUsed(), 16);
+						{
+							rdoTmpl.InitializeCode("%MTA%");
 							rdoTmpl.WriteCode(rdoStrm);
-							module = (TMrbModule *) fLofModules.After(module);
-						}
-						rdoTmpl.InitializeCode("%MTE%");
-						rdoTmpl.WriteCode(rdoStrm);
-						rdoTmpl.InitializeCode("%STA%");
-						rdoTmpl.WriteCode(rdoStrm);
-						sevt = (TMrbSubevent *) fLofSubevents.First();
-						while (sevt) {
-							Int_t nofModules = sevt->GetNofModules();
-							rdoTmpl.InitializeCode((nofModules == 0) ? "%ST0%" : "%ST%");
-							rdoTmpl.Substitute("$sevtNameLC", sevt->GetName());
-							sevtName = sevt->GetName();
-							sevtName(0,1).ToUpper();
-							rdoTmpl.Substitute("$sevtNameUC", sevtName.Data());
-							rdoTmpl.Substitute("$nofModules", nofModules);
-							if (nofModules > 0) {
-								module = (TMrbModule *) sevt->GetLofModules()->First();
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
+								rdoTmpl.InitializeCode("%MT%");
+								rdoTmpl.Substitute("$moduleNameLC", module->GetName());
 								moduleName = module->GetName();
 								moduleName(0,1).ToUpper();
-								rdoTmpl.Substitute("$firstModule", moduleName.Data());
-								Int_t lam = 0;
-								while (module) {
-									lam |= (module->IsCamac()) ?
-										(Int_t) (0x1 << (((TMrbCamacModule *) module)->GetStation() - 1)) : 0;
-									module = (TMrbModule *) sevt->GetLofModules()->After(module);
-								}
+								rdoTmpl.Substitute("$moduleNameUC", moduleName.Data());
+								Int_t lam = (module->IsCamac()) ?
+											(Int_t) (0x1 << (((TMrbCamacModule *) module)->GetStation() - 1)) : 0;
 								rdoTmpl.Substitute("$lam", lam, 16);
-							}
-							rdoTmpl.WriteCode(rdoStrm);
-							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
-						}
-						rdoTmpl.InitializeCode("%STE%");
-						rdoTmpl.WriteCode(rdoStrm);
-						break;
-					case TMrbConfig::kRdoInitPointers:
-						if ((vmeModule = (TMrbVMEModule *) this->FindModuleByType(TMrbConfig::kModuleVME)) != NULL) {
-							rdoTmpl.InitializeCode("%BV%");
-							rdoTmpl.WriteCode(rdoStrm);
-						}
-						module = (TMrbModule *) fLofModules.First();
-						while (module) {
-							module->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl, NULL);
-							module = (TMrbModule *) fLofModules.After(module);
-						}
-						crate = this->FindCrate();
-						while (crate >= 0) {
-							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
-								iniTag = "%";
-								Int_t cc = this->GetControllerType(crate);
-								if (cc == TMrbConfig::kControllerUnused) cc = TMrbConfig::kControllerCBV;
-								TMrbNamedX * ccx = fLofControllerTypes.FindByIndex(cc);
-								iniTag += ccx->GetName();
-								iniTag += "%";
-								rdoTmpl.InitializeCode(iniTag.Data());
-								rdoTmpl.Substitute("$crateNo", crate);
+								rdoTmpl.Substitute("$crate", module->GetCrate());
+								Int_t station = (module->IsCamac()) ? ((TMrbCamacModule *) module)->GetStation() : 0;
+								rdoTmpl.Substitute("$station", station);
+								rdoTmpl.Substitute("$nofParams", module->GetNofChannels());
+								rdoTmpl.Substitute("$nofParUsed", module->GetNofChannelsUsed());
+								rdoTmpl.Substitute("$paramPattern", (Int_t) module->GetPatternOfChannelsUsed(), 16);
 								rdoTmpl.WriteCode(rdoStrm);
 							}
-							crate = this->FindCrate(crate);
+							rdoTmpl.InitializeCode("%MTE%");
+							rdoTmpl.WriteCode(rdoStrm);
+							rdoTmpl.InitializeCode("%STA%");
+							rdoTmpl.WriteCode(rdoStrm);
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+								Int_t nofModules = sevt->GetNofModules();
+								rdoTmpl.InitializeCode((nofModules == 0) ? "%ST0%" : "%ST%");
+								rdoTmpl.Substitute("$sevtNameLC", sevt->GetName());
+								sevtName = sevt->GetName();
+								sevtName(0,1).ToUpper();
+								rdoTmpl.Substitute("$sevtNameUC", sevtName.Data());
+								rdoTmpl.Substitute("$nofModules", nofModules);
+								if (nofModules > 0) {
+									module = (TMrbModule *) sevt->GetLofModules()->First();
+									moduleName = module->GetName();
+									moduleName(0,1).ToUpper();
+									rdoTmpl.Substitute("$firstModule", moduleName.Data());
+									Int_t lam = 0;
+									TIterator * modIter = sevt->GetLofModules()->MakeIterator();
+									while (module = (TMrbModule *) modIter->Next()) {
+										lam |= (module->IsCamac()) ?
+											(Int_t) (0x1 << (((TMrbCamacModule *) module)->GetStation() - 1)) : 0;
+									}
+									rdoTmpl.Substitute("$lam", lam, 16);
+								}
+								rdoTmpl.WriteCode(rdoStrm);
+							}
+							rdoTmpl.InitializeCode("%STE%");
+							rdoTmpl.WriteCode(rdoStrm);
+						}
+						break;
+					case TMrbConfig::kRdoInitPointers:
+						{
+							if ((vmeModule = (TMrbVMEModule *) this->FindModuleByType(TMrbConfig::kModuleVME)) != NULL) {
+								rdoTmpl.InitializeCode("%BV%");
+								rdoTmpl.WriteCode(rdoStrm);
+							}
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) module->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl, NULL);
+							crate = this->FindCrate();
+							while (crate >= 0) {
+								if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
+									iniTag = "%";
+									Int_t cc = this->GetControllerType(crate);
+									if (cc == TMrbConfig::kControllerUnused) cc = TMrbConfig::kControllerCBV;
+									TMrbNamedX * ccx = fLofControllerTypes.FindByIndex(cc);
+									iniTag += ccx->GetName();
+									iniTag += "%";
+									rdoTmpl.InitializeCode(iniTag.Data());
+									rdoTmpl.Substitute("$crateNo", crate);
+									rdoTmpl.WriteCode(rdoStrm);
+								}
+								crate = this->FindCrate(crate);
+							}
 						}
 						break;
 					case TMrbConfig::kRdoInitEnvironment:
@@ -1716,14 +1709,13 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kRdoInitCommonCode:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TList onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleInitCommonCode);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
 						}
@@ -1783,10 +1775,11 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						rdoTmpl.WriteCode(rdoStrm);
 						break;
 					case TMrbConfig::kRdoOnTriggerXX:
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
-							if (!evt->IsReservedEvent()) evt->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl);
-							evt = (TMrbEvent *) fLofEvents.After(evt);
+						{
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
+								if (!evt->IsReservedEvent()) evt->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl);
+							}
 						}
 						break;
 					case TMrbConfig::kRdoIgnoreTriggerXX:
@@ -1864,11 +1857,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							}
 							evt = (TMrbEvent *) this->FindEvent(TMrbConfig::kTriggerStartAcq);
 							if (evt) {
-								sevt = (TMrbSubevent *) evt->GetLofSubevents()->First();
-								while (sevt) {
-									sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
-									sevt = (TMrbSubevent *) evt->GetLofSubevents()->After(sevt);
-								}
+								TIterator * sevtIter = evt->GetLofSubevents()->MakeIterator();
+								while (sevt = (TMrbSubevent *) sevtIter->Next()) sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
 							}
 							rdoTmpl.InitializeCode("%CE%");
 							rdoTmpl.WriteCode(rdoStrm);
@@ -1915,11 +1905,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							}
 							evt = (TMrbEvent *) this->FindEvent(TMrbConfig::kTriggerStopAcq);
 							if (evt) {
-								sevt = (TMrbSubevent *) evt->GetLofSubevents()->First();
-								while (sevt) {
-									sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
-									sevt = (TMrbSubevent *) evt->GetLofSubevents()->After(sevt);
-								}
+								TIterator * sevtIter = evt->GetLofSubevents()->MakeIterator();
+								while (sevt = (TMrbSubevent *) sevtIter->Next()) sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
 							}
 							rdoTmpl.InitializeCode("%CE%");
 							rdoTmpl.WriteCode(rdoStrm);
@@ -1930,101 +1917,95 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kRdoDefineGlobalsOnce:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TList onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefineGlobalsOnce);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kRdoDefineGlobals:
 						{
-							module = (TMrbModule *) fLofModules.First();
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								module->MakeReadoutCode(rdoStrm, kModuleDefineGlobals);
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 						}
 						break;
 					case TMrbConfig::kRdoDefineLocalVarsInit:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TList onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefineLocalVarsInit);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kRdoDefineLocalVarsReadout:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TList onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefineLocalVarsReadout);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kRdoDefinePrototypes:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TList onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefinePrototypes);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kRdoUtilities:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TList onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleUtilities);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kRdoIncludesAndDefs:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TObjArray onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefs);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kRdoUserDefinedDefines:
 						{
-							TMrbNamedX * nx = (TMrbNamedX *) fLofDefines.First();
-							while (nx) {
+							TIterator * defIter = fLofDefines.MakeIterator();
+							TMrbNamedX * nx;
+							while (nx = (TMrbNamedX *) defIter->Next()) {
 								TString dName = nx->GetName();
 								TString dMode = nx->GetTitle();
 								if (dMode.BeginsWith("Bool_t")) {
@@ -2039,7 +2020,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									rdoTmpl.Substitute("$dVal", nx->GetIndex());
 									rdoTmpl.WriteCode(rdoStrm);
 								}
-								nx = (TMrbNamedX *) fLofDefines.After(nx);
 							}
 						}
 						break;
@@ -2049,7 +2029,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 		rdoStrm.close();
 		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
 		gMrbLog->Flush("", "", setblue);
-		pp = (packNames *) filesToCreate.After((TObject *) pp);
 	}
 	return(kTRUE);
 }
@@ -2180,20 +2159,19 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 
 	this->WriteUtilityProtos();
 
-	packNames * pp = (packNames *) filesToCreate.First();
-	while (pp) {
+	packNames * pp;
+	TIterator * ppIter = filesToCreate.MakeIterator();
+	while (pp = (packNames *) ppIter->Next()) {
 		cf = pp->GetF() + pp->GetX();
 		if (((this->GetAnalyzeOptions() & kAnaOptOverwrite) == 0) && (gSystem->AccessPathName(cf) == 0)) {
 			gMrbLog->Err() << "File exists - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			continue;
 		}
 		anaStrm.open(cf, ios::out);
 		if (!anaStrm.good()) {	
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			continue;
 		}
 
@@ -2217,7 +2195,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 			gMrbLog->Flush();
 			gMrbLog->Err()	<< "            or       " << tf2 << endl;
 			gMrbLog->Flush();
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			anaStrm.close();
 			continue;
 		}
@@ -2230,7 +2207,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 		anaTemplateFile = fileSpec;
 
 		if (!anaTmpl.Open(anaTemplateFile, &fLofAnalyzeTags)) {
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			if (verboseMode) {
 				gMrbLog->Err()  << "Skipping template file " << fileSpec << endl;
 				gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
@@ -2275,93 +2251,90 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						anaStrm << anaTmpl.Encode(line, fCreationDate) << endl;
 						break;
 					case TMrbConfig::kAnaHtmlMakeSetup:
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
-							evtNameUC = evt->GetName();
-							evtNameUC(0,1).ToUpper();
-							evtNameUC.Prepend("TUsrEvt");
-							TString evtDots = "";
-							for (Int_t dots = 0; dots < 40 - evtNameUC.Length(); dots++) evtDots += ".";
-							anaTmpl.InitializeCode("%EVT%");
-							anaTmpl.Substitute("$evtClassName", evtNameUC);
-							anaTmpl.Substitute("$evtTitle", evt->GetTitle());
-							anaTmpl.Substitute("$evtTrigger", evt->GetTrigger());
-							anaTmpl.Substitute("$evtDots", evtDots);
-							anaTmpl.WriteCode(anaStrm);
-							sevt = (TMrbSubevent *) evt->GetLofSubevents()->First();
-							while (sevt) {
-								sevtNameUC = sevt->GetName();
-								sevtNameUC(0,1).ToUpper();
-								sevtNameUC.Prepend("TUsrSevt");
-								TString sevtDots = "";
-								for (Int_t dots = 0; dots < 40 - sevtNameUC.Length(); dots++) sevtDots += ".";
-								anaTmpl.InitializeCode("%SEVT%");
-								anaTmpl.Substitute("$sevtClassName", sevtNameUC);
-								anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
-								anaTmpl.Substitute("$sevtDots", sevtDots);
+						{
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
+								evtNameUC = evt->GetName();
+								evtNameUC(0,1).ToUpper();
+								evtNameUC.Prepend("TUsrEvt");
+								TString evtDots = "";
+								for (Int_t dots = 0; dots < 40 - evtNameUC.Length(); dots++) evtDots += ".";
+								anaTmpl.InitializeCode("%EVT%");
+								anaTmpl.Substitute("$evtClassName", evtNameUC);
+								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+								anaTmpl.Substitute("$evtTrigger", evt->GetTrigger());
+								anaTmpl.Substitute("$evtDots", evtDots);
 								anaTmpl.WriteCode(anaStrm);
-								module = (TMrbModule *) sevt->GetLofModules()->First();
-								while (module) {
-									TString moduleDots = "";
-									TString moduleClass = module->ClassName();
-									for (Int_t dots = 0; dots < 40 - moduleClass.Length(); dots++) moduleDots += ".";
-									anaTmpl.InitializeCode("%MOD%");
-									anaTmpl.Substitute("$moduleClassName", moduleClass);
-									anaTmpl.Substitute("$moduleName", module->GetName());
-									anaTmpl.Substitute("$moduleTitle", module->GetTitle());
-									anaTmpl.Substitute("$moduleDots", moduleDots);
-									if (module->IsCamac())	anaTmpl.Substitute("$modulePosition", ((TMrbCamacModule *) module)->GetPosition());
-									else					anaTmpl.Substitute("$modulePosition", ((TMrbVMEModule *) module)->GetPosition());
+								TIterator * sevtIter = evt->GetLofSubevents()->MakeIterator();
+								while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+									sevtNameUC = sevt->GetName();
+									sevtNameUC(0,1).ToUpper();
+									sevtNameUC.Prepend("TUsrSevt");
+									TString sevtDots = "";
+									for (Int_t dots = 0; dots < 40 - sevtNameUC.Length(); dots++) sevtDots += ".";
+									anaTmpl.InitializeCode("%SEVT%");
+									anaTmpl.Substitute("$sevtClassName", sevtNameUC);
+									anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+									anaTmpl.Substitute("$sevtDots", sevtDots);
 									anaTmpl.WriteCode(anaStrm);
-									module = (TMrbModule *) sevt->GetLofModules()->After(module);
+									TIterator * modIter = sevt->GetLofModules()->MakeIterator();
+									while (module = (TMrbModule *) modIter->Next()) {
+										TString moduleDots = "";
+										TString moduleClass = module->ClassName();
+										for (Int_t dots = 0; dots < 40 - moduleClass.Length(); dots++) moduleDots += ".";
+										anaTmpl.InitializeCode("%MOD%");
+										anaTmpl.Substitute("$moduleClassName", moduleClass);
+										anaTmpl.Substitute("$moduleName", module->GetName());
+										anaTmpl.Substitute("$moduleTitle", module->GetTitle());
+										anaTmpl.Substitute("$moduleDots", moduleDots);
+										if (module->IsCamac())	anaTmpl.Substitute("$modulePosition", ((TMrbCamacModule *) module)->GetPosition());
+										else					anaTmpl.Substitute("$modulePosition", ((TMrbVMEModule *) module)->GetPosition());
+										anaTmpl.WriteCode(anaStrm);
+									}
+									anaTmpl.InitializeCode("%SEVTE%");
+									anaTmpl.WriteCode(anaStrm);
 								}
-								anaTmpl.InitializeCode("%SEVTE%");
+								anaTmpl.InitializeCode("%EVTE%");
 								anaTmpl.WriteCode(anaStrm);
-								sevt = (TMrbSubevent *) evt->GetLofSubevents()->After(sevt);
 							}
-							anaTmpl.InitializeCode("%EVTE%");
-							anaTmpl.WriteCode(anaStrm);
-							evt = (TMrbEvent *) fLofEvents.After(evt);
 						}
 						break;
 					case TMrbConfig::kAnaClassImp:
 					case TMrbConfig::kAnaPragmaLinkClasses:
 						{
-							evt = (TMrbEvent *) fLofEvents.First();
-							while (evt) {
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
 								evtNameUC = evt->GetName();
 								evtNameUC(0,1).ToUpper();
 								evtNameUC.Prepend("TUsrEvt");
 								anaTmpl.InitializeCode();
 								anaTmpl.Substitute("$className", evtNameUC);
 								anaTmpl.WriteCode(anaStrm);
-								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
-							sevt = (TMrbSubevent *) fLofSubevents.First();
-							while (sevt) {
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 								sevtNameUC = sevt->GetName();
 								sevtNameUC(0,1).ToUpper();
 								sevtNameUC.Prepend("TUsrSevt");
 								anaTmpl.InitializeCode();
 								anaTmpl.Substitute("$className", sevtNameUC);
 								anaTmpl.WriteCode(anaStrm);
-								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 							}
-							TMrbNamedX * ucl = (TMrbNamedX *) fLofUserClasses.First();
-							while (ucl) {
+							TMrbNamedX * ucl;
+							TIterator * iclIter = fLofUserClasses.MakeIterator();
+							while (ucl = (TMrbNamedX *) iclIter->Next()) {
 								if (ucl->GetIndex() & kIclOptUserClass) {
 									anaTmpl.InitializeCode();
 									anaTmpl.Substitute("$className", ucl->GetName());
 									anaTmpl.WriteCode(anaStrm);
 								}
-								ucl = (TMrbNamedX *) fLofUserClasses.After(ucl);
 							}   
 						}
 						break;
 					case TMrbConfig::kAnaReservedEvents:
 						{
-							evt = (TMrbEvent *) fLofEvents.First();
-							while (evt) {
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
 								if (evt->IsReservedEvent()) {
 									anaTmpl.InitializeCode();
 									evtNameUC = evt->GetName();
@@ -2371,7 +2344,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$pointerName", evt->GetPointerName());
 									anaTmpl.WriteCode(anaStrm);
 								}
-								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
 							if (this->FindEvent(TMrbConfig::kTriggerStartAcq) == NULL) {
 								anaTmpl.InitializeCode();
@@ -2391,34 +2363,34 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kAnaIncludeXhitDefs:
 						{
-							TMrbNamedX * xhit = (TMrbNamedX *) fLofXhits.First();
-							while (xhit) {
+							TMrbNamedX * xhit;
+							TIterator * xhitIter = fLofXhits.MakeIterator();
+							while (xhit = (TMrbNamedX *) xhitIter->Next()) {
 								anaTmpl.InitializeCode();
 								anaTmpl.Substitute("$xhit", xhit->GetName());
 								anaTmpl.WriteCode(anaStrm);
-								xhit = (TMrbNamedX *) fLofXhits.After(xhit);
 							}
 						}
 						break;
 					case TMrbConfig::kAnaIncludesAndDefs:
 					case TMrbConfig::kAnaModuleSpecialEnum:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TObjArray onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeAnalyzeCode(anaStrm, tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kAnaUserDefinedGlobals:
 						{
-							TMrbNamedX * nx = (TMrbNamedX *) fLofGlobals.First();
-							while (nx) {
+							TMrbNamedX * nx;
+							TIterator * globIter = fLofGlobals.MakeIterator();
+							while (nx = (TMrbNamedX *) globIter->Next()) {
 								TString gName = nx->GetName();
 								if (gName(0) != 'k') {
 									anaTmpl.InitializeCode();
@@ -2453,14 +2425,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									}
 									anaTmpl.WriteCode(anaStrm);
 								}
-								nx = (TMrbNamedX *) fLofGlobals.After(nx);
 							}
 						}
 						break;
 					case TMrbConfig::kAnaUserDefinedEnums:
 						{
-							TMrbNamedX * nx = (TMrbNamedX *) fLofGlobals.First();
-							while (nx) {
+							TMrbNamedX * nx;
+							TIterator * globIter = fLofGlobals.MakeIterator();
+							while (nx = (TMrbNamedX *) globIter->Next()) {
 								TString gName = nx->GetName();
 								if (gName(0) == 'k') {
 									if (nx->GetIndex() != TMrbConfig::kGlobInt) {
@@ -2474,14 +2446,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										anaTmpl.WriteCode(anaStrm);
 									}
 								}
-								nx = (TMrbNamedX *) fLofGlobals.After(nx);
 							}
 						}
 						break;
 					case TMrbConfig::kAnaUserDefinedDefines:
 						{
-							TMrbNamedX * nx = (TMrbNamedX *) fLofDefines.First();
-							while (nx) {
+							TMrbNamedX * nx;
+							TIterator * defIter = fLofDefines.MakeIterator();
+							while (nx = (TMrbNamedX *) defIter->Next()) {
 								TString dName = nx->GetName();
 								TString dMode = nx->GetTitle();
 								if (dMode.BeginsWith("Bool_t")) {
@@ -2496,30 +2468,27 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$dVal", nx->GetIndex());
 									anaTmpl.WriteCode(anaStrm);
 								}
-								nx = (TMrbNamedX *) fLofDefines.After(nx);
 							}
 						}
 						break;
 					case TMrbConfig::kAnaMakeClassNames:
 						{
-							evt = (TMrbEvent *) fLofEvents.First();
 							Bool_t first = kTRUE;
-							while (evt) {
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
 								evtNameUC = evt->GetName();
 								evtNameUC(0,1).ToUpper();
 								if (!first) anaStrm << " \\" << endl;
 								first = kFALSE;
 								anaStrm << "\t\t\t\tTUsrEvt" << evtNameUC;
-								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
-							sevt = (TMrbSubevent *) fLofSubevents.First();
-							while (sevt) {
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 								sevtNameUC = sevt->GetName();
 								sevtNameUC(0,1).ToUpper();
 								if (!first) anaStrm << " \\" << endl;
 								first = kFALSE;
 								anaStrm << "\t\t\t\tTUsrSevt" << sevtNameUC;
-								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 							}
 							anaStrm << endl;
 						}
@@ -2544,9 +2513,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						if (fLofUserHistograms.First() == NULL) break;
 					case TMrbConfig::kAnaUserInitializeAfterHB:
 						if (this->UserCodeToBeIncluded()) {
-							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							Bool_t udc = kFALSE;
-							while (icl) {
+							TIterator * iclIter = fLofUserIncludes.MakeIterator();
+							while (icl = (TMrbNamedX *) iclIter->Next()) {
 								if ((icl->GetIndex() & TMrbConfig::kIclOptInitialize) == TMrbConfig::kIclOptInitialize) {
 									TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
 									TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
@@ -2566,7 +2535,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									break;
 								}
 								if (udc) break;
-								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 						}
 						break;
@@ -2576,14 +2544,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							UInt_t iclOpt = 0xFFFFFFFF;
 							if (tagIdx == kAnaUserReloadParams) 	iclOpt = TMrbConfig::kIclOptReloadParams;
 							else if (tagIdx == kAnaUserMessages)	iclOpt = TMrbConfig::kIclOptHandleMessages;
-							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							Bool_t userCode = kFALSE;
-							while (icl) {
+							TIterator * iclIter = fLofUserIncludes.MakeIterator();
+							while (icl = (TMrbNamedX *) iclIter->Next()) {
 								if ((icl->GetIndex() & iclOpt) == iclOpt) {
 									userCode = kTRUE;
 									break;
 								}
-								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 							if (userCode) break;
 						}
@@ -2593,13 +2560,12 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaUserDummyMethods:
 						if (this->UserCodeToBeIncluded()) {
 							Bool_t userInit = kFALSE;
-							icl = (TMrbNamedX *) fLofUserIncludes.First();
-							while (icl) {
+							TIterator * iclIter = fLofUserIncludes.MakeIterator();
+							while (icl = (TMrbNamedX *) iclIter->Next()) {
 								if ((icl->GetIndex() & TMrbConfig::kIclOptInitialize) == TMrbConfig::kIclOptInitialize) {
 									userInit = kTRUE;
 									break;
 								}
-								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 							if (userInit) break;
 						}
@@ -2610,9 +2576,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kAnaUserGlobals:
 						if (this->UserCodeToBeIncluded()) {
-							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							Bool_t whdr = kTRUE;
-							while (icl) {
+							TIterator * iclIter = fLofUserIncludes.MakeIterator();
+							while (icl = (TMrbNamedX *) iclIter->Next()) {
 								if (icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) {
 									if (whdr) {
 										anaTmpl.InitializeCode("%B%");
@@ -2623,15 +2589,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$iclFile", icl->GetName());
 									anaTmpl.WriteCode(anaStrm);
 								}
-								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 						}
 						break;
 					case TMrbConfig::kAnaMakeUserCxxFlags:
 						if (this->UserCodeToBeIncluded()) {
 							TList onceOnly;
-							icl = (TMrbNamedX *) fLofUserIncludes.First();
-							while (icl) {
+							TIterator * iclIter = fLofUserIncludes.MakeIterator();
+							while (icl = (TMrbNamedX *) iclIter->Next()) {
 								if (icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) {
 									TString iclPath = icl->GetTitle();
 									if (iclPath.Length() > 0 && onceOnly.FindObject(iclPath.Data()) == NULL) {
@@ -2639,17 +2604,16 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										onceOnly.Add(new TNamed(iclPath.Data(), ""));
 									}
 								}
-								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kAnaMakeUserHeaders:
 						if (this->UserCodeToBeIncluded()) {
-							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							Bool_t first = kTRUE;
 							Bool_t found = kFALSE;
-							while (icl) {
+							TIterator * iclIter = fLofUserIncludes.MakeIterator();
+							while (icl = (TMrbNamedX *) iclIter->Next()) {
 								if (icl->GetIndex()) {
 									TMrbSystem ux;
 									if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) != 0
@@ -2665,7 +2629,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										found = kTRUE;
 									}
 								}
-								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 							if (found) anaStrm << " \\" << endl;
 						}
@@ -2673,9 +2636,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaMakeUlibHeaders:
 						anaStrm << "ULIB_HDRS\t=";
 						if (this->UserCodeToBeIncluded()) {
-							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							Bool_t first = kTRUE;
-							while (icl) {
+							TIterator * iclIter = fLofUserIncludes.MakeIterator();
+							while (icl = (TMrbNamedX *) iclIter->Next()) {
 								if (icl->GetIndex()) {
 									TMrbSystem ux;
 									if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) != 0
@@ -2690,7 +2653,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										}
 									}
 								}
-								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 							anaStrm << endl;
 						}
@@ -2698,9 +2660,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaMakeUserCode:
 						anaStrm << "USER_CODE\t=";
 						if (this->UserCodeToBeIncluded()) {
-							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							Bool_t first = kTRUE;
-							while (icl) {
+							TIterator * iclIter = fLofUserIncludes.MakeIterator();
+							while (icl = (TMrbNamedX *) iclIter->Next()) {
 								if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) == 0) {
 									TString iclPath = icl->GetTitle();
 									if (first) {
@@ -2713,15 +2675,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									if (iclPath.Length() > 0) anaStrm << icl->GetTitle() << "/";
 									anaStrm << icl->GetName();
 								}
-								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 						}
 						anaStrm << endl << endl;
 						anaStrm << "USER_OBJS\t=";
 						if (this->UserCodeToBeIncluded()) {
-							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							Bool_t first = kTRUE;
-							while (icl) {
+							TIterator * iclIter = fLofUserIncludes.MakeIterator();
+							while (icl = (TMrbNamedX *) iclIter->Next()) {
 								if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) == 0) {
 									TString iclName = icl->GetName();
 									iclName.ReplaceAll(".cxx", ".o");
@@ -2733,7 +2694,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										anaStrm << "\t\t\t\t" << iclName;
 									}
 								}
-								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 						}
 						anaStrm << endl;
@@ -2741,9 +2701,10 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaMakeUserLibs:
 						anaStrm << "USER_LIBS\t=";
 						if (this->UserLibsToBeIncluded()) {
-							TMrbNamedX * ulib = (TMrbNamedX *) fLofUserLibs.First();
 							Bool_t first = kTRUE;
-							while (ulib) {
+							TMrbNamedX * ulib;
+							TIterator * libIter = fLofUserLibs.MakeIterator();
+							while (ulib = (TMrbNamedX *) libIter->Next()) {
 								if (first) {
 									anaStrm << "\t-L" << ulib->GetTitle() << " -l" << ulib->GetName();
 									first = kFALSE;
@@ -2751,21 +2712,20 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaStrm << " \\" << endl;
 									anaStrm << "\t\t\t\t-L" << ulib->GetTitle() << " -l" << ulib->GetName();
 								}
-								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
 							}
 						}
 						anaStrm << endl << endl;
 						break;
 					case TMrbConfig::kAnaMakeAll:
 						if (this->UserLibsToBeIncluded()) {
-							TMrbNamedX * ulib = (TMrbNamedX *) fLofUserLibs.First();
+							TMrbNamedX * ulib;
 							Bool_t first = kTRUE;
 							Bool_t found = kFALSE;
-							while (ulib) {
+							TIterator * libIter = fLofUserLibs.MakeIterator();
+							while (ulib = (TMrbNamedX *) libIter->Next()) {
 								if (!first) anaStrm << " \\" << endl;
 								first = kFALSE;
 								anaStrm << "\t\t\t\tlib" << ulib->GetName() << ".so";
-								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
 								found = kTRUE;
 							}
 						}
@@ -2773,21 +2733,22 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kAnaMakeClean:
 						if (this->UserLibsToBeIncluded()) {
-							TMrbNamedX * ulib = (TMrbNamedX *) fLofUserLibs.First();
+							TMrbNamedX * ulib;
 							TMrbSystem ux;
-							while (ulib) {
+							TIterator * libIter = fLofUserLibs.MakeIterator();
+							while (ulib = (TMrbNamedX *) libIter->Next()) {
 								TObjString * mkf = (TObjString *) ulib->GetAssignedObject();
 								TString mkFile = mkf ? Form("-f %s", mkf->GetString().Data()) : "";
 								anaStrm << "\t\t\t@cd " << ulib->GetTitle() << "; make " << mkFile << " clean" << endl;
-								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
 							}
 						}
 						break;
 					case TMrbConfig::kAnaMakeUlibRules:
 						if (this->UserLibsToBeIncluded()) {
-							TMrbNamedX * ulib = (TMrbNamedX *) fLofUserLibs.First();
+							TMrbNamedX * ulib;
 							TMrbSystem ux;
-							while (ulib) {
+							TIterator * libIter = fLofUserLibs.MakeIterator();
+							while (ulib = (TMrbNamedX *) libIter->Next()) {
 								anaTmpl.InitializeCode();
 								anaTmpl.Substitute("$userLib", Form("lib%s.so", ulib->GetName()));
 								anaTmpl.Substitute("$ulibDir", ulib->GetTitle());
@@ -2795,15 +2756,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								TString mkFile = mkf ? Form("-f %s", mkf->GetString().Data()) : "";
 								anaTmpl.Substitute("$ulibMake", mkFile);
 								anaTmpl.WriteCode(anaStrm);
-								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
 							}
 						}
 						anaStrm << endl << endl;
 						break;
 					case TMrbConfig::kAnaMakeUserRules:
 						if (this->UserCodeToBeIncluded()) {
-							icl = (TMrbNamedX *) fLofUserIncludes.First();
-							while (icl) {
+							TIterator * iclIter = fLofUserIncludes.MakeIterator();
+							while (icl = (TMrbNamedX *) iclIter->Next()) {
 								if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) == 0) {
 									TString iclPath = icl->GetTitle();
 									if (iclPath.Length() > 0) iclPath += "/";
@@ -2816,7 +2776,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$userCode", srcName);
 									anaTmpl.WriteCode(anaStrm);
 								}
-								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 						}
 						break;
@@ -2826,8 +2785,8 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaEventClassInstance:
 						{
 							Bool_t first = kTRUE;
-							evt = (TMrbEvent *) fLofEvents.First();
-							while (evt) {
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
 								if (first) {
 									anaTmpl.InitializeCode("%B%");
 									anaTmpl.Substitute("$pointerName", evt->GetPointerName());
@@ -2863,15 +2822,15 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.InitializeCode("%EX%");
 									anaTmpl.WriteCode(anaStrm);
 								}
-								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
 						}
 						break;
 					case TMrbConfig::kAnaEventUserClassInstance:
 						{
 							Bool_t first = kTRUE;
-							TMrbNamedX * ucl = (TMrbNamedX *) fLofUserClasses.First();
-							while (ucl) {
+							TMrbNamedX * ucl;
+							TIterator * uclIter = fLofUserClasses.MakeIterator();
+							while (ucl = (TMrbNamedX *) uclIter->Next()) {
 								if (ucl->GetIndex() == kIclOptUserDefinedEvent) {
 									if (first) {
 										anaTmpl.InitializeCode("%B%");
@@ -2886,7 +2845,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$classNameUC", classNameUC);
 									anaTmpl.WriteCode(anaStrm);
 								}
-								ucl = (TMrbNamedX *) fLofUserClasses.After(ucl);
 							}
 						}
 						break;
@@ -2899,8 +2857,8 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaEventReplayTree:
 					case TMrbConfig::kAnaEventSetScaleDown:
 						{
-							evt = (TMrbEvent *) fLofEvents.First();
-							while (evt) {
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
 								if (!evt->IsReservedEvent()) {
 									evtNameLC = evt->GetName();
 									evtNameUC = evtNameLC;
@@ -2913,10 +2871,10 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$pointerName", evt->GetPointerName());
 									anaTmpl.WriteCode(anaStrm);
 								}
-								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
-							TMrbNamedX * ucl = (TMrbNamedX *) fLofUserClasses.First();
-							while (ucl) {
+							TMrbNamedX * ucl;
+							TIterator * uclIter = fLofUserClasses.MakeIterator();
+							while (ucl = (TMrbNamedX *) uclIter->Next()) {
 								if (ucl->GetIndex() == kIclOptUserDefinedEvent) {
 									TString classNameUC = ucl->GetName();
 									TString classNameLC = classNameUC;
@@ -2926,79 +2884,79 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$classNameUC", classNameUC);
 									anaTmpl.WriteCode(anaStrm);
 								}
-								ucl = (TMrbNamedX *) fLofUserClasses.After(ucl);
 							}
 						} 
 						break;
 					case TMrbConfig::kAnaEventIdEnum:
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
-							evtNameLC = evt->GetName();
-							evtNameUC = evtNameLC;
-							evtNameUC(0,1).ToUpper();
-							anaTmpl.InitializeCode();
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtTitle", evt->GetTitle());
-							anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
-							anaTmpl.WriteCode(anaStrm);
-							evt = (TMrbEvent *) fLofEvents.After(evt);
-						}
-						break;
-					case TMrbConfig::kAnaEventDispatchOverTrigger:
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
-							if (!evt->IsReservedEvent()) {
+						{
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
 								evtNameLC = evt->GetName();
 								evtNameUC = evtNameLC;
 								evtNameUC(0,1).ToUpper();
-								anaTmpl.InitializeCode("%B%");
+								anaTmpl.InitializeCode();
 								anaTmpl.Substitute("$evtNameUC", evtNameUC);
 								anaTmpl.Substitute("$evtNameLC", evtNameLC);
 								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
 								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
 								anaTmpl.WriteCode(anaStrm);
-								anaTmpl.InitializeCode("%P%");
-								Bool_t udc = kFALSE;
-								TString method = "Analyze";
-								if (gMrbConfig->UserCodeToBeIncluded()) {
-									TMrbNamedX * icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
-									while (icl) {
-										if ((icl->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
-											TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
-											TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
-											while (nx) {
-												if ((nx->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
-													TString m = nx->GetName();
-													Int_t n = m.Index("::", 0);
-													if (n > 0) {
-														TString cl = m(0, n);
-														TString evtClass = evtNameUC;
-														evtClass.Prepend("TUsrEvt");
-														if (evtClass.CompareTo(cl.Data()) == 0) {
-															method = m(n + 2, m.Length() - n - 2);
-															udc = kTRUE;
-															break;
+							}
+						}
+						break;
+					case TMrbConfig::kAnaEventDispatchOverTrigger:
+						{
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
+								if (!evt->IsReservedEvent()) {
+									evtNameLC = evt->GetName();
+									evtNameUC = evtNameLC;
+									evtNameUC(0,1).ToUpper();
+									anaTmpl.InitializeCode("%B%");
+									anaTmpl.Substitute("$evtNameUC", evtNameUC);
+									anaTmpl.Substitute("$evtNameLC", evtNameLC);
+									anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+									anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+									anaTmpl.WriteCode(anaStrm);
+									anaTmpl.InitializeCode("%P%");
+									Bool_t udc = kFALSE;
+									TString method = "Analyze";
+									if (gMrbConfig->UserCodeToBeIncluded()) {
+										TIterator * iclIter = fLofUserIncludes.MakeIterator();
+										while (icl = (TMrbNamedX *) iclIter->Next()) {
+											if ((icl->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
+												TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
+												TMrbNamedX * nx;
+												TIterator * methIter = lofMethods->MakeIterator();
+												while (nx = (TMrbNamedX *) methIter->Next()) {
+													if ((nx->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
+														TString m = nx->GetName();
+														Int_t n = m.Index("::", 0);
+														if (n > 0) {
+															TString cl = m(0, n);
+															TString evtClass = evtNameUC;
+															evtClass.Prepend("TUsrEvt");
+															if (evtClass.CompareTo(cl.Data()) == 0) {
+																method = m(n + 2, m.Length() - n - 2);
+																udc = kTRUE;
+																break;
+															}
 														}
 													}
 												}
-												nx = (TMrbNamedX *) lofMethods->After(nx);
 											}
+											if (udc) break;
 										}
-										if (udc) break;
-										icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
 									}
+									anaTmpl.Substitute("$evtNameUC", evtNameUC);
+									anaTmpl.Substitute("$evtNameLC", evtNameLC);
+									anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+									anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+									anaTmpl.Substitute("$processEvent", method.Data());
+									anaTmpl.WriteCode(anaStrm);
+									anaTmpl.InitializeCode("%E%");
+									anaTmpl.WriteCode(anaStrm);
 								}
-								anaTmpl.Substitute("$evtNameUC", evtNameUC);
-								anaTmpl.Substitute("$evtNameLC", evtNameLC);
-								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
-								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
-								anaTmpl.Substitute("$processEvent", method.Data());
-								anaTmpl.WriteCode(anaStrm);
-								anaTmpl.InitializeCode("%E%");
-								anaTmpl.WriteCode(anaStrm);
 							}
-							evt = (TMrbEvent *) fLofEvents.After(evt);
 						}
 						break;
 					case TMrbConfig::kAnaEventTriggerStartAcq:
@@ -3014,12 +2972,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								Bool_t udc = kFALSE;
 								TString method = "Analyze";
 								if (gMrbConfig->UserCodeToBeIncluded()) {
-									TMrbNamedX * icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
-									while (icl) {
+									TIterator * iclIter = fLofUserIncludes.MakeIterator();
+									while (icl = (TMrbNamedX *) iclIter->Next()) {
 										if ((icl->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
 											TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
-											TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
-											while (nx) {
+											TMrbNamedX * nx;
+											TIterator * methIter = lofMethods->MakeIterator();
+											while (nx = (TMrbNamedX *) methIter->Next()) {
 												if ((nx->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
 													TString m = nx->GetName();
 													Int_t n = m.Index("::", 0);
@@ -3033,11 +2992,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 														}
 													}
 												}
-												nx = (TMrbNamedX *) lofMethods->After(nx);
 											}
 										}
 										if (udc) break;
-										icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
 									}
 								}
 								anaTmpl.InitializeCode("%SP%");
@@ -3068,56 +3025,56 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						}
 						break;
 					case TMrbConfig::kAnaInitializeLists:
-						anaTmpl.InitializeCode("%B%");
-						module = (TMrbModule *) fLofModules.First();
-						nofParams = 0;
-						while (module) {
-							nofParams += module->GetNofChannelsUsed();
-							module = (TMrbModule *) fLofModules.After(module);
-						}
-						anaTmpl.Substitute("$nofModules", fNofModules);
-						anaTmpl.Substitute("$nofParams", nofParams);
-						anaTmpl.WriteCode(anaStrm);
-						module = (TMrbModule *) fLofModules.First();
-						nofParams = 0;
-						while (module) {
-							if (module->GetNofChannelsUsed() > 0) {
-								anaTmpl.InitializeCode("%ML%");
-								moduleNameLC = module->GetName();
-								moduleNameUC = moduleNameLC;
-								moduleNameUC(0,1).ToUpper();
-								anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
-								anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
-								anaTmpl.Substitute("$moduleTitle", module->GetTitle());
-								anaTmpl.Substitute("$paramIndex", nofParams);
-								anaTmpl.Substitute("$nofParams", module->GetNofChannelsUsed());
-								anaTmpl.WriteCode(anaStrm);
+						{
+							anaTmpl.InitializeCode("%B%");
+							nofParams = 0;
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) nofParams += module->GetNofChannelsUsed();
+							anaTmpl.Substitute("$nofModules", fNofModules);
+							anaTmpl.Substitute("$nofParams", nofParams);
+							anaTmpl.WriteCode(anaStrm);
+							module = (TMrbModule *) fLofModules.First();
+							nofParams = 0;
+							modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetNofChannelsUsed() > 0) {
+									anaTmpl.InitializeCode("%ML%");
+									moduleNameLC = module->GetName();
+									moduleNameUC = moduleNameLC;
+									moduleNameUC(0,1).ToUpper();
+									anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
+									anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+									anaTmpl.Substitute("$moduleTitle", module->GetTitle());
+									anaTmpl.Substitute("$paramIndex", nofParams);
+									anaTmpl.Substitute("$nofParams", module->GetNofChannelsUsed());
+									anaTmpl.WriteCode(anaStrm);
+								}
+								nofParams += module->GetNofChannelsUsed();
 							}
-							nofParams += module->GetNofChannelsUsed();
-							module = (TMrbModule *) fLofModules.After(module);
 						}
 						break;
 					case TMrbConfig::kAnaModuleTimeOffset:
-						module = (TMrbModule *) fLofModules.First();
-						found = kFALSE;
-						while (module) {
-							if (module->GetTimeOffset() != 0) {
-								if (!found) {
-									anaTmpl.InitializeCode("%B%");
+						{
+							found = kFALSE;
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetTimeOffset() != 0) {
+									if (!found) {
+										anaTmpl.InitializeCode("%B%");
+										anaTmpl.WriteCode(anaStrm);
+										found = kTRUE;
+									}
+									anaTmpl.InitializeCode("%T%");
+									moduleNameLC = module->GetName();
+									moduleNameUC = moduleNameLC;
+									moduleNameUC(0,1).ToUpper();
+									anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
+									anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+									anaTmpl.Substitute("$moduleTitle", module->GetTitle());
+									anaTmpl.Substitute("$timeOffset", module->GetTimeOffset());
 									anaTmpl.WriteCode(anaStrm);
-									found = kTRUE;
 								}
-								anaTmpl.InitializeCode("%T%");
-								moduleNameLC = module->GetName();
-								moduleNameUC = moduleNameLC;
-								moduleNameUC(0,1).ToUpper();
-								anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
-								anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
-								anaTmpl.Substitute("$moduleTitle", module->GetTitle());
-								anaTmpl.Substitute("$timeOffset", module->GetTimeOffset());
-								anaTmpl.WriteCode(anaStrm);
 							}
-							module = (TMrbModule *) fLofModules.After(module);
 						}
 						break;
 					case TMrbConfig::kAnaAddUserEnv:
@@ -3133,16 +3090,15 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaHistoDefinePointers:
 						if (gMrbConfig->GetAnalyzeOptions() & kAnaOptHistograms) {
 							sevt = (TMrbSubevent *) fLofSubevents.First();
-							while (sevt) {
-								sevt->MakeAnalyzeCode(anaStrm, tagIdx, NULL, anaTmpl);
-								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
-							}
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) sevt->MakeAnalyzeCode(anaStrm, tagIdx, NULL, anaTmpl);
 						}
 						if (fLofUserHistograms.First()) {
 							anaTmpl.InitializeCode("%UDH%");
 							anaTmpl.WriteCode(anaStrm);
-							TMrbNamedX * h = (TMrbNamedX *) fLofUserHistograms.First();
-							while (h) {
+							TMrbNamedX * h;
+							TIterator * hIter = fLofUserHistograms.MakeIterator();
+							while (h = (TMrbNamedX *) hIter->Next()) {
 								anaTmpl.InitializeCode("%UDBH%");
 								anaTmpl.Substitute("$hName", h->GetName());
 								anaTmpl.Substitute("$hTitle", h->GetTitle());
@@ -3150,15 +3106,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								if (hType == TMrbConfig::kHistoRate) hType = TMrbConfig::kHistoTH1F;
 								anaTmpl.Substitute("$hType", (fLofHistoTypes.FindByIndex(hType))->GetName());
 								anaTmpl.WriteCode(anaStrm);
-								h = (TMrbNamedX *) fLofUserHistograms.After(h);
 							}
 							if (fLofHistoArrays.First()) {
-								TMrbNamedX * h = (TMrbNamedX *) fLofHistoArrays.First();
-								while (h) {
+								TMrbNamedX * h;
+								TIterator * hIter = fLofHistoArrays.MakeIterator();
+								while (h = (TMrbNamedX *) hIter->Next()) {
 									anaTmpl.InitializeCode("%UDHA%");
 									anaTmpl.Substitute("$hArrayName", h->GetName());
 									anaTmpl.WriteCode(anaStrm);
-									h = (TMrbNamedX *) fLofHistoArrays.After(h);
 								}
 							}
 						}
@@ -3166,20 +3121,18 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaHistoInitializeArrays:
 						if (gMrbConfig->GetAnalyzeOptions() & kAnaOptHistograms) {
 							sevt = (TMrbSubevent *) fLofSubevents.First();
-							while (sevt) {
-								sevt->MakeAnalyzeCode(anaStrm, tagIdx, NULL, anaTmpl);
-								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
-							}
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) sevt->MakeAnalyzeCode(anaStrm, tagIdx, NULL, anaTmpl);
 							if (fLofHistoArrays.First()) {
-								TMrbNamedX * hArray = (TMrbNamedX *) fLofHistoArrays.First();
-								while (hArray) {
+								TMrbNamedX * hArray;
+								TIterator * hIter = fLofHistoArrays.MakeIterator();
+								while (hArray = (TMrbNamedX *) hIter->Next()) {
 									TObjArray * lofHistos = (TObjArray *) hArray->GetAssignedObject();
 									Int_t nofHistos = lofHistos->GetEntriesFast();
 									anaTmpl.InitializeCode("%U%");
 									anaTmpl.Substitute("$hArrayName", hArray->GetName());
 									anaTmpl.Substitute("$nofHistos", nofHistos);
 									anaTmpl.WriteCode(anaStrm);
-									hArray = (TMrbNamedX *) fLofHistoArrays.After(hArray);
 								}
 							}
 						}
@@ -3188,8 +3141,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						if (fLofUserHistograms.First()) {
 							anaTmpl.InitializeCode("%B%");
 							anaTmpl.WriteCode(anaStrm);
-							TMrbNamedX * h = (TMrbNamedX *) fLofUserHistograms.First();
-							while (h) {
+							TMrbNamedX * h;
+							TIterator * hIter = fLofUserHistograms.MakeIterator();
+							while (h = (TMrbNamedX *) hIter->Next()) {
 								Bool_t hasArgStr = (h->GetAssignedObject())->InheritsFrom("TObjString");
 								TMrbNamedX * cnd = (TMrbNamedX *) fLofHistoConditions.FindObject(h->GetName());
 								if (hasArgStr) {
@@ -3227,15 +3181,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									}
 								}
 								anaTmpl.WriteCode(anaStrm);
-								h = (TMrbNamedX *) fLofUserHistograms.After(h);
 							}
 						}
 						break;
 
 					case TMrbConfig::kAnaHistoFillArrays:
 						if (fLofSubevents.First()) {
-							TMrbSubevent * sevt = (TMrbSubevent *) fLofSubevents.First();
-							while (sevt) {
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 								if (sevt->HistosToBeAllocated() && sevt->IsInArrayMode()) {
 									TString listName = sevt->GetName();
 									listName += ".histlist";
@@ -3244,8 +3197,8 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										gMrbLog->Err() << gSystem->GetError() << " - " << listName << endl;
 										gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 									} else {
-										TMrbModuleChannel * param = (TMrbModuleChannel *) sevt->GetLofParams()->First();
-										while (param) {
+										TIterator * paramIter = sevt->GetLofParams()->MakeIterator();
+										while (param =  (TMrbModuleChannel *) paramIter->Next()) {
 											TString paramName = param->GetName();
 											paramName(0,1).ToUpper();
 											paramName.Prepend("h");
@@ -3261,14 +3214,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										}
 									}
 								}
-								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 							}
 						}
 						if (fLofHistoArrays.First()) {
 							anaTmpl.InitializeCode("%B%");
 							anaTmpl.WriteCode(anaStrm);
-							TMrbNamedX * hArray = (TMrbNamedX *) fLofHistoArrays.First();
-							while (hArray) {
+							TMrbNamedX * hArray;
+							TIterator * hIter = fLofHistoArrays.MakeIterator();
+							while (hArray = (TMrbNamedX *) hIter->Next()) {
 								ofstream list(hArray->GetTitle(), ios::out);
 								if (!list.good()) {
 									gMrbLog->Err() << gSystem->GetError() << " - " << hArray->GetTitle() << endl;
@@ -3298,7 +3251,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									}
 									list.close();
 								}
-								hArray = (TMrbNamedX *) fLofHistoArrays.After(hArray);
 							}
 						}
 						break;
@@ -3306,14 +3258,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaSevtClassMethods:
 						{
 							TList onceOnly;
-							sevt = (TMrbSubevent *) fLofSubevents.First();
-							while (sevt) {
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 								if (onceOnly.FindObject(sevt->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, sevt->ClassName(), sevt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(sevt->GetCommonCodeFile(), ""));
 								sevt->MakeAnalyzeCode(anaStrm, tagIdx, pp->GetX());
-								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 							}
 							onceOnly.Delete();
 						}
@@ -3322,118 +3273,119 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaEventClassMethods:
 						{
 							TList onceOnly;
-							evt = (TMrbEvent *) fLofEvents.First();
-							while (evt) {
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
 								if (onceOnly.FindObject(evt->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, evt->ClassName(), evt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(evt->GetCommonCodeFile(), ""));
 								evt->MakeAnalyzeCode(anaStrm, tagIdx, pp->GetX());
-								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
 							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kAnaEventUserClassMethods:
 						{
-							TMrbNamedX * ucl = (TMrbNamedX *) fLofUserClasses.First();
-							while (ucl) {
+							TMrbNamedX * ucl;
+							TIterator * uclIter = fLofUserClasses.MakeIterator();
+							while (ucl = (TMrbNamedX *) uclIter->Next()) {
 								if (ucl->GetIndex() == kIclOptUserDefinedEvent) {
 									this->CreateUserEvent(anaStrm, ucl->GetName(), kFALSE, kTRUE);
 								}
-								ucl = (TMrbNamedX *) fLofUserClasses.After(ucl);
 							}
 						}
 						break;
 					case TMrbConfig::kAnaEventSetBranchStatus:
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
-							evt->MakeAnalyzeCode(anaStrm, tagIdx, anaTmpl);
-							evt = (TMrbEvent *) fLofEvents.After(evt);
+						{
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) evt->MakeAnalyzeCode(anaStrm, tagIdx, anaTmpl);
 						}
 						break;
 					case TMrbConfig::kAnaSevtSerialEnum:
-						sevt = (TMrbSubevent *) fLofSubevents.First();
-						while (sevt) {
-							sevtNameLC = sevt->GetName();
-							sevtNameUC = sevtNameLC;
-							sevtNameUC(0,1).ToUpper();
-							anaTmpl.InitializeCode(sevt->SerialToBeCreated() ? "%S%" : "%NS%");
-							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-							anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
-							anaTmpl.Substitute("$sevtSerial", sevt->GetSerial());
-							anaTmpl.Substitute("$sevtType", (Int_t) sevt->GetType());
-							anaTmpl.Substitute("$sevtSubtype", (Int_t) sevt->GetSubtype());
-							anaTmpl.Substitute("$sevtHexSerial", sevt->GetSerial(), 16);
-							anaTmpl.WriteCode(anaStrm);
-							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+						{
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+								sevtNameLC = sevt->GetName();
+								sevtNameUC = sevtNameLC;
+								sevtNameUC(0,1).ToUpper();
+								anaTmpl.InitializeCode(sevt->SerialToBeCreated() ? "%S%" : "%NS%");
+								anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+								anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+								anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+								anaTmpl.Substitute("$sevtSerial", sevt->GetSerial());
+								anaTmpl.Substitute("$sevtType", (Int_t) sevt->GetType());
+								anaTmpl.Substitute("$sevtSubtype", (Int_t) sevt->GetSubtype());
+								anaTmpl.Substitute("$sevtHexSerial", sevt->GetSerial(), 16);
+								anaTmpl.WriteCode(anaStrm);
+							}
 						}
 						break;
 					case TMrbConfig::kAnaSevtBitsEnum:
-						sevt = (TMrbSubevent *) fLofSubevents.First();
-						while (sevt) {
-							sevtNameLC = sevt->GetName();
-							sevtNameUC = sevtNameLC;
-							sevtNameUC(0,1).ToUpper();
-							anaTmpl.InitializeCode(sevt->SerialToBeCreated() ? "%S%" : "%NS%");
-							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-							anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
-							anaTmpl.Substitute("$sevtBit", (Int_t) (0x1 << (sevt->GetSerial() - 1)), 16);
-							anaTmpl.Substitute("$sevtType", (Int_t) sevt->GetType());
-							anaTmpl.Substitute("$sevtSubtype", (Int_t) sevt->GetSubtype());
-							anaTmpl.Substitute("$sevtHexBit", sevt->GetSerial(), 16);
-							anaTmpl.WriteCode(anaStrm);
-							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+						{
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+								sevtNameLC = sevt->GetName();
+								sevtNameUC = sevtNameLC;
+								sevtNameUC(0,1).ToUpper();
+								anaTmpl.InitializeCode(sevt->SerialToBeCreated() ? "%S%" : "%NS%");
+								anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+								anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+								anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+								anaTmpl.Substitute("$sevtBit", (Int_t) (0x1 << (sevt->GetSerial() - 1)), 16);
+								anaTmpl.Substitute("$sevtType", (Int_t) sevt->GetType());
+								anaTmpl.Substitute("$sevtSubtype", (Int_t) sevt->GetSubtype());
+								anaTmpl.Substitute("$sevtHexBit", sevt->GetSerial(), 16);
+								anaTmpl.WriteCode(anaStrm);
+							}
 						}
 						break;
 					case TMrbConfig::kAnaSevtIndicesEnum:
-						sevt = (TMrbSubevent *) fLofSubevents.First();
-						header = kFALSE;
-						while (sevt) {
-							sevtNameLC = sevt->GetName();
-							sevtNameUC = sevtNameLC;
-							sevtNameUC(0,1).ToUpper();
-							if (sevt->IsInArrayMode()) {
-								Int_t parNo = 0;
-								param = (TMrbModuleChannel *) sevt->GetLofParams()->First();
-								first = kTRUE;
-								if (!header) {
-									anaTmpl.InitializeCode("%B%");
-									anaTmpl.WriteCode(anaStrm);
-									header = kTRUE;
-								}
-								while (param) {
-									paramNameLC = param->GetName();
-									paramNameUC = paramNameLC;
-									paramNameUC(0,1).ToUpper();
-									anaTmpl.InitializeCode(first ? "%H%" : "%X%");
-									first = kFALSE;
-									anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-									anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-									anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
-									anaTmpl.Substitute("$sevtSerial", sevt->GetSerial());
-									anaTmpl.Substitute("$paramNameLC", paramNameLC.Data());
-									anaTmpl.Substitute("$paramNameUC", paramNameUC.Data());
-									anaTmpl.Substitute("$parNo", parNo);
-									anaTmpl.WriteCode(anaStrm);
-									param = (TMrbModuleChannel *) sevt->GetLofParams()->After(param);
-									parNo++;
-								}
-							}		
-							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
-						}
-						if (header) {
-							anaTmpl.InitializeCode("%E%");
-							anaTmpl.WriteCode(anaStrm);
+						{
+							header = kFALSE;
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+								sevtNameLC = sevt->GetName();
+								sevtNameUC = sevtNameLC;
+								sevtNameUC(0,1).ToUpper();
+								if (sevt->IsInArrayMode()) {
+									Int_t parNo = 0;
+									param = (TMrbModuleChannel *) sevt->GetLofParams()->First();
+									first = kTRUE;
+									if (!header) {
+										anaTmpl.InitializeCode("%B%");
+										anaTmpl.WriteCode(anaStrm);
+										header = kTRUE;
+									}
+									while (param) {
+										paramNameLC = param->GetName();
+										paramNameUC = paramNameLC;
+										paramNameUC(0,1).ToUpper();
+										anaTmpl.InitializeCode(first ? "%H%" : "%X%");
+										first = kFALSE;
+										anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+										anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+										anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+										anaTmpl.Substitute("$sevtSerial", sevt->GetSerial());
+										anaTmpl.Substitute("$paramNameLC", paramNameLC.Data());
+										anaTmpl.Substitute("$paramNameUC", paramNameUC.Data());
+										anaTmpl.Substitute("$parNo", parNo);
+										anaTmpl.WriteCode(anaStrm);
+										param = (TMrbModuleChannel *) sevt->GetLofParams()->After(param);
+										parNo++;
+									}
+								}		
+							}
+							if (header) {
+								anaTmpl.InitializeCode("%E%");
+								anaTmpl.WriteCode(anaStrm);
+							}
 						}
 						break;
 					case TMrbConfig::kAnaModuleIdEnum:
 						{
-							module = (TMrbModule *) fLofModules.First();
 							TList onceOnly;
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									anaTmpl.InitializeCode();
 									TString moduleType = module->GetMnemonic();
@@ -3444,55 +3396,52 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.WriteCode(anaStrm);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}   
 							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kAnaModuleSerialEnum:
-						module = (TMrbModule *) fLofModules.First();
-						while (module) {
-							moduleNameLC = module->GetName();
-							moduleNameUC = moduleNameLC;
-							moduleNameUC(0,1).ToUpper();
-							anaTmpl.InitializeCode();
-							anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
-							anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
-							anaTmpl.Substitute("$moduleTitle", module->GetTitle());
-							anaTmpl.Substitute("$moduleSerial", module->GetSerial());
-							anaTmpl.WriteCode(anaStrm);
-							module = (TMrbModule *) fLofModules.After(module);
+						{
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
+								moduleNameLC = module->GetName();
+								moduleNameUC = moduleNameLC;
+								moduleNameUC(0,1).ToUpper();
+								anaTmpl.InitializeCode();
+								anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+								anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
+								anaTmpl.Substitute("$moduleTitle", module->GetTitle());
+								anaTmpl.Substitute("$moduleSerial", module->GetSerial());
+								anaTmpl.WriteCode(anaStrm);
+							}
 						}
 						break;
 					case TMrbConfig::kAnaIncludeEvtSevtModGlobals:
 					case TMrbConfig::kAnaInitializeEvtSevtMods:
 						{
 							TList onceOnly;
-							evt = (TMrbEvent *) fLofEvents.First();
-							while (evt) {
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
 								if (onceOnly.FindObject(evt->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, evt->ClassName(), evt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(evt->GetCommonCodeFile(), ""));
-								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
 							onceOnly.Delete();
-							sevt = (TMrbSubevent *) fLofSubevents.First();
-							while (sevt) {
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 								if (onceOnly.FindObject(sevt->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, sevt->ClassName(), sevt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(sevt->GetCommonCodeFile(), ""));
-								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 							}
 							onceOnly.Delete();
-							module = (TMrbModule *) fLofModules.First();
-							while (module) {
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
 								if (onceOnly.FindObject(module->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, module->ClassName(), module->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(module->GetCommonCodeFile(), ""));
-								module = (TMrbModule *) fLofModules.After(module);
 							}
 							onceOnly.Delete();
 						}
@@ -3501,8 +3450,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						{
 							TString libName;
 							if (this->UserLibsToBeIncluded()) {
-								TMrbNamedX * icl = (TMrbNamedX *) fLofUserLibs.First();
-								while (icl) {
+								TMrbNamedX * icl;
+								TIterator * iclIter = fLofUserLibs.MakeIterator();
+								while (icl = (TMrbNamedX *) iclIter->Next()) {
 									anaTmpl.InitializeCode();
 									TString iclPath = icl->GetTitle();
 									if (iclPath.Length() > 0) {
@@ -3515,7 +3465,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									libName += icl->GetName();
 									anaTmpl.Substitute("$userLib", libName);
 									anaTmpl.WriteCode(anaStrm);
-									icl = (TMrbNamedX *) fLofUserLibs.After(icl);
 								}
 							}
 							libName = this->GetName();
@@ -3534,7 +3483,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 		anaStrm.close();
 		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
 		gMrbLog->Flush("", "", setblue);
-		pp = (packNames *) filesToCreate.After((TObject *) pp);
 	}
 	return(kTRUE);
 }
@@ -3856,20 +3804,19 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 
-	packNames * pp = (packNames *) filesToCreate.First();
-	while (pp) {
+	packNames * pp;
+	TIterator * ppIter = filesToCreate.MakeIterator();
+	while (pp = (packNames *) ppIter->Next()) {
 		cf = pp->GetF() + pp->GetX();
 		if (((this->GetConfigOptions() & kCfgOptOverwrite) == 0) && (gSystem->AccessPathName(cf) == 0)) {
 			gMrbLog->Err() << "File exists - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeConfigCode");
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			continue;
 		}
 		cfgStrm.open(cf, ios::out);
 		if (!cfgStrm.good()) {	
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeConfigCode");
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			continue;
 		}
 
@@ -3893,7 +3840,6 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 			gMrbLog->Flush();
 			gMrbLog->Err()	<< "            or       " << tf2 << endl;
 			gMrbLog->Flush();
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			cfgStrm.close();
 			continue;
 		}
@@ -3901,7 +3847,6 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 		cfgTemplateFile = fileSpec;
 
 		if (!cfgTmpl.Open(cfgTemplateFile, &fLofConfigTags)) {
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			if (verboseMode) {
 				gMrbLog->Err()  << "Skipping template file " << fileSpec << endl;
 				gMrbLog->Flush(this->ClassName(), "MakeConfigCode");
@@ -3943,48 +3888,51 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 						cfgStrm << cfgTmpl.Encode(line, fCreationDate) << endl;
 						break;
 					case TMrbConfig::kCfgCreateConfig:
-						expName = this->GetName();
-						expName(0,1).ToUpper();
-						cfgTmpl.InitializeCode();
-						cfgTmpl.Substitute("$cfgClass", ClassName());
-						cfgTmpl.Substitute("$cfgNameLC", GetName());
-						cfgTmpl.Substitute("$cfgNameUC", expName);
-						cfgTmpl.Substitute("$cfgTitle", GetTitle());
-						cfgTmpl.WriteCode(cfgStrm);
+						{
+							expName = this->GetName();
+							expName(0,1).ToUpper();
+							cfgTmpl.InitializeCode();
+							cfgTmpl.Substitute("$cfgClass", ClassName());
+							cfgTmpl.Substitute("$cfgNameLC", GetName());
+							cfgTmpl.Substitute("$cfgNameUC", expName);
+							cfgTmpl.Substitute("$cfgTitle", GetTitle());
+							cfgTmpl.WriteCode(cfgStrm);
+						}
 						break;
 					case TMrbConfig::kCfgDefineEvents:
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
-							evtNameLC = this->GetName();
-							evtNameUC = evtNameLC;
-							evtNameUC(0,1).ToUpper();
-							cfgTmpl.InitializeCode();
-							cfgTmpl.Substitute("$evtNameLC", evtNameLC);
-							cfgTmpl.Substitute("$evtNameUC", evtNameUC);
-							cfgTmpl.Substitute("$evtTitle", evt->GetTitle());
-							cfgTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
-							cfgTmpl.WriteCode(cfgStrm);
-							evt = (TMrbEvent *) fLofEvents.After(evt);
+						{
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
+								evtNameLC = this->GetName();
+								evtNameUC = evtNameLC;
+								evtNameUC(0,1).ToUpper();
+								cfgTmpl.InitializeCode();
+								cfgTmpl.Substitute("$evtNameLC", evtNameLC);
+								cfgTmpl.Substitute("$evtNameUC", evtNameUC);
+								cfgTmpl.Substitute("$evtTitle", evt->GetTitle());
+								cfgTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+								cfgTmpl.WriteCode(cfgStrm);
+							}
 						}
 						break;
 					case TMrbConfig::kCfgDefineSubevents:
-						sevt = (TMrbSubevent *) fLofSubevents.First();
-						while (sevt) {
-							sevtNameUC = sevt->GetName();
-							sevtNameUC(0,1).ToUpper();
-							cfgTmpl.InitializeCode();
-							cfgTmpl.Substitute("$sevtClass", sevt->ClassName());
-							cfgTmpl.Substitute("$sevtNameLC", sevt->GetName());
-							cfgTmpl.Substitute("$sevtTitle", sevt->GetTitle());
-							cfgTmpl.WriteCode(cfgStrm);
-							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+						{
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+								sevtNameUC = sevt->GetName();
+								sevtNameUC(0,1).ToUpper();
+								cfgTmpl.InitializeCode();
+								cfgTmpl.Substitute("$sevtClass", sevt->ClassName());
+								cfgTmpl.Substitute("$sevtNameLC", sevt->GetName());
+								cfgTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+								cfgTmpl.WriteCode(cfgStrm);
+							}
 						}
 						break;
 					case TMrbConfig::kCfgAssignParams:
-						sevt = (TMrbSubevent *) fLofSubevents.First();
-						while (sevt) {
-							sevt->MakeConfigCode(cfgStrm, tagIdx, cfgTmpl);
-							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+						{
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) sevt->MakeConfigCode(cfgStrm, tagIdx, cfgTmpl);
 						}
 						break;
 					case TMrbConfig::kCfgDefineVariables:
@@ -4075,42 +4023,44 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 						}
 						break;
 					case TMrbConfig::kCfgDefineModules:
-						module = (TMrbModule *) fLofModules.First();
-						while (module && (module->GetType()->GetIndex() & TMrbConfig::kModuleListMode)) {
-							moduleNameUC = module->GetName();
-							moduleNameUC(0,1).ToUpper();
-							cfgTmpl.InitializeCode();
-							cfgTmpl.Substitute("$moduleClass", module->ClassName());
-							cfgTmpl.Substitute("$moduleNameLC", module->GetName());
-							cfgTmpl.Substitute("$moduleTitle", module->GetTitle());
-							if (module->IsCamac())
-									cfgTmpl.Substitute("$modulePosition", ((TMrbCamacModule *) module)->GetPosition());
-							else if (module->IsVME())
-									cfgTmpl.Substitute("$modulePosition", ((TMrbVMEModule *) module)->GetPosition());
-							else	cfgTmpl.Substitute("$modulePosition", "");
-							cfgTmpl.WriteCode(cfgStrm);
-							module = (TMrbModule *) fLofModules.After(module);
+						{
+							module = (TMrbModule *) fLofModules.First();
+							TIterator * modIter = fLofModules.MakeIterator();
+							while ((module = (TMrbModule *) modIter->Next()) && (module->GetType()->GetIndex() & TMrbConfig::kModuleListMode)) {
+								moduleNameUC = module->GetName();
+								moduleNameUC(0,1).ToUpper();
+								cfgTmpl.InitializeCode();
+								cfgTmpl.Substitute("$moduleClass", module->ClassName());
+								cfgTmpl.Substitute("$moduleNameLC", module->GetName());
+								cfgTmpl.Substitute("$moduleTitle", module->GetTitle());
+								if (module->IsCamac())
+										cfgTmpl.Substitute("$modulePosition", ((TMrbCamacModule *) module)->GetPosition());
+								else if (module->IsVME())
+										cfgTmpl.Substitute("$modulePosition", ((TMrbVMEModule *) module)->GetPosition());
+								else	cfgTmpl.Substitute("$modulePosition", "");
+								cfgTmpl.WriteCode(cfgStrm);
+							}
 						}
 						break;
 					case TMrbConfig::kCfgConnectToEvent:
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
-							evt->MakeConfigCode(cfgStrm, tagIdx, cfgTmpl);
-							evt = (TMrbEvent *) fLofEvents.After(sevt);
+						{
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) evt->MakeConfigCode(cfgStrm, tagIdx, cfgTmpl);
 						}
 						break;
 					case TMrbConfig::kCfgDefineScalers:
-						scaler = (TMrbCamacScaler *) fLofScalers.First();
-						while (scaler) {
-							scalerNameUC = scaler->GetName();
-							scalerNameUC(0,1).ToUpper();
-							cfgTmpl.InitializeCode();
-							cfgTmpl.Substitute("$scalerClass", scaler->ClassName());
-							cfgTmpl.Substitute("$scalerNameLC", scaler->GetName());
-							cfgTmpl.Substitute("$scalerTitle", scaler->GetTitle());
-							cfgTmpl.Substitute("$scalerPosition", scaler->GetPosition());
-							cfgTmpl.WriteCode(cfgStrm);
-							scaler = (TMrbCamacScaler *) fLofScalers.After(scaler);
+						{
+							TIterator * scaIter = fLofScalers.MakeIterator();
+							while (scaler = (TMrbCamacScaler *) scaIter->Next()) {
+								scalerNameUC = scaler->GetName();
+								scalerNameUC(0,1).ToUpper();
+								cfgTmpl.InitializeCode();
+								cfgTmpl.Substitute("$scalerClass", scaler->ClassName());
+								cfgTmpl.Substitute("$scalerNameLC", scaler->GetName());
+								cfgTmpl.Substitute("$scalerTitle", scaler->GetTitle());
+								cfgTmpl.Substitute("$scalerPosition", scaler->GetPosition());
+								cfgTmpl.WriteCode(cfgStrm);
+							}
 						}
 						break;
 					case TMrbConfig::kCfgMakeCode:
@@ -4125,7 +4075,6 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 		cfgStrm.close();
 		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
 		gMrbLog->Flush("", "", setblue);
-		pp = (packNames *) filesToCreate.After((TObject *) pp);
 	}
 	return(kTRUE);
 }
@@ -4212,20 +4161,19 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 
-	packNames * pp = (packNames *) filesToCreate.First();
-	while (pp) {
+	packNames * pp;
+	TIterator * ppIter = filesToCreate.MakeIterator();
+	while (pp = (packNames *) ppIter->Next()) {
 		cf = pp->GetF() + pp->GetX();
 		if (((this->GetRcFileOptions() & kRcOptOverwrite) == 0) && (gSystem->AccessPathName(cf) == 0)) {
 			gMrbLog->Err() << "File exists - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeRcFile");
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			continue;
 		}
 		rcStrm.open(cf, ios::out);
 		if (!rcStrm.good()) {	
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeRcFile");
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			continue;
 		}
 
@@ -4249,7 +4197,6 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 			gMrbLog->Flush();
 			gMrbLog->Err()	<< "            or       " << tf2 << endl;
 			gMrbLog->Flush();
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			rcStrm.close();
 			continue;
 		}
@@ -4257,7 +4204,6 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 		rcTemplateFile = fileSpec;
 
 		if (!rcTmpl.Open(rcTemplateFile, &fLofRcFileTags)) {
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			if (verboseMode) {
 				gMrbLog->Err()  << "Skipping template file " << fileSpec << endl;
 				gMrbLog->Flush(this->ClassName(), "MakeRcFile");
@@ -4294,106 +4240,110 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 						rcTmpl.WriteCode(rcStrm);
 						break;
 					case TMrbConfig::kRcEvtData:
-						evt = (TMrbEvent *) fLofEvents.First();
-						evtNo = 0;
-						while (evt) {
-							iniTag = (gMrbConfig->GetRcFileOptions() & kRcOptByName) ? "%NAM%" : "%NUM%";
-							evtNameUC = evt->GetName();
-							evtNameUC(0,1).ToUpper();
-							rcTmpl.InitializeCode(iniTag.Data());
-							rcTmpl.Substitute("$resource", resourceName.Data());
-							rcTmpl.Substitute("$evtNo", evtNo);
-							rcTmpl.Substitute("$evtNameLC", evt->GetName());
-							rcTmpl.Substitute("$evtNameUC", evtNameUC.Data());
-							rcTmpl.Substitute("$evtTitle", evt->GetTitle());
-							rcTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
-							rcTmpl.Substitute("$nofSubevents", evt->GetNofSubevents());
-							rcTmpl.Substitute("$lofSubevents", evt->GetLofSubeventsAsString(lofModules));
-							rcTmpl.Substitute("$evtType", (Int_t) evt->GetType());
-							rcTmpl.Substitute("$evtSubtype", (Int_t) evt->GetSubtype());
-							rcTmpl.Substitute("$className", evt->ClassName());
-							rcTmpl.WriteCode(rcStrm);
-							iniTag = (gMrbConfig->GetRcFileOptions() & kRcOptByName) ? "%NAMH%" : "%NUMH%";
-							rcTmpl.InitializeCode(iniTag.Data());
-							rcTmpl.Substitute("$resource", resourceName.Data());
-							rcTmpl.Substitute("$evtNo", evtNo);
-							rcTmpl.Substitute("$evtNameLC", evt->GetName());
-							rcTmpl.Substitute("$evtNameUC", evtNameUC.Data());
-							rcTmpl.Substitute("$nofEntries", evt->GetSizeOfHitBuffer());
-							rcTmpl.Substitute("$highWater", evt->GetHBHighWaterLimit());
-							rcTmpl.WriteCode(rcStrm);
-							evt->MakeRcFile(rcStrm, tagIdx, resourceName.Data());
-							evt = (TMrbEvent *) fLofEvents.After(evt);
-							evtNo++;
+						{
+							evtNo = 0;
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
+								iniTag = (gMrbConfig->GetRcFileOptions() & kRcOptByName) ? "%NAM%" : "%NUM%";
+								evtNameUC = evt->GetName();
+								evtNameUC(0,1).ToUpper();
+								rcTmpl.InitializeCode(iniTag.Data());
+								rcTmpl.Substitute("$resource", resourceName.Data());
+								rcTmpl.Substitute("$evtNo", evtNo);
+								rcTmpl.Substitute("$evtNameLC", evt->GetName());
+								rcTmpl.Substitute("$evtNameUC", evtNameUC.Data());
+								rcTmpl.Substitute("$evtTitle", evt->GetTitle());
+								rcTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+								rcTmpl.Substitute("$nofSubevents", evt->GetNofSubevents());
+								rcTmpl.Substitute("$lofSubevents", evt->GetLofSubeventsAsString(lofModules));
+								rcTmpl.Substitute("$evtType", (Int_t) evt->GetType());
+								rcTmpl.Substitute("$evtSubtype", (Int_t) evt->GetSubtype());
+								rcTmpl.Substitute("$className", evt->ClassName());
+								rcTmpl.WriteCode(rcStrm);
+								iniTag = (gMrbConfig->GetRcFileOptions() & kRcOptByName) ? "%NAMH%" : "%NUMH%";
+								rcTmpl.InitializeCode(iniTag.Data());
+								rcTmpl.Substitute("$resource", resourceName.Data());
+								rcTmpl.Substitute("$evtNo", evtNo);
+								rcTmpl.Substitute("$evtNameLC", evt->GetName());
+								rcTmpl.Substitute("$evtNameUC", evtNameUC.Data());
+								rcTmpl.Substitute("$nofEntries", evt->GetSizeOfHitBuffer());
+								rcTmpl.Substitute("$highWater", evt->GetHBHighWaterLimit());
+								rcTmpl.WriteCode(rcStrm);
+								evt->MakeRcFile(rcStrm, tagIdx, resourceName.Data());
+								evtNo++;
+							}
 						}
 						break;
 					case TMrbConfig::kRcSevtData:
-						sevt = (TMrbSubevent *) fLofSubevents.First();
-						sevtNo = 0;
-						iniTag = (gMrbConfig->GetRcFileOptions() & kRcOptByName) ? "%NAM%" : "%NUM%";
-						while (sevt) {
-							sevtNameUC = sevt->GetName();
-							sevtNameUC(0,1).ToUpper();
-							rcTmpl.InitializeCode(iniTag.Data());
-							rcTmpl.Substitute("$resource", resourceName.Data());
-							rcTmpl.Substitute("$sevtNo", sevtNo);
-							rcTmpl.Substitute("$sevtNameLC", sevt->GetName());
-							rcTmpl.Substitute("$sevtNameUC", sevtNameUC.Data());
-							rcTmpl.Substitute("$sevtTitle", sevt->GetTitle());
-							rcTmpl.Substitute("$nofModules", sevt->GetNofModules());
-							rcTmpl.Substitute("$lofModules", sevt->GetLofModulesAsString(lofModules));
-							rcTmpl.Substitute("$sevtType", (Int_t) sevt->GetType());
-							rcTmpl.Substitute("$sevtSubtype", (Int_t) sevt->GetSubtype());
-							rcTmpl.Substitute("$sevtSerial", sevt->GetSerial());
-							rcTmpl.Substitute("$className", sevt->ClassName());
-							rcTmpl.WriteCode(rcStrm);
-							sevt->MakeRcFile(rcStrm, tagIdx, resourceName.Data());
-							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
-							sevtNo++;
+						{
+							sevtNo = 0;
+							iniTag = (gMrbConfig->GetRcFileOptions() & kRcOptByName) ? "%NAM%" : "%NUM%";
+							TIterator * sevtIter = fLofSubevents.MakeIterator();
+							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+								sevtNameUC = sevt->GetName();
+								sevtNameUC(0,1).ToUpper();
+								rcTmpl.InitializeCode(iniTag.Data());
+								rcTmpl.Substitute("$resource", resourceName.Data());
+								rcTmpl.Substitute("$sevtNo", sevtNo);
+								rcTmpl.Substitute("$sevtNameLC", sevt->GetName());
+								rcTmpl.Substitute("$sevtNameUC", sevtNameUC.Data());
+								rcTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+								rcTmpl.Substitute("$nofModules", sevt->GetNofModules());
+								rcTmpl.Substitute("$lofModules", sevt->GetLofModulesAsString(lofModules));
+								rcTmpl.Substitute("$sevtType", (Int_t) sevt->GetType());
+								rcTmpl.Substitute("$sevtSubtype", (Int_t) sevt->GetSubtype());
+								rcTmpl.Substitute("$sevtSerial", sevt->GetSerial());
+								rcTmpl.Substitute("$className", sevt->ClassName());
+								rcTmpl.WriteCode(rcStrm);
+								sevt->MakeRcFile(rcStrm, tagIdx, resourceName.Data());
+								sevtNo++;
+							}
 						}
 						break;
 					case TMrbConfig::kRcModuleData:
-						module = (TMrbModule *) fLofModules.First();
-						modNo = 0;
-						iniTag = (this->GetRcFileOptions() & kRcOptByName) ? "%NAM%" : "%NUM%";
-						while (module) {
-							moduleNameUC = module->GetName();
-							moduleNameUC(0,1).ToUpper();
-							rcTmpl.InitializeCode(iniTag.Data());
-							rcTmpl.Substitute("$resource", resourceName.Data());
-							rcTmpl.Substitute("$modNo", modNo);
-							rcTmpl.Substitute("$moduleNameLC", module->GetName());
-							rcTmpl.Substitute("$moduleNameUC", moduleNameUC.Data());
-							rcTmpl.Substitute("$moduleTitle", module->GetTitle());
-							rcTmpl.Substitute("$moduleSerial", module->GetSerial());
-							rcTmpl.Substitute("$moduleType", module->GetType()->GetIndex(), 16);
-							rcTmpl.Substitute("$className", module->ClassName());
-							rcTmpl.Substitute("$nofChannelsUsed", module->GetNofChannelsUsed());
-							rcTmpl.Substitute("$nofChannels", module->GetNofChannels());
-							rcTmpl.Substitute("$channelPattern", (Int_t) module->GetPatternOfChannelsUsed(), 16);
-							rcTmpl.Substitute("$nofSubdevices", module->GetNofSubDevices());
-							rcTmpl.Substitute("$subDevice", module->GetSubDevice());
-							if (module->IsCamac()) {
-									rcTmpl.Substitute("$interface", "CAMAC");
-									rcTmpl.Substitute("$moduleAddr", ((TMrbCamacModule *) module)->GetPosition());
-									rcTmpl.Substitute("$moduleCrate", ((TMrbCamacModule *) module)->GetCrate());
-									rcTmpl.Substitute("$moduleStation", ((TMrbCamacModule *) module)->GetStation());
-							} else if (module->IsVME()) {
-									rcTmpl.Substitute("$interface", "VME");
-									rcTmpl.Substitute("$moduleAddr", ((TMrbVMEModule *) module)->GetPosition());
-									rcTmpl.Substitute("$moduleCrate", ((TMrbCamacModule *) module)->GetCrate());
-									rcTmpl.Substitute("$moduleStation", 0);
+						{
+							modNo = 0;
+							iniTag = (this->GetRcFileOptions() & kRcOptByName) ? "%NAM%" : "%NUM%";
+							TIterator * modIter = fLofModules.MakeIterator();
+							while (module = (TMrbModule *) modIter->Next()) {
+								moduleNameUC = module->GetName();
+								moduleNameUC(0,1).ToUpper();
+								rcTmpl.InitializeCode(iniTag.Data());
+								rcTmpl.Substitute("$resource", resourceName.Data());
+								rcTmpl.Substitute("$modNo", modNo);
+								rcTmpl.Substitute("$moduleNameLC", module->GetName());
+								rcTmpl.Substitute("$moduleNameUC", moduleNameUC.Data());
+								rcTmpl.Substitute("$moduleTitle", module->GetTitle());
+								rcTmpl.Substitute("$moduleSerial", module->GetSerial());
+								rcTmpl.Substitute("$moduleType", module->GetType()->GetIndex(), 16);
+								rcTmpl.Substitute("$className", module->ClassName());
+								rcTmpl.Substitute("$nofChannelsUsed", module->GetNofChannelsUsed());
+								rcTmpl.Substitute("$nofChannels", module->GetNofChannels());
+								rcTmpl.Substitute("$channelPattern", (Int_t) module->GetPatternOfChannelsUsed(), 16);
+								rcTmpl.Substitute("$nofSubdevices", module->GetNofSubDevices());
+								rcTmpl.Substitute("$subDevice", module->GetSubDevice());
+								if (module->IsCamac()) {
+										rcTmpl.Substitute("$interface", "CAMAC");
+										rcTmpl.Substitute("$moduleAddr", ((TMrbCamacModule *) module)->GetPosition());
+										rcTmpl.Substitute("$moduleCrate", ((TMrbCamacModule *) module)->GetCrate());
+										rcTmpl.Substitute("$moduleStation", ((TMrbCamacModule *) module)->GetStation());
+								} else if (module->IsVME()) {
+										rcTmpl.Substitute("$interface", "VME");
+										rcTmpl.Substitute("$moduleAddr", ((TMrbVMEModule *) module)->GetPosition());
+										rcTmpl.Substitute("$moduleCrate", ((TMrbCamacModule *) module)->GetCrate());
+										rcTmpl.Substitute("$moduleStation", 0);
+								}
+								rcTmpl.WriteCode(rcStrm);
+								module->MakeRcFile(rcStrm, tagIdx, resourceName.Data());
+								modNo++;
 							}
-							rcTmpl.WriteCode(rcStrm);
-							module->MakeRcFile(rcStrm, tagIdx, resourceName.Data());
-							module = (TMrbModule *) fLofModules.After(module);
-							modNo++;
 						}
 						break;
 					case TMrbConfig::kRcUserGlobals:
 						{
-							TMrbNamedX * ug = (TMrbNamedX *) fLofGlobals.First();
-							while (ug) {
+							TMrbNamedX * ug;
+							TIterator * globIter = fLofGlobals.MakeIterator();
+							while (ug = (TMrbNamedX *) globIter->Next()) {
 								if ((EMrbGlobalType) ug->GetIndex() != TMrbConfig::kGlobObject) {
 									rcTmpl.InitializeCode();
 									TString ugName = ug->GetName();
@@ -4420,7 +4370,6 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 									}
 								}
 								rcTmpl.WriteCode(rcStrm);
-								ug = (TMrbNamedX *) fLofGlobals.After(ug);
 							}
 						}
 						break;
@@ -4437,7 +4386,6 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 		}
 		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
 		gMrbLog->Flush("", "", setblue);
-		pp = (packNames *) filesToCreate.After((TObject *) pp);
 	}
 	return(kTRUE);
 }
@@ -4830,9 +4778,10 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 								gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
 							}
 						} else if (scope.Contains("TUsrEvt")) {
-							TMrbEvent * evt = (TMrbEvent *) fLofEvents.First();
 							Bool_t ok = kFALSE;
-							while (evt) {
+							TMrbEvent * evt;
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
 								TString evtName = evt->GetName();
 								evtName(0,1).ToUpper();
 								evtName.Prepend("TUsrEvt");
@@ -4840,14 +4789,14 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 									ok = kTRUE;
 									break;
 								}
-								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
 							if (ok) {
 								TString lineUC = line;
 								lineUC.ToUpper();
-								TMrbNamedX * icl = (TMrbNamedX *) iclOptions.First();
 								Bool_t knownMethod = kFALSE;
-								while (icl) {
+								TMrbNamedX * icl;
+								TIterator * iclIter = iclOptions.MakeIterator();
+								while (icl = (TMrbNamedX *) iclIter->Next()) {
 									if (icl->GetIndex() & TMrbConfig::kIclOptClassTUsrEvent) {
 										TString tag = icl->GetName();
 										tag.Prepend("%%");
@@ -4876,7 +4825,6 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 											break;
 										}
 									}
-									icl = (TMrbNamedX *) iclOptions.After(icl);
 								}
 								if (!knownMethod) {
 									Int_t n1;
@@ -4903,14 +4851,14 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 								gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
 							}
 						} else {
-							TMrbNamedX * nx = (TMrbNamedX *) fLofUserClasses.First();
 							Bool_t isUserClass = kFALSE;
-							while (nx) {
+							TMrbNamedX * nx;
+							TIterator * ucIter = fLofUserClasses.MakeIterator();
+							while (nx = (TMrbNamedX *) ucIter->Next()) {
 								if (scope.CompareTo(nx->GetName()) == 0) {
 									isUserClass = kTRUE;
 									break;
 								}
-								nx = (TMrbNamedX *) fLofUserClasses.After(nx);
 							}
 							if (!isUserClass) {
 								gMrbLog->Err()  << "User code file " << ptPath << " (line " << lineNo
@@ -4965,14 +4913,16 @@ Bool_t TMrbConfig::WriteUtilityProtos() {
 
 	if (this->UserCodeToBeIncluded()) {
 		TString protoFile;
-		TMrbNamedX * icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
 		Bool_t first = kTRUE;
 		ofstream f;
-		while (icl) {
+		TMrbNamedX * icl;
+		TIterator * iclIter = fLofUserIncludes.MakeIterator();
+		while (icl = (TMrbNamedX *) iclIter->Next()) {
 			if (icl->GetIndex() & TMrbConfig::kIclOptUtilities) {
 				TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
-				TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
-				while (nx) {
+				TMrbNamedX * nx;
+				TIterator * methIter = lofMethods->MakeIterator();
+				while (nx = (TMrbNamedX *) methIter->Next()) {
 					if (nx->GetIndex() & TMrbConfig::kIclOptUtilities) {
 						if (first) {
 							protoFile = this->GetName();
@@ -4989,10 +4939,8 @@ Bool_t TMrbConfig::WriteUtilityProtos() {
 						first = kFALSE;
 						f << nx->GetTitle() << endl;
 					}
-					nx = (TMrbNamedX *) lofMethods->After(nx);
 				}
 			}
-			icl = (TMrbNamedX *) this->GetLofUserIncludes()->After(icl);
 		}
 		if (!first) {
 			f.close();
@@ -5485,14 +5433,14 @@ Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 	packNames ah(Xhit->GetName(), "Xhit.h.code", ".h", "Extended hit (protos)");
 	filesToCreate.Add((TObject *) &ah);
 
-	packNames * pp = (packNames *) filesToCreate.First();
-	while (pp) {
+	packNames * pp;
+	TIterator * ppIter = filesToCreate.MakeIterator();
+	while (pp = (packNames *) ppIter->Next()) {
 		cf = pp->GetF() + pp->GetX();
 		outStrm.open(cf, ios::out);
 		if (!outStrm.good()) {	
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "CreateXhit");
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			continue;
 		}
 
@@ -5505,7 +5453,6 @@ Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 			gMrbLog->Flush(this->ClassName(), "CreateXhit");
 			gMrbLog->Err()	<< "            Searching on path " << templatePath << endl;
 			gMrbLog->Flush();
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			outStrm.close();
 			continue;
 		}
@@ -5518,7 +5465,6 @@ Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 		TString xHitTemplateFile = fileSpec;
 
 		if (!xHitTmpl.Open(xHitTemplateFile, &fLofXhitTags)) {
-			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			if (verboseMode) {
 				gMrbLog->Err()  << "Skipping template file " << fileSpec << endl;
 				gMrbLog->Flush(this->ClassName(), "CreateXhit");
@@ -5583,7 +5529,6 @@ Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 		outStrm.close();
 		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
 		gMrbLog->Flush("", "", setblue);
-		pp = (packNames *) filesToCreate.After((TObject *) pp);
 	}
 	return(kTRUE);
 }
@@ -5702,20 +5647,17 @@ void TMrbConfig::Print(ostream & OutStrm, const Char_t * Prefix) const {
 	OutStrm << Prefix << "|  Events/Trigs  : " << fNofEvents << endl;
 	OutStrm << Prefix << "|  Subevents     : " << fNofSubevents << endl;
 	if (fNofEvents > 0) {
-		evt = (TMrbEvent *) fLofEvents.First();
-		while (evt) {
-			evt->Print(OutStrm, Prefix);
-			evt = (TMrbEvent *) fLofEvents.After(evt);
-		}
+		TIterator * evtIter = fLofEvents.MakeIterator();
+		while (evt = (TMrbEvent *) evtIter->Next()) evt->Print(OutStrm, Prefix);
 	}
-	TMrbModule * module = (TMrbModule *) fLofModules.First();
-	while (module) {
+	TMrbModule * module;
+	TIterator * modIter = fLofModules.MakeIterator();
+	while (module = (TMrbModule *) modIter->Next()) {
 		if (module->IsCamac()) {
 			((TMrbCamacModule *) module)->Print(OutStrm, Prefix);
 		} else {
 			((TMrbVMEModule *) module)->Print(OutStrm, Prefix);
 		}
-		module = (TMrbModule *) fLofModules.After(module);
 	}
 }
 
@@ -6673,11 +6615,11 @@ TMrbNamedX * TMrbConfig::FindHistoArray(const Char_t * HistoName, TMrbNamedX * A
 
 	while (hArray) {
 		TObjArray * lofHistos = (TObjArray *) hArray->GetAssignedObject();
-		TMrbNamedX * h = (TMrbNamedX *) lofHistos->First();
-		while (h) {
+		TMrbNamedX * h;
+		TIterator * hIter = lofHistos->MakeIterator();
+		while (h = (TMrbNamedX *) hIter->Next()) {
 			TString hName = h->GetName();
 			if (hName.CompareTo(HistoName) == 0) return(hArray);
-			h = (TMrbNamedX *) lofHistos->After(h);
 		}
 		hArray = (TMrbNamedX *) fLofHistoArrays.After(hArray);
 	}
@@ -6730,8 +6672,8 @@ TMrbConfig * TMrbConfig::ReadFromFile(const Char_t * RootFile,  Option_t * Optio
 	keyList = cfgFile->GetListOfKeys();
 	cfgName = "notFound";
 	cfgClass = this->ClassName();
-	key = (TKey *) keyList->First();
-	while (key) {
+	TIterator * keyIter = keyList->MakeIterator();
+	while (key = (TKey *) keyIter->Next()) {
 		if (cfgClass.CompareTo(key->GetClassName()) == 0) {
 			if (cfgName.CompareTo("notFound") == 0) {
 				cfgName = key->GetName();
@@ -6742,7 +6684,6 @@ TMrbConfig * TMrbConfig::ReadFromFile(const Char_t * RootFile,  Option_t * Optio
 				return(NULL);
 			}
 		}
-		key = (TKey *) keyList->After((TObject *) key);
 	}
 	if (cfgName.CompareTo("notFound") == 0) {
 		gMrbLog->Err() << RootFile << ": No such object - class " << this->ClassName() << endl;
@@ -7512,12 +7453,12 @@ Int_t TMrbConfig::GetNofModules(const Char_t * Pattern) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	TRegexp wild(Pattern, kTRUE);
-	TMrbModule * module = (TMrbModule *) fLofModules.First();
 	Int_t nofModules = 0;
-	while (module) {
+	TMrbModule * module;
+	TIterator * modIter = fLofModules.MakeIterator();
+	while (module = (TMrbModule *) modIter->Next()) {
 		TString mName = module->GetName();
 		if (mName.Index(wild, 0) >= 0) nofModules++;
-		module = (TMrbModule *) fLofModules.After(module);
 	}
 	return(nofModules);
 }
@@ -7539,6 +7480,8 @@ Bool_t TMrbConfig::CheckConfig() {
 
 	Int_t nofErrors = 0;
 
+	nofErrors += this->CheckMbsBranchAssignments();
+
 	if (this->GetNofEvents() == 0) {
 		gMrbLog->Err()	<< "No events/triggers defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckConfig");
@@ -7548,8 +7491,9 @@ Bool_t TMrbConfig::CheckConfig() {
 			gMrbLog->Out()  << "Number of events/triggers:    " << fNofEvents << endl;
 			gMrbLog->Flush(this->ClassName(), "CheckConfig");
 		}
-		TMrbEvent * evt = (TMrbEvent *) fLofEvents.First();
-		while (evt) {
+		TMrbEvent * evt;
+		TIterator * evtIter = fLofEvents.MakeIterator();
+		while (evt = (TMrbEvent *) evtIter->Next()) {
 			if (evt->GetNofSubevents() == 0) {
 				gMrbLog->Err()	<< "Event \"" << evt->GetName()
 								<< "\" (trigger " << evt->GetTrigger()
@@ -7563,8 +7507,9 @@ Bool_t TMrbConfig::CheckConfig() {
 									<< ") has " << evt->GetNofSubevents() << " subevent(s)" << endl;
 					gMrbLog->Flush(this->ClassName(), "CheckConfig");
 				}
-				TMrbSubevent * sevt = (TMrbSubevent *) evt->GetLofSubevents()->First();
-				while (sevt) {
+				TMrbSubevent * sevt;
+				TIterator * sevtIter = evt->GetLofSubevents()->MakeIterator();
+				while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 					if (sevt->NeedsModulesToBeAssigned()) {
 						if (sevt->GetNofModules() == 0) {
 							gMrbLog->Err()	<< "[Event " << evt->GetName() << "] Subevent \"" << sevt->GetName()
@@ -7598,15 +7543,14 @@ Bool_t TMrbConfig::CheckConfig() {
 										<< ") has " << sevt->GetNofParams() << " param(s) assigned" << endl;
 						gMrbLog->Flush(this->ClassName(), "CheckConfig");
 					}
-					sevt = (TMrbSubevent *) evt->GetLofSubevents()->After(sevt);
 				}
 			}
-			evt = (TMrbEvent *) fLofEvents.After(evt);
 		}
 	}
 
-	TMrbSubevent * sevt = (TMrbSubevent *) fLofSubevents.First();
-	while (sevt) {
+	TMrbSubevent *sevt;
+	TIterator * sIter = fLofSubevents.MakeIterator();
+	while (sevt = (TMrbSubevent *) sIter->Next()) {
 		if (sevt->GetNofEvents() == 0) {
 			gMrbLog->Err()	<< "Subevent \"" << sevt->GetName()
 							<< "\" (serial " << sevt->GetSerial()
@@ -7614,11 +7558,11 @@ Bool_t TMrbConfig::CheckConfig() {
 			gMrbLog->Flush(this->ClassName(), "CheckConfig");
 			nofErrors++;
 		}
-		sevt = (TMrbSubevent *)  fLofSubevents.After(sevt);
 	}
 
-	TMrbModule * module = (TMrbModule *) fLofModules.First();
-	while (module) {
+	TMrbModule * module;
+	TIterator * modIter = fLofModules.MakeIterator();
+	while (module = (TMrbModule *) modIter->Next()) {
 		Int_t mtype = (module->GetType())->GetIndex();
 		if ((mtype & TMrbConfig::kModuleListMode) && !(mtype & TMrbConfig::kModuleScaler)) {
 			if (module->GetNofChannelsUsed() == 0) {
@@ -7635,7 +7579,6 @@ Bool_t TMrbConfig::CheckConfig() {
 				gMrbLog->Flush(this->ClassName(), "CheckConfig");
 			}
 		}
-		module = (TMrbModule *)  fLofModules.After(module);
 	}
 
 	if (nofErrors == 0) {
@@ -7649,4 +7592,71 @@ Bool_t TMrbConfig::CheckConfig() {
 	fConfigChecked = kTRUE;
 	fConfigOk = (nofErrors == 0);
 	return(fConfigOk);
+}
+
+Bool_t TMrbConfig::SetMbsBranch(TMrbNamedX & MbsBranch, const Char_t * MbsBranchName, Int_t MbsBranchNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::SetMbsBranch
+// Purpose:        Assign mbs branch to events, subevents, and modules
+// Arguments:      TMrbNamedX & MbsBranch       -- mbs branch to be set
+//                 Char_t * MbsBranchName       -- branch name to be used
+//                 Int_t MbsBranchNo            -- corresponding branch number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets branch data
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok = kTRUE;
+
+	MbsBranch.Set(-1, "none");
+
+	TString branchName;
+	if (MbsBranchName == NULL || *MbsBranchName == '\0') {
+		branchName = "MbsBranch";
+		branchName += MbsBranchNo;
+	} else {
+		branchName = MbsBranchName;
+	}
+
+	TMrbNamedX * br = fLofMbsBranches.FindByName(branchName.Data());
+	if (br) {
+		if (MbsBranchNo == -1 || MbsBranchNo == br->GetIndex()) {
+			MbsBranch.Set(br);
+		} else {
+			gMrbLog->Err()	<< "Branch mismatch - " << MbsBranchName << "(" << MbsBranchNo << "), should be "
+							<< br->GetName() << "(" << br->GetIndex() << ")" << endl;
+			gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+			ok = kFALSE;
+		}
+	} else {
+		if (MbsBranchNo == -1) {
+			gMrbLog->Err()	<< "Branch number missing - " << MbsBranchName << "(?)" << endl;
+			gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+			ok = kFALSE;
+		}
+		MbsBranch.Set(MbsBranchNo, MbsBranchName);
+	}
+
+	return(ok);
+}
+
+Int_t TMrbConfig::CheckMbsBranchAssignments() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::SetMbsBranch
+// Purpose:        Assign mbs branch to events, subevents, and modules
+// Arguments:      TMrbNamedX & MbsBranch       -- mbs branch to be set
+//                 Char_t * MbsBranchName       -- branch name to be used
+//                 Int_t MbsBranchNo            -- corresponding branch number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets branch data
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofErrors = 0;
+
+	return(nofErrors);
 }

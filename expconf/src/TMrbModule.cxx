@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.15 2005-12-14 08:33:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.16 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -104,6 +104,7 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 			fTimeOffset = 0;								// time offset
 			if (fModuleID.GetIndex() != TMrbConfig::kModuleSoftModule) fSerial = gMrbConfig->AssignModuleSerial();		// assign a unique module number
 			fHistosToBeAllocated = kTRUE;					// create histograms for each channel
+			fMbsBranch.Set(-1, "none");
 		}
 	}
 }
@@ -725,4 +726,45 @@ void TMrbModule::PrintRegister(ostream & OutStrm, const Char_t * RegName, const 
 	prefix = Prefix;
 	prefix.Append("   ");
 	rp->Print(OutStrm, prefix.Data());
+}
+
+Bool_t TMrbModule::SetMbsBranch(Int_t MbsBranchNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModule::SetMbsBranch
+// Purpose:        Assign module to a mbs branch
+// Arguments:      Int_t MbsBranchNo         -- mbs branch number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Assigns module to a mbs branch.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!gMrbConfig->SetMbsBranch(fMbsBranch, NULL, MbsBranchNo)) {
+		gMrbLog->Err()	<< "Module " << this->GetName() << ": Can't set mbs branch" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+		return(kFALSE);
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbModule::SetMbsBranch(const Char_t * MbsBranchName, Int_t MbsBranchNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModule::SetMbsBranch
+// Purpose:        Assign module to a mbs branch
+// Arguments:      Char_t * MbsBranchName      -- branch name
+//                 Int_t MbsBranchNo           -- branch number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Assigns module to a mbs branch.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!gMrbConfig->SetMbsBranch(fMbsBranch, NULL, MbsBranchNo)) {
+		gMrbLog->Err()	<< "Module " << this->GetName() << ": Can't set mbs branch" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+		return(kFALSE);
+	}
+	return(kTRUE);
 }

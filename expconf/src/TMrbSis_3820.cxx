@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.3 2006-06-23 08:48:30 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.4 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -207,10 +207,40 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.WriteCode(RdoStrm);
 			}
 			break;
-		case TMrbConfig::kModuleClearModule:
-		case TMrbConfig::kModuleFinishReadout:
 		case TMrbConfig::kModuleStartAcquisition:
 		case TMrbConfig::kModuleStopAcquisition:
+			{
+				fCodeTemplates.InitializeCode("%S%");
+				fCodeTemplates.Substitute("$moduleName", this->GetName());
+				fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
+				fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
+				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
+				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+				Int_t pat;
+				if (this->GetNofChannelsUsed() < 32) {
+					if (this->CheckIfPatternIsContiguous()) {
+						pat = ~(this->GetPatternOfChannelsUsed());
+					} else {
+						pat = 0;
+						gMrbLog->Err()	<< "Pattern of channels used is not contiguous - 0x"
+										<< setbase(16) << this->GetPatternOfChannelsUsed() << setbase(10)
+										<< " (ignored: using 32 chns)" << endl;
+						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+					}
+				} else {
+					pat = 0;
+				}
+				fCodeTemplates.Substitute("$unusedChannels", pat, 16);
+				fCodeTemplates.WriteCode(RdoStrm);
+				if (this->Get("LNESource") == 0) {
+					fCodeTemplates.InitializeCode("%FSR%");
+					fCodeTemplates.Substitute("$moduleName", this->GetName());
+					fCodeTemplates.WriteCode(RdoStrm);
+				}
+			}
+			break;
+		case TMrbConfig::kModuleClearModule:
+		case TMrbConfig::kModuleFinishReadout:
 		case TMrbConfig::kModuleStartAcquisitionGroup:
 		case TMrbConfig::kModuleStopAcquisitionGroup:
 		case TMrbConfig::kModuleUtilities:
@@ -227,11 +257,6 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			break;
 		case TMrbConfig::kModuleReadModule:
 			{
-				if (this->Get("LNESource") == 0) {
-					fCodeTemplates.InitializeCode("%FSR%");
-					fCodeTemplates.Substitute("$moduleName", this->GetName());
-					fCodeTemplates.WriteCode(RdoStrm);
-				}
 				Int_t nofChannels = this->GetNofChannelsUsed();
 				if (nofChannels < 32) {
 					if (!this->CheckIfPatternIsContiguous()) {
