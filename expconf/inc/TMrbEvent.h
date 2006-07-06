@@ -8,7 +8,7 @@
 // Class:          TMrbEvent            -- event connected to a trigger
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEvent.h,v 1.9 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.h,v 1.10 2006-07-06 13:13:02 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -107,8 +107,8 @@ class TMrbEvent : public TNamed {
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
 		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
 		
-		Bool_t SetMbsBranch(Int_t MbsBranchNo);							// mbs branch
-		Bool_t SetMbsBranch(const Char_t * MbsBranch, Int_t MbsBranchNo = -1);
+		Bool_t SetMbsBranch(Int_t MbsBranchNo, const Char_t * MbsBranchName = NULL);	// mbs branch
+		inline Bool_t SetMbsBranch(TMrbNamedX * MbsBranch) { return(this->SetMbsBranch(MbsBranch->GetIndex(), MbsBranch->GetName())); };
 		inline TMrbNamedX * GetMbsBranch() { return(&fMbsBranch); };
 		inline Int_t GetMbsBranchNo() { return(fMbsBranch.GetIndex()); };
 

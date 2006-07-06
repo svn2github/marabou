@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.117 2006-07-05 14:23:53 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.118 2006-07-06 13:13:02 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -893,12 +893,15 @@ TObject * TMrbConfig::FindSubevent(TClass * Class, TObject * After) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	Bool_t ok = (After == NULL);
 	TMrbSubevent * sevt;
-
-	sevt = (After == NULL) ? (TMrbSubevent *) fLofSubevents.First() : (TMrbSubevent *) fLofSubevents.After(After);
-	while (sevt) {
-		if (sevt->IsA() == Class) return(sevt);
-		sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+	TIterator * sevtIter = fLofSubevents.MakeIterator();
+	while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+		if (ok) {
+			if (sevt->IsA() == Class) return(sevt);
+		} else {
+			ok = (sevt == After);
+		}
 	}
 	return(NULL);
 }
@@ -980,16 +983,16 @@ TObject * TMrbConfig::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject 
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbModule * module;
 
-	if (After == NULL) {
-		module = (TMrbModule *) fLofModules.First();
-	} else {
-		module = (TMrbModule *) fLofModules.After(After);
-	}
-	while (module) {
-		if (module->GetModuleID()->GetIndex() == ModuleID) return(module);
-		module = (TMrbModule *) fLofModules.After(module);
+	Bool_t ok = (After == NULL);
+	TMrbModule * module;
+	TIterator * modIter = fLofModules.MakeIterator();
+	while (module = (TMrbModule *) modIter->Next()) {
+		if (ok) {
+			if (module->GetModuleID()->GetIndex() == ModuleID) return(module);
+		} else {
+			ok = (module == After);
+		}
 	}
 	return(NULL);
 }
@@ -1008,16 +1011,15 @@ TObject * TMrbConfig::FindModuleByType(UInt_t ModuleType, TObject * After) const
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	Bool_t ok = (After == NULL);
 	TMrbModule * module;
-
-	if (After == NULL) {
-		module = (TMrbModule *) fLofModules.First();
-	} else {
-		module = (TMrbModule *) fLofModules.After(After);
-	}
-	while (module) {
-		if ((module->GetType()->GetIndex() & ModuleType) == ModuleType) return(module);
-		module = (TMrbModule *) fLofModules.After(module);
+	TIterator * modIter = fLofModules.MakeIterator();
+	while (module = (TMrbModule *) modIter->Next()) {
+		if (ok) {
+			if ((module->GetType()->GetIndex() & ModuleType) == ModuleType) return(module);
+		} else {
+			ok = (module == After);
+		}
 	}
 	return(NULL);
 }
@@ -1036,16 +1038,15 @@ TObject * TMrbConfig::FindModuleByCrate(Int_t Crate, TObject * After) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	Bool_t ok = (After == NULL);
 	TMrbModule * module;
-
-	if (After == NULL) {
-		module = (TMrbModule *) fLofModules.First();
-	} else {
-		module = (TMrbModule *) fLofModules.After(After);
-	}
-	while (module) {
-		if (module->GetCrate() == Crate) return(module);
-		module = (TMrbModule *) fLofModules.After(module);
+	TIterator * modIter = fLofModules.MakeIterator();
+	while (module = (TMrbModule *) modIter->Next()) {
+		if (ok) {
+			if (module->GetCrate() == Crate) return(module);
+		} else {
+			ok = (module == After);
+		}
 	}
 	return(NULL);
 }
@@ -1086,16 +1087,15 @@ TObject * TMrbConfig::FindScalerByCrate(Int_t Crate, TObject * After) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	Bool_t ok = (After == NULL);
 	TMrbCamacScaler * scaler;
-
-	if (After == NULL) {
-		scaler = (TMrbCamacScaler *) fLofScalers.First();
-	} else {
-		scaler = (TMrbCamacScaler *) fLofScalers.After(After);
-	}
-	while (scaler) {
-		if (scaler->GetCrate() == Crate) return(scaler);
-		scaler = (TMrbCamacScaler *) fLofScalers.After(scaler);
+	TIterator * scaIter = fLofScalers.MakeIterator();
+	while (scaler = (TMrbCamacScaler *) scaIter->Next()) {
+		if (ok) {
+			if (scaler->GetCrate() == Crate) return(scaler);
+		} else {
+			ok = (scaler == After);
+		}
 	}
 	return(NULL);
 }
@@ -1361,16 +1361,41 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 		cfile = CodeFile;
 	}
 
-	packNames rdc(cfile.Data(), "Readout.c.code", ".c", "C code (VME/CAMAC readout) for MBS");
-	filesToCreate.Add((TObject *) &rdc);
-
-	packNames rdh(cfile.Data(), "Readout.h.code", ".h", "C definitions for MBS");
-	filesToCreate.Add((TObject *) &rdh);
-
-	packNames rdmk(cfile.Data(), "Readout.mk.code", ".mk", "Makefile (LynxOs)");
-	filesToCreate.Add((TObject *) &rdmk);
-
 	packNames * pp;
+	Int_t nofMbsBranches = fLofMbsBranches.GetEntriesFast();
+	if (nofMbsBranches == 0) {
+		pp = new packNames(cfile.Data(), "Readout.c.code", ".c", "C code (VME/CAMAC readout) for MBS");
+		filesToCreate.Add(pp);
+
+		pp = new packNames(cfile.Data(), "Readout.h.code", ".h", "C definitions for MBS");
+		filesToCreate.Add(pp);
+
+		pp = new packNames(cfile.Data(), "Readout.mk.code", ".mk", "Makefile (LynxOs)");
+		filesToCreate.Add(pp);
+	} else {
+		TIterator * bIter = fLofMbsBranches.MakeIterator();
+		TMrbNamedX * branch;
+		while (branch = (TMrbNamedX *) bIter->Next()) {
+			Int_t bNo = branch->GetIndex();
+			TString bName = branch->GetName();
+			bName(0,1).ToUpper();
+
+			TString bfile = Form("%s%s", cfile.Data(), bName.Data());
+
+			TString cmt = Form("C code (VME/CAMAC readout) for MBS (%s)", bName.Data());
+			pp = new packNames(bfile.Data(), "Readout.c.code", ".c", cmt.Data(), bNo);
+			filesToCreate.Add(pp);
+
+			cmt = Form("C definitions for MBS (%s)", bName.Data());
+			pp = new packNames(bfile.Data(), "Readout.h.code", ".h", cmt.Data(), bNo);
+			filesToCreate.Add(pp);
+
+			cmt = Form("Makefile (LynxOs) (%s)", bName.Data());
+			pp = new packNames(bfile.Data(), "Readout.mk.code", ".mk", cmt.Data(), bNo);
+			filesToCreate.Add(pp);
+		}
+	}
+
 	TIterator * ppIter = filesToCreate.MakeIterator();
 	while (pp  = (packNames *) ppIter->Next()) {
 		cf = pp->GetF() + pp->GetX();
@@ -1448,6 +1473,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefineIncludePaths);
 								}
@@ -1471,6 +1497,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefineLibraries);
 								}
@@ -1580,6 +1607,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						{
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (module->IsVME()) {
 									if (module->GetNofSubDevices() <= 1) {
 										rdoTmpl.InitializeCode("%V%");
@@ -1623,6 +1651,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							rdoTmpl.WriteCode(rdoStrm);
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								rdoTmpl.InitializeCode("%MT%");
 								rdoTmpl.Substitute("$moduleNameLC", module->GetName());
 								moduleName = module->GetName();
@@ -1645,6 +1674,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							rdoTmpl.WriteCode(rdoStrm);
 							TIterator * sevtIter = fLofSubevents.MakeIterator();
 							while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+								if (sevt->GetMbsBranchNo() != pp->GetB()) continue;
 								Int_t nofModules = sevt->GetNofModules();
 								rdoTmpl.InitializeCode((nofModules == 0) ? "%ST0%" : "%ST%");
 								rdoTmpl.Substitute("$sevtNameLC", sevt->GetName());
@@ -1678,7 +1708,9 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								rdoTmpl.WriteCode(rdoStrm);
 							}
 							TIterator * modIter = fLofModules.MakeIterator();
-							while (module = (TMrbModule *) modIter->Next()) module->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl, NULL);
+							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() == pp->GetB()) module->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl, NULL);
+							}
 							crate = this->FindCrate();
 							while (crate >= 0) {
 								if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
@@ -1712,6 +1744,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleInitCommonCode);
 								}
@@ -1749,7 +1782,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								}
 							}
 							while (module) {
-								module->MakeReadoutCode(rdoStrm, kModuleInitModule);
+								if (module->GetMbsBranchNo() == pp->GetB()) module->MakeReadoutCode(rdoStrm, kModuleInitModule);
 								module = (TMrbModule *) this->FindModuleByCrate(crate, module);
 							}
 							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
@@ -1778,6 +1811,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						{
 							TIterator * evtIter = fLofEvents.MakeIterator();
 							while (evt = (TMrbEvent *) evtIter->Next()) {
+								if (evt->GetMbsBranchNo() != pp->GetB()) continue;
 								if (!evt->IsReservedEvent()) evt->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl);
 							}
 						}
@@ -1794,7 +1828,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								while (trg && trigMask < kNofTriggers) {
 									if (trg & trigMask) {
 										evt = (TMrbEvent *) this->FindEvent(trigMask);
-										evt->MakeReadoutCode(rdoStrm, kRdoIgnoreTriggerXX, rdoTmpl);
+										if (evt->GetMbsBranchNo() == pp->GetB()) evt->MakeReadoutCode(rdoStrm, kRdoIgnoreTriggerXX, rdoTmpl);
 										trg &= ~trigMask;
 									}
 									trigMask <<= 1;
@@ -1837,7 +1871,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							}
 							module = (TMrbModule *) this->FindModuleByCrate(crate);
 							while (module) {
-								module->MakeReadoutCode(rdoStrm, kModuleStartAcquisition);
+								if (module->GetMbsBranchNo() != pp->GetB()) module->MakeReadoutCode(rdoStrm, kModuleStartAcquisition);
 								module = (TMrbModule *) this->FindModuleByCrate(crate, module);
 							}
 							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
@@ -1858,7 +1892,9 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							evt = (TMrbEvent *) this->FindEvent(TMrbConfig::kTriggerStartAcq);
 							if (evt) {
 								TIterator * sevtIter = evt->GetLofSubevents()->MakeIterator();
-								while (sevt = (TMrbSubevent *) sevtIter->Next()) sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
+								while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+									if (sevt->GetMbsBranchNo() == pp->GetB() && sevt->GetCrate() == crate) sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
+								}
 							}
 							rdoTmpl.InitializeCode("%CE%");
 							rdoTmpl.WriteCode(rdoStrm);
@@ -1900,13 +1936,15 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							}
 							module = (TMrbModule *) this->FindModuleByCrate(crate);
 							while (module) {
-								module->MakeReadoutCode(rdoStrm, kModuleStopAcquisition);
+								if (module->GetMbsBranchNo() == pp->GetB()) module->MakeReadoutCode(rdoStrm, kModuleStopAcquisition);
 								module = (TMrbModule *) this->FindModuleByCrate(crate, module);
 							}
 							evt = (TMrbEvent *) this->FindEvent(TMrbConfig::kTriggerStopAcq);
-							if (evt) {
+							if (evt && evt->GetMbsBranchNo() == pp->GetB()) {
 								TIterator * sevtIter = evt->GetLofSubevents()->MakeIterator();
-								while (sevt = (TMrbSubevent *) sevtIter->Next()) sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
+								while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+									if (sevt->GetMbsBranchNo() == pp->GetB() && sevt->GetCrate() == crate) sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
+								}
 							}
 							rdoTmpl.InitializeCode("%CE%");
 							rdoTmpl.WriteCode(rdoStrm);
@@ -1920,6 +1958,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefineGlobalsOnce);
 								}
@@ -1932,7 +1971,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						{
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
-								module->MakeReadoutCode(rdoStrm, kModuleDefineGlobals);
+								if (module->GetMbsBranchNo() == pp->GetB()) module->MakeReadoutCode(rdoStrm, kModuleDefineGlobals);
 							}   
 						}
 						break;
@@ -1941,6 +1980,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefineLocalVarsInit);
 								}
@@ -1954,6 +1994,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefineLocalVarsReadout);
 								}
@@ -1967,6 +2008,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefinePrototypes);
 								}
@@ -1980,6 +2022,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleUtilities);
 								}
@@ -1993,6 +2036,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TObjArray onceOnly;
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
+								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefs);
 								}
@@ -2530,7 +2574,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 											udc = kTRUE;
 											break;
 										}
-										nx = (TMrbNamedX *) lofMethods->After(nx);
 									}
 									break;
 								}
@@ -3203,7 +3246,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 											paramName(0,1).ToUpper();
 											paramName.Prepend("h");
 											list << paramName << endl;
-											param = (TMrbModuleChannel *) sevt->GetLofParams()->After(param);
 										}
 										list.close();
 										if (verboseMode) {
@@ -3228,8 +3270,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 								} else {
 									TObjArray * lofHistos = (TObjArray *) hArray->GetAssignedObject();
-									TMrbNamedX * h = (TMrbNamedX *) lofHistos->First();
-									while (h) {
+									TMrbNamedX * h;
+									TIterator * hIter = lofHistos->MakeIterator();
+									while (h = (TMrbNamedX *) hIter->Next()) {
 										if (this->HistogramExists(h->GetName())) {
 											anaTmpl.InitializeCode("%FHA%");
 											anaTmpl.Substitute("$hArrayName", hArray->GetName());
@@ -3241,7 +3284,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 											gMrbLog->Err() << "No such histogram - " << h->GetName() << endl;
 											gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 										}
-										h = (TMrbNamedX *) lofHistos->After(h);
 									}
 									if (verboseMode) {
 										gMrbLog->Out()  << "Creating histo list file - " << hArray->GetTitle()
@@ -3349,14 +3391,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								sevtNameUC(0,1).ToUpper();
 								if (sevt->IsInArrayMode()) {
 									Int_t parNo = 0;
-									param = (TMrbModuleChannel *) sevt->GetLofParams()->First();
 									first = kTRUE;
 									if (!header) {
 										anaTmpl.InitializeCode("%B%");
 										anaTmpl.WriteCode(anaStrm);
 										header = kTRUE;
 									}
-									while (param) {
+									TIterator * paramIter = sevt->GetLofParams()->MakeIterator();
+									while (param = (TMrbModuleChannel *) paramIter->Next()) {
 										paramNameLC = param->GetName();
 										paramNameUC = paramNameLC;
 										paramNameUC(0,1).ToUpper();
@@ -3370,7 +3412,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										anaTmpl.Substitute("$paramNameUC", paramNameUC.Data());
 										anaTmpl.Substitute("$parNo", parNo);
 										anaTmpl.WriteCode(anaStrm);
-										param = (TMrbModuleChannel *) sevt->GetLofParams()->After(param);
 										parNo++;
 									}
 								}		
@@ -6610,18 +6651,21 @@ TMrbNamedX * TMrbConfig::FindHistoArray(const Char_t * HistoName, TMrbNamedX * A
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * hArray = After ?	(TMrbNamedX *) fLofHistoArrays.After(After)
-								:	(TMrbNamedX *) fLofHistoArrays.First();
-
-	while (hArray) {
-		TObjArray * lofHistos = (TObjArray *) hArray->GetAssignedObject();
-		TMrbNamedX * h;
-		TIterator * hIter = lofHistos->MakeIterator();
-		while (h = (TMrbNamedX *) hIter->Next()) {
-			TString hName = h->GetName();
-			if (hName.CompareTo(HistoName) == 0) return(hArray);
+	Bool_t ok = (After == NULL);
+	TMrbNamedX * hArray;
+	TIterator * arrIter = fLofHistoArrays.MakeIterator();
+	while (hArray = (TMrbNamedX *) arrIter->Next()) {
+		if (ok) {
+			TObjArray * lofHistos = (TObjArray *) hArray->GetAssignedObject();
+			TMrbNamedX * h;
+			TIterator * hIter = lofHistos->MakeIterator();
+			while (h = (TMrbNamedX *) hIter->Next()) {
+				TString hName = h->GetName();
+				if (hName.CompareTo(HistoName) == 0) return(hArray);
+			}
+		} else {
+			ok = (hArray == After);
 		}
-		hArray = (TMrbNamedX *) fLofHistoArrays.After(hArray);
 	}
 	return(NULL);
 }
@@ -6760,11 +6804,10 @@ Bool_t TMrbConfig::WriteToFile(const Char_t * ConfigFile,  Option_t * Options) {
 	}
 
 	if (verboseMode) {
-		obj = objList->First();
-		while (obj) {
+		TIterator * objIter = objList->MakeIterator();
+		while (obj = objIter->Next()) {
 			gMrbLog->Out()	<< "Writing " << obj->ClassName() << " " << obj->GetName() << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteToFile");
-			obj = objList->After(obj);
 		}
 	}
 
@@ -6946,10 +6989,8 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 
 	if (fSevtSize > 0) {
 		TMrbEvent * evt = (TMrbEvent *) fLofEvents.First();
-		while (evt) {
-			mbsSetup->ReadoutProc(0)->SetSevtSize(evt->GetTrigger(), fSevtSize);
-			evt = (TMrbEvent *) fLofEvents.After(evt);
-		}
+		TIterator * evtIter = fLofEvents.MakeIterator();
+		while (evt = (TMrbEvent *) evtIter->Next()) mbsSetup->ReadoutProc(0)->SetSevtSize(evt->GetTrigger(), fSevtSize);
 	}
 		
 	mbsSetup->Save();
@@ -7480,7 +7521,7 @@ Bool_t TMrbConfig::CheckConfig() {
 
 	Int_t nofErrors = 0;
 
-	nofErrors += this->CheckMbsBranchAssignments();
+	nofErrors += this->CheckMbsBranchSettings();
 
 	if (this->GetNofEvents() == 0) {
 		gMrbLog->Err()	<< "No events/triggers defined" << endl;
@@ -7594,14 +7635,14 @@ Bool_t TMrbConfig::CheckConfig() {
 	return(fConfigOk);
 }
 
-Bool_t TMrbConfig::SetMbsBranch(TMrbNamedX & MbsBranch, const Char_t * MbsBranchName, Int_t MbsBranchNo) {
+Bool_t TMrbConfig::SetMbsBranch(TMrbNamedX & MbsBranch, Int_t MbsBranchNo, const Char_t * MbsBranchName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::SetMbsBranch
 // Purpose:        Assign mbs branch to events, subevents, and modules
 // Arguments:      TMrbNamedX & MbsBranch       -- mbs branch to be set
-//                 Char_t * MbsBranchName       -- branch name to be used
 //                 Int_t MbsBranchNo            -- corresponding branch number
+//                 Char_t * MbsBranchName       -- branch name to be used
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Sets branch data
@@ -7614,49 +7655,115 @@ Bool_t TMrbConfig::SetMbsBranch(TMrbNamedX & MbsBranch, const Char_t * MbsBranch
 
 	TString branchName;
 	if (MbsBranchName == NULL || *MbsBranchName == '\0') {
-		branchName = "MbsBranch";
+		branchName = "branch";
 		branchName += MbsBranchNo;
 	} else {
 		branchName = MbsBranchName;
 	}
 
-	TMrbNamedX * br = fLofMbsBranches.FindByName(branchName.Data());
+	TMrbNamedX * br = fLofMbsBranches.FindByIndex(MbsBranchNo);
 	if (br) {
-		if (MbsBranchNo == -1 || MbsBranchNo == br->GetIndex()) {
-			MbsBranch.Set(br);
-		} else {
-			gMrbLog->Err()	<< "Branch mismatch - " << MbsBranchName << "(" << MbsBranchNo << "), should be "
-							<< br->GetName() << "(" << br->GetIndex() << ")" << endl;
-			gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
-			ok = kFALSE;
-		}
+		MbsBranch.Set(br);
 	} else {
-		if (MbsBranchNo == -1) {
-			gMrbLog->Err()	<< "Branch number missing - " << MbsBranchName << "(?)" << endl;
+		if (MbsBranchNo < 0) {
+			gMrbLog->Err()	<< "Illegal mbs branch number - " << MbsBranchNo << endl;
 			gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
 			ok = kFALSE;
 		}
 		MbsBranch.Set(MbsBranchNo, MbsBranchName);
+		fLofMbsBranches.AddNamedX(MbsBranchNo, branchName.Data());
 	}
 
 	return(ok);
 }
 
-Int_t TMrbConfig::CheckMbsBranchAssignments() {
+Int_t TMrbConfig::CheckMbsBranchSettings() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbConfig::SetMbsBranch
-// Purpose:        Assign mbs branch to events, subevents, and modules
-// Arguments:      TMrbNamedX & MbsBranch       -- mbs branch to be set
-//                 Char_t * MbsBranchName       -- branch name to be used
-//                 Int_t MbsBranchNo            -- corresponding branch number
-// Results:        kTRUE/kFALSE
+// Name:           TMrbConfig::CheckMbsBranchSettings
+// Purpose:        Check if branch settings are consistent
+// Arguments:      --
+// Results:        Int_t NofErrors       -- number of errors encountered
 // Exceptions:
-// Description:    Sets branch data
+// Description:    Checks mbs branch settings:
+//                 if all modules belonging to a subevent have same branch
+//                 if all subevents of an event have same branch
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t nofErrors = 0;
+
+	TMrbEvent * evt;
+	TMrbSubevent * sevt;
+	TMrbModule * module;
+
+	TIterator * evtIter;
+	TIterator * sevtIter;
+	TIterator * modIter;
+
+	if (fLofMbsBranches.GetEntriesFast() == 0) return(0);		// no branch settigs at all
+
+// check branch settings for events
+	evtIter = fLofEvents.MakeIterator();
+	while (evt = (TMrbEvent *) evtIter->Next()) {
+		if (evt->GetMbsBranchNo() == -1) {			// if there are any branch settings (entries > 0) each event has to be assigned to a branch
+			gMrbLog->Err()	<< "Event not assigned to any mbs branch - " << evt->GetName() << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckMbsBranchSettings");
+			nofErrors++;
+		} else {
+			sevtIter = evt->GetLofSubevents()->MakeIterator();		// step down thru subevents
+			while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+				Int_t branchNo = sevt->GetMbsBranchNo();
+				if (branchNo == -1) { 							// branch not yet set - pass event branch to this subevent
+					sevt->SetMbsBranch(evt->GetMbsBranch());
+				} else if (branchNo != evt->GetMbsBranchNo()) {	// branches for subevent and event differ
+					gMrbLog->Err()	<< "Differing branches - subevent " << sevt->GetName() << ": "
+									<< sevt->GetMbsBranch()->GetName() << "(" << sevt->GetMbsBranch()->GetIndex() << ")"
+									<< " <--> event " << evt->GetName() << ": "
+									<< evt->GetMbsBranch()->GetName() << "(" << evt->GetMbsBranch()->GetIndex() << ")"
+									<< endl;
+					gMrbLog->Flush(this->ClassName(), "CheckMbsBranchSettings");
+					nofErrors++;
+				}
+			}
+		}
+	}
+
+// check branch settings for subevents
+	sevtIter = fLofSubevents.MakeIterator();
+	while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+		if (sevt->GetMbsBranchNo() == -1) {			// if there are any branch settings (entries > 0) each subevent has to be assigned to a branch
+			gMrbLog->Err()	<< "Subevent not assigned to any mbs branch - " << sevt->GetName() << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckMbsBranchSettings");
+			nofErrors++;
+		} else {
+			TIterator * modIter = sevt->GetLofModules()->MakeIterator();		// step down thru modules
+			while (module = (TMrbModule *) modIter->Next()) {
+				Int_t branchNo = module->GetMbsBranchNo();
+				if (branchNo == -1) { 							// branch not yet set - pass event branch to this subevent
+					module->SetMbsBranch(sevt->GetMbsBranch());
+				} else if (branchNo != sevt->GetMbsBranchNo()) {	// branches for subevent and event differ
+					gMrbLog->Err()	<< "Differing branches - module " << module->GetName() << ": "
+									<< module->GetMbsBranch()->GetName() << "(" << module->GetMbsBranch()->GetIndex() << ")"
+									<< " <--> subevent " << evt->GetName() << ": "
+									<< sevt->GetMbsBranch()->GetName() << "(" << sevt->GetMbsBranch()->GetIndex() << ")"
+									<< endl;
+					gMrbLog->Flush(this->ClassName(), "CheckMbsBranchSettings");
+					nofErrors++;
+				}
+			}
+		}
+	}
+
+// check branch settings for modules
+	modIter = fLofModules.MakeIterator();
+	while (module = (TMrbModule *) modIter->Next()) {
+		if (module->GetMbsBranchNo() == -1) {			// if there are any branch settings (entries > 0) each subevent has to be assigned to a branch
+			gMrbLog->Err()	<< "Module not assigned to any mbs branch - " << module->GetName() << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckMbsBranchSettings");
+			nofErrors++;
+		}
+	}
 
 	return(nofErrors);
 }

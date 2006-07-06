@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.16 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.17 2006-07-06 13:13:02 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -158,8 +158,8 @@ class TMrbSubevent : public TNamed {
 		inline void FillHistogramsIfTrueHitOnly(Bool_t Flag = kTRUE) { fHistosToBeFilledIfTrueHit = Flag; };
 		inline Bool_t HistosToBeFilledIfTrueHit() const { return(fHistosToBeFilledIfTrueHit); };
 
-		Bool_t SetMbsBranch(Int_t MbsBranchNo);							// mbs branch
-		Bool_t SetMbsBranch(const Char_t * MbsBranch, Int_t MbsBranchNo = -1);
+		Bool_t SetMbsBranch(Int_t MbsBranchNo, const Char_t * MbsBranchName = NULL);							// mbs branch
+		inline Bool_t SetMbsBranch(TMrbNamedX * MbsBranch) { return(this->SetMbsBranch(MbsBranch->GetIndex(), MbsBranch->GetName())); };
 		inline TMrbNamedX * GetMbsBranch() { return(&fMbsBranch); };
 		inline Int_t GetMbsBranchNo() { return(fMbsBranch.GetIndex()); };
 

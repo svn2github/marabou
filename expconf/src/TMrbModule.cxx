@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.16 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.17 2006-07-06 13:13:03 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -728,41 +728,21 @@ void TMrbModule::PrintRegister(ostream & OutStrm, const Char_t * RegName, const 
 	rp->Print(OutStrm, prefix.Data());
 }
 
-Bool_t TMrbModule::SetMbsBranch(Int_t MbsBranchNo) {
+Bool_t TMrbModule::SetMbsBranch(Int_t MbsBranchNo, const Char_t * MbsBranchName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModule::SetMbsBranch
 // Purpose:        Assign module to a mbs branch
 // Arguments:      Int_t MbsBranchNo         -- mbs branch number
+//                 Char_t * BranchName       -- name
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Assigns module to a mbs branch.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (!gMrbConfig->SetMbsBranch(fMbsBranch, NULL, MbsBranchNo)) {
-		gMrbLog->Err()	<< "Module " << this->GetName() << ": Can't set mbs branch" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
-		return(kFALSE);
-	}
-	return(kTRUE);
-}
-
-Bool_t TMrbModule::SetMbsBranch(const Char_t * MbsBranchName, Int_t MbsBranchNo) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbModule::SetMbsBranch
-// Purpose:        Assign module to a mbs branch
-// Arguments:      Char_t * MbsBranchName      -- branch name
-//                 Int_t MbsBranchNo           -- branch number
-// Results:        kTRUE/kFALSE
-// Exceptions:
-// Description:    Assigns module to a mbs branch.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if (!gMrbConfig->SetMbsBranch(fMbsBranch, NULL, MbsBranchNo)) {
-		gMrbLog->Err()	<< "Module " << this->GetName() << ": Can't set mbs branch" << endl;
+	if (!gMrbConfig->SetMbsBranch(fMbsBranch, MbsBranchNo, MbsBranchName)) {
+		gMrbLog->Err()	<< "Module " << this->GetName() << "- can't set mbs branch" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
 		return(kFALSE);
 	}

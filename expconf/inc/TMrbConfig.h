@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.69 2006-07-05 14:23:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.70 2006-07-06 13:13:02 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -43,14 +43,15 @@ namespace std {} using namespace std;
 
 class packNames : public TObject {
 	public:
-		packNames(const Char_t * f, const Char_t * t, const Char_t * x, const Char_t * c) { F = f; T = t; X = x; C = c; };
+		packNames(const Char_t * f, const Char_t * t, const Char_t * x, const Char_t * c, Int_t b = -1) : F(f), T(t), X(x), C(c), B(b) {};
 		~packNames() {};
 		inline const TString & GetF() const { return(F); };
 		inline const TString & GetT() const { return(T); };
 		inline const TString & GetX() const { return(X); };
 		inline const TString & GetC() const { return(C); };
+		inline Int_t GetB() const { return(B); };
 	protected:
-		TString F; TString T; TString X; TString C;
+		TString F; TString T; TString X; TString C; Int_t B;
 };
 
 //______________________________________________________[C++ CLASS DEFINITION]
@@ -641,8 +642,8 @@ class TMrbConfig : public TNamed {
 			fNofScalers++;
 		};
 
-		Bool_t SetMbsBranch(TMrbNamedX & MbsBranch, const Char_t * MbsBranchName, Int_t MbsBranchNo);	// mbs branch
-		Int_t CheckMbsBranchAssignments();
+		Bool_t SetMbsBranch(TMrbNamedX & MbsBranch, Int_t MbsBranchNo, const Char_t * MbsBranchName = NULL);	// mbs branch
+		Int_t CheckMbsBranchSettings();
 
 		TObject * FindParam(const Char_t * ParamName) const;							// find a param 
 
