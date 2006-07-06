@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.118 2006-07-06 13:13:02 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.119 2006-07-06 14:17:35 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1871,7 +1871,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							}
 							module = (TMrbModule *) this->FindModuleByCrate(crate);
 							while (module) {
-								if (module->GetMbsBranchNo() != pp->GetB()) module->MakeReadoutCode(rdoStrm, kModuleStartAcquisition);
+								if (module->GetMbsBranchNo() == pp->GetB()) module->MakeReadoutCode(rdoStrm, kModuleStartAcquisition);
 								module = (TMrbModule *) this->FindModuleByCrate(crate, module);
 							}
 							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
