@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.119 2006-07-06 14:17:35 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.120 2006-07-10 10:49:07 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -906,12 +906,13 @@ TObject * TMrbConfig::FindSubevent(TClass * Class, TObject * After) const {
 	return(NULL);
 }
 
-Bool_t TMrbConfig::CheckModuleAddress(TObject * Module) const {
+Bool_t TMrbConfig::CheckModuleAddress(TObject * Module, Bool_t WrnOnly) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::CheckModuleAddress
 // Purpose:        Check if module address or position is legal
 // Arguments:      TObject * Module  -- module address
+//                 Bool_t WrnOnly    -- give warning only
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Checks module address or position:
@@ -934,14 +935,17 @@ Bool_t TMrbConfig::CheckModuleAddress(TObject * Module) const {
 		cnaf = ((TMrbCamacModule *) Module)->GetPosition(); 			// get camac B.C.N
 		camac = (TMrbCamacModule *) this->FindModuleByType(TMrbConfig::kModuleCamac);
 		while (camac) { 												// step thru list of camac modules
-			if (cnaf.CompareTo(camac->GetPosition()) == 0) {			// same B.C.N: check if subdevice
-				if	((((TMrbModule *) Module)->GetModuleID()->GetIndex() != camac->GetModuleID()->GetIndex())
-				||	 (((TMrbModule *) Module)->GetSubDevice() == camac->GetSubDevice())) {	// id different or subdevice same
-					gMrbLog->Err()	<< Module->GetName() << ": Camac slot " << cnaf
-									<< " already occupied by module " << camac->GetName()
-									<< " (" << camac->GetTitle() << ")" << endl;
-					gMrbLog->Flush(this->ClassName(), "CheckModuleAddress");
-					return(kFALSE);
+			if (camac != Module && camac->GetMbsBranchNo() == ((TMrbModule *) Module)->GetMbsBranchNo()) {
+				if (cnaf.CompareTo(camac->GetPosition()) == 0) {			// same B.C.N: check if subdevice
+					if	((((TMrbModule *) Module)->GetModuleID()->GetIndex() != camac->GetModuleID()->GetIndex())
+					||	 (((TMrbModule *) Module)->GetSubDevice() == camac->GetSubDevice())) {	// id different or subdevice same
+						gMrbLog->Wrn()	<< Module->GetName() << ": Camac slot " << cnaf
+										<< " already occupied by module " << camac->GetName()
+										<< " (" << camac->GetTitle() << ")" << endl;
+						gMrbLog->Flush(this->ClassName(), "CheckModuleAddress", setred);
+						if (WrnOnly) gMrbLog->Wrn()	<< "WARNING! This will cause severe address conflicts in a single branch environment!" << endl;
+						return(WrnOnly ? kTRUE : kFALSE);
+					}
 				}
 			}
 			camac = (TMrbCamacModule *) this->FindModuleByType(TMrbConfig::kModuleCamac, camac);
@@ -951,17 +955,20 @@ Bool_t TMrbConfig::CheckModuleAddress(TObject * Module) const {
 		endAddr = startAddr + ((TMrbVMEModule *) Module)->GetSegmentSize() - 1;	// + length of segment
 		vme = (TMrbVMEModule *) this->FindModuleByType(TMrbConfig::kModuleVME);
 		while (vme) { 											// step thru list of vmemodules
-			sa = vme->GetBaseAddr();
-			ea = sa + vme->GetSegmentSize() - 1;
-			if ((sa >= startAddr && sa <= endAddr) || (ea >= startAddr && ea <= endAddr)) {
-				gMrbLog->Err()	<< Module->GetName() << ": Address space ["
-								<< setiosflags(ios::showbase) << setbase(16)
-								<< startAddr << "," << endAddr
-								<< "] overlapping with module " << vme->GetName() << " ["
-								<< sa << "," << ea << "]"
-								<< resetiosflags(ios::showbase) << setbase(10) << endl;
-				gMrbLog->Flush(this->ClassName(), "CheckModuleAddress");
-				return(kFALSE);
+			if (vme != Module && vme->GetMbsBranchNo() == ((TMrbModule *) Module)->GetMbsBranchNo()) {
+				sa = vme->GetBaseAddr();
+				ea = sa + vme->GetSegmentSize() - 1;
+				if ((sa >= startAddr && sa <= endAddr) || (ea >= startAddr && ea <= endAddr)) {
+					gMrbLog->Wrn()	<< Module->GetName() << ": Address space ["
+									<< setiosflags(ios::showbase) << setbase(16)
+									<< startAddr << "," << endAddr
+									<< "] overlapping with module " << vme->GetName() << " ["
+									<< sa << "," << ea << "]"
+									<< resetiosflags(ios::showbase) << setbase(10) << endl;
+					if (WrnOnly) gMrbLog->Wrn()	<< "WARNING! This will cause severe address conflicts in a single branch environment!" << endl;
+					gMrbLog->Flush(this->ClassName(), "CheckModuleAddress", setred);
+					return(WrnOnly ? kTRUE : kFALSE);
+				}
 			}
 			vme = (TMrbVMEModule *) this->FindModuleByType(TMrbConfig::kModuleVME, vme);
 		}
@@ -1811,8 +1818,14 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						{
 							TIterator * evtIter = fLofEvents.MakeIterator();
 							while (evt = (TMrbEvent *) evtIter->Next()) {
-								if (evt->GetMbsBranchNo() != pp->GetB()) continue;
-								if (!evt->IsReservedEvent()) evt->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl);
+								if (evt->GetMbsBranchNo() == pp->GetB()) {
+									if (!evt->IsReservedEvent()) evt->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl);
+								} else {
+									rdoTmpl.InitializeCode("%MB%");
+									rdoTmpl.Substitute("$trigNo", evt->GetTrigger());
+									rdoTmpl.Substitute("$branch", evt->GetMbsBranchNo());
+									rdoTmpl.WriteCode(rdoStrm);
+								}
 							}
 						}
 						break;
@@ -7620,6 +7633,7 @@ Bool_t TMrbConfig::CheckConfig() {
 				gMrbLog->Flush(this->ClassName(), "CheckConfig");
 			}
 		}
+		if (!this->CheckModuleAddress(module, kFALSE)) nofErrors++;
 	}
 
 	if (nofErrors == 0) {

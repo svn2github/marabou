@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_CPTM.cxx,v 1.2 2005-05-25 09:33:54 marabou Exp $       
+// Revision:       $Id: TMrbSubevent_CPTM.cxx,v 1.3 2006-07-10 10:49:07 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -162,7 +162,7 @@ Bool_t TMrbSubevent_CPTM::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbRe
 			}
 
 			Template.InitializeCode("%SE%");
-			Template.Substitute("$sevtName", this->GetName());
+			Template.Substitute("$sevtNameLC", this->GetName());
 			Template.WriteCode(RdoStrm);
 			break;
 

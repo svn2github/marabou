@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.70 2006-07-06 13:13:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.71 2006-07-10 10:49:07 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -632,7 +632,7 @@ class TMrbConfig : public TNamed {
 
 		inline Int_t AssignModuleSerial() const { return(fNofModules + 1); }; 		// set unique serial number for a module
 			
-		Bool_t CheckModuleAddress(TObject * Module) const;							// check if module address or position legal
+		Bool_t CheckModuleAddress(TObject * Module, Bool_t WrnOnly = kTRUE) const;	// check if module address or position legal
 
 		inline Bool_t HasCamacModules() const { return(FindModuleByType(TMrbConfig::kModuleCamac) != NULL); };	// camac?
 		inline Bool_t HasVMEModules() const { return(FindModuleByType(TMrbConfig::kModuleVME) != NULL); };		// vme?
