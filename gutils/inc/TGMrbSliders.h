@@ -44,7 +44,6 @@ private:
    TGTextEntry  ** fTePointers;
    TGTextBuffer ** fTbPointers;
    TGHSlider    ** fSlPointers;
-   TGVerticalFrame *fLabelFrame, *fSliderFrame, *fValueFrame;   
    TGLayoutHints *fBly, *fBfly1, *fLO4; 
 //   TStopwatch * fStopwatch;
    MyTimer * fTimer;

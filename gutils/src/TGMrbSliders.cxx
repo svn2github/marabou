@@ -126,14 +126,26 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
    fTePointers  = new TGTextEntry * [NValues];
    fTbPointers  = new TGTextBuffer * [NValues];
    fSlPointers  = new TGHSlider * [NValues];
-   TGCompositeFrame *vframe = new TGCompositeFrame(this, 100, 200, kHorizontalFrame);
+   TGCompositeFrame *vframe = new TGCompositeFrame(this, 100, 200, kVerticalFrame);
 
-   fLabelFrame = new TGVerticalFrame(vframe, 0, 0, 0);
-   fSliderFrame = new TGVerticalFrame(vframe, 0, 0, 0);
-   fValueFrame  = new TGVerticalFrame(vframe, 0, 0, 0);
+   TGHorizontalFrame *hframe = new TGHorizontalFrame(vframe, 0, 0, 0);
+//   fSliderFrame = new TGVerticalFrame(vframe, 0, 0, 0);
+//   fValueFrame  = new TGVerticalFrame(vframe, 0, 0, 0);
    for (Int_t i = 0; i < NValues; i++) {
-      fSlPointers[i] = new TGHSlider(fSliderFrame, 100, kSlider1 | kScaleBoth, i);
-      fTePointers[i] = new TGTextEntry(fValueFrame, 
+      hframe = new TGHorizontalFrame(vframe, 0, 0, 0);
+      fWidgetList->AddFirst(hframe);
+
+      TObjString *objs = (TObjString *)Row_Labels->At(i);
+      TString s = objs->String();
+      TGCompositeFrame * label_fr = new TGCompositeFrame(hframe,100,20,
+                              kVerticalFrame | kFixedWidth |kRaisedFrame);
+      fWidgetList->AddFirst(label_fr);
+      TGLabel * label = new TGLabel(label_fr, new TGString((const char *)s));
+      fWidgetList->AddFirst(label);
+      label_fr->AddFrame(label, fLO4);
+      hframe->AddFrame(label_fr, fBly);
+      fSlPointers[i] = new TGHSlider(hframe, 100, kSlider1 | kScaleBoth, i);
+      fTePointers[i] = new TGTextEntry(hframe, 
                       fTbPointers[i] = new TGTextBuffer(10), i + 1000);
       fTePointers[i]->Resize(80, fTePointers[i]->GetDefaultHeight());
       fTbPointers[i]->AddText(0, Form("%ld", val[i])); 
@@ -141,21 +153,13 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
       fTePointers[i]->Associate(this);
       fSlPointers[i]->SetRange(min[i], max[i]);
       fSlPointers[i]->SetPosition(val[i]);
-      fSliderFrame->AddFrame(fSlPointers[i], fBly);
-      fValueFrame->AddFrame(fTePointers[i], fBly);
-      TObjString *objs = (TObjString *)Row_Labels->At(i);
-      TString s = objs->String();
-      TGCompositeFrame * label_fr = new TGCompositeFrame(fLabelFrame,100,20,
-                              kVerticalFrame | kFixedWidth |kRaisedFrame);
-      fWidgetList->AddFirst(label_fr);
-      TGLabel * label = new TGLabel(label_fr, new TGString((const char *)s));
-      fWidgetList->AddFirst(label);
-      label_fr->AddFrame(label, fLO4);
-      fLabelFrame->AddFrame(label_fr, fBly);
+      hframe->AddFrame(fSlPointers[i], fBly);
+      hframe->AddFrame(fTePointers[i], fBly);
+      vframe->AddFrame(hframe, fLO4);
    }
-   vframe->AddFrame(fValueFrame, fBfly1);
-   vframe->AddFrame(fSliderFrame, fBfly1);
-   vframe->AddFrame(fLabelFrame, fBfly1);
+//   vframe->AddFrame(fValueFrame, fBfly1);
+//   vframe->AddFrame(fSliderFrame, fBfly1);
+//   vframe->AddFrame(fLabelFrame, fBfly1);
    AddFrame(vframe, new TGLayoutHints(kLHintsTop | kLHintsCenterX , 2, 2, 2, 2));
 //  is combined change forseen
    fCombined = kFALSE;
@@ -165,15 +169,15 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
       }
    }
    if (fCombined) {
-      TGHorizontalFrame *hf = new TGHorizontalFrame(this,150, 20, 0);
-      fWidgetList->AddFirst(hf);
-      fCombinedButton = new TGCheckButton(hf, 
+      hframe = new TGHorizontalFrame(this,150, 20, 0);
+      fWidgetList->AddFirst(hframe);
+      fCombinedButton = new TGCheckButton(hframe, 
                     new TGHotString("Change combined"), kCOMBINED);
       fCombinedButton->SetState(kButtonDown);
       fWidgetList->Add(fCombinedButton);
       fCombinedButton->Associate(this);
-      hf->AddFrame(fCombinedButton, new TGLayoutHints( 0 , 2, 2, 2, 2));
-      AddFrame(hf, new TGLayoutHints(kLHintsBottom | kLHintsCenterX , 2, 2, 2, 2));
+      hframe->AddFrame(fCombinedButton, new TGLayoutHints( 0 , 2, 2, 2, 2));
+      AddFrame(hframe, new TGLayoutHints(kLHintsBottom | kLHintsCenterX , 2, 2, 2, 2));
    }
 
    // set dialog title
@@ -260,9 +264,6 @@ TGMrbSliders::~TGMrbSliders()
    delete fTeColor;
 //   delete fStopwatch;
    delete fTimer;
-   delete fSliderFrame;
-   delete fLabelFrame;
-   delete fValueFrame;
    delete fBfly1; delete fBly; delete fLO4;
 }
 

@@ -78,7 +78,7 @@ namespace std {} using namespace std;
 ///////////////////////////////////////////////////////////////////////////
 
 //________________________________________________________________________________________
-
+/*
 Ssiz_t IndexOfLastSpecial(TString &str) 
 {
    // return index  of not (letter, number or _ ) in str searching backwards
@@ -175,6 +175,11 @@ Int_t Matches(TList * list, const char * s, Int_t * matchlength)
    return pos;
 }
 ;
+*/
+extern Ssiz_t IndexOfLastSpecial(TString &str);
+extern Ssiz_t IndexOfLast(TString &str, char &c);
+extern Int_t Matches(TList * list, const char * s, Int_t * matchlength);
+
 //________________________________________________________________________________________
 
 
