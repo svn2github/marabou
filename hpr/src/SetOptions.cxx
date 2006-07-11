@@ -22,7 +22,6 @@
 #include "TCurlyLine.h"
 #include "Buttons.h"
 
-#include "TGMrbInputDialog.h"
 #include "TGMrbTableFrame.h"
 #include "TGMrbValuesAndText.h"
 #include "FitHist.h"

@@ -11,13 +11,13 @@
 #include "TRegexp.h" 
 #include "TPaveStats.h"
 #include "HistPresent.h"
-#include "HprNtuple.h"
-#include "HprGraph.h"
-#include "HprAscii2Hist.h"
+#include "Ascii2GraphDialog.h"
+#include "Ascii2HistDialog.h"
+#include "Ascii2NtupleDialog.h"
 #include "support.h"
-#include "TGMrbInputDialog.h"
 #include "TGMrbValuesAndText.h"
 #include "TGMrbTableFrame.h"
+#include "TGMrbInputDialog.h"
 #include <iostream>
 #include <fstream>
 
@@ -27,16 +27,16 @@ namespace std {} using namespace std;
 
 void HistPresent::NtupleFromASCII(TGWindow * win)
 {
-    new HprNtuple(this, win);
+    new Ascii2NtupleDialog(win);
     return;
 }
 //________________________________________________________________________________________
 
 void HistPresent::GraphFromASCII(TGWindow * win)
 {
-   new HprGraph(this, win);
-//   HprGraph * hg = new HprGraph(this, win);
-//   delete hg;
+   static Int_t winx = 100,  winy = 100;
+   GetWindowPosition(&winx, &winy);
+   new Ascii2GraphDialog(win, winx, winy, GetCanvasList());
    return;
 }
 ;
@@ -44,7 +44,7 @@ void HistPresent::GraphFromASCII(TGWindow * win)
 
 void HistPresent::HistFromASCII(TGWindow * win)
 {
-    new HprAscii2Hist(this, win);
+    new Ascii2HistDialog(win);
     return;
 }
 ;

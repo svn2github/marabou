@@ -59,13 +59,13 @@
 #include "FhContour.h"
 #include "support.h"
 #include "TGMrbTableFrame.h"
-#include "TGMrbInputDialog.h"
 #include "SetColor.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
 #include "TMrbNamedArray.h"
 #include "TMrbArrayD.h"
 #include "TGMrbSliders.h"
+#include "TGMrbInputDialog.h"
 #include "TGMrbValuesAndText.h"
 
 //extern HistPresent* hp;
@@ -2703,14 +2703,7 @@ void FitHist::ProjectF()
 //____________________________________________________________________________________ 
 
 // Fast Fourier Transform 
-#if ROOTVERSION < 51100
 
-void FitHist::FastFT()
-{
-    cout << "FFT not yet implemented" << endl;
-
-}
-#else
 void FitHist::FastFT()
 {
    const char helpText[] =
@@ -2756,7 +2749,7 @@ void FitHist::FastFT()
 ";
 
    static Int_t mag = 1, re = 0 , img = 0 , ph = 0,
-                r2c = 1, dht = 0, r2r = 0;
+                r2c = 1, dht = 0;
    static TString opt_r2r("R2R_0");
 
    static void *valp[50];
@@ -2851,7 +2844,7 @@ void FitHist::FastFT()
       if  (hp) hp->ShowHist(hresult);
    }
 }
-#endif
+
 //____________________________________________________________________________________ 
 
 // Rotate 2dim histograms
@@ -3648,7 +3641,7 @@ void FitHist::UpdateDrawOptions()
    TString drawopt;
    if (fDimension == 1) {
    	if (hp->fShowContour)
-      	drawopt = "";
+      	drawopt = "hist";
    	if (hp->fShowErrors)
       	drawopt += "e1";
    	if (hp->fFill1Dim && fSelHist->GetNbinsX() < 50000) {
@@ -3711,14 +3704,12 @@ void FitHist::SetBrightness(TGWindow * win)
    Int_t id  = 1;
    TGMrbSliders * sl = new TGMrbSliders("Set Brightness", 3, min, max, val, lab, NULL, 
    mycanvas, id);
-   sl->Connect("SliderEvent(Int_t, Int_t, Int_t)",this->ClassName() , this, 
-               "AdjustBrightness(Int_t, Int_t, Int_t)");
-//   this->Connect("AdjustBrightness(Int_t, Int_t, Int_t)", "TGMrbSliders", sl, 
-//                 "SliderEvent(Int_t, Int_t, Int_t)");
+   sl->Connect("SliderEvent(Int_t, Int_t)",this->ClassName() , this, 
+               "AdjustBrightness(Int_t, Int_t)");
 }
 //___________________________________________________________________________________________
 
-void FitHist::AdjustBrightness(Int_t id, Int_t row , Int_t val)
+void FitHist::AdjustBrightness(Int_t row , Int_t val)
 {
 //   cout << "AdjustBrightness: " << id << " " << row << " " << val << endl;
    switch (row) {
@@ -3776,12 +3767,12 @@ void FitHist::SetHLS(TGWindow * win)
    TGMrbSliders * sl = new TGMrbSliders("Set HLS", NVAL, 
                        min, max, val, lab, flags, 
                        mycanvas, id);
-   sl->Connect("SliderEvent(Int_t, Int_t, Int_t)",this->ClassName() , this, 
-               "AdjustHLS(Int_t, Int_t, Int_t)");
+   sl->Connect("SliderEvent(Int_t, Int_t)",this->ClassName() , this, 
+               "AdjustHLS(Int_t, Int_t)");
 }
 //___________________________________________________________________________________________
 
-void FitHist::AdjustHLS(Int_t id, Int_t row , Int_t val)
+void FitHist::AdjustHLS(Int_t row , Int_t val)
 {
 //   cout << "AdjustBrightness: " << id << " " << row << " " << val << endl;
    switch (row) {

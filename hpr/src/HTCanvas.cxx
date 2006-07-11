@@ -26,7 +26,6 @@
 #include "HTimer.h"
 #include "SetColor.h"
 #include "TMrbHelpBrowser.h" 
-#include "TGMrbInputDialog.h"
 #include "TMrbString.h"
 #include "TGMrbValuesAndText.h"
 #include "EditMarker.h"

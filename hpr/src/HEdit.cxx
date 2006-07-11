@@ -18,16 +18,17 @@
 #include "HTCanvas.h"
 #include "HandleMenus.h"
 
-#include "TGMrbInputDialog.h"
 #include "TMrbString.h"
 #include "TGMrbTableFrame.h"
 #include "EditMarker.h"
 #include "GroupOfGObjects.h"
+#include "TGMrbInputDialog.h"
 #include "TGMrbValuesAndText.h"
 #include "TGMrbGetTextAlignment.h"
 #include "HprImage.h"
 #include "HprEditBits.h"
 #include "TSplineX.h"
+#include "TSplineXDialog.h"
 #include "TCurlyLineArrow.h"
 #include <fstream>
 
@@ -1962,6 +1963,10 @@ void HTCanvas::InsertImage()
    		pad->SetBottomMargin(0.0);
    		pad->SetLeftMargin(0.0);
    		pad->SetRightMargin(0.0);
+//  
+         pad->Range(0,0, (GetUxmax() - GetUxmin())* pad->GetWNDC()
+                       , (GetUymax() - GetUymin())* pad->GetHNDC());
+         
       } else {
          WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
          return;
@@ -3529,6 +3534,8 @@ tryagain:
 
 void HTCanvas::InsertTSplineX()
 {
+   new TSplineXDialog(fRootCanvas);
+/*
    static void *valp[25];
    Int_t ind = 0;
    TList * row_lab = new TList(); 
@@ -3665,11 +3672,13 @@ tryagain:
    delete gr;
    Modified();
    Update();
+*/
 }
 //______________________________________________________________________________
 
 void HTCanvas::InsertCurlyArrow()
 {
+   cout << "InsertCurlyArrow()" << endl;
    static void *valp[25];
    Int_t ind = 0;
    TList * row_lab = new TList(); 
@@ -3724,8 +3733,8 @@ tryagain:
      }
   }
 */
-  TLine * gr = (TLine*)this->WaitPrimitive("TLine", "Line");
-  if (!gr) {
+   TLine * gr = (TLine*)this->WaitPrimitive("TLine", "Line");
+   if (!gr) {
       cout << "No Line found, try again" << endl;
       goto tryagain;
    }

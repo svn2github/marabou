@@ -1,5 +1,6 @@
 
 /*
+ 
  * FIG : Facility for Interactive Generation of figures
  * Copyright (c) 1985-1988 by Supoj Sutanthavibul
  * Parts Copyright (c) 1989-2002 by Brian V. Smith
@@ -17,38 +18,62 @@
  */
 
 /********************* CURVES FOR SPLINES *****************************
-
- The following spline drawing routines are from
-
-    "X-splines : A Spline Model Designed for the End User"
-
-    by Carole BLANC and Christophe SCHLICK,
-    in Proceedings of SIGGRAPH ' 95
-
-***********************************************************************/
-//
-//  Code taken from xfig (see Copyright above)
-//  Mods by OS:
-//     Change to c++ calling conventions
-//     Wrap into a ROOT class
-//  
-//
-// #include "fig.h"
-// #include "resources.h"
-// #include "mode.h"
+ *                                                                    *
+ * The following spline drawing routines are from							 *
+ * 																						 *
+ *    "X-splines : A Spline Model Designed for the End User"			 *
+ * 																						 *
+ *    by Carole BLANC and Christophe SCHLICK,								 *
+ *    in Proceedings of SIGGRAPH ' 95											 *
+ * 																						 *
+ * 																						 *
+ *    The code to calculate the xspline itself is taken from xfig 	 *
+ *   (see Copyright above) 														 *
+ *    Mods by Otto Schaile:														 *
+ *    Change to c++ calling conventions										 *
+ *    Wrap into a ROOT class														 *
+ * 																						 *
+ **********************************************************************/
 
 #include "Riostream.h"
-#include <math.h>
-#include "TSplineX.h"
-#include "iostream"
 #include "TObjString.h"
 #include "TOrdCollection.h"
 #include "TPolyLine.h"
-#include "TGMrbTableFrame.h"
+#include "TSplineX.h"
 #include "TGMrbSliders.h"
-#include "HprEditBits.h"
-//#include "RailwaySleeper.h"
 
+//___________________________________________________________________________/
+//                                                                           //
+//                     The T S P L I N E X  Class									  //
+//                     ==========================									  //
+// TSplineX is an implemention of xsplines as described in detail in:		  //
+// "X-splines : A Spline Model Designed for the End User"						  //
+// by Carole BLANC and Christophe SCHLICK in Proceedings of SIGGRAPH'95 	  //
+//																									  //
+// A Xspline is defined by the coordinates and a shapefactor of its  		  //
+// controlpoints. The shapefactor takes values between -1 and + 1;			  //
+// With values < 0 the curve is forced through the controlpoints, 			  //
+// with vulues > 0 the curve is an approximation only. The absolute  		  //
+// value may be regarded as a string force, with 0 maximum strength			  //
+// producing a sharp kink of the resulting at the controlpoint.				  //
+// An important property is that position and shapefactor of a 				  //
+// controlpoint influences the curve only between this point and  			  //
+// its immediate neighbours.																  //
+// Xsplines may be open or closed, the number of points calculated			  //
+// for the resulting smooth curve is controlled by a precission				  //
+// parameter.																					  //
+// TSplineX provides methods to construct a xspline and to modify 			  //
+// it with a GUI. In addition it provides construction of parallel			  //
+// lines and arrows at either end. The area between parallel lines 			  //
+// may be filled (see TAttFill). The special case "railwaylike" allows  	  //
+// filling with a a sleeper pattern as used in maps for railway tracks.      //
+//  																								  //
+// TSplineX is accompanied with GUI class TSplineXDialog to ease access 	  //
+// to the class methods.																	  //
+// 																								  //
+// A TSplineXEditor class allows interactive manipulation of the xspline.	  //
+//  																								  //
+//___________________________________________________________________________//
 namespace std {} using namespace std;
 
 #define         HIGH_PRECISION    0.5
@@ -70,18 +95,9 @@ ClassImp(ParallelGraph)
 ClassImp(PolyLineNoEdit)
 ClassImp(RailwaySleeper)
 
-//_______________________________________________________________________
-//
-// This class implements:
-// "X-splines : A Spline Model Designed for the End User"
-//   
-//    by Carole BLANC and Christophe SCHLICK,
-//    described in Proceedings of SIGGRAPH ' 95
-//
-//_______________________________________________________________________
+//_____________________________________________________________________
 
-
-Double_t f_blend(Double_t numerator, Double_t denominator)
+Double_t TSplineX::f_blend(Double_t numerator, Double_t denominator)
 {
   Double_t p = 2 * denominator * denominator;
   Double_t u = numerator / denominator;
@@ -89,31 +105,35 @@ Double_t f_blend(Double_t numerator, Double_t denominator)
 
   return (u * u2 * (10 - p + (2*p - 15)*u + (6 - p)*u2));
 }
+//____________________________________________________________________________________
 
-Double_t g_blend(Double_t u, Double_t q)             /* p equals 2 */
+Double_t TSplineX::g_blend(Double_t u, Double_t q)             /* p equals 2 */
 {
   return(u*(q + u*(2*q + u*(8 - 12*q + u*(14*q - 11 + u*(4 - 5*q))))));
 }
+//____________________________________________________________________________________
 
-Double_t h_blend(Double_t u, Double_t q)
+Double_t TSplineX::h_blend(Double_t u, Double_t q)
 {
   Double_t u2=u*u;
    return (u * (q + u * (2 * q + u2 * (-2*q - u*q))));
 }
+//____________________________________________________________________________________
 
-void negative_s1_influence(Double_t t, Double_t s1, Double_t *A0, Double_t *A2)
+void TSplineX::negative_s1_influence(Double_t t, Double_t s1, Double_t *A0, Double_t *A2)
 {
   *A0 = h_blend(-t, Q(s1));
   *A2 = g_blend(t, Q(s1));
 }
 
-void negative_s2_influence(Double_t t, Double_t s2, Double_t *A1, Double_t *A3)
+void TSplineX::negative_s2_influence(Double_t t, Double_t s2, Double_t *A1, Double_t *A3)
 {
   *A1 = g_blend(1-t, Q(s2));
   *A3 = h_blend(t-1, Q(s2));
 }
+//____________________________________________________________________________________
 
-void positive_s1_influence(Int_t k, Double_t t, Double_t s1, Double_t *A0, Double_t *A2)
+void TSplineX::positive_s1_influence(Int_t k, Double_t t, Double_t s1, Double_t *A0, Double_t *A2)
 {
   Double_t Tk;
   
@@ -123,8 +143,9 @@ void positive_s1_influence(Int_t k, Double_t t, Double_t s1, Double_t *A0, Doubl
   Tk = k+1-s1;
   *A2 = f_blend(t+k+1-Tk, k+2-Tk);
 }
+//____________________________________________________________________________________
 
-void positive_s2_influence(Int_t k, Double_t t, Double_t s2, Double_t *A1, Double_t *A3)
+void TSplineX::positive_s2_influence(Int_t k, Double_t t, Double_t s2, Double_t *A1, Double_t *A3)
 {
   Double_t Tk;
 
@@ -135,6 +156,7 @@ void positive_s2_influence(Int_t k, Double_t t, Double_t s2, Double_t *A1, Doubl
   *A3 = (t+k+1>Tk) ? f_blend(t+k+1-Tk, k+3-Tk) : 0.0;
 }
 
+//____________________________________________________________________________________
 
 void TSplineX::point_adding(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, ControlPoint *p2, ControlPoint *p3)
 {
@@ -145,8 +167,9 @@ void TSplineX::point_adding(Double_t *A_blend, ControlPoint *p0, ControlPoint *p
 		 EQN_NUMERATOR(y) / (weights_sum)))
       too_many_points();
 }
+//____________________________________________________________________________________
 
-void point_computing(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, ControlPoint *p2, ControlPoint *p3, Double_t *xs, Double_t *ys)
+void TSplineX::point_computing(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, ControlPoint *p2, ControlPoint *p3, Double_t *xs, Double_t *ys)
 {
   Double_t weights_sum;
 
@@ -155,6 +178,7 @@ void point_computing(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, Cont
   *xs = (int)round(EQN_NUMERATOR(x) / (weights_sum));
   *ys = (int)round(EQN_NUMERATOR(y) / (weights_sum));
 }
+//____________________________________________________________________________________
 
 Float_t TSplineX::step_computing(Int_t k, ControlPoint *p0, ControlPoint *p1, ControlPoint *p2, ControlPoint *p3, Double_t s1, Double_t s2, Float_t precision)
 {
@@ -173,14 +197,14 @@ Float_t TSplineX::step_computing(Int_t k, ControlPoint *p0, ControlPoint *p1, Co
 
   /* compute coordinates of the origin */
   if (s1>0) {
-      if (s2<0) {
-	  positive_s1_influence(k, 0.0, s1, &A_blend[0], &A_blend[2]);
-	  negative_s2_influence(0.0, s2, &A_blend[1], &A_blend[3]); 
-      } else {
-	  positive_s1_influence(k, 0.0, s1, &A_blend[0], &A_blend[2]);
-	  positive_s2_influence(k, 0.0, s2, &A_blend[1], &A_blend[3]); 
-      }
-      point_computing(A_blend, p0, p1, p2, p3, &xstart, &ystart);
+     if (s2<0) {
+	     positive_s1_influence(k, 0.0, s1, &A_blend[0], &A_blend[2]);
+	     negative_s2_influence(0.0, s2, &A_blend[1], &A_blend[3]); 
+     } else {
+	     positive_s1_influence(k, 0.0, s1, &A_blend[0], &A_blend[2]);
+	     positive_s2_influence(k, 0.0, s2, &A_blend[1], &A_blend[3]); 
+     }
+     point_computing(A_blend, p0, p1, p2, p3, &xstart, &ystart);
   } else {
       xstart = p1->x;
       ystart = p1->y;
@@ -188,14 +212,14 @@ Float_t TSplineX::step_computing(Int_t k, ControlPoint *p0, ControlPoint *p1, Co
   
   /* compute coordinates  of the extremity */
   if (s2>0) {
-      if (s1<0) {
-	  negative_s1_influence(1.0, s1, &A_blend[0], &A_blend[2]);
-	  positive_s2_influence(k, 1.0, s2, &A_blend[1], &A_blend[3]);
-      } else {
-	  positive_s1_influence(k, 1.0, s1, &A_blend[0], &A_blend[2]);
-	  positive_s2_influence(k, 1.0, s2, &A_blend[1], &A_blend[3]); 
-      }
-      point_computing(A_blend, p0, p1, p2, p3, &xend, &yend);
+     if (s1<0) {
+	     negative_s1_influence(1.0, s1, &A_blend[0], &A_blend[2]);
+	     positive_s2_influence(k, 1.0, s2, &A_blend[1], &A_blend[3]);
+     } else {
+	     positive_s1_influence(k, 1.0, s1, &A_blend[0], &A_blend[2]);
+	     positive_s2_influence(k, 1.0, s2, &A_blend[1], &A_blend[3]); 
+     }
+     point_computing(A_blend, p0, p1, p2, p3, &xend, &yend);
   } else {
       xend = p2->x;
       yend = p2->y;
@@ -203,13 +227,13 @@ Float_t TSplineX::step_computing(Int_t k, ControlPoint *p0, ControlPoint *p1, Co
 
   /* compute coordinates  of the middle */
   if (s2>0) {
-      if (s1<0) {
-	  negative_s1_influence(0.5, s1, &A_blend[0], &A_blend[2]);
-	  positive_s2_influence(k, 0.5, s2, &A_blend[1], &A_blend[3]);
-      } else {
-	  positive_s1_influence(k, 0.5, s1, &A_blend[0], &A_blend[2]);
-	  positive_s2_influence(k, 0.5, s2, &A_blend[1], &A_blend[3]); 
-	}
+     if (s1<0) {
+	     negative_s1_influence(0.5, s1, &A_blend[0], &A_blend[2]);
+	     positive_s2_influence(k, 0.5, s2, &A_blend[1], &A_blend[3]);
+     } else {
+	     positive_s1_influence(k, 0.5, s1, &A_blend[0], &A_blend[2]);
+	     positive_s2_influence(k, 0.5, s2, &A_blend[1], &A_blend[3]); 
+	  }
   } else if (s1<0) {
       negative_s1_influence(0.5, s1, &A_blend[0], &A_blend[2]);
       negative_s2_influence(0.5, s2, &A_blend[1], &A_blend[3]);
@@ -257,6 +281,7 @@ Float_t TSplineX::step_computing(Int_t k, ControlPoint *p0, ControlPoint *p1, Co
 //         precision << " " <<number_of_steps << " " <<step << endl; 
   return (step);
 }
+//____________________________________________________________________________________
 
 void TSplineX::spline_segment_computing(Float_t step, Int_t k, ControlPoint *p0, ControlPoint *p1, ControlPoint *p2, ControlPoint *p3, Double_t s1, Double_t s2)
 {
@@ -322,6 +347,7 @@ void TSplineX::spline_segment_computing(Float_t step, Int_t k, ControlPoint *p0,
       step = step_computing(K, P0, P1, P2, P3, S1, S2, PREC);    \
       spline_segment_computing(step, K, P0, P1, P2, P3, S1, S2)
 
+//____________________________________________________________________________________
 
 Int_t TSplineX::op_spline(ControlPoint *cpoints, ShapeFactor *sfactors, Float_t precision)
 {
@@ -365,6 +391,7 @@ Int_t TSplineX::op_spline(ControlPoint *cpoints, ShapeFactor *sfactors, Float_t 
   
   return 1 ;
 }
+//____________________________________________________________________________________
 
 Int_t TSplineX::cl_spline(ControlPoint *cpoints, ShapeFactor *sfactors, Float_t precision)
 {
@@ -476,6 +503,9 @@ TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
 {
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*TSplineX constructor-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 //*-*                          ===================
+// Number of points, x, y, shape factors of the controlpoints.
+// -1 <= shape factor <= 1; prec controls the number of points
+// calculated for the resulting smooth curve.
 // The controlpoints of TSplineX are stored in its TGraph parent.
 //   
    fControlPointList = 0;
@@ -584,10 +614,9 @@ TSplineX::~TSplineX()
 
 Int_t TSplineX::DistancetoPrimitive(Int_t px, Int_t py)
 {
-   // Compute distance from point px,py to points of a graph
+   // Compute distance from point px,py to points of TSplineX
    // if railwaylike (double line) look inside
    //
-//   cout << "TSplineX::Distan " << fNpoints << endl;
    Int_t distance;
 
    const Int_t big = 9999;
@@ -650,6 +679,8 @@ void TSplineX::SetShapeFactors(Int_t npoints, Float_t* s)
 //_____________________________________________________________________________________
 
 void TSplineX::SetIsClosed(Bool_t isclosed)
+//
+// Control if curve is closed of open
 {
    if (fClosed != isclosed) {
       fClosed = isclosed;
@@ -685,10 +716,6 @@ void TSplineX::SetAllControlPoints(Int_t npoints, Double_t* x, Double_t* y)
 Int_t TSplineX::ComputeSpline()
 {
 // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*Compute the spline-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
-//
-// prec: Controls the number of intermediate points
-// open: Open spline if TRUE otherwise closed
-//
    ControlGraph* cg = GetControlGraph();
    if (cg->GetN() <= 0) {
       cout << "ShapeFactors not set" << endl;
@@ -749,6 +776,9 @@ Int_t TSplineX::GetResult(Double_t*& x, Double_t*& y)
 
 void TSplineX::RemovePolyLines()
 {
+//
+// Before the spline is repainted teh auxilliary lines
+// mustr be removed
 //  cout << "TSplineX::RemovePolyLines()" << endl;
    if (fDPolyLines.GetSize() > 0) {
       TIter next(&fDPolyLines);
@@ -795,7 +825,7 @@ void TSplineX::CopyControlPoints()
 {
 // *-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 // Copy ControlPoints and ShapeFactors into a linked list
-// as expected by the internally used routines  doing the
+// as expected by the internally used routines doing the
 // real compututations
 //
 
@@ -825,6 +855,8 @@ void TSplineX::CopyControlPoints()
 //_____________________________________________________________________________________
 
 Int_t TSplineX::add_point(Double_t x, Double_t y)
+//
+// This is called by the routines doing the calculation of the spline
 {
    if (fNpoints >= fX.GetSize()) {
       fX.Set(fNpoints + 50);
@@ -840,6 +872,8 @@ Int_t TSplineX::add_point(Double_t x, Double_t y)
 //_____________________________________________________________________________________
 
 Int_t TSplineX::add_closepoint()
+//
+// This is called by the routines doing the calculation of the spline
 {
    if (fNpoints >= fX.GetSize()) {
       fX.Set(fNpoints + 1);
@@ -869,6 +903,9 @@ void TSplineX::ExecuteEvent(Int_t event, Int_t px, Int_t py)
  
 void TSplineX::SetGraph()
 {
+//
+// fill values of the polyline representing the smoothed curve
+
    SetPolyLine(fNpoints);
    for (Int_t i = 0; i < fNpoints; i++) {
       SetPoint(i, fX[i], fY[i]);
@@ -877,6 +914,8 @@ void TSplineX::SetGraph()
 //_____________________________________________________________________________________
  
 void TSplineX::DrawControlPoints(Style_t marker,  Size_t size)
+//
+// Make the controlpoints visible
 {
    if (fCPGraph.GetN() <= 0) return;
    
@@ -892,6 +931,8 @@ void TSplineX::DrawControlPoints(Style_t marker,  Size_t size)
 //_____________________________________________________________________________________
  
 void TSplineX::RemoveControlPoints()
+//
+// Make the controlpoints unvisible
 {
    if (fCPGraph.GetN() <= 0) return;
    
@@ -901,15 +942,10 @@ void TSplineX::RemoveControlPoints()
    gPad->Update();
 }
 //_____________________________________________________________________________________
-/*
-void TSplineX::EditControlGraph() 
-{
-    fCPGraph.EditControlGraph();
-}
-*/
-//_____________________________________________________________________________________
 
 ParallelGraph* TSplineX::AddParallelGraph(Double_t dist, Color_t color, Width_t width, Style_t style)
+//
+// Add a parallel line and set its attributes
 {
    ParallelGraph *pgraph = new ParallelGraph (this, dist, fClosed);
    Int_t idx = fPGraphs.GetLast() + 1;
@@ -927,6 +963,8 @@ ParallelGraph* TSplineX::AddParallelGraph(Double_t dist, Color_t color, Width_t 
 //_____________________________________________________________________________________
 
 void  TSplineX::DrawParallelGraphs()
+//
+// Draw the parallel lines
 {
    if (fRailL) fRailL->Draw("L");
    if (fRailR) fRailR->Draw("L");
@@ -939,7 +977,7 @@ void  TSplineX::DrawParallelGraphs()
  
 void TSplineX::SetRailwaylike(Double_t gage)
 {
-//   cout << "SetRailwaylike: " << gage << endl;
+// Make the spline look like railway tracks
    fRailwayGage = gage;
    if (gage <= 0) {
       fRailwaylike = 0;
@@ -972,14 +1010,23 @@ void TSplineX::SetRailwaylike(Double_t gage)
  
 void TSplineX::Paint(Option_t * option)
 {
-//   cout << " TSplineX::Paint ComputeDone " ;
-//   if (fComputeDone) cout << " true" ;
-//   else              cout << " false" ;
- //  cout << endl;
+// 
+// This is the complicated part: compute the spline,
+// add parallel lines, arrows, railwaay sleepers if needed
+// If required fill the space between rails or inside the
+// spline.
+
    if (!fComputeDone) ComputeSpline();
 
    if (fRailwaylike <= 0)  {
-      TPolyLine::Paint(option);
+//    simple line, no rail
+      TString opt(GetOption());
+      if (GetFillStyle() != 0) {
+         SetFillStyle(GetFillStyle());
+         SetFillColor(GetFillColor());
+         opt += "f";
+      }
+      TPolyLine::Paint(opt);
       if (fArrowAtStart) { 
          fArrowAtStart->SetLineColor(GetLineColor());
          if (fArrowAtStart->GetFillStyle() != 0) 
@@ -1093,7 +1140,6 @@ void TSplineX::Paint(Option_t * option)
       gPad->Modified();
       gPad->Update();
    }
-
    if (fFilledLength <= 0 || fEmptyLength <= 0 || fRailwaylike <= 0) {
 //  currently no arrays with railway sleepers allowed
       return;
@@ -1270,6 +1316,9 @@ void TSplineX::SetSleeperColor(Color_t color)
 void TSplineX::AddArrow(Int_t where, Double_t length, 
                        Double_t angle, Double_t indent_angle,Int_t filled)
 {
+// Add arrows at ends (0 at start, 1 at end), 
+// Note: for a railwaylike spline the arrows are part of the spline 
+
    if (where == 0) fPaintArrowAtStart = kTRUE;
    if (where == 1) fPaintArrowAtEnd = kTRUE;
    fArrowLength      = length;
@@ -1506,6 +1555,8 @@ ControlGraph::ControlGraph (Int_t npoints, Double_t*  x, Double_t* y) :
 Int_t ControlGraph::DistancetoPrimitive(Int_t px, Int_t py)
 {
    // Compute distance from point px,py to points of a graph only.
+   // Take care that the smooth curve or the area between rails 
+   // of the spline takes preference
    //
    Int_t distance;
 
@@ -1524,7 +1575,9 @@ Int_t ControlGraph::DistancetoPrimitive(Int_t px, Int_t py)
       if (d < distance) distance = d;
    }
    if (distance < kMaxDiff) return distance;
-    
+// Take care that the smooth curve or the area between rails 
+// of the spline takes preference
+//     
    if (fParent->DistancetoPrimitive(px, py) <= kMaxDiff) return big;
 //   else                     return big;
    for (i=0;i<fNpoints-1;i++) {
@@ -1537,20 +1590,6 @@ Int_t ControlGraph::DistancetoPrimitive(Int_t px, Int_t py)
    
 void ControlGraph::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 //
-// This ExecuteEvent expects to be called b e f o r e the ContextMenu
-// is invoked. Here we set the default values. Note in this
-// way it is possible to set also values contained in arrays
-// since the index can be computed from the position px, py
-// After return the ContextMenu will pop up
-//
-/*
-   static Color_t  fcolor = fParent->GetFillColor();
-   static Style_t  fstyle = fParent->GetFillStyle();
-   static Color_t  color = fParent->GetLineColor();
-   static Style_t  lstyle = fParent->GetLineStyle();
-   static Width_t  lwidth = fParent->GetLineWidth();
-   cout <<  "Enter ExecuteEvent " << fParent->GetFillColor() << endl;
-*/
 
    if (event == kButton3Down) {
 //      cout << "kButton3Down " << endl;
@@ -1572,15 +1611,6 @@ void ControlGraph::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
    } else {
       TGraph::ExecuteEvent(event, px, py);
    }
-/*
-   cout <<  "After TGraph::ExecuteEvent " << fParent->GetFillColor() << endl;
- 
-   if (fParent->GetFillColor() != fcolor) fParent->SetFillColor(fcolor);
-   if (fParent->GetFillStyle() != fstyle) fParent->SetFillStyle(fstyle);
-   if (fParent->GetLineColor() != color)  fParent->SetLineColor(color);
-   if (fParent->GetLineStyle() != lstyle) fParent->SetLineStyle(lstyle);
-   if (fParent->GetLineWidth() != lwidth) fParent->SetLineWidth(lwidth);
-*/
    if (event == kButton1Up && fParent) fParent->ComputeSpline();
  //  cout <<  "exit ExecuteEvent " << fParent->GetFillColor() << endl;
 }
@@ -1734,6 +1764,9 @@ void ControlGraph::EditControlGraph()
 void ControlGraph::ControlGraphMixer() 
 {
 // This method is invoked from the ContextMenu
+// It presents a widget with sliders to control the
+// shapefactors
+
    if (!fParent) return;
    static TOrdCollection * row_lab = new TOrdCollection;
    Int_t nrows = GetN();
@@ -1768,6 +1801,8 @@ void ControlGraph::ControlGraphMixer()
 PolyLineNoEdit::PolyLineNoEdit(Int_t np, Double_t * x, Double_t * y)
                 : TPolyLine(np, x, y)
 {
+   // This is a special polyline which cannot be picked
+   // with the mouse and which is not written out by SavePrimitive 
 }
 //_____________________________________________________________________________________
 
@@ -1775,6 +1810,9 @@ RailwaySleeper::RailwaySleeper(Double_t * x, Double_t * y,
                 TSplineX * parent, Color_t color)
                 : TPolyLine(5, x, y), fParent(parent)
 {
+   // railway sleepers are special filled polylines,
+   // its ExecuteEvent method is diverted to its TSplineX parent
+
    SetLineColor(color);
    SetFillColor(color);
    SetFillStyle(1003);
@@ -1877,6 +1915,8 @@ void ParallelGraph::Compute()
 void ParallelGraph::CorrectForArrows(Double_t alength, Double_t aangle,Double_t aindent_angle,
                                      Bool_t at_start, Bool_t at_end)
 {
+// if a TSlineX has parallel their lengths must be adjust
+// to account for the lengths of the arrows
 //  no arrows with railway sleepers
 
 //   if (fFilledLength > 0 && fEmptyLength > 0) return kTRUE;
@@ -2003,6 +2043,7 @@ Int_t ParallelGraph::DistancetoPrimitive(Int_t px, Int_t py)
    
 void ParallelGraph::ClearFillToSlave()
 { 
+// parallel graphs may be filled to neighbours
    fSlave = NULL;
    if (fSlave) fSlave->SetMaster(NULL);
    fParent->NeedReCompute();
@@ -2012,6 +2053,7 @@ void ParallelGraph::ClearFillToSlave()
    
 void ParallelGraph::FillToSlave(Double_t dist)
 {
+// parallel graphs may be filled to neighbours
    TObjArray * pgl = fParent->GetParallelGraphs();
    if (pgl->GetSize() < 2) {
       cout << "No Partner available" << endl;
@@ -2050,7 +2092,7 @@ void ParallelGraph::Paint(Option_t * option)
 //   fParent->GetDPolyLines()->Add(this);
    if (option);
    if (fSlave) {
-      cout <<  "ParallelGraph::Paint() to fSlave" << endl;
+//      cout <<  "ParallelGraph::Paint() to fSlave" << endl;
       ParallelGraph * lg = this;
       ParallelGraph * rg = fSlave;
       Int_t npoints = 1;

@@ -22,12 +22,13 @@
 #pragma link C++ class GroupOfGObjects;
 #pragma link C++ class EditMarker;
 #pragma link C++ class TSplineX;
+#pragma link C++ class TSplineXDialog;
 #pragma link C++ class TSplineXEditor;
 #pragma link C++ class ParallelGraphEditor;
 #pragma link C++ class HprEditCommands;
-#pragma link C++ class HprNtuple;
-#pragma link C++ class HprGraph;
-#pragma link C++ class HprAscii2Hist;
+#pragma link C++ class Ascii2GraphDialog;
+#pragma link C++ class Ascii2HistDialog;
+#pragma link C++ class Ascii2NtupleDialog;
 #pragma link C++ class TCurlyLineArrow;
 #pragma link C++ class TCurlyLineWithArrow;
 #endif			   

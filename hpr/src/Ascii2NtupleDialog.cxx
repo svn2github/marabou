@@ -1,13 +1,13 @@
 #include "TEnv.h"
+#include "TFile.h"
 #include "TObjString.h"
 #include "TSystem.h"
 #include "TGMrbValuesAndText.h"
-#include "HistPresent.h"
-#include "HprNtuple.h"
+#include "Ascii2NtupleDialog.h"
 
-ClassImp(HprNtuple)
+ClassImp(Ascii2NtupleDialog)
 
-HprNtuple::HprNtuple(HistPresent * hpr, TGWindow * win) 
+Ascii2NtupleDialog::Ascii2NtupleDialog(TGWindow * win) 
 {
    const Char_t helpText[] = "Read values from ASCII file and fill ntuple \n\
 Values in variable list must ne separated by colons (:)";
@@ -16,7 +16,6 @@ Values in variable list must ne separated by colons (:)";
    static void *valp[50];
    Int_t ind = 0;
    Bool_t ok = kTRUE;
-   fHistPresent = hpr;
    fCommand = "Fill_The_Ntuple";
    fCommandHead = "Show_Head_of_File()";
    RestoreDefaults();
@@ -44,13 +43,13 @@ Values in variable list must ne separated by colons (:)";
 };  
 //_________________________________________________________________________
             
-HprNtuple::~HprNtuple() 
+Ascii2NtupleDialog::~Ascii2NtupleDialog() 
 {
    SaveDefaults();
 };
 //_________________________________________________________________________
             
-void HprNtuple::Fill_The_Ntuple()
+void Ascii2NtupleDialog::Fill_The_Ntuple()
 {
    if (gSystem->AccessPathName((const char *) fInputFileName, kFileExists)) {
       cout << "No such file: " << fInputFileName << endl;
@@ -66,31 +65,31 @@ void HprNtuple::Fill_The_Ntuple()
 };
 //_________________________________________________________________________
             
-void HprNtuple::SaveDefaults()
+void Ascii2NtupleDialog::SaveDefaults()
 {
-   cout << "HprNtuple::SaveDefaults() " << endl;
+   cout << "Ascii2NtupleDialog::SaveDefaults() " << endl;
    TEnv env(".rootrc");
-	env.SetValue("HistPresent.ToNtupleInputFileName"  , fInputFileName );
-	env.SetValue("HistPresent.ToNtupleOutputFileName" , fOutputFileName);
-	env.SetValue("HistPresent.ToNtupleNtupleName" 	  , fNtupleName	 );
-	env.SetValue("HistPresent.ToNtupleNtupleTitle"	  , fNtupleTitle   );
-	env.SetValue("HistPresent.ToNtupleListOfVars"	  , fListOfVars	 );
+	env.SetValue("Ascii2NtupleDialog.InputFileName"  , fInputFileName );
+	env.SetValue("Ascii2NtupleDialog.OutputFileName" , fOutputFileName);
+	env.SetValue("Ascii2NtupleDialog.NtupleName"  	, fNtupleName    );
+	env.SetValue("Ascii2NtupleDialog.NtupleTitle" 	, fNtupleTitle   );
+	env.SetValue("Ascii2NtupleDialog.ListOfVars"  	, fListOfVars    );
    env.SaveLevel(kEnvUser);
 }
 //_________________________________________________________________________
             
-void HprNtuple::RestoreDefaults()
+void Ascii2NtupleDialog::RestoreDefaults()
 {
    TEnv env(".rootrc");
-	fInputFileName  = env.GetValue("HistPresent.ToNtupleInputFileName"  ,"nt.asc");
-	fOutputFileName = env.GetValue("HistPresent.ToNtupleOutputFileName" ,"nt.root");
-	fNtupleName 	 = env.GetValue("HistPresent.ToNtupleNtupleName" 	  ,"nt0");
-	fNtupleTitle	 = env.GetValue("HistPresent.ToNtupleNtupleTitle"	  ,"My Ntuples");
-	fListOfVars 	 = env.GetValue("HistPresent.ToNtupleListOfVars"	  ,"x:y:z");
+	fInputFileName  = env.GetValue("Ascii2NtupleDialog.InputFileName"  ,"nt.asc");
+	fOutputFileName = env.GetValue("Ascii2NtupleDialog.OutputFileName" ,"nt.root");
+	fNtupleName 	 = env.GetValue("Ascii2NtupleDialog.NtupleName"  	,"nt0");
+	fNtupleTitle	 = env.GetValue("Ascii2NtupleDialog.NtupleTitle" 	,"My Ntuples");
+	fListOfVars 	 = env.GetValue("Ascii2NtupleDialog.ListOfVars"  	,"x:y:z");
 }
 //_________________________________________________________________________
             
-void HprNtuple::Show_Head_of_File()
+void Ascii2NtupleDialog::Show_Head_of_File()
 {
    TString cmd(fInputFileName.Data());
    cmd.Prepend("head ");
@@ -99,9 +98,9 @@ void HprNtuple::Show_Head_of_File()
 }
 //_________________________________________________________________________
             
-void HprNtuple::CloseDown()
+void Ascii2NtupleDialog::CloseDown()
 {
-   cout << "HprNtuple::CloseDown() " << endl;
+   cout << "Ascii2NtupleDialog::CloseDown()" << endl;
    delete this;
 }
  

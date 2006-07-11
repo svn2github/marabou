@@ -50,21 +50,16 @@
 
 #include "FitHist.h"
 #include "FitHist_Help.h"
-//#include "HprFitMacros.cxx"
 #include "CmdListEntry.h"
 #include "HistPresent.h"
-//#include "MH1F.h"
-//#include "MH2S.h"
 
-// #include "TPInputs.h"
 #include "FhMarker.h"
 #include "support.h"
-#include "TGMrbTableFrame.h"
 #include "TGMrbInputDialog.h"
+#include "TGMrbTableFrame.h"
 #include "SetColor.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
-//  #include "TMrbVarWdw.h"
 
 extern HistPresent *hp;
 extern TFile *fWorkfile;

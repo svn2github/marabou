@@ -159,7 +159,6 @@ public:
    void    FeynmanDashedLine();
    void    FeynmanText();
    void    InsertTSplineX();
-   void    InsertCurlyArrow();
    void    WritePrimitives();
    void    DefineBox();
    void    DefinePolygone();

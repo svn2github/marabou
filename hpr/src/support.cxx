@@ -30,8 +30,8 @@
 #include "SetColor.h"
 
 #include "support.h"
-#include "TGMrbInputDialog.h"
 #include "TMrbString.h"
+#include "TGMrbInputDialog.h"
 #include "TGMrbValuesAndText.h"
 
 #include <iostream>

@@ -1,5 +1,5 @@
-#ifndef HPRASCII2HIST
-#define HPRASCII2HIST
+#ifndef ASCII2HISTDIALOG
+#define ASCII2HISTDIALOG
 #include "TArrayD.h"
 #include "TGWindow.h"
 #include "TString.h"
@@ -8,13 +8,9 @@
 
 
 namespace std {} using namespace std;
-
-class HistPresent;
-
-class HprAscii2Hist : public TObject {
+class Ascii2HistDialog : public TObject {
 
 private:
-   HistPresent *fHistPresent;
    TArrayD  fXval;
    TArrayD  fYval;
    TArrayD  fZval;
@@ -45,14 +41,15 @@ private:
    Double_t fZup;   
  
 public:
-   HprAscii2Hist(HistPresent * hpr = NULL, TGWindow * win = NULL);
-   ~HprAscii2Hist();
+   Ascii2HistDialog(TGWindow * win = NULL);
+   ~Ascii2HistDialog();
    void Draw_The_Hist();
    void Read_Input();
+   void Show_Head_of_File();
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown();
 
-ClassDef(HprAscii2Hist,0)
+ClassDef(Ascii2HistDialog,0)
 };
 #endif

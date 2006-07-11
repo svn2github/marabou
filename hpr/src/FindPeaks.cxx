@@ -16,8 +16,8 @@
 
 #include "FitHist.h"
 #include "TGMrbTableFrame.h"
-#include "support.h"
 #include "TGMrbInputDialog.h"
+#include "support.h"
 
 // Find peaks
 Int_t FoldSqareWave(Int_t i, Int_t j,Int_t m){

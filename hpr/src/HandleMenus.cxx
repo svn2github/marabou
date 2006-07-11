@@ -26,9 +26,9 @@
 #include "support.h"
 #include "HTimer.h"
 #include "SetColor.h"
-#include "TGMrbInputDialog.h" 
 #include "TMrbHelpBrowser.h" 
 #include "TGMrbTableFrame.h" 
+#include "TGMrbInputDialog.h" 
 
 void EditFitMacroG(TGWindow * win);
 void ExecFitMacroG(TGraph * graph, TGWindow * win);
@@ -1482,17 +1482,17 @@ void HandleMenus::BuildMenus()
   // Create menus
    fFileMenu = new TGPopupMenu(fRootCanvas->GetParent());
 //   fFileMenu->AddEntry("&New Canvas",         kFileNewCanvas);
+   if (fGraph) {
+      fFileMenu->AddEntry("Graph_to_ROOT-File",      kFHGraphToFile);
+      fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
+      fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
+   }
    if(fHistPresent){
       if (fFitHist) {
          fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
          fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
       }
 //      fGraph = FindGraph(fHCanvas);
-      if (fGraph) {
-         fFileMenu->AddEntry("Graph_to_ROOT-File",      kFHGraphToFile);
-         fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
-         fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
-      }
       if (!edit_menus) {
          fFileMenu->AddEntry("Select ROOT file from any dir",  kFHSelAnyDir);
          fFileMenu->AddSeparator();
@@ -1865,8 +1865,10 @@ void HandleMenus::BuildMenus()
    else  
       fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, pmi);
 
-   fRootsMenuBar->AddPopup("&Hpr-Options", fOptionMenu,  fMenuBarItemLayout, pmi);
-   fRootsMenuBar->AddPopup("Graphic_defaults", fAttrMenu,  fMenuBarItemLayout, pmi);
+   if (fHistPresent) {
+      fRootsMenuBar->AddPopup("&Hpr-Options", fOptionMenu,  fMenuBarItemLayout, pmi);
+      fRootsMenuBar->AddPopup("Graphic_defaults", fAttrMenu,  fMenuBarItemLayout, pmi);
+   }
    if (fViewMenu) fRootsMenuBar->AddPopup("&View", fViewMenu,  fMenuBarItemLayout, pmi);
    if (fDisplayMenu) fRootsMenuBar->AddPopup("&Display", fDisplayMenu,  fMenuBarItemLayout, pmi);
    if(fh_menus){

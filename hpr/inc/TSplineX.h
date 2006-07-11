@@ -108,6 +108,7 @@ public:
    Double_t  GetDist(){return fDist;}; 
    void      SetDist(Double_t d){fDist = d;};           // *MENU*
    void   Remove();                                     // *MENU*
+   void   Delete(Option_t * opt) {this->Remove();};              
    void   FillToSlave(Double_t dist = 0);               // *MENU*
    void   ClearFillToSlave();                           // *MENU*
    void   SetSlave(ParallelGraph* slave)   {fSlave = slave;};
@@ -213,6 +214,15 @@ private:
    Double_t      fArrowAngle;
    Double_t      fArrowIndentAngle;
 
+	Double_t f_blend(Double_t numerator, Double_t denominator);
+	Double_t g_blend(Double_t u, Double_t q);
+	Double_t h_blend(Double_t u, Double_t q);
+	void negative_s1_influence(Double_t t, Double_t s1, Double_t *A0, Double_t *A2);
+	void negative_s2_influence(Double_t t, Double_t s2, Double_t *A1, Double_t *A3);
+	void positive_s1_influence(Int_t k, Double_t t, Double_t s1, Double_t *A0, Double_t *A2);
+	void positive_s2_influence(Int_t k, Double_t t, Double_t s2, Double_t *A1, Double_t *A3);
+	void point_computing(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, 
+             ControlPoint *p2, ControlPoint *p3, Double_t *xs, Double_t *ys);
    void    point_adding(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, 
                                       ControlPoint *p2, ControlPoint *p3);
    Float_t step_computing(int k, ControlPoint *p0, ControlPoint *p1,

@@ -1,19 +1,24 @@
+#include "TEnv.h"
 #include "TPad.h"
 #include "TSystem.h"
 #include "TObjString.h"
 #include "TString.h"
-#include "TMrbString.h"
 #include "TGWindow.h"
-#include "HprGraph.h"
+#ifdef MARABOUVERS
 #include "HTCanvas.h"
-#include "HistPresent.h"
+#else 
+#include "TCanvas.h"
+#endif
+#include "Ascii2GraphDialog.h"
 #include "TGMrbValuesAndText.h"
-#include "support.h"
+//#include "support.h"
 #include <fstream>
+//_______________________________________________________________________________________
 
-ClassImp(HprGraph)
+ClassImp(Ascii2GraphDialog)
 
-HprGraph::HprGraph(HistPresent * hpr, TGWindow * win) 
+Ascii2GraphDialog::Ascii2GraphDialog(TGWindow * win, Int_t winx,  Int_t winy, TList * wlist)
+              : fWindowList(wlist), fWinx(winx), fWiny(winy) 
 {
   
 static const Char_t helpText[] = 
@@ -34,7 +39,6 @@ Default is to construct a new canvas\n\
    static void *valp[50];
    Int_t ind = 0;
    Bool_t ok = kTRUE;
-   fHistPresent = hpr;
    fGraphSerialNr = 0;
    fCommand = "Draw_The_Graph()";
    fCommandHead = "Show_Head_of_File()";
@@ -48,16 +52,16 @@ Default is to construct a new canvas\n\
    row_lab->Add(new TObjString("PlainIntVal_Col Sel"));
    row_lab->Add(new TObjString("PlainIntVal+Col Sel"));
 
-   row_lab->Add(new TObjString("FileRequest_Name of Inputfile"));
-   row_lab->Add(new TObjString("StringValue_Name of Graph"));
-   row_lab->Add(new TObjString("StringValue_Title of Xaxis"));
-   row_lab->Add(new TObjString("StringValue_Title of Yaxis"));
+   row_lab->Add(new TObjString("FileRequest_Inputfile      "));
+   row_lab->Add(new TObjString("StringValue_GraphName"));
+   row_lab->Add(new TObjString("StringValue_Title Xaxis  "));
+   row_lab->Add(new TObjString("StringValue_Title Yaxis  "));
    row_lab->Add(new TObjString("CheckButton_Draw / Overlay in a selected pad"));
 //   row_lab->Add(new TObjString("CheckButton_Draw in a new canvas"));
    row_lab->Add(new TObjString("PlainIntVal_Xsize of canvas"));
-   row_lab->Add(new TObjString("PlainIntVal_Ysize of canvas"));
+   row_lab->Add(new TObjString("PlainIntVal+Ysize of canvas"));
    row_lab->Add(new TObjString("PlainIntVal_Div X of canvas"));
-   row_lab->Add(new TObjString("PlainIntVal_Div Y of canvas"));
+   row_lab->Add(new TObjString("PlainIntVal+Div Y of canvas"));
    row_lab->Add(new TObjString("CheckButton_Draw marker"));
    row_lab->Add(new TObjString("CheckButton+Draw line"));
    row_lab->Add(new TObjString("Mark_Select_MarkStyle"));
@@ -108,19 +112,19 @@ Default is to construct a new canvas\n\
 };  
 //_________________________________________________________________________
             
-HprGraph::~HprGraph() 
+Ascii2GraphDialog::~Ascii2GraphDialog() 
 {
    SaveDefaults();
 };
 //_________________________________________________________________________
             
-void HprGraph::Draw_The_Graph()
+void Ascii2GraphDialog::Draw_The_Graph()
 {
    TArrayD xval(100), yval(100), zval(100), wval(100), eyl(100), eyh(100);
    ifstream infile;
    infile.open(fGraphFileName.Data(), ios::in);
 	if (!infile.good()) {
-	cerr	<< "HprGraph: "
+	cerr	<< "Ascii2GraphDialog: "
 			<< gSystem->GetError() << " - " << infile
 			<< endl;
 		return;
@@ -129,7 +133,7 @@ void HprGraph::Draw_The_Graph()
 //   Double_t x, y, w;
    Bool_t ok = kTRUE;
    Double_t x[6];
-   Int_t nval;
+   Int_t nval = 0;
    
    TString line;
 
@@ -224,7 +228,7 @@ void HprGraph::Draw_The_Graph()
    htitle.Prepend("Values from ");
    hname.Prepend("g_");
 
-   TMrbString temp;
+//   TMrbString temp;
 
 //  TGraph part 
 
@@ -255,7 +259,7 @@ void HprGraph::Draw_The_Graph()
       if (fGraphFillStyle)  drawopt+= "F";
 //         cout << "gPad->GetName() " <<gPad->GetName() << endl;
       if (fGraphSelPad) {
-         Int_t ngr = FindGraphs(gPad);
+         Int_t ngr = FindGraphs(gPad, NULL, NULL);
          if (ngr > 0) {
             TString oo(drawopt);
             Int_t inda = drawopt.Index("a", 0, TString::kIgnoreCase);
@@ -283,11 +287,15 @@ void HprGraph::Draw_The_Graph()
             cname += "_";
             cname += fGraphSerialNr ++;
          }
-         Int_t winx = 100,  winy = 100;
-         if (fHistPresent != NULL) fHistPresent->GetWindowPosition(&winx, &winy);
-         HTCanvas * cg = new HTCanvas(cname, htitle, winx, winy,
-                         fGraphXsize, fGraphYsize, fHistPresent, 0, 0, graph);
-         if (fHistPresent != NULL)fHistPresent->GetCanvasList()->Add(cg);
+#ifdef MARABOUVERS
+         HTCanvas * cg = new HTCanvas(cname, htitle, fWinx, fWiny,
+                         fGraphXsize, fGraphYsize, NULL, 0, 0, graph);
+//                         fGraphXsize, fGraphYsize, fHistPresent, 0, 0, graph);
+#else
+         TCanvas * cg = new TCanvas(cname, htitle, fWinx, fWiny,
+                         fGraphXsize, fGraphYsize);
+#endif
+         if (fWindowList) fWindowList->Add(cg);
          if (fGraphXdiv > 1 || fGraphYdiv > 1) {
             cg->Divide(fGraphXdiv, fGraphYdiv);
             cg->cd(1);
@@ -315,87 +323,118 @@ void HprGraph::Draw_The_Graph()
    SaveDefaults();
    return;
 };
+//_______________________________________________________________________________________
+
+Int_t Ascii2GraphDialog::FindGraphs(TVirtualPad * ca, TList * logr, TList * pads)
+{
+   if (!ca) return -1;
+   Int_t ngr = 0;
+   TIter next(ca->GetListOfPrimitives());
+   while (TObject * obj = next()) {
+      if (obj->InheritsFrom("TGraph")) { 
+          ngr++;
+          if (logr) logr->Add(obj);
+          if (pads) pads->Add(ca);
+      }
+   }
+// look for subpads
+   TIter next1(ca->GetListOfPrimitives());
+   while (TObject * obj = next1()) {
+      if (obj->InheritsFrom("TPad")) { 
+          TPad * p = (TPad*)obj;
+          TIter next2(p->GetListOfPrimitives());
+          while (TObject * obj = next2()) {
+             if (obj->InheritsFrom("TGraph")) { 
+                ngr++;
+                if (logr) logr->Add(obj);
+                if (pads) pads->Add(p);
+             }
+          }
+      }
+   }
+   return ngr;
+};
+
 //_________________________________________________________________________
             
-void HprGraph::SaveDefaults()
+void Ascii2GraphDialog::SaveDefaults()
 {
-   cout << "HprGraph::SaveDefaults() " << endl;
+   cout << "Ascii2GraphDialog::SaveDefaults() " << endl;
    TEnv env(".rootrc");
-   env.SetValue("HistPresent.Graph_Simple"	 , fGraph_Simple    );
-   env.SetValue("HistPresent.Graph_Error" 	 , fGraph_Error     );
-   env.SetValue("HistPresent.Graph_AsymError" , fGraph_AsymError );
-   env.SetValue("HistPresent.fGraphColSelect" , fGraphColSelect);
-   env.SetValue("HistPresent.fGraphColSel1"   , fGraphColSel1);
-   env.SetValue("HistPresent.fGraphColSel2"   , fGraphColSel2);
-   env.SetValue("HistPresent.fGraphColSel3"   , fGraphColSel3);
-   env.SetValue("HistPresent.GraphFileName"   , fGraphFileName   );
-   env.SetValue("HistPresent.GraphName"		 , fGraphName       );
-   env.SetValue("HistPresent.GraphSelPad" 	 , fGraphSelPad     );
-   env.SetValue("HistPresent.GraphNewPad" 	 , fGraphNewPad     );
-   env.SetValue("HistPresent.GraphXsize"  	 , fGraphXsize      );
-   env.SetValue("HistPresent.GraphYsize"  	 , fGraphYsize      );
-   env.SetValue("HistPresent.GraphXtitle" 	 , fGraphXtitle     );
-   env.SetValue("HistPresent.GraphYtitle" 	 , fGraphYtitle     );
-   env.SetValue("HistPresent.GraphXdiv"		 , fGraphXdiv       );
-   env.SetValue("HistPresent.GraphYdiv"		 , fGraphYdiv       );
-   env.SetValue("HistPresent.GraphDrawMark"   , fGraphDrawMark   );
-   env.SetValue("HistPresent.GraphDrawLine"   , fGraphDrawLine   );
-   env.SetValue("HistPresent.GraphMarkerStyle", fGraphMarkerStyle);
-   env.SetValue("HistPresent.GraphMarkerColor", fGraphMarkerColor);
-   env.SetValue("HistPresent.GraphMarkerSize" , fGraphMarkerSize );
-   env.SetValue("HistPresent.GraphLineStyle"  , fGraphLineStyle  );
-   env.SetValue("HistPresent.GraphLineColor"  , fGraphLineColor  );
-   env.SetValue("HistPresent.GraphFillStyle"  , fGraphFillStyle  );
-   env.SetValue("HistPresent.GraphFillColor"  , fGraphFillColor  );
-   env.SetValue("HistPresent.GraphLineWidth"  , fGraphLineWidth  );
+   env.SetValue("Ascii2GraphDialog.Graph_Simple"	 , fGraph_Simple    );
+   env.SetValue("Ascii2GraphDialog.Graph_Error" 	 , fGraph_Error     );
+   env.SetValue("Ascii2GraphDialog.Graph_AsymError" , fGraph_AsymError );
+   env.SetValue("Ascii2GraphDialog.fGraphColSelect" , fGraphColSelect);
+   env.SetValue("Ascii2GraphDialog.fGraphColSel1"   , fGraphColSel1);
+   env.SetValue("Ascii2GraphDialog.fGraphColSel2"   , fGraphColSel2);
+   env.SetValue("Ascii2GraphDialog.fGraphColSel3"   , fGraphColSel3);
+   env.SetValue("Ascii2GraphDialog.GraphFileName"   , fGraphFileName   );
+   env.SetValue("Ascii2GraphDialog.GraphName"		 , fGraphName       );
+   env.SetValue("Ascii2GraphDialog.GraphSelPad" 	 , fGraphSelPad     );
+   env.SetValue("Ascii2GraphDialog.GraphNewPad" 	 , fGraphNewPad     );
+   env.SetValue("Ascii2GraphDialog.GraphXsize"  	 , fGraphXsize      );
+   env.SetValue("Ascii2GraphDialog.GraphYsize"  	 , fGraphYsize      );
+   env.SetValue("Ascii2GraphDialog.GraphXtitle" 	 , fGraphXtitle     );
+   env.SetValue("Ascii2GraphDialog.GraphYtitle" 	 , fGraphYtitle     );
+   env.SetValue("Ascii2GraphDialog.GraphXdiv"		 , fGraphXdiv       );
+   env.SetValue("Ascii2GraphDialog.GraphYdiv"		 , fGraphYdiv       );
+   env.SetValue("Ascii2GraphDialog.GraphDrawMark"   , fGraphDrawMark   );
+   env.SetValue("Ascii2GraphDialog.GraphDrawLine"   , fGraphDrawLine   );
+   env.SetValue("Ascii2GraphDialog.GraphMarkerStyle", fGraphMarkerStyle);
+   env.SetValue("Ascii2GraphDialog.GraphMarkerColor", fGraphMarkerColor);
+   env.SetValue("Ascii2GraphDialog.GraphMarkerSize" , fGraphMarkerSize );
+   env.SetValue("Ascii2GraphDialog.GraphLineStyle"  , fGraphLineStyle  );
+   env.SetValue("Ascii2GraphDialog.GraphLineColor"  , fGraphLineColor  );
+   env.SetValue("Ascii2GraphDialog.GraphFillStyle"  , fGraphFillStyle  );
+   env.SetValue("Ascii2GraphDialog.GraphFillColor"  , fGraphFillColor  );
+   env.SetValue("Ascii2GraphDialog.GraphLineWidth"  , fGraphLineWidth  );
    env.SaveLevel(kEnvUser);
 }
 //_________________________________________________________________________
             
-void HprGraph::RestoreDefaults()
+void Ascii2GraphDialog::RestoreDefaults()
 {
    TEnv env(".rootrc");
-   fGraph_Simple     = env.GetValue("HistPresent.Graph_Simple"  	, 0);
-   fGraph_Error      = env.GetValue("HistPresent.Graph_Error"		, 1);
-   fGraph_AsymError  = env.GetValue("HistPresent.Graph_AsymError" , 0);
-   fGraphColSelect   = env.GetValue("HistPresent.fGraphColSelect" , 0);
-   fGraphColSel1     = env.GetValue("HistPresent.fGraphColSel1"   , -1);
-   fGraphColSel2     = env.GetValue("HistPresent.fGraphColSel2"   , -1);
-   fGraphColSel3     = env.GetValue("HistPresent.fGraphColSel3"   , -1);
-   fGraphFileName    = env.GetValue("HistPresent.GraphFileName" 	, "hs.dat");
-   fGraphName        = env.GetValue("HistPresent.GraphName"  		, "hs");
-   fGraphSelPad      = env.GetValue("HistPresent.GraphSelPad"		, 0);
-   fGraphNewPad      = env.GetValue("HistPresent.GraphNewPad"		, 1);
-   fGraphXsize       = env.GetValue("HistPresent.GraphXsize" 		, 800);
-   fGraphYsize       = env.GetValue("HistPresent.GraphYsize" 		, 800);
-   fGraphXtitle      = env.GetValue("HistPresent.GraphXtitle"	   , "Xvalues");
-   fGraphYtitle      = env.GetValue("HistPresent.GraphYtitle"		, "Yvalues");
-   fGraphXdiv        = env.GetValue("HistPresent.GraphXdiv"  		, 1);
-   fGraphYdiv        = env.GetValue("HistPresent.GraphYdiv"  		, 1);
-   fGraphDrawMark    = env.GetValue("HistPresent.GraphDrawMark" 	, 1);
-   fGraphDrawLine    = env.GetValue("HistPresent.GraphDrawLine" 	, 0);
-   fGraphMarkerStyle = env.GetValue("HistPresent.GraphMarkerStyle", 20);
-   fGraphMarkerColor = env.GetValue("HistPresent.GraphMarkerColor", 1);
-   fGraphMarkerSize  = env.GetValue("HistPresent.GraphMarkerSize" , 1);
-   fGraphLineStyle   = env.GetValue("HistPresent.GraphLineStyle"	, 1);
-   fGraphLineColor   = env.GetValue("HistPresent.GraphLineColor"	, 1);
-   fGraphFillStyle   = env.GetValue("HistPresent.GraphFillStyle"	, 0);
-   fGraphFillColor   = env.GetValue("HistPresent.GraphFillColor"	, 0);
-   fGraphLineWidth   = env.GetValue("HistPresent.GraphLineWidth"  , 2);
+   fGraph_Simple     = env.GetValue("Ascii2GraphDialog.Graph_Simple"  	, 0);
+   fGraph_Error      = env.GetValue("Ascii2GraphDialog.Graph_Error"		, 1);
+   fGraph_AsymError  = env.GetValue("Ascii2GraphDialog.Graph_AsymError" , 0);
+   fGraphColSelect   = env.GetValue("Ascii2GraphDialog.fGraphColSelect" , 0);
+   fGraphColSel1     = env.GetValue("Ascii2GraphDialog.fGraphColSel1"   , -1);
+   fGraphColSel2     = env.GetValue("Ascii2GraphDialog.fGraphColSel2"   , -1);
+   fGraphColSel3     = env.GetValue("Ascii2GraphDialog.fGraphColSel3"   , -1);
+   fGraphFileName    = env.GetValue("Ascii2GraphDialog.GraphFileName" 	, "hs.dat");
+   fGraphName        = env.GetValue("Ascii2GraphDialog.GraphName"  		, "hs");
+   fGraphSelPad      = env.GetValue("Ascii2GraphDialog.GraphSelPad"		, 0);
+   fGraphNewPad      = env.GetValue("Ascii2GraphDialog.GraphNewPad"		, 1);
+   fGraphXsize       = env.GetValue("Ascii2GraphDialog.GraphXsize" 		, 800);
+   fGraphYsize       = env.GetValue("Ascii2GraphDialog.GraphYsize" 		, 800);
+   fGraphXtitle      = env.GetValue("Ascii2GraphDialog.GraphXtitle"	   , "Xvalues");
+   fGraphYtitle      = env.GetValue("Ascii2GraphDialog.GraphYtitle"		, "Yvalues");
+   fGraphXdiv        = env.GetValue("Ascii2GraphDialog.GraphXdiv"  		, 1);
+   fGraphYdiv        = env.GetValue("Ascii2GraphDialog.GraphYdiv"  		, 1);
+   fGraphDrawMark    = env.GetValue("Ascii2GraphDialog.GraphDrawMark" 	, 1);
+   fGraphDrawLine    = env.GetValue("Ascii2GraphDialog.GraphDrawLine" 	, 0);
+   fGraphMarkerStyle = env.GetValue("Ascii2GraphDialog.GraphMarkerStyle", 20);
+   fGraphMarkerColor = env.GetValue("Ascii2GraphDialog.GraphMarkerColor", 1);
+   fGraphMarkerSize  = env.GetValue("Ascii2GraphDialog.GraphMarkerSize" , 1);
+   fGraphLineStyle   = env.GetValue("Ascii2GraphDialog.GraphLineStyle"	, 1);
+   fGraphLineColor   = env.GetValue("Ascii2GraphDialog.GraphLineColor"	, 1);
+   fGraphFillStyle   = env.GetValue("Ascii2GraphDialog.GraphFillStyle"	, 0);
+   fGraphFillColor   = env.GetValue("Ascii2GraphDialog.GraphFillColor"	, 0);
+   fGraphLineWidth   = env.GetValue("Ascii2GraphDialog.GraphLineWidth"  , 2);
 }
 //_________________________________________________________________________
             
-void HprGraph::Show_Head_of_File()
+void Ascii2GraphDialog::Show_Head_of_File()
 {
    TString cmd(fGraphFileName.Data());
    cmd.Prepend("head ");
-//   cmd.Append("\")");
    gSystem->Exec(cmd);
 }
 //_________________________________________________________________________
             
-void HprGraph::CloseDown()
+void Ascii2GraphDialog::CloseDown()
 {
-   cout << "HprGraph::CloseDown() " << endl;
+   cout << "Ascii2GraphDialog::CloseDown() " << endl;
    delete this;
 }

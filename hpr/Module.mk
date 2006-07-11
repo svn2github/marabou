@@ -1,5 +1,4 @@
 # Module.mk for hpr module
-# Copyright (c) 2000 Rene Brun and Fons Rademakers
 #
 # Author: Otto Schaile, 29/2/2000
 
@@ -35,11 +34,12 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
                $(HPRDIRI)/GroupOfGObjects.h \
  					$(HPRDIRI)/EditMarker.h \
  					$(HPRDIRI)/TSplineX.h \
+ 					$(HPRDIRI)/TSplineXDialog.h \
  					$(HPRDIRI)/TSplineXEditor.h \
  					$(HPRDIRI)/HprEditCommands.h \
- 					$(HPRDIRI)/HprNtuple.h \
- 					$(HPRDIRI)/HprGraph.h \
- 					$(HPRDIRI)/HprAscii2Hist.h \
+ 					$(HPRDIRI)/Ascii2GraphDialog.h \
+ 					$(HPRDIRI)/Ascii2HistDialog.h \
+ 					$(HPRDIRI)/Ascii2NtupleDialog.h \
  					$(HPRDIRI)/TCurlyLineArrow.h \
  					$(HPRDIRI)/LinkDef.h
 
@@ -80,7 +80,7 @@ $(HPRLIB):     $(HPRDO) $(HPRO)
 
 $(HPRDS):     $(HPRDH) $(HPRL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude $(HPRDH)
+		$(ROOTCINT) -f $@ -c -Iinclude $(HPRDH) 
 
 $(HPRDO):     $(HPRDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

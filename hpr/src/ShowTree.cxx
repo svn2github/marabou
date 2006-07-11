@@ -13,13 +13,13 @@
 #include "FitHist_Help.h"
 #include "support.h"
 #include "TGMrbTableFrame.h"
+#include "TGMrbInputDialog.h"
 #include "TMrbStatistics.h"
 #include "HTCanvas.h"
 #include "SetColor.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
 #include "TMrbHelpBrowser.h" 
-#include "TGMrbInputDialog.h"
 #include "CmdListEntry.h"
 
 #include <iostream>

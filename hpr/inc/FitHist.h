@@ -270,9 +270,9 @@ public:
    }
 	void DrawSelectedFunctions();
    void SetBrightness(TGWindow * win);
-   void AdjustBrightness(Int_t id, Int_t row , Int_t val); // *SIGNAL*
+   void AdjustBrightness(Int_t row , Int_t val); // *SIGNAL*
    void SetHLS(TGWindow * win);
-   void AdjustHLS(Int_t id, Int_t row , Int_t val); // *SIGNAL*
+   void AdjustHLS(Int_t row , Int_t val); // *SIGNAL*
    
    void FastFT();
    

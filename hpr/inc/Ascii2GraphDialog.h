@@ -1,5 +1,5 @@
-#ifndef HPRGRAPH
-#define HPRGRAPH
+#ifndef ASCII2GRAPHDIALOG
+#define ASCII2GRAPHDIALOG
 #include "TGraphErrors.h"
 #include "TGraphAsymmErrors.h"
 #include <iostream>
@@ -8,12 +8,12 @@
 
 namespace std {} using namespace std;
 
-class HistPresent;
-
-class HprGraph : public TObject {
+class Ascii2GraphDialog : public TObject {
 
 private:
-   HistPresent *fHistPresent;
+   TList * fWindowList;
+   Int_t   fWinx;
+   Int_t   fWiny;
    TString fCommand;
    TString fCommandHead;
    TString fGraphFileName;
@@ -46,14 +46,15 @@ private:
    Color_t fGraphFillColor;  
  
 public:
-   HprGraph(HistPresent * hpr = NULL, TGWindow * win = NULL);
-   ~HprGraph();
+   Ascii2GraphDialog(TGWindow * win = NULL, Int_t winx = 100, Int_t winy = 100, TList * list =NULL);
+   ~Ascii2GraphDialog();
    void Draw_The_Graph();
    void Show_Head_of_File();
+   Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads);
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown();
 
-ClassDef(HprGraph,0)
+ClassDef(Ascii2GraphDialog,0)
 };
 #endif
