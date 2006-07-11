@@ -2706,6 +2706,9 @@ void FitHist::ProjectF()
 
 void FitHist::FastFT()
 {
+#if ROOTVERSION < 51100
+   cout << "FFT not yet available" << endl;
+#else
    const char helpText[] =
 " This function allows to do discrete Fourier transforms of TH1 and TH2.\n\
  Available transform types and flags are described below.\n\
@@ -2843,6 +2846,7 @@ void FitHist::FastFT()
       hresult->SetStats(kFALSE);
       if  (hp) hp->ShowHist(hresult);
    }
+#endif
 }
 
 //____________________________________________________________________________________ 
