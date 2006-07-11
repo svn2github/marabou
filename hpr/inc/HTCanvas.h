@@ -148,6 +148,7 @@ public:
    void    GrabImage();
    void    InsertImage();
    void    InsertAxis();
+   void    InsertCurlyArrow();
    void    FeynmanDiagMenu();
    void    FeynmanSetPars();
    void    FeynmanArrow();
