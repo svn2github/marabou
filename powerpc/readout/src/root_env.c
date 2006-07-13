@@ -202,10 +202,11 @@ TEnvEntry * _env_find_resource(const char * ResourceName) {
 // Keywords:       
 ///////////////////////////////////////////////////////////////////////////*/
 
-	int i;
+	int i, j;
 	TEnvEntry e;
 	TEnvEntry * entry;
 	int n1, n2, match;
+	char subs1[100], subs2[100];
 	
 	_env_decode_name(&e, ResourceName);
 	
@@ -216,7 +217,17 @@ TEnvEntry * _env_find_resource(const char * ResourceName) {
 			n2 = entry->nsubs - 1;
 			match = TRUE;
 			for (i = 0; i < e.nsubs; i++, n1--, n2--) {
-				if (strcmp(e.substr[n1], "*") != 0 && strcmp(e.substr[n1], entry->substr[n2]) != 0) {
+				strcpy(subs1, e.substr[n1]);
+				for (j = 0; j < 100; j++) {
+					if (subs1[j] == '\0') break;
+					subs1[j] = toupper(subs1[j]);
+				}
+				strcpy(subs2, entry->substr[n2]);
+				for (j = 0; j < 100; j++) {
+					if (subs2[j] == '\0') break;
+					subs2[j] = toupper(subs2[j]);
+				}
+				if (strcmp(subs1, "*") != 0 && strcmp(subs1, subs2) != 0) {
 					match = FALSE;
 					break;
 				}
