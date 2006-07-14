@@ -44,9 +44,9 @@ public:
    void           SetAlignStyle(Style_t pattern);
    Style_t        GetAlignStyle() const { return fAlignStyle; }
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
-void TGedAlignSelect::SavePrimitive(ostream &out, Option_t *);
+void SavePrimitive(ostream &out, Option_t *);
 #else
-void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *);
+void SavePrimitive(ofstream &out, Option_t *);
 #endif 
 
    virtual TGDimension GetDefaultSize() const { return TGDimension(38, 21); }
