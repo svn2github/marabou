@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbString.cxx,v 1.12 2006-07-14 08:21:46 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbString.cxx,v 1.13 2006-07-14 08:40:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -104,11 +104,11 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal,
 
 			case 10:
 				if (PadZero) {
-					if (Width > 0)	sprintf(f, "%%0%do", Width);
-					else			sprintf(f, "%%0o");
+					if (Width > 0)	sprintf(f, "%%0%dd", Width);
+					else			sprintf(f, "%%0d");
 				} else {
-					if (Width > 0)	sprintf(f, "%%%do", Width);
-					else			sprintf(f, "%%o");
+					if (Width > 0)	sprintf(f, "%%%dd", Width);
+					else			sprintf(f, "%%d");
 				}
 				break;
 		}
