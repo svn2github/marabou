@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbString.cxx,v 1.11 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbString.cxx,v 1.12 2006-07-14 08:21:46 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -66,7 +66,7 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Char_t hex, prf, pad;
+	Char_t hex, prf;
 	Char_t f[100], s[100];
 
 	prf = AddBasePrefix ? '#' : ' ';
@@ -265,7 +265,6 @@ TMrbString & TMrbString::FromDouble(Double_t DblVal, Int_t Width, Int_t Precisio
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Char_t pad;
 	Char_t f[100], s[100];
 
 	if (PadZero) {
