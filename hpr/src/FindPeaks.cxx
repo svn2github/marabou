@@ -120,9 +120,10 @@ Int_t FitHist::ShowPeaks(){
          npeaks++;
       }
    }
-   return npeaks;
    cHist->Modified(kTRUE);
    cHist->Update();
+   return npeaks;
+   
 }
 //_____________________________________________________________________
 

@@ -1535,7 +1535,7 @@ void HistPresent::SetGraphOptions(TGWindow * win, TCanvas * ca)
       if (ngr > 0) {
          TIter next(&logr);
          TObject * obj;
-         while ( obj = next() ) {
+         while ( (obj = next()) ) {
             TGraph *gr =(TGraph*)obj;
             gr->SetDrawOption(fDrawOptGraph.Data());
          }

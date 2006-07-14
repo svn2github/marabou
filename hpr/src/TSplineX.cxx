@@ -2115,7 +2115,7 @@ void ParallelGraph::FillToSlave(Double_t dist)
    Double_t mindist = 1e20;
    TIter next(pgl);
    ParallelGraph *pa;
-   while (pa = (ParallelGraph *)next()) {
+   while ( (pa = (ParallelGraph *)next()) ) {
       if (pa == this) continue;
       if (dist != 0) {
          if (TMath::Abs(GetDist() -  pa->GetDist() - dist) < 0.1) {
