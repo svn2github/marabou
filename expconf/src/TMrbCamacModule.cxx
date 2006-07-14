@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCamacModule.cxx,v 1.7 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbCamacModule.cxx,v 1.8 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -65,7 +65,6 @@ TMrbCamacModule::TMrbCamacModule(const Char_t * ModuleName, const Char_t * Modul
 
 		if (fCNAF.Ascii2Int(ModulePosition)) {					// decode position B.C.N
 				fCNAF.Int2Ascii(fPosition, kTRUE);				// set module position
-				if (!gMrbConfig->CheckModuleAddress(this)) this->MakeZombie(); 	// check position
 		} else {
 			this->MakeZombie();
 		}

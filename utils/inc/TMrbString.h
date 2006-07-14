@@ -8,7 +8,7 @@
 // Class:          TMrbString     -- a TString providing number conversion
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbString.h,v 1.7 2005-10-25 08:21:40 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbString.h,v 1.8 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -38,55 +38,55 @@ class TMrbString : public TString {
 
 		TMrbString(Int_t IntVal,							// a string consisting of an integer
 					Int_t Width = 0,
-					Char_t PadChar = ' ',
 					Int_t Base = TMrbString::kDefaultBase,
+					Bool_t PadZero = kFALSE,
 					Bool_t AddBasePrefix = kTRUE,
 					Bool_t LowerCaseHex = kTRUE) {
 						fBase = Base;
-						this->FromInteger(IntVal, Width, PadChar, Base, AddBasePrefix, LowerCaseHex);
+						this->FromInteger(IntVal, Width, Base, PadZero, AddBasePrefix, LowerCaseHex);
 					};
 
 		TMrbString(Double_t DblVal, 						// a string consisting of a double
 					Int_t Width = 0,
-					Char_t PadChar = ' ',
-					Int_t Precision = TMrbString::kDefaultPrecision) {
+					Int_t Precision = TMrbString::kDefaultPrecision,
+					Bool_t PadZero = kFALSE) {
 						fBase = TMrbString::kDefaultBase;
-						this->FromDouble(DblVal, Width, PadChar, Precision);
+						this->FromDouble(DblVal, Width, Precision, PadZero);
 					};
 
 		TMrbString(const Char_t * Prefix, 						// string + trailing integer
 					Int_t IntVal,
 					Int_t Width = 0,
-					Char_t PadChar = '0',
 					Int_t Base = TMrbString::kDefaultBase,
+					Bool_t PadZero = kTRUE,
 					Bool_t AddBasePrefix = kTRUE,
 					Bool_t LowerCaseHex = kTRUE) : TString(Prefix) {
 						fBase = Base;
-						this->AppendInteger(IntVal, Width, PadChar, Base, AddBasePrefix, LowerCaseHex);
+						this->AppendInteger(IntVal, Width, Base, PadZero, AddBasePrefix, LowerCaseHex);
 					};
 
 		TMrbString(const Char_t * Prefix, 						// string + trailing double
 					Double_t DblVal,
 					Int_t Width = 0,
-					Char_t PadChar = '0',
-					Int_t Precision = TMrbString::kDefaultPrecision) : TString(Prefix) {
+					Int_t Precision = TMrbString::kDefaultPrecision,
+					Bool_t PadZero = kTRUE) : TString(Prefix) {
 						fBase = TMrbString::kDefaultBase;
-						this->AppendDouble(DblVal, Width, PadChar, Precision);
+						this->AppendDouble(DblVal, Width, Precision, PadZero);
 					};
 
 		~TMrbString() {};									// default dtor
 
 		TMrbString & FromInteger(Int_t IntVal,				// convert integer to string
 									Int_t Width = 0,
-									Char_t PadChar = ' ',
 									Int_t Base = 0,
+									Bool_t PadZero = kFALSE,
 									Bool_t AddBasePrefix = kTRUE,
 									Bool_t LowerCaseHex = kTRUE);
 
 		TMrbString & AppendInteger(Int_t IntVal,			// append integer to string
 									Int_t Width = 0,
-									Char_t PadChar = ' ',
 									Int_t Base = 0,
+									Bool_t PadZero = kFALSE,
 									Bool_t AddBasePrefix = kTRUE,
 									Bool_t LowerCaseHex = kTRUE);
 
@@ -94,13 +94,13 @@ class TMrbString : public TString {
 
 		TMrbString & FromDouble(Double_t DblVal, 			// convert double to string
 									Int_t Width = 0,
-									Char_t PadChar = ' ',
-									Int_t Precision = TMrbString::kDefaultPrecision);
+									Int_t Precision = TMrbString::kDefaultPrecision,
+									Bool_t PadZero = kFALSE);
 
 		TMrbString & AppendDouble(Double_t DblVal,			// append double to string
 									Int_t Width = 0,
-									Char_t PadChar = '0',
-									Int_t Precision = TMrbString::kDefaultPrecision);
+									Int_t Precision = TMrbString::kDefaultPrecision,
+									Bool_t PadZero = kTRUE);
 
 		Bool_t ToDouble(Double_t & DblVal);					// convert string -> double
 

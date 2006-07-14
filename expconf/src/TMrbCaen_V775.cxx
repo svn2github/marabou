@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V775.cxx,v 1.10 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V775.cxx,v 1.11 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -97,7 +97,7 @@ TMrbCaen_V775::TMrbCaen_V775(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 							<< " (should be 16 or 32)" << endl;
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
-		} else if (gMrbConfig->CheckModuleAddress(this)) {
+		} else {
 			title = "CAEN V775 TDC ";
 			title += NofChannels;		//16 or 32 channels
 			title += " x 12 bit";
@@ -123,8 +123,6 @@ TMrbCaen_V775::TMrbCaen_V775(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			} else {
 				this->MakeZombie();
 			}
-		} else {
-			this->MakeZombie();
 		}
 	}
 }

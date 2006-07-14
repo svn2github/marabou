@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.11 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.12 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -1277,13 +1277,13 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 			currentValue = macroArg->fButtons.FindByIndex(buttonBits)->GetName();
 			argType = macroArg->fType->GetIndex();
 			if (argType == TGMrbMacroArg::kGMrbMacroArgInt || argType == TGMrbMacroArg::kGMrbMacroArgUInt) {
-				argString.FromInteger(buttonBits, 0, 0, 16, kTRUE);
+				argString.FromInteger(buttonBits, 0, 16, kTRUE, kTRUE);
 			} else {
 				argString = currentValue;
 			}
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryCheck) {
 			buttonBits = macroArg->fCheck->GetActive();
-			argString.FromInteger(buttonBits, 0, 0, 16, kTRUE);
+			argString.FromInteger(buttonBits, 0, 16, kTRUE, kTRUE);
 			macroArg->fButtons.Pattern2String(currentValue, buttonBits);
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryCombo) {
 			argString = ((TGTextLBEntry *) macroArg->fCombo->GetComboBox()->GetSelectedEntry())->GetText()->GetString();

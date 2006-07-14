@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEnv.cxx,v 1.12 2005-11-16 08:51:31 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEnv.cxx,v 1.13 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -286,7 +286,7 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, Int_t IntVal, Int_t Base) {
 
 	fResourceName = fPrefix + Resource;
 
-	resValue.FromInteger(IntVal, 0, ' ', Base, kTRUE);
+	resValue.FromInteger(IntVal, 0, Base, kFALSE, kTRUE);
 	resString = fResourceName + "=" + resValue.Data();
 	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
 	fIsModified = kTRUE;
@@ -311,7 +311,7 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, Double_t DblVal, Int_t Precision) {
 
 	fResourceName = fPrefix + Resource;
 
-	resValue.FromDouble(DblVal, 0, ' ', Precision);
+	resValue.FromDouble(DblVal, 0, Precision);
 	TString resString = fResourceName + "=" + resValue.Data();
 	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
 	fIsModified = kTRUE;
@@ -336,7 +336,7 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, TMrbNamedX * NamedVal, Int_t Base) 
 
 	TMrbString resValue = NamedVal->GetName();
 	resValue += "(";
-	resValue.AppendInteger(NamedVal->GetIndex(), 0, ' ', Base, kTRUE, kTRUE);
+	resValue.AppendInteger(NamedVal->GetIndex(), 0, Base, kFALSE, kTRUE, kTRUE);
 	resValue += ")";
 	TString resString = fResourceName + "=" + resValue.Data();
 	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource

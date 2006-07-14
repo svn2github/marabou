@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.70 2006-06-29 13:56:01 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.71 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3105,7 +3105,7 @@ void TMrbAnalyze::PrintLists(ostream & Out) const {
 					ple = (TMrbParamListEntry *) npx->GetAssignedObject();
 					nhx = (TMrbNamedX *) fHistoList[px];
 					hle = (TMrbHistoListEntry *) nhx->GetAssignedObject();
-					addr.FromInteger((Int_t) ple->GetAddress(), 0, 0, 16);
+					addr.FromInteger((Int_t) ple->GetAddress(), 0, 16, kTRUE);
 					Out	<< setiosflags(ios::left) << setw(10) << npx->GetName()
 							<< resetiosflags(ios::left)	<< setw(4) << j
 							<< setw(5) << npx->GetIndex()
@@ -3115,7 +3115,7 @@ void TMrbAnalyze::PrintLists(ostream & Out) const {
 						hName += " (";
 						hName += nhx->GetTitle();
 						hName += ")";
-						addr.FromInteger((Int_t) hle->GetAddress(), 0, 0, 16);
+						addr.FromInteger((Int_t) hle->GetAddress(), 0, 16, kTRUE);
 						Out	<< "     " << setiosflags(ios::left) << setw(30) << hName
 								<< resetiosflags(ios::left) << addr;
 					}

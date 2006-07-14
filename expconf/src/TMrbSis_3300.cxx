@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.2 2006-06-26 10:18:11 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.3 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -127,7 +127,7 @@ TMrbSis_3300::TMrbSis_3300(const Char_t * ModuleName, UInt_t BaseAddr) :
 			gMrbLog->Err() << ModuleName << ": Module name already in use" << endl;
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
-		} else if (gMrbConfig->CheckModuleAddress(this)) {
+		} else {
 			SetTitle("SIS 3300 digitizing adc 8 chn 12 bit 100 MHz"); 	// store module type
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
@@ -158,8 +158,6 @@ TMrbSis_3300::TMrbSis_3300(const Char_t * ModuleName, UInt_t BaseAddr) :
 			} else {
 				this->MakeZombie();
 			}
-		} else {
-			this->MakeZombie();
 		}
 	}
 }

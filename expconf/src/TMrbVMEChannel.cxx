@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMEChannel.cxx,v 1.5 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbVMEChannel.cxx,v 1.6 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +44,7 @@ TMrbVMEChannel::TMrbVMEChannel(TMrbVMEModule * Module, Int_t Channel) : TMrbModu
 	if (!this->IsZombie()) {
 		fOffset = 0;
 		fPosition = "C0.";
-		fPosition.AppendInteger(Module->GetBaseAddr(), 0, 0, 16);
+		fPosition.AppendInteger(Module->GetBaseAddr(), 0, 16, kTRUE);
 	}
 }
 

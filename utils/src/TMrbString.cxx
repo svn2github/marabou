@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbString.cxx,v 1.10 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbString.cxx,v 1.11 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -49,15 +49,15 @@ TMrbString::TMrbString(const Char_t * Str) : TString(Str) {
 }
 
 TMrbString & TMrbString::FromInteger(Int_t IntVal,
-							Int_t Width, Char_t PadChar, Int_t Base, Bool_t AddBasePrefix, Bool_t LowerCaseHex) {
+							Int_t Width, Int_t Base, Bool_t PadZero, Bool_t AddBasePrefix, Bool_t LowerCaseHex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::FromInteger
 // Purpose:        Convert integer to string
 // Arguments:      Int_t IntVal          -- integer value
 //                 Int_t Width           -- number of digits
-//                 Char_t PadChar        -- how to pad leading blanks
 //                 Int_t Base            -- conversion base (2, 8, 10, 16)
+//                 Bool_t PadZero        -- pad leading blanks with zero
 //                 Bool_t AddBasePrefix  -- prepend base identifier (0b, 0, 0x) if kTRUE
 //                 Bool_t LowerCaseHex   -- use lc chars for hex representation
 // Results:        --
@@ -65,6 +65,12 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal,
 // Description:    Converts an integer value to its ascii representation
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
+
+	Char_t hex, prf, pad;
+	Char_t f[100], s[100];
+
+	prf = AddBasePrefix ? '#' : ' ';
+	hex = LowerCaseHex ? 'x' : 'X';
 
 	this->Resize(0);
 
@@ -75,54 +81,53 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal,
 		while (IntVal) { this->Prepend((IntVal & 1) ? '1' : '0'); IntVal >>= 1; }
 		if (AddBasePrefix) this->Prepend("0b");
 	} else {
-		ostringstream * s = new ostringstream();
 		switch (Base) {
 			case 8:
-				if (AddBasePrefix) { *s << "0"; Width -= 1; PadChar = '0'; }
-				if (Width > 0) *s << setw(Width);
-				if (PadChar != '\0') *s << setfill(PadChar);
-				*s << setbase(8) << IntVal << ends;
+				if (PadZero) {
+					if (Width > 0)	sprintf(f, "%%%c0%do", prf, Width);
+					else			sprintf(f, "%%%c0o", prf);
+				} else {
+					if (Width > 0)	sprintf(f, "%%%c%do", prf, Width);
+					else			sprintf(f, "%%%co", prf);
+				}
 				break;
 
 			case 16:
-				if (AddBasePrefix) { *s << "0x"; Width -= 2; PadChar = '0'; }
-				if (Width > 0) *s << setw(Width);
-				if (PadChar != '\0') *s << setfill(PadChar);
-				if (LowerCaseHex) {
-					*s	<< setbase(16)
-						<< IntVal
-						<< ends;
+				if (PadZero) {
+					if (Width > 0)	sprintf(f, "%%%c0%d%c", prf, Width, hex);
+					else			sprintf(f, "%%%c0%c", prf, hex);
 				} else {
-					*s	<< setbase(16)
-						<< setiosflags(ios::uppercase)
-						<< IntVal
-						<< resetiosflags(ios::uppercase)
-						<< ends;
+					if (Width > 0)	sprintf(f, "%%%c%d%c", prf, Width, hex);
+					else			sprintf(f, "%%%c%c", prf, hex);
 				}
 				break;
 
 			case 10:
-				if (Width > 0) *s << setw(Width);
-				if (PadChar != '\0') *s << setfill(PadChar);
-				*s << IntVal << ends;
+				if (PadZero) {
+					if (Width > 0)	sprintf(f, "%%0%do", Width);
+					else			sprintf(f, "%%0o");
+				} else {
+					if (Width > 0)	sprintf(f, "%%%do", Width);
+					else			sprintf(f, "%%o");
+				}
 				break;
 		}
-		this->Insert(0, s->str().c_str());
-		delete s;
+		sprintf(s, f, IntVal); 
+		this->Insert(0, s);
 	}
 	return(*this);
 }
 
 TMrbString & TMrbString::AppendInteger(Int_t IntVal,
-								Int_t Width, Char_t PadChar, Int_t Base, Bool_t AddBasePrefix, Bool_t LowerCaseHex) {
+								Int_t Width, Int_t Base, Bool_t PadZero, Bool_t AddBasePrefix, Bool_t LowerCaseHex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::AppendInteger
 // Purpose:        Append integer to string
 // Arguments:      Int_t IntVal          -- integer value
 //                 Int_t Width           -- number of digits
-//                 Char_t PadChar        -- how to pad leading blanks
 //                 Int_t Base            -- conversion base (2, 8, 10, 16)
+//                 Bool_t PadZero        -- pad leading blanks with zero
 //                 Bool_t AddBasePrefix  -- add base prefix if kTRUEs
 //                 Bool_t LowerCaseHex   -- use lc chars for hex representation
 // Results:        --
@@ -134,7 +139,7 @@ TMrbString & TMrbString::AppendInteger(Int_t IntVal,
 	if (Base == 0) Base = fBase;
 	if (!this->CheckBase(Base, "AppendInteger")) return(*this);
 
-	TMrbString s(IntVal, Width, PadChar, Base, AddBasePrefix, LowerCaseHex);
+	TMrbString s(IntVal, Width, Base, PadZero, AddBasePrefix, LowerCaseHex);
 	this->Append(s.Data());
 	return(*this);
 }
@@ -245,45 +250,52 @@ Bool_t TMrbString::Increment(Int_t Increment, Int_t Base) {
 	return(this->FromInteger(intVal, 0, ' ', Base, basePrefix));
 }
 
-TMrbString & TMrbString::FromDouble(Double_t DblVal, Int_t Width, Char_t PadChar, Int_t Precision) {
+TMrbString & TMrbString::FromDouble(Double_t DblVal, Int_t Width, Int_t Precision, Bool_t PadZero) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::FromDouble
 // Purpose:        Convert double to string
 // Arguments:      Int_t DblVal     -- double value
 //                 Int_t Width      -- number of digits
-//                 Char_t PadChar   -- how to pad blanks
 //                 Int_t Precision  -- precision
+//                 Bool_t PadZero   -- pad leading blanks with zero
 // Results:        --
 // Exceptions:
 // Description:    Converts an integer value to its ascii representation
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	ostringstream * s = new ostringstream();
-	if (Width > 0) *s << setw(Width) << setfill(PadChar);
-	*s << setprecision(Precision) << DblVal << ends;
-	this->Replace(0, this->Length(), s->str().c_str());
-	delete s;
+	Char_t pad;
+	Char_t f[100], s[100];
+
+	if (PadZero) {
+		if (Width > 0)	sprintf(f, "%%0%d.%df", Width, Precision);
+		else			sprintf(f, "%%0%df", Precision);
+	} else {
+		if (Width > 0)	sprintf(f, "%%%d.%df", Width, Precision);
+		else			sprintf(f, "%%%df", Precision);
+	}
+	sprintf(s, f, DblVal); 
+	this->Insert(0, s);
     return(*this);
 }
 
-TMrbString & TMrbString::AppendDouble(Double_t DblVal, Int_t Width, Char_t PadChar, Int_t Precision) {
+TMrbString & TMrbString::AppendDouble(Double_t DblVal, Int_t Width, Int_t Precision, Bool_t PadZero) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::AppendDouble
 // Purpose:        Append double to string
 // Arguments:      Double_t DblVal    -- integer value
 //                 Int_t Width        -- number of digits
-//                 Char_t PadChar     -- how to pad blanks
 //                 Int_t Precision    -- precision
+//                 Bool_t PadZero   -- pad leading blanks with zero
 // Results:        --
 // Exceptions:
 // Description:    Appends a double value to an existing string
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString s(DblVal, Width, PadChar, Precision);
+	TMrbString s(DblVal, Width, Precision, PadZero);
 	this->Append(s.Data());
 	return(*this);
 }

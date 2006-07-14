@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.30 2006-01-25 11:42:34 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.31 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -2473,7 +2473,7 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Int_t ParamValue, Int_
 		if (nx) {
 			nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstValueSet);
 			TMrbString val;
-			val.FromInteger(ParamValue, 0, ' ', ParamBase, kTRUE);
+			val.FromInteger(ParamValue, 0, ParamBase, kFALSE, kTRUE);
 			((TObjString *) nx->GetAssignedObject())->SetString(val.Data());
 			ok = kTRUE;
 		} else if (Verbose) {

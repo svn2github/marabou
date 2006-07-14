@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditModICSRPanel.cxx,v 1.7 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFEditModICSRPanel.cxx,v 1.8 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -199,7 +199,7 @@ Bool_t DGFEditModICSRPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t P
 							fastState = fFastTriggerFrame->GetActive();
 							icsr = dspState | fastState;
 							icsr &= TMrbDGFData::kSwitchBus;
-							intStr.FromInteger(icsr, 0, '0', 16);
+							intStr.FromInteger(icsr, 0, 16, kTRUE);
 							fEntry->SetText(intStr);
 							this->CloseWindow();
 							break;

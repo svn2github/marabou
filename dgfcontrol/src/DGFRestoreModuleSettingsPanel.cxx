@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.20 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.21 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -359,7 +359,7 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 				altParamFile += dgf->GetClusterSerial();
 				altParamFile += "_";
 				TMrbString h;
-				h.FromInteger(dgf->GetClusterHexNum(), 0, ' ', 16, kFALSE);
+				h.FromInteger(dgf->GetClusterHexNum(), 0, 16, kFALSE, kFALSE);
 				altParamFile += h;
 				altParamFile += "_";
 				TString s = dgf->GetClusterSegments();

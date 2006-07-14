@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.19 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.20 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -409,7 +409,7 @@ Bool_t DGFParamsPanel::ReadParams() {
 						TString pName = px->GetName();
 						intStr = "";
 						if (pName.Index("CSRA", 0) >= 0 || pName.Index("PATTERN", 0) >= 0) {
-							intStr.FromInteger(parVal, 4, '0', 16);
+							intStr.FromInteger(parVal, 4, 16, kTRUE);
 						} else {
 							intStr = parVal;
 						}

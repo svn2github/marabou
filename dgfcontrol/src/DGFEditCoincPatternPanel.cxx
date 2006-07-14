@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditCoincPatternPanel.cxx,v 1.6 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFEditCoincPatternPanel.cxx,v 1.7 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -209,7 +209,7 @@ Bool_t DGFEditCoincPatternPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Lon
 								dgf->SetCoincPattern(patMask);
 								UInt_t pattern = dgf->GetCoincPattern();
 								TMrbString intStr;
-								intStr.FromInteger((Int_t) pattern, 0, '0', 16);
+								intStr.FromInteger((Int_t) pattern, 0, 16, kTRUE);
 								fEntry->SetText(intStr.Data());
 							} else {
 								fEntry->SetText("0x0000");

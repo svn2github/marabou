@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLeCroy_1176.cxx,v 1.3 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbLeCroy_1176.cxx,v 1.4 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -65,7 +65,7 @@ TMrbLeCroy_1176::TMrbLeCroy_1176(const Char_t * ModuleName, UInt_t BaseAddr) :
 			gMrbLog->Err() << ModuleName << ": Module name already in use" << endl;
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
-		} else if (gMrbConfig->CheckModuleAddress(this)) {
+		} else {
 			SetTitle("LeCroy 1176 TDC 16 ch x 16 bit"); 	// store module type
 			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
@@ -82,8 +82,6 @@ TMrbLeCroy_1176::TMrbLeCroy_1176(const Char_t * ModuleName, UInt_t BaseAddr) :
 			} else {
 				this->MakeZombie();
 			}
-		} else {
-			this->MakeZombie();
 		}
 	}
 }

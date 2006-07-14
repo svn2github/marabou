@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.44 2005-11-10 09:07:08 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.45 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -6338,7 +6338,7 @@ const Char_t * TMrbDGF::GetClusterInfo(TMrbString & Info) {
 	Info += this->GetClusterSerial();
 	Info += " ";
 	TMrbString h;
-	h.FromInteger(this->GetClusterHexNum(), 0, ' ', 16);
+	h.FromInteger(this->GetClusterHexNum(), 0, 16);
 	Info += h;
 	Info += " ";
 	Info += this->GetClusterColor();

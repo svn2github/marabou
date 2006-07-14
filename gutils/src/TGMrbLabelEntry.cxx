@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.10 2005-09-06 11:47:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.11 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -191,19 +191,19 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.ToInteger(intVal, fBase);
 								intVal += (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
-								s.FromInteger(intVal, fWidth, '0', fBase);
+								s.FromInteger(intVal, fWidth, fBase, kTRUE);
 								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								s.SplitOffInteger(prefix, intVal, fBase);
 								intVal += (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
-								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
+								s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
 								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								s.ToDouble(dblVal);
 								dblVal += fIncrement;
 								if (!this->CheckRange(dblVal)) break;
-								s.FromDouble(dblVal, fWidth, '0', 8);
+								s.FromDouble(dblVal, fWidth, 8, kTRUE);
 								this->SetText(s.Data());
 							}
 							fEntry->SendSignal();
@@ -214,19 +214,19 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.ToInteger(intVal, fBase);
 								intVal -= (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
-								s.FromInteger(intVal, fWidth, '0', fBase);
+								s.FromInteger(intVal, fWidth, fBase, kTRUE);
 								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								s.SplitOffInteger(prefix, intVal, fBase);
 								intVal -= (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
-								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
+								s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
 								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								s.ToDouble(dblVal);
 								dblVal -= fIncrement;
 								if (!this->CheckRange(dblVal)) break;
-								s.FromDouble(dblVal, fWidth, '0', 8);
+								s.FromDouble(dblVal, fWidth, 8, kTRUE);
 								this->SetText(s.Data());
 							}
 							fEntry->SendSignal();
@@ -237,19 +237,19 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								Int_t dmy;
 								s.ToInteger(dmy, fBase);
 								intVal = (Int_t) fLowerLimit;
-								s.FromInteger(intVal, fWidth, '0', fBase);
+								s.FromInteger(intVal, fWidth, fBase, kTRUE);
 								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								Int_t dmy;
 								s.SplitOffInteger(prefix, dmy, fBase);
 								intVal = (Int_t) fLowerLimit;
-								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
+								s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
 								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								Double_t dmy;
 								s.ToDouble(dmy);
 								dblVal = fLowerLimit;
-								s.FromDouble(dblVal, fWidth, '0', 8);
+								s.FromDouble(dblVal, fWidth, 8, kTRUE);
 								this->SetText(s.Data());
 							}
 							fEntry->SendSignal();
@@ -260,19 +260,19 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								Int_t dmy;
 								s.ToInteger(dmy, fBase);
 								intVal = (Int_t) fUpperLimit;
-								s.FromInteger(intVal, fWidth, '0', fBase);
+								s.FromInteger(intVal, fWidth, fBase, kTRUE);
 								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								Int_t dmy;
 								s.SplitOffInteger(prefix, dmy, fBase);
 								intVal = (Int_t) fUpperLimit;
-								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
+								s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
 								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								Double_t dmy;
 								s.ToDouble(dmy);
 								dblVal = fUpperLimit;
-								s.FromDouble(dblVal, fWidth, '0', 8);
+								s.FromDouble(dblVal, fWidth, 8, kTRUE);
 								this->SetText(s.Data());
 							}
 							fEntry->SendSignal();
@@ -349,7 +349,7 @@ void TGMrbLabelEntry::SetText(Int_t Value) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString v;
-	v.FromInteger(Value, fWidth, fPadChar, fBase);
+	v.FromInteger(Value, fWidth, fBase, (fPadChar == '0'));
 	fEntry->SetText(v.Data());
 	this->CreateToolTip();
 }
@@ -367,7 +367,7 @@ void TGMrbLabelEntry::SetText(Double_t Value) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString v;
-	v.FromDouble(Value, fWidth, fPadChar, fPrecision);
+	v.FromDouble(Value, fWidth, fPrecision, (fPadChar == '0'));
 	fEntry->SetText(v.Data());
 	this->CreateToolTip();
 }
@@ -487,11 +487,11 @@ void TGMrbLabelEntry::CreateToolTip() {
 			TMrbString ttStr = "";
 			if (showRange) {
 				ttStr += "[";
-				ttStr.AppendInteger((Int_t) fLowerLimit, 0, ' ', 10);
+				ttStr.AppendInteger((Int_t) fLowerLimit, 0, 10);
 				ttStr += "...";
-				ttStr.AppendInteger((Int_t) fIncrement, 0, ' ', 10);
+				ttStr.AppendInteger((Int_t) fIncrement, 0, 10);
 				ttStr += "...";
-				ttStr.AppendInteger((Int_t) fUpperLimit, 0, ' ', 10);
+				ttStr.AppendInteger((Int_t) fUpperLimit, 0, 10);
 				ttStr += "] ";
 			}
 			TMrbString m;
@@ -502,13 +502,13 @@ void TGMrbLabelEntry::CreateToolTip() {
 				m = "";
 			}
 			ttStr += m;
-			ttStr.AppendInteger(value, 0, ' ', 2);
+			ttStr.AppendInteger(value, 0, 2);
 			ttStr += " | " + m;
-			ttStr.AppendInteger(value, 0, ' ', 8);
+			ttStr.AppendInteger(value, 0, 8);
 			ttStr += " | " + m;
-			ttStr.AppendInteger(value, 0, ' ', 10);
+			ttStr.AppendInteger(value, 0, 10);
 			ttStr += " | " + m;
-			ttStr.AppendInteger(value, 0, ' ', 16);
+			ttStr.AppendInteger(value, 0, 16);
 			fEntry->SetToolTipText(ttStr.Data());
 		} else if (fType == kGMrbEntryTypeDouble) {
 			TMrbString v = fEntry->GetText();

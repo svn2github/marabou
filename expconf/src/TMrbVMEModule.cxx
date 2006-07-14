@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMEModule.cxx,v 1.6 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbVMEModule.cxx,v 1.7 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -58,9 +58,7 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 		fCrate = 0;
 		gMrbConfig->SetCrateType(0, TMrbConfig::kCrateVME); // mark vme crate active
 		fPosition = "C0.";
-		fPosition.AppendInteger(BaseAddr, 0, 0, 16);
-
-		if (!gMrbConfig->CheckModuleAddress(this)) this->MakeZombie(); 	// check position
+		fPosition.AppendInteger(BaseAddr, 0, 16, kTRUE);
 
 		if (!this->IsZombie()) {
 			for (Int_t nch = 0; nch < NofChannels; nch++) { 		// create array of params

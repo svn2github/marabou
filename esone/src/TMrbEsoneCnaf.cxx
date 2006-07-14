@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEsoneCnaf.cxx,v 1.8 2005-07-21 14:58:27 rudi Exp $       
+// Revision:       $Id: TMrbEsoneCnaf.cxx,v 1.9 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -253,7 +253,7 @@ const Char_t * TMrbEsoneCnaf::Int2Ascii(Bool_t DataFlag) {
 			fAscii += " data=";
 			fAscii += cData;
 			fAscii += "|0x";
-			fAscii.AppendInteger(cData, 0, ' ', 16);
+			fAscii.AppendInteger(cData, 0, 16);
 		}
 	}
 

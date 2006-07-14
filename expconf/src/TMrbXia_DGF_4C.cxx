@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.18 2006-02-23 09:28:50 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.19 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -149,7 +149,7 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 
 	TString mnemoLC, mnemoUC;
 	TString moduleNameUC;
-	TString sPath, seg;	
+	TString sPath, sSubdir, seg;	
 	TString pos;
 	
 	if (!fCodeTemplates.FindCode(TagIndex)) {
@@ -187,10 +187,16 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
 			fCodeTemplates.WriteCode(RdoStrm);
 			fCodeTemplates.InitializeCode("%B%");
-			sPath = gSystem->ExpandPathName(gEnv->GetValue("TMrbDGF.SettingsPath", "./DgfSettings"));
+			sPath = gSystem->ExpandPathName(gEnv->GetValue("TMrbDGF.SettingsPath", "../dgfSettings"));
 			if (sPath.Index("./", 0) == 0) {
 				sPath = sPath(1, sPath.Length() - 1);
 				sPath.Prepend(gSystem->WorkingDirectory());
+			}
+			if (!sPath.EndsWith("/")) sPath += "/";
+			sSubdir = gSystem->ExpandPathName(gEnv->GetValue("TMrbDGF.SettingsSubdir", ""));
+			if (!sSubdir.IsNull()) {
+				if (!sSubdir.EndsWith("/")) sSubdir += "/";
+				sPath += sSubdir;
 			}
 			seg = this->GetClusterSegments();
 			if (fSwitchBusIndiv) {

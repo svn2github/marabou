@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditRunTaskPanel.cxx,v 1.1 2005-08-25 14:33:57 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFEditRunTaskPanel.cxx,v 1.2 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -169,7 +169,7 @@ Bool_t DGFEditRunTaskPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t P
 					switch (Param1) {
 						case kDGFEditRunTaskButtonApply:
 							btnState = fRunTaskFrame->GetActive();
-							intStr.FromInteger(btnState, 0, '0', 16);
+							intStr.FromInteger(btnState, 0, 16, kTRUE);
 							fEntry->SetText(intStr);
 							this->CloseWindow();
 							break;

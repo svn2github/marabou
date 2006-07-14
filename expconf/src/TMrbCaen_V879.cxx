@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V879.cxx,v 1.3 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V879.cxx,v 1.4 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -92,7 +92,7 @@ TMrbCaen_V879::TMrbCaen_V879(const Char_t * ModuleName, UInt_t BaseAddr, Bool_t 
 			gMrbLog->Err() << ModuleName << ": Module name already in use" << endl;
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
-		} else if (gMrbConfig->CheckModuleAddress(this)) {
+		} else {
 			title = "CAEN V879 ";
 			title += IsTac ? "TAC" : "ADC";
 			title += " x 12 bit";
@@ -118,8 +118,6 @@ TMrbCaen_V879::TMrbCaen_V879(const Char_t * ModuleName, UInt_t BaseAddr, Bool_t 
 			} else {
 				this->MakeZombie();
 			}
-		} else {
-			this->MakeZombie();
 		}
 	}
 }

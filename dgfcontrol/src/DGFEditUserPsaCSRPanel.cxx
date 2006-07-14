@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditUserPsaCSRPanel.cxx,v 1.1 2005-08-25 14:35:34 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFEditUserPsaCSRPanel.cxx,v 1.2 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -170,7 +170,7 @@ Bool_t DGFEditUserPsaCSRPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 					switch (Param1) {
 						case kDGFEditUserPsaCSRButtonApply:
 							btnState = fCSRFrame->GetActive();
-							intStr.FromInteger(btnState, 0, '0', 16);
+							intStr.FromInteger(btnState, 0, 16, kTRUE);
 							fEntry->SetText(intStr);
 							this->CloseWindow();
 							break;

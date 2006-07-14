@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbNamedX.cxx,v 1.6 2005-10-20 14:16:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbNamedX.cxx,v 1.7 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +42,7 @@ const Char_t * TMrbNamedX::GetFullName(TMrbString & FullName, Int_t Base, Bool_t
 			case 8: FullName += "0"; break;
 			case 16: FullName += "0x"; break;
 		}
-		FullName.AppendInteger(this->GetIndex(), 0, ' ', Base);
+		FullName.AppendInteger(this->GetIndex(), 0, Base);
 		FullName += ")";
 	}
 	return(FullName.Data());

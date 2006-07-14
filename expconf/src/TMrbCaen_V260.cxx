@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V260.cxx,v 1.6 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V260.cxx,v 1.7 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -64,7 +64,7 @@ TMrbCaen_V260::TMrbCaen_V260(const Char_t * ModuleName, UInt_t BaseAddr) :
 			gMrbLog->Err() << ModuleName << ": Module name already in use" << endl;
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
-		} else if (gMrbConfig->CheckModuleAddress(this)) {
+		} else {
 			SetTitle("CAEN V260 scaler 16 x 24 bit"); 	// store module type
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
@@ -84,8 +84,6 @@ TMrbCaen_V260::TMrbCaen_V260(const Char_t * ModuleName, UInt_t BaseAddr) :
 			} else {
 				this->MakeZombie();
 			}
-		} else {
-			this->MakeZombie();
 		}
 	}
 }

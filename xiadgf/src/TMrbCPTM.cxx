@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.12 2005-11-10 09:07:08 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.13 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1317,7 +1317,7 @@ const Char_t * TMrbCPTM::ConvertMask(TString & Mask, Int_t MaskValue, Bool_t Tex
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString mstr;
-	if (!TextOnly) mstr.FromInteger(MaskValue, 0, ' ', 16);
+	if (!TextOnly) mstr.FromInteger(MaskValue, 0, 16);
 
 	TMrbLofNamedX maskBits;
 	maskBits.AddNamedX(kMrbCptmMaskBits);

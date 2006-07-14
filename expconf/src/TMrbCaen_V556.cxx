@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V556.cxx,v 1.6 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V556.cxx,v 1.7 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -65,7 +65,7 @@ TMrbCaen_V556::TMrbCaen_V556(const Char_t * ModuleName, UInt_t BaseAddr) :
 			gMrbLog->Err() << ModuleName << ": Module name already in use" << endl;
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
-		} else if (gMrbConfig->CheckModuleAddress(this)) {
+		} else {
 			SetTitle("CAEN V556 ADC 8 x 12 bit"); 	// store module type
 			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
@@ -83,8 +83,6 @@ TMrbCaen_V556::TMrbCaen_V556(const Char_t * ModuleName, UInt_t BaseAddr) :
 			} else {
 				this->MakeZombie();
 			}
-		} else {
-			this->MakeZombie();
 		}
 	}
 }
