@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.19 2006-07-06 13:13:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.20 2006-07-14 09:00:13 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -232,10 +232,12 @@ Bool_t TMrbEvent::HasSubevent(const Char_t * Assignment) {
 	TMrbSubevent * sevt;
 	TString sevtName;
 
-	istringstream assign(Assignment);
+	TMrbString assign = Assignment;
+	TObjArray assArr;
 
-	for (;;) {
-		assign >> sevtName;
+	Int_t n = assign.Split(assArr, " ", kTRUE);
+	for (Int_t i = 0; i < n; i++) {
+		sevtName = ((TObjString *) assArr[i])->GetString();
 		if (sevtName.Length() <= 0) break;
 		if ((sevt = (TMrbSubevent *) gMrbConfig->FindSubevent(sevtName)) == NULL) {
 			gMrbLog->Err() << "Event " << this->GetName() << ": No such subevent - " << sevtName << endl;
