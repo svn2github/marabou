@@ -42,7 +42,7 @@ $(GUTILSLIB):     $(GUTILSDO) $(GUTILSO) $(MAINLIBS) $(GUTILSLIBDEP)
 
 $(GUTILSDS):     $(GUTILSH) $(GUTILSL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude $(GUTILSH) $(GUTILSL)
+		$(ROOTCINT) -f $@ -c -p -Iinclude $(GUTILSH) $(GUTILSL)
 
 $(GUTILSDO):     $(GUTILSDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

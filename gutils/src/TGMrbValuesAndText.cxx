@@ -388,7 +388,11 @@ void TGedAlignSelect::SetAlignStyle(Style_t alignStyle)
 }
 
 //______________________________________________________________________________
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
+void TGedAlignSelect::SavePrimitive(ostream &out, Option_t *)
+#else
 void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *)
+#endif 
 {
    // Save the pattern select widget as a C++ statement(s) on output stream out
 
@@ -823,7 +827,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
    width  = this->GetDefaultWidth();
    height = this->GetDefaultHeight();
-   cout << "width " << width<< endl;
+//   cout << "width " << width<< endl;
    this->Resize(win_width, height);
 
    // position relative to the parent window (which is the root window)

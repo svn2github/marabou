@@ -43,7 +43,11 @@ public:
    virtual Bool_t ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
    void           SetAlignStyle(Style_t pattern);
    Style_t        GetAlignStyle() const { return fAlignStyle; }
-   virtual void   SavePrimitive(ofstream &out, Option_t *);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
+void TGedAlignSelect::SavePrimitive(ostream &out, Option_t *);
+#else
+void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *);
+#endif 
 
    virtual TGDimension GetDefaultSize() const { return TGDimension(38, 21); }
 
