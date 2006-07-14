@@ -19,7 +19,11 @@ public:
    Int_t GetWhere() {return fWhere;}
    void SetParent(TCurlyLineWithArrow *p) {fParent = p;};
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
-   void SavePrimitive(ofstream &, Option_t *) {};  
+ #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
+   void SavePrimitive(ostream &, Option_t *){};     // dont write to .C file
+ #else
+   void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+ #endif 
 ClassDef(TCurlyLineArrow,1)
 };
 
@@ -51,7 +55,11 @@ public:
    TCurlyLineArrow * GetArrowEnd() { return fArrowEnd;}
    void Paint(const Option_t *option="|>");
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
-   void SavePrimitive(ofstream &, Option_t *);  
+ #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
+   void SavePrimitive(ostream &, Option_t *);
+ #else
+   void SavePrimitive(ofstream &, Option_t *);
+ #endif 
 ClassDef(TCurlyLineWithArrow,1)
 };
 #endif

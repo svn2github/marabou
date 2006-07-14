@@ -21,7 +21,12 @@ public:
    PolyLineNoEdit(Int_t np, Double_t * x = NULL, Double_t * y = NULL);
    virtual ~PolyLineNoEdit() {};
    Int_t DistancetoPrimitive(Int_t, Int_t){return 9999;};
+ #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
+   void SavePrimitive(ostream &, Option_t *){};     // dont write to .C file
+ #else
    void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+ #endif 
+
 ClassDef(PolyLineNoEdit,0)
 };
 //__________________________________________________________________
@@ -38,7 +43,11 @@ public:
    Int_t DistancetoPrimitive(Int_t, Int_t){return 9999;};
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void Draw(Option_t * opt = "F");
+ #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
+   void SavePrimitive(ostream &, Option_t *){};     // dont write to .C file
+ #else
    void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+ #endif 
 ClassDef(RailwaySleeper,0)
 };
 //__________________________________________________________________
@@ -77,11 +86,15 @@ public:
    void SetOneShapeFactor(Int_t ipoint, Double_t x, Double_t y, Float_t sfactor); // *MENU* *ARGS={ipoint=>fSelectedPoint,x=>fSelectedX,y=>fSelectedY,sfactor=>fSelectedShapeFactor}
    void SetControlPoint(Int_t ipoint, Double_t x, Double_t y, Float_t sfactor); // *MENU* *ARGS={ipoint=>fSelectedPoint,x=>fSelectedX,y=>fSelectedY,sfactor=>fSelectedShapeFactor}
    void GetControlPoint(Int_t ipoint, Double_t *x, Double_t *y, Float_t *sfactor); 
-   Int_t CG_InsertPoint();               // *MENU*
-   Int_t CG_RemovePoint();               // *MENU*
+   Int_t InsertPoint();                  // *MENU*
+   Int_t RemovePoint();                  // *MENU*
 //   virtual void EditControlGraph();    // *MENU*
    virtual void ControlGraphMixer();     // *MENU*
+ #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
+   void SavePrimitive(ostream &, Option_t *){};     // dont write to .C file
+ #else
    void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+ #endif 
    ClassDef(ControlGraph, 1)
 };
 //__________________________________________________________________
@@ -103,12 +116,13 @@ public:
    void    Compute();
    void    Paint(Option_t * option = " ");
    Int_t   DistancetoPrimitive(Int_t px, Int_t py);
+   void    Pop();
    void    ExecuteEvent(Int_t event, Int_t px, Int_t py);
    TSplineX *GetParent(){return fParent;}; 
    Double_t  GetDist(){return fDist;}; 
    void      SetDist(Double_t d){fDist = d;};           // *MENU*
-   void   Remove();                                     // *MENU*
-   void   Delete(Option_t * opt) {this->Remove();};              
+   void   Remove(Option_t * opt);                                     // *MENU*
+   void   Delete(Option_t * opt) {this->Remove(opt);};              
    void   FillToSlave(Double_t dist = 0);               // *MENU*
    void   ClearFillToSlave();                           // *MENU*
    void   SetSlave(ParallelGraph* slave)   {fSlave = slave;};
@@ -121,7 +135,11 @@ public:
    void   SetIsRail(Bool_t israil = kTRUE) {fIsRail = israil;};
    void   CorrectForArrows(Double_t alen, Double_t aangle, Double_t aind_angle,
                            Bool_t at_start, Bool_t at_end);
+ #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
+   void SavePrimitive(ostream &, Option_t *){};     // dont write to .C file
+ #else
    void SavePrimitive(ofstream &, Option_t *){};     // dont write to .C file
+ #endif 
    ClassDef(ParallelGraph, 1)
 };
 //__________________________________________________________________
@@ -262,10 +280,13 @@ public:
    virtual ~TSplineX();
    Int_t   DistancetoPrimitive(Int_t px, Int_t py);
    void    ExecuteEvent(Int_t event, Int_t px, Int_t py);
+   void    Pop();
 //   void  EditControlGraph();                                        // *MENU*
+   Int_t   InsertPoint() {return fCPGraph.InsertPoint();};            // *MENU*
+   Int_t   RemovePoint() {return fCPGraph.RemovePoint();};            // *MENU*
    void    RemovePolyLines();
    void    ControlGraphMixer(){fCPGraph.ControlGraphMixer();};        // *MENU* 
-   void    Print(Option_t *) const{TPolyLine::Print();};              // *MENU*
+   void    Print(Option_t *) const;                                   // *MENU*
    void    DrawControlPoints(Style_t marker = 24, Size_t size = 1);   // *MENU* *ARGS={marker=>fMStyle, size=>fMSize}
    void    RemoveControlPoints();                                     // *MENU* 
    Style_t GetMStyle() {return fMStyle;};
@@ -324,7 +345,11 @@ public:
    Bool_t   GetPaintArrowAtEnd()            {return fPaintArrowAtEnd;};
    Int_t    GetArrowFill()                  {return fArrowFill;};
    void     SetArrowFill(Bool_t filled);                              // *MENU*
-   void     SavePrimitive(ofstream &out, Option_t *option);
+   #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
+   void SavePrimitive(ostream &, Option_t *);
+   #else
+   void SavePrimitive(ofstream &, Option_t *); 
+   #endif 
 
    ClassDef(TSplineX, 1)
 };

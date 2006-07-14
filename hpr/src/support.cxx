@@ -43,17 +43,17 @@ TSocket * gSocket = 0;
 //  a command button
 
 int GetBPars(const char *cmd, TObject * cc, int xpos, int ypos, float dx,
-             float dy, char *tmp, float *x0, float *x1, float *y0,
+             float dy, TString *tmp, float *x0, float *x1, float *y0,
              float *y1)
 {
    if (xpos < 1 || xpos > 8 || ypos < 1 || ypos > 8) {
       printf("Illegal button position: %d %d\n", xpos, ypos);
       return 0;
    }
-   strcpy(tmp, cc->GetName());
-   strcat(tmp, "->");
-   strcat(tmp, cmd);
-   strcat(tmp, "();");
+   *tmp = cc->GetName();
+   (*tmp) += "->";
+   (*tmp) += cmd;
+   (*tmp) += "();";
 
    *x0 = (float) ((xpos - 1) * dx);
    *x1 = *x0 + 0.97 * dx;
@@ -68,10 +68,10 @@ int GetBPars(const char *cmd, TObject * cc, int xpos, int ypos, float dx,
 TButton *CButton(const char *cmd, const char *title, TObject * cc,
                  int xpos, int ypos, float dy, float dx)
 {
-   char tmp[50];
+   TString tmp;
    float x0, x1, y0, y1;
-   if (GetBPars(cmd, cc, xpos, ypos, dx, dy, tmp, &x0, &x1, &y0, &y1)) {
-      TButton *b = new TButton((char *) title, tmp, x0, y0, x1, y1);
+   if (GetBPars(cmd, cc, xpos, ypos, dx, dy, &tmp, &x0, &x1, &y0, &y1)) {
+      TButton *b = new TButton((char *) title, tmp.Data(), x0, y0, x1, y1);
       b->SetTextFont(60);
       b->Draw();
       return b;
@@ -85,13 +85,13 @@ TButton *CButton(const char *cmd, const char *title, TObject * cc,
 TButton *SButton(const char *cmd, const char *title, TObject * cc,
                  int xpos, int ypos, float dy, int onoff, float dx)
 {
-   char tmp[50];
+   TString tmp;
    float x0, x1, y0, y1;
-   if (GetBPars(cmd, cc, xpos, ypos, dx, dy, tmp, &x0, &x1, &y0, &y1)) {
+   if (GetBPars(cmd, cc, xpos, ypos, dx, dy, &tmp, &x0, &x1, &y0, &y1)) {
       int col = 2;
       if (onoff)
          col = 3;
-      TButton *b = new TButton((char *) title, tmp, x0, y0, x1, y1);
+      TButton *b = new TButton((char *) title, tmp.Data(), x0, y0, x1, y1);
       b->SetFillColor(col);
       b->Draw();
       return b;
@@ -105,12 +105,12 @@ TButton *SButton(const char *cmd, const char *title, TObject * cc,
 void HButton(const char *cmd, TObject * cc, int xpos, int ypos,
              float dy, float dx)
 {
-   char tmp[50];
+   TString tmp;
    float x0, x1, y0, y1;
-   if (GetBPars(cmd, cc, xpos, ypos, dx, dy, tmp, &x0, &x1, &y0, &y1)) {
+   if (GetBPars(cmd, cc, xpos, ypos, dx, dy, &tmp, &x0, &x1, &y0, &y1)) {
       x0 += dx;
       x1 = x0 + dx * 0.25;
-      TButton *b = new TButton((char *) "?", tmp, x0, y0, x1, y1);
+      TButton *b = new TButton((char *) "?", tmp.Data(), x0, y0, x1, y1);
       b->Draw();
    }
 };

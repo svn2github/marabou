@@ -40,6 +40,8 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
  					$(HPRDIRI)/Ascii2GraphDialog.h \
  					$(HPRDIRI)/Ascii2HistDialog.h \
  					$(HPRDIRI)/Ascii2NtupleDialog.h \
+ 					$(HPRDIRI)/InsertFunctionDialog.h \
+ 					$(HPRDIRI)/InsertTextDialog.h \
  					$(HPRDIRI)/TCurlyLineArrow.h \
  					$(HPRDIRI)/LinkDef.h
 
@@ -80,7 +82,7 @@ $(HPRLIB):     $(HPRDO) $(HPRO)
 
 $(HPRDS):     $(HPRDH) $(HPRL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude $(HPRDH) 
+		$(ROOTCINT) -f $@ -c -p -Iinclude $(HPRDH) 
 
 $(HPRDO):     $(HPRDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

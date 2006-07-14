@@ -212,7 +212,11 @@ void TCurlyLineWithArrow::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 }
 //___________________________________________________________________________
 
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
+void TCurlyLineWithArrow::SavePrimitive(ostream &out, Option_t *)
+#else
 void TCurlyLineWithArrow::SavePrimitive(ofstream &out, Option_t *)
+#endif
 {
    // Save primitive as a C++ statement(s) on output stream out
 

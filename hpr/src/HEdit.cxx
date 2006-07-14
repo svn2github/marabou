@@ -23,6 +23,7 @@
 #include "EditMarker.h"
 #include "GroupOfGObjects.h"
 #include "TGMrbInputDialog.h"
+#include "InsertTextDialog.h"
 #include "TGMrbValuesAndText.h"
 #include "TGMrbGetTextAlignment.h"
 #include "HprImage.h"
@@ -1478,13 +1479,13 @@ void HTCanvas::WritePrimitives()
    if (OpenWorkFile(fRootCanvas)) {
       RemoveEditGrid();
       RemoveControlGraphs();
-      RemoveTSplineXsPolyLines();
-      RemoveParallelGraphs();
-      gPad->GetListOfPrimitives()->ls();
+//      RemoveTSplineXsPolyLines();
+//      RemoveParallelGraphs();
+//      gPad->GetListOfPrimitives()->ls();
       Write(name.Data());
  //     GetListOfPrimitives()->Write(name.Data(), 1);
       CloseWorkFile();
-      DrawTSplineXsParallelGraphs();
+//      DrawTSplineXsParallelGraphs();
    }
 }
 ///______________________________________________________________________________
@@ -2833,155 +2834,6 @@ void HTCanvas::DeleteObjects()
 }
 //______________________________________________________________________________
 
-Int_t getm(TString& cmd, Int_t sind) 
-{
-   Int_t ind = sind;
-   Int_t nbopen = 0;
-   while (ind < cmd.Length()) {
-     if (cmd[ind] == '}') {
-        nbopen -= 1;
-        if (nbopen == 0) return ind;
-     }
-     if (cmd[ind] == '{') nbopen += 1;
-     ind += 1;
-   }
-   return -1;
-}
-Int_t getmb(TString& cmd, Int_t sind) 
-{
-   Int_t ind = sind;
-   Int_t nclose = 0;
-   while (ind >= 0) {
-     if (cmd[ind] == '{') {
-        nclose -= 1;
-        if (nclose == 0) return ind;
-     }
-     if (cmd[ind] == '}') nclose += 1;
-     ind -= 1;
-   }
-   return -1;
-}
-//______________________________________________________________________________
-
-TString lat2root(TString& cmd) 
-{
-// this tries to translate standard Latex into ROOTs
-// latex like formular processor TLatex format
-
-//    remove latex's $ (mathstyle), replace \ by #, ~ by space
-   Int_t ind;
-   Int_t sind = 0;
-   TString ill("Illegal syntax");
-   while (cmd.Index("$") >=0) cmd.Remove(cmd.Index("$"),1);
-   while (cmd.Index("\\{") >=0) cmd.Remove(cmd.Index("\\{"),1);
-   while (cmd.Index("\\}") >=0) cmd.Remove(cmd.Index("\\}"),1);
-   while (cmd.Index("\\") >=0) cmd(cmd.Index("\\")) = '#';
-   while (cmd.Index("~") >=0) cmd(cmd.Index("~")) = ' ';
-//  caligraphics not yet supported
-   while (cmd.Index("#cal") >=0) {
-      Int_t ob = cmd.Index("#cal");
-      Int_t cb = getm(cmd, ob + 4);
-      if (cb < 0) {
-         cout << "in #cal no closing }" << endl;
-         return ill;
-      }
-      cmd.Remove(cb,1);
-      cmd.Remove(ob,5);
-   }
-//    make sure super / sub scripts are enclosed in {}
-   TRegexp supsub("[_^]");
-   TString rep; 
-   sind = 0;
-   while (cmd.Index(supsub, sind) >=0) {
-      ind = 1 + cmd.Index(supsub, sind);
-      char c = cmd[ind];
-      sind = ind + 1;
-      if (c != '{') {
-         rep = "{";
-         rep += c;
-         rep += "}";
-         cmd.Replace(ind, 1, rep);
-         sind += 2;
-      }
-   }
-
-//   add space around operators 
-
-   TRegexp oper("[-+*/=]");
-   sind = 0;
-   while (cmd.Index(oper, sind) >=0) {
-
-      ind = 1 + cmd.Index(oper, sind);
-      char c = cmd[ind];
-      sind = ind + 1;
-//   are we within sub / superscript?
-
-      TString le = cmd(0, ind -1);
-      Int_t ob = le.Last('{');
-      if (ob > 0 && (cmd(ob-1) == '^' 
-                 || (cmd(ob-1) == '_'))) {
-         if (getm(le, ob) == - 1)  continue; // no match before
-      }
-      if (c != ' ' && c!= '{' && c!= '}') {
-         if (ind > -1 && ind < cmd.Length()) { 
-            cmd.Insert(ind," ");
-            sind += 1;
-         }
-      }
-      if (ind > 1) {
-         c = cmd[ind - 2];
-         if (c != ' ' && c!= '{' && c!= '}') { 
-            cmd.Insert(ind-1," ");
-            sind += 1;
-         }
-      }
-   }
-//   replace \over by \frac{}{}
-
- ind = cmd.Index("#over");
- Int_t ind1 = cmd.Index("#overline");
- if (ind > 0 && ind != ind1) {
-     TString le = cmd(0, ind);
-     Int_t cb = le.Last('}');
-     if (cb < 0) {
-        cout << "no closing } found" << endl;
-        return ill;
-     }
-     Int_t ob = getmb(cmd, cb);
-     if (ob < 0) {
-        cout << "no matching { found" << endl;
-        return ill;
-     }
-     cmd.Remove(ind, 5);
-     cmd.Insert(ob, " #frac");
-  }
-
-//   remove not used \cos etc,
-//   replace overline by bar
-
-   TRegexp re_Ra("#Ra");
-   while (cmd.Index(re_Ra) >= 0) cmd(re_Ra) = " #Rightarrow ";
-   TRegexp re_La("#La");
-   while (cmd.Index(re_La) >= 0) cmd(re_La) = " #Leftarrow ";
-   TRegexp re_cdot("#cdot");
-   while (cmd.Index(re_cdot) >= 0) cmd(re_cdot) = " #upoint ";
-   TRegexp re_exp("#exp");
-   while (cmd.Index(re_exp) >= 0) cmd(re_exp) = " e^";
-   TRegexp re_ln("#ln");
-   while (cmd.Index(re_ln) >= 0) cmd(re_ln) = "ln";
-   TRegexp re_cos("#cos");
-   while (cmd.Index(re_cos) >= 0)cmd(re_cos) = "cos";
-   TRegexp re_sin("#sin");
-   while (cmd.Index(re_sin) >= 0)cmd(re_sin) = "sin";
-   TRegexp re_tan("#tan");
-   while (cmd.Index(re_tan) >= 0)cmd(re_tan) = "tan";
-   TRegexp re_ovl("#overline");
-   while (cmd.Index(re_ovl) >= 0)cmd(re_ovl) = "#bar";
-   return cmd;
-}
-
-//______________________________________________________________________________
-
 void HTCanvas::FeynmanDiagMenu()
 {
  //  Int_t win_width = 160
@@ -3043,12 +2895,14 @@ void HTCanvas::FeynmanArrow()
    TArrow * a = (TArrow*)this->WaitPrimitive("TArrow");
    if (a);
 };
+//______________________________________________________________________________
 void HTCanvas::FeynmanWavyLine()
 {
 	TCurlyLine::SetDefaultIsCurly(kFALSE);
    TCurlyLine * a = (TCurlyLine*)this->WaitPrimitive("TCurlyLine");
    if (a);
 };
+//______________________________________________________________________________
 void HTCanvas::FeynmanWavyArc()
 {
 	TCurlyArc::SetDefaultIsCurly(kFALSE);
@@ -3065,6 +2919,7 @@ void HTCanvas::FeynmanCurlyLine()
    TCurlyLine * a = (TCurlyLine*)this->WaitPrimitive("TCurlyLine");
    if (a);
 };
+//______________________________________________________________________________
 void HTCanvas::FeynmanCurlyArc()
 {
 	TCurlyArc::SetDefaultIsCurly(kTRUE);
@@ -3076,6 +2931,7 @@ void HTCanvas::FeynmanCurlyArc()
    Modified();
    Update();
 };
+//______________________________________________________________________________
 void HTCanvas::FeynmanSolidLine()
 {
    Style_t save = gStyle->GetLineStyle();
@@ -3084,6 +2940,7 @@ void HTCanvas::FeynmanSolidLine()
    gStyle->SetLineStyle(save);    
    if (a);
 };
+//______________________________________________________________________________
 void HTCanvas::FeynmanDashedLine()
 {
    Style_t save = gStyle->GetLineStyle();
@@ -3092,6 +2949,7 @@ void HTCanvas::FeynmanDashedLine()
    gStyle->SetLineStyle(save);    
    if (a);
 };
+//______________________________________________________________________________
 void HTCanvas::FeynmanText()
 {
 //   TText * a = (TText*)this->WaitPrimitive("TText");
@@ -3099,235 +2957,12 @@ void HTCanvas::FeynmanText()
    InsertText(kFALSE);
 };
 
-//______________________________________________________________________________
 
-void HTCanvas::InsertTextSaveDefaults()
-{
-}
-//______________________________________________________________________________
-
-void HTCanvas::InsertTextSetDefaults()
-{
-//   cout << "HTCanvas::InsertTextSetDefaults()" << endl;
-   fEditTextFileName = "latex.txt";
-   fEditTextFromFile = 0;
-   fEditTextX0 = 0;
-   fEditTextY0 = 0;
-   fEditTextDy = 10;
-   fEditTextAlign = 11; 
-   fEditTextColor = 1; 
-   fEditTextFont  = 6; 
-   fEditTextPrec  = 2; 
-   fEditTextSize = 0.02;
-   fEditTextAngle = 0;
-   fEditTextMarkCompound = 0;
-   fEditTextLatexFilter = 1;
-   fEditTextSeqNr = 0;
-}
 //______________________________________________________________________________
 
 void HTCanvas::InsertText(Bool_t from_file)
 {
-   static void *valp[25];
-   Int_t ind = 0;
-
-   fEditTextFromFile = (Int_t)from_file;
-
-   static TString excmd("InsertTextExecute()");
-   TList *row_lab = new TList(); 
- 
-   if (fEditTextFromFile) {
-      row_lab->Add(new TObjString("StringValue_File Name with text"));
-      valp[ind++] = &fEditTextFileName;
-      fEditTextMarkCompound = 1;
-   } else {
-      fEditTextMarkCompound = 0;
-   }
-   row_lab->Add(new TObjString("DoubleValue_X Position"));
-   valp[ind++] = &fEditTextX0;
-   row_lab->Add(new TObjString("DoubleValue+Y Position"));
-   valp[ind++] = &fEditTextY0;
-   row_lab->Add(new TObjString("DoubleValue_Line spacing"));
-   valp[ind++] = &fEditTextDy;
-   row_lab->Add(new TObjString("Float_Value+Size"));
-   valp[ind++] = &fEditTextSize;
-   row_lab->Add(new TObjString("CfontSelect_Font"));
-   valp[ind++] = &fEditTextFont;
-   row_lab->Add(new TObjString("PlainIntVal+Precission"));
-   valp[ind++] = &fEditTextPrec;
-   row_lab->Add(new TObjString("ColorSelect_Color"));
-   valp[ind++] = &fEditTextColor;
-   row_lab->Add(new TObjString("AlignSelect+Alignment"));
-   valp[ind++] = &fEditTextAlign;
-   row_lab->Add(new TObjString("Float_Value+Angle"));
-   valp[ind++] = &fEditTextAngle;
-   row_lab->Add(new TObjString("CheckButton_Mark as compound"));
-    valp[ind++] = &fEditTextMarkCompound;
-   row_lab->Add(new TObjString("CheckButton+Apply latex filter"));
-   valp[ind++] = &fEditTextLatexFilter;
-   row_lab->Add(new TObjString("CommandButt_InsertTextExecute"));
-   valp[ind++] = &excmd;
-
-//   if (!from_file) {
-//       row_lab->Add(new TObjString("CheckButton_Keep Dialog"));
-//       valp[ind++] = &keepdialog;
-//   }
-  
-   static TString text;
-//   TString * tpointer = 0; 
-   fEditTextPointer = NULL;
-   const char * history = 0;
-   if (fEditTextFromFile == 0) {
-      fEditTextPointer = &text;
-      const char hist_file[] = {"text_hist.txt"};
-      history = hist_file;
-      if (gROOT->GetVersionInt() < 40000) history = NULL;
-   }
-   fEditTextX0 = 0;
-   fEditTextY0 = 0;
-   Bool_t ok; 
-   Int_t itemwidth = 280;
-//loop:
-   ok = GetStringExt("Text (latex) string", fEditTextPointer, itemwidth, fRootCanvas,
-                      history, NULL, row_lab, valp,
-                      NULL, NULL, NULL, this, this->ClassName());
-//   if (!ok) return;
-}
-//______________________________________________________________________________
-
-void HTCanvas::InsertTextExecute()
-{
-   if (fEditTextX0 == 0 && fEditTextY0 == 0) {
-   	cout << "Mark position with left mouse" << endl;
-   	fGetMouse = kTRUE;
-	   while (fGetMouse == kTRUE) {
-   	   gSystem->ProcessEvents();
-   	   gSystem->Sleep(10);
-	   }
-      fEditTextX0 = fMouseX;
-      fEditTextY0 = fMouseY;
-      fMousePad->cd();
-   }
-
-   ifstream infile;
-   TString line;
-   TString cmd; 
-   TString converted_line;
-
-   TLatex  * latex;
-   Double_t xt = fEditTextX0;
-   Double_t yt = fEditTextY0;
-   Double_t longestline = 0, th_first = 0, th_last = 0;
-   TList llist;
-   Bool_t loop = kTRUE;
-   if (fEditTextFromFile != 0) {
-      infile.open(fEditTextFileName.Data());
-      if (!infile.good()){
-         cout << "Cant open: " << fEditTextFileName << endl;
-         return;
-      }
-   }
-   while(loop) {
-// read lines, concatinate lines ending with 
-      if (fEditTextFromFile != 0) {
-      	line.ReadLine(infile);
-      	if (infile.eof()) {
-	      	infile.close();
-         	if (cmd.Length() > 0) {
-            	cout << "Warning: Files ends with \\" << endl;
-            	cout << cmd << endl;
-         	}
-	      	break;
-      	}
-      	line = line.Strip(TString::kBoth);
-      	cmd = cmd + line;
-      	if (cmd.EndsWith("\\")) {
-         	cmd(cmd.Length()-1) = ' ';
-         	continue;
-      	}
-      } else {
-         cmd = fEditTextPointer->Data();
-         cout << fEditTextPointer << " " << cmd.Data() << endl;
-         loop = kFALSE;
-      }
-      if (fEditTextLatexFilter > 0) converted_line = lat2root(cmd);
-      else             converted_line = cmd;
-      latex = new TLatex(xt, yt, converted_line.Data());
-      latex->SetTextAlign(fEditTextAlign);
-      latex->SetTextFont(fEditTextFont * 10 + fEditTextPrec);
-      latex->SetTextSize(fEditTextSize);
-      latex->SetTextColor(fEditTextColor);
-      latex->Draw();
-      latex->SetTextAngle(fEditTextAngle);
-      llist.Add(latex);
-      yt -= fEditTextDy;
-//      latex->Dump();
-//      outfile << cmd << endl;
-      cmd.Resize(0);
-      if (latex->GetXsize() > longestline) longestline = latex->GetXsize();
-      if (th_first <= 0) th_first = latex->GetYsize();
-      th_last = latex->GetYsize();
-   }
-
-   Int_t nlines = llist.GetSize();
-   if (nlines > 1) {
-      GroupOfGObjects * text_group = NULL;
-      TString cname("text_obj_");
-
-      if (fEditTextMarkCompound) {
-         text_group = new GroupOfGObjects(cname.Data(), 0, 0, NULL);
-         cname += fEditTextSeqNr;
-      }
-      Double_t yshift = 0;
-      if (fEditTextAlign%10 == 1)yshift =  (nlines -1) * fEditTextDy;
-      if (fEditTextAlign%10 == 2)yshift =  (nlines  -1)* (0.5 * fEditTextDy);
-      TIter next(&llist);
-      while ( (latex = (TLatex*)next()) ) {
-          latex->SetY(latex->GetY() + yshift);
-          if (text_group) text_group->AddMember(latex, "");
-      }
-      if (fEditTextMarkCompound) {
-         yt += fEditTextDy;        // last displayed line
-      	Double_t xenc[5];
-      	Double_t yenc[5];
-      	yenc[0] = yt + yshift;
-//      	if (fEditTextAlign%10 == 1)yenc[0] -= 0.5 * th_last;
-      	if (fEditTextAlign%10 == 2)yenc[0] -= 0.5 * th_last;
-      	if (fEditTextAlign%10 == 3)yenc[0] -= th_last;
-      	yenc[1] = yenc[0];
-
-      	yenc[2] = fEditTextY0 + yshift;
-      	if (fEditTextAlign%10 == 2)yenc[2] += 0.5 * th_first;
-      	if (fEditTextAlign%10 == 1)yenc[2] += th_first;
-      	yenc[3] = yenc[2];
-      	yenc[4] = yenc[0];
-
-      	Int_t halign = fEditTextAlign / 10;
-      	if (halign == 1) {
-         	xenc[0] = fEditTextX0;
-         	xenc[1] = xenc[0] + longestline;
-         	xenc[0] -= 0.001;
-      	} else if (halign == 2) {
-         	xenc[0] = fEditTextX0 + 0.5 * longestline;
-         	xenc[1] = xenc[0] - longestline;
-      	} else {
-         	xenc[0] = fEditTextX0 - longestline;
-         	xenc[1] = fEditTextX0 + 0.001;
-      	}
-      	xenc[2] = xenc[1];
-      	xenc[3] = xenc[0];
-      	xenc[4] = xenc[0];
-      	TCutG cut(cname.Data(), 5, xenc, yenc);
-	//      cut.Print();
-      	text_group->SetEnclosingCut(&cut);
-      	text_group->Draw();
-   	}
-   }
-   Modified();
-   Update();
-   fEditTextX0 = 0;
-   fEditTextY0 = 0;
-//   if (!from_file && keepdialog == 1) goto loop;
+   new InsertTextDialog(from_file);
 }
 //______________________________________________________________________________
 
@@ -3534,145 +3169,7 @@ tryagain:
 
 void HTCanvas::InsertTSplineX()
 {
-   new TSplineXDialog(fRootCanvas);
-/*
-   static void *valp[25];
-   Int_t ind = 0;
-   TList * row_lab = new TList(); 
-   static Int_t    closed  = 0;
-   static Int_t    approx  = 1;
-   static Int_t    fixends = 1;
-   static Double_t prec    = 0.2;
-   static Int_t    showcp  = 1;
-   static Color_t  color   = gStyle->GetLineColor();
-   static Width_t  lwidth  = gStyle->GetLineWidth();
-   static Style_t  lstyle  = gStyle->GetLineStyle();
-   static Color_t  fcolor  = gStyle->GetFillColor();
-   static Style_t  fstyle  = gStyle->GetFillStyle();
-
-   static Double_t filled        = 0;
-   static Double_t empty         = 5;
-   static Double_t gage          = 4;
-   static Int_t    arrow_at_start = 0;
-   static Int_t    arrow_at_end  = 0;
-   static Int_t    arrow_filled  = 0;
-   static Double_t arrow_size    = 10;
-   static Double_t arrow_angle   = 30;
-   static Double_t arrow_indent_angle  = -30;
-
-   row_lab->Add(new TObjString("CheckButton_Closed TSplineX"));
-   valp[ind++] = &closed;
-   row_lab->Add(new TObjString("CheckButton+Approximate"));
-   valp[ind++] = &approx;
-   row_lab->Add(new TObjString("CheckButton_Fix endpoints"));
-   valp[ind++] = &fixends;
-   row_lab->Add(new TObjString("CheckButton+Show Controlpoints"));
-   valp[ind++] = &showcp;
-   row_lab->Add(new TObjString("DoubleValue_Precision"));
-   valp[ind++] = &prec;
-   row_lab->Add(new TObjString("ColorSelect+Line Col"));
-   valp[ind++] = &color;
-   row_lab->Add(new TObjString("PlainShtVal_Line Width"));
-   valp[ind++] = &lwidth;
-   row_lab->Add(new TObjString("LineSSelect+Line Style"));
-   valp[ind++] = &lstyle;
-   row_lab->Add(new TObjString("CheckButton_Arrow@Start"));
-   valp[ind++] = &arrow_at_start;
-   row_lab->Add(new TObjString("CheckButton+Arrow@End"));
-   valp[ind++] = &arrow_at_end;
-   row_lab->Add(new TObjString("CheckButton_Fill Arrow"));
-   valp[ind++] = &arrow_filled;
-   row_lab->Add(new TObjString("DoubleValue+ArLength"));
-   valp[ind++] = &arrow_size;
-   row_lab->Add(new TObjString("DoubleValue_ArAngle"));
-   valp[ind++] = &arrow_angle;
-   row_lab->Add(new TObjString("DoubleValue+IndentAng"));
-   valp[ind++] = &arrow_indent_angle;
-//   row_lab->Add(new TObjString("CheckButton_Railway (double line)"));
-//   valp[ind++] = &railway;
-   row_lab->Add(new TObjString("DoubleValue_Railway Gage"));
-   valp[ind++] = &gage;
-   row_lab->Add(new TObjString("DoubleValue_SleeperL"));
-   valp[ind++] = &filled;
-   row_lab->Add(new TObjString("DoubleValue+SleeperDist"));
-   valp[ind++] = &empty;
-   row_lab->Add(new TObjString("ColorSelect_Fill Color"));
-   valp[ind++] = &fcolor;
-   row_lab->Add(new TObjString("Fill_Select+Fill Style"));
-   valp[ind++] = &fstyle;
-
-   Bool_t ok; 
-   Int_t itemwidth = 320;
-tryagain:
-   ok = GetStringExt("TSplineX Params", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, row_lab, valp);
-   if (!ok) return;
-
-  cout << "Input a  Polyline defining the controlpoints" << endl;
-  TIter next(this->GetListOfPrimitives());
-  TObject * obj;
-  while ( (obj = next()) ) {
-     if (obj->IsA() == TGraph::Class()) {
-        TGraph * g = (TGraph*)obj;
-        if(!(strncmp(g->GetName(), "Graph", 5))) { 
-           cout << "Rename existing Graph" << endl;
-           g->SetName("Hprgraph");
-        }
-     }
-  }
-  TGraph * gr = (TGraph*)this->WaitPrimitive("Graph", "PolyLine");
-  if (!gr) {
-      cout << "No PolyLine found, try again" << endl;
-      goto tryagain;
-   }
-   gr->SetName("abc");
-   Double_t* x = gr->GetX();
-   Double_t* y = gr->GetY();
-   Int_t npoints = gr->GetN();
-//  add an extra point in between
-   if (npoints < 2) {
-      cout << "Need at least 2 points, try again" << endl;
-      goto tryagain;
-   }
-   TArrayF shape_factors(npoints);
-   if ( (fixends == 0 || closed == 1) && approx == 1) {
-      shape_factors[0] = 1;
-      shape_factors[npoints - 1] = 1;
-   } else {
-      shape_factors[0] = -1;
-      shape_factors[npoints - 1] = -1;
-   }
-   for (Int_t i = 1; i < npoints - 1; i++) {
-   	if (approx == 1) {
-      	shape_factors[i] = 1;
-   	} else {
-      	shape_factors[i] = -1;
-   	}
-   }
-   Bool_t closed_spline;
-   if (closed != 0) closed_spline = kTRUE;
-   else             closed_spline = kFALSE;
-   TSplineX* xsp = 
-     new TSplineX(npoints, x, y, shape_factors.GetArray(), prec, closed_spline);
-   xsp->Draw("L");
-   xsp->SetFillColor(fcolor);
-   xsp->SetFillStyle(fstyle);
-   xsp->SetLineColor(color);
-   xsp->SetLineWidth(lwidth);
-   xsp->SetLineStyle(lstyle);
-   xsp->SetFilledLength(filled);
-   xsp->SetEmptyLength(empty);
-   if (gage > 0)xsp->SetRailwaylike(gage);
-   if (showcp > 0) xsp->DrawControlPoints(0, 0);
-   Bool_t afilled;
-   if (arrow_filled == 0) afilled = kFALSE;
-   else                  afilled = kTRUE;
-   if (arrow_at_start) xsp->AddArrow(0, arrow_size, arrow_angle, arrow_indent_angle, afilled);
-   if (arrow_at_end)   xsp->AddArrow(1, arrow_size, arrow_angle, arrow_indent_angle, afilled);
-   delete gr;
-   Modified();
-   Update();
-*/
+   new TSplineXDialog();
 }
 //______________________________________________________________________________
 

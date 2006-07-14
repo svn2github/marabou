@@ -3538,8 +3538,8 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
          if (obj->InheritsFrom("TPad")){
             lpads.Add(obj);
          } else {
-             cout << "At HistPresent::ShowCanvas -= " 
-               << obj->GetName()  << endl;
+//             cout << "At HistPresent::ShowCanvas -= " 
+//               << obj->GetName()  << endl;
 //            obj->Dump();
             obj->SetDrawOption(obj->GetOption());
             obj->Draw(lnk->GetOption());

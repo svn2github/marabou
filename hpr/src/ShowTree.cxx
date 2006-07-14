@@ -72,8 +72,8 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
 //   TButton *button;
    Int_t len, l;
 //   TLeaf *leafcount;
-   char *bname;
-   char branchname[100];
+//   char *bname;
+//   char branchname[1000];
    TString cmd;
    TString nam;
    TString empty;
@@ -106,13 +106,9 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    for (l=0;l<nleaves;l++) {
       TLeaf *leaf = (TLeaf*)leaves->UncheckedAt(l);
       TBranch *branch = leaf->GetBranch();
-      strcpy(branchname,branch->GetName());
-      bname = branchname;
-      while ( *bname) { if (*bname == '.') *bname='_'; bname++; }
       if (branch->IsA() == TBranchObject::Class()) {
       } else {
          len = leaf->GetLen();
- //        leafcount =leaf->GetLeafCount();
          if (len > 1) {
            for (Int_t ix = 0; ix < len; ix++) {
 
@@ -124,9 +120,6 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
               fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
            }
          } else {
-//            if (len > 1) sprintf(lname,"%s[%d]",     branchname,len);
-//            else         sprintf(lname,"%s",         branchname);
-//            sprintf(lname,"%s",         branchname);
             cmd = cmd_base + leaf->GetName() + "\")";
             sel = sel_base + leaf->GetName() + "\")";
             nam = leaf->GetName();
@@ -134,16 +127,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
             fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
 
          }
-//         cmd = "mypres->ShowLeaf(\"";
-//         cmd = cmd + fname + "\",\"" + tname + "\",\"" + lname + "\")";
-//         cout << cmd << endl;
-//         sel = "mypres->SelectLeaf(\"";
-//         sel = sel  + lname + "\")";
-//         cmd = cmd_base + lname + "\")";
- //        sel = sel_base + lname + "\")";
- //        nam = lname;
- //        fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
-     }
+      }
    }
    cmd = "mypres->EditLeafCut(\"";
    cmd += Form("0x%x",var_list);

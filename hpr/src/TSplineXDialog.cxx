@@ -8,7 +8,7 @@
 
 ClassImp(TSplineXDialog)
 
-TSplineXDialog::TSplineXDialog(TGWindow * win)
+TSplineXDialog::TSplineXDialog()
 {
    static void *valp[25];
    Int_t ind = 0;

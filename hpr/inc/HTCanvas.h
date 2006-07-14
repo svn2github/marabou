@@ -65,22 +65,6 @@ private:
    Int_t          fFeynmanPhi1;
    Int_t          fFeynmanPhi2;
 
-   TString        *fEditTextPointer;
-   TString        fEditTextFileName;
-   Int_t          fEditTextFromFile;
-   Double_t       fEditTextX0;
-   Double_t       fEditTextY0;
-   Double_t       fEditTextDy;
-   Size_t         fEditTextSize;
-   Float_t        fEditTextAngle;
-   Short_t        fEditTextAlign;
-   Color_t        fEditTextColor;
-   Font_t         fEditTextFont;
-   Int_t          fEditTextPrec;
-   Int_t          fEditTextMarkCompound;
-   Int_t          fEditTextLatexFilter;
-   Int_t          fEditTextSeqNr;
-
    void Build();
 //
 public:
@@ -173,9 +157,6 @@ public:
    void    ShowGallery();
 //   void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
    void    InsertText(Bool_t);
-   void    InsertTextExecute();
-   void    InsertTextSetDefaults();
-   void    InsertTextSaveDefaults();
    void    InsertTextF(){InsertText(kTRUE);};
    void    InsertTextK(){InsertText(kFALSE);};
    void    InsertFunction();

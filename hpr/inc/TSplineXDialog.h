@@ -33,7 +33,7 @@ private:
 	Double_t fArrow_angle;   
 	Double_t fArrow_indent_angle;
 public:
-   TSplineXDialog(TGWindow * win = NULL);
+   TSplineXDialog();
    virtual ~TSplineXDialog() {};
    void Draw_The_TSplineX();
    void SaveDefaults() {};

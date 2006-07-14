@@ -29,6 +29,8 @@
 #pragma link C++ class Ascii2GraphDialog;
 #pragma link C++ class Ascii2HistDialog;
 #pragma link C++ class Ascii2NtupleDialog;
+#pragma link C++ class InsertFunctionDialog;
+#pragma link C++ class InsertTextDialog;
 #pragma link C++ class TCurlyLineArrow;
 #pragma link C++ class TCurlyLineWithArrow;
 #endif			   

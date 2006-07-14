@@ -162,7 +162,6 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
    fHandleMenus->BuildMenus(); 
 
-   InsertTextSetDefaults();
    fCanvasImp->ShowEditor(kFALSE);
    fCanvasImp->ShowToolBar(kFALSE);
    fCanvasImp->ShowStatusBar(kFALSE);

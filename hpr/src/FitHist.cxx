@@ -529,8 +529,8 @@ void ConvertTimeToString(time_t t, TAxis * a, TString * string)
    utctis = gmtime(&t);
 //      cout << "time " << t <<  " tf.Data() " <<  tf.Data() << endl;
    Int_t nchar = strftime(LABEL, 256, tf.Data(), utctis);
-   if (nchar <= 0)strcpy(LABEL, "xxx");
-   *string = LABEL;
+   if (nchar <= 0)*string = "xxx";
+   else           *string = LABEL;
 } 
 //______________________________________________________________________________________
 
@@ -1600,7 +1600,7 @@ to the file.";
    row_lab->Add(new TObjString("CheckButton_Errors"));
    valp[ind++] = &errors;
 
-   Int_t   itemwidth=250,; 
+   Int_t   itemwidth=250; 
    ok = GetStringExt("Write hist as ASCII-file", NULL, itemwidth, mycanvas,
                    NULL, NULL, row_lab, valp, NULL, NULL, &helpText[0]);
    if (!ok) {
@@ -1863,8 +1863,8 @@ void AddAsString(Double_t x, TAxis * a, Int_t  prec, TOrdCollection *entries)
       utctis = gmtime(&t);
 //      cout << "time " << t <<  " tf.Data() " <<  tf.Data() << endl;
       Int_t nchar = strftime(LABEL, 256, tf.Data(), utctis);
-      if (nchar <= 0)strcpy(LABEL, "xxx");
-		os = new TObjString(LABEL);   // wrap TObject around it
+      if (nchar <= 0)os = new TObjString("xxx");
+		else           os = new TObjString(LABEL);   // wrap TObject around it
    }
    entries->Add((TObject *) os);	   // add to collection of string
 } 
