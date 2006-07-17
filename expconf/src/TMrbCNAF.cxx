@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCNAF.cxx,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCNAF.cxx,v 1.5 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -176,43 +176,37 @@ const Char_t * TMrbCNAF::Int2Ascii(TString & CnafAscii, Bool_t StripBorC) const 
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Char_t * dot;
-
 	CnafAscii.Remove(0);
-	dot = "";
-	ostringstream * str = new ostringstream();
+
+	Char_t * dot = "";
 
 	if ((fIsSet & kCnafBranch) && ((fBranch > 0) || !StripBorC)) {
-		*str << dot << "B" << fBranch;
+		CnafAscii += Form("%sB%d", dot, fBranch);
 		dot = ".";
 	}
 
 	if ((fIsSet & kCnafCrate) && ((fCrate > 0) || !StripBorC)) {
-		*str << dot << "C" << fCrate;
+		CnafAscii += Form("%sC%d", dot, fCrate);
 		dot = ".";
 	}
 
 	if (fIsSet & kCnafStation) {
-		*str << dot << "N" << fStation;
+		CnafAscii += Form("%sN%d", dot, fStation);
 		dot = ".";
 	}
 
 	if (fIsSet & kCnafAddr) {
-		*str << dot << "A" << fAddr;
+		CnafAscii += Form("%sA%d", dot, fAddr);
 		dot = ".";
 	}
 
 	if (fIsSet & kCnafFunction) {
-		*str << dot << "F" << fFunction;
+		CnafAscii += Form("%sF%d", dot, fFunction);
 	}
 
 	if (fIsSet & kCnafData) {
-		*str << " data=" << fData;
+		CnafAscii += Form(" data=%d", fData);
 	}
-
-	*str << ends;
-	CnafAscii = str->str().c_str();
-	delete str;
 
 	return(CnafAscii.Data());
 }

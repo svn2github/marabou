@@ -92,25 +92,19 @@ void PlayQuart(Int_t n){
    Int_t a = 400;
    Int_t loadness = 100;
    Int_t duration = 200;
-   ostringstream cmd1;
-   ostringstream cmd2;
    Int_t quart = (Int_t) (a * pow(pow(2,1./12.), 4));
-   cmd1 << "xset b " << loadness << " " << a     << " " << duration << ends;
-   cmd2 << "xset b " << loadness << " " << quart << " " << duration << ends;
+   TString cmd1 = Form("xset b %d %d %d", loadness, a, duration);
+   TString cmd2 = Form("xset b %d %d %d", loadness, quart, duration);
    for(Int_t i = 0; i< n; i++){
-//      gSystem->Exec("xset b 100 400 200");
-      gSystem->Exec(cmd1.str().c_str());
+      gSystem->Exec(cmd1.Data());
       cout << bell << endl;
       gSystem->Sleep(400);   
-//      gSystem->Exec("xset b 100 504 300");
-      gSystem->Exec(cmd2.str().c_str());
+      gSystem->Exec(cmd2.Data());
       cout << bell << endl;
       gSystem->Sleep(500);
    }
-   gSystem->Exec(cmd1.str().c_str());
+   gSystem->Exec(cmd1.Data());
    cout << bell << endl;
-//   cmd1.rdbuf()->freeze(0);
-//   cmd2.rdbuf()->freeze(0);
 }
 
 
@@ -1025,10 +1019,8 @@ void * msg_handler(void * dummy) {
            count = u_analyze->ClearHistograms(arg.Data());
 		     if (count > 0) u_analyze->SetUpdateFlag();
            mess0.Reset();          // re-use TMessage object
-           ostringstream buf;
-           buf << "Number of histos cleared: " << count << ends;
-           mess0.WriteString(buf.str().c_str());
-//           buf.rdbuf()->freeze(0);
+           TString buf = Form("Number of histos cleared: %d", count);
+           mess0.WriteString(buf.Data());
            sock->Send(mess0);
 
          } else if ( cmd == "user" ){

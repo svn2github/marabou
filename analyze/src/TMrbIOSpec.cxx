@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbIOSpec.cxx,v 1.3 2005-11-23 14:05:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbIOSpec.cxx,v 1.4 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -168,7 +168,6 @@ void TMrbIOSpec::ConvertToTimeStamp(TString & TimeStamp, Int_t TstampValue) cons
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t xxx, ss, mm, hh;
-	ostringstream ts;
 
 	xxx = TstampValue % 10000;
 	TstampValue /= 10000;
@@ -176,10 +175,7 @@ void TMrbIOSpec::ConvertToTimeStamp(TString & TimeStamp, Int_t TstampValue) cons
 	TstampValue /= 60;
 	mm = TstampValue % 60;
 	hh = TstampValue / 60;
-	ts << hh << ":" << mm << ":" << ss << ends;
-	if (xxx > 0) ts << ":" << xxx << ends;
-	TimeStamp = ts.str().c_str();
-//	ts.rdbuf()->freeze(0);
+	TimeStamp = (xxx > 0) ?	Form("%d%02d:%02d:%d", hh, mm, ss, xxx) : Form("%d%02d:%02d", hh, mm, ss);
 }	
 
 void TMrbIOSpec::Print(ostream & out) const {

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.12 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.13 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -1237,26 +1237,19 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TGMrbMacroArg * macroArg;
-
 	UInt_t buttonBits;
 	TMrbString argString;
-	TString cmd, delim;
-	TEnv * macroEnv;
 	TMrbString currentValue, cVal;
 	UInt_t argType;
 
-	ostringstream * cmdString = new ostringstream();
-
-	macroEnv = (TEnv *) fMacro->GetAssignedObject();
+	TEnv * macroEnv = (TEnv *) fMacro->GetAssignedObject();
 	gROOT->LoadMacro(macroEnv->GetValue("Path", "UNKNOWN"));
 
-	cmd = fMacroName->GetText()->GetString();
+	TString cmd = fMacroName->GetText()->GetString();
 	cmd = cmd(0, cmd.Index(".C"));
-	*cmdString << cmd;
-	delim = "(";
+	TString delim = "(";
 
-	macroArg = (TGMrbMacroArg *) fLofMacroArgs.First();
+	TGMrbMacroArg * macroArg = (TGMrbMacroArg *) fLofMacroArgs.First();
 	while (macroArg) {
 		Int_t n = macroArg->fEntryType->GetIndex();
 		if (n == TGMrbMacroArg::kGMrbMacroEntryPlain ||
@@ -1299,7 +1292,7 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 			argString.Prepend("\"");
 			argString += "\"";
 		}
-		*cmdString << delim << argString;
+		cmd += Form("%s%s", delim.Data(), argString.Data());
 
 		macroArg->GetResource(cVal, "Current");
 		cVal += "=";
@@ -1309,14 +1302,12 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 
 		if (macroArg->fAddLofValues) {
 			argString = macroEnv->GetValue(macroArg->GetResource(argString, "Values"), "");
-			*cmdString << delim << "\"" << argString << "\"";
+			cmd += Form("%s\"%s\"", delim.Data(), argString.Data());
 		}
 		macroArg = (TGMrbMacroArg *) fLofMacroArgs.After(macroArg);
 	}
-	*cmdString << ");" << ends;
-	gROOT->ProcessLine(cmdString->str().c_str());
-//	cmdString->rdbuf()->freeze(0);
-	delete cmdString;
+	cmd += ");";
+	gROOT->ProcessLine(cmd.Data());
 	G__unloadfile((Char_t *) macroEnv->GetValue("Path", "UNKNOWN"));
 	return(kTRUE);
 }

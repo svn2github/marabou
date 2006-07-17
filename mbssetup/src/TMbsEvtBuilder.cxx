@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsEvtBuilder.cxx,v 1.8 2005-01-10 12:59:24 rudi Exp $       
+// Revision:       $Id: TMbsEvtBuilder.cxx,v 1.9 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -186,10 +186,7 @@ Bool_t TMbsEvtBuilder::SetType(const Char_t * ProcType) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * procType;
-	ostringstream * proc;
-
-	procType = gMbsSetup->fLofProcs.FindByName(ProcType, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
+	TMrbNamedX * procType = gMbsSetup->fLofProcs.FindByName(ProcType, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	if (procType == NULL) {
 		gMrbLog->Err() << "Wrong processor type - " << ProcType << endl;
 		gMrbLog->Flush(this->ClassName(), "SetType");
@@ -199,11 +196,8 @@ Bool_t TMbsEvtBuilder::SetType(const Char_t * ProcType) {
 		return(kFALSE);
 	}
 
-	proc = new ostringstream();
-	*proc << procType->GetName() << "(" << procType->GetIndex() << ")" << ends;
-	gMbsSetup->Set("EvtBuilder.Type", proc->str().c_str());
-//	proc->rdbuf()->freeze(0);
-	delete proc;
+	TString proc = Form("%s(%d)", procType->GetName(), procType->GetIndex());
+	gMbsSetup->Set("EvtBuilder.Type", proc.Data());
 	return(kTRUE);
 }
 
@@ -219,10 +213,7 @@ Bool_t TMbsEvtBuilder::SetType(EMbsProcType ProcType) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * procType;
-	ostringstream * proc;
-
-	procType = gMbsSetup->fLofProcs.FindByIndex(ProcType);
+	TMrbNamedX * procType = gMbsSetup->fLofProcs.FindByIndex(ProcType);
 	if (procType == NULL) {
 		gMrbLog->Err() << "Wrong processor type - " << ProcType << endl;
 		gMrbLog->Flush(this->ClassName(), "SetType");
@@ -232,11 +223,8 @@ Bool_t TMbsEvtBuilder::SetType(EMbsProcType ProcType) {
 		return(kFALSE);
 	}
 
-	proc = new ostringstream();
-	*proc << procType->GetName() << "(" << procType->GetIndex() << ")" << ends;
-	gMbsSetup->Set("EvtBuilder.Type", proc->str().c_str());
-//	proc->rdbuf()->freeze(0);
-	delete proc;
+	TString proc = Form("%s(%d)", procType->GetName(), procType->GetIndex());
+	gMbsSetup->Set("EvtBuilder.Type", proc.Data());
 	return(kTRUE);
 }
 

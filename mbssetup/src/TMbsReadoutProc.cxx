@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.18 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.19 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -869,42 +869,21 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString homeDir;
-	TString codeName;
-	TString srcPath;
-	TString path;
-	TString cFile;
-	TString mkFile;
-	TString errFile;
-	TString compileIt;
-	TString proc;
+	Bool_t isOK = kTRUE;
 
-	ostringstream * cmd;
+	TMrbNamedX * setupMode = gMbsSetup->GetMode();
+	EMbsSetupMode smode = (EMbsSetupMode) (setupMode ? setupMode->GetIndex() : 0);
 
-	ofstream sh;
-	ifstream diag;
-	TString diagLine;
-
-	Bool_t isOK;
-	Int_t nofErrors;
-	Int_t nofWarnings;
-
-	TMrbNamedX * setupMode;
-	EMbsSetupMode smode;
-
-	isOK = kTRUE;
-
-	setupMode = gMbsSetup->GetMode();
-	smode = (EMbsSetupMode) (setupMode ? setupMode->GetIndex() : 0);
-
-	codeName = this->GetCodeName();
+	TString codeName = this->GetCodeName();
 	if (codeName.Length() == 0) {
 		gMrbLog->Err() << "Name of source code not defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		isOK = kFALSE;
 	}
 
-	path = gMbsSetup->GetPath();
+	TString path = gMbsSetup->GetPath();
+	TString homeDir;
+	TString srcPath;
 	if (path.Length() == 0) {
 		gMrbLog->Err() << "Setup path not defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "CompileReadout");
@@ -939,7 +918,7 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 
 	if (!isOK) return(kFALSE);
 
-	mkFile = codeName + ".mk";
+	TString mkFile = codeName + ".mk";
 	TMrbSystem ux;
 	TString mkpath;
 	ux.Which(mkpath, srcPath.Data(), mkFile.Data());
@@ -951,17 +930,17 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 
 	if (!isOK) return(kFALSE);
 
-	proc = this->GetProcName();
+	TString proc = this->GetProcName();
 	if (proc.Length() == 0) {
 		gMrbLog->Err() << "Readout proc not defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		return(kFALSE);
 	}
 
-	compileIt = codeName + ".sh";
+	TString compileIt = codeName + ".sh";
 	path = srcPath + compileIt;
 
-	sh.open(path.Data(), ios::out);
+	ofstream sh(path.Data(), ios::out);
 	if (!sh.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << compileIt << endl;
 		gMrbLog->Flush(this->ClassName(), "CompileReadout");
@@ -969,7 +948,7 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 	}
 
 	sh << "#!/bin/tcsh" << endl;
-	sh << "#" << compileIt << ": shell script to compile readout source " << cFile << endl;
+	sh << "#" << compileIt << ": shell script to compile readout source " << codeName << ".c" << endl;
 	sh << endl;
 	sh << "cd " << srcPath << endl;
 	sh << "source /sys/hosttype" << endl;
@@ -978,24 +957,22 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 	sh << "make -f " << mkFile << " clean all" << endl;
 	sh.close();
 
-	errFile = srcPath;
+	TString errFile = srcPath;
 	errFile += codeName + ".err";
 	gSystem->Unlink(errFile.Data());
 
-	cout	<< this->ClassName() << "::CompileReadout(): Compiling " << cFile
+	cout	<< this->ClassName() << "::CompileReadout(): Compiling " << codeName << ".c"
 			<< " on host " << proc << " (MBS version = " << Version << ") ..."
 			<< endl << endl;
-	cmd = new ostringstream();
-	*cmd << "rsh " << proc << " 'cd " << srcPath << "; tcsh " << compileIt << "' 2>" << errFile << ends;
-	gSystem->Exec(cmd->str().c_str());
-	cout << endl;
-//	cmd->rdbuf()->freeze(0);
-	delete cmd;
 
-	nofErrors = 0;
-	nofWarnings = 0;
+	TString cmd = Form("rsh %s 'cd %s; tcsh %s' 2>%s", proc.Data(), srcPath.Data(), compileIt.Data(), errFile.Data());
+	gSystem->Exec(cmd.Data());
 
-	diag.open(errFile, ios::in);
+	Int_t nofErrors = 0;
+	Int_t nofWarnings = 0;
+
+	TString diagLine;
+	ifstream diag(errFile, ios::in);
 	if (!diag.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << gSystem->BaseName(errFile.Data()) << endl;
 		gMrbLog->Flush(this->ClassName(), "CompileReadout");

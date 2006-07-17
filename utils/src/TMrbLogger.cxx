@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLogger.cxx,v 1.10 2005-12-06 14:00:25 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLogger.cxx,v 1.11 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -91,31 +91,43 @@ const Char_t * TMrbLogMessage::Get(TString & FmtMsg,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	ostringstream * str = new ostringstream();
+	FmtMsg = "";
 
 	if (WithDate) {
 		switch (fType) {
-			case kMrbMsgMessage:	*str << "*-["; break;
-			case kMrbMsgError:		*str << "?-["; break;
-			case kMrbMsgWarning:	*str << "!-["; break;
-			default:				*str << "  ["; break;
+			case kMrbMsgMessage:	FmtMsg += "*-["; break;
+			case kMrbMsgError:		FmtMsg += "?-["; break;
+			case kMrbMsgWarning:	FmtMsg += "!-["; break;
+			default:				FmtMsg += "  ["; break;
 		}
-		*str << fDatime.AsString() << "]- ";
+		FmtMsg += fDatime.AsString();
+		FmtMsg += "]- ";
 	}
 
-	if (*ProgName != '\0') *str << ProgName << " <> ";
-	if (WithColors) *str << fColor;
+	if (*ProgName != '\0') {
+		FmtMsg += ProgName;
+		FmtMsg += " <> ";
+	}
+	if (WithColors) FmtMsg += fColor;
 
 	if (fClassName.Length() > 0) {
-		*str << fClassName << ":";
-		if (fMethod.Length() > 0) *str << ":" << fMethod << "(): "; else *str << " ";
-	} else if (fMethod.Length() > 0) *str << fMethod << "(): ";
-	*str << fText;
-	if (WithColors) *str << setblack;
-	*str << ends;
-	FmtMsg = str->str().c_str();
-//	str->rdbuf()->freeze(0);
-	delete str;
+		FmtMsg += fClassName;
+		FmtMsg += ":";
+		if (fMethod.Length() > 0) {
+			FmtMsg += ":";
+			FmtMsg += fMethod;
+			FmtMsg += "(): ";
+		} else {
+			FmtMsg += " ";
+		}
+	} else if (fMethod.Length() > 0) {
+		FmtMsg += fMethod;
+		FmtMsg += "(): ";
+	}
+
+	FmtMsg += fText;
+	if (WithColors) FmtMsg += setblack;
+
 	return(FmtMsg.Data());
 }
 	

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsTriggerModule.cxx,v 1.5 2004-11-25 12:00:17 rudi Exp $       
+// Revision:       $Id: TMbsTriggerModule.cxx,v 1.6 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -72,13 +72,9 @@ Bool_t TMbsTriggerModule::SetType(const Char_t * ModuleType) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString r;
-	TMrbNamedX * moduleType;
-	ostringstream * mod;
-
 	if (fId < 0) return(kFALSE);
 
-	moduleType = gMbsSetup->fLofTriggerModules.FindByName(ModuleType, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
+	TMrbNamedX * moduleType = gMbsSetup->fLofTriggerModules.FindByName(ModuleType, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	if (moduleType == NULL) {
 		gMrbLog->Err() << "Wrong module type - " << ModuleType << endl;
 		gMrbLog->Flush(this->ClassName(), "SetType");
@@ -88,11 +84,9 @@ Bool_t TMbsTriggerModule::SetType(const Char_t * ModuleType) {
 		return(kFALSE);
 	}
 
-	mod = new ostringstream();
-	*mod << moduleType->GetName() << "(" << moduleType->GetIndex() << ")" << ends;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"), mod->str().c_str());
-//	mod->rdbuf()->freeze(0);
-	delete mod;
+	TString r;
+	TString mod = Form("%s(%d)", moduleType->GetName(), moduleType->GetIndex());
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"), mod.Data());
 	return(kTRUE);
 }
 
@@ -108,13 +102,9 @@ Bool_t TMbsTriggerModule::SetType(EMbsTriggerModuleType ModuleType) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString r;
-	TMrbNamedX * moduleType;
-	ostringstream * mod;
-
 	if (fId < 0) return(kFALSE);
 
-	moduleType = gMbsSetup->fLofTriggerModules.FindByIndex(ModuleType);
+	TMrbNamedX * moduleType = gMbsSetup->fLofTriggerModules.FindByIndex(ModuleType);
 	if (moduleType == NULL) {
 		gMrbLog->Err() << "Wrong module type - " << ModuleType << endl;
 		gMrbLog->Flush(this->ClassName(), "SetType");
@@ -124,11 +114,9 @@ Bool_t TMbsTriggerModule::SetType(EMbsTriggerModuleType ModuleType) {
 		return(kFALSE);
 	}
 
-	mod = new ostringstream();
-	*mod << moduleType->GetName() << "(" << moduleType->GetIndex() << ")" << ends;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"), mod->str().c_str());
-//	mod->rdbuf()->freeze(0);
-	delete mod;
+	TString mod = Form("%s(%d)", moduleType->GetName(), moduleType->GetIndex());
+	TString r;
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"), mod.Data());
 	return(kTRUE);
 }
 

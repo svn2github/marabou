@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.35 2006-06-23 09:28:52 Marabou Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.36 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -817,7 +817,6 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 	EMbsSetupMode smode;
 
 	ofstream stp;
-	ostringstream * str;
 
 	TMrbNamedX * setupTag;
 	TString line;
@@ -955,11 +954,8 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetBuffers:
 					{
-						str = new ostringstream();
 						stpTmpl.InitializeCode();
-						*str << "0x" << setbase(16) << this->EvtBuilder()->GetBufferSize() << ends;
-						stpTmpl.Substitute("$bufSize", str->str().c_str());
-						delete str;
+						stpTmpl.Substitute("$bufSize", this->EvtBuilder()->GetBufferSize(), 16);
 						stpTmpl.Substitute("$nofBufs", (Int_t) this->EvtBuilder()->GetNofBuffers());
 						stpTmpl.Substitute("$nofStreams", (Int_t) this->EvtBuilder()->GetNofStreams());
 						stpTmpl.WriteCode(stp);
@@ -1365,28 +1361,19 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 								return(kFALSE);
 							}
 							stpTmpl.InitializeCode("%B%");
-							str = new ostringstream();
 							stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
-							*str << "0x" << setbase(16) << this->EvtBuilder()->GetVSBAddr() << ends;
-							stpTmpl.Substitute("$vsbAddr", str->str().c_str());
-							delete str;
+							stpTmpl.Substitute("$vsbAddr",this->EvtBuilder()->GetVSBAddr(), 16);
 							stpTmpl.WriteCode(stp);
 							for (i = 0; i < nofReadouts; i++) {
 								stpTmpl.InitializeCode("%L%");
 								stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
-								str = new ostringstream();
-								*str << "0x" << setbase(16) << this->ReadoutProc(i)->GetVSBAddr() << ends;
-								stpTmpl.Substitute("$vsbAddr", str->str().c_str());
-								delete str;
+								stpTmpl.Substitute("$vsbAddr", this->ReadoutProc(i)->GetVSBAddr(), 16);
 								stpTmpl.WriteCode(stp);
 							}
 						} else if (gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
 								stpTmpl.InitializeCode();
-								str = new ostringstream();
 								stpTmpl.Substitute("$procName", this->EvtBuilder()->GetProcName());
-								*str << "0x" << setbase(16) << this->EvtBuilder()->GetVSBAddr() << ends;
-								stpTmpl.Substitute("$vsbAddr", str->str().c_str());
-								delete str;
+								stpTmpl.Substitute("$vsbAddr", this->EvtBuilder()->GetVSBAddr(), 16);
 								stpTmpl.WriteCode(stp);
 						}
 					}
@@ -1420,21 +1407,17 @@ const Char_t * TMbsSetup::EncodeArray(TArrayI & Data, Int_t NofEntries, Int_t Ba
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i;
-	ostringstream * s;
-
-	s = new ostringstream();
-	for (i = 0; i < NofEntries; i++) {
-		if (i == 0) *s << "("; else *s << ",";
+	TMrbString s;
+	for (Int_t i = 0; i < NofEntries; i++) {
+		if (i == 0) s = "("; else s += ",";
 		switch (Base) {
-			case 8: 	*s << "0" << setbase(8) << Data[i]; break;
-			case 16: 	*s << "0x" << setbase(16) << Data[i]; break;
-			default: 	*s << Data[i]; break;
+			default:	Base = 10;
+			case 8:
+			case 16: 	s.AppendInteger(Data[i], 0, Base, kFALSE, kTRUE); break;
 		}
 	}
-	*s << ")" << ends;
-	fArrayString = s->str().c_str();
-	delete s;
+	s += ")";
+	fArrayString = s;
 	return(fArrayString.Data());
 }
 
@@ -1453,23 +1436,20 @@ const Char_t * TMbsSetup::EncodeArray(Int_t Data, Int_t Index, Int_t NofEntries,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i;
-	ostringstream * s;
 	Int_t data;
+	TMrbString s;
 
-	s = new ostringstream();
-	for (i = 0; i < NofEntries; i++) {
+	for (Int_t i = 0; i < NofEntries; i++) {
 		data = (i == Index) ? Data : 0;
-		if (i == 0) *s << "("; else *s << ",";
+		if (i == 0) s = "("; else s += ",";
 		switch (Base) {
-			case 8: 	*s << "0" << setbase(8) << data; break;
-			case 16: 	*s << "0x" << setbase(16) << data; break;
-			default: 	*s << data; break;
+			default:	Base = 10;
+			case 8:
+			case 16: 	s.AppendInteger(Data, 0, Base, kFALSE, kTRUE); break;
 		}
 	}
-	*s << ")" << ends;
-	fArrayString = s->str().c_str();
-	delete s;
+	s += ")";
+	fArrayString = s;
 	return(fArrayString.Data());
 }
 
@@ -1841,10 +1821,7 @@ Bool_t TMbsSetup::SetMode(const Char_t * Mode) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * setupMode;
-	ostringstream * mode;
-
-	setupMode = gMbsSetup->fLofSetupModes.FindByName(Mode, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
+	TMrbNamedX * setupMode = gMbsSetup->fLofSetupModes.FindByName(Mode, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	if (setupMode == NULL) {
 		gMrbLog->Err() << "Wrong setup mode - " << Mode << endl;
 		gMrbLog->Flush(this->ClassName(), "SetMode");
@@ -1854,10 +1831,8 @@ Bool_t TMbsSetup::SetMode(const Char_t * Mode) {
 		return(kFALSE);
 	}
 
-	mode = new ostringstream();
-	*mode << setupMode->GetName() << "(" << setupMode->GetIndex() << ")";
-	gMbsSetup->Set("Mode", mode->str().c_str());
-	delete mode;
+	TString mode = Form("%s(%d)", setupMode->GetName(), setupMode->GetIndex());
+	gMbsSetup->Set("Mode", mode.Data());
 	return(kTRUE);
 }
 
@@ -1873,10 +1848,7 @@ Bool_t TMbsSetup::SetMode(EMbsSetupMode Mode) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * setupMode;
-	ostringstream * mode;
-
-	setupMode = gMbsSetup->fLofSetupModes.FindByIndex(Mode);
+	TMrbNamedX * setupMode = gMbsSetup->fLofSetupModes.FindByIndex(Mode);
 	if (setupMode == NULL) {
 		gMrbLog->Err() << "Wrong setup mode - " << Mode << endl;
 		gMrbLog->Flush(this->ClassName(), "SetMode");
@@ -1886,10 +1858,8 @@ Bool_t TMbsSetup::SetMode(EMbsSetupMode Mode) {
 		return(kFALSE);
 	}
 
-	mode = new ostringstream();
-	*mode << setupMode->GetName() << "(" << setupMode->GetIndex() << ")";
-	gMbsSetup->Set("Mode", mode->str().c_str());
-	delete mode;
+	TString mode = Form("%s(%d)", setupMode->GetName(), setupMode->GetIndex());
+	gMbsSetup->Set("Mode", mode.Data());
 	return(kTRUE);
 }
 
