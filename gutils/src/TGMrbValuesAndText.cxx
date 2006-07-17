@@ -391,7 +391,7 @@ void TGedAlignSelect::SetAlignStyle(Style_t alignStyle)
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
 void TGedAlignSelect::SavePrimitive(ostream &out, Option_t *)
 #else
-void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *)
+void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *);
 #endif 
 {
    // Save the pattern select widget as a C++ statement(s) on output stream out
@@ -827,7 +827,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
    width  = this->GetDefaultWidth();
    height = this->GetDefaultHeight();
-//   cout << "width " << width<< endl;
+   cout << "width " << width<< endl;
    this->Resize(win_width, height);
 
    // position relative to the parent window (which is the root window)
@@ -843,7 +843,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          ((TGFrame *) fMyWindow)->GetHeight() - height >> 1,
                           ax, ay, wdum);
 
-   ax = ax - (int)( width >> 1);
+   ax = ax - (int)( win_width >> 1);
  
    UInt_t ww, wh;
    Int_t  wwi,whi;
@@ -853,7 +853,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
               screen_x, screen_y, ww, wh);
    wwi = ww;
    whi = wh;
-   Int_t wi = width;
+   Int_t wi = win_width;
    Int_t hi = height;
 //  make sure its inside physical screen
    if      (ax < 0)    ax = 10;
