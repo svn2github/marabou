@@ -134,15 +134,6 @@ public:
    void    InsertAxis();
    void    InsertCurlyArrow();
    void    FeynmanDiagMenu();
-   void    FeynmanSetPars();
-   void    FeynmanArrow();
-   void    FeynmanWavyLine();
-   void    FeynmanWavyArc();
-   void    FeynmanCurlyLine();
-   void    FeynmanCurlyArc();
-   void    FeynmanSolidLine();
-   void    FeynmanDashedLine();
-   void    FeynmanText();
    void    InsertTSplineX();
    void    WritePrimitives();
    void    DefineBox();

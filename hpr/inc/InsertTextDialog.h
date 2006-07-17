@@ -24,7 +24,7 @@ private:
    Int_t          fEditTextLatexFilter;
    Int_t          fEditTextSeqNr;
 public:
-   InsertTextDialog(Bool_t from_file);
+   InsertTextDialog(Bool_t from_file = kFALSE);
    virtual ~InsertTextDialog();
    void InsertTextExecute();
    void SaveDefaults();

@@ -40,6 +40,7 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
  					$(HPRDIRI)/Ascii2GraphDialog.h \
  					$(HPRDIRI)/Ascii2HistDialog.h \
  					$(HPRDIRI)/Ascii2NtupleDialog.h \
+ 					$(HPRDIRI)/FeynmanDiagramDialog.h \
  					$(HPRDIRI)/InsertFunctionDialog.h \
  					$(HPRDIRI)/InsertTextDialog.h \
  					$(HPRDIRI)/TCurlyLineArrow.h \

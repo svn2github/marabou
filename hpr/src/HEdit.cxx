@@ -30,6 +30,8 @@
 #include "HprEditBits.h"
 #include "TSplineX.h"
 #include "TSplineXDialog.h"
+#include "InsertFunctionDialog.h"
+#include "FeynmanDiagramDialog.h"
 #include "TCurlyLineArrow.h"
 #include <fstream>
 
@@ -2836,128 +2838,8 @@ void HTCanvas::DeleteObjects()
 
 void HTCanvas::FeynmanDiagMenu()
 {
- //  Int_t win_width = 160
-   static void *valp[25];
-   Int_t ind = 0;
-   TList * labels = new TList;
-   static TString fsp("FeynmanSetPars()");
-   static TString far("FeynmanArrow()");
-   static TString fwl("FeynmanWavyLine()");
-   static TString fcl("FeynmanCurlyLine()");
-   static TString fwa("FeynmanWavyArc()");
-   static TString fca("FeynmanCurlyArc()");
-   static TString fsl("FeynmanSolidLine()");
-   static TString fdl("FeynmanDashedLine()");
-   static TString ftx("FeynmanText()");
-
-   labels->Add(new TObjString("CommandButt_FeynmanSetPars()"));
-   valp[ind++] = &fsp;
-   labels->Add(new TObjString("CommandButt_FeynmanArrow()")); 	
-   valp[ind++] = &far;
-   labels->Add(new TObjString("CommandButt_FeynmanWavyLine()")); 
-   valp[ind++] = &fwl;
-   labels->Add(new TObjString("CommandButt_FeynmanCurlyLine()"));
-   valp[ind++] = &fcl;
-   labels->Add(new TObjString("PlainIntVal_Phi start"));
-   valp[ind++] = &fFeynmanPhi1;
-   labels->Add(new TObjString("PlainIntVal_Phi end"));
-   valp[ind++] = &fFeynmanPhi2;
-   labels->Add(new TObjString("CommandButt_FeynmanWavyArc()"));   
-   valp[ind++] = &fwa;
-   labels->Add(new TObjString("CommandButt_FeynmanCurlyArc()"));  
-   valp[ind++] = &fca;
-   labels->Add(new TObjString("CommandButt_FeynmanSolidLine()")); 
-   valp[ind++] = &fsl;
-   labels->Add(new TObjString("CommandButt_FeynmanDashedLine()"));
-   valp[ind++] = &fdl;
-   labels->Add(new TObjString("CommandButt_FeynmanText()"));  	 
-   valp[ind++] = &ftx;
-   Bool_t ok;
-   Int_t itemwidth = 320;
-
-   ok = GetStringExt("Feynman diagram", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, labels,valp,
-                      NULL, NULL, NULL, this, this->ClassName());
+   new FeynmanDiagramDialog();
 }
-//______________________________________________________________________________
-
-void HTCanvas::FeynmanSetPars()
-{
-	if(fHistPresent){
-	   fHistPresent->SetCurlyAttributes(fRootCanvas, fFitHist);
-	   if(fFitHist)fFitHist->UpdateCanvas();
-	}
-};
-//______________________________________________________________________________
-
-void HTCanvas::FeynmanArrow()
-{   	
-   TArrow * a = (TArrow*)this->WaitPrimitive("TArrow");
-   if (a);
-};
-//______________________________________________________________________________
-void HTCanvas::FeynmanWavyLine()
-{
-	TCurlyLine::SetDefaultIsCurly(kFALSE);
-   TCurlyLine * a = (TCurlyLine*)this->WaitPrimitive("TCurlyLine");
-   if (a);
-};
-//______________________________________________________________________________
-void HTCanvas::FeynmanWavyArc()
-{
-	TCurlyArc::SetDefaultIsCurly(kFALSE);
-   TCurlyArc * a = (TCurlyArc*)this->WaitPrimitive("TCurlyArc");
-   a = (TCurlyArc *)gPad->GetListOfPrimitives()->Last();
-   a->SetPhimin(fFeynmanPhi1);
-   a->SetPhimax(fFeynmanPhi2);
-   Modified();
-   Update();
-};
-void HTCanvas::FeynmanCurlyLine()
-{
-	TCurlyLine::SetDefaultIsCurly(kTRUE);
-   TCurlyLine * a = (TCurlyLine*)this->WaitPrimitive("TCurlyLine");
-   if (a);
-};
-//______________________________________________________________________________
-void HTCanvas::FeynmanCurlyArc()
-{
-	TCurlyArc::SetDefaultIsCurly(kTRUE);
-   TCurlyArc * a = (TCurlyArc*)this->WaitPrimitive("TCurlyArc");
-   a = (TCurlyArc *)gPad->GetListOfPrimitives()->Last();
-//   cout << "TCurlyArc" <<endl;
-   a->SetPhimin(fFeynmanPhi1);
-   a->SetPhimax(fFeynmanPhi2);
-   Modified();
-   Update();
-};
-//______________________________________________________________________________
-void HTCanvas::FeynmanSolidLine()
-{
-   Style_t save = gStyle->GetLineStyle();
-   gStyle->SetLineStyle(kSolid);    
-   TLine * a = (TLine*)this->WaitPrimitive("TLine");
-   gStyle->SetLineStyle(save);    
-   if (a);
-};
-//______________________________________________________________________________
-void HTCanvas::FeynmanDashedLine()
-{
-   Style_t save = gStyle->GetLineStyle();
-   gStyle->SetLineStyle(kDashed);    
-   TLine * a = (TLine*)this->WaitPrimitive("TLine");
-   gStyle->SetLineStyle(save);    
-   if (a);
-};
-//______________________________________________________________________________
-void HTCanvas::FeynmanText()
-{
-//   TText * a = (TText*)this->WaitPrimitive("TText");
-//   if (a);
-   InsertText(kFALSE);
-};
-
-
 //______________________________________________________________________________
 
 void HTCanvas::InsertText(Bool_t from_file)
@@ -2968,116 +2850,7 @@ void HTCanvas::InsertText(Bool_t from_file)
 
 void HTCanvas::InsertFunction()
 {
-   static void *valp[25];
-   Int_t ind = 0;
-   static Int_t Npar = 3;
-   static Double_t par[10] = {1, -.2, 4, 0, 0, 0, 0, 0, 0, 0};
-   static TString func_name("fun1");
-//   static TString new_func_name("ff");
-   static TString xtitle("x");
-   static TString ytitle("y");
-   static Double_t from = 0;
-   static Double_t to   = 10;
-   static Color_t fcol = kBlue;
-   static Int_t pad_opacity = 30;
-   static Int_t same_pad = 0;
-   static Int_t new_pad = 1;
-   static Int_t new_canvas = 0;
-
-   Bool_t ok;
-   Npar = GetInteger("Number of parameters", Npar, &ok, fRootCanvas);
-   if (!ok) return;
-   if (Npar < 1) {
-      WarnBox("Number of parameters < 1", fRootCanvas);
-      return;
-   }
-   if (Npar > 10) {
-      WarnBox("Number of parameters > 10", fRootCanvas);
-      return;
-   }
-   TList *row_lab = new TList(); 
-//   TList *values  = new TList();
-tryagain:
-   ind = 0;
-   row_lab->Clear();
-   row_lab->Add(new TObjString("StringValue_Function Name"));
-   valp[ind++] = &func_name;
-
-   row_lab->Add(new TObjString("StringValue_X axis title"));
-   valp[ind++] = &xtitle;
-   row_lab->Add(new TObjString("StringValue_Y axis title"));
-   valp[ind++] = &ytitle;
-   row_lab->Add(new TObjString("DoubleValue_Lower limit (from)"));
-   valp[ind++] = &from;
-   row_lab->Add(new TObjString("DoubleValue_Upper limit (to)"));
-   valp[ind++] = &to;
-
-   TString text;
-   TString * tpointer = 0; 
-   const char * history = 0;
-   tpointer = &text;
-   const char hist_file[] = {"text_formulas.txt"};
-   history = hist_file;
-   if (gSystem->AccessPathName(history)) {
-      ofstream hfile(history);
-      hfile << "[0]*exp([1]*x)*cos([2]*x)" << endl;
-      hfile.close();
-   } 
-
-   if (gROOT->GetVersionInt() < 40000) history = NULL;
-   for (Int_t i =0; i < Npar; i++) {
-      row_lab->Add(new TObjString(Form("DoubleValue_Value of Parameter %d",i)));
-      valp[ind++] = &par[i];
-   }
-   row_lab->Add(new TObjString("ColorSelect_Drawing color"));
-   valp[ind++] = &fcol;
-   row_lab->Add(new TObjString("PlainIntVal_Opacity of pad (0-100)"));
-   valp[ind++] = &pad_opacity;
-   row_lab->Add(new TObjString("RadioButton_Use new(selected) pad"));
-   valp[ind++] = &new_pad;
-   row_lab->Add(new TObjString("RadioButton_Use same (selected) pad"));
-   valp[ind++] = &same_pad;
-   row_lab->Add(new TObjString("RadioButton_Create separate canvas"));
-   valp[ind++] = &new_canvas;
-
-   Int_t itemwidth = 440;
-   ok = GetStringExt("Function formula", tpointer, itemwidth, fRootCanvas,
-                      history, NULL, row_lab, valp);
-   if (!ok) return;
-
-   if (gROOT->GetListOfFunctions()->FindObject(func_name))
-      IncrementIndex(&func_name);
-   
-   if (gROOT->GetListOfFunctions()->FindObject(func_name)) {
-      cout << "Function with name: " << func_name << " already exists"
-           << endl;
-      goto tryagain;
-   }
-   if (new_pad != 0) {
-   	TPad* pad = GetEmptyPad();
-   	if (pad) {
-   	  gROOT->SetSelectedPad(pad);
-   	} else {
-      	WarnBox("Please create a new Pad in this Canvas\n\
-or select \"Use same (selected) pad\"", fRootCanvas); 
-         goto tryagain;
-   	} 
-   }
-   TF1 * f = new TF1(func_name.Data(), tpointer->Data(), from, to);
-   if (gROOT->GetListOfFunctions()->FindObject(func_name) == 0) {
-       WarnBox("Error in formula, watch printout", fRootCanvas);
-      goto tryagain;
-   }
-   f->SetParameters(par);
-   f->SetLineColor(fcol);
-   if (pad_opacity > 0) {
-      if (pad_opacity > 100) pad_opacity = 100;
-      gPad->SetFillStyle(4000 + pad_opacity);
-   }
-   if (new_canvas != 0) new TCanvas("cc", "cc", 600,400);
-   if (same_pad != 0) f->Draw("same");
-   else                     f->Draw();
-   gPad->Update();
+   new InsertFunctionDialog();
 }
 //______________________________________________________________________________
 
@@ -3217,33 +2990,11 @@ tryagain:
    if (!ok) return;
 
   cout << "Input a Line" << endl;
-/*
-  TIter next(this->GetListOfPrimitives());
-  TObject * obj;
-  while ( (obj = next()) ) {
-     if (obj->IsA() == TGraph::Class()) {
-        TGraph * g = (TGraph*)obj;
-        if(!(strncmp(g->GetName(), "Graph", 5))) { 
-           cout << "Rename existing Graph" << endl;
-           g->SetName("Hprgraph");
-        }
-     }
-  }
-*/
    TLine * gr = (TLine*)this->WaitPrimitive("TLine", "Line");
    if (!gr) {
       cout << "No Line found, try again" << endl;
       goto tryagain;
    }
-//   gr->SetName("abc");
-//   Double_t* x = gr->GetX();
-//   Double_t* y = gr->GetY();
- //  Int_t npoints = gr->GetN();
-//  add an extra point in between
- //  if (npoints < 2) {
- //     cout << "Need at least 2 points, try again" << endl;
- //     goto tryagain;
- //  }
    Int_t where = 0;
    if (arrow_at_start) where += 1;
    if (arrow_at_end)   where += 2;
