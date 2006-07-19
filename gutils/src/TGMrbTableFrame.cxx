@@ -691,7 +691,7 @@ TGMrbTableOfInts::TGMrbTableOfInts(const TGWindow * Window, Int_t * RetValue, co
 	Int_t idx = 0;
 	for (Int_t col = 0; col < Ncols; col++) {
 		for (Int_t row = 0; row < Nrows; row++) {
-			TMrbString s(Values[idx], Base);				// convert integer to string
+			TMrbString s(Values[idx], 0, Base);				// convert integer to string
 			os = new TObjString(s.Data());					// wrap TObject around it
 			entries->Add((TObject *) os);					// add to collection of strings
 			idx++;
@@ -757,7 +757,7 @@ TGMrbTableOfDoubles::TGMrbTableOfDoubles(const TGWindow * Window, Int_t * RetVal
 	Int_t idx = 0;
 	for (Int_t col = 0; col < Ncols; col++) {
 		for (Int_t row = 0; row < Nrows; row++) {
-			TMrbString s(Values[idx], Precision);		// convert double to string
+			TMrbString s(Values[idx], 0, Precision);	// convert double to string
 			os = new TObjString(s.Data());				// wrap TObject around it
 			entries->Add((TObject *) os);				// add to collection of strings
 			idx++;

@@ -10,7 +10,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTemplate.cxx,v 1.9 2006-06-23 08:48:30 Marabou Exp $       
+// Revision:       $Id: TMrbTemplate.cxx,v 1.10 2006-07-19 09:08:58 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -298,7 +298,7 @@ Bool_t TMrbTemplate::Substitute(const Char_t * ArgName, Int_t ArgValue, Int_t Ar
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString str(ArgValue, 0, 0, ArgBase, kTRUE);
+	TMrbString str(ArgValue, 0, ArgBase, kTRUE, kTRUE);
 	return(Substitute(ArgName, str.Data()));
 }
 

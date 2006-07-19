@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFHistogramBuffer.cxx,v 1.8 2004-09-28 13:47:34 rudi Exp $       
+// Revision:       $Id: TMrbDGFHistogramBuffer.cxx,v 1.9 2006-07-19 09:08:58 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -189,10 +189,6 @@ Bool_t TMrbDGFHistogramBuffer::FillHistogram(Int_t Channel, Bool_t DrawIt) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i, k;
-	TH1F * h;
-	TMrbString hName, hTitle;
-
 	if (Channel >= TMrbDGFData::kNofChannels) {
 		gMrbLog->Err()	<< "Channel number out of range - " << Channel
 						<< " (should be in [0," << TMrbDGFData::kNofChannels - 1 << "])" << endl;
@@ -206,18 +202,18 @@ Bool_t TMrbDGFHistogramBuffer::FillHistogram(Int_t Channel, Bool_t DrawIt) {
 		return(kFALSE);
 	}
 
-	hName = fModule->GetName();
+	TMrbString hName = fModule->GetName();
 	hName += "_mca_chn"; hName += Channel;
-	hTitle = fModule->GetName();
+	TMrbString hTitle = fModule->GetName();
 	hTitle += ": MCA histogram chn "; hTitle += Channel;
-	h = fHistogram[Channel];
+	TH1F * h = fHistogram[Channel];
 
 	if (h) delete h;
 
 	h = new TH1F(hName.Data(), hTitle.Data(), fSizePerChannel, 0., (Float_t) fSizePerChannel);
 
-	k = fHistNo[Channel] * fSizePerChannel;
-	for (i = 1; i <= fSizePerChannel; i++, k++) h->SetBinContent(i, (Stat_t) fArray[k]);
+	Int_t k = fHistNo[Channel] * fSizePerChannel;
+	for (Int_t i = 1; i <= fSizePerChannel; i++, k++) h->SetBinContent(i, (Stat_t) fArray[k]);
 	h->SetEntries(h->Integral());
 	if (DrawIt) h->Draw();
 	fHistogram[Channel] = h;
@@ -237,14 +233,6 @@ Bool_t TMrbDGFHistogramBuffer::Save(const Char_t * McaFile, Int_t Channel) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i, k;
-	TH1F * h;
-	TMrbString hName, hTitle;
-	Int_t chn, chnNo;
-	Int_t nofChannels;
-	Int_t nofHistos;
-	TFile * mcaFile;
-
 	if (Channel >= TMrbDGFData::kNofChannels) {
 		gMrbLog->Err()	<< "Channel number out of range - " << Channel
 						<< " (should be in [0," << TMrbDGFData::kNofChannels - 1 << "])" << endl;
@@ -252,13 +240,13 @@ Bool_t TMrbDGFHistogramBuffer::Save(const Char_t * McaFile, Int_t Channel) {
 		return(kFALSE);
 	}
 
-	mcaFile = NULL;
-	h = NULL;
+	TFile * mcaFile = NULL;
+	TH1F * h = NULL;
 
-	nofChannels = 0;
-	nofHistos = 0;
-	for (chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-		chnNo = (Channel == -1) ? chn : Channel;
+	Int_t nofChannels = 0;
+	Int_t nofHistos = 0;
+	for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+		Int_t chnNo = (Channel == -1) ? chn : Channel;
 		if (this->IsActive(chn) && (chnNo == chn)) {
 			nofChannels++;
 			if (this->GetContents(chn) > 0) {
@@ -270,16 +258,16 @@ Bool_t TMrbDGFHistogramBuffer::Save(const Char_t * McaFile, Int_t Channel) {
 						return(kFALSE);
 					}
 				}
-				hName = fModule->GetName();
+				TMrbString hName = fModule->GetName();
 				hName += "_mca_chn"; hName += chn;
-				hTitle = "MCA histogram ";
+				TMrbString hTitle = "MCA histogram ";
 				hTitle += ((TMrbDGF *) fModule)->GetName();
 				hTitle += ", chn ";
 				hTitle += chn;
 				if (h) delete h;
 				h = new TH1F(hName.Data(), hTitle.Data(), fSizePerChannel, 0., (Float_t) fSizePerChannel);
-				k = fHistNo[chn] * fSizePerChannel;
-				for (i = 0; i < fSizePerChannel; i++, k++) h->Fill((Axis_t) i, (Float_t) fArray[k]);
+				Int_t k = fHistNo[chn] * fSizePerChannel;
+				for (Int_t i = 0; i < fSizePerChannel; i++, k++) h->Fill((Axis_t) i, (Float_t) fArray[k]);
 				h->Write();
 				nofHistos++;
 			} else {

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFEventBuffer.cxx,v 1.6 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFEventBuffer.cxx,v 1.7 2006-07-19 09:08:58 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -274,15 +274,9 @@ Double_t TMrbDGFEventBuffer::CalcTau(Int_t EventNumber, Int_t Channel, Int_t Glo
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i, wc;
 	TArrayI data;
-	Double_t tau;
-	TMrbString hName, hTitle;
-	TString fitOpt;
-	Int_t evtNo;
-	TMrbDGFEvent * evt;
 
-	wc = this->GetChannel(EventNumber, Channel, data);
+	Int_t wc = this->GetChannel(EventNumber, Channel, data);
 	if (wc < 0) {
 		gMrbLog->Err() << "No trace data for event " << EventNumber << ", channel " << Channel << endl;
 		gMrbLog->Flush(this->ClassName(), "CalcTau");
@@ -297,11 +291,11 @@ Double_t TMrbDGFEventBuffer::CalcTau(Int_t EventNumber, Int_t Channel, Int_t Glo
 		return(-1);
 	}
 
-	evt = (TMrbDGFEvent *) fEventIndex.At(EventNumber);
-	evtNo = (GlobalEventNo > 0) ? GlobalEventNo : EventNumber;
+	TMrbDGFEvent * evt = (TMrbDGFEvent *) fEventIndex.At(EventNumber);
+	Int_t evtNo = (GlobalEventNo > 0) ? GlobalEventNo : EventNumber;
 
-	hName = "ht"; hName += evtNo; hName += "c"; hName += Channel;
-	hTitle = "Fitted trace data for evt "; hTitle += evtNo; hTitle += ", chn "; hTitle += Channel;
+	TMrbString hName = "ht"; hName += evtNo; hName += "c"; hName += Channel;
+	TMrbString hTitle = "Fitted trace data for evt "; hTitle += evtNo; hTitle += ", chn "; hTitle += Channel;
 
 	if (fHistogram != NULL) {
 		gROOT->GetList()->Remove(fHistogram);
@@ -310,7 +304,7 @@ Double_t TMrbDGFEventBuffer::CalcTau(Int_t EventNumber, Int_t Channel, Int_t Glo
 
 	fHistogram = new TH1F(hName.Data(), hTitle.Data(), wc, 0., (Float_t) wc);
 
-	for (i = 1; i <= wc; i++) {
+	for (Int_t i = 1; i <= wc; i++) {
 		fHistogram->SetBinContent(i, (Stat_t) data[i - 1]);
 		if (fTraceError > 0) fHistogram->SetBinError(i, fTraceError);
 	}
@@ -332,13 +326,13 @@ Double_t TMrbDGFEventBuffer::CalcTau(Int_t EventNumber, Int_t Channel, Int_t Glo
 
 	if (DrawIt) fHistogram->Draw();
 
-	fitOpt = "R";
+	TString fitOpt = "R";
 	if (!Verbose) fitOpt += "Q";
 	if (!DrawIt) fitOpt += "0";
 	fitOpt += "+";
 	fHistogram->Fit(hName.Data(), fitOpt, "SAME");
 
-	tau = 1. / (40. * fTauFit->GetParameter(2));
+	Double_t tau = 1. / (40. * fTauFit->GetParameter(2));
 	if (Verbose) {
 		gMrbLog->Out()	<< "Event " << EventNumber << ", channel " << Channel
 						<< " --> fitted tau value = " << tau << endl;
@@ -393,11 +387,9 @@ TH1F * TMrbDGFEventBuffer::FillHistogram(Int_t EventNumber, Int_t Channel, Bool_
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i, wc;
 	TArrayI data;
-	TMrbString hName, hTitle;
 
-	wc = this->GetChannel(EventNumber, Channel, data);
+	Int_t wc = this->GetChannel(EventNumber, Channel, data);
 	if (wc < 0) return(NULL);
 
 	if (fHistogram != NULL) {
@@ -405,11 +397,11 @@ TH1F * TMrbDGFEventBuffer::FillHistogram(Int_t EventNumber, Int_t Channel, Bool_
 		delete fHistogram;
 	}
 
-	hName = "h"; hName += EventNumber; hName += "c"; hName += Channel;
-	hTitle = "Trace data for evt "; hTitle += EventNumber; hTitle += ", chn "; hTitle += Channel;
+	TMrbString hName = "h"; hName += EventNumber; hName += "c"; hName += Channel;
+	TMrbString hTitle = "Trace data for evt "; hTitle += EventNumber; hTitle += ", chn "; hTitle += Channel;
 	fHistogram = new TH1F(hName.Data(), hTitle.Data(), wc, 0., (Float_t) wc);
 
-	for (i = 1; i <= wc; i++) {
+	for (Int_t i = 1; i <= wc; i++) {
 		fHistogram->SetBinContent(i, (Stat_t) data[i - 1]);
 		if (fTraceError > 0) fHistogram->SetBinError(i, fTraceError);
 	}
@@ -437,8 +429,6 @@ Bool_t TMrbDGFEventBuffer::SaveTraces(const Char_t * TraceFile, Int_t EventNumbe
 	TMrbString hName, hTitle;
 	Int_t nofTraces, nofEvents;
 	Int_t evtNo, chnNo;
-	TFile * tFile;
-	TH1F * h;
 	ofstream hList;
 	TString hListName;
 	TMrbString hln;
@@ -449,8 +439,8 @@ Bool_t TMrbDGFEventBuffer::SaveTraces(const Char_t * TraceFile, Int_t EventNumbe
 		return(kFALSE);
 	}
 
-	tFile = NULL;
-	h = NULL;
+	TFile * tFile = NULL;
+	TH1F * h = NULL;
 
 	if (TraceFile == NULL || *TraceFile == '\0') {		// default name is "dgfTrace.<module>.<channel>.root
 		traceFile = "dgfTrace.";
