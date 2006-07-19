@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.120 2006-07-10 10:49:07 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.121 2006-07-19 10:36:07 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -128,6 +128,7 @@ const SMrbNamedXShort kMrbLofReadoutTags[] =
 								{TMrbConfig::kRdoLibs,						"READOUT_LIBS"				},
 								{TMrbConfig::kRdoPosix,						"READOUT_POSIX"				},
 								{TMrbConfig::kRdoPosixLib,					"POSIX_LIB"					},
+								{TMrbConfig::kRdoAlign64,					"ALIGN_TO_64_BITS"			},
 								{TMrbConfig::kRdoLynxPlatform,				"GSI_LYNX_PLATFORM"			},
 								{TMrbConfig::kRdoDebug,						"DEBUG_READOUT"				},
 								{TMrbConfig::kRdoNameLC, 					"EXP_NAME_LC"				},
@@ -1557,6 +1558,15 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								rdoStrm << rdoTmpl.Encode(line, "GSI_LYNX_PROC_FAM") << endl;
 							} else {
 								rdoStrm << rdoTmpl.Encode(line, "GSI_LYNX_PLATFORM") << endl;
+							}
+						}
+						break;
+					case TMrbConfig::kRdoAlign64:
+						{
+							Bool_t align64 = gEnv->GetValue("TMrbConfig.AlignTo64Bits", kFALSE);
+							if (align64) {
+								rdoTmpl.InitializeCode();
+								rdoTmpl.WriteCode(rdoStrm);
 							}
 						}
 						break;

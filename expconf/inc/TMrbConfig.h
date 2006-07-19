@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.71 2006-07-10 10:49:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.72 2006-07-19 10:36:07 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -71,6 +71,7 @@ class TMrbConfig : public TNamed {
 									kRdoLibs,
 									kRdoPosix,
 									kRdoPosixLib,
+									kRdoAlign64,
 									kRdoLynxPlatform,
 									kRdoDebug,
 									kRdoNameLC,

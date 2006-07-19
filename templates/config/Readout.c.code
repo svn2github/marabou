@@ -426,12 +426,15 @@ int f_user_readout (unsigned char  bh_trig_typ,
 
 	nofBytes = ((unsigned char *) evt.out32) - ((unsigned char *) pl_dat);
 
+%%BeginOfCode%%
 /* align to 64 bit boundary */
 
 	if (nofBytes % 8) {
 		*evt.out32 = 0xFFFFFFFF;
 		nofBytes += 4;
 	}
+%%EndOfCode%%
+%%ALIGN_TO_64_BITS%%
 
 /* pass number of bytes to caller */
 
