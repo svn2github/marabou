@@ -71,6 +71,8 @@ void HistPresent::RestoreOptions()
    fWincury = fWintopy;
    fWinshiftx = env.GetValue("HistPresent.WindowXShift", fWinshiftx);
    fWinshifty = env.GetValue("HistPresent.WindowYShift", fWinshifty);
+   fMainWidth = env.GetValue("HistPresent.MainWidth", 250);
+   if (fMainWidth < 100 || fMainWidth > 1000) fMainWidth = 250;
    fGraphFile =
        env.GetValue("HistPresent.GraphFile", "gdata.asc");
    fDrawOptGraph =
@@ -369,6 +371,7 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.WindowYWidth_1dim", fWinwidy_1dim);
    env.SetValue("HistPresent.WindowXShift", fWinshiftx);
    env.SetValue("HistPresent.WindowYShift", fWinshifty);
+   env.SetValue("HistPresent.MainWidth", fMainWidth);
    env.SetValue("HistPresent.WindowX", fWintopx);
    env.SetValue("HistPresent.WindowY", fWintopy);
    env.SetValue("HistPresent.WindowXWidth_List", fWinwidx_hlist);
@@ -1962,48 +1965,48 @@ The X - scale of of a 1-dim histogram may be recalibrated\n\
 providing (more than 1) x-y-points. If this option is active\n\
 the user is asked after a fit to a peak if the mean value \n\
 should be added to the list of calibration points.\n\
-_____________________________________________________________\n\
+____________________________________________________________\n\
 Auto Display calibrated hist\n\
 ----------------------------\n\
 Display automatically a calibrated histogram if calibration\n\
 data are storteed in defaulsts file\n\
-_____________________________________________________________\n\
+____________________________________________________________\n\
 \n\
 Draw a fitted curve into the histogram.\n\
-_____________________________________________________________\n\
+____________________________________________________________\n\
 Display fitted curves\n\
 ---------------------\n\
 Draw a fitted curve into the histogram.\n\
-______________________________________________________________\n\
+____________________________________________________________\n\
 Remember hist limits if showing trees\n\
 -------------------------------------\n\
 When displaying trees (ntuples) limits for histograms \n\
 (number of channels, lower, upper edge), these values\n\
 may be remembered for each tree entry between sessions.\n\
-______________________________________________________________\n\
+____________________________________________________________\n\
 Remember Expand settings (Marks) \n\
 -----------------------------------\n\
 Using marks expanded parts of hists may be shown. This\n\
 option allows to pass these to later sessions.\n\
-______________________________________________________________\n\
+____________________________________________________________\n\
 Remember Zoomings (by left mouse)\n\
 ---------------------------------\n\
 Pressing the left mouse button in the scale of a histogram\n\
-dragging to the required limit allows to zoom in the picture.\n\
+dragging to the required limit allows to zoom in the picture\n\
 This option allows to pass these limits to later sessions.\n\
-______________________________________________________________\n\
+_____________________________________________________________\n\
 Use Attribute Macro \n\
 -------------------\n\
 Each time a histogram is display a macro (FH_setdefaults.C)\n\
 may be executed. This option can be switched on or off.\n\
-______________________________________________________________\n\
+____________________________________________________________\n\
 Use Regular expression syntax\n\
 ------------------------------\n\
 Normally wild card syntax (e.g. ls *.root to list all\n\
 files ending with .root) is used in file/histo selection\n\
-masks. One may switch to the more powerful Regular expression.\n\
+masks. One may switch to the more powerful Regular expression\n\
 For details consult a book on Unix.\n\
-______________________________________________________________ \n\
+_____________________________________________________________\n\
 \n\
 ";
 // *INDENT-ON* 
@@ -2084,7 +2087,46 @@ ______________________________________________________________ \n\
 
 void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 12;
+// *INDENT-OFF* 
+   const char helptext[] = 
+"\n\
+This menu controls default window sizes:\n\
+Window sizes and offsets are measured in pixels\n\
+Top left is (0, 0)\n\
+\n\
+Main Window Width:\n\
+This defines the width of the main control window \n\
+and windows for file and hist lists, default 250.\n\
+\n\
+Lists Width:\n\
+This gives additional control for lists:\n\
+> 0: Take value as absolute width (pixels)\n\
+= 0: Take default width (see above)\n\
+< 0: Adjust width to fit names without scrollbars\n\
+\n\
+Window_X_Width_1dim etc.:\n\
+Widths for 1 and 2-dim Histograms\n\
+\n\
+Window_Shift_X, Y:\n\
+Each new window is staggered ny theses values\n\
+\n\
+Window_Top_X, Y\n\
+Position of first window (after Close Windows)\n\
+\n\
+Project_Both_Ratio\n\
+When projectecting 2-dim histograms on both axis\n\
+the 2-dim histogram takes this amount of the space\n\
+available\n\
+\n\
+X- Y Margin in ShowSelected\n\
+This controls the space between the pictures when\n\
+multiple histograms are shown in one canvas.\n\
+_____________________________________________________\n\
+\n\
+";
+// *INDENT-ON* 
+
+   Int_t nopt = 13;
 //   Double_t *values = new Double_t[nopt];
    TArrayD values(nopt);
    TOrdCollection *row_lab = new TOrdCollection();
@@ -2093,6 +2135,8 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
 //   col_lab->Add(new TObjString("Y value"));
 
    Int_t vp = 0;
+   row_lab->Add(new TObjString("Main Window Width"));
+   row_lab->Add(new TObjString("Lists Width: 0 def, < 0 fit, >0 abs val"));
    row_lab->Add(new TObjString("Window_X_Width_1dim"));
    row_lab->Add(new TObjString("Window_Y_Width_1dim"));
    row_lab->Add(new TObjString("Window_X_Width_2dim"));
@@ -2101,12 +2145,13 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("Window_Shift_Y"));
    row_lab->Add(new TObjString("Window_Top_X"));
    row_lab->Add(new TObjString("Window_Top_Y"));
-   row_lab->Add(new TObjString("Window_X_Width_List"));
    row_lab->Add(new TObjString("Project_Both_Ratio"));
    row_lab->Add(new TObjString("X - Margin in ShowSelected"));
    row_lab->Add(new TObjString("Y - Margin in ShowSelected"));
 
 
+   values[vp++] = fMainWidth;
+   values[vp++] = fWinwidx_hlist;
    values[vp++] = fWinwidx_1dim;
    values[vp++] = fWinwidy_1dim;
    values[vp++] = fWinwidx_2dim;
@@ -2115,15 +2160,17 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
    values[vp++] = fWinshifty;
    values[vp++] = fWintopx;
    values[vp++] = fWintopy;
-   values[vp++] = fWinwidx_hlist;
    values[vp++] = fProjectBothRatio;
    values[vp++] = fDivMarginX;
    values[vp++] = fDivMarginY;
    Int_t ret = 0, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "Default window sizes and positions",
-                       itemwidth, 1, nopt, values, precission, 0, row_lab);
+   TGMrbTableOfDoubles(win, &ret, "Default window sizes and positions"
+                      ,itemwidth, 1, nopt, values, precission, 0, row_lab
+                      ,NULL, 0, helptext);
    if (ret >= 0) {
       vp = 0;
+      fMainWidth    = (Int_t) values[vp++];
+      fWinwidx_hlist = (Int_t) values[vp++];
       fWinwidx_1dim = (Int_t) values[vp++];
       fWinwidy_1dim = (Int_t) values[vp++];
       fWinwidx_2dim = (Int_t) values[vp++];
@@ -2132,7 +2179,6 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
       fWinshifty = (Int_t) values[vp++];
       fWintopx = (Int_t) values[vp++];
       fWintopy = (Int_t) values[vp++];
-      fWinwidx_hlist = (Int_t) values[vp++];
       fProjectBothRatio = values[vp++];
       fDivMarginX = values[vp++];
       fDivMarginY = values[vp++];

@@ -53,7 +53,7 @@ void AddMathExpressions(TList * var_list)
   
 void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname, const char* bp)
 {
-  static Int_t ycanvas=5;
+  static Int_t ycanvas=100;
 //  const Int_t MAXLEAF=33;
   if (fRootFile) fRootFile->Close();
   fRootFile=new TFile(fname);
@@ -146,7 +146,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    fRootFile->Close();
    TString title("Tree: ");
    title += tname;
-   HTCanvas *ccont = CommandPanel(title.Data(), fCmdLine, 245, ycanvas, this);
+   HTCanvas *ccont = CommandPanel(title.Data(), fCmdLine, fMainWidth + 10, ycanvas, this);
    if (fHistLists)fHistLists->Add(ccont);
    ycanvas += 50;
    if (ycanvas >= 500) ycanvas=5;

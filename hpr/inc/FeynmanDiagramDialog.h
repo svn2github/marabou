@@ -13,6 +13,8 @@ private:
    Width_t    fWidth ;  	// Feynman line width
    Int_t      fPhi1; 		// Phi1 angle for curly arcs
    Int_t      fPhi2; 		// Phi2 angle for curly arcs
+   Float_t    fArrowSize;  //
+   Style_t    fArrowStyle;  //
 public:
    FeynmanDiagramDialog();
    virtual ~FeynmanDiagramDialog();

@@ -42,8 +42,11 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
  					$(HPRDIRI)/Ascii2NtupleDialog.h \
  					$(HPRDIRI)/FeynmanDiagramDialog.h \
  					$(HPRDIRI)/InsertFunctionDialog.h \
+ 					$(HPRDIRI)/InsertArcDialog.h \
  					$(HPRDIRI)/InsertTextDialog.h \
- 					$(HPRDIRI)/TCurlyLineArrow.h \
+ 					$(HPRDIRI)/TCurlyLineWithArrow.h \
+ 					$(HPRDIRI)/CurlyLineWithArrowDialog.h \
+ 					$(HPRDIRI)/TArcEditor.h \
  					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)

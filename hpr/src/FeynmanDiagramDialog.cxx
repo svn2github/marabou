@@ -33,34 +33,38 @@ FeynmanDiagramDialog::FeynmanDiagramDialog()
    static TString fsl("FeynmanSolidLine()");
    static TString fdl("FeynmanDashedLine()");
 
-   labels->Add(new TObjString("DoubleValue_Wavelength"));
+   labels->Add(new TObjString("DoubleValue_WaveL"));
    valp[ind++] = &fWaveLength;
-   labels->Add(new TObjString("DoubleValue+Aplitude"));
+   labels->Add(new TObjString("DoubleValue+Amp"));
    valp[ind++] = &fAmplitude;
+   labels->Add(new TObjString("ArrowSelect_AShape"));
+   valp[ind++] = &fArrowStyle;
+   labels->Add(new TObjString("Float_Value+ASize"));
+   valp[ind++] = &fArrowSize;
    labels->Add(new TObjString("ColorSelect_Color"));
    valp[ind++] = &fColor;
    labels->Add(new TObjString("PlainShtVal+Width"));
    valp[ind++] = &fWidth;
-   labels->Add(new TObjString("CommandButt_FeynmanArrow()")); 	
+   labels->Add(new TObjString("CommandButt_Arrow()"));  
    valp[ind++] = &far;
-   labels->Add(new TObjString("CommandButt_FeynmanWavyLine()")); 
+   labels->Add(new TObjString("CommandButt+Line()")); 
+   valp[ind++] = &fsl;
+   labels->Add(new TObjString("CommandButt+DashedL()"));
+   valp[ind++] = &fdl;
+   labels->Add(new TObjString("CommandButt_WavyLine()")); 
    valp[ind++] = &fwl;
-   labels->Add(new TObjString("CommandButt_FeynmanCurlyLine()"));
+   labels->Add(new TObjString("CommandButt+CurlyLine()"));
    valp[ind++] = &fcl;
+   labels->Add(new TObjString("CommandButt_WavyArc()"));   
+   valp[ind++] = &fwa;
+   labels->Add(new TObjString("CommandButt+CurlyArc()"));  
+   valp[ind++] = &fca;
    labels->Add(new TObjString("PlainIntVal_Phi start"));
    valp[ind++] = &fPhi1;
    labels->Add(new TObjString("PlainIntVal+Phi end"));
    valp[ind++] = &fPhi2;
-   labels->Add(new TObjString("CommandButt_FeynmanWavyArc()"));   
-   valp[ind++] = &fwa;
-   labels->Add(new TObjString("CommandButt_FeynmanCurlyArc()"));  
-   valp[ind++] = &fca;
-   labels->Add(new TObjString("CommandButt_FeynmanSolidLine()")); 
-   valp[ind++] = &fsl;
-   labels->Add(new TObjString("CommandButt_FeynmanDashedLine()"));
-   valp[ind++] = &fdl;
    Bool_t ok;
-   Int_t itemwidth = 320;
+   Int_t itemwidth = 220;
 
    TRootCanvas* rc = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
    ok = GetStringExt("Feynman diagram", NULL, itemwidth, rc,
@@ -77,10 +81,16 @@ FeynmanDiagramDialog::~FeynmanDiagramDialog()
 
 void FeynmanDiagramDialog::FeynmanArrow()
 {   	
+   const char * ArrowOption[] = 
+      {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
    TArrow * a = (TArrow*)gPad->WaitPrimitive("TArrow");
    a = (TArrow *)gPad->GetListOfPrimitives()->Last();
+   a->SetFillColor(fColor);
    a->SetLineColor(fColor);
    a->SetLineWidth(fWidth);
+   a->SetArrowSize(fArrowSize);
+   a->SetDrawOption(ArrowOption[fArrowStyle]);
+   a->SetOption(ArrowOption[fArrowStyle]);
    gPad->Modified();
    gPad->Update();
 };
@@ -164,7 +174,9 @@ void FeynmanDiagramDialog::FeynmanDashedLine()
 //   gStyle->SetLineStyle(kDashed);    
    TLine * a = (TLine*)gPad->WaitPrimitive("TLine");
    a = (TLine *)gPad->GetListOfPrimitives()->Last();
-   a->SetLineStyle(kDashed);    
+   Style_t lstyle = 7;
+   if (fWidth > 3)lstyle = 9;
+   a->SetLineStyle(lstyle);    
    a->SetLineColor(fColor);
    a->SetLineWidth(fWidth);
    gPad->Modified();
@@ -182,6 +194,8 @@ void FeynmanDiagramDialog::SaveDefaults()
    env.SetValue("FeynmanDiagramDialog.fWidth"		, fWidth 	 );
    env.SetValue("FeynmanDiagramDialog.fPhi1" 		, fPhi1  	 );
    env.SetValue("FeynmanDiagramDialog.fPhi2" 		, fPhi2  	 ); 
+   env.SetValue("FeynmanDiagramDialog.fArrowSize"  ,fArrowSize  ); 
+   env.SetValue("FeynmanDiagramDialog.fArrowStyle" ,fArrowStyle  ); 
    env.SaveLevel(kEnvUser);
 }
 //_________________________________________________________________________
@@ -195,6 +209,8 @@ void FeynmanDiagramDialog::RestoreDefaults()
    fWidth   	= env.GetValue("FeynmanDiagramDialog.fWidth"  	  , 2);
    fPhi1	 	   = env.GetValue("FeynmanDiagramDialog.fPhi1"  	  , 0);
    fPhi2	 	   = env.GetValue("FeynmanDiagramDialog.fPhi2"  	  , 180); 
+   fArrowSize  = env.GetValue("FeynmanDiagramDialog.fArrowSize"  , 0.03); 
+   fArrowStyle  = env.GetValue("FeynmanDiagramDialog.fArrowStyle"  , 7); 
 } 
 //_________________________________________________________________________
             

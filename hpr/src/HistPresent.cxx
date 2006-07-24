@@ -212,6 +212,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    filelist = NULL;
    fControlBar = NULL;
    fMainCanvas=0;
+   fMainWidth = 300;
    lastcanvas=0;
    
    fByTitle=kFALSE;
@@ -289,7 +290,7 @@ HistPresent::~HistPresent()
 void HistPresent::RecursiveRemove(TObject * obj)
 {
 //   cout << "------> Enter HistPresent::RecursiveRemove for: " 
-//      << obj<<  endl;
+//     << obj<< " " << obj->ClassName() <<  endl;
    fCanvasList->Remove(obj);
 #if ROOTVERSION > 40302
    if (fCanvasList->GetEntries() == 0 && fCanvasClosing) {;
@@ -314,7 +315,8 @@ void HistPresent::RecursiveRemove(TObject * obj)
 void HistPresent::ShowMain()
 {
    nHists=0;
-   cHPr = new HTCanvas("cHPr", "HistPresent",5,5, 250, 400, this, 0);
+   Int_t mainheight = fMainWidth * 1.6;
+   cHPr = new HTCanvas("cHPr", "HistPresent",5,5, fMainWidth, mainheight, this, 0);
    cHPr->cd();
    fMainCanvas = GetMyCanvas();
 
@@ -543,7 +545,8 @@ Should we create a sample file",
 //      WarnBox("No files found, check File Selection Mask");
    } else {
       fCmdLine->Sort();
-      filelist = CommandPanel(gSystem->BaseName(gSystem->WorkingDirectory()),fCmdLine, 5, 430);
+      Int_t yoff = fMainWidth * 1.6 + 30;
+      filelist = CommandPanel(gSystem->BaseName(gSystem->WorkingDirectory()),fCmdLine, 5, yoff, this);
    }
 //   fCmdLine->Print();
    fCmdLine->Delete();
@@ -1118,7 +1121,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          if (strlen(dir) > 0) cmd_title = cmd_title + "_" + dir;
 //         cout << "HistPresent: CommandPanel: " << fCmdLine->GetSize() << endl;
          HTCanvas *ccont = CommandPanel(cmd_title.Data(), fCmdLine, 
-                           260, ycanvas, this, fWinwidx_hlist);
+                           fMainWidth + 10, ycanvas, this, fWinwidx_hlist);
          if (fHistLists)fHistLists->Add(ccont);
    }
    fCmdLine->Delete();
@@ -1384,7 +1387,7 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
 
 //      TString cname = fname;
 //      cname = cname + "_" +lname; 
-      TCanvas *ccont = CommandPanel(sl.Data(), fCmdLine, 260, ycanvas, this);
+      TCanvas *ccont = CommandPanel(sl.Data(), fCmdLine, fMainWidth + 10, ycanvas, this);
       fHistLists->Add(ccont);
       ycanvas += 50;
       if (ycanvas >= 500) ycanvas=5;
@@ -1758,12 +1761,24 @@ void HistPresent::OperateHist(Int_t op)
    TString nameop;
    TString name2;
    TH1* hresult =  (TH1*)hist1->Clone();
+   Int_t nbinsx_1 = hist1->GetNbinsX();
    TH1* hist2;
    if (nselect == 2 || (op == 1 && nselect != 1)) {
 //   if (nselect == 2) {
       for(Int_t i = 1; i < nselect; i++) {
          hist2 = GetSelHistAt(i);
          if (!hist2) {WarnBox("Histogram not found");return;};
+         if (hist2->GetNbinsX() != hist1->GetNbinsX()
+             || (hresult->GetDimension() == 2 &&
+             (hist2->GetNbinsY() != hist1->GetNbinsY()))) {
+            cout << setred << " canceled" << endl 
+            << "Cant operate on hists with different number of bins " 
+            << nbinsx_1 << " " << hist2->GetNbinsX();
+            if (hist1->GetDimension() == 2) 
+               cout << " " << hist1->GetNbinsY() << " " << hist1->GetNbinsX();
+            cout << setblack << endl;
+            return;
+         }
          name2 = hist2->GetName();
          last_sem = name2.Last(';');    // chop off version
          if (last_sem > 0) name2.Remove(last_sem);

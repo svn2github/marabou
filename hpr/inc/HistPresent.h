@@ -76,7 +76,7 @@ protected:
    TList *fAllContours;
 
    TMrbHelpBrowser * fHelpBrowser;
-
+   Int_t fMainWidth;
    Int_t fNwindows; 
    Int_t fWintopx;     // origin of window
    Int_t fWintopy; 
@@ -489,6 +489,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
 //   void RemoveFromLists(TObject * obj);
    void DinA4Page(Int_t form);
    Int_t GetWindowPosition(Int_t * winx, Int_t * winy);
+   Int_t GetMainWidth() {return fMainWidth;};
 
 ClassDef(HistPresent,0)      // A histogram presenter
 };

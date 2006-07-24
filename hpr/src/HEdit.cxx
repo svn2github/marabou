@@ -32,7 +32,8 @@
 #include "TSplineXDialog.h"
 #include "InsertFunctionDialog.h"
 #include "FeynmanDiagramDialog.h"
-#include "TCurlyLineArrow.h"
+#include "TCurlyLineWithArrow.h"
+#include "CurlyLineWithArrowDialog.h"
 #include <fstream>
 
 //______________________________________________________________________________
@@ -1870,7 +1871,8 @@ void HTCanvas::GrabImage()
       TPad * pad = new TPad(pname.Data(), "For HprImage", 
                             x1, y1, x2, y2); 
       pad->Draw(); 
-      HprImage * hprimg = new HprImage(pname.Data(), pad);
+      TImage *hprimg = TImage::Open(pname.Data());
+//      HprImage * hprimg = new HprImage(pname.Data(), pad);
       gROOT->SetSelectedPad(pad);
       pad->cd();
       hprimg->Draw("xxx");
@@ -1935,9 +1937,9 @@ void HTCanvas::InsertImage()
                    hist_file, NULL, row_lab, valp);
    if (!ok) return;
 
-//      TImage *img = TImage::Open(name.Data());
-   HprImage * hprimg = new HprImage(name.Data(), pad);
-   TImage *img = hprimg->GetImage();
+   TImage *img = TImage::Open(name.Data());
+//   HprImage * hprimg = new HprImage(name.Data(), pad);
+//   TImage *img = hprimg->GetImage();
    if (!img) {
       cout << "Could not create an image... exit" << endl;
       return;
@@ -1947,6 +1949,7 @@ void HTCanvas::InsertImage()
   
    if (new_pad) {
       pad = GetEmptyPad();
+      pad = (TPad*)gPad;
       if (pad) {
          gROOT->SetSelectedPad(pad);
    		Double_t aspect_ratio = img_height * this->GetXsizeReal() 
@@ -1962,19 +1965,20 @@ void HTCanvas::InsertImage()
                   		pad->GetYlowNDC() + pad->GetHNDC());
    		}
 
-   		pad->SetTopMargin(.0);
-   		pad->SetBottomMargin(0.0);
-   		pad->SetLeftMargin(0.0);
-   		pad->SetRightMargin(0.0);
+//   		pad->SetTopMargin(.0);
+//   		pad->SetBottomMargin(0.0);
+//   		pad->SetLeftMargin(0.0);
+//   		pad->SetRightMargin(0.0);
 //  
-         pad->Range(0,0, (GetUxmax() - GetUxmin())* pad->GetWNDC()
-                       , (GetUymax() - GetUymin())* pad->GetHNDC());
+//         pad->Range(0,0, (GetUxmax() - GetUxmin())* pad->GetWNDC()
+//                       , (GetUymax() - GetUymin())* pad->GetHNDC());
          
       } else {
          WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
          return;
       }   
    }
+
    cout << "InsertImage(): " <<  gPad->GetXlowNDC() << " " << gPad->GetYlowNDC() << " "
         <<  gPad->GetWNDC()    << " " << gPad->GetHNDC()    << endl;
    cout << "Image size, X,Y: " << img_width
@@ -1992,10 +1996,13 @@ void HTCanvas::InsertImage()
       drawopt += offset_x;
       drawopt += ",#ffffff";
    }
-   cout << drawopt << endl;
-   hprimg->Draw(drawopt);
-//   img->Draw("xxx");
+//   cout << drawopt << endl;
+//   hprimg->Draw(drawopt);
+   img->Draw(drawopt);
 //   hprimg->Paint();
+//   if(pad) pad->Range(0,0, (GetUxmax() - GetUxmin())* pad->GetWNDC()
+//                       , (GetUymax() - GetUymin())* pad->GetHNDC());
+//   img->Pop();
    Update();
 }
 
@@ -2357,15 +2364,21 @@ void HTCanvas::InsertGObjects(const char * objname)
    }
    if (x0 == 0 && y0 == 0) {
    	cout << "Mark position with left mouse" << endl;
-   	fGetMouse = kTRUE;
-	   while (fGetMouse == kTRUE) {
-   	   gSystem->ProcessEvents();
-   	   gSystem->Sleep(10);
-	   }
-      x0 = fMouseX;
-      y0 = fMouseY;
+      TMarker * mark  = (TMarker*)gPad->WaitPrimitive("TMarker");
+      mark  = (TMarker*)gPad->GetListOfPrimitives()->Last();
+      x0 = mark->GetX();
+      y0 = mark->GetY();
+      delete mark;
+//   	fGetMouse = kTRUE;
+//	   while (fGetMouse == kTRUE) {
+//  	   gSystem->ProcessEvents();
+//   	   gSystem->Sleep(10);
+//	   }
+//      x0 = fMouseX;
+//      y0 = fMouseY;
    }
-   this->cd();
+   cout << "x0 " << x0 << endl;
+//   this->cd();
    TObjArray *colors = (TObjArray*)gg->GetMemberList()
                        ->FindObject("ListOfColors");
    if (colors) {
@@ -2393,7 +2406,7 @@ void HTCanvas::InsertGObjects(const char * objname)
       }
    }
    gg->AddMembersToList(this, x0, y0, scaleNDC, scaleU, angle, align, draw_cut); 
-   
+   x0 = y0 = 0;
    this->Modified(); 
    this->Update(); 
 }
@@ -2460,6 +2473,7 @@ void HTCanvas::ShowGallery()
       cout << "No graph macro objects defined" << endl;
       return;
    }
+   TVirtualPad *padsave = gPad;
    Int_t n = fGObjectGroups->GetSize();
    TDialogCanvas *dialog = new TDialogCanvas("GObjects", "Graphics macro objects",
                             5,500, 500, 500);
@@ -2511,6 +2525,7 @@ void HTCanvas::ShowGallery()
          y = marg;
       }
    }
+   if (padsave)padsave->cd();
 }
 //______________________________________________________________________________
 
@@ -2948,64 +2963,5 @@ void HTCanvas::InsertTSplineX()
 
 void HTCanvas::InsertCurlyArrow()
 {
-   cout << "InsertCurlyArrow()" << endl;
-   static void *valp[25];
-   Int_t ind = 0;
-   TList * row_lab = new TList(); 
-   static Color_t  color   = gStyle->GetLineColor();
-   static Width_t  lwidth  = gStyle->GetLineWidth();
-   static Style_t  lstyle  = gStyle->GetLineStyle();
-
-   static Int_t    arrow_at_start = 0;
-   static Int_t    arrow_at_end  = 0;
-   static Double_t arrow_size    = 0;
-   static Double_t arrow_angle   = 30;
-   static Double_t ampl          = 0.01;
-   static Double_t wlen          = 0.02;
-
-   row_lab->Add(new TObjString("DoubleValue_Ampl"));
-   valp[ind++] = &ampl;
-   row_lab->Add(new TObjString("DoubleValue+WaveL"));
-   valp[ind++] = &wlen;
-   row_lab->Add(new TObjString("ColorSelect_LColor"));
-   valp[ind++] = &color;
-   row_lab->Add(new TObjString("PlainShtVal+LWidth"));
-   valp[ind++] = &lwidth;
-   row_lab->Add(new TObjString("LineSSelect+LStyle"));
-   valp[ind++] = &lstyle;
-   row_lab->Add(new TObjString("CheckButton_Arrow@Start"));
-   valp[ind++] = &arrow_at_start;
-   row_lab->Add(new TObjString("CheckButton+Arrow@End"));
-   valp[ind++] = &arrow_at_end;
-   row_lab->Add(new TObjString("DoubleValue_ArLength"));
-   valp[ind++] = &arrow_size;
-   row_lab->Add(new TObjString("DoubleValue+ArAngle"));
-   valp[ind++] = &arrow_angle;
-
-   Bool_t ok; 
-   Int_t itemwidth = 320;
-tryagain:
-   ok = GetStringExt("Curly Arrow Params", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, row_lab, valp);
-   if (!ok) return;
-
-  cout << "Input a Line" << endl;
-   TLine * gr = (TLine*)this->WaitPrimitive("TLine", "Line");
-   if (!gr) {
-      cout << "No Line found, try again" << endl;
-      goto tryagain;
-   }
-   Int_t where = 0;
-   if (arrow_at_start) where += 1;
-   if (arrow_at_end)   where += 2;
-   TCurlyLineWithArrow* xsp = 
-     new TCurlyLineWithArrow(gr->GetX1(), gr->GetY1(), gr->GetX2(), gr->GetY2(), 
-                             wlen, ampl, where, arrow_size );
-   xsp->Draw();
-   xsp->SetLineColor(color);
-   xsp->SetLineWidth(lwidth);
-   xsp->SetLineStyle(lstyle);
-   delete gr;
-   Modified();
-   Update();
+   new CurlyLineWithArrowDialog();
 }

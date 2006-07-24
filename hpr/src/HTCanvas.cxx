@@ -258,6 +258,9 @@ HTCanvas::~HTCanvas()
       if(cn.Contains(".root") || cn.Contains(".map")
          ||cn.Contains(".histlist")){
          TCanvas *ca = (TCanvas*)gROOT->GetListOfCanvases()->FindObject("Filelist");
+         cout << "dtor HTCanvas:  (!fHistPresent && !fFitHist)" 
+         << GetName()<< " ca " << ca <<  endl;
+          
          if(ca){
             TIter nextobj(ca->GetListOfPrimitives());
             TButton *b;
@@ -297,11 +300,11 @@ HTCanvas::~HTCanvas()
       delete fHistList;
    }
    if(fTimer) delete fTimer;
-   if(fHistPresent){
+//   if(fHistPresent){
 //     cout << "HTCanvas: Remove(this) " << this << endl;
-      fHistPresent->GetCanvasList()->Remove(this);
-      fHistPresent->GetHistList()->Remove(this);
-   }
+//     fHistPresent->GetCanvasList()->Remove(this);
+//      fHistPresent->GetHistList()->Remove(this);
+//   }
    if(fFitHist) {
       fFitHist->UpdateCut();
       fFitHist->SetCanvasIsDeleted();
@@ -318,30 +321,35 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //  Handle input events, like button up/down in current canvas.
 //
 
-   TPad         *pad;
-   TPad         *padsave;
-//   TObjLink     *pickobj;
-   TObject      *prevSelObj = 0;
-   TPad         *prevSelPad = 0;
 //OS start
    static Int_t pxB1down, pyB1down;
    Double_t x = 0, y = 0;
    Int_t n;
+   static TObject * pad_of_image = 0;
+   static Bool_t in_image = kFALSE;
 //OS end
+
+   TPad         *pad;
+   TObject      *prevSelObj = 0;
+   TPad         *prevSelPad = 0;
 
    if (fSelected && fSelected->TestBit(kNotDeleted))
       prevSelObj = fSelected;
    if (fSelectedPad && fSelectedPad->TestBit(kNotDeleted))
       prevSelPad = (TPad*) fSelectedPad;
+
    fPadSave = (TPad*)gPad;
-   padsave  = fPadSave;
+//   if (event == kButton1Down) { 
+//      cout << "fSelected " <<fSelected << " gPad " << gPad
+//        << " fSelectedPad " << fSelectedPad<<  endl;
+//   }
    cd();        // make sure this canvas is the current canvas
+
+//   if (event == kButton1Down)  cout << "gPad " << gPad << endl;
 
    fEvent  = event;
    fEventX = px;
    fEventY = py;
-   static TObject * pad_of_image = 0;
-   static Bool_t in_image = kFALSE;
    
    if (fSelected) {
       if (event == kButton1Down && !strncmp(fSelected->ClassName(), "TASI", 4)) {
@@ -352,7 +360,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       }
    }
 
-   if (gROOT->GetEditorMode() && fEvent ==  kMouseMotion) fEvent = kButton1Motion;
+//   if (gROOT->GetEditorMode() && fEvent == kMouseMotion) fEvent = kButton1Motion;
 
    switch (fEvent) {
 
@@ -369,23 +377,27 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
       fSelected->ExecuteEvent(event, px, py);
 
-      if (GetShowEventStatus()) DrawEventStatus(event, px, py, fSelected);
-      if (GetAutoExec())        RunAutoExec();
+      RunAutoExec();
 
       break;
 
+   case kMouseEnter:
+      // mouse enters canvas
+      if (!fDoubleBuffer) FeedbackMode(kTRUE);
+      break;
    case kMouseLeave:
       // mouse leaves canvas
       {
 //         cout << " kMouseLeave " << endl;
          // force popdown of tooltips
-         TObject     *sobj = fSelected;
-         TPad *spad = fSelectedPad;
+         TObject *sobj = fSelected;
+         TPad    *spad = fSelectedPad;
          fSelected    = 0;
          fSelectedPad = 0;
          EnterLeave(prevSelPad, prevSelObj);
          fSelected    = sobj;
          fSelectedPad = spad;
+         if (!fDoubleBuffer) FeedbackMode(kFALSE);
       }
       break;
 
@@ -400,7 +412,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
      // find pad in which input occured
       pad = Pick(px, py, prevSelObj);
       if (!pad) return;
-      if (!fSelected) return;
+//      if (!fSelected) return;
 
       gPad = pad;   // don't use cd() because we won't draw in pad
                     // we will only use its coordinate system
@@ -409,7 +421,6 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          fSelected = pad_of_image;
       }
    
-      FeedbackMode(kTRUE);   // to draw in rubberband mode
 //OS start
       pxB1down = px;
       pyB1down = py;
@@ -451,8 +462,16 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //         pad << endl;
       }
 //OS end
-      fSelected->ExecuteEvent(event, px, py);
-      if (GetAutoExec())        RunAutoExec();
+      if (fSelected) {
+         FeedbackMode(kTRUE);   // to draw in rubberband mode
+         if (fSelected == fPadSave || gROOT->GetEditorMode() == 0) {
+            fSelected->ExecuteEvent(event, px, py);
+         } else if  (gROOT->GetEditorMode() != 0) {
+            cout << "Please use selected pad" << endl;
+         }
+           
+         RunAutoExec();
+      }
 
       break;
 
@@ -490,7 +509,9 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          }
 
 //OS end
-         fSelected->ExecuteEvent(event, px, py);
+         if (fSelected == fPadSave || gROOT->GetEditorMode() == 0) 
+            fSelected->ExecuteEvent(event, px, py);
+         gVirtualX->Update();
 
          {
             Bool_t resize = kFALSE;
@@ -505,7 +526,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
                FeedbackMode(kTRUE);
             }
          }
-         if (GetAutoExec()) RunAutoExec();
+         RunAutoExec();
 //         if (GetShowEventStatus()) DrawEventStatus(event, px, py, fSelected);
       }
 
@@ -548,13 +569,16 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          }
 //OS end
 
-         fSelected->ExecuteEvent(event, px, py);
+         if (fSelected == fPadSave || gROOT->GetEditorMode() == 0)
+            fSelected->ExecuteEvent(event, px, py);
 
-         if (GetShowEventStatus()) DrawEventStatus(event, px, py, fSelected);
-         if (GetAutoExec())        RunAutoExec();
-         gPad     = this;
-         fPadSave = this;
-         padsave  = fPadSave;
+         RunAutoExec();
+         if (fPadSave->TestBit(kNotDeleted))
+            gPad = fPadSave;
+         else {
+            gPad     = this;
+            fPadSave = this;
+         }
 
          Update();    // before calling update make sure gPad is reset
       }

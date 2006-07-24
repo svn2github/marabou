@@ -31,7 +31,10 @@
 #pragma link C++ class Ascii2NtupleDialog;
 #pragma link C++ class InsertFunctionDialog;
 #pragma link C++ class FeynmanDiagramDialog;
+#pragma link C++ class InsertArcDialog;
 #pragma link C++ class InsertTextDialog;
 #pragma link C++ class TCurlyLineArrow;
+#pragma link C++ class TArcEditor;
 #pragma link C++ class TCurlyLineWithArrow;
+#pragma link C++ class CurlyLineWithArrowDialog;
 #endif			   

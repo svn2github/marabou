@@ -272,8 +272,8 @@ TButton *CommandButton(TString & cmd, TString & tit,
 //      if(text)text->SetX(0.03);
    //  } else {
    TLatex *text = GetPadLatex(button);
-   if (text)
-      text->SetX(0.03);
+   if (text && tit.Length() > 0)
+      text->SetX(0.2 / (Double_t)tit.Length());
 //   }
    button->Draw();
    return button;
@@ -334,8 +334,11 @@ void SelectButton(TString & cmd,
 HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
                        Int_t xpos, Int_t ypos, HistPresent * hpr, Int_t xwid)
 {   
-   Int_t xwid_default = 250;
-   Int_t ywid_default = 600;
+   Int_t xwid_default = hpr->GetMainWidth();
+   Int_t ywid_default = (Int_t)((Float_t)xwid_default * 2.4);
+   Float_t magfac = (Float_t)xwid_default / 250.;
+//   Int_t xwid_default = 250;
+//   Int_t ywid_default = 600;
 
    Int_t xw = xwid_default;
    Int_t yw = ywid_default;
@@ -354,38 +357,33 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
          anysel = kTRUE;
 //      if(cle->fSel != "NoOp") anysel=kTRUE;
    }
-   if (maxlen_nam > 20)
-      xw = 40 + maxlen_nam * 12;
+   if (maxlen_nam > 10)
+      xw = 40 + Int_t((Float_t)maxlen_nam * 9 * magfac) ;
    if (Nentries < 25)
-      yw = 24 * (Nentries + 1);
+      yw = (Int_t)(magfac * 24.) * (Nentries + 2);
+//      yw = 40 * (Nentries + 1);
+//   cout << " xw " << xw << " yw " << yw << endl;
+
    TString pname(fname);
 //   pname.Prepend("CWD:");
    HTCanvas *cHCont = new HTCanvas(pname.Data(), pname.Data(),
                                    -xpos, ypos, xw, yw, hpr, 0);
-   Int_t item_height = TMath::Min(24, 10000/Nentries);
+   Int_t item_height = TMath::Min(Int_t(magfac * 24.), 10000/Nentries);
    cHCont->SetCanvasSize(xw, item_height * Nentries);
    ypos += 50;
    if (ypos > 500) ypos = 5;
+//   cout << "usedxw  " <<  cHCont->GetWw() << " usedyw  " <<  cHCont->GetWh() << endl;
 
-   Float_t expandx = xw / 250.;
+   Float_t expandx = xw / (250. * magfac);
    if(expandx < 1.) expandx=1.;
-   Float_t expandy = (Float_t) Nentries / 25;
+//   Float_t expandy = (Float_t) Nentries / 25;
+   Float_t expandy = (Float_t) Nentries / 20;
 
    Float_t x1, y0, y, dy;
    Float_t xcmd_with_sel = 0.08 / expandx;
    Float_t xcmd_no_sel   = 0.01 / expandx;
-//   if (anysel);
-//      x0 = 0.08;
-//   else
-//      x0 = 0.01;
-//   x0 = x0 / expandx;
-//   x1 = 1.;
    x1 = 0.99;
-
-//   if (Nentries <= 3) 
-//      dy = .999 / (Float_t) (Nentries + 1);
-//   else               
-      dy = .999 / (Float_t) (Nentries);
+   dy = .999 / (Float_t) (Nentries);
 
 //   cout << "Nentries, dy " << Nentries << " " <<  dy << endl;
    y0 = 1.;
@@ -424,6 +422,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    }
    Int_t usedxw = cHCont->GetWw();
    Int_t usedyw = cHCont->GetWh();
+//   cout << "usedxw  " << usedxw << " usedyw  " << usedyw << endl;
    
 //   Int_t newxw = (Int_t) ((Float_t) usedxw * expandx);
    Int_t newxw = usedxw;
@@ -432,16 +431,28 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
       newyw = (Int_t) ((Float_t) usedyw * expandy);
    else
       newyw = usedyw;
-//   cHCont->SetCanvas(newxw, newyw);
-//   if (newyw > usedyw)
-//      newyw -= 16;
-   if (xwid < 0) {
+//  adjust canvas to fit text without scroll bars
+   if (xwid < 0 || (xwid == 0 && newxw < usedxw)) {
       newxw = TMath::Max(xwid_default, newxw);
       if (newxw > xwid_default) newxw += 20;
    } else {
       newxw = xwid_default;
    } 
-   cHCont->SetWindowSize(newxw, TMath::Min(ywid_default+10, newyw+20));
+/*
+   cout << "xwid_default " << xwid_default 
+        << " newxw " << newxw 
+        << " usedxw " << usedxw
+        << endl;
+   cout << "ywid_default " << ywid_default 
+        << " newyw " << newyw 
+        << " usedyw " << usedyw
+        << endl;
+*/
+   if (usedxw < xwid_default ) newxw = usedxw + 10;
+//  acount for scrollbar
+   if (usedxw > newxw )  newyw += 15;
+
+   cHCont->SetWindowSize(newxw, TMath::Min(ywid_default+10, newyw+10));
    cHCont->SetCanvasSize(usedxw, usedyw);
    cHCont->SetEditable(kFALSE);
    cHCont->Update();
