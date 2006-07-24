@@ -573,8 +573,10 @@ Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
                      break;
                   case kTableFrameHelp:
                      {
-                     Int_t nl = (Int_t)(1.5*(Float_t)strlen(fHelpText));
-                     new TGMrbHelpWindow(this, "Help Window", fHelpText, 400, nl);
+                     TString temp(fHelpText);
+                     Int_t nl = temp.CountChar('\n');
+                     nl *= 15;
+                     new TGMrbHelpWindow(this, "Help Window", fHelpText, 450, nl);
                      }
                      break;
                   case kTableFrameAll_1:

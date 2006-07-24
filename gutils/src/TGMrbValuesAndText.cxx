@@ -618,24 +618,24 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else if (l.BeginsWith("ArrowSelect")) {
             fArrowShape = *(Int_t*)fValPointers[i];
             fArrowComboBox = new TGComboBox(hframe, kIdArrowS);
-            fArrowComboBox->AddEntry(" -------|>",1);
-            fArrowComboBox->AddEntry(" <|-------",2);
-            fArrowComboBox->AddEntry(" -------->",3);
-            fArrowComboBox->AddEntry(" <--------",4);
-            fArrowComboBox->AddEntry(" ---->----",5);
-            fArrowComboBox->AddEntry(" ----<----",6);
-            fArrowComboBox->AddEntry(" ----|>---",7);
-            fArrowComboBox->AddEntry(" ---<|----",8);
-            fArrowComboBox->AddEntry(" <------>", 9);
-            fArrowComboBox->AddEntry(" <|-----|>",10);
+            fArrowComboBox->AddEntry(" ----|>",1);
+            fArrowComboBox->AddEntry(" <|----",2);
+            fArrowComboBox->AddEntry(" ----->",3);
+            fArrowComboBox->AddEntry(" <-----",4);
+            fArrowComboBox->AddEntry(" --->--",5);
+            fArrowComboBox->AddEntry(" ---<--",6);
+            fArrowComboBox->AddEntry(" --|>--",7);
+            fArrowComboBox->AddEntry(" --<|--",8);
+            fArrowComboBox->AddEntry(" <--->", 9);
+            fArrowComboBox->AddEntry(" <|--|>",10);
 //            fArrowComboBox->Resize(fArrowComboBox->GetDefaultWidth(), 20);
 //            (fArrowComboBox->GetListBox())->Resize(, 136);
             fArrowComboBox->Select(fArrowShape);
             fWidgets->Add(fArrowComboBox);
             fEntries->Add(fArrowComboBox);
             fArrowComboBox->Associate(this);
-            fArrowComboBox->Resize(win_width / 3, 20);
-            hframe->AddFrame(fArrowComboBox, loc);
+            fArrowComboBox->Resize(win_width / 5, 20);
+            hframe->AddFrame(fArrowComboBox, l3);
 
          } else if (l.BeginsWith("Float_Value")) {
 //               scol = Form("%f", *(Float_t*)fValPointers[i]);
@@ -839,12 +839,12 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //         ((TGFrame *) fMyWindow)->GetHeight() - height >> 1,
 //                          ax, ay, wdum);
    gVirtualX->TranslateCoordinates(fMyWindow->GetId(), this->GetParent()->GetId(),
-         0,
-         ((TGFrame *) fMyWindow)->GetHeight() - height >> 1,
+         0, ((TGFrame *) fMyWindow)->GetHeight(),
                           ax, ay, wdum);
 
    ax = ax - (int)( win_width >> 1);
- 
+   ay = ay - (int)( height) - 30;
+
    UInt_t ww, wh;
    Int_t  wwi,whi;
    Int_t screen_x, screen_y;
