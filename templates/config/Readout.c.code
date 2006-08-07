@@ -429,8 +429,8 @@ int f_user_readout (unsigned char  bh_trig_typ,
 %%BeginOfCode%%
 /* align to 64 bit boundary */
 
-	if (nofBytes % 8) {
-		*evt.out32 = 0xFFFFFFFF;
+	if ((nofBytes + sizeof(s_veshe)) % 8) {
+		*evt.out32 = 0xffffffffL;
 		nofBytes += 4;
 	}
 %%EndOfCode%%
