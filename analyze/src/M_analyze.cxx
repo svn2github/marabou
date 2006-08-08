@@ -668,6 +668,7 @@ int main(int argc, char **argv) {
    	ioSpec->SetHistoFile(histo_file.Data(), histo_mode);
 
 	u_analyze->SaveHistograms("*", ioSpec);	// save histos if needed
+	u_analyze->FinishRun(ioSpec);			// finish run (user may overwrite this method)
 
 //	read events from root files in a loop
 	} else {

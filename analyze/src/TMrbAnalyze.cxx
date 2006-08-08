@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.71 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.72 2006-08-08 14:35:02 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -503,6 +503,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 					this->CloseRootTree(ioSpec);
 					this->SaveHistograms("*", ioSpec);
 					this->ClearHistograms("*", ioSpec);
+					this->FinishRun(ioSpec);			// finish run (user may overwrite this method)
 					nofEntries++;
 				}
 				if (!fFakeMode) {
@@ -531,6 +532,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 						this->CloseRootTree(ioSpec);
 						this->SaveHistograms("*", ioSpec);
 						this->ClearHistograms("*", ioSpec);
+						this->FinishRun(ioSpec);			// finish run (user may overwrite this method)
 					}
 					this->SetRunStatus(TMrbAnalyze::M_RUNNING); 	// for some (unknown) reason we end up with status "PAUSING", so we have to revive it.
 				}
