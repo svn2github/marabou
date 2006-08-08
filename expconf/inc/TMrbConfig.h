@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.72 2006-07-19 10:36:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.73 2006-08-08 14:35:34 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -209,6 +209,7 @@ class TMrbConfig : public TNamed {
 									kAnaUserInitializeBeforeHB,
 									kAnaUserInitializeAfterHB,
 									kAnaUserReloadParams,
+									kAnaUserFinishRun,
 									kAnaUserBookParams,
 									kAnaUserBookHistograms,
 									kAnaUserGlobals,
@@ -328,13 +329,14 @@ class TMrbConfig : public TNamed {
 									kIclOptUserClass			=	BIT(5),
 									kIclOptInitialize			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(6),
 									kIclOptReloadParams			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(7),
-									kIclOptHandleMessages		=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(8),
-									kIclOptBookHistograms		=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(9),
-									kIclOptBookParams			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(10),
-									kIclOptProcessEvent			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(11),
-									kIclOptEventMethod			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(12),
-									kIclOptUserDefinedEvent		=	kIclOptUserClass | BIT(13),
-									kIclOptUtilities			=	BIT(14)
+									kIclOptFinishRun			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(8),
+									kIclOptHandleMessages		=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(9),
+									kIclOptBookHistograms		=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(10),
+									kIclOptBookParams			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(11),
+									kIclOptProcessEvent			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(12),
+									kIclOptEventMethod			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(13),
+									kIclOptUserDefinedEvent		=	kIclOptUserClass | BIT(14),
+									kIclOptUtilities			=	BIT(15)
 								};
 
 		enum					{	kNofCrates			=	100			};	// max number of crates

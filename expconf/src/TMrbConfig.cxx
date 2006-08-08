@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.121 2006-07-19 10:36:07 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.122 2006-08-08 14:35:34 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -308,6 +308,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaUserGlobals,				"INCLUDE_USER_GLOBALS"			},
 								{TMrbConfig::kAnaUserUtilities,				"INCLUDE_USER_UTILITIES"		},
 								{TMrbConfig::kAnaUserReloadParams,			"RELOAD_PARAMS" 				},
+								{TMrbConfig::kAnaUserFinishRun, 			"FINISH_RUN"	 				},
 								{TMrbConfig::kAnaUserMessages,				"HANDLE_MESSAGES"				},
 								{TMrbConfig::kAnaUserDummyMethods,			"INCLUDE_DUMMY_METHODS" 		},
 								{TMrbConfig::kAnaUsingNameSpace,			"USING_NAMESPACE"	 			},
@@ -511,6 +512,7 @@ const SMrbNamedXShort kMrbIncludeOptions[] =
 								{TMrbConfig::kIclOptUserMethod,				"USERMETHOD"			},
 								{TMrbConfig::kIclOptInitialize,				"INITIALIZE"			},
 								{TMrbConfig::kIclOptReloadParams,			"RELOADPARAMS"			},
+								{TMrbConfig::kIclOptFinishRun,				"FINISHRUN" 			},
 								{TMrbConfig::kIclOptBookHistograms,			"BOOKHISTOGRAMS"		},
 								{TMrbConfig::kIclOptBookParams, 			"BOOKPARAMS"			},
 								{TMrbConfig::kIclOptProcessEvent,			"PROCESSEVENT"			},
@@ -2605,10 +2607,12 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						}
 						break;
 					case TMrbConfig::kAnaUserReloadParams:
+					case TMrbConfig::kAnaUserFinishRun:
 					case TMrbConfig::kAnaUserMessages:
 						if (this->UserCodeToBeIncluded()) {
 							UInt_t iclOpt = 0xFFFFFFFF;
 							if (tagIdx == kAnaUserReloadParams) 	iclOpt = TMrbConfig::kIclOptReloadParams;
+							else if (tagIdx == kAnaUserFinishRun)	iclOpt = TMrbConfig::kIclOptFinishRun;
 							else if (tagIdx == kAnaUserMessages)	iclOpt = TMrbConfig::kIclOptHandleMessages;
 							Bool_t userCode = kFALSE;
 							TIterator * iclIter = fLofUserIncludes.MakeIterator();
@@ -4832,6 +4836,9 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 							} else if (mth.CompareTo("ReloadParams") == 0) {
 								iclOpts |= TMrbConfig::kIclOptReloadParams;
 								lofMethods->AddNamedX(TMrbConfig::kIclOptReloadParams, method.Data(), line.Data());
+							} else if (mth.CompareTo("FinishRun") == 0) {
+								iclOpts |= TMrbConfig::kIclOptFinishRun;
+								lofMethods->AddNamedX(TMrbConfig::kIclOptFinishRun, method.Data(), line.Data());
 							} else if (mth.CompareTo("HandleMessages") == 0) {
 								iclOpts |= TMrbConfig::kIclOptHandleMessages;
 								lofMethods->AddNamedX(TMrbConfig::kIclOptHandleMessages, method.Data(), line.Data());
