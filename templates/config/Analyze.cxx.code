@@ -232,6 +232,24 @@ Bool_t TMrbAnalyze::ReloadParams(TMrbIOSpec * IOSpec) {
 %%EndOfCode%%
 %%RELOAD_PARAMS%%
 
+%%BeginOfCode%%
+Bool_t TMrbAnalyze::FinishRun(TMrbIOSpec * IOSpec) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::FinishRun
+// Purpose:        Do some work at end of run
+// Arguments:      TMrbIOSpec * IOSpec   -- i/o specifications
+// Results:        kTRUE/kFALSE
+// Description:    User may overwrite this method by his own
+// Exceptions:     
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	return(kTRUE);
+};
+%%EndOfCode%%
+%%FINISH_RUN%%
+
 Bool_t TMrbAnalyze::AdjustWindowPointers() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
