@@ -4,10 +4,10 @@
 // Purpose:        MARaBOU utilities: type conversion for strings
 // Description:    Implements type conversion for TString objects
 // Keywords:
-// Author:         R. Lutter
+// Author:         R. Lutter <mailto:rudi.lutter@physik.uni-muenchen.de>
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbString.cxx,v 1.14 2006-08-10 07:56:30 Rudolf.Lutter Exp $       
-// Date:           $Date: 2006-08-10 07:56:30 $
+// Revision:       $Id: TMrbString.cxx,v 1.15 2006-08-10 07:57:25 Rudolf.Lutter Exp $       
+// Date:           $Date: 2006-08-10 07:57:25 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
