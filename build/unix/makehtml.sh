@@ -25,19 +25,13 @@
     gSystem.Load("libTSnkDDA0816.so");
     gSystem.Load("libTPolControl.so");
     THtml html;
-    html.MakeAll(kFALSE, "TMrb*");
-    html.MakeAll(kFALSE, "DGF*");
-    html.MakeAll(kFALSE, "TSnk*");
+    html.MakeAll(kTRUE, "TMrb*");
+    html.MakeAll(kTRUE, "DGF*");
+    html.MakeAll(kTRUE, "TSnk*");
     TEnv env(".rootrc");
     TString odir;
     odir = env.GetValue("Root.Html.OutputDir", "");
     cout << endl << "Generated doc in directory " << odir.Data() << endl;
-    if (odir.Length() > 1) {
-       TString rmcmd("rm ");
-       rmcmd.Append(odir);
-       rmcmd.Append("/*.ps");
-       gSystem->Exec(rmcmd);
-    }
 	TString cindex(odir);
 	cindex += "/ClassIndex.html";
 	TString corig(cindex);
