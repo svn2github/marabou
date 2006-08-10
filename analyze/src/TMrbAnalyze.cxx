@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.72 2006-08-08 14:35:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.73 2006-08-10 07:23:21 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -191,7 +191,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 //                             none                don't load any params
 //                 histoFile                    name of file to save histograms
 //                             xyz.root                clear histo space on start, save histos to file at end
-//                             +*                      don't clear histo space, add data to current histos,
+//                             +                       don't clear histo space, add data to current histos,
 //                                                     save to file currently open
 //                 outputFile                   name of file to store tree data
 //                             none                don't write tree data

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.31 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.32 2006-08-10 07:23:22 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1676,7 +1676,11 @@ Bool_t TMrbTidyNode::OutputHtmlForMX(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	this->ProcessMnodeHeader(Out, "header2", fTreeLevel - 4);
+	TString pName = this->GetParent()->GetName();
+	TString h;
+	if (pName.CompareTo("ms") == 0) h = "header3"; else h = "header2";
+
+	this->ProcessMnodeHeader(Out, h.Data(), fTreeLevel - 4);
 
 	this->SetIndentation();
 
@@ -1705,7 +1709,11 @@ Bool_t TMrbTidyNode::OutputHtmlForMC(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	this->ProcessMnodeHeader(Out, "header2", fTreeLevel - 4);
+	TString pName = this->GetParent()->GetName();
+	TString h;
+	if (pName.CompareTo("ms") == 0) h = "header3"; else h = "header2";
+
+	this->ProcessMnodeHeader(Out, h.Data(), fTreeLevel - 4);
 	return(kFALSE);
 }
 
@@ -1756,12 +1764,6 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 //////////////////////////////////////////////////////////////////////////////
 
 	TString cssClass = CssClass;
-#if 0
-	if (Level > 0) {
-		cssClass += "-level";
-		cssClass += Level;
-	}
-#endif
 	Out << "<div class=\"" << cssClass << "\">" << endl;
 	TMrbNamedX * nx = this->GetTidyDoc()->GetLofMnodes()->FindByName(this->GetName());
 	if (nx) {
@@ -1806,16 +1808,19 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 			for (Int_t i = 0; i < nargs; i++) {
 				TMrbString arg = ((TObjString *) sstr[i])->GetString().Data();
 				TObjArray sarg;
-				arg.Split(sarg, ":", kTRUE);
-				Out << "<tr><td>" << a << "</td><td><pre class=\"mtag\">" << ((TObjString *) sarg[0])->GetString() << "</pre></td>"
-					<< "<td><pre class=\"mtag\">" << ((TObjString *) sarg[1])->GetString() << "</pre></td>"
-					<< "<td>" << ((TObjString *) sarg[2])->GetString() << "</td></tr>"
-					<< endl;
-				a = "";
-				if (i > 0) method += ", ";
-				method += ((TObjString *) sarg[0])->GetString();
-				method += " ";
-				method += ((TObjString *) sarg[1])->GetString();
+				Int_t n = arg.Split(sarg, ":", kTRUE);
+				if (n > 0) {
+					Out << "<tr>";
+					if (n >= 1) Out << "<td>" << a << "</td><td><pre class=\"mtag\">" << ((TObjString *) sarg[0])->GetString() << "</pre></td>";
+					if (n >= 2) Out << "<td><pre class=\"mtag\">" << ((TObjString *) sarg[1])->GetString() << "</pre></td>";
+					if (n >= 3) Out << "<td>" << ((TObjString *) sarg[2])->GetString() << "</td>";
+					Out << "</tr>" << endl;
+					a = "";
+					if (i > 0) method += ", ";
+					method += ((TObjString *) sarg[0])->GetString();
+					method += " ";
+					method += ((TObjString *) sarg[1])->GetString();
+				}
 			}
 		}
 		method += ")";
@@ -1823,13 +1828,16 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 		if (attr) {
 			astr = attr->GetValue();
 			TObjArray sstr;
-			astr.Split(sstr, ":", kTRUE);
-			Out << "<tr><td>Return:</td><td><pre class=\"mtag\">" << ((TObjString *) sstr[0])->GetString() << "</pre></td>"
-				<< "<td><pre class=\"mtag\">" << ((TObjString *) sstr[1])->GetString() << "</pre></td>"
-				<< "<td>" << ((TObjString *) sstr[2])->GetString() << "</td></tr>"
-				<< endl;
-			method.Prepend(" ");
-			method.Prepend(((TObjString *) sstr[0])->GetString());
+			Int_t n = astr.Split(sstr, ":", kTRUE);
+			if (n > 0) {
+				Out << "<tr>";
+				if (n >= 1) Out << "<td>Return:</td><td><pre class=\"mtag\">" << ((TObjString *) sstr[0])->GetString() << "</pre></td>";
+				if (n >= 2) Out << "<td><pre class=\"mtag\">" << ((TObjString *) sstr[1])->GetString() << "</pre></td>";
+				if (n >= 3) Out << "<td>" << ((TObjString *) sstr[2])->GetString() << "</td>";
+				Out << "</tr>" << endl;
+				method.Prepend(" ");
+				method.Prepend(((TObjString *) sstr[0])->GetString());
+			}
 		}
 	}
 	TMrbTidyAttr * aDescr = (TMrbTidyAttr *) fLofAttr.FindByName("descr");
@@ -1852,18 +1860,19 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 		TString fileStr;
 		fileStr = fileTag->GetValue();
 		Out << "<tr><td>Included from file:</td><td colspan=\"3\"><pre class=\"mtag\">" << fileStr << "</pre></td></tr>" << endl;
-	}
-	TMrbTidyAttr * stdTag = (TMrbTidyAttr *) fLofAttr.FindByName("mtag");
-	if (stdTag) {
-		TMrbTidyAttr * altTag = (TMrbTidyAttr *) fLofAttr.FindByName("atag");
-		TString tagStr;
-		tagStr = stdTag->GetValue();
-		if (altTag) {
-			tagStr += " (";
-			tagStr += altTag->GetValue();
-			tagStr += ")";
+	} else {
+		TMrbTidyAttr * stdTag = (TMrbTidyAttr *) fLofAttr.FindByName("mtag");
+		if (stdTag) {
+			TMrbTidyAttr * altTag = (TMrbTidyAttr *) fLofAttr.FindByName("atag");
+			TString tagStr;
+			tagStr = stdTag->GetValue();
+			if (altTag) {
+				tagStr += " (";
+				tagStr += altTag->GetValue();
+				tagStr += ")";
+			}
+			Out << "<tr><td>Tag:</td><td colspan=\"3\"><pre class=\"mtag\">" << tagStr << "</pre></td></tr>" << endl;
 		}
-		Out << "<tr><td>Tag:</td><td colspan=\"3\"><pre class=\"mtag\">" << tagStr << "</pre></td></tr>" << endl;
 	}
 	TMrbTidyAttr * aCase = (TMrbTidyAttr *) fLofAttr.FindByName("mcase");
 	if (aCase) {

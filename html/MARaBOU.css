@@ -1,0 +1,139 @@
+a {
+	text-decoration: none;
+	font-weight: bolder;
+}
+a:link {
+	color: #0000ff;
+	text-decoration: none;
+}
+a:visited {
+	color: #5500cc;
+}
+a:active {
+	color: #551a8b;
+	border: dotted 1px #0000ff;
+}
+a:hover {
+	background: #eeeeff;
+}
+
+#indx {
+	list-style:	none;
+	padding-left: 0em;
+	margin-left:	0em;
+}
+#indx li {
+	margin-top:	 1px;
+	margin-bottom: 1px;
+	margin-left:	0px;
+	padding-left:	2em;
+	padding-bottom: 0.3em;
+	border-top:	 0px hidden #afafaf;
+	border-left:	0px hidden #afafaf;
+	border-bottom: 1px hidden #ffffff;
+	border-right:	1px hidden #ffffff;
+}
+#indx li:hover {
+	border-top:	 1px solid #afafaf;
+	border-left:	1px solid #afafaf;
+	border-bottom: 0px solid #ffffff;
+	border-right:	0px solid #ffffff;
+}
+#indx li.idxl0 {
+	background-color: #e7e7ff;
+}
+#indx a {
+	font-weight: bold;
+	display:		block;
+	margin-left: -1em;
+}
+#indxShortX {
+	border: 3px solid gray;
+	padding: 8pt;
+	margin-left: 2em;
+}
+#indxShortX h4 {
+	margin-top: 0em;
+	margin-bottom: 0.5em;
+}
+#indxShortX a {
+	margin-right: 0.25em;
+	margin-left: 0.25em;
+}
+#indxModules {
+	border: 3px solid gray;
+	padding: 8pt;
+	margin-left: 2em;
+}
+#indxModules h4 {
+	margin-top: 0em;
+	margin-bottom: 0.5em;
+}
+#indxModules a {
+	margin-right: 0.25em;
+	margin-left: 0.25em;
+}
+#searchform {
+	margin-left: 2em;
+}
+
+div.funcdoc {
+	width: 100%;
+	border-bottom: solid 3px #cccccc;
+	border-left: solid 1px #cccccc;
+	margin-bottom: 1em;
+	margin-left: 0.3em;
+	padding-left: 1em;
+	background-color: White;
+}
+span.funcname {
+	margin-left: -0.7em;
+	/*border-bottom: solid 1px #cccccc;*/
+	font-weight: bolder;
+}
+
+span.comment {
+	background-color: #eeeeee;
+	color: Green;
+	font-weight: normal;
+}
+span.keyword {
+	color: Maroon;
+	font-weight: normal;
+}
+span.cpp {
+	color: Gray;
+	font-weight: normal;
+}
+span.string {
+	color: Teal;
+	font-weight: normal;
+}
+pre.code {
+	font-weight: bolder;
+}
+div.classdescr {
+	width: 100%;
+	margin-left: 0.3em;
+	padding-left: 1em;
+	margin-bottom: 2em;
+	/*border-bottom: solid 1px Black;*/
+	border-bottom: solid 3px #cccccc;
+	border-left: solid 1px #cccccc;
+	background-color: White;
+}
+body {
+	background-color: #fcfcfc;
+}
+table.inhtree {
+	background-color: White;
+	border: solid 1px Black;
+	width: 100%;
+}
+table.libinfo 
+{
+	background-color: White;
+	padding: 2px;
+	border: solid 1px Gray; 
+	float: right;
+}
