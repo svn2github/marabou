@@ -16,15 +16,14 @@
 <li><a href=#Help_on_ListObjectsInMemory>List Objects in Memory</a></li> 
 <li><a href=#Help_on_HistsFromM_analyze>Hists from M_analyze</a></li> 
 <li><a href=#Help_on_SelectionMask>File/Histo Selection Mask</a></li> 
-<li><a href=#Help_on_ListMacros>List Macros</a></li> 
-<li><a href=#Help_on_ShowSelected>Show selected hists</a></li> 
 <li><a href=#Help_on_StackSelected>Stack selected hists</a></li> 
+<li><a href=#Help_on_ShowSelected>Show selected hists</a></li> 
 </ul>
 
 <a NAME=Help_on_operators></a> 
 <H3>Operators</H3>
 If two histograms (or more for Add)
-are selected one can
+are selected (Click grey button in Hist list) one can
 perform the following operations: 
 + Add: hist1 + factor*hist2
 - Sub: hist1 - factor*hist2
@@ -58,7 +57,12 @@ Display a list of root files (.map, .root, .histlist)  in
 current working directory. Ordering may be done
 alphabetically or by modification time.
 If files in other directory are needed (symbolic) links
-should be used.
+can be used.
+<p>
+The <b>File</b> popup menu provides an entry 
+<b>Select ROOT file from any directory</B>. This opens 
+a file selection dialog from which a ROOT file in any 
+directory may be choosen.
 <p>
 Tighter selection can be made by defining a <b>FileSelectionMask</b>. 
 Clicking on a file displays the contents
@@ -139,16 +143,6 @@ events collected.
 SelectionMasks may be defined using wildcard or regular
 expression syntax. See <a href=options.html#Help_on_RegExp>Help_on_RegExp</a>
 
-<a NAME=Help_on_ListMacros></a> 
-<H3>List Macros</H3>
-List of files ending with .C if the first line of the
-macro file contains a hint like:<br>
-<pre>//Hint: This macro is very useless</pre>
-Pressing the button will execute the macro.<br>
-Note: If the macro changes (root) directories e.g. by
-opening a TFile the last command in the macro should be:
-<pre>gDirectory = gROOT</pre> to keep HistPresent happy.
-
 <a NAME=Help_on_ShowSelected></a> 
 <H3>Show selected hists</H3>
 This command displays up to 25 selected histograms in one
@@ -164,7 +158,7 @@ In this canvas only the following operations are possible
 <li>
 <B>Show all as selected (Range only) or (Range, Min, Max)</B><br>
 
-First select a histgram with the middle mouse, then adjust
+First select a histogram with the middle mouse, then adjust
 the desired range by moving the left mouse pressed in the
 axis scale.
 </li>
@@ -180,9 +174,8 @@ Rebin all histograms with the same rebin value.
 <li>
 <b>Activate automatic update</b><br>
 
-This is useful in an online environment where histograms are
-written to a memory mapped file. This option allows the
-refresh the display of the histograms in regular intervals.
+This is useful in an online environment. This option allows
+to refresh the display of the histograms in regular intervals.
 The refresh rate (AutoUpdateDelay) may be choosen from the
 Option <b>HistPresent numerical options</b>.
 </li>
@@ -210,6 +203,7 @@ I.e. the selected histograms are added channel by channel.
 The regions belonging to the individual histograms are
 colored differently. This function obviously makes only
 sense for 1-dim histograms with the same number of channels.
+The display range is taken from the first histogram selected.
 For more info consult the  ROOT documentation for the class
 <b>THStack</b>.<br>
 Selection is done by pressing the grey button
