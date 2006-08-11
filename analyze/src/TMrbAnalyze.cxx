@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.75 2006-08-11 11:31:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.76 2006-08-11 11:37:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -172,7 +172,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 //                 ---------------------------------------------------------------------------------
 //                 inputFile                    name of input file
 //                             xyz.root                file contains ROOT trees
-//                             xyz.lmd                 file contains MBS list mode data
+//                             xyz.lmd                 file contai::OpenFilns MBS list mode data
 //                             xyz.med                 file contains MBS event data (as used by miniball)
 //                 startEvent                   event / time stamp to start with
 //                             N                       event number
@@ -185,7 +185,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 //                             :nnnnnn                 time stamp in seconds from start
 //                             0                       read data to end of file
 //                 paramFile                    name of file where to reload params from
-//                             xyz.root                file contains ROOT objects
+//                             xyz.root                file cont::OpenFilains ROOT objects
 //                             xyz.par                 file contains ASCII text
 //                             -                   params remain unchanged::OpenFile
 //                             none                don't load any params
@@ -375,7 +375,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		if (histoFile.CompareTo("none") != 0) {
 			if (histoFile.CompareTo("+") == 0) {
 				histoFile = lastIOSpec->GetHistoFile();
-				histoMode = (TMrbIOSpec::EMrbHistoMode) TMrbIOSpec::kHistoAdd;
+				histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoAdd);
 			} else if (histoFile.Index(".root", 0) > 0) {
 				histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoClear);
 			} else {
