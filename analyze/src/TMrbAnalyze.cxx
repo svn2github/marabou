@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.73 2006-08-10 07:23:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.74 2006-08-11 11:24:44 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -501,9 +501,9 @@ Int_t TMrbAnalyze::ProcessFileList() {
 				if (this->WriteRootTree(ioSpec)) {
 					this->ReplayEvents(ioSpec);
 					this->CloseRootTree(ioSpec);
+					this->FinishRun(ioSpec);			// finish run (user may overwrite this method)
 					this->SaveHistograms("*", ioSpec);
 					this->ClearHistograms("*", ioSpec);
-					this->FinishRun(ioSpec);			// finish run (user may overwrite this method)
 					nofEntries++;
 				}
 				if (!fFakeMode) {
@@ -530,9 +530,9 @@ Int_t TMrbAnalyze::ProcessFileList() {
 						if (inputMode == TMrbIOSpec::kInputMED) gMrbTransport->CloseMEDFile();
 						else									gMrbTransport->CloseLMDFile();
 						this->CloseRootTree(ioSpec);
+						this->FinishRun(ioSpec);			// finish run (user may overwrite this method)
 						this->SaveHistograms("*", ioSpec);
 						this->ClearHistograms("*", ioSpec);
-						this->FinishRun(ioSpec);			// finish run (user may overwrite this method)
 					}
 					this->SetRunStatus(TMrbAnalyze::M_RUNNING); 	// for some (unknown) reason we end up with status "PAUSING", so we have to revive it.
 				}
