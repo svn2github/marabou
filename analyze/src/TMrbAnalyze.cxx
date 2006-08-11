@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.74 2006-08-11 11:24:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.75 2006-08-11 11:31:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -187,7 +187,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 //                 paramFile                    name of file where to reload params from
 //                             xyz.root                file contains ROOT objects
 //                             xyz.par                 file contains ASCII text
-//                             -                   params remain unchanged
+//                             -                   params remain unchanged::OpenFile
 //                             none                don't load any params
 //                 histoFile                    name of file to save histograms
 //                             xyz.root                clear histo space on start, save histos to file at end
@@ -196,7 +196,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 //                 outputFile                   name of file to store tree data
 //                             none                don't write tree data
 //                             +                   append to current file
-//                             xyz.root            open file for output         
+//                             xyz.root            open file for output         ::OpenFile
 //                                                         
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -220,7 +220,6 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 
 	TMrbIOSpec * lastIOSpec = DefaultIOSpec;
 	TMrbString line;
-	Bool_t clearFlag = kTRUE;
 	for (;;) {
 		line.ReadLine(fileList, kFALSE);
 		if (fileList.eof()) break;
@@ -376,19 +375,9 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		if (histoFile.CompareTo("none") != 0) {
 			if (histoFile.CompareTo("+") == 0) {
 				histoFile = lastIOSpec->GetHistoFile();
-				if (clearFlag) {
-					histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoAdd | TMrbIOSpec::kHistoClear);
-				} else {
-					histoMode = (TMrbIOSpec::EMrbHistoMode) TMrbIOSpec::kHistoAdd;
-				}
-				clearFlag = kFALSE;
+				histoMode = (TMrbIOSpec::EMrbHistoMode) TMrbIOSpec::kHistoAdd;
 			} else if (histoFile.Index(".root", 0) > 0) {
-				if (clearFlag) {
-					histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoClear);
-				} else {
-					histoMode = (TMrbIOSpec::EMrbHistoMode) TMrbIOSpec::kHistoSave;
-				}
-				clearFlag = kTRUE;
+				histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoClear);
 			} else {
 				if (!lineHdr) {
 					gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
