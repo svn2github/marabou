@@ -178,13 +178,13 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%HISTO_BOOK_USER_DEFINED%%
 
 %%BeginOfCode%%
-%B%// fill histograms arrays
+%B%// fill histogram arrays
 %FHA%	if ($hArrayName.FindObject("$hName") == NULL) $hArrayName.Add($hName);
 %%EndOfCode%%
 %%HISTO_FILL_ARRAYS%%
 
 %%BeginOfCode%%
-// initialize user code (objects, variables ...)
+// initialize user code (objects, variables ...) - 2nd call *AFTER* booking histograms
 	this->$initialize(IOSpec, kFALSE);
 %%EndOfCode%%
 %%INCLUDE_USER_INITIALIZE_AFTER_HB%%
