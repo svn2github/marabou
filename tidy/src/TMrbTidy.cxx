@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.32 2006-08-10 07:23:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.33 2006-08-17 11:52:07 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -923,6 +923,8 @@ Bool_t TMrbTidyNode::CheckEndTag() {
 		fHasEndTag = kFALSE;
 	} else if (this->IsLINK()) {
 		fHasEndTag = kFALSE;
+	} else if (this->IsHR()) {
+		fHasEndTag = kFALSE;
 	} else {
 		fHasEndTag = kTRUE;
 	}
@@ -1540,7 +1542,7 @@ void TMrbTidyNode::OutputHtmlTree(ostream & Out) {
 			node = (TMrbTidyNode *) fLofChilds.After(node);
 		}
 	}
-	if (!this->IsRoot() && this->HasEndTag()) Out << "</" << this->GetName() << ">" << endl;
+	if (!this->IsRoot() && !this->IsMnode() && this->HasEndTag()) Out << "</" << this->GetName() << ">" << endl;
 }
 
 Bool_t TMrbTidyNode::OutputHtml(ostream & Out) {
@@ -1657,6 +1659,7 @@ Bool_t TMrbTidyNode::OutputHtmlForMH(ostream & Out) {
 	this->ProcessMnodeHeader(Out, "header1", 0);
 	TString hdata;
 	if (this->CollectTextFromChilds(hdata)) {
+		hdata.ReplaceAll("\t", tabEquiv.Data());
 		Out << "<pre class=\"code\">" << this->PrepareForHtmlOutput(hdata) << "</pre><br>" << endl;
 	} else {
 		Out << "<br>" << endl;
@@ -1688,6 +1691,7 @@ Bool_t TMrbTidyNode::OutputHtmlForMX(ostream & Out) {
 	if (aString) {
 		TString buf = aString->GetValue();
 		buf.ReplaceAll("\t", tabEquiv.Data());
+		buf.ReplaceAll("&", "&amp;");
 		buf = buf.Strip(TString::kBoth);
 		for (Int_t i = 0; i < fIndentLevel; i++) buf.Prepend(tabEquiv.Data());
 		Out << "<pre class=\"code\">" << this->PrepareForHtmlOutput(buf) << "</pre><br>" << endl;
@@ -1771,7 +1775,7 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	} else {
 		Out << "<b>&lt;" << this->GetName() << "&gt;</b><br>" << endl;
 	}
-	Out << "<table><tr><td></td><td></td><td></td><td></td></tr>" << endl;
+	Out << "<table summary=\"" << this->GetName() << "\"><tr><td width=\"200\"></td><td width=\"150\"></td><td width=\"150\"></td><td></td></tr>" << endl;
 	TMrbTidyAttr * aType = (TMrbTidyAttr *) fLofAttr.FindByName("mtype");
 	TString mType = "";
 	if (aType) {
@@ -1852,6 +1856,7 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 		TMrbString cmt = aCmt->GetValue();
 		if (cmt.BeginsWith("//")) cmt = cmt(2, 1000);
 		cmt.ReplaceAll("\t", tabEquiv.Data());
+		cmt.ReplaceAll("&", "&amp;");
 		cmt = cmt.Strip(TString::kBoth);
 		Out << "<tr><td>Comment:</td><td colspan=\"3\">" << this->Emphasize(cmt) << "</td></tr>" << endl;
 	}
