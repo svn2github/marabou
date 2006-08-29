@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.123 2006-08-29 11:15:53 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.124 2006-08-29 11:58:26 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1347,6 +1347,37 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	if (fNofEvents == 0) {
 		gMrbLog->Err() << "No events/triggers defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+		return(kFALSE);
+	}
+
+	TString mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "");
+	if (mbsVersion.IsNull()) {
+		gMrbLog->Err() << "MBS version not given - set TMbsSetup.MbsVersion in .rootrc accordingly" << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+		return(kFALSE);
+	}
+
+	TString lynxVersion = gEnv->GetValue("TMbsSetup.LynxVersion", "");
+	if (lynxVersion.IsNull()) {
+		if (mbsVersion.CompareTo("v22") == 0) {
+			lynxVersion = "2.5";
+		} else if (mbsVersion.CompareTo("v43") == 0) {
+			lynxVersion = "3.1";
+		}
+		if (lynxVersion.IsNull()) {
+			gMrbLog->Err() << "Lynx version not given - set TMbsSetup.LynxVersion in .rootrc accordingly" << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+			return(kFALSE);
+		} else {
+			gMrbLog->Wrn() << Form("Lynx version not given - taking version %s according to MBS %s", lynxVersion.Data(), mbsVersion.Data()) << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+		}
+	}
+
+	if (lynxVersion.CompareTo("2.5") != 0 && lynxVersion.CompareTo("3.1") != 0) {
+		gMrbLog->Err() << "Wrong Lynx version - " << lynxVersion << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+		return(kFALSE);
 	}
 
 	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
@@ -1368,22 +1399,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 
 	packNames * pp;
 
-	TString mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "");
-	if (mbsVersion.IsNull()) {
-		mbsVersion = "v22";
-		gMrbLog->Wrn() << "MBS version not given - taking default v22" << endl;
-		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-	}
-	TString lynxVersion = gEnv->GetValue("TMbsSetup.LynxVersion", "");
-	if (lynxVersion.IsNull()) {
-		if (mbsVersion.CompareTo("v22") == 0) {
-			lynxVersion = "2.5";
-		} else if (mbsVersion.CompareTo("v43") == 0) {
-			lynxVersion = "3.1";
-		}
-		gMrbLog->Wrn() << Form("Lynx version not given - taking version %s according to MBS %s", lynxVersion.Data(), mbsVersion.Data()) << endl;
-		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-	}
 	TString mkFile = Form("Readout_%s.mk.code", mbsVersion.Data());
 
 	Int_t nofMbsBranches = fLofMbsBranches.GetEntriesFast();
