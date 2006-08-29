@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.124 2006-08-29 11:58:26 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.125 2006-08-29 11:59:29 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1352,7 +1352,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 
 	TString mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "");
 	if (mbsVersion.IsNull()) {
-		gMrbLog->Err() << "MBS version not given - set TMbsSetup.MbsVersion in .rootrc accordingly" << endl;
+		gMrbLog->Err() << "MBS version not given - set TMbsSetup.MbsVersion in .rootrc properly" << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 		return(kFALSE);
 	}
@@ -1365,7 +1365,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 			lynxVersion = "3.1";
 		}
 		if (lynxVersion.IsNull()) {
-			gMrbLog->Err() << "Lynx version not given - set TMbsSetup.LynxVersion in .rootrc accordingly" << endl;
+			gMrbLog->Err() << "Lynx version not given - set TMbsSetup.LynxVersion in .rootrc properly" << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 			return(kFALSE);
 		} else {
