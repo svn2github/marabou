@@ -1,13 +1,11 @@
 #___________________________________________________________________[MAKEFILE]
 #/////////////////////////////////////////////////////////////////////////////
 # Makefile:        %%READOUT_FILE%%.mk
-# Purpose:         Build MBS readout task for PPC
-# Targets:         %%EXP_NAME_LC%%   -- build task m_read_meb
-#                  setup  -- copy setup files to user's directory
-#                  clean  -- clean-up
+# Purpose:         Build MBS readout task for RIO2 cpus
+# Description:     makes task m_read_meb to be used under LynxOs 2.5
 # Author:          %%AUTHOR%%
-# Revision:         
-# Date:            
+# Revision:        $Id: Readout_v22.mk.code,v 1.2 2006-08-29 11:13:39 Rudolf.Lutter Exp $
+# Date:            $Date: 2006-08-29 11:13:39 $
 # URL:             
 #/////////////////////////////////////////////////////////////////////////////
 

@@ -1,13 +1,12 @@
 #___________________________________________________________________[MAKEFILE]
 #/////////////////////////////////////////////////////////////////////////////
 # Makefile:        MbranchReadoutBranch0.mk
-# Purpose:         Build MBS readout task for PPC
-# Targets:         mbranch   -- build task m_read_meb
-#                  setup  -- copy setup files to user's directory
-#                  clean  -- clean-up
-# Author:          Rudolf.Lutter
-# Revision:         
-# Date:            
+# Purpose:         Build MBS readout task for RIO3 cpus
+# Description:     makes task m_read_meb
+#                  to be used under LynxOs 3.1 and MBS v43
+# Author:          %%AUTHOR%%
+# Revision:        $Id: Readout_v43.mk.code,v 1.2 2006-08-29 11:13:39 Rudolf.Lutter Exp $
+# Date:            $Date: 2006-08-29 11:13:39 $
 # URL:             
 #/////////////////////////////////////////////////////////////////////////////
 
@@ -49,7 +48,7 @@ endif
 CFLAGS	+= -I$(RPATH) -I$(INC) $(RDO_INCL)
 LIBS	+= $(RDO_LIBS)
 
-all:	m_read_meb %%DEBUG_READOUT%%
+all:	m_read_meb
 
 m_read_meb: if$(LEGALCPU) $(OBJ)/m_read_meb.o \
 		$(OBJ)/objects \

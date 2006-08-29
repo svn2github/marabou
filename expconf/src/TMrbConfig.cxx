@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.122 2006-08-08 14:35:34 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.123 2006-08-29 11:15:53 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1349,11 +1349,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 	}
 
-	if (fMultiBorC & TMrbCNAF::kCnafBranch) {
-		gMrbLog->Err() << "\"multi-branch\" currently not implemented" << endl;
-		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-	}
-
 	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	Bool_t verboseMode = (this->IsVerbose() || (this->GetReadoutOptions() & kRdoOptVerbose) != 0);
@@ -1372,6 +1367,25 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	}
 
 	packNames * pp;
+
+	TString mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "");
+	if (mbsVersion.IsNull()) {
+		mbsVersion = "v22";
+		gMrbLog->Wrn() << "MBS version not given - taking default v22" << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+	}
+	TString lynxVersion = gEnv->GetValue("TMbsSetup.LynxVersion", "");
+	if (lynxVersion.IsNull()) {
+		if (mbsVersion.CompareTo("v22") == 0) {
+			lynxVersion = "2.5";
+		} else if (mbsVersion.CompareTo("v43") == 0) {
+			lynxVersion = "3.1";
+		}
+		gMrbLog->Wrn() << Form("Lynx version not given - taking version %s according to MBS %s", lynxVersion.Data(), mbsVersion.Data()) << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+	}
+	TString mkFile = Form("Readout_%s.mk.code", mbsVersion.Data());
+
 	Int_t nofMbsBranches = fLofMbsBranches.GetEntriesFast();
 	if (nofMbsBranches == 0) {
 		pp = new packNames(cfile.Data(), "Readout.c.code", ".c", "C code (VME/CAMAC readout) for MBS");
@@ -1380,7 +1394,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 		pp = new packNames(cfile.Data(), "Readout.h.code", ".h", "C definitions for MBS");
 		filesToCreate.Add(pp);
 
-		pp = new packNames(cfile.Data(), "Readout.mk.code", ".mk", "Makefile (LynxOs)");
+		TString cmt = Form("Makefile (LynxOs %s, MBS %s)", lynxVersion.Data(), mbsVersion.Data());
+		pp = new packNames(cfile.Data(), mkFile.Data(), ".mk", cmt.Data());
 		filesToCreate.Add(pp);
 	} else {
 		TIterator * bIter = fLofMbsBranches.MakeIterator();
@@ -1400,8 +1415,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 			pp = new packNames(bfile.Data(), "Readout.h.code", ".h", cmt.Data(), bNo);
 			filesToCreate.Add(pp);
 
-			cmt = Form("Makefile (LynxOs) (%s)", bName.Data());
-			pp = new packNames(bfile.Data(), "Readout.mk.code", ".mk", cmt.Data(), bNo);
+			cmt = Form("Makefile (LynxOs %s, MBS %s) (%s)", lynxVersion.Data(), mbsVersion.Data(), bName.Data());
+			pp = new packNames(bfile.Data(), mkFile.Data(), ".mk", cmt.Data(), bNo);
 			filesToCreate.Add(pp);
 		}
 	}
