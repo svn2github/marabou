@@ -5,14 +5,7 @@ main(int argc, char * argv[])
 
 {
 	int idx, n, ntot;
-	int root_env_read(char *);
-	int root_env_getval_i(char *, int);
-	int root_env_getval_x(char *, int);
-	int root_env_getval_f(char *, double);
-	int root_env_getval_s(char *, char *);
-	int root_env_getval_b(char *, int);
-	void root_env_print();
-	
+
 	idx = 1;
 	while (idx < argc) {
 		switch (*argv[idx]) {
