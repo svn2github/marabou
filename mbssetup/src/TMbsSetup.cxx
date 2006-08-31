@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.36 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.37 2006-08-31 11:02:30 Rudolf.Lutter Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -471,8 +471,15 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 
 	this->Get(templatePath, "TemplatePath");
 
-	if (smode == kModeSingleProc)	templatePath += "/singleproc";
-	else							templatePath += "/multiproc";
+	if (smode == kModeSingleProc)		templatePath += "/singleproc";
+	else if (smode == kModeMultiProc)	templatePath += "/multiproc";
+	else if (smode == kModeMultiBranch)	templatePath += "/multibranch";
+	else {
+		gMrbLog->Err() << "Wrong setup mode - " << setupMode->GetName() << "(" << setupMode->GetIndex() << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
+		return(kFALSE);
+	}
+
 	gSystem->ExpandPathName(templatePath);
 
 	nofErrors = 0;
@@ -485,12 +492,6 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	}
 	
 	fpath = templatePath;
-	fpath += "/";
-	fpath += this->EvtBuilder()->GetType()->GetName();
-	if (smode == kModeSingleProc) {
-		fpath += "/";
-		fpath += this->ReadoutProc(0)->GetController()->GetName();
-	}
 	cout	<< this->ClassName() << "::MakeSetupFiles(): Installing file(s) "
 			<< fpath << " -> " << installPath << " ..."
 			<< endl;
@@ -533,16 +534,12 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 		}
 	}
 
-	if (smode != kModeSingleProc) {
-		templatePath += "/readout";
+	if (smode == kModeMultiProc) {
+		templatePath += "/vme";
 		installPath += "/";
 		for (n = 0; n < nofReadouts; n++) {
 			destPath = installPath + this->ReadoutProc(n)->GetPath();
 			fpath = templatePath;
-			fpath += "/";
-			fpath += this->ReadoutProc(n)->GetType()->GetName();
-			fpath += "/";
-			fpath += this->ReadoutProc(n)->GetController()->GetName();
 			cout	<< this->ClassName() << "::MakeSetupFiles(): Installing file(s) "
 					<< fpath << " -> " << destPath << " ..."
 					<< endl;
@@ -590,10 +587,9 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	this->Get(templatePath, "TemplatePath");
 
 	if (smode == kModeSingleProc)	templatePath += "/singleproc";
-	else							templatePath += "/multiproc";
+	else if (smode == kModeMultiProc)	templatePath += "/multiProc";
+	else if (smode == kModeMultiBranch)	templatePath += "/multiBranch";
 	gSystem->ExpandPathName(templatePath);
-	templatePath += "/";
-	templatePath += this->EvtBuilder()->GetType()->GetName();
 
 	installPath = this->GetHomeDir();
 	cout	<< this->ClassName() << "::MakeSetupFiles(): Creating startup files on \"" << installPath << "\": .tcshrc + .login ..."
@@ -1678,12 +1674,6 @@ Bool_t TMbsSetup::CheckSetup() {
 		}
 
 		fileList = templatePath;
-		fileList += "/";
-		fileList += this->EvtBuilder()->GetType()->GetName();
-		if (smode == kModeSingleProc) {
-			fileList += "/";
-			fileList += this->ReadoutProc(0)->GetController()->GetName();
-		}
 		fileList += "/FILES";
 		if (gSystem->GetPathInfo(fileList.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || flags != 0) {
 			gMrbLog->Err() << "No such file - " << fileList << endl;
@@ -1691,17 +1681,13 @@ Bool_t TMbsSetup::CheckSetup() {
 			nofErrors++;
 		}
 		if (setupMode->GetIndex() == kModeMultiProc) {
-			templatePath += "/readout";
+			templatePath += "/vme";
 			if (gSystem->GetPathInfo(templatePath.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
 				gMrbLog->Err() << "No such directory - " << templatePath << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
 				nofErrors++;
 			}
 			fileList = templatePath;
-			fileList += "/";
-			fileList += this->ReadoutProc(0)->GetType()->GetName();
-			fileList += "/";
-			fileList += this->ReadoutProc(0)->GetController()->GetName();
 			fileList += "/FILES";
 			if (gSystem->GetPathInfo(fileList.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || flags != 0) {
 				gMrbLog->Err() << "No such file - " << fileList << endl;

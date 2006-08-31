@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.125 2006-08-29 11:59:29 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.126 2006-08-31 11:02:30 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1615,11 +1615,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TString ctrlName = "NoCamac";
 							if (camacPattern != 0) {
 								contrType = this->GetControllerType(1);
-								if (contrType == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
-									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-									contrType = TMrbConfig::kControllerCBV;
-								}
 								camacController = fLofControllerTypes.FindByIndex((UInt_t) contrType);
 								ctrlName = camacController->GetName();
 							}
@@ -1680,11 +1675,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							while (crate >= 0) {
 								if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
 									Int_t cc = this->GetControllerType(crate);
-									if (cc == TMrbConfig::kControllerUnused) {
-										gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
-										gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-										cc = TMrbConfig::kControllerCBV;
-									}
 									if (cc == TMrbConfig::kControllerCBV) rdoTmpl.InitializeCode("%CBV%");
 									else if (cc == TMrbConfig::kControllerCC32) rdoTmpl.InitializeCode("%CC32%");
 									rdoTmpl.Substitute("$crateNo", crate);
@@ -1817,11 +1807,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
 									iniTag = "%CB";
 									Int_t cc = this->GetControllerType(crate);
-									if (cc == TMrbConfig::kControllerUnused) {
-										gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
-										gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-										cc = TMrbConfig::kControllerCBV;
-									}
 									TMrbNamedX * ccx = fLofControllerTypes.FindByIndex(cc);
 									iniTag += ccx->GetName();
 									iniTag += "%";
@@ -1837,11 +1822,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
 								iniTag = "%CE";
 								Int_t cc = this->GetControllerType(crate);
-								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
-									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-									cc = TMrbConfig::kControllerCBV;
-								}
 								TMrbNamedX * ccx = fLofControllerTypes.FindByIndex(cc);
 								iniTag += ccx->GetName();
 								iniTag += "%";
@@ -1907,11 +1887,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
 								iniTag = "%CB";
 								Int_t cc = this->GetControllerType(crate);
-								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
-									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-									cc = TMrbConfig::kControllerCBV;
-								}
 								TMrbNamedX * ccx = fLofControllerTypes.FindByIndex(cc);
 								iniTag += ccx->GetName();
 								iniTag += "%";
@@ -1932,11 +1907,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
 								iniTag = "%CE";
 								Int_t cc = this->GetControllerType(crate);
-								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
-									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-									cc = TMrbConfig::kControllerCBV;
-								}
 								TMrbNamedX * ccx = fLofControllerTypes.FindByIndex(cc);
 								iniTag += ccx->GetName();
 								iniTag += "%";
@@ -1972,11 +1942,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
 								iniTag = "%CB";
 								Int_t cc = this->GetControllerType(crate);
-								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
-									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-									cc = TMrbConfig::kControllerCBV;
-								}
 								TMrbNamedX * ccx = fLofControllerTypes.FindByIndex(cc);
 								iniTag += ccx->GetName();
 								iniTag += "%";
@@ -7681,6 +7646,37 @@ Bool_t TMrbConfig::CheckConfig() {
 			}
 		}
 		if (!this->CheckModuleAddress(module, kFALSE)) nofErrors++;
+	}
+
+	TString camacContr = gEnv->GetValue("TMbsSetup.CamacController", "");
+	if (camacContr.IsNull()) camacContr = gEnv->GetValue("TMrbEsone.Controller", "");
+
+	UInt_t camacPattern = this->GetCratePattern(kCrateCamac);
+	if (camacPattern != 0) {
+		Int_t crate = 0;
+		while (camacPattern) {
+			if (camacPattern & 1) {
+				if (crate >= 1) {
+					EMrbControllerType contrType = this->GetControllerType(crate);
+					if (contrType == TMrbConfig::kControllerUnused) {
+						TString cc = gEnv->GetValue(Form("TMbsSetup.CamacController.C%d", crate), "");
+						if (cc.IsNull()) {
+							if (!camacContr.IsNull()) this->SetControllerType(Form("C%d", crate), camacContr.Data());
+						} else {
+							this->SetControllerType(Form("C%d", crate), cc.Data());
+						}
+					}
+					contrType = this->GetControllerType(crate);
+					if (contrType == TMrbConfig::kControllerUnused) {
+						gMrbLog->Err() << "Type of CAMAC controller missing for crate C" << crate << endl;
+						gMrbLog->Flush(this->ClassName(), "CheckConfig");
+						nofErrors++;
+					}
+				}
+			}
+			crate++;
+			camacPattern >>= 1;
+		}
 	}
 
 	if (nofErrors == 0) {

@@ -7,7 +7,7 @@
 // Purpose:        Define a MBS setup: Common defs
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetupCommon.h,v 1.9 2006-01-18 12:50:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetupCommon.h,v 1.10 2006-08-31 11:02:30 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -20,7 +20,8 @@ enum						{	kNofPPCs				=	8	};			// ... ppcs
 enum						{	kMinFCT 				=	20	};			// minimum FCT value
 
 enum EMbsSetupMode			{ 	kModeSingleProc			=	1,				// setup modes
-								kModeMultiProc
+								kModeMultiProc,
+								kModeMultiBranch
 							};
 
 enum EMbsProcType			{ 	kProcUndefined			=	0,				// processor types
@@ -113,6 +114,7 @@ const SMrbNamedXShort kMbsLofSetupModes[] =		// list of legal setup modes
 							{
 								{kModeSingleProc,	"SingleProc"	},
 								{kModeMultiProc,	"MultiProc" 	},
+								{kModeMultiBranch,	"MultiBranch" 	},
 								{0, 				NULL			}
 							};
 
