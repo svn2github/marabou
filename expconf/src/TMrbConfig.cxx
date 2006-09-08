@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.126 2006-08-31 11:02:30 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.127 2006-09-08 07:15:38 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -332,7 +332,6 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 							};
 
 //_________________________________________________________________________________________________________ tag words in MakeConfigCode()
-
 const SMrbNamedXShort kMrbLofConfigTags[] =
 							{
 								{TMrbConfig::kCfgFile,						"CONFIG_FILE"					},
@@ -945,8 +944,8 @@ Bool_t TMrbConfig::CheckModuleAddress(TObject * Module, Bool_t WrnOnly) const {
 						gMrbLog->Wrn()	<< Module->GetName() << ": Camac slot " << cnaf
 										<< " already occupied by module " << camac->GetName()
 										<< " (" << camac->GetTitle() << ")" << endl;
-						gMrbLog->Flush(this->ClassName(), "CheckModuleAddress", setred);
 						if (WrnOnly) gMrbLog->Wrn()	<< "WARNING! This will cause severe address conflicts in a single branch environment!" << endl;
+						gMrbLog->Flush(this->ClassName(), "CheckModuleAddress");
 						return(WrnOnly ? kTRUE : kFALSE);
 					}
 				}
@@ -969,7 +968,7 @@ Bool_t TMrbConfig::CheckModuleAddress(TObject * Module, Bool_t WrnOnly) const {
 									<< sa << "," << ea << "]"
 									<< resetiosflags(ios::showbase) << setbase(10) << endl;
 					if (WrnOnly) gMrbLog->Wrn()	<< "WARNING! This will cause severe address conflicts in a single branch environment!" << endl;
-					gMrbLog->Flush(this->ClassName(), "CheckModuleAddress", setred);
+					gMrbLog->Flush(this->ClassName(), "CheckModuleAddress");
 					return(WrnOnly ? kTRUE : kFALSE);
 				}
 			}
@@ -1399,7 +1398,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 
 	packNames * pp;
 
-	TString mkFile = Form("Readout_%s.mk.code", mbsVersion.Data());
+	TString mbsv = mbsVersion(0,2) + "x";			// make file depends on major mbs version: v22 -> v2x, v42 & v43 -> v4x
+	TString mkFile = Form("Readout_%s.mk.code", mbsv.Data());
 
 	Int_t nofMbsBranches = fLofMbsBranches.GetEntriesFast();
 	if (nofMbsBranches == 0) {
@@ -1840,13 +1840,15 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						{
 							TIterator * evtIter = fLofEvents.MakeIterator();
 							while (evt = (TMrbEvent *) evtIter->Next()) {
-								if (evt->GetMbsBranchNo() == pp->GetB()) {
-									if (!evt->IsReservedEvent()) evt->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl);
-								} else {
-									rdoTmpl.InitializeCode("%MB%");
-									rdoTmpl.Substitute("$trigNo", evt->GetTrigger());
-									rdoTmpl.Substitute("$branch", evt->GetMbsBranchNo());
-									rdoTmpl.WriteCode(rdoStrm);
+								if (!evt->IsReservedEvent()) {
+									if (evt->SelectMbsBranch(pp->GetB())) {
+										evt->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl);
+									} else {
+										rdoTmpl.InitializeCode("%MB%");
+										rdoTmpl.Substitute("$trigNo", evt->GetTrigger());
+										rdoTmpl.Substitute("$branch", pp->GetB());
+										rdoTmpl.WriteCode(rdoStrm);
+									}
 								}
 							}
 						}
@@ -1863,7 +1865,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								while (trg && trigMask < kNofTriggers) {
 									if (trg & trigMask) {
 										evt = (TMrbEvent *) this->FindEvent(trigMask);
-										if (evt->GetMbsBranchNo() == pp->GetB()) evt->MakeReadoutCode(rdoStrm, kRdoIgnoreTriggerXX, rdoTmpl);
+										evt->MakeReadoutCode(rdoStrm, kRdoIgnoreTriggerXX, rdoTmpl);
 										trg &= ~trigMask;
 									}
 									trigMask <<= 1;
@@ -1960,7 +1962,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								module = (TMrbModule *) this->FindModuleByCrate(crate, module);
 							}
 							evt = (TMrbEvent *) this->FindEvent(TMrbConfig::kTriggerStopAcq);
-							if (evt && evt->GetMbsBranchNo() == pp->GetB()) {
+							if (evt) {
 								TIterator * sevtIter = evt->GetLofSubevents()->MakeIterator();
 								while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 									if (sevt->GetMbsBranchNo() == pp->GetB() && sevt->GetCrate() == crate) sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
@@ -6967,11 +6969,23 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	TMbsSetup * mbsSetup_old;
+	TMbsSetup * mbsSetup;
+	TString evbProc = "";
+	TString rdoProc = "";
+
 	gMrbLog->Out() << "[.mbssetup: Definitions to perform MBS setup]" << endl;
 	gMrbLog->Flush("", "", setblue);
-	gSystem->Exec("rm -f .mbssetup");
 
-	TMbsSetup * mbsSetup = new TMbsSetup();
+	if (!gSystem->AccessPathName(".mbssetup")) {
+		mbsSetup_old = new TMbsSetup(".mbssetup");
+		mbsSetup_old->Get(evbProc, "EvtBuilder.Name", "");
+		mbsSetup_old->Get(rdoProc, "Readout1.Name", "");
+		delete mbsSetup_old;
+		gSystem->Exec("rm -f .mbssetup");
+	}
+
+	mbsSetup = new TMbsSetup();
 
 	if (!gSystem->AccessPathName(".mbssetup-localdefs")) {
 		mbsSetup->GetEnv()->ReadFile(".mbssetup-localdefs", kEnvChange);
@@ -6979,8 +6993,22 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 		gMrbLog->Flush("", "", setblue);
 	}
 
+	TString mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "");
+	if (mbsVersion.IsNull()) {
+		gMrbLog->Err() << "MBS version not given - set TMbsSetup.MbsVersion in .rootrc properly" << endl;
+		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
+		return(kFALSE);
+	}
+	mbsSetup->Set("MbsVersion", mbsVersion.Data());
+
+	TString pn;
+	mbsSetup->Get(pn, "TMbsSetup.EvtBuilder.Name", "");
+	if (pn.IsNull()) mbsSetup->Set("EvtBuilder.Name", evbProc.Data());
+	mbsSetup->Get(pn, "TMbsSetup.Readout1.Name", "");
+	if (pn.IsNull()) mbsSetup->Set("Readout1.Name", rdoProc.Data());
+
 	TString procType = gEnv->GetValue("TMbsSetup.ProcType", "");
-	if (procType.Length() > 0) {
+	if (!procType.IsNull()) {
 		mbsSetup->EvtBuilder()->SetType(procType.Data());
 		mbsSetup->ReadoutProc(0)->SetType(procType.Data());
 		gMrbLog->Out() << "Setting MBS proc type to \"" << procType << "\"" << endl;
@@ -6988,7 +7016,7 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	}
 
 	TString trigMode = gEnv->GetValue("TMbsSetup.TriggerMode", "");
-	if (trigMode.Length() > 0) {
+	if (!trigMode.IsNull()) {
 		mbsSetup->ReadoutProc(0)->TriggerModule()->SetTriggerMode(trigMode.Data());
 		gMrbLog->Out() << "Setting MBS trigger mode to \"" << trigMode << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup", setblue);
@@ -7019,6 +7047,7 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	}
 		
 	mbsSetup->Save();
+	delete mbsSetup;
 	return(kTRUE);
 }
 
@@ -7727,7 +7756,7 @@ Bool_t TMrbConfig::SetMbsBranch(TMrbNamedX & MbsBranch, Int_t MbsBranchNo, const
 			gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
 			ok = kFALSE;
 		}
-		MbsBranch.Set(MbsBranchNo, MbsBranchName);
+		MbsBranch.Set(MbsBranchNo, branchName.Data());
 		fLofMbsBranches.AddNamedX(MbsBranchNo, branchName.Data());
 	}
 
@@ -7763,12 +7792,8 @@ Int_t TMrbConfig::CheckMbsBranchSettings() {
 // check branch settings for events
 	evtIter = fLofEvents.MakeIterator();
 	while (evt = (TMrbEvent *) evtIter->Next()) {
-		if (evt->GetMbsBranchNo() == -1) {			// if there are any branch settings (entries > 0) each event has to be assigned to a branch
-			gMrbLog->Err()	<< "Event not assigned to any mbs branch - " << evt->GetName() << endl;
-			gMrbLog->Flush(this->ClassName(), "CheckMbsBranchSettings");
-			nofErrors++;
-		} else {
-			sevtIter = evt->GetLofSubevents()->MakeIterator();		// step down thru subevents
+		if (evt->GetMbsBranchNo() != -1) {	// if event is assigned to a branch all subevents have to have same branch number
+			sevtIter = evt->GetLofSubevents()->MakeIterator();	// step down thru subevents
 			while (sevt = (TMrbSubevent *) sevtIter->Next()) {
 				Int_t branchNo = sevt->GetMbsBranchNo();
 				if (branchNo == -1) { 							// branch not yet set - pass event branch to this subevent
@@ -7802,7 +7827,7 @@ Int_t TMrbConfig::CheckMbsBranchSettings() {
 				} else if (branchNo != sevt->GetMbsBranchNo()) {	// branches for subevent and event differ
 					gMrbLog->Err()	<< "Differing branches - module " << module->GetName() << ": "
 									<< module->GetMbsBranch()->GetName() << "(" << module->GetMbsBranch()->GetIndex() << ")"
-									<< " <--> subevent " << evt->GetName() << ": "
+									<< " <--> subevent " << sevt->GetName() << ": "
 									<< sevt->GetMbsBranch()->GetName() << "(" << sevt->GetMbsBranch()->GetIndex() << ")"
 									<< endl;
 					gMrbLog->Flush(this->ClassName(), "CheckMbsBranchSettings");

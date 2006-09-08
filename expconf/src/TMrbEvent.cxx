@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.20 2006-07-14 09:00:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.21 2006-09-08 07:15:38 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -350,7 +350,7 @@ Bool_t TMrbEvent::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag
 				wtstmpFlag = kTRUE;
 				sevt = (TMrbSubevent *) this->FindSubeventByCrate(crate);
 				while (sevt) {
-					sevt->MakeReadoutCode(RdoStrm, TagIndex, Template, "%S%");
+					if (sevt->GetMbsBranchNo() == this->GetSelectedBranchNo()) sevt->MakeReadoutCode(RdoStrm, TagIndex, Template, "%S%");
 					sevt = (TMrbSubevent *) this->FindSubeventByCrate(crate, sevt);
 				}
 				Template.InitializeCode("%CE%");
@@ -1131,10 +1131,48 @@ Bool_t TMrbEvent::SetMbsBranch(Int_t MbsBranchNo, const Char_t * MbsBranchName) 
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if(this->GetMbsBranchNo() != -1) {
+		gMrbLog->Err()	<< "Event " << this->GetName() << " already assigned to mbs branch "
+						<< fMbsBranch.GetName() << "(" << fMbsBranch.GetIndex() << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+		return(kFALSE);
+	}
 	if (!gMrbConfig->SetMbsBranch(fMbsBranch, MbsBranchNo, MbsBranchName)) {
 		gMrbLog->Err()	<< "Event " << this->GetName() << "- can't set mbs branch" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
 		return(kFALSE);
 	}
 	return(kTRUE);
+}
+
+Bool_t TMrbEvent::SelectMbsBranch(Int_t MbsBranchNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEvent::SelectMbsBranch
+// Purpose:        Select a branch
+// Arguments:      Int_t MbsBranchNo         -- mbs branch number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks if given branch number is assigned to this event
+//                 or to at least one subevent.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t bNo = this->GetMbsBranchNo();
+	if (bNo != -1) {
+		if(bNo == MbsBranchNo) {
+			fSelectedBranchNo = MbsBranchNo;
+			return(kTRUE);
+		}
+	} else {
+		TMrbSubevent * sevt;
+		TIterator * sevtIter = fLofSubevents.MakeIterator();
+		while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+			if (sevt->GetMbsBranchNo() == MbsBranchNo) {
+				fSelectedBranchNo = MbsBranchNo;
+				return(kTRUE);
+			}
+		}
+	}
+	return(kFALSE);
 }

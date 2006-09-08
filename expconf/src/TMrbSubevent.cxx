@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.28 2006-07-06 13:13:03 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.29 2006-09-08 07:15:38 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2023,6 +2023,12 @@ Bool_t TMrbSubevent::SetMbsBranch(Int_t MbsBranchNo, const Char_t * MbsBranchNam
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if(this->GetMbsBranchNo() != -1) {
+		gMrbLog->Err()	<< "Subevent " << this->GetName() << " already assigned to mbs branch "
+						<< fMbsBranch.GetName() << "(" << fMbsBranch.GetIndex() << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+		return(kFALSE);
+	}
 	if (!gMrbConfig->SetMbsBranch(fMbsBranch, MbsBranchNo, MbsBranchName)) {
 		gMrbLog->Err()	<< "Subevent " << this->GetName() << "- can't set mbs branch" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");

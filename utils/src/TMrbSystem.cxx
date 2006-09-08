@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.14 2005-12-08 09:33:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.15 2006-09-08 07:18:03 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -396,17 +396,20 @@ const Char_t * TMrbSystem::Which(TString & Result, const Char_t * Search, const 
 //                 Char_t * Search       -- unix-like search path, :-separated
 //                 Char_t * File         -- file name to be searched for
 //                 EAccessMode Mode      -- access mode
-// Results:        Char_t * ResPath      -- smae as Result.Data()
+// Results:        Char_t * ResPath      -- same as Result.Data()
 // Exceptions:     
 // Description:    Performs TSystem::Which().
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	const Char_t * s = gSystem->ExpandPathName(Search);
-	const Char_t * r = gSystem->Which(s, File, Mode);
-	Result = r;
-	delete s;
-	delete r;
+	TString s = Search;
+	gSystem->ExpandPathName(s);
+	Result = "";
+	const Char_t * res = gSystem->Which(s.Data(), File, Mode);
+	if (res) {
+		Result = res;
+		delete res;
+	}
 	return(Result.Data());
 }
 

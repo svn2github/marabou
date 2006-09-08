@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.17 2006-07-06 13:13:03 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.18 2006-09-08 07:15:38 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -741,6 +741,12 @@ Bool_t TMrbModule::SetMbsBranch(Int_t MbsBranchNo, const Char_t * MbsBranchName)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if(this->GetMbsBranchNo() != -1) {
+		gMrbLog->Err()	<< "Module " << this->GetName() << " already assigned to mbs branch "
+						<< fMbsBranch.GetName() << "(" << fMbsBranch.GetIndex() << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");
+		return(kFALSE);
+	}
 	if (!gMrbConfig->SetMbsBranch(fMbsBranch, MbsBranchNo, MbsBranchName)) {
 		gMrbLog->Err()	<< "Module " << this->GetName() << "- can't set mbs branch" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetMbsBranch");

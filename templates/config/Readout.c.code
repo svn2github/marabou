@@ -405,7 +405,7 @@ int f_user_readout (unsigned char  bh_trig_typ,
 %E% 			}
 %E% 			break;
 %MB%
-%MB% 		case $trigNo:		/* ignore trigger $trigNo - belongs to branch $branch */
+%MB% 		case $trigNo:		/* ignore trigger $trigNo - not used in branch $branch */
 %MB% 			break;
 %%EndOfCode%%
 %%ON_TRIGGER_XX%%

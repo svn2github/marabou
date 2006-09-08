@@ -8,7 +8,7 @@
 // Class:          TMrbEvent            -- event connected to a trigger
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEvent.h,v 1.10 2006-07-06 13:13:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.h,v 1.11 2006-09-08 07:15:38 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -111,6 +111,8 @@ class TMrbEvent : public TNamed {
 		inline Bool_t SetMbsBranch(TMrbNamedX * MbsBranch) { return(this->SetMbsBranch(MbsBranch->GetIndex(), MbsBranch->GetName())); };
 		inline TMrbNamedX * GetMbsBranch() { return(&fMbsBranch); };
 		inline Int_t GetMbsBranchNo() { return(fMbsBranch.GetIndex()); };
+		Bool_t SelectMbsBranch(Int_t MbsBranchNo);
+		inline Int_t GetSelectedBranchNo() { return(fSelectedBranchNo); };
 
 		inline Int_t GetNofSubevents() const { return(fNofSubevents); };					// number of subevents
 		inline TMrbLofNamedX * GetLofSubevents() { return(&fLofSubevents); };		// list of subevents
@@ -152,6 +154,7 @@ class TMrbEvent : public TNamed {
 		Int_t fAutoSave;					// auto save after N bytes
 
 		TMrbNamedX fMbsBranch;				// branch within MBS
+		Int_t fSelectedBranchNo;			// selected branch
 
 		Bool_t fPrivateHistograms;			// kTRUE if private histograms to be accumualted
 		TString fPrefix;					// prefix to be prepended to private histos
