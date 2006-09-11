@@ -177,6 +177,7 @@ void root_env_print() {
 
 	TEnvEntry * entry;
 	char str[3 * ENV_L_STR];
+	int i;
 
 	entry = firstEntry;
 	if (entry) {
@@ -184,7 +185,12 @@ void root_env_print() {
 		printf("-------------------------------------------------------------------------------------\n");
 	}
 	while (entry) {
-		printf("%-50s:%-15s\n", entry->resstr, entry->value);
+		str[0] = '\0';
+		for (i = 0; i < entry->nsubs; i++) {
+			if (i > 0) strcat(str, ".");
+			strcat(str, entry->substr[i]);
+		}
+		printf("%-50s:%-15s\n", str, entry->value);
 		entry = (TEnvEntry *) entry->next;
 	}
 	printf("\n[%d entries]\n\n", nofEntries);
