@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.128 2006-09-12 11:44:08 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.129 2006-09-12 14:35:00 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1361,7 +1361,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 		if (mbsVersion.CompareTo("v22") == 0) {
 			lynxVersion = "2.5";
 		} else if (mbsVersion.CompareTo("v42") == 0) {
-			lynxVersion = "2.5";
+			lynxVersion = "3.1";
 		} else if (mbsVersion.CompareTo("v43") == 0) {
 			lynxVersion = "3.1";
 		}
