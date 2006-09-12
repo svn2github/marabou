@@ -8,7 +8,7 @@
 // Class:          TMrbString     -- a TString providing number conversion
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbString.h,v 1.8 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbString.h,v 1.9 2006-09-12 08:02:31 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ class TMrbString : public TString {
 
 	public:
 		enum		{	kDefaultBase		=	10	};
-		enum		{	kDefaultPrecision	=	4	};
+		enum		{	kDefaultPrecision	=	2	};
 
 	public:
 		TMrbString();									// default ctor

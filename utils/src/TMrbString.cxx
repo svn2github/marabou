@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbString.cxx,v 1.16 2006-08-10 08:14:28 Marabou Exp $       
-// Date:           $Date: 2006-08-10 08:14:28 $
+// Revision:       $Id: TMrbString.cxx,v 1.17 2006-09-12 08:02:31 Marabou Exp $       
+// Date:           $Date: 2006-09-12 08:02:31 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -84,28 +84,76 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal,
 		switch (Base) {
 			case 8:
 				if (PadZero) {
-					if (Width > 0)	sprintf(f, "%%%c0%do", prf, Width);
-					else			sprintf(f, "%%%c0o", prf);
+					if (Width > 0)	{
+						if (IntVal == 0 && prf == '#') {
+							Width--;
+							sprintf(f, "0%%0%do", Width);
+						} else {
+							sprintf(f, "%%%c0%do", prf, Width);
+						}
+					} else {
+						if (IntVal == 0 && prf == '#') {
+							sprintf(f, "0%%o");
+						} else {
+							sprintf(f, "%%%co", prf);
+						}
+					}
 				} else {
-					if (Width > 0)	sprintf(f, "%%%c%do", prf, Width);
-					else			sprintf(f, "%%%co", prf);
+					if (Width > 0)	{
+						if (IntVal == 0 && prf == '#') {
+							Width--;
+							sprintf(f, "0%%o");
+						} else {
+							sprintf(f, "%%%c%do", prf, Width);
+						}
+					} else {
+						if (IntVal == 0 && prf == '#') {
+							sprintf(f, "0%%o");
+						} else {
+							sprintf(f, "%%%co", prf);
+						}
+					}
 				}
 				break;
 
 			case 16:
 				if (PadZero) {
-					if (Width > 0)	sprintf(f, "%%%c0%d%c", prf, Width, hex);
-					else			sprintf(f, "%%%c0%c", prf, hex);
+					if (Width > 0)	{
+						if (IntVal == 0 && prf == '#') {
+							Width -= 2;
+							sprintf(f, "0%c%%0%d%c", hex, Width, hex);
+						} else {
+							sprintf(f, "%%%c0%d%c", prf, Width, hex);
+						}
+					} else {
+						if (IntVal == 0 && prf == '#') {
+							sprintf(f, "0%c%%%c", hex, hex);
+						} else {
+							sprintf(f, "%%%c%c", prf, hex);
+						}
+					}
 				} else {
-					if (Width > 0)	sprintf(f, "%%%c%d%c", prf, Width, hex);
-					else			sprintf(f, "%%%c%c", prf, hex);
+					if (Width > 0)	{
+						if (IntVal == 0 && prf == '#') {
+							Width -= 2;
+							sprintf(f, "0%c%%%c", hex, hex);
+						} else {
+							sprintf(f, "%%%c%d%c", prf, Width, hex);
+						}
+					} else {
+						if (IntVal == 0 && prf == '#') {
+							sprintf(f, "0%c%%%c", hex, hex);
+						} else {
+							sprintf(f, "%%%c%c", prf, hex);
+						}
+					}
 				}
 				break;
 
 			case 10:
 				if (PadZero) {
 					if (Width > 0)	sprintf(f, "%%0%dd", Width);
-					else			sprintf(f, "%%0d");
+					else			sprintf(f, "%%d");
 				} else {
 					if (Width > 0)	sprintf(f, "%%%dd", Width);
 					else			sprintf(f, "%%d");
@@ -113,6 +161,7 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal,
 				break;
 		}
 		sprintf(s, f, IntVal); 
+		this->Resize(0);
 		this->Insert(0, s);
 	}
 	return(*this);
@@ -269,12 +318,13 @@ TMrbString & TMrbString::FromDouble(Double_t DblVal, Int_t Width, Int_t Precisio
 
 	if (PadZero) {
 		if (Width > 0)	sprintf(f, "%%0%d.%df", Width, Precision);
-		else			sprintf(f, "%%0%df", Precision);
+		else			sprintf(f, "%%.%df", Precision);
 	} else {
 		if (Width > 0)	sprintf(f, "%%%d.%df", Width, Precision);
-		else			sprintf(f, "%%%df", Precision);
+		else			sprintf(f, "%%.%df", Precision);
 	}
 	sprintf(s, f, DblVal); 
+	this->Resize(0);
 	this->Insert(0, s);
     return(*this);
 }
