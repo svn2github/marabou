@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.8 2005-11-16 08:51:31 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.9 2006-09-12 08:02:47 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -106,7 +106,7 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 
 		~TGMrbLabelEntry() {};				// default dtor
 
-		void SetType(EGMrbEntryType EntryType, Int_t Width = 0, Char_t PadChar = ' ', Int_t BaseOrPrec = 0);
+		void SetType(EGMrbEntryType EntryType, Int_t Width = 0, Int_t BaseOrPrec = -1, Bool_t PadZero = kFALSE);
 		inline void SetIncrement(Double_t Increment) { fIncrement = Increment; };
 		Bool_t SetRange(Double_t LowerLimit, Double_t UpperLimit);
 		Bool_t WithinRange() const;
@@ -159,7 +159,7 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		Int_t fWidth;					// number of digits to be displayed
 		Int_t fBase;					// numerical base if of type int or charint (2, 8, 10, 16)
 		Int_t fPrecision;				// precision if type double
-		Char_t fPadChar;				// character ot pad empty fields
+		Bool_t fPadZero; 				// should we pad with 0?
 		Double_t fLowerLimit;			// lower limit
 		Double_t fUpperLimit;			// upper limit
 		Double_t fIncrement;			// increment

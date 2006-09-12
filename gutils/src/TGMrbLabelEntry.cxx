@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.11 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.12 2006-09-12 08:02:47 Marabou Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -89,7 +89,7 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 	fLowerLimit = 0;
 	fUpperLimit = 0;
 	fIncrement = 1;
-	fBase = 10;
+	fBase = TMrbString::kDefaultBase;
 	fPrecision = TMrbString::kDefaultPrecision;
 	fType = TGMrbLabelEntry::kGMrbEntryTypeChar;
 	fLabel = NULL;
@@ -203,7 +203,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.ToDouble(dblVal);
 								dblVal += fIncrement;
 								if (!this->CheckRange(dblVal)) break;
-								s.FromDouble(dblVal, fWidth, 8, kTRUE);
+								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data());
 							}
 							fEntry->SendSignal();
@@ -226,7 +226,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.ToDouble(dblVal);
 								dblVal -= fIncrement;
 								if (!this->CheckRange(dblVal)) break;
-								s.FromDouble(dblVal, fWidth, 8, kTRUE);
+								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data());
 							}
 							fEntry->SendSignal();
@@ -249,7 +249,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								Double_t dmy;
 								s.ToDouble(dmy);
 								dblVal = fLowerLimit;
-								s.FromDouble(dblVal, fWidth, 8, kTRUE);
+								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data());
 							}
 							fEntry->SendSignal();
@@ -272,7 +272,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								Double_t dmy;
 								s.ToDouble(dmy);
 								dblVal = fUpperLimit;
-								s.FromDouble(dblVal, fWidth, 8, kTRUE);
+								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data());
 							}
 							fEntry->SendSignal();
@@ -298,15 +298,15 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 	return(kTRUE);
 }
 
-void TGMrbLabelEntry::SetType(EGMrbEntryType EntryType, Int_t Width, Char_t PadChar, Int_t BaseOrPrec) {
+void TGMrbLabelEntry::SetType(EGMrbEntryType EntryType, Int_t Width, Int_t BaseOrPrec, Bool_t PadZero) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::SetType
 // Purpose:        Define entry type
 // Arguments:      EGMrbEntryType EntryType   -- type
 //                 Int_t Width                -- number width
-//                 Char_t PadChar             -- pad character
 //                 Int_t BaseOrPrec           -- numerical base (int) or precision (double)
+//                 Bool_t PadZero             -- pad with 0 if kTRUE
 // Results:        --
 // Exceptions:     
 // Description:    Defines entry type.
@@ -315,9 +315,20 @@ void TGMrbLabelEntry::SetType(EGMrbEntryType EntryType, Int_t Width, Char_t PadC
 
 	fType = EntryType;
 	fWidth = Width;
-	fPadChar = PadChar;
-	if (EntryType == TGMrbLabelEntry::kGMrbEntryTypeInt)			fBase = BaseOrPrec;
-	else if (EntryType == TGMrbLabelEntry::kGMrbEntryTypeDouble)	fPrecision = BaseOrPrec;
+	fPadZero = PadZero;
+	if (EntryType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
+		if (BaseOrPrec == -1) {
+			fBase = TMrbString::kDefaultBase;
+		} else {
+			fBase = BaseOrPrec;
+		}
+	} else if (EntryType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
+		if (BaseOrPrec == -1) {
+			fPrecision = TMrbString::kDefaultPrecision;
+		} else {
+			fPrecision = BaseOrPrec;
+		}
+	}
 }
 
 void TGMrbLabelEntry::SetText(const Char_t * Text) {
@@ -349,7 +360,7 @@ void TGMrbLabelEntry::SetText(Int_t Value) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString v;
-	v.FromInteger(Value, fWidth, fBase, (fPadChar == '0'));
+	v.FromInteger(Value, fWidth, fBase, fPadZero);
 	fEntry->SetText(v.Data());
 	this->CreateToolTip();
 }
@@ -367,7 +378,7 @@ void TGMrbLabelEntry::SetText(Double_t Value) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString v;
-	v.FromDouble(Value, fWidth, fPrecision, (fPadChar == '0'));
+	v.FromDouble(Value, fWidth, fPrecision, fPadZero);
 	fEntry->SetText(v.Data());
 	this->CreateToolTip();
 }
