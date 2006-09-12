@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.1 2005-11-28 12:10:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.2 2006-09-12 11:44:08 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -130,7 +130,7 @@ void TMrbDGFClusterMember::Print(ostream & Out, Bool_t CmtFlag) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Out << Form("%3d %2d %c %4d %4d %-10s %s %-6s %-7s %-9s %1d %2d %2d %s %s",
+	Out << Form("%3d %2d %c %4d %4d %-10s %s %-6s %-7s %-9s %1d ",
 					fClusterIndex,
 					fClusterNo,
 					fCapsuleId,
@@ -141,9 +141,13 @@ void TMrbDGFClusterMember::Print(ostream & Out, Bool_t CmtFlag) {
 					fSide.Data(),
 					fHeight.Data(),
 					fAngle.Data(),
-					fCrate,
-					fSlot[0], fSlot[1],
-					fDgf[0].Data(), fDgf[1].Data());
+					fCrate);
+	for (Int_t i = 0; i < fNofModules; i++) {
+		Out << Form("%2d ", fSlot[i]);
+	}
+	for (Int_t i = 0; i < fNofModules; i++) {
+		if (fSlot[i] > 0) Out << Form("%s ", fDgf[i].Data());
+	}
 	if (CmtFlag && fCmt.Length() > 0) Out << "\t" << fCmt;
 	Out << endl;
 }
@@ -284,11 +288,37 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		TObjArray sLine;
 		sLine.Delete();
 		Int_t nIdx = cLine.Split(sLine, " ", kTRUE);
-		if (nIdx != kMrbDGFClusterIdxShort && nIdx != kMrbDGFClusterIdxLong) {
-			gMrbLog->Err()	<< "Wrong number of items in line " << lineNo << " - " << nIdx
-							<< " (should be " << kMrbDGFClusterIdxShort << " or " << kMrbDGFClusterIdxLong << ")" << endl;
-			gMrbLog->Flush(this->ClassName(), "ReadFile");
-			continue;
+
+		Int_t nofModules = 0;
+		Bool_t hasNames;
+		switch (nIdx - kMrbDgfClusterNofItems) {
+			case 2:
+				{
+					nofModules = 2;
+					hasNames = kFALSE;
+				}
+				break;
+			case 4:
+				{
+					TString x = ((TObjString *) sLine[kMrbDgfClusterNofItems + 3])->GetString();
+					if (atoi(x.Data()) > 0) {
+						nofModules = 4;
+						hasNames = kFALSE;
+					} else {
+						nofModules = 2;
+						hasNames = kTRUE;
+					}
+				}
+				break;
+			case 8:
+				{
+					nofModules = 4;
+					hasNames = kTRUE;
+				}
+			default:
+				gMrbLog->Err()	<< "Wrong number of items in line " << lineNo << " - " << nIdx << endl;
+				gMrbLog->Flush(this->ClassName(), "ReadFile");
+				break;
 		}
 
 		Int_t cIdx = atoi(((TObjString *) sLine[kMrbDGFClusterIdx])->GetString().Data());
@@ -317,6 +347,7 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		Bool_t ok = kTRUE;
 		TMrbDGFClusterMember * cluMem = new TMrbDGFClusterMember(cluIdx, cluNo, capsId(0));
 
+		cluMem->SetNofModules(nofModules);
 		cluMem->SetHex(atoi(((TObjString *) sLine[kMrbDGFClusterHex])->GetString().Data()));
 		cluMem->SetVoltage(atoi(((TObjString *) sLine[kMrbDGFClusterVoltage])->GetString().Data()));
 		cluMem->SetColor(((TObjString *) sLine[kMrbDGFClusterColor])->GetString().Data());
@@ -325,26 +356,24 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		if (!cluMem->SetHeight(((TObjString *) sLine[kMrbDGFClusterHeight])->GetString().Data())) ok = kFALSE;
 		if (!cluMem->SetAngle(((TObjString *) sLine[kMrbDGFClusterAngle])->GetString().Data())) ok = kFALSE;
 		cluMem->SetCrate(atoi(((TObjString *) sLine[kMrbDGFClusterCrate])->GetString().Data()));
-		cluMem->SetSlot(0, atoi(((TObjString *) sLine[kMrbDGFClusterSlot1])->GetString().Data()));
-		cluMem->SetSlot(1, atoi(((TObjString *) sLine[kMrbDGFClusterSlot2])->GetString().Data()));
-		if (nIdx == kMrbDGFClusterIdxShort) {
-			TMrbString dgfName = "";
-			if (cluMem->GetSlot(0) > 0) {
-				dgfName = "dgf";
-				dgfName += cluIdx;
-				dgfName += capsNo * 2 + 1;
+		Int_t idx = kMrbDgfClusterNofItems;
+		for (Int_t i = 0; i < nofModules; i++, idx++) {
+			cluMem->SetSlot(i, atoi(((TObjString *) sLine[idx])->GetString().Data()));
+		}
+		if (hasNames) {
+			for (Int_t i = 0; i < nofModules; i++, idx++) {
+				cluMem->SetDgf(i, ((TObjString *) sLine[idx])->GetString().Data());
 			}
-			cluMem->SetDgf(0, dgfName.Data());
-			dgfName = "";
-			if (cluMem->GetSlot(1) > 0) {
-				dgfName = "dgf";
-				dgfName += cluIdx;
-				dgfName += capsNo * 2 + 2;
-			}
-			cluMem->SetDgf(1, dgfName.Data());
 		} else {
-			cluMem->SetDgf(0, ((TObjString *) sLine[kMrbDGFClusterDgf1])->GetString().Data());
-			cluMem->SetDgf(1, ((TObjString *) sLine[kMrbDGFClusterDgf2])->GetString().Data());
+			for (Int_t i = 0; i < nofModules; i++) {
+				TMrbString dgfName = "undef";
+				if (cluMem->GetSlot(i) > 0) {
+					dgfName = "dgf";
+					dgfName += cluIdx;
+					dgfName += capsNo * nofModules + i + 1;
+				}
+				cluMem->SetDgf(i, dgfName.Data());
+			}
 		}
 		if (cmt.Length() > 0) cluMem->SetCmt(cmt.Data());
 
@@ -365,7 +394,7 @@ void TMrbLofDGFClusters::Print(ostream & Out) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Out << endl << "DGF Cluster Data:" << endl;
-	Out << Form("%3s %-4s %4s %4s %-10s %2s %-6s %-7s %-9s %s %2s %2s %s",
+	Out << Form("%3s %-4s %4s %4s %-10s %2s %-6s %-7s %-9s %s %s",
 					"#",
 					"id",
 					"hex",
@@ -376,14 +405,13 @@ void TMrbLofDGFClusters::Print(ostream & Out) {
 					"height",
 					"angle",
 					"C",
-					"N1", "N2", "DGFs") << endl;
-	Out << "--------------------------------------------------------------------------------" << endl;
+					"Nxx/Dgfxx ...") << endl;
+	Out << "----------------------------------------------------------------------------------------------" << endl;
 
 	TMrbNamedX * nx = (TMrbNamedX *) this->First();
 	while (nx) {
 		TMrbDGFCluster * clu = (TMrbDGFCluster *) nx->GetAssignedObject();
 		if (clu) clu->Print(Out);
-		Out << endl;
 		nx = (TMrbDGFCluster *) this->After(nx);
 	}
 	Out << endl;

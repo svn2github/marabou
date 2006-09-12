@@ -24,7 +24,7 @@ SYSMODE=y
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-ROOTSYS=/cern/root/root_new
+ROOTSYS=/usr/local/opt/root/root4.04-02g-src-gcc344
 MARABOU=`pwd`
 
 #____________________________[end editable section]___________________________
@@ -193,8 +193,8 @@ fi
 export ROOTSYS
 export MARABOU
 export INSTDIR=
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$ROOTSYS/lib:$MARABOU/lib
-export PATH=$PATH:$ROOTSYS/bin:$MARABOU/bin
+export LD_LIBRARY_PATH=$ROOTSYS/lib:$MARABOU/lib:$LD_LIBRARY_PATH
+export PATH=$ROOTSYS/bin:$MARABOU/bin:$PATH
 
 echo -e -n $BLU >&2
 if [ $SYSMODE = "y" ]

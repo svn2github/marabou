@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.29 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.30 2006-09-12 11:45:01 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -243,7 +243,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fEnergyPeakTimeEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyPeakTimeEntry, frameGC->LH());
-	fEnergyPeakTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fEnergyPeakTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble, 0, 1);
 	fEnergyPeakTimeEntry->SetText(0);
 	fEnergyPeakTimeEntry->SetRange(0, 100000);
 	fEnergyPeakTimeEntry->SetIncrement(gDGFControlData->fDeltaT);
@@ -259,7 +259,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fEnergyGapTimeEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyGapTimeEntry, frameGC->LH());
-	fEnergyGapTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fEnergyGapTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble, 0, 1);
 	fEnergyGapTimeEntry->SetText(0);
 	fEnergyGapTimeEntry->SetRange(0, 100000);
 	fEnergyGapTimeEntry->SetIncrement(gDGFControlData->fDeltaT);
@@ -290,7 +290,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fEnergyTauEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyTauEntry, frameGC->LH());
-	fEnergyTauEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fEnergyTauEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble, 0, 1);
 	fEnergyTauEntry->SetText(0.0);
 	fEnergyTauEntry->SetRange(0, 99);
 	fEnergyTauEntry->SetIncrement(0.2);
@@ -317,7 +317,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTriggerPeakTimeEntry);
 	fTriggerFilterFrame->AddFrame(fTriggerPeakTimeEntry, frameGC->LH());
-	fTriggerPeakTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTriggerPeakTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble,0, 3);
 	fTriggerPeakTimeEntry->SetText(0.025);
 	fTriggerPeakTimeEntry->SetRange(.025, .1);
 	fTriggerPeakTimeEntry->SetIncrement(.025);
@@ -333,7 +333,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTriggerGapTimeEntry);
 	fTriggerFilterFrame->AddFrame(fTriggerGapTimeEntry, frameGC->LH());
-	fTriggerGapTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTriggerGapTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble, 0, 3);
 	fTriggerGapTimeEntry->SetText(0);
 	fTriggerGapTimeEntry->SetRange(0, .75);
 	fTriggerGapTimeEntry->SetIncrement(.025);
@@ -404,7 +404,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fDACVVEntry);
 	fDACGainFrame->AddFrame(fDACVVEntry, frameGC->LH());
-	fDACVVEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fDACVVEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble, 0, 4);
 	fDACVVEntry->SetText(0);
 	fDACVVEntry->SetRange(0, 20);
 	fDACVVEntry->SetIncrement(.1);
@@ -452,7 +452,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fDACVoltEntry);
 	fDACOffsetFrame->AddFrame(fDACVoltEntry, frameGC->LH());
-	fDACVoltEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fDACVoltEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble, 0, 4);
 	fDACVoltEntry->SetText(0);
 	fDACVoltEntry->SetRange(-3, 3);
 	fDACVoltEntry->SetIncrement(.1);
@@ -492,7 +492,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTraceLengthEntry);
 	fTraceLengthDelayFrame->AddFrame(fTraceLengthEntry, frameGC->LH());
-	fTraceLengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTraceLengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble, 0, 1);
 	fTraceLengthEntry->SetText(0);
 	fTraceLengthEntry->SetRange(0, 25.6);
 	fTraceLengthEntry->SetIncrement(.5);
@@ -511,7 +511,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTraceDelayEntry);
 	fTraceLengthDelayFrame->AddFrame(fTraceDelayEntry, frameGC->LH());
-	fTraceDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTraceDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble, 0, 1);
 	fTraceDelayEntry->SetText(0);
 	fTraceDelayEntry->SetRange(0, 100000);
 	fTraceDelayEntry->SetIncrement(.1);
@@ -534,7 +534,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTraceXPSALengthEntry);
 	fTraceXPSAFrame->AddFrame(fTraceXPSALengthEntry, frameGC->LH());
-	fTraceXPSALengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTraceXPSALengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble, 0, 1);
 	fTraceXPSALengthEntry->SetText(0);
 	fTraceXPSALengthEntry->SetRange(0, 25);
 	fTraceXPSALengthEntry->SetIncrement(.5);
@@ -551,7 +551,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTraceXPSAOffsetEntry);
 	fTraceXPSAFrame->AddFrame(fTraceXPSAOffsetEntry, frameGC->LH());
-	fTraceXPSAOffsetEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTraceXPSAOffsetEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble, 0, 1);
 	fTraceXPSAOffsetEntry->SetText(0);
 	fTraceXPSAOffsetEntry->SetRange(0, 25);
 	fTraceXPSAOffsetEntry->SetIncrement(.1);
@@ -657,7 +657,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																fUserPsaCSREditButton, buttonGC);
 	HEAP(fStatRegUserPsaCSREntry);
 	fTraceUPSAFrame->AddFrame(fStatRegUserPsaCSREntry, frameGC->LH());
-	fStatRegUserPsaCSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
+	fStatRegUserPsaCSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 6, 16);
 	fStatRegUserPsaCSREntry->SetText(0);
 	fStatRegUserPsaCSREntry->SetRange(0, 0xffff);
 	fStatRegUserPsaCSREntry->ShowToolTip(kTRUE, kTRUE);
@@ -738,7 +738,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC);
 	HEAP(fCFDRegEntry);
 	fCFDDataFrame->AddFrame(fCFDRegEntry, frameGC->LH());
-	fCFDRegEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 0, ' ', 16);
+	fCFDRegEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 0, 16);
 	fCFDRegEntry->SetText(0);
 	fCFDRegEntry->SetRange(0, 0x1 << 16);
 	fCFDRegEntry->ShowToolTip(kTRUE, kTRUE);
@@ -838,12 +838,13 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																kLEWidth,
 																kLEHeight,
 																kEntryWidth,
-																frameGC, labelGC, entryGC, NULL, kFALSE);
+																frameGC, labelGC, entryGC, NULL, kFALSE, NULL, buttonGC);
 	HEAP(fStatRegModICSREntry);
 	fStatRegEntryFrame->AddFrame(fStatRegModICSREntry, frameGC->LH());
-	fStatRegModICSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
+	fStatRegModICSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 6, 16);
 	fStatRegModICSREntry->SetText(0);
-	fStatRegModICSREntry->SetRange(0, 0x1);
+	fStatRegModICSREntry->SetRange(0, 0x2400);
+	fStatRegModICSREntry->SetIncrement(0x2400);
 	fStatRegModICSREntry->ShowToolTip(kTRUE, kTRUE);
 	fStatRegModICSREntry->AddToFocusList(&fFocusList);
 	fStatRegModICSREntry->Associate(this);
@@ -862,7 +863,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																fChanCSRAEditButton, buttonGC);
 	HEAP(fStatRegChanCSRAEntry);
 	fStatRegEntryFrame->AddFrame(fStatRegChanCSRAEntry, frameGC->LH());
-	fStatRegChanCSRAEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
+	fStatRegChanCSRAEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 6, 16, kTRUE);
 	fStatRegChanCSRAEntry->SetText(0);
 	fStatRegChanCSRAEntry->SetRange(0, 0xffff);
 	fStatRegChanCSRAEntry->ShowToolTip(kTRUE, kTRUE);
@@ -883,7 +884,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																fCoincPatternEditButton, buttonGC);
 	HEAP(fStatCoincPatternEntry);
 	fStatRegEntryFrame->AddFrame(fStatCoincPatternEntry, frameGC->LH());
-	fStatCoincPatternEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
+	fStatCoincPatternEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 6, 16,kTRUE);
 	fStatCoincPatternEntry->SetText(0);
 	fStatCoincPatternEntry->SetRange(0, 0xf);
 	fStatCoincPatternEntry->ShowToolTip(kTRUE, kTRUE);
@@ -904,7 +905,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																fRunTaskEditButton, buttonGC);
 	HEAP(fStatRunTaskEntry);
 	fStatRegEntryFrame->AddFrame(fStatRunTaskEntry, frameGC->LH());
-	fStatRunTaskEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 3, ' ', 16);
+	fStatRunTaskEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 5, 16, kTRUE);
 	fStatRunTaskEntry->SetText(0x100);
 	fStatRunTaskEntry->SetRange(0x100, 0x301);
 	fStatRunTaskEntry->ShowToolTip(kTRUE, kTRUE);

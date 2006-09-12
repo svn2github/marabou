@@ -8,7 +8,7 @@
 // Class:          TMrbDGFCluster            -- cluster data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFCluster.h,v 1.1 2005-11-28 12:10:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFCluster.h,v 1.2 2006-09-12 11:44:08 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -30,15 +30,11 @@ enum	EMrbDGFClusterIdx	{	kMrbDGFClusterIdx = 0,
 								kMrbDGFClusterSide,
 								kMrbDGFClusterHeight,
 								kMrbDGFClusterAngle,
-								kMrbDGFClusterCrate,
-								kMrbDGFClusterSlot1,
-								kMrbDGFClusterSlot2,
-								kMrbDGFClusterDgf1,
-								kMrbDGFClusterDgf2
+								kMrbDGFClusterCrate
 							};
 
-enum	{	kMrbDGFClusterIdxShort =	kMrbDGFClusterSlot2 + 1	};
-enum	{	kMrbDGFClusterIdxLong = 	kMrbDGFClusterDgf2 + 1	};
+enum	{	kMrbDgfClusterNofItems = kMrbDGFClusterCrate+ 1 };
+enum	{	kMrbDGFClusterNofModules = 	4	};
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -67,10 +63,8 @@ class TMrbDGFClusterMember : public TObject {
 			fAngle = "void";
 			fIsForward = kFALSE;
 			fCrate = 0;
-			fSlot[0] = 0;
-			fSlot[1] = 0;
-			fDgf[0] = "undef";
-			fDgf[1] = "undef";
+			for (Int_t i = 0; i < kMrbDGFClusterNofModules; i++) fSlot[i] = 0;
+			for (Int_t i = 0; i < kMrbDGFClusterNofModules; i++) fDgf[i] = "undef";
 			fCmt = "";
 		}
 		virtual ~TMrbDGFClusterMember() {};
@@ -106,6 +100,9 @@ class TMrbDGFClusterMember : public TObject {
 		inline void SetDgf(Int_t SlotNo, const Char_t * DgfName) { fDgf[SlotNo] = DgfName; };
 		inline const Char_t * GetDgf(Int_t SlotNo) { return(fDgf[SlotNo].Data()); };
 
+		inline void SetNofModules(Int_t NofModules) { fNofModules = NofModules; };
+		inline Int_t GetNofModules() { return(fNofModules); };
+
 		inline void SetCmt(const Char_t * Cmt) { fCmt = Cmt; };
 		inline const Char_t * GetCmt() { return(fCmt.Data()); };
 
@@ -128,8 +125,9 @@ class TMrbDGFClusterMember : public TObject {
 		TString fAngle;
 		Bool_t fIsForward;
 		Int_t fCrate;
-		Int_t fSlot[2];
-		TString fDgf[2];
+		Int_t fNofModules;
+		Int_t fSlot[kMrbDGFClusterNofModules];
+		TString fDgf[kMrbDGFClusterNofModules];
 		TString fCmt;
 		
 	ClassDef(TMrbDGFClusterMember, 1)		// [XIA DGF-4C] DGF cluster member
