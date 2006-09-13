@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.2 2006-09-12 11:44:08 Marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.3 2006-09-13 07:28:54 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -289,36 +289,34 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		sLine.Delete();
 		Int_t nIdx = cLine.Split(sLine, " ", kTRUE);
 
-		Int_t nofModules = 0;
+		Int_t nofModules = nIdx - kMrbDgfClusterNofItems;
+		Int_t nofModsPerMember;
 		Bool_t hasNames;
-		switch (nIdx - kMrbDgfClusterNofItems) {
-			case 2:
-				{
-					nofModules = 2;
-					hasNames = kFALSE;
-				}
-				break;
+		switch (nofModules) {
+			case 1:
+			case 2: nofModsPerMember = 2; hasNames = kFALSE; break;
+			case 3: nofModsPerMember = 4; hasNames = kFALSE; break;
 			case 4:
 				{
 					TString x = ((TObjString *) sLine[kMrbDgfClusterNofItems + 3])->GetString();
 					if (atoi(x.Data()) > 0) {
-						nofModules = 4;
+						nofModsPerMember = 4;
 						hasNames = kFALSE;
 					} else {
 						nofModules = 2;
+						nofModsPerMember = 2;
 						hasNames = kTRUE;
 					}
 				}
 				break;
-			case 8:
-				{
-					nofModules = 4;
-					hasNames = kTRUE;
-				}
+			case 5:
+			case 6:
+			case 7: nofModsPerMember = 4; hasNames = kFALSE; break;
+			case 8: nofModsPerMember = 4; nofModules = 4; hasNames = kTRUE; break;
 			default:
 				gMrbLog->Err()	<< "Wrong number of items in line " << lineNo << " - " << nIdx << endl;
 				gMrbLog->Flush(this->ClassName(), "ReadFile");
-				break;
+				return(-1);
 		}
 
 		Int_t cIdx = atoi(((TObjString *) sLine[kMrbDGFClusterIdx])->GetString().Data());
@@ -370,7 +368,7 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 				if (cluMem->GetSlot(i) > 0) {
 					dgfName = "dgf";
 					dgfName += cluIdx;
-					dgfName += capsNo * nofModules + i + 1;
+					dgfName += capsNo * nofModsPerMember + i + 1;
 				}
 				cluMem->SetDgf(i, dgfName.Data());
 			}
