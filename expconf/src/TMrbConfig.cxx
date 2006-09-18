@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.129 2006-09-12 14:35:00 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.130 2006-09-18 11:00:55 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -126,10 +126,7 @@ const SMrbNamedXShort kMrbLofReadoutTags[] =
 								{TMrbConfig::kRdoFile,						"READOUT_FILE"				},
 								{TMrbConfig::kRdoInclude,					"READOUT_INCLUDE"			},
 								{TMrbConfig::kRdoLibs,						"READOUT_LIBS"				},
-								{TMrbConfig::kRdoPosix,						"READOUT_POSIX"				},
-								{TMrbConfig::kRdoPosixLib,					"POSIX_LIB"					},
 								{TMrbConfig::kRdoAlign64,					"ALIGN_TO_64_BITS"			},
-								{TMrbConfig::kRdoLynxPlatform,				"GSI_LYNX_PLATFORM"			},
 								{TMrbConfig::kRdoDebug,						"DEBUG_READOUT"				},
 								{TMrbConfig::kRdoNameLC, 					"EXP_NAME_LC"				},
 								{TMrbConfig::kRdoNameUC, 					"EXP_NAME_UC"				},
@@ -1555,44 +1552,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							}
 							libString += gEnv->GetValue("TMrbConfig.ReadoutLibs", "$(LIB)/lib_utils.a");
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
-						}
-						break;
-					case TMrbConfig::kRdoPosix:
-						{
-							TString posixFlags = gEnv->GetValue("TMrbConfig.ReadoutPosixFlags", "");
-							if (posixFlags.Length() == 0) {
-								TString mbsVersion = gEnv->GetValue("TMrbConfig.MbsVersion", "");
-								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "");
-								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v22");
-								if (mbsVersion.Contains("v2"))	posixFlags = "-mposix4d9 -mthreads";
-								else							posixFlags = "-D_THREADS_POSIX4ad4 -mthreads";
-							}
-							rdoStrm << rdoTmpl.Encode(line, posixFlags.Data()) << endl;
-						}
-						break;
-					case TMrbConfig::kRdoPosixLib:
-						{
-							TString posixLib = gEnv->GetValue("TMrbConfig.ReadoutPosixLib", "");
-							if (posixLib.Length() == 0) {
-								TString mbsVersion = gEnv->GetValue("TMrbConfig.MbsVersion", "");
-								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "");
-								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v22");
-								if (mbsVersion.Contains("v2"))	posixLib = "";
-								else							posixLib = "-lposix-pre1c";
-							}
-							rdoStrm << rdoTmpl.Encode(line, posixLib.Data()) << endl;
-						}
-						break;
-					case TMrbConfig::kRdoLynxPlatform:
-						{
-							TString mbsVersion = gEnv->GetValue("TMrbConfig.MbsVersion", "");
-							if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "");
-							if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v22");
-							if (mbsVersion.Contains("v2")) {
-								rdoStrm << rdoTmpl.Encode(line, "GSI_LYNX_PROC_FAM") << endl;
-							} else {
-								rdoStrm << rdoTmpl.Encode(line, "GSI_LYNX_PLATFORM") << endl;
-							}
 						}
 						break;
 					case TMrbConfig::kRdoAlign64:
