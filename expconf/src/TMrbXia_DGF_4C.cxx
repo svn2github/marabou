@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.19 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.20 2006-09-22 10:27:50 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -112,6 +112,9 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 					fSynchWait = 1;
 					fActivateUserPSA = kFALSE;
 					fInSynch = 0;
+					fLofChannelModels.Delete(); 	// channel models for 6 and 12 fold segmented crystals are predefined
+					this->SetChannelModel("6fold", 8, "c:1:2:x:3:4:5:6");
+					this->SetChannelModel("12fold", 16, "c:1:2:3:4:5:6:x1:x2:7:8:9:10:11:12:x3");
 				} else {
 					this->MakeZombie();
 				}
@@ -785,3 +788,106 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 	}
 	return(kTRUE);
 }
+
+Bool_t TMrbXia_DGF_4C::SetChannelModel(const Char_t * ModelName, Int_t NofChannels, const Char_t * ChannelNames) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXia_DGF_4C::SetChannelModel
+// Purpose:        Define channel names to be used
+// Arguments:      Char_t * ModelName          -- name of channel model
+//                 Int_t NofChannels           -- max number of channels
+//                 Char_t * ChannelNames       -- channel names, :-separated string
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Defines a set of channel names to be used.
+//                 On startup 2 standard models will be defined:
+//                 "6fold" ->  channels "c:1:2:x:3:4:5:6" (0-7)
+//                 "12fold" -> channels "c:1:2:3:4:5:6:x1:x2:7:8:9:10:11:12:x3" (0-15)
+//                 x, x1, x2, x3 spare channels
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t verboseMode = gMrbConfig->IsVerbose();
+
+	if (fLofChannelModels.FindByName(ModelName) != NULL) {
+		gMrbLog->Err() << "Channel model already defined - " << ModelName << endl;
+		gMrbLog->Flush(this->ClassName(), "SetChannelModel");
+		return(kFALSE);
+	}
+
+	TMrbString cn = ChannelNames;
+	TObjArray * chnNames = new TObjArray();
+	Int_t nofChannels = cn.Split(*chnNames);
+	if (nofChannels != NofChannels) {
+		gMrbLog->Err()	<< "Channel model \"" << ModelName << "\": number of channels ("
+						<< NofChannels << ") != number of names given (" << nofChannels << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetChannelModel");
+		return(kFALSE);
+	}
+
+	TMrbNamedX * nx = new TMrbNamedX(nofChannels, ModelName, ChannelNames);
+	nx->AssignObject(chnNames);
+	fLofChannelModels.AddNamedX(nx);
+	fLofChannelModels.Print();
+
+	if (verboseMode) {
+		gMrbLog->Out()  << "[" << this->GetName() << "] Defining channel model " << ModelName << ", " << nofChannels << " channels" << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeRcFile");
+	}
+
+	return(kTRUE);
+}
+
+TMrbNamedX * TMrbXia_DGF_4C::GetChannelModel(const Char_t * ModelName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXia_DGF_4C::GetChannelModel
+// Purpose:   	   Get channel model from list
+// Arguments:      Char_t * ModelName            -- name of channel model
+// Results:        TMrbNamedX * ChannelModel     -- model defs
+// Exceptions:
+// Description:    Returns model definitions.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * model = (TMrbNamedX *) fLofChannelModels.FindByName(ModelName);
+	if (model == NULL) {
+		gMrbLog->Err() << "No such channel model - " << ModelName << endl;
+		gMrbLog->Flush(this->ClassName(), "GetChannelModel");
+	}
+	return(model);
+}
+
+const Char_t * TMrbXia_DGF_4C::GetChannelName(Int_t Channel, const Char_t * ModelName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXia_DGF_4C::GetChannelName
+// Purpose:        Get channel named for a given model
+// Arguments:      Int_t Channel               -- channel number
+//                 Char_t * ModelName          -- name of channel model
+// Results:        Char_t * ChannelName        -- channel name
+// Exceptions:
+// Description:    Returns channel name by its number.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * model = (TMrbNamedX *) fLofChannelModels.FindByName(ModelName);
+	if (model == NULL) {
+		gMrbLog->Err() << "No such channel model - " << ModelName << endl;
+		gMrbLog->Flush(this->ClassName(), "GetChannelName");
+		return(NULL);
+	}
+
+	if (Channel < 0 || Channel >= model->GetIndex()) {
+		gMrbLog->Err()	<< "Wrong channel number (model \"" << ModelName << "\") - " << Channel
+						<< " (should be in [0," << model->GetIndex() - 1 << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetChannelName");
+		return(NULL);
+	}
+
+	TObjArray * cn = (TObjArray *) model->GetAssignedObject();
+	return(((TObjString *) cn->At(Channel))->GetString());
+}
+
+
+

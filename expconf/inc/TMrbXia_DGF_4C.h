@@ -8,7 +8,7 @@
 // Class:          TMrbXia_DGF_4C     -- xia's digital gamma finder
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXia_DGF_4C.h,v 1.12 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.h,v 1.13 2006-09-22 10:27:50 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -96,7 +96,11 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		inline Int_t GetRelease() const { return(fRelease); };								// return xia release
 		inline Bool_t DSPLoadedFromBinary() const { return(fDSPLoadedFromBinary); };			// return dsp format
 		
-		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
+		Bool_t SetChannelModel(const Char_t * ModelName, Int_t NofChannels, const Char_t * ChannelNames); // define channel names to be used
+		TMrbNamedX * GetChannelModel(const Char_t * ModelName);										// get channel model by its name
+		const Char_t * GetChannelName(Int_t Channel, const Char_t * Model = "6fold");					// get channel name from model
+
+		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 							// use private code files
 		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -112,6 +116,8 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		TMrbLofNamedX fParamNames; 			// DSP param table, pairs of (ParamName, Offset)
 
 		TMrbNamedX fClusterID;				// cluster serial, color, segment info
+
+		TMrbLofNamedX fLofChannelModels; 	// models how to name dgf channels
 
 		Int_t fMaxEvents;					// parameter MAXEVENTS
 		Int_t fTraceLength; 				// parameter TRACELENGTH (common to all 4 channels)
