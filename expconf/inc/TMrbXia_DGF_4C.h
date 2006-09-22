@@ -8,7 +8,7 @@
 // Class:          TMrbXia_DGF_4C     -- xia's digital gamma finder
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXia_DGF_4C.h,v 1.15 2006-09-22 11:22:56 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.h,v 1.16 2006-09-22 11:49:31 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -101,7 +101,7 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		
 		Bool_t SetChannelLayout(const Char_t * LayoutName, Int_t NofChannels, const Char_t * ChannelNames); // define channel names to be used
 		const Char_t * GetChannelName(Int_t Channel, const Char_t * Layout = "6fold");					// get channel name from layout
-		const Char_t * GetChannelLayout(Int_t ModuleNumber, const Char_t * LayoutName = "6fold");		// get channel layout per module
+		const Char_t * GetChannelLayout(TString & ChannelLayout, Int_t ModuleNumber, const Char_t * LayoutName = "6fold");		// get channel layout per module
 
 		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 							// use private code files
 		

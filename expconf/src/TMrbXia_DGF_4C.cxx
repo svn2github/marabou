@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.23 2006-09-22 11:37:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.24 2006-09-22 11:49:31 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -837,12 +837,13 @@ Bool_t TMrbXia_DGF_4C::SetChannelLayout(const Char_t * LayoutName, Int_t NofChan
 	return(kTRUE);
 }
 
-const Char_t * TMrbXia_DGF_4C::GetChannelLayout(Int_t ModuleNumber, const Char_t * LayoutName) {
+const Char_t * TMrbXia_DGF_4C::GetChannelLayout(TString & ChannelLayout, Int_t ModuleNumber, const Char_t * LayoutName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXia_DGF_4C::GetChannelLayout
 // Purpose:   	   Get channel layout per module
-// Arguments:      Int_t ModuleNumber            -- module number
+// Arguments:      TString & ChannelLayout       -- where to store the result
+//                 Int_t ModuleNumber            -- module number
 //                 Char_t * LayoutName           -- name of channel layout
 // Results:        Char_t * ChannelLayout        -- layout for given module
 // Exceptions:
@@ -866,15 +867,15 @@ const Char_t * TMrbXia_DGF_4C::GetChannelLayout(Int_t ModuleNumber, const Char_t
 	}
 
 	TObjArray * cn = (TObjArray *) layout->GetAssignedObject();
-	TString chnLayout = "<";
+	ChannelLayout = "<";
 	for (Int_t chn = chn1; chn <= chn2; chn++) {
 		TString c = ((TObjString *) cn->At(chn))->GetString();
-		if (c.CompareTo("c") == 0)	chnLayout += "c";
-		else if (c.BeginsWith("x")) chnLayout += "x";
-		else						chnLayout += "s";
+		if (c.CompareTo("c") == 0)	ChannelLayout += "c";
+		else if (c.BeginsWith("x")) ChannelLayout += "x";
+		else						ChannelLayout += "s";
 	}
-	chnLayout += ">";
-	return(chnLayout.Data());
+	ChannelLayout += ">";
+	return(ChannelLayout.Data());
 }
 
 const Char_t * TMrbXia_DGF_4C::GetChannelName(Int_t Channel, const Char_t * LayoutName) {
