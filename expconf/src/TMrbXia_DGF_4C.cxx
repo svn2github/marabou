@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.22 2006-09-22 11:22:56 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.23 2006-09-22 11:37:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -114,7 +114,7 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 					fInSynch = 0;
 					fLofChannelLayouts.Delete(); 	// channel layouts for 6 and 12 fold segmented crystals are predefined
 					this->SetChannelLayout("6fold", 8, "c:1:2:x:3:4:5:6");
-					this->SetChannelLayout("12fold", 16, "c:1:2:3:4:5:6:x1:x2:7:8:9:10:11:12:x3");
+					this->SetChannelLayout("12fold", 16, "c:01:02:03:04:05:06:x1:x2:07:08:09:10:11:12:x3");
 				} else {
 					this->MakeZombie();
 				}
