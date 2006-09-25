@@ -107,7 +107,7 @@ Bool_t TMrbSubevent_DGF_Xhit::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 						mle->IncrChannelHits(chn);			// count this channel
 						DgfEventChannelHeader * chnHdr = (DgfEventChannelHeader *) dataPtr;
 						UShort_t * xdata = (UShort_t *) dataPtr + kDgfMaxNofChannelWords;
-						Int_t nofXdata = nofWordsPerChn - kDgfMaxNofChannelWords;
+						Int_t nofXdata = nofWordsPerChn - kDgfMaxNofChannelWords + 1;
 						if (nofXdata <= 0) {
 							this->GetHitBuffer()->AddHit(
 																eventsProcessed,
@@ -118,7 +118,7 @@ Bool_t TMrbSubevent_DGF_Xhit::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 																chnHdr->fastTriggerTime,
 																&chnHdr->fastTriggerTime,
 																nofWordsPerChn);
-						} else {
+						} else if (nofXdata == this->GetMaxData()) {
 							this->GetHitBuffer()->AddXhit(		eventsProcessed,
 																moduleNumber,
 																chn,
@@ -126,9 +126,18 @@ Bool_t TMrbSubevent_DGF_Xhit::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 																evtHdr->eventTime[0],
 																chnHdr->fastTriggerTime,
 																&chnHdr->fastTriggerTime,
-																kDgfMaxNofChannelWords,
+																kDgfMaxNofChannelWords - 1,
 																xdata,
 																nofXdata);
+						} else {
+							gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong trace data wc", SevtData, SevtWC);
+							cerr	<< setred
+									<< this->ClassName() << "::FillSubevent(): [Module "
+									<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << ")] At SevtWC = "
+									<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong trace data wc - 0x"
+									<< setbase(16) << nofXdata << " (should be " << this->GetMaxData() << ")" << setbase(10)
+									<< setblack << endl;
+							return(kTRUE);
 						}
 						dataPtr += nofWordsPerChn * sizeof(Short_t);
 						wc -= nofWordsPerChn;		 // continue with next channel
