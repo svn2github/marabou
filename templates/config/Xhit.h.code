@@ -103,7 +103,7 @@ class %%EXTENDED_HIT_NAME_UC%%Buffer : public TUsrHitBuffer {
 										UShort_t * ChannelTime,
 										UShort_t * Hdata, Int_t NofHdata, UShort_t * Xdata, Int_t NofXdata);
 
-		inline Int_t GetDataLength() { return(k%%EXTENDED_HIT_NAME_UC%%DataLength); };
+		inline Int_t GetDataLength() { return(%%EXTENDED_HIT_NAME_UC%%::k%%EXTENDED_HIT_NAME_UC%%DataLength); };
 
 	ClassDef(%%EXTENDED_HIT_NAME_UC%%Buffer, 1)				// [Analyze] An extension to TUsrHitBuffer object
 };
