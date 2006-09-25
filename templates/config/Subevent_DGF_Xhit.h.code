@@ -10,7 +10,7 @@
 class TMrbSubevent_DGF_Xhit : public TObject {
 
 	public:
-		TMrbSubevent_DGF_Xhit() {};						// ctor
+		TMrbSubevent_DGF_Xhit(Int_t NofData = 0) { fNofData = NofData; };		// ctor
 		~TMrbSubevent_DGF_Xhit() {};						// default dtor
 
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
@@ -21,7 +21,7 @@ class TMrbSubevent_DGF_Xhit : public TObject {
 			return(&fHitBuffer);
 		};
 		inline TUsrXhitBuffer * GetHitBuffer() { return(&fHitBuffer); };
-		
+		inline Int_t GetNofData() { return(fNofData); };		
 	protected:
 		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };
 
@@ -31,6 +31,7 @@ class TMrbSubevent_DGF_Xhit : public TObject {
 
 		Int_t fTimeStamp;						// time stamp, same as fUniqueID
 
+		Int_t fNofData; 						// length of extended data
 		TUsrXhitBuffer fHitBuffer; 				// hit buffer to store subevent data
 
 	ClassDef(TMrbSubevent_DGF_Xhit, 1)			// [Analyze] Base class for subvents: store DGF data (including traces) in hit buffer
