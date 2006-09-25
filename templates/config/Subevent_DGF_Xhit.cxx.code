@@ -135,9 +135,8 @@ Bool_t TMrbSubevent_DGF_Xhit::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 							cerr	<< setred
 									<< this->ClassName() << "::FillSubevent(): [Module "
 									<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << ")] At SevtWC = "
-									<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong trace data wc - 0x"
-									<< setbase(16) << nofXdata << " (should be " << xdataLength << ")" << setbase(10)
-									<< setblack << endl;
+									<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong trace data wc - "
+									<< nofXdata << " (should be " << xdataLength << ")" << setblack << endl;
 							return(kTRUE);
 						}
 						dataPtr += nofWordsPerChn * sizeof(Short_t);
