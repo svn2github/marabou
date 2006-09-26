@@ -22,7 +22,8 @@
 %C% this->GetHitBuffer()->Reset();			// clear hit buffer
 %C%
 %C% recNo++;						// count this record	
-%C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, SevtWC);
+%C% Int_t origSevtWC = SevtWC;				// save original subevent wc
+%C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
 %C% Int_t wordsProcessed = 0; 			// words processed so far
 %C% UShort_t * dataPtr = (UShort_t *) SevtData;
 %C% Int_t eventsProcessed = 0;
@@ -32,30 +33,20 @@
 %C% 	SevtWC -= 2;
 %C% 	wordsProcessed += 2;
 %C% 	if (wc < 0 || wc % 10) { 				// 10 words per event
-%C% 		gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, SevtWC);
+%C% 		gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, origSevtWC);
 %C% 		cerr	<< setred
-%C% 				<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-%C% 				<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong word count - " << wc
-%C% 				<< setblack << endl;
+%C% 				<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C% 				<< wordsProcessed << "] Wrong word count - " << wc << setblack << endl;
 %C% 		return(kTRUE);
 %C% 	}
 %C% 	Int_t moduleNumber = *dataPtr++;		// header word 2: module number
-%C% 	if (moduleNumber <= 0) {
-%C% 		gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
-%C% 				cerr	<< setred
-%C% 						<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-%C% 						<< SevtWC << " (relWC = " << wordsProcessed
-%C% 						<< ") : Wrong module number - " << moduleNumber
-%C% 						<< setblack << endl;
-%C% 	}
 %C%
 %C% 	TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
 %C% 	if (mle == NULL) {
-%C% 		gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
+%C% 		gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
 %C% 		cerr	<< setred
-%C% 				<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-%C% 				<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong module number - "
-%C% 				<< moduleNumber
+%C% 				<< this->ClassName() << "::FillSubevent(): [sevtWC="
+%C% 				<< wordsProcessed << ") : Wrong module number - " << moduleNumber
 %C% 				<< setblack << endl;
 %C% 		return(kTRUE);
 %C% 	}

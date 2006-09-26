@@ -25,40 +25,38 @@
 %C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 %C%
 %C%	recNo++;						// count this record	
-%C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, SevtWC);
+%C% Int_t origSevtWC = SevtWC;				// save original subevent wc
+%C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
 %C%	Int_t wordsProcessed = 0; 			// words processed so far
 %C% 	UShort_t * dataPtr = (UShort_t *) SevtData;
 %C%	while (SevtWC > 0) {									// subevent may contain several modules
 %C%		UShort_t header = *dataPtr++; 							// header word
 %C%		if ((header & kMrbSevt_10_12_B_Header) == 0) {
-%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, SevtWC);
+%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
 %C%			cerr	<< setred
-%C%					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-%C%					<< SevtWC << " (relWC = " << wordsProcessed
-%C%					<< ") : Wrong header - 0x" << setbase(16) << header << setbase(10)
-%C%					<< setblack << endl;
+%C%					<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C%					<< wordsProcessed
+%C%					<< "] Wrong header - 0x" << setbase(16) << header << setbase(10) << setblack << endl;
 %C%			return(kTRUE);
 %C%		}
 %C%		Int_t wc = *dataPtr++; 							// word count
 %C% 		Int_t wcs = wc;
 %C%		if (wc <= 0) {
-%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, SevtWC);
+%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, origSevtWC);
 %C%			cerr	<< setred
-%C%					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-%C%					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong word count - " << wc
-%C%					<< setblack << endl;
+%C%					<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C%					<< wordsProcessed << "] Wrong word count - " << wc << setblack << endl;
 %C%			return(kTRUE);
 %C%		}
 %C%		Int_t moduleNumber = header & kMrbSevt_10_12_M_ModuleNumber;	// extract module number
-%C% 		if (moduleNumber <= 0) {
-%C% 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
-%C% 			cerr	<< setred
-%C% 					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-%C% 					<< SevtWC << " (relWC = " << wordsProcessed
-%C% 					<< ") : Wrong module number - " << moduleNumber
-%C% 					<< setblack << endl;
-%C%				return(kTRUE);
-%C% 		}
+%C%		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
+%C%		if (mle == NULL) {
+%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
+%C%			cerr	<< setred
+%C%					<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C%					<< wordsProcessed << "] Wrong module number - " << moduleNumber << setblack << endl;
+%C%			return(kTRUE);
+%C%		}
 %C% 		Int_t moduleID = (header >> kMrbSevt_10_12_SH_ModuleId) & kMrbSevt_10_12_M_ModuleId;
 %C% 		Bool_t sis3801 = (moduleID == (kMrbModIdSis_3801 & kMrbSevt_10_12_M_ModuleId));
 %C% 		Int_t chn;
@@ -75,20 +73,11 @@
 %C%			if (paramAddr) {
 %C%				*paramAddr = data;	// assign data value to param
 %C%			} else {
-%C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "No such param", SevtData, SevtWC);
-%C%				if (gMrbAnalyze->GetModuleName(moduleNumber)) {
-%C% 					cerr	<< setred
-%C%							<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-%C%							<< SevtWC << " (relWC = " << wordsProcessed << ") : No such param - "
-%C%							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (chn " << chn << ")"
-%C%							<< setblack << endl;
-%C% 				} else {
-%C% 					cerr	<< setred
-%C%							<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-%C%							<< SevtWC << " (relWC = " << wordsProcessed << ") : No such param - module serial "
-%C%							<< moduleNumber << " (chn " << chn << ")"
-%C%							<< setblack << endl;
-%C% 				}
+%C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "No such param", SevtData, origSevtWC);
+%C% 			cerr	<< setred
+%C% 					<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C%						<< wordsProcessed << "] No such param - chn" << chn << setblack << endl;
 %C%				return(kTRUE);
 %C% 			}
 %C% 		}

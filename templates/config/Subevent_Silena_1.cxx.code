@@ -29,29 +29,36 @@
 %C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 %C%
 %C%	recNo++;						// count this record	
-%C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, SevtWC);
+%C% Int_t origSevtWC = SevtWC;				// save original subevent wc
+%C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
 %C%	wordsProcessed = 0; 			// words processed so far
 %C%	while (SevtWC) {									// subevent may contain several dgf buffers
 %C%		header = *SevtData++; 							// header word
 %C%		if ((header & 0x8000) == 0) {
-%C%			gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "Wrong header", SevtData, SevtWC);
+%C%			gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "Wrong header", SevtData, origSevtWC);
 %C%			cerr	<< setred
-%C%					<< "TUsrSevt$sevtNameUC::FillSubevent(): At SevtWC = "
-%C%					<< SevtWC << " (relWC = " << wordsProcessed
-%C%					<< ") : Wrong header - sign bit missing"
+%C%					<< "TUsrSevt$sevtNameUC::FillSubevent() [sevtWC="
+%C%					<< wordsProcessed << "] Wrong header - sign bit missing"
 %C%					<< setblack << endl;
 %C%			return(kTRUE);
 %C%		}
 %C%		wc = (header >> 8) & 0xF;				// extract buffer length
 %C%		if (wc <= 0 || wc > 10) {				// max. 8 data words + 2 header words
-%C%			gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "Wrong word count", SevtData, SevtWC);
+%C%			gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "Wrong word count", SevtData, origSevtWC);
 %C%			cerr	<< setred
-%C%					<< "TUsrSevt$sevtNameUC::FillSubevent(): At SevtWC = "
-%C%					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong word count - " << wc
-%C%					<< setblack << endl;
+%C%					<< "TUsrSevt$sevtNameUC::FillSubevent() [sevtWC="
+%C%					<< wordsProcessed << "] Wrong word count - " << wc << setblack << endl;
 %C%			return(kTRUE);
 %C%		}
 %C%			moduleNumber = header & 0xFF;			// extract module number
+%C% 	TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
+%C% 	if (mle == NULL) {
+%C% 		gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
+%C% 		cerr	<< setred
+%C% 				<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C% 				<< wordsProcessed << ") : Wrong module number - " << moduleNumber << setblack << endl;
+%C% 		return(kTRUE);
+%C% 	}
 %C%			hitPattern = *SevtData++; 				// pattern of active channels
 %C%			wcs = wc;
 %C%		for (chn = 0; chn < 8; chn++) {			// up to 8 channels
@@ -62,31 +69,22 @@
 %C%					*paramAddr = (Int_t) *SevtData++;	// assign energy value to param
 %C%						wc--;
 %C%				} else {
-%C%					gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "No such param", SevtData, SevtWC);
-%C%					if (gMrbAnalyze->GetModuleName(moduleNumber)) {
-%C% 					cerr	<< setred
-%C%								<< "TUsrSevt$sevtNameUC::FillSubevent(): At SevtWC = "
-%C%								<< SevtWC << " (relWC = " << wordsProcessed << ") : No such param - "
-%C%								<< gMrbAnalyze->GetModuleName(moduleNumber) << " (chn " << chn << ")"
-%C%								<< setblack << endl;
-%C% 				} else {
-%C% 					cerr	<< setred
-%C%								<< "TUsrSevt$sevtNameUC::FillSubevent(): At SevtWC = "
-%C%								<< SevtWC << " (relWC = " << wordsProcessed << ") : No such param - module serial "
-%C%								<< moduleNumber << " (chn " << chn << ")"
-%C%								<< setblack << endl;
-%C% 				}
+%C%					gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "No such param", SevtData, origSevtWC);
+%C% 				cerr	<< setred
+%C% 						<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 						<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C%							<< wordsProcessed << "] No such param - chn" << chn << setblack << endl;
 %C%					return(kTRUE);
 %C%				}
 %C%			}
 %C%			hitPattern >>= 1;
 %C%		}
 %C%		if (wc != 0) {				// more data words remaining?
-%C%			gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "WC != 0", SevtData, SevtWC);
-%C%			cerr	<< setred
-%C%					<< "TUsrSevt$sevtNameUC::FillSubevent(): At SevtWC = "
-%C%					<< SevtWC << " (relWC = " << wordsProcessed << ") : Word count != 0 - " << wc
-%C%					<< setblack << endl;
+%C%			gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "WC != 0", SevtData, origSevtWC);
+%C% 		cerr	<< setred
+%C% 				<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 				<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C%					<< wordsProcessed << "] Word count != 0 - " << wc << setblack << endl;
 %C%			return(kTRUE);
 %C%		}
 %C%		SevtWC -= wcs + 2;						// remaining subevent data

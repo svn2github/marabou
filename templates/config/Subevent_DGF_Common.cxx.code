@@ -19,11 +19,12 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 
 	this->GetHitBuffer()->Reset();			// clear hit buffer
+	this->GetHitBuffer()->GetDataLength();	// data words per hit
 
 	Char_t * dataPtr = (Char_t *) SevtData;
 	recNo++;								// count this record
-	if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, SevtWC);
 	Int_t origSevtWC = SevtWC;				// save original subevent wc
+	if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
  
 	Int_t wordsProcessed = 0;				 // words processed so far
 	Int_t nofWordsPerChn;
@@ -33,22 +34,20 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 		Int_t moduleNumber = bufHdr->moduleNumber;		 // module number
 		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
 		if (mle == NULL) {
-			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
 			cerr	<< setred
-					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong module number - "
-					<< moduleNumber
-					<< setblack << endl;
+					<< this->ClassName() << "::FillSubevent() [sevtWC=" << wordsProcessed << "]: Wrong module number - "
+					<< moduleNumber << setblack << endl;
 			return(kTRUE);
 		}
 		UInt_t runTask = bufHdr->formatDescr;				// check buffer format
 		UInt_t listMode = runTask & 0x300;					// list mode descriptor
 		if (listMode != 0x100 && listMode != 0x200) {		// normal or fast list mode
-			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong format descr", SevtData, SevtWC);
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong format descr", SevtData, origSevtWC);
 			cerr	<< setred
 					<< this->ClassName() << "::FillSubevent(): [Module "
-					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << ")] At SevtWC = "
-					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong format descriptor - 0x"
+					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+					<< wordsProcessed << "] Wrong format descriptor - 0x"
 					<< setbase(16) << runTask << setbase(10)
 					<< setblack << endl;
 			return(kTRUE);
@@ -58,10 +57,11 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 		else if (runTask == 3) nofWordsPerChn = 2;	// 0x103, 0x203 --> 2 words per chn
 		Int_t wc = bufWC;
 		if (bufWC <= 0) {
-			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong bufWC", SevtData, SevtWC);
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong bufWC", SevtData, origSevtWC);
 			cerr	<< setred
-					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong buffer WC - " << bufWC
+					<< this->ClassName() << "::FillSubevent(): [Module "
+					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+					<< wordsProcessed << "] Wrong buffer WC - " << bufWC
 					<< setblack << endl;
 			return(kTRUE);
 		}  				 // reject neg buffer wcs
@@ -73,11 +73,11 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 				DgfEventHeader * evtHdr = (DgfEventHeader *) dataPtr;	 // points to event header
 				UInt_t hitPattern = evtHdr->hitPattern;		 // get hit pattern
 				if (hitPattern & 0xFFFFFFF0) {
-					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong hit pattern", SevtData, SevtWC);
+					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong hit pattern", SevtData, origSevtWC);
 					cerr	<< setred
 							<< this->ClassName() << "::FillSubevent(): [Module "
-							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << ")] At SevtWC = "
-							<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong hit pattern - 0x"
+							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+							<< wordsProcessed << "] Wrong hit pattern - 0x"
 							<< setbase(16) << hitPattern << setbase(10)
 							<< setblack << endl;
 					return(kTRUE);
@@ -92,13 +92,12 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 							nofWordsPerChn = *((UShort_t *) dataPtr);
 							dataPtr += sizeof(UShort_t);
 							if (nofWordsPerChn <= 0 || nofWordsPerChn > kDgfMaxNofChannelWords) {
-								gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong channel wc", SevtData, SevtWC);
+								gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong channel wc", SevtData, origSevtWC);
 								cerr	<< setred
 										<< this->ClassName() << "::FillSubevent(): [Module "
-										<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << ")] At SevtWC = "
-										<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong channel wc - 0x"
-										<< setbase(16) << nofWordsPerChn << setbase(10)
-										<< setblack << endl;
+										<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+										<< wordsProcessed << "] Wrong channel wc - "
+										<< nofWordsPerChn << setblack << endl;
 								return(kTRUE);
 							}
 							nofWordsPerChn--;
