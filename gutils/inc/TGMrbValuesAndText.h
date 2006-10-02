@@ -73,6 +73,7 @@ private:
    TList            *fFlagButtons;
    TGListBox        *fListBox;
    TString          fFileName;
+   const char       *fPrompt;
    const char       *fHelpText;
    TList            *fCompList;
    Int_t            fNrows;

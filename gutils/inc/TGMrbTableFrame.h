@@ -10,7 +10,7 @@
 //                 TGMrbTableOfDoubles   -- ... pure double elements
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbTableFrame.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbTableFrame.h,v 1.8 2006-10-02 13:28:45 Otto.Schaile Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -31,8 +31,8 @@
 #include "TGLabel.h"
 #include "TGColorSelect.h"
 
-#include "TMrbString.h"
-#include "TMrbLofNamedX.h"
+//#include "TMrbString.h"
+//#include "TMrbLofNamedX.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -126,7 +126,7 @@ class TGMrbTableOfInts {
 	public:
 		TGMrbTableOfInts(const TGWindow * MainFrame, Int_t * RetValue, const Char_t * Title,
 											Int_t ItemWidth, Int_t Ncols, Int_t Nrows,
-											TArrayI & Values, Int_t Base = TMrbString::kDefaultBase,
+											TArrayI & Values, Int_t Base = 0,
 											TOrdCollection * ColumnLabels = NULL,
 											TOrdCollection * RowLabels = NULL,
 											TArrayI * Flags = NULL,
@@ -157,7 +157,7 @@ class TGMrbTableOfDoubles {
 	public:
 		TGMrbTableOfDoubles(const TGWindow * MainFrame, Int_t * RetValue, const Char_t * Title,
 											Int_t ItemWidth, Int_t Ncols, Int_t Nrows,
-											TArrayD & Values, Int_t Precision = TMrbString::kDefaultPrecision,
+											TArrayD & Values, Int_t Precision = 0,
 											TOrdCollection * ColumnLabels = NULL,
 											TOrdCollection * RowLabels = NULL,
 											TArrayI * Flags = NULL,

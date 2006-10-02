@@ -20,9 +20,11 @@ namespace std {} using namespace std;
 #include <fstream>
 
 #include "TObjString.h"
+#ifdef MARABOUVERS
 #include "TMrbLogger.h"
+#endif
 #include "TGMrbTableFrame.h"
-#include "TGMrbHelpWindow.h"
+#include "TRootHelpDialog.h"
 
 #include "SetColor.h"
 
@@ -30,8 +32,9 @@ ClassImp(TGMrbTableFrame)
 ClassImp(TGMrbTableOfInts)
 ClassImp(TGMrbTableOfDoubles)
 
+#ifdef MARABOUVERS
 extern TMrbLogger * gMrbLog;			// access to message logging
-
+#endif
 TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, const Char_t * Title,
 													Int_t ItemWidth, Int_t Ncols, Int_t Nrows,
 													TOrdCollection * Values, 
@@ -71,8 +74,9 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+#ifdef MARABOUVERS
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+#endif	
 	fWidgets = new TList;
 	fEntries = new TList;
 
@@ -107,6 +111,7 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 //   fCheck = fNrows - fRadio;
 	fCheck = 0;
 		
+#ifdef MARABOUVERS
    if(fNrows < 0) {
       gMrbLog->Err() << "Number of rows < 0, set to 0" << endl;
 	  gMrbLog->Flush("TGMrbTableFrame");
@@ -133,6 +138,29 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
       gMrbLog->Err() << "WARNING: not all values will be shown" << endl;
 	  gMrbLog->Flush("TGMrbTableFrame");
    }
+#else
+   if(fNrows < 0) {
+      cout << "Number of rows < 0, set to 0" << endl;
+      fNrows = 0;
+   }  
+   if(fNcols < 0) {
+      cout << "Number of columns < 0, set to 0" << endl;
+      fNcols = 0;
+   }  
+   if(fNrows == 0 && fNcols == 0) {
+      cout << "Number of rows and columns, setting fNrows=1" << endl;
+      fNrows = 1;
+      fNcols = 0;
+   } 
+   Int_t nvalues = Values->GetSize();
+   if(nvalues <= 0) {
+      cout << "Value array has size <= 0" << endl;
+      return;
+   }
+   if(fNrows != 0 && fNcols != 0 && fNrows*fNcols != nvalues) {
+      cout << "WARNING: not all values will be shown" << endl;
+   }
+#endif
 
    if(fNrows != 0 && fNcols == 0) fNcols = nvalues/fNrows;
    if(fNcols != 0 && fNrows == 0) fNrows = nvalues/fNcols;
@@ -168,8 +196,12 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    if (Flags) {
       fl1 = 1;
       if(Flags->GetSize() < fNrows) {
+#ifdef MARABOUVERS
 		gMrbLog->Err() << "Not enough flags in checkbutton array" << endl;
 	  	gMrbLog->Flush("TGMrbTableFrame");
+#else
+      cout << "Not enough flags in checkbutton array" << endl;
+#endif
          fl1 = 0;
       }
 	   if(Flags->GetSize() >= 2*fNrows) {
@@ -549,7 +581,8 @@ Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-  switch(GET_MSG(MsgId)) {
+   if ( Param2) ; // keep compiler quiet
+   switch(GET_MSG(MsgId)) {
       case kC_COMMAND:
          switch(GET_SUBMSG(MsgId)) {
            case kCM_BUTTON:
@@ -576,9 +609,11 @@ Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
                      TString temp(fHelpText);
                      Int_t nl = temp.CountChar('\n');
                      nl *= 15;
-                     new TGMrbHelpWindow(this, "Help Window", fHelpText, 450, nl);
-                     }
+                     TRootHelpDialog * hd = new TRootHelpDialog(this, "HelpDialog", 450, nl+20);
+                     hd->SetText(fHelpText);
+                     hd->Popup();
                      break;
+                    }
                   case kTableFrameAll_1:
 					{
 						TGCheckButton *chkb;
@@ -690,12 +725,12 @@ TGMrbTableOfInts::TGMrbTableOfInts(const TGWindow * Window, Int_t * RetValue, co
 
 	TOrdCollection * entries = new TOrdCollection();		// TGMrbTableFrame needs a collection of strings
 
+   if (Base) ; // keep compiler quiet
 	Int_t idx = 0;
 	for (Int_t col = 0; col < Ncols; col++) {
 		for (Int_t row = 0; row < Nrows; row++) {
-			TMrbString s(Values[idx], 0, Base);				// convert integer to string
-			os = new TObjString(s.Data());					// wrap TObject around it
-			entries->Add((TObject *) os);					// add to collection of strings
+			os = new TObjString(Form("%d", Values[idx]));	// wrap TObject around it
+			entries->Add((TObject *) os);					   // add to collection of strings
 			idx++;
 		}
 	}
@@ -709,8 +744,9 @@ TGMrbTableOfInts::TGMrbTableOfInts(const TGWindow * Window, Int_t * RetValue, co
 	for (Int_t col = 0; col < Ncols; col++) {
 		for (Int_t row = 0; row < Nrows; row++) {
 			os = (TObjString *) entries->At(idx);			// get (modified) string
-			TMrbString s(os->GetString().Data());			// make it an extended TMrbString
-			s.ToInteger(Values[idx]);						// convert to integer
+//			TMrbString s(os->GetString().Data());			// make it an extended TMrbString
+//			s.ToInteger(Values[idx]);						// convert to integer
+         Values[idx] = atoi(os->GetString().Data());
 			idx++;
 		}
 	}
@@ -755,12 +791,11 @@ TGMrbTableOfDoubles::TGMrbTableOfDoubles(const TGWindow * Window, Int_t * RetVal
 	TObjString * os;
 
 	TOrdCollection * entries = new TOrdCollection();	// TGMrbTableFrame needs a collection of strings
-
+   if (Precision) ; // keep compiler quiet
 	Int_t idx = 0;
 	for (Int_t col = 0; col < Ncols; col++) {
 		for (Int_t row = 0; row < Nrows; row++) {
-			TMrbString s(Values[idx], 0, Precision);	// convert double to string
-			os = new TObjString(s.Data());				// wrap TObject around it
+			os = new TObjString(Form("%g", Values[idx]));				// wrap TObject around it
 			entries->Add((TObject *) os);				// add to collection of strings
 			idx++;
 		}
@@ -775,8 +810,9 @@ TGMrbTableOfDoubles::TGMrbTableOfDoubles(const TGWindow * Window, Int_t * RetVal
 	for (Int_t col = 0; col < Ncols; col++) {
 		for (Int_t row = 0; row < Nrows; row++) {
 			os = (TObjString *) entries->At(idx);		// get (modified) string
-			TMrbString s(os->GetString().Data());		// make it an extended TMrbString
-			s.ToDouble(Values[idx]);					// convert to double
+//			TMrbString s(os->GetString().Data());		// make it an extended TMrbString
+//			s.ToDouble(Values[idx]);					// convert to double
+         Values[idx] = atof(os->GetString().Data());
 			idx++;
 		}
 	}

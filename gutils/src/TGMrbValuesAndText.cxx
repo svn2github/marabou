@@ -47,8 +47,9 @@ namespace std {} using namespace std;
 // facility                                                              //
 //                                                                       //
 // The meaning of the requested values are stored in the first 11        //
-// characters terminated by _ or + of the row labels as follows:         //
-//                                                                       //
+// characters terminated by _, + of the row labels as follows:           //
+// The termination char _, + determine if the dialog entry starts        //
+// on new row: _: start new row, +: continue on same row                 //
 // 																							 //
 // StringValue : Text string															 //
 // PlainShtVal : Short_t																 //
@@ -79,6 +80,7 @@ namespace std {} using namespace std;
 //  TString * text:     the value of the string                          //
 //  Int_t * retval    : 0 if ok pressed, -1 if cancel                    //
 //  Int_t   win_width : Width (pixels) of the dialog  widget             //
+//                                                                       //
 //  optional arguments:                                                  //
 //                                                                       //
 // TGWindow *win        pointer to parent window								 //
@@ -231,13 +233,15 @@ EWidgetMessageTypes kC_ALIGNSEL = (EWidgetMessageTypes)1001,
 
 
 struct alignDescription_t {
-   const char* filename;
+//   const char* filename;
+   const char* pictname;
    const char* name;
    int number;
+   int seqnr;
 };
 
 static alignDescription_t  Aligns[] = {
-
+/*
    {"align13.gif","13 Top, Left",      13},
    {"align23.gif","23 Top, Middle",    23},
    {"align33.gif","33 Top, Right",     33},
@@ -247,24 +251,308 @@ static alignDescription_t  Aligns[] = {
    {"align11.gif","11 Bottom, Left",   11},
    {"align21.gif","21 Bottom, Middle", 21},
    {"align31.gif","31 Bottom, Right",  31},
-   {0, 0, 0}
+*/
+   {"align13","13 Top, Left",      13, 0},
+   {"align23","23 Top, Middle",    23, 1},
+   {"align33","33 Top, Right",     33, 2},
+   {"align12","12 Middle, Left",   12, 3},
+   {"align22","22 Middle, Middle", 22, 4},
+   {"align32","32 Middle, Right",  32, 5},
+   {"align11","11 Bottom, Left",   11, 6},
+   {"align21","21 Bottom, Middle", 21, 7},
+   {"align31","31 Bottom, Right",  31, 8},
+   {0, 0, 0, 0}
 };
+   /* XPM */
+   static char *align11[] = {
+   /* columns rows colors chars-per-pixel */
+   "20 20 2 1",
+   "  c black",
+   "% c #FDFDFE",
+   /* pixels */
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%    %%%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%%    %%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%"
+   };
+   static char *align12[] = {
+   /* columns rows colors chars-per-pixel */
+   "20 20 2 1",
+   "  c black",
+   "% c #FDFDFE",
+   /* pixels */
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%    %%%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%%    %%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%"
+   };
+   static char *align13[] = {
+   /* columns rows colors chars-per-pixel */
+   "20 20 2 1",
+   "  c black",
+   "% c #FDFDFE",
+   /* pixels */
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%    %%%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%      %%%%%%%%%%%%%",
+   "%%    %%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%"
+   };
+   static char *align21[] = {
+   /* columns rows colors chars-per-pixel */
+   "20 20 2 1",
+   "  c black",
+   "% c #FDFDFE",
+   /* pixels */
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%    %%%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%%    %%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%"
+   };
+   static char *align22[] = {
+   /* columns rows colors chars-per-pixel */
+   "20 20 2 1",
+   "  c black",
+   "% c #FDFDFE",
+   /* pixels */
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%    %%%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%%    %%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%"
+   };
+   static char *align23[] = {
+   /* columns rows colors chars-per-pixel */
+   "20 20 2 1",
+   "  c black",
+   "% c #FDFDFE",
+   /* pixels */
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%    %%%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%      %%%%%%%",
+   "%%%%%%%%    %%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%"
+   };
+   static char *align31[] = {
+   /* columns rows colors chars-per-pixel */
+   "20 20 2 1",
+   "  c black",
+   "% c #FDFDFE",
+   /* pixels */
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%    %%",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%%    %%",
+   "%%%%%%%%%%%%%%%%%%%%"
+   };
+   static char *align32[] = {
+   /* columns rows colors chars-per-pixel */
+   "20 20 2 1",
+   "  c black",
+   "% c #FDFDFE",
+   /* pixels */
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%    %%",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%%    %%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%"
+   };
+   static char *align33[] = {
+   /* columns rows colors chars-per-pixel */
+   "20 20 2 1",
+   "  c black",
+   "% c #FDFDFE",
+   /* pixels */
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%    %%",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%      %",
+   "%%%%%%%%%%%%%%    %%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%",
+   "%%%%%%%%%%%%%%%%%%%%"
+   };
+   static char **pixarr[9] = {
+      &align13[0],
+      &align23[0],
+      &align33[0],
+      &align12[0],
+      &align22[0],
+      &align32[0],
+      &align11[0],
+      &align21[0],
+      &align31[0]
+   };
 
 
 static alignDescription_t* GetAlignByNumber(int number)
 {
-   for (int i = 0; Aligns[i].filename != 0; i++) {
+   for (int i = 0; Aligns[i].number != 0; i++) {
       if (Aligns[i].number == number)
           return &Aligns[i];
    }
    return 0;
 }
 
+static const char *filetypes[] = { "All files",     "*",
+                            "ROOT files",    "*.root",
+                            "Data files",    "*.dat",
+                            "Text files",    "*.txt",
+                            "Text files",    "*.asc",
+                            "Text files",    "*.ascii",
+                            0,               0 };
+
 //______________________________________________________________________________
 TGedAlignPopup::TGedAlignPopup(const TGWindow *p, const TGWindow *m, Style_t alignStyle)
    : TGedPopup(p, m, 30, 30, kDoubleBorder | kRaisedFrame | kOwnBackground,
                GetDefaultFrameBackground())
 {
+/*
+   pixarr[0] = &align13[0];
+   pixarr[1] = &align23[0];
+   pixarr[2] = &align33[0];
+   pixarr[3] = &align12[0];
+   pixarr[4] = &align22[0];
+   pixarr[5] = &align32[0];
+   pixarr[6] = &align11[0];
+   pixarr[7] = &align21[0];
+   pixarr[8] = &align31[0];
+*/
    TGButton *b;
    fCurrentStyle = alignStyle;
 
@@ -273,9 +561,9 @@ TGedAlignPopup::TGedAlignPopup(const TGWindow *p, const TGWindow *m, Style_t ali
    SetBackgroundColor(white);
 
    SetLayoutManager(new TGTileLayout(this, 1));
-
-   for (int i = 0; Aligns[i].filename != 0; i++) {
-      AddFrame(b = new TGPictureButton(this, Aligns[i].filename,
+   for (int i = 0; Aligns[i].number != 0; i++) {
+      const TGPicture * pict = gClient->GetPicturePool()->GetPicture(Aligns[i].pictname, pixarr[i]);
+      AddFrame(b = new TGPictureButton(this, pict,
                Aligns[i].number, TGButton::GetDefaultGC()(), kSunkenFrame),
                new TGLayoutHints(kLHintsLeft, 14, 14, 14, 14));
       b->SetToolTipText(Aligns[i].name);
@@ -344,7 +632,7 @@ void TGedAlignSelect::DoRedraw()
 
    if (IsEnabled()) {
       // pattern rectangle
-
+//      cout << "TGedAlignSelect::DoRedraw() " << fPicture<< endl;
       x = fBorderWidth + 2;
       y = fBorderWidth + 2;  // 1;
       h = fHeight - (fBorderWidth * 2) - 4;  // -3;  // 14
@@ -370,7 +658,7 @@ void TGedAlignSelect::SetAlignStyle(Style_t alignStyle)
    // Set align.
 
    fAlignStyle = alignStyle;
-   gClient->NeedRedraw(this);
+//   gClient->NeedRedraw(this);
 
    if (fPicture) {
       gClient->FreePicture(fPicture);
@@ -381,9 +669,13 @@ void TGedAlignSelect::SetAlignStyle(Style_t alignStyle)
 
 //   cout << "TGedAlignSelect::SetAlignStyle " << md->filename << endl;
    if (md) {
-      fPicture = gClient->GetPicture(md->filename);
+//   cout << "TGedAlignSelect::SetAlignStyle " << fAlignStyle << " " << md->pictname << endl;
+//      fPicture = gClient->GetPicture(md->filename);
+      fPicture = gClient->GetPicturePool()->GetPicture(md->pictname, pixarr[md->seqnr]);
+//      fPicture = gClient->GetPicture(md->filename);
       SetToolTipText(md->name);
    }
+   gClient->NeedRedraw(this);
    AlignSelected(fAlignStyle);
 }
 
@@ -402,7 +694,7 @@ void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *)
 }
 //________________________________________________________________________________________
 
-enum buttonId {kIdOk = 101, kIdCancel = 102, kIdHelp = 103,
+enum buttonId {kIdOk = 101, kIdCancel = 102, kIdHelp = 103, kIdClearHist = 104,
                kIdText = 201, kIdTextValue = 301, kIdTextSelect, 
                kIdFileDialog = 4, kIdFontS, kIdCommand = 5, 
                kIdLineS, kIdArrowS, kIdAlignS, kIdMarkS, kIdFillS};
@@ -442,6 +734,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    fValPointers = val_pointers;
    fFlags = Flags;
    fText = text;
+   fPrompt = Prompt;
    fHelpText = helptext;
    const TGWindow * main = gClient->GetRoot();
    if(Win != 0)fMyWindow = Win;
@@ -452,11 +745,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    TString CancelCmd;
   
    Bool_t has_commands = kFALSE;
+   if (calling_class != NULL) {
+      this->Connect("CloseWindow()",cname, calling_class, "CloseDown()");
+   }
 //   cout << "win_width " <<win_width << endl;
 
-   TGLayoutHints * lo1 = new TGLayoutHints(kLHintsExpandX , 2, 2, 2, 2);
+   TGLayoutHints * lo1 = new TGLayoutHints(kLHintsExpandX|kLHintsCenterY , 2, 2, 2, 2);
    TGLayoutHints * lor = new TGLayoutHints( kLHintsRight , 2, 2, 2, 2);
-   TGLayoutHints * loc = new TGLayoutHints( kLHintsCenterY , 2, 2, 2, 2);
+   TGLayoutHints * locy = new TGLayoutHints( kLHintsCenterY , 2, 2, 2, 2);
    TGLayoutHints * l1 = new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 3, 3, 0, 0);
    TGLayoutHints * l2 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 5, 5, 5, 5);
    TGLayoutHints * l3 = new TGLayoutHints(kLHintsLeft | kLHintsCenterY | kLHintsExpandX, 3, 3, 0, 0);
@@ -477,6 +773,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       TGTextBuffer * tbuf;
       TString s;
       TString l;
+      TString nl;
       fNrows = fLabels->GetSize();
       if (fFlags && Flagslabel) {
          hframe = new TGCompositeFrame(this, win_width, 20, kHorizontalFrame);
@@ -497,7 +794,15 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       hframe = NULL;
       for (Int_t i= 0; i < fNrows; i++) {
          l = ((TObjString *)RowLabels->At(i))->String();
-         if (l[11] != '+' && hframe != NULL) {
+//       in multi column row save space by avoiding expandx
+         TGLayoutHints * loc = lo1;
+         if (l[11] == '-') loc = locy;
+         if (i < fNrows-1) {
+            nl =((TObjString *)RowLabels->At(i+1))->String();
+            if (nl[11] == '-') loc = locy;
+         }
+//       continue in same row if +
+         if (l[11] == '_' && hframe != NULL) {
              this->AddFrame(hframe, lo1);
              hframe = NULL;
          }
@@ -509,16 +814,17 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             TString lab(l);
             lab.Remove(0,12);
             label = new TGLabel(hframe, new TGString((const char *)lab));
-/*
-            if (l.BeginsWith("DoubleValue") || l.BeginsWith("Float_Value")
-             || l.BeginsWith("PlainIntVal") || l.BeginsWith("PlainShtVal"))
-               label->Resize(40, label->GetDefaultHeight()); 
-*/
 			   fWidgets->Add(label);
-            if (l.BeginsWith("CheckButton") || l.BeginsWith("RadioButton"))
-               hframe->AddFrame(label, l1);
-            else 
-               hframe->AddFrame(label, l1);
+            hframe->AddFrame(label, loc);
+
+//            if (l.BeginsWith("CheckButton") || l.BeginsWith("RadioButton"))
+//               hframe->AddFrame(label, l3);
+ //           else 
+//             save space but allow for non vertical align
+//               if (l[11] == '+' || l[11] == '-')
+//                  hframe->AddFrame(label, l1);
+//               else 
+//                  hframe->AddFrame(label, l3);
          }
 
          if (l.BeginsWith("CheckButton")) {
@@ -527,22 +833,22 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             if (state != 0) cbutton->SetState(kButtonDown);
             else                    cbutton->SetState(kButtonUp);
 //            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
-//            cbutton->Resize(win_width / 4, cbutton->GetDefaultHeight());
+            cbutton->Resize(win_width / 6, cbutton->GetDefaultHeight());
             fWidgets->Add(cbutton);
             fEntries->Add(cbutton);
             cbutton->Associate(this);
-            hframe->AddFrame(cbutton, loc);
+            hframe->AddFrame(cbutton, locy);
          } else if (l.BeginsWith("RadioButton")) {
             cbutton = new TGRadioButton(hframe, new TGHotString(""), i);
             Int_t state = *(Int_t*)fValPointers[i];
             if (state != 0) cbutton->SetState(kButtonDown);
             else                    cbutton->SetState(kButtonUp);
 //            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
-//            cbutton->Resize(win_width / 4, cbutton->GetDefaultHeight());
+            cbutton->Resize(win_width / 6, cbutton->GetDefaultHeight());
             fWidgets->Add(cbutton);
             fEntries->Add(cbutton);
             cbutton->Associate(this);
-            hframe->AddFrame(cbutton, lor);
+            hframe->AddFrame(cbutton, locy);
          } else if (l.BeginsWith("ColorSelect")) {
             Int_t col = GetColorPixelByInd(*(Color_t*)fValPointers[i]);
             cbutton = new TGColorSelect(hframe, col, i);
@@ -720,11 +1026,21 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    if (hframe != NULL) {
       this->AddFrame(hframe, lo1);
    }
+   TGTextButton *b;
 // create Prompt label and textentry widget
     
    if (fText) {
-      TGLabel *label = new TGLabel(this, Prompt);
+      hframe = new TGCompositeFrame(this, win_width, 20, kHorizontalFrame);
+      TGLabel *label = new TGLabel(hframe, Prompt);
       fWidgets->AddFirst(label);
+      hframe->AddFrame(label, lo1);
+      if (FileName != NULL) {
+         b = new TGTextButton(hframe, "Clear history", kIdClearHist);
+         fWidgets->AddFirst(b);
+         b->Associate(this);
+         hframe->AddFrame(b, lor);
+      }
+      this->AddFrame(hframe, l2);
 
       TGTextBuffer *tbuf = new TGTextBuffer(256);  // will be deleted by TGtextEntry
       tbuf->AddText(0, text->Data());
@@ -734,8 +1050,6 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       fTE->Associate(this);
       fWidgets->AddFirst(fTE);
 
-
-      this->AddFrame(label, l1);
       this->AddFrame(fTE, l2);
 
       // optionally create a ListBox from which items can be selected
@@ -782,7 +1096,6 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    // create OK and Cancel buttons in their own frame (hf)
 
    UInt_t  nb = 0, width = 0, height = 0;
-   TGTextButton *b;
    if (!has_commands) {
       b = new TGTextButton(hf, "&Apply", kIdOk);
       fWidgets->AddFirst(b);
@@ -790,12 +1103,12 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       hf->AddFrame(b, l3);
       height = b->GetDefaultHeight();
       width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
-   }
-   b = new TGTextButton(hf, "&Cancel", kIdCancel);
-   fWidgets->AddFirst(b);
-   if (has_commands) {
+      b = new TGTextButton(hf, "Cancel", kIdCancel);
+   } else {
+      b = new TGTextButton(hf, "Close Dialog", kIdCancel);
       b->Connect("Clicked()", cname, calling_class, "CloseDown()");
-  }
+   } 
+   fWidgets->AddFirst(b);
    b->Associate(this);
    hf->AddFrame(b, l3);
    height = b->GetDefaultHeight();
@@ -894,31 +1207,41 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
              case kCM_BUTTON:
                 {
                 if (parm1 == kIdOk) {
-                      // here copy the string from text buffer to return variable
-                      if (fText) *fText = fTE->GetBuffer()->GetString();
-                      if (fFileName && fFileName.Length() > 0) this->SaveList();
-                      StoreValues();
-                      *fReturn = 0;
-                      CloseWindow();
-//                      break;
+                   // here copy the string from text buffer to return variable
+                   if (fText) *fText = fTE->GetBuffer()->GetString();
+                   if (fFileName && fFileName.Length() > 0) this->SaveList();
+                   StoreValues();
+                   *fReturn = 0;
+                   CloseWindow();
+//                 break;
 
+                } else if (parm1 == kIdClearHist) {
+                   if (fFileName && fFileName.Length() > 0) {
+                      TString cmd(fFileName);
+                      cmd.Prepend("rm ");
+                      gSystem->Exec(cmd);
+                      fListBox->RemoveAll();
+                      gClient->NeedRedraw(fListBox);
+ 
+                   }
                 } else if (parm1 == kIdCancel) {
-                      CloseWindow();
-                      return kTRUE;
+                    CloseWindow();
+                    return kTRUE;
 //                    break;
                 } else if (parm1 == kIdHelp) {
-                      TRootHelpDialog * hd = new TRootHelpDialog(this, "Help on TGraphDialog", 400, 300);
-                      hd->SetText(fHelpText);
-                      hd->Popup();
-//                      new TGMrbHelpWindow(this, "HistPresent Help", fHelpText, 400, 300);
-//                      break;
+                    TString temp(fHelpText);
+                    Int_t nl = temp.CountChar('\n');
+                    nl *= 15;
+                    TRootHelpDialog * hd = new TRootHelpDialog(this, fPrompt, 450, nl+20);
+                    hd->SetText(fHelpText);
+                    hd->Popup();
                 } else {
                    Int_t id = parm1 / 100;
                    if (id == kIdFileDialog) {
                       Int_t entryNr = parm1%100;
                       TGFileInfo* fi = new TGFileInfo();
-                      const char * filter[] = {"data files", "*", 0, 0};
-                      fi->fFileTypes = filter;
+//                      const char * filter[] = {"data files", "*", 0, 0};
+                      fi->fFileTypes = filetypes;
    						 new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
   						    if (fi->fFilename) { 
                          TString fn(fi->fFilename);
@@ -1337,6 +1660,7 @@ TGMrbValuesAndText::~TGMrbValuesAndText()
 
 void TGMrbValuesAndText::CloseWindow()
 {
+   Emit("CloseDown()");
    DeleteWindow();
 }
 //_______________________________________________________________________________________
