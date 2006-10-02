@@ -20,7 +20,7 @@
 #include "TAttImage.h"
 #include "TContextMenu.h"
 #include "TCanvasImp.h"
-//#include "TRootCanvas.h"
+#include "TRootCanvas.h"
 #include "TObjString.h"
 #include "TGMsgBox.h"
 #include <TGClient.h>
