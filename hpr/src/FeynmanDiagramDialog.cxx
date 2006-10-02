@@ -35,11 +35,11 @@ FeynmanDiagramDialog::FeynmanDiagramDialog()
 
    labels->Add(new TObjString("DoubleValue_WaveL"));
    valp[ind++] = &fWaveLength;
-   labels->Add(new TObjString("DoubleValue+Amp"));
+   labels->Add(new TObjString("DoubleValue-Amp"));
    valp[ind++] = &fAmplitude;
    labels->Add(new TObjString("ArrowSelect_AShape"));
    valp[ind++] = &fArrowStyle;
-   labels->Add(new TObjString("Float_Value+ASize"));
+   labels->Add(new TObjString("Float_Value-ASize"));
    valp[ind++] = &fArrowSize;
    labels->Add(new TObjString("ColorSelect_Color"));
    valp[ind++] = &fColor;

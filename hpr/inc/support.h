@@ -87,10 +87,7 @@ extern Int_t  GetObjects(TList &, TDirectory *, const char *);
 extern TH1 *  GetTheHist(TVirtualPad * pad);
 
 void     Show_Fonts();
-void     ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode,
-                       TGWindow* win = 0);
 void     CalibrateAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
-void     RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
 void     Canvas2LP(TCanvas * canvas, Bool_t to_printer = kTRUE, TGWindow * = 0);
 void     Canvas2RootFile(HTCanvas * canvas, TGWindow * win = 0);
 TEnv *   GetDefaults(const char *, Bool_t mustexist = kTRUE);

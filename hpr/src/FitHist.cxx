@@ -55,7 +55,6 @@
 #include "FitHist_Help.h"
 #include "CmdListEntry.h"
 #include "HistPresent.h"
-#include "FhMarker.h"
 #include "FhContour.h"
 #include "support.h"
 #include "TGMrbTableFrame.h"
@@ -72,9 +71,10 @@
 extern TFile *fWorkfile;
 extern const char *fWorkname;
 extern Int_t nHists;
-Int_t nPeaks;
-Double_t gTailSide;             // in fit with tail determines side: 1 left(low), -1 high(right)
-Float_t gBinW;
+//Int_t nPeaks;
+//Double_t gTailSide;             // in fit with tail determines side: 1 left(low), -1 high(right)
+//Float_t gBinW;
+extern Float_t gBinW;
 
 enum dowhat { expand, projectx, projecty, statonly, projectf,
        projectboth , profilex, profiley};
@@ -116,7 +116,6 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fRangeUpX = 0;
    fRangeLowY = 0;
    fRangeUpY = 0;
-   fLinBgConst = fLinBgSlope = 0;
    fOrigLowX = hist->GetXaxis()->GetXmin();
    fOrigUpX  = hist->GetXaxis()->GetXmax();
    fOrigLowY = hist->GetYaxis()->GetXmin();
@@ -153,7 +152,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
       fAllWindows = hp->GetWindowList();
       fAllCuts = hp->GetCutList();
    }
-   markers = new TObjArray(0);
+//   fMarkers = new FhMarkerList(0);
    peaks = new TObjArray(0);
    fDimension = hist->GetDimension();
 //  look for cuts and windows
@@ -208,7 +207,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fSerialPx = 0;
    fSerialPy = 0;
    fSerialPf = 0;
-   func_numb = 0;
+   fFuncNumb = 0;
    fCutNumber = 0;
    wdw_numb = 0;
    if (env.GetValue("HistPresent.FitOptMinos", 0) != 0) fCallMinos = kTRUE;
@@ -279,7 +278,7 @@ FitHist::~FitHist()
    }
 
    if (cHist) {
-      cHist->ClearFitHist();
+      cHist->SetFitHist(NULL);
       if (fCanvasIsAlive) {
 //         cout << " deleting " << cHist->GetName() << endl;
          delete cHist;
@@ -288,8 +287,9 @@ FitHist::~FitHist()
    }
    if (fCutPanel && fCutPanel->TestBit(TObject::kNotDeleted))
       delete fCutPanel;
-   if (markers)
-      delete markers;
+//   if (fMarkers)
+//      ClearMarks();
+//      delete fMarkers;
    if (fActiveCuts)
       delete fActiveCuts;
    if (peaks)
@@ -925,14 +925,16 @@ void FitHist::handle_mouse()
       	   gVirtualX->DrawBox(px1old, py1old, px2old, py2old, TVirtualX::kHollow);
       	   gVirtualX->SetLineColor(-1);
          } else {
+            ClearMarks();
+            fMarkers = new FhMarkerList();
+            fSelHist->GetListOfFunctions()->Add(fMarkers);
             if (is2dim) {
                box = new TBox(XlowEdge, YlowEdge, XupEdge, YupEdge);
                box->SetLineColor(-1);
                box->SetFillStyle(0);
                box->Draw();
-               ClearMarks();
-               markers->Add(new FhMarker(XlowEdge, YlowEdge, 28));
-               markers->Add(new FhMarker(XupEdge,  YupEdge, 28));
+               fMarkers->Add(new FhMarker(XlowEdge, YlowEdge, 28));
+               fMarkers->Add(new FhMarker(XupEdge,  YupEdge, 28));
                PaintMarks();
             } else {
             	lowedge = new TLine(XlowEdge, hist->GetYaxis()->GetXmin(), 
@@ -941,9 +943,8 @@ void FitHist::handle_mouse()
                                    XupEdge, hist->GetYaxis()->GetXmax());
          	   lowedge->SetLineColor(4); lowedge->Draw();  
          	   upedge->SetLineColor(4); upedge->Draw(); 
-               ClearMarks();
-               markers->Add(new FhMarker(XlowEdge, yy, 28));
-               markers->Add(new FhMarker(XupEdge,  yy, 28));
+               fMarkers->Add(new FhMarker(XlowEdge, yy, 28));
+               fMarkers->Add(new FhMarker(XupEdge,  yy, 28));
                PaintMarks();
             }
          }
@@ -1799,8 +1800,8 @@ void FitHist::WriteOutCanvas()
                      drawopt += "e1";
                   hi->SetOption(drawopt.Data());
                   if (hp->fFill1Dim) {
-                     hi->SetFillStyle(1001);
-                     hi->SetFillColor(hp->f1DimFillColor);
+                     hi->SetFillStyle(hp->fHistFillStyle);
+                     hi->SetFillColor(hp->fHistFillColor);
                   } else
                      hi->SetFillStyle(0);
                }
@@ -2063,8 +2064,13 @@ void FitHist::Set2Marks()
       x2 = xyvals[1];
       y1 = xyvals[2];
       y2 = xyvals[3];
-      markers->Add(new FhMarker(x1, y1, 28));
-      markers->Add(new FhMarker(x2, y2, 28));
+      fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+      if (fMarkers == NULL) {
+         fMarkers = new  FhMarkerList();
+         fSelHist->GetListOfFunctions()->Add(fMarkers);
+      }
+      fMarkers->Add(new FhMarker(x1, y1, 28));
+      fMarkers->Add(new FhMarker(x2, y2, 28));
    }
 //   if (xyvals) delete [] xyvals;
    if (row_lab) {
@@ -2083,8 +2089,17 @@ void FitHist::AddMark(TPad * pad, Int_t px, Int_t py)
       cout << " its not us " << endl;
       return;
    }
+//   cout << " FitHist::AddMark " << endl;
+   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers == NULL) {
+ //     cout << "new  FhMarkerList()  " << endl;
+      fMarkers = new  FhMarkerList();
+      fSelHist->GetListOfFunctions()->Add(fMarkers);
+   }
    x = pad->AbsPixeltoX(px);
    y = pad->AbsPixeltoY(py);
+   if (pad->GetLogx()) x = TMath::Power(10, x);
+   if (pad->GetLogy()) y = TMath::Power(10, y);
    binx = XBinNumber(fSelHist, x);
    if (is2dim(fOrigHist))
       biny = YBinNumber(fSelHist, y);
@@ -2096,7 +2111,7 @@ void FitHist::AddMark(TPad * pad, Int_t px, Int_t py)
    m->SetMarkerColor(6);
 //   m->Paint();
 //   m->Print();
-   markers->Add(m);
+   fMarkers->Add(m);
 	PaintMarks();
 	
 }
@@ -2105,16 +2120,17 @@ void FitHist::AddMark(TPad * pad, Int_t px, Int_t py)
 void FitHist::ClearMarks()
 {
 //  
-   FhMarker *ti;
-   TIter next(markers);
+   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers == NULL ) return;
+   fSelHist->GetListOfFunctions()->Remove(fMarkers);
+   TIter next(fMarkers);
+   FhMarker * ti;
    while ( (ti = (FhMarker *) next()) ) {
-//         cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
-//         FhMarker *m = new FhMarker(ti->GetValX(), ti->GetValY(), 28);
       cHist->GetListOfPrimitives()->Remove(ti);
    }
 
-   markers->Delete();
-//   markers->Clear();
+   fMarkers->Delete();
+//   fMarkers->Clear();
    cHist->Modified(kTRUE);
    cHist->Update();
 };
@@ -2145,31 +2161,37 @@ Int_t FitHist::GetMarks(TH1 * hist)
       cout << "Null pointer to hist" << endl;
       return -1;
    }
-   nval = markers->GetEntries();
+   fMarkers = (FhMarkerList*)hist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers == NULL) {
+      fMarkers = new  FhMarkerList();
+      hist->GetListOfFunctions()->Add(fMarkers);
+   }
+
+   nval = fMarkers->GetEntries();
    if (nval == 1) {
       if (fSelInside)
-         markers->Add(new FhMarker(xmin, ymin, 30));
+         fMarkers->Add(new FhMarker(xmin, ymin, 30));
       else
-         markers->Add(new FhMarker(xmax, ymax, 30));
+         fMarkers->Add(new FhMarker(xmax, ymax, 30));
       nval = 2;
    }
    if (nval == 0) {
-      markers->Add(new FhMarker(xmin, ymin, 30));
-      markers->Add(new FhMarker(xmax, ymax, 30));
+      fMarkers->Add(new FhMarker(xmin, ymin, 30));
+      fMarkers->Add(new FhMarker(xmax, ymax, 30));
       nval = 2;
    }
-   markers->Sort();
+   fMarkers->Sort();
    return nval;
 };
 //_______________________________________________________________________________________
 
 void FitHist::PrintMarks()
 {
-   int nval = markers->GetEntries();
-   if (nval > 0) {
-      cout << "--- Current markers --------------" << endl;
+   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers != NULL && fMarkers->GetEntries() > 0) {
+      cout << "--- Current fMarkers --------------" << endl;
       FhMarker *ti;
-      TIter next(markers);
+      TIter next(fMarkers);
       while ( (ti = (FhMarker *) next()) ) {
          cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
       }
@@ -2181,15 +2203,13 @@ void FitHist::PrintMarks()
 
 void FitHist::PaintMarks()
 {
-   int nval = markers->GetEntries();
-   if (nval > 0) {
-//      cout << "--- Current markers --------------" << endl;
+   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers != NULL && fMarkers->GetEntries() > 0) {
+//      cout << "--- Current fMarkers --------------" << endl;
       FhMarker *ti;
-      TIter next(markers);
+      TIter next(fMarkers);
       cHist->cd();
       while ( (ti = (FhMarker *) next()) ) {
-//         cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
-//         FhMarker *m = new FhMarker(ti->GetValX(), ti->GetValY(), 28);
          ti->Draw();
       }
       cHist->Modified(kTRUE);
@@ -2287,7 +2307,12 @@ void FitHist::GetRange()
       else
          yold = 0;
    }
-   markers->Add(new FhMarker(xold, yold, 2));
+   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers == NULL) {
+      fMarkers = new  FhMarkerList();
+      fSelHist->GetListOfFunctions()->Add(fMarkers);
+   }
+   fMarkers->Add(new FhMarker(xold, yold, 2));
    xold = hist->GetXaxis()->GetXmax();
    if (is2dim(hist))
       yold = hist->GetYaxis()->GetXmax();
@@ -2297,7 +2322,7 @@ void FitHist::GetRange()
       else
          yold = 0;
    }
-   markers->Add(new FhMarker(xold, yold, 2));
+   fMarkers->Add(new FhMarker(xold, yold, 2));
    Expand();
 }
 
@@ -2328,7 +2353,8 @@ void FitHist::Superimpose(Int_t mode)
 //   Int_t nh = hp->GetSelectedHist()->GetSize();
    if (hp->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
       if (hp->GetSelectedHist()->GetSize() > 1) {
-         WarnBox("More than 1 selection, take first");
+         WarnBox("More than 1 selection,\n please choose only one");
+         return;
       }
       hist = hp->GetSelHistAt(0);
    } else
@@ -2341,6 +2367,11 @@ void FitHist::Superimpose(Int_t mode)
 //      return;
 //   }
    if (hist) {
+      if (hist->GetDimension() != fSelHist->GetDimension()) {
+         WarnBox("Dimensions of histograms differ");
+         return;
+      }
+      
       TGaxis *naxis = 0;
       TH1 *hdisp = hist;
       if (mode == 1 && !is2dim(fSelHist)) {	// scale
@@ -2438,8 +2469,10 @@ void FitHist::GetLimits()
    fBinY_2 = 0;
 
    FhMarker *p;
-   TIter next(markers);
-//   markers->Sort();
+   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers == NULL) return;
+   TIter next(fMarkers);
+//   fMarkers->Sort();
    while ( (p = (FhMarker *) next()) ) {
       inp = fSelHist->GetXaxis()->FindBin(p->GetX());
 //      inp = XBinNumber(fSelHist, p->GetX());
@@ -3451,8 +3484,8 @@ void FitHist::Draw1Dim()
    if (hp->fShowErrors)
       drawopt += "e1";
    if (hp->fFill1Dim && fSelHist->GetNbinsX() < 50000) {
-      fSelHist->SetFillStyle(1001);
-      fSelHist->SetFillColor(hp->f1DimFillColor);
+      fSelHist->SetFillStyle(hp->fHistFillStyle);
+      fSelHist->SetFillColor(hp->fHistFillColor);
    } else
       fSelHist->SetFillStyle(0);
    fSelHist->SetOption(drawopt.Data());
@@ -3538,27 +3571,18 @@ void FitHist::Draw2Dim()
    if (hp->GetShowTitle())
       gStyle->SetTitleFont(hp->fTitleFont);
 //   cout << "DrawOpt2Dim: " << hp->fDrawOpt2Dim->Data() << endl;
-   fSelHist->Draw();
+   fSelHist->Draw(hp->fDrawOpt2Dim->Data());
    fSelHist->SetOption(hp->fDrawOpt2Dim->Data());
    fSelHist->SetDrawOption(hp->fDrawOpt2Dim->Data());
    fSelHist->SetStats(0);
    if (hp && hp->GetShowStatBox()) fSelHist->SetStats(1);
    fSelHist->SetOption(hp->fDrawOpt2Dim->Data());
+   if (gROOT->GetForceStyle()) {
+      fSelHist->SetLineColor(gStyle->GetHistLineColor());
+   }
    DrawCut();
-//   cout << "SelHistHist->GetListOfFunctions()" << endl;
-//	fSelHist->GetListOfFunctions()->ls();
-//   TPaletteAxis *p =
-//   (TPaletteAxis*)fSelHist->GetListOfFunctions()->FindObject("palette"); 
-//	cout << "fSelHist " << fSelHist<< endl;
-//	if (p) p->Dump();
    TList *lof = fOrigHist->GetListOfFunctions();
    if (lof) {
-//      cout << "OrigHist->GetListOfFunctions()" << endl;
-//      p = (TPaletteAxis*)fSelHist->GetListOfFunctions()->FindObject("palette");  
-//	   cout << "fOrigHist " << fOrigHist<< endl;
-//	   if (p) p->Dump();
-//      lof->ls();
-//      TF1 *p;
       TObject *p;
       TIter next(lof);
       while ( (p = (TObject *) next()) ) {
@@ -3649,8 +3673,8 @@ void FitHist::UpdateDrawOptions()
    	if (hp->fShowErrors)
       	drawopt += "e1";
    	if (hp->fFill1Dim && fSelHist->GetNbinsX() < 50000) {
-      	fSelHist->SetFillStyle(1001);
-      	fSelHist->SetFillColor(hp->f1DimFillColor);
+      	fSelHist->SetFillStyle(hp->fHistFillStyle);
+      	fSelHist->SetFillColor(hp->fHistFillColor);
    	} else
       	fSelHist->SetFillStyle(0);
 //   cout << "UpdateDrawOptions() " << drawopt.Data() << endl;

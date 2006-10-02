@@ -1141,6 +1141,7 @@ void TSplineX::Paint(Option_t * opt)
       pl->SetLineColor(GetLineColor());
       pl->SetLineWidth(GetLineWidth());
       fDPolyLines.Add(pl);
+//      cout << "GetFillStyle() " << GetFillStyle() << endl;
       if (fParallelFill || GetFillStyle() != 0) {     
          pl->SetFillStyle(GetFillStyle());
          pl->SetFillColor(GetFillColor());
@@ -1709,7 +1710,8 @@ void ControlGraph::SetControlPoint(Int_t ipoint, Double_t x, Double_t y, Float_t
    if (ipoint >=0 && ipoint < fShapeFactors.GetSize() ) {
       fShapeFactors[ipoint] = sfactor;
       SetPoint(ipoint, x, y);
-//      cout << "Set ShapeFactor[" << ipoint << "] = " << sfactor << endl;
+      fParent->ComputeSpline();
+ //      cout << "Set ShapeFactor[" << ipoint << "] = " << sfactor << endl;
    }
 }
 //_____________________________________________________________________________________
@@ -1752,9 +1754,8 @@ Int_t ControlGraph::RemovePoint()
 {
 // This method is invoked from the ContextMenu
 // When removing a point also its ShapeFactor must be removed 
-
    Int_t npoints_before =  GetN();
-   cout << "ControlGraph::RemovePoint() " << gPad->GetEventX() 
+   cout << "ControlGraph::RemovePoint() at: " << gPad->GetEventX() 
         << " " << gPad->GetEventY() << endl;
 
    Int_t ipoint = TGraph::RemovePoint();
@@ -1772,44 +1773,6 @@ Int_t ControlGraph::RemovePoint()
    }
    return ipoint;
 }
-//_____________________________________________________________________________________
-/*
-void ControlGraph::EditControlGraph() 
-{
-// This method is invoked from the ContextMenu
-   if (!fParent) return;
-   TOrdCollection * col_lab = new TOrdCollection;
-   col_lab->Add(new TObjString("X"));
-   col_lab->Add(new TObjString("Y"));
-   col_lab->Add(new TObjString("Shape F"));
-//   col_lab->Add(new TObjString("cc"));
-   Int_t nrows = GetN();
-   Int_t ncols = 3;
-
-   TArrayD values(ncols * nrows);
-//   TArrayI flags(nrows);
-   Double_t * x = GetX();
-   Double_t * y = GetY();
-   for(Int_t i = 0; i < nrows; i++) {
-      values[i] = x[i];
-      values[i + nrows] = y[i];
-      values[i + 2 * nrows] = fShapeFactors[i];
-   }
-   Int_t ret = 0;
-   Int_t itemwidth = 100;
-   Int_t prec = 3;
-   new TGMrbTableOfDoubles(0, &ret, "Edit Spline", itemwidth,
-                          ncols, nrows, values, prec, 
-                          col_lab);
-   if (ret < 0) return;
-   for(Int_t i = 0; i < nrows; i++) {
-      x[i] = values[i];
-      y[i] = values[i + nrows];
-      fShapeFactors[i] = values[i + 2 * nrows];
-   }
-   fParent->ComputeSpline();
-}
-*/
 //_____________________________________________________________________________________
 
 void ControlGraph::ControlGraphMixer() 

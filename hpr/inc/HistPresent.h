@@ -26,16 +26,19 @@ namespace std {} using namespace std;
 enum e_HsOp {kHsOp_None, kHsOp_And, kHsOp_Or, kHsOp_Not};
 const Int_t MAXCAN=10;
 class FitHist;
+class GroupOfHists;
  
 class HistPresent : public TNamed , public TQObject {
 
 friend class FitHist;
+friend class GEdit;
 friend class HTCanvas;
 friend class HandleMenus;
+friend class GroupOfHists;
 
 protected:
    TCanvas *cHPr;                 // the main canvas
-   TCanvas *filelist;                 // the main canvas
+   HTCanvas *fFileList;                 // the main canvas
    TFile       *fRootFile;        // root file
    TH1 * fCurrentHist;
    TRootCanvas *fMainCanvas;
@@ -104,18 +107,7 @@ protected:
    Int_t fFill1Dim;    
    Int_t fFill2Dim;
    Int_t f2DimBackgroundColor;
-   Int_t f1DimFillColor;
 
-   Int_t fFitOptLikelihood;  
-   Int_t fFitOptQuiet;  
-   Int_t fFitOptVerbose;  
-   Int_t fFitOptMinos;  
-   Int_t fFitOptErrors1;  
-   Int_t fFitOptIntegral;  
-   Int_t fFitOptNoDraw;  
-   Int_t fFitOptAddAll; 
-   Int_t fFitOptKeepParameters; 
-   Int_t fFitOptUseLinBg;
    TString  fGraphFile;    
    TString  fDrawOptGraph;    
    TString * fDrawOpt2Dim;    
@@ -161,7 +153,7 @@ protected:
    Double_t fProjectBothRatio;
    Double_t fLogScaleMin;
    Double_t fLinScaleMin;
-   Double_t fAutoUpdateDelay;
+   Int_t    fAutoUpdateDelay;
    Double_t fPeakThreshold;
    Int_t    fPeakMwidth;
    Int_t    fLiveStat1dim;
@@ -360,6 +352,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void Editrootrc();
    void CloseAllCanvases();
    void CloseHistLists();
+   void HandleDeleteCanvas(HTCanvas * htc);
    void SetRebinValue(Int_t);               // 
    void SetRebinMethod();               // 
    void DiffHist();                 // 
@@ -394,9 +387,6 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void SetGraphOptions(TGWindow * win = 0, TCanvas * ca = 0);  
    void SetVariousOptions(TGWindow * win = 0, FitHist * fh = 0);
    void SetWindowSizes(TGWindow * win = 0, FitHist * fh = 0);
-   void SetFontsAndColors(TGWindow * win = 0, FitHist * fh = 0);
-   void SetNumericalOptions(TGWindow * win = 0, FitHist * fh = 0);
-   void SetFittingOptions(TGWindow * win = 0, FitHist * fh = 0);
 
    void SetStatDefaults(TCanvas *);
 //   void CheckAutoExecFiles();
@@ -463,7 +453,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    TList* GetWindowList(){return fAllWindows;};
    TList* GetFunctionList(){return fAllFunctions;};
    TList* GetCutList(){return fAllCuts;};
-   TH1* GetSelHistAt(Int_t pos = 0, TList * hl = 0, Bool_t try_memory = kFALSE);
+   TH1*   GetSelHistAt(Int_t pos = 0, TList * hl = 0, Bool_t try_memory = kFALSE);
    TGraph* GetSelGraphAt(Int_t pos = 0);
    void TurnButtonGreen(TVirtualPad **);
    TList* GetSelections(){return fSelectHist;};
@@ -480,10 +470,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    Bool_t GetShowPSFile(){return fShowPSFile;};
    Bool_t GetShowFittedCurves(){return fShowFittedCurves;};
    Bool_t GetEnableCalibration(){return fEnableCalibration;};
-   Double_t GetAutoUpdateDelay(){return fAutoUpdateDelay;};
+   Int_t  GetAutoUpdateDelay(){return fAutoUpdateDelay;};
    TMrbHelpBrowser * GetHelpBrowser(){return fHelpBrowser;};
-   void auto_exec_1();
-   void auto_exec_2();
    void WarnBox(const char *);
    void CleanWindowLists(TH1* hist);
 //   void RemoveFromLists(TObject * obj);

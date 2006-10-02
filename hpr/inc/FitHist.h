@@ -15,6 +15,7 @@
 #include "TVirtualPad.h"
 #include "HTCanvas.h"
 #include "TRootCanvas.h"
+#include "FhMarker.h"
 
 //#include "SetColor.h"
 //#include "TMrbWdw.h"
@@ -68,7 +69,7 @@ private:
    TList *fAllCuts;
    TList *fPeaks;
    TList *fActiveCuts;
-   TObjArray *markers;
+   FhMarkerList *fMarkers;
    TObjArray *peaks;
    TList *fCmdLine;
    Int_t fExpInd;
@@ -76,7 +77,7 @@ private:
    Int_t fSerialPy;
    Int_t fSerialPf;
    Int_t fSerialRot;
-   Int_t func_numb;
+   Int_t fFuncNumb;
    Int_t fCutNumber;
    Int_t wdw_numb;
    Int_t fColSuperimpose;
@@ -101,8 +102,6 @@ private:
    TString fFitSliceYMacroName;
    Int_t fFirstUse; 
    Bool_t fDeleteCalFlag;
-   Double_t fLinBgConst;
-   Double_t fLinBgSlope;
    HTCanvas * fCutPanel;
    TableOfLabels * fTofLabels;
    Int_t fLiveStat1dim;
@@ -180,7 +179,7 @@ public:
    void PaintMarks();               // 
    void PrintMarks();               // 
    void Set2Marks();               // 
-   TObjArray* GetPointertoMarks(){return markers;};
+   TObjArray* GetPointertoMarks(){return fMarkers;};
    void AddFunctionsToHist();
 
    void MarksToWindow();               // 
@@ -212,12 +211,12 @@ public:
    void UpdateCut();                  // 
    void UpdateDrawOptions();                  // 
    Bool_t Its2dim(){return fOrigHist->InheritsFrom("TH2");};               // 
-   void FitGBg(Int_t tail, Int_t force_zero_bg =0);                      // fit gaus + lin bg
+//   void FitGBg(Int_t tail, Int_t force_zero_bg =0);  // fit gaus + lin bg max 3 peaks
+   void FitGausLBg(Int_t force_zero_bg =0);       // fit gaus + lin bg any number of peaks
    Int_t Fit1dim(Int_t, Int_t);            // fit polynoms
    Int_t Fit2dim(Int_t, Int_t);            // fit polynoms
    Int_t FitPolyHist(Int_t);               // fit polynoms hist 
    Int_t FitPolyMarks(Int_t);              // fit  polynoms to marks
-   Bool_t SetLinBg();
    Int_t FindPeaks();
    Int_t ShowPeaks();
    void  Expand();                     // expand

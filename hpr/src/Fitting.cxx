@@ -49,6 +49,7 @@
 #include "FHCommands.h"
 
 #include "FitHist.h"
+#include "FitOneDimDialog.h"
 #include "FitHist_Help.h"
 #include "CmdListEntry.h"
 #include "HistPresent.h"
@@ -65,9 +66,9 @@ extern HistPresent *hp;
 extern TFile *fWorkfile;
 extern const char *fWorkname;
 extern Int_t nHists;
-extern Int_t nPeaks;
-extern Double_t gTailSide;      // in fit with tail determines side: 1 left(low), -1 high(right)
-extern Float_t gBinW;
+//extern Int_t nPeaks;
+//extern Double_t gTailSide;      // in fit with tail determines side: 1 left(low), -1 high(right)
+//extern Float_t gBinW;
 
 enum dowhat { expand, projectx, projecty, statonly, projectf,
        projectboth };
@@ -572,774 +573,13 @@ const char *FitMacroTemplates[nFitTemplates] = {
    &Landau[0],
    &Pol2Sine[0]
 };
-//____________________________________________________________________________________ 
-
-Int_t GetGaussEstimate(TH1 * h1, Double_t bg, Int_t centbin, TArrayD & par)
-{
-   Double_t halfmax = 0.5 * (h1->GetBinContent(centbin) + bg);
-   par[1] = h1->GetBinCenter(centbin);
-   Int_t NbinX = h1->GetNbinsX();
-   Double_t sigma = 5. * h1->GetBinWidth(centbin);
-   if (halfmax <= 0.) {
-      cout << "halfmax<0" << endl;
-      par[0] = h1->GetBinContent(centbin);
-      par[2] = sigma;
-      return -1;
-   };
-   Double_t sum = 0., sumr = 0.;
-   Int_t binl = centbin, dbinl = 0 , dbin = 0;
-   while (binl > 0) {
-      Double_t cont = (Double_t) h1->GetBinContent(binl);
-      if (cont < halfmax && cont > bg) {
-         dbinl = centbin - binl;
-         break;
-      }
-      sum += (cont - bg);
-      binl--;
-   };
-   Int_t binr = centbin, dbinr = 1;
-   while (binr <= NbinX) {
-      Double_t cont = (Double_t) h1->GetBinContent(binr);
-      if (cont < halfmax && cont > bg) {
-         dbinr = binr - centbin;
-         break;
-      }
-      sumr += (cont - bg);
-      binr++;
-   };
-   if (!dbinl && !dbinr)
-      return -1;
-
-   if (dbinr && dbinr) {
-      if (dbinr > dbinl)
-         dbin = dbinl;
-      else {
-         dbin = dbinr;
-         sum = sumr;
-      };
-   } else {
-      if (dbinr) {
-         dbin = dbinr;
-         sum = sumr;
-      };
-      if (dbinr) {
-         dbin = dbinr;
-         sum = sumr;
-      };
-   };
-   sigma = dbin * h1->GetBinWidth(centbin) / 1.18;
-//  par[0]=2.* 1.25 * sum*h1->GetBinWidth(centbin)/(sigma*sq2pi);
-   par[0] = 2. * 1.25 * sum;
-   par[2] = sigma;
-   return 1;
-//  cout << "centbin, dbin" << centbin << dbin << endl;      
-};
-
-//____________________________________________________________________________________ 
-
-Int_t GetMaxBin(TH1 * h1, Int_t binl, Int_t binu)
-{
-   Double_t maxcont = 0.;
-   Int_t bin = (binu - binl) / 2;
-   if (bin <= 0) {
-      bin = -bin;
-      return bin;
-   }
-   for (Int_t i = binl; i <= binu; i++) {
-      Double_t cont = (Double_t) h1->GetBinContent(i);
-      if (cont > maxcont) {
-         maxcont = cont;
-         bin = i;
-      }
-   };
-//  cout << "MaxBin " << bin  << endl;
-   return bin;
-};
-
-//____________________________________________________________________________________ 
-
-Double_t gaus_cbg(Double_t * x, Double_t * par)
-{
-/*
-  par[0]   background constant
-//  par[1]   background slope
-  par[1]   gauss width
-  par[3]   gauss0 constant
-  par[4]   gauss0 mean
-  par[5]   gauss1 constant
-  par[6]   gauss1 mean
-  par[7]   gauss2 constant
-  par[8]   gauss2 mean
-*/
-   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
-   Double_t arg;
-
-   if (par[2] == 0)
-      par[2] = 1;               //  force widths /= 0
-   arg = (x[0] - par[4]) / (sqrt2 * par[2]);
-   Double_t fitval = par[0] + x[0] * par[1]
-       + gBinW / (sqrt2pi * par[2]) * par[3] * exp(-arg * arg);
-   if (nPeaks > 1) {
-      arg = (x[0] - par[6]) / (sqrt2 * par[2]);
-      fitval += gBinW / (sqrt2pi * par[2]) * par[5] * exp(-arg * arg);
-   }
-   if (nPeaks > 2) {
-      arg = (x[0] - par[8]) / (sqrt2 * par[2]);
-      fitval += gBinW / (sqrt2pi * par[2]) * par[7] * exp(-arg * arg);
-   }
-   return gBinW * fitval;
-}
-
-//____________________________________________________________________________ 
-
-Double_t gaus_lbg(Double_t * x, Double_t * par)
-{
-/*
-  par[0]   background constant
-  par[1]   background slope
-  par[2]   gauss width
-  par[3]   gauss0 constant
-  par[4]   gauss0 mean
-  par[5]   gauss1 constant
-  par[6]   gauss1 mean
-  par[7]   gauss2 constant
-  par[8]   gauss2 mean
-*/
-   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
-   Double_t arg;
-
-   if (par[2] == 0)
-      par[2] = 1;               //  force widths /= 0
-   arg = (x[0] - par[4]) / (sqrt2 * par[2]);
-   Double_t fitval = par[0] + x[0] * par[1]
-       +  par[3] * exp(-arg * arg) / (sqrt2pi * par[2]);
-   if (nPeaks > 1) {
-      arg = (x[0] - par[6]) / (sqrt2 * par[2]);
-      fitval +=  par[5] * exp(-arg * arg) / (sqrt2pi * par[2]);
-   }
-   if (nPeaks > 2) {
-      arg = (x[0] - par[8]) / (sqrt2 * par[2]);
-      fitval += par[7] * exp(-arg * arg)/ (sqrt2pi * par[2]);
-   }
-   return gBinW * fitval;
-}
-
-//_____________________________________________________________________________ 
-
-Double_t gaus_tail(Double_t * x, Double_t * par)
-{
-/*
-  par[0]   tail fraction
-  par[1]   tail width
-  par[2]   background constant
-  par[3]   background slope
-  par[4]   gauss width
-  par[5]   gauss0 constant
-  par[6]   gauss0 mean
-  par[7]   gauss1 constant
-  par[8]   gauss1 mean
-  par[9]   gauss2 constant
-  par[10]  gauss2 mean
-*/
-   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
-//  force widths /= 0
-   if (par[1] == 0)
-      par[1] = 1;
-   if (par[4] == 0)
-      par[4] = 1;
-
-// xij = (x - xpeak)
-   Double_t xij = x[0] - par[6];
-   Double_t arg = xij / (sqrt2 * par[4]);
-   xij *= gTailSide;
-   Double_t tail = exp(xij / par[1]) / par[1];
-   Double_t g2b = 0.5 * par[4] / par[1];
-   Double_t err = 0.5 * par[0] * par[5] * TMath::Erfc(xij / par[4] + g2b);
-   Double_t norm = exp(0.25 * pow(par[4], 2) / pow(par[1], 2));
-   Double_t fitval = par[2] + x[0] * par[3]
-       + norm * err * tail + par[5] * exp(-arg * arg) / (sqrt2pi * par[4]);
-   if (nPeaks > 1) {
-      xij = x[0] - par[8];
-      arg = xij / (sqrt2 * par[4]);
-      xij *= gTailSide;
-      tail = exp(xij / par[1]) / par[1];
-      err = 0.5 * par[0] * par[7] * TMath::Erfc(xij / par[4] + g2b);
-      fitval = fitval + norm * err * tail
-          + par[7] * exp(-arg * arg) / (sqrt2pi * par[4]);
-   }
-   if (nPeaks > 2) {
-      xij = x[0] - par[10];
-      arg = xij / (sqrt2 * par[4]);
-      xij *= gTailSide;
-      tail = exp(xij / par[1]) / par[1];
-      err = 0.5 * par[0] * par[9] * TMath::Erfc(xij / par[4] + g2b);
-      fitval = fitval + norm * err * tail
-          + par[9] * exp(-arg * arg) / (sqrt2pi * par[4]);
-   }
-   return gBinW * fitval;
-}
-
-//____________________________________________________________________________________ 
-
-Double_t tailf(Double_t * x, Double_t * par)
-{
-//   extern Double_t erfc(Double_t);
-//  force widths /= 0
-   if (par[2] == 0)
-      par[2] = 1;
-   if (par[3] == 0)
-      par[3] = 1;
-
-// xij = (x - xpeak)
-   Double_t xij = x[0] - par[1];
-   xij *= gTailSide;
-
-//   Double_t arggaus = xij/par[6];
-
-   Double_t tail = exp(xij / par[3]) / par[3];
-   Double_t g2b = 0.5 * par[2] / par[3];
-   Double_t err = 0.5 * par[0] * TMath::Erfc(xij / par[2] + g2b);
-   Double_t norm = exp(0.25 * pow(par[2], 2) / pow(par[3], 2));
-   Double_t fitval = norm * err * tail;
-//                     par[0] + x[0]*par[1] 
-//                   + er * tail
-//                   + par[5] * exp(-arggaus*arggaus);
-   return gBinW * fitval;
-}
-
-//____________________________________________________________________________________ 
-
-Double_t backf(Double_t * x, Double_t * par)
-{
-   Double_t fitval = par[0] + x[0] * par[1];
-   return gBinW * fitval;
-//   return gBinW*fitval;
-}
-
-//____________________________________________________________________________________ 
-
-Double_t gausf(Double_t * x, Double_t * par)
-{
-   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
-   if (par[2] == 0)
-      par[2] = 1;
-
-//   xij = (x - xpeak)
-   Double_t xij = x[0] - par[1];
-
-   Double_t arggaus = xij / (sqrt2 * par[2]);
-   Double_t fitval = par[0] * exp(-arggaus * arggaus) / (sqrt2pi * par[2]);
-   return gBinW * fitval;
-}
-
 // Fit a pol1 + 1 or 2 or 3 gaus + optionally tails
 //____________________________________________________________________________________ 
 
-void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
+void FitHist::FitGausLBg(Int_t force_zero_bg)
 {
-
-//   Int_t GetGaussEstimate(TH1*, Double_t, Int_t, Double_t *);
-   if (!fSelHist) {
-      cout << "No hist selected" << endl;
-      return;
-   }
-
-   if (is2dim(fSelHist)) {
-      cout << "Cant fit 2-dim hist (yet)" << endl;
-      return;
-   }
-//   UInt_t xp, yp;
-//   Int_t ret=GetPosition(gPad,&xp,&yp);
-//   SetMark(kFALSE);
-
-   const char *funcname;
-   TString sfunc(fHname);
-   Int_t ip = sfunc.Index(";");
-	if (ip > 0)sfunc.Resize(ip);
-   func_numb++;
-   sfunc.Prepend(Form("%d_", func_numb));
-   sfunc.Prepend("f");
-   Bool_t ok;
-   sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
-   if (!ok)
-      return;
-   funcname = (const char *) sfunc;
-   func_numb++;
-
-   TOrdCollection *row_lab = new TOrdCollection();
-   if (with_tail > 0) {
-      row_lab->Add(new TObjString("Ta_Fract"));
-      row_lab->Add(new TObjString("Ta_Width"));
-   }
-   row_lab->Add(new TObjString("Bg_Const"));
-   row_lab->Add(new TObjString("Bg_Slope"));
-   row_lab->Add(new TObjString("Ga_Width"));
-   row_lab->Add(new TObjString("Ga_Cont"));
-   row_lab->Add(new TObjString("Ga_Mean "));
-   row_lab->Add(new TObjString("Ga_Cont"));
-   row_lab->Add(new TObjString("Ga_Mean "));
-   row_lab->Add(new TObjString("Ga_Cont"));
-   row_lab->Add(new TObjString("Ga_Mean "));
-
-   int ncols = 3;
-   TOrdCollection *col_lab = new TOrdCollection();
-   col_lab->Add(new TObjString("StartVal"));
-   col_lab->Add(new TObjString("Low Lim "));
-   col_lab->Add(new TObjString("Up Lim  "));
-
-//
-   int *inp;
-   TF1 *func;
-   static Int_t npar;
-   static Int_t nval;
-   static const Int_t len_upar = 33;
-   static Double_t upar[len_upar];
-//   static Double_t fpar[11];
-//   static Double_t gpar[3];
-   TArrayD gpar(3);
-   static Axis_t edgelx;
-   static Axis_t edgeux;
-   //
-   if (hp->fFitOptKeepParameters && fOldMode != -1) {
-      if (fOldMode == 0) {      //  old mode no tail
-         if (with_tail > 0) {
-            npar += 2;
-            for (Int_t i = npar - 1; i > 1; i--)
-               upar[i] = upar[i - 2];
-            upar[0] = upar[1] = 0;
-         } else {
-            npar -= 2;
-            for (int i = 0; i < npar; i++)
-               upar[i] = upar[i + 2];
-         }
-      }
-   } else {
-      nval = GetMarks(fSelHist);
-      if (nval < 2) {
-         WarnBox("Need at least 2 selected points");
-         return;
-      } else {
-         cout << "Fit Gaussian ----------------" << endl;
-         markers->Print();
-         FhMarker *p;
-         TIter next(markers);
-         inp = new int[nval];
-         int i = 0;
-         while ( (p = (FhMarker *) next()) ) {
-            inp[i] = XBinNumber(fSelHist, p->GetX());
-            if (inp[i] > 0)
-               i++;
-         }
-      }
-      edgelx = fSelHist->GetBinCenter(inp[0]);
-      edgeux = fSelHist->GetBinCenter(inp[nval - 1]);
-      Double_t lowval = fSelHist->GetBinContent(inp[0]);
-      Double_t upval = fSelHist->GetBinContent(inp[nval - 1]);
-//      Double_t bwidth = fSelHist->GetBinWidth(inp[0]);
-      Int_t binh;
-      if (nval <= 3) {
-         npar = 7;
-         nPeaks = 1;
-         //      func = new TF1(funcname,"pol1(0)+gaus(2)",edgelx, edgeux);
-//         upar[2] = 0.5 * (lowval + upval);
-//         upar[3] = 0.;
-//         if (nval == 3) {
-//            centbin = inp[1];
-//         } else {
- //           centbin = GetMaxBin(fSelHist, inp[0], inp[1]);
-//         }
- //        binh = GetGaussEstimate(fSelHist, lowval, centbin, gpar);
-
-//         upar[4] = gpar[2];
-//         upar[5] = gpar[0];
- //        upar[6] = gpar[1];
-         Double_t dx = edgeux - edgelx;
-         Double_t dy = upval - lowval;
-         if (force_zero_bg == 0) {
-         	if (dx > 0) {
-            	upar[3] = dy / dx;
-            	upar[2] = upval - upar[3] * edgeux;
-         	} else {            
-            	upar[2] = 0.5 * (lowval + upval);
-            	upar[3] = 0;
-         	}
-         } else {
-            upar[2] = 0;
-            upar[3] = 0;
-         }
-         upar[5] = 0;
-         upar[4] = 0.25 * (edgeux - edgelx);
-         for (Int_t i = inp[0]; i <= inp[nval - 1]; i++){
-            upar[5] = upar[5] + fSelHist->GetBinContent(i) -
-                      (upar[2] + upar[3] * fSelHist->GetBinCenter(i));
-         }
-//         upar[5] *= fSelHist->GetBinWidth(inp[0]);
-
-         upar[6] = 0.5 * (edgeux + edgelx);
-
-      } else {
-         if (nval > 5) {
-            WarnBox("Warning: Using not all inputs");
-         }
-         if (nval == 4) {
-            npar = 9;
-            nPeaks = 2;
-            //         func = new TF1(funcname,"pol1(0)+gaus(2)+gaus(5)",edgelx, edgeux);
-         } else {
-            npar = 11;
-            nPeaks = 3;
-            //         func = new TF1(funcname,"pol1(0)+gaus(2)+gaus(5)+gaus(8)",edgelx, edgeux);
-            binh = GetGaussEstimate(fSelHist, lowval, inp[3], gpar);
-            upar[9] = gpar[0];
-            upar[10] = gpar[1];
-         }
-         upar[2] = 0.5 * (lowval + upval);
-         upar[3] = 0.;
-         binh = GetGaussEstimate(fSelHist, lowval, inp[1], gpar);
-         upar[4] = gpar[2];
-         upar[5] = gpar[0];
-         upar[6] = gpar[1];
-         binh = GetGaussEstimate(fSelHist, lowval, inp[2], gpar);
-         upar[7] = gpar[0];
-         upar[8] = gpar[1];
-      }
-      if (with_tail > 0) {          // with tail
-         upar[0] = 1.;
-         upar[npar] = -.00001;
-         upar[2 * npar] = 0.5;
-         upar[1] = upar[4];
-      } else {
-         npar -= 2;
-         for (int i = 0; i < npar; i++) {
-            upar[i] = upar[i + 2];
-         }
-         upar[npar] = 0;
-         upar[npar + 1] = 0;
-      }
-   }
-   fOldMode = with_tail;
-// ---
-
-   func = (TF1 *) gROOT->FindObject(funcname);
-   if (func)
-      delete func;
-   for (int i = 0; i < npar; i++) {
-      upar[i + npar] = 0;
-      upar[i + 2 * npar] = 0;
-//      upar[i+npar]  = 0.1 * upar[i];
-//      upar[i+2*npar]= 10. * upar[i];
-   }
-   if (with_tail > 0) {             // with tail
-      func = new TF1(funcname, gaus_tail, edgelx, edgeux, npar);
-      gTailSide = 1;
-      if (with_tail == 2)
-         gTailSide = -1;
-
-//      upar[0] = 0.;
-//      upar[npar]=-.00001;
-//     upar[2*npar]=0.5;
-//      func->SetParLimits(0,0.,2.);      
-//      upar[1] = gpar[2];
-      func->SetParName(0, "Ta_Fract");
-      func->SetParName(1, "Ta_Width");
-      func->SetParName(2, "Bg_Const");
-      func->SetParName(3, "Bg_Slope");
-      func->SetParName(4, "Ga_Width");
-
-   } else {
-//      npar -=2;
-//      for (int i=0; i < npar; i++){
-//         upar[i]=upar[i+2];
-//      }
-//      upar[npar]   = 0;
-//      upar[npar+1] = 0;
-      func = new TF1(funcname, gaus_lbg, edgelx, edgeux, npar);
-      func->SetParName(0, "Bg_Const");
-      func->SetParName(1, "Bg_Slope");
-      func->SetParName(2, "Ga_Width");
-   }
-
-//  set errors + step size
-
-   int nn = 0, istart = 3;
-   if (with_tail > 0)
-      istart = 5;
-   for (int i = istart; i < npar; i += 2) {
-      TString buf("Ga_Cont"); buf += nn;
-      func->SetParName(i, buf.Data());
-      buf = "Ga_Mean"; buf += nn ;
-      func->SetParName(i + 1, buf.Data());
-      nn++;
-   }
-   TArrayI fixflag(2 * npar);
-   fixflag[0] = 0;
-   fixflag[1] = 0;
-
-   Bool_t bound = kFALSE;
-   for (Int_t i = 2; i < npar; i++)
-      fixflag[i] = 0;
-   col_lab->Add(new TObjString("fix it"));
-   col_lab->Add(new TObjString("bound"));
-// show values to caller and let edit
-   TString title("Start parameters");
-//  if fixed linear background  requested fiz const + slope
-   if (hp->fFitOptUseLinBg || force_zero_bg > 0) {
-      cout << "Fixed linear background selected" << endl;
-      if (with_tail > 0) {          // with tail
-         upar[2] = fLinBgConst;
-         upar[3] = fLinBgSlope;
-         fixflag[2] = 1;
-         fixflag[3] = 1;
-      } else {
-         if (with_tail == 0) {
-            upar[0] = fLinBgConst;
-            upar[1] = fLinBgSlope;
-         } else {
-            upar[0] = 0;
-            upar[1] = 0;
-         }
-         fixflag[0] = 1;
-         fixflag[1] = 1;
-      }
-   }
-
-   TArrayD xyvals(len_upar);
-   for (Int_t i = 0; i < len_upar; i++)
-      xyvals[i] = upar[i];
-   Int_t ret = 0, itemwidth = 120, precission = 5;
-   TGMrbTableOfDoubles(mycanvas, &ret, title.Data(), itemwidth,
-                       ncols, npar, xyvals, precission,
-                       col_lab, row_lab, &fixflag, 0,
-                       Help_Fit_1dim_text, "Do fit", "Draw only");
-   for (Int_t i = 0; i < len_upar; i++)
-      upar[i] = xyvals[i];
-   if (col_lab)
-      col_lab->Delete();
-   if (row_lab)
-      row_lab->Delete();
-   if (col_lab)
-      delete col_lab;
-   if (row_lab)
-      delete row_lab;
-   if (ret < 0)
-      return;
-
-   cout <<
-       "-------------------------------------------------------------"
-       << endl;
-   cout << "Fitting Gauss + linear BG to Histogram:" << fSelHist->GetName()
-       << " from " << edgelx << " to " << edgeux << endl;
-   cout <<
-       "-------------------------------------------------------------"
-       << endl;
-   cout << "Start parameters " << endl;
-
-   for (Int_t i = 0; i < npar; i++) {
-      bound = kFALSE;
-      cout << "par[" << i << "] " << upar[i]
-          << "\t lowlim " << upar[i + npar]
-          << "\t uplim " << upar[i + 2 * npar];
-      if (fixflag[i]) {
-         cout << "\t fixed " << endl;
-         upar[i + 2 * npar] = upar[i + npar] = 1;
-         bound = kTRUE;
-      } else {
-//         if(upar[i+npar] != 0 || upar[i+2*npar] != 0 ) {
-         if (fixflag[i + npar]) {
-            cout << "\t bound" << endl;
-            bound = kTRUE;
-            if (upar[i + 2 * npar] == upar[i + npar]) {
-               cout << "warning upper = lower bound" << endl;
-            }
-         } else
-            cout << "\t variable " << endl;
-      }
-//      cout << endl;
-      if (bound)
-         func->SetParLimits(i, upar[i + npar], upar[i + 2 * npar]);
-   }
-   cout <<
-       "-------------------------------------------------------------"
-       << endl;
-   cout <<
-       "-------------------------------------------------------------"
-       << endl;
-
-//   func->SetLineWidth(4);
-//   func->SetLineColor(4);
-   func->SetParameters(upar);
-
-//  now fit it 
-   fSelPad->cd();
-   if (ret == 0) {
-//      gROOT->Reset();
-      TString fitopt = "R";
-      if (hp->fFitOptMinos)
-         fitopt += "E";
-      if (hp->fFitOptQuiet)
-         fitopt += "Q";
-      if (hp->fFitOptVerbose)
-         fitopt += "V";
-      if (hp->fFitOptErrors1)
-         fitopt += "W";
-      if (hp->fFitOptIntegral)
-         fitopt += "I";
-      if (hp->fFitOptAddAll)
-         fitopt += "+";
-      if (hp->fFitOptNoDraw)
-         fitopt += "0";
-      cout << "fitopt.Data() " << fitopt.Data() << endl;
-      fSelHist->Fit(funcname, fitopt.Data(), "SAMES");	//  here fitting is done
-      if (hp->fFitOptAddAll) {
-         TList *lof = fSelHist->GetListOfFunctions();
-         if (lof->GetSize() > 1) {
-            TObject *last = lof->Last();
-            lof->Remove(last);
-            lof->AddFirst(last);
-         }
-      }
-      func->SetLineStyle(1);
-      func->SetFillStyle(0);
-      if (fOrigHist != fSelHist) {
-         TF1 *f1 = new TF1();
-         func->Copy(*f1);
-         fOrigHist->GetListOfFunctions()->Add(f1);
-         f1->SetParent(fOrigHist);
-         f1->Save(edgelx, edgeux, 0, 0, 0, 0);
-//         TCanvas * cc = new TCanvas("cc", "cvc");
-         fOrigHist->GetXaxis()->SetRange(1, fSelHist->GetNbinsX());
-//         fOrigHist->Draw();
-      }
-
-   } else {
-      fSelPad->cd();
-      func->SetLineColor(2);
-      func->Draw("same");
-      func->SetLineStyle(2);
-      func->SetFillStyle(0);
-      cout << setred << "No fit done, function drawn with start parameters"
-          << setblack << endl;
-   }
-   func->GetParameters(upar);
-   Double_t * errors = func->GetParErrors();
-//   fSelHist->SetFillColor(hp->f1DimFillColor);
-//   fSelPad->cd();
-//   fSelPad->Modified(kTRUE);
-//   fSelPad->Update();
-
-//   Bool_t enable_calib = kFALSE;
-//                                                                                                                                                                                                                                                             TEnv env(".rootrc");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          // inspect ROOT's environment
-//                                                                                                                                                                                                                                                             enable_calib = (Bool_t) env.GetValue("HistPresent.EnableCalibration", kFALSE);
-   if (nPeaks == 1 && hp->GetEnableCalibration()) {
-      TString question = "Add parameters to calibration list?";
-      int buttons = kMBYes | kMBNo, retval = 0;
-      EMsgBoxIcon icontype = kMBIconQuestion;
-      new TGMsgBox(gClient->GetRoot(), mycanvas,
-                   "Question", (const char *) question,
-                   icontype, buttons, &retval);
-      if (retval == kMBYes) {
-         Int_t woff = 0;
-         if (with_tail > 0)
-            woff = 2;
-         FhPeak *peak = new FhPeak(upar[4 + woff]);
-//         peak->SetWidth(upar[2 + woff]);
-         peak->SetWidth(errors[4 + woff]);
-         peak->SetContent(upar[3 + woff]);
-         fPeaks->Add(peak);
-      }
-   }
-//  draw components of fit, skip simple gaus without bg
-   if (hp->GetShowFittedCurves() && force_zero_bg == 0) {
-      double fdpar[4];
-      if (with_tail > 0) {
-         fdpar[0] = upar[2] ;
-         fdpar[1] = upar[3];
-      } else {
-         fdpar[0] = upar[0];
-         fdpar[1] = upar[1];
-      }
-      if (force_zero_bg == 0) {
-         TF1 *back = new TF1("backf", backf, edgelx, edgeux, 2);
-         back->SetParameters(fdpar);
-         back->Save(edgelx, edgeux, 0, 0, 0, 0);
-         back->SetLineColor(2);
-         back->SetLineStyle(3);
-   //      back->Draw("same");
-         fSelHist->GetListOfFunctions()->Add(back);
-         back->SetParent(fSelHist);
-      }
-//      if(fOrigHist != fSelHist)fOrigHist->GetListOfFunctions()->Add(back);
-//
-      for (Int_t j = 0; j < nPeaks; j++) {
-         if (with_tail > 0) {
-            fdpar[0] = upar[5 + 2 * j];
-            fdpar[1] = upar[6 + 2 * j];
-            fdpar[2] = upar[4];
-         } else {
-            fdpar[0] = upar[3 + 2 * j];
-            fdpar[1] = upar[4 + 2 * j];
-            fdpar[2] = upar[2];
-         }
-         TF1 *gaus = new TF1("gausf", gausf, edgelx, edgeux, 3);
-         gaus->SetParameters(fdpar);
-         TF1 *g1 = new TF1();
-         gaus->Copy(*g1);
-         g1->SetLineColor(6);
-         g1->SetLineStyle(4);
-//         g1->Draw("same");
-         fSelHist->GetListOfFunctions()->Add(g1);
-         g1->SetParent(fSelHist);
-         g1->Save(edgelx, edgeux, 0, 0, 0, 0);
-/*
-         TF1 *g2 = new TF1();
-         gaus->Copy(*g2);
-         g2->SetLineColor(6);
-         g2->SetLineWidth(3);
-         if(fOrigHist != fSelHist)fOrigHist->GetListOfFunctions()->Add(g2);
-         g2->SetParent(fOrigHist);
-         g2->Save(edgelx, edgeux);
-*/
-         if (with_tail > 0) {
-            fdpar[0] = upar[0] * upar[5 + 2 * j];	// const
-            fdpar[1] = upar[6 + 2 * j];	// position
-            fdpar[2] = upar[4]; // gaus width
-            fdpar[3] = upar[1]; // tail width
-            TF1 *tail = new TF1("tailf", tailf, edgelx, edgeux, 4);
-            tail->SetParameters(fdpar);
-            tail->Save(edgelx, edgeux, 0, 0, 0, 0);
-            tail->SetLineColor(7);
-            tail->SetLineStyle(2);
-//            tail->Draw("same");
-            fSelHist->GetListOfFunctions()->Add(tail);
-            tail->SetParent(fSelHist);
-//            if(fOrigHist != fSelHist)fOrigHist->GetListOfFunctions()->Add(tail);
-         }
-      }
-          
-   }
-   ClearMarks();
-//   if (hp->fShowErrors) fSelHist->Draw("e1");
-   UpdateDrawOptions();
-/*
-   TString drawopt;
-   if (hp->fShowContour)
-      drawopt = "";
-   if (hp->fShowErrors)
-      drawopt += "e1";
-   if (hp->fFill1Dim) {
-      fSelHist->SetFillStyle(1001);
-      fSelHist->SetFillColor(hp->f1DimFillColor);
-   } else
-      fSelHist->SetFillStyle(0);
-   fSelHist->Draw(drawopt.Data());
-
-   fSelPad->cd();
-*/
-   fSelPad->Modified(kTRUE);
-   fSelPad->Update();
-   fSelPad->GetFrame()->SetBit(TBox::kCannotMove);
-};
-
+   new FitOneDimDialog(fSelHist);
+}
 //____________________________________________________________________________
 
 Int_t FitHist::FitPolyHist(Int_t degree)
@@ -1385,7 +625,7 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
       return -1;
    }
    cout << "Fit1dim ----------------" << endl;
-   markers->Print();
+   fMarkers->Print();
 //   double par[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 //   double fpar[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
 
@@ -1394,8 +634,8 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
    TString sfunc = fHname;
    Int_t ip = sfunc.Index(";");
 	if (ip > 0)sfunc.Resize(ip);
-   func_numb++;
-   sfunc.Prepend(Form("%d_", func_numb));
+   fFuncNumb++;
+   sfunc.Prepend(Form("%d_", fFuncNumb));
    sfunc.Prepend("f");
    Bool_t ok;
    sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
@@ -1436,8 +676,8 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
                           "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4+[5]*x^5+[6]*x^6+[7]*x^7+[8]*x^8");
       break;
    }
-   FhMarker *pfirst = (FhMarker *) markers->First();
-   FhMarker *plast = (FhMarker *) markers->Last();
+   FhMarker *pfirst = (FhMarker *) fMarkers->First();
+   FhMarker *plast = (FhMarker *) fMarkers->Last();
    cout <<
        "-------------------------------------------------------------"
        << endl;
@@ -1457,30 +697,14 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
    TF1 *pol =
        new TF1(funcname, "func", (float) pfirst->GetX(),
                (float) plast->GetX());
-   TString fitopt = "R";
-   if (hp->fFitOptMinos)
-      fitopt += "E";
-   if (hp->fFitOptQuiet)
-      fitopt += "Q";
-   if (hp->fFitOptVerbose)
-      fitopt += "V";
-   if (hp->fFitOptErrors1)
-      fitopt += "W";
-   if (hp->fFitOptIntegral)
-      fitopt += "I";
-   if (hp->fFitOptAddAll)
-      fitopt += "+";
-   if (hp->fFitOptNoDraw)
-      fitopt += "0";
+   TString fitopt = "R+";
    cout << "fitopt.Data() " << fitopt.Data() << endl;
    fSelHist->Fit(funcname, fitopt.Data());	//  here fitting is done
-   if (hp->fFitOptAddAll) {
-      TList *lof = fSelHist->GetListOfFunctions();
-      if (lof->GetSize() > 1) {
-         TObject *last = lof->Last();
-         lof->Remove(last);
-         lof->AddFirst(last);
-      }
+   TList *lof = fSelHist->GetListOfFunctions();
+   if (lof->GetSize() > 1) {
+      TObject *last = lof->Last();
+      lof->Remove(last);
+      lof->AddFirst(last);
    }
    UpdateDrawOptions();
    fSelPad->Update();
@@ -1497,7 +721,7 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
          pol->Write();
          CloseWorkFile();
       } else
-         func_numb--;
+         fFuncNumb--;
    }
    return 1;
 }
@@ -1528,7 +752,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
       return -1;
    }
    cout << "Fit2dim ----------------" << endl;
-   markers->Print();
+   fMarkers->Print();
 //     get values in orig hist      
    TAxis *xaxis = fOrigHist->GetXaxis();
    Axis_t xmin = xaxis->GetXmin();
@@ -1544,8 +768,8 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 
 //     get values in expanded hist      
 
-   FhMarker *pfirst = (FhMarker *) markers->First();
-   FhMarker *plast = (FhMarker *) markers->Last();
+   FhMarker *pfirst = (FhMarker *) fMarkers->First();
+   FhMarker *plast = (FhMarker *) fMarkers->Last();
    Float_t xlow = pfirst->GetX();
    Float_t xup = plast->GetX();
 
@@ -1699,7 +923,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
       delete [] sigma;
    } else {
       FhMarker *p;
-      TIter next(markers);
+      TIter next(fMarkers);
       double mean = 0., entries = 0.;
       TAxis *xaxis = fSelHist->GetXaxis();
       xmin = xaxis->GetXmin();
@@ -1729,8 +953,8 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    TString sfunc = fHname;
    Int_t ip = sfunc.Index(";");
 	if (ip > 0)sfunc.Resize(ip);
-   func_numb++;
-   sfunc.Prepend(Form("%d_", func_numb));
+   fFuncNumb++;
+   sfunc.Prepend(Form("%d_", fFuncNumb));
    sfunc.Prepend("f");
    Bool_t ok;
    sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
@@ -1845,7 +1069,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
          pol->Write();
          CloseWorkFile();
       } else
-         func_numb--;
+         fFuncNumb--;
    }
    if (what == 0)
       ClearMarks();
@@ -1854,60 +1078,6 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    return 1;
 };
 
-//__________________________________________________________________________________
-
-Bool_t FitHist::SetLinBg()
-{
-   fLinBgConst = 0;
-   fLinBgSlope = 0;
-   int nval = GetMarks(fSelHist);
-   if (nval != 4) {
-      WarnBox("Please define exactly 4 marks");
-      return kFALSE;
-   }
-   markers->Print();
-   markers->Sort();
-   Double_t xlow = ((FhMarker *) markers->At(0))->GetX();
-   Double_t xup = ((FhMarker *) markers->At(3))->GetX();
-   Int_t binlow1 =
-       XBinNumber(fSelHist, ((FhMarker *) markers->At(0))->GetX());
-   Int_t binup1 =
-       XBinNumber(fSelHist, ((FhMarker *) markers->At(1))->GetX());
-   Int_t binlow2 =
-       XBinNumber(fSelHist, ((FhMarker *) markers->At(2))->GetX());
-   Int_t binup2 =
-       XBinNumber(fSelHist, ((FhMarker *) markers->At(3))->GetX());
-
-   if (binlow1 >= binup1 || binlow2 >= binup2) {
-      WarnBox("Illegal bins");
-      cout << "binlow1, binup1, binlow2, binup2 " <<
-          binlow1 << " " << binup1 << " " << binlow2 << " " << binup2 <<
-          endl;
-      return kFALSE;
-   }
-
-   Double_t meany1 = 0, meany2 = 0;
-   for (Int_t i = binlow1; i <= binup1; i++)
-      meany1 += fSelHist->GetBinContent(i);
-   for (Int_t i = binlow2; i <= binup2; i++)
-      meany2 += fSelHist->GetBinContent(i);
-   meany1 /= (Double_t) (binup1 - binlow1 + 1);
-   meany2 /= (Double_t) (binup2 - binlow2 + 1);
-   Double_t meanx1 = 0.5 * (fSelHist->GetBinCenter(binup1)
-                            + fSelHist->GetBinCenter(binlow1));
-   Double_t meanx2 = 0.5 * (fSelHist->GetBinCenter(binup2)
-                            + fSelHist->GetBinCenter(binlow2));
-   fLinBgSlope = (meany2 - meany1) / (meanx2 - meanx1);
-   fLinBgConst = meany1 - fLinBgSlope * meanx1;
-   TF1 *lin_bg = new TF1("lin_bg", "pol1", xlow, xup);
-   lin_bg->SetParameters(fLinBgConst, fLinBgSlope);
-   cHist->cd();
-   lin_bg->Draw("same");
-   ClearMarks();
-   cHist->Update();
-   hp->fFitOptUseLinBg = 1;
-   return kTRUE;
-}
 //__________________________________________________________________________________
 
 void FitHist::DrawSelectedFunctions()
@@ -2130,10 +1300,10 @@ void FitHist::ExecFitSliceYMacro()
    TH1 * parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
    if (parhist) delete parhist;
  //  	cout << "ExecFitSliceYMacro ----------------" << endl;
- //  	markers->Print();
+ //  	fMarkers->Print();
 
-   	FhMarker *pfirst = (FhMarker *) markers->First();
-   	FhMarker *plast = (FhMarker *) markers->Last();
+   	FhMarker *pfirst = (FhMarker *) fMarkers->First();
+   	FhMarker *plast = (FhMarker *) fMarkers->Last();
    	Float_t xlow = pfirst->GetX();
    	Float_t xup = plast->GetX();
    	Float_t ylow = pfirst->GetY();

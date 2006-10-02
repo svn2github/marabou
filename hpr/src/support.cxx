@@ -258,7 +258,7 @@ TButton *CommandButton(TString & cmd, TString & tit,
       button->SetFillColor(3);
       button->SetBit(kSelected);
    } else {
-      button->SetFillColor(18);
+      button->SetFillColor(19);
       button->ResetBit(kSelected);
    }
    button->SetMethod((char *) newcmd.Data());
@@ -334,7 +334,8 @@ void SelectButton(TString & cmd,
 HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
                        Int_t xpos, Int_t ypos, HistPresent * hpr, Int_t xwid)
 {   
-   Int_t xwid_default = hpr->GetMainWidth();
+   Int_t xwid_default = 250;
+   if (hpr) xwid_default = hpr->GetMainWidth();
    Int_t ywid_default = (Int_t)((Float_t)xwid_default * 2.4);
    Float_t magfac = (Float_t)xwid_default / 250.;
 //   Int_t xwid_default = 250;
@@ -357,21 +358,25 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
          anysel = kTRUE;
 //      if(cle->fSel != "NoOp") anysel=kTRUE;
    }
-   if (maxlen_nam > 10)
-      xw = 40 + Int_t((Float_t)maxlen_nam * 9 * magfac) ;
+//   cout << "xw " << xw << " maxlen_nam " << maxlen_nam << endl;
+   if (maxlen_nam < 15) maxlen_nam = 15;
+   xw = 40 + Int_t((Float_t)(maxlen_nam) * 9 * magfac) ;
+
+   if (xwid > 0) xw = xwid;
+
    if (Nentries < 25)
       yw = (Int_t)(magfac * 24.) * (Nentries + 2);
 //      yw = 40 * (Nentries + 1);
-//   cout << " xw " << xw << " yw " << yw << endl;
+   cout << "xwid " << xwid << " xw 2 " << xw << " maxlen_nam " << maxlen_nam << endl;
 
    TString pname(fname);
 //   pname.Prepend("CWD:");
    HTCanvas *cHCont = new HTCanvas(pname.Data(), pname.Data(),
-                                   -xpos, ypos, xw, yw, hpr, 0);
+                                   xpos, ypos, -xw, yw, hpr, 0);
    Int_t item_height = TMath::Min(Int_t(magfac * 24.), 10000/Nentries);
    cHCont->SetCanvasSize(xw, item_height * Nentries);
-   ypos += 50;
-   if (ypos > 500) ypos = 5;
+//   ypos += 50;
+//   if (ypos > 500) ypos = 5;
 //   cout << "usedxw  " <<  cHCont->GetWw() << " usedyw  " <<  cHCont->GetWh() << endl;
 
    Float_t expandx = xw / (250. * magfac);
@@ -448,7 +453,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
         << " usedyw " << usedyw
         << endl;
 */
-   if (usedxw < xwid_default ) newxw = usedxw + 10;
+   if (xwid <= 0 && usedxw < xwid_default) newxw = usedxw + 6;
 //  acount for scrollbar
    if (usedxw > newxw )  newyw += 15;
 
@@ -713,66 +718,6 @@ TH1 *GetTheHist(TVirtualPad * pad)
 
 //_______________________________________________________________________________________
 
-void ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode, TGWindow * win)
-{
-// find reference histogram
-   TList *l = canvas->GetListOfPrimitives();
-   TObject *obj;
-   TH1 *href = GetTheHist(pad);
-   if (!href) {
-//      WarnBox("Selected pad contains no hist,\n please select with middle mouse");
-      cout << "No pad selected, using first" << endl;
-      TIter next(l);
-      while ( (obj = next()) ) {
-         if (obj->InheritsFrom(TPad::Class())) {
-            TPad *p = (TPad *) obj;
-            href = GetTheHist(p);
-            if (href) {
-               p->cd();
-               break;
-            }
-         }
-      }
-   }
-   if (!href) {
-      WarnBox
-          ("Selected pad contains no hist,\n please select with middle mouse", win);
-      return;
-   }
-
-   TAxis *xa = href->GetXaxis();
-   Axis_t lowedge = xa->GetBinLowEdge(xa->GetFirst());
-   Axis_t upedge = xa->GetBinLowEdge(xa->GetLast()) +
-       xa->GetBinWidth(xa->GetLast());
-   Axis_t min = 0, max = 0;
-   if (mode > 0) {
-      min = href->GetMinimum();
-      max = href->GetMaximum();
-   }
-   l = canvas->GetListOfPrimitives();
-   TIter next(l);
-   while ( (obj = next()) ) {
-      if (obj->InheritsFrom(TPad::Class())) {
-         TPad *p = (TPad *) obj;
-         TH1 *hist = GetTheHist(p);
-         if (hist) {
-            hist->GetXaxis()->SetRangeUser(lowedge, upedge);
-            p->SetLogy(pad->GetLogy());
-            if (mode > 0 && pad->GetLogy() == 0) {
-               hist->SetMinimum(min);
-               hist->SetMaximum(max);
-            }
-            p->Modified(kTRUE);
-            p->Update();
-         }
-      }
-   }
-   canvas->Modified(kTRUE);
-   canvas->Update();
-}
-
-//_______________________________________________________________________________________
-
 //_______________________________________________________________________________________
 
 void CalibrateAllAsSelected(TVirtualPad * pad, TCanvas * canvas,
@@ -855,40 +800,6 @@ void CalibrateAllAsSelected(TVirtualPad * pad, TCanvas * canvas,
          }
       }
    }
-}
-
-//_______________________________________________________________________________________
-
-void RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode)
-{
-   static Int_t ngroup = 2;
-   Bool_t ok;
-   ngroup = GetInteger("Rebin value", ngroup, &ok);
-   if (!ok || ngroup <= 0)
-      return;
-   TList *l = canvas->GetListOfPrimitives();
-   TIter next(l);
-   TObject *obj;
-   while ( (obj = next()) ) {
-      if (obj->InheritsFrom(TPad::Class())) {
-         TPad *p = (TPad *) obj;
-         TH1 *hist = GetTheHist(p);
-         if (hist) {
-//            cout << hist->GetName()<< ", first, last, min, max  " 
-//            << first << " " << last  << " " << min << " " << max<< endl;
-            Int_t first = hist->GetXaxis()->GetFirst();
-            Int_t last = hist->GetXaxis()->GetLast();
-            hist->Rebin(ngroup);
-            first /= ngroup;
-            last /= ngroup;
-            hist->GetXaxis()->SetRange(first, last);
-            p->Modified(kTRUE);
-            p->Update();
-         }
-      }
-   }
-   canvas->Modified(kTRUE);
-   canvas->Update();
 }
 
 //_______________________________________________________________________________________

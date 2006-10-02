@@ -368,9 +368,9 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    TString cmd;
    TString hname = "hist_";
    Int_t nent = 1;
-   Double_t nbin[4] = {0, 0, 0, 0};
-   Double_t vmin[4] = {0, 0, 0, 0};
-   Double_t vmax[4] = {0, 0, 0, 0};
+   static Double_t nbin[4] = {0, 0, 0, 0};
+   static Double_t vmin[4] = {0, 0, 0, 0};
+   static Double_t vmax[4] = {0, 0, 0, 0};
    static Int_t first_event = 0;
    static Int_t nof_events = 0;
 
@@ -476,31 +476,6 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 
    TString cmd_orig(cmd);
    cmd += ">>";
-/*
-//  look if a histogram is defined to be used instead of a default
-   TH1* hist1 =0;
-   if (fUseHist && nent !=3) {
-      Int_t nselect=fSelectHist->GetSize();
-      if (nselect != 1) {
-         WarnBox("Please select exactly 1 histogram");
-         return;
-      }
-      hist1 = GetSelHistAt(0);
-      if (!hist1) {WarnBox("Histogram not found");return;};
-      if (is2dim(hist1) && nent != 2) {
-         WarnBox("Histogram must be 2-dim");
-         return;
-      }
-      if (!is2dim(hist1) && nent != 1) {
-         WarnBox("Histogram must be 1-dim");
-         return;
-      }
-      hname = hist1->GetName();
-      cmd += hname;
-      option += "same";
-
-   } else {
-*/
       if (fNtupleVersioning) {
          hname += "_v";
          hname += fNtupleSeqNr;
@@ -633,10 +608,8 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       b = (TButton *)strtoul(bp, 0, 16);
       TRootCanvas * pwin = NULL;
       if (b) {
- //        TCanvas * cc = b->GetCanvas();
          pwin = (TRootCanvas *)(b->GetCanvas()->GetCanvasImp());
       }
-//      cout << "pwin " << pwin << endl;
 
       Int_t ret = 0,  itemwidth=120, precission = 5; 
       TGMrbTableOfDoubles(pwin, &ret, "Set axis ranges", 

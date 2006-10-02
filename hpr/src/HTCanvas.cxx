@@ -23,7 +23,6 @@
 #include "FitHist.h"
 #include "HistPresent.h"
 #include "support.h"
-#include "HTimer.h"
 #include "SetColor.h"
 #include "TMrbHelpBrowser.h" 
 #include "TMrbString.h"
@@ -41,21 +40,16 @@ HTCanvas::HTCanvas():TCanvas()
 {
    fHistPresent = NULL; 
    fFitHist = NULL;     
-   fHistList = NULL;    
    fGraph = NULL;       
-   fTimer = NULL;       
    fRootCanvas = NULL;  
    fHandleMenus = NULL;  
-   fEditCommands = NULL;
-   fGObjectGroups = NULL; 
-   fGetMouse = kFALSE;
+//   fGObjectGroups = NULL; 
 };
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
            Int_t ww, Int_t wh, HistPresent * hpr, FitHist * fh,
-           TList * hlist, TGraph * graph, Int_t flag)
-           :  TCanvas(kFALSE), fHistPresent(hpr), fFitHist(fh), 
-              fHistList(hlist),fGraph(graph)
+           TGraph * graph, Int_t flag)
+           :  TCanvas(kFALSE), fHistPresent(hpr), fFitHist(fh),fGraph(graph)
             {
 
 //*-*-*-*-*-*-*-*-*-*-*-*Canvas constructor*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -66,7 +60,16 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //     if wtopx < 0) the menubar is not shown.
 //  ww is the canvas size in pixels along X
 //  wh is the canvas size in pixels along Y
-//   if(!gHTGuiFactory) gHTGuiFactory = new HTRootGuiFactory();
+//
+// HTCanvas has the following extra facilities:
+//
+// Edit grid: if activated forces coordinates of mouse clicks on the grid
+// Markers:   Pressing the middle mouse sets markers used by class FitHist
+// Timer:     Used to update histograms in the canvas at regular intervals
+// Menus:     The class HandleMenus adds popup menus the standard menubar
+//            to invoke  functions in classes HistPresent and FitHist
+//--------------------------------------------------------------------------
+
 
    if (gThreadXAR) {
       void *arr[8];
@@ -131,37 +134,22 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    }
    SetName(name);
    SetTitle(title); // requires fCanvasImp set
-   fTimer = NULL;
-   fFeynmanPhi1 = 0;
-   fFeynmanPhi2 = 180;
    fEditGridX = 0;
    fEditGridY = 0;
-   fVisibleGridX = 0;
-   fVisibleGridY = 0;
-   fEditCommands = NULL;
-   fGObjectGroups = NULL; 
+   fHandleMenus = NULL;  
    fUseEditGrid = kFALSE;
-   fCommonRotate= kFALSE;
-   fGetMouse = kFALSE;
 
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
    Build();
-   TEnv env(".rootrc");
-   Int_t temp = env.GetValue("HistPresent.InsertMacrosAsGroup", 0);
-   if (temp == 0) fInsertMacrosAsGroup = kFALSE;
-   else  fInsertMacrosAsGroup = kTRUE;
-   temp = env.GetValue("HistPresent.UseEditGrid", 1);
-   if (temp == 0) fUseEditGrid = kFALSE;
-   else  fUseEditGrid = kTRUE;
-   
-   if (flag & HTCanvas::kIsAEditorPage) {
-      SetBit(HTCanvas::kIsAEditorPage);
-   }
-   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph); 
+   if (TestBit(kMenuBar)) {
+      fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph); 
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
-   fHandleMenus->BuildMenus(); 
-
+      fHandleMenus->BuildMenus(); 
+      if (flag & HTCanvas::kIsAEditorPage) {
+         SetBit(HTCanvas::kIsAEditorPage);
+      }
+   }
    fCanvasImp->ShowEditor(kFALSE);
    fCanvasImp->ShowToolBar(kFALSE);
    fCanvasImp->ShowStatusBar(kFALSE);
@@ -171,7 +159,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fCanvasImp->Show();
    SetWindowSize(ww , wh );
    if (TestBit(kIsAEditorPage)) {
-      InitEditCommands();
+//      InitEditCommands();
       fRootCanvas->DontCallClose();
       TQObject::Connect((TGMainFrame*)fRootCanvas, "CloseWindow()",
                         this->ClassName(), this, "MyClose()");
@@ -186,7 +174,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 
 void HTCanvas::MyClose()
 {
-//   cout << "HTCanvas::MyClose() set ShowEditor(kFALSE) " << endl;
+   cout << "HTCanvas::MyClose() set ShowEditor(kFALSE) " << endl;
    fRootCanvas->ShowEditor(kFALSE);
    fRootCanvas->CloseWindow();
 }
@@ -194,117 +182,13 @@ void HTCanvas::MyClose()
 
 HTCanvas::~HTCanvas()
 {
-//   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
-   if (fEditCommands) { delete fEditCommands; fEditCommands = NULL;};
+   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
+//   if (fEditCommands) { delete fEditCommands; fEditCommands = NULL;};
    if (fHandleMenus) {
       delete fHandleMenus;
       fHandleMenus = 0;
-   } else return;
-   
-   if (fHistPresent && fFitHist) {
-      TH1 * hist =  fFitHist->GetSelHist();
-      if(!hist || !hist->TestBit(TObject::kNotDeleted) ||
-             hist->TestBit(0xf0000000)){
-         cout << "~HTCanvas:fFitHist is deleted" << endl;
-         return;
-      }
-      const char * hname =  fFitHist->GetSelHist()->GetName();
-      TList * hl = fHistPresent->GetHistList();
-      if(hl->GetSize() > 0){
-         TIter next(hl);
-//         cout << "hl->GetSize() " << hl->GetSize() << endl;
-         TCanvas *ca;
-         while ( (ca = (TCanvas*)next()) ) {
-            TIter nextobj(ca->GetListOfPrimitives());
-            TButton *b;
-            while(TObject * obj = nextobj()){
-               if(!strcmp(obj->ClassName(),"TButton")){
-                  b = (TButton*)obj;
-                  if(b->TestBit(kSelected) && b->TestBit(kCommand)){
-                     TString cname(b->GetMethod());
-//                     cout << "~HTCanvas():hname " << hname << endl;
-//                     cout << "~HTCanvas():cname.Data() " << cname.Data() << endl;
-                     Int_t i = cname.First('"'); cname.Remove(0,i+1);
-                     if(cname.Contains("Memory")
-                        || cname.Contains("Socket")
-                        || cname.Contains(".map")){
-                        i = cname.First('"'); cname.Remove(0,i+1);
-                        i = cname.First('"'); cname.Remove(0,i+1);
-                     } else { 
-                        i = cname.First('.');
-                        cname.Remove(i,8);
-                        cname.Insert(i,"_");                    
-                     }
-                     i = cname.First('"');
-                     Int_t len = cname.Length() - i; 
-//                     cout << cname.Data() << " len " << len << endl;
-                     cname.Remove(i,len);
-//                     cout << cname.Data() << endl;
-                     if(!strcmp(cname.Data(),hname)){
-                        b->ResetBit(kSelected);
-                        b->SetFillColor(42);
-                        b->Modified(kTRUE);
-                        b->Update();
-                     }
-                  }
-               }
-            }
-         }
-      }
-//   }
    }
-   if(!fHistPresent && !fFitHist){
-      TString cn(GetName());
-      if(cn.Contains(".root") || cn.Contains(".map")
-         ||cn.Contains(".histlist")){
-         TCanvas *ca = (TCanvas*)gROOT->GetListOfCanvases()->FindObject("Filelist");
-         cout << "dtor HTCanvas:  (!fHistPresent && !fFitHist)" 
-         << GetName()<< " ca " << ca <<  endl;
-          
-         if(ca){
-            TIter nextobj(ca->GetListOfPrimitives());
-            TButton *b;
-             cout << "dtor HTCanvas:  (!fHistPresent && !fFitHist)" << GetName()<< endl;
-            while(TObject * obj = nextobj()){
-               if(!strcmp(obj->ClassName(),"TButton")){
-                  b = (TButton*)obj;
-                  TString cname(b->GetMethod());
-                  if(b->TestBit(kSelected) && b->TestBit(kCommand)){
-                     TString cname(b->GetMethod());
-                     Int_t i = cname.First('"');
-                     cname.Remove(0,i+1);
-                     i = cname.First('"');
-                     Int_t len = cname.Length() - i;
-                     cname.Remove(i,len);
-//                     cout << cname.Data() << " len " << len << endl;
-                     if(!cname.CompareTo(cn)){
-                        b->ResetBit(kSelected);
-                        b->SetFillColor(19);
-                        b->Modified(kTRUE);
-                        b->Update();  
-                     }                        
-                  }
-               }
-            }
-         }
-      }
-   }
-   if(fHistPresent){
-      fHistPresent->GetHistList()->Remove(this);
-      fHistPresent->SetMyCanvas(NULL);
-//     cout << "remove " << this->GetName() << endl;
-   }
-   if(fHistList){
-      fHistPresent->fHistListList->Remove(fHistList);
-      fHistList->Delete();
-      delete fHistList;
-   }
-   if(fTimer) delete fTimer;
-//   if(fHistPresent){
-//     cout << "HTCanvas: Remove(this) " << this << endl;
-//     fHistPresent->GetCanvasList()->Remove(this);
-//      fHistPresent->GetHistList()->Remove(this);
-//   }
+   if (fHistPresent) fHistPresent->HandleDeleteCanvas(this);
    if(fFitHist) {
       fFitHist->UpdateCut();
       fFitHist->SetCanvasIsDeleted();
@@ -453,14 +337,6 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //         cout << "x y grid " << x << " " << y << endl;
       }
    
-      if (fGetMouse) {
-         fMouseX = gPad->AbsPixeltoX(px);
-         fMouseY = gPad->AbsPixeltoY(py);
-         fGetMouse = kFALSE;
-         fMousePad = pad;
-//         cout << "HTCanvas: " << pad->GetName()<< " pad " <<
-//         pad << endl;
-      }
 //OS end
       if (fSelected) {
          FeedbackMode(kTRUE);   // to draw in rubberband mode
@@ -600,7 +476,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       fSelected->Pop();           // pop object to foreground
       pad->cd();                  // and make its pad the current pad
       if (gDebug)
-         printf("Current Pad: %s / %s\n", pad->GetName(), pad->GetTitle());
+         printf("Current Pad: %s / %s \n", pad->GetName(), pad->GetTitle());
 
       // loop over all canvases to make sure that only one pad is highlighted
       {
@@ -827,74 +703,6 @@ void HTCanvas::RunAutoExec()
    if (!gPad) return;
    ((TPad*)gPad)->AutoExec();
 }
-
-//_____________________________________________________________________________
-
-HistPresent * HTCanvas::GetHistPresent(){return fHistPresent;};
-//_____________________________________________________________________________
-
-FitHist * HTCanvas::GetFitHist(){return fFitHist;};
-//_____________________________________________________________________________
-
-void HTCanvas::ActivateTimer(Int_t delay){
-   if(fTimer){
-      cout << "Deleting existing timer" << endl;
-      delete fTimer;
-      fTimer = 0;
-   }
-   if(delay > 0) fTimer = new HTimer(delay, kTRUE, this);      
-}
-//_____________________________________________________________________________
-
-void HTCanvas::UpdateHists() 
-{
-   if (!fHistPresent) return;
-   if (!fHistList)    return; 
-   if (fHistPresent->fAnyFromSocket && !(fHistPresent->fComSocket)) return;
-//      TList * hlist = fHistPresent->GetSelectedHist();
-   Int_t nhist = fHistList->GetSize();
-   if(nhist <= 0)return;
-   Int_t fx, lx, fy, ly;
-   for(Int_t i=0; i<nhist; i++){
-      this->cd(i+1);
-//         TPad * p = gPad;
-      TH1 * hold  = GetTheHist(gPad);
-      fx =  hold->GetXaxis()->GetFirst(); 
-      lx =  hold->GetXaxis()->GetLast(); 
-      TH1 * hist = fHistPresent->GetSelHistAt(i,fHistList);
-     if (!hist) {
-         cout << setred << "Cant get histogram, M_analyze stopped? " << endl;
-         if(fTimer){
-            cout << "Deleting existing timer" << endl;
-            delete fTimer;
-            fTimer = 0;
-//            fHistPresent->fSocketIsOpen = kFALSE;
-         }
-          cout << setblack << endl;
-
-         return;
-      }
-     if(is2dim(hist)){
-         fy =  hold->GetYaxis()->GetFirst(); 
-         ly =  hold->GetYaxis()->GetLast();        
-         hist->Draw(fHistPresent->fDrawOpt2Dim->Data());
-         hist->GetXaxis()->SetRange(fx, lx);
-         hist->GetYaxis()->SetRange(fy, ly);
-      } else { 
-         TString drawopt;
-         if(fHistPresent->fShowContour)drawopt = "hist";
-         if(fHistPresent->fShowErrors)drawopt += "e1";
-         if(fHistPresent->fFill1Dim){
-            hist->SetFillStyle(1001);
-			hist->SetFillColor(44);
-         } else hist->SetFillStyle(0);
-         hist->Draw(drawopt.Data());
-         hist->GetXaxis()->SetRange(fx, lx);
-      }
-   }
-   this->Modified(kTRUE);
-   this->Update();
-}
 //______________________________________________________________________________
 void HTCanvas::SetLog(Int_t state)
 {
@@ -906,7 +714,7 @@ void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)
 {
    if (hpr) fHistPresent = hpr;
    if (fh)  fFitHist = fh;
-   if (gr) fGraph= gr;
+   if (gr)  fGraph= gr;
 
    fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph); 
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;

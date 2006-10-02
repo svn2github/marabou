@@ -6,10 +6,18 @@
 #include "TSplineX.h"
 #include "TGMrbValuesAndText.h"
 
+static const Char_t helpText[] = 
+"This class helps to construct a Xspline with\n\
+additional graphical elements:\n\
+Arrows at either ends\n\
+Railway like filling etc.\n\
+";
+
 ClassImp(TSplineXDialog)
 
 TSplineXDialog::TSplineXDialog()
 {
+
    static void *valp[25];
    Int_t ind = 0;
    TList * row_lab = new TList(); 
@@ -83,7 +91,7 @@ TSplineXDialog::TSplineXDialog()
    TRootCanvas* rc = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
    ok = GetStringExt("TSplineX Params", NULL, itemwidth, rc,
                      NULL, NULL, row_lab, valp,
-                     NULL, NULL, NULL, this, this->ClassName());
+                     NULL, NULL, helpText, this, this->ClassName());
 }
 //______________________________________________________________________
 

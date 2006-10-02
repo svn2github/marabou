@@ -88,6 +88,7 @@ public:
    void GetControlPoint(Int_t ipoint, Double_t *x, Double_t *y, Float_t *sfactor); 
    Int_t InsertPoint();                  // *MENU*
    Int_t RemovePoint();                  // *MENU*
+   Int_t RemovePoint(Int_t ip) {return ip;};  //
 //   virtual void EditControlGraph();    // *MENU*
    virtual void ControlGraphMixer();     // *MENU*
  #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)

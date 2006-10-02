@@ -108,7 +108,6 @@ Int_t FitHist::ShowPeaks(){
    Float_t ymax  = cHist->GetUymax();
    TArrow *arr;
    TIter next(peaks);
-//   markers->Sort();
    while ( (arr= (TArrow*)next()) ) {
       Coord_t x=arr->GetX1();
       if(x >= xmin && x <= xmax){

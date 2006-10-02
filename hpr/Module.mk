@@ -21,7 +21,8 @@ HPRMAINO    := $(MODDIRS)/main.o
 HPRO        := $(filter-out $(HPRMAINO),$(HPROM))
 
 
-HPRDH			:= $(HPRDIRI)/HTCanvas.h \
+HPRDH			:= $(HPRDIRI)/defineMarabou.h \
+               $(HPRDIRI)/HTCanvas.h \
  					$(HPRDIRI)/HandleMenus.h \
  					$(HPRDIRI)/FitHist.h \
  					$(HPRDIRI)/HistPresent.h \
@@ -32,7 +33,10 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
                $(HPRDIRI)/FhRegion.h \
                $(HPRDIRI)/HprImage.h \
                $(HPRDIRI)/GroupOfGObjects.h \
+               $(HPRDIRI)/GroupOfHists.h \
+ 					$(HPRDIRI)/GEdit.h \
  					$(HPRDIRI)/EditMarker.h \
+ 					$(HPRDIRI)/FhMarker.h \
  					$(HPRDIRI)/TSplineX.h \
  					$(HPRDIRI)/TSplineXDialog.h \
  					$(HPRDIRI)/TSplineXEditor.h \
@@ -43,6 +47,7 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
  					$(HPRDIRI)/FeynmanDiagramDialog.h \
  					$(HPRDIRI)/InsertFunctionDialog.h \
  					$(HPRDIRI)/InsertArcDialog.h \
+ 					$(HPRDIRI)/FitOneDimDialog.h \
  					$(HPRDIRI)/InsertTextDialog.h \
  					$(HPRDIRI)/TCurlyLineWithArrow.h \
  					$(HPRDIRI)/CurlyLineWithArrowDialog.h \

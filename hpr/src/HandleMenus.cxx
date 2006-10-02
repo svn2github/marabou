@@ -24,7 +24,6 @@
 #include "FitHist.h"
 #include "HistPresent.h"
 #include "support.h"
-#include "HTimer.h"
 #include "SetColor.h"
 #include "TMrbHelpBrowser.h" 
 #include "TGMrbTableFrame.h" 
@@ -92,16 +91,14 @@ enum ERootCanvasCommands {
 
 //   Ottos stuff
 
-   kOptionFit,
+//   kOptionFit,
    kOptionDisp,
    kOption1Dim,
    kOption2Dim,
    kOption2DimCol,
    kOptionGraph,
    kOptionHpr,
-   kOptionNum,
    kOptionWin,
-   kOptionCol,
    kOptionBright,
    kOptionHLS,
    kFHMarks,
@@ -137,17 +134,10 @@ enum ERootCanvasCommands {
    kFHProjectY,
    kFHProjectF,
    kFHProjectB,
-   kFHAllAsSel,
-   kFHCalAllAsSel,
-   kFHCommonRotate,
-   kFHAllAsFirst,
    kFHStackMax,
    kFHStackMin,
    kFHStack,
    kFHCanvas2LP,
-   kFHAllAsSelRangeOnly,
-   kFHActivateTimer,
-   kFHRebinAll,
    kFHRebinOne,
    kFHUserCont,
    kFHUserContClear,
@@ -180,13 +170,7 @@ enum ERootCanvasCommands {
    kFHTerminate,
 
    kFHFit,
-   kFHSetLinBg,
-   kFHFitGOnly,
-   kFHFitGBg,
-   kFHFitGBgTailLow,
-   kFHFitGBgTailHigh,
-   kFHFitGTailLow,
-   kFHFitGTailHigh,
+   kFHFitGausLBg,
    kFHFitUserG,
    kFHEditUserG,
    kFHFitUser,
@@ -387,7 +371,7 @@ again:
                             fn.EndsWith(".jpg")  ||
                             fn.EndsWith(".png")  ||
                             fn.EndsWith(".tiff")) {
-                           fHCanvas->RemoveEditGrid();
+//                           fHCanvas->RemoveEditGrid();
                            gSystem->Sleep(60); // give X server time to refresh
                            fHCanvas->SaveAs(fn);
                         } else if (fn.EndsWith(".C"))
@@ -466,51 +450,6 @@ again:
                         if(fHistPresent)fHistPresent->CloseAllCanvases();
                         gApplication->Terminate(0);
                      }
-                     }
-                     break;
-                  case kFHActivateTimer:
-                     if (fHCanvas->GetHTimer()) {
-                        fHCanvas->ActivateTimer(-1);    // deactivate
-                        fDisplayMenu->UnCheckEntry(kFHActivateTimer);
-                     } else { 
-                     	Int_t tms = 0;
-                     	if(fHistPresent)tms = (Int_t)(1000 * fHistPresent->GetAutoUpdateDelay());
-                     	if(tms <= 0) tms = 2000;
-                     	cout << "Setting AutoUpdateDelay to " << tms << endl;
-                     	fHCanvas->ActivateTimer(tms);    // in milli second
-                     	fDisplayMenu->CheckEntry(kFHActivateTimer);
-                     }
-                     break;            
-                  case kFHRebinAll:
-                     RebinAll(gPad, fHCanvas, 0);
-                     break;
-                  case kFHAllAsSelRangeOnly:
-                     ShowAllAsSelected(gPad, fHCanvas, 0, 
-                               (TGWindow*)fRootCanvas);
-                     break;
-                  case kFHCalAllAsSel:
-                     CalibrateAllAsSelected(gPad, fHCanvas, 1);
-                     break;
-
-                  case kFHAllAsSel:
-                     ShowAllAsSelected(gPad, fHCanvas, 1);
-                     break;
-                  case kFHCommonRotate:
-                     if (fHCanvas->GetCommonRotate()) {
-                        fHCanvas->SetCommonRotate(kFALSE);
-                        fDisplayMenu->UnCheckEntry(kFHCommonRotate);
-                     } else {
-                        fHCanvas->SetCommonRotate(kTRUE);
-                        fDisplayMenu->CheckEntry(kFHCommonRotate);
-                     }
-                     break;
-                  case kFHAllAsFirst:
-                     if (fHistPresent->fShowAllAsFirst) {
-                        fHistPresent->fShowAllAsFirst = 0;
-                        fDisplayMenu->UnCheckEntry(kFHAllAsFirst);
-                     } else {
-                        fHistPresent->fShowAllAsFirst = 1;
-                        fDisplayMenu->CheckEntry(kFHAllAsFirst);
                      }
                      break;
 
@@ -606,6 +545,7 @@ again:
                      fHCanvas->Paint();
                      fHCanvas->Update();
                      break;
+/*
                   case kFH_SetGrid:
                      {
                     TArrayD values(4);
@@ -631,6 +571,7 @@ again:
                     }
                     }
                     break;
+
                   case kFH_UseGrid:
      					if (fHCanvas->GetUseEditGrid()) {
                         fEditMenu->UnCheckEntry(kFH_UseGrid);
@@ -732,6 +673,7 @@ again:
                   case kFH_ShowGallery:
                        fHCanvas->ShowGallery();
                      break;
+*/
                   case    kFH_Portrait:
                      if(fHistPresent)
                         fHistPresent->DinA4Page(0);                    
@@ -771,13 +713,13 @@ again:
                         padsav->cd();
                      }
                      break;
-                  case kOptionFit:
-                     {
-                     if(fHistPresent){
-                        fHistPresent->SetFittingOptions(fRootCanvas, fFitHist);
-                     }
-                     }
-                     break;
+//                  case kOptionFit:
+//                     {
+//                     if(fHistPresent){
+//                        fHistPresent->SetFittingOptions(fRootCanvas, fFitHist);
+//                     }
+//                     }
+//                     break;
                   case kOptionDisp:
                      {
                      if(fHistPresent){
@@ -833,26 +775,10 @@ again:
                      }
                      }
                      break;
-                  case kOptionNum:
-                     {
-                     if(fHistPresent){
-                        fHistPresent->SetNumericalOptions(fRootCanvas, fFitHist);
-                        if(fFitHist)fFitHist->UpdateCanvas();
-                     }
-                     }
-                     break;
                   case kOptionWin:
                      {
                      if(fHistPresent){
                         fHistPresent->SetWindowSizes(fRootCanvas, fFitHist);
-                        if(fFitHist)fFitHist->UpdateCanvas();
-                     }
-                     }
-                     break;
-                  case kOptionCol:
-                     {
-                     if(fHistPresent){
-                        fHistPresent->SetFontsAndColors(fRootCanvas, fFitHist);
                         if(fFitHist)fFitHist->UpdateCanvas();
                      }
                      }
@@ -1151,33 +1077,14 @@ again:
                   case kFHTerminate:
                      gApplication->Terminate(0);
                      break;
-
-                  case kFHFitGOnly:
-                     fFitHist->FitGBg(0, 1); 
-                     break;
-                   case kFHFitGBg:
-                     fFitHist->FitGBg(0, 0); 
-                     break;
-                 case kFHFitGBgTailLow:
-                     fFitHist->FitGBg(1, 0); 
-                     break;
-                  case kFHFitGBgTailHigh:
-                     fFitHist->FitGBg(2, 0); 
-                     break;
-                 case kFHFitGTailLow:
-                     fFitHist->FitGBg(1, 1); 
-                     break;
-                  case kFHFitGTailHigh:
-                     fFitHist->FitGBg(2, 1); 
+                   case kFHFitGausLBg:
+                     fFitHist->FitGausLBg(0); 
                      break;
                   case kFHFitUserG:
                      ExecFitMacroG(fGraph, fRootCanvas);   // global function !! 
                      break;
                   case kFHFitUser:
                      fFitHist->ExecFitMacro(); 
-                     break;
-                  case kFHSetLinBg:
-                     fFitHist->SetLinBg(); 
                      break;
                   case kFHFitSlicesYUser:
                      fFitHist->ExecFitSliceYMacro(); 
@@ -1543,18 +1450,16 @@ void HandleMenus::BuildMenus()
    fOptionMenu = new TGPopupMenu(fRootCanvas->GetParent());
    fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
    if(!fFitHist || !(fFitHist->Its2dim()))
-      fOptionMenu->AddEntry("How to display a 1-dim histgram", kOption1Dim);
+      fOptionMenu->AddEntry("How to display a 1-dim histogram", kOption1Dim);
    if(!fFitHist || fFitHist->Its2dim()){
-      fOptionMenu->AddEntry("Display mode of 2-dim histgram ", kOption2Dim);
-      fOptionMenu->AddEntry("Color mode of 2-dim histgram", kOption2DimCol);
+      fOptionMenu->AddEntry("How to display a 2-dim histogram ", kOption2Dim);
+      fOptionMenu->AddEntry("Color mode of 2-dim histogram", kOption2DimCol);
+      fOptionMenu->AddEntry("Change RGB transitions", kOptionBright);
+      fOptionMenu->AddEntry("Change HLS transitions", kOptionHLS);
    }
    fOptionMenu->AddEntry("How to display a graph", kOptionGraph);
    fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
-   fOptionMenu->AddEntry("HistPresent Numerical Options", kOptionNum);
    fOptionMenu->AddEntry("Default window sizes", kOptionWin);
-   fOptionMenu->AddEntry("Brightness of rgb", kOptionBright);
-   fOptionMenu->AddEntry("Lightness+Saturation (HLS)", kOptionHLS);
-   fOptionMenu->AddEntry("Default colors and fonts", kOptionCol);
 
    fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
    fAttrMenu->AddEntry("Histogram / function", kOptionHist);
@@ -1592,7 +1497,7 @@ void HandleMenus::BuildMenus()
    fViewMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
    fViewMenu->AddEntry("Show Line Attr",          kViewLineStyles);
    
-   if (fh_menus || fHCanvas->GetHistList()) {
+   if (fh_menus) {
    	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
    	if (fh_menus) {
       	fFitHist->SetMyCanvas(fRootCanvas);
@@ -1658,20 +1563,7 @@ void HandleMenus::BuildMenus()
 
 
       	if(hbrowser)hbrowser->DisplayMenu(fDisplayMenu, "display.html");
-	//      fDisplayMenu->AddEntry("ProjectY",    kFHProjectY, );
-   	} else if (fHCanvas->GetHistList()) {
-         if (!strncmp(fHCanvas->GetName(), "cmany", 5)) {
-      	   fDisplayMenu->AddEntry("Show now all as selected, Range only", kFHAllAsSelRangeOnly);
-      	   fDisplayMenu->AddEntry("Show now all as selected, Range, Min, Max ",  kFHAllAsSel);
-      	   fDisplayMenu->AddEntry("Calibrate all as selected",  kFHCalAllAsSel);
-      	   fDisplayMenu->AddEntry("Show always all as First", kFHAllAsFirst);
-            if (fHistPresent->fShowAllAsFirst) fDisplayMenu->CheckEntry(kFHAllAsFirst);
-            else                      fDisplayMenu->UnCheckEntry(kFHAllAsFirst);
-      	   fDisplayMenu->AddEntry("Rebin all",  kFHRebinAll);
-      	   fDisplayMenu->AddSeparator();
-         	fDisplayMenu->AddEntry("Activate automatic update",  kFHActivateTimer);
-         	fDisplayMenu->AddEntry("Activate simultanous rotation", kFHCommonRotate);
-         } else if (!strncmp(fHCanvas->GetName(), "cstack", 5)){
+         if (!strncmp(fHCanvas->GetName(), "cstack", 5)){
       	   fDisplayMenu->AddEntry("Real stack", kFHStack);
             if (fHistPresent->fRealStack) fDisplayMenu->CheckEntry(kFHStack);
             else                          fDisplayMenu->UnCheckEntry(kFHStack);
@@ -1680,7 +1572,6 @@ void HandleMenus::BuildMenus()
       	   fDisplayMenu->AddEntry("Set Maximum of Yscale", kFHStackMax);
          }
       	fDisplayMenu->AddSeparator();
-	//      fDisplayMenu->AddEntry("Help",  kFH_Help_ShowSelected);
    	}
    }
    if(fh_menus){
@@ -1744,19 +1635,7 @@ void HandleMenus::BuildMenus()
       	fFitMenu->AddEntry("Execute User FitSlices Y Macro", kFHFitSlicesYUser);
       	fFitMenu->AddSeparator();
       } else {
-         fFitMenu->AddEntry("Fit Gauss Only",             kFHFitGOnly);
-         fFitMenu->AddEntry("Fit Gauss + Bg",             kFHFitGBg);
-         fFitMenu->AddEntry("Fit Gauss + Low Tail",       kFHFitGTailLow);
-         fFitMenu->AddEntry("Fit Gauss + High Tail",      kFHFitGTailHigh);
-         fFitMenu->AddEntry("Fit Gauss + Bg + Low Tail",  kFHFitGBgTailLow);
-         fFitMenu->AddEntry("Fit Gauss + Bg + High Tail", kFHFitGBgTailHigh);
-         fFitMenu->AddEntry("Determine linear background", kFHSetLinBg);
-         fFitMenu->AddSeparator();
-         fFitMenu->AddEntry("Set Fitting Options",       kOptionFit);
-         if(fFitHist->GetKeepPar()) fFitMenu->CheckEntry(kFHKeepPar);
-         else                       fFitMenu->UnCheckEntry(kFHKeepPar);
-         if(fFitHist->GetCallMinos()) fFitMenu->CheckEntry(kFHCallMinos);
-         else                       fFitMenu->UnCheckEntry(kFHCallMinos);
+         fFitMenu->AddEntry("Fit Gauss + Linear BG",      kFHFitGausLBg);
       }
       fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUser);
       fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUser);
@@ -1832,7 +1711,7 @@ void HandleMenus::BuildMenus()
    	fEditMenu->AddEntry("Use Edit Grid",           kFH_UseGrid);
    	fEditMenu->AddEntry("Align objects at grid",     kFH_PutObjectsOnGrid);
       if (fHCanvas->GetUseEditGrid()) fEditMenu->CheckEntry(kFH_UseGrid);
-      else                      fEditMenu->UnCheckEntry(kFH_UseGrid);
+      else                            fEditMenu->UnCheckEntry(kFH_UseGrid);
 //      fEditMenu->AddEntry("Edit User Fit Macro",     kFHEditUser);
    	fEditMenu->AddEntry("Draw visible grid",        kFH_DrawGridVis);
    	fEditMenu->AddEntry("Draw real grid",           kFH_DrawGrid  );

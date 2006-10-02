@@ -3,6 +3,7 @@
 #include "Gtypes.h"
 #include "TGWindow.h"
 #include "TObject.h"
+#include <iostream>
 //_____________________________________________________________________________________
 
 
@@ -34,11 +35,11 @@ private:
 	Double_t fArrow_indent_angle;
 public:
    TSplineXDialog();
-   virtual ~TSplineXDialog() {};
+   virtual ~TSplineXDialog() {cout << "dtor:~TSplineXDialog()" << endl;};
    void Draw_The_TSplineX();
    void SaveDefaults() {};
    void RestoreDefaults() {};
-   void CloseDown() {};
+   void CloseDown() {delete this;};
 
 ClassDef(TSplineXDialog,0)
 };

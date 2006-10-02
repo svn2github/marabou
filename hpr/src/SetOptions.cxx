@@ -22,7 +22,6 @@
 #include "TCurlyLine.h"
 #include "Buttons.h"
 
-#include "TGMrbTableFrame.h"
 #include "TGMrbValuesAndText.h"
 #include "FitHist.h"
 #include "HistPresent.h"
@@ -109,8 +108,7 @@ void HistPresent::RestoreOptions()
    fDivMarginY        = env.GetValue("HistPresent.DivMarginY", 0.001);
    fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
    fLinScaleMin = atof(env.GetValue("HistPresent.LinScaleMin", "0"));
-   fAutoUpdateDelay =
-       atof(env.GetValue("HistPresent.AutoUpdateDelay", "2"));
+   fAutoUpdateDelay  = env.GetValue("HistPresent.AutoUpdateDelay", 2);
    fPeakMwidth       = env.GetValue("HistPresent.fPeakMwidth", 11);
    fPeakThreshold    = env.GetValue("HistPresent.fPeakThreshold", 3.);
    fLiveStat1dim     = env.GetValue("HistPresent.LiveStat1dim", 0);
@@ -118,15 +116,6 @@ void HistPresent::RestoreOptions()
    fLiveGauss        = env.GetValue("HistPresent.LiveGauss", 0);
    fLiveBG           = env.GetValue("HistPresent.LiveBG", 0);
 
-   fFitOptLikelihood = env.GetValue("HistPresent.FitOptLikelihood", 0);
-   fFitOptQuiet      = env.GetValue("HistPresent.FitOptQuiet", 0);
-   fFitOptVerbose    = env.GetValue("HistPresent.FitOptVerbose", 0);
-   fFitOptMinos      = env.GetValue("HistPresent.FitOptMinos", 0);
-   fFitOptErrors1    = env.GetValue("HistPresent.FitOptErrors1", 0);
-   fFitOptIntegral   = env.GetValue("HistPresent.FitOptIntegral", 0);
-   fFitOptNoDraw     = env.GetValue("HistPresent.FitOptNoDraw", 0);
-   fFitOptAddAll     = env.GetValue("HistPresent.FitOptAddAll", 0);
-   fFitOptKeepParameters = env.GetValue("HistPresent.FitOptKeepPara", 0);
    fNofTransLevels   = env.GetValue("HistPresent.NofTransLevels", 20);
    fStartColor       = env.GetValue("HistPresent.StartColor", 2);
    fEndColor         = env.GetValue("HistPresent.EndColor", 3);
@@ -140,10 +129,8 @@ void HistPresent::RestoreOptions()
 
    f2DimBackgroundColor =
        env.GetValue("HistPresent.2DimBackgroundColor", 0);
-   f1DimFillColor = env.GetValue("HistPresent.1DimFillColor", 46);
    fStatFont = env.GetValue("HistPresent.StatBoxFont", 40);
    fTitleFont = env.GetValue("HistPresent.TitleFont", 62);
-   fFitOptUseLinBg = env.GetValue("HistPresent.FitOptUseLinBg", 0);
    fMaxListEntries= env.GetValue("HistPresent.MaxListEntries", 333);
    fDisplayCalibrated= env.GetValue("HistPresent.DisplayCalibrated", 1);
    *fHostToConnect =
@@ -389,7 +376,6 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.Lightness", fLightness);
    env.SetValue("HistPresent.Saturation",fSaturation);
    env.SetValue("HistPresent.2DimBackgroundColor", f2DimBackgroundColor);
-   env.SetValue("HistPresent.1DimFillColor", f1DimFillColor);
    env.SetValue("HistPresent.StatBoxFont", fStatFont);
    env.SetValue("HistPresent.TitleBoxFont", fTitleFont);
    env.SetValue("HistPresent.ShowContour", fShowContour);
@@ -412,16 +398,6 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.ShowAllAsFirst",    fShowAllAsFirst);
    env.SetValue("HistPresent.RealStack",    fRealStack);
    env.SetValue("HistPresent.UseRegexp", fUseRegexp);
-   env.SetValue("HistPresent.FitOptLikelihood", fFitOptLikelihood);
-   env.SetValue("HistPresent.FitOptQuiet", fFitOptQuiet);
-   env.SetValue("HistPresent.FitOptVerbose", fFitOptVerbose);
-   env.SetValue("HistPresent.FitOptMinos", fFitOptMinos);
-   env.SetValue("HistPresent.FitOptErrors1", fFitOptErrors1);
-   env.SetValue("HistPresent.FitOptIntegral", fFitOptIntegral);
-   env.SetValue("HistPresent.FitOptNoDraw", fFitOptNoDraw);
-   env.SetValue("HistPresent.FitOptAddAll", fFitOptAddAll);
-   env.SetValue("HistPresent.FitOptKeepPara", fFitOptKeepParameters);
-   env.SetValue("HistPresent.FitOptUseLinBg", fFitOptUseLinBg);
    env.SetValue("HistPresent.MaxListEntries", fMaxListEntries);
    env.SetValue("HistPresent.DisplayCalibrated", fDisplayCalibrated);
 //  char options
@@ -431,10 +407,6 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim->Data());
    env.SetValue("HistPresent.HostToConnect", fHostToConnect->Data());
    env.SetValue("HistPresent.SocketToConnect", fSocketToConnect);
-//  double
-//   env.SetValue("HistPresent.ProjectBothRatio"   ,kEnvUser);
-//   env.SetValue("HistPresent.LogScaleMin"        ,kEnvUser);
-//   env.SetValue("HistPresent.AutoUpdateDelay"    ,kEnvUser);
    env.SetValue("HistPresent.DivMarginX", fDivMarginX);
    env.SetValue("HistPresent.DivMarginY", fDivMarginY);
    env.SetValue("HistPresent.ProjectBothRatio", fProjectBothRatio);
@@ -1057,6 +1029,9 @@ void HistPresent::SetHistAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("Fill_Select_HistFillStyle")); 
    row_lab->Add(new TObjString("LineSSelect_HistLineStyle"));  
    row_lab->Add(new TObjString("PlainShtVal_HistLineWidth"));
+   row_lab->Add(new TObjString("ColorSelect_MarkerColor"));     
+   row_lab->Add(new TObjString("Mark_Select_MarkerStyle"));     
+   row_lab->Add(new TObjString("Float_Value_MarkerSize"));         
    row_lab->Add(new TObjString("Float_Value_EndErrorSize "));  
    row_lab->Add(new TObjString("Float_Value_ErrorX")); 
    row_lab->Add(new TObjString("ColorSelect_FuncColor"));
@@ -1068,6 +1043,9 @@ void HistPresent::SetHistAttributes(TGWindow * win, FitHist * fh)
    valp[ind++] = &fHistFillStyle;
    valp[ind++] = &fHistLineStyle;
    valp[ind++] = &fHistLineWidth;
+	valp[ind++] = &fMarkerColor;   
+	valp[ind++] = &fMarkerStyle;   
+	valp[ind++] = &fMarkerSize;
    valp[ind++] = &fEndErrorSize;
    valp[ind++] = &fErrorX;     
    valp[ind++] = &fFuncColor;
@@ -1090,6 +1068,9 @@ void HistPresent::SetHistAtt()
    gStyle->SetHistFillStyle(fHistFillStyle);
    gStyle->SetHistLineStyle(fHistLineStyle);
    gStyle->SetHistLineWidth(fHistLineWidth);
+   gStyle->SetMarkerColor(fMarkerColor);
+   gStyle->SetMarkerSize(fMarkerSize);
+   gStyle->SetMarkerStyle(fMarkerStyle);
    gStyle->SetEndErrorSize (fEndErrorSize );
    gStyle->SetErrorX       (fErrorX       );
    gStyle->SetFuncColor    (fFuncColor    );
@@ -1422,74 +1403,43 @@ void HistPresent::SetAxisAtt()
 
 void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 7;
-   enum e_opt { e_contour, e_filled, e_errors, e_axisattop,
-                e_livestat, e_livegauss,e_livebg };
-   const char *opt[] = {
-      "Show contour",
-      "Fill histogram",
-      "Show error bars",
-      "Extra Xaxis (channels) at top",
-      "Show live statbox when dragging mouse",
-      "Do live Gauss fit",
-      "Use linear background in live fit"
-   };
+   TList *row_lab = new TList();
+   static void *valp[25];
+   Int_t ind = 0;
+ 
+   row_lab->Add(new TObjString("CheckButton_Show contour"));
+   valp[ind++] = &fShowContour; 
+   row_lab->Add(new TObjString("CheckButton+Fill histogram")); 
+   valp[ind++] = &fFill1Dim; 
+   row_lab->Add(new TObjString("ColorSelect_FillColor"));
+   valp[ind++] = &fHistFillColor; 
+   row_lab->Add(new TObjString("Fill_Select_FillStyle"));
+   valp[ind++] = &fHistFillStyle; 
 
-   TArrayI flags(nopt);
-   TOrdCollection *svalues = new TOrdCollection();
-   for (Int_t i = 0; i < nopt; i++) {
-      svalues->Add(new TObjString(opt[i]));
-      flags[i] = 0;
-      if (i == e_contour && fShowContour)
-         flags[i] = 1;
-      else if (i == e_filled && fFill1Dim)
-         flags[i] = 1;
-      else if (i == e_errors && fShowErrors)
-         flags[i] = 1;
-      else if (i == e_axisattop && fDrawAxisAtTop)
-         flags[i] = 1;
-      else if (i == e_livestat && fLiveStat1dim)
-         flags[i] = 1;
-      else if (i == e_livegauss && fLiveGauss)
-         flags[i] = 1;
-      else if (i == e_livebg && fLiveBG)
-         flags[i] = 1;
-   }
-   Int_t retval = 0;
+   row_lab->Add(new TObjString("CheckButton_Show Errors")); 
+   valp[ind++] = &fShowErrors; 
+   row_lab->Add(new TObjString("CheckButton+Xaxis at top")); 
+   valp[ind++] = &fDrawAxisAtTop; 
+   row_lab->Add(new TObjString("CheckButton_Live statbox")); 
+   valp[ind++] = &fLiveStat1dim; 
+   row_lab->Add(new TObjString("CheckButton+Live Gauss fit")); 
+   valp[ind++] = &fLiveGauss; 
+   row_lab->Add(new TObjString("CheckButton_Use linear background in live fit"));
+   valp[ind++] = &fLiveBG; 
+//   row_lab->Add(new TObjString("PlainIntVal_Width of response func in fpeak"));
+//   valp[ind++] = &fPeakMwidth;
+//   row_lab->Add(new TObjString("DoubleValue_Threshold in fpeak"));
+ //  valp[ind++] = &fPeakThreshold;
+ 
+   Bool_t ok; 
    Int_t itemwidth = 240;
-   new TGMrbTableFrame(win, &retval,
-                      "1 dim options", itemwidth,
-                       1, nopt,
-                       svalues, 0, 0, &flags);
-   if (retval < 0) {
-//      cout << "canceled" << endl;
-      return;
-   }
-   fShowContour = 0;
-   fFill1Dim = 0;
-   fShowErrors = 0;
-   fDrawAxisAtTop = 0;
-   fLiveStat1dim = 0;
-   fLiveGauss = 0;
-   fLiveBG = 0;
-   for (Int_t i = 0; i < nopt; i++) {
-      if (flags[i] != 0) {
-         if (i == e_contour)
-            fShowContour = 1;
-         else if (i == e_errors)
-            fShowErrors = 1;
-         else if (i == e_filled)
-            fFill1Dim = 1;
-         else if (i == e_axisattop)
-            fDrawAxisAtTop = 1;
-         else if (i == e_livestat) 
-           fLiveStat1dim = 1;
-         else if (i == e_livegauss) 
-           fLiveGauss = 1;
-         else if (i == e_livebg) 
-           fLiveBG = 1;
-      }
-   }
+   ok = GetStringExt("How to draw a 1-dim hist", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, valp);
+   if (!ok) return;
+   if (fFill1Dim) {
+      if (fHistFillColor == 0) fHistFillColor = 1;
+      if (fHistFillStyle == 0) fHistFillStyle = 1001;
+   }   
    SaveOptions();
    if (fh) fh->UpdateDrawOptions();
 }
@@ -1497,36 +1447,34 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetGraphOptions(TGWindow * win, TCanvas * ca)
 {
+   TList *row_lab = new TList();
    const Int_t nopt = 8;
+   static void *valp[nopt];
+   Int_t flags[nopt];
+   Int_t ind = 0;
    const char *cdrawopt[] = {"L", "F", "A", "C", "*", "P", "B", "1"};
    const char *gDrawOptText[] = {
-      "A simple polyline between every points is drawn",
-      "A fill area is drawn ('CF' draw a smooth fill area)",
-      "Axis are drawn around the graph",
-      "A smooth Curve is drawn",
-      "A Star is plotted at each point",
-      "Idem with the current marker",
-      "A Bar chart is drawn at each point",
-      "ylow=rwymin"};
-   TArrayI flags(nopt);
-   TOrdCollection *svalues = new TOrdCollection();
+      "CheckButton_A simple polyline between every points is drawn",
+      "CheckButton_A fill area is drawn ('CF' draw a smooth fill area)",
+      "CheckButton_Axis are drawn around the graph",
+      "CheckButton_A smooth Curve is drawn",
+      "CheckButton_A Star is plotted at each point",
+      "CheckButton_Idem with the current marker",
+      "CheckButton_A Bar chart is drawn at each point",
+      "CheckButton_ylow=rwymin"};
    for (Int_t i = 0; i < nopt; i++) {
+      row_lab->Add(new TObjString(gDrawOptText[i]));
       if (fDrawOptGraph.Contains(cdrawopt[i]))
          flags[i] = 1;
       else
          flags[i] = 0;
-      svalues->Add(new TObjString(gDrawOptText[i]));
+      valp[ind++] = &flags[i];
    }
-   Int_t retval = 0;
-   Int_t itemwidth = 300;
-   new TGMrbTableFrame(win, &retval,
-   						  "How to draw a Graph",
-   						  itemwidth, 1, nopt,
-   						  svalues, 0, 0, &flags);
-   if (retval < 0) {
-//      cout << "canceled" << endl;
-      return;
-   }
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Graph Drawing Options", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, valp);
+   if (!ok) return;
    fDrawOptGraph = "";
    for (Int_t i = 0; i < nopt; i++) {
       if (flags[i] != 0)
@@ -1549,85 +1497,132 @@ void HistPresent::SetGraphOptions(TGWindow * win, TCanvas * ca)
    SaveOptions();
 }
 //_______________________________________________________________________
+
 void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 {
-   const Int_t nopt = 21;
-   enum drawopt2 { e_scat,  e_box,   e_cont0, e_contz, e_cont1,
-                   e_cont2, e_cont3, e_col,   e_colz,  e_lego1, 
-                   e_lego2, e_lego3, e_surf1, e_surf2, e_surf3, 
-                   e_surf4, e_text,  e_arr,   e_fb,    e_bb, 
-                   e_livestat
-   };
+static const Char_t helptext[] =
+"SCAT  : Draw a scatter-plot (default)\n\
+BOX   : a box is drawn for each cell with surface proportional to the\n\
+          content's absolute value. A negative content is marked with a X.\n\
+BOX1  : a button is drawn for each cell with surface proportional to\n\
+          content's absolute value. A sunken button is drawn for negative values\n\
+          a raised one for positive.\n\
+COL   : a box is drawn for each cell with a color scale varying with contents\n\
+COLZ  : same as COL. In addition the color palette is also drawn\n\
+CONT  : Draw a contour plot (same as CONT0)\n\
+CONT0 : Draw a contour plot using surface colors to distinguish contours\n\
+CONT1 : Draw a contour plot using line styles to distinguish contours\n\
+CONT2 : Draw a contour plot using the same line style for all contours\n\
+CONT3 : Draw a contour plot using fill area colors\n\
+CONT4 : Draw a contour plot using surface colors (SURF option at theta = 0)\n\
+CONT5 : (TGraph2D only) Draw a contour plot using Delaunay triangles\n\
+LEGO  : Draw a lego plot with hidden line removal\n\
+LEGO1 : Draw a lego plot with hidden surface removal\n\
+LEGO2 : Draw a lego plot using colors to show the cell contents\n\
+SURF  : Draw a surface plot with hidden line removal\n\
+SURF1 : Draw a surface plot with hidden surface removal\n\
+SURF2 : Draw a surface plot using colors to show the cell contents\n\
+SURF3 : same as SURF with in addition a contour view drawn on the top\n\
+SURF4 : Draw a surface using Gouraud shading\n\
+SURF5 : Same as SURF3 but only the colored contour is drawn. Used with\n\
+          option CYL, SPH or PSR it allows to draw colored contours on a\n\
+          sphere, a cylinder or a in pseudo rapidy space. In cartesian\n\
+          or polar coordinates, option SURF3 is used.\n\
+ARR   : arrow mode. Shows gradient between adjacent cells\n\
+TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
+";
    const char *cdrawopt2[] =
-       { "scat",  "box",   "cont0", "contz", "cont1", 
-         "cont2", "cont3", "col",   "COLZ",  "lego1", 
-         "lego2", "lego3", "surf1", "surf2", "surf3", 
-         "surf4", "text",  "arr",   "BB",    "FB", 
-         "LBOX"
-   };
-   const char *gDrawOpt2Text[] = {
-      "Scatter pixels",
-      "Boxes",
-      "Contour, filled",
-      "Contour, filled, with scale",
-      "Contour, colored lines",
-      "Contour, styled lines",
-      "Contour, b/w lines",
-      "Color levels",
-      "Color levels, with scale",
-      "Lego plot, colored shading",
-      "Lego plot, colored level",
-      "Lego plot, b/w",
-      "Surface, colored,  mesh",
-      "Surface, colored, no mesh",
-      "Surface + Contour",
-      "Surface, Gourand shading",
-      "Numbers",
-      "Arrows indicating gradient",
+   {"SCAT", "BOX0",   "BOX1",  "COL", 
+    "CONT0", "CONT1", "CONT2", "CONT3", "CONT4", 
+    "LEGO", "LEGO1", "LEGO2",
+    "SURF0", "SURF1", "SURF2", "SURF3", "SURF4", 
+    "ARR", "TEXT"}; 
 
-      "Dont show back box (LEGO)",
-      "Dont show front box (LEGO)",
-      "Show live statbox when dragging mouse"
+   const char *gDrawOpt2Text[] = {
+      "RadioButton_Scatter pixels",
+      "RadioButton_Boxes",
+      "RadioButton_Boxes (raised sunken)",
+      "RadioButton_Color levels",
+      "RadioButton_Contour, fillcolors",
+      "RadioButton_Contour, colored lines",
+      "RadioButton_Contour, diff linestyles",
+      "RadioButton_Contour, b/w solidlines",
+      "RadioButton_Contour, surface colors",
+      "RadioButton_Lego, hidden line removal",
+      "RadioButton_Lego, hidden surface removal",
+      "RadioButton_Lego, colored level",
+      "RadioButton_Surface, b/w,  mesh",
+      "RadioButton_Surface, colored,  mesh",
+      "RadioButton_Surface, colored, no mesh",
+      "RadioButton_Surface + Contour",
+      "RadioButton_Surface, Gouraud shading",
+      "RadioButton_Arrows indicating gradient",
+      "RadioButton_Numbers"
    };
-   TArrayI flags(nopt);
-   TOrdCollection *svalues = new TOrdCollection();
+
+   const Int_t nopt = 19;
+   TList *row_lab = new TList();
+   static void *valp[50];
+   Int_t ind = 0;
+   Int_t flags[nopt];
+   Int_t drawzscale = 0;
+   Int_t hidebackbox = 0;
+   Int_t hidefrontbox = 0;
+
    for (Int_t i = 0; i < nopt; i++) {
-      if (fDrawOpt2Dim->Contains(cdrawopt2[i]))
+      if (fDrawOpt2Dim->Contains(cdrawopt2[i], TString::kIgnoreCase))
          flags[i] = 1;
       else
          flags[i] = 0;
-      svalues->Add(new TObjString(gDrawOpt2Text[i]));
+      if (fDrawOpt2Dim->Contains("Z"))  drawzscale = 1;
+      if (fDrawOpt2Dim->Contains("BB")) hidebackbox = 1;
+      if (fDrawOpt2Dim->Contains("FB")) hidefrontbox = 1;
+      valp[ind++] = &flags[i];
+      row_lab->Add(new TObjString(gDrawOpt2Text[i]));
    }
-   flags[nopt - 1] = fLiveStat2dim;
-   Int_t retval = 0;
+   row_lab->Add(new TObjString("CheckButton_Show z-scale"));
+   valp[ind++] = &drawzscale;
+   row_lab->Add(new TObjString("CheckButton_Dont show back box (LEGO)"));
+   valp[ind++] = &hidebackbox;
+   row_lab->Add(new TObjString("CheckButton_Dont show front box (LEGO)"));
+   valp[ind++] = &hidefrontbox;
+   row_lab->Add(new TObjString("CheckButton_Show statbox when dragging mouse"));
+   valp[ind++] = &fLiveStat2dim;
+   row_lab->Add(new TObjString("DoubleValue_LogScale_Minimum"));
+   valp[ind++] = &fLogScaleMin;
+   row_lab->Add(new TObjString("DoubleValue_LinScale_Minimum"));
+   valp[ind++] = &fLinScaleMin;
+
+   Bool_t ok; 
    Int_t itemwidth = 240;
-   new TGMrbTableFrame(win, &retval,
-   						  "How to show a 2dim hist",
-   						  itemwidth, 1, nopt,
-   						  svalues, 0, 0, &flags,
-   						  nopt - 3);
-   if (retval < 0) {
-//      cout << "canceled" << endl;
-      return;
-   }
-   for (Int_t i = 0; i < nopt - 3; i++) {
+   ok = GetStringExt("How to draw a 1-dim hist", NULL, itemwidth, win
+                     ,NULL, NULL, row_lab, valp
+                     ,NULL, NULL, &helptext[0]);
+   if (!ok) return;
+
+   for (Int_t i = 0; i < nopt; i++) {
       if (flags[i] != 0)
          *fDrawOpt2Dim = cdrawopt2[i];
    }
 
-   fLiveStat2dim = flags[nopt - 1];
    TString sopt = *fDrawOpt2Dim;
 //         cout << " sopt " << sopt << endl;
    if (sopt.Contains("SURF", TString::kIgnoreCase) ||
        sopt.Contains("LEGO", TString::kIgnoreCase)) {
        cout << " sopt " << sopt << endl;
 
-      if (flags[nopt - 3] != 0)
+      if (hidebackbox != 0)
          *fDrawOpt2Dim += "BB";
-      if (flags[nopt - 2] != 0)
+      if (hidefrontbox != 0)
          *fDrawOpt2Dim += "FB";
    }
-
+   if (sopt.Contains("CONT", TString::kIgnoreCase) ||
+      sopt.Contains("COL", TString::kIgnoreCase)) {
+      if (drawzscale != 0)
+         *fDrawOpt2Dim += "Z";
+   }
+   if (sopt.Contains("CONT0", TString::kIgnoreCase))
+      gStyle->SetHistFillStyle(1001);
 
    if (fh) {
       fh->SetSelectedPad();
@@ -1644,36 +1639,37 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 void HistPresent::Set2DimColorOpt(TGWindow * win, FitHist * fh)
 {
    const Int_t nopt = 5;
-   enum drawopt2 {e_trgb, e_thls, e_mono, e_minv, e_regb};
+   Int_t flags[nopt];
+   static void *valp[10];
+   Int_t ind = 0;
+   TList *row_lab = new TList();
    const char *cdrawopt2[] =
        { "TRANSRGB", "TRANSHLS", "MONO", "MINV", "REGB"};
    const char *gDrawOpt2Text[] = {
-      "Color transition RGB",
-      "Color transition HLS",
-      "Grey levels, highest=white",
-      "Grey levels, highest=black",
-      "Rainbow colors"
+      "RadioButton_Color transition RGB",
+      "RadioButton_Color transition HLS",
+      "RadioButton_Grey levels, highest=white",
+      "RadioButton_Grey levels, highest=black",
+      "RadioButton_Rainbow colors"
    };
-   TArrayI flags(nopt);
-   TOrdCollection *svalues = new TOrdCollection();
    for (Int_t i = 0; i < nopt; i++) {
       if (f2DimColorPalette->Contains(cdrawopt2[i]))
          flags[i] = 1;
       else
          flags[i] = 0;
-      svalues->Add(new TObjString(gDrawOpt2Text[i]));
+      valp[ind++] = &flags[i];
+      row_lab->Add(new TObjString(gDrawOpt2Text[i]));
    }
-   Int_t retval = 0;
+   row_lab->Add(new TObjString("PlainIntVal_Start color in RGB trans"));
+   row_lab->Add(new TObjString("PlainIntVal_End   color in RGB trans"));
+   valp[ind++] = &fStartColor;
+   valp[ind++] = &fEndColor;
+
+   Bool_t ok; 
    Int_t itemwidth = 240;
-   new TGMrbTableFrame(win, &retval,
-   						  "Color mode for 2dim hist",
-   						  itemwidth, 1, nopt,
-   						  svalues, 0, 0, &flags,
-   						  nopt);
-   if (retval < 0) {
-//      cout << "canceled" << endl;
-      return;
-   }
+   ok = GetStringExt("2 Dim Color Mode", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, valp);
+   if (!ok) return;
    *f2DimColorPalette = "DEFA"; 
    for (Int_t i = 0; i < nopt; i++) {
       if (flags[i] != 0)
@@ -1688,108 +1684,47 @@ void HistPresent::Set2DimColorOpt(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetDisplayOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 12;
-   enum e_opt { e_title, e_date, e_display, e_statbox, e_name, e_entries,
-      e_mean, e_rms, e_underflow, e_overflow, e_integral,
-      e_fit, e_monochrome
-   };
-   Int_t ib_name = 1, ib_entries = 10,
-       ib_mean = 100, ib_rms = 1000, ib_underflow = 10000, ib_overflow =
-       100000, ib_integral = 1000000;
-   const char *opt[] = {
-      "Show histogram title",
-      "Show date box",
-      "Use time of display",
-      "Show statistics box",
-      "Show name of histogram",
+   const Int_t nopt = 7;
+   Int_t flags[nopt];
+   Int_t statopts[nopt] = {1, 10, 100, 1000, 10000, 100000, 1000000};
 
-      "Show number of entries",
-      "Show mean",
-      "Show rms",
-      "Show underflow",
-      "Show overflow",
+   TList *row_lab = new TList();
+   static void *valp[50];
+   Int_t ind = 0;
+   row_lab->Add(new TObjString("CheckButton_Show histogram title"));
+   row_lab->Add(new TObjString("CheckButton_Show date box"));
+   row_lab->Add(new TObjString("CheckButton_Use time of display"));
+   row_lab->Add(new TObjString("CheckButton_Show statistics box"));
+   row_lab->Add(new TObjString("CheckButton_Show name of histogram"));
+   row_lab->Add(new TObjString("CheckButton_Show number of entries"));
+   row_lab->Add(new TObjString("CheckButton_Show mean"));
+   row_lab->Add(new TObjString("CheckButton_Show rms"));
+   row_lab->Add(new TObjString("CheckButton_Show underflow"));
+   row_lab->Add(new TObjString("CheckButton_Show overflow"));
+   row_lab->Add(new TObjString("CheckButton_Show integral"));
+   row_lab->Add(new TObjString("CheckButton_Show fit parameters"));
 
-      "Show integral",
-      "Show fit parameters"
-   };
-   TArrayI flags(nopt);
-   TOrdCollection *svalues = new TOrdCollection();
+   valp[ind++] = &fShowTitle;
+   valp[ind++] = &fShowDateBox;
+   valp[ind++] = &fUseTimeOfDisplay;
+   valp[ind++] = &fShowStatBox;
+
    for (Int_t i = 0; i < nopt; i++) {
-      svalues->Add(new TObjString(opt[i]));
-      flags[i] = 0;
-      if (i == e_title && fShowTitle)
-         flags[i] = 1;
-      else if (i == e_date && fShowDateBox)
-         flags[i] = 1;
-      else if (i == e_display && fUseTimeOfDisplay)
-         flags[i] = 1;
-      else if (i == e_statbox && fShowStatBox)
-         flags[i] = 1;
-      else if (i == e_name && (fOptStat / ib_name) % 10)
-         flags[i] = 1;
-      else if (i == e_entries && (fOptStat / ib_entries) % 10)
-         flags[i] = 1;
-      else if (i == e_mean && (fOptStat / ib_mean) % 10)
-         flags[i] = 1;
-      else if (i == e_rms && (fOptStat / ib_rms) % 10)
-         flags[i] = 1;
-      else if (i == e_underflow && (fOptStat / ib_underflow) % 10)
-         flags[i] = 1;
-      else if (i == e_overflow && (fOptStat / ib_overflow) % 10)
-         flags[i] = 1;
-      else if (i == e_integral && (fOptStat / ib_integral) % 10)
-         flags[i] = 1;
-      else if (i == e_fit && fShowFitBox)
-         flags[i] = 1;
+      if (((fOptStat / statopts[i]) % 10) != 0) flags[i] = 1; 
+      else                                      flags[i] = 0; 
+      valp[ind++] = &flags[i];
    }
-   Int_t retval = 0;
+   valp[ind++] = &fShowFitBox;
+   Bool_t ok; 
    Int_t itemwidth = 240;
-   new TGMrbTableFrame(win, &retval,
-   						  "What elements to show",
-   						  itemwidth, 1, nopt,
-   						  svalues, 0, 0, &flags);
-   if (retval < 0) {
-//      cout << "canceled" << endl;
-      return;
-   }
+   ok = GetStringExt("What to show for a histogram", NULL, itemwidth, win
+                     ,NULL, NULL, row_lab, valp);
+   if (!ok) return;
    fOptStat = 0;
-   fShowTitle = 0;
-   fShowDateBox = 0;
-   fUseTimeOfDisplay = 0;
-   fShowStatBox = 0;
-   fShowFitBox = 0;
    for (Int_t i = 0; i < nopt; i++) {
-      if (flags[i] != 0) {
-         if (i == e_title)
-            fShowTitle = 1;
-         else if (i == e_date)
-            fShowDateBox = 1;
-         else if (i == e_display)
-            fUseTimeOfDisplay = 1;
-         else if (i == e_statbox)
-            fShowStatBox = 1;
-         else if (i == e_entries)
-            fOptStat += ib_entries;
-         else if (i == e_name)
-            fOptStat += ib_name;
-         else if (i == e_mean)
-            fOptStat += ib_mean;
-         else if (i == e_rms)
-            fOptStat += ib_rms;
-         else if (i == e_underflow)
-            fOptStat += ib_underflow;
-         else if (i == e_overflow)
-            fOptStat += ib_overflow;
-         else if (i == e_integral)
-            fOptStat += ib_integral;
-         else if (i == e_fit)
-            fShowFitBox = 1;
-      }
+      if (flags[i] != 0)
+        fOptStat += statopts[i];
    }
-
-//   if (fShowDateBox)gStyle->SetOptDate(21);
-//   else             gStyle->SetOptDate(0);
-
    gStyle->SetOptFit(0);
    gStyle->SetOptStat(0);
    if (fh){
@@ -1809,143 +1744,10 @@ void HistPresent::SetDisplayOptions(TGWindow * win, FitHist * fh)
 
 //_______________________________________________________________________
 
-void HistPresent::SetFittingOptions(TGWindow * win, FitHist * fh)
-{
-   Int_t nopt = 11;
-   enum e_opt { e_likeli,
-      e_quiet,
-      e_verbose,
-      e_minos,
-      e_errors,
-      e_integral,
-      e_nodraw,
-      e_addall,
-      e_keep,
-      e_uselinbg,
-      e_fitted
-   };
-   const char *opt[] = {
-      "Use Loglikelihood method",
-      "Quiet, minimal printout",
-      "Verbose printout",
-      "Use Minos to improve fit",
-      "Set all errors to 1",
-      "Use Integral of function in bin",
-      "Dont draw result function",
-      "Add all fitted functions to hist",
-      "Keep parameters for next fit",
-      "Use fixed linear background",
-      "Display compents of fit function"
-   };
-   TArrayI flags(nopt);
-   TOrdCollection *svalues = new TOrdCollection();
-   for (Int_t i = 0; i < nopt; i++) {
-      svalues->Add(new TObjString(opt[i]));
-      flags[i] = 0;
-      if (i == e_likeli && fFitOptLikelihood)
-         flags[i] = 1;
-      else if (i == e_quiet && fFitOptQuiet)
-         flags[i] = 1;
-      else if (i == e_verbose && fFitOptVerbose)
-         flags[i] = 1;
-      else if (i == e_minos && fFitOptMinos)
-         flags[i] = 1;
-      else if (i == e_errors && fFitOptErrors1)
-         flags[i] = 1;
-      else if (i == e_integral && fFitOptIntegral)
-         flags[i] = 1;
-      else if (i == e_nodraw && fFitOptNoDraw)
-         flags[i] = 1;
-      else if (i == e_addall && fFitOptAddAll)
-         flags[i] = 1;
-      else if (i == e_keep && fFitOptKeepParameters)
-         flags[i] = 1;
-      else if (i == e_uselinbg && fFitOptUseLinBg)
-         flags[i] = 1;
-      else if (i == e_fitted && fShowFittedCurves)
-         flags[i] = 1;
-   }
-   Int_t retval = 0;
-   Int_t itemwidth = 240;
-   new TGMrbTableFrame(win, &retval,
-                       "Fitting Options",
-                       itemwidth, 1, nopt,
-                       svalues, 0, 0, &flags);
-   if (retval < 0) {
-//      cout << "canceled" << endl;
-      return;
-   }
-   fFitOptLikelihood = 0;
-   fFitOptQuiet = 0;
-   fFitOptVerbose = 0;
-   fFitOptMinos = 0;
-   fFitOptErrors1 = 0;
-   fFitOptIntegral = 0;
-   fFitOptNoDraw = 0;
-   fFitOptAddAll = 0;
-   fFitOptKeepParameters = 0;
-   fFitOptUseLinBg = 0;
-   fShowFittedCurves = 0;
-   for (Int_t i = 0; i < nopt; i++) {
-      if (flags[i] != 0) {
-         if (i == e_likeli)
-            fFitOptLikelihood = 1;
-         else if (i == e_quiet)
-            fFitOptQuiet = 1;
-         else if (i == e_verbose)
-            fFitOptVerbose = 1;
-         else if (i == e_minos)
-            fFitOptMinos = 1;
-         else if (i == e_errors)
-            fFitOptErrors1 = 1;
-         else if (i == e_integral)
-            fFitOptIntegral = 1;
-         else if (i == e_nodraw)
-            fFitOptNoDraw = 1;
-         else if (i == e_addall)
-            fFitOptAddAll = 1;
-         else if (i == e_keep)
-            fFitOptKeepParameters = 1;
-         else if (i == e_uselinbg)
-            fFitOptUseLinBg = 1;
-         else if (i == e_fitted)
-            fShowFittedCurves = 1;
-      }
-   }
-   SaveOptions();
-}
-
-//_______________________________________________________________________
-
 void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 15;
-   enum e_opt { e_force, e_listsonly, e_psfile, e_enablecal, e_displaycal, 
-                e_fitted, e_treehists, e_treenew, e_treevers, e_savelast,
-                e_savezoom, e_useattr, e_allasfirst, e_realstack, e_useregexp 
-   };
-   const char *opt[] = {
-      "Force style, i.e show histograms with current style",
-      "Show histlists only",
-      "Show PS file after creation",
-      "Enable calibration",
-      "Auto Display calibrated hist",
-
-      "Display compents of fit function",
-      "Remember hist limits when showing trees",
-      "Ask always for hist limits when showing trees",
-      "Keep old hists when showing trees (add version # to name)",
-      "Remember Expand settings (Marks)",
-
-      "Remember Zoomings (by left mouse)",
-      "Use Attribute Macro",
-      "In Show Selected: Show All As First",
-      "Really stack (instead of superimpose)",
-      "Use Regular expression syntax",
-
-   };
 // *INDENT-OFF* 
-   const char helptext[] = 
+static const char helptext[] = 
 "\n\
 With sockets, show lists only\n\
 -----------------------------\n\
@@ -1970,9 +1772,6 @@ Auto Display calibrated hist\n\
 ----------------------------\n\
 Display automatically a calibrated histogram if calibration\n\
 data are storteed in defaulsts file\n\
-____________________________________________________________\n\
-\n\
-Draw a fitted curve into the histogram.\n\
 ____________________________________________________________\n\
 Display fitted curves\n\
 ---------------------\n\
@@ -2007,77 +1806,71 @@ files ending with .root) is used in file/histo selection\n\
 masks. One may switch to the more powerful Regular expression\n\
 For details consult a book on Unix.\n\
 _____________________________________________________________\n\
+Max Ents in Lists\n\
+-----------------\n\
+Too many entries in histlist (e.g. > 1000) make build up\n\
+of lists slow and may even crash X on some older systems\n\
+With this option one can limit this number\n\
+____________________________________________________________\n\
+Auto Update Interval\n\
+Histograms may be updated automatically, this number is the\n\
+update interval in seconds\n\
+____________________________________________________________\n\
+Nof color transition levels\n\
+---------------------------\n\
+Number of transition levels in color palettes.\n\
 \n\
 ";
 // *INDENT-ON* 
+   TList *row_lab = new TList();
+   static void *valp[50];
+   Int_t ind = 0;
+   row_lab->Add(new TObjString("CheckButton_Force style)); i.e show histograms with current style"));
+   row_lab->Add(new TObjString("CheckButton_Show histlists only"));
+   row_lab->Add(new TObjString("CheckButton_Show PS file after creation"));
+   row_lab->Add(new TObjString("CheckButton_Enable calibration"));
+   row_lab->Add(new TObjString("CheckButton_Auto Display calibrated hist"));
+   row_lab->Add(new TObjString("CheckButton_Display compents of fit function"));
+   row_lab->Add(new TObjString("CheckButton_Remember hist limits when showing trees"));
+   row_lab->Add(new TObjString("CheckButton_Ask always for hist limits when showing trees"));
+   row_lab->Add(new TObjString("CheckButton_Keep old hists when showing trees (add version # to name)"));
+   row_lab->Add(new TObjString("CheckButton_Remember Expand settings (Marks)"));
+   row_lab->Add(new TObjString("CheckButton_Remember Zoomings (by left mouse)"));
+   row_lab->Add(new TObjString("CheckButton_Use Attribute Macro"));
+   row_lab->Add(new TObjString("CheckButton_In Show Selected: Show All As First"));
+   row_lab->Add(new TObjString("CheckButton_Really stack (instead of superimpose)"));
+   row_lab->Add(new TObjString("CheckButton_Use Regular expression syntax"));
+   row_lab->Add(new TObjString("PlainIntVal_Max Ents in Lists"));
+   row_lab->Add(new TObjString("PlainIntVal_Auto Update Interval"));
+   row_lab->Add(new TObjString("PlainIntVal_Nof color transition levels"));
+   
 
-   TArrayI flags(nopt);
-   TOrdCollection *svalues = new TOrdCollection();
-   for (Int_t i = 0; i < nopt; i++) {
-      svalues->Add(new TObjString(opt[i]));
-      flags[i] = 0;
-      if      (i == e_enablecal && fEnableCalibration)  flags[i] = 1;
-      else if (i == e_force && fForceStyle)             flags[i] = 1;
-      else if (i == e_displaycal && fDisplayCalibrated) flags[i] = 1;
-      else if (i == e_listsonly && fShowListsOnly)      flags[i] = 1;
-      else if (i == e_psfile && fShowPSFile)            flags[i] = 1;
-      else if (i == e_fitted && fShowFittedCurves)      flags[i] = 1;
-      else if (i == e_treehists && fRememberTreeHists)  flags[i] = 1;
-      else if (i == e_treenew && fAlwaysNewLimits)      flags[i] = 1;
-      else if (i == e_treevers && fNtupleVersioning)    flags[i] = 1;
-      else if (i == e_savelast && fRememberLastSet)     flags[i] = 1;
-      else if (i == e_savezoom && fRememberZoom)        flags[i] = 1;
-      else if (i == e_useattr && fUseAttributeMacro)    flags[i] = 1;
-      else if (i == e_allasfirst && fShowAllAsFirst)    flags[i] = 1;
-      else if (i == e_realstack && fRealStack)          flags[i] = 1;
-      else if (i == e_useregexp && fUseRegexp)          flags[i] = 1;
-   }
-   Int_t retval = 0;
+   valp[ind++] = &fForceStyle;
+   valp[ind++] = &fEnableCalibration;
+   valp[ind++] = &fDisplayCalibrated;
+   valp[ind++] = &fShowFittedCurves;
+   valp[ind++] = &fShowPSFile;
+   valp[ind++] = &fShowListsOnly;
+   valp[ind++] = &fRememberTreeHists;
+   valp[ind++] = &fAlwaysNewLimits;
+   valp[ind++] = &fNtupleVersioning;
+   valp[ind++] = &fRememberLastSet;
+   valp[ind++] = &fRememberZoom;
+   valp[ind++] = &fUseAttributeMacro;
+   valp[ind++] = &fShowAllAsFirst;
+   valp[ind++] = &fRealStack;
+   valp[ind++] = &fUseRegexp;
+   valp[ind++] = &fMaxListEntries;
+   valp[ind++] = &fAutoUpdateDelay;
+   valp[ind++] = &fNofTransLevels;
+
+   Bool_t ok; 
    Int_t itemwidth = 240;
-   new TGMrbTableFrame(win, &retval,
-   						  "Various Options",
-   						  itemwidth, 1, nopt,
-   						  svalues, 0, 0, &flags, 0,
-                       helptext);
-   if (retval < 0) {
-//      cout << "canceled" << endl;
-      return;
-   }
+   ok = GetStringExt("How to draw a 1-dim hist", NULL, itemwidth, win
+                     ,NULL, NULL, row_lab, valp
+                     ,NULL, NULL, helptext);
+   if (!ok) return;
 
-   fForceStyle = 0;
-   fEnableCalibration = 0;
-   fDisplayCalibrated = 0;
-   fShowFittedCurves = 0;
-   fShowPSFile = 0;
-   fShowListsOnly = 0;
-   fRememberTreeHists = 0;
-   fAlwaysNewLimits = 0;
-   fNtupleVersioning = 0;
-   fRememberLastSet = 0;
-   fRememberZoom = 0;
-   fUseAttributeMacro = 0;
-   fShowAllAsFirst = 0;
-   fRealStack = 0;
-   fUseRegexp = 0;
-   for (Int_t i = 0; i < nopt; i++) {
-      if (flags[i] != 0) {
-         if      (i == e_enablecal)  fEnableCalibration = 1;
-          else if (i == e_force)     fForceStyle = 1;
-         else if (i == e_displaycal) fDisplayCalibrated= 1;
-         else if (i == e_psfile)     fShowPSFile = 1;
-         else if (i == e_listsonly)  fShowListsOnly = 1;
-         else if (i == e_fitted)     fShowFittedCurves = 1;
-         else if (i == e_treehists)  fRememberTreeHists = 1;
-         else if (i == e_treenew)    fAlwaysNewLimits = 1;
-         else if (i == e_treevers)   fNtupleVersioning = 1;
-         else if (i == e_savelast)   fRememberLastSet = 1;
-         else if (i == e_savezoom)   fRememberZoom = 1;
-         else if (i == e_useattr)    fUseAttributeMacro = 1;
-         else if (i == e_allasfirst) fShowAllAsFirst = 1;
-         else if (i == e_realstack)  fRealStack = 1;
-         else if (i == e_useregexp)  fUseRegexp = 1;
-      }
-   }
    if (fForceStyle > 0) gROOT->ForceStyle();
    else                 gROOT->ForceStyle(kFALSE);
    SaveOptions();
@@ -2088,7 +1881,7 @@ _____________________________________________________________\n\
 void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
 {
 // *INDENT-OFF* 
-   const char helptext[] = 
+   static const char helptext[] = 
 "\n\
 This menu controls default window sizes:\n\
 Window sizes and offsets are measured in pixels\n\
@@ -2126,212 +1919,63 @@ _____________________________________________________\n\
 ";
 // *INDENT-ON* 
 
-   Int_t nopt = 13;
-//   Double_t *values = new Double_t[nopt];
-   TArrayD values(nopt);
-   TOrdCollection *row_lab = new TOrdCollection();
-//   TList *col_lab = new TList();
-//   col_lab->Add(new TObjString("X value"));
-//   col_lab->Add(new TObjString("Y value"));
-
-   Int_t vp = 0;
-   row_lab->Add(new TObjString("Main Window Width"));
-   row_lab->Add(new TObjString("Lists Width: 0 def, < 0 fit, >0 abs val"));
-   row_lab->Add(new TObjString("Window_X_Width_1dim"));
-   row_lab->Add(new TObjString("Window_Y_Width_1dim"));
-   row_lab->Add(new TObjString("Window_X_Width_2dim"));
-   row_lab->Add(new TObjString("Window_Y_Width_2dim"));
-   row_lab->Add(new TObjString("Window_Shift_X"));
-   row_lab->Add(new TObjString("Window_Shift_Y"));
-   row_lab->Add(new TObjString("Window_Top_X"));
-   row_lab->Add(new TObjString("Window_Top_Y"));
-   row_lab->Add(new TObjString("Project_Both_Ratio"));
-   row_lab->Add(new TObjString("X - Margin in ShowSelected"));
-   row_lab->Add(new TObjString("Y - Margin in ShowSelected"));
-
-
-   values[vp++] = fMainWidth;
-   values[vp++] = fWinwidx_hlist;
-   values[vp++] = fWinwidx_1dim;
-   values[vp++] = fWinwidy_1dim;
-   values[vp++] = fWinwidx_2dim;
-   values[vp++] = fWinwidy_2dim;
-   values[vp++] = fWinshiftx;
-   values[vp++] = fWinshifty;
-   values[vp++] = fWintopx;
-   values[vp++] = fWintopy;
-   values[vp++] = fProjectBothRatio;
-   values[vp++] = fDivMarginX;
-   values[vp++] = fDivMarginY;
-   Int_t ret = 0, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "Default window sizes and positions"
-                      ,itemwidth, 1, nopt, values, precission, 0, row_lab
-                      ,NULL, 0, helptext);
-   if (ret >= 0) {
-      vp = 0;
-      fMainWidth    = (Int_t) values[vp++];
-      fWinwidx_hlist = (Int_t) values[vp++];
-      fWinwidx_1dim = (Int_t) values[vp++];
-      fWinwidy_1dim = (Int_t) values[vp++];
-      fWinwidx_2dim = (Int_t) values[vp++];
-      fWinwidy_2dim = (Int_t) values[vp++];
-      fWinshiftx = (Int_t) values[vp++];
-      fWinshifty = (Int_t) values[vp++];
-      fWintopx = (Int_t) values[vp++];
-      fWintopy = (Int_t) values[vp++];
-      fProjectBothRatio = values[vp++];
-      fDivMarginX = values[vp++];
-      fDivMarginY = values[vp++];
-      fWincury = fWintopy;
-      fWincurx = fWintopx;
+   TList *row_lab = new TList();
+   static void *valp[25];
+   Int_t ind = 0;
+   Int_t fittext = 0;
+   Int_t usecustom = 0;
+   if (fWinwidx_hlist == -1) {
+      fittext = 1;
+      fWinwidx_hlist = fMainWidth;
    }
+   else if (fWinwidx_hlist > 0) {
+      usecustom = 1;
+   } else {
+      usecustom = 0;
+      fWinwidx_hlist = fMainWidth;
+   }
+   row_lab->Add(new TObjString("PlainIntVal_Main Window Width"));
+   row_lab->Add(new TObjString("CheckButton_Expand width to fit"));
+   row_lab->Add(new TObjString("CheckButton_Use fixed width"));
+   row_lab->Add(new TObjString("PlainIntVal_Lists Width"));
+   row_lab->Add(new TObjString("PlainIntVal_Window_X_Width_1dim"));
+   row_lab->Add(new TObjString("PlainIntVal_Window_Y_Width_1dim"));
+   row_lab->Add(new TObjString("PlainIntVal_Window_X_Width_2dim"));
+   row_lab->Add(new TObjString("PlainIntVal_Window_Y_Width_2dim"));
+   row_lab->Add(new TObjString("PlainIntVal_Window_Shift_X"));
+   row_lab->Add(new TObjString("PlainIntVal_Window_Shift_Y"));
+   row_lab->Add(new TObjString("PlainIntVal_Window_Top_X"));
+   row_lab->Add(new TObjString("PlainIntVal_Window_Top_Y"));
+   row_lab->Add(new TObjString("DoubleValue_Project_Both_Ratio"));
+   row_lab->Add(new TObjString("Float_Value_X - Margin in ShowSelected"));
+   row_lab->Add(new TObjString("Float_Value_Y - Margin in ShowSelected"));
+
+   valp[ind++] = &fMainWidth;
+   valp[ind++] = &fittext;
+   valp[ind++] = &usecustom;
+   valp[ind++] = &fWinwidx_hlist;
+   valp[ind++] = &fWinwidx_1dim;
+   valp[ind++] = &fWinwidy_1dim;
+   valp[ind++] = &fWinwidx_2dim;
+   valp[ind++] = &fWinwidy_2dim;
+   valp[ind++] = &fWinshiftx;
+   valp[ind++] = &fWinshifty;
+   valp[ind++] = &fWintopx;
+   valp[ind++] = &fWintopy;
+   valp[ind++] = &fProjectBothRatio;
+   valp[ind++] = &fDivMarginX;
+   valp[ind++] = &fDivMarginY;
+
+   Bool_t ok; 
+   Int_t itemwidth = 320;
+   ok = GetStringExt("Default window sizes and positions", NULL, itemwidth
+                     , win, NULL, NULL, row_lab, valp
+                     , NULL, NULL, helptext);
+   if (!ok) return;
+   if (fittext != 0) fWinwidx_hlist = -1;
+   else if (usecustom == 0) fWinwidx_hlist = fMainWidth;
    SaveOptions();
 }
-
-//___________________________________________________________________________________________
-
-void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
-{
-   Int_t nopt = 6;
-//   Double_t *values = new Double_t[nopt];
-   TArrayD values(nopt);
-   TOrdCollection *row_lab = new TOrdCollection();
-
-   Int_t vp = 0;
-   row_lab->Add(new TObjString("LogScale_Minimum (2-dim only)"));
-   row_lab->Add(new TObjString("LinScale_Minimum (2-dim only)"));
-   row_lab->Add(new TObjString("AutoUpdateDelay"));
-   row_lab->Add(new TObjString("Max_Entries_in_HistList"));
-   row_lab->Add(new TObjString("Width of response func in fpeak"));
-   row_lab->Add(new TObjString("Threshold in fpeak"));
-
-   values[vp++] = fLogScaleMin;
-   values[vp++] = fLinScaleMin;
-   values[vp++] = fAutoUpdateDelay;
-   values[vp++] = fMaxListEntries;
-   values[vp++] = fPeakMwidth;
-   values[vp++] = fPeakThreshold;
-
-   Int_t ret = 0, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "Various numerical options", itemwidth,
-                       1, nopt, values, precission, 0, row_lab);
-   if (ret >= 0) {
-      vp = 0;
-      fLogScaleMin     = values[vp++];
-      fLinScaleMin     = values[vp++];
-      fAutoUpdateDelay = values[vp++];
-      fMaxListEntries  = (Int_t)values[vp++];
-      fPeakMwidth      = (Int_t)values[vp++];
-      fPeakThreshold   = values[vp++];
-   }
-   SaveOptions();
-}
-
-//___________________________________________________________________________________________
-
-void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
-{
-   Int_t nopt = 14;
-//   Double_t *values = new Double_t[nopt];
-   TArrayD values(nopt);
-   TOrdCollection *row_lab = new TOrdCollection();
-
-   Int_t vp = 0;
-   row_lab->Add(new TObjString("Nof transition levels"));
-   row_lab->Add(new TObjString("Color transition start"));
-   row_lab->Add(new TObjString("Color transition end"));
-   row_lab->Add(new TObjString("Enhence red (RGB)"));
-   row_lab->Add(new TObjString("Enhence green (RGB)"));
-   row_lab->Add(new TObjString("Enhence blue (RGB)"));
-
-   row_lab->Add(new TObjString("Start Hue (HLS)"));
-   row_lab->Add(new TObjString("End Hue (HLS)"));
-   row_lab->Add(new TObjString("Lightness (HLS)"));
-   row_lab->Add(new TObjString("Saturation (HLS)"));
-   row_lab->Add(new TObjString("1_Dim_FillColor"));
-   row_lab->Add(new TObjString("2_Dim_BackgroundColor"));
-   row_lab->Add(new TObjString("StatBox font"));
-   row_lab->Add(new TObjString("TitleBox font"));
-
-   values[vp++] = fNofTransLevels;
-   values[vp++] = fStartColor;
-   values[vp++] = fEndColor;
-   values[vp++] = fEnhenceRed;
-   values[vp++] = fEnhenceGreen;
-   values[vp++] = fEnhenceBlue;
-   values[vp++] = fStartHue;
-   values[vp++] = fEndHue;
-   values[vp++] = fLightness;
-   values[vp++] = fSaturation;
-   values[vp++] = f1DimFillColor;
-   values[vp++] = f2DimBackgroundColor;
-   values[vp++] = fStatFont;
-   values[vp++] = fTitleFont;
-   Int_t ret = 0, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "Fonts and Colors", itemwidth, 1, nopt,
-                       values, precission, 0, row_lab);
-   if (ret >= 0) {
-      vp = 0;
-      Int_t tl = (Int_t) values[vp++];
-      Int_t ts = (Int_t) values[vp++];
-      Int_t te = (Int_t) values[vp++];
-      Float_t er = values[vp++];
-      Float_t eg = values[vp++];
-      Float_t eb = values[vp++];
-
-      if (ts != fStartColor || te != fEndColor || tl != fNofTransLevels
-          || er != fEnhenceRed || eg != fEnhenceGreen || eb != fEnhenceBlue) {
-         fStartColor = ts; 
-         fEndColor = te; 
-         fNofTransLevels = tl;
-         fEnhenceRed   = er;
-         fEnhenceGreen = eg;
-         fEnhenceBlue  = eb;
-         SetTransLevelsRGB();
-         SetColorPalette();
-      }
-      Int_t sh = (Int_t) values[vp++];
-      Int_t eh = (Int_t) values[vp++];
-      Float_t li = values[vp++];
-      Float_t sa = values[vp++];
-      if (sh != fStartHue || eh != fEndHue || tl != fNofTransLevels
-          || li != fLightness || sa != fSaturation) {
-         fStartHue = sh;
-         fEndHue   = eh;
-         fLightness = li;
-         fSaturation = sa;
-         SetTransLevelsHLS();
-         SetColorPalette();
-      }
-
-      f1DimFillColor = (Int_t) values[vp++];
-      if (values[vp] != f2DimBackgroundColor) {
-         f2DimBackgroundColor = (Int_t) values[vp];
-         if (fh && fh->Its2dim()) {
-            HTCanvas *ch = fh->GetCanvas();
-            if (f2DimBackgroundColor == 0) {
-               ch->GetFrame()->SetFillStyle(0);
-            } else {
-               ch->GetFrame()->SetFillStyle(1001);
-               ch->GetFrame()->SetFillColor(f2DimBackgroundColor);
-            }
-            fh->UpdateCanvas();
-         }
-      }
-      vp++;
-      fStatFont = (Int_t) values[vp++];
-      fTitleFont = (Int_t) values[vp++];
-//     force high precission
-      fStatFont = fStatFont / 10 * 10 + 2;
-      fTitleFont = fTitleFont / 10 * 10 + 2;
-   }
-//   if(values) delete [] values;
-//   cout << "fStatFont " << fStatFont << endl;
-   gStyle->SetStatFont(fStatFont);
-   gStyle->SetTitleFont(fTitleFont);
-   SaveOptions();
-}
-
 //___________________________________________________________________________________________
 
 void HistPresent::SetGreyLevels()
@@ -2401,8 +2045,6 @@ void HistPresent::SetTransLevelsRGB()
    if (fTransPaletteRGB) delete [] fTransPaletteRGB;
    fTransPaletteRGB    = new Int_t[fNofTransLevels];
    TColor * color;
-//   fStartColor = 2;
-//   fEndColor   = 4;
    TColor * sc = GetColorByInd(fStartColor); 
    TColor * ec = GetColorByInd(fEndColor);
    Float_t start_r = sc->GetRed(); 

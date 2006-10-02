@@ -10,6 +10,7 @@
 
 class GroupOfGObjects : public TCutG {
 friend class HTCanvas;
+friend class GEdit;
 protected:
    Double_t fXorigin;
    Double_t fYorigin;

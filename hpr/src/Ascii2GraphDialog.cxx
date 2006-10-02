@@ -56,7 +56,7 @@ Default is to construct a new canvas\n\
    row_lab->Add(new TObjString("StringValue_GraphName"));
    row_lab->Add(new TObjString("StringValue_Title Xaxis  "));
    row_lab->Add(new TObjString("StringValue_Title Yaxis  "));
-   row_lab->Add(new TObjString("CheckButton_Draw / Overlay in a selected pad"));
+   row_lab->Add(new TObjString("CheckButton_Draw/Overlay in a sel pad"));
 //   row_lab->Add(new TObjString("CheckButton_Draw in a new canvas"));
    row_lab->Add(new TObjString("PlainIntVal_Xsize of canvas"));
    row_lab->Add(new TObjString("PlainIntVal+Ysize of canvas"));
@@ -289,8 +289,8 @@ void Ascii2GraphDialog::Draw_The_Graph()
          }
 #ifdef MARABOUVERS
          HTCanvas * cg = new HTCanvas(cname, htitle, fWinx, fWiny,
-                         fGraphXsize, fGraphYsize, NULL, 0, 0, graph);
-//                         fGraphXsize, fGraphYsize, fHistPresent, 0, 0, graph);
+                         fGraphXsize, fGraphYsize, NULL, NULL, graph);
+//                         fGraphXsize, fGraphYsize, fHistPresent, 0, graph);
 #else
          TCanvas * cg = new TCanvas(cname, htitle, fWinx, fWiny,
                          fGraphXsize, fGraphYsize);

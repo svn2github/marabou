@@ -44,10 +44,12 @@
 #include "FhContour.h"
 #include "FitHist_Help.h"
 #include "support.h"
-#include "TGMrbTableFrame.h"
+#include "TGMrbValuesAndText.h"
 #include "TGMrbInputDialog.h"
 #include "TMrbStatistics.h"
 #include "HTCanvas.h"
+#include "GEdit.h"
+#include "GroupOfHists.h"
 #include "SetColor.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
@@ -209,7 +211,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fRootFile = NULL;
    activeFile= NULL;
    activeHist= NULL;
-   filelist = NULL;
+   fFileList = NULL;
    fControlBar = NULL;
    fMainCanvas=0;
    fMainWidth = 300;
@@ -259,6 +261,13 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fCanvasClosing = kFALSE;
 
    RestoreOptions();
+// look if we are in a NX session
+   TString display(gSystem->Getenv("DISPLAY"));
+   if (display.BeginsWith("unix")) {
+      cout << "Running in NX session, force WindowWidth >= 300" << endl;
+      if (fMainWidth < 300)     fMainWidth     = 300;
+      if (fWinwidx_hlist < 300) fWinwidx_hlist = 300;
+   }
    fCmdLine = new TList();
    if (gDirectory) {
       HistPresent *hold = (HistPresent*)gDirectory->GetList()->FindObject(GetName());
@@ -290,7 +299,12 @@ HistPresent::~HistPresent()
 void HistPresent::RecursiveRemove(TObject * obj)
 {
 //   cout << "------> Enter HistPresent::RecursiveRemove for: " 
-//     << obj<< " " << obj->ClassName() <<  endl;
+//        << obj << " " << obj->ClassName() <<  endl;
+//   if (obj->InheritsFrom("TCanvas")) {
+//      HTCanvas * c = (HTCanvas*)obj;
+//      cout << "Name: " << c->GetName() <<  endl;
+//   obj->Dump();
+//   }
    fCanvasList->Remove(obj);
 #if ROOTVERSION > 40302
    if (fCanvasList->GetEntries() == 0 && fCanvasClosing) {;
@@ -315,8 +329,9 @@ void HistPresent::RecursiveRemove(TObject * obj)
 void HistPresent::ShowMain()
 {
    nHists=0;
-   Int_t mainheight = fMainWidth * 1.6;
+   Int_t mainheight = (Int_t)(fMainWidth * 1.6);
    cHPr = new HTCanvas("cHPr", "HistPresent",5,5, fMainWidth, mainheight, this, 0);
+//   cHPr = new TCanvas("cHPr", "HistPresent",5,5, fMainWidth, mainheight);
    cHPr->cd();
    fMainCanvas = GetMyCanvas();
 
@@ -430,7 +445,7 @@ void HistPresent::ShowMain()
 
    cHPr->SetEditable(kFALSE);
    cHPr->Update();
-   CreateDefaultsDir(fMainCanvas); 
+//   CreateDefaultsDir(fMainCanvas); 
 }
 //________________________________________________________________________________________
 
@@ -455,7 +470,7 @@ void HistPresent::Editrootrc()
    }
    else   cout << "Cant find .rootrc" << endl;
 
-   cout << setred << "Warning: values might be overwriten by current settings"
+   cout << setred << "Warning: values might be overwritten by current settings"
         << setblack << endl;
 }
 //________________________________________________________________________________________
@@ -479,10 +494,10 @@ void HistPresent::EditAttrFile()
 
 void HistPresent::ShowFiles(const char *how, const char *bp)
 {
-   if (filelist) {
-      if (gROOT->FindObject("Filelist")) delete filelist; 
+   if (fFileList) {
+      if (gROOT->FindObject("Filelist")) delete fFileList; 
       activeFile=NULL; 
-      filelist=NULL;
+      fFileList=NULL;
    }
    const char *fname;
    void* dirp=gSystem->OpenDirectory(".");
@@ -545,8 +560,10 @@ Should we create a sample file",
 //      WarnBox("No files found, check File Selection Mask");
    } else {
       fCmdLine->Sort();
-      Int_t yoff = fMainWidth * 1.6 + 30;
-      filelist = CommandPanel(gSystem->BaseName(gSystem->WorkingDirectory()),fCmdLine, 5, yoff, this);
+      Int_t yoff = (Int_t)(fMainWidth * 1.6 + 30);
+      fFileList = CommandPanel(gSystem->BaseName(gSystem->WorkingDirectory()),
+                               fCmdLine, 5, yoff, this, fWinwidx_hlist);
+      fFileList->SetName("FileList");
    }
 //   fCmdLine->Print();
    fCmdLine->Delete();
@@ -1122,6 +1139,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
 //         cout << "HistPresent: CommandPanel: " << fCmdLine->GetSize() << endl;
          HTCanvas *ccont = CommandPanel(cmd_title.Data(), fCmdLine, 
                            fMainWidth + 10, ycanvas, this, fWinwidx_hlist);
+         ccont->SetName("ObjectList");
          if (fHistLists)fHistLists->Add(ccont);
    }
    fCmdLine->Delete();
@@ -1671,7 +1689,7 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
       }
       fNwindows++;
       HTCanvas * cg = new HTCanvas(cname, cname, fWincurx, fWincury,
-                                 fWinwidx_1dim, fWinwidy_1dim, this, 0, 0, graph);
+                                 fWinwidx_1dim, fWinwidy_1dim, this, 0, graph);
       fCanvasList->Add(cg);
 //      graph->SetName(hname);
 //      graph->SetTitle(htitle);
@@ -3028,7 +3046,7 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
    if (title) tit = title;
    HTCanvas * cmany = 
        new HTCanvas(buf.Data(), tit, fWincurx, fWincury, wwx, wwy,
-                    this, 0, savelist);
+                    this);
    fWincurx = fWintopx; fWincury += fWinshifty;
 
    fCanvasList->Add(cmany);
@@ -3123,189 +3141,7 @@ void HistPresent::ShowSelectedHists(const char *bp)
   
 void HistPresent::ShowSelectedHists(TList * hlist, const char* title) 
 {
-   Int_t nsel = hlist->GetSize();
-   Int_t nx = 1, ny =1;
-   TH1* hist = 0;
-   if (nsel == 0) {
-      WarnBox("No histogram selected");
-      return;
-
-   } else if (nsel > 32) {
-      WarnBox("Maximum 32 histograms allowed");
-      return;
-   } 
-
-//  make a copy of  hlist, add its pointer to list of histlists fHistListList
-//  pass its pointer to HTCanvas,
-//  destructor of HTCanvas shall delete the list and remove its 
-//  pointer from fHistListList
-   TList * savelist = new TList();
-   TIter next(hlist);
-   while ( TObjString * objs = (TObjString*)next()) {
-      savelist->Add(new TObjString(*objs));
-   }
-   fHistListList->Add(savelist);
-//   savelist->Print();
-   if (nsel == 2 ) {nx = 1, ny = 2;};
-   if (nsel >= 3 ) {nx = 2, ny = 2;};
-   if (nsel >= 5 ) {nx = 2, ny = 3;};
-   if (nsel >= 7 ) {nx = 3, ny = 3;};
-   if (nsel >= 10) {nx = 3, ny = 4;};
-   if (nsel >= 13) {nx = 4, ny = 4;};
-
-   if (nsel >= 16) {nx = 4, ny = 5;};
-   if (nsel == 21) {nx = 7, ny = 3;};
-   if (nsel >  21) {nx = 5, ny = 5;};
-
-   if (nsel > 25) {nx = 6, ny = 5;};
-   if (nsel == 32) {nx = 8, ny = 4;};
-
- 	TMrbString wwhx = "HistPresent.WindowXWidth_";
-	wwhx += nx;
-	wwhx += "x";
-	wwhx += ny;
-	TMrbString wwhy = "HistPresent.WindowYWidth_";
-	wwhy += nx;
-	wwhy += "x";
-	wwhy += ny;
-   TEnv env(".rootrc");		// inspect ROOT's environment
-	Int_t wwx   =   env.GetValue(wwhx.Data(), 0);
-	if (wwx == 0) wwx   =   env.GetValue("HistPresent.WindowXWidth_many", 800);
-	Int_t wwy   =   env.GetValue(wwhy.Data(), 0);
-	if (wwy == 0) wwy   =   env.GetValue("HistPresent.WindowYWidth_many", 800);
-
-   TString arrange("no"); 
-   arrange =env.GetValue("HistPresent.WindowArrange_many",arrange.Data());
-   if (arrange.Contains("top")) {nx = 1; ny = nsel;}
-   if (arrange.Contains("side")) {nx =  nsel; ny = 1;}
-
-   TString buf("cmany_");
-   buf += fSeqNumberMany++;
-   const char * tit = buf.Data();
-   if (title) tit = title;
-   HTCanvas * cmany = 
-       new HTCanvas(buf.Data(), tit, fWincurx, fWincury, wwx, wwy,
-                    this, 0, savelist);
-   fWincurx = fWintopx; fWincury += fWinshifty;
-
-   fCanvasList->Add(cmany);
-   cmany->Divide(nx, ny, fDivMarginX, fDivMarginY);
-//   cmany->SetEditable(kTRUE);
-   TEnv * lastset = 0;
-   TString hname;
-//   TString xtitle("");
-//   TString ytitle(""); 
-   fAnyFromSocket = kFALSE;
-   TPad * firstpad = NULL;
-   for(Int_t i=0; i<nsel; i++) {
-      cmany->cd(i+1);
-      TPad * p = (TPad *)gPad;
-      if (firstpad == NULL) firstpad = p;
-      hist = GetSelHistAt(i, hlist); 
-      if (!hist) {
-//         cout << " Hist not found at: " << i << endl;  
-         continue;
-      } 
-      TString fname = ((TObjString *)hlist->At(i))->String();
-      if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
-      hname = hist->GetName();
- //     cout << "Bef: " << hname << endl;
-
-      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
-      if(last_us >0)hname.Remove(last_us);
-      TRegexp sem(";");
-      hname(sem) ="_"; 
-//      cout << "Aft: "  << hname << endl;
-      lastset = GetDefaults(hname);
-      if (lastset) {
-         if (lastset->Lookup("fRangeLowX") )
-            hist->GetXaxis()->Set(hist->GetNbinsX(), 
-            lastset->GetValue("fRangeLowX", 0), 
-            lastset->GetValue("fRangeUpX",  0));
-         if (lastset->Lookup("fBinlx") )
-         {
-            hist->GetXaxis()->SetRange( 
-            lastset->GetValue("fBinlx", 0),
-            lastset->GetValue("fBinux", 0));
-         }
-         if (lastset->Lookup("fXtitle") )
-           hist->GetXaxis()->SetTitle(lastset->GetValue("fXtitle",""));
-         if (lastset->Lookup("fYtitle") )
-           hist->GetYaxis()->SetTitle(lastset->GetValue("fYtitle",""));
-      }
-
-      if (is2dim(hist)) {
-         hist->Draw(fDrawOpt2Dim->Data());
-         if (lastset) {
-            if (lastset->GetValue("LogZ", 0) )p->SetLogz();
-            if (lastset->Lookup("fRangeLowY") )
-               hist->GetXaxis()->Set(hist->GetNbinsY(), 
-               lastset->GetValue("fRangeLowY", 0), 
-               lastset->GetValue("fRangeUpY",  0));
-            if (lastset->Lookup("fBinly") )
-            {
-               hist->GetYaxis()->SetRange( 
-               lastset->GetValue("fBinly", 0),
-               lastset->GetValue("fBinuy", 0));
-            }
-         }
-   		TString cmd2("((HistPresent*)gROOT->FindObject(\""); 
-   		cmd2 += GetName();
-   		cmd2 += "\"))->auto_exec_2()";
-         p->AddExec("ex2", cmd2.Data());
-      } else {
-         if (lastset && lastset->GetValue("LogY", 0) )p->SetLogy();
-         TString drawopt;
-         hist->Draw(drawopt.Data());
-         gStyle->SetOptTitle(GetShowTitle());
-         if (fShowContour) drawopt = "hist";
-         if (fShowErrors)  drawopt += "e1";
-         if (fFill1Dim) {
-            hist->SetFillStyle(1001);
-            hist->SetFillColor(44);
-         } else hist->SetFillStyle(0);
-
-//         hist->Draw(fDrawOpt2Dim->Data());
-   		TString cmd1("((HistPresent*)gROOT->FindObject(\""); 
-   		cmd1 += GetName();
-   		cmd1 += "\"))->auto_exec_1()";
-         p->AddExec("ex1", cmd1.Data());
-//
-//         p->SetRightMargin(0.02);
-//         if (hist->GetMaximum() > 999)p->SetLeftMargin(0.2);
-         TAxis * xa = hist->GetXaxis();
-         TAxis * ya = hist->GetYaxis();
-         ya->SetLabelSize(gStyle->GetLabelSize("Y") * 0.5 * ny); // nb y det text size
-         xa->SetLabelSize(gStyle->GetLabelSize("X") * 0.5 * ny);
-         xa->SetTitleSize(gStyle->GetTitleSize("X") * 0.5 * ny);
-         ya->SetTitleSize(gStyle->GetTitleSize("Y") * 0.5 * ny);
-         if (nx > 3)xa->SetNdivisions(205);
-         if (ny > 3)ya->SetNdivisions(205);
-          
-//        hist->SetTitleSize(gStyle->GetTitleSize("C") * 0.8 * ny);
-      }  
-      SetCurrentHist(hist);
-      gPad->Modified(kTRUE);
-      gPad->Update();
-      
-      if (fUseAttributeMacro && !gSystem->AccessPathName(attrname, kFileExists)) {
-         gROOT->LoadMacro(attrname);
-         TString cmd = attrname;
-         cmd.Remove(cmd.Index("."),100);
-         cmd = cmd + "(\"" + gPad->GetName()  + "\",\"" + hist->GetName() + "\")";
-//         cout << cmd << endl;
-         gROOT->ProcessLine((const char *)cmd);
-         gPad->Modified(kTRUE);
-         gPad->Update();
-      }
-   }
-   if (firstpad) { 
-      if (fShowAllAsFirst || (fDivMarginX <= 0 && fDivMarginY <= 0)) 
-         ShowAllAsSelected(firstpad, cmany, 0, NULL);
-      firstpad->cd();
-   }
-   cmany->SetEditable(kTRUE);
-//   cout << "firstpad " << setbase(16) << firstpad << endl;
+   new GroupOfHists(hlist, this, title);
 }
 //____________________________________________________________________________
 
@@ -3332,22 +3168,14 @@ Int_t NofEditorPages()
 
 void HistPresent::DinA4Page(Int_t form)
 {
-//   gROOT->SetStyle("Plain");
-/*
-   if (NofEditorPages() > 0) {
-      WarnBox("Currently only 1 open EditorPage allowed");
-      cout << "Currently only 1 open EditorPage allowed" << endl;
-      return;
-   }
-*/
    HTCanvas *c1 = NULL; 
    TString name("page_");
-//   Bool_t ok;
    fPageNumber++;
    name += fPageNumber;
 
-//   GetString("Name of page", name.Data(), &ok, GetMyCanvas());
-
+   TList *row_lab = new TList();
+   static void *valp[25];
+   Int_t ind = 0;
    Int_t Xlow, Ylow, Xwidth, Ywidth;
 
    Double_t xmin = 0;
@@ -3375,54 +3203,23 @@ void HistPresent::DinA4Page(Int_t form)
       XRange = fEditPoXRange;
    } 
    TMrbString temp;
-   TOrdCollection *row_lab = new TOrdCollection(); 
-   TOrdCollection *values  = new TOrdCollection();
-   row_lab->Add(new TObjString("Name of page"));
-   row_lab->Add(new TObjString("X Position"));
-   row_lab->Add(new TObjString("Y Position"));
-   row_lab->Add(new TObjString("X Width"));
-   row_lab->Add(new TObjString("Y Width"));
-   row_lab->Add(new TObjString("X Range"));
-   values->Add(new TObjString(name.Data()));
-   values->Add(new TObjString(Form("%d", Xlow )));
-   values->Add(new TObjString(Form("%d", Ylow )));
-   values->Add(new TObjString(Form("%d", Xwidth )));
-   values->Add(new TObjString(Form("%d", Ywidth )));
-   values->Add(new TObjString(Form("%lf", XRange )));
-   Int_t ret = 0,  itemwidth=120, nrows = values->GetSize(); 
-tryagain:
-   new TGMrbTableFrame(GetMyCanvas(), &ret, "", 
-                        itemwidth, 1, nrows, values,
-                        0, row_lab, 0, 0, 0);
-   if (ret < 0) {
-      return;
-   }
-   name = ((TObjString*)values->At(0))->GetString();
-   temp = ((TObjString*)values->At(1))->GetString();
-   if (!temp.ToInteger(Xlow)) {
-      cout << "Illegal integer: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(2))->GetString();
-   if (!temp.ToInteger(Ylow)) {
-      cout << "Illegal integer: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(3))->GetString();
-   if (!temp.ToInteger(Xwidth)) {
-      cout << "Illegal integer: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(4))->GetString();
-   if (!temp.ToInteger(Ywidth)) {
-      cout << "Illegal integer: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(5))->GetString();
-   if (!temp.ToDouble(XRange)) {
-      cout << "Illegal double: " << temp << endl;
-      goto tryagain;      
-   }   
+   row_lab->Add(new TObjString("StringValue_Name of page"));
+   row_lab->Add(new TObjString("PlainIntVal_X Position"));
+   row_lab->Add(new TObjString("PlainIntVal_Y Position"));
+   row_lab->Add(new TObjString("PlainIntVal_X Width"));
+   row_lab->Add(new TObjString("PlainIntVal_Y Width"));
+   row_lab->Add(new TObjString("DoubleValue_X Range"));
+   valp[ind++] = &name;
+   valp[ind++] = &Xlow;
+   valp[ind++] = &Ylow;
+   valp[ind++] = &Xwidth;
+   valp[ind++] = &Ywidth;
+   valp[ind++] = &XRange;
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Canvas parameters", NULL, itemwidth, fMainCanvas,
+                      NULL, NULL, row_lab, valp);
+   if (!ok) return;
 
    if (form == 2) {          // user
       fEditUsXlow   = Xlow  ;
@@ -3446,7 +3243,7 @@ tryagain:
    } 
 
    c1= new HTCanvas(name.Data(), name.Data(),
-                  Xlow, Ylow, Xwidth, Ywidth, this, NULL, NULL, NULL, 
+                  Xlow, Ylow, Xwidth, Ywidth, this, NULL, NULL, 
                   HTCanvas::kIsAEditorPage);
 
    //compute the pad range to get a fix aspect ratio
@@ -3463,12 +3260,13 @@ tryagain:
 	c1->SetLeftMargin(0);
 	c1->SetBottomMargin(0);
 	c1->SetTopMargin(0);
-   c1->SetEditGrid(5, 5, 10, 10);
+//   c1->SetEditGrid(5, 5, 10, 10);
    c1->Modified(kTRUE);
    c1->Update();
    c1->SetEditable(kTRUE);
    c1->GetCanvasImp()->ShowEditor();
    c1->GetCanvasImp()->ShowToolBar();
+   new GEdit(c1);
 }
 //________________________________________________________________________________________
 // Show Canvas
@@ -3525,9 +3323,8 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
 
    HTCanvas * c1 = new HTCanvas(sname, c->GetTitle(),
                       c->GetWindowTopX(), c->GetWindowTopY(),
-                      ww, wh, this, NULL, NULL, NULL, HTCanvas::kIsAEditorPage);
-  cout << "At HistPresent::c1 = new HTCanvas -= " 
-               << c1->GetName()  << endl;
+                      ww, wh, this, NULL, NULL, HTCanvas::kIsAEditorPage);
+   cout << "HTCanvas *c1 = new (HTCanvas*)"<< c1 << endl;
    
    Double_t x1, y1, x2, y2;
    c->GetRange(x1, y1, x2, y2);
@@ -3577,142 +3374,16 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    c1->SetLeftMargin(0);
    c1->SetBottomMargin(0);
    c1->SetTopMargin(0);
-   c1->SetEditGrid(5, 5, 10, 10);
+//   c1->SetEditGrid(5, 5, 10, 10);
    c1->Modified(kTRUE);
    c1->Update();
    c1->SetEditable(kTRUE);
    c1->GetCanvasImp()->ShowEditor();
    c1->GetCanvasImp()->ShowToolBar();
    if (fRootFile) fRootFile->Close();
-}
-//_______________________________________________________________________
-
-void HistPresent::auto_exec_1()
-{
-   //example of macro called when a pad is redrawn
-   //one must create a TExec object in the following way
-   // TExec ex(\"ex\",\".x exec1.C\");
-   // ex.Draw();
-   // this macro prints the bin number and the bin content when one clicks
-   //on the histogram contour of any histogram in a pad
-   
-   int event = gPad->GetEvent();
-//   cout << "event "<< event << endl;
-   if (event ==  kKeyPress) {
-      char ch = (char)gPad->GetEventX();
-      if ( ch == 'C' ||ch == 'c') { 
-         HTCanvas * htc = (HTCanvas *)gPad->GetCanvas();
-         TRootCanvas *rc =  (TRootCanvas*)htc->GetCanvasImp(); 
-         rc->ShowEditor(kFALSE);
-         rc->SendCloseMessage();
-         return;
-      }
-   }
-   if (event != kButton1Down) return;
-   TObject *select = gPad->GetSelected();
-   if (!select) return;
-//   cout << "selected: " << select->GetName() << endl;
-   if (!strncmp(select->GetName(), "TFrame",6) || !strncmp(select->GetName(), "cmany",5) ) {
-//      cout << "TFrame selected" << endl;
-      if(gPad == gPad->GetMother()){
-//         cout << "not in divided" << endl;
-         return;
-      } 
-//      HTCanvas * ca = (HTCanvas *)gPad->GetCanvas();
-      Bool_t cr = kTRUE;
-//      if (ca && ca->GetCommonRotate()) cr = kTRUE;
-      HistPresent * hp = (HistPresent*)gROOT->FindObject("mypres");
-      if(!hp) return;
-      TList * l = gPad->GetListOfPrimitives();
-      TIter next(l);
-      TObject * o;
-      while ( (o = next()) ) {
-//         o->Print();
-         if (cr && o->InheritsFrom("TH2")) continue;
-         
-         if(o->InheritsFrom("TH1") ){
-            TH1* h = (TH1*)o;
-            TString hname(h->GetName());
-            Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
-            if(last_us >0){
-               hname.Remove(last_us);
-               h->SetName(hname.Data());
-            }
-            hp->ShowHist(h);
-            return;
-         }
-      }
-   }
-}
-//__________________________________________________________________________
-
-void HistPresent::auto_exec_2()
-{
-   static Double_t phi;
-   static Double_t theta;
-   int event = gPad->GetEvent();
-   if (event ==  kKeyPress) {
-      char ch = (char)gPad->GetEventX();
-      if ( ch == 'C' ||ch == 'c') { 
-         HTCanvas * htc = (HTCanvas *)gPad->GetCanvas();
-         TRootCanvas *rc =  (TRootCanvas*)htc->GetCanvasImp(); 
-         rc->ShowEditor(kFALSE);
-         rc->SendCloseMessage();
-         return;
-      }
-   }
-//   cout << "event "<< event << endl;
-   if (event != kButton1Down && event != kMouseMotion && event != kButton1Up) return;
-   TObject *select = gPad->GetSelected();
-   if(!select) return;
-//   cout << "auto_exec_2() selected " << select->GetName() << endl;
-   
-   HistPresent * hpr = (HistPresent*)gROOT->FindObject("mypres");
-   if(!hpr) return;
-   if ((event == kButton1Down || event == kButton1Up ) && select->InheritsFrom("TH2")) {
-//      cout << "TFrame selected" << endl;
-      if(gPad == gPad->GetMother()){
-//         cout << "not in divided" << endl;
-         return;
-      } 
-      HTCanvas * ca = (HTCanvas *)gPad->GetCanvas();
-      Bool_t cr = ca->GetCommonRotate();
-         
-      TList * l = gPad->GetListOfPrimitives();
-      TIter next(l);
-      TObject * o;
-      while ( (o = next()) ){
-         if (o->InheritsFrom("TH2")) {
-            TH1* h = (TH1*)o;
-            if (cr && !strncmp(h->GetDrawOption(), "lego", 4)) { 
-            	if (event == 1) {
-               	phi = gPad->GetPhi();
-               	theta = gPad->GetTheta();
-            	} else if (event == 11) {
-               	Double_t phi_n = gPad->GetPhi();
-               	Double_t theta_n = gPad->GetTheta();
-               	if (phi != phi_n || theta != theta_n) {
-                  	TList * pl = gPad->GetMother()->GetListOfPrimitives();
-                  	TIter nextpad(pl);
-                  	TObject * p;
-                  	while ( (p = nextpad()) ) {
-                     	if (p->InheritsFrom("TPad")) {
-                        	TPad* pp = (TPad*)p;
-                        	pp->SetPhi(phi_n);
-                        	pp->SetTheta(theta_n);
-                        	pp->Modified();
-                        	pp->Update();
-                     	}
-                  	}
-               	}                   
-            	}
-            } else {
-               if (event == kButton1Down) hpr->ShowHist(h);
-            }
-            return;
-         }
-      }
-   }
+   c1->cd();
+   new GEdit(c1);
+   cout << "gPad " << gPad << endl;
 }
 //________________________________________________________________
 
@@ -3739,5 +3410,79 @@ Int_t HistPresent::GetWindowPosition(Int_t * winx, Int_t * winy)
    *winy = fWincury;
    return fNwindows;
 }
-  
+//________________________________________________________________
 
+void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
+{
+//   cout << "HandleDeleteCanvas " << htc << endl;
+   GetHistList()->Remove(htc);
+   HTCanvas *c;
+   TButton *b;
+   TString fname;
+   TObject *obj;
+   TString line;
+//  has it a histogram?
+   FitHist * fh = htc->GetFitHist();
+   if (fh) {
+//  reset color of command button which invoked the Canvas
+      TString histname(fh->GetSelHist()->GetName());
+// does it end with a _number
+      TRegexp us_num("_[0-9]*$");
+      Int_t indus = histname.Index(us_num);
+      if (indus > 1) histname.Resize(indus);
+//      cout <<  fh->GetName()<< " hist " << fh->GetSelHist()->GetName() << endl;
+      TIter next(fHistLists);
+      TIter *next1;
+      TString hname;
+      TString space(" ");
+      TObjArray * oa;
+      while ( (c = (HTCanvas*)next()) ) {
+         next1 = new TIter(c->GetListOfPrimitives());
+         fname = c->GetTitle();
+         Int_t inddot = fname.Index(".");
+         if (inddot > 0) fname.Resize(inddot); // chop of .root .map etc.
+         while ( (obj = (*next1)()) ) {
+            if (obj->InheritsFrom("TButton")) {
+               b = (TButton*)obj;
+//               cout << b->GetTitle() << endl;
+//             detangle title line, 2nd item is hist name
+               line =  b->GetTitle();
+               oa = line.Tokenize(space);
+               if (oa->GetEntries() < 2) continue;
+               hname = ((TObjString*)oa->At(1))->String();
+               hname.Prepend("_");
+               hname.Prepend(fname);
+               if (histname == hname) {
+//                  cout << "Set color for: " << histname << endl;
+                  b->SetFillColor(17);
+                  b->Modified(kTRUE);
+                  b->Update(); 
+               } 
+            }
+         }
+         delete next1;
+      }
+      return;
+   }
+//  is it a list of objects, look in filelist
+   TString name = htc->GetName();
+   if (name == "ObjectList" && fFileList != NULL) {
+//      cout << "|" << htc->GetTitle()<< "|" << endl;
+      fname = htc->GetTitle();
+      TIter next(fFileList->GetListOfPrimitives());
+      while ( (obj = next()) ) {
+         if (obj->InheritsFrom("TButton")) {
+            b = (TButton*)obj;
+//            cout << "|" << b->GetTitle()<< "|" << endl;
+            line =  b->GetTitle();
+            line = line.Strip();
+            if (line == fname) {
+//                  cout << "Set color for: " << fname << endl;
+               b->SetFillColor(17);
+               b->Modified(kTRUE);
+               b->Update(); 
+            } 
+         }
+      }
+   }
+}

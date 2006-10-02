@@ -84,6 +84,7 @@ TString lat2root(TString& cmd)
    sind = 0;
    while (cmd.Index(supsub, sind) >=0) {
       ind = 1 + cmd.Index(supsub, sind);
+      if (ind >= cmd.Length()) break;
       char c = cmd[ind];
       sind = ind + 1;
       if (c != '{') {
@@ -167,6 +168,7 @@ TString lat2root(TString& cmd)
    while (cmd.Index(re_tan) >= 0)cmd(re_tan) = "tan";
    TRegexp re_ovl("#overline");
    while (cmd.Index(re_ovl) >= 0)cmd(re_ovl) = "#bar";
+//   cout << cmd << endl;
    return cmd;
 }
 //___________________________________________________________________________
@@ -184,7 +186,7 @@ InsertTextDialog::InsertTextDialog(Bool_t from_file)
    TList *row_lab = new TList(); 
  
    if (fEditTextFromFile) {
-      row_lab->Add(new TObjString("StringValue_File Name with text"));
+      row_lab->Add(new TObjString("FileRequest_File Name with text"));
       valp[ind++] = &fEditTextFileName;
       fEditTextMarkCompound = 1;
    } else {
@@ -192,25 +194,25 @@ InsertTextDialog::InsertTextDialog(Bool_t from_file)
    }
    row_lab->Add(new TObjString("DoubleValue_X Position"));
    valp[ind++] = &fEditTextX0;
-   row_lab->Add(new TObjString("DoubleValue+Y Position"));
+   row_lab->Add(new TObjString("DoubleValue-Y Position"));
    valp[ind++] = &fEditTextY0;
    row_lab->Add(new TObjString("DoubleValue_Line spacing"));
    valp[ind++] = &fEditTextDy;
-   row_lab->Add(new TObjString("Float_Value+Size"));
+   row_lab->Add(new TObjString("Float_Value-Size"));
    valp[ind++] = &fEditTextSize;
    row_lab->Add(new TObjString("CfontSelect_Font"));
    valp[ind++] = &fEditTextFont;
-   row_lab->Add(new TObjString("PlainIntVal+Precission"));
+   row_lab->Add(new TObjString("PlainIntVal-Precission"));
    valp[ind++] = &fEditTextPrec;
    row_lab->Add(new TObjString("ColorSelect_Color"));
    valp[ind++] = &fEditTextColor;
-   row_lab->Add(new TObjString("AlignSelect+Alignment"));
+   row_lab->Add(new TObjString("AlignSelect-Alignment"));
    valp[ind++] = &fEditTextAlign;
-   row_lab->Add(new TObjString("Float_Value+Angle"));
+   row_lab->Add(new TObjString("Float_Value-Angle"));
    valp[ind++] = &fEditTextAngle;
    row_lab->Add(new TObjString("CheckButton_Mark as compound"));
     valp[ind++] = &fEditTextMarkCompound;
-   row_lab->Add(new TObjString("CheckButton+Apply latex filter"));
+   row_lab->Add(new TObjString("CheckButton-Apply latex filter"));
    valp[ind++] = &fEditTextLatexFilter;
    row_lab->Add(new TObjString("CommandButt_InsertTextExecute"));
    valp[ind++] = &excmd;
@@ -301,7 +303,7 @@ void InsertTextDialog::InsertTextExecute()
       	}
       } else {
          cmd = fEditTextPointer->Data();
-         cout << fEditTextPointer << " " << cmd.Data() << endl;
+//         cout << fEditTextPointer << " " << cmd.Data() << endl;
          loop = kFALSE;
       }
       if (fEditTextLatexFilter > 0) converted_line = lat2root(cmd);

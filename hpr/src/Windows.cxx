@@ -21,9 +21,11 @@
 //______________________________________________________________________________________ 
   
 void FitHist::MarksToWindow(){
-   int nval = markers->GetEntries();
+   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers == NULL ||  fMarkers->GetEntries() <= 0) return;
+   int nval = fMarkers->GetEntries();
    FhMarker *ti;
-   TIter next(markers);
+   TIter next(fMarkers);
    if(is2dim(fSelHist)){
       MarksToCut(); 
    } else {
@@ -155,8 +157,10 @@ void  FitHist::WriteOutWindows(){
 void FitHist::ListWindows(){
    if(CheckList(fAllWindows) < 0){WarnBox("No windows active");return;}
    CheckList(fActiveWindows);
-   UInt_t xp, yp;
-   GetPosition(gPad,&xp,&yp);
+   Int_t xp, yp;
+   xp =  cHist->GetWindowTopX() +  ((Int_t)(cHist->GetWw()) / 2);
+   yp =  cHist->GetWindowTopY() +  ((Int_t)(cHist->GetWh()) / 2);
+//   GetPosition(gPad,&xp,&yp);
    TIter next(fAllWindows);
    TMrbWindow* wdw;
    while( (wdw=(TMrbWindow*)next()) ){
@@ -173,6 +177,7 @@ void FitHist::ListWindows(){
       WarnBox("No windows active");
       return;
    }
+//   fCutPanel = CommandPanel("Windows", fCmdLine, 500, 500);
    fCutPanel = CommandPanel("Windows", fCmdLine, xp, yp);
    fCmdLine->Delete();
 }
@@ -357,7 +362,6 @@ void FitHist::DrawCutName(){
    if(CheckList(fActiveCuts, "TMrbWindow2D") <=0) return;
    TMrbWindow2D * wdw;
    TIter next(fActiveCuts);
-//   markers->Sort();
    while( (wdw= (TMrbWindow2D*)next()) ){
       TIter nextobj(cHist->GetListOfPrimitives());
       TObject *obj;
@@ -402,8 +406,9 @@ void FitHist::CloseCuts(){
 //______________________________________________________________________________________
   
 void FitHist::ListCuts(){
-   UInt_t xp, yp;
-   GetPosition(gPad,&xp,&yp);
+   Int_t xp, yp;
+   xp =  cHist->GetWindowTopX() +  (Int_t)(cHist->GetWw() >> 1);
+   yp =  cHist->GetWindowTopY() +  (Int_t)(cHist->GetWh() >> 1);
    UpdateCut();
 //   CheckList(fActiveCuts);
    TIter next(fAllCuts);
@@ -516,7 +521,6 @@ Float_t FitHist::DrawCut(){
    TAxis* yaxis = fSelHist->GetYaxis();
    Float_t ent = 0;
    
-//   markers->Sort();
    while( (cut= (TMrbWindow2D*)next()) ){
       cut->Draw();
       ent = 0;
@@ -538,13 +542,15 @@ Float_t FitHist::DrawCut(){
 //______________________________________________________________________________________
 
 void FitHist::MarksToCut(){
-   Int_t nmarks = markers->GetEntries();
-   FhMarker *mark;
-   TIter next(markers);
+   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers == NULL ||  fMarkers->GetEntries() <= 0) return;
+   Int_t nmarks = fMarkers->GetEntries();
    if(nmarks < 2){
       WarnBox("Need at least 2 marks");
       return;
    }
+   FhMarker *mark;
+   TIter next(fMarkers);
    Int_t nval;
    if(nmarks == 2)nval = 5;
    else           nval = nmarks+1;

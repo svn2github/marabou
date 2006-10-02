@@ -33,13 +33,13 @@ InsertFunctionDialog::InsertFunctionDialog()
 
    row_lab->Add(new TObjString("StringValue_Title X"));
    valp[ind++] = &fXtitle;
-   row_lab->Add(new TObjString("StringValue+Title Y"));
+   row_lab->Add(new TObjString("StringValue-Title Y"));
    valp[ind++] = &fYtitle;
    row_lab->Add(new TObjString("PlainIntVal_Npar"));
    valp[ind++] = &fNpar;
-   row_lab->Add(new TObjString("DoubleValue+From"));
+   row_lab->Add(new TObjString("DoubleValue-From"));
    valp[ind++] = &fFrom;
-   row_lab->Add(new TObjString("DoubleValue+To"));
+   row_lab->Add(new TObjString("DoubleValue-To"));
    valp[ind++] = &fTo;
 
    for (Int_t i =0; i < 10; i += 2) {
@@ -50,7 +50,7 @@ InsertFunctionDialog::InsertFunctionDialog()
    }
    row_lab->Add(new TObjString("PlainIntVal_Pad Opacity "));
    valp[ind++] = &fPadOpacity;
-   row_lab->Add(new TObjString("ColorSelect+Drawing color"));
+   row_lab->Add(new TObjString("ColorSelect-Drawing color"));
    valp[ind++] = &fCol;
    row_lab->Add(new TObjString("CheckButton_Create new canvas"));
    valp[ind++] = &fNew_canvas;
