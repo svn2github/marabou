@@ -1216,6 +1216,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 //                 break;
 
                 } else if (parm1 == kIdClearHist) {
+#if ROOTVERSION > 51000
                    if (fFileName && fFileName.Length() > 0) {
                       TString cmd(fFileName);
                       cmd.Prepend("rm ");
@@ -1224,6 +1225,9 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                       gClient->NeedRedraw(fListBox);
  
                    }
+#else
+                    cout << "Not yet implemented, please do it handish" << endl;
+#endif
                 } else if (parm1 == kIdCancel) {
                     CloseWindow();
                     return kTRUE;
