@@ -844,8 +844,8 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
    Int_t save_optdate = gStyle->GetOptDate();
    gStyle->SetOptDate(0);
 
-//   gStyle->SetTextFont(fTextFont + 3);   // char height in pixel
-//   gStyle->SetTextSize(fTextSize);
+   gStyle->SetTextFont(fTextFont + 3);   // char height in pixel
+   gStyle->SetTextSize(fTextSize);
    
    Int_t char_width = 5;
    if(fTextSize >= 8)  char_width = 5;
@@ -916,6 +916,9 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
    delete tt;
 
    Float_t lspace = 1 / (Float_t)(nl + nof_heads + extralines);   // line spacing 
+//   Float_t wh = (Float_t)gPad->XtoPixel(gPad->GetX2());
+//   cout << "wh " << gPad->XtoPixel(gPad->GetX2())<<  endl;
+//   Float_t clength = char_width / (Float_t)(wh);     // in NDC
 
    Float_t x0 = 2 * clength;      // left margin
    Float_t yt0 = 1 - lspace;       // top margin, starting y
@@ -951,19 +954,16 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
          if(tag_start > pointer){
             restofline = line(pointer, tag_start - pointer);   
 //            cout << "Rol |" <<  restofline << "|" << endl;
-            tt = new TText(xt, yt, restofline.Data());
-            tt->SetTextAlign(11);
-            tt->SetTextColor(1);
-            tt->SetTextAngle(0);
-            tt->SetTextSize(fTextSize);
-            tt->SetTextFont(fTextFont + 3); 
+            tt = new TText(xt, yt, restofline.Data()); 
+//            tt->SetText(xt, yt, restofline.Data()); 
+//            tt = latex.DrawLatex(xt, yt, restofline.Data()); 
             if(heading){
                tt->SetTextFont(63);  tt->SetTextColor(46);
                if (yt < yt0) {
                   yt -= lspace;
                   tt->SetY(yt);
                }
-            } else tt->SetTextColor(1);
+            }
             if(italic) {tt->SetTextFont(113); tt->SetTextColor(46);}
             if(bold)   {tt->SetTextFont(103); tt->SetTextColor(46);}
             tt->Draw();
@@ -974,6 +974,11 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
             } else {
                tt->SetUniqueID(kTextOnly);
             }
+
+//            ca->Modified();
+//            ca->Update();
+//            tt->GetTextExtent(tw, th, restofline.Data());
+//            cout << restofline.Length() << " " << tw << " " << th << endl;
             xt += restofline.Length() * clength;
             its_ref   = kFALSE;
          }
@@ -1026,11 +1031,8 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
          restofline = line(pointer, line.Length() - pointer);   
 //         cout << "TextLeft |" << restofline  << "|" << endl;
          tt = new TText(xt, yt, restofline.Data()); 
-         tt->SetTextColor(1);
-         tt->SetTextAlign(11);
-         tt->SetTextAngle(0);
-         tt->SetTextSize(fTextSize);
-         tt->SetTextFont(fTextFont + 3); 
+//         tt->SetText(xt, yt, restofline.Data()); 
+//         tt = latex.DrawLatex(xt, yt, restofline.Data()); 
          tt->Draw();
          tt->SetUniqueID(kTextOnly);
          if(heading){tt->SetTextFont(63); tt->SetTextColor(46);}
