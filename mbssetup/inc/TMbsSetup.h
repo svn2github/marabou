@@ -8,7 +8,7 @@
 // Class:          TMbsSetup            -- base class
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetup.h,v 1.6 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.h,v 1.7 2006-10-04 12:35:58 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -82,6 +82,7 @@ class TMbsSetup : public TMrbEnv {
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
+		Bool_t GetRcVal(UInt_t & RcValue, const Char_t * Resource, const Char_t * ContrlType = "*", const Char_t * ProcType = "*", const Char_t * MbsVersion = "*", const Char_t * LynxVersion = "*");
 		Bool_t ExpandFile(Int_t ProcID, TString & TemplatePath, TString & SetupFile, TString & DestPath);	// expand setup file
 		Bool_t CreateNodeList(TString & NodeListFile);				// create node list
 		Bool_t WriteRhostsFile(TString & RhostsFile);				// rewrite .rhosts
@@ -102,7 +103,9 @@ class TMbsSetup : public TMrbEnv {
 		TMbsEvtBuilder * fEvtBuilder;			//! event builder (master)
 
 		TObjArray fLofReadouts; 				// readout processors (slaves)
-		TMbsReadoutProc * fReadoutError;		// ... error
+		TMbsReadoutProc * fReadoutError;		//! ... error
+
+		TEnv * fSettings;						//! settings depending on lynx, mbs, cpu etc.
 
 		TString fHomeDir;						// temp storage: home dir
 		TString fPath;							// ... path

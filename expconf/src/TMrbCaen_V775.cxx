@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V775.cxx,v 1.11 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V775.cxx,v 1.12 2006-10-04 12:35:58 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -112,6 +112,7 @@ TMrbCaen_V775::TMrbCaen_V775(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			fFullScaleRange = 0x1E; 				// set full scale range to 1200 ns
 			fFullScaleRangeNsecs = 1200;
 			fZeroSuppression = kTRUE;
+			fValidDataCheck = kTRUE;
 			fOverRangeCheck = kTRUE;
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
@@ -297,6 +298,16 @@ Bool_t TMrbCaen_V775::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			fCodeTemplates.WriteCode(RdoStrm);
 			fCodeTemplates.InitializeCode("%ZSP%");
 			if (this->HasZeroSuppression()) {
+				fCodeTemplates.Substitute("$onOrOff", "ON");
+				fCodeTemplates.Substitute("$dont", "");
+			} else {
+				fCodeTemplates.Substitute("$onOrOff", "OFF");
+				fCodeTemplates.Substitute("$dont", "don't");
+			}
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.WriteCode(RdoStrm);
+			fCodeTemplates.InitializeCode("%VDC%");
+			if (this->HasValidDataCheck()) {
 				fCodeTemplates.Substitute("$onOrOff", "ON");
 				fCodeTemplates.Substitute("$dont", "");
 			} else {

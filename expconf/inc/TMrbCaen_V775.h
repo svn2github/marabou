@@ -8,7 +8,7 @@
 // Class:          TMrbCaen_V775        -- 16/32 chn TDC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V775.h,v 1.8 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V775.h,v 1.9 2006-10-04 12:35:58 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -125,6 +125,9 @@ class TMrbCaen_V775 : public TMrbVMEModule {
 		inline void SetZeroSuppression(Bool_t ZsFlag = kTRUE) { fZeroSuppression = ZsFlag; };	// zero compression on/off
 		inline Bool_t HasZeroSuppression() const { return(fZeroSuppression); };
 		
+		inline void SetValidDataCheck(Bool_t VdCheck = kTRUE) { fValidDataCheck = VdCheck; };	// valid data check on/off
+		inline Bool_t HasValidDataCheck() const { return(fValidDataCheck); };
+		
 		inline void SetOverRangeCheck(Bool_t OrFlag = kTRUE) { fOverRangeCheck = OrFlag; }; 	// range check on/off
 		inline Bool_t HasOverRangeCheck() const { return(fOverRangeCheck); };
 		
@@ -144,6 +147,7 @@ class TMrbCaen_V775 : public TMrbVMEModule {
 		Bool_t fFFMode;
 		Bool_t fCommonStart;
 		Bool_t fZeroSuppression;
+		Bool_t fValidDataCheck;
 		Bool_t fOverRangeCheck;
 
 		Int_t fFullScaleRange;

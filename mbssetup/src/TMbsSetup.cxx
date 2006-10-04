@@ -6,51 +6,12 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.37 2006-08-31 11:02:30 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.38 2006-10-04 12:35:58 Rudolf.Lutter Exp $       
 // Date:           
 //
-// ************************************************************************************************************************
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
 //
-// Follows a list of resource items together with their associated methods:
-//
-// RESOURCE NAME                             DEFAULT     CLASS             METHODS
-//-------------------------------------------------------------------------------------------------------------------------
-// TMbsSetup.HomeDir                         n/a         TMbsSetup         GetHomeDir, SetHomeDir
-// TMbsSetup.Path                            n/a         TMbsSetup         GetPath, SetPath
-// TMbsSetup.EvtBuilder.Name                 n/a         TMbsEvtBuilder    GetProcName, SetProcName
-// TMbsSetup.EvtBuilder.Address              n/a         TMbsEvtBuilder    GetProcAddr, SetProcAddr
-// TMbsSetup.EvtBuilder.Type                 n/a         TMbsEvtBuilder    GetType, SetType
-// TMbsSetup.EvtBuilder.Crate                0           TMbsEvtBuilder    GetCrate, SetCrate
-// TMbsSetup.EvtBuilder.NofStreams           8           TMbsEvtBuilder    GetNofStreams, SetBuffers
-// TMbsSetup.EvtBuilder.NofBuffers           8           TMbsEvtBuilder    GetNofBuffers, SetBuffers
-// TMbsSetup.EvtBuilder.BufferSize           0x4000      TMbsEvtBuilder    GetBufferSize, SetBuffers
-// TMbsSetup.EvtBuilder.FlushTime            1           TMbsEvtBuilder    GetFlushTime, SetFlushTime
-// TMbsSetup.EvtBuilder.VSBAddr              0xf5000000  TMbsEvtBuilder    GetVSBAddr, SetVSBAddr
-// TMbsSetup.MaxReadouts                     1           TMbsSetup         n/a
-// TMbsSetup.NofReadouts                     0           TMbsSetup         GetNofReadouts, SetNofReadouts
-// TMbsSetup.Mode                            n/a         TMbsSetup         GetMode, SetMode
-// TMbsSetup.Readout1.Name                   n/a         TMbsReadoutProc   GetProcName, SetProcName
-// TMbsSetup.Readout1.Address                n/a         TMbsReadoutProc   GetProcAddr, SetProcAddr
-// TMbsSetup.Readout1.Type                   n/a         TMbsReadoutProc   GetType, SetType
-// TMbsSetup.Readout1.Path                   vme1        TMbsReadoutProc   GetPath, SetPath
-// TMbsSetup.Readout1.Crate                  0           TMbsReadoutProc   GetCrate, SetCrate
-// TMbsSetup.Readout1.SourceCode             n/a         TMbsReadoutProc   GetSourceCode, SetSourceCode, CompileSourceCode				
-// TMbsSetup.Readout1.TriggerModule.Type     n/a         TMbsTriggerModule GetType, SetType
-// TMbsSetup.Readout1.TriggerModule.Mode     POLLING(1)  TMbsTriggerModule GetTriggerMode, SetTriggerMode
-// TMbsSetup.Readout1.TriggerModule.ConvTime 500         TMbsTriggerModule GetConversionTime, SetConversionTime
-// TMbsSetup.Readout1.TriggerModule.FastClearTime 20     TMbsTriggerModule GetFastClearTime, SetFastClearTime
-// TMbsSetup.Readout1.CratesToBeRead         0,1         TMbsReadoutProc   GetCratesToBeRead, SetCratesToBeRead
-// TMbsSetup.Readout1.Controller             CBV(5)      TMbsReadoutProc   GetController, SetController
-// TMbsSetup.Readout1.RemoteMemoryBase       0xd0380000  TMbsReadoutProc
-// TMbsSetup.Readout1.RemoteMemoryLength     0x00200000  TMbsReadoutProc
-// TMbsSetup.Readout1.RemoteCamacBase        0xd0380000  TMbsReadoutProc
-// TMbsSetup.Readout1.RemoteCamacLength      0x00200000  TMbsReadoutProc
-// TMbsSetup.Readout1.PipeBase               0xd0000000  TMbsReadoutProc   GetPipeBase, SetPipeBase
-// TMbsSetup.Readout1.VSBAddr                0xf0000000  TMbsReadoutProc   GetVSBAddr, SetVSBAddr
-// TMbsSetup.Readout1.SevtSize               2048        TMbsReadoutProc   GetSevtSize, SetSevtSize
-// ************************************************************************************************************************
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -98,6 +59,8 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 	TString defaultSetupFile;
 	Int_t nofReadouts, n;
 
+	TString settingsFile;
+
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("mbssetup.log");
 	
 	if (gMbsSetup != NULL) {
@@ -131,34 +94,46 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 
 		gSystem->ExpandPathName(defaultSetupPath);
 		TMrbSystem ux;
-		ux.Which(defaultSetupFile, defaultSetupPath.Data(), "mbssetup_default");
+		TString tmplFile = "mbssetup.tmpl";
+		ux.Which(defaultSetupFile, defaultSetupPath.Data(), tmplFile.Data());
 		if (defaultSetupFile.IsNull()) {
-			gMrbLog->Err() << "No such file - mbssetup_default (path = " << defaultSetupPath << ")" << endl;
+			gMrbLog->Err() << "No such file - " << tmplFile << " (path = " << defaultSetupPath << ")" << endl;
 			gMrbLog->Flush(this->ClassName());
 			gMrbLog->Err() << "No default setup given - can't do the job, sorry" << endl;
 			gMrbLog->Flush(this->ClassName());
 		} else {
-			gMbsSetup = this; 						// holds addr of current setup def
-			gDirectory->Append(this);
+			TString rcFile = "mbssetup.rc";
+			ux.Which(settingsFile, defaultSetupPath.Data(), rcFile.Data());
+			if (settingsFile.IsNull()) {
+				gMrbLog->Err() << "No such file - " << rcFile << " (path = " << defaultSetupPath << ")" << endl;
+				gMrbLog->Flush(this->ClassName());
+				gMrbLog->Err() << "No settings file given - can't do the job, sorry" << endl;
+				gMrbLog->Flush(this->ClassName());
+			} else {
+				gMbsSetup = this; 						// holds addr of current setup def
+				gDirectory->Append(this);
 
-			this->OpenDefaults(defaultSetupFile.Data()); // open defaults file
+				fSettings = new TEnv(rcFile.Data());	// open settings file
 
-			this->SetPrefix("TMbsSetup");			// resource names start with "TMbsSetup"
+				this->OpenDefaults(defaultSetupFile.Data()); // open defaults file
 
-			this->CopyDefaults("TemplatePath");		// get template path: where to get file templates from
-			this->CopyDefaults("HomeDir");			// get user's home dir as seen from lynxos
-			this->CopyDefaults("Path");				// get path: where to write setup files
-			this->CopyDefaults("Mode");				// get setup mode: single, dual, or multi proc
+				this->SetPrefix("TMbsSetup");			// resource names start with "TMbsSetup"
 
-			fEvtBuilder = new TMbsEvtBuilder(); 	// create an event builder
+				this->CopyDefaults("TemplatePath");		// get template path: where to get file templates from
+				this->CopyDefaults("HomeDir");			// get user's home dir as seen from lynxos
+				this->CopyDefaults("Path");				// get path: where to write setup files
+				this->CopyDefaults("Mode");				// get setup mode: single, dual, or multi proc
 
-			fReadoutError = new TMbsReadoutProc(-1);	// alloc readout proc for errors
+				fEvtBuilder = new TMbsEvtBuilder(); 	// create an event builder
 
-			fVerbose = gEnv->GetValue("TMbsSetup.VerboseMode", kFALSE);
+				fReadoutError = new TMbsReadoutProc(-1);	// alloc readout proc for errors
 
-			nofReadouts = this->GetNofReadouts();
-			nofReadouts = 1;
-			for (n = 0; n < nofReadouts; n++) fLofReadouts.Add(new TMbsReadoutProc(n));
+				fVerbose = gEnv->GetValue("TMbsSetup.VerboseMode", kFALSE);
+
+				nofReadouts = this->GetNofReadouts();
+				nofReadouts = 1;
+				for (n = 0; n < nofReadouts; n++) fLofReadouts.Add(new TMbsReadoutProc(n));
+			}
 		}
 	}
 }
@@ -181,7 +156,74 @@ TMbsSetup::~TMbsSetup() {
 	fLofTriggerModes.Delete();
 	fLofSetupTags.Delete();
 	fLofControllers.Delete();
+	gDirectory->RecursiveRemove(gMbsSetup);
 	gMbsSetup = NULL;
+}
+
+Bool_t TMbsSetup::GetRcVal(UInt_t & RcValue, const Char_t * Resource, const Char_t * ContrlType, const Char_t * ProcType, const Char_t * MbsVersion, const Char_t * LynxVersion) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMbsSetup::GetRcVal
+// Purpose:        Get value from settings file
+// Arguments:      Int_t & RcValue         -- resulting settings value
+//                 Char_t * Resource       -- resource name
+//                 Char_t * ContrlType     -- type of controller
+//                 Char_t * ProcType       -- type of processor
+//                 Char_t * MbsVersion     -- MBS' version
+//                 Char_t * LynxVersion    -- version of lynxOs
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Reads settings from file mbssetup.rc
+//                 Format:
+//                 <LynxVersion>.<MbsVersion>.<CpuType>.<ContrType>.<Resource>:	<Value>
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	RcValue = 0xaffec0c0;
+
+	if (Resource == NULL || *Resource == '\0') {
+		gMrbLog->Err() << "Resource name missing" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetRcVal");
+		return(kFALSE);
+	}
+
+	if (LynxVersion == NULL || *LynxVersion == '\0') LynxVersion = "*";
+	if (MbsVersion == NULL || *MbsVersion == '\0') MbsVersion = "*";
+	if (ProcType == NULL || *ProcType == '\0') ProcType = "*";
+	if (ContrlType == NULL || *ContrlType == '\0') ContrlType = "*";
+
+	TString res = Form("%s.%s.%s.%s.%s", LynxVersion, MbsVersion, ProcType, ContrlType, Resource);
+	TString resSav = res;
+	TString valStr = fSettings->GetValue(res.Data(), "");
+	if (valStr.IsNull()) {
+		LynxVersion = "*";
+		res = Form("%s.%s.%s.%s.%s", LynxVersion, MbsVersion, ProcType, ContrlType, Resource);
+		valStr = fSettings->GetValue(res.Data(), "");
+	}
+	if (valStr.IsNull()) {
+		MbsVersion = "*";
+		res = Form("%s.%s.%s.%s.%s", LynxVersion, MbsVersion, ProcType, ContrlType, Resource);
+		valStr = fSettings->GetValue(res.Data(), "");
+	}
+	if (valStr.IsNull()) {
+		ProcType = "*";
+		res = Form("%s.%s.%s.%s.%s", LynxVersion, MbsVersion, ProcType, ContrlType, Resource);
+		valStr = fSettings->GetValue(res.Data(), "");
+	}
+	if (valStr.IsNull()) {
+		ContrlType = "*";
+		res = Form("%s.%s.%s.%s.%s", LynxVersion, MbsVersion, ProcType, ContrlType, Resource);
+		valStr = fSettings->GetValue(res.Data(), "");
+	}
+
+	if (valStr.IsNull()) {
+		gMrbLog->Err() << "No value given for resource - " << resSav << endl;
+		gMrbLog->Flush(this->ClassName(), "GetRcVal");
+		return(kFALSE);
+	}
+
+	RcValue = strtoul(valStr.Data(), NULL, 0);
+	return(kTRUE);
 }
 
 void TMbsSetup::RemoveSetup() {
@@ -803,86 +845,60 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i, j, n;
-
-	TString templateFile;
-	TString setupFile;
-	TMrbTemplate stpTmpl;
-
-	TMrbNamedX * setupMode;
-	EMbsSetupMode smode;
-
-	ofstream stp;
-
-	TMrbNamedX * setupTag;
-	TString line;
-	Int_t tagIdx;
-	Bool_t isOK;
-
-	Int_t nofReadouts;
-	TString mbsPath;
-
-	TString path;
-	TString mode;
-	TMrbNamedX * k;
-
-	Int_t fct;
-	Int_t crate;
-	Int_t rdoCrate;
-	Int_t sevtSize = 0;
-	Bool_t found;
-
 	TArrayI lofCrates(kNofCrates);
 	TArrayI arrayData(16);
 
-	nofReadouts = this->GetNofReadouts();
+	Int_t nofReadouts = this->GetNofReadouts();
 	
-	TString mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "v22");
-	Int_t mbsVersNo = 0;
-	if (mbsVersion(0) == 'v') {
-		TString v = mbsVersion(1, 2);
-		mbsVersNo = atoi(v.Data());
-	} else {
-		gMrbLog->Wrn() << "MBS version unexpected - " << mbsVersion << " (should be \"vNN\")" << endl;
-		gMrbLog->Flush(this->ClassName(), "ExpandFile");
-	}
-		
-	mbsPath = this->GetPath();
+	TString mbsPath = this->GetPath();
 	if (!mbsPath.BeginsWith("/")) {
 		mbsPath = this->GetHomeDir();
 		mbsPath += "/";
 		mbsPath += this->GetPath();
 	}
 
-	setupMode = this->GetMode();
-	smode = (EMbsSetupMode) (setupMode ? setupMode->GetIndex() : 0);
+	TMrbNamedX * setupMode = this->GetMode();
+	EMbsSetupMode smode = (EMbsSetupMode) (setupMode ? setupMode->GetIndex() : 0);
 
-	templateFile = TemplatePath;
+	TString templateFile = TemplatePath;
 	templateFile += "/";
 	templateFile += SetupFile;
 
+	TMrbTemplate stpTmpl;
 	if (!stpTmpl.Open(templateFile, &fLofSetupTags)) return(kFALSE);
 
-	setupFile = DestPath;
+	TString setupFile = DestPath;
 	setupFile += "/";
 	setupFile += SetupFile;
 
-	stp.open(setupFile.Data(), ios::out);
+	ofstream stp(setupFile.Data(), ios::out);
 	if (!stp.good()) {	
 		gMrbLog->Err() << gSystem->GetError() << " - " << setupFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ExpandFile");
 		return(kFALSE);
 	}
 
-	isOK = kTRUE;
+	Bool_t isOK = kTRUE;
+
+	TString mbsVersion;
+	this->Get(mbsVersion, "MbsVersion");
+	if (mbsVersion.IsNull()) {
+		gMrbLog->Err() << "MBS version not given - set TMbsSetup.MbsVersion properly" << endl;
+		gMrbLog->Flush(this->ClassName(), "ExpandFile");
+		return(kFALSE);
+	}
+
+	Int_t mbsVersNo = 0;
 
 	for (;;) {
-		setupTag = stpTmpl.Next(line);
+		TString line;
+		TMrbNamedX * setupTag = stpTmpl.Next(line);
 		if (stpTmpl.IsEof()) break;
 		if (stpTmpl.IsError()) { isOK = kFALSE; continue; }
 		if (stpTmpl.Status() & TMrbTemplate::kNoTag) {
 			if (line.Index("//-") != 0) stp << line << endl;
 		} else {
+			Int_t tagIdx;
 			switch (tagIdx = setupTag->GetIndex()) {
 				case kSetAuthor:
 					{
@@ -902,7 +918,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetRdoNames:
-					for (i = 0; i < nofReadouts; i++) {
+					for (Int_t i = 0; i < nofReadouts; i++) {
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoNo", (Int_t) i);
 						stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
@@ -911,16 +927,16 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetHostFlag:
-					for (i = 0; i < nofReadouts; i++) arrayData[i] = 1;
-					for (i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
+					for (Int_t i = 0; i < nofReadouts; i++) arrayData[i] = 1;
+					for (Int_t i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
 					stpTmpl.InitializeCode();
 					stpTmpl.Substitute("$rdoFlagArr", this->EncodeArray(arrayData, kNofRdoProcs));
 					stpTmpl.WriteCode(stp);
 					break;
 
 				case kSetSetupPath:
-					for (i = 0; i < nofReadouts; i++) {
-						path = mbsPath;
+					for (Int_t i = 0; i < nofReadouts; i++) {
+						TString path = mbsPath;
 						path += "/";
 						path += this->ReadoutProc(i)->GetPath();
 						stpTmpl.InitializeCode();
@@ -931,7 +947,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetPipeAddr:
-					for (i = 0; i < nofReadouts; i++) {
+					for (Int_t i = 0; i < nofReadouts; i++) {
 						UInt_t pipeBase = this->ReadoutProc(i)->GetPipeBase();
 						if (pipeBase == 0) {
 							gMrbLog->Err()	<< "Base addr for readout pipe (#"
@@ -942,7 +958,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						}
 						arrayData[i] = pipeBase;
 					}
-					for (i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
+					for (Int_t i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
 					stpTmpl.InitializeCode();
 					stpTmpl.Substitute("$rdoPipeArr", this->EncodeArray(arrayData, kNofRdoProcs, 16));
 					stpTmpl.WriteCode(stp);
@@ -968,8 +984,8 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 				case kStartReadout:
 				case kStopReadout:
 				case kReloadReadout:
-					for (i = 0; i < nofReadouts; i++) {
-						path = mbsPath;
+					for (Int_t i = 0; i < nofReadouts; i++) {
+						TString path = mbsPath;
 						path += "/";
 						path += this->ReadoutProc(i)->GetPath();
 						stpTmpl.InitializeCode();
@@ -1006,16 +1022,18 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetMasterType:
-					k = this->ReadoutProc(ProcID)->GetType();
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$rdoIntType", (Int_t) k->GetIndex());
-					stpTmpl.Substitute("$rdoAscType", k->GetName());
-					stpTmpl.WriteCode(stp);
+					{
+						TMrbNamedX * k = this->ReadoutProc(ProcID)->GetType();
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoIntType", (Int_t) k->GetIndex());
+						stpTmpl.Substitute("$rdoAscType", k->GetName());
+						stpTmpl.WriteCode(stp);
+					}
 					break;
 
 				case kSetRemMemoryBase:
 					{
-						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryBase"), 0);
@@ -1034,9 +1052,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 								else						memLength = kRemMemoryLengthCC32;
 							}
 						} 
-						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						for (i = 0; i < n; i++) {
-							crate = lofCrates[i];
+						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (Int_t i = 0; i < n; i++) {
+							Int_t crate = lofCrates[i];
 							if (crate == 0) {
 								arrayData[crate] = 0;
 							} else {
@@ -1052,7 +1070,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetRemMemoryOffset:
 					{
-						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemMemoryOffset", this->EncodeArray(arrayData, kNofCrates, 16));
 						stpTmpl.WriteCode(stp);
@@ -1061,7 +1079,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetRemMemoryLength:
 					{
-						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
 						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
@@ -1072,9 +1090,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 								else						memLength = kRemMemoryLengthCC32;
 							}
 						} 
-						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						for (i = 0; i < n; i++) {
-							crate = lofCrates[i];
+						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (Int_t i = 0; i < n; i++) {
+							Int_t crate = lofCrates[i];
 							if (crate == 0) {
 								arrayData[crate] = 0;
 							} else {
@@ -1089,7 +1107,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetRemCamacBase:
 					{
-						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacBase"), 0);
@@ -1108,9 +1126,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 								else						memLength = kRemMemoryLengthCC32;
 							}
 						} 
-						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						for (i = 0; i < n; i++) {
-							crate = lofCrates[i];
+						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (Int_t i = 0; i < n; i++) {
+							Int_t crate = lofCrates[i];
 							if (crate == 0) {
 								arrayData[crate] = 0;
 							} else {
@@ -1126,7 +1144,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetRemCamacOffset:
 					{
-						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemCamacOffset", this->EncodeArray(arrayData, kNofCrates, 16));
 						stpTmpl.WriteCode(stp);
@@ -1135,7 +1153,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetRemCamacLength:
 					{
-						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
 						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
@@ -1146,9 +1164,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 								else						memLength = kRemMemoryLengthCC32;
 							}
 						} 
-						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						for (i = 0; i < n; i++) {
-							crate = lofCrates[i];
+						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (Int_t i = 0; i < n; i++) {
+							Int_t crate = lofCrates[i];
 							if (crate == 0) {
 								arrayData[crate] = 0;
 							} else {
@@ -1190,12 +1208,13 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetSevtSize:
-					for (i = 1; i < kNofTriggers; i++) {
-						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
-						found = kFALSE;
-						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						for (j = 0; j < n; j++) {
-							crate = lofCrates[j];
+					for (Int_t i = 1; i < kNofTriggers; i++) {
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						Bool_t found = kFALSE;
+						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						Int_t sevtSize = 0;
+						for (Int_t j = 0; j < n; j++) {
+							Int_t crate = lofCrates[j];
 							sevtSize = this->ReadoutProc(ProcID)->GetSevtSize(i);
 							if (sevtSize == 0) {
 								if (i == 1 || i == 14 || i == 15) sevtSize = this->ReadoutProc(ProcID)->GetSevtSize();
@@ -1216,10 +1235,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetRdoFlag:
-					for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
-					n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-					for (i = 0; i < n; i++) {
-						crate = lofCrates[i];
+					for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+					Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+					for (Int_t i = 0; i < n; i++) {
+						Int_t crate = lofCrates[i];
 						arrayData[crate] = 1;
 					}
 					stpTmpl.InitializeCode();
@@ -1228,62 +1247,66 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetControllerID:
-					for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
-					rdoCrate = this->ReadoutProc(ProcID)->GetCrate();
-					k = this->ReadoutProc(ProcID)->GetType();
-					arrayData[rdoCrate] = k->GetIndex();
-					n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-					k = this->ReadoutProc(ProcID)->GetController();
-					for (j = 0; j < n; j++) {
-						crate = lofCrates[j];
-						if (crate != rdoCrate) arrayData[crate] = k->GetIndex();
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						Int_t rdoCrate = this->ReadoutProc(ProcID)->GetCrate();
+						TMrbNamedX * k = this->ReadoutProc(ProcID)->GetType();
+						arrayData[rdoCrate] = k->GetIndex();
+						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						k = this->ReadoutProc(ProcID)->GetController();
+						for (Int_t j = 0; j < n; j++) {
+							Int_t crate = lofCrates[j];
+							if (crate != rdoCrate) arrayData[crate] = k->GetIndex();
+						}
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$contrIdArr", this->EncodeArray(arrayData, kNofCrates));
+						stpTmpl.WriteCode(stp);
 					}
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$contrIdArr", this->EncodeArray(arrayData, kNofCrates));
-					stpTmpl.WriteCode(stp);
 					break;
 
 				case kSetTriggerModule:
-					k = this->ReadoutProc(ProcID)->TriggerModule()->GetType();
-					stpTmpl.InitializeCode();
-					switch (k->GetIndex()) {
-						case kTriggerModuleCAMAC:
-							stpTmpl.Substitute("$trigModuleComment", "TriggerModule: CAMAC / Polling");
-							stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModePolling);
-							stpTmpl.Substitute("$trigType", (Int_t) kTriggerModuleCAMAC);
-							stpTmpl.Substitute("$trigBase", "0xd0380000");
-							break;
-						case kTriggerModuleVME:
-							k = this->ReadoutProc(ProcID)->TriggerModule()->GetTriggerMode();
-							if (k->GetIndex() == kTriggerModeLocalInterrupt) {
-								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / Local interrupt");
-								stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModeLocalInterrupt);
-								stpTmpl.Substitute("$trigType", (Int_t) kTriggerModuleVME);
-								stpTmpl.Substitute("$trigBase", "0x0");
-							} else if (k->GetIndex() == kTriggerModeVsbInterrupt) {
-								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / VSB interrupt (not implemented!!)");
-								stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModeVsbInterrupt);
-								stpTmpl.Substitute("$trigType", 0);
-								stpTmpl.Substitute("$trigBase", "0x0");
-								gMrbLog->Wrn() << "Trigger mode \"VSB Interrupt\" not implemented" << endl;
-								gMrbLog->Flush(this->ClassName(), "ExpandFile");
-							} else {
-								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / Polling");
+					{
+						TMrbNamedX * k = this->ReadoutProc(ProcID)->TriggerModule()->GetType();
+						stpTmpl.InitializeCode();
+						switch (k->GetIndex()) {
+							case kTriggerModuleCAMAC:
+								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: CAMAC / Polling");
 								stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModePolling);
-								stpTmpl.Substitute("$trigType", (Int_t) kTriggerModuleVME);
-								UInt_t trigBase;
-								if (this->ReadoutProc(ProcID)->GetType()->GetIndex() == kProcRIO3)	trigBase = kTriggerModuleBaseRIO3;
-								else																trigBase = kTriggerModuleBaseRIO2;
-								stpTmpl.Substitute("$trigBase", trigBase, 16);
-							}
-							break;
+								stpTmpl.Substitute("$trigType", (Int_t) kTriggerModuleCAMAC);
+								stpTmpl.Substitute("$trigBase", "0xd0380000");
+								break;
+							case kTriggerModuleVME:
+								k = this->ReadoutProc(ProcID)->TriggerModule()->GetTriggerMode();
+								if (k->GetIndex() == kTriggerModeLocalInterrupt) {
+									stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / Local interrupt");
+									stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModeLocalInterrupt);
+									stpTmpl.Substitute("$trigType", (Int_t) kTriggerModuleVME);
+									stpTmpl.Substitute("$trigBase", "0x0");
+								} else if (k->GetIndex() == kTriggerModeVsbInterrupt) {
+									stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / VSB interrupt (not implemented!!)");
+									stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModeVsbInterrupt);
+									stpTmpl.Substitute("$trigType", 0);
+									stpTmpl.Substitute("$trigBase", "0x0");
+									gMrbLog->Wrn() << "Trigger mode \"VSB Interrupt\" not implemented" << endl;
+									gMrbLog->Flush(this->ClassName(), "ExpandFile");
+								} else {
+									stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / Polling");
+									stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModePolling);
+									stpTmpl.Substitute("$trigType", (Int_t) kTriggerModuleVME);
+									UInt_t trigBase;
+									if (this->ReadoutProc(ProcID)->GetType()->GetIndex() == kProcRIO3)	trigBase = kTriggerModuleBaseRIO3;
+									else																trigBase = kTriggerModuleBaseRIO2;
+									stpTmpl.Substitute("$trigBase", trigBase, 16);
+								}
+								break;
+						}
+						stpTmpl.WriteCode(stp);
 					}
-					stpTmpl.WriteCode(stp);
 					break;
 
 				case kSetTrigStation:
-					for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
-					crate = this->ReadoutProc(ProcID)->GetCrate();
+					for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+					Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
 					arrayData[crate] = 1;
 					stpTmpl.InitializeCode();
 					stpTmpl.Substitute("$trigStatArr", this->EncodeArray(arrayData, kNofCrates));
@@ -1291,41 +1314,50 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetTrigFastClear:
-					for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
-					crate = this->ReadoutProc(ProcID)->GetCrate();
-					fct = this->ReadoutProc(ProcID)->TriggerModule()->GetFastClearTime();
-					arrayData[crate] = (fct == 0) ? kMinFCT : fct;
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$trigFctArr", this->EncodeArray(arrayData, kNofCrates));
-					stpTmpl.WriteCode(stp);
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
+						Int_t fct = this->ReadoutProc(ProcID)->TriggerModule()->GetFastClearTime();
+						arrayData[crate] = (fct == 0) ? kMinFCT : fct;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$trigFctArr", this->EncodeArray(arrayData, kNofCrates));
+						stpTmpl.WriteCode(stp);
+					}
 					break;
 
 				case kSetTrigConvTime:
-					for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
-					crate = this->ReadoutProc(ProcID)->GetCrate();
-					arrayData[crate] = this->ReadoutProc(ProcID)->TriggerModule()->GetConversionTime();
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$trigCvtArr", this->EncodeArray(arrayData, kNofCrates));
-					stpTmpl.WriteCode(stp);
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
+						arrayData[crate] = this->ReadoutProc(ProcID)->TriggerModule()->GetConversionTime();
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$trigCvtArr", this->EncodeArray(arrayData, kNofCrates));
+						stpTmpl.WriteCode(stp);
+					}
 					break;
 
 				case kLoadRdoSetup:
 				case kStartRdoTask:
-					path = mbsPath;
-					path += "/";
-					path += this->ReadoutProc(ProcID)->GetPath();
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$mbsPath", mbsPath);
-					stpTmpl.Substitute("$rdoPath", path);
-					stpTmpl.WriteCode(stp);
+					{
+						TString path = mbsPath;
+						path += "/";
+						path += this->ReadoutProc(ProcID)->GetPath();
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$mbsPath", mbsPath);
+						stpTmpl.Substitute("$rdoPath", path);
+						stpTmpl.WriteCode(stp);
+					}
 					break;
 
 				case kSetIrqMode:
-					k = this->ReadoutProc(ProcID)->TriggerModule()->GetTriggerMode();
-					if (k->GetIndex() == kTriggerModeVsbInterrupt) mode = "enable"; else mode = "disable";
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$irqMode", mode);
-					stpTmpl.WriteCode(stp);
+					{
+						TMrbNamedX * k = this->ReadoutProc(ProcID)->TriggerModule()->GetTriggerMode();
+						TString mode;
+						if (k->GetIndex() == kTriggerModeVsbInterrupt) mode = "enable"; else mode = "disable";
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$irqMode", mode);
+						stpTmpl.WriteCode(stp);
+					}
 					break;
 
 				case kTestHostName:
@@ -1334,7 +1366,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						stpTmpl.InitializeCode("%B%");
 						stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
 						stpTmpl.WriteCode(stp);
-						for (i = 0; i < nofReadouts; i++) {
+						for (Int_t i = 0; i < nofReadouts; i++) {
 							stpTmpl.InitializeCode("%L%");
 							stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
 							stpTmpl.WriteCode(stp);
@@ -1360,7 +1392,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 							stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
 							stpTmpl.Substitute("$vsbAddr",this->EvtBuilder()->GetVSBAddr(), 16);
 							stpTmpl.WriteCode(stp);
-							for (i = 0; i < nofReadouts; i++) {
+							for (Int_t i = 0; i < nofReadouts; i++) {
 								stpTmpl.InitializeCode("%L%");
 								stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
 								stpTmpl.Substitute("$vsbAddr", this->ReadoutProc(i)->GetVSBAddr(), 16);
@@ -1461,8 +1493,6 @@ Bool_t TMbsSetup::CheckSetup() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString resString;
-	TString remoteHome;
 	TMrbNamedX * resType;
 	Int_t nofErrors;
 
@@ -1477,7 +1507,6 @@ Bool_t TMbsSetup::CheckSetup() {
 	TMrbNamedX * setupMode;
 	EMbsSetupMode smode;
 
-	TString templatePath;
 	TString fileList;
 	Long_t dmy;
 	Long64_t dmy64;
@@ -1488,7 +1517,7 @@ Bool_t TMbsSetup::CheckSetup() {
 
 	nofErrors = 0;
 
-	remoteHome = this->RemoteHomeDir();	// get home dir via remote login
+	TString remoteHome = this->RemoteHomeDir();	// get home dir via remote login
 	if (remoteHome.IsNull()) {
 		gMrbLog->Err() << "Can't get remote home dir via rsh - MBS host not responding" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckSetup");
@@ -1496,6 +1525,7 @@ Bool_t TMbsSetup::CheckSetup() {
 	}
 
 // TMbsSetup.TemplatePath:
+	TString templatePath;
 	this->Get(templatePath, "TemplatePath");
 	if (templatePath.Length() == 0) {
 		gMrbLog->Err() << fResourceName << " is not set" << endl;
@@ -1504,7 +1534,7 @@ Bool_t TMbsSetup::CheckSetup() {
 	}
 
 // TMbsSetup.HomeDir:
-	resString = this->GetHomeDir();
+	TString resString = this->GetHomeDir();
 	if (resString.Length() == 0) {
 		if (remoteHome.IsNull()) {
 			gMrbLog->Err() << fResourceName << " is not set" << endl;
