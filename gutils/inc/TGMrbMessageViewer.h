@@ -9,7 +9,7 @@
 //                                             displaying messages
 // Description:        Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMessageViewer.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMessageViewer.h,v 1.5 2006-10-09 08:58:59 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ class TGMrbMessageViewer: public TGTransientFrame {
 
 		~TGMrbMessageViewer() {};				// default dtor
 
-		TGMrbMessageViewer(const TGMrbMessageViewer & f) : TGTransientFrame(f) {};	// default copy ctor
+//		TGMrbMessageViewer(const TGMrbMessageViewer & f) : TGTransientFrame(f) {};	// default copy ctor
 
 		Int_t AddEntries(UInt_t Type = TMrbLogMessage::kMrbMsgAny, Int_t Start = 0, Bool_t WithDate = kTRUE);
 		virtual Bool_t Notify();

@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.7 2006-10-09 08:58:59 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -183,7 +183,7 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main, TMrbNamedX * Macro, UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		~TGMrbMacroFrame() { fHeap.Delete(); };
 
-		TGMrbMacroFrame(const TGMrbMacroFrame & f) : TGTransientFrame(f) {};	// default copy ctor
+//		TGMrbMacroFrame(const TGMrbMacroFrame & f) : TGTransientFrame(f) {};	// default copy ctor
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
@@ -268,7 +268,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, TMrbNamedX * Macro, UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		~TGMrbMacroEdit() { fHeap.Delete(); };
 
-		TGMrbMacroEdit(const TGMrbMacroEdit & f) : TGTransientFrame(f) {};	// default copy ctor
+//		TGMrbMacroEdit(const TGMrbMacroEdit & f) : TGTransientFrame(f) {};	// default copy ctor
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
@@ -360,7 +360,7 @@ class TGMrbMacroList : public TGVerticalFrame {
 																UInt_t ButtonOptions = kRaisedFrame | kDoubleBorder);
 		~TGMrbMacroList() { fHeap.Delete(); };
 
-		TGMrbMacroList(const TGMrbMacroList & f) : TGVerticalFrame(f) {};	// default copy ctor
+//		TGMrbMacroList(const TGMrbMacroList & f) : TGVerticalFrame(f) {};	// default copy ctor
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
@@ -402,7 +402,7 @@ class TGMrbMacroBrowserMain : public TGMainFrame {
 
 		virtual ~TGMrbMacroBrowserMain() { fHeap.Delete(); };
 
-		TGMrbMacroBrowserMain(const TGMrbMacroBrowserMain & f) : TGMainFrame(f) {};	// default copy ctor
+//		TGMrbMacroBrowserMain(const TGMrbMacroBrowserMain & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
@@ -451,7 +451,7 @@ class TGMrbMacroBrowserVertical : public TGVerticalFrame {
 
 		virtual ~TGMrbMacroBrowserVertical() {};
 
-		TGMrbMacroBrowserVertical(const TGMrbMacroBrowserVertical & f) : TGVerticalFrame(f) {};	// default copy ctor
+//		TGMrbMacroBrowserVertical(const TGMrbMacroBrowserVertical & f) : TGVerticalFrame(f) {};	// default copy ctor
 
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
@@ -482,7 +482,7 @@ class TGMrbMacroBrowserGroup : public TGGroupFrame {
 
 		virtual ~TGMrbMacroBrowserGroup() {};
 
-		TGMrbMacroBrowserGroup(const TGMrbMacroBrowserGroup & f) : TGGroupFrame(f) {};	// default copy ctor
+//		TGMrbMacroBrowserGroup(const TGMrbMacroBrowserGroup & f) : TGGroupFrame(f) {};	// default copy ctor
 
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
@@ -518,7 +518,7 @@ class TGMrbMacroBrowserPopup : public TGPopupMenu {
 
 		virtual ~TGMrbMacroBrowserPopup() { fHeap.Delete(); };
 
-		TGMrbMacroBrowserPopup(const TGMrbMacroBrowserPopup & f) : TGPopupMenu(f) {};	// default copy ctor
+//		TGMrbMacroBrowserPopup(const TGMrbMacroBrowserPopup & f) : TGPopupMenu(f) {};	// default copy ctor
 
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
@@ -547,7 +547,7 @@ class TGMrbMacroBrowserTransient : public TGTransientFrame {
 		TGMrbMacroBrowserTransient(const TGWindow * Parent, const TGWindow * Main, const Char_t * Title, TMrbLofMacros * LofMacros,
 															UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 
-		TGMrbMacroBrowserTransient(const TGMrbMacroBrowserTransient & f) : TGTransientFrame(f) {};	// default copy ctor
+//		TGMrbMacroBrowserTransient(const TGMrbMacroBrowserTransient & f) : TGTransientFrame(f) {};	// default copy ctor
 
 		virtual ~TGMrbMacroBrowserTransient() {fHeap.Delete(); };
 
