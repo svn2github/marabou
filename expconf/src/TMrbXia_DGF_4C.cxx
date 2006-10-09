@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.26 2006-09-22 12:20:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.27 2006-10-09 10:30:35 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -112,9 +112,6 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 					fSynchWait = 1;
 					fActivateUserPSA = kFALSE;
 					fInSynch = 0;
-					fLofChannelLayouts.Delete(); 	// channel layouts for 6 and 12 fold segmented crystals are predefined
-					this->SetChannelLayout("6fold", 8, "c:1:2:x:3:4:5:6");
-					this->SetChannelLayout("12fold", 16, "c:01:02:03:04:05:06:x1:x2:07:08:09:10:11:12:x3");
 				} else {
 					this->MakeZombie();
 				}
@@ -788,136 +785,4 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 	}
 	return(kTRUE);
 }
-
-Bool_t TMrbXia_DGF_4C::SetChannelLayout(const Char_t * LayoutName, Int_t NofChannels, const Char_t * ChannelNames) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbXia_DGF_4C::SetChannelLayout
-// Purpose:        Define channel names to be used
-// Arguments:      Char_t * LayoutName         -- name of channel layout
-//                 Int_t NofChannels           -- max number of channels
-//                 Char_t * ChannelNames       -- channel names, :-separated string
-// Results:        kTRUE/kFALSE
-// Exceptions:
-// Description:    Defines a set of channel names to be used.
-//                 On startup 2 standard layouts will be defined:
-//                 "6fold" ->  channels "c:1:2:x:3:4:5:6" (0-7)
-//                 "12fold" -> channels "c:1:2:3:4:5:6:x1:x2:7:8:9:10:11:12:x3" (0-15)
-//                 x, x1, x2, x3 spare channels
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Bool_t verboseMode = gMrbConfig->IsVerbose();
-
-	if (fLofChannelLayouts.FindByName(LayoutName) != NULL) {
-		gMrbLog->Err() << "Channel layout already defined - " << LayoutName << endl;
-		gMrbLog->Flush(this->ClassName(), "SetChannelLayout");
-		return(kFALSE);
-	}
-
-	TMrbString cn = ChannelNames;
-	TObjArray * ca = new TObjArray();
-	Int_t nofChannels = cn.Split(*ca);
-	if (nofChannels != NofChannels) {
-		gMrbLog->Err()	<< "Channel layout \"" << LayoutName << "\": number of channels ("
-						<< NofChannels << ") != number of names given (" << nofChannels << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetChannelLayout");
-		return(kFALSE);
-	}
-
-	TString chnLayout = "<";
-	Int_t modNo = 0;
-	for (Int_t chn = 0; chn < nofChannels; chn++) {
-		if ((modNo % kMrbXiaChansPerModule) == 0) {
-			chnLayout += ">";
-			ca->Add(new TObjString(chnLayout.Data()));
-			chnLayout = "<";
-		}
-		TString c = ((TObjString *) ca->At(chn))->GetString();
-		if (c.CompareTo("c") == 0)	chnLayout += "c";
-		else if (c.BeginsWith("x")) chnLayout += "x";
-		else						chnLayout += "s";
-		modNo++;
-	}
-	if ((modNo % kMrbXiaChansPerModule) == 0) {
-		chnLayout += ">";
-		ca->Add(new TObjString(chnLayout.Data()));
-	}
-
-	TMrbNamedX * nx = new TMrbNamedX(nofChannels, LayoutName, ChannelNames);
-	nx->AssignObject(ca);
-	fLofChannelLayouts.AddNamedX(nx);
-
-	if (verboseMode) {
-		gMrbLog->Out()  << "[" << this->GetName() << "] Defining channel layout " << LayoutName << ", " << nofChannels << " channels" << endl;
-		gMrbLog->Flush(this->ClassName(), "MakeRcFile");
-	}
-
-	return(kTRUE);
-}
-
-const Char_t * TMrbXia_DGF_4C::GetChannelLayout(Int_t ModuleNumber, const Char_t * LayoutName) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbXia_DGF_4C::GetChannelLayout
-// Purpose:   	   Get channel layout per module
-// Arguments:      Int_t ModuleNumber            -- module number
-//                 Char_t * LayoutName           -- name of channel layout
-// Results:        Char_t * ChannelLayout        -- layout for given module
-// Exceptions:
-// Description:    Returns layout definitions per module: <....>
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbNamedX * layout = (TMrbNamedX *) fLofChannelLayouts.FindByName(LayoutName);
-	if (layout == NULL) {
-		gMrbLog->Err() << "No such channel layout - " << LayoutName << endl;
-		gMrbLog->Flush(this->ClassName(), "GetChannelLayout");
-		return(NULL);
-	}
-
-	Int_t chn1 = ModuleNumber * kMrbXiaChansPerModule;
-	Int_t chn2 = chn1 + kMrbXiaChansPerModule - 1;
-	if (chn1 < 0 || chn1 > layout->GetIndex() - 1 || chn2 < 0 || chn2 > layout->GetIndex() - 1) {
-		gMrbLog->Err() << "Module number out of range - " << ModuleNumber << endl;
-		gMrbLog->Flush(this->ClassName(), "GetChannelLayout");
-		return(NULL);
-	}
-
-	TObjArray * ca = (TObjArray *) layout->GetAssignedObject();
-	return(((TObjString *) ca->At(layout->GetIndex() + ModuleNumber))->GetString());
-}
-
-const Char_t * TMrbXia_DGF_4C::GetChannelName(Int_t Channel, const Char_t * LayoutName) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbXia_DGF_4C::GetChannelName
-// Purpose:        Get channel named for a given layout
-// Arguments:      Int_t Channel               -- channel number
-//                 Char_t * LayoutName         -- name of channel layout
-// Results:        Char_t * ChannelName        -- channel name
-// Exceptions:
-// Description:    Returns channel name by its number.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbNamedX * layout = (TMrbNamedX *) fLofChannelLayouts.FindByName(LayoutName);
-	if (layout == NULL) {
-		gMrbLog->Err() << "No such channel layout - " << LayoutName << endl;
-		gMrbLog->Flush(this->ClassName(), "GetChannelName");
-		return(NULL);
-	}
-
-	if (Channel < 0 || Channel >= layout->GetIndex()) {
-		gMrbLog->Err()	<< "Wrong channel number (layout \"" << LayoutName << "\") - " << Channel
-						<< " (should be in [0," << layout->GetIndex() - 1 << "]" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetChannelName");
-		return(NULL);
-	}
-
-	TObjArray * ca = (TObjArray *) layout->GetAssignedObject();
-	return(((TObjString *) ca->At(Channel))->GetString());
-}
-
-
 

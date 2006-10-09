@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.130 2006-09-18 11:00:55 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.131 2006-10-09 10:30:35 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4709,6 +4709,12 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 	TRegexp rxh("\\.h$");
 	TRegexp rxcxx("\\.cxx$");
 
+	if (fConfigChecked) {
+		gMrbLog->Err()	<< "Statement out of phase - must be called *BEFORE* MakeAnalyzeCode()" << endl;
+		gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+		return(kFALSE);
+	}
+
 	if (userFile.Index(rxh, 0) == -1 && userFile.Index(rxcxx, 0) == -1) {
 		gMrbLog->Err()	<< "Wrong extension - " << userFile << " (should be \".cxx\" or \".h\")" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
@@ -5007,6 +5013,12 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 
 	TMrbSystem ux;
 
+	if (fConfigChecked) {
+		gMrbLog->Err()	<< "Statement out of phase - must be called *BEFORE* MakeAnalyzeCode()" << endl;
+		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+		return(kFALSE);
+	}
+
 	if (userLib.Index(rxlib, 0) == -1 || userLib.Index(rxso, 0) == -1) {
 		gMrbLog->Err()	<< "Wrong library name - " << userLib
 						<< " (should be \"libXYZ.so\")" << endl;
@@ -5186,6 +5198,12 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 
 	TRegexp rxh("\\.h$");
 	TRegexp rxcxx("\\.cxx$");
+
+	if (fConfigChecked) {
+		gMrbLog->Err()	<< "Statement out of phase - must be called *BEFORE* MakeAnalyzeCode()" << endl;
+		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+		return(kFALSE);
+	}
 
 	if (userFile.Index(rxh, 0) == -1 && userFile.Index(rxcxx, 0) == -1) {
 		gMrbLog->Err()	<< "Wrong extension - " << userFile << " (should be \".cxx\" or \".h\")" << endl;

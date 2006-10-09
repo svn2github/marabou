@@ -8,7 +8,7 @@
 // Class:          TMrbDGFCluster            -- cluster data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFCluster.h,v 1.2 2006-09-12 11:44:08 Marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.h,v 1.3 2006-10-09 10:30:35 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -18,6 +18,7 @@
 #include "TNamed.h"
 #include "TEnv.h"
 
+#include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 
 enum	EMrbDGFClusterIdx	{	kMrbDGFClusterIdx = 0,
@@ -48,25 +49,7 @@ class TMrbDGFClusterMember : public TObject {
 
 	public:
 
-		TMrbDGFClusterMember(Int_t ClusterIndex = 0, Int_t ClusterNo = 0, Char_t CapsuleId = 'X') {
-			fClusterIndex = ClusterIndex;
-			fClusterNo = ClusterNo;
-			fCapsuleId = CapsuleId;
-			fHex = 0;
-			fVoltage = 0;
-			fColor = "void";
-			fAF = "void";
-			fSide = "void";
-			fIsRight = kFALSE;
-			fHeight = "void";
-			fIsUp = kFALSE;
-			fAngle = "void";
-			fIsForward = kFALSE;
-			fCrate = 0;
-			for (Int_t i = 0; i < kMrbDGFClusterNofModules; i++) fSlot[i] = 0;
-			for (Int_t i = 0; i < kMrbDGFClusterNofModules; i++) fDgf[i] = "undef";
-			fCmt = "";
-		}
+		TMrbDGFClusterMember(Int_t ClusterIndex = 0, Int_t ClusterNo = 0, Char_t CapsuleId = 'X');
 		virtual ~TMrbDGFClusterMember() {};
 
 		inline void SetClusterIndex(Int_t CluIndex) { fClusterIndex = CluIndex; };
@@ -144,12 +127,11 @@ class TMrbDGFClusterMember : public TObject {
 class TMrbDGFCluster : public TMrbNamedX {
 
 	public:
+		enum	{	kMrbXiaChansPerModule	=	4	};
 
-		TMrbDGFCluster(Int_t ClusterIndex = 0, const Char_t * ClusterName = "Clu0") : TMrbNamedX(ClusterIndex, ClusterName) {
-			fMembers.Delete();
-			fClusterNo = 0;
-			fCrate = -1;
-		};
+	public:
+
+		TMrbDGFCluster(Int_t ClusterIndex = 0, const Char_t * ClusterName = "Clu0");
 		virtual ~TMrbDGFCluster() {};
 
 		inline Int_t GetClusterIndex() { return(this->GetIndex()); };
@@ -172,6 +154,10 @@ class TMrbDGFCluster : public TMrbNamedX {
 		void Print(ostream & OutStrm, Bool_t CmtFlag = kFALSE);
 		virtual inline void Print(Bool_t CmtFlag) { Print(cout, CmtFlag); };
 		
+		Bool_t SetChannelLayout(const Char_t * LayoutName, Int_t NofChannels, const Char_t * ChannelNames); // define channel names to be used
+		const Char_t * GetChannelName(Int_t Channel, const Char_t * Layout = "6fold");					// get channel name from layout
+		const Char_t * GetChannelLayout(Int_t ModuleNumber, const Char_t * LayoutName = "6fold");		// get channel layout per module
+
 	protected:
 		Int_t fClusterNo;
 		Int_t fCrate;
@@ -181,6 +167,8 @@ class TMrbDGFCluster : public TMrbNamedX {
 		TString fAngle;
 
 		TObjArray fMembers;
+
+		TMrbLofNamedX fLofChannelLayouts; 	// layouts how to name dgf channels
 
 	ClassDef(TMrbDGFCluster, 1)		// [XIA DGF-4C] DGF cluster data
 };

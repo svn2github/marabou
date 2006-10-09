@@ -8,7 +8,7 @@
 // Class:          TMrbXia_DGF_4C     -- xia's digital gamma finder
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXia_DGF_4C.h,v 1.18 2006-09-22 12:20:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.h,v 1.19 2006-10-09 10:30:35 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -36,9 +36,6 @@ namespace std {} using namespace std;
 //////////////////////////////////////////////////////////////////////////////
 
 class TMrbXia_DGF_4C : public TMrbCamacModule {
-
-	public:
-		enum	{	kMrbXiaChansPerModule	=	4	};
 
 	public:
 

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.3 2006-09-13 07:28:54 Marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.4 2006-10-09 10:30:35 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -32,6 +32,39 @@ extern TMrbLogger * gMrbLog;
 ClassImp(TMrbDGFClusterMember)
 ClassImp(TMrbDGFCluster)
 ClassImp(TMrbLofDGFClusters)
+
+TMrbDGFClusterMember::TMrbDGFClusterMember(Int_t ClusterIndex, Int_t ClusterNo, Char_t CapsuleId) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGFClusterMember
+// Purpose:        Create a cluster member
+// Arguments:      Int_t ClusterIndex     -- cluster index
+//                 Int_t ClusterNo        -- cluster number
+//                 Char_t CapsuleId       -- id of capsule
+// Results:        --
+// Exceptions:
+// Description:    Creates a cluster member
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fClusterIndex = ClusterIndex;
+	fClusterNo = ClusterNo;
+	fCapsuleId = CapsuleId;
+	fHex = 0;
+	fVoltage = 0;
+	fColor = "void";
+	fAF = "void";
+	fSide = "void";
+	fIsRight = kFALSE;
+	fHeight = "void";
+	fIsUp = kFALSE;
+	fAngle = "void";
+	fIsForward = kFALSE;
+	fCrate = 0;
+	for (Int_t i = 0; i < kMrbDGFClusterNofModules; i++) fSlot[i] = 0;
+	for (Int_t i = 0; i < kMrbDGFClusterNofModules; i++) fDgf[i] = "undef";
+	fCmt = "";
+}
 
 Bool_t TMrbDGFClusterMember::SetSide(const Char_t * Side) {
 //________________________________________________________________[C++ METHOD]
@@ -152,6 +185,27 @@ void TMrbDGFClusterMember::Print(ostream & Out, Bool_t CmtFlag) {
 	Out << endl;
 }
 
+TMrbDGFCluster::TMrbDGFCluster(Int_t ClusterIndex, const Char_t * ClusterName)  : TMrbNamedX(ClusterIndex, ClusterName) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGFCluster
+// Purpose:        Create a dgf cluster 
+// Arguments:      Int_t ClusterIndex     -- cluster index
+//                  Char_t * ClusterName  -- name
+// Results:        --
+// Exceptions:
+// Description:    Creates a dgf cluster
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fMembers.Delete();
+	fClusterNo = 0;
+	fCrate = -1;
+	fLofChannelLayouts.Delete(); 	// channel layouts for 6 and 12 fold segmented crystals are predefined
+	this->SetChannelLayout("6fold", 8, "c:1:2:x:3:4:5:6");
+	this->SetChannelLayout("12fold", 16, "c:01:02:03:04:05:06:x1:x2:07:08:09:10:11:12:x3");
+}
+
 void TMrbDGFCluster::Print(ostream & Out, Bool_t CmtFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -226,6 +280,132 @@ Bool_t TMrbDGFCluster::AddMember(TMrbDGFClusterMember * Member) {
 	fAngle = Member->GetAngle();
 	fMembers.Add(Member);
 	return(kTRUE);
+}
+
+Bool_t TMrbDGFCluster::SetChannelLayout(const Char_t * LayoutName, Int_t NofChannels, const Char_t * ChannelNames) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGFCluster::SetChannelLayout
+// Purpose:        Define channel names to be used
+// Arguments:      Char_t * LayoutName         -- name of channel layout
+//                 Int_t NofChannels           -- max number of channels
+//                 Char_t * ChannelNames       -- channel names, :-separated string
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Defines a set of channel names to be used.
+//                 On startup 2 standard layouts will be defined:
+//                 "6fold" ->  channels "c:1:2:x:3:4:5:6" (0-7)
+//                 "12fold" -> channels "c:1:2:3:4:5:6:x1:x2:7:8:9:10:11:12:x3" (0-15)
+//                 x, x1, x2, x3 spare channels
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fLofChannelLayouts.FindByName(LayoutName) != NULL) {
+		gMrbLog->Err() << "Channel layout already defined - " << LayoutName << endl;
+		gMrbLog->Flush(this->ClassName(), "SetChannelLayout");
+		return(kFALSE);
+	}
+
+	TMrbString cn = ChannelNames;
+	TObjArray * ca = new TObjArray();
+	Int_t nofChannels = cn.Split(*ca);
+	if (nofChannels != NofChannels) {
+		gMrbLog->Err()	<< "Channel layout \"" << LayoutName << "\": number of channels ("
+						<< NofChannels << ") != number of names given (" << nofChannels << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetChannelLayout");
+		return(kFALSE);
+	}
+
+	TString chnLayout = "<";
+	Int_t modNo = 0;
+	for (Int_t chn = 0; chn < nofChannels; chn++) {
+		if ((modNo % kMrbXiaChansPerModule) == 0) {
+			chnLayout += ">";
+			ca->Add(new TObjString(chnLayout.Data()));
+			chnLayout = "<";
+		}
+		TString c = ((TObjString *) ca->At(chn))->GetString();
+		if (c.CompareTo("c") == 0)	chnLayout += "c";
+		else if (c.BeginsWith("x")) chnLayout += "x";
+		else						chnLayout += "s";
+		modNo++;
+	}
+	if ((modNo % kMrbXiaChansPerModule) == 0) {
+		chnLayout += ">";
+		ca->Add(new TObjString(chnLayout.Data()));
+	}
+
+	TMrbNamedX * nx = new TMrbNamedX(nofChannels, LayoutName, ChannelNames);
+	nx->AssignObject(ca);
+	fLofChannelLayouts.AddNamedX(nx);
+
+	gMrbLog->Out()  << "[" << this->GetName() << "] Defining channel layout " << LayoutName << ", " << nofChannels << " channels" << endl;
+	gMrbLog->Flush(this->ClassName(), "MakeRcFile");
+
+	return(kTRUE);
+}
+
+const Char_t * TMrbDGFCluster::GetChannelLayout(Int_t ModuleNumber, const Char_t * LayoutName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGFCluster::GetChannelLayout
+// Purpose:   	   Get channel layout per module
+// Arguments:      Int_t ModuleNumber            -- module number
+//                 Char_t * LayoutName           -- name of channel layout
+// Results:        Char_t * ChannelLayout        -- layout for given module
+// Exceptions:
+// Description:    Returns layout definitions per module: <....>
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * layout = (TMrbNamedX *) fLofChannelLayouts.FindByName(LayoutName);
+	if (layout == NULL) {
+		gMrbLog->Err() << "No such channel layout - " << LayoutName << endl;
+		gMrbLog->Flush(this->ClassName(), "GetChannelLayout");
+		return(NULL);
+	}
+
+	Int_t chn1 = ModuleNumber * kMrbXiaChansPerModule;
+	Int_t chn2 = chn1 + kMrbXiaChansPerModule - 1;
+	if (chn1 < 0 || chn1 > layout->GetIndex() - 1 || chn2 < 0 || chn2 > layout->GetIndex() - 1) {
+		gMrbLog->Err() << "Module number out of range - " << ModuleNumber << endl;
+		gMrbLog->Flush(this->ClassName(), "GetChannelLayout");
+		return(NULL);
+	}
+
+	TObjArray * ca = (TObjArray *) layout->GetAssignedObject();
+	return(((TObjString *) ca->At(layout->GetIndex() + ModuleNumber))->GetString());
+}
+
+const Char_t * TMrbDGFCluster::GetChannelName(Int_t Channel, const Char_t * LayoutName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGFCluster::GetChannelName
+// Purpose:        Get channel named for a given layout
+// Arguments:      Int_t Channel               -- channel number
+//                 Char_t * LayoutName         -- name of channel layout
+// Results:        Char_t * ChannelName        -- channel name
+// Exceptions:
+// Description:    Returns channel name by its number.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * layout = (TMrbNamedX *) fLofChannelLayouts.FindByName(LayoutName);
+	if (layout == NULL) {
+		gMrbLog->Err() << "No such channel layout - " << LayoutName << endl;
+		gMrbLog->Flush(this->ClassName(), "GetChannelName");
+		return(NULL);
+	}
+
+	if (Channel < 0 || Channel >= layout->GetIndex()) {
+		gMrbLog->Err()	<< "Wrong channel number (layout \"" << LayoutName << "\") - " << Channel
+						<< " (should be in [0," << layout->GetIndex() - 1 << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetChannelName");
+		return(NULL);
+	}
+
+	TObjArray * ca = (TObjArray *) layout->GetAssignedObject();
+	return(((TObjString *) ca->At(Channel))->GetString());
 }
 
 Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
