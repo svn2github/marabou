@@ -8,7 +8,7 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.13 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.14 2006-10-09 08:59:16 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -88,7 +88,7 @@ class DGFControlData : public TNamed {
 			fLofModules.Delete();
 		};
 
-		DGFControlData(const DGFControlData & f) {};	// default copy ctor
+//		DGFControlData(const DGFControlData & f) {};	// default copy ctor
 
 		Int_t SetupModuleList();									// create module list and key list
 		inline Int_t GetNofModules() { return(fNofModules); };		// number of dgf modules

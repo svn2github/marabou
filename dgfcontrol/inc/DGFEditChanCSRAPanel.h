@@ -8,7 +8,7 @@
 // Class:          DGFEditChanCSRAPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFEditChanCSRAPanel.h,v 1.4 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFEditChanCSRAPanel.h,v 1.5 2006-10-09 08:59:16 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -64,7 +64,7 @@ class DGFEditChanCSRAPanel : public TGMainFrame {
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditChanCSRAPanel() { fHeap.Delete(); };
 
-		DGFEditChanCSRAPanel(const DGFEditChanCSRAPanel & f) : TGMainFrame(f) {};	// default copy ctor
+//		DGFEditChanCSRAPanel(const DGFEditChanCSRAPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

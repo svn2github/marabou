@@ -8,7 +8,7 @@
 // Class:          DGFEditUserPsaCSRPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFEditUserPsaCSRPanel.h,v 1.1 2005-08-25 14:35:34 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFEditUserPsaCSRPanel.h,v 1.2 2006-10-09 08:59:16 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -64,7 +64,7 @@ class DGFEditUserPsaCSRPanel : public TGMainFrame {
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditUserPsaCSRPanel() { fHeap.Delete(); };
 
-		DGFEditUserPsaCSRPanel(const DGFEditUserPsaCSRPanel & f) : TGMainFrame(f) {};	// default copy ctor
+//		DGFEditUserPsaCSRPanel(const DGFEditUserPsaCSRPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

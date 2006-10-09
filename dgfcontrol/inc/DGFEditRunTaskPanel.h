@@ -8,7 +8,7 @@
 // Class:          DGFEditRunTaskPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFEditRunTaskPanel.h,v 1.1 2005-08-25 14:33:57 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFEditRunTaskPanel.h,v 1.2 2006-10-09 08:59:16 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -64,7 +64,7 @@ class DGFEditRunTaskPanel : public TGMainFrame {
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditRunTaskPanel() { fHeap.Delete(); };
 
-		DGFEditRunTaskPanel(const DGFEditRunTaskPanel & f) : TGMainFrame(f) {};	// default copy ctor
+//		DGFEditRunTaskPanel(const DGFEditRunTaskPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

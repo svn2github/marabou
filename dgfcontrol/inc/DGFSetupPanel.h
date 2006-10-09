@@ -8,7 +8,7 @@
 // Class:          DGFSetupPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFSetupPanel.h,v 1.10 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSetupPanel.h,v 1.11 2006-10-09 08:59:16 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -80,7 +80,7 @@ class DGFSetupPanel : public TGCompositeFrame {
 		DGFSetupPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFSetupPanel() { fHeap.Delete(); };
 
-		DGFSetupPanel(const DGFSetupPanel & f) : TGCompositeFrame(f) {};	// default copy ctor
+//		DGFSetupPanel(const DGFSetupPanel & f) : TGCompositeFrame(f) {};	// default copy ctor
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 

@@ -8,7 +8,7 @@
 // Class:          DGFRunControlPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFRunControlPanel.h,v 1.10 2005-08-03 12:40:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFRunControlPanel.h,v 1.11 2006-10-09 08:59:16 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -101,7 +101,7 @@ class DGFRunControlPanel : public TGMainFrame {
 		DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UInt_t Height);
 		virtual ~DGFRunControlPanel() { fHeap.Delete(); };
 
-		DGFRunControlPanel(const DGFRunControlPanel & f) : TGMainFrame(f) {};	// default copy ctor
+//		DGFRunControlPanel(const DGFRunControlPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		virtual void CloseWindow();
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);

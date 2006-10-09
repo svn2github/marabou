@@ -8,7 +8,7 @@
 // Class:          DGFModule
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFModule.h,v 1.3 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFModule.h,v 1.4 2006-10-09 08:59:16 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -36,7 +36,7 @@ class DGFModule : public TNamed {
 		DGFModule(const Char_t * Name, const Char_t * Host, Int_t Crate, Int_t Station);
 		~DGFModule() {};
 
-		DGFModule(const DGFModule & f) {};	// default copy ctor
+//		DGFModule(const DGFModule & f) {};	// default copy ctor
 
 		inline void SetHost(const Char_t * HostName) { fHostName = HostName; };
 		inline const Char_t * GetHost() { return(fHostName.Data()); };

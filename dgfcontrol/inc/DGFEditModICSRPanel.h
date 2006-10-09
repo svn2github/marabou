@@ -8,7 +8,7 @@
 // Class:          DGFEditModICSRPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFEditModICSRPanel.h,v 1.3 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFEditModICSRPanel.h,v 1.4 2006-10-09 08:59:16 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -66,7 +66,7 @@ class DGFEditModICSRPanel : public TGMainFrame {
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditModICSRPanel() { fHeap.Delete(); };
 
-		DGFEditModICSRPanel(const DGFEditModICSRPanel & f) : TGMainFrame(f) {};	// default copy ctor
+//		DGFEditModICSRPanel(const DGFEditModICSRPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
