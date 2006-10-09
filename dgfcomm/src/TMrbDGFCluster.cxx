@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.6 2006-10-09 10:45:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.7 2006-10-09 11:49:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -338,9 +338,6 @@ Bool_t TMrbDGFCluster::SetChannelLayout(const Char_t * LayoutName, Int_t NofChan
 	TMrbNamedX * nx = new TMrbNamedX(nofChannels, LayoutName, ChannelNames);
 	nx->AssignObject(ca);
 	fLofChannelLayouts.AddNamedX(nx);
-
-	gMrbLog->Out()  << "Defining channel layout " << LayoutName << ", " << nofChannels << " channels" << endl;
-	gMrbLog->Flush(this->ClassName(), "SetChannelLayout");
 
 	return(kTRUE);
 }
