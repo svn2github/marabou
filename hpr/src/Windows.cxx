@@ -177,8 +177,9 @@ void FitHist::ListWindows(){
       WarnBox("No windows active");
       return;
    }
-//   fCutPanel = CommandPanel("Windows", fCmdLine, 500, 500);
-   fCutPanel = CommandPanel("Windows", fCmdLine, xp, yp);
+   Int_t xwidth = 0;
+   if (hp) xwidth = hp->fWinwidx_hlist;
+   fCutPanel = CommandPanel("Windows", fCmdLine, xp, yp, NULL, xwidth);
    fCmdLine->Delete();
 }
 //______________________________________________________________________________________ 
@@ -426,7 +427,9 @@ void FitHist::ListCuts(){
       WarnBox("No cuts active");
       return;
    }
-   fCutPanel= CommandPanel("Cuts", fCmdLine, xp, yp);
+   Int_t xwidth = 0;
+   if (hp) xwidth = hp->fWinwidx_hlist;
+   fCutPanel= CommandPanel("Cuts", fCmdLine, xp, yp, NULL, xwidth);
    fCmdLine->Delete();
 }
 //______________________________________________________________________________________

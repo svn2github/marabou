@@ -146,7 +146,8 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    fRootFile->Close();
    TString title("Tree: ");
    title += tname;
-   HTCanvas *ccont = CommandPanel(title.Data(), fCmdLine, fMainWidth + 10, ycanvas, this);
+   HTCanvas *ccont = CommandPanel(title.Data(), fCmdLine, 
+                     fMainWidth + 10, ycanvas, this, fWinwidx_hlist);
    if (fHistLists)fHistLists->Add(ccont);
    ycanvas += 50;
    if (ycanvas >= 500) ycanvas=5;
