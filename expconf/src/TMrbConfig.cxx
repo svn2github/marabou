@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.132 2006-10-10 12:00:09 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.133 2006-10-10 13:39:12 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -6967,6 +6967,7 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	}
 
 	mbsSetup->Set("MbsVersion", fMbsVersion.Data());
+	mbsSetup->Set("LynxVersion", fLynxVersion.Data());
 
 	TString pn;
 	mbsSetup->Get(pn, "TMbsSetup.EvtBuilder.Name", "");
