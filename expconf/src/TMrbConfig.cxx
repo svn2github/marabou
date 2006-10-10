@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.133 2006-10-10 13:39:12 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.134 2006-10-10 13:57:10 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1362,7 +1362,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 
 	packNames * pp;
 
-	TString mbsv = fMbsVersion(0,2) + "x";			// make file depends on major mbs version: v22 -> v2x, v42 & v43 -> v4x
+	TString mbsv = Form("v%cx", fMbsVersion(0));			// make file depends on major mbs version: v22 -> v2x, v42 & v43 -> v4x
 	TString mkFile = Form("Readout_%s.mk.code", mbsv.Data());
 
 	Int_t nofMbsBranches = fLofMbsBranches.GetEntriesFast();
@@ -7546,12 +7546,15 @@ Bool_t TMrbConfig::CheckConfig() {
 	nofErrors += this->CheckMbsBranchSettings();
 
 	fMbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "");
+	if (fMbsVersion(0) == 'v') {
+		fMbsVersion = Form("%c.%c", fMbsVersion(1), fMbsVersion(2));
+	}
 	TString lv = "";
-	if (fMbsVersion.CompareTo("v22") == 0) {
+	if (fMbsVersion.CompareTo("2.2") == 0) {
 		lv = "2.5";
-	} else if (fMbsVersion.CompareTo("v42") == 0) {
+	} else if (fMbsVersion.CompareTo("4.2") == 0) {
 		lv = "3.1";
-	} else if (fMbsVersion.CompareTo("v43") == 0) {
+	} else if (fMbsVersion.CompareTo("4.3") == 0) {
 		lv = "3.1";
 	} else {
 		gMrbLog->Err() << "Wrong MBS version - " << fMbsVersion << "; set TMbsSetup.MbsVersion in .rootrc properly" << endl;
