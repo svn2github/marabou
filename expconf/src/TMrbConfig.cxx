@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.134 2006-10-10 13:57:10 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.135 2006-10-12 07:13:56 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4704,7 +4704,7 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 	TRegexp rxcxx("\\.cxx$");
 
 	if (fConfigChecked) {
-		gMrbLog->Err()	<< "Statement out of phase - must be called *BEFORE* MakeAnalyzeCode()" << endl;
+		gMrbLog->Err()	<< "Statement out of phase - must be called *BEFORE* MakeReadoutCode()/MakeAnalyzeCode()" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
 		return(kFALSE);
 	}
@@ -5008,7 +5008,7 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 	TMrbSystem ux;
 
 	if (fConfigChecked) {
-		gMrbLog->Err()	<< "Statement out of phase - must be called *BEFORE* MakeAnalyzeCode()" << endl;
+		gMrbLog->Err()	<< "Statement out of phase - must be called *BEFORE* MakeReadoutCode()/MakeAnalyzeCode()" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 		return(kFALSE);
 	}
@@ -5194,7 +5194,7 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 	TRegexp rxcxx("\\.cxx$");
 
 	if (fConfigChecked) {
-		gMrbLog->Err()	<< "Statement out of phase - must be called *BEFORE* MakeAnalyzeCode()" << endl;
+		gMrbLog->Err()	<< "Statement out of phase - must be called *BEFORE* MakeReadoutCode()/MakeAnalyzeCode()" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
 		return(kFALSE);
 	}
