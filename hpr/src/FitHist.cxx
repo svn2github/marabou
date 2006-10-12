@@ -249,7 +249,7 @@ void FitHist::RecursiveRemove(TObject * obj)
 // destructor
 FitHist::~FitHist()
 {
-//    cout << " ~FitHist(): " << endl;
+    cout << " ~FitHist(): " << this << endl;
 //   cout<< "enter FitHist  dtor "<< GetName()<<endl;
 //   if(fMyTimer)fMyTimer->Delete();
 //   fMyTimer=NULL;
@@ -265,9 +265,9 @@ FitHist::~FitHist()
       delete expHist;
       expHist = 0;
    }
-   if (fCalFitHist) delete fCalFitHist;
+//   if (fCalFitHist) delete fCalFitHist;
    if (fTofLabels) { delete fTofLabels; fTofLabels=NULL;}
-   if (fCalHist) delete fCalHist;
+//   if (fCalHist) delete fCalHist;
    if (fCalFunc) delete fCalFunc;
    if (fDateText) delete fDateText;
    if (!cHist || !cHist->TestBit(TObject::kNotDeleted) ||

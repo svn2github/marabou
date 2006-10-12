@@ -196,12 +196,12 @@ use Clear calibration and redisplay");
    for(Int_t i=0; i<npeaks; i++)row_lab->Add(new TObjString("Values"));
 
    for(Int_t counter=0; counter<npeaks; counter++){
-      xyvals[counter] = 0;
-      xyvals[counter+npeaks] = 0;
-      xyvals[counter+2*npeaks] = 0;
-      xyvals[counter+3*npeaks] = 0;
+      xyvals[counter] = counter;
+      xyvals[counter+npeaks] = 1;
+      xyvals[counter+2*npeaks] = counter;
+      xyvals[counter+3*npeaks] = 1;
    }
-   if(npeaks_def > 0){
+   if (npeaks_def > 0) {
       fPeaks->Sort();
       TIter next(fPeaks);
       FhPeak * peak;
@@ -212,10 +212,16 @@ use Clear calibration and redisplay");
           xyvals[counter+ 2 * npeaks] = peak->GetNominalEnergy();
         counter ++;
       }
-   } else {
+   } 
+/*
+else {
+      xyvals[0] = 0;               // mean
       xyvals[1] = 1;               // mean
+      xyvals[2] = 1;               // err
       xyvals[1 + 2*npeaks ] = 2;   // nom value
+      xyvals[2 + 2*npeaks ] = 1;   // err
    }
+*/
    TArrayI useflag(npeaks);
    for(Int_t i=0; i<npeaks; i++)useflag[i] = 1;
    Int_t ret = 0, ncols = 4, itemwidth=120, precission = 5; 
@@ -312,13 +318,15 @@ tryagain:
          cout << endl << "Fitted values a: " 
               << a << " +- " << fCalFunc->GetParError(0) << " b: " 
               << b << " +- " << fCalFunc->GetParError(1) << endl;
-         TCanvas * cc = new TCanvas("cc","cc");
+
+         TCanvas * cc = new TCanvas("cc","cc", 200, 200, 500, 500);
          gr->Draw("A*");
          PrintGraph(gr);
          fCalFunc->Draw("SAME"); 
          fCalFunc->SetLineWidth(1);
          fCalFunc->SetLineColor(7);
          cc->Update();
+
          if (flag == 0) {
          	Axis_t newlow = a + b * oldlow;
          	Axis_t newup  = a + b * oldup;
@@ -354,7 +362,7 @@ tryagain:
          	cHist->Modified(kTRUE);
          	cHist->Update();
          } else if (flag == 1) {
-            if (fCalFitHist) {delete fCalFitHist; fCalFitHist = 0;}
+//            if (fCalFitHist) {delete fCalFitHist; fCalFitHist = 0;}
    
             col_lab->Delete();
             row_lab->Delete();

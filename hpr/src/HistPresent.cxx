@@ -2936,8 +2936,10 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
    nHists++;
    if (FHnameSave != FHname) {
       if (fNwindows>0) {       // not the 1. time
-         if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
-         else   {fWincurx = fWintopx; fWincury += fWinshifty;}
+//         if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
+//         else   {fWincurx = fWintopx; fWincury += fWinshifty;}
+         fWincurx += fWinshiftx;
+         fWincury += fWinshifty;
       }
       fNwindows++;
       FHnameSave = FHname;
@@ -3425,7 +3427,10 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
    FitHist * fh = htc->GetFitHist();
    if (fh) {
 //  reset color of command button which invoked the Canvas
-      TString histname(fh->GetSelHist()->GetName());
+      TH1* hh = fh->GetSelHist();
+//      cout << "HandleDeleteCanvas: fh->GetSelHist() " << hh << endl;
+      if (!hh || !hh->TestBit(TObject::kNotDeleted)) return;
+      TString histname(hh->GetName());
 // does it end with a _number
       TRegexp us_num("_[0-9]*$");
       Int_t indus = histname.Index(us_num);

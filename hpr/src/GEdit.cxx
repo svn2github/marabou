@@ -1567,11 +1567,11 @@ void GEdit::DrawControlGraphs()
 void GEdit::RemoveControlGraphs()
 {
    fParent->cd();
-   TIter next( fParent->GetListOfPrimitives());
+   TList * lop = fParent->GetListOfPrimitives();
    TObject * obj;
-   fParent->cd();
-   while ( (obj = next()) ){
-      if (obj->IsA() == TSplineX::Class()) ((TSplineX*)obj)->RemoveControlPoints();
+   while (obj = lop->FindObject("ControlGraph")) {
+      cout << obj->ClassName() << endl;
+      lop->Remove(obj);
    }
    fParent->Update();
 }

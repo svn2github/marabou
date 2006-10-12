@@ -1654,7 +1654,8 @@ void HandleMenus::BuildMenus()
          fFitMenu->AddSeparator();
          fFitMenu->AddEntry("Calibrate, Generate new hist",         kFHCalibrateNew);
          fFitMenu->AddEntry("Calibrate, change scale only",         kFHCalibrate);
-         fFitMenu->AddEntry("Clear Calibration", kFHDeleteCal);
+         if (fFitHist->IsCalibrated())
+            fFitMenu->AddEntry("Clear Calibration", kFHDeleteCal);
          fFitMenu->AddSeparator();
          fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
          if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "calibration.html");
