@@ -105,8 +105,8 @@
 #define CAEN_V775_ZERO_SUPPR_ON(module)	*CAEN_V775_A_BITCLEAR2(module) = CAEN_V775_B_BITSET2_LOW_THRESH_DIS
 #define CAEN_V775_ZERO_SUPPR_OFF(module)	*CAEN_V775_A_BITSET2(module) = CAEN_V775_B_BITSET2_LOW_THRESH_DIS
 
-#define CAEN_V775_VALID_CONTROL_ON(module)	*CAEN_V775_A_BITCLEAR2(module) = CAEN_V775_B_BITSET2_VALID_CONTROL_DIS
-#define CAEN_V775_VALID_CONTROL_OFF(module)	*CAEN_V775_A_BITSET2(module) = CAEN_V775_B_BITSET2_VALID_CONTROL_DIS
+#define CAEN_V775_VALID_DATA_CHECK_ON(module)	*CAEN_V775_A_BITCLEAR2(module) = CAEN_V775_B_BITSET2_VALID_CONTROL_DIS
+#define CAEN_V775_VALID_DATA_CHECK_OFF(module)	*CAEN_V775_A_BITSET2(module) = CAEN_V775_B_BITSET2_VALID_CONTROL_DIS
 
 #define CAEN_V775_COMMON_START_ON(module)	*CAEN_V775_A_BITCLEAR2(module) = CAEN_V775_B_BITSET2_COMMON_START_DIS
 #define CAEN_V775_COMMON_STOP_ON(module)	*CAEN_V775_A_BITSET2(module) = CAEN_V775_B_BITSET2_COMMON_START_DIS
@@ -150,6 +150,7 @@
 %B%					CAEN_V775_ALL_TRIG_ON($moduleName);
 %B%					CAEN_V775_SLIDING_SCALE_ON($moduleName);
 %ZSP%					CAEN_V775_ZERO_SUPPR_$onOrOff($moduleName); 				/* $dont use zero suppression */
+%VDC%					CAEN_V775_VALID_DATA_CHECK_$onOrOff($moduleName);			/* $dont check valid data bit */
 %ORC%					CAEN_V775_OVER_RANGE_CHECK_$onOrOff($moduleName);			/* $dont check for range overflow */
 %CST%					CAEN_V775_COMMON_$startOrStop_ON($moduleName);  			/* runs in COMMON $startOrStop mode */
 %E% 					CAEN_V775_SET_FULL_SCALE_RANGE($moduleName,$fullScaleRange); 	/* full scale range is $fullScaleNsecs ns */

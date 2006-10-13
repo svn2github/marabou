@@ -1,0 +1,64 @@
+#___________________________________________________________________[MBSSETUP]
+#/////////////////////////////////////////////////////////////////////////////
+# Name             mbssetup.rc
+# Purpose:         Different addr/length settings depending on MBS, CPU etc.
+# Author:          MARaBOU
+# Revision:        $Id: mbssetup.rc,v 1.1 2006-10-13 11:40:21 Rudolf.Lutter Exp $
+# Date:            $Date: 2006-10-13 11:40:21 $
+# URL:             
+#/////////////////////////////////////////////////////////////////////////////
+
+# Format:
+# <LynxVersion>-<MbsVersion>-<Mode>-<CpuType>-<ContrType>.<Resource>:	<Value>
+#
+# LynxVersion:    2.5, 3.1 ...
+# MbsVersion:     2.2, 4.2, 4.3 ...
+# Mode:           SP, MP, MB (single proc, multi proc, multi branch)
+# CpuType:        RIO2, RIO3
+# ContrType:      CBV, CC32 (camac)
+#                 CAMAC, VME (trigger module)
+#                 EVB, RDO (event builder / readout)
+# Resource:       resource name used in TMbsSetup.cxx
+
+*-*-*-*-*.RdPipeBaseAddr: 				0xd0000000
+
+*-*-*-*-CBV.RemoteMemoryBase:			0xd0380000
+*-*-*-RIO2-CC32.RemoteMemoryBase:		0xee550000
+*-*-*-RIO3-CC32.RemoteMemoryBase:		0x4f550000
+
+*-*-*-*-*.RemoteMemoryOffset:  			0x0
+
+*-*-*-*-CBV.RemoteMemoryLength: 		0x00200000
+*-*-*-*-*.RemoteMemoryLength: 			0x00008000
+
+*-*-*-*-CBV.RemoteCamacBase:			0xd0380000
+*-*-*-RIO2-CC32.RemoteCamacBase:		0xee550000
+*-*-*-RIO3-CC32.RemoteCamacBase:		0x4f550000
+
+*-*-*-*-*.RemoteCamacOffset: 			0x0
+
+*-*-*-*-CBV.RemoteCamacLength: 			0x00200000
+*-*-*-*-CC32.RemoteCamacLength: 		0x00008000
+
+*-*-*-*-*.LocalEsoneBase:	 			0x0
+
+*-*-*-*-CBV.LocalMemoryBase: 			0xe2000000
+*-*-*-*-CC32.LocalMemoryBase: 			0xee550000
+
+*-*-*-*-*.LocalMemoryLength:			0x00001000
+
+*-*-SP-*-*.LocalPipeBase:	 			0xe5000000
+*-*-MP-*-*.LocalPipeBase:	 			0x1b000000
+
+*-*-*-*-*.LocalPipeOffset:	 			0x0
+
+*-*-SP-*-*.LocalPipeSegmentLength:	 	0x00100000
+*-*-MP-*-*.LocalPipeSegmentLength:		0x00200000
+
+*-*-*-*-*.LocalPipeLength:		 		5000
+
+*-*-*-RIO2-VME.TriggerModuleBase:		0xe2000000
+*-*-*-RIO3-VME.TriggerModuleBase:		0x42000000
+
+*-*-*-*-EVB.VSBAddr:					0xf5000000
+*-*-*-*-RDO.VSBAddr:					0xf0000000
