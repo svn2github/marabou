@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.38 2006-10-04 12:35:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.39 2006-10-13 11:31:42 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -29,6 +29,7 @@ namespace std {} using namespace std;
 #include "TMrbTemplate.h"
 #include "TMrbLogger.h"
 #include "TMrbSystem.h"
+#include "TMrbWildcard.h"
 
 #include "TMbsSetup.h"
 
@@ -113,7 +114,7 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 				gMbsSetup = this; 						// holds addr of current setup def
 				gDirectory->Append(this);
 
-				fSettings = new TEnv(rcFile.Data());	// open settings file
+				fSettings = new TEnv(settingsFile.Data());	// open settings file
 
 				this->OpenDefaults(defaultSetupFile.Data()); // open defaults file
 
@@ -160,15 +161,16 @@ TMbsSetup::~TMbsSetup() {
 	gMbsSetup = NULL;
 }
 
-Bool_t TMbsSetup::GetRcVal(UInt_t & RcValue, const Char_t * Resource, const Char_t * ContrlType, const Char_t * ProcType, const Char_t * MbsVersion, const Char_t * LynxVersion) {
+Bool_t TMbsSetup::GetRcVal(UInt_t & RcValue, const Char_t * Resource, const Char_t * ContrlType, const Char_t * ProcType, const Char_t * Mode, const Char_t * MbsVersion, const Char_t * LynxVersion) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsSetup::GetRcVal
 // Purpose:        Get value from settings file
-// Arguments:      Int_t & RcValue         -- resulting settings value
+// Arguments:      UInt_t & RcValue        -- resulting settings value
 //                 Char_t * Resource       -- resource name
 //                 Char_t * ContrlType     -- type of controller
 //                 Char_t * ProcType       -- type of processor
+//                 Char_t * Mode           -- mode: single/multi proc, multi branch
 //                 Char_t * MbsVersion     -- MBS' version
 //                 Char_t * LynxVersion    -- version of lynxOs
 // Results:        kTRUE/kFALSE
@@ -192,38 +194,31 @@ Bool_t TMbsSetup::GetRcVal(UInt_t & RcValue, const Char_t * Resource, const Char
 	if (ProcType == NULL || *ProcType == '\0') ProcType = "*";
 	if (ContrlType == NULL || *ContrlType == '\0') ContrlType = "*";
 
-	TString res = Form("%s.%s.%s.%s.%s", LynxVersion, MbsVersion, ProcType, ContrlType, Resource);
-	TString resSav = res;
-	TString valStr = fSettings->GetValue(res.Data(), "");
-	if (valStr.IsNull()) {
-		LynxVersion = "*";
-		res = Form("%s.%s.%s.%s.%s", LynxVersion, MbsVersion, ProcType, ContrlType, Resource);
-		valStr = fSettings->GetValue(res.Data(), "");
-	}
-	if (valStr.IsNull()) {
-		MbsVersion = "*";
-		res = Form("%s.%s.%s.%s.%s", LynxVersion, MbsVersion, ProcType, ContrlType, Resource);
-		valStr = fSettings->GetValue(res.Data(), "");
-	}
-	if (valStr.IsNull()) {
-		ProcType = "*";
-		res = Form("%s.%s.%s.%s.%s", LynxVersion, MbsVersion, ProcType, ContrlType, Resource);
-		valStr = fSettings->GetValue(res.Data(), "");
-	}
-	if (valStr.IsNull()) {
-		ContrlType = "*";
-		res = Form("%s.%s.%s.%s.%s", LynxVersion, MbsVersion, ProcType, ContrlType, Resource);
-		valStr = fSettings->GetValue(res.Data(), "");
-	}
+	if (strcmp(ProcType, "PPC") == 0) ProcType = "RIO2";
 
-	if (valStr.IsNull()) {
-		gMrbLog->Err() << "No value given for resource - " << resSav << endl;
+	TList * lofSettings = (TList *) fSettings->GetTable();
+	if (lofSettings->GetEntries() == 0) {
+		gMrbLog->Err() << "No entries in settings table" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetRcVal");
 		return(kFALSE);
 	}
 
-	RcValue = strtoul(valStr.Data(), NULL, 0);
-	return(kTRUE);
+	TString res = Form("%s-%s-%s-%s-%s.%s", LynxVersion, MbsVersion, Mode, ProcType, ContrlType, Resource);
+	TString valStr;
+	TIterator * iter = lofSettings->MakeIterator();
+	TEnvRec * r;
+	while (r = (TEnvRec *) iter->Next()) {
+		TMrbWildcard w(r->GetName());
+		if (w.Match(res.Data())) {
+			valStr = r->GetValue();	
+			RcValue = strtoul(valStr.Data(), NULL, 0);
+			return(kTRUE);
+		}
+	}
+
+	gMrbLog->Err() << "No value given for resource - " << res << endl;
+	gMrbLog->Flush(this->ClassName(), "GetRcVal");
+	return(kFALSE);
 }
 
 void TMbsSetup::RemoveSetup() {
@@ -629,8 +624,8 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	this->Get(templatePath, "TemplatePath");
 
 	if (smode == kModeSingleProc)	templatePath += "/singleproc";
-	else if (smode == kModeMultiProc)	templatePath += "/multiProc";
-	else if (smode == kModeMultiBranch)	templatePath += "/multiBranch";
+	else if (smode == kModeMultiProc)	templatePath += "/multiproc";
+	else if (smode == kModeMultiBranch)	templatePath += "/multibranch";
 	gSystem->ExpandPathName(templatePath);
 
 	installPath = this->GetHomeDir();
@@ -858,8 +853,14 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 	}
 
 	TMrbNamedX * setupMode = this->GetMode();
-	EMbsSetupMode smode = (EMbsSetupMode) (setupMode ? setupMode->GetIndex() : 0);
-
+	EMbsSetupMode sModeIdx = (EMbsSetupMode) (setupMode ? setupMode->GetIndex() : 0);
+	TString sMode = "*";
+	switch (sModeIdx) {
+		case kModeSingleProc:	sMode = "SP"; break;
+		case kModeMultiProc:	sMode = "MP"; break;
+		case kModeMultiBranch:	sMode = "MB"; break;
+	}
+		
 	TString templateFile = TemplatePath;
 	templateFile += "/";
 	templateFile += SetupFile;
@@ -888,7 +889,17 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 		return(kFALSE);
 	}
 
-	Int_t mbsVersNo = 0;
+	TString lynxVersion;
+	this->Get(lynxVersion, "LynxVersion");
+	if (lynxVersion.IsNull()) {
+		gMrbLog->Err() << "Lynx version not given - set TMbsSetup.LynxVersion properly" << endl;
+		gMrbLog->Flush(this->ClassName(), "ExpandFile");
+		return(kFALSE);
+	}
+
+	TMrbNamedX * pType = this->ReadoutProc(ProcID)->GetType();
+	TMrbNamedX * cType = this->ReadoutProc(ProcID)->GetController();
+	TMrbNamedX * mType = this->ReadoutProc(ProcID)->TriggerModule()->GetType();
 
 	for (;;) {
 		TString line;
@@ -934,7 +945,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					stpTmpl.WriteCode(stp);
 					break;
 
-				case kSetSetupPath:
+				case kSetSbsSetupPath:
 					for (Int_t i = 0; i < nofReadouts; i++) {
 						TString path = mbsPath;
 						path += "/";
@@ -946,19 +957,23 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					}
 					break;
 
-				case kSetPipeAddr:
+				case kSetRdPipeBaseAddr:
+					for (Int_t i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
 					for (Int_t i = 0; i < nofReadouts; i++) {
 						UInt_t pipeBase = this->ReadoutProc(i)->GetPipeBase();
 						if (pipeBase == 0) {
+							this->GetRcVal(pipeBase, "RdPipeBaseAddr", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+						}
+						if (pipeBase == 0) {
 							gMrbLog->Err()	<< "Base addr for readout pipe (#"
 											<< (i + 1) << ") is 0 (see resource \"TMbsSetup.Readout"
-											<< (i + 1) << ".PipeBase\")" << endl;
+											<< (i + 1) << ".RdPipeBaseAddr\")" << endl;
 							gMrbLog->Flush(this->ClassName(), "ExpandFile");
 							isOK = kFALSE;
+						} else {
+							arrayData[i] = pipeBase;
 						}
-						arrayData[i] = pipeBase;
 					}
-					for (Int_t i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
 					stpTmpl.InitializeCode();
 					stpTmpl.Substitute("$rdoPipeArr", this->EncodeArray(arrayData, kNofRdoProcs, 16));
 					stpTmpl.WriteCode(stp);
@@ -1023,10 +1038,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetMasterType:
 					{
-						TMrbNamedX * k = this->ReadoutProc(ProcID)->GetType();
 						stpTmpl.InitializeCode();
-						stpTmpl.Substitute("$rdoIntType", (Int_t) k->GetIndex());
-						stpTmpl.Substitute("$rdoAscType", k->GetName());
+						stpTmpl.Substitute("$rdoIntType", (Int_t) pType->GetIndex());
+						stpTmpl.Substitute("$rdoAscType", pType->GetName());
 						stpTmpl.WriteCode(stp);
 					}
 					break;
@@ -1035,22 +1049,13 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					{
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryBase"), 0);
 						if (memBase == 0) {
-							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
-							else if (ctrl == kControllerCC32) {
-								if (this->ReadoutProc(ProcID)->GetType()->GetIndex() == kProcRIO3)	memBase = kRemMemoryBaseCC32RIO3;
-								else																memBase = kRemMemoryBaseCC32RIO2;
-							}
-						} 
-						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
+							this->GetRcVal(memBase, "RemoteMemoryBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+						}
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
 						if (memLength == 0) {
-							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
-							else if (ctrl == kControllerCC32) {
-								if (mbsVersNo >= kMbsV43)	memLength = kRemMemoryLengthCC32v4x;
-								else						memLength = kRemMemoryLengthCC32;
-							}
+							this->GetRcVal(memLength, "RemoteMemoryLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1071,6 +1076,20 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 				case kSetRemMemoryOffset:
 					{
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						UInt_t memOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryOffset"), 0);
+						if (memOffs == 0) {
+							this->GetRcVal(memOffs, "RemoteMemoryOffset", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+						} 
+						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (Int_t i = 0; i < n; i++) {
+							Int_t crate = lofCrates[i];
+							if (crate == 0) {
+								arrayData[crate] = 0;
+							} else {
+								arrayData[crate] = memOffs;
+							}
+						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemMemoryOffset", this->EncodeArray(arrayData, kNofCrates, 16));
 						stpTmpl.WriteCode(stp);
@@ -1081,14 +1100,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					{
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
-						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
 						if (memLength == 0) {
-							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
-							else if (ctrl == kControllerCC32) {
-								if (mbsVersNo >= kMbsV43)	memLength = kRemMemoryLengthCC32v4x;
-								else						memLength = kRemMemoryLengthCC32;
-							}
+							this->GetRcVal(memLength, "RemoteMemoryLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1109,22 +1123,13 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					{
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacBase"), 0);
 						if (memBase == 0) {
-							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
-							else if (ctrl == kControllerCC32) {
-								if (this->ReadoutProc(ProcID)->GetType()->GetIndex() == kProcRIO3)	memBase = kRemMemoryBaseCC32RIO3;
-								else																memBase = kRemMemoryBaseCC32RIO2;
-							}
+							this->GetRcVal(memBase, "RemoteCamacBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
 						} 
-						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
-							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
-							else if (ctrl == kControllerCC32) {
-								if (mbsVersNo >= kMbsV43)	memLength = kRemMemoryLengthCC32v4x;
-								else						memLength = kRemMemoryLengthCC32;
-							}
+							this->GetRcVal(memLength, "RemoteCamacLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1145,6 +1150,20 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 				case kSetRemCamacOffset:
 					{
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						UInt_t memOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacOffset"), 0);
+						if (memOffs == 0) {
+							this->GetRcVal(memOffs, "RemoteCamacOffset", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+						} 
+						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (Int_t i = 0; i < n; i++) {
+							Int_t crate = lofCrates[i];
+							if (crate == 0) {
+								arrayData[crate] = 0;
+							} else {
+								arrayData[crate] = memOffs;
+							}
+						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemCamacOffset", this->EncodeArray(arrayData, kNofCrates, 16));
 						stpTmpl.WriteCode(stp);
@@ -1155,14 +1174,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					{
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
-						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
-							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
-							else if (ctrl == kControllerCC32) {
-								if (mbsVersNo >= kMbsV43)	memLength = kRemMemoryLengthCC32v4x;
-								else						memLength = kRemMemoryLengthCC32;
-							}
+							this->GetRcVal(memLength, "RemoteCamacLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1179,30 +1193,124 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					}
 					break;
 
+				case kSetLocEsoneBase:
+					{
+						TString res;
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalEsoneBase"), 0);
+						if (memBase == 0) {
+							this->GetRcVal(memBase, "LocalEsoneBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+						} 
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoLocEsoneBase", memBase, 16);
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
 				case kSetRemEsoneBase:
 					{
 						TString res;
-						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacBase"), 0);
 						if (memBase == 0) {
-							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
-							else if (ctrl == kControllerCC32) {
-								if (this->ReadoutProc(ProcID)->GetType()->GetIndex() == kProcRIO3)	memBase = kRemMemoryBaseCC32RIO3;
-								else																memBase = kRemMemoryBaseCC32RIO2;
-							}
+							this->GetRcVal(memBase, "RemoteCamacBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
 						} 
-						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
-							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
-							else if (ctrl == kControllerCC32) {
-								if (mbsVersNo >= kMbsV43)	memLength = kRemMemoryLengthCC32v4x;
-								else						memLength = kRemMemoryLengthCC32;
-							}
+							this->GetRcVal(memLength, "RemoteCamacLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
 						} 
 						memBase -= memLength;
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemEsoneBase", memBase, 16);
 						stpTmpl.Substitute("$rdoRemCamacLength", memLength, 16);
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetLocMemoryBase:
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalMemoryBase"), 0);
+						if (memBase == 0) {
+							this->GetRcVal(memBase, "LocalMemoryBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+						} 
+						arrayData[0] = memBase;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoLocMemoryBase", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetLocMemoryLength:
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalMemoryLength"), 0);
+						if (memLength == 0) {
+							this->GetRcVal(memLength, "LocalMemoryLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+						} 
+						arrayData[0] = memLength;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoLocMemoryLength", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetLocPipeBase:
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						UInt_t pipeBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeBase"), 0);
+						if (pipeBase == 0) {
+							this->GetRcVal(pipeBase, "LocalPipeBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+						} 
+						arrayData[0] = pipeBase;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoLocPipeBase", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetLocPipeOffset:
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						UInt_t pipeOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeOffset"), 0);
+						if (pipeOffs == 0) {
+							this->GetRcVal(pipeOffs, "LocalPipeOffset", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+						} 
+						arrayData[0] = pipeOffs;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoLocPipeOffset", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetLocPipeSegLength:
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						UInt_t pipeLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeSegmentLength"), 0);
+						if (pipeLength == 0) {
+							this->GetRcVal(pipeLength, "LocalPipeSegmentLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+						} 
+						arrayData[0] = pipeLength;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoLocPipeSegLength", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetLocPipeLength:
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						UInt_t pipeLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeLength"), 0);
+						if (pipeLength == 0) {
+							this->GetRcVal(pipeLength, "LocalPipeLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+						} 
+						arrayData[0] = pipeLength;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoLocPipeLength", this->EncodeArray(arrayData, kNofCrates, 16));
 						stpTmpl.WriteCode(stp);
 					}
 					break;
@@ -1294,8 +1402,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 									stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModePolling);
 									stpTmpl.Substitute("$trigType", (Int_t) kTriggerModuleVME);
 									UInt_t trigBase;
-									if (this->ReadoutProc(ProcID)->GetType()->GetIndex() == kProcRIO3)	trigBase = kTriggerModuleBaseRIO3;
-									else																trigBase = kTriggerModuleBaseRIO2;
+									this->GetRcVal(trigBase, "TriggerModuleBase", mType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
 									stpTmpl.Substitute("$trigBase", trigBase, 16);
 								}
 								break;
@@ -1304,7 +1411,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					}
 					break;
 
-				case kSetTrigStation:
+				case kSetTrigModStation:
 					for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 					Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
 					arrayData[crate] = 1;
@@ -1313,7 +1420,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					stpTmpl.WriteCode(stp);
 					break;
 
-				case kSetTrigFastClear:
+				case kSetTrigModFastClear:
 					{
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
@@ -1325,7 +1432,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					}
 					break;
 
-				case kSetTrigConvTime:
+				case kSetTrigModConvTime:
 					{
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
@@ -1362,7 +1469,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kTestHostName:
 				case kPrintBanner:
-					if (smode == kModeMultiProc) {
+					if (sModeIdx == kModeMultiProc) {
 						stpTmpl.InitializeCode("%B%");
 						stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
 						stpTmpl.WriteCode(stp);
@@ -1382,7 +1489,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetVsbAddr:
 					{
-						if (smode == kModeMultiProc) {
+						if (sModeIdx == kModeMultiProc) {
 							if (!gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
 								gMrbLog->Err() << "TMbsSetup.ConfigVSB has to be set in a MULTIPROC environment" << endl;
 								gMrbLog->Flush(this->ClassName(), "ExpandFile");
@@ -1409,8 +1516,14 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kMbsLogin:
 					{
+						TString mbsv;
+						if (mbsVersion(0) != 'v') {
+							mbsv = Form("v%c%c", mbsVersion(0), mbsVersion(2));
+						} else {
+							mbsv = mbsVersion;
+						}
 						stpTmpl.InitializeCode();
-						stpTmpl.Substitute("$mbsVersion", mbsVersion.Data());
+						stpTmpl.Substitute("$mbsVersion", mbsv.Data());
 						stpTmpl.WriteCode(stp);
 					}
 					break;

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.19 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.20 2006-10-13 11:31:42 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -654,7 +654,7 @@ Bool_t TMbsReadoutProc::SetPipeBase(UInt_t Addr) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "PipeBase"), (Int_t) Addr, 16);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "LocalPipeBase"), (Int_t) Addr, 16);
 	return(kTRUE);
 }
 
@@ -671,7 +671,7 @@ UInt_t TMbsReadoutProc::GetPipeBase() const {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId + 1, "PipeBase"), 0));
+	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId + 1, "RdPipeBaseAddr"), 0));
 }
 
 Bool_t TMbsReadoutProc::SetSevtSize(Int_t Trigger, Int_t SevtSize) {
