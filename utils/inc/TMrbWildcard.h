@@ -8,7 +8,7 @@
 // Class:          TMrbWildcard    -- wildcard utility
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbWildcard.h,v 1.3 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbWildcard.h,v 1.4 2006-10-13 11:31:07 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ namespace std {} using namespace std;
 class TMrbWildcard {
 
 	public:
-		TMrbWildcard(const Char_t * Wildcard) { this->SetMask(Wildcard); };	// ctor
+		TMrbWildcard(const Char_t * Wildcard = "*") { this->SetMask(Wildcard); };	// ctor
 		virtual ~TMrbWildcard() {};						// dtor
 
 		void SetMask(const Char_t * Wildcard);			// define wildcard mask
