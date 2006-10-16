@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.39 2006-10-13 11:31:42 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.40 2006-10-16 11:02:16 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -473,39 +473,20 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * setupMode;
-	TString templatePath;
-	TString fpath;
-	TString fname;
+	gMrbLog->Out()	<< "Checking setup data base ..." << endl;
+	gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 
-	TString installPath;
-	TString destPath;
-	TString rhostsFile;
-	TString nodelistFile;
-
-	TList lofFiles;
-	TString line;
-	Int_t nofFiles;
-
-	Int_t nofErrors;
-
-	TObject * obj;
-	Int_t nofReadouts;
-	Int_t n;
-	EMbsSetupMode smode;
-
-	cout	<< this->ClassName() << "::MakeSetupFiles(): Checking setup data base ..."
-			<< endl;
 	if (!this->CheckSetup()) {
 		gMrbLog->Err() << "Sorry, can't proceed." << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 		return(kFALSE);
 	}
 
-	nofReadouts = this->GetNofReadouts();
-	setupMode = this->GetMode();
-	smode = (EMbsSetupMode) (setupMode ?  setupMode->GetIndex() : 0);
+	Int_t nofReadouts = this->GetNofReadouts();
+	TMrbNamedX * setupMode = this->GetMode();
+	EMbsSetupMode smode = (EMbsSetupMode) (setupMode ?  setupMode->GetIndex() : 0);
 
+	TString templatePath;
 	this->Get(templatePath, "TemplatePath");
 
 	if (smode == kModeSingleProc)		templatePath += "/singleproc";
@@ -519,54 +500,50 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 
 	gSystem->ExpandPathName(templatePath);
 
-	nofErrors = 0;
+	Int_t nofErrors = 0;
 
-	installPath = this->GetPath();
+	TString installPath = this->GetPath();
 	if (!installPath.BeginsWith("/")) {
 		installPath = this->GetHomeDir();
 		installPath += "/";
 		installPath += this->GetPath();
 	}
 	
-	fpath = templatePath;
-	cout	<< this->ClassName() << "::MakeSetupFiles(): Installing file(s) "
-			<< fpath << " -> " << installPath << " ..."
-			<< endl;
-	fname = fpath + "/FILES";
-	ifstream * f = new ifstream(fname.Data(), ios::in);
-	if (!f->good()) {	
-		gMrbLog->Err() << gSystem->GetError() << " - " << fname << endl;
+	TString srcPath = templatePath;
+	gMrbLog->Out()	<< "Installing file(s) " << srcPath << " -> " << installPath << " ..." << endl;
+	gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
+	void * dirPtr = gSystem->OpenDirectory(srcPath.Data());
+	if (dirPtr == NULL) {
+		gMrbLog->Err() << gSystem->GetError() << " - " << srcPath << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 		nofErrors++;
 	} else {
+		TObjArray lofFiles;
 		lofFiles.Delete();
-		nofFiles = 0;
+		TMrbSystem ux;
 		for (;;) {
-			line.ReadLine(*f, kFALSE);
-			line = line.Strip(TString::kBoth);
-			if (f->eof()) break;
-			lofFiles.Add(new TObjString(line.Data()));
-			nofFiles++;
+			const Char_t * dirEntry = gSystem->GetDirEntry(dirPtr);
+			if (dirEntry == NULL) break;
+			TString fileName = Form("%s/%s", srcPath.Data(), dirEntry);
+			if (ux.IsRegular(fileName.Data())) lofFiles.Add(new TObjString(dirEntry));
 		}
-		f->close();
-		delete f;
-		if (nofFiles == 0) {
-			gMrbLog->Err() << "FILES is empty" << endl;
+		if (lofFiles.GetEntries() == 0) {
+			gMrbLog->Err() << "No files to install from directory " << srcPath << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 			nofErrors++;
 		} else {
-			obj = lofFiles.First();
-			while (obj) {
-				fname = ((TObjString *) obj)->String();
-				if (this->ExpandFile(0, fpath, fname, installPath)) {
-					cout	<< setblue << "   ... " << fname
+			TIterator * iter = lofFiles.MakeIterator();
+			TObjString * os;
+			while (os = (TObjString *) iter->Next()) {
+				TString fileName = os->String();
+				if (this->ExpandFile(0, srcPath, fileName, installPath)) {
+					cout	<< setblue << "   ... " << fileName
 							<< setblack << endl;
 				} else {
 					nofErrors++;
-					cout	<< "   ... " << fname
+					cout	<< "   ... " << fileName
 							<< setred << " (with errors)" << setblack << endl;
 				}
-				obj = lofFiles.After(obj);
 			}
 		}
 	}
@@ -574,50 +551,45 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	if (smode == kModeMultiProc) {
 		templatePath += "/vme";
 		installPath += "/";
-		for (n = 0; n < nofReadouts; n++) {
-			destPath = installPath + this->ReadoutProc(n)->GetPath();
-			fpath = templatePath;
-			cout	<< this->ClassName() << "::MakeSetupFiles(): Installing file(s) "
-					<< fpath << " -> " << destPath << " ..."
-					<< endl;
-			fname = fpath + "/FILES";
-			ifstream * f = new ifstream(fname.Data(), ios::in);
-			if (!f->good()) {	
-				gMrbLog->Err() << gSystem->GetError() << " - " << fname << endl;
+		for (Int_t n = 0; n < nofReadouts; n++) {
+			TString destPath = installPath + this->ReadoutProc(n)->GetPath();
+			TString srcPath = templatePath;
+			gMrbLog->Out()	<< "Installing file(s) " << srcPath << " -> " << destPath << " ..." << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
+			void * dirPtr = gSystem->OpenDirectory(srcPath.Data());
+			if (dirPtr == NULL) {
+				gMrbLog->Err() << gSystem->GetError() << " - " << srcPath << endl;
 				gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 				nofErrors++;
-				break;
 			} else {
+				TObjArray lofFiles;
 				lofFiles.Delete();
-				nofFiles = 0;
+				TMrbSystem ux;
 				for (;;) {
-					line.ReadLine(*f, kFALSE);
-					line = line.Strip(TString::kBoth);
-					if (f->eof()) break;
-					lofFiles.Add(new TObjString(line.Data()));
-					nofFiles++;
+					const Char_t * dirEntry = gSystem->GetDirEntry(dirPtr);
+					if (dirEntry == NULL) break;
+					TString fileName = Form("%s/%s", srcPath.Data(), dirEntry);
+					if (ux.IsRegular(fileName.Data()))  lofFiles.Add(new TObjString(dirEntry));
 				}
-				f->close();
-				delete f;
-				if (nofFiles == 0) {
-					gMrbLog->Err() << "FILES is empty" << endl;
+				if (lofFiles.GetEntries() == 0) {
+					gMrbLog->Err() << "No files to install from directory " << srcPath << endl;
 					gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 					nofErrors++;
-					break;
-				}
-			}
-			obj = lofFiles.First();
-			while (obj) {
-				fname = ((TObjString *) obj)->String();
-				if (this->ExpandFile(n, fpath, fname, destPath)) {
-					cout	<< setblue << "   ... " << fname
-							<< setblack << endl;
 				} else {
-					nofErrors++;
-					cout	<< "   ... " << fname
-							<< setred << " (with errors)" << setblack << endl;
+					TIterator * iter = lofFiles.MakeIterator();
+					TObjString * os;
+					while (os = (TObjString *) iter->Next()) {
+						TString fileName = os->String();
+						if (this->ExpandFile(0, srcPath, fileName, installPath)) {
+							cout	<< setblue << "   ... " << fileName
+									<< setblack << endl;
+						} else {
+							nofErrors++;
+							cout	<< "   ... " << fileName
+									<< setred << " (with errors)" << setblack << endl;
+						}
+					}
 				}
-				obj = lofFiles.After(obj);
 			}
 		}
 	}
@@ -628,15 +600,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	else if (smode == kModeMultiBranch)	templatePath += "/multibranch";
 	gSystem->ExpandPathName(templatePath);
 
-	installPath = this->GetHomeDir();
-	cout	<< this->ClassName() << "::MakeSetupFiles(): Creating startup files on \"" << installPath << "\": .tcshrc + .login ..."
-			<< endl;
-	TString tcshrc = ".tcshrc";
-	this->ExpandFile(0, templatePath, tcshrc, installPath);
-	TString login = ".login";
-	this->ExpandFile(0, templatePath, login, installPath);
-
-	nodelistFile = this->GetPath();
+	TString nodelistFile = this->GetPath();
 	if (!nodelistFile.BeginsWith("/")) {
 		nodelistFile = this->GetHomeDir();
 		nodelistFile += "/";
@@ -645,13 +609,13 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	nodelistFile += "/node_list.txt";
 	cout	<< this->ClassName() << "::MakeSetupFiles(): Creating node list " << nodelistFile << " ..."
 			<< endl;
-	if (!CreateNodeList(nodelistFile)) nofErrors++;
+	if (!this->CreateNodeList(nodelistFile)) nofErrors++;
 
-	rhostsFile = this->GetHomeDir();
+	TString rhostsFile = this->GetHomeDir();
 	rhostsFile += "/.rhosts";
 	cout	<< this->ClassName() << "::MakeSetupFiles(): Writing host names to file " << rhostsFile << " ..."
 			<< endl;
-	if (!WriteRhostsFile(rhostsFile)) nofErrors++;
+	if (!this->WriteRhostsFile(rhostsFile)) nofErrors++;
 
 	if (nofErrors > 0) {
 		gMrbLog->Err() << "Something went wrong, files may be incomplete ..." << endl;
@@ -1806,6 +1770,8 @@ Bool_t TMbsSetup::CheckSetup() {
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
 			}
 			templatePath += "/singleproc";
+		} else if (smode == kModeMultiBranch) {
+			templatePath += "/multibranch";
 		} else {
 			templatePath += "/multiproc";
 		}
@@ -1816,24 +1782,10 @@ Bool_t TMbsSetup::CheckSetup() {
 			nofErrors++;
 		}
 
-		fileList = templatePath;
-		fileList += "/FILES";
-		if (gSystem->GetPathInfo(fileList.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || flags != 0) {
-			gMrbLog->Err() << "No such file - " << fileList << endl;
-			gMrbLog->Flush(this->ClassName(), "CheckSetup");
-			nofErrors++;
-		}
 		if (setupMode->GetIndex() == kModeMultiProc) {
 			templatePath += "/vme";
 			if (gSystem->GetPathInfo(templatePath.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
 				gMrbLog->Err() << "No such directory - " << templatePath << endl;
-				gMrbLog->Flush(this->ClassName(), "CheckSetup");
-				nofErrors++;
-			}
-			fileList = templatePath;
-			fileList += "/FILES";
-			if (gSystem->GetPathInfo(fileList.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || flags != 0) {
-				gMrbLog->Err() << "No such file - " << fileList << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
 				nofErrors++;
 			}
