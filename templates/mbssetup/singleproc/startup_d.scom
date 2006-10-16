@@ -1,0 +1,20 @@
+start task m_util
+%%BeginOfCode%%
+load setup "$mbsPath/setup.usf"
+%%EndOfCode%%
+%%LOAD_SP_SETUP%% 
+clear daq counter 
+set trig_mod
+enable irq
+%%BeginOfCode%%
+start task m_read_meb "$mbsPath/m_read_meb_debug"
+%%EndOfCode%%
+%%START_RDO_TASK%%
+start task m_collector
+start task m_transport
+start task m_esone_serv
+%%BeginOfCode%%
+set flushtime $flushTime
+%%EndOfCode%%
+%%SET_FLUSHTIME%%
+enable tcp

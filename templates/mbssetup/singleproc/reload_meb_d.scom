@@ -1,0 +1,5 @@
+%%BeginOfCode%%
+stop task m_read_meb
+start task m_read_meb "$mbsPath/m_read_meb_debug"
+%%EndOfCode%%
+%%START_RDO_TASK%%

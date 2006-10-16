@@ -1,18 +1,10 @@
-%%BeginOfCode%%
-set dispatcher $evbProc
-%%EndOfCode%%
-%%SET_DISP_EVB%%
 disable tcp
 stop task m_transport
 stop task m_collector
 start task m_collector
 start task m_transport
-enable tcp
 %%BeginOfCode%%
 set flushtime $flushTime
 %%EndOfCode%%
 %%SET_FLUSHTIME%%
-%%BeginOfCode%%
-set dispatcher $rdoProc
-%%EndOfCode%%
-%%SET_DISP_RDO1%%
+enable tcp
