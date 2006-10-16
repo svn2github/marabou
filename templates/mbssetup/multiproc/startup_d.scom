@@ -1,11 +1,11 @@
 %%BeginOfCode%%
 set dispatcher $rdoProc
-@$rdoPath/start_with_prm_d.scom
+@$rdoPath/start_with_prm_d
 %%EndOfCode%%
 %%START_READOUT%%
 %%BeginOfCode%%
 set dispatcher $evbProc
-@$evbPath/mlstart.scom
+@./mlstart
 %%EndOfCode%%
 %%START_EVTBUILDER%%
 start task m_transport

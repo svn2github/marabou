@@ -1,8 +1,5 @@
 start task m_util
-%%BeginOfCode%%
-load ml_set "$mbsPath/set_ml.usf" 
-%%EndOfCode%%
-%%LOAD_ML_SETUP%%
+load ml_set ./set_ml.usf 
 clear daq counter
 start task m_collector 
 %%BeginOfCode%%

@@ -1,10 +1,10 @@
 %%BeginOfCode%%
 set dispatcher $rdoProc
-@$rdoPath/stop_with_prm.scom
+@$rdoPath/stop_with_prm
 %%EndOfCode%%
 %%STOP_READOUT%%
 %%BeginOfCode%%
 set dispatcher $evbProc
-@$evbPath/mlstop.scom
+@./mlstop
 %%EndOfCode%%
 %%STOP_EVTBUILDER%%
