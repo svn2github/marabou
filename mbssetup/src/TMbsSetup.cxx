@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.40 2006-10-16 11:02:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.41 2006-10-16 13:34:28 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -580,7 +580,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 					TObjString * os;
 					while (os = (TObjString *) iter->Next()) {
 						TString fileName = os->String();
-						if (this->ExpandFile(0, srcPath, fileName, installPath)) {
+						if (this->ExpandFile(0, srcPath, fileName, destPath)) {
 							cout	<< setblue << "   ... " << fileName
 									<< setblack << endl;
 						} else {
