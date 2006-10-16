@@ -1,0 +1,5 @@
+%%BeginOfCode%%
+set dispatcher $rdoProc
+@$rdoPath/reload_meb.scom
+%%EndOfCode%%
+%%RELOAD_READOUT%%

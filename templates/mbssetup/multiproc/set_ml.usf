@@ -1,0 +1,47 @@
+#______________________________________________________________[MBS SETUP FILE]
+#/////////////////////////////////////////////////////////////////////////////
+# @(#)Name:        %M%
+# @(#)Purpose:     User Setup File (usf) for MBS
+# Description:     Setup file in a multi-branch, multi-layer environment
+# @(#)Author:      N. Kurz (GSI), R. Lutter
+# @(#)Revision:    SCCS:  %W%
+# @(#)Date:        %G%
+# URL:             
+# Keywords:        
+#/////////////////////////////////////////////////////////////////////////////
+
+ML_SETUP: -
+%%BeginOfCode%%
+       HOSTNAME             = "$hostName", -         
+%%EndOfCode%%
+%%SET_HOST_NAME%%
+
+%%BeginOfCode%%
+       RD_HOSTNAME_$rdoNo        = "$rdoName", -
+%%EndOfCode%%
+%%SET_RDO_NAMES%%
+
+%%BeginOfCode%%
+       RD_HOST_FLG          = $rdoFlagArr, -
+%%EndOfCode%%
+%%SET_HOST_FLAG%%
+
+%%BeginOfCode%%
+       SBS_SETUP_PATH_$rdoNo     = "$rdoPath/setup_mbs.usf", -
+%%EndOfCode%%
+%%SET_SBS_SETUP_PATH%%
+
+%%BeginOfCode%%
+       RD_PIPE_BASE_ADDR    = $rdoPipeArr, -  
+%%EndOfCode%%
+%%SET_RD_PIPE_BASE_ADDR%%
+
+       OUT_MODE             =  2, -
+
+%%BeginOfCode%%
+       EV_BUF_LEN           = $bufSize, -
+       N_EV_BUF             = $nofBufs, -
+       N_STREAM             = $nofStreams
+%%EndOfCode%%
+%%SET_BUFFERS%%
+#******************************************************************************

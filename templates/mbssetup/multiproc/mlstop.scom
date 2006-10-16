@@ -1,0 +1,3 @@
+stop task m_collector -kill
+stop task m_transport -kill
+stop task m_util -kill

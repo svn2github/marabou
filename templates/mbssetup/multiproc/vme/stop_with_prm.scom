@@ -1,0 +1,3 @@
+stop acq 
+stop task m_read_meb -kill
+stop task m_util -kill

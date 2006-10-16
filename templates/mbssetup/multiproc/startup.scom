@@ -1,0 +1,16 @@
+%%BeginOfCode%%
+set dispatcher $rdoProc
+@$rdoPath/start_with_prm.scom
+%%EndOfCode%%
+%%START_READOUT%%
+%%BeginOfCode%%
+set dispatcher $evbProc
+@$evbPath/mlstart.scom
+%%EndOfCode%%
+%%START_EVTBUILDER%%
+start task m_transport
+enable tcp
+%%BeginOfCode%%
+set dispatcher $rdoProc
+%%EndOfCode%%
+%%SET_DISP_RDO1%%
