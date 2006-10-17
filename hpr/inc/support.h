@@ -23,9 +23,11 @@
 #include "TGraphErrors.h"
 #include "TPolyLine.h"
 #include "HistPresent.h"
-#include "TMrbStatistics.h"
+//#include "TMrbStatistics.h"
 
 namespace std {} using namespace std;
+
+class TMrbStatistics;
 //_______________________________________________________________________________
 
 enum att_types {kAttDefault, kAttColor, kAttAlign, kAttLineS, kAttFont, 

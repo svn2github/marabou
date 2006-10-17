@@ -14,7 +14,8 @@ private:
    Double_t   fX2;         // 2. point on circumference
    Double_t   fY2;         // 
    Int_t      fSense;      // + counter clock wise, -1 clock wise
-   Double_t   fR;          // radius
+   Double_t   fR1;          // radius
+   Double_t   fR2;          // radius
    Color_t    fColor;   	// line color 
    Width_t    fWidth;  	   // line width
    Style_t    fStyle;      // line style

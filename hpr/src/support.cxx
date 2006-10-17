@@ -33,6 +33,7 @@
 #include "TMrbString.h"
 #include "TGMrbInputDialog.h"
 #include "TGMrbValuesAndText.h"
+#include "TMrbStatistics.h"
 
 #include <iostream>
 #include <sstream>
