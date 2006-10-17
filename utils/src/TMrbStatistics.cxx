@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         O. Schaile
 // Mailto:         <a href=mailto:otto.schaile@physik.uni-muenchen.de>O. Schaile</a>
-// Revision:       $Id: TMrbStatistics.cxx,v 1.7 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbStatistics.cxx,v 1.8 2006-10-17 06:59:29 Otto.Schaile Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -210,15 +210,18 @@ void TMrbStatistics::Print(ostream & output) const{
      output << setw(25)<<setiosflags(ios::left)<< "Name" 
             << resetiosflags(ios::left)<< setw(10) <<  "Entries" 
            << setw(10) << "Sumofw"
-           << setw(10)<<  "Mean" <<setw(10) << "Sigma" << endl;
+           << setw(10)<<  "Mean" <<setw(10) << "Sigma" 
+           << setw(10) << "NbinsX" << setw(10) << "NbinsY" <<  setw(10) << "Size[bytes]"<< endl;
    output << sep.Data() << endl;
 //
 //     fStatEntries->Print();
+   Int_t size = 0;
    TIter next(fStatEntries);
    TMrbStatEntry *ent;
    while( (ent = (TMrbStatEntry*)next()) ){
-      ent->Print(output);
+      size += ent->Print(output);
    }
+   output << endl << "Total size used: " << (size + 999999) / 1000000 << " Mbytes" << endl; 
 }
 
 ClassImp(TMrbStatEntry)
@@ -232,10 +235,22 @@ TMrbStatEntry::TMrbStatEntry(TH1* hist, const char * name, const char * title)
                :TNamed(name, title){
 // TMrbStatEntry normal constructor
    fHist = hist;
-   if      (hist->InheritsFrom(TH3::Class()))fDim = 3;
-   else if (hist->InheritsFrom(TH2::Class()))fDim = 2;
-   else if (hist->InheritsFrom(TH1::Class()))fDim = 1;
-   else {cout << "ctor TMrbStatEntry illegal hist dim " << endl; fDim=0;}
+   fNbinsX = fNbinsY = fNbinsZ = 0;
+   if      (hist->InheritsFrom(TH3::Class())) {
+     fDim = 3;
+   } else if (hist->InheritsFrom(TH2::Class())) {
+     fDim = 2; 
+   } else if (hist->InheritsFrom(TH1::Class())) {
+      fDim = 1;
+   } else {cout << "ctor TMrbStatEntry illegal hist dim " << endl; fDim=0;}
+   fNbinsX = hist->GetNbinsX();
+   if (fDim > 1) fNbinsY = hist->GetNbinsY();
+   if (fDim > 2) fNbinsZ = hist->GetNbinsZ();
+   TString cn = hist->ClassName();
+   if      (cn[3] == 'C') fBytesPerCell = 1;
+   else if (cn[3] == 'S') fBytesPerCell = 2; 
+   else if (cn[3] == 'F') fBytesPerCell = 4; 
+   else if (cn[3] == 'D') fBytesPerCell = 8; 
    fNofUpdates =0;
    fEntries = 0;
    fSumofw  = 0;
@@ -258,11 +273,13 @@ void TMrbStatEntry::Set(const Stat_t ent, const Stat_t sofw, const Stat_t mx,
     fSigma  = sx;
     fNofUpdates ++;
 };
+//____________________________________________________________________________
 void TMrbStatEntry::Set(const Stat_t ent, const Stat_t sofw){
     fEntries = ent; 
     fSumofw  = sofw;
     fNofUpdates ++;
 };
+//____________________________________________________________________________
 Int_t TMrbStatEntry::Get(Stat_t *ent, Stat_t *sofw, Stat_t *mx, Stat_t *sx) const {
     *ent  = fEntries;
     *sofw = fSumofw ;
@@ -270,24 +287,36 @@ Int_t TMrbStatEntry::Get(Stat_t *ent, Stat_t *sofw, Stat_t *mx, Stat_t *sx) cons
     *sx   = fSigma ;
     return fNofUpdates;
 };
+//____________________________________________________________________________
 Int_t TMrbStatEntry::Get(Stat_t *ent, Stat_t *sofw) const {
     *ent  = fEntries;
     *sofw = fSumofw ;
     return fNofUpdates;
 };
-void TMrbStatEntry::Print(ostream & output) const {
-     if(fDim == 1)
-     output << setw(25)<<setiosflags(ios::left)<< GetName() 
-          << resetiosflags(ios::left)
-          << setw(10)<< fEntries << " "
-          << setw(9) << fSumofw << " " << setw(9)<< fMean << " " << setw(9) << fSigma << endl;
-     else
-     output << setw(25)<<setiosflags(ios::left)<< GetName() 
-          << resetiosflags(ios::left)
-          << setw(10)<<  fEntries << " " << setw(9) << fSumofw<< endl;
-}
+//____________________________________________________________________________
 
-#include "TMrbStatistics.h"
+Int_t TMrbStatEntry::Print(ostream & output) const {
+   Int_t size = 0;
+   if(fDim == 1) {
+        size = (fNbinsX + 2) * fBytesPerCell;
+      output << setw(25)<<setiosflags(ios::left)<< GetName() 
+        << resetiosflags(ios::left)
+        << setw(10)<< fEntries << " "
+        << setw(9) << fSumofw << " " << setw(9)<< fMean 
+        << setw(10) << fSigma << setw(9) << fNbinsX << setw(10)<< 0 << setw(10)<< size << endl;
+   } else {
+      size = (fNbinsX + 2) * (fNbinsY + 2) * fBytesPerCell;;
+      output << setw(25)<<setiosflags(ios::left)<< GetName() 
+        << resetiosflags(ios::left)
+        << setw(10)<<  fEntries << " " << setw(9) << fSumofw
+        << setw(10)<< " " << setw(10)<< " " 
+        << setw(10) << fNbinsX << setw(10) << fNbinsY << setw(10)<< size << endl;
+   }
+   return size;
+}
+//____________________________________________________________________________
+
+// #include "TMrbStatistics.h"
 
 ClassImp(TMrbStatCheck)
 /////////////////////////////////////////////////////////////////////////////////////////

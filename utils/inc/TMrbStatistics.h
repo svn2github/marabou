@@ -38,16 +38,17 @@ public:
    void  SetCycle(Int_t cycle) {fCycle = cycle;}; 
    Int_t GetCycle() const {return fCycle;}; 
    void Print(Option_t * Option) const { TObject::Print(Option); }
-   void Print(ostream & ostr) const;                      // print out one line
+   Int_t Print(ostream & ostr) const;                      // print out one line
 
 protected:
    TH1 * fHist;            //! pointer to histogram, dont stream out hists
    Int_t fDim;             // Dimension of histogram
    Int_t fNofUpdates;      // Number of updates
    Int_t fCycle;           // cycle number of Key on file
-   Int_t fNinX;
-   Int_t fNinY;
-   Int_t fNinZ;
+   Int_t fNbinsX;
+   Int_t fNbinsY;
+   Int_t fNbinsZ;
+   Int_t fBytesPerCell;
    Axis_t fLowX;
    Axis_t fHighX;
    Axis_t fLowY;
