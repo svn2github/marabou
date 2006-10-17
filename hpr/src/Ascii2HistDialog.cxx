@@ -30,12 +30,14 @@ X, Y, W:    2 dim: X, Y , Weight \n\
 X, Ym Z:    3 dim: X, Y, Z values to be filled\n\
 X, Y, Z, W: 3 dim: X, Y ,Z, Weight \n\
 \n\
-A common error can be applied to all channels\n\
+A common error is applied to all channels\n\
+if this value is > 0\n\
 \n\
 Before the histogram is build the values must be read\n\
 by \"Read_Input()\". At this moment the format\n\
 should have been selected so meaningful values\n\
-for the axis can be calculated\n\
+for the axis can be calculated if the option\n\
+\"Keep limits\" is off.\n\
 ";
 
    static void *valp[50];
@@ -54,10 +56,9 @@ for the axis can be calculated\n\
    row_lab->Add(new TObjString("RadioButton_2 Dim, X, Y, Weight"));
    row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z values to be filled"));
    row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z, Weight"));
-   row_lab->Add(new TObjString("DoubleValue_Common error"));
    row_lab->Add(new TObjString("FileRequest_Name of Inputfile   "));
-   row_lab->Add(new TObjString("StringValue_Name of Histogram"));
-   row_lab->Add(new TObjString("StringValue_Title of Histogram  "));
+   row_lab->Add(new TObjString("StringValue_Name"));
+   row_lab->Add(new TObjString("StringValue_Title"));
    row_lab->Add(new TObjString("PlainIntVal_NbX"));
    row_lab->Add(new TObjString("DoubleValue+Xl"));
    row_lab->Add(new TObjString("DoubleValue+Xu"));
@@ -67,6 +68,8 @@ for the axis can be calculated\n\
    row_lab->Add(new TObjString("PlainIntVal_NbZ"));
    row_lab->Add(new TObjString("DoubleValue+Zl"));
    row_lab->Add(new TObjString("DoubleValue+Zu"));
+   row_lab->Add(new TObjString("CheckButton_Keep limits"));
+   row_lab->Add(new TObjString("DoubleValue+Common error"));
    row_lab->Add(new TObjString("CommandButt_Show_Head_of_File"));
    row_lab->Add(new TObjString("CommandButt_Read_Input"));
    row_lab->Add(new TObjString("CommandButt_Draw_the_Histogram"));
@@ -78,7 +81,6 @@ for the axis can be calculated\n\
    valp[ind++] = &f2DimWithWeight;
    valp[ind++] = &f3Dim;          
    valp[ind++] = &f3DimWithWeight;
-   valp[ind++] = &fError; 
    valp[ind++] = &fHistFileName;
    valp[ind++] = &fHistName;
    valp[ind++] = &fHistTitle;
@@ -91,11 +93,13 @@ for the axis can be calculated\n\
    valp[ind++] = &fNbinsZ; 
    valp[ind++] = &fZlow;  
    valp[ind++] = &fZup;   
+   valp[ind++] = &fKeepLimits; 
+   valp[ind++] = &fError; 
    valp[ind++] = &fCommandHead;
    valp[ind++] = &fReadCommand;
    valp[ind++] = &fCommand;
 
-   Int_t itemwidth = 320;
+   Int_t itemwidth = 380;
    ok = GetStringExt("Hists parameters", NULL, itemwidth, win,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0], this, this->ClassName());
@@ -182,30 +186,34 @@ void Ascii2HistDialog::Read_Input()
       fXlow = 0;
       fXup  = fNvalues;
    } else {
-   	if (f1DimWithWeight ) fNbinsX = fNvalues;
-      fXlow = fXval[TMath::LocMin(fNvalues, fXval.GetArray())]; 
-      fXup  = fXval[TMath::LocMax(fNvalues, fXval.GetArray())];
-      Double_t binw2 = 0.5 * (fXup - fXlow) / (Double_t) fNbinsX;
-      fXlow -= binw2;
-      fXup  += binw2;
-
-      cout << " fXlow " << fXlow  << " fXup " << fXup;
-      
+      if (fKeepLimits <= 0) {
+   	   if (f1DimWithWeight ) fNbinsX = fNvalues;
+         fXlow = fXval[TMath::LocMin(fNvalues, fXval.GetArray())]; 
+         fXup  = fXval[TMath::LocMax(fNvalues, fXval.GetArray())];
+         Double_t binw2 = 0.5 * (fXup - fXlow) / (Double_t) fNbinsX;
+         fXlow -= binw2;
+         fXup  += binw2;
+         cout << " fXlow " << fXlow  << " fXup " << fXup;
+      }
    	if (f2Dim ||f2DimWithWeight ) {
-      	fYlow = fYval[TMath::LocMin(fNvalues, fYval.GetArray())]; 
-      	fYup  = fYval[TMath::LocMax(fNvalues, fYval.GetArray())]; 
-      	Double_t binw2 = 0.5 * (fYup - fYlow) / (Double_t) fNbinsY;
-      	fYlow -= binw2;
-      	fYup  += binw2;
-         cout << " fYlow " << fYlow  << " fYup " << fYup;
+         if (fKeepLimits <= 0) {
+      	   fYlow = fYval[TMath::LocMin(fNvalues, fYval.GetArray())]; 
+      	   fYup  = fYval[TMath::LocMax(fNvalues, fYval.GetArray())]; 
+      	   Double_t binw2 = 0.5 * (fYup - fYlow) / (Double_t) fNbinsY;
+      	   fYlow -= binw2;
+      	   fYup  += binw2;
+            cout << " fYlow " << fYlow  << " fYup " << fYup;
+         }
     	}
       if (f3Dim || f3DimWithWeight) {
-      	fZlow = fZval[TMath::LocMin(fNvalues, fZval.GetArray())]; 
-      	fZup  = fZval[TMath::LocMax(fNvalues, fZval.GetArray())]; 
-      	Double_t binw2 = 0.5 * (fZup - fZlow) / (Double_t) fNbinsZ;
-      	fZlow -= binw2;
-      	fZup  += binw2;
-         cout << " fZlow " << fZlow  << " fZup " << fZup;
+         if (fKeepLimits <= 0) {
+      	   fZlow = fZval[TMath::LocMin(fNvalues, fZval.GetArray())]; 
+      	   fZup  = fZval[TMath::LocMax(fNvalues, fZval.GetArray())]; 
+      	   Double_t binw2 = 0.5 * (fZup - fZlow) / (Double_t) fNbinsZ;
+      	   fZlow -= binw2;
+      	   fZup  += binw2;
+            cout << " fZlow " << fZlow  << " fZup " << fZup;
+   	   }
    	}
    }
 
@@ -239,7 +247,8 @@ void Ascii2HistDialog::Draw_The_Hist()
       }
       if (fError > 0) {
          for (Int_t i = 0; i < fNbinsX; i++) {
-            hist1->SetBinError(i+1, fError);
+            if (hist1->GetBinError(i+1) != 0)
+               hist1->SetBinError(i+1, fError);
          }
       }    
    }
@@ -260,7 +269,8 @@ void Ascii2HistDialog::Draw_The_Hist()
       if (fError > 0) {
          for (Int_t i = 0; i < fNbinsX; i++) {
             for (Int_t k = 0; k < fNbinsY; k++) {
-               hist2->SetCellError(i+1, k+1, fError);
+               if (hist2->GetCellError(i+1, k+1) != 0)
+                  hist2->SetCellError(i+1, k+1, fError);
             }
          }
       }    
@@ -325,6 +335,7 @@ void Ascii2HistDialog::SaveDefaults()
    env.SetValue("Ascii2HistDialog.Ascii2HistNbinsZ",  		  fNbinsZ); 
    env.SetValue("Ascii2HistDialog.Ascii2HistZlow",  			  fZlow);  
    env.SetValue("Ascii2HistDialog.Ascii2HistZup",   			  fZup);	
+   env.SetValue("Ascii2HistDialog.Ascii2KeepLimits",   		  fKeepLimits);	
    env.SaveLevel(kEnvUser);
 }
 //_________________________________________________________________________
@@ -352,6 +363,7 @@ void Ascii2HistDialog::RestoreDefaults()
    fNbinsZ  		  = env.GetValue("Ascii2HistDialog.Ascii2HistNbinsZ",  		 100); 
    fZlow    		  = env.GetValue("Ascii2HistDialog.Ascii2HistZlow", 			   0.);  
    fZup     		  = env.GetValue("Ascii2HistDialog.Ascii2HistZup",  			 100.); 
+   fKeepLimits      = env.GetValue("Ascii2HistDialog.Ascii2HistKeepLimits",  		0 ); 
    cout << "fXup " << fXup<< endl;
 }
 //_________________________________________________________________________

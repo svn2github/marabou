@@ -40,6 +40,7 @@ private:
    Int_t    fNbinsZ; 
    Double_t fZlow;  
    Double_t fZup;   
+   Int_t    fKeepLimits;
  
 public:
    Ascii2HistDialog(TGWindow * win = NULL);
