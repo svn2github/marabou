@@ -30,6 +30,7 @@ private:
    Int_t    f2DimWithWeight;  // X,Y,  Weight
    Int_t    f3Dim;            // X, Y, Z values to be filled
    Int_t    f3DimWithWeight;  // X,Y,Z,  Weight
+   Double_t fError;  
    Int_t    fNbinsX; 
    Double_t fXlow;  
    Double_t fXup;   

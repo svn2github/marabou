@@ -30,6 +30,8 @@ X, Y, W:    2 dim: X, Y , Weight \n\
 X, Ym Z:    3 dim: X, Y, Z values to be filled\n\
 X, Y, Z, W: 3 dim: X, Y ,Z, Weight \n\
 \n\
+A common error can be applied to all channels\n\
+\n\
 Before the histogram is build the values must be read\n\
 by \"Read_Input()\". At this moment the format\n\
 should have been selected so meaningful values\n\
@@ -52,6 +54,7 @@ for the axis can be calculated\n\
    row_lab->Add(new TObjString("RadioButton_2 Dim, X, Y, Weight"));
    row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z values to be filled"));
    row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z, Weight"));
+   row_lab->Add(new TObjString("DoubleValue_Common error"));
    row_lab->Add(new TObjString("FileRequest_Name of Inputfile   "));
    row_lab->Add(new TObjString("StringValue_Name of Histogram"));
    row_lab->Add(new TObjString("StringValue_Title of Histogram  "));
@@ -75,6 +78,7 @@ for the axis can be calculated\n\
    valp[ind++] = &f2DimWithWeight;
    valp[ind++] = &f3Dim;          
    valp[ind++] = &f3DimWithWeight;
+   valp[ind++] = &fError; 
    valp[ind++] = &fHistFileName;
    valp[ind++] = &fHistName;
    valp[ind++] = &fHistTitle;
@@ -233,7 +237,13 @@ void Ascii2HistDialog::Draw_The_Hist()
             hist1->Fill(fXval[i], fYval[i]);
          }
       }
+      if (fError > 0) {
+         for (Int_t i = 0; i < fNbinsX; i++) {
+            hist1->SetBinError(i+1, fError);
+         }
+      }    
    }
+   
    if (f2Dim || f2DimWithWeight) {
       TH2F * hist2 = new TH2F(fHistName, fHistTitle, fNbinsX, fXlow, fXup, 
                                             fNbinsY, fYlow, fYup);
@@ -247,6 +257,13 @@ void Ascii2HistDialog::Draw_The_Hist()
             hist2->Fill(fXval[i], fYval[i], fZval[i]);
          }
       }
+      if (fError > 0) {
+         for (Int_t i = 0; i < fNbinsX; i++) {
+            for (Int_t k = 0; k < fNbinsY; k++) {
+               hist2->SetCellError(i+1, k+1, fError);
+            }
+         }
+      }    
    }
    if (f3Dim || f3DimWithWeight) {
       TH3F * hist3 = new TH3F(fHistName, fHistTitle, fNbinsX, fXlow, fXup, 
@@ -262,6 +279,7 @@ void Ascii2HistDialog::Draw_The_Hist()
          }
       }
    }
+
 #ifdef MARABOUVERS
    HistPresent * hpr = (HistPresent*)gROOT->GetList()->FindObject("mypres");
    if (hpr) hpr->ShowHist(hist);
@@ -297,6 +315,7 @@ void Ascii2HistDialog::SaveDefaults()
    env.SetValue("Ascii2HistDialog.Ascii2Hist2DimWithWeight", f2DimWithWeight); 
    env.SetValue("Ascii2HistDialog.Ascii2Hist3Dim", 			  f3Dim);  			
    env.SetValue("Ascii2HistDialog.Ascii2Hist3DimWithWeight", f3DimWithWeight); 
+   env.SetValue("Ascii2HistDialog.Ascii2HistError",  		     fError); 
    env.SetValue("Ascii2HistDialog.Ascii2HistNbinsX",  		  fNbinsX); 
    env.SetValue("Ascii2HistDialog.Ascii2HistXlow",  			  fXlow);  
    env.SetValue("Ascii2HistDialog.Ascii2HistXup",   			  fXup);	
@@ -323,6 +342,7 @@ void Ascii2HistDialog::RestoreDefaults()
    f2DimWithWeight  = env.GetValue("Ascii2HistDialog.Ascii2Hist2DimWithWeight", 0); 
    f3Dim            = env.GetValue("Ascii2HistDialog.Ascii2Hist3Dim", 			   0); 		  
    f3DimWithWeight  = env.GetValue("Ascii2HistDialog.Ascii2Hist3DimWithWeight", 0); 
+   fError           = env.GetValue("Ascii2HistDialog.Ascii2HistError",  		  -1); 
    fNbinsX  		  = env.GetValue("Ascii2HistDialog.Ascii2HistNbinsX",  	    100); 
    fXlow    		  = env.GetValue("Ascii2HistDialog.Ascii2HistXlow", 			   0.);  
    fXup     		  = env.GetValue("Ascii2HistDialog.Ascii2HistXup",  			 100.); 
