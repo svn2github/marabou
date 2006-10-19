@@ -66,6 +66,7 @@
 #include "TGMrbSliders.h"
 #include "TGMrbInputDialog.h"
 #include "TGMrbValuesAndText.h"
+#include "FitOneDimDialog.h"
 
 //extern HistPresent* hp;
 extern TFile *fWorkfile;
@@ -127,7 +128,9 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fUserContourLevels = 0;
 //   datebox = 0;
    fExpInd = 0;
+   
    fSelHist = hist;
+   fFit1DimD = 0;
    fCalHist = NULL;
    fCalFitHist = NULL;
    fCalFunc = NULL;
@@ -239,10 +242,11 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-//   cout << "RecursiveRemove " << obj <<  endl;
+   cout << "FitHist::RecursiveRemove: obj " << obj <<  endl;
    fActiveCuts->Remove(obj);
    fActiveWindows->Remove(obj);
    fActiveFunctions->Remove(obj);
+   if (obj == fFit1DimD) fFit1DimD = NULL;
 }
 
 //------------------------------------------------------ 
@@ -256,6 +260,8 @@ FitHist::~FitHist()
    if (!expHist && hp && hp->fRememberZoom) SaveDefaults(kTRUE);
    gDirectory->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
+
+   if (fFit1DimD) fFit1DimD->CloseDialog(); 
    if (hp) hp->fNwindows -= 1;
    if (expHist) {
 //      cout << "expHist " << expHist->GetName() << endl;
@@ -265,9 +271,7 @@ FitHist::~FitHist()
       delete expHist;
       expHist = 0;
    }
-//   if (fCalFitHist) delete fCalFitHist;
    if (fTofLabels) { delete fTofLabels; fTofLabels=NULL;}
-//   if (fCalHist) delete fCalHist;
    if (fCalFunc) delete fCalFunc;
    if (fDateText) delete fDateText;
    if (!cHist || !cHist->TestBit(TObject::kNotDeleted) ||
@@ -1568,7 +1572,9 @@ void FitHist::WriteHistasASCII(Int_t what)
 // *INDENT-OFF* 
   const char helpText[] =
 "As default only the channel contents is written\n\
-to the file.";
+to the file.|n\
+\"Binwidth/2\" and \"Errors\" is useful if file should be used\n\
+as input to Ascii2Graph: X, Y, ErrX, ErrY";
 // *INDENT-ON* 
 
    if (is3dim(fSelHist)) {
@@ -1577,6 +1583,7 @@ to the file.";
    }
    static Int_t channels = 0;
    static Int_t bincenters = 1;
+   static Int_t binw2  = 0;
    static Int_t errors  = 0;
 
 
@@ -1598,6 +1605,8 @@ to the file.";
       row_lab->Add(new TObjString("CheckButton_Bin Centers"));
       valp[ind++] = &bincenters;
    }
+   row_lab->Add(new TObjString("CheckButton_BinWidth/2"));
+   valp[ind++] = &binw2;
    row_lab->Add(new TObjString("CheckButton_Errors"));
    valp[ind++] = &errors;
 
@@ -1635,6 +1644,8 @@ to the file.";
          if (bincenters)
             outfile << fSelHist->GetBinCenter(i) << "\t";
          outfile << fSelHist->GetBinContent(i); 
+         if (binw2) 
+            outfile << "\t" << 0.5 * fSelHist->GetBinWidth(i);
          if (errors) 
             outfile << "\t" << fSelHist->GetBinError(i);
          outfile << endl;

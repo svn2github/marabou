@@ -28,6 +28,7 @@ namespace std {} using namespace std;
 
 class TMrbWindow2D;
 class TMrbWindow;
+class FitOneDimDialog;
 //______________________________ globals ____________________________________
 
 static const char attrname[]="FH_setdefaults.C";
@@ -50,7 +51,8 @@ private:
    TH1    *fSelHist, *fOrigHist;          // pointer to the selected histogram 
    TH1    *fCalHist;
    FitHist  *fCalFitHist;
-   TF1    *fCalFunc;
+   TF1      *fCalFunc;
+   FitOneDimDialog *fFit1DimD;
    HistPresent* hp;
    HTCanvas *cHist;
    TH1     *expHist, *projHist, *projHistX, *projHistY,*projHistF;

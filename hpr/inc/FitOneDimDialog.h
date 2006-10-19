@@ -1,11 +1,13 @@
 #ifndef FITONEDIMDIALOG
 #define FITONEDIMDIALOG
-#include "TObject.h"
+#include "TGraph.h"
+#include "TH1.h"
 #include "TVirtualPad.h"
 #include "TPad.h"
 #include "TRootCanvas.h"
 #include "TString.h"
 #include "FhMarker.h"
+#include "TGMrbValuesAndText.h"
 //_____________________________________________________________________________________
 
 
@@ -13,10 +15,13 @@ class FitOneDimDialog : public TObject {
 
 private:
    TRootCanvas* fParentWindow; 
+   TGMrbValuesAndText *fDialog;
    TString fFuncName;
    Int_t   fFuncNumber;
    TVirtualPad *fSelPad;
    TH1     *fSelHist;
+   TGraph  *fGraph;
+   TString fName;
    FhMarkerList * fMarkers;
    Double_t fFrom;
    Double_t fTo;
@@ -47,11 +52,16 @@ private:
 
 public:
    FitOneDimDialog(TH1 * hist);
-   virtual ~FitOneDimDialog(){};
+   FitOneDimDialog(TGraph * graph);
+   void DisplayMenu();
+   virtual ~FitOneDimDialog();
+   void RecursiveRemove(TObject * obj);
    void FitOneDimExecute();
    void SetFitOptions(){};
    Int_t GetMaxBin(TH1 * h1, Int_t binl, Int_t binu);
-   void GetGaussEstimate(TH1 * h, Double_t from, Double_t to,  
+   void GetGaussEstimate(TH1 *h, Double_t from, Double_t to,  
+                         Double_t bg,TArrayD & par);
+   void GetGaussEstimate(TGraph *g, Double_t from, Double_t to,  
                          Double_t bg,TArrayD & par);
    void DetLinearBackground();
    Int_t GetMarkers();
@@ -61,6 +71,7 @@ public:
    void SetFittingOptions();
    void SaveDefaults();
    void RestoreDefaults();
+   void CloseDialog();
    void CloseDown();
 
 ClassDef(FitOneDimDialog,0)

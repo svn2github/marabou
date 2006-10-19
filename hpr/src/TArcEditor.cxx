@@ -51,9 +51,15 @@ enum {
 };
 
 //______________________________________________________________________________
+#if ROOTVERSION < 51304
 TArcEditor::TArcEditor(const TGWindow *p, Int_t id, Int_t width,
                            Int_t height, UInt_t options, Pixel_t back)
    : TGedFrame(p, id, width, height, options | kVerticalFrame, back)
+#else
+TArcEditor::TArcEditor(const TGWindow *p, Int_t width,
+                           Int_t height, UInt_t options, Pixel_t back)
+   : TGedFrame(p, width, height, options | kVerticalFrame, back)
+#endif
 {
    // Constructor of Arc GUI.
 
@@ -192,18 +198,20 @@ TArcEditor::TArcEditor(const TGWindow *p, Int_t id, Int_t width,
    f11->AddFrame(fPoCfY2Entry, new TGLayoutHints(kLHintsLeft, 7, 1, 1, 1));
 //-
 */
+#if ROOTVERSION < 51304
    TClass *cl = TArc::Class();
    TGedElement *ge = new TGedElement;
    ge->fGedFrame = this;
    ge->fCanvas = 0;
    cl->GetEditorList()->Add(ge);
+#endif
 }
 
 //______________________________________________________________________________
 TArcEditor::~TArcEditor()
 {
    // Destructor of Arc editor.
-
+#if ROOTVERSION < 51304
    TGFrameElement *el;
    TIter next(GetList());
    
@@ -212,6 +220,7 @@ TArcEditor::~TArcEditor()
          ((TGCompositeFrame *)el->fFrame)->Cleanup();
    }
    Cleanup();
+#endif
 }
 
 //______________________________________________________________________________
@@ -245,10 +254,9 @@ void TArcEditor::ConnectSignals2Slots()
 }
 
 //______________________________________________________________________________
+#if ROOTVERSION < 51304
 void TArcEditor::SetModel(TVirtualPad* pad, TObject* obj, Int_t)
 {
-   // Pick up the used curly arc attributes.
-
    fModel = 0;
    fPad = 0;
    if (obj == 0 || !obj->InheritsFrom("TArc")) {
@@ -260,7 +268,13 @@ void TArcEditor::SetModel(TVirtualPad* pad, TObject* obj, Int_t)
    fPad = pad;
    
    fArc = (TArc *)fModel;
+#else 
 
+void TArcEditor::SetModel(TObject* obj)
+{
+   fArc = (TArc *)obj;
+#endif
+   // Pick up the used curly arc attributes.
    std::cout << "TArcEditor::SetModel() " << std::endl;
    Double_t rad = fArc->GetR1();
    fRadiusEntry->SetNumber(rad);
@@ -288,9 +302,20 @@ void TArcEditor::SetModel(TVirtualPad* pad, TObject* obj, Int_t)
 */
 
    if (fInit) ConnectSignals2Slots();
-   SetActive();
+//   SetActive();
 }
 
+#if ROOTVERSION > 51303
+//______________________________________________________________________________
+
+void TArcEditor::ActivateBaseClassEditors(TClass* cl)
+{
+   // Add editors to fGedFrame and exclude TLineEditor.
+
+//   fGedEditor->ExcludeClassEditor(TAttFill::Class());
+   TGedFrame::ActivateBaseClassEditors(cl);
+}
+#endif
 //______________________________________________________________________________
 
 void TArcEditor::Redraw()

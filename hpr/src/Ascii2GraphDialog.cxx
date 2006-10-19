@@ -319,6 +319,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
       graph->SetLineWidth(fGraphLineWidth);
       gPad->Modified();
       gPad->Update();
+      cout << "TGraph *gr = (TGraph*)" << graph;
    }
    SaveDefaults();
    return;

@@ -578,7 +578,8 @@ const char *FitMacroTemplates[nFitTemplates] = {
 
 void FitHist::FitGausLBg(Int_t force_zero_bg)
 {
-   new FitOneDimDialog(fSelHist);
+   if (fFit1DimD == NULL) 
+      fFit1DimD = new FitOneDimDialog(fSelHist);
 }
 //____________________________________________________________________________
 

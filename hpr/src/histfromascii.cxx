@@ -18,6 +18,7 @@
 #include "TGMrbValuesAndText.h"
 #include "TGMrbTableFrame.h"
 #include "TGMrbInputDialog.h"
+#include "FitOneDimDialog.h"
 #include <iostream>
 #include <fstream>
 
@@ -392,4 +393,12 @@ void ExecFitMacroG(TGraph * graph, TGWindow * win)
       cout << "Macro not found" << endl;
    logr.Clear("nodelete");
    pads.Clear("nodelete");
+}
+//____________________________________________________________________________
+
+void ExecGausFitG(TGraph * graph)
+{
+   if (!gPad || !graph) return;
+   graph->SetBit(kMustCleanup);
+   new FitOneDimDialog(graph);
 }

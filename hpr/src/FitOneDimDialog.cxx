@@ -11,7 +11,6 @@
 #include "TMath.h"
 #include "TVirtualPad.h"
 #include "TGMrbTableFrame.h"
-#include "TGMrbValuesAndText.h"
 #include "FitOneDimDialog.h"
 //#include "support.h"
 #include "SetColor.h"
@@ -48,6 +47,7 @@ Double_t gaus_only(Double_t * x, Double_t * par)
       arg = (x[0] - par[2 + 2 * i]) / (sqrt2 * sigma);
       fitval = fitval + par[1 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
+//   cout << x[0] << " "<< par[0]<< " " << par[1]<< " " << par[2]<< " " << gBinW << " "<< fitval << endl;
    return gBinW * fitval;
 }
 //____________________________________________________________________________ 
@@ -126,7 +126,7 @@ Double_t gaus_cbg_vsig(Double_t * x, Double_t * par)
       sigma   = par[3 + 3 * i];
       if (sigma == 0) sigma = 1;               //  force widths /= 0
       arg = (x[0] - par[2 + 3 * i]) / (sqrt2 * sigma);
-      fitval = fitval + par[3 + 3 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
+      fitval = fitval + par[1 + 3 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
    return gBinW * fitval;
 }
@@ -294,12 +294,54 @@ Double_t gausf(Double_t * x, Double_t * par)
 
 FitOneDimDialog::FitOneDimDialog(TH1 * hist)
 {
+   fSelHist = hist;
+   fGraph = NULL;
+   if (!fSelHist) {
+      cout << "No hist selected" << endl;
+      return;
+   }
+
+   if (fSelHist->GetDimension() != 1) {
+      cout << "Can only be used with 1-dim hist" << endl;
+      return;
+   }
+   gBinW   = fSelHist->GetBinWidth(1);
+   fName = fSelHist->GetName();
+   DisplayMenu();
+}
+//____________________________________________________________________________________ 
+
+FitOneDimDialog::FitOneDimDialog(TGraph * graph)
+{
+   if (!graph) {
+      cout << "No graph selected" << endl;
+      return;
+   }
+   fGraph = graph;
+   fSelHist = graph->GetHistogram();
+   if (!fSelHist) {
+      cout << "Graph must be drawn" << endl;
+      return;
+   }
+
+   if (fSelHist->GetDimension() != 1) {
+      cout << "Can only be used with 1-dim hist" << endl;
+      return;
+   }
+   gBinW   = 1;
+   fName = fGraph->GetName();
+   DisplayMenu();
+}
 //_________________________________________________________________________
 //
 // This widget allows fitting of any number of gaussian shaped peaks
 // optionally with a low or high energy tail plus a linear background.
 //
 //_________________________________________________________________________
+//____________________________________________________________________________________ 
+
+void FitOneDimDialog::DisplayMenu()
+{
 
 static const Char_t helptext[] =
 "This widget allows fitting of any number of \n\
@@ -346,27 +388,19 @@ parameters without actually doing a fit.\n\
    fFuncNumber = 0;
    fLinBgConst = 0;
    fLinBgSlope = 0;
-   fSelHist    = hist;
    fUsedbg     = 0;
    fUseoldpars = 0;
-   if (!fSelHist) {
-      cout << "No hist selected" << endl;
-      return;
-   }
-
-   if (fSelHist->GetDimension() != 1) {
-      cout << "Can only be used with 1-dim hist" << endl;
-      return;
-   }
    RestoreDefaults();
    fSelPad = NULL;
+   SetBit(kMustCleanup);
+   gROOT->GetListOfCleanups()->Add(this);
    TIter next(gROOT->GetListOfCanvases());
    TCanvas *c;
    while ( (c = (TCanvas*)next()) ) {
-      if (c->GetListOfPrimitives()->FindObject(fSelHist->GetName())) {
+      if (c->GetListOfPrimitives()->FindObject(fName)) {
          fSelPad = c;
          fSelPad->cd();
-         cout << "fSelPad " << fSelPad << endl;
+//         cout << "fSelPad " << fSelPad << endl;
          break;
       }
    }
@@ -404,7 +438,6 @@ parameters without actually doing a fit.\n\
    fFrom = xaxis->GetBinLowEdge(xaxis->GetFirst());
    fTo   = xaxis->GetBinUpEdge(xaxis->GetLast()) ;
    GetMarkers();
-   gBinW   = fSelHist->GetBinWidth(1);
    row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
    valp[ind++] = &fNpeaks;
    row_lab->Add(new TObjString("CheckButton+Low Tail"));
@@ -443,13 +476,36 @@ parameters without actually doing a fit.\n\
    valp[ind++] = &setmcmd;
    row_lab->Add(new TObjString("PlainIntVal-N"));
    valp[ind++] = &fNmarks;
-   Bool_t ok;
    Int_t itemwidth = 320;
-   TRootCanvas* fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
-   cout << "fParentWindow " << fParentWindow << endl;
-   ok = GetStringExt("Function name", &fFuncName, itemwidth,
+//   TRootCanvas* fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
+//   cout << "fParentWindow " << fParentWindow << endl;
+   Int_t ok = 0;
+   fDialog =
+   new TGMrbValuesAndText ("Function name", &fFuncName, &ok, itemwidth,
                       fParentWindow, history, NULL, row_lab, valp,
                       NULL, NULL, helptext, this, this->ClassName());
+//  Bool_t ok;
+//  ok = GetStringExt("Function name", &fFuncName, itemwidth,
+//                      fParentWindow, history, NULL, row_lab, valp,
+//                      NULL, NULL, helptext, this, this->ClassName());
+}
+//__________________________________________________________________________
+
+FitOneDimDialog::~FitOneDimDialog()
+{
+   gROOT->GetListOfCleanups()->Remove(this);
+}
+//__________________________________________________________________________
+
+void FitOneDimDialog::RecursiveRemove(TObject * obj)
+{
+//   cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "  
+//        << obj << " fSelHist " <<  fSelHist <<  endl;
+   if ((fGraph && obj == fGraph) || obj == fSelHist) { 
+ //      cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "  
+ //       << obj << " fSelHist " <<  fSelHist <<  endl;
+      CloseDialog(); 
+   }
 }
 //__________________________________________________________________________
 
@@ -468,6 +524,7 @@ void FitOneDimDialog::FitOneDimExecute()
    if (fLowtail)
       gTailSide = 1;
    if (gTailSide != 0) {
+/*
       if (fBackg0 != 0) {
          cout << "With tail ignore: Force Background = 0" << endl;
          fBackg0 = 0;
@@ -476,10 +533,15 @@ void FitOneDimDialog::FitOneDimExecute()
          cout << "With tail ignore: Force BG slope = 0" << endl;
          fSlope0 = 0;
       }
+*/
       if (fOnesig == 0) {
          cout << "With tail ignore: Force common Gaus width" << endl;
          fOnesig = 1;
       }
+   }
+   if (fBackg0 != 0) {
+      cout << "With Background == 0, Force BG slope = 0" << endl;
+      fSlope0 = 1;
    }
    Bool_t setpars = (fUseoldpars == 0);
 //   if (setpars) cout << "ent setpars true" << endl;
@@ -497,13 +559,13 @@ void FitOneDimDialog::FitOneDimExecute()
    else
       npars = 1 + fNpeaks * 2;
 
-   if (fBackg0 == 0)  npars++;
-   if (fBackg0 == 0 && fSlope0 == 0)  npars++;
+   if (fBackg0 == 0 || gTailSide != 0)  npars++;
+   if ((fBackg0 == 0 && fSlope0 == 0) || gTailSide != 0)  npars++;
    if (gTailSide != 0) npars += 2;
    if (params == NULL) {
       params    = new TArrayD(3 * npars);
       setpars = kTRUE;
-      if (setpars)  cout << "new setpars true" << endl;
+//      if (setpars)  cout << "new setpars true" << endl;
    } else {
       if (params->GetSize() != 3 * npars) {
          params->Set(3 * npars);
@@ -511,7 +573,7 @@ void FitOneDimDialog::FitOneDimExecute()
 //         if (setpars)  cout << "size setpars true" << endl;;
       }
    }
-   cout << "npars: " << npars << endl;
+//   cout << "npars: " << npars << endl;
    cout << (*params)[0] << " " << (*params)[1] << " "  << (*params)[2] << endl;
    TArrayI * fbflags   = new TArrayI(2 * npars);
 // get estimates
@@ -540,6 +602,14 @@ void FitOneDimDialog::FitOneDimExecute()
             func = new TF1(fFuncName, gaus_lbg_vsig,  fFrom, fTo, npars); 
       }
    }
+// in case it was not incremented
+   ind = npars;
+// add bound and fixflags
+   for (Int_t i = 0; i < 2 * npars; i++) {
+      (*fbflags)[i] = 0;
+      (*params)[ind++] = 0;
+   }  
+   ind = 0;
    TOrdCollection row_lab;
 //   cout << params->GetSize() << endl;
    if (gTailSide != 0) {
@@ -549,15 +619,17 @@ void FitOneDimDialog::FitOneDimExecute()
       func->SetParName(ind,      "Ta_width");
       row_lab.Add(new TObjString("Ta_width"));
       if (setpars) (*params)[ind++] = 1;
+      (*fbflags)[2] = fBackg0;
+      (*fbflags)[3] = fSlope0;
    }
  
    Double_t bgest = fSelHist->GetBinContent(bin_from);
-   if (fBackg0 == 0 || fUsedbg == 1) {
+   if (fBackg0 == 0 || fUsedbg == 1|| gTailSide != 0) {
       func->SetParName(ind,      "Bg_Const");
       row_lab.Add(new TObjString("Bg_Const"));
       if (setpars) (*params)[ind++] = bgest/fSelHist->GetBinWidth(bin_from);
    }
-   if ((fBackg0 == 0 && fSlope0 == 0) || fUsedbg == 1) {
+   if (fSlope0 == 0 || fUsedbg == 1 || gTailSide != 0) {
       func->SetParName(ind,      "Bg_Slope");
       row_lab.Add(new TObjString("Bg_Slope"));
       if (setpars) (*params)[ind++] = 0;
@@ -575,7 +647,10 @@ void FitOneDimDialog::FitOneDimExecute()
    if (fNmarks == 2) {
 // 2 marks only assume peak in between
 //      bin = GetMaxBin(fSelHist, bin_from, bin_to);
-      GetGaussEstimate(fSelHist, fFrom, fTo, bgest, gpar);
+      if (fGraph == NULL) 
+         GetGaussEstimate(fSelHist, fFrom, fTo, bgest, gpar);
+      else
+         GetGaussEstimate(fGraph, fFrom, fTo, bgest, gpar);
       func->SetParName(ind,      "Ga_Const0");
       row_lab.Add(new TObjString("Ga_Const0"));
       if (setpars) (*params)[ind++]     = gpar[0];
@@ -600,7 +675,10 @@ void FitOneDimDialog::FitOneDimExecute()
          Double_t d1 = (mpos-mprev);
          Double_t d2 = (mnext-mpos);
          d1 = 0.5 * TMath::Min(d1, d2);
-         GetGaussEstimate(fSelHist, mpos-d1, mpos+d1, bgest, gpar);
+         if (fGraph == NULL) 
+            GetGaussEstimate(fSelHist, mpos-d1, mpos+d1, bgest, gpar);
+         else
+            GetGaussEstimate(fGraph, mpos-d1, mpos+d1, bgest, gpar);
          lab = "Ga_Const";
          lab += (i - 1);
          func->SetParName(ind,  lab.Data() );
@@ -624,13 +702,6 @@ void FitOneDimDialog::FitOneDimExecute()
 
       }
    }
-// in case it was not incremented
-   ind = npars;
-// add bound and fixflags
-   for (Int_t i = 0; i < 2 * npars; i++) {
-      (*fbflags)[i] = 0;
-      (*params)[ind++] = 0;
-   }  
    if (fUsedbg) {
 //  use predermined linear background
       Int_t offset = 0;
@@ -652,6 +723,8 @@ void FitOneDimDialog::FitOneDimExecute()
    Int_t ret = 0; 
    Int_t itemwidth = 120;
    Int_t precission = 5;
+//   row_lab.Print();
+
 //   TGMrbTableOfDoubles(NULL, &ret, title.Data(), itemwidth,
    TGMrbTableOfDoubles(fParentWindow, &ret, title.Data(), itemwidth,
                        ncols, npars, *params, precission,
@@ -710,15 +783,29 @@ void FitOneDimDialog::FitOneDimExecute()
       if (fFitOptAddAll)    fitopt += "+";
       if (bound)            fitopt += "B";   // some pars are bound
 
-      cout << "fitopt.Data() " << fitopt.Data() << endl;
-      fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
-//     add to ListOfFunctions if requested
-      if (fFitOptAddAll) {
-         TList *lof = fSelHist->GetListOfFunctions();
-         if (lof->GetSize() > 1) {
-            TObject *last = lof->Last();
-            lof->Remove(last);
-            lof->AddFirst(last);
+//      cout << "fitopt.Data() " << fitopt.Data() << endl;
+      if (fGraph != NULL) {
+         fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
+   //     add to ListOfFunctions if requested
+         if (fFitOptAddAll) {
+            TList *lof = fGraph->GetListOfFunctions();
+            if (lof->GetSize() > 1) {
+               TObject *last = lof->Last();
+               lof->Remove(last);
+               lof->AddFirst(last);
+            }
+         }
+
+      } else {
+         fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
+   //     add to ListOfFunctions if requested
+         if (fFitOptAddAll) {
+            TList *lof = fSelHist->GetListOfFunctions();
+            if (lof->GetSize() > 1) {
+               TObject *last = lof->Last();
+               lof->Remove(last);
+               lof->AddFirst(last);
+            }
          }
       }
       func->SetFillStyle(0);
@@ -732,7 +819,7 @@ void FitOneDimDialog::FitOneDimExecute()
 
 //  draw components of fit, skip simple gaus without bg
 
-   if (fShowcof != 0  && fBackg0 == 0) {
+   if (fShowcof != 0  && fBackg0 == 0 && fGraph == NULL) {
       func->GetParameters(params->GetArray());
       Double_t fdpar[4];
       if (gTailSide != 0) {
@@ -744,11 +831,13 @@ void FitOneDimDialog::FitOneDimExecute()
       }
       if (fBackg0 == 0) {
          TF1 *back = new TF1("backf", backf, fFrom, fTo, 2);
-         back->SetParameters(fdpar);
+         back->SetParameter(0, fdpar[0]);
+         if (fSlope0 != 0) back->SetParameter(1, 0);
          back->Save(fFrom, fTo, 0, 0, 0, 0);
          back->SetLineColor(2);
          back->SetLineStyle(3);
-   //      back->Draw("same");
+         back->Draw("same");
+         back->Print();
          fSelHist->GetListOfFunctions()->Add(back);
          back->SetParent(fSelHist);
       }
@@ -811,7 +900,7 @@ void FitOneDimDialog::FitOneDimExecute()
 //____________________________________________________________________________________ 
 
 void FitOneDimDialog::GetGaussEstimate(TH1 * h, Double_t from, Double_t to, 
-                                       Double_t bg, TArrayD & par)
+                                       Double_t bg, TArrayD &par)
 {
    Int_t frombin = h->FindBin(from);
    Int_t tobin = h->FindBin(to);
@@ -824,6 +913,36 @@ void FitOneDimDialog::GetGaussEstimate(TH1 * h, Double_t from, Double_t to,
       sum += cont;
       sumx += x * cont;
       sumx2 += x * x * cont;
+   }
+   par[0] = sum;
+   if (sum > 0.) {
+      par[1] = sumx / sum;
+      if ( (sumx2 /sum - par[1]*par[1]) > 0)
+         par[2] = TMath::Sqrt(sumx2 / sum - par[1]*par[1]);
+      else 
+         par[2] = 1;
+   } else {
+      par[1] = 0.5 * (to - from); 
+      par[2] = 1;
+   }
+}
+//____________________________________________________________________________________ 
+
+void FitOneDimDialog::GetGaussEstimate(TGraph * g, Double_t from, Double_t to, 
+                                       Double_t bg, TArrayD & par)
+{
+   Double_t sum = 0;
+   Double_t sumx = 0;
+   Double_t sumx2 = 0;
+   Double_t x, y;
+   for (Int_t i = 0; i < g->GetN(); i++) {
+      g->GetPoint(i, x, y);
+      if (x >= from && x <= to) {
+         Double_t cont = y - bg;
+         sum += cont;
+         sumx += x * cont;
+         sumx2 += x * x * cont;
+      }
    }
    par[0] = sum;
    if (sum > 0.) {
@@ -898,7 +1017,7 @@ Int_t FitOneDimDialog::GetMarkers()
       fNpeaks = fNmarks - 2;
    }
    gNpeaks = fNpeaks;
-   cout << fNmarks << " markers found " << endl;
+//   cout << fNmarks << " markers found " << endl;
    return fNmarks;
 }
 //____________________________________________________________________________________ 
@@ -914,7 +1033,7 @@ void FitOneDimDialog::ClearMarkers() {
 //____________________________________________________________________________________ 
 
 Int_t  FitOneDimDialog::SetMarkers() {
-   cout << "Request " << fNmarks << " Markers" << endl;
+//   cout << "Request " << fNmarks << " Markers" << endl;
    Int_t nmarks = 0;
    if (fNmarks <= 0) {
       Int_t retval = 0;
@@ -1080,9 +1199,17 @@ void FitOneDimDialog::SaveDefaults()
 }
 //_______________________________________________________________________
 
+void FitOneDimDialog::CloseDialog()
+{
+//   cout << "FitOneDimDialog::CloseDialog() " << endl;
+   gROOT->GetListOfCleanups()->Remove(this);
+   fDialog->CloseWindow();
+}
+//_______________________________________________________________________
+
 void FitOneDimDialog::CloseDown()
 {
-   cout << "FitOneDimDialog::CloseDown() " << endl;
+//   cout << "FitOneDimDialog::CloseDown() " << endl;
    SaveDefaults();
    delete this;
 }

@@ -31,6 +31,7 @@
 
 void EditFitMacroG(TGWindow * win);
 void ExecFitMacroG(TGraph * graph, TGWindow * win);
+void ExecGausFitG(TGraph * graph);
 
 
 enum ERootCanvasCommands {
@@ -172,6 +173,7 @@ enum ERootCanvasCommands {
    kFHFit,
    kFHFitGausLBg,
    kFHFitUserG,
+   kFHGausFitG,
    kFHEditUserG,
    kFHFitUser,
    kFHEditUser,
@@ -1083,6 +1085,9 @@ again:
                   case kFHFitUserG:
                      ExecFitMacroG(fGraph, fRootCanvas);   // global function !! 
                      break;
+                  case kFHGausFitG:
+                     ExecGausFitG(fGraph);                 // global function !! 
+                     break;
                   case kFHFitUser:
                      fFitHist->ExecFitMacro(); 
                      break;
@@ -1675,6 +1680,7 @@ void HandleMenus::BuildMenus()
       fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
       fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUserG);
       fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUserG);
+      fFitMenu->AddEntry("Gauss Fit Dialog", kFHGausFitG);
       fFitMenu->AddSeparator();
    }
    if(edit_menus){

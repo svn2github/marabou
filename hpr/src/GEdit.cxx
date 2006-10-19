@@ -340,7 +340,7 @@ void GEdit::InitEditCommands()
    char * xgrabsc = gSystem->Which(gSystem->Getenv("PATH"), "xgrabsc");
    if (xgrabsc != NULL) {
       has_xgrabsc = kTRUE;
-      delete xgrabsc;
+      delete [] xgrabsc;
    }
    if (has_xgrabsc) 
       labels->Add(new TObjString("Grab image from screen"));
