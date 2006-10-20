@@ -304,11 +304,13 @@ void Ascii2GraphDialog::Draw_The_Graph()
 //            gPad->Modified();
 //            gPad->Update();
       }
-
+      TH1 * gh = graph->GetHistogram();
       if (fGraphXtitle.Length() > 0)
-         graph->GetHistogram()->GetXaxis()->SetTitle(fGraphXtitle.Data());
+         gh->GetXaxis()->SetTitle(fGraphXtitle.Data());
       if (fGraphYtitle.Length() > 0)
-         graph->GetHistogram()->GetYaxis()->SetTitle(fGraphYtitle.Data());
+         gh->GetYaxis()->SetTitle(fGraphYtitle.Data());
+      gh->SetLineWidth(1);
+      gh->SetLineColor(0);
       graph->SetMarkerStyle(fGraphMarkerStyle);
       graph->SetMarkerColor(fGraphMarkerColor);
       graph->SetMarkerSize(fGraphMarkerSize);
@@ -319,7 +321,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
       graph->SetLineWidth(fGraphLineWidth);
       gPad->Modified();
       gPad->Update();
-      cout << "TGraph *gr = (TGraph*)" << graph;
+      cout << "TGraph *gr = (TGraph*)" << graph << endl;
    }
    SaveDefaults();
    return;

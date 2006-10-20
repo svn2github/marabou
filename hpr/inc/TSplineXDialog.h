@@ -37,8 +37,8 @@ public:
    TSplineXDialog();
    virtual ~TSplineXDialog() {cout << "dtor:~TSplineXDialog()" << endl;};
    void Draw_The_TSplineX();
-   void SaveDefaults() {};
-   void RestoreDefaults() {};
+   void SaveDefaults();
+   void RestoreDefaults();
    void CloseDown() {delete this;};
 
 ClassDef(TSplineXDialog,0)

@@ -1,4 +1,5 @@
 #include "TCanvas.h"
+#include "TEnv.h"
 #include "TGraph.h"
 #include "TObjString.h"
 #include "TRootCanvas.h"
@@ -162,4 +163,55 @@ void TSplineXDialog::Draw_The_TSplineX()
    delete gr;
    gPad->Modified();
    gPad->Update();
+}
+//_________________________________________________________________________
+            
+void TSplineXDialog::SaveDefaults()
+{
+   TEnv env(".rootrc");
+   env.SetValue("TSplineXDialog.Closed"            , fClosed            );  
+   env.SetValue("TSplineXDialog.Approx"            , fApprox            );
+   env.SetValue("TSplineXDialog.Fixends"           , fFixends           );
+   env.SetValue("TSplineXDialog.Prec"              , fPrec              );
+   env.SetValue("TSplineXDialog.Showcp"            , fShowcp            );
+   env.SetValue("TSplineXDialog.Color"             , fColor             );
+   env.SetValue("TSplineXDialog.Lwidth"            , fLwidth            );
+   env.SetValue("TSplineXDialog.Lstyle"            , fLstyle            );
+   env.SetValue("TSplineXDialog.Fcolor"            , fFcolor            );
+   env.SetValue("TSplineXDialog.Fstyle"            , fFstyle            );
+   env.SetValue("TSplineXDialog.Filled"            , fFilled            );
+   env.SetValue("TSplineXDialog.Empty"             , fEmpty             );
+   env.SetValue("TSplineXDialog.Gage"              , fGage              );
+   env.SetValue("TSplineXDialog.Arrow_at_start"    , fArrow_at_start    );
+   env.SetValue("TSplineXDialog.Arrow_at_end"      , fArrow_at_end      );
+   env.SetValue("TSplineXDialog.Arrow_filled"      , fArrow_filled      );
+   env.SetValue("TSplineXDialog.Arrow_size"        , fArrow_size        );
+   env.SetValue("TSplineXDialog.Arrow_angle"       , fArrow_angle       );
+   env.SetValue("TSplineXDialog.Arrow_indent_angle", fArrow_indent_angle);   
+   env.SaveLevel(kEnvUser);
+}
+//_________________________________________________________________________
+            
+void TSplineXDialog::RestoreDefaults()
+{
+   TEnv env(".rootrc");
+   fClosed             = env.GetValue("TSplineXDialog.Closed"            , 0);  
+   fApprox             = env.GetValue("TSplineXDialog.Approx"            , 1);
+   fFixends            = env.GetValue("TSplineXDialog.Fixends"           , 1);
+   fPrec               = env.GetValue("TSplineXDialog.Prec"              , 0.2);
+   fShowcp             = env.GetValue("TSplineXDialog.Showcp"            , 1);
+   fColor              = env.GetValue("TSplineXDialog.Color"             , 1);
+   fLwidth             = env.GetValue("TSplineXDialog.Lwidth"            , 1);
+   fLstyle             = env.GetValue("TSplineXDialog.Lstyle"            , 1);
+   fFcolor             = env.GetValue("TSplineXDialog.Fcolor"            , 4);
+   fFstyle             = env.GetValue("TSplineXDialog.Fstyle"            , 0);
+   fFilled             = env.GetValue("TSplineXDialog.Filled"            , 0);
+   fEmpty              = env.GetValue("TSplineXDialog.Empty"             , 5);
+   fGage               = env.GetValue("TSplineXDialog.Gage"              , 0);
+   fArrow_at_start     = env.GetValue("TSplineXDialog.Arrow_at_start"    , 0);
+   fArrow_at_end       = env.GetValue("TSplineXDialog.Arrow_at_end"      , 0);
+   fArrow_filled       = env.GetValue("TSplineXDialog.Arrow_filled"      , 0);
+   fArrow_size         = env.GetValue("TSplineXDialog.Arrow_size"        , 10);
+   fArrow_angle        = env.GetValue("TSplineXDialog.Arrow_angle"       , 30);
+   fArrow_indent_angle = env.GetValue("TSplineXDialog.Arrow_indent_angle", -20);   
 }

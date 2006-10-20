@@ -242,7 +242,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-   cout << "FitHist::RecursiveRemove: obj " << obj <<  endl;
+//   cout << "FitHist::RecursiveRemove: obj " << obj <<  endl;
    fActiveCuts->Remove(obj);
    fActiveWindows->Remove(obj);
    fActiveFunctions->Remove(obj);
@@ -1581,10 +1581,14 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
       WarnBox(" WriteHistasASCII: 3 dim not yet supported ");
       return;
    }
-   static Int_t channels = 0;
+   static Int_t channels   = 0;
    static Int_t bincenters = 1;
-   static Int_t binw2  = 0;
-   static Int_t errors  = 0;
+   static Int_t binw2      = 0;
+   static Int_t errors     = 0;
+   static Int_t first_binX  = 0;
+   static Int_t last_binX   = 0;
+   static Int_t first_binY  = 0;
+   static Int_t last_binY   = 0;
 
 
    static TString fname;
@@ -1599,16 +1603,26 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
 ;
    row_lab->Add(new TObjString("StringValue_File name"));
    valp[ind++] = &fname;
-   if (!is2dim(fSelHist)) {
+   if (fSelHist->GetDimension() == 1) {
       row_lab->Add(new TObjString("CheckButton_Channel Numbers"));
       valp[ind++] = &channels;
       row_lab->Add(new TObjString("CheckButton_Bin Centers"));
       valp[ind++] = &bincenters;
+      row_lab->Add(new TObjString("CheckButton_Bwidth/Sqrt(12) Errors X"));
+      valp[ind++] = &binw2;
    }
-   row_lab->Add(new TObjString("CheckButton_BinWidth/2"));
-   valp[ind++] = &binw2;
-   row_lab->Add(new TObjString("CheckButton_Errors"));
+   row_lab->Add(new TObjString("CheckButton_Errors Content (Y)"));
    valp[ind++] = &errors;
+   row_lab->Add(new TObjString("PlainIntVal_first_binX"));
+   valp[ind++] = &first_binX;
+   row_lab->Add(new TObjString("PlainIntVal_last_binX"));
+   valp[ind++] = &last_binX;
+   if (fSelHist->GetDimension() == 2) {
+      row_lab->Add(new TObjString("PlainIntVal_first_binY"));
+      valp[ind++] = &first_binY;
+      row_lab->Add(new TObjString("PlainIntVal_last_binY"));
+      valp[ind++] = &last_binY;
+   }
 
    Int_t   itemwidth=250; 
    ok = GetStringExt("Write hist as ASCII-file", NULL, itemwidth, mycanvas,
@@ -1636,16 +1650,20 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
       return;
    }
    Int_t nl = 0;
+   Int_t nbx1 = 1;
+   Int_t nbx2 = fSelHist->GetNbinsX();
+   if (first_binX > 0) nbx1 = first_binX;
+   if (last_binX > 0)  nbx2 = last_binX;
+
    if (!is2dim(fSelHist)) {
-      Int_t nbinsX = fSelHist->GetNbinsX();
-      for (Int_t i = 1; i <= nbinsX; i++) {
+      for (Int_t i = nbx1; i <= nbx2; i++) {
          if (channels)
             outfile << i << "\t";
          if (bincenters)
             outfile << fSelHist->GetBinCenter(i) << "\t";
          outfile << fSelHist->GetBinContent(i); 
          if (binw2) 
-            outfile << "\t" << 0.5 * fSelHist->GetBinWidth(i);
+            outfile << "\t" <<  fSelHist->GetBinWidth(i) / TMath::Sqrt(12);
          if (errors) 
             outfile << "\t" << fSelHist->GetBinError(i);
          outfile << endl;
@@ -1653,12 +1671,14 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
       }
 
    } else {
-      Int_t nbinsX = fSelHist->GetNbinsX();
-      Int_t nbinsY = fSelHist->GetNbinsY();
+      Int_t nby1 = 1;
+      Int_t nby2 = fSelHist->GetNbinsY();
+      if (first_binY > 0) nby1 = first_binY;
+      if (last_binY > 0)  nby2 = last_binY;
       TAxis * xa = fSelHist->GetXaxis();
       TAxis * ya = fSelHist->GetYaxis();
-      for (Int_t i = 1; i <= nbinsX; i++) {
-         for (Int_t k = 1; k <= nbinsY; k++) {
+      for (Int_t i = nbx1; i <= nbx2; i++) {
+         for (Int_t k = nby1; k <= nby2; k++) {
             outfile << xa->GetBinCenter(i) << "\t";
             outfile << ya->GetBinCenter(k) << "\t";
 
