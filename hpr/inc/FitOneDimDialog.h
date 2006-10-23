@@ -25,6 +25,9 @@ private:
    FhMarkerList * fMarkers;
    Double_t fFrom;
    Double_t fTo;
+   Double_t fMean;
+   Double_t fMeanError;
+   Double_t fConstant;
    Double_t fLinBgConst;
    Double_t fLinBgSlope;
    Bool_t   fLinBgSet;
@@ -57,6 +60,7 @@ public:
    virtual ~FitOneDimDialog();
    void RecursiveRemove(TObject * obj);
    void FitOneDimExecute();
+   void AddToCalibration();
    void SetFitOptions(){};
    Int_t GetMaxBin(TH1 * h1, Int_t binl, Int_t binu);
    void GetGaussEstimate(TH1 *h, Double_t from, Double_t to,  

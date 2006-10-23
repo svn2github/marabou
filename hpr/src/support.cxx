@@ -1242,7 +1242,7 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
 //___________________________________________________________________________
 
 TH1 * calhist(TH1 * hist, TF1 * calfunc,
-              Int_t  nbin_cal, Axis_t low_cal, Axis_t binw_cal,
+              Int_t  nbin_cal, Axis_t low_cal, Axis_t up_cal,
               const char * origname)
 {
    TString hname_cal;
@@ -1252,21 +1252,21 @@ TH1 * calhist(TH1 * hist, TF1 * calfunc,
    TString title_cal(hist->GetTitle());
    title_cal += "_calibrated";
    title_cal += ";Energy[KeV];Events[";
-   title_cal += Form("%4.2f", binw_cal);
+   title_cal += Form("%4.2f", (up_cal-low_cal)/(Double_t)nbin_cal);
    title_cal += " KeV]";
    TH1 * hist_cal;
    if      (!strcmp(hist->ClassName(), "TH1F"))
    	hist_cal = new TH1F(hname_cal, title_cal,nbin_cal, 
-                     low_cal, low_cal + binw_cal * nbin_cal);
+                     low_cal, low_cal + up_cal);
    else if (!strcmp(hist->ClassName(), "TH1D"))
    	hist_cal = new TH1D(hname_cal, title_cal,nbin_cal, 
-                     low_cal, low_cal + binw_cal * nbin_cal);
+                     low_cal, low_cal + up_cal);
    else if (!strcmp(hist->ClassName(), "TH1S"))
    	hist_cal = new TH1S(hname_cal, title_cal,nbin_cal, 
-                     low_cal, low_cal + binw_cal * nbin_cal);
+                     low_cal, low_cal + up_cal);
    else
    	hist_cal = new TH1C(hname_cal, title_cal,nbin_cal, 
-                     low_cal, low_cal + binw_cal * nbin_cal);
+                     low_cal, low_cal + up_cal);
 
 //   under - overflows of origin hist are taken as they are
    hist_cal->SetBinContent(0, hist->GetBinContent(0));

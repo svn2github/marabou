@@ -12,9 +12,11 @@
 #include "TVirtualPad.h"
 #include "TGMrbTableFrame.h"
 #include "FitOneDimDialog.h"
-//#include "support.h"
 #include "SetColor.h"
 #include <iostream>
+#ifdef MARABOUVERS
+#include "FitHist.h"
+#endif
 
 using std::cout;
 using std::endl;
@@ -390,6 +392,9 @@ parameters without actually doing a fit.\n\
    fLinBgSlope = 0;
    fUsedbg     = 0;
    fUseoldpars = 0;
+   fConstant   = 0;
+   fMean       = 0;
+   fMeanError  = 0;
    RestoreDefaults();
    fSelPad = NULL;
    SetBit(kMustCleanup);
@@ -425,6 +430,7 @@ parameters without actually doing a fit.\n\
    static void *valp[25];
    Int_t ind = 0;
    static TString excmd("FitOneDimExecute()");
+   static TString accmd("AddToCalibration()");
    static TString lbgcmd("DetLinearBackground()");
    static TString clmcmd("ClearMarkers()");
    static TString setmcmd("SetMarkers()");
@@ -464,6 +470,12 @@ parameters without actually doing a fit.\n\
    valp[ind++] = &fStyle;
    row_lab->Add(new TObjString("CommandButt_Execute Fitting"));
    valp[ind++] = &excmd;
+#ifdef MARABOUVERS
+   if (fGraph == NULL) {
+      row_lab->Add(new TObjString("CommandButt+Add To Calibration"));
+      valp[ind++] = &accmd;
+   }
+#endif
    row_lab->Add(new TObjString("CommandButt_Determine Lin BG"));
    valp[ind++] = &lbgcmd;
    row_lab->Add(new TObjString("CommandButt+Fitting Options"));
@@ -809,6 +821,23 @@ void FitOneDimDialog::FitOneDimExecute()
          }
       }
       func->SetFillStyle(0);
+      if (gNpeaks == 1) {
+         if (gTailSide != 0)  {
+            fConstant  = func->GetParameter(5);
+            fMean      = func->GetParameter(6);
+            fMeanError = func->GetParError(6);
+         } else {
+            Int_t offset = 0;
+            if (fSlope0 == 0)    offset++;
+            if (fBackg0 == 0)    offset++;
+            if (fOnesig != 0)    offset++;
+            fConstant  = func->GetParameter(offset);
+            fMean      = func->GetParameter(offset +1);
+            fMeanError = func->GetParError(offset +1);
+         }
+         cout << "co, m, me " << fConstant << " " << fMean << " " << fMeanError 
+              << endl;
+      }
    } else {
 //    no fit requested draw
       gPad->cd();
@@ -1149,6 +1178,27 @@ void FitOneDimDialog::SetFittingOptions()
    ok = GetStringExt("Fitting options", NULL, itemwidth, fParentWindow 
                      ,NULL, NULL, row_lab, valp);
    if (ok) SaveDefaults(); 
+}
+//_______________________________________________________________________
+
+void FitOneDimDialog::AddToCalibration()
+{
+#ifdef MARABOUVERS
+   TString name = fSelHist->GetName();
+   name.Prepend("F");
+   cout << "Fh " << name << endl;
+   FitHist *fh = (FitHist*)gROOT->GetList()->FindObject(name);
+   if (!fh) {
+      cout << "FitHist: " << name  << " not found" << endl;
+      return;
+   }  
+   FhPeak *peak = new FhPeak(fMean);
+   peak->SetWidth(fMeanError);
+   peak->SetContent(fConstant);
+   fh->GetPeakList()->Add(peak);
+#else
+   cout << "No FitHist Object available" << endl; 
+#endif
 }
 //_______________________________________________________________________
 

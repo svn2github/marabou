@@ -335,7 +335,7 @@ void Ascii2HistDialog::SaveDefaults()
    env.SetValue("Ascii2HistDialog.Ascii2HistNbinsZ",  		  fNbinsZ); 
    env.SetValue("Ascii2HistDialog.Ascii2HistZlow",  			  fZlow);  
    env.SetValue("Ascii2HistDialog.Ascii2HistZup",   			  fZup);	
-   env.SetValue("Ascii2HistDialog.Ascii2KeepLimits",   		  fKeepLimits);	
+   env.SetValue("Ascii2HistDialog.Ascii2HistKeepLimits",   		  fKeepLimits);	
    env.SaveLevel(kEnvUser);
 }
 //_________________________________________________________________________
@@ -353,7 +353,7 @@ void Ascii2HistDialog::RestoreDefaults()
    f2DimWithWeight  = env.GetValue("Ascii2HistDialog.Ascii2Hist2DimWithWeight", 0); 
    f3Dim            = env.GetValue("Ascii2HistDialog.Ascii2Hist3Dim", 			   0); 		  
    f3DimWithWeight  = env.GetValue("Ascii2HistDialog.Ascii2Hist3DimWithWeight", 0); 
-   fError           = env.GetValue("Ascii2HistDialog.Ascii2HistError",  		  -1); 
+   fError           = env.GetValue("Ascii2HistDialog.Ascii2HistError",  		  0.0); 
    fNbinsX  		  = env.GetValue("Ascii2HistDialog.Ascii2HistNbinsX",  	    100); 
    fXlow    		  = env.GetValue("Ascii2HistDialog.Ascii2HistXlow", 			   0.);  
    fXup     		  = env.GetValue("Ascii2HistDialog.Ascii2HistXup",  			 100.); 

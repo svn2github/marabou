@@ -1,4 +1,4 @@
-// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.h,v 1.2 2006-07-11 07:19:43 Otto.Schaile Exp $
+// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.h,v 1.3 2006-10-23 15:46:11 Otto.Schaile Exp $
 // Author: Carsten Hof 28/07/04
 
 /*************************************************************************
@@ -58,12 +58,21 @@ protected:
    virtual void ConnectSignals2Slots();
 
 public:
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,13,4)
+   TSplineXEditor(const TGWindow *p = 0,
+#else
    TSplineXEditor(const TGWindow *p, Int_t id,
+#endif
                Int_t width = 140, Int_t height = 30,
                UInt_t options = kChildFrame,
                Pixel_t back = GetDefaultFrameBackground());
    virtual ~TSplineXEditor();
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,13,4)
+   void TSplineXEditor::ActivateBaseClassEditors(TClass* cl);
+   virtual void SetModel(TObject *obj);
+#else
    virtual void SetModel(TVirtualPad *pad, TObject *obj, Int_t event);
+#endif
 
    // slots related to SplineX attributes
    virtual void DoOpenClose(Bool_t on);
@@ -96,12 +105,21 @@ protected:
    virtual void ConnectSignals2Slots();
 
 public:
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,13,4)
+   ParallelGraphEditor(const TGWindow *p = 0,
+#else
    ParallelGraphEditor(const TGWindow *p, Int_t id,
+#endif
                Int_t width = 140, Int_t height = 30,
                UInt_t options = kChildFrame,
                Pixel_t back = GetDefaultFrameBackground());
    virtual ~ParallelGraphEditor();
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,13,4)
+   void ParallelGraphEditor::ActivateBaseClassEditors(TClass* cl);
+   virtual void SetModel(TObject *obj);
+#else
    virtual void SetModel(TVirtualPad *pad, TObject *obj, Int_t event);
+#endif
 
    // 
    virtual void DoDistance();

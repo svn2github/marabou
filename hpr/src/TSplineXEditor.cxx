@@ -1,4 +1,4 @@
-// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.2 2006-07-11 07:19:44 Otto.Schaile Exp $
+// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.3 2006-10-23 15:46:12 Otto.Schaile Exp $
 // Author: Carsten Hof   16/08/04
 
 /*************************************************************************
@@ -29,6 +29,7 @@
 #include "TGButton.h"
 //#include "TGGroupFrame.h"
 #include "TSplineXEditor.h"
+#include "TGedEditor.h"
 #include "TGedFrame.h"
 #include "TGNumberEntry.h"
 #include "TGTextEntry.h"
@@ -59,9 +60,15 @@ enum ESplineXWid {
 
 //______________________________________________________________________________
 
+#if ROOTVERSION < 51304
 TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t id, Int_t width,
-                         Int_t height, UInt_t options, Pixel_t back)
+                        Int_t height, UInt_t options, Pixel_t back)
    : TGedFrame(p, id, width, height, options | kVerticalFrame, back)
+#else
+TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
+                         Int_t height, UInt_t options, Pixel_t back)
+   : TGedFrame(p, width, height, options | kVerticalFrame, back)
+#endif
 {
    // Constructor of SplineX editor.
 
@@ -181,15 +188,17 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t id, Int_t width,
    AddFrame(f12, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
    // initialises the window layout
+#if ROOTVERSION < 51304
    MapSubwindows();
    Layout();
    MapWindow();
-
    TClass *cl = TSplineX::Class();
    TGedElement *ge = new TGedElement;
    ge->fGedFrame = this;
    ge->fCanvas = 0;
    cl->GetEditorList()->Add(ge);
+#endif
+
 }
 
 //______________________________________________________________________________
@@ -197,7 +206,7 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t id, Int_t width,
 TSplineXEditor::~TSplineXEditor()
 {
    // Destructor of graph editor.
-
+#if ROOTVERSION < 51304
    TGFrameElement *el;
    TIter next(GetList());
 
@@ -206,6 +215,7 @@ TSplineXEditor::~TSplineXEditor()
          ((TGCompositeFrame *)el->fFrame)->Cleanup();
    }
    Cleanup();
+#endif
 }
 
 //______________________________________________________________________________
@@ -242,10 +252,13 @@ void TSplineXEditor::ConnectSignals2Slots()
 
 //______________________________________________________________________________
 
-void TSplineXEditor::SetModel(TVirtualPad* pad, TObject* obj, Int_t)
+#if ROOTVERSION >= 51304
+void TSplineXEditor::SetModel(TObject* obj)
 {
-   // Pick up the used values of graph attributes.
-
+   fSplineX = (TSplineX *)obj;
+#else
+void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
+{
    fModel = 0;
    fPad = 0;
 
@@ -256,7 +269,8 @@ void TSplineXEditor::SetModel(TVirtualPad* pad, TObject* obj, Int_t)
 
    fModel = obj;
    fPad = pad;
-   fSplineX = (TSplineX *)fModel;
+#endif
+   // Pick up the used values of graph attributes.
    if (fSplineX->GetIsClosed())         fOpenClose->SetState(kButtonDown);
    else                                 fOpenClose->SetState(kButtonUp);
    if (fSplineX->GetCPDrawn())          fMarkerOnOff->SetState(kButtonDown);
@@ -286,9 +300,19 @@ void TSplineXEditor::SetModel(TVirtualPad* pad, TObject* obj, Int_t)
    fDistParallelEntry->SetNumber(fDistParallel);
 
    if (fInit) ConnectSignals2Slots();
-   SetActive();  // activates this Editor
+//   SetActive();  // activates this Editor
 }
+#if ROOTVERSION >= 51304
+//______________________________________________________________________________
 
+void TSplineXEditor::ActivateBaseClassEditors(TClass* cl)
+{
+   // Add editors to fGedFrame and exclude TLineEditor.
+
+   fGedEditor->ExcludeClassEditor(TAttFill::Class());
+   TGedFrame::ActivateBaseClassEditors(cl);
+}
+#endif
 //______________________________________________________________________________
 
 void TSplineXEditor::DoControlGraphMixer()
@@ -412,9 +436,13 @@ void TSplineXEditor::DoEmptyLength()
 
 //______________________________________________________________________________
 
+#if ROOTVERSION >= 51304
+ParallelGraphEditor::ParallelGraphEditor(const TGWindow *p, Int_t width,
+#else
 ParallelGraphEditor::ParallelGraphEditor(const TGWindow *p, Int_t id, Int_t width,
+#endif
                          Int_t height, UInt_t options, Pixel_t back)
-   : TGedFrame(p, id, width, height, options | kVerticalFrame, back)
+   : TGedFrame(p, width, height, options | kVerticalFrame, back)
 {
    // Constructor of SplineX editor.
 
@@ -451,6 +479,7 @@ ParallelGraphEditor::ParallelGraphEditor(const TGWindow *p, Int_t id, Int_t widt
    f11->AddFrame(fClearToParallel, new TGLayoutHints(kLHintsLeft, 2, 1, 0, 3));
    AddFrame(f11, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
    // initialises the window layout
+/*
    MapSubwindows();
    Layout();
    MapWindow();
@@ -460,6 +489,7 @@ ParallelGraphEditor::ParallelGraphEditor(const TGWindow *p, Int_t id, Int_t widt
    ge->fGedFrame = this;
    ge->fCanvas = 0;
    cl->GetEditorList()->Add(ge);
+*/
 }
 
 //______________________________________________________________________________
@@ -497,10 +527,13 @@ void ParallelGraphEditor::ConnectSignals2Slots()
 
 //______________________________________________________________________________
 
-void ParallelGraphEditor::SetModel(TVirtualPad* pad, TObject* obj, Int_t)
+#if ROOTVERSION >= 51304
+void ParallelGraphEditor::SetModel(TObject* obj)
 {
-   // Pick up the used values of graph attributes.
-
+   fParallel = (ParallelGraph *)obj;
+#else
+void ParallelGraphEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
+{
    fModel = 0;
    fPad = 0;
 
@@ -511,7 +544,8 @@ void ParallelGraphEditor::SetModel(TVirtualPad* pad, TObject* obj, Int_t)
 
    fModel = obj;
    fPad = pad;
-   fParallel = (ParallelGraph *)fModel;
+#endif
+   // Pick up the used values of graph attributes.
    Double_t val;
    val = fParallel->GetDist();
    fDistance->SetNumber(val);
@@ -520,8 +554,19 @@ void ParallelGraphEditor::SetModel(TVirtualPad* pad, TObject* obj, Int_t)
    fDistParallelEntry->SetNumber(fDistParallel);
 
    if (fInit) ConnectSignals2Slots();
-   SetActive();  // activates this Editor
+//   SetActive();  // activates this Editor
 }
+#if ROOTVERSION >= 51304
+//______________________________________________________________________________
+
+void ParallelGraphEditor::ActivateBaseClassEditors(TClass* cl)
+{
+   // Add editors to fGedFrame and exclude TLineEditor.
+
+   fGedEditor->ExcludeClassEditor(TAttFill::Class());
+   TGedFrame::ActivateBaseClassEditors(cl);
+}
+#endif
 
 //______________________________________________________________________________
 

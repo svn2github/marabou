@@ -1065,7 +1065,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
          Axis_t low_cal = lastset->GetValue("CalHistXmin", 0);
          Axis_t up_cal  = lastset->GetValue("CalHistXmax", 0);
          fCalHist = calhist(fSelHist,   fCalFunc, nbin_cal, 
-                              low_cal, (up_cal - low_cal) / nbin_cal,(const char *)fHname);
+                              low_cal, up_cal,(const char *)fHname);
          hp->ShowHist(fCalHist);
       }
       if (lastset) delete lastset;

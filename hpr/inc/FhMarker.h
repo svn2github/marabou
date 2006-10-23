@@ -19,6 +19,7 @@ ClassDef(FhMarkerList, 1)
 class FhMarker : public TMarker {
 
 public:
+   FhMarker() {};
    FhMarker(Float_t x, Float_t y, Int_t type) : TMarker(x, y, type){};
 
    ~FhMarker() {};
@@ -38,6 +39,6 @@ public:
                                       return +1;
                                  };
 */
-ClassDef(FhMarker, 1)
+ClassDef(FhMarker, 0)
 };
 #endif

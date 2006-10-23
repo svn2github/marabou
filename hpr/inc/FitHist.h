@@ -245,6 +245,7 @@ public:
    void WarnBox(const char *);
    void PrintCalib();
    void ClearCalib(){fPeaks->Clear();};
+   TList * GetPeakList(){return fPeaks;};
    void SetDeleteCalFlag(){fDeleteCalFlag = kTRUE; SaveDefaults();};
    Bool_t Calibrate(Int_t flag = 1);
    void ClearCalibration();

@@ -22,6 +22,7 @@ TSplineXDialog::TSplineXDialog()
    static void *valp[25];
    Int_t ind = 0;
    TList * row_lab = new TList(); 
+/*
    fClosed  = 0;
    fApprox  = 1;
    fFixends = 1;
@@ -42,6 +43,8 @@ TSplineXDialog::TSplineXDialog()
    fArrow_size 	= 10;
    fArrow_angle	= 30;
    fArrow_indent_angle  = -30;
+*/
+   RestoreDefaults();
    fCommand = "Draw_The_TSplineX()";
 
    row_lab->Add(new TObjString("CheckButton_Closed curve"));
@@ -214,4 +217,12 @@ void TSplineXDialog::RestoreDefaults()
    fArrow_size         = env.GetValue("TSplineXDialog.Arrow_size"        , 10);
    fArrow_angle        = env.GetValue("TSplineXDialog.Arrow_angle"       , 30);
    fArrow_indent_angle = env.GetValue("TSplineXDialog.Arrow_indent_angle", -20);   
+}
+//_______________________________________________________________________
+
+void TSplineXDialog::CloseDown()
+{
+   cout << "TSplineXDialog::CloseDown() " << endl;
+   SaveDefaults();
+   delete this;
 }

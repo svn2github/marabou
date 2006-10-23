@@ -192,6 +192,7 @@ enum ERootCanvasCommands {
    kFHCalibrate,
    kFHCalibrateNew,
    kFHDeleteCal,
+   kFHClearCalib,
    kFHShowPeaks,
    kFHRedefineAxis,
    kFHAddAxisX,
@@ -1210,6 +1211,10 @@ again:
                   case kFHCalibrateNew:
                      fFitHist->Calibrate(1); 
                      break;
+                  case kFHClearCalib:
+                     fFitHist->ClearCalib(); 
+//                     fFitHist->SetDeleteCalFlag(); 
+                     break;
                   case kFHDeleteCal:
                      fFitHist->ClearCalibration(); 
 //                     fFitHist->SetDeleteCalFlag(); 
@@ -1657,11 +1662,12 @@ void HandleMenus::BuildMenus()
       if(!is2dim){
  //        fFitMenu->AddEntry("Help On Fitting 1-dim",       kFH_Help_Fit1);
          fFitMenu->AddSeparator();
-         fFitMenu->AddEntry("Calibrate, Generate new hist",         kFHCalibrateNew);
-         fFitMenu->AddEntry("Calibrate, change scale only",         kFHCalibrate);
+         fFitMenu->AddEntry("Calibrate, Generate new hist",  kFHCalibrateNew);
+         fFitMenu->AddEntry("Calibrate, change scale only",  kFHCalibrate);
          if (fFitHist->IsCalibrated())
-            fFitMenu->AddEntry("Clear Calibration", kFHDeleteCal);
+            fFitMenu->AddEntry("Clear Calibration",          kFHDeleteCal);
          fFitMenu->AddSeparator();
+         fFitMenu->AddEntry("Clear Calib Peaks List",        kFHClearCalib);
          fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
          if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "calibration.html");
       }

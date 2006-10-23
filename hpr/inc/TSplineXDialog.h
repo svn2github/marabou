@@ -39,7 +39,7 @@ public:
    void Draw_The_TSplineX();
    void SaveDefaults();
    void RestoreDefaults();
-   void CloseDown() {delete this;};
+   void CloseDown();
 
 ClassDef(TSplineXDialog,0)
 };

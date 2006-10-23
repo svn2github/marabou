@@ -59,13 +59,22 @@ protected:
    TGComboBox    *BuildOptionComboBox(TGFrame* parent, Int_t id);
    
 public:
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,13,4)
+   TArcEditor(const TGWindow *p = 0,
+#else
    TArcEditor(const TGWindow *p, Int_t id,
+#endif
                 Int_t width = 140, Int_t height = 30,
                 UInt_t options = kChildFrame,
                 Pixel_t back = GetDefaultFrameBackground());
    virtual ~TArcEditor();
 
-   virtual void   SetModel(TVirtualPad *pad, TObject *obj, Int_t event);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,13,4)
+   virtual void   SetModel(TObject *obj);
+   void           TArcEditor::ActivateBaseClassEditors(TClass* cl);
+#else
+   virtual void TArcEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event);
+#endif
    virtual void   DoRedraw();
    virtual void   Redraw();
    virtual void   DoCenterPhi();

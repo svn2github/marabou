@@ -368,10 +368,10 @@ tryagain:
             row_lab->Delete();
             row_lab->Add(new TObjString("Nbins"));
             row_lab->Add(new TObjString("Low edge"));
-            row_lab->Add(new TObjString("Bin width"));
+            row_lab->Add(new TObjString("Up edge"));
             xyvals[0] = 1000;
             xyvals[1] = 0;
-            xyvals[2] = TMath::Abs((a + b * oldup) / 1000);
+            xyvals[2] = fCalFunc->Eval(oldup);
             ncols = 1; 
             Int_t nrows = 3;
             ret = 0;
@@ -384,10 +384,10 @@ tryagain:
    				TH1 * hist = fSelHist;
    				Int_t  nbin_cal = (Int_t)xyvals[0];
    				Axis_t low_cal  = (Axis_t)xyvals[1];
-   				Axis_t binw_cal = (Axis_t)xyvals[2];
+   				Axis_t up_cal = (Axis_t)xyvals[2];
                if (fCalHist) {delete fCalHist; fCalHist = 0;}
                fCalHist = calhist(hist, fCalFunc, nbin_cal, 
-                                  low_cal, binw_cal,(const char *)fHname);
+                                  low_cal, up_cal,(const char *)fHname);
 
    				if (hp) {
                   fCalFitHist = hp->ShowHist(fCalHist);
