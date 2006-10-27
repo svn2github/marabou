@@ -253,7 +253,7 @@ void FitHist::RecursiveRemove(TObject * obj)
 // destructor
 FitHist::~FitHist()
 {
-    cout << " ~FitHist(): " << this << endl;
+//    cout << " ~FitHist(): " << this << endl;
 //   cout<< "enter FitHist  dtor "<< GetName()<<endl;
 //   if(fMyTimer)fMyTimer->Delete();
 //   fMyTimer=NULL;
