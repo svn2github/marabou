@@ -811,11 +811,16 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fWidgets->Add(hframe);
          }
          if (!l.BeginsWith("CommandButt")) {
+// label 
             TString lab(l);
-            lab.Remove(0,12);
-            label = new TGLabel(hframe, new TGString((const char *)lab));
-			   fWidgets->Add(label);
-            hframe->AddFrame(label, loc);
+            if (lab.Length() > 12) {
+               lab.Remove(0,12);
+               label = new TGLabel(hframe, new TGString((const char *)lab));
+			      fWidgets->Add(label);
+               if (l.BeginsWith("CommentRigh")) loc = lor;
+               hframe->AddFrame(label, loc);
+               if (l.BeginsWith("Comment")) fEntries->Add(label);
+            }
 
 //            if (l.BeginsWith("CheckButton") || l.BeginsWith("RadioButton"))
 //               hframe->AddFrame(label, l3);
@@ -827,7 +832,9 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //                  hframe->AddFrame(label, l3);
          }
 
-         if (l.BeginsWith("CheckButton")) {
+         if (l.BeginsWith("Comment")) {
+
+         } else if (l.BeginsWith("CheckButton")) {
             cbutton = new TGCheckButton(hframe, new TGHotString(""), i);
             Int_t state = *(Int_t*)fValPointers[i];
             if (state != 0) cbutton->SetState(kButtonDown);
@@ -1140,7 +1147,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
    width  = this->GetDefaultWidth();
    height = this->GetDefaultHeight();
-   cout << "width " << width<< endl;
+//   cout << "width " << width<< endl;
    this->Resize(win_width, height);
 
    // position relative to the parent window (which is the root window)
