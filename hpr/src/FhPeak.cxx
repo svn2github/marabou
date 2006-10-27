@@ -4,12 +4,12 @@
 ClassImp(FhRegion)
 ClassImp(FhPeak)
 
-FhRegion::FhRegion(Float_t low, Float_t up) : fLowEdge(low), fUpperEdge(up){
+FhRegion::FhRegion(Double_t low, Double_t up) : fLowEdge(low), fUpperEdge(up){
    fNpeaks=0;
    fPeaks = new TList();
 };
 
-FhPeak::FhPeak(Float_t pos) : fEstimate(pos), fMean(pos){
+FhPeak::FhPeak(Double_t pos) : fEstimate(pos), fMean(pos){
    fNominalEnergy = 0;
    fCalibratedEnergy = 0;
    fContent = 0;
@@ -32,8 +32,8 @@ void FhPeak::PrintHeadLine(){
 }
 
 Int_t FhPeak::Compare(const TObject *obj) const { 
-//   Float_t mthis = GetMean();
-//   Float_t mobj  = (( FhPeak*)obj)->GetMean();
+//   Double_t mthis = GetMean();
+//   Double_t mobj  = (( FhPeak*)obj)->GetMean();
 //   cout << " mthis,  mobj" <<  mthis " " <<  mobj << endl;
    if(GetMean() == ((FhPeak *)obj)->GetMean()) return  0; 
    if(GetMean() <  ((FhPeak *)obj)->GetMean()) return -1;

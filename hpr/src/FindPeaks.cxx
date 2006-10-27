@@ -17,6 +17,7 @@
 #include "FitHist.h"
 #include "TGMrbTableFrame.h"
 #include "TGMrbInputDialog.h"
+#include "CalibrationDialog.h"
 #include "support.h"
 
 // Find peaks
@@ -165,6 +166,10 @@ Bool_t FitHist::Calibrate(Int_t flag){
 // flag: 0 change scale of current histogram only
 //       1 generate a new histogram wit new binning
 
+   if (flag == 2) {
+      new CalibrationDialog(fSelHist);
+      return kTRUE;
+   }
    if(fSetRange){
        WarnBox("Calibration already applied,\n\
 use Clear calibration and redisplay");

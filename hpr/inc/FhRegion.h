@@ -14,14 +14,14 @@ const Int_t kMAXPEAK = 3;
 class FhRegion : public TObject {
 
 private:
-   Float_t fLowEdge;
-   Float_t fUpperEdge;
+   Double_t fLowEdge;
+   Double_t fUpperEdge;
    Int_t   fNpeaks;
    TList * fPeaks;  //!dont stream
 
 public:
    FhRegion(){};
-   FhRegion(Float_t low, Float_t up);
+   FhRegion(Double_t low, Double_t up);
 
    ~FhRegion(){};
 
@@ -33,10 +33,10 @@ public:
       }
       return fNpeaks;
    };
-   Float_t GetLowEdge() const {return fLowEdge;};
-   Float_t GetUpperEdge() const {return fUpperEdge;};
-   void SetLowEdge(Float_t x)    {fLowEdge = x;};
-   void SetUpperEdge(Float_t x)  {fUpperEdge = x;};
+   Double_t GetLowEdge() const {return fLowEdge;};
+   Double_t GetUpperEdge() const {return fUpperEdge;};
+   void SetLowEdge(Double_t x)    {fLowEdge = x;};
+   void SetUpperEdge(Double_t x)  {fUpperEdge = x;};
 
    Bool_t IsEqual(const TObject *obj) const {
       return GetLowEdge() == ((FhRegion*)obj)->GetLowEdge();

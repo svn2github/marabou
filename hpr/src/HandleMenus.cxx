@@ -190,6 +190,7 @@ enum ERootCanvasCommands {
    kFHFitPolyMarks,
    kFHFindPeaks,
    kFHCalibrate,
+   kFHCalDialog,
    kFHCalibrateNew,
    kFHDeleteCal,
    kFHClearCalib,
@@ -1208,6 +1209,9 @@ again:
                   case kFHCalibrate:
                      fFitHist->Calibrate(0); 
                      break;
+                  case kFHCalDialog:
+                     fFitHist->Calibrate(2); 
+                     break;
                   case kFHCalibrateNew:
                      fFitHist->Calibrate(1); 
                      break;
@@ -1662,6 +1666,7 @@ void HandleMenus::BuildMenus()
       if(!is2dim){
  //        fFitMenu->AddEntry("Help On Fitting 1-dim",       kFH_Help_Fit1);
          fFitMenu->AddSeparator();
+         fFitMenu->AddEntry("Calibration Dialog",            kFHCalDialog);
          fFitMenu->AddEntry("Calibrate, Generate new hist",  kFHCalibrateNew);
          fFitMenu->AddEntry("Calibrate, change scale only",  kFHCalibrate);
          if (fFitHist->IsCalibrated())

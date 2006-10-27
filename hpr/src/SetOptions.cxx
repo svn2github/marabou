@@ -147,7 +147,7 @@ void HistPresent::RestoreOptions()
    fLabelOffsetX=env.GetValue("HistPresent.LabelOffsetX",0.005);
    fLabelSizeX=  env.GetValue("HistPresent.LabelSizeX",  0.03);  
    fTickLengthX= env.GetValue("HistPresent.TickLengthX", 0.03); 
-   fTitleOffsetX=env.GetValue("HistPresent.TitleOffsetX",1);
+   fTitleOffsetX=env.GetValue("HistPresent.TitleOffsetX",1.);
    fTitleSizeX=  env.GetValue("HistPresent.TitleSizeX",  0.03);  
    fTitleColorX= env.GetValue("HistPresent.TitleColorX", 1); 
    fTitleFontX=  env.GetValue("HistPresent.TitleFontX",   62);  
@@ -171,7 +171,7 @@ void HistPresent::RestoreOptions()
    fLabelOffsetZ=env.GetValue("HistPresent.LabelOffsetZ",0.005);
    fLabelSizeZ=  env.GetValue("HistPresent.LabelSizeZ",  0.03);  
    fTickLengthZ= env.GetValue("HistPresent.TickLengthZ", 0.03); 
-   fTitleOffsetZ=env.GetValue("HistPresent.TitleOffsetZ",1);
+   fTitleOffsetZ=env.GetValue("HistPresent.TitleOffsetZ",1.);
    fTitleSizeZ=  env.GetValue("HistPresent.TitleSizeZ",  0.03);  
    fTitleColorZ= env.GetValue("HistPresent.TitleColorZ", 1); 
    fTitleFontZ=  env.GetValue("HistPresent.TitleFontZ",   62);  
@@ -181,8 +181,8 @@ void HistPresent::RestoreOptions()
    fHistFillStyle=env.GetValue("HistPresent.HistFillStyle", 0);
    fHistLineStyle=env.GetValue("HistPresent.HistLineStyle", 1);
    fHistLineWidth=env.GetValue("HistPresent.HistLineWidth", 2);
-   fEndErrorSize= env.GetValue("HistPresent.EndErrorSize ", 1);
-   fErrorX=       env.GetValue("HistPresent.ErrorX", 0.0);
+   fEndErrorSize= env.GetValue("HistPresent.EndErrorSize ", 1.);
+   fErrorX=       env.GetValue("HistPresent.ErrorX",       0.0);
    fFuncColor=    env.GetValue("HistPresent.FuncColor", 4);
    fFuncStyle=    env.GetValue("HistPresent.FuncStyle", 1);
    fFuncWidth=    env.GetValue("HistPresent.FuncWidth", 2);
@@ -191,7 +191,7 @@ void HistPresent::RestoreOptions()
    fStatTextColor= env.GetValue("HistPresent.StatTextColor", 1);
    fStatBorderSize=env.GetValue("HistPresent.StatBorderSize", 1);
    fStatFont=      env.GetValue("HistPresent.StatFont", 62);
-   fStatFontSize=  env.GetValue("HistPresent.StatFontSize", 0);
+   fStatFontSize=  env.GetValue("HistPresent.StatFontSize", 0.02);
    fStatStyle=     env.GetValue("HistPresent.StatStyle", 1001);
    fStatX=         env.GetValue("HistPresent.StatX", 0.98);
    fStatY=         env.GetValue("HistPresent.StatY", 0.995);
@@ -202,12 +202,13 @@ void HistPresent::RestoreOptions()
    fTitleTextColor = env.GetValue("HistPresent.TitleTextColor", 1);
    fTitleBorderSize= env.GetValue("HistPresent.TitleBorderSize",1);
    fTitleFont      = env.GetValue("HistPresent.TitleFont",      62);
-   fTitleFontSize  = env.GetValue("HistPresent.TitleFontSize",  0);
+   fTitleFontSize  = env.GetValue("HistPresent.TitleFontSize",  0.02);
    fTitleStyle     = env.GetValue("HistPresent.TitleStyle",     1001);
    fTitleX         = env.GetValue("HistPresent.TitleX",         0.01);
    fTitleY         = env.GetValue("HistPresent.TitleY",         .995);
-   fTitleW         = env.GetValue("HistPresent.TitleW",         0);
-   fTitleH         = env.GetValue("HistPresent.TitleH",         0);
+   fTitleW         = env.GetValue("HistPresent.TitleW",         0.);
+   fTitleH         = env.GetValue("HistPresent.TitleH",         0.);
+   fTitleAlign     = env.GetValue("HistPresent.TitleAlign",    13);
 
    fPadColor       = env.GetValue("HistPresent.PadColor",       19);
    fPadBorderSize  = env.GetValue("HistPresent.PadBorderSize",  2);
@@ -236,7 +237,7 @@ void HistPresent::RestoreOptions()
 	fCanvasDefY		 	= env.GetValue("HistPresent.CanvasDefY",		 0);
 	fMarkerColor      = env.GetValue("HistPresent.MarkerColor",       1);
 	fMarkerStyle      = env.GetValue("HistPresent.MarkerStyle",       7);
-	fMarkerSize       = env.GetValue("HistPresent.MarkerSize",       1);
+	fMarkerSize       = env.GetValue("HistPresent.MarkerSize",      1.);
 	fLineColor        = env.GetValue("HistPresent.LineColor",       1);
 	fLineStyle        = env.GetValue("HistPresent.LineStyle",       1);
 	fLineWidth        = env.GetValue("HistPresent.LineWidth",       1);
@@ -489,6 +490,7 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.TitleY",          fTitleY         );
    env.SetValue("HistPresent.TitleW",          fTitleW         );
    env.SetValue("HistPresent.TitleH",          fTitleH         );
+   env.SetValue("HistPresent.TitleAlign",      fTitleAlign     );
 
    env.SetValue("HistPresent.PadColor",        fPadColor       );
    env.SetValue("HistPresent.PadBorderSize",   fPadBorderSize  );
@@ -885,6 +887,7 @@ void HistPresent::SetTitleAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("Float_Value_TitleY"));         
    row_lab->Add(new TObjString("Float_Value_TitleW"));         
    row_lab->Add(new TObjString("Float_Value_TitleH"));  
+   row_lab->Add(new TObjString("AlignSelect_TitleAlign"));  
 
    valp[ind++] = &fTitleColor;     
    valp[ind++] = &fTitleTextColor;
@@ -897,11 +900,13 @@ void HistPresent::SetTitleAttributes(TGWindow * win, FitHist * fh)
    valp[ind++] = &fTitleY;         
    valp[ind++] = &fTitleW;         
    valp[ind++] = &fTitleH;  
+   valp[ind++] = &fTitleAlign;  
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("Title Attr", NULL, itemwidth, win,
                       NULL, NULL, row_lab, valp);
    if (!ok) return;
+   fTitleFont = 2 + 10 * fTitleFont;
    SaveOptions();
    SetTitleAtt();
 }
@@ -919,6 +924,7 @@ void HistPresent::SetTitleAtt()
    gStyle->SetTitleY(         fTitleY);        
    gStyle->SetTitleW(         fTitleW);        
    gStyle->SetTitleH(         fTitleH);
+   gStyle->SetTitleAlign(     fTitleAlign);
 }
 //_______________________________________________________________________
 

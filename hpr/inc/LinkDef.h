@@ -38,6 +38,7 @@
 #pragma link C++ class FeynmanDiagramDialog;
 #pragma link C++ class InsertArcDialog;
 #pragma link C++ class FitOneDimDialog;
+#pragma link C++ class CalibrationDialog;
 #pragma link C++ class InsertTextDialog;
 #pragma link C++ class TCurlyLineArrow;
 #pragma link C++ class TArcEditor;

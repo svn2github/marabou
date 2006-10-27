@@ -232,8 +232,9 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
 
    fitval = fitval + bgconst + x[0] * bgslope;
    for (Int_t i = 0; i < gNpeaks; i++) {
-      xij = (x[0] - par[6 + 2 * i]) * gTailSide;
+      xij = (x[0] - par[6 + 2 * i]);
       arg = xij / (sqrt2 * sigma);
+      xij *= gTailSide;
       tail = exp(xij / tailwidth) / tailwidth;
       g2b = 0.5 * sigma / tailwidth;
       err = 0.5 * tailfrac * par[5 + 2 * i] * TMath::Erfc(xij / sigma + g2b);
@@ -395,6 +396,7 @@ parameters without actually doing a fit.\n\
    fConstant   = 0;
    fMean       = 0;
    fMeanError  = 0;
+   fAdded      = -1;
    RestoreDefaults();
    fSelPad = NULL;
    SetBit(kMustCleanup);
@@ -527,7 +529,7 @@ void FitOneDimDialog::FitOneDimExecute()
    Int_t ind = 0;
    gTailSide = 0;
    if (fHightail == 1) {
-      gTailSide = 2;
+      gTailSide = -1;
       if (fLowtail) {
          cout << "Tail side dubious, use low tail" << endl;
          gTailSide = 1;
@@ -597,6 +599,7 @@ void FitOneDimDialog::FitOneDimExecute()
    TF1 * func;
    if (gTailSide) {
       func = new TF1(fFuncName, gaus_tail, fFrom, fTo, npars);
+      cout << "gTailSide " << gTailSide<< endl;
    } else {
       if (fOnesig) {
          if (fBackg0 != 0) 
@@ -627,10 +630,10 @@ void FitOneDimDialog::FitOneDimExecute()
    if (gTailSide != 0) {
       func->SetParName(ind,      "Ta_fract");
       row_lab.Add(new TObjString("Ta_fract"));
-      if (setpars) (*params)[ind++] = 0.1;
+      if (setpars) (*params)[ind++] = 1;
       func->SetParName(ind,      "Ta_width");
       row_lab.Add(new TObjString("Ta_width"));
-      if (setpars) (*params)[ind++] = 1;
+      if (setpars) (*params)[ind++] = 5;
       (*fbflags)[2] = fBackg0;
       (*fbflags)[3] = fSlope0;
    }
@@ -666,6 +669,7 @@ void FitOneDimDialog::FitOneDimExecute()
       func->SetParName(ind,      "Ga_Const0");
       row_lab.Add(new TObjString("Ga_Const0"));
       if (setpars) (*params)[ind++]     = gpar[0];
+      if (gTailSide != 0) (*params)[ind -1] *= 0.5;
       func->SetParName(ind,      "Ga_Mean_0");
       row_lab.Add(new TObjString("Ga_Mean_0"));
       if (setpars) (*params)[ind++]     = gpar[1];
@@ -809,7 +813,7 @@ void FitOneDimDialog::FitOneDimExecute()
          }
 
       } else {
-         fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
+         fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
    //     add to ListOfFunctions if requested
          if (fFitOptAddAll) {
             TList *lof = fSelHist->GetListOfFunctions();
@@ -835,6 +839,7 @@ void FitOneDimDialog::FitOneDimExecute()
             fMean      = func->GetParameter(offset +1);
             fMeanError = func->GetParError(offset +1);
          }
+         fAdded = 0;
          cout << "co, m, me " << fConstant << " " << fMean << " " << fMeanError 
               << endl;
       }
@@ -861,7 +866,8 @@ void FitOneDimDialog::FitOneDimExecute()
       if (fBackg0 == 0) {
          TF1 *back = new TF1("backf", backf, fFrom, fTo, 2);
          back->SetParameter(0, fdpar[0]);
-         if (fSlope0 != 0) back->SetParameter(1, 0);
+         if (fSlope0 == 0) back->SetParameter(1, fdpar[1]);
+         else              back->SetParameter(1, 0);
          back->Save(fFrom, fTo, 0, 0, 0, 0);
          back->SetLineColor(2);
          back->SetLineStyle(3);
@@ -1184,6 +1190,13 @@ void FitOneDimDialog::SetFittingOptions()
 void FitOneDimDialog::AddToCalibration()
 {
 #ifdef MARABOUVERS
+   if (fAdded == 1) {
+      cout << "Values already added to list" << endl;
+      return;
+   } else if (fAdded == -1) {
+      cout << "No fit done yet" << endl;
+      return;
+   }
    TString name = fSelHist->GetName();
    name.Prepend("F");
    cout << "Fh " << name << endl;
@@ -1196,6 +1209,8 @@ void FitOneDimDialog::AddToCalibration()
    peak->SetWidth(fMeanError);
    peak->SetContent(fConstant);
    fh->GetPeakList()->Add(peak);
+   fAdded = 1;
+   fSelHist->GetListOfFunctions()->Add(peak);
 #else
    cout << "No FitHist Object available" << endl; 
 #endif

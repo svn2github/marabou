@@ -3700,7 +3700,7 @@ void FitHist::UpdateDrawOptions()
    TString drawopt;
    if (fDimension == 1) {
    	if (hp->fShowContour)
-      	drawopt = "hist";
+      	drawopt = "";
    	if (hp->fShowErrors)
       	drawopt += "e1";
    	if (hp->fFill1Dim && fSelHist->GetNbinsX() < 50000) {

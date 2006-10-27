@@ -28,6 +28,7 @@ private:
    Double_t fMean;
    Double_t fMeanError;
    Double_t fConstant;
+   Int_t    fAdded;
    Double_t fLinBgConst;
    Double_t fLinBgSlope;
    Bool_t   fLinBgSet;

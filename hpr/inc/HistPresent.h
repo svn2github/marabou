@@ -277,6 +277,7 @@ protected:
    Float_t       fTitleY;         
    Float_t       fTitleW;         
    Float_t       fTitleH; 
+   Short_t       fTitleAlign;        //Text alignment
 
    Color_t    fLineColor;           //line color
    Style_t    fLineStyle;           //line style
