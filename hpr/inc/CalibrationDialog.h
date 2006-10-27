@@ -13,7 +13,7 @@
 
 class CalibrationDialog : public TObject {
 
-static const MAXPEAKS = 10;
+static const Int_t MAXPEAKS = 10;
 private:
    HistPresent *fHistPresent;
    TRootCanvas* fParentWindow; 
