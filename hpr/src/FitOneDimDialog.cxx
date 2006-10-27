@@ -841,7 +841,7 @@ void FitOneDimDialog::FitOneDimExecute()
          }
          fAdded = 0;
 //        cout << "co, m, me " << fConstant << " " << fMean << " " << fMeanError 
-              << endl;
+//              << endl;
       }
    } else {
 //    no fit requested draw
