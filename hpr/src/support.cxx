@@ -368,7 +368,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    if (Nentries < 25)
       yw = (Int_t)(magfac * 24.) * (Nentries + 2);
 //      yw = 40 * (Nentries + 1);
-   cout << "xwid " << xwid << " xw 2 " << xw << " maxlen_nam " << maxlen_nam << endl;
+//   cout << "xwid " << xwid << " xw 2 " << xw << " maxlen_nam " << maxlen_nam << endl;
 
    TString pname(fname);
 //   pname.Prepend("CWD:");

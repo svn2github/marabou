@@ -840,7 +840,7 @@ void FitOneDimDialog::FitOneDimExecute()
             fMeanError = func->GetParError(offset +1);
          }
          fAdded = 0;
-         cout << "co, m, me " << fConstant << " " << fMean << " " << fMeanError 
+//        cout << "co, m, me " << fConstant << " " << fMean << " " << fMeanError 
               << endl;
       }
    } else {
