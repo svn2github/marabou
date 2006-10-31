@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.42 2006-10-31 15:44:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.43 2006-10-31 16:13:53 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -1165,6 +1165,29 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemCamacLength", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetRemCamacOffset:
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						UInt_t memOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacOffset"), 0);
+						if (memOffs == 0) {
+							this->GetRcVal(memOffs, "RemoteCamacBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+						} 
+						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (Int_t i = 0; i < n; i++) {
+							Int_t crate = lofCrates[i];
+							if (crate == 0) {
+								arrayData[crate] = 0;
+							} else {
+								arrayData[crate] = memOffs;
+							}
+						}
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoRemCamacOffset", this->EncodeArray(arrayData, kNofCrates, 16));
 						stpTmpl.WriteCode(stp);
 					}
 					break;

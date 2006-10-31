@@ -7,7 +7,7 @@
 // Purpose:        Define a MBS setup: Common defs
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetupCommon.h,v 1.13 2006-10-31 15:44:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetupCommon.h,v 1.14 2006-10-31 16:13:53 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -87,6 +87,7 @@ enum EMbsSetupTags			{
 								kSetRdPipeBaseAddr,
 								kSetRemCamacBase,
 								kSetRemCamacLength,
+								kSetRemCamacOffset,
 								kSetRemEsoneBase,
 								kSetRemMemoryBase,
 								kSetRemMemoryLength,
@@ -176,7 +177,7 @@ const SMrbNamedXShort kMbsSetupTags[] =			// list of setup tag words
 								{kSetRdPipeBaseAddr,		"SET_RD_PIPE_BASE_ADDR" 	},
 								{kSetRemCamacBase,			"SET_REM_CAMAC_BASE"		},
 								{kSetRemCamacLength,		"SET_REM_CAMAC_LENGTH"		},
-								{kSetRemMemoryOffset,		"SET_REM_CAMAC_OFFSET"		},
+								{kSetRemCamacOffset,		"SET_REM_CAMAC_OFFSET"		},
 								{kSetRemEsoneBase,			"SET_REM_ESONE_BASE"		},
 								{kSetRemMemoryBase,			"SET_REM_MEMORY_BASE"		},
 								{kSetRemMemoryLength,		"SET_REM_MEMORY_LENGTH"		},
