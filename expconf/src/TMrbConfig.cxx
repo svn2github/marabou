@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.135 2006-10-12 07:13:56 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.136 2006-10-31 15:37:33 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4612,15 +4612,15 @@ Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Cha
 		cmd = fUserMacroCmd;
 		cmd.SetBase(16);
 		cmd += "((ofstream *) ";
-		cmd += (Int_t) Strm;
+		cmd += Form("%lx", (ULong_t) Strm);
 		cmd += ", (TMrbConfig *) ";
-		cmd += (Int_t) this;
+		cmd += Form("%lx", (ULong_t) this);
 		cmd += ", (TObject *) ";
-		cmd += (Int_t) CfgObject;
+		cmd += Form("%lx", (ULong_t) CfgObject);
 		cmd += ", \"";
 		cmd += TagWord;
 		cmd += "\", (Bool_t *) ";
-		cmd += (Int_t) &result;
+		cmd += Form("%lx", (ULong_t) &result);
 		cmd += ")";
 		cmd.ResetBase();
 		gROOT->ProcessLine(cmd.Data());
@@ -6942,23 +6942,17 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMbsSetup * mbsSetup_old;
 	TMbsSetup * mbsSetup;
-	TString evbProc = "";
-	TString rdoProc = "";
+	Int_t nofReadouts = 1;
 
 	gMrbLog->Out() << "[.mbssetup: Definitions to perform MBS setup]" << endl;
 	gMrbLog->Flush("", "", setblue);
 
 	if (!gSystem->AccessPathName(".mbssetup")) {
-		mbsSetup_old = new TMbsSetup(".mbssetup");
-		mbsSetup_old->Get(evbProc, "EvtBuilder.Name", "");
-		mbsSetup_old->Get(rdoProc, "Readout1.Name", "");
-		delete mbsSetup_old;
-		gSystem->Exec("rm -f .mbssetup");
+		mbsSetup = new TMbsSetup(".mbssetup");
+	} else {
+		mbsSetup = new TMbsSetup();
 	}
-
-	mbsSetup = new TMbsSetup();
 
 	if (!gSystem->AccessPathName(".mbssetup-localdefs")) {
 		mbsSetup->GetEnv()->ReadFile(".mbssetup-localdefs", kEnvChange);
@@ -6968,12 +6962,6 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 
 	mbsSetup->Set("MbsVersion", fMbsVersion.Data());
 	mbsSetup->Set("LynxVersion", fLynxVersion.Data());
-
-	TString pn;
-	mbsSetup->Get(pn, "TMbsSetup.EvtBuilder.Name", "");
-	if (pn.IsNull()) mbsSetup->Set("EvtBuilder.Name", evbProc.Data());
-	mbsSetup->Get(pn, "TMbsSetup.Readout1.Name", "");
-	if (pn.IsNull()) mbsSetup->Set("Readout1.Name", rdoProc.Data());
 
 	TString procType = gEnv->GetValue("TMbsSetup.ProcType", "");
 	if (!procType.IsNull()) {
@@ -7004,7 +6992,7 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 			n++;
 		}
 	}
-	mbsSetup->SetNofReadouts(1);
+	mbsSetup->SetNofReadouts(nofReadouts);
 	if (ctrlType != kControllerUnused) mbsSetup->ReadoutProc(0)->SetController((EMbsControllerType) ctrlType);
 	mbsSetup->ReadoutProc(0)->SetCratesToBeRead(c[0], c[1], c[2], c[3], c[4]);
 
@@ -7555,6 +7543,8 @@ Bool_t TMrbConfig::CheckConfig() {
 	} else if (fMbsVersion.CompareTo("4.2") == 0) {
 		lv = "3.1";
 	} else if (fMbsVersion.CompareTo("4.3") == 0) {
+		lv = "3.1";
+	} else if (fMbsVersion.CompareTo("4.5") == 0) {
 		lv = "3.1";
 	} else {
 		gMrbLog->Err() << "Wrong MBS version - " << fMbsVersion << "; set TMbsSetup.MbsVersion in .rootrc properly" << endl;
