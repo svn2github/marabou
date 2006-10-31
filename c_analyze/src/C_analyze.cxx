@@ -416,7 +416,12 @@ trying to attach?",
 	fWaitedForStop = 0;
    fMfile = 0;
    fUseMap = kFALSE;
-   fSetup = 0;
+	if(fSetup != NULL) delete fSetup;
+	if (!gSystem->AccessPathName(".mbssetup")) {
+		fSetup = new TMbsSetup(".mbssetup");
+	} else {
+		fSetup = new TMbsSetup();
+	}
 
    gClient->GetColorByName("white", white);
    gClient->GetColorByName("blue", blue);
@@ -1739,17 +1744,18 @@ Bool_t FhMainFrame::MbsSetup(){
       if(!confirm("Do you really want to run MbsSetup in this state?", 
                    this))return kFALSE;
    }
-   if(!CheckHostsUp())return kFALSE;
+   if(!CheckHostsUp()) return kFALSE;
    cout << "MbsSetup,  HostsUp ok, mod fStatus" << endl;
    fStatus->SetText(new TGString("Setting up"));
    fStatus->ChangeBackground(cyan);
    gClient->NeedRedraw(fStatus);
    gSystem->ProcessEvents();
-	if(!fSetup) {
-		fSetup = new TMbsSetup();
-    } else {
-		delete fSetup;
-        fSetup = new TMbsSetup(".mbssetup");
+	if(fSetup == NULL) {
+	   if (!gSystem->AccessPathName(".mbssetup")) {
+		   fSetup = new TMbsSetup(".mbssetup");
+	   } else {
+		   fSetup = new TMbsSetup();
+	   }
     }
 	const char * mproc = masters[fCbMaster->GetSelected()-1];
    const char * sproc = slaves[fCbReadout->GetSelected()-1];
@@ -1777,8 +1783,6 @@ Bool_t FhMainFrame::MbsSetup(){
 	fSetup->ReadoutProc(0)->TriggerModule()->SetConversionTime(fGateLength);	
    Bool_t ok = fSetup->MakeSetupFiles();		// erfindet alle files
 
-//  dont Close at the moment, otherwise compile wouldnt owrk
-//   fSetup->Close();
    if(fSetup) fSetup->Save();
    return ok; 
 
@@ -1786,29 +1790,27 @@ Bool_t FhMainFrame::MbsSetup(){
 //_____________________________________________________________________________________
 Bool_t FhMainFrame::MbsCompile(){
    if(!confirm("Do you really want recompile?", this))return kFALSE;
-   if(!fSetup) {
-		this->MbsSetup();
-   } else {
-		fSetup->Open(".mbssetup");
-		fSetup->SetPrefix("TMbsSetup");
-   }
-   if(fSetup){
-      fStatus->SetText(new TGString("Compiling"));
-      fStatus->ChangeBackground(cyan);
-      gClient->NeedRedraw(fStatus);
-      gSystem->ProcessEvents();
-      if(fCodeName->Length() > 0){
-         TMbsReadoutProc * rp = fSetup->ReadoutProc(0);
-         if(rp){
-			rp->SetCodeName(fCodeName->Data());
-			   rp->CopyMakefile();
-            rp->CompileReadout(fMbsVersion->Data());
-         } else {WarnBox("No ReadoutProc defined", this); return kFALSE;}
-      } else {WarnBox("No Makefile found to compile readout function", this); return kFALSE;}
-   } else {WarnBox("No setup done", this); return kFALSE;}
-//   if(fSetup){delete fSetup; cout << "delete fSetup\n"; fSetup = 0;}
-//   if(fSetup) fSetup->Close();
-   if(fSetup) fSetup->Save();
+	if(fSetup == NULL) {
+	   if (!gSystem->AccessPathName(".mbssetup")) {
+		   fSetup = new TMbsSetup(".mbssetup");
+	   } else {
+		   fSetup = new TMbsSetup();
+	   }
+    }
+    fStatus->SetText(new TGString("Compiling"));
+    fStatus->ChangeBackground(cyan);
+    gClient->NeedRedraw(fStatus);
+    gSystem->ProcessEvents();
+    if(fCodeName->Length() > 0){
+       TMbsReadoutProc * rp = fSetup->ReadoutProc(0);
+       if(rp){
+	      rp->SetCodeName(fCodeName->Data());
+          rp->CopyMakefile();
+          rp->CompileReadout(fMbsVersion->Data());
+       } else {WarnBox("No ReadoutProc defined", this); return kFALSE;}
+    } else {WarnBox("No Makefile found to compile readout function", this); return kFALSE;}
+
+   fSetup->Save();
    fStatus->SetText(new TGString("Absent"));
    fStatus->ChangeBackground(green);
    gClient->NeedRedraw(fStatus);
@@ -2913,7 +2915,13 @@ Bool_t FhMainFrame::PutDefaults(){
    wstream << "AUTOSETUP:"  <<  wout       << endl;
 
    if( *fInputSource == "TcpIp" ) {
-      if (!fSetup) fSetup = new TMbsSetup();
+	  if(fSetup == NULL) {
+	    if (!gSystem->AccessPathName(".mbssetup")) {
+		    fSetup = new TMbsSetup(".mbssetup");
+	    } else {
+		    fSetup = new TMbsSetup();
+	    }
+      }
       TString mproc = masters[fCbMaster->GetSelected()-1];
       if (!mproc.IsNull()) fSetup->EvtBuilder()->SetProcName(mproc.Data());
       TString sproc = slaves[fCbReadout->GetSelected()-1];
@@ -2962,7 +2970,11 @@ Bool_t FhMainFrame::GetDefaults(){
    *fSaveMap = *fSaveMap + gSystem->Getenv("USER") + "_RUN.root";
    fMaster       = new TString("ppc-1");
    fReadout      = new TString("ppc-0");
-   fMbsVersion   = new TString(gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
+   fMbsVersion   = new TString(gEnv->GetValue("TMbsSetup.MbsVersion", ""));
+   if (fMbsVersion->IsNull()) {
+     cerr	<< setred << "C_analyze: MBS version not defined" << setblack << endl;
+     ok = kFALSE;
+   }
    fDir          = new TString("dualppc");
    fTrigger      = new TString("VME");
    fCodeName        = new TString("");
@@ -3103,20 +3115,26 @@ Bool_t FhMainFrame::GetDefaults(){
       ok = kFALSE;
    }
    if (!ok) {
-      cout << setred <<  "Couldnt read C_analyze.def" << setblack << endl;
+      cout << setred <<  "Couldn't read C_analyze.def" << setblack << endl;
    }
    if (!gSystem->AccessPathName(".mbssetup")) {
-      cout << "Looking for parameters .mbssetup" << endl;
-      TMrbEnv mbssetup(".mbssetup");//      TMrbString temp;
+      cout << setblue << "Looking up setup data in .mbssetup" << setblack << endl;
+	  if(fSetup == NULL) {
+	    if (!gSystem->AccessPathName(".mbssetup")) {
+		    fSetup = new TMbsSetup(".mbssetup");
+	    } else {
+		    fSetup = new TMbsSetup();
+	    }
+      }
       TMrbNamedX temp;
-//      TMbsSetup mbssetup;
-      mbssetup.Get(*fMaster,  "TMbsSetup.EvtBuilder.Name",             fMaster->Data());
-      mbssetup.Get(*fReadout, "TMbsSetup.Readout1.Name",               fReadout->Data());
-      mbssetup.Get(temp,      "TMbsSetup.Readout1.TriggerModule.Type", fTrigger->Data());
-      cout << "fTrigger: " << temp.GetName() << endl;
-      cout << "fMaster: "  << fMaster->Data() << endl;
-      cout << "fReadout: "  << fReadout->Data() << endl;
-  } else {
+      fSetup->Get(*fMaster,  "EvtBuilder.Name",             fMaster->Data());
+      fSetup->Get(*fReadout, "Readout0.Name",               fReadout->Data());
+      fSetup->Get(temp,      "Readout0.TriggerModule.Type", fTrigger->Data());
+      cout << "EvtBuilder      : "  << fMaster->Data() << endl;
+      cout << "Readout0/Master : "  << fReadout->Data() << endl;
+      cout << "Readout1/Slave  : "  << endl;
+      cout << "TriggerModule   : " << temp.GetName() << "(" << temp.GetIndex() << ")" << endl;
+   } else {
       cout << "No .mbssetup in cwd" << endl;
    }
    return kTRUE;
