@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.76 2006-08-11 11:37:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.77 2006-10-31 09:35:27 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -172,7 +172,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 //                 ---------------------------------------------------------------------------------
 //                 inputFile                    name of input file
 //                             xyz.root                file contains ROOT trees
-//                             xyz.lmd                 file contai::OpenFilns MBS list mode data
+//                             xyz.lmd                 file contains MBS list mode data
 //                             xyz.med                 file contains MBS event data (as used by miniball)
 //                 startEvent                   event / time stamp to start with
 //                             N                       event number
@@ -185,18 +185,18 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 //                             :nnnnnn                 time stamp in seconds from start
 //                             0                       read data to end of file
 //                 paramFile                    name of file where to reload params from
-//                             xyz.root                file cont::OpenFilains ROOT objects
+//                             xyz.root                file contains ROOT objects
 //                             xyz.par                 file contains ASCII text
-//                             -                   params remain unchanged::OpenFile
+//                             -                   params remain unchanged
 //                             none                don't load any params
 //                 histoFile                    name of file to save histograms
 //                             xyz.root                clear histo space on start, save histos to file at end
 //                             +                       don't clear histo space, add data to current histos,
-//                                                     save to file currently open
+//                             ++                      same as +, but save to file currently open
 //                 outputFile                   name of file to store tree data
 //                             none                don't write tree data
 //                             +                   append to current file
-//                             xyz.root            open file for output         ::OpenFile
+//                             xyz.root            open file for output
 //                                                         
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -375,7 +375,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		if (histoFile.CompareTo("none") != 0) {
 			if (histoFile.CompareTo("+") == 0) {
 				histoFile = lastIOSpec->GetHistoFile();
-				histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoAdd);
+				histoMode = (TMrbIOSpec::EMrbHistoMode) TMrbIOSpec::kHistoAdd;
 			} else if (histoFile.Index(".root", 0) > 0) {
 				histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoClear);
 			} else {
@@ -476,6 +476,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 
 	nofEntries = 0;
 	this->ClearHistograms("*", ioSpec);
+
 	TIterator * iter = fLofIOSpecs.MakeIterator();
 	while ((ioSpec = (TMrbIOSpec *) iter->Next()) && this->TestRunStatus()) {
 		gMrbLog->Out() << "[" << nofEntries + 1 << "] ";
