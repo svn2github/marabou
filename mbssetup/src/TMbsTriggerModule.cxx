@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsTriggerModule.cxx,v 1.6 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsTriggerModule.cxx,v 1.7 2006-10-31 15:44:55 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -86,7 +86,7 @@ Bool_t TMbsTriggerModule::SetType(const Char_t * ModuleType) {
 
 	TString r;
 	TString mod = Form("%s(%d)", moduleType->GetName(), moduleType->GetIndex());
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"), mod.Data());
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "TriggerModule.Type"), mod.Data());
 	return(kTRUE);
 }
 
@@ -116,7 +116,7 @@ Bool_t TMbsTriggerModule::SetType(EMbsTriggerModuleType ModuleType) {
 
 	TString mod = Form("%s(%d)", moduleType->GetName(), moduleType->GetIndex());
 	TString r;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"), mod.Data());
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "TriggerModule.Type"), mod.Data());
 	return(kTRUE);
 }
 
@@ -137,7 +137,7 @@ TMrbNamedX * TMbsTriggerModule::GetType() {
 	TString resValue;
 	Int_t n;
 
-	gMbsSetup->Get(resValue, gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"));
+	gMbsSetup->Get(resValue, gMbsSetup->Resource(r, "Readout", fId, "TriggerModule.Type"));
 	if ((n = resValue.Index("(")) >= 0) resValue = resValue(0, n);
 	moduleType = gMbsSetup->fLofTriggerModules.FindByName(resValue, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	return(moduleType);
@@ -175,7 +175,7 @@ Bool_t TMbsTriggerModule::SetTriggerMode(const Char_t * Mode) {
 	mod += "(";
 	mod += trigMode->GetIndex();
 	mod += ")";
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Mode"), mod.Data());
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "TriggerModule.Mode"), mod.Data());
 	return(kTRUE);
 }
 
@@ -195,7 +195,7 @@ Bool_t TMbsTriggerModule::SetTriggerMode(EMbsTriggerMode Mode) {
 	TMrbNamedX * trigMode;
 	TMrbString mod;
 
-	if (fId + 1 == 0) return(kFALSE);
+	if (fId < 0) return(kFALSE);
 
 	trigMode = gMbsSetup->fLofTriggerModes.FindByIndex(Mode);
 	if (trigMode == NULL) {
@@ -211,7 +211,7 @@ Bool_t TMbsTriggerModule::SetTriggerMode(EMbsTriggerMode Mode) {
 	mod += "(";
 	mod += trigMode->GetIndex();
 	mod += ")";
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Mode"), mod.Data());
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "TriggerModule.Mode"), mod.Data());
 	return(kTRUE);
 }
 
@@ -232,7 +232,7 @@ TMrbNamedX * TMbsTriggerModule::GetTriggerMode() {
 	TString resValue;
 	Int_t n;
 
-	gMbsSetup->Get(resValue, gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Mode"));
+	gMbsSetup->Get(resValue, gMbsSetup->Resource(r, "Readout", fId, "TriggerModule.Mode"));
 	if ((n = resValue.Index("(")) >= 0) resValue = resValue(0, n);
 	trigMode = gMbsSetup->fLofTriggerModes.FindByName(resValue, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	return(trigMode);
@@ -254,7 +254,7 @@ Bool_t  TMbsTriggerModule::SetConversionTime(Int_t ConvTime) {
 
 	if (fId < 0) return(kFALSE);
 
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.ConvTime"), ConvTime);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "TriggerModule.ConvTime"), ConvTime);
 	return(kTRUE);
 }
 
@@ -271,7 +271,7 @@ Int_t TMbsTriggerModule::GetConversionTime() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.ConvTime"), 0));
+	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "TriggerModule.ConvTime"), 0));
 }
 
 Bool_t TMbsTriggerModule::SetFastClearTime(Int_t FastClearTime) {
@@ -290,7 +290,7 @@ Bool_t TMbsTriggerModule::SetFastClearTime(Int_t FastClearTime) {
 
 	if (fId < 0) return(kFALSE);
 
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.FastClearTime"), FastClearTime);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "TriggerModule.FastClearTime"), FastClearTime);
 	return(kTRUE);
 }
 
@@ -307,5 +307,5 @@ Int_t TMbsTriggerModule::GetFastClearTime() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.FastClearTime"), 0));
+	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "TriggerModule.FastClearTime"), 0));
 }

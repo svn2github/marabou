@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.41 2006-10-16 13:34:28 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.42 2006-10-31 15:44:55 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -356,7 +356,7 @@ Bool_t TMbsSetup::SetPath(const Char_t * Path, Bool_t Create) {
 	TString remoteHome;
 
 	pathName = Path;
-	if (!pathName.BeginsWith("/")) {
+	if (!pathName.BeginsWith("/") && !pathName.BeginsWith("./")) {
 		pathName = gMbsSetup->GetHomeDir();	// get home dir
 		if (pathName.IsNull()) {
 			remoteHome = this->RemoteHomeDir();
@@ -503,7 +503,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	Int_t nofErrors = 0;
 
 	TString installPath = this->GetPath();
-	if (!installPath.BeginsWith("/")) {
+	if (!installPath.BeginsWith("/") && !installPath.BeginsWith("./")) {
 		installPath = this->GetHomeDir();
 		installPath += "/";
 		installPath += this->GetPath();
@@ -536,7 +536,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 			TObjString * os;
 			while (os = (TObjString *) iter->Next()) {
 				TString fileName = os->String();
-				if (this->ExpandFile(0, srcPath, fileName, installPath)) {
+				if (this->ExpandFile(0, srcPath, fileName, installPath, fileName)) {
 					cout	<< setblue << "   ... " << fileName
 							<< setblack << endl;
 				} else {
@@ -551,8 +551,8 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	if (smode == kModeMultiProc) {
 		templatePath += "/vme";
 		installPath += "/";
-		for (Int_t n = 0; n < nofReadouts; n++) {
-			TString destPath = installPath + this->ReadoutProc(n)->GetPath();
+		for (Int_t nrdo = 0; nrdo < nofReadouts; nrdo++) {
+			TString destPath = installPath + this->ReadoutProc(nrdo)->GetPath();
 			TString srcPath = templatePath;
 			gMrbLog->Out()	<< "Installing file(s) " << srcPath << " -> " << destPath << " ..." << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
@@ -580,7 +580,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 					TObjString * os;
 					while (os = (TObjString *) iter->Next()) {
 						TString fileName = os->String();
-						if (this->ExpandFile(0, srcPath, fileName, destPath)) {
+						if (this->ExpandFile(nrdo, srcPath, fileName, destPath, fileName)) {
 							cout	<< setblue << "   ... " << fileName
 									<< setblack << endl;
 						} else {
@@ -592,7 +592,54 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 				}
 			}
 		}
+	} else if (smode == kModeMultiBranch) {
+		templatePath += "/vme";
+		installPath += "/";
+		for (Int_t nrdo = 0; nrdo < nofReadouts; nrdo++) {
+			TString destPath = installPath + this->ReadoutProc(nrdo)->GetPath();
+			TString srcPath = templatePath;
+			gMrbLog->Out()	<< "Installing file(s) " << srcPath << " -> " << destPath << " ..." << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
+			void * dirPtr = gSystem->OpenDirectory(srcPath.Data());
+			if (dirPtr == NULL) {
+				gMrbLog->Err() << gSystem->GetError() << " - " << srcPath << endl;
+				gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
+				nofErrors++;
+			} else {
+				TObjArray lofFiles;
+				lofFiles.Delete();
+				TMrbSystem ux;
+				for (;;) {
+					const Char_t * dirEntry = gSystem->GetDirEntry(dirPtr);
+					if (dirEntry == NULL) break;
+					TString fileName = Form("%s/%s", srcPath.Data(), dirEntry);
+					if (ux.IsRegular(fileName.Data()))  lofFiles.Add(new TObjString(dirEntry));
+				}
+				if (lofFiles.GetEntries() == 0) {
+					gMrbLog->Err() << "No files to install from directory " << srcPath << endl;
+					gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
+					nofErrors++;
+				} else {
+					TIterator * iter = lofFiles.MakeIterator();
+					TObjString * os;
+					while (os = (TObjString *) iter->Next()) {
+						TString srcFile = os->String();
+						TString destFile = os->String();
+						destFile.ReplaceAll("NNN", Form("%d", nrdo));
+						if (this->ExpandFile(nrdo, srcPath, srcFile, destPath, destFile)) {
+							cout	<< setblue << "   ... " << srcFile << " -> " << destFile
+									<< setblack << endl;
+						} else {
+							nofErrors++;
+							cout	<< "   ... " << srcFile << " -> " << destFile
+									<< setred << " (with errors)" << setblack << endl;
+						}
+					}
+				}
+			}
+		}
 	}
+
 	this->Get(templatePath, "TemplatePath");
 
 	if (smode == kModeSingleProc)	templatePath += "/singleproc";
@@ -601,7 +648,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	gSystem->ExpandPathName(templatePath);
 
 	TString nodelistFile = this->GetPath();
-	if (!nodelistFile.BeginsWith("/")) {
+	if (!nodelistFile.BeginsWith("/") && !nodelistFile.BeginsWith("./")) {
 		nodelistFile = this->GetHomeDir();
 		nodelistFile += "/";
 		nodelistFile += this->GetPath();
@@ -789,15 +836,16 @@ Bool_t TMbsSetup::CreateNodeList(TString & NodeListFile) {
 	return(kTRUE);
 }
 
-Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & SetupFile, TString & DestPath) {
+Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & SrcFile, TString & DestPath, TString & DestFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsSetup::ExpandFile
 // Purpose:        Expand setup file
 // Arguments:      Int_t ProcID                 -- readout proc id
 //                 TString & TemplatePath       -- where templates reside
-//                 TString & SetupFile          -- file name
+//                 TString & SrcFile            -- template source
 //                 TString & DestPath           -- destination
+//                 TString & DestFile           -- where to write expanded code
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Opens a template file and expands it.
@@ -810,7 +858,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 	Int_t nofReadouts = this->GetNofReadouts();
 	
 	TString mbsPath = this->GetPath();
-	if (!mbsPath.BeginsWith("/")) {
+	if (!mbsPath.BeginsWith("/") && !mbsPath.BeginsWith("./")) {
 		mbsPath = this->GetHomeDir();
 		mbsPath += "/";
 		mbsPath += this->GetPath();
@@ -827,14 +875,14 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 		
 	TString templateFile = TemplatePath;
 	templateFile += "/";
-	templateFile += SetupFile;
+	templateFile += SrcFile;
 
 	TMrbTemplate stpTmpl;
 	if (!stpTmpl.Open(templateFile, &fLofSetupTags)) return(kFALSE);
 
 	TString setupFile = DestPath;
 	setupFile += "/";
-	setupFile += SetupFile;
+	setupFile += DestFile;
 
 	ofstream stp(setupFile.Data(), ios::out);
 	if (!stp.good()) {	
@@ -911,12 +959,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetSbsSetupPath:
 					for (Int_t i = 0; i < nofReadouts; i++) {
-						TString path = mbsPath;
-						path += "/";
-						path += this->ReadoutProc(i)->GetPath();
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoNo", (Int_t) i);
-						stpTmpl.Substitute("$rdoPath", path);
+						stpTmpl.Substitute("$rdoPath", this->ReadoutProc(i)->GetPath());
 						stpTmpl.WriteCode(stp);
 					}
 					break;
@@ -953,23 +998,13 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					}
 					break;
 
-				case kLoadMLSetup:
-				case kLoadSPSetup:
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$mbsPath", mbsPath);
-					stpTmpl.WriteCode(stp);
-					break;
-
 				case kStartReadout:
 				case kStopReadout:
 				case kReloadReadout:
 					for (Int_t i = 0; i < nofReadouts; i++) {
-						TString path = mbsPath;
-						path += "/";
-						path += this->ReadoutProc(i)->GetPath();
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoProc", this->ReadoutProc(i)->GetProcName());
-						stpTmpl.Substitute("$rdoPath", path);
+						stpTmpl.Substitute("$rdoPath", this->ReadoutProc(i)->GetPath());
 						stpTmpl.WriteCode(stp);
 					}
 					break;
@@ -982,9 +1017,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					stpTmpl.WriteCode(stp);
 					break;
 
-				case kSetDispRdo1:
+				case kSetDispRdo:
 					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$rdoProc", this->ReadoutProc(0)->GetProcName());
+					stpTmpl.Substitute("$rdoProc", this->ReadoutProc(ProcID)->GetProcName());
 					stpTmpl.WriteCode(stp);
 					break;
 
@@ -1107,29 +1142,6 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemCamacBase", this->EncodeArray(arrayData, kNofCrates, 16));
-						stpTmpl.WriteCode(stp);
-					}
-					break;
-
-				case kSetRemCamacOffset:
-					{
-						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
-						TString res;
-						UInt_t memOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacOffset"), 0);
-						if (memOffs == 0) {
-							this->GetRcVal(memOffs, "RemoteCamacOffset", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
-						} 
-						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						for (Int_t i = 0; i < n; i++) {
-							Int_t crate = lofCrates[i];
-							if (crate == 0) {
-								arrayData[crate] = 0;
-							} else {
-								arrayData[crate] = memOffs;
-							}
-						}
-						stpTmpl.InitializeCode();
-						stpTmpl.Substitute("$rdoRemCamacOffset", this->EncodeArray(arrayData, kNofCrates, 16));
 						stpTmpl.WriteCode(stp);
 					}
 					break;
@@ -1307,15 +1319,17 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetRdoFlag:
-					for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
-					Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-					for (Int_t i = 0; i < n; i++) {
-						Int_t crate = lofCrates[i];
-						arrayData[crate] = 1;
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (Int_t i = 0; i < n; i++) {
+							Int_t crate = lofCrates[i];
+							arrayData[crate] = 1;
+						}
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoFlagArr", this->EncodeArray(arrayData, kNofCrates));
+						stpTmpl.WriteCode(stp);
 					}
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$rdoFlagArr", this->EncodeArray(arrayData, kNofCrates));
-					stpTmpl.WriteCode(stp);
 					break;
 
 				case kSetControllerID:
@@ -1376,12 +1390,14 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetTrigModStation:
-					for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
-					Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
-					arrayData[crate] = 1;
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$trigStatArr", this->EncodeArray(arrayData, kNofCrates));
-					stpTmpl.WriteCode(stp);
+					{
+						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
+						arrayData[crate] = 1;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$trigStatArr", this->EncodeArray(arrayData, kNofCrates));
+						stpTmpl.WriteCode(stp);
+					}
 					break;
 
 				case kSetTrigModFastClear:
@@ -1410,12 +1426,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 				case kLoadRdoSetup:
 				case kStartRdoTask:
 					{
-						TString path = mbsPath;
-						path += "/";
-						path += this->ReadoutProc(ProcID)->GetPath();
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$mbsPath", mbsPath);
-						stpTmpl.Substitute("$rdoPath", path);
+						stpTmpl.Substitute("$rdoPath", this->ReadoutProc(ProcID)->GetPath());
 						stpTmpl.WriteCode(stp);
 					}
 					break;
@@ -1452,29 +1465,27 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetVsbAddr:
-					{
-						if (sModeIdx == kModeMultiProc) {
-							if (!gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
-								gMrbLog->Err() << "TMbsSetup.ConfigVSB has to be set in a MULTIPROC environment" << endl;
-								gMrbLog->Flush(this->ClassName(), "ExpandFile");
-								return(kFALSE);
-							}
-							stpTmpl.InitializeCode("%B%");
-							stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
-							stpTmpl.Substitute("$vsbAddr",this->EvtBuilder()->GetVSBAddr(), 16);
-							stpTmpl.WriteCode(stp);
-							for (Int_t i = 0; i < nofReadouts; i++) {
-								stpTmpl.InitializeCode("%L%");
-								stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
-								stpTmpl.Substitute("$vsbAddr", this->ReadoutProc(i)->GetVSBAddr(), 16);
-								stpTmpl.WriteCode(stp);
-							}
-						} else if (gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
-								stpTmpl.InitializeCode();
-								stpTmpl.Substitute("$procName", this->EvtBuilder()->GetProcName());
-								stpTmpl.Substitute("$vsbAddr", this->EvtBuilder()->GetVSBAddr(), 16);
-								stpTmpl.WriteCode(stp);
+					if (sModeIdx == kModeMultiProc) {
+						if (!gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
+							gMrbLog->Err() << "TMbsSetup.ConfigVSB has to be set in a MULTIPROC environment" << endl;
+							gMrbLog->Flush(this->ClassName(), "ExpandFile");
+							return(kFALSE);
 						}
+						stpTmpl.InitializeCode("%B%");
+						stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
+						stpTmpl.Substitute("$vsbAddr",this->EvtBuilder()->GetVSBAddr(), 16);
+						stpTmpl.WriteCode(stp);
+						for (Int_t i = 0; i < nofReadouts; i++) {
+							stpTmpl.InitializeCode("%L%");
+							stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
+							stpTmpl.Substitute("$vsbAddr", this->ReadoutProc(i)->GetVSBAddr(), 16);
+							stpTmpl.WriteCode(stp);
+						}
+					} else if (gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
+							stpTmpl.InitializeCode();
+							stpTmpl.Substitute("$procName", this->EvtBuilder()->GetProcName());
+							stpTmpl.Substitute("$vsbAddr", this->EvtBuilder()->GetVSBAddr(), 16);
+							stpTmpl.WriteCode(stp);
 					}
 					break;
 

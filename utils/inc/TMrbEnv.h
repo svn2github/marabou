@@ -8,7 +8,7 @@
 // Class:          TMrbEnv       -- provide an extended TEnv
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEnv.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEnv.h,v 1.8 2006-10-31 15:46:33 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -22,6 +22,7 @@
 #include "TRegexp.h"
 
 #include "TMrbNamedX.h"
+#include "TMrbLofNamedX.h"
 #include "TMrbString.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
@@ -71,8 +72,8 @@ class TMrbEnv : public TObject {
 		const Char_t * GetDefault(TString & Result, const Char_t * Resource, const Char_t * Default = "");	// ... ascii
 
 																				// set resource(s) from defaults
-		Int_t CopyDefaults(const Char_t * Resource, Bool_t ExactMatch = kTRUE, Bool_t OverWrite = kFALSE);
-		Int_t CopyDefaults(const TRegexp & Regexp, Bool_t OverWrite = kFALSE);
+		Int_t CopyDefaults(const Char_t * Resource, Bool_t ExactMatch = kTRUE, Bool_t OverWrite = kFALSE, TMrbLofNamedX * LofSubstitutions = NULL);
+		Int_t CopyDefaults(const TRegexp & Regexp, Bool_t OverWrite = kFALSE, TMrbLofNamedX * LofSubstitutions = NULL);
 
 		Int_t SetUndef(const Char_t * Resource, Bool_t ExactMatch = kTRUE);		// deactivate resource(s)
 		Int_t SetUndef(const TRegexp & Regexp);

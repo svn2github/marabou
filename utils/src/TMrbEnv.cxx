@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEnv.cxx,v 1.13 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEnv.cxx,v 1.14 2006-10-31 15:46:33 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -674,15 +674,16 @@ Int_t TMrbEnv::GetDefault(const Char_t * Resource, Int_t Default) {
 	return(resValue);
 }
 
-Int_t TMrbEnv::CopyDefaults(const Char_t * Resource, Bool_t ExactMatch, Bool_t OverWrite) {
+Int_t TMrbEnv::CopyDefaults(const Char_t * Resource, Bool_t ExactMatch, Bool_t OverWrite, TMrbLofNamedX * LofSubstitutions) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEnv::CopyDefaults
 // Purpose:        Copy a resource value from defaults
-// Arguments:      Char_t * Resource   -- resource name
-//                 Bool_t ExactMatch   -- how to match resource names?
-//                 Bool_t OverWrite    -- overwrite existing resources?
-// Results:        Int_t NofRes        -- number of resources copied
+// Arguments:      Char_t * Resource                  -- resource name
+//                 Bool_t ExactMatch                  -- how to match resource names?
+//                 Bool_t OverWrite                   -- overwrite existing resources?
+//                 TMrbLofNamedX * LofSubstitutions   -- list of substitutions to be performed
+// Results:        Int_t NofRes                       -- number of resources copied
 // Exceptions:
 // Description:    Sets a resource to its default value.
 // Keywords:
@@ -698,7 +699,8 @@ Int_t TMrbEnv::CopyDefaults(const Char_t * Resource, Bool_t ExactMatch, Bool_t O
 		return(-1);
 	}
 
-	fResourceName = fPrefix + Resource;
+	TString resName = Resource;
+	fResourceName = fPrefix + resName;
 
 	Bool_t wildCard = (fResourceName.Index("*", 0) >= 0);
 
@@ -711,7 +713,15 @@ Int_t TMrbEnv::CopyDefaults(const Char_t * Resource, Bool_t ExactMatch, Bool_t O
 				gMrbLog->Flush(this->ClassName(), "CopyDefaults");
 				return(-1);
 			}
-			return(this->Set(Resource, resValue.Data()) ? 1 : -1);
+			if (LofSubstitutions != NULL) {
+				TIterator * siter = LofSubstitutions->MakeIterator();
+				TMrbNamedX * s;
+				while (s = (TMrbNamedX *) siter->Next()) {
+					resName.ReplaceAll(s->GetName(), s->GetTitle());
+					resValue.ReplaceAll(s->GetName(), s->GetTitle());
+				}
+			}
+			return(this->Set(resName.Data(), resValue.Data()) ? 1 : -1);
 		} else {
 			return(0);
 		}
@@ -719,13 +729,18 @@ Int_t TMrbEnv::CopyDefaults(const Char_t * Resource, Bool_t ExactMatch, Bool_t O
 		resPattern = fResourceName;
 		if (!wildCard) resPattern += ".*";
 		TRegexp rexp(resPattern.Data(), kTRUE);
-		nofRes = this->CopyDefaults(rexp, OverWrite);
+		nofRes = this->CopyDefaults(rexp, OverWrite, LofSubstitutions);
 		if (nofRes == -1) {
 			gMrbLog->Err() << "No resource matching \"" << resPattern << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "CopyDefaults");
 			return(-1);
 		} else {
 			if (nofRes > 0) {
+				if (LofSubstitutions != NULL) {
+					TIterator * siter = LofSubstitutions->MakeIterator();
+					TMrbNamedX * s;
+					while (s = (TMrbNamedX *) siter->Next()) resPattern.ReplaceAll(s->GetName(), s->GetTitle());
+				}
 				gMrbLog->Out()	<< "Copied " << nofRes
 								<< " resource(s) matching \"" << resPattern << "\"" << endl;
 				gMrbLog->Flush(this->ClassName(), "CopyDefaults", setblue);
@@ -735,26 +750,19 @@ Int_t TMrbEnv::CopyDefaults(const Char_t * Resource, Bool_t ExactMatch, Bool_t O
 	}
 }
 
-Int_t TMrbEnv::CopyDefaults(const TRegexp & Regexp, Bool_t OverWrite) {
+Int_t TMrbEnv::CopyDefaults(const TRegexp & Regexp, Bool_t OverWrite, TMrbLofNamedX * LofSubstitutions) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEnv::CopyDefaults
 // Purpose:        Copy resource values within regular expression
-// Arguments:      TRegexp Regexp      -- regular expression
-//                 Bool_t OverWrite    -- overwrite existing resources?
-// Results:        Int_t NofRes        -- number of resources copied
+// Arguments:      TRegexp Regexp                     -- regular expression
+//                 Bool_t OverWrite                   -- overwrite existing resources?
+//                 TMrbLofNamedX * LofSubstitutions   -- list of substitutions to be performed
+// Results:        Int_t NofRes                       -- number of resources copied
 // Exceptions:
 // Description:    Sets resource(s) to default value(s).
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
-
-	TString resEntry;
-	TString resName;
-	TString resValue, rv;
-	TString pfs;
-	ifstream dFile;
-	Int_t n;
-	Int_t nofRes;
 
 	if (!this->HasDefaults()) {
 		gMrbLog->Err() << "No default resources present" << endl;
@@ -762,38 +770,35 @@ Int_t TMrbEnv::CopyDefaults(const TRegexp & Regexp, Bool_t OverWrite) {
 		return(-1);
 	}
 
-	dFile.open(fDefaultsFile.Data(), ios::in);
-	if (!dFile.good()) {
-		gMrbLog->Err() << gSystem->GetError() << " - " << fDefaultsFile << endl;
-		gMrbLog->Flush(this->ClassName(), "CopyDefaults");
-		return(-1);
-	}
-
 	TRegexp infoRexp("*.Info.*", kTRUE);
 
-	nofRes = 0;
-	pfs = fPrefix;
+	Int_t nofRes = 0;
+	TString pfs = fPrefix;
 	this->SetPrefix("");
-	while (!dFile.eof()) {
-		resEntry.ReadLine(dFile, kFALSE);
-		resEntry = resEntry.Strip(TString::kBoth);
-		if (resEntry(0) == '#') continue;
-		n = resEntry.Index(":");
-		if (n > 0) {
-			resName = resEntry(0, n);
-			if (resName.Index(Regexp) == -1) continue;
-			if (resName.Index(infoRexp) != -1) continue;
-			rv = fCurEnv->GetValue(resName.Data(), "<undef>");
-			if (OverWrite || (rv.CompareTo("<undef>") == 0)) {
-				resValue = fDefaultsEnv->GetValue(resName, "<undef>");	// read as ascii
-				if (resValue.CompareTo("<undef>") != 0) {
-					if (this->Set(resName.Data(), resValue.Data())) nofRes++;
-				}
+	TList * lofDefaults = (TList *) fDefaultsEnv->GetTable();
+	TIterator * iter = lofDefaults->MakeIterator();
+	TEnvRec * r;
+	while (r = (TEnvRec *) iter->Next()) {
+		TString resName = r->GetName();
+		TString resValue = r->GetValue();
+		if (resName.Index(Regexp) == -1) continue;
+		if (resName.Index(infoRexp) != -1) continue;
+		if (LofSubstitutions != NULL) {
+			TIterator * siter = LofSubstitutions->MakeIterator();
+			TMrbNamedX * s;
+			while (s = (TMrbNamedX *) siter->Next()) {
+				resName.ReplaceAll(s->GetName(), s->GetTitle());
+				resValue.ReplaceAll(s->GetName(), s->GetTitle());
+			}
+		}
+		TString rv = fCurEnv->GetValue(resName.Data(), "<undef>");
+		if (OverWrite || (rv.CompareTo("<undef>") == 0)) {
+			if (resValue.CompareTo("<undef>") != 0) {
+				if (this->Set(resName.Data(), resValue.Data())) nofRes++;
 			}
 		}
 	}
 	fPrefix = pfs;
-	dFile.close();
 	return(nofRes);
 }
 

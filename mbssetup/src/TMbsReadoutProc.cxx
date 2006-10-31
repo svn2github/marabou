@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.20 2006-10-13 11:31:42 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.21 2006-10-31 15:44:55 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -53,8 +53,10 @@ TMbsReadoutProc::TMbsReadoutProc(Int_t ProcNo) {
 	fId = ProcNo;		// store process number
 	if (fId >= 0) {
 		rdoName = "Readout";
-		rdoName += fId + 1;
-		gMbsSetup->CopyDefaults(rdoName.Data(), kFALSE);	// get defaults
+		rdoName += fId;
+		TMrbLofNamedX lofSubs;
+		lofSubs.AddNamedX(0, "$rdoNo", Form("%d", fId));
+		gMbsSetup->CopyDefaults("Readout$rdoNo", kFALSE, kFALSE, &lofSubs);	// get defaults
 	}
 	fTriggerModule = new TMbsTriggerModule(fId);		// alloc trigger module
 }
@@ -75,7 +77,7 @@ void TMbsReadoutProc::RemoveSetup() {
 
 	if (fId >= 0) {
 		rdoName = "Readout";
-		rdoName += fId + 1;
+		rdoName += fId;
 		gMbsSetup->Remove(rdoName.Data(), kFALSE);	// remove entries
 	}
 }
@@ -96,8 +98,10 @@ void TMbsReadoutProc::Reset() {
 
 	if (fId >= 0) {
 		rdoName = "Readout";
-		rdoName += fId + 1;
-		gMbsSetup->CopyDefaults(rdoName.Data(), kFALSE, kTRUE);	// force copy
+		rdoName += fId;
+		TMrbLofNamedX lofSubs;
+		lofSubs.AddNamedX(0, "$rdoNo", Form("%d", fId));
+		gMbsSetup->CopyDefaults("Readout$rdoNo", kFALSE, kFALSE, &lofSubs);	// get defaults
 	}
 }
 
@@ -132,8 +136,8 @@ Bool_t TMbsReadoutProc::SetProcName(const Char_t * ProcName) {
 		gMrbLog->Flush(this->ClassName(), "SetName");
 		return(kFALSE);
 	} else {
-		gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "Name"), ProcName);
-		gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "Address"), ia->GetHostName());
+		gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "Name"), ProcName);
+		gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "Address"), ia->GetHostName());
 		cout	<< this->ClassName() << "::SetName(): " << ProcName
 				<< " has addr " << ia->GetHostName()
 				<< " (" << ia->GetHostAddress() << ")"
@@ -179,7 +183,7 @@ const Char_t * TMbsReadoutProc::GetProcName() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Get(fName, gMbsSetup->Resource(r, "Readout", fId + 1, "Name"));
+	gMbsSetup->Get(fName, gMbsSetup->Resource(r, "Readout", fId, "Name"));
 	return(fName.Data());
 }
 
@@ -196,7 +200,7 @@ const Char_t * TMbsReadoutProc::GetProcAddr() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Get(fAddr, gMbsSetup->Resource(r, "Readout", fId + 1, "Address"));
+	gMbsSetup->Get(fAddr, gMbsSetup->Resource(r, "Readout", fId, "Address"));
 	return(fAddr.Data());
 }
 
@@ -232,7 +236,7 @@ Bool_t TMbsReadoutProc::SetType(const Char_t * ProcType) {
 	proc += "(";
 	proc += procType->GetIndex();
 	proc += ")";
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "Type"), proc.Data());
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "Type"), proc.Data());
 	return(kTRUE);
 }
 
@@ -268,7 +272,7 @@ Bool_t TMbsReadoutProc::SetType(EMbsProcType ProcType) {
 	proc += "(";
 	proc += procType->GetIndex();
 	proc += ")";
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "Type"), proc.Data());
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "Type"), proc.Data());
 	return(kTRUE);
 }
 
@@ -289,7 +293,7 @@ TMrbNamedX * TMbsReadoutProc::GetType() const {
 	TString resValue;
 	Int_t n;
 
-	gMbsSetup->Get(resValue, gMbsSetup->Resource(r, "Readout", fId + 1, "Type"));
+	gMbsSetup->Get(resValue, gMbsSetup->Resource(r, "Readout", fId, "Type"));
 	if ((n = resValue.Index("(")) >= 0) resValue = resValue(0, n);
 	procType = gMbsSetup->fLofProcs.FindByName(resValue, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	return(procType);
@@ -340,7 +344,7 @@ Bool_t TMbsReadoutProc::SetPath(const Char_t * Path, Bool_t Create) {
 		return(kFALSE);
 	}
 
-	if (!pathName.BeginsWith("/")) {
+	if (!pathName.BeginsWith("/") && !pathName.BeginsWith("./")) {
 		pathName = gMbsSetup->GetHomeDir();
 		pathName += "/";
 		pathName += gMbsSetup->GetPath();
@@ -365,7 +369,7 @@ Bool_t TMbsReadoutProc::SetPath(const Char_t * Path, Bool_t Create) {
 			return(kFALSE);
 		}
 	}
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "Path"), Path);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "Path"), Path);
 	return(kTRUE);
 }
 
@@ -382,7 +386,7 @@ const Char_t * TMbsReadoutProc::GetPath() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Get(fPath, gMbsSetup->Resource(r, "Readout", fId + 1, "Path"));
+	gMbsSetup->Get(fPath, gMbsSetup->Resource(r, "Readout", fId, "Path"));
 	return(fPath.Data());
 }
 
@@ -402,7 +406,7 @@ Bool_t TMbsReadoutProc::SetCrate(Int_t Crate) {
 
 	if (fId < 0) return(kFALSE);
 
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "Crate"), Crate);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "Crate"), Crate);
 	return(kTRUE);
 }
 
@@ -419,7 +423,7 @@ Int_t TMbsReadoutProc::GetCrate() const {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId + 1, "Crate"), 0));
+	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "Crate"), 0));
 }
 
 Bool_t TMbsReadoutProc::SetCratesToBeRead(Int_t C1, Int_t C2, Int_t C3, Int_t C4, Int_t C5) {
@@ -465,7 +469,7 @@ Bool_t TMbsReadoutProc::SetCratesToBeRead(Int_t C1, Int_t C2, Int_t C3, Int_t C4
 		cstr = gMbsSetup->EncodeArray(lofCrates, nofCrates);
 		cstr = cstr(1, cstr.Length() - 2);				// strip parens "(...)"
 	}
-	return(gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "CratesToBeRead"), cstr.Data()));
+	return(gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "CratesToBeRead"), cstr.Data()));
 }
 
 Int_t TMbsReadoutProc::GetCratesToBeRead(TArrayI & LofCrates) const {
@@ -489,7 +493,7 @@ Int_t TMbsReadoutProc::GetCratesToBeRead(TArrayI & LofCrates) const {
 	Int_t nofCrates;
 	TString r;
 
-	gMbsSetup->Get(crateString, gMbsSetup->Resource(r, "Readout", fId + 1, "CratesToBeRead"));
+	gMbsSetup->Get(crateString, gMbsSetup->Resource(r, "Readout", fId, "CratesToBeRead"));
 	crateString += ",";
 
 	n1 = 0;
@@ -545,7 +549,7 @@ Bool_t TMbsReadoutProc::SetController(const Char_t * ContrlType) {
 	cntrl += "(";
 	cntrl += contrlType->GetIndex();
 	cntrl += ")";
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "Controller"), cntrl.Data());
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "Controller"), cntrl.Data());
 	return(kTRUE);
 }
 
@@ -581,7 +585,7 @@ Bool_t TMbsReadoutProc::SetController(EMbsControllerType ContrlType) {
 	cntrl += "(";
 	cntrl += contrlType->GetIndex();
 	cntrl += ")";
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "Controller"), cntrl.Data());
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "Controller"), cntrl.Data());
 	return(kTRUE);
 }
 
@@ -602,7 +606,7 @@ TMrbNamedX * TMbsReadoutProc::GetController() const {
 	TString resValue;
 	Int_t n;
 
-	gMbsSetup->Get(resValue, gMbsSetup->Resource(r, "Readout", fId + 1, "Controller"));
+	gMbsSetup->Get(resValue, gMbsSetup->Resource(r, "Readout", fId, "Controller"));
 	if ((n = resValue.Index("(")) >= 0) resValue = resValue(0, n);
 	contrlType = gMbsSetup->fLofControllers.FindByName(resValue, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	return(contrlType);
@@ -621,7 +625,7 @@ Bool_t TMbsReadoutProc::SetVSBAddr(UInt_t Addr) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "VSBAddr"), (Int_t) Addr, 16);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "VSBAddr"), (Int_t) Addr, 16);
 	return(kTRUE);
 }
 
@@ -638,7 +642,7 @@ UInt_t TMbsReadoutProc::GetVSBAddr() const {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId + 1, "VSBAddr"), 0));
+	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "VSBAddr"), 0));
 }
 
 Bool_t TMbsReadoutProc::SetPipeBase(UInt_t Addr) {
@@ -654,7 +658,7 @@ Bool_t TMbsReadoutProc::SetPipeBase(UInt_t Addr) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "LocalPipeBase"), (Int_t) Addr, 16);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "LocalPipeBase"), (Int_t) Addr, 16);
 	return(kTRUE);
 }
 
@@ -671,7 +675,7 @@ UInt_t TMbsReadoutProc::GetPipeBase() const {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId + 1, "RdPipeBaseAddr"), 0));
+	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "RdPipeBaseAddr"), 0));
 }
 
 Bool_t TMbsReadoutProc::SetSevtSize(Int_t Trigger, Int_t SevtSize) {
@@ -696,9 +700,9 @@ Bool_t TMbsReadoutProc::SetSevtSize(Int_t Trigger, Int_t SevtSize) {
 	}
 
 	if (Trigger == 0) {
-		gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "SevtSize"), SevtSize);
+		gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "SevtSize"), SevtSize);
 	} else {
-		gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "SevtSize.Trigger", Trigger), SevtSize);
+		gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "SevtSize.Trigger", Trigger), SevtSize);
 	}
 	return(kTRUE);
 }
@@ -724,9 +728,9 @@ Int_t TMbsReadoutProc::GetSevtSize(Int_t Trigger) const {
 	}
 
 	if (Trigger == 0) {
-		return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId + 1, "SevtSize"), 0));
+		return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "SevtSize"), 0));
 	} else {
-		return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId + 1, "SevtSize.Trigger", Trigger), 0));
+		return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "SevtSize.Trigger", Trigger), 0));
 	}
 }
 
@@ -743,7 +747,7 @@ Bool_t TMbsReadoutProc::SetCodeName(const Char_t * CodeName) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "CodeName"), CodeName);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "CodeName"), CodeName);
 	return(kTRUE);
 }
 
@@ -760,7 +764,7 @@ const Char_t * TMbsReadoutProc::GetCodeName() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Get(fCode, gMbsSetup->Resource(r, "Readout", fId + 1, "CodeName"));
+	gMbsSetup->Get(fCode, gMbsSetup->Resource(r, "Readout", fId, "CodeName"));
 	return(fCode.Data());
 }
 

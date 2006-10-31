@@ -8,7 +8,7 @@
 // Class:          TMbsSetup            -- base class
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetup.h,v 1.8 2006-10-13 11:31:42 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.h,v 1.9 2006-10-31 15:44:55 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -83,7 +83,7 @@ class TMbsSetup : public TMrbEnv {
 
 	protected:
 		Bool_t GetRcVal(UInt_t & RcValue, const Char_t * Resource, const Char_t * ContrlType = "*", const Char_t * ProcType = "*", const Char_t * Mode = "*", const Char_t * MbsVersion = "*", const Char_t * LynxVersion = "*");
-		Bool_t ExpandFile(Int_t ProcID, TString & TemplatePath, TString & SetupFile, TString & DestPath);	// expand setup file
+		Bool_t ExpandFile(Int_t ProcID, TString & TemplatePath, TString & SetupFile, TString & DestPath, TString & DestFile);	// expand setup file
 		Bool_t CreateNodeList(TString & NodeListFile);				// create node list
 		Bool_t WriteRhostsFile(TString & RhostsFile);				// rewrite .rhosts
 
