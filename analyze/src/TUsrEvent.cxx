@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvent.cxx,v 1.2 2005-12-20 14:26:46 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvent.cxx,v 1.3 2006-11-02 12:02:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +41,11 @@ TUsrEvent::TUsrEvent() {
 	fEventNumber = 0;
 	fNofEvents = 0;
 	fScaleDown = 0;
+
+	fClockRes = 0;
+	fClockSecs = 0;
+	fClockNsecs = 0;
+	fTimeRS = 0;
 
 	fLofHBXs.Delete();
 	fLofSubevents.Delete();

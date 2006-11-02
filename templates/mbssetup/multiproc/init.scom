@@ -15,4 +15,4 @@ set flushtime $flushTime
 %%BeginOfCode%%
 set dispatcher $rdoProc
 %%EndOfCode%%
-%%SET_DISP_RDO1%%
+%%SET_DISP_RDO%%

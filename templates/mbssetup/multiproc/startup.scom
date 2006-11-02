@@ -1,6 +1,6 @@
 %%BeginOfCode%%
 set dispatcher $rdoProc
-@$rdoPath/start_with_prm
+@./$rdoPath/start_with_prm
 %%EndOfCode%%
 %%START_READOUT%%
 %%BeginOfCode%%
@@ -13,4 +13,4 @@ enable tcp
 %%BeginOfCode%%
 set dispatcher $rdoProc
 %%EndOfCode%%
-%%SET_DISP_RDO1%%
+%%SET_DISP_RDO%%

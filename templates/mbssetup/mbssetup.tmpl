@@ -3,8 +3,8 @@
 # Name             mbssetup.tmpl
 # Purpose:         Default settings to be used by TMbsSetup
 # Author:          MARaBOU
-# Revision:        $Id: mbssetup.tmpl,v 1.2 2006-10-16 12:54:19 Rudolf.Lutter Exp $
-# Date:            $Date: 2006-10-16 12:54:19 $
+# Revision:        $Id: mbssetup.tmpl,v 1.3 2006-11-02 12:02:26 Rudolf.Lutter Exp $
+# Date:            $Date: 2006-11-02 12:02:26 $
 # URL:             
 #/////////////////////////////////////////////////////////////////////////////
 
@@ -29,78 +29,40 @@ TMbsSetup.EvtBuilder.VSBAddr:
 TMbsSetup.MaxReadouts:							2
 TMbsSetup.NofReadouts:							0
 TMbsSetup.Mode:
-TMbsSetup.Readout1.Name:
-TMbsSetup.Readout1.Address:
-TMbsSetup.Readout1.Type:
-TMbsSetup.Readout1.Path:						vme1
-TMbsSetup.Readout1.Crate:						0
-TMbsSetup.Readout1.CratesToBeRead:				1
-TMbsSetup.Readout1.Controller:
-TMbsSetup.Readout1.SourceCode:				
-TMbsSetup.Readout1.RdPipeBaseAddr:                
-TMbsSetup.Readout1.RemoteMemoryBase:
-TMbsSetup.Readout1.RemoteMemoryOffset:
-TMbsSetup.Readout1.RemoteMemoryLength:
-TMbsSetup.Readout1.RemoteCamacBase:
-TMbsSetup.Readout1.RemoteCamacOffset:
-TMbsSetup.Readout1.RemoteCamacLength:
-TMbsSetup.Readout1.LocalEsoneBase:
-TMbsSetup.Readout1.LocalMemoryBase:
-TMbsSetup.Readout1.LocalMemoryLength:
-TMbsSetup.Readout1.LocalPipeBase:
-TMbsSetup.Readout1.LocalPipeOffset:
-TMbsSetup.Readout1.LocalPipeSegmentLength:
-TMbsSetup.Readout1.LocalPipeLength:
-TMbsSetup.Readout1.VSBAddr:
-TMbsSetup.Readout1.TriggerModule.Type:
-TMbsSetup.Readout1.TriggerModule.Mode:			POLLING(1)
-TMbsSetup.Readout1.TriggerModule.ConvTime:		500
-TMbsSetup.Readout1.TriggerModule.FastClearTime:	20
-TMbsSetup.Readout1.TriggerModule.Base:
-TMbsSetup.Readout1.SevtSize:					2048
-TMbsSetup.Readout1.SevtSize.Trigger1:			2048
-TMbsSetup.Readout1.SevtSize.Trigger2:			2048
-TMbsSetup.Readout1.SevtSize.Trigger3:			2048
-TMbsSetup.Readout1.SevtSize.Trigger4:			2048
-TMbsSetup.Readout1.SevtSize.Trigger5:			2048
-TMbsSetup.Readout1.SevtSize.Trigger6:			2048
-TMbsSetup.Readout1.SevtSize.Trigger7:			2048
-TMbsSetup.Readout1.SevtSize.Trigger8:			2048
-
-TMbsSetup.Readout2.Name:
-TMbsSetup.Readout2.Address:
-TMbsSetup.Readout2.Type:
-TMbsSetup.Readout2.Path:						vme2
-TMbsSetup.Readout2.Crate:						0
-TMbsSetup.Readout2.CratesToBeRead:				1
-TMbsSetup.Readout2.Controller:
-TMbsSetup.Readout2.SourceCode:				
-TMbsSetup.Readout2.RdPipeBaseAddr:                
-TMbsSetup.Readout2.RemoteMemoryBase:
-TMbsSetup.Readout2.RemoteMemoryOffset:
-TMbsSetup.Readout2.RemoteMemoryLength:
-TMbsSetup.Readout2.RemoteCamacBase:
-TMbsSetup.Readout2.RemoteCamacOffset:
-TMbsSetup.Readout2.RemoteCamacLength:
-TMbsSetup.Readout2.LocalEsoneBase:
-TMbsSetup.Readout2.LocalMemoryBase:
-TMbsSetup.Readout2.LocalMemoryLength:
-TMbsSetup.Readout2.LocalPipeBase:
-TMbsSetup.Readout2.LocalPipeOffset:
-TMbsSetup.Readout2.LocalPipeSegmentLength:
-TMbsSetup.Readout2.LocalPipeLength:
-TMbsSetup.Readout2.VSBAddr:
-TMbsSetup.Readout2.TriggerModule.Type:
-TMbsSetup.Readout2.TriggerModule.Mode:			POLLING(1)
-TMbsSetup.Readout2.TriggerModule.ConvTime:		500
-TMbsSetup.Readout2.TriggerModule.FastClearTime:	20
-TMbsSetup.Readout2.TriggerModule.Base:
-TMbsSetup.Readout2.SevtSize:					2048
-TMbsSetup.Readout2.SevtSize.Trigger1:			2048
-TMbsSetup.Readout2.SevtSize.Trigger2:			2048
-TMbsSetup.Readout2.SevtSize.Trigger3:			2048
-TMbsSetup.Readout2.SevtSize.Trigger4:			2048
-TMbsSetup.Readout2.SevtSize.Trigger5:			2048
-TMbsSetup.Readout2.SevtSize.Trigger6:			2048
-TMbsSetup.Readout2.SevtSize.Trigger7:			2048
-TMbsSetup.Readout2.SevtSize.Trigger8:			2048
+TMbsSetup.Readout$rdoNo.Name:
+TMbsSetup.Readout$rdoNo.Address:
+TMbsSetup.Readout$rdoNo.Type:
+TMbsSetup.Readout$rdoNo.Path:						vme$rdoNo
+TMbsSetup.Readout$rdoNo.Crate:						0
+TMbsSetup.Readout$rdoNo.CratesToBeRead:				1
+TMbsSetup.Readout$rdoNo.Controller:
+TMbsSetup.Readout$rdoNo.SourceCode:				
+TMbsSetup.Readout$rdoNo.RdPipeBaseAddr:                
+TMbsSetup.Readout$rdoNo.RemoteMemoryBase:
+TMbsSetup.Readout$rdoNo.RemoteMemoryOffset:
+TMbsSetup.Readout$rdoNo.RemoteMemoryLength:
+TMbsSetup.Readout$rdoNo.RemoteCamacBase:
+TMbsSetup.Readout$rdoNo.RemoteCamacOffset:
+TMbsSetup.Readout$rdoNo.RemoteCamacLength:
+TMbsSetup.Readout$rdoNo.LocalEsoneBase:
+TMbsSetup.Readout$rdoNo.LocalMemoryBase:
+TMbsSetup.Readout$rdoNo.LocalMemoryLength:
+TMbsSetup.Readout$rdoNo.LocalPipeBase:
+TMbsSetup.Readout$rdoNo.LocalPipeOffset:
+TMbsSetup.Readout$rdoNo.LocalPipeSegmentLength:
+TMbsSetup.Readout$rdoNo.LocalPipeLength:
+TMbsSetup.Readout$rdoNo.VSBAddr:
+TMbsSetup.Readout$rdoNo.TriggerModule.Type:
+TMbsSetup.Readout$rdoNo.TriggerModule.Mode:				POLLING(1)
+TMbsSetup.Readout$rdoNo.TriggerModule.ConvTime:			500
+TMbsSetup.Readout$rdoNo.TriggerModule.FastClearTime:	20
+TMbsSetup.Readout$rdoNo.TriggerModule.Base:
+TMbsSetup.Readout$rdoNo.SevtSize:						2048
+TMbsSetup.Readout$rdoNo.SevtSize.Trigger1:				2048
+TMbsSetup.Readout$rdoNo.SevtSize.Trigger2:				2048
+TMbsSetup.Readout$rdoNo.SevtSize.Trigger3:				2048
+TMbsSetup.Readout$rdoNo.SevtSize.Trigger4:				2048
+TMbsSetup.Readout$rdoNo.SevtSize.Trigger5:				2048
+TMbsSetup.Readout$rdoNo.SevtSize.Trigger6:				2048
+TMbsSetup.Readout$rdoNo.SevtSize.Trigger7:				2048
+TMbsSetup.Readout$rdoNo.SevtSize.Trigger8:				2048

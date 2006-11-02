@@ -1,5 +1,5 @@
 %%BeginOfCode%%
 set dispatcher $rdoProc
-@$rdoPath/reload_meb
+@./$rdoPath/reload_meb
 %%EndOfCode%%
 %%RELOAD_READOUT%%

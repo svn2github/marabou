@@ -1,6 +1,6 @@
 start task m_util
 %%BeginOfCode%%
-load setup "$rdoPath/setup_mbs.usf" 
+load setup "./$rdoPath/setup_mbs.usf" 
 %%EndOfCode%%
 %%LOAD_RDO_SETUP%%
 set trig_mod    
@@ -10,7 +10,7 @@ $irqMode irq
 %%EndOfCode%%
 %%SET_IRQ_MODE%%
 %%BeginOfCode%%
-start task m_read_meb "$rdoPath/m_read_meb"
+start task m_read_meb "./$rdoPath/m_read_meb"
 %%EndOfCode%%
 %%START_RDO_TASK%%
 start task m_esone_serv

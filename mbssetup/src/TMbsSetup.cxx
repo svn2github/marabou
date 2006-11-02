@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.43 2006-10-31 16:13:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.44 2006-11-02 12:02:39 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -852,9 +852,6 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TArrayI lofCrates(kNofCrates);
-	TArrayI arrayData(16);
-
 	Int_t nofReadouts = this->GetNofReadouts();
 	
 	TString mbsPath = this->GetPath();
@@ -950,11 +947,14 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 					break;
 
 				case kSetHostFlag:
-					for (Int_t i = 0; i < nofReadouts; i++) arrayData[i] = 1;
-					for (Int_t i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$rdoFlagArr", this->EncodeArray(arrayData, kNofRdoProcs));
-					stpTmpl.WriteCode(stp);
+					{
+						TArrayI arrayData(16);
+						for (Int_t i = 0; i < nofReadouts; i++) arrayData[i] = 1;
+						for (Int_t i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoFlagArr", this->EncodeArray(arrayData, kNofRdoProcs));
+						stpTmpl.WriteCode(stp);
+					}
 					break;
 
 				case kSetSbsSetupPath:
@@ -967,25 +967,28 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 					break;
 
 				case kSetRdPipeBaseAddr:
-					for (Int_t i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
-					for (Int_t i = 0; i < nofReadouts; i++) {
-						UInt_t pipeBase = this->ReadoutProc(i)->GetPipeBase();
-						if (pipeBase == 0) {
-							this->GetRcVal(pipeBase, "RdPipeBaseAddr", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+					{
+							TArrayI arrayData(16);
+						for (Int_t i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
+						for (Int_t i = 0; i < nofReadouts; i++) {
+							UInt_t pipeBase = this->ReadoutProc(i)->GetPipeBase();
+							if (pipeBase == 0) {
+								this->GetRcVal(pipeBase, "RdPipeBaseAddr", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							}
+							if (pipeBase == 0) {
+								gMrbLog->Err()	<< "Base addr for readout pipe (#"
+												<< (i + 1) << ") is 0 (see resource \"TMbsSetup.Readout"
+												<< (i + 1) << ".RdPipeBaseAddr\")" << endl;
+								gMrbLog->Flush(this->ClassName(), "ExpandFile");
+								isOK = kFALSE;
+							} else {
+								arrayData[i] = pipeBase;
+							}
 						}
-						if (pipeBase == 0) {
-							gMrbLog->Err()	<< "Base addr for readout pipe (#"
-											<< (i + 1) << ") is 0 (see resource \"TMbsSetup.Readout"
-											<< (i + 1) << ".RdPipeBaseAddr\")" << endl;
-							gMrbLog->Flush(this->ClassName(), "ExpandFile");
-							isOK = kFALSE;
-						} else {
-							arrayData[i] = pipeBase;
-						}
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoPipeArr", this->EncodeArray(arrayData, kNofRdoProcs, 16));
+						stpTmpl.WriteCode(stp);
 					}
-					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$rdoPipeArr", this->EncodeArray(arrayData, kNofRdoProcs, 16));
-					stpTmpl.WriteCode(stp);
 					break;
 
 				case kSetBuffers:
@@ -1046,6 +1049,8 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetRemMemoryBase:
 					{
+						TArrayI lofCrates(kNofCrates);
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryBase"), 0);
@@ -1074,6 +1079,8 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetRemMemoryOffset:
 					{
+						TArrayI lofCrates(kNofCrates);
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t memOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryOffset"), 0);
@@ -1097,6 +1104,8 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetRemMemoryLength:
 					{
+						TArrayI lofCrates(kNofCrates);
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
@@ -1120,6 +1129,8 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetRemCamacBase:
 					{
+						TArrayI lofCrates(kNofCrates);
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacBase"), 0);
@@ -1148,6 +1159,8 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetRemCamacLength:
 					{
+						TArrayI lofCrates(kNofCrates);
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
@@ -1171,11 +1184,13 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetRemCamacOffset:
 					{
+						TArrayI lofCrates(kNofCrates);
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t memOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacOffset"), 0);
 						if (memOffs == 0) {
-							this->GetRcVal(memOffs, "RemoteCamacBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->GetRcVal(memOffs, "RemoteCamacOffset", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1226,6 +1241,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetLocMemoryBase:
 					{
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalMemoryBase"), 0);
@@ -1241,6 +1257,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetLocMemoryLength:
 					{
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalMemoryLength"), 0);
@@ -1256,6 +1273,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetLocPipeBase:
 					{
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t pipeBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeBase"), 0);
@@ -1271,6 +1289,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetLocPipeOffset:
 					{
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t pipeOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeOffset"), 0);
@@ -1286,6 +1305,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetLocPipeSegLength:
 					{
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t pipeLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeSegmentLength"), 0);
@@ -1301,6 +1321,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetLocPipeLength:
 					{
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t pipeLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeLength"), 0);
@@ -1315,34 +1336,40 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 					break;
 
 				case kSetSevtSize:
-					for (Int_t i = 1; i < kNofTriggers; i++) {
-						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
-						Bool_t found = kFALSE;
-						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						Int_t sevtSize = 0;
-						for (Int_t j = 0; j < n; j++) {
-							Int_t crate = lofCrates[j];
-							sevtSize = this->ReadoutProc(ProcID)->GetSevtSize(i);
-							if (sevtSize == 0) {
-								if (i == 1 || i == 14 || i == 15) sevtSize = this->ReadoutProc(ProcID)->GetSevtSize();
+					{
+						TArrayI lofCrates(kNofCrates);
+						TArrayI arrayData(16);
+						for (Int_t i = 1; i < kNofTriggers; i++) {
+							for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+							Bool_t found = kFALSE;
+							Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+							Int_t sevtSize = 0;
+							for (Int_t j = 0; j < n; j++) {
+								Int_t crate = lofCrates[j];
+								sevtSize = this->ReadoutProc(ProcID)->GetSevtSize(i);
+								if (sevtSize == 0) {
+									if (i == 1 || i == 14 || i == 15) sevtSize = this->ReadoutProc(ProcID)->GetSevtSize();
+								}
+								if (sevtSize > arrayData[crate]) {
+									found = kTRUE;
+									arrayData[crate] = sevtSize;
+								}
 							}
-							if (sevtSize > arrayData[crate]) {
-								found = kTRUE;
-								arrayData[crate] = sevtSize;
+							arrayData[0] = sevtSize;
+							if (found) {
+								stpTmpl.InitializeCode();
+								stpTmpl.Substitute("$trigNo", (Int_t) i);
+								stpTmpl.Substitute("$sevtBufArr", this->EncodeArray(arrayData, kNofCrates));
+								stpTmpl.WriteCode(stp);
 							}
-						}
-						arrayData[0] = sevtSize;
-						if (found) {
-							stpTmpl.InitializeCode();
-							stpTmpl.Substitute("$trigNo", (Int_t) i);
-							stpTmpl.Substitute("$sevtBufArr", this->EncodeArray(arrayData, kNofCrates));
-							stpTmpl.WriteCode(stp);
 						}
 					}
 					break;
 
 				case kSetRdoFlag:
 					{
+						TArrayI lofCrates(kNofCrates);
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1357,6 +1384,8 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetControllerID:
 					{
+						TArrayI lofCrates(kNofCrates);
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						Int_t rdoCrate = this->ReadoutProc(ProcID)->GetCrate();
 						TMrbNamedX * k = this->ReadoutProc(ProcID)->GetType();
@@ -1414,6 +1443,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetTrigModStation:
 					{
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
 						arrayData[crate] = 1;
@@ -1425,6 +1455,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetTrigModFastClear:
 					{
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
 						Int_t fct = this->ReadoutProc(ProcID)->TriggerModule()->GetFastClearTime();
@@ -1437,6 +1468,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetTrigModConvTime:
 					{
+						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						Int_t crate = this->ReadoutProc(ProcID)->GetCrate();
 						arrayData[crate] = this->ReadoutProc(ProcID)->TriggerModule()->GetConversionTime();

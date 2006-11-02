@@ -27,7 +27,7 @@ ML_SETUP: -
 %%SET_HOST_FLAG%%
 
 %%BeginOfCode%%
-       SBS_SETUP_PATH_$rdoNo     = "$rdoPath/setup_mbs.usf", -
+       SBS_SETUP_PATH_$rdoNo     = "./$rdoPath/setup_mbs.usf", -
 %%EndOfCode%%
 %%SET_SBS_SETUP_PATH%%
 
