@@ -7,7 +7,7 @@
 // Purpose:        Class to specify the i/o in an experiment
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbIOSpec.h,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbIOSpec.h,v 1.2 2006-11-02 12:09:30 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -71,6 +71,8 @@ class TMrbIOSpec : public TObject {
 			fOutputMode = TMrbIOSpec::kOutputNone;
 			fParamMode = TMrbIOSpec::kParamNone;
 			fHistoMode = TMrbIOSpec::kHistoNone;
+			fStartEvent = 0;
+			fStopEvent = 0;
 		};
 
 		~TMrbIOSpec() {};							// default dtor
