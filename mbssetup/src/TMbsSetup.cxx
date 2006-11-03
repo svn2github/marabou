@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.46 2006-11-03 08:25:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.47 2006-11-03 08:34:45 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -1021,7 +1021,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 					break;
 
 				case kStartEsone:
-					if (cType->GetIndex() != kControllerNoCamacs) {
+					if (cType->GetIndex() != kControllerNoCamac) {
 						stpTmpl.InitializeCode();
 						stpTmpl.WriteCode(stp);
 					}
