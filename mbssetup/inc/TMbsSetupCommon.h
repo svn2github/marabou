@@ -7,7 +7,7 @@
 // Purpose:        Define a MBS setup: Common defs
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetupCommon.h,v 1.14 2006-10-31 16:13:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetupCommon.h,v 1.15 2006-11-03 07:27:41 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -45,7 +45,8 @@ enum EMbsControllerType		{ 	kControllerUndefined	=	0,				// crate controllers
 								kControllerCAV			=	7,
 								kControllerRIO2			=	kProcRIO2,
 								kControllerRIO3			=	kProcRIO3,
-								kControllerCC32 		=   11
+								kControllerCC32 		=   11,
+								kControllerNoCamac		=	99
 							};
 
 enum EMbsTriggerModuleType	{ 	kTriggerModuleUndefined =	0,			// trigger modules
@@ -102,6 +103,7 @@ enum EMbsSetupTags			{
 								kStartEvtBuilder,
 								kStartRdoTask,
 								kStartReadout,
+								kStartEsone,
 								kStopEvtBuilder,
 								kStopReadout,
 								kTestHostName,
@@ -126,10 +128,11 @@ const SMrbNamedXShort kMbsLofProcs[] =				// list of legal processors
 
 const SMrbNamedXShort kMbsLofControllers[] =		// list of legal crate controllers
 							{
-								{kControllerCVC,	"CVC"			},
-								{kControllerCBV,	"CBV"			},
-								{kControllerCC32,	"CC32"			},
-								{0, 				NULL			}
+								{kControllerNoCamac,	"NoCamac"		},
+								{kControllerCVC,		"CVC"			},
+								{kControllerCBV,		"CBV"			},
+								{kControllerCC32,		"CC32"			},
+								{0, 					NULL			}
 							};
 
 const SMrbNamedXShort kMbsLofTriggerModules[] = 	// list of legal trigger modules
@@ -192,6 +195,7 @@ const SMrbNamedXShort kMbsSetupTags[] =			// list of setup tag words
 								{kStartEvtBuilder,			"START_EVTBUILDER"  		},
 								{kStartRdoTask, 			"START_RDO_TASK"			},
 								{kStartReadout, 			"START_READOUT"				},
+								{kStartEsone,	 			"START_ESONE"				},
 								{kStopEvtBuilder,			"STOP_EVTBUILDER"			},
 								{kStopReadout,				"STOP_READOUT"				},
 								{kTestHostName, 			"TEST_HOSTNAME" 			},

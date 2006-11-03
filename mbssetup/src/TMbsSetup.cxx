@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.44 2006-11-02 12:02:39 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.45 2006-11-03 07:27:41 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -1020,6 +1020,13 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 					stpTmpl.WriteCode(stp);
 					break;
 
+				case kStartEsone:
+					if (cType->GetIndex() != kControllerUndefined) {
+						stpTmpl.InitializeCode();
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
 				case kSetDispRdo:
 					stpTmpl.InitializeCode();
 					stpTmpl.Substitute("$rdoProc", this->ReadoutProc(ProcID)->GetProcName());
@@ -1780,12 +1787,23 @@ Bool_t TMbsSetup::CheckSetup() {
 			} else if (!this->ReadoutProc(n)->TriggerModule()->SetFastClearTime(fct)) nofErrors++;
 
 // TMbsSetup.ReadoutNNN.Controller:
-			resType = this->ReadoutProc(n)->GetController();
-			if (resType == NULL) {
-				gMrbLog->Err() << fResourceName << " is not set" << endl;
-				gMrbLog->Flush(this->ClassName(), "CheckSetup");
-				nofErrors++;
-			} else if (!this->ReadoutProc(n)->SetController((EMbsControllerType) resType->GetIndex())) nofErrors++;
+			TArrayI lofCrates(kNofCrates);
+			Int_t ncrates = this->ReadoutProc(n)->GetCratesToBeRead(lofCrates);
+			Bool_t useCamac = kFALSE;
+			for (Int_t i = 0; i < ncrates; i++) {
+				if (lofCrates[i] > 0) {
+					useCamac = kTRUE;
+					break;
+				}
+			}
+			if (useCamac) {
+				resType = this->ReadoutProc(n)->GetController();
+				if (resType == NULL) {
+					gMrbLog->Err() << fResourceName << " is not set" << endl;
+					gMrbLog->Flush(this->ClassName(), "CheckSetup");
+					nofErrors++;
+				} else if (!this->ReadoutProc(n)->SetController((EMbsControllerType) resType->GetIndex())) nofErrors++;
+			} else if (!this->ReadoutProc(n)->SetController(kControllerNoCamac)) nofErrors++;
 
 // TMbsSetup.ReadoutNNN.VSBAddr:
 // TMbsSetup.ReadoutNNN.PipeBase:

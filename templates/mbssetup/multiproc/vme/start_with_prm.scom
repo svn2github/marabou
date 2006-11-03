@@ -13,4 +13,7 @@ $irqMode irq
 start task m_read_meb "./$rdoPath/m_read_meb"
 %%EndOfCode%%
 %%START_RDO_TASK%%
+%%BeginOfCode%%
 start task m_esone_serv
+%%EndOfCode%%
+%%START_ESONE%%

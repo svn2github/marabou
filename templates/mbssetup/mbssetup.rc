@@ -3,8 +3,8 @@
 # Name             mbssetup.rc
 # Purpose:         Different addr/length settings depending on MBS, CPU etc.
 # Author:          MARaBOU
-# Revision:        $Id: mbssetup.rc,v 1.2 2006-10-16 12:54:19 Rudolf.Lutter Exp $
-# Date:            $Date: 2006-10-16 12:54:19 $
+# Revision:        $Id: mbssetup.rc,v 1.3 2006-11-03 07:30:53 Rudolf.Lutter Exp $
+# Date:            $Date: 2006-11-03 07:30:53 $
 # URL:             
 #/////////////////////////////////////////////////////////////////////////////
 
@@ -23,25 +23,30 @@
 *-*-*-*-*.RdPipeBaseAddr: 				0xd0000000
 
 *-*-*-*-CBV.RemoteMemoryBase:			0xd0380000
+*-*-*-*-NoCamac.RemoteMemoryBase:		0x0
 *-*-*-RIO2-CC32.RemoteMemoryBase:		0xee550000
 *-*-*-RIO3-CC32.RemoteMemoryBase:		0x4f550000
 
 *-*-*-*-*.RemoteMemoryOffset:  			0x0
 
+*-*-*-*-NoCamac.RemoteMemoryLength: 	0x0
 *-*-*-*-CBV.RemoteMemoryLength: 		0x00200000
 *-*-*-*-*.RemoteMemoryLength: 			0x00008000
 
+*-*-*-*-NoCamac.RemoteCamacBase:		0x0
 *-*-*-*-CBV.RemoteCamacBase:			0xd0380000
 *-*-*-RIO2-CC32.RemoteCamacBase:		0xee550000
 *-*-*-RIO3-CC32.RemoteCamacBase:		0x4f550000
 
 *-*-*-*-*.RemoteCamacOffset: 			0x0
 
+*-*-*-*-NoCamac.RemoteCamacLength: 		0x0
 *-*-*-*-CBV.RemoteCamacLength: 			0x00200000
 *-*-*-*-CC32.RemoteCamacLength: 		0x00008000
 
 *-*-*-*-*.LocalEsoneBase:	 			0x0
 
+*-*-*-*-NoCamac.LocalMemoryBase: 		0x0
 *-*-*-*-CBV.LocalMemoryBase: 			0xe2000000
 *-*-*-*-CC32.LocalMemoryBase: 			0xee550000
 
