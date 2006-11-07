@@ -503,7 +503,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	return(mbs);
 }
 
-bool mbs_close_file(MBSDataIO *mbs) {
+boolean mbs_close_file(MBSDataIO *mbs) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_close_file
@@ -1332,7 +1332,7 @@ void mbs_set_sevt_minwc(MBSDataIO *mbs, int wc) {
 	mbs->sevt_minwc = wc;
 }
 
-bool mbs_is_running(MBSDataIO *mbs) {
+boolean mbs_is_running(MBSDataIO *mbs) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_is_running
@@ -1347,7 +1347,7 @@ bool mbs_is_running(MBSDataIO *mbs) {
 	return(mbs->running);
 }
 
-bool mbs_set_stat(MBSDataIO *mbs, int redu, FILE *out) {
+boolean mbs_set_stat(MBSDataIO *mbs, int redu, FILE *out) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_set_stat
@@ -1374,7 +1374,7 @@ bool mbs_set_stat(MBSDataIO *mbs, int redu, FILE *out) {
 	return(TRUE);
 }
 
-bool mbs_show_stat(MBSDataIO *mbs, FILE *out) {
+boolean mbs_show_stat(MBSDataIO *mbs, FILE *out) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_show_stat
@@ -1459,7 +1459,7 @@ bool mbs_show_stat(MBSDataIO *mbs, FILE *out) {
 	return(TRUE);
 }
 
-bool mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
+boolean mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_show
@@ -1497,7 +1497,7 @@ bool mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
 	return(TRUE);
 }
 
-bool mbs_set_show(MBSDataIO *mbs, const char *show_elems, int redu, FILE *out) {
+boolean mbs_set_show(MBSDataIO *mbs, const char *show_elems, int redu, FILE *out) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_set_show
@@ -1555,7 +1555,7 @@ void mbs_set_dump(MBSDataIO *mbs, int count) {
 	mbs->buf_to_be_dumped = count;
 }
 
-bool mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
+boolean mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_set_stream
@@ -1583,7 +1583,7 @@ bool mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
 	return(TRUE);
 }
 
-bool mbs_open_log(const char *logfile) {
+boolean mbs_open_log(const char *logfile) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_open_log
@@ -1607,7 +1607,7 @@ bool mbs_open_log(const char *logfile) {
 	return(TRUE);
 }
 
-bool mbs_open_med(const char *medfile) {
+boolean mbs_open_med(const char *medfile) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_open_med
@@ -1646,7 +1646,7 @@ void mbs_close_med() {
 	if (med_out) fclose(med_out);
 }
 
-bool mbs_open_lmd(const char *lmdfile) {
+boolean mbs_open_lmd(const char *lmdfile) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_open_lmd
@@ -2496,7 +2496,7 @@ MBSBufferElem *_mbs_check_type(unsigned int btype, MBSBufferElem *ltdescr, MBSBu
 	return(&buffer_type_error);
 }
 
-bool _mbs_check_sequence(MBSDataIO *mbs, unsigned int type) {
+boolean _mbs_check_sequence(MBSDataIO *mbs, unsigned int type) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_check_sequence
@@ -2651,7 +2651,7 @@ void _mbs_convert_sheader(MBSDataIO *mbs) {
 	mbs->sevt_id = seh->i_procid;
 }
 
-bool _mbs_check_active(MBSDataIO *mbs) {
+boolean _mbs_check_active(MBSDataIO *mbs) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_check_active
@@ -2677,7 +2677,7 @@ bool _mbs_check_active(MBSDataIO *mbs) {
 	}
 }
 
-bool _mbs_check_dbase(MBSDataIO *mbs) {
+boolean _mbs_check_dbase(MBSDataIO *mbs) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_check_dbase
@@ -2703,7 +2703,7 @@ bool _mbs_check_dbase(MBSDataIO *mbs) {
 	}
 }
 
-bool _mbs_check_buffer_empty(MBSDataIO *mbs) {
+boolean _mbs_check_buffer_empty(MBSDataIO *mbs) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_check_buffer_empty
@@ -3180,13 +3180,13 @@ void _mbs_dump_buffer(MBSDataIO * mbs) {
 	}
 }
 
-void _mbs_set_run_flag(MBSDataIO * mbs, bool flag) {
+void _mbs_set_run_flag(MBSDataIO * mbs, boolean flag) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_set_run_flag
 // Purpose:        Turn on/off run flag
 // Arguments:      MBSDataIO * mbs        -- ptr as returned by mbs_open_file
-//                 bool flag              -- enable/disable run
+//                 boolean flag              -- enable/disable run
 // Results:        --
 // Exceptions:     
 // Description:    Turns run flag on/off.

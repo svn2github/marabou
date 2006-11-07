@@ -164,7 +164,7 @@ SEE ALSO
 
 #define MBS_ODD_NOF_PARAMS		1
 
-typedef int bool;
+typedef int boolean;
 
 /*C_STRUKTUR******************************************************************
 NAME
@@ -243,7 +243,7 @@ SEE ALSO
 *****************************************************************************/
 
 typedef struct {
-	bool is_swapped;
+	boolean is_swapped;
 	int buf_size;
 	int buf_p_stream;
 	int nof_streams;
@@ -341,7 +341,7 @@ typedef struct {
 	char device[MBS_L_STR];
 	char host[MBS_L_STR];
 	unsigned int connection;
-	bool running;
+	boolean running;
 	MBSBufferElem *buftype;
 	int byte_order;
 	MBSShowElem show_elems[MBS_N_BELEMS];
@@ -355,14 +355,14 @@ typedef struct {
 	int cur_bufno;
 	int cur_bufno_stream;
 	int bufno_mbs;
-	bool buf_to_be_dumped;
+	boolean buf_to_be_dumped;
 	unsigned long long buf_ts;
 	unsigned long long buf_ts_start;
 	char *hdr_data;
 	MBSBufferPool buf_pool[MBS_N_BUFFERS];
 	MBSBufferPool * poolpt;
 	char *bufpt;
-	bool buf_valid;
+	boolean buf_valid;
 	int buf_oo_phase;
 	MBSBufferElem *evttype;
 	int evtsiz;
