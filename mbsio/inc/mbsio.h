@@ -47,7 +47,7 @@ DEFINITION
 .	MBS_CTYPE_REMOTE	--		remote tape
 
 .	MBS_TY_BUFFER			Buffer type:
-.	MBS_BTYPE_HEADER	--		FileHeader
+.	MBS_BTYPE_FHEADER	--		FileHeader
 .	MBS_BTYPE_VME		--		VME formatted data
 .	MBS_BTYPE_EOF		--		End of file
 .	MBS_BTYPE_ERROR		--		Error
@@ -101,7 +101,7 @@ SEE ALSO
 
 #define MBS_TY_BUFFER			0x2
 #define MBS_X_BUFFER			1
-#define MBS_BTYPE_HEADER		0x000107d0		// [1,2000]
+#define MBS_BTYPE_FHEADER		0x000107d0		// [1,2000]
 #define MBS_BTYPE_VME			0x0001000a		// [1,10]
 #define MBS_BTYPE_EOF			0
 #define MBS_BTYPE_ERROR			0xffffffff
@@ -116,6 +116,9 @@ SEE ALSO
 #define MBS_ETYPE_ABORT			MBS_BTYPE_ABORT
 #define MBS_ETYPE_RAW			MBS_BTYPE_RAW
 #define MBS_ETYPE_WAIT			0xfffffffc
+#define MBS_ETYPE_EOW			0xaffec0c0
+#define MBS_ETYPE_START			0xfffffffb
+#define MBS_ETYPE_STOP			0xfffffffa
 
 #define MBS_TY_SUBEVENT				0x8
 #define MBS_X_SUBEVENT				3
@@ -160,6 +163,8 @@ SEE ALSO
 #define MBS_L_NAME				64
 
 #define MBS_ODD_NOF_PARAMS		1
+
+typedef int bool;
 
 /*C_STRUKTUR******************************************************************
 NAME
@@ -238,7 +243,7 @@ SEE ALSO
 *****************************************************************************/
 
 typedef struct {
-	int is_swapped;
+	bool is_swapped;
 	int buf_size;
 	int buf_p_stream;
 	int nof_streams;
@@ -282,6 +287,7 @@ ELEMENTS
 .	device				-- name of input dev
 .	host				-- host name
 .	connection			-- device type, MBS_DTYPE_xxxx
+.   running             -- trigger 14 found - running
 .	buftype				-- buffer type
 .	byte_order			-- byte ordering
 .	show_elems			-- buffer elements to be shown automatically
@@ -335,6 +341,7 @@ typedef struct {
 	char device[MBS_L_STR];
 	char host[MBS_L_STR];
 	unsigned int connection;
+	bool running;
 	MBSBufferElem *buftype;
 	int byte_order;
 	MBSShowElem show_elems[MBS_N_BELEMS];
@@ -348,14 +355,14 @@ typedef struct {
 	int cur_bufno;
 	int cur_bufno_stream;
 	int bufno_mbs;
-	int buf_to_be_dumped;
+	bool buf_to_be_dumped;
 	unsigned long long buf_ts;
 	unsigned long long buf_ts_start;
 	char *hdr_data;
 	MBSBufferPool buf_pool[MBS_N_BUFFERS];
 	MBSBufferPool * poolpt;
 	char *bufpt;
-	int buf_valid;
+	bool buf_valid;
 	int buf_oo_phase;
 	MBSBufferElem *evttype;
 	int evtsiz;

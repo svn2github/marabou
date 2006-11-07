@@ -8,7 +8,7 @@
 //
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTransport.cxx,v 1.16 2006-06-23 08:48:30 Marabou Exp $       
+// Revision:       $Id: TMrbTransport.cxx,v 1.17 2006-11-07 12:25:31 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -191,14 +191,9 @@ Bool_t TMrbTransport::FreeBuffers() {
 
 	if (fMBSDataIO == NULL) return(kTRUE);
 
-	if (!mbs_free_dbase(fMBSDataIO)) {
-		PrintMbsIoError("FreeBuffers");
-		SetError();
-		return(kFALSE);
-	} else {
-		fMBSDataIO = NULL;
-		return(kTRUE);
-	}
+	mbs_free_dbase(fMBSDataIO);
+	fMBSDataIO = NULL;
+	return(kTRUE);
 }
 
 Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
@@ -240,8 +235,7 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 				if (this->IsToBeStopped()) {
 					gMrbLog->Out()	<< "Detecting STOP flag" << endl;
 					gMrbLog->Flush(this->ClassName(), "ReadEvents");
-//					eventType = MBS_ETYPE_EOF; break; 
-					eventType = 12345; 
+					eventType = MBS_ETYPE_EOW; 
 				}
 			} while (eventType == MBS_ETYPE_WAIT);
 //			pthread_mutex_unlock(&global_data_mutex);
@@ -269,6 +263,15 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 				gMrbLog->Flush(this->ClassName(), "ReadEvents");
 				break;
 			} else {
+				if (eventType == MBS_ETYPE_START) {
+					gMrbLog->Out()	<< "Event START (trigger 14)" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadEvents");
+					SetError();
+				} else if (eventType == MBS_ETYPE_STOP) {
+					gMrbLog->Out()	<< "Event STOP (trigger 15)" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadEvents");
+					SetError();
+				}
 				if (!ProcessEvent((s_vehe *) fMBSDataIO->evt_data)) {
 					eventType = MBS_ETYPE_ERROR;
 					break;
@@ -315,10 +318,19 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 				gMrbLog->Flush(this->ClassName(), "ReadEvents");
 				break;
 			} else {
+				if (eventType == MBS_ETYPE_START) {
+					gMrbLog->Out()	<< "Event START (trigger 14)" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadEvents");
+					SetError();
+				} else if (eventType == MBS_ETYPE_STOP) {
+					gMrbLog->Out()	<< "Event STOP (trigger 15)" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadEvents");
+					SetError();
+				}
 				if (!ProcessEvent((s_vehe *) fMBSDataIO->evt_data)) {
 					eventType = MBS_ETYPE_ERROR;
 					break;
-            	}
+				}
 				abortOnError = 0;
 				nofEventsProcessed++;
 			}

@@ -57,6 +57,7 @@ FILE * lmd_out = NULL;
 		
 int total = 0;
 
+
 void _mbs_show_bheader();
 void _mbs_show_evhe_10_1();
 void _mbs_show_sev_10_1();
@@ -78,7 +79,7 @@ void _mbs_show_sev_9000_2();
 unsigned int *_mbs_unpack_sev_9000_X();
 
 static MBSBufferElem buffer_types[] = {
-				{	MBS_BTYPE_HEADER,		// [subtype,type]
+				{	MBS_BTYPE_FHEADER,		// [subtype,type]
 					"File header",			// description
 					sizeof(s_filhe),		// size
 					0,						// hits
@@ -474,8 +475,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	mbs->hdr_data = calloc(1, bufsiz);
 	if (mbs->hdr_data == NULL)
 	{
-		sprintf(loc_errbuf, "?ALLOC-[mbs_open_file]- %s: Can't allocate internal buffer",
-															device);
+		sprintf(loc_errbuf, "?ALLOC-[mbs_open_file]- %s: Can't allocate internal buffer", device);
 		_mbs_output_error(NULL);
 		return(NULL);
 	}
@@ -497,13 +497,13 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	if ((ctype & MBS_CTYPE_FILE_LMD) == MBS_CTYPE_FILE_LMD) {
 		buffer_type = _mbs_next_buffer(mbs);
 		if (buffer_type == MBS_BTYPE_ERROR || buffer_type == MBS_BTYPE_ABORT) return(NULL);
-		if (buffer_type == MBS_BTYPE_HEADER) mbs->buf_valid = FALSE;
+		if (buffer_type == MBS_BTYPE_FHEADER) mbs->buf_valid = FALSE;
 	}
 
 	return(mbs);
 }
 
-int mbs_close_file(MBSDataIO *mbs) {
+bool mbs_close_file(MBSDataIO *mbs) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_close_file
@@ -536,7 +536,7 @@ int mbs_close_file(MBSDataIO *mbs) {
 	return(TRUE);
 }
 
-int mbs_free_dbase(MBSDataIO * mbs) {
+void mbs_free_dbase(MBSDataIO * mbs) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_free_dbase
@@ -555,7 +555,6 @@ int mbs_free_dbase(MBSDataIO * mbs) {
 		_mbs_free_pool(mbs);
 		free(mbs);
 	}
-	return(TRUE);
 }
 
 unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
@@ -587,7 +586,20 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 		if (bpp == NULL) {
 			buffer_type = _mbs_read_buffer(mbs);
 			if (buffer_type == MBS_BTYPE_VME) {
-				if (!_mbs_check_sequence(mbs, MBS_TY_BUFFER)) {
+				if (_mbs_check_buffer_empty(mbs)) {
+					if (log_out != NULL) {
+						if (mbs_is_running(mbs)) {
+							sprintf(loc_errbuf,
+				"%%BUFEMT-[_mbs_next_buffer]- %s: received empty buffer (used data field = 0) - skipped", mbs->device);
+						} else {
+							sprintf(loc_errbuf,
+				"%%KPALIV-[_mbs_next_buffer]- %s: received KEEP ALIVE buffer", mbs->device);
+						}
+						_mbs_output_error(mbs);
+					}
+					(mbs->poolpt)->bufno_mbs = -1;
+					continue;
+				} else if (!_mbs_check_sequence(mbs, MBS_TY_BUFFER)) {
 					mbs->buf_oo_phase++;
 					if (log_out != NULL) {
 						sprintf(loc_errbuf,
@@ -600,7 +612,11 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 					mbs->bufno_mbs = bh->l_buf;
 					bpp = mbs->poolpt;
 				}
-			} else if (buffer_type == MBS_BTYPE_HEADER) break; else return(buffer_type);
+			} else if (buffer_type == MBS_BTYPE_FHEADER) {
+				break;
+			} else {
+				return(buffer_type);
+			}
 		} else {
 			mbs->poolpt = bpp;
 			mbs->bufpt = bpp->data;
@@ -616,7 +632,7 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 	mbs->sevtpt = NULL;
 	mbs->sevt_wc = 0;
 
-	if (buffer_type == MBS_BTYPE_HEADER) {
+	if (buffer_type == MBS_BTYPE_FHEADER) {
 		mbs->nof_events = 0;
 
 		sc = mbs->show_elems[MBS_X_FHEADER].redu;
@@ -919,6 +935,13 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	if ((mbs->evttype)->type == MBS_ETYPE_VME) {
 		vh = (s_vehe *) mbs->evt_data;
 		triggers[vh->i_trigger].hit++;
+		if (vh->i_trigger == 14) {
+			_mbs_set_run_flag(mbs, TRUE);
+			etype = MBS_ETYPE_START;
+		} else if (vh->i_trigger == 15)	{
+			_mbs_set_run_flag(mbs, FALSE);
+			etype = MBS_ETYPE_STOP;
+		}
 	}
 
 	sc = mbs->show_elems[MBS_X_EVENT].redu;
@@ -935,7 +958,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 		fwrite((char *) mbs->evt_data + ehs, 1, mbs->evtsiz - ehs, med_out);	/* write subevent data unswapped */
 	} 
 
-	return((mbs->evttype)->type);
+	return(etype);
 }
 
 unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
@@ -1042,6 +1065,13 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	if ((mbs->evttype)->type == MBS_ETYPE_VME) {
 		vh = (s_vehe *) mbs->evt_data;
 		triggers[vh->i_trigger].hit++;
+		if (vh->i_trigger == 14) {
+			_mbs_set_run_flag(mbs, TRUE);
+			etype = MBS_ETYPE_START;
+		} else if (vh->i_trigger == 15)	{
+			_mbs_set_run_flag(mbs, FALSE);
+			etype = MBS_ETYPE_STOP;
+		}
 	}
 
 	sc = mbs->show_elems[MBS_X_EVENT].redu;
@@ -1050,7 +1080,7 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 		if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_EVENT].out);
 	}
 
-	return((mbs->evttype)->type);
+	return(etype);
 }
 
 unsigned int mbs_next_sheader(MBSDataIO *mbs) {
@@ -1302,7 +1332,22 @@ void mbs_set_sevt_minwc(MBSDataIO *mbs, int wc) {
 	mbs->sevt_minwc = wc;
 }
 
-int mbs_set_stat(MBSDataIO *mbs, int redu, FILE *out) {
+bool mbs_is_running(MBSDataIO *mbs) {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mbs_is_running
+// Purpose:        Check run flag
+// Arguments:      MBSDataIO * mbs        -- ptr as returned by mbs_open_file
+// Results:        TRUE/FALSE
+// Exceptions:     
+// Description:    Returns run flag.
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	return(mbs->running);
+}
+
+bool mbs_set_stat(MBSDataIO *mbs, int redu, FILE *out) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_set_stat
@@ -1329,14 +1374,14 @@ int mbs_set_stat(MBSDataIO *mbs, int redu, FILE *out) {
 	return(TRUE);
 }
 
-int mbs_show_stat(MBSDataIO *mbs, FILE *out) {
+bool mbs_show_stat(MBSDataIO *mbs, FILE *out) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_show_stat
 // Purpose:        Show event statistics
 // Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
 //                 FILE * out       -- stream to send output to (NULL = stdout)
-// Results:        --
+// Results:        TRUE/FALSE
 // Exceptions:     
 // Description:    Shows header/data information on stdout.
 // Keywords:       
@@ -1414,7 +1459,7 @@ int mbs_show_stat(MBSDataIO *mbs, FILE *out) {
 	return(TRUE);
 }
 
-int mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
+bool mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_show
@@ -1424,7 +1469,7 @@ int mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
 //                                       (one char out of "FBES")
 //                 FILE * out         -- stream to send output to
 //                                       (NULL = stdout)
-// Results:        
+// Results:        TRUE/FALSE
 // Exceptions:     
 // Description:    Shows header/data information on stdout.
 // Keywords:       
@@ -1452,7 +1497,7 @@ int mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
 	return(TRUE);
 }
 
-int mbs_set_show(MBSDataIO *mbs, const char *show_elems, int redu, FILE *out) {
+bool mbs_set_show(MBSDataIO *mbs, const char *show_elems, int redu, FILE *out) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_set_show
@@ -1464,7 +1509,7 @@ int mbs_set_show(MBSDataIO *mbs, const char *show_elems, int redu, FILE *out) {
 //                                                  element only
 //                 FILE * out         -- stream to send output to
 //                                       (NULL = stdout)
-// Results:        
+// Results:        TRUE/FALSE
 // Exceptions:     
 // Description:    Defines buffer elements to be shown automatically
 // Keywords:       
@@ -1510,7 +1555,7 @@ void mbs_set_dump(MBSDataIO *mbs, int count) {
 	mbs->buf_to_be_dumped = count;
 }
 
-int mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
+bool mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_set_stream
@@ -1520,7 +1565,7 @@ int mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
 //                                     (0 = ad infinitum)
 //                 int slow_down    -- # of secs to wait after each stream
 //                                     (0 = don't wait)
-// Results:        
+// Results:        TRUE/FALSE
 // Exceptions:     
 // Description:    Defines how to process stream data
 // Keywords:       
@@ -1538,13 +1583,13 @@ int mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
 	return(TRUE);
 }
 
-int mbs_open_log(const char *logfile) {
+bool mbs_open_log(const char *logfile) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_open_log
 // Purpose:        Open a file for (error) logging
 // Arguments:      char * logfile     -- log file, will be opened in append mode
-// Results:        
+// Results:        TRUE/FALSE
 // Exceptions:     
 // Description:    Defines buffer elements to be shown automatically
 // Keywords:       
@@ -1562,13 +1607,13 @@ int mbs_open_log(const char *logfile) {
 	return(TRUE);
 }
 
-int mbs_open_med(const char *medfile) {
+bool mbs_open_med(const char *medfile) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_open_med
 // Purpose:        Open a file write raw event data
 // Arguments:      char * medfile     -- med file
-// Results:        
+// Results:        TRUE/FALSE
 // Exceptions:     
 // Description:    Opens a file to store MBS event data.
 // Keywords:       
@@ -1601,13 +1646,13 @@ void mbs_close_med() {
 	if (med_out) fclose(med_out);
 }
 
-int mbs_open_lmd(const char *lmdfile) {
+bool mbs_open_lmd(const char *lmdfile) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_open_lmd
 // Purpose:        Open a file to dump lmd data
 // Arguments:      char * lmdfile     -- lmd file
-/ Results:        
+// Results:        TRUE/FALSE
 // Exceptions:     
 // Description:    Opens a file to store original MBS data (LMD format)
 // Keywords:       
@@ -2331,10 +2376,10 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 	if (bo_tag == 0 && mbs->nof_buffers == 1) {
 		byte_order = BYTE_ORDER_1_TO_1;
 		bto_get_int32(&btype, (char *) &bh->i_subtype, 1, byte_order);
-		if (btype != MBS_BTYPE_HEADER) {
+		if (btype != MBS_BTYPE_FHEADER) {
 			byte_order = BYTE_ORDER_REV;
 			bto_get_int32(&btype, (char *) &bh->i_subtype, 1, byte_order);
-			if (btype != MBS_BTYPE_HEADER) {
+			if (btype != MBS_BTYPE_FHEADER) {
 				sprintf(loc_errbuf,
 "?ILLFMT-[_mbs_convert_data]- %s (buf %d): Can't determine byte ordering - %#x",
 									mbs->device, mbs->nof_buffers, bh->l_free[0]);
@@ -2451,7 +2496,7 @@ MBSBufferElem *_mbs_check_type(unsigned int btype, MBSBufferElem *ltdescr, MBSBu
 	return(&buffer_type_error);
 }
 
-int _mbs_check_sequence(MBSDataIO *mbs, unsigned int type) {
+bool _mbs_check_sequence(MBSDataIO *mbs, unsigned int type) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_check_sequence
@@ -2606,13 +2651,13 @@ void _mbs_convert_sheader(MBSDataIO *mbs) {
 	mbs->sevt_id = seh->i_procid;
 }
 
-int _mbs_check_active(MBSDataIO *mbs) {
+bool _mbs_check_active(MBSDataIO *mbs) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_check_active
 // Purpose:        Check if a given mbs struct is active
 // Arguments:      MBSDataIO * mbs  -- pointer to mbs struct
-// Results:        0/1
+// Results:        TRUE/FALSE
 // Exceptions:     
 // Description:    	Tests the addr given by mbs and outputs an error message
 //                  it isn't a valid mbs i/o struct.
@@ -2632,13 +2677,13 @@ int _mbs_check_active(MBSDataIO *mbs) {
 	}
 }
 
-int _mbs_check_dbase(MBSDataIO *mbs) {
+bool _mbs_check_dbase(MBSDataIO *mbs) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_check_dbase
 // Purpose:        Check if a given mbs struct has valid data
 // Arguments:      MBSDataIO * mbs  -- pointer to mbs struct
-// Results:        0/1
+// Results:        TRUE/FALSE
 // Exceptions:     
 // Description:    	Tests the addr given by mbs and outputs an error message
 //                  it isn't a valid mbs i/o struct.
@@ -2656,6 +2701,23 @@ int _mbs_check_dbase(MBSDataIO *mbs) {
 	} else {
 		return(TRUE);
 	}
+}
+
+bool _mbs_check_buffer_empty(MBSDataIO *mbs) {
+/*________________________________________________________[C PRIVATE FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           _mbs_check_buffer_empty
+// Purpose:        Check if buffer is emptyr
+// Arguments:      mbs                -- ptr as returned by mbs_open_file
+// Results:        TRUE/FALSE
+// Exceptions:     
+// Description:    Checks 'used data field' in buffer header.
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	s_bufhe * bh;
+	bh = (s_bufhe *) (mbs->poolpt)->data;
+	return((int) (bh->i_used == 0));
 }
 
 void _mbs_output_error(MBSDataIO *mbs) {
@@ -2896,7 +2958,7 @@ int _mbs_request_stream(int fildes) {
 	return(write(fildes, "            ", 12));
 }
 
-int _mbs_disconnect_from_server(int fildes, unsigned int server_type) {
+void _mbs_disconnect_from_server(int fildes, unsigned int server_type) {
 /*________________________________________________________[C PRIVATE FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           _mbs_disconnect_from_server
@@ -2919,7 +2981,6 @@ int _mbs_disconnect_from_server(int fildes, unsigned int server_type) {
 	}
 	shutdown(fildes, 2);
 	close(fildes);
-	return(TRUE);
 }
 
 void _mbs_init_pool(MBSDataIO * mbs) {
@@ -3118,3 +3179,20 @@ void _mbs_dump_buffer(MBSDataIO * mbs) {
 		}
 	}
 }
+
+void _mbs_set_run_flag(MBSDataIO * mbs, bool flag) {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           _mbs_set_run_flag
+// Purpose:        Turn on/off run flag
+// Arguments:      MBSDataIO * mbs        -- ptr as returned by mbs_open_file
+//                 bool flag              -- enable/disable run
+// Results:        --
+// Exceptions:     
+// Description:    Turns run flag on/off.
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	mbs->running = flag;
+}
+
