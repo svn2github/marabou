@@ -588,13 +588,8 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 			if (buffer_type == MBS_BTYPE_VME) {
 				if (_mbs_check_buffer_empty(mbs)) {
 					if (log_out != NULL) {
-						if (mbs_is_running(mbs)) {
-							sprintf(loc_errbuf,
-				"%%BUFEMT-[_mbs_next_buffer]- %s: received empty buffer (used data field = 0) - skipped", mbs->device);
-						} else {
-							sprintf(loc_errbuf,
+						sprintf(loc_errbuf,
 				"%%KPALIV-[_mbs_next_buffer]- %s: received KEEP ALIVE buffer", mbs->device);
-						}
 						_mbs_output_error(mbs);
 					}
 					(mbs->poolpt)->bufno_mbs = -1;
