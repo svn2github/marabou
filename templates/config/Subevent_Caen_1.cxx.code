@@ -94,7 +94,7 @@
 %C% 				cerr	<< setred
 %C% 						<< this->ClassName() << "::FillSubevent(): [Module "
 %C% 						<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
-%C% 						<< wordsProcessed << "] Data field not empty - chn=" << chn << ", data=" << *paramAddr << data
+%C% 						<< wordsProcessed << "] Data field not empty - chn=" << chn << ", data=" << *paramAddr
 %C% 						<< setblack << endl;
 %C% 			}
 %C%				*paramAddr = (Int_t) (data & CAEN_V7X5_M_ADCDATA);	// assign data value to param
