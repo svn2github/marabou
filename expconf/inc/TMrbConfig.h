@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.75 2006-10-10 12:00:09 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.76 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -853,6 +853,7 @@ class TMrbConfig : public TNamed {
 		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);
 		Bool_t WriteUtilityProtos();
 		Bool_t CheckConfig();
+		Bool_t CreateHistoArrays();
 		
 	protected:
 		Bool_t fVerboseMode;				// verbose flag

@@ -8,7 +8,7 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.15 2006-07-06 13:13:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.h,v 1.16 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -163,6 +163,13 @@ class TMrbModule : public TNamed {
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
 		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
 		
+		inline void CreateHistoArray(const Char_t * ArrayName = NULL) {		// create array of histograms and write .histlist file
+			fCreateHistoArray = kTRUE;
+			fHistoArrayName = ArrayName ? ArrayName : this->GetName();
+		}
+		inline Bool_t HistoArrayToBeCreated() { return(fCreateHistoArray); };
+		inline const Char_t * GetHistoArrayName() { return(fHistoArrayName.Data()); };
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
@@ -202,6 +209,9 @@ class TMrbModule : public TNamed {
 		TMrbLofNamedX fLofRegisters;	 		// list of registers
 
 		TMrbTemplate fCodeTemplates; 			// store template code
+
+		Bool_t fCreateHistoArray;				// kTRUE if histo array / .histlist file is to be created
+		TString fHistoArrayName;				// name of histo array / .histlist file
 
 		TObjArray fChannelSpec;					// channel specifications (type TMrbModuleChannel *)
 

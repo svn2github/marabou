@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.18 2006-09-08 07:15:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.19 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -105,6 +105,7 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 			if (fModuleID.GetIndex() != TMrbConfig::kModuleSoftModule) fSerial = gMrbConfig->AssignModuleSerial();		// assign a unique module number
 			fHistosToBeAllocated = kTRUE;					// create histograms for each channel
 			fMbsBranch.Set(-1, "none");
+			fCreateHistoArray = kFALSE;
 		}
 	}
 }

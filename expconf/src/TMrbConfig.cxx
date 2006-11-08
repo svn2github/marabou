@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.136 2006-10-31 15:37:33 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.137 2006-11-08 10:02:21 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3237,6 +3237,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								}
 							}
 						}
+						this->CreateHistoArrays();
 						if (fLofHistoArrays.First()) {
 							anaTmpl.InitializeCode("%B%");
 							anaTmpl.WriteCode(anaStrm);
@@ -3504,6 +3505,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
 		gMrbLog->Flush("", "", setblue);
 	}
+
 	return(kTRUE);
 }
 
@@ -7845,3 +7847,70 @@ Int_t TMrbConfig::CheckMbsBranchSettings() {
 
 	return(nofErrors);
 }
+
+Bool_t TMrbConfig::CreateHistoArrays() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::CreateHistoArrays
+// Purpose:        Create histogram arrays if needed
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Creates histo arrays as well .histlist files
+//                 for modules, subevents, and events.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbEvent * evt;
+	TIterator * evtIter = fLofEvents.MakeIterator();
+	while (evt = (TMrbEvent *) evtIter->Next()) {
+		if (evt->HistoArrayToBeCreated()) {
+			TMrbSubevent * sevt;
+			TIterator * sevtIter = evt->GetLofSubevents()->MakeIterator();
+			while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+				if (sevt->HistosToBeAllocated()) {
+					TMrbModuleChannel * param;
+					TIterator * paramIter = sevt->GetLofParams()->MakeIterator();
+					while (param = (TMrbModuleChannel *) paramIter->Next()) {
+						TString pName = param->GetName();
+						pName(0,1).ToUpper();
+						pName.Prepend("h");
+						this->AddHistoToArray(evt->GetHistoArrayName(), pName.Data());
+					}					
+				}
+			}
+		}
+	}
+
+	TMrbSubevent * sevt;
+	TIterator * sevtIter = fLofSubevents.MakeIterator();
+	while (sevt = (TMrbSubevent *) sevtIter->Next()) {
+		if (sevt->HistosToBeAllocated() && sevt->HistoArrayToBeCreated()) {
+			TMrbModuleChannel * param;
+			TIterator * paramIter = sevt->GetLofParams()->MakeIterator();
+			while (param = (TMrbModuleChannel *) paramIter->Next()) {
+				TString pName = param->GetName();
+				pName(0,1).ToUpper();
+				pName.Prepend("h");
+				this->AddHistoToArray(sevt->GetHistoArrayName(), pName.Data());
+			}					
+		}
+	}
+
+	TMrbModule * module;
+	TIterator * modIter = fLofModules.MakeIterator();
+	while (module = (TMrbModule *) modIter->Next()) {
+		if (module->HistoArrayToBeCreated()) {
+			TMrbModuleChannel * param;
+			TIterator * paramIter = module->GetLofChannels()->MakeIterator();
+			while (param = (TMrbModuleChannel *) paramIter->Next()) {
+				TString pName = param->GetName();
+				pName(0,1).ToUpper();
+				pName.Prepend("h");
+				this->AddHistoToArray(module->GetHistoArrayName(), pName.Data());
+			}					
+		}
+	}
+	return(kTRUE);
+}
+

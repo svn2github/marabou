@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.21 2006-09-08 07:15:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.22 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -187,6 +187,8 @@ TMrbEvent::TMrbEvent(Int_t Trigger, const Char_t * EvtName, const Char_t * EvtTi
 		fHBHighWaterLimit = 0;
 
 		fMbsBranch.Set(-1, "none");
+
+		fCreateHistoArray = kFALSE;
 
 		gMrbConfig->AddEvent(this);
 		gDirectory->Append(this);

@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.17 2006-07-06 13:13:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.18 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -194,6 +194,13 @@ class TMrbSubevent : public TNamed {
 		inline TObjArray * GetLofParams() { return(&fLofParams); };
 		const Char_t * GetLofParamsAsString(TString & LofParams) const;
 
+		inline void CreateHistoArray(const Char_t * ArrayName = NULL) {		// create array of histograms and write .histlist file
+			fCreateHistoArray = kTRUE;
+			fHistoArrayName = ArrayName ? ArrayName : this->GetName();
+		}
+		inline Bool_t HistoArrayToBeCreated() { return(fCreateHistoArray); };
+		inline const Char_t * GetHistoArrayName() { return(fHistoArrayName.Data()); };
+
 		void Browse(TBrowser * Browser);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
@@ -234,6 +241,9 @@ class TMrbSubevent : public TNamed {
 
 		TString fXhit;						// a special (extended) hit
 		Int_t fHitDataLength;				// length of hit data
+
+		Bool_t fCreateHistoArray;			// kTRUE if histo array / .histlist file is to be created
+		TString fHistoArrayName;			// name of histo array / .histlist file
 
 		TMrbModule * fSoftModule;			// internal module name, simulated by software
 				

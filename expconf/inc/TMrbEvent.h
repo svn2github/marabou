@@ -8,7 +8,7 @@
 // Class:          TMrbEvent            -- event connected to a trigger
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEvent.h,v 1.11 2006-09-08 07:15:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.h,v 1.12 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -132,6 +132,13 @@ class TMrbEvent : public TNamed {
 		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;	// show data
 		inline virtual void Print() const { Print(cout, ""); };
 
+		inline void CreateHistoArray(const Char_t * ArrayName = NULL) {		// create array of histograms and write .histlist file
+			fCreateHistoArray = kTRUE;
+			fHistoArrayName = ArrayName ? ArrayName : this->GetName();
+		}
+		inline Bool_t HistoArrayToBeCreated() { return(fCreateHistoArray); };
+		inline const Char_t * GetHistoArrayName() { return(fHistoArrayName.Data()); };
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
@@ -161,6 +168,9 @@ class TMrbEvent : public TNamed {
 
 		Int_t fSizeOfHitBuffer;
 		Int_t fHBHighWaterLimit;
+
+		Bool_t fCreateHistoArray;			// kTRUE if histo array / .histlist file is to be created
+		TString fHistoArrayName;			// name of histo array / .histlist file
 
 	ClassDef(TMrbEvent, 1)		// [Config] Base class describing a MBS event
 };

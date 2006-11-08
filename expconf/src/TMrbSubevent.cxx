@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.29 2006-09-08 07:15:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.30 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -126,6 +126,9 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 
 			fSerial = gMrbConfig->AssignSevtSerial();		// assign a unique id to be used by MBS
 			fCrate = Crate; 								// store crate number
+
+			fCreateHistoArray = kFALSE;
+
 			gMrbConfig->AddSubevent(this); 	// insert subevent in list
 		}
 	}
