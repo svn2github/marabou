@@ -89,6 +89,14 @@
 %C% 		chn = (data >> CAEN_V7X5_SH_CHN) & CAEN_V7X5_M_CHN;
 %C%			paramAddr = (Int_t*) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
 %C%			if (paramAddr) {
+%C% 			if (*paramAddr != 0) {
+%C% 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Data field not empty", SevtData, origSevtWC);
+%C% 				cerr	<< setred
+%C% 						<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 						<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C% 						<< wordsProcessed << "] Data field not empty - chn=" << chn << ", data=" << *paramAddr << data
+%C% 						<< setblack << endl;
+%C% 			}
 %C%				*paramAddr = (Int_t) (data & CAEN_V7X5_M_ADCDATA);	// assign data value to param
 %C%			} else {
 %C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "No such param", SevtData, origSevtWC);
