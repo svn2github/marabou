@@ -11,6 +11,8 @@ namespace std {} using namespace std;
 #include <TVirtualX.h>
 #include "TRootHelpDialog.h"
 #include <TList.h>
+#include <TFile.h>
+#include <TKey.h>
 #include <TColor.h>
 #include <TObjString.h>
 #include <TRegexp.h>
@@ -66,6 +68,8 @@ namespace std {} using namespace std;
 // RadioButton : radio button 														 //
 // CheckButton : check button 														 //
 // FileRequest : file name (invokes file dialog)								 //
+// FileContReq : invoke file dialog and present listbox with content		 //
+//             : arg: filename | classname | object name                 //
 // CommandButt : Command button implemented as follows:						 //
 //               assume: CommandButt_DrawArrow()								 //
 //               when pressed will emit:											 //
@@ -695,8 +699,8 @@ void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *)
 //________________________________________________________________________________________
 
 enum buttonId {kIdOk = 101, kIdCancel = 102, kIdHelp = 103, kIdClearHist = 104,
-               kIdText = 201, kIdTextValue = 301, kIdTextSelect, 
-               kIdFileDialog = 4, kIdFontS, kIdCommand = 5, 
+               kIdText = 201, kIdTextValue = 301, kIdTextSelect, kIdListBoxReq = 401,
+               kIdFileDialog = 4, kIdFileDialogCont = 5, kIdFontS = 6, kIdCommand = 7, 
                kIdLineS, kIdArrowS, kIdAlignS, kIdMarkS, kIdFillS};
  
 ClassImp(TGMrbValuesAndText)
@@ -1016,6 +1020,46 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             hframe->AddFrame(tb, lor);
 			   fWidgets->Add(tb);
             tb->Associate(this);
+
+         } else if (l.BeginsWith("FileContReq")) {
+            TString scol;
+            TString fname("none");
+            fClassName = "TF1";
+            TString ename("none");
+ 
+            scol = *(TString*)fValPointers[i];
+            TObjArray * oa = scol.Tokenize("|");
+            Int_t nent = oa->GetEntries();
+            if (nent > 0) fname =((TObjString*)oa->At(0))->String();
+            if (nent > 1) fClassName =((TObjString*)oa->At(1))->String();
+            if (nent > 2) ename =((TObjString*)oa->At(2))->String();
+            tentry = new TGTextEntry(hframe, tbuf = new TGTextBuffer(100), kIdText);
+            tentry->GetBuffer()->AddText(0, (const char *)fname);
+//            tentry->Resize(win_width/2, tentry->GetDefaultHeight());
+            hframe->AddFrame(tentry, l3);
+			   fWidgets->Add(tentry);
+            tentry->Associate(this);
+            fEntries->Add(tentry);
+            TGPictureButton * tb = new TGPictureButton(hframe, 
+                         fClient->GetPicture("arrow_down.xpm"), i + 100 * kIdFileDialogCont);
+            tb->Resize(20, 20);
+            tb->SetToolTipText("Browse");
+
+            hframe->AddFrame(tb, lor);
+            this->AddFrame(hframe, lo1);
+            hframe = NULL;
+			   fWidgets->Add(tb);
+            tb->Associate(this);
+//
+            fListBoxReq = new TGListBox(this, kIdListBoxReq);  
+            fListBoxReq->AddEntry(ename.Data(), 0);
+            fListBoxReq->Resize(win_width , 20);
+            fListBoxReq->Layout();
+            fListBoxReq->Associate(this);
+            fWidgets->AddFirst(fListBoxReq);
+            this->AddFrame(fListBoxReq, l2);
+            fEntries->Add(fListBoxReq);
+            UpdateRequestBox(tentry->GetBuffer()->GetString());
          }
          if (fFlags) {
             hframe1 = new TGCompositeFrame(hframe, win_width*1/6, 20, kFixedWidth);
@@ -1248,14 +1292,15 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                     hd->Popup();
                 } else {
                    Int_t id = parm1 / 100;
-                   if (id == kIdFileDialog) {
+                   if (id == kIdFileDialog || id == kIdFileDialogCont) {
                       Int_t entryNr = parm1%100;
+                      TString fn;
                       TGFileInfo* fi = new TGFileInfo();
-//                      const char * filter[] = {"data files", "*", 0, 0};
+ //                     const char * filter[] = {"data files", "*", 0, 0};
                       fi->fFileTypes = filetypes;
    						 new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
   						    if (fi->fFilename) { 
-                         TString fn(fi->fFilename);
+                         fn = fi->fFilename;
                          TString pwd(gSystem->Getenv("PWD"));
                          if (fn.BeginsWith(pwd.Data()))fn.Remove(0,pwd.Length()+1);
                          TGTextEntry *te = (TGTextEntry*)fEntries->At(entryNr);
@@ -1265,6 +1310,10 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                          gClient->NeedRedraw(this);
                       }
    						 delete fi;
+                      if (id == kIdFileDialogCont) {
+                         UpdateRequestBox(fn.Data());
+                      }
+
                    }
                 }
                 break;
@@ -1375,6 +1424,37 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 
 //_____________________________________________________________________________
 
+void TGMrbValuesAndText::UpdateRequestBox(const char *fname)
+{
+   if (gSystem->AccessPathName(fname)) {
+      cout << "Cant find: " << fname << endl;
+      return;
+   }
+   fListBoxReq->RemoveAll();
+   TFile f(fname);
+   TIter next(f.GetListOfKeys());
+   TKey* key;
+   TObject* obj;
+   Int_t id = 0;
+   while( (key = (TKey*)next()) ){
+      obj = (TObject*)key->ReadObj(); 
+      if (obj->InheritsFrom(fClassName)) {
+         TString s(obj->GetName());
+         s += " | ";
+         s += obj->GetTitle();
+         fListBoxReq->AddEntry(s.Data(), id);
+//         cout << "AddEntry " << obj->GetName()<< endl;
+         id++;
+      }
+   }      
+   fListBoxReq->Resize(fListBoxReq->GetDefaultWidth(), TMath::Min(200, (id+1)*20));
+   fListBoxReq->Layout();
+   gClient->NeedRedraw(fListBoxReq);
+   gClient->NeedRedraw(this);
+}
+//________________________________________________________________[C++ METHOD]
+//_____________________________________________________________________________
+
 void TGMrbValuesAndText::StoreValues(){
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1482,9 +1562,30 @@ void TGMrbValuesAndText::StoreValues(){
        } else if (obj->InheritsFrom("TGTextEntry")) {
           TGTextEntry   * tentry  = (TGTextEntry*)obj;
           TString tmp(objs->String());
-          if (tmp.BeginsWith("StringValue") || tmp.BeginsWith("FileRequest")) {
+          if (tmp.BeginsWith("StringValue") || tmp.BeginsWith("FileRequest")
+             || tmp.BeginsWith("FileContReq") ) {
              TString * sr = (TString*)fValPointers[i];
-             *sr = tentry->GetBuffer()->GetString();
+//             cout << tmp << " " << *sr << endl;
+             if (tmp.BeginsWith("FileContReq")) {
+                TString retstr(tentry->GetBuffer()->GetString());
+                retstr += "|";
+                retstr += fClassName.Data();
+                retstr += "|";
+                TGLBEntry * tle = fListBoxReq->GetSelectedEntry();
+                if (tle == NULL) {
+                   retstr += "noselection";
+                } else {
+                   TGTextLBEntry * tge = (TGTextLBEntry *)tle;
+                   TString temp(tge->GetText()->GetString());
+                   Int_t ip = temp.Index("|");
+                   if (ip > 0) temp.Resize(ip);
+                   retstr += temp.Data();
+                   retstr = retstr.Strip(TString::kBoth);
+                }
+                *sr = retstr.Data();
+             } else {
+                *sr = tentry->GetBuffer()->GetString();
+             }
           }
        } 
 

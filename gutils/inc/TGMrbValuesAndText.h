@@ -72,6 +72,8 @@ private:
    TArrayI          *fFlags;
    TList            *fFlagButtons;
    TGListBox        *fListBox;
+   TGListBox        *fListBoxReq;
+   TString          fClassName;
    TString          fFileName;
    const char       *fPrompt;
    const char       *fHelpText;
@@ -105,6 +107,7 @@ public:
    virtual ~TGMrbValuesAndText();
 
    virtual Bool_t  ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
+   void UpdateRequestBox(const char *fname);
    void StoreValues();
    void ReloadValues();
    void CloseWindow();
