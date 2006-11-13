@@ -11,32 +11,36 @@
 
 %%BeginOfCode%%
 /* bit definitions for VME scaler SIS 3820 */
-#define SIS_3820_R_STATUS				0x0L
-#define SIS_3820_R_IDENT				0x4L
-#define SIS_3820_R_IRQSTATUS 			0xCL
-#define SIS_3820_R_ACQ_PRESET			0x10L
-#define SIS_3820_R_ACQ_COUNT			0x14L
-#define SIS_3820_R_LNE_PRESC_FACTOR		0x18L
-#define SIS_3820_R_PRESET_VALUE_1		0x20L
-#define SIS_3820_R_PRESET_VALUE_2		0x24L
-#define SIS_3820_R_PRESET_ENABLE		0x28L
-#define SIS_3820_R_FIFO_WC				0x38L
-#define SIS_3820_R_FIFO_WC_THRESH		0x3CL
-#define SIS_3820_R_ACQ_OPER_MODE		0x100L
-#define SIS_3820_R_COPY_DISABLE			0x104L
-#define SIS_3820_R_LNE_CHAN_SELECT		0x108L
-#define SIS_3820_R_PRESET_CHAN_SELECT	0x10CL
-#define SIS_3820_R_INHIBIT_COUNTING		0x200L
-#define SIS_3820_R_CLEAR				0x204L
-#define SIS_3820_R_CLEAR_OVERFLOW		0x208L
-#define SIS_3820_R_KEY_RESET			0x400L
-#define SIS_3820_R_KEY_FIFO_RESET		0x404L
-#define SIS_3820_R_KEY_TEST_PULSE		0x408L
-#define SIS_3820_R_KEY_COUNTER_CLEAR	0x40CL
-#define SIS_3820_R_KEY_VME_LNE			0x410L
-#define SIS_3820_R_KEY_OPER_ENABLE		0x418L
-#define SIS_3820_R_KEY_OPER_DISABLE		0x41CL
-#define SIS_3820_R_READ_FIFO			0xA00L
+#define SIS_3820_R_STATUS					0x0L
+#define SIS_3820_R_IDENT					0x4L
+#define SIS_3820_R_IRQSTATUS 				0xCL
+#define SIS_3820_R_ACQ_PRESET				0x10L
+#define SIS_3820_R_ACQ_COUNT				0x14L
+#define SIS_3820_R_LNE_PRESC_FACTOR			0x18L
+#define SIS_3820_R_PRESET_VALUE_1			0x20L
+#define SIS_3820_R_PRESET_VALUE_2			0x24L
+#define SIS_3820_R_PRESET_ENABLE			0x28L
+#define SIS_3820_R_FIFO_WC					0x38L
+#define SIS_3820_R_FIFO_WC_THRESH			0x3CL
+#define SIS_3820_R_HISCAL_START_PRESET		0x40L
+#define SIS_3820_R_HISCAL_START_COUNTER		0x44L
+#define SIS_3820_R_HISCAL_LAST_ACQ_COUNTER	0x48L
+#define SIS_3820_R_ACQ_OPER_MODE			0x100L
+#define SIS_3820_R_COPY_DISABLE				0x104L
+#define SIS_3820_R_LNE_CHAN_SELECT			0x108L
+#define SIS_3820_R_PRESET_CHAN_SELECT		0x10CL
+#define SIS_3820_R_INHIBIT_COUNTING			0x200L
+#define SIS_3820_R_CLEAR					0x204L
+#define SIS_3820_R_CLEAR_OVERFLOW			0x208L
+#define SIS_3820_R_KEY_RESET				0x400L
+#define SIS_3820_R_KEY_FIFO_RESET			0x404L
+#define SIS_3820_R_KEY_TEST_PULSE			0x408L
+#define SIS_3820_R_KEY_COUNTER_CLEAR		0x40CL
+#define SIS_3820_R_KEY_VME_LNE				0x410L
+#define SIS_3820_R_KEY_OPER_ENABLE			0x418L
+#define SIS_3820_R_KEY_OPER_DISABLE			0x41CL
+#define SIS_3820_R_READ_SHADOW				0x800L
+#define SIS_3820_R_READ_FIFO				0xA00L
 
 
 #define SIS_3820_A_STATUS(module)				((unsigned long *) (module + SIS_3820_R_STATUS))
@@ -65,7 +69,7 @@
 
 #define SIS_3820_READ_STATUS(module)			*SIS_3820_A_STATUS(module)
 #define SIS_3820_READ_IRQS(module)				*SIS_3820_A_IRQSTATUS(module)
-#define SIS_3820_SET_CTRL_BIT(module, b)		*SIS_3820_A_STATUS(module) = b
+#define SIS_3820_SET_ACQ_OPER_MODE(module, b)	*SIS_3820_A_ACQ_OPER_MODE(module) = b
 #define SIS_3820_DISABLE_COPY(module, b)		*SIS_3820_A_COPY_DISABLE(module) = b
 #define SIS_3820_INHIBIT_COUNTING(module, b) 	*SIS_3820_A_INHIBIT_COUNTING(module) = b
 #define SIS_3820_WRITE_FIFO_THRESH(module, b)	*SIS_3820_A_FIFO_WC_THRESH(module) = b
@@ -108,7 +112,7 @@
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					SIS_3820_RESET($moduleName);
 					SIS_3820_CLEAR_FIFO($moduleName);
-					SIS_3820_SET_CTRL_BIT($moduleName, SIS_3820_CS_B_INPUT_MODE_$inputMode | SIS_3820_CS_B_OUTPUT_MODE_$outputMode | SIS_3820_CS_B_LNE_SOURCE_$lneSource);
+					SIS_3820_SET_ACQ_OPER_MODE($moduleName, SIS_3820_CS_B_INPUT_MODE_$inputMode | SIS_3820_CS_B_OUTPUT_MODE_$outputMode | SIS_3820_CS_B_LNE_SOURCE_$lneSource);
 					SIS_3820_WRITE_FIFO_THRESH($moduleName, 1);
 					SIS_3820_INHIBIT_COUNTING($moduleName, 0xFFFFFFFF);
 					SIS_3820_DISABLE_COPY($moduleName, 0xFFFFFFFF);
@@ -213,7 +217,7 @@
 %S%					SIS_3820_OPER_ENABLE($moduleName);
 %S%					SIS_3820_INHIBIT_COUNTING($moduleName, $unusedChannels);
 %S%					SIS_3820_DISABLE_COPY($moduleName, $unusedChannels);
-%FSR%					SIS_3820_KEY_VME_LNE($moduleName);				/* force scaler readout */
+%FSR%
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -223,7 +227,7 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-%FSR%
+%FSR%					SIS_3820_KEY_VME_LNE($moduleName);				/* force scaler readout */
 %S%
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
