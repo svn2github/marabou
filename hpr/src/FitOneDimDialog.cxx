@@ -432,7 +432,7 @@ parameters without actually doing a fit.\n\
    static void *valp[25];
    Int_t ind = 0;
    static TString excmd("FitOneDimExecute()");
-   static TString accmd("AddToCalibration()");
+//   static TString accmd("AddToCalibration()");
    static TString lbgcmd("DetLinearBackground()");
    static TString clmcmd("ClearMarkers()");
    static TString setmcmd("SetMarkers()");
@@ -464,6 +464,10 @@ parameters without actually doing a fit.\n\
    valp[ind++] = &fUseoldpars;
    row_lab->Add(new TObjString("CheckButton+Show components of fit"));
    valp[ind++] = &fShowcof;
+   row_lab->Add(new TObjString("CheckButton_Add all functions to hist"));
+   valp[ind++] = &fFitOptAddAll;
+   row_lab->Add(new TObjString("CheckButton+Clear marks after fit"));
+   valp[ind++] = &fAutoClearMarks;
    row_lab->Add(new TObjString("ColorSelect_LCol"));
    valp[ind++] = &fColor;
    row_lab->Add(new TObjString("PlainShtVal-LWid"));
@@ -472,12 +476,14 @@ parameters without actually doing a fit.\n\
    valp[ind++] = &fStyle;
    row_lab->Add(new TObjString("CommandButt_Execute Fitting"));
    valp[ind++] = &excmd;
+/*
 #ifdef MARABOUVERS
    if (fGraph == NULL) {
       row_lab->Add(new TObjString("CommandButt+Add To Calibration"));
       valp[ind++] = &accmd;
    }
 #endif
+*/
    row_lab->Add(new TObjString("CommandButt_Determine Lin BG"));
    valp[ind++] = &lbgcmd;
    row_lab->Add(new TObjString("CommandButt+Fitting Options"));
@@ -825,6 +831,8 @@ void FitOneDimDialog::FitOneDimExecute()
          }
       }
       func->SetFillStyle(0);
+      if (fAutoClearMarks) ClearMarkers();
+/*
       if (gNpeaks == 1) {
          if (gTailSide != 0)  {
             fConstant  = func->GetParameter(5);
@@ -843,6 +851,7 @@ void FitOneDimDialog::FitOneDimExecute()
 //        cout << "co, m, me " << fConstant << " " << fMean << " " << fMeanError 
 //              << endl;
       }
+*/
    } else {
 //    no fit requested draw
       gPad->cd();
@@ -1187,6 +1196,12 @@ void FitOneDimDialog::SetFittingOptions()
 }
 //_______________________________________________________________________
 
+void FitOneDimDialog::ClearFunctionList()
+{
+   fSelHist->GetListOfFunctions()->Delete();
+}
+//_______________________________________________________________________
+/*
 void FitOneDimDialog::AddToCalibration()
 {
 #ifdef MARABOUVERS
@@ -1215,6 +1230,7 @@ void FitOneDimDialog::AddToCalibration()
    cout << "No FitHist Object available" << endl; 
 #endif
 }
+*/
 //_______________________________________________________________________
 
 void FitOneDimDialog::RestoreDefaults()

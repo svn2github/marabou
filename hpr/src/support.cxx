@@ -1062,7 +1062,7 @@ TEnv *GetDefaults(TString & hname, Bool_t mustexist)
 TEnv *GetDefaults(const char * hname, Bool_t mustexist)
 {
    TEnv *lastset = 0;
-   TString defname;
+   TString defname("default/Last");
    TEnv env(".rootrc");         // inspect ROOT's environment
    defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
 //   cout << "Got : " << defname.Data() << endl;
@@ -1621,7 +1621,7 @@ void DrawLineStyles()
   
 Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly) 
 {
-   TString defname("defaults/Last");
+   TString defname("default/Last");
    Bool_t fok = kFALSE;
    TEnv env(".rootrc");         // inspect ROOT's environment
    defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());

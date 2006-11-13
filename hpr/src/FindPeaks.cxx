@@ -167,7 +167,26 @@ Bool_t FitHist::Calibrate(Int_t flag){
 //       1 generate a new histogram wit new binning
 
    if (flag == 2) {
-      new CalibrationDialog(fSelHist);
+      Int_t npeaks = 0;
+      TIter next(fSelHist->GetListOfFunctions());
+      TObject *obj;
+      TF1 *f;
+      TString pname;
+      while (obj = next()) {
+         if (obj->IsA() == TF1::Class()) {
+            f = (TF1*)obj;
+            for (Int_t i = 0; i < f->GetNpar(); i++) {
+               pname = f->GetParName(i);
+               if (pname.BeginsWith("Ga_Mean")) {
+                  cout << "Mean: " << f->GetParameter(i) 
+                       << " Error: " << f->GetParError(i) << endl;
+                   npeaks++;
+               }
+            }
+         }
+      }
+      if (npeaks < 3) npeaks = 3;
+      new CalibrationDialog(fSelHist, npeaks);
       return kTRUE;
    }
    if(fSetRange){

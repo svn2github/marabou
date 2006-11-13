@@ -45,6 +45,7 @@ private:
    Int_t   fLowtail;
    Int_t   fHightail;
    Int_t   fShowcof;
+   Int_t   fAutoClearMarks;
    Int_t fFitOptLikelihood;  
    Int_t fFitOptQuiet;  
    Int_t fFitOptVerbose;  
@@ -61,7 +62,7 @@ public:
    virtual ~FitOneDimDialog();
    void RecursiveRemove(TObject * obj);
    void FitOneDimExecute();
-   void AddToCalibration();
+//   void AddToCalibration();
    void SetFitOptions(){};
    Int_t GetMaxBin(TH1 * h1, Int_t binl, Int_t binu);
    void GetGaussEstimate(TH1 *h, Double_t from, Double_t to,  
@@ -71,6 +72,7 @@ public:
    void DetLinearBackground();
    Int_t GetMarkers();
    void ClearMarkers();
+   void ClearFunctionList();
    void PrintMarkers();
    Int_t SetMarkers();
    void SetFittingOptions();

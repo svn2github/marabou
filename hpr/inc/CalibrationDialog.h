@@ -7,7 +7,9 @@
 #include "TRootCanvas.h"
 #include "TString.h"
 #include "TGMrbValuesAndText.h"
+#ifdef MARABOUVERS
 #include "HistPresent.h"
+#endif
 //_____________________________________________________________________________________
 
 
@@ -15,13 +17,17 @@ class CalibrationDialog : public TObject {
 
 static const Int_t MAXPEAKS = 10;
 private:
+#ifdef MARABOUVERS
    HistPresent *fHistPresent;
+#endif
    TRootCanvas* fParentWindow; 
    TGMrbValuesAndText *fDialog;
    TString fFuncName;
+   TString fFuncFromFile;
    TString fFormula;
    TVirtualPad *fSelPad;
    TH1     *fSelHist;
+   TH1     *fCalHist;
    TF1     *fCalFunc;
    Double_t fX[MAXPEAKS];
    Double_t fY[MAXPEAKS];
@@ -39,10 +45,12 @@ public:
    virtual ~CalibrationDialog(){};
 //   void RecursiveRemove(TObject * obj) {};
    void CalculateFunction();
+   void SaveFunction();
+   void GetFunction();
    void FillCalibratedHist();
    void UpdatePeakList();
    void ClearLocalPeakList();
-   void ClearHistPeakList();
+//   void ClearHistPeakList();
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDialog();

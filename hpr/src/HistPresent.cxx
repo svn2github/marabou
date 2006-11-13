@@ -2747,24 +2747,21 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
          if (strlen(dir) > 0) fRootFile->cd(dir);
 //	      cout << "GetHist: |" << shname.Data()<< "|"
 //         << dir << "|" << endl;
-         if (shname.Index(";") > 0)shname.Resize(shname.Index(";"));
-         TKey * key = gDirectory->GetKey(shname.Data());
-//      	hist = (TH1*)gDirectory->Get(shname.Data());
+         Int_t kn = 9999;
+         Int_t is = shname.Index(";");
+         if (is > 0){
+            TString sk = shname(is+1, shname.Length()-1);
+            kn = sk.Atoi();
+            if (kn <= 0) kn = 9999;
+            shname.Resize(is);
+         }
+//         cout << shname.Data() << " " << kn << endl;
+         TKey * key = gDirectory->GetKey(shname.Data(), kn);
       	if (key)hist = (TH1*)key->ReadObj();
       	if (hist) {
             hist->SetDirectory(gROOT);
-/*
-            TString hn = hist->GetName();
-            if (hn.Index(notascii)>= 0) {
-               cout << "WARNING: Replace non letter/numbers by US(_) in: " 
-                    << hn << endl;
-               while (hn.Index(notascii) >= 0) {
-                 hn(notascii) = "_";
-               }
-               hist->SetName(hn);
-            }
-*/
-            TDatime dt = gDirectory->GetModificationDate();
+//            TDatime dt = gDirectory->GetModificationDate();
+            TDatime dt = key->GetDatime();
             hist->SetUniqueID(dt.Convert());
       	   hist->SetName(newhname);
          } else {
@@ -2773,7 +2770,6 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
          }
       	fRootFile->Close();
       } 
-//       else cout << "Use existing: " << hn << endl;
    
    } else if (strstr(fname,"Socket")) {
       if(!fComSocket){

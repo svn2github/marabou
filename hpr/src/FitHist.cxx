@@ -313,42 +313,49 @@ void FitHist::SaveDefaults(Bool_t recalculate)
    if (!hp->fRememberLastSet &&  !hp->fRememberZoom) return;
 //   cout << "Enter SaveDefaults " << endl;
 
-   TString defname("defaults/Last");
-   TEnv env(".rootrc");         // inspect ROOT's environment
-   env.SetValue("HistPresent.FitMacroName", fFitMacroName);
+//   TString defname("default/Last");
+//   TEnv env(".rootrc");         // inspect ROOT's environment
+//   env.SetValue("HistPresent.FitMacroName", fFitMacroName);
 
    Bool_t checkonly = kTRUE;
    if ( (!CreateDefaultsDir(mycanvas, checkonly)) ) return;
-   defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
+//   defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
 
-   defname += "_";
-   defname += fHname;
-	Int_t ip = defname.Index(";");
-	if (ip > 0) defname.Resize(ip);
-   defname += ".def";
+//   defname += "_";
+//   defname += fHname;
+//	Int_t ip = defname.Index(";");
+//	if (ip > 0) defname.Resize(ip);
+//   defname += ".def";
 
-   if (fDeleteCalFlag && !gSystem->AccessPathName(defname.Data())) {
-      defname.Prepend("rm ");
-      gSystem->Exec(defname.Data());
-      cout << "Removing: " << defname.Data() << endl;
+   TEnv * env = GetDefaults(fHname, kFALSE);
+	if (!env) return;
+
+   if (fDeleteCalFlag && !gSystem->AccessPathName(env->GetRcName())) {
+      TString cmd(env->GetRcName());
+      cmd.Prepend("rm ");
+      gSystem->Exec(cmd.Data());
+      cout << "Removing: " << cmd.Data() << endl;
+      delete env;
       return;
    } 
 
 //   cout << "SaveDefaults in: "<< defname.Data()  << endl;
-   ofstream wstream;
-   wstream.open(defname, ios::out);
-   if (!wstream.good()) {
-      cerr << "SaveDefaults: " << gSystem->GetError() << " - " 
-           << defname << endl;
-      return;
-   }
-   wstream << "FitMacroName: " << fFitMacroName << endl;
+//   ofstream wstream;
+//   wstream.open(defname, ios::out);
+//   if (!wstream.good()) {
+//      cerr << "SaveDefaults: " << gSystem->GetError() << " - " 
+//           << defname << endl;
+//      return;
+//   }
+//   wstream << "FitMacroName: " << fFitMacroName << endl;
+//   env->SetValue("FitMacroName", fFitMacroName);
 
+   env->SetValue("FitMacroName", fFitMacroName);
    if (TCanvas * ca =
        (TCanvas *) gROOT->FindObject(GetCanvasName())) {
-      wstream << "LogX:  " << ca->GetLogx() << endl;
-      wstream << "LogY:  " << ca->GetLogy() << endl;
-      wstream << "LogZ:  " << ca->GetLogz() << endl;
+      env->SetValue("LogX", ca->GetLogx());
+      env->SetValue("LogY", ca->GetLogy());
+      env->SetValue("LogZ", ca->GetLogz());
    } else {
       cerr << "Canvas deleted, cant find lin/log state" << endl;
    }
@@ -356,33 +363,33 @@ void FitHist::SaveDefaults(Bool_t recalculate)
       Int_t first = fSelHist->GetXaxis()->GetFirst();
       Int_t last  = fSelHist->GetXaxis()->GetLast();
       if (first > 1 || last < fSelHist->GetXaxis()->GetNbins()) {
-         wstream << "fBinlx:  " << first << endl;
+         env->SetValue("fBinlx", first);
 //      cout  << "recalculate fBinlx,ux:  " << first << " " << last << endl;
-         wstream << "fBinux:  " << last << endl;
+         env->SetValue("fBinux", last);
       }
       if (fDimension == 2) {
          first = fSelHist->GetYaxis()->GetFirst();
          last  = fSelHist->GetYaxis()->GetLast();
          if (first > 1 || last < fSelHist->GetYaxis()->GetNbins()) {
-            wstream << "fBinly:  " << first << endl;
-            wstream << "fBinuy:  " << last << endl;
+            env->SetValue("fBinly", first);
+            env->SetValue("fBinuy", last);
          }
       }
    } else {
 //      cout << "take current fBinlx " << fBinlx  << endl;
-      wstream << "fBinlx:  " << fBinlx << endl;
-      wstream << "fBinux:  " << fBinux << endl;
+      env->SetValue("fBinlx", fBinlx);
+      env->SetValue("fBinux", fBinux);
       if (fDimension == 2) {
-         wstream << "fBinly:  " << fBinly << endl;
-         wstream << "fBinuy:  " << fBinuy << endl;
+         env->SetValue("fBinly", fBinly);
+         env->SetValue("fBinuy", fBinuy);
       }
    }
    //         check if hist is still alive
    if (fSelHist->TestBit(TObject::kNotDeleted)) {
       if (strlen(fSelHist->GetXaxis()->GetTitle()) > 0) 
-         wstream << "fXtitle: " << fSelHist->GetXaxis()->GetTitle() << endl;
+         env->SetValue("fXtitle", fSelHist->GetXaxis()->GetTitle());
       if (strlen(fSelHist->GetYaxis()->GetTitle()) > 0)
-         wstream << "fYtitle: " << fSelHist->GetYaxis()->GetTitle() << endl;
+         env->SetValue("fYtitle", fSelHist->GetYaxis()->GetTitle());
 //     save user contour
       if(fSelHist->InheritsFrom("TH2")) {
          TMrbNamedArrayI * colors = (TMrbNamedArrayI *)fSelHist->
@@ -397,38 +404,57 @@ void FitHist::SaveDefaults(Bool_t recalculate)
             }
             Int_t pixval;
             Double_t cval;
-            wstream << "Contours: " << ncol << endl;
+            env->SetValue("Contours", ncol);
             for (Int_t i = 0; i < ncol; i++) {
                if (colors) pixval = (*colors)[i];
                else        pixval = 0;
                if (uc)     cval = uc[i];
                else        cval = 0;
-               wstream << "Cont" << i << ": " << cval<< endl;
-               wstream << "Pix"  << i << ": " << pixval << endl;
+               TString s;
+               s = "Cont"; s += i;
+               env->SetValue(s.Data(), cval);
+               s = "Pix"; s += i;
+               env->SetValue(s.Data(), pixval);
             } 
             if (uc) delete [] uc;     
          } 
       }
    	if (fSetRange) {
-      	wstream << "fRangeLowX:  " << fSelHist->GetXaxis()->GetXmin() << endl;
-      	wstream << "fRangeUpX:   " << fSelHist->GetXaxis()->GetXmax() << endl;
+      	env->SetValue("fRangeLowX", fSelHist->GetXaxis()->GetXmin());
+      	env->SetValue("fRangeUpX", fSelHist->GetXaxis()->GetXmax());
       	if (fDimension == 2) {
-         	wstream << "fRangeLowY:  " << fSelHist->GetYaxis()->GetXmin() << endl;
-         	wstream << "fRangeUpY:   " << fSelHist->GetYaxis()->GetXmax() << endl;
+         	env->SetValue("fRangeLowY", fSelHist->GetYaxis()->GetXmin());
+         	env->SetValue("fRangeUpY", fSelHist->GetYaxis()->GetXmax());
       	}
    	}
-      if (fCalFunc && fCalHist) {
-         wstream << "CalFuncName:  " << fCalFunc->GetName()  << endl;
-         wstream << "CalFuncForm:  " << fCalFunc->GetTitle()  << endl;
-         wstream << "CalFuncNpar:  " << fCalFunc->GetNpar()  << endl;
-         for (Int_t i =0; i < fCalFunc->GetNpar(); i++) {
-           wstream << "CalFuncPar" << i << ":   " << fCalFunc->GetParameter(i)  << endl;
+      if (fCalFunc == NULL) {
+         TIter next(fSelHist->GetListOfFunctions());
+         TObject *obj;
+         while ( (obj = next()) ) {
+            TString name(obj->GetName());
+            if (name.BeginsWith("CalF_")) {
+               fCalFunc = (TF1*)obj;
+               fCalHist = (TH1*)fCalFunc->GetParent();
+            }
          }
-         wstream << "CalHistNbin:  " << fCalHist->GetNbinsX()  << endl;
-         wstream << "CalHistXmin:  " << fCalHist->GetXaxis()->GetXmin()  << endl;
-         wstream << "CalHistXmax:  " << fCalHist->GetXaxis()->GetXmax()  << endl;
+      }
+      if (fCalFunc) {
+         env->SetValue("CalFuncName", fCalFunc->GetName());
+         env->SetValue("CalFuncForm", fCalFunc->GetTitle());
+         env->SetValue("CalFuncNpar", fCalFunc->GetNpar());
+         for (Int_t i =0; i < fCalFunc->GetNpar(); i++) {
+           TString s ("CalFuncPar"); s += i;
+           env->SetValue(s.Data(), fCalFunc->GetParameter(i));
+         }
+      }
+      if (fCalHist) {
+         env->SetValue("CalHistNbin", fCalHist->GetNbinsX());
+         env->SetValue("CalHistXmin", fCalHist->GetXaxis()->GetXmin());
+         env->SetValue("CalHistXmax", fCalHist->GetXaxis()->GetXmax());
       }
    }
+   env->SaveLevel(kEnvLocal);
+   delete env;
    return;
 }
 //________________________________________________________________
@@ -3578,10 +3604,15 @@ void FitHist::Draw1Dim()
 void FitHist::DrawDate() 
 {
    if (hp && hp->fShowDateBox ) {
-      TDatime dt;
+      TDatime dt; 
+      TString dtext("Drawn at: ");
       UInt_t da = fSelHist->GetUniqueID();
-      if (da != 0 && !hp->fUseTimeOfDisplay) dt.Set(da);
-      fDateText = new TText(gStyle->GetDateX(),gStyle->GetDateY(),dt.AsSQLString());
+      if (da != 0 && !hp->fUseTimeOfDisplay) {
+         dt.Set(da);
+         dtext = "Created at: ";
+      }
+      dtext += dt.AsSQLString();
+      fDateText = new TText(gStyle->GetDateX(),gStyle->GetDateY(),dtext);
       fDateText->SetTextSize( gStyle->GetAttDate()->GetTextSize());
       fDateText->SetTextFont( gStyle->GetAttDate()->GetTextFont());
       fDateText->SetTextColor(gStyle->GetAttDate()->GetTextColor());
@@ -3699,8 +3730,13 @@ void FitHist::UpdateDrawOptions()
    SetSelectedPad();
    TString drawopt;
    if (fDimension == 1) {
-   	if (hp->fShowContour)
+   	if (hp->fShowContour) {
       	drawopt = "";
+         for (Int_t i = 1; i < fSelHist->GetNbinsX(); i++) { 
+            if (fSelHist->GetBinError(i) > 0)
+      	      drawopt = "hist";
+         }
+      }
    	if (hp->fShowErrors)
       	drawopt += "e1";
    	if (hp->fFill1Dim && fSelHist->GetNbinsX() < 50000) {

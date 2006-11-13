@@ -9,7 +9,7 @@
 #include "TGMsgBox.h"
 #include "THLimitsFinder.h"
 #include "CalibrationDialog.h"
-#include "FhPeak.h"
+//#include "FhPeak.h"
 
 #include <iostream>
 
@@ -31,10 +31,14 @@ static const Char_t helptext[] =
       fMaxPeaks = MAXPEAKS;
       cout << "Setting fMaxPeaks = " << fMaxPeaks << endl;
    }
+#ifdef MARABOUVERS
    fHistPresent = (HistPresent*)gROOT->GetList()->FindObject("mypres");
+#endif
    static Int_t fFuncNumber = 0;
    ClearLocalPeakList();
    fSelHist = hist;
+   fCalHist = NULL;
+   fCalFunc = NULL;
    if (!fSelHist) {
       cout << "No hist selected" << endl;
       return;
@@ -57,8 +61,9 @@ static const Char_t helptext[] =
 	if (ip > 0)fFuncName.Resize(ip);
    fFuncNumber++;
    fFuncName.Prepend(Form("%d_", fFuncNumber));
-   fFuncName.Prepend("f");
+   fFuncName.Prepend("CalF_");
    const char hist_file[] = {"caldialog_hist.txt"};
+   fFuncFromFile="hsimple.root|TH1|hpx";
    RestoreDefaults();
 
    TList *row_lab = new TList(); 
@@ -66,10 +71,12 @@ static const Char_t helptext[] =
    static Int_t dummy = 0;
    Int_t ind = 0;
    static TString cacmd("CalculateFunction()");
+   static TString svcmd("SaveFunction()");
+   static TString gfcmd("GetFunction()");
    static TString excmd("FillCalibratedHist()");
    static TString udcmd("UpdatePeakList()");
    static TString clcmd("ClearLocalPeakList()");
-   static TString chcmd("ClearHistPeakList()");
+//   static TString chcmd("ClearHistPeakList()");
 
    row_lab->Add(new TObjString("CommentOnly_Parameters for Polynomial Fit"));
    valp[ind++] = &dummy;
@@ -99,23 +106,29 @@ static const Char_t helptext[] =
    valp[ind++] = &dummy;
    row_lab->Add(new TObjString("PlainIntVal_Nbins"));
    valp[ind++] = &fNbinsX;
-   row_lab->Add(new TObjString("DoubleValue+Xlow"));
+   row_lab->Add(new TObjString("DoubleValue-Xlow"));
    valp[ind++] = &fXlow;
-   row_lab->Add(new TObjString("DoubleValue+Xup"));
+   row_lab->Add(new TObjString("DoubleValue-Xup"));
    valp[ind++] = &fXup;
    row_lab->Add(new TObjString("StringValue_CalFunction name"));
    valp[ind++] = &fFuncName;
+   row_lab->Add(new TObjString("FileContReq_Select Function from file"));
+   valp[ind++] = &fFuncFromFile;
 
    row_lab->Add(new TObjString("CommandButt_Calculate Function"));
    valp[ind++] = &cacmd;
-   row_lab->Add(new TObjString("CommandButt+Fill Calibrated Hist"));
+   row_lab->Add(new TObjString("CommandButt+Fill Hist"));
    valp[ind++] = &excmd;
-   row_lab->Add(new TObjString("CommandButt_Update Peaklist"));
+   row_lab->Add(new TObjString("CommandButt+Save Calibration"));
+   valp[ind++] = &svcmd;
+   row_lab->Add(new TObjString("CommandButt_Get function from file"));
+   valp[ind++] = &gfcmd;
+   row_lab->Add(new TObjString("CommandButt+Update Peaklist"));
    valp[ind++] = &udcmd;
-   row_lab->Add(new TObjString("CommandButt+Clear Local Plist"));
+   row_lab->Add(new TObjString("CommandButt+Clear Peaklist"));
    valp[ind++] = &clcmd;
-   row_lab->Add(new TObjString("CommandButt+Clear Hists Plist"));
-   valp[ind++] = &chcmd;
+ //  row_lab->Add(new TObjString("CommandButt+Clear Hists Plist"));
+//   valp[ind++] = &chcmd;
 
    Int_t itemwidth = 480;
    Int_t ok = 0;
@@ -186,6 +199,27 @@ void CalibrationDialog::CalculateFunction()
 }
 //____________________________________________________________________________________ 
 
+void CalibrationDialog::GetFunction()
+{
+   cout << "fFuncFromFile: " << fFuncFromFile << endl;
+}
+//____________________________________________________________________________________ 
+
+void CalibrationDialog::SaveFunction()
+{
+   if (!fCalFunc) {
+      cout << "No function defined" << endl;
+      return;
+   } 
+   if (!fCalHist) {
+      cout << "Execute Fill histogram " << endl;
+      return;
+   } 
+   fCalFunc->SetParent(fCalHist);
+   fSelHist->GetListOfFunctions()->Add(fCalFunc);
+}
+//____________________________________________________________________________________ 
+
 void CalibrationDialog::FillCalibratedHist()
 {
    TString hname_cal;
@@ -196,22 +230,21 @@ void CalibrationDialog::FillCalibratedHist()
    title_cal += ";Energy[KeV];Events[";
    title_cal += Form("%4.2f", (fXup-fXlow)/(Double_t)fNbinsX);
    title_cal += " KeV]";
-   TH1 * hist_cal;
    if      (!strcmp(fSelHist->ClassName(), "TH1F"))
-   	hist_cal = new TH1F(hname_cal, title_cal, fNbinsX, fXlow, fXup);
+   	fCalHist = new TH1F(hname_cal, title_cal, fNbinsX, fXlow, fXup);
    else if (!strcmp(fSelHist->ClassName(), "TH1D"))
-   	hist_cal = new TH1D(hname_cal, title_cal, fNbinsX, fXlow, fXup);
+   	fCalHist = new TH1D(hname_cal, title_cal, fNbinsX, fXlow, fXup);
    else if (!strcmp(fSelHist->ClassName(), "TH1S"))
-   	hist_cal = new TH1S(hname_cal, title_cal, fNbinsX, fXlow, fXup);
+   	fCalHist = new TH1S(hname_cal, title_cal, fNbinsX, fXlow, fXup);
    else
-   	hist_cal = new TH1C(hname_cal, title_cal, fNbinsX, fXlow, fXup);
+   	fCalHist = new TH1C(hname_cal, title_cal, fNbinsX, fXlow, fXup);
 
 //   under - overflows of origin hist are taken as they are
-   hist_cal->SetBinContent(0, fSelHist->GetBinContent(0));
-   hist_cal->SetBinContent(hist_cal->GetNbinsX()+1, 
+   fCalHist->SetBinContent(0, fSelHist->GetBinContent(0));
+   fCalHist->SetBinContent(fCalHist->GetNbinsX()+1, 
                            fSelHist->GetBinContent(fSelHist->GetNbinsX()+1));
 //  update number of entries
-   hist_cal->SetEntries(fSelHist->GetBinContent(0) + 
+   fCalHist->SetEntries(fSelHist->GetBinContent(0) + 
                         fSelHist->GetBinContent(fSelHist->GetNbinsX()+1));
 // shuffle bins
    for (Int_t bin = 1; bin <= fSelHist->GetNbinsX(); bin++) {
@@ -220,18 +253,22 @@ void CalibrationDialog::FillCalibratedHist()
       for (Int_t cnt = 0; cnt < fSelHist->GetBinContent(bin); cnt++) {
          Axis_t bcent_r = bcent + binw  * (gRandom->Rndm() - 0.5);
          Axis_t bcent_cal = fCalFunc->Eval(bcent_r);
-         hist_cal->Fill(bcent_cal);
+         fCalHist->Fill(bcent_cal);
       }
    }
+#ifdef MARABOUVERS
    if (fHistPresent) {
-      fHistPresent->ShowHist(hist_cal);
+      fHistPresent->ShowHist(fCalHist);
    } else {
+#endif
       TString title(hname_cal);
       title.Prepend("C_");
       TCanvas *ch = new TCanvas("ccal", title, 500, 100, 600,400);
-      hist_cal->Draw("E");
+      fCalHist->Draw("E");
       ch->Update();
+#ifdef MARABOUVERS
    }
+#endif
 }
 //____________________________________________________________________________________ 
 
@@ -244,7 +281,7 @@ void CalibrationDialog::ClearLocalPeakList()
    fNpeaks = 0;
 }
 //____________________________________________________________________________________ 
-
+/*
 void CalibrationDialog::ClearHistPeakList()
 {
    TList *lof = fSelHist->GetListOfFunctions();
@@ -256,8 +293,53 @@ void CalibrationDialog::ClearHistPeakList()
       }
    }    
 }
+*/
 //____________________________________________________________________________________ 
 
+void CalibrationDialog::UpdatePeakList()
+{
+//   Int_t npeaks = 0;
+   TIter next(fSelHist->GetListOfFunctions());
+   TObject *obj;
+   TF1 *f;
+   TString pname;
+   Double_t mean, error;
+   while (obj = next()) {
+      if (obj->IsA() == TF1::Class()) {
+         f = (TF1*)obj;
+         for (Int_t i = 0; i < f->GetNpar(); i++) {
+            pname = f->GetParName(i);
+            if (pname.BeginsWith("Ga_Mean")) {
+               mean =  f->GetParameter(i);
+               error = f->GetParError(i);
+               cout << "fNpeaks: " << fNpeaks<<  " Mean: " << mean  << " Error: " << error << endl;
+	//          look if already stored
+            	Bool_t store_it = kTRUE;
+            	if (fNpeaks > 0) {
+               	for (Int_t k = 0; k < fNpeaks; k++) { 
+                  	if (TMath::Abs((fX[k] - mean) / fX[k]) < 0.0001) store_it = kFALSE;
+               	}
+            	}
+            	if (store_it && fNpeaks < fMaxPeaks) {
+               	fX [fNpeaks] = mean;
+               	fXE[fNpeaks] = error;
+               	fY [fNpeaks] = 0;
+               	fYE[fNpeaks] = 1;
+               	fUse[fNpeaks] = 1;
+               	fNpeaks++;
+            	} else {
+               	if (!store_it)
+                  	cout << mean << " already in list" << endl;
+               	else 
+                  	cout << "More than " << fMaxPeaks << " peaks" << endl;
+            	}
+            }
+         }
+      }
+   }        
+}
+//______________________________________________________________________
+/*
 void CalibrationDialog::UpdatePeakList()
 {
    TIter next(fSelHist->GetListOfFunctions());
@@ -297,6 +379,7 @@ void CalibrationDialog::UpdatePeakList()
       }
    }        
 }
+*/
 //_______________________________________________________________________
 
 void CalibrationDialog::RestoreDefaults()
