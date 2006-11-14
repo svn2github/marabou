@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.5 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.6 2006-11-14 17:16:45 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -109,7 +109,7 @@ void TMrbSis_3820::DefineRegisters() {
 								TMrbSis_3820::kOffsControlStatus,
 								TMrbSis_3820::kOffsControlStatus,
 								TMrbSis_3820::kOffsControlStatus,
-								1, 0, 4);
+								1, 0, 6);
 	rp->SetFromResource(1);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
@@ -120,7 +120,7 @@ void TMrbSis_3820::DefineRegisters() {
 								TMrbSis_3820::kOffsControlStatus,
 								TMrbSis_3820::kOffsControlStatus,
 								TMrbSis_3820::kOffsControlStatus,
-								0, 0, 1);
+								0, 0, 3);
 	rp->SetFromResource(0);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
