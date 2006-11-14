@@ -23,6 +23,7 @@
 #pragma link C++ class TGMrbLabelCombo;
 #pragma link C++ class TGMrbFileEntry;
 #pragma link C++ class TGMrbFileObjectCombo;
+#pragma link C++ class TGMrbFileObjectListBox;
 #pragma link C++ class TGMrbTableFrame;
 #pragma link C++ class TGMrbTableOfInts;
 #pragma link C++ class TGMrbTableOfDoubles;

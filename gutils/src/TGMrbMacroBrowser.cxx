@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.13 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.14 2006-11-14 14:09:56 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -106,6 +106,7 @@ const SMrbNamedX kGMrbMacroLofEntryTypes[] =
 					{TGMrbMacroArg::kGMrbMacroEntryCombo,	"Combo",		"Combo box" 							},
 					{TGMrbMacroArg::kGMrbMacroEntryFile,	"File", 		"File dialog box"						},
 					{TGMrbMacroArg::kGMrbMacroEntryFObjCombo,"FObjCombo",	"Combo box for ROOT objects"			},
+					{TGMrbMacroArg::kGMrbMacroEntryFObjListBox,"FObjListBox",	"List box for ROOT objects"			},
 					{0, 									NULL,			NULL									}
 				};
 
@@ -1090,6 +1091,19 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			fMacroArgs->AddFrame(macroArg->fFObjCombo, frameGC->LH());
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
 			macroArg->fFObjCombo->SetFileEntry(value.Data());
+		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
+			macroArg->fFObjListBox = new TGMrbFileObjectListBox(fMacroArgs, argTitle.Data(), 100,
+												TGMrbMacroFrame::kEntryId + i + 1,
+												TGMrbMacroFrame::kListBoxId + i + 1,
+												frameWidth - 20,
+												TGMrbMacroFrame::kLineHeight,
+												macroArg->fEntryWidth,
+												macroArg->fEntryWidth,
+												frameGC, labelGC, entryGC, labelGC, entryGC);
+			HEAP(macroArg->fFObjListBox);
+			fMacroArgs->AddFrame(macroArg->fFObjListBox, frameGC->LH());
+			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
+			macroArg->fFObjListBox->SetFileEntry(value.Data());
 		}
 	}
 
@@ -1219,6 +1233,8 @@ Bool_t TGMrbMacroFrame::ResetMacroArgs() {
 			macroArg->fFile->GetEntry()->SetText(macroArg->fDefaultValue.Data());
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) {
 			macroArg->fFObjCombo->GetEntry()->SetText(macroArg->fDefaultValue.Data());
+		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
+			macroArg->fFObjListBox->GetEntry()->SetText(macroArg->fDefaultValue.Data());
 		}
 		macroArg = (TGMrbMacroArg *) fLofMacroArgs.After(macroArg);
 	}
@@ -1286,6 +1302,9 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 			currentValue = argString;
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) {
 			argString = macroArg->fFObjCombo->GetSelection(argString);
+			currentValue = argString;
+		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
+			argString = macroArg->fFObjListBox->GetSelection(argString);
 			currentValue = argString;
 		}
 		if (macroArg->fType->GetIndex() == TGMrbMacroArg::kGMrbMacroArgChar) {
