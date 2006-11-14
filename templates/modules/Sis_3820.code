@@ -84,9 +84,13 @@
 #define SIS_3820_CS_B_INPUT_MODE_2				(0x2 << 16)
 #define SIS_3820_CS_B_INPUT_MODE_3				(0x3 << 16)
 #define SIS_3820_CS_B_INPUT_MODE_4				(0x4 << 16)
+#define SIS_3820_CS_B_INPUT_MODE_5				(0x5 << 16)
+#define SIS_3820_CS_B_INPUT_MODE_6				(0x6 << 16)
 
 #define SIS_3820_CS_B_OUTPUT_MODE_0				0x0
 #define SIS_3820_CS_B_OUTPUT_MODE_1				(0x1 << 20)
+#define SIS_3820_CS_B_OUTPUT_MODE_2				(0x2 << 20)
+#define SIS_3820_CS_B_OUTPUT_MODE_3				(0x3 << 20)
 
 #define SIS_3820_CS_B_LNE_SOURCE_0				0x0
 #define SIS_3820_CS_B_LNE_SOURCE_1				(0x1 << 4)
