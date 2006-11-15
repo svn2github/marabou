@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.77 2006-10-31 09:35:27 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.78 2006-11-15 10:08:05 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -104,6 +104,7 @@ TMrbAnalyze::TMrbAnalyze(TMrbIOSpec * IOSpec) {
 		fRootFileIn = NULL;
 		fFakeMode = kFALSE;
 
+		fCurIOSpec = IOSpec;
 		fLofIOSpecs.Delete();
 
 		gStartEvent = new TUsrEvtStart();	// create special events for start and stop
@@ -479,6 +480,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 
 	TIterator * iter = fLofIOSpecs.MakeIterator();
 	while ((ioSpec = (TMrbIOSpec *) iter->Next()) && this->TestRunStatus()) {
+		this->SetCurIOSpec(ioSpec);
 		gMrbLog->Out() << "[" << nofEntries + 1 << "] ";
 		ioSpec->Print(gMrbLog->Out());
 		gMrbLog->Flush(this->ClassName(), "ProcessFileList", setgreen);

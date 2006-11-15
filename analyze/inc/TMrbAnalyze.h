@@ -7,7 +7,7 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.49 2006-08-08 14:35:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.50 2006-11-15 10:08:05 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -137,7 +137,7 @@ class TMrbAnalyze : public TObject {
 		Bool_t ReloadVarsAndWdws(const Char_t * ParamFile); 		// reload vars and wdws
 		Bool_t ReloadVarsAndWdws(TMrbIOSpec * IOSpec);
 
-		Bool_t FinishRun(TMrbIOSpec * IOSpec);						// do some work ar end of run
+		Bool_t FinishRun(TMrbIOSpec * IOSpec, Bool_t BeforeSH = kTRUE);	// do some work at end of run
 
 		inline void AddIOSpec(TMrbIOSpec * IOSpec) { fLofIOSpecs.Add(IOSpec); };	// add an i/o spec to list
 		inline TMrbIOSpec * GetNextIOSpec(TMrbIOSpec * IOSpec) {					// get (next) i/o spec
@@ -149,6 +149,10 @@ class TMrbAnalyze : public TObject {
 		Int_t SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec);
 
 		Int_t ClearHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec = NULL);	// clear histos in shared memory
+
+		inline void SetCurIOSpec(TMrbIOSpec * IOSpec) { fCurIOSpec = IOSpec; };
+		inline TMrbIOSpec * GetCurIOSpec() { return(fCurIOSpec); };
+		inline TList * GetLofIOSpecs() { return(&fLofIOSpecs); };
 
 		inline void SetMapFile(TMapFile * MapFile, Int_t Size) { 		// store mmap addr & size
 			fMapFile = MapFile;
@@ -292,8 +296,9 @@ class TMrbAnalyze : public TObject {
 		TMapFile * fMapFile;		// shared memory mmap file
 		Int_t fMapFileSize;			// ... size
 
+		TMrbIOSpec * fCurIOSpec;	// current i/o spec
 		TList fLofIOSpecs;			// list of i/o specs
-
+		
 		TString fResourceFile;		// user's resource defs
 		TString fResourceName;
 		TString fResourceString;
