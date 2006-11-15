@@ -233,12 +233,13 @@ Bool_t TMrbAnalyze::ReloadParams(TMrbIOSpec * IOSpec) {
 %%RELOAD_PARAMS%%
 
 %%BeginOfCode%%
-Bool_t TMrbAnalyze::FinishRun(TMrbIOSpec * IOSpec) {
+Bool_t TMrbAnalyze::FinishRun(TMrbIOSpec * IOSpec, Bool_t BeforeSH) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::FinishRun
 // Purpose:        Do some work at end of run
 // Arguments:      TMrbIOSpec * IOSpec   -- i/o specifications
+//                 Bool_t BeforeSH       -- kTRUE if before saving histos
 // Results:        kTRUE/kFALSE
 // Description:    User may overwrite this method by his own
 // Exceptions:     
