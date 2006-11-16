@@ -1,0 +1,354 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Caen_V965.code
+// @(#)Purpose:    VME code for adc CAEN V965
+// Description:    Contains pieces of code to operate a CAEN V965 dual range QDC
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* bit definitions for VME QDC CAEN V965 */
+#define CAEN_V965_R_OUTPUT						0x0
+#define CAEN_V965_R_FIRMWARE					0x1000
+#define CAEN_V965_785_R_GEOADDR					0x1002
+#define CAEN_V965_R_BITSET1						0x1006
+#define CAEN_V965_R_BITCLEAR1					0x1008
+#define CAEN_V965_R_STATUS1						0x100E
+#define CAEN_V965_R_CONTROL1					0x1010
+#define CAEN_V965_R_ADDR_HIGH					0x1012
+#define CAEN_V965_R_ADDR_LOW					0x1014
+#define CAEN_V965_R_SINGLE_SHOT					0x1016
+#define CAEN_V965_R_EVT_TRIG					0x1020
+#define CAEN_V965_R_STATUS2						0x1022
+#define CAEN_V965_R_EVT_CNT_LOW					0x1024
+#define CAEN_V965_R_EVT_CNT_HIGH 				0x1026
+#define CAEN_V965_R_INCR_EVT					0x1028
+#define CAEN_V965_R_INCR_OFFS					0x102A
+#define CAEN_V965_R_LOAD_TEST_REG				0x102C
+#define CAEN_V965_R_FCLR_WINDOW 				0x102E
+#define CAEN_V965_R_BITSET2						0x1032
+#define CAEN_V965_R_BITCLEAR2					0x1034
+#define CAEN_V965_R_CRATE_SEL					0x103C
+#define CAEN_V965_R_TEST_EVT_WRITE				0x103E
+#define CAEN_V965_R_EVT_CNT_RESET				0x1040
+#define CAEN_V965_R_IPED						0x1060
+#define CAEN_V965_R_THRESH 						0x1080
+#define CAEN_V965_R_ROM	 						0x8000
+
+#define CAEN_V965_B_BITSET1_SEL_ADDR_INTERN 		(0x1 << 4)
+#define CAEN_V965_B_BITSET1_RESET			 		(0x1 << 7)
+#define CAEN_V965_B_CONTROL1_PROG_RESET_MODULE	(0x1 << 4)
+#define CAEN_V965_B_BITSET2_OFFLINE				(0x1 << 1)
+#define CAEN_V965_B_BITSET2_CLEAR_DATA		(0x1 << 2)
+#define CAEN_V965_B_BITSET2_OVER_RANGE_DIS		(0x1 << 3)
+#define CAEN_V965_B_BITSET2_LOW_THRESH_DIS		(0x1 << 4)
+#define CAEN_V965_B_BITSET2_SLIDE_ENA			(0x1 << 7)
+#define CAEN_V965_B_BITSET2_STEP_TH 			(0x1 << 8)
+#define CAEN_V965_B_BITSET2_AUTO_INCR_ENA 		(0x1 << 11)
+#define CAEN_V965_B_BITSET2_EMPTY_PROG_ENA		(0x1 << 12)
+#define CAEN_V965_B_BITSET2_ALL_TRIG_ENA			(0x1 << 14)
+#define CAEN_V965_B_STATUS2_BUFFER_EMPTY			(0x1 << 1)
+#define CAEN_V965_B_THRESH_KILL_CHANNEL 			(0x1 << 8)
+
+#define CAEN_V965_SH_WC							8
+
+#define CAEN_V965_D_HDR							0x02000000
+#define CAEN_V965_D_DATA							0x00000000
+#define CAEN_V965_D_EOB							0x04000000
+#define CAEN_V965_D_INVALID						0x06000000
+
+#define CAEN_V965_M_MSERIAL						0xFF
+#define CAEN_V965_M_WC							0x3F
+#define CAEN_V965_M_CHN							0xFF
+#define CAEN_V965_M_ID							0x07000000
+#define CAEN_V965_M_HDR							0x07FFFFFF
+#define CAEN_V965_M_DATA						0x07FFFFFF
+#define CAEN_V965_M_ADCDATA						0x00000FFF
+
+#define CAEN_V965_B_OVERFLOW	 				(0x1 << 12)
+#define CAEN_V965_B_UNDERTHRESH 				(0x1 << 13)
+
+#define CAEN_V965_N_MAXEVENTS					32
+
+#define CAEN_V965_A_OUTPUT(module)			((unsigned int *) (module + CAEN_V965_R_OUTPUT))
+#define CAEN_V965_A_FIRMWARE(module) 		((unsigned short *) (module + CAEN_V965_R_FIRMWARE))
+#define CAEN_V965_A_GEOADDR(module)			((unsigned short *) (module + CAEN_V965_R_GEOADDR))
+#define CAEN_V965_A_BITSET1(module)			((unsigned short *) (module + CAEN_V965_R_BITSET1))
+#define CAEN_V965_A_BITCLEAR1(module)		((unsigned short *) (module + CAEN_V965_R_BITCLEAR1))
+#define CAEN_V965_A_STATUS1(module)			((unsigned short *) (module + CAEN_V965_R_STATUS1))
+#define CAEN_V965_A_CONTROL1(module) 		((unsigned short *) (module + CAEN_V965_R_CONTROL1))
+#define CAEN_V965_A_ADDR_HIGH(module) 		((unsigned short *) (module + CAEN_V965_R_ADDR_HIGH))
+#define CAEN_V965_A_ADDR_LOW(module)			((unsigned short *) (module + CAEN_V965_R_ADDR_LOW))
+#define CAEN_V965_A_EVT_TRIG(module)			((unsigned short *) (module + CAEN_V965_R_EVT_TRIG))
+#define CAEN_V965_A_STATUS2(module)			((unsigned short *) (module + CAEN_V965_R_STATUS2))
+#define CAEN_V965_A_EVT_CNT_LOW(module)		((unsigned short *) (module + CAEN_V965_R_EVT_CNT_LOW))
+#define CAEN_V965_A_EVT_CNT_HIGH(module) 	((unsigned short *) (module + CAEN_V965_R_EVT_CNT_HIGH))
+#define CAEN_V965_A_INCR_EVT(module)			((unsigned short *) (module + CAEN_V965_R_INCR_EVT))
+#define CAEN_V965_A_INCR_OFFS(module) 		((unsigned short *) (module + CAEN_V965_R_INCR_OFFS))
+#define CAEN_V965_A_BITSET2(module)			((unsigned short *) (module + CAEN_V965_R_BITSET2))
+#define CAEN_V965_A_BITCLEAR2(module)		((unsigned short *) (module + CAEN_V965_R_BITCLEAR2))
+#define CAEN_V965_A_CRATE_SEL(module) 		((unsigned short *) (module + CAEN_V965_R_CRATE_SEL))
+#define CAEN_V965_A_TEST_EVT_WRITE(module)	((unsigned short *) (module + CAEN_V965_R_TEST_EVT_WRITE))
+#define CAEN_V965_A_EVT_CNT_RESET(module)	((unsigned short *) (module + CAEN_V965_R_EVT_CNT_RESET))
+#define CAEN_V965_A_IPED(module)			((unsigned short *) (module + CAEN_V965_R_IPED))
+#define CAEN_V965_A_THRESH(module)			((unsigned short *) (module + CAEN_V965_R_THRESH))
+#define CAEN_V965_A_ROM(module)				((unsigned short *) (module + CAEN_V965_R_ROM))
+
+#define CAEN_V965_SET_THRESHOLD(module,chn,data) 	*(CAEN_V965_A_THRESH(module) + chn) = data
+
+#define CAEN_V965_AUTO_INCR_ON(module)	*CAEN_V965_A_BITSET2(module) = CAEN_V965_B_BITSET2_AUTO_INCR_ENA
+#define CAEN_V965_AUTO_INCR_OFF(module)	*CAEN_V965_A_BITCLEAR2(module) = CAEN_V965_B_BITSET2_AUTO_INCR_ENA
+
+#define CAEN_V965_ZERO_SUPPR_ON(module)	*CAEN_V965_A_BITCLEAR2(module) = CAEN_V965_B_BITSET2_LOW_THRESH_DIS
+#define CAEN_V965_ZERO_SUPPR_OFF(module)	*CAEN_V965_A_BITSET2(module) = CAEN_V965_B_BITSET2_LOW_THRESH_DIS
+
+#define CAEN_V965_ALL_TRIG_ON(module)		*CAEN_V965_A_BITSET2(module) = CAEN_V965_B_BITSET2_ALL_TRIG_ENA
+#define CAEN_V965_ALL_TRIG_OFF(module)	*CAEN_V965_A_BITCLEAR2(module) = CAEN_V965_B_BITSET2_ALL_TRIG_ENA
+
+#define CAEN_V965_THRESH_RES_COARSE(module) *CAEN_V965_A_BITCLEAR2(module) = CAEN_V965_B_BITSET2_STEP_TH
+#define CAEN_V965_THRESH_RES_FINE(module)	*CAEN_V965_A_BITSET2(module) = CAEN_V965_B_BITSET2_STEP_TH
+
+#define CAEN_V965_SLIDING_SCALE_ON(module)	*CAEN_V965_A_BITSET2(module) = CAEN_V965_B_BITSET2_SLIDE_ENA
+#define CAEN_V965_SLIDING_SCALE_OFF(module)	*CAEN_V965_A_BITCLEAR2(module) = CAEN_V965_B_BITSET2_SLIDE_ENA
+
+#define CAEN_V965_OVER_RANGE_CHECK_ON(module)	*CAEN_V965_A_BITCLEAR2(module) = CAEN_V965_B_BITSET2_OVER_RANGE_DIS
+#define CAEN_V965_OVER_RANGE_CHECK_OFF(module)	*CAEN_V965_A_BITSET2(module) = CAEN_V965_B_BITSET2_OVER_RANGE_DIS
+
+#define CAEN_V965_EMPTY_PROG_ENABLE(module)	*CAEN_V965_A_BITSET2(module) = CAEN_V965_B_BITSET2_EMPTY_PROG_ENA
+#define CAEN_V965_EMPTY_PROG_DISABLE(module)	*CAEN_V965_A_BITCLEAR2(module) = CAEN_V965_B_BITSET2_EMPTY_PROG_ENA
+
+#define CAEN_V965_CLEAR_DATA(module)	*CAEN_V965_A_BITSET2(module) = CAEN_V965_B_BITSET2_CLEAR_DATA; \
+											*CAEN_V965_A_BITCLEAR2(module) = CAEN_V965_B_BITSET2_CLEAR_DATA
+
+#define CAEN_V965_RESET_EVENT_COUNTER(module)	*CAEN_V965_A_EVT_CNT_RESET(module) = 1
+
+#define CAEN_V965_SET_IPED(module, iped)	*CAEN_V965_A_IPED(module) = iped & 0xFF
+#define CAEN_V965_GET_IPED(module)	*CAEN_V965_A_IPED(module)
+
+#define CAEN_V965_SET_KILL_BIT(module,chn)	*(CAEN_V965_A_THRESH(module) + chn) = CAEN_V965_B_THRESH_KILL_CHANNEL
+
+#define CAEN_V965_READ_BITSET2(module)	*CAEN_V965_A_BITSET2(module)
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+%B%
+%B%									/* init module $moduleName at addr $baseAddr */
+%B%					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+%B%					caen_v965_module_info(CAEN_V965_A_ROM($moduleName));
+%B%					caen_v965_reset($moduleName);
+%B%					CAEN_V965_AUTO_INCR_ON($moduleName);
+%B%					CAEN_V965_ALL_TRIG_ON($moduleName);
+%B%					CAEN_V965_SLIDING_SCALE_ON($moduleName);
+%ZSP%					CAEN_V965_ZERO_SUPPR_$onOrOff($moduleName); 				/* $dont use zero suppression */
+%ORC%					CAEN_V965_OVER_RANGE_CHECK_$onOrOff($moduleName);			/* $dont check for range overflow */
+%THR%					CAEN_V965_THRESH_RES_$fineOrCoarse($moduleName);			/* set threshold resolution */
+%E%					CAEN_V965_EMPTY_PROG_ENABLE($moduleName);
+%E%					CAEN_V965_CLEAR_DATA($moduleName);
+%E%					CAEN_V965_RESET_EVENT_COUNTER($moduleName);
+%E%					CAEN_V965_SET_IPED($moduleName. $iped); 		/* set i-pedestal (common for all chans) */
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+%U%					CAEN_V965_SET_THRESHOLD($moduleName, $chnNo, $lowerThreshL);	/* lower limit $chnName:$chnNo */
+%N%					CAEN_V965_SET_KILL_BIT($moduleName, $chnNo);	/* de-activate $chnName:$chnNo */
+%F% 				caen_v965_set_thresh($moduleName, "$threshFile");
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+
+					caen_v965_rdoinp = CAEN_V965_A_OUTPUT($moduleName);
+					while ((*CAEN_V965_A_STATUS2($moduleName) & CAEN_V965_B_STATUS2_BUFFER_EMPTY) == 0) {
+						caen_v965_hdr = *caen_v965_rdoinp;
+						caen_v965_wc = (caen_v965_hdr >> CAEN_V965_SH_WC) & CAEN_V965_M_WC;	/* extract wc */
+#ifdef DEBUG
+						caen_v965_id = caen_v965_hdr & CAEN_V965_M_ID;
+						if (caen_v965_id != CAEN_V965_D_HDR) {
+							sprintf(msg, "$moduleName: Not a header - %#lx\n", caen_v965_hdr);
+							f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						} else if (caen_v965_wc > 32) {
+							sprintf(msg, "$moduleName: Illegal word count - %#lx\n", caen_v965_wc);
+							f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						}
+#endif
+						caen_v965_hdr = (caen_v965_hdr & CAEN_V965_M_HDR) | $moduleSerial;
+						RDO_2MEM_32(caen_v965_hdr);					/* write header (+ module number) */
+						isTruncated = 0;
+						for (;caen_v965_wc--;) {
+							caen_v965_data = *caen_v965_rdoinp;
+							caen_v965_id = caen_v965_data & CAEN_V965_M_ID;
+							if (caen_v965_id != CAEN_V965_D_DATA) {
+								if (caen_v965_id == CAEN_V965_D_EOB) {
+#ifdef DEBUG
+									sprintf(msg, "$moduleName: Unexpected EOB - %#lx\n", caen_v965_data);
+									f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+#endif
+									isTruncated = 1;
+									caen_v965_hdr = caen_v965_data;
+									break;
+								} else {
+#ifdef DEBUG
+									sprintf(msg, "$moduleName: Not a data word - %#lx\n", caen_v965_data);
+									f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+#endif
+								}
+							}
+							RDO_2MEM_32(caen_v965_data & CAEN_V965_M_DATA);	/* write data */
+						}
+						if (isTruncated == 0) caen_v965_hdr = *caen_v965_rdoinp;
+						RDO_2MEM_32(caen_v965_hdr & CAEN_V965_M_HDR);			/* write trailer */
+#ifdef DEBUG
+						caen_v965_id = (caen_v965_hdr & CAEN_V965_M_ID);
+						if (caen_v965_id != CAEN_V965_D_EOB) {
+							sprintf(msg, "$moduleName: Illegal end of block - %#lx\n", caen_v965_id);
+							f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						}
+#endif
+					}
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+void caen_v965_module_info(volatile unsigned short * firmWare) {
+	unsigned short revision;
+	unsigned short serialMSB, serialLSB;
+	unsigned short boardIdMSB, boardIdLSB;
+	int serial, boardId;
+	char str[256];
+	
+	boardIdMSB = *(firmWare + 0x3A / sizeof(unsigned short)) & 0xFF;
+	boardIdLSB = *(firmWare + 0x3E / sizeof(unsigned short)) & 0xFF;
+	boardId = (int) (boardIdMSB << 8) + (int) boardIdLSB;
+	revision = *(firmWare + 0x4E / sizeof(unsigned short)) & 0xFF;
+	serialLSB = *(firmWare + 0xF06 / sizeof(unsigned short)) & 0xFF;
+	serialMSB = *(firmWare + 0xF02 / sizeof(unsigned short)) & 0xFF;
+	serialLSB = *(firmWare + 0xF06 / sizeof(unsigned short)) & 0xFF;
+	serial = (int) (serialMSB << 8) + (int) serialLSB;
+	sprintf(str, "  CAEN module info: type V%d, serial# %d, revision %d\n", boardId, serial, revision);
+	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+	if (boardId != 785) {
+		sprintf(str, "  CAEN module info: Illegal board ID %d - should be 785\n", boardId);
+		f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+	}
+}
+
+void caen_v965_reset(volatile unsigned char * module) {
+	*CAEN_V965_A_BITSET1(module) = CAEN_V965_B_BITSET1_RESET;
+	usleep(1000);
+	*CAEN_V965_A_BITCLEAR1(module) = CAEN_V965_B_BITSET1_RESET;
+	usleep(1000);
+	*CAEN_V965_A_BITCLEAR2(module) = 0xFFFF;			/* clear all bits */
+}
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+void caen_v965_module_info(volatile unsigned short * firmWare);
+void caen_v965_reset(volatile unsigned char * module);
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	unsigned int * caen_v965_rdoinp;
+	int caen_v965_wc;
+	int isTruncated;
+	unsigned int caen_v965_hdr, caen_v965_data, caen_v965_id, caen_v965_chn;
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+
