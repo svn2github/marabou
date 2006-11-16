@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V785.cxx,v 1.12 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V785.cxx,v 1.13 2006-11-16 09:28:05 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -239,7 +239,7 @@ Bool_t TMrbCaen_V785::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 //                 EMrbModuleTag TagIndex     -- index of tag word taken from template file
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Writes code for readout of a caen v556 adc module.
+// Description:    Writes code for readout of a caen v785 adc module.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -349,7 +349,7 @@ Bool_t TMrbCaen_V785::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Writes code for readout of a caen v556 adc module.
+// Description:    Writes code for readout of a caen v785 adc module.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 

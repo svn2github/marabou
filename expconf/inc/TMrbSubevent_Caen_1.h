@@ -9,7 +9,7 @@
 //                                          dedicated format CAEN modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Caen_1.h,v 1.7 2005-11-15 14:01:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_1.h,v 1.8 2006-11-16 09:28:05 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,8 @@ class TMrbSubevent_Caen_1 : public TMrbSubevent {
 		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type CAEN
 			return( Module->CheckID(TMrbConfig::kModuleCaenV775)
 				||	Module->CheckID(TMrbConfig::kModuleCaenV785)
-				||	Module->CheckID(TMrbConfig::kModuleCaenV879));
+				||	Module->CheckID(TMrbConfig::kModuleCaenV879)
+				||	Module->CheckID(TMrbConfig::kModuleCaenV965));
 		};
 		
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files

@@ -155,7 +155,7 @@
 %E%					CAEN_V965_EMPTY_PROG_ENABLE($moduleName);
 %E%					CAEN_V965_CLEAR_DATA($moduleName);
 %E%					CAEN_V965_RESET_EVENT_COUNTER($moduleName);
-%E%					CAEN_V965_SET_IPED($moduleName. $iped); 		/* set i-pedestal (common for all chans) */
+%E%					CAEN_V965_SET_IPED($moduleName, $iped); 		/* set i-pedestal (common for all chans) */
 %%EndOfCode%%
 %%INIT_MODULE%%
 

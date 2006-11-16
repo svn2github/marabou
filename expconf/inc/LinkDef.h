@@ -63,6 +63,7 @@
 #pragma link C++ class TMrbCaen_V785;
 #pragma link C++ class TMrbCaen_V820;
 #pragma link C++ class TMrbCaen_V879;
+#pragma link C++ class TMrbCaen_V965;
 #pragma link C++ class TMrbGanelec_Q1612F;
 #pragma link C++ class TMrbOrtec_413A;
 #pragma link C++ class TMrbXia_DGF_4C;

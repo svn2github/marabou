@@ -8,7 +8,7 @@
 // Class:          TMrbCaen_V879        -- 32 chn peak sensing ADC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V879.h,v 1.1 2005-11-15 11:34:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V879.h,v 1.2 2006-11-16 09:28:05 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -132,7 +132,7 @@ class TMrbCaen_V879 : public TMrbVMEModule {
 
 
 		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
-		virtual inline const Char_t * GetPrivateCodeFile() const { return("Module_Caen_V7X5"); };
+		virtual inline const Char_t * GetPrivateCodeFile() const { return("Module_Caen_Vxxx"); };
 		
 		inline Bool_t IsTac() { return(fIsTac); };
 

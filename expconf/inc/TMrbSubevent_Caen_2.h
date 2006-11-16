@@ -9,7 +9,7 @@
 //                                         dedicated format for CAEN modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Caen_2.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_2.h,v 1.7 2006-11-16 09:28:05 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -54,9 +54,12 @@ class TMrbSubevent_Caen_2 : public TMrbSubevent {
 		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
 		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type CAEN
-			return(Module->CheckID(TMrbConfig::kModuleCaenV775) || Module->CheckID(TMrbConfig::kModuleCaenV785));
+			return( Module->CheckID(TMrbConfig::kModuleCaenV775)
+				||	Module->CheckID(TMrbConfig::kModuleCaenV785)
+				||	Module->CheckID(TMrbConfig::kModuleCaenV879)
+				||	Module->CheckID(TMrbConfig::kModuleCaenV965));
 		};
-				
+		
 		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };  					// allocate hit buffer
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode

@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.76 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.77 2006-11-16 09:28:05 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -500,6 +500,7 @@ class TMrbConfig : public TNamed {
 									kModuleCaenV879 		=	kManufactCaen + 0x1d,
 									kModuleSis_3820 		=	kManufactSis + 0x1e,
 									kModuleSis_3300 		=	kManufactSis + 0x1f,
+									kModuleCaenV965 		=	kManufactCaen + 0x20,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};

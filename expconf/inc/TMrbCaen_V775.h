@@ -8,7 +8,7 @@
 // Class:          TMrbCaen_V775        -- 16/32 chn TDC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V775.h,v 1.9 2006-10-04 12:35:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V775.h,v 1.10 2006-11-16 09:28:05 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -136,7 +136,7 @@ class TMrbCaen_V775 : public TMrbVMEModule {
 		inline Bool_t HasRandomReadout() const { return(kFALSE); };
 
 		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
-		virtual inline const Char_t * GetPrivateCodeFile() const { return("Module_Caen_V7X5"); };
+		virtual inline const Char_t * GetPrivateCodeFile() const { return("Module_Caen_Vxxx"); };
 		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
