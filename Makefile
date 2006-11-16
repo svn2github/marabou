@@ -140,7 +140,7 @@ ALLOBJ       :=
 .PRECIOUS: include/%.h obj/%.o
 
 %.o: %.cxx
-	$(CXX) $(OPT) $(CXXFLAGS) -DROOTVERSION=$(ROOTVERS) -o $@ -c $<
+	$(CXX) $(OPT) $(CXXFLAGS) -DMARABOUVERS=1 -DROOTVERSION=$(ROOTVERS) -o $@ -c $<
 
 %.o: %.c
 	$(CC) $(OPT) $(CFLAGS) -o $@ -c $<

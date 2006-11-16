@@ -1,0 +1,1300 @@
+<html>
+<head>
+<title>
+Analyze.cxx.code
+
+</title>
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+
+
+<link rev="made" href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Code">
+<meta name="keywords" content="software development, oo, object oriented, c++, html, MARaBOU, R. Lutter, O. Schaile">
+<meta name="description" content="Marabou - MBS and ROOT based Online/Offline Utility.">
+<link rel="stylesheet" type="text/css" href="mrb-style.css">
+</head>
+<body>
+<h3 align="center">
+Analyze.cxx.code
+
+</h3>
+<hr>
+<div class="header0">
+<b>[4] &lt;mb&gt; [body]</b><br>
+<table summary="mb"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag"> contiguous</pre></td></tr>
+<tr><td>Input from:</td><td colspan="3">Analyze.cxx.code</td></tr>
+<tr><td>Tidy config from:</td><td colspan="3">tidy.cfg</td></tr>
+<tr><td>Substitutions  (global):</td><td><pre class="arg1">fname</pre></td><td>name of file w/o extension</td></tr>
+<tr><td></td><td><pre class="arg1">fprefix</pre></td><td>file prefix</td></tr>
+<tr><td></td><td><pre class="arg1">fdescr</pre></td><td>description/name of experiment</td></tr>
+</table></div>
+<br>
+<div class="header1">
+<b>[5] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">MAIN PROGRAM</pre></td></tr>
+<tr><td>Description:</td><td colspan="3">User's main program to be linked to M_analyze</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">ANALYZE_CXX_HEADER</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">author</pre></td><td>author/exp group</td></tr>
+<tr><td></td><td><pre class="arg1">cdate</pre></td><td>creation date</td></tr>
+<tr><td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(inherited):</td><td><pre class="arg1">fname</pre></td><td>name of file w/o extension</td></tr>
+<tr><td></td><td><pre class="arg1">fdescr</pre></td><td>description/name of experiment</td></tr>
+</table></div>
+<pre class="code">//______________________________________________________________[MAIN PROGRAM]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           <em title="name of file w/o extension">fname</em>.cxx
+// Purpose:        User's main program to be linked to M_analyze
+// Description:    <em title="description/name of experiment">fdescr</em>
+//
+// Author:         <em title="author/exp group">author</em>
+// Revision:         
+// Date:           <em title="creation date">cdate</em>
+// URL:            
+//////////////////////////////////////////////////////////////////////////////
+</pre><br>
+<pre class="code">
+
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">definitions and includes</td></tr>
+</table></div>
+<pre class="code">#define _MARABOU_MAIN_
+#define MAX_LLONG 9223372036854775807LL
+
+#include "TEnv.h"
+
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">class definitions</td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">fname</pre></td><td>name of file w/o extension</td></tr>
+</table></div>
+<pre class="code">#include "<em title="name of file w/o extension">fname</em>.h"</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">common index declarations for analysis and readout</td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">fprefix</pre></td><td>file prefix</td></tr>
+</table></div>
+<pre class="code">#include "<em title="file prefix (1st char upper case)">Fprefix</em>CommonIndices.h"</pre><br>
+<pre class="code">
+#include "SetColor.h"
+#include "pthread.h"  // pthread header file
+
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">global defs supplied by user</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">INCLUDE_USER_GLOBALS (TMrbConfig::kAnaUserGlobals)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">iclFile</pre></td><td>file containing globals defined by user</td></tr>
+<tr><td>Iteration:</td><td colspan="3">more than one file possible</td></tr>
+</table></div>
+<pre class="code">#include "<em title="file containing globals defined by user">iclFile</em>"</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">global objects</td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">fname</pre></td><td>name of file w/o extension</td></tr>
+</table></div>
+<pre class="code">#include "<em title="name of file w/o extension">fname</em>Globals.h"</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">special global defs for events, subevents, and modules</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">INCLUDE_EVT_SEVT_MOD_GLOBALS (TMrbConfig::kAnaIncludeEvtSevtModGlobals)</pre></td></tr>
+</table></div>
+<br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">namespace definitions</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">USING_NAMESPACE (TMrbConfig::kAnaUsingNameSpace)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">nspace</pre></td><td>namespace definition</td></tr>
+<tr><td>Iteration:</td><td colspan="3">possibly more than one namespace definition</td></tr>
+</table></div>
+<pre class="code">using namespace <em title="namespace definition">nspace</em>;</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">implement class defs</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">IMPLEMENT_CLASSES (TMrbConfig::kAnaClassImp)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">cname</pre></td><td>class name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one statement per class</td></tr>
+</table></div>
+<pre class="code">ClassImp(<em title="class name">cname</em>)</pre><br>
+<pre class="code">
+</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">globals - static and external</td></tr>
+</table></div>
+<pre class="code">extern pthread_mutex_t global_data_mutex;    // global pthread mutex to protect TMapped data
+
+extern <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">TMrbLogger</a> * <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>;              // MARaBOU's logging mechanism
+
+extern <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbTransport.html">TMrbTransport</a> * gMrbTransport;        // base class for MBS transport
+extern <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a> * <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>;            // base class for user's analysis
+
+extern TUsrEvtStart * <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrEvtStart.html">gStartEvent</a>;           // start + stop events
+extern TUsrEvtStop * <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrEvtStop.html">gStopEvent</a>;
+extern TUsrDeadTime * <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrDeadTime.html">gDeadTime</a>;          // dead-time data
+
+extern <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLofUserVars.html">TMrbLofUserVars</a> * gMrbLofUserVars;    // list of user vars/wdws
+
+static Bool_t verboseMode;                // verbosity flag;
+static Bool_t forcedDump = kFALSE;           // kTRUE -&gt; dump records
+static Int_t recNo = 0;
+</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header1">
+<b>[6] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
+<tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::Initialize</pre></td></tr>
+<tr><td>Purpose:</td><td colspan="3">Instantiate user objects, initialize values</td></tr>
+<tr><td>Arguments:</td><td><pre class="mtag">TMrbIOSpec</pre></td><td><pre class="mtag">*IOSpec</pre></td><td>i/o specifications</td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Description:</td><td colspan="3">Instantiates events, histgrams, windows etc. and initializes values</td></tr>
+</table></div>
+<br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::Initialize(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> *IOSpec) {</pre>
+<br>
+   <pre class="code">
+   verboseMode = (Bool_t) <a href="http://root.cern.ch/root/htmldoc/TEnv.html">gEnv</a>-&gt;GetValue("<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>.VerboseMode", kFALSE);
+   forcedDump = (Bool_t) <a href="http://root.cern.ch/root/htmldoc/TEnv.html">gEnv</a>-&gt;GetValue("<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>.ForcedDump", kFALSE);
+
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">add user's environment defs</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">ADD_USER_ENV (TMrbConfig::kAnaAddUserEnv)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">rcFile</pre></td><td>file containing env definitions</td></tr>
+<tr><td>Iteration:</td><td colspan="3">more than one file possible</td></tr>
+</table></div>
+   <pre class="code">
+   Bool_t fileOk = this-&gt;AddResourcesFromFile("<em title="file containing env definitions">rcFile</em>");
+   if (verboseMode &amp;&amp; fileOk) {
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Out() &lt;&lt; "Reading user's environment defs from file <em title="file containing env definitions">rcFile</em>" &lt;&lt; endl;
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "Initialize", setblue);
+   }
+</pre><br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mi&gt; [include]</b><br>
+<table summary="mi"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Included from file:</td><td colspan="3"><pre class="mtag">xxx.cxx.code</pre></td></tr>
+</table></div>
+<div class="header2">
+<b>[7] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">*default method*, may be replaced by user-defined code</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">TEST_INCLUDE</pre></td></tr>
+</table></div>
+   <pre class="code">
+
+</pre><br>
+<div class="header1">
+<b>[8] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
+<tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::HandleMessage</pre></td></tr>
+<tr><td>Purpose:</td><td colspan="3">Execute a message</td></tr>
+<tr><td>Arguments:</td><td><pre class="mtag">Char_t *</pre></td><td><pre class="mtag">Args</pre></td><td>argument list</td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td></tr>
+<tr><td>Description:</td><td colspan="3">Executes a message sent by message handler</td></tr>
+</table></div>
+<br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::HandleMessage(Char_t * Args) {</pre>
+<br>
+   <pre class="code">
+
+</pre><br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">initialize histogram arrays</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">HISTO_INIT_ARRAYS (TMrbConfig::kAnaHistoInitializeArrays)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">sevtName</pre></td><td>subevent name</td></tr>
+<tr><td></td><td><pre class="arg1">paramName</pre></td><td>parameter name</td></tr>
+<tr><td></td><td><pre class="arg1">nofParams</pre></td><td>number of parameters</td></tr>
+<tr><td></td><td><pre class="arg1">nofHistos</pre></td><td>number of histograms</td></tr>
+<tr><td></td><td><pre class="arg1">hArrayName</pre></td><td>name of histogram array</td></tr>
+<tr><td></td><td><pre class="arg1">indexRange</pre></td><td>range of histogram index</td></tr>
+<tr><td></td><td><pre class="arg1">prefix</pre></td><td>event prefix</td></tr>
+</table></div>
+<br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">N</pre></td><td><pre class="mtag">normal</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">sevtName</pre></td><td>subevent name</td></tr>
+<tr><td></td><td><pre class="arg1">paramName</pre></td><td>parameter name</td></tr>
+<tr><td></td><td><pre class="arg1">indexRange</pre></td><td>range of histogram index</td></tr>
+<tr><td></td><td><pre class="arg1">prefix</pre></td><td>event prefix</td></tr>
+</table></div>
+<pre class="code">   memset(h<em title="event prefix (1st char upper case)">Prefix</em><em title="parameter name (1st char upper case)">ParamName</em>, 0, <em title="range of histogram index">indexRange</em> * sizeof(<a href="http://root.cern.ch/root/htmldoc/TH1.html">TH1</a> *)); // <em title="subevent name">sevtName</em>.<em title="parameter name">paramName</em></pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">A</pre></td><td><pre class="mtag">array mode</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">sevtName</pre></td><td>subevent name</td></tr>
+<tr><td></td><td><pre class="arg1">nofParams</pre></td><td>number of parameters</td></tr>
+</table></div>
+<pre class="code">   h<em title="subevent name (1st char upper case)">SevtName</em>Array.Expand(<em title="number of parameters">nofParams</em>); h<em title="subevent name (1st char upper case)">SevtName</em>Array.Clear(); // <em title="subevent name">sevtName</em></pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">U</pre></td><td><pre class="mtag">user-defined array</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">nofHistos</pre></td><td>number of histograms</td></tr>
+<tr><td></td><td><pre class="arg1">hArrayName</pre></td><td>name of histogram array</td></tr>
+</table></div>
+<pre class="code">   <em title="name of histogram array">hArrayName</em>.Expand(<em title="number of histograms">nofHistos</em>); <em title="name of histogram array">hArrayName</em>.Clear(); // user-defined histos in array <em title="name of histogram array">hArrayName</em></pre><br>
+<br>
+<br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">initialize user lists: modules, params &amp; histos</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">INITIALIZE_LISTS (TMrbConfig::kAnaInitializeLists)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">moduleName</pre></td><td>module name</td></tr>
+<tr><td></td><td><pre class="arg1">nofModules</pre></td><td>number of modules</td></tr>
+<tr><td></td><td><pre class="arg1">nofParams</pre></td><td>number of parameters</td></tr>
+<tr><td></td><td><pre class="arg1">moduleTitle</pre></td><td>module title</td></tr>
+<tr><td></td><td><pre class="arg1">paramIndex</pre></td><td>parameter index</td></tr>
+</table></div>
+   <pre class="code"> 
+   
+</pre><br>
+<div class="header2">
+<b>[7] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">nofModules</pre></td><td>number of modules</td></tr>
+<tr><td></td><td><pre class="arg1">nofParams</pre></td><td>number of parameters</td></tr>
+</table></div>
+<pre class="code">   <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>->InitializeLists(<em title="number of modules">nofModules</em>, <em title="number of parameters">nofParams</em>);</pre><br>
+<br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">ML</pre></td><td><pre class="mtag">add module</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">moduleName</pre></td><td>module name</td></tr>
+<tr><td></td><td><pre class="arg1">nofParams</pre></td><td>number of parameters</td></tr>
+<tr><td></td><td><pre class="arg1">moduleTitle</pre></td><td>module title</td></tr>
+<tr><td></td><td><pre class="arg1">paramIndex</pre></td><td>parameter index</td></tr>
+</table></div>
+<pre class="code">   <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>->AddModuleToList("<em title="module name">moduleName</em>", "<em title="module title">moduleTitle</em>", kMrbModule<em title="module name (1st char upper case)">ModuleName</em>, <em title="parameter index">paramIndex</em>, <em title="number of parameters">nofParams</em>, 0);</pre><br>
+<br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">set time offsets for modules</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">MODULE_TIME_OFFSET (TMrbConfig::kAnaModuleTimeOffset)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">moduleName</pre></td><td>module name</td></tr>
+<tr><td></td><td><pre class="arg1">moduleTitle</pre></td><td>module title</td></tr>
+<tr><td></td><td><pre class="arg1">timeOffset</pre></td><td>time offset</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per module</td></tr>
+</table></div>
+   <pre class="code"> 
+   Int_t timeOffset;
+   timeOffset = <a href="http://root.cern.ch/root/htmldoc/TEnv.html">gEnv</a>-&gt;GetValue(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>-&gt;GetResource("Module.<em title="module name (1st char upper case)">ModuleName</em>.TimeOffset"), <em title="time offset">timeOffset</em>);   // <em title="module name">moduleName</em> (<em title="module title">moduleTitle</em>)
+   <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>-&gt;SetTimeOffset(kMrbModule<em title="module name (1st char upper case)">ModuleName</em>, timeOffset);
+
+</pre><br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">instantiate event classes and book histograms</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_CLASS_INSTANCE (TMrbConfig::kAnaEventClassInstance)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td></td><td><pre class="arg1">trigNo</pre></td><td>trigger number</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per readout class</td></tr>
+</table></div>
+   <pre class="code"> 
+   if (g<em title="event name (1st char upper case)">EvtName</em> == NULL) {     // event <em title="event name">evtName</em>, trigger <em title="trigger number">trigNo</em>
+      g<em title="event name (1st char upper case)">EvtName</em> = new TUsrEvt<em title="event name (1st char upper case)">EvtName</em>();
+      Bool_t err = g<em title="event name (1st char upper case)">EvtName</em>-&gt;IsZombie();
+      if (!err) {
+         err |= !g<em title="event name (1st char upper case)">EvtName</em>-&gt;BookParams();
+         err |= !g<em title="event name (1st char upper case)">EvtName</em>-&gt;BookHistograms();
+         
+</pre><br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">HB</pre></td><td><pre class="mtag">event uses hit buffers</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+</table></div>
+<pre class="code">         err |= !g<em title="event name (1st char upper case)">EvtName</em>->AllocHitBuffers();</pre><br>
+   <pre class="code">      }
+      if (err) {
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Err() &lt;&lt; "Something went wrong while creating event \"<em title="event name">evtName</em>\"" &lt;&lt; endl;
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "Initialize");
+      }
+   }
+</pre><br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">instantiate user-defined event classes</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_USER_CLASS_INSTANCE (TMrbConfig::kAnaEventUserClassInstance)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">className</pre></td><td>name of user class</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per user class</td></tr>
+</table></div>
+   <pre class="code"> 
+   if (g<em title="name of user class (1st char upper case)">ClassName</em> == NULL) {      // event <em title="name of user class">className</em>
+      g<em title="name of user class (1st char upper case)">ClassName</em> = new <em title="name of user class (1st char upper case)">ClassName</em>();
+      Bool_t err = g<em title="name of user class (1st char upper case)">ClassName</em>-&gt;IsZombie();
+      if (err) {
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Err() &lt;&lt; "Something went wrong while creating user-defined event \"<em title="name of user class">className</em>\"" &lt;&lt; endl;
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "Initialize");
+      }
+   }
+
+</pre><br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">instantiate windows</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">WDW_CLASS_INSTANCE (TMrbConfig::kAnaWdwClassInstance)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">wdwClass</pre></td><td>window class (1 or 2 dim)</td></tr>
+<tr><td></td><td><pre class="arg1">wdwName</pre></td><td>window name</td></tr>
+<tr><td></td><td><pre class="arg1">wdwLower</pre></td><td>lower limit</td></tr>
+<tr><td></td><td><pre class="arg1">wdwUpper</pre></td><td>upper limit</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per window</td></tr>
+</table></div>
+   <pre class="code"> 
+   Double_t cut_x0 = 0.; Double_t cut_y0 = 0.;
+   
+</pre><br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">1D</pre></td><td><pre class="mtag">1dim window</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">wdwClass</pre></td><td>window class (1 or 2 dim)</td></tr>
+<tr><td></td><td><pre class="arg1">wdwName</pre></td><td>window name</td></tr>
+<tr><td></td><td><pre class="arg1">wdwLower</pre></td><td>lower limit</td></tr>
+<tr><td></td><td><pre class="arg1">wdwUpper</pre></td><td>upper limit</td></tr>
+</table></div>
+<pre class="code">   if (<em title="window name">wdwName</em> == NULL) <em title="window name">wdwName</em> = new <em title="window class (1 or 2 dim)">wdwClass</em>("<em title="window name">wdwName</em>", <em title="lower limit">wdwLower</em>, <em title="upper limit">wdwUpper</em>);</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">2D</pre></td><td><pre class="mtag">2dim window (cut)</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">wdwClass</pre></td><td>window class (1 or 2 dim)</td></tr>
+<tr><td></td><td><pre class="arg1">wdwName</pre></td><td>window name</td></tr>
+</table></div>
+<pre class="code">   if (<em title="window name">wdwName</em> == NULL) <em title="window name">wdwName</em> = new <em title="window class (1 or 2 dim)">wdwClass</em>("<em title="window name">wdwName</em>", 1, &amp;cut_x0, &amp;cut_y0);</pre><br>
+<br>
+<br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">instatiate subevents and modules</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">INITIALIZE_EVT_SEVT_MODS (TMrbConfig::kAnaInitializeEvtSevtMods)</pre></td></tr>
+</table></div>
+<br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">initialize user code (objects, variables ...) - 1st call <b>before</b> booking histograms</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">INCLUDE_USER_INITIALIZE_BEFORE_HB (TMrbConfig::kAnaUserInitializeBeforeHB)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">initUcode</pre></td><td>method to initialize user code</td></tr>
+</table></div>
+   <pre class="code">   this-&gt;<em title="method to initialize user code">initUcode</em>(IOSpec, kTRUE);
+</pre><br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">book histograms defined by user</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">HISTO_BOOK_USER_DEFINED (TMrbConfig::kAnaHistoBookUserDefined)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">hName</pre></td><td>histo name</td></tr>
+<tr><td></td><td><pre class="arg1">hType</pre></td><td>histo type (THxx)</td></tr>
+<tr><td></td><td><pre class="arg1">hTitle</pre></td><td>title</td></tr>
+<tr><td></td><td><pre class="arg1">binSizeX</pre></td><td>bin size X</td></tr>
+<tr><td></td><td><pre class="arg1">lowerX</pre></td><td>lower edge X</td></tr>
+<tr><td></td><td><pre class="arg1">upperX</pre></td><td>upper edge X</td></tr>
+<tr><td></td><td><pre class="arg1">binSizeY</pre></td><td>bin size Y</td></tr>
+<tr><td></td><td><pre class="arg1">lowerY</pre></td><td>lower edge Y</td></tr>
+<tr><td></td><td><pre class="arg1">upperY</pre></td><td>upper edge Y</td></tr>
+<tr><td></td><td><pre class="arg1">condition</pre></td><td>condition</td></tr>
+<tr><td></td><td><pre class="arg1">args</pre></td><td>arg list</td></tr>
+</table></div>
+<br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">UD1</pre></td><td><pre class="mtag">1dim</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">hName</pre></td><td>histo name</td></tr>
+<tr><td></td><td><pre class="arg1">hType</pre></td><td>histo type (THxx)</td></tr>
+<tr><td></td><td><pre class="arg1">hTitle</pre></td><td>title</td></tr>
+<tr><td></td><td><pre class="arg1">binSizeX</pre></td><td>bin size X</td></tr>
+<tr><td></td><td><pre class="arg1">lowerX</pre></td><td>lower edge X</td></tr>
+<tr><td></td><td><pre class="arg1">upperX</pre></td><td>upper edge X</td></tr>
+</table></div>
+<pre class="code">   if (<em title="histo name">hName</em> == NULL) <em title="histo name">hName</em> = new <em title="histo type (THxx)">hType</em>("<em title="histo name">hName</em>", "<em title="title">hTitle</em>", <em title="bin size X">binSizeX</em>, <em title="lower edge X">lowerX</em>, <em title="upper edge X">upperX</em>);</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">UD2</pre></td><td><pre class="mtag">2dim</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">hName</pre></td><td>histo name</td></tr>
+<tr><td></td><td><pre class="arg1">hType</pre></td><td>histo type (THxx)</td></tr>
+<tr><td></td><td><pre class="arg1">hTitle</pre></td><td>title</td></tr>
+<tr><td></td><td><pre class="arg1">binSizeX</pre></td><td>bin size X</td></tr>
+<tr><td></td><td><pre class="arg1">lowerX</pre></td><td>lower edge X</td></tr>
+<tr><td></td><td><pre class="arg1">upperX</pre></td><td>upper edge X</td></tr>
+<tr><td></td><td><pre class="arg1">binSizeY</pre></td><td>bin size Y</td></tr>
+<tr><td></td><td><pre class="arg1">lowerY</pre></td><td>lower edge Y</td></tr>
+<tr><td></td><td><pre class="arg1">upperY</pre></td><td>upper edge Y</td></tr>
+</table></div>
+<pre class="code">   if (<em title="histo name">hName</em> == NULL) <em title="histo name">hName</em> = new <em title="histo type (THxx)">hType</em>("<em title="histo name">hName</em>", "<em title="title">hTitle</em>", <em title="bin size X">binSizeX</em>, <em title="lower edge X">lowerX</em>, <em title="upper edge X">upperX</em>, <em title="bin size Y">binSizeY</em>, <em title="lower edge Y">lowerY</em>, <em title="upper edge Y">upperY</em>);</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">UD1C</pre></td><td><pre class="mtag">1dim + condition</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">hName</pre></td><td>histo name</td></tr>
+<tr><td></td><td><pre class="arg1">hType</pre></td><td>histo type (THxx)</td></tr>
+<tr><td></td><td><pre class="arg1">hTitle</pre></td><td>title</td></tr>
+<tr><td></td><td><pre class="arg1">binSizeX</pre></td><td>bin size X</td></tr>
+<tr><td></td><td><pre class="arg1">lowerX</pre></td><td>lower edge X</td></tr>
+<tr><td></td><td><pre class="arg1">upperX</pre></td><td>upper edge X</td></tr>
+<tr><td></td><td><pre class="arg1">condition</pre></td><td>condition</td></tr>
+</table></div>
+<pre class="code">   if ((<em title="histo name">hName</em> == NULL) &amp;&amp; (<em title="condition">condition</em>)) <em title="histo name">hName</em> = new <em title="histo type (THxx)">hType</em>("<em title="histo name">hName</em>", "<em title="title">hTitle</em>", <em title="bin size X">binSizeX</em>, <em title="lower edge X">lowerX</em>, <em title="upper edge X">upperX</em>);</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">UD2C</pre></td><td><pre class="mtag">2dim + condition</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">hName</pre></td><td>histo name</td></tr>
+<tr><td></td><td><pre class="arg1">hType</pre></td><td>histo type (THxx)</td></tr>
+<tr><td></td><td><pre class="arg1">hTitle</pre></td><td>title</td></tr>
+<tr><td></td><td><pre class="arg1">binSizeX</pre></td><td>bin size X</td></tr>
+<tr><td></td><td><pre class="arg1">lowerX</pre></td><td>lower edge X</td></tr>
+<tr><td></td><td><pre class="arg1">upperX</pre></td><td>upper edge X</td></tr>
+<tr><td></td><td><pre class="arg1">binSizeY</pre></td><td>bin size Y</td></tr>
+<tr><td></td><td><pre class="arg1">lowerY</pre></td><td>lower edge Y</td></tr>
+<tr><td></td><td><pre class="arg1">upperY</pre></td><td>upper edge Y</td></tr>
+<tr><td></td><td><pre class="arg1">condition</pre></td><td>condition</td></tr>
+</table></div>
+<pre class="code">   if ((<em title="histo name">hName</em> == NULL) &amp;&amp; (<em title="condition">condition</em>)) <em title="histo name">hName</em> = new <em title="histo type (THxx)">hType</em>("<em title="histo name">hName</em>", "<em title="title">hTitle</em>", <em title="bin size X">binSizeX</em>, <em title="lower edge X">lowerX</em>, <em title="upper edge X">upperX</em>, <em title="bin size Y">binSizeY</em>, <em title="lower edge Y">lowerY</em>, <em title="upper edge Y">upperY</em>);</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">UDS</pre></td><td><pre class="mtag">arg string</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">hName</pre></td><td>histo name</td></tr>
+<tr><td></td><td><pre class="arg1">hType</pre></td><td>histo type (THxx)</td></tr>
+<tr><td></td><td><pre class="arg1">hTitle</pre></td><td>title</td></tr>
+<tr><td></td><td><pre class="arg1">args</pre></td><td>arg list</td></tr>
+</table></div>
+<pre class="code">   if (<em title="histo name">hName</em> == NULL) <em title="histo name">hName</em> = new <em title="histo type (THxx)">hType</em>("<em title="histo name">hName</em>", "<em title="title">hTitle</em>", <em title="arg list">args</em>);</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">UDSC</pre></td><td><pre class="mtag">arg string + condition</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">hName</pre></td><td>histo name</td></tr>
+<tr><td></td><td><pre class="arg1">hType</pre></td><td>histo type (THxx)</td></tr>
+<tr><td></td><td><pre class="arg1">hTitle</pre></td><td>title</td></tr>
+<tr><td></td><td><pre class="arg1">condition</pre></td><td>condition</td></tr>
+<tr><td></td><td><pre class="arg1">args</pre></td><td>arg list</td></tr>
+</table></div>
+<pre class="code">   if ((<em title="histo name">hName</em> == NULL) &amp;&amp; (<em title="condition">condition</em>)) <em title="histo name">hName</em> = new <em title="histo type (THxx)">hType</em>("<em title="histo name">hName</em>", "<em title="title">hTitle</em>", <em title="arg list">args</em>);</pre><br>
+<br>
+<br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">fill histograms arrays</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">HISTO_FILL_ARRAYS (TMrbConfig::kAnaHistoFillArrays)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">hArrayName</pre></td><td>name of histo array</td></tr>
+<tr><td></td><td><pre class="arg1">hName</pre></td><td>histo name</td></tr>
+</table></div>
+   <pre class="code">   if (<em title="name of histo array">hArrayName</em>.FindObject("<em title="histo name">hName</em>") == NULL) <em title="name of histo array">hArrayName</em>.Add(<em title="histo name">hName</em>);
+</pre><br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">initialize user code (objects, variables ...) - 2nd call <b>after</b> booking histograms</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">INCLUDE_USER_INITIALIZE_AFTER_HB (TMrbConfig::kAnaUserInitializeAfterHB)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">initUcode</pre></td><td>method to initialize user code</td></tr>
+</table></div>
+   <pre class="code">   this-&gt;<em title="method to initialize user code">initUcode</em>(IOSpec, kTRUE);
+</pre><br>
+   <pre class="code">
+   return(kTRUE);
+}
+</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3"> <b>default method</b>, may be replaced by user-defined code</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">HANDLE_MESSAGES (TMrbConfig::kAnaUserMessages)</pre></td></tr>
+</table></div>
+<br>
+<div class="header1">
+<b>[6] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
+<tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::HandleMessage</pre></td></tr>
+<tr><td>Purpose:</td><td colspan="3">Execute a message</td></tr>
+<tr><td>Arguments:</td><td><pre class="mtag">Char_t *</pre></td><td><pre class="mtag">Args</pre></td><td>argument list</td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Description:</td><td colspan="3">Executes a message sent by message handler</td></tr>
+</table></div>
+<br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::HandleMessage(Char_t * Args) {</pre>
+<br>
+   <pre class="code">   return(kFALSE);
+}
+</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3"> <b>default method</b>, may be replaced by user-defined code</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">RELOAD_PARAMS (TMrbConfig::kAnaUserReloadParams)</pre></td></tr>
+</table></div>
+<br>
+<div class="header1">
+<b>[6] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
+<tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::ReloadParams</pre></td></tr>
+<tr><td>Purpose:</td><td colspan="3">Reload parameters from file</td></tr>
+<tr><td>Arguments:</td><td><pre class="mtag">TMrbIOSpec</pre></td><td><pre class="mtag">*IOSpec</pre></td><td>i/o specifications</td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Description:</td><td colspan="3">Reloads params (vars, wdws, functions etc.) from root file</td></tr>
+</table></div>
+<br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::ReloadParams(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> *IOSpec) {</pre>
+<br>
+   <pre class="code">   Bool_t sts = this-&gt;ReloadVarsAndWdws(IOSpec);
+   this-&gt;AdjustWindowPointers();
+   return(sts);
+}
+</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header1">
+<b>[6] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
+<tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::AdjustWindowPointers</pre></td></tr>
+<tr><td>Purpose:</td><td colspan="3">Adjust pointers to windows after reload</td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Description:</td><td colspan="3">Updates pointers to windows (2-dim only)</td></tr>
+</table></div>
+<br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::AdjustWindowPointers() {</pre>
+<br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">WDW_ADJUST_POINTERS (TMrbConfig::kAnaWdwAdjustPointers)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">wdwClass</pre></td><td>window class</td></tr>
+<tr><td></td><td><pre class="arg1">wdwName</pre></td><td>window name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per window</td></tr>
+</table></div>
+   <pre class="code"> 
+   <em title="window name">wdwName</em> = (<em title="window class">wdwClass</em> *) gMrbLofUserVars-&gt;Find("<em title="window name">wdwName</em>");
+
+</pre><br>
+   <pre class="code">   return(kTRUE);
+}
+</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header1">
+<b>[6] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
+<tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::WriteRootTree</pre></td></tr>
+<tr><td>Purpose:</td><td colspan="3">Open a file to write raw data to tree</td></tr>
+<tr><td>Arguments:</td><td><pre class="mtag">TMrbIOSpec</pre></td><td><pre class="mtag">*IOSpec</pre></td><td>i/o specifications</td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Description:</td><td colspan="3">Opens a ROOT file and creates trees</td></tr>
+</table></div>
+<br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::WriteRootTree(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> *IOSpec) {</pre>
+<br>
+   <pre class="code">
+   <a href="http://root.cern.ch/root/htmldoc/TString.html">TString</a> rootFile;
+
+   if ((IOSpec-&gt;GetOutputMode() &amp; <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a>::kOutputOpen) == 0) return(kTRUE);
+
+   if (fWriteRootTree) {
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Err() &lt;&lt; "ROOT file already open - " &lt;&lt; fRootFileOut-&gt;GetName() &lt;&lt; endl;
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "WriteRootTree");
+      return(kFALSE);
+   }
+
+   rootFile = IOSpec-&gt;GetOutputFile();
+
+   if (verboseMode) {
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Out() &lt;&lt; "Opening ROOT file \"" &lt;&lt; rootFile &lt;&lt; "\"" &lt;&lt; endl;
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "WriteRootTree");
+   }
+
+   fRootFileOut = new <a href="http://root.cern.ch/root/htmldoc/TFile.html">TFile</a>(rootFile.Data(), "RECREATE", "<em title="description/name of experiment">fdescr</em>");
+   fRootFileOut-&gt;SetCompressionLevel(1);
+   fWriteRootTree = kTRUE;
+
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">create ROOT trees for each event</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_CREATE_TREE (TMrbConfig::kAnaEventCreateTree)</pre></td></tr>
+</table></div>
+<br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">E</pre></td><td><pre class="mtag">standard event</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+<pre class="code">   g<em title="event name (1st char upper case)">EvtName</em>->CreateTree();</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">U</pre></td><td><pre class="mtag">user-defined event class</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+<pre class="code">   g<em title="event name (1st char upper case)">EvtName</em>->CreateTree();</pre><br>
+<br>
+<br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">control output of tree data individually for each event</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_SET_WRITE_TREE (TMrbConfig::kAnaEventSetWriteTree)</pre></td></tr>
+</table></div>
+<br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header3">
+<b>[8] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">E</pre></td><td><pre class="mtag">standard event</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+   <pre class="code"> 
+   g<em title="event name (1st char upper case)">EvtName</em>-&gt;WriteTree(<a href="http://root.cern.ch/root/htmldoc/TEnv.html">gEnv</a>-&gt;GetValue(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>-&gt;GetResource("Event.<em title="event name (1st char upper case)">EvtName</em>.WriteTree"), kTRUE));
+   if (!g$evtNameUC-&gt;TreeToBeWritten()) {
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Wrn() &lt;&lt; "Output of tree data TURNED OFF for event \"<em title="event name">evtName</em>\"" &lt;&lt; endl;
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "WriteRootTree");
+   }
+      
+</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">U</pre></td><td><pre class="mtag">user-defined event class</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+   <pre class="code"> 
+   g<em title="event name (1st char upper case)">EvtName</em>-&gt;WriteTree(<a href="http://root.cern.ch/root/htmldoc/TEnv.html">gEnv</a>-&gt;GetValue(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>-&gt;GetResource("Event.<em title="event name (1st char upper case)">EvtName</em>.WriteTree"), kTRUE));
+   if (!g<em title="event name (1st char upper case)">EvtName</em>-&gt;TreeToBeWritten()) {
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Wrn() &lt;&lt; "Output of tree data TURNED OFF for event \"<em title="event name">evtName</em>\"" &lt;&lt; endl;
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;evtName(), "WriteRootTree");
+   }
+      
+</pre><br>
+<br>
+<br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">create trees for start/stop info</td></tr>
+</table></div>
+   <pre class="code">   <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrEvtStart.html">gStartEvent</a>-&gt;CreateTree();
+   <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrEvtStop.html">gStopEvent</a>-&gt;CreateTree();
+</pre><br>
+<br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">create tree to hold dead-time data</td></tr>
+</table></div>
+   <pre class="code">   <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrDeadTime.html">gDeadTime</a>-&gt;CreateTree();
+</pre><br>
+   <pre class="code">   return(kTRUE);
+}
+</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header1">
+<b>[6] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
+<tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::OpenRootFile</pre></td></tr>
+<tr><td>Purpose:</td><td colspan="3">Open a file to replay tree data</td></tr>
+<tr><td>Arguments:</td><td><pre class="mtag">TMrbIOSpec</pre></td><td><pre class="mtag">*IOSpec</pre></td><td>i/o specifications</td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Description:</td><td colspan="3">Opens a ROOT file for input (replay only)</td></tr>
+</table></div>
+<br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::OpenRootFile(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> *IOSpec) {</pre>
+<br>
+   <pre class="code">   <a href="http://root.cern.ch/root/htmldoc/TString.html">TString</a> rootFile;
+
+   if ((IOSpec-&gt;GetInputMode() &amp; <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a>::kInputRoot) == 0) return(kTRUE);
+
+   if (fRootFileIn != NULL) {
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Err() &lt;&lt; "ROOT file already open - " &lt;&lt; fRootFileIn-&gt;GetName() &lt;&lt; endl;
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "OpenRootFile");
+      return(kFALSE);
+   }
+
+   rootFile = IOSpec-&gt;GetInputFile();
+
+   if (rootFile.CompareTo("fake.root") == 0) {
+      this-&gt;SetFakeMode();
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">set fake mode for all trees</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_SET_FAKE_MODE (TMrbConfig::kAnaEventSetFakeMode)</pre></td></tr>
+</table></div>
+<br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">E</pre></td><td><pre class="mtag">standard event</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+<pre class="code">      g<em title="event name (1st char upper case)">EvtName</em>->SetFakeMode();</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">U</pre></td><td><pre class="mtag">user-defined event class</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+<pre class="code">      g<em title="event name (1st char upper case)">EvtName</em>->SetFakeMode();</pre><br>
+<br>
+<br>
+   <pre class="code">      if (verboseMode) {
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Out() &lt;&lt; "Running in FAKE mode" &lt;&lt; endl;
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "OpenRootFile");
+      }
+   } else {
+      <a href="http://root.cern.ch/root/htmldoc/TSystem.html">gSystem</a>-&gt;ExpandPathName(rootFile);
+      if(<a href="http://root.cern.ch/root/htmldoc/TSystem.html">gSystem</a>-&gt;AccessPathName(rootFile, kFileExists)){
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Err() &lt;&lt; "No such file - " &lt;&lt; rootFile &lt;&lt; endl;
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "OpenRootFile");
+         return(kFALSE);
+      } else {
+         if (verboseMode) {
+            <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Out() &lt;&lt; "Opening ROOT file \"" &lt;&lt; rootFile &lt;&lt; "\"" &lt;&lt; endl;
+            <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "OpenRootFile");
+         }
+      }
+      fRootFileIn = new <a href="http://root.cern.ch/root/htmldoc/TFile.html">TFile</a>(rootFile.Data(), "READ");
+
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">initialize ROOT trees</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_INITIALIZE_TREE (TMrbConfig::kAnaEventInitializeTree)</pre></td></tr>
+</table></div>
+<br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">E</pre></td><td><pre class="mtag">standard event</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+<pre class="code">      g<em title="event name (1st char upper case)">EvtName</em>->InitializeTree(fRootFileIn);</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">U</pre></td><td><pre class="mtag">user-defined event class</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+<pre class="code">      g<em title="event name (1st char upper case)">EvtName</em>->InitializeTree(fRootFileIn);</pre><br>
+<br>
+<br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">initialize trees containing start/stop information</td></tr>
+</table></div>
+      <pre class="code">      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrEvtStart.html">gStartEvent</a>-&gt;InitializeTree(fRootFileIn);
+      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrEvtStop.html">gStopEvent</a>-&gt;InitializeTree(fRootFileIn);
+</pre><br>
+<br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">initialize dead-time tree</td></tr>
+</table></div>
+      <pre class="code">      <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrDeadTime.html">gDeadTime</a>-&gt;InitializeTree(fRootFileIn);
+</pre><br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">turn on replay mode</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_SET_REPLAY_MODE (TMrbConfig::kAnaEventSetReplayMode)</pre></td></tr>
+</table></div>
+      <pre class="code">      fReplayMode = kTRUE;
+   </pre><br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header3">
+<b>[8] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">E</pre></td><td><pre class="mtag">standard event</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+      <pre class="code"> 
+      g<em title="event name (1st char upper case)">EvtName</em>-&gt;SetReplayMode(<a href="http://root.cern.ch/root/htmldoc/TEnv.html">gEnv</a>-&gt;GetValue(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>-&gt;GetResource("Event.<em title="event name (1st char upper case)">EvtName</em>.ReplayMode"), kTRUE));
+      if (!g<em title="event name (1st char upper case)">EvtName</em>-&gt;IsReplayMode()) {
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Wrn() &lt;&lt; "Replay of tree data TURNED OFF for event \"<em title="event name">evtName</em>\"" &lt;&lt; endl;
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "OpenRootFile");
+      }
+      
+</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">U</pre></td><td><pre class="mtag">user-defined event class</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+      <pre class="code"> 
+      g<em title="event name (1st char upper case)">EvtName</em>-&gt;SetReplayMode(<a href="http://root.cern.ch/root/htmldoc/TEnv.html">gEnv</a>-&gt;GetValue(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>-&gt;GetResource("Event.<em title="event name (1st char upper case)">EvtName</em>.ReplayMode"), kTRUE));
+      if (!g<em title="event name (1st char upper case)">EvtName</em>-&gt;IsReplayMode()) {
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Wrn() &lt;&lt; "Replay of tree data TURNED OFF for event \"<em title="event name">evtName</em>\"" &lt;&lt; endl;
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "OpenRootFile");
+      }
+      
+</pre><br>
+<br>
+<br>
+   <pre class="code">
+   }
+   return(kTRUE);
+}
+</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header1">
+<b>[6] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
+<tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::ReplayEvents</pre></td></tr>
+<tr><td>Purpose:</td><td colspan="3">Read data from ROOT file</td></tr>
+<tr><td>Arguments:</td><td><pre class="mtag">TMrbIOSpec</pre></td><td><pre class="mtag">*IOSpec</pre></td><td>i/o specifications</td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Description:</td><td colspan="3">Replays event data</td></tr>
+</table></div>
+<br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::ReplayEvents(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> *IOSpec) {</pre>
+<br>
+   <pre class="code">   Bool_t sts;
+
+   if (!this-&gt;IsFakeMode()) {
+      if (fRootFileIn == NULL) {
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Err() &lt;&lt; "No ROOT file open" &lt;&lt; endl;
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "ReplayEvents");
+         return(kFALSE);
+      }
+
+   // output start/stop time stamps
+      this-&gt;PrintStartStop();
+   }
+
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">replay tree data for each event with replay mode turned-on</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_REPLAY_TREE (TMrbConfig::kAnaEventReplayTree)</pre></td></tr>
+</table></div>
+   <pre class="code">   sts = kTRUE;
+   </pre><br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header3">
+<b>[8] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">E</pre></td><td><pre class="mtag">standard event</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+   <pre class="code"> 
+   if (g<em title="event name (1st char upper case)">EvtName</em>-&gt;IsReplayMode()) {
+      if (!g<em title="event name (1st char upper case)">EvtName</em>-&gt;ReplayTreeData(IOSpec)) sts = kFALSE;
+   }
+      
+</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">U</pre></td><td><pre class="mtag">user-defined event class</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+   <pre class="code"> 
+   if (g<em title="event name (1st char upper case)">EvtName</em>-&gt;IsReplayMode()) {
+      if (!g<em title="event name (1st char upper case)">EvtName</em>-&gt;ReplayTreeData(IOSpec)) sts = kFALSE;
+   }
+      
+</pre><br>
+<br>
+<br>
+   <pre class="code">   return(sts);
+}
+</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header1">
+<b>[6] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
+<tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::SetScaleDown</pre></td></tr>
+<tr><td>Purpose:</td><td colspan="3">Set a scale-down value</td></tr>
+<tr><td>Arguments:</td><td><pre class="mtag">Int_t</pre></td><td><pre class="mtag">ScaleDown</pre></td><td>scale-down factor</td></tr>
+<tr><td>Description:</td><td colspan="3">Defines common and individual scale-down values, resp.</td></tr>
+</table></div>
+<br><pre class="method"><a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::SetScaleDown(Int_t ScaleDown) {</pre>
+<br>
+   <pre class="code">   // common value for all events
+   fScaleDown = ScaleDown;
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">set scale down individually for each event</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_SET_SCALEDOWN (TMrbConfig::kAnaEventSetScaleDown)</pre></td></tr>
+</table></div>
+<br>
+<div class="header2">
+<b>[7] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header3">
+<b>[8] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">E</pre></td><td><pre class="mtag">standard event</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+   <pre class="code"> 
+   g<em title="event name (1st char upper case)">EvtName</em>-&gt;SetScaleDown(ScaleDown);
+      
+</pre><br>
+<br>
+<div class="header3">
+<b>[8] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">U</pre></td><td><pre class="mtag">user-defined event class</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per event</td></tr>
+</table></div>
+   <pre class="code"> 
+   g<em title="event name (1st char upper case)">EvtName</em>-&gt;SetScaleDown(ScaleDown);
+      
+</pre><br>
+<br>
+<br>
+   <pre class="code">}
+</pre><br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">include <b>subevent</b> methods</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">SEVT_CLASS_METHODS (TMrbConfig::kAnaSevtClassMethods)</pre></td></tr>
+</table></div>
+<br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">include <b>event</b> methods</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_CLASS_METHODS (TMrbConfig::kAnaEventClassMethods)</pre></td></tr>
+</table></div>
+<br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">include methods for <b>user-defined</b> event classes</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_USER_CLASS_METHODS (TMrbConfig::kAnaEventUserClassMethods)</pre></td></tr>
+</table></div>
+<br>
+<pre class="code">
+</pre><br>
+<div class="header2">
+<b>[5] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<br>
+<div class="header1">
+<b>[6] &lt;mh&gt; [header]</b><br>
+<table summary="mh"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
+<tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbTransport::ProcessEvent</pre></td></tr>
+<tr><td>Purpose:</td><td colspan="3">Process event data from MBS</td></tr>
+<tr><td>Arguments:</td><td><pre class="mtag">s_vehe</pre></td><td><pre class="mtag">*EventData</pre></td><td>pointer to event data (including header)</td></tr>
+<tr><td>Description:</td><td colspan="3">This is the event filling function. User has to define via method <b>Analyze()</b> how to process this event</td></tr>
+</table></div>
+<br><pre class="method"><a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbTransport.html">TMrbTransport</a>::ProcessEvent(s_vehe *EventData) {</pre>
+<br>
+   <pre class="code">   const MBSDataIO * BaseAddr;      // base addr of MBS data
+   Bool_t sts;
+
+   if (!<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>-&gt;TestRunStatus()) return(kFALSE);    // run is stopped (maybe after pausing)
+
+   BaseAddr = GetMbsBase();         // fetch base addr
+
+   switch (EventData-&gt;i_trigger) {     // dispatch according to trigger number
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">dispatch according to trigger number</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_DISPATCH_OVER_TRIGGER (TMrbConfig::kAnaEventDispatchOverTrigger)</pre></td></tr>
+</table></div>
+<br>
+<div class="header2">
+<b>[7] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td></td><td><pre class="arg1">trigNo</pre></td><td>trigger number</td></tr>
+<tr><td></td><td><pre class="arg1">procEvent</pre></td><td>method how to process an event</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per trigger</td></tr>
+</table></div>
+   <pre class="code"> 
+      case kMrbTrigger<em title="event name (1st char upper case)">EvtName</em>:    // event <em title="event name">evtName</em>, trigger <em title="trigger number">trigNo</em>
+         pthread_mutex_lock(&amp;global_data_mutex);
+         g<em title="event name (1st char upper case)">EvtName</em>-&gt;FillEvent(EventData, BaseAddr);
+         
+</pre><br>
+<div class="header2">
+<b>[8] &lt;ms&gt; [switch]</b><br>
+<table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+</table></div>
+<div class="header3">
+<b>[9] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Case:</td><td><pre class="mtag">P</pre></td></tr>
+<tr><td>Substitutions (inherited):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
+<tr><td></td><td><pre class="arg1">procEvent</pre></td><td>method how to process an event</td></tr>
+</table></div>
+<pre class="code">         sts = g<em title="event name (1st char upper case)">EvtName</em>-><em title="method how to process an event">procEvent</em>();</pre><br>
+   <pre class="code">         pthread_mutex_unlock(&amp;global_data_mutex);
+         return(sts);
+</pre><br>
+<br>
+<div class="header2">
+<b>[7] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">ignore trigger number</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_IGNORE_TRIGGER (TMrbConfig::kAnaEventIgnoreTrigger)</pre></td></tr>
+<tr><td>Substitutions  (local):</td><td><pre class="arg1">trigNo</pre></td><td>trigger number</td></tr>
+<tr><td>Iteration:</td><td colspan="3">one entry per trigger number</td></tr>
+</table></div>
+   <pre class="code">      case <em title="trigger number">trigNo</em>: return(kTRUE); // ignore trigger <em title="trigger number">trigNo</em>
+</pre><br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[7] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">start acquisition</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_TRIGGER_START_ACQUISITION (TMrbConfig::kAnaEventTriggerStartAcq)</pre></td></tr>
+</table></div>
+   <pre class="code">      case kMrbTriggerStartAcquisition:               // start acquisition (trigger 14)
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrEvtStart.html">gStartEvent</a>-&gt;ExtractTimeStamp(EventData, BaseAddr);
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrEvtStart.html">gStartEvent</a>-&gt;Print();
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>-&gt;SetRunStatus(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::M_STARTING);
+         return(kTRUE);
+</pre><br>
+<br>
+<div class="header2">
+<b>[7] &lt;mc&gt; [code]</b><br>
+<table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">stop acquisition</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">EVT_TRIGGER_STOP_ACQUISITION (TMrbConfig::kAnaEventTriggerStopAcq)</pre></td></tr>
+</table></div>
+   <pre class="code">      case kMrbTriggerStopAcquisition:             // stop acquisition (trigger 15)
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrEvtStop.html">gStopEvent</a>-&gt;ExtractTimeStamp(EventData, BaseAddr);
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TUsrEvtStop.html">gStopEvent</a>-&gt;Print();
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>-&gt;SetRunStatus(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::M_PAUSING);
+         return(kFALSE);
+</pre><br>
+   <pre class="code">      default:
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Err() &lt;&lt; "Illegal trigger number - #" &lt;&lt; EventData-&gt;i_trigger &lt;&lt; endl;
+         <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Flush(this-&gt;ClassName(), "ProcessEvent");
+         return(kFALSE);
+   }
+   return(kTRUE);
+}              
+</pre><br>
+   <pre class="code">
+</pre><br>
+<div class="header2">
+<b>[6] &lt;mx&gt; [expand]</b><br>
+<table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
+<tr><td>Comment:</td><td colspan="3">include <b>dummy</b> methods if user extensions are not activated</td></tr>
+<tr><td>Tag:</td><td colspan="3"><pre class="mtag">INCLUDE_DUMMY_METHODS (TMrbConfig::kAnaUserDummyMethods)</pre></td></tr>
+</table></div>
+<pre class="code">   Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::InitializeUserCode(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> * IOSpec, Bool_t BeforeHB) { return(kFALSE); };</pre><br>
+<br>
+</body>
+</html>

@@ -1,0 +1,77 @@
+A:link { font-weight: bolder; text-decoration: none; background-color: #f5f5a0 }
+A:visited { font-weight: bolder; text-decoration: none; background-color: #f5f5a0 }
+A:active { font-weight: bolder; text-decoration: none; background-color: #f5f5a0 }
+
+em {
+   font-style: normal;
+   font-weight: bold;
+   background-color: rgb(238,213,183);
+   color: darkblue;
+   border-width: thin;
+   border-style: solid;
+   padding-left: 0.2em;
+   padding-right: 0.2em;
+}
+bx {
+   border-width: thin;
+   border-style: solid;
+   padding-left: 0.2em;
+   padding-right: 0.2em;
+}
+div.header0 {
+   font: 8pt arial;
+   background-color: #61d8e6;
+   color: darkblue;
+   margin-left: +2%;
+   width: 93%
+}
+div.header1 {
+   font: 8pt arial;
+   background-color: #00ee7c;
+   color: darkblue;
+   margin-left: +5%;
+   width: 90%
+}
+div.header2 {
+   font: 8pt arial;
+   background-color: #61d8e6;
+   color: darkblue;
+   margin-left: +5%;
+   width: 90%
+}
+div.header3 {
+   font: 8pt arial;
+   background-color: #bfefff;
+   color: darkblue;
+   margin-left: +5%;
+   width: 90%
+}
+pre.code {
+   font: 12pt courier;
+   background-color: #f5f5dc;
+   color: darkblue;
+   margin-left: +5%;
+   width: 90%
+}
+pre.mtag {
+   font: 12pt courier;
+   color: darkblue;
+}
+pre.arg1 {
+   font: 12pt courier;
+   color: darkblue;
+}
+pre.arg2 {
+   font: 12pt courier;
+   background-color: red;
+   color: white;
+}
+pre.method {
+   font: 12pt courier;
+   font-style: normal;
+   font-weight: bold;
+   background-color: beige;
+   color: darkblue;
+   margin-left: +5%;
+   width: 90%
+}

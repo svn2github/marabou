@@ -1,0 +1,431 @@
+<html>
+<link rel="stylesheet" type="text/css" href="mrb-style.css">
+<body bgcolor="beige">
+<H2 align="center">Document mrb-test</H2>
+<H4 align="center">File: Analyze.cxx.code</H4>
+<H4 align="center">(structure as analyzed by D. Raggett's TIDY)</H4><HR>
+<em>root</em><UL><LI> type=Root(0)</UL>
+<UL>
+<em>html</em><UL><LI> type=StartTag(5)<LI> tag=HTML(48)</UL>
+<UL>
+<em>head</em><UL><LI> type=StartTag(5)<LI> tag=HEAD(46)</UL>
+<UL>
+<em>title</em><UL><LI> type=StartTag(5)<LI> tag=TITLE(111)</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='Analyze.cx...'</UL>
+</UL>
+<em>comment</em><UL><LI> type=Comment(2)<LI> text='<!-- Autho...'</UL>
+<em>link</em><UL><LI> type=StartTag(5)<LI> tag=LINK(62)<LI> rev="made"<LI> href="mailto:marabou@physik.uni-muenchen.de"</UL>
+<em>meta</em><UL><LI> type=StartTag(5)<LI> tag=META(67)<LI> name="rating"<LI> content="General"</UL>
+<em>meta</em><UL><LI> type=StartTag(5)<LI> tag=META(67)<LI> name="objecttype"<LI> content="Code"</UL>
+<em>meta</em><UL><LI> type=StartTag(5)<LI> tag=META(67)<LI> name="keywords"<LI> content="software development, oo, object oriented, c++, html, MARaBOU, R. Lutter, O. Schaile"</UL>
+<em>meta</em><UL><LI> type=StartTag(5)<LI> tag=META(67)<LI> name="description"<LI> content="Marabou - MBS and ROOT based Online/Offline Utility."</UL>
+<em>link</em><UL><LI> type=StartTag(5)<LI> tag=LINK(62)<LI> rel="stylesheet"<LI> type="text/css"<LI> href="mrb-style.css"</UL>
+</UL>
+<em>body</em><UL><LI> type=StartTag(5)<LI> tag=BODY(16)</UL>
+<UL>
+<em>h3</em><UL><LI> type=StartTag(5)<LI> tag=H3(42)<LI> align="center"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='Analyze.cx...'</UL>
+</UL>
+<em>hr</em><UL><LI> type=StartTag(5)<LI> tag=HR(47)</UL>
+<em>mb</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(201)<LI> indent=0<LI> mtype=" contiguous"<LI> subst="fname:name of file w/o extension, fprefix:file prefix, fdescr:description/name of experiment"<LI> rlinks=" gEnv:TEnv, TString, TFile, TH1, TH2, gSystem:TSystem"<LI> mlinks="TMrbLogger, TMrbTransport, TMrbAnalyze, TMrbLofUserVars, TMrbIOSpec, gMrbLog:TMrbLogger, gMrbAnalyze:TMrbAnalyze, gStopEvent:TUsrEvtStop, gStartEvent:TUsrEvtStart, gDeadTime:TUsrDeadTime"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mh</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(200)<LI> indent=0<LI> mtype="MAIN PROGRAM"<LI> mtag="ANALYZE_CXX_HEADER"<LI> descr="User's main program to be linked to M_analyze"<LI> subst=" author:author/exp group, cdate:creation date"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='//________...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr><cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=0<LI> comment="definitions and includes"<LI> indent="0"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='#define _M...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=0<LI> comment="// class definitions"<LI> string='#include "...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=0<LI> comment="// common index declarations for analysis and readout"<LI> string='#include "...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>#include ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=0<LI> mtag="INCLUDE_USER_GLOBALS"<LI> atag="TMrbConfig::kAnaUserGlobals"<LI> comment="// global defs supplied by user"<LI> subst="iclFile:file containing globals defined by user"<LI> iter="more than one file possible"<LI> string='#include "...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=0<LI> comment="// global objects"<LI> string='#include "...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=0<LI> mtag="INCLUDE_EVT_SEVT_MOD_GLOBALS"<LI> atag="TMrbConfig::kAnaIncludeEvtSevtModGlobals"<LI> comment="// special global defs for events, subevents, and modules"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=0<LI> mtag="USING_NAMESPACE"<LI> atag="TMrbConfig::kAnaUsingNameSpace"<LI> comment="// namespace definitions"<LI> subst="nspace:namespace definition"<LI> iter="possibly more than one namespace definition"<LI> string="using name..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=0<LI> mtag="IMPLEMENT_CLASSES"<LI> atag="TMrbConfig::kAnaClassImp"<LI> comment="// implement class defs"<LI> subst="cname:class name"<LI> iter="one statement per class"<LI> string="ClassImp(#..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=0<LI> comment="globals - static and external"<LI> indent="0"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='extern pth...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> indent="1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mh</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(200)<LI> indent=1<LI> mtype="C++ METHOD"<LI> name="TMrbAnalyze::Initialize"<LI> purp="Instantiate user objects, initialize values"<LI> descr="Instantiates events, histgrams, windows etc. and initializes values"<LI> args="TMrbIOSpec:*IOSpec:i/o specifications"<LI> return="Bool_t:TrueOrFalse:"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>   verbos...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="ADD_USER_ENV"<LI> atag="TMrbConfig::kAnaAddUserEnv"<LI> comment="// add user's environment defs"<LI> subst="rcFile:file containing env definitions"<LI> iter="more than one file possible"<LI> marabou-links="gMrbLog:TMrbLogger,Out:TMrbLogger#"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>   Bool_t...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mi</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(204)<LI> indent=1<LI> mtag="TEST_INCLUDE"<LI> mfile="xxx.cxx.code"</UL>
+<UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="TEST_INCLUDE"<LI> comment="*default method*, may be replaced by user-defined code"<LI> indent="1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr><cr>...'</UL>
+<em>mh</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(200)<LI> indent=1<LI> mtype="C++ METHOD"<LI> name="TMrbAnalyze::HandleMessage"<LI> purp="Execute a message"<LI> args="Char_t *:Args:argument list"<LI> return="Bool_t:TrueOrFalse"<LI> descr="Executes a message sent by message handler"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr><cr>...'</UL>
+</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="HISTO_INIT_ARRAYS"<LI> atag="TMrbConfig::kAnaHistoInitializeArrays"<LI> comment="// initialize histogram arrays"<LI> subst=" sevtName:subevent name, paramName:parameter name, nofParams:number of parameters, nofHistos:number of histograms, hArrayName:name of histogram array, indexRange:range of histogram index, prefix:event prefix"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=1</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="N:normal"<LI> string="memset(h#p..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="A:array mode"<LI> string="h#sevtName..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="U:user-defined array"<LI> string="#hArrayNam..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="INITIALIZE_LISTS"<LI> atag="TMrbConfig::kAnaInitializeLists"<LI> comment="// initialize user lists: modules, params & histos"<LI> subst=" moduleName:module name, nofModules:number of modules, nofParams: number of parameters, moduleTitle:module title, paramIndex:parameter index"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   <cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> string="gMrbAnalyz..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=1</UL>
+<UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="ML:add module"<LI> string='gMrbAnalyz...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="MODULE_TIME_OFFSET"<LI> atag="TMrbConfig::kAnaModuleTimeOffset"<LI> comment="// set time offsets for modules"<LI> subst=" moduleName:module name, moduleTitle:module title, timeOffset:time offset"<LI> iter="one entry per module"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   Int_t...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="EVT_CLASS_INSTANCE"<LI> atag="TMrbConfig::kAnaEventClassInstance"<LI> comment="// instantiate event classes and book histograms"<LI> subst=" evtName:event name, trigNo:trigger number"<LI> iter="one entry per readout class"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   if (g...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=1</UL>
+<UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=3<LI> mcase="HB:event uses hit buffers"<LI> indent="+1"<LI> string="err |= !g#..."</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      }<cr>  ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="EVT_USER_CLASS_INSTANCE"<LI> atag="TMrbConfig::kAnaEventUserClassInstance"<LI> comment="// instantiate user-defined event classes"<LI> subst="className:name of user class"<LI> iter="one entry per user class"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   if (g...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="WDW_CLASS_INSTANCE"<LI> atag="TMrbConfig::kAnaWdwClassInstance"<LI> comment="// instantiate windows"<LI> subst=" wdwClass:window class (1 or 2 dim), wdwName:window name, wdwLower:lower limit, wdwUpper:upper limit"<LI> iter="one entry per window"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   Doubl...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=1</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="1D:1dim window"<LI> string='if (#wdwNa...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="2D:2dim window (cut)"<LI> string='if (#wdwNa...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mtag="INITIALIZE_EVT_SEVT_MODS"<LI> atag="TMrbConfig::kAnaInitializeEvtSevtMods"<LI> comment="instatiate subevents and modules"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="INCLUDE_USER_INITIALIZE_BEFORE_HB"<LI> atag="TMrbConfig::kAnaUserInitializeBeforeHB"<LI> comment="// initialize user code (objects, variables ...) - 1st call **before** booking histograms"<LI> subst="initUcode:method to initialize user code"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   this-&g...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="HISTO_BOOK_USER_DEFINED"<LI> atag="TMrbConfig::kAnaHistoBookUserDefined"<LI> comment="// book histograms defined by user"<LI> subst=" hName:histo name, hType:histo type (THxx), hTitle:title, binSizeX:bin size X, lowerX:lower edge X, upperX:upper edge X, binSizeY:bin size Y, lowerY:lower edge Y, upperY:upper edge Y, condition:condition, args:arg list"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=1</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="UD1:1dim"<LI> string='if (#hName...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="UD2:2dim"<LI> string='if (#hName...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="UD1C:1dim + condition"<LI> string='if ((#hNam...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="UD2C:2dim + condition"<LI> string='if ((#hNam...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="UDS:arg string"<LI> string='if (#hName...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="UDSC:arg string + condition"<LI> string='if ((#hNam...'</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="HISTO_FILL_ARRAYS"<LI> atag="TMrbConfig::kAnaHistoFillArrays"<LI> comment="// fill histograms arrays"<LI> subst=" hArrayName:name of histo array, hName:histo name"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   if (#hA...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="INCLUDE_USER_INITIALIZE_AFTER_HB"<LI> atag="TMrbConfig::kAnaUserInitializeAfterHB"<LI> comment="// initialize user code (objects, variables ...) - 2nd call **after** booking histograms"<LI> subst="initUcode:method to initialize user code"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   this-&g...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>   return...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="HANDLE_MESSAGES"<LI> atag="TMrbConfig::kAnaUserMessages"<LI> comment="**default method**, may be replaced by user-defined code"<LI> indent="1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mh</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(200)<LI> indent=1<LI> mtype="C++ METHOD"<LI> name="TMrbAnalyze::HandleMessage"<LI> purp="Execute a message"<LI> args="Char_t *:Args:argument list"<LI> return="Bool_t:TrueOrFalse:"<LI> descr="Executes a message sent by message handler"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   return(...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="RELOAD_PARAMS"<LI> atag="TMrbConfig::kAnaUserReloadParams"<LI> comment="**default method**, may be replaced by user-defined code"<LI> indent="1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mh</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(200)<LI> indent=1<LI> mtype="C++ METHOD"<LI> name="TMrbAnalyze::ReloadParams"<LI> purp="Reload parameters from file"<LI> args="TMrbIOSpec:*IOSpec:i/o specifications"<LI> return="Bool_t:TrueOrFalse:"<LI> descr="Reloads params (vars, wdws, functions etc.) from root file"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   Bool_t ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> indent="1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mh</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(200)<LI> indent=1<LI> mtype="C++ METHOD"<LI> name="TMrbAnalyze::AdjustWindowPointers"<LI> purp="Adjust pointers to windows after reload"<LI> return="Bool_t:TrueOrFalse:"<LI> descr="Updates pointers to windows (2-dim only)"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="WDW_ADJUST_POINTERS"<LI> atag="TMrbConfig::kAnaWdwAdjustPointers"<LI> subst=" wdwClass:window class, wdwName:window name"<LI> iter="one entry per window"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   #wdwN...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   return(...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> indent="1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mh</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(200)<LI> indent=1<LI> mtype="C++ METHOD"<LI> name="TMrbAnalyze::WriteRootTree"<LI> purp="Open a file to write raw data to tree"<LI> args="TMrbIOSpec:*IOSpec:i/o specifications"<LI> return="Bool_t:TrueOrFalse:"<LI> descr="Opens a ROOT file and creates trees"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>   TStrin...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="EVT_CREATE_TREE"<LI> atag="TMrbConfig::kAnaEventCreateTree"<LI> comment="// create ROOT trees for each event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=1</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="E:standard event"<LI> subst="evtName:event name"<LI> iter="one entry per event"<LI> string="g#evtName&..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mcase="U:user-defined event class"<LI> subst="evtName:event name"<LI> iter="one entry per event"<LI> string="g#evtName&..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="EVT_SET_WRITE_TREE"<LI> atag="TMrbConfig::kAnaEventSetWriteTree"<LI> comment="// control output of tree data individually for each event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=1</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mcase="E:standard event"<LI> subst="evtName:event name"<LI> iter="one entry per event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   g#evt...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mcase="U:user-defined event class"<LI> subst="evtName:event name"<LI> iter="one entry per event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   g#evt...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> comment="// create trees for start/stop info"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   gStartE...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> comment="// create tree to hold dead-time data"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   gDeadTi...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   return(...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> indent="1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mh</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(200)<LI> indent=1<LI> mtype="C++ METHOD"<LI> name="TMrbAnalyze::OpenRootFile"<LI> purp="Open a file to replay tree data"<LI> args="TMrbIOSpec:*IOSpec:i/o specifications"<LI> return="Bool_t:TrueOrFalse:"<LI> descr="Opens a ROOT file for input (replay only)"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   TString...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=2<LI> mtag="EVT_SET_FAKE_MODE"<LI> atag="TMrbConfig::kAnaEventSetFakeMode"<LI> comment="// set fake mode for all trees"<LI> indent="+1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=2</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=2<LI> mcase="E:standard event"<LI> subst="evtName:event name"<LI> iter="one entry per event"<LI> string="g#evtName&..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=2<LI> mcase="U:user-defined event class"<LI> subst="evtName:event name"<LI> iter="one entry per event"<LI> string="g#evtName&..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      if (...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=2<LI> mtag="EVT_INITIALIZE_TREE"<LI> atag="TMrbConfig::kAnaEventInitializeTree"<LI> comment="// initialize ROOT trees"<LI> indent="+1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=2</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=2<LI> mcase="E:standard event"<LI> subst="evtName:event name"<LI> iter="one entry per event"<LI> string="g#evtName&..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=2<LI> mcase="U:user-defined event class"<LI> subst="evtName:event name"<LI> iter="one entry per event"<LI> string="g#evtName&..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=2<LI> comment="// initialize trees containing start/stop information"<LI> indent="+1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      gSta...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=2<LI> comment="// initialize dead-time tree"<LI> indent="+1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      gDea...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=2<LI> mtag="EVT_SET_REPLAY_MODE"<LI> atag="TMrbConfig::kAnaEventSetReplayMode"<LI> comment="// turn on replay mode"<LI> indent="+1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      fRep...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=2</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=2<LI> mcase="E:standard event"<LI> subst="evtName:event name"<LI> iter="one entry per event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>      g#...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=2<LI> mcase="U:user-defined event class"<LI> subst="evtName:event name"<LI> iter="one entry per event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>      g#...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>   }<cr>   r...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> indent="1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mh</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(200)<LI> indent=1<LI> mtype="C++ METHOD"<LI> name="TMrbAnalyze::ReplayEvents"<LI> purp="Read data from ROOT file"<LI> args="TMrbIOSpec:*IOSpec:i/o specifications"<LI> return="Bool_t:TrueOrFalse:"<LI> descr="Replays event data"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   Bool_t ...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="EVT_REPLAY_TREE"<LI> atag="TMrbConfig::kAnaEventReplayTree"<LI> comment="// replay tree data for each event with replay mode turned-on"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   sts = k...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=1</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mcase="E:standard event"<LI> subst="evtName:event name"<LI> iter="one entry per event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   if (g...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mcase="U:user-defined event class"<LI> subst="evtName:event name"<LI> iter="one entry per event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   if (g...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   return(...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> indent="1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mh</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(200)<LI> indent=1<LI> mtype="C++ METHOD"<LI> name="TMrbAnalyze::SetScaleDown"<LI> purp="Set a scale-down value"<LI> args="Int_t:ScaleDown:scale-down factor"<LI> descr="Defines common and individual scale-down values, resp."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   // comm...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="EVT_SET_SCALEDOWN"<LI> atag="TMrbConfig::kAnaEventSetScaleDown"<LI> comment="// set scale down individually for each event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=1</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mcase="E:standard event"<LI> subst="evtName:event name"<LI> iter="one entry per event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   g#evt...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      ...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mcase="U:user-defined event class"<LI> subst="evtName:event name"<LI> iter="one entry per event"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>   g#evt...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='}<cr>...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=0<LI> mtag="SEVT_CLASS_METHODS"<LI> atag="TMrbConfig::kAnaSevtClassMethods"<LI> comment="include **subevent** methods"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=0<LI> mtag="EVT_CLASS_METHODS"<LI> atag="TMrbConfig::kAnaEventClassMethods"<LI> comment="include **event** methods"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=0<LI> mtag="EVT_USER_CLASS_METHODS"<LI> atag="TMrbConfig::kAnaEventUserClassMethods"<LI> comment="include methods for **user-defined** event classes"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> indent="1"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mh</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(200)<LI> indent=1<LI> mtype="C++ METHOD"<LI> name="TMrbTransport::ProcessEvent"<LI> purp="Process event data from MBS"<LI> args="s_vehe:*EventData:pointer to event data (including header)"<LI> descr="This is the event filling function. User has to define via method **Analyze()** how to process this event"</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   const M...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="EVT_DISPATCH_OVER_TRIGGER"<LI> atag="TMrbConfig::kAnaEventDispatchOverTrigger"<LI> comment="dispatch according to trigger number"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='   ...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> subst=" evtName:event name, trigNo:trigger number, procEvent:method how to process an event"<LI> iter="one entry per trigger"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=' <cr>      ca...'</UL>
+<em>ms</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(205)<LI> indent=1</UL>
+<UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=3<LI> mcase="P"<LI> indent="+1"<LI> string="sts = g#ev..."</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='         p...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="EVT_IGNORE_TRIGGER"<LI> atag="TMrbConfig::kAnaEventIgnoreTrigger"<LI> comment="ignore trigger number"<LI> subst="trigNo:trigger number"<LI> iter="one entry per trigger number"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      case...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="EVT_TRIGGER_START_ACQUISITION"<LI> atag="TMrbConfig::kAnaEventTriggerStartAcq"<LI> comment="start acquisition"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      case...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+<em>mc</em><UL><LI> type=StartTag(5)<LI> tag=MNODE(203)<LI> indent=1<LI> mtag="EVT_TRIGGER_STOP_ACQUISITION"<LI> atag="TMrbConfig::kAnaEventTriggerStopAcq"<LI> comment="stop acquisition"</UL>
+<UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      case...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='      defa...'</UL>
+</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text='<cr>...'</UL>
+<em>mx</em><UL><LI> type=Start/End(7)<LI> tag=MNODE(202)<LI> indent=1<LI> mtag="INCLUDE_DUMMY_METHODS"<LI> atag="TMrbConfig::kAnaUserDummyMethods"<LI> comment="include **dummy** methods if user extensions are not activated"<LI> string="Bool_t TMr..."</UL>
+<em>text</em><UL><LI> type=Text(4)<LI> text=<empty></UL>
+</UL>
+</UL>
+</UL>
+</UL>
+</UL>
+</body></html>
