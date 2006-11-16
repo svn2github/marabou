@@ -246,11 +246,11 @@ void sis_3820_module_info(volatile unsigned char * module) {
 	char str[128];
 	unsigned long ident;
 	unsigned short modId;
-	unsigned short version;
+	unsigned short vmajor;
 	ident = *SIS_3820_A_IDENT(module);
 	modId = (ident >> 16) & 0xFFFF;
-	version = (ident >> 12) & 0xF;
-	sprintf(str, "  SIS module info: id %#x, version %x", modId, version);
+	vmajor = ident & 0xFFFF;
+	sprintf(str, "  SIS module info: id %#x, major version %x", modId, vmajor);
 	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
 }
 
