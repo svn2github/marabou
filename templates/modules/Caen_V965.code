@@ -297,7 +297,7 @@ void caen_v965_module_info(volatile unsigned short * firmWare) {
 	serial = (int) (serialMSB << 8) + (int) serialLSB;
 	sprintf(str, "  CAEN module info: type V%d, serial# %d, revision %d\n", boardId, serial, revision);
 	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
-	if (boardId != 785) {
+	if (boardId != 965) {
 		sprintf(str, "  CAEN module info: Illegal board ID %d - should be 785\n", boardId);
 		f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
 	}
