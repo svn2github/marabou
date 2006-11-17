@@ -8,7 +8,7 @@
 // Class:          TMrbCaen_V965        -- 32 chn QDC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V965.h,v 1.1 2006-11-16 09:29:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V965.h,v 1.2 2006-11-17 13:15:44 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -101,7 +101,7 @@ class TMrbCaen_V965 : public TMrbVMEModule {
 	public:
 
 		TMrbCaen_V965() {};  												// default ctor
-		TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr); 			// define a new qdc
+		TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr, Int_t NofChannels = 0); 	// define a new qdc
 		~TMrbCaen_V965() {};												// default dtor
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code

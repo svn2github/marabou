@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V965.cxx,v 1.1 2006-11-16 09:29:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V965.cxx,v 1.2 2006-11-17 13:15:44 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -58,11 +58,11 @@ const SMrbNamedX kMrbBitSet2Bits[] =
 			{0, 											NULL,				NULL								}
 		};
 
-TMrbCaen_V965::TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr) :
+TMrbCaen_V965::TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr, Int_t NofChannels) :
 									TMrbVMEModule(ModuleName, "Caen_V965", BaseAddr,
 																TMrbCaen_V965::kAddrMod,
 																TMrbCaen_V965::kSegSize,
-																0, 32, 1 << 12) {
+																0, NofChannels, 1 << 12) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCaen_V965
