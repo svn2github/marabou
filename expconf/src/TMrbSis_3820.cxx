@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.6 2006-11-14 17:16:45 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.7 2006-11-17 08:00:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -78,6 +78,7 @@ TMrbSis_3820::TMrbSis_3820(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 				fNofShortsPerChannel = 2;
 				fFifoDepth = FifoDepth; 		// fifo depth per channel
 				fBlockReadout = kTRUE;			// module has block readout
+				fNonClearingMode = kFALSE;		// clear on copy
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gMrbConfig->AddScaler(this);				// and to list of scalers
 				gDirectory->Append(this);
@@ -187,6 +188,7 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.Substitute("$inputMode", (Int_t) this->Get("InputMode"));
 				fCodeTemplates.Substitute("$outputMode", (Int_t) this->Get("OutputMode"));
 				fCodeTemplates.Substitute("$lneSource", (Int_t) this->Get("LNESource"));
+				fCodeTemplates.Substitute("$nonClearingMode", this->NonClearingMode() ? 0x1 : 0x0);
 				Int_t pat;
 				if (this->GetNofChannelsUsed() < 32) {
 					if (this->CheckIfPatternIsContiguous()) {
@@ -208,6 +210,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 		case TMrbConfig::kModuleStartAcquisition:
 		case TMrbConfig::kModuleStopAcquisition:
 			{
+				if (this->Get("LNESource") == 0) {
+					fCodeTemplates.InitializeCode("%FSR%");
+					fCodeTemplates.Substitute("$moduleName", this->GetName());
+					fCodeTemplates.WriteCode(RdoStrm);
+				}
 				fCodeTemplates.InitializeCode("%S%");
 				fCodeTemplates.Substitute("$moduleName", this->GetName());
 				fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
@@ -230,11 +237,6 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				}
 				fCodeTemplates.Substitute("$unusedChannels", pat, 16);
 				fCodeTemplates.WriteCode(RdoStrm);
-				if (this->Get("LNESource") == 0) {
-					fCodeTemplates.InitializeCode("%FSR%");
-					fCodeTemplates.Substitute("$moduleName", this->GetName());
-					fCodeTemplates.WriteCode(RdoStrm);
-				}
 			}
 			break;
 		case TMrbConfig::kModuleClearModule:
