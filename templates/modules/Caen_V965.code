@@ -189,7 +189,7 @@
 #endif
 						caen_v965_hdr = (caen_v965_hdr & CAEN_V965_M_HDR) | $moduleSerial;
 						RDO_2MEM_32(caen_v965_hdr);					/* write header (+ module number) */
-						isTruncated = 0;
+						caen_v965_isTruncated = 0;
 						for (;caen_v965_wc--;) {
 							caen_v965_data = *caen_v965_rdoinp;
 							caen_v965_id = caen_v965_data & CAEN_V965_M_ID;
@@ -199,7 +199,7 @@
 									sprintf(msg, "$moduleName: Unexpected EOB - %#lx\n", caen_v965_data);
 									f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 #endif
-									isTruncated = 1;
+									caen_v965_isTruncated = 1;
 									caen_v965_hdr = caen_v965_data;
 									break;
 								} else {
@@ -211,7 +211,7 @@
 							}
 							RDO_2MEM_32(caen_v965_data & CAEN_V965_M_DATA);	/* write data */
 						}
-						if (isTruncated == 0) caen_v965_hdr = *caen_v965_rdoinp;
+						if (caen_v965_isTruncated == 0) caen_v965_hdr = *caen_v965_rdoinp;
 						RDO_2MEM_32(caen_v965_hdr & CAEN_V965_M_HDR);			/* write trailer */
 #ifdef DEBUG
 						caen_v965_id = (caen_v965_hdr & CAEN_V965_M_ID);
@@ -337,7 +337,7 @@ void caen_v965_reset(volatile unsigned char * module);
 %%BeginOfCode%%
 	unsigned int * caen_v965_rdoinp;
 	int caen_v965_wc;
-	int isTruncated;
+	int caen_v965_isTruncated;
 	unsigned int caen_v965_hdr, caen_v965_data, caen_v965_id, caen_v965_chn;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
