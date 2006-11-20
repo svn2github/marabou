@@ -223,6 +223,14 @@ static MBSBufferElem sevent_types[] = {
 					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
+				{	MBS_STYPE_VME_CAEN_Q1,
+					"Caen VME QDCs (1)",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
+					(void *) _mbs_convert_sheader
+				},
 				{	MBS_STYPE_VME_SIS_1,
 					"SIS VME modules (1)",
 					sizeof(s_veshe),

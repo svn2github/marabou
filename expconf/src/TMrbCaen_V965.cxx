@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V965.cxx,v 1.2 2006-11-17 13:15:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V965.cxx,v 1.3 2006-11-20 12:41:25 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -91,7 +91,7 @@ TMrbCaen_V965::TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
 		} else {
-			SetTitle("CAEN V965 QDC 32 x 12 bit"); 	// store module type
+			SetTitle("CAEN V965 QDC 8/16 x 12 bit, dual range"); 	// store module type
 			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());

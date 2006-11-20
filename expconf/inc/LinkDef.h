@@ -33,6 +33,7 @@
 #pragma link C++ class TMrbSubevent_Silena_1;
 #pragma link C++ class TMrbSubevent_Silena_2;
 #pragma link C++ class TMrbSubevent_Caen_1;
+#pragma link C++ class TMrbSubevent_Caen_Q1;
 #pragma link C++ class TMrbSubevent_Caen_2;
 #pragma link C++ class TMrbSubevent_Caen_3;
 #pragma link C++ class TMrbSubevent_Sis_1;
