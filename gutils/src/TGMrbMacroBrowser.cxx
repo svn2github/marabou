@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.14 2006-11-14 14:09:56 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.15 2006-11-20 08:58:24 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -1265,8 +1265,9 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 	cmd = cmd(0, cmd.Index(".C"));
 	TString delim = "(";
 
-	TGMrbMacroArg * macroArg = (TGMrbMacroArg *) fLofMacroArgs.First();
-	while (macroArg) {
+	TIterator *macroIter = fLofMacroArgs.MakeIterator();
+	TGMrbMacroArg * macroArg;
+	while (macroArg = (TGMrbMacroArg *) macroIter->Next()) {
 		Int_t n = macroArg->fEntryType->GetIndex();
 		if (n == TGMrbMacroArg::kGMrbMacroEntryPlain ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDown ||
@@ -1323,7 +1324,6 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 			argString = macroEnv->GetValue(macroArg->GetResource(argString, "Values"), "");
 			cmd += Form("%s\"%s\"", delim.Data(), argString.Data());
 		}
-		macroArg = (TGMrbMacroArg *) fLofMacroArgs.After(macroArg);
 	}
 	cmd += ");";
 	gROOT->ProcessLine(cmd.Data());

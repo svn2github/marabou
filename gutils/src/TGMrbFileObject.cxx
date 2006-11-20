@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.8 2006-11-14 14:09:56 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.9 2006-11-20 08:58:24 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -151,13 +151,6 @@ Bool_t TGMrbFileObjectCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TFile * rootFile;
-	TList * fileKeys;
-	TKey * key;
-	Int_t idx;
-	TObject * obj;
-	TH1 * h;
-					
 	if (GET_MSG(MsgId) == kC_COMMAND) {
 		switch (GET_SUBMSG(MsgId)) {
 			case kCM_BUTTON:
@@ -165,26 +158,27 @@ Bool_t TGMrbFileObjectCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 					case 0:
 						new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fFileInfo);
 						if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') {
-							rootFile = new TFile(fFileInfo.fFilename);
+							TFile * rootFile = new TFile(fFileInfo.fFilename);
 							if (!rootFile->IsOpen()) {
 								new TGMsgBox(fClient->GetRoot(), this, "TGMrbFileObjectCombo: Error", "Not a ROOT file", kMBIconStop);
 								break;
 							}
 							this->SetFileEntry(fFileInfo.fFilename);
-							fileKeys = rootFile->GetListOfKeys();
-							key = (TKey *) fileKeys->First();
-							idx = 0;
+							TList * fileKeys = rootFile->GetListOfKeys();
+							Int_t idx = 0;
 							Int_t nofEntries = fCombo->GetListBox()->GetNumberOfEntries();
 							fCombo->RemoveEntries(0, nofEntries - 1);
-							while (key) {
+							TKey * key;
+							TIterator * keyIter = fileKeys->MakeIterator();
+							while (key = (TKey *) keyIter->Next()) {
 								TMrbString keyName = "(";
 								keyName += key->GetClassName();
 								keyName += " *) ";
 								keyName += key->GetName();
-								obj = key->ReadObj();
+								TObject * obj = key->ReadObj();
 								if (obj) {
 									if (obj->InheritsFrom("TH1")) {
-										h = (TH1 *) obj;
+										TH1 *h = (TH1 *) obj;
 										keyName += " [";
 										keyName += h->GetNbinsX();
 										if (h->GetDimension() == 2) {
@@ -196,7 +190,6 @@ Bool_t TGMrbFileObjectCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 									fCombo->AddEntry(keyName.Data(), idx);
 									idx++;
 								}
-								key = (TKey *) fileKeys->After(key);
 							}
 							fCombo->Select(0);
 						}
@@ -438,12 +431,13 @@ Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 							}
 							this->SetFileEntry(fFileInfo.fFilename);
 							TList * fileKeys = rootFile->GetListOfKeys();
-							TKey * key = (TKey *) fileKeys->First();
 							Int_t idx = 0;
 							Int_t nofEntries = fListBox->GetNumberOfEntries();
 							fListBox->RemoveEntries(0, nofEntries - 1);
 							fLofListItems.Delete();
-							while (key) {
+							TKey * key;
+							TIterator * keyIter = fileKeys->MakeIterator();
+							while (key = (TKey *) keyIter->Next()) {
 								TMrbString keyName = "(";
 								keyName += key->GetClassName();
 								keyName += " *) ";
@@ -594,19 +588,24 @@ const Char_t * TGMrbFileObjectListBox::GetSelection(TString & SelItem, Bool_t Fu
 //////////////////////////////////////////////////////////////////////////////
 
 	SelItem = "";
-	TGTextLBEntry * lbEntry = (TGTextLBEntry *) fListBox->GetSelectedEntry();
-	if (lbEntry) {
-		TString itemString = lbEntry->GetText()->GetString();
-		this->GetFileEntry(SelItem, FullPath);
-		SelItem += ":";
-		Int_t idx = itemString.Index(")", 0) + 1;
-		if (idx < 0) idx = 0;
-		itemString = itemString(idx, itemString.Length());
-		idx = itemString.Index("[", 0) - 1;
-		if (idx < 0) idx = itemString.Length();
-		itemString.Resize(idx);
-		itemString = itemString.Strip(TString::kBoth);
-		SelItem += itemString; 
+	Int_t n = fListBox->GetNumberOfEntries();
+	if (n == 0) return("");
+
+	this->GetFileEntry(SelItem, FullPath);
+	for (Int_t i = 0; i < n; i++) {
+		TGTextLBEntry * lbEntry = (TGTextLBEntry *) fListBox->GetEntry(i);
+		if (lbEntry) {
+			TString itemString = lbEntry->GetText()->GetString();
+			SelItem += ":";
+			Int_t idx = itemString.Index(")", 0) + 1;
+			if (idx < 0) idx = 0;
+			itemString = itemString(idx, itemString.Length());
+			idx = itemString.Index("[", 0) - 1;
+			if (idx < 0) idx = itemString.Length();
+			itemString.Resize(idx);
+			itemString = itemString.Strip(TString::kBoth);
+			SelItem += itemString;
+		} 
 	}
 	return(SelItem.Data());
 }
