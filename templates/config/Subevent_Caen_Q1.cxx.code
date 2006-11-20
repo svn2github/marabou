@@ -100,7 +100,7 @@
 %C% 						<< setblack << endl;
 %C% 			} else {
 %C%					data &= CAEN_Vxxx_M_ADCDATA;
-%C% 				if (highRange) data <<= 3;
+%C% 				if (highRange) data <<= CAEN_V965A_SH_HIGH_RANGE;
 %C% 				*paramAddr = (Int_t) data;
 %C% 			}
 %C%			} else {
