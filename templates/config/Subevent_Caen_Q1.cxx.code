@@ -25,6 +25,7 @@
 %B% 	Int_t data;
 %B%	Int_t * paramAddr;
 %B%	Int_t wordsProcessed;
+%B%	Bool_t highRange;
 %B%						
 %C%	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 %C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
