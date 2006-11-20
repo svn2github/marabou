@@ -45,7 +45,7 @@
 %C%					<< wordsProcessed << "] Wrong header - 0x" << setbase(16) << header << setbase(10)
 %C%					<< setblack << endl;
 %C%			return(kTRUE);
-%C%		}highRange
+%C%		}
 %C%		wc = (header >> CAEN_Vxxx_SH_WC) & CAEN_Vxxx_M_WC;				// extract wc
 %C% 		wcs = wc;
 %C%		if (wc < 0 || wc > 32) {				// max 32 data words
