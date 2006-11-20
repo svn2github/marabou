@@ -45,7 +45,7 @@
 %C%					<< wordsProcessed << "] Wrong header - 0x" << setbase(16) << header << setbase(10)
 %C%					<< setblack << endl;
 %C%			return(kTRUE);
-%C%		}
+%C%		}highRange
 %C%		wc = (header >> CAEN_Vxxx_SH_WC) & CAEN_Vxxx_M_WC;				// extract wc
 %C% 		wcs = wc;
 %C%		if (wc < 0 || wc > 32) {				// max 32 data words
@@ -99,8 +99,14 @@
 %C% 						<< wordsProcessed << "] Multiple hit for channel " << chn << " - prev data =" << *paramAddr
 %C% 						<< setblack << endl;
 %C% 			} else {
-%C%					data &= CAEN_Vxxx_M_ADCDATA;
-%C% 				if (highRange) data <<= CAEN_V965A_SH_HIGH_RANGE;
+%C%					if ((data & CAEN_Vxxx_B_OVERFLOW) != 0) {
+%C%						data = CAEN_Vxxx_B_OVERFLOW;
+%C%					} else if ((data & CAEN_Vxxx_B_UNDERTHRESH) != 0) {
+%C%						data = -1;
+%C%					} else {
+%C%						data &= CAEN_Vxxx_M_ADCDATA;
+%C% 					if (highRange) data <<= CAEN_V965A_SH_HIGH_RANGE;
+%C% 				}
 %C% 				*paramAddr = (Int_t) data;
 %C% 			}
 %C%			} else {
