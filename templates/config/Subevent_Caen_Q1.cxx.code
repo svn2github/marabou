@@ -86,10 +86,11 @@
 %C% 						<< setblack << endl;
 %C% 			}
 %C% 		}
-%C% 		chn = (data >> CAEN_Vxxx_SH_CHN) & CAEN_Vxxx_M_CHN;
+%C% 		chn = (data >> CAEN_V965A_SH_CHN) & CAEN_V965A_M_CHN;
+%C% 		highRange = (data & CAEN_V965A_M_RANGE) == 0;
 %C%			paramAddr = (Int_t*) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
 %C%			if (paramAddr) {
-%C% 			if (*paramAddr != 0) {
+%C% 			if (highRange && *paramAddr != 0) {
 %C% 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Multiple hit", SevtData, origSevtWC);
 %C% 				cerr	<< setred
 %C% 						<< this->ClassName() << "::FillSubevent(): [Module "
@@ -97,7 +98,9 @@
 %C% 						<< wordsProcessed << "] Multiple hit for channel " << chn << " - prev data =" << *paramAddr
 %C% 						<< setblack << endl;
 %C% 			} else {
-%C%					*paramAddr = (Int_t) (data & CAEN_Vxxx_M_ADCDATA);	// assign data value to param
+%C%					data &= CAEN_Vxxx_M_ADCDATA;
+%C% 				if (highRange) data <<= 3;
+%C% 				*paramAddr = (Int_t) data;
 %C% 			}
 %C%			} else {
 %C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "No such param", SevtData, origSevtWC);

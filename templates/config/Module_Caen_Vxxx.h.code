@@ -1,28 +1,35 @@
 %%BeginOfCode%%
 #ifndef __CaenDefs__
 #define __CaenDefs__
-// definitions for CAEN V785/V775 modules
+// definitions for CAEN modules
+// Vxxx -> common to all (?) types
+// V965A -> special qdc defs
 
-#define CAEN_V7X5_SH_WC							8
-#define CAEN_V7X5_SH_CHN						16
+#define CAEN_Vxxx_SH_WC							8
+#define CAEN_Vxxx_SH_CHN						16
 
-#define CAEN_V7X5_D_HDR							0x02000000
-#define CAEN_V7X5_D_DATA						0x00000000
-#define CAEN_V7X5_D_EOB							0x04000000
-#define CAEN_V7X5_D_INVALID						0x06000000
+#define CAEN_V965A_SH_CHN						17
 
-#define CAEN_V7X5_M_MSERIAL						0xFF
-#define CAEN_V7X5_M_WC							0x3F
-#define CAEN_V7X5_M_CHN							0xFF
-#define CAEN_V7X5_M_ID							0x07000000
-#define CAEN_V7X5_M_HDR							0x07FFFFFF
-#define CAEN_V7X5_M_DATA 						0x07FFFFFF
-#define CAEN_V7X5_M_ADCDATA	 					0x00000FFF
+#define CAEN_Vxxx_D_HDR							0x02000000
+#define CAEN_Vxxx_D_DATA						0x00000000
+#define CAEN_Vxxx_D_EOB							0x04000000
+#define CAEN_Vxxx_D_INVALID						0x06000000
 
-#define CAEN_V7X5_B_OVERFLOW	 				(0x1 << 12)
-#define CAEN_V7X5_B_UNDERTHRESH 				(0x1 << 13)
+#define CAEN_Vxxx_M_MSERIAL						0xFF
+#define CAEN_Vxxx_M_WC							0x3F
+#define CAEN_Vxxx_M_CHN							0xFF
+#define CAEN_Vxxx_M_ID							0x07000000
+#define CAEN_Vxxx_M_HDR							0x07FFFFFF
+#define CAEN_Vxxx_M_DATA 						0x07FFFFFF
+#define CAEN_Vxxx_M_ADCDATA	 					0x00000FFF
 
-#define CAEN_V7X5_N_MAXEVENTS					32
+#define CAEN_V965A_M_CHN						0x7
+#define CAEN_V965A_M_RANGE		 				0x00100000
+
+#define CAEN_Vxxx_B_OVERFLOW	 				(0x1 << 12)
+#define CAEN_Vxxx_B_UNDERTHRESH 				(0x1 << 13)
+
+#define CAEN_Vxxx_N_MAXEVENTS					32
 
 #endif
 
