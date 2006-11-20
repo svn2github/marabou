@@ -6,13 +6,12 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.9 2006-11-20 08:58:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.10 2006-11-20 09:11:08 Marabou Exp $       
 // Date:           
 // Layout:
 //Begin_Html
 /*
-<img src=gutils/TGMrbFileObjectCombo.gif>
-<img src=gutils/TGMrbFileObjectListBox.gif>
+<img src=gutils/TGMrbFileObject.gif>
 */
 //End_Html
 //////////////////////////////////////////////////////////////////////////////
