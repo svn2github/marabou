@@ -97,6 +97,14 @@
 %C% 						<< wordsProcessed << "] Multiple hit for channel " << chn << " - prev data =" << *paramAddr
 %C% 						<< setblack << endl;
 %C% 			} else {
+%C%					if ((data & CAEN_Vxxx_B_OVERFLOW) != 0) {
+%C%						data = CAEN_Vxxx_B_OVERFLOW;
+%C%					} else if ((data & CAEN_Vxxx_B_UNDERTHRESH) != 0) {
+%C%						data = -1;
+%C%					} else {
+%C%						data &= CAEN_Vxxx_M_ADCDATA;
+%C% 					if (highRange) data <<= CAEN_V965A_SH_HIGH_RANGE;
+%C% 				}
 %C%					*paramAddr = (Int_t) (data & CAEN_Vxxx_M_ADCDATA);	// assign data value to param
 %C% 			}
 %C%			} else {

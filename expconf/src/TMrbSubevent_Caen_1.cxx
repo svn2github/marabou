@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Caen_1.cxx,v 1.9 2006-07-10 10:49:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_1.cxx,v 1.10 2006-11-21 09:51:27 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -49,7 +49,7 @@ TMrbSubevent_Caen_1::TMrbSubevent_Caen_1(const Char_t * SevtName, const Char_t *
 //
 //                 Data format as given by the producer (MBS):
 //                 -  several modules per buffer
-//                 -  only 1 event per module (MAXEVENTS=1)
+//                 -  only 1 event per module
 //
 //                 31---------------16|15------8|7---------0
 //                 |                  |    wc   | modser#  | header
@@ -60,31 +60,6 @@ TMrbSubevent_Caen_1::TMrbSubevent_Caen_1(const Char_t * SevtName, const Char_t *
 //                 |==================|====================|
 //                 |         |         event count         | trailer
 //                 31======================================0
-//
-//                 Data storage by the consumer (ROOT):
-//                 -  stored in a fixed-length vector, indexed by channel number
-//                 -  empty channels padded with a zero value
-//                 -  therefore works with MAXEVENTS=1 only
-//
-//                 31--------------------------------------0
-//                 |             buffer number             |
-//                 |---------------------------------------|
-//                 |      event number within buffer       |
-//                 |---------------------------------------|
-//                 |             module number             |
-//                 |---------------------------------------|
-//                 |            channel number             |
-//                 |---------------------------------------|
-//                 |          0        |  time st (32..47) |
-//                 |---------------------------------------|
-//                 |           time stamp (0..31)          |
-//                 |---------------------------------------|
-//                 |             word count (=2)           |
-//                 |---------------------------------------|
-//                 |                    0                  |
-//                 |---------------------------------------|
-//                 |                  data                 |
-//                 |---------------------------------------|
 //
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

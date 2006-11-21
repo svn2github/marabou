@@ -1,13 +1,13 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbSubevent_Caen_Q1.cxx
-// Purpose:        MARaBOU configuration: subevents of type [10,41] - CAEN data
-// Description:    Implements class methods to handle [10,41] subevents
-//                 reflecting data structure of CAEN modules
+// Purpose:        MARaBOU configuration: subevents of type [10,44] - CAEN data
+// Description:    Implements class methods to handle [10,44] subevents
+//                 reflecting data structure of CAEN QDC modules
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Caen_Q1.cxx,v 1.1 2006-11-20 12:42:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_Q1.cxx,v 1.2 2006-11-21 09:51:27 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -38,18 +38,18 @@ TMrbSubevent_Caen_Q1::TMrbSubevent_Caen_Q1(const Char_t * SevtName, const Char_t
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Caen_Q1
-// Purpose:        Create a subevent type [10,41]
+// Purpose:        Create a subevent type [10,44]
 // Arguments:      Char_t * SevtName       -- subevent name
 //                 Char_t * SevtTitle      -- ... and title
 //                 Int_t Crate             -- crate number
 // Results:        --
 // Exceptions:
-// Description:    Create a new subevent of type [10,41]
+// Description:    Create a new subevent of type [10,44]
 //                 used to store CAEN list-mode data
 //
 //                 Data format as given by the producer (MBS):
 //                 -  several modules per buffer
-//                 -  only 1 event per module (MAXEVENTS=1)
+//                 -  only 1 event per module
 //
 //                 31---------------16|15------8|7---------0
 //                 |                  |    wc   | modser#  | header
@@ -61,38 +61,13 @@ TMrbSubevent_Caen_Q1::TMrbSubevent_Caen_Q1(const Char_t * SevtName, const Char_t
 //                 |         |         event count         | trailer
 //                 31======================================0
 //
-//                 Data storage by the consumer (ROOT):
-//                 -  stored in a fixed-length vector, indexed by channel number
-//                 -  empty channels padded with a zero value
-//                 -  therefore works with MAXEVENTS=1 only
-//
-//                 31--------------------------------------0
-//                 |             buffer number             |
-//                 |---------------------------------------|
-//                 |      event number within buffer       |
-//                 |---------------------------------------|
-//                 |             module number             |
-//                 |---------------------------------------|
-//                 |            channel number             |
-//                 |---------------------------------------|
-//                 |          0        |  time st (32..47) |
-//                 |---------------------------------------|
-//                 |           time stamp (0..31)          |
-//                 |---------------------------------------|
-//                 |             word count (=2)           |
-//                 |---------------------------------------|
-//                 |                    0                  |
-//                 |---------------------------------------|
-//                 |                  data                 |
-//                 |---------------------------------------|
-//
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->IsZombie()) {
 		fSevtDescr = "CAEN data, multi-module, single-event (MAXEVENTS=1)";
 		fSevtType = 10; 	 						// set subevent type & subtype
-		fSevtSubtype = 41;
+		fSevtSubtype = 44;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
 		gDirectory->Append(this);
@@ -105,7 +80,7 @@ Bool_t TMrbSubevent_Caen_Q1::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMr
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Caen_Q1::MakeReadoutCode
-// Purpose:        Write a piece of code for subevent [10,41]
+// Purpose:        Write a piece of code for subevent [10,44]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file
 //                 TMrbTemplate & Template      -- template
