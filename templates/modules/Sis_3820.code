@@ -71,6 +71,7 @@
 
 #define SIS_3820_READ_STATUS(module)			*SIS_3820_A_STATUS(module)
 #define SIS_3820_READ_IRQS(module)				*SIS_3820_A_IRQSTATUS(module)
+#define SIS_3820_READ_FIFO_WC(module)			*SIS_3820_A_FIFO_WC(module)
 #define SIS_3820_SET_ACQ_OPER_MODE(module, b)	*SIS_3820_A_ACQ_OPER_MODE(module) = b
 #define SIS_3820_DISABLE_COPY(module, b)		*SIS_3820_A_COPY_DISABLE(module) = b
 #define SIS_3820_INHIBIT_COUNTING(module, b) 	*SIS_3820_A_INHIBIT_COUNTING(module) = b
@@ -146,27 +147,17 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-%SH%#if 0
-%SH%					$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
-%SH%					if (($mnemoLC_sts & SIS_3820_FLAG_B_FIFO_THRESH) != 0) {
-%SH%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);
-%SH%						RDO_BLTI_32(32);
-%SH%					} else {
-%SH%						memset(evt.out32, 0, 32 * sizeof(unsigned long));
-%SH%						evt.out32 += 32;
-%SH%					}
-%SH%#endif
-%SH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read scaler contents anyway */
+%SH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
 %SH%					RDO_BLTI_32(32);
-%SHS%					$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
-%SHS%					if (($mnemoLC_sts & SIS_3820_FLAG_B_FIFO_THRESH) != 0) {
-%SHS%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO);
-%SHS%						RDO_BLT_32($nofChannels);
+%SHS%					$mnemoLC_wc = SIS_3820_READ_FIFO_WC($moduleName);	/* read contents of scaler $moduleName */
+%SHS%					if ($mnemoLC_wc > 0) {
+%SHS%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);
+%SHS%						RDO_BLT_32($mnemoLC_wc);
 %SHS%					} else {
 %SHS%						memset(evt.out32, 0, (32 - $nofChannels) * sizeof(unsigned long));
 %SHS%						evt.out32 += (32 - $nofChannels);
 %SHS%					}
-%MH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO); 	/* scaler $moduleName runs in multi-hit mode */
+%MH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW); 	/* scaler $moduleName runs in multi-hit mode */
 %MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
 %MH%						$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName);
 %MH%						if (($mnemoLC_sts & SIS_3820_FLAG_B_FIFO_THRESH) != 0) RDO_BLTI_32(32);
@@ -177,7 +168,7 @@
 %MH%						memset(evt.out32, 0, $mnemoLC_hit * sizeof(unsigned long));
 %MH%						evt.out32 += $mnemoLC_hit;
 %MH%					}
-%MHS%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO); 	/* scaler $moduleName runs in multi-hit mode */
+%MHS%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW); 	/* scaler $moduleName runs in multi-hit mode */
 %MHS%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
 %MHS%						$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName);
 %MHS%						if (($mnemoLC_sts & SIS_3820_FLAG_B_FIFO_THRESH) != 0) RDO_BLTI_32($nofChannels);
