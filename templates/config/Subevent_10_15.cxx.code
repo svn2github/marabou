@@ -34,6 +34,7 @@
 %SI%	for (i = 0; i < SevtWC; i ++) { fBuffer[i] = ($dataType) ((SevtData[0] << 16) + SevtData[1]);	SevtData += 2; }
 %XS%	for (i = 0; i < SevtWC; i++) fBuffer[i] = ($dataType) *SevtData++;
 %XI%	for (i = 0; i < SevtWC; i++, pIdx += 2) fBuffer[i] = ($dataType) ((SevtData[pIdx] << 16) | SevtData[pIdx+1]);
+%XL%	for (i = 0; i < SevtWC; i++, pIdx += 2) fBuffer[i] = ($dataType) ((SevtData[pIdx] << 16) | SevtData[pIdx+1]);
 %E%
 %E% 	this->DecodeBuffer();
 %E%

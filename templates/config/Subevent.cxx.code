@@ -42,6 +42,7 @@
 %SI%	$paramNameLC = ($dataType) ((SevtData[0] << 16) + SevtData[1]);	SevtData += 2;	// $sevtNameLC.$paramNameLC[$indexRange]
 %XS%	for (i = 0; i < $indexRange; i++) $paramNameLC[i] = ($dataType) *SevtData++;	// $sevtNameLC.$paramNameLC[$indexRange]
 %XI%	for (i = 0; i < $indexRange; i++, pIdx += 2) $paramNameLC[i] = ($dataType) ((SevtData[pIdx] << 16) | SevtData[pIdx+1]);	// $sevtNameLC.$paramNameLC[$indexRange]
+%XL%	for (i = 0; i < $indexRange; i++, pIdx += 2) $paramNameLC[i] = ($dataType) ((SevtData[pIdx] << 16) | SevtData[pIdx+1]);	// $sevtNameLC.$paramNameLC[$indexRange]
 %AS%	for (i = k$firstParam; i <= k$lastParam; i++) fData[i] = ($dataType) *SevtData++;
 %AI%	for (i = k$firstParam; i <= k$lastParam; i++, pIdx += 2) fData[i] = ($dataType) ((SevtData[pIdx] << 16) | SevtData[pIdx+1]);
 %AL%	SevtData++; 				// skip 1 word (aligns to 32 bit boundary)
