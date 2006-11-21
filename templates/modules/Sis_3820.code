@@ -104,6 +104,9 @@
 
 #define SIS_3820_CS_B_NON_CLEARING_MODE			0x1
 
+#define SIS_3820_CS_B_DATA_32					0x0
+#define SIS_3820_CS_B_DATA_24					0x4
+
 #define SIS_3820_B_SELECT_SDRAM_MODE			(0x1 << 12)
 
 #define SIS_3820_FLAG_B_FIFO_THRESH				(0x1 << 17)
@@ -126,7 +129,8 @@
 							SIS_3820_CS_B_INPUT_MODE_$inputMode |		/* input */
 							SIS_3820_CS_B_OUTPUT_MODE_$outputMode | 	/* output */
 							SIS_3820_CS_B_LNE_SOURCE_$lneSource |		/* LNE */
-							$nonClearingMode);							/* non clearing mode? */
+							SIS_3820_CS_B_$dataFormat |					/* data format */
+							$nonClearingMode);							/* non clearing mode */
 					SIS_3820_WRITE_FIFO_THRESH($moduleName, 1);
 					SIS_3820_INHIBIT_COUNTING($moduleName, 0xFFFFFFFF);
 					SIS_3820_DISABLE_COPY($moduleName, 0xFFFFFFFF);
