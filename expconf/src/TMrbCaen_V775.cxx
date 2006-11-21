@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V775.cxx,v 1.12 2006-10-04 12:35:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V775.cxx,v 1.13 2006-11-21 10:07:35 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -105,8 +105,8 @@ TMrbCaen_V775::TMrbCaen_V775(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
-			fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUShort);
-			fNofShortsPerChannel = 1;
+			fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataULong);
+			fNofShortsPerChannel = 2;
 			fFFMode = kFALSE;
 			fCommonStart = kTRUE;
 			fFullScaleRange = 0x1E; 				// set full scale range to 1200 ns
