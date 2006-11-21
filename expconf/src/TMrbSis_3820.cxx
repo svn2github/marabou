@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.9 2006-11-21 14:35:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.10 2006-11-21 14:37:28 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -190,8 +190,8 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.Substitute("$inputMode", (Int_t) this->Get("InputMode"));
 				fCodeTemplates.Substitute("$outputMode", (Int_t) this->Get("OutputMode"));
 				fCodeTemplates.Substitute("$lneSource", (Int_t) this->Get("LNESource"));
-				fCodeTemplates.Substitute("$clearingMode", this->NonClearingMode() ? "NON_CLEARING_MODE" : "CLEAR_ON_COPY");
-				fCodeTemplates.Substitute("$DataFormat", this->DataFormat24() ? 0x4 : 0x0);
+				fCodeTemplates.Substitute("$clearOnCopy", this->NonClearingMode() ? "NON_CLEARING_MODE" : "CLEAR_ON_COPY");
+				fCodeTemplates.Substitute("$dataFormat", this->DataFormat24() ? 24 : 32);
 				Int_t pat;
 				if (this->GetNofChannelsUsed() < 32) {
 					if (this->CheckIfPatternIsContiguous()) {
