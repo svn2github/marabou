@@ -30,12 +30,13 @@ private:
    HprEditCommands *fEditCommands;    //! dont stream
    HprEditCommands *fModifyCommands;  //! dont stream
    TList           *fGObjectGroups;   // compound graphic objects
+   TString        fRootFileName;
+   TString        fPictureName;
    Double_t       fEditGridX;
    Double_t       fEditGridY;
    Double_t       fVisibleGridX;
    Double_t       fVisibleGridY;
-   Bool_t         fUseEditGrid;
-   Bool_t         fSaveUseEditGrid;
+   Int_t          fUseEditGrid;
    Bool_t         fInsertMacrosAsGroup;  
    Bool_t         fCommonRotate;         //! dont stream
    UInt_t         fOrigWw;
@@ -89,8 +90,8 @@ public:
    void    SetEditGridY(Double_t y) {fEditGridY = y;};
    void    SetVisibleGridX(Double_t x) {fVisibleGridX = x;};
    void    SetVisibleGridY(Double_t y) {fVisibleGridY = y;};
-   void    SetUseEditGrid(Bool_t use = kTRUE);
-   Bool_t  GetUseEditGrid() {return fUseEditGrid;};
+   void    SetUseEditGrid(Int_t use = 1);
+   Int_t   GetUseEditGrid() {return fUseEditGrid;};
    void    DrawEditGrid(Bool_t visible);
    void    RemoveEditGrid();
    void    RemoveControlGraphs();
@@ -133,6 +134,8 @@ public:
    void    ZoomIn();
    void    ZoomOut();
    void    UnZoom();
+   void    SaveDefaults();
+   void    RestoreDefaults();
    
 
 //   void    MyClose();

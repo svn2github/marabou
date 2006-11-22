@@ -1,4 +1,4 @@
-// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.3 2006-10-23 15:46:12 Otto.Schaile Exp $
+// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.4 2006-11-22 08:02:18 Otto.Schaile Exp $
 // Author: Carsten Hof   16/08/04
 
 /*************************************************************************
@@ -259,6 +259,7 @@ void TSplineXEditor::SetModel(TObject* obj)
 #else
 void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
 {
+   fSplineX = 0;
    fModel = 0;
    fPad = 0;
 
@@ -267,6 +268,7 @@ void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
       return;
    }
 
+   fSplineX = (TSplineX *)obj;
    fModel = obj;
    fPad = pad;
 #endif

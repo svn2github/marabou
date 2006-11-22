@@ -290,7 +290,8 @@ HistPresent::~HistPresent()
       fComSocket->Send("M_client exit");
    }
    SaveOptions();
-//   CloseAllCanvases();
+
+   CloseAllCanvases();
    gDirectory->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
    if (cHPr )delete cHPr;
@@ -2968,7 +2969,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 void HistPresent::CloseAllCanvases() 
 {
 //     Cleaning all FitHist objects
-//   cout << "Enter CloseAllCanvases()" << endl;
+   cout << "Enter CloseAllCanvases()" << endl;
    if (fHelpBrowser) fHelpBrowser->Clear();
 #if ROOTVERSION > 40302
    if (fCanvasList->GetEntries() == 0) return;
@@ -2980,6 +2981,7 @@ void HistPresent::CloseAllCanvases()
    TIter next(fCanvasList);
    HTCanvas * htc;
    while ( (htc =(HTCanvas *)next()) ) {
+      cout << "CloseAllCanvases(): " << htc->GetName() << endl;
       TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
       rc->ShowEditor(kFALSE);
       rc->SendCloseMessage();

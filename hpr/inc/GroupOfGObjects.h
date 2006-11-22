@@ -19,7 +19,8 @@ protected:
    Double_t fXUpEdge;       // Bounding Box X Upper Edge
    Double_t fYUpEdge;       // Bounding Box Y Upper Edge
    Bool_t   fIsVisible;
-   
+   Bool_t   fForceVerticalShiftOnly;
+   Bool_t   fForceHorizontalShiftOnly;
    TList    fMembers;       // Members 
 public:
    GroupOfGObjects(){};
@@ -51,8 +52,11 @@ public:
    void BindObjects() {BindReleaseObjects(kTRUE);};            // *MENU*
    void ReleaseObjects() {BindReleaseObjects(kFALSE);};        // *MENU*
    void DeleteObjects();                                       // *MENU*
+   void ForceVerticalShiftOnly(Bool_t fs) {fForceVerticalShiftOnly = fs;};   // *MENU*
+   void ForceHorizontalShiftOnly(Bool_t fs) {fForceHorizontalShiftOnly = fs;};   // *MENU*
    void ShiftObjects(Double_t xshift, Double_t yshift, Bool_t shiftcut = kTRUE);        // *MENU*
    void BindReleaseObjects(Bool_t bind) ; 
+   Bool_t SloppyInside(Double_t x, Double_t y);
         
 ClassDef(GroupOfGObjects,2)
 };

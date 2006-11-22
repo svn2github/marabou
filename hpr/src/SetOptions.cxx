@@ -92,15 +92,15 @@ void HistPresent::RestoreOptions()
    fEnableCalibration = env.GetValue("HistPresent.EnableCalibration", 0);
    fShowFitBox        = env.GetValue("HistPresent.ShowFitBox", 1);
    fShowFittedCurves  = env.GetValue("HistPresent.ShowFittedCurves", 1);
-   fShowPSFile        = env.GetValue("HistPresent.AutoShowPSFile", 1);
+   fShowPSFile        = env.GetValue("HistPresent.AutoShowPSFile", 0);
    fShowListsOnly     = env.GetValue("HistPresent.ShowListsOnly", 0);
    fRememberTreeHists = env.GetValue("HistPresent.RememberTreeHists", 0);
    fNtupleVersioning  = env.GetValue("HistPresent.NtupleVersioning", 1);
    fAlwaysNewLimits   = env.GetValue("HistPresent.AlwaysNewLimits", 0);
    fRememberLastSet   = env.GetValue("HistPresent.RememberLastSet", 1);
-   fRememberZoom      = env.GetValue("HistPresent.RememberZoom", 0);
-   fUseAttributeMacro = env.GetValue("HistPresent.UseAttributeMacro", 1);
-   fShowAllAsFirst    = env.GetValue("HistPresent.ShowAllAsFirst", 1);
+   fRememberZoom      = env.GetValue("HistPresent.RememberZoom", 1);
+   fUseAttributeMacro = env.GetValue("HistPresent.UseAttributeMacro", 0);
+   fShowAllAsFirst    = env.GetValue("HistPresent.ShowAllAsFirst", 0);
    fRealStack         = env.GetValue("HistPresent.RealStack", 1);
    fUseRegexp         = env.GetValue("HistPresent.UseRegexp", 0);
    fProjectBothRatio  = env.GetValue("HistPresent.ProjectBothRatio", 0.6);
@@ -130,7 +130,9 @@ void HistPresent::RestoreOptions()
    f2DimBackgroundColor =
        env.GetValue("HistPresent.2DimBackgroundColor", 0);
    fStatFont = env.GetValue("HistPresent.StatBoxFont", 40);
+   if (fTextFont < 12 || fTextFont > 123) fTextFont = 62;
    fTitleFont = env.GetValue("HistPresent.TitleFont", 62);
+   if (fTitleFont < 12 || fTitleFont > 123) fTitleFont = 62;
    fMaxListEntries= env.GetValue("HistPresent.MaxListEntries", 333);
    fDisplayCalibrated= env.GetValue("HistPresent.DisplayCalibrated", 1);
    *fHostToConnect =
@@ -144,6 +146,7 @@ void HistPresent::RestoreOptions()
    fAxisColorX=  env.GetValue("HistPresent.AxisColorX",  1);  
    fLabelColorX= env.GetValue("HistPresent.LabelColorX", 1); 
    fLabelFontX=  env.GetValue("HistPresent.LabelFontX",  62);  
+   if (fTextFont < 12 || fTextFont > 123) fTextFont = 62;
    fLabelOffsetX=env.GetValue("HistPresent.LabelOffsetX",0.005);
    fLabelSizeX=  env.GetValue("HistPresent.LabelSizeX",  0.03);  
    fTickLengthX= env.GetValue("HistPresent.TickLengthX", 0.03); 
@@ -151,11 +154,13 @@ void HistPresent::RestoreOptions()
    fTitleSizeX=  env.GetValue("HistPresent.TitleSizeX",  0.03);  
    fTitleColorX= env.GetValue("HistPresent.TitleColorX", 1); 
    fTitleFontX=  env.GetValue("HistPresent.TitleFontX",   62);  
+   if (fTitleFontX < 12 || fTitleFontX > 123) fTitleFontX = 62;
 
    fNdivisionsY= env.GetValue("HistPresent.NdivisionsY", 510); 
    fAxisColorY=  env.GetValue("HistPresent.AxisColorY",  1);  
    fLabelColorY= env.GetValue("HistPresent.LabelColorY", 1); 
    fLabelFontY=  env.GetValue("HistPresent.LabelFontY",  62);  
+   if (fLabelFontY < 12 || fLabelFontY > 123) fLabelFontY = 62;
    fLabelOffsetY=env.GetValue("HistPresent.LabelOffsetY",0.005);
    fLabelSizeY=  env.GetValue("HistPresent.LabelSizeY",  0.03);  
    fTickLengthY= env.GetValue("HistPresent.TickLengthY", 0.03); 
@@ -163,11 +168,13 @@ void HistPresent::RestoreOptions()
    fTitleSizeY=  env.GetValue("HistPresent.TitleSizeY",  0.03);  
    fTitleColorY= env.GetValue("HistPresent.TitleColorY", 1); 
    fTitleFontY=  env.GetValue("HistPresent.TitleFontY",   62);  
+   if (fTitleFontY < 12 || fTitleFontY > 123) fTitleFontY = 62;
 
    fNdivisionsZ= env.GetValue("HistPresent.NdivisionsZ", 510); 
    fAxisColorZ=  env.GetValue("HistPresent.AxisColorZ",  1);  
    fLabelColorZ= env.GetValue("HistPresent.LabelColorZ", 1); 
    fLabelFontZ=  env.GetValue("HistPresent.LabelFontZ",  62);  
+   if (fLabelFontZ < 12 || fLabelFontZ > 123) fLabelFontZ = 62;
    fLabelOffsetZ=env.GetValue("HistPresent.LabelOffsetZ",0.005);
    fLabelSizeZ=  env.GetValue("HistPresent.LabelSizeZ",  0.03);  
    fTickLengthZ= env.GetValue("HistPresent.TickLengthZ", 0.03); 
@@ -175,6 +182,7 @@ void HistPresent::RestoreOptions()
    fTitleSizeZ=  env.GetValue("HistPresent.TitleSizeZ",  0.03);  
    fTitleColorZ= env.GetValue("HistPresent.TitleColorZ", 1); 
    fTitleFontZ=  env.GetValue("HistPresent.TitleFontZ",   62);  
+   if (fTitleFontZ < 12 || fTitleFontZ > 123) fTitleFontZ = 62;
 
    fHistFillColor=env.GetValue("HistPresent.HistFillColor", 0);
    fHistLineColor=env.GetValue("HistPresent.HistLineColor", 1);
@@ -191,6 +199,7 @@ void HistPresent::RestoreOptions()
    fStatTextColor= env.GetValue("HistPresent.StatTextColor", 1);
    fStatBorderSize=env.GetValue("HistPresent.StatBorderSize", 1);
    fStatFont=      env.GetValue("HistPresent.StatFont", 62);
+   if (fStatFont < 12 || fStatFont > 123) fStatFont = 62;
    fStatFontSize=  env.GetValue("HistPresent.StatFontSize", 0.02);
    fStatStyle=     env.GetValue("HistPresent.StatStyle", 1001);
    fStatX=         env.GetValue("HistPresent.StatX", 0.98);
@@ -202,6 +211,7 @@ void HistPresent::RestoreOptions()
    fTitleTextColor = env.GetValue("HistPresent.TitleTextColor", 1);
    fTitleBorderSize= env.GetValue("HistPresent.TitleBorderSize",1);
    fTitleFont      = env.GetValue("HistPresent.TitleFont",      62);
+   if (fTitleFont < 12 || fTitleFont > 123) fTitleFont = 62;
    fTitleFontSize  = env.GetValue("HistPresent.TitleFontSize",  0.02);
    fTitleStyle     = env.GetValue("HistPresent.TitleStyle",     1001);
    fTitleX         = env.GetValue("HistPresent.TitleX",         0.01);
@@ -246,6 +256,7 @@ void HistPresent::RestoreOptions()
 	fTextAlign        = env.GetValue("HistPresent.TextAlign",       1);
 	fTextColor        = env.GetValue("HistPresent.TextColor",       1);
 	fTextFont         = env.GetValue("HistPresent.TextFont" ,       62);
+   if (fTextFont < 12 || fTextFont > 123) fTextFont = 62;
 	fFillColor        = env.GetValue("HistPresent.FillColor",       8);
 	fFillStyle        = env.GetValue("HistPresent.FillStyle",       1);
 	fArrowAngle       = env.GetValue("HistPresent.ArrowAngle" ,      60.);

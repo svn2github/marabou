@@ -137,7 +137,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fEditGridX = 0;
    fEditGridY = 0;
    fHandleMenus = NULL;  
-   fUseEditGrid = kFALSE;
+   fUseEditGrid = 0;
 
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
@@ -174,7 +174,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 
 void HTCanvas::MyClose()
 {
-//   cout << "HTCanvas::MyClose() set ShowEditor(kFALSE) " << endl;
+   cout << "HTCanvas::MyClose() set ShowEditor(kFALSE) " << endl;
    fRootCanvas->ShowEditor(kFALSE);
    fRootCanvas->CloseWindow();
 }
@@ -182,7 +182,7 @@ void HTCanvas::MyClose()
 
 HTCanvas::~HTCanvas()
 {
-//   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
+   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
 //   if (fEditCommands) { delete fEditCommands; fEditCommands = NULL;};
    if (fHandleMenus) {
       delete fHandleMenus;

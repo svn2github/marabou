@@ -61,6 +61,7 @@ GroupOfGObjects::GroupOfGObjects(const char * name, Double_t x, Double_t y, TCut
 
 GroupOfGObjects::~GroupOfGObjects()
 { 
+   BindReleaseObjects(kFALSE);
    fMembers.Clear();
    gPad->GetListOfPrimitives()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
@@ -422,6 +423,8 @@ void  GroupOfGObjects::ExecuteEvent(Int_t event, Int_t px, Int_t py)
       {
       Double_t xshift = GetX()[0] -  xEnclosingCut;
       Double_t yshift = GetY()[0] -  yEnclosingCut;
+      if (fForceVerticalShiftOnly)    xshift = 0;
+      if (fForceHorizontalShiftOnly) yshift = 0;
       ShiftObjects(xshift, yshift, kFALSE);
       }
       break;
@@ -531,8 +534,10 @@ void GroupOfGObjects::ShiftObjects(Double_t xoff, Double_t yoff, Bool_t shiftcut
          Double_t * y = b->GetY();
 //         either first or last point
          for (Int_t i = 0; i < b->GetN(); i++) {
-            x[i] += xoff;
-            y[i] += yoff;
+            if (IsInside(x[i],y[i])) {
+               x[i] += xoff;
+               y[i] += yoff;
+            }
          }
       } else {
 //         cout << obj->ClassName() << " not yet implemented" << endl;
@@ -548,3 +553,15 @@ void GroupOfGObjects::ShiftObjects(Double_t xoff, Double_t yoff, Bool_t shiftcut
    }
    gPad->Modified();   
 }
+//______________________________________________________________________________
+Bool_t GroupOfGObjects::SloppyInside(Double_t x, Double_t y)
+{
+//   cut->Dump();
+   Double_t m = 0.1;
+   if (IsInside(x,y)) return kTRUE;
+   if (IsInside(x + m,y + m)) return kTRUE;
+   if (IsInside(x - m,y - m)) return kTRUE;
+   if (IsInside(x + m,y - m)) return kTRUE;
+   if (IsInside(x - m,y + m)) return kTRUE;
+   return kFALSE;
+}  

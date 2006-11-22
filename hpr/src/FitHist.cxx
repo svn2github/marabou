@@ -1618,8 +1618,8 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
 
 
    static TString fname;
-//   fname = fSelHist->GetName();
-   fname = fHname;
+   fname = fSelHist->GetName();
+ //  fname = fHname;
    fname += ".ascii";
 
    TList *row_lab = new TList(); 

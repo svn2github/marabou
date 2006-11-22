@@ -41,8 +41,8 @@ private:
    
    Double_t       fEditGridX;
    Double_t       fEditGridY;
-   Bool_t         fUseEditGrid;
-   Bool_t         fSaveUseEditGrid;
+   Int_t          fUseEditGrid;
+   Int_t          fSaveUseEditGrid;
    UInt_t         fOrigWw;
    UInt_t         fOrigWh;
 
@@ -70,8 +70,8 @@ public:
    Double_t GetEditGridX() {return fEditGridX;};
    Double_t GetEditGridY() {return fEditGridY;};
    void     SetEditGrid(Double_t x, Double_t y) {fEditGridX = x, fEditGridY = y;};
-   void     SetUseEditGrid(Bool_t use = kTRUE) {fUseEditGrid = use;};
-   Bool_t   GetUseEditGrid() {return fUseEditGrid;};
+   void     SetUseEditGrid(Int_t use = 1) {fUseEditGrid = use;};
+   Int_t   GetUseEditGrid() {return fUseEditGrid;};
 
    ClassDef(HTCanvas,1)  //Graphics canvas
 };

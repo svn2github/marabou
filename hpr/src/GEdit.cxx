@@ -46,7 +46,7 @@
 #include "GEdit.h"
 
 #include <fstream>
-extern Bool_t SloppyInside(TCutG * cut, Double_t x, Double_t y);
+//extern Bool_t SloppyInside(TCutG * cut, Double_t x, Double_t y);
 extern Double_t MinElement(Int_t n, Double_t * x);
 extern Double_t MaxElement(Int_t n, Double_t * x);
 extern void SetAllArrowSizes(TList *list, Double_t size,  Bool_t abs); 
@@ -88,9 +88,7 @@ GEdit::GEdit(TCanvas * parent)
    fRootCanvas = (TRootCanvas*)parent->GetCanvas()->GetCanvasImp();
    fOrigWw = fParent->GetWw();
    fOrigWh = fParent->GetWh();
-   fEditGridX = fEditGridY = 5;
-   fVisibleGridX = fVisibleGridY = 10;
-   fUseEditGrid = kTRUE;
+   RestoreDefaults();
    BuildMenu();
    InitEditCommands();
 
@@ -100,6 +98,7 @@ GEdit::GEdit(TCanvas * parent)
       fParent->Modified();
       fParent->Update();
    }
+   SetBit(kMustCleanup);
    gROOT->GetListOfCleanups()->Add(this);
 }
 //______________________________________________________________________________
@@ -107,7 +106,7 @@ GEdit::GEdit(TCanvas * parent)
 GEdit::~GEdit() 
 {
    cout << "~GEdit " << this << endl;
-
+   SaveDefaults();
    if (fEditCommands) delete fEditCommands;
 }
 
@@ -1476,7 +1475,7 @@ void GEdit::DefineBox()
 {
    fParent->cd();
    TObject * obj = gPad->WaitPrimitive("TPave");
-//   TObject * obj = gPad->GetListOfPrimitives()->Last();
+   obj = gPad->GetListOfPrimitives()->Last();
    if (obj->IsA() == TPave::Class()) {
       TPave * p = (TPave*)obj;
       Double_t x[5];
@@ -1604,15 +1603,13 @@ void GEdit::RemoveEditGrid()
 void GEdit::WritePrimitives()
 {
    Bool_t ok;
-   static Int_t sernr = 1;
 //   TString name = "drawing";
-   TString name = "p";
-   name += sernr++;
+   static TString name(fPictureName);
    name = GetString("Save picture with name", name.Data(), &ok,
                  (TGWindow*)fRootCanvas);
    if (!ok)
       return;
-   TString fn = "pictures.root";
+   TString fn(fRootFileName);
    fn = GetString("File name", fn.Data(), &ok,
                  (TGWindow*)fRootCanvas);
    if (!ok)
@@ -1623,6 +1620,9 @@ void GEdit::WritePrimitives()
    RemoveControlGraphs();
    fParent->Write(name.Data());
    f->Close();
+   fPictureName =  name;
+   fRootFileName = fn;
+   SaveDefaults();
 }
 ///______________________________________________________________________________
 
@@ -2170,7 +2170,8 @@ Int_t GEdit::ExtractGObjectsE()
 Int_t GEdit::ExtractGObjects(Bool_t markonly)
 {
    fParent->cd();
-   TCutG * cut = (TCutG *)FindObject("CUTG");
+   cout << "fParent " << fParent<< " gPad " << gPad << endl;
+   TCutG * cut = (TCutG *)gPad->FindObject("CUTG");
    if (!cut) {
       WarnBox("Define a graphical cut first", fRootCanvas); 
       return -1;
@@ -3197,7 +3198,7 @@ Double_t GEdit::PutOnGridY(Double_t y)
    return (Double_t)n * fEditGridY;
 }   
 //______________________________________________________________________________
-void  GEdit::SetUseEditGrid(Bool_t use) 
+void  GEdit::SetUseEditGrid(Int_t use) 
 {
    if (use) { 
       if (fEditGridX <= 0 ||  fEditGridY <= 0) {
@@ -3212,9 +3213,6 @@ void  GEdit::SetUseEditGrid(Bool_t use)
    fUseEditGrid = use;
    Int_t temp = 0;
    if (use) temp = 1;
-   TEnv env(".rootrc");
-   env.SetValue("GEdit.UseEditGrid", temp);
-   env.SaveLevel(kEnvUser);
 };
 //______________________________________________________________________________
 
@@ -3248,6 +3246,7 @@ void GEdit::SetEditGrid(Double_t x, Double_t y, Double_t xvis, Double_t yvis)
       fVisibleGridX = xvis; 
       fVisibleGridY = yvis;
    }
+   SaveDefaults();
 #ifdef MARABOUVERS
    fParent->SetEditGrid(fEditGridX, fEditGridY);
    SetUseEditGrid(kTRUE);
@@ -3297,4 +3296,30 @@ void GEdit::DrawEditGrid(Bool_t visible)
    }
    fParent->Modified();
    fParent->Update();
+}
+//_____________________________________________________________________
+
+void GEdit::SaveDefaults()
+{
+   TEnv env(".rootrc");
+   env.SetValue("GEdit.RootFileName",   fRootFileName);
+   env.SetValue("GEdit.PictureName",    fPictureName);
+   env.SetValue("GEdit.EditGridX",      fEditGridX);  
+   env.SetValue("GEdit.EditGridY",      fEditGridY);  
+   env.SetValue("GEdit.VisibleGridX",   fVisibleGridX);
+   env.SetValue("GEdit.VisibleGridY",   fVisibleGridY);
+   env.SetValue("GEdit.UseEditGrid",    fUseEditGrid);
+   env.SaveLevel(kEnvUser);
+}
+//_____________________________________________________________________
+void GEdit::RestoreDefaults()
+{
+   TEnv env(".rootrc");
+   fRootFileName    = env.GetValue("GEdit.RootFileName", "pictures.root"); 
+   fPictureName     = env.GetValue("GEdit.PictureName",  "pict"); 
+   fEditGridX       = env.GetValue("GEdit.EditGridX",      5.);
+   fEditGridY       = env.GetValue("GEdit.EditGridY",      5.);
+   fVisibleGridX    = env.GetValue("GEdit.VisibleGridX",  10.);
+   fVisibleGridY    = env.GetValue("GEdit.VisibleGridY",  10.);
+   fUseEditGrid     = env.GetValue("GEdit.UseEditGrid",    1);
 }
