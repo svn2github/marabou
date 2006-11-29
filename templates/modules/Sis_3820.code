@@ -156,22 +156,10 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-%SH%					$mnemoLC_wc = SIS_3820_READ_FIFO_WC($moduleName);	/* read contents of scaler $moduleName */
-%SH%					if ($mnemoLC_wc > 0) {
 %SH%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
 %SH%						RDO_BLTI_32(32);
-%SH%					} else {
-%SH%						memset(evt.out32, 0, 32 * sizeof(unsigned long));
-%SH%						evt.out32 += 32;
-%SH%					}
-%SHS%					$mnemoLC_wc = SIS_3820_READ_FIFO_WC($moduleName);	/* read contents of scaler $moduleName */
-%SHS%					if ($mnemoLC_wc > 0) {
 %SHS%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);
 %SHS%						RDO_BLT_32($mnemoLC_wc);
-%SHS%					} else {
-%SHS%						memset(evt.out32, 0, $nofChannels * sizeof(unsigned long));
-%SHS%						evt.out32 += $nofChannels;
-%SHS%					}
 %MH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW); 	/* scaler $moduleName runs in multi-hit mode */
 %MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
 %MH%						$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName);
