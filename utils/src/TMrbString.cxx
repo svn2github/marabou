@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbString.cxx,v 1.17 2006-09-12 08:02:31 Marabou Exp $       
-// Date:           $Date: 2006-09-12 08:02:31 $
+// Revision:       $Id: TMrbString.cxx,v 1.18 2006-11-29 15:09:54 Rudolf.Lutter Exp $       
+// Date:           $Date: 2006-11-29 15:09:54 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -466,34 +466,35 @@ Int_t TMrbString::Split(TObjArray & LofSubStrings, const Char_t * Separator, Boo
 	TString sepStr;
 	Int_t nstr, sepl, lng;
 	TString subStr;
-	Char_t whiteSpace = ' ';
 	TMrbString tmpStr;
-	TMrbString * sp;
 
 	sepStr = Separator;
 	sepl = sepStr.Length();
 
+	Char_t whiteSpace = (sepStr.CompareTo("\t") == 0) ? '\t' : ' ';
+
 	if (RemoveWhiteSpace) {
 		tmpStr = this->Copy();
-		whiteSpace = (sepStr.CompareTo("\t") == 0) ? '\t' : ' ';
 		tmpStr.ReplaceWhiteSpace(whiteSpace);
-		sp = &tmpStr;
 	} else {
-		sp = this;
+		tmpStr = this->Data();
 	}
+
+	tmpStr = tmpStr.Strip(TString::kBoth);
+	if (tmpStr.IsNull()) return(0);
 
 	n1 = 0;
 	nstr = 0;
 	for (;;) {
-		n2 = sp->Index(sepStr.Data(), n1);
-		lng = (n2 == -1) ? sp->Length() - n1 : n2 - n1;
-		subStr = (*sp)(n1, lng);
-		if (subStr.Length() > 0) {
-			if (RemoveWhiteSpace) subStr = subStr.Strip(TString::kBoth, whiteSpace);
-			LofSubStrings.Add(new TObjString(subStr.Data()));
+		n2 = tmpStr.Index(sepStr.Data(), n1);
+		lng = (n2 == -1) ? tmpStr.Length() - n1 : n2 - n1;
+		subStr = tmpStr(n1, lng);
+		if (RemoveWhiteSpace) subStr = subStr.Strip(TString::kBoth, whiteSpace);
+		if (subStr.IsNull()) {
+			LofSubStrings.Add(new TObjString(" "));
 			nstr++;
 		} else {
-			LofSubStrings.Add(new TObjString(" "));
+			LofSubStrings.Add(new TObjString(subStr.Data()));
 			nstr++;
 		}
 		if (n2 == -1) break;

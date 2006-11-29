@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.15 2006-09-08 07:18:03 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.16 2006-11-29 15:09:54 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -514,3 +514,34 @@ void TMrbSystem::PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t
 	}
 }
 			
+void TMrbSystem::AppendIncludePath(const Char_t * IncludePath) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSystem::AppendIncludePath
+// Purpose:        Append an item to $IncludePath
+// Arguments:      Char_t * IncludePath         -- include path
+// Exceptions:     
+// Description:    Adds a string to include defs
+//                 IncludePath may be a :-separated string
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString iclPath = gSystem->GetIncludePath();
+	TMrbString newIcl = IncludePath;
+	TObjArray lofIcls;
+	Int_t nicl = newIcl.Split(lofIcls, ":", kTRUE);
+	for (Int_t i = 0; i < nicl; i++) {
+		TString icl = ((TObjString *) lofIcls[i])->GetString();
+		icl = icl.Strip(TString::kBoth);
+		if (!icl.IsNull()) {
+			if (!iclPath.Contains(icl.Data())) {
+				gSystem->ExpandPathName(icl);
+				if (!iclPath.Contains(icl.Data())) {
+					iclPath += " -I";
+					iclPath += icl;
+				}
+			}
+		}
+	}
+	gSystem->SetIncludePath(iclPath.Data());
+}

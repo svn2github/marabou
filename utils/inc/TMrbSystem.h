@@ -57,7 +57,7 @@ struct FileStat_t {
 // Class:          TMrbSystem    -- extension to TSystem class
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSystem.h,v 1.12 2005-12-08 09:33:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.h,v 1.13 2006-11-29 15:09:54 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -124,6 +124,10 @@ class TMrbSystem: public TObject {
 		const Char_t * GetSymbolicLink(TString & SymLink, const Char_t * Path);
 
 		const Char_t * Which(TString & Result, const Char_t * Search, const Char_t * File, EAccessMode Mode = kFileExists);
+
+		inline void SetIncludePath(const Char_t * IncludePath) { gSystem->SetIncludePath(IncludePath); };
+		inline const Char_t * GetIncludePath() { return(gSystem->GetIncludePath()); };
+		void AppendIncludePath(const Char_t * IncludePath);
 
 		Int_t Load(const char * LofModules, Bool_t SystemFlag = kFALSE);
 		void PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t * Path = "", const Char_t * Entry = "", Bool_t SystemFlag = kFALSE);
