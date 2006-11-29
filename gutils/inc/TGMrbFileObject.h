@@ -11,13 +11,14 @@
 //                                           a list box containing file objects
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFileObject.h,v 1.5 2006-11-14 14:09:56 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.h,v 1.6 2006-11-29 15:10:28 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Rtypes.h"
 #include "TSystem.h"
+#include "TObjArray.h"
 #include "TGWindow.h"
 #include "TGFrame.h"
 #include "TGButton.h"
@@ -61,7 +62,8 @@ class TGMrbFileObjectCombo: public TGCompositeFrame, public TGMrbObject {
 
 		void SetFileEntry(const Char_t * File);
 		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file
-		const Char_t * GetSelection(TString & SelItem, Bool_t FullPath = kTRUE) const;	// get selected file/object
+		Int_t GetSelectionAsString(TString & SelItem, Bool_t FullPath = kTRUE) const;  // get selected file/object -- string
+		Int_t GetSelection(TObjArray & SelArr, Bool_t FullPath = kTRUE) const;	// ... -- array
 
 		inline void Associate(const TGWindow * Window) { fCombo->Associate(Window); };	// where to go if combobox
 																					// selection changes
@@ -127,7 +129,8 @@ class TGMrbFileObjectListBox: public TGCompositeFrame, public TGMrbObject {
 
 		void SetFileEntry(const Char_t * File);
 		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file
-		const Char_t * GetSelection(TString & SelItem, Bool_t FullPath = kTRUE) const;	// get selected file/object
+		Int_t GetSelectionAsString(TString & SelItem, Bool_t FullPath = kTRUE) const;	// get selected file/object -- string
+		Int_t GetSelection(TObjArray & SelArr, Bool_t FullPath = kTRUE) const;	// ... -- array
 
 		inline void Associate(const TGWindow * Window) { fListBox->Associate(Window); };	// where to go if combobox
 																					// selection changes

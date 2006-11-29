@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.8 2006-11-14 14:09:56 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.9 2006-11-29 15:10:28 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -192,11 +192,14 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		virtual void CloseWindow() { delete this; };
 
 		Bool_t ResetMacroArgs();						// reset arguments
-		Bool_t ExecMacro() const; 						// exec macro
+		Bool_t ExecMacro(); 	 						// exec macro
 		Bool_t ModifyMacroHeader(); 					// modify header
 		Bool_t ModifyMacroSource(); 					// modify source
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
+
+	protected:
+		Bool_t LoadMacro();
 
 	protected:
 		TList fHeap;
@@ -216,6 +219,8 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		TMrbLofNamedX fLofActions;
 
 		TObjArray fLofMacroArgs;	// list of arguments
+
+		Bool_t fMacroLoaded;
 
 	ClassDef(TGMrbMacroFrame, 0)	// [GraphUtils] A frame containing definitions of a ROOT macro
 };
@@ -259,11 +264,14 @@ class TGMrbMacroEdit : public TGTransientFrame {
 											kMacroTagTitle,
 											kMacroTagProc,
 											kMacroTagAuthor,
+											kMacroTagMailAddr,
+											kMacroTagUrl,
 											kMacroTagCreationDate,
 											kMacroTagSyntax,
 											kMacroTagArguments,
 											kMacroTagExec,
 											kMacroTagIncludeHFiles,
+											kMacroTagEnums,
 											kMacroTagCode
 										};
 
@@ -290,6 +298,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		Bool_t RestoreAllArgs();							// reset all args to original values
 		Bool_t ChangeEnv(Int_t ArgNo, Bool_t Delete);		// change current environment by deleting/inserting this argument
 		Bool_t SaveMacro(const Char_t * FileName);			// save settings to a file
+		Int_t ExtractEnums(TMrbLofNamedX & LofEnums, Int_t ArgNo);	// extract enum defs
 
 	protected:
 		TList fHeap;

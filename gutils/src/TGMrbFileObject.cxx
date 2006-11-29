@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.10 2006-11-20 09:11:08 Marabou Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.11 2006-11-29 15:10:28 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -22,6 +22,7 @@ namespace std {} using namespace std;
 #include <iomanip>
 
 #include "TKey.h"
+#include "TObjString.h"
 #include "TNamed.h"
 #include "TFile.h"
 #include "TH1.h"
@@ -240,35 +241,73 @@ const Char_t * TGMrbFileObjectCombo::GetFileEntry(TString & FileName, Bool_t Ful
 	return(FileName.Data());
 }
 
-const Char_t * TGMrbFileObjectCombo::GetSelection(TString & SelItem, Bool_t FullPath) const {
+Int_t TGMrbFileObjectCombo::GetSelectionAsString(TString & SelItem, Bool_t FullPath) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbFileObjectCombo::GetSelection
-// Purpose:        Return selected file/object
+// Name:           TGMrbFileObjectCombo::GetSelectionAsString
+// Purpose:        Return selected file/object as string
 // Arguments:      TString SelItem         -- where to store selection data
 //                 Bool_t FullPath         -- prepend full file path if kTRUE
-// Results:        Char_t * SelItem        -- selected item
+// Results:        Int_t NofItems          -- number of selected items (+1 for filename)
 // Exceptions:     
-// Description:    Returns selected item "file:object"
+// Description:    Returns selected item as string: "file:object"
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
 	SelItem = "";
 	TGTextLBEntry * lbEntry = (TGTextLBEntry *) fCombo->GetSelectedEntry();
 	if (lbEntry) {
-		TString itemString = lbEntry->GetText()->GetString();
 		this->GetFileEntry(SelItem, FullPath);
-		SelItem += ":";
-		Int_t idx = itemString.Index(")", 0) + 1;
+		SelItem = SelItem.Strip(TString::kBoth);
+		if (SelItem.IsNull()) return(0);
+		TString item = lbEntry->GetText()->GetString();
+		Int_t idx = item.Index(")", 0) + 1;
 		if (idx < 0) idx = 0;
-		itemString = itemString(idx, itemString.Length());
-		idx = itemString.Index("[", 0) - 1;
-		if (idx < 0) idx = itemString.Length();
-		itemString.Resize(idx);
-		itemString = itemString.Strip(TString::kBoth);
-		SelItem += itemString; 
+		item = item(idx, item.Length());
+		idx = item.Index("[", 0) - 1;
+		if (idx < 0) idx = item.Length();
+		item.Resize(idx);
+		item = item.Strip(TString::kBoth);
+		if (item.IsNull()) return(1);
+		SelItem += ":";
+		SelItem += item; 
+		return(2);
 	}
-	return(SelItem.Data());
+	return(0);
+}
+
+Int_t TGMrbFileObjectCombo::GetSelection(TObjArray & SelArr, Bool_t FullPath) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectCombo::GetSelection
+// Purpose:        Return selected file/object
+// Arguments:      TObjArray SelArr        -- where to store selection data
+//                 Bool_t FullPath         -- prepend full file path if kTRUE
+// Results:        Int_t NofItems          -- number of selected items (0/1)
+// Exceptions:     
+// Description:    Returns selected item as TObjArray
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	SelArr.Delete();
+	TGTextLBEntry * lbEntry = (TGTextLBEntry *) fCombo->GetSelectedEntry();
+	if (lbEntry) {
+		TString file;
+		this->GetFileEntry(file, FullPath);
+		SelArr.Add(new TObjString(file.Data()));
+		TString item = lbEntry->GetText()->GetString();
+		Int_t idx = item.Index(")", 0) + 1;
+		if (idx < 0) idx = 0;
+		item = item(idx, item.Length());
+		idx = item.Index("[", 0) - 1;
+		if (idx < 0) idx = item.Length();
+		item.Resize(idx);
+		item = item.Strip(TString::kBoth);
+		if (item.IsNull()) return(1);
+		SelArr.Add(new TObjString(item.Data()));
+		return(2);
+	}
+	return(0);
 }
 
 TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
@@ -566,6 +605,8 @@ const Char_t * TGMrbFileObjectListBox::GetFileEntry(TString & FileName, Bool_t F
 
 	FileName = fEntry->GetText();
 	FileName = FileName.Strip(TString::kBoth);
+	if (FileName.IsNull()) return("");
+
 	if (FullPath && FileName(0) != '/') {
 		FileName.Prepend("/");
 		FileName.Prepend(fFileInfo.fIniDir);
@@ -573,38 +614,90 @@ const Char_t * TGMrbFileObjectListBox::GetFileEntry(TString & FileName, Bool_t F
 	return(FileName.Data());
 }
 
-const Char_t * TGMrbFileObjectListBox::GetSelection(TString & SelItem, Bool_t FullPath) const {
+Int_t TGMrbFileObjectListBox::GetSelectionAsString(TString & SelItem, Bool_t FullPath) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbFileObjectListBox::GetSelection
-// Purpose:        Return selected file/object
+// Name:           TGMrbFileObjectListBox::GetSelectionAsString
+// Purpose:        Return selected file/objects as string
 // Arguments:      TString SelItem         -- where to store selection data
 //                 Bool_t FullPath         -- prepend full file path if kTRUE
-// Results:        Char_t * SelItem        -- selected item
+// Results:        Int_t NofItems          -- number of selected items (+1 for filename)
 // Exceptions:     
-// Description:    Returns selected item "file:object"
+// Description:    Returns selected item "file:obj1:obj2:...:objN"
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
 	SelItem = "";
 	Int_t n = fListBox->GetNumberOfEntries();
-	if (n == 0) return("");
+	if (n == 0) return(0);
 
 	this->GetFileEntry(SelItem, FullPath);
+	SelItem.Strip(TString::kBoth);
+	if (SelItem.IsNull()) return(0);
+
+	Int_t nofSelected = 1;
 	for (Int_t i = 0; i < n; i++) {
 		TGTextLBEntry * lbEntry = (TGTextLBEntry *) fListBox->GetEntry(i);
 		if (lbEntry) {
-			TString itemString = lbEntry->GetText()->GetString();
-			SelItem += ":";
-			Int_t idx = itemString.Index(")", 0) + 1;
+			TString item = lbEntry->GetText()->GetString();
+			Int_t idx = item.Index(")", 0) + 1;
 			if (idx < 0) idx = 0;
-			itemString = itemString(idx, itemString.Length());
-			idx = itemString.Index("[", 0) - 1;
-			if (idx < 0) idx = itemString.Length();
-			itemString.Resize(idx);
-			itemString = itemString.Strip(TString::kBoth);
-			SelItem += itemString;
+			item = item(idx, item.Length());
+			idx = item.Index("[", 0) - 1;
+			if (idx < 0) idx = item.Length();
+			item.Resize(idx);
+			item = item.Strip(TString::kBoth);
+			if (!item.IsNull()) {
+				SelItem += ":";
+				SelItem += item;
+				nofSelected++;
+			}
 		} 
 	}
-	return(SelItem.Data());
+	return(nofSelected);
+}
+
+Int_t TGMrbFileObjectListBox::GetSelection(TObjArray & SelArr, Bool_t FullPath) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectListBox::GetSelection
+// Purpose:        Return selected file/objects
+// Arguments:      TString SelItem         -- where to store selection data
+//                 Bool_t FullPath         -- prepend full file path if kTRUE
+// Results:        Int_t NofItems          -- number of selected items
+// Exceptions:     
+// Description:    Returns selected item as TObjArray
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	SelArr.Delete();
+	Int_t n = fListBox->GetNumberOfEntries();
+	if (n == 0) return(0);
+
+	TString file;
+	this->GetFileEntry(file, FullPath);
+	file.Strip(TString::kBoth);
+	if (file.IsNull()) return(0);
+
+	SelArr.Add(new TObjString(file.Data()));
+
+	Int_t nofSelected = 1;
+	for (Int_t i = 0; i < n; i++) {
+		TGTextLBEntry * lbEntry = (TGTextLBEntry *) fListBox->GetEntry(i);
+		if (lbEntry) {
+			TString item = lbEntry->GetText()->GetString();
+			Int_t idx = item.Index(")", 0) + 1;
+			if (idx < 0) idx = 0;
+			item = item(idx, item.Length());
+			idx = item.Index("[", 0) - 1;
+			if (idx < 0) idx = item.Length();
+			item.Resize(idx);
+			item = item.Strip(TString::kBoth);
+			if (!item.IsNull()) {
+				SelArr.Add(new TObjString(item.Data()));
+				nofSelected++;
+			}
+		} 
+	}
+	return(nofSelected);
 }

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.15 2006-11-20 08:58:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.16 2006-11-29 15:10:28 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -140,11 +140,14 @@ const SMrbNamedXShort kGMrbMacroLofTags[] =
 								{TGMrbMacroEdit::kMacroTagName,				"MACRO_NAME"				},
 								{TGMrbMacroEdit::kMacroTagTitle, 			"MACRO_TITLE"				},
 								{TGMrbMacroEdit::kMacroTagAuthor,			"AUTHOR"					},
+								{TGMrbMacroEdit::kMacroTagMailAddr,			"MAILADDR"					},
+								{TGMrbMacroEdit::kMacroTagUrl,				"URL"						},
 								{TGMrbMacroEdit::kMacroTagCreationDate,		"CREATION_DATE" 			},
 								{TGMrbMacroEdit::kMacroTagSyntax,			"MACRO_SYNTAX"				},
 								{TGMrbMacroEdit::kMacroTagArguments, 		"MACRO_ARGUMENTS"			},
 								{TGMrbMacroEdit::kMacroTagExec,				"MACRO_EXEC"				},
 								{TGMrbMacroEdit::kMacroTagIncludeHFiles,	"MACRO_INCLUDE_H_FILES"		},
+								{TGMrbMacroEdit::kMacroTagEnums,			"MACRO_ENUMS"				},
 								{TGMrbMacroEdit::kMacroTagCode,				"MACRO_CODE"				},
 								{0, 											NULL					}
 							};
@@ -577,7 +580,7 @@ Bool_t TGMrbMacroBrowserPopup::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 							break;
 						default:
 							macro = fLofMacros->FindByIndex(Param1);
-							new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
+							if (macro) new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
 							break;
 					}
 					break;
@@ -709,7 +712,7 @@ Bool_t TGMrbMacroList::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 			switch (GET_SUBMSG(MsgId)) {
 				case kCM_BUTTON:
 					macro = fLofMacros->FindByIndex(Param1);
-					new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
+					if (macro) new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
 					break;
 
 				default:	break;
@@ -804,6 +807,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	fLofActions.AddNamedX(kGMrbMacroLofActions);
 
 	fMacro = Macro; 		// save pointer to macro
+
+	fMacroLoaded = kFALSE;	// try to recompile
 
 	macroEnv = (TEnv *) Macro->GetAssignedObject();
 	nofArgs = macroEnv->GetValue("NofArgs", 1);
@@ -994,11 +999,14 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					if (nsep > 0) {
 						UInt_t at = macroArg->fType->GetIndex();
 						if (at == TGMrbMacroArg::kGMrbMacroArgInt || at == TGMrbMacroArg::kGMrbMacroArgUInt) {
-							str.SplitOffInteger(prefix, m, intBase);
+							TString s = str(nsep + 1, 1000);
+							m = strtol(s.Data(), NULL, intBase);
 							str.Resize(nsep);
-						} else {
-							tip = str(nsep + 1, str.Length());
-							str.Resize(nsep);
+						}
+						Int_t ntip = str.Index("|", 0);
+						if (ntip > 0) {
+							tip = str(ntip + 1, 1000);
+							str.Resize(ntip);
 						}
 					}
 					macroArg->fButtons.AddNamedX(new TMrbNamedX(m, str.Data(), (tip.Length() > 0) ? tip.Data() : NULL));
@@ -1134,6 +1142,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	this->MapWindow();
 
 	gClient->WaitFor(this);
+
 }
 
 Bool_t TGMrbMacroFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
@@ -1241,7 +1250,7 @@ Bool_t TGMrbMacroFrame::ResetMacroArgs() {
 	return(kTRUE);
 }
 
-Bool_t TGMrbMacroFrame::ExecMacro() const {
+Bool_t TGMrbMacroFrame::ExecMacro() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroFrame::ExecMacro
@@ -1258,14 +1267,16 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 	TMrbString currentValue, cVal;
 	UInt_t argType;
 
+	if (!this->LoadMacro()) return(kFALSE);
+
 	TEnv * macroEnv = (TEnv *) fMacro->GetAssignedObject();
-	gROOT->LoadMacro(macroEnv->GetValue("Path", "UNKNOWN"));
+	TString macroName = macroEnv->GetValue("Path", "UNKNOWN");
 
 	TString cmd = fMacroName->GetText()->GetString();
 	cmd = cmd(0, cmd.Index(".C"));
 	TString delim = "(";
 
-	TIterator *macroIter = fLofMacroArgs.MakeIterator();
+	TIterator * macroIter = fLofMacroArgs.MakeIterator();
 	TGMrbMacroArg * macroArg;
 	while (macroArg = (TGMrbMacroArg *) macroIter->Next()) {
 		Int_t n = macroArg->fEntryType->GetIndex();
@@ -1276,21 +1287,25 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 			currentValue = argString;
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryYesNo) {
 			buttonBits = macroArg->fRadio->GetActive();
-			currentValue = macroArg->fButtons.FindByIndex(buttonBits)->GetName();
-			if (currentValue.CompareTo("Yes") == 0) {
-				argString = "kTRUE";
-			} else {
-				argString = "kFALSE";
+			TMrbNamedX * btn = macroArg->fButtons.FindByIndex(buttonBits);
+			currentValue = macroArg->fButtons[0]->GetName();
+			if (btn) {
+				currentValue = btn->GetName();
+				if (currentValue.CompareTo("Yes") == 0) {
+					argString = "kTRUE";
+				} else {
+					argString = "kFALSE";
+				}
 			}
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryRadio) {
 			buttonBits = macroArg->fRadio->GetActive();
-			currentValue = macroArg->fButtons.FindByIndex(buttonBits)->GetName();
 			argType = macroArg->fType->GetIndex();
 			if (argType == TGMrbMacroArg::kGMrbMacroArgInt || argType == TGMrbMacroArg::kGMrbMacroArgUInt) {
 				argString.FromInteger(buttonBits, 0, 16, kTRUE, kTRUE);
 			} else {
-				argString = currentValue;
-			}
+				TMrbNamedX * btn =  macroArg->fButtons.FindByIndex(buttonBits);
+				argString = btn ? btn->GetName() : macroArg->fButtons[0]->GetName();
+			} 
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryCheck) {
 			buttonBits = macroArg->fCheck->GetActive();
 			argString.FromInteger(buttonBits, 0, 16, kTRUE, kTRUE);
@@ -1302,10 +1317,10 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 			argString = macroArg->fFile->GetEntry()->GetText();
 			currentValue = argString;
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) {
-			argString = macroArg->fFObjCombo->GetSelection(argString);
+			macroArg->fFObjCombo->GetSelectionAsString(argString, kFALSE);
 			currentValue = argString;
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
-			argString = macroArg->fFObjListBox->GetSelection(argString);
+			macroArg->fFObjListBox->GetSelectionAsString(argString, kFALSE);
 			currentValue = argString;
 		}
 		if (macroArg->fType->GetIndex() == TGMrbMacroArg::kGMrbMacroArgChar) {
@@ -1327,7 +1342,60 @@ Bool_t TGMrbMacroFrame::ExecMacro() const {
 	}
 	cmd += ");";
 	gROOT->ProcessLine(cmd.Data());
-	G__unloadfile((Char_t *) macroEnv->GetValue("Path", "UNKNOWN"));
+	return(kTRUE);
+}
+
+Bool_t TGMrbMacroFrame::LoadMacro() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroFrame::LoadMacro
+// Purpose:        Execute macro
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Executes macro with given arguments
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fMacroLoaded) return(kTRUE);
+
+	TEnv * macroEnv = (TEnv *) fMacro->GetAssignedObject();
+	TString macroName = macroEnv->GetValue("Path", "UNKNOWN");
+
+	TString macroPath = gEnv->GetValue("Root.MacroPath", ".:$HOME/rootmacros:$MARABOU/macros");
+	gSystem->ExpandPathName(macroPath);
+
+	TString fileSpec;
+	TMrbSystem ux;
+	ux.Which(fileSpec, macroPath.Data(), macroName.Data());
+	if (fileSpec.IsNull()) {
+		gMrbLog->Err()	<< "Macro not found -" << endl;
+		gMrbLog->Flush(this->ClassName(), "LoadMacro");
+		gMrbLog->Err()	<< "            Searching on path " << macroPath << endl;
+		gMrbLog->Flush();
+		gMrbLog->Err()	<< "            for file " << macroName << endl;
+		gMrbLog->Flush();
+		return(kFALSE);
+	}
+
+	ux.AppendIncludePath("$MARABOU/include");
+
+	TString macroCmd = macroName;
+	macroCmd.Remove(macroCmd.Index(".C"), 1000);
+
+	TString aclicFlag = macroEnv->GetValue("Aclic", "+g");
+	if (aclicFlag.CompareTo("none") != 0) {
+		TString aclic = fileSpec;
+		aclic += aclicFlag;
+		Int_t errCode;
+		Int_t sts = gROOT->LoadMacro(aclic.Data(), &errCode);
+		if (sts == -1 || errCode != 0) {
+			gMrbLog->Err()  << "Compile step failed for macro \"" << fileSpec << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "LoadMacro");
+			return(kFALSE);
+		}
+		fMacroLoaded = kTRUE;
+	}
 	return(kTRUE);
 }
 
@@ -2333,6 +2401,18 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 				case TGMrbMacroEdit::kMacroTagAuthor:
 					macroStrm << macroTmpl.Encode(line, gSystem->Getenv("USER")) << endl;
 					break;
+				case TGMrbMacroEdit::kMacroTagMailAddr:
+					{
+						TString mailAddr = gEnv->GetValue("User.MailAddr", gSystem->Getenv("MAILADDR"));
+						macroStrm << macroTmpl.Encode(line, mailAddr.Data()) << endl;
+					}
+					break;
+				case TGMrbMacroEdit::kMacroTagUrl:
+					{
+						TString url = gEnv->GetValue("User.URL", gSystem->Getenv("URL"));
+						macroStrm << macroTmpl.Encode(line, url.Data()) << endl;
+					}
+					break;
 				case TGMrbMacroEdit::kMacroTagCreationDate:
 					macroStrm << macroTmpl.Encode(line, dt.AsString()) << endl;
 					break;
@@ -2430,11 +2510,28 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 						}
 					}
 					break;
+				case TGMrbMacroEdit::kMacroTagEnums:
+					for (i = 1; i <= fNofArgs; i++) {
+						TMrbLofNamedX lofEnums;
+						Int_t nofEnums = this->ExtractEnums(lofEnums, i);
+						if (nofEnums > 0) {
+							TIterator * enumIter = lofEnums.MakeIterator();
+							TMrbNamedX * en;
+							while (en = (TMrbNamedX *) enumIter->Next()) {
+								macroTmpl.InitializeCode();
+								macroTmpl.Substitute("$enumName", en->GetName());
+								macroTmpl.Substitute("$enumVal", en->GetIndex());
+								macroTmpl.WriteCode(macroStrm);
+							}
+						}
+					}
+					break;
 				case TGMrbMacroEdit::kMacroTagCode:
 					macroType = "void";
 					for (i = 1; i <= fNofArgs; i++) {
 						thisArg.SetNumber(i);
 						argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
+						argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "EntryType"), "");
 						argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
 						argDefault = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Default"), "");
 						if (i == 1) {
@@ -2446,16 +2543,30 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 						} else {
 							argSpace.Resize(0); argSpace.Fill(macroType.Length() + macroName.Length() + 2);
 							if (argDefault.Length() > 0) {
-								if (argType.Index("Char", 0) == 0)	macroTmpl.InitializeCode("%ARGNDC%");
-								else								macroTmpl.InitializeCode("%ARGND%");
-							} else									macroTmpl.InitializeCode("%ARGN%");
+								if (argType.BeginsWith("Char")) {
+									macroTmpl.InitializeCode("%ARGNDC%");
+								} else {
+									macroTmpl.InitializeCode("%ARGND%");
+									if (argEntryType.CompareTo("Radio") == 0 || argEntryType.CompareTo("Check") == 0) {
+										TMrbLofNamedX lofEnums;
+										Int_t nofEnums = this->ExtractEnums(lofEnums, i);
+										if (nofEnums > 0) {
+											Int_t intBase = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Base"), 10);
+											Int_t n = strtol(argDefault.Data(), NULL, intBase);
+											TMrbNamedX * en = lofEnums.FindByIndex(n);
+											if (en) argDefault = en->GetName();
+										}
+									}
+								}
+							} else {
+								macroTmpl.InitializeCode("%ARGN%");
+							}
 						}
 						macroTmpl.Substitute("$macroType", macroType);
 						macroTmpl.Substitute("$macroName", macroName);
 						macroTmpl.Substitute("$argName", argName);
 						if (argType.Index("Char", 0) == 0) argType.Prepend("const ");
 						macroTmpl.Substitute("$argType", argType);
-						argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "EntryType"), "");
 						if (argEntryType.CompareTo("YesNo") == 0) {
 							if (argDefault.CompareTo("Yes") == 0)	macroTmpl.Substitute("$argDefault", "kTRUE");
 							else									macroTmpl.Substitute("$argDefault", "kFALSE");
@@ -2523,6 +2634,69 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 		gMrbLog->Flush(this->ClassName(), "SaveMacro", setblue);
 	}
 	return(kTRUE);
+}
+
+Int_t TGMrbMacroEdit::ExtractEnums(TMrbLofNamedX & LofEnums, Int_t ArgNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroEdit::ExtractEnums
+// Purpose:        Extract enum names and values
+// Arguments:      TMrbLofNamedX & LofEnums    -- where to store enum defs
+//                 Int_t ArgNo                 -- argument number
+// Results:        Int_t NofEnums              -- number of enums
+// Exceptions:
+// Description:    Extracts a list of enum defs from arg body.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TGMrbMacroArg thisArg;
+	thisArg.SetNumber(ArgNo);
+
+	Int_t nofEnums = 0;
+	LofEnums.Delete();
+
+	TString argEnv;
+	TString argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
+	TString argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
+	TString argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "EntryType"), "");
+	
+	if (argEntryType.CompareTo("Radio") != 0 && argEntryType.CompareTo("Check") != 0) return(0);
+	if (argType.CompareTo("Int_t") != 0) return(0);
+
+	TMrbString argVals = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Values"), "");
+	TObjArray lofSubstrings;
+	Int_t nvals = argVals.Split(lofSubstrings);
+	TString valName;
+	TString val = "";
+	for (Int_t nn = 0; nn < nvals; nn++) {
+		valName = ((TObjString *) lofSubstrings[nn])->GetString();
+		Int_t nsep = valName.Index("=", 0);
+		if (nsep > 0) {
+			val = valName(nsep + 1, 1000);
+			valName.Resize(nsep);
+		}
+		Int_t ntip = valName.Index("|", 0);
+		if (ntip > 0) valName.Resize(ntip);
+		if (!val.IsNull()) {
+			TString enumName;
+			for (Int_t i = 0; i < valName.Length(); i++) {
+				Char_t c = valName(i);
+				if (isalnum(c)) {
+					enumName += c;
+				} else if (i < valName.Length() - 1) {
+					valName(i+1,1).ToUpper();
+				}
+			}
+			enumName(0,1).ToUpper();
+			enumName.Prepend(argName.Data());
+			enumName(0,1).ToUpper();
+			enumName.Prepend("k");
+			Int_t intBase = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Base"), 10);
+			LofEnums.AddNamedX(strtol(val.Data(), NULL, intBase), enumName.Data());
+			nofEnums++;
+		}
+	}
+	return (nofEnums);
 }
 
 const Char_t * TGMrbMacroArg::GetResource(TString & Resource, const Char_t * ResourceName) const {
