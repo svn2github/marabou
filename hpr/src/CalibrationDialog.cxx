@@ -304,7 +304,7 @@ void CalibrationDialog::UpdatePeakList()
    TF1 *f;
    TString pname;
    Double_t mean, error;
-   while (obj = next()) {
+   while ( (obj = next()) ) {
       if (obj->IsA() == TF1::Class()) {
          f = (TF1*)obj;
          for (Int_t i = 0; i < f->GetNpar(); i++) {

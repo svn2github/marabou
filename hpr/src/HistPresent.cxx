@@ -290,8 +290,7 @@ HistPresent::~HistPresent()
       fComSocket->Send("M_client exit");
    }
    SaveOptions();
-
-   CloseAllCanvases();
+//   CloseAllCanvases();
    gDirectory->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
    if (cHPr )delete cHPr;
@@ -1004,7 +1003,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
             cmd = fname;
-            cmd = cmd + "\",\"" + title.Data() + "\")";
+            cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
             sel = cmd;
             cmd.Prepend("mypres->ShowFunction(\"");
             sel.Prepend("mypres->LoadFunction(\"");
@@ -1023,7 +1022,8 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
             cmd = fname;
-            cmd = cmd + "\",\"" + title.Data() + "\")";
+            cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
+//            cmd = cmd + "\",\"" + title.Data() + "\")";
             sel = cmd;
             cmd.Prepend("mypres->ShowCanvas(\"");
             sel.Resize(0);
@@ -1041,6 +1041,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
             cmd = fname;
+            cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
             cmd = cmd + "\",\"" + title.Data() + "\")";
             sel = cmd;
             cmd.Prepend("mypres->ShowContour(\"");
@@ -1580,13 +1581,14 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
 //________________________________________________________________________________________
 // Show Function
   
-void HistPresent::ShowFunction(const char* fname, const char* name, const char* bp)
+void HistPresent::ShowFunction(const char* fname, const char* dir, const char* name, const char* bp)
 {
    TF1* func;
    if (strstr(fname,".root")) {
       if (fRootFile) fRootFile->Close();
       fRootFile=new TFile(fname);
-      func = (TF1*)fRootFile->Get(name);
+      if (strlen(dir) > 0) fRootFile->cd(dir);
+      func = (TF1*)gDirectory->Get(name);
 //      func->SetDirectory(gROOT);
 //      fRootFile->Close();
    } else {
@@ -1615,13 +1617,14 @@ void HistPresent::ShowFunction(const char* fname, const char* name, const char* 
 //________________________________________________________________________________________
 // Show user contour
   
-void HistPresent::ShowContour(const char* fname, const char* name, const char* bp)
+void HistPresent::ShowContour(const char* fname, const char* dir, const char* name, const char* bp)
 {
    FhContour * co;
    if (strstr(fname,".root")) {
       if (fRootFile) fRootFile->Close();
       fRootFile=new TFile(fname);
-      co = (FhContour*)fRootFile->Get(name);
+      if (strlen(dir) > 0) fRootFile->cd(dir);
+      co = (FhContour*)gDirectory->Get(name);
 //      func->SetDirectory(gROOT);
       fRootFile->Close();
    } else {
@@ -2450,7 +2453,7 @@ void HistPresent::PrintWindow(const char* fname, const char* hname, const char* 
 }
 //________________________________________________________________________________________
 
-void HistPresent::LoadFunction(const char* fname, const char* hname, const char* bp)
+void HistPresent::LoadFunction(const char* fname, const char* dir, const char* hname, const char* bp)
 {
 //   cout << fname << " " << hname << endl;
    TString sel = fname;
@@ -2473,7 +2476,8 @@ void HistPresent::LoadFunction(const char* fname, const char* hname, const char*
       } else {
          if (fRootFile) fRootFile->Close();
          fRootFile=new TFile(fname);
-         fun= (TObject*)fRootFile->Get(hname);
+         if (strlen(dir) > 0) fRootFile->cd(dir);
+         fun= (TObject*)gDirectory->Get(hname);
          fRootFile->Close(); fRootFile=0;
       }
       if (fun) {
@@ -2969,7 +2973,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 void HistPresent::CloseAllCanvases() 
 {
 //     Cleaning all FitHist objects
-   cout << "Enter CloseAllCanvases()" << endl;
+//   cout << "Enter CloseAllCanvases()" << endl;
    if (fHelpBrowser) fHelpBrowser->Clear();
 #if ROOTVERSION > 40302
    if (fCanvasList->GetEntries() == 0) return;
@@ -2981,7 +2985,6 @@ void HistPresent::CloseAllCanvases()
    TIter next(fCanvasList);
    HTCanvas * htc;
    while ( (htc =(HTCanvas *)next()) ) {
-      cout << "CloseAllCanvases(): " << htc->GetName() << endl;
       TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
       rc->ShowEditor(kFALSE);
       rc->SendCloseMessage();
@@ -3271,15 +3274,20 @@ void HistPresent::DinA4Page(Int_t form)
 //________________________________________________________________________________________
 // Show Canvas
   
-void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp)
+void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* name, const char* bp)
 {
+   cout << "ShowCanvas: " << fname << " " << dir << " " << name << endl;
+   TString sname(name);
+   Int_t ip = sname.Index(";");
+   if (ip > 0) sname.Resize(ip);
    HTCanvas *c;
    if (strstr(fname,".root")) {
       if (fRootFile) fRootFile->Close();
       fRootFile=new TFile(fname);
-      c = (HTCanvas*)fRootFile->Get(name);
+      if (strlen(dir) > 0) fRootFile->cd(dir);
+      c = (HTCanvas*)gDirectory->Get(sname);
    } else {
-      c=(HTCanvas*)gROOT->FindObject(name);
+      c=(HTCanvas*)gROOT->FindObject(sname);
    }
    gDirectory = gROOT;
    if (!c)  return;
@@ -3317,9 +3325,9 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    wh =  c->GetWindowHeight();
    wh =  c->GetWh();
 //   cout << "ww, wh: " << ww << " " << wh << endl;
-   TString sname(name);
-   Int_t sem= sname.Last(';');    // chop off verion
-   if(sem >0)sname.Remove(sem);
+//   sname(name);
+//   Int_t sem= sname.Last(';');    // chop off verion
+//   if(sem >0)sname.Remove(sem);
 
    HTCanvas * c1 = new HTCanvas(sname, c->GetTitle(),
                       c->GetWindowTopX(), c->GetWindowTopY(),

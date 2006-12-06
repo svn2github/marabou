@@ -412,10 +412,10 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void ShowFiles(const char* , const char* bp =0);               // 
    void SelectFromOtherDir();
    void ShowContents(const char* fname, const char* dir = 0,const char* bp =0);    // 
-   void ShowFunction(const char* , const char*, const char* bp =0); 
-   void LoadFunction(const char* , const char*, const char* bp =0); 
-   void ShowCanvas(const char* , const char*, const char* bp =0); 
-   void ShowContour(const char* , const char*, const char* bp =0); 
+   void ShowFunction(const char*, const char*, const char*, const char* bp =0); 
+   void LoadFunction(const char*, const char*, const char*, const char* bp =0); 
+   void ShowCanvas(const char* , const char*, const char*, const char* bp =0); 
+   void ShowContour(const char*, const char*, const char*, const char* bp =0); 
    void ShowGraph(const char*, const char* , const char*, const char* bp =0); 
    void ComposeList(const char* bp =0); 
    void ShowList(const char* , const char*, const char* bp =0); 

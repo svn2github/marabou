@@ -1568,7 +1568,7 @@ void GEdit::RemoveControlGraphs()
    fParent->cd();
    TList * lop = fParent->GetListOfPrimitives();
    TObject * obj;
-   while (obj = lop->FindObject("ControlGraph")) {
+   while ( (obj = lop->FindObject("ControlGraph")) ) {
       cout << obj->ClassName() << endl;
       lop->Remove(obj);
    }

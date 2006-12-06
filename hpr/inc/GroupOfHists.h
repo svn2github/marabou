@@ -57,7 +57,7 @@ public:
           Int_t mode = 0, TGWindow * win = NULL);
    void   RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
 //   void   WarnBox(const char *message);
-   TH1    *GroupOfHists::GetTheHist(TVirtualPad * pad);
+   TH1    *GetTheHist(TVirtualPad * pad);
 ClassDef(GroupOfHists,0)
 };
 #endif

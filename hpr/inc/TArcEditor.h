@@ -71,9 +71,9 @@ public:
 
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,13,4)
    virtual void   SetModel(TObject *obj);
-   void           TArcEditor::ActivateBaseClassEditors(TClass* cl);
+   void           ActivateBaseClassEditors(TClass* cl);
 #else
-   virtual void TArcEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event);
+   virtual void SetModel(TVirtualPad *pad, TObject *obj, Int_t event);
 #endif
    virtual void   DoRedraw();
    virtual void   Redraw();
