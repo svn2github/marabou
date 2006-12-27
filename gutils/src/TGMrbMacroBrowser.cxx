@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.16 2006-11-29 15:10:28 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.17 2006-12-27 15:07:01 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -1378,7 +1378,7 @@ Bool_t TGMrbMacroFrame::LoadMacro() {
 		return(kFALSE);
 	}
 
-	ux.AppendIncludePath("$MARABOU/include");
+	gSystem->AddIncludePath("-I$MARABOU/include");
 
 	TString macroCmd = macroName;
 	macroCmd.Remove(macroCmd.Index(".C"), 1000);

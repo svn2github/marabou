@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.16 2006-11-29 15:09:54 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.17 2006-12-27 15:07:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -18,6 +18,8 @@ namespace std {} using namespace std;
 #include <sstream>
 #include <iomanip>
 #include <fstream>
+#include <unistd.h>
+
 
 #include "TRegexp.h"
 #include "TEnv.h"
@@ -514,10 +516,10 @@ void TMrbSystem::PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t
 	}
 }
 			
-void TMrbSystem::AppendIncludePath(const Char_t * IncludePath) {
+void TMrbSystem::AddIncludePath(const Char_t * IncludePath) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSystem::AppendIncludePath
+// Name:           TMrbSystem::AddIncludePath
 // Purpose:        Append an item to $IncludePath
 // Arguments:      Char_t * IncludePath         -- include path
 // Exceptions:     
@@ -544,4 +546,20 @@ void TMrbSystem::AppendIncludePath(const Char_t * IncludePath) {
 		}
 	}
 	gSystem->SetIncludePath(iclPath.Data());
+}
+
+const Char_t * TMrbSystem::GetHostName(TString & HostName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSystem::GetHostName
+// Purpose:        Get host name
+// Arguments:      TString & HostName   -- where to store host name
+// Exceptions:     
+// Description:    Executes gethostname(2),
+//                 returns name of current host
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	gethostname((Char_t *) HostName.Data(), 100);
+	return(HostName.Data());
 }
