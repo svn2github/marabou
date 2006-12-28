@@ -45,17 +45,17 @@ set found = 0
 %B%echo " "
 %B%echo " "
 %B%echo "              ###########################################"
-%B%echo "              # MBS configured to run in MultiProc mode #"
+%B%echo "              # MBS configured to run in $setupMode mode #"
 %B%echo "              #                                         #"
 %B%if (`hostname` == "$evbName") then
 %B%echo "              #                $evbName                    #"
 %B%echo "              #            is being used as             #"
-%B%echo "              #         Event Builder (Master)          #"
+%B%echo "              #         $procType          #"
 %B%endif
 %L%if (`hostname` == "$rdoName") then
 %L%echo "              #                $rdoName                    #"
 %L%echo "              #            is being used as             #"
-%L%echo "              #          Readout Proc (Slave)           #"
+%L%echo "              #          $procType           #"
 %L%endif
 %E%echo "              ###########################################"
 %E%echo " "
