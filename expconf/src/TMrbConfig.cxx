@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.139 2006-12-29 07:57:47 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.140 2006-12-29 08:08:01 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1518,8 +1518,12 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								libString += o->String();
 								libString += " ";
 							}
-							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", "$(LIB)/lib_utils.a");
-							gSystem->ExpandPathName(ip);
+							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", "");
+							if (ip.IsNull()) {
+								ip = "$(LIB)/lib_utils.a";
+							} else {
+								gSystem->ExpandPathName(ip);
+							}
 							libString += ip;
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
 						}
