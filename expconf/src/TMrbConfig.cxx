@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.138 2006-11-16 09:28:05 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.139 2006-12-29 07:57:47 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1493,7 +1493,9 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iclPath += " ";
 							}
 							iclPath += "-I";
-							iclPath += gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "/nfs/mbssys/include");
+							TString ip = gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "/nfs/mbssys/include");
+							gSystem->ExpandPathName(ip);
+							iclPath += ip;
 							rdoStrm << rdoTmpl.Encode(line, iclPath.Data()) << endl << endl;
 						}
 						break;
@@ -1516,7 +1518,9 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								libString += o->String();
 								libString += " ";
 							}
-							libString += gEnv->GetValue("TMrbConfig.ReadoutLibs", "$(LIB)/lib_utils.a");
+							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", "$(LIB)/lib_utils.a");
+							gSystem->ExpandPathName(ip);
+							libString += ip;
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
 						}
 						break;
