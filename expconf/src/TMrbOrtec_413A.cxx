@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbOrtec_413A.cxx,v 1.6 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbOrtec_413A.cxx,v 1.7 2007-01-17 14:25:27 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -207,19 +207,34 @@ Bool_t TMrbOrtec_413A::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleInitModule:
-			fCodeTemplates.InitializeCode();
-			fCodeTemplates.Substitute("$moduleName", this->GetName());
-			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
-			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
-			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
-			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$status", this->Get(TMrbOrtec_413A::kRegStatus), 16);
-			fCodeTemplates.Substitute("$gate", this->Get(TMrbOrtec_413A::kRegGate), 16);
-			fCodeTemplates.WriteCode(RdoStrm);
-			for (i = 0; i < fNofChannels; i++, chn++) {
-				chn = (TMrbCamacChannel *) fChannelSpec[i];
-				if (chn->IsUsed()) {
-					this->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleInitChannel, chn);
+			{
+				fCodeTemplates.InitializeCode();
+				fCodeTemplates.Substitute("$moduleName", this->GetName());
+				fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
+				fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
+				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
+				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+				Int_t sBits = this->Get(TMrbOrtec_413A::kRegStatus);
+				TString str;
+				TMrbLofNamedX snames;
+				snames.AddNamedX(kMrbLofStatusBits);	
+				snames.SetPatternMode();
+				snames.Pattern2String(str, sBits);
+				fCodeTemplates.Substitute("$status", sBits, 16);
+				fCodeTemplates.Substitute("$sBits", str.Data());
+				Int_t gBits = this->Get(TMrbOrtec_413A::kRegGate);
+				TMrbLofNamedX gnames;
+				gnames.AddNamedX(kMrbLofGateBits);	
+				gnames.SetPatternMode();
+				gnames.Pattern2String(str, gBits);
+				fCodeTemplates.Substitute("$gate", gBits, 16);
+				fCodeTemplates.Substitute("$gBits", str.Data());
+				fCodeTemplates.WriteCode(RdoStrm);
+				for (i = 0; i < fNofChannels; i++, chn++) {
+					chn = (TMrbCamacChannel *) fChannelSpec[i];
+					if (chn->IsUsed()) {
+						this->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleInitChannel, chn);
+					}
 				}
 			}
 			break;
