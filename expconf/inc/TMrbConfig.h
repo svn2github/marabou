@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.77 2006-11-16 09:28:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.78 2007-01-18 11:45:10 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -466,7 +466,8 @@ class TMrbConfig : public TNamed {
 									kManufactKinetics	=	BIT(22),
 									kManufactMpiHD		=	BIT(23),
 									kManufactSis		=	BIT(24),
-									kManufactCologne	=	BIT(25)
+									kManufactCologne	=	BIT(25),
+									kManufactISN		=	BIT(26)
 								};
 
 		enum EMrbModuleID		{	kModuleSilena4418V		=   kManufactSilena + 0x1,  // modules ids *** insert new modules at end of list !!! ***
@@ -501,6 +502,7 @@ class TMrbConfig : public TNamed {
 									kModuleSis_3820 		=	kManufactSis + 0x1e,
 									kModuleSis_3300 		=	kManufactSis + 0x1f,
 									kModuleCaenV965 		=	kManufactCaen + 0x20,
+									kModuleISN4481	 		=	kManufactISN + 0x21,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};
