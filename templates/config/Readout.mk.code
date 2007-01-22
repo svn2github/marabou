@@ -5,8 +5,8 @@
 # Description:     makes task m_read_meb
 #                  to be used under LynxOs 3.1 and MBS v43
 # Author:          %%AUTHOR%%
-# Revision:        $Id: Readout_v4x.mk.code,v 1.2 2006-09-12 14:34:48 Marabou Exp $
-# Date:            $Date: 2006-09-12 14:34:48 $
+# Revision:        $Id: Readout.mk.code,v 1.12 2007-01-22 12:48:55 Rudolf.Lutter Exp $
+# Date:            $Date: 2007-01-22 12:48:55 $
 # URL:             
 #/////////////////////////////////////////////////////////////////////////////
 
@@ -17,9 +17,6 @@ RFILE		= %%READOUT_FILE%%
 
 SRC	= $(MBSROOT)/src
 INC = $(MBSROOT)/inc
-OBJ = $(MBSROOT)/obj_$(GSI_CPU_PLATFORM)
-LIB = $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
-LIBCES = -L/lib/ces -lvme -lbma -luio
 
 RDO_INCL	= %%READOUT_INCLUDE%%
 RDO_LIBS	= %%READOUT_LIBS%%
@@ -32,17 +29,23 @@ CC	= gcc
 
 SHMQ    = -DLYNX__SMEM
 ifeq ($(GSI_OS_VERSION),2.5)
-POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
-LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-          $(LIB)/libedit.a -llynx -lnetinet $(LIBCES)
+OBJ = $(MBSROOT)/obj_$(GSI_LYNX_PROC_FAM)
+LIB = $(MBSROOT)/lib_$(GSI_LYNX_PROC_FAM)
+LIBCES = -L/lib/ces -lvme
+POSIX   	=  -mposix4d9 -mthreads
+CFLAGS  	= $(POSIX) -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+LIBS    	= $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
+				$(LIB)/libedit.a -llynx -lnetinet $(LIBCES)
 endif
 
 ifeq ($(GSI_OS_VERSION),3.1)
-POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) 
-LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-          $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet $(LIBCES)
+OBJ = $(MBSROOT)/obj_$(GSI_CPU_PLATFORM)
+LIB = $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
+LIBCES = -L/lib/ces -lvme -lbma -luio
+POSIX   	=  -mthreads
+CFLAGS  	= $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) 
+LIBS    	= $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
+				$(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet $(LIBCES)
 endif
 
 CFLAGS	+= -I$(RPATH) -I$(INC) $(RDO_INCL)
