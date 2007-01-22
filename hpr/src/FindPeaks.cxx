@@ -18,6 +18,7 @@
 #include "TGMrbTableFrame.h"
 #include "TGMrbInputDialog.h"
 #include "CalibrationDialog.h"
+#include "Save2FileDialog.h"
 #include "support.h"
 
 // Find peaks
@@ -439,12 +440,14 @@ tryagain:
             funcname+="_graph";
             gr->SetName((const char *)funcname);
             gr->SetTitle((const char *)funcname);
-           
-       		if(OpenWorkFile(parent)){
-         		fCalFunc->Write();
-               gr->Write();
-         		CloseWorkFile();
-      		}
+            new Save2FileDialog(fCalFunc);
+            new Save2FileDialog(gr);
+          
+//       		if(OpenWorkFile(parent)){
+//         		fCalFunc->Write();
+//               gr->Write();
+//         		CloseWorkFile();
+//      		}
    		}
      
       }

@@ -34,6 +34,7 @@
 #include "TGMrbInputDialog.h"
 #include "TGMrbValuesAndText.h"
 #include "TMrbStatistics.h"
+#include "Save2FileDialog.h"
 
 #include <iostream>
 #include <sstream>
@@ -571,6 +572,7 @@ Bool_t QuestionBox(const char *message, TGWindow * win)
    else
       return kTRUE;
 }
+/*
 //------------------------------------------------------   
 void CloseWorkFile(TGWindow * win)
 {
@@ -620,7 +622,7 @@ Bool_t OpenWorkFile(TGWindow * win, TFile ** file)
    if (file) *file = fWorkfile;
    return kTRUE;
 }
-
+*/
 //------------------------------------------------------   
 Int_t GetUsedSize(TMapFile * mfile)
 {
@@ -1031,23 +1033,16 @@ void Canvas2RootFile(HTCanvas * canvas, TGWindow * win)
           << obj->ClassName() << setblack << endl;
       return;
    }
-   if (OpenWorkFile(win)) {
-      if (canvas->GetAutoExec()) {
-         canvas->ToggleAutoExec();
-         toggle = kTRUE;
-      }
- //     HTCanvas *nc =
- //         new HTCanvas(hname.Data(), canvas->GetTitle(), 50, 500, 720, 500);
- //     TIter next(canvas->GetListOfPrimitives());
-//      while ((obj = next())) {
-//         gROOT->SetSelectedPad(nc);
-//         nc->GetListOfPrimitives()->Add(obj->Clone());
-//      }
-      canvas->Write();
-      if (toggle) canvas->ToggleAutoExec();
-      CloseWorkFile();
-//      delete nc;
+//   if (OpenWorkFile(win)) {
+   if (canvas->GetAutoExec()) {
+      canvas->ToggleAutoExec();
+      toggle = kTRUE;
    }
+   new Save2FileDialog(canvas);
+//      canvas->Write();
+   if (toggle) canvas->ToggleAutoExec();
+//      CloseWorkFile();
+//   }
 }
 
 //_________________________________________________________________________________________
@@ -1737,10 +1732,11 @@ void WriteOutGraph(TGraph * g, TRootCanvas * mycanvas)
       if (!ok)
          return;
       g->SetName(name.Data());
-      if (OpenWorkFile(mycanvas)) {
-         g->Write();
-         CloseWorkFile();
-      }
+      new Save2FileDialog(g);
+//     if (OpenWorkFile(mycanvas)) {
+//         g->Write();
+//        CloseWorkFile();
+//     }
    }
 }
 //______________________________________________________________________________________

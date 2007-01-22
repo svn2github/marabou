@@ -22,6 +22,7 @@
 #pragma link C++ class HprImage;
 #pragma link C++ class GroupOfGObjects;
 #pragma link C++ class GoHTimer;
+#pragma link C++ class TbTimer;
 #pragma link C++ class EditMarker;
 #pragma link C++ class FhMarker;
 #pragma link C++ class FhMarkerList;
@@ -37,6 +38,9 @@
 #pragma link C++ class InsertFunctionDialog;
 #pragma link C++ class FeynmanDiagramDialog;
 #pragma link C++ class InsertArcDialog;
+#pragma link C++ class InsertTextBoxDialog;
+#pragma link C++ class TextBox;
+#pragma link C++ class TextBoxMember;
 #pragma link C++ class FitOneDimDialog;
 #pragma link C++ class CalibrationDialog;
 #pragma link C++ class InsertTextDialog;
@@ -44,4 +48,5 @@
 #pragma link C++ class TArcEditor;
 #pragma link C++ class TCurlyLineWithArrow;
 #pragma link C++ class CurlyLineWithArrowDialog;
+#pragma link C++ class Save2FileDialog;
 #endif			   

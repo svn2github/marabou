@@ -185,7 +185,7 @@ enum ERootCanvasCommands {
    kFHMacroTwoG,
    kFHFuncsToHist,
    kFHWriteFunc,
-   kFHWriteFuncList,
+//   kFHWriteFuncList,
    kFHFitPolyHist,
    kFHFitPolyMarks,
    kFHFindPeaks,
@@ -1141,9 +1141,9 @@ again:
                   case kFHWriteFunc:
                      fFitHist->WriteFunctions(); 
                      break;
-                  case kFHWriteFuncList:
-                     fFitHist->WriteFunctionList(); 
-                     break;
+ //                 case kFHWriteFuncList:
+ //                    fFitHist->WriteFunctionList(); 
+ //                    break;
                   case kFH_CASCADE1_0:
                      fFitHist->FitPolyHist(0); 
                      break;

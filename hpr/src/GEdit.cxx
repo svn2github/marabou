@@ -31,6 +31,7 @@
 #include "TGMrbInputDialog.h"
 #include "InsertArcDialog.h"
 #include "InsertTextDialog.h"
+#include "InsertTextBoxDialog.h"
 #include "TGMrbValuesAndText.h"
 
 #include "HprImage.h"
@@ -352,6 +353,7 @@ void GEdit::InitEditCommands()
    labels->Add(new TObjString("Feynman Dialog"));
    labels->Add(new TObjString("Text (Latex) from file"));
    labels->Add(new TObjString("Text (Latex) from keyboard"));
+   labels->Add(new TObjString("A Text Box (Pave)"));
    labels->Add(new TObjString("Insert compound object"));
    labels->Add(new TObjString("Draw an axis"));
    labels->Add(new TObjString("TSplineX Dialog"));
@@ -381,6 +383,7 @@ void GEdit::InitEditCommands()
    methods->Add(new TObjString("FeynmanDiagMenu()"));
    methods->Add(new TObjString("InsertTextF()"));
    methods->Add(new TObjString("InsertTextK()"));
+   methods->Add(new TObjString("InsertTextBox()"));
    methods->Add(new TObjString("InsertGObjects()"));
    methods->Add(new TObjString("InsertAxis()"));
    methods->Add(new TObjString("InsertTSplineX()"));
@@ -3009,6 +3012,13 @@ void GEdit::InsertText(Bool_t from_file)
 {
    fParent->cd();
    new InsertTextDialog(from_file);
+}
+//______________________________________________________________________________
+
+void GEdit::InsertTextBox()
+{
+   fParent->cd();
+   new InsertTextBoxDialog();
 }
 //______________________________________________________________________________
 

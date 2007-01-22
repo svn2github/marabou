@@ -1,4 +1,4 @@
-// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.4 2006-11-22 08:02:18 Otto.Schaile Exp $
+// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.5 2007-01-22 16:12:29 Otto.Schaile Exp $
 // Author: Carsten Hof   16/08/04
 
 /*************************************************************************
@@ -311,7 +311,7 @@ void TSplineXEditor::ActivateBaseClassEditors(TClass* cl)
 {
    // Add editors to fGedFrame and exclude TLineEditor.
 
-   fGedEditor->ExcludeClassEditor(TAttFill::Class());
+//   fGedEditor->ExcludeClassEditor(TAttFill::Class());
    TGedFrame::ActivateBaseClassEditors(cl);
 }
 #endif
@@ -565,7 +565,7 @@ void ParallelGraphEditor::ActivateBaseClassEditors(TClass* cl)
 {
    // Add editors to fGedFrame and exclude TLineEditor.
 
-   fGedEditor->ExcludeClassEditor(TAttFill::Class());
+//   fGedEditor->ExcludeClassEditor(TAttFill::Class());
    TGedFrame::ActivateBaseClassEditors(cl);
 }
 #endif

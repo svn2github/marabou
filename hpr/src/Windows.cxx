@@ -13,6 +13,7 @@
 #include "SetColor.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
+#include "Save2FileDialog.h"
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -144,10 +145,16 @@ void FitHist::DrawWindows(){
 void  FitHist::WriteOutWindows(){
    Int_t nval = CheckList(fActiveWindows);
    if(nval>0){
-      if(OpenWorkFile(mycanvas)){
-         fActiveWindows->Write();
-         CloseWorkFile();
+      if (nval == 1) {
+         TMrbWindow* wdw = (TMrbWindow*)fActiveWindows->At(0);
+         new Save2FileDialog(wdw);
+      } else { 
+         new Save2FileDialog(fActiveWindows);
       }
+//      if(OpenWorkFile(mycanvas)){
+//         fActiveWindows->Write();
+//         CloseWorkFile();
+//      }
    } else {
      WarnBox("No Windows active");
    }
@@ -263,10 +270,12 @@ void FitHist::UpdateCut(){
 
 void  FitHist::WriteOutCut(){
    UpdateCut();
-   if(Ncuts()){
-      if(OpenWorkFile(mycanvas)){
-         fActiveCuts->Write();
-         CloseWorkFile();
+   if(Ncuts() > 0){
+      if (Ncuts() == 1) {
+         TMrbWindow* wdw = (TMrbWindow*)fActiveCuts->At(0);
+         new Save2FileDialog(wdw);
+      } else { 
+         new Save2FileDialog(fActiveCuts);
       }
    } else {
      WarnBox("No cuts active");

@@ -50,8 +50,11 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/FitOneDimDialog.h \
  					$(HPRDIRI)/CalibrationDialog.h \
  					$(HPRDIRI)/InsertTextDialog.h \
- 					$(HPRDIRI)/TCurlyLineWithArrow.h \
+					$(HPRDIRI)/InsertTextBoxDialog.h \
+					$(HPRDIRI)/TextBox.h \
+  					$(HPRDIRI)/TCurlyLineWithArrow.h \
  					$(HPRDIRI)/CurlyLineWithArrowDialog.h \
+ 					$(HPRDIRI)/Save2FileDialog.h \
  					$(HPRDIRI)/TArcEditor.h \
  					$(HPRDIRI)/LinkDef.h
 

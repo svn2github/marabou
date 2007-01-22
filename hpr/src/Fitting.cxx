@@ -60,6 +60,7 @@
 #include "TGMrbTableFrame.h"
 #include "SetColor.h"
 #include "TMrbWdw.h"
+#include "Save2FileDialog.h"
 #include "TMrbVarWdwCommon.h"
 
 extern HistPresent *hp;
@@ -718,11 +719,12 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
                 "Qustion", (const char *) question,
                 icontype, buttons, &retval);
    if (retval == kMBYes) {
-      if (OpenWorkFile()) {
-         pol->Write();
-         CloseWorkFile();
-      } else
-         fFuncNumb--;
+      new Save2FileDialog(pol);
+//      if (OpenWorkFile()) {
+//         pol->Write();
+//         CloseWorkFile();
+//      } else
+//         fFuncNumb--;
    }
    return 1;
 }
@@ -1066,11 +1068,12 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
                 "Qustion", (const char *) question,
                 icontype, buttons, &retval);
    if (retval == kMBYes) {
-      if (OpenWorkFile()) {
-         pol->Write();
-         CloseWorkFile();
-      } else
-         fFuncNumb--;
+      new Save2FileDialog(pol);
+//      if (OpenWorkFile()) {
+//         pol->Write();
+//        CloseWorkFile();
+//      } else
+//         fFuncNumb--;
    }
    if (what == 0)
       ClearMarks();

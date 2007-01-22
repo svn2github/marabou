@@ -166,6 +166,7 @@ void TSplineXDialog::Draw_The_TSplineX()
    delete gr;
    gPad->Modified();
    gPad->Update();
+   SaveDefaults();
 }
 //_________________________________________________________________________
             

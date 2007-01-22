@@ -43,6 +43,7 @@ HTCanvas::HTCanvas():TCanvas()
    fGraph = NULL;       
    fRootCanvas = NULL;  
    fHandleMenus = NULL;  
+   fHasConnection = kFALSE;
 //   fGObjectGroups = NULL; 
 };
 
@@ -138,6 +139,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fEditGridY = 0;
    fHandleMenus = NULL;  
    fUseEditGrid = 0;
+   fHasConnection = kFALSE;
 
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
@@ -208,6 +210,9 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
 //OS start
    static Int_t pxB1down, pyB1down;
+   static Bool_t in_edit = kFALSE;
+   static Bool_t obj_moved = kFALSE;
+
    Double_t x = 0, y = 0;
    Int_t n;
    static TObject * pad_of_image = 0;
@@ -218,6 +223,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    TObject      *prevSelObj = 0;
    TPad         *prevSelPad = 0;
 
+   if (gROOT->GetEditorMode() != 0) in_edit = kTRUE;
    if (fSelected && fSelected->TestBit(kNotDeleted))
       prevSelObj = fSelected;
    if (fSelectedPad && fSelectedPad->TestBit(kNotDeleted))
@@ -225,8 +231,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    fPadSave = (TPad*)gPad;
 //   if (event == kButton1Down) { 
-//      cout << "fSelected " <<fSelected << " gPad " << gPad
-//        << " fSelectedPad " << fSelectedPad<<  endl;
+//      cout << "kButton1Down fSelected " << fSelected->ClassName() << " gPad " << gPad
+//        << " fSelectedPad " << fSelectedPad <<  endl;
 //   }
    cd();        // make sure this canvas is the current canvas
 
@@ -235,7 +241,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    fEvent  = event;
    fEventX = px;
    fEventY = py;
-   
+   obj_moved = kFALSE;
+
    if (fSelected) {
       if (event == kButton1Down && !strncmp(fSelected->ClassName(), "TASI", 4)) {
          cout << "HTCanvas: " << fSelected->GetName()<< " gPad " <<
@@ -388,7 +395,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //OS end
          if (fSelected == fPadSave || gROOT->GetEditorMode() == 0) 
             fSelected->ExecuteEvent(event, px, py);
-         gVirtualX->Update();
+            gVirtualX->Update();
 
          {
             Bool_t resize = kFALSE;
@@ -413,7 +420,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (fSelected) {
          gPad = fSelectedPad;
 //         cout << "kButton1Up: this " << this 
-//              << " fSelected " << fSelected << " gPad " << gPad << endl;
+ //             << " fSelected " << fSelected->ClassName() << " gPad " << gPad << endl;
          if (fSelected->TestBit(kIsBound)) break;
          if (in_image) {
 //            cout << "setting: " << fSelected << endl;
@@ -421,9 +428,10 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
             in_image = kFALSE;
          }
 //OS start
-//         cout << "name, px, py, bef " << px << " " << py << endl;
-//         fSelected->Print();
+//         cout << "name, px, py, bef " << fSelected->ClassName() << " " << pxB1down << " " << pyB1down 
+//                 << " "  << px << " " << py << endl;
          
+         if (px != pxB1down || py != pyB1down) obj_moved = kTRUE;
          if (fUseEditGrid && fSelectedPad == this &&
           !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
            ){
@@ -569,6 +577,13 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       ProcessedEvent(event, px, py, fSelected);  // emit signal
       DrawEventStatus(event, px, py, fSelected);
    }
+   if (in_edit && gROOT->GetEditorMode() == 0) {
+      ObjectCreated(px, py, fSelected);
+      in_edit = kFALSE;
+   }
+   if (obj_moved && fSelected && fSelected != this) {
+      ObjectMoved(px, py, fSelected);
+   }
 }
 //______________________________________________________________________________
 void HTCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selected)
@@ -711,6 +726,7 @@ void HTCanvas::SetLog(Int_t state)
 
 }
 //______________________________________________________________________________
+
 void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)
 {
    if (hpr) fHistPresent = hpr;
@@ -725,3 +741,40 @@ void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)
    fCanvasImp->ShowStatusBar(kFALSE);
    fCanvasImp->ShowMenuBar(HasMenuBar());
 }
+//______________________________________________________________________________
+
+void HTCanvas::Add2ConnectedClasses(TObject *obj)
+{
+   this->Connect("ObjectCreated(Int_t, Int_t, TObject*)", obj->ClassName(), obj, 
+                 "ObjCreated(Int_t, Int_t, TObject*)");
+   this->Connect("ObjectMoved(Int_t, Int_t, TObject*)", obj->ClassName(), obj, 
+                 "ObjMoved(Int_t, Int_t, TObject*)");
+   fHasConnection = kTRUE;
+}
+//______________________________________________________________________________
+
+void HTCanvas::ObjectCreated(Int_t px, Int_t py, TObject *obj)
+{
+   Long_t args[3];
+   if (fHasConnection) {
+      args[0] = (Long_t)px;
+      args[1] = (Long_t)py;
+      args[2] = (Long_t)obj;
+      cout << "HTCanvas::Emit(ObjectCreated" << endl;
+      Emit("ObjectCreated(Int_t, Int_t, TObject*)", args );
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ObjectMoved(Int_t px, Int_t py, TObject *obj)
+{
+   Long_t args[3];
+   if (fHasConnection) {
+      args[0] = (Long_t)px;
+      args[1] = (Long_t)py;
+      args[2] = (Long_t)obj;
+      cout << "HTCanvas::Emit(ObjectMoved: " << obj << endl;
+      Emit("ObjectMoved(Int_t, Int_t, TObject*)", args );
+   }
+}
+

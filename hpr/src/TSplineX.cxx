@@ -1153,8 +1153,9 @@ void TSplineX::Paint(Option_t * opt)
          if (fPaintArrowAtStart) fArrowAtStart->Pop();
       }
 //      pl->Dump();
-      if (fRailL) fRailL->Paint("L");
-      if (fRailR) fRailR->Paint("L");
+      pl->Paint("L");
+ //     if (fRailL) fRailL->Paint("L");
+ //     if (fRailR) fRailR->Paint("L");
       gPad->Modified();
       gPad->Update();
    }
@@ -2095,6 +2096,7 @@ void ParallelGraph::FillToSlave(Double_t dist)
          }
       }
    }
+   cout <<  "ParallelGraph::FillToSlave " << dist << " " << fSlave << endl;
    if (fSlave) fSlave->SetMaster(this);
    fParent->NeedReCompute();
    fParent->Paint();
@@ -2108,7 +2110,7 @@ void ParallelGraph::Paint(Option_t * option)
 //   fParent->GetDPolyLines()->Add(this);
    if (option);
    if (fSlave) {
-//      cout <<  "ParallelGraph::Paint() to fSlave" << endl;
+      cout <<  "ParallelGraph::Paint() to fSlave" << endl;
       ParallelGraph * lg = this;
       ParallelGraph * rg = fSlave;
       Int_t npoints = 1;

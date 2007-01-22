@@ -124,6 +124,7 @@ public:
    void    ReadGObjects();
    void    ShowGallery();
 //   void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
+   void    InsertTextBox();
    void    InsertText(Bool_t);
    void    InsertTextF(){InsertText(kTRUE);};
    void    InsertTextK(){InsertText(kFALSE);};

@@ -594,7 +594,7 @@ void FitOneDimDialog::FitOneDimExecute()
       }
    }
 //   cout << "npars: " << npars << endl;
-   cout << (*params)[0] << " " << (*params)[1] << " "  << (*params)[2] << endl;
+//   cout << (*params)[0] << " " << (*params)[1] << " "  << (*params)[2] << endl;
    TArrayI * fbflags   = new TArrayI(2 * npars);
 // get estimates
    TArrayD gpar(3);
@@ -605,7 +605,7 @@ void FitOneDimDialog::FitOneDimExecute()
    TF1 * func;
    if (gTailSide) {
       func = new TF1(fFuncName, gaus_tail, fFrom, fTo, npars);
-      cout << "gTailSide " << gTailSide<< endl;
+//      cout << "gTailSide " << gTailSide<< endl;
    } else {
       if (fOnesig) {
          if (fBackg0 != 0) 
@@ -862,7 +862,7 @@ void FitOneDimDialog::FitOneDimExecute()
 
 //  draw components of fit, skip simple gaus without bg
 
-   if (fShowcof != 0  && fBackg0 == 0 && fGraph == NULL) {
+   if (fShowcof != 0 && fGraph == NULL) {
       func->GetParameters(params->GetArray());
       Double_t fdpar[4];
       if (gTailSide != 0) {
@@ -887,9 +887,12 @@ void FitOneDimDialog::FitOneDimExecute()
       }
 //
       Int_t offset = 0;
-      if (gTailSide != 0)  offset = 2;
-      if (fSlope0 == 0)    offset++;
-      if (fBackg0 == 0)    offset++;
+      if (gTailSide != 0) {
+         offset = 4;
+      } else {
+         if (fSlope0 == 0)    offset++;
+         if (fBackg0 == 0)    offset++;
+      }
       Int_t mult = 3;
       if (fOnesig == 1) {
          offset++;
@@ -936,9 +939,18 @@ void FitOneDimDialog::FitOneDimExecute()
    delete fbflags;
 //   delete params;
 //   if (fUseoldpars == 0 && do_fit) ClearMarks();
+   TString drawopt = fSelHist->GetOption();
+//   cout << "drawopt " <<drawopt << endl;
+
+   TRegexp hist("hist");
+   drawopt(hist) = "";
+//   cout << "new drawopt " <<drawopt << endl;
+   fSelHist->SetDrawOption(drawopt);
+   fSelHist->SetOption(drawopt);
    gPad->Modified(kTRUE);
    gPad->Update();
    gPad->GetFrame()->SetBit(TBox::kCannotMove);
+   SaveDefaults();
 }
 
 //____________________________________________________________________________________ 

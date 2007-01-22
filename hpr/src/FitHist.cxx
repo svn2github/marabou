@@ -67,6 +67,7 @@
 #include "TGMrbInputDialog.h"
 #include "TGMrbValuesAndText.h"
 #include "FitOneDimDialog.h"
+#include "Save2FileDialog.h"
 
 //extern HistPresent* hp;
 extern TFile *fWorkfile;
@@ -339,17 +340,6 @@ void FitHist::SaveDefaults(Bool_t recalculate)
       return;
    } 
 
-//   cout << "SaveDefaults in: "<< defname.Data()  << endl;
-//   ofstream wstream;
-//   wstream.open(defname, ios::out);
-//   if (!wstream.good()) {
-//      cerr << "SaveDefaults: " << gSystem->GetError() << " - " 
-//           << defname << endl;
-//      return;
-//   }
-//   wstream << "FitMacroName: " << fFitMacroName << endl;
-//   env->SetValue("FitMacroName", fFitMacroName);
-
    env->SetValue("FitMacroName", fFitMacroName);
    if (TCanvas * ca =
        (TCanvas *) gROOT->FindObject(GetCanvasName())) {
@@ -362,21 +352,22 @@ void FitHist::SaveDefaults(Bool_t recalculate)
    if (recalculate && fSelHist->TestBit(TObject::kNotDeleted)) {
       Int_t first = fSelHist->GetXaxis()->GetFirst();
       Int_t last  = fSelHist->GetXaxis()->GetLast();
-      if (first > 1 || last < fSelHist->GetXaxis()->GetNbins()) {
-         env->SetValue("fBinlx", first);
 //      cout  << "recalculate fBinlx,ux:  " << first << " " << last << endl;
+//      if (first > 1 || last < fSelHist->GetXaxis()->GetNbins()) {
+         env->SetValue("fBinlx", first);
+//         cout  << "recalculate fBinlx,ux:  " << first << " " << last << endl;
          env->SetValue("fBinux", last);
-      }
+//      }
       if (fDimension == 2) {
          first = fSelHist->GetYaxis()->GetFirst();
          last  = fSelHist->GetYaxis()->GetLast();
-         if (first > 1 || last < fSelHist->GetYaxis()->GetNbins()) {
+//         if (first > 1 || last < fSelHist->GetYaxis()->GetNbins()) {
             env->SetValue("fBinly", first);
             env->SetValue("fBinuy", last);
-         }
+//         }
       }
    } else {
-//      cout << "take current fBinlx " << fBinlx  << endl;
+//      cout << "take current fBinlx,y " << fBinlx  << " "  << fBinly  << endl;
       env->SetValue("fBinlx", fBinlx);
       env->SetValue("fBinux", fBinux);
       if (fDimension == 2) {
@@ -453,6 +444,8 @@ void FitHist::SaveDefaults(Bool_t recalculate)
          env->SetValue("CalHistXmax", fCalHist->GetXaxis()->GetXmax());
       }
    }
+
+//   cout << "env->SaveLevel: " << fBinlx << " " << fBinux << endl;
    env->SaveLevel(kEnvLocal);
    delete env;
    return;
@@ -1161,6 +1154,12 @@ void FitHist::Entire()
 //   fSelHist->SetMaximum(fMax);  
 //   fSelHist->SetMinimum(fMin);
    fSelHist->GetXaxis()->SetRange(1, fSelHist->GetNbinsX());
+   fBinlx = 1;
+   fBinux =  fSelHist->GetNbinsX();
+   if (is2dim(fSelHist)) {
+      fBinly = 1;
+      fBinuy =  fSelHist->GetNbinsY();
+   }
    SaveDefaults(kTRUE);
 
    ClearMarks();
@@ -1422,10 +1421,12 @@ void FitHist::SaveUserContours()
 //
 //   }
    contour->Print();
-   if (OpenWorkFile(mycanvas)) {
-      contour->Write();
-      CloseWorkFile();
-   }
+   new Save2FileDialog(contour);
+//   if (OpenWorkFile(mycanvas)) {
+//      contour->Write();
+//      CloseWorkFile();
+//   }
+
 }
 //_______________________________________________________________________________________
 
@@ -1788,32 +1789,12 @@ void FitHist::PictToLP()
 void FitHist::WriteFunctions()
 {
    if (fSelHist) {
-      if (OpenWorkFile()) {
-         fSelHist->GetListOfFunctions()->Write();
-         CloseWorkFile();
-      }
-   }
-};
-//_______________________________________________________________________________________
-
-void FitHist::WriteFunctionList()
-{
-   if (fSelHist) {
-      TString name = fSelHist->GetName();
-      Int_t us = name.Index("_");
-      if (us >= 0)
-         name.Remove(0, us + 1);
-      name += "_funcs";
-      Bool_t ok;
-      name =
-          GetString("Save Function List with name", name.Data(), &ok,
-                    mycanvas);
-      if (!ok)
-         return;
-      if (OpenWorkFile()) {
-         fSelHist->GetListOfFunctions()->Write(name.Data(), 1);
-         CloseWorkFile();
-      }
+      ClearMarks();
+      new Save2FileDialog(fSelHist->GetListOfFunctions());
+//      if (OpenWorkFile()) {
+//         fSelHist->GetListOfFunctions()->Write();
+//         CloseWorkFile();
+//      }
    }
 };
 //_______________________________________________________________________________________
@@ -1835,7 +1816,7 @@ void FitHist::WriteOutCanvas()
              << obj->ClassName() << setblack << endl;
          return;
       }
-      if (OpenWorkFile()) {
+//      if (OpenWorkFile()) {
          if (cHist->GetAutoExec())
             cHist->ToggleAutoExec();
 //         cHist->SetName(hname.Data());
@@ -1868,10 +1849,11 @@ void FitHist::WriteOutCanvas()
          }
          if (nc->GetAutoExec())
             nc->ToggleAutoExec();
-         nc->Write();
-         CloseWorkFile();
+//         nc->Write();
+//         CloseWorkFile();
+         new Save2FileDialog(nc);
          delete nc;
-      }
+//      }
    }
 };
 //_______________________________________________________________________________________
@@ -1888,10 +1870,11 @@ void FitHist::WriteOutHist()
       if (!ok)
          return;
       fSelHist->SetName(hname.Data());
-      if (OpenWorkFile(mycanvas)) {
-         fSelHist->Write();
-         CloseWorkFile();
-      }
+      new Save2FileDialog(fSelHist);
+//      if (OpenWorkFile(mycanvas)) {
+//        fSelHist->Write();
+//         CloseWorkFile();
+//     }
    }
 };
 
@@ -3732,9 +3715,11 @@ void FitHist::UpdateDrawOptions()
    if (fDimension == 1) {
    	if (hp->fShowContour) {
       	drawopt = "";
-         for (Int_t i = 1; i < fSelHist->GetNbinsX(); i++) { 
-            if (fSelHist->GetBinError(i) > 0)
-      	      drawopt = "hist";
+         if (fSelHist->GetListOfFunctions()->GetSize() == 0) {
+            for (Int_t i = 1; i < fSelHist->GetNbinsX(); i++) { 
+               if (fSelHist->GetBinError(i) > 0)
+      	         drawopt = "hist";
+            }
          }
       }
    	if (hp->fShowErrors)
@@ -3744,7 +3729,7 @@ void FitHist::UpdateDrawOptions()
       	fSelHist->SetFillColor(hp->fHistFillColor);
    	} else
       	fSelHist->SetFillStyle(0);
-//   cout << "UpdateDrawOptions() " << drawopt.Data() << endl;
+ //     cout << "UpdateDrawOptions() " << drawopt.Data() << endl;
       fSelHist->SetOption(drawopt.Data());
       fSelHist->SetDrawOption(drawopt.Data());
    } else if (fDimension  == 2) {
@@ -3753,6 +3738,8 @@ void FitHist::UpdateDrawOptions()
    }
    fLiveStat1dim = hp->fLiveStat1dim;
    fLiveStat2dim = hp->fLiveStat2dim;
+   gPad->Modified();
+   gPad->Update();
 }
 //______________________________________________________________________________________
   

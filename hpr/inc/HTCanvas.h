@@ -38,6 +38,9 @@ private:
    TGraph         * fGraph;         //! dont stream
    TRootCanvas    * fRootCanvas;    //! dont stream
    HandleMenus    * fHandleMenus;   //! dont stream
+   Bool_t         fHasConnection;    //! dont stream
+
+//   TList          fConnectedClasses; //!
    
    Double_t       fEditGridX;
    Double_t       fEditGridY;
@@ -72,7 +75,10 @@ public:
    void     SetEditGrid(Double_t x, Double_t y) {fEditGridX = x, fEditGridY = y;};
    void     SetUseEditGrid(Int_t use = 1) {fUseEditGrid = use;};
    Int_t   GetUseEditGrid() {return fUseEditGrid;};
-
+   void    Add2ConnectedClasses(TObject *obj);
+   void    HTCanvas::ObjectCreated(Int_t, Int_t, TObject*); 
+   void    HTCanvas::ObjectMoved(Int_t, Int_t, TObject*); 
+//   TList   *GetConnectedClasses() { return &fConnectedClasses;};
    ClassDef(HTCanvas,1)  //Graphics canvas
 };
 

@@ -16,10 +16,6 @@
 #include "HTCanvas.h"
 #include "TRootCanvas.h"
 #include "FhMarker.h"
-
-//#include "SetColor.h"
-//#include "TMrbWdw.h"
-//#include "TMrbVarWdwCommon.h"
 #include "FhPeak.h"
 #include "TableOfLabels.h"
 
@@ -232,7 +228,7 @@ public:
    void OutputStat();
 //   void ListFunctions();
    void WriteFunctions();
-   void WriteFunctionList();
+//   void WriteFunctionList();
    void PictToPSFile(Int_t);
    void PictToLP();
    void WriteOutCanvas();
