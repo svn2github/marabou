@@ -85,28 +85,6 @@ pthread_t msg_thread, update_thread;
 // pthread prototypes
 void * msg_handler(void *);               // pthreaded message handler routine
 void * update_handler(void *);            // pthreaded timed mapped file update routine
-//__________________________________________________________________________________________
-
-void PlayQuart(Int_t n){
-   const char bell[] = "\007";
-   Int_t a = 400;
-   Int_t loadness = 100;
-   Int_t duration = 200;
-   Int_t quart = (Int_t) (a * pow(pow(2,1./12.), 4));
-   TString cmd1 = Form("xset b %d %d %d", loadness, a, duration);
-   TString cmd2 = Form("xset b %d %d %d", loadness, quart, duration);
-   for(Int_t i = 0; i< n; i++){
-      gSystem->Exec(cmd1.Data());
-      cout << bell << endl;
-      gSystem->Sleep(400);   
-      gSystem->Exec(cmd2.Data());
-      cout << bell << endl;
-      gSystem->Sleep(500);
-   }
-   gSystem->Exec(cmd1.Data());
-   cout << bell << endl;
-}
-
 
 Bool_t PutPid(TMrbAnalyze::EMrbRunStatus Status) {
 //________________________________________________________________[C FUNCTION]
@@ -713,7 +691,20 @@ int main(int argc, char **argv) {
 
 	cout << "Events Processed: " << u_analyze->GetEventsProcessed()<< endl;
 
-//   PlayQuart(3);
+   TEnv env(".rootrc");
+   TString soundfile;
+   TString wavplayer;
+   soundfile = env.GetValue("M_analyze.EndOfRunSound", "");
+   if (soundfile.Length() > 3) {
+      wavplayer = env.GetValue("M_analyze.SoundPlayer", "/usr/bin/play");
+      TString cmd (wavplayer);
+      cmd += " ";
+      cmd += soundfile.Data();
+      gSystem->Exec(cmd.Data());
+      gSystem->Exec(cmd);
+   }
+      
+   
 //    for(Int_t i=0; i < 5; i++){
 //       usleep(300000);
 // 	   cout << "" << endl;
