@@ -164,7 +164,7 @@ Ssiz_t IndexOfLast(TString &str, char &c)
    if (str.Index(c) < 0) return -1;    // no occurence
    Int_t len = str.Length();
    const char *sp = str.Data();
-   cout << sp << endl;
+//   cout << sp << endl;
    Int_t ind = len - 1;
    while (ind > 0) {
       if (sp[ind] == c && sp[ind -1] != c) return ind;
@@ -185,7 +185,7 @@ Int_t Matches(TList * list, const char * s, Int_t * matchlength)
       obs = (TObjString *)list->At(i);
       TString var = obs->GetString();
       if (var.Index(s, 0) == 0) {
-         cout << "Input: " << s << " matches: " << var << endl;
+//        cout << "Input: " << s << " matches: " << var << endl;
          if (pos >=0) unique = kFALSE;
          pos = i;
          if (var.Length() < lmax) lmax = var.Length(); 
@@ -733,6 +733,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    fWidgets = new TList;
    fFlagButtons = new TList;
 //   fFinis = 0;
+   fEmitClose = kTRUE;
    fListBox = NULL;
    fLabels = RowLabels;
    fValPointers = val_pointers;
@@ -1126,7 +1127,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                id++;
             }
             selections.close();
-            cout << "Entries: " << id << endl;
+ //           cout << "Entries: " << id << endl;
             wid = 8 * fTE->GetBuffer()->GetTextLength();
             fListBox->Resize(TMath::Max(wid,320), TMath::Min(200, id*20));
             fListBox->Layout();
@@ -1252,6 +1253,9 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 //   cout << "TGMrbValuesAndText::ProcessMessage " 
 //       << GET_MSG(msg) << " "
 //        << GET_SUBMSG(msg) << " " << parm1 << " " << parm2 << endl;
+
+   if (!fEmitClose) return kTRUE;
+
    switch (GET_MSG(msg)) {
       case kC_COMMAND:
          switch (GET_SUBMSG(msg)) { 
@@ -1360,7 +1364,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
        case kC_TEXTENTRY:
          switch (GET_SUBMSG(msg)) {
              case kTE_TAB:
-               cout << "Tab " << parm1 << " " << fCompList<< endl;
+//               cout << "Tab " << parm1 << " " << fCompList<< endl;
 //                if (parm1 != kIdText) break;
                 if (fCompList) {
                    TString temp = fTE->GetBuffer()->GetString();
@@ -1770,9 +1774,17 @@ TGMrbValuesAndText::~TGMrbValuesAndText()
    }
 //_______________________________________________________________________________________
 
+void TGMrbValuesAndText::CloseWindowExt()
+{
+   fEmitClose = kFALSE;
+   CloseWindow();
+}
+//_______________________________________________________________________________________
+
 void TGMrbValuesAndText::CloseWindow()
 {
-   Emit("CloseDown()");
+//   cout << "TGMrbValuesAndText::CloseWindow() " << endl << flush;
+   if (fEmitClose) Emit("CloseDown()");
    DeleteWindow();
 }
 //_______________________________________________________________________________________

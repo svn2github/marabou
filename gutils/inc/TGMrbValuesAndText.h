@@ -95,6 +95,7 @@ private:
    TList				  *fEntries;
    TGGC              fRedTextGC;
    TGGC              fBlueTextGC;
+   Bool_t            fEmitClose;
 //   Int_t             fFinis; 
 public:
    TGMrbValuesAndText(const char *prompt, TString * text, 
@@ -111,6 +112,7 @@ public:
    void StoreValues();
    void ReloadValues();
    void CloseWindow();
+   void CloseWindowExt();
 //   void DoMarkerStyle(Style_t marker) {fMarker = marker;};
    void SaveList();
    Int_t GetColorPixelByInd(Int_t index);
