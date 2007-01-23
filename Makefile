@@ -281,6 +281,9 @@ install:
 		echo "Installing icons in   $(ICONPATH)"; \
 		$(INSTALLDIR) $(ICONPATH); \
 		$(INSTALLDATA) icons/* $(ICONPATH); \
+		echo "Installing sounds in   $(SOUNDPATH)"; \
+		$(INSTALLDIR) $(SOUNDPATH); \
+		$(INSTALLDATA) sounds/* $(SOUNDPATH); \
 	fi)
 
 install-others:
@@ -296,6 +299,9 @@ install-others:
 		echo "Installing icons in   $(ICONPATH)"; \
 		$(INSTALLDIR) $(ICONPATH); \
 		$(INSTALLDATA) icons/* $(ICONPATH); \
+		echo "Installing sounds in   $(SOUNDPATH)"; \
+		$(INSTALLDIR) $(SOUNDPATH); \
+		$(INSTALLDATA) sounds/* $(SOUNDPATH); \
 
 install-html:
 		@echo "Installing html files in $(HTMLURL)"; \
