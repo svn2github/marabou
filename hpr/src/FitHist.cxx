@@ -445,7 +445,7 @@ void FitHist::SaveDefaults(Bool_t recalculate)
       }
    }
 
-//   cout << "env->SaveLevel: " << fBinlx << " " << fBinux << endl;
+   cout << "env->SaveLevel(kEnvLocal): " << fBinlx << " " << fBinux << endl;
    env->SaveLevel(kEnvLocal);
    delete env;
    return;
