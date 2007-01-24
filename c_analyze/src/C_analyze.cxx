@@ -501,8 +501,13 @@ trying to attach?",
    fMenuParameters->AddEntry("Disk space warn limit (Mbyte)", M_WARNHWM);
    fMenuParameters->AddEntry("Disk space hard limit (Mbyte)", M_HARDHWM);
    fMenuParameters->AddEntry("Check disk quota",              M_CHKQUOTA);
+   fMenuParameters->AddEntry("Play sound at end of run", M_PLAYSOUND);
+	if (fPlaySound) fMenuParameters->CheckEntry(M_PLAYSOUND );
+	else            fMenuParameters->UnCheckEntry(M_PLAYSOUND);
+   fMenuParameters->AddEntry("Sound file name", M_SOUNDFILE);
+   fMenuParameters->AddEntry("Sound player", M_SOUNDPLAYER);
    fMenuParameters->AddEntry("C_analyse Verbose level", M_VERBLEV);
-   fMenuParameters->AddEntry("Run M_analyse in debugger (0, 1, 2)", M_MADEBUG);
+   fMenuParameters->AddEntry("Run M_analyze in debugger (0, 1, 2)", M_MADEBUG);
 
    fMenuParameters->AddSeparator();
 
@@ -2471,6 +2476,61 @@ Note: Unit is 100 ns for historical reasons";
                         chkquota(fTbRootFile->GetString(), fHardHWM, fWarnHWM, fVerbLevel);
                       }  
                       break;
+					   case M_PLAYSOUND:
+                      {
+                      TEnv env(".rootrc");
+						    if (fPlaySound) {
+							    fMenuParameters->UnCheckEntry(M_PLAYSOUND);
+								 fPlaySound = 0;
+                         env.SetValue("M_analyze.PlaySound", 0);
+							 } else {
+							    fMenuParameters->CheckEntry(M_PLAYSOUND);
+								 fPlaySound = 1;
+                         env.SetValue("M_analyze.PlaySound", 1);
+                         *fSoundFile = env.GetValue("M_analyze.EndOfRunSound", "$MARABOU/sounds/Ende_der_Seereise.wav");
+                         TString expanded_name(fSoundFile->Data());
+                         if (expanded_name.BeginsWith("$")) {
+                            Int_t indslash = expanded_name.Index("/");
+                            TString var = expanded_name(1,indslash-1);
+                            expanded_name.Remove(0,indslash);
+                            expanded_name.Prepend(gSystem->Getenv(var.Data()));
+                         }
+                         if (!gSystem->AccessPathName(expanded_name.Data(), kFileExists)) {
+                            if (!gSystem->AccessPathName(fSoundPlayer->Data(), kFileExists)) {
+                               TString scmd(*fSoundPlayer);
+                               scmd += " ";
+                               scmd += expanded_name.Data();
+                               gSystem->Exec(scmd);
+                            } else {
+                               cout << "SoundPlayer " << *fSoundPlayer << " not found" <<endl;
+                            }
+                         } else {
+                            cout << "SoundFile " << expanded_name << " not found" <<endl;
+							    }
+                      env.SaveLevel(kEnvLocal);
+                      }
+                      }
+							 break;
+                  case M_SOUNDFILE:
+                     {
+                     Bool_t ok;
+                     TEnv env(".rootrc");
+                     *fSoundFile = env.GetValue("M_analyze.EndOfRunSound", "$MARABOU/sounds/Ende_der_Seereise.wav");
+                     *fSoundFile = GetString("Sound file name",fSoundFile->Data(), &ok, this);
+                      env.SetValue("M_analyze.EndOfRunSound", fSoundFile->Data());
+                      env.SaveLevel(kEnvLocal);
+                     }
+                     break;
+                  case M_SOUNDPLAYER:
+                     {
+                     Bool_t ok;
+                     TEnv env(".rootrc");
+                     *fSoundPlayer = env.GetValue("M_analyze.SoundPlayer", "/usr/bin/play");
+                     *fSoundPlayer = GetString("Sound player name",fSoundPlayer->Data(), &ok, this);
+                      env.SetValue("M_analyze.SoundPlayer", fSoundPlayer->Data());
+                      env.SaveLevel(kEnvLocal);
+                     }
+                     break;
                    case M_VERBLEV:
                       {
                       Int_t bs = GetInteger("C_analyze verbose level", 
@@ -2975,12 +3035,16 @@ Bool_t FhMainFrame::GetDefaults(){
      cerr	<< setred << "C_analyze: MBS version not defined" << setblack << endl;
      ok = kFALSE;
    }
+   
    fDir          = new TString("dualppc");
    fTrigger      = new TString("VME");
    fCodeName        = new TString("");
    fFromTime        = new TString(":000");
    fToTime          = new TString(":000");
    fResetList          = new TString("*");
+   fPlaySound       = gEnv->GetValue("M_analyze.PlaySound", 1);
+   fSoundFile       = new TString(gEnv->GetValue("M_analyze.EndOfRunSound", "$MARABOU/sounds/Ende_der_Seereise.wav"));
+   fSoundPlayer       = new TString(gEnv->GetValue("M_analyze.SoundPlayer", "/usr/bin/play"));
    fSelectTime      = kFALSE;
    fSelectNumber    = kFALSE;
    fAutoSetup    = kTRUE;

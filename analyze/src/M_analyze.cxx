@@ -692,19 +692,30 @@ int main(int argc, char **argv) {
 	cout << "Events Processed: " << u_analyze->GetEventsProcessed()<< endl;
 
    TEnv env(".rootrc");
-   TString soundfile;
-   TString wavplayer;
-   soundfile = env.GetValue("M_analyze.EndOfRunSound", "");
-   if (soundfile.Length() > 3) {
-      wavplayer = env.GetValue("M_analyze.SoundPlayer", "/usr/bin/play");
-      TString cmd (wavplayer);
-      cmd += " ";
-      cmd += soundfile.Data();
-      gSystem->Exec(cmd.Data());
-      gSystem->Exec(cmd);
+//   env.Print()
+   if (env.GetValue("M_analyze.PlaySound", 0) > 0) {
+		TString soundfile = env.GetValue("M_analyze.EndOfRunSound", "");
+		TString expanded_name(soundfile.Data());
+		if (expanded_name.BeginsWith("$")) {
+			Int_t indslash = expanded_name.Index("/");
+			TString var = expanded_name(1,indslash-1);
+			expanded_name.Remove(0,indslash);
+			expanded_name.Prepend(gSystem->Getenv(var.Data()));
+		}
+		TString soundplayer = env.GetValue("M_analyze.SoundPlayer", "/usr/bin/play");
+		if (!gSystem->AccessPathName(expanded_name.Data(), kFileExists)) {
+			if (!gSystem->AccessPathName(soundplayer, kFileExists)) {
+				TString cmd(soundplayer);
+				cmd += " ";
+				cmd += expanded_name;
+				gSystem->Exec(cmd);
+			} else {
+				cout << "SoundPlayer " << soundplayer << " not found" <<endl;
+			}
+		} else {
+			cout << "SoundFile " << expanded_name << " not found" <<endl;
+		}
    }
-      
-   
 //    for(Int_t i=0; i < 5; i++){
 //       usleep(300000);
 // 	   cout << "" << endl;
