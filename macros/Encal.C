@@ -34,7 +34,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.1 2007-01-25 09:25:44 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.2 2007-01-25 15:40:33 Rudolf.Lutter Exp $
 // Date:             Wed Nov 29 10:34:10 2006
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -195,31 +195,28 @@
 #include "TGraphErrors.h"
 #include "TF1.h"
 #include "TEnv.h"
+#include "TGFrame.h"
+#include "TSystem.h"
 #include "TSpectrum.h"
 #include "TPolyMarker.h"
-#include "TMrbString.h"
+#include "TMrbLogger.h"
 #include "SetColor.h"
 
-enum	{ kCalSourceCo60 = 1 };
-enum	{ kCalSourceEu152 = 2 };
-enum	{ kCalSourceTripleAlpha = 4 };
-enum	{ kBackEstOff = 1 };
-enum	{ kBackEstOrder2 = 2 };
-enum	{ kBackEstCompton = 4 };
-enum	{ kFitModeGaus = 1 };
-enum	{ kFitModeGausTail = 2 };
-enum	{ kDisplayFlagNo = 1 };
-enum	{ kDisplayFlagStep = 2 };
-enum	{ kDisplayFlag2dim = 4 };
-enum	{ kDisplayFlagStep2dim = 6 };
-enum	{ kVerboseModeNo = 1 };
-enum	{ kVerboseModeYes = 2 };
-enum	{ kVerboseModeDebug = 3 };
-
-enum	{	kAskOk,
-			kAskDiscard,
-			kAskQuit
-		};
+enum	{	kCalSourceCo60 = 1 };
+enum	{	kCalSourceEu152 = 2 };
+enum	{	kCalSourceTripleAlpha = 4 };
+enum	{	kBackEstOff = 1 };
+enum	{	kBackEstOrder2 = 2 };
+enum	{	kBackEstCompton = 4 };
+enum	{	kFitModeGaus = 1 };
+enum	{	kFitModeGausTail = 2 };
+enum	{	kDisplayFlagNo = 1 };
+enum	{	kDisplayFlagStep = 2 };
+enum	{	kDisplayFlag2dim = 4 };
+enum	{	kDisplayFlagStep2dim = 6 };
+enum	{	kVerboseModeNo = 1 };
+enum	{	kVerboseModeYes = 2 };
+enum	{	kVerboseModeDebug = 3 };
 
 Double_t nofPeaks = 1;
 Int_t binWidth = 1;
@@ -320,59 +317,88 @@ void Encal(Int_t CalSource = 1,
            Int_t DisplayFlag = kDisplayFlagStep,
            Int_t VerboseMode = kVerboseModeNo)
 {
-	TObjArray lofHistos;
-	TMrbString hfStr = HistoFile;
-	hfStr = hfStr.Strip(TString::kBoth);
+	TMrbLogger * msg = new TMrbLogger("Encal.log");
 
-	lofHistos.Delete();
-	Int_t nofHistos = hfStr.Split(lofHistos, ":", kTRUE);
+	TString hfStr = HistoFile;
+	TString delim = ":";
+	hfStr = hfStr.Strip(TString::kBoth);
+	TObjArray * lofHistos = hfStr.Tokenize(delim);
+
+	Int_t nofHistos = lofHistos->GetEntriesFast();
 	if (nofHistos == 0) {
-		cerr << setred << "Encal.C: No histogram file given" << setblack << endl;
+		msg->Err() << "No histogram file given" << endl;
+		msg->Flush("Encal.C");
 		return;
 	}
 
-	TString hFileName = ((TObjString *) lofHistos[0])->GetString();
-	hFileName = hFileName.Strip(TString::kBoth);
+	TIterator * hIter = lofHistos->MakeIterator();
+	TObjString * h;
+	h = (TObjString *) hIter->Next();
+
+	TString hFileName;
+	hFileName.Resize(0);
+	if (h) {
+		hFileName = h->GetString();
+		hFileName = hFileName.Strip(TString::kBoth);
+	}
 	if (hFileName.IsNull()) {
-		cerr << setred << "Encal.C: No histogram file given" << setblack << endl;
+		msg->Err() << "No histogram file given" << endl;
+		msg->Flush("Encal.C");
 		return;
 	}
 
 	TFile * hFile = new TFile(hFileName.Data());
 	if (!hFile->IsOpen()) {
-		cerr << setred << "Encal.C: Can't open histogram file - " << hFileName << setblack << endl;
+		msg->Err() << "Can't open histogram file - " << hFileName << endl;
+		msg->Flush("Encal.C");
 		return;
 	}
 
 	if (nofHistos == 1) {
-		cerr << setred << "Encal.C: No histogram(s) selected" << setblack << endl;
+		msg->Err() << "No histogram(s) selected" << endl;
+		msg->Flush("Encal.C");
 		return;
 	}
 
+	TString calSource;
+	if (CalSource == kCalSourceTripleAlpha) {
+		calSource = "TripleAlpha";
+	} else {
+		TString s;
+		switch (CalSource) {
+			case kCalSourceCo60:	calSource = "Co60"; break;
+			case kCalSourceEu152:	calSource = "Eu152"; break;
+		}
+		msg->Err()	<< "Calibration source not yet implemented - " << calSource
+					<< ", performing peak fitting only" << endl;
+		msg->Flush("Encal.C");
+	}
+
 	TEnv res(ResFile);
+	if (VerboseMode & kVerboseModeYes) {
+		msg->Out() << "Writing results to file " << ResFile << endl;
+		msg->Flush("Encal.C");
+	}
 
 	res.SetValue("Calib.ROOTFile", hFileName.Data());
 	res.SetValue("Calib.NofHistograms", nofHistos - 1);
 
 	TEnv cal(CalFile);
+	if (VerboseMode & kVerboseModeYes) {
+		msg->Out() << "Writing calibration data to file " << CalFile << endl;
+		msg->Flush("Encal.C");
+	}
 
 	cal.SetValue("Calib.ROOTFile", hFileName.Data());
 	
-	TString s;
-	switch (CalSource) {
-		case kCalSourceCo60:	s = "Co60"; break;
-		case kCalSourceEu152:	s = "Eu152"; break;
-		case kCalSourceTripleAlpha:	s = "TripleAlpha"; break;
-	}
-
-	cal.SetValue("Calib.Source", s.Data());
+	cal.SetValue("Calib.Source", calSource.Data());
 	cal.SetValue("Calib.NofHistograms", nofHistos - 1);
 
 	TCanvas * canv = new TCanvas("EncalCanv");
 	canv->Divide(1,2);
 
-	for (Int_t nHist = 1; nHist < nofHistos; nHist++) {
-		TString hist = ((TObjString *) lofHistos[nHist])->GetString();
+	while (h = (TObjString *) hIter->Next()) {
+		TString hist = h->GetString();
 
 		canv->cd(1);
 		TH1F * h = (TH1F *) hFile->Get(hist.Data());
@@ -397,6 +423,21 @@ void Encal(Int_t CalSource = 1,
 
 			px.Set(nPeaks, s->GetPositionX());
 			py.Set(nPeaks, s->GetPositionY());
+
+			TArrayF ps;
+			TArrayI ind(nPeaks);
+			ps.Set(nPeaks, px.GetArray());
+			TMath::Sort(nPeaks, ps.GetArray(), ind.GetArray(), kFALSE);
+			for (Int_t i = 0; i < nPeaks; i++) {
+				Int_t k = ind[i];
+				px[i] = ps[k];
+			}
+			ps.Set(nPeaks, py.GetArray());
+			for (Int_t i = 0; i < nPeaks; i++) {
+				Int_t k = ind[i];
+				py[i] = ps[k];
+			}
+
 			cout << endl << "Peaks:" << endl;
 			for (Int_t i = 0; i < nPeaks; i++) cout << i << " X=" << px[i] << " Y=" << py[i] << endl;
 
@@ -464,41 +505,38 @@ void Encal(Int_t CalSource = 1,
 					Int_t ndf = TMath::Max(1, fit->GetNDF());
 					chi2[i] = fit->GetChisquare() / ndf;
 				}
-				delete fit;
 			}
 
 			canv->cd(2);
 			gPad->Clear();
 
-			if ((CalSource == kCalSourceTripleAlpha) && (nPeaks == 3)) {
-				TArrayF calX(3);
-				TArrayF calE(3);
-				TArrayF calXerr(3);
-				TArrayF calEerr(3);
+			if (CalSource == kCalSourceTripleAlpha) {
+				if (nPeaks == 3) { 
+					TArrayF calX(3);
+					TArrayF calE(3);
+					TArrayF calXerr(3);
+					TArrayF calEerr(3);
 
-				for (Int_t i = 0; i < 3; i++) calX[i] = fx[i];
-				TArrayI ind(3);
-				TMath::Sort(3, calX.GetArray(), ind.GetArray(), kFALSE);
-				for (Int_t i = 0; i < 3; i++) {
-					Int_t k = ind[i];
-					calX[i] = fx[k];
-					calXerr[i] = fxe[k];
+					for (Int_t i = 0; i < 3; i++) {
+						calX[i] = fx[i];
+						calXerr[i] = fxe[i];
+					}
+
+ 					calE[0] = 5157;
+					calE[1] = 5486;
+					calE[2] = 5865;
+					calEerr[0] = 1;
+					calEerr[1] = 1;
+					calEerr[2] = 1;
+
+					TGraphErrors * calib = new TGraphErrors(3, calX.GetArray(), calE.GetArray(), calXerr.GetArray(), calEerr.GetArray());
+					calib->SetName(Form("c_%s", hist.Data()));
+					calib->SetTitle(Form("Calibration for histo %s", hist.Data()));
+					calib->Draw("A*");
+					calib->Fit("pol1");
+					pol1 = calib->GetFunction("pol1");
+					pol1->SetLineColor(2);
 				}
-
- 				calE[0] = 5157;
-				calE[1] = 5486;
-				calE[2] = 5865;
-				calEerr[0] = 1;
-				calEerr[1] = 1;
-				calEerr[2] = 1;
-
-				TGraphErrors * calib = new TGraphErrors(3, calX.GetArray(), calE.GetArray(), calXerr.GetArray(), calEerr.GetArray());
-				calib->SetName(Form("c_%s", hist.Data()));
-				calib->SetTitle(Form("Calibration for histo %s", hist.Data()));
-				calib->Draw("A*");
-				calib->Fit("pol1");
-				pol1 = calib->GetFunction("pol1");
-				pol1->SetLineColor(2);
 			}
 
 			cout << endl << "=========================================================================" << endl;
@@ -510,14 +548,19 @@ void Encal(Int_t CalSource = 1,
 				cout << Form("%9d   %7.2f   %7.2f       %7.5f", i, px[i], fx[i], chi2[i]) << endl;
 			}
 			cout << "=========================================================================" << endl;
-			if (nPeaks != 3) {
-				cerr << setred << "Encal.C: Need 3 peaks exactly - " << hFileName << ":" << hist << setblack << endl;
+
+			if ((CalSource == kCalSourceTripleAlpha) && (nPeaks != 3)) {
+				msg->Err()	<< "Wrong number of peaks - " << nPeaks
+							<< " (TripleAlpha needs 3 peaks exactly)" << endl;
+				msg->Flush("Encal.C");
 			}
 
 			canv->Update();
 			gSystem->ProcessEvents();
 		} else {
-			cerr << setred << "Encal.C: No peaks found in histogram " << hFileName << ":" << hist << setblack << endl;
+			h->Draw();
+			msg->Err()	<< "No peaks found in histogram - " << hist << endl;
+			msg->Flush("Encal.C");
 			continue;
 		}
 
@@ -577,7 +620,9 @@ void Encal(Int_t CalSource = 1,
 			}
 		}
 	}
-	cout << setblue << "End of calibration" << setblack << endl;
+
+	msg->Out() << "End of calibration - " << (nofHistos - 1) << " histogram(s)" << endl;
+	msg->Flush("Encal.C", "", setblue);
 
 	res.SaveLevel(kEnvLocal);
 	cal.SaveLevel(kEnvLocal);
