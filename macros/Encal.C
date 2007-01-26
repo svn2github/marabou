@@ -34,13 +34,13 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.2 2007-01-25 15:40:33 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.3 2007-01-26 10:02:40 Rudolf.Lutter Exp $
 // Date:             Wed Nov 29 10:34:10 2006
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
 //                   Width:               
-//                   Aclic:               ++g
+//                   Aclic:               +g
 //                   NofArgs:             14
 //                   Arg1.Name:           CalSource
 //                   Arg1.Title:          Calibration source
@@ -190,6 +190,7 @@
 #include "TObjArray.h"
 #include "TObjString.h"
 #include "TCanvas.h"
+#include "TButton.h"
 #include "TFile.h"
 #include "TH1F.h"
 #include "TGraphErrors.h"
@@ -218,9 +219,17 @@ enum	{	kVerboseModeNo = 1 };
 enum	{	kVerboseModeYes = 2 };
 enum	{	kVerboseModeDebug = 3 };
 
+enum	{	kDialogOk = 1,
+			kDialogDiscard,
+			kDialogQuit,
+			kDialogExit
+		};
+
 Double_t nofPeaks = 1;
 Int_t binWidth = 1;
 Double_t tailSide = 1;
+
+Int_t dialogFlag = 0;
 
 Double_t gaus_lbg(Double_t * x, Double_t * par)
 {
@@ -394,10 +403,34 @@ void Encal(Int_t CalSource = 1,
 	cal.SetValue("Calib.Source", calSource.Data());
 	cal.SetValue("Calib.NofHistograms", nofHistos - 1);
 
-	TCanvas * canv = new TCanvas("EncalCanv");
+	Int_t nBtns = 4;
+	Int_t canvw = 700;
+	Int_t canvh = 500;
+	Double_t pixx = 1./canvw;
+	Double_t pixy = 1./canvh;
+	Double_t x0 = 200 * pixx;
+	Double_t w = 400 * pixx / nBtns;
+	Double_t y0 = 0.9;
+	Double_t y1 = 0.98;
+
+	TCanvas * canv = new TCanvas("EncalCanv", "Energy Calibration Tool", canvw, canvh);
 	canv->Divide(1,2);
 
+	canv->cd(2);
+	gPad->Clear();
+	TButton * btnOk = new TButton("ok", "dialogFlag = kDialogOk;", x0, y0, x0 + w, y1);
+	btnOk->Draw();
+	TButton * btnDiscard = new TButton("discard", "dialogFlag = kDialogDiscard;", x0 + w, y0, x0 + 2 * w, y1);
+	btnDiscard->Draw();
+	TButton * btnQuit = new TButton("quit", "dialogFlag = kDialogQuit;", x0 + 2 * w, y0, x0 + 3 * w, y1);
+	btnQuit->Draw();
+	TButton * btnExit = new TButton("exit", "gSystem->Exit(0);", x0 + 3 * w, y0, x0 + 4 * w, y1);
+	btnExit->Draw();
+	canv->Update();
+
 	while (h = (TObjString *) hIter->Next()) {
+		dialogFlag = 0;
+
 		TString hist = h->GetString();
 
 		canv->cd(1);
@@ -508,7 +541,6 @@ void Encal(Int_t CalSource = 1,
 			}
 
 			canv->cd(2);
-			gPad->Clear();
 
 			if (CalSource == kCalSourceTripleAlpha) {
 				if (nPeaks == 3) { 
@@ -580,20 +612,17 @@ void Encal(Int_t CalSource = 1,
 				res.SetValue(Form("Calib.%s.Peak.%d.Chi2", hist.Data(), i), chi2[i]);
 			}
 			if (DisplayFlag & kDisplayFlagStep) {
-				cout << "y=ok, n=discard, q=quit ..." << ends;
-				Char_t c = getchar();
-				cout << endl;
-				if (c == 'q') break;
-				if (c == 'y') {
-					fitOk = "TRUE";
-					if (pol1) {
-						cal.SetValue(Form("Calib.%s.Xmin", hist.Data()), LowerLim);
-						cal.SetValue(Form("Calib.%s.Xmax", hist.Data()), UpperLim);
-						cal.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
-						cal.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
-						res.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
-						res.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
-					}
+				while (dialogFlag == 0) gSystem->ProcessEvents();
+				if (dialogFlag == kDialogQuit) break;
+				if (dialogFlag != kDialogOk) continue;
+				fitOk = "TRUE";
+				if (pol1) {
+					cal.SetValue(Form("Calib.%s.Xmin", hist.Data()), LowerLim);
+					cal.SetValue(Form("Calib.%s.Xmax", hist.Data()), UpperLim);
+					cal.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
+					cal.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
+					res.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
+					res.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
 				} else {
 					fitOk = "FALSE";
 				}
@@ -613,10 +642,8 @@ void Encal(Int_t CalSource = 1,
 			res.SetValue(Form("Calib.%s.NofPeaks", hist.Data()), nPeaks);
 			res.SetValue(Form("Calib.%s.FitOk", hist.Data()), "FALSE");
 			if (DisplayFlag & kDisplayFlagStep) {
-				cout << "<any>=discard, q=quit ..." << ends;
-				Char_t c = getchar();
-				cout << endl;
-				if (c == 'q') break;
+				while (dialogFlag == 0) gSystem->ProcessEvents();
+				if (dialogFlag == kDialogQuit) break;
 			}
 		}
 	}
