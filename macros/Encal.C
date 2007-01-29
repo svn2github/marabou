@@ -34,7 +34,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.3 2007-01-26 10:02:40 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.4 2007-01-29 08:10:49 Rudolf.Lutter Exp $
 // Date:             Wed Nov 29 10:34:10 2006
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -190,6 +190,7 @@
 #include "TObjArray.h"
 #include "TObjString.h"
 #include "TCanvas.h"
+#include "TVirtualX.h"
 #include "TButton.h"
 #include "TFile.h"
 #include "TH1F.h"
@@ -408,25 +409,30 @@ void Encal(Int_t CalSource = 1,
 	Int_t canvh = 500;
 	Double_t pixx = 1./canvw;
 	Double_t pixy = 1./canvh;
-	Double_t x0 = 200 * pixx;
-	Double_t w = 400 * pixx / nBtns;
-	Double_t y0 = 0.9;
-	Double_t y1 = 0.98;
+	Double_t x0 = 100 * pixx;
+	Double_t w = (canvw - 200) * pixx / nBtns;
+	Double_t y0 = 0.03;
+	Double_t y1 = 0.08;
 
 	TCanvas * canv = new TCanvas("EncalCanv", "Energy Calibration Tool", canvw, canvh);
 	canv->Divide(1,2);
 
-	canv->cd(2);
-	gPad->Clear();
 	TButton * btnOk = new TButton("ok", "dialogFlag = kDialogOk;", x0, y0, x0 + w, y1);
+	btnOk->SetCursor(kHand);
 	btnOk->Draw();
 	TButton * btnDiscard = new TButton("discard", "dialogFlag = kDialogDiscard;", x0 + w, y0, x0 + 2 * w, y1);
+	btnDiscard->SetCursor(kHand);
 	btnDiscard->Draw();
 	TButton * btnQuit = new TButton("quit", "dialogFlag = kDialogQuit;", x0 + 2 * w, y0, x0 + 3 * w, y1);
+	btnQuit->SetCursor(kHand);
 	btnQuit->Draw();
 	TButton * btnExit = new TButton("exit", "gSystem->Exit(0);", x0 + 3 * w, y0, x0 + 4 * w, y1);
+	btnExit->SetCursor(kHand);
 	btnExit->Draw();
 	canv->Update();
+
+	canv->cd(2);
+	gPad->SetBottomMargin(.2);
 
 	while (h = (TObjString *) hIter->Next()) {
 		dialogFlag = 0;
@@ -446,6 +452,7 @@ void Encal(Int_t CalSource = 1,
 
 		TArrayF px, py, fx, fy, fxe, fye, chi2;
 		TF1 * pol1 = NULL;
+		TString fitOk;
 
 		if (nPeaks > 0) {
 	
@@ -541,17 +548,19 @@ void Encal(Int_t CalSource = 1,
 			}
 
 			canv->cd(2);
+			gPad->Clear();
 
 			if (CalSource == kCalSourceTripleAlpha) {
-				if (nPeaks == 3) { 
+				if (nPeaks >= 3) { 
 					TArrayF calX(3);
 					TArrayF calE(3);
 					TArrayF calXerr(3);
 					TArrayF calEerr(3);
 
-					for (Int_t i = 0; i < 3; i++) {
-						calX[i] = fx[i];
-						calXerr[i] = fxe[i];
+					Int_t k = nPeaks - 1;
+					for (Int_t i = 2; i >= 0; i--, k--) {
+						calX[i] = fx[k];
+						calXerr[i] = fxe[k];
 					}
 
  					calE[0] = 5157;
@@ -581,10 +590,11 @@ void Encal(Int_t CalSource = 1,
 			}
 			cout << "=========================================================================" << endl;
 
-			if ((CalSource == kCalSourceTripleAlpha) && (nPeaks != 3)) {
+			if ((CalSource == kCalSourceTripleAlpha) && (nPeaks < 3)) {
 				msg->Err()	<< "Wrong number of peaks - " << nPeaks
-							<< " (TripleAlpha needs 3 peaks exactly)" << endl;
+							<< " (TripleAlpha needs at least 3 peaks)" << endl;
 				msg->Flush("Encal.C");
+				fitOk = "FALSE";
 			}
 
 			canv->Update();
@@ -593,59 +603,55 @@ void Encal(Int_t CalSource = 1,
 			h->Draw();
 			msg->Err()	<< "No peaks found in histogram - " << hist << endl;
 			msg->Flush("Encal.C");
-			continue;
+			fitOk = "FALSE";
 		}
 
 		res.SetValue(Form("Calib.%s.Xmin", hist.Data()), LowerLim);
 		res.SetValue(Form("Calib.%s.Xmax", hist.Data()), UpperLim);
 
-		TString fitOk;
-		if (nPeaks == 3) {
-			res.SetValue(Form("Calib.%s.NofPeaks", hist.Data()), nPeaks);
-			for (Int_t i = 0; i < nPeaks; i++) {
-				res.SetValue(Form("Calib.%s.Peak.%d.X", hist.Data(), i), px[i]);
-				res.SetValue(Form("Calib.%s.Peak.%d.Xfit", hist.Data(), i), fx[i]);
-				res.SetValue(Form("Calib.%s.Peak.%d.Xerr", hist.Data(), i), fxe[i]);
-				res.SetValue(Form("Calib.%s.Peak.%d.Y", hist.Data(), i), py[i]);
-				res.SetValue(Form("Calib.%s.Peak.%d.Yfit", hist.Data(), i), fy[i]);
-				res.SetValue(Form("Calib.%s.Peak.%d.Yerr", hist.Data(), i), fye[i]);
-				res.SetValue(Form("Calib.%s.Peak.%d.Chi2", hist.Data(), i), chi2[i]);
+		res.SetValue(Form("Calib.%s.NofPeaks", hist.Data()), nPeaks);
+		for (Int_t i = 0; i < nPeaks; i++) {
+			res.SetValue(Form("Calib.%s.Peak.%d.X", hist.Data(), i), px[i]);
+			res.SetValue(Form("Calib.%s.Peak.%d.Xfit", hist.Data(), i), fx[i]);
+			res.SetValue(Form("Calib.%s.Peak.%d.Xerr", hist.Data(), i), fxe[i]);
+			res.SetValue(Form("Calib.%s.Peak.%d.Y", hist.Data(), i), py[i]);
+			res.SetValue(Form("Calib.%s.Peak.%d.Yfit", hist.Data(), i), fy[i]);
+			res.SetValue(Form("Calib.%s.Peak.%d.Yerr", hist.Data(), i), fye[i]);
+			res.SetValue(Form("Calib.%s.Peak.%d.Chi2", hist.Data(), i), chi2[i]);
+		}
+
+		if (DisplayFlag & kDisplayFlagStep) {
+			while (dialogFlag == 0) {
+				gSystem->Sleep(50);
+				gSystem->ProcessEvents();
 			}
-			if (DisplayFlag & kDisplayFlagStep) {
-				while (dialogFlag == 0) gSystem->ProcessEvents();
-				if (dialogFlag == kDialogQuit) break;
-				if (dialogFlag != kDialogOk) continue;
+			if (dialogFlag == kDialogQuit) break;
+			if (dialogFlag != kDialogOk) continue;
+			if (pol1) {
 				fitOk = "TRUE";
-				if (pol1) {
-					cal.SetValue(Form("Calib.%s.Xmin", hist.Data()), LowerLim);
-					cal.SetValue(Form("Calib.%s.Xmax", hist.Data()), UpperLim);
-					cal.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
-					cal.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
-					res.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
-					res.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
-				} else {
-					fitOk = "FALSE";
-				}
+				cal.SetValue(Form("Calib.%s.Xmin", hist.Data()), LowerLim);
+				cal.SetValue(Form("Calib.%s.Xmax", hist.Data()), UpperLim);
+				cal.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
+				cal.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
+				res.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
+				res.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
 			} else {
-				fitOk = "AUTO";
-				if (pol1) {
-					cal.SetValue(Form("Calib.%s.Xmin", hist.Data()), LowerLim);
-					cal.SetValue(Form("Calib.%s.Xmax", hist.Data()), UpperLim);
-					cal.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
-					cal.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
-					res.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
-					res.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
-				}
+				fitOk = "FALSE";
 			}
-			res.SetValue(Form("Calib.%s.FitOk", hist.Data()), fitOk);
 		} else {
-			res.SetValue(Form("Calib.%s.NofPeaks", hist.Data()), nPeaks);
-			res.SetValue(Form("Calib.%s.FitOk", hist.Data()), "FALSE");
-			if (DisplayFlag & kDisplayFlagStep) {
-				while (dialogFlag == 0) gSystem->ProcessEvents();
-				if (dialogFlag == kDialogQuit) break;
+			if (pol1) {
+				cal.SetValue(Form("Calib.%s.Xmin", hist.Data()), LowerLim);
+				cal.SetValue(Form("Calib.%s.Xmax", hist.Data()), UpperLim);
+				cal.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
+				cal.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
+				res.SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
+				res.SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
+				fitOk = "AUTO";
+			} else {
+				fitOk = "FALSE";
 			}
 		}
+		res.SetValue(Form("Calib.%s.FitOk", hist.Data()), fitOk);
 	}
 
 	msg->Out() << "End of calibration - " << (nofHistos - 1) << " histogram(s)" << endl;
