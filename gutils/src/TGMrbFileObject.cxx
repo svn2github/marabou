@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.12 2007-01-30 12:22:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.13 2007-01-30 13:35:48 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -730,7 +730,7 @@ void TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
 		new TGMsgBox(fClient->GetRoot(), this, "TGMrbFileObjectListBox: Error", err.Data(), kMBIconStop);
 		return;
 	}
-	this->SetFileEntry(fFileInfo.fFilename);
+	this->SetFileEntry(FileName);
 	TList * fileKeys = rootFile->GetListOfKeys();
 	Int_t idx = 0;
 	Int_t nofEntries = fListBox->GetNumberOfEntries();
