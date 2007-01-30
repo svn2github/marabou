@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.11 2006-11-29 15:10:28 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.12 2007-01-30 12:22:26 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -125,6 +125,7 @@ TGMrbFileObjectCombo::TGMrbFileObjectCombo(const TGWindow * Parent,
 	fEntry = new TGTextEntry(fEB, new TGTextBuffer(BufferSize), EntryId);
 	fEntry->SetFont(EntryGC->Font());
 	fEntry->SetBackgroundColor(EntryGC->BG());
+	fEntry->Associate(this);
 
 	fHeap.AddFirst((TObject *) fEntry);
 	fEB->AddFrame(fEntry, EntryGC->LH());
@@ -151,51 +152,34 @@ Bool_t TGMrbFileObjectCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	if (GET_MSG(MsgId) == kC_COMMAND) {
-		switch (GET_SUBMSG(MsgId)) {
-			case kCM_BUTTON:
-				switch (Param1) {
-					case 0:
-						new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fFileInfo);
-						if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') {
-							TFile * rootFile = new TFile(fFileInfo.fFilename);
-							if (!rootFile->IsOpen()) {
-								new TGMsgBox(fClient->GetRoot(), this, "TGMrbFileObjectCombo: Error", "Not a ROOT file", kMBIconStop);
-								break;
+	switch (GET_MSG(MsgId)) {
+		case kC_COMMAND:
+			switch (GET_SUBMSG(MsgId)) {
+				case kCM_BUTTON:
+					switch (Param1) {
+						case 0:
+							new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fFileInfo);
+							if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') {
+								this->OpenFile(fFileInfo.fFilename);
+								fCombo->Select(0);
 							}
-							this->SetFileEntry(fFileInfo.fFilename);
-							TList * fileKeys = rootFile->GetListOfKeys();
-							Int_t idx = 0;
-							Int_t nofEntries = fCombo->GetListBox()->GetNumberOfEntries();
-							fCombo->RemoveEntries(0, nofEntries - 1);
-							TKey * key;
-							TIterator * keyIter = fileKeys->MakeIterator();
-							while (key = (TKey *) keyIter->Next()) {
-								TMrbString keyName = "(";
-								keyName += key->GetClassName();
-								keyName += " *) ";
-								keyName += key->GetName();
-								TObject * obj = key->ReadObj();
-								if (obj) {
-									if (obj->InheritsFrom("TH1")) {
-										TH1 *h = (TH1 *) obj;
-										keyName += " [";
-										keyName += h->GetNbinsX();
-										if (h->GetDimension() == 2) {
-											keyName += ",";
-											keyName += h->GetNbinsY();
-										}
-										keyName += "]";
-									}
-									fCombo->AddEntry(keyName.Data(), idx);
-									idx++;
-								}
-							}
-							fCombo->Select(0);
-						}
-						break;
-				}
-		}
+							break;
+					}
+					break;
+			}
+			break;
+		case kC_TEXTENTRY:
+			switch (GET_SUBMSG(MsgId)) {
+				case kTE_ENTER:
+					{
+						TString fName;
+						this->GetFileEntry(fName, kTRUE);
+						this->OpenFile(fName.Data());
+						fCombo->Select(0);
+					}
+					break;
+			}
+			break;
 	}
 	return(kTRUE);
 }
@@ -310,6 +294,54 @@ Int_t TGMrbFileObjectCombo::GetSelection(TObjArray & SelArr, Bool_t FullPath) co
 	return(0);
 }
 
+void TGMrbFileObjectCombo::OpenFile(const Char_t * FileName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectCombo::OpenFile
+// Purpose:        Open root file
+// Arguments:      Char_t * FileName  -- file name
+// Results:        --
+// Description:    Open file given by selection
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TFile * rootFile = new TFile(FileName);
+	if (!rootFile->IsOpen()) {
+		TString err = "Not a ROOT file:\n";
+		err += FileName;
+		new TGMsgBox(fClient->GetRoot(), this, "TGMrbFileObjectCombo: Error", err.Data(), kMBIconStop);
+		return;
+	}
+	this->SetFileEntry(FileName);
+	TList * fileKeys = rootFile->GetListOfKeys();
+	Int_t idx = 0;
+	Int_t nofEntries = fCombo->GetListBox()->GetNumberOfEntries();
+	fCombo->RemoveEntries(0, nofEntries - 1);
+	TKey * key;
+	TIterator * keyIter = fileKeys->MakeIterator();
+	while (key = (TKey *) keyIter->Next()) {
+		TMrbString keyName = "(";
+		keyName += key->GetClassName();
+		keyName += " *) ";
+		keyName += key->GetName();
+		TObject * obj = key->ReadObj();
+		if (obj) {
+			if (obj->InheritsFrom("TH1")) {
+				TH1 *h = (TH1 *) obj;
+				keyName += " [";
+				keyName += h->GetNbinsX();
+				if (h->GetDimension() == 2) {
+					keyName += ",";
+					keyName += h->GetNbinsY();
+				}
+				keyName += "]";
+			}
+			fCombo->AddEntry(keyName.Data(), idx);
+			idx++;
+		}
+	}
+}
+
 TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 												const Char_t * Label,
 												Int_t BufferSize,
@@ -397,6 +429,7 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 	fEntry = new TGTextEntry(fEB1, new TGTextBuffer(BufferSize), EntryId);
 	fEntry->SetFont(EntryGC->Font());
 	fEntry->SetBackgroundColor(EntryGC->BG());
+	fEntry->Associate(this);
 
 	fHeap.AddFirst((TObject *) fEntry);
 	fEB1->AddFrame(fEntry, EntryGC->LH());
@@ -455,118 +488,95 @@ Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	if (GET_MSG(MsgId) == kC_COMMAND) {
-		switch (GET_SUBMSG(MsgId)) {
-			case kCM_BUTTON:
-				switch (Param1) {
-					case kBtnBrowse:
-						new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fFileInfo);
-						if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') {
-							TFile * rootFile = new TFile(fFileInfo.fFilename);
-							if (!rootFile->IsOpen()) {
-								new TGMsgBox(fClient->GetRoot(), this, "TGMrbFileObjectListBox: Error", "Not a ROOT file", kMBIconStop);
-								break;
+	switch (GET_MSG(MsgId)) {
+		case kC_COMMAND:
+			switch (GET_SUBMSG(MsgId)) {
+				case kCM_BUTTON:
+					switch (Param1) {
+						case kBtnBrowse:
+							new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fFileInfo);
+							if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') {
+								this->OpenFile(fFileInfo.fFilename);
 							}
-							this->SetFileEntry(fFileInfo.fFilename);
-							TList * fileKeys = rootFile->GetListOfKeys();
-							Int_t idx = 0;
-							Int_t nofEntries = fListBox->GetNumberOfEntries();
-							fListBox->RemoveEntries(0, nofEntries - 1);
-							fLofListItems.Delete();
-							TKey * key;
-							TIterator * keyIter = fileKeys->MakeIterator();
-							while (key = (TKey *) keyIter->Next()) {
-								TMrbString keyName = "(";
-								keyName += key->GetClassName();
-								keyName += " *) ";
-								keyName += key->GetName();
-								TObject * obj = key->ReadObj();
-								if (obj) {
-									if (obj->InheritsFrom("TH1")) {
-										TH1 * h = (TH1 *) obj;
-										keyName += " [";
-										keyName += h->GetNbinsX();
-										if (h->GetDimension() == 2) {
-											keyName += ",";
-											keyName += h->GetNbinsY();
-										}
-										keyName += "]";
-									}
-									fListBox->AddEntry(keyName.Data(), idx);
+							break;
+
+						case kBtnClear:
+							{
+								fListBox->RemoveAll();
+								TIterator * iter = fLofListItems.MakeIterator();
+								TMrbNamedX * nx;
+								while (nx = (TMrbNamedX *) iter->Next()) {
+									fListBox->AddEntry(nx->GetTitle(), nx->GetIndex());
 									fListBox->Layout();
-									fLofListItems.AddNamedX(idx, key->GetName(), keyName.Data());
+								}
+								fStartIndex = -1;
+							}
+							break;
+						case kBtnApply:
+							{
+								TList selected;
+								fListBox->GetSelectedEntries(&selected);
+								TMrbLofNamedX lofSelected;
+								TIterator * iter = selected.MakeIterator();
+								TGTextLBEntry * lbe;
+								Int_t idx = 0;
+								while (lbe = (TGTextLBEntry *) iter->Next()) {
+									lofSelected.AddNamedX(idx, lbe->GetText()->GetString());
 									idx++;
 								}
-								key = (TKey *) fileKeys->After(key);
+								fListBox->RemoveAll();
+								iter = lofSelected.MakeIterator();
+								TMrbNamedX * nx;
+								while (nx = (TMrbNamedX *) iter->Next()) {
+									fListBox->AddEntry(nx->GetName(), nx->GetIndex());
+									fListBox->Layout();
+								}
+								fStartIndex = -1;
 							}
-							fListBox->Select(0);
-						}
-						break;
-
-					case kBtnClear:
-						{
-							fListBox->RemoveAll();
-							TIterator * iter = fLofListItems.MakeIterator();
-							TMrbNamedX * nx;
-							while (nx = (TMrbNamedX *) iter->Next()) {
-								fListBox->AddEntry(nx->GetTitle(), nx->GetIndex());
-								fListBox->Layout();
-							}
-							fStartIndex = -1;
-						}
-						break;
-					case kBtnApply:
-						{
-							TList selected;
-							fListBox->GetSelectedEntries(&selected);
-							TMrbLofNamedX lofSelected;
-							TIterator * iter = selected.MakeIterator();
-							TGTextLBEntry * lbe;
-							Int_t idx = 0;
-							while (lbe = (TGTextLBEntry *) iter->Next()) {
-								lofSelected.AddNamedX(idx, lbe->GetText()->GetString());
-								idx++;
-							}
-							fListBox->RemoveAll();
-							iter = lofSelected.MakeIterator();
-							TMrbNamedX * nx;
-							while (nx = (TMrbNamedX *) iter->Next()) {
-								fListBox->AddEntry(nx->GetName(), nx->GetIndex());
-								fListBox->Layout();
-							}
-							fStartIndex = -1;
-						}
-						break;
-				}
-
-			case kCM_RADIOBUTTON:
-				switch (Param1) {
-					case kBtnSingle:
-						fRBSingle->SetState(kButtonDown);
-						fRBRange->SetState(kButtonUp);
-						break;
-					case kBtnRange:
-						fRBRange->SetState(kButtonDown);
-						fRBSingle->SetState(kButtonUp);
-						break;
-				}
-				break;
-
-			case kCM_LISTBOX:
-				if (fRBRange->GetState() == kButtonDown) {
-					if (fStartIndex == -1) {
-						fStartIndex = Param2;
-					} else {
-						if (fStartIndex <= Param2) {
-							for (Int_t i = fStartIndex; i <= Param2; i++) fListBox->Select(i, kTRUE);
-						} else {
-							for (Int_t i = Param2; i < fStartIndex; i++) fListBox->Select(i, kTRUE);
-						}
-						fStartIndex = -1;
+							break;
 					}
-				}
-				break;
-		}
+					break;
+
+				case kCM_RADIOBUTTON:
+					switch (Param1) {
+						case kBtnSingle:
+							fRBSingle->SetState(kButtonDown);
+							fRBRange->SetState(kButtonUp);
+							break;
+						case kBtnRange:
+							fRBRange->SetState(kButtonDown);
+							fRBSingle->SetState(kButtonUp);
+							break;
+					}
+					break;
+
+				case kCM_LISTBOX:
+					if (fRBRange->GetState() == kButtonDown) {
+						if (fStartIndex == -1) {
+							fStartIndex = Param2;
+						} else {
+							if (fStartIndex <= Param2) {
+								for (Int_t i = fStartIndex; i <= Param2; i++) fListBox->Select(i, kTRUE);
+							} else {
+								for (Int_t i = Param2; i < fStartIndex; i++) fListBox->Select(i, kTRUE);
+							}
+							fStartIndex = -1;
+						}
+					}
+					break;
+			}
+			break;
+		case kC_TEXTENTRY:
+			switch (GET_SUBMSG(MsgId)) {
+				case kTE_ENTER:
+					{
+						TString fName;
+						this->GetFileEntry(fName, kTRUE);
+						this->OpenFile(fName.Data());
+					}
+					break;
+			}
+			break;
 	}
 	return(kTRUE);
 }
@@ -701,3 +711,56 @@ Int_t TGMrbFileObjectListBox::GetSelection(TObjArray & SelArr, Bool_t FullPath) 
 	}
 	return(nofSelected);
 }
+
+void TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectListBox::OpenFile
+// Purpose:        Open root file
+// Arguments:      Char_t * FileName  -- file name
+// Results:        --
+// Description:    Open file given by selection
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TFile * rootFile = new TFile(FileName);
+	if (!rootFile->IsOpen()) {
+		TString err = "Not a ROOT file:\n";
+		err += FileName;
+		new TGMsgBox(fClient->GetRoot(), this, "TGMrbFileObjectListBox: Error", err.Data(), kMBIconStop);
+		return;
+	}
+	this->SetFileEntry(fFileInfo.fFilename);
+	TList * fileKeys = rootFile->GetListOfKeys();
+	Int_t idx = 0;
+	Int_t nofEntries = fListBox->GetNumberOfEntries();
+	fListBox->RemoveEntries(0, nofEntries - 1);
+	fLofListItems.Delete();
+	TKey * key;
+	TIterator * keyIter = fileKeys->MakeIterator();
+	while (key = (TKey *) keyIter->Next()) {
+		TMrbString keyName = "(";
+		keyName += key->GetClassName();
+		keyName += " *) ";
+		keyName += key->GetName();
+		TObject * obj = key->ReadObj();
+		if (obj) {
+			if (obj->InheritsFrom("TH1")) {
+				TH1 * h = (TH1 *) obj;
+				keyName += " [";
+				keyName += h->GetNbinsX();
+				if (h->GetDimension() == 2) {
+					keyName += ",";
+					keyName += h->GetNbinsY();
+				}
+				keyName += "]";
+			}
+			fListBox->AddEntry(keyName.Data(), idx);
+			fListBox->Layout();
+			fLofListItems.AddNamedX(idx, key->GetName(), keyName.Data());
+			idx++;
+		}
+		key = (TKey *) fileKeys->After(key);
+	}
+}
+

@@ -11,7 +11,7 @@
 //                                           a list box containing file objects
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFileObject.h,v 1.6 2006-11-29 15:10:28 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.h,v 1.7 2007-01-30 12:22:26 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -73,6 +73,9 @@ class TGMrbFileObjectCombo: public TGCompositeFrame, public TGMrbObject {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
+
+	protected:
+		void OpenFile(const Char_t * FileName);
 
 	protected:
 		TGVerticalFrame * fEC;				//!
@@ -140,6 +143,9 @@ class TGMrbFileObjectListBox: public TGCompositeFrame, public TGMrbObject {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
+
+	protected:
+		void OpenFile(const Char_t * FileName);
 
 	protected:
 		TGVerticalFrame * fEC;				//!
