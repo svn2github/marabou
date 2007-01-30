@@ -76,8 +76,8 @@ public:
    void     SetUseEditGrid(Int_t use = 1) {fUseEditGrid = use;};
    Int_t   GetUseEditGrid() {return fUseEditGrid;};
    void    Add2ConnectedClasses(TObject *obj);
-   void    HTCanvas::ObjectCreated(Int_t, Int_t, TObject*); 
-   void    HTCanvas::ObjectMoved(Int_t, Int_t, TObject*); 
+   void    ObjectCreated(Int_t, Int_t, TObject*); 
+   void    ObjectMoved(Int_t, Int_t, TObject*); 
 //   TList   *GetConnectedClasses() { return &fConnectedClasses;};
    ClassDef(HTCanvas,1)  //Graphics canvas
 };

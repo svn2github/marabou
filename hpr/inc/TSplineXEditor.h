@@ -1,4 +1,4 @@
-// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.h,v 1.3 2006-10-23 15:46:11 Otto.Schaile Exp $
+// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.h,v 1.4 2007-01-30 09:24:03 Otto.Schaile Exp $
 // Author: Carsten Hof 28/07/04
 
 /*************************************************************************
@@ -68,7 +68,7 @@ public:
                Pixel_t back = GetDefaultFrameBackground());
    virtual ~TSplineXEditor();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,13,4)
-   void TSplineXEditor::ActivateBaseClassEditors(TClass* cl);
+   void ActivateBaseClassEditors(TClass* cl);
    virtual void SetModel(TObject *obj);
 #else
    virtual void SetModel(TVirtualPad *pad, TObject *obj, Int_t event);
@@ -115,7 +115,7 @@ public:
                Pixel_t back = GetDefaultFrameBackground());
    virtual ~ParallelGraphEditor();
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,13,4)
-   void ParallelGraphEditor::ActivateBaseClassEditors(TClass* cl);
+   void ActivateBaseClassEditors(TClass* cl);
    virtual void SetModel(TObject *obj);
 #else
    virtual void SetModel(TVirtualPad *pad, TObject *obj, Int_t event);
