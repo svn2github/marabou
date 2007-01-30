@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.18 2007-01-25 09:23:46 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.19 2007-01-30 14:36:07 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -896,9 +896,19 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 		if (macroArg->fEntryType->GetIndex() == TGMrbMacroArg::kGMrbMacroEntryFile) defaultEntryWidth = 300;
 		macroArg->fEntryWidth = macroEnv->GetValue(macroArg->GetResource(argName, "Width"), defaultEntryWidth);
 
-		currentValue = curEnv->GetValue(macroArg->GetResource(argName, "Current"), "");
-		currentValue = currentValue.Strip(TString::kBoth);
-		macroArg->fCurrentValue = currentValue;
+		Int_t nofVals = curEnv->GetValue(macroArg->GetResource(argName, "Current.NofValues"), 0);
+		if (nofVals == 0) {
+			currentValue = curEnv->GetValue(macroArg->GetResource(argName, "Current"), "");
+			currentValue = currentValue.Strip(TString::kBoth);
+			macroArg->fCurrentValue = currentValue;
+		} else {
+			currentValue = "";
+			for (Int_t k = 0; k < nofVals; k++) {
+				TString vStr = curEnv->GetValue(macroArg->GetResource(argName, Form("Current.%d", k)), "");
+				if (k > 0) currentValue += ":";
+				currentValue += vStr;
+			}
+		}
 
 		defaultValue = macroEnv->GetValue(macroArg->GetResource(argName, "Default"), "");
 		defaultValue = defaultValue.Strip(TString::kBoth);
@@ -1272,6 +1282,8 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 
 	TEnv * macroEnv = (TEnv *) fMacro->GetAssignedObject();
 
+	TObjArray * argArr = new TObjArray();
+
 	TString cmd = fMacroName->GetText()->GetString();
 	cmd = cmd(0, cmd.Index(".C"));
 	TString delim = "(";
@@ -1319,20 +1331,32 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 			argString = macroArg->fFile->GetEntry()->GetText();
 			currentValue = argString;
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) {
-			macroArg->fFObjCombo->GetSelectionAsString(argString, kFALSE);
-			currentValue = argString;
+			macroArg->fFObjCombo->GetSelection(*argArr, kFALSE);
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
-			macroArg->fFObjListBox->GetSelectionAsString(argString, kFALSE);
-			currentValue = argString;
+			macroArg->fFObjListBox->GetSelection(*argArr, kFALSE);
 		}
 		if (macroArg->fType->GetIndex() == TGMrbMacroArg::kGMrbMacroArgChar) {
 			argString.Prepend("\"");
 			argString += "\"";
 		}
-		cmd += Form("%s%s", delim.Data(), argString.Data());
 
 		macroArg->GetResource(cVal, "Current");
-		macroEnv->SetValue(cVal, currentValue);
+		if ((n == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) || (n == TGMrbMacroArg::kGMrbMacroEntryFObjListBox)) {
+			Int_t nVal = argArr->GetEntriesFast();
+			macroEnv->SetValue(Form("%s.NofValues", cVal.Data()), nVal);
+			TIterator * iter = argArr->MakeIterator();
+			TObjString * vStr;
+			nVal = 0;
+			while (vStr = (TObjString *) iter->Next()) {
+				macroEnv->SetValue(Form("%s.%d", cVal.Data(), nVal), vStr->GetString().Data());
+				nVal++;
+			}
+			argString = Form("(TObjArray *) %#lx", argArr);
+		} else {
+			macroEnv->SetValue(cVal, currentValue);
+		}
+
+		cmd += Form("%s%s", delim.Data(), argString.Data());
 		delim = ", ";
 
 		if (macroArg->fAddLofValues) {
@@ -1341,6 +1365,8 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 		}
 	}
 	cmd += ");";
+
+	cout << "@@@ " << cmd << endl;
 
 	TString macroName = macroEnv->GetValue("Name", "macro.C");
 	macroName = macroName(0, macroName.Index(".C"));
