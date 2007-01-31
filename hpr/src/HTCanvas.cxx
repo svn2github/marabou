@@ -191,7 +191,7 @@ HTCanvas::~HTCanvas()
       fHandleMenus = 0;
    }
    if (fHistPresent) fHistPresent->HandleDeleteCanvas(this);
-   if(fGraph) delete fGraph;
+//   if(fGraph) delete fGraph;
    if(fFitHist) {
       fFitHist->UpdateCut();
       fFitHist->SetCanvasIsDeleted();

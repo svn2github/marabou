@@ -42,6 +42,7 @@ Default is to construct a new canvas\n\
    fGraphSerialNr = 0;
    fCommand = "Draw_The_Graph()";
    fCommandHead = "Show_Head_of_File()";
+   fCommandTail = "Show_Tail_of_File()";
    RestoreDefaults();
    fGraphSelPad = 0;    // start with new canvas as default
    TList *row_lab = new TList(); 
@@ -54,25 +55,29 @@ Default is to construct a new canvas\n\
 
    row_lab->Add(new TObjString("FileRequest_Inputfile      "));
    row_lab->Add(new TObjString("StringValue_GraphName"));
-   row_lab->Add(new TObjString("StringValue_Title Xaxis  "));
-   row_lab->Add(new TObjString("StringValue_Title Yaxis  "));
+   row_lab->Add(new TObjString("StringValue_Title X  "));
+   row_lab->Add(new TObjString("StringValue-Title Y  "));
+   row_lab->Add(new TObjString("DoubleValue_Xaxis min"));
+   row_lab->Add(new TObjString("DoubleValue-Yaxis min"));
+
    row_lab->Add(new TObjString("CheckButton_Draw/Overlay in a sel pad"));
 //   row_lab->Add(new TObjString("CheckButton_Draw in a new canvas"));
    row_lab->Add(new TObjString("PlainIntVal_Xsize of canvas"));
-   row_lab->Add(new TObjString("PlainIntVal+Ysize of canvas"));
+   row_lab->Add(new TObjString("PlainIntVal-Ysize of canvas"));
    row_lab->Add(new TObjString("PlainIntVal_Div X of canvas"));
-   row_lab->Add(new TObjString("PlainIntVal+Div Y of canvas"));
+   row_lab->Add(new TObjString("PlainIntVal-Div Y of canvas"));
    row_lab->Add(new TObjString("CheckButton_Draw marker"));
    row_lab->Add(new TObjString("CheckButton+Draw line"));
-   row_lab->Add(new TObjString("Mark_Select_MarkStyle"));
-   row_lab->Add(new TObjString("ColorSelect+MarkColor"));
-   row_lab->Add(new TObjString("Float_Value+MarkSize"));
+   row_lab->Add(new TObjString("Mark_Select_MaStyle"));
+   row_lab->Add(new TObjString("ColorSelect+MaColor"));
+   row_lab->Add(new TObjString("Float_Value+MaSize"));
    row_lab->Add(new TObjString("ColorSelect_LineC"));
    row_lab->Add(new TObjString("PlainShtVal+Width"));
    row_lab->Add(new TObjString("LineSSelect+Style"));
    row_lab->Add(new TObjString("Fill_Select_Fill Style"));
    row_lab->Add(new TObjString("ColorSelect+Fill color"));
    row_lab->Add(new TObjString("CommandButt_Show_Head_of_File"));
+   row_lab->Add(new TObjString("CommandButt+Show_Tail_of_File"));
    row_lab->Add(new TObjString("CommandButt_Draw_the_Graph"));
 //   row_lab->Add(new TObjString("CommandButt_Cancel"));
 //      Int_t nrows = row_lab->GetSize();
@@ -87,6 +92,8 @@ Default is to construct a new canvas\n\
    valp[ind++] = &fGraphName;
    valp[ind++] = &fGraphXtitle;
    valp[ind++] = &fGraphYtitle;
+   valp[ind++] = &fXaxisMin;
+   valp[ind++] = &fYaxisMin;
    valp[ind++] = &fGraphSelPad;
 //   valp[ind++] = &fGraphNewPad;
    valp[ind++] = &fGraphXsize;
@@ -104,6 +111,7 @@ Default is to construct a new canvas\n\
    valp[ind++] = &fGraphFillStyle;
    valp[ind++] = &fGraphFillColor;
    valp[ind++] = &fCommandHead;
+   valp[ind++] = &fCommandTail;
    valp[ind++] = &fCommand;
    Int_t itemwidth = 320;
    ok = GetStringExt("Graphs parameters", NULL, itemwidth, win,
@@ -319,6 +327,8 @@ void Ascii2GraphDialog::Draw_The_Graph()
       graph->SetFillColor(fGraphFillStyle);
       graph->SetFillColor(fGraphFillColor);
       graph->SetLineWidth(fGraphLineWidth);
+      if (fXaxisMin != 0) graph->GetXaxis()->SetLimits(fXaxisMin, graph->GetXaxis()->GetXmax());
+      if (fYaxisMin != 0) graph->SetMinimum(fYaxisMin);
       gPad->Modified();
       gPad->Update();
       cout << "TGraph *gr = (TGraph*)" << graph << endl;
@@ -379,6 +389,8 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.GraphYsize"  	 , fGraphYsize      );
    env.SetValue("Ascii2GraphDialog.GraphXtitle" 	 , fGraphXtitle     );
    env.SetValue("Ascii2GraphDialog.GraphYtitle" 	 , fGraphYtitle     );
+   env.SetValue("Ascii2GraphDialog.XaxisMin"  		 , fXaxisMin        );
+   env.SetValue("Ascii2GraphDialog.YaxisMin"  		 , fYaxisMin        );
    env.SetValue("Ascii2GraphDialog.GraphXdiv"		 , fGraphXdiv       );
    env.SetValue("Ascii2GraphDialog.GraphYdiv"		 , fGraphYdiv       );
    env.SetValue("Ascii2GraphDialog.GraphDrawMark"   , fGraphDrawMark   );
@@ -414,6 +426,8 @@ void Ascii2GraphDialog::RestoreDefaults()
    fGraphXtitle      = env.GetValue("Ascii2GraphDialog.GraphXtitle"	   , "Xvalues");
    fGraphYtitle      = env.GetValue("Ascii2GraphDialog.GraphYtitle"		, "Yvalues");
    fGraphXdiv        = env.GetValue("Ascii2GraphDialog.GraphXdiv"  		, 1);
+   fXaxisMin         = env.GetValue("Ascii2GraphDialog.XaxisMin"  		, 0);
+   fYaxisMin         = env.GetValue("Ascii2GraphDialog.YaxisMin"  		, 0);
    fGraphYdiv        = env.GetValue("Ascii2GraphDialog.GraphYdiv"  		, 1);
    fGraphDrawMark    = env.GetValue("Ascii2GraphDialog.GraphDrawMark" 	, 1);
    fGraphDrawLine    = env.GetValue("Ascii2GraphDialog.GraphDrawLine" 	, 0);
@@ -432,6 +446,14 @@ void Ascii2GraphDialog::Show_Head_of_File()
 {
    TString cmd(fGraphFileName.Data());
    cmd.Prepend("head ");
+   gSystem->Exec(cmd);
+}
+//_________________________________________________________________________
+            
+void Ascii2GraphDialog::Show_Tail_of_File()
+{
+   TString cmd(fGraphFileName.Data());
+   cmd.Prepend("tail ");
    gSystem->Exec(cmd);
 }
 //_________________________________________________________________________

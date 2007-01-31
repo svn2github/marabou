@@ -16,10 +16,13 @@ private:
    Int_t   fWiny;
    TString fCommand;
    TString fCommandHead;
+   TString fCommandTail;
    TString fGraphFileName;
    TString fGraphName;
    TString fGraphXtitle;
    TString fGraphYtitle;
+   Double_t fXaxisMin;
+   Double_t fYaxisMin;
    Int_t   fGraphColSelect; 
    Int_t   fGraphColSel1; 
    Int_t   fGraphColSel2; 
@@ -50,6 +53,7 @@ public:
    ~Ascii2GraphDialog();
    void Draw_The_Graph();
    void Show_Head_of_File();
+   void Show_Tail_of_File();
    Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads);
    void SaveDefaults();
    void RestoreDefaults();

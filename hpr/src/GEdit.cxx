@@ -80,10 +80,12 @@ ClassImp(GEdit)
 //____________________________________________________________________________
 #ifdef MARABOUVERS
 GEdit::GEdit(HTCanvas * parent)
+{
+   fHistPresent = parent->GetHistPresent();
 #else
 GEdit::GEdit(TCanvas * parent)
-#endif
 {
+#endif
    cout << "ctor GEdit, parent " << parent << endl;
    fParent = parent;
    fRootCanvas = (TRootCanvas*)parent->GetCanvas()->GetCanvasImp();
@@ -1645,6 +1647,7 @@ void GEdit::SetVisibilityOfEnclosingCuts(Bool_t visible)
 
 void GEdit::InsertHist()
 {
+   cout << "GEdit::InsertHist() " << endl;
    fParent->cd();
    if (!fHistPresent) return;
    TPad* pad = GetEmptyPad();
