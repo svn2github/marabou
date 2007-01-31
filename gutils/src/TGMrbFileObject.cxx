@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.13 2007-01-30 13:35:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.14 2007-01-31 15:13:14 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -280,12 +280,10 @@ Int_t TGMrbFileObjectCombo::GetSelection(TObjArray & SelArr, Bool_t FullPath) co
 		this->GetFileEntry(file, FullPath);
 		SelArr.Add(new TObjString(file.Data()));
 		TString item = lbEntry->GetText()->GetString();
-		Int_t idx = item.Index(")", 0) + 1;
-		if (idx < 0) idx = 0;
-		item = item(idx, item.Length());
-		idx = item.Index("[", 0) - 1;
-		if (idx < 0) idx = item.Length();
-		item.Resize(idx);
+		Int_t idx = item.Index(")", 0);
+		if (idx > 0) item = item(idx + 1, item.Length());
+		idx = item.Index("[", 0);
+		if (idx > 0) item.Resize(idx - 1);
 		item = item.Strip(TString::kBoth);
 		if (item.IsNull()) return(1);
 		SelArr.Add(new TObjString(item.Data()));
@@ -294,13 +292,13 @@ Int_t TGMrbFileObjectCombo::GetSelection(TObjArray & SelArr, Bool_t FullPath) co
 	return(0);
 }
 
-void TGMrbFileObjectCombo::OpenFile(const Char_t * FileName) {
+Bool_t TGMrbFileObjectCombo::OpenFile(const Char_t * FileName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbFileObjectCombo::OpenFile
 // Purpose:        Open root file
 // Arguments:      Char_t * FileName  -- file name
-// Results:        --
+// Results:        kTRUE/kFALSE
 // Description:    Open file given by selection
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -310,7 +308,7 @@ void TGMrbFileObjectCombo::OpenFile(const Char_t * FileName) {
 		TString err = "Not a ROOT file:\n";
 		err += FileName;
 		new TGMsgBox(fClient->GetRoot(), this, "TGMrbFileObjectCombo: Error", err.Data(), kMBIconStop);
-		return;
+		return(kFALSE);
 	}
 	this->SetFileEntry(FileName);
 	TList * fileKeys = rootFile->GetListOfKeys();
@@ -340,6 +338,7 @@ void TGMrbFileObjectCombo::OpenFile(const Char_t * FileName) {
 			idx++;
 		}
 	}
+	return(kTRUE);
 }
 
 TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
@@ -581,6 +580,30 @@ Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 	return(kTRUE);
 }
 
+void TGMrbFileObjectListBox::SetList(TObjArray & LofEntries) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectListBox::SetList
+// Purpose:        Set list entries
+// Arguments:      TObjArray & LofEntries  -- list of entries
+// Results:        
+// Exceptions:     
+// Description:    Inserts names into list
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fListBox->RemoveAll();
+	TIterator * iter = LofEntries.MakeIterator();
+	TObjString * str;
+	Int_t idx = 0;
+	while (str = (TObjString *) iter->Next()) {
+		fListBox->AddEntry(str->GetString(), idx);
+		fListBox->Layout();
+		idx++;
+	}
+	fStartIndex = -1;
+}
+
 void TGMrbFileObjectListBox::SetFileEntry(const Char_t * FileName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -696,12 +719,10 @@ Int_t TGMrbFileObjectListBox::GetSelection(TObjArray & SelArr, Bool_t FullPath) 
 		TGTextLBEntry * lbEntry = (TGTextLBEntry *) fListBox->GetEntry(i);
 		if (lbEntry) {
 			TString item = lbEntry->GetText()->GetString();
-			Int_t idx = item.Index(")", 0) + 1;
-			if (idx < 0) idx = 0;
-			item = item(idx, item.Length());
-			idx = item.Index("[", 0) - 1;
-			if (idx < 0) idx = item.Length();
-			item.Resize(idx);
+			Int_t idx = item.Index(")", 0);
+			if (idx > 0) item = item(idx + 1, item.Length());
+			idx = item.Index("[", 0);
+			if (idx > 0) item.Resize(idx - 1);
 			item = item.Strip(TString::kBoth);
 			if (!item.IsNull()) {
 				SelArr.Add(new TObjString(item.Data()));
@@ -712,13 +733,13 @@ Int_t TGMrbFileObjectListBox::GetSelection(TObjArray & SelArr, Bool_t FullPath) 
 	return(nofSelected);
 }
 
-void TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
+Bool_t TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbFileObjectListBox::OpenFile
 // Purpose:        Open root file
 // Arguments:      Char_t * FileName  -- file name
-// Results:        --
+// Results:        kTRUE/kFALSE
 // Description:    Open file given by selection
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -728,7 +749,7 @@ void TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
 		TString err = "Not a ROOT file:\n";
 		err += FileName;
 		new TGMsgBox(fClient->GetRoot(), this, "TGMrbFileObjectListBox: Error", err.Data(), kMBIconStop);
-		return;
+		return(kFALSE);
 	}
 	this->SetFileEntry(FileName);
 	TList * fileKeys = rootFile->GetListOfKeys();
@@ -762,5 +783,6 @@ void TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
 		}
 		key = (TKey *) fileKeys->After(key);
 	}
+	return(kTRUE);
 }
 

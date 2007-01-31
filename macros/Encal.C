@@ -3,7 +3,7 @@
 // Name:             Encal.C
 // Purpose:          Energy calibration for 1-dim histograms
 // Syntax:           .x Encal.C(Int_t CalSource,
-//                               const Char_t * HistoFile,
+//                               TObjArray * Histos,
 //                               const Char_t * CalFile,
 //                               const Char_t * ResFile,
 //                               const Char_t * PrecalFile,
@@ -17,7 +17,7 @@
 //                               Int_t DisplayFlag,
 //                               Int_t VerboseMode)
 // Arguments:        Int_t CalSource           -- Calibration source
-//                   Char_t * HistoFile        -- Histogram file (.root)
+//                   TObjArray * Histos        -- Histogram file (.root) & histograms
 //                   Char_t * CalFile          -- Calibration output file (.cal)
 //                   Char_t * ResFile          -- Results file (.res)
 //                   Char_t * PrecalFile       -- Precalibration file (.cal, needed if Eu152)
@@ -34,7 +34,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.4 2007-01-29 08:10:49 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.5 2007-01-31 15:13:14 Rudolf.Lutter Exp $
 // Date:             Wed Nov 29 10:34:10 2006
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -42,21 +42,21 @@
 //                   Width:               
 //                   Aclic:               +g
 //                   NofArgs:             14
-//                   Arg1.Name:           CalSource
-//                   Arg1.Title:          Calibration source
-//                   Arg1.Type:           Int_t
-//                   Arg1.EntryType:      Radio
-//                   Arg1.Default:        1
-//                   Arg1.Values:         Co60|calibrate using Co60 source=1:Eu152|calibrate using Eu152 source (Co60 precalibration needed)=2:TripleAlpha|calibrate using 3x alpha source=4
+//                   Arg1.Name:           HistoFile
+//                   Arg1.Title:          Histogram file (.root)
+//                   Arg1.Type:           Char_t *
+//                   Arg1.EntryType:      FObjListBox
+//                   Arg1.Default:        none.root
+//                   Arg1.Values:         ROOT files:*.root
 //                   Arg1.AddLofValues:   No
 //                   Arg1.Base:           dec
 //                   Arg1.Orientation:    horizontal
-//                   Arg2.Name:           HistoFile
-//                   Arg2.Title:          Histogram file (.root)
-//                   Arg2.Type:           Char_t *
-//                   Arg2.EntryType:      FObjListBox
-//                   Arg2.Default:        none.root
-//                   Arg2.Values:         ROOT files:*.root
+//                   Arg2.Name:           CalSource
+//                   Arg2.Title:          Calibration source
+//                   Arg2.Type:           Int_t
+//                   Arg2.EntryType:      Radio
+//                   Arg2.Default:        1
+//                   Arg2.Values:         Co60|calibrate using Co60 source=1:Eu152|calibrate using Eu152 source (Co60 precalibration needed)=2:TripleAlpha|calibrate using 3x alpha source=4
 //                   Arg2.AddLofValues:   No
 //                   Arg2.Base:           dec
 //                   Arg2.Orientation:    horizontal
@@ -166,18 +166,18 @@
 //                   Arg13.Name:          DisplayFlag
 //                   Arg13.Title:         Display results
 //                   Arg13.Type:          Int_t
-//                   Arg13.EntryType:     Radio
-//                   Arg13.Default:       2
-//                   Arg13.Values:        No|don't display results=1:Step|show each fit=2:2dim|show 2-dim histo after calibration=4:Step+2dim|options 2+3=6
+//                   Arg13.EntryType:     Check
+//                   Arg13.Default:       1
+//                   Arg13.Values:        Step|show each fit=1:2dim|show 2-dim histo after calibration=2
 //                   Arg13.AddLofValues:  No
 //                   Arg13.Base:          dec
 //                   Arg13.Orientation:   horizontal
 //                   Arg14.Name:          VerboseMode
 //                   Arg14.Title:         Verbose mode
 //                   Arg14.Type:          Int_t
-//                   Arg14.EntryType:     Radio
+//                   Arg14.EntryType:     YesNo
 //                   Arg14.Default:       1
-//                   Arg14.Values:        No=1:Yes=2:Debug=3
+//                   Arg14.Values:        
 //                   Arg14.AddLofValues:  No
 //                   Arg14.Base:          dec
 //                   Arg14.Orientation:   horizontal
@@ -212,10 +212,8 @@ enum	{	kBackEstOrder2 = 2 };
 enum	{	kBackEstCompton = 4 };
 enum	{	kFitModeGaus = 1 };
 enum	{	kFitModeGausTail = 2 };
-enum	{	kDisplayFlagNo = 1 };
-enum	{	kDisplayFlagStep = 2 };
-enum	{	kDisplayFlag2dim = 4 };
-enum	{	kDisplayFlagStep2dim = 6 };
+enum	{	kDisplayFlagStep = 1 };
+enum	{	kDisplayFlag2dim = 2 };
 enum	{	kVerboseModeNo = 1 };
 enum	{	kVerboseModeYes = 2 };
 enum	{	kVerboseModeDebug = 3 };
@@ -226,11 +224,29 @@ enum	{	kDialogOk = 1,
 			kDialogExit
 		};
 
+// global vars
+
+TMrbLogger * msg = NULL;
+
+// fitting
 Double_t nofPeaks = 1;
 Int_t binWidth = 1;
 Double_t tailSide = 1;
 
+// calibration
+TString calSource;
+
+Bool_t isTripleAlpha = kFALSE;
+Bool_t isCo60 = kFALSE;
+Bool_t isEu152 = kFALSE;
+Bool_t doCal = kFALSE;
+Int_t peaksNeeded = 0;
+
+// display
 Int_t dialogFlag = 0;
+Bool_t stepFlag = kFALSE;
+Bool_t show2dim = kFALSE;
+TCanvas * canv = NULL;
 
 Double_t gaus_lbg(Double_t * x, Double_t * par)
 {
@@ -289,7 +305,7 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
    Double_t tailwidth = par[1];
    Double_t bgconst   = par[2];
    Double_t bgslope   = par[3];
-   Double_t sigma     = par[4];
+   Double_t sigma = par[4];
 
 //  force widths /= 0
    if (tailwidth == 0)
@@ -312,8 +328,65 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
    return binWidth * fitval;
 }
 
-void Encal(Int_t CalSource = 1,
-           const Char_t * HistoFile = "none.root",
+void OpenCanvas() {
+	Int_t nBtns = 4;
+	Int_t canvw = 700;
+	Int_t canvh = 500;
+	Double_t xpx = 1./canvw;
+	Double_t x0 = 100 * xpx;
+	Double_t wdth = (canvw - 200) * xpx / nBtns;
+	Double_t y0 = 0.03;
+	Double_t y1 = 0.08;
+
+	canv = new TCanvas("EncalCanv", "Energy Calibration Tool", canvw, canvh);
+	canv->Divide(1,2);
+
+	TButton * btnOk = new TButton("ok", "dialogFlag = kDialogOk;", x0, y0, x0 + wdth, y1);
+	btnOk->SetCursor(kHand);
+	btnOk->Draw();
+	TButton * btnDiscard = new TButton("discard", "dialogFlag = kDialogDiscard;", x0 + wdth, y0, x0 + 2 * wdth, y1);
+	btnDiscard->SetCursor(kHand);
+	btnDiscard->Draw();
+	TButton * btnQuit = new TButton("quit", "dialogFlag = kDialogQuit;", x0 + 2 * wdth, y0, x0 + 3 * wdth, y1);
+	btnQuit->SetCursor(kHand);
+	btnQuit->Draw();
+	TButton * btnExit = new TButton("exit", "gSystem->Exit(0);", x0 + 3 * wdth, y0, x0 + 4 * wdth, y1);
+	btnExit->SetCursor(kHand);
+	btnExit->Draw();
+	canv->Update();
+
+	canv->cd(2);
+	gPad->SetBottomMargin(.2);
+	canv->cd();
+}
+
+Bool_t CheckCalSource(Int_t CalSource) {
+	switch (CalSource) {
+		case kCalSourceTripleAlpha:
+			calSource = "TripleAlpha";
+			isTripleAlpha = kTRUE;
+			peaksNeeded = 3;
+			return(kTRUE);
+		case kCalSourceCo60:
+			calSource = "Co60";
+			isCo60 = kTRUE;
+			peaksNeeded = 2;
+			break;
+		case kCalSourceEu152:
+			calSource = "Eu152";
+			isEu152 = kTRUE;
+			peaksNeeded = 5;
+			break;
+	}
+		
+	msg->Err()	<< "Calibration source not yet implemented - " << calSource
+				<< ", performing peak fitting only" << endl;
+	msg->Flush("Encal.C");
+	return(kFALSE);
+}
+
+void Encal(TObjArray * Histos,
+           Int_t CalSource = 1,
            const Char_t * CalFile = "Encal.cal",
            const Char_t * ResFile = "Encal.res",
            const Char_t * PrecalFile = "Co60.cal",
@@ -327,21 +400,19 @@ void Encal(Int_t CalSource = 1,
            Int_t DisplayFlag = kDisplayFlagStep,
            Int_t VerboseMode = kVerboseModeNo)
 {
-	TMrbLogger * msg = new TMrbLogger("Encal.log");
+	msg = new TMrbLogger("Encal.log");
 
-	TString hfStr = HistoFile;
-	TString delim = ":";
-	hfStr = hfStr.Strip(TString::kBoth);
-	TObjArray * lofHistos = hfStr.Tokenize(delim);
+	show2dim = ((DisplayFlag & kDisplayFlag2dim) != 0);
+	stepFlag = ((DisplayFlag & kDisplayFlagStep) != 0);
 
-	Int_t nofHistos = lofHistos->GetEntriesFast();
+	Int_t nofHistos = Histos->GetEntriesFast();
 	if (nofHistos == 0) {
 		msg->Err() << "No histogram file given" << endl;
 		msg->Flush("Encal.C");
 		return;
 	}
 
-	TIterator * hIter = lofHistos->MakeIterator();
+	TIterator * hIter = Histos->MakeIterator();
 	TObjString * h;
 	h = (TObjString *) hIter->Next();
 
@@ -370,19 +441,7 @@ void Encal(Int_t CalSource = 1,
 		return;
 	}
 
-	TString calSource;
-	if (CalSource == kCalSourceTripleAlpha) {
-		calSource = "TripleAlpha";
-	} else {
-		TString s;
-		switch (CalSource) {
-			case kCalSourceCo60:	calSource = "Co60"; break;
-			case kCalSourceEu152:	calSource = "Eu152"; break;
-		}
-		msg->Err()	<< "Calibration source not yet implemented - " << calSource
-					<< ", performing peak fitting only" << endl;
-		msg->Flush("Encal.C");
-	}
+	doCal = CheckCalSource(CalSource);
 
 	TEnv res(ResFile);
 	if (VerboseMode & kVerboseModeYes) {
@@ -404,35 +463,7 @@ void Encal(Int_t CalSource = 1,
 	cal.SetValue("Calib.Source", calSource.Data());
 	cal.SetValue("Calib.NofHistograms", nofHistos - 1);
 
-	Int_t nBtns = 4;
-	Int_t canvw = 700;
-	Int_t canvh = 500;
-	Double_t pixx = 1./canvw;
-	Double_t pixy = 1./canvh;
-	Double_t x0 = 100 * pixx;
-	Double_t w = (canvw - 200) * pixx / nBtns;
-	Double_t y0 = 0.03;
-	Double_t y1 = 0.08;
-
-	TCanvas * canv = new TCanvas("EncalCanv", "Energy Calibration Tool", canvw, canvh);
-	canv->Divide(1,2);
-
-	TButton * btnOk = new TButton("ok", "dialogFlag = kDialogOk;", x0, y0, x0 + w, y1);
-	btnOk->SetCursor(kHand);
-	btnOk->Draw();
-	TButton * btnDiscard = new TButton("discard", "dialogFlag = kDialogDiscard;", x0 + w, y0, x0 + 2 * w, y1);
-	btnDiscard->SetCursor(kHand);
-	btnDiscard->Draw();
-	TButton * btnQuit = new TButton("quit", "dialogFlag = kDialogQuit;", x0 + 2 * w, y0, x0 + 3 * w, y1);
-	btnQuit->SetCursor(kHand);
-	btnQuit->Draw();
-	TButton * btnExit = new TButton("exit", "gSystem->Exit(0);", x0 + 3 * w, y0, x0 + 4 * w, y1);
-	btnExit->SetCursor(kHand);
-	btnExit->Draw();
-	canv->Update();
-
-	canv->cd(2);
-	gPad->SetBottomMargin(.2);
+	OpenCanvas();
 
 	while (h = (TObjString *) hIter->Next()) {
 		dialogFlag = 0;
@@ -550,8 +581,8 @@ void Encal(Int_t CalSource = 1,
 			canv->cd(2);
 			gPad->Clear();
 
-			if (CalSource == kCalSourceTripleAlpha) {
-				if (nPeaks >= 3) { 
+			if (isTripleAlpha) {
+				if (nPeaks >= peaksNeeded) { 
 					TArrayF calX(3);
 					TArrayF calE(3);
 					TArrayF calXerr(3);
@@ -572,7 +603,33 @@ void Encal(Int_t CalSource = 1,
 
 					TGraphErrors * calib = new TGraphErrors(3, calX.GetArray(), calE.GetArray(), calXerr.GetArray(), calEerr.GetArray());
 					calib->SetName(Form("c_%s", hist.Data()));
-					calib->SetTitle(Form("Calibration for histo %s", hist.Data()));
+					calib->SetTitle(Form("%s Calibration for histo %s", calSource.Data(), hist.Data()));
+					calib->Draw("A*");
+					calib->Fit("pol1");
+					pol1 = calib->GetFunction("pol1");
+					pol1->SetLineColor(2);
+				}
+			} else if (isCo60) {
+				if (nPeaks >= peaksNeeded) { 
+					TArrayF calX(2);
+					TArrayF calE(2);
+					TArrayF calXerr(2);
+					TArrayF calEerr(2);
+
+					Int_t k = nPeaks - 1;
+					for (Int_t i = 1; i >= 0; i--, k--) {
+						calX[i] = fx[k];
+						calXerr[i] = fxe[k];
+					}
+
+ 					calE[0] = 1173.24;
+					calE[1] = 1332.5;
+					calEerr[0] = 1;
+					calEerr[1] = 1;
+
+					TGraphErrors * calib = new TGraphErrors(2, calX.GetArray(), calE.GetArray(), calXerr.GetArray(), calEerr.GetArray());
+					calib->SetName(Form("c_%s", hist.Data()));
+					calib->SetTitle(Form("%s Calibration for histo %s", calSource.Data(), hist.Data()));
 					calib->Draw("A*");
 					calib->Fit("pol1");
 					pol1 = calib->GetFunction("pol1");
@@ -590,9 +647,9 @@ void Encal(Int_t CalSource = 1,
 			}
 			cout << "=========================================================================" << endl;
 
-			if ((CalSource == kCalSourceTripleAlpha) && (nPeaks < 3)) {
+			if (nPeaks < peaksNeeded) {
 				msg->Err()	<< "Wrong number of peaks - " << nPeaks
-							<< " (TripleAlpha needs at least 3 peaks)" << endl;
+							<< " (" << calSource << " calibration needs at least " << peaksNeeded << " peaks)" << endl;
 				msg->Flush("Encal.C");
 				fitOk = "FALSE";
 			}
@@ -600,9 +657,14 @@ void Encal(Int_t CalSource = 1,
 			canv->Update();
 			gSystem->ProcessEvents();
 		} else {
+			canv->cd(1);
 			h->Draw();
 			msg->Err()	<< "No peaks found in histogram - " << hist << endl;
 			msg->Flush("Encal.C");
+			canv->cd(2);
+			gPad->Clear();
+			canv->Update();
+			gSystem->ProcessEvents();
 			fitOk = "FALSE";
 		}
 
@@ -620,7 +682,7 @@ void Encal(Int_t CalSource = 1,
 			res.SetValue(Form("Calib.%s.Peak.%d.Chi2", hist.Data(), i), chi2[i]);
 		}
 
-		if (DisplayFlag & kDisplayFlagStep) {
+		if (stepFlag) {
 			while (dialogFlag == 0) {
 				gSystem->Sleep(50);
 				gSystem->ProcessEvents();

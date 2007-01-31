@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.19 2007-01-30 14:36:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.20 2007-01-31 15:13:14 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -770,6 +770,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 
 	TObjArray * lofSpecialButtons;
 	
+	TObjArray lofValues;
+
 	TString inputFile;
 	Int_t nft;
 
@@ -897,6 +899,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 		macroArg->fEntryWidth = macroEnv->GetValue(macroArg->GetResource(argName, "Width"), defaultEntryWidth);
 
 		Int_t nofVals = curEnv->GetValue(macroArg->GetResource(argName, "Current.NofValues"), 0);
+		lofValues.Delete();
 		if (nofVals == 0) {
 			currentValue = curEnv->GetValue(macroArg->GetResource(argName, "Current"), "");
 			currentValue = currentValue.Strip(TString::kBoth);
@@ -905,8 +908,11 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			currentValue = "";
 			for (Int_t k = 0; k < nofVals; k++) {
 				TString vStr = curEnv->GetValue(macroArg->GetResource(argName, Form("Current.%d", k)), "");
-				if (k > 0) currentValue += ":";
-				currentValue += vStr;
+				if (k == 0) {
+					currentValue = vStr;
+				} else {
+					lofValues.Add(new TObjString(vStr.Data()));
+				}
 			}
 		}
 
@@ -1015,11 +1021,11 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 							m = strtol(s.Data(), NULL, intBase);
 							str.Resize(nsep);
 						}
-						Int_t ntip = str.Index("|", 0);
-						if (ntip > 0) {
-							tip = str(ntip + 1, 1000);
-							str.Resize(ntip);
-						}
+					}
+					Int_t ntip = str.Index("|", 0);
+					if (ntip > 0) {
+						tip = str(ntip + 1, 1000);
+						str.Resize(ntip);
 					}
 					macroArg->fButtons.AddNamedX(new TMrbNamedX(m, str.Data(), (tip.Length() > 0) ? tip.Data() : NULL));
 					m <<= 1;
@@ -1049,10 +1055,9 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					HEAP(macroArg->fCheck);
 					fMacroArgs->AddFrame(macroArg->fCheck, frameGC->LH());
 					value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
-					UInt_t pattern = macroArg->fButtons.FindPattern(value.Data());
-					if (pattern != TMrbLofNamedX::kIllIndexBit) {
-						macroArg->fCheck->SetState(pattern, kButtonDown);
-					}
+					Int_t pattern;
+					value.ToInteger(pattern);
+					macroArg->fCheck->SetState(pattern, kButtonDown);
 				} else if (n == TGMrbMacroArg::kGMrbMacroEntryCombo) {
 					macroArg->fCombo = new TGMrbLabelCombo(fMacroArgs, argTitle.Data(), &macroArg->fButtons,
 														TGMrbMacroFrame::kEntryId + i + 1, -1,
@@ -1113,6 +1118,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			fMacroArgs->AddFrame(macroArg->fFObjCombo, frameGC->LH());
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
 			macroArg->fFObjCombo->SetFileEntry(value.Data());
+			macroArg->fFObjCombo->OpenFile(value.Data());
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
 			macroArg->fFObjListBox = new TGMrbFileObjectListBox(fMacroArgs, argTitle.Data(), 100,
 												TGMrbMacroFrame::kEntryId + i + 1,
@@ -1125,7 +1131,9 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			HEAP(macroArg->fFObjListBox);
 			fMacroArgs->AddFrame(macroArg->fFObjListBox, frameGC->LH());
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
-			macroArg->fFObjListBox->SetFileEntry(" ");
+			macroArg->fFObjListBox->SetFileEntry(value.Data());
+			macroArg->fFObjListBox->OpenFile(value.Data());
+			if (nofVals > 0) macroArg->fFObjListBox->SetList(lofValues);
 		}
 	}
 
@@ -1365,8 +1373,6 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 		}
 	}
 	cmd += ");";
-
-	cout << "@@@ " << cmd << endl;
 
 	TString macroName = macroEnv->GetValue("Name", "macro.C");
 	macroName = macroName(0, macroName.Index(".C"));

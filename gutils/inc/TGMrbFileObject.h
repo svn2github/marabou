@@ -11,7 +11,7 @@
 //                                           a list box containing file objects
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFileObject.h,v 1.7 2007-01-30 12:22:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.h,v 1.8 2007-01-31 15:13:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -60,6 +60,8 @@ class TGMrbFileObjectCombo: public TGCompositeFrame, public TGMrbObject {
 		inline TGTextEntry * GetEntry() const { return(fEntry); };
 		inline TGComboBox * GetComboBox() const { return(fCombo); };
 
+		Bool_t OpenFile(const Char_t * FileName);
+
 		void SetFileEntry(const Char_t * File);
 		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file
 		Int_t GetSelectionAsString(TString & SelItem, Bool_t FullPath = kTRUE) const;  // get selected file/object -- string
@@ -73,9 +75,6 @@ class TGMrbFileObjectCombo: public TGCompositeFrame, public TGMrbObject {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
-
-	protected:
-		void OpenFile(const Char_t * FileName);
 
 	protected:
 		TGVerticalFrame * fEC;				//!
@@ -130,6 +129,10 @@ class TGMrbFileObjectListBox: public TGCompositeFrame, public TGMrbObject {
 		inline TGTextEntry * GetEntry() const { return(fEntry); };
 		inline TGListBox * GetListBox() const { return(fListBox); };
 
+		Bool_t OpenFile(const Char_t * FileName);
+		void SetList(TObjArray & LofEntries);
+		inline void ClearList() { fListBox->RemoveAll(); };
+
 		void SetFileEntry(const Char_t * File);
 		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file
 		Int_t GetSelectionAsString(TString & SelItem, Bool_t FullPath = kTRUE) const;	// get selected file/object -- string
@@ -143,9 +146,6 @@ class TGMrbFileObjectListBox: public TGCompositeFrame, public TGMrbObject {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
-
-	protected:
-		void OpenFile(const Char_t * FileName);
 
 	protected:
 		TGVerticalFrame * fEC;				//!
