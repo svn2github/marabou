@@ -1647,7 +1647,7 @@ void GEdit::SetVisibilityOfEnclosingCuts(Bool_t visible)
 
 void GEdit::InsertHist()
 {
-   cout << "GEdit::InsertHist() " << endl;
+//   cout << "GEdit::InsertHist() " << endl;
    fParent->cd();
    if (!fHistPresent) return;
    TPad* pad = GetEmptyPad();

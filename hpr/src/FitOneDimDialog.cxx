@@ -585,12 +585,12 @@ void FitOneDimDialog::FitOneDimExecute()
    if (params == NULL) {
       params    = new TArrayD(3 * npars);
       setpars = kTRUE;
-//      if (setpars)  cout << "new setpars true" << endl;
+      if (setpars)  cout << "new setpars true" << endl;
    } else {
       if (params->GetSize() != 3 * npars) {
          params->Set(3 * npars);
          setpars = kTRUE;
-//         if (setpars)  cout << "size setpars true" << endl;;
+         if (setpars)  cout << "size setpars true" << endl;;
       }
    }
 //   cout << "npars: " << npars << endl;
@@ -636,10 +636,12 @@ void FitOneDimDialog::FitOneDimExecute()
    if (gTailSide != 0) {
       func->SetParName(ind,      "Ta_fract");
       row_lab.Add(new TObjString("Ta_fract"));
-      if (setpars) (*params)[ind++] = 1;
+      if (setpars) (*params)[ind] = 1;
+      ind++;
       func->SetParName(ind,      "Ta_width");
       row_lab.Add(new TObjString("Ta_width"));
-      if (setpars) (*params)[ind++] = 5;
+      if (setpars) (*params)[ind] = 5;
+      ind++;
       (*fbflags)[2] = fBackg0;
       (*fbflags)[3] = fSlope0;
    }
@@ -648,12 +650,14 @@ void FitOneDimDialog::FitOneDimExecute()
    if (fBackg0 == 0 || fUsedbg == 1|| gTailSide != 0) {
       func->SetParName(ind,      "Bg_Const");
       row_lab.Add(new TObjString("Bg_Const"));
-      if (setpars) (*params)[ind++] = bgest/fSelHist->GetBinWidth(bin_from);
+      if (setpars) (*params)[ind] = bgest/fSelHist->GetBinWidth(bin_from);
+      ind++;
    }
    if (fSlope0 == 0 || fUsedbg == 1 || gTailSide != 0) {
       func->SetParName(ind,      "Bg_Slope");
       row_lab.Add(new TObjString("Bg_Slope"));
-      if (setpars) (*params)[ind++] = 0;
+      if (setpars) (*params)[ind] = 0;
+      ind++;
    }
 //   cout << "fNmarks " <<  fNmarks<< endl;
    TString lab; 
@@ -663,7 +667,8 @@ void FitOneDimDialog::FitOneDimExecute()
       func->SetParName(ind,      "Ga_Sigma_");
       row_lab.Add(new TObjString("Ga_Sigma_"));
       ind_sigma = ind;
-      if (setpars) (*params)[ind++] = -1;                        // Sigma
+      if (setpars) (*params)[ind] = -1;                        // Sigma
+      ind++;
    }
    if (fNmarks == 2) {
 // 2 marks only assume peak in between
@@ -674,17 +679,20 @@ void FitOneDimDialog::FitOneDimExecute()
          GetGaussEstimate(fGraph, fFrom, fTo, bgest, gpar);
       func->SetParName(ind,      "Ga_Const0");
       row_lab.Add(new TObjString("Ga_Const0"));
-      if (setpars) (*params)[ind++]     = gpar[0];
+      if (setpars) (*params)[ind]     = gpar[0];
+      ind++;
       if (gTailSide != 0) (*params)[ind -1] *= 0.5;
       func->SetParName(ind,      "Ga_Mean_0");
       row_lab.Add(new TObjString("Ga_Mean_0"));
-      if (setpars) (*params)[ind++]     = gpar[1];
+      if (setpars) (*params)[ind]     = gpar[1];
+      ind++;
       if (fOnesig == 1) {
          if (setpars) (*params)[ind_sigma] = gpar[2];
       } else {
          func->SetParName(ind,      "Ga_Sigma_");
          row_lab.Add(new TObjString("Ga_Sigma_"));
-         if (setpars) (*params)[ind++] = gpar[2];                // Sigma
+         if (setpars) (*params)[ind] = gpar[2];                // Sigma
+         ind++;
       }
 
    } else {
@@ -705,12 +713,14 @@ void FitOneDimDialog::FitOneDimExecute()
          lab += (i - 1);
          func->SetParName(ind,  lab.Data() );
          row_lab.Add(new TObjString(lab.Data()));
-         if (setpars) (*params)[ind++]     = gpar[0];
+         if (setpars) (*params)[ind]     = gpar[0];
+         ind++;
          lab = "Ga_Mean_";
          lab += (i - 1);
          func->SetParName(ind,  lab.Data() );
          row_lab.Add(new TObjString(lab.Data()));
-         if (setpars) (*params)[ind++]     = gpar[1];
+         if (setpars) (*params)[ind]     = gpar[1];
+         ind++;
          if (fOnesig == 1) {
             if (gpar[2] > (*params)[ind_sigma])         // use biggest sigma as est
                if (setpars) (*params)[ind_sigma] = gpar[2];
@@ -719,7 +729,8 @@ void FitOneDimDialog::FitOneDimExecute()
             lab += (i - 1);
             func->SetParName(ind,  lab.Data() );
             row_lab.Add(new TObjString(lab.Data()));
-            if (setpars) (*params)[ind++]     = gpar[2];
+            if (setpars) (*params)[ind]     = gpar[2];
+            ind++;
          }
 
       }
