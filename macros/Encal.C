@@ -38,7 +38,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.8 2007-02-02 11:39:16 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.9 2007-02-02 14:15:07 Rudolf.Lutter Exp $
 // Date:             Fri Feb  2 09:30:23 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -529,6 +529,7 @@ void ShowResults2dim(TFile * HistoFile, Int_t LowerLim, Int_t UpperLim, Double_t
 	TString hTitle = Form("Calibration restults: file %s, %d histogram(s)", HistoFile->GetName(), nofHistos);
  	TCanvas * c = new TCanvas();
 	TH2S * hCal = new TH2S("hCal", hTitle.Data(), (UpperLim - LowerLim), Emin, Emax, nofHistos, 0, nofHistos);
+	TAxis * yAxis = hCal->GetYaxis();
 	TList * lofEntries = (TList *) cal->GetTable();
 	TIterator * iter = lofEntries->MakeIterator();
 	TEnvRec * r;
@@ -553,8 +554,9 @@ void ShowResults2dim(TFile * HistoFile, Int_t LowerLim, Int_t UpperLim, Double_t
 						hCal->Fill((Axis_t) x, (Axis_t) nh);
 					}
 				}
+				yAxis->SetBinLabel(nh, hn.Data());
+				nh++;
 			}
-			nh++;
 		}
 		delete a;
 	}
