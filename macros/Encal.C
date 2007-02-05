@@ -38,7 +38,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.9 2007-02-02 14:15:07 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.10 2007-02-05 15:08:21 Rudolf.Lutter Exp $
 // Date:             Fri Feb  2 09:30:23 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -254,9 +254,9 @@ enum	{	kColorWhite = 10,
 TMrbLogger * msg = NULL;
 
 // fitting
-Double_t nofPeaks = 1;
-Int_t binWidth = 1;
-Double_t tailSide = 1;
+Int_t fitNofPeaks = 1;
+Int_t fitBinWidth = 1;
+Int_t fitTailSide = 1;
 
 // calibration
 TString calSource;
@@ -300,11 +300,11 @@ Double_t gaus_lbg(Double_t * x, Double_t * par)
    Double_t sigma   = par[2];
    if (sigma == 0) sigma = 1;               //  force widths /= 0
    fitval = fitval + bgconst + x[0] * bgslope;
-   for (Int_t i = 0; i < nofPeaks; i ++) {
+   for (Int_t i = 0; i < fitNofPeaks; i ++) {
       arg = (x[0] - par[4 + 2 * i]) / (sqrt2 * sigma);
       fitval = fitval + par[3 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
-   return binWidth * fitval;
+   return fitBinWidth * fitval;
 }
 
 Double_t gaus_tail(Double_t * x, Double_t * par)
@@ -344,10 +344,10 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
       sigma = 1;
 
    fitval = fitval + bgconst + x[0] * bgslope;
-   for (Int_t i = 0; i < nofPeaks; i++) {
+   for (Int_t i = 0; i < fitNofPeaks; i++) {
       xij = (x[0] - par[6 + 2 * i]);
       arg = xij / (sqrt2 * sigma);
-      xij *= tailSide;
+      xij *= fitTailSide;
       tail = exp(xij / tailwidth) / tailwidth;
       g2b = 0.5 * sigma / tailwidth;
       err = 0.5 * tailfrac * par[5 + 2 * i] * TMath::Erfc(xij / sigma + g2b);
@@ -355,7 +355,7 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
       fitval = fitval + norm * err * tail 
                       + par[5 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
-   return binWidth * fitval;
+   return fitBinWidth * fitval;
 }
 
 void WaitForButtonPressed() {
@@ -554,8 +554,8 @@ void ShowResults2dim(TFile * HistoFile, Int_t LowerLim, Int_t UpperLim, Double_t
 						hCal->Fill((Axis_t) x, (Axis_t) nh);
 					}
 				}
-				yAxis->SetBinLabel(nh, hn.Data());
 				nh++;
+				yAxis->SetBinLabel(nh, hn.Data());
 			}
 		}
 		delete a;
@@ -644,10 +644,10 @@ void Encal(TObjArray * Histos = NULL,
 
 	canv = DrawCanvas();
 
-	Double_t eMin = 1e+20;
-	Double_t eMax = 0;
-	Int_t xMin = 100000;
-	Int_t xMax = 0;
+	Double_t eMin = res->GetValue("Calib.Emin", 1e+20);
+	Double_t eMax = res->GetValue("Calib.Emax", 0);
+	Int_t xMin = res->GetValue("Calib.Xmin", 100000);
+	Int_t xMax = res->GetValue("Calib.Xmax", 0);
 
 	Int_t nofHistosCalibrated = 0;
 	while (hStr = (TObjString *) hIter->Next()) {
@@ -708,58 +708,131 @@ void Encal(TObjArray * Histos = NULL,
 			chi2.Set(nPeaks);
 
 			TF1 * fit;
-			if (FitMode == 1) {
-				for (Int_t i = 0; i < nPeaks; i++) {
-					Double_t p[7];
+			if (FitMode == kFitModeGausTail) {
+				if (FitGrouping == kFitGroupingSinglePeak) {
+					fitNofPeaks = 1;
+					Int_t nPar = 5 + 2 * fitNofPeaks;
+					for (Int_t i = 0; i < nPeaks; i++) {
+						TArrayD p(nPar);
+						// tail
+						p[0] = 1;
+						p[1] = Sigma;
+						// linear background
+						p[2] = h->GetBinContent(h->FindBin(px[i] - FitRange * Sigma));
+						p[3] = 0.;
+						// gauss
+						p[4] = Sigma;
+						p[5] = py[i];
+						p[6] = px[i];
+
+						fit = new TF1(Form("g%d", i), gaus_tail, px[i] - FitRange * Sigma, px[i] + FitRange * Sigma, nPar);
+						fit->SetParameters(p.GetArray());
+						cout << "Gaussian/tail params for peak #" << i << ":" << endl;
+						for (Int_t k = 0; k < 7; k++) cout << "    p" << k << "=" << p[k] << endl;
+						fit->SetLineColor(2);
+						h->Fit(fit, (i == 0) ? "R" : "R+");
+						fit->GetParameters(p.GetArray());
+						fx[i] = p[6];
+						fy[i] = p[5];
+						fxe[i] = fit->GetParError(6);
+						fye[i] = fit->GetParError(5);
+						Int_t ndf = TMath::Max(1, fit->GetNDF());
+						chi2[i] = fit->GetChisquare() / ndf;
+					}
+				} else if (FitGrouping == kFitGroupingEnsemble){
+					fitNofPeaks = nPeaks;
+					Int_t nPar = 5 + 2 * fitNofPeaks;
+					TArrayD p(nPar);
 					// tail
 					p[0] = 1;
 					p[1] = Sigma;
 					// linear background
-					p[2] = h->GetBinContent(h->FindBin(px[i] - FitRange * Sigma));
+					p[2] = h->GetBinContent(h->FindBin(px[0] - FitRange * Sigma));
 					p[3] = 0.;
 					// gauss
 					p[4] = Sigma;
-					p[5] = py[i];
-					p[6] = px[i];
+					Int_t k = 5;
+					for (Int_t i = 0; i < nPeaks; i++, k+= 2) {
+						p[k] = py[i];
+						p[k + 1] = px[i];
+					}
 
-					fit = new TF1(Form("g%d", i), gaus_tail, px[i] - FitRange * Sigma, px[i] + FitRange * Sigma, 7);
-					fit->SetParameters(p);
-					cout << "Peak #" << i << ":" << endl;
-					for (Int_t k = 0; k < 7; k++) cout << "    p" << k << "=" << p[k] << endl;
+					fit = new TF1("g_group", gaus_tail, px[0] - FitRange * Sigma, px[nPeaks - 1] + FitRange * Sigma, nPar);
+					fit->SetParameters(p.GetArray());
+					cout << "Gaussian/tail params for group of " << nPeaks << " peaks:" << endl;
+					for (Int_t k = 0; k < nPar; k++) cout << "    p" << k << "=" << p[k] << endl;
 					fit->SetLineColor(2);
-					h->Fit(fit, (i == 0) ? "R" : "R+");
-					fit->GetParameters(p);
-					fx[i] = p[6];
-					fy[i] = p[5];
-					fxe[i] = fit->GetParError(6);
-					fye[i] = fit->GetParError(5);
+					h->Fit(fit, "R");
+					fit->GetParameters(p.GetArray());
 					Int_t ndf = TMath::Max(1, fit->GetNDF());
-					chi2[i] = fit->GetChisquare() / ndf;
+					k = 5;
+					for (Int_t i = 0; i < nPeaks; i++, k+= 2) {
+						fy[i] = p[k];
+						fye[i] = fit->GetParError(k);
+						fx[i] = p[k + 1];
+						fxe[i] = fit->GetParError(k + 1);
+						chi2[i] = fit->GetChisquare() / ndf;
+					}
 				}
-			} else {
-				for (Int_t i = 0; i < nPeaks; i++) {
-					Double_t p[5];
+			} else if (FitMode == kFitModeGaus) {
+				if (FitGrouping == kFitGroupingSinglePeak) {
+					fitNofPeaks = 1;
+					Int_t nPar = 3 + 2 * fitNofPeaks;
+					for (Int_t i = 0; i < nPeaks; i++) {
+						TArrayD p(nPar);
+						// linear background
+						p[0] = h->GetBinContent(h->FindBin(px[i] - FitRange * Sigma));
+						p[1] = 0.;
+						// gauss
+						p[2] = Sigma;
+						p[3] = py[i];
+						p[4] = px[i];
+
+						fit = new TF1(Form("g%d", i), gaus_lbg, px[i] - FitRange * Sigma, px[i] + FitRange * Sigma, nPar);
+						fit->SetParameters(p.GetArray());
+						cout << "Gaussian params for peak #" << i << ":" << endl;
+						for (Int_t k = 0; k < 5; k++) cout << "    p" << k << "=" << p[k] << endl;
+						fit->SetLineColor(2);
+						h->Fit(fit, (i == 0) ? "R" : "R+");
+						fit->GetParameters(p.GetArray());
+						fy[i] = p[3];
+						fye[i] = fit->GetParError(3);
+						fx[i] = p[4];
+						fxe[i] = fit->GetParError(4);
+						Int_t ndf = TMath::Max(1, fit->GetNDF());
+						chi2[i] = fit->GetChisquare() / ndf;
+					}
+				} else if (FitGrouping == kFitGroupingEnsemble){
+					fitNofPeaks = nPeaks;
+					Int_t nPar = 3 + 2 * fitNofPeaks;
+					TArrayD p(nPar);
 					// linear background
-					p[0] = h->GetBinContent(h->FindBin(px[i] - FitRange * Sigma));
+					p[0] = h->GetBinContent(h->FindBin(px[0] - FitRange * Sigma));
 					p[1] = 0.;
 					// gauss
 					p[2] = Sigma;
-					p[3] = py[i];
-					p[4] = px[i];
+					Int_t k = 3;
+					for (Int_t i = 0; i < nPeaks; i++, k += 2) {
+						p[k] = py[i];
+						p[k + 1] = px[i];
+					}
 
-					fit = new TF1(Form("g%d", i), gaus_lbg, px[i] - FitRange * Sigma, px[i] + FitRange * Sigma, 5);
-					fit->SetParameters(p);
-					cout << "Peak #" << i << ":" << endl;
-					for (Int_t k = 0; k < 5; k++) cout << "    p" << k << "=" << p[k] << endl;
+					fit = new TF1("g_group", gaus_lbg, px[0] - FitRange * Sigma, px[nPeaks - 1] + FitRange * Sigma, nPar);
+					fit->SetParameters(p.GetArray());
+					cout << "Gaussian params for group of " << nPeaks << " peaks:" << endl;
+					for (Int_t k = 0; k < nPar; k++) cout << "    p" << k << "=" << p[k] << endl;
 					fit->SetLineColor(2);
-					h->Fit(fit, (i == 0) ? "R" : "R+");
-					fit->GetParameters(p);
-					fx[i] = p[4];
-					fy[i] = p[3];
-					fxe[i] = fit->GetParError(4);
-					fye[i] = fit->GetParError(3);
+					h->Fit(fit, "R");
+					fit->GetParameters(p.GetArray());
 					Int_t ndf = TMath::Max(1, fit->GetNDF());
-					chi2[i] = fit->GetChisquare() / ndf;
+					k = 3;
+					for (Int_t i = 0; i < nPeaks; i++, k += 2) {
+						fy[i] = p[k];
+						fye[i] = fit->GetParError(k);
+						fx[i] = p[k + 1];
+						fxe[i] = fit->GetParError(k + 1);
+						chi2[i] = fit->GetChisquare() / ndf;
+					}
 				}
 			}
 
@@ -891,6 +964,11 @@ void Encal(TObjArray * Histos = NULL,
 		res->SetValue(Form("Calib.%s.FitOk", hist.Data()), fitOk);
 		nofHistosCalibrated++;
 	}
+
+	res->SetValue("Calib.Emin", eMin);
+	res->SetValue("Calib.Emax", eMax);
+	res->SetValue("Calib.Xmin", xMin);
+	res->SetValue("Calib.Xmax", xMax);
 
 	CloseResultFiles();
 
