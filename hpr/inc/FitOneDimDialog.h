@@ -58,10 +58,11 @@ private:
 public:
    FitOneDimDialog(TH1 * hist);
    FitOneDimDialog(TGraph * graph);
-   void DisplayMenu();
+   void DisplayMenu(Int_t type = 1);
    virtual ~FitOneDimDialog();
    void RecursiveRemove(TObject * obj);
-   void FitOneDimExecute();
+   void FitGausExecute();
+   void FitPolyExpExecute();
 //   void AddToCalibration();
    void SetFitOptions(){};
    Int_t GetMaxBin(TH1 * h1, Int_t binl, Int_t binu);

@@ -23,9 +23,11 @@ using std::endl;
 //__________________________________________________________________________
 //
 //  globals needed for non member fitting functions
-Int_t    gNpeaks;
-Double_t gTailSide;   // if tail determines side: 1 left(low), -1 high(right)
-Float_t  gBinW;
+//Int_t    lNpeaks;
+//Double_t lTailSide;   // if tail determines side: 1 left(low), -1 high(right)
+//Float_t  lBinW;
+static const Int_t kFix = 3;
+
 //___________________________________________________________________________  
 //___________________________________________________________________________
 
@@ -33,24 +35,28 @@ Double_t gaus_only(Double_t * x, Double_t * par)
 {
 /*
   gaus + linear background
-  par[0]   gauss width
-  par[1]   gauss0 constant
-  par[2]   gauss0 mean
-  par[3]   gauss1 constant
+  par[kFix +0]   gauss width
+  par[kFix +1]   gauss0 constant
+  par[kFix +2]   gauss0 mean
+  par[kFix +3]   gauss1 constant
   ...
 */
+   Double_t lBinW = par[0];
+   Int_t lNpeaks = (Int_t)par[1];
+//   Double_t lTailSide = par[2];
+
    static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
-   Double_t sigma   = par[0];
+   Double_t sigma   = par[kFix +0];
    if (sigma == 0)
       sigma = 1;               //  force widths /= 0
-   for (Int_t i = 0; i < gNpeaks; i ++) {
-      arg = (x[0] - par[2 + 2 * i]) / (sqrt2 * sigma);
-      fitval = fitval + par[1 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
+   for (Int_t i = 0; i < lNpeaks; i ++) {
+      arg = (x[0] - par[kFix +2 + 2 * i]) / (sqrt2 * sigma);
+      fitval = fitval + par[kFix +1 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
-//   cout << x[0] << " "<< par[0]<< " " << par[1]<< " " << par[2]<< " " << gBinW << " "<< fitval << endl;
-   return gBinW * fitval;
+//   cout << x[0] << " "<< par[kFix +0]<< " " << par[kFix +1]<< " " << par[kFix +2]<< " " << lBinW << " "<< fitval << endl;
+   return lBinW * fitval;
 }
 //____________________________________________________________________________ 
 
@@ -58,25 +64,28 @@ Double_t gaus_only_vsig(Double_t * x, Double_t * par)
 {
 /*
   gaus + linear background
-  par[0]   gauss0 constant
-  par[1]   gauss0 mean
-  par[2]   gauss width
-  par[3]   gauss1 constant
+  par[kFix +0]   gauss0 constant
+  par[kFix +1]   gauss0 mean
+  par[kFix +2]   gauss width
+  par[kFix +3]   gauss1 constant
   ...
 */
+   Double_t lBinW = par[0];
+   Int_t lNpeaks = (Int_t)par[1];
+//   Double_t lTailSide = par[2];
    static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
-   Double_t sigma   = par[0];
+   Double_t sigma   = par[kFix +0];
    if (sigma == 0)
       sigma = 1;               //  force widths /= 0
-   for (Int_t i = 0; i < gNpeaks; i ++) {
-      sigma   = par[2 + 3 * i];
+   for (Int_t i = 0; i < lNpeaks; i ++) {
+      sigma   = par[kFix +2 + 3 * i];
       if (sigma == 0) sigma = 1;               //  force widths /= 0
-      arg = (x[0] - par[1 + 3 * i]) / (sqrt2 * sigma);
-      fitval = fitval + par[0 + 3 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
+      arg = (x[0] - par[kFix +1 + 3 * i]) / (sqrt2 * sigma);
+      fitval = fitval + par[kFix +0 + 3 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
-   return gBinW * fitval;
+   return lBinW * fitval;
 }
 //____________________________________________________________________________ 
 
@@ -84,25 +93,29 @@ Double_t gaus_cbg(Double_t * x, Double_t * par)
 {
 /*
   gaus + const background
-  par[0]   back ground
-  par[1]   gauss width
-  par[2]   gauss0 constant
-  par[3]   gauss0 mean
-  par[4]   gauss1 constant
+  par[kFix +0]   back ground
+  par[kFix +1]   gauss width
+  par[kFix +2]   gauss0 constant
+  par[kFix +3]   gauss0 mean
+  par[kFix +4]   gauss1 constant
   ...
 */
+   Double_t lBinW = par[0];
+   Int_t lNpeaks = (Int_t)par[1];
+//   Double_t lTailSide = par[2];
    static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+
    Double_t arg;
    Double_t fitval  = 0;
-   Double_t sigma   = par[1];
+   Double_t sigma   = par[kFix +1];
    if (sigma == 0)
       sigma = 1;               //  force widths /= 0
-   fitval = par[0];
-   for (Int_t i = 0; i < gNpeaks; i ++) {
-      arg = (x[0] - par[3 + 2 * i]) / (sqrt2 * sigma);
-      fitval = fitval + par[2 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
+   fitval = par[kFix +0];
+   for (Int_t i = 0; i < lNpeaks; i ++) {
+      arg = (x[0] - par[kFix +3 + 2 * i]) / (sqrt2 * sigma);
+      fitval = fitval + par[kFix +2 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
-   return gBinW * fitval;
+   return lBinW * fitval;
 }
 //____________________________________________________________________________ 
 
@@ -110,87 +123,98 @@ Double_t gaus_cbg_vsig(Double_t * x, Double_t * par)
 {
 /*
   gaus + const background
-  par[0]   back ground
-  par[1]   gauss0 constant
-  par[2]   gauss0 mean
-  par[3]   gauss width
-  par[4]   gauss1 constant
+  par[kFix +0]   back ground
+  par[kFix +1]   gauss0 constant
+  par[kFix +2]   gauss0 mean
+  par[kFix +3]   gauss width
+  par[kFix +4]   gauss1 constant
   ...
 */
-   static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+   Double_t lBinW = par[0];
+   Int_t lNpeaks = (Int_t)par[1];
+//   Double_t lTailSide = par[2];
+ 
+  static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval;
    Double_t sigma ;
    if (sigma == 0)
       sigma = 1;               //  force widths /= 0
-   fitval = par[0];
-   for (Int_t i = 0; i < gNpeaks; i ++) {
-      sigma   = par[3 + 3 * i];
+   fitval = par[kFix +0];
+   for (Int_t i = 0; i < lNpeaks; i ++) {
+      sigma   = par[kFix +3 + 3 * i];
       if (sigma == 0) sigma = 1;               //  force widths /= 0
-      arg = (x[0] - par[2 + 3 * i]) / (sqrt2 * sigma);
-      fitval = fitval + par[1 + 3 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
+      arg = (x[0] - par[kFix +2 + 3 * i]) / (sqrt2 * sigma);
+      fitval = fitval + par[kFix +1 + 3 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
-   return gBinW * fitval;
+   return lBinW * fitval;
 }
 //____________________________________________________________________________ 
 
 Double_t gaus_lbg(Double_t * x, Double_t * par)
 {
 /*
-  par[0]   background constant
-  par[1]   background slope
-  par[2]   gauss width
-  par[3]   gauss0 constant
-  par[4]   gauss0 mean
-  par[5]   gauss1 constant
-  par[6]   gauss1 mean
-  par[7]   gauss2 constant
-  par[8]   gauss2 mean
+  par[kFix +0]   background constant
+  par[kFix +1]   background slope
+  par[kFix +2]   gauss width
+  par[kFix +3]   gauss0 constant
+  par[kFix +4]   gauss0 mean
+  par[kFix +5]   gauss1 constant
+  par[kFix +6]   gauss1 mean
+  par[kFix +7]   gauss2 constant
+  par[kFix +8]   gauss2 mean
 */
-   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+   Double_t lBinW = par[0];
+   Int_t lNpeaks = (Int_t)par[1];
+//   Double_t lTailSide = par[2];
+
+   static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
-   Double_t bgconst = par[0];
-   Double_t bgslope = par[1];
-   Double_t sigma   = par[2];
+   Double_t bgconst = par[kFix +0];
+   Double_t bgslope = par[kFix +1];
+   Double_t sigma   = par[kFix +2];
    if (sigma == 0) sigma = 1;               //  force widths /= 0
    fitval = fitval + bgconst + x[0] * bgslope;
-   for (Int_t i = 0; i < gNpeaks; i ++) {
-      arg = (x[0] - par[4 + 2 * i]) / (sqrt2 * sigma);
-      fitval = fitval + par[3 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
+   for (Int_t i = 0; i < lNpeaks; i ++) {
+      arg = (x[0] - par[kFix +4 + 2 * i]) / (sqrt2 * sigma);
+      fitval = fitval + par[kFix +3 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
-   return gBinW * fitval;
+   return lBinW * fitval;
 }
 //____________________________________________________________________________ 
 
 Double_t gaus_lbg_vsig(Double_t * x, Double_t * par)
 {
 /*
-  par[0]   background constant
-  par[1]   background slope
-  par[2]   gauss0 constant
-  par[3]   gauss0 mean
-  par[4]   gauss0 width
-  par[5]   gauss1 constant
-  par[6]   gauss1 mean
+  par[kFix +0]   background constant
+  par[kFix +1]   background slope
+  par[kFix +2]   gauss0 constant
+  par[kFix +3]   gauss0 mean
+  par[kFix +4]   gauss0 width
+  par[kFix +5]   gauss1 constant
+  par[kFix +6]   gauss1 mean
   .....
 */
-   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+   Double_t lBinW = par[0];
+   Int_t lNpeaks = (Int_t)par[1];
+//   Double_t lTailSide = par[2];
+   static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
-   Double_t bgconst = par[0];
-   Double_t bgslope = par[1];
+   Double_t bgconst = par[kFix +0];
+   Double_t bgslope = par[kFix +1];
    Double_t sigma;
    if (sigma == 0)
       sigma = 1;               //  force widths /= 0
    fitval = fitval + bgconst + x[0] * bgslope;
-   for (Int_t i = 0; i < gNpeaks; i ++) {
-      sigma = par[4 + 3 * i];
+   for (Int_t i = 0; i < lNpeaks; i ++) {
+      sigma = par[kFix +4 + 3 * i];
       if (sigma == 0) sigma = 1;               //  force widths /= 0
-      arg = (x[0] - par[3 + 3 * i]) / (sqrt2 * sigma);
-      fitval = fitval + par[2 + 3 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
+      arg = (x[0] - par[kFix +3 + 3 * i]) / (sqrt2 * sigma);
+      fitval = fitval + par[kFix +2 + 3 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
-   return gBinW * fitval;
+   return lBinW * fitval;
 }
 
 //_____________________________________________________________________________ 
@@ -198,18 +222,22 @@ Double_t gaus_lbg_vsig(Double_t * x, Double_t * par)
 Double_t gaus_tail(Double_t * x, Double_t * par)
 {
 /*
-  par[0]   tail fraction
-  par[1]   tail width
-  par[2]   background constant
-  par[3]   background slope
-  par[4]   gauss width
-  par[5]   gauss0 constant
-  par[6]   gauss0 mean
-  par[7]   gauss1 constant
-  par[8]   gauss1 mean
-  par[9]   gauss2 constant
-  par[10]  gauss2 mean
+  par[kFix +0]   tail fraction
+  par[kFix +1]   tail width
+  par[kFix +2]   background constant
+  par[kFix +3]   background slope
+  par[kFix +4]   gauss width
+  par[kFix +5]   gauss0 constant
+  par[kFix +6]   gauss0 mean
+  par[kFix +7]   gauss1 constant
+  par[kFix +8]   gauss1 mean
+  par[kFix +9]   gauss2 constant
+  par[kFix +10]  gauss2 mean
 */
+   Double_t lBinW = par[0];
+   Int_t lNpeaks = (Int_t)par[1];
+   Double_t lTailSide = par[2];
+
    static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
    Double_t xij;
    Double_t arg;
@@ -218,11 +246,11 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
    Double_t err;
    Double_t norm;
    Double_t fitval = 0;
-   Double_t tailfrac  = par[0];
-   Double_t tailwidth = par[1];
-   Double_t bgconst   = par[2];
-   Double_t bgslope   = par[3];
-   Double_t sigma     = par[4];
+   Double_t tailfrac  = par[kFix +0];
+   Double_t tailwidth = par[kFix +1];
+   Double_t bgconst   = par[kFix +2];
+   Double_t bgslope   = par[kFix +3];
+   Double_t sigma     = par[kFix +4];
 
 //  force widths /= 0
    if (tailwidth == 0)
@@ -231,18 +259,18 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
       sigma = 1;
 
    fitval = fitval + bgconst + x[0] * bgslope;
-   for (Int_t i = 0; i < gNpeaks; i++) {
-      xij = (x[0] - par[6 + 2 * i]);
+   for (Int_t i = 0; i < lNpeaks; i++) {
+      xij = (x[0] - par[kFix +6 + 2 * i]);
       arg = xij / (sqrt2 * sigma);
-      xij *= gTailSide;
+      xij *= lTailSide;
       tail = exp(xij / tailwidth) / tailwidth;
       g2b = 0.5 * sigma / tailwidth;
-      err = 0.5 * tailfrac * par[5 + 2 * i] * TMath::Erfc(xij / sigma + g2b);
+      err = 0.5 * tailfrac * par[kFix +5 + 2 * i] * TMath::Erfc(xij / sigma + g2b);
       norm = exp(0.25 * pow(sigma, 2) / pow(tailwidth, 2));
       fitval = fitval + norm * err * tail 
-                      + par[5 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
+                      + par[kFix +5 + 2 * i] * exp(-arg * arg) / (sqrt2pi * sigma);
    }
-   return gBinW * fitval;
+   return lBinW * fitval;
 }
 
 //____________________________________________________________________________________ 
@@ -250,47 +278,57 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
 Double_t tailf(Double_t * x, Double_t * par)
 {
 //  force widths /= 0
-   Double_t const0    = par[0];
-   Double_t mean      = par[1];
-   Double_t gauswidth = par[2];
-   Double_t tailwidth = par[3];
+   Double_t lBinW = par[0];
+//   Int_t lNpeaks = (Int_t)par[1];
+   Double_t lTailSide = par[2];
+
+   Double_t const0    = par[kFix +0];
+   Double_t mean      = par[kFix +1];
+   Double_t gauswidth = par[kFix +2];
+   Double_t tailwidth = par[kFix +3];
 
    if (gauswidth == 0)
       gauswidth = 1;
    if (tailwidth == 0)
       tailwidth = 1;
 
-   Double_t xij = (x[0] - mean) *gTailSide ;
+   Double_t xij = (x[0] - mean) *lTailSide ;
 
    Double_t tail = exp(xij / tailwidth) / tailwidth;
    Double_t g2b = 0.5 * gauswidth / tailwidth;
    Double_t err = 0.5 * const0 * TMath::Erfc(xij / gauswidth + g2b);
    Double_t norm = exp(0.25 * pow(gauswidth, 2) / pow(tailwidth, 2));
    Double_t fitval = norm * err * tail;
-   return gBinW * fitval;
+   return lBinW * fitval;
 }
 
 //____________________________________________________________________________________ 
 
 Double_t backf(Double_t * x, Double_t * par)
 {
-   Double_t fitval = par[0] + x[0] * par[1];
-   return gBinW * fitval;
+   Double_t lBinW = par[0];
+//   Int_t lNpeaks = (Int_t)par[1];
+//   Double_t lTailSide = par[2];
+   Double_t fitval = par[kFix +0] + x[0] * par[kFix +1];
+   return lBinW * fitval;
 }
 
 //____________________________________________________________________________________ 
 
 Double_t gausf(Double_t * x, Double_t * par)
 {
+   Double_t lBinW = par[0];
+//   Int_t lNpeaks = (Int_t)par[1];
+//   Double_t lTailSide = par[2];
    static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
-   if (par[2] == 0)
-      par[2] = 1;
+   if (par[kFix +2] == 0)
+      par[kFix +2] = 1;
 
-   Double_t xij = x[0] - par[1];
+   Double_t xij = x[0] - par[kFix +1];
 
-   Double_t arggaus = xij / (sqrt2 * par[2]);
-   Double_t fitval = par[0] * exp(-arggaus * arggaus) / (sqrt2pi * par[2]);
-   return gBinW * fitval;
+   Double_t arggaus = xij / (sqrt2 * par[kFix +2]);
+   Double_t fitval = par[kFix +0] * exp(-arggaus * arggaus) / (sqrt2pi * par[kFix +2]);
+   return lBinW * fitval;
 }
 //____________________________________________________________________________________ 
 //____________________________________________________________________________________ 
@@ -308,7 +346,7 @@ FitOneDimDialog::FitOneDimDialog(TH1 * hist)
       cout << "Can only be used with 1-dim hist" << endl;
       return;
    }
-   gBinW   = fSelHist->GetBinWidth(1);
+ //  lBinW   = fSelHist->GetBinWidth(1);
    fName = fSelHist->GetName();
    DisplayMenu();
 }
@@ -331,7 +369,7 @@ FitOneDimDialog::FitOneDimDialog(TGraph * graph)
       cout << "Can only be used with 1-dim hist" << endl;
       return;
    }
-   gBinW   = 1;
+//   lBinW   = 1;
    fName = fGraph->GetName();
    DisplayMenu();
 }
@@ -343,10 +381,10 @@ FitOneDimDialog::FitOneDimDialog(TGraph * graph)
 //_________________________________________________________________________
 //____________________________________________________________________________________ 
 
-void FitOneDimDialog::DisplayMenu()
+void FitOneDimDialog::DisplayMenu(Int_t type)
 {
 
-static const Char_t helptext[] =
+static const Char_t helptext_gaus[] =
 "This widget allows fitting of any number of \n\
 gaussian shaped peaks optionally with a low or high\n\
 energy tail plus a linear background.\n\
@@ -431,7 +469,8 @@ parameters without actually doing a fit.\n\
    TList *row_lab = new TList(); 
    static void *valp[25];
    Int_t ind = 0;
-   static TString excmd("FitOneDimExecute()");
+   static TString exgcmd("FitGausExecute()");
+   static TString expcmd("FitPolyExpExecute()");
 //   static TString accmd("AddToCalibration()");
    static TString lbgcmd("DetLinearBackground()");
    static TString clmcmd("ClearMarkers()");
@@ -445,21 +484,26 @@ parameters without actually doing a fit.\n\
    TAxis *xaxis = fSelHist->GetXaxis();
    fFrom = xaxis->GetBinLowEdge(xaxis->GetFirst());
    fTo   = xaxis->GetBinUpEdge(xaxis->GetLast()) ;
-   GetMarkers();
-   row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
-   valp[ind++] = &fNpeaks;
-   row_lab->Add(new TObjString("CheckButton+Low Tail"));
-   valp[ind++] = &fLowtail;
-   row_lab->Add(new TObjString("CheckButton+High Tail"));
-   valp[ind++] = &fHightail;
-   row_lab->Add(new TObjString("CheckButton_Force Background=0"));
-   valp[ind++] = &fBackg0;
-   row_lab->Add(new TObjString("CheckButton+Force BG Slope=0"));
-   valp[ind++] = &fSlope0;
-   row_lab->Add(new TObjString("CheckButton_Common Gauss width"));
-   valp[ind++] = &fOnesig;
-   row_lab->Add(new TObjString("CheckButton+Use pre det lin bg"));
-   valp[ind++] = &fUsedbg;
+   const char * helptext = NULL;
+   if (type == 1) {
+      helptext = helptext_gaus;
+		GetMarkers();
+		row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
+		valp[ind++] = &fNpeaks;
+		row_lab->Add(new TObjString("CheckButton+Low Tail"));
+		valp[ind++] = &fLowtail;
+		row_lab->Add(new TObjString("CheckButton+High Tail"));
+		valp[ind++] = &fHightail;
+		row_lab->Add(new TObjString("CheckButton_Force Background=0"));
+		valp[ind++] = &fBackg0;
+		row_lab->Add(new TObjString("CheckButton+Force BG Slope=0"));
+		valp[ind++] = &fSlope0;
+		row_lab->Add(new TObjString("CheckButton_Common Gauss width"));
+		valp[ind++] = &fOnesig;
+		row_lab->Add(new TObjString("CheckButton+Use pre det lin bg"));
+		valp[ind++] = &fUsedbg;
+   } else if (type == 2) {
+   }
    row_lab->Add(new TObjString("CheckButton_Use pars of prev fit"));
    valp[ind++] = &fUseoldpars;
    row_lab->Add(new TObjString("CheckButton+Show components of fit"));
@@ -475,7 +519,11 @@ parameters without actually doing a fit.\n\
    row_lab->Add(new TObjString("LineSSelect-LSty"));
    valp[ind++] = &fStyle;
    row_lab->Add(new TObjString("CommandButt_Execute Fitting"));
-   valp[ind++] = &excmd;
+   if (type == 1) { 
+      valp[ind++] = &exgcmd;
+   } else if (type == 2) {
+      valp[ind++] = &exgcmd;
+   }
 /*
 #ifdef MARABOUVERS
    if (fGraph == NULL) {
@@ -529,21 +577,21 @@ void FitOneDimDialog::RecursiveRemove(TObject * obj)
 }
 //__________________________________________________________________________
 
-void FitOneDimDialog::FitOneDimExecute()
+void FitOneDimDialog::FitGausExecute()
 {
-   static TArrayD * params = NULL;
+   static TArrayD * par = NULL;
    Int_t ind = 0;
-   gTailSide = 0;
+   Double_t lTailSide = 0;
    if (fHightail == 1) {
-      gTailSide = -1;
+      lTailSide = -1;
       if (fLowtail) {
          cout << "Tail side dubious, use low tail" << endl;
-         gTailSide = 1;
+         lTailSide = 1;
       }
    } 
    if (fLowtail)
-      gTailSide = 1;
-   if (gTailSide != 0) {
+      lTailSide = 1;
+   if (lTailSide != 0) {
 /*
       if (fBackg0 != 0) {
          cout << "With tail ignore: Force Background = 0" << endl;
@@ -563,6 +611,7 @@ void FitOneDimDialog::FitOneDimExecute()
       cout << "With Background == 0, Force BG slope = 0" << endl;
       fSlope0 = 1;
    }
+   Double_t lBinW = fSelHist->GetBinWidth(1);
    Bool_t setpars = (fUseoldpars == 0);
 //   if (setpars) cout << "ent setpars true" << endl;
 
@@ -578,23 +627,23 @@ void FitOneDimDialog::FitOneDimExecute()
       npars = fNpeaks * 3;
    else
       npars = 1 + fNpeaks * 2;
-
-   if (fBackg0 == 0 || gTailSide != 0)  npars++;
-   if ((fBackg0 == 0 && fSlope0 == 0) || gTailSide != 0)  npars++;
-   if (gTailSide != 0) npars += 2;
-   if (params == NULL) {
-      params    = new TArrayD(3 * npars);
+//   npars += kFix;
+   if (fBackg0 == 0 || lTailSide != 0)  npars++;
+   if ((fBackg0 == 0 && fSlope0 == 0) || lTailSide != 0)  npars++;
+   if (lTailSide != 0) npars += 2;
+   if (par == NULL) {
+      par    = new TArrayD(3 * npars);
       setpars = kTRUE;
-      if (setpars)  cout << "new setpars true" << endl;
+      if (setpars)  cout << "new setpars true: npars " << npars << endl;
    } else {
-      if (params->GetSize() != 3 * npars) {
-         params->Set(3 * npars);
+      if (par->GetSize() != 3 * npars) {
+         par->Set(3 * npars);
          setpars = kTRUE;
-         if (setpars)  cout << "size setpars true" << endl;;
+         if (setpars)  cout << "size setpars true: npars "  << npars<< endl;;
       }
    }
 //   cout << "npars: " << npars << endl;
-//   cout << (*params)[0] << " " << (*params)[1] << " "  << (*params)[2] << endl;
+//   cout << (*par)[0] << " " << (*par)[1] << " "  << (*par)[2] << endl;
    TArrayI * fbflags   = new TArrayI(2 * npars);
 // get estimates
    TArrayD gpar(3);
@@ -603,60 +652,66 @@ void FitOneDimDialog::FitOneDimExecute()
 //   Int_t bin_to   = fSelHist->FindBin(fTo);
 //   Int_t bin = 0; 
    TF1 * func;
-   if (gTailSide) {
-      func = new TF1(fFuncName, gaus_tail, fFrom, fTo, npars);
-//      cout << "gTailSide " << gTailSide<< endl;
+   if (lTailSide) {
+      func = new TF1(fFuncName, gaus_tail, fFrom, fTo, npars+kFix);
+      cout << "lTailSide " << lTailSide<< endl;
    } else {
       if (fOnesig) {
          if (fBackg0 != 0) 
-            func = new TF1(fFuncName, gaus_only, fFrom, fTo, npars);
+            func = new TF1(fFuncName, gaus_only, fFrom, fTo, npars+kFix);
          else if (fSlope0 != 0)
-            func = new TF1(fFuncName, gaus_cbg,  fFrom, fTo, npars);
+            func = new TF1(fFuncName, gaus_cbg,  fFrom, fTo, npars+kFix);
          else
-            func = new TF1(fFuncName, gaus_lbg,  fFrom, fTo, npars); 
+            func = new TF1(fFuncName, gaus_lbg,  fFrom, fTo, npars+kFix); 
       } else {
          if (fBackg0 != 0) 
-            func = new TF1(fFuncName, gaus_only_vsig, fFrom, fTo, npars);
+            func = new TF1(fFuncName, gaus_only_vsig, fFrom, fTo, npars+kFix);
          else if (fSlope0 != 0)
-            func = new TF1(fFuncName, gaus_cbg_vsig,  fFrom, fTo, npars);
+            func = new TF1(fFuncName, gaus_cbg_vsig,  fFrom, fTo, npars+kFix);
          else
-            func = new TF1(fFuncName, gaus_lbg_vsig,  fFrom, fTo, npars); 
+            func = new TF1(fFuncName, gaus_lbg_vsig,  fFrom, fTo, npars+kFix); 
       }
    }
+   func->SetParameter(0, lBinW);
+   func->SetParameter(1, fNpeaks);
+   func->SetParameter(2, lTailSide);
+   func->SetParName(0, "BinW");
+   func->SetParName(1, "Npeaks");
+   func->SetParName(2, "TailSide");
 // in case it was not incremented
    ind = npars;
 // add bound and fixflags
    for (Int_t i = 0; i < 2 * npars; i++) {
       (*fbflags)[i] = 0;
-      (*params)[ind++] = 0;
+      (*par)[ind++] = 0;
    }  
    ind = 0;
    TOrdCollection row_lab;
-//   cout << params->GetSize() << endl;
-   if (gTailSide != 0) {
-      func->SetParName(ind,      "Ta_fract");
+//   cout << par->GetSize() << endl;
+   if (lTailSide != 0) {
+      func->SetParName(ind+kFix,      "Ta_fract");
       row_lab.Add(new TObjString("Ta_fract"));
-      if (setpars) (*params)[ind] = 1;
+      if (setpars) (*par)[ind] = 1;
       ind++;
-      func->SetParName(ind,      "Ta_width");
+      func->SetParName(ind+kFix,      "Ta_width");
       row_lab.Add(new TObjString("Ta_width"));
-      if (setpars) (*params)[ind] = 5;
+      if (setpars) (*par)[ind] = 5;
       ind++;
       (*fbflags)[2] = fBackg0;
       (*fbflags)[3] = fSlope0;
    }
  
    Double_t bgest = fSelHist->GetBinContent(bin_from);
-   if (fBackg0 == 0 || fUsedbg == 1|| gTailSide != 0) {
-      func->SetParName(ind,      "Bg_Const");
+   if (fBackg0 == 0 || fUsedbg == 1|| lTailSide != 0) {
+      func->SetParName(ind+kFix,      "Bg_Const");
       row_lab.Add(new TObjString("Bg_Const"));
-      if (setpars) (*params)[ind] = bgest/fSelHist->GetBinWidth(bin_from);
+      if (setpars) (*par)[ind] = bgest/fSelHist->GetBinWidth(bin_from);
       ind++;
    }
-   if (fSlope0 == 0 || fUsedbg == 1 || gTailSide != 0) {
-      func->SetParName(ind,      "Bg_Slope");
+   if (fSlope0 == 0 || fUsedbg == 1 || lTailSide != 0) {
+      func->SetParName(ind+kFix,      "Bg_Slope");
       row_lab.Add(new TObjString("Bg_Slope"));
-      if (setpars) (*params)[ind] = 0;
+      if (setpars) (*par)[ind] = 0;
       ind++;
    }
 //   cout << "fNmarks " <<  fNmarks<< endl;
@@ -664,10 +719,10 @@ void FitOneDimDialog::FitOneDimExecute()
    Int_t ind_sigma = 0; 
    if (fOnesig == 1) {
 //  use same sigma for all peaks
-      func->SetParName(ind,      "Ga_Sigma_");
+      func->SetParName(ind+kFix,      "Ga_Sigma_");
       row_lab.Add(new TObjString("Ga_Sigma_"));
       ind_sigma = ind;
-      if (setpars) (*params)[ind] = -1;                        // Sigma
+      if (setpars) (*par)[ind] = -1;                        // Sigma
       ind++;
    }
    if (fNmarks == 2) {
@@ -677,21 +732,21 @@ void FitOneDimDialog::FitOneDimExecute()
          GetGaussEstimate(fSelHist, fFrom, fTo, bgest, gpar);
       else
          GetGaussEstimate(fGraph, fFrom, fTo, bgest, gpar);
-      func->SetParName(ind,      "Ga_Const0");
+      func->SetParName(ind+kFix,      "Ga_Const0");
       row_lab.Add(new TObjString("Ga_Const0"));
-      if (setpars) (*params)[ind]     = gpar[0];
+      if (setpars) (*par)[ind]     = gpar[0];
       ind++;
-      if (gTailSide != 0) (*params)[ind -1] *= 0.5;
-      func->SetParName(ind,      "Ga_Mean_0");
+      if (lTailSide != 0) (*par)[ind -1] *= 0.5;
+      func->SetParName(ind+kFix,      "Ga_Mean_0");
       row_lab.Add(new TObjString("Ga_Mean_0"));
-      if (setpars) (*params)[ind]     = gpar[1];
+      if (setpars) (*par)[ind]     = gpar[1];
       ind++;
       if (fOnesig == 1) {
-         if (setpars) (*params)[ind_sigma] = gpar[2];
+         if (setpars) (*par)[ind_sigma] = gpar[2];
       } else {
-         func->SetParName(ind,      "Ga_Sigma_");
+         func->SetParName(ind+kFix,      "Ga_Sigma_");
          row_lab.Add(new TObjString("Ga_Sigma_"));
-         if (setpars) (*params)[ind] = gpar[2];                // Sigma
+         if (setpars) (*par)[ind] = gpar[2];                // Sigma
          ind++;
       }
 
@@ -711,25 +766,25 @@ void FitOneDimDialog::FitOneDimExecute()
             GetGaussEstimate(fGraph, mpos-d1, mpos+d1, bgest, gpar);
          lab = "Ga_Const";
          lab += (i - 1);
-         func->SetParName(ind,  lab.Data() );
+         func->SetParName(ind+kFix,  lab.Data() );
          row_lab.Add(new TObjString(lab.Data()));
-         if (setpars) (*params)[ind]     = gpar[0];
+         if (setpars) (*par)[ind]     = gpar[0];
          ind++;
          lab = "Ga_Mean_";
          lab += (i - 1);
-         func->SetParName(ind,  lab.Data() );
+         func->SetParName(ind+kFix,  lab.Data() );
          row_lab.Add(new TObjString(lab.Data()));
-         if (setpars) (*params)[ind]     = gpar[1];
+         if (setpars) (*par)[ind]     = gpar[1];
          ind++;
          if (fOnesig == 1) {
-            if (gpar[2] > (*params)[ind_sigma])         // use biggest sigma as est
-               if (setpars) (*params)[ind_sigma] = gpar[2];
+            if (gpar[2] > (*par)[ind_sigma])         // use biggest sigma as est
+               if (setpars) (*par)[ind_sigma] = gpar[2];
          } else {
             lab = "Ga_Sigma";
             lab += (i - 1);
-            func->SetParName(ind,  lab.Data() );
+            func->SetParName(ind+kFix,  lab.Data() );
             row_lab.Add(new TObjString(lab.Data()));
-            if (setpars) (*params)[ind]     = gpar[2];
+            if (setpars) (*par)[ind]     = gpar[2];
             ind++;
          }
 
@@ -738,9 +793,9 @@ void FitOneDimDialog::FitOneDimExecute()
    if (fUsedbg) {
 //  use predermined linear background
       Int_t offset = 0;
-      if (gTailSide != 0) offset = 2;
-      (*params)[0 + offset] = fLinBgConst / gBinW;      
-      (*params)[1 + offset] = fLinBgSlope / gBinW;  
+      if (lTailSide != 0) offset = 2;
+      (*par)[0 + offset] = fLinBgConst / lBinW;      
+      (*par)[1 + offset] = fLinBgSlope / lBinW;  
       (*fbflags)[0 + offset] = 1;
       (*fbflags)[1 + offset] = 1;
    }  
@@ -760,7 +815,7 @@ void FitOneDimDialog::FitOneDimExecute()
 
 //   TGMrbTableOfDoubles(NULL, &ret, title.Data(), itemwidth,
    TGMrbTableOfDoubles(fParentWindow, &ret, title.Data(), itemwidth,
-                       ncols, npars, *params, precission,
+                       ncols, npars, *par, precission,
                        &col_lab, &row_lab, fbflags, 0,
                        NULL, "Do fit", "Draw only");
    if (ret < 0) return;
@@ -784,22 +839,28 @@ void FitOneDimDialog::FitOneDimExecute()
        << endl;
 //  Look for fix /bound flag
    Bool_t bound = kFALSE;
+   func->FixParameter(0, func->GetParameter(0));
+   func->FixParameter(1, func->GetParameter(1));
+   func->FixParameter(2, func->GetParameter(2));
+   
    for (Int_t i = 0; i < npars; i++) {
       if ((*fbflags)[i] == 1) {
-         func->FixParameter(i, (*params)[i]);
+         func->FixParameter(i+kFix, (*par)[i]);
       } 
 // bound flag
       if ((*fbflags)[i + npars] == 1) {
-         func->SetParLimits(i, (*params)[i + npars], (*params)[i + 2 * npars]);
+         func->SetParLimits(i+kFix, (*par)[i + npars], (*par)[i + 2 * npars]);
          bound = kTRUE;
-         if ((*params)[i + 2 * npars] == (*params)[i + npars]) {
+         if ((*par)[i + 2 * npars] == (*par)[i + npars]) {
             cout << "warning upper = lower bound" << endl;
          }
       }
+      func->SetParameter(i+kFix, (*par)[i]);
    }
    func->SetLineWidth(fWidth);
    func->SetLineColor(fColor);
-   func->SetParameters(params->GetArray());
+
+//   func->SetParameters(par->GetArray());
 
    func->Print();
 //  now fit it 
@@ -843,26 +904,6 @@ void FitOneDimDialog::FitOneDimExecute()
       }
       func->SetFillStyle(0);
       if (fAutoClearMarks) ClearMarkers();
-/*
-      if (gNpeaks == 1) {
-         if (gTailSide != 0)  {
-            fConstant  = func->GetParameter(5);
-            fMean      = func->GetParameter(6);
-            fMeanError = func->GetParError(6);
-         } else {
-            Int_t offset = 0;
-            if (fSlope0 == 0)    offset++;
-            if (fBackg0 == 0)    offset++;
-            if (fOnesig != 0)    offset++;
-            fConstant  = func->GetParameter(offset);
-            fMean      = func->GetParameter(offset +1);
-            fMeanError = func->GetParError(offset +1);
-         }
-         fAdded = 0;
-//        cout << "co, m, me " << fConstant << " " << fMean << " " << fMeanError 
-//              << endl;
-      }
-*/
    } else {
 //    no fit requested draw
       gPad->cd();
@@ -873,32 +914,37 @@ void FitOneDimDialog::FitOneDimExecute()
 
 //  draw components of fit, skip simple gaus without bg
 
+   for (Int_t i = 0; i < npars; i++) { 
+     (*par)[i] = func->GetParameter(i+kFix);
+//     cout << (*par)[i] << endl;
+   }
    if (fShowcof != 0 && fGraph == NULL) {
-      func->GetParameters(params->GetArray());
+//      func->GetParameters(par->GetArray());
       Double_t fdpar[4];
-      if (gTailSide != 0) {
-         fdpar[0] = (*params)[2] ;
-         fdpar[1] = (*params)[3];
+      if (lTailSide != 0) {
+         fdpar[0] = (*par)[2] ;
+         fdpar[1] = (*par)[3];
       } else {
-         fdpar[0] = (*params)[0];
-         fdpar[1] = (*params)[1];
+         fdpar[0] = (*par)[0];
+         fdpar[1] = (*par)[1];
       }
       if (fBackg0 == 0) {
-         TF1 *back = new TF1("backf", backf, fFrom, fTo, 2);
-         back->SetParameter(0, fdpar[0]);
-         if (fSlope0 == 0) back->SetParameter(1, fdpar[1]);
-         else              back->SetParameter(1, 0);
+         TF1 *back = new TF1("backf", backf, fFrom, fTo, 2+kFix);
+         back->SetParameter(0, lBinW);
+         back->SetParameter(0+kFix, fdpar[0]);
+         if (fSlope0 == 0) back->SetParameter(1+kFix, fdpar[1]);
+         else              back->SetParameter(1+kFix, 0);
          back->Save(fFrom, fTo, 0, 0, 0, 0);
-         back->SetLineColor(2);
+         back->SetLineColor(kRed);
          back->SetLineStyle(3);
          back->Draw("same");
-         back->Print();
+//         back->Print();
          fSelHist->GetListOfFunctions()->Add(back);
          back->SetParent(fSelHist);
       }
 //
       Int_t offset = 0;
-      if (gTailSide != 0) {
+      if (lTailSide != 0) {
          offset = 4;
       } else {
          if (fSlope0 == 0)    offset++;
@@ -911,14 +957,16 @@ void FitOneDimDialog::FitOneDimExecute()
       }
 
       for (Int_t j = 0; j < fNpeaks; j++) {
-         fdpar[0] = (*params)[0 + offset + mult * j];
-         fdpar[1] = (*params)[1 + offset + mult * j];
+         fdpar[0] = (*par)[0 + offset + mult * j];
+         fdpar[1] = (*par)[1 + offset + mult * j];
          if (fOnesig == 1) 
-            fdpar[2] = (*params)[offset -1];
+            fdpar[2] = (*par)[offset -1];
          else
-            fdpar[2] = (*params)[2 + offset + mult * j];
-         TF1 *gaus = new TF1("gausf", gausf, fFrom, fTo, 3);
-         gaus->SetParameters(fdpar);
+            fdpar[2] = (*par)[2 + offset + mult * j];
+         TF1 *gaus = new TF1("gausf", gausf, fFrom, fTo, 3+kFix);
+         gaus->SetParameter(0, lBinW);
+         for (Int_t i = 0; i<3; i++)
+            gaus->SetParameter(i+kFix, fdpar[i]);
          TF1 *g1 = new TF1();
          gaus->Copy(*g1);
          g1->SetLineColor(6);
@@ -927,16 +975,19 @@ void FitOneDimDialog::FitOneDimExecute()
          fSelHist->GetListOfFunctions()->Add(g1);
          g1->SetParent(fSelHist);
          g1->Save(fFrom, fTo, 0, 0, 0, 0);
-         if (gTailSide != 0) {
-            fdpar[0] = (*params)[0] * (*params)[0 + offset + mult * j];	// const
-            fdpar[1] = (*params)[1 + offset + mult * j];	// position
+         if (lTailSide != 0) {
+            fdpar[0] = (*par)[0] * (*par)[0 + offset + mult * j];	// const
+            fdpar[1] = (*par)[1 + offset + mult * j];	// position
             if (fOnesig == 1) 
-               fdpar[2] = (*params)[offset -1];
+               fdpar[2] = (*par)[offset -1];
             else
-               fdpar[2] = (*params)[2 + offset + mult * j];
-            fdpar[3] = (*params)[1]; // tail width
-            TF1 *tail = new TF1("tailf", tailf, fFrom, fTo, 4);
-            tail->SetParameters(fdpar);
+               fdpar[2] = (*par)[2 + offset + mult * j];
+            fdpar[3] = (*par)[1]; // tail width
+            TF1 *tail = new TF1("tailf", tailf, fFrom, fTo, 4+kFix);
+            tail->SetParameter(0, lBinW);
+            tail->SetParameter(2, lTailSide);
+            for (Int_t i = 0; i<4; i++)
+               tail->SetParameter(i+kFix, fdpar[i]);
             tail->Save(fFrom, fTo, 0, 0, 0, 0);
             tail->SetLineColor(7);
             tail->SetLineStyle(2);
@@ -948,7 +999,7 @@ void FitOneDimDialog::FitOneDimExecute()
       }
    }
    delete fbflags;
-//   delete params;
+//   delete par;
 //   if (fUseoldpars == 0 && do_fit) ClearMarks();
    TString drawopt = fSelHist->GetOption();
 //   cout << "drawopt " <<drawopt << endl;
@@ -1044,7 +1095,6 @@ Int_t FitOneDimDialog::GetMaxBin(TH1 * h1, Int_t binl, Int_t binu)
    return bin;
 };
 //____________________________________________________________________________________ 
-
 void FitOneDimDialog::PrintMarkers()
 {
    fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
@@ -1083,7 +1133,7 @@ Int_t FitOneDimDialog::GetMarkers()
    } else {
       fNpeaks = fNmarks - 2;
    }
-   gNpeaks = fNpeaks;
+//   lNpeaks = fNpeaks;
 //   cout << fNmarks << " markers found " << endl;
    return fNmarks;
 }
@@ -1223,37 +1273,13 @@ void FitOneDimDialog::ClearFunctionList()
 {
    fSelHist->GetListOfFunctions()->Delete();
 }
-//_______________________________________________________________________
-/*
-void FitOneDimDialog::AddToCalibration()
+//__________________________________________________________________________
+
+void FitOneDimDialog::FitPolyExpExecute()
 {
-#ifdef MARABOUVERS
-   if (fAdded == 1) {
-      cout << "Values already added to list" << endl;
-      return;
-   } else if (fAdded == -1) {
-      cout << "No fit done yet" << endl;
-      return;
-   }
-   TString name = fSelHist->GetName();
-   name.Prepend("F");
-   cout << "Fh " << name << endl;
-   FitHist *fh = (FitHist*)gROOT->GetList()->FindObject(name);
-   if (!fh) {
-      cout << "FitHist: " << name  << " not found" << endl;
-      return;
-   }  
-   FhPeak *peak = new FhPeak(fMean);
-   peak->SetWidth(fMeanError);
-   peak->SetContent(fConstant);
-   fh->GetPeakList()->Add(peak);
-   fAdded = 1;
-   fSelHist->GetListOfFunctions()->Add(peak);
-#else
-   cout << "No FitHist Object available" << endl; 
-#endif
+   static TArrayD * par = NULL;
+   Int_t ind = 0;
 }
-*/
 //_______________________________________________________________________
 
 void FitOneDimDialog::RestoreDefaults()

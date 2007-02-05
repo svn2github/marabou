@@ -76,7 +76,7 @@ extern Int_t nHists;
 //Int_t nPeaks;
 //Double_t gTailSide;             // in fit with tail determines side: 1 left(low), -1 high(right)
 //Float_t gBinW;
-extern Float_t gBinW;
+//extern Float_t gBinW;
 
 enum dowhat { expand, projectx, projecty, statonly, projectf,
        projectboth , profilex, profiley};
@@ -1182,10 +1182,10 @@ void FitHist::RebinOne()
 {
    if (fSelHist == NULL) return;
 
-   static TString title(fSelHist->GetTitle());
-   title += "_rebinned_by_";
-   static TString name(fSelHist->GetName());
-   name += "_rebinned_by_";
+   TString title(fSelHist->GetTitle());
+   title += "_rebin";
+   TString name(fSelHist->GetName());
+   name += "_rebin";
 
    static Int_t ngroupX = 2;
    static Int_t ngroupY = 2;
@@ -1237,6 +1237,7 @@ void FitHist::RebinOne()
       newhist = h2->Rebin2D(ngroupX, ngroupY, name.Data());
    } else {
       newhist = (TH1*)fSelHist->Clone();  
+      newhist->GetListOfFunctions()->Clear();
       Int_t first = fSelHist->GetXaxis()->GetFirst();
       Int_t last = fSelHist->GetXaxis()->GetLast();
       newhist->Rebin(ngroupX);
@@ -3530,7 +3531,7 @@ void FitHist::Draw1Dim()
       fSelHist->SetFillStyle(0);
    fSelHist->SetOption(drawopt.Data());
    fSelHist->Draw();
-   gBinW = fSelHist->GetBinWidth(1);
+ //  gBinW = fSelHist->GetBinWidth(1);
 //   Float_t tz = 0.035;
 //   if (hp->GetShowDateBox())
 //      DrawDateBox(fSelHist, tz);
