@@ -1,5 +1,5 @@
 Calib.NofCalibrations:				3
-Calib.Names:						Co60:Eu152:TripleAlpha
+Calib.SourceNames:					Co60:Eu152:TripleAlpha
 Calib.TripleAlpha.NofLines: 		3
 Calib.TripleAlpha.Line.0.E: 		5157
 Calib.TripleAlpha.Line.0.Eerr:		1

@@ -7,7 +7,8 @@
 //                               const Char_t * Energies,
 //                               const Char_t * CalFile,
 //                               const Char_t * ResFile,
-//                               Int_t ClearFlag,
+//                               const Char_t * FitFile,
+//                               Bool_t ClearFlag,
 //                               const Char_t * PrecalFile,
 //                               Int_t LowerLim,
 //                               Int_t UpperLim,
@@ -21,9 +22,10 @@
 // Arguments:        TObjArray * Histos        -- [0] Histogram file (.root),  histo names
 //                   Int_t CalSource           -- Calibration source
 //                   Char_t * Energies         -- Calibration energies
-//                   Char_t * CalFile          -- Calibration output file (.cal)
-//                   Char_t * ResFile          -- Results file (.res)
-//                   Bool_t ClearFlag          -- Clear output files (.cal, .res)
+//                   Char_t * CalFile          -- Calibration data (.cal)
+//                   Char_t * ResFile          -- Calibration results (.res)
+//                   Char_t * FitFile          -- Fit results (.root)
+//                   Bool_t ClearFlag          -- Clear calibration files (.cal, .res)
 //                   Char_t * PrecalFile       -- Precalibration file (.cal, needed if Eu152)
 //                   Int_t LowerLim            -- Lower limit [chn]
 //                   Int_t UpperLim            -- Upper limit [chn]
@@ -38,14 +40,14 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.10 2007-02-05 15:08:21 Rudolf.Lutter Exp $
-// Date:             Fri Feb  2 09:30:23 2007
+// Revision:         $Id: Encal.C,v 1.11 2007-02-06 09:39:27 Rudolf.Lutter Exp $
+// Date:             Tue Feb  6 09:08:52 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
 //                   Width:               
 //                   Aclic:               +g
-//                   NofArgs:             16
+//                   NofArgs:             17
 //                   Arg1.Name:           HistoFile
 //                   Arg1.Title:          Histogram file (.root)
 //                   Arg1.Type:           Char_t *
@@ -73,7 +75,7 @@
 //                   Arg3.Base:           dec
 //                   Arg3.Orientation:    horizontal
 //                   Arg4.Name:           CalFile
-//                   Arg4.Title:          Calibration output file (.cal)
+//                   Arg4.Title:          Calibration data (.cal)
 //                   Arg4.Type:           Char_t *
 //                   Arg4.EntryType:      File
 //                   Arg4.Width:          150
@@ -83,122 +85,132 @@
 //                   Arg4.Base:           dec
 //                   Arg4.Orientation:    horizontal
 //                   Arg5.Name:           ResFile
-//                   Arg5.Title:          Results file (.res)
+//                   Arg5.Title:          Calibration results (.res)
 //                   Arg5.Type:           Char_t *
 //                   Arg5.EntryType:      File
 //                   Arg5.Width:          150
 //                   Arg5.Default:        Encal.res
-//                   Arg5.Values:         Results file:*.res
+//                   Arg5.Values:         Result files:*.res
 //                   Arg5.AddLofValues:   No
 //                   Arg5.Base:           dec
 //                   Arg5.Orientation:    horizontal
-//                   Arg6.Name:           ClearFlag
-//                   Arg6.Title:          Clear output files (.cal, .res)
-//                   Arg6.Type:           Bool_t
-//                   Arg6.EntryType:      YesNo
+//                   Arg6.Name:           FitFile
+//                   Arg6.Title:          Fit results (.root)
+//                   Arg6.Type:           Char_t *
+//                   Arg6.EntryType:      File
+//                   Arg6.Width:          150
+//                   Arg6.Default:        Encal.root
+//                   Arg6.Values:         Fit data files:*.root
 //                   Arg6.AddLofValues:   No
 //                   Arg6.Base:           dec
 //                   Arg6.Orientation:    horizontal
-//                   Arg7.Name:           PrecalFile
-//                   Arg7.Title:          Precalibration file (.cal, needed if Eu152)
-//                   Arg7.Type:           Char_t *
-//                   Arg7.EntryType:      File
-//                   Arg7.Width:          150
-//                   Arg7.Default:        Co60.cal
-//                   Arg7.Values:         Calib files:*.cal
+//                   Arg7.Name:           ClearFlag
+//                   Arg7.Title:          Clear output files (.cal, .res)
+//                   Arg7.Type:           Bool_t
+//                   Arg7.EntryType:      YesNo
 //                   Arg7.AddLofValues:   No
 //                   Arg7.Base:           dec
 //                   Arg7.Orientation:    horizontal
-//                   Arg8.Name:           LowerLim
-//                   Arg8.Title:          Lower limit [chn]
-//                   Arg8.Type:           Int_t
-//                   Arg8.EntryType:      UpDown-X
-//                   Arg8.Default:        0
+//                   Arg8.Name:           PrecalFile
+//                   Arg8.Title:          Precalibration file (.cal, needed if Eu152)
+//                   Arg8.Type:           Char_t *
+//                   Arg8.EntryType:      File
+//                   Arg8.Width:          150
+//                   Arg8.Default:        Co60.cal
+//                   Arg8.Values:         Calib results:*.cal
 //                   Arg8.AddLofValues:   No
-//                   Arg8.LowerLimit:     0
-//                   Arg8.UpperLimit:     4096
-//                   Arg8.Increment:      100
 //                   Arg8.Base:           dec
 //                   Arg8.Orientation:    horizontal
-//                   Arg9.Name:           UpperLim
-//                   Arg9.Title:          Upper limit [chn]
+//                   Arg9.Name:           LowerLim
+//                   Arg9.Title:          Lower limit [chn]
 //                   Arg9.Type:           Int_t
 //                   Arg9.EntryType:      UpDown-X
-//                   Arg9.Default:        4096
+//                   Arg9.Default:        0
 //                   Arg9.AddLofValues:   No
 //                   Arg9.LowerLimit:     0
 //                   Arg9.UpperLimit:     4096
 //                   Arg9.Increment:      100
 //                   Arg9.Base:           dec
 //                   Arg9.Orientation:    horizontal
-//                   Arg10.Name:          PeakFrac
-//                   Arg10.Title:         Threshold for peak finder [% of max peak]
+//                   Arg10.Name:          UpperLim
+//                   Arg10.Title:         Upper limit [chn]
 //                   Arg10.Type:          Int_t
 //                   Arg10.EntryType:     UpDown-X
-//                   Arg10.Default:       1
+//                   Arg10.Default:       4096
 //                   Arg10.AddLofValues:  No
-//                   Arg10.LowerLimit:    1
-//                   Arg10.UpperLimit:    50
-//                   Arg10.Increment:     1
+//                   Arg10.LowerLimit:    0
+//                   Arg10.UpperLimit:    4096
+//                   Arg10.Increment:     100
 //                   Arg10.Base:          dec
 //                   Arg10.Orientation:   horizontal
-//                   Arg11.Name:          Sigma
-//                   Arg11.Title:         Sigma
-//                   Arg11.Type:          Double_t
-//                   Arg11.EntryType:     UpDown
-//                   Arg11.Default:       3
+//                   Arg11.Name:          PeakFrac
+//                   Arg11.Title:         Threshold for peak finder [% of max peak]
+//                   Arg11.Type:          Int_t
+//                   Arg11.EntryType:     UpDown-X
+//                   Arg11.Default:       1
 //                   Arg11.AddLofValues:  No
-//                   Arg11.LowerLimit:    0
-//                   Arg11.UpperLimit:    10
-//                   Arg11.Increment:     .2
+//                   Arg11.LowerLimit:    1
+//                   Arg11.UpperLimit:    50
+//                   Arg11.Increment:     1
 //                   Arg11.Base:          dec
 //                   Arg11.Orientation:   horizontal
-//                   Arg12.Name:          FitMode
-//                   Arg12.Title:         Fit mode
-//                   Arg12.Type:          Int_t
-//                   Arg12.EntryType:     Radio
-//                   Arg12.Default:       1
-//                   Arg12.Values:        gaus|fit gaussian distribution=1:gaus+tail|fit gaussian + exp tail on left side=2
+//                   Arg12.Name:          Sigma
+//                   Arg12.Title:         Sigma
+//                   Arg12.Type:          Double_t
+//                   Arg12.EntryType:     UpDown
+//                   Arg12.Default:       3
 //                   Arg12.AddLofValues:  No
+//                   Arg12.LowerLimit:    0
+//                   Arg12.UpperLimit:    10
+//                   Arg12.Increment:     .2
 //                   Arg12.Base:          dec
 //                   Arg12.Orientation:   horizontal
-//                   Arg13.Name:          FitGrouping
-//                   Arg13.Title:         Fit grouping
+//                   Arg13.Name:          FitMode
+//                   Arg13.Title:         Fit mode
 //                   Arg13.Type:          Int_t
 //                   Arg13.EntryType:     Radio
 //                   Arg13.Default:       1
-//                   Arg13.Values:        single peak|fit each peak separately=1:ensemble|group peaks before fitting=2
+//                   Arg13.Values:        gaus|fit gaussian distribution=1:gaus+tail|fit gaussian + exp tail on left side=2
 //                   Arg13.AddLofValues:  No
 //                   Arg13.Base:          dec
 //                   Arg13.Orientation:   horizontal
-//                   Arg14.Name:          FitRange
-//                   Arg14.Title:         Range for single peak fit [sigma]
-//                   Arg14.Type:          Double_t
-//                   Arg14.EntryType:     UpDown
-//                   Arg14.Default:       3
+//                   Arg14.Name:          FitGrouping
+//                   Arg14.Title:         Fit grouping
+//                   Arg14.Type:          Int_t
+//                   Arg14.EntryType:     Radio
+//                   Arg14.Default:       1
+//                   Arg14.Values:        single peak|fit each peak separately=1:ensemble|group peaks before fitting=2
 //                   Arg14.AddLofValues:  No
-//                   Arg14.LowerLimit:    0
-//                   Arg14.UpperLimit:    10
-//                   Arg14.Increment:     .5
 //                   Arg14.Base:          dec
 //                   Arg14.Orientation:   horizontal
-//                   Arg15.Name:          DisplayFlag
-//                   Arg15.Title:         Display results
-//                   Arg15.Type:          Int_t
-//                   Arg15.EntryType:     Check
-//                   Arg15.Default:       1
-//                   Arg15.Values:        Step|show each fit=1:2dim|show 2-dim histo after calibration=2
+//                   Arg15.Name:          FitRange
+//                   Arg15.Title:         Range for single peak fit [sigma]
+//                   Arg15.Type:          Double_t
+//                   Arg15.EntryType:     UpDown
+//                   Arg15.Default:       3
 //                   Arg15.AddLofValues:  No
+//                   Arg15.LowerLimit:    0
+//                   Arg15.UpperLimit:    10
+//                   Arg15.Increment:     .5
 //                   Arg15.Base:          dec
 //                   Arg15.Orientation:   horizontal
-//                   Arg16.Name:          VerboseMode
-//                   Arg16.Title:         Verbose mode
-//                   Arg16.Type:          Bool_t
-//                   Arg16.EntryType:     YesNo
+//                   Arg16.Name:          DisplayFlag
+//                   Arg16.Title:         Display results
+//                   Arg16.Type:          Int_t
+//                   Arg16.EntryType:     Check
 //                   Arg16.Default:       1
+//                   Arg16.Values:        Step|show each fit=1:2dim|show 2-dim histo after calibration=2
 //                   Arg16.AddLofValues:  No
 //                   Arg16.Base:          dec
 //                   Arg16.Orientation:   horizontal
+//                   Arg17.Name:          VerboseMode
+//                   Arg17.Title:         Verbose mode
+//                   Arg17.Type:          Bool_t
+//                   Arg17.EntryType:     YesNo
+//                   Arg17.Default:       1
+//                   Arg17.AddLofValues:  No
+//                   Arg17.Base:          dec
+//                   Arg17.Orientation:   horizontal
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
@@ -263,6 +275,7 @@ TString calSource;
 TEnv * enTable = NULL;
 TEnv * cal = NULL;
 TEnv * res = NULL;
+TFile * resFit = NULL;
 
 Bool_t isTripleAlpha = kFALSE;
 Bool_t isCo60 = kFALSE;
@@ -406,7 +419,7 @@ void OutputMessage(const Char_t * Text, Bool_t ErrFlag = kFALSE, Int_t ColorInde
 		msg->Flush("Encal.C");
 	} else {
 		msg->Out() << Text << endl;
-		msg->Flush("Encal.C", tCol);
+		msg->Flush("Encal.C", "", tCol);
 	}
 }
 
@@ -433,11 +446,11 @@ TCanvas * DrawCanvas() {
 	btnDiscard->SetFillColor(32);
 	btnDiscard->SetToolTipText("discard fit and continue with next histo");
 	btnDiscard->Draw();
-	TButton * btnStop = new TButton("stop", "buttonFlag = kButtonStop;", x0 + 2 * wdth, y0, x0 + 3 * wdth, y1);
+	TButton * btnStop = new TButton("stop", "if (resFit) resFit->Close(); buttonFlag = kButtonStop;", x0 + 2 * wdth, y0, x0 + 3 * wdth, y1);
 	btnStop->SetFillColor(32);
 	btnStop->SetToolTipText("leave calibration and return to MacroBrowser");
 	btnStop->Draw();
-	TButton * btnQuit = new TButton("quit", "gSystem->Exit(0);", x0 + 3 * wdth, y0, x0 + 4 * wdth, y1);
+	TButton * btnQuit = new TButton("quit", "if (resFit) resFit->Close(); gSystem->Exit(0);", x0 + 3 * wdth, y0, x0 + 4 * wdth, y1);
 	btnQuit->SetFillColor(32);
 	btnQuit->SetToolTipText("exit from ROOT");
 	btnQuit->Draw();
@@ -528,7 +541,8 @@ void ShowResults2dim(TFile * HistoFile, Int_t LowerLim, Int_t UpperLim, Double_t
 
 	TString hTitle = Form("Calibration restults: file %s, %d histogram(s)", HistoFile->GetName(), nofHistos);
  	TCanvas * c = new TCanvas();
-	TH2S * hCal = new TH2S("hCal", hTitle.Data(), (UpperLim - LowerLim), Emin, Emax, nofHistos, 0, nofHistos);
+	TH2S * hCal = new TH2S("hCalResults", hTitle.Data(), (UpperLim - LowerLim), Emin, Emax, nofHistos, 0, nofHistos);
+	if (resFit) resFit->Append(hCal);
 	TAxis * yAxis = hCal->GetYaxis();
 	TList * lofEntries = (TList *) cal->GetTable();
 	TIterator * iter = lofEntries->MakeIterator();
@@ -569,6 +583,7 @@ void Encal(TObjArray * Histos = NULL,
            const Char_t * Energies = "$MARABOU/data/encal/energies.dat",
            const Char_t * CalFile = "Encal.cal",
            const Char_t * ResFile = "Encal.res",
+           const Char_t * FitFile = "Encal.root",
            Bool_t ClearFlag = kFALSE,
            const Char_t * PrecalFile = "Co60.cal",
            Int_t LowerLim = 0,
@@ -641,6 +656,14 @@ void Encal(TObjArray * Histos = NULL,
 	
 	cal->SetValue("Calib.Source", calSource.Data());
 	cal->SetValue("Calib.Energies", enFile.Data());
+
+	TFile * resFit = new TFile(FitFile, "RECREATE");
+	if (!resFit->IsOpen()) {
+		OutputMessage(Form("Can't open file - %s", FitFile), kTRUE);
+		resFit = NULL;
+	} else if (VerboseMode) {
+		OutputMessage(Form("Writing fit data to file %s", FitFile));
+	}
 
 	canv = DrawCanvas();
 
@@ -739,6 +762,7 @@ void Encal(TObjArray * Histos = NULL,
 						Int_t ndf = TMath::Max(1, fit->GetNDF());
 						chi2[i] = fit->GetChisquare() / ndf;
 					}
+					if (resFit) resFit->Append(h);
 				} else if (FitGrouping == kFitGroupingEnsemble){
 					fitNofPeaks = nPeaks;
 					Int_t nPar = 5 + 2 * fitNofPeaks;
@@ -763,6 +787,7 @@ void Encal(TObjArray * Histos = NULL,
 					for (Int_t k = 0; k < nPar; k++) cout << "    p" << k << "=" << p[k] << endl;
 					fit->SetLineColor(2);
 					h->Fit(fit, "R");
+					if (resFit) resFit->Append(h);
 					fit->GetParameters(p.GetArray());
 					Int_t ndf = TMath::Max(1, fit->GetNDF());
 					k = 5;
@@ -802,6 +827,7 @@ void Encal(TObjArray * Histos = NULL,
 						Int_t ndf = TMath::Max(1, fit->GetNDF());
 						chi2[i] = fit->GetChisquare() / ndf;
 					}
+					if (resFit) resFit->Append(h);
 				} else if (FitGrouping == kFitGroupingEnsemble){
 					fitNofPeaks = nPeaks;
 					Int_t nPar = 3 + 2 * fitNofPeaks;
@@ -823,6 +849,7 @@ void Encal(TObjArray * Histos = NULL,
 					for (Int_t k = 0; k < nPar; k++) cout << "    p" << k << "=" << p[k] << endl;
 					fit->SetLineColor(2);
 					h->Fit(fit, "R");
+					if (resFit) resFit->Append(h);
 					fit->GetParameters(p.GetArray());
 					Int_t ndf = TMath::Max(1, fit->GetNDF());
 					k = 3;
@@ -866,7 +893,8 @@ void Encal(TObjArray * Histos = NULL,
 					}
 
 					TGraphErrors * calib = new TGraphErrors(peaksNeeded, calX.GetArray(), calE.GetArray(), calXerr.GetArray(), calEerr.GetArray());
-					calib->SetName(Form("c_%s", hist.Data()));
+					if (resFit) resFit->Append(calib);
+					calib->SetName(Form("calib_%s", hist.Data()));
 					calib->SetTitle(Form("%s Calibration for histo %s", calSource.Data(), hist.Data()));
 					calib->Draw("A*");
 					calib->Fit("pol1");
@@ -975,6 +1003,8 @@ void Encal(TObjArray * Histos = NULL,
 	if (doCal && show2dim) ShowResults2dim(hFile, xMin, xMax, eMin, eMax);
 
 	OutputMessage(Form("End of calibration - %d histogram(s), press \"execute\" to re-calibrate or \"quit\" to exit", nofHistosCalibrated), kFALSE, kColorBlue);
+
+	if (resFit) resFit->Write();
 
 	return;
 }
