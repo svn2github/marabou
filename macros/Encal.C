@@ -40,7 +40,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.11 2007-02-06 09:39:27 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.12 2007-02-07 13:04:20 Rudolf.Lutter Exp $
 // Date:             Tue Feb  6 09:08:52 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -170,7 +170,7 @@
 //                   Arg13.Type:          Int_t
 //                   Arg13.EntryType:     Radio
 //                   Arg13.Default:       1
-//                   Arg13.Values:        gaus|fit gaussian distribution=1:gaus+tail|fit gaussian + exp tail on left side=2
+//                   Arg13.Values:        gauss|fit gaussian distribution=1:gauss+tail|fit gaussian + exp tail on left side=2
 //                   Arg13.AddLofValues:  No
 //                   Arg13.Base:          dec
 //                   Arg13.Orientation:   horizontal
@@ -184,7 +184,7 @@
 //                   Arg14.Base:          dec
 //                   Arg14.Orientation:   horizontal
 //                   Arg15.Name:          FitRange
-//                   Arg15.Title:         Range for single peak fit [sigma]
+//                   Arg15.Title:         Range for peak fit [sigma]
 //                   Arg15.Type:          Double_t
 //                   Arg15.EntryType:     UpDown
 //                   Arg15.Default:       3
@@ -199,7 +199,7 @@
 //                   Arg16.Type:          Int_t
 //                   Arg16.EntryType:     Check
 //                   Arg16.Default:       1
-//                   Arg16.Values:        Step|show each fit=1:2dim|show 2-dim histo after calibration=2
+//                   Arg16.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2
 //                   Arg16.AddLofValues:  No
 //                   Arg16.Base:          dec
 //                   Arg16.Orientation:   horizontal
@@ -438,19 +438,23 @@ TCanvas * DrawCanvas() {
 	TCanvas * c = new TCanvas("EncalCanv", "Energy Calibration Tool", canvw, canvh);
 	c->Divide(1,2);
 
-	TButton * btnOk = new TButton("ok", "buttonFlag = kButtonOk;", x0, y0, x0 + wdth, y1);
+	Int_t btnNo = 0;
+	TButton * btnOk = new TButton("accept", "buttonFlag = kButtonOk;", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
 	btnOk->SetFillColor(32);
 	btnOk->SetToolTipText("pass data to calibration file and continue with next histo");
 	btnOk->Draw();
-	TButton * btnDiscard = new TButton("discard", "buttonFlag = kButtonDiscard;", x0 + wdth, y0, x0 + 2 * wdth, y1);
+	btnNo++;
+	TButton * btnDiscard = new TButton("discard", "buttonFlag = kButtonDiscard;", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
 	btnDiscard->SetFillColor(32);
 	btnDiscard->SetToolTipText("discard fit and continue with next histo");
 	btnDiscard->Draw();
-	TButton * btnStop = new TButton("stop", "if (resFit) resFit->Close(); buttonFlag = kButtonStop;", x0 + 2 * wdth, y0, x0 + 3 * wdth, y1);
+	btnNo++;
+	TButton * btnStop = new TButton("stop", "if (resFit) resFit->Close(); buttonFlag = kButtonStop;", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
 	btnStop->SetFillColor(32);
 	btnStop->SetToolTipText("leave calibration and return to MacroBrowser");
 	btnStop->Draw();
-	TButton * btnQuit = new TButton("quit", "if (resFit) resFit->Close(); gSystem->Exit(0);", x0 + 3 * wdth, y0, x0 + 4 * wdth, y1);
+	btnNo++;
+	TButton * btnQuit = new TButton("quit", "if (resFit) resFit->Close(); gSystem->Exit(0);", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
 	btnQuit->SetFillColor(32);
 	btnQuit->SetToolTipText("exit from ROOT");
 	btnQuit->Draw();
