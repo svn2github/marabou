@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.9 2006-11-29 15:10:28 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.10 2007-02-08 09:45:37 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -170,6 +170,7 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		enum EGMrbMacroId				{	kGMrbMacroIdExec,
 											kGMrbMacroIdReset,
 											kGMrbMacroIdClose,
+											kGMrbMacroIdQuit,
 											kGMrbMacroIdModifyHeader,
 											kGMrbMacroIdModifySource,
 											kGMrbMacroIdExecClose
@@ -185,8 +186,6 @@ class TGMrbMacroFrame : public TGTransientFrame {
 	public:
 		TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main, TMrbNamedX * Macro, UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		~TGMrbMacroFrame() { fHeap.Delete(); };
-
-//		TGMrbMacroFrame(const TGMrbMacroFrame & f) : TGTransientFrame(f) {};	// default copy ctor
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
@@ -217,6 +216,7 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		TMrbLofNamedX fLofEntryTypes;
 
 		TMrbLofNamedX fLofActions;
+		TMrbLofNamedX fLofActionsM;
 
 		TObjArray fLofMacroArgs;	// list of arguments
 
@@ -236,6 +236,16 @@ class TGMrbMacroFrame : public TGTransientFrame {
 class TGMrbMacroEdit : public TGTransientFrame {
 
 	public:
+		// button ids
+		enum EGMrbMacroEditButtons		{	kGMrbMacroAclicNone,
+											kGMrbMacroAclicPlus,
+											kGMrbMacroAclicPlusPlus,
+											kGMrbMacroAclicPlusG,
+											kGMrbMacroAclicPlusPlusG,
+											kGMrbMacroMayModify,
+											kGMrbMacroDontModify
+										};
+
 		// ids to dispatch over X events
 		enum EGMrbMacroEditId			{	kGMrbMacroEditCurrentArg,
 											kGMrbMacroEditIdFirstArg,
@@ -279,8 +289,6 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, TMrbNamedX * Macro, UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		~TGMrbMacroEdit() { fHeap.Delete(); };
 
-//		TGMrbMacroEdit(const TGMrbMacroEdit & f) : TGTransientFrame(f) {};	// default copy ctor
-
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
 
@@ -310,6 +318,10 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		TGMrbLabelEntry * fMacroTitle;
 		TGMrbLabelEntry * fMacroProc;
 		TGMrbLabelEntry * fMacroWidth;
+
+		TGMrbRadioButtonList * fMacroAclic;
+		TGMrbRadioButtonList * fMacroModify;
+
 		TGMrbLabelEntry * fMacroNofArgs;
 
 		TGGroupFrame * fMacroArg;
@@ -333,6 +345,9 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		TGMrbLabelEntry * fArgNofCL;
 
 		TGMrbTextButtonGroup * fAction;
+
+		TMrbLofNamedX fLofAclicModes;
+		TMrbLofNamedX fLofModifyModes;
 
 		TMrbLofNamedX fLofArgTypes;
 		TMrbLofNamedX fLofEntryTypes;
@@ -371,8 +386,6 @@ class TGMrbMacroList : public TGVerticalFrame {
 																UInt_t FrameOptions = kChildFrame | kVerticalFrame,
 																UInt_t ButtonOptions = kRaisedFrame | kDoubleBorder);
 		~TGMrbMacroList() { fHeap.Delete(); };
-
-//		TGMrbMacroList(const TGMrbMacroList & f) : TGVerticalFrame(f) {};	// default copy ctor
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
@@ -414,16 +427,14 @@ class TGMrbMacroBrowserMain : public TGMainFrame {
 
 		virtual ~TGMrbMacroBrowserMain() { fHeap.Delete(); };
 
-//		TGMrbMacroBrowserMain(const TGMrbMacroBrowserMain & f) : TGMainFrame(f) {};	// default copy ctor
-
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		
-		virtual inline void CloseWindow();
-
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
+
+		void CloseWindow();
 
 	protected:
 		void PopupMessageViewer();
@@ -463,8 +474,6 @@ class TGMrbMacroBrowserVertical : public TGVerticalFrame {
 
 		virtual ~TGMrbMacroBrowserVertical() {};
 
-//		TGMrbMacroBrowserVertical(const TGMrbMacroBrowserVertical & f) : TGVerticalFrame(f) {};	// default copy ctor
-
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) { return(kTRUE); };
@@ -493,8 +502,6 @@ class TGMrbMacroBrowserGroup : public TGGroupFrame {
 		TGMrbMacroBrowserGroup(const TGWindow * Parent, const Char_t * Title, TMrbLofMacros * LofMacros, TGMrbLayout * Layout);
 
 		virtual ~TGMrbMacroBrowserGroup() {};
-
-//		TGMrbMacroBrowserGroup(const TGMrbMacroBrowserGroup & f) : TGGroupFrame(f) {};	// default copy ctor
 
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
@@ -530,8 +537,6 @@ class TGMrbMacroBrowserPopup : public TGPopupMenu {
 
 		virtual ~TGMrbMacroBrowserPopup() { fHeap.Delete(); };
 
-//		TGMrbMacroBrowserPopup(const TGMrbMacroBrowserPopup & f) : TGPopupMenu(f) {};	// default copy ctor
-
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
@@ -558,8 +563,6 @@ class TGMrbMacroBrowserTransient : public TGTransientFrame {
 	public:
 		TGMrbMacroBrowserTransient(const TGWindow * Parent, const TGWindow * Main, const Char_t * Title, TMrbLofMacros * LofMacros,
 															UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
-
-//		TGMrbMacroBrowserTransient(const TGMrbMacroBrowserTransient & f) : TGTransientFrame(f) {};	// default copy ctor
 
 		virtual ~TGMrbMacroBrowserTransient() {fHeap.Delete(); };
 

@@ -40,13 +40,14 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.12 2007-02-07 13:04:20 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.13 2007-02-08 09:45:37 Rudolf.Lutter Exp $
 // Date:             Tue Feb  6 09:08:52 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
 //                   Width:               
 //                   Aclic:               +g
+//                   Modify:              no
 //                   NofArgs:             17
 //                   Arg1.Name:           HistoFile
 //                   Arg1.Title:          Histogram file (.root)

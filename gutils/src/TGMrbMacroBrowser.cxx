@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.20 2007-01-31 15:13:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.21 2007-02-08 09:45:37 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -54,7 +54,24 @@ ClassImp(TGMrbMacroEdit)
 ClassImp(TGMrbMacroArg)
 ClassImp(TGMrbMacroList)
 
-const SMrbNamedX kGMrbMacroLofActions[] =
+const SMrbNamedX kGMrbMacroLofAclicModes[] =
+			{
+				{TGMrbMacroEdit::kGMrbMacroAclicNone, 		"none",		"Don't use ACLiC"						},
+				{TGMrbMacroEdit::kGMrbMacroAclicPlus, 		"+",		"Compile if needed"						},
+				{TGMrbMacroEdit::kGMrbMacroAclicPlusPlus, 	"++",		"Force compiling"						},
+				{TGMrbMacroEdit::kGMrbMacroAclicPlusG,		"+g",	 	"Compile if needed, include debug info"	},
+				{TGMrbMacroEdit::kGMrbMacroAclicPlusPlusG, "++g",	 	"Force compiling, include debug info"	},
+				{0, 										NULL,		NULL									}
+			};
+
+const SMrbNamedX kGMrbMacroLofModifyModes[] =
+			{
+				{TGMrbMacroEdit::kGMrbMacroMayModify, 		"yes",		"User may modify header/source"	},
+				{TGMrbMacroEdit::kGMrbMacroDontModify,	 	"no",		"User is not allowed to modify"	},
+				{0, 										NULL,		NULL							}
+			};
+
+const SMrbNamedX kGMrbMacroLofActionsModify[] =
 			{
 				{TGMrbMacroFrame::kGMrbMacroIdModifyHeader, "Modify header",	"Modify macro layout"				},
 				{TGMrbMacroFrame::kGMrbMacroIdModifySource, "Modify source",	"Modify macro source"				},
@@ -62,6 +79,17 @@ const SMrbNamedX kGMrbMacroLofActions[] =
 				{TGMrbMacroFrame::kGMrbMacroIdExecClose, 	"Exec + Close", 	"Execute macro & close window"		},
 				{TGMrbMacroFrame::kGMrbMacroIdReset,		"Reset",			"Reset arguments to default values"	},
 				{TGMrbMacroFrame::kGMrbMacroIdClose,		"Close",			"Close window" 				 		},
+				{TGMrbMacroFrame::kGMrbMacroIdQuit, 		"Quit",				"Exit from ROOT" 				 		},
+				{0, 										NULL,				NULL								}
+			};
+
+const SMrbNamedX kGMrbMacroLofActions[] =
+			{
+				{TGMrbMacroFrame::kGMrbMacroIdExec, 		"Execute",			"Execute macro"						},
+				{TGMrbMacroFrame::kGMrbMacroIdExecClose, 	"Exec + Close", 	"Execute macro & close window"		},
+				{TGMrbMacroFrame::kGMrbMacroIdReset,		"Reset",			"Reset arguments to default values"	},
+				{TGMrbMacroFrame::kGMrbMacroIdClose,		"Close",			"Close window" 				 		},
+				{TGMrbMacroFrame::kGMrbMacroIdQuit,			"Quit",				"Exit from ROOT" 				 		},
 				{0, 										NULL,				NULL								}
 			};
 
@@ -806,6 +834,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	fLofEntryTypes.AddNamedX(kGMrbMacroLofEntryTypes);
 	fLofActions.SetName("Action buttons");
 	fLofActions.AddNamedX(kGMrbMacroLofActions);
+	fLofActionsM.SetName("Action buttons (+modify)");
+	fLofActionsM.AddNamedX(kGMrbMacroLofActionsModify);
 
 	fMacro = Macro; 		// save pointer to macro
 
@@ -1132,8 +1162,10 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			fMacroArgs->AddFrame(macroArg->fFObjListBox, frameGC->LH());
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
 			macroArg->fFObjListBox->SetFileEntry(value.Data());
-			macroArg->fFObjListBox->OpenFile(value.Data());
-			if (nofVals > 0) macroArg->fFObjListBox->SetList(lofValues);
+			if (!gSystem->AccessPathName(value.Data())) {
+				macroArg->fFObjListBox->OpenFile(value.Data());
+				if (nofVals > 0) macroArg->fFObjListBox->SetList(lofValues);
+			}
 		}
 	}
 
@@ -1141,7 +1173,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	HEAP(actionLayout);
 	buttonGC->SetLH(actionLayout);
 
-	fAction = new TGMrbTextButtonGroup(this, "Action", &fLofActions, -1, 2, frameGC, buttonGC);
+	Bool_t CanModify = macroEnv->GetValue("Modify", kFALSE);
+	fAction = new TGMrbTextButtonGroup(this, "Action", CanModify ? &fLofActionsM : &fLofActions, -1, 2, frameGC, buttonGC);
 	HEAP(fAction);
 	this->AddFrame(fAction, frameGC->LH());
 	fAction->Associate(this);
@@ -1201,6 +1234,9 @@ Bool_t TGMrbMacroFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 						case TGMrbMacroFrame::kGMrbMacroIdExecClose:
 							this->ExecMacro();
 							this->CloseWindow();
+							break;
+						case TGMrbMacroFrame::kGMrbMacroIdQuit:
+							gSystem->Exit(0);
 							break;
 					}
 					break;
@@ -1535,6 +1571,10 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 //	Initialize several lists
 	fLofArgTypes.SetName("Argument types");
 	fLofArgTypes.AddNamedX(kGMrbMacroLofArgTypes);
+	fLofAclicModes.SetName("Aclic modes");
+	fLofAclicModes.AddNamedX(kGMrbMacroLofAclicModes);
+	fLofModifyModes.SetName("Modify modes");
+	fLofModifyModes.AddNamedX(kGMrbMacroLofModifyModes);
 	fLofEntryTypes.SetName("Entry types");
 	fLofEntryTypes.AddNamedX(kGMrbMacroLofEntryTypes);
 	fLofArgActions.SetName("Action buttons");
@@ -1611,6 +1651,20 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fMacroWidth->SetRange(0, 1000);
 	fMacroWidth->SetIncrement(100);
 	fMacroWidth->GetEntry()->SetText(fOriginalEnv->GetValue("Width", ""));
+
+	fMacroAclic = new TGMrbRadioButtonList(fMacroInfo, "Aclic", &fLofAclicModes, -1, 1,
+														frameWidth - 20,
+														TGMrbMacroEdit::kLineHeight,
+														frameGC, labelGC, buttonGC);
+	HEAP(fMacroAclic);
+	fMacroInfo->AddFrame(fMacroAclic, frameGC->LH());
+
+	fMacroModify = new TGMrbRadioButtonList(fMacroInfo, "Modify", &fLofModifyModes, -1, 1,
+														frameWidth - 20,
+														TGMrbMacroEdit::kLineHeight,
+														frameGC, labelGC, buttonGC);
+	HEAP(fMacroModify);
+	fMacroInfo->AddFrame(fMacroModify, frameGC->LH());
 
 	fMacroNofArgs = new TGMrbLabelEntry(fMacroInfo, "Number of arguments", 40, -1, frameWidth - 20,
 														TGMrbMacroEdit::kLineHeight, 100,
@@ -1979,6 +2033,14 @@ Bool_t TGMrbMacroEdit::StoreHeader() {
 	fCurrentEnv->SetValue("Title", argValue.Data(), kEnvChange);
 	argValue = fMacroWidth->GetEntry()->GetText();
 	fCurrentEnv->SetValue("Width", argValue.Data(), kEnvChange);
+	Int_t idx = fMacroAclic->GetActive();
+	TMrbNamedX * nx = fLofAclicModes.FindByIndex(idx);
+	argValue = nx ? nx->GetName() : "";
+	fCurrentEnv->SetValue("Aclic", argValue.Data(), kEnvChange);
+	idx = fMacroModify->GetActive();
+	nx = fLofModifyModes.FindByIndex(idx);
+	argValue = nx ? nx->GetName() : "";
+	fCurrentEnv->SetValue("Modify", argValue.Data(), kEnvChange);
 	argValue = fMacroNofArgs->GetEntry()->GetText();
 	fCurrentEnv->SetValue("NofArgs", argValue.Data(), kEnvChange);
 	return(kTRUE);
