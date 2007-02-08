@@ -40,7 +40,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.13 2007-02-08 09:45:37 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.14 2007-02-08 11:24:20 Rudolf.Lutter Exp $
 // Date:             Tue Feb  6 09:08:52 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -51,7 +51,7 @@
 //                   NofArgs:             17
 //                   Arg1.Name:           HistoFile
 //                   Arg1.Title:          Histogram file (.root)
-//                   Arg1.Type:           Char_t *
+//                   Arg1.Type:           TObjArray *
 //                   Arg1.EntryType:      FObjListBox
 //                   Arg1.Default:        none.root
 //                   Arg1.Values:         ROOT files:*.root
