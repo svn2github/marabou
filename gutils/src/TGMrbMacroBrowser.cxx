@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.21 2007-02-08 09:45:37 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.22 2007-02-08 11:03:18 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -120,6 +120,7 @@ const SMrbNamedX kGMrbMacroLofArgTypes[] =
 					{TGMrbMacroArg::kGMrbMacroArgDouble,	"Double_t", 	"Double precision value"		},
 					{TGMrbMacroArg::kGMrbMacroArgChar,		"Char_t *", 	"String of characters"			},
 					{TGMrbMacroArg::kGMrbMacroArgBool,		"Bool_t",		"Boolean value" 				},
+					{TGMrbMacroArg::kGMrbMacroArgObjArr,	"TObjArray *",	"Array of ROOT objects" 		},
 					{0, 									NULL,			NULL							}
 				};
 
@@ -1377,7 +1378,13 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) {
 			macroArg->fFObjCombo->GetSelection(*argArr, kFALSE);
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
-			macroArg->fFObjListBox->GetSelection(*argArr, kFALSE);
+			Int_t at = macroArg->fType->GetIndex();
+			if (at == TGMrbMacroArg::kGMrbMacroArgObjArr) {
+				macroArg->fFObjListBox->GetSelection(*argArr, kFALSE);
+			} else {
+				macroArg->fFObjListBox->GetSelectionAsString(argString, kFALSE);
+				currentValue = argString;
+			}
 		}
 		if (macroArg->fType->GetIndex() == TGMrbMacroArg::kGMrbMacroArgChar) {
 			argString.Prepend("\"");
@@ -1385,17 +1392,22 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 		}
 
 		macroArg->GetResource(cVal, "Current");
-		if ((n == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) || (n == TGMrbMacroArg::kGMrbMacroEntryFObjListBox)) {
-			Int_t nVal = argArr->GetEntriesFast();
-			macroEnv->SetValue(Form("%s.NofValues", cVal.Data()), nVal);
-			TIterator * iter = argArr->MakeIterator();
-			TObjString * vStr;
-			nVal = 0;
-			while (vStr = (TObjString *) iter->Next()) {
-				macroEnv->SetValue(Form("%s.%d", cVal.Data(), nVal), vStr->GetString().Data());
-				nVal++;
+		if (n == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
+			Int_t at = macroArg->fType->GetIndex();
+			if (at == TGMrbMacroArg::kGMrbMacroArgObjArr) {
+				Int_t nVal = argArr->GetEntriesFast();
+				macroEnv->SetValue(Form("%s.NofValues", cVal.Data()), nVal);
+				TIterator * iter = argArr->MakeIterator();
+				TObjString * vStr;
+				nVal = 0;
+				while (vStr = (TObjString *) iter->Next()) {
+					macroEnv->SetValue(Form("%s.%d", cVal.Data(), nVal), vStr->GetString().Data());
+					nVal++;
+				}
+				argString = Form("(TObjArray *) %#lx", argArr);
+			} else {
+				macroEnv->SetValue(cVal, currentValue);
 			}
-			argString = Form("(TObjArray *) %#lx", argArr);
 		} else {
 			macroEnv->SetValue(cVal, currentValue);
 		}

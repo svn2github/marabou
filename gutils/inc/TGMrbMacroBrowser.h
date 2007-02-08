@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.10 2007-02-08 09:45:37 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.11 2007-02-08 11:03:18 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,8 @@ class TGMrbMacroArg : public TObject {
 											kGMrbMacroArgFloat,
 											kGMrbMacroArgDouble,
 											kGMrbMacroArgChar,
-											kGMrbMacroArgBool
+											kGMrbMacroArgBool,
+											kGMrbMacroArgObjArr
 										};
 
 		enum EGMrbMacroArgBase			{
