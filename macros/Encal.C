@@ -2,7 +2,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:             Encal.C
 // Purpose:          Energy calibration for 1-dim histograms
-// Syntax:           .x Encal.C(TObjArray * Histos,
+// Syntax:           .x Encal.C(TObjArray * HistoFile,
 //                               Int_t CalSource,
 //                               const Char_t * Energies,
 //                               const Char_t * CalFile,
@@ -16,16 +16,17 @@
 //                               Double_t Sigma,
 //                               Int_t FitMode,
 //                               Int_t FitGrouping,
+//                               Int_t FitBackground,
 //                               Double_t FitRange,
 //                               Int_t DisplayFlag,
 //                               Bool_t VerboseMode)
-// Arguments:        TObjArray * Histos        -- [0] Histogram file (.root),  histo names
+// Arguments:        TObjArray * HistoFile     -- Histogram file (.root)
 //                   Int_t CalSource           -- Calibration source
 //                   Char_t * Energies         -- Calibration energies
 //                   Char_t * CalFile          -- Calibration data (.cal)
 //                   Char_t * ResFile          -- Calibration results (.res)
 //                   Char_t * FitFile          -- Fit results (.root)
-//                   Bool_t ClearFlag          -- Clear calibration files (.cal, .res)
+//                   Bool_t ClearFlag          -- Clear output files (.cal, .res)
 //                   Char_t * PrecalFile       -- Precalibration file (.cal, needed if Eu152)
 //                   Int_t LowerLim            -- Lower limit [chn]
 //                   Int_t UpperLim            -- Upper limit [chn]
@@ -33,28 +34,30 @@
 //                   Double_t Sigma            -- Sigma
 //                   Int_t FitMode             -- Fit mode
 //                   Int_t FitGrouping         -- Fit grouping
-//                   Double_t FitRange         -- Range for single peak fit [sigma]
+//                   Int_t FitBackground       -- Background
+//                   Double_t FitRange         -- Range for peak fit [sigma]
 //                   Int_t DisplayFlag         -- Display results
 //                   Bool_t VerboseMode        -- Verbose mode
 // Description:      Energy calibration for 1-dim histograms
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.14 2007-02-08 11:24:20 Rudolf.Lutter Exp $
-// Date:             Tue Feb  6 09:08:52 2007
+// Revision:         $Id: Encal.C,v 1.15 2007-02-08 14:16:16 Rudolf.Lutter Exp $
+// Date:             Thu Feb  8 13:23:50 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
 //                   Width:               
 //                   Aclic:               +g
-//                   Modify:              no
-//                   NofArgs:             17
+//                   Modify:              
+//                   NofArgs:             18
 //                   Arg1.Name:           HistoFile
 //                   Arg1.Title:          Histogram file (.root)
 //                   Arg1.Type:           TObjArray *
 //                   Arg1.EntryType:      FObjListBox
 //                   Arg1.Default:        none.root
 //                   Arg1.Values:         ROOT files:*.root
+//                   Arg1.Width:          300
 //                   Arg1.AddLofValues:   No
 //                   Arg1.Base:           dec
 //                   Arg1.Orientation:    horizontal
@@ -184,37 +187,45 @@
 //                   Arg14.AddLofValues:  No
 //                   Arg14.Base:          dec
 //                   Arg14.Orientation:   horizontal
-//                   Arg15.Name:          FitRange
-//                   Arg15.Title:         Range for peak fit [sigma]
-//                   Arg15.Type:          Double_t
-//                   Arg15.EntryType:     UpDown
-//                   Arg15.Default:       3
+//                   Arg15.Name:          FitBackground
+//                   Arg15.Title:         Background
+//                   Arg15.Type:          Int_t
+//                   Arg15.EntryType:     Radio
+//                   Arg15.Default:       1
+//                   Arg15.Values:        linear|fit linear Background=1:const|fit constant background=2
 //                   Arg15.AddLofValues:  No
-//                   Arg15.LowerLimit:    0
-//                   Arg15.UpperLimit:    10
-//                   Arg15.Increment:     .5
 //                   Arg15.Base:          dec
 //                   Arg15.Orientation:   horizontal
-//                   Arg16.Name:          DisplayFlag
-//                   Arg16.Title:         Display results
-//                   Arg16.Type:          Int_t
-//                   Arg16.EntryType:     Check
-//                   Arg16.Default:       1
-//                   Arg16.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2
+//                   Arg16.Name:          FitRange
+//                   Arg16.Title:         Range for peak fit [sigma]
+//                   Arg16.Type:          Double_t
+//                   Arg16.EntryType:     UpDown
+//                   Arg16.Default:       3
 //                   Arg16.AddLofValues:  No
+//                   Arg16.LowerLimit:    0
+//                   Arg16.UpperLimit:    10
+//                   Arg16.Increment:     .5
 //                   Arg16.Base:          dec
 //                   Arg16.Orientation:   horizontal
-//                   Arg17.Name:          VerboseMode
-//                   Arg17.Title:         Verbose mode
-//                   Arg17.Type:          Bool_t
-//                   Arg17.EntryType:     YesNo
+//                   Arg17.Name:          DisplayFlag
+//                   Arg17.Title:         Display results
+//                   Arg17.Type:          Int_t
+//                   Arg17.EntryType:     Check
 //                   Arg17.Default:       1
+//                   Arg17.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2
 //                   Arg17.AddLofValues:  No
 //                   Arg17.Base:          dec
 //                   Arg17.Orientation:   horizontal
+//                   Arg18.Name:          VerboseMode
+//                   Arg18.Title:         Verbose mode
+//                   Arg18.Type:          Bool_t
+//                   Arg18.EntryType:     YesNo
+//                   Arg18.Default:       1
+//                   Arg18.AddLofValues:  No
+//                   Arg18.Base:          dec
+//                   Arg18.Orientation:   horizontal
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
-
 
 #include <iostream>
 #include <iomanip>
@@ -244,6 +255,8 @@ enum	{ kCalSourceEu152 = 2 };
 enum	{ kCalSourceTripleAlpha = 4 };
 enum	{ kFitModeGaus = 1 };
 enum	{ kFitModeGausTail = 2 };
+enum	{ kFitModeBackgroundLinear = 1 };
+enum	{ kFitModeBackgroundConst = 2 };
 enum	{ kFitGroupingSinglePeak = 1 };
 enum	{ kFitGroupingEnsemble = 2 };
 enum	{ kDisplayFlagStep = 1 };
@@ -597,6 +610,7 @@ void Encal(TObjArray * Histos = NULL,
            Double_t Sigma = 3,
            Int_t FitMode = kFitModeGaus,
            Int_t FitGrouping = kFitGroupingSinglePeak,
+           Int_t FitBackground = kFitModeBackgroundLinear,
            Double_t FitRange = 3,
            Int_t DisplayFlag = kDisplayFlagStep,
            Bool_t VerboseMode = kFALSE)
@@ -703,6 +717,9 @@ void Encal(TObjArray * Histos = NULL,
 		TF1 * pol1 = NULL;
 		TString fitOk;
 
+		TString parNames = "Ta_Frac:Ta_Width:Bg_Slope:Bg_Const:Ga_Sigma:Ga_Const:Ga_Mean";
+		TObjArray * pNames = parNames.Tokenize(":");
+
 		if (nPeaks > 0) {
 	
 			px.Set(nPeaks, s->GetPositionX());
@@ -755,8 +772,14 @@ void Encal(TObjArray * Histos = NULL,
 
 						fit = new TF1(Form("g%d", i), gaus_tail, px[i] - FitRange * Sigma, px[i] + FitRange * Sigma, nPar);
 						fit->SetParameters(p.GetArray());
-						cout << "Gaussian/tail params for peak #" << i << ":" << endl;
-						for (Int_t k = 0; k < 7; k++) cout << "    p" << k << "=" << p[k] << endl;
+						if (FitBackground == kFitModeBackgroundConst) fit->FixParameter(3, 0.0);
+						cout	<< endl << "---------------------------------------------------------------------" << endl
+								<< "Gaussian/tail start params for peak #" << i << ":" << endl;
+						for (Int_t k = 0; k < nPar; k++) {
+							const Char_t * pn = ((TObjString *) pNames->At(k))->GetString().Data();
+							fit->SetParName(k, pn);
+							cout << Form("   %d: %-10s = %10.4f", k, pn, p[k]) << endl;
+						}
 						fit->SetLineColor(2);
 						h->Fit(fit, (i == 0) ? "R" : "R+");
 						fit->GetParameters(p.GetArray());
@@ -769,34 +792,49 @@ void Encal(TObjArray * Histos = NULL,
 					}
 					if (resFit) resFit->Append(h);
 				} else if (FitGrouping == kFitGroupingEnsemble){
-					fitNofPeaks = nPeaks;
+					fitNofPeaks = (nPeaks > peaksNeeded) ? peaksNeeded : nPeaks;
+					Int_t idxPeak1 = (nPeaks <= fitNofPeaks) ? 0 : (nPeaks - fitNofPeaks);
 					Int_t nPar = 5 + 2 * fitNofPeaks;
 					TArrayD p(nPar);
 					// tail
 					p[0] = 1;
 					p[1] = Sigma;
 					// linear background
-					p[2] = h->GetBinContent(h->FindBin(px[0] - FitRange * Sigma));
+					p[2] = h->GetBinContent(h->FindBin(px[idxPeak1] - FitRange * Sigma));
 					p[3] = 0.;
 					// gauss
 					p[4] = Sigma;
 					Int_t k = 5;
-					for (Int_t i = 0; i < nPeaks; i++, k+= 2) {
+					for (Int_t i = idxPeak1; i < nPeaks; i++, k+= 2) {
 						p[k] = py[i];
 						p[k + 1] = px[i];
 					}
 
-					fit = new TF1("g_group", gaus_tail, px[0] - FitRange * Sigma, px[nPeaks - 1] + FitRange * Sigma, nPar);
+					fit = new TF1("g_group", gaus_tail, px[idxPeak1] - FitRange * Sigma, px[nPeaks - 1] + FitRange * Sigma, nPar);
 					fit->SetParameters(p.GetArray());
-					cout << "Gaussian/tail params for group of " << nPeaks << " peaks:" << endl;
-					for (Int_t k = 0; k < nPar; k++) cout << "    p" << k << "=" << p[k] << endl;
+					if (FitBackground == kFitModeBackgroundConst) fit->FixParameter(3, 0.0);
+					cout	<< endl << "---------------------------------------------------------------------" << endl
+							<< "Gaussian/tail start params for a group of " << fitNofPeaks << " peak(s)" << endl;
+					for (Int_t k = 0; k < nPar; k++) {
+						const Char_t * pn;
+						Int_t kk;
+						if (k <= 4) {
+							kk = k;
+						} else {
+							kk = (k & 1) ? 5 : 6;
+						}
+						pn = ((TObjString *) pNames->At(kk))->GetString().Data();
+						if (k > 4) pn = Form("%s_%d", pn, (k - 3) / 2);
+						fit->SetParName(k, pn);
+						cout << Form("   %2d: %-10s = %10.4f", k + 1, pn, p[k]) << endl;
+					}
 					fit->SetLineColor(2);
 					h->Fit(fit, "R");
 					if (resFit) resFit->Append(h);
 					fit->GetParameters(p.GetArray());
 					Int_t ndf = TMath::Max(1, fit->GetNDF());
 					k = 5;
-					for (Int_t i = 0; i < nPeaks; i++, k+= 2) {
+					for (Int_t i = 0; i < fitNofPeaks; i++, k+= 2) {
 						fy[i] = p[k];
 						fye[i] = fit->GetParError(k);
 						fx[i] = p[k + 1];
@@ -820,8 +858,15 @@ void Encal(TObjArray * Histos = NULL,
 
 						fit = new TF1(Form("g%d", i), gaus_lbg, px[i] - FitRange * Sigma, px[i] + FitRange * Sigma, nPar);
 						fit->SetParameters(p.GetArray());
-						cout << "Gaussian params for peak #" << i << ":" << endl;
-						for (Int_t k = 0; k < 5; k++) cout << "    p" << k << "=" << p[k] << endl;
+						if (FitBackground == kFitModeBackgroundConst) fit->FixParameter(1, 0.0);
+						cout	<< endl << "---------------------------------------------------------------------" << endl
+								<< "Gaussian start params for peak #" << i << ":" << endl;
+						Int_t np = 2;
+						for (Int_t k = 0; k < nPar; k++, np++) {
+							const Char_t * pn = ((TObjString *) pNames->At(np))->GetString().Data();
+							fit->SetParName(k, pn);
+							cout << Form("   %d: %-10s = %10f", k, pn, p[k]) << endl;
+						}
 						fit->SetLineColor(2);
 						h->Fit(fit, (i == 0) ? "R" : "R+");
 						fit->GetParameters(p.GetArray());
@@ -834,31 +879,46 @@ void Encal(TObjArray * Histos = NULL,
 					}
 					if (resFit) resFit->Append(h);
 				} else if (FitGrouping == kFitGroupingEnsemble){
-					fitNofPeaks = nPeaks;
+					fitNofPeaks = (nPeaks > peaksNeeded) ? peaksNeeded : nPeaks;
+					Int_t idxPeak1 = (nPeaks <= fitNofPeaks) ? 0 : (nPeaks - fitNofPeaks);
 					Int_t nPar = 3 + 2 * fitNofPeaks;
 					TArrayD p(nPar);
 					// linear background
-					p[0] = h->GetBinContent(h->FindBin(px[0] - FitRange * Sigma));
+					p[0] = h->GetBinContent(h->FindBin(px[idxPeak1] - FitRange * Sigma));
 					p[1] = 0.;
 					// gauss
 					p[2] = Sigma;
 					Int_t k = 3;
-					for (Int_t i = 0; i < nPeaks; i++, k += 2) {
+					for (Int_t i = idxPeak1; i < nPeaks; i++, k += 2) {
 						p[k] = py[i];
 						p[k + 1] = px[i];
 					}
 
-					fit = new TF1("g_group", gaus_lbg, px[0] - FitRange * Sigma, px[nPeaks - 1] + FitRange * Sigma, nPar);
+					fit = new TF1("g_group", gaus_lbg, px[idxPeak1] - FitRange * Sigma, px[nPeaks - 1] + FitRange * Sigma, nPar);
 					fit->SetParameters(p.GetArray());
-					cout << "Gaussian params for group of " << nPeaks << " peaks:" << endl;
-					for (Int_t k = 0; k < nPar; k++) cout << "    p" << k << "=" << p[k] << endl;
+					if (FitBackground == kFitModeBackgroundConst) fit->FixParameter(1, 0.0);
+					cout	<< endl << "---------------------------------------------------------------------" << endl
+							<< "Gaussian start params for a group of " << fitNofPeaks << " peak(s)" << endl;
+					for (Int_t k = 0; k < nPar; k++) {
+						const Char_t * pn;
+						Int_t kk;
+						if (k <= 2) {
+							kk = k + 2;
+						} else {
+							kk = (k & 1) ? 5 : 6;
+						}
+						pn = ((TObjString *) pNames->At(kk))->GetString().Data();
+						if (k > 2) pn = Form("%s_%d", pn, (k - 3) / 2);
+						fit->SetParName(k, pn);
+						cout << Form("   %2d: %-10s = %10.4f", k + 1, pn, p[k]) << endl;
+					}
 					fit->SetLineColor(2);
 					h->Fit(fit, "R");
 					if (resFit) resFit->Append(h);
 					fit->GetParameters(p.GetArray());
 					Int_t ndf = TMath::Max(1, fit->GetNDF());
 					k = 3;
-					for (Int_t i = 0; i < nPeaks; i++, k += 2) {
+					for (Int_t i = 0; i < fitNofPeaks; i++, k += 2) {
 						fy[i] = p[k];
 						fye[i] = fit->GetParError(k);
 						fx[i] = p[k + 1];
