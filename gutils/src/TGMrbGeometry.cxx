@@ -6,12 +6,13 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbGeometry.cxx,v 1.1 2005-09-09 07:48:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbGeometry.cxx,v 1.2 2007-02-16 11:48:44 Otto.Schaile Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
 
+#include "TROOT.h"
 #include "TEnv.h"
 #include "TGMrbGeometry.h"
 #include "TMrbLogger.h"
