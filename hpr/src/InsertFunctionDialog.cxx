@@ -1,3 +1,4 @@
+#include "TROOT.h"
 #include "TCanvas.h"
 #include "TEnv.h"
 #include "TF1.h"

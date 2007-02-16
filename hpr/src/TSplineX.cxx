@@ -40,6 +40,8 @@
 #include "TOrdCollection.h"
 #include "TPolyLine.h"
 #include "TSplineX.h"
+#include "TROOT.h"
+#include "TMath.h"
 #include "TGMrbSliders.h"
 
 //___________________________________________________________________________/

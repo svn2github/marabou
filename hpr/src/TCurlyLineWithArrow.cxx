@@ -1,6 +1,8 @@
 #include "Riostream.h"
 #include "TCurlyLineWithArrow.h"
 #include "TPad.h"
+#include "TROOT.h"
+#include "TMath.h"
 #include "iostream"
 ClassImp(TCurlyLineArrow)
 ClassImp(TCurlyLineWithArrow)

@@ -3,8 +3,11 @@
 #include "TObject.h"
 #include "TGraph.h"
 #include "TArrayD.h"
+#include "TArrayF.h"
 #include "TArrow.h"
+#include "TList.h"
 #include "TMarker.h"
+#include "TObjArray.h"
 #include "TPolyLine.h"
 #include "TStyle.h"
 #include "TVirtualPad.h"
@@ -154,8 +157,7 @@ class ShapeFactor
 public:
    Float_t s;
    ShapeFactor* next;
-   ShapeFactor (Float_t f, ShapeFactor* nf) {
-      s = f;
+   ShapeFactor (Float_t f, ShapeFactor* nf) {      s = f;
       next = nf;
    };
    

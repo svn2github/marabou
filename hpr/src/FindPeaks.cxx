@@ -13,6 +13,7 @@
 #include "TH2.h"
 #include "TObjString.h"
 #include "TGMsgBox.h"
+#include "TMath.h"
 
 #include "FitHist.h"
 #include "TGMrbTableFrame.h"
@@ -60,7 +61,7 @@ Int_t FitHist::FindPeaks(){
             fold += L*fSelHist->GetBinContent(i);
             var += L * L * fSelHist->GetBinContent(i);
          }
-         if(var) fold = fold /sqrt(var);
+         if(var) fold = fold /TMath::Sqrt(var);
          else    fold = 0.;
          if(fold < threshold) {
             fold=0.;

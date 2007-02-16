@@ -1,4 +1,5 @@
 #include "TEnv.h"
+#include "TH1D.h"
 #include "TPad.h"
 #include "TSystem.h"
 #include "TStyle.h"
@@ -80,6 +81,11 @@ EmptyHistDialog::~EmptyHistDialog()
 void EmptyHistDialog::Draw_The_Hist()
 {
 	cout << "Empty pad only" << endl;
+#ifdef MARABOUVERS
+	   HTCanvas * cg;
+#else
+	   TCanvas * cg; 
+#endif
 	TGraph *graph = new TGraph();
    if (fHistSelPad |= 0) {
       if (gPad == NULL) {
@@ -88,10 +94,10 @@ void EmptyHistDialog::Draw_The_Hist()
       }
    } else {
 #ifdef MARABOUVERS
-	   HTCanvas * cg = new HTCanvas("Empty", "Empty", fWinx, fWiny,
+	   cg = new HTCanvas("Empty", "Empty", fWinx, fWiny,
 						fHistXsize, fHistYsize, NULL, NULL, graph);
 #else
-	   TCanvas * cg = new TCanvas("Empty", "Empty", fWinx, fWiny,
+	   cg = new TCanvas("Empty", "Empty", fWinx, fWiny,
 						fHistXsize, fHistYsize);
 #endif
    }

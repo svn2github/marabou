@@ -1,6 +1,7 @@
 namespace std {} using namespace std;
 
 #include "GroupOfGObjects.h"
+#include "TROOT.h"
 #include "TBox.h"
 #include "TPave.h"
 #include "TLine.h"
@@ -8,6 +9,7 @@ namespace std {} using namespace std;
 #include "TCurlyArc.h"
 #include "TArrow.h"
 #include "TMarker.h"
+#include "TMath.h"
 #include "TText.h"
 #include "TEllipse.h"
 #include "TPolyLine.h"

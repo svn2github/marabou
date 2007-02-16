@@ -5,6 +5,7 @@
 #include "HistPresent.h"
 #endif
 
+#include "TMath.h"
 #include "TEnv.h"
 #include "TH1D.h"
 #include "TH2F.h"
@@ -12,6 +13,10 @@
 #include "TObjString.h"
 #include "TSystem.h"
 #include <fstream>
+
+//Double_t LocMin(Int_t n, Double_t *x)
+//{
+//   Double xmin = 
 
 ClassImp(Ascii2HistDialog)
 

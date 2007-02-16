@@ -13,6 +13,7 @@
 #include "TRegexp.h"
 #include "TKey.h"
 #include "TMapFile.h"
+#include "TMath.h"
 #include "TSocket.h"
 #include "TMessage.h"
 #include "TGMsgBox.h"
@@ -532,7 +533,7 @@ Stat_t Content(TH1 * hist, Axis_t xlow, Axis_t xup,
    }
    if (sum > 0.) {
       mi = sumx / sum;
-      sigi = sqrt(sumx2 / sum - mi * mi);
+      sigi = TMath::Sqrt(sumx2 / sum - mi * mi);
    }
    *mean = mi;
    *sigma = sigi;

@@ -23,6 +23,7 @@
 #include "TRootCanvas.h"
 #include "TObjString.h"
 #include "TGMsgBox.h"
+#include "TMath.h"
 #include <TGClient.h>
 
 #include "TGMrbTableFrame.h"
