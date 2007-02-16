@@ -14,6 +14,7 @@ namespace std {} using namespace std;
 #include <TFile.h>
 #include <TKey.h>
 #include <TColor.h>
+#include <TObjArray.h>
 #include <TObjString.h>
 #include <TRegexp.h>
 
@@ -1416,7 +1417,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
    if (  GET_MSG(msg) == kC_COMMAND 
       && GET_SUBMSG(msg) == kCM_BUTTON
       && parm1 / 100 == kIdCommand) {
-//      cout << "ReloadValues()" << endl;
+//
       if (fText) *fText = fTE->GetBuffer()->GetString();
 	   if (fFileName && fFileName.Length() > 0) this->SaveList();
       ReloadValues();
