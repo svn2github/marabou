@@ -44,6 +44,7 @@
 #pragma link C++ class FitOneDimDialog;
 #pragma link C++ class CalibrationDialog;
 #pragma link C++ class InsertTextDialog;
+#pragma link C++ class EmptyHistDialog;
 #pragma link C++ class TCurlyLineArrow;
 #pragma link C++ class TArcEditor;
 #pragma link C++ class TCurlyLineWithArrow;

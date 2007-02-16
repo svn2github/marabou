@@ -23,6 +23,8 @@ private:
    TString fGraphYtitle;
    Double_t fXaxisMin;
    Double_t fYaxisMin;
+   Double_t fXaxisMax;
+   Double_t fYaxisMax;
    Int_t   fGraphColSelect; 
    Int_t   fGraphColSel1; 
    Int_t   fGraphColSel2; 
@@ -31,6 +33,7 @@ private:
    Int_t   fGraphYsize;  
    Int_t   fGraphXdiv;   
    Int_t   fGraphYdiv;   
+   Int_t   fEmptyPad;
    Int_t   fGraph_Simple;
    Int_t   fGraph_Error;
    Int_t   fGraph_AsymError;

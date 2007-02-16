@@ -22,12 +22,47 @@ private:
    TH1     *fSelHist;
    TGraph  *fGraph;
    TString fName;
+   TString fGausFuncName;
+   TString fExpFuncName;
+   TString fPolFuncName;
+   TString fFormFuncName;
+   TString fFormula;
    FhMarkerList * fMarkers;
    Double_t fFrom;
    Double_t fTo;
    Double_t fMean;
    Double_t fMeanError;
    Double_t fConstant;
+   Double_t fExpA;
+   Double_t fExpB;
+   Double_t fExpC;
+   Double_t fExpD;
+   Int_t fExpFixA;
+   Int_t fExpFixB;
+   Int_t fExpFixC;
+   Int_t fExpFixD;
+   Int_t fPolN;
+   Double_t fPolA;
+   Double_t fPolB;
+   Double_t fPolC;
+   Double_t fPolD;
+   Int_t fPolFixA;
+   Int_t fPolFixB;
+   Int_t fPolFixC;
+   Int_t fPolFixD;
+   Double_t fFormA;
+   Double_t fFormB;
+   Double_t fFormC;
+   Double_t fFormD;
+   Double_t fFormE;
+   Double_t fFormF;
+   Int_t fFormFixA;
+   Int_t fFormFixB;
+   Int_t fFormFixC;
+   Int_t fFormFixD;
+   Int_t fFormFixE;
+   Int_t fFormFixF;
+  
    Int_t    fAdded;
    Double_t fLinBgConst;
    Double_t fLinBgSlope;
@@ -56,13 +91,21 @@ private:
    Int_t fFitOptAddAll; 
 
 public:
-   FitOneDimDialog(TH1 * hist);
-   FitOneDimDialog(TGraph * graph);
+   FitOneDimDialog(TH1 * hist, Int_t type = 1);
+   FitOneDimDialog(TGraph * graph, Int_t type = 1);
    void DisplayMenu(Int_t type = 1);
    virtual ~FitOneDimDialog();
    void RecursiveRemove(TObject * obj);
    void FitGausExecute();
-   void FitPolyExpExecute();
+   void FitExpExecute();
+   void DrawExpExecute();
+   void ExpExecute(Int_t draw_only = 0);
+   void FitPolExecute();
+   void DrawPolExecute();
+   void PolExecute(Int_t draw_only = 0);
+   void FitFormExecute();
+   void DrawFormExecute();
+   void FormExecute(Int_t draw_only = 0);
 //   void AddToCalibration();
    void SetFitOptions(){};
    Int_t GetMaxBin(TH1 * h1, Int_t binl, Int_t binu);
@@ -81,6 +124,7 @@ public:
    void RestoreDefaults();
    void CloseDialog();
    void CloseDown();
+   void IncrementIndex(TString * arg);
 
 ClassDef(FitOneDimDialog,0)
 };

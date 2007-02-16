@@ -1,4 +1,4 @@
-#include "TCanvas.h"
+// #include "TCanvas.h"
 #include "TH1D.h"
 #include "TF1.h"
 #include "TEnv.h"
@@ -333,7 +333,7 @@ Double_t gausf(Double_t * x, Double_t * par)
 //____________________________________________________________________________________ 
 //____________________________________________________________________________________ 
 
-FitOneDimDialog::FitOneDimDialog(TH1 * hist)
+FitOneDimDialog::FitOneDimDialog(TH1 * hist, Int_t type)
 {
    fSelHist = hist;
    fGraph = NULL;
@@ -348,11 +348,11 @@ FitOneDimDialog::FitOneDimDialog(TH1 * hist)
    }
  //  lBinW   = fSelHist->GetBinWidth(1);
    fName = fSelHist->GetName();
-   DisplayMenu();
+   DisplayMenu(type);
 }
 //____________________________________________________________________________________ 
 
-FitOneDimDialog::FitOneDimDialog(TGraph * graph)
+FitOneDimDialog::FitOneDimDialog(TGraph * graph, Int_t type)
 {
    if (!graph) {
       cout << "No graph selected" << endl;
@@ -371,7 +371,7 @@ FitOneDimDialog::FitOneDimDialog(TGraph * graph)
    }
 //   lBinW   = 1;
    fName = fGraph->GetName();
-   DisplayMenu();
+   DisplayMenu(type);
 }
 //_________________________________________________________________________
 //
@@ -425,7 +425,52 @@ MINUIT to find an unwanted minimum. Start parameters\n\
 may be checked by drawing the fit function with these \n\
 parameters without actually doing a fit.\n\
 ";
+
+static const Char_t helptext_exp[] =
+"Fit exponential with offset in x and y:\n\
+f(x) = a + b * exp ((x -x0) * c)\n\
+x0 is introduced for convenience to simplify\n\
+determination of start parameters\n\
+Function limits may be given by  modifying fFrom\n\
+and fTo or by setting 2 marks\n\
+\n\
+";
+
+static const Char_t helptext_pol[] =
+"Fit polynomial f(x) = a0 + a1*x +a2*x*x ..)\n\
+Degree must be >= 0, any degree is allowed\n\
+but may be not meaningful\n\
+Only a0, a1, a2, a3 may be given start values\n\
+higher coefficients get start values = 0\n\
+Function limits may be given by  modifying fFrom\n\
+and fTo or by setting 2 marks\n\
+";
+
+static const Char_t helptext_form[] =
+"Fit a user defined function:\n\
+e.g.: [0]*sin([1]*(x+[2])\n\
+Note: The number of parameters is defined\n\
+implicitly by the formula. Maximimum 6 parameters are\n\
+allowed, if more parameters are needed use a fit macro\n\
+Function limits may be given by modifying fFrom\n\
+and fTo explicitely or by setting 2 marks\n\
+Examples:\n\
+Error function with y offset [0], constant [1]\n\
+x offset [2] and width[3]:\n\
+[0] + [1]*TMath::Erf((x-[2]) / [3])\n\
+\n\
+Sum of sine functions producing a beat:\n\
+[0] + [1]*sin([2]*x+ [3]) + [2] * sin([4]*x + [5])\n\
+\n\
+A BreitWigner with constant [0], mean [1] and gamma [2]\n\
+[0] * TMath::BreitWigner(x,[1], [2])\n\
+\n\
+For a complete list of implemented functions consult\n\
+the root doc at: http://root.cern.ch\n\
+";
+
    fParentWindow = NULL; 
+
    fFuncNumber = 0;
    fLinBgConst = 0;
    fLinBgSlope = 0;
@@ -436,7 +481,7 @@ parameters without actually doing a fit.\n\
    fMeanError  = 0;
    fAdded      = -1;
    RestoreDefaults();
-   fSelPad = NULL;
+   fSelPad = gPad;
    SetBit(kMustCleanup);
    gROOT->GetListOfCleanups()->Add(this);
    TIter next(gROOT->GetListOfCanvases());
@@ -455,13 +500,12 @@ parameters without actually doing a fit.\n\
       fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
    }
 //  function name
-   fFuncName = fSelHist->GetName();
-   Int_t ip = fFuncName.Index(";");
-	if (ip > 0)fFuncName.Resize(ip);
+//   fFuncName = fSelHist->GetName();
+//   Int_t ip = fFuncName.Index(";");
+//	if (ip > 0)fFuncName.Resize(ip);
+   fFuncName = Form("_%d", fFuncNumber);
    fFuncNumber++;
-   fFuncName.Prepend(Form("%d_", fFuncNumber));
-   fFuncName.Prepend("f");
-   const char * history = NULL;
+//   fFuncName.Prepend("f");
 //   const char hist_file[] = {"funcname_hist.txt"};
 //   history = hist_file;
 //   if (gROOT->GetVersionInt() < 40000) history = NULL;
@@ -470,23 +514,37 @@ parameters without actually doing a fit.\n\
    static void *valp[25];
    Int_t ind = 0;
    static TString exgcmd("FitGausExecute()");
-   static TString expcmd("FitPolyExpExecute()");
+   static TString expcmd("FitExpExecute()");
+   static TString exdcmd("DrawExpExecute()");
+   static TString expolcmd("FitPolExecute()");
+   static TString exdpolcmd("DrawPolExecute()");
+   static TString exformcmd("FitFormExecute()");
+   static TString exdformcmd("DrawFormExecute()");
 //   static TString accmd("AddToCalibration()");
    static TString lbgcmd("DetLinearBackground()");
    static TString clmcmd("ClearMarkers()");
    static TString setmcmd("SetMarkers()");
    static TString prtcmd("PrintMarkers()");
    static TString sfocmd("SetFittingOptions()");
+   static Int_t dummy = 0;
+   TString * text = NULL;
+   const char * history = NULL;
+   const char hist_file[] = {"func_formulae_hist.txt"};
+//   history = hist_file;
+//   if (gROOT->GetVersionInt() < 40000) history = NULL;
+
    fNpeaks = 1;
    fUseoldpars = 0;
    fLinBgSet = kFALSE;
    fMarkers = NULL; 
    TAxis *xaxis = fSelHist->GetXaxis();
-   fFrom = xaxis->GetBinLowEdge(xaxis->GetFirst());
-   fTo   = xaxis->GetBinUpEdge(xaxis->GetLast()) ;
+   fFrom = xaxis->GetXmin();
+   fTo   = xaxis->GetXmax() ;
+//   fSelHist->Dump();
    const char * helptext = NULL;
    if (type == 1) {
       helptext = helptext_gaus;
+      fFuncName.Prepend(fGausFuncName);
 		GetMarkers();
 		row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
 		valp[ind++] = &fNpeaks;
@@ -502,12 +560,89 @@ parameters without actually doing a fit.\n\
 		valp[ind++] = &fOnesig;
 		row_lab->Add(new TObjString("CheckButton+Use pre det lin bg"));
 		valp[ind++] = &fUsedbg;
+		row_lab->Add(new TObjString("CheckButton_Use pars of prev fit"));
+		valp[ind++] = &fUseoldpars;
+		row_lab->Add(new TObjString("CheckButton+Show components of fit"));
+		valp[ind++] = &fShowcof;
    } else if (type == 2) {
+      helptext = helptext_exp;
+      fFuncName.Prepend(fExpFuncName);
+      row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
+		valp[ind++] = &dummy;
+      row_lab->Add(new TObjString("DoubleValue_a"));
+		valp[ind++] = &fExpA;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fExpFixA;
+      row_lab->Add(new TObjString("DoubleValue-b"));
+		valp[ind++] = &fExpB;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fExpFixB;
+      row_lab->Add(new TObjString("DoubleValue_c"));
+		valp[ind++] = &fExpC;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fExpFixC;
+      row_lab->Add(new TObjString("DoubleValue+d"));
+		valp[ind++] = &fExpD;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fExpFixD;
+
+   } else if (type == 3) {
+      helptext = helptext_pol;
+      fFuncName.Prepend(fPolFuncName);
+      row_lab->Add(new TObjString("CommentOnly_Pol: a0 + a1*x +.."));
+		valp[ind++] = &dummy;
+		row_lab->Add(new TObjString("PlainIntVal+Degree"));
+		valp[ind++] = &fPolN;
+      row_lab->Add(new TObjString("DoubleValue_a0"));
+		valp[ind++] = &fPolA;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fPolFixA;
+      row_lab->Add(new TObjString("DoubleValue-a1"));
+		valp[ind++] = &fPolB;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fPolFixB;
+      row_lab->Add(new TObjString("DoubleValue_a2"));
+		valp[ind++] = &fPolC;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fPolFixC;
+      row_lab->Add(new TObjString("DoubleValue+a3"));
+		valp[ind++] = &fPolD;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fPolFixD;
+   } else if (type == 4) {
+      helptext = helptext_form;
+      fFuncName.Prepend(fFormFuncName);
+      row_lab->Add(new TObjString("CommentOnly_User defined formula"));
+		valp[ind++] = &dummy;
+      row_lab->Add(new TObjString("DoubleValue_p0"));
+		valp[ind++] = &fFormA;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fFormFixA;
+      row_lab->Add(new TObjString("DoubleValue-p1"));
+		valp[ind++] = &fFormB;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fFormFixB;
+      row_lab->Add(new TObjString("DoubleValue_p2"));
+		valp[ind++] = &fFormC;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fFormFixC;
+      row_lab->Add(new TObjString("DoubleValue+p3"));
+		valp[ind++] = &fFormD;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fFormFixD;
+      row_lab->Add(new TObjString("DoubleValue_p4"));
+		valp[ind++] = &fFormE;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fFormFixE;
+      row_lab->Add(new TObjString("DoubleValue+p5"));
+		valp[ind++] = &fFormF;
+		row_lab->Add(new TObjString("CheckButton-Fix"));
+		valp[ind++] = &fFormFixF;
    }
-   row_lab->Add(new TObjString("CheckButton_Use pars of prev fit"));
-   valp[ind++] = &fUseoldpars;
-   row_lab->Add(new TObjString("CheckButton+Show components of fit"));
-   valp[ind++] = &fShowcof;
+   row_lab->Add(new TObjString("DoubleValue_From"));
+   valp[ind++] = &fFrom;
+   row_lab->Add(new TObjString("DoubleValue+To"));
+   valp[ind++] = &fTo;
    row_lab->Add(new TObjString("CheckButton_Add all functions to hist"));
    valp[ind++] = &fFitOptAddAll;
    row_lab->Add(new TObjString("CheckButton+Clear marks after fit"));
@@ -518,11 +653,28 @@ parameters without actually doing a fit.\n\
    valp[ind++] = &fWidth;
    row_lab->Add(new TObjString("LineSSelect-LSty"));
    valp[ind++] = &fStyle;
+   row_lab->Add(new TObjString("StringValue_FuncName"));
+   valp[ind++] = &fFuncName;
    row_lab->Add(new TObjString("CommandButt_Execute Fitting"));
    if (type == 1) { 
       valp[ind++] = &exgcmd;
+//      cout << exgcmd << endl;
+      row_lab->Add(new TObjString("CommandButt+Determine Lin BG"));
+      valp[ind++] = &lbgcmd;
    } else if (type == 2) {
-      valp[ind++] = &exgcmd;
+      valp[ind++] = &expcmd;
+      row_lab->Add(new TObjString("CommandButt+Draw only"));
+      valp[ind++] = &exdcmd;
+   } else if (type == 3) {
+      valp[ind++] = &expolcmd;
+      row_lab->Add(new TObjString("CommandButt+Draw only"));
+      valp[ind++] = &exdpolcmd;
+   } else if (type == 4) {
+      valp[ind++] = &exformcmd;
+      row_lab->Add(new TObjString("CommandButt+Draw only"));
+      valp[ind++] = &exdformcmd;
+      history = hist_file;
+      text = &fFormula;
    }
 /*
 #ifdef MARABOUVERS
@@ -532,24 +684,28 @@ parameters without actually doing a fit.\n\
    }
 #endif
 */
-   row_lab->Add(new TObjString("CommandButt_Determine Lin BG"));
-   valp[ind++] = &lbgcmd;
-   row_lab->Add(new TObjString("CommandButt+Fitting Options"));
+   row_lab->Add(new TObjString("CommandButt_Fitting Options"));
    valp[ind++] = &sfocmd;
-   row_lab->Add(new TObjString("CommandButt_Clear Markers"));
-   valp[ind++] = &clmcmd;
    row_lab->Add(new TObjString("CommandButt+Print Markers"));
    valp[ind++] = &prtcmd;
-   row_lab->Add(new TObjString("CommandButt_Set N Markers"));
-   valp[ind++] = &setmcmd;
-   row_lab->Add(new TObjString("PlainIntVal-N"));
-   valp[ind++] = &fNmarks;
+   row_lab->Add(new TObjString("CommandButt_Clear Marks"));
+   valp[ind++] = &clmcmd;
+   if (type == 1) {
+      row_lab->Add(new TObjString("CommandButt-Set N Marks"));
+      valp[ind++] = &setmcmd;
+      row_lab->Add(new TObjString("PlainIntVal-N"));
+      valp[ind++] = &fNmarks;
+   } else {
+      row_lab->Add(new TObjString("CommandButt-Set 2 Marks"));
+      fNmarks = 2;
+      valp[ind++] = &setmcmd;
+   }
    Int_t itemwidth = 320;
 //   TRootCanvas* fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
 //   cout << "fParentWindow " << fParentWindow << endl;
    Int_t ok = 0;
    fDialog =
-   new TGMrbValuesAndText ("Function name", &fFuncName, &ok, itemwidth,
+   new TGMrbValuesAndText ("Function", text, &ok, itemwidth,
                       fParentWindow, history, NULL, row_lab, valp,
                       NULL, NULL, helptext, this, this->ClassName());
 //  Bool_t ok;
@@ -579,6 +735,14 @@ void FitOneDimDialog::RecursiveRemove(TObject * obj)
 
 void FitOneDimDialog::FitGausExecute()
 {
+   Int_t retval = 0;
+   if (fGraph != NULL && fGraph->GetN() == 0) {
+      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+                "Warning",
+                "No histogram nore graph defined\n Use Draw only" ,
+                kMBIconExclamation, kMBDismiss, &retval);
+      return;
+   }
    static TArrayD * par = NULL;
    Int_t ind = 0;
    Double_t lTailSide = 0;
@@ -1109,12 +1273,16 @@ void FitOneDimDialog::PrintMarkers()
 Int_t FitOneDimDialog::GetMarkers()
 {
    fNmarks = 2;
+//   if (fSelHist) {
+//      fFrom = fSelHist->GetXaxis()->GetMinimum();
+//      fTo   = fSelHist->GetXaxis()->GetMaximum();
+//   }
 // find number of peaks to fit 
    fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
    if (fMarkers != NULL) {
+      if (fMarkers->GetEntries() <= 0) return fNmarks;
       fMarkers->Sort();
       fNmarks = fMarkers->GetEntries();
-      if (fNmarks <= 0) return 0;
       fFrom = ((FhMarker *) fMarkers->At(0))->GetX();
       if (fNmarks > 1) {
          fTo   = ((FhMarker *) fMarkers->At(fNmarks - 1))->GetX();
@@ -1150,7 +1318,7 @@ void FitOneDimDialog::ClearMarkers() {
 //____________________________________________________________________________________ 
 
 Int_t  FitOneDimDialog::SetMarkers() {
-//   cout << "Request " << fNmarks << " Markers" << endl;
+   cout << "Request " << fNmarks << " Markers" << endl;
    Int_t nmarks = 0;
    if (fNmarks <= 0) {
       Int_t retval = 0;
@@ -1159,18 +1327,21 @@ Int_t  FitOneDimDialog::SetMarkers() {
                 kMBIconExclamation, kMBDismiss, &retval);
       return 0;
    }
+   ClearMarkers();
    fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
    if (fMarkers == NULL) {
       fMarkers = new  FhMarkerList();
       fSelHist->GetListOfFunctions()->Add(fMarkers);
    }
- 
    for (Int_t i = 0; i < fNmarks; i++) {
       TMarker * m1  = (TMarker*)gPad->WaitPrimitive("TMarker");
    	m1 = (TMarker *)gPad->GetListOfPrimitives()->Last();
       if (m1 == NULL) break;
       Double_t x = m1->GetX();
       Double_t y = m1->GetY();
+      if (i == 0) fFrom = x;
+      if (i == 1) fTo = x;
+
 //      if (fSelPad->GetLogx()) x = TMath::Power(10, x);
 //      if (fSelPad->GetLogy()) y = TMath::Power(10, y);
       FhMarker *m = new FhMarker(x, y, 28);
@@ -1181,6 +1352,7 @@ Int_t  FitOneDimDialog::SetMarkers() {
       nmarks++;
    }
    if (fSelPad) fSelPad->Update();
+   fDialog->ReloadValues();
    return nmarks;
 };
 //____________________________________________________________________________________ 
@@ -1273,12 +1445,341 @@ void FitOneDimDialog::ClearFunctionList()
 {
    fSelHist->GetListOfFunctions()->Delete();
 }
-//__________________________________________________________________________
+//________________________________________________________________________
 
-void FitOneDimDialog::FitPolyExpExecute()
+void FitOneDimDialog::FitExpExecute()
 {
-   static TArrayD * par = NULL;
-   Int_t ind = 0;
+   ExpExecute(0);    // do fitting
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::DrawExpExecute()
+{
+   ExpExecute(1);    // draw only
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::ExpExecute(Int_t draw_only)
+{
+   Int_t retval = 0;
+   if (draw_only == 0 && (fGraph != NULL && fGraph->GetN()) == 0) {
+      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+                "Warning",
+                "No histogram nore graph defined\n Use Draw only" ,
+                kMBIconExclamation, kMBDismiss, &retval);
+      return;
+   }
+   if ( GetMarkers() <= 0 ) { 
+      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+                "Warning", "No marks set,\n need at least 2" ,
+                kMBIconExclamation, kMBDismiss, &retval);
+      return;
+   }
+   TF1 *func = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*(x - [3]))",fFrom,fTo);
+   func->SetParameter(0, fExpA);
+   if (fExpFixA |= 0) func->FixParameter(0, fExpA);
+   func->SetParName(0, "a (y_off)");
+   func->SetParameter(1, fExpB);
+   if (fExpFixB |= 0) func->FixParameter(1, fExpB);
+   func->SetParName(1, "b (const)");
+   func->SetParameter(2, fExpC);
+   if (fExpFixC |= 0) func->FixParameter(2, fExpC);
+   func->SetParName(2, "c (slope)");
+   func->SetParameter(3, fExpD);
+   if (fExpFixD |= 0) func->FixParameter(3, fExpD);
+   func->SetParName(3, "d (x_off)");
+   func->SetLineWidth(fWidth);
+   func->SetLineColor(fColor);
+   if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
+      func->Draw("same");
+      func->Print();
+   } else {
+      TString fitopt = "R";     // fit in range
+      if (fFitOptLikelihood)fitopt += "L";
+      if (fFitOptQuiet)     fitopt += "Q";
+      if (fFitOptVerbose)   fitopt += "V";
+      if (fFitOptMinos)     fitopt += "E";
+      if (fFitOptErrors1)   fitopt += "W";
+      if (fFitOptIntegral)  fitopt += "I";
+      if (fFitOptNoDraw)    fitopt += "0";
+      if (fFitOptAddAll)    fitopt += "+";
+      Bool_t bound = (fExpFixA + fExpFixB + fExpFixC + fExpFixD) != 0;
+      if (bound)            fitopt += "B";   // some pars are bound
+      if (fGraph != NULL) {
+         fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
+   //     add to ListOfFunctions if requested
+         if (fFitOptAddAll) {
+            TList *lof = fGraph->GetListOfFunctions();
+            if (lof->GetSize() > 1) {
+               TObject *last = lof->Last();
+               lof->Remove(last);
+               lof->AddFirst(last);
+            }
+         }
+
+      } else if (fSelHist != NULL) {
+         fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
+   //     add to ListOfFunctions if requested
+         if (fFitOptAddAll) {
+            TList *lof = fSelHist->GetListOfFunctions();
+            if (lof->GetSize() > 1) {
+               TObject *last = lof->Last();
+               lof->Remove(last);
+               lof->AddFirst(last);
+            }
+         }
+      }
+		fExpA = func->GetParameter(0);
+		fExpB = func->GetParameter(1);
+		fExpC = func->GetParameter(2);
+		fExpD = func->GetParameter(3);
+      if (fAutoClearMarks) ClearMarkers();
+      IncrementIndex(&fFuncName);
+   }
+   gPad->Modified(kTRUE);
+   gPad->Update();
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::FitPolExecute()
+{
+   PolExecute(0);    // do fitting
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::DrawPolExecute()
+{
+   PolExecute(1);    // draw only
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::PolExecute(Int_t draw_only)
+{
+   Int_t retval = 0;
+   if (draw_only == 0 && (fGraph != NULL && fGraph->GetN()) == 0) {
+      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+                "Warning",
+                "No histogram nore graph defined\n Use Draw only" ,
+                kMBIconExclamation, kMBDismiss, &retval);
+      return;
+   }
+   if (fPolN < 0) {
+      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+                "Warning", "Degree of Polynom < 0" ,
+                kMBIconExclamation, kMBDismiss, &retval);
+      return;
+   }
+   if ( GetMarkers() <= 0 ) { 
+      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+                "Warning", "No marks set,\n need at least 2" ,
+                kMBIconExclamation, kMBDismiss, &retval);
+      return;
+   }
+   TString fn;
+   TString pn;
+//   TArrayD par(fPolN+1);
+   
+   for (Int_t i = 0; i <= fPolN; i++) {
+      if (i > 0) fn += "+";
+      fn += "["; fn += i;fn += "]";
+      for (Int_t k = 1; k <= i; k++) {
+         fn += "*x";
+      }
+   }
+   cout << "fn: " << fn << endl;
+   TF1 *func = new TF1(fFuncName.Data(),fn.Data(), fFrom, fTo);
+   for (Int_t i = 0; i <= fPolN; i++) {
+      pn = "a"; pn += i;
+      func->SetParName(i, pn);
+      if (i == 0) {
+         func->SetParameter(i, fPolA);
+         if (fPolFixA |= 0) func->FixParameter(i, fPolA);
+      } else if (i == 1) {
+         func->SetParameter(i, fPolB);
+         if (fPolFixB |= 0) func->FixParameter(i, fPolB);
+      } else if (i == 2) {
+         func->SetParameter(i, fPolC);
+         if (fPolFixC |= 0) func->FixParameter(i, fPolC);
+      } else if (i == 3) {
+         func->SetParameter(i, fPolD);
+         if (fPolFixD |= 0) func->FixParameter(i, fPolD);
+      } else {
+          func->SetParameter(i, 0.);
+      }
+   }
+   func->SetLineWidth(fWidth);
+   func->SetLineColor(fColor);
+   if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
+      func->Draw("same");
+//      func->Print();
+   } else {
+      TString fitopt = "R";     // fit in range
+      if (fFitOptLikelihood)fitopt += "L";
+      if (fFitOptQuiet)     fitopt += "Q";
+      if (fFitOptVerbose)   fitopt += "V";
+      if (fFitOptMinos)     fitopt += "E";
+      if (fFitOptErrors1)   fitopt += "W";
+      if (fFitOptIntegral)  fitopt += "I";
+      if (fFitOptNoDraw)    fitopt += "0";
+      if (fFitOptAddAll)    fitopt += "+";
+      Bool_t bound = (fPolFixA + fPolFixB + fPolFixC + fPolFixD) != 0;
+      if (bound)            fitopt += "B";   // some pars are bound
+      if (fGraph != NULL) {
+         fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
+   //     add to ListOfFunctions if requested
+         if (fFitOptAddAll) {
+            TList *lof = fGraph->GetListOfFunctions();
+            if (lof->GetSize() > 1) {
+               TObject *last = lof->Last();
+               lof->Remove(last);
+               lof->AddFirst(last);
+            }
+         }
+
+      } else if (fSelHist != NULL){
+         fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
+   //     add to ListOfFunctions if requested
+         if (fFitOptAddAll) {
+            TList *lof = fSelHist->GetListOfFunctions();
+            if (lof->GetSize() > 1) {
+               TObject *last = lof->Last();
+               lof->Remove(last);
+               lof->AddFirst(last);
+            }
+         }
+      }
+
+		fPolA = func->GetParameter(0);
+		if (fPolN > 0) fPolB = func->GetParameter(1);
+		if (fPolN > 1) fPolC = func->GetParameter(2);
+		if (fPolN > 2) fPolD = func->GetParameter(3);
+      IncrementIndex(&fFuncName);
+      if (fAutoClearMarks) ClearMarkers();
+   }
+   gPad->Modified(kTRUE);
+   gPad->Update();
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::FitFormExecute()
+{
+   FormExecute(0);    // do fitting
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::DrawFormExecute()
+{
+   FormExecute(1);    // draw only
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::FormExecute(Int_t draw_only)
+{
+   Int_t retval = 0;
+   if (draw_only == 0 && (fGraph != NULL && fGraph->GetN()) == 0) {
+      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+                "Warning",
+                "No histogram nore graph defined\n Use Draw only" ,
+                kMBIconExclamation, kMBDismiss, &retval);
+      return;
+   }
+
+   if ( GetMarkers() <= 0 ) { 
+      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+                "Warning", "No marks set,\n need at least 2" ,
+                kMBIconExclamation, kMBDismiss, &retval);
+      return;
+   }
+   TString fn;
+   TString pn;
+   TF1 *func = new TF1(fFuncName,fFormula, fFrom, fTo);
+   if (func->GetNdim() <= 0) {
+      cout << "Something wrong with formula" << endl;
+      return;
+   }
+   Int_t npars = func->GetNpar();
+   if (npars > 6) {
+      cout << "Max 6 parameters allowed, correct function" << endl;
+      return;
+   }
+   for (Int_t i = 0; i < npars; i++) {
+      pn = "a"; pn += i;
+      func->SetParName(i, pn);
+      if (i == 0) {
+         func->SetParameter(i, fFormA);
+         if (fFormFixA |= 0) func->FixParameter(i, fFormA);
+      } else if (i == 1) {
+         func->SetParameter(i, fFormB);
+         if (fFormFixB |= 0) func->FixParameter(i, fFormB);
+      } else if (i == 2) {
+         func->SetParameter(i, fFormC);
+         if (fFormFixC |= 0) func->FixParameter(i, fFormC);
+      } else if (i == 3) {
+         func->SetParameter(i, fFormD);
+         if (fFormFixD |= 0) func->FixParameter(i, fFormD);
+      } else if (i == 4) {
+         func->SetParameter(i, fFormE);
+         if (fFormFixE |= 0) func->FixParameter(i, fFormE);
+      } else if (i == 5) {
+         func->SetParameter(i, fFormF);
+         if (fFormFixF |= 0) func->FixParameter(i, fFormF);
+      }
+   }
+   func->SetLineWidth(fWidth);
+   func->SetLineColor(fColor);
+   if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
+      func->SetNpx(1000);
+      func->Draw("same");
+//      func->Print();
+   } else {
+      TString fitopt = "R";     // fit in range
+      if (fFitOptLikelihood)fitopt += "L";
+      if (fFitOptQuiet)     fitopt += "Q";
+      if (fFitOptVerbose)   fitopt += "V";
+      if (fFitOptMinos)     fitopt += "E";
+      if (fFitOptErrors1)   fitopt += "W";
+      if (fFitOptIntegral)  fitopt += "I";
+      if (fFitOptNoDraw)    fitopt += "0";
+      if (fFitOptAddAll)    fitopt += "+";
+      Bool_t bound = (fFormFixA + fFormFixB + fFormFixC + fFormFixD+ fFormFixE + fFormFixF) != 0;
+      if (bound)            fitopt += "B";   // some pars are bound
+      if ( fGraph != NULL) {
+         fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
+   //     add to ListOfFunctions if requested
+         if (fFitOptAddAll) {
+            TList *lof = fGraph->GetListOfFunctions();
+            if (lof->GetSize() > 1) {
+               TObject *last = lof->Last();
+               lof->Remove(last);
+               lof->AddFirst(last);
+            }
+         }
+
+      } else if (fSelHist != NULL){
+         fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
+   //     add to ListOfFunctions if requested
+         if (fFitOptAddAll) {
+            TList *lof = fSelHist->GetListOfFunctions();
+            if (lof->GetSize() > 1) {
+               TObject *last = lof->Last();
+               lof->Remove(last);
+               lof->AddFirst(last);
+            }
+         }
+      }
+        
+
+		fFormA = func->GetParameter(0);
+		if (npars > 1) fFormB = func->GetParameter(1);
+		if (npars > 2) fFormC = func->GetParameter(2);
+		if (npars > 3) fFormD = func->GetParameter(3);
+		if (npars > 4) fFormE = func->GetParameter(4);
+		if (npars > 5) fFormF = func->GetParameter(5);
+      IncrementIndex(&fFuncName);
+      if (fAutoClearMarks) ClearMarkers();
+   }
+   gPad->Modified(kTRUE);
+   gPad->Update();
 }
 //_______________________________________________________________________
 
@@ -1302,6 +1803,37 @@ void FitOneDimDialog::RestoreDefaults()
    fLowtail          = env.GetValue("FitOneDimDialog.Lowtail", 0);
    fHightail         = env.GetValue("FitOneDimDialog.Hightail",0);
    fShowcof          = env.GetValue("FitOneDimDialog.Showcof", 1);
+   fExpA             = env.GetValue("FitOneDimDialog.fExpA", 0.);
+   fExpB             = env.GetValue("FitOneDimDialog.fExpB", 1.);
+   fExpC             = env.GetValue("FitOneDimDialog.fExpC", 1.);
+   fExpD             = env.GetValue("FitOneDimDialog.fExpD", 0.);
+   fExpFixA          = env.GetValue("FitOneDimDialog.fExpFixA", 0);
+   fExpFixB          = env.GetValue("FitOneDimDialog.fExpFixB", 0);
+   fExpFixC          = env.GetValue("FitOneDimDialog.fExpFixC", 0);
+   fExpFixD          = env.GetValue("FitOneDimDialog.fExpFixD", 1);
+   fPolN             = env.GetValue("FitOneDimDialog.fPolN", 1);
+   fPolA             = env.GetValue("FitOneDimDialog.fPolA", 0.);
+   fPolB             = env.GetValue("FitOneDimDialog.fPolB", 1.);
+   fPolC             = env.GetValue("FitOneDimDialog.fPolC", 1.);
+   fPolD             = env.GetValue("FitOneDimDialog.fPolD", 0.);
+   fPolFixA          = env.GetValue("FitOneDimDialog.fPolFixA", 0);
+   fPolFixB          = env.GetValue("FitOneDimDialog.fPolFixB", 0);
+   fPolFixC          = env.GetValue("FitOneDimDialog.fPolFixC", 0);
+   fPolFixD          = env.GetValue("FitOneDimDialog.fPolFixD", 0);
+   fFormA             = env.GetValue("FitOneDimDialog.fFormA", 1.);
+   fFormB             = env.GetValue("FitOneDimDialog.fFormB", 1.);
+   fFormC             = env.GetValue("FitOneDimDialog.fFormC", 1.);
+   fFormD             = env.GetValue("FitOneDimDialog.fFormD", 0.);
+   fFormFixA          = env.GetValue("FitOneDimDialog.fFormFixA", 0);
+   fFormFixB          = env.GetValue("FitOneDimDialog.fFormFixB", 0);
+   fFormFixC          = env.GetValue("FitOneDimDialog.fFormFixC", 0);
+   fFormFixD          = env.GetValue("FitOneDimDialog.fFormFixD", 0);
+   fFormFixE          = env.GetValue("FitOneDimDialog.fFormFixE", 0);
+   fFormFixF          = env.GetValue("FitOneDimDialog.fFormFixF", 0);
+   fGausFuncName     = env.GetValue("FitOneDimDialog.fGausFuncName", "gaus_fun");
+   fExpFuncName      = env.GetValue("FitOneDimDialog.fExpFuncName", "exp_fun");
+   fPolFuncName      = env.GetValue("FitOneDimDialog.fPolFuncName", "pol_fun");
+   fFormFuncName     = env.GetValue("FitOneDimDialog.fFormFuncName", "form_fun");
 }
 //_______________________________________________________________________
 
@@ -1325,7 +1857,38 @@ void FitOneDimDialog::SaveDefaults()
    env.SetValue("FitOneDimDialog.Lowtail",          fLowtail);
    env.SetValue("FitOneDimDialog.Hightail",         fHightail);
    env.SetValue("FitOneDimDialog.Showcof",          fShowcof);
-   env.SaveLevel(kEnvUser);
+   env.SetValue("FitOneDimDialog.fExpA",   fExpA    );
+   env.SetValue("FitOneDimDialog.fExpB",   fExpB    );
+   env.SetValue("FitOneDimDialog.fExpC",   fExpC    );
+   env.SetValue("FitOneDimDialog.fExpD",   fExpD    );
+   env.SetValue("FitOneDimDialog.fExpFixA",fExpFixA );
+   env.SetValue("FitOneDimDialog.fExpFixB",fExpFixB );
+   env.SetValue("FitOneDimDialog.fExpFixC",fExpFixC );
+   env.SetValue("FitOneDimDialog.fExpFixD",fExpFixD );
+   env.SetValue("FitOneDimDialog.fPolN",   fPolN    );
+   env.SetValue("FitOneDimDialog.fPolA",   fPolA    );
+   env.SetValue("FitOneDimDialog.fPolB",   fPolB    );
+   env.SetValue("FitOneDimDialog.fPolC",   fPolC    );
+   env.SetValue("FitOneDimDialog.fPolD",   fPolD    );
+   env.SetValue("FitOneDimDialog.fPolFixA",fPolFixA );
+   env.SetValue("FitOneDimDialog.fPolFixB",fPolFixB );
+   env.SetValue("FitOneDimDialog.fPolFixC",fPolFixC );
+   env.SetValue("FitOneDimDialog.fPolFixD",fPolFixD );
+   env.SetValue("FitOneDimDialog.fFormA",   fFormA    );
+   env.SetValue("FitOneDimDialog.fFormB",   fFormB    );
+   env.SetValue("FitOneDimDialog.fFormC",   fFormC    );
+   env.SetValue("FitOneDimDialog.fFormD",   fFormD    );
+   env.SetValue("FitOneDimDialog.fFormFixA",fFormFixA );
+   env.SetValue("FitOneDimDialog.fFormFixB",fFormFixB );
+   env.SetValue("FitOneDimDialog.fFormFixC",fFormFixC );
+   env.SetValue("FitOneDimDialog.fFormFixD",fFormFixD );
+   env.SetValue("FitOneDimDialog.fFormFixE",fFormFixE );
+   env.SetValue("FitOneDimDialog.fFormFixF",fFormFixF );
+   env.SetValue("FitOneDimDialog.fGausFuncName", fGausFuncName);
+   env.SetValue("FitOneDimDialog.fExpFuncName",  fExpFuncName );
+   env.SetValue("FitOneDimDialog.fPolFuncName",  fPolFuncName );
+   env.SetValue("FitOneDimDialog.fFormFuncName", fFormFuncName);
+   env.SaveLevel(kEnvLocal);
 }
 //_______________________________________________________________________
 
@@ -1342,4 +1905,30 @@ void FitOneDimDialog::CloseDown()
 //   cout << "FitOneDimDialog::CloseDown() " << endl;
    SaveDefaults();
    delete this;
+}
+//________________________________________________________________
+void FitOneDimDialog::IncrementIndex(TString * arg)
+{
+// find number at end of string and increment,
+// if no number found add "_0";
+   Int_t len = arg->Length();
+   if (len < 0) return;
+   Int_t ind = len - 1;
+   Int_t first_digit = ind;
+   TString subs;
+   while (ind > 0) {
+      subs = (*arg)(ind, len - ind);
+      cout << subs << endl;
+      if (!subs.IsDigit()) break;
+      first_digit = ind;
+      ind--;
+   }
+   if (first_digit == ind) {
+     *arg += "_0";
+   } else { 
+      subs = (*arg)(first_digit, len - first_digit);
+      Int_t num = atol(subs.Data());
+      arg->Resize(first_digit);
+      *arg += (num + 1);
+   }
 }

@@ -577,10 +577,10 @@ const char *FitMacroTemplates[nFitTemplates] = {
 // Fit a pol1 + 1 or 2 or 3 gaus + optionally tails
 //____________________________________________________________________________________ 
 
-void FitHist::FitGausLBg(Int_t force_zero_bg)
+void FitHist::Fit1DimDialog(Int_t type)
 {
    if (fFit1DimD == NULL) 
-      fFit1DimD = new FitOneDimDialog(fSelHist);
+      fFit1DimD = new FitOneDimDialog(fSelHist, type);
 }
 //____________________________________________________________________________
 

@@ -1,6 +1,7 @@
 #include "TEnv.h"
 #include "TPad.h"
 #include "TSystem.h"
+#include "TStyle.h"
 #include "TObjString.h"
 #include "TString.h"
 #include "TGWindow.h"
@@ -10,10 +11,19 @@
 #include "TCanvas.h"
 #endif
 #include "Ascii2GraphDialog.h"
+#include "FitOneDimDialog.h"
 #include "TGMrbValuesAndText.h"
 //#include "support.h"
 #include <fstream>
-//_______________________________________________________________________________________
+//____________________________________________________________________________
+
+void ExecGausFitG(TGraph * graph, Int_t type)
+{
+   if (!gPad || !graph) return;
+   graph->SetBit(kMustCleanup);
+   new FitOneDimDialog(graph, type);
+}
+//______________________________________________________________________________________//_______________________________________________________________________________________
 
 ClassImp(Ascii2GraphDialog)
 
@@ -46,6 +56,7 @@ Default is to construct a new canvas\n\
    RestoreDefaults();
    fGraphSelPad = 0;    // start with new canvas as default
    TList *row_lab = new TList(); 
+   row_lab->Add(new TObjString("RadioButton_Empty pad only"));
    row_lab->Add(new TObjString("RadioButton_Simple: X, Y no errors"));
    row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, Ex, Ey"));
    row_lab->Add(new TObjString("RadioButton_Asym Ers: X,Y,Exl,Exu,Eyl,Eyu"));
@@ -53,12 +64,14 @@ Default is to construct a new canvas\n\
    row_lab->Add(new TObjString("PlainIntVal_Col Sel"));
    row_lab->Add(new TObjString("PlainIntVal+Col Sel"));
 
-   row_lab->Add(new TObjString("FileRequest_Inputfile      "));
+   row_lab->Add(new TObjString("FileRequest_Inputfile"));
    row_lab->Add(new TObjString("StringValue_GraphName"));
    row_lab->Add(new TObjString("StringValue_Title X  "));
    row_lab->Add(new TObjString("StringValue-Title Y  "));
    row_lab->Add(new TObjString("DoubleValue_Xaxis min"));
-   row_lab->Add(new TObjString("DoubleValue-Yaxis min"));
+   row_lab->Add(new TObjString("DoubleValue-Xaxis max"));
+   row_lab->Add(new TObjString("DoubleValue_Yaxis min"));
+   row_lab->Add(new TObjString("DoubleValue-Yaxis max"));
 
    row_lab->Add(new TObjString("CheckButton_Draw/Overlay in a sel pad"));
 //   row_lab->Add(new TObjString("CheckButton_Draw in a new canvas"));
@@ -82,6 +95,7 @@ Default is to construct a new canvas\n\
 //   row_lab->Add(new TObjString("CommandButt_Cancel"));
 //      Int_t nrows = row_lab->GetSize();
 
+   valp[ind++] = &fEmptyPad;
    valp[ind++] = &fGraph_Simple;
    valp[ind++] = &fGraph_Error;
    valp[ind++] = &fGraph_AsymError;
@@ -93,7 +107,9 @@ Default is to construct a new canvas\n\
    valp[ind++] = &fGraphXtitle;
    valp[ind++] = &fGraphYtitle;
    valp[ind++] = &fXaxisMin;
+   valp[ind++] = &fXaxisMax;
    valp[ind++] = &fYaxisMin;
+   valp[ind++] = &fYaxisMax;
    valp[ind++] = &fGraphSelPad;
 //   valp[ind++] = &fGraphNewPad;
    valp[ind++] = &fGraphXsize;
@@ -128,6 +144,46 @@ Ascii2GraphDialog::~Ascii2GraphDialog()
             
 void Ascii2GraphDialog::Draw_The_Graph()
 {
+   if (fEmptyPad != 0) {
+      cout << "Empty pad only" << endl;
+      TGraph *graph = new TGraph();
+#ifdef MARABOUVERS
+      HTCanvas * cg = new HTCanvas("Empty", "Empty", fWinx, fWiny,
+                      fGraphXsize, fGraphYsize, NULL, NULL, graph);
+//                         fGraphXsize, fGraphYsize, fHistPresent, 0, graph);
+#else
+       TCanvas * cg = new TCanvas("Empty", "Empty", fWinx, fWiny,
+                     fGraphXsize, fGraphYsize);
+#endif
+      if (fWindowList) fWindowList->Add(cg);
+      if (fGraphXdiv > 1 || fGraphYdiv > 1) {
+         cg->Divide(fGraphXdiv, fGraphYdiv);
+         cg->cd(1);
+      }
+      Double_t xmin = 0, xmax = 100;
+      Double_t ymin = 0, ymax = 100;
+      if (fXaxisMin != 0 || fXaxisMax != 0) {
+         xmin = fXaxisMin;
+         xmax = fXaxisMax;
+      }
+      if (fYaxisMin != 0 || fYaxisMax != 0) {
+         ymin = fYaxisMin;
+         ymax = fYaxisMax;
+      }
+      gStyle->SetOptStat(0);
+      TH1D * gh = new TH1D(fGraphName, fGraphName, 100, xmin, xmax);
+      gh->Draw();
+      gh->SetMinimum(ymin);
+      gh->SetMaximum(ymax);
+      if (fGraphXtitle.Length() > 0)
+         gh->GetXaxis()->SetTitle(fGraphXtitle.Data());
+      if (fGraphYtitle.Length() > 0)
+         gh->GetYaxis()->SetTitle(fGraphYtitle.Data());
+      graph->SetHistogram(gh);
+      gPad->Update();
+      return; 
+   }
+
    TArrayD xval(100), yval(100), zval(100), wval(100), eyl(100), eyh(100);
    ifstream infile;
    infile.open(fGraphFileName.Data(), ios::in);
@@ -327,8 +383,9 @@ void Ascii2GraphDialog::Draw_The_Graph()
       graph->SetFillColor(fGraphFillStyle);
       graph->SetFillColor(fGraphFillColor);
       graph->SetLineWidth(fGraphLineWidth);
-      if (fXaxisMin != 0) graph->GetXaxis()->SetLimits(fXaxisMin, graph->GetXaxis()->GetXmax());
+      if (fXaxisMin != 0 || fXaxisMax) graph->GetXaxis()->SetLimits(fXaxisMin, fXaxisMax);
       if (fYaxisMin != 0) graph->SetMinimum(fYaxisMin);
+      if (fYaxisMax != 0) graph->SetMaximum(fYaxisMin);
       gPad->Modified();
       gPad->Update();
       cout << "TGraph *gr = (TGraph*)" << graph << endl;
@@ -374,13 +431,14 @@ void Ascii2GraphDialog::SaveDefaults()
 {
    cout << "Ascii2GraphDialog::SaveDefaults() " << endl;
    TEnv env(".rootrc");
+   env.SetValue("Ascii2GraphDialog.fEmptyPad"  	    , fEmptyPad        );
    env.SetValue("Ascii2GraphDialog.Graph_Simple"	 , fGraph_Simple    );
    env.SetValue("Ascii2GraphDialog.Graph_Error" 	 , fGraph_Error     );
    env.SetValue("Ascii2GraphDialog.Graph_AsymError" , fGraph_AsymError );
-   env.SetValue("Ascii2GraphDialog.fGraphColSelect" , fGraphColSelect);
-   env.SetValue("Ascii2GraphDialog.fGraphColSel1"   , fGraphColSel1);
-   env.SetValue("Ascii2GraphDialog.fGraphColSel2"   , fGraphColSel2);
-   env.SetValue("Ascii2GraphDialog.fGraphColSel3"   , fGraphColSel3);
+   env.SetValue("Ascii2GraphDialog.fGraphColSelect" , fGraphColSelect  );
+   env.SetValue("Ascii2GraphDialog.fGraphColSel1"   , fGraphColSel1    );
+   env.SetValue("Ascii2GraphDialog.fGraphColSel2"   , fGraphColSel2    );
+   env.SetValue("Ascii2GraphDialog.fGraphColSel3"   , fGraphColSel3    );
    env.SetValue("Ascii2GraphDialog.GraphFileName"   , fGraphFileName   );
    env.SetValue("Ascii2GraphDialog.GraphName"		 , fGraphName       );
    env.SetValue("Ascii2GraphDialog.GraphSelPad" 	 , fGraphSelPad     );
@@ -391,6 +449,8 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.GraphYtitle" 	 , fGraphYtitle     );
    env.SetValue("Ascii2GraphDialog.XaxisMin"  		 , fXaxisMin        );
    env.SetValue("Ascii2GraphDialog.YaxisMin"  		 , fYaxisMin        );
+   env.SetValue("Ascii2GraphDialog.XaxisMax"  		 , fXaxisMax        );
+   env.SetValue("Ascii2GraphDialog.YaxisMax"  		 , fYaxisMax        );
    env.SetValue("Ascii2GraphDialog.GraphXdiv"		 , fGraphXdiv       );
    env.SetValue("Ascii2GraphDialog.GraphYdiv"		 , fGraphYdiv       );
    env.SetValue("Ascii2GraphDialog.GraphDrawMark"   , fGraphDrawMark   );
@@ -410,6 +470,7 @@ void Ascii2GraphDialog::SaveDefaults()
 void Ascii2GraphDialog::RestoreDefaults()
 {
    TEnv env(".rootrc");
+   fEmptyPad         = env.GetValue("Ascii2GraphDialog.fEmptyPad"  	   , 0);
    fGraph_Simple     = env.GetValue("Ascii2GraphDialog.Graph_Simple"  	, 0);
    fGraph_Error      = env.GetValue("Ascii2GraphDialog.Graph_Error"		, 1);
    fGraph_AsymError  = env.GetValue("Ascii2GraphDialog.Graph_AsymError" , 0);
@@ -428,6 +489,8 @@ void Ascii2GraphDialog::RestoreDefaults()
    fGraphXdiv        = env.GetValue("Ascii2GraphDialog.GraphXdiv"  		, 1);
    fXaxisMin         = env.GetValue("Ascii2GraphDialog.XaxisMin"  		, 0);
    fYaxisMin         = env.GetValue("Ascii2GraphDialog.YaxisMin"  		, 0);
+   fXaxisMax         = env.GetValue("Ascii2GraphDialog.XaxisMax"  		, 0);
+   fYaxisMax         = env.GetValue("Ascii2GraphDialog.YaxisMax"  		, 0);
    fGraphYdiv        = env.GetValue("Ascii2GraphDialog.GraphYdiv"  		, 1);
    fGraphDrawMark    = env.GetValue("Ascii2GraphDialog.GraphDrawMark" 	, 1);
    fGraphDrawLine    = env.GetValue("Ascii2GraphDialog.GraphDrawLine" 	, 0);

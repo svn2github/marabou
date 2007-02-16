@@ -394,11 +394,3 @@ void ExecFitMacroG(TGraph * graph, TGWindow * win)
    logr.Clear("nodelete");
    pads.Clear("nodelete");
 }
-//____________________________________________________________________________
-
-void ExecGausFitG(TGraph * graph)
-{
-   if (!gPad || !graph) return;
-   graph->SetBit(kMustCleanup);
-   new FitOneDimDialog(graph);
-}

@@ -28,10 +28,11 @@
 #include "TMrbHelpBrowser.h" 
 #include "TGMrbTableFrame.h" 
 #include "TGMrbInputDialog.h" 
+#include "EmptyHistDialog.h"
 
 void EditFitMacroG(TGWindow * win);
 void ExecFitMacroG(TGraph * graph, TGWindow * win);
-void ExecGausFitG(TGraph * graph);
+void ExecGausFitG(TGraph * graph, Int_t type);
 
 
 enum ERootCanvasCommands {
@@ -158,6 +159,7 @@ enum ERootCanvasCommands {
    kFHASCIIToHist, 
    kFHNtuple, 
    kFHGraph, 
+   kFHEmptyHist, 
 
    kFHCut,
    kFHInitCut,
@@ -172,8 +174,14 @@ enum ERootCanvasCommands {
 
    kFHFit,
    kFHFitGausLBg,
+   kFHFitExp,
+   kFHFitPol,
+   kFHFitForm,
    kFHFitUserG,
    kFHGausFitG,
+   kFHExpFitG,
+   kFHPolFitG,
+   kFHFormFitG,
    kFHEditUserG,
    kFHFitUser,
    kFHEditUser,
@@ -549,135 +557,6 @@ again:
                      fHCanvas->Paint();
                      fHCanvas->Update();
                      break;
-/*
-                  case kFH_SetGrid:
-                     {
-                    TArrayD values(4);
-                    TOrdCollection *row_lab = new TOrdCollection();
-                    row_lab->Add(new TObjString("Real EditGrid X"));
-                    row_lab->Add(new TObjString("Real EditGrid Y"));
-                    row_lab->Add(new TObjString("Visible Grid X"));
-                    row_lab->Add(new TObjString("Visible Grid Y"));
-                    values[0] = fHCanvas->GetEditGridX();
-                    values[1] = fHCanvas->GetEditGridY();
-                    values[2] = fHCanvas->GetVisibleGridX();
-                    values[3] = fHCanvas->GetVisibleGridY();
-   					  Int_t ret = 0, itemwidth = 240, precission = 5;
-   					  TGMrbTableOfDoubles(fRootCanvas, &ret,  "Edit Grid", itemwidth, 
-                                       1, 4, values, precission, 0, row_lab);
-   					  if (ret >= 0) {
-                       fHCanvas->SetEditGridX(values[0]);
-                       fHCanvas->SetEditGridY(values[1]);
-                       fHCanvas->SetVisibleGridX(values[2]);
-                       fHCanvas->SetVisibleGridY(values[3]);
-                       fHCanvas->SetUseEditGrid(kTRUE);
-                       fHCanvas->DrawEditGrid(kTRUE);
-                    }
-                    }
-                    break;
-
-                  case kFH_UseGrid:
-     					if (fHCanvas->GetUseEditGrid()) {
-                        fEditMenu->UnCheckEntry(kFH_UseGrid);
-                        fHCanvas->SetUseEditGrid(kFALSE);
-      					} else {                    
-                        fEditMenu->CheckEntry(kFH_UseGrid);
-                        fHCanvas->SetUseEditGrid(kTRUE);
-                     }
-                     break;
-
-                  case kFH_DrawGrid:  
-                        fHCanvas->DrawEditGrid(kFALSE);
-                     break;
-
-                  case kFH_DrawGridVis:  
-                        fHCanvas->DrawEditGrid(kTRUE);
-                     break;
-
-                  case kFH_RemoveGrid:
-                        fHCanvas->RemoveEditGrid();
-                     break;
-                  case kFH_RemoveCGraph:
-                        fHCanvas->RemoveControlGraphs();
-                     break;
-                  case kFH_DrawCGraph:
-                        fHCanvas->DrawControlGraphs();
-                     break;
-                  case kFH_SetVisEnclosingCut:
-                        if (fEditMenu->IsEntryChecked(kFH_SetVisEnclosingCut)) {
-                           fEditMenu->UnCheckEntry(kFH_SetVisEnclosingCut);
-                           fHCanvas->SetVisibilityOfEnclosingCuts(kFALSE);
-                        } else {
-                           fEditMenu->CheckEntry(kFH_SetVisEnclosingCut);
-                           fHCanvas->SetVisibilityOfEnclosingCuts(kTRUE);
-                        }
-                     break;
-                  case kFH_PutObjectsOnGrid:
-                        fHCanvas->PutObjectsOnGrid();
-                     break;
-
-                  case kFH_DrawHist:
-                        fHCanvas->InsertHist();
-                     break;
-                  case kFH_DrawGraph:
-                        fHCanvas->InsertGraph();
-                     break;
-
-                  case kFH_InsertLatex:
-                        fHCanvas->InsertText(kFALSE);
-                     break;
-                  case kFH_InsertLatexF:
-                        fHCanvas->InsertText(kTRUE);
-                     break;
-                  case kFH_InsertImage:
-                        fHCanvas->InsertImage();
-                     break;
-                  case kFH_InsertAxis:
-                        fHCanvas->InsertAxis();
-                     break;
-                  case kFH_WritePrim:
-                        fHCanvas->WritePrimitives();
-                     break;
-
-                  case kFH_InsertGObjects:
-                       fHCanvas->InsertGObjects();
-                     break;
-                  case kFH_InsertGObjectsG:
-                     {
-                     Int_t temp =0;
-                     if (fHCanvas->fInsertMacrosAsGroup) {
-                        fEditMenu->UnCheckEntry(kFH_InsertGObjectsG);
-                        fHCanvas->fInsertMacrosAsGroup = kFALSE;
-
-                     } else {
-                        fEditMenu->CheckEntry(kFH_InsertGObjectsG);
-                        fHCanvas->fInsertMacrosAsGroup = kTRUE;
-                        temp = 1;
-                     } 
-                     TEnv env(".rootrc");
-                     env.SetValue("HistPresent.InsertMacrosAsGroup", temp);
-                     env.SaveLevel(kEnvUser);
-                     }                   
-                     break;
-                  case kFH_MarkGObjects:
-                       fHCanvas->MarkGObjects();
-                     break;
-                  case kFH_ExtractGObjects:
-                       fHCanvas->ExtractGObjects();
-                     break;
-                  case kFH_WriteGObjects:
-                       fHCanvas->WriteGObjects();
-                     break;
-                  case kFH_DeleteObjects:
-                       fHCanvas->DeleteObjects();
-                     break;
-                  case kFH_ReadGObjects:
-                       fHCanvas->ReadGObjects();
-                     break;
-                  case kFH_ShowGallery:
-                       fHCanvas->ShowGallery();
-                     break;
-*/
                   case    kFH_Portrait:
                      if(fHistPresent)
                         fHistPresent->DinA4Page(0);                    
@@ -1049,6 +928,9 @@ again:
                   case kFHGraph:
                      fHistPresent->GraphFromASCII(fRootCanvas); 
                      break;
+                  case kFHEmptyHist:
+                     new EmptyHistDialog(fRootCanvas); ; 
+                     break;
 
                   case  kFHMarksToCut:
                      fFitHist->MarksToCut();
@@ -1082,15 +964,33 @@ again:
                      gApplication->Terminate(0);
                      break;
                    case kFHFitGausLBg:
-                     fFitHist->FitGausLBg(0); 
+                     fFitHist->Fit1DimDialog(1); 
+                     break;
+                   case kFHFitExp:
+                     fFitHist->Fit1DimDialog(2); 
+                     break;
+                   case kFHFitPol:
+                     fFitHist->Fit1DimDialog(3); 
+                     break;
+                   case kFHFitForm:
+                     fFitHist->Fit1DimDialog(4); 
                      break;
                   case kFHFitUserG:
                      ExecFitMacroG(fGraph, fRootCanvas);   // global function !! 
                      break;
                   case kFHGausFitG:
-                     ExecGausFitG(fGraph);                 // global function !! 
+                     ExecGausFitG(fGraph, 1);                 // global function !! 
                      break;
-                  case kFHFitUser:
+                  case kFHExpFitG:
+                     ExecGausFitG(fGraph, 2);                 // global function !! 
+                     break;
+                   case kFHPolFitG:
+                     ExecGausFitG(fGraph, 3);                 // global function !! 
+                     break;
+                  case kFHFormFitG:
+                     ExecGausFitG(fGraph, 4);                 // global function !! 
+                     break;
+                 case kFHFitUser:
                      fFitHist->ExecFitMacro(); 
                      break;
                   case kFHFitSlicesYUser:
@@ -1421,6 +1321,7 @@ void HandleMenus::BuildMenus()
          fFileMenu->AddEntry("ASCII data from file to Ntuple", kFHNtuple);
          fFileMenu->AddEntry("ASCII data from file to histogram ",  kFHASCIIToHist);
          fFileMenu->AddEntry("ASCII data from file to graph",  kFHGraph);
+         fFileMenu->AddEntry("Create empty histogram",  kFHEmptyHist);
       }
       fFileMenu->AddSeparator();
    }
@@ -1649,7 +1550,10 @@ void HandleMenus::BuildMenus()
       	fFitMenu->AddEntry("Execute User FitSlices Y Macro", kFHFitSlicesYUser);
       	fFitMenu->AddSeparator();
       } else {
-         fFitMenu->AddEntry("Fit Gauss + Linear BG",      kFHFitGausLBg);
+         fFitMenu->AddEntry("Fit Gaussians (with tail)",   kFHFitGausLBg);
+         fFitMenu->AddEntry("Fit Exponential",     kFHFitExp);
+         fFitMenu->AddEntry("Fit Polynomial",      kFHFitPol);
+         fFitMenu->AddEntry("Fit User formula",    kFHFitForm);
       }
       fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUser);
       fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUser);
@@ -1692,6 +1596,9 @@ void HandleMenus::BuildMenus()
       fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUserG);
       fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUserG);
       fFitMenu->AddEntry("Gauss Fit Dialog", kFHGausFitG);
+      fFitMenu->AddEntry("Fit Exponential",  kFHExpFitG);
+      fFitMenu->AddEntry("Fit Polynomial",   kFHPolFitG);
+      fFitMenu->AddEntry("Fit User formula", kFHFormFitG);
       fFitMenu->AddSeparator();
    }
    if(edit_menus){

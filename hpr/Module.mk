@@ -48,7 +48,8 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/InsertFunctionDialog.h \
  					$(HPRDIRI)/InsertArcDialog.h \
  					$(HPRDIRI)/FitOneDimDialog.h \
- 					$(HPRDIRI)/CalibrationDialog.h \
+ 					$(HPRDIRI)/EmptyHistDialog.h \
+					$(HPRDIRI)/CalibrationDialog.h \
  					$(HPRDIRI)/InsertTextDialog.h \
 					$(HPRDIRI)/InsertTextBoxDialog.h \
 					$(HPRDIRI)/TextBox.h \
