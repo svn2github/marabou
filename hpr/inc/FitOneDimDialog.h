@@ -71,6 +71,7 @@ private:
    Int_t fUsedbg;
    Int_t fNpeaks;
    Int_t fNmarks;
+   Int_t fNevents;
    Color_t fColor;
    Width_t fWidth;
    Style_t fStyle;
@@ -106,6 +107,8 @@ public:
    void FitFormExecute();
    void DrawFormExecute();
    void FormExecute(Int_t draw_only = 0);
+   void FillHistRandom();
+   TH1  *FindHistInPad();
 //   void AddToCalibration();
    void SetFitOptions(){};
    Int_t GetMaxBin(TH1 * h1, Int_t binl, Int_t binu);

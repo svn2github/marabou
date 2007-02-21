@@ -1,6 +1,8 @@
 #ifndef EMPTYHISTDIALOG
 #define EMPTYHISTDIALOG
 #include "TGWindow.h"
+#include "TRootCanvas.h"
+#include "TGMenu.h"
 #include "TString.h"
 #include <iostream>
 //_____________________________________________________________________________________
@@ -11,6 +13,8 @@ namespace std {} using namespace std;
 class EmptyHistDialog : public TObject {
 
 private:
+   TCanvas *fCanvas;
+   TH1D    *fHist;
    Int_t   fWinx;
    Int_t   fWiny;
    TString fCommand;
@@ -27,11 +31,15 @@ private:
    Int_t   fHistYdiv;   
    Int_t   fHistSelPad;   
    Int_t   fHistNewPad;   
-
+   TRootCanvas *fRootCanvas;
+   TGPopupMenu *fMenu;
+   
 public:
    EmptyHistDialog(TGWindow * win = NULL, Int_t winx = 100, Int_t winy = 100);
    ~EmptyHistDialog();
    void Draw_The_Hist();
+   void BuildMenu();
+   void HandleMenu(Int_t id);
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown();

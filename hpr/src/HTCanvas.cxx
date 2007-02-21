@@ -184,7 +184,7 @@ void HTCanvas::MyClose()
 
 HTCanvas::~HTCanvas()
 {
-   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
+//   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
 //   if (fEditCommands) { delete fEditCommands; fEditCommands = NULL;};
    if (fHandleMenus) {
       delete fHandleMenus;

@@ -12,10 +12,14 @@
 #endif
 #include "TGMrbValuesAndText.h"
 #include "EmptyHistDialog.h"
+#include "FitOneDimDialog.h"
+#include "Save2FileDialog.h"
 #include <fstream>
 //______________________________________________________________________________
 
 ClassImp(EmptyHistDialog)
+
+enum Ecmds {M_FitFormula = 1001, M_Save2File = 1002};
 
 EmptyHistDialog::EmptyHistDialog(TGWindow * win, Int_t winx,  Int_t winy)
               : fWinx(winx), fWiny(winy) 
@@ -30,6 +34,7 @@ Default is to construct a new canvas\n\
    Int_t ind = 0;
    Bool_t ok = kTRUE;
    fCommand = "Draw_The_Hist()";
+   fCanvas = NULL;
    RestoreDefaults();
    TList *row_lab = new TList(); 
 
@@ -81,12 +86,7 @@ EmptyHistDialog::~EmptyHistDialog()
 void EmptyHistDialog::Draw_The_Hist()
 {
 	cout << "Empty pad only" << endl;
-#ifdef MARABOUVERS
-	   HTCanvas * cg;
-#else
-	   TCanvas * cg; 
-#endif
-	TGraph *graph = new TGraph();
+//	TGraph *graph = new TGraph();
    if (fHistSelPad |= 0) {
       if (gPad == NULL) {
          cout << "Please select a pad first" << endl;
@@ -94,16 +94,17 @@ void EmptyHistDialog::Draw_The_Hist()
       }
    } else {
 #ifdef MARABOUVERS
-	   cg = new HTCanvas("Empty", "Empty", fWinx, fWiny,
-						fHistXsize, fHistYsize, NULL, NULL, graph);
+	   fCanvas = new HTCanvas("Empty", "Empty", fWinx, fWiny,
+						fHistXsize, fHistYsize);
 #else
-	   cg = new TCanvas("Empty", "Empty", fWinx, fWiny,
+	   fCanvas = new TCanvas("Empty", "Empty", fWinx, fWiny,
 						fHistXsize, fHistYsize);
 #endif
    }
+   BuildMenu();
 	if (fHistXdiv > 1 || fHistYdiv > 1) {
-		cg->Divide(fHistXdiv, fHistYdiv);
-		cg->cd(1);
+		fCanvas->Divide(fHistXdiv, fHistYdiv);
+		fCanvas->cd(1);
 	}
 	Double_t xmin = 0, xmax = 100;
 	Double_t ymin = 0, ymax = 100;
@@ -116,17 +117,36 @@ void EmptyHistDialog::Draw_The_Hist()
 		ymax = fYaxisMax;
 	}
 	gStyle->SetOptStat(0);
-	TH1D * gh = new TH1D(fHistName, fHistName, 100, xmin, xmax);
-	gh->Draw();
-	gh->SetMinimum(ymin);
-	gh->SetMaximum(ymax);
+	fHist = new TH1D(fHistName, fHistName, 100, xmin, xmax);
+	fHist->Draw();
+	fHist->SetMinimum(ymin);
+	fHist->SetMaximum(ymax);
 	if (fHistXtitle.Length() > 0)
-		gh->GetXaxis()->SetTitle(fHistXtitle.Data());
+		fHist->GetXaxis()->SetTitle(fHistXtitle.Data());
 	if (fHistYtitle.Length() > 0)
-		gh->GetYaxis()->SetTitle(fHistYtitle.Data());
-	graph->SetHistogram(gh);
+		fHist->GetYaxis()->SetTitle(fHistYtitle.Data());
+//	graph->SetHistogram(gh);
 	gPad->Update();
 };
+//________________________________________________________________________
+
+void EmptyHistDialog::BuildMenu()
+{
+//   cout << "EmptyHistDialog::BuildMenu() " <<this << endl;
+   fRootCanvas = (TRootCanvas*)fCanvas->GetCanvas()->GetCanvasImp();
+   TGMenuBar * menubar = fRootCanvas->GetMenuBar();
+   TGLayoutHints * layoh_right = new TGLayoutHints(kLHintsTop | kLHintsLeft);
+   fMenu     = new TGPopupMenu(fRootCanvas->GetParent());
+   menubar->AddPopup("Draw_Fill", fMenu, layoh_right, menubar->GetPopup("Inspect"));
+   fMenu->AddEntry("Draw / fill with user defined function", M_FitFormula);
+   fMenu->AddEntry("Save hist to rootfile", M_Save2File);
+
+   fMenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
+                      "HandleMenu(Int_t)");
+   
+   menubar->MapSubwindows();
+   menubar->Layout(); 
+}
 //_________________________________________________________________________
             
 void EmptyHistDialog::SaveDefaults()
@@ -146,7 +166,21 @@ void EmptyHistDialog::SaveDefaults()
    env.SetValue("EmptyHistDialog.YaxisMax"  		 , fYaxisMax        );
    env.SetValue("EmptyHistDialog.HistXdiv"		 , fHistXdiv       );
    env.SetValue("EmptyHistDialog.HistYdiv"		 , fHistYdiv       );
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
+}
+//________________________________________________________________________
+
+void EmptyHistDialog::HandleMenu(Int_t id)
+{
+   switch (id) {
+
+      case M_FitFormula:
+         new FitOneDimDialog(fHist, 4);
+         break;
+      case M_Save2File:
+         new Save2FileDialog(fHist);
+         break;
+   }
 }
 //_________________________________________________________________________
             
@@ -171,6 +205,7 @@ void EmptyHistDialog::RestoreDefaults()
             
 void EmptyHistDialog::CloseDown()
 {
-   cout << "EmptyHistDialog::CloseDown() " << endl;
+//   cout << "EmptyHistDialog::CloseDown() " << endl;
+   if (fCanvas) delete fCanvas;
    delete this;
 }

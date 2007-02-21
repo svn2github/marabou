@@ -337,17 +337,17 @@ FitOneDimDialog::FitOneDimDialog(TH1 * hist, Int_t type)
 {
    fSelHist = hist;
    fGraph = NULL;
-   if (!fSelHist) {
-      cout << "No hist selected" << endl;
-      return;
-   }
+//   if (!fSelHist) {
+//      cout << "No hist selected" << endl;
+//      return;
+//   }
 
-   if (fSelHist->GetDimension() != 1) {
+   if (fSelHist && fSelHist->GetDimension() != 1) {
       cout << "Can only be used with 1-dim hist" << endl;
       return;
    }
  //  lBinW   = fSelHist->GetBinWidth(1);
-   fName = fSelHist->GetName();
+   if (fSelHist) fName = fSelHist->GetName();
    DisplayMenu(type);
 }
 //____________________________________________________________________________________ 
@@ -511,7 +511,7 @@ the root doc at: http://root.cern.ch\n\
 //   if (gROOT->GetVersionInt() < 40000) history = NULL;
 
    TList *row_lab = new TList(); 
-   static void *valp[25];
+   static void *valp[50];
    Int_t ind = 0;
    static TString exgcmd("FitGausExecute()");
    static TString expcmd("FitExpExecute()");
@@ -526,6 +526,7 @@ the root doc at: http://root.cern.ch\n\
    static TString setmcmd("SetMarkers()");
    static TString prtcmd("PrintMarkers()");
    static TString sfocmd("SetFittingOptions()");
+   static TString fhrcmd("FillHistRandom()");
    static Int_t dummy = 0;
    TString * text = NULL;
    const char * history = NULL;
@@ -699,6 +700,12 @@ the root doc at: http://root.cern.ch\n\
       row_lab->Add(new TObjString("CommandButt-Set 2 Marks"));
       fNmarks = 2;
       valp[ind++] = &setmcmd;
+   }
+   if (type == 4) {
+      row_lab->Add(new TObjString("CommandButt_Fill random"));
+      valp[ind++] = &fhrcmd;
+		row_lab->Add(new TObjString("PlainIntVal-N events"));
+		valp[ind++] = &fNevents;
    }
    Int_t itemwidth = 320;
 //   TRootCanvas* fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
@@ -1462,7 +1469,7 @@ void FitOneDimDialog::DrawExpExecute()
 void FitOneDimDialog::ExpExecute(Int_t draw_only)
 {
    Int_t retval = 0;
-   if (draw_only == 0 && (fGraph != NULL && fGraph->GetN()) == 0) {
+   if (draw_only == 0 && fSelHist == NULL && (fGraph != NULL && fGraph->GetN()) == 0) {
       new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
                 "Warning",
                 "No histogram nore graph defined\n Use Draw only" ,
@@ -1556,7 +1563,7 @@ void FitOneDimDialog::DrawPolExecute()
 void FitOneDimDialog::PolExecute(Int_t draw_only)
 {
    Int_t retval = 0;
-   if (draw_only == 0 && (fGraph != NULL && fGraph->GetN()) == 0) {
+   if (draw_only == 0 && fSelHist == NULL && (fGraph != NULL && fGraph->GetN()) == 0) {
       new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
                 "Warning",
                 "No histogram nore graph defined\n Use Draw only" ,
@@ -1676,12 +1683,19 @@ void FitOneDimDialog::DrawFormExecute()
 void FitOneDimDialog::FormExecute(Int_t draw_only)
 {
    Int_t retval = 0;
-   if (draw_only == 0 && (fGraph != NULL && fGraph->GetN()) == 0) {
-      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+   cout << "fSelHist: " << fSelHist << endl;
+   if (draw_only == 0 && fSelHist == 0 && (fGraph != NULL && fGraph->GetN()) == 0) {
+      fSelHist = FindHistInPad();
+      if (fSelHist == 0) {
+         new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
                 "Warning",
                 "No histogram nore graph defined\n Use Draw only" ,
                 kMBIconExclamation, kMBDismiss, &retval);
-      return;
+         return;
+         
+      } else {
+         fGraph = NULL;
+      }
    }
 
    if ( GetMarkers() <= 0 ) { 
@@ -1725,6 +1739,7 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
          if (fFormFixF |= 0) func->FixParameter(i, fFormF);
       }
    }
+   func->Print();
    func->SetLineWidth(fWidth);
    func->SetLineColor(fColor);
    if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
@@ -1737,13 +1752,13 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
       if (fFitOptQuiet)     fitopt += "Q";
       if (fFitOptVerbose)   fitopt += "V";
       if (fFitOptMinos)     fitopt += "E";
-      if (fFitOptErrors1)   fitopt += "W";
+      if (fFitOptErrors1)    fitopt += "W";
       if (fFitOptIntegral)  fitopt += "I";
       if (fFitOptNoDraw)    fitopt += "0";
       if (fFitOptAddAll)    fitopt += "+";
       Bool_t bound = (fFormFixA + fFormFixB + fFormFixC + fFormFixD+ fFormFixE + fFormFixF) != 0;
       if (bound)            fitopt += "B";   // some pars are bound
-      if ( fGraph != NULL) {
+      if ( fGraph != NULL && fGraph->GetN() > 1) {
          fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
    //     add to ListOfFunctions if requested
          if (fFitOptAddAll) {
@@ -1780,6 +1795,72 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
    }
    gPad->Modified(kTRUE);
    gPad->Update();
+}
+//________________________________________________________________________
+
+TH1 *FitOneDimDialog::FindHistInPad()
+{
+   TList * lop = gPad->GetListOfPrimitives();
+   TIter next(lop);
+   TH1 *hist = NULL;
+   while (TObject *obj = next()) {
+      if(obj->InheritsFrom("TH1")) {
+         hist = (TH1*)obj;
+         break;
+      }
+   }
+   return hist;
+}
+//________________________________________________________________________
+
+void FitOneDimDialog::FillHistRandom()
+{
+   TH1 *hist = FindHistInPad();
+   if (!hist) {
+      cout << "No hist found" << endl;
+      return;
+   }
+   gStyle->SetOptStat(1111111);
+   TString fn;
+   TString pn;
+   TF1 *func = new TF1(fFuncName,fFormula, fFrom, fTo);
+   if (func->GetNdim() <= 0) {
+      cout << "Something wrong with formula" << endl;
+      return;
+   }
+   Int_t npars = func->GetNpar();
+   if (npars > 6) {
+      cout << "Max 6 parameters allowed, correct function" << endl;
+      return;
+   }
+   for (Int_t i = 0; i < npars; i++) {
+      pn = "a"; pn += i;
+      func->SetParName(i, pn);
+      if (i == 0) {
+         func->SetParameter(i, fFormA);
+         if (fFormFixA |= 0) func->FixParameter(i, fFormA);
+      } else if (i == 1) {
+         func->SetParameter(i, fFormB);
+         if (fFormFixB |= 0) func->FixParameter(i, fFormB);
+      } else if (i == 2) {
+         func->SetParameter(i, fFormC);
+         if (fFormFixC |= 0) func->FixParameter(i, fFormC);
+      } else if (i == 3) {
+         func->SetParameter(i, fFormD);
+         if (fFormFixD |= 0) func->FixParameter(i, fFormD);
+      } else if (i == 4) {
+         func->SetParameter(i, fFormE);
+         if (fFormFixE |= 0) func->FixParameter(i, fFormE);
+      } else if (i == 5) {
+         func->SetParameter(i, fFormF);
+         if (fFormFixF |= 0) func->FixParameter(i, fFormF);
+      }
+   }
+   hist->FillRandom(fFuncName, fNevents);
+   hist->SetMaximum(hist->GetBinContent(hist->GetMaximumBin()));
+   hist->Print();
+   gPad->Modified(); 
+   gPad->Update(); 
 }
 //_______________________________________________________________________
 
@@ -1824,6 +1905,8 @@ void FitOneDimDialog::RestoreDefaults()
    fFormB             = env.GetValue("FitOneDimDialog.fFormB", 1.);
    fFormC             = env.GetValue("FitOneDimDialog.fFormC", 1.);
    fFormD             = env.GetValue("FitOneDimDialog.fFormD", 0.);
+   fFormE             = env.GetValue("FitOneDimDialog.fFormE", 1.);
+   fFormF             = env.GetValue("FitOneDimDialog.fFormF", 0.);
    fFormFixA          = env.GetValue("FitOneDimDialog.fFormFixA", 0);
    fFormFixB          = env.GetValue("FitOneDimDialog.fFormFixB", 0);
    fFormFixC          = env.GetValue("FitOneDimDialog.fFormFixC", 0);
@@ -1834,6 +1917,7 @@ void FitOneDimDialog::RestoreDefaults()
    fExpFuncName      = env.GetValue("FitOneDimDialog.fExpFuncName", "exp_fun");
    fPolFuncName      = env.GetValue("FitOneDimDialog.fPolFuncName", "pol_fun");
    fFormFuncName     = env.GetValue("FitOneDimDialog.fFormFuncName", "form_fun");
+   fNevents          = env.GetValue("FitOneDimDialog.fNevents", 10000);
 }
 //_______________________________________________________________________
 
@@ -1878,6 +1962,8 @@ void FitOneDimDialog::SaveDefaults()
    env.SetValue("FitOneDimDialog.fFormB",   fFormB    );
    env.SetValue("FitOneDimDialog.fFormC",   fFormC    );
    env.SetValue("FitOneDimDialog.fFormD",   fFormD    );
+   env.SetValue("FitOneDimDialog.fFormE",   fFormE    );
+   env.SetValue("FitOneDimDialog.fFormF",   fFormF    );
    env.SetValue("FitOneDimDialog.fFormFixA",fFormFixA );
    env.SetValue("FitOneDimDialog.fFormFixB",fFormFixB );
    env.SetValue("FitOneDimDialog.fFormFixC",fFormFixC );
@@ -1888,6 +1974,7 @@ void FitOneDimDialog::SaveDefaults()
    env.SetValue("FitOneDimDialog.fExpFuncName",  fExpFuncName );
    env.SetValue("FitOneDimDialog.fPolFuncName",  fPolFuncName );
    env.SetValue("FitOneDimDialog.fFormFuncName", fFormFuncName);
+   env.SetValue("FitOneDimDialog.fNevents", fNevents);
    env.SaveLevel(kEnvLocal);
 }
 //_______________________________________________________________________
@@ -1902,7 +1989,7 @@ void FitOneDimDialog::CloseDialog()
 
 void FitOneDimDialog::CloseDown()
 {
-//   cout << "FitOneDimDialog::CloseDown() " << endl;
+   cout << "FitOneDimDialog::CloseDown() " << endl;
    SaveDefaults();
    delete this;
 }
