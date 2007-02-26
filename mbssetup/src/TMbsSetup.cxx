@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.48 2007-02-26 13:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.49 2007-02-26 13:42:25 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -710,6 +710,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 	TMrbSystem ux;
 
 	Bool_t ok = kTRUE;
+	TMrbLofNamedX lofHosts;
 
 	TString rhFile = "rhost.names";
 	TString rhTmpl;
@@ -717,7 +718,6 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 	if (rhTmpl.IsNull()) ok = kFALSE;
 
 	ifstream rhin;
-	TMrbLofNamedX lofHosts;
 	if (ok) {
 		rhin.open(rhTmpl.Data(), ios::in);
 		if (!rhin.good()) {
@@ -791,7 +791,6 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 			TString rhLine;
 			TString hname;
 			TString dname;
-			TMrbLofNamedX lofHosts;
 			Int_t lineNo = 0;
 			for (;;) {
 				rhLine.ReadLine(rhin);
@@ -811,17 +810,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 					hname = rhLine;
 					dname = "";
 				}
-				TMrbNamedX * nx = lofHosts.FindByName(hname.Data());
-				if (nx) {
-					if (!dname.IsNull() && dname.CompareTo(nx->GetTitle()) != 0) {
-						gMrbLog->Wrn()	<< "[" << hname << ", line " << lineNo << "] Domains different - .rhosts:"
-										<< dname << " <--> " << rhFile << ":" << nx->GetTitle() << endl;
-						gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
-						dname = nx->GetTitle();
-					}
-				} else {
-					lofHosts.AddNamedX(lineNo + 1000, hname, dname);
-				}
+				if (!lofHosts.FindByName(hname.Data())) lofHosts.AddNamedX(lineNo + 1000, hname, dname);
 			}
 		}
 		rhin.close();
@@ -838,19 +827,16 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 
 	TString hostName;
 	ux.GetHostName(hostName);
-	TMrbNamedX * nx = lofHosts.FindByName(hostName.Data());
-	if (!nx) lofHosts.AddNamedX(0, hostName.Data(), "");
+	if (!lofHosts.FindByName(hostName.Data())) lofHosts.AddNamedX(0, hostName.Data(), "");
 
 	TString ppcName;
 	this->Get(ppcName, "EvtBuilder.Name");
-	nx = lofHosts.FindByName(ppcName.Data());
-	if (!nx) lofHosts.AddNamedX(1, ppcName.Data(), "");
+	if (!lofHosts.FindByName(ppcName.Data())) lofHosts.AddNamedX(1, ppcName.Data(), "");
 
 	for (Int_t i = 0; i < this->GetNofReadouts(); i++) {
 		TString res;
 		this->Get(ppcName, this->Resource(res, "Readout", i, "Name"));
-		nx = lofHosts.FindByName(ppcName.Data());
-		if (!nx) lofHosts.AddNamedX(2 + i, ppcName.Data(), "");
+		if (!lofHosts.FindByName(ppcName.Data())) lofHosts.AddNamedX(2 + i, ppcName.Data(), "");
 	}
 
 	TIterator * rhIter = lofHosts.MakeIterator();
