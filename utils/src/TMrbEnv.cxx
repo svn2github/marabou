@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEnv.cxx,v 1.14 2006-10-31 15:46:33 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEnv.cxx,v 1.15 2007-02-26 13:25:32 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -174,16 +174,16 @@ void TMrbEnv::Save(Bool_t Verbose) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TDatime dt;
-	TString pfs;
-
 	if (IsModified()) { 				// some modifications?
-		pfs = fPrefix;
+		TString pfs = fPrefix;
 		this->SetPrefix("");
-		if (!fIsSystemEnv) this->Set("TMrbEnv.Info.Modified", dt.AsString());
-		fCurEnv->SaveLevel(kEnvLocal);	// write to file
-		fCurEnv->SaveLevel(kEnvUser);
+		if (!fIsSystemEnv) {
+			TDatime dt;
+			this->Set("TMrbEnv.Info.Modified", dt.AsString());
+		}
 		fCurEnv->SaveLevel(kEnvChange);
+		fCurEnv->SaveLevel(kEnvLocal);
+		fCurEnv->SaveLevel(kEnvUser);
 		if (Verbose) {
 			gMrbLog->Out()	<< "Resource data saved to file " << fCurFile << endl;
 			gMrbLog->Flush(this->ClassName(), "Save", setblue);
@@ -262,8 +262,7 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, const Char_t * StrVal) {
 
 	fResourceName = fPrefix + Resource;
 
-	resString = fResourceName + "=" + StrVal;
-	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
+	fCurEnv->SetValue(fResourceName.Data(), StrVal);	// set resource
 	fIsModified = kTRUE;
 	return(kTRUE);
 }
@@ -287,8 +286,7 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, Int_t IntVal, Int_t Base) {
 	fResourceName = fPrefix + Resource;
 
 	resValue.FromInteger(IntVal, 0, Base, kFALSE, kTRUE);
-	resString = fResourceName + "=" + resValue.Data();
-	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
+	fCurEnv->SetValue(fResourceName.Data(), resValue.Data());	// set resource
 	fIsModified = kTRUE;
 	return(kTRUE);
 }
@@ -312,8 +310,7 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, Double_t DblVal, Int_t Precision) {
 	fResourceName = fPrefix + Resource;
 
 	resValue.FromDouble(DblVal, 0, Precision);
-	TString resString = fResourceName + "=" + resValue.Data();
-	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
+	fCurEnv->SetValue(fResourceName.Data(), resValue.Data());	// set resource
 	fIsModified = kTRUE;
 	return(kTRUE);
 }
@@ -338,8 +335,7 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, TMrbNamedX * NamedVal, Int_t Base) 
 	resValue += "(";
 	resValue.AppendInteger(NamedVal->GetIndex(), 0, Base, kFALSE, kTRUE, kTRUE);
 	resValue += ")";
-	TString resString = fResourceName + "=" + resValue.Data();
-	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
+	fCurEnv->SetValue(fResourceName.Data(), resValue.Data());	// set resource
 	fIsModified = kTRUE;
 	return(kTRUE);
 }

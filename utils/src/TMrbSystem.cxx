@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.17 2006-12-27 15:07:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.18 2007-02-26 13:25:32 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -560,6 +560,26 @@ const Char_t * TMrbSystem::GetHostName(TString & HostName) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	gethostname((Char_t *) HostName.Data(), 100);
+	Char_t hn[100];
+	gethostname(hn, 100);
+	HostName = hn;
 	return(HostName.Data());
+}
+
+const Char_t * TMrbSystem::GetDomainName(TString & DomainName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSystem::GetDomainName
+// Purpose:        Get domain name
+// Arguments:      TString & DomainName   -- where to store domain name
+// Exceptions:     
+// Description:    Executes getdomainname(2),
+//                 returns name of current host
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Char_t dn[100];
+	getdomainname(dn, 100);
+	DomainName = dn;
+	return(DomainName.Data());
 }

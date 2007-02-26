@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.47 2006-11-03 08:34:45 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.48 2007-02-26 13:25:32 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -488,17 +488,19 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 
 	TString templatePath;
 	this->Get(templatePath, "TemplatePath");
+	gSystem->ExpandPathName(templatePath);
 
-	if (smode == kModeSingleProc)		templatePath += "/singleproc";
-	else if (smode == kModeMultiProc)	templatePath += "/multiproc";
-	else if (smode == kModeMultiBranch)	templatePath += "/multibranch";
+	TString templateDir = templatePath;
+	if (smode == kModeSingleProc)		templateDir += "/singleproc";
+	else if (smode == kModeMultiProc)	templateDir += "/multiproc";
+	else if (smode == kModeMultiBranch)	templateDir += "/multibranch";
 	else {
 		gMrbLog->Err() << "Wrong setup mode - " << setupMode->GetName() << "(" << setupMode->GetIndex() << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 		return(kFALSE);
 	}
 
-	gSystem->ExpandPathName(templatePath);
+	gSystem->ExpandPathName(templateDir);
 
 	Int_t nofErrors = 0;
 
@@ -509,7 +511,29 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 		installPath += this->GetPath();
 	}
 	
-	TString srcPath = templatePath;
+	TString homeDir = this->GetHomeDir();
+	gMrbLog->Out()	<< "Installing file(s) " << templatePath << " -> " << homeDir << " ..." << endl;
+	gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
+	TString fileName = ".login";
+	if (this->ExpandFile(0, templatePath, fileName, homeDir, fileName)) {
+		cout	<< setblue << "   ... " << fileName
+				<< setblack << endl;
+	} else {
+		nofErrors++;
+		cout	<< "   ... " << fileName
+				<< setred << " (with errors)" << setblack << endl;
+	}
+	fileName = ".tcshrc";
+	if (this->ExpandFile(0, templatePath, fileName, homeDir, fileName)) {
+		cout	<< setblue << "   ... " << fileName
+				<< setblack << endl;
+	} else {
+		nofErrors++;
+		cout	<< "   ... " << fileName
+				<< setred << " (with errors)" << setblack << endl;
+	}
+
+	TString srcPath = templateDir;
 	gMrbLog->Out()	<< "Installing file(s) " << srcPath << " -> " << installPath << " ..." << endl;
 	gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 	void * dirPtr = gSystem->OpenDirectory(srcPath.Data());
@@ -524,7 +548,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 		for (;;) {
 			const Char_t * dirEntry = gSystem->GetDirEntry(dirPtr);
 			if (dirEntry == NULL) break;
-			TString fileName = Form("%s/%s", srcPath.Data(), dirEntry);
+			fileName = Form("%s/%s", srcPath.Data(), dirEntry);
 			if (ux.IsRegular(fileName.Data())) lofFiles.Add(new TObjString(dirEntry));
 		}
 		if (lofFiles.GetEntries() == 0) {
@@ -535,7 +559,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 			TIterator * iter = lofFiles.MakeIterator();
 			TObjString * os;
 			while (os = (TObjString *) iter->Next()) {
-				TString fileName = os->String();
+				fileName = os->String();
 				if (this->ExpandFile(0, srcPath, fileName, installPath, fileName)) {
 					cout	<< setblue << "   ... " << fileName
 							<< setblack << endl;
@@ -549,11 +573,11 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	}
 
 	if (smode == kModeMultiProc) {
-		templatePath += "/vme";
+		templateDir += "/vme";
 		installPath += "/";
 		for (Int_t nrdo = 0; nrdo < nofReadouts; nrdo++) {
 			TString destPath = installPath + this->ReadoutProc(nrdo)->GetPath();
-			TString srcPath = templatePath;
+			TString srcPath = templateDir;
 			gMrbLog->Out()	<< "Installing file(s) " << srcPath << " -> " << destPath << " ..." << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 			void * dirPtr = gSystem->OpenDirectory(srcPath.Data());
@@ -568,7 +592,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 				for (;;) {
 					const Char_t * dirEntry = gSystem->GetDirEntry(dirPtr);
 					if (dirEntry == NULL) break;
-					TString fileName = Form("%s/%s", srcPath.Data(), dirEntry);
+					fileName = Form("%s/%s", srcPath.Data(), dirEntry);
 					if (ux.IsRegular(fileName.Data()))  lofFiles.Add(new TObjString(dirEntry));
 				}
 				if (lofFiles.GetEntries() == 0) {
@@ -579,7 +603,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 					TIterator * iter = lofFiles.MakeIterator();
 					TObjString * os;
 					while (os = (TObjString *) iter->Next()) {
-						TString fileName = os->String();
+						fileName = os->String();
 						if (this->ExpandFile(nrdo, srcPath, fileName, destPath, fileName)) {
 							cout	<< setblue << "   ... " << fileName
 									<< setblack << endl;
@@ -593,11 +617,11 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 			}
 		}
 	} else if (smode == kModeMultiBranch) {
-		templatePath += "/vme";
+		templateDir += "/vme";
 		installPath += "/";
 		for (Int_t nrdo = 0; nrdo < nofReadouts; nrdo++) {
 			TString destPath = installPath + this->ReadoutProc(nrdo)->GetPath();
-			TString srcPath = templatePath;
+			TString srcPath = templateDir;
 			gMrbLog->Out()	<< "Installing file(s) " << srcPath << " -> " << destPath << " ..." << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 			void * dirPtr = gSystem->OpenDirectory(srcPath.Data());
@@ -612,7 +636,7 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 				for (;;) {
 					const Char_t * dirEntry = gSystem->GetDirEntry(dirPtr);
 					if (dirEntry == NULL) break;
-					TString fileName = Form("%s/%s", srcPath.Data(), dirEntry);
+					fileName = Form("%s/%s", srcPath.Data(), dirEntry);
 					if (ux.IsRegular(fileName.Data()))  lofFiles.Add(new TObjString(dirEntry));
 				}
 				if (lofFiles.GetEntries() == 0) {
@@ -639,13 +663,6 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 			}
 		}
 	}
-
-	this->Get(templatePath, "TemplatePath");
-
-	if (smode == kModeSingleProc)	templatePath += "/singleproc";
-	else if (smode == kModeMultiProc)	templatePath += "/multiproc";
-	else if (smode == kModeMultiBranch)	templatePath += "/multibranch";
-	gSystem->ExpandPathName(templatePath);
 
 	TString nodelistFile = this->GetPath();
 	if (!nodelistFile.BeginsWith("/") && !nodelistFile.BeginsWith("./")) {
@@ -687,11 +704,130 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 //////////////////////////////////////////////////////////////////////////////
 
 
-	ofstream rhosts;
+	TString templatePath = gEnv->GetValue("TMbsSetup.DefaultSetupPath", ".:$HOME:$(MARABOU)/templates/mbssetup");
+	gSystem->ExpandPathName(templatePath);
 
-	Bool_t isOK = kTRUE;
+	TMrbSystem ux;
 
-	rhosts.open(RhostsFile, ios::out);
+	Bool_t ok = kTRUE;
+
+	TString rhFile = "rhost.names";
+	TString rhTmpl;
+	ux.Which(rhTmpl, templatePath.Data(), rhFile.Data());
+	if (rhTmpl.IsNull()) ok = kFALSE;
+
+	ifstream rhin;
+	TMrbLofNamedX lofHosts;
+	if (ok) {
+		rhin.open(rhTmpl.Data(), ios::in);
+		if (!rhin.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << rhTmpl << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+			ok = kFALSE;
+		}
+	}
+
+	if (ok) {
+		TString rhLine;
+		TString domain = "";
+		TString hname;
+		TString dname;
+		TString haddr;
+		Int_t lineNo = 0;
+		for(;;) {
+			rhLine.ReadLine(rhin);
+			if (rhin.eof()) break;
+			lineNo++;
+			rhLine = rhLine.Strip(TString::kBoth);
+			if (rhLine.IsNull() || rhLine.BeginsWith("#") || rhLine.BeginsWith("//")) continue;
+			TObjArray * rhArr = rhLine.Tokenize(":");
+			Int_t n = rhArr->GetEntriesFast();
+			if (n == 0) continue;
+			if (n > 2) {
+				gMrbLog->Err() << "[" << rhFile << ", line " << lineNo << "] Wrong format - should be \"hostName [:address]\"" << endl;
+				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				continue;
+			}
+			hname = ((TObjString *) rhArr->At(0))->GetString();
+			if (hname.BeginsWith(".")) {
+				domain = hname;
+			} else {
+				if (n != 1) {
+					gMrbLog->Err() << "[" << rhFile << ", line " << lineNo << "] Wrong format - should be \"domainName\" (starting with \".\")" << endl;
+					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				}
+				continue;
+			}
+			Int_t m;
+			if (m = hname.Index(".", 0) != -1) {
+				dname = hname(m, 1000);
+				dname = dname.Strip(TString::kBoth);
+				hname.Resize(m);
+			} else {
+				dname = "";
+			}
+			if (dname.IsNull() && !domain.IsNull()) dname = domain;
+
+			TMrbNamedX * nx = new TMrbNamedX(lineNo, hname.Data(), dname.Data());
+			if (n == 2) {
+				haddr = ((TObjString *) rhArr->At(1))->GetString();
+				nx->AssignObject(new TObjString(haddr.Data()));
+			}
+			lofHosts.AddNamedX(nx);
+		}
+		rhin.close();
+	} else if (this->IsVerbose()) {
+		gMrbLog->Wrn() << "No such file - " << rhFile << " (path = " << templatePath << ")" << endl;
+		gMrbLog->Wrn() << "No list of hosts/ppcs present - .rhosts will contain your local defs only" << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+	}
+
+	if (!gSystem->AccessPathName(RhostsFile.Data())) {
+		ifstream rhin(RhostsFile.Data(), ios::in);
+		if (!rhin.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << RhostsFile << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+		} else {
+			TString rhLine;
+			TString hname;
+			TString dname;
+			TMrbLofNamedX lofHosts;
+			Int_t lineNo = 0;
+			for (;;) {
+				rhLine.ReadLine(rhin);
+				if (rhin.eof()) break;
+				lineNo++;
+				rhLine.ReplaceAll("\t", " ");
+				rhLine = rhLine.Strip(TString::kBoth);
+				if (rhLine.IsNull() || rhLine.BeginsWith("#") || rhLine.BeginsWith("//")) continue;
+				Int_t n = rhLine.Index(" ", 0);
+				if (n != -1) rhLine.Resize(n);
+				n = rhLine.Index(".", 0);
+				if (n != -1) {
+					hname = rhLine;
+					hname.Resize(n);
+					dname = rhLine(n + 1, 1000);
+				} else {
+					hname = rhLine;
+					dname = "";
+				}
+				TMrbNamedX * nx = lofHosts.FindByName(hname.Data());
+				if (nx) {
+					if (!dname.IsNull() && dname.CompareTo(nx->GetTitle()) != 0) {
+						gMrbLog->Wrn()	<< "[" << hname << ", line " << lineNo << "] Domains different - .rhosts:"
+										<< dname << " <--> " << rhFile << ":" << nx->GetTitle() << endl;
+						gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+						dname = nx->GetTitle();
+					}
+				} else {
+					lofHosts.AddNamedX(lineNo + 1000, hname, dname);
+				}
+			}
+		}
+		rhin.close();
+	}
+		
+	ofstream rhosts(RhostsFile, ios::out);
 	if (!rhosts.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << RhostsFile << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
@@ -700,101 +836,59 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 
 	TString userName = gSystem->Getenv("USER");
 
-	TMrbString hString = gEnv->GetValue("TMbsSetup.DefaultHost", "");
-	if (hString.IsNull()) {
-		hString = gSystem->Getenv("HOSTNAME");
-		if (hString.IsNull()) {
-			gMrbLog->Err()	<< "Can't determine hostname - set .rootrc:TMbsSetup.DefaultHost properly" << endl;
-			gMrbLog->Err()	<< "Can't determine hostname - $HOSTNAME is empty (may be it's not exported)" << endl;
-			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
-			isOK = kFALSE;
-		}
-	}
-	for (Int_t i = 0; i < kNofPPCs; i++) {
-		hString += ":";
-		hString += "ppc-";
-		hString += i;
+	TString hostName;
+	ux.GetHostName(hostName);
+	TMrbNamedX * nx = lofHosts.FindByName(hostName.Data());
+	if (!nx) lofHosts.AddNamedX(0, hostName.Data(), "");
+
+	TString ppcName;
+	this->Get(ppcName, "EvtBuilder.Name");
+	nx = lofHosts.FindByName(ppcName.Data());
+	if (!nx) lofHosts.AddNamedX(1, ppcName.Data(), "");
+
+	for (Int_t i = 0; i < this->GetNofReadouts(); i++) {
+		TString res;
+		this->Get(ppcName, this->Resource(res, "Readout", i, "Name"));
+		nx = lofHosts.FindByName(ppcName.Data());
+		if (!nx) lofHosts.AddNamedX(2 + i, ppcName.Data(), "");
 	}
 
+	TIterator * rhIter = lofHosts.MakeIterator();
+	TMrbNamedX * hx;
+	ok = kFALSE;
 	Int_t nofHosts = 0;
-	Bool_t once = kFALSE;
-	TString domain = "";
-	TObjArray hNames;
-	Int_t nh = hString.Split(hNames, ":", kTRUE);
-	for (Int_t i = 0; i < nh; i++) {
-		TString hName = ((TObjString *) hNames[i])->GetString();
-		hName = hName.Strip(TString::kBoth);
-		if (hName.IsNull()) continue;
-		TInetAddress * ia = new TInetAddress(gSystem->GetHostByName(hName));
+	while (hx = (TMrbNamedX *) rhIter->Next()) {
+		TString hname = hx->GetName();
+		TInetAddress * ia = new TInetAddress(gSystem->GetHostByName(hname.Data()));
 		TString hAddr = ia->GetHostName();
 		if (hAddr.CompareTo("UnknownHost") == 0) {
-			gMrbLog->Err() << "Can't resolve host name - " << hName << " (ignored)" << endl;
+			gMrbLog->Err() << "Can't resolve host name - " << hname << " (ignored)" << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 			continue;
 		}
 		
-		if (domain.IsNull()) {
-			Char_t hstr[1024];
-			TString hcmd = "host ";
-			hcmd += hName;
-			FILE * hPipe = gSystem->OpenPipe(hcmd, "r");
-			while (fgets(hstr, 1024, hPipe) != NULL) {
-				hAddr = hstr;
-				if (hAddr.Contains("has address")) {
-					hAddr.Resize(hAddr.Index(" ", 0));
-					break;
-				}
-			}
-			gSystem->ClosePipe(hPipe);
-		}
-
-		if (hAddr.Index(".", 0) == -1) {
-			if (domain.IsNull()) domain = gEnv->GetValue("TMbsSetup.DefaultDomain", "");
-			if (domain.IsNull()) {
-				if (!once) {
-					gMrbLog->Err()	<< "Can't get default domain - set TMbsSetup.DefaultDomain in .rootrc properly" << endl;
-					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
-				}
-				once = kTRUE;
-				if (this->IsVerbose()) {
-					gMrbLog->Err()	<< "Got short host name \"" << hName
-									<< "\" while expecting full host addr - only SHORT name written to .rhosts file" << endl;
-					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
-				}
-				rhosts << hName << " " << userName << endl;
-				nofHosts++;
-			} else {
-				if (this->IsVerbose()) {
-					gMrbLog->Wrn()	<< "Got short host name \"" << hName
-									<< "\" while expecting full host addr - appending default domain \"." << domain << "\"" << endl;
-					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
-				}
-				hAddr = hName;
+		if (!hAddr.Contains(".")) {
+			TString dn;
+			ux.GetDomainName(dn);
+			if (!dn.IsNull()) {
 				hAddr += ".";
-				hAddr += domain;
-				rhosts << hName << " " << userName << endl;
-				rhosts << hAddr << " " << userName << endl;
-				nofHosts++;
+				hAddr += dn;
 			}
-		} else {
-			hAddr.ReplaceAll("\t", " ");
-			Int_t blank = hAddr.Index(" ", 0);
-			if (blank != -1) hAddr.Resize(blank);
-			domain = hAddr(hAddr.Index(".", 0) + 1, 1000);
-			rhosts << hName << " " << userName << endl;
-			rhosts << hAddr << " " << userName << endl;
-			nofHosts++;
 		}
+		if (hAddr.CompareTo(hname.Data()) != 0) rhosts << hname << " " << userName << endl;
+		rhosts << hAddr << " " << userName << endl;
+		ok = kTRUE;
+		nofHosts++;
 	}
 	rhosts.close();
 
-	if (isOK) {
+	if (ok) {
 		cout	<< setblue
 				<< this->ClassName() << "::WriteRhostsFile(): " << nofHosts
 				<< " Lynx/MARaBOU host(s) written"
 				<< setblack << endl;
 	}
-	return(isOK);
+	return(ok);
 }
 
 Bool_t TMbsSetup::CreateNodeList(TString & NodeListFile) {
@@ -864,10 +958,11 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 	TMrbNamedX * setupMode = this->GetMode();
 	EMbsSetupMode sModeIdx = (EMbsSetupMode) (setupMode ? setupMode->GetIndex() : 0);
 	TString sMode = "*";
+	TString sMode2 = "*";
 	switch (sModeIdx) {
-		case kModeSingleProc:	sMode = "SP"; break;
-		case kModeMultiProc:	sMode = "MP"; break;
-		case kModeMultiBranch:	sMode = "MB"; break;
+		case kModeSingleProc:	sMode = "SP"; sMode2 = "SingleProc"; break;
+		case kModeMultiProc:	sMode = "MP"; sMode2 = "MultiProc"; break;
+		case kModeMultiBranch:	sMode = "MB"; sMode2 = "MultiBranch"; break;
 	}
 		
 	TString templateFile = TemplatePath;
@@ -968,12 +1063,13 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kSetRdPipeBaseAddr:
 					{
-							TArrayI arrayData(16);
+						TArrayI arrayData(16);
 						for (Int_t i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
 						for (Int_t i = 0; i < nofReadouts; i++) {
 							UInt_t pipeBase = this->ReadoutProc(i)->GetPipeBase();
 							if (pipeBase == 0) {
 								this->GetRcVal(pipeBase, "RdPipeBaseAddr", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+								this->ReadoutProc(i)->SetPipeBase(pipeBase);
 							}
 							if (pipeBase == 0) {
 								gMrbLog->Err()	<< "Base addr for readout pipe (#"
@@ -1060,13 +1156,15 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryBase"), 0);
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID, "RemoteMemoryBase"), 0);
 						if (memBase == 0) {
 							this->GetRcVal(memBase, "RemoteMemoryBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "RemoteMemoryBase"), (Int_t) memBase, 16);
 						}
-						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID, "RemoteMemoryLength"), 0);
 						if (memLength == 0) {
-							this->GetRcVal(memLength, "RemoteMemoryLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(memLength, "RemoteMemoryLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "RemoteMemoryLength"), (Int_t) memLength, 16);
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1090,9 +1188,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t memOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryOffset"), 0);
+						UInt_t memOffs = this->Get(this->Resource(res, "Readout", ProcID, "RemoteMemoryOffset"), 0);
 						if (memOffs == 0) {
 							this->GetRcVal(memOffs, "RemoteMemoryOffset", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "RemoteMemoryOffset"), (Int_t) memOffs, 16);
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1115,9 +1214,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID, "RemoteMemoryLength"), 0);
 						if (memLength == 0) {
-							this->GetRcVal(memLength, "RemoteMemoryLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(memLength, "RemoteMemoryLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "RemoteMemoryLength"), (Int_t) memLength, 16);
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1140,13 +1240,15 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacBase"), 0);
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID, "RemoteCamacBase"), 0);
 						if (memBase == 0) {
 							this->GetRcVal(memBase, "RemoteCamacBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "RemoteCamacBase"), (Int_t) memBase, 16);
 						} 
-						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
-							this->GetRcVal(memLength, "RemoteCamacLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(memLength, "RemoteCamacLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "RemoteCamacLength"), (Int_t) memLength, 16);
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1170,9 +1272,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
-							this->GetRcVal(memLength, "RemoteCamacLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(memLength, "RemoteCamacLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "RemoteCamacLength"), (Int_t) memLength, 16);
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1195,9 +1298,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t memOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacOffset"), 0);
+						UInt_t memOffs = this->Get(this->Resource(res, "Readout", ProcID, "RemoteCamacOffset"), 0);
 						if (memOffs == 0) {
 							this->GetRcVal(memOffs, "RemoteCamacOffset", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "RemoteCamacOffset"), (Int_t) memOffs, 16);
 						} 
 						Int_t n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (Int_t i = 0; i < n; i++) {
@@ -1217,9 +1321,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 				case kSetLocEsoneBase:
 					{
 						TString res;
-						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalEsoneBase"), 0);
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID, "LocalEsoneBase"), 0);
 						if (memBase == 0) {
-							this->GetRcVal(memBase, "LocalEsoneBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(memBase, "LocalEsoneBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "LocalEsoneBase"), (Int_t) memBase, 16);
 						} 
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoLocEsoneBase", memBase, 16);
@@ -1230,13 +1335,15 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 				case kSetRemEsoneBase:
 					{
 						TString res;
-						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacBase"), 0);
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID, "RemoteCamacBase"), 0);
 						if (memBase == 0) {
-							this->GetRcVal(memBase, "RemoteCamacBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(memBase, "RemoteCamacBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "RemoteCamacBase"), (Int_t) memBase, 16);
 						} 
-						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
-							this->GetRcVal(memLength, "RemoteCamacLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(memLength, "RemoteCamacLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "RemoteCamacLength"), (Int_t) memLength, 16);
 						} 
 						memBase -= memLength;
 						stpTmpl.InitializeCode();
@@ -1251,9 +1358,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalMemoryBase"), 0);
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID, "LocalMemoryBase"), 0);
 						if (memBase == 0) {
-							this->GetRcVal(memBase, "LocalMemoryBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(memBase, "LocalMemoryBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "LocalMemoryBase"), (Int_t) memBase, 16);
 						} 
 						arrayData[0] = memBase;
 						stpTmpl.InitializeCode();
@@ -1267,9 +1375,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalMemoryLength"), 0);
+						UInt_t memLength = this->Get(this->Resource(res, "Readout", ProcID, "LocalMemoryLength"), 0);
 						if (memLength == 0) {
-							this->GetRcVal(memLength, "LocalMemoryLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(memLength, "LocalMemoryLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "LocalMemoryLength"), (Int_t) memLength, 16);
 						} 
 						arrayData[0] = memLength;
 						stpTmpl.InitializeCode();
@@ -1283,9 +1392,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t pipeBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeBase"), 0);
+						UInt_t pipeBase = this->Get(this->Resource(res, "Readout", ProcID, "LocalPipeBase"), 0);
 						if (pipeBase == 0) {
-							this->GetRcVal(pipeBase, "LocalPipeBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(pipeBase, "LocalPipeBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "LocalPipeBase"), (Int_t) pipeBase, 16);
 						} 
 						arrayData[0] = pipeBase;
 						stpTmpl.InitializeCode();
@@ -1299,9 +1409,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t pipeOffs = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeOffset"), 0);
+						UInt_t pipeOffs = this->Get(this->Resource(res, "Readout", ProcID, "LocalPipeOffset"), 0);
 						if (pipeOffs == 0) {
-							this->GetRcVal(pipeOffs, "LocalPipeOffset", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(pipeOffs, "LocalPipeOffset", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "LocalPipeOffset"), (Int_t) pipeOffs, 16);
 						} 
 						arrayData[0] = pipeOffs;
 						stpTmpl.InitializeCode();
@@ -1315,9 +1426,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t pipeLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeSegmentLength"), 0);
+						UInt_t pipeLength = this->Get(this->Resource(res, "Readout", ProcID, "LocalPipeSegmentLength"), 0);
 						if (pipeLength == 0) {
-							this->GetRcVal(pipeLength, "LocalPipeSegmentLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(pipeLength, "LocalPipeSegmentLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "LocalPipeSegmentLength"), (Int_t) pipeLength, 16);
 						} 
 						arrayData[0] = pipeLength;
 						stpTmpl.InitializeCode();
@@ -1331,9 +1443,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						TArrayI arrayData(16);
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
-						UInt_t pipeLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "LocalPipeLength"), 0);
+						UInt_t pipeLength = this->Get(this->Resource(res, "Readout", ProcID, "LocalPipeLength"), 0);
 						if (pipeLength == 0) {
-							this->GetRcVal(pipeLength, "LocalPipeLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data()); 
+							this->GetRcVal(pipeLength, "LocalPipeLength", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							this->Set(this->Resource(res, "Readout", ProcID, "LocalPipeLength"), (Int_t) pipeLength, 16);
 						} 
 						arrayData[0] = pipeLength;
 						stpTmpl.InitializeCode();
@@ -1508,46 +1621,44 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 
 				case kTestHostName:
 				case kPrintBanner:
-					if (sModeIdx == kModeMultiProc) {
+					{
 						stpTmpl.InitializeCode("%B%");
 						stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
+						stpTmpl.Substitute("$setupMode", sMode2.Data());
+						stpTmpl.Substitute("$procType", (sModeIdx == kModeSingleProc) ? "ReadoutProc & EventBuilder" : "EventBuilder (Master)");
 						stpTmpl.WriteCode(stp);
-						for (Int_t i = 0; i < nofReadouts; i++) {
-							stpTmpl.InitializeCode("%L%");
-							stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
-							stpTmpl.WriteCode(stp);
+						if (sModeIdx == kModeMultiProc) {
+							for (Int_t i = 0; i < nofReadouts; i++) {
+								stpTmpl.InitializeCode("%L%");
+								stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
+								stpTmpl.Substitute("$procType", "Readout (Slave)");
+								stpTmpl.WriteCode(stp);
+							}
 						}
 						stpTmpl.InitializeCode("%E%");
-						stpTmpl.WriteCode(stp);
-					} else {
-						stpTmpl.InitializeCode();
-						stpTmpl.Substitute("$procName", this->EvtBuilder()->GetProcName());
 						stpTmpl.WriteCode(stp);
 					}
 					break;
 
 				case kSetVsbAddr:
-					if (sModeIdx == kModeMultiProc) {
-						if (!gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
-							gMrbLog->Err() << "TMbsSetup.ConfigVSB has to be set in a MULTIPROC environment" << endl;
-							gMrbLog->Flush(this->ClassName(), "ExpandFile");
-							return(kFALSE);
-						}
+					{
 						stpTmpl.InitializeCode("%B%");
 						stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
 						stpTmpl.Substitute("$vsbAddr",this->EvtBuilder()->GetVSBAddr(), 16);
 						stpTmpl.WriteCode(stp);
-						for (Int_t i = 0; i < nofReadouts; i++) {
-							stpTmpl.InitializeCode("%L%");
-							stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
-							stpTmpl.Substitute("$vsbAddr", this->ReadoutProc(i)->GetVSBAddr(), 16);
-							stpTmpl.WriteCode(stp);
+						if (sModeIdx == kModeMultiProc) {
+							if (!gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
+								gMrbLog->Err() << "TMbsSetup.ConfigVSB has to be set in a MULTIPROC environment" << endl;
+								gMrbLog->Flush(this->ClassName(), "ExpandFile");
+								return(kFALSE);
+							}
+							for (Int_t i = 0; i < nofReadouts; i++) {
+								stpTmpl.InitializeCode("%L%");
+								stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
+								stpTmpl.Substitute("$vsbAddr", this->ReadoutProc(i)->GetVSBAddr(), 16);
+								stpTmpl.WriteCode(stp);
+							}
 						}
-					} else if (gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
-							stpTmpl.InitializeCode();
-							stpTmpl.Substitute("$procName", this->EvtBuilder()->GetProcName());
-							stpTmpl.Substitute("$vsbAddr", this->EvtBuilder()->GetVSBAddr(), 16);
-							stpTmpl.WriteCode(stp);
 					}
 					break;
 
