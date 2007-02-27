@@ -362,7 +362,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 //      if(cle->fSel != "NoOp") anysel=kTRUE;
    }
 //   cout << "xw " << xw << " maxlen_nam " << maxlen_nam << endl;
-   if (maxlen_nam < 15) maxlen_nam = 15;
+   if (maxlen_nam < 15) maxlen_nam = 13;
    xw = 40 + Int_t((Float_t)(maxlen_nam) * 9 * magfac) ;
 
    if (xwid > 0) xw = xwid;
@@ -461,7 +461,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    if (usedxw > newxw )  newyw += 15;
 
    cHCont->SetWindowSize(newxw, TMath::Min(ywid_default+10, newyw+10));
-   cHCont->SetCanvasSize(usedxw, usedyw);
+   cHCont->SetCanvasSize(usedxw-5, usedyw);
    cHCont->SetEditable(kFALSE);
    cHCont->Update();
    return cHCont;

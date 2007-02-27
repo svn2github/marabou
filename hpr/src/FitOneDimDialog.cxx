@@ -1,5 +1,5 @@
 // #include "TCanvas.h"
-#include "TH1D.h"
+#include "TH1.h"
 #include "TF1.h"
 #include "TEnv.h"
 #include "TFrame.h"
@@ -421,9 +421,13 @@ will let MINUIT vary their values.\n\
 \n\
 The quality of the start parameters of a fit determine\n\
 the speed of convergence. Bad start parameters may lead\n\
-MINUIT to find an unwanted minimum. Start parameters\n\
-may be checked by drawing the fit function with these \n\
-parameters without actually doing a fit.\n\
+to unresonable results. Start parameters may be checked\n\
+by drawing the fit function with these parameters without \n\
+actually doing a fit.\n\
+\n\
+Note: If you want to use the fitting values in a\n\
+      subsequent calibration step the option:\n\
+      \"Add all functions to histogram\" must be activ\n\
 ";
 
 static const Char_t helptext_exp[] =

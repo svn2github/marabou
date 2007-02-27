@@ -22,6 +22,33 @@ CalibrationDialog::CalibrationDialog(TH1 * hist, Int_t maxPeaks)
 
 static const Char_t helptext[] =
 "This widget is used to calibrate a 1-dim histogram \n\
+The procedure to use previously fitted peaks is as follows:\n\
+  - Use the \"Fit Gaussian (with tail)\" dialog to perform \n\
+    the required fits (Activate the Option \"Add all functions\n\
+  - If this is done before the \"CalibrationDialog\" is invoked\n\
+    the table in  the \"CalibrationDialog\" will have as many\n\
+    rows as peaks are defined. The default number is 3\n\
+  - Invoke this widget (\"CalibrationDialog\") \n\
+    Execute (Click) \"Update Peaklist\"\n\
+  - Fields \"Mean\" and \"Errors\" of the table should now\n\
+    be filled. Complete / modify the table at least  with\n\
+    \"Nom Val\" (Nominal values)\n\
+  - Execute \"Calculate Function\", the function is drawn\n\
+    in a seperate canvas.\n\
+  - If the result is reasonable possibly modify the parameters\n\
+    for the \"Calibrated Hist\"\n\
+  - Execute \"Fill Hist\". A new histogram will be created\n\
+    and filled according to the calibration function.\n\
+    Note: Each entry in the original histogram is randomly \n\
+          shifted within its bin before the calibration is\n\
+          applied to avoid bining effects.\n\
+\n\
+- The Calibration function may be any legal \"TFormala\"\n\
+  in practice polynomials of 1. or 2. degree (pol1, pol2)\n\
+  are used\n\
+- Calibration functions may be saved to and restored from\n\
+  a root file.\n\
+\n\
 ";
    if (maxPeaks <= 0) {
       fMaxPeaks = 3;
