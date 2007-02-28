@@ -9,6 +9,7 @@
 #include "TGMsgBox.h"
 #include "THLimitsFinder.h"
 #include "CalibrationDialog.h"
+#include "Save2FileDialog.h"
 //#include "FhPeak.h"
 
 #include <iostream>
@@ -90,7 +91,7 @@ The procedure to use previously fitted peaks is as follows:\n\
    fFuncName.Prepend(Form("%d_", fFuncNumber));
    fFuncName.Prepend("CalF_");
    const char hist_file[] = {"caldialog_hist.txt"};
-   fFuncFromFile="hsimple.root|TH1|hpx";
+   fFuncFromFile="workfile.root|TF1|ff";
    RestoreDefaults();
 
    TList *row_lab = new TList(); 
@@ -228,7 +229,35 @@ void CalibrationDialog::CalculateFunction()
 
 void CalibrationDialog::GetFunction()
 {
-   cout << "fFuncFromFile: " << fFuncFromFile << endl;
+//   cout << "fFuncFromFile: " << fFuncFromFile << endl;
+   TString fname;
+   TString cname;
+   TString oname;
+	TObjArray * oa = fFuncFromFile.Tokenize("|");
+	Int_t nent = oa->GetEntries();
+   if (nent < 3) {
+      cout << "fFuncFromFile unknown error " << endl;
+      return;
+   }
+	fname =((TObjString*)oa->At(0))->String();
+	cname =((TObjString*)oa->At(1))->String();
+   if (cname != "TF1") {
+      cout << "fFuncFromFil " << oname << " is not a function " << endl;
+      return;
+   }
+	oname =((TObjString*)oa->At(2))->String();
+   TFile f(fname);
+   fCalFunc = (TF1*)f.Get(oname);
+   fCalFunc->Print();
+   Double_t xl = fCalFunc->Eval(fSelHist->GetXaxis()->GetBinLowEdge(1));
+   Double_t xu = fCalFunc->Eval(fSelHist->GetXaxis()
+                  ->GetBinUpEdge(fSelHist->GetNbinsX()));
+   Int_t nbins;
+   Double_t BinWidth;
+   THLimitsFinder::Optimize(xl, xu, fNbinsX , fXlow, fXup, 
+                      nbins, BinWidth, "");
+   cout << "nbins , BinWidth " << nbins << " " << BinWidth << endl;
+   fNbinsX = nbins;
 }
 //____________________________________________________________________________________ 
 
@@ -239,11 +268,12 @@ void CalibrationDialog::SaveFunction()
       return;
    } 
    if (!fCalHist) {
-      cout << "Execute Fill histogram " << endl;
+      cout << "Execute Fill histogram first" <<  endl;
       return;
    } 
    fCalFunc->SetParent(fCalHist);
    fSelHist->GetListOfFunctions()->Add(fCalFunc);
+   new Save2FileDialog(fCalFunc);
 }
 //____________________________________________________________________________________ 
 
@@ -414,6 +444,7 @@ void CalibrationDialog::RestoreDefaults()
    TEnv env(".rootrc");
    fNbinsX  = env.GetValue("CalibrationDialog.BinsX", 1000);
    fFormula = env.GetValue("CalibrationDialog.Formula", "pol1");
+   fFuncFromFile = env.GetValue("CalibrationDialog.fFuncFromFile", "workfile.root|TF1|calf");
 }
 //_______________________________________________________________________
 
@@ -422,6 +453,7 @@ void CalibrationDialog::SaveDefaults()
    TEnv env(".rootrc");
    env.SetValue("CalibrationDialog.BinsX", fNbinsX);
    env.SetValue("CalibrationDialog.Formula", fFormula.Data());
+   env.SetValue("CalibrationDialog.fFuncFromFile", fFuncFromFile);
    env.SaveLevel(kEnvUser);
 }
 //_______________________________________________________________________
