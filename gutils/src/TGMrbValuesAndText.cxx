@@ -749,11 +749,17 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    fReturn = ok;
    *ok = -1;    // if closed by cancel
    TString CancelCmd;
-  
    Bool_t has_commands = kFALSE;
-   if (calling_class != NULL) {
+   fCallClose = kTRUE;
+   
+   if (calling_class != NULL && win_width > 0) {
       this->Connect("CloseWindow()",cname, calling_class, "CloseDown()");
    }
+   if (win_width < 0) {
+      fCallClose = kFALSE;
+      win_width *= -1;
+   } 
+
 //   cout << "win_width " <<win_width << endl;
 
    TGLayoutHints * lo1 = new TGLayoutHints(kLHintsExpandX|kLHintsCenterY , 2, 2, 2, 2);
@@ -1159,7 +1165,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       b = new TGTextButton(hf, "Cancel", kIdCancel);
    } else {
       b = new TGTextButton(hf, "Close Dialog", kIdCancel);
-      b->Connect("Clicked()", cname, calling_class, "CloseDown()");
+      if (fCallClose) b->Connect("Clicked()", cname, calling_class, "CloseDown()");
    } 
    fWidgets->AddFirst(b);
    b->Associate(this);
@@ -1443,7 +1449,8 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname)
    Int_t id = 0;
    while( (key = (TKey*)next()) ){
       obj = (TObject*)key->ReadObj(); 
-      if (obj->InheritsFrom(fClassName)) {
+//        cout << "AddEntry " << fClassName<< " " <<  obj->ClassName()<< endl;
+        if (obj->InheritsFrom(fClassName)) {
          TString s(obj->GetName());
          s += " | ";
          s += obj->GetTitle();
@@ -1784,7 +1791,8 @@ void TGMrbValuesAndText::CloseWindowExt()
 
 void TGMrbValuesAndText::CloseWindow()
 {
-//   cout << "TGMrbValuesAndText::CloseWindow() " << endl << flush;
+   cout << "TGMrbValuesAndText::CloseWindow() ";
+   cout  << endl << flush;
    if (fEmitClose) Emit("CloseDown()");
    DeleteWindow();
 }
