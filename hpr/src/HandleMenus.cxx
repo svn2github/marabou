@@ -1578,7 +1578,7 @@ void HandleMenus::BuildMenus()
          fFitMenu->AddSeparator();
 //         fFitMenu->AddEntry("Clear Calib Peaks List",        kFHClearCalib);
          fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
-         if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "calibration.html");
+//         if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "calibration.html");
       }
       fFitMenu->AddSeparator();
       fFitMenu->AddEntry("Kolmogorov Test",         kFHKolmogorov);

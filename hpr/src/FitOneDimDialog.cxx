@@ -1879,6 +1879,7 @@ void FitOneDimDialog::RestoreDefaults()
    fFitOptIntegral   = env.GetValue("FitOneDimDialog.FitOptIntegral", 0);
    fFitOptNoDraw     = env.GetValue("FitOneDimDialog.FitOptNoDraw", 0);
    fFitOptAddAll     = env.GetValue("FitOneDimDialog.FitOptAddAll", 0);
+   fAutoClearMarks   = env.GetValue("FitOneDimDialog.fAutoClearMarks", 0);
    fColor            = env.GetValue("FitOneDimDialog.Color", 4);
    fWidth            = env.GetValue("FitOneDimDialog.Width", 1);
    fStyle            = env.GetValue("FitOneDimDialog.Style", 1);
@@ -1936,6 +1937,7 @@ void FitOneDimDialog::SaveDefaults()
    env.SetValue("FitOneDimDialog.FitOptIntegral",   fFitOptIntegral);
    env.SetValue("FitOneDimDialog.FitOptNoDraw",     fFitOptNoDraw);
    env.SetValue("FitOneDimDialog.FitOptAddAll",     fFitOptAddAll);
+   env.SetValue("FitOneDimDialog.fAutoClearMarks",  fAutoClearMarks);
    env.SetValue("FitOneDimDialog.Color",            fColor);
    env.SetValue("FitOneDimDialog.Width",            fWidth);
    env.SetValue("FitOneDimDialog.Style",            fStyle);

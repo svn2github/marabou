@@ -12,10 +12,11 @@
 #endif
 //_____________________________________________________________________________________
 
-
 class CalibrationDialog : public TObject {
 
 static const Int_t MAXPEAKS = 10;
+static const Int_t MAXNOMPEAKS = 100;
+
 private:
 #ifdef MARABOUVERS
    HistPresent *fHistPresent;
@@ -33,12 +34,14 @@ private:
    Double_t fY[MAXPEAKS];
    Double_t fXE[MAXPEAKS];
    Double_t fYE[MAXPEAKS];
+   Double_t fCont[MAXPEAKS];
    Int_t    fUse[MAXPEAKS];
    Int_t    fMaxPeaks;
    Int_t    fNbinsX;
    Double_t fXlow;
    Double_t fXup;
    Int_t    fNpeaks;
+   Int_t    fSetFlag[MAXNOMPEAKS];
 
 public:
    CalibrationDialog(TH1 * hist, Int_t maxPeaks = 3);
@@ -49,7 +52,9 @@ public:
    void GetFunction();
    void FillCalibratedHist();
    void UpdatePeakList();
-   void ClearLocalPeakList();
+   void SetNominalValues();
+   void SetValues();
+//   void ClearLocalPeakList();
 //   void ClearHistPeakList();
    void SaveDefaults();
    void RestoreDefaults();
