@@ -96,6 +96,7 @@ private:
    TGGC              fRedTextGC;
    TGGC              fBlueTextGC;
    Bool_t            fEmitClose;
+   Bool_t            fCallClose;
 //   Int_t             fFinis; 
 public:
    TGMrbValuesAndText(const char *prompt, TString * text, 
