@@ -50,6 +50,7 @@ public:
    void CalculateFunction();
    void SaveFunction();
    void GetFunction();
+   void ExecuteGetFunction();
    void FillCalibratedHist();
    void UpdatePeakList();
    void SetNominalValues();

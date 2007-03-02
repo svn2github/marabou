@@ -1068,6 +1068,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
                         win_widy + (win_widy - cHist->GetWh()));
 //  look if there exists a calibrated version of this histogram
    gSystem->ProcessEvents();
+/*
    TEnv *lastset = 0;
    if (hp && hp->fDisplayCalibrated && (lastset = GetDefaults(fHname)) ) {
       if (lastset->Lookup("CalFuncName")) {
@@ -1090,6 +1091,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
       }
       if (lastset) delete lastset;
    } 
+*/
 };
   
 //------------------------------------------------------ 

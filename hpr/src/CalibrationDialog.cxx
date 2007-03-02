@@ -19,9 +19,9 @@ using std::endl;
 
 static const Int_t kSc_Npeaks = 15;
 Char_t *Sc_Name[kSc_Npeaks] =
-      {"60Eu",    "60Eu",     "60Eu",     "60Eu", 
-       "60Eu",    "60Eu",     "60Eu",     "88Y ",   "60Eu", 
-       "60Eu",    "60Eu",     "60Co",     "60Eu", 
+      {"152Eu",    "152Eu",     "152Eu",     "152Eu", 
+       "152Eu",    "152Eu",     "152Eu",     "88Y ",   "152Eu", 
+       "152Eu",    "152Eu",     "60Co",     "152Eu", 
        "60Co",    "88Y"};
 Double_t Sc_Energy[kSc_Npeaks] = 
      {121.780,  244.664,  344.306, 411.114,
@@ -56,11 +56,15 @@ The procedure to use previously fitted peaks is as follows:\n\
   - Fields \"Mean\" and \"Errors\" of the table should now\n\
     be filled. Complete / modify the table at least  with\n\
     \"Nom Val\" (Nominal values)\n\
+    This can be done from \"Set Nominal Vals\", this menu\n\
+    presents the lines of the calibration sources 60Co, 88Eu\n\
+    and 88Y. THe selected values must correspond to the fitted\n\
+\n\
   - Execute \"Calculate Function\", the function is drawn\n\
     in a seperate canvas.\n\
   - If the result is reasonable possibly modify the parameters\n\
     for the \"Calibrated Hist\"\n\
-  - Execute \"Fill Hist\". A new histogram will be created\n\
+  - Execute \"Fill Calibrated Hist\". A new histogram will be created\n\
     and filled according to the calibration function.\n\
     Note: Each entry in the original histogram is randomly \n\
           shifted within its bin before the calibration is\n\
@@ -70,8 +74,8 @@ The procedure to use previously fitted peaks is as follows:\n\
   in practice polynomials of 1. or 2. degree (pol1, pol2)\n\
   are used\n\
 - Calibration functions may be saved to and restored from\n\
-  a root file.\n\
-\n\
+  a root file. Use \"Save Cal function\" to store it\n\
+  and \"Get function from file\" to read from file.\n\
 ";
    if (maxPeaks <= 0) {
       fMaxPeaks = 3;
@@ -161,23 +165,22 @@ The procedure to use previously fitted peaks is as follows:\n\
    valp[ind++] = &fXlow;
    row_lab->Add(new TObjString("DoubleValue-Xup"));
    valp[ind++] = &fXup;
+
    row_lab->Add(new TObjString("StringValue_CalFunction name"));
    valp[ind++] = &fFuncName;
-   row_lab->Add(new TObjString("FileContReq_Select Function from file"));
-   valp[ind++] = &fFuncFromFile;
 
-   row_lab->Add(new TObjString("CommandButt_Calculate Function"));
-   valp[ind++] = &cacmd;
-   row_lab->Add(new TObjString("CommandButt+Fill Calib Hist"));
-   valp[ind++] = &excmd;
-   row_lab->Add(new TObjString("CommandButt+Save Cal function"));
-   valp[ind++] = &svcmd;
-   row_lab->Add(new TObjString("CommandButt_Get Cal func from file"));
-   valp[ind++] = &gfcmd;
-   row_lab->Add(new TObjString("CommandButt+Update Peaklist"));
+   row_lab->Add(new TObjString("CommandButt_Update Peaklist"));
    valp[ind++] = &udcmd;
    row_lab->Add(new TObjString("CommandButt+SetNominal Vals"));
    valp[ind++] = &nvcmd;
+   row_lab->Add(new TObjString("CommandButt+Calculate Function"));
+   valp[ind++] = &cacmd;
+   row_lab->Add(new TObjString("CommandButt_Fill Calibrated Hist"));
+   valp[ind++] = &excmd;
+   row_lab->Add(new TObjString("CommandButt+Save Cal Func to File"));
+   valp[ind++] = &svcmd;
+   row_lab->Add(new TObjString("CommandButt+Get Cal Func from File"));
+   valp[ind++] = &gfcmd;
 //   row_lab->Add(new TObjString("CommandButt+Clear Peaklist"));
 //   valp[ind++] = &clcmd;
  //  row_lab->Add(new TObjString("CommandButt+Clear Hists Plist"));
@@ -219,7 +222,6 @@ from frequently used calibration sources like Europium\n\
    valp[ind++] = &nvcmd;
    Int_t itemwidth = 200;
    Int_t ok = 0;
-   TGMrbValuesAndText * nvdialog =
    new TGMrbValuesAndText ("Choose nominal values", NULL, &ok, -itemwidth,
                       fParentWindow, NULL, NULL, row_lab, valp,
                       NULL, NULL, helptext, this, this->ClassName());
@@ -301,26 +303,56 @@ void CalibrationDialog::CalculateFunction()
    Double_t xl = fCalFunc->Eval(fSelHist->GetXaxis()->GetBinLowEdge(1));
    Double_t xu = fCalFunc->Eval(fSelHist->GetXaxis()
                   ->GetBinUpEdge(fSelHist->GetNbinsX()));
+   cout << "fNbinsX ,xl, xu " << fNbinsX << " xl" << xl<< "xu " << xu<< endl;
+/*
    Int_t nbins;
    Double_t BinWidth;
    THLimitsFinder::Optimize(xl, xu, fNbinsX , fXlow, fXup, 
                       nbins, BinWidth, "");
    cout << "nbins , BinWidth " << nbins << " " << BinWidth << endl;
+   fDialog->ReloadValues();
    fNbinsX = nbins;
+*/
 }
 
-//____________________________________________________________________________________ 
+//________________________________________________________________________________
 
 void CalibrationDialog::GetFunction()
 {
-//   cout << "fFuncFromFile: " << fFuncFromFile << endl;
+static const Char_t helptext[] =
+"Select file name with the browser (use arrow)\n\
+Click on the required function name to select it\n\
+Then use \"Read function\" to read it in.\n\
+Note: As default the last entry is selected\n\
+";
+   TList *row_lab = new TList(); 
+   static TString nvcmd("SetValues()");
+   static void *valp[100];
+   Int_t ind = 0;
+   static TString gfcmd("ExecuteGetFunction()");
+
+   row_lab->Add(new TObjString("FileContReq_File name"));
+   valp[ind++] = &fFuncFromFile;
+   row_lab->Add(new TObjString("CommandButt_Read function"));
+   valp[ind++] = &gfcmd;
+   Int_t itemwidth = 300;
+   Int_t ok = 0;
+   new TGMrbValuesAndText ("Get Function from file", NULL, &ok, -itemwidth,
+                      fParentWindow, NULL, NULL, row_lab, valp,
+                      NULL, NULL, helptext, this, this->ClassName());
+}
+//________________________________________________________________________________
+
+void CalibrationDialog::ExecuteGetFunction()
+{
    TString fname;
    TString cname;
    TString oname;
+
 	TObjArray * oa = fFuncFromFile.Tokenize("|");
 	Int_t nent = oa->GetEntries();
    if (nent < 3) {
-      cout << "fFuncFromFile unknown error " << endl;
+      cout << "fFuncFromFile not enough (3) fields" << endl;
       return;
    }
 	fname =((TObjString*)oa->At(0))->String();
@@ -332,16 +364,22 @@ void CalibrationDialog::GetFunction()
 	oname =((TObjString*)oa->At(2))->String();
    TFile f(fname);
    fCalFunc = (TF1*)f.Get(oname);
+   if (fCalFunc == NULL) {
+      cout << "No function found / selected" << endl;
+      return;
+   }
    fCalFunc->Print();
    Double_t xl = fCalFunc->Eval(fSelHist->GetXaxis()->GetBinLowEdge(1));
    Double_t xu = fCalFunc->Eval(fSelHist->GetXaxis()
                   ->GetBinUpEdge(fSelHist->GetNbinsX()));
-   Int_t nbins;
-   Double_t BinWidth;
-   THLimitsFinder::Optimize(xl, xu, fNbinsX , fXlow, fXup, 
-                      nbins, BinWidth, "");
-   cout << "nbins , BinWidth " << nbins << " " << BinWidth << endl;
-   fNbinsX = nbins;
+//   Int_t nbins;
+//   Double_t BinWidth;
+   cout << "fNbinsX ,xl, xu " << fNbinsX << " xl" << xl<< "xu " << xu<< endl;
+//   THLimitsFinder::Optimize(xl, xu, fNbinsX , fXlow, fXup, 
+ //                     nbins, BinWidth, "");
+//   cout << "nbins , BinWidth " << nbins << " " << BinWidth << endl;
+ //  fDialog->ReloadValues();
+ //  fNbinsX = nbins;
 }
 //____________________________________________________________________________________ 
 
@@ -375,6 +413,9 @@ void CalibrationDialog::FillCalibratedHist()
    title_cal += ";Energy[KeV];Events[";
    title_cal += Form("%4.2f", (fXup-fXlow)/(Double_t)fNbinsX);
    title_cal += " KeV]";
+   cout << "title_cal: " << title_cal << endl;
+   TH1* hh = (TH1*)gROOT->GetList()->FindObject(hname_cal);
+   if (hh) delete hh;
    if      (!strcmp(fSelHist->ClassName(), "TH1F"))
    	fCalHist = new TH1F(hname_cal, title_cal, fNbinsX, fXlow, fXup);
    else if (!strcmp(fSelHist->ClassName(), "TH1D"))
@@ -404,6 +445,9 @@ void CalibrationDialog::FillCalibratedHist()
 #ifdef MARABOUVERS
    if (fHistPresent) {
       fHistPresent->ShowHist(fCalHist);
+//   in case a title was set to a stored value
+      fCalHist->SetTitle(title_cal);
+      gPad->Modified();
    } else {
 #endif
       TString title(hname_cal);
@@ -529,54 +573,14 @@ void CalibrationDialog::UpdatePeakList()
    }
 */
 }
-//______________________________________________________________________
-/*
-void CalibrationDialog::UpdatePeakList()
-{
-   TIter next(fSelHist->GetListOfFunctions());
-   TObject *obj;
-   while (obj = next()) {
-      if (obj->IsA() == FhPeak::Class()) {
-         if (fNpeaks < fMaxPeaks) {
-            FhPeak *p = (FhPeak*)obj;
-//          look if already stored
-            Bool_t store_it = kTRUE;
-            if (fNpeaks > 0) {
-//               Int_t im = (Int_t)(1000 * p->GetMean());
-               
-               for (Int_t i = 0; i < fNpeaks; i++) { 
-//                  Int_t im1 = (Int_t)(1000 * fX[i]);
-
- //                 cout << hex << p->GetMean() << " " << hex <<  fX[i]<< endl;        
- //                 cout << "i, im, im1 "  << i << " " << im << " " << im1 << endl;        
- //                 if ((Int_t)(1000 * fX[i]) == im) store_it = kFALSE;
-                  if ((fX[i] - p->GetMean()) / fX[i] < 0.0001) store_it = kFALSE;
-               }
-            }
-            if (store_it) {
-               fX [fNpeaks] = p->GetMean();
-               fXE[fNpeaks] = p->GetWidth();
-               fY [fNpeaks] = p->GetNominalEnergy();
-               fYE[fNpeaks] = 1;
-               fUse[fNpeaks] = 1;
-   //            fYE[fNpeaks] = p->GetNominalEnergyError();
-               fNpeaks++;
-            } else {
-               cout << p->GetMean() << " already in list" << endl;
-            }
-         } else {
-            cout << "More than " << fMaxPeaks << " peaks" << endl;
-         }
-      }
-   }        
-}
-*/
 //_______________________________________________________________________
 
 void CalibrationDialog::RestoreDefaults()
 {
    TEnv env(".rootrc");
-   fNbinsX  = env.GetValue("CalibrationDialog.BinsX", 1000);
+   fNbinsX  = env.GetValue("CalibrationDialog.BinsX", 4000);
+   fXlow    = env.GetValue("CalibrationDialog.fXlow", 0.);
+   fXup     = env.GetValue("CalibrationDialog.fXup", 4000.);
    fFormula = env.GetValue("CalibrationDialog.Formula", "pol1");
    fFuncFromFile = env.GetValue("CalibrationDialog.fFuncFromFile", "workfile.root|TF1|calf");
 }
@@ -584,11 +588,14 @@ void CalibrationDialog::RestoreDefaults()
 
 void CalibrationDialog::SaveDefaults()
 {
+   cout << "CalibrationDialog:: SaveDefaults() kEnvLocal" << endl;
    TEnv env(".rootrc");
    env.SetValue("CalibrationDialog.BinsX", fNbinsX);
+   env.SetValue("CalibrationDialog.fXlow", fXlow);
+   env.SetValue("CalibrationDialog.fXup", fXup);
    env.SetValue("CalibrationDialog.Formula", fFormula.Data());
    env.SetValue("CalibrationDialog.fFuncFromFile", fFuncFromFile);
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_______________________________________________________________________
 
@@ -602,7 +609,7 @@ void CalibrationDialog::CloseDialog()
 
 void CalibrationDialog::CloseDown()
 {
-   cout << "CalibrationDialog::CloseDown() " << endl;
+//   cout << "CalibrationDialog::CloseDown() " << endl;
    SaveDefaults();
    delete this;
 }
