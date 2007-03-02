@@ -64,6 +64,7 @@ class TGMrbValuesAndText : public TGTransientFrame {
 private:
    const TGWindow   *fMyWindow;
    TGTextEntry      *fTE;        // text entry widget
+   TGTextEntry      *fFileNameEntry;     // for file content 
    TList            *fWidgets;   // keep track of widgets to be deleted in dtor
    TString          *fText;      // address to store return string
    Int_t            *fReturn;    // address to store cancel = -1 / ok =0 
