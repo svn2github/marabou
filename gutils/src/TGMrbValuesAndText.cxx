@@ -700,7 +700,8 @@ void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *)
 //________________________________________________________________________________________
 
 enum buttonId {kIdOk = 101, kIdCancel = 102, kIdHelp = 103, kIdClearHist = 104,
-               kIdText = 201, kIdTextValue = 301, kIdTextSelect, kIdListBoxReq = 401,
+               kIdText = 201, kIdFileName = 202, kIdTextValue = 301, 
+               kIdTextSelect, kIdListBoxReq = 401,
                kIdFileDialog = 4, kIdFileDialogCont = 5, kIdFontS = 6, kIdCommand = 7, 
                kIdLineS, kIdArrowS, kIdAlignS, kIdMarkS, kIdFillS};
  
@@ -1041,13 +1042,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             if (nent > 0) fname =((TObjString*)oa->At(0))->String();
             if (nent > 1) fClassName =((TObjString*)oa->At(1))->String();
             if (nent > 2) ename =((TObjString*)oa->At(2))->String();
-            tentry = new TGTextEntry(hframe, tbuf = new TGTextBuffer(100), kIdText);
-            tentry->GetBuffer()->AddText(0, (const char *)fname);
+            fFileNameEntry = 
+               new TGTextEntry(hframe, tbuf = new TGTextBuffer(100), kIdFileName);
+            fFileNameEntry->GetBuffer()->AddText(0, (const char *)fname);
 //            tentry->Resize(win_width/2, tentry->GetDefaultHeight());
-            hframe->AddFrame(tentry, l3);
-			   fWidgets->Add(tentry);
-            tentry->Associate(this);
-            fEntries->Add(tentry);
+            hframe->AddFrame(fFileNameEntry, l3);
+			   fWidgets->Add(fFileNameEntry);
+            fFileNameEntry->Associate(this);
+            fEntries->Add(fFileNameEntry);
             TGPictureButton * tb = new TGPictureButton(hframe, 
                          fClient->GetPicture("arrow_down.xpm"), i + 100 * kIdFileDialogCont);
             tb->Resize(20, 20);
@@ -1067,7 +1069,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fWidgets->AddFirst(fListBoxReq);
             this->AddFrame(fListBoxReq, l2);
             fEntries->Add(fListBoxReq);
-            UpdateRequestBox(tentry->GetBuffer()->GetString());
+            UpdateRequestBox(fFileNameEntry->GetBuffer()->GetString());
          }
          if (fFlags) {
             hframe1 = new TGCompositeFrame(hframe, win_width*1/6, 20, kFixedWidth);
@@ -1257,7 +1259,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 {
    // Handle button and text enter events
-//   cout << "TGMrbValuesAndText::ProcessMessage " 
+//  cout << "TGMrbValuesAndText::ProcessMessage " 
 //       << GET_MSG(msg) << " "
 //        << GET_SUBMSG(msg) << " " << parm1 << " " << parm2 << endl;
 
@@ -1391,6 +1393,10 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                 break;
              case kTE_ENTER:
 //                cout << "kTE_ENTERparm1 " << parm1 << " kIdText" << kIdText << endl;
+                if (parm1 == kIdFileName) {
+                   TString fn = fFileNameEntry->GetBuffer()->GetString();
+                   UpdateRequestBox(fn);
+                }
                 if (parm1 != kIdText) break;
                 // here copy the string from text buffer to return variable
                 if (fText) {
@@ -1458,11 +1464,13 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname)
 //         cout << "AddEntry " << obj->GetName()<< endl;
          id++;
       }
-   }      
+   }
+   cout << "fListBoxReq->Resize " << (id+1)*20 << endl;
    fListBoxReq->Resize(fListBoxReq->GetDefaultWidth(), TMath::Min(200, (id+1)*20));
    fListBoxReq->Layout();
    gClient->NeedRedraw(fListBoxReq);
    gClient->NeedRedraw(this);
+   StoreValues();
 }
 //________________________________________________________________[C++ METHOD]
 //_____________________________________________________________________________
@@ -1791,8 +1799,8 @@ void TGMrbValuesAndText::CloseWindowExt()
 
 void TGMrbValuesAndText::CloseWindow()
 {
-   cout << "TGMrbValuesAndText::CloseWindow() ";
-   cout  << endl << flush;
+//   cout << "TGMrbValuesAndText::CloseWindow() ";
+//   cout  << endl << flush;
    if (fEmitClose) Emit("CloseDown()");
    DeleteWindow();
 }
