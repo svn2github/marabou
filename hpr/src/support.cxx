@@ -131,6 +131,17 @@ TLatex *GetPadLatex(TButton * pad)
    return NULL;
 }
 //----------------------------------------------------------------------- 
+Bool_t HasFunctions(TH1 * hist)
+{
+   TIter next(hist->GetListOfFunctions());
+   TObject *obj;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TF1")) return kTRUE;
+   }
+   return kFALSE;
+};
+
+//----------------------------------------------------------------------- 
 Bool_t is2dim(TH1 * hist)
 {
    return hist->InheritsFrom("TH2");

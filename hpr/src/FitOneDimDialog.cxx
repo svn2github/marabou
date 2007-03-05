@@ -727,7 +727,8 @@ the root doc at: http://root.cern.ch\n\
 //__________________________________________________________________________
 
 FitOneDimDialog::~FitOneDimDialog()
-{
+{ 
+// cout << "dtor FitOneDimDialog: " << this << endl;
    gROOT->GetListOfCleanups()->Remove(this);
 }
 //__________________________________________________________________________
@@ -781,10 +782,15 @@ void FitOneDimDialog::FitGausExecute()
          cout << "With tail ignore: Force common Gaus width" << endl;
          fOnesig = 1;
       }
-   }
+   } 
    if (fBackg0 != 0) {
       cout << "With Background == 0, Force BG slope = 0" << endl;
       fSlope0 = 1;
+   }
+   if (fUsedbg != 0) {
+      cout << "With Use det backg , need const + slope" << endl;
+      fSlope0 = 0;
+      fBackg0 = 0;
    }
    Double_t lBinW = fSelHist->GetBinWidth(1);
    Bool_t setpars = (fUseoldpars == 0);
@@ -982,7 +988,10 @@ void FitOneDimDialog::FitGausExecute()
    col_lab.Add(new TObjString("fix it"));
    col_lab.Add(new TObjString("bound"));
 
-   TString title("Start parameters");
+   TString title("Start pars, fit from: ");
+   title += Form("%g", fFrom);
+   title += " to ";
+   title += Form("%g", fTo);
    Int_t ret = 0; 
    Int_t itemwidth = 120;
    Int_t precission = 5;
@@ -1987,15 +1996,16 @@ void FitOneDimDialog::SaveDefaults()
 
 void FitOneDimDialog::CloseDialog()
 {
-//   cout << "FitOneDimDialog::CloseDialog() " << endl;
+ //  cout << "FitOneDimDialog::CloseDialog() " << endl;
    gROOT->GetListOfCleanups()->Remove(this);
    fDialog->CloseWindow();
+   delete this;
 }
 //_______________________________________________________________________
 
 void FitOneDimDialog::CloseDown()
 {
-   cout << "FitOneDimDialog::CloseDown() " << endl;
+//   cout << "FitOneDimDialog::CloseDown() " << endl;
    SaveDefaults();
    delete this;
 }

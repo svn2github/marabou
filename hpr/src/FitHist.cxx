@@ -244,7 +244,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-//   cout << "FitHist::RecursiveRemove: obj " << obj <<  endl;
+//   cout << "FitHist::RecursiveRemove: obj fFit1DimD " << obj << " " << fFit1DimD<<  endl;
    fActiveCuts->Remove(obj);
    fActiveWindows->Remove(obj);
    fActiveFunctions->Remove(obj);
@@ -319,7 +319,7 @@ void FitHist::SaveDefaults(Bool_t recalculate)
 //   TEnv env(".rootrc");         // inspect ROOT's environment
 //   env.SetValue("HistPresent.FitMacroName", fFitMacroName);
 
-   Bool_t checkonly = kTRUE;
+   Bool_t checkonly = kFALSE;
    if ( (!CreateDefaultsDir(mycanvas, checkonly)) ) return;
 //   defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
 
@@ -419,6 +419,7 @@ void FitHist::SaveDefaults(Bool_t recalculate)
          	env->SetValue("fRangeUpY", fSelHist->GetYaxis()->GetXmax());
       	}
    	}
+/*
       if (fCalFunc == NULL) {
          TIter next(fSelHist->GetListOfFunctions());
          TObject *obj;
@@ -444,9 +445,10 @@ void FitHist::SaveDefaults(Bool_t recalculate)
          env->SetValue("CalHistXmin", fCalHist->GetXaxis()->GetXmin());
          env->SetValue("CalHistXmax", fCalHist->GetXaxis()->GetXmax());
       }
+*/
    }
 
-   cout << "env->SaveLevel(kEnvLocal): " << fBinlx << " " << fBinux << endl;
+//   cout << "env->SaveLevel(kEnvLocal): " << fBinlx << " " << fBinux << endl;
    env->SaveLevel(kEnvLocal);
    delete env;
    return;
@@ -456,6 +458,7 @@ void FitHist::SaveDefaults(Bool_t recalculate)
 void FitHist::RestoreDefaults()
 {
    TEnv * lastset = GetDefaults(fHname);
+//   cout << "RestoreDefaults() " << lastset<< endl;
 	if (!lastset) return;
    fFitMacroName = lastset->GetValue("FitMacroName",fFitMacroName.Data());
    if (hp && (hp->fRememberLastSet || hp->fRememberZoom)) {
@@ -1142,7 +1145,14 @@ void FitHist::Entire()
 //   fSelHist->GetListOfFunctions()->Print();
 //   fOrigHist->GetListOfFunctions()->Print();
    if (expHist) {
+      cout << " Entire() expHist->Delete()" <<endl;
       expHist->GetListOfFunctions()->Clear("nodelete");
+      TF1 *ff= (TF1*)gROOT->GetListOfFunctions()->FindObject("backf");
+      if (ff) delete ff;
+           ff= (TF1*)gROOT->GetListOfFunctions()->FindObject("tailf");
+      if (ff) delete ff;
+           ff= (TF1*)gROOT->GetListOfFunctions()->FindObject("gausf");
+      if (ff) delete ff;
       expHist->Delete();
       expHist = NULL;
    }
@@ -3175,8 +3185,12 @@ void FitHist::ExpandProject(Int_t what)
          }
          if (what == expand) {
             Int_t newbin = i - fBinlx + 1;
-            expHist->Fill(x, cont);
-            if (i >= fBinlx && i <= fBinux)
+            if (fOrigHist->GetSumw2N()) { 
+               expHist->Fill(x, cont);
+            } else {
+               expHist->SetBinContent(newbin, cont);
+            }
+            if (i >= fBinlx && i <= fBinux && fOrigHist->GetSumw2N())  
                expHist->SetBinError(newbin, fOrigHist->GetBinError(i));
          }
       }
@@ -3719,10 +3733,9 @@ void FitHist::UpdateDrawOptions()
    if (fDimension == 1) {
    	if (hp->fShowContour) {
       	drawopt = "";
-         if (fSelHist->GetListOfFunctions()->GetSize() == 0) {
-            for (Int_t i = 1; i < fSelHist->GetNbinsX(); i++) { 
-               if (fSelHist->GetBinError(i) > 0)
-      	         drawopt = "hist";
+         if (!HasFunctions(fSelHist)) {
+            if (fSelHist->GetSumw2N()) {
+      	      drawopt = "hist";
             }
          }
       }
@@ -3733,7 +3746,7 @@ void FitHist::UpdateDrawOptions()
       	fSelHist->SetFillColor(hp->fHistFillColor);
    	} else
       	fSelHist->SetFillStyle(0);
- //     cout << "UpdateDrawOptions() " << drawopt.Data() << endl;
+//      cout << "UpdateDrawOptions() " << drawopt.Data() << endl;
       fSelHist->SetOption(drawopt.Data());
       fSelHist->SetDrawOption(drawopt.Data());
    } else if (fDimension  == 2) {

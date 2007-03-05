@@ -61,6 +61,7 @@ extern Bool_t is_a_list(TObject *);
 extern Bool_t is_a_cut(TObject *);
 extern Bool_t is_a_tree(TObject *);
 extern Bool_t is_a_window(TObject *);
+extern Bool_t HasFunctions(TH1 *);
 extern Bool_t is2dim(TH1 *);
 extern Bool_t is3dim(TH1 *);
 extern Bool_t is_a_file(const char *);

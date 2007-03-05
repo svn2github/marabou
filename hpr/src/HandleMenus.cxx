@@ -1516,7 +1516,7 @@ void HandleMenus::BuildMenus()
       if(hbrowser)hbrowser->DisplayMenu(fCutsMenu, "cuts.html");
 //      fCutsMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
 //      fCutsMenu->AddEntry("Help On Cuts/Windows",  kFH_Help_Cuts);
-
+/*
       fCascadeMenu1 = new TGPopupMenu(fRootCanvas->GetParent());
       fCascadeMenu1->AddEntry("Pol 0", kFH_CASCADE1_0);
       fCascadeMenu1->AddEntry("Pol 1", kFH_CASCADE1_1);
@@ -1528,7 +1528,7 @@ void HandleMenus::BuildMenus()
       fCascadeMenu1->AddEntry("Pol 7", kFH_CASCADE1_7);
       fCascadeMenu1->AddEntry("Pol 8", kFH_CASCADE1_8);
       fCascadeMenu1->AddEntry("User Formula", kFH_CASCADE1_U);
-
+*/
       fCascadeMenu2 = new TGPopupMenu(fRootCanvas->GetParent());
       fCascadeMenu2->AddEntry("Pol 0", kFH_CASCADE2_0);
       fCascadeMenu2->AddEntry("Pol 1", kFH_CASCADE2_1);
@@ -1542,7 +1542,7 @@ void HandleMenus::BuildMenus()
       fCascadeMenu2->AddEntry("User Formula", kFH_CASCADE2_U);
 
       fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-      fFitMenu->AddPopup("FitPolyHist",  fCascadeMenu1);
+//      fFitMenu->AddPopup("FitPolyHist",  fCascadeMenu1);
       if(is2dim){
          fFitMenu->AddPopup("FitPolyMarks", fCascadeMenu2);
       	fFitMenu->AddSeparator();
@@ -1555,6 +1555,7 @@ void HandleMenus::BuildMenus()
          fFitMenu->AddEntry("Fit Polynomial",      kFHFitPol);
          fFitMenu->AddEntry("Fit User formula",    kFHFitForm);
       }
+      fFitMenu->AddSeparator();
       fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUser);
       fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUser);
       fFitMenu->AddSeparator();
@@ -1565,11 +1566,11 @@ void HandleMenus::BuildMenus()
       fFitMenu->AddSeparator();
 
   
-      if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "fitting.html");
+//      if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "fitting.html");
       
       if(!is2dim){
  //        fFitMenu->AddEntry("Help On Fitting 1-dim",       kFH_Help_Fit1);
-         fFitMenu->AddSeparator();
+ //        fFitMenu->AddSeparator();
          fFitMenu->AddEntry("Calibration Dialog",            kFHCalDialog);
 //         fFitMenu->AddEntry("Calibrate, Generate new hist",  kFHCalibrateNew);
 //         fFitMenu->AddEntry("Calibrate, change scale only",  kFHCalibrate);
@@ -1580,13 +1581,13 @@ void HandleMenus::BuildMenus()
          fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
 //         if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "calibration.html");
       }
-      fFitMenu->AddSeparator();
+//      fFitMenu->AddSeparator();
       fFitMenu->AddEntry("Kolmogorov Test",         kFHKolmogorov);
-      fFitMenu->AddSeparator();
+ //     fFitMenu->AddSeparator();
       fFitMenu->AddEntry("Fast Fourier Transform",  kFHfft);
 
       fCutsMenu->Associate((TGWindow*)this);
-      fCascadeMenu1->Associate((TGWindow*)this);
+//      fCascadeMenu1->Associate((TGWindow*)this);
       fCascadeMenu2->Associate((TGWindow*)this);
 //      fCascadeMenu1->Associate(this);
    }
