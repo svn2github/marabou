@@ -3031,6 +3031,13 @@ Bool_t FhMainFrame::GetDefaults(){
    fMaster       = new TString("ppc-1");
    fReadout      = new TString("ppc-0");
    fMbsVersion   = new TString(gEnv->GetValue("TMbsSetup.MbsVersion", ""));
+	if (fMbsVersion->Contains(".")) {
+		fMbsVersion->ReplaceAll(".", "");
+		fMbsVersion->Prepend("v");
+	} else if (!fMbsVersion->BeginsWith("v")) {
+		cerr	<< setred << "Malformed Mbs version - " << fMbsVersion << setblack << endl;
+     ok = kFALSE;
+	}
    if (fMbsVersion->IsNull()) {
      cerr	<< setred << "C_analyze: MBS version not defined" << setblack << endl;
      ok = kFALSE;
