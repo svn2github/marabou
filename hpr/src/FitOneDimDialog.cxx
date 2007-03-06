@@ -551,9 +551,9 @@ the root doc at: http://root.cern.ch\n\
       helptext = helptext_gaus;
       fFuncName.Prepend(fGausFuncName);
 		GetMarkers();
-		row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
-		valp[ind++] = &fNpeaks;
-		row_lab->Add(new TObjString("CheckButton+Low Tail"));
+//		row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
+//		valp[ind++] = &fNpeaks;
+		row_lab->Add(new TObjString("CheckButton_Low Tail"));
 		valp[ind++] = &fLowtail;
 		row_lab->Add(new TObjString("CheckButton+High Tail"));
 		valp[ind++] = &fHightail;
@@ -1322,7 +1322,8 @@ Int_t FitOneDimDialog::GetMarkers()
       fNpeaks = fNmarks - 2;
    }
 //   lNpeaks = fNpeaks;
-//   cout << fNmarks << " markers found " << endl;
+   cout << setblue << fNmarks << " markers found i.e. "
+        << fNpeaks << " peak(s) will be fitted" << setblack << endl;
    return fNmarks;
 }
 //____________________________________________________________________________________ 
