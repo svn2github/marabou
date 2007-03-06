@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.21 2006-10-31 15:44:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.22 2007-03-06 12:28:38 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -881,6 +881,16 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 	TString codeName = this->GetCodeName();
 	if (codeName.Length() == 0) {
 		gMrbLog->Err() << "Name of source code not defined" << endl;
+		gMrbLog->Flush(this->ClassName(), "CompileReadout");
+		isOK = kFALSE;
+	}
+
+	TString version = Version;
+	if (version.Contains(".")) {
+		version.ReplaceAll(".", "");
+		version.Prepend("v");
+	} else if (!version.BeginsWith("v")) {
+		gMrbLog->Err() << "Malformed Mbs version - " << Version << endl;
 		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		isOK = kFALSE;
 	}
