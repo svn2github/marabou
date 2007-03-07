@@ -446,6 +446,9 @@ void HistPresent::ShowMain()
    cHPr->SetEditable(kFALSE);
    cHPr->Update();
 //   CreateDefaultsDir(fMainCanvas); 
+   if (gSystem->AccessPathName(gSystem->WorkingDirectory(), kWritePermission))
+      WarnBox("You have no write permission on current working directory\n\
+you will be unable to save current settings etc.");
 }
 //________________________________________________________________________________________
 

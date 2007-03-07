@@ -45,7 +45,7 @@ Double_t gaus_only(Double_t * x, Double_t * par)
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
 
-   static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
    Double_t sigma   = par[kFix +0];
@@ -73,7 +73,7 @@ Double_t gaus_only_vsig(Double_t * x, Double_t * par)
    Double_t lBinW = par[0];
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
-   static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
    Double_t sigma   = par[kFix +0];
@@ -103,7 +103,7 @@ Double_t gaus_cbg(Double_t * x, Double_t * par)
    Double_t lBinW = par[0];
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
-   static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
 
    Double_t arg;
    Double_t fitval  = 0;
@@ -134,7 +134,7 @@ Double_t gaus_cbg_vsig(Double_t * x, Double_t * par)
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
  
-  static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+  static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval;
    Double_t sigma ;
@@ -168,7 +168,7 @@ Double_t gaus_lbg(Double_t * x, Double_t * par)
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
 
-   static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
    Double_t bgconst = par[kFix +0];
@@ -199,7 +199,7 @@ Double_t gaus_lbg_vsig(Double_t * x, Double_t * par)
    Double_t lBinW = par[0];
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
-   static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
    Double_t bgconst = par[kFix +0];
@@ -238,7 +238,7 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
    Int_t lNpeaks = (Int_t)par[1];
    Double_t lTailSide = par[2];
 
-   static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
    Double_t xij;
    Double_t arg;
    Double_t tail;
@@ -320,7 +320,7 @@ Double_t gausf(Double_t * x, Double_t * par)
    Double_t lBinW = par[0];
 //   Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
-   static Double_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
    if (par[kFix +2] == 0)
       par[kFix +2] = 1;
 
@@ -385,7 +385,7 @@ void FitOneDimDialog::DisplayMenu(Int_t type)
 {
 
 static const Char_t helptext_gaus[] =
-"This widget allows fitting of any number of \n\
+"This widget allows fitting of any number of\n\
 gaussian shaped peaks optionally with a low or high\n\
 energy tail plus a linear background.\n\
 The linear background may be forced to zero (Force BG = 0)\n\
@@ -393,13 +393,15 @@ or to be constant(Force BG slope = 0)\n\
 The gauss width may be forced to the same for all peaks\n\
 In case with tail the parameter Ta_fract (tail\n\
 fraction) is the contents of the tail part relative\n\
-to the pure gaussian part. In case of more then one\n\
-peak this fraction, the width of the tail and of the\n\
-gaussian are the same for all peaks. Marks (use middle\n\
-mouse button to define them) are used to provide \n\
-lower and upper limits of the fit region and the positions\n\
-of peaks to be fitted. So if 3 peaks should be fitted\n\
-5 marks need to be defined \n\
+to the pure gaussian part. If more then one peak is fitted \n\
+this fraction, the width of the tail and of the\n\
+gaussian are the same for all peaks.\n\
+\n\
+Marks (use middle mouse button to define them) are used\n\
+to provide lower and upper limits of the fit region and\n\
+the positions of peaks to be fitted. So if 3 peaks should be\n\
+fitted 5 marks need to be defined \n\
+\n\
 The program estimates from this the start\n\
 parameters of the fit which are presented and may be\n\
 changed. Values may be fixed and bound. When using\n\
