@@ -177,8 +177,8 @@ void TSplineX::point_computing(Double_t *A_blend, ControlPoint *p0, ControlPoint
 
   weights_sum = A_blend[0] + A_blend[1] + A_blend[2] + A_blend[3];
 
-  *xs = (int)round(EQN_NUMERATOR(x) / (weights_sum));
-  *ys = (int)round(EQN_NUMERATOR(y) / (weights_sum));
+  *xs = (int)TMath::Nint(EQN_NUMERATOR(x) / (weights_sum));
+  *ys = (int)TMath::Nint(EQN_NUMERATOR(y) / (weights_sum));
 }
 //____________________________________________________________________________________
 
