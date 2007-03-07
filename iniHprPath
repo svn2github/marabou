@@ -27,8 +27,10 @@ SYSMODE=y
 # export ROOTSYS=/usr/cern/Linux/root_v4.04.02
 MARABOU=`pwd`
 
-# export LD_LIBRARY_PATH=$MARABOU/lib:$ROOTSYS/lib:$LD_LIBRARY_PATH
 # export PATH=$MARABOU/bin:$ROOTSYS/bin:$PATH
+# export LD_LIBRARY_PATH=$MARABOU/lib:$ROOTSYS/lib:$LD_LIBRARY_PATH
+# for Mac
+# export DYLD_LIBRARY_PATH=$MARABOU/lib:$ROOTSYS/lib:$DYLD_LIBRARY_PATH
 
 #____________________________[end editable section]___________________________
 
