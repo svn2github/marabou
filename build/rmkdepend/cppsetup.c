@@ -90,8 +90,8 @@ cppsetup(line, filep, inc)
 	pend = p;
 
 	ptrtab = slotab+COFF;
-	*--inp = SALT; 
-	outp=inp; 
+	*--inp = SALT;
+	outp=inp;
 	value = yyparse();
 	*p = savec;
 	return(value);
@@ -210,7 +210,7 @@ my_eval_variable (ip, var, len)
 	var = (*s)->s_value;
 	if (!isvarfirstletter(*var))
 	    break;
-	s = lookup_variable (ip, var, strlen(var));
+	s = lookup_variable (ip, var, (int)strlen(var));
     } while (s);
 
     return strtol(var, NULL, 0);

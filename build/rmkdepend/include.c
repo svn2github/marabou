@@ -36,6 +36,7 @@ extern char	*notdotdot[ ];
 extern boolean show_where_not;
 extern boolean warn_multiple;
 
+
 boolean
 isdot(p)
 	register char	*p;
@@ -73,6 +74,8 @@ issymbolic(dir, component)
 			fatalerr("out of .. dirs, increase MAXDIRS\n");
 		return(TRUE);
 	}
+#else
+	if (dir && component) { }  /* use arguments */
 #endif
 	return(FALSE);
 }
@@ -121,7 +124,7 @@ remove_dotdot(path)
 		    char **fp = cp + 2;
 		    char **tp = cp;
 
-		    do 
+		    do
 			*tp++ = *fp; /* move all the pointers down */
 		    while (*fp++);
 		    if (cp != components)
@@ -267,7 +270,11 @@ struct inclist *inc_path(file, include, dot)
 	 * then check the exact path provided.
 	 */
 	if (!found && (dot || *include == '/')) {
-		if (stat(include, &st) == 0) {
+#ifdef _WIN32
+		if (stat(include, &st) == 0 && (st.st_mode & S_IFREG)) {
+#else
+		if (stat(include, &st) == 0 && S_ISREG(st.st_mode)) {
+#endif
 			ip = newinclude(include, include);
 			found = TRUE;
 		}
@@ -291,7 +298,11 @@ struct inclist *inc_path(file, include, dot)
 			strcpy(path + (p-file) + 1, include);
 		}
 		remove_dotdot(path);
-		if (stat(path, &st) == 0) {
+#ifdef _WIN32
+		if (stat(path, &st) == 0 && (st.st_mode & S_IFREG)) {
+#else
+		if (stat(path, &st) == 0 && S_ISREG(st.st_mode)) {
+#endif
 			ip = newinclude(path, include);
 			found = TRUE;
 		}
@@ -307,7 +318,11 @@ struct inclist *inc_path(file, include, dot)
 		for (pp = includedirs; *pp; pp++) {
 			sprintf(path, "%s/%s", *pp, include);
 			remove_dotdot(path);
-			if (stat(path, &st) == 0) {
+#ifdef _WIN32
+			if (stat(path, &st) == 0 && (st.st_mode & S_IFREG)) {
+#else
+			if (stat(path, &st) == 0 && S_ISREG(st.st_mode)) {
+#endif
 				ip = newinclude(path, include);
 				found = TRUE;
 				break;

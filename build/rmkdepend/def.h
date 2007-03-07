@@ -75,7 +75,7 @@ in this Software without prior written authorization from the X Consortium.
 extern int	_debugmask;
 /*
  * debug levels are:
- * 
+ *
  *     0	show ifn*(def)*,endif
  *     1	trace defined/!defined
  *     2	show #include
@@ -135,7 +135,7 @@ char			*realloc();
 
 char			*copy();
 char			*base_name();
-char			*getline();
+char			*rgetline();
 struct symtab		**slookup();
 struct symtab		**isdefined();
 struct symtab		**fdefined();
@@ -147,3 +147,5 @@ void			undefine_all(struct inclist *);
 extern void fatalerr(char *, ...);
 extern void warning(char *, ...);
 extern void warning1(char *, ...);
+
+extern int rootBuild;

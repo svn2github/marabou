@@ -10,10 +10,13 @@ BINDEXPDIR   := $(MODDIR)/win/bindexplib
 
 ##### rmkdepend #####
 RMKDEPH      := $(wildcard $(RMKDEPDIR)/*.h)
-RMKDEPS      := $(wildcard $(RMKDEPDIR)/*.c)
-RMKDEPO      := $(RMKDEPS:.c=.o)
+RMKDEPS1     := $(wildcard $(RMKDEPDIR)/*.c)
+RMKDEPS2     := $(wildcard $(RMKDEPDIR)/*.cxx)
+RMKDEPO1     := $(RMKDEPS1:.c=.o)
+RMKDEPO2     := $(RMKDEPS2:.cxx=.o)
+RMKDEPO      := $(RMKDEPO1) $(RMKDEPO2)
 RMKDEP       := bin/rmkdepend$(EXEEXT)
-ifeq ($(ARCH),win32)
+ifeq ($(PLATFORM),win32)
 #RMKDEPCFLAGS := -DINCLUDEDIR=\"/usr/include\" -DOBJSUFFIX=\".obj\"
 RMKDEPCFLAGS := -DINCLUDEDIR=\"/usr/include\" -DOBJSUFFIX=\".o\"
 else
@@ -21,17 +24,23 @@ RMKDEPCFLAGS := -DINCLUDEDIR=\"/usr/include\" -DOBJSUFFIX=\".o\"
 endif
 
 ##### bindexplib #####
-ifeq ($(ARCH),win32)
+ifeq ($(PLATFORM),win32)
 BINDEXPS     := $(wildcard $(BINDEXPDIR)/*.cxx)
 BINDEXPO     := $(BINDEXPS:.cxx=.o)
 BINDEXP      := bin/bindexplib$(EXEEXT)
+
+W32PRAGMA    := build/win/w32pragma.h
+ALLHDRS      += include/w32pragma.h
 endif
 
 ##### local rules #####
 $(RMKDEP):      $(RMKDEPO)
 		$(LD) $(LDFLAGS) -o $@ $(RMKDEPO)
 
-ifeq ($(ARCH),win32)
+ifeq ($(PLATFORM),win32)
+include/%.h:    build/win/%.h
+		cp $< $@
+
 $(BINDEXP):     $(BINDEXPO)
 		$(LD) $(LDFLAGS) -o $@ $(BINDEXPO)
 
@@ -58,7 +67,8 @@ $(RMKDEPDIR)/include.o:  $(RMKDEPDIR)/def.h
 $(RMKDEPDIR)/main.o:     $(RMKDEPDIR)/def.h $(RMKDEPDIR)/imakemdep.h
 $(RMKDEPDIR)/parse.o:    $(RMKDEPDIR)/def.h
 $(RMKDEPDIR)/pr.o:       $(RMKDEPDIR)/def.h
+$(RMKDEPDIR)/mainroot.o: $(RMKDEPDIR)/def.h
 
 ##### local rules #####
-$(RMKDEPO): %.o: %.c
-	$(CC) $(OPT) $(CFLAGS) $(RMKDEPCFLAGS) -o $@ -c $<
+$(RMKDEPO1): CFLAGS += $(RMKDEPCFLAGS)
+$(RMKDEPO2): CXXFLAGS += $(RMKDEPCFLAGS)

@@ -49,11 +49,18 @@ in this Software without prior written authorization from the X Consortium.
 #include <stdarg.h>
 #ifndef WIN32
 #include <unistd.h>
+#else
+#include <io.h>
 #endif
-#ifdef __hpux
-#include <sys/stat.h>
+#if !defined(__hpux)
+#if defined(__APPLE__)
+#include <AvailabilityMacros.h>
+#if !defined(MAC_OS_X_VERSION_10_4)
+extern int fchmod();
+#endif
 #else
 extern int fchmod();
+#endif
 #endif
 
 #ifdef MINIX
@@ -145,9 +152,7 @@ extern int find_includes(struct filepointer *filep, struct inclist *file,
 extern void recursive_pr_include(struct inclist *head, char *file, char *base);
 extern void inc_clean();
 
-
-
-int main(argc, argv)
+int main_orig(argc, argv)
 	int	argc;
 	char	**argv;
 {
@@ -336,7 +341,7 @@ int main(argc, argv)
 		case 'm':
 			warn_multiple = TRUE;
 			break;
-			
+
 		/* Ignore -O, -g so we can just pass ${CFLAGS} to
 		   makedepend
 		 */
@@ -467,17 +472,20 @@ int main(argc, argv)
 	 * now peruse through the list of files.
 	 */
 	for(fp=filelist; *fp; fp++) {
-		filecontent = getfile(*fp);
-		ip = newinclude(*fp, (char *)NULL);
+           filecontent = getfile(*fp);
+           ip = newinclude(*fp, (char *)NULL);
 
-		find_includes(filecontent, ip, ip, 0, FALSE);
-		freefile(filecontent);
-		recursive_pr_include(ip, ip->i_file, base_name(*fp));
-		inc_clean();
+           find_includes(filecontent, ip, ip, 0, FALSE);
+           freefile(filecontent);
+           recursive_pr_include(ip, ip->i_file, base_name(*fp));
+           inc_clean();
 	}
-	if (printed)
-		printf("\n");
-	exit(0);
+        if (!rootBuild) {
+	   if (printed)
+		   printf("\n");
+	   exit(0);
+        }
+        return 0;
 }
 
 #ifdef __EMX__
@@ -559,7 +567,7 @@ int match(str, list)
  * Get the next line.  We only return lines beginning with '#' since that
  * is all this program is ever interested in.
  */
-char *getline(filep)
+char *rgetline(filep)
 	register struct filepointer	*filep;
 {
 	register char	*p,	/* walking pointer */
@@ -617,7 +625,7 @@ char *getline(filep)
 
 				*p++ = '\0';
 				/* punt lines with just # (yacc generated) */
-				for (cp = bol+1; 
+				for (cp = bol+1;
 				     *cp && (*cp == ' ' || *cp == '\t'); cp++);
 				if (*cp) goto done;
 			}
@@ -669,7 +677,7 @@ redirect(line, makefile)
 		*makefile;
 {
 	struct stat	st;
-	FILE	*fdin, *fdout;
+	FILE	*fdin=0, *fdout=0;
 	char	backup[ BUFSIZ ],
 		buf[ BUFSIZ ];
 	boolean	found = FALSE;
@@ -696,43 +704,50 @@ redirect(line, makefile)
 	}
 	else
 	    stat(makefile, &st);
-	if ((fdin = fopen(makefile, "r")) == NULL)
-		fatalerr("cannot open \"%s\"\n", makefile);
-	sprintf(backup, "%s.bak", makefile);
-	unlink(backup);
+        if (!rootBuild) {
+	   if ((fdin = fopen(makefile, "r")) == NULL)
+		   fatalerr("cannot open \"%s\"\n", makefile);
+	   sprintf(backup, "%s.bak", makefile);
+	   unlink(backup);
 #if defined(WIN32) || defined(__EMX__)
-	fclose(fdin);
+   	   fclose(fdin);
 #endif
-	if (rename(makefile, backup) < 0)
+	   if (rename(makefile, backup) < 0)
 		fatalerr("cannot rename %s to %s\n", makefile, backup);
 #if defined(WIN32) || defined(__EMX__)
-	if ((fdin = fopen(backup, "r")) == NULL)
+	   if ((fdin = fopen(backup, "r")) == NULL)
 		fatalerr("cannot open \"%s\"\n", backup);
 #endif
+        }
 	if ((fdout = freopen(makefile, "w", stdout)) == NULL)
 		fatalerr("cannot open \"%s\"\n", backup);
-	len = strlen(line);
-	while (!found && fgets(buf, BUFSIZ, fdin)) {
-		if (*buf == '#' && strncmp(line, buf, len) == 0)
-			found = TRUE;
-		fputs(buf, fdout);
-	}
-	if (!found) {
-		if (verbose)
-		warning("Adding new delimiting line \"%s\" and dependencies...\n",
-			line);
-		puts(line); /* same as fputs(fdout); but with newline */
-	} else if (append) {
-	    while (fgets(buf, BUFSIZ, fdin)) {
-		fputs(buf, fdout);
-	    }
-	}
-	fflush(fdout);
+        if (!rootBuild) {
+	   len = strlen(line);
+	   while (!found && fgets(buf, BUFSIZ, fdin)) {
+		   if (*buf == '#' && strncmp(line, buf, len) == 0)
+			   found = TRUE;
+		   fputs(buf, fdout);
+	   }
+	   if (!found) {
+		   if (verbose)
+		   warning("Adding new delimiting line \"%s\" and dependencies...\n",
+			   line);
+		   puts(line); /* same as fputs(fdout); but with newline */
+	   } else if (append) {
+	       while (fgets(buf, BUFSIZ, fdin)) {
+		   fputs(buf, fdout);
+	       }
+	   }
+	   fflush(fdout);
 #if defined(USGISH) || defined(_SEQUENT_) || defined(USE_CHMOD)
-	chmod(makefile, st.st_mode);
+	   chmod(makefile, st.st_mode);
 #else
-        fchmod(fileno(fdout), st.st_mode);
+	   fchmod(fileno(fdout), st.st_mode);
 #endif /* USGISH */
+	} else {
+	   printf(" "); /* we need this to update the time stamp! */
+	   fflush(fdout);
+   }
 }
 
 void fatalerr(char *msg, ...)
@@ -747,17 +762,21 @@ void fatalerr(char *msg, ...)
 
 void warning(char *msg, ...)
 {
+   if (!rootBuild) {
 	va_list args;
 	fprintf(stderr, "%s: warning:  ", ProgramName);
 	va_start(args, msg);
 	vfprintf(stderr, msg, args);
 	va_end(args);
+   }
 }
 
 void warning1(char *msg, ...)
 {
+   if (!rootBuild) {
 	va_list args;
 	va_start(args, msg);
 	vfprintf(stderr, msg, args);
 	va_end(args);
+   }
 }
