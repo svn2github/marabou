@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.49 2007-02-26 13:42:25 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.50 2007-03-08 08:09:59 Rudolf.Lutter Exp $       
 // Date:           
 //
 // Class TMbsSetup refers to a resource file in user's working directory
@@ -712,7 +712,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 	Bool_t ok = kTRUE;
 	TMrbLofNamedX lofHosts;
 
-	TString rhFile = "rhost.names";
+	TString rhFile = "rhosts.rc";
 	TString rhTmpl;
 	ux.Which(rhTmpl, templatePath.Data(), rhFile.Data());
 	if (rhTmpl.IsNull()) ok = kFALSE;
@@ -728,6 +728,10 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 	}
 
 	if (ok) {
+		if (this->IsVerbose()) {
+			gMrbLog->Out() << "Reading entries from file " << rhFile << " (" << rhTmpl << ")" << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+		}
 		TString rhLine;
 		TString domain = "";
 		TString hname;
@@ -750,17 +754,21 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 			}
 			hname = ((TObjString *) rhArr->At(0))->GetString();
 			if (hname.BeginsWith(".")) {
-				domain = hname;
+				domain = hname(1, 1000);
+				if (this->IsVerbose()) {
+					gMrbLog->Out() << "Setting default domain - " << domain << endl;
+					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				}
 			} else {
 				if (n != 1) {
 					gMrbLog->Err() << "[" << rhFile << ", line " << lineNo << "] Wrong format - should be \"domainName\" (starting with \".\")" << endl;
 					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+					continue;
 				}
-				continue;
 			}
 			Int_t m;
 			if (m = hname.Index(".", 0) != -1) {
-				dname = hname(m, 1000);
+				dname = hname(m + 1, 1000);
 				dname = dname.Strip(TString::kBoth);
 				hname.Resize(m);
 			} else {
@@ -773,11 +781,19 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 				haddr = ((TObjString *) rhArr->At(1))->GetString();
 				nx->AssignObject(new TObjString(haddr.Data()));
 			}
+			if (this->IsVerbose()) {
+				if (!dname.IsNull()) {
+					gMrbLog->Out() << "Adding to list of host names - " << hname << " (" << hname << "." << dname << ")" << endl;
+				} else {
+					gMrbLog->Out() << "Adding to list of host names - " << hname << endl;
+				}
+				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+			}
 			lofHosts.AddNamedX(nx);
 		}
 		rhin.close();
 	} else if (this->IsVerbose()) {
-		gMrbLog->Wrn() << "No such file - " << rhFile << " (path = " << templatePath << ")" << endl;
+		gMrbLog->Wrn() << "No such file - " << rhFile << " (" << rhTmpl << ")" << endl;
 		gMrbLog->Wrn() << "No list of hosts/ppcs present - .rhosts will contain your local defs only" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 	}
@@ -788,6 +804,10 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 			gMrbLog->Err() << gSystem->GetError() << " - " << RhostsFile << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 		} else {
+			if (this->IsVerbose()) {
+				gMrbLog->Out() << "Reading entries from file " << RhostsFile << endl;
+					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+			}
 			TString rhLine;
 			TString hname;
 			TString dname;
@@ -810,7 +830,17 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 					hname = rhLine;
 					dname = "";
 				}
-				if (!lofHosts.FindByName(hname.Data())) lofHosts.AddNamedX(lineNo + 1000, hname, dname);
+				if (!lofHosts.FindByName(hname.Data())) {
+					if (this->IsVerbose()) {
+						if (!dname.IsNull()) {
+							gMrbLog->Out() << "Adding to list of host names - " << hname << " (" << hname << "." << dname << ")" << endl;
+						} else {
+							gMrbLog->Out() << "Adding to list of host names - " << hname << endl;
+						}
+						gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+					}
+					lofHosts.AddNamedX(lineNo + 1000, hname, dname);
+				}
 			}
 		}
 		rhin.close();
@@ -827,16 +857,34 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 
 	TString hostName;
 	ux.GetHostName(hostName);
-	if (!lofHosts.FindByName(hostName.Data())) lofHosts.AddNamedX(0, hostName.Data(), "");
+	if (!lofHosts.FindByName(hostName.Data())) {
+		if (this->IsVerbose()) {
+			gMrbLog->Out() << "Adding to list of host names - " << hostName << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+		}
+		lofHosts.AddNamedX(0, hostName.Data(), "");
+	}
 
 	TString ppcName;
 	this->Get(ppcName, "EvtBuilder.Name");
-	if (!lofHosts.FindByName(ppcName.Data())) lofHosts.AddNamedX(1, ppcName.Data(), "");
+	if (!lofHosts.FindByName(ppcName.Data())) {
+		if (this->IsVerbose()) {
+			gMrbLog->Out() << "Adding to list of host names - " << ppcName << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+		}
+		lofHosts.AddNamedX(1, ppcName.Data(), "");
+	}
 
 	for (Int_t i = 0; i < this->GetNofReadouts(); i++) {
 		TString res;
 		this->Get(ppcName, this->Resource(res, "Readout", i, "Name"));
-		if (!lofHosts.FindByName(ppcName.Data())) lofHosts.AddNamedX(2 + i, ppcName.Data(), "");
+		if (!lofHosts.FindByName(ppcName.Data())) {
+			if (this->IsVerbose()) {
+				gMrbLog->Out() << "Adding to list of host names - " << ppcName << endl;
+				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+			}
+			lofHosts.AddNamedX(2 + i, ppcName.Data(), "");
+		}
 	}
 
 	TIterator * rhIter = lofHosts.MakeIterator();
@@ -846,23 +894,28 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 	while (hx = (TMrbNamedX *) rhIter->Next()) {
 		TString hname = hx->GetName();
 		TInetAddress * ia = new TInetAddress(gSystem->GetHostByName(hname.Data()));
-		TString hAddr = ia->GetHostName();
-		if (hAddr.CompareTo("UnknownHost") == 0) {
+		TString hlong = ia->GetHostName();
+		TString haddr = ia->GetHostAddress();
+		if (hlong.CompareTo("UnknownHost") == 0 || haddr.CompareTo("0.0.0.0") == 0) {
 			gMrbLog->Err() << "Can't resolve host name - " << hname << " (ignored)" << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 			continue;
 		}
 		
-		if (!hAddr.Contains(".")) {
+		if (!hlong.Contains(".")) {
 			TString dn;
 			ux.GetDomainName(dn);
-			if (!dn.IsNull()) {
-				hAddr += ".";
-				hAddr += dn;
+			if (!dn.IsNull() && dn.CompareTo("(none)") != 0) {
+				hlong += ".";
+				hlong += dn;
 			}
 		}
-		if (hAddr.CompareTo(hname.Data()) != 0) rhosts << hname << " " << userName << endl;
-		rhosts << hAddr << " " << userName << endl;
+		if (this->IsVerbose()) {
+			gMrbLog->Out() << "Resolving host " << hname << " (" << hlong << "): " << haddr << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+		}
+		if (hlong.CompareTo(hname.Data()) != 0) rhosts << hname << " " << userName << endl;
+		rhosts << hlong << " " << userName << endl;
 		ok = kTRUE;
 		nofHosts++;
 	}
