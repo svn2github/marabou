@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.22 2007-02-08 11:03:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.23 2007-03-13 14:22:11 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -274,9 +274,25 @@ TGMrbMacroBrowserMain::TGMrbMacroBrowserMain(const TGWindow * Parent, TMrbLofMac
 	HEAP(buttonLayout);
 	fButtonGC->SetLH(buttonLayout);
 
-	fMacroList = new TGMrbMacroList(this, fLofMacros, Width - 10, Height - 10, fFrameGC, fButtonGC);
-	HEAP(fMacroList);
-	this->AddFrame(fMacroList, fFrameGC->LH());
+	if (fLofMacros->GetEntriesFast() == 1) {
+		TMrbNamedX * macro = fLofMacros->FirstMacro();
+		if (macro) {
+			cout << "@@ " << macro->GetName() << endl;
+			getchar();
+			SetWindowName("MacroBrowser: Display & exec ROOT macros");
+			MapSubwindows();
+			Resize(GetDefaultSize());
+			Int_t w = fMenuBar->GetDefaultWidth();
+			if (w < (Int_t) fMacroList->GetDefaultWidth()) w = fMacroList->GetDefaultWidth();
+			Resize(w + 10, fMenuBar->GetDefaultHeight() + fMacroList->GetDefaultHeight() + 5);
+			MapWindow();
+			new TGMrbMacroFrame(fClient->GetRoot(), this, fLofMacros->FirstMacro(), 100, 100);
+		}
+	} else {
+		fMacroList = new TGMrbMacroList(this, fLofMacros, Width - 10, Height - 10, fFrameGC, fButtonGC);
+		HEAP(fMacroList);
+		this->AddFrame(fMacroList, fFrameGC->LH());
+	}
 
 	this->ChangeBackground(blue);
 
@@ -1466,6 +1482,23 @@ Bool_t TGMrbMacroFrame::LoadMacro() {
 
 	gSystem->AddIncludePath("-I$MARABOU/include");
 
+	TString rcFile = macroEnv->GetValue("RcFile", "");
+	if (!rcFile.IsNull()) {
+		TString rcSpec;
+		ux.Which(rcSpec, macroPath.Data(), rcFile.Data());
+		if (rcSpec.IsNull()) {
+			gMrbLog->Wrn()	<< "RcFile not found - " << rcFile << endl;
+			gMrbLog->Flush(this->ClassName(), "LoadMacro");
+		} else {
+			Int_t errCode;
+			gROOT->Macro(rcFile.Data(), &errCode);
+			if (errCode != 0) {
+				gMrbLog->Err()  << "Executing rcFile failed - " << rcFile << endl;
+				gMrbLog->Flush(this->ClassName(), "LoadMacro");
+			}
+		}
+	}
+
 	TString macroCmd = macroName;
 	macroCmd.Remove(macroCmd.Index(".C"), 1000);
 
@@ -1670,6 +1703,13 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 														frameGC, labelGC, buttonGC);
 	HEAP(fMacroAclic);
 	fMacroInfo->AddFrame(fMacroAclic, frameGC->LH());
+
+	fMacroRcFile = new TGMrbLabelEntry(fMacroInfo, "RcFile", 80, -1, frameWidth - 20,
+														TGMrbMacroEdit::kLineHeight, 300,
+														frameGC, labelGC, entryGC);
+	HEAP(fMacroRcFile);
+	fMacroInfo->AddFrame(fMacroRcFile, frameGC->LH());
+	fMacroRcFile->GetEntry()->SetText(fOriginalEnv->GetValue("RcFile", ""));
 
 	fMacroModify = new TGMrbRadioButtonList(fMacroInfo, "Modify", &fLofModifyModes, -1, 1,
 														frameWidth - 20,
@@ -2053,6 +2093,8 @@ Bool_t TGMrbMacroEdit::StoreHeader() {
 	nx = fLofModifyModes.FindByIndex(idx);
 	argValue = nx ? nx->GetName() : "";
 	fCurrentEnv->SetValue("Modify", argValue.Data(), kEnvChange);
+	argValue = fMacroRcFile->GetEntry()->GetText();
+	fCurrentEnv->SetValue("RcFile", argValue.Data(), kEnvChange);
 	argValue = fMacroNofArgs->GetEntry()->GetText();
 	fCurrentEnv->SetValue("NofArgs", argValue.Data(), kEnvChange);
 	return(kTRUE);

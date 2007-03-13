@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.11 2007-02-08 11:03:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.12 2007-03-13 14:22:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -317,6 +317,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		TGGroupFrame * fMacroInfo;
 		TGMrbLabelEntry * fMacroName;
 		TGMrbLabelEntry * fMacroTitle;
+		TGMrbLabelEntry * fMacroRcFile;
 		TGMrbLabelEntry * fMacroProc;
 		TGMrbLabelEntry * fMacroWidth;
 
