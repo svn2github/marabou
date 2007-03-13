@@ -2,7 +2,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:             Encal.C
 // Purpose:          Energy calibration for 1-dim histograms
-// Syntax:           .x Encal.C(TObjArray * HistoFile,
+// Syntax:           .x Encal.C(TObjArray * LofHistos,
 //                               Int_t CalSource,
 //                               const Char_t * Energies,
 //                               const Char_t * CalFile,
@@ -18,9 +18,9 @@
 //                               Int_t FitGrouping,
 //                               Int_t FitBackground,
 //                               Double_t FitRange,
-//                               Int_t DisplayFlag,
+//                               Int_t DisplayMode,
 //                               Bool_t VerboseMode)
-// Arguments:        TObjArray * HistoFile     -- Histogram file (.root)
+// Arguments:        TObjArray * LofHistos     -- list of histos (#0=name of histo file)
 //                   Int_t CalSource           -- Calibration source
 //                   Char_t * Energies         -- Calibration energies
 //                   Char_t * CalFile          -- Calibration data (.cal)
@@ -36,13 +36,13 @@
 //                   Int_t FitGrouping         -- Fit grouping
 //                   Int_t FitBackground       -- Background
 //                   Double_t FitRange         -- Range for peak fit [sigma]
-//                   Int_t DisplayFlag         -- Display results
+//                   Int_t DisplayMode         -- Display results
 //                   Bool_t VerboseMode        -- Verbose mode
 // Description:      Energy calibration for 1-dim histograms
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.15 2007-02-08 14:16:16 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.16 2007-03-13 14:25:25 Rudolf.Lutter Exp $
 // Date:             Thu Feb  8 13:23:50 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -50,6 +50,7 @@
 //                   Width:               
 //                   Aclic:               +g
 //                   Modify:              
+//                   RcFile:              .EncalLoadLibs.C              
 //                   NofArgs:             18
 //                   Arg1.Name:           HistoFile
 //                   Arg1.Title:          Histogram file (.root)
@@ -207,7 +208,7 @@
 //                   Arg16.Increment:     .5
 //                   Arg16.Base:          dec
 //                   Arg16.Orientation:   horizontal
-//                   Arg17.Name:          DisplayFlag
+//                   Arg17.Name:          DisplayMode
 //                   Arg17.Title:         Display results
 //                   Arg17.Type:          Int_t
 //                   Arg17.EntryType:     Check
@@ -249,76 +250,250 @@
 #include "TMrbLogger.h"
 #include "SetColor.h"
 
-
-enum	{ kCalSourceCo60 = 1 };
-enum	{ kCalSourceEu152 = 2 };
-enum	{ kCalSourceTripleAlpha = 4 };
-enum	{ kFitModeGaus = 1 };
-enum	{ kFitModeGausTail = 2 };
-enum	{ kFitModeBackgroundLinear = 1 };
-enum	{ kFitModeBackgroundConst = 2 };
-enum	{ kFitGroupingSinglePeak = 1 };
-enum	{ kFitGroupingEnsemble = 2 };
-enum	{ kDisplayFlagStep = 1 };
-enum	{ kDisplayFlag2dim = 2 };
-
-enum	{	kButtonOk = 1,
-			kButtonDiscard,
-			kButtonStop,
-			kButtonQuit
-		};
-
-enum	{	kColorWhite = 10,
-			kColorRed = 2,
-			kColorGreen = 3,
-			kColorBlue = 4,
-			kColorGray = 32
-		};
-
 // global vars
 
 TMrbLogger * msg = NULL;
 
-// fitting
+// global fitting vars used by fit functions
 Int_t fitNofPeaks = 1;
 Int_t fitBinWidth = 1;
 Int_t fitTailSide = 1;
 
-// calibration
-TString calSource;
-TEnv * enTable = NULL;
-TEnv * cal = NULL;
-TEnv * res = NULL;
-TFile * resFit = NULL;
+// global button flag
+enum EEncalButtons		{	kButtonDiscard = 1,
+							kButtonOk,
+							kButtonStop,
+							kButtonQuit
+						};
 
-Bool_t isTripleAlpha = kFALSE;
-Bool_t isCo60 = kFALSE;
-Bool_t isEu152 = kFALSE;
-Int_t peaksNeeded = 0;
-Bool_t doCal = kFALSE;
-TString enFile;
-
-// canvas & display
 Int_t buttonFlag = 0;
-Bool_t stepIt = kFALSE;
-Bool_t show2dim = kFALSE;
-TCanvas * canv = NULL;
-TButton * statusLine;
 
-Double_t gaus_lbg(Double_t * x, Double_t * par)
-{
-/*
-  par[0]   background constant
-  par[1]   background slope
-  par[2]   gauss width
-  par[3]   gauss0 constant
-  par[4]   gauss0 mean
-  par[5]   gauss1 constant
-  par[6]   gauss1 mean
-  par[7]   gauss2 constant
-  par[8]   gauss2 mean
-  ...
-*/
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           Encal
+// Description:    Class to describe an energy calibration
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbEncal {
+
+	public:
+		enum EEncalBrowserBits {	kCalSourceCo60 = 1,
+									kCalSourceEu152 = 2,
+									kCalSourceTripleAlpha = 4,
+									kFitModeGaus = 1,
+									kFitModeGausTail = 2,
+									kFitModeBackgroundLinear = 1,
+									kFitModeBackgroundConst = 2,
+									kFitGroupingSinglePeak = 1,
+									kFitGroupingEnsemble = 2,
+									kDisplayFlagStep = 1,
+									kDisplayFlag2dim = 2
+								};
+
+		enum EEncalColors		{	kColorBlack = 1,
+									kColorWhite = 10,
+									kColorRed = 2,
+									kColorGreen = 3,
+									kColorBlue = 4,
+									kColorGray = 32
+								};
+
+		enum					{	kNofButtons = 4 };
+		enum					{	kCanvasWidth = 800 };
+		enum					{	kCanvasHeight = 600 };
+
+		enum EEncalFitStatus	{	kFitDiscard = 0,
+									kFitOk,
+									kFitAuto
+								};
+
+	public:
+		TMrbEncal() {}; 							// default ctor
+		TMrbEncal(	TObjArray * LofHistos,			// ctor
+						Int_t CalSource,
+						const Char_t * Energies,
+						const Char_t * CalFile,
+						const Char_t * ResFile,
+						const Char_t * FitFile,
+						Bool_t ClearFlag,
+						const Char_t * PrecalFile,
+						Int_t LowerLim,
+						Int_t UpperLim,
+						Int_t PeakFrac,
+						Double_t Sigma,
+						Int_t FitMode,
+						Int_t FitGrouping,
+						Int_t FitBackground,
+						Double_t FitRange,
+						Int_t DisplayMode,
+						Bool_t VerboseMode);
+
+		virtual ~TMrbEncal() {};	// default dtor
+		
+		Bool_t OpenHistoFile();
+		inline Int_t GetNofHistos() { return(fNofHistos); };
+		Bool_t OpenCalFiles();
+
+		inline const Char_t * SourceName() { return(fSourceName.Data()); };
+		Bool_t SetCalSource();
+		inline Bool_t IsTripleAlpha() { return(fCalSource == kCalSourceTripleAlpha); };
+		inline Bool_t IsCo60() { return(fCalSource == kCalSourceCo60); };
+		inline Bool_t IsEu152() { return(fCalSource == kCalSourceEu152); };
+
+		inline TObjArray * GetLofHistos() { return(fLofHistos); };
+		inline void ResetLofHistos() { fHIter = fLofHistos->MakeIterator(); };
+		TH1F * GetNextHisto();
+
+		Bool_t FindPeaks(Int_t MaxNofPeaks = 100, Float_t Resolution = 1.0);
+
+		inline Int_t GetNofPeaks() { return(fNofPeaks); };
+		inline Int_t GetNofPeaksNeeded() { return(fNofPeaksNeeded); };
+
+		Int_t GetPeakFinderResults(TArrayF & PeakX, TArrayF & PeakY);
+
+		void FitGaussTailSingle();
+		void FitGaussTailEnsemble();
+		void FitGaussSingle();
+		void FitGaussEnsemble();
+		Int_t GetFitResults(TArrayF & Xfit, TArrayF & Xerr, TArrayF & Yfit, TArrayF & Yerr, TArrayF & Chi2);
+		void PrintFitResults();
+
+		inline Int_t GetFitMode() { return(fFitMode); };
+		inline Int_t GetFitGrouping() { return(fFitGrouping); };
+
+		void Calibrate();
+
+		Int_t GetNofHistosCalibrated();
+
+		inline Bool_t StepMode() { return((fDisplayMode & kDisplayFlagStep) != 0); };
+		inline Bool_t TwoDimMode() { return((fDisplayMode & kDisplayFlag2dim) != 0); };
+
+		void WaitForButtonPressed(Bool_t StepFlag = kFALSE);
+		inline Bool_t ButtonOk() { return(buttonFlag == kButtonOk); };
+		inline Bool_t ButtonDiscard() { return(buttonFlag == kButtonDiscard); };
+		inline Bool_t ButtonStop() { return(buttonFlag == kButtonStop); };
+
+		void ClearCanvas(Int_t PadNo);
+		void SetStatusLine(const Char_t * Text = NULL, Int_t FillColor = kColorWhite, Int_t LineColor = kColorBlack);
+		void OutputMessage(const Char_t * Method, const Char_t * Text, Bool_t ErrFlag = kFALSE, Int_t ColorIndex = -1);
+
+		TCanvas * OpenCanvas();
+		void CloseCanvas() { if (fMainCanvas) fMainCanvas->Close(); if (f2DimCanvas) f2DimCanvas->Close(); }
+
+		void WriteResults();
+		void WriteCalibration();
+		void UpdateStatusLine();
+		void WriteMinMax();
+		void WriteFitStatus();
+
+		void SetFitStatus(Int_t FitStatus, const Char_t * Reason = NULL);
+
+		void ShowResults2dim();
+		void CloseEnvFiles();
+		void CloseRootFile();
+
+		inline Bool_t Verbose() { return(fVerboseMode); };
+		inline void SetVerboseMode(Bool_t Flag) { fVerboseMode = Flag; };
+
+		void SetCurHisto(TH1F * Histo);
+		inline Int_t GetLowerLim() { return(fLowerLim); };
+		inline Int_t GetUpperLim() { return(fUpperLim); };
+
+		inline TFile * HistoFile() { return(fHistoFile); };
+
+	protected:
+		TObjArray * fLofHistos;	// argument storage
+		Int_t fCalSource;
+		TString fEnergies;
+		TString fCalFile;
+		TString fResFile;
+		TString fFitFile;
+		Bool_t fClearFlag;
+		TString fPrecalFile;
+		Int_t fLowerLim;
+		Int_t fUpperLim;
+		Int_t fPeakFrac;
+		Double_t fSigma;
+		Int_t fFitMode;
+		Int_t fFitGrouping;
+		Int_t fFitBackground;
+		Double_t fFitRange;
+		Int_t fDisplayMode;
+		Bool_t fVerboseMode;
+
+	protected:
+		TString fSourceName; 	// calibration source
+		TEnv * fEnvEnergies;	// calibration energies
+		TEnv * fEnvCalib;		// calibration data
+		TEnv * fEnvResults;		// detailed calibration results
+		TFile * fFitResults;	// histograms + fits
+
+		Int_t fNofPeaksNeeded; 	// peaks needed for given calibration
+		Bool_t fEnableCalib;	// kTRUE if we have to calibrate
+
+		TCanvas * fMainCanvas;	// canvas to display histo + fit
+		TCanvas * f2DimCanvas;	// 2nd canvas: 2-dim histo
+		TButton * fStatusLine;	// status
+
+		TFile * fHistoFile; 	// root file containing histograms
+		TIterator * fHIter;
+		TH1F * fCurHisto;
+		Int_t fNofHistos;		// number of histograms (selected from root file)
+		Int_t fNofHistosCalibrated;	// number of histograms calibrated
+
+		TH2S * f2DimFitResults;	// 2-dim histo to show re-calibrated histograms
+
+		Int_t fNofPeaks;		// peak finder results
+		TArrayF fPeakX;
+		TArrayF fPeakY;
+
+		TArrayF fXfit;			// fit results
+		TArrayF fXerr;
+		TArrayF fYfit;
+		TArrayF fYerr;
+		TArrayF fChi2;
+
+		Int_t fXmin;			// energy calibration
+		Double_t fEmin;
+		Int_t fXmax;
+		Double_t fEmax;
+		TF1 * fPoly;
+
+		TArrayF fCalX;
+		TArrayF fCalE;
+		TArrayF fCalXerr;
+		TArrayF fCalEerr;
+
+		Int_t fFitStatus;		// fit quality
+		TString fReason;
+
+		TObjArray * fParamNames;	// param names for gauss/tail/background fit
+
+		TButton * fBtnOk;		//buttons
+		TButton * fBtnDiscard;
+		TButton * fBtnStop;
+		TButton * fBtnQuit;
+};
+
+void buttonPressed(Int_t Flag = 0) { buttonFlag = Flag; }
+
+Double_t gaus_lbg(Double_t * x, Double_t * par) {
+//___________________________________________________________[STATIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           gaus_lbg
+// Purpose:        fit linear/const background + N gaussians
+// Description:    par[0]   background constant
+//                 par[1]   background slope
+//                 par[2]   gauss width
+//                 par[3]   gauss0 constant
+//                 par[4]   gauss0 mean
+//                 par[5]   gauss1 constant
+//                 par[6]   gauss1 mean
+//                 par[7]   gauss2 constant
+//                 par[8]   gauss2 mean
+//                 ...
+//////////////////////////////////////////////////////////////////////////////
+
    static Float_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
@@ -334,22 +509,25 @@ Double_t gaus_lbg(Double_t * x, Double_t * par)
    return fitBinWidth * fitval;
 }
 
-Double_t gaus_tail(Double_t * x, Double_t * par)
-{
-/*
-  par[0]   tail fraction
-  par[1]   tail width
-  par[2]   background constant
-  par[3]   background slope
-  par[4]   gauss width
-  par[5]   gauss0 constant
-  par[6]   gauss0 mean
-  par[7]   gauss1 constant
-  par[8]   gauss1 mean
-  par[9]   gauss2 constant
-  par[10]  gauss2 mean
-  ...
-*/
+Double_t gaus_tail(Double_t * x, Double_t * par) {
+//___________________________________________________________[STATIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           gaus_tail
+// Purpose:        fit linear/const background + tail on left/right side + N gaussians
+// Description:    par[0]   tail fraction
+//                 par[1]   tail width
+//                 par[2]   background constant
+//                 par[3]   background slope
+//                 par[4]   gauss width
+//                 par[5]   gauss0 constant
+//                 par[6]   gauss0 mean
+//                 par[7]   gauss1 constant
+//                 par[8]   gauss1 mean
+//                 par[9]   gauss2 constant
+//                 par[10]  gauss2 mean
+//                 ...
+//////////////////////////////////////////////////////////////////////////////
+
    static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
    Double_t xij;
    Double_t arg;
@@ -385,43 +563,270 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
    return fitBinWidth * fitval;
 }
 
-void WaitForButtonPressed() {
-	buttonFlag = 0;
-	if (!stepIt) return;
-	while (buttonFlag == 0) {
-		gSystem->Sleep(50);
-		gSystem->ProcessEvents();
+TMrbEncal::TMrbEncal(	TObjArray * LofHistos,
+						Int_t CalSource,
+						const Char_t * Energies,
+						const Char_t * CalFile,
+						const Char_t * ResFile,
+						const Char_t * FitFile,
+						Bool_t ClearFlag,
+						const Char_t * PrecalFile,
+						Int_t LowerLim,
+						Int_t UpperLim,
+						Int_t PeakFrac,
+						Double_t Sigma,
+						Int_t FitMode,
+						Int_t FitGrouping,
+						Int_t FitBackground,
+						Double_t FitRange,
+						Int_t DisplayMode,
+						Bool_t VerboseMode) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal
+// Purpose:        ROOT object to hold energy calibration data
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofHistos = LofHistos; 								// xfer arguments
+	fCalSource = CalSource;
+	fEnergies = (Energies == NULL || *Energies == '\0') ? "$MARABOU/data/encal/energies.dat" : Energies;
+	fCalFile = (CalFile == NULL || *CalFile == '\0') ? "Encal.cal" : CalFile;
+	fResFile = (ResFile == NULL || *ResFile == '\0') ? "" : CalFile;
+	if (fResFile.IsNull()) { fResFile = fCalFile; fResFile.ReplaceAll(".cal", 4, ".res", 4); }
+	fFitFile = (FitFile == NULL || *FitFile == '\0') ? "" : FitFile;
+	if (fFitFile.IsNull()) { fFitFile = fCalFile; fFitFile.ReplaceAll(".cal", 4, ".root", 5); }
+	fClearFlag = ClearFlag;
+	fPrecalFile = (PrecalFile == NULL || *PrecalFile == '\0') ? "" : PrecalFile;
+	fLowerLim = LowerLim;
+	fUpperLim = UpperLim;
+	fPeakFrac = PeakFrac;
+	fSigma = Sigma;
+	fFitMode = FitMode;
+	fFitGrouping = FitGrouping;
+	fFitBackground = FitBackground;
+	fFitRange = FitRange;
+	fDisplayMode = DisplayMode;
+	fVerboseMode = VerboseMode;
+
+	fNofPeaksNeeded = 0;
+	fEnableCalib = kFALSE;
+	fEnvEnergies = NULL;
+	fEnvCalib = NULL;
+	fFitResults = NULL;
+
+	TString pNames = "Ta_Frac:Ta_Width:Bg_Slope:Bg_Const:Ga_Sigma:Ga_Const:Ga_Mean";
+	fParamNames = pNames.Tokenize(":");
+};
+
+Bool_t TMrbEncal::OpenHistoFile() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::OpenHistoFile
+// Purpose:        Open ROOT file and extract histo list
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    Extracts file name and histo names
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t fNofHistos = fLofHistos->GetEntriesFast();
+	if (fNofHistos == 0) {
+		this->OutputMessage("OpenHistoFile", "No histogram file given", kTRUE);
+		return(kFALSE);
+	}
+
+	TObjString * hStr = (TObjString *) fLofHistos->At(0);
+	TString hFileName = hStr->GetString();
+	hFileName = hFileName.Strip(TString::kBoth);
+
+	if (hFileName.IsNull()) {
+		this->OutputMessage("OpenHistoFile", "No histogram file given", kTRUE);
+		return(kFALSE);
+	}
+
+	fHistoFile = new TFile(hFileName.Data());
+	if (!fHistoFile->IsOpen()) {
+		this->OutputMessage("OpenHistoFile", Form("Can't open histogram file - %s", hFileName.Data()), kTRUE);
+		return(kFALSE);
+	}
+
+	if (fNofHistos == 1) {
+		this->OutputMessage("OpenHistoFile", Form("File %s - no histogram(s) selected", hFileName.Data()), kTRUE);
+		return(kFALSE);
+	}
+
+	fLofHistos->Remove(hStr);
+	fNofHistos--;
+	fNofHistosCalibrated = 0;
+
+	this->ResetLofHistos();
+
+	return(kTRUE);
+}
+
+TH1F * TMrbEncal::GetNextHisto() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::GetNextHisto
+// Purpose:        Fetch next histogram from list
+// Arguments:      --
+// Results:        TH1F * Histo    -- ptr to histo
+// Description:    Reads next histo name from list
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjString * hStr = (TObjString *) fHIter->Next();
+	if (hStr) {
+		TString hName = hStr->GetString();
+		TH1F * h = (TH1F *) fHistoFile->Get(hName.Data());
+		if (h == NULL) this->OutputMessage("GetNextHisto", Form("No such histogram - %s:%s", fHistoFile->GetName(), hName.Data()), kTRUE);
+		return(h);
+	}
+	return(NULL);
+}
+
+Bool_t TMrbEncal::OpenCalFiles() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::OpenCalFiles
+// Purpose:        Open calibration files
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    Opens calibration files
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fClearFlag) {
+		TString rmCmd = Form("rm -f %s %s", fCalFile.Data(), fResFile.Data());
+		gSystem->Exec(rmCmd.Data());
+		if (this->Verbose()) this->OutputMessage("OpenCalFiles", Form("Removing existing files - %s %s", fCalFile.Data(), fResFile.Data()));
+	}
+
+	fEnvCalib = new TEnv(fCalFile.Data());
+	if (this->Verbose()) this->OutputMessage("OpenCalFiles", Form("Writing calibration data to file %s", fCalFile.Data()));
+
+	fEnvCalib->SetValue("Calib.ROOTFile", fHistoFile->GetName());
+	
+	fEnvCalib->SetValue("Calib.Source", fSourceName.Data());
+	fEnvCalib->SetValue("Calib.Energies", fEnergies.Data());
+
+	fEnvResults = new TEnv(fResFile.Data());
+	if (this->Verbose()) this->OutputMessage("OpenCalFiles", Form("Writing results to file %s", fResFile.Data()));
+
+	fEnvResults->SetValue("Calib.ROOTFile", fHistoFile->GetName());
+	fEnvResults->SetValue("Calib.Energies", fEnergies.Data());
+
+	fFitResults = new TFile(fFitFile.Data(), "RECREATE");
+	if (!fFitResults->IsOpen()) {
+		this->OutputMessage("OpenCalFiles", Form("Can't open file - %s", fFitFile.Data()), kTRUE);
+		fFitResults = NULL;
+	} else if (this->Verbose()) {
+		this->OutputMessage("OpenCalFiles", Form("Writing fit data to file %s", fFitFile.Data()));
+	}
+
+	fEmin = fEnvResults->GetValue("Calib.Emin", 1e+20);
+	fEmax = fEnvResults->GetValue("Calib.Emax", 0);
+	fXmin = fEnvResults->GetValue("Calib.Xmin", 1000000);
+	fXmax = fEnvResults->GetValue("Calib.Xmax", 0);
+
+	return(kTRUE);
+}
+
+void TMrbEncal::SetCurHisto(TH1F * Histo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::SetCurHisto
+// Purpose:        Define current histo
+// Arguments:      TH1F * Histo   -- histogram
+// Results:        --
+// Description:    Defines current histo and adjusts histo limits
+//////////////////////////////////////////////////////////////////////////////
+
+	fCurHisto = Histo;
+	if (fUpperLim == 0 || fUpperLim < fLowerLim) fUpperLim = fCurHisto->GetNbinsX();
+	if (fLowerLim != 0 || fUpperLim < Histo->GetNbinsX()) fCurHisto->GetXaxis()->SetRange(fLowerLim, fUpperLim);
+}
+
+void TMrbEncal::WriteMinMax() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::WriteMinMax
+// Purpose:        Set minimum and maximum
+// Arguments:      --
+// Results:        --
+// Description:    Writes minimum/maximum values to .res file
+//////////////////////////////////////////////////////////////////////////////
+
+	fEnvResults->SetValue("Calib.Emin", fEmin);
+	fEnvResults->SetValue("Calib.Emax", fEmax);
+	fEnvResults->SetValue("Calib.Xmin", fXmin);
+	fEnvResults->SetValue("Calib.Xmax", fXmax);
+
+}
+
+void TMrbEncal::WaitForButtonPressed(Bool_t StepFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::WaitForButtonPressed
+// Purpose:        Control buttons
+// Arguments:      Bool_t StepFlag    -- wait if kTRUE (overwrites StepMode bit)
+// Results:        --
+// Description:    Waits for button flag to change
+//////////////////////////////////////////////////////////////////////////////
+
+	if (StepFlag || this->StepMode()) {
+		buttonPressed(0);
+		while (buttonFlag == 0) {
+			gSystem->Sleep(50);
+			gSystem->ProcessEvents();
+		}
+	} else {
+		buttonPressed(kButtonOk);
 	}
 }
 
-void ClearCanvas(Int_t PadNo) {
-	switch (PadNo) {
-		case 0:
-		case 1:
-			canv->cd(1);
-			gPad->Clear();
-			if (PadNo == 1) break;
-		case 2:
-			canv->cd(2);
-			gPad->Clear();
-			break;
-	}
-	canv->cd(PadNo);
-	canv->Update();
+void TMrbEncal::SetStatusLine(const Char_t * Text, Int_t FillColor, Int_t LineColor) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::SetStatusLine
+// Purpose:        Write text to status line
+// Arguments:      Char_t * Text     -- text to be written
+//                 Int_t FillColor   -- background color
+//                 Int_t LineColor   -- foreground color
+// Results:        --
+// Description:    Update status information
+//////////////////////////////////////////////////////////////////////////////
+
+	fStatusLine->SetTitle(Text);
+	fStatusLine->SetFillColor(FillColor);
+	fStatusLine->SetTextColor(LineColor);
+	fStatusLine->Paint();
+	fStatusLine->Modified();
+	fStatusLine->Update();
 }
 
-void SetStatusLine(const Char_t * Text = "", Int_t FillColor = 10, Int_t LineColor = 1) {
-		statusLine->SetTitle(Text);
-		statusLine->SetFillColor(FillColor);
-		statusLine->SetTextColor(LineColor);
-		statusLine->Paint();
-		statusLine->Modified();
-		statusLine->Update();
-}
+void TMrbEncal::OutputMessage(const Char_t * Method, const Char_t * Text, Bool_t ErrFlag, Int_t ColorIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::OutputMessage
+// Purpose:        Write message to cout/cerr
+// Arguments:      Char_t * Method   -- method
+//                 Char_t * Text     -- message text
+//                 Bool_t ErrFlag    -- kTRUE if error message
+//                 Int_t ColorIndex  -- foreground color
+// Results:        --
+// Description:    Outputs a message
+//////////////////////////////////////////////////////////////////////////////
 
-void OutputMessage(const Char_t * Text, Bool_t ErrFlag = kFALSE, Int_t ColorIndex = -1) {
 	const Char_t * tCol = setblack;
 	Int_t fgCol = 1;
+	TString method;
+	TString cName;
+	if (Method == NULL || *Method == '\0') {
+		cName = "Encal.C";
+		method = "";
+	} else {
+		cName = "TMrbEncal";
+		method = Method;
+	}
+
 	switch (ColorIndex) {
 		case kColorRed: tCol = setred; fgCol = 1; break;
 		case kColorGreen: tCol = setgreen; fgCol = 1; break;
@@ -430,108 +835,159 @@ void OutputMessage(const Char_t * Text, Bool_t ErrFlag = kFALSE, Int_t ColorInde
 	if (ColorIndex > 0) SetStatusLine(Text, ColorIndex, fgCol);
 	if (ErrFlag) {
 		msg->Err() << Text << endl;
-		msg->Flush("Encal.C");
+		msg->Flush(cName.Data(), method.Data());
 	} else {
 		msg->Out() << Text << endl;
-		msg->Flush("Encal.C", "", tCol);
+		msg->Flush(cName.Data(), method.Data(), tCol);
 	}
 }
 
-TCanvas * DrawCanvas() {
-	Int_t nBtns = 4;
-	Int_t canvw = 800;
-	Int_t canvh = 600;
-	Double_t xpx = 1./canvw;
+TCanvas * TMrbEncal::OpenCanvas() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::OpenCanvas
+// Purpose:        Create canvas and display buttons
+// Arguments:      --
+// Results:        TCanvas * Canvas   -- canvas
+// Description:    Opens the canvas
+//////////////////////////////////////////////////////////////////////////////
+
+	fMainCanvas = new TCanvas("EncalCanv", "Energy Calibration Tool", kCanvasWidth, kCanvasHeight);
+	fMainCanvas->Divide(1,2);
+
+	Double_t xpx = 1./kCanvasWidth;
 	Double_t x0 = 100 * xpx;
-	Double_t wdth = (canvw - 200) * xpx / nBtns;
+	Double_t wdth = (kCanvasWidth - 200) * xpx / kNofButtons;
 	Double_t y0 = 0.03;
 	Double_t y1 = 0.08;
 	Double_t y2 = 0.081;
 	Double_t y3 = 0.132;
 
-	TCanvas * c = new TCanvas("EncalCanv", "Energy Calibration Tool", canvw, canvh);
-	c->Divide(1,2);
-
 	Int_t btnNo = 0;
-	TButton * btnOk = new TButton("accept", "buttonFlag = kButtonOk;", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
-	btnOk->SetFillColor(32);
-	btnOk->SetToolTipText("pass data to calibration file and continue with next histo");
-	btnOk->Draw();
+	fBtnOk = new TButton("next", "buttonPressed(kButtonOk);", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
+	fBtnOk->SetFillColor(32);
+	fBtnOk->SetToolTipText("pass data to calibration file and continue with next histo");
+	fBtnOk->Draw();
 	btnNo++;
-	TButton * btnDiscard = new TButton("discard", "buttonFlag = kButtonDiscard;", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
-	btnDiscard->SetFillColor(32);
-	btnDiscard->SetToolTipText("discard fit and continue with next histo");
-	btnDiscard->Draw();
+	fBtnDiscard = new TButton("discard", "buttonPressed(kButtonDiscard);", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
+	fBtnDiscard->SetFillColor(32);
+	fBtnDiscard->SetToolTipText("discard fit and continue with next histo");
+	fBtnDiscard->Draw();
 	btnNo++;
-	TButton * btnStop = new TButton("stop", "if (resFit) resFit->Close(); buttonFlag = kButtonStop;", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
-	btnStop->SetFillColor(32);
-	btnStop->SetToolTipText("leave calibration and return to MacroBrowser");
-	btnStop->Draw();
+	fBtnStop = new TButton("stop", "buttonPressed(kButtonStop);", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
+	fBtnStop->SetFillColor(32);
+	fBtnStop->SetToolTipText("leave calibration and return to MacroBrowser");
+	fBtnStop->Draw();
 	btnNo++;
-	TButton * btnQuit = new TButton("quit", "if (resFit) resFit->Close(); gSystem->Exit(0);", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
-	btnQuit->SetFillColor(32);
-	btnQuit->SetToolTipText("exit from ROOT");
-	btnQuit->Draw();
-	statusLine = new TButton(" ", " ", .03, y2, .97, y3);
-	statusLine->Draw();
+	fBtnQuit = new TButton("quit", "gSystem->Exit(0);", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
+	fBtnQuit->SetFillColor(32);
+	fBtnQuit->SetToolTipText("exit from ROOT");
+	fBtnQuit->Draw();
+	fStatusLine = new TButton(" ", " ", .03, y2, .97, y3);
+	fStatusLine->Draw();
 
-	c->cd(2);
+	fMainCanvas->cd(2);
 	gPad->SetBottomMargin(.3);
 
-	c->cd();
-	c->Update();
-
-	return c;
+	fMainCanvas->cd();
+	fMainCanvas->Update();
+	return(fMainCanvas);
 }
 
-Bool_t CheckCalSource(Int_t CalSource, const Char_t * Energies) {
-	peaksNeeded = 0;
-	enFile = Energies;
-	gSystem->ExpandPathName(enFile);
-	if (gSystem->AccessPathName(enFile.Data())) {
-		OutputMessage(Form("No such file - %s, can't read calibration energies", enFile.Data()), kTRUE);
-		return(kFALSE);
-	}
-	enTable = new TEnv(enFile.Data());
+void TMrbEncal::ClearCanvas(Int_t PadNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::ClearCanvas
+// Purpose:        Clear canvas
+// Arguments:      Int_t PadNo     -- pad number
+// Results:        --
+// Description:    Clears whole canvas or specified pads
+//////////////////////////////////////////////////////////////////////////////
 
-	switch (CalSource) {
+	switch (PadNo) {
+		case 0:
+		case 1:
+			fMainCanvas->cd(1);
+			gPad->Clear();
+			if (PadNo == 1) break;
+		case 2:
+			fMainCanvas->cd(2);
+			gPad->Clear();
+			break;
+	}
+	fMainCanvas->cd(PadNo);
+	fMainCanvas->Update();
+}
+
+Bool_t TMrbEncal::SetCalSource() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::SetCalSource
+// Purpose:        Set calibration source
+// Arguments:      --
+//                 --
+// Results:        kTRUE/kFALSE
+// Description:    Define calibration source
+//////////////////////////////////////////////////////////////////////////////
+
+	fNofPeaksNeeded = 0;
+	fEnableCalib = kFALSE;
+
+	switch (fCalSource) {
 		case kCalSourceTripleAlpha:
-			calSource = "TripleAlpha";
-			isTripleAlpha = kTRUE;
+			fSourceName = "TripleAlpha";
 			break;
 		case kCalSourceCo60:
-			calSource = "Co60";
-			isCo60 = kTRUE;
+			fSourceName = "Co60";
 			break;
 		case kCalSourceEu152:
-			calSource = "Eu152";
-			isEu152 = kTRUE;
+			fSourceName = "Eu152";
 			break;
 		default:
-			OutputMessage(Form("Calibration source not yet implemented - %s, performing peak fitting only", calSource.Data()), kTRUE);
+			this->OutputMessage("SetCalSource", "Wrong calibration source - performing peak fitting only", kTRUE);
 			return(kFALSE);
 	}
 
-	TString calNames = enTable->GetValue("Calib.SourceNames", "");
+	gSystem->ExpandPathName(fEnergies);
+	if (gSystem->AccessPathName(fEnergies.Data())) {
+		this->OutputMessage("SetCalSource", Form("SetCalSource", "No such file - %s, can't read calibration energies", fEnergies.Data()), kTRUE);
+		return(kFALSE);
+	}
+
+	fEnvEnergies = new TEnv(fEnergies.Data());
+
+	TString calNames = fEnvEnergies->GetValue("Calib.SourceNames", "");
 	if (calNames.IsNull()) {
-		OutputMessage(Form("File %s doesn't contain calibration energies for source \"%s\"", enFile.Data(), calSource.Data()), kTRUE);
-		delete enTable;
-		enTable = NULL;
+		this->OutputMessage("SetCalSource", Form("File %s doesn't contain calibration energies for source \"%s\"", fEnergies.Data(), fSourceName.Data()), kTRUE);
+		delete fEnvEnergies;
+		fEnvEnergies = NULL;
 		return(kFALSE);
 	}	
 		
-	peaksNeeded = enTable->GetValue(Form("Calib.%s.NofLines", calSource.Data()), 0);
-	if (peaksNeeded == 0) {
-		OutputMessage(Form("Error reading \"%s\" from file %s - can't calibrate using %s source", Form("Calib.%s.NofLines",calSource.Data()), enFile.Data(), calSource.Data()), kTRUE);
-		delete enTable;
-		enTable = NULL;
+	fNofPeaksNeeded = fEnvEnergies->GetValue(Form("Calib.%s.NofLines", fSourceName.Data()), 0);
+	if (fNofPeaksNeeded == 0) {
+		this->OutputMessage(	"SetCalSource",
+								Form("Error reading \"Calib.%s.NofLines\" from file %s - can't calibrate using %s source",
+								fSourceName.Data(), fEnergies.Data(), fSourceName.Data()), kTRUE);
+		delete fEnvEnergies;
+		fEnvEnergies = NULL;
 		return(kFALSE);
 	}	
+	fEnableCalib = kTRUE;
 	return(kTRUE);
 }
 
-void CloseResultFiles() {
-	TList * lofEntries = (TList *) res->GetTable();
+void TMrbEncal::CloseEnvFiles() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::CloseEnvFiles
+// Purpose:        Close calibration files
+// Arguments:      --
+// Results:        --
+// Description:    Close TEnv files
+//////////////////////////////////////////////////////////////////////////////
+
+	TList * lofEntries = (TList *) fEnvResults->GetTable();
 	TIterator * iter = lofEntries->MakeIterator();
 	TEnvRec * r;
 	Int_t nh = 0;
@@ -539,537 +995,754 @@ void CloseResultFiles() {
 		TString e = r->GetName();
 		if (e.Contains(".Xmin")) nh++;
 	}
-	res->SetValue("Calib.NofHistograms", nh);
-	res->SaveLevel(kEnvLocal);
+	fEnvResults->SetValue("Calib.NofHistograms", nh);
+	fEnvResults->SaveLevel(kEnvLocal);
 
-	lofEntries = (TList *) cal->GetTable();
-	iter = lofEntries->MakeIterator();
-	nh = 0;
-	while (r = (TEnvRec *) iter->Next()) {
-		TString e = r->GetName();
-		if (e.Contains(".Xmin")) nh++;
-	}
-	cal->SetValue("Calib.NofHistograms", nh);
-	cal->SaveLevel(kEnvLocal);
+	fEnvCalib->SetValue("Calib.NofHistograms", this->GetNofHistosCalibrated());
+	fEnvCalib->SaveLevel(kEnvLocal);
 }
 
-void ShowResults2dim(TFile * HistoFile, Int_t LowerLim, Int_t UpperLim, Double_t Emin, Double_t Emax) {
-	Int_t nofHistos = cal->GetValue("Calib.NofHistograms", 0);
-	if (nofHistos == 0) return;
+void TMrbEncal::CloseRootFile() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::CloseRootFile
+// Purpose:        Write histo results and close file
+// Arguments:      --
+// Results:        --
+// Description:    Closes root file containing histo + fit data
+//////////////////////////////////////////////////////////////////////////////
 
-	TString hTitle = Form("Calibration restults: file %s, %d histogram(s)", HistoFile->GetName(), nofHistos);
- 	TCanvas * c = new TCanvas();
-	TH2S * hCal = new TH2S("hCalResults", hTitle.Data(), (UpperLim - LowerLim), Emin, Emax, nofHistos, 0, nofHistos);
-	if (resFit) resFit->Append(hCal);
-	TAxis * yAxis = hCal->GetYaxis();
-	TList * lofEntries = (TList *) cal->GetTable();
+	if (fFitResults) {
+		fFitResults->Write();
+		fFitResults->Close();
+	}
+}
+
+Int_t TMrbEncal::GetNofHistosCalibrated() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::GetNofHistosCalibrated
+// Purpose:        Count histos in .cal file
+// Arguments:      --
+// Results:        Int_t NofHistos   -- number of calibrated histos
+// Description:    Counts histos in calibration file
+//////////////////////////////////////////////////////////////////////////////
+
+	TList * lofEntries = (TList *) fEnvCalib->GetTable();
 	TIterator * iter = lofEntries->MakeIterator();
 	TEnvRec * r;
 	Int_t nh = 0;
-	TString hName = "";
+	while (r = (TEnvRec *) iter->Next()) {
+		TString e = r->GetName();
+		if (e.Contains(".Xmin")) nh++;
+	}
+	fNofHistosCalibrated = nh;
+	return(nh);
+}
+
+Bool_t TMrbEncal::FindPeaks(Int_t MaxNofPeaks, Float_t Resolution) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::FindPeaks
+// Purpose:        Start the peak finder
+// Arguments:      TH1F * Histo         -- histogram
+//                 Int_t MaxNofPeaks    -- max number of peaks expected
+//                 Float_t Resolution   -- resolution
+// Results:        kTRUE/kFALSE
+// Description:    Peak finding
+//////////////////////////////////////////////////////////////////////////////
+
+	TSpectrum * s = new TSpectrum(MaxNofPeaks, Resolution);
+
+	Double_t pmax = (Double_t) fPeakFrac / 100.;
+	fNofPeaks = s->Search(fCurHisto, 5, "", pmax);
+
+	if (fNofPeaks == 0) {
+		this->OutputMessage("FindPeaks", Form("No peaks found in histogram - %s", fCurHisto->GetName()), kTRUE, TMrbEncal::kColorRed);
+		this->SetFitStatus(TMrbEncal::kFitDiscard, "No peaks found");
+		return(kFALSE);
+	}
+
+	fPeakX.Set(fNofPeaks, s->GetPositionX());
+	fPeakY.Set(fNofPeaks, s->GetPositionY());
+
+	TArrayF ps;
+	TArrayI ind(fNofPeaks);
+	ps.Set(fNofPeaks, fPeakX.GetArray());
+	TMath::Sort(fNofPeaks, ps.GetArray(), ind.GetArray(), kFALSE);
+	for (Int_t i = 0; i < fNofPeaks; i++) {
+		Int_t k = ind[i];
+		fPeakX[i] = ps[k];
+	}
+	ps.Set(fNofPeaks, fPeakY.GetArray());
+	for (Int_t i = 0; i < fNofPeaks; i++) {
+		Int_t k = ind[i];
+		fPeakY[i] = ps[k];
+	}
+
+	if (this->Verbose()) {
+		cout << endl << "Peaks in histogram " << fCurHisto->GetName() << ":" << endl;
+		for (Int_t i = 0; i < fNofPeaks; i++) cout << i << " X=" << fPeakX[i] << " Y=" << fPeakY[i] << endl;
+	}
+
+    TList * lf = fCurHisto->GetListOfFunctions();                        
+    TPolyMarker * pm = (TPolyMarker *) lf->FindObject("TPolyMarker");
+	pm->SetMarkerColor(kBlue);
+
+	return(kTRUE);
+}
+
+void TMrbEncal::FitGaussTailSingle() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::FitGaussTailSingle
+// Purpose:        Fit: gauss + tail, single peaks
+// Arguments:      --
+// Results:        --
+//////////////////////////////////////////////////////////////////////////////
+
+	fXfit.Set(fNofPeaks);
+	fXerr.Set(fNofPeaks);
+	fYfit.Set(fNofPeaks);
+	fYerr.Set(fNofPeaks);
+	fChi2.Set(fNofPeaks);
+
+	Int_t fitNofPeaks = 1;
+	Int_t nPar = 5 + 2 * fitNofPeaks;
+
+	for (Int_t i = 0; i < fNofPeaks; i++) {
+		TArrayD p(nPar);
+		// tail
+		p[0] = 1;
+		p[1] = fSigma;
+		// linear background
+		p[2] = fCurHisto->GetBinContent(fCurHisto->FindBin(fPeakX[i] - fFitRange * fSigma));
+		p[3] = 0.;
+		// gauss
+		p[4] = fSigma;
+		p[5] = fPeakY[i];
+		p[6] = fPeakX[i];
+
+		TF1 * fit = new TF1(Form("g%d", i), gaus_tail, fPeakX[i] - fFitRange * fSigma, fPeakX[i] + fFitRange * fSigma, nPar);
+		fit->SetParameters(p.GetArray());
+		if (fFitBackground == TMrbEncal::kFitModeBackgroundConst) fit->FixParameter(3, 0.0);
+		if (this->Verbose()) {
+			cout	<< endl << "---------------------------------------------------------------------" << endl
+					<< "Gaussian/tail start params for peak #" << i << ":" << endl;
+		}
+		for (Int_t k = 0; k < nPar; k++) {
+			const Char_t * pn = ((TObjString *) fParamNames->At(k))->GetString().Data();
+			fit->SetParName(k, pn);
+			if (this->Verbose()) cout << Form("   %d: %-10s = %10.4f", k, pn, p[k]) << endl;
+		}
+		fit->SetLineColor(2);
+		fCurHisto->Fit(fit, (i == 0) ? "R" : "R+");
+		fit->GetParameters(p.GetArray());
+		fXfit[i] = p[6];
+		fYfit[i] = p[5];
+		fXerr[i] = fit->GetParError(6);
+		fYerr[i] = fit->GetParError(5);
+		Int_t ndf = TMath::Max(1, fit->GetNDF());
+		fChi2[i] = fit->GetChisquare() / ndf;
+	}
+	if (fFitResults) fFitResults->Append(fCurHisto);
+}
+
+void TMrbEncal::FitGaussTailEnsemble() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::FitGaussTailEnsemble
+// Purpose:        Fit: gauss + tail, group of peaks
+// Arguments:      --
+// Results:        --
+//////////////////////////////////////////////////////////////////////////////
+
+	fXfit.Set(fNofPeaks);
+	fXerr.Set(fNofPeaks);
+	fYfit.Set(fNofPeaks);
+	fYerr.Set(fNofPeaks);
+	fChi2.Set(fNofPeaks);
+
+	Int_t fitNofPeaks = (fNofPeaks > fNofPeaksNeeded) ? fNofPeaksNeeded : fNofPeaks;
+	Int_t idxPeak1 = (fNofPeaks <= fitNofPeaks) ? 0 : (fNofPeaks - fitNofPeaks);
+	Int_t nPar = 5 + 2 * fitNofPeaks;
+	TArrayD p(nPar);
+	// tail
+	p[0] = 1;
+	p[1] = fSigma;
+	// linear background
+	p[2] = fCurHisto->GetBinContent(fCurHisto->FindBin(fPeakX[idxPeak1] - fFitRange * fSigma));
+	p[3] = 0.;
+	// gauss
+	p[4] = fSigma;
+	Int_t k = 5;
+	for (Int_t i = idxPeak1; i < fNofPeaks; i++, k+= 2) {
+		p[k] = fPeakY[i];
+		p[k + 1] = fPeakX[i];
+	}
+
+	TF1 * fit = new TF1("g_group", gaus_tail, fPeakX[idxPeak1] - fFitRange * fSigma, fPeakX[fNofPeaks - 1] + fFitRange * fSigma, nPar);
+	fit->SetParameters(p.GetArray());
+	if (fFitBackground == TMrbEncal::kFitModeBackgroundConst) fit->FixParameter(3, 0.0);
+	if (this->Verbose()) {
+		cout	<< endl << "---------------------------------------------------------------------" << endl
+				<< "Gaussian/tail start params for a group of " << fitNofPeaks << " peak(s)" << endl;
+	}
+	for (Int_t k = 0; k < nPar; k++) {
+		const Char_t * pn;
+		Int_t kk;
+		if (k <= 4) {
+			kk = k;
+		} else {
+			kk = (k & 1) ? 5 : 6;
+		}
+		pn = ((TObjString *) fParamNames->At(kk))->GetString().Data();
+		if (k > 4) pn = Form("%s_%d", pn, (k - 3) / 2);
+		fit->SetParName(k, pn);
+		if (this->Verbose()) cout << Form("   %2d: %-10s = %10.4f", k + 1, pn, p[k]) << endl;
+	}
+	fit->SetLineColor(2);
+	fCurHisto->Fit(fit, "R");
+	if (fFitResults) fFitResults->Append(fCurHisto);
+	fit->GetParameters(p.GetArray());
+	Int_t ndf = TMath::Max(1, fit->GetNDF());
+	k = 5;
+	for (Int_t i = 0; i < fitNofPeaks; i++, k+= 2) {
+		fYfit[i] = p[k];
+		fYerr[i] = fit->GetParError(k);
+		fXfit[i] = p[k + 1];
+		fXerr[i] = fit->GetParError(k + 1);
+		fChi2[i] = fit->GetChisquare() / ndf;
+	}
+}
+
+void TMrbEncal::FitGaussSingle() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::FitGaussSingle
+// Purpose:        Fit: gauss, single peaks
+// Arguments:      --
+// Results:        --
+//////////////////////////////////////////////////////////////////////////////
+
+	fXfit.Set(fNofPeaks);
+	fXerr.Set(fNofPeaks);
+	fYfit.Set(fNofPeaks);
+	fYerr.Set(fNofPeaks);
+	fChi2.Set(fNofPeaks);
+
+	Int_t fitNofPeaks = 1;
+	Int_t nPar = 3 + 2 * fitNofPeaks;
+	for (Int_t i = 0; i < fNofPeaks; i++) {
+		TArrayD p(nPar);
+		// linear background
+		p[0] = fCurHisto->GetBinContent(fCurHisto->FindBin(fPeakX[i] - fFitRange * fSigma));
+		p[1] = 0.;
+		// gauss
+		p[2] = fSigma;
+		p[3] = fPeakY[i];
+		p[4] = fPeakX[i];
+
+		TF1 * fit = new TF1(Form("g%d", i), gaus_lbg, fPeakX[i] - fFitRange * fSigma, fPeakX[i] + fFitRange * fSigma, nPar);
+		fit->SetParameters(p.GetArray());
+		if (fFitBackground == kFitModeBackgroundConst) fit->FixParameter(1, 0.0);
+		if (this->Verbose()) {
+			cout	<< endl << "---------------------------------------------------------------------" << endl
+					<< "Gaussian start params for peak #" << i << ":" << endl;
+		}
+		Int_t np = 2;
+		for (Int_t k = 0; k < nPar; k++, np++) {
+			const Char_t * pn = ((TObjString *) fParamNames->At(np))->GetString().Data();
+			fit->SetParName(k, pn);
+			if (this->Verbose()) cout << Form("   %d: %-10s = %10f", k, pn, p[k]) << endl;
+		}
+		fit->SetLineColor(2);
+		fCurHisto->Fit(fit, (i == 0) ? "R" : "R+");
+		fit->GetParameters(p.GetArray());
+		fYfit[i] = p[3];
+		fYerr[i] = fit->GetParError(3);
+		fXfit[i] = p[4];
+		fXerr[i] = fit->GetParError(4);
+		Int_t ndf = TMath::Max(1, fit->GetNDF());
+		fChi2[i] = fit->GetChisquare() / ndf;
+	}
+	if (fFitResults) fFitResults->Append(fCurHisto);
+}
+
+
+void TMrbEncal::FitGaussEnsemble() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::FitGaussTailEnsemble
+// Purpose:        Fit: gauss, group of peaks
+// Arguments:      --
+// Results:        --
+//////////////////////////////////////////////////////////////////////////////
+
+	fXfit.Set(fNofPeaks);
+	fXerr.Set(fNofPeaks);
+	fYfit.Set(fNofPeaks);
+	fYerr.Set(fNofPeaks);
+	fChi2.Set(fNofPeaks);
+
+	fitNofPeaks = (fNofPeaks > fNofPeaksNeeded) ? fNofPeaksNeeded : fNofPeaks;
+	Int_t idxPeak1 = (fNofPeaks <= fitNofPeaks) ? 0 : (fNofPeaks - fitNofPeaks);
+	Int_t nPar = 3 + 2 * fitNofPeaks;
+	TArrayD p(nPar);
+	// linear background
+	p[0] = fCurHisto->GetBinContent(fCurHisto->FindBin(fPeakX[idxPeak1] - fFitRange * fSigma));
+	p[1] = 0.;
+	// gauss
+	p[2] = fSigma;
+	Int_t k = 3;
+	for (Int_t i = idxPeak1; i < fNofPeaks; i++, k += 2) {
+		p[k] = fPeakY[i];
+		p[k + 1] = fPeakX[i];
+	}
+
+	TF1 * fit = new TF1("g_group", gaus_lbg, fPeakX[idxPeak1] - fFitRange * fSigma, fPeakX[fNofPeaks - 1] + fFitRange * fSigma, nPar);
+	fit->SetParameters(p.GetArray());
+	if (fFitBackground == TMrbEncal::kFitModeBackgroundConst) fit->FixParameter(1, 0.0);
+	if (this->Verbose()) {
+		cout	<< endl << "---------------------------------------------------------------------" << endl
+				<< "Gaussian start params for a group of " << fitNofPeaks << " peak(s)" << endl;
+	}
+	for (Int_t k = 0; k < nPar; k++) {
+		const Char_t * pn;
+		Int_t kk;
+		if (k <= 2) {
+			kk = k + 2;
+		} else {
+			kk = (k & 1) ? 5 : 6;
+		}
+		pn = ((TObjString *) fParamNames->At(kk))->GetString().Data();
+		if (k > 2) pn = Form("%s_%d", pn, (k - 3) / 2);
+		fit->SetParName(k, pn);
+		if (this->Verbose()) cout << Form("   %2d: %-10s = %10.4f", k + 1, pn, p[k]) << endl;
+	}
+	fit->SetLineColor(2);
+	fCurHisto->Fit(fit, "R");
+	if (fFitResults) fFitResults->Append(fCurHisto);
+	fit->GetParameters(p.GetArray());
+	Int_t ndf = TMath::Max(1, fit->GetNDF());
+	k = 3;
+	for (Int_t i = 0; i < fitNofPeaks; i++, k += 2) {
+		fYfit[i] = p[k];
+		fYerr[i] = fit->GetParError(k);
+		fXfit[i] = p[k + 1];
+		fXerr[i] = fit->GetParError(k + 1);
+		fChi2[i] = fit->GetChisquare() / ndf;
+	}
+}
+
+Int_t TMrbEncal::GetPeakFinderResults(TArrayF & PeakX, TArrayF & PeakY) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::GetPeakFinderResults
+// Purpose:        Pass peak finder results to caller
+// Arguments:      TArrayF & PeakX     -- centroids
+//                 TArrayF & PeakY     -- amplitudes
+// Results:        Int_t NofPeaks      -- number of peaks
+// Description:    Returns peak finder data
+//////////////////////////////////////////////////////////////////////////////
+
+	PeakX.Set(fNofPeaks, fPeakX.GetArray());
+	PeakY.Set(fNofPeaks, fPeakY.GetArray());
+	return(fNofPeaks);
+}
+
+Int_t TMrbEncal::GetFitResults(TArrayF & Xfit, TArrayF & Xerr, TArrayF & Yfit, TArrayF & Yerr, TArrayF & Chi2) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::GetFitResults
+// Purpose:        Pass peak finder results to caller
+// Arguments:      TArrayF & Xfit     -- centroids
+//                 TArrayF & Xfit     -- errors
+//                 TArrayF & Yfit     -- amplitudes
+//                 TArrayF & Yerr     -- errors
+//                 TArrayF & Chi2     -- chi sqaure
+// Results:        Int_t NofPeaks      -- number of peaks
+// Description:    Returns peak finder data
+//////////////////////////////////////////////////////////////////////////////
+
+	Xfit.Set(fNofPeaks, fXfit.GetArray());
+	Xerr.Set(fNofPeaks, fXerr.GetArray());
+	Yfit.Set(fNofPeaks, fYfit.GetArray());
+	Yerr.Set(fNofPeaks, fYerr.GetArray());
+	Chi2.Set(fNofPeaks, fChi2.GetArray());
+	return(fNofPeaks);
+}
+
+void TMrbEncal::PrintFitResults() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::PrintFitResults
+// Purpose:        Print results
+// Arguments:      --
+// Results:        --
+// Description:    Print peak finder & fit results
+//////////////////////////////////////////////////////////////////////////////
+
+	cout << endl << "=========================================================================" << endl;
+	cout << "File : " << fHistoFile->GetName() << endl;
+	cout << "Histo: " << fCurHisto->GetName() << endl;
+	cout << "Peaks:  #    X         X(fit)       Chi2" << endl;
+	cout << "------------------------------------------------------------------------" << endl;
+	for (Int_t i = 0; i < fNofPeaks; i++) {
+		cout << Form("%9d   %7.2f   %7.2f       %7.5f", i, fPeakX[i], fXfit[i], fChi2[i]) << endl;
+	}
+	cout << "=========================================================================" << endl;
+}
+
+void TMrbEncal::Calibrate() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::Calibrate
+// Purpose:        Perform energy calibration
+// Arguments:      --
+// Results:        --
+// Description:    Starts energy calibration
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!fEnableCalib) return;
+
+	fCalX.Set(fNofPeaksNeeded);
+	fCalE.Set(fNofPeaksNeeded);
+	fCalXerr.Set(fNofPeaksNeeded);
+	fCalEerr.Set(fNofPeaksNeeded);
+
+	if (fNofPeaks >= fNofPeaksNeeded) { 
+		Int_t k = fNofPeaks - 1;
+		for (Int_t i = fNofPeaksNeeded - 1; i >= 0; i--, k--) {
+			fCalX[i] = fXfit[k];
+			fCalXerr[i] = fXerr[k];
+		}
+
+ 		for (Int_t i = 0; i < fNofPeaksNeeded; i++) {
+			fCalE[i] = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.E", fSourceName.Data(), i), 0.0);
+			fCalEerr[i] = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Eerr", fSourceName.Data(), i), 0.0);
+		}
+
+		TGraphErrors * calib = new TGraphErrors(fNofPeaksNeeded, fCalX.GetArray(), fCalE.GetArray(), fCalXerr.GetArray(), fCalEerr.GetArray());
+		if (fFitResults) fFitResults->Append(calib);
+		calib->SetName(Form("calib_%s", fCurHisto->GetName()));
+		calib->SetTitle(Form("%s Calibration for histo %s", fSourceName.Data(), fCurHisto->GetName()));
+		calib->Draw("A*");
+		calib->Fit("pol1");
+		fPoly = calib->GetFunction("pol1");
+		fPoly->SetLineColor(2);
+
+		Int_t low = -1;
+		Int_t up = -1;
+		for (Int_t i = fLowerLim; i < fUpperLim; i++) {
+			if (fCurHisto->GetBinContent(i) != 0) {
+				if (low == -1) low = i;
+				up = i;
+			}
+		}
+
+		Double_t e = fPoly->GetParameter(0) + fPoly->GetParameter(1) * low;
+		if (e < fEmin) {
+			fXmin = low;
+			fEmin = e;
+		}
+		e = fPoly->GetParameter(0) + fPoly->GetParameter(1) * up;
+		if (e > fEmax) {
+			fXmax = up;
+			fEmax = e;
+		}
+		this->SetFitStatus(kFitOk);
+	} else {
+		this->OutputMessage("Calibrate", Form("Too few peaks - %d (%s calibration needs at least %d peaks)", fNofPeaks, fSourceName.Data(), fNofPeaksNeeded), kTRUE);
+		this->SetFitStatus(kFitDiscard, "Too few peaks");
+	}
+}
+
+void TMrbEncal::WriteResults() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::WriteResults
+// Purpose:        Write results to file
+// Arguments:      --
+// Results:        --
+// Description:    Writes results to .res file
+//////////////////////////////////////////////////////////////////////////////
+
+	fEnvResults->SetValue(Form("Calib.%s.Xmin", fCurHisto->GetName()), fLowerLim);
+	fEnvResults->SetValue(Form("Calib.%s.Xmax", fCurHisto->GetName()), fUpperLim);
+
+	fEnvResults->SetValue(Form("Calib.%s.NofPeaks", fCurHisto->GetName()), fNofPeaks);
+	for (Int_t i = 0; i < fNofPeaks; i++) {
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.X", fCurHisto->GetName(), i), fPeakX[i]);
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Xfit", fCurHisto->GetName(), i), fXfit[i]);
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Xerr", fCurHisto->GetName(), i), fXerr[i]);
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Y", fCurHisto->GetName(), i), fPeakY[i]);
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Yfit", fCurHisto->GetName(), i), fYfit[i]);
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Yerr", fCurHisto->GetName(), i), fYerr[i]);
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Chi2", fCurHisto->GetName(), i), fChi2[i]);
+	}
+}
+
+void TMrbEncal::WriteCalibration() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::WriteCalibration
+// Purpose:        Write calibration data to file
+// Arguments:      --
+// Results:        --
+// Description:    Writes calibration to .cal file
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fEnableCalib && (fNofPeaks >= fNofPeaksNeeded)) {
+		fEnvCalib->SetValue(Form("Calib.%s.Xmin", fCurHisto->GetName()), fLowerLim);
+		fEnvCalib->SetValue(Form("Calib.%s.Xmax", fCurHisto->GetName()), fUpperLim);
+		fEnvCalib->SetValue(Form("Calib.%s.Gain", fCurHisto->GetName()), fPoly->GetParameter(1));
+		fEnvCalib->SetValue(Form("Calib.%s.Offset", fCurHisto->GetName()), fPoly->GetParameter(0));
+		fEnvResults->SetValue(Form("Calib.%s.Gain", fCurHisto->GetName()), fPoly->GetParameter(1));
+		fEnvResults->SetValue(Form("Calib.%s.Offset", fCurHisto->GetName()), fPoly->GetParameter(0));
+		this->SetFitStatus(this->StepMode() ? kFitOk : kFitAuto);
+	} else {
+		this->SetFitStatus(kFitDiscard, "Too few peaks");
+	}
+}
+
+void TMrbEncal::WriteFitStatus() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::WriteFitStatus
+// Purpose:        Write fit status to file
+// Arguments:      --
+// Results:        --
+// Description:    Writes fit status to .res file
+//////////////////////////////////////////////////////////////////////////////
+
+	TString fitStr;
+	switch (fFitStatus) {
+		case kFitOk: fitStr = "TRUE"; break;
+		case kFitDiscard:	fitStr = "FALSE"; break;
+		case kFitAuto:		fitStr = "AUTO"; break;
+	}
+	fEnvResults->SetValue(Form("Calib.%s.FitOk", fCurHisto->GetName()), fitStr.Data());
+	fEnvResults->SetValue(Form("Calib.%s.Reason", fCurHisto->GetName()), fReason.Data());
+}
+
+void TMrbEncal::UpdateStatusLine() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::UpdateStatusLine
+// Purpose:        Update status line
+// Arguments:      --
+// Results:        --
+// Description:    Writes results status line
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fNofPeaks >= fNofPeaksNeeded) {
+		TString sts;
+		if (fEnableCalib) {
+			sts = Form("File %s, histo %s: E(x) = %5.2f + %5.2f * x", fHistoFile->GetName(), fCurHisto->GetName(), fPoly->GetParameter(0), fPoly->GetParameter(1));
+		} else {
+			sts = Form("File %s, histo %s: %d peak(s)", fHistoFile->GetName(), fCurHisto->GetName(), fNofPeaks);
+		}
+		this->OutputMessage("UpdateStatusLine", sts.Data(), kFALSE, 3);
+	}
+}
+
+void TMrbEncal::SetFitStatus(Int_t FitStatus, const Char_t * Reason) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::SetFitStatus
+// Purpose:        Set fit status
+// Arguments:      Int_t FitStatus   -- status
+//                 Char_t * Reason   -- reason
+// Results:        --
+// Description:    stores fit status
+//////////////////////////////////////////////////////////////////////////////
+
+	fFitStatus = FitStatus;
+	fReason = (Reason == NULL || *Reason == '\0') ? "" : Reason;
+}
+
+void TMrbEncal::ShowResults2dim() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::ShowResults2dim
+// Purpose:        Fill 2-dim histogram
+// Arguments:      --
+// Results:        --
+// Description:    Shows fit results in 2-dim histogram
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->TwoDimMode()) return;
+
+	TList * lofEntries = (TList *) fEnvCalib->GetTable();
+	TIterator * iter = lofEntries->MakeIterator();
+	TEnvRec * r;
+	Int_t nh = 0;
+	TObjArray lofCalibs;
 	while (r = (TEnvRec *) iter->Next()) {
 		TString str = r->GetName();
 		TObjArray * a = str.Tokenize(".");
 		TString hn = ((TObjString *) a->At(1))->GetString();
-		if (hName.CompareTo(hn.Data()) != 0) {
-			hName = hn;
-			Double_t a0 = cal->GetValue(Form("Calib.%s.Offset", hn.Data()), 0.0);
-			Double_t a1 = cal->GetValue(Form("Calib.%s.Gain", hn.Data()), 1.0);
-			TH1F * h = (TH1F *) HistoFile->Get(hn.Data());
+		if (lofCalibs.FindObject(hn.Data()) == NULL) {
+			TH1F * h = (TH1F *) fHistoFile->Get(hn.Data());
+			if (h) {
+				TString testIt = fEnvCalib->GetValue(Form("Calib.%s.Gain", hn.Data()), "");
+				if (!testIt.IsNull()) {
+					Double_t a1 = fEnvCalib->GetValue(Form("Calib.%s.Gain", hn.Data()), 1.);
+					Double_t a0 = fEnvCalib->GetValue(Form("Calib.%s.Offset", hn.Data()), 0.);
+					const Char_t * formula = Form("%f + %f * x[0]", a0, a1);
+					TFormula * poly = new TFormula(hn.Data(), formula);
+					lofCalibs.Add(poly);
+					nh++;
+				}
+			}
+		}
+	}
+
+	if (nh == 0) {
+		this->OutputMessage("ShowResults2dim", Form("File %s - No histograms found", fHistoFile->GetName()), kTRUE);
+	} else {
+ 		f2DimCanvas = new TCanvas();
+		TString hTitle = Form("Calibration restults: file %s, %d histogram(s)", fHistoFile->GetName(), nh);
+		f2DimFitResults = new TH2S("hCalResults", hTitle.Data(), (fXmax - fXmin), fEmin, fEmax, nh, 0, nh);
+		if (fFitResults) fFitResults->Append(f2DimFitResults);
+		TAxis * yAxis = f2DimFitResults->GetYaxis();
+
+		for (Int_t n = 0; n < nh; n++) {
+			TFormula * poly = (TFormula *) lofCalibs[n];
+			TString hn = poly->GetName();
+			TH1F * h = (TH1F *) fHistoFile->Get(hn.Data());
 			if (h != NULL) {
-				for (Int_t i = LowerLim; i < UpperLim; i++) {
+				for (Int_t i = fXmin; i < fXmax; i++) {
 					Int_t bCont = (Int_t) h->GetBinContent(i);
 					Double_t bCent = h->GetBinCenter(i);
 					for (Int_t j = 0; j < bCont; j++) {
 						Double_t x = bCent + gRandom->Rndm() - 0.5;
-						x = a0 + a1 * x;
-						hCal->Fill((Axis_t) x, (Axis_t) nh);
+						f2DimFitResults->Fill((Axis_t) poly->Eval(x), (Axis_t) n);
 					}
 				}
-				nh++;
-				yAxis->SetBinLabel(nh, hn.Data());
+				yAxis->SetBinLabel(n + 1, hn.Data());
 			}
 		}
-		delete a;
+		f2DimFitResults->Draw();
+		f2DimCanvas->Update();
 	}
-	hCal->Draw();
-	c->Update();
 }
 
-void Encal(TObjArray * Histos = NULL,
-           Int_t CalSource = kCalSourceCo60,
-           const Char_t * Energies = "$MARABOU/data/encal/energies.dat",
-           const Char_t * CalFile = "Encal.cal",
-           const Char_t * ResFile = "Encal.res",
-           const Char_t * FitFile = "Encal.root",
-           Bool_t ClearFlag = kFALSE,
-           const Char_t * PrecalFile = "Co60.cal",
-           Int_t LowerLim = 0,
-           Int_t UpperLim = 4096,
-           Int_t PeakFrac = 1,
-           Double_t Sigma = 3,
-           Int_t FitMode = kFitModeGaus,
-           Int_t FitGrouping = kFitGroupingSinglePeak,
-           Int_t FitBackground = kFitModeBackgroundLinear,
-           Double_t FitRange = 3,
-           Int_t DisplayFlag = kDisplayFlagStep,
-           Bool_t VerboseMode = kFALSE)
-//>>_________________________________________________(do not change this line)
+void Encal(TObjArray * LofHistos,
+           Int_t CalSource,
+           const Char_t * Energies,
+           const Char_t * CalFile,
+           const Char_t * ResFile,
+           const Char_t * FitFile,
+           Bool_t ClearFlag,
+           const Char_t * PrecalFile,
+           Int_t LowerLim,
+           Int_t UpperLim,
+           Int_t PeakFrac,
+           Double_t Sigma,
+           Int_t FitMode,
+           Int_t FitGrouping,
+           Int_t FitBackground,
+           Double_t FitRange,
+           Int_t DisplayMode,
+           Bool_t VerboseMode)
+//_____________________________________________________________[MAIN FUNCTION]
 //
 {
 	msg = new TMrbLogger("Encal.log");
 
-	show2dim = ((DisplayFlag & kDisplayFlag2dim) != 0);
-	stepIt = ((DisplayFlag & kDisplayFlagStep) != 0);
+	TMrbEncal encal(	LofHistos,
+						CalSource,
+						Energies,
+						CalFile,
+						ResFile,
+						FitFile,
+						ClearFlag,
+						PrecalFile,
+						LowerLim,
+						UpperLim,
+						PeakFrac,
+						Sigma,
+						FitMode,
+						FitGrouping,
+						FitBackground,
+						FitRange,
+						DisplayMode,
+						VerboseMode);
 
-	Int_t nofHistos = Histos->GetEntriesFast();
-	if (nofHistos == 0) {
-		OutputMessage("No histogram file given", kTRUE);
-		return;
-	}
+	if (!encal.OpenHistoFile()) return;
 
-	TIterator * hIter = Histos->MakeIterator();
-	TObjString * hStr;
-	hStr = (TObjString *) hIter->Next();
+	if (!encal.SetCalSource()) return;
 
-	TString hFileName;
-	hFileName.Resize(0);
-	if (hStr) {
-		hFileName = hStr->GetString();
-		hFileName = hFileName.Strip(TString::kBoth);
-	}
-	if (hFileName.IsNull()) {
-		OutputMessage("No histogram file given", kTRUE);
-		return;
-	}
+	encal.OpenCalFiles();
 
-	TFile * hFile = new TFile(hFileName.Data());
-	if (!hFile->IsOpen()) {
-		OutputMessage(Form("Can't open histogram file - %s", hFileName.Data()), kTRUE);
-		return;
-	}
+	TCanvas * mainCanvas = encal.OpenCanvas();
 
-	if (nofHistos == 1) {
-		OutputMessage("No histogram(s) selected", kTRUE);
-		return;
-	}
+	encal.ResetLofHistos();
+	TH1F * h;
+	while (h = encal.GetNextHisto()) {
 
-	doCal = CheckCalSource(CalSource, Energies);
-
-	if (ClearFlag) {
-		TString rmCmd = Form("rm -f %s %s", CalFile, ResFile);
-		gSystem->Exec(rmCmd.Data());
-		if (VerboseMode) OutputMessage(Form("Removing existing files - %s %s", CalFile, ResFile));
-	}
-
-	res = new TEnv(ResFile);
-	if (VerboseMode) OutputMessage(Form("Writing results to file %s", ResFile));
-
-	res->SetValue("Calib.ROOTFile", hFileName.Data());
-	res->SetValue("Calib.Energies", enFile.Data());
-
-	cal = new TEnv(CalFile);
-	if (VerboseMode) OutputMessage(Form("Writing calibration data to file %s", CalFile));
-
-	cal->SetValue("Calib.ROOTFile", hFileName.Data());
-	
-	cal->SetValue("Calib.Source", calSource.Data());
-	cal->SetValue("Calib.Energies", enFile.Data());
-
-	TFile * resFit = new TFile(FitFile, "RECREATE");
-	if (!resFit->IsOpen()) {
-		OutputMessage(Form("Can't open file - %s", FitFile), kTRUE);
-		resFit = NULL;
-	} else if (VerboseMode) {
-		OutputMessage(Form("Writing fit data to file %s", FitFile));
-	}
-
-	canv = DrawCanvas();
-
-	Double_t eMin = res->GetValue("Calib.Emin", 1e+20);
-	Double_t eMax = res->GetValue("Calib.Emax", 0);
-	Int_t xMin = res->GetValue("Calib.Xmin", 100000);
-	Int_t xMax = res->GetValue("Calib.Xmax", 0);
-
-	Int_t nofHistosCalibrated = 0;
-	while (hStr = (TObjString *) hIter->Next()) {
-
-		TString hist = hStr->GetString();
-
-		canv->cd(1);
-		TH1F * h = (TH1F *) hFile->Get(hist.Data());
+		mainCanvas->cd(1);
 		if (h == NULL) {
-			ClearCanvas(0);
-			OutputMessage(Form("No such histogram - %s:%s", hFileName.Data(), hist.Data()), kTRUE);
-			WaitForButtonPressed();
-			if (buttonFlag == kButtonStop) break; else continue;
+			encal.ClearCanvas(0);
+			encal.WaitForButtonPressed();
+			if (encal.ButtonStop()) break; else continue;
 		}
 
-		if (UpperLim == 0 || UpperLim < LowerLim) UpperLim = h->GetNbinsX();
-		if (LowerLim != 0 || UpperLim != h->GetNbinsX()) h->GetXaxis()->SetRange(LowerLim, UpperLim);
+		encal.SetCurHisto(h);
 
-		TSpectrum * s = new TSpectrum(100);
-
-		Double_t pmax = (Double_t) PeakFrac / 100.;
-		Int_t nPeaks = s->Search(h, 5, "", pmax);
-
-		TArrayF px, py, fx, fy, fxe, fye, chi2;
-		TF1 * pol1 = NULL;
-		TString fitOk;
-
-		TString parNames = "Ta_Frac:Ta_Width:Bg_Slope:Bg_Const:Ga_Sigma:Ga_Const:Ga_Mean";
-		TObjArray * pNames = parNames.Tokenize(":");
-
-		if (nPeaks > 0) {
-	
-			px.Set(nPeaks, s->GetPositionX());
-			py.Set(nPeaks, s->GetPositionY());
-
-			TArrayF ps;
-			TArrayI ind(nPeaks);
-			ps.Set(nPeaks, px.GetArray());
-			TMath::Sort(nPeaks, ps.GetArray(), ind.GetArray(), kFALSE);
-			for (Int_t i = 0; i < nPeaks; i++) {
-				Int_t k = ind[i];
-				px[i] = ps[k];
-			}
-			ps.Set(nPeaks, py.GetArray());
-			for (Int_t i = 0; i < nPeaks; i++) {
-				Int_t k = ind[i];
-				py[i] = ps[k];
-			}
-
-			cout << endl << "Peaks:" << endl;
-			for (Int_t i = 0; i < nPeaks; i++) cout << i << " X=" << px[i] << " Y=" << py[i] << endl;
-
-    		TList * lf = h->GetListOfFunctions();                        
-    		TPolyMarker * pm = (TPolyMarker *) lf->FindObject("TPolyMarker");
-			pm->SetMarkerColor(kBlue);
-
-			fx.Set(nPeaks);
-			fy.Set(nPeaks);
-			fxe.Set(nPeaks);
-			fye.Set(nPeaks);
-			chi2.Set(nPeaks);
-
-			TF1 * fit;
-			if (FitMode == kFitModeGausTail) {
-				if (FitGrouping == kFitGroupingSinglePeak) {
-					fitNofPeaks = 1;
-					Int_t nPar = 5 + 2 * fitNofPeaks;
-					for (Int_t i = 0; i < nPeaks; i++) {
-						TArrayD p(nPar);
-						// tail
-						p[0] = 1;
-						p[1] = Sigma;
-						// linear background
-						p[2] = h->GetBinContent(h->FindBin(px[i] - FitRange * Sigma));
-						p[3] = 0.;
-						// gauss
-						p[4] = Sigma;
-						p[5] = py[i];
-						p[6] = px[i];
-
-						fit = new TF1(Form("g%d", i), gaus_tail, px[i] - FitRange * Sigma, px[i] + FitRange * Sigma, nPar);
-						fit->SetParameters(p.GetArray());
-						if (FitBackground == kFitModeBackgroundConst) fit->FixParameter(3, 0.0);
-						cout	<< endl << "---------------------------------------------------------------------" << endl
-								<< "Gaussian/tail start params for peak #" << i << ":" << endl;
-						for (Int_t k = 0; k < nPar; k++) {
-							const Char_t * pn = ((TObjString *) pNames->At(k))->GetString().Data();
-							fit->SetParName(k, pn);
-							cout << Form("   %d: %-10s = %10.4f", k, pn, p[k]) << endl;
-						}
-						fit->SetLineColor(2);
-						h->Fit(fit, (i == 0) ? "R" : "R+");
-						fit->GetParameters(p.GetArray());
-						fx[i] = p[6];
-						fy[i] = p[5];
-						fxe[i] = fit->GetParError(6);
-						fye[i] = fit->GetParError(5);
-						Int_t ndf = TMath::Max(1, fit->GetNDF());
-						chi2[i] = fit->GetChisquare() / ndf;
-					}
-					if (resFit) resFit->Append(h);
-				} else if (FitGrouping == kFitGroupingEnsemble){
-					fitNofPeaks = (nPeaks > peaksNeeded) ? peaksNeeded : nPeaks;
-					Int_t idxPeak1 = (nPeaks <= fitNofPeaks) ? 0 : (nPeaks - fitNofPeaks);
-					Int_t nPar = 5 + 2 * fitNofPeaks;
-					TArrayD p(nPar);
-					// tail
-					p[0] = 1;
-					p[1] = Sigma;
-					// linear background
-					p[2] = h->GetBinContent(h->FindBin(px[idxPeak1] - FitRange * Sigma));
-					p[3] = 0.;
-					// gauss
-					p[4] = Sigma;
-					Int_t k = 5;
-					for (Int_t i = idxPeak1; i < nPeaks; i++, k+= 2) {
-						p[k] = py[i];
-						p[k + 1] = px[i];
-					}
-
-					fit = new TF1("g_group", gaus_tail, px[idxPeak1] - FitRange * Sigma, px[nPeaks - 1] + FitRange * Sigma, nPar);
-					fit->SetParameters(p.GetArray());
-					if (FitBackground == kFitModeBackgroundConst) fit->FixParameter(3, 0.0);
-					cout	<< endl << "---------------------------------------------------------------------" << endl
-							<< "Gaussian/tail start params for a group of " << fitNofPeaks << " peak(s)" << endl;
-					for (Int_t k = 0; k < nPar; k++) {
-						const Char_t * pn;
-						Int_t kk;
-						if (k <= 4) {
-							kk = k;
-						} else {
-							kk = (k & 1) ? 5 : 6;
-						}
-						pn = ((TObjString *) pNames->At(kk))->GetString().Data();
-						if (k > 4) pn = Form("%s_%d", pn, (k - 3) / 2);
-						fit->SetParName(k, pn);
-						cout << Form("   %2d: %-10s = %10.4f", k + 1, pn, p[k]) << endl;
-					}
-					fit->SetLineColor(2);
-					h->Fit(fit, "R");
-					if (resFit) resFit->Append(h);
-					fit->GetParameters(p.GetArray());
-					Int_t ndf = TMath::Max(1, fit->GetNDF());
-					k = 5;
-					for (Int_t i = 0; i < fitNofPeaks; i++, k+= 2) {
-						fy[i] = p[k];
-						fye[i] = fit->GetParError(k);
-						fx[i] = p[k + 1];
-						fxe[i] = fit->GetParError(k + 1);
-						chi2[i] = fit->GetChisquare() / ndf;
-					}
+		if (encal.FindPeaks(100)) {
+			if (encal.GetFitMode() == TMrbEncal::kFitModeGausTail) {
+				if (encal.GetFitGrouping() == TMrbEncal::kFitGroupingSinglePeak) {
+					encal.FitGaussTailSingle();
+				} else if (encal.GetFitGrouping() == TMrbEncal::kFitGroupingEnsemble) {
+					encal.FitGaussTailEnsemble();
 				}
-			} else if (FitMode == kFitModeGaus) {
-				if (FitGrouping == kFitGroupingSinglePeak) {
-					fitNofPeaks = 1;
-					Int_t nPar = 3 + 2 * fitNofPeaks;
-					for (Int_t i = 0; i < nPeaks; i++) {
-						TArrayD p(nPar);
-						// linear background
-						p[0] = h->GetBinContent(h->FindBin(px[i] - FitRange * Sigma));
-						p[1] = 0.;
-						// gauss
-						p[2] = Sigma;
-						p[3] = py[i];
-						p[4] = px[i];
-
-						fit = new TF1(Form("g%d", i), gaus_lbg, px[i] - FitRange * Sigma, px[i] + FitRange * Sigma, nPar);
-						fit->SetParameters(p.GetArray());
-						if (FitBackground == kFitModeBackgroundConst) fit->FixParameter(1, 0.0);
-						cout	<< endl << "---------------------------------------------------------------------" << endl
-								<< "Gaussian start params for peak #" << i << ":" << endl;
-						Int_t np = 2;
-						for (Int_t k = 0; k < nPar; k++, np++) {
-							const Char_t * pn = ((TObjString *) pNames->At(np))->GetString().Data();
-							fit->SetParName(k, pn);
-							cout << Form("   %d: %-10s = %10f", k, pn, p[k]) << endl;
-						}
-						fit->SetLineColor(2);
-						h->Fit(fit, (i == 0) ? "R" : "R+");
-						fit->GetParameters(p.GetArray());
-						fy[i] = p[3];
-						fye[i] = fit->GetParError(3);
-						fx[i] = p[4];
-						fxe[i] = fit->GetParError(4);
-						Int_t ndf = TMath::Max(1, fit->GetNDF());
-						chi2[i] = fit->GetChisquare() / ndf;
-					}
-					if (resFit) resFit->Append(h);
-				} else if (FitGrouping == kFitGroupingEnsemble){
-					fitNofPeaks = (nPeaks > peaksNeeded) ? peaksNeeded : nPeaks;
-					Int_t idxPeak1 = (nPeaks <= fitNofPeaks) ? 0 : (nPeaks - fitNofPeaks);
-					Int_t nPar = 3 + 2 * fitNofPeaks;
-					TArrayD p(nPar);
-					// linear background
-					p[0] = h->GetBinContent(h->FindBin(px[idxPeak1] - FitRange * Sigma));
-					p[1] = 0.;
-					// gauss
-					p[2] = Sigma;
-					Int_t k = 3;
-					for (Int_t i = idxPeak1; i < nPeaks; i++, k += 2) {
-						p[k] = py[i];
-						p[k + 1] = px[i];
-					}
-
-					fit = new TF1("g_group", gaus_lbg, px[idxPeak1] - FitRange * Sigma, px[nPeaks - 1] + FitRange * Sigma, nPar);
-					fit->SetParameters(p.GetArray());
-					if (FitBackground == kFitModeBackgroundConst) fit->FixParameter(1, 0.0);
-					cout	<< endl << "---------------------------------------------------------------------" << endl
-							<< "Gaussian start params for a group of " << fitNofPeaks << " peak(s)" << endl;
-					for (Int_t k = 0; k < nPar; k++) {
-						const Char_t * pn;
-						Int_t kk;
-						if (k <= 2) {
-							kk = k + 2;
-						} else {
-							kk = (k & 1) ? 5 : 6;
-						}
-						pn = ((TObjString *) pNames->At(kk))->GetString().Data();
-						if (k > 2) pn = Form("%s_%d", pn, (k - 3) / 2);
-						fit->SetParName(k, pn);
-						cout << Form("   %2d: %-10s = %10.4f", k + 1, pn, p[k]) << endl;
-					}
-					fit->SetLineColor(2);
-					h->Fit(fit, "R");
-					if (resFit) resFit->Append(h);
-					fit->GetParameters(p.GetArray());
-					Int_t ndf = TMath::Max(1, fit->GetNDF());
-					k = 3;
-					for (Int_t i = 0; i < fitNofPeaks; i++, k += 2) {
-						fy[i] = p[k];
-						fye[i] = fit->GetParError(k);
-						fx[i] = p[k + 1];
-						fxe[i] = fit->GetParError(k + 1);
-						chi2[i] = fit->GetChisquare() / ndf;
-					}
+			} else if (encal.GetFitMode() == TMrbEncal::kFitModeGaus) {
+				if (encal.GetFitGrouping() == TMrbEncal::kFitGroupingSinglePeak) {
+					encal.FitGaussSingle();
+				} else if (encal.GetFitGrouping() == TMrbEncal::kFitGroupingEnsemble) {
+					encal.FitGaussEnsemble();
 				}
 			}
 
-			cout << endl << "=========================================================================" << endl;
-			cout << "File : " << hFileName << endl;
-			cout << "Histo: " << hist << endl;
-			cout << "Peaks:  #    X         X(fit)       Chi2" << endl;
-			cout << "------------------------------------------------------------------------" << endl;
-			for (Int_t i = 0; i < nPeaks; i++) {
-				cout << Form("%9d   %7.2f   %7.2f       %7.5f", i, px[i], fx[i], chi2[i]) << endl;
-			}
-			cout << "=========================================================================" << endl;
+			encal.PrintFitResults();
 
-			ClearCanvas(2);
+			encal.ClearCanvas(2);
 
-			if (doCal) {
-				TArrayF calX(peaksNeeded);
-				TArrayF calE(peaksNeeded);
-				TArrayF calXerr(peaksNeeded);
-				TArrayF calEerr(peaksNeeded);
-				if (nPeaks >= peaksNeeded) { 
-					Int_t k = nPeaks - 1;
-					for (Int_t i = peaksNeeded - 1; i >= 0; i--, k--) {
-						calX[i] = fx[k];
-						calXerr[i] = fxe[k];
-					}
+			encal.Calibrate();
 
- 					for (Int_t i = 0; i < peaksNeeded; i++) {
-						calE[i] = enTable->GetValue(Form("Calib.%s.Line.%d.E", calSource.Data(), i), 0.0);
-						calEerr[i] = enTable->GetValue(Form("Calib.%s.Line.%d.Eerr", calSource.Data(), i), 0.0);
-					}
-
-					TGraphErrors * calib = new TGraphErrors(peaksNeeded, calX.GetArray(), calE.GetArray(), calXerr.GetArray(), calEerr.GetArray());
-					if (resFit) resFit->Append(calib);
-					calib->SetName(Form("calib_%s", hist.Data()));
-					calib->SetTitle(Form("%s Calibration for histo %s", calSource.Data(), hist.Data()));
-					calib->Draw("A*");
-					calib->Fit("pol1");
-					pol1 = calib->GetFunction("pol1");
-					pol1->SetLineColor(2);
-
-					Int_t low = -1;
-					Int_t up = -1;
-					for (Int_t i = LowerLim; i < UpperLim; i++) {
-						if (h->GetBinContent(i) != 0) {
-							if (low == -1) low = i;
-							up = i;
-						}
-					}
-
-					Double_t e = pol1->GetParameter(0) + pol1->GetParameter(1) * low;
-					if (e < eMin) {
-						xMin = low;
-						eMin = e;
-					}
-					e = pol1->GetParameter(0) + pol1->GetParameter(1) * up;
-					if (e > eMax) {
-						xMax = up;
-						eMax = e;
-					}
-				} else {
-					OutputMessage(Form("Wrong number of peaks - %d (%s calibration needs at least %d peaks)", nPeaks, calSource.Data(), peaksNeeded), kTRUE);
-					fitOk = "FALSE";
-				}
-			}
-
-			canv->Update();
+			mainCanvas->Update();
 			gSystem->ProcessEvents();
 		} else {
-			canv->cd(1);
+			mainCanvas->cd(1);
 			h->Draw();
-			ClearCanvas(2);
-			OutputMessage(Form("No peaks found in histogram - %s", hist.Data()), kTRUE, kColorRed);
-			gSystem->ProcessEvents();
-			fitOk = "FALSE";
+			encal.ClearCanvas(2);
 		}
 
-		res->SetValue(Form("Calib.%s.Xmin", hist.Data()), LowerLim);
-		res->SetValue(Form("Calib.%s.Xmax", hist.Data()), UpperLim);
+		encal.WriteResults();
+		encal.UpdateStatusLine();
 
-		res->SetValue(Form("Calib.%s.NofPeaks", hist.Data()), nPeaks);
-		for (Int_t i = 0; i < nPeaks; i++) {
-			res->SetValue(Form("Calib.%s.Peak.%d.X", hist.Data(), i), px[i]);
-			res->SetValue(Form("Calib.%s.Peak.%d.Xfit", hist.Data(), i), fx[i]);
-			res->SetValue(Form("Calib.%s.Peak.%d.Xerr", hist.Data(), i), fxe[i]);
-			res->SetValue(Form("Calib.%s.Peak.%d.Y", hist.Data(), i), py[i]);
-			res->SetValue(Form("Calib.%s.Peak.%d.Yfit", hist.Data(), i), fy[i]);
-			res->SetValue(Form("Calib.%s.Peak.%d.Yerr", hist.Data(), i), fye[i]);
-			res->SetValue(Form("Calib.%s.Peak.%d.Chi2", hist.Data(), i), chi2[i]);
-		}
+		encal.WaitForButtonPressed();
+		if (encal.ButtonStop()) break;
+		if (!encal.ButtonOk()) continue;
 
-		if (nPeaks >= peaksNeeded) {
-			TString sts;
-			if (doCal) {
-				sts = Form("File %s, histo %s: E(x) = %5.2f + %5.2f * x", hFileName.Data(), hist.Data(), pol1->GetParameter(0),pol1->GetParameter(1));
-			} else {
-				sts = Form("File %s, histo %s: %d peak(s)", hFileName.Data(), hist.Data(), nPeaks);
-			}
-			OutputMessage(sts.Data(), kFALSE, 3);
-		}
-
-		WaitForButtonPressed();
-		if (buttonFlag != 0) {
-			if (buttonFlag == kButtonStop) break;
-			if (buttonFlag != kButtonOk) continue;
-			if (doCal && (nPeaks >= peaksNeeded)) {
-				fitOk = "TRUE";
-				cal->SetValue(Form("Calib.%s.Xmin", hist.Data()), LowerLim);
-				cal->SetValue(Form("Calib.%s.Xmax", hist.Data()), UpperLim);
-				cal->SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
-				cal->SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
-				res->SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
-				res->SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
-			} else {
-				fitOk = "FALSE";
-			}
-		} else {
-			if (doCal && (nPeaks >= peaksNeeded)) {
-				cal->SetValue(Form("Calib.%s.Xmin", hist.Data()), LowerLim);
-				cal->SetValue(Form("Calib.%s.Xmax", hist.Data()), UpperLim);
-				cal->SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
-				cal->SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
-				res->SetValue(Form("Calib.%s.Gain", hist.Data()), pol1->GetParameter(1));
-				res->SetValue(Form("Calib.%s.Offset", hist.Data()), pol1->GetParameter(0));
-				fitOk = "AUTO";
-			} else {
-				fitOk = "FALSE";
-			}
-		}
-		res->SetValue(Form("Calib.%s.FitOk", hist.Data()), fitOk);
-		nofHistosCalibrated++;
+		encal.WriteCalibration();
+		encal.WriteFitStatus();
 	}
 
-	res->SetValue("Calib.Emin", eMin);
-	res->SetValue("Calib.Emax", eMax);
-	res->SetValue("Calib.Xmin", xMin);
-	res->SetValue("Calib.Xmax", xMax);
+	encal.WriteMinMax();
 
-	CloseResultFiles();
+	encal.ShowResults2dim();
 
-	if (doCal && show2dim) ShowResults2dim(hFile, xMin, xMax, eMin, eMax);
+	encal.CloseEnvFiles();
 
-	OutputMessage(Form("End of calibration - %d histogram(s), press \"execute\" to re-calibrate or \"quit\" to exit", nofHistosCalibrated), kFALSE, kColorBlue);
+	encal.OutputMessage(NULL, Form("%s - %d histogram(s), press \"execute\" to restart or \"quit\" to exit", encal.HistoFile()->GetName(), encal.GetNofHistosCalibrated()), kFALSE, TMrbEncal::kColorBlue);
 
-	if (resFit) resFit->Write();
+	encal.WaitForButtonPressed(kTRUE);
+
+	encal.CloseRootFile();
 
 	return;
 }
