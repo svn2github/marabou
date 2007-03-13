@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.18 2007-02-26 13:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.19 2007-03-13 14:29:27 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -440,13 +440,13 @@ Int_t TMrbSystem::Load(const Char_t * LofModules, Bool_t SystemFlag) {
 		return(-1);
 	}
 
-	TObjArray lofLibs;
-	TMrbString lofModules = LofModules;
-	Int_t nofLibs = lofModules.Split(lofLibs, ":");
+	TString lofModules = LofModules;
+	TObjArray * lofLibs = lofModules.Tokenize(":");
+	Int_t nofLibs = lofLibs->GetEntriesFast();
 	Int_t sts = 0;
 	for (Int_t i = 0; i < nofLibs; i++) {
 		TString path;
-		TString mod = ((TObjString *) lofLibs[i])->GetString().Data();
+		TString mod = ((TObjString *) lofLibs->At(i))->GetString().Data();
 		TString entry = "";
 		Int_t lparen = mod.Index("(", 0);
 		Int_t rparen = mod.Index(")", 0);
@@ -463,12 +463,17 @@ Int_t TMrbSystem::Load(const Char_t * LofModules, Bool_t SystemFlag) {
 		if (path.IsNull()) {
 			gMrbLog->Err()	<< "No such library - " << mod << " (searched on $LD_LIBRARY_PATH)" << endl;
 			gMrbLog->Flush(this->ClassName(), "Load");
+			delete lofLibs;
 			return(-1);
 		}
 		sts = gSystem->Load(path.Data(), entry, SystemFlag);
 		this->PrintLoadPath(sts, mod.Data(), path.Data(), entry, SystemFlag);
-		if (sts == -1) return(-1);
+		if (sts == -1) {
+			delete lofLibs;
+			return(-1);
+		}
 	}
+	delete lofLibs;
 	return((nofLibs == 1) ? sts : 0);
 }
 
