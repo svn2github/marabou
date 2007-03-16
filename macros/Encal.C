@@ -42,7 +42,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.16 2007-03-13 14:25:25 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.17 2007-03-16 09:14:11 Rudolf.Lutter Exp $
 // Date:             Thu Feb  8 13:23:50 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -372,6 +372,7 @@ class TMrbEncal {
 		inline Bool_t ButtonOk() { return(buttonFlag == kButtonOk); };
 		inline Bool_t ButtonDiscard() { return(buttonFlag == kButtonDiscard); };
 		inline Bool_t ButtonStop() { return(buttonFlag == kButtonStop); };
+		inline Bool_t ButtonQuit() { return(buttonFlag == kButtonQuit); };
 
 		void ClearCanvas(Int_t PadNo);
 		void SetStatusLine(const Char_t * Text = NULL, Int_t FillColor = kColorWhite, Int_t LineColor = kColorBlack);
@@ -400,6 +401,8 @@ class TMrbEncal {
 		inline Int_t GetUpperLim() { return(fUpperLim); };
 
 		inline TFile * HistoFile() { return(fHistoFile); };
+
+		void Exit();
 
 	protected:
 		TObjArray * fLofHistos;	// argument storage
@@ -782,6 +785,21 @@ void TMrbEncal::WaitForButtonPressed(Bool_t StepFlag) {
 	}
 }
 
+void TMrbEncal::Exit() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::Exit
+// Purpose:        Close files and exit
+// Arguments:      --
+// Results:        --
+// Description:    Exits from MacroBrowser
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fHistoFile && fHistoFile->IsOpen()) fHistoFile->Close();
+	this->CloseRootFile();
+	gSystem->Exit(0);
+}
+
 void TMrbEncal::SetStatusLine(const Char_t * Text, Int_t FillColor, Int_t LineColor) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -879,7 +897,7 @@ TCanvas * TMrbEncal::OpenCanvas() {
 	fBtnStop->SetToolTipText("leave calibration and return to MacroBrowser");
 	fBtnStop->Draw();
 	btnNo++;
-	fBtnQuit = new TButton("quit", "gSystem->Exit(0);", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
+	fBtnQuit = new TButton("quit", "buttonPressed(kButtonQuit);", x0 + btnNo * wdth, y0, x0 + (btnNo + 1) * wdth, y1);
 	fBtnQuit->SetFillColor(32);
 	fBtnQuit->SetToolTipText("exit from ROOT");
 	fBtnQuit->Draw();
@@ -950,7 +968,7 @@ Bool_t TMrbEncal::SetCalSource() {
 
 	gSystem->ExpandPathName(fEnergies);
 	if (gSystem->AccessPathName(fEnergies.Data())) {
-		this->OutputMessage("SetCalSource", Form("SetCalSource", "No such file - %s, can't read calibration energies", fEnergies.Data()), kTRUE);
+		this->OutputMessage("SetCalSource", Form("No such file - %s, can't read calibration energies", fEnergies.Data()), kTRUE);
 		return(kFALSE);
 	}
 
@@ -1012,7 +1030,7 @@ void TMrbEncal::CloseRootFile() {
 // Description:    Closes root file containing histo + fit data
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fFitResults) {
+	if (fFitResults && fFitResults->IsOpen()) {
 		fFitResults->Write();
 		fFitResults->Close();
 	}
@@ -1424,7 +1442,6 @@ void TMrbEncal::Calibrate() {
 		}
 
 		TGraphErrors * calib = new TGraphErrors(fNofPeaksNeeded, fCalX.GetArray(), fCalE.GetArray(), fCalXerr.GetArray(), fCalEerr.GetArray());
-		if (fFitResults) fFitResults->Append(calib);
 		calib->SetName(Form("calib_%s", fCurHisto->GetName()));
 		calib->SetTitle(Form("%s Calibration for histo %s", fSourceName.Data(), fCurHisto->GetName()));
 		calib->Draw("A*");
@@ -1687,7 +1704,9 @@ void Encal(TObjArray * LofHistos,
 		if (h == NULL) {
 			encal.ClearCanvas(0);
 			encal.WaitForButtonPressed();
-			if (encal.ButtonStop()) break; else continue;
+			if (encal.ButtonQuit()) encal.Exit();
+			if (encal.ButtonStop()) break;
+			continue;
 		}
 
 		encal.SetCurHisto(h);
@@ -1725,6 +1744,7 @@ void Encal(TObjArray * LofHistos,
 		encal.UpdateStatusLine();
 
 		encal.WaitForButtonPressed();
+		if (encal.ButtonQuit()) encal.Exit();
 		if (encal.ButtonStop()) break;
 		if (!encal.ButtonOk()) continue;
 
