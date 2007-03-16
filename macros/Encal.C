@@ -42,7 +42,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.17 2007-03-16 09:14:11 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.18 2007-03-16 09:39:58 Rudolf.Lutter Exp $
 // Date:             Thu Feb  8 13:23:50 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -402,6 +402,7 @@ class TMrbEncal {
 
 		inline TFile * HistoFile() { return(fHistoFile); };
 
+		void Stop();
 		void Exit();
 
 	protected:
@@ -783,6 +784,21 @@ void TMrbEncal::WaitForButtonPressed(Bool_t StepFlag) {
 	} else {
 		buttonPressed(kButtonOk);
 	}
+}
+
+void TMrbEncal::Stop() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEncal::Stop
+// Purpose:        Close files and return from calibration
+// Arguments:      --
+// Results:        --
+// Description:    Stops calibration loop
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fHistoFile && fHistoFile->IsOpen()) fHistoFile->Close();
+	this->CloseRootFile();
+	fBtnQuit->SetMethod("gSystem.Exit(0);");
 }
 
 void TMrbEncal::Exit() {
@@ -1705,7 +1721,7 @@ void Encal(TObjArray * LofHistos,
 			encal.ClearCanvas(0);
 			encal.WaitForButtonPressed();
 			if (encal.ButtonQuit()) encal.Exit();
-			if (encal.ButtonStop()) break;
+			if (encal.ButtonStop()) { encal.Stop(); break; }
 			continue;
 		}
 
@@ -1745,7 +1761,7 @@ void Encal(TObjArray * LofHistos,
 
 		encal.WaitForButtonPressed();
 		if (encal.ButtonQuit()) encal.Exit();
-		if (encal.ButtonStop()) break;
+		if (encal.ButtonStop()) { encal.Stop(); break; }
 		if (!encal.ButtonOk()) continue;
 
 		encal.WriteCalibration();
