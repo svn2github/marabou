@@ -354,7 +354,7 @@ void GroupOfHists::HandleMenu(Int_t id)
          }
          break;            
       case M_RebinAll:
-         RebinAll(gPad, fCanvas, 0);
+         RebinAll(fCanvas);
          break;
       case M_AllAsSelRangeOnly:
          ShowAllAsSelected(gPad, fCanvas, 0, 
@@ -533,7 +533,7 @@ void GroupOfHists::ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t 
 }
 //_______________________________________________________________________________________
 
-void GroupOfHists::RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode)
+void GroupOfHists::RebinAll(TCanvas * canvas)
 {
    static Int_t ngroup = 2;
    Bool_t ok;

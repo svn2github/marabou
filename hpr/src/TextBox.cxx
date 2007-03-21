@@ -376,7 +376,7 @@ TextBoxMember* TextBox::FindMember(TObject *obj)
 {
    TIter next(&fMembers);
    TextBoxMember *tbm;
-   while ( tbm = (TextBoxMember*)next()) {
+   while ( (tbm = (TextBoxMember*)next()) ) {
       if (tbm->GetObject() == obj) return tbm;
    }
    return NULL;
@@ -542,9 +542,10 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
 }
 //________________________________________________________________________________
 
-void TextBox::Paint(Option_t * option)
+void TextBox::Paint(Option_t * opt)
 {
  //  AlignEntries(0., 0., 0., 0.);
+   if (opt);    // keep compiler quiet
    TPave::Paint(GetDrawOption());
 }
 //________________________________________________________________________________

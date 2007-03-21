@@ -1618,6 +1618,7 @@ to the file.|n\
 as input to Ascii2Graph: X, Y, ErrX, ErrY";
 // *INDENT-ON* 
 
+   if (what);
    if (is3dim(fSelHist)) {
       WarnBox(" WriteHistasASCII: 3 dim not yet supported ");
       return;
@@ -3780,7 +3781,7 @@ void FitHist::ColorMarked()
 }
 //___________________________________________________________________________________________
 
-void FitHist::SetBrightness(TGWindow * win)
+void FitHist::SetBrightness()
 {
    TOrdCollection * lab = new TOrdCollection();
    lab->Add(new TObjString("red"));
@@ -3832,7 +3833,7 @@ void FitHist::AdjustBrightness(Int_t row , Int_t val)
 }
 //___________________________________________________________________________________________
 
-void FitHist::SetHLS(TGWindow * win)
+void FitHist::SetHLS()
 {
    const Int_t NVAL = 4;
    TOrdCollection * lab = new TOrdCollection();

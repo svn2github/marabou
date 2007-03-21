@@ -138,8 +138,6 @@ Double_t gaus_cbg_vsig(Double_t * x, Double_t * par)
    Double_t arg;
    Double_t fitval;
    Double_t sigma ;
-   if (sigma == 0)
-      sigma = 1;               //  force widths /= 0
    fitval = par[kFix +0];
    for (Int_t i = 0; i < lNpeaks; i ++) {
       sigma   = par[kFix +3 + 3 * i];
@@ -205,8 +203,6 @@ Double_t gaus_lbg_vsig(Double_t * x, Double_t * par)
    Double_t bgconst = par[kFix +0];
    Double_t bgslope = par[kFix +1];
    Double_t sigma;
-   if (sigma == 0)
-      sigma = 1;               //  force widths /= 0
    fitval = fitval + bgconst + x[0] * bgslope;
    for (Int_t i = 0; i < lNpeaks; i ++) {
       sigma = par[kFix +4 + 3 * i];

@@ -91,6 +91,7 @@ Int_t HprImage::ToFile(const Char_t * fname){
 
 void HprImage::Paint(Option_t * opt)
 {
+   if (opt);
    TString name(GetName());
    name.Prepend("temp_");
 //   cout << "HprImage::Paint(): " << name << endl;

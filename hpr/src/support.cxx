@@ -478,16 +478,8 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    return cHCont;
 };
 
-//______________________________________________________________________________________
-
-int GetPosition(TVirtualPad * pad, UInt_t * xp, UInt_t * yp)
-{
-   *xp = 1000;
-   *yp = 650;
-   return 1;
-};
-
 //--------------------------------------------------
+
 Int_t XBinNumber(TH1 * hist, Axis_t xval)
 {
    TAxis *xaxis = hist->GetXaxis();
@@ -735,8 +727,7 @@ TH1 *GetTheHist(TVirtualPad * pad)
 
 //_______________________________________________________________________________________
 
-void CalibrateAllAsSelected(TVirtualPad * pad, TCanvas * canvas,
-                            Int_t mode)
+void CalibrateAllAsSelected(TVirtualPad * pad, TCanvas * canvas)
 {
 // find reference histogram
    TList *l = canvas->GetListOfPrimitives();

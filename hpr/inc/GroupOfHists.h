@@ -55,7 +55,7 @@ public:
    void   auto_exec();
    void   ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, 
           Int_t mode = 0, TGWindow * win = NULL);
-   void   RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
+   void   RebinAll(TCanvas * canvas);
 //   void   WarnBox(const char *message);
    TH1    *GetTheHist(TVirtualPad * pad);
 ClassDef(GroupOfHists,0)

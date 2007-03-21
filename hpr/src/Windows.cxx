@@ -167,7 +167,6 @@ void FitHist::ListWindows(){
    Int_t xp, yp;
    xp =  cHist->GetWindowTopX() +  ((Int_t)(cHist->GetWw()) / 2);
    yp =  cHist->GetWindowTopY() +  ((Int_t)(cHist->GetWh()) / 2);
-//   GetPosition(gPad,&xp,&yp);
    TIter next(fAllWindows);
    TMrbWindow* wdw;
    while( (wdw=(TMrbWindow*)next()) ){
@@ -208,7 +207,7 @@ void FitHist::AddWindow(const char * name, const char * bp){
 }
 //______________________________________________________________________________________ 
   
-void FitHist::EditWindow(const char * name, const char * bp){
+void FitHist::EditWindow(const char * name){
    if(CheckList(fAllWindows)<= 0) return;
    TObject* obj=fAllWindows->FindObject((char *)name);
    if(obj){
@@ -462,7 +461,7 @@ void FitHist::AddCut(const char * name, const char * bp){
 }
 //______________________________________________________________________________________
   
-void FitHist::EditCut(const char * name, const char * bp){
+void FitHist::EditCut(const char * name){
    UpdateCut();
    TMrbWindow2D* cut = (TMrbWindow2D*)fActiveCuts->FindObject((char *)name);
    if(cut){

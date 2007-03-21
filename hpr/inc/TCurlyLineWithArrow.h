@@ -48,7 +48,7 @@ public:
    void SetX2(Double_t v) {fX2 = v;}
    void SetY1(Double_t v) {fY1 = v;}
    void SetY2(Double_t v) {fY2 = v;}
-   void AddArrow(Int_t where, Float_t arrowsize=0) {}; // *MENU*
+//   void AddArrow(Int_t where, Float_t arrowsize=0) {}; // *MENU*
    void SetArrowSize(Int_t where = 2, Float_t arrowsize = 0);  // *MENU*
    Double_t GetDistToArrow(Int_t where);
    TCurlyLineArrow * GetArrowStart() { return fArrowStart;}

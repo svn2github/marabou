@@ -669,14 +669,14 @@ again:
                   case kOptionBright:
                      {
                      if(fFitHist && fHistPresent){
-                        fFitHist->SetBrightness(fRootCanvas);
+                        fFitHist->SetBrightness();
                      }
                      }
                      break;
                   case kOptionHLS:
                      {
                      if(fFitHist && fHistPresent){
-                        fFitHist->SetHLS(fRootCanvas);
+                        fFitHist->SetHLS();
                      }
                      }
                      break;

@@ -185,18 +185,18 @@ public:
    void DrawWindows();               // 
    void WriteOutWindows();               // 
    void ListWindows();                       // 
-   void AddWindow(const char *, const char * bp=0);            // 
+   void AddWindow(const char *, const char * bp=NULL);            // 
    void AddWindowsToHist();
-   void EditWindow(const char *, const char * bp=0); 
+   void EditWindow(const char *); 
 
    Int_t Nwindows(){return fActiveWindows->GetSize();};    
    Int_t Ncuts(){return fActiveCuts->GetSize();};                  // 
    void InitCut();                       // 
-   void EditCut(const char *, const char * bp); 
+   void EditCut(const char *); 
    void PrintOneCut(TMrbWindow2D *);      // 
    void CloseCuts();                       // 
    void ListCuts();                       // 
-   void AddCut(const char *, const char * bp);            // 
+   void AddCut(const char *, const char * bp=NULL);            // 
    Float_t DrawCut();                      // 
    void DrawCutName();                      // 
    void MarksToCut();               // 
@@ -268,9 +268,9 @@ public:
       fTofLabels = 0;
    }
 	void DrawSelectedFunctions();
-   void SetBrightness(TGWindow * win);
+   void SetBrightness();
    void AdjustBrightness(Int_t row , Int_t val); // *SIGNAL*
-   void SetHLS(TGWindow * win);
+   void SetHLS();
    void AdjustHLS(Int_t row , Int_t val); // *SIGNAL*
    
    void FastFT();

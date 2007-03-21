@@ -396,6 +396,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
 void  GroupOfGObjects::Transform(Double_t x, Double_t y, Double_t xoff, Double_t yoff,
                Double_t scaleG, Double_t angle, Int_t  align, Double_t* xt, Double_t* yt)
 {
+   if (align);
    Double_t xx = scaleG * x;
    Double_t yy = scaleG * y;
    *xt = xx; 
