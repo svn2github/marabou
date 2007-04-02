@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.14 2007-01-31 15:13:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.15 2007-04-02 07:54:03 Marabou Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -501,7 +501,11 @@ Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 
 						case kBtnClear:
 							{
-								fListBox->RemoveAll();
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
+  								fListBox->RemoveAll();
+#else
+    							fListBox->RemoveEntries(0, 1000);
+#endif
 								TIterator * iter = fLofListItems.MakeIterator();
 								TMrbNamedX * nx;
 								while (nx = (TMrbNamedX *) iter->Next()) {
@@ -523,7 +527,11 @@ Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 									lofSelected.AddNamedX(idx, lbe->GetText()->GetString());
 									idx++;
 								}
-								fListBox->RemoveAll();
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
+  								fListBox->RemoveAll();
+#else
+    							fListBox->RemoveEntries(0, 1000);
+#endif
 								iter = lofSelected.MakeIterator();
 								TMrbNamedX * nx;
 								while (nx = (TMrbNamedX *) iter->Next()) {
@@ -592,7 +600,11 @@ void TGMrbFileObjectListBox::SetList(TObjArray & LofEntries) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fListBox->RemoveAll();
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
+  	fListBox->RemoveAll();
+#else
+    fListBox->RemoveEntries(0, 1000);
+#endif
 	TIterator * iter = LofEntries.MakeIterator();
 	TObjString * str;
 	Int_t idx = 0;

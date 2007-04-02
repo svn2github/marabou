@@ -11,7 +11,7 @@
 //                                           a list box containing file objects
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFileObject.h,v 1.8 2007-01-31 15:13:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.h,v 1.9 2007-04-02 07:54:02 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -131,7 +131,11 @@ class TGMrbFileObjectListBox: public TGCompositeFrame, public TGMrbObject {
 
 		Bool_t OpenFile(const Char_t * FileName);
 		void SetList(TObjArray & LofEntries);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
 		inline void ClearList() { fListBox->RemoveAll(); };
+#else
+		inline void ClearList() { fListBox->RemoveEntries(0, 1000); };
+#endif
 
 		void SetFileEntry(const Char_t * File);
 		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file

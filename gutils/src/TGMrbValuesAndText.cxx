@@ -1280,18 +1280,18 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 //                 break;
 
                 } else if (parm1 == kIdClearHist) {
-#if ROOTVERSION > 51000
                    if (fFileName && fFileName.Length() > 0) {
                       TString cmd(fFileName);
                       cmd.Prepend("rm ");
                       gSystem->Exec(cmd);
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
                       fListBox->RemoveAll();
+#else
+                      fListBox->RemoveEntries(0, 1000);
+#endif
                       gClient->NeedRedraw(fListBox);
  
                    }
-#else
-                    cout << "Not yet implemented, please do it handish" << endl;
-#endif
                 } else if (parm1 == kIdCancel) {
                     CloseWindow();
                     return kTRUE;
@@ -1447,7 +1447,11 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname)
       cout << "Cant find: " << fname << endl;
       return;
    }
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
    fListBoxReq->RemoveAll();
+#else
+   fListBoxReq->RemoveEntries(0, 1000);
+#endif
    TFile f(fname);
    TIter next(f.GetListOfKeys());
    TKey* key;
