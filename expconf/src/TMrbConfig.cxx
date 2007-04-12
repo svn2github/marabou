@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.142 2007-03-07 13:22:36 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.143 2007-04-12 15:16:31 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -748,7 +748,12 @@ void TMrbConfig::UpdateTriggerTable(Int_t Trigger) {
 			fTriggersToBeHandled[Trigger] = kTriggerAssigned; 	// mark this trigger in trigger table
 
 			if (fSingleBitTriggersOnly) {								// check if single-bit triggers only
-				fSingleBitTriggersOnly = (Trigger == 1 || Trigger == 2 || Trigger == 4 || Trigger == 8);
+				fSingleBitTriggersOnly = (		Trigger == 1
+											||	Trigger == 2
+											||	Trigger == 4
+											||	Trigger == 8
+											||	Trigger == TMrbConfig::kTriggerStartAcq
+											||	Trigger == TMrbConfig::kTriggerStopAcq);
 
 				if (fSingleBitTriggersOnly) {							// single-bit triggers
 					fTriggerMask |= Trigger;							// add bit to trigger mask
@@ -822,8 +827,8 @@ Bool_t TMrbConfig::HandleMultipleTriggers(Int_t T1, Int_t T2, Int_t T3, Int_t T4
 		for (i = 0; i < kNofTriggers; i++) {
 			trg = i;
 			if (fTriggersToBeHandled[trg] == kTriggerPattern) {
-				TMrbString evtName("pattern", trg);
-				TMrbString evtTitle("multiple trigger ", trg);
+				TString evtName = Form("pattern%d", trg);
+				TString evtTitle = Form("multiple trigger ", trg);
 				multiEvt = new TMrbEvent_10_1(trg, evtName.Data(), evtTitle.Data());
 				trigMask = 1;
 				while (trg && trigMask < kNofTriggers) {
