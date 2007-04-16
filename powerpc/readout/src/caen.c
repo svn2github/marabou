@@ -303,8 +303,8 @@ void caen_module_info(long addr, volatile unsigned short * firmWare) {
 	serialLSB = *(firmWare + 0xF06 / sizeof(unsigned short)) & 0xFF;
 	serialMSB = *(firmWare + 0xF02 / sizeof(unsigned short)) & 0xFF;
 	serial = (int) (serialMSB << 8) + (int) serialLSB;
-	printf("CAEN module info: addr %#lx type V%d, serial# %d, revision %d\n", addr, boardId, serial, revision);
-	if (boardId != 785 && boardId != 775) {
+	printf("CAEN module info: addr %#lx, type V%d, serial# %d, revision %d\n", addr, boardId, serial, revision);
+	if (boardId != 785 && boardId != 775 && boardId != 965) {
 		printf("CAEN module info: Illegal board ID %d - should be 785\n", boardId);
 	}
 }

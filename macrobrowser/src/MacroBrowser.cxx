@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: MacroBrowser.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: MacroBrowser.cxx,v 1.5 2007-04-16 11:54:27 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -39,9 +39,6 @@ int main(int argc, char **argv)
 
 	useRint = gEnv->GetValue("MacroBrowser.UseRint", kFALSE);
 
-	if (useRint) theRint = new TRint("MacroBrowser", &argc, argv);
-	else theApp = new TApplication("MacroBrowser", &argc, argv);
-
 	TMrbLofMacros * lofMacros = new TMrbLofMacros("");
 	if (argc <= 1) {
 		lofMacros->AddMacro("*.C");
@@ -55,7 +52,13 @@ int main(int argc, char **argv)
 				<< "MacroBrowser: No ROOT macros found or wrong format - *.C" << endl
 				<< "              (Path=" << lofMacros->GetPath() << ")"
 				<< setblack << endl;
+		exit(1);
 	}
+
+	argc = 1;
+
+	if (useRint) theRint = new TRint("MacroBrowser", &argc, argv);
+	else theApp = new TApplication("MacroBrowser", &argc, argv);
 
 	TGMrbMacroBrowserMain mainWindow((const TGWindow *) gClient->GetRoot(), lofMacros, 600, 500);
 

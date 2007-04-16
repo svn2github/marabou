@@ -109,5 +109,5 @@ void sis_module_info(volatile unsigned char * module) {
 	ident = *SIS_3801_A_IDENT(module);
 	modId = (ident >> 16) & 0xFFFF;
 	version = (ident >> 12) & 0xF;
-	printf("SIS module info: id %#x, version %x\n", modId, version);
+	printf("SIS module info: addr %#lx, id %#x, version %x\n", module, modId, version);
 }
