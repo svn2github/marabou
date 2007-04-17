@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEsone.cxx,v 1.14 2006-02-22 12:15:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEsone.cxx,v 1.15 2007-04-17 11:22:02 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -493,15 +493,7 @@ Bool_t TMrbEsone::StartMarabouServer(const Char_t * HostName) {
 	fSocket = NULL;
 	
 	fServerPath = gEnv->GetValue("TMrbEsone.ServerPath", "");
-	fServerProg = gEnv->GetValue("TMrbEsone.ServerProg", "mrbLynxOsSrv");
-	TMrbSystem ux;
-	TString srvProg;
-	ux.Which(srvProg, fServerPath.Data(), fServerProg.Data());
-	if (srvProg.IsNull()) {
-		gMrbLog->Err()	<< "Can't locate server prog " << fServerProg << ", search on " << fServerPath << endl;
-		gMrbLog->Flush(this->ClassName(), "StartMarabouServer");
-		return(kFALSE);
-	}
+	fServerProg = gSystem->BaseName(fServerPath.Data());
 
 	// restart server
 	gMrbLog->Out()	<< "Starting ESONE server (type "
@@ -509,78 +501,17 @@ Bool_t TMrbEsone::StartMarabouServer(const Char_t * HostName) {
 					<< fController.GetName() << ") on host \"" << HostName << "\"." << endl;
 	gMrbLog->Flush(this->ClassName(), "StartMarabouServer", setmagenta);
 
-	Bool_t startSrvInXterm = gEnv->GetValue("TMrbEsone.StartSrvInXterm", kTRUE);
+	Bool_t useXterm = gEnv->GetValue("TMrbEsone.StartSrvInXterm", kTRUE);
 	Bool_t nonBlocking = gEnv->GetValue("TMrbEsone.NonBlockingMode", kFALSE);
 
-	TSocket * s = new TSocket(fHost.Data(), fPort);
-	Bool_t sockOk = s->IsValid();
-	if (sockOk) {
-		gMrbLog->Out()	<< "Connecting to server " << fHost << ":" << fPort
-						<< " (progr " << fServerProg << ")" << endl;
+	fLynxClient = new TMrbC2Lynx(fHost.Data(), fServerPath.Data(), fPort, nonBlocking, useXterm);
+
+	if ((fSocket = fLynxClient->GetSocket()) == NULL) {
+		gMrbLog->Err()	<< "Can't connect to server/port " << fHost << ":" << fPort << endl;
 		gMrbLog->Flush(this->ClassName(), "StartMarabouServer");
-	} else {
-		gMrbLog->Out()	<< "Trying to connect to server " << fHost << ":" << fPort
-						<< " (progr " << fServerProg << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "StartMarabouServer", setmagenta);
-		delete s;
-		TMrbString cmd1, cmd2;
-		if (startSrvInXterm) {
-			cmd1 = "xterm -title ";
-			cmd1 += fServerProg;
-			cmd1 += "@";
-			cmd1 += fHost;
-			cmd1 += " -e rsh ";
-		} else {
-			cmd1 = "rsh ";
-		}
-		cmd1 += fHost;
-		cmd1 += " ";
-
-		cmd2 = "";
-		if (!fServerPath.IsNull()) {
-			cmd2 += fServerPath;
-			cmd2 += "/";
-		}
-		cmd2 += fServerProg;
-		cmd2 += " ";
-		cmd2 += fPort;
-		cmd2 += " ";
-		cmd2.AppendInteger(nonBlocking ? 1 : 0);
-
-		Bool_t debugMode = gEnv->GetValue("TMrbEsone.DebugMode", kFALSE);
-		if (debugMode) {
-			gMrbLog->Out()	<< "[Debug mode] Start manually @ " << fHost << " >> " << cmd2 << " <<" << endl;
-			gMrbLog->Flush(this->ClassName(), "StartMarabouServer");
-		} else {
-			cmd1 += cmd2;
-			cmd1 += " &";
-			if (this->IsVerbose()) {
-				gMrbLog->Out()	<< "Exec >> " << cmd1 << " <<" << endl;
-				gMrbLog->Flush(this->ClassName(), "StartMarabouServer", setmagenta);
-			}
-			gSystem->Exec(cmd1.Data());
-		}
-
-		Int_t wait = debugMode ? 100 : kEsoneWaitForServer;
-		for (Int_t i = 0; i < wait; i++) {
-			sleep(1);
-			cout << "." << flush;
-			s = new TSocket(fHost.Data(), fPort);
-			sockOk = s->IsValid();
-			if (sockOk) break;
-			delete s;
-		}
-		if (sockOk) {
-			cout << " done." << endl;
-		} else {
-			cout << endl;
-			gMrbLog->Err()	<< "Can't connect to server/port " << fHost << ":" << fPort << endl;
-			gMrbLog->Flush(this->ClassName(), "StartMarabouServer");
-			return(kFALSE);
-		}
+		return(kFALSE);
 	}
 	
-	fSocket = s;
 	return(kTRUE);
 }
 							

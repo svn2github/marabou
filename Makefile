@@ -46,6 +46,10 @@ ifeq ($(shell if [ -d dgfcomm ] ; then echo yes; fi), yes)
 MODULES      += dgfcomm
 endif
 
+ifeq ($(shell if [ -d c2lynx ] ; then echo yes; fi), yes)
+MODULES      += c2lynx
+endif
+
 # if online data acquisition is needed in addition
 
 ifeq ($(shell if [ -d camcli  ] ; then echo yes; fi), yes)

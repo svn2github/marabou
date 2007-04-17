@@ -9,7 +9,7 @@
 // Description:    Class definitions to establish an
 //                 ESONE client/server connection.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEsone.h,v 1.9 2006-02-22 12:15:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEsone.h,v 1.10 2007-04-17 11:22:02 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -28,6 +28,8 @@
 
 #include "TMrbEsoneCommon.h"
 #include "TMrbEsoneCnaf.h"
+
+#include "TMrbC2Lynx.h"
 
 #define C_CBV	5
 #define C_CC32	11
@@ -233,6 +235,7 @@ class TMrbEsone : public TObject {
 		TString fSetupPath;							// where to fond setup files
 		TString fServerPath;						// where to start server from
 		TString fServerProg;						// server program
+		TMrbC2Lynx * fLynxClient;					// client to lynxos/vme
 		TSocket * fSocket;							//! connection to server
 		Int_t fPort;								// port number
 		Int_t fNofCrates;							// number of crates in use
