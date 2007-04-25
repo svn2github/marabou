@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEnv.cxx,v 1.19 2007-04-25 14:46:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEnv.cxx,v 1.20 2007-04-25 14:48:49 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -358,7 +358,6 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, TMrbNamedX * NamedVal, Int_t Base) 
 
 	fResourceName = fPrefix + Resource;
 
-	if (strcmp(Resource, "Readout0.LocalPipeBase") == 0) fCurEnv->Print();
 	resValue = fCurEnv->GetValue(fResourceName, "<undef>");	// read as ascii
 	if (resValue.CompareTo("<undef>") == 0) {
 		if (this->HasDefaults()) {

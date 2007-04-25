@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.53 2007-04-25 14:40:59 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-04-25 14:40:59 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.54 2007-04-25 14:46:11 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-04-25 14:46:11 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -985,8 +985,6 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	fCurEnv->Print();
-
 	Int_t nofReadouts = this->GetNofReadouts();
 	
 	TString mbsPath = this->GetPath();
@@ -1434,10 +1432,8 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t pipeBase = this->Get(this->Resource(res, "Readout", ProcID, "LocalPipeBase"), 0);
-						cout << "@@@ get: " << pipeBase << endl;
 						if (pipeBase == 0) {
 							this->GetRcVal(pipeBase, "LocalPipeBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
-							cout << "@@@ rcv: " << pipeBase << endl;
 							this->Set(this->Resource(res, "Readout", ProcID, "LocalPipeBase"), (Int_t) pipeBase, 16);
 						} 
 						arrayData[0] = pipeBase;
