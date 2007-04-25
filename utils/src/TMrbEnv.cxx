@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEnv.cxx,v 1.15 2007-02-26 13:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEnv.cxx,v 1.16 2007-04-25 14:32:21 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -358,17 +358,22 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, TMrbNamedX * NamedVal, Int_t Base) 
 
 	fResourceName = fPrefix + Resource;
 
+	cout << "@@@ TMrbEnv::Get: " << Resource << " " << Default << endl;
 	resValue = fCurEnv->GetValue(fResourceName, "<undef>");	// read as ascii
+	cout << "@@@ resValue: " << resValue << endl;
 	if (resValue.CompareTo("<undef>") == 0) {
 		if (this->HasDefaults()) {
 			resValue = fDefaultsEnv->GetValue(fResourceName, "<undef>");
+			cout << "@@@ resValue/defaultEnv: " << resValue << endl;
 			if (resValue.CompareTo("<undef>") == 0) resValue = Default;
 		} else {
 			resValue = Default;
+			cout << "@@@ default: " << resValue << endl;
 		}
 	}
 	resValue.Strip(TString::kBoth);
 	resValue.ToInteger(intVal);
+	cout << "@@@ return: " << intVal << endl;
 	return(intVal);
 }
 
