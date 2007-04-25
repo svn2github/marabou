@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.1 2007-04-17 11:22:02 Rudolf.Lutter Exp $     
-// Date:           $Date: 2007-04-17 11:22:02 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.2 2007-04-25 06:41:01 Rudolf.Lutter Exp $     
+// Date:           $Date: 2007-04-25 06:41:01 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -50,6 +50,8 @@ TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, Int_t Por
 // Results:        --
 // Description:    Class constructor
 //////////////////////////////////////////////////////////////////////////////
+
+	this->Reset();
 
 	fHost = HostName;
 	fPort = Port;
@@ -145,7 +147,7 @@ void TMrbC2Lynx::Reset() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("esone.log");
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("c2lynx.log");
 	
 	fVerboseMode = gEnv->GetValue("TMrbC2Lynx.VerboseMode", kFALSE);
 	fDebugMode = gEnv->GetValue("TMrbC2Lynx.DebugMode", kFALSE);
