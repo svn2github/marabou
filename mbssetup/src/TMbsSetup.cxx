@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.50 2007-03-08 08:09:59 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMbsSetup.cxx,v 1.51 2007-04-25 13:56:41 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-04-25 13:56:41 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
