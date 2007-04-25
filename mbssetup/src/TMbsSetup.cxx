@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.51 2007-04-25 13:56:41 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-04-25 13:56:41 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.52 2007-04-25 14:03:32 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-04-25 14:03:32 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -1432,8 +1432,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						for (Int_t crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						UInt_t pipeBase = this->Get(this->Resource(res, "Readout", ProcID, "LocalPipeBase"), 0);
+						cout << "@@@ get: " << pipeBase << endl;
 						if (pipeBase == 0) {
 							this->GetRcVal(pipeBase, "LocalPipeBase", cType->GetName(), pType->GetName(), sMode.Data(), mbsVersion.Data(), lynxVersion.Data());
+							cout << "@@@ rcv: " << pipeBase << endl;
 							this->Set(this->Resource(res, "Readout", ProcID, "LocalPipeBase"), (Int_t) pipeBase, 16);
 						} 
 						arrayData[0] = pipeBase;
