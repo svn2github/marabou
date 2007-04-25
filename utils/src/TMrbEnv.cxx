@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEnv.cxx,v 1.16 2007-04-25 14:32:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEnv.cxx,v 1.17 2007-04-25 14:34:44 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -118,6 +118,7 @@ Bool_t TMrbEnv::Open(const Char_t * ResourceFile) {
 
 	if (!fIsSystemEnv && fCurEnv != NULL) delete fCurEnv;
 	fCurEnv = new TEnv(resFile.Data());
+	fCurEnv->Print();
 	fCurFile = resFile;
 	this->Set("TMrbEnv.Info.File", gSystem->BaseName(resFile.Data()));
 	this->Set("TMrbEnv.Info.Modified", dt.AsString());
