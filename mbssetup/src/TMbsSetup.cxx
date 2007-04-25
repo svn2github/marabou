@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.52 2007-04-25 14:03:32 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-04-25 14:03:32 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.53 2007-04-25 14:40:59 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-04-25 14:40:59 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -984,6 +984,8 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 // Description:    Opens a template file and expands it.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
+
+	fCurEnv->Print();
 
 	Int_t nofReadouts = this->GetNofReadouts();
 	
