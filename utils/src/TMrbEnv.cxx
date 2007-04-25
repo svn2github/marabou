@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEnv.cxx,v 1.18 2007-04-25 14:37:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEnv.cxx,v 1.19 2007-04-25 14:46:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -118,7 +118,6 @@ Bool_t TMrbEnv::Open(const Char_t * ResourceFile) {
 
 	if (!fIsSystemEnv && fCurEnv != NULL) delete fCurEnv;
 	fCurEnv = new TEnv(resFile.Data());
-	fCurEnv->Print();
 	fCurFile = resFile;
 	this->Set("TMrbEnv.Info.File", gSystem->BaseName(resFile.Data()));
 	this->Set("TMrbEnv.Info.Modified", dt.AsString());
@@ -359,23 +358,18 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, TMrbNamedX * NamedVal, Int_t Base) 
 
 	fResourceName = fPrefix + Resource;
 
-	cout << "@@@ TMrbEnv::Get: " << Resource << " " << Default << endl;
 	if (strcmp(Resource, "Readout0.LocalPipeBase") == 0) fCurEnv->Print();
 	resValue = fCurEnv->GetValue(fResourceName, "<undef>");	// read as ascii
-	cout << "@@@ resValue: " << resValue << endl;
 	if (resValue.CompareTo("<undef>") == 0) {
 		if (this->HasDefaults()) {
 			resValue = fDefaultsEnv->GetValue(fResourceName, "<undef>");
-			cout << "@@@ resValue/defaultEnv: " << resValue << endl;
 			if (resValue.CompareTo("<undef>") == 0) resValue = Default;
 		} else {
 			resValue = Default;
-			cout << "@@@ default: " << resValue << endl;
 		}
 	}
 	resValue.Strip(TString::kBoth);
 	resValue.ToInteger(intVal);
-	cout << "@@@ return: " << intVal << endl;
 	return(intVal);
 }
 
