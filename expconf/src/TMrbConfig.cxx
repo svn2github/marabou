@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.143 2007-04-12 15:16:31 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.144 2007-04-26 08:53:57 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2535,7 +2535,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kAnaVarArrDefinePointers:
 					case TMrbConfig::kAnaVarArrClassInstance:
-						if (gMrbLofUserVars != NULL) this->MakeAnalyzeCode(anaStrm, tagIdx, kIsVariable | kIsArray, anaTmpl);
+						if (gMrbLofUserVars != NULL) this->MakeAnalyzeCode(anaStrm, tagIdx, kIsVariable | kVarIsArray, anaTmpl);
 						break;
 					case TMrbConfig::kAnaWdwDefinePointers:
 					case TMrbConfig::kAnaWdwClassInstance:
