@@ -24,8 +24,9 @@ SYSMODE=y
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-ROOTSYS=/usr/local/opt/root/root4.04-02g-src-gcc344
+ROOTSYS=/usr/daq/root_v5.15.06
 MARABOU=`pwd`
+MARABOU_INSTALL_PATH=/usr/daq/marabou_pro
 
 #____________________________[end editable section]___________________________
 
@@ -192,6 +193,7 @@ fi
 
 export ROOTSYS
 export MARABOU
+export MARABOU_INSTALL_PATH
 export INSTDIR=
 export LD_LIBRARY_PATH=$ROOTSYS/lib:$MARABOU/lib:$LD_LIBRARY_PATH
 export PATH=$ROOTSYS/bin:$MARABOU/bin:$PATH
