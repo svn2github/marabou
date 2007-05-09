@@ -38,7 +38,7 @@ ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(CptmCH))
 INCLUDEFILES += $(CptmCDEP)
 
 ##### extra libs needed #####
-OCptmCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbEsone -lEsoneClient \
+OCptmCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbC2Lynx -lTMrbEsone -lEsoneClient \
                  -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser
 
 ##### local rules #####
@@ -63,7 +63,7 @@ $(CptmCLIB):     $(CptmCDO) $(CptmCO)
 $(CptmCDS):     $(CptmCDH) $(CptmCL)
 		@echo "includes: $(CptmCDH)"
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude $(CptmCDH) $(CptmCL)
+		$(ROOTCINT) -f $@ -c -Iinclude +P $(CptmCDH) $(CptmCL)
 
 $(CptmCDO):     $(CptmCDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

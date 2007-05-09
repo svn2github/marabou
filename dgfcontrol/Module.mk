@@ -38,7 +38,7 @@ ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(DGFCH))
 INCLUDEFILES += $(DGFCDEP)
 
 ##### extra libs needed #####
-ODGFCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbEsone -lEsoneClient \
+ODGFCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbC2Lynx -lTMrbEsone -lEsoneClient \
                  -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser
 
 ##### local rules #####
@@ -63,7 +63,7 @@ $(DGFCLIB):     $(DGFCDO) $(DGFCO)
 $(DGFCDS):     $(DGFCDH) $(DGFCL)
 		@echo "includes: $(DGFCDH)"
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude $(DGFCDH) $(DGFCL)
+		$(ROOTCINT) -f $@ -c -Iinclude +P $(DGFCDH) $(DGFCL)
 
 $(DGFCDO):     $(DGFCDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

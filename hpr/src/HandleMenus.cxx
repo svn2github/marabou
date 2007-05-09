@@ -344,7 +344,7 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                switch (parm1) {
                   // Handle File menu items...
                   case kFileNewCanvas:
-                     gROOT->GetMakeDefCanvas()();
+//                     gROOT->GetMakeDefCanvas();
                      break;
                   case kFileOpen:
                      {

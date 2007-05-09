@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.78 2006-11-15 10:08:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.79 2007-05-09 14:12:28 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -17,6 +17,8 @@
 #include "TOrdCollection.h"
 #include "TRegexp.h"
 #include "TObjString.h"
+#include "THashList.h"
+#include "TMath.h"
 
 #include "TMrbAnalyze.h"
 #include "TUsrEvtStart.h"

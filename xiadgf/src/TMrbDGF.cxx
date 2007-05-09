@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.45 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.46 2007-05-09 14:12:28 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -19,6 +19,7 @@ namespace std {} using namespace std;
 #include <sstream>
 #include <iomanip>
 #include <fstream>
+#include <math.h>
 
 #include "Rtypes.h"
 #include "TRegexp.h"

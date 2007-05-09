@@ -58,9 +58,9 @@ endif
 
 # the following modules are for special hardware
 
-#ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
-#MODULES      += xiadgf dgfcontrol cptmcontrol
-#endif
+ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
+MODULES      += xiadgf dgfcontrol cptmcontrol
+endif
 
 ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
 MODULES      += polar
