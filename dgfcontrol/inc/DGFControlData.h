@@ -8,13 +8,14 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.14 2006-10-09 08:59:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.15 2007-05-11 08:15:47 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TNamed.h"
+#include "TEnv.h"
 #include "TString.h"
 #include "TList.h"
 
@@ -163,7 +164,9 @@ class DGFControlData : public TNamed {
 		void UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, const Char_t * TrueFalse);
 		void UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, Int_t Value);
 		void UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, Double_t Value);
-		inline void WriteLocalEnv() { fEnv->Save(); };
+		inline void WriteLocalEnv() {	fEnv->SaveLevel(kEnvChange);
+										fEnv->SaveLevel(kEnvLocal);
+										fEnv->SaveLevel(kEnvUser); };
 
 	protected:
 		TList fHeap;								//!
