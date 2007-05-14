@@ -245,7 +245,7 @@ void TextBox::AddMember(TObject* obj, Double_t xi, Double_t yi)
       }
       g->SetPoint(ip, x, y);
    }
-   if (p) {
+   if (p && fAlignType != 0) {
       if (align > 0 && align <= 33) {
          TransformPave(p, align);
       }
@@ -440,6 +440,8 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
 //	Double_t newx = 0;
 //	Double_t newy = 0;
 	while ( (mobj = (TextBoxMember*)next()) ) {
+		Short_t align = mobj->GetAlign();
+      if (align == 0) continue;
 		TText  *t = NULL;
 		TGraph *g = NULL;
 		TPave  *p = NULL;
@@ -458,8 +460,6 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
 		else if (obj->InheritsFrom("TPave")) {
 			p =(TPave*)obj;
 		}
-		Short_t align = mobj->GetAlign();
-      
 		if (   TMath::Abs(dX1) < fSmall && TMath::Abs(dY1) < fSmall
          &&  TMath::Abs(dX2) < fSmall && TMath::Abs(dY2) < fSmall) continue;
       Double_t dX = 0;
@@ -530,7 +530,7 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
 				cout << "((TSplineX*)obj)->Paint()" << endl;
 			}
 		}
-		if (p) {
+		if (p && fAlignType != 0) {
 			p->SetX1(p->GetX1() + dX);
 			p->SetY1(p->GetY1() + dY);
 			p->SetX2(p->GetX2() + dX);

@@ -137,7 +137,7 @@ public:
    ParallelGraph* GetMaster()              {return fMaster;};
    Bool_t GetIsRail()                      {return fIsRail;};
    void   SetIsRail(Bool_t israil = kTRUE) {fIsRail = israil;};
-   void   CorrectForArrows(Double_t alen, Double_t aangle, Double_t aind_angle,
+   void   CorrectForArrows(Double_t rxy, Double_t alen,Double_t aangle, Double_t aind_angle,
                            Bool_t at_start, Bool_t at_end);
  #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
    void SavePrimitive(ostream &, Option_t *){};     // dont write to .C file
@@ -234,6 +234,7 @@ private:
    Double_t      fArrowLength;
    Double_t      fArrowAngle;
    Double_t      fArrowIndentAngle;
+   Double_t      fRatioXY;
 
 	Double_t f_blend(Double_t numerator, Double_t denominator);
 	Double_t g_blend(Double_t u, Double_t q);
@@ -267,13 +268,13 @@ protected:
 
    Int_t ComputeSpline();
 
-   static Double_t Length(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
-   static Double_t PhiOfLine(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
-   static void Nextpoint(Double_t phi, Double_t x, Double_t y, 
+   Double_t Length(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
+   Double_t PhiOfLine(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
+   void Nextpoint(Double_t phi, Double_t x, Double_t y, 
                         Double_t dist, Double_t* a,  Double_t* b);
-   static void Endpoint(Double_t phi, Double_t x, Double_t y, 
+   void Endpoint(Double_t phi, Double_t x, Double_t y, 
                         Double_t dist, Double_t* a,  Double_t* b);
-   static void Midpoint(Double_t phi1, Double_t phi2, Double_t x, Double_t y, 
+   void Midpoint(Double_t phi1, Double_t phi2, Double_t x, Double_t y, 
                         Double_t dist ,Double_t* a, Double_t* b);
 
 public:

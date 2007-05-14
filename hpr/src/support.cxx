@@ -1025,7 +1025,7 @@ void Canvas2RootFile(HTCanvas * canvas, TGWindow * win)
    TString hname = canvas->GetName();
    hname += ".canvas";
    Bool_t ok = kTRUE, toggle = kFALSE;
-
+/*
    TObject *obj;
    hname = GetString("Save canvas with name", hname.Data(), &ok, win);
    if (!ok)
@@ -1036,6 +1036,7 @@ void Canvas2RootFile(HTCanvas * canvas, TGWindow * win)
           << obj->ClassName() << setblack << endl;
       return;
    }
+*/
 //   if (OpenWorkFile(win)) {
    if (canvas->GetAutoExec()) {
       canvas->ToggleAutoExec();

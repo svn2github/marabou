@@ -314,16 +314,16 @@ void InsertTextDialog::InsertTextExecute()
       latex->SetTextFont(fEditTextFont * 10 + fEditTextPrec);
       latex->SetTextSize(fEditTextSize);
       latex->SetTextColor(fEditTextColor);
-      latex->Draw();
       latex->SetTextAngle(fEditTextAngle);
+      latex->Draw();
+//      latex->Inspect();
       llist.Add(latex);
       yt -= fEditTextDy;
-//      latex->Dump();
-//      outfile << cmd << endl;
       cmd.Resize(0);
       if (latex->GetXsize() > longestline) longestline = latex->GetXsize();
       if (th_first <= 0) th_first = latex->GetYsize();
       th_last = latex->GetYsize();
+      latex->SetTextAngle(fEditTextAngle);
    }
 
    Int_t nlines = llist.GetSize();

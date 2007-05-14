@@ -115,8 +115,10 @@ void InsertArcDialog::ArcByCenterAndRadius()
    if (fR2 <= 0) {
       TArc *a = new TArc(fXcenter, fYcenter, fR1, fPhi1, fPhi2);
       el = (TEllipse *)a; 
+      el->SetR2(fR1* GetRatioXY());
    } else {
       el = new TEllipse(fXcenter, fYcenter, fR1, fR1 * fR2, fPhi1, fPhi2);
+      el->SetR2(fR1* fR2 * GetRatioXY());
    }
    el->Draw();
    el->SetLineColor(fColor);
@@ -285,5 +287,18 @@ Bool_t InsertArcDialog::PoCftoCenterPhi(Double_t x1, Double_t y1,
    *phimin = phi1;
    *phimax = phi2;
    return ok;
+}
+
+Double_t InsertArcDialog::GetRatioXY() 
+{
+	Double_t ww = (Double_t)gPad->GetWw();
+	Double_t wh = (Double_t)gPad->GetWh();
+	Double_t pxrange = gPad->GetAbsWNDC()*ww;
+	Double_t pyrange = gPad->GetAbsHNDC()*wh;
+	Double_t xrange  = gPad->GetX2() - gPad->GetX1();
+	Double_t yrange  = gPad->GetY2() - gPad->GetY1();
+	Double_t pixeltoX  = xrange / pxrange;
+	Double_t pixeltoY  = yrange/pyrange;
+   return pixeltoY / pixeltoX;
 }
 

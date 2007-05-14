@@ -19,6 +19,7 @@
 #include "TContextMenu.h"
 #include "TVirtualPadEditor.h"
 
+#include "GEdit.h"
 #include "HTCanvas.h"
 #include "HandleMenus.h"
 #include "FitHist.h"
@@ -538,6 +539,7 @@ again:
 //                     fHCanvas->ToggleEditor();
                        fRootCanvas->ShowEditor();
                        fRootCanvas->ShowToolBar();
+                       new GEdit(fHCanvas);
 //                     if (!fEditor) CreateEditor();
                      break;
                   case kEditUndo:

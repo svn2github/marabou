@@ -3294,14 +3294,20 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
    }
    gDirectory = gROOT;
    if (!c)  return;
+
    if (!c->TestBit(HTCanvas::kIsAEditorPage)) {
-      c->Draw();
+//      c->Draw();
       TList * logr = new TList();
       Int_t ngr = FindGraphs(gPad, logr);
-      if (ngr > 0) c->BuildHprMenus(this,0, (TGraph*)logr->First());
+      if (ngr > 0) { 
+         c->Draw();
+         c->BuildHprMenus(this,0, (TGraph*)logr->First());
+         delete logr;
+         return;
+      }
       delete logr;
-      return;
    }
+
    TString new_name(c->GetName());
    if (new_name == "dina4page") {
       new_name = "page_";
@@ -3309,6 +3315,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       new_name += fPageNumber;
       c->SetBit(HTCanvas::kIsAEditorPage);
    }
+   c->SetBit(HTCanvas::kIsAEditorPage);
    HTCanvas* oldc = (HTCanvas*)gROOT->GetListOfCanvases()->FindObject(name); 
    if (oldc) {
       cout << new_name << " already exists, please save und delete" << endl;

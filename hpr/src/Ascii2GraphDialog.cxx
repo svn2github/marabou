@@ -287,6 +287,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 
 
    TString hname = fGraphFileName;
+   hname = gSystem->BaseName(hname);
    Int_t ip = hname.Index(".");
    if (ip > 0) hname.Resize(ip);
    TString htitle = hname;

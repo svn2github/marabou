@@ -33,6 +33,7 @@ public:
                        Double_t x2, Double_t y2, Double_t r, Int_t sense,
                        Double_t *xcenter, Double_t *ycenter, 
                        Double_t *phimin, Double_t *phimax);
+   Double_t GetRatioXY();
    void    SaveDefaults();
    void    RestoreDefaults();
    void    CloseDown();

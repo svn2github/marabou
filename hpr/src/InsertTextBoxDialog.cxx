@@ -104,6 +104,9 @@ void InsertTextBoxDialog::ExecuteInsert()
          X2 = fX1 + fDx;
          Y2 = fY1 + fDy;
 		}
+   } else {
+      X2 = fX1 + fDx;
+      Y2 = fY1 + fDy;
    }
    if (m1) delete m1;
    if (ma) delete ma;

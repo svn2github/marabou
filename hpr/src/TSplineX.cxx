@@ -447,7 +447,7 @@ Double_t TSplineX::PhiOfLine(Double_t x1, Double_t y1, Double_t x2, Double_t y2)
    Double_t len = Length(x1, y1, x2, y2);
    Double_t phi = 0;
    if (len > 0) {
-      Double_t sina = (y2 - y1) / len;
+      Double_t sina = (y2 - y1) / len / fRatioXY ;
       Double_t cosa = (x2 - x1) / len;
       phi = TMath::ATan2(sina, cosa);
       if (phi < 0) phi += 2. * TMath::Pi();
@@ -462,7 +462,7 @@ void TSplineX::Nextpoint(Double_t phi, Double_t x, Double_t y,
    Double_t phip = phi; 
    if (phip < 0) phip += 2 * TMath::Pi();
    *a = x + dist * TMath::Cos(phip);
-   *b = y + dist * TMath::Sin(phip);
+   *b = y + fRatioXY * dist * TMath::Sin(phip);
 }
 //_______________________________________________________________________________________
 
@@ -472,7 +472,7 @@ void TSplineX::Endpoint(Double_t phi, Double_t x, Double_t y,
    Double_t phip = phi - 0.5 * TMath::Pi(); 
    if (phip < 0) phip += 2 * TMath::Pi();
    *a = x + dist * TMath::Cos(phip);
-   *b = y + dist * TMath::Sin(phip);
+   *b = y + fRatioXY * dist * TMath::Sin(phip);
 }
 //_______________________________________________________________________________________
 
@@ -483,7 +483,7 @@ void TSplineX::Midpoint(Double_t phi1, Double_t phi2, Double_t x, Double_t y,
    Double_t phi3 = 0.5 * (phi1 + phi2 - TMath::Pi()); 
    if (phi3 < 0) phi3 += 2 * TMath::Pi();
    *a = x + r * TMath::Cos(phi3);
-   *b = y + r * TMath::Sin(phi3);
+   *b = y + fRatioXY * r * TMath::Sin(phi3);
 }
 //____________________________________________________________________________________
 
@@ -744,9 +744,9 @@ Int_t TSplineX::ComputeSpline()
 //      if (!gPad->GetListOfPrimitives()->FindObject(fRailL)) fRailL->Draw("L");
 //      if (!gPad->GetListOfPrimitives()->FindObject(fRailR)) fRailR->Draw("L");
       if (fPaintArrowAtStart || fPaintArrowAtEnd) { 
-         fRailL->CorrectForArrows( fArrowLength, fArrowAngle,fArrowIndentAngle,
+         fRailL->CorrectForArrows(fRatioXY, fArrowLength, fArrowAngle,fArrowIndentAngle,
                                     fPaintArrowAtStart, fPaintArrowAtEnd);
-         fRailR->CorrectForArrows( fArrowLength, fArrowAngle,fArrowIndentAngle,
+         fRailR->CorrectForArrows( fRatioXY, fArrowLength, fArrowAngle,fArrowIndentAngle, 
                                     fPaintArrowAtStart, fPaintArrowAtEnd);
       }
    }
@@ -760,7 +760,7 @@ Int_t TSplineX::ComputeSpline()
 
             if ((fPaintArrowAtStart || fPaintArrowAtEnd) 
                 && (fFilledLength <= 0 || fEmptyLength  <= 0))
-              gr->CorrectForArrows( fArrowLength, fArrowAngle,fArrowIndentAngle,
+              gr->CorrectForArrows( fRatioXY, fArrowLength, fArrowAngle,fArrowIndentAngle,
                                     fPaintArrowAtStart, fPaintArrowAtEnd);
          }
       }
@@ -872,7 +872,7 @@ Int_t TSplineX::add_point(Double_t x, Double_t y)
    if (fNpoints >= fX.GetSize()) {
       fX.Set(fNpoints + 50);
       fY.Set(fNpoints + 50);
-      cout << "TSplineX::add_point, expand result vector to: " << fX.GetSize()<< endl;
+//      cout << "TSplineX::add_point, expand result vector to: " << fX.GetSize()<< endl;
    }
    fX[fNpoints] = x;
    fY[fNpoints] = y;
@@ -1028,7 +1028,17 @@ void TSplineX::Paint(Option_t * opt)
 
    if (opt) ; // keep compiler quiet
    if (!fComputeDone) ComputeSpline();
-
+// correction for different scales in x and y
+	Double_t ww = (Double_t)gPad->GetWw();
+	Double_t wh = (Double_t)gPad->GetWh();
+	Double_t pxrange = gPad->GetAbsWNDC()*ww;
+	Double_t pyrange = gPad->GetAbsHNDC()*wh;
+	Double_t xrange  = gPad->GetX2() - gPad->GetX1();
+	Double_t yrange  = gPad->GetY2() - gPad->GetY1();
+	Double_t pixeltoX  = xrange / pxrange;
+	Double_t pixeltoY  = yrange/pyrange;
+   fRatioXY = pixeltoY / pixeltoX;
+//   cout << fRatioXY<< " fRatioXY " << endl;
    if (fRailwaylike <= 0)  {
 //    simple line, no rail
       TString opt(GetOption());
@@ -1404,7 +1414,7 @@ void TSplineX::PaintArrow(Int_t where)
       xx = x[i] * cosang - y[i] * sinang;
       yy = x[i] * sinang + y[i] * cosang;
       x[i] = xx + px2;
-      y[i] = yy + py2;
+      y[i] = fRatioXY *yy + py2;
    }
    if (fRailwaylike && fArrowFill == 0) {
 //  connect array at end to parallel lines
@@ -1911,29 +1921,29 @@ void ParallelGraph::Compute()
       }
    }
    if (fClosed) {
-      phi1 = TSplineX::PhiOfLine(xo[n-2], yo[n-2], xo[n-1], yo[n-1]);
-      phi2 = TSplineX::PhiOfLine(xo[0], yo[0], xo[1], yo[1]);
-      TSplineX::Midpoint(phi1, phi2, xo[0], yo[0], fDist, &xp[0], &yp[0]);
+      phi1 =  fParent->PhiOfLine(xo[n-2], yo[n-2], xo[n-1], yo[n-1]);
+      phi2 =  fParent->PhiOfLine(xo[0], yo[0], xo[1], yo[1]);
+       fParent->Midpoint(phi1, phi2, xo[0], yo[0], fDist, &xp[0], &yp[0]);
       xp[n-1] = xp[0];
       yp[n-1] = yp[0];
    } else {
-      phi1 = TSplineX::PhiOfLine(xo[0], yo[0], xo[1], yo[1]);
-      TSplineX::Endpoint(phi1, xo[0], yo[0], fDist, &xp[0], &yp[0]);
-      phi1 = TSplineX::PhiOfLine(xo[n-2], yo[n-2], xo[n-1], yo[n-1]);
-      TSplineX::Endpoint(phi1, xo[n-1], yo[n-1], fDist, &xp[n-1], &yp[n-1]);
+      phi1 =  fParent->PhiOfLine(xo[0], yo[0], xo[1], yo[1]);
+       fParent->Endpoint(phi1, xo[0], yo[0], fDist, &xp[0], &yp[0]);
+      phi1 =  fParent->PhiOfLine(xo[n-2], yo[n-2], xo[n-1], yo[n-1]);
+       fParent->Endpoint(phi1, xo[n-1], yo[n-1], fDist, &xp[n-1], &yp[n-1]);
    } 
    for (Int_t i = 1; i <= n - 2; i++) {
-      phi1 = TSplineX::PhiOfLine(xo[i-1], yo[i-1], xo[i], yo[i]);
-      phi2 = TSplineX::PhiOfLine(xo[i], yo[i], xo[i+1], yo[i+1]);
-      TSplineX::Midpoint(phi1, phi2, xo[i], yo[i], fDist, &xp[i], &yp[i]);
+      phi1 =  fParent->PhiOfLine(xo[i-1], yo[i-1], xo[i], yo[i]);
+      phi2 =  fParent->PhiOfLine(xo[i], yo[i], xo[i+1], yo[i+1]);
+       fParent->Midpoint(phi1, phi2, xo[i], yo[i], fDist, &xp[i], &yp[i]);
    }
 };
 //_____________________________________________________________________________________
 
-void ParallelGraph::CorrectForArrows(Double_t alength, Double_t aangle,Double_t aindent_angle,
+void ParallelGraph::CorrectForArrows(Double_t rxy, Double_t alength,Double_t aangle,Double_t aindent_angle,
                                      Bool_t at_start, Bool_t at_end)
 {
-// if a TSlineX has parallel their lengths must be adjust
+// if a TSlineX has parallels their lengths must be adjusted
 // to account for the lengths of the arrows
 //  no arrows with railway sleepers
 
@@ -1957,8 +1967,12 @@ void ParallelGraph::CorrectForArrows(Double_t alength, Double_t aangle,Double_t 
    if (at_end) {
       chop = reallength ;
       ip = n - 1;
+      Double_t phi = fParent->PhiOfLine(xp[ip-1], yp[ip-1], xp[ip], yp[ip] );
+      Double_t c2 = TMath::Cos(phi)* TMath::Cos(phi);
+      Double_t s2 = TMath::Sin(phi)* TMath::Sin(phi);
+      chop = chop * TMath::Sqrt(c2 + rxy * rxy * s2);
       while (1) {
-         seglen = TSplineX::Length(xp[ip], yp[ip], xp[ip-1], yp[ip-1] );
+         seglen = fParent->Length(xp[ip], yp[ip], xp[ip-1], yp[ip-1] );
 //         cout << ip << " " << yp[ip] << " " << chop << " " << seglen << " " << endl;
          if (chop <= seglen) {
             xm = xp[ip-1] + (xp[ip] - xp[ip-1]) * (1 - chop/seglen);
@@ -1983,7 +1997,7 @@ void ParallelGraph::CorrectForArrows(Double_t alength, Double_t aangle,Double_t 
       chop = reallength;
       ip = 0;
       while (1) {
-         seglen = TSplineX::Length(xp[ip], yp[ip], xp[ip+1], yp[ip+1] );
+         seglen = fParent->Length(xp[ip], yp[ip], xp[ip+1], yp[ip+1] );
 //         cout << ip << " " << yp[ip] << " " << chop << " " << seglen << " " << endl;
          if (chop <= seglen) {
             xm = xp[ip] + (xp[ip+1] - xp[ip]) * (chop/seglen);
