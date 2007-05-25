@@ -63,7 +63,7 @@ $(CptmCLIB):     $(CptmCDO) $(CptmCO)
 $(CptmCDS):     $(CptmCDH) $(CptmCL)
 		@echo "includes: $(CptmCDH)"
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude +P $(CptmCDH) $(CptmCL)
+		$(ROOTCINT) -f $@ -c -p -Iinclude $(CptmCDH) $(CptmCL)
 
 $(CptmCDO):     $(CptmCDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<
