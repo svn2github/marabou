@@ -15,6 +15,7 @@
 #include <iostream.h>
 #include <iomanip.h>
 #include <fstream.h>
+#include "TROOT.h"
 #include "TSocket.h"
 #include "TMessage.h"
 #include "TCanvas.h"
@@ -52,6 +53,7 @@ class PpacTimer : public TTimer {
 	public:
     	PpacTimer(Long_t ms, Bool_t synch);
     	Bool_t Notify();
+    	inline void SetRange(Double_t Range) { fRange = Range; };
 		inline void ResetHists() {
 			if (fHistX) fHistX->Reset();
 			if (fHistY) fHistY->Reset();
@@ -75,6 +77,7 @@ class PpacTimer : public TTimer {
 		TH1F * fHistY; 
 		TLine * fLeftMarker;
 		TLine * fRightMarker;
+		Double_t fRange;
 
 	ClassDef(PpacTimer, 0)
 };
@@ -84,6 +87,7 @@ PpacTimer::PpacTimer(Long_t MilliSecs, Bool_t SynchFlag): TTimer(MilliSecs, Sync
 	fCanvas = NULL;
 	fHistX = NULL;
 	fHistY = NULL;
+	fRange = 20000;
 }
 
 
@@ -116,24 +120,28 @@ Bool_t PpacTimer::Notify() {
 		fHistX->GetYaxis()->SetTitle("PPAC strip current [pA]");
 		fHistX->GetYaxis()->CenterTitle();
 		fHistX->GetYaxis()->SetTitleOffset(1.3);
-		fHistX->SetAxisRange(-20000, 20000, "Y");
-		fLeftMarker = new TLine(-5, -20000, -5, 20000); 	// show marker lines at X=-/+5
+		fHistX->SetAxisRange(-fRange, fRange, "Y");
+		fLeftMarker = new TLine(-5, -fRange, -5, fRange); 	// show marker lines at X=-/+5
 		fLeftMarker->SetLineColor(kRed);
-		fRightMarker = new TLine(5, -20000, 5, 20000);
+		fRightMarker = new TLine(5, -fRange, 5, fRange);
 		fRightMarker->SetLineColor(kRed);
 	}
 	if (fHistY == NULL) {						// histogram to show Y strips
 		fHistY = new TH1F("PPACY", "PPAC", 25, -20, 20);
 		fHistY->SetLineColor(4);				// data will be shown blue
 		fHistY->SetLineWidth(2);
-		fHistY->SetAxisRange(-20000, 20000, "Y");
+		fHistY->SetAxisRange(-fRange, fRange, "Y");
 	}
 	ifstream f;
 	Int_t dataX[32], dataY[32];
 	f.open("VMEScalers.dat", ios::in);			// read data from file "VMEScalers.dat"
 	if (!f.good()) return(kFALSE);
-	for (Int_t i = 0; i < 32; i++) f >> dataX[i];	// first 32 channels belong to X strips
-	for (Int_t i = 0; i < 32; i++) f >> dataY[i];	// next 32 channels belong to Y strips
+	for (Int_t i = 0; i < 32; i++) {
+		f >> dataX[i];	// first 32 channels belong to X strips
+	}
+	for (Int_t i = 0; i < 32; i++) {
+		f >> dataY[i];	// next 32 channels belong to Y strips
+	}
 	f.close();
 	for (Int_t i = 0; i < 25; i++) {				// now do the channel mapping for X
 		Stat_t d = (Stat_t) (dataX[chnMap[i] - 1] / 20. - offsetX[i]);	// apply offsets
@@ -175,6 +183,17 @@ void start(Int_t Refresh = 0) {
 	}
 }
 
+// set range in Y
+void range(Double_t Range = 20000) {
+	if (ppacTimer) {
+		ppacTimer->Stop();
+		ppacTimer->RemoveHists();
+		ppacTimer->SetRange(Range);		// remove histograms
+		ppacTimer->Notify();
+		cout << "[PPAC Y-Range set to " << Range << "]" << endl;
+	}
+}
+
 // exit from root
 void bye() {
 	cout << "[ppac.C: Exit]" << endl;
@@ -187,6 +206,7 @@ void help() {
 	cout	<< endl << "Usage:  ppac(n)   start execution, n being the timer interval in seconds (default: 1)" << endl;
 	cout	<< "        stop()    stop timer" << endl;
 	cout	<< "        start(n)  restart timer, set interval to n (default: previous value)" << endl;
+	cout	<< "        range(r)  set Y range to r (default: 20000)" << endl;
 	cout	<< "        bye()     exit" << endl << endl;
 };
 

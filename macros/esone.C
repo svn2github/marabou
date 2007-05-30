@@ -14,6 +14,7 @@
 //                   Name:                esone.C
 //                   Title:               Connect to ESONE server
 //                   Width:               
+//                   Aclic:               none
 //                   NofArgs:             1
 //                   Arg1.Name:           HostName
 //                   Arg1.Title:          Host name

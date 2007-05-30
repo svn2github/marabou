@@ -22,6 +22,7 @@
 //                   Name:                nulljob.C
 //                   Title:               Show nulljob on dataway display
 //                   Width:               650
+//                   Aclic:               none
 //                   NofArgs:             5
 //                   Arg1.Name:           HostName
 //                   Arg1.Title:          Host name
