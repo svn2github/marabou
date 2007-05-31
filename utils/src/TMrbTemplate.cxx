@@ -10,7 +10,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTemplate.cxx,v 1.10 2006-07-19 09:08:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTemplate.cxx,v 1.11 2007-05-31 12:42:49 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -317,6 +317,36 @@ Bool_t TMrbTemplate::Substitute(const Char_t * ArgName, Double_t ArgValue) {
 
 	TMrbString str(ArgValue);
 	return(Substitute(ArgName, str.Data()));
+}
+
+Bool_t TMrbTemplate::ExpandPathName() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTemplate::Expand
+// Purpose:        Expand evironment variables provided by shell
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Expands shell vars
+//                 ATTENTION: has to be called *AFTER* any call to Substitute()!
+//                            otherwise $-args will be catched by this method
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjString * code;
+
+	if (!HasCode()) {
+		gMrbLog->Err() << "%%" << fTag.GetName() << "%%: Code buffer is empty" << endl;
+		gMrbLog->Flush(this->ClassName(), "Expand");
+		return(kFALSE);
+	}
+
+	code = (TObjString *) fExpansionBuffer.First();
+	while (code) {
+		gSystem->ExpandPathName(code->String());
+		code = (TObjString *) fExpansionBuffer.After((TObject *) code);
+	}
+	return(kTRUE);
 }
 
 Bool_t TMrbTemplate::WriteCode(ostream & Out) {

@@ -8,7 +8,7 @@
 // Class:          TMrbTemplate     -- decode templates
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTemplate.h,v 1.11 2006-06-23 08:48:30 Marabou Exp $       
+// Revision:       $Id: TMrbTemplate.h,v 1.12 2007-05-31 12:42:49 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -80,6 +80,8 @@ class TMrbTemplate : public TObject {
 		Bool_t Substitute(const Char_t * ArgName, const Char_t * ArgValue);	// substitute arguments
 		Bool_t Substitute(const Char_t * ArgName, Int_t ArgValue, Int_t ArgBase = 10);
 		Bool_t Substitute(const Char_t * ArgName, Double_t ArgValue);
+
+		Bool_t ExpandPathName();			// expand shell vars (like TSystem::ExpandPathName())
 
 		Bool_t WriteCode(ostream & Out);									// write code buffer to output stream
 		const Char_t * CopyCode(TString & CodeString, const Char_t * Seperator = " ");	// copy code to string
