@@ -42,12 +42,12 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.18 2007-03-16 09:39:58 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.19 2007-05-31 16:56:42 Marabou Exp $
 // Date:             Thu Feb  8 13:23:50 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
-//                   Width:               
+//                   Width:               700
 //                   Aclic:               +g
 //                   Modify:              
 //                   RcFile:              .EncalLoadLibs.C              
@@ -67,7 +67,7 @@
 //                   Arg2.Type:           Int_t
 //                   Arg2.EntryType:      Radio
 //                   Arg2.Default:        1
-//                   Arg2.Values:         Co60|calibrate using Co60 source=1:Eu152|calibrate using Eu152 source (Co60 precalibration needed)=2:TripleAlpha|calibrate using alpha source (Pu239/Am241/Cm244)=4
+//                   Arg2.Values:         None|no calibration / fit only=0:Co60|calibrate using Co60 source=1:Eu152|calibrate using Eu152 source (Co60 precalibration needed)=2:TripleAlpha|calibrate using alpha source (Pu239/Am241/Cm244)=4
 //                   Arg2.AddLofValues:   No
 //                   Arg2.Base:           dec
 //                   Arg2.Orientation:    horizontal
@@ -246,6 +246,7 @@
 #include "TGFrame.h"
 #include "TSystem.h"
 #include "TSpectrum.h"
+#include "TMath.h"
 #include "TPolyMarker.h"
 #include "TMrbLogger.h"
 #include "SetColor.h"
@@ -277,7 +278,8 @@ Int_t buttonFlag = 0;
 class TMrbEncal {
 
 	public:
-		enum EEncalBrowserBits {	kCalSourceCo60 = 1,
+		enum EEncalBrowserBits {	kCalNoCalibration = 0,
+									kCalSourceCo60 = 1,
 									kCalSourceEu152 = 2,
 									kCalSourceTripleAlpha = 4,
 									kFitModeGaus = 1,
@@ -336,6 +338,7 @@ class TMrbEncal {
 
 		inline const Char_t * SourceName() { return(fSourceName.Data()); };
 		Bool_t SetCalSource();
+		inline Bool_t ToBeCalibrated() { return(fCalSource != kCalNoCalibration); };
 		inline Bool_t IsTripleAlpha() { return(fCalSource == kCalSourceTripleAlpha); };
 		inline Bool_t IsCo60() { return(fCalSource == kCalSourceCo60); };
 		inline Bool_t IsEu152() { return(fCalSource == kCalSourceEu152); };
@@ -758,11 +761,12 @@ void TMrbEncal::WriteMinMax() {
 // Description:    Writes minimum/maximum values to .res file
 //////////////////////////////////////////////////////////////////////////////
 
-	fEnvResults->SetValue("Calib.Emin", fEmin);
-	fEnvResults->SetValue("Calib.Emax", fEmax);
-	fEnvResults->SetValue("Calib.Xmin", fXmin);
-	fEnvResults->SetValue("Calib.Xmax", fXmax);
-
+	if (fEnvResults) {
+		fEnvResults->SetValue("Calib.Emin", fEmin);
+		fEnvResults->SetValue("Calib.Emax", fEmax);
+		fEnvResults->SetValue("Calib.Xmin", fXmin);
+		fEnvResults->SetValue("Calib.Xmax", fXmax);
+	}
 }
 
 void TMrbEncal::WaitForButtonPressed(Bool_t StepFlag) {
@@ -1020,6 +1024,8 @@ void TMrbEncal::CloseEnvFiles() {
 // Results:        --
 // Description:    Close TEnv files
 //////////////////////////////////////////////////////////////////////////////
+
+	if (fEnvResults == NULL) return;
 
 	TList * lofEntries = (TList *) fEnvResults->GetTable();
 	TIterator * iter = lofEntries->MakeIterator();
@@ -1706,23 +1712,24 @@ void Encal(TObjArray * LofHistos,
 
 	if (!encal.OpenHistoFile()) return;
 
-	if (!encal.SetCalSource()) return;
-
-	encal.OpenCalFiles();
+	if (encal.ToBeCalibrated()) {
+		if (!encal.SetCalSource()) return;
+		encal.OpenCalFiles();
+	}
 
 	TCanvas * mainCanvas = encal.OpenCanvas();
 
 	encal.ResetLofHistos();
 	TH1F * h;
-	while (h = encal.GetNextHisto()) {
+	for (;;) {
 
+		h = encal.GetNextHisto();
 		mainCanvas->cd(1);
-		if (h == NULL) {
+		while (h == NULL) {
+			encal.OutputMessage(NULL, Form("No more histograms from file - %s", encal.HistoFile()->GetName()), kTRUE);
 			encal.ClearCanvas(0);
 			encal.WaitForButtonPressed();
-			if (encal.ButtonQuit()) encal.Exit();
-			if (encal.ButtonStop()) { encal.Stop(); break; }
-			continue;
+			if (encal.ButtonQuit() || encal.ButtonStop()) encal.Exit();
 		}
 
 		encal.SetCurHisto(h);
@@ -1746,7 +1753,7 @@ void Encal(TObjArray * LofHistos,
 
 			encal.ClearCanvas(2);
 
-			encal.Calibrate();
+			if (encal.ToBeCalibrated()) encal.Calibrate();
 
 			mainCanvas->Update();
 			gSystem->ProcessEvents();
@@ -1756,27 +1763,29 @@ void Encal(TObjArray * LofHistos,
 			encal.ClearCanvas(2);
 		}
 
-		encal.WriteResults();
-		encal.UpdateStatusLine();
+		if (encal.ToBeCalibrated()) {
+			encal.WriteResults();
+			encal.UpdateStatusLine();
+		}
 
 		encal.WaitForButtonPressed();
 		if (encal.ButtonQuit()) encal.Exit();
 		if (encal.ButtonStop()) { encal.Stop(); break; }
 		if (!encal.ButtonOk()) continue;
 
-		encal.WriteCalibration();
-		encal.WriteFitStatus();
+		if (encal.ToBeCalibrated()) {
+			encal.WriteCalibration();
+			encal.WriteFitStatus();
+		}
 	}
 
 	encal.WriteMinMax();
 
-	encal.ShowResults2dim();
+	if (encal.ToBeCalibrated()) encal.ShowResults2dim();
 
 	encal.CloseEnvFiles();
 
 	encal.OutputMessage(NULL, Form("%s - %d histogram(s), press \"execute\" to restart or \"quit\" to exit", encal.HistoFile()->GetName(), encal.GetNofHistosCalibrated()), kFALSE, TMrbEncal::kColorBlue);
-
-	encal.WaitForButtonPressed(kTRUE);
 
 	encal.CloseRootFile();
 
