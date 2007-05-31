@@ -42,7 +42,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.19 2007-05-31 16:56:42 Marabou Exp $
+// Revision:         $Id: Encal.C,v 1.20 2007-05-31 18:35:57 Marabou Exp $
 // Date:             Thu Feb  8 13:23:50 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -618,6 +618,7 @@ TMrbEncal::TMrbEncal(	TObjArray * LofHistos,
 	fNofPeaksNeeded = 0;
 	fEnableCalib = kFALSE;
 	fEnvEnergies = NULL;
+	fEnvResults = NULL;
 	fEnvCalib = NULL;
 	fFitResults = NULL;
 
