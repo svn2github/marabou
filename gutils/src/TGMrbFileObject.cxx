@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.15 2007-04-02 07:54:03 Marabou Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.16 2007-05-31 17:07:26 Marabou Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -510,8 +510,8 @@ Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 								TMrbNamedX * nx;
 								while (nx = (TMrbNamedX *) iter->Next()) {
 									fListBox->AddEntry(nx->GetTitle(), nx->GetIndex());
-									fListBox->Layout();
 								}
+								fListBox->Layout();
 								fStartIndex = -1;
 							}
 							break;
@@ -536,8 +536,8 @@ Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 								TMrbNamedX * nx;
 								while (nx = (TMrbNamedX *) iter->Next()) {
 									fListBox->AddEntry(nx->GetName(), nx->GetIndex());
-									fListBox->Layout();
 								}
+								fListBox->Layout();
 								fStartIndex = -1;
 							}
 							break;
@@ -610,9 +610,9 @@ void TGMrbFileObjectListBox::SetList(TObjArray & LofEntries) {
 	Int_t idx = 0;
 	while (str = (TObjString *) iter->Next()) {
 		fListBox->AddEntry(str->GetString(), idx);
-		fListBox->Layout();
 		idx++;
 	}
+	fListBox->Layout();
 	fStartIndex = -1;
 }
 
@@ -789,12 +789,12 @@ Bool_t TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
 				keyName += "]";
 			}
 			fListBox->AddEntry(keyName.Data(), idx);
-			fListBox->Layout();
 			fLofListItems.AddNamedX(idx, key->GetName(), keyName.Data());
 			idx++;
 		}
 		key = (TKey *) fileKeys->After(key);
 	}
+	fListBox->Layout();
 	return(kTRUE);
 }
 
