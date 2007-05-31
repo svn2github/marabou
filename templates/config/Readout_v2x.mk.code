@@ -4,8 +4,8 @@
 # Purpose:         Build MBS readout task for RIO2 cpus
 # Description:     makes task m_read_meb to be used under LynxOs 2.5
 # Author:          %%AUTHOR%%
-# Revision:        $Id: Readout_v2x.mk.code,v 1.4 2007-01-22 13:26:23 Rudolf.Lutter Exp $
-# Date:            $Date: 2007-01-22 13:26:23 $
+# Revision:        $Id: Readout_v2x.mk.code,v 1.5 2007-05-31 11:37:42 Marabou Exp $
+# Date:            $Date: 2007-05-31 11:37:42 $
 # URL:             
 #/////////////////////////////////////////////////////////////////////////////
 
@@ -24,7 +24,7 @@ LIB	= $(MBSROOT)/lib_$(LYNX_PF)
 RDO_INCL	= %%READOUT_INCLUDE%%
 RDO_LIBS	= %%READOUT_LIBS%%
 
-SYS_LIBS	= -L/lib/ces -lvme
+SYS_LIBS	= -L/lib/ces -lvme -lbma -luio
 
 C_CTRL	= %%CAMAC_CONTROLLER%%
 

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.144 2007-04-26 08:53:57 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.145 2007-05-31 11:37:42 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1495,7 +1495,9 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TString iclPath = "";
 							TIterator * objIter = fLofRdoIncludes.MakeIterator();
 							while (o = (TObjString *) objIter->Next()) {
-								iclPath += o->String();
+								TString iclStr = o->String();
+								gSystem->ExpandPathName(iclStr);
+								iclPath += iclStr;
 								iclPath += " ";
 							}
 							iclPath += "-I";
@@ -1519,9 +1521,11 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							onceOnly.Delete();
 							TObjString * o;
 							TString libString = "";
-							TIterator * objIter = fLofRdoIncludes.MakeIterator();
+							TIterator * objIter = fLofRdoLibs.MakeIterator();
 							while (o = (TObjString *) objIter->Next()) {
-								libString += o->String();
+								TString libStr = o->String();
+								gSystem->ExpandPathName(libStr);
+								libString += libStr;
 								libString += " ";
 							}
 							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", "");

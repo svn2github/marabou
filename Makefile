@@ -370,7 +370,9 @@ install-ppc:
 		$(INSTALLDATA) powerpc/*/bin/v43/* $(PPCDIR)/bin/v43; \
 		$(INSTALLDIR) $(PPCDIR)/bin/v45; \
 		$(INSTALLDATA) powerpc/*/bin/v45/* $(PPCDIR)/bin/v45; \
-		echo "Installing ppc modules in $(PPCDIR)"; \
+		echo "Installing ppc module headers in $(PPCDIR)/include"; \
+		$(INSTALLDATA) powerpc/modules/*/inc/* $(PPCDIR)/include; \
+		echo "Installing ppc module libraries in $(PPCDIR)/lib/v??"; \
 		$(INSTALLDATA) powerpc/modules/lib/v22/* $(PPCDIR)/lib/v22; \
 		$(INSTALLDATA) powerpc/modules/lib/v42/* $(PPCDIR)/lib/v22; \
 		$(INSTALLDATA) powerpc/modules/lib/v43/* $(PPCDIR)/lib/v43; \

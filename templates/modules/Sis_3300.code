@@ -164,12 +164,12 @@ static struct s_sis_3300 * s_$moduleName;
 %%DEFINE_LOCAL_VARS_READOUT%%
 
 %%BeginOfCode%%
-	-I/mbdata/miniball/sis3300test/sis_3300/inc
+	-I$(MARABOU)/powerpc/include
 %%EndOfCode%%
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L/mbdata/miniball/sis3300test/sis_3300/lib -lsis_3300
+	-L$(MARABOU)/powerpc/lib/${MBS_VERSION} -lsis_3300
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 
