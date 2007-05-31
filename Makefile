@@ -347,6 +347,35 @@ install-expconf:
 		$(INSTALLDIR) $(LIBDIR); \
 		$(INSTALL) lib/libTMrbConfig.so $(LIBDIR)
 
+install-ppc:
+		@echo "Installing ppc headers in $(PPCDIR)/include"; \
+		$(INSTALLDIR) $(PPCDIR)/include; \
+		$(INSTALLDATA) powerpc/include/* $(PPCDIR)/include; \
+		$(INSTALLDATA) powerpc/*/inc/* $(PPCDIR)/include; \
+		echo "Installing ppc libraries in $(PPCDIR)/lib/v??"; \
+		$(INSTALLDIR) $(PPCDIR)/lib/v22; \
+		$(INSTALLDATA) powerpc/*/lib/v22/* $(PPCDIR)/lib/v22; \
+		$(INSTALLDIR) $(PPCDIR)/lib/v42; \
+		$(INSTALLDATA) powerpc/*/lib/v42/* $(PPCDIR)/lib/v42; \
+		$(INSTALLDIR) $(PPCDIR)/lib/v43; \
+		$(INSTALLDATA) powerpc/*/lib/v43/* $(PPCDIR)/lib/v43; \
+		$(INSTALLDIR) $(PPCDIR)/lib/v45; \
+		$(INSTALLDATA) powerpc/*/lib/v45/* $(PPCDIR)/lib/v45; \
+		echo "Installing ppc binaries in $(PPCDIR)/bin/v??"; \
+		$(INSTALLDIR) $(PPCDIR)/bin/v22; \
+		$(INSTALLDATA) powerpc/*/bin/v22/* $(PPCDIR)/bin/v22; \
+		$(INSTALLDIR) $(PPCDIR)/bin/v42; \
+		$(INSTALLDATA) powerpc/*/bin/v42/* $(PPCDIR)/bin/v42; \
+		$(INSTALLDIR) $(PPCDIR)/bin/v43; \
+		$(INSTALLDATA) powerpc/*/bin/v43/* $(PPCDIR)/bin/v43; \
+		$(INSTALLDIR) $(PPCDIR)/bin/v45; \
+		$(INSTALLDATA) powerpc/*/bin/v45/* $(PPCDIR)/bin/v45; \
+		echo "Installing ppc modules in $(PPCDIR)"; \
+		$(INSTALLDATA) powerpc/modules/lib/v22/* $(PPCDIR)/lib/v22; \
+		$(INSTALLDATA) powerpc/modules/lib/v42/* $(PPCDIR)/lib/v22; \
+		$(INSTALLDATA) powerpc/modules/lib/v43/* $(PPCDIR)/lib/v43; \
+		$(INSTALLDATA) powerpc/modules/lib/v45/* $(PPCDIR)/lib/v45; 
+
 showbuild:
 	@echo "MODULES            = $(MODULES)"
 

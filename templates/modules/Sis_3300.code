@@ -53,7 +53,7 @@
 							}
 						}
 					} else {
-            			sis_3300_disarmBank(s_$moduleName, $mnemoLC_activeBank);           /* arm the other bank active */ 
+            			sis_3300_disarmBank(s_$moduleName, $mnemoLC_activeBank);           /* arm other bank active */ 
 						$mnemoLC_activeBank ^= 1;
 						sis_3300_armBank(s_$moduleName, $mnemoLC_activeBank);
 						sis_3300_startSampling(s_$moduleName);
@@ -164,12 +164,12 @@ static struct s_sis_3300 * s_$moduleName;
 %%DEFINE_LOCAL_VARS_READOUT%%
 
 %%BeginOfCode%%
-	-I/d1/miniball/sis3300test/sis_3300/inc
+	-I/mbdata/miniball/sis3300test/sis_3300/inc
 %%EndOfCode%%
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L/d1/miniball/sis3300test/sis_3300/lib -lsis_3300
+	-L/mbdata/miniball/sis3300test/sis_3300/lib -lsis_3300
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 

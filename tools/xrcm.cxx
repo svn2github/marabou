@@ -13,6 +13,9 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+#include <iostream.h>
+#include <iomanip.h>
+#include <fstream.h>
 #include <stdlib.h>
 #include <unistd.h>
 #include <sys/types.h>
@@ -20,8 +23,7 @@
 #include <ctype.h>
 #include <utime.h>
 #include <string.h>
-#include <iostream.h>
-#include <fstream.h>
+
 #include "SetColor.h"
 
 main(int argc, char *argv[]) {
