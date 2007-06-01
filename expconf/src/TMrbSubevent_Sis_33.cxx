@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.3 2007-06-01 08:24:06 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.4 2007-06-01 17:10:48 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -199,6 +199,11 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 	TString sevtNameUC = sevtNameLC;
 	sevtNameUC(0,1).ToUpper();
 
+	TString pType[2];
+	TString pName[2];
+	Bool_t pIsTrig[2];
+	Int_t nofChansPerGroup;
+
 	switch (TagIndex) {
 		case TMrbConfig::kAnaSevtBookHistograms:
 		case TMrbConfig::kAnaSevtBookParams:
@@ -219,38 +224,37 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					TString moduleNameUC = moduleNameLC;
 					moduleNameUC(0,1).ToUpper();
 					Int_t trigGroup = param->GetAddr();
-					TString type, type1, type2;
-					TString tname, tname1, tname2;
-					Int_t pPerChn;
 					switch (module->GetTriggerOn(trigGroup)) {
 						case TMrbSis_3300::kTriggerOnDisabled:
-							// no histogram used, but booked as dummy
+							nofChansPerGroup = 0;
+							break;
 						case TMrbSis_3300::kTriggerOnEnabled:
-							type1 = "S";	// sample only
-							tname1 = "sample";
-							pPerChn = 1;
+							pType[0] = "S";	// sample only
+							pName[0] = "sample";
+							pIsTrig[0] = kFALSE;
+							nofChansPerGroup = 1;
 							break;
 						case TMrbSis_3300::kTriggerOnEvenFIR:
-							type1 = "S";	// sample
-							type2 = "T";	// trigger
-							tname1 = "sample";
-							tname2 = "trigger";
-							pPerChn = 2;
+							pType[0] = "S";	// sample
+							pName[0] = "sample";
+							pIsTrig[0] = kFALSE;
+							pType[1] = "T"; // trigger
+							pName[1] = "trigger";
+							pIsTrig[1] = kTRUE;
+							nofChansPerGroup = 2;
 							break;
 						case TMrbSis_3300::kTriggerOnOddFIR:
-							type1 = "T";	// trigger
-							type2 = "S";	// sample
-							tname1 = "trigger";
-							tname2 = "sample";
-							pPerChn = 2;
+							pType[0] = "T";	// trigger
+							pName[0] = "trigger";
+							pIsTrig[0] = kTRUE;
+							pType[1] = "S";	// sample
+							pName[1] = "sample";
+							pIsTrig[1] = kFALSE;
+							nofChansPerGroup = 2;
 							break;
 					}
-					type = type1;
-					tname = tname1;
-					Int_t nofXbins = module->GetChansPerPage() / module->GetBinning();
-					Int_t rangeY = module->GetRange();
-					Int_t nofYbins = rangeY / 4;
-					for (Int_t i = 0; i < pPerChn; i++) {
+
+					for (Int_t i = 0; i < nofChansPerGroup; i++) {
 						AnaTmpl.InitializeCode("%C%");
 						AnaTmpl.Substitute("$paramNameLC", paramNameLC);
 						AnaTmpl.Substitute("$paramNameUC", paramNameUC);
@@ -258,16 +262,23 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.Substitute("$moduleNameUC", moduleNameUC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-						AnaTmpl.Substitute("$pageSize", module->GetChansPerPage());
-						AnaTmpl.Substitute("$nofXbins", nofXbins);
-						AnaTmpl.Substitute("$nofYbins", nofYbins);
-						AnaTmpl.Substitute("$rangeY", rangeY);
 						AnaTmpl.Substitute("$paramIndex", pIdx++);
-						AnaTmpl.Substitute("$type", type);
-						AnaTmpl.Substitute("$xtype", tname);
+						AnaTmpl.Substitute("$type", pType[i]);
+						AnaTmpl.Substitute("$xtype", pName[i]);
+						AnaTmpl.Substitute("$nofXbins", 512);
+						AnaTmpl.Substitute("$xLow", 0);
+						AnaTmpl.Substitute("$xUp", module->GetPageSizeChan());
+						AnaTmpl.Substitute("$pageSize", module->GetPageSizeChan());
+						if (pIsTrig[i]) {
+							AnaTmpl.Substitute("$nofYbins", 1024);
+							AnaTmpl.Substitute("$yLow", (Int_t) (1 << 15) - 4096);
+							AnaTmpl.Substitute("$yUp", (Int_t) (1 << 15) + 4096);
+						} else {
+							AnaTmpl.Substitute("$nofYbins", 1024);
+							AnaTmpl.Substitute("$yLow", 0);
+							AnaTmpl.Substitute("$yUp", 4096);
+						}
 						AnaTmpl.WriteCode(AnaStrm);
-						type = type2;
-						tname = tname2;
 					}
 					param = (TMrbModuleChannel *) fLofParams.After(param);
 				}
@@ -291,34 +302,36 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					TString moduleNameUC = moduleNameLC;
 					moduleNameUC(0,1).ToUpper();
 					Int_t trigGroup = param->GetAddr();
-					TString type, type1, type2;
-					TString tname, tname1, tname2;
-					Int_t pPerChn;
 					switch (module->GetTriggerOn(trigGroup)) {
 						case TMrbSis_3300::kTriggerOnDisabled:
+							nofChansPerGroup = 0;
+							break;
 						case TMrbSis_3300::kTriggerOnEnabled:
-							type1 = "S";	// sample only
-							tname1 = "sample";
-							pPerChn = 1;
+							pType[0] = "S";	// sample only
+							pName[0] = "sample";
+							pIsTrig[0] = kFALSE;
+							nofChansPerGroup = 1;
 							break;
 						case TMrbSis_3300::kTriggerOnEvenFIR:
-							type1 = "S";	// sample
-							type2 = "T";	// trigger
-							tname1 = "sample";
-							tname2 = "trigger";
-							pPerChn = 2;
+							pType[0] = "S";	// sample
+							pName[0] = "sample";
+							pIsTrig[0] = kFALSE;
+							pType[1] = "T"; // trigger
+							pName[1] = "trigger";
+							pIsTrig[1] = kTRUE;
+							nofChansPerGroup = 2;
 							break;
 						case TMrbSis_3300::kTriggerOnOddFIR:
-							type1 = "T";	// trigger
-							type2 = "S";	// sample
-							tname1 = "trigger";
-							tname2 = "sample";
-							pPerChn = 2;
+							pType[0] = "T";	// trigger
+							pName[0] = "trigger";
+							pIsTrig[0] = kTRUE;
+							pType[1] = "S";	// sample
+							pName[1] = "sample";
+							pIsTrig[1] = kFALSE;
+							nofChansPerGroup = 2;
 							break;
 					}
-					type = type1;
-					tname = tname1;
-					for (Int_t i = 0; i < pPerChn; i++) {
+					for (Int_t i = 0; i < nofChansPerGroup; i++) {
 						AnaTmpl.InitializeCode();
 						AnaTmpl.Substitute("$paramNameLC", paramNameLC);
 						AnaTmpl.Substitute("$paramNameUC", paramNameUC);
@@ -326,13 +339,11 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.Substitute("$moduleNameUC", moduleNameUC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-						AnaTmpl.Substitute("$pageSize", module->GetChansPerPage());
+						AnaTmpl.Substitute("$pageSize", module->GetPageSizeChan());
 						AnaTmpl.Substitute("$paramIndex", pIdx++);
-						AnaTmpl.Substitute("$type", type);
-						AnaTmpl.Substitute("$xtype", tname);
+						AnaTmpl.Substitute("$type", pType[i]);
+						AnaTmpl.Substitute("$xtype", pName[i]);
 						AnaTmpl.WriteCode(AnaStrm);
-						type = type2;
-						tname = tname2;
 					}
 					param = (TMrbModuleChannel *) fLofParams.After(param);
 				}
@@ -348,39 +359,41 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					TString moduleNameUC = moduleNameLC;
 					moduleNameUC(0,1).ToUpper();
 					Int_t trigGroup = param->GetAddr();
-					TString type, type1, type2;
-					TString tname, tname1, tname2;
-					Int_t pPerChn;
 					switch (module->GetTriggerOn(trigGroup)) {
 						case TMrbSis_3300::kTriggerOnDisabled:
+							nofChansPerGroup = 0;
+							break;
 						case TMrbSis_3300::kTriggerOnEnabled:
-							type1 = "S";	// sample only
-							tname1 = "sample";
-							pPerChn = 1;
+							pType[0] = "S";	// sample only
+							pName[0] = "sample";
+							pIsTrig[0] = kFALSE;
+							nofChansPerGroup = 1;
 							break;
 						case TMrbSis_3300::kTriggerOnEvenFIR:
-							type1 = "S";	// sample
-							type2 = "T";	// trigger
-							tname1 = "sample";
-							tname2 = "trigger";
-							pPerChn = 2;
+							pType[0] = "S";	// sample
+							pName[0] = "sample";
+							pIsTrig[0] = kFALSE;
+							pType[1] = "T"; // trigger
+							pName[1] = "trigger";
+							pIsTrig[1] = kTRUE;
+							nofChansPerGroup = 2;
 							break;
 						case TMrbSis_3300::kTriggerOnOddFIR:
-							type1 = "T";	// trigger
-							type2 = "S";	// sample
-							tname1 = "trigger";
-							tname2 = "sample";
-							pPerChn = 2;
+							pType[0] = "T";	// trigger
+							pName[0] = "trigger";
+							pIsTrig[0] = kTRUE;
+							pType[1] = "S";	// sample
+							pName[1] = "sample";
+							pIsTrig[1] = kFALSE;
+							nofChansPerGroup = 2;
 							break;
 					}
-					type = type1;
-					tname = tname1;
-					for (Int_t i = 0; i < pPerChn; i++) {
+					for (Int_t i = 0; i < nofChansPerGroup; i++) {
 						TString paramNameLC = param->GetName();
 						TString paramNameUC = paramNameLC;
 						paramNameUC(0,1).ToUpper();
-						paramNameLC += type;
-						paramNameUC += type;
+						paramNameLC += pType[i];
+						paramNameUC += pType[i];
 						AnaTmpl.InitializeCode("%S2N%");
 						AnaTmpl.Substitute("$paramNameLC", paramNameLC);
 						AnaTmpl.Substitute("$paramNameUC", paramNameUC);
@@ -388,13 +401,11 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.Substitute("$moduleNameUC", moduleNameUC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-						AnaTmpl.Substitute("$pageSize", module->GetChansPerPage());
+						AnaTmpl.Substitute("$pageSize", module->GetPageSizeChan());
 						AnaTmpl.Substitute("$paramIndex", pIdx++);
-						AnaTmpl.Substitute("$type", type);
-						AnaTmpl.Substitute("$xtype", tname);
+						AnaTmpl.Substitute("$type", pType[i]);
+						AnaTmpl.Substitute("$xtype", pName[i]);
 						AnaTmpl.WriteCode(AnaStrm);
-						type = type2;
-						tname = tname2;
 					}
 					param = (TMrbModuleChannel *) fLofParams.After(param);
 				}

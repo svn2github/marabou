@@ -68,10 +68,9 @@ int sis_3300_readout(struct s_sis_3300 * s, uint8_t bank, uint32_t * pointer)
 	/*				 acqMode, eventCounter,									 */
 	/*				 pageSize (as number), status register,	 */
 	/*				 acquisition status register							*/
-	pointerBegin = pointer; 			/* save pointer to begin of data */
-	pointer++;
 
-	*pointer++ = (uint32_t)s->subEvtId;
+	pointerBegin = pointer;
+
 	*pointer++ = (uint32_t)s->acqMode;
 	*pointer++ = numEvts;
 	*pointer++ = (uint32_t)pageSize;
@@ -186,9 +185,10 @@ int sis_3300_readout(struct s_sis_3300 * s, uint8_t bank, uint32_t * pointer)
 		*tmp = pointer - tmp;
 	}
 	
+	length = pointer - pointerBegin;		/* length of data */
+
 	sis_3300_clearBankFull(s, bank);
 	
-	length = pointer - pointerBegin;		/* length of data */
 	return (length);
 }
 

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.4 2007-06-01 08:24:06 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.5 2007-06-01 17:10:48 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -711,7 +711,7 @@ Bool_t TMrbSis_3300::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleT
 	return(kTRUE);
 }
 
-int TMrbSis_3300::GetChansPerPage() {
+int TMrbSis_3300::GetPageSizeChan() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSis_3300::GetChansPerPage

@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3300        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3300.h,v 1.2 2006-06-26 10:18:11 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.h,v 1.3 2007-06-01 17:10:48 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -135,7 +135,7 @@ class TMrbSis_3300 : public TMrbVMEModule {
 		inline Bool_t SetPageSize(Int_t Size) { return(this->Set(TMrbSis_3300::kRegPageSize, Size)); };
 		inline Bool_t SetPageSize(Char_t * Size) {	return(this->Set(TMrbSis_3300::kRegPageSize, Size)); };
 		inline Int_t GetPageSize() { return(this->Get(TMrbSis_3300::kRegPageSize)); };
-		Int_t GetChansPerPage();
+		Int_t GetPageSizeChan();
 
 		inline Bool_t SetClockSource(Int_t Source) { return(this->Set(TMrbSis_3300::kRegClockSource, Source)); };
 		inline Bool_t SetClockSource(Char_t * Source) { return(this->Set(TMrbSis_3300::kRegClockSource, Source)); };
