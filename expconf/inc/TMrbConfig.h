@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.78 2007-01-18 11:45:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.79 2007-06-01 08:24:05 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -830,6 +830,9 @@ class TMrbConfig : public TNamed {
 		Bool_t CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent, Bool_t CreateProto, Bool_t SystemPart);
 		Bool_t CreateXhit(TMrbNamedX * Xhit);
 
+		const Char_t * GetMbsVersion(Bool_t Vformat = kTRUE, Bool_t Verbose = kFALSE);
+		const Char_t * GetLynxVersion(Bool_t Verbose = kFALSE);
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	public: 									// public lists of key words:
@@ -922,8 +925,9 @@ class TMrbConfig : public TNamed {
 		Bool_t fConfigChecked;				// kTRUE if consistency check done
 		Bool_t fConfigOk;					// kTRUE config consistent
 
-		TString fMbsVersion;				// MBS version
-		TString fLynxVersion;				// lynxOs version
+		TString fMbsVersion;				// MBS version, format N.M
+		TString fMbsVVersion;				// ... format vNN
+		TString fLynxVersion;				// lynxOs version, format N.M
 
 	ClassDef(TMrbConfig, 1) 	// [Config] Base class to describe an experimental setup in MARaBOU
 };	

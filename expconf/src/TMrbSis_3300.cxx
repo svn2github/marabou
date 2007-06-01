@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.3 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.4 2007-06-01 08:24:06 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -634,6 +634,8 @@ Bool_t TMrbSis_3300::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			{
 				TString codeString;
 				fCodeTemplates.InitializeCode();
+				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
+				fCodeTemplates.Substitute("$mbsVersion", gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
 				fCodeTemplates.CopyCode(codeString, " \\\n\t\t\t\t");
 				gMrbConfig->GetLofRdoIncludes()->Add(new TObjString(codeString.Data()));
 			}
@@ -642,6 +644,8 @@ Bool_t TMrbSis_3300::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			{
 				TString codeString;
 				fCodeTemplates.InitializeCode();
+				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
+				fCodeTemplates.Substitute("$mbsVersion", gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
 				fCodeTemplates.CopyCode(codeString, " \\\n\t\t\t\t");
 				gMrbConfig->GetLofRdoLibs()->Add(new TObjString(codeString.Data()));
 			}

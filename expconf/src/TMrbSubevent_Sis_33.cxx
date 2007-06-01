@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.2 2006-06-26 10:18:11 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.3 2007-06-01 08:24:06 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -224,6 +224,7 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					Int_t pPerChn;
 					switch (module->GetTriggerOn(trigGroup)) {
 						case TMrbSis_3300::kTriggerOnDisabled:
+							// no histogram used, but booked as dummy
 						case TMrbSis_3300::kTriggerOnEnabled:
 							type1 = "S";	// sample only
 							tname1 = "sample";
