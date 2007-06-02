@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.5 2007-06-02 07:28:11 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.6 2007-06-02 14:25:33 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -94,6 +94,8 @@ TMrbSubevent_Sis_33::TMrbSubevent_Sis_33(const Char_t * SevtName, const Char_t *
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+	
 	if (!this->IsZombie()) {
 		fSevtDescr = "SIS trace data, multi-event";
 		fSevtType = 10; 	 							// set subevent type & subtype
@@ -227,6 +229,8 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					switch (module->GetTriggerOn(trigGroup)) {
 						case TMrbSis_3300::kTriggerOnDisabled:
 							nofChansPerGroup = 0;
+							gMrbLog->Wrn() << "Module \"" << moduleNameLC << "\"/param \"" << paramNameLC << "\" - trigger mode disabled" << endl;
+							gMrbLog->Flush(this->ClassName(), "MakeSpecialAnalyzeCode");
 							break;
 						case TMrbSis_3300::kTriggerOnEnabled:
 							pType[0] = "S";	// sample only
@@ -309,6 +313,8 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					switch (module->GetTriggerOn(trigGroup)) {
 						case TMrbSis_3300::kTriggerOnDisabled:
 							nofChansPerGroup = 0;
+							gMrbLog->Wrn() << "Module \"" << moduleNameLC << "\"/param \"" << paramNameLC << "\" - trigger mode disabled" << endl;
+							gMrbLog->Flush(this->ClassName(), "MakeSpecialAnalyzeCode");
 							break;
 						case TMrbSis_3300::kTriggerOnEnabled:
 							pType[0] = "S";	// sample only
@@ -362,10 +368,15 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					TString moduleNameLC = module->GetName();
 					TString moduleNameUC = moduleNameLC;
 					moduleNameUC(0,1).ToUpper();
+					TString paramNameLC = param->GetName();
+					TString paramNameUC = paramNameLC;
+					paramNameUC(0,1).ToUpper();
 					Int_t trigGroup = param->GetAddr();
 					switch (module->GetTriggerOn(trigGroup)) {
 						case TMrbSis_3300::kTriggerOnDisabled:
 							nofChansPerGroup = 0;
+							gMrbLog->Wrn() << "Module \"" << moduleNameLC << "\"/param \"" << paramNameLC << "\" - trigger mode disabled" << endl;
+							gMrbLog->Flush(this->ClassName(), "MakeSpecialAnalyzeCode");
 							break;
 						case TMrbSis_3300::kTriggerOnEnabled:
 							pType[0] = "S";	// sample only

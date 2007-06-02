@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.6 2007-06-02 07:28:11 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.7 2007-06-02 14:25:33 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -99,7 +99,7 @@ TMrbSis_3300::TMrbSis_3300(const Char_t * ModuleName, UInt_t BaseAddr) :
 									TMrbVMEModule(ModuleName, "Sis_3300", BaseAddr,
 																TMrbSis_3300::kAddrMod,
 																TMrbSis_3300::kSegSize,
-																1, 8, 1 << 12) {
+																1, 8, 1 << 17) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSis_3300
@@ -153,13 +153,16 @@ TMrbSis_3300::TMrbSis_3300(const Char_t * ModuleName, UInt_t BaseAddr) :
 
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
 
-				fSampleRange = fRange;
+				fXmin = 0;									// X range: 4K
+				fXmax = (Int_t) (1 << 12);
+
+				fSampleRange = (Int_t) (1 << 12);			// sampling: 4K
 				fSmin = 0;
 				fSmax = fSampleRange;
 				this->SetSampleBinning(4);
 
+				fTriggerRange = (Int_t) (1 << 16);			// trigger: 64K
 				fTriggerBaseLine = (Int_t) (1 << 15);
-				fTriggerRange = (Int_t) (1 << 16);
 				fTmin = fTriggerBaseLine - 4096;
 				fTmax = fTriggerBaseLine + 4096;
 				this->SetTriggerBinning(8);

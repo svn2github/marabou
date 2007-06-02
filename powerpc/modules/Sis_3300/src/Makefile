@@ -1,5 +1,6 @@
 CC = gcc 
-CFLAGS =  -pipe -g -O3 -ansi -DLOG_PERROR_DOESNT_WORK
+#CFLAGS =  -pipe -g -O3 -ansi -DLOG_PERROR_DOESNT_WORK
+CFLAGS =  -pipe -g -O3 -ansi 
 
 CPPFLAGS =
 
