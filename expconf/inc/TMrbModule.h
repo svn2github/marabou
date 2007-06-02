@@ -8,7 +8,7 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.16 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.h,v 1.17 2007-06-02 07:28:11 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -90,14 +90,19 @@ class TMrbModule : public TNamed {
 		inline Int_t GetRange() { return(fRange); };							// get module range
 		inline TMrbNamedX * GetDataType() const { return(fDataType); };				// get data type
 
-		inline Bool_t SetBinning(Int_t PointsPerBin) {							// define bin size for histograms
+		inline Bool_t SetBinning(Int_t PointsPerBin = 1) {						// define bin size for histograms
 			fPointsPerBin = PointsPerBin;
-			fBinRange = (fRange + fPointsPerBin - 1) / fPointsPerBin;
+			fBinRange = (fXmax - fXmin + fPointsPerBin - 1) / fPointsPerBin;
 			return(kTRUE);
 		};
 
-		inline Int_t GetBinning() const { return(fPointsPerBin); };					// get bin values
+		inline Int_t GetBinning() const { return(fPointsPerBin); };				// get bin values
 		inline Int_t GetBinRange() const { return(fBinRange); };
+
+		Bool_t SetXmin(Int_t Xmin = 0);											// set min / max in X
+		Bool_t SetXmax(Int_t Xmax = 0);
+		inline Int_t GetXmin() { return(fXmin); };
+		inline Int_t GetXmax() { return(fXmax); };
 
 		inline Int_t GetSubDevice() const { return(fSubDevice); };					// get subdevice number
 
@@ -196,6 +201,8 @@ class TMrbModule : public TNamed {
 		TMrbString fPosition;					// crate & addr
 
 		Int_t fRange;							// number of data points
+		Int_t fXmin;							// xmin / xmax
+		Int_t fXmax;
 		Int_t fPointsPerBin;					// points per bin
 		Int_t fBinRange;						// number of bins
 		Int_t fSubDevice;						// subdevice

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.30 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.31 2007-06-02 07:28:11 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1075,7 +1075,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 														anaTmpl.Substitute("$paramNameUC", paramNameUC);
 														anaTmpl.Substitute("$paramIndex", param->GetAddr());
 														anaTmpl.Substitute("$hBinSize", (Int_t) module->GetBinRange());
-														anaTmpl.Substitute("$hUpperLim", (Int_t) module->GetRange());
+														anaTmpl.Substitute("$hLowerLim", (Int_t) module->GetXmin());
+														anaTmpl.Substitute("$hUpperLim", (Int_t) module->GetXmax());
 														anaTmpl.Substitute("$indexRange", (Int_t) param->GetIndexRange());
 														anaTmpl.WriteCode(AnaStrm);
 													}

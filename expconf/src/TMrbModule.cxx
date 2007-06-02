@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.19 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.20 2007-06-02 07:28:11 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -96,6 +96,8 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 			fNofChannels = NofChannels; 	 				// number of channels available
 			fRange = Range; 								// range
 			fPointsPerBin = 1;								// bin size defaults to 1
+			fXmin = 0;										// X limits
+			fXmax = Range;
 			fBinRange = Range;								// number of channels
 			fBlockReadout = kFALSE; 						// turn off block mode
 			fIsActive = kTRUE;								// module is active
@@ -132,6 +134,53 @@ Int_t TMrbModule::GetNofChannelsUsed() const {
 		if (chn->IsUsed()) nofChannelsUsed++;
 	}
 	return(nofChannelsUsed);
+}
+
+Bool_t TMrbModule::SetXmin(Int_t Xmin) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModule::SetXmin
+// Purpose:        Set lower limit
+// Arguments:      Int_t Xmin     -- lower limit
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets lower X limit
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Xmin < 0 || Xmin > fXmax) {
+		gMrbLog->Err()	<< this->GetName() << ": XMIN out of range - " << Xmin
+						<< " (should be in [0, " << fXmax << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetXmin");
+		return(kFALSE);
+	} else {
+		fXmin = Xmin;
+		return(kTRUE);
+	}
+}
+
+Bool_t TMrbModule::SetXmax(Int_t Xmax) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModule::SetXmax
+// Purpose:        Set upper limit
+// Arguments:      Int_t Xmax     -- upper limit
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets upper X limit
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Xmax == 0) Xmax = fRange;
+	if (Xmax < fXmin || Xmax > fRange) {
+		gMrbLog->Err()	<< this->GetName() << ": XMAX out of range - " << Xmax
+						<< " (should be in [" << fXmin << ", " << fRange << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetXmax");
+		return(kFALSE);
+	} else {
+		fXmax = Xmax;
+		return(kTRUE);
+	}
 }
 
 UInt_t TMrbModule::GetPatternOfChannelsUsed() const {

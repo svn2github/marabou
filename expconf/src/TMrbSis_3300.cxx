@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.5 2007-06-01 17:10:48 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.6 2007-06-02 07:28:11 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -152,6 +152,17 @@ TMrbSis_3300::TMrbSis_3300(const Char_t * ModuleName, UInt_t BaseAddr) :
 				fTriggerArmed = kFALSE;
 
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
+
+				fSampleRange = fRange;
+				fSmin = 0;
+				fSmax = fSampleRange;
+				this->SetSampleBinning(4);
+
+				fTriggerBaseLine = (Int_t) (1 << 15);
+				fTriggerRange = (Int_t) (1 << 16);
+				fTmin = fTriggerBaseLine - 4096;
+				fTmax = fTriggerBaseLine + 4096;
+				this->SetTriggerBinning(8);
 
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gDirectory->Append(this);
@@ -371,6 +382,100 @@ Bool_t TMrbSis_3300::UseSettings(const Char_t * SettingsFile) {
 	}
 
 	return(kTRUE);
+}
+
+Bool_t TMrbSis_3300::SetSmin(Int_t Smin) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSis_3300::SetSmin
+// Purpose:        Set lower limit
+// Arguments:      Int_t Smin     -- lower limit
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets lower X limit
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Smin < 0 || Smin > fSmax) {
+		gMrbLog->Err()	<< this->GetName() << ": Sample YMIN out of range - " << Smin
+						<< " (should be in [0, " << fSmax << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetSmin");
+		return(kFALSE);
+	} else {
+		fSmin = Smin;
+		return(kTRUE);
+	}
+}
+
+Bool_t TMrbSis_3300::SetSmax(Int_t Smax) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSis_3300::SetSmax
+// Purpose:        Set upper limit
+// Arguments:      Int_t Smax     -- upper limit
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets upper X limit
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Smax == 0) Smax = fSampleRange;
+	if (Smax < fSmin || Smax > fSampleRange) {
+		gMrbLog->Err()	<< this->GetName() << ": Sample YMAX out of range - " << Smax
+						<< " (should be in [" << fSmin << ", " << fSampleRange << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetSmax");
+		return(kFALSE);
+	} else {
+		fSmax = Smax;
+		return(kTRUE);
+	}
+}
+
+Bool_t TMrbSis_3300::SetTmin(Int_t Tmin) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSis_3300::SetTmin
+// Purpose:        Set lower limit
+// Arguments:      Int_t Tmin     -- lower limit
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets lower X limit
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Tmin < 0 || Tmin > fTmax) {
+		gMrbLog->Err()	<< this->GetName() << ": Sample YMIN out of range - " << Tmin
+						<< " (should be in [0, " << fTmax << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetTmin");
+		return(kFALSE);
+	} else {
+		fTmin = Tmin;
+		return(kTRUE);
+	}
+}
+
+Bool_t TMrbSis_3300::SetTmax(Int_t Tmax) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSis_3300::SetTmax
+// Purpose:        Set upper limit
+// Arguments:      Int_t Tmax     -- upper limit
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets upper X limit
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Tmax == 0) Tmax = fTriggerRange;
+	if (Tmax < fTmin || Tmax > fTriggerRange) {
+		gMrbLog->Err()	<< this->GetName() << ": Sample YMAX out of range - " << Tmax
+						<< " (should be in [" << fTmin << ", " << fTriggerRange << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetTmax");
+		return(kFALSE);
+	} else {
+		fTmax = Tmax;
+		return(kTRUE);
+	}
 }
 
 Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {

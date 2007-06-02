@@ -70,7 +70,8 @@ Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 			continue;
 		}
 
-		UInt_t sevtId = *dataPtr++;
+		UInt_t * end = dataPtr + wc - 2;
+
 		UInt_t acqMode = *dataPtr++;
 		UInt_t numEvts = *dataPtr++;
 		UInt_t pageSize = *dataPtr++;
@@ -104,7 +105,7 @@ Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 			UInt_t dataSize = wrapped ? pageSize : stopData - startData;
       
 			dataPtr = evtBuf;
-			while (dataPtr < dataPtr + wc - 2) {
+			while (dataPtr < end) {
 				UInt_t * next = dataPtr + (*dataPtr++);
 				UInt_t channelGrp = *dataPtr++;
 				UInt_t triggerMode = *dataPtr++;
@@ -197,7 +198,7 @@ Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 %B%// Keywords:       
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%C%	h$paramNameUC$type = new TH2S("h$paramNameUC$type", "$paramNameLC $xtype", $nofXbins, $xLow.0, $xUp.0, $nofYbins, $yLow.0, $yUp.0);
+%C%	h$paramNameUC$type = new TH2S("h$paramNameUC$type", "$paramNameLC $xtype", $xBins, $xMin.0, $xMax.0, $yBins, $yMin.0, $yMax.0);
 %E%
 %E%	return(kTRUE);
 %E%}

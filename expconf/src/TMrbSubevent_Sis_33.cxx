@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.4 2007-06-01 17:10:48 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.5 2007-06-02 07:28:11 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -254,6 +254,10 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 							break;
 					}
 
+					module->SetXmin(0); 				// fix X limits to [0, pageSize]
+					module->SetXmax(module->GetPageSizeChan());
+					module->SetBinning(module->GetBinning());	// apply user's binning value
+
 					for (Int_t i = 0; i < nofChansPerGroup; i++) {
 						AnaTmpl.InitializeCode("%C%");
 						AnaTmpl.Substitute("$paramNameLC", paramNameLC);
@@ -265,18 +269,18 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.Substitute("$paramIndex", pIdx++);
 						AnaTmpl.Substitute("$type", pType[i]);
 						AnaTmpl.Substitute("$xtype", pName[i]);
-						AnaTmpl.Substitute("$nofXbins", 512);
-						AnaTmpl.Substitute("$xLow", 0);
-						AnaTmpl.Substitute("$xUp", module->GetPageSizeChan());
-						AnaTmpl.Substitute("$pageSize", module->GetPageSizeChan());
+						AnaTmpl.Substitute("$xBins", module->GetBinRange());
+						AnaTmpl.Substitute("$xMin", module->GetXmin());
+						AnaTmpl.Substitute("$xMax", module->GetXmax());
+						AnaTmpl.Substitute("$pageSize", module->GetXmax() - module->GetXmin());
 						if (pIsTrig[i]) {
-							AnaTmpl.Substitute("$nofYbins", 1024);
-							AnaTmpl.Substitute("$yLow", (Int_t) (1 << 15) - 4096);
-							AnaTmpl.Substitute("$yUp", (Int_t) (1 << 15) + 4096);
+							AnaTmpl.Substitute("$yBins", module->GetTriggerBinRange());
+							AnaTmpl.Substitute("$yMin", module->GetTmin());
+							AnaTmpl.Substitute("$yMax", module->GetTmax());
 						} else {
-							AnaTmpl.Substitute("$nofYbins", 1024);
-							AnaTmpl.Substitute("$yLow", 0);
-							AnaTmpl.Substitute("$yUp", 4096);
+							AnaTmpl.Substitute("$yBins", module->GetSampleBinRange());
+							AnaTmpl.Substitute("$yMin", module->GetSmin());
+							AnaTmpl.Substitute("$yMax", module->GetSmax());
 						}
 						AnaTmpl.WriteCode(AnaStrm);
 					}

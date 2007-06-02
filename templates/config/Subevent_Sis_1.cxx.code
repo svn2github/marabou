@@ -126,19 +126,19 @@
 %BP%//////////////////////////////////////////////////////////////////////////////
 %BP%
 %S%	if (h$prefix$paramNameUC == NULL) {
-%S% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, 0.0, $hUpperLim.0);
+%S% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, $hLowerLim.0, $hUpperLim.0);
 %S% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC, kMrbModule$moduleNameUC, $paramIndex);
 %S% 	}
 %X%	for (Int_t i = 0; i < $indexRange; i++) {
 %X% 		if (h$prefix$paramNameUC[i] == NULL) {
 %X% 			TMrbString hName = "h$prefix$paramNameUC"; hName += i;
 %X% 			TMrbString hTitle = "$sevtNameLC.$paramNameLC"; hTitle += i;
-%X% 			h$prefix$paramNameUC[i] = new TH1F(hName.Data(), hTitle.Data(), $hBinSize, 0.0, $hUpperLim.0);
+%X% 			h$prefix$paramNameUC[i] = new TH1F(hName.Data(), hTitle.Data(), $hBinSize, $hLowerLim.0, $hUpperLim.0);
 %X% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 		}
 %X% 	}
 %A%	if (h$prefix$paramNameUC == NULL) {
-%A% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, 0.0, $hUpperLim.0);
+%A% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, $hLowerLim.0, $hUpperLim.0);
 %A% 			h$prefix$sevtNameUCArray.AddAt(h$prefix$paramNameUC, k$paramNameUC);
 %A% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC, kMrbModule$moduleNameUC, $paramIndex);
 %A% 	}

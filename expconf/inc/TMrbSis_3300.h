@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3300        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3300.h,v 1.3 2007-06-01 17:10:48 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.h,v 1.4 2007-06-02 07:28:11 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -198,6 +198,32 @@ class TMrbSis_3300 : public TMrbVMEModule {
 		inline Bool_t SetPulseLength(Int_t Ticks, Int_t Group = -1) { return(this->Set(TMrbSis_3300::kRegPulseLength, Ticks, Group)); };
 		inline Int_t GetPulseLength(Int_t Group) { return(this->Get(TMrbSis_3300::kRegPulseLength, Group)); };
 
+		Bool_t SetSmin(Int_t Smin = 0);						// set/get sample limits
+		Bool_t SetSmax(Int_t Smax = 0);
+		inline Int_t GetSmin() { return(fSmin); };
+		inline Int_t GetSmax() { return(fSmax); };
+
+		inline Bool_t SetSampleBinning(Int_t PointsPerBin) {		// sample binning
+			fSamplePointsPerBin = PointsPerBin;
+			fSampleBinRange = (fSmax - fSmin + fSamplePointsPerBin - 1) / fSamplePointsPerBin;
+			return(kTRUE);
+		};
+		inline Int_t GetSampleBinning() const { return(fSamplePointsPerBin); };
+		inline Int_t GetSampleBinRange() const { return(fSampleBinRange); };
+
+		Bool_t SetTmin(Int_t Tmin = 0);						// set/get trigger limits
+		Bool_t SetTmax(Int_t Tmax = 0);
+		inline Int_t GetTmin() { return(fTmin); };
+		inline Int_t GetTmax() { return(fTmax); };
+
+		inline Bool_t SetTriggerBinning(Int_t PointsPerBin) {		// trigger binning
+			fTriggerPointsPerBin = PointsPerBin;
+			fTriggerBinRange = (fTmax - fTmin + fTriggerPointsPerBin - 1) / fTriggerPointsPerBin;
+			return(kTRUE);
+		};
+		inline Int_t GetTriggerBinning() const { return(fTriggerPointsPerBin); };
+		inline Int_t GetTriggerBinRange() const { return(fTriggerBinRange); };
+
 		Bool_t UseSettings(const Char_t * SettingsFile = NULL);
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 
@@ -217,6 +243,20 @@ class TMrbSis_3300 : public TMrbVMEModule {
 		Bool_t fAutoBankSwitch;
 		Bool_t fWrapAroundEnable;
 		Bool_t fTriggerArmed;
+
+		Int_t fSampleRange;
+		Int_t fTriggerRange;
+
+		Int_t fSmin;
+		Int_t fSmax;
+		Int_t fSamplePointsPerBin;
+		Int_t fSampleBinRange;
+
+		Int_t fTmin;
+		Int_t fTmax;
+		Int_t fTriggerPointsPerBin;
+		Int_t fTriggerBinRange;
+		Int_t fTriggerBaseLine;
 
 		TString fSettingsFile;
 
