@@ -352,31 +352,34 @@ install-ppc:
 		$(INSTALLDIR) $(PPCDIR)/include; \
 		$(INSTALLDATA) powerpc/inc/* $(PPCDIR)/include; \
 		$(INSTALLDATA) powerpc/*/inc/* $(PPCDIR)/include; \
-		echo "Installing ppc libraries in $(PPCDIR)/lib/v??"; \
-		$(INSTALLDIR) $(PPCDIR)/lib/v22; \
-		$(INSTALLDATA) powerpc/*/lib/v22/* $(PPCDIR)/lib/v22; \
-		$(INSTALLDIR) $(PPCDIR)/lib/v42; \
-		$(INSTALLDATA) powerpc/*/lib/v42/* $(PPCDIR)/lib/v42; \
-		$(INSTALLDIR) $(PPCDIR)/lib/v43; \
-		$(INSTALLDATA) powerpc/*/lib/v43/* $(PPCDIR)/lib/v43; \
-		$(INSTALLDIR) $(PPCDIR)/lib/v45; \
-		$(INSTALLDATA) powerpc/*/lib/v45/* $(PPCDIR)/lib/v45; \
-		echo "Installing ppc binaries in $(PPCDIR)/bin/v??"; \
-		$(INSTALLDIR) $(PPCDIR)/bin/v22; \
-		$(INSTALLDATA) powerpc/*/bin/v22/* $(PPCDIR)/bin/v22; \
-		$(INSTALLDIR) $(PPCDIR)/bin/v42; \
-		$(INSTALLDATA) powerpc/*/bin/v42/* $(PPCDIR)/bin/v42; \
-		$(INSTALLDIR) $(PPCDIR)/bin/v43; \
-		$(INSTALLDATA) powerpc/*/bin/v43/* $(PPCDIR)/bin/v43; \
-		$(INSTALLDIR) $(PPCDIR)/bin/v45; \
-		$(INSTALLDATA) powerpc/*/bin/v45/* $(PPCDIR)/bin/v45; \
+		echo "Installing ppc libraries in $(PPCDIR)/lib/*"; \
+		for FLIST in powerpc/*/lib/*/*; do \
+			DIR=`dirname $$FLIST`; \
+			SUBDIR=`basename $$DIR`; \
+			if [ -d $$DIR ]; then \
+				$(INSTALLDIR) $(PPCDIR)/lib/$$SUBDIR; \
+				$(INSTALLDATA) powerpc/*/lib/$$SUBDIR/* $(PPCDIR)/lib/$$SUBDIR; \
+			fi; \
+		done; \
+		echo "Installing ppc binaries in $(PPCDIR)/bin/*"; \
+		for FLIST in powerpc/*/bin/*/*; do \
+			DIR=`dirname $$FLIST`; \
+			SUBDIR=`basename $$DIR`; \
+			if [ -d $$DIR ]; then \
+				$(INSTALLDIR) $(PPCDIR)/bin/$$SUBDIR; \
+				$(INSTALLDATA) powerpc/*/bin/$$SUBDIR/* $(PPCDIR)/bin/$$SUBDIR; \
+			fi; \
+		done; \
 		echo "Installing ppc module headers in $(PPCDIR)/include"; \
 		$(INSTALLDATA) powerpc/modules/*/inc/* $(PPCDIR)/include; \
-		echo "Installing ppc module libraries in $(PPCDIR)/lib/v??"; \
-		$(INSTALLDATA) powerpc/modules/lib/v22/* $(PPCDIR)/lib/v22; \
-		$(INSTALLDATA) powerpc/modules/lib/v42/* $(PPCDIR)/lib/v22; \
-		$(INSTALLDATA) powerpc/modules/lib/v43/* $(PPCDIR)/lib/v43; \
-		$(INSTALLDATA) powerpc/modules/lib/v45/* $(PPCDIR)/lib/v45; 
+		echo "Installing ppc module libraries in $(PPCDIR)/lib/*"; \
+		for FLIST in powerpc/modules/lib/*/*; do \
+			DIR=`dirname $$FLIST`; \
+			SUBDIR=`basename $$DIR`; \
+			if [ -d $$DIR ]; then \
+				$(INSTALLDATA) powerpc/modules/lib/$$SUBDIR/* $(PPCDIR)/lib/$$SUBDIR; \
+			fi; \
+		done; \
 
 showbuild:
 	@echo "MODULES            = $(MODULES)"
