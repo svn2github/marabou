@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.18 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.19 2007-06-04 05:54:55 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -185,6 +185,7 @@ class TMrbSubevent : public TNamed {
 		virtual inline Bool_t NeedsModulesToBeAssigned() const { return(kTRUE); };	// normal subevents need modules
 
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 			// normal code generation
+		virtual inline Bool_t SingleModuleOnly() const { return(kFALSE); }; 		// only module per subevent only
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
 		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
 		

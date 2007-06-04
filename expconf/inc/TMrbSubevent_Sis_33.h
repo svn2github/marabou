@@ -9,7 +9,7 @@
 //                                         dedicated format for Sis modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Sis_33.h,v 1.1 2006-06-23 09:05:11 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_33.h,v 1.2 2007-06-04 05:54:55 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -53,13 +53,14 @@ class TMrbSubevent_Sis_33 : public TMrbSubevent {
 		virtual Bool_t MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, TMrbTemplate & Template);  // generate part of code
 
 		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
-		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
+		inline Bool_t AllowsMultipleModules() const { return(kFALSE); };			// one module only
 
 		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type Sis
 			return(Module->CheckID(TMrbConfig::kModuleSis_3300));
 		};
 				
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
+		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Sis33xx_Common"); };
 		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

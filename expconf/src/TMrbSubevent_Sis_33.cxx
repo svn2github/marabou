@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.6 2007-06-02 14:25:33 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.7 2007-06-04 05:54:55 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -102,6 +102,7 @@ TMrbSubevent_Sis_33::TMrbSubevent_Sis_33(const Char_t * SevtName, const Char_t *
 		fSevtSubtype = 54;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Sis33xx");	// we need this base class
 		gDirectory->Append(this);
 	}
 }
@@ -229,7 +230,8 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					switch (module->GetTriggerOn(trigGroup)) {
 						case TMrbSis_3300::kTriggerOnDisabled:
 							nofChansPerGroup = 0;
-							gMrbLog->Wrn() << "Module \"" << moduleNameLC << "\"/param \"" << paramNameLC << "\" - trigger mode disabled" << endl;
+							gMrbLog->Err()	<< "Module " << moduleNameLC << " (param " << paramNameLC
+											<< ") - sampling/triggering disabled" << endl;
 							gMrbLog->Flush(this->ClassName(), "MakeSpecialAnalyzeCode");
 							break;
 						case TMrbSis_3300::kTriggerOnEnabled:
@@ -263,7 +265,17 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					module->SetBinning(module->GetBinning());	// apply user's binning value
 
 					for (Int_t i = 0; i < nofChansPerGroup; i++) {
-						AnaTmpl.InitializeCode("%C%");
+						AnaTmpl.InitializeCode("%CB%");
+						AnaTmpl.Substitute("$paramNameLC", paramNameLC);
+						AnaTmpl.Substitute("$paramNameUC", paramNameUC);
+						AnaTmpl.Substitute("$moduleNameLC", moduleNameLC);
+						AnaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+						AnaTmpl.Substitute("$type", pType[i]);
+						AnaTmpl.Substitute("$xtype", pName[i]);
+						AnaTmpl.WriteCode(AnaStrm);
+						AnaTmpl.InitializeCode("%ST%");
 						AnaTmpl.Substitute("$paramNameLC", paramNameLC);
 						AnaTmpl.Substitute("$paramNameUC", paramNameUC);
 						AnaTmpl.Substitute("$moduleNameLC", moduleNameLC);
@@ -271,6 +283,7 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$paramIndex", pIdx++);
+						AnaTmpl.Substitute("$chnIndex", i);
 						AnaTmpl.Substitute("$type", pType[i]);
 						AnaTmpl.Substitute("$xtype", pName[i]);
 						AnaTmpl.Substitute("$xBins", module->GetBinRange());
@@ -287,6 +300,28 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 							AnaTmpl.Substitute("$yMax", module->GetSmax());
 						}
 						AnaTmpl.WriteCode(AnaStrm);
+						if (module->ShaperIsOn() && !pIsTrig[i]) {
+							AnaTmpl.InitializeCode("%SH%");
+							AnaTmpl.Substitute("$paramNameLC", paramNameLC);
+							AnaTmpl.Substitute("$paramNameUC", paramNameUC);
+							AnaTmpl.Substitute("$moduleNameLC", moduleNameLC);
+							AnaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+							AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+							AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+							AnaTmpl.Substitute("$type", pType[i]);
+							AnaTmpl.Substitute("$xtype", pName[i]);
+							AnaTmpl.Substitute("$chnIndex", i);
+							AnaTmpl.Substitute("$xBins", module->GetBinRange());
+							AnaTmpl.Substitute("$xMin", module->GetXmin());
+							AnaTmpl.Substitute("$xMax", module->GetXmax());
+							AnaTmpl.Substitute("$pageSize", module->GetXmax() - module->GetXmin());
+							AnaTmpl.Substitute("$yBins", module->GetShaperBinRange());
+							AnaTmpl.Substitute("$yMin", module->GetShmin());
+							AnaTmpl.Substitute("$yMax", module->GetShmax());
+							AnaTmpl.WriteCode(AnaStrm);
+						}
+						AnaTmpl.InitializeCode("%CE%");
+						AnaTmpl.WriteCode(AnaStrm);
 					}
 					param = (TMrbModuleChannel *) fLofParams.After(param);
 				}
@@ -300,7 +335,6 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 		case TMrbConfig::kAnaSevtDefineAddr:
 			{
 				TMrbModuleChannel * param = (TMrbModuleChannel *) fLofParams.First();
-				Int_t pIdx = 0;
 				while (param) {
 					TString paramNameLC = param->GetName();
 					TString paramNameUC = paramNameLC;
@@ -313,7 +347,8 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					switch (module->GetTriggerOn(trigGroup)) {
 						case TMrbSis_3300::kTriggerOnDisabled:
 							nofChansPerGroup = 0;
-							gMrbLog->Wrn() << "Module \"" << moduleNameLC << "\"/param \"" << paramNameLC << "\" - trigger mode disabled" << endl;
+							gMrbLog->Err()	<< "Module " << moduleNameLC << " (param " << paramNameLC
+											<< ") - sampling/triggering disabled" << endl;
 							gMrbLog->Flush(this->ClassName(), "MakeSpecialAnalyzeCode");
 							break;
 						case TMrbSis_3300::kTriggerOnEnabled:
@@ -342,7 +377,7 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 							break;
 					}
 					for (Int_t i = 0; i < nofChansPerGroup; i++) {
-						AnaTmpl.InitializeCode();
+						AnaTmpl.InitializeCode("%ST%");
 						AnaTmpl.Substitute("$paramNameLC", paramNameLC);
 						AnaTmpl.Substitute("$paramNameUC", paramNameUC);
 						AnaTmpl.Substitute("$moduleNameLC", moduleNameLC);
@@ -350,10 +385,22 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						AnaTmpl.Substitute("$pageSize", module->GetPageSizeChan());
-						AnaTmpl.Substitute("$paramIndex", pIdx++);
 						AnaTmpl.Substitute("$type", pType[i]);
 						AnaTmpl.Substitute("$xtype", pName[i]);
 						AnaTmpl.WriteCode(AnaStrm);
+						if (module->ShaperIsOn() && !pIsTrig[i]) {
+							AnaTmpl.InitializeCode("%SH%");
+							AnaTmpl.Substitute("$paramNameLC", paramNameLC);
+							AnaTmpl.Substitute("$paramNameUC", paramNameUC);
+							AnaTmpl.Substitute("$moduleNameLC", moduleNameLC);
+							AnaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+							AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+							AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+							AnaTmpl.Substitute("$type", pType[i]);
+							AnaTmpl.Substitute("$xtype", pName[i]);
+							AnaTmpl.Substitute("$pageSize", module->GetXmax() - module->GetXmin());
+							AnaTmpl.WriteCode(AnaStrm);
+						}
 					}
 					param = (TMrbModuleChannel *) fLofParams.After(param);
 				}
@@ -375,7 +422,8 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 					switch (module->GetTriggerOn(trigGroup)) {
 						case TMrbSis_3300::kTriggerOnDisabled:
 							nofChansPerGroup = 0;
-							gMrbLog->Wrn() << "Module \"" << moduleNameLC << "\"/param \"" << paramNameLC << "\" - trigger mode disabled" << endl;
+							gMrbLog->Err()	<< "Module " << moduleNameLC << " (param " << paramNameLC
+											<< ") - sampling/triggering disabled" << endl;
 							gMrbLog->Flush(this->ClassName(), "MakeSpecialAnalyzeCode");
 							break;
 						case TMrbSis_3300::kTriggerOnEnabled:
@@ -421,11 +469,44 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.Substitute("$type", pType[i]);
 						AnaTmpl.Substitute("$xtype", pName[i]);
 						AnaTmpl.WriteCode(AnaStrm);
+						if (module->ShaperIsOn() && !pIsTrig[i]) {
+							const Char_t * n2d[] = {"SS", "LS", "MinMin", "MaxMax"};
+							for (Int_t sh = 0; sh < 4; sh++) {
+								TString paramNameLC = param->GetName();
+								paramNameLC += n2d[sh];
+								TString paramNameUC = paramNameLC;
+								paramNameUC(0,1).ToUpper();
+								AnaTmpl.InitializeCode("%S2N%");
+								AnaTmpl.Substitute("$paramNameLC", paramNameLC);
+								AnaTmpl.Substitute("$paramNameUC", paramNameUC);
+								AnaTmpl.Substitute("$moduleNameLC", moduleNameLC);
+								AnaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+								AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+								AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+								AnaTmpl.WriteCode(AnaStrm);
+							}
+							const Char_t * n1d[] = {"SSMin", "SSMax", "LSMin", "LSMax"};
+							for (Int_t sh = 0; sh < 4; sh++) {
+								TString paramNameLC = param->GetName();
+								paramNameLC += n1d[sh];
+								TString paramNameUC = paramNameLC;
+								paramNameUC(0,1).ToUpper();
+								AnaTmpl.InitializeCode("%SN%");
+								AnaTmpl.Substitute("$paramNameLC", paramNameLC);
+								AnaTmpl.Substitute("$paramNameUC", paramNameUC);
+								AnaTmpl.Substitute("$moduleNameLC", moduleNameLC);
+								AnaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+								AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+								AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+								AnaTmpl.WriteCode(AnaStrm);
+							}
+						}
 					}
 					param = (TMrbModuleChannel *) fLofParams.After(param);
 				}
 				return(kTRUE);
 			}
+			break;
 		case TMrbConfig::kAnaSevtFillSubevent:
 			{
 				AnaTmpl.InitializeCode();

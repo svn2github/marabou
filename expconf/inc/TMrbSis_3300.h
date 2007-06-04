@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3300        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3300.h,v 1.4 2007-06-02 07:28:11 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.h,v 1.5 2007-06-04 05:54:55 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -107,6 +107,13 @@ class TMrbSis_3300 : public TMrbVMEModule {
 										kTriggerSlopeBipolar,
 										kTriggerSlopeLast
 									};
+
+		enum	{	kShapeShort,				// ATTENTION! Must be same as in /templates/config/Subevent_Sis33xx_Common.h
+					kShapeLong,
+					kShapeBoth
+				};
+
+		enum	{	kShaperMinMax	=	256 };
 
 	public:
 
@@ -224,6 +231,20 @@ class TMrbSis_3300 : public TMrbVMEModule {
 		inline Int_t GetTriggerBinning() const { return(fTriggerPointsPerBin); };
 		inline Int_t GetTriggerBinRange() const { return(fTriggerBinRange); };
 
+		inline void ShaperOn(Bool_t ShaperFlag = kTRUE) { fShaperOn = ShaperFlag; };	// shaper settings
+		inline Bool_t ShaperIsOn() { return(fShaperOn); };
+
+		Bool_t SetShmin(Int_t Shmin = -kShaperMinMax, Int_t ShaperIdx = kShapeShort);		// set/get shaper limits
+		Bool_t SetShmax(Int_t Shmax = kShaperMinMax, Int_t ShaperIdx = kShapeShort);
+		inline Int_t GetShmin() { return(fShmin); };
+		inline Int_t GetShmax() { return(fShmax); };
+
+		inline Bool_t SetShaperBinRange(Int_t BinRange) {		// shaper binning
+			fShaperBinRange = BinRange;
+			return(kTRUE);
+		};
+		inline Int_t GetShaperBinRange() const { return(fShaperBinRange); };
+
 		Bool_t UseSettings(const Char_t * SettingsFile = NULL);
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 
@@ -246,6 +267,7 @@ class TMrbSis_3300 : public TMrbVMEModule {
 
 		Int_t fSampleRange;
 		Int_t fTriggerRange;
+		Int_t fShaperRange;
 
 		Int_t fSmin;
 		Int_t fSmax;
@@ -257,6 +279,12 @@ class TMrbSis_3300 : public TMrbVMEModule {
 		Int_t fTriggerPointsPerBin;
 		Int_t fTriggerBinRange;
 		Int_t fTriggerBaseLine;
+
+		Bool_t fShaperOn;
+		Int_t fShmin;
+		Int_t fShmax;
+		Int_t fShaperBinRange;
+		Int_t fShaperBaseLine;
 
 		TString fSettingsFile;
 

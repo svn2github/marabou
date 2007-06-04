@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.7 2007-06-02 14:25:33 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.8 2007-06-04 05:54:55 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -166,6 +166,12 @@ TMrbSis_3300::TMrbSis_3300(const Char_t * ModuleName, UInt_t BaseAddr) :
 				fTmin = fTriggerBaseLine - 4096;
 				fTmax = fTriggerBaseLine + 4096;
 				this->SetTriggerBinning(8);
+
+				fShaperOn = kFALSE;
+				fShaperRange = (Int_t) (1 << 11);
+				fShmin = -256;
+				fShmax = 256;
+				this->SetShaperBinRange(1024);
 
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gDirectory->Append(this);
@@ -395,12 +401,12 @@ Bool_t TMrbSis_3300::SetSmin(Int_t Smin) {
 // Arguments:      Int_t Smin     -- lower limit
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Sets lower X limit
+// Description:    Sets lower Y limit (sampling channel)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Smin < 0 || Smin > fSmax) {
-		gMrbLog->Err()	<< this->GetName() << ": Sample YMIN out of range - " << Smin
+		gMrbLog->Err()	<< this->GetName() << ": YMIN (sampling channel) out of range - " << Smin
 						<< " (should be in [0, " << fSmax << "]" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetSmin");
 		return(kFALSE);
@@ -418,13 +424,13 @@ Bool_t TMrbSis_3300::SetSmax(Int_t Smax) {
 // Arguments:      Int_t Smax     -- upper limit
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Sets upper X limit
+// Description:    Sets upper Y limit (sampling channel)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Smax == 0) Smax = fSampleRange;
 	if (Smax < fSmin || Smax > fSampleRange) {
-		gMrbLog->Err()	<< this->GetName() << ": Sample YMAX out of range - " << Smax
+		gMrbLog->Err()	<< this->GetName() << ": YMAX (sampling channel) out of range - " << Smax
 						<< " (should be in [" << fSmin << ", " << fSampleRange << "]" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetSmax");
 		return(kFALSE);
@@ -442,12 +448,12 @@ Bool_t TMrbSis_3300::SetTmin(Int_t Tmin) {
 // Arguments:      Int_t Tmin     -- lower limit
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Sets lower X limit
+// Description:    Sets lower Y limit (trigger channel)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Tmin < 0 || Tmin > fTmax) {
-		gMrbLog->Err()	<< this->GetName() << ": Sample YMIN out of range - " << Tmin
+		gMrbLog->Err()	<< this->GetName() << ": YMIN (trigger channel) out of range - " << Tmin
 						<< " (should be in [0, " << fTmax << "]" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetTmin");
 		return(kFALSE);
@@ -465,18 +471,65 @@ Bool_t TMrbSis_3300::SetTmax(Int_t Tmax) {
 // Arguments:      Int_t Tmax     -- upper limit
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Sets upper X limit
+// Description:    Sets upper Y limit (trigger channel)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Tmax == 0) Tmax = fTriggerRange;
 	if (Tmax < fTmin || Tmax > fTriggerRange) {
-		gMrbLog->Err()	<< this->GetName() << ": Sample YMAX out of range - " << Tmax
+		gMrbLog->Err()	<< this->GetName() << ":YMAX (trigger channel) out of range - " << Tmax
 						<< " (should be in [" << fTmin << ", " << fTriggerRange << "]" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetTmax");
 		return(kFALSE);
 	} else {
 		fTmax = Tmax;
+		return(kTRUE);
+	}
+}
+
+Bool_t TMrbSis_3300::SetShmin(Int_t Shmin, Int_t ShaperIdx) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSis_3300::SetShmin
+// Purpose:        Set lower limit
+// Arguments:      Int_t Shmin     -- lower limit
+//                 Int_t ShaperIdx -- shape index: short/long
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets lower Y limit (shaper)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Shmin < -kShaperMinMax || Shmin > kShaperMinMax || Shmin > fShmax) {
+		gMrbLog->Err()	<< this->GetName() << ": YMIN (shaper) out of range - " << Shmin
+						<< " (should be [-" << kShaperMinMax << ", " << kShaperMinMax << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetShmin");
+		return(kFALSE);
+	} else {
+		fShmin = Shmin;
+		return(kTRUE);
+	}
+}
+
+Bool_t TMrbSis_3300::SetShmax(Int_t Shmax, Int_t ShaperIdx) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSis_3300::SetShmax
+// Purpose:        Set upper limit
+// Arguments:      Int_t Shmax     -- upper limit
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets upper Y limit (shaper)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Shmax < -kShaperMinMax || Shmax > kShaperMinMax || Shmax < fShmin) {
+		gMrbLog->Err()	<< this->GetName() << ": YMAX (shaper) out of range - " << Shmax
+						<< " (should be [-" << kShaperMinMax << ", " << kShaperMinMax << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetShmax");
+		return(kFALSE);
+	} else {
+		fShmax = Shmax;
 		return(kTRUE);
 	}
 }
