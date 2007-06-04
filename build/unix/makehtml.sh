@@ -1,4 +1,4 @@
-#!/share/local_rh9/bin/xrcm
+#!/usr/local/bin/xrcm
 
 // Script to generate html files from MARaBOU classes
 // Called by main Makefile.
@@ -6,15 +6,16 @@
 // Author: O. Schaile, R. Lutter
 
 {
+    gSystem.Load("libGed.so");
 	gSystem.Load("libTMrbUtils.so");
     gSystem.Load("libTMbsControl.so");
     gSystem.Load("libTMrbConfig.so");
     gSystem.Load("libTMrbTransport.so");
     gSystem.Load("libTMbsSetup.so");
+    gSystem.Load("libTMrbC2Lynx.so");
     gSystem.Load("libTMrbEsone.so");
     gSystem.Load("libTMrbDGF.so");
     gSystem.Load("libTMrbDGFCommon.so");
-    gSystem.Load("libGed.so");
     gSystem.Load("libTGMrbUtils.so");
     gSystem.Load("libTMrbHelpBrowser.so");
     gSystem.Load("libTidy.so");
