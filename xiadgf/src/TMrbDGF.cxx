@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.46 2007-05-09 14:12:28 Marabou Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.47 2007-06-04 10:07:15 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4667,7 +4667,8 @@ Int_t TMrbDGF::ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t Chan
 	TString datFile = this->GetName();			// store binary data in file <dgf>.histoDump.dat
 	datFile += ".histoDump.dat";
 
-	TString hdPgm = gEnv->GetValue("TMrbDGF.ProgramToDumpHistos", "/nfs/mbssys/standalone/histoDump");
+	TString hdPgm = gEnv->GetValue("TMrbDGF.ProgramToDumpHistos", "$MARABOU/powerpc/bin/v22/histoDump");
+	gSystem->ExpandPathName(hdPgm);
 	TString hdPath = gSystem->Getenv("PWD");
 	if (hdPath.IsNull()) hdPath = gSystem->WorkingDirectory();
 	TString cmd = Form("rsh %s 'cd %s; %s %d %d %#x %s b q'",

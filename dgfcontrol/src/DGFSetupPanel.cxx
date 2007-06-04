@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.35 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.36 2007-06-04 10:07:15 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -715,7 +715,8 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 				dlf.close();
 
 				if (nerr == 0) {
-					TString dlPgm = gEnv->GetValue("TMrbDGF.ProgramToDownloadCode", "/nfs/mbssys/standalone/dgfdown");
+					TString dlPgm = gEnv->GetValue("TMrbDGF.ProgramToDownLoadCode", "$MARABOU/powerpc/bin/v22/dgfdown");
+					gSystem->ExpandPathName(dlPgm);
 					gMrbLog->Out()	<< "Calling program \"" << camacHost << ":" << dlPgm << "\" via rsh" << endl;
 					gMrbLog->Flush(this->ClassName(), "ReloadDGFs", setblue);
 
