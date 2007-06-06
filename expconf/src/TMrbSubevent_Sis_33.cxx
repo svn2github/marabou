@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.7 2007-06-04 05:54:55 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.8 2007-06-06 07:37:12 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -316,8 +316,10 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 							AnaTmpl.Substitute("$xMax", module->GetXmax());
 							AnaTmpl.Substitute("$pageSize", module->GetXmax() - module->GetXmin());
 							AnaTmpl.Substitute("$yBins", module->GetShaperBinRange());
-							AnaTmpl.Substitute("$yMin", module->GetShmin());
-							AnaTmpl.Substitute("$yMax", module->GetShmax());
+							AnaTmpl.Substitute("$yMinS", module->GetShmin(0));
+							AnaTmpl.Substitute("$yMaxS", module->GetShmax(0));
+							AnaTmpl.Substitute("$yMinL", module->GetShmin(1));
+							AnaTmpl.Substitute("$yMaxL", module->GetShmax(1));
 							AnaTmpl.WriteCode(AnaStrm);
 						}
 						AnaTmpl.InitializeCode("%CE%");

@@ -16,14 +16,14 @@
 %B%//////////////////////////////////////////////////////////////////////////////
 %CB%
 %ST%	h$paramNameUC$type = new TH2S("h$paramNameUC$type", "$paramNameLC $xtype", $xBins, $xMin.0, $xMax.0, $yBins, $yMin.0, $yMax.0);
-%SH%	h$paramNameUCSS = new TH2S("h$paramNameUCSS", "$paramNameLC short shaped", $xBins, $xMin.0, $xMax.0, $yBins, $yMin.0, $yMax.0);
-%SH%	h$paramNameUCLS = new TH2S("h$paramNameUCLS", "$paramNameLC long shaped", $xBins, $xMin.0, $xMax.0, $yBins, $yMin.0, $yMax.0);
-%SH%	h$paramNameUCMinMin = new TH2S("h$paramNameUCMinMin", "$paramNameLC shaper min/max", $yBins, $yMin.0, $yMax.0, $yBins, $yMin.0, $yMax.0);
-%SH%	h$paramNameUCMaxMax = new TH2S("h$paramNameUCMaxMax", "$paramNameLC shaper min/max", $yBins, $yMin.0, $yMax.0, $yBins, $yMin.0, $yMax.0);
-%SH%	h$paramNameUCSSMin = new TH1F("h$paramNameUCSSMin", "$paramNameLC shaper min", $yBins, $yMin.0, $yMax.0);
-%SH%	h$paramNameUCSSMax = new TH1F("h$paramNameUCSSMax", "$paramNameLC shaper max", $yBins, $yMin.0, $yMax.0);
-%SH%	h$paramNameUCLSMin = new TH1F("h$paramNameUCLSMin", "$paramNameLC shaper min", $yBins, $yMin.0, $yMax.0);
-%SH%	h$paramNameUCLSMax = new TH1F("h$paramNameUCLSMax", "$paramNameLC shaper max", $yBins, $yMin.0, $yMax.0);
+%SH%	h$paramNameUCSS = new TH2S("h$paramNameUCSS", "$paramNameLC short shaped", $xBins, $xMin.0, $xMax.0, $yBins, $yMinS.0, $yMaxS.0);
+%SH%	h$paramNameUCLS = new TH2S("h$paramNameUCLS", "$paramNameLC long shaped", $xBins, $xMin.0, $xMax.0, $yBins, $yMinL.0, $yMaxL.0);
+%SH%	h$paramNameUCMinMin = new TH2S("h$paramNameUCMinMin", "$paramNameLC shaper min/max", $yBins, $yMinL.0, $yMaxL.0, $yBins, $yMinS.0, $yMaxS.0);
+%SH%	h$paramNameUCMaxMax = new TH2S("h$paramNameUCMaxMax", "$paramNameLC shaper min/max", $yBins, $yMinL.0, $yMaxL.0, $yBins, $yMinS.0, $yMaxS.0);
+%SH%	h$paramNameUCSSMin = new TH1F("h$paramNameUCSSMin", "$paramNameLC shaper min", $yBins, $yMinS.0, $yMaxS.0);
+%SH%	h$paramNameUCSSMax = new TH1F("h$paramNameUCSSMax", "$paramNameLC shaper max", $yBins, $yMinS.0, $yMaxS.0);
+%SH%	h$paramNameUCLSMin = new TH1F("h$paramNameUCLSMin", "$paramNameLC shaper min", $yBins, $yMinL.0, $yMaxL.0);
+%SH%	h$paramNameUCLSMax = new TH1F("h$paramNameUCLSMax", "$paramNameLC shaper max", $yBins, $yMinL.0, $yMaxL.0);
 %CE%
 %E%	return(kTRUE);
 %E%}

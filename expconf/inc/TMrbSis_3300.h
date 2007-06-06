@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3300        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3300.h,v 1.5 2007-06-04 05:54:55 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.h,v 1.6 2007-06-06 07:37:12 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -236,8 +236,8 @@ class TMrbSis_3300 : public TMrbVMEModule {
 
 		Bool_t SetShmin(Int_t Shmin = -kShaperMinMax, Int_t ShaperIdx = kShapeShort);		// set/get shaper limits
 		Bool_t SetShmax(Int_t Shmax = kShaperMinMax, Int_t ShaperIdx = kShapeShort);
-		inline Int_t GetShmin() { return(fShmin); };
-		inline Int_t GetShmax() { return(fShmax); };
+		inline Int_t GetShmin(Int_t ShaperIdx = kShapeShort) { return(fShmin[ShaperIdx]); };
+		inline Int_t GetShmax(Int_t ShaperIdx = kShapeShort) { return(fShmax[ShaperIdx]); };
 
 		inline Bool_t SetShaperBinRange(Int_t BinRange) {		// shaper binning
 			fShaperBinRange = BinRange;
@@ -281,10 +281,9 @@ class TMrbSis_3300 : public TMrbVMEModule {
 		Int_t fTriggerBaseLine;
 
 		Bool_t fShaperOn;
-		Int_t fShmin;
-		Int_t fShmax;
+		Int_t fShmin[2];
+		Int_t fShmax[2];
 		Int_t fShaperBinRange;
-		Int_t fShaperBaseLine;
 
 		TString fSettingsFile;
 

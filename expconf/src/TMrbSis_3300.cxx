@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.8 2007-06-04 05:54:55 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.9 2007-06-06 07:37:12 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -169,8 +169,10 @@ TMrbSis_3300::TMrbSis_3300(const Char_t * ModuleName, UInt_t BaseAddr) :
 
 				fShaperOn = kFALSE;
 				fShaperRange = (Int_t) (1 << 11);
-				fShmin = -256;
-				fShmax = 256;
+				fShmin[kShapeShort] = -25;
+				fShmax[kShapeShort] = 25;
+				fShmin[kShapeLong] = -256;
+				fShmax[kShapeLong] = 256;
 				this->SetShaperBinRange(1024);
 
 				gMrbConfig->AddModule(this);				// append to list of modules
@@ -500,13 +502,13 @@ Bool_t TMrbSis_3300::SetShmin(Int_t Shmin, Int_t ShaperIdx) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (Shmin < -kShaperMinMax || Shmin > kShaperMinMax || Shmin > fShmax) {
+	if (Shmin < -kShaperMinMax || Shmin > kShaperMinMax || Shmin > fShmax[ShaperIdx]) {
 		gMrbLog->Err()	<< this->GetName() << ": YMIN (shaper) out of range - " << Shmin
 						<< " (should be [-" << kShaperMinMax << ", " << kShaperMinMax << "]" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetShmin");
 		return(kFALSE);
 	} else {
-		fShmin = Shmin;
+		fShmin[ShaperIdx] = Shmin;
 		return(kTRUE);
 	}
 }
@@ -523,13 +525,13 @@ Bool_t TMrbSis_3300::SetShmax(Int_t Shmax, Int_t ShaperIdx) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (Shmax < -kShaperMinMax || Shmax > kShaperMinMax || Shmax < fShmin) {
+	if (Shmax < -kShaperMinMax || Shmax > kShaperMinMax || Shmax < fShmin[ShaperIdx]) {
 		gMrbLog->Err()	<< this->GetName() << ": YMAX (shaper) out of range - " << Shmax
 						<< " (should be [-" << kShaperMinMax << ", " << kShaperMinMax << "]" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetShmax");
 		return(kFALSE);
 	} else {
-		fShmax = Shmax;
+		fShmax[ShaperIdx] = Shmax;
 		return(kTRUE);
 	}
 }
