@@ -36,11 +36,11 @@ private:
    Double_t fExpA;
    Double_t fExpB;
    Double_t fExpC;
-   Double_t fExpD;
+//   Double_t fExpD;
    Int_t fExpFixA;
    Int_t fExpFixB;
    Int_t fExpFixC;
-   Int_t fExpFixD;
+//   Int_t fExpFixD;
    Int_t fPolN;
    Double_t fPolA;
    Double_t fPolB;
@@ -70,6 +70,7 @@ private:
    Int_t fUseoldpars;
    Int_t fUsedbg;
    Int_t fNpeaks;
+   Int_t fReqNmarks;
    Int_t fNmarks;
    Int_t fNevents;
    Color_t fColor;
@@ -90,6 +91,7 @@ private:
    Int_t fFitOptIntegral;  
    Int_t fFitOptNoDraw;  
    Int_t fFitOptAddAll; 
+   Int_t fFitPrintCovariance; 
 
 public:
    FitOneDimDialog(TH1 * hist, Int_t type = 1);
@@ -100,10 +102,12 @@ public:
    void FitGausExecute();
    void FitExpExecute();
    void DrawExpExecute();
+   void CalcStartParExp();
    void ExpExecute(Int_t draw_only = 0);
    void FitPolExecute();
    void DrawPolExecute();
    void PolExecute(Int_t draw_only = 0);
+   void PrintCorrelation(); 
    void FitFormExecute();
    void DrawFormExecute();
    void FormExecute(Int_t draw_only = 0);

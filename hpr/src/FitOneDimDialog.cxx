@@ -9,6 +9,7 @@
 #include "TList.h"
 #include "TGMsgBox.h"
 #include "TMath.h"
+#include "TVirtualFitter.h"
 #include "TVirtualPad.h"
 #include "TGMrbTableFrame.h"
 #include "FitOneDimDialog.h"
@@ -429,23 +430,27 @@ Note: If you want to use the fitting values in a\n\
 ";
 
 static const Char_t helptext_exp[] =
-"Fit exponential with offset in x and y:\n\
-f(x) = a + b * exp ((x -x0) * c)\n\
-x0 is introduced for convenience to simplify\n\
-determination of start parameters\n\
-Function limits may be given by  modifying fFrom\n\
-and fTo or by setting 2 marks\n\
-\n\
+"Fit exponential with offset in y:\n\
+f(x) = a + b * exp (x * c)\n\
+Start parameters may can be calculated (estimated)\n\
+For this however \"a\" (the y-offset) must be preset\n\
+to a reasonable value\n\
+Function limits may be given by modifying fFrom\n\
+and fTo or by setting 2 marks.\n\
+Fitting of any combination of functions is provided\n\
+in the \"Fit User formula\" popup menu.\n\
 ";
 
 static const Char_t helptext_pol[] =
 "Fit polynomial f(x) = a0 + a1*x +a2*x*x ..)\n\
 Degree must be >= 0, any degree is allowed\n\
-but may be not meaningful\n\
+but may be not meaningful.\n\
 Only a0, a1, a2, a3 may be given start values\n\
 higher coefficients get start values = 0\n\
-Function limits may be given by  modifying fFrom\n\
+Function limits may be given by modifying fFrom\n\
 and fTo or by setting 2 marks\n\
+Fitting of any combination of functions is provided\n\
+in the \"Fit User formula\" popup menu;.\n\
 ";
 
 static const Char_t helptext_form[] =
@@ -453,7 +458,7 @@ static const Char_t helptext_form[] =
 e.g.: [0]*sin([1]*(x+[2])\n\
 Note: The number of parameters is defined\n\
 implicitly by the formula. Maximimum 6 parameters are\n\
-allowed, if more parameters are needed use a fit macro\n\
+allowed, if more parameters are needed use a fit macro.\n\
 Function limits may be given by modifying fFrom\n\
 and fTo explicitely or by setting 2 marks\n\
 Examples:\n\
@@ -518,6 +523,7 @@ the root doc at: http://root.cern.ch\n\
    static TString exgcmd("FitGausExecute()");
    static TString expcmd("FitExpExecute()");
    static TString exdcmd("DrawExpExecute()");
+   static TString exstpcmd("CalcStartParExp()");
    static TString expolcmd("FitPolExecute()");
    static TString exdpolcmd("DrawPolExecute()");
    static TString exformcmd("FitFormExecute()");
@@ -540,6 +546,7 @@ the root doc at: http://root.cern.ch\n\
    fUseoldpars = 0;
    fLinBgSet = kFALSE;
    fMarkers = NULL; 
+   fReqNmarks= 0; 
    TAxis *xaxis = fSelHist->GetXaxis();
    fFrom = xaxis->GetXmin();
    fTo   = xaxis->GetXmax() ;
@@ -548,7 +555,7 @@ the root doc at: http://root.cern.ch\n\
    if (type == 1) {
       helptext = helptext_gaus;
       fFuncName.Prepend(fGausFuncName);
-		GetMarkers();
+		fNmarks = GetMarkers();
 //		row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
 //		valp[ind++] = &fNpeaks;
 		row_lab->Add(new TObjString("CheckButton_Low Tail"));
@@ -570,7 +577,8 @@ the root doc at: http://root.cern.ch\n\
    } else if (type == 2) {
       helptext = helptext_exp;
       fFuncName.Prepend(fExpFuncName);
-      row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
+//      row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
+      row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*x)"));
 		valp[ind++] = &dummy;
       row_lab->Add(new TObjString("DoubleValue_a"));
 		valp[ind++] = &fExpA;
@@ -584,10 +592,12 @@ the root doc at: http://root.cern.ch\n\
 		valp[ind++] = &fExpC;
 		row_lab->Add(new TObjString("CheckButton-Fix"));
 		valp[ind++] = &fExpFixC;
-      row_lab->Add(new TObjString("DoubleValue+d"));
-		valp[ind++] = &fExpD;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fExpFixD;
+ //     row_lab->Add(new TObjString("DoubleValue+d"));
+//		valp[ind++] = &fExpD;
+//		row_lab->Add(new TObjString("CheckButton-Fix"));
+//		valp[ind++] = &fExpFixD;
+      row_lab->Add(new TObjString("CommentOnly+ --"));
+		valp[ind++] = &dummy;
 
    } else if (type == 3) {
       helptext = helptext_pol;
@@ -658,7 +668,7 @@ the root doc at: http://root.cern.ch\n\
    valp[ind++] = &fStyle;
    row_lab->Add(new TObjString("StringValue_FuncName"));
    valp[ind++] = &fFuncName;
-   row_lab->Add(new TObjString("CommandButt_Execute Fitting"));
+   row_lab->Add(new TObjString("CommandButt_Execute Fit"));
    if (type == 1) { 
       valp[ind++] = &exgcmd;
 //      cout << exgcmd << endl;
@@ -668,6 +678,8 @@ the root doc at: http://root.cern.ch\n\
       valp[ind++] = &expcmd;
       row_lab->Add(new TObjString("CommandButt+Draw only"));
       valp[ind++] = &exdcmd;
+      row_lab->Add(new TObjString("CommandButt+Calc Start Pars"));
+      valp[ind++] = &exstpcmd;
    } else if (type == 3) {
       valp[ind++] = &expolcmd;
       row_lab->Add(new TObjString("CommandButt+Draw only"));
@@ -697,10 +709,10 @@ the root doc at: http://root.cern.ch\n\
       row_lab->Add(new TObjString("CommandButt-Set N Marks"));
       valp[ind++] = &setmcmd;
       row_lab->Add(new TObjString("PlainIntVal-N"));
-      valp[ind++] = &fNmarks;
+      valp[ind++] = &fReqNmarks;
    } else {
       row_lab->Add(new TObjString("CommandButt-Set 2 Marks"));
-      fNmarks = 2;
+      fReqNmarks = 2;
       valp[ind++] = &setmcmd;
    }
    if (type == 4) {
@@ -795,13 +807,14 @@ void FitOneDimDialog::FitGausExecute()
 //   if (setpars) cout << "ent setpars true" << endl;
 
    Int_t npars;
-   if ( GetMarkers() <= 0 ) { 
-      Int_t retval = 0;
-      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
-                "Warning", "No marks set,\n need at least 2" ,
-                kMBIconExclamation, kMBDismiss, &retval);
-      return;
-   }
+   GetMarkers(); 
+//   if ( GetMarkers() <= 0 ) { 
+//      Int_t retval = 0;
+//      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+//                "Warning", "No marks set,\n need at least 2" ,
+//                kMBIconExclamation, kMBDismiss, &retval);
+//      return;
+//   }
    if (fOnesig == 0) 
       npars = fNpeaks * 3;
    else
@@ -1084,6 +1097,7 @@ void FitOneDimDialog::FitGausExecute()
             }
          }
       }
+      PrintCorrelation(); 
       func->SetFillStyle(0);
       if (fAutoClearMarks) ClearMarkers();
    } else {
@@ -1290,28 +1304,25 @@ void FitOneDimDialog::PrintMarkers()
 
 Int_t FitOneDimDialog::GetMarkers()
 {
-   fNmarks = 2;
+   fNmarks = 0;
+   fNpeaks = 1;
 //   if (fSelHist) {
 //      fFrom = fSelHist->GetXaxis()->GetMinimum();
 //      fTo   = fSelHist->GetXaxis()->GetMaximum();
 //   }
 // find number of peaks to fit 
+   TAxis * xa = fSelHist->GetXaxis();
+   fFrom = xa->GetBinUpEdge(xa->GetFirst());
+   fTo   = xa->GetBinLowEdge(xa->GetLast());
    fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
    if (fMarkers != NULL) {
       if (fMarkers->GetEntries() <= 0) return fNmarks;
       fMarkers->Sort();
       fNmarks = fMarkers->GetEntries();
-      fFrom = ((FhMarker *) fMarkers->At(0))->GetX();
-      if (fNmarks > 1) {
+      if (fNmarks > 0) 
+         fFrom = ((FhMarker *) fMarkers->At(0))->GetX();
+      if (fNmarks > 1) 
          fTo   = ((FhMarker *) fMarkers->At(fNmarks - 1))->GetX();
-      } else {
-         Int_t retval = 0;
-         new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
-                "Question", "Less then 2 marks set, fit anyway??",
-                kMBIconQuestion, kMBYes | kMBNo, &retval);
-         if (retval == kMBNo) return -1;
-         fNmarks = 2;
-      }
    } 
      
    if (fNmarks == 2) { 
@@ -1320,8 +1331,8 @@ Int_t FitOneDimDialog::GetMarkers()
       fNpeaks = fNmarks - 2;
    }
 //   lNpeaks = fNpeaks;
-   cout << setblue << fNmarks << " markers found i.e. "
-        << fNpeaks << " peak(s) will be fitted" << setblack << endl;
+//   cout << setblue << fNmarks << " markers found i.e. "
+//        << fNpeaks << " peak(s) will be fitted" << setblack << endl;
    return fNmarks;
 }
 //____________________________________________________________________________________ 
@@ -1337,9 +1348,9 @@ void FitOneDimDialog::ClearMarkers() {
 //____________________________________________________________________________________ 
 
 Int_t  FitOneDimDialog::SetMarkers() {
-   cout << "Request " << fNmarks << " Markers" << endl;
+   cout << "Request " << fReqNmarks << " Markers" << endl;
    Int_t nmarks = 0;
-   if (fNmarks <= 0) {
+   if (fReqNmarks <= 0) {
       Int_t retval = 0;
       new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
                 "Warning","fNmarks <= 0" ,
@@ -1352,7 +1363,7 @@ Int_t  FitOneDimDialog::SetMarkers() {
       fMarkers = new  FhMarkerList();
       fSelHist->GetListOfFunctions()->Add(fMarkers);
    }
-   for (Int_t i = 0; i < fNmarks; i++) {
+   for (Int_t i = 0; i < fReqNmarks; i++) {
       TMarker * m1  = (TMarker*)gPad->WaitPrimitive("TMarker");
    	m1 = (TMarker *)gPad->GetListOfPrimitives()->Last();
       if (m1 == NULL) break;
@@ -1443,6 +1454,7 @@ void FitOneDimDialog::SetFittingOptions()
    row_lab->Add(new TObjString("CheckButton_Use Integral of function in bin"));
    row_lab->Add(new TObjString("CheckButton_Dont draw result function"));
    row_lab->Add(new TObjString("CheckButton_Add all fitted functions to hist"));
+   row_lab->Add(new TObjString("CheckButton_Print covariance mattrix"));
 
    valp[ind++] = &fFitOptLikelihood    ;
    valp[ind++] = &fFitOptQuiet         ;
@@ -1452,6 +1464,7 @@ void FitOneDimDialog::SetFittingOptions()
    valp[ind++] = &fFitOptIntegral      ;
    valp[ind++] = &fFitOptNoDraw        ;
    valp[ind++] = &fFitOptAddAll        ;
+   valp[ind++] = & fFitPrintCovariance ;
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("Fitting options", NULL, itemwidth, fParentWindow 
@@ -1488,13 +1501,15 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
                 kMBIconExclamation, kMBDismiss, &retval);
       return;
    }
-   if ( GetMarkers() <= 0 ) { 
-      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
-                "Warning", "No marks set,\n need at least 2" ,
-                kMBIconExclamation, kMBDismiss, &retval);
-      return;
-   }
-   TF1 *func = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*(x - [3]))",fFrom,fTo);
+    GetMarkers(); 
+//   if ( GetMarkers() <= 0 ) { 
+ //     new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+//                "Warning", "No marks set,\n need at least 2" ,
+//                kMBIconExclamation, kMBDismiss, &retval);
+//      return;
+//   }
+//   TF1 *func = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*(x - [3]))",fFrom,fTo);
+   TF1 *func = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*x)",fFrom,fTo);
    func->SetParameter(0, fExpA);
    if (fExpFixA |= 0) func->FixParameter(0, fExpA);
    func->SetParName(0, "a (y_off)");
@@ -1504,9 +1519,9 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
    func->SetParameter(2, fExpC);
    if (fExpFixC |= 0) func->FixParameter(2, fExpC);
    func->SetParName(2, "c (slope)");
-   func->SetParameter(3, fExpD);
-   if (fExpFixD |= 0) func->FixParameter(3, fExpD);
-   func->SetParName(3, "d (x_off)");
+//   func->SetParameter(3, fExpD);
+//   if (fExpFixD |= 0) func->FixParameter(3, fExpD);
+//   func->SetParName(3, "d (x_off)");
    func->SetLineWidth(fWidth);
    func->SetLineColor(fColor);
    if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
@@ -1522,7 +1537,8 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
       if (fFitOptIntegral)  fitopt += "I";
       if (fFitOptNoDraw)    fitopt += "0";
       if (fFitOptAddAll)    fitopt += "+";
-      Bool_t bound = (fExpFixA + fExpFixB + fExpFixC + fExpFixD) != 0;
+//      Bool_t bound = (fExpFixA + fExpFixB + fExpFixC + fExpFixD) != 0;
+      Bool_t bound = (fExpFixA + fExpFixB + fExpFixC) != 0;
       if (bound)            fitopt += "B";   // some pars are bound
       if (fGraph != NULL) {
          fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
@@ -1551,13 +1567,46 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
 		fExpA = func->GetParameter(0);
 		fExpB = func->GetParameter(1);
 		fExpC = func->GetParameter(2);
-		fExpD = func->GetParameter(3);
+//		fExpD = func->GetParameter(3);
       if (fAutoClearMarks) ClearMarkers();
       IncrementIndex(&fFuncName);
+      PrintCorrelation(); 
    }
    gPad->Modified(kTRUE);
    gPad->Update();
 }
+//________________________________________________________________________
+
+void FitOneDimDialog::CalcStartParExp()
+{
+   Double_t xlow, xup, ylow, yup;
+   Int_t nmarks = GetMarkers();
+   if (nmarks > 0) {
+     xlow = ((FhMarker *) fMarkers->At(0))->GetX();
+   } else {
+     xlow = fFrom;
+   }
+   if (nmarks > 1) {
+      xup  = ((FhMarker *) fMarkers->At(nmarks-1))->GetX();
+   } else {
+     xup = fTo;
+   }
+
+   
+   Int_t binlow = fSelHist->FindBin(xlow);
+   Int_t binup  = fSelHist->FindBin(xup);
+   ylow = fSelHist->GetBinContent(binlow);
+   yup  = fSelHist->GetBinContent(binup);
+   ylow = ylow - fExpA;
+   if (ylow < 1) ylow = 1;
+   yup = yup - fExpA;
+   if (yup < 1) yup = 1;
+   fExpC = TMath::Log(yup/ylow) / (xup - xlow);
+   fExpB = TMath::Exp(TMath::Log(yup) - fExpC * xup); 
+//   cout << fExpA << " " << fExpB << " " << fExpC
+ //   << " " << xup << " " << yup << endl;
+}
+
 //________________________________________________________________________
 
 void FitOneDimDialog::FitPolExecute()
@@ -1588,12 +1637,12 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
                 kMBIconExclamation, kMBDismiss, &retval);
       return;
    }
-   if ( GetMarkers() <= 0 ) { 
-      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
-                "Warning", "No marks set,\n need at least 2" ,
-                kMBIconExclamation, kMBDismiss, &retval);
-      return;
-   }
+//   if ( GetMarkers() <= 0 ) { 
+//      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+ //               "Warning", "No marks set,\n need at least 2" ,
+ //               kMBIconExclamation, kMBDismiss, &retval);
+//      return;
+//   }
    TString fn;
    TString pn;
 //   TArrayD par(fPolN+1);
@@ -1674,6 +1723,7 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
 		if (fPolN > 2) fPolD = func->GetParameter(3);
       IncrementIndex(&fFuncName);
       if (fAutoClearMarks) ClearMarkers();
+      PrintCorrelation(); 
    }
    gPad->Modified(kTRUE);
    gPad->Update();
@@ -1710,15 +1760,15 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
       }
    }
 
-   if ( GetMarkers() <= 0 ) { 
-      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
-                "Warning", "No marks set,\n need at least 2" ,
-                kMBIconExclamation, kMBDismiss, &retval);
-      return;
-   }
+//   if ( GetMarkers() <= 0 ) { 
+//      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+//                "Warning", "No marks set,\n need at least 2" ,
+ //               kMBIconExclamation, kMBDismiss, &retval);
+//      return;
+//   }
    TString fn;
    TString pn;
-   TF1 *func = new TF1(fFuncName,fFormula, fFrom, fTo);
+   TF1 *func = new TF1(fFuncName,(const char*)fFormula, fFrom, fTo);
    if (func->GetNdim() <= 0) {
       cout << "Something wrong with formula" << endl;
       return;
@@ -1804,9 +1854,46 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
 		if (npars > 5) fFormF = func->GetParameter(5);
       IncrementIndex(&fFuncName);
       if (fAutoClearMarks) ClearMarkers();
+      PrintCorrelation(); 
    }
    gPad->Modified(kTRUE);
    gPad->Update();
+}
+//________________________________________________________________________
+void FitOneDimDialog::PrintCorrelation() 
+{
+  if (fFitPrintCovariance) {
+		TVirtualFitter *fitter = TVirtualFitter::GetFitter();
+      Int_t ntot = fitter->GetNumberTotalParameters();
+		cout << "-- Correlationmatrix (Cov(i,j) / (err i * err j)) -----" << endl;
+      printf("%9s", "          ");
+		for (Int_t i=0; i < ntot; i++) {  
+         if (fitter->IsFixed(i) == 0)printf("%11s", fitter->GetParName(i));
+      }
+	   cout << endl;
+      Int_t indi = 0;
+		for (Int_t i =0; i < ntot; i++) {  
+         if (fitter->IsFixed(i) == 0) {
+            printf("%10s", fitter->GetParName(i));
+				Int_t indj = 0;
+				for (Int_t j=0; j < ntot; j++) { 
+               if (fitter->IsFixed(j) == 0) {
+					   Double_t ei =  fitter->GetParError(i);
+					   Double_t ej =  fitter->GetParError(j);
+					   Double_t cor = fitter->GetCovarianceMatrixElement(indi, indj)/(ei*ej); 
+					   printf("%10.3g ", cor);
+                  indj++;
+               }
+				}
+            indi++;
+			cout << endl;
+         }
+		}
+      for (Int_t i=0; i < ntot; i++) {  
+         if (fitter->IsFixed(i) == 0) cout << "-----------";
+      }
+	   cout << endl;
+	}
 }
 //________________________________________________________________________
 
@@ -1835,7 +1922,7 @@ void FitOneDimDialog::FillHistRandom()
    gStyle->SetOptStat(1111111);
    TString fn;
    TString pn;
-   TF1 *func = new TF1(fFuncName,fFormula, fFrom, fTo);
+   TF1 *func = new TF1(fFuncName,(const char*)fFormula, fFrom, fTo);
    if (func->GetNdim() <= 0) {
       cout << "Something wrong with formula" << endl;
       return;
@@ -1887,6 +1974,7 @@ void FitOneDimDialog::RestoreDefaults()
    fFitOptIntegral   = env.GetValue("FitOneDimDialog.FitOptIntegral", 0);
    fFitOptNoDraw     = env.GetValue("FitOneDimDialog.FitOptNoDraw", 0);
    fFitOptAddAll     = env.GetValue("FitOneDimDialog.FitOptAddAll", 0);
+   fFitPrintCovariance= env.GetValue("FitOneDimDialog.fFitPrintCovariance", 0);
    fAutoClearMarks   = env.GetValue("FitOneDimDialog.fAutoClearMarks", 0);
    fColor            = env.GetValue("FitOneDimDialog.Color", 4);
    fWidth            = env.GetValue("FitOneDimDialog.Width", 1);
@@ -1900,11 +1988,11 @@ void FitOneDimDialog::RestoreDefaults()
    fExpA             = env.GetValue("FitOneDimDialog.fExpA", 0.);
    fExpB             = env.GetValue("FitOneDimDialog.fExpB", 1.);
    fExpC             = env.GetValue("FitOneDimDialog.fExpC", 1.);
-   fExpD             = env.GetValue("FitOneDimDialog.fExpD", 0.);
+//   fExpD             = env.GetValue("FitOneDimDialog.fExpD", 0.);
    fExpFixA          = env.GetValue("FitOneDimDialog.fExpFixA", 0);
    fExpFixB          = env.GetValue("FitOneDimDialog.fExpFixB", 0);
    fExpFixC          = env.GetValue("FitOneDimDialog.fExpFixC", 0);
-   fExpFixD          = env.GetValue("FitOneDimDialog.fExpFixD", 1);
+//   fExpFixD          = env.GetValue("FitOneDimDialog.fExpFixD", 1);
    fPolN             = env.GetValue("FitOneDimDialog.fPolN", 1);
    fPolA             = env.GetValue("FitOneDimDialog.fPolA", 0.);
    fPolB             = env.GetValue("FitOneDimDialog.fPolB", 1.);
@@ -1945,6 +2033,7 @@ void FitOneDimDialog::SaveDefaults()
    env.SetValue("FitOneDimDialog.FitOptIntegral",   fFitOptIntegral);
    env.SetValue("FitOneDimDialog.FitOptNoDraw",     fFitOptNoDraw);
    env.SetValue("FitOneDimDialog.FitOptAddAll",     fFitOptAddAll);
+   env.SetValue("FitOneDimDialog.fFitPrintCovariance", fFitPrintCovariance);
    env.SetValue("FitOneDimDialog.fAutoClearMarks",  fAutoClearMarks);
    env.SetValue("FitOneDimDialog.Color",            fColor);
    env.SetValue("FitOneDimDialog.Width",            fWidth);
@@ -1958,11 +2047,11 @@ void FitOneDimDialog::SaveDefaults()
    env.SetValue("FitOneDimDialog.fExpA",   fExpA    );
    env.SetValue("FitOneDimDialog.fExpB",   fExpB    );
    env.SetValue("FitOneDimDialog.fExpC",   fExpC    );
-   env.SetValue("FitOneDimDialog.fExpD",   fExpD    );
+//   env.SetValue("FitOneDimDialog.fExpD",   fExpD    );
    env.SetValue("FitOneDimDialog.fExpFixA",fExpFixA );
    env.SetValue("FitOneDimDialog.fExpFixB",fExpFixB );
    env.SetValue("FitOneDimDialog.fExpFixC",fExpFixC );
-   env.SetValue("FitOneDimDialog.fExpFixD",fExpFixD );
+//   env.SetValue("FitOneDimDialog.fExpFixD",fExpFixD );
    env.SetValue("FitOneDimDialog.fPolN",   fPolN    );
    env.SetValue("FitOneDimDialog.fPolA",   fPolA    );
    env.SetValue("FitOneDimDialog.fPolB",   fPolB    );

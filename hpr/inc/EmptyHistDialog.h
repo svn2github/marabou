@@ -25,6 +25,7 @@ private:
    Double_t fYaxisMin;
    Double_t fXaxisMax;
    Double_t fYaxisMax;
+   Int_t   fNbins;
    Int_t   fHistXsize;
    Int_t   fHistYsize;  
    Int_t   fHistXdiv;   
@@ -37,6 +38,7 @@ private:
 public:
    EmptyHistDialog(TGWindow * win = NULL, Int_t winx = 100, Int_t winy = 100);
    ~EmptyHistDialog();
+   void RecursiveRemove(TObject*);
    void Draw_The_Hist();
    void BuildMenu();
    void HandleMenu(Int_t id);

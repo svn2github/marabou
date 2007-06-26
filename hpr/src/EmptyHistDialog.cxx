@@ -1,3 +1,4 @@
+#include "TROOT.h"
 #include "TEnv.h"
 #include "TH1D.h"
 #include "TPad.h"
@@ -26,8 +27,10 @@ EmptyHistDialog::EmptyHistDialog(TGWindow * win, Int_t winx,  Int_t winy)
 {
   
 static const Char_t helpText[] = 
-"The graph can be drawn / overlayed in a selected pad.\n\
-Default is to construct a new canvas\n\
+"This widget helps to create an empty histogram\n\
+which can be used to hold a function or randomly\n\
+filled according to a function. The canvas can\n\
+divided into pads to allow for more than one histogram\n\
 ";
 
    static void *valp[50];
@@ -35,16 +38,18 @@ Default is to construct a new canvas\n\
    Bool_t ok = kTRUE;
    fCommand = "Draw_The_Hist()";
    fCanvas = NULL;
+   gROOT->GetListOfCleanups()->Add(this);
    RestoreDefaults();
    TList *row_lab = new TList(); 
 
    row_lab->Add(new TObjString("StringValue_HistName"));
    row_lab->Add(new TObjString("StringValue_Title X  "));
    row_lab->Add(new TObjString("StringValue-Title Y  "));
-   row_lab->Add(new TObjString("DoubleValue_Xaxis min"));
-   row_lab->Add(new TObjString("DoubleValue-Xaxis max"));
-   row_lab->Add(new TObjString("DoubleValue_Yaxis min"));
-   row_lab->Add(new TObjString("DoubleValue-Yaxis max"));
+   row_lab->Add(new TObjString("PlainIntVal_Nbins"));
+   row_lab->Add(new TObjString("DoubleValue-Xmin"));
+   row_lab->Add(new TObjString("DoubleValue-Xmax"));
+   row_lab->Add(new TObjString("DoubleValue_Ymin"));
+   row_lab->Add(new TObjString("DoubleValue-Ymax"));
 
    row_lab->Add(new TObjString("CheckButton_Draw/Overlay in a sel pad"));
 //   row_lab->Add(new TObjString("CheckButton_Draw in a new canvas"));
@@ -59,6 +64,7 @@ Default is to construct a new canvas\n\
    valp[ind++] = &fHistName;
    valp[ind++] = &fHistXtitle;
    valp[ind++] = &fHistYtitle;
+   valp[ind++] = &fNbins;
    valp[ind++] = &fXaxisMin;
    valp[ind++] = &fXaxisMax;
    valp[ind++] = &fYaxisMin;
@@ -80,7 +86,20 @@ Default is to construct a new canvas\n\
 EmptyHistDialog::~EmptyHistDialog() 
 {
    SaveDefaults();
+   gROOT->GetListOfCleanups()->Remove(this);
 };
+//__________________________________________________________________________
+
+void EmptyHistDialog::RecursiveRemove(TObject * obj)
+{
+//   cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "  
+//        << obj << " fSelHist " <<  fSelHist <<  endl;
+   if (obj == fCanvas) { 
+ //      cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "  
+ //       << obj << " fSelHist " <<  fSelHist <<  endl;
+      fCanvas = NULL;
+   }
+}
 //_________________________________________________________________________
             
 void EmptyHistDialog::Draw_The_Hist()
@@ -117,7 +136,7 @@ void EmptyHistDialog::Draw_The_Hist()
 		ymax = fYaxisMax;
 	}
 	gStyle->SetOptStat(0);
-	fHist = new TH1D(fHistName, fHistName, 100, xmin, xmax);
+	fHist = new TH1D(fHistName, fHistName, fNbins, xmin, xmax);
 	fHist->Draw();
 	fHist->SetMinimum(ymin);
 	fHist->SetMaximum(ymax);
@@ -136,9 +155,18 @@ void EmptyHistDialog::BuildMenu()
    fRootCanvas = (TRootCanvas*)fCanvas->GetCanvas()->GetCanvasImp();
    TGMenuBar * menubar = fRootCanvas->GetMenuBar();
    TGLayoutHints * layoh_right = new TGLayoutHints(kLHintsTop | kLHintsLeft);
+   
    fMenu     = new TGPopupMenu(fRootCanvas->GetParent());
    menubar->AddPopup("Draw_Fill", fMenu, layoh_right, menubar->GetPopup("Inspect"));
    fMenu->AddEntry("Draw / fill with user defined function", M_FitFormula);
+   TGPopupMenu * filemenu = menubar->GetPopup("File");
+   if (filemenu) {
+      const TList * el = filemenu->GetListOfEntries();
+      TGMenuEntry *en = (TGMenuEntry*)el->First();
+      filemenu->AddEntry("Save hist to rootfile", M_Save2File, NULL, NULL, en);
+      filemenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
+                      "HandleMenu(Int_t)");
+   }    
    fMenu->AddEntry("Save hist to rootfile", M_Save2File);
 
    fMenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
@@ -160,6 +188,7 @@ void EmptyHistDialog::SaveDefaults()
    env.SetValue("EmptyHistDialog.HistYsize"  	 , fHistYsize      );
    env.SetValue("EmptyHistDialog.HistXtitle" 	 , fHistXtitle     );
    env.SetValue("EmptyHistDialog.HistYtitle" 	 , fHistYtitle     );
+   env.SetValue("EmptyHistDialog.Nbins"  		    , fNbins           );
    env.SetValue("EmptyHistDialog.XaxisMin"  		 , fXaxisMin        );
    env.SetValue("EmptyHistDialog.YaxisMin"  		 , fYaxisMin        );
    env.SetValue("EmptyHistDialog.XaxisMax"  		 , fXaxisMax        );
@@ -195,10 +224,11 @@ void EmptyHistDialog::RestoreDefaults()
    fHistXtitle      = env.GetValue("EmptyHistDialog.HistXtitle"	   , "Xvalues");
    fHistYtitle      = env.GetValue("EmptyHistDialog.HistYtitle"		, "Yvalues");
    fHistXdiv        = env.GetValue("EmptyHistDialog.HistXdiv"  		, 1);
-   fXaxisMin         = env.GetValue("EmptyHistDialog.XaxisMin"  		, 0);
-   fYaxisMin         = env.GetValue("EmptyHistDialog.YaxisMin"  		, 0);
-   fXaxisMax         = env.GetValue("EmptyHistDialog.XaxisMax"  		, 0);
-   fYaxisMax         = env.GetValue("EmptyHistDialog.YaxisMax"  		, 0);
+   fNbins           = env.GetValue("EmptyHistDialog.Nbins"  		   , 100);
+   fXaxisMin        = env.GetValue("EmptyHistDialog.XaxisMin"  		, 0);
+   fYaxisMin        = env.GetValue("EmptyHistDialog.YaxisMin"  		, 0);
+   fXaxisMax        = env.GetValue("EmptyHistDialog.XaxisMax"  		, 0);
+   fYaxisMax        = env.GetValue("EmptyHistDialog.YaxisMax"  		, 0);
    fHistYdiv        = env.GetValue("EmptyHistDialog.HistYdiv"  		, 1);
 }
 //_________________________________________________________________________

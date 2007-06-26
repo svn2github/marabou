@@ -251,7 +251,7 @@ void CalibrationDialog::SetValues()
 void CalibrationDialog::CalculateFunction()
 {
    if (fCalFunc) {delete fCalFunc; fCalFunc = NULL;}
-   fCalFunc = new TF1(fFuncName,fFormula);
+   fCalFunc = new TF1(fFuncName,(const char*)fFormula);
    if(fCalFunc->GetNpar() < 2){
       cout << "Need at least pol1" << endl;
       delete fCalFunc; fCalFunc = NULL;
