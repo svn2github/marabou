@@ -1216,7 +1216,8 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          0, ((TGFrame *) fMyWindow)->GetHeight(),
                           ax, ay, wdum);
 
-   ax = ax - (int)( win_width >> 1);
+   ax = ax - (int)( win_width );
+//   ax = ax - (int)( win_width >> 1);
    ay = ay - (int)( height) - 30;
 
    UInt_t ww, wh;

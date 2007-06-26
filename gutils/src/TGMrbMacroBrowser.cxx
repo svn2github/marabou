@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.23 2007-03-13 14:22:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.24 2007-06-26 07:32:02 Otto.Schaile Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -31,7 +31,7 @@
 #include "TApplication.h"
 #include "TObjArray.h"
 #include "TObjString.h"
-
+#include "Token.h"
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 #include "TMrbTemplate.h"
