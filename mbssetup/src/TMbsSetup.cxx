@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.55 2007-05-31 12:42:49 Marabou Exp $       
-// Date:           $Date: 2007-05-31 12:42:49 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.56 2007-06-29 12:15:48 Marabou Exp $       
+// Date:           $Date: 2007-06-29 12:15:48 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -767,16 +767,29 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 				}
 			}
 			Int_t m;
+			Bool_t isAddr = kFALSE;
 			if (m = hname.Index(".", 0) != -1) {
-				dname = hname(m + 1, 1000);
-				dname = dname.Strip(TString::kBoth);
-				hname.Resize(m);
+				TObjArray * hArr = hname.Tokenize(".");
+				TString h1 = ((TObjString *) hArr->At(0))->GetString();
+				if (h1.IsDigit()) {
+					isAddr = kTRUE;
+				} else {
+					isAddr = kFALSE;
+					dname = hname(m + 1, 1000);
+					dname = dname.Strip(TString::kBoth);
+					hname.Resize(m);
+				}
 			} else {
 				dname = "";
 			}
 			if (dname.IsNull() && !domain.IsNull()) dname = domain;
 
-			TMrbNamedX * nx = new TMrbNamedX(lineNo, hname.Data(), dname.Data());
+			TMrbNamedX * nx;
+			if (isAddr) {
+				nx = new TMrbNamedX(lineNo, hname.Data(), "");
+			} else {
+				nx = new TMrbNamedX(lineNo, hname.Data(), dname.Data());
+			}
 			if (n == 2) {
 				haddr = ((TObjString *) rhArr->At(1))->GetString();
 				nx->AssignObject(new TObjString(haddr.Data()));
@@ -822,10 +835,18 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 				Int_t n = rhLine.Index(" ", 0);
 				if (n != -1) rhLine.Resize(n);
 				n = rhLine.Index(".", 0);
+				Bool_t isAddr = kFALSE;
 				if (n != -1) {
-					hname = rhLine;
-					hname.Resize(n);
-					dname = rhLine(n + 1, 1000);
+					TObjArray * hArr = hname.Tokenize(".");
+					TString h1 = ((TObjString *) hArr->At(0))->GetString();
+					if (h1.IsDigit()) {
+						isAddr = kTRUE;
+					} else {
+						isAddr = kFALSE;
+						hname = rhLine;
+						hname.Resize(n);
+						dname = rhLine(n + 1, 1000);
+					}
 				} else {
 					hname = rhLine;
 					dname = "";
@@ -839,7 +860,11 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 						}
 						gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 					}
-					lofHosts.AddNamedX(lineNo + 1000, hname, dname);
+					if (isAddr) {
+						lofHosts.AddNamedX(lineNo + 1000, hname, "");
+					} else {
+						lofHosts.AddNamedX(lineNo + 1000, hname, dname);
+					}
 				}
 			}
 		}
