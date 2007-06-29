@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.146 2007-06-01 08:24:05 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.147 2007-06-29 08:20:45 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -748,16 +748,16 @@ void TMrbConfig::UpdateTriggerTable(Int_t Trigger) {
 		fSingleBitTriggersOnly = kTRUE; 					// single-bit triggers only so far
 
 	} else if ((Trigger > 0) || (Trigger < kNofTriggers)) {		// with argument "trigger"
-		if (fTriggersToBeHandled[Trigger] != kTriggerPattern) {	// status "pattern": multiple trigger defined previously
+															// status "pattern": multiple trigger defined previously
+															// status "reserved": skip start and stop striggers
+		if (fTriggersToBeHandled[Trigger] != kTriggerPattern && fTriggersToBeHandled[Trigger] != kTriggerReserved) {
 			fTriggersToBeHandled[Trigger] = kTriggerAssigned; 	// mark this trigger in trigger table
 
 			if (fSingleBitTriggersOnly) {								// check if single-bit triggers only
 				fSingleBitTriggersOnly = (		Trigger == 1
 											||	Trigger == 2
 											||	Trigger == 4
-											||	Trigger == 8
-											||	Trigger == TMrbConfig::kTriggerStartAcq
-											||	Trigger == TMrbConfig::kTriggerStopAcq);
+											||	Trigger == 8);
 
 				if (fSingleBitTriggersOnly) {							// single-bit triggers
 					fTriggerMask |= Trigger;							// add bit to trigger mask
@@ -1651,12 +1651,11 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								libString += o->String();
 								libString += " ";
 							}
-							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", "");
-							if (ip.IsNull()) {
-								ip = "$(LIB)/lib_utils.a";
-							} else {
-								gSystem->ExpandPathName(ip);
-							}
+							TString rdoLibs = "$(MARABOU)/powerpc/lib/";
+							rdoLibs += this->GetMbsVersion(kTRUE, kTRUE);
+							rdoLibs += "/lib_utils.a";
+							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", rdoLibs.Data());
+							gSystem->ExpandPathName(ip);
 							libString += ip;
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
 						}
