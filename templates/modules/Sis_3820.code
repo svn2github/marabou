@@ -115,6 +115,7 @@
 #define SIS_3820_OPER_ARM(module)				*SIS_3820_A_KEY_OPER_ARM(module) = 0
 #define SIS_3820_OPER_ENABLE(module)			*SIS_3820_A_KEY_OPER_ENABLE(module) = 0
 #define SIS_3820_OPER_DISABLE(module)			*SIS_3820_A_KEY_OPER_DISABLE(module) = 0
+
 #define SIS_3820_ENABLE_REF_PULSER(module)		*SIS_3820_A_STATUS(module) = SIS_3820_CS_B_REF_PULSER
 #define SIS_3820_DISABLE_REF_PULSER(module)		*SIS_3820_A_STATUS(module) = 0
 
