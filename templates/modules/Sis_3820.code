@@ -43,6 +43,39 @@
 #define SIS_3820_R_READ_SHADOW				0x800L
 #define SIS_3820_R_READ_FIFO				0xA00L
 
+#define SIS_3820_CS_B_REF_PULSER				(0x1 << 6)
+
+#define SIS_3820_ACQ_B_INPUT_MODE_0				0x0
+#define SIS_3820_ACQ_B_INPUT_MODE_1				(0x1 << 16)
+#define SIS_3820_ACQ_B_INPUT_MODE_2				(0x2 << 16)
+#define SIS_3820_ACQ_B_INPUT_MODE_3				(0x3 << 16)
+#define SIS_3820_ACQ_B_INPUT_MODE_4				(0x4 << 16)
+#define SIS_3820_ACQ_B_INPUT_MODE_5				(0x5 << 16)
+#define SIS_3820_ACQ_B_INPUT_MODE_6				(0x6 << 16)
+
+#define SIS_3820_ACQ_B_OUTPUT_MODE_0				0x0
+#define SIS_3820_ACQ_B_OUTPUT_MODE_1				(0x1 << 20)
+#define SIS_3820_ACQ_B_OUTPUT_MODE_2				(0x2 << 20)
+#define SIS_3820_ACQ_B_OUTPUT_MODE_3				(0x3 << 20)
+
+#define SIS_3820_ACQ_B_LNE_SOURCE_0				0x0
+#define SIS_3820_ACQ_B_LNE_SOURCE_1				(0x1 << 4)
+#define SIS_3820_ACQ_B_LNE_SOURCE_2				(0x2 << 4)
+#define SIS_3820_ACQ_B_LNE_SOURCE_3				(0x3 << 4)
+#define SIS_3820_ACQ_B_LNE_SOURCE_4				(0x4 << 4)
+
+#define SIS_3820_ACQ_B_CLEAR_ON_COPY			0x0
+#define SIS_3820_ACQ_B_NON_CLEARING_MODE		0x1
+
+#define SIS_3820_ACQ_B_DATA_FORMAT_32			0x0
+#define SIS_3820_ACQ_B_DATA_FORMAT_24			0x4
+
+#define SIS_3820_ACQ_B_SELECT_SDRAM_MODE		(0x1 << 12)
+
+#define SIS_3820_ACQ_B_SINGLE_HIT				0x0
+#define SIS_3820_ACQ_B_MULTI_HIT				(0x2 << 28)
+
+#define SIS_3820_FLAG_B_FIFO_THRESH				(0x1 << 17)
 
 #define SIS_3820_A_STATUS(module)				((unsigned long *) (module + SIS_3820_R_STATUS))
 #define SIS_3820_A_IDENT(module)				((unsigned long *) (module + SIS_3820_R_IDENT))
@@ -82,38 +115,8 @@
 #define SIS_3820_OPER_ARM(module)				*SIS_3820_A_KEY_OPER_ARM(module) = 0
 #define SIS_3820_OPER_ENABLE(module)			*SIS_3820_A_KEY_OPER_ENABLE(module) = 0
 #define SIS_3820_OPER_DISABLE(module)			*SIS_3820_A_KEY_OPER_DISABLE(module) = 0
-
-#define SIS_3820_ACQ_B_INPUT_MODE_0				0x0
-#define SIS_3820_ACQ_B_INPUT_MODE_1				(0x1 << 16)
-#define SIS_3820_ACQ_B_INPUT_MODE_2				(0x2 << 16)
-#define SIS_3820_ACQ_B_INPUT_MODE_3				(0x3 << 16)
-#define SIS_3820_ACQ_B_INPUT_MODE_4				(0x4 << 16)
-#define SIS_3820_ACQ_B_INPUT_MODE_5				(0x5 << 16)
-#define SIS_3820_ACQ_B_INPUT_MODE_6				(0x6 << 16)
-
-#define SIS_3820_ACQ_B_OUTPUT_MODE_0				0x0
-#define SIS_3820_ACQ_B_OUTPUT_MODE_1				(0x1 << 20)
-#define SIS_3820_ACQ_B_OUTPUT_MODE_2				(0x2 << 20)
-#define SIS_3820_ACQ_B_OUTPUT_MODE_3				(0x3 << 20)
-
-#define SIS_3820_ACQ_B_LNE_SOURCE_0				0x0
-#define SIS_3820_ACQ_B_LNE_SOURCE_1				(0x1 << 4)
-#define SIS_3820_ACQ_B_LNE_SOURCE_2				(0x2 << 4)
-#define SIS_3820_ACQ_B_LNE_SOURCE_3				(0x3 << 4)
-#define SIS_3820_ACQ_B_LNE_SOURCE_4				(0x4 << 4)
-
-#define SIS_3820_ACQ_B_CLEAR_ON_COPY			0x0
-#define SIS_3820_ACQ_B_NON_CLEARING_MODE		0x1
-
-#define SIS_3820_ACQ_B_DATA_FORMAT_32			0x0
-#define SIS_3820_ACQ_B_DATA_FORMAT_24			0x4
-
-#define SIS_3820_ACQ_B_SELECT_SDRAM_MODE		(0x1 << 12)
-
-#define SIS_3820_ACQ_B_SINGLE_HIT				0x0
-#define SIS_3820_ACQ_B_MULTI_HIT				(0x2 << 28)
-
-#define SIS_3820_FLAG_B_FIFO_THRESH				(0x1 << 17)
+#define SIS_3820_ENABLE_REF_PULSER(module)		*SIS_3820_A_STATUS(module) = SIS_3820_CS_B_REF_PULSER
+#define SIS_3820_DISABLE_REF_PULSER(module)		*SIS_3820_A_STATUS(module) = 0
 
 %%EndOfCode%%
 %%MODULE_DEFS%%
@@ -139,6 +142,7 @@
 					SIS_3820_WRITE_FIFO_THRESH($moduleName, 1);
 					SIS_3820_INHIBIT_COUNTING($moduleName, 0xFFFFFFFF);
 					SIS_3820_DISABLE_COPY($moduleName, 0xFFFFFFFF);
+					SIS_3820_$rpEnaDis_REF_PULSER($moduleName);
 					SIS_3820_OPER_DISABLE($moduleName);
 					sis_3820_module_info($moduleName);
 
