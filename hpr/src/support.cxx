@@ -140,6 +140,16 @@ Bool_t HasFunctions(TH1 * hist)
    }
    return kFALSE;
 };
+//----------------------------------------------------------------------- 
+Bool_t HasGraphs(TVirtualPad * pad)
+{
+   TIter next(pad->GetListOfPrimitives());
+   TObject *obj;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TGraph")) return kTRUE;
+   }
+   return kFALSE;
+};
 
 //----------------------------------------------------------------------- 
 Bool_t is2dim(TH1 * hist)
@@ -2079,4 +2089,59 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
    }  
 //   cout << "Exit rotate_hist" << endl << flush;
    return hrot;
+}
+
+//__________________________________________________________
+
+void SetAxisGraph(TCanvas *c, TGraph *gr)
+{
+   static void *valp[50];
+   Int_t ind = 0;
+   Bool_t ok = kTRUE;
+   static Double_t xl;
+   static Double_t xu;
+   static Int_t ixl;
+   static Int_t ixu;
+   TList *row_lab = new TList(); 
+   TRootCanvas * win = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
+//   TH1 * hist = gr->GetHistogram();
+ //  if (hist == NULL) return;
+   TAxis * xa = gr->GetXaxis();
+//   xl = xa->GetBinLowEdge(TMath::Max(xa->GetFirst(),1));
+//   xu = xa->GetBinUpEdge(TMath::Max(xa->GetLast(),1));
+   xl = xa->GetXmin();
+   xu = xa->GetXmax();
+//   cout << " xl, xu " << xl << " " << xu << endl;
+   if (xa->GetTimeDisplay()) {
+      ixl = (Int_t)xl;
+      ixu = (Int_t)xu;
+      row_lab->Add(new TObjString("PlainIntVal_Xaxis min"));
+      row_lab->Add(new TObjString("PlainIntVal_Xaxis max"));
+      valp[ind++] = &ixl;
+      valp[ind++] = &ixu;
+   } else {
+      row_lab->Add(new TObjString("DoubleValue_Xaxis min"));
+      row_lab->Add(new TObjString("DoubleValue_Xaxis max"));
+      valp[ind++] = &xl;
+      valp[ind++] = &xu;
+   }
+   Int_t itemwidth = 320;
+   ok = GetStringExt("Xmin, Xmax", NULL, itemwidth, win,
+                   NULL, NULL, row_lab, valp,
+                   NULL, NULL);
+   if (ok) {
+      if (xa->GetTimeDisplay()) {
+//         cout << ixl << " " << ixu << endl;
+         xl = (Double_t)ixl;
+         xu = (Double_t)ixu;
+         xa->SetTimeDisplay(kFALSE);
+         xa->SetLimits(xl, xu);
+         xa->SetTimeDisplay(kTRUE);
+      } else {
+         xa->SetLimits(xl, xu);
+      }
+      
+      gPad->Modified();
+      gPad->Update();
+   }
 }

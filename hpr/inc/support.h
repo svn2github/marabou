@@ -62,6 +62,7 @@ extern Bool_t is_a_cut(TObject *);
 extern Bool_t is_a_tree(TObject *);
 extern Bool_t is_a_window(TObject *);
 extern Bool_t HasFunctions(TH1 *);
+extern Bool_t HasGraphs(TVirtualPad *);
 extern Bool_t is2dim(TH1 *);
 extern Bool_t is3dim(TH1 *);
 extern Bool_t is_a_file(const char *);
@@ -127,6 +128,7 @@ Double_t y_orig(Double_t a, Double_t b, Double_t alpha, Double_t x, Double_t y);
 Double_t x_orig(Double_t a, Double_t b, Double_t alpha, Double_t x, Double_t y);
 Stat_t get_bincontent(TH2 * hist, Axis_t x, Axis_t y);
 TH2 * rotate_hist(TH2 * hist, Double_t alpha_deg, Int_t serial_nr = 0);
+void SetAxisGraph(TCanvas *c, TGraph *gr);
 
 inline void nothing();
 #endif

@@ -1549,28 +1549,40 @@ void FitHist::SetUserContours()
               GetListOfFunctions()->FindObject("Pixel"));
      if (oldcol)fSelHist->GetListOfFunctions()->Remove(oldcol);
    }
+	Int_t startIndex = 51;
+	Int_t nofLevels = 50;
+	Int_t colind;
+	Float_t dcol = (Float_t)nofLevels / (Float_t)(ncont -1);
+	Float_t colf = dcol + (Float_t)startIndex;
    for (Int_t i=0; i < ncont; i++) {
       (*colors)[i] = 0;
       Int_t ival = (Int_t)(i * fSelHist->GetMaximum() / ncont);
       (*xyvals)[i] = (Double_t) ival;
-      if (use_old && oldcol && i < old_ncont ) {
-         (*xyvals)[i] = fSelHist->GetContourLevel(i);
-         (*colors)[i] = oldcol->At(i);
-      } else {
+//      if (use_old && oldcol && i < old_ncont ) {
+//         (*xyvals)[i] = fSelHist->GetContourLevel(i);
+//         (*colors)[i] = oldcol->At(i);
+//      } else {
 //    assume colorindeces 51 - 100 ( rainbow colors)
-         Int_t startIndex = 51;
-         Int_t nofLevels = 50;
          if (hp) {
-            startIndex= hp->fStartColorIndex;
-            nofLevels= hp->fNofColorLevels;
+           startIndex= hp->fStartColorIndex;
+           nofLevels= hp->fNofColorLevels;
          } 
+         if (i == 0) {
+            colind =  startIndex;
+         } else if (i == ncont-1) {
+            colind = startIndex + nofLevels - 1;
+         } else {
+            colind = TMath::Nint(colf);
+            colf += dcol;
+         }
+
 //         Int_t colind = Int_t( (i + 1)* (50 / (Float_t)ncont)) + 50;
-         Int_t colind = TMath::Nint( i * ( nofLevels / (Float_t)(ncont))) + startIndex;
-         colind = TMath::Min(colind, startIndex + nofLevels - 1); 
-         cout << "colind " << colind << endl;
+//         Int_t colind = TMath::Nint( i * ( nofLevels / (Float_t)(ncont))) + startIndex;
+//         colind = TMath::Min(colind, startIndex + nofLevels - 1); 
+         if (gDebug > 1) cout << "colind " << colind << endl;
          TColor * col = GetColorByInd(colind);
          if (col) (*colors)[i] = col->GetPixel();
-      }
+//      }
    }
 
    Int_t ret = ucont.Edit((TGWindow*)mycanvas);

@@ -319,6 +319,7 @@ void FitHist::AddCutsToHist(){
 //______________________________________________________________________________________
   
 void FitHist::InitCut(){
+   cHist->cd();
    UpdateCut();
 //   CheckList(fActiveCuts);
    TString cname = fHname;

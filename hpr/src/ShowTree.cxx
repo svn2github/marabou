@@ -92,7 +92,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
 
    cmd = "mypres->ShowLeaf(\"";
    cmd = cmd + fname + "\",\"" + dir + "\",\"" + tname + "\",\"\")";
-   nam = "Show leaves";
+   nam = "Fill histogram";
    fCmdLine->Add(new CmdListEntry(cmd, nam, empty, empty));
 
    cmd = "mypres->MkClass(\"";

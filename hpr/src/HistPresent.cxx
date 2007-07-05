@@ -1672,7 +1672,7 @@ void HistPresent::ShowContour(const char* fname, const char* dir, const char* na
 //   if (fRootFile) fRootFile->Close();
 }
 //________________________________________________________________________________________
-// Show user contour
+// Show a graph
   
 void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name, const char* bp)
 {
@@ -2157,7 +2157,7 @@ void HistPresent::CloseHistLists()
   
 void HistPresent::SelectHist(const char* fname, const char* dir, const char* hname, const char* bp)
 {
-//   cout << fname << " " << hname << endl;
+   cout << fname << " " << hname << endl;
    TString sel = fname;
    sel = sel + " " + hname + " " + dir;
    if (bp) {
@@ -3506,4 +3506,27 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
          }
       }
    }
+}
+//____________________________________________________________
+
+void HistPresent::SuperimposeGraph(TCanvas * current)
+{
+   if (!HasGraphs(gPad)) {
+      if (current) {
+         if ( !HasGraphs(current) ) {
+            cout << "No graph in active pad" << endl;
+            return;
+         } else {
+            current->cd();
+         }
+      }
+   }
+   if (fSelectGraph->GetSize() != 1) {
+      cout << "Plaese select exactly  one graph" << endl;
+      return;
+   }
+   TGraph * gr = GetSelGraphAt(0);
+   if (gr) gr->Draw();
+   gPad->Modified();
+   gPad->Update();
 }

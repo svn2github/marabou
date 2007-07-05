@@ -479,6 +479,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void DinA4Page(Int_t form);
    Int_t GetWindowPosition(Int_t * winx, Int_t * winy);
    Int_t GetMainWidth() {return fMainWidth;};
+   void SuperimposeGraph(TCanvas * = NULL);
 
 ClassDef(HistPresent,0)      // A histogram presenter
 };

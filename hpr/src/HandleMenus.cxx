@@ -121,6 +121,8 @@ enum ERootCanvasCommands {
    kFHAxisRange,
    kFHMagnify,
    kFHSuperimpose,
+   kFHSuperimposeGraph,
+   kFHSetAxisGraph,
    kFHKolmogorov,
    kFHfft,
    kFHSuperimposeScale,
@@ -836,6 +838,12 @@ again:
                   case kFHSuperimpose:
                      fFitHist->Superimpose(0); 
                      break;
+                  case kFHSuperimposeGraph:
+                     fHistPresent->SuperimposeGraph((TCanvas*)fHCanvas); 
+                     break;
+                  case kFHSetAxisGraph:
+                     SetAxisGraph((TCanvas*)fHCanvas, fGraph); 
+                     break;
                   case kFHKolmogorov:
                      fFitHist->KolmogorovTest(); 
                      break;
@@ -1414,6 +1422,11 @@ void HandleMenus::BuildMenus()
    fViewMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
    fViewMenu->AddEntry("Show Line Attr",          kViewLineStyles);
    
+   if (fGraph ) {
+   	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
+      fDisplayMenu->AddEntry("Superimpose selected graph", kFHSuperimposeGraph);
+      fDisplayMenu->AddEntry("Set range of X-axis", kFHSetAxisGraph);
+   }      
    if (fh_menus) {
    	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
    	if (fh_menus) {
@@ -1518,7 +1531,7 @@ void HandleMenus::BuildMenus()
       if(hbrowser)hbrowser->DisplayMenu(fCutsMenu, "cuts.html");
 //      fCutsMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
 //      fCutsMenu->AddEntry("Help On Cuts/Windows",  kFH_Help_Cuts);
-/*
+
       fCascadeMenu1 = new TGPopupMenu(fRootCanvas->GetParent());
       fCascadeMenu1->AddEntry("Pol 0", kFH_CASCADE1_0);
       fCascadeMenu1->AddEntry("Pol 1", kFH_CASCADE1_1);
@@ -1530,7 +1543,7 @@ void HandleMenus::BuildMenus()
       fCascadeMenu1->AddEntry("Pol 7", kFH_CASCADE1_7);
       fCascadeMenu1->AddEntry("Pol 8", kFH_CASCADE1_8);
       fCascadeMenu1->AddEntry("User Formula", kFH_CASCADE1_U);
-*/
+
       fCascadeMenu2 = new TGPopupMenu(fRootCanvas->GetParent());
       fCascadeMenu2->AddEntry("Pol 0", kFH_CASCADE2_0);
       fCascadeMenu2->AddEntry("Pol 1", kFH_CASCADE2_1);
@@ -1544,7 +1557,7 @@ void HandleMenus::BuildMenus()
       fCascadeMenu2->AddEntry("User Formula", kFH_CASCADE2_U);
 
       fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-//      fFitMenu->AddPopup("FitPolyHist",  fCascadeMenu1);
+      fFitMenu->AddPopup("FitPolyHist",  fCascadeMenu1);
       if(is2dim){
          fFitMenu->AddPopup("FitPolyMarks", fCascadeMenu2);
       	fFitMenu->AddSeparator();
