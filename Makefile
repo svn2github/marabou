@@ -26,7 +26,8 @@ include config/Makefile.$(ARCH)
 # for HistPresent only the following modules are needed
 
 MODULES       = build utils gutils \
-                helpbrowser hpr \
+
+#                helpbrowser hpr \
 
 # if offline data analysis in the marabou framework is needed
 
