@@ -11,6 +11,8 @@
 
 %%BeginOfCode%%
 /* bit definitions for VME scaler SIS 3820 */
+#define SIS_3820_CS_B_REF_PULSE					(0x1 << 6)
+
 #define SIS_3820_R_STATUS					0x0L
 #define SIS_3820_R_IDENT					0x4L
 #define SIS_3820_R_IRQSTATUS 				0xCL
@@ -115,9 +117,9 @@
 #define SIS_3820_OPER_ARM(module)				*SIS_3820_A_KEY_OPER_ARM(module) = 0
 #define SIS_3820_OPER_ENABLE(module)			*SIS_3820_A_KEY_OPER_ENABLE(module) = 0
 #define SIS_3820_OPER_DISABLE(module)			*SIS_3820_A_KEY_OPER_DISABLE(module) = 0
-
 #define SIS_3820_ENABLE_REF_PULSER(module)		*SIS_3820_A_STATUS(module) = SIS_3820_CS_B_REF_PULSER
 #define SIS_3820_DISABLE_REF_PULSER(module)		*SIS_3820_A_STATUS(module) = 0
+#define SIS_3820_COUNTER_CLEAR(module)			*SIS_3820_A_KEY_COUNTER_CLEAR(module) = 0
 
 %%EndOfCode%%
 %%MODULE_DEFS%%
@@ -229,6 +231,7 @@
 %S%					SIS_3820_OPER_ENABLE($moduleName);
 %S%					SIS_3820_INHIBIT_COUNTING($moduleName, $unusedChannels);
 %S%					SIS_3820_DISABLE_COPY($moduleName, $unusedChannels);
+%S%					SIS_3820_COUNTER_CLEAR($moduleName);
 %S%					SIS_3820_OPER_ARM($moduleName);
 %FSR%
 %%EndOfCode%%
