@@ -3,13 +3,48 @@
 #
 # Author: Otto stolen from ROOT (Fons Rademakers), 15/9/2000
 
+##### Include path/location macros (result of ./configure) #####
+##### However, if we are building packages or cleaning,    #####
+##### config/Makefile.config isn't made yet - the package  #####
+##### scripts want's to make it them selves - so we don't  #####
 
-##### include path/location macros (result of ./configure) #####
-
+ifeq ($(findstring $(MAKECMDGOALS), maintainer-clean debian redhat),)
 include config/Makefile.config
+endif
+ifeq ($(MAKECMDGOALS),clean)
+include config/Makefile.config
+endif
 
-EXTRA_CFLAGS   += -g -Wno-switch -I$(ROOTSYS)/include
-EXTRA_CXXFLAGS += -g -Wno-switch -I$(ROOTSYS)/include 
+MAKE_VERSION_MAJOR := $(word 1,$(subst ., ,$(MAKE_VERSION)))
+MAKE_VERSION_MINOR := $(shell echo $(word 2,$(subst ., ,$(MAKE_VERSION))) | \
+                              sed 's/\([0-9][0-9]*\).*/\1/')
+MAKE_VERSION_MAJOR ?= 0
+MAKE_VERSION_MINOR ?= 0
+ORDER_ := $(shell test $(MAKE_VERSION_MAJOR) -gt 3 || \
+                  test $(MAKE_VERSION_MAJOR) -eq 3 && \
+                  test $(MAKE_VERSION_MINOR) -ge 80 && echo '|')
+
+##### Include machine dependent macros                     #####
+##### However, if we are building packages or cleaning, we #####
+##### don't include this file since it may screw up things #####
+
+ifeq ($(findstring $(MAKECMDGOALS), maintainer-clean debian redhat),)
+include config/Makefile.$(ARCH)
+endif
+ifeq ($(MAKECMDGOALS),clean)
+include config/Makefile.$(ARCH)
+endif
+
+##### Include library dependencies for explicit linking #####
+
+ifeq ($(EXPLICITLINK),yes)
+include config/Makefile.depend
+endif
+ifneq ($(findstring map, $(MAKECMDGOALS)),)
+include config/Makefile.depend
+endif
+
+
 ##### include machine dependent macros #####
 
 include config/Makefile.$(ARCH)
@@ -17,6 +52,9 @@ include config/Makefile.$(ARCH)
 ##### allow local macros #####
 
 -include MyConfig.mk
+
+EXTRA_CFLAGS   += -g -Wno-switch -I$(ROOTSYS)/include
+EXTRA_CXXFLAGS += -g -Wno-switch -I$(ROOTSYS)/include 
 
 ##### Modules to build #####
 
@@ -26,8 +64,7 @@ include config/Makefile.$(ARCH)
 # for HistPresent only the following modules are needed
 
 MODULES       = build utils gutils \
-
-#                helpbrowser hpr \
+						helpbrowser hpr \
 
 # if offline data analysis in the marabou framework is needed
 
