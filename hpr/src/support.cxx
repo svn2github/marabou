@@ -1034,7 +1034,7 @@ void Canvas2RootFile(HTCanvas * canvas, TGWindow * win)
 {
    TString hname = canvas->GetName();
    hname += ".canvas";
-   Bool_t ok = kTRUE, toggle = kFALSE;
+   Bool_t toggle = kFALSE;
 /*
    TObject *obj;
    hname = GetString("Save canvas with name", hname.Data(), &ok, win);
@@ -2095,6 +2095,17 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
 
 void SetAxisGraph(TCanvas *c, TGraph *gr)
 {
+   TH1 *hist = gr->GetHistogram();
+   if (!hist) {
+      cout << "Graph must be drawn to set axis range" << endl;
+   } else {
+      SetAxisHist(c, hist->GetXaxis());
+   }
+}
+//__________________________________________________________
+
+void SetAxisHist(TCanvas *c, TAxis * xa)
+{
    static void *valp[50];
    Int_t ind = 0;
    Bool_t ok = kTRUE;
@@ -2102,23 +2113,44 @@ void SetAxisGraph(TCanvas *c, TGraph *gr)
    static Double_t xu;
    static Int_t ixl;
    static Int_t ixu;
+   static Int_t tof;
+   static Int_t tofinit;
+   static TString starttime;
+   static TString endtime;
+   static TString timeoffset;
+
    TList *row_lab = new TList(); 
    TRootCanvas * win = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
 //   TH1 * hist = gr->GetHistogram();
  //  if (hist == NULL) return;
-   TAxis * xa = gr->GetXaxis();
-//   xl = xa->GetBinLowEdge(TMath::Max(xa->GetFirst(),1));
-//   xu = xa->GetBinUpEdge(TMath::Max(xa->GetLast(),1));
-   xl = xa->GetXmin();
-   xu = xa->GetXmax();
+//   TAxis * xa = hist->GetXaxis();
+   xl = xa->GetBinLowEdge(TMath::Max(xa->GetFirst(),1));
+   xu = xa->GetBinUpEdge(TMath::Min(xa->GetLast(),xa->GetNbins()));
+//   xl = xa->GetXmin();
+//   xu = xa->GetXmax();
 //   cout << " xl, xu " << xl << " " << xu << endl;
    if (xa->GetTimeDisplay()) {
       ixl = (Int_t)xl;
       ixu = (Int_t)xu;
-      row_lab->Add(new TObjString("PlainIntVal_Xaxis min"));
-      row_lab->Add(new TObjString("PlainIntVal_Xaxis max"));
-      valp[ind++] = &ixl;
-      valp[ind++] = &ixu;
+      tof = (Int_t)gStyle->GetTimeOffset();
+      tofinit = tof;
+      ixl += tof;
+      ixu += tof;
+ //     cout << " ixl, ixu, tof " << ixl << " " << ixu << " " << tof << endl;
+      ConvertTimeToString(ixl, xa, &starttime);
+      ConvertTimeToString(ixu, xa, &endtime);
+      ConvertTimeToString(tof, xa, &timeoffset);
+      row_lab->Add(new TObjString("StringValue_Start time"));
+      row_lab->Add(new TObjString("StringValue_End time"));
+      row_lab->Add(new TObjString("StringValue_Time Offset"));
+      valp[ind++] = &starttime;
+      valp[ind++] = &endtime;
+      valp[ind++] = &timeoffset;
+
+//      row_lab->Add(new TObjString("PlainIntVal_Xaxis min"));
+//      row_lab->Add(new TObjString("PlainIntVal_Xaxis max"));
+//      valp[ind++] = &ixl;
+//      valp[ind++] = &ixu;
    } else {
       row_lab->Add(new TObjString("DoubleValue_Xaxis min"));
       row_lab->Add(new TObjString("DoubleValue_Xaxis max"));
@@ -2131,17 +2163,65 @@ void SetAxisGraph(TCanvas *c, TGraph *gr)
                    NULL, NULL);
    if (ok) {
       if (xa->GetTimeDisplay()) {
-//         cout << ixl << " " << ixu << endl;
-         xl = (Double_t)ixl;
-         xu = (Double_t)ixu;
+         xl = ConvertToTimeOrDouble(starttime.Data(), xa);
+         xu = ConvertToTimeOrDouble(endtime.Data(), xa);
+         if (xl < 0 || xu < 0) return;
+         tof = (Int_t)ConvertToTimeOrDouble(timeoffset.Data(), xa);
+         if  (tof > 0)
+            gStyle->SetTimeOffset((Double_t)tof);
+ //        cout << xl << " " << xu << endl;
+         if (gStyle->GetTimeOffset() != 0) {
+            xl -= tofinit;
+            xu -= tofinit;
+         }
          xa->SetTimeDisplay(kFALSE);
-         xa->SetLimits(xl, xu);
+         Int_t bin1 = xa->FindBin(xl);
+         Int_t bin2 = xa->FindBin(xu);
+         xa->SetRange(bin1, bin2);
+//         xa->SetLimits(xl, xu);
          xa->SetTimeDisplay(kTRUE);
       } else {
-         xa->SetLimits(xl, xu);
+         Int_t bin1 = xa->FindBin(xl);
+         Int_t bin2 = xa->FindBin(xu);
+         xa->SetRange(bin1, bin2);
+//         xa->SetLimits(xl, xu);
       }
-      
-      gPad->Modified();
-      gPad->Update();
    }
+   c->cd();
+   gPad->Modified();
+   gPad->Update();
 }
+//_______________________________________________________________________________________
+
+void ConvertTimeToString(time_t t, TAxis * a, TString * string)
+{
+   if (t == 0) *string = "";
+   TDatime dt;
+   dt.Set(t);
+   *string = dt.AsSQLString();
+} 
+//_______________________________________________________________________________________
+
+Double_t ConvertToTimeOrDouble(const char * string, TAxis * a)
+{
+   Int_t yy, mm, dd, hh, mi, ss;
+   TString s(string);
+   if (s.Length() < 2) return 0;
+   if (sscanf(string, "%d-%d-%d %d:%d:%d", &yy, &mm, &dd, &hh, &mi, &ss) != 6) {
+      cout << setblue << " Trying to correct time format: " << s << setblack << endl;
+      if (s.Contains('-') && !s.Contains(':')) {
+        s += " 0:0:0";
+      } else {
+         cout << setred << "Wrong time format: " << s << endl << "must be: yy-mm-dd hh:mm:ss" << setblack << endl;
+         return -1;
+      }
+   }
+   if (sscanf(s.Data(), "%d-%d-%d %d:%d:%d", &yy, &mm, &dd, &hh, &mi, &ss) != 6) {
+      cout << setred << "Cant correct time format: " << s << endl << "must be: yy-mm-dd hh:mm:ss" << setblack << endl;
+      return -1;
+   }
+
+   TDatime dt;
+   dt.Set(s.Data());
+   return dt.Convert();
+} 

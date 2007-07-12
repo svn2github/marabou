@@ -119,6 +119,9 @@ enum ERootCanvasCommands {
    kFHExpand,
    kFHEntire,
    kFHAxisRange,
+   kFHXaxisRange,
+   kFHYaxisRange,
+   kFHZaxisRange,
    kFHMagnify,
    kFHSuperimpose,
    kFHSuperimposeGraph,
@@ -814,8 +817,14 @@ again:
                   case kFHEntire:
                      fFitHist->Entire(); 
                      break;
-                  case kFHAxisRange:
-                     fFitHist->SetAxisRange(); 
+                  case kFHXaxisRange:
+                     fFitHist->SetXaxisRange(); 
+                     break;
+                  case kFHYaxisRange:
+                     fFitHist->SetYaxisRange(); 
+                     break;
+                  case kFHZaxisRange:
+                     fFitHist->SetZaxisRange(); 
                      break;
                   case kFHRebinOne:
                      fFitHist->RebinOne(); 
@@ -1435,7 +1444,11 @@ void HandleMenus::BuildMenus()
 
       	fDisplayMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
       	fDisplayMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
-       	fDisplayMenu->AddEntry("Set Axis Range",      kFHAxisRange     );
+       	fDisplayMenu->AddEntry("Set X Axis Range",      kFHXaxisRange     );
+         if (fFitHist->GetSelHist()->GetDimension() > 1)
+       	   fDisplayMenu->AddEntry("Set Y Axis Range",      kFHYaxisRange     );
+         if (fFitHist->GetSelHist()->GetDimension() > 2)
+      	   fDisplayMenu->AddEntry("Set Z Axis Range",      kFHZaxisRange     );
      	   fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
       	if (is2dim) {
       	   fDisplayMenu->AddSeparator();

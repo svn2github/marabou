@@ -11,6 +11,8 @@
 #include "CalibrationDialog.h"
 #include "Save2FileDialog.h"
 #include "FhPeak.h"
+#include "FhPeak.h"
+#include "SetColor.h"
 
 #include <iostream>
 
@@ -47,36 +49,45 @@ static const Char_t helptext[] =
 "This widget is used to calibrate a 1-dim histogram \n\
 The procedure to use previously fitted peaks is as follows:\n\
   - Use the \"Fit Gaussian (with tail)\" dialog to perform \n\
-    the required fits (Activate the Option \"Add all functions\n\
-  - If this is done before the \"CalibrationDialog\" is invoked\n\
-    the table in  the \"CalibrationDialog\" will have as many\n\
-    rows as peaks are defined. The default number is 3\n\
+    the required fits. The Option \"Add all functions\"\n\
+    must be activated.\n\
+  - This is done before the \"CalibrationDialog\" is invoked.\n\
+    In that cas the table in the \"CalibrationDialog\" \n\
+    will have as many rows as peaks are defined. \n\
+    The default number is 3\n\
   - Invoke this widget (\"CalibrationDialog\") \n\
     Execute (Click) \"Update Peaklist\"\n\
   - Fields \"Mean\" and \"Errors\" of the table should now\n\
-    be filled. Complete / modify the table at least  with\n\
+    be filled. Complete / modify the table at least with\n\
     \"Nom Val\" (Nominal values)\n\
     This can be done from \"Set Nominal Vals\", this menu\n\
     presents the lines of the calibration sources 60Co, 88Eu\n\
-    and 88Y. THe selected values must correspond to the fitted\n\
+    and 88Y. The selected values must correspond to the\n\
+    fitted ones\n\
 \n\
-  - Execute \"Calculate Function\", the function is drawn\n\
-    in a seperate canvas.\n\
-  - If the result is reasonable possibly modify the parameters\n\
-    for the \"Calibrated Hist\"\n\
-  - Execute \"Fill Calibrated Hist\". A new histogram will be created\n\
-    and filled according to the calibration function.\n\
+  - Execute \"Calculate Function\": A TGraphErrors is created \n\
+    using the peak and nominal values. The function is\n\
+    fitted to this graph to evaluate the parameters\n\
+  - The parameters for the \"Calibrated Hist\" (Nbins,\n\
+    Xlow, Xup) should be adjusted to reasonable values.\n\
+  - Execute \"Fill Calibrated Hist\". A new histogram will be\n\
+    created and filled according to the calibration function\n\
     Note: Each entry in the original histogram is randomly \n\
           shifted within its bin before the calibration is\n\
-          applied to avoid bining effects.\n\
+          applied to avoid binning effects.\n\
 \n\
-- The Calibration function may be any legal \"TFormala\"\n\
+- The Calibration function may be any legal \"TFormula\"\n\
   in practice polynomials of 1. or 2. degree (pol1, pol2)\n\
   are used\n\
+\n\
+- For test purposes mainly a bare formula containing all \n\
+  needed parameters may be given, e.g: 200 + 0.7*x + 0.1*x*x\n\
+\n\
 - Calibration functions may be saved to and restored from\n\
   a root file. Use \"Save Cal function\" to store it\n\
   and \"Get function from file\" to read from file.\n\
 ";
+
    if (maxPeaks <= 0) {
       fMaxPeaks = 3;
    } else if (maxPeaks <= MAXPEAKS) {
@@ -401,9 +412,17 @@ void CalibrationDialog::SaveFunction()
 
 void CalibrationDialog::FillCalibratedHist()
 {
+   Bool_t bare_function = kFALSE;
    if (fCalFunc == NULL) {
-      cout << "Calculate function first" << endl;
-      return;
+      cout << "Try to use bare formula: " << fFormula << endl;
+      fCalFunc = new TF1(fFuncName,(const char*)fFormula);
+      if (fCalFunc->GetNdim() == 0) {
+         cout << setred << "Formula invalid" << setblack<< endl;
+         delete fCalFunc;
+         fCalFunc = NULL;
+         return;
+      }
+      bare_function = kTRUE;
    }
    TString hname_cal;
    hname_cal = fSelHist->GetName();
@@ -458,6 +477,10 @@ void CalibrationDialog::FillCalibratedHist()
 #ifdef MARABOUVERS
    }
 #endif
+   if (bare_function) {
+      delete fCalFunc;
+      fCalFunc = NULL;
+   }
 }
 //____________________________________________________________________________________ 
 /*

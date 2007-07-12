@@ -1,4 +1,7 @@
 // #include "TCanvas.h"
+#include "TROOT.h"
+#include "TStyle.h"
+#include "TCanvas.h"
 #include "TH1.h"
 #include "TF1.h"
 #include "TEnv.h"
@@ -1454,7 +1457,7 @@ void FitOneDimDialog::SetFittingOptions()
    row_lab->Add(new TObjString("CheckButton_Use Integral of function in bin"));
    row_lab->Add(new TObjString("CheckButton_Dont draw result function"));
    row_lab->Add(new TObjString("CheckButton_Add all fitted functions to hist"));
-   row_lab->Add(new TObjString("CheckButton_Print covariance mattrix"));
+   row_lab->Add(new TObjString("CheckButton_Print covariance matrix"));
 
    valp[ind++] = &fFitOptLikelihood    ;
    valp[ind++] = &fFitOptQuiet         ;

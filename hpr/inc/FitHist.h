@@ -134,7 +134,9 @@ public:
    TH1* GetOneHist(); 
    Bool_t IsThereAnyHist(); 
    void Entire();                  // 
-   void SetAxisRange();                  // 
+   void SetXaxisRange();                  // 
+   void SetYaxisRange();                  // 
+   void SetZaxisRange();                  // 
    void ProfileX();                  // 
    void ProfileY();                  // 
    void RebinOne();                  // 

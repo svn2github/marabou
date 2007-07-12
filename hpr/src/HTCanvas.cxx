@@ -207,7 +207,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //*-*                ===================
 //  Handle input events, like button up/down in current canvas.
 //
-
+//  if (event > 0) return;
 //OS start
    static Int_t pxB1down, pyB1down;
    static Bool_t in_edit = kFALSE;
@@ -300,7 +300,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    case kButton1Down:
 
-//      cout  << px << " " << py << " " << fSelected << endl;
+//      cout << "kButton1Down "  << px << " " << py << " " << fSelected << endl;
      // find pad in which input occured
       pad = Pick(px, py, prevSelObj);
       if (!pad) return;
@@ -526,13 +526,15 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    case kButton3Down:
    {
+ //     cout << "kButton3Down "  << px << " " << py << " " << fSelected << endl;
       // popup context menu
       pad = Pick(px, py, prevSelObj);
       if (!pad) return;
+      if (!fDoubleBuffer) FeedbackMode(kFALSE);
 
       if (fContextMenu && !fSelected->TestBit(kNoContextMenu) &&
           !pad->TestBit(kNoContextMenu) && !TestBit(kNoContextMenu)) {
-          fSelected->ExecuteEvent(event, px, py);
+ //         fSelected->ExecuteEvent(event, px, py);
           fContextMenu->Popup(px, py, fSelected, this, pad);
       }
 
@@ -542,8 +544,9 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       break;
 
    case kButton3Up:
-      if (fSelected) fSelected->ExecuteEvent(event, px, py);
-      if (GetAutoExec())        RunAutoExec();
+      if (!fDoubleBuffer) FeedbackMode(kTRUE);
+//      if (fSelected) fSelected->ExecuteEvent(event, px, py);
+ //     if (GetAutoExec())        RunAutoExec();
       break;
 
    case kButton3Double:
@@ -585,6 +588,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       ObjectMoved(px, py, fSelected);
    }
 }
+
 //______________________________________________________________________________
 void HTCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selected)
 {

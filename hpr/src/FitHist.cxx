@@ -538,27 +538,6 @@ void FitHist::RestoreDefaults()
    if (lastset)
       delete lastset;
 }
-//_______________________________________________________________________________________
-
-#include "time.h"
-
-void ConvertTimeToString(time_t t, TAxis * a, TString * string)
-{
-   struct tm * utctis;
-   char CHLABEL[256];
-   char *LABEL;
-   LABEL  = &CHLABEL[0];
-   TString tf(a->GetTimeFormat());
-   Int_t itoff = tf.Index("%F");
-   if (itoff > 0){
-         tf.Resize(itoff);
-   }
-   utctis = gmtime(&t);
-//      cout << "time " << t <<  " tf.Data() " <<  tf.Data() << endl;
-   Int_t nchar = strftime(LABEL, 256, tf.Data(), utctis);
-   if (nchar <= 0)*string = "xxx";
-   else           *string = LABEL;
-} 
 //______________________________________________________________________________________
 
 void FitHist::handle_mouse()
@@ -1938,174 +1917,22 @@ void AddAsString(Double_t x, TAxis * a, Int_t  prec, TOrdCollection *entries)
 } 
 //_______________________________________________________________________________________
 
-Double_t ConvertToTimeOrDouble(const char * string, TAxis * a)
+void FitHist::SetXaxisRange()
 {
-//   tm ts;
-//   ts.tm_sec = 0;
-//   ts.tm_min = 0;
-//   ts.tm_hour = 0;
-//   ts.tm_year = 70;
-//   ts.tm_mon = 0;
-//   ts.tm_mday = 1;
-//     cout << "cvtt: " <<  string << endl;
-     time_t t = 0;
-     tm * ts = localtime(&t); 
-   
-   if (a && a->GetTimeDisplay()) {
-      TString tf(a->GetTimeFormat());
-      Int_t itoff = tf.Index("%F");
-      if (itoff > 0)tf.Resize(itoff);
-      strptime(string, tf.Data(), ts);
-//      cout << "time: " <<  mktime(ts) << endl;
-      time_t result = mktime(ts) + ts->tm_gmtoff;
-      return (Double_t)result;
-//      return (Double_t)mktime(&ts);
-
-   } else {
-      Double_t x = 0;
-      TMrbString s(string);		// make it an extended TMrbString
-      s.ToDouble(x);					// convert to double
-      return x;
-   }
-} 
+   SetAxisHist(cHist, fSelHist->GetXaxis());
+}
 //_______________________________________________________________________________________
 
-void FitHist::SetAxisRange()
+void FitHist::SetYaxisRange()
 {
-   Int_t n = fSelHist->GetDimension();
-   TAxis * xa = fSelHist->GetXaxis();
-   TAxis * ya = fSelHist->GetYaxis();
-   TAxis * za = NULL;
-   Int_t ncols = 2; 
-   Int_t nrows = 2;
-   Int_t nval = 4;
-   TOrdCollection *row_lab = new TOrdCollection();
-   TOrdCollection *col_lab = new TOrdCollection();
-   TOrdCollection *entries = new TOrdCollection();
-   col_lab->Add(new TObjString("Min"));
-   col_lab->Add(new TObjString("Max"));
+   SetAxisHist(cHist, fSelHist->GetYaxis());
+}
+//_______________________________________________________________________________________
 
-   row_lab->Add(new TObjString("X axis"));
-   row_lab->Add(new TObjString("Y axis"));
-   if (n > 1) {
-      nval = 6;
-      nrows = 3;
-      row_lab->Add(new TObjString("Z axis"));
-      za = fSelHist->GetZaxis();
-   }
-
-   Int_t  precision = 5;
-   TArrayD xyvals(nval);
-
-   if (n == 1) {
-      xyvals[0] = xa->GetBinLowEdge(TMath::Max(xa->GetFirst(),1));
-      AddAsString(xyvals[0], xa, precision, entries); 
-      xyvals[1] = fSelHist->GetMinimum();
-      AddAsString(xyvals[1], NULL, precision, entries); 
-      xyvals[2] = xa->GetBinUpEdge(xa->GetLast());
-      AddAsString(xyvals[2], xa, precision, entries); 
-      xyvals[3] = fSelHist->GetMaximum();
-      AddAsString(xyvals[3], NULL, precision, entries); 
-   } else if (n == 2) { 
-      xyvals[0] = xa->GetBinLowEdge(TMath::Max(xa->GetFirst(),1));
-      AddAsString(xyvals[0], xa, precision, entries); 
-      xyvals[1] = ya->GetBinLowEdge(TMath::Max(ya->GetFirst(),1));
-      AddAsString(xyvals[1], ya, precision, entries); 
-      xyvals[2] = fSelHist->GetMinimum();
-      AddAsString(xyvals[2], NULL, precision, entries); 
-      xyvals[3] = xa->GetBinUpEdge(xa->GetLast());
-      AddAsString(xyvals[3], xa, precision, entries); 
-      xyvals[4] = ya->GetBinUpEdge(ya->GetLast());
-      AddAsString(xyvals[4], ya, precision, entries); 
-      xyvals[5] = fSelHist->GetMaximum();
-      AddAsString(xyvals[5], NULL, precision, entries); 
-   } else { 
-      za = fSelHist->GetZaxis();
-      xyvals[0] = xa->GetBinLowEdge(TMath::Max(xa->GetFirst(),1));
-      AddAsString(xyvals[0], xa, precision, entries); 
-      xyvals[1] = ya->GetBinLowEdge(TMath::Max(ya->GetFirst(),1));
-      AddAsString(xyvals[1], ya, precision, entries); 
-      xyvals[2] = za->GetBinLowEdge(TMath::Max(za->GetFirst(),1));
-      AddAsString(xyvals[2], ya, precision, entries); 
-      xyvals[3] = xa->GetBinUpEdge(xa->GetLast());
-      AddAsString(xyvals[3], xa, precision, entries); 
-      xyvals[4] = ya->GetBinUpEdge(ya->GetLast());
-      AddAsString(xyvals[4], ya, precision, entries); 
-      xyvals[5] = za->GetBinUpEdge(za->GetLast());
-      AddAsString(xyvals[5], ya, precision, entries); 
-   }      
-   
-   // show values to caller and let edit
-   Int_t ret = 0, itemwidth = 120;
-//   TGMrbTableOfDoubles(mycanvas, &ret, "Axis range", itemwidth,
-//                       ncols, nrows, xyvals, precision, NULL, row_lab);
-   new TGMrbTableFrame(mycanvas, &ret, "Axis range", itemwidth,
-                       ncols, nrows, entries, NULL, row_lab);
-   if (ret >= 0) {
-	   TObjString * os;
-      Axis_t bwxl2 = 0.5 * xa->GetBinWidth(xa->GetFirst());
-      Axis_t bwxu2 = 0.5 * xa->GetBinWidth(xa->GetLast());
-      if (n == 1) {
-         os = (TObjString *) entries->At(0);
-         xyvals[0] = ConvertToTimeOrDouble(os->GetString().Data(), xa);
-      cout << xyvals[0]<< endl;
-         os = (TObjString *) entries->At(2);
-         xyvals[2] = ConvertToTimeOrDouble(os->GetString().Data(), xa);
-         os = (TObjString *) entries->At(1);
-         xyvals[1] = ConvertToTimeOrDouble(os->GetString().Data(), NULL);
-         os = (TObjString *) entries->At(3);
-         xyvals[3] = ConvertToTimeOrDouble(os->GetString().Data(), NULL);
-         xa->SetRangeUser(xyvals[0] + bwxl2, xyvals[2]- bwxu2);
-         ya->SetRangeUser(xyvals[1], xyvals[3]);
-      } else if (n == 2) {
-         Axis_t bwyl2 = 0.5 * ya->GetBinWidth(xa->GetFirst());
-         Axis_t bwyu2 = 0.5 * ya->GetBinWidth(xa->GetLast());
-         os = (TObjString *) entries->At(0);
-         xyvals[0] = ConvertToTimeOrDouble(os->GetString().Data(), xa);
-         os = (TObjString *) entries->At(1);
-         xyvals[1] = ConvertToTimeOrDouble(os->GetString().Data(), ya);
-         os = (TObjString *) entries->At(2);
-         xyvals[2] = ConvertToTimeOrDouble(os->GetString().Data(), NULL);
-
-         os = (TObjString *) entries->At(3);
-         xyvals[3] = ConvertToTimeOrDouble(os->GetString().Data(), xa);
-         os = (TObjString *) entries->At(4);
-         xyvals[4] = ConvertToTimeOrDouble(os->GetString().Data(), ya);
-         os = (TObjString *) entries->At(5);
-         xyvals[5] = ConvertToTimeOrDouble(os->GetString().Data(), NULL);
-         
-         xa->SetRangeUser(xyvals[0] + bwxl2, xyvals[3] - bwxu2);
-         ya->SetRangeUser(xyvals[1] + bwyl2, xyvals[4] - bwyu2);
-         za->SetRangeUser(xyvals[2], xyvals[5]);
-      } else {
-         Axis_t bwyl2 = 0.5 * ya->GetBinWidth(xa->GetFirst());
-         Axis_t bwyu2 = 0.5 * ya->GetBinWidth(xa->GetLast());
-         Axis_t bwzl2 = 0.5 * za->GetBinWidth(xa->GetFirst());
-         Axis_t bwzu2 = 0.5 * za->GetBinWidth(xa->GetLast());
-         os = (TObjString *) entries->At(0);
-         xyvals[0] = ConvertToTimeOrDouble(os->GetString().Data(), xa);
-         os = (TObjString *) entries->At(1);
-         xyvals[1] = ConvertToTimeOrDouble(os->GetString().Data(), ya);
-         os = (TObjString *) entries->At(2);
-         xyvals[2] = ConvertToTimeOrDouble(os->GetString().Data(), za);
-
-         os = (TObjString *) entries->At(3);
-         xyvals[3] = ConvertToTimeOrDouble(os->GetString().Data(), za);
-         os = (TObjString *) entries->At(4);
-         xyvals[4] = ConvertToTimeOrDouble(os->GetString().Data(), ya);
-         os = (TObjString *) entries->At(5);
-         xyvals[5] = ConvertToTimeOrDouble(os->GetString().Data(), za);
-         
-         xa->SetRangeUser(xyvals[0] + bwxl2, xyvals[3] - bwxu2);
-         ya->SetRangeUser(xyvals[1] + bwyl2, xyvals[4] - bwyu2);
-         za->SetRangeUser(xyvals[2] + bwzl2, xyvals[5] - bwzu2);
-      }    }
-   delete row_lab;
-   delete col_lab;
-   delete entries;
-   cHist->Modified();
-   cHist->Update();
-};
+void FitHist::SetZaxisRange()
+{
+   SetAxisHist(cHist, fSelHist->GetZaxis());
+}
 //_______________________________________________________________________________________
 
 void FitHist::Set2Marks()

@@ -23,6 +23,7 @@
 #include "TGraphErrors.h"
 #include "TPolyLine.h"
 #include "HistPresent.h"
+#include "time.h"
 //#include "TMrbStatistics.h"
 
 namespace std {} using namespace std;
@@ -129,6 +130,9 @@ Double_t x_orig(Double_t a, Double_t b, Double_t alpha, Double_t x, Double_t y);
 Stat_t get_bincontent(TH2 * hist, Axis_t x, Axis_t y);
 TH2 * rotate_hist(TH2 * hist, Double_t alpha_deg, Int_t serial_nr = 0);
 void SetAxisGraph(TCanvas *c, TGraph *gr);
+void SetAxisHist(TCanvas *c, TAxis *a);
+void ConvertTimeToString(time_t t, TAxis * a, TString * string);
+Double_t ConvertToTimeOrDouble(const char * string, TAxis * a);
 
 inline void nothing();
 #endif
