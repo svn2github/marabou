@@ -24,9 +24,9 @@
 
 									/* init module $moduleName in $modulePosition */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
-					CIO_CTRL_R2B($moduleName, F(24), A(10));	/* disable input */
-					CIO_CTRL_R2B($moduleName, F(24), A(11));	/* disable requests */
-					CIO_CTRL_R2B($moduleName, F(24), A(1)); 	/* disable addr counter */
+					CIO_CTRL2_R2B($moduleName, F(24), A(10));	/* disable input */
+					CIO_CTRL2_R2B($moduleName, F(24), A(11));	/* disable requests */
+					CIO_CTRL2_R2B($moduleName, F(24), A(1)); 	/* disable addr counter */
 					CIO_WRITE_R2B($moduleName, F(16), A(2), 0L);	/* clear output reg */
 					CIO_CTRL_R2B($moduleName, F(10), A(14));	/* clear lam */
 					CIO_WRITE_R2B($moduleName, F(23), A(9), 077L);	/* clear status */
@@ -41,9 +41,9 @@
 
 %%BeginOfCode%%
 									/* clear module $moduleName in $modulePosition */
-					CIO_CTRL_R2B($moduleName, F(24), A(10));	/* disable input */
-					CIO_CTRL_R2B($moduleName, F(24), A(11));	/* disable requests */
-					CIO_CTRL_R2B($moduleName, F(24), A(1)); 	/* disable addr counter */
+					CIO_CTRL2_R2B($moduleName, F(24), A(10));	/* disable input */
+					CIO_CTRL2_R2B($moduleName, F(24), A(11));	/* disable requests */
+					CIO_CTRL2_R2B($moduleName, F(24), A(1)); 	/* disable addr counter */
 					CIO_WRITE_R2B($moduleName, F(16), A(2), 0L);	/* clear output reg */
 					CIO_CTRL_R2B($moduleName, F(10), A(14));	/* clear lam */
 					CIO_WRITE_R2B($moduleName, F(23), A(9), 077L);	/* clear status */
@@ -80,8 +80,8 @@
 					CIO_CTRL_R2B($moduleName, F(10), A(14));	/* clear lam */
 					CIO_WRITE_R2B($moduleName, F(23), A(9), 044L);	/* clear test & request bits */
 					CIO_WRITE_R2B($moduleName, F(16), A(2), 0L);	/* clear output reg */
-					CIO_CTRL_R2B($moduleName, F(26), A(11));	/* enable requests */
-					CIO_CTRL_R2B($moduleName, F(26), A(10));	/* enable input */
+					CIO_CTRL2_R2B($moduleName, F(26), A(11));	/* enable requests */
+					CIO_CTRL2_R2B($moduleName, F(26), A(10));	/* enable input */
 					CIO_WRITE_R2B($moduleName, F(19), A(9), 020L);	/* set adc bit */
 %%EndOfCode%%
 %%START_ACQUISITION%%	
@@ -94,8 +94,8 @@
 %%BeginOfCode%%
 														/* stop $moduleName / $chnName */
 					CIO_WRITE_R2B($moduleName, F(23), A(9), 020L);	/* clear adc bit */
-					CIO_CTRL_R2B($moduleName, F(24), A(10));	/* disable input */
-					CIO_CTRL_R2B($moduleName, F(24), A(11));	/* disable requests */
+					CIO_CTRL2_R2B($moduleName, F(24), A(10));	/* disable input */
+					CIO_CTRL2_R2B($moduleName, F(24), A(11));	/* disable requests */
 					CIO_WRITE_R2B($moduleName, F(23), A(9), 044L);	/* clear test & request bits */
 					CIO_WRITE_R2B($moduleName, F(16), A(2), 0L);	/* clear output reg */
 %%EndOfCode%%
@@ -111,10 +111,10 @@
 int $mnemoLC_set_dwin(volatile unsigned long * smdw, unsigned int lthr, unsigned int uthr) {	/* set digital window limits */
 	register int i;
 	register unsigned long wdwbit = 1L << 13;		/* 'band active' bit */
-	CIO_CTRL_R2B(smdw, F(24), A(10));	/* disable input */
-	CIO_CTRL_R2B(smdw, F(24), A(11));	/* disable requests */
-	CIO_CTRL_R2B(smdw, F(24), A(1)); 	/* stop addr counter */
-	CIO_CTRL_R2B(smdw, F(26), A(1)); 	/* start addr counter */
+	CIO_CTRL2_R2B(smdw, F(24), A(10));	/* disable input */
+	CIO_CTRL2_R2B(smdw, F(24), A(11));	/* disable requests */
+	CIO_CTRL2_R2B(smdw, F(24), A(1)); 	/* stop addr counter */
+	CIO_CTRL2_R2B(smdw, F(26), A(1)); 	/* start addr counter */
 	for (i = 0; i < lthr; i++) CIO_WRITE_R2B(smdw, F(16), A(0), 0L);
 	for (i = lthr; i <= uthr; i++) CIO_WRITE_R2B(smdw, F(16), A(0), wdwbit);
 	for (i > uthr; i < 8191; i++) CIO_WRITE_R2B(smdw, F(16), A(0), 0L);

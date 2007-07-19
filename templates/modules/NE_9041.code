@@ -93,8 +93,8 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-					CIO_CTRL_R2B($moduleName, F(26), A(0)); 		/* enable LAM */
-					CIO_CTRL_R2B($moduleName, F(26), A(1));
+					CIO_CTRL2_R2B($moduleName, F(26), A(0)); 		/* enable LAM */
+					CIO_CTRL2_R2B($moduleName, F(26), A(1));
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -104,8 +104,8 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-					CIO_CTRL_R2B($moduleName, F(24), A(0)); 		/* disable LAM */
-					CIO_CTRL_R2B($moduleName, F(24), A(1));
+					CIO_CTRL2_R2B($moduleName, F(24), A(0)); 		/* disable LAM */
+					CIO_CTRL2_R2B($moduleName, F(24), A(1));
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 

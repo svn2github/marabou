@@ -69,23 +69,23 @@
 %%STORE_DATA%% 
 
 %%BeginOfCode%%
-					CIO_CTRL_R2B($moduleName, F(26), A(5 + $subDevice));	/* enable camac mode: F26.A5/A6 */
+					CIO_CTRL2_R2B($moduleName, F(26), A(5 + $subDevice));	/* enable camac mode: F26.A5/A6 */
 					CIO_CTRL_R2B($moduleName, F(9 + $subDevice), A(0));	/* reset addr counter */
 					CIO_CTRL_R2B($moduleName, F(9 + $subDevice), A(1));	/* reset data accept counter */
-					CIO_CTRL_R2B($moduleName, F(24), A(5 + $subDevice));	/* disable camac mode: F24.A5/A6 */
+					CIO_CTRL2_R2B($moduleName, F(24), A(5 + $subDevice));	/* disable camac mode: F24.A5/A6 */
 %%EndOfCode%%
 %%CLEAR_MODULE%%
 
 %%BeginOfCode%%
 												/* read $moduleName (subdev $subDevice) in $modulePosition */
-					CIO_CTRL_R2B($moduleName, F(26), A(5 + $subDevice));	/* enable camac mode: F26.A5/A6 */
+					CIO_CTRL2_R2B($moduleName, F(26), A(5 + $subDevice));	/* enable camac mode: F26.A5/A6 */
 					wc = CIO_READ_R2B($moduleName, F(2 + $subDevice), A(1));	/* read & clear */
 					wc &= 0xfff;									/* data accept count: F2/F3.A1 */
 %%EndOfCode%%
 %%SETUP_READOUT%%	
 
 %%BeginOfCode%%
-					CIO_CTRL_R2B($moduleName, F(24), A(5 + $subDevice));	/* disable camac mode: F26.A5/A6 */
+					CIO_CTRL2_R2B($moduleName, F(24), A(5 + $subDevice));	/* disable camac mode: F26.A5/A6 */
 %%EndOfCode%%
 %%FINISH_READOUT%%	
 
@@ -113,10 +113,10 @@
 int $mnemoLC_init(volatile unsigned long * adcd, int subdev, long thresh) {	/* initialize flash adc */
 	register int i;
 	CIO_CTRL_R2B(adcd, F(9), A(15));						/* clear module */
-	CIO_CTRL_R2B(adcd, F(26), A(5 + subdev));				/* enable camac mode: F26.A5/A6 */
+	CIO_CTRL2_R2B(adcd, F(26), A(5 + subdev));				/* enable camac mode: F26.A5/A6 */
 	CIO_CTRL_R2B(adcd, F(9 + subdev * 2), A(0));			/* reset addr counter: F9/F11.A0 */
 	for (i = 0; i < 2048; i++) CIO_WRITE_R2B(adcd, F(16 + subdev), A(4), thresh);	/* write threshold: F16/F17.A4 */
-	CIO_CTRL_R2B(adcd, F(24), A(5 + subdev));				/* disable camac mode: F24.A5/A6 */
+	CIO_CTRL2_R2B(adcd, F(24), A(5 + subdev));				/* disable camac mode: F24.A5/A6 */
 	return(1);
 }
 

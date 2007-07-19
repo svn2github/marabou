@@ -89,7 +89,7 @@
 %%START_ACQUISITION%%
 
 %%BeginOfCode%%
-					CIO_CTRL_R2B($moduleName, F(26), A(4));	/* enable xfer */
+					CIO_CTRL2_R2B($moduleName, F(26), A(4));	/* enable xfer */
 %%EndOfCode%%
 %%START_ACQUISITION_GROUP%%
 

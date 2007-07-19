@@ -99,6 +99,8 @@
 // Purpose:        Execute a CONTROL cnaf
 // Syntax:         CIO_CTRL(branch, crate, station, function, addr)
 //                 CIO_CTRL_R2B(base, function, addr)
+//                 CIO_CTRL2(branch, crate, station, function, addr)
+//                 CIO_CTRL2_R2B(base, function, addr)
 // Arguments:      base      -- cnaf base given by CIO_SET_BASE(B, C, N)
 //                 branch    -- camac branch
 //                 crate     -- camac crate
@@ -111,7 +113,8 @@
 //                 R2B macro calculates cnaf address relative to base.
 //                 ### IMPORTANT ###
 //                 As CC32 doesn't have a F16 bit but sets it automatically on
-//                 a write access CAMAC functions >F23 must be WRITE not CTRL!
+//                 a write access CAMAC functions >F23 have to use WRITE
+//                 (see CIO_CTRL2)
 // Keywords:       
 ////////////////////////////////////////////////////////////////////////////*/
 
@@ -119,18 +122,28 @@
 #define CIO_CTRL(branch,crate,station,function,addr) \
 				*(volatile unsigned long *)(BCNAF_ADDR(branch,crate,station,function,addr))
 
+#define CIO_CTRL2(branch,crate,station,function,addr) \
+				*(volatile unsigned long *)(BCNAF_ADDR(branch,crate,station,function,addr))
+
 #define CIO_CTRL_R2B(base,function,addr) \
+				*(volatile unsigned long *)((char *)base + function + addr)
+
+#define CIO_CTRL2_R2B(base,function,addr) \
 				*(volatile unsigned long *)((char *)base + function + addr)
 #endif
 
 #ifdef CC32
 #define CIO_CTRL(branch,crate,station,function,addr) \
-				if (function <= F(23))	*(volatile unsigned long *)(BCNAF_ADDR(branch,crate,station,function,addr)); \
-				else					*(volatile unsigned long *)(BCNAF_ADDR(branch,crate,station,function,addr)) = 0
+				*(volatile unsigned long *)(BCNAF_ADDR(branch,crate,station,function,addr))
+
+#define CIO_CTRL2(branch,crate,station,function,addr) \
+				*(volatile unsigned long *)(BCNAF_ADDR(branch,crate,station,function,addr)) = 0
 
 #define CIO_CTRL_R2B(base,function,addr) \
-				if (function <= F(23))	*(volatile unsigned long *)((char *)base + function + addr); \
-				else					*(volatile unsigned long *)((char *)base + function + addr) = 0
+				*(volatile unsigned long *)((char *)base + function + addr)
+
+#define CIO_CTRL2_R2B(base,function,addr) \
+				*(volatile unsigned long *)((char *)base + function + addr) = 0
 #endif
 
 
