@@ -125,11 +125,11 @@
 
 #ifdef CC32
 #define CIO_CTRL(branch,crate,station,function,addr) \
-				if (function <= F(23)	*(volatile unsigned long *)(BCNAF_ADDR(branch,crate,station,function,addr)); \
+				if (function <= F(23))	*(volatile unsigned long *)(BCNAF_ADDR(branch,crate,station,function,addr)); \
 				else					*(volatile unsigned long *)(BCNAF_ADDR(branch,crate,station,function,addr)) = 0
 
 #define CIO_CTRL_R2B(base,function,addr) \
-				if (function <= F(23)	*(volatile unsigned long *)((char *)base + function + addr); \
+				if (function <= F(23))	*(volatile unsigned long *)((char *)base + function + addr); \
 				else					*(volatile unsigned long *)((char *)base + function + addr) = 0
 #endif
 
