@@ -221,9 +221,9 @@ int f_user_init (unsigned char  bh_crate_nr,
 %%BeginOfCode%%
 %B% 	switch (bh_crate_nr) {
 %CB% 		case $crateNo:						/* init modules in crate C$crateNo ($crateType) */
-%CBCBV%					CIO_CTRL_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */
+%CBCBV%					CIO_CTRL2_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */
 %CECBV%
-%CECBV%			CIO_CTRL_R2B(cam_sreg_C$crateNo, F(26), A(1));	/* enable X and Q for crate C$crateNo */
+%CECBV%			CIO_CTRL2_R2B(cam_sreg_C$crateNo, F(26), A(1));	/* enable X and Q for crate C$crateNo */
 %CBCC32%			CIO_WRITE_R2B(cam_reset_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: reset */
 %CBCC32%			CC_AUTOREAD_OFF(cam_auto_C$crateNo);					/* crate C$crateNo: no auto read */
 %CBCC32%			CC_READ_DWORD_OFF(cam_rddw_C$crateNo);					/* crate C$crateNo: no double word read */
@@ -316,10 +316,10 @@ int f_user_readout (unsigned char  bh_trig_typ,
 %B%		case 14:							/* start acquisition */
 %B%			switch (bh_crate_nr) {
 %CB%				case $crateNo:				/* start modules in crate C$crateNo ($crateType) */
-%CBCBV%					CIO_CTRL_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */
+%CBCBV%					CIO_CTRL2_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */
 %CBCC32%					CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: dataway disable */
 %CT% 	 				WRITE_TIME_STAMP(); 	/* include time stamp for this trigger */
-%CECBV%					CIO_CTRL_R2B(cam_dwinh_C$crateNo, F(24), A(9));	/* crate C$crateNo: dataway enable */
+%CECBV%					CIO_CTRL2_R2B(cam_dwinh_C$crateNo, F(24), A(9));	/* crate C$crateNo: dataway enable */
 %CECC32%					CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(1), 0L);	/* crate C$crateNo: dataway enable */
 %SB%					BEGIN_SUBEVENT($sevtType, $sevtSubtype, 0, $crateNo, kMrbSevt$sevtNameUC); /* subevent $sevtNameLC (type=[$sevtType,$sevtSubtype], crate C$crateNo, serial=$sevtSerial) */
 %SMB%					phdr$lng = evt.out$lng;			/* save addr of module header for module $moduleNameLC */
@@ -348,7 +348,7 @@ int f_user_readout (unsigned char  bh_trig_typ,
 %B%		case 15:							/* stop acquisition */
 %B%			switch (bh_crate_nr) {
 %CB%				case $crateNo:				/* stop modules in crate C$crateNo ($crateType) */
-%CBCBV%					CIO_CTRL_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */
+%CBCBV%					CIO_CTRL2_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */
 %CBCC32%					CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: dataway disable */
 %CT% 	 				WRITE_TIME_STAMP(); 	/* include time stamp for this trigger */
 %SB%					BEGIN_SUBEVENT($sevtType, $sevtSubtype, 0, $crateNo, kMrbSevt$sevtNameUC); /* subevent $sevtNameLC (type=[$sevtType,$sevtSubtype], crate C$crateNo, serial=$sevtSerial) */
