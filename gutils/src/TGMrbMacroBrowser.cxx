@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.25 2007-07-25 09:24:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.26 2007-07-25 09:51:28 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -225,89 +225,89 @@ TGMrbMacroBrowserMain::TGMrbMacroBrowserMain(const TGWindow * Parent, TMrbLofMac
 	fFrameGC = new TGMrbLayout(font, black, blue);
 	HEAP(fFrameGC);
 
-	fMenuFile = new TGPopupMenu(fClient->GetRoot());
-	HEAP(fMenuFile);
-
-	fMenuFile->AddEntry("New ... Ctrl-n", kGMrbMacroMenuFileNew);
-	fMenuFile->AddEntry("Open ... Ctrl-o", kGMrbMacroMenuFileOpen);
-	fMenuFile->AddSeparator();
-	fMenuFile->AddEntry("Exit ... Ctrl-q", kGMrbMacroMenuFileExit);
-	fMenuFile->Associate(this);
-
-	fMenuView = new TGPopupMenu(fClient->GetRoot());
-	HEAP(fMenuView);
-
-	fMenuView->AddEntry("&Errors", kGMrbMacroMenuViewErrors);
-	fMenuView->Associate(this);
-
-	fMenuHelp = new TGPopupMenu(fClient->GetRoot());
-	HEAP(fMenuHelp);
-
-	fMenuHelp->AddEntry("&Contents", kGMrbMacroMenuHelpContents);
-	fMenuHelp->AddEntry("&About", kGMrbMacroMenuHelpAbout);
-	fMenuHelp->Associate(this);
-
-	fMenuBar = new TGMenuBar(this, 500, 20, kHorizontalFrame | kRaisedFrame);
-	HEAP(fMenuBar);
-
-	TGLayoutHints * menuBarItemLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft,0, 4, 0, 0);
-	HEAP(menuBarItemLayout);
-	fMenuBar->AddPopup("&File", fMenuFile, menuBarItemLayout);
-	fMenuBar->AddPopup("&View", fMenuView, menuBarItemLayout);
-	TGLayoutHints * menuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
-	HEAP(menuBarHelpLayout);
-	fMenuBar->AddPopup("&Help", fMenuHelp, menuBarHelpLayout);
-
-	TGLayoutHints * menuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
-	HEAP(menuBarLayout);
-	this->AddFrame(fMenuBar, menuBarLayout);
-
-	fMenuBar->ChangeBackground(gray);
-
 	fLofMacros = LofMacros;
 
-	TGLayoutHints * frameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 1, 1);
-	HEAP(frameLayout);
-	fFrameGC->SetLH(frameLayout);
+	Int_t nofMacros = fLofMacros->GetEntriesFast();
 
-	TGLayoutHints * buttonLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 1, 1);
-	HEAP(buttonLayout);
-	fButtonGC->SetLH(buttonLayout);
+	if (nofMacros > 1) {
+		fMenuFile = new TGPopupMenu(fClient->GetRoot());
+		HEAP(fMenuFile);
 
-	if (fLofMacros->GetEntriesFast() == 1) {
+		fMenuFile->AddEntry("New ... Ctrl-n", kGMrbMacroMenuFileNew);
+		fMenuFile->AddEntry("Open ... Ctrl-o", kGMrbMacroMenuFileOpen);
+		fMenuFile->AddSeparator();
+		fMenuFile->AddEntry("Exit ... Ctrl-q", kGMrbMacroMenuFileExit);
+		fMenuFile->Associate(this);
+
+		fMenuView = new TGPopupMenu(fClient->GetRoot());
+		HEAP(fMenuView);
+
+		fMenuView->AddEntry("&Errors", kGMrbMacroMenuViewErrors);
+		fMenuView->Associate(this);
+
+		fMenuHelp = new TGPopupMenu(fClient->GetRoot());
+		HEAP(fMenuHelp);
+
+		fMenuHelp->AddEntry("&Contents", kGMrbMacroMenuHelpContents);
+		fMenuHelp->AddEntry("&About", kGMrbMacroMenuHelpAbout);
+		fMenuHelp->Associate(this);
+
+		fMenuBar = new TGMenuBar(this, 500, 20, kHorizontalFrame | kRaisedFrame);
+		HEAP(fMenuBar);
+
+		TGLayoutHints * menuBarItemLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft,0, 4, 0, 0);
+		HEAP(menuBarItemLayout);
+		fMenuBar->AddPopup("&File", fMenuFile, menuBarItemLayout);
+		fMenuBar->AddPopup("&View", fMenuView, menuBarItemLayout);
+		TGLayoutHints * menuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
+		HEAP(menuBarHelpLayout);
+		fMenuBar->AddPopup("&Help", fMenuHelp, menuBarHelpLayout);
+
+		TGLayoutHints * menuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
+		HEAP(menuBarLayout);
+		this->AddFrame(fMenuBar, menuBarLayout);
+
+		fMenuBar->ChangeBackground(gray);
+
+		TGLayoutHints * frameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 1, 1);
+		HEAP(frameLayout);
+		fFrameGC->SetLH(frameLayout);
+
+		TGLayoutHints * buttonLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 1, 1);
+		HEAP(buttonLayout);
+		fButtonGC->SetLH(buttonLayout);
+
+		fMacroList = new TGMrbMacroList(this, fLofMacros, Width - 10, Height - 10, fFrameGC, fButtonGC);
+		HEAP(fMacroList);
+		this->AddFrame(fMacroList, fFrameGC->LH());
+
+		this->ChangeBackground(blue);
+
+		fKeyBindings.SetParent(this);
+		fKeyBindings.BindKey("Ctrl-q", TGMrbLofKeyBindings::kGMrbKeyActionExit);
+		fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionExit);
+		fKeyBindings.BindKey("Ctrl-n", TGMrbLofKeyBindings::kGMrbKeyActionNew);
+		fKeyBindings.BindKey("Ctrl-o", TGMrbLofKeyBindings::kGMrbKeyActionOpen);
+	
+		if (gEnv->GetValue("MacroBrowser.ViewMessages", kFALSE) == 1
+		||	gEnv->GetValue("TGMrbMessageViewer.Popup", kFALSE) == 1) this->PopupMessageViewer();
+
+		SetWindowName("MacroBrowser: Display & exec ROOT macros");
+
+		MapSubwindows();
+
+		Resize(GetDefaultSize());
+		Int_t w = fMenuBar->GetDefaultWidth();
+		if (w < (Int_t) fMacroList->GetDefaultWidth()) w = fMacroList->GetDefaultWidth();
+		Resize(w + 10, fMenuBar->GetDefaultHeight() + fMacroList->GetDefaultHeight() + 5);
+
+		MapWindow();
+	} else {
 		TMrbNamedX * macro = fLofMacros->FirstMacro();
 		if (macro) {
 			new TGMrbMacroFrame(fClient->GetRoot(), this, fLofMacros->FirstMacro(), 100, 100);
 		}
-	} else {
-		fMacroList = new TGMrbMacroList(this, fLofMacros, Width - 10, Height - 10, fFrameGC, fButtonGC);
-		HEAP(fMacroList);
-		this->AddFrame(fMacroList, fFrameGC->LH());
 	}
-
-	this->ChangeBackground(blue);
-
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-q", TGMrbLofKeyBindings::kGMrbKeyActionExit);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionExit);
-	fKeyBindings.BindKey("Ctrl-n", TGMrbLofKeyBindings::kGMrbKeyActionNew);
-	fKeyBindings.BindKey("Ctrl-o", TGMrbLofKeyBindings::kGMrbKeyActionOpen);
-	
-	if (gEnv->GetValue("MacroBrowser.ViewMessages", kFALSE) == 1
-	||	gEnv->GetValue("TGMrbMessageViewer.Popup", kFALSE) == 1) this->PopupMessageViewer();
-
-	SetWindowName("MacroBrowser: Display & exec ROOT macros");
-
-	MapSubwindows();
-
-	Resize(GetDefaultSize());
-	Int_t w = fMenuBar->GetDefaultWidth();
-	if (fLofMacros->GetEntriesFast() > 1) {
-		if (w < (Int_t) fMacroList->GetDefaultWidth()) w = fMacroList->GetDefaultWidth();
-		Resize(w + 10, fMenuBar->GetDefaultHeight() + fMacroList->GetDefaultHeight() + 5);
-	}
-
-	MapWindow();
 }
 
 Bool_t TGMrbMacroBrowserMain::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
