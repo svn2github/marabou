@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.24 2007-06-26 07:32:02 Otto.Schaile Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.25 2007-07-25 09:24:05 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -277,15 +277,6 @@ TGMrbMacroBrowserMain::TGMrbMacroBrowserMain(const TGWindow * Parent, TMrbLofMac
 	if (fLofMacros->GetEntriesFast() == 1) {
 		TMrbNamedX * macro = fLofMacros->FirstMacro();
 		if (macro) {
-			cout << "@@ " << macro->GetName() << endl;
-			getchar();
-			SetWindowName("MacroBrowser: Display & exec ROOT macros");
-			MapSubwindows();
-			Resize(GetDefaultSize());
-			Int_t w = fMenuBar->GetDefaultWidth();
-			if (w < (Int_t) fMacroList->GetDefaultWidth()) w = fMacroList->GetDefaultWidth();
-			Resize(w + 10, fMenuBar->GetDefaultHeight() + fMacroList->GetDefaultHeight() + 5);
-			MapWindow();
 			new TGMrbMacroFrame(fClient->GetRoot(), this, fLofMacros->FirstMacro(), 100, 100);
 		}
 	} else {
@@ -311,8 +302,10 @@ TGMrbMacroBrowserMain::TGMrbMacroBrowserMain(const TGWindow * Parent, TMrbLofMac
 
 	Resize(GetDefaultSize());
 	Int_t w = fMenuBar->GetDefaultWidth();
-	if (w < (Int_t) fMacroList->GetDefaultWidth()) w = fMacroList->GetDefaultWidth();
-	Resize(w + 10, fMenuBar->GetDefaultHeight() + fMacroList->GetDefaultHeight() + 5);
+	if (fLofMacros->GetEntriesFast() > 1) {
+		if (w < (Int_t) fMacroList->GetDefaultWidth()) w = fMacroList->GetDefaultWidth();
+		Resize(w + 10, fMenuBar->GetDefaultHeight() + fMacroList->GetDefaultHeight() + 5);
+	}
 
 	MapWindow();
 }
