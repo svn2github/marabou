@@ -20,7 +20,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: taufit.C,v 1.3 2007-07-27 11:36:40 Rudolf.Lutter Exp $
+// Revision:         $Id: taufit.C,v 1.4 2007-07-27 11:39:07 Rudolf.Lutter Exp $
 // Date:             Fri Jul 27 13:25:50 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                taufit.C
@@ -47,8 +47,8 @@
 //                   Arg2.AddLofValues:   No
 //                   Arg2.Base:           dec
 //                   Arg2.Orientation:    horizontal
-//                   Arg3.Name:           c
-//                   Arg3.Title:          Constant
+//                   Arg3.Name:           C
+//                   Arg3.Title:          c
 //                   Arg3.Type:           Double_t
 //                   Arg3.EntryType:      Entry-C
 //                   Arg3.AddLofValues:   No
