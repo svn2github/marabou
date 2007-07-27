@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.9 2006-09-12 08:02:47 Marabou Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.10 2007-07-27 11:08:06 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -25,6 +25,8 @@
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 #include "TGMrbTextButton.h"
+#include "TGMrbRadioButton.h"
+#include "TGMrbCheckButton.h"
 #include "TGMrbFocusList.h"
 #include "TGMrbObject.h"
 #include "TGMrbLayout.h"
@@ -79,7 +81,9 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		enum EGMrbEntryButton	{	kGMrbEntryButtonUp,
 									kGMrbEntryButtonDown,
 									kGMrbEntryButtonBegin,
-									kGMrbEntryButtonEnd
+									kGMrbEntryButtonEnd,
+									kGMrbEntryButtonCheck,
+									kGMrbEntryButtonRadio
 								};
 
 		enum EGMrbEntryType 	{	kGMrbEntryTypeChar,
@@ -101,6 +105,8 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 									Bool_t BeginEndBtns = kFALSE,
 									TMrbNamedX * Action = NULL,
 									TGMrbLayout * ActionGC = NULL,
+									TMrbLofNamedX * CheckBtns = NULL,
+									TMrbLofNamedX * RadioBtns = NULL,
 									UInt_t FrameOptions = kHorizontalFrame,
 									UInt_t EntryOptions = kSunkenFrame | kDoubleBorder);
 
@@ -122,6 +128,8 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		inline TGPictureButton * GetBeginButton() const { return(fBegin); };
 		inline TGPictureButton * GetEndButton() const { return(fEnd); };
 		inline TGTextButton * GetActionButton() const { return(fAction); };
+		inline TGMrbCheckButtonList * GetLofCheckButtons() const { return(fCheckBtns); };
+		inline TGMrbRadioButtonList * GetLofRadioButtons() const { return(fRadioBtns); };
 
 		void UpDownButtonEnable(Bool_t Flag = kTRUE);			// enable/disable up/down buttons
 		void ActionButtonEnable(Bool_t Flag = kTRUE);			// enable/disable action button
@@ -154,7 +162,8 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		TGPictureButton * fBegin; 		//! button "<<", begin
 		TGPictureButton * fEnd; 		//! button ">>", end
 		TGTextButton * fAction; 		//! textbutton
-
+		TGMrbCheckButtonList * fCheckBtns;	//!checkbuttons
+		TGMrbRadioButtonList * fRadioBtns;	//!radiobuttons
 		EGMrbEntryType fType;			// entry type: char, char + int, ...
 		Int_t fWidth;					// number of digits to be displayed
 		Int_t fBase;					// numerical base if of type int or charint (2, 8, 10, 16)

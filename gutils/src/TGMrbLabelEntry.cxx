@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.12 2006-09-12 08:02:47 Marabou Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.13 2007-07-27 11:08:06 Rudolf.Lutter Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -44,6 +44,8 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 												TGMrbLayout * UpDownBtnGC,
 												Bool_t BeginEndBtns,
 												TMrbNamedX * Action, TGMrbLayout * ActionGC,
+												TMrbLofNamedX * CheckBtns,
+												TMrbLofNamedX * RadioBtns,
 												UInt_t FrameOptions,
 												UInt_t EntryOptions) :
 										TGCompositeFrame(Parent, Width, Height, FrameOptions, FrameGC->BG()) {
@@ -66,6 +68,8 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 //                 Bool_t BeginEndBtns         -- if kTRUE add two additional buttons "<<" and ">>"
 //                 TMrbNamedX * Action         -- adds an "action" button
 //                 TGMrbLayout * ActionGC      -- graphic context & layout (action)
+//                 TMrbLofNamedX * CheckBtns   -- adds a list of check buttons
+//                 TMrbLofNamedX * RadioBtns   -- adds a list of radio buttons
 //                 UInt_t FrameOptions         -- frame options
 //                 UInt_t EntryOptions         -- options to configure the entry
 // Results:        --
@@ -105,6 +109,24 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 	}
 
 	bSize = 0;
+
+	if (RadioBtns) {
+		TGLayoutHints * radioLayout = new TGLayoutHints(kLHintsRight | kLHintsCenterY, 0, 0, 1, 0);
+		fHeap.AddFirst((TObject *) radioLayout);
+		fRadioBtns = new TGMrbRadioButtonList(this, NULL, RadioBtns, kGMrbEntryButtonRadio, 1, 0, Height, FrameGC);
+		fRadioBtns->ChangeBackground(LabelGC->BG());
+		this->AddFrame(fRadioBtns, radioLayout);			
+		bSize += fRadioBtns->GetDefaultWidth();
+	}
+
+	if (CheckBtns) {
+		TGLayoutHints * checkLayout = new TGLayoutHints(kLHintsRight | kLHintsCenterY, 0, 0, 1, 0);
+		fHeap.AddFirst((TObject *) checkLayout);
+		fCheckBtns = new TGMrbCheckButtonList(this, NULL, CheckBtns, kGMrbEntryButtonCheck, 1, 0, Height, FrameGC);
+		fCheckBtns->ChangeBackground(LabelGC->BG());
+		this->AddFrame(fCheckBtns, checkLayout);			
+		bSize += fCheckBtns->GetDefaultWidth();
+	}
 
 	if (Action && Action->GetAssignedObject()) {
 		TGLayoutHints * actLayout = new TGLayoutHints(kLHintsRight | kLHintsCenterY, 0, 0, 1, 0);
