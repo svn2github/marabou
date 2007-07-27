@@ -18,7 +18,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: taufit.C,v 1.1 2007-07-27 08:05:13 Rudolf.Lutter Exp $
+// Revision:         $Id: taufit.C,v 1.2 2007-07-27 11:08:27 Rudolf.Lutter Exp $
 // Date:             Wed Jul 25 15:41:44 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                taufit.C
@@ -48,7 +48,7 @@
 //                   Arg3.Name:           A0
 //                   Arg3.Title:          a0
 //                   Arg3.Type:           Double_t
-//                   Arg3.EntryType:      Entry
+//                   Arg3.EntryType:      Entry-C
 //                   Arg3.Default:        1.0
 //                   Arg3.AddLofValues:   No
 //                   Arg3.Base:           dec
@@ -56,7 +56,7 @@
 //                   Arg4.Name:           Tau0
 //                   Arg4.Title:          tau0
 //                   Arg4.Type:           Double_t
-//                   Arg4.EntryType:      Entry
+//                   Arg4.EntryType:      Entry-C
 //                   Arg4.Default:        1.0
 //                   Arg4.AddLofValues:   No
 //                   Arg4.Base:           dec
@@ -64,7 +64,7 @@
 //                   Arg5.Name:           A1
 //                   Arg5.Title:          a1
 //                   Arg5.Type:           Double_t
-//                   Arg5.EntryType:      Entry
+//                   Arg5.EntryType:      Entry-C
 //                   Arg5.Default:        1.0
 //                   Arg5.AddLofValues:   No
 //                   Arg5.Base:           dec
@@ -72,7 +72,7 @@
 //                   Arg6.Name:           Tau1
 //                   Arg6.Title:          tau1
 //                   Arg6.Type:           Double_t
-//                   Arg6.EntryType:      Entry
+//                   Arg6.EntryType:      Entry-C
 //                   Arg6.Default:        1.0
 //                   Arg6.AddLofValues:   No
 //                   Arg6.Base:           dec
@@ -116,10 +116,10 @@ Double_t multi_exp(Double_t * x, Double_t * par) {
 
 void taufit(const Char_t * File,
          Int_t NofTaus = 1,
-         Double_t A0 = 1.0,
-         Double_t Tau0 = 1.0,
-         Double_t A1 = 1.0,
-         Double_t Tau1 = 1.0)
+         Double_t A0 = 1.0, Bool_t FixA0 = kFALSE,
+         Double_t Tau0 = 1.0, Bool_t FixTau0 = kFALSE,
+         Double_t A1 = 1.0, Bool_t FixA1 = kFALSE,
+         Double_t Tau1 = 1.0, Bool_t FixTau1 = kFALSE)
 //___________________________________________________________[STATIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           fit
@@ -151,13 +151,17 @@ void taufit(const Char_t * File,
 
 	f->SetParName(0, "a_{0}");				// set par name (in latex mode!)
 	f->SetParameter(0, A0); 				// start value
+	if (FixA0) f->FixParameter(0, A0);
 	f->SetParName(1, "#tau_{0}");			// ...
 	f->SetParameter(1, Tau0);
+	if (FixTau0) f->FixParameter(1, Tau0);
 	if (fitNofTaus == 2) {
 		f->SetParName(2, "a_{1}");
 		f->SetParameter(2, A1);
+		if (FixA1) f->FixParameter(2, A1);
 		f->SetParName(3, "#tau_{1}");
 		f->SetParameter(3, Tau1);
+		if (FixTau1) f->FixParameter(3, Tau1);
 	}
 	f->SetLineColor(2);
 	g->Fit(f);								// do the fit

@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.79 2007-05-09 14:12:28 Marabou Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.80 2007-07-27 11:17:22 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -25,6 +25,7 @@
 #include "TUsrEvtStop.h"
 #include "TUsrDeadTime.h"
 
+#include "TMrbString.h"
 #include "TMrbLofUserVars.h"
 #include "TMrbTransport.h"
 
@@ -222,7 +223,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 	TMrbIOSpec::EMrbInputMode inputMode = DefaultIOSpec->GetInputMode();
 
 	TMrbIOSpec * lastIOSpec = DefaultIOSpec;
-	TMrbString line;
+	TString line;
 	for (;;) {
 		line.ReadLine(fileList, kFALSE);
 		if (fileList.eof()) break;
@@ -230,8 +231,8 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		Bool_t lineHdr = kFALSE;
 		line = line.Strip(TString::kBoth);
 		if (line.Length() == 0 || line(0) == '#') continue;
-		TObjArray splitLine;
-		Int_t nArgs = line.Split(splitLine, " ", kTRUE);
+		TObjArray * splitLine = line.Tokenize(" \t");
+		Int_t nArgs = splitLine->GetEntries();
 		if (nArgs < 6) {
 			if (!lineHdr) {
 				gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
@@ -241,9 +242,10 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 			gMrbLog->Err()	<< "Too few arguments - " << nArgs << " (should be 6)" << endl;
 			gMrbLog->Flush(this->ClassName(), "OpenFileList");
 			errCnt++;
+			delete splitLine;
 			continue;
 		} else if (nArgs > 6) {
-			TString dummy = ((TObjString *) splitLine[6])->GetString();
+			TString dummy = ((TObjString *) splitLine->At(6))->GetString();
 			if (dummy(0) != '#') {
 				if (!lineHdr) {
 					gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
@@ -257,7 +259,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		
 // decode line
 // input file
-		TString inputFile = ((TObjString *) splitLine[0])->GetString();
+		TString inputFile = ((TObjString *) splitLine->At(0))->GetString();
 		gSystem->ExpandPathName(inputFile);
 		if (inputFile.Index(rxroot, 0) != -1)		inputMode = TMrbIOSpec::kInputRoot;
 		else if (inputFile.Index(rxmed, 0) != -1)	inputMode = TMrbIOSpec::kInputMED;
@@ -282,7 +284,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 			errCnt++;
 		}
 // start / stop
-		TString startEvent = ((TObjString *) splitLine[1])->GetString();
+		TString startEvent = ((TObjString *) splitLine->At(1))->GetString();
 		Int_t startValue;
 		Bool_t startTimeFlag;
 		if (!DefaultIOSpec->CheckStartStop(startEvent, startValue, startTimeFlag)) {
@@ -296,7 +298,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 			errCnt++;
 		}
 
-		TString stopEvent = ((TObjString *) splitLine[2])->GetString();
+		TString stopEvent = ((TObjString *) splitLine->At(2))->GetString();
 		Int_t stopValue;
 		Bool_t stopTimeFlag;
 		if (!DefaultIOSpec->CheckStartStop(stopEvent, stopValue, stopTimeFlag)) {
@@ -336,7 +338,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		}
 
 // param file
-		TString paramFile = ((TObjString *) splitLine[3])->GetString();
+		TString paramFile = ((TObjString *) splitLine->At(3))->GetString();
 		TMrbIOSpec::EMrbParamMode lastpMode = lastIOSpec->GetParamMode();
 		TMrbIOSpec::EMrbParamMode paramMode = TMrbIOSpec::kParamNone;
 		if (paramFile.CompareTo("none") != 0) {
@@ -373,7 +375,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		}
 
 // histo file
-		TString histoFile = ((TObjString *) splitLine[4])->GetString();
+		TString histoFile = ((TObjString *) splitLine->At(4))->GetString();
 		TMrbIOSpec::EMrbHistoMode histoMode = TMrbIOSpec::kHistoNone;
 		if (histoFile.CompareTo("none") != 0) {
 			if (histoFile.CompareTo("+") == 0) {
@@ -394,7 +396,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		}
 
 // output file
-		TString outputFile = ((TObjString *) splitLine[5])->GetString();
+		TString outputFile = ((TObjString *) splitLine->At(5))->GetString();
 		TMrbIOSpec::EMrbOutputMode outputMode = TMrbIOSpec::kOutputNone;
 		TMrbIOSpec::EMrbOutputMode lastoMode = lastIOSpec->GetOutputMode();
 		if (outputFile.CompareTo("none") != 0) {
@@ -448,6 +450,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 			lastIOSpec = ioSpec;
 		}
 		lerrCnt = errCnt;
+		delete splitLine;
 	}
 
 // check if errors

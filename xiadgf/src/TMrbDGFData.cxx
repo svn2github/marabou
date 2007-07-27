@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFData.cxx,v 1.14 2006-01-11 12:33:05 marabou Exp $       
+// Revision:       $Id: TMrbDGFData.cxx,v 1.15 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -852,14 +852,15 @@ Int_t TMrbDGFData::AddToNameTable(const Char_t * ParamFile, const Char_t * Comme
 		pLine = pLine.Strip(TString::kBoth);
 		pLine = pLine.Strip(TString::kBoth, '\r');
 		if (pLine.Length() == 0 || pLine(0) == '#') continue;
-		TObjArray pl;
-		Int_t n = pLine.Split(pl, " ", kTRUE);
+		TObjArray * pl = pLine.Tokenize(" \t");
+		Int_t n = pl->GetEntries();
 		if (n == 2) {
-			Int_t pOffset = atoi(((TObjString *) pl[0])->GetString().Data());
-			TString pName = ((TObjString *) pl[1])->GetString().Data();
+			Int_t pOffset = atoi(((TObjString *) pl->At(0))->GetString().Data());
+			TString pName = ((TObjString *) pl->At(1))->GetString().Data();
 			pName.Strip(TString::kBoth);
 			if (pName.Length() > 0) nofParams += this->AddToNameTable(pName.Data(), pOffset, Comment);
 		}
+		delete pl;
 	}
 	param.close();
 

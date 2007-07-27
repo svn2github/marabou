@@ -8,7 +8,7 @@
 // Description:    Class definitions to control I/O from/to a serial port.
 //                 Inspired by a class c_SerialComm written by Mario Schubert
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSerialComm.h,v 1.6 2006-01-25 12:21:27 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSerialComm.h,v 1.7 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -17,7 +17,6 @@
 
 #include "TNamed.h"
 #include "TString.h"
-#include "TMrbString.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +47,7 @@ class TMrbSerialComm : public TNamed {
 					Bool_t IgnoreCR = kTRUE);
 		Bool_t Open();
 		Bool_t Close();
-		Int_t ReadData(TMrbString & Data);
+		Int_t ReadData(TString & Data);
 		Int_t WriteData(const Char_t * Data);
 		Int_t WriteSingleBytes(const Char_t * Data, Double_t Delay = -1);
 		Int_t WriteWithDelay(const Char_t * Data, Double_t Delay = -1);

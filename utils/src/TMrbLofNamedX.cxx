@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofNamedX.cxx,v 1.9 2006-06-29 13:56:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofNamedX.cxx,v 1.10 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -199,7 +199,7 @@ void TMrbLofNamedX::AddNamedX(const Char_t * NameString, const Char_t * Separato
 //                 Bool_t PatternMode     -- turn pattern mode on/off
 // Results:        --
 // Exceptions:
-// Description:    Adds a list of indices taken from a charater string.
+// Description:    Adds a list of indices taken from a character string.
 //                 Format is
 //                          name1[=idx1]:...:nameN[=idxN]
 //                 ":" is the default delimiter, but may be defined by arg "Separator"
@@ -208,26 +208,20 @@ void TMrbLofNamedX::AddNamedX(const Char_t * NameString, const Char_t * Separato
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t idx, n;
-	TMrbString nameString;
-	TObjArray lofSubStr;
-	TMrbString subStr;
-	Int_t nstr;
-	TMrbNamedX * nx;
-	TString prefix;
-
-	nx = (TMrbNamedX *) this->Last();
+	TMrbNamedX * nx = (TMrbNamedX *) this->Last();
+	Int_t idx;
 	if (nx == NULL) 		idx = 1;
 	else if (PatternMode)	idx = nx->GetIndex() << 1;
 	else					idx = nx->GetIndex() + 1;
 
-	nameString = NameString;
-	nstr = nameString.Split(lofSubStr, Separator);
-	for (Int_t i = 0; i < nstr; i++) {
-		subStr = ((TObjString *) lofSubStr[i])->GetString().Data();
-		n = subStr.Index("=", 0);
+	TString nameString = NameString;
+	TString subStr;
+	Int_t from = 0;
+	while (nameString.Tokenize(subStr, from, Separator)) {
+		Int_t n = subStr.Index("=", 0);
 		if (n != -1) {
-			subStr.SplitOffInteger(prefix, idx);
+			TString sn = subStr(n + 1, subStr.Length());
+			idx = sn.Atoi();
 			subStr = (TString) subStr(0, n);
 		}
 		nx = new TMrbNamedX(idx, subStr.Data());
@@ -276,8 +270,6 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 	Bool_t negFlag;
 	Bool_t firstBit;
 	TMrbNamedX * k;
-	TMrbString fullName;
-	Int_t base;
 	
 	if (this->GetLast() == -1) {
 		gMrbLog->Err() << "No indices defined" << endl;
@@ -285,8 +277,9 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 		return;
 	}
 
-	base = this->IsPatternMode() ? 16 : 10;
+	Int_t base = this->IsPatternMode() ? 16 : 10;
 
+	TString fullName;
 	TMrbNamedX * xPnt;
 	TIterator * iter = this->MakeIterator();
 	if (fPatternMode) {

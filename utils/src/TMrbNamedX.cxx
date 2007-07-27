@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbNamedX.cxx,v 1.7 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbNamedX.cxx,v 1.8 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -15,7 +15,7 @@
 
 ClassImp(TMrbNamedX)
 
-const Char_t * TMrbNamedX::GetFullName(TMrbString & FullName, Int_t Base, Bool_t IndexFlag) const {
+const Char_t * TMrbNamedX::GetFullName(TString & FullName, Int_t Base, Bool_t IndexFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbNamedX::GetFullName
@@ -36,14 +36,24 @@ const Char_t * TMrbNamedX::GetFullName(TMrbString & FullName, Int_t Base, Bool_t
 		FullName += this->GetTitle();
 	}
 	if (IndexFlag) {
-		FullName += " (";
 		switch (Base) {
-			case 2: FullName += "0b"; break;
-			case 8: FullName += "0"; break;
-			case 16: FullName += "0x"; break;
+			case 2:
+				{
+					UInt_t patt = 0;
+					Int_t bit = 1;
+					UInt_t idx = this->GetIndex();
+					while (idx) {
+						if (idx & 1) patt += bit;
+						bit *= 10;
+						idx >>= 1;
+					}
+					FullName += Form("(0b%d)", patt);
+				}
+				break;
+			case 8: FullName += Form("(%#o)", this->GetIndex()); break;
+			case 10: FullName += Form("(%d)", this->GetIndex()); break;
+			case 16: FullName += Form("(%#x)", this->GetIndex()); break;
 		}
-		FullName.AppendInteger(this->GetIndex(), 0, Base);
-		FullName += ")";
 	}
 	return(FullName.Data());
 }
@@ -85,7 +95,7 @@ void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString fullName;
+	TString fullName;
 	Out << this->GetFullName(fullName, Base, kTRUE);
 	if (CrFlag) Out << endl;
 }

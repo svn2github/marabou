@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCptmPanel.cxx,v 1.10 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFCptmPanel.cxx,v 1.11 2007-07-27 11:17:22 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -464,13 +464,11 @@ Int_t DGFCptmPanel::GetLofCptmModules() {
 				Int_t nofModules;
 				gDGFControlData->GetResource(nofModules, "DGFControl.Subevent", i, sevtName.Data(), "NofModules");
 				if (nofModules > 0) {
-					TMrbString sevtLofModules;
+					TString sevtLofModules;
 					gDGFControlData->GetResource(sevtLofModules, "DGFControl.Subevent", i, sevtName.Data(), "LofModules");
-					TObjArray lofModules;
-					lofModules.Delete();
-					Int_t n = sevtLofModules.Split(lofModules);
-					for (Int_t j = 0; j < n; j++) {
-						TString cptmName = ((TObjString *) lofModules.At(j))->GetString();
+					TString cptmName;
+					Int_t from = 0;
+					while (sevtLofModules.Tokenize(cptmName, from, ":")) {
 						Int_t crate, station;
 						gDGFControlData->GetResource(crate, "DGFControl.Module", i, cptmName.Data(), "Crate");
 						gDGFControlData->GetResource(station, "DGFControl.Module", i, cptmName.Data(), "Station");

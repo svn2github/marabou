@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbString.cxx,v 1.18 2006-11-29 15:09:54 Rudolf.Lutter Exp $       
-// Date:           $Date: 2006-11-29 15:09:54 $
+// Revision:       $Id: TMrbString.cxx,v 1.19 2007-07-27 11:16:00 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-07-27 11:16:00 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -585,6 +585,165 @@ void TMrbString::ProcessEscapeSequence(Char_t CharId, TString & Replacement) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Replacement.Resize(0);		// nullify
+}
+
+Bool_t TMrbString::Encode(UInt_t & IntVal, TMrbLofNamedX * LofSubStrings, const Char_t * Separator, UInt_t Mode) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbString::Encode
+// Purpose:        Convert option string to number
+// Arguments:      TMrbLofNamedX * LofSubStrings   -- possible substrings
+//                 Char_t * Separator              -- separator
+//                 UInt_t Mode                     -- how to identify substrings
+// Results:        UInt_t & IntVal                 -- result
+//                 kTRUE/kFALSE
+// Exceptions:
+// Description:    Encodes string to a number according to definitions in
+//                 LofSubstrings.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Char_t * endptr;
+
+	IntVal = strtoul(fData, &endptr, 0);
+	if (*endptr == '\0') return(kTRUE);
+
+	IntVal = 0;
+	Bool_t isOk = kTRUE;
+	TString subs;
+	Int_t from = 0;
+	while (this->Tokenize(subs, from, Separator)) {
+		TMrbNamedX * nx = LofSubStrings->FindByName(subs.Data(), Mode);
+		if (nx == NULL) {
+			isOk = kFALSE;
+		} else {
+			IntVal |= nx->GetIndex();
+		}
+	}
+	return(isOk);	
+}
+
+Bool_t TMrbString::Encode(UInt_t & IntVal, SMrbNamedXShort * LofSubStrings, const Char_t * Separator, UInt_t Mode) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbString::Encode
+// Purpose:        Convert option string to number
+// Arguments:      SMrbNamedXShort * LofSubStrings -- possible substrings
+//                 Char_t * Separator              -- separator
+//                 UInt_t Mode                     -- how to identify substrings
+// Results:        UInt_t & IntVal                 -- result
+//                 kTRUE/kFALSE
+// Exceptions:
+// Description:    Encodes string to a number according to definitions in
+//                 LofSubstrings.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Char_t * endptr;
+
+	IntVal = strtoul(fData, &endptr, 0);
+	if (*endptr == '\0') return(kTRUE);
+
+	TMrbLofNamedX lofSubStrings;
+	lofSubStrings.AddNamedX(LofSubStrings);
+	return(this->Encode(IntVal, &lofSubStrings, Separator, Mode));
+}
+
+Bool_t TMrbString::Encode(UInt_t & IntVal, const Char_t * LofSubStrings, const Char_t * Separator, UInt_t Mode) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbString::Encode
+// Purpose:        Convert option string to number
+// Arguments:      Char_t * LofSubStrings          -- possible substrings
+//                 Char_t * Separator              -- separator
+//                 UInt_t Mode                     -- how to identify substrings
+// Results:        UInt_t & IntVal                 -- result
+//                 kTRUE/kFALSE
+// Exceptions:
+// Description:    Encodes string to a number according to definitions in
+//                 LofSubstrings.
+//                 Assigns BIT(0) to substring #1, BIT(1) to #2, and so on.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Char_t * endptr;
+
+	IntVal = strtoul(fData, &endptr, 0);
+	if (*endptr == '\0') return(kTRUE);
+
+	TMrbLofNamedX lofSubStrings;
+	lofSubStrings.AddNamedX(LofSubStrings, Separator, kTRUE);
+	return(this->Encode(IntVal, &lofSubStrings, Separator, Mode));
+}
+
+Bool_t TMrbString::Decode(UInt_t IntVal, TMrbLofNamedX * LofSubStrings, const Char_t * Separator) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbString::Encode
+// Purpose:        Convert number to option string
+// Arguments:      UInt_t IntVal                   -- number to be decoded
+//                 TMrbLofNamedX * LofSubStrings   -- possible substrings
+//                 Char_t * Separator              -- separator
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Decodes a number to an option string according to definitions in
+//                 LofSubstrings.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t isOk = kTRUE;
+	this->Resize(0);
+	TMrbNamedX * nx = (TMrbNamedX *) LofSubStrings->First();
+	Bool_t first = kTRUE;
+	while (nx) {
+		if (IntVal & nx->GetIndex()) {
+			if (!first) this->Append(":");
+			this->Append(nx->GetName());
+			first = kFALSE;
+		}
+		nx = (TMrbNamedX *) LofSubStrings->After(nx);
+	}
+	return(isOk);
+}
+
+Bool_t TMrbString::Decode(UInt_t IntVal, SMrbNamedXShort * LofSubStrings, const Char_t * Separator) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbString::Encode
+// Purpose:        Convert number to option string
+// Arguments:      UInt_t IntVal                   -- number to be decoded
+//                 SMrbNamedXShort * LofSubStrings -- possible substrings
+//                 Char_t * Separator              -- separator
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Decodes a number to an option string according to definitions in
+//                 LofSubstrings.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbLofNamedX lofSubStrings;
+	lofSubStrings.AddNamedX(LofSubStrings);
+	return(this->Decode(IntVal, &lofSubStrings, Separator));
+}
+
+Bool_t TMrbString::Decode(UInt_t IntVal, const Char_t * LofSubStrings, const Char_t * Separator) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbString::Encode
+// Purpose:        Convert number to option string
+// Arguments:      UInt_t IntVal                   -- number to be decoded
+//                 Char_t * LofSubStrings          -- possible substrings
+//                 Char_t * Separator              -- separator
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Decodes a number to an option string according to definitions in
+//                 LofSubstrings.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbLofNamedX lofSubStrings;
+	lofSubStrings.AddNamedX(LofSubStrings, Separator, kTRUE);
+	return(this->Decode(IntVal, &lofSubStrings, Separator));
 }
 
 Int_t TMrbString::CheckInteger(Int_t Base) const {

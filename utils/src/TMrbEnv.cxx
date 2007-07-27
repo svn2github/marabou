@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEnv.cxx,v 1.20 2007-04-25 14:48:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEnv.cxx,v 1.21 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -498,25 +498,20 @@ Int_t TMrbEnv::Find(const Char_t * LofPrefixes, const Char_t * Resource, Int_t D
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString lofPrefixes;
-	TObjArray lPrefs;
-	Int_t nPrefs;
-	TEnv * dEnvSave;
-	TString prefSave;
-
-	TString resValue;
-	Int_t intVal;
-
-	lofPrefixes = LofPrefixes;
-	nPrefs = lofPrefixes.Split(lPrefs);
+	TString lofPrefixes = LofPrefixes;
+	TObjArray * lPrefs = lofPrefixes.Tokenize(":");
+	Int_t nPrefs = lPrefs->GetEntries();
+	delete lPrefs;
 	if (nPrefs <= 0) return(Default);
 
-	dEnvSave = fDefaultsEnv; 	// turn off defaults
+	TEnv * dEnvSave = fDefaultsEnv; 	// turn off defaults
 	fDefaultsEnv = NULL;
-	prefSave = fPrefix;
-	for (Int_t i = 0; i < nPrefs; i++) {
-		fPrefix = ((TObjString *) lPrefs[i])->GetString();
+	TString prefSave = fPrefix;
+	Int_t intVal;
+	Int_t from = 0;
+	while (lofPrefixes.Tokenize(fPrefix, from, ":")) {
 		fPrefix += ".";
+		TString resValue;
 		this->Get(resValue, Resource, "<undef>");
 		if (resValue.CompareTo("<undef>") != 0) {
 			intVal = this->Get(Resource, Default);
@@ -547,23 +542,18 @@ const Char_t * TMrbEnv::Find(TString & Result, const Char_t * LofPrefixes, const
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString lofPrefixes;
-	TObjArray lPrefs;
-	Int_t nPrefs;
-	TEnv * dEnvSave;
-	TString prefSave;
-
-	TString resValue;
-
-	lofPrefixes = LofPrefixes;
-	nPrefs = lofPrefixes.Split(lPrefs);
+	TString lofPrefixes = LofPrefixes;
+	TObjArray * lPrefs = lofPrefixes.Tokenize(":");
+	Int_t nPrefs = lPrefs->GetEntries();
+	delete lPrefs;
 	if (nPrefs <= 0) return(Default);
 
-	dEnvSave = fDefaultsEnv; 	// turn off defaults
+	TEnv * dEnvSave = fDefaultsEnv; 	// turn off defaults
 	fDefaultsEnv = NULL;
-	prefSave = fPrefix;
-	for (Int_t i = 0; i < nPrefs; i++) {
-		fPrefix = ((TObjString *) lPrefs[i])->GetString();
+	TString prefSave = fPrefix;
+	TString resValue;
+	Int_t from = 0;
+	while (lofPrefixes.Tokenize(fPrefix, from, ":")) {
 		fPrefix += ".";
 		this->Get(resValue, Resource, "<undef>");
 		if (resValue.CompareTo("<undef>") != 0) {
@@ -595,23 +585,18 @@ const Char_t * TMrbEnv::Find(TMrbNamedX & Result, const Char_t * LofPrefixes, co
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString lofPrefixes;
-	TObjArray lPrefs;
-	Int_t nPrefs;
-	TEnv * dEnvSave;
-	TString prefSave;
-
-	TString resValue;
-
-	lofPrefixes = LofPrefixes;
-	nPrefs = lofPrefixes.Split(lPrefs);
+	TString lofPrefixes = LofPrefixes;
+	TObjArray * lPrefs = lofPrefixes.Tokenize(":");
+	Int_t nPrefs = lPrefs->GetEntries();
+	delete lPrefs;
 	if (nPrefs <= 0) return(Default);
 
-	dEnvSave = fDefaultsEnv; 	// turn off defaults
+	TEnv * dEnvSave = fDefaultsEnv; 	// turn off defaults
 	fDefaultsEnv = NULL;
-	prefSave = fPrefix;
-	for (Int_t i = 0; i < nPrefs; i++) {
-		fPrefix = ((TObjString *) lPrefs[i])->GetString();
+	TString prefSave = fPrefix;
+	TString resValue;
+	Int_t from = 0;
+	while (lofPrefixes.Tokenize(fPrefix, from, ":")) {
 		fPrefix += ".";
 		this->Get(resValue, Resource, "<undef>");
 		if (resValue.CompareTo("<undef>") != 0) {

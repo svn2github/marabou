@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.19 2007-03-13 14:29:27 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.20 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -441,12 +441,13 @@ Int_t TMrbSystem::Load(const Char_t * LofModules, Bool_t SystemFlag) {
 	}
 
 	TString lofModules = LofModules;
-	TObjArray * lofLibs = lofModules.Tokenize(":");
-	Int_t nofLibs = lofLibs->GetEntriesFast();
 	Int_t sts = 0;
-	for (Int_t i = 0; i < nofLibs; i++) {
+	Int_t from = 0;
+	Int_t nofLibs = 0;
+	TString mod;
+	while (lofModules.Tokenize(mod, from, ":")) {
+		nofLibs++;
 		TString path;
-		TString mod = ((TObjString *) lofLibs->At(i))->GetString().Data();
 		TString entry = "";
 		Int_t lparen = mod.Index("(", 0);
 		Int_t rparen = mod.Index(")", 0);
@@ -463,17 +464,12 @@ Int_t TMrbSystem::Load(const Char_t * LofModules, Bool_t SystemFlag) {
 		if (path.IsNull()) {
 			gMrbLog->Err()	<< "No such library - " << mod << " (searched on $LD_LIBRARY_PATH)" << endl;
 			gMrbLog->Flush(this->ClassName(), "Load");
-			delete lofLibs;
 			return(-1);
 		}
 		sts = gSystem->Load(path.Data(), entry, SystemFlag);
 		this->PrintLoadPath(sts, mod.Data(), path.Data(), entry, SystemFlag);
-		if (sts == -1) {
-			delete lofLibs;
-			return(-1);
-		}
+		if (sts == -1) return(-1);
 	}
-	delete lofLibs;
 	return((nofLibs == 1) ? sts : 0);
 }
 
@@ -534,11 +530,10 @@ void TMrbSystem::AddIncludePath(const Char_t * IncludePath) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString iclPath = gSystem->GetIncludePath();
-	TMrbString newIcl = IncludePath;
-	TObjArray lofIcls;
-	Int_t nicl = newIcl.Split(lofIcls, ":", kTRUE);
-	for (Int_t i = 0; i < nicl; i++) {
-		TString icl = ((TObjString *) lofIcls[i])->GetString();
+	TString newIcl = IncludePath;
+	Int_t from = 0;
+	TString icl;
+	while (newIcl.Tokenize(icl, from, ":")) {
 		icl = icl.Strip(TString::kBoth);
 		if (!icl.IsNull()) {
 			if (!iclPath.Contains(icl.Data())) {

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: CptmPanel.cxx,v 1.6 2005-09-08 08:00:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: CptmPanel.cxx,v 1.7 2007-07-27 11:17:22 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -481,20 +481,19 @@ Int_t CptmPanel::GetLofCptmModules() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TObjArray lofModules;
-	Int_t crate, station;
-
 	fLofCptmModules.Delete();
-	TMrbString cptmRes;
 
-	cptmRes = gEnv->GetValue("DGFControl.LofCptmModules", "");
-	lofModules.Delete();
-	Int_t n = cptmRes.Split(lofModules);
+	TString cptmRes = gEnv->GetValue("DGFControl.LofCptmModules", "");
 	Int_t nofCptmModules = 0;
-	for (Int_t modNo = 0; modNo < n; modNo++) {
-		TString cptmName = ((TObjString *) lofModules.At(modNo))->GetString();
-		gCptmControlData->GetResource(crate, "DGFControl.Module", modNo + 1, cptmName.Data(), "Crate");
-		gCptmControlData->GetResource(station, "DGFControl.Module", modNo + 1, cptmName.Data(), "Station");
+	TString cptmName;
+	Int_t from = 0;
+	Int_t modNo = 0;
+	while (cptmRes.Tokenize(cptmName, from, ":")) {
+		modNo++;
+		Int_t crate;
+		gCptmControlData->GetResource(crate, "DGFControl.Module", modNo, cptmName.Data(), "Crate");
+		Int_t station;
+		gCptmControlData->GetResource(station, "DGFControl.Module", modNo, cptmName.Data(), "Station");
 		TMrbCPTM * cptm = new TMrbCPTM(cptmName.Data(), gCptmControlData->fCAMACHost.Data(), crate, station);
 		if (!cptm->IsZombie())	{
 			nofCptmModules++;
@@ -521,8 +520,6 @@ void CptmPanel::InitializeValues(Int_t ModuleIndex) {
 // Description:    Reads values from hardware.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
-
-	TMrbString dblStr, intStr;
 
 	if (ModuleIndex < 0) {
 		for (Int_t i = 0; i < fLofCptmModules.GetEntriesFast(); i++) this->InitializeValues(i);
@@ -580,7 +577,6 @@ void CptmPanel::UpdateValue(Int_t EntryId, Int_t ModuleIndex) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString dblStr, intStr;
 	Int_t intVal;
 	Double_t dblVal;
 

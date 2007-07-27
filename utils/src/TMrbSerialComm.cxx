@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSerialComm.cxx,v 1.6 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbSerialComm.cxx,v 1.7 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -30,6 +30,7 @@ namespace std {} using namespace std;
 #include "TMrbSerialComm.h"
 
 #include "TMrbLogger.h"
+#include "TMrbString.h"
 #include "SetColor.h"
 
 ClassImp(TMrbSerialComm)
@@ -267,12 +268,12 @@ void TMrbSerialComm::Setup(Int_t BaudRate, Int_t NofDataBits, EMrbParity Parity,
 	}
 }
 
-Int_t TMrbSerialComm::ReadData(TMrbString & Data) {
+Int_t TMrbSerialComm::ReadData(TString & Data) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSerialComm::ReadData
 // Purpose:        Read data from serial device
-// Arguments:      TMrbString & Data      -- where to store data
+// Arguments:      TString & Data         -- where to store data
 // Results:        Int_t NofBytes         -- number of bytes read
 // Exceptions:
 // Description:    Inputs data from serial port.

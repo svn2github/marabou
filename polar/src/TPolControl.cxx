@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TPolControl.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TPolControl.cxx,v 1.5 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -69,11 +69,6 @@ Int_t TPolControl::ReadAdc(Int_t Subdev, Int_t Channel, Bool_t LowResolution) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString cmd, result;
-	Int_t value;
-	Int_t chn;
-	Int_t nBytes;
-
 	if (!this->IsOnline()) {
 		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadAdc");
@@ -85,8 +80,9 @@ Int_t TPolControl::ReadAdc(Int_t Subdev, Int_t Channel, Bool_t LowResolution) {
 	}
 	if (!this->CheckAdcChannel(Subdev, Channel, "ReadAdc")) return(-1);
 
-	chn = Subdev * kPolNofAdcs + Channel;
+	Int_t chn = Subdev * kPolNofAdcs + Channel;
 
+	TString cmd;
 	if (LowResolution) {
 		cmd = "AH";
 		cmd += chn;
@@ -99,6 +95,8 @@ Int_t TPolControl::ReadAdc(Int_t Subdev, Int_t Channel, Bool_t LowResolution) {
 		fSerIO->WriteData("AR");
 		gSystem->Sleep(fWaitAR);
 	}
+	Int_t nBytes;
+	TString result;
 	for (Int_t i = 0; i < 4; i++) {
 		if ((nBytes = fSerIO->ReadData(result)) > 0) break;
 		gSystem->Sleep(100);
@@ -111,7 +109,8 @@ Int_t TPolControl::ReadAdc(Int_t Subdev, Int_t Channel, Bool_t LowResolution) {
 	}
 	result = result.Strip(TString::kTrailing, '\n');
 	result = result.Strip(TString::kBoth);
-	if (result.ToInteger(value)) {
+	if (result.IsDigit()) {
+		Int_t value = result.Atoi();
 		if (value < 0) return(kPolAdcRange + value); else return(-value);
 	} else {
 		gMrbLog->Err()	<< "Read error for channel " << chn
@@ -212,9 +211,6 @@ Int_t TPolControl::SetDac(Int_t AbsChannel, Double_t DacValue, Int_t ReadBack, B
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString cmd, result;
-	Int_t dacVal;
-
 	if (!this->IsOnline()) {
 		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetDac");
@@ -228,9 +224,9 @@ Int_t TPolControl::SetDac(Int_t AbsChannel, Double_t DacValue, Int_t ReadBack, B
 	if (!this->CheckDacValue(DacValue, "SetDac")) return(-1);
 	if (ReadBack != -1 && !this->CheckAdcChannel(ReadBack, "SetDac")) return(-1);
 
-	dacVal = (Int_t) (DacValue * kPolDacRange / (Double_t) kPolMaxVoltage);
+	Int_t dacVal = (Int_t) (DacValue * kPolDacRange / (Double_t) kPolMaxVoltage);
 
-	cmd = "SD";
+	TString cmd = "SD";
 	cmd += AbsChannel;
 	cmd += "=";
 	cmd += dacVal;
@@ -360,10 +356,6 @@ TH1F * TPolControl::Plot(	const Char_t * HistoName,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Double_t dacValue, yVal;
-	Int_t steps;
-	TMrbString hTitle, hAxis;
-
 	if (!this->IsOnline()) {
 		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
 		gMrbLog->Flush(this->ClassName(), "Plot");
@@ -384,9 +376,9 @@ TH1F * TPolControl::Plot(	const Char_t * HistoName,
 	if (!this->CheckDacValue(Xmin, "Plot")) return(NULL);
 	if (!this->CheckDacValue(Xmax, "Plot")) return(NULL);
 
-	steps = (Int_t) ((Xmax - Xmin) / DeltaX + .5);
+	Int_t steps = (Int_t) ((Xmax - Xmin) / DeltaX + .5);
 	if (fHisto) delete fHisto;
-	hTitle = "Plot Y=f(X), Y=chn";
+	TString hTitle = "Plot Y=f(X), Y=chn";
 	hTitle += Y;
 	hTitle += ", X=chn";
 	hTitle += X;
@@ -398,6 +390,7 @@ TH1F * TPolControl::Plot(	const Char_t * HistoName,
 	hTitle += Xmax;
 	hTitle += "]";
 	fHisto = new TH1F(HistoName, hTitle.Data(), steps, Xmin, Xmax);
+	TString hAxis;
 	if (Xaxis == NULL || *Xaxis == '\0') {
 		hAxis = "DAC chn";
 		hAxis += X;
@@ -412,11 +405,11 @@ TH1F * TPolControl::Plot(	const Char_t * HistoName,
 	}
 	fHisto->GetYaxis()->SetTitle(Yaxis);
 	fHisto->GetYaxis()->CenterTitle();
-	dacValue = Xmin;
+	Double_t dacValue = Xmin;
 	for (Int_t i = 0; i < steps; i++, dacValue += DeltaX) {
 		if (dacValue > Xmax) break;
 		this->SetDac(X, dacValue);
-		yVal = ((Double_t) this->ReadAdc(Y)) * kPolMaxVoltage / kPolAdcRange;
+		Double_t yVal = ((Double_t) this->ReadAdc(Y)) * kPolMaxVoltage / kPolAdcRange;
 		fHisto->Fill((Axis_t) dacValue, (Stat_t) yVal);
 	}
 	return(fHisto);
@@ -551,15 +544,6 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObjArray adcList;
-	TMrbString lofChannels;
-	Int_t nofAdcs;
-	TString varList;
-	TMrbString adcName, subdev, channel;
-	TString a1;
-	Int_t sd, chn;
-	TMrbNamedX * nx;
-
 	if (!this->IsOnline()) {
 		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
 		gMrbLog->Flush(this->ClassName(), "Monitor");
@@ -575,35 +559,36 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 		return(NULL);
 	}
 
-	lofChannels = LofChannels;
-	nofAdcs = lofChannels.Split(adcList);
-	if (nofAdcs <= 0) {
-		gMrbLog->Err()	<< "List of channels is empty" << endl;
-		gMrbLog->Flush(this->ClassName(), "Monitor");
-		return(NULL);
-	}
-	varList = "time:";
+	TString varList = "time:";
 	fMonitorLayout.Delete();
 	fMonitorLayout.SetName("MonitorLayout");
 	TString numString = "123456789";
-	for (Int_t i = 0; i < nofAdcs; i++) {
-		adcName = ((TObjString *) adcList[i])->GetString();
-		a1 = adcName(0);
+	Int_t chn;
+	Int_t sd;
+	TString lofChannels = LofChannels;
+	TString adcName;
+	Int_t from = 0;
+	Int_t nofAdcs = 0;
+	while (lofChannels.Tokenize(adcName, from, ":")) {
+		nofAdcs++;
+		TString a1 = adcName(0);
 		if (numString.Index(a1.Data(), 0) != -1) {
 			Int_t n = adcName.Index("-", 0);
 			if (n != -1) {
-				subdev = adcName(0, n);
-				if (!subdev.ToInteger(sd)) {
+				TString subdev = adcName(0, n);
+				if (!subdev.IsDigit()) {
 					gMrbLog->Err()	<< "Illegal subdevice - " << subdev << endl;
 					gMrbLog->Flush(this->ClassName(), "Monitor");
 					return(NULL);
 				}
-				channel = adcName(n + 1, adcName.Length() - n - 1);
-				if (!channel.ToInteger(chn)) {
+				sd = subdev.Atoi();
+				TString channel = adcName(n + 1, adcName.Length() - n - 1);
+				if (!channel.IsDigit()) {
 					gMrbLog->Err()	<< "Illegal channel - " << channel << endl;
 					gMrbLog->Flush(this->ClassName(), "Monitor");
 					return(NULL);
 				}
+				chn = channel.Atoi();
 				if (!this->CheckAdcChannel(sd, chn, "Monitor")) return(NULL);
 				adcName = "S";
 				adcName += sd;
@@ -612,11 +597,12 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 				this->AddName(&fMonitorLayout, adcName.Data(), sd, chn, "A", "");
 				varList += adcName;
 			} else {
-				if (!adcName.ToInteger(chn)) {
+				if (!adcName.IsDigit()) {
 					gMrbLog->Err()	<< "Illegal channel - " << adcName << endl;
 					gMrbLog->Flush(this->ClassName(), "Monitor");
 					return(NULL);
 				}
+				chn = adcName.Atoi();
 				if (!this->CheckAdcChannel(chn, "Monitor")) return(NULL);
 				adcName = "C";
 				adcName += chn;
@@ -626,10 +612,10 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 				varList += adcName;
 			}
 		} else {
-			nx = this->Find(&fNameTable, adcName.Data(), "A", "Monitor", kFALSE);
+			TMrbNamedX * nx = this->Find(&fNameTable, adcName.Data(), "A", "Monitor", kFALSE);
 			if (nx) 	{
 				fMonitorLayout.AddNamedX(nx);
-				if (i > 0) varList += ":";
+				if (nofAdcs > 1) varList += ":";
 				varList += adcName;
 			} else {
 				gMrbLog->Err()	<< "Illegal ADC name - " << adcName << endl;
@@ -637,6 +623,11 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 				return(NULL);
 			}
 		}
+	}
+	if (nofAdcs <= 0) {
+		gMrbLog->Err()	<< "List of channels is empty" << endl;
+		gMrbLog->Flush(this->ClassName(), "Monitor");
+		return(NULL);
 	}
 
 	fMonitorFile = FileName;
@@ -1005,19 +996,16 @@ Int_t TPolControl::ReadNameTable(const Char_t * NameTableFile) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	ifstream f;
-	TMrbString line;
-	Int_t nofEntries, lineNo;
-
-	f.open(NameTableFile, ios::in);
+	ifstream f(NameTableFile, ios::in);
 	if (!f.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " (" << gSystem->GetErrno() << ")" << " - " << NameTableFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadNameTable");
 		return(0);
 	}
 
-	nofEntries = 0;
-	lineNo = 0;
+	Int_t nofEntries = 0;
+	Int_t lineNo = 0;
+	TString line;
 	while (kTRUE) {
 		line.ReadLine(f, kFALSE);
 		if (f.eof()) break;
@@ -1195,26 +1183,24 @@ TMrbNamedX * TPolControl::AddName(const Char_t * NameString) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString str;
-	TObjArray specs;
-	TMrbString subdev, channel;
-	Int_t n, sd, chn;
-	TString name, type, comment;
-
-	str = NameString;
-	n = str.Split(specs);
+	TString str = NameString;
+	TObjArray * specs = str.Tokenize(":");
+	Int_t n = specs->GetEntries();
 	if (n < kPolNofFields - 1) {
 		gMrbLog->Err() << "Illegal format - " << str << endl;
 		gMrbLog->Flush(this->ClassName(), "AddName");
+		delete specs;
 		return(NULL);
 	}
-	name = ((TObjString *) specs[kPolIdxName])->GetString();
-	type = ((TObjString *) specs[kPolIdxType])->GetString();
-	subdev = ((TObjString *) specs[kPolIdxSubdev])->GetString(); subdev.ToInteger(sd);
-	channel = ((TObjString *) specs[kPolIdxChannel])->GetString(); channel.ToInteger(chn);
-	comment = "";
-	if (n == kPolNofFields) comment = ((TObjString *) specs[kPolIdxComment])->GetString();
+	Int_t sd, chn;
+	TString name = ((TObjString *) specs->At(kPolIdxName))->GetString();
+	TString type = ((TObjString *) specs->At(kPolIdxType))->GetString();
+	TString subdev = ((TObjString *) specs->At(kPolIdxSubdev))->GetString(); sd = subdev.Atoi();
+	TString channel = ((TObjString *) specs->At(kPolIdxChannel))->GetString(); chn = channel.Atoi();
+	TString comment = "";
+	if (n == kPolNofFields) comment = ((TObjString *) specs->At(kPolIdxComment))->GetString();
 
+	delete specs;
 	return(this->AddName(&fNameTable, name.Data(), sd, chn, type.Data(), comment.Data()));
 }
 

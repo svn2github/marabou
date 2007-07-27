@@ -63,6 +63,7 @@
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
 #include "TMrbNamedArray.h"
+#include "TMrbString.h"
 #include "TMrbArrayD.h"
 #include "TGMrbSliders.h"
 #include "TGMrbInputDialog.h"

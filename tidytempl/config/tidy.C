@@ -1,5 +1,5 @@
 {
-	gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
+	gROOT->Macro("LoadUtilityLibs.C");
 	gSystem->Load("$MARABOU/lib/libTMrbTidy.so");
 	gSystem->Load("$MARABOU/lib/libTidy.so");
 	TMrbTidyDoc * tdoc = new TMrbTidyDoc("mrb-test");

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbIOSpec.cxx,v 1.4 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbIOSpec.cxx,v 1.5 2007-07-27 11:17:22 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -15,7 +15,6 @@
 
 #include "TMrbIOSpec.h"
 #include "TMrbLogger.h"
-#include "TMrbString.h"
 
 extern TMrbLogger * gMrbLog;					// message logger
 
@@ -79,77 +78,80 @@ Bool_t TMrbIOSpec::CheckStartStop(TString & ValAscii, Int_t & Value, Bool_t & Ti
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString valAscii;
-	TString hmsx;
-
-	valAscii = ValAscii.Strip(TString::kBoth);
+	TString valAscii = ValAscii.Strip(TString::kBoth);
 
 	Value = 0;
+	TString hmsx;
 
 	if (valAscii.Index(":", 0) == -1) {		// event count
 		TimeStampFlag = kFALSE;
-		valAscii.ToInteger(Value);			// convert to integer
+		Value = valAscii.Atoi();			// convert to integer
 		return(kTRUE);
 	} else {								// time stamp
 		TimeStampFlag = kTRUE;
-		TObjArray tsArr;
-		Int_t nts = valAscii.Split(tsArr, ":");
+		TObjArray * tsArr = valAscii.Tokenize(":");
+		Int_t nts = tsArr->GetEntries();
 
 		switch (nts) {
 			case 1: break;
 
 			case 2:
 				{
-					TString h = ((TObjString *) tsArr[0])->GetString();
+					TString h = ((TObjString *) tsArr->At(0))->GetString();
 					h = h.Strip(TString::kBoth);
 					if (h.Length() == 0) {										// :nnnnnn -> raw time stamp
-						Value = atoi(((TObjString *) tsArr[1])->GetString());
+						Value = atoi(((TObjString *) tsArr->At(1))->GetString());
+						delete tsArr;
 						return(kTRUE);
 					} else {													// hh:mm
 						Int_t hh = atoi(h.Data());
-						TString m = ((TObjString *) tsArr[1])->GetString();
+						TString m = ((TObjString *) tsArr->At(1))->GetString();
 						m = m.Strip(TString::kBoth);
 						Int_t mm = (m.Length() == 0) ? 0 : atoi(m.Data());
 						if (mm < 0 || mm > 59) return(kFALSE);
 						Value = ((hh * 60 + mm) * 60) * 1000;
+						delete tsArr;
 						return(kTRUE);
 					}
 				}
 			case 3:
 				{
-					TString h = ((TObjString *) tsArr[0])->GetString(); 		// hh:mm:ss
+					TString h = ((TObjString *) tsArr->At(0))->GetString(); 		// hh:mm:ss
 					h = h.Strip(TString::kBoth);
 					Int_t hh = (h.Length() == 0) ? 0 : atoi(h.Data());
-					TString m = ((TObjString *) tsArr[1])->GetString();
+					TString m = ((TObjString *) tsArr->At(1))->GetString();
 					m = m.Strip(TString::kBoth);
 					Int_t mm = (m.Length() == 0) ? 0 : atoi(m.Data());
-					TString s = ((TObjString *) tsArr[2])->GetString();
+					TString s = ((TObjString *) tsArr->At(2))->GetString();
 					s = s.Strip(TString::kBoth);
 					Int_t ss = (s.Length() == 0) ? 0 : atoi(s.Data());
 					if (mm < 0 || mm > 59 || ss < 0 || ss > 59) return(kFALSE);
 					Value = ((hh * 60 + mm) * 60 + ss) * 1000;
+					delete tsArr;
 					return(kTRUE);
 				}
 			case 4:
 				{
-					TString h = ((TObjString *) tsArr[0])->GetString(); 		// hh:mm:ss:xxx
+					TString h = ((TObjString *) tsArr->At(0))->GetString(); 		// hh:mm:ss:xxx
 					h = h.Strip(TString::kBoth);
 					Int_t hh = (h.Length() == 0) ? 0 : atoi(h.Data());
-					TString m = ((TObjString *) tsArr[1])->GetString();
+					TString m = ((TObjString *) tsArr->At(1))->GetString();
 					m = m.Strip(TString::kBoth);
 					Int_t mm = (m.Length() == 0) ? 0 : atoi(m.Data());
-					TString s = ((TObjString *) tsArr[2])->GetString();
+					TString s = ((TObjString *) tsArr->At(2))->GetString();
 					s = s.Strip(TString::kBoth);
 					Int_t ss = (s.Length() == 0) ? 0 : atoi(s.Data());
-					TString x = ((TObjString *) tsArr[3])->GetString();
+					TString x = ((TObjString *) tsArr->At(3))->GetString();
 					x = x.Strip(TString::kBoth);
 					Int_t xxx = (x.Length() == 0) ? 0 : atoi(x.Data());
+					delete tsArr;
 					if (mm < 0 || mm > 59 || ss < 0 || ss > 59 || xxx < 0 || xxx > 999) return(kFALSE);
 					Value = ((hh * 60 + mm) * 60 + ss) * 1000 + xxx;
 					return(kTRUE);
 				}
 			default:	break;
 		}
+		delete tsArr;
 	}
 	return(kFALSE);
 }

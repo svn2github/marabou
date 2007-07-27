@@ -16,7 +16,7 @@
 // Author:           %%AUTHOR%%
 // Mail:             %%MAILADDR%%
 // URL:              %%URL%%
-// Revision:         $Id: MacroBrowserTemplate.C,v 1.2 2006-11-29 15:11:24 Rudolf.Lutter Exp $
+// Revision:         $Id: MacroBrowserTemplate.C,v 1.3 2007-07-27 11:17:23 Rudolf.Lutter Exp $
 // Date:             %%CREATION_DATE%%
 %%BeginOfCode%%
 //                   $envName:$envSpace$envVal
@@ -42,6 +42,8 @@ enum	{ $enumName = $enumVal };
 %ARGN%$argSpace$argType $argName$argDel
 %ARGND%$argSpace$argType $argName = $argDefault$argDel
 %ARGNDC%$argSpace$argType $argName = "$argDefault"$argDel
+%ARGNCHK%$argSpaceBool_t $argNameCheck$argDel
+%ARGNCHKD%$argSpaceBool_t $argNameCheck = kFALSE$argDel
 %NEW%//>>_________________________________________________(do not change this line)
 %NEW%//
 %NEW%{

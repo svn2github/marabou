@@ -10,7 +10,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTemplate.cxx,v 1.11 2007-05-31 12:42:49 Marabou Exp $       
+// Revision:       $Id: TMrbTemplate.cxx,v 1.12 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -453,9 +453,7 @@ Bool_t TMrbTemplate::InitializeCode(const Char_t * Prefix) {
 	Bool_t lineIsValid;
 	Bool_t errorFlag;
 
-	TMrbString prefix;
-	TObjArray lofPrefs;
-	Int_t nofPrefs = 0;
+	TString prefix;
 	TString pref;
 
 	Bool_t inCodeSegment;
@@ -477,7 +475,6 @@ Bool_t TMrbTemplate::InitializeCode(const Char_t * Prefix) {
 		hasPrefix = kTRUE;
 		prefix = Prefix;
 		fPrefix = prefix;
-		nofPrefs = prefix.Split(lofPrefs, ":");
 	}
 
 	if (fVerbose) {
@@ -499,8 +496,8 @@ Bool_t TMrbTemplate::InitializeCode(const Char_t * Prefix) {
 			if (code == NULL) break;
 			lineOfCode = code->String();
 			if (inCodeSegment) lineOfCode.Prepend(label.Data());
-			for (Int_t i = 0; i < nofPrefs; i++) {
-				pref = ((TObjString *) lofPrefs[i])->GetString();
+			Int_t from = 0;
+			while (prefix.Tokenize(pref, from, ":")) {
 				Bool_t takeIt = kTRUE;
 				if (pref(0) == '~') {
 					takeIt = kFALSE;

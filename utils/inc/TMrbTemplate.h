@@ -8,7 +8,7 @@
 // Class:          TMrbTemplate     -- decode templates
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTemplate.h,v 1.12 2007-05-31 12:42:49 Marabou Exp $       
+// Revision:       $Id: TMrbTemplate.h,v 1.13 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -30,6 +30,7 @@ namespace std {} using namespace std;
 #include "TRegexp.h"
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
+#include "TMrbString.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////

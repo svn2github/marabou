@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.56 2007-06-29 12:15:48 Marabou Exp $       
-// Date:           $Date: 2007-06-29 12:15:48 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.57 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-07-27 11:17:23 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -746,10 +746,11 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 			if (rhLine.IsNull() || rhLine.BeginsWith("#") || rhLine.BeginsWith("//")) continue;
 			TObjArray * rhArr = rhLine.Tokenize(":");
 			Int_t n = rhArr->GetEntriesFast();
-			if (n == 0) continue;
+			if (n == 0) { delete rhArr; continue; }
 			if (n > 2) {
 				gMrbLog->Err() << "[" << rhFile << ", line " << lineNo << "] Wrong format - should be \"hostName [:address]\"" << endl;
 				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				delete rhArr;
 				continue;
 			}
 			hname = ((TObjString *) rhArr->At(0))->GetString();
@@ -763,6 +764,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 				if (n != 1) {
 					gMrbLog->Err() << "[" << rhFile << ", line " << lineNo << "] Wrong format - should be \"domainName\" (starting with \".\")" << endl;
 					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+					delete rhArr;
 					continue;
 				}
 			}
@@ -779,6 +781,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 					dname = dname.Strip(TString::kBoth);
 					hname.Resize(m);
 				}
+				delete hArr;
 			} else {
 				dname = "";
 			}
@@ -803,6 +806,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 			}
 			lofHosts.AddNamedX(nx);
+			delete rhArr;
 		}
 		rhin.close();
 	} else if (this->IsVerbose()) {
@@ -847,6 +851,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 						hname.Resize(n);
 						dname = rhLine(n + 1, 1000);
 					}
+					delete hArr;
 				} else {
 					hname = rhLine;
 					dname = "";

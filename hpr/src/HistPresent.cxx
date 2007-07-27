@@ -51,6 +51,7 @@
 #include "GEdit.h"
 #include "GroupOfHists.h"
 #include "SetColor.h"
+#include "TMrbString.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
 #include "TMrbHelpBrowser.h" 

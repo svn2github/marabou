@@ -8,7 +8,7 @@
 // Class:          TMrbNamedX    -- a TNamed with an index assigned
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbNamedX.h,v 1.8 2006-02-14 15:56:42 Marabou Exp $       
+// Revision:       $Id: TMrbNamedX.h,v 1.9 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -23,8 +23,7 @@ namespace std {} using namespace std;
 #include "TObject.h"
 #include "TNamed.h"
 #include "TSystem.h"
-
-#include "TMrbString.h"
+#include "TString.h"
 
 //_______________________________________________________________[C STRUCTURE]
 //////////////////////////////////////////////////////////////////////////////
@@ -84,7 +83,7 @@ class TMrbNamedX: public TNamed {
 		~TMrbNamedX() {};				// default dtor
 
 																				// return short name + long name (+ index)
-		const Char_t * GetFullName(TMrbString & FullName, Int_t Base = 10, Bool_t IndexFlag = kFALSE) const;
+		const Char_t * GetFullName(TString & FullName, Int_t Base = 10, Bool_t IndexFlag = kFALSE) const;
 
 		inline Int_t GetIndex() const { return(fIndex); };							// return index
 		inline void ChangeIndex(Int_t Index) { fIndex = Index; };					// change index

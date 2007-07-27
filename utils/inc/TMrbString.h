@@ -8,7 +8,7 @@
 // Class:          TMrbString     -- a TString providing number conversion
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbString.h,v 1.9 2006-09-12 08:02:31 Marabou Exp $       
+// Revision:       $Id: TMrbString.h,v 1.10 2007-07-27 11:16:00 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -16,6 +16,9 @@
 #include "Rtypes.h"
 #include "TString.h"
 #include "TSystem.h"
+
+#include "TMrbNamedX.h"
+#include "TMrbLofNamedX.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -116,6 +119,16 @@ class TMrbString : public TString {
 		Bool_t Increment(Double_t Increment);				// increment trailing double
 
 		Int_t Split(TObjArray & LofSubStrings, const Char_t * Separator = ":", Bool_t RemoveWhiteSpace = kFALSE); // split into substrings
+
+		Bool_t Encode(UInt_t & IntVal, SMrbNamedXShort * LofSubStrings, const Char_t * Separator = ":",	// convert option string to number
+									UInt_t Mode = TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase);
+		Bool_t Encode(UInt_t & IntVal, const Char_t * LofSubStrings, const Char_t * Separator = ":",
+									UInt_t Mode = TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase);
+		Bool_t Encode(UInt_t & IntVal, TMrbLofNamedX * LofSubStrings, const Char_t * Separator = ":",
+									UInt_t Mode = TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase);
+		Bool_t Decode(UInt_t IntVal, SMrbNamedXShort * LofSubStrings, const Char_t * Separator = ":");		// convert number to option string
+		Bool_t Decode(UInt_t IntVal, const Char_t * LofSubStrings, const Char_t * Separator = ":");
+		Bool_t Decode(UInt_t IntVal, TMrbLofNamedX * LofSubStrings, const Char_t * Separator = ":");
 
 		Int_t ReplaceWhiteSpace(const Char_t WhiteSpace = ' ');		// replace multiple white spaces (blanks or tabs) by given one
 

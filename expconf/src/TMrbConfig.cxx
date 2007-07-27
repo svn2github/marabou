@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.147 2007-06-29 08:20:45 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.148 2007-07-27 11:17:22 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -953,6 +953,7 @@ const Char_t * TMrbConfig::GetMbsVersion(Bool_t Vformat, Bool_t Verbose)  {
 					gMrbLog->Err() << "Wrong format of MBS version - " << mbsVersion << endl;
 					gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
 				}
+				delete v;
 				return("");
 			}
 			TString major = ((TObjString *) v->At(0))->String();
@@ -961,6 +962,7 @@ const Char_t * TMrbConfig::GetMbsVersion(Bool_t Vformat, Bool_t Verbose)  {
 					gMrbLog->Err() << "Wrong format of MBS version - " << mbsVersion << endl;
 					gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
 				}
+				delete v;
 				return("");
 			}
 			TString minor = ((TObjString *) v->At(1))->String();
@@ -969,10 +971,12 @@ const Char_t * TMrbConfig::GetMbsVersion(Bool_t Vformat, Bool_t Verbose)  {
 					gMrbLog->Err() << "Wrong format of MBS version - " << mbsVersion << endl;
 					gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
 				}
+				delete v;
 				return("");
 			}
 			fMbsVVersion = Form("v%s%s", major.Data(), minor.Data());
 			fMbsVersion = mbsVersion;
+			delete v;
 		}
 	}
 
@@ -1013,6 +1017,7 @@ const Char_t * TMrbConfig::GetLynxVersion(Bool_t Verbose)  {
 				gMrbLog->Err() << "Wrong format of LynxOs version - " << lynxVersion << endl;
 				gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
 			}
+			delete v;
 			return("");
 		}
 		TString major = ((TObjString *) v->At(0))->String();
@@ -1021,6 +1026,7 @@ const Char_t * TMrbConfig::GetLynxVersion(Bool_t Verbose)  {
 				gMrbLog->Err() << "Wrong format of LynxOs version - " << lynxVersion << endl;
 				gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
 			}
+			delete v;
 			return("");
 		}
 		TString minor = ((TObjString *) v->At(1))->String();
@@ -1029,9 +1035,11 @@ const Char_t * TMrbConfig::GetLynxVersion(Bool_t Verbose)  {
 				gMrbLog->Err() << "Wrong format of LynxOs version - " << lynxVersion << endl;
 				gMrbLog->Flush(this->ClassName(), "GetLynxVersion");
 			}
+			delete v;
 			return("");
 		}
 		fLynxVersion = lynxVersion;
+		delete v;
 	}
 
 	return(fLynxVersion.Data());

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.7 2006-10-09 11:49:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.8 2007-07-27 11:17:22 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -306,13 +306,14 @@ Bool_t TMrbDGFCluster::SetChannelLayout(const Char_t * LayoutName, Int_t NofChan
 		return(kFALSE);
 	}
 
-	TMrbString cn = ChannelNames;
-	TObjArray * ca = new TObjArray();
-	Int_t nofChannels = cn.Split(*ca);
+	TString cn = ChannelNames;
+	TObjArray * ca = cn.Tokenize(":");
+	Int_t nofChannels = ca->GetEntries();
 	if (nofChannels != NofChannels) {
 		gMrbLog->Err()	<< "Channel layout \"" << LayoutName << "\": number of channels ("
 						<< NofChannels << ") != number of names given (" << nofChannels << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetChannelLayout");
+		delete ca;
 		return(kFALSE);
 	}
 
@@ -338,6 +339,8 @@ Bool_t TMrbDGFCluster::SetChannelLayout(const Char_t * LayoutName, Int_t NofChan
 	TMrbNamedX * nx = new TMrbNamedX(nofChannels, LayoutName, ChannelNames);
 	nx->AssignObject(ca);
 	fLofChannelLayouts.AddNamedX(nx);
+
+	delete ca;
 
 	return(kTRUE);
 }
@@ -417,7 +420,7 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString cluName;
+	TString cluName;
 
 	TString cluFile = ClusterFile;
 	if (cluFile.EndsWith(".ps")) {
@@ -433,7 +436,7 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		return(-1);
 	}
 
-	TMrbString cLine;
+	TString cLine;
 	Int_t lineNo = 0;
 	Int_t nofClusters = 0;
 	Int_t cluIdx = 0;
@@ -462,9 +465,8 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 			cLine = cLine.Strip(TString::kBoth);
 		}
 
-		TObjArray sLine;
-		sLine.Delete();
-		Int_t nIdx = cLine.Split(sLine, " ", kTRUE);
+		TObjArray * sLine = cLine.Tokenize(" \t");
+		Int_t nIdx = sLine->GetEntries();
 
 		Int_t nofModules = nIdx - kMrbDgfClusterNofItems;
 		Int_t nofModsPerMember;
@@ -475,7 +477,7 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 			case 3: nofModsPerMember = 4; hasNames = kFALSE; break;
 			case 4:
 				{
-					TString x = ((TObjString *) sLine[kMrbDgfClusterNofItems + 3])->GetString();
+					TString x = ((TObjString *) sLine->At(kMrbDgfClusterNofItems + 3))->GetString();
 					if (atoi(x.Data()) > 0) {
 						nofModsPerMember = 4;
 						hasNames = kFALSE;
@@ -493,10 +495,11 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 			default:
 				gMrbLog->Err()	<< "Wrong number of items in line " << lineNo << " - " << nIdx << endl;
 				gMrbLog->Flush(this->ClassName(), "ReadFile");
+				delete sLine;
 				return(-1);
 		}
 
-		Int_t cIdx = atoi(((TObjString *) sLine[kMrbDGFClusterIdx])->GetString().Data());
+		Int_t cIdx = atoi(((TObjString *) sLine->At(kMrbDGFClusterIdx))->GetString().Data());
 		if (cIdx != cluIdx) {
 			if (clu) this->AddNamedX(cluIdx, cluName.Data(), NULL, clu);
 			cluName = "clu";
@@ -506,16 +509,17 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 			nofClusters++;
 		}
 
-		Int_t cluNo = atoi(((TObjString *) sLine[kMrbDGFClusterNo])->GetString());
+		Int_t cluNo = atoi(((TObjString *) sLine->At(kMrbDGFClusterNo))->GetString());
 		clu->SetClusterNo(cluNo);
 
-		TString capsId = ((TObjString *) sLine[kMrbDGFClusterCapsId])->GetString();
+		TString capsId = ((TObjString *) sLine->At(kMrbDGFClusterCapsId))->GetString();
 		capsId.ToUpper();
 		Int_t capsNo = (Int_t) (capsId(0) - 'A');
 		if (capsNo < 0 || capsNo > 2) {
 			gMrbLog->Err()	<< "Wrong capsule id in " << lineNo << " - " << capsId
 							<< " (should be A, B, or C)" << endl;
 			gMrbLog->Flush(this->ClassName(), "ReadFile");
+			delete sLine;
 			continue;
 		}
 
@@ -523,25 +527,25 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		TMrbDGFClusterMember * cluMem = new TMrbDGFClusterMember(cluIdx, cluNo, capsId(0));
 
 		cluMem->SetNofModules(nofModules);
-		cluMem->SetHex(atoi(((TObjString *) sLine[kMrbDGFClusterHex])->GetString().Data()));
-		cluMem->SetVoltage(atoi(((TObjString *) sLine[kMrbDGFClusterVoltage])->GetString().Data()));
-		cluMem->SetColor(((TObjString *) sLine[kMrbDGFClusterColor])->GetString().Data());
-		cluMem->SetAF(((TObjString *) sLine[kMrbDGFClusterAF])->GetString().Data());
-		if (!cluMem->SetSide(((TObjString *) sLine[kMrbDGFClusterSide])->GetString().Data())) ok = kFALSE;
-		if (!cluMem->SetHeight(((TObjString *) sLine[kMrbDGFClusterHeight])->GetString().Data())) ok = kFALSE;
-		if (!cluMem->SetAngle(((TObjString *) sLine[kMrbDGFClusterAngle])->GetString().Data())) ok = kFALSE;
-		cluMem->SetCrate(atoi(((TObjString *) sLine[kMrbDGFClusterCrate])->GetString().Data()));
+		cluMem->SetHex(atoi(((TObjString *) sLine->At(kMrbDGFClusterHex))->GetString().Data()));
+		cluMem->SetVoltage(atoi(((TObjString *) sLine->At(kMrbDGFClusterVoltage))->GetString().Data()));
+		cluMem->SetColor(((TObjString *) sLine->At(kMrbDGFClusterColor))->GetString().Data());
+		cluMem->SetAF(((TObjString *) sLine->At(kMrbDGFClusterAF))->GetString().Data());
+		if (!cluMem->SetSide(((TObjString *) sLine->At(kMrbDGFClusterSide))->GetString().Data())) ok = kFALSE;
+		if (!cluMem->SetHeight(((TObjString *) sLine->At(kMrbDGFClusterHeight))->GetString().Data())) ok = kFALSE;
+		if (!cluMem->SetAngle(((TObjString *) sLine->At(kMrbDGFClusterAngle))->GetString().Data())) ok = kFALSE;
+		cluMem->SetCrate(atoi(((TObjString *) sLine->At(kMrbDGFClusterCrate))->GetString().Data()));
 		Int_t idx = kMrbDgfClusterNofItems;
 		for (Int_t i = 0; i < nofModules; i++, idx++) {
-			cluMem->SetSlot(i, atoi(((TObjString *) sLine[idx])->GetString().Data()));
+			cluMem->SetSlot(i, atoi(((TObjString *) sLine->At(idx))->GetString().Data()));
 		}
 		if (hasNames) {
 			for (Int_t i = 0; i < nofModules; i++, idx++) {
-				cluMem->SetDgf(i, ((TObjString *) sLine[idx])->GetString().Data());
+				cluMem->SetDgf(i, ((TObjString *) sLine->At(idx))->GetString().Data());
 			}
 		} else {
 			for (Int_t i = 0; i < nofModules; i++) {
-				TMrbString dgfName = "undef";
+				TString dgfName = "undef";
 				if (cluMem->GetSlot(i) > 0) {
 					dgfName = "dgf";
 					dgfName += cluIdx;
@@ -553,6 +557,7 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		if (cmt.Length() > 0) cluMem->SetCmt(cmt.Data());
 
 		if (ok) clu->AddMember(cluMem);
+		delete sLine;
 	}
 }	
 

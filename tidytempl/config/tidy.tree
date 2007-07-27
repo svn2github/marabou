@@ -49,12 +49,6 @@ Document mrb-test (file Analyze.cxx.code): structure as analyzed by D. Raggett's
 [ 6] ...... <mc> type=StartTag(5) tag=MNODE(203) parent=mc indent=1 mtag="ADD_USER_ENV" atag="TMrbConfig::kAnaAddUserEnv" comment="// add user's environment defs" subst="rcFile:file containing env definitions" iter="more than one file possible" marabou-links="gMrbLog:TMrbLogger,Out:TMrbLogger#"
 [ 7] ....... <text> type=Text(4) parent=mc text='<cr>   Bool_t...'
 [ 6] ...... <text> type=Text(4) parent=mc text='<cr>...'
-[ 6] ...... <mi> type=Start/End(7) tag=MNODE(204) parent=mc indent=1 mtag="TEST_INCLUDE" mfile="xxx.cxx.code"
-[ 7] ....... <mc> type=StartTag(5) tag=MNODE(203) parent=mi indent=1 mtag="TEST_INCLUDE" comment="*default method*, may be replaced by user-defined code" indent="1"
-[ 8] ........ <text> type=Text(4) parent=mc text='<cr><cr>...'
-[ 8] ........ <mh> type=Start/End(7) tag=MNODE(200) parent=mc indent=1 mtype="C++ METHOD" name="TMrbAnalyze::HandleMessage" purp="Execute a message" args="Char_t *:Args:argument list" return="Bool_t:TrueOrFalse" descr="Executes a message sent by message handler"
-[ 8] ........ <text> type=Text(4) parent=mc text='<cr><cr>...'
-[ 6] ...... <text> type=Text(4) parent=mc text='<cr>...'
 [ 6] ...... <mc> type=StartTag(5) tag=MNODE(203) parent=mc indent=1 mtag="HISTO_INIT_ARRAYS" atag="TMrbConfig::kAnaHistoInitializeArrays" comment="// initialize histogram arrays" subst=" sevtName:subevent name, paramName:parameter name, nofParams:number of parameters, nofHistos:number of histograms, hArrayName:name of histogram array, indexRange:range of histogram index, prefix:event prefix"
 [ 7] ....... <text> type=Text(4) parent=mc text='   ...'
 [ 7] ....... <ms> type=StartTag(5) tag=MNODE(205) parent=mc indent=1

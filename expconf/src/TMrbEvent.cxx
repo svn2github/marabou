@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.22 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.23 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +22,6 @@ namespace std {} using namespace std;
 #include "TDirectory.h"
 
 #include "TMrbSystem.h"
-#include "TMrbString.h"
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 #include "TMrbLogger.h"
@@ -231,16 +230,14 @@ Bool_t TMrbEvent::HasSubevent(const Char_t * Assignment) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbSubevent * sevt;
+
+	TString assign = Assignment;
 	TString sevtName;
-
-	TMrbString assign = Assignment;
-	TObjArray assArr;
-
-	Int_t n = assign.Split(assArr, " ", kTRUE);
-	for (Int_t i = 0; i < n; i++) {
-		sevtName = ((TObjString *) assArr[i])->GetString();
+	Int_t from = 0;
+	while (assign.Tokenize(sevtName, from, " ")) {
+		sevtName = sevtName.Strip(TString::kBoth);
 		if (sevtName.Length() <= 0) break;
+		TMrbSubevent * sevt;
 		if ((sevt = (TMrbSubevent *) gMrbConfig->FindSubevent(sevtName)) == NULL) {
 			gMrbLog->Err() << "Event " << this->GetName() << ": No such subevent - " << sevtName << endl;
 			gMrbLog->Flush(this->ClassName(), "HasSubevent");
@@ -400,7 +397,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 	TString evtNameLC;
 	TString sevtNameLC;
 	TString sevtNameUC;
-	TMrbString evtAutoSave;
+	TString evtAutoSave;
 	
 	TMrbNamedX * analyzeTag;
 	TMrbConfig::EMrbAnalyzeTag tagIdx;
@@ -537,7 +534,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 					break;
 				case TMrbConfig::kAnaEventTrigger:
 					{
-						TMrbString trigName(this->GetTrigger());
+						TString trigName(this->GetTrigger());
 						ana << anaTmpl.Encode(line, trigName) << endl;
 					}
 					break;

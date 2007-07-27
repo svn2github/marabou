@@ -64,7 +64,7 @@ EXTRA_CXXFLAGS += -g -Wno-switch -I$(ROOTSYS)/include
 # for HistPresent only the following modules are needed
 
 MODULES       = build utils gutils \
-						helpbrowser hpr \
+                helpbrowser hpr \
 
 # if offline data analysis in the marabou framework is needed
 
@@ -104,9 +104,9 @@ ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
 MODULES      += polar
 endif
 
-#ifeq ($(shell if [ -d snake ] ; then echo yes; fi), yes)
-#MODULES      += snake
-#endif
+ifeq ($(shell if [ -d snake ] ; then echo yes; fi), yes)
+MODULES      += snake
+endif
 
 ##### ROOT libraries #####
 

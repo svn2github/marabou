@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.47 2007-06-04 10:07:15 Marabou Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.48 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2067,9 +2067,9 @@ Int_t TMrbDGF::LoadParams(const Char_t * ParamFile, const Char_t * AltParamFile,
 	ifstream pf;
 	Int_t nofParams;
 	TString paramFile;
-	TMrbString pLine;
-	TObjArray pFields;
-	TMrbString pStr;
+	TString pLine;
+	TObjArray * pFields;
+	TString pStr;
 	Int_t line;
 	Int_t nFields;
 	TMrbSystem uxSys;
@@ -2111,27 +2111,31 @@ Int_t TMrbDGF::LoadParams(const Char_t * ParamFile, const Char_t * AltParamFile,
 			pLine = pLine.Strip(TString::kBoth);
 			if (pLine.Length() == 0) continue;						// empty line
 			if (pLine(0) == '#') continue;							// comment
-			pFields.Delete();
-			nFields = pLine.Split(pFields, ":");
+			pLine = pLine.Strip(TString::kBoth);
+			pFields = pLine.Tokenize(":");
+			nFields = pFields->GetEntries();
 			if (nFields < 3) {
 				gMrbLog->Err() << paramFile << " (line " << line << "): Wrong number of fields - " << nFields << endl;
 				gMrbLog->Flush(this->ClassName(), "LoadParams");
+				delete pFields;
 				continue;
 			}
-			pName = ((TObjString *) pFields[0])->GetString();
+			pName = ((TObjString *) pFields->At(0))->GetString();
 			pKey = fDGFData->FindParam(pName.Data());
 			if (pKey == NULL) {
 				gMrbLog->Err() << paramFile << " (line " << line << "): No such param - " << pName << endl;
 				gMrbLog->Flush(this->ClassName(), "LoadParams");
+				delete pFields;
 				continue;
 			} else {
 				nofParams++;
-				pStr = ((TObjString *) pFields[1])->GetString();
-				pStr.ToInteger(pOffset);
-				pStr = ((TObjString *) pFields[2])->GetString();
-				pStr.ToInteger(pValue);				
+				pStr = ((TObjString *) pFields->At(1))->GetString();
+				pOffset = pStr.Atoi();
+				pStr = ((TObjString *) pFields->At(2))->GetString();
+				pValue = pStr.Atoi();
 				fParams[pOffset] = pValue;
 			}
+			delete pFields;
 		}
 		pf.close();
 	} else if (uxSys.CheckExtension(paramFile.Data(), ".pdmp")) {
@@ -2152,7 +2156,7 @@ Int_t TMrbDGF::LoadParams(const Char_t * ParamFile, const Char_t * AltParamFile,
 			if (pLine(0) == '#') continue;							// comment
 			nofParams++;
 			pStr = pLine;
-			pStr.ToInteger(pValue);				
+			pValue = pStr.Atoi();			
 			fParams[line] = pValue;
 			line++;
 		}
@@ -2198,8 +2202,8 @@ Int_t TMrbDGF::LoadParamsToEnv(TEnv * Env, const Char_t * ParamFile, const Char_
 	ifstream pf;
 	Int_t nofParams;
 	TString paramFile;
-	TMrbString pLine;
-	TObjArray pFields;
+	TString pLine;
+	TObjArray * pFields;
 	TString pStr;
 	Int_t line;
 	Int_t nFields;
@@ -2245,37 +2249,41 @@ Int_t TMrbDGF::LoadParamsToEnv(TEnv * Env, const Char_t * ParamFile, const Char_
 			Int_t ncmt = pLine.Index("#", 0);
 			if (ncmt > 0) pLine.Resize(ncmt);
 			pLine = pLine.Strip(TString::kBoth);
-			pFields.Delete();
-			nFields = pLine.Split(pFields, ":");
-			pName = ((TObjString *) pFields[0])->GetString();
+			pFields = pLine.Tokenize(":");
+			nFields = pFields->GetEntries();
+			pName = ((TObjString *) pFields->At(0))->GetString();
 			if (pName(0) == '#') {									// special entry (#+): strip off leading chars
 				if (nFields != 2) {
 					gMrbLog->Err() << paramFile << " (line " << line << "): Wrong number of fields - " << nFields << endl;
 					gMrbLog->Flush(this->ClassName(), "LoadParamsToEnv");
+					delete pFields;
 					continue;
 				}
 				pStr = pName(2, pName.Length() - 2);
 				pStr = pStr.Strip(TString::kBoth);
 				pStr += "=";
-				pStr += ((TObjString *) pFields[1])->GetString();
+				pStr += ((TObjString *) pFields->At(1))->GetString();
 			} else {
 				if (nFields < 3) {
 					gMrbLog->Err() << paramFile << " (line " << line << "): Wrong number of fields - " << nFields << endl;
 					gMrbLog->Flush(this->ClassName(), "LoadParamsToEnv");
+					delete pFields;
 					continue;
 				}
 				pKey = fDGFData->FindParam(pName.Data());
 				if (pKey == NULL) {
 					gMrbLog->Err() << paramFile << " (line " << line << "): No such param - " << pName << endl;
 					gMrbLog->Flush(this->ClassName(), "LoadParamsToEnv");
+					delete pFields;
 					continue;
 				}
 				nofParams++;
-				pStr = ((TObjString *) pFields[0])->GetString();
+				pStr = ((TObjString *) pFields->At(0))->GetString();
 				pStr += "=";
-				pStr += ((TObjString *) pFields[2])->GetString();
+				pStr += ((TObjString *) pFields->At(2))->GetString();
 			}
 			Env->SetValue(pStr.Data(), kEnvUser);
+			delete pFields;
 		}
 		pf.close();
 	} else {
@@ -2430,8 +2438,8 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFi
 	ifstream pf;
 	Int_t nofParams;
 	TString paramFile;
-	TMrbString pLine;
-	TObjArray pFields;
+	TString pLine;
+	TObjArray * pFields;
 	TMrbString pStr;
 	Int_t line;
 	Int_t nFields;
@@ -2470,17 +2478,18 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFi
 			Int_t ncmt = pLine.Index("#", 0);
 			if (ncmt > 0) pLine.Resize(ncmt);
 			pLine = pLine.Strip(TString::kBoth);
-			pFields.Delete();
-			nFields = pLine.Split(pFields, ":");
+			pFields = pLine.Tokenize(":");
+			nFields = pFields->GetEntries();
 			if (nFields < 3) {
 				gMrbLog->Err() << paramFile << " (line " << line << "): Wrong number of fields - " << nFields << endl;
 				gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+				delete pFields;
 				continue;
 			}
-			pName = ((TObjString *) pFields[0])->GetString();
+			pName = ((TObjString *) pFields->At(0))->GetString();
 			pKey = fDGFData->FindParam(pName.Data());
-			pStr = ((TObjString *) pFields[1])->GetString();
-			pStr.ToInteger(pOffset);
+			pStr = ((TObjString *) pFields->At(1))->GetString();
+			pOffset = pStr.Atoi();
 			if (pOffset0 == -1) pOffset0 = pOffset;
 			if (pKey == NULL) {
 				gMrbLog->Wrn()	<< paramFile << " (line " << line << "): No such PSA name - " << pName
@@ -2490,12 +2499,14 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFi
 			if (pOffset - pOffset0 > 16) {
 				gMrbLog->Err() << paramFile << " (line " << line << "): [" << pName << "] PSA offset > 16" << endl;
 				gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+				delete pFields;
 				continue;
 			}
-			pStr = ((TObjString *) pFields[2])->GetString();
-			pStr.ToInteger(pValue);				
+			pStr = ((TObjString *) pFields->At(2))->GetString();
+			pValue = pStr.Atoi();			
 			psaVal[pOffset - pOffset0] = pValue;
 			nofParams++;
+			delete pFields;
 		}
 		pf.close();
 	} else if (uxSys.CheckExtension(paramFile.Data(), ".psadmp")) {
