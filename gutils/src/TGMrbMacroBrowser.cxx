@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.28 2007-07-30 12:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.29 2007-07-30 12:44:22 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -994,7 +994,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 
 			TMrbLofNamedX * checkBtn;
 			TString tf = "F";
-			if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC || TGMrbMacroArg::kGMrbMacroEntryUpDownC) {
+			if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC || n == TGMrbMacroArg::kGMrbMacroEntryUpDownC) {
 				checkBtn = new TMrbLofNamedX();
 				checkBtn->AddNamedX(1, "");
 				Int_t x = currentValue.Index(":");
@@ -1018,7 +1018,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			fMacroArgs->AddFrame(macroArg->fEntry, frameGC->LH());
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
 			macroArg->fEntry->GetEntry()->SetText(value.Data());
-			if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC || TGMrbMacroArg::kGMrbMacroEntryUpDownC) {
+			if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC || n == TGMrbMacroArg::kGMrbMacroEntryUpDownC) {
 				TGMrbCheckButtonList * lcb = macroArg->fEntry->GetLofCheckButtons();
 				TGButton * btn = lcb->GetButton(1);
 				btn->SetState(tf.BeginsWith("T") ? kButtonDown : kButtonUp);
