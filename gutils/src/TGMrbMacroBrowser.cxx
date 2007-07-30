@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.30 2007-07-30 13:08:28 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.31 2007-07-30 13:16:47 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -1467,7 +1467,8 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 			argString = macroArg->fEntry->GetEntry()->GetText();
 			currentValue = argString;
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC ||
-			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC) {
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC) {
 			TGMrbCheckButtonList * lcb = macroArg->fEntry->GetLofCheckButtons();
 			argString = macroArg->fEntry->GetEntry()->GetText();
 			currentValue = argString;
@@ -1479,16 +1480,31 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 				checkBtn = "kFALSE";
 			}
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryPlain2 ||
-			n == TGMrbMacroArg::kGMrbMacroEntryPlainC2 ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDown2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2) {
+			argString = macroArg->fEntry->GetText(0);
+			currentValue = argString;
+			currentValue += ":";
+			argString2 = macroArg->fEntry->GetText(1);
+			currentValue += argString2;
+		} else if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC2 ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC2 ||
-			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2 ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC2) {
 			argString = macroArg->fEntry->GetText(0);
 			currentValue = argString;
 			currentValue += ":";
 			argString2 = macroArg->fEntry->GetText(1);
 			currentValue += argString2;
+			TGMrbCheckButtonList * lcb = macroArg->fEntry->GetLofCheckButtons();
+			argString = macroArg->fEntry->GetEntry()->GetText();
+			currentValue = argString;
+			if (lcb->GetActive()) {
+				currentValue += ":T";
+				checkBtn = "kTRUE";
+			} else {
+				currentValue += ":F";
+				checkBtn = "kFALSE";
+			}
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryYesNo) {
 			buttonBits = macroArg->fRadio->GetActive();
 			TMrbNamedX * btn = macroArg->fButtons.FindByIndex(buttonBits);
@@ -1570,7 +1586,11 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 			cmd += Form("%s%s", delim.Data(), argString2.Data());
 		}
 		if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC ||
-			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC) cmd += Form("%s%s", delim.Data(), checkBtn.Data());
+			n == TGMrbMacroArg::kGMrbMacroEntryPlainC2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC2) cmd += Form("%s%s", delim.Data(), checkBtn.Data());
 
 		if (macroArg->fAddLofValues) {
 			argString = macroEnv->GetValue(macroArg->GetResource(argString, "Values"), "");
