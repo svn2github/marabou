@@ -7,7 +7,7 @@
 // Purpose:        Define utilities to be used with the MARaBOU GUI
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbProfile.h,v 1.1 2007-07-27 11:11:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbProfile.h,v 1.2 2007-07-30 12:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -15,7 +15,10 @@
 #include "Rtypes.h"
 #include "GuiTypes.h"
 
+#include "TGClient.h"
+#include "TGGC.h"
 #include "TGLayout.h"
+#include "TGFont.h"
 #include "TSystem.h"
 #include "TObjArray.h"
 #include "TEnv.h"
@@ -25,13 +28,13 @@
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbProfile
-// Purpose:        A utility to ease use of ROOT's GC mechanisms
-// Description:    Handles graphic contexts.
+// Name:           TGMrbGC
+// Purpose:        A wrapper around TGGC object
+// Description:    Handles graphics contexts.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TGMrbGContext : public TObject {
+class TGMrbGC : public TObject {
 
 	public:
 		enum EGMrbButtonType		{	kGMrbTextButton 			= BIT(0),
@@ -58,22 +61,22 @@ class TGMrbGContext : public TObject {
 							};
 
 	public:
-		TGMrbGContext(const Char_t * Font = "Gui.NormalFont",
+		TGMrbGC(const Char_t * Font = "Gui.NormalFont",
 					const Char_t * Foreground = "Gui.Foreground",
 					const Char_t * Background = "Gui.Background",
 					UInt_t Options = 0);
 
-		TGMrbGContext(const Char_t * Font, Pixel_t Foreground, Pixel_t Background, UInt_t Options = 0);
+		TGMrbGC(const Char_t * Font, Pixel_t Foreground, Pixel_t Background, UInt_t Options = 0);
 
-		TGMrbGContext(TGMrbGContext::EGMrbGCType Type, UInt_t Options = 0);
+		TGMrbGC(TGMrbGC::EGMrbGCType Type, UInt_t Options = 0);
 
-		~TGMrbGContext() {};						// dtor
+		~TGMrbGC() {};						// dtor
 
-		inline GContext_t GC() const { return(fGC); };
+		inline TGGC * GCAddr() const { return(fGC); };
+		inline GContext_t GC() const { return(fGC->GetGC()); };
 
 		Bool_t SetFont(const Char_t * Font);
-		inline void SetFont(FontStruct_t Font) { fFont = Font; };
-		inline FontStruct_t Font() const { return(fFont); };
+		inline TGFont * Font() const { return(fFont); };
 		inline const Char_t * GetFontName() { return(fFontName.Data()); };
 
 		Bool_t SetFG(const Char_t * Foreground);
@@ -89,29 +92,26 @@ class TGMrbGContext : public TObject {
 		inline void SetOptions(UInt_t Options) { fOptions = Options; };
 		inline UInt_t GetOptions() { return(fOptions); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbGContext.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbGC.html&"); };
 
 	protected:
-		GContext_t CreateGC(FontStruct_t Font, Pixel_t Foreground, Pixel_t Background);
-
-	protected:
-		GContext_t fGC;
+		TGGC * fGC;
 		TString fFontName;
 		TString fForegroundName;
 		TString fBackgroundName;
-		FontStruct_t fFont;
+		TGFont * fFont;
 		Pixel_t fForeground;
 		Pixel_t fBackground;
 		UInt_t fOptions;
 
-	ClassDef(TGMrbGContext, 0)		// [GraphUtils] Describe a graphical layout (colors, fonts, layout hints)
+	ClassDef(TGMrbGC, 0)		// [GraphUtils] Graphics context (colors, fonts)
 };
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbProfile
 // Purpose:        Graphics profile
-// Description:    Handles a list of TGMrbGContext objects
+// Description:    Handles a list of TGMrbGC objects
 //                 together with global graphics options.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -123,21 +123,21 @@ class TGMrbProfile : public TNamed {
 
 		~TGMrbProfile() {};						// dtor
 
-		Bool_t SetGC(TGMrbGContext::EGMrbGCType Type, TGMrbGContext * GC);
-		Bool_t SetGC(TGMrbGContext::EGMrbGCType Type,	const Char_t * Font = "Gui.NormalFont",
+		Bool_t SetGC(TGMrbGC::EGMrbGCType Type, TGMrbGC * GC);
+		Bool_t SetGC(TGMrbGC::EGMrbGCType Type,	const Char_t * Font = "Gui.NormalFont",
 										const Char_t * Foreground = "Gui.Foreground",
 										const Char_t * Background = "Gui.Background");
-		Bool_t SetGC(TGMrbGContext::EGMrbGCType Type, const Char_t * Font, Pixel_t Foreground, Pixel_t Background);
+		Bool_t SetGC(TGMrbGC::EGMrbGCType Type, const Char_t * Font, Pixel_t Foreground, Pixel_t Background);
 
-		TGMrbGContext * GetGC(TGMrbGContext::EGMrbGCType Type);
+		TGMrbGC * GetGC(TGMrbGC::EGMrbGCType Type);
 
-		void SetOptions(TGMrbGContext::EGMrbGCType Type, UInt_t Options);
+		void SetOptions(TGMrbGC::EGMrbGCType Type, UInt_t Options);
 		void SetOptions(const Char_t * Type, UInt_t Options);
-		UInt_t GetOptions(TGMrbGContext::EGMrbGCType Type);
+		UInt_t GetOptions(TGMrbGC::EGMrbGCType Type);
 		UInt_t GetOptions(const Char_t * Type);
 
 		inline UInt_t GetFrameOptions() {
-				return(((TGMrbGContext *) ((TMrbNamedX *) fLofGCs[TGMrbGContext::kGMrbGCFrame])->GetAssignedObject())->GetOptions());
+				return(((TGMrbGC *) ((TMrbNamedX *) fLofGCs[TGMrbGC::kGMrbGCFrame])->GetAssignedObject())->GetOptions());
 		};
 
 		void Print(Option_t * Option) const { TObject::Print(Option); };
@@ -145,12 +145,12 @@ class TGMrbProfile : public TNamed {
 		inline void Print() const { Print(cout); };
 
 	protected:
-		TGMrbGContext * AddGC(TMrbNamedX * GCSpecs, TEnv * Env = NULL, TGMrbGContext * DefaultGC = NULL);
+		TGMrbGC * AddGC(TMrbNamedX * GCSpecs, TEnv * Env = NULL, TGMrbGC * DefaultGC = NULL);
 
 	protected:
 		TMrbLofNamedX fLofGCs;			// graphics contexts
 
-	ClassDef(TGMrbProfile, 0)		// [GraphUtils] A graphics profile: a list of graph contexts and options
+	ClassDef(TGMrbProfile, 0)		// [GraphUtils] A graphics profile: a set of graphics contexts and options
 };
 
 //______________________________________________________[C++ CLASS DEFINITION]

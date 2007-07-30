@@ -3,9 +3,9 @@
 #pragma link off all classes;
 #pragma link off all functions;
 
+#pragma link C++ class TGMrbGC;
 #pragma link C++ class TGMrbProfile;
 #pragma link C++ class TGMrbLofProfiles;
-#pragma link C++ class TGMrbGContext;
 #pragma link C++ class TGMrbLayout;
 #pragma link C++ class TGMrbGeometry;
 #pragma link C++ class TGMrbFocusList;

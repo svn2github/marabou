@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.10 2007-07-27 11:08:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.11 2007-07-30 12:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -93,6 +93,8 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 									kGMrbEntryTypeCharDouble
 								};
 
+		enum					{	kGMrbEntryNofEntries = 4	};
+
 	public:
 		TGMrbLabelEntry(const TGWindow * Parent, const Char_t * Label,				// ctor
 									Int_t BufferSize, Int_t EntryId,
@@ -108,25 +110,26 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 									TMrbLofNamedX * CheckBtns = NULL,
 									TMrbLofNamedX * RadioBtns = NULL,
 									UInt_t FrameOptions = kHorizontalFrame,
-									UInt_t EntryOptions = kSunkenFrame | kDoubleBorder);
+									UInt_t EntryOptions = kSunkenFrame | kDoubleBorder,
+									Int_t NofEntries = 1);
 
 		~TGMrbLabelEntry() {};				// default dtor
 
 		void SetType(EGMrbEntryType EntryType, Int_t Width = 0, Int_t BaseOrPrec = -1, Bool_t PadZero = kFALSE);
-		inline void SetIncrement(Double_t Increment) { fIncrement = Increment; };
-		Bool_t SetRange(Double_t LowerLimit, Double_t UpperLimit);
-		Bool_t WithinRange() const;
-		Bool_t CheckRange(Double_t Value, Bool_t Verbose = kFALSE, Bool_t Popup = kFALSE) const;
-		Bool_t RangeToBeChecked() const;
+		void SetIncrement(Double_t Increment, Int_t EntryNo = -1);
+		Bool_t SetRange(Double_t LowerLimit, Double_t UpperLimit, Int_t EntryNo = -1);
+		Bool_t WithinRange(Int_t EntryNo = 0) const;
+		Bool_t CheckRange(Double_t Value, Int_t EntryNo = 0, Bool_t Verbose = kFALSE, Bool_t Popup = kFALSE) const;
+		Bool_t RangeToBeChecked(Int_t EntryNo = 0) const;
 
-		inline void AddToFocusList(TGMrbFocusList * FocusList) { fFocusList = FocusList; fFocusList->Add(fEntry); };
+		inline void AddToFocusList(TGMrbFocusList * FocusList, Int_t EntryNo = 0) { fFocusList = FocusList; fFocusList->Add(fEntry[EntryNo]); };
 		inline TGMrbFocusList * GetFocusList() const { return(fFocusList); };
 
-		inline TGMrbTextEntry * GetEntry() const { return(fEntry); };
-		inline TGPictureButton * GetUpButton() const { return(fUp); };
-		inline TGPictureButton * GetDownButton() const { return(fDown); };
-		inline TGPictureButton * GetBeginButton() const { return(fBegin); };
-		inline TGPictureButton * GetEndButton() const { return(fEnd); };
+		inline TGMrbTextEntry * GetEntry(Int_t EntryNo = 0) const { return(fEntry[EntryNo]); };
+		inline TGPictureButton * GetUpButton(Int_t EntryNo = 0) const { return(fUp[EntryNo]); };
+		inline TGPictureButton * GetDownButton(Int_t EntryNo = 0) const { return(fDown[EntryNo]); };
+		inline TGPictureButton * GetBeginButton(Int_t EntryNo = 0) const { return(fBegin[EntryNo]); };
+		inline TGPictureButton * GetEndButton(Int_t EntryNo = 0) const { return(fEnd[EntryNo]); };
 		inline TGTextButton * GetActionButton() const { return(fAction); };
 		inline TGMrbCheckButtonList * GetLofCheckButtons() const { return(fCheckBtns); };
 		inline TGMrbRadioButtonList * GetLofRadioButtons() const { return(fRadioBtns); };
@@ -134,12 +137,12 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		void UpDownButtonEnable(Bool_t Flag = kTRUE);			// enable/disable up/down buttons
 		void ActionButtonEnable(Bool_t Flag = kTRUE);			// enable/disable action button
 
-		const Char_t * GetText();								// get text, update tooltip if necessary
-		Int_t GetText2Int();									// get text, convert to integer
-		Double_t GetText2Double();								// ... convert to integer
-		void SetText(const Char_t * Text);						// set text, update tooltip if necessary
-		void SetText(Int_t Value);								// ... convert from integer
-		void SetText(Double_t Value);							// ... from double
+		const Char_t * GetText(Int_t EntryNo = 0);				// get text, update tooltip if necessary
+		Int_t GetText2Int(Int_t EntryNo = 0);					// get text, convert to integer
+		Double_t GetText2Double(Int_t EntryNo = 0);				// ... convert to integer
+		void SetText(const Char_t * Text, Int_t EntryNo = 0);	// set text, update tooltip if necessary
+		void SetText(Int_t Value, Int_t EntryNo = 0);			// ... convert from integer
+		void SetText(Double_t Value, Int_t EntryNo = 0);		// ... from double
 
 		inline TGLabel * GetLabel() { return(fLabel); };
 
@@ -147,31 +150,32 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
-		inline void Associate(const TGWindow * Window) { fEntry->Associate(Window); };	// where to go if text field data change
+		inline void Associate(const TGWindow * Window, Int_t EntryNo = 0) { fEntry[EntryNo]->Associate(Window); };	// where to go if text field data change
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
-		void CreateToolTip();
+		void CreateToolTip(Int_t EntryNo = 0);
 
 	protected:
-		TGLabel * fLabel;				//! label
-		TGMrbTextEntry * fEntry;		//! entry widget
-		TGPictureButton * fUp; 			//! button ">", increment
-		TGPictureButton * fDown;		//! button "<", decrement
-		TGPictureButton * fBegin; 		//! button "<<", begin
-		TGPictureButton * fEnd; 		//! button ">>", end
-		TGTextButton * fAction; 		//! textbutton
-		TGMrbCheckButtonList * fCheckBtns;	//!checkbuttons
-		TGMrbRadioButtonList * fRadioBtns;	//!radiobuttons
-		EGMrbEntryType fType;			// entry type: char, char + int, ...
-		Int_t fWidth;					// number of digits to be displayed
-		Int_t fBase;					// numerical base if of type int or charint (2, 8, 10, 16)
-		Int_t fPrecision;				// precision if type double
-		Bool_t fPadZero; 				// should we pad with 0?
-		Double_t fLowerLimit;			// lower limit
-		Double_t fUpperLimit;			// upper limit
-		Double_t fIncrement;			// increment
+		Int_t fNofEntries;									// number of entries (1 or 2)
+		TGLabel * fLabel;									//! label
+		TGMrbTextEntry * fEntry[kGMrbEntryNofEntries];		//! entry widget(s)
+		TGPictureButton * fUp[kGMrbEntryNofEntries]; 		//! button ">", increment
+		TGPictureButton * fDown[kGMrbEntryNofEntries];		//! button "<", decrement
+		TGPictureButton * fBegin[kGMrbEntryNofEntries]; 	//! button "<<", begin
+		TGPictureButton * fEnd[kGMrbEntryNofEntries]; 		//! button ">>", end
+		TGTextButton * fAction; 							//! textbutton
+		TGMrbCheckButtonList * fCheckBtns;					//!checkbuttons
+		TGMrbRadioButtonList * fRadioBtns;					//!radiobuttons
+		EGMrbEntryType fType;								// entry type: char, char + int, ...
+		Int_t fWidth;										// number of digits to be displayed
+		Int_t fBase;										// numerical base if of type int or charint (2, 8, 10, 16)
+		Int_t fPrecision;									// precision if type double
+		Bool_t fPadZero; 									// should we pad with 0?
+		Double_t fLowerLimit[kGMrbEntryNofEntries];			// lower limit
+		Double_t fUpperLimit[kGMrbEntryNofEntries];			// upper limit
+		Double_t fIncrement[kGMrbEntryNofEntries];			// increment
 
 		Bool_t fShowToolTip;			// kTRUE if tooltip has to be shown
 		Bool_t fShowRange;				// kTRUE if range has to be shown in tooltip

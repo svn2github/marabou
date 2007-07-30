@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbProfile.cxx,v 1.1 2007-07-27 11:15:03 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbProfile.cxx,v 1.2 2007-07-30 12:25:33 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +32,7 @@ namespace std {} using namespace std;
 
 #include "SetColor.h"
 
-ClassImp(TGMrbGContext)
+ClassImp(TGMrbGC)
 ClassImp(TGMrbProfile)
 ClassImp(TGMrbLofProfiles)
 
@@ -44,23 +44,23 @@ extern TMrbLogger * gMrbLog;			// access to message lgging
 
 const SMrbNamedXShort kGMrbGCTypes[] =
 							{
-								{TGMrbGContext::kGMrbGCFrame,			"Frame" 		},
-								{TGMrbGContext::kGMrbGCLabel,			"Label" 		},
-								{TGMrbGContext::kGMrbGCButton,			"Button"		},
-								{TGMrbGContext::kGMrbGCEntry,			"Entry"			},
-								{TGMrbGContext::kGMrbGCTextEntry,		"TextEntry"		},
-								{TGMrbGContext::kGMrbGCLBEntry,			"ListBoxEntry"	},
-								{TGMrbGContext::kGMrbGCTextButton,		"TextButton"	},
-								{TGMrbGContext::kGMrbGCRadioButton, 	"RadioButton"	},
-								{TGMrbGContext::kGMrbGCCheckButton, 	"CheckButton"	},
-								{TGMrbGContext::kGMrbGCPictureButton,	"PictureButton"	},
-								{0, 				NULL		}
+								{TGMrbGC::kGMrbGCFrame,			"Frame" 		},
+								{TGMrbGC::kGMrbGCLabel,			"Label" 		},
+								{TGMrbGC::kGMrbGCButton,		"Button"		},
+								{TGMrbGC::kGMrbGCEntry,			"Entry"			},
+								{TGMrbGC::kGMrbGCTextEntry,		"TextEntry"		},
+								{TGMrbGC::kGMrbGCLBEntry,		"ListBoxEntry"	},
+								{TGMrbGC::kGMrbGCTextButton,	"TextButton"	},
+								{TGMrbGC::kGMrbGCRadioButton, 	"RadioButton"	},
+								{TGMrbGC::kGMrbGCCheckButton, 	"CheckButton"	},
+								{TGMrbGC::kGMrbGCPictureButton,	"PictureButton"	},
+								{0, 							NULL			}
 							};
 
-TGMrbGContext::TGMrbGContext(const Char_t * Font, const Char_t * Foreground, const Char_t * Background, UInt_t Options) {
+TGMrbGC::TGMrbGC(const Char_t * Font, const Char_t * Foreground, const Char_t * Background, UInt_t Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbGContext
+// Name:           TGMrbGC
 // Purpose:        Graphics context within MARaBOU
 // Arguments:      Char_t * Font         -- font
 //                 Char_t * Foreground   -- foreground color
@@ -72,21 +72,25 @@ TGMrbGContext::TGMrbGContext(const Char_t * Font, const Char_t * Foreground, con
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
-	FontStruct_t font;
+	TGFont * font;
 	TString fontStr = (*Font == '-') ? Font : gEnv->GetValue(Font, "");
-	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0) {
+	if ((fontStr.Length() == 0) || (font = gClient->GetFont(fontStr.Data())) == NULL) {
 		gMrbLog->Wrn()	<< "No such font - " << fontStr << endl
 						<< "Falling back to \"NormalFont\"" << endl;
-		gMrbLog->Flush("TGMrbGContext");
-		font = gClient->GetFontByName(gEnv->GetValue("Gui.NormalFont",
-													"-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
+		gMrbLog->Flush("TGMrbGC");
+		fontStr = gEnv->GetValue("Gui.NormalFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
+		font = gClient->GetFont(fontStr.Data());
+	}
+	if (font == NULL) {
+		gMrbLog->Err()	<< "Can't set font - " << fontStr << endl;
+		gMrbLog->Flush("TGMrbGC");
 	}
 
 	Pixel_t fg;
 	if (!gClient->GetColorByName(Foreground, fg)) {
 		gMrbLog->Wrn()	<< "No such color - " << Foreground << " (foreground)" << endl
 						<< "Falling back to \"black\"" << endl;
-		gMrbLog->Flush("TGMrbGContext");
+		gMrbLog->Flush("TGMrbGC");
 		gClient->GetColorByName("black", fg);
 	}
 
@@ -94,11 +98,9 @@ TGMrbGContext::TGMrbGContext(const Char_t * Font, const Char_t * Foreground, con
 	if (!gClient->GetColorByName(Background, bg)) {
 		gMrbLog->Wrn()	<< "No such color - " << Background << " (background)" << endl
 						<< "Falling back to \"white\"" << endl;
-		gMrbLog->Flush("TGMrbGContext");
+		gMrbLog->Flush("TGMrbGC");
 		gClient->GetColorByName("white", bg);
 	}
-
-	fGC = this->CreateGC(font, fg, bg);
 
 	fFontName = fontStr;
 	fForegroundName = Foreground;
@@ -109,12 +111,17 @@ TGMrbGContext::TGMrbGContext(const Char_t * Font, const Char_t * Foreground, con
 	fBackground = bg;
 
 	fOptions = Options;
+
+	fGC = new TGGC();
+	if (fFont) fGC->SetFont(fFont->GetFontHandle());
+	fGC->SetForeground(fForeground);
+	fGC->SetBackground(fBackground);
 }
 
-TGMrbGContext::TGMrbGContext(const Char_t * Font, Pixel_t Foreground, Pixel_t Background, UInt_t Options) {
+TGMrbGC::TGMrbGC(const Char_t * Font, Pixel_t Foreground, Pixel_t Background, UInt_t Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbGContext
+// Name:           TGMrbGC
 // Purpose:        Graphics context within MARaBOU
 // Arguments:      Char_t * Font         -- font
 //                 Pixel_t Foreground    -- foreground color
@@ -128,16 +135,18 @@ TGMrbGContext::TGMrbGContext(const Char_t * Font, Pixel_t Foreground, Pixel_t Ba
 	
 	TString fontStr = (*Font == '-') ? Font : gEnv->GetValue(Font, "");
 
-	FontStruct_t font;
-	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0) {
+	TGFont * font;
+	if ((fontStr.Length() == 0) || (font = gClient->GetFont(fontStr.Data())) == NULL) {
 		gMrbLog->Wrn()	<< "No such font - " << fontStr << endl
 						<< "Falling back to \"NormalFont\"" << endl;
-		gMrbLog->Flush("TGMrbGContext");
-		font = gClient->GetFontByName(gEnv->GetValue("Gui.NormalFont",
-													"-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
+		gMrbLog->Flush("TGMrbGC");
+		fontStr = gEnv->GetValue("Gui.NormalFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
+		font = gClient->GetFont(fontStr);
 	}
-
-	fGC = this->CreateGC(font, Foreground, Background);
+	if (font == NULL) {
+		gMrbLog->Err()	<< "Can't set font - " << fontStr << endl;
+		gMrbLog->Flush("TGMrbGC");
+	}
 
 	fFontName = fontStr;
 	TMrbString str = "#";
@@ -152,12 +161,17 @@ TGMrbGContext::TGMrbGContext(const Char_t * Font, Pixel_t Foreground, Pixel_t Ba
 	fBackground = Background;
 
 	fOptions = Options;
+
+	fGC = new TGGC();
+	if (fFont) fGC->SetFont(fFont->GetFontHandle());
+	fGC->SetForeground(fForeground);
+	fGC->SetBackground(fBackground);
 }
 
-TGMrbGContext::TGMrbGContext(TGMrbGContext::EGMrbGCType Type, UInt_t Options) {
+TGMrbGC::TGMrbGC(TGMrbGC::EGMrbGCType Type, UInt_t Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbGContext
+// Name:           TGMrbGC
 // Purpose:        Graphics context within MARaBOU
 // Arguments:      EGMrbGCType Type   -- grpahic object type
 //                 UInt_t Options        -- option bits
@@ -168,29 +182,36 @@ TGMrbGContext::TGMrbGContext(TGMrbGContext::EGMrbGCType Type, UInt_t Options) {
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
 	fFontName = gEnv->GetValue("Gui.NormalFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
-	FontStruct_t font = gClient->GetFontByName(fFontName.Data());
+	TGFont * font = gClient->GetFont(fFontName.Data());
+	if (font == NULL) {
+		gMrbLog->Err()	<< "Can't set font - " << fFontName << endl;
+		gMrbLog->Flush("TGMrbGC");
+	}
 
 	Pixel_t fg;
 	fForegroundName = "black";
 	gClient->GetColorByName(fForegroundName.Data(), fg);
 
-	fBackgroundName = (Type >= TGMrbGContext::kGMrbGCTextEntry) ? "white" : "gray";
+	fBackgroundName = (Type >= TGMrbGC::kGMrbGCTextEntry) ? "white" : "gray";
 	Pixel_t bg;
 	gClient->GetColorByName(fBackgroundName.Data(), bg);
-
-	fGC = this->CreateGC(font, fg, bg);
 
 	fFont = font;
 	fForeground = fg;
 	fBackground = bg;
 
 	fOptions = Options;
+
+	fGC = new TGGC();
+	if (fFont) fGC->SetFont(fFont->GetFontHandle());
+	fGC->SetForeground(fForeground);
+	fGC->SetBackground(fBackground);
 }
 
-Bool_t TGMrbGContext::SetFont(const Char_t * Font) {
+Bool_t TGMrbGC::SetFont(const Char_t * Font) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbGContext::SetFont
+// Name:           TGMrbGC::SetFont
 // Purpose:        Change font in a GC
 // Arguments:      Char_t * Font      -- font name
 // Results:        kTRUE/kFALSE
@@ -200,25 +221,24 @@ Bool_t TGMrbGContext::SetFont(const Char_t * Font) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString fontStr;
-	FontStruct_t font;
+	TGFont * font;
 
 	fontStr = (*Font == '-') ? Font : gEnv->GetValue(Font, "");
-	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0) {
-		gMrbLog->Wrn()	<< "No such font - " << fontStr << endl
-						<< "Falling back to \"NormalFont\"" << endl;
-		gMrbLog->Flush("TGMrbGContext", "SetFont");
+	if ((fontStr.Length() == 0) || (font = gClient->GetFont(fontStr.Data())) == NULL) {
+		gMrbLog->Wrn()	<< "No such font - " << fontStr << endl;
+		gMrbLog->Flush("TGMrbGC", "SetFont");
 		return(kFALSE);
 	}
 	fFontName = fontStr; 
 	fFont = font; 
-	fGC = this->CreateGC(font, fForeground, fBackground);
+	fGC->SetFont(fFont->GetFontHandle());
 	return(kTRUE);
 }
 
-Bool_t TGMrbGContext::SetFG(const Char_t * Foreground) {
+Bool_t TGMrbGC::SetFG(const Char_t * Foreground) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbGContext::SetFG
+// Name:           TGMrbGC::SetFG
 // Purpose:        Change foreground
 // Arguments:      Char_t * Foreground  -- foreground color
 // Results:        kTRUE/kFALSE
@@ -230,22 +250,21 @@ Bool_t TGMrbGContext::SetFG(const Char_t * Foreground) {
 	Pixel_t color;
 
 	if (!gClient->GetColorByName(Foreground, color)) {
-		gMrbLog->Wrn()	<< "No such color - " << Foreground << " (foreground)" << endl
-						<< "Falling back to \"black\"" << endl;
-		gMrbLog->Flush("TGMrbGContext", "SetFG");
-		gClient->GetColorByName("black", color);
+		gMrbLog->Wrn()	<< "No such color - " << Foreground << " (foreground)" << endl;
+		gMrbLog->Flush("TGMrbGC", "SetFG");
+		return(kFALSE);
 	}
 
 	fForegroundName = Foreground; 
 	fForeground = color; 
-	fGC = this->CreateGC(fFont, fForeground, fBackground);
+	fGC->SetForeground(color);
 	return(kTRUE);
 }
 
-Bool_t TGMrbGContext::SetBG(const Char_t * Background) {
+Bool_t TGMrbGC::SetBG(const Char_t * Background) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbGContext::SetBG
+// Name:           TGMrbGC::SetBG
 // Purpose:        Change background
 // Arguments:      Char_t * Background  -- background color
 // Results:        kTRUE/kFALSE
@@ -257,41 +276,15 @@ Bool_t TGMrbGContext::SetBG(const Char_t * Background) {
 	Pixel_t color;
 
 	if (!gClient->GetColorByName(Background, color)) {
-		gMrbLog->Wrn()	<< "No such color - " << Background << " (background)" << endl
-						<< "Falling back to \"white\"" << endl;
-		gMrbLog->Flush("TGMrbGContext", "SetBG");
-		gClient->GetColorByName("white", color);
+		gMrbLog->Wrn()	<< "No such color - " << Background << " (background)" << endl;
+		gMrbLog->Flush("TGMrbGC", "SetFG");
+		return(kFALSE);
 	}
 
 	fBackgroundName = Background; 
 	fBackground = color; 
-	fGC = this->CreateGC(fFont, fForeground, fBackground);
+	fGC->SetBackground(color);
 	return(kTRUE);
-}
-
-GContext_t TGMrbGContext::CreateGC(FontStruct_t Font, Pixel_t Foreground, Pixel_t Background) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbGContext::CreateGC
-// Purpose:        Create a new GC
-// Arguments:      FontStruct_t Font     -- font
-//                 Pixel_t Foreground    -- foreground
-//                 Pixel_t Background    -- background
-// Results:        GContext_t GC         -- graphics context
-// Exceptions:
-// Description:    Creates a new GC.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	GCValues_t gval;
-
-	gval.fMask = kGCForeground | kGCBackground | kGCFont | kGCFillStyle | kGCGraphicsExposures;
-	gval.fFillStyle = kFillSolid;
-	gval.fGraphicsExposures = kFALSE;
-	gval.fForeground = Foreground;
-	gval.fBackground = Background;
-	gval.fFont = gVirtualX->GetFontHandle(Font);
-	return(gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gval));
 }
 
 TGMrbProfile::TGMrbProfile(const Char_t * Name, const Char_t * Title, TEnv * Env) : TNamed(Name, Title) {
@@ -303,7 +296,7 @@ TGMrbProfile::TGMrbProfile(const Char_t * Name, const Char_t * Title, TEnv * Env
 //                 Char_t * Title  -- title
 //                 TEnv * Env      -- env definitions
 // Description:    Defines a graphics profile:
-//                 a list of TGMrbGContext objects together with some options
+//                 a list of TGMrbGC objects together with some options
 //                 and other global params
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -316,42 +309,42 @@ TGMrbProfile::TGMrbProfile(const Char_t * Name, const Char_t * Title, TEnv * Env
 	TMrbLofNamedX wtypes;
 	wtypes.AddNamedX(kGMrbGCTypes);
 
-	TMrbNamedX * bnx = wtypes.FindByIndex(TGMrbGContext::kGMrbGCButton);
-	TGMrbGContext * bgc = this->AddGC(bnx, Env);
+	TMrbNamedX * bnx = wtypes.FindByIndex(TGMrbGC::kGMrbGCButton);
+	TGMrbGC * bgc = this->AddGC(bnx, Env);
 
-	TMrbNamedX * enx = wtypes.FindByIndex(TGMrbGContext::kGMrbGCEntry);
-	TGMrbGContext * egc = this->AddGC(enx, Env);
+	TMrbNamedX * enx = wtypes.FindByIndex(TGMrbGC::kGMrbGCEntry);
+	TGMrbGC * egc = this->AddGC(enx, Env);
 
 	TMrbNamedX * nx = (TMrbNamedX *) wtypes.First();
 	while (nx) {
-		TGMrbGContext * dfltGC = NULL;
-		if (nx->GetIndex() & TGMrbGContext::kGMrbGCButton)		dfltGC = bgc;
-		else if (nx->GetIndex() & TGMrbGContext::kGMrbGCEntry)	dfltGC = egc;
+		TGMrbGC * dfltGC = NULL;
+		if (nx->GetIndex() & TGMrbGC::kGMrbGCButton)		dfltGC = bgc;
+		else if (nx->GetIndex() & TGMrbGC::kGMrbGCEntry)	dfltGC = egc;
 		this->AddGC(nx, Env, dfltGC);
 		nx = (TMrbNamedX *) wtypes.After(nx);
 	}
 }
 		
-TGMrbGContext * TGMrbProfile::AddGC(TMrbNamedX * GCSpec, TEnv * Env, TGMrbGContext * DefaultGC) {
+TGMrbGC * TGMrbProfile::AddGC(TMrbNamedX * GCSpec, TEnv * Env, TGMrbGC * DefaultGC) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbProfile::AddGC
 // Purpose:        Add a graphics context to list
 // Arguments:      TMrbNamedX * GCSpec        -- graphics context specs
 //                 TEnv * Env                 -- ROOT environment
-//                 TGMrbGContext * DefaultGC  -- default context
-// Results:        TGMrbGContext * GC         -- context
+//                 TGMrbGC * DefaultGC  -- default context
+// Results:        TGMrbGC * GC         -- context
 // Exceptions:
 // Description:    Fills table 'fLofGCs'
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx = fLofGCs.FindByIndex(GCSpec->GetIndex());
-	if (nx) return((TGMrbGContext *) nx->GetAssignedObject());
+	if (nx) return((TGMrbGC *) nx->GetAssignedObject());
 
 	if (Env == NULL) Env = gEnv;
 
-	TGMrbGContext * gc = new TGMrbGContext((TGMrbGContext::EGMrbGCType) GCSpec->GetIndex());
+	TGMrbGC * gc = new TGMrbGC((TGMrbGC::EGMrbGCType) GCSpec->GetIndex());
 
 	TString res = this->GetName();
 	res.ToLower();
@@ -384,13 +377,13 @@ TGMrbGContext * TGMrbProfile::AddGC(TMrbNamedX * GCSpec, TEnv * Env, TGMrbGConte
 	return(gc);
 }
 
-Bool_t TGMrbProfile::SetGC(TGMrbGContext::EGMrbGCType Type, TGMrbGContext * GC) {
+Bool_t TGMrbProfile::SetGC(TGMrbGC::EGMrbGCType Type, TGMrbGC * GC) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbProfile::SetGC
 // Purpose:        Set graphics context
 // Arguments:      EGMrbGCType Type        -- graphics context type
-//                 TGMrbGContext * GC      -- context
+//                 TGMrbGC * GC      -- context
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Updates table 'fLofGCs'.
@@ -407,7 +400,7 @@ Bool_t TGMrbProfile::SetGC(TGMrbGContext::EGMrbGCType Type, TGMrbGContext * GC) 
 	return(kTRUE);
 }
 
-Bool_t TGMrbProfile::SetGC(TGMrbGContext::EGMrbGCType Type, const Char_t * Font, const Char_t * Foreground, const Char_t * Background) {
+Bool_t TGMrbProfile::SetGC(TGMrbGC::EGMrbGCType Type, const Char_t * Font, const Char_t * Foreground, const Char_t * Background) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbProfile::SetGC
@@ -422,13 +415,13 @@ Bool_t TGMrbProfile::SetGC(TGMrbGContext::EGMrbGCType Type, const Char_t * Font,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TGMrbGContext * gc = new TGMrbGContext(Font, Foreground, Background);
+	TGMrbGC * gc = new TGMrbGC(Font, Foreground, Background);
 	if (this->SetGC(Type, gc)) return(kTRUE);
 	delete gc;
 	return(kFALSE);
 }
 	
-Bool_t TGMrbProfile::SetGC(TGMrbGContext::EGMrbGCType Type, const Char_t * Font, Pixel_t Foreground, Pixel_t Background) {
+Bool_t TGMrbProfile::SetGC(TGMrbGC::EGMrbGCType Type, const Char_t * Font, Pixel_t Foreground, Pixel_t Background) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbProfile::SetGC
@@ -443,19 +436,19 @@ Bool_t TGMrbProfile::SetGC(TGMrbGContext::EGMrbGCType Type, const Char_t * Font,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TGMrbGContext * gc = new TGMrbGContext(Font, Foreground, Background);
+	TGMrbGC * gc = new TGMrbGC(Font, Foreground, Background);
 	if (this->SetGC(Type, gc)) return(kTRUE);
 	delete gc;
 	return(kFALSE);
 }
 
-TGMrbGContext * TGMrbProfile::GetGC(TGMrbGContext::EGMrbGCType Type) {
+TGMrbGC * TGMrbProfile::GetGC(TGMrbGC::EGMrbGCType Type) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbProfile::GetGC
 // Purpose:        Get graphics context
 // Arguments:      EGMrbGCType Type              -- gc type
-// Results:        TGMrbGContext * GC            -- graphics context
+// Results:        TGMrbGC * GC            -- graphics context
 // Exceptions:
 // Description:    Table lookup in 'fLofGCs'.
 // Keywords:
@@ -467,10 +460,10 @@ TGMrbGContext * TGMrbProfile::GetGC(TGMrbGContext::EGMrbGCType Type) {
 		gMrbLog->Flush(this->ClassName(), "GetGC");
 		return(NULL);
 	}
-	return((TGMrbGContext *) nx->GetAssignedObject());
+	return((TGMrbGC *) nx->GetAssignedObject());
 }
 
-void TGMrbProfile::SetOptions(TGMrbGContext::EGMrbGCType Type, UInt_t Options) {
+void TGMrbProfile::SetOptions(TGMrbGC::EGMrbGCType Type, UInt_t Options) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbProfile::SetOptions
@@ -483,11 +476,11 @@ void TGMrbProfile::SetOptions(TGMrbGContext::EGMrbGCType Type, UInt_t Options) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TGMrbGContext * gc = this->GetGC(Type);
+	TGMrbGC * gc = this->GetGC(Type);
 	if (gc != NULL) gc->SetOptions(Options);
 }
 
-UInt_t  TGMrbProfile::GetOptions(TGMrbGContext::EGMrbGCType Type) {
+UInt_t  TGMrbProfile::GetOptions(TGMrbGC::EGMrbGCType Type) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbProfile::SetOptions
@@ -499,7 +492,7 @@ UInt_t  TGMrbProfile::GetOptions(TGMrbGContext::EGMrbGCType Type) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TGMrbGContext * gc = this->GetGC(Type);
+	TGMrbGC * gc = this->GetGC(Type);
 	if (gc == NULL) return(0);
 	else			return(gc->GetOptions());
 }
@@ -518,7 +511,7 @@ void TGMrbProfile::SetOptions(const Char_t * Type, UInt_t Options) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx = (TMrbNamedX *) fLofGCs.FindByName(Type);
-	if (nx) ((TGMrbGContext *) nx->GetAssignedObject())->SetOptions(Options);
+	if (nx) ((TGMrbGC *) nx->GetAssignedObject())->SetOptions(Options);
 }
 
 UInt_t  TGMrbProfile::GetOptions(const Char_t * Type) {
@@ -535,7 +528,7 @@ UInt_t  TGMrbProfile::GetOptions(const Char_t * Type) {
 
 	TMrbNamedX * nx = (TMrbNamedX *) fLofGCs.FindByName(Type);
 	if (nx == NULL) return(0);
-	else			return(((TGMrbGContext *) nx->GetAssignedObject())->GetOptions());
+	else			return(((TGMrbGC *) nx->GetAssignedObject())->GetOptions());
 }
 
 void TGMrbProfile::Print(ostream & Out, const Char_t * Type) const {
@@ -558,7 +551,7 @@ void TGMrbProfile::Print(ostream & Out, const Char_t * Type) const {
 	TMrbNamedX * nx = (TMrbNamedX *) fLofGCs.First();
 	while (nx) {
 		Out << Form("%-15s", nx->GetName());
-		TGMrbGContext * gc = (TGMrbGContext *) nx->GetAssignedObject();
+		TGMrbGC * gc = (TGMrbGC *) nx->GetAssignedObject();
 		if (gc == NULL) {
 			Out << "(empty)" << endl;
 		} else {

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.13 2007-07-27 11:08:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.14 2007-07-30 12:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -47,7 +47,8 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 												TMrbLofNamedX * CheckBtns,
 												TMrbLofNamedX * RadioBtns,
 												UInt_t FrameOptions,
-												UInt_t EntryOptions) :
+												UInt_t EntryOptions,
+												Int_t NofEntries) :
 										TGCompositeFrame(Parent, Width, Height, FrameOptions, FrameGC->BG()) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -72,6 +73,7 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 //                 TMrbLofNamedX * RadioBtns   -- adds a list of radio buttons
 //                 UInt_t FrameOptions         -- frame options
 //                 UInt_t EntryOptions         -- options to configure the entry
+//                 Int_t NofEntries            -- number of entries
 // Results:        --
 // Exceptions:
 // Description:    Class constructor
@@ -85,14 +87,17 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 	LabelGC = this->SetupGC(LabelGC, FrameOptions);
 	EntryGC = this->SetupGC(EntryGC, FrameOptions);
 
-	fUp = NULL;
-	fDown = NULL;
-	fBegin = NULL;
-	fEnd = NULL;
+	for (Int_t i = 0; i < kGMrbEntryNofEntries; i++) {
+		fUp[i] = NULL;
+		fDown[i] = NULL;
+		fBegin[i] = NULL;
+		fEnd[i] = NULL;
+		fLowerLimit[i] = 0;
+		fUpperLimit[i] = 0;
+		fIncrement[i] = 1;
+	}
 
-	fLowerLimit = 0;
-	fUpperLimit = 0;
-	fIncrement = 1;
+
 	fBase = TMrbString::kDefaultBase;
 	fPrecision = TMrbString::kDefaultPrecision;
 	fType = TGMrbLabelEntry::kGMrbEntryTypeChar;
@@ -108,78 +113,85 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 		fLabel->SetTextJustify(kTextLeft);
 	}
 
-	bSize = 0;
-
 	if (RadioBtns) {
 		TGLayoutHints * radioLayout = new TGLayoutHints(kLHintsRight | kLHintsCenterY, 0, 0, 1, 0);
 		fHeap.AddFirst((TObject *) radioLayout);
 		fRadioBtns = new TGMrbRadioButtonList(this, NULL, RadioBtns, kGMrbEntryButtonRadio, 1, 0, Height, FrameGC);
+		fHeap.AddFirst((TObject *) fRadioBtns);
 		fRadioBtns->ChangeBackground(LabelGC->BG());
 		this->AddFrame(fRadioBtns, radioLayout);			
-		bSize += fRadioBtns->GetDefaultWidth();
+//		bSize += fRadioBtns->GetDefaultWidth();
 	}
 
 	if (CheckBtns) {
 		TGLayoutHints * checkLayout = new TGLayoutHints(kLHintsRight | kLHintsCenterY, 0, 0, 1, 0);
 		fHeap.AddFirst((TObject *) checkLayout);
 		fCheckBtns = new TGMrbCheckButtonList(this, NULL, CheckBtns, kGMrbEntryButtonCheck, 1, 0, Height, FrameGC);
+		fHeap.AddFirst((TObject *) fCheckBtns);
 		fCheckBtns->ChangeBackground(LabelGC->BG());
 		this->AddFrame(fCheckBtns, checkLayout);			
-		bSize += fCheckBtns->GetDefaultWidth();
+//		bSize += fCheckBtns->GetDefaultWidth();
 	}
 
 	if (Action && Action->GetAssignedObject()) {
 		TGLayoutHints * actLayout = new TGLayoutHints(kLHintsRight | kLHintsCenterY, 0, 0, 1, 0);
 		fHeap.AddFirst((TObject *) actLayout);
-		fAction = new TGTextButton(this, Action->GetName(), Action->GetIndex(), ActionGC->GC(), ActionGC->Font());			fHeap.AddFirst((TObject *) fAction);
+		fAction = new TGTextButton(this, Action->GetName(), Action->GetIndex(), ActionGC->GC(), ActionGC->Font());
+		fHeap.AddFirst((TObject *) fAction);
 		fAction->ChangeBackground(ActionGC->BG());
 		this->AddFrame(fAction, actLayout);			
 		fAction->Associate((const TGWindow *) Action->GetAssignedObject());
-		bSize += fAction->GetDefaultWidth();
+//		bSize += fAction->GetDefaultWidth();
 	}
 
-	if (UpDownBtnGC) {
-		TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsRight | kLHintsCenterY, 0, 0, 1, 0);
-		fHeap.AddFirst((TObject *) btnLayout);
-		if (BeginEndBtns) {
-			fEnd = new TGPictureButton(this, fClient->GetPicture("arrow_rightright.xpm"), kGMrbEntryButtonEnd, UpDownBtnGC->GC());
-			fHeap.AddFirst((TObject *) fEnd);
-			fEnd->ChangeBackground(UpDownBtnGC->BG());
-			fEnd->SetToolTipText("->End", 500);
-			bSize += fEnd->GetDefaultWidth();
-			this->AddFrame(fEnd, btnLayout);
+	fNofEntries = NofEntries;
+	for (Int_t entryNo = NofEntries - 1; entryNo >= 0; entryNo--) {
+		bSize = 0;
+		if (UpDownBtnGC) {
+			TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsRight | kLHintsCenterY, 0, 0, 1, 0);
+			fHeap.AddFirst((TObject *) btnLayout);
+			if (BeginEndBtns) {
+				fEnd[entryNo] = new TGPictureButton(this, fClient->GetPicture("arrow_rightright.xpm"), entryNo * 10 + kGMrbEntryButtonEnd, UpDownBtnGC->GC());
+				fHeap.AddFirst((TObject *) fEnd[entryNo]);
+				fEnd[entryNo]->ChangeBackground(UpDownBtnGC->BG());
+				fEnd[entryNo]->SetToolTipText("->End", 500);
+				bSize += fEnd[entryNo]->GetDefaultWidth();
+				this->AddFrame(fEnd[entryNo], btnLayout);
+			}
+			fUp[entryNo] = new TGPictureButton(this, fClient->GetPicture("arrow_right.xpm"), entryNo * 10 + kGMrbEntryButtonUp, UpDownBtnGC->GC());
+			fHeap.AddFirst((TObject *) fUp[entryNo]);
+			fUp[entryNo]->ChangeBackground(UpDownBtnGC->BG());
+			fUp[entryNo]->SetToolTipText("Increment", 500);
+			bSize += fUp[entryNo]->GetDefaultWidth();
+			this->AddFrame(fUp[entryNo], btnLayout);
+			fUp[entryNo]->Associate(this);
+			fDown[entryNo] = new TGPictureButton(this, fClient->GetPicture("arrow_left.xpm"), entryNo * 10 + kGMrbEntryButtonDown, UpDownBtnGC->GC());
+			fHeap.AddFirst((TObject *) fDown[entryNo]);
+			fDown[entryNo]->ChangeBackground(UpDownBtnGC->BG());
+			fDown[entryNo]->SetToolTipText("Decrement", 500);
+			bSize += fDown[entryNo]->GetDefaultWidth();
+			this->AddFrame(fDown[entryNo], btnLayout);
+			fDown[entryNo]->Associate(this);
+			if (BeginEndBtns) {
+				fBegin[entryNo] = new TGPictureButton(this, fClient->GetPicture("arrow_leftleft.xpm"), entryNo * 10 + kGMrbEntryButtonBegin, UpDownBtnGC->GC());
+				fHeap.AddFirst((TObject *) fBegin[entryNo]);
+				fBegin[entryNo]->ChangeBackground(UpDownBtnGC->BG());
+				fBegin[entryNo]->SetToolTipText("->Start", 500);
+				bSize += fBegin[entryNo]->GetDefaultWidth();
+				this->AddFrame(fBegin[entryNo], btnLayout);
+			}
+			fType = TGMrbLabelEntry::kGMrbEntryTypeCharInt;
 		}
-		fUp = new TGPictureButton(this, fClient->GetPicture("arrow_right.xpm"), kGMrbEntryButtonUp, UpDownBtnGC->GC());
-		fHeap.AddFirst((TObject *) fUp);
-		fUp->ChangeBackground(UpDownBtnGC->BG());
-		fUp->SetToolTipText("Increment", 500);
-		bSize += fUp->GetDefaultWidth();
-		this->AddFrame(fUp, btnLayout);
-		fUp->Associate(this);
-		fDown = new TGPictureButton(this, fClient->GetPicture("arrow_left.xpm"), kGMrbEntryButtonDown, UpDownBtnGC->GC());
-		fHeap.AddFirst((TObject *) fDown);
-		fDown->ChangeBackground(UpDownBtnGC->BG());
-		fDown->SetToolTipText("Decrement", 500);
-		bSize += fDown->GetDefaultWidth();
-		this->AddFrame(fDown, btnLayout);
-		fDown->Associate(this);
-		if (BeginEndBtns) {
-			fBegin = new TGPictureButton(this, fClient->GetPicture("arrow_leftleft.xpm"), kGMrbEntryButtonBegin, UpDownBtnGC->GC());
-			fHeap.AddFirst((TObject *) fBegin);
-			fBegin->ChangeBackground(UpDownBtnGC->BG());
-			fBegin->SetToolTipText("->Start", 500);
-			bSize += fBegin->GetDefaultWidth();
-			this->AddFrame(fBegin, btnLayout);
-		}
-		fType = TGMrbLabelEntry::kGMrbEntryTypeCharInt;
-	}
 
-	fEntry = new TGMrbTextEntry(this, new TGTextBuffer(BufferSize), EntryId,
+		TGLayoutHints * entryLayout = new TGLayoutHints(kLHintsRight | kLHintsCenterY, 0, 0, 1, 0);
+		fHeap.AddFirst((TObject *) entryLayout);
+		fEntry[entryNo] = new TGMrbTextEntry(this, new TGTextBuffer(BufferSize), entryNo * 10 + EntryId,
 											EntryGC->GC(), EntryGC->Font(), EntryOptions, EntryGC->BG());
-	fHeap.AddFirst((TObject *) fEntry);
-	this->AddFrame(fEntry, EntryGC->LH());
-	fEntry->Resize(EntryWidth - bSize, Height);
-	fEntry->Associate(this);
+		fHeap.AddFirst((TObject *) fEntry[entryNo]);
+		this->AddFrame(fEntry[entryNo], entryLayout);
+		fEntry[entryNo]->Resize(EntryWidth - bSize, Height);
+		fEntry[entryNo]->Associate(this);
+	}
 }
 
 Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
@@ -199,6 +211,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 	TString prefix;
 	Int_t intVal;
 	Double_t dblVal;
+	Int_t entryNo, btn;
 
 	switch (GET_MSG(MsgId)) {
 		case kC_COMMAND:
@@ -206,98 +219,100 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 			switch (GET_SUBMSG(MsgId)) {
 
 				case kCM_BUTTON:
-					switch (Param1) {
+					entryNo = Param1 / 10;
+					btn = Param1 % 10;
+					switch (btn) {
 						case TGMrbLabelEntry::kGMrbEntryButtonUp:
-							s = this->GetText();
+							s = this->GetText(entryNo);
 							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
 								s.ToInteger(intVal, fBase);
-								intVal += (Int_t) fIncrement;
+								intVal += (Int_t) fIncrement[entryNo];
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s.FromInteger(intVal, fWidth, fBase, kTRUE);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								s.SplitOffInteger(prefix, intVal, fBase);
-								intVal += (Int_t) fIncrement;
+								intVal += (Int_t) fIncrement[entryNo];
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								s.ToDouble(dblVal);
-								dblVal += fIncrement;
+								dblVal += fIncrement[entryNo];
 								if (!this->CheckRange(dblVal)) break;
 								s.FromDouble(dblVal, fWidth, fPrecision);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							}
-							fEntry->SendSignal();
+							fEntry[entryNo]->SendSignal();
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonDown:
-							s = this->GetText();
+							s = this->GetText(entryNo);
 							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
 								s.ToInteger(intVal, fBase);
-								intVal -= (Int_t) fIncrement;
+								intVal -= (Int_t) fIncrement[entryNo];
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s.FromInteger(intVal, fWidth, fBase, kTRUE);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								s.SplitOffInteger(prefix, intVal, fBase);
-								intVal -= (Int_t) fIncrement;
+								intVal -= (Int_t) fIncrement[entryNo];
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								s.ToDouble(dblVal);
-								dblVal -= fIncrement;
+								dblVal -= fIncrement[entryNo];
 								if (!this->CheckRange(dblVal)) break;
 								s.FromDouble(dblVal, fWidth, fPrecision);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							}
-							fEntry->SendSignal();
+							fEntry[entryNo]->SendSignal();
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonBegin:
-							s = this->GetText();
+							s = this->GetText(entryNo);
 							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
 								Int_t dmy;
 								s.ToInteger(dmy, fBase);
-								intVal = (Int_t) fLowerLimit;
+								intVal = (Int_t) fLowerLimit[entryNo];
 								s.FromInteger(intVal, fWidth, fBase, kTRUE);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								Int_t dmy;
 								s.SplitOffInteger(prefix, dmy, fBase);
-								intVal = (Int_t) fLowerLimit;
+								intVal = (Int_t) fLowerLimit[entryNo];
 								s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								Double_t dmy;
 								s.ToDouble(dmy);
-								dblVal = fLowerLimit;
+								dblVal = fLowerLimit[entryNo];
 								s.FromDouble(dblVal, fWidth, fPrecision);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							}
-							fEntry->SendSignal();
+							fEntry[entryNo]->SendSignal();
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonEnd:
-							s = this->GetText();
+							s = this->GetText(entryNo);
 							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
 								Int_t dmy;
 								s.ToInteger(dmy, fBase);
-								intVal = (Int_t) fUpperLimit;
+								intVal = (Int_t) fUpperLimit[entryNo];
 								s.FromInteger(intVal, fWidth, fBase, kTRUE);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								Int_t dmy;
 								s.SplitOffInteger(prefix, dmy, fBase);
-								intVal = (Int_t) fUpperLimit;
+								intVal = (Int_t) fUpperLimit[entryNo];
 								s = prefix; s.AppendInteger(intVal, fWidth, fBase, kTRUE);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								Double_t dmy;
 								s.ToDouble(dmy);
-								dblVal = fUpperLimit;
+								dblVal = fUpperLimit[entryNo];
 								s.FromDouble(dblVal, fWidth, fPrecision);
-								this->SetText(s.Data());
+								this->SetText(s.Data(), entryNo);
 							}
-							fEntry->SendSignal();
+							fEntry[entryNo]->SendSignal();
 							break;
 					}
 			}
@@ -307,12 +322,8 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 
 			switch (GET_SUBMSG(MsgId)) {
 
-				case kTE_ENTER:
-					s = this->GetText();
-					break;
-
 				case kTE_TAB:
-					if (fFocusList) fFocusList->FocusForward(fEntry);
+//					if (fFocusList) fFocusList->FocusForward(fEntry);
 					break;
 			}
 			break;
@@ -353,28 +364,30 @@ void TGMrbLabelEntry::SetType(EGMrbEntryType EntryType, Int_t Width, Int_t BaseO
 	}
 }
 
-void TGMrbLabelEntry::SetText(const Char_t * Text) {
+void TGMrbLabelEntry::SetText(const Char_t * Text, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::SetText
 // Purpose:        Write text entry and create tooltip
 // Arguments:      Char_t * Text    -- text to be written
+//                 Int_t EntryNo    -- entry number
 // Results:        --
 // Exceptions:     
 // Description:    Writes entry text and updates tooltip.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fEntry->SetText(Text);
-	this->CreateToolTip();
+	fEntry[EntryNo]->SetText(Text);
+	this->CreateToolTip(EntryNo);
 }
 
-void TGMrbLabelEntry::SetText(Int_t Value) {
+void TGMrbLabelEntry::SetText(Int_t Value, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::SetText
 // Purpose:        Write text entry and create tooltip
 // Arguments:      Int_t Value    -- integer to be converted to text
+//                 Int_t EntryNo    -- entry number
 // Results:        --
 // Exceptions:     
 // Description:    Writes entry text and updates tooltip.
@@ -383,16 +396,17 @@ void TGMrbLabelEntry::SetText(Int_t Value) {
 
 	TMrbString v;
 	v.FromInteger(Value, fWidth, fBase, fPadZero);
-	fEntry->SetText(v.Data());
-	this->CreateToolTip();
+	fEntry[EntryNo]->SetText(v.Data());
+	this->CreateToolTip(EntryNo);
 }
 
-void TGMrbLabelEntry::SetText(Double_t Value) {
+void TGMrbLabelEntry::SetText(Double_t Value, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::SetText
 // Purpose:        Write text entry and create tooltip
 // Arguments:      Double_t Value    -- double to be converted to text
+//                 Int_t EntryNo    -- entry number
 // Results:        --
 // Exceptions:     
 // Description:    Writes entry text and updates tooltip.
@@ -401,32 +415,32 @@ void TGMrbLabelEntry::SetText(Double_t Value) {
 
 	TMrbString v;
 	v.FromDouble(Value, fWidth, fPrecision, fPadZero);
-	fEntry->SetText(v.Data());
-	this->CreateToolTip();
+	fEntry[EntryNo]->SetText(v.Data());
+	this->CreateToolTip(EntryNo);
 }
 
-const Char_t * TGMrbLabelEntry::GetText() {
+const Char_t * TGMrbLabelEntry::GetText(Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::GetText
 // Purpose:        Read text entry and update tooltip
-// Arguments:      --
+// Arguments:      Int_t EntryNo    -- entry number
 // Results:        Char_t * Text    -- text
 // Exceptions:     
 // Description:    Reads entry contents and updates tooltip
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	this->CreateToolTip();
-	return(fEntry->GetText());
+	this->CreateToolTip(EntryNo);
+	return(fEntry[EntryNo]->GetText());
 }
 
-Int_t TGMrbLabelEntry::GetText2Int() {
+Int_t TGMrbLabelEntry::GetText2Int(Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::GetText2Int
 // Purpose:        Read text entry, convert to integer, update tooltip
-// Arguments:      --
+// Arguments:      Int_t EntryNo    -- entry number
 // Results:        Int_t Value   -- integer value
 // Exceptions:     
 // Description:    Reads entry contents and converts to integer
@@ -435,7 +449,7 @@ Int_t TGMrbLabelEntry::GetText2Int() {
 
 	Int_t intVal = 0;
 	if (fType == kGMrbEntryTypeInt) {
-		TMrbString intStr = fEntry->GetText();
+		TMrbString intStr = fEntry[EntryNo]->GetText();
 		Int_t idx = intStr.Index("0x", 0);
 		if (idx >= 0) {
 			intStr = intStr(idx + 2, intStr.Length());
@@ -443,7 +457,7 @@ Int_t TGMrbLabelEntry::GetText2Int() {
 		} else {
 			intStr.ToInteger(intVal);
 		}
-		this->CreateToolTip();
+		this->CreateToolTip(EntryNo);
 	} else {
 		if (fLabel) gMrbLog->Err() << fLabel << ": ";
 		gMrbLog->Err() << "Not a INTEGER entry" << endl;
@@ -453,12 +467,12 @@ Int_t TGMrbLabelEntry::GetText2Int() {
 	return(intVal);
 }
 
-Double_t TGMrbLabelEntry::GetText2Double() {
+Double_t TGMrbLabelEntry::GetText2Double(Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::GetText2Double
 // Purpose:        Read text entry, convert to double, update tooltip
-// Arguments:      --
+// Arguments:      Int_t EntryNo    -- entry number
 // Results:        Double_t Value   -- double value
 // Exceptions:     
 // Description:    Reads entry contents and converts to double
@@ -467,9 +481,9 @@ Double_t TGMrbLabelEntry::GetText2Double() {
 
 	Double_t dblVal = 0.0;
 	if (fType == kGMrbEntryTypeDouble) {
-		TMrbString dblStr = fEntry->GetText();
+		TMrbString dblStr = fEntry[EntryNo]->GetText();
 		dblStr.ToDouble(dblVal);
-		this->CreateToolTip();
+		this->CreateToolTip(EntryNo);
 	} else {
 		if (fLabel) gMrbLog->Err() << fLabel << ": ";
 		gMrbLog->Err() << "Not a DOUBLE entry" << endl;
@@ -494,15 +508,15 @@ void TGMrbLabelEntry::ShowToolTip(Bool_t ShowFlag, Bool_t ShowRange) {
 
 	fShowToolTip = ShowFlag;
 	fShowRange = ShowRange;
-	this->CreateToolTip();
+	for (Int_t i = 0; i < fNofEntries; i++) this->CreateToolTip(i);
 }
 
-void TGMrbLabelEntry::CreateToolTip() {
+void TGMrbLabelEntry::CreateToolTip(Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::CreateToolTip
 // Purpose:        Create tooltip showing integer value in different formats
-// Arguments:      --
+// Arguments:      Int_t EntryNo    -- entry number
 // Results:        --
 // Exceptions:     
 // Description:    Shows number as binary, octal, dec, and hex in tooltip.
@@ -511,20 +525,20 @@ void TGMrbLabelEntry::CreateToolTip() {
 
 	if (fShowToolTip) {
 		Bool_t showRange = fShowRange;
-		if (fLowerLimit >= fUpperLimit || fIncrement == 0) showRange = kFALSE;
+		if (fLowerLimit[EntryNo] >= fUpperLimit[EntryNo] || fIncrement[EntryNo] == 0) showRange = kFALSE;
 
 		if (fType == kGMrbEntryTypeInt) {
-			TMrbString v = fEntry->GetText();
+			TMrbString v = fEntry[EntryNo]->GetText();
 			Int_t value;
 			v.ToInteger(value);
 			TMrbString ttStr = "";
 			if (showRange) {
 				ttStr += "[";
-				ttStr.AppendInteger((Int_t) fLowerLimit, 0, 10);
+				ttStr.AppendInteger((Int_t) fLowerLimit[EntryNo], 0, 10);
 				ttStr += "...";
-				ttStr.AppendInteger((Int_t) fIncrement, 0, 10);
+				ttStr.AppendInteger((Int_t) fIncrement[EntryNo], 0, 10);
 				ttStr += "...";
-				ttStr.AppendInteger((Int_t) fUpperLimit, 0, 10);
+				ttStr.AppendInteger((Int_t) fUpperLimit[EntryNo], 0, 10);
 				ttStr += "] ";
 			}
 			TMrbString m;
@@ -542,43 +556,70 @@ void TGMrbLabelEntry::CreateToolTip() {
 			ttStr.AppendInteger(value, 0, 10);
 			ttStr += " | " + m;
 			ttStr.AppendInteger(value, 0, 16);
-			fEntry->SetToolTipText(ttStr.Data());
+			fEntry[EntryNo]->SetToolTipText(ttStr.Data());
 		} else if (fType == kGMrbEntryTypeDouble) {
-			TMrbString v = fEntry->GetText();
+			TMrbString v = fEntry[EntryNo]->GetText();
 			Double_t value;
 			v.ToDouble(value);
 			TMrbString ttStr = "";
 			if (showRange) {
 				ttStr += "[";
-				ttStr.AppendDouble(fLowerLimit);
+				ttStr.AppendDouble(fLowerLimit[EntryNo]);
 				ttStr += "...";
-				ttStr.AppendDouble(fIncrement);
+				ttStr.AppendDouble(fIncrement[EntryNo]);
 				ttStr += "...";
-				ttStr.AppendDouble(fUpperLimit);
+				ttStr.AppendDouble(fUpperLimit[EntryNo]);
 				ttStr += "] ";
 			}
 			ttStr.AppendDouble(value);
-			fEntry->SetToolTipText(ttStr.Data());
+			fEntry[EntryNo]->SetToolTipText(ttStr.Data());
 		}
 	}
 }
 
-Bool_t TGMrbLabelEntry::SetRange(Double_t LowerLimit, Double_t UpperLimit) {
+void TGMrbLabelEntry::SetIncrement(Double_t Increment, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::SetIncrement
+// Purpose:        Define an increment
+// Arguments:      Double_t Increment    -- increment
+//                 Int_t EntryNo         -- entry number (-1 -> all entries)
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Defines an increment value.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (EntryNo == -1) {
+		for (Int_t i = 0; i < fNofEntries; i++) this->SetIncrement(Increment, i);
+	}
+	fIncrement[EntryNo] = Increment;
+}
+
+Bool_t TGMrbLabelEntry::SetRange(Double_t LowerLimit, Double_t UpperLimit, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::SetRange
 // Purpose:        Define a range for numerical input
 // Arguments:      Double_t LowerLimit   -- lower limit
-//                 Double_t UpperLimit   -- upper limit 
+//                 Double_t UpperLimit   -- upper limit
+//                 Int_t EntryNo         -- entry number (-1 -> all entries)
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Defines a numerical range.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	if (EntryNo == -1) {
+		for (Int_t i = 0; i < fNofEntries; i++) {
+			if (!this->SetRange(LowerLimit, UpperLimit, i)) return(kFALSE);
+		}
+		return(kTRUE);
+	}
+
 	if (LowerLimit == 0 && UpperLimit == 0) {
-		fLowerLimit = 0;
-		fUpperLimit = 0;
+		fLowerLimit[EntryNo] = 0;
+		fUpperLimit[EntryNo] = 0;
 		return(kTRUE);
 	}
 	if (LowerLimit > UpperLimit) {
@@ -586,17 +627,17 @@ Bool_t TGMrbLabelEntry::SetRange(Double_t LowerLimit, Double_t UpperLimit) {
 		gMrbLog->Flush(this->ClassName(), "SetRange");
 		return(kFALSE);
 	}
-	fLowerLimit = LowerLimit;
-	fUpperLimit = UpperLimit;
+	fLowerLimit[EntryNo] = LowerLimit;
+	fUpperLimit[EntryNo] = UpperLimit;
 	return(kTRUE);
 }
 
-Bool_t TGMrbLabelEntry::WithinRange() const {
+Bool_t TGMrbLabelEntry::WithinRange(Int_t EntryNo) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::WithinRange
 // Purpose:        Check range
-// Arguments:      --
+// Arguments:      Int_t EntryNo    -- entry number
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Checks if entry text is a numeric value within range.
@@ -611,28 +652,29 @@ Bool_t TGMrbLabelEntry::WithinRange() const {
 	if (!this->RangeToBeChecked()) return(kTRUE);
 
 	switch (fType) {
-		case TGMrbLabelEntry::kGMrbEntryTypeInt:		numStr = fEntry->GetText();
+		case TGMrbLabelEntry::kGMrbEntryTypeInt:		numStr = fEntry[EntryNo]->GetText();
 														if (!numStr.ToInteger(intVal)) return(kFALSE);
-														return(intVal >= fLowerLimit && intVal <= fUpperLimit);
-		case TGMrbLabelEntry::kGMrbEntryTypeDouble:		numStr = fEntry->GetText();
+														return(intVal >= fLowerLimit[EntryNo] && intVal <= fUpperLimit[EntryNo]);
+		case TGMrbLabelEntry::kGMrbEntryTypeDouble:		numStr = fEntry[EntryNo]->GetText();
 														if (!numStr.ToDouble(dblVal)) return(kFALSE);
-														return(dblVal >= fLowerLimit && dblVal <= fUpperLimit);
-		case TGMrbLabelEntry::kGMrbEntryTypeCharInt:	numStr = fEntry->GetText();
+														return(dblVal >= fLowerLimit[EntryNo] && dblVal <= fUpperLimit[EntryNo]);
+		case TGMrbLabelEntry::kGMrbEntryTypeCharInt:	numStr = fEntry[EntryNo]->GetText();
 														numStr.SplitOffInteger(prefix, intVal, fBase);
-														return(intVal >= fLowerLimit && intVal <= fUpperLimit);
-		case TGMrbLabelEntry::kGMrbEntryTypeCharDouble:	numStr = fEntry->GetText();
+														return(intVal >= fLowerLimit[EntryNo] && intVal <= fUpperLimit[EntryNo]);
+		case TGMrbLabelEntry::kGMrbEntryTypeCharDouble:	numStr = fEntry[EntryNo]->GetText();
 														numStr.SplitOffDouble(prefix, dblVal);
-														return(dblVal >= fLowerLimit && dblVal <= fUpperLimit);
+														return(dblVal >= fLowerLimit[EntryNo] && dblVal <= fUpperLimit[EntryNo]);
 	}
 	return(kTRUE);
 }
 
-Bool_t TGMrbLabelEntry::CheckRange(Double_t Value, Bool_t Verbose, Bool_t Popup) const {
+Bool_t TGMrbLabelEntry::CheckRange(Double_t Value, Int_t EntryNo, Bool_t Verbose, Bool_t Popup) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::CheckRange
 // Purpose:        Check range
 // Arguments:      Double_t Value    -- value to be tested
+//                 Int_t EntryNo     -- entry number
 //                 Bool_t Verbose    -- ouput message to stderr
 //                 Bool_t Popup      -- pop up TGMsgBox
 // Results:        kTRUE/kFALSE
@@ -642,23 +684,23 @@ Bool_t TGMrbLabelEntry::CheckRange(Double_t Value, Bool_t Verbose, Bool_t Popup)
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->RangeToBeChecked()) return(kTRUE);
-	Bool_t withinRange = (Value >= fLowerLimit && Value <= fUpperLimit);
+	Bool_t withinRange = (Value >= fLowerLimit[EntryNo] && Value <= fUpperLimit[EntryNo]);
 	if (withinRange) return(kTRUE);
 	if (Verbose || Popup) {
 		if (fLabel) gMrbLog->Err() << fLabel << ": ";
-		gMrbLog->Err() << "Value out of range - " << Value << " should be in [" << fLowerLimit << "," << fUpperLimit << "]" << endl;
+		gMrbLog->Err() << "Value out of range - " << Value << " should be in [" << fLowerLimit[EntryNo] << "," << fUpperLimit[EntryNo] << "]" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckRange");
 		if (Popup) new TGMsgBox(fClient->GetRoot(), this, "TGMrbLabelEntry: Error", gMrbLog->GetLast()->GetText(), kMBIconStop);
 	}
 	return(kFALSE);
 }
 
-Bool_t TGMrbLabelEntry::RangeToBeChecked() const {
+Bool_t TGMrbLabelEntry::RangeToBeChecked(Int_t EntryNo) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::RangeToBeChecked
 // Purpose:        Test if range to be checked
-// Arguments:      --
+// Arguments:      Int_t EntryNo    -- entry number
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Checks if range has to be checked.
@@ -666,7 +708,7 @@ Bool_t TGMrbLabelEntry::RangeToBeChecked() const {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fType == TGMrbLabelEntry::kGMrbEntryTypeChar) return(kFALSE);
-	if (fLowerLimit == 0 && fUpperLimit == 0) return(kFALSE);
+	if (fLowerLimit[EntryNo] == 0 && fUpperLimit[EntryNo] == 0) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -682,10 +724,12 @@ void TGMrbLabelEntry::UpDownButtonEnable(Bool_t Flag) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fUp && fDown) {
-		EButtonState btnState = Flag ? kButtonUp : kButtonDisabled;
-		fUp->SetState(btnState);
-		fDown->SetState(btnState);
+	for (Int_t i = 0; i < fNofEntries; i++) {
+		if (fUp[i] && fDown[i]) {
+			EButtonState btnState = Flag ? kButtonUp : kButtonDisabled;
+			fUp[i]->SetState(btnState);
+			fDown[i]->SetState(btnState);
+		}
 	}
 }
 
