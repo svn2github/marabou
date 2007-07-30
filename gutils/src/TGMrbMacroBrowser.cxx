@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.29 2007-07-30 12:44:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.30 2007-07-30 13:08:28 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -129,11 +129,14 @@ const SMrbNamedX kGMrbMacroLofEntryTypes[] =
 					{TGMrbMacroArg::kGMrbMacroEntryPlain, 	"Entry",		"Plain entry (text or numeric)" 		},
 					{TGMrbMacroArg::kGMrbMacroEntryPlain2, 	"Entry-2",		"Double entry (text or numeric)" 		},
 					{TGMrbMacroArg::kGMrbMacroEntryPlainC, 	"Entry-C",		"Plain entry (text or numeric) with check button" 		},
+					{TGMrbMacroArg::kGMrbMacroEntryPlainC2, "Entry-2-C",		"Double entry (text or numeric) with check button" 		},
 					{TGMrbMacroArg::kGMrbMacroEntryUpDown,	"UpDown",		"Entry (numeric) with Up/Down buttons"	},
 					{TGMrbMacroArg::kGMrbMacroEntryUpDown2,	"UpDown-2",		"Double entry (numeric) with Up/Down buttons"	},
 					{TGMrbMacroArg::kGMrbMacroEntryUpDownC,	"UpDown-C",		"Entry (numeric) with Up/Down and check buttons"	},
+					{TGMrbMacroArg::kGMrbMacroEntryUpDownC2,"UpDown-2-C",	"Double entry (numeric) with Up/Down and check buttons"	},
 					{TGMrbMacroArg::kGMrbMacroEntryUpDownX,	"UpDown-X", 	"Entry (numeric) with Begin/Up/Down/End buttons"	},
-					{TGMrbMacroArg::kGMrbMacroEntryUpDownX2,"UpDown-2X",	"Double entry (numeric) with Begin/Up/Down/End buttons"	},
+					{TGMrbMacroArg::kGMrbMacroEntryUpDownX2,"UpDown-2-X",	"Double entry (numeric) with Begin/Up/Down/End buttons"	},
+					{TGMrbMacroArg::kGMrbMacroEntryUpDownXC2,"UpDown-2-X-C","Double entry (numeric) with Begin/Up/Down/End and check buttons"	},
 					{TGMrbMacroArg::kGMrbMacroEntryYesNo, 	"YesNo",		"Yes/No button" 							},
 					{TGMrbMacroArg::kGMrbMacroEntryRadio,	"Radio",		"List of (exclusive) radio buttons" 				},
 					{TGMrbMacroArg::kGMrbMacroEntryCheck,	"Check",		"List of (inclusive) check buttons" 				},
@@ -988,13 +991,16 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			n == TGMrbMacroArg::kGMrbMacroEntryPlainC ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDown ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC ||
-			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX) {
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC) {
 			xUpDown = (n == TGMrbMacroArg::kGMrbMacroEntryUpDownX);
 			updownGC = (n == TGMrbMacroArg::kGMrbMacroEntryUpDown || xUpDown) ? buttonGC : NULL;
 
 			TMrbLofNamedX * checkBtn;
 			TString tf = "F";
-			if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC || n == TGMrbMacroArg::kGMrbMacroEntryUpDownC) {
+			if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC ||
+				n == TGMrbMacroArg::kGMrbMacroEntryUpDownC ||
+				n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC) {
 				checkBtn = new TMrbLofNamedX();
 				checkBtn->AddNamedX(1, "");
 				Int_t x = currentValue.Index(":");
@@ -1018,7 +1024,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			fMacroArgs->AddFrame(macroArg->fEntry, frameGC->LH());
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
 			macroArg->fEntry->GetEntry()->SetText(value.Data());
-			if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC || n == TGMrbMacroArg::kGMrbMacroEntryUpDownC) {
+			if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC ||
+				n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC) {
 				TGMrbCheckButtonList * lcb = macroArg->fEntry->GetLofCheckButtons();
 				TGButton * btn = lcb->GetButton(1);
 				btn->SetState(tf.BeginsWith("T") ? kButtonDown : kButtonUp);
@@ -1042,18 +1049,37 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 				macroArg->fEntry->SetIncrement(macroArg->fIncrement);
 			}
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryPlain2 ||
+					n == TGMrbMacroArg::kGMrbMacroEntryPlainC2 ||
 					n == TGMrbMacroArg::kGMrbMacroEntryUpDown2 ||
-					n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2) {
-			xUpDown = (n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2);
+					n == TGMrbMacroArg::kGMrbMacroEntryUpDownC2 ||
+					n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC2) {
+			xUpDown = (n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2 || n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC2);
 			updownGC = (n == TGMrbMacroArg::kGMrbMacroEntryUpDown2 || xUpDown) ? buttonGC : NULL;
 
+			TMrbLofNamedX * checkBtn;
+			TString tf = "F";
+			if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC2 ||
+				n == TGMrbMacroArg::kGMrbMacroEntryUpDownC2 ||
+				n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC2) {
+				checkBtn = new TMrbLofNamedX();
+				checkBtn->AddNamedX(1, "");
+				Int_t x = currentValue.Index(":");
+				if (x > 0) {
+					tf = currentValue(x + 1, x + 2);
+					currentValue.Resize(x);
+				} else {
+					tf = "F";
+				}
+			} else {
+				checkBtn = NULL;
+			}
 			macroArg->fEntry = new TGMrbLabelEntry(fMacroArgs, argTitle.Data(),
 														40, TGMrbMacroFrame::kEntryId + i + 1,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														macroArg->fEntryWidth,
 														frameGC, labelGC, entryGC, updownGC, xUpDown,
-														NULL, NULL, NULL, NULL, kHorizontalFrame, kSunkenFrame, 2);
+														NULL, NULL, checkBtn, NULL, kHorizontalFrame, kSunkenFrame, 2);
 			HEAP(macroArg->fEntry);
 			fMacroArgs->AddFrame(macroArg->fEntry, frameGC->LH());
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
@@ -1353,11 +1379,15 @@ Bool_t TGMrbMacroFrame::ResetMacroArgs() {
 			n == TGMrbMacroArg::kGMrbMacroEntryPlainC ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDown ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC ||
-			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX) {
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC) {
 			macroArg->fEntry->SetText(macroArg->fDefaultValue.Data());
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryPlain2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryPlainC2 ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDown2 ||
-			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2) {
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC2) {
 			TString value = macroArg->fDefaultValue.Data();
 			TObjArray * va = value.Tokenize(":");
 			Int_t nva = va->GetEntries();
@@ -1449,8 +1479,11 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 				checkBtn = "kFALSE";
 			}
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryPlain2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryPlainC2 ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDown2 ||
-			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2) {
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC2) {
 			argString = macroArg->fEntry->GetText(0);
 			currentValue = argString;
 			currentValue += ":";
@@ -1529,8 +1562,11 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 		cmd += Form("%s%s", delim.Data(), argString.Data());
 		delim = ", ";
 		if (n == TGMrbMacroArg::kGMrbMacroEntryPlain2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryPlainC2 ||
 			n == TGMrbMacroArg::kGMrbMacroEntryUpDown2 ||
-			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2) {
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownC2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownX2 ||
+			n == TGMrbMacroArg::kGMrbMacroEntryUpDownXC2) {
 			cmd += Form("%s%s", delim.Data(), argString2.Data());
 		}
 		if (n == TGMrbMacroArg::kGMrbMacroEntryPlainC ||
@@ -2849,7 +2885,9 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 						addLofValues = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "AddLofValues"), "No");
 						macroTmpl.Substitute("$argSpace", argSpace);
 						argDel = (i == fNofArgs) ? ")" : ",";
-						if (argEntryType.Contains("-C") || argEntryType.Contains("-2") || addLofValues.CompareTo("Yes") == 0) argDel = ",";
+						if (argEntryType.Contains("-C") ||
+							argEntryType.Contains("-2") ||
+							addLofValues.CompareTo("Yes") == 0) argDel = ",";
 						macroTmpl.Substitute("$argDel", argDel);
 						macroTmpl.WriteCode(macroStrm);
 						if (argEntryType.Contains("-2")) {
@@ -2873,7 +2911,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 							TString v;
 							if (nva >= 2) v = ((TObjString *) va->At(1))->GetString(); else v = "";
 							macroTmpl.Substitute("$argDefault", v);
-							argDel = (i == fNofArgs) ? ")" : ",";
+							argDel = (i == fNofArgs && !argEntryType.Contains("-C")) ? ")" : ",";
 							macroTmpl.Substitute("$argDel", argDel);
 							argSpace.Resize(0);
 							argSpace.Fill(macroType.Length() + macroName.Length() + 2);
