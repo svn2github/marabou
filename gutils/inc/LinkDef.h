@@ -50,4 +50,5 @@
 #pragma link C++ class TableOfLabels;
 #pragma link C++ class TGedAlignSelect;
 #pragma link C++ class TGedAlignPopup;
+#pragma link C++ class Save2FileDialog;
 #endif
