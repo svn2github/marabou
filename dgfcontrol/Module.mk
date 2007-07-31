@@ -50,7 +50,7 @@ $(DGFCEXE):     $(DGFCSO)$(DGFCO) $(DGFCMAINO) $(MRBLIBS)
 #		@echo "sources: $(DGFCS)"
 		@echo "ODGFCLIBS: $(ODGFCLIBS)"
 		@echo "$(DGFCEXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(DGFCMAINO) $(DGFCO) $(DGFCDO) $(ODGFCLIBS) $(ROOTGLIBS) \
+		$(LD) -g $(LDFLAGS) $(DGFCMAINO) $(DGFCO) $(DGFCDO) $(ODGFCLIBS) $(ROOTGLIBS) -lSpectrum \
             -o $(DGFCEXE)
 
 $(DGFCLIB):     $(DGFCDO) $(DGFCO)
