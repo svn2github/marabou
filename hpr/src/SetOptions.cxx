@@ -1443,10 +1443,10 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
    valp[ind++] = &fLiveGauss; 
    row_lab->Add(new TObjString("CheckButton_Use linear background in live fit"));
    valp[ind++] = &fLiveBG; 
-//   row_lab->Add(new TObjString("PlainIntVal_Width of response func in fpeak"));
-//   valp[ind++] = &fPeakMwidth;
-//   row_lab->Add(new TObjString("DoubleValue_Threshold in fpeak"));
- //  valp[ind++] = &fPeakThreshold;
+   row_lab->Add(new TObjString("PlainIntVal_Width of response func in fpeak"));
+   valp[ind++] = &fPeakMwidth;
+   row_lab->Add(new TObjString("DoubleValue_Threshold in fpeak"));
+    valp[ind++] = &fPeakThreshold;
  
    Bool_t ok; 
    Int_t itemwidth = 240;

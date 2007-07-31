@@ -30,7 +30,6 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/TMrbArrayF.h \
   					$(HPRDIRI)/FhPeak.h \
 					$(HPRDIRI)/FhContour.h \
-               $(HPRDIRI)/FhRegion.h \
                $(HPRDIRI)/HprImage.h \
                $(HPRDIRI)/GroupOfGObjects.h \
                $(HPRDIRI)/GroupOfHists.h \
@@ -48,6 +47,7 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/InsertFunctionDialog.h \
  					$(HPRDIRI)/InsertArcDialog.h \
  					$(HPRDIRI)/FitOneDimDialog.h \
+ 					$(HPRDIRI)/FindPeakDialog.h \
  					$(HPRDIRI)/EmptyHistDialog.h \
 					$(HPRDIRI)/CalibrationDialog.h \
  					$(HPRDIRI)/InsertTextDialog.h \
@@ -55,7 +55,6 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
 					$(HPRDIRI)/TextBox.h \
   					$(HPRDIRI)/TCurlyLineWithArrow.h \
  					$(HPRDIRI)/CurlyLineWithArrowDialog.h \
- 					$(HPRDIRI)/Save2FileDialog.h \
  					$(HPRDIRI)/TArcEditor.h \
  					$(HPRDIRI)/LinkDef.h
 
@@ -85,7 +84,7 @@ include/%.h:    $(HPRDIRI)/%.h
 $(HPREXE):     $(HPRSO)$(HPRO) $(HPRMAINO) $(MRBLIBS)
 #		@echo "sources: $(HPRS)"
 		@echo "$(HPREXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) $(ROOTGLIBS) \
+		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) $(ROOTGLIBS) -lSpectrum \
             -o $(HPREXE)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)

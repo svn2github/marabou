@@ -24,7 +24,8 @@ void ExecGausFitG(TGraph * graph, Int_t type)
    graph->SetBit(kMustCleanup);
    new FitOneDimDialog(graph, type);
 }
-//______________________________________________________________________________________//_______________________________________________________________________________________
+//______________________________________________________________________________________
+//_______________________________________________________________________________________
 
 ClassImp(Ascii2GraphDialog)
 
@@ -37,7 +38,10 @@ static const Char_t helpText[] =
 Input data can have the formats:\n\
 X, Y:                     simple graph, no errors\n\
 X, Y, Ex, Ey:             symmetric errors in X and Y\n\
+   if only 3 values are given the 3rd is assumed to be Ey\n\
 X, Y, Exl, Exu, Eyl, Eyu: asymmetric errors in X and Y\n\
+   Values after Y may be ommitted, they are set to 0\n\
+\n\
 Select columns:\n\
    Select 2 columns to be used as X, Y of a simple graph\n\
    White space or comma are used as separators\n\
@@ -195,88 +199,66 @@ void Ascii2GraphDialog::Draw_The_Graph()
 		return;
 	}
    Int_t n = 0;
-//   Double_t x, y, w;
-   Bool_t ok = kTRUE;
    Double_t x[6];
-   Int_t nval = 0;
    
    TString line;
-
-   if (fGraphColSelect) {
-      TString del(" ,");
-      TObjArray * oa;
-    	while ( 1 ) {
-         line.ReadLine(infile);
-         if (infile.eof()) break;
-         oa = line.Tokenize(del);
-         Int_t nent = oa->GetEntries();
-         if ( fGraphColSel1 > nent || fGraphColSel2 > nent) {
-            cout << "Not enough entries: " << n << endl;
+   TString del(" ,\t");
+   TObjArray * oa;
+	while ( 1 ) {
+		line.ReadLine(infile);
+		if (infile.eof()) break;
+		oa = line.Tokenize(del);
+		Int_t nent = oa->GetEntries();
+      if (nent < 2) {
+         cout << "Not enough entries at: " << n+1 << endl;
+         break;
+      }
+      for ( Int_t i = 0; i < 6; i++ ) 
+         x[i] = 0;
+		for (Int_t i = 0; i < nent; i++) {
+			TString val = ((TObjString*)oa->At(i))->String();
+			if (!val.IsFloat()) {
+				cout << "Illegal double: " << val << " at line: " << n+1 << endl;
+			   break;
+         }
+			x[i] = val.Atof();
+		}
+      if (fGraphColSelect) {
+        if ( fGraphColSel1 > nent || fGraphColSel2 > nent) {
+            cout << "Not enough entries at: " << n << endl;
             break;
          }
-         TString val = ((TObjString*)oa->At(fGraphColSel1-1))->String();
-         if (!val.IsFloat()) {
-            cout << "Illegal double: " << val << " at line: " << n+1 << endl;
-            break;
-         }
-         xval.AddAt(val.Atof(), n);
-
-         val = ((TObjString*)oa->At(fGraphColSel2-1))->String();
-         if (!val.IsFloat()) {
-            cout << "Illegal double: " << val << " at line: " << n+1 << endl;
-            break;
-         }
-         yval.AddAt(val.Atof(), n);
+         xval.AddAt(x[fGraphColSel1-1], n);
+         yval.AddAt(x[fGraphColSel2-1], n);
          n++;
       	if (n >= xval.GetSize()){
          	xval.Set(n+100);
          	yval.Set(n+100);
          }
-      }
-   } else {
-   	if (fGraph_Simple == 1)    nval = 2;
-   	if (fGraph_Error == 1)     nval = 4;
-   	if (fGraph_AsymError == 1) nval = 6;
-   	while ( 1 ) {
-      	Int_t i = 0;
-      	while (i < nval) {
-         	infile >> x[i];
-	      	if (infile.eof()) {
-            	 if (i != 0) {
-               	cout << "Warning: Number of input data not multiple of: " << nval << endl;
-               	cout << "Discard the " << i << " value(s) at end of file " << endl;
-               	cout << ": " << x[0] << endl;
-               	if (i > 1) cout << ": " << x[1] << endl;
-               	if (i > 2) cout << ": " << x[2] << endl;
-               	if (i > 3) cout << ": " << x[3] << endl;
-               	if (i > 4) cout << ": " << x[4] << endl;
-            	 }
-            	 ok = kFALSE;
-			   	 break;
-		   	}
-         	if (!infile.good()) {
-	//          discard non white space separator,comma etc.
-            	infile.clear();
-            	infile >> line;
-            	continue;
-         	}
-         	if      (i == 0) xval.AddAt(x[i], n);
-         	else if (i == 1) yval.AddAt(x[i], n);
-         	else if (i == 2) zval.AddAt(x[i], n);
-         	else if (i == 3) wval.AddAt(x[i], n);
-         	else if (i == 4) eyl.AddAt(x[i], n);
-         	else if (i == 5) eyh.AddAt(x[i], n);
-         	i++;
-      	}
-      	if (!ok) break;
+      } else {
+         xval.AddAt(x[0], n);
+         yval.AddAt(x[1], n);
+//       if only 3 values  assume x, y, ye
+         if (nent == 3) {
+            x[3] = x[2];
+            x[2] = 0;
+         }
+         if (fGraph_Error == 1 || fGraph_AsymError == 1) {
+            zval.AddAt(x[2], n);
+            wval.AddAt(x[3], n);
+            if ( fGraph_AsymError == 1 ) {
+               eyl.AddAt(x[4], n);
+               eyh.AddAt(x[5], n);
+            }
+         }
       	n++;
       	if (n >= xval.GetSize()){
          	xval.Set(n+100);
-         	if (nval > 1) yval.Set(n+100);
-         	if (nval > 2) zval.Set(n+100);
-         	if (nval > 3) wval.Set(n+100);
-         	if (nval > 4) eyl.Set(n+100);
-         	if (nval > 5) eyh.Set(n+100);
+         	yval.Set(n+100);
+         	zval.Set(n+100);
+         	wval.Set(n+100);
+         	eyl.Set(n+100);
+         	eyh.Set(n+100);
       	}
    	}
    }
@@ -308,7 +290,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
       graph = new TGraphAsymmErrors(n, xval.GetArray(), yval.GetArray(),
                                        zval.GetArray(), wval.GetArray(),
                                        eyl.GetArray(),  eyh.GetArray());
-      }
+   }
    if (graph) {
       if (fGraphName.Length() <= 0) {
          graph->SetName(fGraphFileName.Data());

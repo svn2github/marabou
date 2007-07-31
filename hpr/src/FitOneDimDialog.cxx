@@ -16,6 +16,7 @@
 #include "TVirtualPad.h"
 #include "TGMrbTableFrame.h"
 #include "FitOneDimDialog.h"
+#include "FhPeak.h"
 #include "SetColor.h"
 #include <iostream>
 #ifdef MARABOUVERS
@@ -333,8 +334,10 @@ Double_t gausf(Double_t * x, Double_t * par)
 //____________________________________________________________________________________ 
 //____________________________________________________________________________________ 
 
-FitOneDimDialog::FitOneDimDialog(TH1 * hist, Int_t type)
+FitOneDimDialog::FitOneDimDialog(TH1 * hist, Int_t type, Int_t interactive)
 {
+   fInteractive = interactive;
+   fFitPeakListDone = kFALSE;
    fSelHist = hist;
    fGraph = NULL;
 //   if (!fSelHist) {
@@ -352,8 +355,9 @@ FitOneDimDialog::FitOneDimDialog(TH1 * hist, Int_t type)
 }
 //____________________________________________________________________________________ 
 
-FitOneDimDialog::FitOneDimDialog(TGraph * graph, Int_t type)
+FitOneDimDialog::FitOneDimDialog(TGraph * graph, Int_t type, Int_t interactive)
 {
+   fInteractive = interactive;
    if (!graph) {
       cout << "No graph selected" << endl;
       return;
@@ -383,7 +387,6 @@ FitOneDimDialog::FitOneDimDialog(TGraph * graph, Int_t type)
 
 void FitOneDimDialog::DisplayMenu(Int_t type)
 {
-
 static const Char_t helptext_gaus[] =
 "This widget allows fitting of any number of\n\
 gaussian shaped peaks optionally with a low or high\n\
@@ -430,6 +433,18 @@ actually doing a fit.\n\
 Note: If you want to use the fitting values in a\n\
       subsequent calibration step the option:\n\
       \"Add all functions to histogram\" must be activ\n\
+\n\
+The command \"FitPeakList\" can be used to fit gaussians\n\
+(optionally with tails) to many peaks automatically\n\
+The estimated positions of the peaks must previously\n\
+be defined with \"FindPeakDialog\"\n\
+The value \"fPeakSep\" determines if close peaks\n\
+should be treated by a common fit.\n\
+This procedure may be exercised manually setting\n\
+\"fConfirmStartValues\" on\n\
+Normally the fitted functions are added to the \n\
+histogram for a following calibration procedure\n\
+\"CalibrationDialog\"\n\
 ";
 
 static const Char_t helptext_exp[] =
@@ -493,7 +508,19 @@ the root doc at: http://root.cern.ch\n\
    RestoreDefaults();
    fSelPad = gPad;
    SetBit(kMustCleanup);
+   fFuncName = Form("_%d", fFuncNumber);
+   fFuncNumber++;
+   fNpeaks = 1;
+   fUseoldpars = 0;
+   fLinBgSet = kFALSE;
+   fMarkers = NULL; 
+   fReqNmarks= 0; 
+   fDialog = NULL;
+   TAxis *xaxis = fSelHist->GetXaxis();
+   fFrom = xaxis->GetXmin();
+   fTo   = xaxis->GetXmax() ;
    gROOT->GetListOfCleanups()->Add(this);
+
    TIter next(gROOT->GetListOfCanvases());
    TCanvas *c;
    while ( (c = (TCanvas*)next()) ) {
@@ -509,233 +536,204 @@ the root doc at: http://root.cern.ch\n\
    } else {
       fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
    }
-//  function name
-//   fFuncName = fSelHist->GetName();
-//   Int_t ip = fFuncName.Index(";");
-//	if (ip > 0)fFuncName.Resize(ip);
-   fFuncName = Form("_%d", fFuncNumber);
-   fFuncNumber++;
-//   fFuncName.Prepend("f");
-//   const char hist_file[] = {"funcname_hist.txt"};
-//   history = hist_file;
-//   if (gROOT->GetVersionInt() < 40000) history = NULL;
-
-   TList *row_lab = new TList(); 
-   static void *valp[50];
-   Int_t ind = 0;
-   static TString exgcmd("FitGausExecute()");
-   static TString expcmd("FitExpExecute()");
-   static TString exdcmd("DrawExpExecute()");
-   static TString exstpcmd("CalcStartParExp()");
-   static TString expolcmd("FitPolExecute()");
-   static TString exdpolcmd("DrawPolExecute()");
-   static TString exformcmd("FitFormExecute()");
-   static TString exdformcmd("DrawFormExecute()");
-//   static TString accmd("AddToCalibration()");
-   static TString lbgcmd("DetLinearBackground()");
-   static TString clmcmd("ClearMarkers()");
-   static TString setmcmd("SetMarkers()");
-   static TString prtcmd("PrintMarkers()");
-   static TString sfocmd("SetFittingOptions()");
-   static TString fhrcmd("FillHistRandom()");
-   static Int_t dummy = 0;
-   TString * text = NULL;
-   const char * history = NULL;
-   const char hist_file[] = {"func_formulae_hist.txt"};
-//   history = hist_file;
-//   if (gROOT->GetVersionInt() < 40000) history = NULL;
-
-   fNpeaks = 1;
-   fUseoldpars = 0;
-   fLinBgSet = kFALSE;
-   fMarkers = NULL; 
-   fReqNmarks= 0; 
-   TAxis *xaxis = fSelHist->GetXaxis();
-   fFrom = xaxis->GetXmin();
-   fTo   = xaxis->GetXmax() ;
-//   fSelHist->Dump();
-   const char * helptext = NULL;
-   if (type == 1) {
-      helptext = helptext_gaus;
-      fFuncName.Prepend(fGausFuncName);
-		fNmarks = GetMarkers();
-//		row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
-//		valp[ind++] = &fNpeaks;
-		row_lab->Add(new TObjString("CheckButton_Low Tail"));
-		valp[ind++] = &fLowtail;
-		row_lab->Add(new TObjString("CheckButton+High Tail"));
-		valp[ind++] = &fHightail;
-		row_lab->Add(new TObjString("CheckButton_Force Background=0"));
-		valp[ind++] = &fBackg0;
-		row_lab->Add(new TObjString("CheckButton+Force BG Slope=0"));
-		valp[ind++] = &fSlope0;
-		row_lab->Add(new TObjString("CheckButton_Common Gauss width"));
-		valp[ind++] = &fOnesig;
-		row_lab->Add(new TObjString("CheckButton+Use pre det lin bg"));
-		valp[ind++] = &fUsedbg;
-		row_lab->Add(new TObjString("CheckButton_Use pars of prev fit"));
-		valp[ind++] = &fUseoldpars;
-		row_lab->Add(new TObjString("CheckButton+Show components of fit"));
-		valp[ind++] = &fShowcof;
-   } else if (type == 2) {
-      helptext = helptext_exp;
-      fFuncName.Prepend(fExpFuncName);
-//      row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
-      row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*x)"));
-		valp[ind++] = &dummy;
-      row_lab->Add(new TObjString("DoubleValue_a"));
-		valp[ind++] = &fExpA;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fExpFixA;
-      row_lab->Add(new TObjString("DoubleValue-b"));
-		valp[ind++] = &fExpB;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fExpFixB;
-      row_lab->Add(new TObjString("DoubleValue_c"));
-		valp[ind++] = &fExpC;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fExpFixC;
- //     row_lab->Add(new TObjString("DoubleValue+d"));
-//		valp[ind++] = &fExpD;
-//		row_lab->Add(new TObjString("CheckButton-Fix"));
-//		valp[ind++] = &fExpFixD;
-      row_lab->Add(new TObjString("CommentOnly+ --"));
-		valp[ind++] = &dummy;
-
-   } else if (type == 3) {
-      helptext = helptext_pol;
-      fFuncName.Prepend(fPolFuncName);
-      row_lab->Add(new TObjString("CommentOnly_Pol: a0 + a1*x +.."));
-		valp[ind++] = &dummy;
-		row_lab->Add(new TObjString("PlainIntVal+Degree"));
-		valp[ind++] = &fPolN;
-      row_lab->Add(new TObjString("DoubleValue_a0"));
-		valp[ind++] = &fPolA;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fPolFixA;
-      row_lab->Add(new TObjString("DoubleValue-a1"));
-		valp[ind++] = &fPolB;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fPolFixB;
-      row_lab->Add(new TObjString("DoubleValue_a2"));
-		valp[ind++] = &fPolC;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fPolFixC;
-      row_lab->Add(new TObjString("DoubleValue+a3"));
-		valp[ind++] = &fPolD;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fPolFixD;
-   } else if (type == 4) {
-      helptext = helptext_form;
-      fFuncName.Prepend(fFormFuncName);
-      row_lab->Add(new TObjString("CommentOnly_User defined formula"));
-		valp[ind++] = &dummy;
-      row_lab->Add(new TObjString("DoubleValue_p0"));
-		valp[ind++] = &fFormA;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fFormFixA;
-      row_lab->Add(new TObjString("DoubleValue-p1"));
-		valp[ind++] = &fFormB;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fFormFixB;
-      row_lab->Add(new TObjString("DoubleValue_p2"));
-		valp[ind++] = &fFormC;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fFormFixC;
-      row_lab->Add(new TObjString("DoubleValue+p3"));
-		valp[ind++] = &fFormD;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fFormFixD;
-      row_lab->Add(new TObjString("DoubleValue_p4"));
-		valp[ind++] = &fFormE;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fFormFixE;
-      row_lab->Add(new TObjString("DoubleValue+p5"));
-		valp[ind++] = &fFormF;
-		row_lab->Add(new TObjString("CheckButton-Fix"));
-		valp[ind++] = &fFormFixF;
+   if (fInteractive > 0 ) {
+		TList *row_lab = new TList(); 
+		static void *valp[50];
+		Int_t ind = 0;
+		static TString explcmd("FitPeakList()");
+		static TString exgcmd("FitGausExecute()");
+		static TString expcmd("FitExpExecute()");
+		static TString exdcmd("DrawExpExecute()");
+		static TString exstpcmd("CalcStartParExp()");
+		static TString expolcmd("FitPolExecute()");
+		static TString exdpolcmd("DrawPolExecute()");
+		static TString exformcmd("FitFormExecute()");
+		static TString exdformcmd("DrawFormExecute()");
+	//   static TString accmd("AddToCalibration()");
+		static TString lbgcmd("DetLinearBackground()");
+		static TString clmcmd("ClearMarkers()");
+		static TString setmcmd("SetMarkers()");
+		static TString prtcmd("PrintMarkers()");
+		static TString sfocmd("SetFittingOptions()");
+		static TString fhrcmd("FillHistRandom()");
+		static Int_t dummy = 0;
+		TString * text = NULL;
+		const char * history = NULL;
+		const char hist_file[] = {"func_formulae_hist.txt"};
+	//   history = hist_file;
+	//   if (gROOT->GetVersionInt() < 40000) history = NULL;
+	
+	//   fSelHist->Dump();
+		const char * helptext = NULL;
+		if (type == 1) {
+			helptext = helptext_gaus;
+			fFuncName.Prepend(fGausFuncName);
+			fNmarks = GetMarkers();
+	//		row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
+	//		valp[ind++] = &fNpeaks;
+			row_lab->Add(new TObjString("CheckButton_Low Tail"));
+			valp[ind++] = &fLowtail;
+			row_lab->Add(new TObjString("CheckButton+High Tail"));
+			valp[ind++] = &fHightail;
+			row_lab->Add(new TObjString("CheckButton_Force Background=0"));
+			valp[ind++] = &fBackg0;
+			row_lab->Add(new TObjString("CheckButton+Force BG Slope=0"));
+			valp[ind++] = &fSlope0;
+			row_lab->Add(new TObjString("CheckButton_Common Gauss width"));
+			valp[ind++] = &fOnesig;
+			row_lab->Add(new TObjString("CheckButton+Use pre det lin bg"));
+			valp[ind++] = &fUsedbg;
+			row_lab->Add(new TObjString("CheckButton_Use pars of prev fit"));
+			valp[ind++] = &fUseoldpars;
+			row_lab->Add(new TObjString("CheckButton+Show components of fit"));
+			valp[ind++] = &fShowcof;
+		} else if (type == 2) {
+			helptext = helptext_exp;
+			fFuncName.Prepend(fExpFuncName);
+	//      row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
+			row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*x)"));
+			valp[ind++] = &dummy;
+			row_lab->Add(new TObjString("DoubleValue_a"));
+			valp[ind++] = &fExpA;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fExpFixA;
+			row_lab->Add(new TObjString("DoubleValue-b"));
+			valp[ind++] = &fExpB;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fExpFixB;
+			row_lab->Add(new TObjString("DoubleValue_c"));
+			valp[ind++] = &fExpC;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fExpFixC;
+	//     row_lab->Add(new TObjString("DoubleValue+d"));
+	//		valp[ind++] = &fExpD;
+	//		row_lab->Add(new TObjString("CheckButton-Fix"));
+	//		valp[ind++] = &fExpFixD;
+			row_lab->Add(new TObjString("CommentOnly+ --"));
+			valp[ind++] = &dummy;
+	
+		} else if (type == 3) {
+			helptext = helptext_pol;
+			fFuncName.Prepend(fPolFuncName);
+			row_lab->Add(new TObjString("CommentOnly_Pol: a0 + a1*x +.."));
+			valp[ind++] = &dummy;
+			row_lab->Add(new TObjString("PlainIntVal+Degree"));
+			valp[ind++] = &fPolN;
+			row_lab->Add(new TObjString("DoubleValue_a0"));
+			valp[ind++] = &fPolA;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fPolFixA;
+			row_lab->Add(new TObjString("DoubleValue-a1"));
+			valp[ind++] = &fPolB;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fPolFixB;
+			row_lab->Add(new TObjString("DoubleValue_a2"));
+			valp[ind++] = &fPolC;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fPolFixC;
+			row_lab->Add(new TObjString("DoubleValue+a3"));
+			valp[ind++] = &fPolD;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fPolFixD;
+		} else if (type == 4) {
+			helptext = helptext_form;
+			fFuncName.Prepend(fFormFuncName);
+			row_lab->Add(new TObjString("CommentOnly_User defined formula"));
+			valp[ind++] = &dummy;
+			row_lab->Add(new TObjString("DoubleValue_p0"));
+			valp[ind++] = &fFormA;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fFormFixA;
+			row_lab->Add(new TObjString("DoubleValue-p1"));
+			valp[ind++] = &fFormB;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fFormFixB;
+			row_lab->Add(new TObjString("DoubleValue_p2"));
+			valp[ind++] = &fFormC;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fFormFixC;
+			row_lab->Add(new TObjString("DoubleValue+p3"));
+			valp[ind++] = &fFormD;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fFormFixD;
+			row_lab->Add(new TObjString("DoubleValue_p4"));
+			valp[ind++] = &fFormE;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fFormFixE;
+			row_lab->Add(new TObjString("DoubleValue+p5"));
+			valp[ind++] = &fFormF;
+			row_lab->Add(new TObjString("CheckButton-Fix"));
+			valp[ind++] = &fFormFixF;
+		}
+		row_lab->Add(new TObjString("DoubleValue_From"));
+		valp[ind++] = &fFrom;
+		row_lab->Add(new TObjString("DoubleValue+To"));
+		valp[ind++] = &fTo;
+		row_lab->Add(new TObjString("CheckButton_Add all functions to hist"));
+		valp[ind++] = &fFitOptAddAll;
+		row_lab->Add(new TObjString("CheckButton+Clear marks after fit"));
+		valp[ind++] = &fAutoClearMarks;
+		row_lab->Add(new TObjString("ColorSelect_LCol"));
+		valp[ind++] = &fColor;
+		row_lab->Add(new TObjString("PlainShtVal-LWid"));
+		valp[ind++] = &fWidth;
+		row_lab->Add(new TObjString("LineSSelect-LSty"));
+		valp[ind++] = &fStyle;
+		row_lab->Add(new TObjString("StringValue_FuncName"));
+		valp[ind++] = &fFuncName;
+		row_lab->Add(new TObjString("CommandButt_Exe Fit"));
+		if (type == 1) { 
+			valp[ind++] = &exgcmd;
+			row_lab->Add(new TObjString("CommandButt+FitPeakList"));
+			valp[ind++] = &explcmd;
+			row_lab->Add(new TObjString("CommandButt+Det Lin BG"));
+			valp[ind++] = &lbgcmd;
+		} else if (type == 2) {
+			valp[ind++] = &expcmd;
+			row_lab->Add(new TObjString("CommandButt+Draw only"));
+			valp[ind++] = &exdcmd;
+			row_lab->Add(new TObjString("CommandButt+Calc Start Pars"));
+			valp[ind++] = &exstpcmd;
+		} else if (type == 3) {
+			valp[ind++] = &expolcmd;
+			row_lab->Add(new TObjString("CommandButt+Draw only"));
+			valp[ind++] = &exdpolcmd;
+		} else if (type == 4) {
+			valp[ind++] = &exformcmd;
+			row_lab->Add(new TObjString("CommandButt+Draw only"));
+			valp[ind++] = &exdformcmd;
+			history = hist_file;
+			text = &fFormula;
+		}
+		row_lab->Add(new TObjString("CommandButt_Options / Params"));
+		valp[ind++] = &sfocmd;
+		row_lab->Add(new TObjString("CommandButt+Print Markers"));
+		valp[ind++] = &prtcmd;
+		row_lab->Add(new TObjString("CommandButt_Clear Marks"));
+		valp[ind++] = &clmcmd;
+		if (type == 1) {
+			row_lab->Add(new TObjString("CommandButt-Set N Marks"));
+			valp[ind++] = &setmcmd;
+			row_lab->Add(new TObjString("PlainIntVal-N"));
+			valp[ind++] = &fReqNmarks;
+		} else {
+			row_lab->Add(new TObjString("CommandButt-Set 2 Marks"));
+			fReqNmarks = 2;
+			valp[ind++] = &setmcmd;
+		}
+		if (type == 4) {
+			row_lab->Add(new TObjString("CommandButt_Fill random"));
+			valp[ind++] = &fhrcmd;
+			row_lab->Add(new TObjString("PlainIntVal-N events"));
+			valp[ind++] = &fNevents;
+		}
+		Int_t itemwidth = 320;
+		Int_t ok = 0;
+		fDialog =
+		new TGMrbValuesAndText ("Function", text, &ok, itemwidth,
+								fParentWindow, history, NULL, row_lab, valp,
+								NULL, NULL, helptext, this, this->ClassName());
    }
-   row_lab->Add(new TObjString("DoubleValue_From"));
-   valp[ind++] = &fFrom;
-   row_lab->Add(new TObjString("DoubleValue+To"));
-   valp[ind++] = &fTo;
-   row_lab->Add(new TObjString("CheckButton_Add all functions to hist"));
-   valp[ind++] = &fFitOptAddAll;
-   row_lab->Add(new TObjString("CheckButton+Clear marks after fit"));
-   valp[ind++] = &fAutoClearMarks;
-   row_lab->Add(new TObjString("ColorSelect_LCol"));
-   valp[ind++] = &fColor;
-   row_lab->Add(new TObjString("PlainShtVal-LWid"));
-   valp[ind++] = &fWidth;
-   row_lab->Add(new TObjString("LineSSelect-LSty"));
-   valp[ind++] = &fStyle;
-   row_lab->Add(new TObjString("StringValue_FuncName"));
-   valp[ind++] = &fFuncName;
-   row_lab->Add(new TObjString("CommandButt_Execute Fit"));
-   if (type == 1) { 
-      valp[ind++] = &exgcmd;
-//      cout << exgcmd << endl;
-      row_lab->Add(new TObjString("CommandButt+Determine Lin BG"));
-      valp[ind++] = &lbgcmd;
-   } else if (type == 2) {
-      valp[ind++] = &expcmd;
-      row_lab->Add(new TObjString("CommandButt+Draw only"));
-      valp[ind++] = &exdcmd;
-      row_lab->Add(new TObjString("CommandButt+Calc Start Pars"));
-      valp[ind++] = &exstpcmd;
-   } else if (type == 3) {
-      valp[ind++] = &expolcmd;
-      row_lab->Add(new TObjString("CommandButt+Draw only"));
-      valp[ind++] = &exdpolcmd;
-   } else if (type == 4) {
-      valp[ind++] = &exformcmd;
-      row_lab->Add(new TObjString("CommandButt+Draw only"));
-      valp[ind++] = &exdformcmd;
-      history = hist_file;
-      text = &fFormula;
-   }
-/*
-#ifdef MARABOUVERS
-   if (fGraph == NULL) {
-      row_lab->Add(new TObjString("CommandButt+Add To Calibration"));
-      valp[ind++] = &accmd;
-   }
-#endif
-*/
-   row_lab->Add(new TObjString("CommandButt_Fitting Options"));
-   valp[ind++] = &sfocmd;
-   row_lab->Add(new TObjString("CommandButt+Print Markers"));
-   valp[ind++] = &prtcmd;
-   row_lab->Add(new TObjString("CommandButt_Clear Marks"));
-   valp[ind++] = &clmcmd;
-   if (type == 1) {
-      row_lab->Add(new TObjString("CommandButt-Set N Marks"));
-      valp[ind++] = &setmcmd;
-      row_lab->Add(new TObjString("PlainIntVal-N"));
-      valp[ind++] = &fReqNmarks;
-   } else {
-      row_lab->Add(new TObjString("CommandButt-Set 2 Marks"));
-      fReqNmarks = 2;
-      valp[ind++] = &setmcmd;
-   }
-   if (type == 4) {
-      row_lab->Add(new TObjString("CommandButt_Fill random"));
-      valp[ind++] = &fhrcmd;
-		row_lab->Add(new TObjString("PlainIntVal-N events"));
-		valp[ind++] = &fNevents;
-   }
-   Int_t itemwidth = 320;
-//   TRootCanvas* fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
-//   cout << "fParentWindow " << fParentWindow << endl;
-   Int_t ok = 0;
-   fDialog =
-   new TGMrbValuesAndText ("Function", text, &ok, itemwidth,
-                      fParentWindow, history, NULL, row_lab, valp,
-                      NULL, NULL, helptext, this, this->ClassName());
-//  Bool_t ok;
-//  ok = GetStringExt("Function name", &fFuncName, itemwidth,
-//                      fParentWindow, history, NULL, row_lab, valp,
-//                      NULL, NULL, helptext, this, this->ClassName());
 }
 //__________________________________________________________________________
 
@@ -753,14 +751,95 @@ void FitOneDimDialog::RecursiveRemove(TObject * obj)
    if ((fGraph && obj == fGraph) || obj == fSelHist) { 
  //      cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "  
  //       << obj << " fSelHist " <<  fSelHist <<  endl;
-      CloseDialog(); 
+      if (fInteractive > 0) CloseDialog(); 
    }
 }
 //__________________________________________________________________________
 
+void FitOneDimDialog::FitPeakList()
+{
+   Int_t confirm = fConfirmStartValues;
+   TList * p = (TList*)fSelHist->GetListOfFunctions()->FindObject("spectrum_peaklist");
+   if (!p) {
+      cout << "No peaklist found" << endl;
+      return;
+   }
+   if (fDialog) fDialog->DisableCancelButton();
+   Int_t addall_save = fFitOptAddAll;
+   Int_t showcof_save = fShowcof;
+   fFitOptAddAll = 1;
+   fShowcof = 0;
+   p->Sort();
+//   p->Print();
+   Int_t npeaks = p->GetSize();
+   Int_t i = 0;
+   Bool_t started = kFALSE;
+   Double_t xmin = fSelHist->GetBinCenter(1);
+   Double_t xmax = fSelHist->GetBinCenter(fSelHist->GetNbinsX());
+   Double_t xp = 0, xpn = 0;
+   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers == NULL) {
+      fMarkers = new  FhMarkerList();
+      fSelHist->GetListOfFunctions()->Add(fMarkers);
+   }
+   ClearMarkers();
+   Bool_t close_peak = kFALSE;
+   while (i < npeaks) {
+      FhPeak *peak = (FhPeak*)p->At(i);
+      xp = peak->GetMean();
+      Float_t mark;
+      if (fPrintStartValues)
+         cout << "Enter Peak at: " << xp << endl;
+      if (!started) {
+         mark = TMath::Max(xmin, xp - fFitWindow * peak->GetWidth());
+         started = kTRUE;
+         fMarkers->Add(new FhMarker(mark));
+         if (fPrintStartValues) 
+           cout << "Start Mark at: " << mark << endl;
+     }
+     if (i == npeaks - 1) {
+        mark = TMath::Min(xmax, xp + fFitWindow * peak->GetWidth());
+        fMarkers->Add(new FhMarker(mark));
+        if (fPrintStartValues) 
+           cout << "Exit Mark at: " << mark << endl;
+        FitGausExecute();
+        ClearMarkers();
+        break;
+     }
+     FhPeak *peakn = (FhPeak*)p->At(i+1);
+     xpn = peakn->GetMean();
+     if (xpn - xp < fPeakSep *  peak->GetWidth()) {
+        fMarkers->Add(new FhMarker(xp));
+        close_peak = kTRUE;
+        if (fPrintStartValues) 
+           cout << "Close Peak at: " << xp << endl;
+        i++;
+     } else {
+         if (close_peak) {
+            fMarkers->Add(new FhMarker(xp));
+            close_peak = kFALSE;
+         }
+         mark = TMath::Min(xmax, xp + fFitWindow * peak->GetWidth());
+         fMarkers->Add(new FhMarker(mark));
+         i++;
+         started = kFALSE;
+         if (fPrintStartValues) 
+            cout << "End Mark at: " << mark << endl;
+         FitGausExecute();
+         ClearMarkers();
+      }
+   }
+   fFitOptAddAll = addall_save;
+   fShowcof = showcof_save; 
+   fConfirmStartValues = confirm;
+   fFitPeakListDone = kTRUE;
+   if (fDialog) fDialog->EnableCancelButton();
+}
+ //__________________________________________________________________________
+
 void FitOneDimDialog::FitGausExecute()
 {
-   Int_t retval = 0;
+  Int_t retval = 0;
    if (fGraph != NULL && fGraph->GetN() == 0) {
       new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
                 "Warning",
@@ -810,14 +889,16 @@ void FitOneDimDialog::FitGausExecute()
 //   if (setpars) cout << "ent setpars true" << endl;
 
    Int_t npars;
-   GetMarkers(); 
-//   if ( GetMarkers() <= 0 ) { 
-//      Int_t retval = 0;
-//      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
-//                "Warning", "No marks set,\n need at least 2" ,
-//                kMBIconExclamation, kMBDismiss, &retval);
-//      return;
-//   }
+   if (fPrintStartValues) {
+      PrintMarkers();
+   }
+   if ( GetMarkers() < 2 ) { 
+      Int_t retval = 0;
+      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+                "Warning", "No marks set,\n need at least 2" ,
+                kMBIconExclamation, kMBDismiss, &retval);
+      return;
+   }
    if (fOnesig == 0) 
       npars = fNpeaks * 3;
    else
@@ -844,7 +925,7 @@ void FitOneDimDialog::FitGausExecute()
    TArrayD gpar(3);
    ind = 0;
    Int_t bin_from = fSelHist->FindBin(fFrom);
-//   Int_t bin_to   = fSelHist->FindBin(fTo);
+   Int_t bin_to   = fSelHist->FindBin(fTo);
 //   Int_t bin = 0; 
    TF1 * func;
    if (lTailSide) {
@@ -896,7 +977,8 @@ void FitOneDimDialog::FitGausExecute()
       (*fbflags)[3] = fSlope0;
    }
  
-   Double_t bgest = fSelHist->GetBinContent(bin_from);
+   Double_t bgest = 0.5 * (fSelHist->GetBinContent(bin_from)
+                          + fSelHist->GetBinContent(bin_to));
    if (fBackg0 == 0 || fUsedbg == 1|| lTailSide != 0) {
       func->SetParName(ind+kFix,      "Bg_Const");
       row_lab.Add(new TObjString("Bg_Const"));
@@ -994,47 +1076,52 @@ void FitOneDimDialog::FitGausExecute()
       (*fbflags)[0 + offset] = 1;
       (*fbflags)[1 + offset] = 1;
    }  
-   Int_t ncols = 3;
-   TOrdCollection col_lab ;
-   col_lab.Add(new TObjString("StartVal"));
-   col_lab.Add(new TObjString("Low Lim "));
-   col_lab.Add(new TObjString("Up Lim  "));
-   col_lab.Add(new TObjString("fix it"));
-   col_lab.Add(new TObjString("bound"));
-
-   TString title("Start pars, fit from: ");
-   title += Form("%g", fFrom);
-   title += " to ";
-   title += Form("%g", fTo);
    Int_t ret = 0; 
-   Int_t itemwidth = 120;
-   Int_t precission = 5;
-//   row_lab.Print();
+   Bool_t do_fit = kTRUE;
+   if (fConfirmStartValues) {
 
-//   TGMrbTableOfDoubles(NULL, &ret, title.Data(), itemwidth,
-   TGMrbTableOfDoubles(fParentWindow, &ret, title.Data(), itemwidth,
-                       ncols, npars, *par, precission,
-                       &col_lab, &row_lab, fbflags, 0,
-                       NULL, "Do fit", "Draw only");
-   if (ret < 0) return;
-   Bool_t do_fit = (ret == 0);
-   cout <<
-       "-------------------------------------------------------------"
-       << endl;
-   if (ret == 0)
-      cout << "Fitting Gauss ";
-   else
-      cout << "Drawing Gauss ";
-   if (fSlope0 == 0) {
-      cout << "+ linear BG ";
-   } else if (fBackg0 == 0) { 
-      cout << "+ const BG ";
-   } 
-   cout << "to Histogram:" << fSelHist->GetName()
-        << " from " << fFrom << " fTo " << fTo << endl;
-   cout <<
-       "-------------------------------------------------------------"
-       << endl;
+		Int_t ncols = 3;
+		TOrdCollection col_lab ;
+		col_lab.Add(new TObjString("StartVal"));
+		col_lab.Add(new TObjString("Low Lim "));
+		col_lab.Add(new TObjString("Up Lim  "));
+		col_lab.Add(new TObjString("fix it"));
+		col_lab.Add(new TObjString("bound"));
+		TString title("Start pars, fit from: ");
+		title += Form("%g", fFrom);
+		title += " to ";
+		title += Form("%g", fTo);
+		Int_t itemwidth = 120;
+		Int_t precission = 5;
+	//   row_lab.Print();
+	
+	//   TGMrbTableOfDoubles(NULL, &ret, title.Data(), itemwidth,
+		TGMrbTableOfDoubles(fParentWindow, &ret, title.Data(), itemwidth,
+								ncols, npars, *par, precission,
+								&col_lab, &row_lab, fbflags, 0,
+								NULL, "Do fit", "Draw only");
+		if (ret < 0) return;
+	   do_fit = (ret == 0);
+      if (fPrintStartValues) {
+			cout <<
+				"-------------------------------------------------------------"
+				<< endl;
+			if (ret == 0)
+				cout << "Fitting Gauss ";
+			else
+				cout << "Drawing Gauss ";
+			if (fSlope0 == 0) {
+				cout << "+ linear BG ";
+			} else if (fBackg0 == 0) { 
+				cout << "+ const BG ";
+			} 
+			cout << "to Histogram:" << fSelHist->GetName()
+				<< " from " << fFrom << " fTo " << fTo << endl;
+			cout <<
+				"-------------------------------------------------------------"
+				<< endl;
+      }
+   }
 //  Look for fix /bound flag
    Bool_t bound = kFALSE;
    func->FixParameter(0, func->GetParameter(0));
@@ -1060,7 +1147,9 @@ void FitOneDimDialog::FitGausExecute()
 
 //   func->SetParameters(par->GetArray());
 
-   func->Print();
+   if (fPrintStartValues) {
+      func->Print();
+   }
 //  now fit it 
    gPad->cd();
    if (do_fit) {
@@ -1225,7 +1314,7 @@ void FitOneDimDialog::GetGaussEstimate(TH1 * h, Double_t from, Double_t to,
    Double_t sumx = 0;
    Double_t sumx2 = 0;
    for (Int_t i = frombin; i <= tobin; i++) {
-      Double_t cont = h->GetBinContent(i) - bg;
+      Double_t cont = TMath::Max(h->GetBinContent(i) - bg, 0.);
       Double_t x = h->GetBinCenter(i);
       sum += cont;
       sumx += x * cont;
@@ -1342,7 +1431,7 @@ Int_t FitOneDimDialog::GetMarkers()
 
 void FitOneDimDialog::ClearMarkers() {
    if (fMarkers) fMarkers->Delete();
-   fMarkers = NULL;
+//   fMarkers = NULL;
    if (fSelPad) {
       fSelPad->Modified();
       fSelPad->Update();
@@ -1385,7 +1474,7 @@ Int_t  FitOneDimDialog::SetMarkers() {
       nmarks++;
    }
    if (fSelPad) fSelPad->Update();
-   fDialog->ReloadValues();
+   if (fDialog) fDialog->ReloadValues();
    return nmarks;
 };
 //____________________________________________________________________________________ 
@@ -1449,6 +1538,7 @@ void FitOneDimDialog::SetFittingOptions()
    TList *row_lab = new TList();
    static void *valp[50];
    Int_t ind = 0;
+   Double_t dummy;
    row_lab->Add(new TObjString("CheckButton_Use Loglikelihood method"));
    row_lab->Add(new TObjString("CheckButton_Quiet)); minimal printout"));
    row_lab->Add(new TObjString("CheckButton_Verbose printout"));
@@ -1458,6 +1548,12 @@ void FitOneDimDialog::SetFittingOptions()
    row_lab->Add(new TObjString("CheckButton_Dont draw result function"));
    row_lab->Add(new TObjString("CheckButton_Add all fitted functions to hist"));
    row_lab->Add(new TObjString("CheckButton_Print covariance matrix"));
+   row_lab->Add(new TObjString("CheckButton_Confirm start values"));
+   row_lab->Add(new TObjString("CheckButton_Print start values"));
+
+   row_lab->Add(new TObjString("CommentOnly_Params for FitPeakList"));
+   row_lab->Add(new TObjString("DoubleValue_Half Fit Window[sigma]"));
+   row_lab->Add(new TObjString("DoubleValue_Two Peak Separation[sigma]"));
 
    valp[ind++] = &fFitOptLikelihood    ;
    valp[ind++] = &fFitOptQuiet         ;
@@ -1467,7 +1563,12 @@ void FitOneDimDialog::SetFittingOptions()
    valp[ind++] = &fFitOptIntegral      ;
    valp[ind++] = &fFitOptNoDraw        ;
    valp[ind++] = &fFitOptAddAll        ;
-   valp[ind++] = & fFitPrintCovariance ;
+   valp[ind++] = &fFitPrintCovariance  ;
+   valp[ind++] = &fConfirmStartValues  ;
+   valp[ind++] = &fPrintStartValues    ;
+   valp[ind++] = &dummy                ;
+   valp[ind++] = &fFitWindow           ;
+   valp[ind++] = &fPeakSep             ;
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("Fitting options", NULL, itemwidth, fParentWindow 
@@ -1763,12 +1864,6 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
       }
    }
 
-//   if ( GetMarkers() <= 0 ) { 
-//      new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
-//                "Warning", "No marks set,\n need at least 2" ,
- //               kMBIconExclamation, kMBDismiss, &retval);
-//      return;
-//   }
    TString fn;
    TString pn;
    TF1 *func = new TF1(fFuncName,(const char*)fFormula, fFrom, fTo);
@@ -2022,6 +2117,10 @@ void FitOneDimDialog::RestoreDefaults()
    fPolFuncName      = env.GetValue("FitOneDimDialog.fPolFuncName", "pol_fun");
    fFormFuncName     = env.GetValue("FitOneDimDialog.fFormFuncName", "form_fun");
    fNevents          = env.GetValue("FitOneDimDialog.fNevents", 10000);
+   fPeakSep          = env.GetValue("FitOneDimDialog.fPeakSep", 3);
+   fFitWindow        = env.GetValue("FitOneDimDialog.fFitWindow", 3);
+   fConfirmStartValues  = env.GetValue("FitOneDimDialog.fConfirmStartValues", 1);
+   fPrintStartValues  = env.GetValue("FitOneDimDialog.fPrintStartValues", 0);
 }
 //_______________________________________________________________________
 
@@ -2081,6 +2180,10 @@ void FitOneDimDialog::SaveDefaults()
    env.SetValue("FitOneDimDialog.fPolFuncName",  fPolFuncName );
    env.SetValue("FitOneDimDialog.fFormFuncName", fFormFuncName);
    env.SetValue("FitOneDimDialog.fNevents", fNevents);
+   env.SetValue("FitOneDimDialog.fPeakSep", fPeakSep);
+   env.SetValue("FitOneDimDialog.fFitWindow", fFitWindow);
+   env.SetValue("FitOneDimDialog.fConfirmStartValues", fConfirmStartValues);
+   env.SetValue("FitOneDimDialog.fPrintStartValues", fPrintStartValues);
    env.SaveLevel(kEnvLocal);
 }
 //_______________________________________________________________________
@@ -2089,7 +2192,7 @@ void FitOneDimDialog::CloseDialog()
 {
  //  cout << "FitOneDimDialog::CloseDialog() " << endl;
    gROOT->GetListOfCleanups()->Remove(this);
-   fDialog->CloseWindow();
+   if (fDialog) fDialog->CloseWindow();
    delete this;
 }
 //_______________________________________________________________________

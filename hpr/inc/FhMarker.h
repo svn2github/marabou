@@ -20,7 +20,7 @@ class FhMarker : public TMarker {
 
 public:
    FhMarker() {};
-   FhMarker(Float_t x, Float_t y, Int_t type) : TMarker(x, y, type){};
+   FhMarker(Float_t x, Float_t y = 0, Int_t type = 0) : TMarker(x, y, type){};
 
    ~FhMarker() {};
 

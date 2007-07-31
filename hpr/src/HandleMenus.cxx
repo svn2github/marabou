@@ -203,6 +203,7 @@ enum ERootCanvasCommands {
    kFHFitPolyHist,
    kFHFitPolyMarks,
    kFHFindPeaks,
+   kFHFindPeaksO,
    kFHCalibrate,
    kFHCalDialog,
    kFHCalibrateNew,
@@ -1145,6 +1146,9 @@ again:
                   case kFHFindPeaks:
                      np=fFitHist->FindPeaks(); 
                      break;
+                  case kFHFindPeaksO:
+                     np=fFitHist->FindPeaks(1); 
+                     break;
                   case kFHShowPeaks:
                      np=fFitHist->ShowPeaks(); 
                      break;
@@ -1607,6 +1611,7 @@ void HandleMenus::BuildMenus()
          fFitMenu->AddSeparator();
 //         fFitMenu->AddEntry("Clear Calib Peaks List",        kFHClearCalib);
          fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
+         fFitMenu->AddEntry("FindPeaksO",         kFHFindPeaksO);
 //         if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "calibration.html");
       }
 //      fFitMenu->AddSeparator();

@@ -218,7 +218,7 @@ public:
    Int_t Fit2dim(Int_t, Int_t);            // fit polynoms
    Int_t FitPolyHist(Int_t);               // fit polynoms hist 
    Int_t FitPolyMarks(Int_t);              // fit  polynoms to marks
-   Int_t FindPeaks();
+   Int_t FindPeaks(Int_t mode = 0);
    Int_t ShowPeaks();
    void  Expand();                     // expand
    void  ProjectX();

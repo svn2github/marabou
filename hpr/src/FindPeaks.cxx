@@ -15,6 +15,8 @@
 #include "TGMsgBox.h"
 #include "TMath.h"
 
+#include "FindPeakDialog.h"
+#include "FhPeak.h"
 #include "FitHist.h"
 #include "TGMrbTableFrame.h"
 #include "TGMrbInputDialog.h"
@@ -29,26 +31,43 @@ Int_t FoldSqareWave(Int_t i, Int_t j,Int_t m){
    else if (i <= j+2*m-1 && i >= j+m) return -1; 
    else return 0;
 }
-  
-Int_t FitHist::FindPeaks(){
+//_____________________________________________________________________
+
+Int_t FitHist::FindPeaks(Int_t mode)
+{
+   if (mode == 0) {
+      new FindPeakDialog(fSelHist);
+      return 0;
+   }
+   TLatex latex;
+   TList * p;
+   p = (TList*)fSelHist->GetListOfFunctions()->FindObject("spectrum_peaklist");
+   if (p) {
+      p->Delete();
+      delete p;
+   }
+   p = new TList();
+   p->SetName("spectrum_peaklist");
+   fSelHist->GetListOfFunctions()->Add(p);
    Int_t npeaks=0;
    if(is2dim(fSelHist)){
       cout << "FindPeaks in 2 dim not yet supported " << endl;
       return -1;
    }
-   Int_t Mwidth = 11;
+   Int_t Mwidth = 8;
    if (hp)  Mwidth = hp->fPeakMwidth;
    Int_t bin, i, L, start=0, wid;
    Stat_t fold, var;
    Float_t threshold = 3.;
    if (hp) threshold = hp->fPeakThreshold;
+   cout << "fPeakMwidth fPeakThreshold: " << Mwidth<< " " << threshold<< endl;
    Int_t nbins   = fSelHist->GetNbinsX();
 //   TAxis *yaxis = fSelHist->GetYaxis();
 //   Float_t ymin  = fSelHist->GetMinimum();
 //   Float_t ymax  = fSelHist->GetMaximum();
    Float_t ymin  = cHist->GetUymin();
    Float_t ymax  = cHist->GetUymax();
- 
+   Float_t  dyd = 0.05* (ymax - ymin);
 //   if(fOpfac > 1. && fOpfac < 10) threshold = fOpfac;
    TH1F* h_width = new TH1F("width","Widths",30,0,30);
    for (bin = 1;bin<=nbins-1;bin++) {
@@ -70,15 +89,25 @@ Int_t FitHist::FindPeaks(){
                h_width->Fill(wid);
 //               if(wid > 12)cout << " bin " << bin << " width " << wid << endl;
                start += (Int_t)(0.5 * Mwidth);
-               if(start > 0){
-                  Float_t x = fSelHist->GetBinCenter(start);
+               Double_t maxa = 0;
+               Int_t maxp = 0;
+               for (Int_t b = start; b <= TMath::Min(start+Mwidth, nbins); b++) {
+                  if (fSelHist->GetBinContent(b) > maxa ) {
+                     maxa = fSelHist->GetBinContent(b);
+                     maxp = b;
+                  }
+               }
+               if(maxp > 0 && wid > 0.5 * Mwidth){
+                  Float_t x = fSelHist->GetBinCenter(maxp);
+						FhPeak *pe = new FhPeak(x);
+   					pe->SetWidth(0.5 * Mwidth);
+						pe->SetContent(maxa);
+						p->Add(pe);
 
-//                  Float_t y = ymax*fSelHist->GetBinContent(start)/(ymax-ymin);
-//                  y += 0.02 * (ymax-ymin);
- //                 Float_t y1 =  y + 0.04 * (ymax-ymin);
-//                  TArrow *arr = new TArrow(x,y1,x,y, 0.025);
-                  TLine *arr = new TLine(x,ymin,x, ymax);
+                  latex.DrawLatex(x, maxa+dyd, Form("%d", wid));
+                  TLine *arr = new TLine(x,maxa-dyd,x, maxa + dyd);
                   arr->SetLineColor(2);
+                  arr->SetLineWidth(2);
                   fSelPad->cd();
                   arr->Draw();
                   peaks->Add(arr);
@@ -137,7 +166,7 @@ void FitHist::PrintCalib(){
    cout         << "-------------------------" << endl;
       ((FhPeak*)fPeaks->At(0))->PrintHeadLine();
        while ( (peak = (FhPeak*)next()) ) {
-         peak->Print();  
+         peak->Print("");  
       }
    }
 //  else    WarnBox("No peaks selected");
@@ -169,26 +198,7 @@ Bool_t FitHist::Calibrate(Int_t flag){
 //       1 generate a new histogram wit new binning
 
    if (flag == 2) {
-      Int_t npeaks = 0;
-      TIter next(fSelHist->GetListOfFunctions());
-      TObject *obj;
-      TF1 *f;
-      TString pname;
-      while ( (obj = next()) ) {
-         if (obj->IsA() == TF1::Class()) {
-            f = (TF1*)obj;
-            for (Int_t i = 0; i < f->GetNpar(); i++) {
-               pname = f->GetParName(i);
-               if (pname.BeginsWith("Ga_Mean")) {
-                  cout << "Mean: " << f->GetParameter(i) 
-                       << " Error: " << f->GetParError(i) << endl;
-                   npeaks++;
-               }
-            }
-         }
-      }
-      if (npeaks < 3) npeaks = 3;
-      new CalibrationDialog(fSelHist, npeaks);
+      new CalibrationDialog(fSelHist);
       return kTRUE;
    }
    if(fSetRange){

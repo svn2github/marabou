@@ -138,7 +138,7 @@ void EmptyHistDialog::Draw_The_Hist()
 	gStyle->SetOptStat(0);
 	fHist = new TH1D(fHistName, fHistName, fNbins, xmin, xmax);
 	fHist->Draw();
-	fHist->SetMinimum(ymin);
+//	fHist->SetMinimum(ymin);
 	fHist->SetMaximum(ymax);
 	if (fHistXtitle.Length() > 0)
 		fHist->GetXaxis()->SetTitle(fHistXtitle.Data());
