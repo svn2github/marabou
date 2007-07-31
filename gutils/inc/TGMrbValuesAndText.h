@@ -76,6 +76,7 @@ private:
    TGListBox        *fListBoxReq;
    TString          fClassName;
    TString          fFileName;
+   TGTextButton     *fCancelButton;
    const char       *fPrompt;
    const char       *fHelpText;
    TList            *fCompList;
@@ -115,9 +116,10 @@ public:
    void ReloadValues();
    void CloseWindow();
    void CloseWindowExt();
-//   void DoMarkerStyle(Style_t marker) {fMarker = marker;};
    void SaveList();
    Int_t GetColorPixelByInd(Int_t index);
+   void EnableCancelButton() { fCancelButton->SetEnabled(kTRUE); };
+   void DisableCancelButton() { fCancelButton->SetEnabled(kFALSE); };
 
 ClassDef(TGMrbValuesAndText,0)		// [GraphUtils] A dialog box
 };   

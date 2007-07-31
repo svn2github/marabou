@@ -743,6 +743,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    fText = text;
    fPrompt = Prompt;
    fHelpText = helptext;
+   fCancelButton = NULL;
    const TGWindow * main = gClient->GetRoot();
    if(Win != 0)fMyWindow = Win;
    else        fMyWindow = main;
@@ -1164,16 +1165,17 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       hf->AddFrame(b, l3);
       height = b->GetDefaultHeight();
       width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
-      b = new TGTextButton(hf, "Cancel", kIdCancel);
+      fCancelButton = new TGTextButton(hf, "Cancel", kIdCancel);
    } else {
-      b = new TGTextButton(hf, "Close Dialog", kIdCancel);
-      if (fCallClose) b->Connect("Clicked()", cname, calling_class, "CloseDown()");
+      fCancelButton = new TGTextButton(hf, "Close Dialog", kIdCancel);
+      fCancelButton->SetEnabled(kTRUE);
+      if (fCallClose) fCancelButton->Connect("Clicked()", cname, calling_class, "CloseDown()");
    } 
-   fWidgets->AddFirst(b);
-   b->Associate(this);
-   hf->AddFrame(b, l3);
-   height = b->GetDefaultHeight();
-   width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
+   fWidgets->AddFirst(fCancelButton);
+   fCancelButton->Associate(this);
+   hf->AddFrame(fCancelButton, l3);
+   height = fCancelButton->GetDefaultHeight();
+   width  = TMath::Max(width, fCancelButton->GetDefaultWidth()); ++nb;
    if(helptext){
       b = new TGTextButton(hf, "Help", kIdHelp);
       fWidgets->AddFirst(b);
