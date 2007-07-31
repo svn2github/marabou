@@ -468,10 +468,14 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    if(Window){
    	Window_t wdum;
    	Int_t      ax, ay;
-
+//   	gVirtualX->TranslateCoordinates(Window->GetId(), this->GetParent()->GetId(),
+//         	((TGFrame *) Window)->GetWidth() - width >> 1,
+//         	((TGFrame *) Window)->GetHeight(),
+//                       	  ax, ay, wdum);
+//      cout << "height, ay raw" << height<< " " << ay << endl; 
    	gVirtualX->TranslateCoordinates(Window->GetId(), this->GetParent()->GetId(),
          	((TGFrame *) Window)->GetWidth() - width >> 1,
-         	((TGFrame *) Window)->GetHeight() - height >> 1,
+         	((TGFrame *) Window)->GetHeight() - height,
                         	  ax, ay, wdum);
    	Int_t  screen_x, screen_y;
    	UInt_t wwu, whu;
@@ -483,10 +487,11 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
             	  screen_x, screen_y, wwu, whu);
    	ww = (Int_t)wwu;
    	wh = (Int_t)whu;
-
+ //     cout << "height, ay, wh " << height<< " " << ay << " " << wh<< endl; 
    	if(ax < 0) ax = 5;
    	Int_t ovl = ax + width - ww;
    	if(ovl > 0) ax -= ovl;
+      ay += height;
    	if(ay < 0) ay = 5;
       ovl = ay +  height + 30 - wh;
       if(ovl > 0) ay -= ovl;
