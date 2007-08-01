@@ -3,15 +3,17 @@
 // Name:             taufit.C
 // Purpose:          Taufit
 // Syntax:           .x taufit.C(const Char_t * File,
+//                                Int_t ErrMode,
 //                                Int_t NofTaus,
-//                                Double_t c,
+//                                Double_t C,
 //                                Double_t A0,
 //                                Double_t Tau0,
 //                                Double_t A1,
 //                                Double_t Tau1)
 // Arguments:        Char_t * File             -- File (.dat)
+//                   Int_t ErrMode             -- Errors
 //                   Int_t NofTaus             -- Number of exp() functions
-//                   Double_t c                -- Constant
+//                   Double_t C                -- c
 //                   Double_t A0               -- a0
 //                   Double_t Tau0             -- tau0
 //                   Double_t A1               -- a1
@@ -20,16 +22,16 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: taufit.C,v 1.4 2007-07-27 11:39:07 Rudolf.Lutter Exp $
-// Date:             Fri Jul 27 13:25:50 2007
+// Revision:         $Id: taufit.C,v 1.5 2007-08-01 11:49:05 Rudolf.Lutter Exp $
+// Date:             Wed Aug  1 13:14:51 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                taufit.C
 //                   Title:               Taufit
 //                   Width:               
 //                   Aclic:               +g
-//                   Modify:              
+//                   Modify:              1
 //                   RcFile:              
-//                   NofArgs:             7
+//                   NofArgs:             8
 //                   Arg1.Name:           File
 //                   Arg1.Title:          File (.dat)
 //                   Arg1.Type:           Char_t *
@@ -38,54 +40,64 @@
 //                   Arg1.AddLofValues:   No
 //                   Arg1.Base:           dec
 //                   Arg1.Orientation:    horizontal
-//                   Arg2.Name:           NofTaus
-//                   Arg2.Title:          Number of exp() functions
+//                   Arg2.Name:           ErrMode
+//                   Arg2.Title:          Errors
 //                   Arg2.Type:           Int_t
 //                   Arg2.EntryType:      Radio
 //                   Arg2.Default:        1
-//                   Arg2.Values:         1:2
+//                   Arg2.Values:         file=1|errors taken from file:all 1=2|set all errors to 1:sqrt=4|set error to sqrt(y)
 //                   Arg2.AddLofValues:   No
 //                   Arg2.Base:           dec
 //                   Arg2.Orientation:    horizontal
-//                   Arg3.Name:           C
-//                   Arg3.Title:          c
-//                   Arg3.Type:           Double_t
-//                   Arg3.EntryType:      Entry-C
+//                   Arg3.Name:           NofTaus
+//                   Arg3.Title:          Number of exp() functions
+//                   Arg3.Type:           Int_t
+//                   Arg3.EntryType:      Radio
+//                   Arg3.Default:        1
+//                   Arg3.Values:         1:2
 //                   Arg3.AddLofValues:   No
 //                   Arg3.Base:           dec
 //                   Arg3.Orientation:    horizontal
-//                   Arg4.Name:           A0
-//                   Arg4.Title:          a0
+//                   Arg4.Name:           C
+//                   Arg4.Title:          c
 //                   Arg4.Type:           Double_t
 //                   Arg4.EntryType:      Entry-C
-//                   Arg4.Default:        1.0
+//                   Arg4.Default:        0.0
 //                   Arg4.AddLofValues:   No
 //                   Arg4.Base:           dec
 //                   Arg4.Orientation:    horizontal
-//                   Arg5.Name:           Tau0
-//                   Arg5.Title:          tau0
+//                   Arg5.Name:           A0
+//                   Arg5.Title:          a0
 //                   Arg5.Type:           Double_t
 //                   Arg5.EntryType:      Entry-C
 //                   Arg5.Default:        1.0
 //                   Arg5.AddLofValues:   No
 //                   Arg5.Base:           dec
 //                   Arg5.Orientation:    horizontal
-//                   Arg6.Name:           A1
-//                   Arg6.Title:          a1
+//                   Arg6.Name:           Tau0
+//                   Arg6.Title:          tau0
 //                   Arg6.Type:           Double_t
 //                   Arg6.EntryType:      Entry-C
 //                   Arg6.Default:        1.0
 //                   Arg6.AddLofValues:   No
 //                   Arg6.Base:           dec
 //                   Arg6.Orientation:    horizontal
-//                   Arg7.Name:           Tau1
-//                   Arg7.Title:          tau1
+//                   Arg7.Name:           A1
+//                   Arg7.Title:          a1
 //                   Arg7.Type:           Double_t
 //                   Arg7.EntryType:      Entry-C
 //                   Arg7.Default:        1.0
 //                   Arg7.AddLofValues:   No
 //                   Arg7.Base:           dec
 //                   Arg7.Orientation:    horizontal
+//                   Arg8.Name:           Tau1
+//                   Arg8.Title:          tau1
+//                   Arg8.Type:           Double_t
+//                   Arg8.EntryType:      Entry-C
+//                   Arg8.Default:        1.0
+//                   Arg8.AddLofValues:   No
+//                   Arg8.Base:           dec
+//                   Arg8.Orientation:    horizontal
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
@@ -99,6 +111,10 @@
 #include "TF1.h"
 #include "TGraphErrors.h"
 #include "TStyle.h"
+
+enum	{ kErrModeFile = 1 };
+enum	{ kErrModeAll1 = 2 };
+enum	{ kErrModeSqrt = 4 };
 
 Int_t fitNofTaus = 2;
 Int_t fitBinWidth = 1;
@@ -126,12 +142,13 @@ Double_t multi_exp(Double_t * x, Double_t * par) {
 
 
 void taufit(const Char_t * File,
-         Int_t NofTaus = 1,
-         Double_t C = 0.0, Bool_t FixC = kFALSE,
-         Double_t A0 = 1.0, Bool_t FixA0 = kFALSE,
-         Double_t Tau0 = 1.0, Bool_t FixTau0 = kFALSE,
-         Double_t A1 = 1.0, Bool_t FixA1 = kFALSE,
-         Double_t Tau1 = 1.0, Bool_t FixTau1 = kFALSE)
+            Int_t ErrMode = kErrModeFile,
+            Int_t NofTaus = 1,
+         	Double_t C = 0.0, Bool_t FixC = kFALSE,
+        	Double_t A0 = 1.0, Bool_t FixA0 = kFALSE,
+        	Double_t Tau0 = 1.0, Bool_t FixTau0 = kFALSE,
+         	Double_t A1 = 1.0, Bool_t FixA1 = kFALSE,
+         	Double_t Tau1 = 1.0, Bool_t FixTau1 = kFALSE)
 //___________________________________________________________[STATIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           fit
@@ -154,8 +171,18 @@ void taufit(const Char_t * File,
 	TCanvas * c = new TCanvas("fit", "Taufit"); 		// open a c anvas to draw data
 	gStyle->SetOptFit(1);								// fit results will be displayed in upper right corner
 
-	TGraph * g = new TGraphErrors(fileName.Data(), "%lg %lg %lg");		// read data: x, y, dy
+	TGraphErrors * g = new TGraphErrors(fileName.Data(), "%lg %lg %lg");		// read data: x, y, dy
 	g->SetTitle(fileName.Data());
+
+// calculate errors
+	if (ErrMode == kErrModeSqrt) {
+		Double_t * y = g->GetY();
+		for (Int_t i = 0; i < g->GetN(); i++) g->SetPointError(i, 0.0, sqrt(*y++));
+	} else if (ErrMode == kErrModeAll1) {
+		Double_t * y = g->GetY();
+		for (Int_t i = 0; i < g->GetN(); i++) g->SetPointError(i, 0.0, 1.0);
+	}
+
 	g->Draw("a*");										// draw graph: asteriscs + error bars
 
 	// set up fit function
