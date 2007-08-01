@@ -22,7 +22,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: taufit.C,v 1.5 2007-08-01 11:49:05 Rudolf.Lutter Exp $
+// Revision:         $Id: taufit.C,v 1.6 2007-08-01 11:52:18 Rudolf.Lutter Exp $
 // Date:             Wed Aug  1 13:14:51 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                taufit.C
@@ -45,7 +45,7 @@
 //                   Arg2.Type:           Int_t
 //                   Arg2.EntryType:      Radio
 //                   Arg2.Default:        1
-//                   Arg2.Values:         file=1|errors taken from file:all 1=2|set all errors to 1:sqrt=4|set error to sqrt(y)
+//                   Arg2.Values:         file|take errors from file=1:all 1|set all errors to 1=2:sqrt|set error to sqrt(y)=4
 //                   Arg2.AddLofValues:   No
 //                   Arg2.Base:           dec
 //                   Arg2.Orientation:    horizontal
