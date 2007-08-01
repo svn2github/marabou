@@ -22,7 +22,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: taufit.C,v 1.6 2007-08-01 11:52:18 Rudolf.Lutter Exp $
+// Revision:         $Id: taufit.C,v 1.7 2007-08-01 14:51:37 Rudolf.Lutter Exp $
 // Date:             Wed Aug  1 13:14:51 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                taufit.C
@@ -179,7 +179,6 @@ void taufit(const Char_t * File,
 		Double_t * y = g->GetY();
 		for (Int_t i = 0; i < g->GetN(); i++) g->SetPointError(i, 0.0, sqrt(*y++));
 	} else if (ErrMode == kErrModeAll1) {
-		Double_t * y = g->GetY();
 		for (Int_t i = 0; i < g->GetN(); i++) g->SetPointError(i, 0.0, 1.0);
 	}
 
