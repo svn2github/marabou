@@ -28,14 +28,12 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/HistPresent.h \
  					$(HPRDIRI)/TMrbArrayD.h \
  					$(HPRDIRI)/TMrbArrayF.h \
-  					$(HPRDIRI)/FhPeak.h \
 					$(HPRDIRI)/FhContour.h \
                $(HPRDIRI)/HprImage.h \
                $(HPRDIRI)/GroupOfGObjects.h \
                $(HPRDIRI)/GroupOfHists.h \
  					$(HPRDIRI)/GEdit.h \
  					$(HPRDIRI)/EditMarker.h \
- 					$(HPRDIRI)/FhMarker.h \
  					$(HPRDIRI)/TSplineX.h \
  					$(HPRDIRI)/TSplineXDialog.h \
  					$(HPRDIRI)/TSplineXEditor.h \
@@ -46,10 +44,7 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/FeynmanDiagramDialog.h \
  					$(HPRDIRI)/InsertFunctionDialog.h \
  					$(HPRDIRI)/InsertArcDialog.h \
- 					$(HPRDIRI)/FitOneDimDialog.h \
- 					$(HPRDIRI)/FindPeakDialog.h \
  					$(HPRDIRI)/EmptyHistDialog.h \
-					$(HPRDIRI)/CalibrationDialog.h \
  					$(HPRDIRI)/InsertTextDialog.h \
 					$(HPRDIRI)/InsertTextBoxDialog.h \
 					$(HPRDIRI)/TextBox.h \
@@ -74,7 +69,7 @@ ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(HPRH))
 INCLUDEFILES += $(HPRDEP)
 
 ##### extra libs needed #####
-OHPRLIBS      := -L$(LPATH) -lTMrbUtils -lTGMrbUtils -lTMrbHelpBrowser
+OHPRLIBS      := -L$(LPATH) -lTMrbUtils -lTGMrbUtils -lTMrbHelpBrowser -lFitCal
 
 ##### local rules #####
 

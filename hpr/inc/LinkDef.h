@@ -16,15 +16,12 @@
 #pragma link C++ class GroupOfHists;
 #pragma link C++ class TMrbArrayD;
 #pragma link C++ class TMrbArrayF;
-#pragma link C++ class FhPeak;
 #pragma link C++ class FhContour;
 #pragma link C++ class HprImage;
 #pragma link C++ class GroupOfGObjects;
 #pragma link C++ class GoHTimer;
 #pragma link C++ class TbTimer;
 #pragma link C++ class EditMarker;
-#pragma link C++ class FhMarker;
-#pragma link C++ class FhMarkerList;
 #pragma link C++ class TSplineX;
 #pragma link C++ class TSplineXDialog;
 #pragma link C++ class TSplineXEditor;
@@ -40,9 +37,6 @@
 #pragma link C++ class InsertTextBoxDialog;
 #pragma link C++ class TextBox;
 #pragma link C++ class TextBoxMember;
-#pragma link C++ class FitOneDimDialog;
-#pragma link C++ class FindPeakDialog;
-#pragma link C++ class CalibrationDialog;
 #pragma link C++ class InsertTextDialog;
 #pragma link C++ class EmptyHistDialog;
 #pragma link C++ class TCurlyLineArrow;
