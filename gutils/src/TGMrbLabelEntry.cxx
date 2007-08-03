@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.14 2007-07-30 12:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.15 2007-08-03 09:02:50 Rudolf.Lutter Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -120,7 +120,6 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 		fHeap.AddFirst((TObject *) fRadioBtns);
 		fRadioBtns->ChangeBackground(LabelGC->BG());
 		this->AddFrame(fRadioBtns, radioLayout);			
-//		bSize += fRadioBtns->GetDefaultWidth();
 	}
 
 	if (CheckBtns) {
@@ -130,7 +129,6 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 		fHeap.AddFirst((TObject *) fCheckBtns);
 		fCheckBtns->ChangeBackground(LabelGC->BG());
 		this->AddFrame(fCheckBtns, checkLayout);			
-//		bSize += fCheckBtns->GetDefaultWidth();
 	}
 
 	if (Action && Action->GetAssignedObject()) {
@@ -141,7 +139,6 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 		fAction->ChangeBackground(ActionGC->BG());
 		this->AddFrame(fAction, actLayout);			
 		fAction->Associate((const TGWindow *) Action->GetAssignedObject());
-//		bSize += fAction->GetDefaultWidth();
 	}
 
 	fNofEntries = NofEntries;

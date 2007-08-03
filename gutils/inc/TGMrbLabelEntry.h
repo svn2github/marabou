@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.11 2007-07-30 12:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.12 2007-08-03 09:02:50 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -93,7 +93,7 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 									kGMrbEntryTypeCharDouble
 								};
 
-		enum					{	kGMrbEntryNofEntries = 4	};
+		enum					{	kGMrbEntryNofEntries = 10	};
 
 	public:
 		TGMrbLabelEntry(const TGWindow * Parent, const Char_t * Label,				// ctor
