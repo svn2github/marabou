@@ -8,7 +8,7 @@
 // Classes:        TMrbLofMacros     -- a list of root macros
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofMacros.h,v 1.8 2007-03-13 14:22:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofMacros.h,v 1.9 2007-08-03 10:12:33 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -43,6 +43,7 @@ class TMrbLofMacros: public TMrbLofNamedX {
 									kMrbMacroArgTitle,  	
 									kMrbMacroArgType, 		
 									kMrbMacroArgEntryType, 	
+									kMrbMacroArgNofEntryFields, 	
 									kMrbMacroArgEntryWidth, 
 									kMrbMacroArgDefaultValue, 
 									kMrbMacroArgValues, 	
