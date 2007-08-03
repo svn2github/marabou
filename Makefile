@@ -64,7 +64,7 @@ EXTRA_CXXFLAGS += -g -Wno-switch -I$(ROOTSYS)/include
 # for HistPresent only the following modules are needed
 
 MODULES       = build utils gutils \
-                helpbrowser hpr \
+						helpbrowser fitcal hpr \
 
 # if offline data analysis in the marabou framework is needed
 
@@ -96,9 +96,9 @@ endif
 
 # the following modules are for special hardware
 
-ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
-MODULES      += xiadgf dgfcontrol cptmcontrol
-endif
+# ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
+# MODULES      += xiadgf dgfcontrol cptmcontrol
+# endif
 
 ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
 MODULES      += polar
@@ -171,7 +171,7 @@ MAKEINFO      = cint/MAKEINFO
 
 ALLHDRS      :=
 ALLLIBS      :=
-HPRLIBS      := lib/libHpr.so lib/libTMrbHelpBrowser.so lib/libTMrbUtils.so lib/libTGMrbUtils.so
+HPRLIBS      := lib/libHpr.so lib/libTMrbHelpBrowser.so lib/libTMrbUtils.so lib/libTGMrbUtils.so lib/libFitCal.so
 ALLEXECS     :=
 INCLUDEFILES :=
 ALLOBJ       :=
