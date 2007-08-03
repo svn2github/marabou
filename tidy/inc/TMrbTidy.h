@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.21 2006-01-25 12:21:27 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.22 2007-08-03 10:11:05 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -20,7 +20,10 @@
 #include "TString.h"
 
 #include "TMrbNamedX.h"
+#include "TMrbString.h"
 #include "TMrbLofNamedX.h"
+
+#include "TMrbString.h"
 
 #include "tidy_protos.h"
 
@@ -424,7 +427,7 @@ class TMrbTidyNode : public TMrbNamedX {
 		const Char_t * PrepareForCodeOutput(TString & Buffer);
 		const Char_t * MarkLinks(TString & Buffer);
 
-		const Char_t * Emphasize(TMrbString & String, Bool_t Remove = kFALSE);
+		const Char_t * Emphasize(TString & String, Bool_t Remove = kFALSE);
 
 		TMrbTidyNode * ScanTidyTree(TidyNode Node, const Char_t * AttrName, const Char_t * AttrString, TMrbTidyDoc * Doc = NULL);
 

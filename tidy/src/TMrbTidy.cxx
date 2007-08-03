@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.33 2006-08-17 11:52:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.34 2007-08-03 10:11:05 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1806,42 +1806,45 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 		attr = (TMrbTidyAttr *) fLofAttr.FindByName("args");
 		if (attr) {
 			astr = attr->GetValue();
-			TObjArray sstr;
-			Int_t nargs = astr.Split(sstr, ",", kTRUE);
 			TString a = "Arguments:";
-			for (Int_t i = 0; i < nargs; i++) {
-				TMrbString arg = ((TObjString *) sstr[i])->GetString().Data();
-				TObjArray sarg;
-				Int_t n = arg.Split(sarg, ":", kTRUE);
+			TString arg;
+			Int_t from = 0;
+			Int_t nargs = 0;
+			while (astr.Tokenize(arg, from, ",")) {
+				nargs++;
+				TObjArray * sarg = arg.Tokenize(":");
+				Int_t n = sarg->GetEntries();
 				if (n > 0) {
 					Out << "<tr>";
-					if (n >= 1) Out << "<td>" << a << "</td><td><pre class=\"mtag\">" << ((TObjString *) sarg[0])->GetString() << "</pre></td>";
-					if (n >= 2) Out << "<td><pre class=\"mtag\">" << ((TObjString *) sarg[1])->GetString() << "</pre></td>";
-					if (n >= 3) Out << "<td>" << ((TObjString *) sarg[2])->GetString() << "</td>";
+					if (n >= 1) Out << "<td>" << a << "</td><td><pre class=\"mtag\">" << ((TObjString *) sarg->At(0))->GetString() << "</pre></td>";
+					if (n >= 2) Out << "<td><pre class=\"mtag\">" << ((TObjString *) sarg->At(1))->GetString() << "</pre></td>";
+					if (n >= 3) Out << "<td>" << ((TObjString *) sarg->At(2))->GetString() << "</td>";
 					Out << "</tr>" << endl;
 					a = "";
-					if (i > 0) method += ", ";
-					method += ((TObjString *) sarg[0])->GetString();
+					if (nargs > 1) method += ", ";
+					method += ((TObjString *) sarg->At(0))->GetString();
 					method += " ";
-					method += ((TObjString *) sarg[1])->GetString();
+					method += ((TObjString *) sarg->At(1))->GetString();
 				}
+				delete sarg;
 			}
 		}
 		method += ")";
 		attr = (TMrbTidyAttr *) fLofAttr.FindByName("return");
 		if (attr) {
 			astr = attr->GetValue();
-			TObjArray sstr;
-			Int_t n = astr.Split(sstr, ":", kTRUE);
+			TObjArray * sstr = astr.Tokenize(":");
+			Int_t n = sstr->GetEntries();
 			if (n > 0) {
 				Out << "<tr>";
-				if (n >= 1) Out << "<td>Return:</td><td><pre class=\"mtag\">" << ((TObjString *) sstr[0])->GetString() << "</pre></td>";
-				if (n >= 2) Out << "<td><pre class=\"mtag\">" << ((TObjString *) sstr[1])->GetString() << "</pre></td>";
-				if (n >= 3) Out << "<td>" << ((TObjString *) sstr[2])->GetString() << "</td>";
+				if (n >= 1) Out << "<td>Return:</td><td><pre class=\"mtag\">" << ((TObjString *) sstr->At(0))->GetString() << "</pre></td>";
+				if (n >= 2) Out << "<td><pre class=\"mtag\">" << ((TObjString *) sstr->At(1))->GetString() << "</pre></td>";
+				if (n >= 3) Out << "<td>" << ((TObjString *) sstr->At(2))->GetString() << "</td>";
 				Out << "</tr>" << endl;
 				method.Prepend(" ");
-				method.Prepend(((TObjString *) sstr[0])->GetString());
+				method.Prepend(((TObjString *) sstr->At(0))->GetString());
 			}
+			delete sstr;
 		}
 	}
 	TMrbTidyAttr * aDescr = (TMrbTidyAttr *) fLofAttr.FindByName("descr");
@@ -1957,14 +1960,14 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	}
 }
 
-const Char_t * TMrbTidyNode::Emphasize(TMrbString & String, Bool_t Remove) {
+const Char_t * TMrbTidyNode::Emphasize(TString & String, Bool_t Remove) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyNode::Emphasize
 // Purpose:        Replace special chars by <b>, <i>, <u> etc.
-// Arguments:      TMrbString String    -- string containing meta chars
+// Arguments:      TString String       -- string containing meta chars
 //                 Bool_t Remove        -- kTRUE -> remove meta chars
-// Results:        Chasr_t * String     -- string after replacement
+// Results:        Char_t * String      -- string after replacement
 // Exceptions:
 // Description:    Searches for pairs of           replaces by
 //                          **                     <b></b>
@@ -1973,58 +1976,75 @@ const Char_t * TMrbTidyNode::Emphasize(TMrbString & String, Bool_t Remove) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObjArray emph;
-	Int_t nEmph = String.Split(emph, "**"); 		// bold
+	TObjArray * emph;
+	Int_t nEmph;
+
+	TString str = String;
+	str.ReplaceAll("**", '\001');				// bold
+	emph = str.Tokenize('\001');
+	nEmph = emph->GetEntries();
 	if (nEmph % 2) {
 		String = "";
 		if (Remove) {
-			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph[i])->GetString();
+			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph->At(i))->GetString();
 		} else {
 			for (Int_t i = 0; i < nEmph; i++) {
 				if (i & 1) String += "<b>";
-				String += ((TObjString *) emph[i])->GetString();
+				String += ((TObjString *) emph->At(i))->GetString();
 				if (i & 1) String += "</b>";
 			}
 		}
 	}
-	emph.Delete();
-	nEmph = String.Split(emph, "!!");				// italic
+	delete emph;
+
+	str = String;
+	str.ReplaceAll("!!", '\001');					// italic
+	emph = str.Tokenize('\001');
+	nEmph = emph->GetEntries();
 	if (nEmph % 2) {
 		String = "";
 		if (Remove) {
-			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph[i])->GetString();
+			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph->At(i))->GetString();
 		} else {
 			for (Int_t i = 0; i < nEmph; i++) {
 				if (i & 1) String += "<i>";
-				String += ((TObjString *) emph[i])->GetString();
+				String += ((TObjString *) emph->At(i))->GetString();
 				if (i & 1) String += "</i>";
 			}
 		}
 	}
-	emph.Delete();
-	nEmph = String.Split(emph, "__");				// underline
+	delete emph;
+
+	str = String;
+	str.ReplaceAll("__", '\001');					// underline
+	emph = str.Tokenize('\001');
+	nEmph = emph->GetEntries();
 	if (nEmph % 2) {
 		String = "";
 		if (Remove) {
-			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph[i])->GetString();
+			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph->At(i))->GetString();
 		} else {
 			for (Int_t i = 0; i < nEmph; i++) {
 				if (i & 1) String += "<u>";
-				String += ((TObjString *) emph[i])->GetString();
+				String += ((TObjString *) emph->At(i))->GetString();
 				if (i & 1) String += "</u>";
 			}
 		}
 	}
-	emph.Delete();
-	nEmph = String.Split(emph, "||");				// box
+	delete emph;
+
+	str = String;
+	str.ReplaceAll("||", '\001');					// box
+	emph = str.Tokenize('\001');
+	nEmph = emph->GetEntries();
 	if (nEmph % 2) {
 		String = "";
 		if (Remove) {
-			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph[i])->GetString();
+			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph->At(i))->GetString();
 		} else {
 			for (Int_t i = 0; i < nEmph; i++) {
 				if (i & 1) String += "<bx>";
-				String += ((TObjString *) emph[i])->GetString();
+				String += ((TObjString *) emph->At(i))->GetString();
 				if (i & 1) String += "</bx>";
 			}
 		}
@@ -2106,23 +2126,20 @@ Int_t TMrbTidyNode::InitSubstitutions(Bool_t Recursive, Bool_t ReInit) {
 		nSubst = 0;
 		fLofSubstitutions.Delete();
 		if (aSubst) {
-			TObjArray sarr;
-			TMrbString subst = aSubst->GetValue();
-			nSubst = subst.Split(sarr, ",");
-			if (nSubst) {
-				for (Int_t i = 0; i < nSubst; i++) {
-					TString sstr = ((TObjString *) sarr[i])->GetString();
-					sstr.ReplaceAll("\t", tabEquiv.Data());
-					TString sdescr = "";
-					Int_t n = sstr.Index(":", 0);
-					if (n > 0) {
-						sdescr = sstr(n + 1, 1000);
-						sdescr = sdescr.Strip(TString::kBoth);
-						sstr.Resize(n);
-						sstr = sstr.Strip(TString::kBoth);
-					}
-					fLofSubstitutions.AddNamedX(kMrbTidySubstLocalDef, sstr.Data(), sdescr.Data(), new TObjString(""));
+			TString subst = aSubst->GetValue();
+			Int_t from = 0;
+			TString sstr;
+			while (subst.Tokenize(sstr, from, ",")) {
+				sstr.ReplaceAll("\t", tabEquiv.Data());
+				TString sdescr = "";
+				Int_t n = sstr.Index(":", 0);
+				if (n > 0) {
+					sdescr = sstr(n + 1, 1000);
+					sdescr = sdescr.Strip(TString::kBoth);
+					sstr.Resize(n);
+					sstr = sstr.Strip(TString::kBoth);
 				}
+				fLofSubstitutions.AddNamedX(kMrbTidySubstLocalDef, sstr.Data(), sdescr.Data(), new TObjString(""));
 			}
 		}
 		TMrbLofNamedX * lofParentSubst = this->Parent()->GetLofSubstitutions();
@@ -2208,19 +2225,18 @@ Int_t TMrbTidyNode::InitLinks(Bool_t Recursive, Bool_t ReInit) {
 	if (ReInit || nLinks == 0) {
 		TMrbLofNamedX lofLinkTypes;
 		lofLinkTypes.AddNamedX(kMrbTidyLinkTypes);
-		TObjArray larr;
 		fLofLinks.Delete();
 		TMrbNamedX * nx = (TMrbNamedX *) lofLinkTypes.First();
 		while (nx) {
 			TMrbTidyAttr * aLinks = (TMrbTidyAttr *) fLofAttr.FindByName(nx->GetName());
 			if (aLinks) {
-				larr.Delete();
-				TMrbString links = aLinks->GetValue();
+				TString links = aLinks->GetValue();
 				links.ReplaceAll("\t", tabEquiv.Data());
-				nLinks = links.Split(larr, ",");
-				for (Int_t i = 0; i < nLinks; i++) {
-					TString lstr1 = ((TObjString *) larr[i])->GetString();
-					TString lstr2 = "";
+				Int_t from = 0;
+				TString lstr1;
+				TString lstr2;
+				while (links.Tokenize(lstr1, from, ",")) {
+					lstr2 = "";
 					Int_t n = lstr1.Index(":", 0);
 					if (n > 0) {
 						lstr2 = lstr1(n + 1, 1000);
@@ -2569,11 +2585,12 @@ Bool_t TMrbTidyNode::OutputSubstituted(const Char_t * CaseString, ostream & Out)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObjArray lofCaseStrings;
-	lofCaseStrings.Delete();
-	TMrbString caseString = CaseString;
-	if (caseString.Split(lofCaseStrings, ":") > 0) lofCaseStrings.Print();
-	return(this->OutputSubstituted(lofCaseStrings, Out));
+	TString caseString = CaseString;
+	TObjArray * lofCaseStrings = caseString.Tokenize(":");
+	if (lofCaseStrings->GetEntries() > 0) lofCaseStrings->Print();
+	Bool_t sts = this->OutputSubstituted(*lofCaseStrings, Out);
+	delete lofCaseStrings;
+	return(sts);
 }
 
 Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out) {
@@ -2979,14 +2996,12 @@ Int_t TMrbTidyNode::DecodeAttrString(TObjArray & LofAttr, const Char_t * NodeAtt
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObjArray attrArr;
-
 	LofAttr.Delete();
-	attrArr.Delete();
 	if (NodeAttributes != NULL) {
-		TMrbString str = NodeAttributes;
-		for (Int_t i = 0; i < str.Split(attrArr, " "); i++) {
-			TString attr = ((TObjString *) attrArr[i])->GetString();
+		TString str = NodeAttributes;
+		Int_t from = 0;
+		TString attr;
+		while (str.Tokenize(attr, from, " ")) {
 			attr.ReplaceAll("\t", tabEquiv.Data());
 			attr = attr.Strip(TString::kBoth);
 			if (attr.Length() > 0) {
