@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.32 2007-08-03 09:02:50 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.33 2007-08-03 12:29:54 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -2707,37 +2707,53 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 					macroStrm << macroTmpl.Encode(line, dt.AsString()) << endl;
 					break;
 				case TGMrbMacroEdit::kMacroTagSyntax:
-					for (i = 1; i <= fNofArgs; i++) {
-						if (i == 1) macroTmpl.InitializeCode("%ARG1%");
-						else		macroTmpl.InitializeCode("%ARGN%");
-						thisArg.SetNumber(i);
-						argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
-						argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
-						argSpace.Resize(0); argSpace.Fill(fileName.Length() + 5);
-						macroTmpl.Substitute("$macroFile", fileName);
-						macroTmpl.Substitute("$argName", argName);
-						macroTmpl.Substitute("$argSpace", argSpace);
-						if (argType.BeginsWith("Char_t")) argType.Prepend("const ");
-						macroTmpl.Substitute("$argType", argType);
-						argDel = (i == fNofArgs) ? ")" : ",";
-						macroTmpl.Substitute("$argDel", argDel);
-						macroTmpl.WriteCode(macroStrm);
+					{
+						Bool_t firstArg = kTRUE;
+						for (i = 1; i <= fNofArgs; i++) {
+							thisArg.SetNumber(i);
+							argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "EntryType"), "");
+							TMrbNamedX * argx = fLofEntryTypes.FindByName(argEntryType.Data());
+							if (argx) argEntryTypeBits = (TGMrbMacroArg::EGMrbMacroEntryType) argx->GetIndex();
+							if (argEntryTypeBits & (TGMrbMacroArg::kGMrbMacroEntryComment | TGMrbMacroArg::kGMrbMacroEntrySection)) continue;
+							if (firstArg) macroTmpl.InitializeCode("%ARG1%");
+							else		macroTmpl.InitializeCode("%ARGN%");
+							argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
+							argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
+							argSpace.Resize(0); argSpace.Fill(fileName.Length() + 5);
+							macroTmpl.Substitute("$macroFile", fileName);
+							macroTmpl.Substitute("$argName", argName);
+							macroTmpl.Substitute("$argSpace", argSpace);
+							if (argType.BeginsWith("Char_t")) argType.Prepend("const ");
+							macroTmpl.Substitute("$argType", argType);
+							argDel = (i == fNofArgs) ? ")" : ",";
+							macroTmpl.Substitute("$argDel", argDel);
+							macroTmpl.WriteCode(macroStrm);
+							firstArg = kFALSE;
+						}
 					}
 					break;
 				case TGMrbMacroEdit::kMacroTagArguments:
-					for (i = 1; i <= fNofArgs; i++) {
-						if (i == 1) macroTmpl.InitializeCode("%ARG1%");
-						else		macroTmpl.InitializeCode("%ARGN%");
-						thisArg.SetNumber(i);
-						argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
-						argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
-						argTitle = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Title"), "");
-						argSpace.Resize(0); argSpace.Fill(25 - (argType.Length() + argName.Length() + 1));
-						macroTmpl.Substitute("$argName", argName);
-						macroTmpl.Substitute("$argType", argType);
-						macroTmpl.Substitute("$argTitle", argTitle);
-						macroTmpl.Substitute("$argSpace", argSpace);
-						macroTmpl.WriteCode(macroStrm);
+					{
+						Bool_t firstArg = kTRUE;
+							for (i = 1; i <= fNofArgs; i++) {
+							thisArg.SetNumber(i);
+							argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "EntryType"), "");
+							TMrbNamedX * argx = fLofEntryTypes.FindByName(argEntryType.Data());
+							if (argx) argEntryTypeBits = (TGMrbMacroArg::EGMrbMacroEntryType) argx->GetIndex();
+							if (argEntryTypeBits & (TGMrbMacroArg::kGMrbMacroEntryComment | TGMrbMacroArg::kGMrbMacroEntrySection)) continue;
+							if (firstArg) macroTmpl.InitializeCode("%ARG1%");
+							else		macroTmpl.InitializeCode("%ARGN%");
+							argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
+							argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
+							argTitle = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Title"), "");
+							argSpace.Resize(0); argSpace.Fill(25 - (argType.Length() + argName.Length() + 1));
+							macroTmpl.Substitute("$argName", argName);
+							macroTmpl.Substitute("$argType", argType);
+							macroTmpl.Substitute("$argTitle", argTitle);
+							macroTmpl.Substitute("$argSpace", argSpace);
+							macroTmpl.WriteCode(macroStrm);
+							firstArg = kFALSE;
+						}
 					}
 					break;
 				case TGMrbMacroEdit::kMacroTagExec:

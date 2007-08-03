@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.16 2007-08-03 09:02:50 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.17 2007-08-03 12:29:54 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,6 @@ class TGMrbMacroArg : public TObject {
 											kGMrbMacroEntryMulti		= BIT(2),
 											kGMrbMacroEntryChkBtn		= BIT(3),
 											kGMrbMacroEntryRdoBtn		= BIT(4),
-											kGMrbMacroEntryUpDown		= BIT(5),
 											kGMrbMacroEntryBeginEnd		= BIT(6),
 
 											kGMrbMacroEntryPlain		= kGMrbMacroEntryEntry,
@@ -79,11 +78,12 @@ class TGMrbMacroArg : public TObject {
 											kGMrbMacroEntryPlainC		= kGMrbMacroEntryEntry | kGMrbMacroEntryChkBtn,
 											kGMrbMacroEntryPlainC2		= kGMrbMacroEntryPlainC | kGMrbMacroEntryMulti,
 
-											kGMrbMacroEntryUpDown2		= kGMrbMacroEntryEntry | kGMrbMacroEntryUpDown | kGMrbMacroEntryMulti,
-											kGMrbMacroEntryUpDownC		= kGMrbMacroEntryEntry | kGMrbMacroEntryUpDown | kGMrbMacroEntryChkBtn,
+											kGMrbMacroEntryUpDown		= kGMrbMacroEntryEntry | BIT(5),
+											kGMrbMacroEntryUpDown2		= kGMrbMacroEntryUpDown | kGMrbMacroEntryMulti,
+											kGMrbMacroEntryUpDownC		= kGMrbMacroEntryUpDown | kGMrbMacroEntryChkBtn,
 											kGMrbMacroEntryUpDownC2 	= kGMrbMacroEntryUpDownC | kGMrbMacroEntryMulti,
 
-											kGMrbMacroEntryUpDownX		= kGMrbMacroEntryEntry | kGMrbMacroEntryUpDown | kGMrbMacroEntryBeginEnd,
+											kGMrbMacroEntryUpDownX		= kGMrbMacroEntryUpDown | kGMrbMacroEntryBeginEnd,
 											kGMrbMacroEntryUpDownXC 	= kGMrbMacroEntryUpDownX | kGMrbMacroEntryChkBtn,
 											kGMrbMacroEntryUpDownX2 	= kGMrbMacroEntryUpDownX | kGMrbMacroEntryMulti,
 											kGMrbMacroEntryUpDownXC2	= kGMrbMacroEntryUpDownXC | kGMrbMacroEntryMulti,
