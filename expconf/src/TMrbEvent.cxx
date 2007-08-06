@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.23 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.24 2007-08-06 13:33:17 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -519,7 +519,8 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 					ana << anaTmpl.Encode(line, this->GetTitle()) << endl;
 					break;
 				case TMrbConfig::kAnaEventAutoSave:
-					evtAutoSave = this->GetAutoSave();
+					evtAutoSave = "";
+					evtAutoSave += this->GetAutoSave();
 					ana << anaTmpl.Encode(line, evtAutoSave.Data()) << endl;
 					break;
 				case TMrbConfig::kAnaEventFirstSubevent:
