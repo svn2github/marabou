@@ -42,7 +42,7 @@ $(FITCALLIB):     $(FITCALDO) $(FITCALO) $(MAINLIBS) $(FITCALLIBDEP)
 
 $(FITCALDS):     $(FITCALH) $(FITCALL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -p -Iinclude $(FITCALH) $(FITCALL)
+		$(ROOTCINT) -f $@ -c -p -Iinclude defineMarabou.h $(FITCALH) $(FITCALL)
 
 $(FITCALDO):     $(FITCALDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<
