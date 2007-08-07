@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.15 2007-08-03 09:02:50 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.16 2007-08-07 12:39:26 Rudolf.Lutter Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -414,6 +414,40 @@ void TGMrbLabelEntry::SetText(Double_t Value, Int_t EntryNo) {
 	v.FromDouble(Value, fWidth, fPrecision, fPadZero);
 	fEntry[EntryNo]->SetText(v.Data());
 	this->CreateToolTip(EntryNo);
+}
+
+void TGMrbLabelEntry::SetTextAlignment(ETextJustification Align, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::SetTextAlignment
+// Purpose:        Set text alignment
+// Arguments:      ETextJustification Align    -- alignment (left, right)
+//                 Int_t EntryNo               -- entry number
+// Results:        --
+// Exceptions:     
+// Description:    Writes entry text and updates tooltip.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (EntryNo == -1) {
+		for (Int_t i = 0; i < fNofEntries; i++) this->SetTextAlignment(Align, i);
+	}
+	fEntry[EntryNo]->SetAlignment(Align);
+}
+
+TGMrbTextEntry * TGMrbLabelEntry::GetTextEntry(Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::GetTextEntry
+// Purpose:        Return address of specified text entry
+// Arguments:      Int_t EntryNo            -- entry number
+// Results:        TGMrbTextEntry * Addr    -- entry address
+// Exceptions:     
+// Description:    Reads entry contents and updates tooltip
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	return(fEntry[EntryNo]);
 }
 
 const Char_t * TGMrbLabelEntry::GetText(Int_t EntryNo) {

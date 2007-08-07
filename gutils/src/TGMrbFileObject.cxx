@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.16 2007-05-31 17:07:26 Marabou Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.17 2007-08-07 12:39:26 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -401,7 +401,7 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 	fFileInfo.fFileTypes = (const Char_t **) rootFileTypes;
 	fFileInfo.fIniDir = StrDup(gSystem->WorkingDirectory());
 
-	TGLayoutHints * frameLayout = new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 0, 0, 0, 0);
+	TGLayoutHints * frameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsCenterY, 0, 0, 0, 0);
 	fHeap.AddFirst((TObject *) frameLayout);
 	fEC = new TGVerticalFrame(this, ListBoxWidth, Height, kChildFrame, FrameGC->BG());
 	fHeap.AddFirst((TObject *) fEC);
@@ -434,7 +434,7 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 	fEB1->AddFrame(fEntry, EntryGC->LH());
 	fEntry->Resize(EntryWidth - bSize, Height);
 	
-	TGLayoutHints * rbLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsCenterY, 10, 10, 0, 0);
+	TGLayoutHints * rbLayout = new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 10, 10, 0, 0);
 	fHeap.AddFirst((TObject *) rbLayout);
 	fRBSingle = new TGRadioButton(fEB2, "single", kBtnSingle);
 	fHeap.AddFirst((TObject *) fRBSingle);
@@ -451,7 +451,7 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 	fRBRange->Associate(this);
 	fStartIndex = -1;
 
-	TGLayoutHints * tbLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsCenterY, 10, 10, 0, 0);
+	TGLayoutHints * tbLayout = new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 10, 10, 0, 0);
 	fHeap.AddFirst((TObject *) tbLayout);
 	fTBClear = new TGTextButton(fEB2, "clear", kBtnClear);
 	fHeap.AddFirst((TObject *) fTBClear);

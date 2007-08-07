@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofMacros.cxx,v 1.11 2007-08-03 10:12:33 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofMacros.cxx,v 1.12 2007-08-07 12:39:26 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -39,6 +39,7 @@ const SMrbNamedXShort kMrbMacroLofEnvNames[] =
 								{TMrbLofMacros::kMrbMacroWidth, 			"Width" 			},
 								{TMrbLofMacros::kMrbMacroAclic, 			"Aclic" 			},
 								{TMrbLofMacros::kMrbMacroModify, 			"Modify" 			},
+								{TMrbLofMacros::kMrbMacroAddGuiPtr, 		"AddGuiPtr" 		},
 								{TMrbLofMacros::kMrbMacroRcFile, 			"RcFile" 			},
 								{TMrbLofMacros::kMrbMacroNofArgs, 			"NofArgs"			},
 								{TMrbLofMacros::kMrbMacroArgName, 			"Arg.Name"			},
@@ -54,6 +55,7 @@ const SMrbNamedXShort kMrbMacroLofEnvNames[] =
 								{TMrbLofMacros::kMrbMacroArgUpperLimit, 	"Arg.UpperLimit"	},
 								{TMrbLofMacros::kMrbMacroArgIncrement, 		"Arg.Increment" 	},
 								{TMrbLofMacros::kMrbMacroArgBase, 			"Arg.Base"			},
+								{TMrbLofMacros::kMrbMacroArgPrecision, 		"Arg.Precision"		},
 								{TMrbLofMacros::kMrbMacroArgOrientation, 	"Arg.Orientation"	},
 								{TMrbLofMacros::kMrbMacroArgNofCL, 			"Arg.NofCL" 		},
 								{0, 										NULL				}

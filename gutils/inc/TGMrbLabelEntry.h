@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.12 2007-08-03 09:02:50 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.13 2007-08-07 12:39:26 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -137,12 +137,15 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		void UpDownButtonEnable(Bool_t Flag = kTRUE);			// enable/disable up/down buttons
 		void ActionButtonEnable(Bool_t Flag = kTRUE);			// enable/disable action button
 
+		TGMrbTextEntry * GetTextEntry(Int_t EntryNo = 0);		// get text entry
 		const Char_t * GetText(Int_t EntryNo = 0);				// get text, update tooltip if necessary
 		Int_t GetText2Int(Int_t EntryNo = 0);					// get text, convert to integer
 		Double_t GetText2Double(Int_t EntryNo = 0);				// ... convert to integer
 		void SetText(const Char_t * Text, Int_t EntryNo = 0);	// set text, update tooltip if necessary
 		void SetText(Int_t Value, Int_t EntryNo = 0);			// ... convert from integer
 		void SetText(Double_t Value, Int_t EntryNo = 0);		// ... from double
+
+		void SetTextAlignment(ETextJustification Align, Int_t EntryNo = -1);		// set text alignment
 
 		inline TGLabel * GetLabel() { return(fLabel); };
 

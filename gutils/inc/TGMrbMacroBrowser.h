@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.17 2007-08-03 12:29:54 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.18 2007-08-07 12:39:26 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -96,8 +96,10 @@ class TGMrbMacroArg : public TObject {
 											kGMrbMacroEntryFObjCombo	= BIT(15),
 											kGMrbMacroEntryFObjListBox	= BIT(16),
 
-											kGMrbMacroEntryComment		= BIT(30),
-											kGMrbMacroEntrySection		= BIT(31)
+											kGMrbMacroEntryComment		= BIT(28),
+											kGMrbMacroEntrySection		= BIT(29),
+											kGMrbMacroEntryGroupFrame	= BIT(30),
+											kGMrbMacroEntryPad			= BIT(31)
 										};
 
 		enum EGMrbMacroArgType		{
@@ -155,6 +157,7 @@ class TGMrbMacroArg : public TObject {
 
 		TGLabel * fComment; 			// gui representation
 		TGLabel * fSection;
+		TGGroupFrame * fGroup;
 		TGMrbLabelEntry * fEntry;
 		TGMrbRadioButtonList * fRadio;
 		TGMrbCheckButtonList * fCheck;
@@ -205,8 +208,10 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		enum							{	kComboId		=	1100	};
 		enum							{	kListBoxId		=	1200	};
 
-		enum							{	kFrameWidth 	=	600 	};
+		enum							{	kFrameWidth 	=	1200 	};
 		enum							{	kLineHeight 	=	20		};
+
+		enum							{	kGMrbMacroNofSubframes	=	3	};
 
 	public:
 		TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main, TMrbNamedX * Macro, UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
@@ -219,6 +224,10 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		Bool_t ExecMacro(); 	 						// exec macro
 		Bool_t ModifyMacroHeader(); 					// modify header
 		Bool_t ModifyMacroSource(); 					// modify source
+
+		inline TMrbLofNamedX * GetLofArgTypes() { return(&fLofArgTypes); };
+		inline TMrbLofNamedX * GetLofEntryTypes() { return(&fLofEntryTypes); };
+		inline TObjArray * GetLofMacroArgs() { return(&fLofMacroArgs); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -235,6 +244,7 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		TGLabel * fMacroPath;
 		TGLabel * fMacroTitle;
 		TGGroupFrame * fMacroArgs;
+		TGVerticalFrame * fMacroSubframe[kGMrbMacroNofSubframes];
 		TGMrbTextButtonGroup * fAction;
 
 		TMrbLofNamedX fLofArgTypes;
@@ -268,7 +278,9 @@ class TGMrbMacroEdit : public TGTransientFrame {
 											kGMrbMacroAclicPlusG,
 											kGMrbMacroAclicPlusPlusG,
 											kGMrbMacroMayModify,
-											kGMrbMacroDontModify
+											kGMrbMacroDontModify,
+											kGMrbMacroAddGuiPtr,
+											kGMrbMacroDontAddGuiPtr
 										};
 
 		// ids to dispatch over X events
@@ -347,6 +359,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 
 		TGMrbRadioButtonList * fMacroAclic;
 		TGMrbRadioButtonList * fMacroModify;
+		TGMrbRadioButtonList * fMacroAddGuiPtr;
 
 		TGMrbLabelEntry * fMacroNofArgs;
 
@@ -375,6 +388,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 
 		TMrbLofNamedX fLofAclicModes;
 		TMrbLofNamedX fLofModifyModes;
+		TMrbLofNamedX fLofGuiModes;
 
 		TMrbLofNamedX fLofArgTypes;
 		TMrbLofNamedX fLofEntryTypes;
