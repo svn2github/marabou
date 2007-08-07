@@ -8,6 +8,7 @@
 #include "TRootCanvas.h"
 #include "TString.h"
 #include "TGMrbValuesAndText.h"
+//#include "defineMarabou.h"
 #ifdef MARABOUVERS
 #include "HistPresent.h"
 #endif
@@ -49,13 +50,16 @@ private:
    TArrayD  fGaugeEnergy;
    TArrayD  fGaugeError;
    TArrayD  fGaugeIntensity;
-   Bool_t   fAutoAssigned;  
+   Int_t    fAutoAssigned;  
    
    Int_t    fInteractive;     // Flag for user interaction, 0: no Dialog
    Int_t    fVerbose;         // Verbose printout
    Int_t    fCalibratedNbinsX;// Params for calibrated histogram, Nbins
    Double_t fCalibratedXlow;  // Xlow
    Double_t fCalibratedXup;   // Xup
+   Int_t    fEu152Gauge;      // Use Eu 152 gauge source
+   Int_t    fCo60Gauge;       // Use Co60 gauge source
+   Int_t    fY88Gauge;        // Use Y88gauge source
    Int_t    fCustomGauge;     // Use user provided gauge peaks
    TString  fCustomGaugeFile; // File name for user provided gauge peaks
    Int_t    fMatchNbins;      // Number of bins for peak match histogram
@@ -82,7 +86,7 @@ public:
    void SetNominalValues();
    void SetBuiltinGaugeValues();
    void QueryReadGaugeFile();
-   void ReadGaugeFile();
+   Int_t ReadGaugeFile();
    void SetValues();
    void AutoSelectDialog();
    void ExecuteAutoSelect();
@@ -110,6 +114,9 @@ public:
    void SetOffMin( Double_t offmin) { fOffMin = offmin; };
    void SetOffMax( Double_t offmax) { fOffMax = offmax; };
    void SetOffStep( Double_t offstep) { fOffStep = offstep; };
+   void SetEu152Gauge( Int_t eu152gauge) { fEu152Gauge = eu152gauge; };
+   void SetCo60Gauge( Int_t co60gauge) { fCo60Gauge = co60gauge; };
+   void SetY88Gauge( Int_t y88gauge) { fY88Gauge = y88gauge; };
 
    Int_t GetVerbose() { return fVerbose; };
    Int_t GetInteractive() { return fInteractive; };
@@ -127,6 +134,9 @@ public:
    Double_t GetOffMin() { return fOffMin; };
    Double_t GetOffMax() { return fOffMax; };
    Double_t GetOffStep() { return fOffStep; };
+   Int_t GetEu152Gauge() { return fEu152Gauge; };
+   Int_t GetCo60Gauge() { return fCo60Gauge; };
+   Int_t GetY88Gauge() { return fY88Gauge; };
 
 
 ClassDef(CalibrationDialog,0)

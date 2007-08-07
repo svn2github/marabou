@@ -536,6 +536,7 @@ the root doc at: http://root.cern.ch\n\
    } else {
       fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
    }
+   this->Dump();
    if (fInteractive > 0 ) {
 		TList *row_lab = new TList(); 
 		static void *valp[50];

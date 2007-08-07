@@ -64,21 +64,25 @@ The procedure to use previously fitted peaks is as follows:\n\
     In that case the table in the \"CalibrationDialog\" \n\
     will have as many rows as peaks are defined. \n\
     The default number is 3\n\
+\n\
   - Invoke this widget (\"CalibrationDialog\") \n\
     Execute (Click) \"Update Peaklist\"\n\
+\n\
   - Fields \"Mean\" and \"Errors\" of the table should now\n\
     be filled. Complete / modify the table at least with\n\
     \"Nom Val\" (Nominal values)\n\
+\n\
     This can be done from \"Set Nominal Vals\": This menu\n\
-    presents the lines of the calibration sources 60Co, 88Eu\n\
-    and 88Y. The selected values must correspond to the\n\
-    fitted and selected ones: i.e. One one has to activate\n\
-    the checkbuttons correctly in both tables.\n\
+    presents the lines of the calibration sources 60Co, 192Eu\n\
+    and 88Y or the custom provided ones according the\n\
+    selection of \"Cal source\".\n\
+\n\
   - An automatic procedure for this assignment is provided:\n\
     It uses a histogramming method to find the best assignments\n\
     between the calibration peaks and the measured ones \n\
     by varying offset and gain. Note: this procedure\n\
     being an approximation assumes a linear calibration.\n\
+\n\
   - Execute \"Calculate Function\": A TGraphErrors is created \n\
     using the peak and nominal values. The function is\n\
     fitted to this graph to evaluate the parameters\n\
@@ -135,7 +139,7 @@ The procedure to use previously fitted peaks is as follows:\n\
    fHistPresent = (HistPresent*)gROOT->GetList()->FindObject("mypres");
 #endif
    static Int_t fFuncNumber = 0;
-   fAutoAssigned = kFALSE;
+   fAutoAssigned = 0;
    fParentWindow =  NULL;
    fSelPad = gPad;
    if (fSelPad == NULL) {
@@ -153,7 +157,7 @@ The procedure to use previously fitted peaks is as follows:\n\
    const char hist_file[] = {"caldialog_hist.txt"};
    fFuncFromFile="workfile.root|TF1|ff";
    RestoreDefaults();
-   if (interactive > 0) {
+   if (fInteractive > 0) {
 		TList *row_lab = new TList(); 
 		static void *valp[1000];
 		static Int_t dummy = 0;
@@ -203,10 +207,18 @@ The procedure to use previously fitted peaks is as follows:\n\
 		row_lab->Add(new TObjString("DoubleValue-Xup"));
 		valp[ind++] = &fCalibratedXup;
 	
-		row_lab->Add(new TObjString("CheckButton_Custom gauge file"));
+		row_lab->Add(new TObjString("CommentOnly_Cal source"));
+		valp[ind++] = &dummy;
+		row_lab->Add(new TObjString("RadioButton+Eu152"));
+		valp[ind++] = &fEu152Gauge;
+		row_lab->Add(new TObjString("RadioButton+Co60"));
+		valp[ind++] = &fCo60Gauge;
+		row_lab->Add(new TObjString("RadioButton+Y88"));
+		valp[ind++] = &fY88Gauge;
+		row_lab->Add(new TObjString("RadioButton+Custom"));
 		valp[ind++] = &fCustomGauge;
-		row_lab->Add(new TObjString("CommandButt+Read gauge peaks"));
-		valp[ind++] = &rdcmd;
+		row_lab->Add(new TObjString("StringValue_Custom gauge file"));
+		valp[ind++] = &fCustomGaugeFile;
 	
 		row_lab->Add(new TObjString("CommandButt_Update Peaklist"));
 		valp[ind++] = &udcmd;
@@ -231,7 +243,7 @@ The procedure to use previously fitted peaks is as follows:\n\
 		new TGMrbValuesAndText ("Calibration function formula", &fFormula, &ok, itemwidth,
 								fParentWindow, hist_file, NULL, row_lab, valp,
 								NULL, NULL, helptext, this, this->ClassName());
-   }
+  }
 }
 //________________________________________________________________________
 
@@ -241,18 +253,35 @@ void CalibrationDialog::SetBuiltinGaugeValues()
 	fGaugeError.Set(kSc_Npeaks);
 	fGaugeIntensity.Set(kSc_Npeaks);
 	fGaugeNpeaks = kSc_Npeaks;
+   TString name;
+   Int_t n = 0;
+   if        (fEu152Gauge) {
+      name = "152Eu";
+   } else if ( fCo60Gauge ) {
+      name = "60Co";
+   } else if ( fY88Gauge ) {
+      name = "88Y";
+   } else {
+      cout << "No builtin gauge source selected" << endl;
+      return;
+   } 
 //   ofstream ofile("cal_eu.txt", ios::out);
+   fGaugeName.Clear();
  	for (Int_t i = 0; i < fGaugeNpeaks; i++) {
-		fGaugeEnergy[i]= Sc_Energy[i];
-		fGaugeError[i] = Sc_EnError[i];
-		fGaugeIntensity[i] = Sc_Intensity[i];
-		fGaugeName.Add(new TObjString(Sc_Name[i]));
+      TString gn (Sc_Name[i]);
+      if ( gn.Contains(name) ) {
+			fGaugeEnergy[n]= Sc_Energy[i];
+			fGaugeError[n] = Sc_EnError[i];
+			fGaugeIntensity[n] = Sc_Intensity[i];
+			fGaugeName.Add(new TObjString(Sc_Name[i]));
+         n++;
+      }
 //      TString cn(Sc_Name[i]);
 //      if (cn.Contains("Eu")) 
 //         ofile << Sc_Name[i] << " " << Sc_Energy[i] << " " 
 //            << Sc_EnError[i] << " " << Sc_Intensity[i] << endl;
 	}
-//   ofile.close();
+   fGaugeNpeaks = n;
 }
 //________________________________________________________________________
 
@@ -261,9 +290,14 @@ void CalibrationDialog::SetNominalValues()
 static const Char_t helptext[] =
 "This widget allows selection of nominal values\n\
 from frequently used calibration sources like Europium\n\
+or user (custom) provided file with format:\n\
+\"name energy error rel_intensity\"\n\
 The following options are provided:\n\
   - Select the gauge peaks manually and press:\n\
     \"Choose selected\"\n\
+    The selected values must correspond to the\n\
+    fitted and selected ones: i.e. One one has to activate\n\
+    the checkbuttons correctly in both tables.\n\
   - Press \"Auto select\":\n\
     The program will vary gain and offset and find\n\
     the best match between the (fitted) peaks in the\n\
@@ -272,8 +306,7 @@ The following options are provided:\n\
 ";   
    
    if (fCustomGauge) {
-      ReadGaugeFile();
-      if (fGaugeEnergy.GetSize() < 2) {
+      if ( ReadGaugeFile() <=0 )  {
 //         WarnBox("Read gauge file first", fParentWindow);
          Int_t retval;
          new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning","Read gauge file first",kMBIconExclamation, kMBDismiss, &retval);
@@ -338,7 +371,7 @@ Format: Name(eg. 60Co) energy error intensity\n\
 }
 //________________________________________________________________________
  
-void CalibrationDialog::ReadGaugeFile()
+Int_t CalibrationDialog::ReadGaugeFile()
 { 
    if (fCustomGaugeFile.Length() <= 0 ||
       gSystem->AccessPathName(fCustomGaugeFile.Data())) {
@@ -347,7 +380,7 @@ void CalibrationDialog::ReadGaugeFile()
 //      WarnBox(warn, fParentWindow);
       Int_t retval;
       new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning",warn ,kMBIconExclamation, kMBDismiss, &retval);
-      return;
+      return 0;
    }
    ifstream infile;
    infile.open(fCustomGaugeFile.Data(), ios::in);
@@ -355,7 +388,7 @@ void CalibrationDialog::ReadGaugeFile()
 	cerr	<< "ReadGaugeFile: "
 			<< gSystem->GetError() << " - " << infile
 			<< endl;
-		return;
+		return 0;
 	}
    Int_t n = 0;
    TString line;
@@ -380,14 +413,14 @@ void CalibrationDialog::ReadGaugeFile()
 		val = ((TObjString*)oa->At(1))->String();
 		if (!val.IsFloat()) {
 			cout << "Illegal double: " << val << " at line: " << n+1 << endl;
-			return;
+			return 0;
 		}
 		fGaugeEnergy.AddAt(val.Atof(), n);
 		if (nent > 2) {
 			val = ((TObjString*)oa->At(2))->String();
 			if (!val.IsFloat()) {
 				cout << "Illegal double: " << val << " at line: " << n+1 << endl;
-				return;
+				return 0; 
 			}
 			fGaugeError.AddAt(val.Atof(), n);
 		} else {
@@ -397,7 +430,7 @@ void CalibrationDialog::ReadGaugeFile()
 			val = ((TObjString*)oa->At(3))->String();
 			if (!val.IsFloat()) {
 				cout << "Illegal double: " << val << " at line: " << n+1 << endl;
-				return;
+				return 0;
 			}
 			fGaugeIntensity.AddAt(val.Atof(), n);
 		} else {
@@ -416,6 +449,7 @@ void CalibrationDialog::ReadGaugeFile()
    fGaugeIntensity.Set(n);
    fGaugeNpeaks = n;
    cout << "ReadGaugeFile, peaks read: " << n << endl;
+   return n;
 }
 
 //________________________________________________________________________
@@ -652,9 +686,9 @@ void CalibrationDialog::ExecuteAutoSelect()
    if (fInteractive > 0) {
       fDialog->ReloadValues();
       fDialogSetNominal->ReloadValues(); 
+      EnableDialogs();
    }
-   fAutoAssigned = kTRUE;
-   EnableDialogs();
+   fAutoAssigned = 1;
 }
 //________________________________________________________________________
  
@@ -1046,8 +1080,11 @@ void CalibrationDialog::RestoreDefaults()
    fOffStep  = env.GetValue("CalibrationDialog.fOffStep",  0.5 );
    fAccept   = env.GetValue("CalibrationDialog.fAccept",     2 );
    fVerbose  = env.GetValue("CalibrationDialog.fVerbose",    0 );
-   fInteractive  = env.GetValue("CalibrationDialog.fInteractive", 1);
+//   fInteractive  = env.GetValue("CalibrationDialog.fInteractive", 1);
    fCustomGauge   = env.GetValue("CalibrationDialog.fCustomGauge",     0 );
+   fEu152Gauge = env.GetValue("CalibationDialog.fEu152Gauge", 1);
+   fCo60Gauge = env.GetValue("CalibationDialog.fCo60Gauge", 0);
+   fY88Gauge = env.GetValue("CalibationDialog.fY88Gauge", 0);
    fCustomGaugeFile= env.GetValue("CalibrationDialog.fCustomGaugeFile", "gauge_values.txt");
 }
 //_______________________________________________________________________
@@ -1055,6 +1092,7 @@ void CalibrationDialog::RestoreDefaults()
 void CalibrationDialog::SaveDefaults()
 {
    cout << "CalibrationDialog:: SaveDefaults() kEnvLocal" << endl;
+   this->Dump();
    TEnv env(".rootrc");
    env.SetValue("CalibrationDialog.BinsX", fCalibratedNbinsX);
    env.SetValue("CalibrationDialog.fCalibratedXlow", fCalibratedXlow);
@@ -1072,8 +1110,11 @@ void CalibrationDialog::SaveDefaults()
    env.SetValue("CalibrationDialog.fOffStep", fOffStep );
    env.SetValue("CalibrationDialog.fAccept",  fAccept  );
    env.SetValue("CalibrationDialog.fVerbose", fVerbose);
-   env.SetValue("CalibrationDialog.fInteractive", fInteractive);
+//   env.SetValue("CalibrationDialog.fInteractive", fInteractive);
    env.SetValue("CalibrationDialog.fCustomGauge", fCustomGauge);
+   env.SetValue("CalibationDialog.fEu152Gauge", fEu152Gauge);
+   env.SetValue("CalibationDialog.fCo60Gauge", fCo60Gauge);
+   env.SetValue("CalibationDialog.fY88Gauge", fY88Gauge);
    env.SetValue("CalibrationDialog.fCustomGaugeFile", fCustomGaugeFile.Data());
    env.SaveLevel(kEnvLocal);
 }
