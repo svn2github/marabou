@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.80 2007-07-27 11:17:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.81 2007-08-08 07:39:00 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1173,13 +1173,13 @@ Int_t TMrbAnalyze::ClearHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) 
 	return(count);
 }
 
-void TMrbAnalyze::PrintStartStop() const {
+void TMrbAnalyze::PrintStartStop(TUsrEvtStart * StartEvent, TUsrEvtStop * StopEvent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::PrintStartStop
 // Purpose:        Output time stamps for start and stop
-// Arguments:      
-// Results:        
+// Arguments:      StartEvent            -- start event (default gStartEvent)
+// Results:        StopEvent             -- stop event (default gStopEvent)
 // Exceptions:     
 // Description:    Outputs start/stop records read from root file
 //                 (replay mode only)
@@ -1188,7 +1188,12 @@ void TMrbAnalyze::PrintStartStop() const {
 
 	Int_t runTime;
 
-	if (gStartEvent->GetTreeIn() == NULL || gStopEvent->GetTreeIn() == NULL) {
+	cout << "@@@1 " << StartEvent << " " << StopEvent << endl; getchar();
+	if (StartEvent == NULL) StartEvent = gStartEvent;
+	if (StopEvent == NULL) StopEvent = gStopEvent;
+	cout << "@@@2 " << StartEvent << " " << StopEvent << endl; getchar();
+
+	if (StartEvent->GetTreeIn() == NULL || StopEvent->GetTreeIn() == NULL) {
 		gMrbLog->Err()	<< "No start/stop tree found" << endl;
 		gMrbLog->Flush(this->ClassName(), "PrintStartStop");
 	} else {
@@ -1196,11 +1201,11 @@ void TMrbAnalyze::PrintStartStop() const {
 				<< this->ClassName() << "::PrintStartStop(): Start/stop info taken from file "
 				<< fRootFileIn->GetName() << ":" << endl
 				<< "--------------------------------------------------------------------------------" << endl;
-		gStartEvent->GetTreeIn()->GetEvent(0);
-		gStartEvent->Print();
-		gStopEvent->GetTreeIn()->GetEvent(0);
-		gStopEvent->Print();
-		runTime = gStopEvent->GetTime() - gStartEvent->GetTime();
+		StartEvent->GetTreeIn()->GetEvent(0);
+		StartEvent->Print();
+		StopEvent->GetTreeIn()->GetEvent(0);
+		StopEvent->Print();
+		runTime = StopEvent->GetTime() - StartEvent->GetTime();
 		Int_t h = runTime / 3600;
 		runTime = runTime % 3600;
 		Int_t m = runTime / 60;
