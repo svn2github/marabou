@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvtStop.cxx,v 1.2 2005-12-20 14:26:47 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvtStop.cxx,v 1.3 2007-08-08 11:16:00 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -123,22 +123,4 @@ Bool_t TUsrEvtStop::InitializeTree(TFile * RootFile) {
 
 	return(kTRUE);
 }
-
-void TUsrEvtStop::Print() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrEvtStop::Print
-// Purpose:        Output time stamp of last "stop acquisition"
-// Arguments:      
-// Results:        
-// Exceptions:     
-// Description:    Outputs a message containing time of last stop cmd
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	TDatime d;
-	d.Set((UInt_t) fClockSecs, kFALSE);
-	cout	<< setblue << this->ClassName() << "::Print(): STOP Acquisition at " << d.AsString() << setblack << endl;
-}
-
 

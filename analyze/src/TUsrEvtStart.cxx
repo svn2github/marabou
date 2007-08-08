@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvtStart.cxx,v 1.3 2006-02-27 12:15:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvtStart.cxx,v 1.4 2007-08-08 11:16:00 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -125,21 +125,3 @@ Bool_t TUsrEvtStart::InitializeTree(TFile * RootFile) {
 
 	return(kTRUE);
 }
-
-void TUsrEvtStart::Print() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrEvtStart::Print
-// Purpose:        Output time stamp of last "start acquisition"
-// Arguments:      
-// Results:        
-// Exceptions:     
-// Description:    Outputs a message containing time of last start cmd
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	TDatime d;
-	d.Set((UInt_t) fClockSecs, kFALSE);
-	cout	<< setblue << this->ClassName() << "::Print(): START Acquisition at " << d.AsString() << setblack << endl;
-}
-

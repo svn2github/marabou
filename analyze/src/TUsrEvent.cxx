@@ -6,13 +6,14 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvent.cxx,v 1.3 2006-11-02 12:02:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvent.cxx,v 1.4 2007-08-08 11:16:00 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TMrbAnalyze.h"
 #include "TUsrEvent.h"
 #include "mbsio_protos.h"
+#include "SetColor.h"
 
 ClassImp(TUsrEvent)
 
@@ -186,3 +187,23 @@ Int_t TUsrEvent::CalcTimeRS() {
 
 	return(timeRS);
 }
+
+void TUsrEvent::Print(const Char_t * Text, UInt_t TimeStamp) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent::Print
+// Purpose:        Output time stamp
+// Arguments:      Char_t * Text     -- text to be printed
+//                 UInt_t TimeStamp  -- time stamp
+// Results:        
+// Exceptions:     
+// Description:    Outputs a time stamp message
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (TimeStamp == 0) TimeStamp = fClockSecs;
+	TDatime d;
+	d.Set((UInt_t) TimeStamp, kFALSE);
+	cout	<< setblue << this->ClassName() << "::Print(): " << Text << " at " << d.AsString() << setblack << endl;
+}
+

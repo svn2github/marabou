@@ -7,7 +7,7 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.51 2007-08-08 07:39:00 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.52 2007-08-08 11:15:59 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -259,6 +259,7 @@ class TMrbAnalyze : public TObject {
 		void PrintLists(const Char_t * FileName) const;
 
 		void PrintStartStop(TUsrEvtStart * Start = NULL, TUsrEvtStop * StopEvent = NULL) const;		// output start/stop time stamps
+		void PrintStartStop(UInt_t StartTime, UInt_t StopTime) const;
 
 		inline TMrbLogger * GetMessageLogger() const { return(fMessageLogger); };
 		

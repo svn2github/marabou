@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a start event
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrEvtStart.h,v 1.2 2005-12-20 14:26:46 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvtStart.h,v 1.3 2007-08-08 11:15:59 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -33,8 +33,6 @@ class TUsrEvtStart : public TUsrEvent {
 		~TUsrEvtStart() {};				// default dtor
 
 		Bool_t ExtractTimeStamp(const s_vehe *, MBSDataIO *);
-		void Print(Option_t * Option) const { TObject::Print(Option); };
-		void Print();
 		Bool_t CreateTree();
 		Bool_t InitializeTree(TFile * RootFile);
 		inline Int_t GetTime() const { return(fClockSecs); };

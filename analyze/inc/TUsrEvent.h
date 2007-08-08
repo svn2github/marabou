@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a user-defined event
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrEvent.h,v 1.2 2005-12-20 14:26:46 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvent.h,v 1.3 2007-08-08 11:15:59 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -75,7 +75,7 @@ class TUsrEvent : public TObject {
 		};
 		inline TObjArray * GetLofSubevents() { return(&fLofSubevents); };
 		inline TObject * GetSubevent(Int_t SevtSerial) { return(fLofSubevents.At(SevtSerial)); };	// get it from list
-		inline Int_t GetNofSubevents() const { return(fLofSubevents.GetSize()); };
+		inline Int_t GetNofSubevents() const { return(fLofSubevents.GetEntries()); };
 
 																	// list of hit buffers
 		inline void AddHBX(TUsrHBX * HBX, Int_t SevtSerial = -1) {	// add hit buffer wrapper to list
@@ -83,6 +83,8 @@ class TUsrEvent : public TObject {
 				else					fLofHBXs.AddAtAndExpand(HBX, SevtSerial);
 		};
 		inline TUsrHBX * GetHBX(Int_t SevtSerial) { return((TUsrHBX *) fLofHBXs.At(SevtSerial)); }; // get it from list
+
+		void Print(const Char_t * Text, UInt_t TimeStamp = 0);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

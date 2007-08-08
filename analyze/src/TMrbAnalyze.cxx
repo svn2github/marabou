@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.81 2007-08-08 07:39:00 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.82 2007-08-08 11:16:00 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1178,8 +1178,9 @@ void TMrbAnalyze::PrintStartStop(TUsrEvtStart * StartEvent, TUsrEvtStop * StopEv
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::PrintStartStop
 // Purpose:        Output time stamps for start and stop
-// Arguments:      StartEvent            -- start event (default gStartEvent)
-// Results:        StopEvent             -- stop event (default gStopEvent)
+// Arguments:      TUsrEvtStart * StartEvent            -- start event (default gStartEvent)
+//                 TUsrEvtStop * StopEvent              -- stop event (default gStopEvent)
+// Results:        --
 // Exceptions:     
 // Description:    Outputs start/stop records read from root file
 //                 (replay mode only)
@@ -1188,10 +1189,8 @@ void TMrbAnalyze::PrintStartStop(TUsrEvtStart * StartEvent, TUsrEvtStop * StopEv
 
 	Int_t runTime;
 
-	cout << "@@@1 " << StartEvent << " " << StopEvent << endl; getchar();
 	if (StartEvent == NULL) StartEvent = gStartEvent;
 	if (StopEvent == NULL) StopEvent = gStopEvent;
-	cout << "@@@2 " << StartEvent << " " << StopEvent << endl; getchar();
 
 	if (StartEvent->GetTreeIn() == NULL || StopEvent->GetTreeIn() == NULL) {
 		gMrbLog->Err()	<< "No start/stop tree found" << endl;
@@ -1202,9 +1201,9 @@ void TMrbAnalyze::PrintStartStop(TUsrEvtStart * StartEvent, TUsrEvtStop * StopEv
 				<< fRootFileIn->GetName() << ":" << endl
 				<< "--------------------------------------------------------------------------------" << endl;
 		StartEvent->GetTreeIn()->GetEvent(0);
-		StartEvent->Print();
+		StartEvent->Print("START Acquisition");
 		StopEvent->GetTreeIn()->GetEvent(0);
-		StopEvent->Print();
+		StopEvent->Print("STOP Acquisition");
 		runTime = StopEvent->GetTime() - StartEvent->GetTime();
 		Int_t h = runTime / 3600;
 		runTime = runTime % 3600;
@@ -1216,6 +1215,44 @@ void TMrbAnalyze::PrintStartStop(TUsrEvtStart * StartEvent, TUsrEvtStop * StopEv
 				<< "--------------------------------------------------------------------------------"
 				<< setblack << endl;
 	}
+}
+
+void TMrbAnalyze::PrintStartStop(UInt_t StartTime, UInt_t StopTime) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::PrintStartStop
+// Purpose:        Output time stamps for start and stop
+// Arguments:      UInt_t StartTime            -- start time
+//                 UInt_t StopTime             -- stop time
+// Results:        --
+// Exceptions:     
+// Description:    Outputs start/stop records read from root file
+//                 (replay mode only)
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t runTime;
+
+	cout	<< setblue
+			<< this->ClassName() << "::PrintStartStop(): Start/stop info taken from file "
+			<< fRootFileIn->GetName() << ":" << endl
+			<< "--------------------------------------------------------------------------------" << endl;
+	TDatime d;
+	d.Set(StartTime, kFALSE);
+	cout	<< setblue << this->ClassName() << "::Print(): " "START Acquisition at " << d.AsString() << setblack << endl;
+	d.Set(StopTime, kFALSE);
+	cout	<< setblue << this->ClassName() << "::Print(): " "STOP Acquisition at " << d.AsString() << setblack << endl;
+
+	runTime = StopTime - StartTime;
+	Int_t h = runTime / 3600;
+	runTime = runTime % 3600;
+	Int_t m = runTime / 60;
+	Int_t s = runTime % 60;
+	cout	<< setblue
+			<< "Runtime             :   " << h << ":" << m << ":" << s << endl;
+	cout	<< setblue
+			<< "--------------------------------------------------------------------------------"
+			<< setblack << endl;
 }
 
 void TMrbAnalyze::InitializeLists(Int_t NofModules, Int_t NofParams) {

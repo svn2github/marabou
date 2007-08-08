@@ -227,6 +227,8 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 		stopEvent = IOSpec->GetStopEvent();
 
 		if (IOSpec->IsTimeStampMode()) {
+			Int_t tsOffset = gEnv->GetValue("TUsrEvt%%EVT_NAME_UC%%.TimeOffset", 0);
+
 			IOSpec->ConvertToTimeStamp(startTime, startEvent);
 			IOSpec->ConvertToTimeStamp(stopTime, stopEvent);
 
@@ -253,7 +255,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 				if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);
 				pthread_mutex_lock(&global_data_mutex);
 				if (!this->IsFakeMode()) nbytes = fTreeIn->GetEvent(i);
-				timeStamp = %%EVT_FIRST_SEVT%%.fTimeStamp;
+				timeStamp = %%EVT_FIRST_SEVT%%.fTimeStamp - tsOffset;
 				if (timeStamp >= startEvent && timeStamp <= stopEvent) {
 					nofEvents++;
 					fNofEvents++;
