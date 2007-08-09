@@ -29,35 +29,18 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/TMrbArrayD.h \
  					$(HPRDIRI)/TMrbArrayF.h \
 					$(HPRDIRI)/FhContour.h \
-               $(HPRDIRI)/HprImage.h \
-               $(HPRDIRI)/GroupOfGObjects.h \
-               $(HPRDIRI)/GroupOfHists.h \
- 					$(HPRDIRI)/GEdit.h \
- 					$(HPRDIRI)/EditMarker.h \
- 					$(HPRDIRI)/TSplineX.h \
- 					$(HPRDIRI)/TSplineXDialog.h \
- 					$(HPRDIRI)/TSplineXEditor.h \
- 					$(HPRDIRI)/HprEditCommands.h \
+					$(HPRDIRI)/GroupOfHists.h \
  					$(HPRDIRI)/Ascii2GraphDialog.h \
  					$(HPRDIRI)/Ascii2HistDialog.h \
  					$(HPRDIRI)/Ascii2NtupleDialog.h \
- 					$(HPRDIRI)/FeynmanDiagramDialog.h \
- 					$(HPRDIRI)/InsertFunctionDialog.h \
- 					$(HPRDIRI)/InsertArcDialog.h \
  					$(HPRDIRI)/EmptyHistDialog.h \
- 					$(HPRDIRI)/InsertTextDialog.h \
-					$(HPRDIRI)/InsertTextBoxDialog.h \
-					$(HPRDIRI)/TextBox.h \
-  					$(HPRDIRI)/TCurlyLineWithArrow.h \
- 					$(HPRDIRI)/CurlyLineWithArrowDialog.h \
- 					$(HPRDIRI)/TArcEditor.h \
  					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)
 HPRDEP      += $(MODDIRS)/main.d
 
 HPREXE      := bin/HistPresent
-HPRLIB       := $(LPATH)/libHpr.so
+HPRLIB      := $(LPATH)/libHpr.so
 
 ALLEXECS    += $(HPREXE)
 
@@ -69,17 +52,23 @@ ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(HPRH))
 INCLUDEFILES += $(HPRDEP)
 
 ##### extra libs needed #####
-OHPRLIBS      := -L$(LPATH) -lTMrbUtils -lTGMrbUtils -lTMrbHelpBrowser -lFitCal
+MRBUTILSLIB   := $(LPATH)/libTMrbUtils.$(SOEXT)
+MRBGUTILSLIB  := $(LPATH)/libTGMrbUtils.$(SOEXT)
+HELPBRLIB     := $(LPATH)/libTMrbHelpBrowser.$(SOEXT)
+FITCALLIB     := $(LPATH)/libFitCal.$(SOEXT)
+GREDITLIB     := $(LPATH)/libGrEdit.$(SOEXT)
+
+OHPRLIBS      := $(MRBUTILSLIB) $(MRBGUTILSLIB) $(HELPBRLIB) $(FITCALLIB) $(GREDITLIB)
 
 ##### local rules #####
 
 include/%.h:    $(HPRDIRI)/%.h
 		cp $< $@
 
-$(HPREXE):     $(HPRSO)$(HPRO) $(HPRMAINO) $(MRBLIBS)
-#		@echo "sources: $(HPRS)"
+$(HPREXE):      $(HPRMAINO) $(HPRLIB) $(OHPRLIBS)
+		@echo "other libs: $(OHPRLIBS)"
 		@echo "$(HPREXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) $(ROOTGLIBS) -lSpectrum \
+		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(OHPRLIBS) $(ROOTGLIBS) -lSpectrum \
             -o $(HPREXE)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)

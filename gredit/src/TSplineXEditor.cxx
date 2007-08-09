@@ -1,4 +1,4 @@
-// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.5 2007-01-22 16:12:29 Otto.Schaile Exp $
+// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.1 2007-08-09 13:53:46 Otto.Schaile Exp $
 // Author: Carsten Hof   16/08/04
 
 /*************************************************************************

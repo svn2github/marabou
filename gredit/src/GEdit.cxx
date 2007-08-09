@@ -3293,14 +3293,18 @@ void GEdit::DrawEditGrid(Bool_t visible)
 	if (dx <= 0 || dy <= 0) return;
    Double_t xl, yl, xh, yh;
    fParent->GetRange(xl, yl, xh, yh);
-   cout << "DrawEditGrid, fParent, dx, xh  " << fParent << " " << dx << " " << xh  << endl;
+   cout << "DrawEditGrid, GetRange(xl, yl, xh, yh) " 
+     << xl << " " << yl << " " << xh << " " << yh << endl;
 
-   Double_t x = xl;
+   Double_t x;
+   x = 0;
+//   x = xl;
    Double_t y;
    EditMarker * em;
    Int_t ix = 0, iy = 0;
    while (x <= xh) {
-      y = yl;   
+//      y = yl;
+      y = 0;
       while (y <= yh) {
          Int_t mstyle = 2;
          Double_t msize =0.4;
