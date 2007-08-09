@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.34 2007-08-07 12:39:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.35 2007-08-09 14:04:35 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -1675,7 +1675,6 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 	macroName = macroName(0, macroName.Index(".C"));
 	macroEnv->WriteFile(Form(".%s.env", macroName.Data()), kEnvAll);
 
-	cout << "@@@ " << cmd << endl;
 	gROOT->ProcessLine(cmd.Data());
 	gSystem->ProcessEvents();
 	return(kTRUE);
@@ -2352,7 +2351,6 @@ Bool_t TGMrbMacroEdit::StoreHeader() {
 	nx = fLofGuiModes.FindByIndex(idx);
 	argValue = nx ? nx->GetName() : "";
 	fCurrentEnv->SetValue("AddGuiPtr", argValue.Data(), kEnvChange);
-	cout << "@@@ store: " << argValue << endl;
 	argValue = fMacroRcFile->GetEntry()->GetText();
 	fCurrentEnv->SetValue("RcFile", argValue.Data(), kEnvChange);
 	argValue = fMacroNofArgs->GetEntry()->GetText();
@@ -2562,7 +2560,6 @@ Bool_t TGMrbMacroEdit::RestoreHeader() {
 		envName = nx->GetName();
 		if (envName.Index("Arg.", 0) == -1) {
 			envVal = fOriginalEnv->GetValue(envName.Data(), "");
-			cout << "@@@ restore: " << envName << " " << envVal << endl;
 			fCurrentEnv->SetValue(envName.Data(), envVal.Data(), kEnvChange);
 		}
 		nx = (TMrbNamedX *) fLofEnvNames.After(nx);
