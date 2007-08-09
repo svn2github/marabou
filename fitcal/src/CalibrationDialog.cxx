@@ -640,15 +640,6 @@ void CalibrationDialog::ExecuteAutoSelect()
             printf("\n");
       }
    }
-/*
-   TIter next1(&fPeakList);
-   FhPeak* p;
-   while ( (p = (FhPeak*)next1()) ) {
-      if (fNpeaks == 0) 
-         p->PrintHeadLine();
-      p->Print("");
-   }
-*/
    if (fVerbose) {
 		TCanvas  *cscan = new TCanvas("cscan", "cscan", 500, 500, 500, 500);
 		hscan->Draw("col");

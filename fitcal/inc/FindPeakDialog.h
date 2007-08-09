@@ -25,11 +25,14 @@ private:
    Double_t fTo;                 // Used range, upper value
    Double_t fThreshold;          // Minimum peaks size used, unit: fraction compared to highest peak in range
                                  // Note: If height of peaks vary strongly use several ranges
-                                 //       dont clear list (see below)
-   Double_t fSigma;              // Assumed, peakm width
+                                 //       use dont clear list (see below)
+   Double_t fSigma;              // Assumed peakwidth
    Double_t fTwoPeakSeparation;  // mimimum separation of two peaks, unit: sigma
    Int_t    fClearList;          // clear list of found peaks before new search
-   Bool_t   fFindPeakDone;
+   Int_t    fMarkow;					// use Markow algorithm
+   Int_t    fRemoveBG;           // remove background before deconvolution
+   Int_t    fShowMarkers;        // draw polymarker at found peak
+   Int_t    fFindPeakDone;       // number of peaksearches executed
 
 public:
    FindPeakDialog(TH1 * hist, Int_t interactive =1);
@@ -37,7 +40,7 @@ public:
    void RecursiveRemove(TObject * obj);
    void ExecuteFindPeak();
    void ClearList();
-   Bool_t FindPeakDone() { return fFindPeakDone; };
+   Int_t FindPeakDone() { return fFindPeakDone; };
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDialog();
@@ -48,12 +51,18 @@ public:
    void SetSigma( Double_t sigma) { fSigma = sigma; };
    void SetTwoPeakSeparation( Double_t twopeakseparation) { fTwoPeakSeparation = twopeakseparation; };
    void SetClearList( Int_t clearlist) { fClearList = clearlist; };
+   void SetMarkow( Int_t markow) { fMarkow = markow; };
+   void SetRemoveBG( Int_t removebg) { fRemoveBG = removebg; };
+   void SetShowMarkers( Int_t showmarkers) { fShowMarkers = showmarkers; };
    Double_t GetFrom() { return fFrom; };
    Double_t GetTo() { return fTo; };
    Double_t GetThreshold() { return fThreshold; };
    Double_t GetSigma() { return fSigma; };
    Double_t GetTwoPeakSeparation() { return fTwoPeakSeparation; };
    Int_t GetClearList() { return fClearList; };
+   Int_t GetMarkow() { return fMarkow; };
+   Int_t GetRemoveBG() { return fRemoveBG; };
+   Int_t GetShowMarkers() { return fShowMarkers; };
 
 ClassDef(FindPeakDialog,0)
 };
