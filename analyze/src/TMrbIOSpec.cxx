@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbIOSpec.cxx,v 1.5 2007-07-27 11:17:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbIOSpec.cxx,v 1.6 2007-08-09 13:32:27 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -83,14 +83,19 @@ Bool_t TMrbIOSpec::CheckStartStop(TString & ValAscii, Int_t & Value, Bool_t & Ti
 	Value = 0;
 	TString hmsx;
 
-	if (valAscii.Index(":", 0) == -1) {		// event count
+	Int_t idx = valAscii.Index(":", 0);
+	if (idx == -1) {		// event count
 		TimeStampFlag = kFALSE;
 		Value = valAscii.Atoi();			// convert to integer
 		return(kTRUE);
 	} else {								// time stamp
+		if (idx == 0) valAscii.Prepend(" ");
 		TimeStampFlag = kTRUE;
 		TObjArray * tsArr = valAscii.Tokenize(":");
 		Int_t nts = tsArr->GetEntries();
+
+		cout << "@@@ " << nts << endl;
+		tsArr->Print();
 
 		switch (nts) {
 			case 1: break;
