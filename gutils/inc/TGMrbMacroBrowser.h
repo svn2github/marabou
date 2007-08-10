@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.18 2007-08-07 12:39:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.19 2007-08-10 12:35:08 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -91,10 +91,11 @@ class TGMrbMacroArg : public TObject {
 											kGMrbMacroEntryYesNo		= BIT(10),
 											kGMrbMacroEntryRadio		= BIT(11),
 											kGMrbMacroEntryCheck		= BIT(12),
-											kGMrbMacroEntryCombo		= BIT(13),
-											kGMrbMacroEntryFile 		= BIT(14),
-											kGMrbMacroEntryFObjCombo	= BIT(15),
-											kGMrbMacroEntryFObjListBox	= BIT(16),
+											kGMrbMacroEntryText 		= BIT(13),
+											kGMrbMacroEntryCombo		= BIT(14),
+											kGMrbMacroEntryFile 		= BIT(15),
+											kGMrbMacroEntryFObjCombo	= BIT(16),
+											kGMrbMacroEntryFObjListBox	= BIT(17),
 
 											kGMrbMacroEntryComment		= BIT(28),
 											kGMrbMacroEntrySection		= BIT(29),
@@ -139,13 +140,18 @@ class TGMrbMacroArg : public TObject {
 		virtual ~TGMrbMacroArg() { delete fFileInfo; };						// default dtor
 
 		const Char_t * GetResource(TString & Resource, const Char_t * ResourceName) const;
-		inline Int_t GetNumber() const { return(fNumber); };
+
 		inline void SetNumber(Int_t Number) { fNumber = Number; };
+		inline Int_t GetNumber() const { return(fNumber); };
+
+		inline void SetName(const Char_t * ArgName) { fName = ArgName; };
+		inline const Char_t * GetName() { return(fName.Data()); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Int_t fNumber;					// arg number
+		TString fName;					// arg name
 
 		TMrbNamedX * fType;				// argument type
 		TMrbNamedX * fEntryType; 		// entry type;
@@ -161,6 +167,7 @@ class TGMrbMacroArg : public TObject {
 		TGMrbLabelEntry * fEntry;
 		TGMrbRadioButtonList * fRadio;
 		TGMrbCheckButtonList * fCheck;
+		TGMrbTextButtonList * fText;
 		TGMrbLabelCombo * fCombo;
 		TGMrbFileEntry * fFile;
 		TGMrbFileObjectCombo * fFObjCombo;
@@ -201,7 +208,8 @@ class TGMrbMacroFrame : public TGTransientFrame {
 											kGMrbMacroIdQuit,
 											kGMrbMacroIdModifyHeader,
 											kGMrbMacroIdModifySource,
-											kGMrbMacroIdExecClose
+											kGMrbMacroIdExecClose,
+											kGMrbMacroIdUserButton
 										};
 
 		enum							{	kEntryId		=	1000	};
@@ -228,6 +236,8 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		inline TMrbLofNamedX * GetLofArgTypes() { return(&fLofArgTypes); };
 		inline TMrbLofNamedX * GetLofEntryTypes() { return(&fLofEntryTypes); };
 		inline TObjArray * GetLofMacroArgs() { return(&fLofMacroArgs); };
+
+		TGMrbMacroArg * FindArgByName(const Char_t * ArgName);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
