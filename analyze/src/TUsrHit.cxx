@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrHit.cxx,v 1.3 2006-06-29 13:56:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHit.cxx,v 1.4 2007-08-16 08:09:39 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -136,6 +136,7 @@ Double_t TUsrHit::GetCalEnergy(Bool_t Randomize) const {
 	TF1 * cal = gMrbAnalyze->GetCalibration(fModuleNumber, fChannel);
 	Double_t e = fData[kHitEnergy];
 	if (cal) {
+		if(e < cal->GetXmin() || e > cal->GetXmax()) return(0);
 		if (Randomize && (cal->GetParameter(1) != 1.0)) e += gRandom->Rndm() - 0.5;
 		e = cal->Eval(e);
 	}
@@ -159,6 +160,7 @@ Double_t TUsrHit::GetDCorrEnergy(Bool_t Randomize) const {
 	gMrbAnalyze->GetDCorr(fModuleNumber, fChannel, dcfact);
 	Double_t e = fData[kHitEnergy];
 	if (cal) {
+		if(e < cal->GetXmin() || e > cal->GetXmax()) return(0);
 		if (Randomize && (cal->GetParameter(1) != 1.0)) e += gRandom->Rndm() - 0.5;
 		e = cal->Eval(e);
 	}
