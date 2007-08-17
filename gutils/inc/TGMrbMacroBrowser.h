@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.19 2007-08-10 12:35:08 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.20 2007-08-17 14:05:58 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -238,6 +238,9 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		inline TObjArray * GetLofMacroArgs() { return(&fLofMacroArgs); };
 
 		TGMrbMacroArg * FindArgByName(const Char_t * ArgName);
+		Bool_t SetArgValue(const Char_t * ArgName, Int_t Value);
+		Bool_t SetArgValue(const Char_t * ArgName, Double_t Value);
+		Bool_t SetArgValue(const Char_t * ArgName, const Char_t * Value);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
