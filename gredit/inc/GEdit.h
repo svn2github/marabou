@@ -1,12 +1,13 @@
 #ifndef ROOT_GEdit
 #define ROOT_GEdit
 #include "TList.h"
-#ifdef MARABOUVERS
+//#ifdef MARABOUVERS
 #include "HTCanvas.h"
-#include "HistPresent.h"
-#else
-#include "TCanvas.h"
-#endif
+//#include "HistPresent.h"
+//#else
+//#include "TCanvas.h"
+//#include "TRootCanvas.h"
+//#endif
 #include "TGraph.h"
 #include "TCutG.h"
 #include <TGMenu.h>
@@ -21,10 +22,8 @@ class GEdit : public TObject {
 private:
 #ifdef MARABOUVERS
    HistPresent    *fHistPresent;
-   HTCanvas        *fParent;
-#else
-   TCanvas        *fParent;
 #endif
+   TCanvas        *fParent;
    TGPopupMenu     *fEditMenu;
    TRootCanvas     *fRootCanvas;      //! dont stream
    HprEditCommands *fEditCommands;    //! dont stream
@@ -49,9 +48,9 @@ public:
    GEdit() {};
 #ifdef MARABOUVERS
    GEdit(HTCanvas * parent);
-#else
-   GEdit(TCanvas * parent);
 #endif
+   GEdit(TCanvas * parent);
+   void Constructor();
    virtual ~GEdit();
    void RecursiveRemove(TObject * obj);
 
@@ -101,9 +100,9 @@ public:
    void    DrawControlGraphs();
    void    SetVisibilityOfEnclosingCuts(Bool_t visible);
 
-#ifdef MARABOUVERS
+//#ifdef MARABOUVERS
    void    InsertHist();
-#endif
+//#endif
    void    InsertArc();
    void    InsertGraph();
    void    GrabImage();

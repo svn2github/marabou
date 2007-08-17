@@ -1,6 +1,7 @@
 #ifndef CURLYLINEWITHARROWDIALOG
 #define CURLYLINEWITHARROWDIALOG
 #include "TObject.h"
+#include "Gtypes.h"
 //_____________________________________________________________________________________
 
 

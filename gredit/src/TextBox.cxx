@@ -6,8 +6,9 @@
 #include "TSystem.h"
 #include "TSplineX.h"
 #include "TextBox.h"
+#ifdef MARABOUVERS
 #include "HTCanvas.h"
-
+#endif
 ClassImp(TextBoxMember)
 ClassImp(TextBox)
 ClassImp(TbTimer)
@@ -45,10 +46,12 @@ TextBox::TextBox(Double_t x1, Double_t y1, Double_t x2, Double_t y2,const char *
    fPrimitives = 0;
    SetBit(kMustCleanup);
    gROOT->GetListOfCleanups()->Add(this);
+#ifdef MARABOUVERS
    if (gPad) {
        HTCanvas* hc = (HTCanvas*)gPad;
        hc->Add2ConnectedClasses(this);
    }
+#endif
    fTimer = new TbTimer(100, kTRUE, this);
 };  
 //_________________________________________________________________________

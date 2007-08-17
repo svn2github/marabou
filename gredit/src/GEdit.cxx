@@ -11,6 +11,7 @@
 #include "TEllipse.h"
 #include "TEnv.h"
 #include "TF1.h"
+#include "TH1.h"
 #include "TFile.h"
 #include "TKey.h"
 #include "TLatex.h"
@@ -79,17 +80,24 @@ enum EGeditCommandIds {
 ClassImp(GEdit)
 
 //____________________________________________________________________________
+
 #ifdef MARABOUVERS
 GEdit::GEdit(HTCanvas * parent)
 {
    fHistPresent = parent->GetHistPresent();
-#else
+   Constructor();
+}
+#endif
+
 GEdit::GEdit(TCanvas * parent)
 {
-#endif
    cout << "ctor GEdit, parent " << parent << endl;
    fParent = parent;
-   fRootCanvas = (TRootCanvas*)parent->GetCanvas()->GetCanvasImp();
+   Constructor();
+}
+void GEdit::Constructor()
+{
+   fRootCanvas = (TRootCanvas*)fParent->GetCanvas()->GetCanvasImp();
    fOrigWw = fParent->GetWw();
    fOrigWh = fParent->GetWh();
    RestoreDefaults();
@@ -1652,14 +1660,33 @@ void GEdit::SetVisibilityOfEnclosingCuts(Bool_t visible)
    }
    fParent->Update();
 }
-#ifdef MARABOUVERS
+//______________________________________________________________________________
+
+TPad*  GEdit::GetEmptyPad()
+{
+   TIter next(fParent->GetListOfPrimitives());
+   TObject * obj;
+   TPad* pad  = NULL;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TPad")) {
+         pad = (TPad*)obj;
+         if (pad->GetListOfPrimitives()->GetSize() == 0) {
+            pad->cd(0);
+            gROOT->SetSelectedPad(pad);
+            return pad;
+         }
+      }
+   }
+   return NULL;
+}
+//#ifdef MARABOUVERS
 //______________________________________________________________________________
 
 void GEdit::InsertHist()
 {
 //   cout << "GEdit::InsertHist() " << endl;
    fParent->cd();
-   if (!fHistPresent) return;
+//   if (!fHistPresent) return;
    TPad* pad = GetEmptyPad();
    if (pad) {
      gROOT->SetSelectedPad(pad);
@@ -1674,7 +1701,7 @@ void GEdit::InsertHist()
    static TString fname;
    static TString gname;
    static TString drawopt;
-   static Int_t select_from_list = 1;
+//   static Int_t select_from_list = 1;
    static Double_t scale = 1;
 
    ind = 0;
@@ -1682,8 +1709,8 @@ void GEdit::InsertHist()
    valp[ind++] = &fname;
    row_lab->Add(new TObjString("StringValue_Name of Histogram"));
    valp[ind++] = &gname;
-   row_lab->Add(new TObjString("CheckButton_Select hist from Filelist"));
-   valp[ind++] = &select_from_list;
+//   row_lab->Add(new TObjString("CheckButton_Select hist from Filelist"));
+//   valp[ind++] = &select_from_list;
    row_lab->Add(new TObjString("DoubleValue_Scale factor for labels titles etc."));
    valp[ind++] = &scale;
    row_lab->Add(new TObjString("StringValue_Drawing option"));
@@ -1696,7 +1723,7 @@ void GEdit::InsertHist()
                       NULL, NULL, row_lab, valp);
    if (!ok) return;
    TH1* hist = 0;
-   
+/*   
    if (select_from_list > 0) {
       if (!fHistPresent) {
          cout << "No HistPresent" << endl;
@@ -1709,6 +1736,7 @@ void GEdit::InsertHist()
          hist = fHistPresent->GetSelHistAt(0, NULL, kTRUE);
       }
    } else {
+*/
       if (gname.Length()) {
          if (fname.Length() > 0) {
             TFile * rfile = new TFile(fname.Data());
@@ -1717,9 +1745,10 @@ void GEdit::InsertHist()
                return;
             }
             hist = (TH1*)rfile->Get(gname.Data());
-         } else {
-            hist = (TH1F*)gROOT->FindObject(gname.Data());
          }
+// else {
+//            hist = (TH1F*)gROOT->FindObject(gname.Data());
+//         }
          if (!hist) {
             cout << "Cant find histogram: " << gname.Data() << endl;
             return;
@@ -1729,7 +1758,7 @@ void GEdit::InsertHist()
       } else {
          cout << "No Histogram defined" << endl;
       }      
-   }
+//   }
    if (!hist) return;
    TString hn = hist->GetName();
    if (hn.Index(";") > 0) { 
@@ -1750,6 +1779,7 @@ void GEdit::InsertHist()
       }
    }
    hist->Draw(drawopt.Data());
+/*
    if (fHistPresent && drawopt.Length() == 0) {
       if (hist->GetDimension() == 1) {
          if (fHistPresent->fShowContour)
@@ -1768,28 +1798,10 @@ void GEdit::InsertHist()
       hist->SetDrawOption(drawopt.Data());
       pad->Modified();
    }
+*/
    fParent->Update();
 }
-#endif
-//______________________________________________________________________________
-
-TPad*  GEdit::GetEmptyPad()
-{
-   TIter next(fParent->GetListOfPrimitives());
-   TObject * obj;
-   TPad* pad  = NULL;
-   while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TPad")) {
-         pad = (TPad*)obj;
-         if (pad->GetListOfPrimitives()->GetSize() == 0) {
-            pad->cd(0);
-            gROOT->SetSelectedPad(pad);
-            return pad;
-         }
-      }
-   }
-   return NULL;
-}
+//#endif
 //______________________________________________________________________________
 
 void GEdit::InsertGraph()
@@ -1809,7 +1821,7 @@ void GEdit::InsertGraph()
    static TString fname;
    static TString gname;
    static TString goption;
-   static Int_t select_from_list = 1;
+//   static Int_t select_from_list = 1;
    static Double_t scale = 1;
 //   if (fHistPresent) goption = fHistPresent->fDrawOptGraph;
 //   else 
@@ -1819,8 +1831,8 @@ void GEdit::InsertGraph()
    valp[ind++] = &fname;
    row_lab->Add(new TObjString("StringValue_Name of TGraph"));
    valp[ind++] = &gname;
-   row_lab->Add(new TObjString("CheckButton_Select graph from Filelist"));
-   valp[ind++] = &select_from_list;
+//   row_lab->Add(new TObjString("CheckButton_Select graph from Filelist"));
+//   valp[ind++] = &select_from_list;
    row_lab->Add(new TObjString("DoubleValue_Scale factor for labels titles etc."));
    valp[ind++] = &scale;
    row_lab->Add(new TObjString("StringValue_Drawing option"));
@@ -1833,6 +1845,7 @@ void GEdit::InsertGraph()
                       NULL, NULL, row_lab, valp);
    if (!ok) return;
    TGraph* graph = 0;
+/*
 #ifdef MARABOUVERS
    
    if (select_from_list > 0) {
@@ -1848,6 +1861,7 @@ void GEdit::InsertGraph()
       }
    } else {
 #endif
+*/
       if (fname.Length() > 0 && gname.Length()) {
          TFile * rfile = new TFile(fname.Data());
          if (!rfile->IsOpen()) {
@@ -1860,9 +1874,11 @@ void GEdit::InsertGraph()
             return;
          }
       }
+/*
 #ifdef MARABOUVERS
    }
 #endif
+*/
    if (!graph) return;
 
 //   graph->Print();
@@ -2654,7 +2670,7 @@ void GEdit::ShowGallery()
    for (Int_t i = 0; i < n; i++) {
       go = (GroupOfGObjects*)fGObjectGroups->At(i);
       oname = go->GetName();
-      cmd = "((HTCanvas*)(gROOT->GetListOfCanvases()->FindObject(\"";
+      cmd = "((TCanvas*)(gROOT->GetListOfCanvases()->FindObject(\"";
       cmd += fParent->GetName();
       cmd += "\")))->InsertGObjects(\"";
       cmd += oname;
@@ -2762,9 +2778,9 @@ void GEdit::PutObjectsOnGrid(TList* list)
       if (obj->InheritsFrom("TPave") && dopave) {
          TPave * b = (TPave*)obj;
          x1 = PutOnGridX(b->GetX1());
-         y1 = PutOnGridX(b->GetY1());
+         y1 = PutOnGridY(b->GetY1());
          x2 = PutOnGridX(b->GetX2());
-         y2 = PutOnGridX(b->GetY2());
+         y2 = PutOnGridY(b->GetY2());
 
          x1 = (x1 - fParent->GetX1()) / (fParent->GetX2() - fParent->GetX1());
          y1 = (y1 - fParent->GetY1()) / (fParent->GetY2() - fParent->GetY1());
@@ -2794,9 +2810,9 @@ void GEdit::PutObjectsOnGrid(TList* list)
          x2 = (x2 -  fParent->GetX1()) * ( fParent->GetX2() -  fParent->GetX1());
          y2 = (y2 -  fParent->GetY1()) * ( fParent->GetY2() -  fParent->GetY1());
          if (dox) x1 = PutOnGridX(x1);
-         if (doy) y1 = PutOnGridX(y1);
+         if (doy) y1 = PutOnGridY(y1);
          if (dox) x2 = PutOnGridX(x2);
-         if (doy) y2 = PutOnGridX(y2);
+         if (doy) y2 = PutOnGridY(y2);
          x1 =  fParent->GetX1()+ x1 / ( fParent->GetX2() -  fParent->GetX1());
          y1 =  fParent->GetY1()+ y1 / ( fParent->GetY2() -  fParent->GetY1());
          x2 =  fParent->GetX1()+ x2 / ( fParent->GetX2() -  fParent->GetX1());
@@ -2822,7 +2838,7 @@ void GEdit::PutObjectsOnGrid(TList* list)
          x1 = b->GetStartX();
          y1 = b->GetStartY();
          if (dox) x1 = PutOnGridX(x1);
-         if (doy) y1 = PutOnGridX(y1);
+         if (doy) y1 = PutOnGridY(y1);
          b->SetStartPoint(x1, y1);
   
       } else if (obj->InheritsFrom("TCurlyLine") && docurlyl) {
@@ -2830,24 +2846,24 @@ void GEdit::PutObjectsOnGrid(TList* list)
          x1 = b->GetStartX();
          y1 = b->GetStartY();
          if (dox) x1 = PutOnGridX(x1);
-         if (doy) y1 = PutOnGridX(y1);
+         if (doy) y1 = PutOnGridY(y1);
          b->SetStartPoint(x1, y1);
 
          x1 = b->GetEndX();
          y1 = b->GetEndY();
          if (dox) x1 = PutOnGridX(x1);
-         if (doy) y1 = PutOnGridX(y1);
+         if (doy) y1 = PutOnGridY(y1);
          b->SetEndPoint(x1, y1);
 
       } else if (obj->InheritsFrom("TMarker") && domark) {
          TMarker * b = (TMarker*)obj;
          if (dox) b->SetX(PutOnGridX(b->GetX()));
-         if (doy) b->SetY(PutOnGridX(b->GetY()));
+         if (doy) b->SetY(PutOnGridY(b->GetY()));
 
       } else if (obj->InheritsFrom("TText") && dotext) {
          TText * b = (TText*)obj;
          if (dox) b->SetX(PutOnGridX(b->GetX()));
-         if (doy) b->SetY(PutOnGridX(b->GetY()));
+         if (doy) b->SetY(PutOnGridY(b->GetY()));
 
       } else if (obj->InheritsFrom("TArc") && doarc) {
          TArc * b = (TArc*)obj;
@@ -3230,8 +3246,8 @@ void  GEdit::SetUseEditGrid(Int_t use)
       }
    }
 #ifdef MARABOUVERS
-   fParent->SetEditGrid(fEditGridX, fEditGridY);
-   fParent->SetUseEditGrid(use);
+   ((HTCanvas*)fParent)->SetEditGrid(fEditGridX, fEditGridY);
+   ((HTCanvas*)fParent)->SetUseEditGrid(use);
 #endif
    fUseEditGrid = use;
    Int_t temp = 0;
@@ -3271,8 +3287,8 @@ void GEdit::SetEditGrid(Double_t x, Double_t y, Double_t xvis, Double_t yvis)
    }
    SaveDefaults();
 #ifdef MARABOUVERS
-   fParent->SetEditGrid(fEditGridX, fEditGridY);
-   SetUseEditGrid(kTRUE);
+   ((HTCanvas*)fParent)->SetEditGrid(fEditGridX, fEditGridY);
+   ((HTCanvas*)fParent)->SetUseEditGrid(kTRUE);
 #endif
    SetUseEditGrid(kTRUE);
    DrawEditGrid(kTRUE);
@@ -3296,15 +3312,18 @@ void GEdit::DrawEditGrid(Bool_t visible)
    cout << "DrawEditGrid, GetRange(xl, yl, xh, yh) " 
      << xl << " " << yl << " " << xh << " " << yh << endl;
 
-   Double_t x;
-   x = 0;
+   Double_t x0, y0, x, y;
+   Int_t n = (Int_t)(xl / dx);
+   x0 = n * dx;
+   n = (Int_t)(yl / dy);
+   y0 = n * dy;
 //   x = xl;
-   Double_t y;
    EditMarker * em;
    Int_t ix = 0, iy = 0;
+   x = x0;
    while (x <= xh) {
 //      y = yl;
-      y = 0;
+      y = y0;
       while (y <= yh) {
          Int_t mstyle = 2;
          Double_t msize =0.4;
