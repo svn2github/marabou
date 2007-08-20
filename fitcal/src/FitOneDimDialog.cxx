@@ -787,6 +787,7 @@ void FitOneDimDialog::FitPeakList()
    while (i < npeaks) {
       FhPeak *peak = (FhPeak*)p->At(i);
       xp = peak->GetMean();
+      fMarkers->Add(new FhMarker(xp));
       Float_t mark;
       if (fPrintStartValues)
          cout << "Enter Peak at: " << xp << endl;
@@ -794,14 +795,18 @@ void FitOneDimDialog::FitPeakList()
          mark = TMath::Max(xmin, xp - fFitWindow * peak->GetWidth());
          started = kTRUE;
          fMarkers->Add(new FhMarker(mark));
-         if (fPrintStartValues) 
+//         fMarkers->Add(new FhMarker(xp));
+         if (fPrintStartValues) {
            cout << "Start Mark at: " << mark << endl;
+         }   
      }
+//  last peak
      if (i == npeaks - 1) {
         mark = TMath::Min(xmax, xp + fFitWindow * peak->GetWidth());
         fMarkers->Add(new FhMarker(mark));
         if (fPrintStartValues) 
            cout << "Exit Mark at: " << mark << endl;
+        fMarkers->Sort();
         FitGausExecute();
         ClearMarkers();
         break;
@@ -809,14 +814,14 @@ void FitOneDimDialog::FitPeakList()
      FhPeak *peakn = (FhPeak*)p->At(i+1);
      xpn = peakn->GetMean();
      if (xpn - xp < fPeakSep *  peak->GetWidth()) {
-        fMarkers->Add(new FhMarker(xp));
+//        fMarkers->Add(new FhMarker(xp));
         close_peak = kTRUE;
         if (fPrintStartValues) 
            cout << "Close Peak at: " << xp << endl;
         i++;
      } else {
          if (close_peak) {
-            fMarkers->Add(new FhMarker(xp));
+//            fMarkers->Add(new FhMarker(xp));
             close_peak = kFALSE;
          }
          mark = TMath::Min(xmax, xp + fFitWindow * peak->GetWidth());
@@ -825,6 +830,7 @@ void FitOneDimDialog::FitPeakList()
          started = kFALSE;
          if (fPrintStartValues) 
             cout << "End Mark at: " << mark << endl;
+         fMarkers->Sort();
          FitGausExecute();
          ClearMarkers();
       }

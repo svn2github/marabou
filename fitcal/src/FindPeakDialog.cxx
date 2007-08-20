@@ -57,6 +57,7 @@ Parameters:\n\
    fFrom = fSelHist->GetBinCenter(ax->GetFirst());
    fTo = fSelHist->GetBinCenter(ax->GetLast());
    RestoreDefaults();
+   cout << "fSigma " <<fSigma << endl;
    if ( interactive > 0 ) {
 		TList *row_lab = new TList(); 
 		static void *valp[50];
@@ -194,11 +195,11 @@ void FindPeakDialog::ExecuteFindPeak()
 void FindPeakDialog::RestoreDefaults()
 {
    TEnv env(".rootrc");
-   fFrom      = env.GetValue("FindPeakDialog.fFrom", 0);
-   fTo        = env.GetValue("FindPeakDialog.fTo", 2000);
+   fFrom      = env.GetValue("FindPeakDialog.fFrom", 0.);
+   fTo        = env.GetValue("FindPeakDialog.fTo", 2000.);
    fThreshold = env.GetValue("FindPeakDialog.fThreshold", 0.001);
-   fSigma     = env.GetValue("FindPeakDialog.fSigma", 2);
-   fTwoPeakSeparation = env.GetValue("FindPeakDialog.fTwoPeakSeparation", 3);
+   fSigma     = env.GetValue("FindPeakDialog.fSigma", 2.);
+   fTwoPeakSeparation = env.GetValue("FindPeakDialog.fTwoPeakSeparation", 3.);
    fMarkow = env.GetValue("FindPeakDialog.fMarkow", 1);
    fRemoveBG = env.GetValue("FindPeakDialog.fRemoveBG", 1);
    fShowMarkers = env.GetValue("FindPeakDialog.fShowMarkers", 1);
