@@ -10,14 +10,13 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTemplate.cxx,v 1.12 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTemplate.cxx,v 1.13 2007-08-20 11:19:04 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TEnv.h"
 #include "TObjArray.h"
 #include "TMrbTemplate.h"
-#include "TMrbString.h"
 #include "TMrbLogger.h"
 #include "SetColor.h"
 
@@ -298,8 +297,14 @@ Bool_t TMrbTemplate::Substitute(const Char_t * ArgName, Int_t ArgValue, Int_t Ar
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString str(ArgValue, 0, ArgBase, kTRUE, kTRUE);
-	return(Substitute(ArgName, str.Data()));
+	const Char_t * fmt;
+	switch (ArgBase) {
+		case 8: fmt = "%#o"; break;
+		case 16: fmt = "%#x"; break;
+		case 10:
+		default: fmt = "%d"; break;
+	}
+	return(Substitute(ArgName, Form(fmt, ArgValue)));
 }
 
 Bool_t TMrbTemplate::Substitute(const Char_t * ArgName, Double_t ArgValue) {
@@ -315,8 +320,7 @@ Bool_t TMrbTemplate::Substitute(const Char_t * ArgName, Double_t ArgValue) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString str(ArgValue);
-	return(Substitute(ArgName, str.Data()));
+	return(Substitute(ArgName, Form("%.1f", ArgValue)));
 }
 
 Bool_t TMrbTemplate::ExpandPathName() {
