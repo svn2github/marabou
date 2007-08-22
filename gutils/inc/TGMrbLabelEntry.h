@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.13 2007-08-07 12:39:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.14 2007-08-22 13:43:28 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -133,6 +133,11 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		inline TGTextButton * GetActionButton() const { return(fAction); };
 		inline TGMrbCheckButtonList * GetLofCheckButtons() const { return(fCheckBtns); };
 		inline TGMrbRadioButtonList * GetLofRadioButtons() const { return(fRadioBtns); };
+
+		inline void SetCheckButtons(UInt_t Bits) { if (fCheckBtns) fCheckBtns->SetState(Bits, kButtonDown); };
+		inline void SetRadioButtons(UInt_t Bits) { if (fRadioBtns) fRadioBtns->SetState(Bits, kButtonDown); };
+		inline UInt_t GetCheckButtons() { return(fCheckBtns ? fCheckBtns->GetActive() : 0); };
+		inline UInt_t GetRadioButtons() { return(fRadioBtns ? fRadioBtns->GetActive() : 0); };
 
 		void UpDownButtonEnable(Bool_t Flag = kTRUE);			// enable/disable up/down buttons
 		void ActionButtonEnable(Bool_t Flag = kTRUE);			// enable/disable action button

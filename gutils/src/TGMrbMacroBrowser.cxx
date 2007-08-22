@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.37 2007-08-17 14:05:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.38 2007-08-22 13:43:28 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -1876,11 +1876,69 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Int_t Value) {
 					ap->fRadio->SetState(((Bool_t) Value) ? (Int_t) TGMrbMacroArg::kGMrbMacroEntryYes : (Int_t) TGMrbMacroArg::kGMrbMacroEntryNo, kButtonDown);
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryRadio:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgInt && ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgUInt) return(kFALSE);
 					ap->fRadio->SetState(Value, kButtonDown);
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryCheck:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgInt && ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgUInt) return(kFALSE);
 					ap->fCheck->SetState(Value, kButtonDown);
 					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryText:
+				case TGMrbMacroArg::kGMrbMacroEntryCombo:
+				case TGMrbMacroArg::kGMrbMacroEntryFile:
+				case TGMrbMacroArg::kGMrbMacroEntryFObjCombo:
+				case TGMrbMacroArg::kGMrbMacroEntryFObjListBox:
+				case TGMrbMacroArg::kGMrbMacroEntryComment:
+				case TGMrbMacroArg::kGMrbMacroEntrySection:
+				case TGMrbMacroArg::kGMrbMacroEntryGroupFrame:
+				case TGMrbMacroArg::kGMrbMacroEntryPad:
+					return(kFALSE);
+			}
+		}
+	}
+	return(kFALSE);
+}
+
+Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Bool_t Value) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroFrame::SetArgValue
+// Purpose:        Set argument value
+// Arguments:      Char_t * ArgName         -- name
+//                 Bool_t Value             -- value
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets entry field of given argument to value
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * argIter = fLofMacroArgs.MakeIterator();
+	TGMrbMacroArg * ap;
+	while (ap = (TGMrbMacroArg *) argIter->Next()) {
+		TString argName = ap->GetName();
+		if (argName.CompareTo(ArgName) == 0) {
+			switch (ap->fEntryType->GetIndex()) {
+				case TGMrbMacroArg::kGMrbMacroEntryPlain:
+				case TGMrbMacroArg::kGMrbMacroEntryPlain2:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgBool) return(kFALSE);
+					ap->fEntry->SetText(Value ? "TRUE" : "FALSE");
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryYesNo:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgBool) return(kFALSE);
+					ap->fRadio->SetState(Value ? (Int_t) TGMrbMacroArg::kGMrbMacroEntryYes : (Int_t) TGMrbMacroArg::kGMrbMacroEntryNo, kButtonDown);
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryRadio:
+				case TGMrbMacroArg::kGMrbMacroEntryCheck:
 				case TGMrbMacroArg::kGMrbMacroEntryText:
 				case TGMrbMacroArg::kGMrbMacroEntryCombo:
 				case TGMrbMacroArg::kGMrbMacroEntryFile:
@@ -2013,6 +2071,330 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, const Char_t * Value
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryFObjListBox:
 					ap->fFObjListBox->SetText(Value);
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryComment:
+				case TGMrbMacroArg::kGMrbMacroEntrySection:
+				case TGMrbMacroArg::kGMrbMacroEntryGroupFrame:
+				case TGMrbMacroArg::kGMrbMacroEntryPad:
+					return(kFALSE);
+			}
+		}
+	}
+	return(kFALSE);
+}
+
+Bool_t TGMrbMacroFrame::GetArgValue(const Char_t * ArgName, Int_t & Value, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroFrame::GetArgInt
+// Purpose:        Get argument value
+// Arguments:      Char_t * ArgName         -- name
+//                 Int_t & Value            -- value to be returned
+//                 Int_t EntryNo            -- entry number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Reads given argument and converts to int
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * argIter = fLofMacroArgs.MakeIterator();
+	TGMrbMacroArg * ap;
+	TString argString;
+	Value = 0;
+	while (ap = (TGMrbMacroArg *) argIter->Next()) {
+		TString argName = ap->GetName();
+		if (argName.CompareTo(ArgName) == 0) {
+			switch (ap->fEntryType->GetIndex()) {
+				case TGMrbMacroArg::kGMrbMacroEntryPlain:
+				case TGMrbMacroArg::kGMrbMacroEntryPlain2:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgInt && ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgUInt) return(kFALSE);
+					argString = ap->fEntry->GetText(EntryNo);
+					Value = argString.Atoi();
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryYesNo:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgBool) return(kFALSE);
+					Value = ap->fRadio->GetActive();
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryRadio:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgInt && ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgUInt) return(kFALSE);
+					Value = ap->fRadio->GetActive();
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryCheck:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgInt && ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgUInt) return(kFALSE);
+					Value = ap->fCheck->GetActive();
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryText:
+				case TGMrbMacroArg::kGMrbMacroEntryCombo:
+				case TGMrbMacroArg::kGMrbMacroEntryFile:
+				case TGMrbMacroArg::kGMrbMacroEntryFObjCombo:
+				case TGMrbMacroArg::kGMrbMacroEntryFObjListBox:
+				case TGMrbMacroArg::kGMrbMacroEntryComment:
+				case TGMrbMacroArg::kGMrbMacroEntrySection:
+				case TGMrbMacroArg::kGMrbMacroEntryGroupFrame:
+				case TGMrbMacroArg::kGMrbMacroEntryPad:
+					return(kFALSE);
+			}
+		}
+	}
+	return(kFALSE);
+}
+
+Bool_t TGMrbMacroFrame::GetArgValue(const Char_t * ArgName, Bool_t & Value, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroFrame::GetArgInt
+// Purpose:        Get argument value
+// Arguments:      Char_t * ArgName         -- name
+//                 Bool_t & Value           -- value to be returned
+//                 Int_t EntryNo            -- entry number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Reads given argument and converts to int
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * argIter = fLofMacroArgs.MakeIterator();
+	TGMrbMacroArg * ap;
+	TString argString;
+	Value = 0;
+	while (ap = (TGMrbMacroArg *) argIter->Next()) {
+		TString argName = ap->GetName();
+		if (argName.CompareTo(ArgName) == 0) {
+			switch (ap->fEntryType->GetIndex()) {
+				case TGMrbMacroArg::kGMrbMacroEntryPlain:
+				case TGMrbMacroArg::kGMrbMacroEntryPlain2:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgBool) return(kFALSE);
+					argString = ap->fEntry->GetText(EntryNo);
+					argString.ToUpper();
+					Value = (argString.CompareTo("TRUE") == 0) ? kTRUE : kFALSE;
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryYesNo:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgBool) return(kFALSE);
+					Value = ap->fRadio->GetActive();
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryRadio:
+				case TGMrbMacroArg::kGMrbMacroEntryCheck:
+				case TGMrbMacroArg::kGMrbMacroEntryText:
+				case TGMrbMacroArg::kGMrbMacroEntryCombo:
+				case TGMrbMacroArg::kGMrbMacroEntryFile:
+				case TGMrbMacroArg::kGMrbMacroEntryFObjCombo:
+				case TGMrbMacroArg::kGMrbMacroEntryFObjListBox:
+				case TGMrbMacroArg::kGMrbMacroEntryComment:
+				case TGMrbMacroArg::kGMrbMacroEntrySection:
+				case TGMrbMacroArg::kGMrbMacroEntryGroupFrame:
+				case TGMrbMacroArg::kGMrbMacroEntryPad:
+					return(kFALSE);
+			}
+		}
+	}
+	return(kFALSE);
+}
+
+Bool_t TGMrbMacroFrame::SetArgCheck(const Char_t * ArgName, UInt_t Check) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroFrame::SetArgCheck
+// Purpose:        Set check button
+// Arguments:      Char_t * ArgName         -- name
+//                 UInt_t Check             -- value to be set
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets check button
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * argIter = fLofMacroArgs.MakeIterator();
+	TGMrbMacroArg * ap;
+	while (ap = (TGMrbMacroArg *) argIter->Next()) {
+		TString argName = ap->GetName();
+		if (argName.CompareTo(ArgName) == 0) {
+			switch (ap->fEntryType->GetIndex()) {
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
+					ap->fEntry->SetCheckButtons(Check);
+					return(kTRUE);
+				default:
+					return(kFALSE);
+			}
+		}
+	}
+	return(kFALSE);
+}
+
+Bool_t TGMrbMacroFrame::GetArgCheck(const Char_t * ArgName, UInt_t & Check) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroFrame::GetArgCheck
+// Purpose:        Read check button
+// Arguments:      Char_t * ArgName         -- name
+//                 UInt_t Check             -- value to be set
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Reads check button bit
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * argIter = fLofMacroArgs.MakeIterator();
+	TGMrbMacroArg * ap;
+	Check = 0;
+	while (ap = (TGMrbMacroArg *) argIter->Next()) {
+		TString argName = ap->GetName();
+		if (argName.CompareTo(ArgName) == 0) {
+			switch (ap->fEntryType->GetIndex()) {
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
+					Check = ap->fEntry->GetCheckButtons();
+					return(kTRUE);
+				default:
+					return(kFALSE);
+			}
+		}
+	}
+	return(kFALSE);
+}
+
+Bool_t TGMrbMacroFrame::GetArgValue(const Char_t * ArgName, Double_t & Value, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroFrame::GetArgInt
+// Purpose:        Get argument value
+// Arguments:      Char_t * ArgName         -- name
+//                 Double_t & Value         -- value to be returned
+//                 Int_t EntryNo            -- entry number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Reads given argument and converts to double
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * argIter = fLofMacroArgs.MakeIterator();
+	TGMrbMacroArg * ap;
+	TString argString;
+	Value = 0;
+	while (ap = (TGMrbMacroArg *) argIter->Next()) {
+		TString argName = ap->GetName();
+		if (argName.CompareTo(ArgName) == 0) {
+			switch (ap->fEntryType->GetIndex()) {
+				case TGMrbMacroArg::kGMrbMacroEntryPlain:
+				case TGMrbMacroArg::kGMrbMacroEntryPlain2:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgFloat && ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgDouble) return(kFALSE);
+					argString = ap->fEntry->GetText(EntryNo);
+					Value = argString.Atof();
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryYesNo:
+				case TGMrbMacroArg::kGMrbMacroEntryRadio:
+				case TGMrbMacroArg::kGMrbMacroEntryCheck:
+				case TGMrbMacroArg::kGMrbMacroEntryText:
+				case TGMrbMacroArg::kGMrbMacroEntryCombo:
+				case TGMrbMacroArg::kGMrbMacroEntryFile:
+				case TGMrbMacroArg::kGMrbMacroEntryFObjCombo:
+				case TGMrbMacroArg::kGMrbMacroEntryFObjListBox:
+				case TGMrbMacroArg::kGMrbMacroEntryComment:
+				case TGMrbMacroArg::kGMrbMacroEntrySection:
+				case TGMrbMacroArg::kGMrbMacroEntryGroupFrame:
+				case TGMrbMacroArg::kGMrbMacroEntryPad:
+					return(kFALSE);
+			}
+		}
+	}
+	return(kFALSE);
+}
+
+Bool_t TGMrbMacroFrame::GetArgValue(const Char_t * ArgName, TString & Value, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroFrame::GetArgInt
+// Purpose:        Get argument value
+// Arguments:      Char_t * ArgName         -- name
+//                 TString & Value          -- value to be returned
+//                 Int_t EntryNo            -- entry number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Reads given argument and returns it as string
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * argIter = fLofMacroArgs.MakeIterator();
+	TGMrbMacroArg * ap;
+	Value = "";
+	while (ap = (TGMrbMacroArg *) argIter->Next()) {
+		TString argName = ap->GetName();
+		if (argName.CompareTo(ArgName) == 0) {
+			switch (ap->fEntryType->GetIndex()) {
+				case TGMrbMacroArg::kGMrbMacroEntryPlain:
+				case TGMrbMacroArg::kGMrbMacroEntryPlain2:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
+					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgChar) return(kFALSE);
+					Value = ap->fEntry->GetText(EntryNo);
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryYesNo:
+					{
+						UInt_t sts = ap->fRadio->GetActive();
+						Value = (sts & TGMrbMacroArg::kGMrbMacroEntryYes) ? "yes" : "no";
+						return(kTRUE);
+					}
+				case TGMrbMacroArg::kGMrbMacroEntryRadio:
+				case TGMrbMacroArg::kGMrbMacroEntryCheck:
+				case TGMrbMacroArg::kGMrbMacroEntryText:
+					return(kFALSE);
+				case TGMrbMacroArg::kGMrbMacroEntryCombo:
+					Value = ap->fCombo->GetText();
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryFile:
+					Value = ap->fFile->GetText();
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryFObjCombo:
+					Value = ap->fFObjCombo->GetText();
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryFObjListBox:
+					Value = ap->fFObjListBox->GetText();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryComment:
 				case TGMrbMacroArg::kGMrbMacroEntrySection:
