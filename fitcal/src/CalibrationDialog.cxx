@@ -459,21 +459,26 @@ void CalibrationDialog::AutoSelectDialog()
 static const Char_t helptext[] =
 "	Vary gain and offset and find the best match\n\
    between the (fitted) peaks in the measured spectrum\n\
-   and the gauge peaks. \"Xlow\" and \"Xup\" define range\n\
-   of the calibrated histogram. The sensivity can\n\
+   and the gauge peaks. \"Xlow\" and \"Xup\" define the range\n\
+   of the testbed histogram. Units are those of the calibrated\n\
+   histogram hence the values of the gauge peaks must be within\n\
+   the range of this histogram. The sensivity can\n\
 	be adjusted by varying Nbins and Gain/Offset Steps.\n\
    Smaller \"Nbins\" leads to a wider binwidth of the \n\
    test histogram resulting to more likely matches\n\
-   finally to ambiguities\n\
+   but finally to ambiguities\n\
    The binwidths should be typically 2-4 times the peakwidth\n\
-   \"Accept Limits\" defines the maximum alloed difference in\n\
+   \"Accept Limits\" defines the maximum allowed difference in\n\
    the position of the calibrated and gauge peak\n\
 ";   
    TString label;
    TList *row_lab = new TList(); 
    static TString ascmd("ExecuteAutoSelect()");
+   static Int_t dummy;
    static void *valp[100];
    Int_t ind = 0;
+   row_lab->Add(new TObjString("CommentOnly_Parameters for Testbed histogram"));
+   valp[ind++] = &dummy;
    row_lab->Add(new TObjString("PlainIntVal_Nbins"));
    valp[ind++] = &fMatchNbins;
    row_lab->Add(new TObjString("DoubleValue+Xlow"));
@@ -526,6 +531,16 @@ void CalibrationDialog::ExecuteAutoSelect()
       cout << "Need at least 2 peaks defined" << endl;
       return;
    }
+   for (Int_t i = 0; i < fGaugeNpeaks; i++) {
+	   if (fVerbose) 
+         cout << "Gauge Peak: " << fGaugeEnergy[i] << endl;
+      if (fGaugeEnergy[i] <= fMatchMin || fGaugeEnergy[i] >= fMatchMax) {
+          cout << "Gauge Peak: " << fGaugeEnergy[i] 
+               << " outside testbed histogram range: [" 
+               << fMatchMin << ", " << fMatchMax <<  "]" << endl;
+          return;
+      }
+   }    
    DisableDialogs();
    static Int_t print_done = 0;
    for (Int_t i = 0; i < MAXPEAKS; i++) 
@@ -574,18 +589,28 @@ void CalibrationDialog::ExecuteAutoSelect()
 			}
       }
    }
+   if (best <= 0) {
+      cout << " No match found, you might need to lower Nbins in testbed histogram" << endl;
+      return;
+   }
    std::cout << "Best match: Hits, offset, gain " <<  best << " " << best_off << " " << best_gain<< std::endl;
-   cout << "Checking for ambiguities (should be 1 line only)" << endl;
+   if (fVerbose) 
+      cout << "Checking for ambiguities (should be 1 line only)" << endl;
+   Int_t namb = 0;
    for (Int_t io = 1; io <= hscan->GetNbinsX(); io++) {
       for (Int_t ig = 1; ig <= hscan->GetNbinsY(); ig++) {
          Int_t ic = (Int_t)hscan->GetCellContent(io, ig);
          if (ic == best) {
-            printf("At Offset, gain: %10.4f %10.4f found: %2d matches\n", 
+            if (fVerbose) 
+               printf("At Offset, gain: %10.4f %10.4f found: %2d matches\n", 
                  hscan->GetXaxis()->GetBinCenter(io), 
                  hscan->GetYaxis()->GetBinCenter(ig), best);
+               namb++;
          }
       }
    }
+   if (namb > 0) 
+      cout << "Warning: " << namb << " ambiguities found " << endl;
    cout << "-------------------------------------------" << endl;
    Double_t max_cont = 0;
    Int_t nassigned = 0;
@@ -648,16 +673,14 @@ void CalibrationDialog::ExecuteAutoSelect()
 		TGraph * eff = new TGraph(nassigned);
 		eff->SetTitle("Effeciciency vs calibrated energy");
 		Int_t na = 0;
+	   printf ("  Energy  GaugInt  MeasInt   RelInt Rel/Gauge\n");
 		for (Int_t i = 0; i < fNpeaks; i++) {
 			Int_t ass = fAssigned[i];
-	//      cout << i << " " << fX[i] << " " << ass << endl;
 			if (ass >= 0) {
 				fY[i]=  fGaugeEnergy[ass];
 				Double_t norm_int = fCont[i] / max_cont / fGaugeIntensity[ass];
-				cout << "fY[" << i << "] = " << fY[i] 
-					<< " Sint " << fGaugeIntensity[ass] << " Meas Int " << fCont[i] 
-					<< " Rel Int " << fCont[i] / max_cont 
-					<< " RelInt/Sint " << norm_int<< endl;
+				printf ("%8.2f %8.2f %8.2f %8.2f %8.2f\n",
+               fY[i], fGaugeIntensity[ass], fCont[i], fCont[i] / max_cont, norm_int);
 			
 				eff->SetPoint(na, fY[i], norm_int);
 				na++;
@@ -679,6 +702,7 @@ void CalibrationDialog::ExecuteAutoSelect()
       fDialogSetNominal->ReloadValues(); 
       EnableDialogs();
    }
+   SaveDefaults();
    fAutoAssigned = 1;
 }
 //________________________________________________________________________
@@ -1083,7 +1107,7 @@ void CalibrationDialog::RestoreDefaults()
 void CalibrationDialog::SaveDefaults()
 {
    cout << "CalibrationDialog:: SaveDefaults() kEnvLocal" << endl;
-   this->Dump();
+//   this->Dump();
    TEnv env(".rootrc");
    env.SetValue("CalibrationDialog.BinsX", fCalibratedNbinsX);
    env.SetValue("CalibrationDialog.fCalibratedXlow", fCalibratedXlow);
