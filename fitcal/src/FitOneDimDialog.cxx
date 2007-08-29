@@ -552,6 +552,7 @@ the root doc at: http://root.cern.ch\n\
 	//   static TString accmd("AddToCalibration()");
 		static TString lbgcmd("DetLinearBackground()");
 		static TString clmcmd("ClearMarkers()");
+		static TString clfcmd("ClearFunctionList()");
 		static TString setmcmd("SetMarkers()");
 		static TString prtcmd("PrintMarkers()");
 		static TString sfocmd("SetFittingOptions()");
@@ -684,10 +685,10 @@ the root doc at: http://root.cern.ch\n\
 		row_lab->Add(new TObjString("CommandButt_Exe Fit"));
 		if (type == 1) { 
 			valp[ind++] = &exgcmd;
-			row_lab->Add(new TObjString("CommandButt+FitPeakList"));
-			valp[ind++] = &explcmd;
 			row_lab->Add(new TObjString("CommandButt+Det Lin BG"));
 			valp[ind++] = &lbgcmd;
+			row_lab->Add(new TObjString("CommandButt+FitPeakList"));
+			valp[ind++] = &explcmd;
 		} else if (type == 2) {
 			valp[ind++] = &expcmd;
 			row_lab->Add(new TObjString("CommandButt+Draw only"));
@@ -709,6 +710,8 @@ the root doc at: http://root.cern.ch\n\
 		valp[ind++] = &sfocmd;
 		row_lab->Add(new TObjString("CommandButt+Print Markers"));
 		valp[ind++] = &prtcmd;
+		row_lab->Add(new TObjString("CommandButt+Clear FuncList"));
+		valp[ind++] = &clfcmd;
 		row_lab->Add(new TObjString("CommandButt_Clear Marks"));
 		valp[ind++] = &clmcmd;
 		if (type == 1) {
@@ -752,6 +755,29 @@ void FitOneDimDialog::RecursiveRemove(TObject * obj)
  //      cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "  
  //       << obj << " fSelHist " <<  fSelHist <<  endl;
       if (fInteractive > 0) CloseDialog(); 
+   }
+}
+//__________________________________________________________________________
+
+void FitOneDimDialog::ClearFunctionList()
+{
+   TList temp;
+   TList *lof = fSelHist->GetListOfFunctions();
+   TIter next(lof);
+   TObject *obj;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TF1"))
+         temp.Add(obj);
+   }
+   TIter next1(&temp);
+   while ( (obj = next1()) ) {
+      lof->Remove(obj);
+//      delete obj;
+   }
+   temp.Delete();
+   if (gPad) {
+      gPad->Modified();
+      gPad->Update();
    }
 }
 //__________________________________________________________________________
@@ -1583,10 +1609,10 @@ void FitOneDimDialog::SetFittingOptions()
 }
 //_______________________________________________________________________
 
-void FitOneDimDialog::ClearFunctionList()
-{
-   fSelHist->GetListOfFunctions()->Delete();
-}
+//void FitOneDimDialog::ClearFunctionList()
+//{
+//   fSelHist->GetListOfFunctions()->Delete();
+//}
 //________________________________________________________________________
 
 void FitOneDimDialog::FitExpExecute()

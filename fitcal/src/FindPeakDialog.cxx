@@ -63,6 +63,7 @@ Parameters:\n\
 		static void *valp[50];
 		Int_t ind = 0;
 		static TString exgcmd("ExecuteFindPeak()");
+		static TString clfcmd("ClearList()");
 	
 		row_lab->Add(new TObjString("DoubleValue_From"));
 		valp[ind++] = &fFrom;
@@ -74,14 +75,16 @@ Parameters:\n\
 		valp[ind++] = &fTwoPeakSeparation;
 		row_lab->Add(new TObjString("DoubleValue_Thresh"));
 		valp[ind++] = &fThreshold;
-		row_lab->Add(new TObjString("CheckButton+Clear List"));
-		valp[ind++] = &fClearList;
-		row_lab->Add(new TObjString("CheckButton_Markow Alg"));
+//		row_lab->Add(new TObjString("CheckButton+Clear List"));
+//		valp[ind++] = &fClearList;
+		row_lab->Add(new TObjString("CheckButton+Markow Alg"));
 		valp[ind++] = &fMarkow;
 		row_lab->Add(new TObjString("CheckButton+Remove BG"));
 		valp[ind++] = &fRemoveBG;
 		row_lab->Add(new TObjString("CommandButt_Execute Find"));
 		valp[ind++] = &exgcmd;
+		row_lab->Add(new TObjString("CommandButt+Clear List"));
+		valp[ind++] = &clfcmd;
 		Int_t itemwidth = 320;
 	//   TRootCanvas* fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
 	//   cout << "fParentWindow " << fParentWindow << endl;
@@ -118,6 +121,15 @@ void FindPeakDialog::ClearList()
       fSelHist->GetListOfFunctions()->Remove(p);
       p->Delete();
       delete p;
+   }
+   TPolyMarker *pm = (TPolyMarker *) fSelHist->GetListOfFunctions()->FindObject("TPolyMarker");
+      if (pm) {
+         fSelHist->GetListOfFunctions()->Remove(pm);
+         pm->Delete();
+      }
+   if (gPad) {
+      gPad->Modified();
+      gPad->Update();
    }
 }
 //__________________________________________________________________________

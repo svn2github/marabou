@@ -559,6 +559,11 @@ void CalibrationDialog::ExecuteAutoSelect()
    Double_t off, gain;
    Int_t nbscanX = TMath::Nint((fOffMax - fOffMin + fOffStep) / fOffStep);
    Int_t nbscanY = TMath::Nint((fGainMax - fGainMin + fGainStep) / fGainStep);
+   TH2C *hscan = gROOT->GetList()->FindObject("hscan");
+   if (hscan) 
+      gROOT->GetList()->Remove(hscan);
+      delete hscan;
+   }
    TH2C *hscan = new TH2C("hscan", "Matches vs offset and gain;Offset;Gain",
                  nbscanX, fOffMin - 0.5*fOffStep, fOffMax + 0.5*fOffStep,
                  nbscanY,fGainMin- 0.5*fGainStep, fGainMax + 0.5*fGainStep);
