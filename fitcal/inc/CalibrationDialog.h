@@ -114,29 +114,31 @@ public:
    void SetOffMin( Double_t offmin) { fOffMin = offmin; };
    void SetOffMax( Double_t offmax) { fOffMax = offmax; };
    void SetOffStep( Double_t offstep) { fOffStep = offstep; };
+   void SetAccept( Double_t val) { fAccept = val; };
    void SetEu152Gauge( Int_t eu152gauge) { fEu152Gauge = eu152gauge; };
    void SetCo60Gauge( Int_t co60gauge) { fCo60Gauge = co60gauge; };
    void SetY88Gauge( Int_t y88gauge) { fY88Gauge = y88gauge; };
 
-   Int_t GetVerbose() { return fVerbose; };
-   Int_t GetInteractive() { return fInteractive; };
+   Int_t GetVerbose()          { return fVerbose; };
+   Int_t GetInteractive()      { return fInteractive; };
    Int_t GetCalibratedNbinsX() { return fCalibratedNbinsX; };
-   Double_t GetCalibratedXlow() { return fCalibratedXlow; };
+   Double_t GetCalibratedXlow(){ return fCalibratedXlow; };
    Double_t GetCalibratedXup() { return fCalibratedXup; };
-   Int_t GetCustomGauge() { return fCustomGauge; };
-   TString GetCustomGaugeFile() { return fCustomGaugeFile; };
+   Int_t GetCustomGauge()      { return fCustomGauge; };
+   TString GetCustomGaugeFile(){ return fCustomGaugeFile; };
    Int_t GetMatchNbins() { return fMatchNbins; };
-   Double_t GetMatchMin() { return fMatchMin; };
-   Double_t GetMatchMax() { return fMatchMax; };
+   Double_t GetMatchMin(){ return fMatchMin; };
+   Double_t GetMatchMax(){ return fMatchMax; };
    Double_t GetGainMin() { return fGainMin; };
    Double_t GetGainMax() { return fGainMax; };
-   Double_t GetGainStep() { return fGainStep; };
-   Double_t GetOffMin() { return fOffMin; };
-   Double_t GetOffMax() { return fOffMax; };
+   Double_t GetGainStep(){ return fGainStep; };
+   Double_t GetOffMin()  { return fOffMin; };
+   Double_t GetOffMax()  { return fOffMax; };
    Double_t GetOffStep() { return fOffStep; };
+   Double_t GetAccept()  { return fAccept; };
    Int_t GetEu152Gauge() { return fEu152Gauge; };
-   Int_t GetCo60Gauge() { return fCo60Gauge; };
-   Int_t GetY88Gauge() { return fY88Gauge; };
+   Int_t GetCo60Gauge()  { return fCo60Gauge; };
+   Int_t GetY88Gauge()   { return fY88Gauge; };
 
 
 ClassDef(CalibrationDialog,0)
