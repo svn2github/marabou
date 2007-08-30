@@ -104,7 +104,8 @@ public:
    void SetCalibratedXlow( Double_t calibratedxlow) { fCalibratedXlow = calibratedxlow; };
    void SetCalibratedXup( Double_t calibratedxup) { fCalibratedXup = calibratedxup; };
    void SetCustomGauge( Int_t customgauge) { fCustomGauge = customgauge; };
-   void SetCustomGaugeFile( TString customgaugefile) { fCustomGaugeFile = customgaugefile; };
+   void SetCustomGaugeFile(const Char_t * customgaugefile) { fCustomGaugeFile = customgaugefile; };
+   void SetFormula(const Char_t * formula) { fCustomGaugeFile = formula; };
    void SetMatchNbins( Int_t matchnbins) { fMatchNbins = matchnbins; };
    void SetMatchMin( Double_t matchmin) { fMatchMin = matchmin; };
    void SetMatchMax( Double_t matchmax) { fMatchMax = matchmax; };
@@ -119,13 +120,15 @@ public:
    void SetCo60Gauge( Int_t co60gauge) { fCo60Gauge = co60gauge; };
    void SetY88Gauge( Int_t y88gauge) { fY88Gauge = y88gauge; };
 
+   TF1   *GetCalFunction()     { return fCalFunc;};
    Int_t GetVerbose()          { return fVerbose; };
    Int_t GetInteractive()      { return fInteractive; };
    Int_t GetCalibratedNbinsX() { return fCalibratedNbinsX; };
    Double_t GetCalibratedXlow(){ return fCalibratedXlow; };
    Double_t GetCalibratedXup() { return fCalibratedXup; };
    Int_t GetCustomGauge()      { return fCustomGauge; };
-   TString GetCustomGaugeFile(){ return fCustomGaugeFile; };
+   const Char_t *GetCustomGaugeFile(){ return fCustomGaugeFile.Data(); };
+   const Char_t *GetFormula()    { return fFormula.Data(); };
    Int_t GetMatchNbins() { return fMatchNbins; };
    Double_t GetMatchMin(){ return fMatchMin; };
    Double_t GetMatchMax(){ return fMatchMax; };

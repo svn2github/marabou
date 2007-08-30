@@ -670,6 +670,16 @@ void CalibrationDialog::ExecuteAutoSelect()
             printf("\n");
       }
    }
+	for (Int_t i = 0; i < fNpeaks; i++) {
+		Int_t ass = fAssigned[i];
+		if (ass >= 0) {
+			fY[i]=  fGaugeEnergy[ass];
+			fYE[i] = fGaugeError[ass];
+			fUse[i] = 1;
+		} else {
+			fUse[i] = 0;
+		}
+	}
    if (fVerbose) {
 		TCanvas  *cscan = new TCanvas("cscan", "cscan", 500, 500, 500, 500);
 		hscan->Draw("col");
@@ -781,18 +791,19 @@ void CalibrationDialog::CalculateFunction()
    cout << endl << "Fitted values a: " 
         <<  fCalFunc->GetParameter(0)<< " +- " << fCalFunc->GetParError(0) << " b: " 
         << fCalFunc->GetParameter(1)<< " +- " << fCalFunc->GetParError(1) << endl;
-
-   TCanvas * cc = new TCanvas("cc","cc", 200, 200, 500, 500);
-   gr->Draw("AP");
-//   PrintGraph(gr);
-   fCalFunc->Draw("SAME"); 
-   fCalFunc->SetLineWidth(1);
-   fCalFunc->SetLineColor(7);
-   cc->Update();
-   Double_t xl = fCalFunc->Eval(fSelHist->GetXaxis()->GetBinLowEdge(1));
-   Double_t xu = fCalFunc->Eval(fSelHist->GetXaxis()
-                  ->GetBinUpEdge(fSelHist->GetNbinsX()));
-   cout << "fCalibratedNbinsX ,xl, xu " << fCalibratedNbinsX << " xl " << xl<< " xu " << xu<< endl;
+   if (fVerbose) {
+		TCanvas * cc = new TCanvas("cc","cc", 200, 200, 500, 500);
+		gr->Draw("AP");
+	//   PrintGraph(gr);
+		fCalFunc->Draw("SAME"); 
+		fCalFunc->SetLineWidth(1);
+		fCalFunc->SetLineColor(7);
+		cc->Update();
+		Double_t xl = fCalFunc->Eval(fSelHist->GetXaxis()->GetBinLowEdge(1));
+		Double_t xu = fCalFunc->Eval(fSelHist->GetXaxis()
+							->GetBinUpEdge(fSelHist->GetNbinsX()));
+		cout << "fCalibratedNbinsX ,xl, xu " << fCalibratedNbinsX << " xl " << xl<< " xu " << xu<< endl;
+   }
 }
 
 //________________________________________________________________________________
