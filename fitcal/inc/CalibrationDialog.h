@@ -139,6 +139,7 @@ public:
    Double_t GetOffMax()  { return fOffMax; };
    Double_t GetOffStep() { return fOffStep; };
    Double_t GetAccept()  { return fAccept; };
+   TList * GetPeakList() { return &fPeakList; };
    Int_t GetEu152Gauge() { return fEu152Gauge; };
    Int_t GetCo60Gauge()  { return fCo60Gauge; };
    Int_t GetY88Gauge()   { return fY88Gauge; };

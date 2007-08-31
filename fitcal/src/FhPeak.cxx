@@ -7,6 +7,7 @@ FhPeak::FhPeak(Double_t pos) : fEstimate(pos), fMean(pos){
    fContent = 0;
    fWidth = 0;
    fMeanError = 0;
+   fNominalEnergyError = 0;
    fContentError = 0;
    fWidthError =0;
    fChi2oNdf = 0;

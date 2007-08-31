@@ -16,6 +16,7 @@ private:
    Double_t fContent;
    Double_t fMean;
    Double_t fWidth;
+   Double_t fNominalEnergyError;
    Double_t fContentError;
    Double_t fMeanError;
    Double_t fWidthError;
@@ -28,18 +29,19 @@ public:
    FhPeak(Double_t pos);
 
    ~FhPeak() {};
-   Double_t GetNominalEnergy() const    {return fNominalEnergy;};
+   Double_t GetNominalEnergy() const {return fNominalEnergy;};
    Double_t GetCalibratedEnergy() const {return fCalibratedEnergy;};
    Double_t GetContent()             {return fContent;};
    Double_t GetMean() const          {return fMean;};
    Double_t GetWidth() const         {return fWidth;};
-   Double_t GetContentError()        {return fContentError;};
+   Double_t GetNominalEnergyError() const {return fNominalEnergyError;};
+   Double_t GetContentError() const  {return fContentError;};
    Double_t GetMeanError() const     {return fMeanError;};
    Double_t GetWidthError() const    {return fWidthError;};
    Double_t GetChi2oNdf() const      {return fChi2oNdf;};
    Double_t GetTailContent() const   {return fTailContent;};
    Double_t GetTailWidth() const     {return fTailWidth;};
-   Bool_t   GetUsed() const           {return fUsed;};
+   Bool_t   GetUsed() const          {return fUsed;};
 
 
    void SetNominalEnergy(Double_t val){fNominalEnergy=val;};
@@ -47,6 +49,7 @@ public:
    void SetContent(Double_t val)      {fContent=val;};
    void SetMean(Double_t val)         {fMean=val;};
    void SetWidth(Double_t val)        {fWidth=val;};
+   void SetNominalEnergyError(Double_t val)       {fNominalEnergyError=val;};
    void SetContentError(Double_t val) {fContentError=val;};
    void SetMeanError(Double_t val)    {fMeanError=val;};
    void SetWidthError(Double_t val)   {fWidthError=val;};

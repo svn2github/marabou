@@ -595,6 +595,7 @@ void CalibrationDialog::ExecuteAutoSelect()
       }
    }
    if (best <= 0) {
+
       cout << " No match found, you might need to lower Nbins in testbed histogram" << endl;
       return;
    }
@@ -670,16 +671,26 @@ void CalibrationDialog::ExecuteAutoSelect()
             printf("\n");
       }
    }
-	for (Int_t i = 0; i < fNpeaks; i++) {
-		Int_t ass = fAssigned[i];
-		if (ass >= 0) {
-			fY[i]=  fGaugeEnergy[ass];
-			fYE[i] = fGaugeError[ass];
-			fUse[i] = 1;
-		} else {
-			fUse[i] = 0;
-		}
-	}
+   TIter next(&fPeakList);
+   FhPeak * p;
+   Int_t np = 0;
+   while (p = (FhPeak *) next()) {
+     Int_t ass = fAssigned[np];
+     if (ass >= 0) {
+       fY[np]=  fGaugeEnergy[ass];
+       fYE[np] = fGaugeError[ass];
+       fUse[np] = 1;
+       p->SetUsed(1);
+       p->SetNominalEnergy(fY[np]);
+       p->SetNominalEnergyError(fYE[np]);
+     } else {
+       p->SetUsed(0);
+       p->SetNominalEnergy(0);
+       p->SetNominalEnergyError(0);
+       fUse[np] = 0;
+     }
+     np++;
+   }
    if (fVerbose) {
 		TCanvas  *cscan = new TCanvas("cscan", "cscan", 500, 500, 500, 500);
 		hscan->Draw("col");

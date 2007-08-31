@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.22 2007-08-24 11:32:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.23 2007-08-31 07:55:07 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -37,6 +37,8 @@ namespace std {} using namespace std;
 #include "TGMenu.h"
 #include "TGTab.h"
 #include "TGFileDialog.h"
+
+#include "RQ_OBJECT.h"
 
 #include "TMrbNamedX.h"
 #include "TMrbString.h"
@@ -68,26 +70,27 @@ class TGMrbMacroArg : public TObject {
 
 	public:
 		enum EGMrbMacroEntryType		{
-											kGMrbMacroEntryEntry			= BIT(0),
-											kGMrbMacroEntryMulti			= BIT(2),
-											kGMrbMacroEntryChkBtn			= BIT(3),
-											kGMrbMacroEntryRdoBtn			= BIT(4),
-											kGMrbMacroEntryBeginEnd			= BIT(6),
+											kGMrbMacroEntryBitEntry			= BIT(0),
+											kGMrbMacroEntryBitMulti			= BIT(1),
+											kGMrbMacroEntryBitChkBtn		= BIT(2),
+											kGMrbMacroEntryBitRdoBtn		= BIT(3),
+											kGMrbMacroEntryBitBeginEnd		= BIT(4),
+											kGMrbMacroEntryBitUpDown		= BIT(5),
 
-											kGMrbMacroEntryPlain			= kGMrbMacroEntryEntry,
-											kGMrbMacroEntryPlain2			= kGMrbMacroEntryEntry | kGMrbMacroEntryMulti,
-											kGMrbMacroEntryPlainC			= kGMrbMacroEntryEntry | kGMrbMacroEntryChkBtn,
-											kGMrbMacroEntryPlainC2			= kGMrbMacroEntryPlainC | kGMrbMacroEntryMulti,
+											kGMrbMacroEntryPlain			= kGMrbMacroEntryBitEntry,
+											kGMrbMacroEntryPlain2			= kGMrbMacroEntryBitEntry | kGMrbMacroEntryBitMulti,
+											kGMrbMacroEntryPlainC			= kGMrbMacroEntryBitEntry | kGMrbMacroEntryBitChkBtn,
+											kGMrbMacroEntryPlainC2			= kGMrbMacroEntryPlainC | kGMrbMacroEntryBitMulti,
 
-											kGMrbMacroEntryUpDown			= kGMrbMacroEntryEntry | BIT(5),
-											kGMrbMacroEntryUpDown2			= kGMrbMacroEntryUpDown | kGMrbMacroEntryMulti,
-											kGMrbMacroEntryUpDownC			= kGMrbMacroEntryUpDown | kGMrbMacroEntryChkBtn,
-											kGMrbMacroEntryUpDownC2 		= kGMrbMacroEntryUpDownC | kGMrbMacroEntryMulti,
+											kGMrbMacroEntryUpDown			= kGMrbMacroEntryBitEntry | kGMrbMacroEntryBitUpDown,
+											kGMrbMacroEntryUpDown2			= kGMrbMacroEntryUpDown | kGMrbMacroEntryBitMulti,
+											kGMrbMacroEntryUpDownC			= kGMrbMacroEntryUpDown | kGMrbMacroEntryBitChkBtn,
+											kGMrbMacroEntryUpDownC2 		= kGMrbMacroEntryUpDownC | kGMrbMacroEntryBitMulti,
 
-											kGMrbMacroEntryUpDownX			= kGMrbMacroEntryUpDown | kGMrbMacroEntryBeginEnd,
-											kGMrbMacroEntryUpDownXC 		= kGMrbMacroEntryUpDownX | kGMrbMacroEntryChkBtn,
-											kGMrbMacroEntryUpDownX2 		= kGMrbMacroEntryUpDownX | kGMrbMacroEntryMulti,
-											kGMrbMacroEntryUpDownXC2		= kGMrbMacroEntryUpDownXC | kGMrbMacroEntryMulti,
+											kGMrbMacroEntryUpDownX			= kGMrbMacroEntryUpDown | kGMrbMacroEntryBitBeginEnd,
+											kGMrbMacroEntryUpDownXC 		= kGMrbMacroEntryUpDownX | kGMrbMacroEntryBitChkBtn,
+											kGMrbMacroEntryUpDownX2 		= kGMrbMacroEntryUpDownX | kGMrbMacroEntryBitMulti,
+											kGMrbMacroEntryUpDownXC2		= kGMrbMacroEntryUpDownXC | kGMrbMacroEntryBitMulti,
 
 											kGMrbMacroEntryYesNo			= BIT(10),
 											kGMrbMacroEntryRadio			= BIT(11),
@@ -187,6 +190,7 @@ class TGMrbMacroArg : public TObject {
 		Double_t fIncrement;
 		Int_t fOrientation;
 		Int_t fNofCL;
+		TString fExecFunct;
 
 		TGFileInfo * fFileInfo;			// file info to be used with FileEntry
 		TObjArray fFileTypes;
@@ -205,6 +209,8 @@ class TGMrbMacroArg : public TObject {
 
 class TGMrbMacroFrame : public TGTransientFrame {
 
+	RQ_OBJECT("TGMrbMacroFrame")
+
 	public:
 		// ids to dispatch over X events
 		enum EGMrbMacroId				{	kGMrbMacroIdExec,
@@ -213,16 +219,17 @@ class TGMrbMacroFrame : public TGTransientFrame {
 											kGMrbMacroIdQuit,
 											kGMrbMacroIdModifyHeader,
 											kGMrbMacroIdModifySource,
-											kGMrbMacroIdExecClose,
-											kGMrbMacroIdUserButton
+											kGMrbMacroIdExecClose
 										};
 
-		enum							{	kEntryId		=	1000	};
-		enum							{	kComboId		=	1100	};
-		enum							{	kListBoxId		=	1200	};
+		enum							{	kUserButtonStart	=	BIT(16)	};
 
-		enum							{	kFrameWidth 	=	1200 	};
-		enum							{	kLineHeight 	=	20		};
+		enum							{	kEntryId			=	1000	};
+		enum							{	kComboId			=	1100	};
+		enum							{	kListBoxId			=	1200	};
+
+		enum							{	kFrameWidth 		=	1200 	};
+		enum							{	kLineHeight 		=	20		};
 
 		enum							{	kGMrbMacroNofFrames 	=	10	};
 		enum							{	kGMrbMacroNofSubframes	=	10	};
@@ -258,6 +265,8 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		Bool_t SetArgCheck(const Char_t * ArgName, UInt_t Check);
 		Bool_t GetArgCheck(const Char_t * ArgName, UInt_t & Check);
 		Bool_t ArgIsChecked(const Char_t * ArgName);
+
+		void CatchSignal(Int_t SignalId);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -353,6 +362,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 											kMacroTagArguments,
 											kMacroTagExec,
 											kMacroTagIncludeHFiles,
+											kMacroTagArgEnums,
 											kMacroTagEnums,
 											kMacroTagCode
 										};
@@ -418,6 +428,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		TGMrbLabelEntry * fArgIncrement;
 		TGMrbRadioButtonList * fArgOrientation;
 		TGMrbLabelEntry * fArgNofCL;
+		TGMrbLabelEntry * fArgExecFunct;
 
 		TGMrbTextButtonGroup * fAction;
 

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.39 2007-08-24 11:32:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.40 2007-08-31 07:55:07 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -199,6 +199,7 @@ const SMrbNamedXShort kGMrbMacroLofTags[] =
 								{TGMrbMacroEdit::kMacroTagArguments, 		"MACRO_ARGUMENTS"			},
 								{TGMrbMacroEdit::kMacroTagExec,				"MACRO_EXEC"				},
 								{TGMrbMacroEdit::kMacroTagIncludeHFiles,	"MACRO_INCLUDE_H_FILES"		},
+								{TGMrbMacroEdit::kMacroTagArgEnums,			"MACRO_ARG_ENUMS"			},
 								{TGMrbMacroEdit::kMacroTagEnums,			"MACRO_ENUMS"				},
 								{TGMrbMacroEdit::kMacroTagCode,				"MACRO_CODE"				},
 								{0, 											NULL					}
@@ -327,7 +328,8 @@ TGMrbMacroBrowserMain::TGMrbMacroBrowserMain(const TGWindow * Parent, TMrbLofMac
 	} else {
 		TMrbNamedX * macro = fLofMacros->FirstMacro();
 		if (macro) {
-			new TGMrbMacroFrame(fClient->GetRoot(), this, fLofMacros->FirstMacro(), 100, 100);
+			TGMrbMacroFrame * mf = new TGMrbMacroFrame(fClient->GetRoot(), this, fLofMacros->FirstMacro(), 100, 100);
+			if (mf->IsZombie()) delete mf;
 		}
 	}
 }
@@ -948,8 +950,6 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
 	
-	Int_t userButtonId = TGMrbMacroFrame::kGMrbMacroIdUserButton;
-
 	Int_t tabNo = -1;
 	Int_t subframeNo = -1;
 	Int_t frameNo = -1;
@@ -959,7 +959,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	Bool_t newPad = kTRUE;
 	Bool_t newFrame = kTRUE;
 	for (Int_t i = 0; i < nofArgs; i++) {
-		macroArg = new TGMrbMacroArg(i + 1);
+		Int_t argNo = i + 1;
+		macroArg = new TGMrbMacroArg(argNo);
 		fLofMacroArgs.Add(macroArg);
 
 		argName = macroEnv->GetValue(macroArg->GetResource(argResource, "Name"), "");
@@ -999,7 +1000,6 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			if (fMacroTab == NULL) {
 				if (i == 0) {
 					fMacroTab = new TGTab(fMacroArgs, Width, Height);
-					HEAP(fMacroTab);
 					fMacroArgs->AddFrame(fMacroTab, frameGC->LH());
 				} else {
 					gMrbLog->Wrn()	<< "[Arg " << argName << "(#" << macroArg->GetNumber() << ")]: Can't open tab - tabs have to be initialized with arg#0" << endl;
@@ -1117,23 +1117,23 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			HEAP(macroArg->fFrame);
 			fMacroArgs->AddFrame(macroArg->fFrame, frameGC->LH());
 			parentFrame = macroArg->fFrame;
-		} else if (entryType & TGMrbMacroArg::kGMrbMacroEntryEntry) {
+		} else if (entryType & TGMrbMacroArg::kGMrbMacroEntryBitEntry) {
 
 			TMrbLofNamedX * checkBtn;
-			if (entryType & TGMrbMacroArg::kGMrbMacroEntryChkBtn) {
+			if (entryType & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) {
 				checkBtn = new TMrbLofNamedX();
 				checkBtn->AddNamedX(1, "");
 			} else {
 				checkBtn = NULL;
 			}
 
-			xUpDown = (entryType & TGMrbMacroArg::kGMrbMacroEntryBeginEnd);
-			updownGC = ((entryType & TGMrbMacroArg::kGMrbMacroEntryUpDown) || xUpDown) ? buttonGC : NULL;
+			xUpDown = (entryType & TGMrbMacroArg::kGMrbMacroEntryBitBeginEnd);
+			updownGC = ((entryType & TGMrbMacroArg::kGMrbMacroEntryBitUpDown) || xUpDown) ? buttonGC : NULL;
 
-			if (entryType & TGMrbMacroArg::kGMrbMacroEntryMulti) {
+			if (entryType & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 
 				macroArg->fEntry = new TGMrbLabelEntry(parentFrame, argTitle.Data(),
-														40, TGMrbMacroFrame::kEntryId + i + 1,
+														40, TGMrbMacroFrame::kEntryId + argNo,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														macroArg->fEntryWidth,
@@ -1141,7 +1141,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 														NULL, NULL, checkBtn, NULL, kHorizontalFrame, kSunkenFrame, macroArg->fNofEntryFields);
 			} else {
 				macroArg->fEntry = new TGMrbLabelEntry(parentFrame, argTitle.Data(),
-														40, TGMrbMacroFrame::kEntryId + i + 1,
+														40, TGMrbMacroFrame::kEntryId + argNo,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														macroArg->fEntryWidth,
@@ -1156,7 +1156,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 
 			TObjArray * lofTokens = value.Tokenize(":");
 			Int_t nofTokens = lofTokens->GetEntries();
-			Int_t nt = (entryType & TGMrbMacroArg::kGMrbMacroEntryChkBtn) ? (nofEntryFields + 1) : nofEntryFields;
+			Int_t nt = (entryType & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) ? (nofEntryFields + 1) : nofEntryFields;
 			if (nt != nofTokens) {
 				TString an = macroEnv->GetValue(macroArg->GetResource(argResource, "Name"), "??");
 				gMrbLog->Wrn()	<< "[Arg " << an << " (#" << macroArg->GetNumber() << ")]: Number of (default) values not matching number of entries - "
@@ -1168,13 +1168,13 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			TString dv = aet.BeginsWith("Char_t") ? "" : "0";
 			if (nofTokens >= 1) v = ((TObjString *) lofTokens->At(0))->GetString(); else v = dv;
 			macroArg->fEntry->SetText(v, 0);
-			if (entryType & TGMrbMacroArg::kGMrbMacroEntryMulti) {
+			if (entryType & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 				for (Int_t ef = 1; ef < nofEntryFields; ef++) {
 					if (nofTokens >= (ef + 1)) v = ((TObjString *) lofTokens->At(ef))->GetString(); else v = dv;
 					macroArg->fEntry->SetText(v, ef);
 				}
 			}
-			if (entryType & TGMrbMacroArg::kGMrbMacroEntryChkBtn) {
+			if (entryType & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) {
 				if (nofTokens == nt) v = ((TObjString *) lofTokens->At(nofTokens - 1))->GetString(); else v = "F";
 				TGMrbCheckButtonList * lcb = macroArg->fEntry->GetLofCheckButtons();
 				TGButton * btn = lcb->GetButton(1);
@@ -1207,7 +1207,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fEntry->SetTextAlignment(jm);
 
 			if (entryType & TGMrbMacroArg::kGMrbMacroEntryUpDown) {
-				if (entryType & TGMrbMacroArg::kGMrbMacroEntryMulti) {
+				if (entryType & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 					Int_t nofEntryFields = macroArg->fNofEntryFields;
 					TString llvalue = macroEnv->GetValue(macroArg->GetResource(argResource, "LowerLimit"), "0.0");
 					TString ulvalue = macroEnv->GetValue(macroArg->GetResource(argResource, "UpperLimit"), "1000000.0");
@@ -1274,6 +1274,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			} else {
 				macroArg->fRadio->SetState(TGMrbMacroArg::kGMrbMacroEntryNo, kButtonDown);
 			}
+			macroArg->fRadio->SetFrameId(argNo);
+			macroArg->fRadio->SendSignal(this, "CatchSignal(Int_t)");
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryRadio
 						|| entryType == TGMrbMacroArg::kGMrbMacroEntryCheck
 						|| entryType == TGMrbMacroArg::kGMrbMacroEntryText
@@ -1312,7 +1314,6 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 						tip = str(ntip + 1, 1000);
 						str.Resize(ntip);
 					}
-					if (entryType == TGMrbMacroArg::kGMrbMacroEntryText) m = userButtonId++;
 					macroArg->fButtons.AddNamedX(new TMrbNamedX(m, str.Data(), (tip.Length() > 0) ? tip.Data() : NULL));
 					m <<= 1;
 				}
@@ -1330,6 +1331,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					if ((button = macroArg->fButtons.FindByIndex(val)) != NULL) {
 						macroArg->fRadio->SetState(val, kButtonDown);
 					}
+					macroArg->fRadio->SetFrameId(argNo);
+					macroArg->fRadio->SendSignal(this, "CatchSignal(Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryCheck) {
 					macroArg->fCheck = new TGMrbCheckButtonList(parentFrame, argTitle.Data(),
 														&macroArg->fButtons, -1, macroArg->fNofCL,
@@ -1344,6 +1347,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					Int_t pattern;
 					value.ToInteger(pattern);
 					macroArg->fCheck->SetState(pattern, kButtonDown);
+					macroArg->fCheck->SetFrameId(argNo);
+					macroArg->fCheck->SendSignal(this, "CatchSignal(Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryText) {
 					macroArg->fText = new TGMrbTextButtonList(parentFrame, argTitle.Data(),
 														&macroArg->fButtons, -1, macroArg->fNofCL,
@@ -1353,10 +1358,11 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 														macroArg->fOrientation);
 					HEAP(macroArg->fText);
 					parentFrame->AddFrame(macroArg->fText, frameGC->LH());
-					macroArg->fText->Associate(this);
+					macroArg->fText->SetFrameId(argNo);
+					macroArg->fText->SendSignal(this, "CatchSignal(Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryCombo) {
 					macroArg->fCombo = new TGMrbLabelCombo(parentFrame, argTitle.Data(), &macroArg->fButtons,
-														TGMrbMacroFrame::kEntryId + i + 1, -1,
+														TGMrbMacroFrame::kEntryId + argNo, -1,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														macroArg->fEntryWidth,
@@ -1391,7 +1397,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fFileInfo->fIniDir = (Char_t *) gSystem->WorkingDirectory();
 			macroArg->fFileInfo->fFileTypes = (const Char_t **) macroArg->fPtrFileTypes;
 			macroArg->fFile = new TGMrbFileEntry(parentFrame, argTitle.Data(), 100,
-												TGMrbMacroFrame::kEntryId + i + 1,
+												TGMrbMacroFrame::kEntryId + argNo,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
 												macroArg->fEntryWidth,
@@ -1403,8 +1409,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fFile->GetEntry()->SetText(value.Data());
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) {
 			macroArg->fFObjCombo = new TGMrbFileObjectCombo(parentFrame, argTitle.Data(), 100,
-												TGMrbMacroFrame::kEntryId + i + 1,
-												TGMrbMacroFrame::kComboId + i + 1,
+												TGMrbMacroFrame::kEntryId + argNo,
+												TGMrbMacroFrame::kComboId + argNo,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
 												macroArg->fEntryWidth,
@@ -1417,8 +1423,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fFObjCombo->OpenFile(value.Data());
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
 			macroArg->fFObjListBox = new TGMrbFileObjectListBox(parentFrame, argTitle.Data(), 100,
-												TGMrbMacroFrame::kEntryId + i + 1,
-												TGMrbMacroFrame::kListBoxId + i + 1,
+												TGMrbMacroFrame::kEntryId + argNo,
+												TGMrbMacroFrame::kListBoxId + argNo,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
 												macroArg->fEntryWidth,
@@ -1448,19 +1454,43 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	this->ChangeBackground(gray);
 	this->SetWindowName(titleBar.Data());
 
-	Window_t wdum;
-	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(Main->GetId(), Parent->GetId(), (((TGFrame *) Main)->GetWidth() + 10), 0, ax, ay, wdum);
-	this->Move(ax, ay);
+	if (this->LoadMacro()) {
+		Window_t wdum;
+		Int_t ax, ay;
+		gVirtualX->TranslateCoordinates(Main->GetId(), Parent->GetId(), (((TGFrame *) Main)->GetWidth() + 10), 0, ax, ay, wdum);
+		this->Move(ax, ay);
 
-	this->MapSubwindows();
-	this->Resize(this->GetDefaultSize());
+		this->MapSubwindows();
+		this->Resize(this->GetDefaultSize());
 
-	this->Resize(frameWidth, fMacroInfo->GetDefaultHeight()
+		this->Resize(frameWidth, fMacroInfo->GetDefaultHeight()
 								+ fMacroArgs->GetDefaultHeight()
 								+ fAction->GetDefaultHeight() + 20);
+		this->MapWindow();
+	} else {
+		this->MakeZombie();
+	}
+}
 
-	this->MapWindow();
+void TGMrbMacroFrame::CatchSignal(Int_t SignalId) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroFrame::CatchSignal
+// Purpose:        Signal handler
+// Arguments:      Int_t SignalId      -- signal id
+// Results:        --
+// Exceptions:     
+// Description:    Pass signals to consumer.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t id = SignalId & 0xFFFF;
+	Int_t argNo = (SignalId >> TGMrbButtonFrame::kFrameIdShift) & 0xFF;
+	if (argNo > 0) {
+		TEnv * macroEnv = (TEnv *) fMacro->GetAssignedObject();
+		TString argName = macroEnv->GetValue(Form("Arg%d.Name", argNo), "???");
+		gROOT->ProcessLine(Form("UserButtonPressed(%d, \"%s\", %d)", argNo, argName.Data(), id));
+	}
 }
 
 Bool_t TGMrbMacroFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
@@ -1481,33 +1511,29 @@ Bool_t TGMrbMacroFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 		case kC_COMMAND:
 			switch (GET_SUBMSG(MsgId)) {
 				case kCM_BUTTON:
-					if (Param1 >= TGMrbMacroFrame::kGMrbMacroIdUserButton) {
-						gROOT->ProcessLine(Form("UserButtonPressed(%d)", Param1));
-					} else {
-						switch (Param1) {
-							case TGMrbMacroFrame::kGMrbMacroIdModifyHeader:
-								this->ModifyMacroHeader();
-								break;
-							case TGMrbMacroFrame::kGMrbMacroIdModifySource:
-								this->ModifyMacroSource();
-								break;
-							case TGMrbMacroFrame::kGMrbMacroIdClose:
-								this->CloseWindow();
-								break;
-							case TGMrbMacroFrame::kGMrbMacroIdReset:
-								this->ResetMacroArgs();
-								break;
-							case TGMrbMacroFrame::kGMrbMacroIdExec:
-								this->ExecMacro();
-								break;
-							case TGMrbMacroFrame::kGMrbMacroIdExecClose:
-								this->ExecMacro();
-								this->CloseWindow();
-								break;
-							case TGMrbMacroFrame::kGMrbMacroIdQuit:
-								gSystem->Exit(0);
-								break;
-						}
+					switch (Param1) {
+						case TGMrbMacroFrame::kGMrbMacroIdModifyHeader:
+							this->ModifyMacroHeader();
+							break;
+						case TGMrbMacroFrame::kGMrbMacroIdModifySource:
+							this->ModifyMacroSource();
+							break;
+						case TGMrbMacroFrame::kGMrbMacroIdClose:
+							this->CloseWindow();
+							break;
+						case TGMrbMacroFrame::kGMrbMacroIdReset:
+							this->ResetMacroArgs();
+							break;
+						case TGMrbMacroFrame::kGMrbMacroIdExec:
+							this->ExecMacro();
+							break;
+						case TGMrbMacroFrame::kGMrbMacroIdExecClose:
+							this->ExecMacro();
+							this->CloseWindow();
+							break;
+						case TGMrbMacroFrame::kGMrbMacroIdQuit:
+							gSystem->Exit(0);
+							break;
 					}
 					break;
 
@@ -1547,12 +1573,12 @@ Bool_t TGMrbMacroFrame::ResetMacroArgs() {
 					TGMrbMacroArg::kGMrbMacroEntryPad |
 					TGMrbMacroArg::kGMrbMacroEntryTab)) {
 			continue;
-		} else if (n & TGMrbMacroArg::kGMrbMacroEntryMulti || n & TGMrbMacroArg::kGMrbMacroEntryChkBtn) {
+		} else if (n & TGMrbMacroArg::kGMrbMacroEntryBitMulti || n & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) {
 			Int_t nofEntryFields = macroArg->fNofEntryFields;
 			TString value = macroArg->fDefaultValue;
 			TObjArray * lofTokens = value.Tokenize(":");
 			Int_t nofTokens = lofTokens->GetEntries();
-			Int_t nt = (n & TGMrbMacroArg::kGMrbMacroEntryChkBtn) ? (nofEntryFields + 1) : nofEntryFields;
+			Int_t nt = (n & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) ? (nofEntryFields + 1) : nofEntryFields;
 			if (nt != nofTokens) {
 				gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetNumber() << "]: Number of (default) values not matching number of entries - "
 								<< nofTokens << " (should be " << nt << ")" << endl;
@@ -1561,20 +1587,20 @@ Bool_t TGMrbMacroFrame::ResetMacroArgs() {
 			TString v;
 			TString aet = macroArg->fType->GetName();
 			TString dv = aet.BeginsWith("Char_t") ? "" : "0";
-			if (n & TGMrbMacroArg::kGMrbMacroEntryMulti) {
+			if (n & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 				for (Int_t ef = 0; ef < nofEntryFields; ef++) {
 					if (nofTokens >= (ef + 1)) v = ((TObjString *) lofTokens->At(ef))->GetString(); else v = dv;
 					macroArg->fEntry->SetText(v, ef);
 				}
 			}
-			if (n & TGMrbMacroArg::kGMrbMacroEntryChkBtn) {
+			if (n & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) {
 				if (nofTokens == nt) v = ((TObjString *) lofTokens->At(nofTokens - 1))->GetString(); else v = "F";
 				TGMrbCheckButtonList * lcb = macroArg->fEntry->GetLofCheckButtons();
 				TGButton * btn = lcb->GetButton(1);
 				btn->SetState(v.BeginsWith("T") ? kButtonDown : kButtonUp);
 			}
 			delete lofTokens;
-		} else if (n & TGMrbMacroArg::kGMrbMacroEntryEntry) {
+		} else if (n & TGMrbMacroArg::kGMrbMacroEntryBitEntry) {
 			macroArg->fEntry->SetText(macroArg->fDefaultValue.Data());
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryYesNo) {
 			if (macroArg->fDefaultValue.CompareTo("Yes") == 0) {
@@ -1655,11 +1681,11 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 					TGMrbMacroArg::kGMrbMacroEntryPad |
 					TGMrbMacroArg::kGMrbMacroEntryTab)) {
 			continue;
-		} else if (n & TGMrbMacroArg::kGMrbMacroEntryEntry) {
+		} else if (n & TGMrbMacroArg::kGMrbMacroEntryBitEntry) {
 			argString[0] = macroArg->fEntry->GetText();
 			for (Int_t i = 1; i < TGMrbLabelEntry::kGMrbEntryNofEntries; i++) argString[i] = "";
 			currentValue = argString[0];
-			if (n & TGMrbMacroArg::kGMrbMacroEntryMulti) {
+			if (n & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 				Int_t nofEntryFields = macroArg->fNofEntryFields;
 				for (Int_t ef = 1; ef < nofEntryFields; ef++) {
 					currentValue += ":";
@@ -1667,7 +1693,7 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 					currentValue += argString[ef];
 				}
 			}
-			if (n & TGMrbMacroArg::kGMrbMacroEntryChkBtn) {
+			if (n & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) {
 				TGMrbCheckButtonList * lcb = macroArg->fEntry->GetLofCheckButtons();
 				if (lcb->GetActive()) {
 					currentValue += ":T";
@@ -1750,12 +1776,12 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 		if (!guiOnly) {
 			cmd += Form("%s%s", delim.Data(), argString[0].Data());
 			delim = ", ";
-			if (n & TGMrbMacroArg::kGMrbMacroEntryMulti) {
+			if (n & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 				Int_t nofEntryFields = macroArg->fNofEntryFields;
 				for (Int_t ef = 1; ef < nofEntryFields; ef++) cmd += Form("%s%s", delim.Data(), argString[ef].Data());
 			}
 
-			if (n & TGMrbMacroArg::kGMrbMacroEntryChkBtn) cmd += Form("%s%s", delim.Data(), checkBtn.Data());
+			if (n & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) cmd += Form("%s%s", delim.Data(), checkBtn.Data());
 
 			if (macroArg->fAddLofValues) {
 				argString[0] = macroEnv->GetValue(macroArg->GetResource(argString[0], "Values"), "");
@@ -1836,6 +1862,8 @@ Bool_t TGMrbMacroFrame::LoadMacro() {
 	if (aclicFlag.CompareTo("none") != 0) {
 		TString aclic = fileSpec;
 		aclic += aclicFlag;
+		gMrbLog->Out()	<< "Compiling/loading macro " << gSystem->BaseName(macroName.Data()) << ", cmd=\".L " << aclic << "\" - wait ..." << endl;
+		gMrbLog->Flush(this->ClassName(), "LoadMacro");
 		Int_t errCode;
 		Int_t sts = gROOT->LoadMacro(aclic.Data(), &errCode);
 		if (sts == -1 || errCode != 0) {
@@ -2897,6 +2925,12 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	HEAP(fArgOrientation);
 	fMacroLayout->AddFrame(fArgOrientation, frameGC->LH());
 
+	fArgExecFunct = new TGMrbLabelEntry(fMacroLayout, "Exec function", 40, -1, frameWidth - 20,
+														TGMrbMacroEdit::kLineHeight, 100,
+														frameGC, labelGC, entryGC);
+	HEAP(fArgExecFunct);
+	fMacroLayout->AddFrame(fArgExecFunct, frameGC->LH());
+
 	fCurrentArg.SetNumber(1);
 	argValue = 1;
 	fArgNumber->GetEntry()->SetText(argValue.Data());
@@ -3231,6 +3265,9 @@ Bool_t TGMrbMacroEdit::StoreArg(Int_t ArgNo) {
 	nx = fLofOrientations.FindByIndex(idx);
 	argOrientation = nx ? nx->GetName() : "";
 	fCurrentEnv->SetValue(thisArg.GetResource(argName, "Orientation"), argOrientation.Data(), kEnvChange);
+
+	argValue = fArgExecFunct->GetEntry()->GetText();
+	fCurrentEnv->SetValue(thisArg.GetResource(argName, "ExecFunct"), argValue.Data(), kEnvChange);
 
 	return(kTRUE);
 }
@@ -3800,20 +3837,48 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 						}
 					}
 					break;
-				case TGMrbMacroEdit::kMacroTagEnums:
-					for (i = 1; i <= fNofArgs; i++) {
-						TMrbLofNamedX lofEnums;
-						Int_t nofEnums = this->ExtractEnums(lofEnums, i);
-						if (nofEnums > 0) {
-							TIterator * enumIter = lofEnums.MakeIterator();
-							TMrbNamedX * en;
-							while (en = (TMrbNamedX *) enumIter->Next()) {
-								macroTmpl.InitializeCode();
-								macroTmpl.Substitute("$enumName", en->GetName());
-								macroTmpl.Substitute("$enumVal", en->GetIndex());
+				case TGMrbMacroEdit::kMacroTagArgEnums:
+					{
+						TString mName = macroName;
+						mName(0,1).ToUpper();
+						macroTmpl.InitializeCode("%B%");
+						macroTmpl.Substitute("$macroName", mName);
+						macroTmpl.WriteCode(macroStrm);
+						for (i = 1; i <= fNofArgs; i++) {
+								thisArg.SetNumber(i);
+								argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
+								macroTmpl.InitializeCode("%N%");
+								macroTmpl.Substitute("$enumName", Form("kArg%s", argName.Data()));
+								macroTmpl.Substitute("$enumVal", i);
 								macroTmpl.WriteCode(macroStrm);
+						}
+						macroTmpl.InitializeCode("%E%");
+						macroTmpl.WriteCode(macroStrm);
+					}
+					break;
+				case TGMrbMacroEdit::kMacroTagEnums:
+					{
+						TString mName = macroName;
+						mName(0,1).ToUpper();
+						macroTmpl.InitializeCode("%B%");
+						macroTmpl.Substitute("$macroName", mName);
+						macroTmpl.WriteCode(macroStrm);
+						for (i = 1; i <= fNofArgs; i++) {
+							TMrbLofNamedX lofEnums;
+							Int_t nofEnums = this->ExtractEnums(lofEnums, i);
+							if (nofEnums > 0) {
+								TIterator * enumIter = lofEnums.MakeIterator();
+								TMrbNamedX * en;
+								while (en = (TMrbNamedX *) enumIter->Next()) {
+									macroTmpl.InitializeCode("%N%");
+									macroTmpl.Substitute("$enumName", en->GetName());
+									macroTmpl.Substitute("$enumVal", en->GetIndex());
+									macroTmpl.WriteCode(macroStrm);
+								}
 							}
 						}
+						macroTmpl.InitializeCode("%E%");
+						macroTmpl.WriteCode(macroStrm);
 					}
 					break;
 				case TGMrbMacroEdit::kMacroTagCode:
@@ -3891,7 +3956,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 							}
 							macroTmpl.Substitute("$macroType", macroType);
 							macroTmpl.Substitute("$macroName", macroName);
-							if (argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryMulti) {
+							if (argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 								TString an = argName;
 								an += "0";
 								macroTmpl.Substitute("$argName", an);
@@ -3903,7 +3968,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 							if (argEntryTypeBits == TGMrbMacroArg::kGMrbMacroEntryYesNo) {
 								if (argDefault.CompareTo("Yes") == 0)	macroTmpl.Substitute("$argDefault", "kTRUE");
 								else									macroTmpl.Substitute("$argDefault", "kFALSE");
-							} else if (argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryMulti) {
+							} else if (argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 								TObjArray * lofTokens = argDefault.Tokenize(":");
 								Int_t nofTokens = lofTokens->GetEntries();
 								TString v;
@@ -3918,12 +3983,12 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 							addLofValues = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "AddLofValues"), "No");
 							macroTmpl.Substitute("$argSpace", argSpace);
 							argDel = ((na == lastRealArg) && !addGui) ? ")" : ",";
-							if ((argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryChkBtn) ||
-								(argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryMulti) ||
+							if ((argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) ||
+								(argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryBitMulti) ||
 								addLofValues.CompareTo("Yes") == 0) argDel = ",";
 							macroTmpl.Substitute("$argDel", argDel);
 							macroTmpl.WriteCode(macroStrm);
-							if (argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryMulti) {
+							if (argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 								Int_t nofEntryFields = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "NofEntryFields"), 1);
 								TObjArray * lofTokens = argDefault.Tokenize(":");
 								Int_t nofTokens = lofTokens->GetEntries();
@@ -3947,7 +4012,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 									TString v;
 									if (nofTokens >= ef + 1) v = ((TObjString *) lofTokens->At(ef))->GetString(); else v = dv;
 									macroTmpl.Substitute("$argDefault", v);
-									argDel = ((na == lastRealArg) && !addGui && !(argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryChkBtn)) ? ")" : ",";
+									argDel = ((na == lastRealArg) && !addGui && !(argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn)) ? ")" : ",";
 									macroTmpl.Substitute("$argDel", argDel);
 									argSpace.Resize(0);
 									argSpace.Fill(macroType.Length() + macroName.Length() + 2);
@@ -3956,7 +4021,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 								}
 								delete lofTokens;
 							}
-							if (argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryChkBtn) {
+							if (argEntryTypeBits & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) {
 								macroTmpl.InitializeCode(hasDefaults ? "%ARGNCHKD%" : "%ARGNCHK%");
 								macroTmpl.Substitute("$argName", argName);
 								argDel = ((na == lastRealArg) && !addGui) ? ")" : ",";
