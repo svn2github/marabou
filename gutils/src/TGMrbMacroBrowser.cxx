@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.40 2007-08-31 07:55:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.41 2007-09-02 06:33:11 Marabou Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -985,7 +985,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 				fMacroLofFrames[frameNo] = new TGHorizontalFrame(fMacroArgs, 1, 1, opt);
 				HEAP(fMacroLofFrames[frameNo]);
 				fMacroArgs->AddFrame(fMacroLofFrames[frameNo], frameGC->LH());
-				curFrame = fMacroLofFrames[tabNo];
+				curFrame = fMacroLofFrames[frameNo];
 				parentFrame = fMacroLofFrames[frameNo];
 				newPad = kTRUE;
 			} else {
@@ -1029,6 +1029,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			if (subframeNo < TGMrbMacroFrame::kGMrbMacroNofSubframes) {
 				fMacroLofSubframes[subframeNo] = new TGVerticalFrame(curFrame);
 				HEAP(fMacroLofSubframes[subframeNo]);
+				getchar();
 				curFrame->AddFrame(fMacroLofSubframes[subframeNo], frameGC->LH());
 				parentFrame = fMacroLofSubframes[subframeNo];
 				newPad = kFALSE;
