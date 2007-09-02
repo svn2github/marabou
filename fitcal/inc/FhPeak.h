@@ -23,6 +23,8 @@ private:
    Double_t fChi2oNdf;
    Double_t fTailContent;
    Double_t fTailWidth;
+   Double_t fIntensity;
+   Double_t fRelEfficiency;
    Bool_t   fUsed;
 public:
    FhPeak(){};
@@ -41,6 +43,8 @@ public:
    Double_t GetChi2oNdf() const      {return fChi2oNdf;};
    Double_t GetTailContent() const   {return fTailContent;};
    Double_t GetTailWidth() const     {return fTailWidth;};
+   Double_t GetIntensity() const     {return fIntensity;};
+   Double_t GetRelEfficiency() const {return fRelEfficiency;};
    Bool_t   GetUsed() const          {return fUsed;};
 
 
@@ -56,6 +60,8 @@ public:
    void SetChi2oNdf(Double_t val)     {fChi2oNdf=val;};
    void SetTailContent(Double_t val)  {fTailContent=val;};
    void SetTailWidth(Double_t val)    {fTailWidth=val;};
+   void SetIntensity(Double_t val)    {fIntensity=val;};
+   void SetRelEfficiency(Double_t val) {fRelEfficiency=val;};
    void SetUsed(Bool_t  used)         {fUsed = used;};
 
    Bool_t IsEqual(const TObject *obj) const {

@@ -683,10 +683,14 @@ void CalibrationDialog::ExecuteAutoSelect()
        p->SetUsed(1);
        p->SetNominalEnergy(fY[np]);
        p->SetNominalEnergyError(fYE[np]);
+       p->SetIntensity(fGaugeIntensity[ass]);
+       p->SetRelEfficiency(fCont[np] / max_cont / fGaugeIntensity[ass]);
      } else {
        p->SetUsed(0);
        p->SetNominalEnergy(0);
        p->SetNominalEnergyError(0);
+       p->SetIntensity(0);
+       p->SetRelEfficiency(0);
        fUse[np] = 0;
      }
      np++;

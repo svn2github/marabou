@@ -9,7 +9,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.24 2007-08-31 07:55:07 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.25 2007-09-02 06:11:55 Rudolf.Lutter Exp $
 // Date:             Tue Aug 28 09:29:11 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -529,9 +529,6 @@ TEnv * fEnvCalib;		// calibration data
 TEnv * fEnvResults;		// detailed calibration results
 TFile * fFitResults;	// histograms + fits
 
-Int_t fNofPeaksNeeded; 	// peaks needed for given calibration
-Bool_t fEnableCalib;	// kTRUE if we have to calibrate
-
 TCanvas * fMainCanvas;	// canvas to display histo + fit
 TCanvas * f2DimCanvas;	// 2nd canvas: 2-dim histo
 
@@ -548,6 +545,10 @@ TH2S * f2DimFitResults;	// 2-dim histo to show re-calibrated histograms
 
 Int_t fNofPeaks;		// peak finder results
 TList * fPeakList;
+Int_t fNofPeaksNeeded; 	// peaks needed for given calibration
+Int_t fNofPeaksUsed; 	// peaks used for calibration
+Bool_t fEnableCalib;	// kTRUE if we have to calibrate
+TF1 * fCalibFct;		// calibration function
 
 TList * fFitList;		// gauss fit results
 Int_t fFitStatus;		// fit quality
@@ -579,12 +580,10 @@ void ClearCanvas(Int_t PadNo);
 void OutputMessage(const Char_t * Method, const Char_t * Text, Bool_t ErrFlag = kFALSE, Int_t ColorIndex = -1);
 TCanvas * OpenCanvas();
 void CloseCanvas() { if (fMainCanvas) fMainCanvas->Close(); if (f2DimCanvas) f2DimCanvas->Close(); }
-#if 0
 void WriteCalibration();
 void ShowResults2dim();
 void UpdateStatusLine();
 void SetFitStatus(Int_t FitStatus, const Char_t * Reason = NULL);
-#endif
 void WriteResults();
 Bool_t WriteGaugeFile();
 void CloseEnvFiles();
@@ -848,7 +847,6 @@ Bool_t OpenCalFiles() {
 	if (IsVerbose()) OutputMessage("OpenCalFiles", Form("Writing calibration data to file %s", fCalFile.Data()));
 
 	fEnvCalib->SetValue("Calib.ROOTFile", fHistoFile->GetName());
-	
 	fEnvCalib->SetValue("Calib.Source", fSourceName.Data());
 	fEnvCalib->SetValue("Calib.Energies", fEnergies.Data());
 
@@ -856,6 +854,7 @@ Bool_t OpenCalFiles() {
 	if (IsVerbose()) OutputMessage("OpenCalFiles", Form("Writing results to file %s", fResFile.Data()));
 
 	fEnvResults->SetValue("Calib.ROOTFile", fHistoFile->GetName());
+	fEnvResults->SetValue("Calib.Source", fSourceName.Data());
 	fEnvResults->SetValue("Calib.Energies", fEnergies.Data());
 
 	fFitResults = new TFile(fFitFile.Data(), "RECREATE");
@@ -1289,29 +1288,31 @@ void Calibrate() {
 		TArrayD yerr(fNofPeaks);
 		TIterator * pIter = fFitList->MakeIterator();
 		FhPeak * p;
-		Int_t np = 0;
+		fNofPeaksUsed = 0;
 		while (p = (FhPeak *) pIter->Next()) {
 			if (p->GetUsed()) {
-				x[np] = p->GetMean();
-				xerr[np] = p->GetMeanError();
-				y[np] = p->GetNominalEnergy();
-				yerr[np] = p->GetNominalEnergyError();
-				np++;
+				x[fNofPeaksUsed] = p->GetMean();
+				xerr[fNofPeaksUsed] = p->GetMeanError();
+				y[fNofPeaksUsed] = p->GetNominalEnergy();
+				yerr[fNofPeaksUsed] = p->GetNominalEnergyError();
+				fNofPeaksUsed++;
 			}
 		}
-		TGraphErrors * gr = new TGraphErrors(np, x.GetArray(), y.GetArray(), xerr.GetArray(), yerr.GetArray()); 
+		ClearCanvas(2);
+		TGraphErrors * gr = new TGraphErrors(fNofPeaksUsed, x.GetArray(), y.GetArray(), xerr.GetArray(), yerr.GetArray()); 
 		gr->SetMarkerStyle(4);
 		gr->SetMarkerSize(1);
 		gr->Draw("A*");
-		TF1 * fct = fCalibration->GetCalFunction();
-		fct->Draw("SAME"); 
-		fct->SetLineWidth(1);
-		fct->SetLineColor(7);
-		gr->GetXaxis()->SetRange(fMinX, fMaxX);
-		fMainCanvas->Update();
+		fCalibFct = fCalibration->GetCalFunction();
+		fCalibFct->Draw("SAME"); 
+		fCalibFct->SetLineWidth(1);
+		fCalibFct->SetLineColor(7);
+		gr->GetHistogram()->SetBins(fMaxX - fMinX, fMinX, fMaxX);
+		gPad->Modified();
+		gPad->Update();
 	} else {
 		OutputMessage("Calibrate", Form("Too few peaks - %d (%s calibration needs at least %d peaks)", fNofPeaks, fSourceName.Data(), fNofPeaksNeeded), kTRUE);
-//		SetFitStatus(kFitDiscard, "Too few peaks");
+		SetFitStatus(kFitDiscard, "Too few peaks");
 	}
 }
 
@@ -1329,23 +1330,35 @@ void WriteResults() {
 	fEnvResults->SetValue(Form("Calib.%s.Xmax", fCurHisto->GetName()), fMaxX);
 
 	fEnvResults->SetValue(Form("Calib.%s.NofPeaks", fCurHisto->GetName()), fNofPeaks);
+	fEnvResults->SetValue(Form("Calib.%s.NofPeaksUsed", fCurHisto->GetName()), fNofPeaksUsed);
 	TIterator * p1Iter = fPeakList->MakeIterator();
 	TIterator * p2Iter = fFitList->MakeIterator();
 	FhPeak * p1;
 	FhPeak * p2;
 	Int_t np = 0;
 	while ((p1 = (FhPeak *) p1Iter->Next()) && (p2 = (FhPeak *) p2Iter->Next())) {
-		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.X", fCurHisto->GetName(), np), p1->GetMean());
-		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Xfit", fCurHisto->GetName(), np), p2->GetMean());
-		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Xerr", fCurHisto->GetName(), np), p2->GetMeanError());
-		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Yfit", fCurHisto->GetName(), np), p2->GetContent());
-		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Yerr", fCurHisto->GetName(), np), p2->GetContentError());
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Centroid", fCurHisto->GetName(), np), p1->GetMean());
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Mean", fCurHisto->GetName(), np), p2->GetMean());
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.MeanError", fCurHisto->GetName(), np), p2->GetMeanError());
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Content", fCurHisto->GetName(), np), p2->GetContent());
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.ContentError", fCurHisto->GetName(), np), p2->GetContentError());
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Width", fCurHisto->GetName(), np), p2->GetWidth());
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.WidthError", fCurHisto->GetName(), np), p2->GetWidthError());
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.TailContent", fCurHisto->GetName(), np), p2->GetTailContent());
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.TailWidth", fCurHisto->GetName(), np), p2->GetTailWidth());
 		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Chi2", fCurHisto->GetName(), np), p2->GetChi2oNdf());
+		fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Used", fCurHisto->GetName(), np), p2->GetUsed() ? "TRUE" : "FALSE");
+		if (p2->GetUsed()) {
+			fEnvResults->SetValue(Form("Calib.%s.Peak.%d.NominalEnergy", fCurHisto->GetName(), np), p2->GetNominalEnergy());
+			fEnvResults->SetValue(Form("Calib.%s.Peak.%d.NominalEnergyError", fCurHisto->GetName(), np), p2->GetNominalEnergyError());
+			fEnvResults->SetValue(Form("Calib.%s.Peak.%d.Intensity", fCurHisto->GetName(), np), p2->GetIntensity());
+			fEnvResults->SetValue(Form("Calib.%s.Peak.%d.CalibratedEnergy", fCurHisto->GetName(), np), fCalibFct->Eval(p2->GetMean()));
+			fEnvResults->SetValue(Form("Calib.%s.Peak.%d.RelEfficiency", fCurHisto->GetName(), np), p2->GetRelEfficiency());
+		}
 		np++;
 	}
 }
 
-#if 0
 void WriteCalibration() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1359,13 +1372,17 @@ void WriteCalibration() {
 	if (fEnableCalib && (fNofPeaks >= fNofPeaksNeeded)) {
 		fEnvCalib->SetValue(Form("Calib.%s.Xmin", fCurHisto->GetName()), fMinX);
 		fEnvCalib->SetValue(Form("Calib.%s.Xmax", fCurHisto->GetName()), fMaxX);
-		fEnvCalib->SetValue(Form("Calib.%s.Gain", fCurHisto->GetName()), fPoly->GetParameter(1));
-		fEnvCalib->SetValue(Form("Calib.%s.Offset", fCurHisto->GetName()), fPoly->GetParameter(0));
-		fEnvResults->SetValue(Form("Calib.%s.Gain", fCurHisto->GetName()), fPoly->GetParameter(1));
-		fEnvResults->SetValue(Form("Calib.%s.Offset", fCurHisto->GetName()), fPoly->GetParameter(0));
-//		SetFitStatus(StepMode() ? kFitOk : kFitAuto);
+		fEnvCalib->SetValue(Form("Calib.%s.Gain", fCurHisto->GetName()), fCalibFct->GetParameter(1));
+		fEnvCalib->SetValue(Form("Calib.%s.Offset", fCurHisto->GetName()), fCalibFct->GetParameter(0));
+		fEnvCalib->SetValue(Form("Calib.%s.GainError", fCurHisto->GetName()), fCalibFct->GetParError(1));
+		fEnvCalib->SetValue(Form("Calib.%s.OffsetError", fCurHisto->GetName()), fCalibFct->GetParError(0));
+		fEnvResults->SetValue(Form("Calib.%s.Gain", fCurHisto->GetName()), fCalibFct->GetParameter(1));
+		fEnvResults->SetValue(Form("Calib.%s.Offset", fCurHisto->GetName()), fCalibFct->GetParameter(0));
+		fEnvResults->SetValue(Form("Calib.%s.GainError", fCurHisto->GetName()), fCalibFct->GetParError(1));
+		fEnvResults->SetValue(Form("Calib.%s.OffsetError", fCurHisto->GetName()), fCalibFct->GetParError(0));
+		SetFitStatus(StepMode() ? kFitOk : kFitAuto);
 	} else {
-//		SetFitStatus(kFitDiscard, "Too few peaks");
+		SetFitStatus(kFitDiscard, "Too few peaks");
 	}
 }
 
@@ -1382,9 +1399,16 @@ void UpdateStatusLine() {
 	if (fNofPeaks >= fNofPeaksNeeded) {
 		TString sts;
 		if (fEnableCalib) {
-			sts = Form("File %s, histo %s: E(x) = %5.2f + %5.2f * x", fHistoFile->GetName(), fCurHisto->GetName(), fPoly->GetParameter(0), fPoly->GetParameter(1));
+			sts = Form("File %s, histo %s: E(x) = %5.2f + %5.2f * x",
+									fHistoFile->GetName(),
+									fCurHisto->GetName(),
+									fCalibFct->GetParameter(0),
+									fCalibFct->GetParameter(1));
 		} else {
-			sts = Form("File %s, histo %s: %d peak(s)", fHistoFile->GetName(), fCurHisto->GetName(), fNofPeaks);
+			sts = Form("File %s, histo %s: %d peak(s)",
+									fHistoFile->GetName(),
+									fCurHisto->GetName(),
+									fNofPeaks);
 		}
 		OutputMessage("UpdateStatusLine", sts.Data(), kFALSE, 3);
 	}
@@ -1447,7 +1471,7 @@ void ShowResults2dim() {
 	} else {
  		f2DimCanvas = new TCanvas();
 		TString hTitle = Form("Calibration restults: file %s, %d histogram(s)", fHistoFile->GetName(), nh);
-		f2DimFitResults = new TH2S("hCalResults", hTitle.Data(), (fXmax - fXmin), fEmin, fEmax, nh, 0, nh);
+		f2DimFitResults = new TH2S("hCalResults", hTitle.Data(), (fMaxX - fMinX), fCalibFct->Eval(fMinX), fCalibFct->Eval(fMaxX), nh, 0, nh);
 		if (fFitResults) fFitResults->Append(f2DimFitResults);
 		TAxis * yAxis = f2DimFitResults->GetYaxis();
 
@@ -1456,7 +1480,7 @@ void ShowResults2dim() {
 			TString hn = poly->GetName();
 			TH1F * h = (TH1F *) fHistoFile->Get(hn.Data());
 			if (h != NULL) {
-				for (Int_t i = fXmin; i < fXmax; i++) {
+				for (Int_t i = fMinX; i < fMaxX; i++) {
 					Int_t bCont = (Int_t) h->GetBinContent(i);
 					Double_t bCent = h->GetBinCenter(i);
 					for (Int_t j = 0; j < bCont; j++) {
@@ -1471,7 +1495,6 @@ void ShowResults2dim() {
 		f2DimCanvas->Update();
 	}
 }
-#endif
 
 void GetArguments(TGMrbMacroFrame * GuiPtr) {
 //________________________________________________________________[C++ METHOD]
@@ -1603,7 +1626,6 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 
 		GetArguments(GuiPtr);
 
-		fMainCanvas->cd(1);
 		if (h == NULL) {
 			ClearCanvas(0);
 			WaitForButtonPressed();
@@ -1613,6 +1635,8 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 
 		SetCurHisto(h);
 		SetFullRange(h);
+		ClearCanvas(2);
+		fMainCanvas->cd(1);
 		h->Draw("");
 
 		if (FindPeaks()) {
@@ -1621,6 +1645,7 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 
 			Calibrate();
 
+			WriteCalibration();
 			WriteResults();
 
 			fMainCanvas->Update();
@@ -1633,10 +1658,9 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 
 		WaitForButtonPressed();
 		if (fButtonStop) { Stop(); break; }
-		ClearCanvas(2);
 	}
 
-//	ShowResults2dim();
+	ShowResults2dim();
 
 	CloseEnvFiles();
 
