@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.41 2007-09-02 06:33:11 Marabou Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.42 2007-09-03 14:04:43 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -79,6 +79,13 @@ const SMrbNamedX kGMrbMacroLofArgListGuiModes[] =
 				{0, 										NULL,				NULL											}
 			};
 
+const SMrbNamedX kGMrbMacroLofUserStartModes[] =
+			{
+				{TGMrbMacroEdit::kGMrbMacroUserStartOn,	 	"on",		"Macro will be started by user's start button"	},
+				{TGMrbMacroEdit::kGMrbMacroUserStartOff, 	"off",		"User has to press \"Execute\" to start"		},
+				{0, 										NULL,		NULL											}
+			};
+
 const SMrbNamedX kGMrbMacroLofActionsModify[] =
 			{
 				{TGMrbMacroFrame::kGMrbMacroIdModifyHeader, "Modify header",	"Modify macro layout"				},
@@ -87,7 +94,17 @@ const SMrbNamedX kGMrbMacroLofActionsModify[] =
 				{TGMrbMacroFrame::kGMrbMacroIdExecClose, 	"Exec + Close", 	"Execute macro & close window"		},
 				{TGMrbMacroFrame::kGMrbMacroIdReset,		"Reset",			"Reset arguments to default values"	},
 				{TGMrbMacroFrame::kGMrbMacroIdClose,		"Close",			"Close window" 				 		},
-				{TGMrbMacroFrame::kGMrbMacroIdQuit, 		"Quit",				"Exit from ROOT" 				 		},
+				{TGMrbMacroFrame::kGMrbMacroIdQuit, 		"Quit",				"Exit from ROOT" 				 	},
+				{0, 										NULL,				NULL								}
+			};
+
+const SMrbNamedX kGMrbMacroLofActionsUserStart[] =
+			{
+				{TGMrbMacroFrame::kGMrbMacroIdModifyHeader, "Modify header",	"Modify macro layout"				},
+				{TGMrbMacroFrame::kGMrbMacroIdModifySource, "Modify source",	"Modify macro source"				},
+				{TGMrbMacroFrame::kGMrbMacroIdReset,		"Reset",			"Reset arguments to default values"	},
+				{TGMrbMacroFrame::kGMrbMacroIdClose,		"Close",			"Close window" 				 		},
+				{TGMrbMacroFrame::kGMrbMacroIdQuit, 		"Quit",				"Exit from ROOT" 				 	},
 				{0, 										NULL,				NULL								}
 			};
 
@@ -97,7 +114,7 @@ const SMrbNamedX kGMrbMacroLofActions[] =
 				{TGMrbMacroFrame::kGMrbMacroIdExecClose, 	"Exec + Close", 	"Execute macro & close window"		},
 				{TGMrbMacroFrame::kGMrbMacroIdReset,		"Reset",			"Reset arguments to default values"	},
 				{TGMrbMacroFrame::kGMrbMacroIdClose,		"Close",			"Close window" 				 		},
-				{TGMrbMacroFrame::kGMrbMacroIdQuit,			"Quit",				"Exit from ROOT" 				 		},
+				{TGMrbMacroFrame::kGMrbMacroIdQuit,			"Quit",				"Exit from ROOT" 				 	},
 				{0, 										NULL,				NULL								}
 			};
 
@@ -883,6 +900,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	fLofActions.AddNamedX(kGMrbMacroLofActions);
 	fLofActionsM.SetName("Action buttons (+modify)");
 	fLofActionsM.AddNamedX(kGMrbMacroLofActionsModify);
+	fLofActionsX.SetName("Action buttons (auto exec)");
+	fLofActionsX.AddNamedX(kGMrbMacroLofActionsUserStart);
 
 	fMacro = Macro; 		// save pointer to macro
 
@@ -890,9 +909,13 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 
 	macroName = Macro->GetName();
 	TString curEnvName = macroName(0, macroName.Index(".C"));
-	TEnv * curEnv = new TEnv(Form(".%s.env", curEnvName.Data()));
-
-	TEnv * macroEnv = (TEnv *) Macro->GetAssignedObject();
+	curEnvName = Form(".%s.env", curEnvName.Data());
+	TEnv * macroEnv;
+	if (!gSystem->AccessPathName(curEnvName.Data())) {
+		macroEnv = new TEnv(curEnvName.Data());
+	} else {
+		macroEnv = (TEnv *) Macro->GetAssignedObject();
+	}
 	nofArgs = macroEnv->GetValue("NofArgs", 1);
 
 	frameWidth = macroEnv->GetValue("Width", -1);
@@ -1058,16 +1081,16 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 		if (macroArg->fEntryType->GetIndex() == TGMrbMacroArg::kGMrbMacroEntryFile) defaultEntryWidth = 300;
 		macroArg->fEntryWidth = macroEnv->GetValue(macroArg->GetResource(argResource, "Width"), defaultEntryWidth);
 
-		Int_t nofVals = curEnv->GetValue(macroArg->GetResource(argResource, "Current.NofValues"), 0);
+		Int_t nofVals = macroEnv->GetValue(macroArg->GetResource(argResource, "Current.NofValues"), 0);
 		lofValues.Delete();
 		if (nofVals == 0) {
-			currentValue = curEnv->GetValue(macroArg->GetResource(argResource, "Current"), "");
+			currentValue = macroEnv->GetValue(macroArg->GetResource(argResource, "Current"), "");
 			currentValue = currentValue.Strip(TString::kBoth);
 			macroArg->fCurrentValue = currentValue;
 		} else {
 			currentValue = "";
 			for (Int_t k = 0; k < nofVals; k++) {
-				TString vStr = curEnv->GetValue(macroArg->GetResource(argResource, Form("Current.%d", k)), "");
+				TString vStr = macroEnv->GetValue(macroArg->GetResource(argResource, Form("Current.%d", k)), "");
 				if (k == 0) {
 					currentValue = vStr;
 				} else {
@@ -1446,16 +1469,34 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	HEAP(actionLayout);
 	bbuttonGC->SetLH(actionLayout);
 
-	Bool_t CanModify = macroEnv->GetValue("Modify", kFALSE);
-	fAction = new TGMrbTextButtonGroup(this, "Action", CanModify ? &fLofActionsM : &fLofActions, -1, 2, labelGC, bbuttonGC);
-	HEAP(fAction);
-	this->AddFrame(fAction, frameGC->LH());
-	fAction->Associate(this);
-
 	this->ChangeBackground(gray);
 	this->SetWindowName(titleBar.Data());
 
 	if (this->LoadMacro()) {
+
+		Bool_t canModify = macroEnv->GetValue("Modify", kFALSE);
+		Bool_t userStart = macroEnv->GetValue("UserStart", kFALSE);
+		fAction = NULL;
+		if (userStart) {
+			TString gui = macroEnv->GetValue("GuiPtrMode", "GuiPtr");
+			if (gui.CompareTo("GuiPtr") != 0) {
+				gMrbLog->Err()	<< "User start not possible with gui ptr mode off" << endl;
+				gMrbLog->Flush(this->ClassName());
+				userStart = kFALSE;
+			}
+		}
+		if (userStart) {
+			if (canModify) fAction = new TGMrbTextButtonGroup(this, "Action", &fLofActionsX, -1, 2, labelGC, bbuttonGC);
+			this->ExecMacro(kTRUE);
+		} else {
+			fAction = new TGMrbTextButtonGroup(this, "Action", canModify ? &fLofActionsM : &fLofActions, -1, 2, labelGC, bbuttonGC);
+		}
+		if (fAction) {
+			HEAP(fAction);
+			this->AddFrame(fAction, frameGC->LH());
+			fAction->Associate(this);
+		}
+
 		Window_t wdum;
 		Int_t ax, ay;
 		gVirtualX->TranslateCoordinates(Main->GetId(), Parent->GetId(), (((TGFrame *) Main)->GetWidth() + 10), 0, ax, ay, wdum);
@@ -1464,13 +1505,20 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 		this->MapSubwindows();
 		this->Resize(this->GetDefaultSize());
 
-		this->Resize(frameWidth, fMacroInfo->GetDefaultHeight()
-								+ fMacroArgs->GetDefaultHeight()
-								+ fAction->GetDefaultHeight() + 20);
+		if (fAction) {
+			this->Resize(frameWidth, fMacroInfo->GetDefaultHeight()
+    							   + fMacroArgs->GetDefaultHeight()
+    							   + fAction->GetDefaultHeight() + 20);
+		} else {
+			this->Resize(frameWidth, fMacroInfo->GetDefaultHeight()
+    							   + fMacroArgs->GetDefaultHeight() + 20);
+		}
 		this->MapWindow();
 	} else {
 		this->MakeZombie();
 	}
+
+
 }
 
 void TGMrbMacroFrame::CatchSignal(Int_t SignalId) {
@@ -1490,7 +1538,7 @@ void TGMrbMacroFrame::CatchSignal(Int_t SignalId) {
 	if (argNo > 0) {
 		TEnv * macroEnv = (TEnv *) fMacro->GetAssignedObject();
 		TString argName = macroEnv->GetValue(Form("Arg%d.Name", argNo), "???");
-		gROOT->ProcessLine(Form("UserButtonPressed(%d, \"%s\", %d)", argNo, argName.Data(), id));
+		gROOT->ProcessLine(Form("UserButtonPressed((TGMrbMacroFrame *) %#x, %d, \"%s\", %d)", this, argNo, argName.Data(), id));
 	}
 }
 
@@ -1634,12 +1682,12 @@ Bool_t TGMrbMacroFrame::ResetMacroArgs() {
 	return(kTRUE);
 }
 
-Bool_t TGMrbMacroFrame::ExecMacro() {
+Bool_t TGMrbMacroFrame::ExecMacro(Bool_t UserStart) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroFrame::ExecMacro
 // Purpose:        Execute macro
-// Arguments:      --
+// Arguments:      Bool_t UserStart   -- kTRUE if to be started by user
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Executes macro with given arguments
@@ -1799,8 +1847,10 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 	macroName = macroName(0, macroName.Index(".C"));
 	macroEnv->WriteFile(Form(".%s.env", macroName.Data()), kEnvAll);
 
-	gROOT->ProcessLine(cmd.Data());
-	gSystem->ProcessEvents();
+	if (!UserStart) {
+		gROOT->ProcessLine(cmd.Data());
+		gSystem->ProcessEvents();
+	}
 	return(kTRUE);
 }
 
@@ -2686,6 +2736,8 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fLofModifyModes.AddNamedX(kGMrbMacroLofModifyModes);
 	fLofArglistGuiModes.SetName("GUI modes");
 	fLofArglistGuiModes.AddNamedX(kGMrbMacroLofArgListGuiModes);
+	fLofUserStartModes.SetName("Auto exec modes");
+	fLofUserStartModes.AddNamedX(kGMrbMacroLofUserStartModes);
 	fLofEntryTypes.SetName("Entry types");
 	fLofEntryTypes.AddNamedX(kGMrbMacroLofEntryTypes);
 	fLofArgActions.SetName("Action buttons");
@@ -2793,6 +2845,15 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	HEAP(fMacroGuiPtrMode);
 	fMacroInfo->AddFrame(fMacroGuiPtrMode, frameGC->LH());
 	fMacroGuiPtrMode->SetState(TGMrbMacroEdit::kGMrbMacroArglistOnly);
+
+	fMacroUserStart = new TGMrbRadioButtonList(fMacroInfo, "Auto exec mode",
+														&fLofUserStartModes, -1, 1,
+														frameWidth - 20,
+														TGMrbMacroEdit::kLineHeight,
+														frameGC, labelGC, buttonGC);
+	HEAP(fMacroUserStart);
+	fMacroInfo->AddFrame(fMacroUserStart, frameGC->LH());
+	fMacroUserStart->SetState(TGMrbMacroEdit::kGMrbMacroUserStartOff);
 
 	fMacroNofArgs = new TGMrbLabelEntry(fMacroInfo, "Number of arguments", 40, -1, frameWidth - 20,
 														TGMrbMacroEdit::kLineHeight, 100,
@@ -3191,6 +3252,10 @@ Bool_t TGMrbMacroEdit::StoreHeader() {
 	fCurrentEnv->SetValue("GuiPtrMode", argValue.Data(), kEnvChange);
 	argValue = fMacroRcFile->GetEntry()->GetText();
 	fCurrentEnv->SetValue("RcFile", argValue.Data(), kEnvChange);
+	idx = fMacroUserStart->GetActive();
+	nx = fLofUserStartModes.FindByIndex(idx);
+	argValue = nx ? nx->GetName() : "";
+	fCurrentEnv->SetValue("UserStart", argValue.Data(), kEnvChange);
 	argValue = fMacroNofArgs->GetEntry()->GetText();
 	fCurrentEnv->SetValue("NofArgs", argValue.Data(), kEnvChange);
 	return(kTRUE);

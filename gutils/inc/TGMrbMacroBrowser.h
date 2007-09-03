@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.23 2007-08-31 07:55:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.24 2007-09-03 14:04:43 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -243,7 +243,7 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		virtual void CloseWindow() { delete this; };
 
 		Bool_t ResetMacroArgs();						// reset arguments
-		Bool_t ExecMacro(); 	 						// exec macro
+		Bool_t ExecMacro(Bool_t UserStart = kFALSE);	// exec macro
 		Bool_t ModifyMacroHeader(); 					// modify header
 		Bool_t ModifyMacroSource(); 					// modify source
 
@@ -295,6 +295,7 @@ class TGMrbMacroFrame : public TGTransientFrame {
 
 		TMrbLofNamedX fLofActions;
 		TMrbLofNamedX fLofActionsM;
+		TMrbLofNamedX fLofActionsX;
 
 		TObjArray fLofMacroArgs;	// list of arguments
 
@@ -324,7 +325,9 @@ class TGMrbMacroEdit : public TGTransientFrame {
 											kGMrbMacroDontModify,
 											kGMrbMacroArglistOnly,
 											kGMrbMacroGuiPtrOnly,
-											kGMrbMacroArglistAndGui
+											kGMrbMacroArglistAndGui,
+											kGMrbMacroUserStartOn,
+											kGMrbMacroUserStartOff
 										};
 
 		// ids to dispatch over X events
@@ -405,6 +408,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		TGMrbRadioButtonList * fMacroAclic;
 		TGMrbRadioButtonList * fMacroModify;
 		TGMrbRadioButtonList * fMacroGuiPtrMode;
+		TGMrbRadioButtonList * fMacroUserStart;
 
 		TGMrbLabelEntry * fMacroNofArgs;
 
@@ -435,6 +439,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		TMrbLofNamedX fLofAclicModes;
 		TMrbLofNamedX fLofModifyModes;
 		TMrbLofNamedX fLofArglistGuiModes;
+		TMrbLofNamedX fLofUserStartModes;
 
 		TMrbLofNamedX fLofArgTypes;
 		TMrbLofNamedX fLofEntryTypes;

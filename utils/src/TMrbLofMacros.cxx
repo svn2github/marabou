@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofMacros.cxx,v 1.14 2007-09-02 06:11:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofMacros.cxx,v 1.15 2007-09-03 14:04:43 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +40,7 @@ const SMrbNamedXShort kMrbMacroLofEnvNames[] =
 								{TMrbLofMacros::kMrbMacroAclic, 			"Aclic" 			},
 								{TMrbLofMacros::kMrbMacroModify, 			"Modify" 			},
 								{TMrbLofMacros::kMrbMacroGuiPtrMode,		"GuiPtrMode"	 	},
+								{TMrbLofMacros::kMrbMacroUserStart,			"UserStart"		 	},
 								{TMrbLofMacros::kMrbMacroRcFile, 			"RcFile" 			},
 								{TMrbLofMacros::kMrbMacroNofArgs, 			"NofArgs"			},
 								{TMrbLofMacros::kMrbMacroArgName, 			"Arg.Name"			},
@@ -326,7 +327,7 @@ TMrbNamedX * TMrbLofMacros::ProcessMacro(const Char_t * MacroPath, const Char_t 
 			envVal = macroLine(n + 1, macroLine.Length() - n - 1);
 			envVal = envVal.Strip(TString::kBoth);
 			envVal = envVal.Strip(TString::kBoth, '\t');
-			if (envName.Index("Arg", 0) == 0) {
+			if (envName.BeginsWith("Arg")) {
 				TString en = envName(envName.Index(".", 0) + 1, 1000);
 				envOk = this->CheckEnvName(en.Data(), kTRUE);
 			} else {

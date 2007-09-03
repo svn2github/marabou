@@ -1,25 +1,76 @@
 //________________________________________________________________[ROOT MACRO]
 //////////////////////////////////////////////////////////////////////////////
-// Name:             Encal.C
+// Name:             e.C
 // Purpose:          Energy calibration for 1-dim histograms
-// Syntax:           .L Encal.C
-//                   Encal(TGMrbMacroFrame * GuiPtr)
-// Arguments:        TGMrbMacroFrame * GuiPtr -- pointer to MacroBrowser GUI
+// Syntax:           .L e.C
+//                   e(Int_t CalSource,
+//                           const Char_t * Energies,
+//                           Bool_t VerboseMode,
+//                           TObjArray * HistoFile,
+//                           const Char_t * CalFile,
+//                           const Char_t * ResFile,
+//                           const Char_t * FitFile,
+//                           const Char_t * PreCalFile,
+//                           Bool_t ClearFlag,
+//                           Int_t Rebin,
+//                           Int_t Region1,
+//                           Int_t Region2,
+//                           Int_t Region3,
+//                           Double_t Efficiency,
+//                           Int_t PeakFrac,
+//                           Double_t Sigma,
+//                           Double_t TwoPeakSep,
+//                           Int_t FitMode,
+//                           Int_t FitGrouping,
+//                           Int_t FitBackground,
+//                           Double_t FitRange,
+//                           Int_t PeakMatch,
+//                           Int_t TestbedHisto,
+//                           Double_t MatchOffset,
+//                           Double_t MatchGain,
+//                           Int_t DisplayMode)
+// Arguments:        Int_t CalSource           -- Calibration source
+//                   Char_t * Energies         -- Calibration energies
+//                   Bool_t VerboseMode        -- Verbose mode
+//                   TObjArray * HistoFile     -- Histogram file (.root)
+//                   Char_t * CalFile          -- Calibration data (.cal)
+//                   Char_t * ResFile          -- Calibration results (.res)
+//                   Char_t * FitFile          -- Fit results (.root)
+//                   Char_t * PreCalFile       -- Precalibration file (.cal)
+//                   Bool_t ClearFlag          -- Clear output files (.cal, .res)
+//                   Int_t Rebin               -- Rebin histograms
+//                   Int_t Region1             -- Region-1: lower, upper
+//                   Int_t Region2             -- Region-2: lower, upper
+//                   Int_t Region3             -- Region-3: lower, upper
+//                   Double_t Efficiency       -- Efficiency function: yeff(x) = a0 * exp(a1 * y(x))
+//                   Int_t PeakFrac            -- Threshold [% of max peak]
+//                   Double_t Sigma            -- Sigma
+//                   Double_t TwoPeakSep       -- Two-peak separation [sigma]
+//                   Int_t FitMode             -- Fit mode
+//                   Int_t FitGrouping         -- Fit grouping
+//                   Int_t FitBackground       -- Background
+//                   Double_t FitRange         -- Range [sigma]
+//                   Int_t PeakMatch           -- Peak matching
+//                   Int_t TestbedHisto        -- Testbed histogram: nbins, xmin, xmax
+//                   Double_t MatchOffset      -- Offset: min, step, max
+//                   Double_t MatchGain        -- Gain: min, step, max
+//                   Int_t DisplayMode         -- Display results
 // Description:      Energy calibration for 1-dim histograms
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.25 2007-09-02 06:11:55 Rudolf.Lutter Exp $
-// Date:             Tue Aug 28 09:29:11 2007
+// Revision:         $Id: Encal.C,v 1.26 2007-09-03 14:05:52 Rudolf.Lutter Exp $
+// Date:             Mon Sep  3 12:20:22 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
-//                   Width:               700
+//                   Width:               780
 //                   Aclic:               +g
-//                   Modify:              yes
+//                   Modify:              no
 //                   GuiPtrMode:          GuiPtr
+//                   UserStart:           on
 //                   RcFile:              .EncalLoadLibs.C
-//                   NofArgs:             35
+//                   NofArgs:             36
 //                   Arg1.Name:           Tab_1
 //                   Arg1.Title:          Init & Files
 //                   Arg1.Type:           Int_t
@@ -280,76 +331,85 @@
 //                   Arg28.AddLofValues:  No
 //                   Arg28.Base:          dec
 //                   Arg28.Orientation:   horizontal
-//                   Arg29.Name:          TestbedHisto
-//                   Arg29.Title:         Testbed histogram: nbins, xmin, xmax
+//                   Arg29.Name:          PeakMatch
+//                   Arg29.Title:         Peak matching
 //                   Arg29.Type:          Int_t
-//                   Arg29.EntryType:     UpDown-M
-//                   Arg29.NofEntryFields:3
-//                   Arg29.Width:         100
-//                   Arg29.Default:       0:0:0
+//                   Arg29.EntryType:     Radio
+//                   Arg29.Default:       on
+//                   Arg29.Values:        off=0:on=1
 //                   Arg29.AddLofValues:  No
-//                   Arg29.LowerLimit:    1:0:10000
-//                   Arg29.UpperLimit:    10000:10000:10000
-//                   Arg29.Increment:     100:100:100
 //                   Arg29.Base:          dec
 //                   Arg29.Orientation:   horizontal
-//                   Arg30.Name:          MatchOffset
-//                   Arg30.Title:         Offset: min, step, max
-//                   Arg30.Type:          Double_t
+//                   Arg30.Name:          TestbedHisto
+//                   Arg30.Title:         Testbed histogram: nbins, xmin, xmax
+//                   Arg30.Type:          Int_t
 //                   Arg30.EntryType:     UpDown-M
 //                   Arg30.NofEntryFields:3
 //                   Arg30.Width:         100
 //                   Arg30.Default:       0:0:0
 //                   Arg30.AddLofValues:  No
-//                   Arg30.LowerLimit:    0:1:10000
-//                   Arg30.UpperLimit:    10000:100:10000
-//                   Arg30.Increment:     1:.1:1
+//                   Arg30.LowerLimit:    1:0:10000
+//                   Arg30.UpperLimit:    10000:10000:10000
+//                   Arg30.Increment:     100:100:100
 //                   Arg30.Base:          dec
 //                   Arg30.Orientation:   horizontal
-//                   Arg31.Name:          MatchGain
-//                   Arg31.Title:         Gain: min, step, max
+//                   Arg31.Name:          MatchOffset
+//                   Arg31.Title:         Offset: min, step, max
 //                   Arg31.Type:          Double_t
 //                   Arg31.EntryType:     UpDown-M
 //                   Arg31.NofEntryFields:3
 //                   Arg31.Width:         100
-//                   Arg31.Default:       1:1:100
+//                   Arg31.Default:       0:0:0
 //                   Arg31.AddLofValues:  No
-//                   Arg31.LowerLimit:    1:.1:100
-//                   Arg31.UpperLimit:    100:1:100
+//                   Arg31.LowerLimit:    0:1:10000
+//                   Arg31.UpperLimit:    10000:100:10000
 //                   Arg31.Increment:     1:.1:1
 //                   Arg31.Base:          dec
 //                   Arg31.Orientation:   horizontal
-//                   Arg32.Name:          NewFrame_1
-//                   Arg32.Title:         Control
-//                   Arg32.Type:          Int_t
-//                   Arg32.EntryType:     Frame
+//                   Arg32.Name:          MatchGain
+//                   Arg32.Title:         Gain: min, step, max
+//                   Arg32.Type:          Double_t
+//                   Arg32.EntryType:     UpDown-M
+//                   Arg32.NofEntryFields:3
+//                   Arg32.Width:         100
+//                   Arg32.Default:       1:1:100
 //                   Arg32.AddLofValues:  No
+//                   Arg32.LowerLimit:    1:.1:100
+//                   Arg32.UpperLimit:    100:1:100
+//                   Arg32.Increment:     1:.1:1
 //                   Arg32.Base:          dec
 //                   Arg32.Orientation:   horizontal
-//                   Arg33.Name:          Section_CTRL
-//                   Arg33.Title:         6. Control
+//                   Arg33.Name:          NewFrame_1
+//                   Arg33.Title:         Control
 //                   Arg33.Type:          Int_t
-//                   Arg33.EntryType:     Group
+//                   Arg33.EntryType:     Frame
 //                   Arg33.AddLofValues:  No
 //                   Arg33.Base:          dec
 //                   Arg33.Orientation:   horizontal
-//                   Arg34.Name:          DisplayMode
-//                   Arg34.Title:         Display results
+//                   Arg34.Name:          Section_CTRL
+//                   Arg34.Title:         6. Control
 //                   Arg34.Type:          Int_t
-//                   Arg34.EntryType:     Check
-//                   Arg34.Default:       1
-//                   Arg34.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2
+//                   Arg34.EntryType:     Group
 //                   Arg34.AddLofValues:  No
 //                   Arg34.Base:          dec
 //                   Arg34.Orientation:   horizontal
-//                   Arg35.Name:          CtrlButtons
-//                   Arg35.Title:         What to be done next?
+//                   Arg35.Name:          DisplayMode
+//                   Arg35.Title:         Display results
 //                   Arg35.Type:          Int_t
-//                   Arg35.EntryType:     TextButton
-//                   Arg35.Values:        Prev=0:Same=1:Next/ok=2:Next/discard=3:Stop=4
+//                   Arg35.EntryType:     Check
+//                   Arg35.Default:       1
+//                   Arg35.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2
 //                   Arg35.AddLofValues:  No
 //                   Arg35.Base:          dec
 //                   Arg35.Orientation:   horizontal
+//                   Arg36.Name:          CtrlButtons
+//                   Arg36.Title:         What to be done next?
+//                   Arg36.Type:          Int_t
+//                   Arg36.EntryType:     TextButton
+//                   Arg36.Values:        Start=0:Prev=1:Same=2:Next/ok=3:Next/discard=4:Stop=5:Quit=6
+//                   Arg36.AddLofValues:  No
+//                   Arg36.Base:          dec
+//                   Arg36.Orientation:   horizontal
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
@@ -387,7 +447,7 @@
 // Name:           Enum definitions
 //////////////////////////////////////////////////////////////////////////////
 
-enum EEncalArgNums {
+enum EEArgNums {
  		kArgTab_1 = 1,
  		kArgSection_IC = 2,
  		kArgCalSource = 3,
@@ -416,13 +476,14 @@ enum EEncalArgNums {
  		kArgFitBackground = 26,
  		kArgFitRange = 27,
  		kArgSection_PM = 28,
- 		kArgTestbedHisto = 29,
- 		kArgMatchOffset = 30,
- 		kArgMatchGain = 31,
- 		kArgNewFrame_1 = 32,
- 		kArgSection_CTRL = 33,
- 		kArgDisplayMode = 34,
- 		kArgCtrlButtons = 35,
+ 		kArgPeakMatch = 29,
+ 		kArgTestbedHisto = 30,
+ 		kArgMatchOffset = 31,
+ 		kArgMatchGain = 32,
+ 		kArgNewFrame_1 = 33,
+ 		kArgSection_CTRL = 34,
+ 		kArgDisplayMode = 35,
+ 		kArgCtrlButtons = 36,
  	};
 
 enum EEncalEnums {
@@ -459,11 +520,13 @@ enum EEncalFitStatus	{	kFitDiscard = 0,
 							kFitAuto
 						};
 
-enum EEncalButtons		{	kButtonPrev,
+enum EEncalButtons		{	kButtonStart,
+							kButtonPrev,
 							kButtonSame,
 							kButtonNext,
 							kButtonDiscard,
-							kButtonStop
+							kButtonStop,
+							kButtonQuit
 						};
 
 enum EEncalHisto		{	kPrevHisto,
@@ -514,6 +577,7 @@ Double_t fFitRange;
 Int_t fMatchNbins;				// peak match
 Int_t fMatchEmin;
 Int_t fMatchEmax;
+Bool_t fMatchFlag;
 Double_t fMatchOffsetMin;
 Double_t fMatchOffsetStep;
 Double_t fMatchOffsetMax;
@@ -567,6 +631,8 @@ TString fGaugeFile = "gauge.dat";	// file name to be used with CalibrationDialog
 // Name:           Prototype definitions
 //////////////////////////////////////////////////////////////////////////////
 
+void Encal(TGMrbMacroFrame * GuiPtr);
+void UserButtonPressed(TGMrbMacroFrame * GuiPtr, Int_t ArgNo, const Char_t * ArgName, Int_t ButtonId);
 void GetArguments(TGMrbMacroFrame * GuiPtr);
 Bool_t OpenHistoFile();
 Bool_t OpenCalFiles();
@@ -916,12 +982,15 @@ void WaitForButtonPressed(Bool_t StepFlag) {
 	fButtonFlag = kFALSE;
 }
 
-void UserButtonPressed(Int_t ArgNo, const Char_t * ArgName, Int_t ButtonId) {
+void UserButtonPressed(TGMrbMacroFrame * GuiPtr, Int_t ArgNo, const Char_t * ArgName, Int_t ButtonId) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           UserButtonPressed
 // Purpose:        Notify user buttons
-// Arguments:      Int_t ButtonId    -- button number
+// Arguments:      TGMrbMacroFrame * GuiPtr   -- pointer to gui
+//                 Int_t ArgNo                -- argument number
+//                 Int_t ArgName              -- argument name
+//                 Int_t ButtonId             -- button id
 // Results:        --
 // Description:    Accepts user buttons and sets flags
 //////////////////////////////////////////////////////////////////////////////
@@ -929,11 +998,13 @@ void UserButtonPressed(Int_t ArgNo, const Char_t * ArgName, Int_t ButtonId) {
 	TString argName = ArgName;
 	if (ArgNo == kArgCtrlButtons) {
 		switch (ButtonId) {
-			case kButtonPrev:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kPrevHisto; return;
-			case kButtonSame:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kSameHisto; return;
-			case kButtonNext:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kNextHisto; return;
-			case kButtonDiscard:	fButtonFlag = kTRUE; fButtonOk = kFALSE; return;
-			case kButtonStop:		fButtonFlag = kTRUE; fButtonStop = kTRUE; return;
+			case kButtonStart:		Encal(GuiPtr); break;
+			case kButtonPrev:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kPrevHisto; break;
+			case kButtonSame:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kSameHisto; break;
+			case kButtonNext:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kNextHisto; break;
+			case kButtonDiscard:	fButtonFlag = kTRUE; fButtonOk = kFALSE; break;
+			case kButtonStop:		fButtonFlag = kTRUE; fButtonStop = kTRUE; break;
+			case kButtonQuit:		gSystem->Exit(0);
 		}
 	}
 }
@@ -1261,33 +1332,59 @@ void Calibrate() {
 // Description:    Starts energy calibration
 //////////////////////////////////////////////////////////////////////////////
 
+	TIterator * pIter;
+	FhPeak * p;
+
 	if (!fEnableCalib) return;
 
 	if (fNofPeaks >= fNofPeaksNeeded) { 
 		if (fCalibration == NULL) fCalibration = new CalibrationDialog(fCurHisto, kFALSE);
-		fCalibration->SetVerbose(fVerboseMode);
-		fCalibration->SetCustomGauge(kTRUE);
-		fCalibration->SetCustomGaugeFile(fGaugeFile);
-		fCalibration->SetMatchNbins(fMatchNbins);
-		fCalibration->SetMatchMin(fMatchEmin);
-		fCalibration->SetMatchMax(fMatchEmax);
-		fCalibration->SetOffMin(fMatchOffsetMin);
-		fCalibration->SetOffStep(fMatchOffsetStep);
-		fCalibration->SetOffMax(fMatchOffsetMax);
-		fCalibration->SetGainMin(fMatchGainMin);
-		fCalibration->SetGainStep(fMatchGainStep);
-		fCalibration->SetGainMax(fMatchGainMax);
-		fCalibration->ExecuteAutoSelect();
-		fCalibration->CalculateFunction();
-
-		fMainCanvas->cd(2);
 		fFitList = fCalibration->GetPeakList();
+		if (fMatchFlag) {
+			fCalibration->SetVerbose(fVerboseMode);
+			fCalibration->SetCustomGauge(kTRUE);
+			fCalibration->SetCustomGaugeFile(fGaugeFile);
+			fCalibration->SetMatchNbins(fMatchNbins);
+			fCalibration->SetMatchMin(fMatchEmin);
+			fCalibration->SetMatchMax(fMatchEmax);
+			fCalibration->SetOffMin(fMatchOffsetMin);
+			fCalibration->SetOffStep(fMatchOffsetStep);
+			fCalibration->SetOffMax(fMatchOffsetMax);
+			fCalibration->SetGainMin(fMatchGainMin);
+			fCalibration->SetGainStep(fMatchGainStep);
+			fCalibration->SetGainMax(fMatchGainMax);
+			fCalibration->ExecuteAutoSelect();
+			fCalibration->CalculateFunction();
+		} else {
+			Int_t np = 0;
+			Int_t npg = 0;
+			pIter = fFitList->MakeIterator();
+			fCalibration->UpdatePeakList();
+			fFitList->Print();
+			while (p = (FhPeak *) pIter->Next()) {
+				if (np < fNofPeaks - fNofPeaksNeeded) {
+					fCalibration->SetGaugePoint(np, 0);
+				} else {
+					Double_t e = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.E", fSourceName.Data(), npg), 0.0);
+					Double_t eerr = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Eerr", fSourceName.Data(), npg), 1.0);
+					Double_t intens = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Intensity", fSourceName.Data(), npg), 0.0);
+					fCalibration->SetGaugePoint(np, 1, p->GetMean(), e, p->GetMeanError(), eerr);
+					p->SetUsed(1);
+					p->SetNominalEnergy(e);
+					p->SetNominalEnergyError(eerr);
+					p->SetIntensity(intens);
+					npg++;
+				}
+				np++;
+			}
+			fCalibration->CalculateFunction();
+		}
+		fMainCanvas->cd(2);
 		TArrayD x(fNofPeaks);
 		TArrayD xerr(fNofPeaks);
 		TArrayD y(fNofPeaks);
 		TArrayD yerr(fNofPeaks);
-		TIterator * pIter = fFitList->MakeIterator();
-		FhPeak * p;
+		pIter = fFitList->MakeIterator();
 		fNofPeaksUsed = 0;
 		while (p = (FhPeak *) pIter->Next()) {
 			if (p->GetUsed()) {
@@ -1304,9 +1401,11 @@ void Calibrate() {
 		gr->SetMarkerSize(1);
 		gr->Draw("A*");
 		fCalibFct = fCalibration->GetCalFunction();
-		fCalibFct->Draw("SAME"); 
-		fCalibFct->SetLineWidth(1);
-		fCalibFct->SetLineColor(7);
+		if (fCalibFct) {
+			fCalibFct->Draw("SAME"); 
+			fCalibFct->SetLineWidth(1);
+			fCalibFct->SetLineColor(7);
+		}
 		gr->GetHistogram()->SetBins(fMaxX - fMinX, fMinX, fMaxX);
 		gPad->Modified();
 		gPad->Update();
@@ -1369,7 +1468,7 @@ void WriteCalibration() {
 // Description:    Writes calibration to .cal file
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fEnableCalib && (fNofPeaks >= fNofPeaksNeeded)) {
+	if (fCalibFct && fEnableCalib && (fNofPeaks >= fNofPeaksNeeded)) {
 		fEnvCalib->SetValue(Form("Calib.%s.Xmin", fCurHisto->GetName()), fMinX);
 		fEnvCalib->SetValue(Form("Calib.%s.Xmax", fCurHisto->GetName()), fMaxX);
 		fEnvCalib->SetValue(Form("Calib.%s.Gain", fCurHisto->GetName()), fCalibFct->GetParameter(1));
@@ -1580,6 +1679,7 @@ void GetArguments(TGMrbMacroFrame * GuiPtr) {
 	GuiPtr->GetArgValue("TestbedHisto", fMatchNbins, 0);
 	GuiPtr->GetArgValue("TestbedHisto", fMatchEmin, 1);
 	GuiPtr->GetArgValue("TestbedHisto", fMatchEmax, 2);
+	GuiPtr->GetArgValue("PeakMatch", fMatchFlag);
 	GuiPtr->GetArgValue("MatchOffset", fMatchOffsetMin, 0);
 	GuiPtr->GetArgValue("MatchOffset", fMatchOffsetStep, 1);
 	GuiPtr->GetArgValue("MatchOffset", fMatchOffsetMax, 2);
