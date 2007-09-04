@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofMacros.cxx,v 1.15 2007-09-03 14:04:43 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofMacros.cxx,v 1.16 2007-09-04 11:04:26 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -60,6 +60,7 @@ const SMrbNamedXShort kMrbMacroLofEnvNames[] =
 								{TMrbLofMacros::kMrbMacroArgOrientation, 	"Arg.Orientation"	},
 								{TMrbLofMacros::kMrbMacroArgNofCL, 			"Arg.NofCL" 		},
 								{TMrbLofMacros::kMrbMacroArgExecFunct, 		"Arg.ExecFunct" 	},
+								{TMrbLofMacros::kMrbMacroArgState,	 		"Arg.State" 		},
 								{0, 										NULL				}
 							};
 

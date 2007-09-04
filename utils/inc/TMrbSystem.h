@@ -57,13 +57,16 @@ struct FileStat_t {
 // Class:          TMrbSystem    -- extension to TSystem class
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSystem.h,v 1.15 2007-02-26 13:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.h,v 1.16 2007-09-04 11:04:26 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TSystem.h"
 #include "TObjArray.h"
+
+#include "TMrbNamedX.h"
+#include "TMrbLofNamedX.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -127,6 +130,8 @@ class TMrbSystem: public TObject {
 		const Char_t * GetDomainName(TString & DomainName); 	// get domain name
 
 		const Char_t * Which(TString & Result, const Char_t * Search, const Char_t * File, EAccessMode Mode = kFileExists);
+
+		Bool_t GetStat(TMrbLofNamedX & StatBuf, const Char_t * Path);  // perform stat(2) call
 
 		inline void SetIncludePath(const Char_t * IncludePath) { gSystem->SetIncludePath(IncludePath); };
 		inline const Char_t * GetIncludePath() { return(gSystem->GetIncludePath()); };

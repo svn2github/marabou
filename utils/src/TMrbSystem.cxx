@@ -7,17 +7,20 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.20 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.21 2007-09-04 11:04:26 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
+
 
 #include <cstdlib>
 #include <iostream>
 #include <sstream>
 #include <iomanip>
 #include <fstream>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include <unistd.h>
 
 
@@ -583,3 +586,43 @@ const Char_t * TMrbSystem::GetDomainName(TString & DomainName) {
 	DomainName = dn;
 	return(DomainName.Data());
 }
+
+Bool_t TMrbSystem::GetStat(TMrbLofNamedX & StatBuf, const Char_t * Path) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSystem::GetStat
+// Purpose:        Get file stat bits
+// Arguments:      TMrbLofNamedX & StatBuf   -- where to store stat bits
+//                 Char_t * Path             -- file path
+// Exceptions:     
+// Description:    Executes stat(2) and returns stat bits
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	struct stat stbuf;
+
+	StatBuf.Delete();
+
+	if (stat(Path, &stbuf) != 0) return(kFALSE);
+
+	StatBuf.AddNamedX(stbuf.st_dev, "st_dev");
+    StatBuf.AddNamedX(stbuf.st_ino, "st_ino");
+    StatBuf.AddNamedX(stbuf.st_mode, "st_mode");
+    StatBuf.AddNamedX(stbuf.st_nlink, "st_nlink");
+    StatBuf.AddNamedX(stbuf.st_uid, "st_uid");
+    StatBuf.AddNamedX(stbuf.st_gid, "st_gid");
+    StatBuf.AddNamedX(stbuf.st_rdev, "st_rdev");
+    StatBuf.AddNamedX(stbuf.st_size, "st_size");
+    StatBuf.AddNamedX(stbuf.st_blksize, "st_blksize");
+    StatBuf.AddNamedX(stbuf.st_blocks, "st_blocks");
+    StatBuf.AddNamedX(stbuf.st_atime, "st_atime");
+    StatBuf.AddNamedX(stbuf.st_mtime, "st_mtime");
+    StatBuf.AddNamedX(stbuf.st_ctime, "st_ctime");
+
+	return(kTRUE);
+}
+
+
+
+
+
