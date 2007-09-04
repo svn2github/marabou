@@ -20,7 +20,7 @@
 // Author:           %%AUTHOR%%
 // Mail:             %%MAILADDR%%
 // URL:              %%URL%%
-// Revision:         $Id: MacroBrowserTemplate.C,v 1.4 2007-09-02 06:11:55 Rudolf.Lutter Exp $
+// Revision:         $Id: MacroBrowserTemplate.C,v 1.5 2007-09-04 06:24:29 Rudolf.Lutter Exp $
 // Date:             %%CREATION_DATE%%
 %%BeginOfCode%%
 //                   $envName:$envSpace$envVal
@@ -38,14 +38,14 @@
 %%BeginOfCode%%
 %B%enum E$macroNameArgNums {
 %N% 		$enumName = $enumVal,
-%E% 	}
+%E% 	};
 %%EndOfCode%%
 %%MACRO_ARG_ENUMS%%
 
 %%BeginOfCode%%
 %B%enum E$macroNameEnums {
 %N% 		$enumName = $enumVal,
-%E% 	}
+%E% 	};
 %%EndOfCode%%
 %%MACRO_ENUMS%%
 

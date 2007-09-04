@@ -1043,7 +1043,7 @@ void CalibrationDialog::UpdatePeakList()
                   p->SetContent(cont);
                   p->SetChi2oNdf(chi2ondf);
                   fPeakList.Add(p);
-               	fNpeaks++;
+               	  fNpeaks++;
             	} else {
                	if (!store_it)
                   	cout << mean << " already in list" << endl;

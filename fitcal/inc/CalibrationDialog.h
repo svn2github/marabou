@@ -120,6 +120,10 @@ public:
    void SetCo60Gauge( Int_t co60gauge) { fCo60Gauge = co60gauge; };
    void SetY88Gauge( Int_t y88gauge) { fY88Gauge = y88gauge; };
 
+   void SetGaugePoint(Int_t N, Int_t Use, Double_t X = 0, Double_t Y = 0, Double_t Xerr = 0, Double_t Yerr = 0) {
+				if ((N >= 0) && (N < fNpeaks)) { fX[N] = X; fY[N] = Y; fXE[N] = Xerr; fYE[N] = Yerr; fUse[N] = Use; }
+   };
+
    TF1   *GetCalFunction()     { return fCalFunc;};
    Int_t GetVerbose()          { return fVerbose; };
    Int_t GetInteractive()      { return fInteractive; };
