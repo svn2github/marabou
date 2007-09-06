@@ -58,10 +58,24 @@
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
-#include <iostream.h>
-#include <iomanip.h>
+#include <iostream>
+#include <iomanip>
+#include <fstream>
+#include <strstream>
 
-Bool_t isLoaded = kFALSE;
+#include "TString.h"
+#include "TObjArray.h"
+#include "TArrayD.h"
+#include "TGraph.h"
+#include "TGraphErrors.h"
+#include "TFile.h"
+#include "TObjString.h"
+#include "TH1F.h"
+#include "TEnv.h"
+
+#include "TMrbSystem.h"
+
+#include "SetColor.h"
 
 void asc2root(const Char_t * FileName,
               const Char_t * Format = "y",
@@ -76,21 +90,16 @@ void asc2root(const Char_t * FileName,
 	Bool_t yOnly;
 	Bool_t withErrors;
 	Int_t yCol;
-	Double_t x, y, e, yc[7];
+	Double_t x, yc[7];
 	Int_t ix;
 	TObjArray fList;
 	TMrbSystem ux;
 		
-	if (!isLoaded) {
-		gROOT->Macro("LoadUtilityLibs.C"); 	// load utility libs 
-		gROOT->Macro("LoadColors.C");
-		isLoaded = kTRUE;
-	}
-
 	format = Format;
 	yOnly = (format.Index("x", 0) == -1);
 	withErrors = (format.Index("e", 0) > 0);
 	if (yOnly && XisInt) XisInt = kFALSE;
+	yCol = 0;
 	if (!yOnly) {
 		yCol = 2;
 		if (format.Index("3", 0) > 0) yCol = 3;
@@ -165,7 +174,7 @@ void asc2root(const Char_t * FileName,
 	rootFile.ReplaceAll(".dat", ".root");
 	TFile * root = new TFile(rootFile.Data(), "RECREATE");
 	if (root->IsZombie()) {
-		cerr	<< setread
+		cerr	<< setred
 				<< "asc2root: Can't open root file - " << rootFile
 				<< setblack << endl;
 		return;
@@ -213,7 +222,7 @@ void asc2root(const Char_t * FileName,
 				if (x < xmin) xmin = x;
 				if (x > xmax) xmax = x;
 				yarr[ix] = yc[yCol];
-				if (withErrors) earr[ix] = y[3];
+				if (withErrors) earr[ix] = yc[3];
 			} else {
 				aline >> xarr[n] >> yc[2] >> yc[3] >> yc[4] >> yc[5] >> yc[6];
 				yarr[n] = yc[yCol];
@@ -240,7 +249,7 @@ void asc2root(const Char_t * FileName,
 		gre->SetTitle(datFile.Data());
 		gre->Write();
 		cout << setblue << "asc2root: Data stored using \"TGraphErrors\"" << setblack << endl;
-		if (DrawFlag) gr->Draw("AL");
+		if (DrawFlag) gre->Draw("AL");
 	} else {
 		TGraph * gr = new TGraph(nofData, xarr.GetArray(), yarr.GetArray());
 		gr->SetName(histoName.Data());

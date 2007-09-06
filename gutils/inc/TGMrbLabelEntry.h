@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.14 2007-08-22 13:43:28 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.15 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -42,6 +42,9 @@
 class TGMrbTextEntry: public TGTextEntry {
 
 	public:
+		enum						{	kFrameIdShift 		=	16	};
+
+	public:
 		TGMrbTextEntry(const TGWindow * Parent, TGTextBuffer * Text, Int_t Id,
 								GContext_t Context, FontStruct_t Font, UInt_t Option, ULong_t Back) :
 														TGTextEntry(Parent, Text, Id) {
@@ -53,15 +56,23 @@ class TGMrbTextEntry: public TGTextEntry {
 		~TGMrbTextEntry() {};
 		
 		inline void SendReturnPressedOnButtonClick(Bool_t Flag) { fSendReturnPressed = Flag; };
-		inline void SendSignal() {				// ReturnPressed() or TextChanged() depending on ReturnPressed flag
+		inline void SendSignal(Int_t EntryNo) {		// ReturnPressed() or TextChanged() depending on ReturnPressed flag
 			if (fSendReturnPressed) TGTextEntry::ReturnPressed(); else TGTextEntry::TextChanged();
+			this->EntryChanged(EntryNo);
 		};
+		inline void ConnectSigToSlot(const Char_t * Signal, TObject * Receiver, const Char_t * Slot) {
+			this->Connect(Signal, Receiver->ClassName(), Receiver, Slot);
+		}
+
+		inline void EntryChanged(Int_t Signal) { this->Emit("EntryChanged(Int_t)", fFrameId + Signal); };	//*SIGNAL*
+
 		virtual void TextChanged(const Char_t * Text) {};	// no operation, action handled by SendSignal()
 		
 		virtual Bool_t HandleButton(Event_t * Event);
 
 	protected:
 		Bool_t fSendReturnPressed;
+		Int_t fFrameId;
 
 	ClassDef(TGMrbTextEntry, 1) 	// [GraphUtils] A text entry
 };

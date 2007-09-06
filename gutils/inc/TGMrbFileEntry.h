@@ -9,7 +9,7 @@
 //                                           browse files
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFileEntry.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileEntry.h,v 1.5 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -37,6 +37,9 @@
 class TGMrbFileEntry: public TGCompositeFrame, public TGMrbObject {
 
 	public:
+		enum						{	kFrameIdShift 		=	16	};
+
+	public:
 		TGMrbFileEntry(const TGWindow * Parent, const Char_t * Label,				// ctor
 							Int_t BufferSize, Int_t EntryId,
 							Int_t Width, Int_t Height, Int_t EntryWidth,
@@ -55,6 +58,11 @@ class TGMrbFileEntry: public TGCompositeFrame, public TGMrbObject {
 		inline const Char_t * GetText() { return(fEntry->GetText()); };
 		inline void SetText(const Char_t * Text) { fEntry->SetText(Text); };
 
+		inline void ConnectSigToSlot(const Char_t * Signal, TObject * Receiver, const Char_t * Slot) {
+			this->Connect(Signal, Receiver->ClassName(), Receiver, Slot);
+		}
+		inline void EntryChanged(Int_t Signal) { this->Emit("EntryChanged(Int_t)", fFrameId + Signal); };	//*SIGNAL*
+
 		void FileButtonEnable(Bool_t Flag = kTRUE);			// enable/disable file button
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
@@ -62,6 +70,7 @@ class TGMrbFileEntry: public TGCompositeFrame, public TGMrbObject {
 		inline void Help() const { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); }
 
 	protected:
+		Int_t fFrameId;
 		TGTextEntry * fEntry;				//!
 		TGPictureButton * fBrowse;	 		//!
 		TGFileInfo fFileInfo;	 			//!

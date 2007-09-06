@@ -1,76 +1,26 @@
 //________________________________________________________________[ROOT MACRO]
 //////////////////////////////////////////////////////////////////////////////
-// Name:             e.C
+// Name:             Encal.C
 // Purpose:          Energy calibration for 1-dim histograms
-// Syntax:           .L e.C
-//                   e(Int_t CalSource,
-//                           const Char_t * Energies,
-//                           Bool_t VerboseMode,
-//                           TObjArray * HistoFile,
-//                           const Char_t * CalFile,
-//                           const Char_t * ResFile,
-//                           const Char_t * FitFile,
-//                           const Char_t * PreCalFile,
-//                           Bool_t ClearFlag,
-//                           Int_t Rebin,
-//                           Int_t Region1,
-//                           Int_t Region2,
-//                           Int_t Region3,
-//                           Double_t Efficiency,
-//                           Int_t PeakFrac,
-//                           Double_t Sigma,
-//                           Double_t TwoPeakSep,
-//                           Int_t FitMode,
-//                           Int_t FitGrouping,
-//                           Int_t FitBackground,
-//                           Double_t FitRange,
-//                           Int_t PeakMatch,
-//                           Int_t TestbedHisto,
-//                           Double_t MatchOffset,
-//                           Double_t MatchGain,
-//                           Int_t DisplayMode)
-// Arguments:        Int_t CalSource           -- Calibration source
-//                   Char_t * Energies         -- Calibration energies
-//                   Bool_t VerboseMode        -- Verbose mode
-//                   TObjArray * HistoFile     -- Histogram file (.root)
-//                   Char_t * CalFile          -- Calibration data (.cal)
-//                   Char_t * ResFile          -- Calibration results (.res)
-//                   Char_t * FitFile          -- Fit results (.root)
-//                   Char_t * PreCalFile       -- Precalibration file (.cal)
-//                   Bool_t ClearFlag          -- Clear output files (.cal, .res)
-//                   Int_t Rebin               -- Rebin histograms
-//                   Int_t Region1             -- Region-1: lower, upper
-//                   Int_t Region2             -- Region-2: lower, upper
-//                   Int_t Region3             -- Region-3: lower, upper
-//                   Double_t Efficiency       -- Efficiency function: yeff(x) = a0 * exp(a1 * y(x))
-//                   Int_t PeakFrac            -- Threshold [% of max peak]
-//                   Double_t Sigma            -- Sigma
-//                   Double_t TwoPeakSep       -- Two-peak separation [sigma]
-//                   Int_t FitMode             -- Fit mode
-//                   Int_t FitGrouping         -- Fit grouping
-//                   Int_t FitBackground       -- Background
-//                   Double_t FitRange         -- Range [sigma]
-//                   Int_t PeakMatch           -- Peak matching
-//                   Int_t TestbedHisto        -- Testbed histogram: nbins, xmin, xmax
-//                   Double_t MatchOffset      -- Offset: min, step, max
-//                   Double_t MatchGain        -- Gain: min, step, max
-//                   Int_t DisplayMode         -- Display results
+// Syntax:           .L Encal.C
+//                   Encal(TGMrbMacroFrame * GuiPtr)
+// Arguments:        TGMrbMacroFrame * GuiPtr -- pointer to MacroBrowser GUI
 // Description:      Energy calibration for 1-dim histograms
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.26 2007-09-03 14:05:52 Rudolf.Lutter Exp $
-// Date:             Mon Sep  3 12:20:22 2007
+// Revision:         $Id: Encal.C,v 1.27 2007-09-06 11:25:32 Rudolf.Lutter Exp $
+// Date:             Tue Sep  4 14:37:09 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
 //                   Width:               780
-//                   Aclic:               +g
-//                   Modify:              no
+//                   Aclic:               +
+//                   Modify:              yes
 //                   GuiPtrMode:          GuiPtr
 //                   UserStart:           on
 //                   RcFile:              .EncalLoadLibs.C
-//                   NofArgs:             36
+//                   NofArgs:             38
 //                   Arg1.Name:           Tab_1
 //                   Arg1.Title:          Init & Files
 //                   Arg1.Type:           Int_t
@@ -78,151 +28,141 @@
 //                   Arg1.AddLofValues:   No
 //                   Arg1.Base:           dec
 //                   Arg1.Orientation:    horizontal
-//                   Arg2.Name:           Section_IC
-//                   Arg2.Title:          1. Initialization
+//                   Arg2.Name:           Section_STP
+//                   Arg2.Title:          0. Setup
 //                   Arg2.Type:           Int_t
 //                   Arg2.EntryType:      Group
 //                   Arg2.AddLofValues:   No
 //                   Arg2.Base:           dec
 //                   Arg2.Orientation:    horizontal
-//                   Arg3.Name:           CalSource
-//                   Arg3.Title:          Calibration source
-//                   Arg3.Type:           Int_t
-//                   Arg3.EntryType:      Radio
-//                   Arg3.Default:        1
-//                   Arg3.Values:         Co60|calibrate using Co60 source=1:Eu152|calibrate using Eu152 source=2:3Alpha|calibrate using alpha source (Pu239/Am241/Cm244)=4:Other|user-defined calibraion=8
+//                   Arg3.Name:           SetupFile
+//                   Arg3.Title:          Load setup from file
+//                   Arg3.Type:           Char_t *
+//                   Arg3.EntryType:      File
+//                   Arg3.Default:        .Encal.env
+//                   Arg3.Values:         Encal environment files:.Encal*.env
 //                   Arg3.AddLofValues:   No
 //                   Arg3.Base:           dec
 //                   Arg3.Orientation:    horizontal
-//                   Arg4.Name:           Energies
-//                   Arg4.Title:          Calibration energies
-//                   Arg4.Type:           Char_t *
-//                   Arg4.EntryType:      File
-//                   Arg4.Default:        $MARABOU/data/encal/calibEnergies.all
+//                   Arg4.Name:           Section_IC
+//                   Arg4.Title:          1. Initialization
+//                   Arg4.Type:           Int_t
+//                   Arg4.EntryType:      Group
 //                   Arg4.AddLofValues:   No
 //                   Arg4.Base:           dec
 //                   Arg4.Orientation:    horizontal
-//                   Arg5.Name:           VerboseMode
-//                   Arg5.Title:          Verbose mode
-//                   Arg5.Type:           Bool_t
-//                   Arg5.EntryType:      YesNo
-//                   Arg5.Default:        no
+//                   Arg5.Name:           CalSource
+//                   Arg5.Title:          Calibration source
+//                   Arg5.Type:           Int_t
+//                   Arg5.EntryType:      Radio
+//                   Arg5.Default:        1
+//                   Arg5.Values:         Co60|calibrate using Co60 source=1:Eu152|calibrate using Eu152 source=2:3Alpha|calibrate using alpha source (Pu239/Am241/Cm244)=4:Other|user-defined calibraion=8
 //                   Arg5.AddLofValues:   No
 //                   Arg5.Base:           dec
 //                   Arg5.Orientation:    horizontal
-//                   Arg6.Name:           Section_FH
-//                   Arg6.Title:          2. Files & histograms
-//                   Arg6.Type:           Int_t
-//                   Arg6.EntryType:      Group
+//                   Arg6.Name:           Energies
+//                   Arg6.Title:          Calibration energies
+//                   Arg6.Type:           Char_t *
+//                   Arg6.EntryType:      File
+//                   Arg6.Default:        $MARABOU/data/encal/calibEnergies.all
 //                   Arg6.AddLofValues:   No
 //                   Arg6.Base:           dec
 //                   Arg6.Orientation:    horizontal
-//                   Arg7.Name:           HistoFile
-//                   Arg7.Title:          Histogram file (.root)
-//                   Arg7.Type:           TObjArray *
-//                   Arg7.EntryType:      FObjListBox
-//                   Arg7.Width:          300
-//                   Arg7.Default:        none.root
-//                   Arg7.Values:         ROOT files:*.root
+//                   Arg7.Name:           VerboseMode
+//                   Arg7.Title:          Verbose mode
+//                   Arg7.Type:           Bool_t
+//                   Arg7.EntryType:      YesNo
+//                   Arg7.Default:        no
 //                   Arg7.AddLofValues:   No
 //                   Arg7.Base:           dec
 //                   Arg7.Orientation:    horizontal
-//                   Arg8.Name:           CalFile
-//                   Arg8.Title:          Calibration data (.cal)
-//                   Arg8.Type:           Char_t *
-//                   Arg8.EntryType:      File
-//                   Arg8.Width:          150
-//                   Arg8.Default:        Encal.cal
-//                   Arg8.Values:         Calib files:*.cal
+//                   Arg8.Name:           Section_FH
+//                   Arg8.Title:          2. Files & histograms
+//                   Arg8.Type:           Int_t
+//                   Arg8.EntryType:      Group
 //                   Arg8.AddLofValues:   No
 //                   Arg8.Base:           dec
 //                   Arg8.Orientation:    horizontal
-//                   Arg9.Name:           ResFile
-//                   Arg9.Title:          Calibration results (.res)
-//                   Arg9.Type:           Char_t *
-//                   Arg9.EntryType:      File
-//                   Arg9.Width:          150
-//                   Arg9.Default:        Encal.res
-//                   Arg9.Values:         Result files:*.res
+//                   Arg9.Name:           HistoFile
+//                   Arg9.Title:          Histogram file (.root)
+//                   Arg9.Type:           TObjArray *
+//                   Arg9.EntryType:      FObjListBox
+//                   Arg9.Width:          300
+//                   Arg9.Default:        none.root
+//                   Arg9.Values:         ROOT files:*.root
 //                   Arg9.AddLofValues:   No
 //                   Arg9.Base:           dec
 //                   Arg9.Orientation:    horizontal
-//                   Arg10.Name:          FitFile
-//                   Arg10.Title:         Fit results (.root)
+//                   Arg10.Name:          CalFile
+//                   Arg10.Title:         Calibration data (.cal)
 //                   Arg10.Type:          Char_t *
 //                   Arg10.EntryType:     File
 //                   Arg10.Width:         150
-//                   Arg10.Default:       Encal.root
-//                   Arg10.Values:        Fit data files:*.root
+//                   Arg10.Default:       Encal.cal
+//                   Arg10.Values:        Calib files:*.cal
 //                   Arg10.AddLofValues:  No
 //                   Arg10.Base:          dec
 //                   Arg10.Orientation:   horizontal
-//                   Arg11.Name:          PreCalFile
-//                   Arg11.Title:         Precalibration file (.cal)
+//                   Arg11.Name:          ResFile
+//                   Arg11.Title:         Calibration results (.res)
 //                   Arg11.Type:          Char_t *
 //                   Arg11.EntryType:     File
-//                   Arg11.Default:       none
+//                   Arg11.Width:         150
+//                   Arg11.Default:       Encal.res
+//                   Arg11.Values:        Result files:*.res
 //                   Arg11.AddLofValues:  No
 //                   Arg11.Base:          dec
 //                   Arg11.Orientation:   horizontal
-//                   Arg12.Name:          ClearFlag
-//                   Arg12.Title:         Clear output files (.cal, .res)
-//                   Arg12.Type:          Bool_t
-//                   Arg12.EntryType:     YesNo
-//                   Arg12.Default:       no
+//                   Arg12.Name:          FitFile
+//                   Arg12.Title:         Fit results (.root)
+//                   Arg12.Type:          Char_t *
+//                   Arg12.EntryType:     File
+//                   Arg12.Width:         150
+//                   Arg12.Default:       Encal.root
+//                   Arg12.Values:        Fit data files:*.root
 //                   Arg12.AddLofValues:  No
 //                   Arg12.Base:          dec
 //                   Arg12.Orientation:   horizontal
-//                   Arg13.Name:          Tab_2
-//                   Arg13.Title:         Peaks & Calibration
-//                   Arg13.Type:          Int_t
-//                   Arg13.EntryType:     Tab
+//                   Arg13.Name:          PreCalFile
+//                   Arg13.Title:         Precalibration file (.cal)
+//                   Arg13.Type:          Char_t *
+//                   Arg13.EntryType:     File
+//                   Arg13.Default:       none
 //                   Arg13.AddLofValues:  No
 //                   Arg13.Base:          dec
 //                   Arg13.Orientation:   horizontal
-//                   Arg14.Name:          Section_PFND
-//                   Arg14.Title:         3. Peak Finder
-//                   Arg14.Type:          Int_t
-//                   Arg14.EntryType:     Group
+//                   Arg14.Name:          ClearFlag
+//                   Arg14.Title:         Clear output files (.cal, .res)
+//                   Arg14.Type:          Bool_t
+//                   Arg14.EntryType:     YesNo
+//                   Arg14.Default:       no
 //                   Arg14.AddLofValues:  No
 //                   Arg14.Base:          dec
 //                   Arg14.Orientation:   horizontal
-//                   Arg15.Name:          Rebin
-//                   Arg15.Title:         Rebin histograms
+//                   Arg15.Name:          Tab_2
+//                   Arg15.Title:         Peaks & Calibration
 //                   Arg15.Type:          Int_t
-//                   Arg15.EntryType:     UpDown
-//                   Arg15.Default:       1
+//                   Arg15.EntryType:     Tab
 //                   Arg15.AddLofValues:  No
 //                   Arg15.Base:          dec
 //                   Arg15.Orientation:   horizontal
-//                   Arg16.Name:          Region1
-//                   Arg16.Title:         Region-1: lower, upper
+//                   Arg16.Name:          Section_PFND
+//                   Arg16.Title:         3. Peak Finder
 //                   Arg16.Type:          Int_t
-//                   Arg16.EntryType:     UpDown-MXC
-//                   Arg16.NofEntryFields:2
-//                   Arg16.Width:         150
-//                   Arg16.Default:       0:0:F
+//                   Arg16.EntryType:     Group
 //                   Arg16.AddLofValues:  No
-//                   Arg16.LowerLimit:    0:0
-//                   Arg16.UpperLimit:    65535:65535
-//                   Arg16.Increment:     100:100
 //                   Arg16.Base:          dec
 //                   Arg16.Orientation:   horizontal
-//                   Arg17.Name:          Region2
-//                   Arg17.Title:         Region-2: lower, upper
+//                   Arg17.Name:          Rebin
+//                   Arg17.Title:         Rebin histograms
 //                   Arg17.Type:          Int_t
-//                   Arg17.EntryType:     UpDown-MXC
-//                   Arg17.NofEntryFields:2
-//                   Arg17.Width:         150
-//                   Arg17.Default:       0:0:F
+//                   Arg17.EntryType:     UpDown
+//                   Arg17.Default:       1
 //                   Arg17.AddLofValues:  No
-//                   Arg17.LowerLimit:    0:0
-//                   Arg17.UpperLimit:    65535:65535
-//                   Arg17.Increment:     100:100
 //                   Arg17.Base:          dec
 //                   Arg17.Orientation:   horizontal
-//                   Arg18.Name:          Region3
-//                   Arg18.Title:         Region-3: lower, upper
+//                   Arg18.Name:          Region1
+//                   Arg18.Title:         Region-1: lower, upper
 //                   Arg18.Type:          Int_t
 //                   Arg18.EntryType:     UpDown-MXC
 //                   Arg18.NofEntryFields:2
@@ -234,185 +174,214 @@
 //                   Arg18.Increment:     100:100
 //                   Arg18.Base:          dec
 //                   Arg18.Orientation:   horizontal
-//                   Arg19.Name:          Efficiency
-//                   Arg19.Title:         Efficiency function: yeff(x) = a0 * exp(a1 * y(x))
-//                   Arg19.Type:          Double_t
-//                   Arg19.EntryType:     Entry-MC
+//                   Arg19.Name:          Region2
+//                   Arg19.Title:         Region-2: lower, upper
+//                   Arg19.Type:          Int_t
+//                   Arg19.EntryType:     UpDown-MXC
 //                   Arg19.NofEntryFields:2
-//                   Arg19.Width:         100
+//                   Arg19.Width:         150
 //                   Arg19.Default:       0:0:F
 //                   Arg19.AddLofValues:  No
 //                   Arg19.LowerLimit:    0:0
-//                   Arg19.UpperLimit:    1000:0.1
-//                   Arg19.Increment:     10:0.05
+//                   Arg19.UpperLimit:    65535:65535
+//                   Arg19.Increment:     100:100
 //                   Arg19.Base:          dec
 //                   Arg19.Orientation:   horizontal
-//                   Arg20.Name:          PeakFrac
-//                   Arg20.Title:         Threshold [% of max peak]
+//                   Arg20.Name:          Region3
+//                   Arg20.Title:         Region-3: lower, upper
 //                   Arg20.Type:          Int_t
-//                   Arg20.EntryType:     UpDown-X
-//                   Arg20.Default:       1
+//                   Arg20.EntryType:     UpDown-MXC
+//                   Arg20.NofEntryFields:2
+//                   Arg20.Width:         150
+//                   Arg20.Default:       0:0:F
 //                   Arg20.AddLofValues:  No
-//                   Arg20.LowerLimit:    1
-//                   Arg20.UpperLimit:    50
-//                   Arg20.Increment:     1
+//                   Arg20.LowerLimit:    0:0
+//                   Arg20.UpperLimit:    65535:65535
+//                   Arg20.Increment:     100:100
 //                   Arg20.Base:          dec
 //                   Arg20.Orientation:   horizontal
-//                   Arg21.Name:          Sigma
-//                   Arg21.Title:         Sigma
+//                   Arg21.Name:          Efficiency
+//                   Arg21.Title:         Efficiency function: yeff(x) = a0 * exp(a1 * y(x))
 //                   Arg21.Type:          Double_t
-//                   Arg21.EntryType:     UpDown-X
-//                   Arg21.Default:       3
+//                   Arg21.EntryType:     Entry-MC
+//                   Arg21.NofEntryFields:2
+//                   Arg21.Width:         100
+//                   Arg21.Default:       0:0:F
 //                   Arg21.AddLofValues:  No
-//                   Arg21.LowerLimit:    0
-//                   Arg21.UpperLimit:    10
-//                   Arg21.Increment:     .2
+//                   Arg21.LowerLimit:    0:0
+//                   Arg21.UpperLimit:    1000:0.1
+//                   Arg21.Increment:     10:0.05
 //                   Arg21.Base:          dec
 //                   Arg21.Orientation:   horizontal
-//                   Arg22.Name:          TwoPeakSep
-//                   Arg22.Title:         Two-peak separation [sigma]
-//                   Arg22.Type:          Double_t
+//                   Arg22.Name:          PeakFrac
+//                   Arg22.Title:         Threshold [% of max peak]
+//                   Arg22.Type:          Int_t
 //                   Arg22.EntryType:     UpDown-X
 //                   Arg22.Default:       1
 //                   Arg22.AddLofValues:  No
 //                   Arg22.LowerLimit:    1
-//                   Arg22.UpperLimit:    10
+//                   Arg22.UpperLimit:    50
+//                   Arg22.Increment:     1
 //                   Arg22.Base:          dec
 //                   Arg22.Orientation:   horizontal
-//                   Arg23.Name:          Section_PFIT
-//                   Arg23.Title:         4. Peak Fit
-//                   Arg23.Type:          Int_t
-//                   Arg23.EntryType:     Group
+//                   Arg23.Name:          Sigma
+//                   Arg23.Title:         Sigma
+//                   Arg23.Type:          Double_t
+//                   Arg23.EntryType:     UpDown-X
+//                   Arg23.Default:       3
 //                   Arg23.AddLofValues:  No
+//                   Arg23.LowerLimit:    0
+//                   Arg23.UpperLimit:    10
+//                   Arg23.Increment:     .2
 //                   Arg23.Base:          dec
 //                   Arg23.Orientation:   horizontal
-//                   Arg24.Name:          FitMode
-//                   Arg24.Title:         Fit mode
-//                   Arg24.Type:          Int_t
-//                   Arg24.EntryType:     Radio
+//                   Arg24.Name:          TwoPeakSep
+//                   Arg24.Title:         Two-peak separation [sigma]
+//                   Arg24.Type:          Double_t
+//                   Arg24.EntryType:     UpDown-X
 //                   Arg24.Default:       1
-//                   Arg24.Values:        gauss|fit symmetric gaussian=1:left tail|fit gaussian + exp tail on left side=2:right tail|fit gaussian + exp tail on right side=4
 //                   Arg24.AddLofValues:  No
+//                   Arg24.LowerLimit:    1
+//                   Arg24.UpperLimit:    10
 //                   Arg24.Base:          dec
 //                   Arg24.Orientation:   horizontal
-//                   Arg25.Name:          FitGrouping
-//                   Arg25.Title:         Fit grouping
+//                   Arg25.Name:          Section_PFIT
+//                   Arg25.Title:         4. Peak Fit
 //                   Arg25.Type:          Int_t
-//                   Arg25.EntryType:     Radio
-//                   Arg25.Default:       1
-//                   Arg25.Values:        single peak|fit each peak separately=1:ensemble|group peaks before fitting=2
+//                   Arg25.EntryType:     Group
 //                   Arg25.AddLofValues:  No
 //                   Arg25.Base:          dec
 //                   Arg25.Orientation:   horizontal
-//                   Arg26.Name:          FitBackground
-//                   Arg26.Title:         Background
+//                   Arg26.Name:          FitMode
+//                   Arg26.Title:         Fit mode
 //                   Arg26.Type:          Int_t
 //                   Arg26.EntryType:     Radio
 //                   Arg26.Default:       1
-//                   Arg26.Values:        linear|fit linear Background=1:const|fit constant background=2
+//                   Arg26.Values:        gauss|fit symmetric gaussian=1:left tail|fit gaussian + exp tail on left side=2:right tail|fit gaussian + exp tail on right side=4
 //                   Arg26.AddLofValues:  No
 //                   Arg26.Base:          dec
 //                   Arg26.Orientation:   horizontal
-//                   Arg27.Name:          FitRange
-//                   Arg27.Title:         Range [sigma]
-//                   Arg27.Type:          Double_t
-//                   Arg27.EntryType:     UpDown
-//                   Arg27.Default:       3
+//                   Arg27.Name:          FitGrouping
+//                   Arg27.Title:         Fit grouping
+//                   Arg27.Type:          Int_t
+//                   Arg27.EntryType:     Radio
+//                   Arg27.Default:       1
+//                   Arg27.Values:        single peak|fit each peak separately=1:ensemble|group peaks before fitting=2
 //                   Arg27.AddLofValues:  No
-//                   Arg27.LowerLimit:    0
-//                   Arg27.UpperLimit:    10
-//                   Arg27.Increment:     .5
 //                   Arg27.Base:          dec
 //                   Arg27.Orientation:   horizontal
-//                   Arg28.Name:          Section_PM
-//                   Arg28.Title:         5. Peak Matching
+//                   Arg28.Name:          FitBackground
+//                   Arg28.Title:         Background
 //                   Arg28.Type:          Int_t
-//                   Arg28.EntryType:     Group
+//                   Arg28.EntryType:     Radio
+//                   Arg28.Default:       1
+//                   Arg28.Values:        linear|fit linear Background=1:const|fit constant background=2
 //                   Arg28.AddLofValues:  No
 //                   Arg28.Base:          dec
 //                   Arg28.Orientation:   horizontal
-//                   Arg29.Name:          PeakMatch
-//                   Arg29.Title:         Peak matching
-//                   Arg29.Type:          Int_t
-//                   Arg29.EntryType:     Radio
-//                   Arg29.Default:       on
-//                   Arg29.Values:        off=0:on=1
+//                   Arg29.Name:          FitRange
+//                   Arg29.Title:         Range [sigma]
+//                   Arg29.Type:          Double_t
+//                   Arg29.EntryType:     UpDown
+//                   Arg29.Default:       3
 //                   Arg29.AddLofValues:  No
+//                   Arg29.LowerLimit:    0
+//                   Arg29.UpperLimit:    10
+//                   Arg29.Increment:     .5
 //                   Arg29.Base:          dec
 //                   Arg29.Orientation:   horizontal
-//                   Arg30.Name:          TestbedHisto
-//                   Arg30.Title:         Testbed histogram: nbins, xmin, xmax
+//                   Arg30.Name:          Section_PM
+//                   Arg30.Title:         5. Peak Matching
 //                   Arg30.Type:          Int_t
-//                   Arg30.EntryType:     UpDown-M
-//                   Arg30.NofEntryFields:3
-//                   Arg30.Width:         100
-//                   Arg30.Default:       0:0:0
+//                   Arg30.EntryType:     Group
 //                   Arg30.AddLofValues:  No
-//                   Arg30.LowerLimit:    1:0:10000
-//                   Arg30.UpperLimit:    10000:10000:10000
-//                   Arg30.Increment:     100:100:100
 //                   Arg30.Base:          dec
 //                   Arg30.Orientation:   horizontal
-//                   Arg31.Name:          MatchOffset
-//                   Arg31.Title:         Offset: min, step, max
-//                   Arg31.Type:          Double_t
-//                   Arg31.EntryType:     UpDown-M
-//                   Arg31.NofEntryFields:3
-//                   Arg31.Width:         100
-//                   Arg31.Default:       0:0:0
+//                   Arg31.Name:          PeakMatch
+//                   Arg31.Title:         Peak matching
+//                   Arg31.Type:          Int_t
+//                   Arg31.EntryType:     Radio
+//                   Arg31.Default:       on
+//                   Arg31.Values:        off=0:on=1
 //                   Arg31.AddLofValues:  No
-//                   Arg31.LowerLimit:    0:1:10000
-//                   Arg31.UpperLimit:    10000:100:10000
-//                   Arg31.Increment:     1:.1:1
 //                   Arg31.Base:          dec
 //                   Arg31.Orientation:   horizontal
-//                   Arg32.Name:          MatchGain
-//                   Arg32.Title:         Gain: min, step, max
-//                   Arg32.Type:          Double_t
+//                   Arg32.Name:          TestbedHisto
+//                   Arg32.Title:         Testbed histogram: nbins, xmin, xmax
+//                   Arg32.Type:          Int_t
 //                   Arg32.EntryType:     UpDown-M
 //                   Arg32.NofEntryFields:3
 //                   Arg32.Width:         100
-//                   Arg32.Default:       1:1:100
+//                   Arg32.Default:       0:0:0
 //                   Arg32.AddLofValues:  No
-//                   Arg32.LowerLimit:    1:.1:100
-//                   Arg32.UpperLimit:    100:1:100
-//                   Arg32.Increment:     1:.1:1
+//                   Arg32.LowerLimit:    1:0:10000
+//                   Arg32.UpperLimit:    10000:10000:10000
+//                   Arg32.Increment:     100:100:100
 //                   Arg32.Base:          dec
 //                   Arg32.Orientation:   horizontal
-//                   Arg33.Name:          NewFrame_1
-//                   Arg33.Title:         Control
-//                   Arg33.Type:          Int_t
-//                   Arg33.EntryType:     Frame
+//                   Arg33.Name:          MatchOffset
+//                   Arg33.Title:         Offset: min, step, max
+//                   Arg33.Type:          Double_t
+//                   Arg33.EntryType:     UpDown-M
+//                   Arg33.NofEntryFields:3
+//                   Arg33.Width:         100
+//                   Arg33.Default:       0:0:0
 //                   Arg33.AddLofValues:  No
+//                   Arg33.LowerLimit:    0:1:10000
+//                   Arg33.UpperLimit:    10000:100:10000
+//                   Arg33.Increment:     1:.1:1
 //                   Arg33.Base:          dec
 //                   Arg33.Orientation:   horizontal
-//                   Arg34.Name:          Section_CTRL
-//                   Arg34.Title:         6. Control
-//                   Arg34.Type:          Int_t
-//                   Arg34.EntryType:     Group
+//                   Arg34.Name:          MatchGain
+//                   Arg34.Title:         Gain: min, step, max
+//                   Arg34.Type:          Double_t
+//                   Arg34.EntryType:     UpDown-M
+//                   Arg34.NofEntryFields:3
+//                   Arg34.Width:         100
+//                   Arg34.Default:       1:1:100
 //                   Arg34.AddLofValues:  No
+//                   Arg34.LowerLimit:    1:.1:100
+//                   Arg34.UpperLimit:    100:1:100
+//                   Arg34.Increment:     1:.1:1
 //                   Arg34.Base:          dec
 //                   Arg34.Orientation:   horizontal
-//                   Arg35.Name:          DisplayMode
-//                   Arg35.Title:         Display results
+//                   Arg35.Name:          NewFrame_1
+//                   Arg35.Title:         Control
 //                   Arg35.Type:          Int_t
-//                   Arg35.EntryType:     Check
-//                   Arg35.Default:       1
-//                   Arg35.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2
+//                   Arg35.EntryType:     Frame
 //                   Arg35.AddLofValues:  No
 //                   Arg35.Base:          dec
 //                   Arg35.Orientation:   horizontal
-//                   Arg36.Name:          CtrlButtons
-//                   Arg36.Title:         What to be done next?
+//                   Arg36.Name:          Section_CTRL
+//                   Arg36.Title:         6. Control
 //                   Arg36.Type:          Int_t
-//                   Arg36.EntryType:     TextButton
-//                   Arg36.Values:        Start=0:Prev=1:Same=2:Next/ok=3:Next/discard=4:Stop=5:Quit=6
+//                   Arg36.EntryType:     Group
 //                   Arg36.AddLofValues:  No
 //                   Arg36.Base:          dec
 //                   Arg36.Orientation:   horizontal
+//                   Arg37.Name:          DisplayMode
+//                   Arg37.Title:         Display results
+//                   Arg37.Type:          Int_t
+//                   Arg37.EntryType:     Check
+//                   Arg37.Default:       1
+//                   Arg37.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2
+//                   Arg37.AddLofValues:  No
+//                   Arg37.Base:          dec
+//                   Arg37.Orientation:   horizontal
+//                   Arg38.Name:          CtrlButtons
+//                   Arg38.Title:         What to be done next?
+//                   Arg38.Type:          Int_t
+//                   Arg38.EntryType:     TextButton
+//                   Arg38.Values:        Start=0:Prev=1:Same=2:Next/ok=3:Next/discard=4:Stop=5:Quit=6
+//                   Arg38.AddLofValues:  No
+//                   Arg38.Base:          dec
+//                   Arg38.Orientation:   horizontal
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
+//__________________________________________________________[C++ HEADER FILES]
+//////////////////////////////////////////////////////////////////////////////
+//+IncludeFiles
 #include <iostream>
 #include <iomanip>
 #include <fstream>
@@ -441,52 +410,67 @@
 #include "FitOneDimDialog.h"
 #include "CalibrationDialog.h"
 #include "SetColor.h"
+//-IncludeFiles
 
 //______________________________________________________[C++ ENUM DEFINITIONS]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           Enum definitions
+// Name:		   E<MacroName>ArgNums
+// Format:  	   kArg<ArgName> = <ArgNumber>
+// Description:    Enums to address macro arguments by their numbers
 //////////////////////////////////////////////////////////////////////////////
+//+ArgNums
 
 enum EEArgNums {
  		kArgTab_1 = 1,
- 		kArgSection_IC = 2,
- 		kArgCalSource = 3,
- 		kArgEnergies = 4,
- 		kArgVerboseMode = 5,
- 		kArgSection_FH = 6,
- 		kArgHistoFile = 7,
- 		kArgCalFile = 8,
- 		kArgResFile = 9,
- 		kArgFitFile = 10,
- 		kArgPreCalFile = 11,
- 		kArgClearFlag = 12,
- 		kArgTab_2 = 13,
- 		kArgSection_PFND = 14,
- 		kArgRebin = 15,
- 		kArgRegion1 = 16,
- 		kArgRegion2 = 17,
- 		kArgRegion3 = 18,
- 		kArgEfficiency = 19,
- 		kArgPeakFrac = 20,
- 		kArgSigma = 21,
- 		kArgTwoPeakSep = 22,
- 		kArgSection_PFIT = 23,
- 		kArgFitMode = 24,
- 		kArgFitGrouping = 25,
- 		kArgFitBackground = 26,
- 		kArgFitRange = 27,
- 		kArgSection_PM = 28,
- 		kArgPeakMatch = 29,
- 		kArgTestbedHisto = 30,
- 		kArgMatchOffset = 31,
- 		kArgMatchGain = 32,
- 		kArgNewFrame_1 = 33,
- 		kArgSection_CTRL = 34,
- 		kArgDisplayMode = 35,
- 		kArgCtrlButtons = 36,
+ 		kArgSection_STP = 2,
+ 		kArgSetupFile = 3,
+ 		kArgSection_IC = 4,
+ 		kArgCalSource = 5,
+ 		kArgEnergies = 6,
+ 		kArgVerboseMode = 7,
+ 		kArgSection_FH = 8,
+ 		kArgHistoFile = 9,
+ 		kArgCalFile = 10,
+ 		kArgResFile = 11,
+ 		kArgFitFile = 12,
+ 		kArgPreCalFile = 13,
+ 		kArgClearFlag = 14,
+ 		kArgTab_2 = 15,
+ 		kArgSection_PFND = 16,
+ 		kArgRebin = 17,
+ 		kArgRegion1 = 18,
+ 		kArgRegion2 = 19,
+ 		kArgRegion3 = 20,
+ 		kArgEfficiency = 21,
+ 		kArgPeakFrac = 22,
+ 		kArgSigma = 23,
+ 		kArgTwoPeakSep = 24,
+ 		kArgSection_PFIT = 25,
+ 		kArgFitMode = 26,
+ 		kArgFitGrouping = 27,
+ 		kArgFitBackground = 28,
+ 		kArgFitRange = 29,
+ 		kArgSection_PM = 30,
+ 		kArgPeakMatch = 31,
+ 		kArgTestbedHisto = 32,
+ 		kArgMatchOffset = 33,
+ 		kArgMatchGain = 34,
+ 		kArgNewFrame_1 = 35,
+ 		kArgSection_CTRL = 36,
+ 		kArgDisplayMode = 37,
+ 		kArgCtrlButtons = 38,
  	};
+//-ArgNums
 
-enum EEncalEnums {
+//______________________________________________________[C++ ENUM DEFINITIONS]
+//////////////////////////////////////////////////////////////////////////////
+// Name:		   E<MacroName>Enums
+// Format:  	   k<ArgName><ArgState> = <StateValue>
+// Description:    Enums defining possible states of radio/check buttons
+//////////////////////////////////////////////////////////////////////////////
+//+Enums
+
+enum EEEnums {
  		kCalSourceCo60 = 1,
  		kCalSourceEu152 = 2,
  		kCalSource3Alpha = 4,
@@ -498,9 +482,12 @@ enum EEncalEnums {
  		kFitGroupingEnsemble = 2,
  		kFitBackgroundLinear = 1,
  		kFitBackgroundConst = 2,
+ 		kPeakMatchOff = 0,
+ 		kPeakMatchOn = 1,
  		kDisplayModeStep = 1,
  		kDisplayMode2dim = 2,
  	};
+//-Enums
 
 enum EEncalColors		{	kColorBlack = 1,
 							kColorWhite = 10,
@@ -632,8 +619,9 @@ TString fGaugeFile = "gauge.dat";	// file name to be used with CalibrationDialog
 //////////////////////////////////////////////////////////////////////////////
 
 void Encal(TGMrbMacroFrame * GuiPtr);
-void UserButtonPressed(TGMrbMacroFrame * GuiPtr, Int_t ArgNo, const Char_t * ArgName, Int_t ButtonId);
+void ProcessSignal(TGMrbMacroFrame * GuiPtr, Int_t ArgNo, const Char_t * ArgName, Int_t Signal);
 void GetArguments(TGMrbMacroFrame * GuiPtr);
+void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile = ".Encal.env");
 Bool_t OpenHistoFile();
 Bool_t OpenCalFiles();
 Bool_t SetCalSource();
@@ -641,7 +629,7 @@ TH1F * GetNextHisto();
 Bool_t FindPeaks();
 void Calibrate();
 Int_t GetNofHistosCalibrated();
-void WaitForButtonPressed(Bool_t StepFlag = kFALSE);
+void WaitForSignal(Bool_t StepFlag = kFALSE);
 void ClearCanvas(Int_t PadNo);
 void OutputMessage(const Char_t * Method, const Char_t * Text, Bool_t ErrFlag = kFALSE, Int_t ColorIndex = -1);
 TCanvas * OpenCanvas();
@@ -717,6 +705,9 @@ void OutputMessage(const Char_t * Method, const Char_t * Text, Bool_t ErrFlag, I
 		case kColorGreen: tCol = setgreen; fgCol = 1; break;
 		case kColorBlue: tCol = setblue; fgCol = 10; break;
 	}
+
+	if (msg == NULL) msg = new TMrbLogger("Encal.log");
+
 	if (ErrFlag) {
 		msg->Err() << Text << endl;
 		msg->Flush(cName.Data(), method.Data());
@@ -956,10 +947,10 @@ void SetFullRange(TH1F * Histo) {
 	if (fMinX != 0 || fMaxX < xmax) fCurHisto->GetXaxis()->SetRange(fMinX, fMaxX);
 }
 
-void WaitForButtonPressed(Bool_t StepFlag) {
+void WaitForSignal(Bool_t StepFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           WaitForButtonPressed
+// Name:           WaitForSignal
 // Purpose:        Control buttons
 // Arguments:      Bool_t StepFlag    -- wait if kTRUE (overwrites StepMode bit)
 // Results:        --
@@ -982,23 +973,23 @@ void WaitForButtonPressed(Bool_t StepFlag) {
 	fButtonFlag = kFALSE;
 }
 
-void UserButtonPressed(TGMrbMacroFrame * GuiPtr, Int_t ArgNo, const Char_t * ArgName, Int_t ButtonId) {
+void ProcessSignal(TGMrbMacroFrame * GuiPtr, Int_t ArgNo, const Char_t * ArgName, Int_t Signal) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           UserButtonPressed
+// Name:           ProcessSignal
 // Purpose:        Notify user buttons
 // Arguments:      TGMrbMacroFrame * GuiPtr   -- pointer to gui
 //                 Int_t ArgNo                -- argument number
 //                 Int_t ArgName              -- argument name
-//                 Int_t ButtonId             -- button id
+//                 Int_t Signal               -- signal / button id
 // Results:        --
 // Description:    Accepts user buttons and sets flags
 //////////////////////////////////////////////////////////////////////////////
 
 	TString argName = ArgName;
 	if (ArgNo == kArgCtrlButtons) {
-		switch (ButtonId) {
-			case kButtonStart:		Encal(GuiPtr); break;
+		switch (Signal) {
+			case kButtonStart:		GuiPtr->ExecMacro(); break;
 			case kButtonPrev:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kPrevHisto; break;
 			case kButtonSame:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kSameHisto; break;
 			case kButtonNext:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kNextHisto; break;
@@ -1006,6 +997,10 @@ void UserButtonPressed(TGMrbMacroFrame * GuiPtr, Int_t ArgNo, const Char_t * Arg
 			case kButtonStop:		fButtonFlag = kTRUE; fButtonStop = kTRUE; break;
 			case kButtonQuit:		gSystem->Exit(0);
 		}
+	} else if (ArgNo == kArgSetupFile) {
+		TString setupFile;
+		GuiPtr->GetArgValue("SetupFile", setupFile);
+		SetArguments(GuiPtr, setupFile.Data());
 	}
 }
 
@@ -1339,7 +1334,6 @@ void Calibrate() {
 
 	if (fNofPeaks >= fNofPeaksNeeded) { 
 		if (fCalibration == NULL) fCalibration = new CalibrationDialog(fCurHisto, kFALSE);
-		fFitList = fCalibration->GetPeakList();
 		if (fMatchFlag) {
 			fCalibration->SetVerbose(fVerboseMode);
 			fCalibration->SetCustomGauge(kTRUE);
@@ -1354,13 +1348,12 @@ void Calibrate() {
 			fCalibration->SetGainStep(fMatchGainStep);
 			fCalibration->SetGainMax(fMatchGainMax);
 			fCalibration->ExecuteAutoSelect();
-			fCalibration->CalculateFunction();
+			fFitList = fCalibration->UpdatePeakList();
 		} else {
 			Int_t np = 0;
 			Int_t npg = 0;
+			fFitList = fCalibration->UpdatePeakList();
 			pIter = fFitList->MakeIterator();
-			fCalibration->UpdatePeakList();
-			fFitList->Print();
 			while (p = (FhPeak *) pIter->Next()) {
 				if (np < fNofPeaks - fNofPeaksNeeded) {
 					fCalibration->SetGaugePoint(np, 0);
@@ -1377,8 +1370,8 @@ void Calibrate() {
 				}
 				np++;
 			}
-			fCalibration->CalculateFunction();
 		}
+		fCalibFct = fCalibration->CalculateFunction();
 		fMainCanvas->cd(2);
 		TArrayD x(fNofPeaks);
 		TArrayD xerr(fNofPeaks);
@@ -1400,7 +1393,6 @@ void Calibrate() {
 		gr->SetMarkerStyle(4);
 		gr->SetMarkerSize(1);
 		gr->Draw("A*");
-		fCalibFct = fCalibration->GetCalFunction();
 		if (fCalibFct) {
 			fCalibFct->Draw("SAME"); 
 			fCalibFct->SetLineWidth(1);
@@ -1598,19 +1590,22 @@ void ShowResults2dim() {
 void GetArguments(TGMrbMacroFrame * GuiPtr) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           UpdateArguments
+// Name:           GetArguments
 // Purpose:        Read arguments from GUI
 // Arguments:      TGMrbMacroFrame * GuiPtr  -- pointer to MacroBrowser GUI
 // Results:        --
-// Description:    Xfers arguments from GUI
+// Description:    Imports arguments from GUI
 //////////////////////////////////////////////////////////////////////////////
 
 	if (GuiPtr == NULL) {
-		OutputMessage("OpenHistoFile", "Pointer to MacrBrowser GUI is NULL - can't continue", kTRUE);
+		OutputMessage("GetArguments", "Pointer to MacrBrowser GUI is NULL - can't continue", kTRUE);
 		gSystem->Exit(1);
 	}
 
-	GuiPtr->GetArgValue("HistoFile", fHistoFileName, fLofHistos);
+	GuiPtr->GetArgValue("HistoFile", fLofHistos);
+	fHistoFileName = ((TObjString *) fLofHistos[0])->GetString();
+	fLofHistos.RemoveAt(0);
+	fLofHistos.Compress();
 
 	GuiPtr->GetArgValue("CalSource", fCalSource);
 	GuiPtr->GetArgValue("Energies", fEnergies);
@@ -1690,12 +1685,264 @@ void GetArguments(TGMrbMacroFrame * GuiPtr) {
 	GuiPtr->GetArgValue("VerboseMode", fVerboseMode);
 }
 
+void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           SetArguments
+// Purpose:        Set GUI args from env file
+// Arguments:      TGMrbMacroFrame * GuiPtr  -- pointer to MacroBrowser GUI
+//                 Char_t * EnvFile          -- env file
+// Results:        --
+// Description:    Sets gui values from environment file
+//////////////////////////////////////////////////////////////////////////////
+
+	if (GuiPtr == NULL) {
+		OutputMessage("SetArguments", "Pointer to MacroBrowser GUI is NULL - no action", kTRUE);
+		return;
+	}
+
+	if (gSystem->AccessPathName(EnvFile)) {
+		OutputMessage("SetArguments", Form("No such file - %s", EnvFile), kTRUE);
+		return;
+	}
+
+	TEnv * env = new TEnv(EnvFile);
+
+	Int_t nofArgs = env->GetValue("NofArgs", 0);
+	if (nofArgs == 0) {
+		OutputMessage("SetArguments", Form("No arguments found on file %s", EnvFile), kTRUE);
+		return;
+	}
+
+	TMrbLofNamedX lofArgs;
+	lofArgs.Delete();
+	for (Int_t i = 1; i <= nofArgs; i++) lofArgs.AddNamedX(i, env->GetValue(Form("Arg%d.Name", i), "NoName"));
+	TMrbNamedX * argX;
+
+	Int_t envInt;
+	Double_t envDbl;
+	TString envStr;
+
+	argX = lofArgs.FindByName("HistoFile");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current.NofValues", argX->GetIndex()), 0);
+		TObjArray ha;
+		for (Int_t i = 0; i < envInt; i++) ha.Add(new TObjString(env->GetValue(Form("Arg%d.Current.%d", kArgHistoFile, i), "")));
+		GuiPtr->SetArgValue("HistoFile", ha);
+	}
+
+	argX = lofArgs.FindByName("CalSource");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 0);
+		GuiPtr->SetArgValue("CalSource", envInt);
+	}
+
+	argX = lofArgs.FindByName("Energies");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		if (envStr.IsNull()) envStr = "$MARABOU/data/encal/calibEnergies.all";
+		GuiPtr->SetArgValue("Energies", envStr.Data());
+	}
+
+	argX = lofArgs.FindByName("CalFile");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		if (envStr.IsNull()) envStr = "Encal.cal";
+		GuiPtr->SetArgValue("CalFile", envStr.Data());
+	}
+
+	argX = lofArgs.FindByName("ResFile");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		if (envStr.IsNull()) { envStr = fCalFile; envStr.ReplaceAll(".cal", 4, ".res", 4); }
+		GuiPtr->SetArgValue("ResFile", envStr.Data());
+	}
+
+	argX = lofArgs.FindByName("FitFile");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		if (envStr.IsNull()) { envStr = fCalFile; envStr.ReplaceAll(".cal", 4, ".root", 5); }
+		GuiPtr->SetArgValue("FitFile", envStr.Data());
+	}
+
+	argX = lofArgs.FindByName("PreCalFile");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		GuiPtr->SetArgValue("PreCalFile", envStr.Data());
+	}
+
+	argX = lofArgs.FindByName("ClearFlag");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 0);
+		GuiPtr->SetArgValue("ClearFlag", envInt);
+	}
+
+	argX = lofArgs.FindByName("Rebin");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 1);
+		GuiPtr->SetArgValue("Rebin", envInt);
+	}
+
+	argX = lofArgs.FindByName("Region1");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		TObjArray * a = envStr.Tokenize(":");
+		TString tf = ((TObjString *) a->At(2))->GetString();
+		if (tf.CompareTo("T") == 0) {
+			GuiPtr->SetArgCheck("Region1", 1);
+			envStr = ((TObjString *) a->At(0))->GetString();
+			GuiPtr->SetArgValue("Region1", envStr.Atoi(), 0);
+			envStr = ((TObjString *) a->At(1))->GetString();
+			GuiPtr->SetArgValue("Region1", envStr.Atoi(), 1);
+		} else {
+			GuiPtr->SetArgCheck("Region1", 0);
+			GuiPtr->SetArgValue("Region1", 0, 0);
+			GuiPtr->SetArgValue("Region1", 0, 1);
+		}
+		delete a;
+	}
+	argX = lofArgs.FindByName("Region2");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		TObjArray * a = envStr.Tokenize(":");
+		TString tf = ((TObjString *) a->At(2))->GetString();
+		if (tf.CompareTo("T") == 0) {
+			GuiPtr->SetArgCheck("Region2", 1);
+			envStr = ((TObjString *) a->At(0))->GetString();
+			GuiPtr->SetArgValue("Region2", envStr.Atoi(), 0);
+			envStr = ((TObjString *) a->At(1))->GetString();
+			GuiPtr->SetArgValue("Region2", envStr.Atoi(), 1);
+		} else {
+			GuiPtr->SetArgCheck("Region2", 0);
+			GuiPtr->SetArgValue("Region2", 0, 0);
+			GuiPtr->SetArgValue("Region2", 0, 1);
+		}
+		delete a;
+	}
+	argX = lofArgs.FindByName("Region3");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		TObjArray * a = envStr.Tokenize(":");
+		TString tf = ((TObjString *) a->At(2))->GetString();
+		if (tf.CompareTo("T") == 0) {
+			GuiPtr->SetArgCheck("Region3", 1);
+			envStr = ((TObjString *) a->At(0))->GetString();
+			GuiPtr->SetArgValue("Region3", envStr.Atoi(), 0);
+			envStr = ((TObjString *) a->At(1))->GetString();
+			GuiPtr->SetArgValue("Region3", envStr.Atoi(), 1);
+		} else {
+			GuiPtr->SetArgCheck("Region3", 0);
+			GuiPtr->SetArgValue("Region3", 0, 0);
+			GuiPtr->SetArgValue("Region3", 0, 1);
+		}
+		delete a;
+	}
+	argX = lofArgs.FindByName("Efficiency");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		TObjArray * a = envStr.Tokenize(":");
+		TString tf = ((TObjString *) a->At(2))->GetString();
+		if (tf.CompareTo("T") == 0) {
+			GuiPtr->SetArgCheck("Efficiency", 1);
+			envStr = ((TObjString *) a->At(0))->GetString();
+			GuiPtr->SetArgValue("Efficiency", envStr.Atof(), 0);
+			envStr = ((TObjString *) a->At(1))->GetString();
+			GuiPtr->SetArgValue("Efficiency", envStr.Atof(), 1);
+		} else {
+			GuiPtr->SetArgCheck("Efficiency", 0);
+			GuiPtr->SetArgValue("Efficiency", 0, 0);
+			GuiPtr->SetArgValue("Efficiency", 0, 1);
+		}
+		delete a;
+	}
+	argX = lofArgs.FindByName("PeakFrac");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 1);
+		GuiPtr->SetArgValue("PeakFrac", envInt);
+	}
+	argX = lofArgs.FindByName("Sigma");
+	if (argX) {
+		envDbl = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 3.0);
+		GuiPtr->SetArgValue("Sigma", envDbl);
+	}
+	argX = lofArgs.FindByName("TwoPeakSep");
+	if (argX) {
+		envDbl = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 1.0);
+		GuiPtr->SetArgValue("TwoPeakSep", envDbl);
+	}
+	argX = lofArgs.FindByName("FitMode");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), kFitModeGauss);
+		GuiPtr->SetArgValue("FitMode", envInt);
+	}
+	argX = lofArgs.FindByName("FitGrouping");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), kFitGroupingSinglePeak);
+		GuiPtr->SetArgValue("FitGrouping", envInt);
+	}
+	argX = lofArgs.FindByName("FitBackground");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), kFitBackgroundLinear);
+		GuiPtr->SetArgValue("FitBackground", envInt);
+	}
+	argX = lofArgs.FindByName("FitRange");
+	if (argX) {
+		envDbl = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 3.0);
+		GuiPtr->SetArgValue("FitRange", envDbl);
+	}
+	argX = lofArgs.FindByName("PeakMatch");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), kPeakMatchOn);
+		GuiPtr->SetArgValue("PeakMatch", envInt);
+	}
+	argX = lofArgs.FindByName("TestbedHisto");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		TObjArray * a = envStr.Tokenize(":");
+		for (Int_t k = 0; k < 3; k++) {
+			envStr = ((TObjString *) a->At(k))->GetString();
+			GuiPtr->SetArgValue("TestbedHisto", envStr.Atoi(), k);
+		}
+		delete a;
+	}
+	argX = lofArgs.FindByName("MatchOffset");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		TObjArray * a = envStr.Tokenize(":");
+		for (Int_t k = 0; k < 3; k++) {
+			envStr = ((TObjString *) a->At(k))->GetString();
+			GuiPtr->SetArgValue("MatchOffset", envStr.Atof(), k);
+		}
+		delete a;
+	}
+	argX = lofArgs.FindByName("MatchGain");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		TObjArray * a = envStr.Tokenize(":");
+		for (Int_t k = 0; k < 3; k++) {
+			envStr = ((TObjString *) a->At(k))->GetString();
+			GuiPtr->SetArgValue("MatchGain", envStr.Atof(), k);
+		}
+		delete a;
+	}
+	argX = lofArgs.FindByName("DisplayMode");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), kDisplayModeStep);
+		GuiPtr->SetArgValue("DisplayMode", envInt);
+	}
+	argX = lofArgs.FindByName("VerboseMode");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 0);
+		GuiPtr->SetArgValue("VerboseMode", envInt);
+	}
+}
+
+//+CallingSequence
 void Encal(TGMrbMacroFrame * GuiPtr)
+//-CallingSequence
 //_____________________________________________________________[MAIN FUNCTION]
 //
 {
-	msg = new TMrbLogger("Encal.log");
-
 	GetArguments(GuiPtr);
 
 	fNofPeaksNeeded = 0;
@@ -1728,7 +1975,7 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 
 		if (h == NULL) {
 			ClearCanvas(0);
-			WaitForButtonPressed();
+			WaitForSignal();
 			if (fButtonStop) { Stop(); break; }
 			continue;
 		}
@@ -1756,7 +2003,7 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 			ClearCanvas(2);
 		}
 
-		WaitForButtonPressed();
+		WaitForSignal();
 		if (fButtonStop) { Stop(); break; }
 	}
 
@@ -1766,7 +2013,7 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 
 	OutputMessage(NULL, Form("%s - %d histogram(s), press \"execute\" to restart or \"quit\" to exit", HistoFile()->GetName(), GetNofHistosCalibrated()), kFALSE, kColorBlue);
 
-	WaitForButtonPressed(kTRUE);
+	WaitForSignal(kTRUE);
 
 	CloseRootFile();
 

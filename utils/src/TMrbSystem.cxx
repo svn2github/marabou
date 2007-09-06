@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.21 2007-09-04 11:04:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.22 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -622,6 +622,27 @@ Bool_t TMrbSystem::GetStat(TMrbLofNamedX & StatBuf, const Char_t * Path) {
 	return(kTRUE);
 }
 
+Bool_t TMrbSystem::IsSameFile(const Char_t * Path1, const Char_t * Path2) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSystem::GetStat
+// Purpose:        Get file stat bits
+// Arguments:      Char_t * Path1             -- file path #1
+//                 Char_t * Path2             -- file path #2
+// Exceptions:     
+// Description:    Compares inodes.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbLofNamedX stat1, stat2;
+	TMrbNamedX * nx1;
+	TMrbNamedX * nx2;
+	this->GetStat(stat1, Path1);
+	this->GetStat(stat2, Path2);
+	nx1 = stat1.FindByName("st_ino");
+	nx2 = stat2.FindByName("st_ino");
+	return(nx1->GetIndex() == nx2->GetIndex());
+}
 
 
 

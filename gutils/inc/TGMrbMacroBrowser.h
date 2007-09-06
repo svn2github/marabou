@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.24 2007-09-03 14:04:43 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.25 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ namespace std {} using namespace std;
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class TGMrbMacroArg : public TObject {
+class TGMrbMacroArg : public TMrbNamedX {
 
 	friend class TGMrbMacroFrame;
 
@@ -92,21 +92,21 @@ class TGMrbMacroArg : public TObject {
 											kGMrbMacroEntryUpDownX2 		= kGMrbMacroEntryUpDownX | kGMrbMacroEntryBitMulti,
 											kGMrbMacroEntryUpDownXC2		= kGMrbMacroEntryUpDownXC | kGMrbMacroEntryBitMulti,
 
-											kGMrbMacroEntryYesNo			= BIT(10),
-											kGMrbMacroEntryRadio			= BIT(11),
-											kGMrbMacroEntryCheck			= BIT(12),
-											kGMrbMacroEntryText 			= BIT(13),
-											kGMrbMacroEntryCombo			= BIT(14),
-											kGMrbMacroEntryFile 			= BIT(15),
-											kGMrbMacroEntryFObjCombo		= BIT(16),
-											kGMrbMacroEntryFObjListBox		= BIT(17),
+											kGMrbMacroEntryYesNo			= BIT(6),
+											kGMrbMacroEntryRadio			= BIT(7),
+											kGMrbMacroEntryCheck			= BIT(8),
+											kGMrbMacroEntryText 			= BIT(9),
+											kGMrbMacroEntryCombo			= BIT(10),
+											kGMrbMacroEntryFile 			= BIT(11),
+											kGMrbMacroEntryFObjCombo		= BIT(12),
+											kGMrbMacroEntryFObjListBox		= BIT(13),
 
-											kGMrbMacroEntryComment			= BIT(26),
-											kGMrbMacroEntrySection			= BIT(27),
-											kGMrbMacroEntryGroup			= BIT(28),
-											kGMrbMacroEntryPad 				= BIT(29),
-											kGMrbMacroEntryTab				= BIT(30),
-											kGMrbMacroEntryFrame			= BIT(31),
+											kGMrbMacroEntryComment			= BIT(14),
+											kGMrbMacroEntrySection			= BIT(15),
+											kGMrbMacroEntryGroup			= BIT(16),
+											kGMrbMacroEntryPad 				= BIT(17),
+											kGMrbMacroEntryTab				= BIT(18),
+											kGMrbMacroEntryFrame			= BIT(20)
 										};
 
 		enum EGMrbMacroArgType		{
@@ -135,30 +135,22 @@ class TGMrbMacroArg : public TObject {
 		enum							{	kGMrbMacroNofFileTypes	=	50	};
 
 	public:
-		TGMrbMacroArg() { 					// default ctor
-			fNumber = 0;
+		TGMrbMacroArg() : TMrbNamedX(0, "Arg0") { 		// default ctor
 			fFileInfo = new TGFileInfo();
 		};
-		TGMrbMacroArg(Int_t Number) {		// ctor
-			fNumber = Number;
+		TGMrbMacroArg(Int_t Number) : TMrbNamedX(Number, Form("Arg%d", Number)) {		// ctor
+			fFileInfo = new TGFileInfo();
+		};
+		TGMrbMacroArg(Int_t Number, const Char_t * Name) : TMrbNamedX(Number, Name) {
 			fFileInfo = new TGFileInfo();
 		};
 		virtual ~TGMrbMacroArg() { delete fFileInfo; };						// default dtor
 
 		const Char_t * GetResource(TString & Resource, const Char_t * ResourceName) const;
 
-		inline void SetNumber(Int_t Number) { fNumber = Number; };
-		inline Int_t GetNumber() const { return(fNumber); };
-
-		inline void SetName(const Char_t * ArgName) { fName = ArgName; };
-		inline const Char_t * GetName() { return(fName.Data()); };
-
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
-		Int_t fNumber;					// arg number
-		TString fName;					// arg name
-
 		TMrbNamedX * fType;				// argument type
 		TMrbNamedX * fEntryType; 		// entry type;
 
@@ -224,10 +216,6 @@ class TGMrbMacroFrame : public TGTransientFrame {
 
 		enum							{	kUserButtonStart	=	BIT(16)	};
 
-		enum							{	kEntryId			=	1000	};
-		enum							{	kComboId			=	1100	};
-		enum							{	kListBoxId			=	1200	};
-
 		enum							{	kFrameWidth 		=	1200 	};
 		enum							{	kLineHeight 		=	20		};
 
@@ -252,21 +240,22 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		inline TObjArray * GetLofMacroArgs() { return(&fLofMacroArgs); };
 
 		TGMrbMacroArg * FindArgByName(const Char_t * ArgName);
-		Bool_t SetArgValue(const Char_t * ArgName, Int_t Value);
-		Bool_t SetArgValue(const Char_t * ArgName, Bool_t Value);
-		Bool_t SetArgValue(const Char_t * ArgName, Double_t Value);
-		Bool_t SetArgValue(const Char_t * ArgName, const Char_t * Value);
+		Bool_t SetArgValue(const Char_t * ArgName, Int_t Value, Int_t EntryNo = 0);
+		Bool_t SetArgValue(const Char_t * ArgName, Bool_t Value, Int_t EntryNo = 0);
+		Bool_t SetArgValue(const Char_t * ArgName, Double_t Value, Int_t EntryNo = 0);
+		Bool_t SetArgValue(const Char_t * ArgName, const Char_t * Value, Int_t EntryNo = 0);
+		Bool_t SetArgValue(const Char_t * ArgName, TObjArray & Selection);
 		Bool_t GetArgValue(const Char_t * ArgName, Int_t & Value, Int_t EntryNo = 0);
 		Bool_t GetArgValue(const Char_t * ArgName, Bool_t & Value, Int_t EntryNo = 0);
 		Bool_t GetArgValue(const Char_t * ArgName, Double_t & Value, Int_t EntryNo = 0);
 		Bool_t GetArgValue(const Char_t * ArgName, TString & Value, Int_t EntryNo = 0);
-		Bool_t GetArgValue(const Char_t * ArgName, TString & File, TObjArray & Selection);
+		Bool_t GetArgValue(const Char_t * ArgName, TObjArray & Selection);
 
 		Bool_t SetArgCheck(const Char_t * ArgName, UInt_t Check);
 		Bool_t GetArgCheck(const Char_t * ArgName, UInt_t & Check);
 		Bool_t ArgIsChecked(const Char_t * ArgName);
 
-		void CatchSignal(Int_t SignalId);
+		void ProcessSignal(Int_t SignalId);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -316,8 +305,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 
 	public:
 		// button ids
-		enum EGMrbMacroEditButtons		{	kGMrbMacroAclicNone,
-											kGMrbMacroAclicPlus,
+		enum EGMrbMacroEditButtons		{	kGMrbMacroAclicPlus,
 											kGMrbMacroAclicPlusPlus,
 											kGMrbMacroAclicPlusG,
 											kGMrbMacroAclicPlusPlusG,
@@ -390,8 +378,11 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		Bool_t RestoreHeader(); 							// reset header env (Name, Title, Path ...) to original values
 		Bool_t RestoreAllArgs();							// reset all args to original values
 		Bool_t ChangeEnv(Int_t ArgNo, Bool_t Delete);		// change current environment by deleting/inserting this argument
-		Bool_t SaveMacro(const Char_t * FileName);			// save settings to a file
+		Bool_t SaveMacro(const Char_t * NewFile, const Char_t * OldFile);	// save settings to a file
 		Int_t ExtractEnums(TMrbLofNamedX & LofEnums, Int_t ArgNo);	// extract enum defs
+
+		Bool_t CopyUserCode(const Char_t * NewFile, const Char_t * OrgFile);		// copy user code fromn original to new file
+		Bool_t CopyUserCode(ofstream & Out, const Char_t * OutFile, ifstream & In, const Char_t * InFile, const Char_t * Tag, Bool_t CopyFlag);
 
 	protected:
 		TList fHeap;

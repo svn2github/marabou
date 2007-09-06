@@ -11,7 +11,7 @@
 //                                           a list box containing file objects
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFileObject.h,v 1.9 2007-04-02 07:54:02 Marabou Exp $       
+// Revision:       $Id: TGMrbFileObject.h,v 1.10 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -62,10 +62,18 @@ class TGMrbFileObjectCombo: public TGCompositeFrame, public TGMrbObject {
 
 		Bool_t OpenFile(const Char_t * FileName);
 
+#if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
+		inline void ClearList() { fCombo->RemoveAll(); };
+#else
+		inline void ClearList() { fCombo->RemoveEntries(0, 1000); };
+#endif
+
 		void SetFileEntry(const Char_t * File);
 		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file
-		Int_t GetSelectionAsString(TString & SelItem, Bool_t FullPath = kTRUE) const;  // get selected file/object -- string
+		Int_t GetSelectionAsString(TString & SelString, Bool_t FullPath = kTRUE) const;  // get selected file/object -- string
 		Int_t GetSelection(TObjArray & SelArr, Bool_t FullPath = kTRUE) const;	// ... -- array
+		void SetSelectionFromString(TString & SelString);  					// set items
+		void SetSelection(TObjArray & SelArr); 								// ... -- array
 
 		inline void Associate(const TGWindow * Window) { fCombo->Associate(Window); };	// where to go if combobox
 																					// selection changes
@@ -139,8 +147,10 @@ class TGMrbFileObjectListBox: public TGCompositeFrame, public TGMrbObject {
 
 		void SetFileEntry(const Char_t * File);
 		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file
-		Int_t GetSelectionAsString(TString & SelItem, Bool_t FullPath = kTRUE) const;	// get selected file/object -- string
+		Int_t GetSelectionAsString(TString & SelString, Bool_t FullPath = kTRUE) const;	// get selected file/object -- string
 		Int_t GetSelection(TObjArray & SelArr, Bool_t FullPath = kTRUE) const;	// ... -- array
+		void SetSelectionFromString(TString & SelString);  					// set items
+		void SetSelection(TObjArray & SelArr); 								// ... -- array
 
 		inline void Associate(const TGWindow * Window) { fListBox->Associate(Window); };	// where to go if combobox
 																					// selection changes

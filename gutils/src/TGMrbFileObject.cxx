@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.17 2007-08-07 12:39:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.18 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -290,6 +290,52 @@ Int_t TGMrbFileObjectCombo::GetSelection(TObjArray & SelArr, Bool_t FullPath) co
 		return(2);
 	}
 	return(0);
+}
+
+void TGMrbFileObjectCombo::SetSelectionFromString(TString & SelString) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectListBox::SetSelectionFromString
+// Purpose:        Fill file entry and listbox from array
+// Arguments:      TString & SelArr     -- string containing file name and file items
+// Results:        
+// Exceptions:     
+// Description:    Inserts file name into file entry and file items into listbox.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->ClearList();
+	Int_t from;
+	TString item;
+	Int_t id = -1;
+	while (SelString.Tokenize(item, from, ":")) {
+		if (id == -1) fEntry->SetText(item.Data());
+		else fCombo->AddEntry(item.Data(), id);
+		id++;
+	}
+}
+
+void TGMrbFileObjectCombo::SetSelection(TObjArray & SelArr) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectListBox::SetSelection
+// Purpose:        Fill file entry and listbox from array
+// Arguments:      TObjArray & SelArr     -- array containing file name and file items
+// Results:        
+// Exceptions:     
+// Description:    Inserts file name into file entry and file items into listbox.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->ClearList();
+	TIterator * iter = SelArr.MakeIterator();
+	TObjString * o;
+	Int_t id = -1;
+	while (o = (TObjString *) iter->Next()) {
+		if (id == -1) fEntry->SetText(o->GetString());
+		else fCombo->AddEntry(o->GetString(), id);
+		id++;
+	}
 }
 
 Bool_t TGMrbFileObjectCombo::OpenFile(const Char_t * FileName) {
@@ -659,12 +705,12 @@ const Char_t * TGMrbFileObjectListBox::GetFileEntry(TString & FileName, Bool_t F
 	return(FileName.Data());
 }
 
-Int_t TGMrbFileObjectListBox::GetSelectionAsString(TString & SelItem, Bool_t FullPath) const {
+Int_t TGMrbFileObjectListBox::GetSelectionAsString(TString & SelString, Bool_t FullPath) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbFileObjectListBox::GetSelectionAsString
 // Purpose:        Return selected file/objects as string
-// Arguments:      TString SelItem         -- where to store selection data
+// Arguments:      TString SelString       -- where to store selection data
 //                 Bool_t FullPath         -- prepend full file path if kTRUE
 // Results:        Int_t NofItems          -- number of selected items (+1 for filename)
 // Exceptions:     
@@ -672,13 +718,13 @@ Int_t TGMrbFileObjectListBox::GetSelectionAsString(TString & SelItem, Bool_t Ful
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	SelItem = "";
+	SelString = "";
 	Int_t n = fListBox->GetNumberOfEntries();
 	if (n == 0) return(0);
 
-	this->GetFileEntry(SelItem, FullPath);
-	SelItem.Strip(TString::kBoth);
-	if (SelItem.IsNull()) return(0);
+	this->GetFileEntry(SelString, FullPath);
+	SelString.Strip(TString::kBoth);
+	if (SelString.IsNull()) return(0);
 
 	Int_t nofSelected = 1;
 	for (Int_t i = 0; i < n; i++) {
@@ -693,8 +739,8 @@ Int_t TGMrbFileObjectListBox::GetSelectionAsString(TString & SelItem, Bool_t Ful
 			item.Resize(idx);
 			item = item.Strip(TString::kBoth);
 			if (!item.IsNull()) {
-				SelItem += ":";
-				SelItem += item;
+				SelString += ":";
+				SelString += item;
 				nofSelected++;
 			}
 		} 
@@ -743,6 +789,52 @@ Int_t TGMrbFileObjectListBox::GetSelection(TObjArray & SelArr, Bool_t FullPath) 
 		} 
 	}
 	return(nofSelected);
+}
+
+void TGMrbFileObjectListBox::SetSelectionFromString(TString & SelString) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectListBox::SetSelectionFromString
+// Purpose:        Fill file entry and listbox from array
+// Arguments:      TString & SelArr     -- string containing file name and file items
+// Results:        
+// Exceptions:     
+// Description:    Inserts file name into file entry and file items into listbox.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->ClearList();
+	Int_t from;
+	TString item;
+	Int_t id = -1;
+	while (SelString.Tokenize(item, from, ":")) {
+		if (id == -1) fEntry->SetText(item.Data());
+		else fListBox->AddEntry(item.Data(), id);
+		id++;
+	}
+}
+
+void TGMrbFileObjectListBox::SetSelection(TObjArray & SelArr) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectListBox::SetSelection
+// Purpose:        Fill file entry and listbox from array
+// Arguments:      TObjArray & SelArr     -- array containing file name and file items
+// Results:        
+// Exceptions:     
+// Description:    Inserts file name into file entry and file items into listbox.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->ClearList();
+	TIterator * iter = SelArr.MakeIterator();
+	TObjString * o;
+	Int_t id = -1;
+	while (o = (TObjString *) iter->Next()) {
+		if (id == -1) fEntry->SetText(o->GetString());
+		else fListBox->AddEntry(o->GetString(), id);
+		id++;
+	}
 }
 
 Bool_t TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {

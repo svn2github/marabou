@@ -1,8 +1,10 @@
 #ifndef __TMrbSystem_h__
 #define __TMrbSystem_h__
 
-#if ROOTVERSION < 40104
-enum EFileModeMask {
+namespace std {} using namespace std;
+
+#if ROOT_VERSION_CODE <= ROOT_VERSION(4,01,00)
+ enum EFileModeMask {
    kS_IFMT   = 0170000,   // bitmask for the file type bitfields
    kS_IFSOCK = 0140000,   // socket
    kS_IFLNK  = 0120000,   // symbolic link
@@ -57,7 +59,7 @@ struct FileStat_t {
 // Class:          TMrbSystem    -- extension to TSystem class
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSystem.h,v 1.16 2007-09-04 11:04:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.h,v 1.17 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -132,6 +134,7 @@ class TMrbSystem: public TObject {
 		const Char_t * Which(TString & Result, const Char_t * Search, const Char_t * File, EAccessMode Mode = kFileExists);
 
 		Bool_t GetStat(TMrbLofNamedX & StatBuf, const Char_t * Path);  // perform stat(2) call
+		Bool_t IsSameFile(const Char_t * Path1, const Char_t * Path2);	// check if same inode
 
 		inline void SetIncludePath(const Char_t * IncludePath) { gSystem->SetIncludePath(IncludePath); };
 		inline const Char_t * GetIncludePath() { return(gSystem->GetIncludePath()); };

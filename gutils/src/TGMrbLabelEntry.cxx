@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.16 2007-08-07 12:39:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.17 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -240,7 +240,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data(), entryNo);
 							}
-							fEntry[entryNo]->SendSignal();
+							fEntry[entryNo]->SendSignal(entryNo);
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonDown:
 							s = this->GetText(entryNo);
@@ -263,7 +263,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data(), entryNo);
 							}
-							fEntry[entryNo]->SendSignal();
+							fEntry[entryNo]->SendSignal(entryNo);
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonBegin:
 							s = this->GetText(entryNo);
@@ -286,7 +286,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data(), entryNo);
 							}
-							fEntry[entryNo]->SendSignal();
+							fEntry[entryNo]->SendSignal(entryNo);
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonEnd:
 							s = this->GetText(entryNo);
@@ -309,7 +309,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data(), entryNo);
 							}
-							fEntry[entryNo]->SendSignal();
+							fEntry[entryNo]->SendSignal(entryNo);
 							break;
 					}
 			}
@@ -321,6 +321,10 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 
 				case kTE_TAB:
 //					if (fFocusList) fFocusList->FocusForward(fEntry);
+					break;
+				case kTE_ENTER:
+					entryNo = Param1 / 10;
+					fEntry[entryNo]->SendSignal(entryNo);
 					break;
 			}
 			break;

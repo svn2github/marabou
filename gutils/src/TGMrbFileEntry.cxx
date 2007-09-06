@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileEntry.cxx,v 1.5 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbFileEntry.cxx,v 1.6 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -95,12 +95,15 @@ TGMrbFileEntry::TGMrbFileEntry(const TGWindow * Parent,
 		bSize = fBrowse->GetDefaultWidth();
 	} else bSize = 0;
 
+	fFrameId = EntryId;
+
 	fEntry = new TGTextEntry(this, new TGTextBuffer(BufferSize), EntryId);
 	fEntry->SetFont(EntryGC->Font());
 	fEntry->SetBackgroundColor(EntryGC->BG());
 
 	fHeap.AddFirst((TObject *) fEntry);
 	this->AddFrame(fEntry, EntryGC->LH());
+	fEntry->Associate(this);
 	fEntry->Resize(EntryWidth - bSize, Height);
 }
 
@@ -127,8 +130,17 @@ Bool_t TGMrbFileEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 					case 0:
 						new TGFileDialog(fClient->GetRoot(), this, fDialogMode, &fFileInfo);
 						if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') fEntry->SetText(fFileInfo.fFilename);
+						this->EntryChanged(0);
 						break;
 				}
+		}
+	} else if (GET_MSG(MsgId) == kC_TEXTENTRY) {
+		switch (GET_SUBMSG(MsgId)) {
+			case kTE_TAB:
+				break;
+			case kTE_ENTER:
+				this->EntryChanged(0);
+				break;
 		}
 	}
 	return(kTRUE);

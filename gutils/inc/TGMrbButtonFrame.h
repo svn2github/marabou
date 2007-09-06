@@ -8,7 +8,7 @@
 // Class:          TGMrbButtonFrame    -- a composite frame containing buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbButtonFrame.h,v 1.7 2007-08-31 07:55:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbButtonFrame.h,v 1.8 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ class TGMrbButtonFrame: public TGMrbObject {
 										kGMrbButtonGroup	= BIT(5)
 									};
 
-		enum						{	kFrameIdShift 		=	16	};
+		enum						{	kFrameIdShift 		= 16	};
 
 	public:
 		TGMrbButtonFrame(const TGWindow * Parent, const Char_t * Label, UInt_t ButtonType,
@@ -98,13 +98,9 @@ class TGMrbButtonFrame: public TGMrbObject {
 		void SetState(UInt_t Pattern, EButtonState State = kButtonDown);	// set button state
 		UInt_t GetActive(); 												// return button state
 
-		inline void SetFrameId(Int_t Id) { fFrameId = (Id << kFrameIdShift); };
-		inline Int_t GetFrameId() { return(fFrameId); };
-
-		inline void SendSignal(TObject * Receiver, const Char_t * Method) {
-				this->Connect("ButtonPressed(Int_t)", Receiver->ClassName(), Receiver, Method);
+		inline void ConnectSigToSlot(const Char_t * Signal, TObject * Receiver, const Char_t * Slot) {
+			this->Connect(Signal, Receiver->ClassName(), Receiver, Slot);
 		}
-
 		inline void ButtonPressed(Int_t Signal) { this->Emit("ButtonPressed(Int_t)", fFrameId + Signal); };	//*SIGNAL*
 
 		void FlipState(UInt_t Pattern);					// flip state
@@ -132,8 +128,7 @@ class TGMrbButtonFrame: public TGMrbObject {
 	protected:
 		const TGWindow * fParent; 						// parent window
 		UInt_t fType;								// button type: text, radio, check, or picture; list or group
-		Int_t fButtonId;							// button id to be used with Associate()
-		Int_t fFrameId;								// frame id to be used with signal/slot mechanism
+		Int_t fFrameId;								// frame id to be used with Associate()
 		TString fLabel; 							// label text
 		TMrbLofNamedX fButtons;						// list of buttons: labels, indices, widgets
 		Int_t fWidth;								// frame width

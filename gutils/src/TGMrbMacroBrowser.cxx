@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.43 2007-09-03 18:13:24 Marabou Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.44 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -26,6 +26,9 @@
 #define HEAP(x)	fHeap.AddFirst((TObject *) x)
 
 #include <sstream>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
 
 #include "TEnv.h"
 #include "TApplication.h"
@@ -56,11 +59,10 @@ ClassImp(TGMrbMacroList)
 
 const SMrbNamedX kGMrbMacroLofAclicModes[] =
 			{
-				{TGMrbMacroEdit::kGMrbMacroAclicNone, 		"none",		"Don't use ACLiC"						},
 				{TGMrbMacroEdit::kGMrbMacroAclicPlus, 		"+",		"Compile if needed"						},
 				{TGMrbMacroEdit::kGMrbMacroAclicPlusPlus, 	"++",		"Force compiling"						},
 				{TGMrbMacroEdit::kGMrbMacroAclicPlusG,		"+g",	 	"Compile if needed, include debug info"	},
-				{TGMrbMacroEdit::kGMrbMacroAclicPlusPlusG, "++g",	 	"Force compiling, include debug info"	},
+				{TGMrbMacroEdit::kGMrbMacroAclicPlusPlusG,	"++g",	 	"Force compiling, include debug info"	},
 				{0, 										NULL,		NULL									}
 			};
 
@@ -1012,7 +1014,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 				parentFrame = fMacroLofFrames[frameNo];
 				newPad = kTRUE;
 			} else {
-				gMrbLog->Wrn()	<< "[Arg " << argName << "(#" << macroArg->GetNumber() << ")]: Can't open new frame - max "
+				gMrbLog->Wrn()	<< "[Arg " << argName << "(#" << macroArg->GetIndex() << ")]: Can't open new frame - max "
 								<< TGMrbMacroFrame::kGMrbMacroNofFrames << " allowed" << endl;
 				gMrbLog->Flush(this->ClassName());
 				continue;
@@ -1025,7 +1027,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					fMacroTab = new TGTab(fMacroArgs, Width, Height);
 					fMacroArgs->AddFrame(fMacroTab, frameGC->LH());
 				} else {
-					gMrbLog->Wrn()	<< "[Arg " << argName << "(#" << macroArg->GetNumber() << ")]: Can't open tab - tabs have to be initialized with arg#0" << endl;
+					gMrbLog->Wrn()	<< "[Arg " << argName << "(#" << macroArg->GetIndex() << ")]: Can't open tab - tabs have to be initialized with arg#0" << endl;
 					gMrbLog->Flush(this->ClassName());
 					continue;
 				}
@@ -1040,7 +1042,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 				parentFrame = fMacroLofTabFrames[tabNo];
 				newPad = kTRUE;
 			} else {
-				gMrbLog->Wrn()	<< "[Arg " << argName << "(#" << macroArg->GetNumber() << ")]: Can't open new tab - max "
+				gMrbLog->Wrn()	<< "[Arg " << argName << "(#" << macroArg->GetIndex() << ")]: Can't open new tab - max "
 								<< TGMrbMacroFrame::kGMrbMacroNofTabs << " allowed" << endl;
 				gMrbLog->Flush(this->ClassName());
 				continue;
@@ -1057,7 +1059,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 				newPad = kFALSE;
 				if (i > 0) continue;
 			} else {
-				gMrbLog->Wrn()	<< "[Arg " << argName << "(#" << macroArg->GetNumber() << ")]: Can't open new vertical pad - max "
+				gMrbLog->Wrn()	<< "[Arg " << argName << "(#" << macroArg->GetIndex() << ")]: Can't open new vertical pad - max "
 									<< TGMrbMacroFrame::kGMrbMacroNofSubframes << " allowed" << endl;
 				gMrbLog->Flush(this->ClassName());
 				continue;
@@ -1066,7 +1068,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 
 		argType = macroEnv->GetValue(macroArg->GetResource(argResource, "Type"), "Char_t *");
 		if ((macroArg->fType = fLofArgTypes.FindByName(argType.Data(), TMrbLofNamedX::kFindExact)) == NULL) {
-			gMrbLog->Err() << "[Arg " << argName << "(#" << macroArg->GetNumber() << ")]: Illegal argument type - " << argType << endl;
+			gMrbLog->Err() << "[Arg " << argName << "(#" << macroArg->GetIndex() << ")]: Illegal argument type - " << argType << endl;
 			gMrbLog->Flush(this->ClassName());
 			macroArg->fType = fLofArgTypes.FindByIndex(TGMrbMacroArg::kGMrbMacroArgChar);
 		}
@@ -1156,7 +1158,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			if (entryType & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 
 				macroArg->fEntry = new TGMrbLabelEntry(parentFrame, argTitle.Data(),
-														40, TGMrbMacroFrame::kEntryId + argNo,
+														40, argNo << TGMrbButtonFrame::kFrameIdShift,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														macroArg->fEntryWidth,
@@ -1164,7 +1166,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 														NULL, NULL, checkBtn, NULL, kHorizontalFrame, kSunkenFrame, macroArg->fNofEntryFields);
 			} else {
 				macroArg->fEntry = new TGMrbLabelEntry(parentFrame, argTitle.Data(),
-														40, TGMrbMacroFrame::kEntryId + argNo,
+														40, argNo << TGMrbButtonFrame::kFrameIdShift,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														macroArg->fEntryWidth,
@@ -1172,6 +1174,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 														NULL, NULL, checkBtn);
 			}
 			HEAP(macroArg->fEntry);
+			macroArg->fEntry->GetTextEntry()->ConnectSigToSlot("EntryChanged(Int_t)", this, "ProcessSignal(Int_t)");
 			parentFrame->AddFrame(macroArg->fEntry, frameGC->LH());
 
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
@@ -1182,7 +1185,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			Int_t nt = (entryType & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) ? (nofEntryFields + 1) : nofEntryFields;
 			if (nt != nofTokens) {
 				TString an = macroEnv->GetValue(macroArg->GetResource(argResource, "Name"), "??");
-				gMrbLog->Wrn()	<< "[Arg " << an << " (#" << macroArg->GetNumber() << ")]: Number of (default) values not matching number of entries - "
+				gMrbLog->Wrn()	<< "[Arg " << an << " (#" << macroArg->GetIndex() << ")]: Number of (default) values not matching number of entries - "
 								<< nofTokens << " (should be " << nt << ")" << endl;
 				gMrbLog->Flush(this->ClassName());
 			}
@@ -1238,21 +1241,21 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					TObjArray * lltok = llvalue.Tokenize(":");
 					Int_t nofTokens = lltok->GetEntries();
 					if (nofTokens != nofEntryFields) {
-						gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetNumber() << "]: Number of lower limits not matching number of entries - "
+						gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetIndex() << "]: Number of lower limits not matching number of entries - "
 										<< nofTokens << " (should be " << nofEntryFields << ")" << endl;
 						gMrbLog->Flush(this->ClassName());
 					}
 					TObjArray * ultok = ulvalue.Tokenize(":");
 					nofTokens = ultok->GetEntries();
 					if (nofTokens != nofEntryFields) {
-						gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetNumber() << "]: Number of upper limits not matching number of entries - "
+						gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetIndex() << "]: Number of upper limits not matching number of entries - "
 										<< nofTokens << " (should be " << nofEntryFields << ")" << endl;
 						gMrbLog->Flush(this->ClassName());
 					}
 					TObjArray * itok = ivalue.Tokenize(":");
 					nofTokens = itok->GetEntries();
 					if (nofTokens != nofEntryFields) {
-						gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetNumber() << "]: Number of increments not matching number of entries - "
+						gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetIndex() << "]: Number of increments not matching number of entries - "
 										<< nofTokens << " (should be " << nofEntryFields << ")" << endl;
 						gMrbLog->Flush(this->ClassName());
 					}
@@ -1285,7 +1288,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fButtons.SetPatternMode();
 			macroArg->fButtons.AddNamedX(kGMrbMacroYesNoButtons);
 			macroArg->fRadio = new TGMrbRadioButtonList(parentFrame, argTitle.Data(),
-														&macroArg->fButtons, -1, 1,
+														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, 1,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC);
@@ -1297,8 +1300,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			} else {
 				macroArg->fRadio->SetState(TGMrbMacroArg::kGMrbMacroEntryNo, kButtonDown);
 			}
-			macroArg->fRadio->SetFrameId(argNo);
-			macroArg->fRadio->SendSignal(this, "CatchSignal(Int_t)");
+			macroArg->fRadio->ConnectSigToSlot("ButtonPressed(Int_t)", this, "ProcessSignal(Int_t)");
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryRadio
 						|| entryType == TGMrbMacroArg::kGMrbMacroEntryCheck
 						|| entryType == TGMrbMacroArg::kGMrbMacroEntryText
@@ -1342,7 +1344,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 				}
 				if (entryType == TGMrbMacroArg::kGMrbMacroEntryRadio) {
 					macroArg->fRadio = new TGMrbRadioButtonList(parentFrame, argTitle.Data(),
-														&macroArg->fButtons, -1, macroArg->fNofCL,
+														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, macroArg->fNofCL,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC, macroArg->fOrientation);
@@ -1354,11 +1356,10 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					if ((button = macroArg->fButtons.FindByIndex(val)) != NULL) {
 						macroArg->fRadio->SetState(val, kButtonDown);
 					}
-					macroArg->fRadio->SetFrameId(argNo);
-					macroArg->fRadio->SendSignal(this, "CatchSignal(Int_t)");
+					macroArg->fRadio->ConnectSigToSlot("ButtonPressed(Int_t)", this, "ProcessSignal(Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryCheck) {
 					macroArg->fCheck = new TGMrbCheckButtonList(parentFrame, argTitle.Data(),
-														&macroArg->fButtons, -1, macroArg->fNofCL,
+														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, macroArg->fNofCL,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC,
@@ -1370,22 +1371,20 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					Int_t pattern;
 					value.ToInteger(pattern);
 					macroArg->fCheck->SetState(pattern, kButtonDown);
-					macroArg->fCheck->SetFrameId(argNo);
-					macroArg->fCheck->SendSignal(this, "CatchSignal(Int_t)");
+					macroArg->fCheck->ConnectSigToSlot("ButtonPressed(Int_t)", this, "ProcessSignal(Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryText) {
 					macroArg->fText = new TGMrbTextButtonList(parentFrame, argTitle.Data(),
-														&macroArg->fButtons, -1, macroArg->fNofCL,
+														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, macroArg->fNofCL,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC,
 														macroArg->fOrientation);
 					HEAP(macroArg->fText);
 					parentFrame->AddFrame(macroArg->fText, frameGC->LH());
-					macroArg->fText->SetFrameId(argNo);
-					macroArg->fText->SendSignal(this, "CatchSignal(Int_t)");
+					macroArg->fText->ConnectSigToSlot("ButtonPressed(Int_t)", this, "ProcessSignal(Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryCombo) {
 					macroArg->fCombo = new TGMrbLabelCombo(parentFrame, argTitle.Data(), &macroArg->fButtons,
-														TGMrbMacroFrame::kEntryId + argNo, -1,
+														argNo << TGMrbButtonFrame::kFrameIdShift, -1,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														macroArg->fEntryWidth,
@@ -1420,7 +1419,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fFileInfo->fIniDir = (Char_t *) gSystem->WorkingDirectory();
 			macroArg->fFileInfo->fFileTypes = (const Char_t **) macroArg->fPtrFileTypes;
 			macroArg->fFile = new TGMrbFileEntry(parentFrame, argTitle.Data(), 100,
-												TGMrbMacroFrame::kEntryId + argNo,
+												argNo << TGMrbButtonFrame::kFrameIdShift,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
 												macroArg->fEntryWidth,
@@ -1430,10 +1429,11 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			parentFrame->AddFrame(macroArg->fFile, frameGC->LH());
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
 			macroArg->fFile->GetEntry()->SetText(value.Data());
+			macroArg->fFile->ConnectSigToSlot("EntryChanged(Int_t)", this, "ProcessSignal(Int_t)");
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) {
 			macroArg->fFObjCombo = new TGMrbFileObjectCombo(parentFrame, argTitle.Data(), 100,
-												TGMrbMacroFrame::kEntryId + argNo,
-												TGMrbMacroFrame::kComboId + argNo,
+												argNo << TGMrbButtonFrame::kFrameIdShift,
+												argNo << TGMrbButtonFrame::kFrameIdShift,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
 												macroArg->fEntryWidth,
@@ -1446,8 +1446,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fFObjCombo->OpenFile(value.Data());
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
 			macroArg->fFObjListBox = new TGMrbFileObjectListBox(parentFrame, argTitle.Data(), 100,
-												TGMrbMacroFrame::kEntryId + argNo,
-												TGMrbMacroFrame::kListBoxId + argNo,
+												argNo << TGMrbButtonFrame::kFrameIdShift,
+												argNo << TGMrbButtonFrame::kFrameIdShift,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
 												macroArg->fEntryWidth,
@@ -1516,14 +1516,12 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	} else {
 		this->MakeZombie();
 	}
-
-
 }
 
-void TGMrbMacroFrame::CatchSignal(Int_t SignalId) {
+void TGMrbMacroFrame::ProcessSignal(Int_t SignalId) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbMacroFrame::CatchSignal
+// Name:           TGMrbMacroFrame::ProcessSignal
 // Purpose:        Signal handler
 // Arguments:      Int_t SignalId      -- signal id
 // Results:        --
@@ -1537,7 +1535,7 @@ void TGMrbMacroFrame::CatchSignal(Int_t SignalId) {
 	if (argNo > 0) {
 		TEnv * macroEnv = (TEnv *) fMacro->GetAssignedObject();
 		TString argName = macroEnv->GetValue(Form("Arg%d.Name", argNo), "???");
-		gROOT->ProcessLine(Form("UserButtonPressed((TGMrbMacroFrame *) %#x, %d, \"%s\", %d)", this, argNo, argName.Data(), id));
+		gROOT->ProcessLine(Form("ProcessSignal((TGMrbMacroFrame *) %#x, %d, \"%s\", %d)", this, argNo, argName.Data(), id));
 	}
 }
 
@@ -1573,10 +1571,10 @@ Bool_t TGMrbMacroFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							this->ResetMacroArgs();
 							break;
 						case TGMrbMacroFrame::kGMrbMacroIdExec:
-							this->ExecMacro();
+							this->ExecMacro(kFALSE);
 							break;
 						case TGMrbMacroFrame::kGMrbMacroIdExecClose:
-							this->ExecMacro();
+							this->ExecMacro(kFALSE);
 							this->CloseWindow();
 							break;
 						case TGMrbMacroFrame::kGMrbMacroIdQuit:
@@ -1628,7 +1626,7 @@ Bool_t TGMrbMacroFrame::ResetMacroArgs() {
 			Int_t nofTokens = lofTokens->GetEntries();
 			Int_t nt = (n & TGMrbMacroArg::kGMrbMacroEntryBitChkBtn) ? (nofEntryFields + 1) : nofEntryFields;
 			if (nt != nofTokens) {
-				gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetNumber() << "]: Number of (default) values not matching number of entries - "
+				gMrbLog->Wrn()	<< "[Arg #" << macroArg->GetIndex() << "]: Number of (default) values not matching number of entries - "
 								<< nofTokens << " (should be " << nt << ")" << endl;
 				gMrbLog->Flush(this->ClassName(), "ResetMacroArgs");
 			}
@@ -1694,8 +1692,8 @@ Bool_t TGMrbMacroFrame::ExecMacro(Bool_t UserStart) {
 //////////////////////////////////////////////////////////////////////////////
 
 	UInt_t buttonBits;
-	TMrbString argString[TGMrbLabelEntry::kGMrbEntryNofEntries];
-	TMrbString currentValue, cVal;
+	TString argString[TGMrbLabelEntry::kGMrbEntryNofEntries];
+	TString currentValue, cVal;
 	UInt_t argType;
 
 	if (!this->LoadMacro()) return(kFALSE);
@@ -1767,7 +1765,8 @@ Bool_t TGMrbMacroFrame::ExecMacro(Bool_t UserStart) {
 			buttonBits = macroArg->fRadio->GetActive();
 			argType = macroArg->fType->GetIndex();
 			if (argType == TGMrbMacroArg::kGMrbMacroArgInt || argType == TGMrbMacroArg::kGMrbMacroArgUInt) {
-				argString[0].FromInteger(buttonBits, 0, 16, kTRUE, kTRUE);
+				argString[0] = "";
+				argString[0] += buttonBits;
 			} else {
 				TMrbNamedX * btn =  macroArg->fButtons.FindByIndex(buttonBits);
 				argString[0] = btn ? btn->GetName() : macroArg->fButtons[0]->GetName();
@@ -1775,7 +1774,8 @@ Bool_t TGMrbMacroFrame::ExecMacro(Bool_t UserStart) {
 			currentValue = argString[0];
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryCheck) {
 			buttonBits = macroArg->fCheck->GetActive();
-			argString[0].FromInteger(buttonBits, 0, 16, kTRUE, kTRUE);
+			argString[0] = "";
+			argString[0] += buttonBits;
 			macroArg->fButtons.Pattern2String(currentValue, buttonBits);
 			currentValue = argString[0];
 		} else if (n == TGMrbMacroArg::kGMrbMacroEntryCombo) {
@@ -1908,21 +1908,21 @@ Bool_t TGMrbMacroFrame::LoadMacro() {
 	TString macroCmd = macroName;
 	macroCmd.Remove(macroCmd.Index(".C"), 1000);
 
-	TString aclicFlag = macroEnv->GetValue("Aclic", "+g");
-	if (aclicFlag.CompareTo("none") != 0) {
-		TString aclic = fileSpec;
-		aclic += aclicFlag;
-		gMrbLog->Out()	<< "Compiling/loading macro " << gSystem->BaseName(macroName.Data()) << ", cmd=\".L " << aclic << "\" - wait ..." << endl;
+	TString aclicFlag = macroEnv->GetValue("Aclic", "+");
+	aclicFlag = aclicFlag.Strip(TString::kBoth);
+	if (!aclicFlag.BeginsWith("+")) aclicFlag = "+";
+	TString aclic = fileSpec;
+	aclic += aclicFlag;
+	gMrbLog->Out()	<< "Compiling/loading macro " << gSystem->BaseName(macroName.Data()) << ", cmd=\".L " << aclic << "\" - wait ..." << endl;
+	gMrbLog->Flush(this->ClassName(), "LoadMacro", setblue);
+	Int_t errCode;
+	Int_t sts = gROOT->LoadMacro(aclic.Data(), &errCode);
+	if (sts == -1 || errCode != 0) {
+		gMrbLog->Err()  << "Compile step failed for macro \"" << fileSpec << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "LoadMacro");
-		Int_t errCode;
-		Int_t sts = gROOT->LoadMacro(aclic.Data(), &errCode);
-		if (sts == -1 || errCode != 0) {
-			gMrbLog->Err()  << "Compile step failed for macro \"" << fileSpec << "\"" << endl;
-			gMrbLog->Flush(this->ClassName(), "LoadMacro");
-			return(kFALSE);
-		}
-		fMacroLoaded = kTRUE;
+		return(kFALSE);
 	}
+	fMacroLoaded = kTRUE;
 	return(kTRUE);
 }
 
@@ -1987,13 +1987,14 @@ TGMrbMacroArg * TGMrbMacroFrame::FindArgByName(const Char_t * ArgName) {
 	return(NULL);
 }
 
-Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Int_t Value) {
+Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Int_t Value, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroFrame::SetArgValue
 // Purpose:        Set argument value
 // Arguments:      Char_t * ArgName         -- name
 //                 Int_t Value              -- value
+//                 Int_t EntryNo            -- entry
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Sets entry field of given argument to value
@@ -2019,19 +2020,23 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Int_t Value) {
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownX2:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
 					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgInt && ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgUInt) return(kFALSE);
-					ap->fEntry->SetText(Form("%d", Value));
+					ap->fEntry->SetText(Form("%d", Value), EntryNo);
+					ap->fEntry->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryYesNo:
 					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgBool) return(kFALSE);
 					ap->fRadio->SetState(((Bool_t) Value) ? (Int_t) TGMrbMacroArg::kGMrbMacroEntryYes : (Int_t) TGMrbMacroArg::kGMrbMacroEntryNo, kButtonDown);
+					ap->fRadio->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryRadio:
 					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgInt && ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgUInt) return(kFALSE);
 					ap->fRadio->SetState(Value, kButtonDown);
+					ap->fRadio->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryCheck:
 					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgInt && ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgUInt) return(kFALSE);
 					ap->fCheck->SetState(Value, kButtonDown);
+					ap->fCheck->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryText:
 				case TGMrbMacroArg::kGMrbMacroEntryCombo:
@@ -2051,13 +2056,14 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Int_t Value) {
 	return(kFALSE);
 }
 
-Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Bool_t Value) {
+Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Bool_t Value, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroFrame::SetArgValue
 // Purpose:        Set argument value
 // Arguments:      Char_t * ArgName         -- name
 //                 Bool_t Value             -- value
+//                 Int_t EntryNo            -- entry
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Sets entry field of given argument to value
@@ -2083,11 +2089,13 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Bool_t Value) {
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownX2:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
 					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgBool) return(kFALSE);
-					ap->fEntry->SetText(Value ? "TRUE" : "FALSE");
+					ap->fEntry->SetText(Value ? "TRUE" : "FALSE", EntryNo);
+					ap->fEntry->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryYesNo:
 					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgBool) return(kFALSE);
 					ap->fRadio->SetState(Value ? (Int_t) TGMrbMacroArg::kGMrbMacroEntryYes : (Int_t) TGMrbMacroArg::kGMrbMacroEntryNo, kButtonDown);
+					ap->fRadio->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryRadio:
 				case TGMrbMacroArg::kGMrbMacroEntryCheck:
@@ -2109,13 +2117,14 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Bool_t Value) {
 	return(kFALSE);
 }
 
-Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Double_t Value) {
+Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Double_t Value, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroFrame::SetArgValue
 // Purpose:        Set argument value
 // Arguments:      Char_t * ArgName         -- name
 //                 Double_t Value           -- value
+//                 Int_t EntryNo            -- entry
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Sets entry field of given argument to value
@@ -2141,7 +2150,8 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Double_t Value) {
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownX2:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
 					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgFloat && ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgDouble) return(kFALSE);
-					ap->fEntry->SetText(Form("%g", Value));
+					ap->fEntry->SetText(Form("%g", Value), EntryNo);
+					ap->fEntry->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryYesNo:
 				case TGMrbMacroArg::kGMrbMacroEntryRadio:
@@ -2164,13 +2174,14 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, Double_t Value) {
 	return(kFALSE);
 }
 
-Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, const Char_t * Value) {
+Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, const Char_t * Value, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroFrame::SetArgValue
 // Purpose:        Set argument value
 // Arguments:      Char_t * ArgName         -- name
 //                 Char_t * Value           -- value
+//                 Int_t EntryNo            -- entry
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Sets entry field of given argument to value
@@ -2196,7 +2207,8 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, const Char_t * Value
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownX2:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
 					if (ap->fType->GetIndex() != TGMrbMacroArg::kGMrbMacroArgChar) return(kFALSE);
-					ap->fEntry->SetText(Value);
+					ap->fEntry->SetText(Value, EntryNo);
+					ap->fEntry->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryYesNo:
 					{
@@ -2204,10 +2216,12 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, const Char_t * Value
 						yn.ToLower();
 						if (yn.CompareTo("y") == 0 || yn.CompareTo("yes") == 0) {
 							ap->fRadio->SetState(TGMrbMacroArg::kGMrbMacroEntryYes, kButtonDown);
+							ap->fRadio->Layout();
 							return(kTRUE);
 						}
 						if (yn.CompareTo("n") == 0 || yn.CompareTo("no") == 0) {
 							ap->fRadio->SetState(TGMrbMacroArg::kGMrbMacroEntryNo, kButtonDown);
+							ap->fRadio->Layout();
 							return(kTRUE);
 						}
 						return(kFALSE);
@@ -2218,15 +2232,19 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, const Char_t * Value
 					return(kFALSE);
 				case TGMrbMacroArg::kGMrbMacroEntryCombo:
 					ap->fCombo->SetText(Value);
+					ap->fCombo->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryFile:
 					ap->fFile->SetText(Value);
+					ap->fFile->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryFObjCombo:
 					ap->fFObjCombo->SetText(Value);
+					ap->fFObjCombo->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryFObjListBox:
 					ap->fFObjListBox->SetText(Value);
+					ap->fFObjListBox->Layout();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryComment:
 				case TGMrbMacroArg::kGMrbMacroEntrySection:
@@ -2235,6 +2253,64 @@ Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, const Char_t * Value
 				case TGMrbMacroArg::kGMrbMacroEntryPad:
 				case TGMrbMacroArg::kGMrbMacroEntryTab:
 					return(kFALSE);
+			}
+		}
+	}
+	return(kFALSE);
+}
+
+Bool_t TGMrbMacroFrame::SetArgValue(const Char_t * ArgName, TObjArray & Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroFrame::SetArgValue
+// Purpose:        Set argument value
+// Arguments:      Char_t * ArgName         -- name
+//                 TString & File           -- selected file name
+//                 TObjArray & Selection    -- selected items
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets file name and list items for a combobox or listbox
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * argIter = fLofMacroArgs.MakeIterator();
+	TGMrbMacroArg * ap;
+	while (ap = (TGMrbMacroArg *) argIter->Next()) {
+		TString argName = ap->GetName();
+		if (argName.CompareTo(ArgName) == 0) {
+			switch (ap->fEntryType->GetIndex()) {
+				case TGMrbMacroArg::kGMrbMacroEntryPlain:
+				case TGMrbMacroArg::kGMrbMacroEntryPlain2:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC:
+				case TGMrbMacroArg::kGMrbMacroEntryPlainC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDown2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownX2:
+				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
+				case TGMrbMacroArg::kGMrbMacroEntryRadio:
+				case TGMrbMacroArg::kGMrbMacroEntryCheck:
+				case TGMrbMacroArg::kGMrbMacroEntryText:
+				case TGMrbMacroArg::kGMrbMacroEntryFile:
+				case TGMrbMacroArg::kGMrbMacroEntryCombo:
+				case TGMrbMacroArg::kGMrbMacroEntryComment:
+				case TGMrbMacroArg::kGMrbMacroEntrySection:
+				case TGMrbMacroArg::kGMrbMacroEntryGroup:
+				case TGMrbMacroArg::kGMrbMacroEntryFrame:
+				case TGMrbMacroArg::kGMrbMacroEntryPad:
+				case TGMrbMacroArg::kGMrbMacroEntryTab:
+					return(kFALSE);
+				case TGMrbMacroArg::kGMrbMacroEntryFObjCombo:
+					ap->fFObjCombo->SetSelection(Selection);
+					ap->fFObjCombo->Layout();
+					return(kTRUE);
+				case TGMrbMacroArg::kGMrbMacroEntryFObjListBox:
+					ap->fFObjListBox->SetSelection(Selection);
+					ap->fFObjListBox->Layout();
+					return(kTRUE);
 			}
 		}
 	}
@@ -2502,7 +2578,7 @@ Bool_t TGMrbMacroFrame::GetArgValue(const Char_t * ArgName, TString & Value, Int
 	return(kFALSE);
 }
 
-Bool_t TGMrbMacroFrame::GetArgValue(const Char_t * ArgName, TString & File, TObjArray & Selection) {
+Bool_t TGMrbMacroFrame::GetArgValue(const Char_t * ArgName, TObjArray & Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroFrame::GetArgValue
@@ -2519,7 +2595,6 @@ Bool_t TGMrbMacroFrame::GetArgValue(const Char_t * ArgName, TString & File, TObj
 
 	TIterator * argIter = fLofMacroArgs.MakeIterator();
 	TGMrbMacroArg * ap;
-	File = "";
 	Selection.Delete();
 	while (ap = (TGMrbMacroArg *) argIter->Next()) {
 		TString argName = ap->GetName();
@@ -2550,16 +2625,10 @@ Bool_t TGMrbMacroFrame::GetArgValue(const Char_t * ArgName, TString & File, TObj
 				case TGMrbMacroArg::kGMrbMacroEntryTab:
 					return(kFALSE);
 				case TGMrbMacroArg::kGMrbMacroEntryFObjCombo:
-					ap->fFObjCombo->GetFileEntry(File, kFALSE);
 					ap->fFObjCombo->GetSelection(Selection, kFALSE);
-					Selection.RemoveAt(0);
-					Selection.Compress();
 					return(kTRUE);
 				case TGMrbMacroArg::kGMrbMacroEntryFObjListBox:
-					ap->fFObjListBox->GetFileEntry(File, kFALSE);
 					ap->fFObjListBox->GetSelection(Selection, kFALSE);
-					Selection.RemoveAt(0);
-					Selection.Compress();
 					return(kTRUE);
 			}
 		}
@@ -2735,7 +2804,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fLofModifyModes.AddNamedX(kGMrbMacroLofModifyModes);
 	fLofArglistGuiModes.SetName("GUI modes");
 	fLofArglistGuiModes.AddNamedX(kGMrbMacroLofArgListGuiModes);
-	fLofUserStartModes.SetName("Auto exec modes");
+	fLofUserStartModes.SetName("User start modes");
 	fLofUserStartModes.AddNamedX(kGMrbMacroLofUserStartModes);
 	fLofEntryTypes.SetName("Entry types");
 	fLofEntryTypes.AddNamedX(kGMrbMacroLofEntryTypes);
@@ -2820,7 +2889,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 														frameGC, labelGC, buttonGC);
 	HEAP(fMacroAclic);
 	fMacroInfo->AddFrame(fMacroAclic, frameGC->LH());
-	fMacroAclic->SetState(TGMrbMacroEdit::kGMrbMacroAclicPlusG);
+	fMacroAclic->SetState(TGMrbMacroEdit::kGMrbMacroAclicPlus);
 
 	fMacroRcFile = new TGMrbLabelEntry(fMacroInfo, "RcFile", 50, -1, frameWidth - 20,
 														TGMrbMacroEdit::kLineHeight, 300,
@@ -2845,7 +2914,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fMacroInfo->AddFrame(fMacroGuiPtrMode, frameGC->LH());
 	fMacroGuiPtrMode->SetState(TGMrbMacroEdit::kGMrbMacroArglistOnly);
 
-	fMacroUserStart = new TGMrbRadioButtonList(fMacroInfo, "Auto exec mode",
+	fMacroUserStart = new TGMrbRadioButtonList(fMacroInfo, "User start mode",
 														&fLofUserStartModes, -1, 1,
 														frameWidth - 20,
 														TGMrbMacroEdit::kLineHeight,
@@ -2992,7 +3061,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	HEAP(fArgExecFunct);
 	fMacroLayout->AddFrame(fArgExecFunct, frameGC->LH());
 
-	fCurrentArg.SetNumber(1);
+	fCurrentArg.SetIndex(1);
 	argValue = 1;
 	fArgNumber->GetEntry()->SetText(argValue.Data());
 	this->UpdateArg();
@@ -3067,13 +3136,13 @@ Bool_t TGMrbMacroEdit::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 							break;
 						case kGMrbMacroEditIdNewArgBefore:
 							this->StoreArg();
-							this->InsertArg(fCurrentArg.GetNumber());
+							this->InsertArg(fCurrentArg.GetIndex());
 							this->UpdateNofArgs();
 							this->UpdateArg();
 							break;
 						case kGMrbMacroEditIdNewArgAfter:
 							this->StoreArg();
-							this->InsertArg(fCurrentArg.GetNumber() + 1);
+							this->InsertArg(fCurrentArg.GetIndex() + 1);
 							this->UpdateNofArgs();
 							this->UpdateArg();
 							break;
@@ -3097,7 +3166,7 @@ Bool_t TGMrbMacroEdit::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 							fo.fFileTypes = (const char **) macroFileTypes;
 							new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fo);
 							if (fo.fFilename != NULL && *fo.fFilename != '\0') {
-								if (this->SaveMacro(fo.fFilename)) {
+								if (this->SaveMacro(fo.fFilename, fMacro->GetName())) {
 									if (lofMacros.AddMacro(fo.fFilename)) {
 										macro = lofMacros.FirstMacro();
 										fMacro->GetAssignedObject()->Delete();
@@ -3126,19 +3195,19 @@ Bool_t TGMrbMacroEdit::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 					if (argValue.ToInteger(intVal)) {
 						if (intVal < 1) {
 							this->StoreArg();
-							fCurrentArg.SetNumber(1); 
+							fCurrentArg.SetIndex(1); 
 							argValue = 1;
 							fArgNumber->GetEntry()->SetText(argValue.Data());
 							this->UpdateArg();
 						} else if (intVal > fNofArgs) {
 							this->StoreArg();
-							fCurrentArg.SetNumber(fNofArgs); 
+							fCurrentArg.SetIndex(fNofArgs); 
 							argValue = fNofArgs;
 							fArgNumber->GetEntry()->SetText(argValue.Data());
 							this->UpdateArg();
 						} else {
 							this->StoreArg();
-							fCurrentArg.SetNumber(intVal); 
+							fCurrentArg.SetIndex(intVal); 
 							this->UpdateArg();
 						}
 					}
@@ -3169,8 +3238,8 @@ Bool_t TGMrbMacroEdit::UpdateArg(Int_t ArgNo) {
 
 	TGMrbMacroArg thisArg;
 
-	if (ArgNo == -1) ArgNo = fCurrentArg.GetNumber();
-	thisArg.SetNumber(ArgNo);
+	if (ArgNo == -1) ArgNo = fCurrentArg.GetIndex();
+	thisArg.SetIndex(ArgNo);
 
 	if (ArgNo < 1 || ArgNo > fNofArgs) {
 		gMrbLog->Err() << "Arg number " << ArgNo << " out of range (should be in [1, " << fNofArgs << "])" << endl;
@@ -3180,6 +3249,7 @@ Bool_t TGMrbMacroEdit::UpdateArg(Int_t ArgNo) {
 
 
 	fArgName->GetEntry()->SetText(fCurrentEnv->GetValue(thisArg.GetResource(argValue, "Name"), ""));
+	thisArg.SetName(thisArg.GetResource(argValue, "Name"));
 	fArgTitle->GetEntry()->SetText(fCurrentEnv->GetValue(thisArg.GetResource(argValue, "Title"), ""));
 
 	argType = fCurrentEnv->GetValue(thisArg.GetResource(argValue, "Type"), "");
@@ -3279,8 +3349,8 @@ Bool_t TGMrbMacroEdit::StoreArg(Int_t ArgNo) {
 
 	TGMrbMacroArg thisArg;
 
-	if (ArgNo == -1) ArgNo = fCurrentArg.GetNumber();
-	thisArg.SetNumber(ArgNo);
+	if (ArgNo == -1) ArgNo = fCurrentArg.GetIndex();
+	thisArg.SetIndex(ArgNo);
 
 	if (ArgNo < 1 || ArgNo > fNofArgs) {
 		gMrbLog->Err() << "Arg number " << ArgNo << " out of range (should be in [1, " << fNofArgs << "])" << endl;
@@ -3289,6 +3359,7 @@ Bool_t TGMrbMacroEdit::StoreArg(Int_t ArgNo) {
 	}
 
 	argValue = fArgName->GetEntry()->GetText();
+	thisArg.SetName(argValue.Data());
 	fCurrentEnv->SetValue(thisArg.GetResource(argName, "Name"), argValue.Data(), kEnvChange);
 	argValue = fArgTitle->GetEntry()->GetText();
 	fCurrentEnv->SetValue(thisArg.GetResource(argName, "Title"), argValue.Data(), kEnvChange);
@@ -3351,7 +3422,7 @@ Bool_t TGMrbMacroEdit::RemoveArg(Int_t ArgNo) {
 
 	TMrbString argValue;
 
-	if (ArgNo == -1) ArgNo = fCurrentArg.GetNumber();
+	if (ArgNo == -1) ArgNo = fCurrentArg.GetIndex();
 
 	if (ArgNo < 1 || ArgNo > fNofArgs) {
 		gMrbLog->Err() << "Arg number " << ArgNo << " out of range (should be in [1, " << fNofArgs << "])" << endl;
@@ -3363,11 +3434,11 @@ Bool_t TGMrbMacroEdit::RemoveArg(Int_t ArgNo) {
 		fNofArgs--;
 		if (fNofArgs <= 0) {
 			this->InsertArg(1);
-			fCurrentArg.SetNumber(1);
+			fCurrentArg.SetIndex(1);
 			argValue = fNofArgs;
 			fArgNumber->GetEntry()->SetText(argValue.Data());
-		} else if (fCurrentArg.GetNumber() > fNofArgs) {
-			fCurrentArg.SetNumber(fNofArgs);
+		} else if (fCurrentArg.GetIndex() > fNofArgs) {
+			fCurrentArg.SetIndex(fNofArgs);
 			argValue = fNofArgs;
 			fArgNumber->GetEntry()->SetText(argValue.Data());
 		}
@@ -3389,7 +3460,7 @@ Bool_t TGMrbMacroEdit::InsertArg(Int_t ArgNo) {
 
 	TMrbString argValue;
 
-	if (ArgNo == -1) ArgNo = fCurrentArg.GetNumber();
+	if (ArgNo == -1) ArgNo = fCurrentArg.GetIndex();
 
 	if (ArgNo < 1 || ArgNo > fNofArgs + 1) {
 		gMrbLog->Err() << "Arg number " << ArgNo << " out of range (should be in [1, " << fNofArgs + 1 << "])" << endl;
@@ -3399,7 +3470,7 @@ Bool_t TGMrbMacroEdit::InsertArg(Int_t ArgNo) {
 
 	if (this->ChangeEnv(ArgNo, kFALSE)) {
 		fNofArgs++;
-		fCurrentArg.SetNumber(ArgNo);
+		fCurrentArg.SetIndex(ArgNo);
 		argValue = ArgNo;
 		fArgNumber->GetEntry()->SetText(argValue.Data());
 		return(kTRUE);
@@ -3422,8 +3493,8 @@ Bool_t TGMrbMacroEdit::RestoreArg(Int_t ArgNo) {
 	TGMrbMacroArg thisArg;
 	TString envName, envVal, argEnv;
 
-	if (ArgNo == -1) ArgNo = fCurrentArg.GetNumber();
-	thisArg.SetNumber(ArgNo);
+	if (ArgNo == -1) ArgNo = fCurrentArg.GetIndex();
+	thisArg.SetIndex(ArgNo);
 
 	if (ArgNo < 1 || ArgNo > fNofArgs) {
 		gMrbLog->Err() << "Arg number " << ArgNo << " out of range (should be in [1, " << fNofArgs << "])" << endl;
@@ -3546,7 +3617,7 @@ Bool_t TGMrbMacroEdit::ChangeEnv(Int_t ArgNo, Bool_t Delete) {
 
 	if (Delete) {
 		for (Int_t i = 1; i < ArgNo; i++) {
-			thisArg.SetNumber(i);
+			thisArg.SetIndex(i);
 			nx = (TMrbNamedX *) fLofEnvNames.First();
 			while (nx) {
 				envName = nx->GetName();
@@ -3559,8 +3630,8 @@ Bool_t TGMrbMacroEdit::ChangeEnv(Int_t ArgNo, Bool_t Delete) {
 			}
 		}
 		for (Int_t i = ArgNo + 1; i <= fNofArgs; i++) {
-			thisArg.SetNumber(i);
-			nextArg.SetNumber(i - 1);
+			thisArg.SetIndex(i);
+			nextArg.SetIndex(i - 1);
 			nx = (TMrbNamedX *) fLofEnvNames.First();
 			while (nx) {
 				envName = nx->GetName();
@@ -3574,7 +3645,7 @@ Bool_t TGMrbMacroEdit::ChangeEnv(Int_t ArgNo, Bool_t Delete) {
 		}
 	} else {
 		for (Int_t i = 1; i < ArgNo; i++) {
-			thisArg.SetNumber(i);
+			thisArg.SetIndex(i);
 			nx = (TMrbNamedX *) fLofEnvNames.First();
 			while (nx) {
 				envName = nx->GetName();
@@ -3586,7 +3657,7 @@ Bool_t TGMrbMacroEdit::ChangeEnv(Int_t ArgNo, Bool_t Delete) {
 				nx = (TMrbNamedX *) fLofEnvNames.After(nx);
 			}
 		}
-		thisArg.SetNumber(ArgNo);
+		thisArg.SetIndex(ArgNo);
 		nx = (TMrbNamedX *) fLofEnvNames.First();
 		while (nx) {
 			envName = nx->GetName();
@@ -3598,8 +3669,8 @@ Bool_t TGMrbMacroEdit::ChangeEnv(Int_t ArgNo, Bool_t Delete) {
 			nx = (TMrbNamedX *) fLofEnvNames.After(nx);
 		}
 		for (Int_t i = ArgNo; i <= fNofArgs; i++) {
-			thisArg.SetNumber(i);
-			nextArg.SetNumber(i + 1);
+			thisArg.SetIndex(i);
+			nextArg.SetIndex(i + 1);
 			nx = (TMrbNamedX *) fLofEnvNames.First();
 			while (nx) {
 				envName = nx->GetName();
@@ -3618,20 +3689,19 @@ Bool_t TGMrbMacroEdit::ChangeEnv(Int_t ArgNo, Bool_t Delete) {
 	return(kTRUE);
 }
 
-Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
+Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * NewFile, const Char_t * OldFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroEdit::SaveMacro
 // Purpose:        Save macro settings
-// Arguments:      Char_t * FileName   -- file name (.C)
+// Arguments:      Char_t * NewFile   -- new file name (.C)
+//                 Char_t * OldFile   -- old file name
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Write macro definitions to a file.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i;
-	TString templatePath;
 	TString macroTemplateFile;
 	ofstream macroStrm;
 	ifstream orgStrm;
@@ -3640,13 +3710,11 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 	TMrbLofNamedX lofMacroTags;
 	TString line;
 	TGMrbMacroEdit::EGMrbMacroTag tagIdx;
-	TString fileName, orgFile, macroName, macroType;
-	TMrbSystem ux;
+	TString orgFile, macroName, macroType;
 	TDatime dt;
 	TGMrbMacroArg thisArg;
 	TMrbNamedX * nx;
 
-	Bool_t fileIsNew;
 	Int_t yesno;
 
 	TString argEnv, argName, argTitle, argType, argEntryType, argDefault, argDel, addLofValues;
@@ -3655,32 +3723,42 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 
 	TGMrbMacroArg::EGMrbMacroEntryType argEntryTypeBits;
 
-	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", "");
+	TString templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", "");
 	if (templatePath.Length() == 0) templatePath = ".:$(MARABOU)/templates/macros";
 	gSystem->ExpandPathName(templatePath);
 
-	fileIsNew = kTRUE;
-	if (!gSystem->AccessPathName(FileName)) {
+	Bool_t fileIsNew = kTRUE;
+	Bool_t sameFile = kFALSE;
+	TMrbSystem ux;
+	TString newFilePath = NewFile;
+	TString newFile; ux.GetBaseName(newFile, NewFile);
+	TString oldFilePath = OldFile;
+	TString oldFile; ux.GetBaseName(oldFile, OldFile);
+
+	if (!gSystem->AccessPathName(newFilePath.Data())) {
 		TString msg = this->ClassName();
 		msg += "::SaveMacro()";
-		new TGMsgBox(fClient->GetRoot(), this, msg, "File exists. Overwrite?", kMBIconQuestion, kMBYes | kMBNo, &yesno);
+		new TGMsgBox(fClient->GetRoot(), this, msg, Form("%s:\nFile exists. Overwrite?", newFilePath.Data()), kMBIconQuestion, kMBYes | kMBNo, &yesno);
 		if (yesno != 1) return(kFALSE);
 		fileIsNew = kFALSE;
 	}
 
-	if (!fileIsNew) {
-		orgFile = FileName;
+	if (!fileIsNew) sameFile = ux.IsSameFile(newFile.Data(), oldFilePath.Data());
+
+	if (sameFile) {
+		orgFile = newFile;
 		orgFile += ".org";
 		gSystem->Unlink(orgFile.Data());
-		gSystem->Rename(FileName, orgFile.Data());
+		gSystem->Rename(newFile.Data(), orgFile.Data());
+	} else {
+		orgFile = oldFile;
 	}
 
-	ux.GetBaseName(fileName, FileName);
-	macroName = fileName(0, fileName.Index("."));
+	macroName = newFile(0, newFile.Index("."));
 
-	macroStrm.open(FileName, ios::out);
+	macroStrm.open(newFile.Data(), ios::out);
 	if (!macroStrm.good()) {	
-		gMrbLog->Err() << gSystem->GetError() << " - " << FileName << endl;
+		gMrbLog->Err() << gSystem->GetError() << " - " << newFile << endl;
 		gMrbLog->Flush(this->ClassName(), "SaveMacro");
 		return(kFALSE);
 	}
@@ -3709,7 +3787,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 
 	Int_t lastRealArg = 0;
 	for (Int_t na = 1; na <= fNofArgs; na++) {
-		thisArg.SetNumber(na);
+		thisArg.SetIndex(na);
 		argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "EntryType"), "");
 		TMrbNamedX * argx = fLofEntryTypes.FindByName(argEntryType.Data());
 		if (argx) argEntryTypeBits = (TGMrbMacroArg::EGMrbMacroEntryType) argx->GetIndex();
@@ -3737,7 +3815,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 		} else {
 			switch (tagIdx = (TGMrbMacroEdit::EGMrbMacroTag) macroTag->GetIndex()) {
 				case TGMrbMacroEdit::kMacroTagFile:
-					macroStrm << macroTmpl.Encode(line, fileName) << endl;
+					macroStrm << macroTmpl.Encode(line, newFile) << endl;
 					break;
 				case TGMrbMacroEdit::kMacroTagName:
 					macroStrm << macroTmpl.Encode(line, macroName) << endl;
@@ -3766,13 +3844,13 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 				case TGMrbMacroEdit::kMacroTagSyntax:
 					if (guiOnly) {
 						macroTmpl.InitializeCode("%ARGGUI%");
-						macroTmpl.Substitute("$macroFile", fileName);
+						macroTmpl.Substitute("$macroFile", newFile);
 						macroTmpl.Substitute("$macroName", macroName);
 						macroTmpl.WriteCode(macroStrm);
 					} else {
 						Bool_t firstArg = kTRUE;
 						for (Int_t na = 1; na <= fNofArgs; na++) {
-							thisArg.SetNumber(na);
+							thisArg.SetIndex(na);
 							argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "EntryType"), "");
 							TMrbNamedX * argx = fLofEntryTypes.FindByName(argEntryType.Data());
 							if (argx) argEntryTypeBits = (TGMrbMacroArg::EGMrbMacroEntryType) argx->GetIndex();
@@ -3788,9 +3866,10 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 							if (firstArg) macroTmpl.InitializeCode("%ARG1%");
 							else		macroTmpl.InitializeCode("%ARGN%");
 							argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
+							thisArg.SetName(argName.Data());
 							argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
-							argSpace.Resize(0); argSpace.Fill(fileName.Length() + 5);
-							macroTmpl.Substitute("$macroFile", fileName);
+							argSpace.Resize(0); argSpace.Fill(newFile.Length() + 5);
+							macroTmpl.Substitute("$macroFile", newFile);
 							macroTmpl.Substitute("$macroName", macroName);
 							macroTmpl.Substitute("$argName", argName);
 							macroTmpl.Substitute("$argSpace", argSpace);
@@ -3810,7 +3889,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 					} else {
 						Bool_t firstArg = kTRUE;
 						for (Int_t na = 1; na <= fNofArgs; na++) {
-						thisArg.SetNumber(na);
+						thisArg.SetIndex(na);
 						argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "EntryType"), "");
 						TMrbNamedX * argx = fLofEntryTypes.FindByName(argEntryType.Data());
 						if (argx) argEntryTypeBits = (TGMrbMacroArg::EGMrbMacroEntryType) argx->GetIndex();
@@ -3826,6 +3905,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 						if (firstArg) macroTmpl.InitializeCode("%ARG1%");
 						else		macroTmpl.InitializeCode("%ARGN%");
 						argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
+						thisArg.SetName(argName.Data());
 						argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
 						argTitle = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Title"), "");
 						argSpace.Resize(0); argSpace.Fill(25 - (argType.Length() + argName.Length() + 1));
@@ -3856,8 +3936,8 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 						}
 						nx = (TMrbNamedX *) fLofEnvNames.After(nx);
 					}
-					for (i = 1; i <= fNofArgs; i++) {
-						thisArg.SetNumber(i);
+					for (Int_t i = 1; i <= fNofArgs; i++) {
+						thisArg.SetIndex(i);
 						nx = (TMrbNamedX *) fLofEnvNames.First();
 						while (nx) {
 							envName = nx->GetName();
@@ -3880,6 +3960,8 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 					macroStrm << "//-Exec" << endl;
 					break;
 				case TGMrbMacroEdit::kMacroTagIncludeHFiles:
+					macroTmpl.InitializeCode("%B%");
+					macroTmpl.WriteCode(macroStrm);
 					if (fileIsNew) {
 						macroTmpl.InitializeCode("%NEW%");
 						macroTmpl.WriteCode(macroStrm);
@@ -3901,6 +3983,8 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 							orgStrm.close();
 						}
 					}
+					macroTmpl.InitializeCode("%E%");
+					macroTmpl.WriteCode(macroStrm);
 					break;
 				case TGMrbMacroEdit::kMacroTagArgEnums:
 					{
@@ -3909,9 +3993,10 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 						macroTmpl.InitializeCode("%B%");
 						macroTmpl.Substitute("$macroName", mName);
 						macroTmpl.WriteCode(macroStrm);
-						for (i = 1; i <= fNofArgs; i++) {
-								thisArg.SetNumber(i);
+						for (Int_t i = 1; i <= fNofArgs; i++) {
+								thisArg.SetIndex(i);
 								argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
+								thisArg.SetName(argName.Data());
 								macroTmpl.InitializeCode("%N%");
 								macroTmpl.Substitute("$enumName", Form("kArg%s", argName.Data()));
 								macroTmpl.Substitute("$enumVal", i);
@@ -3928,7 +4013,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 						macroTmpl.InitializeCode("%B%");
 						macroTmpl.Substitute("$macroName", mName);
 						macroTmpl.WriteCode(macroStrm);
-						for (i = 1; i <= fNofArgs; i++) {
+						for (Int_t i = 1; i <= fNofArgs; i++) {
 							TMrbLofNamedX lofEnums;
 							Int_t nofEnums = this->ExtractEnums(lofEnums, i);
 							if (nofEnums > 0) {
@@ -3947,11 +4032,15 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 					}
 					break;
 				case TGMrbMacroEdit::kMacroTagCode:
+					macroTmpl.InitializeCode("%B%");
+					macroTmpl.WriteCode(macroStrm);
 					if (guiOnly) {
 						macroType = "void";
 						macroTmpl.InitializeCode("%ARGGUI%");
 						macroTmpl.Substitute("$macroType", macroType);
 						macroTmpl.Substitute("$macroName", macroName);
+						macroTmpl.WriteCode(macroStrm);
+						macroTmpl.InitializeCode("%E%");
 						macroTmpl.WriteCode(macroStrm);
 						if (fileIsNew) {
 							macroTmpl.InitializeCode("%NEW%");
@@ -3962,8 +4051,9 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 						Bool_t hasDefaults = kFALSE;
 						Bool_t firstArg = kTRUE;
 						for (Int_t na = 1; na <= fNofArgs; na++) {
-							thisArg.SetNumber(na);
+							thisArg.SetIndex(na);
 							argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
+							thisArg.SetName(argName.Data());
 							argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "EntryType"), "");
 							TMrbNamedX * argx = fLofEntryTypes.FindByName(argEntryType.Data());
 							if (argx) argEntryTypeBits = (TGMrbMacroArg::EGMrbMacroEntryType) argx->GetIndex();
@@ -4006,7 +4096,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 										macroTmpl.InitializeCode("%ARGND%");
 										if (argEntryType.CompareTo("Radio") == 0 || argEntryType.CompareTo("Check") == 0) {
 											TMrbLofNamedX lofEnums;
-											Int_t nofEnums = this->ExtractEnums(lofEnums, i);
+											Int_t nofEnums = this->ExtractEnums(lofEnums, na);
 											if (nofEnums > 0) {
 												Int_t intBase = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Base"), 10);
 												Int_t n = strtol(argDefault.Data(), NULL, intBase);
@@ -4120,36 +4210,11 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 								macroTmpl.Substitute("$argDel", ")");
 								macroTmpl.WriteCode(macroStrm);
 						}
+						macroTmpl.InitializeCode("%E%");
+						macroTmpl.WriteCode(macroStrm);
 						if (fileIsNew) {
 							macroTmpl.InitializeCode("%NEW%");
 							macroTmpl.WriteCode(macroStrm);
-						} else {
-							Bool_t found = kFALSE;
-							orgStrm.open(orgFile.Data(), ios::in);
-							if (!orgStrm.good()) {	
-								gMrbLog->Err() << gSystem->GetError() << " - " << orgFile << endl;
-								gMrbLog->Flush(this->ClassName(), "SaveMacro");
-							} else {
-								for (;;) {
-									line.ReadLine(orgStrm, kFALSE);
-									if (orgStrm.eof()) break;
-									if (found) {
-										macroStrm << line << endl;
-									} else if (line.Index("//>>__", 0) == 0) {
-										macroStrm << line << endl;
-										found = kTRUE;
-									}
-								}
-								orgStrm.close();
-							}
-							if (!found) {
-								msgSpace.Resize(0); msgSpace.Fill(strlen(this->ClassName()) + strlen("::SaveMacro(): "));
-								gMrbLog->Err()	<< "Can't locate USER CODE in file " << orgFile << endl
-												<< msgSpace << "Copy code MANUALLY please ..." << endl;
-								gMrbLog->Flush(this->ClassName(), "SaveMacro");
-								macroTmpl.InitializeCode("%NEW%");
-								macroTmpl.WriteCode(macroStrm);
-							}
 						}
 					}
 					break;
@@ -4157,14 +4222,201 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 		}
 	}	
 	macroStrm.close();
-	gMrbLog->Out() << "Definitions saved to file " << FileName << endl;
+	gMrbLog->Out() << "Definitions saved to file " << newFile << endl;
 	gMrbLog->Flush(this->ClassName(), "SaveMacro", setblue);
 	if (!fileIsNew) {
-		msgSpace.Resize(0); msgSpace.Fill(strlen(this->ClassName()) + strlen("::SaveMacro(): "));
-		gMrbLog->Out() << msgSpace << "(Original version saved to " << orgFile << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "SaveMacro", setblue);
+		if (sameFile) {
+			gMrbLog->Out() << "Original version saved to " << orgFile << endl;
+			gMrbLog->Flush(this->ClassName(), "SaveMacro", setblue);
+		}
+		if (this->CopyUserCode(newFile.Data(), orgFile.Data())) {
+			gMrbLog->Out() << "User code copied from " << orgFile << " to " << newFile << endl;
+			gMrbLog->Flush(this->ClassName(), "SaveMacro", setblue);
+		} else {
+			gMrbLog->Err()	<< "Can't copy USER CODE from " << orgFile << " to " << newFile
+							<< " - copy code MANUALLY please ..." << endl;
+			gMrbLog->Flush(this->ClassName(), "SaveMacro");
+		}
 	}
 	return(kTRUE);
+}
+
+Bool_t TGMrbMacroEdit::CopyUserCode(const Char_t * NewFile, const Char_t * OrgFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroEdit::CopyUserCode
+// Purpose:        Copy user code
+// Arguments:      Char_t * NewFile      -- new macro file
+//                 Char_t * OrgFile      -- original (old) macro file
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Copies user's code from original to new file.
+//                 !ATTENTION!
+//                 Depends *strongly* on a given sequence of code parts:
+//                     (1)  //+Exec ... //-Exec (taken from new file)
+//                     (2)  [user code from original file]
+//                     (3)  //+IncludeFiles ... //-IncludeFiles (taken from new file)
+//                     (4)  [user code from original file]
+//                     (5)  //+ArgNums ... //-ArgNums (taken from new file)
+//                     (6)  [user code from original file]
+//                     (7)  //+Enums ... //-Enums (taken from new file)
+//                     (8)  [user code from original file]
+//                     (9)  //+CallingSequence ... //-CallingSequence (taken from new file)
+//                     (10) [user code from original file]
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString newnew = NewFile;
+	newnew += ".new";
+
+	ifstream tagStrm(OrgFile);
+	if (!tagStrm.good()) {	
+		gMrbLog->Err() << gSystem->GetError() << " - " << OrgFile << " (input)" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyUserCode");
+		return(kFALSE);
+	}
+
+	Bool_t hasTags = kFALSE;
+	Bool_t hasExecTag = kFALSE;
+	Bool_t hasIncludeTag = kFALSE;
+	Bool_t hasArgNumTag = kFALSE;
+	Bool_t hasEnumTag = kFALSE;
+	Bool_t hasCallSeqTag = kFALSE;
+	TString line;
+	for (;;) {
+		line.ReadLine(tagStrm, kFALSE);
+		if (tagStrm.eof()) break;
+		line = line.Strip(TString::kBoth);
+		if (line.BeginsWith("//+Exec") == 0) { hasExecTag = kTRUE; }
+		if (line.BeginsWith("//+IncludeFiles") == 0) { hasIncludeTag = kTRUE; hasTags = kTRUE; }
+		if (line.BeginsWith("//+ArgNums") == 0) { hasArgNumTag = kTRUE; hasTags = kTRUE; }
+		if (line.BeginsWith("//+Enums") == 0) { hasEnumTag = kTRUE; hasTags = kTRUE; }
+		if (line.BeginsWith("//+CallingSequence") == 0) { hasCallSeqTag = kTRUE; hasTags = kTRUE; }
+	}
+	tagStrm.close();
+
+	if (!hasExecTag) {
+		gMrbLog->Err() << "No //+Exec tag in file " << OrgFile << " - format error?" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyUserCode");
+		return(kFALSE);
+	}
+
+	if (!hasTags) {
+		gMrbLog->Wrn() << "No tags in file " << OrgFile << " - nothing to copy" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyUserCode");
+		return(kTRUE);
+	}
+
+	ifstream orgStrm(OrgFile);
+	if (!orgStrm.good()) {	
+		gMrbLog->Err() << gSystem->GetError() << " - " << OrgFile << " (input)" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyUserCode");
+		return(kFALSE);
+	}
+
+	ifstream newStrm(NewFile);
+	if (!newStrm.good()) {	
+		gMrbLog->Err() << gSystem->GetError() << " - " << NewFile << " (input)" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyUserCode");
+		return(kFALSE);
+	}
+	ofstream outStrm(newnew.Data());
+	if (!outStrm.good()) {	
+		gMrbLog->Err() << gSystem->GetError() << " - " << newnew << " (output)" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyUserCode");
+		return(kFALSE);
+	}
+
+// (1)  //+Exec ... //-Exec (taken from new file)
+	if (!CopyUserCode(outStrm, newnew.Data(), newStrm, NewFile, "//-Exec", kTRUE)) return(kFALSE);
+	if (!CopyUserCode(outStrm, newnew.Data(), orgStrm, OrgFile, "//-Exec", kFALSE)) return(kFALSE);
+// (2)  [user code from original file]
+	if (!CopyUserCode(outStrm, newnew.Data(), newStrm, NewFile, "//+IncludeFiles", kFALSE)) return(kFALSE);
+	if (hasIncludeTag) {
+		if (!CopyUserCode(outStrm, newnew.Data(), orgStrm, OrgFile, "//+IncludeFiles", kTRUE)) return(kFALSE);
+	}
+// (3)  //+IncludeFiles ... //-IncludeFiles (taken from new file)
+	if (!CopyUserCode(outStrm, newnew.Data(), newStrm, NewFile, "//-IncludeFiles", kTRUE)) return(kFALSE);
+	if (hasIncludeTag) {
+		if (!CopyUserCode(outStrm, newnew.Data(), orgStrm, OrgFile, "//-IncludeFiles", kFALSE)) return(kFALSE);
+	}
+// (4)  [user code from original file]
+	if (!CopyUserCode(outStrm, newnew.Data(), newStrm, NewFile, "//+ArgNums", kFALSE)) return(kFALSE);
+	if (hasArgNumTag) {
+		if (!CopyUserCode(outStrm, newnew.Data(), orgStrm, OrgFile, "//+ArgNums", kTRUE)) return(kFALSE);
+	}
+// (5)  //+ArgNums ... //-ArgNums (taken from new file)
+	if (!CopyUserCode(outStrm, newnew.Data(), newStrm, NewFile, "//-ArgNums", kTRUE)) return(kFALSE);
+	if (hasArgNumTag) {
+		if (!CopyUserCode(outStrm, newnew.Data(), orgStrm, OrgFile, "//-ArgNums", kFALSE)) return(kFALSE);
+	}
+// (6)  [user code from original file]
+	if (!CopyUserCode(outStrm, newnew.Data(), newStrm, NewFile, "//+Enums", kFALSE)) return(kFALSE);
+	if (hasEnumTag) {
+		if (!CopyUserCode(outStrm, newnew.Data(), orgStrm, OrgFile, "//+Enums", kTRUE)) return(kFALSE);
+	}
+// (7)  //+Enums ... //-Enums (taken from new file)
+	if (!CopyUserCode(outStrm, newnew.Data(), newStrm, NewFile, "//-Enums", kTRUE)) return(kFALSE);
+	if (hasEnumTag) {
+		if (!CopyUserCode(outStrm, newnew.Data(), orgStrm, OrgFile, "//-Enums", kFALSE)) return(kFALSE);
+	}
+// (8)  [user code from original file]
+	if (!CopyUserCode(outStrm, newnew.Data(), newStrm, NewFile, "//+CallingSequence", kFALSE)) return(kFALSE);
+	if (hasCallSeqTag) {
+		if (!CopyUserCode(outStrm, newnew.Data(), orgStrm, OrgFile, "//+CallingSequence", kTRUE)) return(kFALSE);
+	}
+// (9)  //+CallingSequence ... //-CallingSequence (taken from new file)
+	if (!CopyUserCode(outStrm, newnew.Data(), newStrm, NewFile, "//-CallingSequence", kTRUE)) return(kFALSE);
+	if (hasCallSeqTag) {
+		if (!CopyUserCode(outStrm, newnew.Data(), orgStrm, OrgFile, "//-CallingSequence", kFALSE)) return(kFALSE);
+	}
+// (10) [user code from original file]
+	if (!CopyUserCode(outStrm, newnew.Data(), newStrm, NewFile, "", kFALSE)) return(kFALSE);
+	if (!CopyUserCode(outStrm, newnew.Data(), orgStrm, OrgFile, "", kTRUE)) return(kFALSE);
+
+	orgStrm.close();
+	newStrm.close();
+	outStrm.close();
+
+	gSystem->Unlink(NewFile);
+	gSystem->Rename(newnew.Data(), NewFile);
+
+	return(kTRUE);
+}
+
+Bool_t TGMrbMacroEdit::CopyUserCode(ofstream & Out, const Char_t * OutFile, ifstream & In, const Char_t * InFile, const Char_t * Tag, Bool_t CopyFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroEdit::CopyUserCode
+// Purpose:        Copy user code
+// Arguments:      ofstream & Out      -- output stream
+//                 Char_t * OutFile    -- name of output file
+//                 ifstream & In       -- input stream
+//                 Char_t * InFile     -- name of input file
+//                 Char_t * Tag        -- stop copying on this tag
+//                 Bool_t CopyFlag     -- copy code / skip code
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Copies user's code from original to new file.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString line, stripLine;
+	for (;;) {
+		line.ReadLine(In, kFALSE);
+		if (In.eof()) {
+			if (*Tag == '\0') return(kTRUE);
+			gMrbLog->Err() << InFile << " out of phase - \"" << Tag << "\" missing" << endl;
+			gMrbLog->Flush(this->ClassName(), "CopyUserCode");
+			In.close();
+			Out.close();
+			return(kFALSE);
+		}
+		stripLine = line.Strip(TString::kBoth);
+		if (CopyFlag) Out << line << endl;
+		if (*Tag != '\0' && stripLine.BeginsWith(Tag)) return(kTRUE);
+	}
+	return(kFALSE);
 }
 
 Int_t TGMrbMacroEdit::ExtractEnums(TMrbLofNamedX & LofEnums, Int_t ArgNo) {
@@ -4181,13 +4433,14 @@ Int_t TGMrbMacroEdit::ExtractEnums(TMrbLofNamedX & LofEnums, Int_t ArgNo) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TGMrbMacroArg thisArg;
-	thisArg.SetNumber(ArgNo);
+	thisArg.SetIndex(ArgNo);
 
 	Int_t nofEnums = 0;
 	LofEnums.Delete();
 
 	TString argEnv;
 	TString argName = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Name"), "");
+	thisArg.SetName(argName.Data());
 	TString argType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Type"), "");
 	TString argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "EntryType"), "");
 	
@@ -4246,7 +4499,7 @@ const Char_t * TGMrbMacroArg::GetResource(TString & Resource, const Char_t * Res
 	TMrbString arg;
 
 	arg = "Arg";
-	arg += fNumber;
+	arg += this->GetIndex();
 	arg += ".";
 	arg += ResourceName;
 	Resource = arg;
