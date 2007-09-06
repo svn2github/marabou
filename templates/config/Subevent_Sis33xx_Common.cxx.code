@@ -1,0 +1,413 @@
+%%BeginOfCode%%
+Bool_t  TMrbSubevent_Sis33xx::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis33xx::FillSubevent
+// Purpose:        Unpack SIS33xx flash adc data
+// Arguments:      const UShort_t * SevtData   -- pointer to subevent data
+//                 Int_t SevtWC                -- word count
+//                 Int_t TimeStamp             -- time since last start
+//                                                in units of 100 microsecs
+// Results:        kTRUE/kFALSE
+// Exceptions:   
+// Description:    Assigns MBS data to corresponding subevent data members
+//                 Special version for SIS 33xx modules.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
+	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
+
+	recNo++;								// count this record	
+	Int_t origSevtWC = SevtWC;				// save original subevent wc
+	if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
+	Int_t wordsProcessed = 0; 			// words processed so far
+	UInt_t * dataPtr = (UInt_t *) SevtData;
+	Int_t eventsProcessed = 0;
+	Int_t evtNo = 0;
+
+	UInt_t * sevtStart = dataPtr;							// save ptr to begin of subevent 
+	while (SevtWC > 0) {									// subevent may contain several SIS modules
+		UInt_t * moduleStart = dataPtr;					// save ptr to begin of module
+		UInt_t header = *dataPtr++;						// header word
+		if ((header & kMrbSevt_10_12_B_Header) == 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Wrong header - 0x" << setbase(16) << header << setbase(10)
+					<< setblack << endl;
+			return(kTRUE);
+		}
+		Int_t wc = *dataPtr++;							 // word count
+		if (wc <= 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Wrong word count - " << wc << setblack << endl;
+			return(kTRUE);
+		}
+		Int_t moduleNumber = header & kMrbSevt_10_12_M_ModuleNumber;  // extract module number
+		if (moduleNumber <= 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Wrong module number - " << moduleNumber << setblack << endl;
+			return(kTRUE);
+		}
+		
+		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
+		if (mle == NULL) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Wrong module number - " << moduleNumber << setblack << endl;
+			return(kTRUE);
+		}
+
+		if (wc == 2) {			// header only, no real data, skip it
+			SevtWC -= wc * sizeof(Int_t) / sizeof(Short_t);
+			this->SetEmpty();
+			continue;
+		}
+
+		this->Reset();
+		
+		UInt_t * end = dataPtr + wc - 2;
+
+		UInt_t acqMode = *dataPtr++;
+		UInt_t numEvts = *dataPtr++;
+		UInt_t pageSize = *dataPtr++;
+		UInt_t statusReg = *dataPtr++;
+		UInt_t acqStatusReg = *dataPtr++;
+
+		if (acqMode == 2) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong acquision mode", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): [Module "
+					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+					<< wordsProcessed << "] Wrong acquision mode - gate chaining not yet implemented"
+					<< setblack << endl;
+			return(kTRUE);
+		}
+  
+		UInt_t * tsBuf = dataPtr;				// start of time stamp buffer
+		UInt_t * trigBuf = tsBuf + *tsBuf;		// start of trigger buffer
+		UInt_t * evtBuf = trigBuf + *trigBuf;	// start of event data
+
+		for (Int_t evtNo = 0; evtNo < numEvts; evtNo++) {
+
+			UInt_t sisTstamp = (*(tsBuf + evtNo + 1)) & 0x00ffffff;		// get time stamp for this event
+  
+			UInt_t evtDir = *(trigBuf + evtNo + 1);	// get event entry
+  
+			UInt_t startData = pageSize * evtNo;
+			UInt_t stopData = evtDir & 0x0001ffff;
+			Bool_t wrapped = (evtDir & 0x80000) != 0;
+
+			UInt_t dataSize = wrapped ? pageSize : stopData - startData;
+      
+			dataPtr = evtBuf;
+			while (dataPtr < end) {
+				UInt_t * next = dataPtr + (*dataPtr++);
+				UInt_t channelGrp = *dataPtr++;
+				UInt_t triggerMode = *dataPtr++;
+    
+				// read channelData
+				Int_t c = 0;
+				UInt_t val;
+				UInt_t p;
+				UInt_t mask0, mask1;
+				UInt_t omask0, omask1;
+				Int_t ch0 = channelGrp * 2;
+				Int_t ch1 = ch0 + 1;
+    
+				switch (triggerMode) {
+					case 0:
+					case 1:
+						mask0 = 0x0fff;
+						mask1 = 0x0fff;
+						omask0 = 0x4000;
+						omask1 = 0x4000;
+						break;
+					case 2:
+						mask0 = 0x0fff;
+						mask1 = 0xffff;
+						omask0 = 0x4000;
+						omask1 = 0x0000;
+						break;
+					case 3:
+						mask0 = 0xffff;
+						mask1 = 0x0fff;
+						omask0 = 0x0000;
+						omask1 = 0x4000;
+						break;
+				}
+    
+				UInt_t * pch0 = fChanData[ch0];
+				if (pch0 == NULL) {
+					cerr	<< setred
+							<< this->ClassName() << "::FillSubevent(): [Module "
+							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber
+							<< "): Channel not defined - ch" << ch0 << " - data can't be stored"
+							<< setblack << endl;
+					return(kTRUE);
+				}
+				UInt_t * pch1 = fChanData[ch1];
+				if (pch1 == NULL) {
+					cerr	<< setred
+							<< this->ClassName() << "::FillSubevent(): [Module "
+							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber
+							<< "): Channel not defined - ch" << ch1 << " - data can't be stored"
+							<< setblack << endl;
+					return(kTRUE);
+				}
+
+				Bool_t trig = (evtDir & (0x80000000 >> ch0)) != 0;
+				this->SetTriggered(ch0, trig);
+				trig = (evtDir & (0x80000000 >> ch1)) != 0;
+				this->SetTriggered(ch1, trig);
+  
+				this->SetDataSize(ch0, dataSize);
+				this->SetDataSize(ch1, dataSize);
+				
+				c = 0;  
+				if (wrapped) {
+					for (p = stopData; p < (startData + pageSize); p++, c++) {
+						val = *(dataPtr + p);
+						*(pch0 + c) = (val >> 16) & mask0;
+						this->SetOverflow(ch0, ((val >> 16) & omask0 != 0));        
+						*(pch1 + c) = val & mask1;
+						this->SetOverflow(ch0, ((val >> 16) & omask1 != 0));
+					}
+				}
+   
+				for (p = startData; p < stopData; p++, c++) {
+					val = *(dataPtr + p);
+					*(pch0 + c) = (val >> 16) & mask0;
+					this->SetOverflow(ch0, ((val >> 16) & omask0 != 0));        
+					*(pch1 + c) = val & mask1;
+					this->SetOverflow(ch0, ((val >> 16) & omask1 != 0));
+				}
+				dataPtr = next;
+			}
+		}
+		SevtWC -= wc * sizeof(Int_t) / sizeof(Short_t); // count for wc 32 bit words
+	}
+  
+	return(kTRUE);
+}
+
+Bool_t  TMrbSubevent_Sis33xx::InitializeShaper(const Char_t * SettingsFile, const Char_t * Module, Int_t NofChannels) {
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis33xx::InitializeShaper
+// Purpose:        Initialize shaping constants
+// Arguments:      Char_t * SettingsFile   -- where to read values from
+//                 Char_t * Module         -- module name
+//                 Int_t NofChannels       -- number of channels
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Reads peak and gap time values from settings file
+//                 (default: .rootrc)
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TEnv * settings;
+	if (SettingsFile == NULL || *SettingsFile == '\0') {
+		settings = gEnv;
+		SettingsFile = ".rootrc";
+	} else {
+		if (gSystem->AccessPathName(SettingsFile, kFileExists)) {
+			gMrbLog->Err() << "File not found - " << SettingsFile << endl;
+			gMrbLog->Flush(this->ClassName(), "InitializeShaper");
+			return(kFALSE);
+		}
+		settings = new TEnv(SettingsFile);
+	}
+
+	Bool_t verboseMode = settings->GetValue("SIS3300.VerboseMode", kFALSE)
+							|| gEnv->GetValue("TMrbAnalyze.VerboseMode", kFALSE);
+
+// same values for all channels
+	if (NofChannels == -1) {
+		if (Module == NULL || *Module == '\0') {
+			for (Int_t chn = 0; chn < kNofChannels; chn++) {
+				fPeakTime[kShapeShort * kNofChannels + chn] = settings->GetValue("SIS3300.Shaper.Short.PeakTime", 0.0);
+				fGapTime[kShapeShort * kNofChannels + chn] = settings->GetValue("SIS3300.Shaper.Short.GapTime", 0.0);
+				fPeakTime[kShapeLong * kNofChannels + chn] = settings->GetValue("SIS3300.Shaper.Long.PeakTime", 0.0);
+				fGapTime[kShapeLong * kNofChannels + chn] = settings->GetValue("SIS3300.Shaper.Long.GapTime", 0.0);
+			}
+		} else {
+			for (Int_t chn = 0; chn < kNofChannels; chn++) {
+				fPeakTime[kShapeShort * kNofChannels + chn] = settings->GetValue(Form("SIS3300.%s.Shaper.Short.PeakTime", Module), 0.0);
+				fGapTime[kShapeShort * kNofChannels + chn] = settings->GetValue(Form("SIS3300.%s.Shaper.Short.GapTime", Module), 0.0);
+				fPeakTime[kShapeLong * kNofChannels + chn] = settings->GetValue(Form("SIS3300.%s.Shaper.Long.PeakTime", Module), 0.0);
+				fGapTime[kShapeLong * kNofChannels + chn] = settings->GetValue(Form("SIS3300.%s.Shaper.Long.GapTime", Module), 0.0);
+			}
+		}
+	} else {
+// different values for each channel
+		if (Module == NULL || *Module == '\0') {
+			for (Int_t chn = 0; chn < NofChannels; chn++) {
+				fPeakTime[kShapeShort * kNofChannels + chn] = settings->GetValue(Form("SIS3300.Shaper.%d.Short.PeakTime", chn), 0.0);
+				fGapTime[kShapeShort * kNofChannels + chn] = settings->GetValue(Form("SIS3300.Shaper.%d.Short.GapTime", chn), 0.0);
+				fPeakTime[kShapeLong * kNofChannels + chn] = settings->GetValue(Form("SIS3300.Shaper.%d.Long.PeakTime", chn), 0.0);
+				fGapTime[kShapeLong * kNofChannels + chn] = settings->GetValue(Form("SIS3300.Shaper.%d.Long.GapTime", chn), 0.0);
+			}
+		} else {
+			for (Int_t chn = 0; chn < NofChannels; chn++) {
+				fPeakTime[kShapeShort * kNofChannels + chn] = settings->GetValue(Form("SIS3300.%s.Shaper.%d.Short.PeakTime", Module, chn), 0.0);
+				fGapTime[kShapeShort * kNofChannels + chn] = settings->GetValue(Form("SIS3300.%s.Shaper.%d.Short.GapTime", Module, chn), 0.0);
+				fPeakTime[kShapeLong * kNofChannels + chn] = settings->GetValue(Form("SIS3300.%s.Shaper%d..Long.PeakTime", Module, chn), 0.0);
+				fGapTime[kShapeLong * kNofChannels + chn] = settings->GetValue(Form("SIS3300.%s.Shaper.%d.Long.GapTime", Module, chn), 0.0);
+			}
+		}
+	}
+
+	if (verboseMode) {
+		cout << endl << "Shaper settings from file " << SettingsFile << endl;
+		cout << Form("%3s%-30s%-30s", "", "PeakTime", "GapTime") << endl;
+		cout << Form("%3s%-15s%-15s%-15s%-15s", "", "short", "long", "short", "long") << endl;
+		cout << "-------------------------------------------------------------------------------------" << endl;
+		for (Int_t chn = 0; chn < kNofChannels; chn++) {
+			cout << Form("%2d %15.2f%15.2f%15.2f%15.2f\n",
+				chn,
+				fPeakTime[kShapeShort * kNofChannels + chn],
+				fPeakTime[kShapeLong * kNofChannels + chn],
+				fGapTime[kShapeShort * kNofChannels + chn],
+				fGapTime[kShapeLong * kNofChannels + chn]);
+		}
+		cout << endl;
+	}
+
+	return(kTRUE);
+}
+			
+Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis33xx::Shaper
+// Purpose:        Perform shaping
+// Arguments:      Int_t Channel      -- channel
+//                 Int_t ShaperIdx    -- shaper index (short/long)
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Performs trapezoidal shaping
+//                 (Origin: L. Maier, E12)
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (ShaperIdx == kShapeBoth) {
+		Bool_t sts = this->Shaper(Channel, kShapeShort);
+		sts &= this->Shaper(Channel, kShapeLong);
+		return(sts);
+	}
+
+	Int_t shIdx = ShaperIdx * kNofChannels + Channel;		// different settings for each channel
+
+	fShapeMin[shIdx] = DBL_MAX;
+	fShapeMax[shIdx] = DBL_MIN;
+
+	Double_t * data = fShapedData[shIdx];
+
+	for (Int_t offset = 0; offset < fPageSize[Channel]; offset++, data++) {
+
+		Double_t sum = 0;
+
+		Int_t xLow = offset - (Int_t) (fPeakTime[shIdx] + fGapTime[shIdx]);
+		if (xLow < 0) xLow = 0;
+		Int_t xHigh = offset + (Int_t) fPeakTime[shIdx];
+		if (xHigh >= fDataSize[Channel]) xHigh = fDataSize[Channel];
+
+		if ((xHigh - xLow) < (Int_t) (2 * fPeakTime[shIdx] + fGapTime[shIdx])) {
+			*data = 0;
+			continue;			
+		}
+
+		UInt_t * dinp = fChanData[Channel] + xLow;
+		for (Int_t x = xLow; x < xHigh; x++, dinp++) {
+			sum += *dinp * this->Trapezoid((Double_t) x, (Double_t) offset, fPeakTime[shIdx], fGapTime[shIdx]);
+		}
+
+		sum /= fPeakTime[shIdx];
+		if (fShapeMax[shIdx] < sum) fShapeMax[shIdx] = sum;
+		if (fShapeMin[shIdx] > sum) fShapeMin[shIdx] = sum;
+		*data = sum;
+	}
+	return(kTRUE);
+}
+
+Double_t  TMrbSubevent_Sis33xx::Trapezoid(Double_t X, Double_t Offset, Double_t PeakTime, Double_t GapTime) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis33xx::Trapezoid
+// Purpose:        Perform trapezoidal shaping
+// Arguments:      Double_t X        -- channel
+//                 Double_t Offset   -- offset 
+//                 Double_t PeakTime -- peaking
+//                 Double_t GapTime  -- gap
+// Results:        Double_t Result   -- resulting value
+// Exceptions:     
+// Description:    Performs trapezoidal shaping
+//                 (Origin: L. Maier, E12)
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Double_t totalDeadTime = 2 * PeakTime + GapTime;
+	Double_t slope = 1. / PeakTime;
+
+	X = X - Offset + PeakTime + GapTime;
+	if ((X < 0) || (X > totalDeadTime)) return(0.);
+
+	if (X <= PeakTime) return(-slope * X);
+
+	if ((X > PeakTime) && (X < (PeakTime + GapTime))) return(0.);
+
+	if (X >= (PeakTime + GapTime)) return(slope * (totalDeadTime - X));
+
+	return(0.);
+}
+
+void TMrbSubevent_Sis33xx::Reset(Int_t InitValue, Bool_t DataOnly) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis33xx::Reset
+// Purpose:        Reset subevent data
+// Arguments:      Int_t InitValue   -- initialization value
+//                 Bool_t DataOnly   -- reset data only if kTRUE (ignored)
+// Results:        --
+// Exceptions:     
+// Description:    Initializes subevent data with given value.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	for (Int_t chn = 0; chn < kNofChannels; chn++) {
+		fIsEmpty = kFALSE;
+		fChanTriggered[chn] = kFALSE;
+		fChanOverflow[chn] = kFALSE;
+		UInt_t * idp = fChanData[chn];
+		if (idp != NULL) {
+			for (Int_t i = 0; i < fPageSize[chn]; i++)  *idp++ = InitValue;
+		}
+		Double_t * dp = fShapedData[kShapeShort * kNofChannels + chn];
+		if (dp != NULL) {
+			for (Int_t i = 0; i < fPageSize[chn]; i++)  *dp++ = 0;
+		}
+		dp = fShapedData[kShapeLong * kNofChannels + chn];
+		if (dp != NULL) {
+			for (Int_t i = 0; i < fPageSize[chn]; i++)  *dp++ = 0;
+		}
+	}
+}
+
+%%EndOfCode%%
+%%SEVT_CLASS_METHODS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCLUDE_EVT_SEVT_MOD_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INITIALIZE_EVT_SEVT_MODS%%
