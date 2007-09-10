@@ -27,8 +27,6 @@ proc writeEnv {uEnv linux release arch admin} {
 	global userEnv envFile env
 	set uVar $userEnv(var)
 	set f [open $envFile w]
-	puts stderr "@@@ $userEnv($uEnv,cleanup,envs)"
-	puts stderr "@@@ $userEnv($uEnv,cleanup,what)"
 	set clnpEnvs [split $userEnv($uEnv,cleanup,envs) ":"]
 	if {[llength $clnpEnvs] > 0} {
 		set clnpWhat [split $userEnv($uEnv,cleanup,what) ":"]
@@ -41,10 +39,8 @@ proc writeEnv {uEnv linux release arch admin} {
 			foreach v $envVal {
 				foreach w $clnpWhat {
 					if {![string match $w $v]} {
-						puts stderr "@@@ do not remove: $e $w $v"
 						set removeIt 0
 					} else {
-						puts stderr "@@@ remove: $e $w $v"
 						set removeIt 1
 						break
 					}
