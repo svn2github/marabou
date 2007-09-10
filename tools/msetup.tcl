@@ -1,9 +1,5 @@
 #!/usr/bin/tclsh
 
-proc usage {} {
-	puts stderr "Usage: msetup sfile efile"
-}
-
 proc testArch {} {
 	catch "exec uname -a" arch
 	set arch [split $arch]
@@ -71,32 +67,6 @@ proc writeEnv {uEnv linux release arch admin} {
 	}
 }
 
-proc expandTitle {} {
-	global env userEnv
-	set odd 1
-	foreach u [array get userEnv "*,name"] {
-		if {$odd == 1} { set odd 0; continue }
-		set odd 1
-		set t $userEnv($u,title)
-		if {[info exists userEnv($u,root)]} {
-			set xx $userEnv($u,root)
-		} else {
-			set xx $u
-		}
-		set xt [string first @ $t]
-		if {$xt != -1} {
-			set v $userEnv($u,version)
-			set xv [string first @ $v]
-			if {$xv != -1} {
-				set rv [lindex [split [exec ls -l [string range $v 1 end]/root_$xx]] end]
-				set mv [lindex [split [exec ls -l [string range $v 1 end]/marabou_$xx]] end]
-				set userEnv($u,version,root) $rv
-				set userEnv($u,version,marabou) $mv
-			}
-		}
-	}		
-}
-
 proc checkLock {isAdmin isWish} {
 	global env userEnv
 	if {$isAdmin} {
@@ -138,6 +108,32 @@ proc createLock {uEnv isAdmin linux release arch} {
 	}
 }	
 	
+proc extractVersion {} {
+	global env userEnv
+	set odd 1
+	foreach u [array get userEnv "*,name"] {
+		if {$odd == 1} { set odd 0; continue }
+		set odd 1
+		set xt [string first %v $userEnv($u,title)]
+		if {$xt != -1 && [info exists userEnv($u,version)]} {
+			foreach p [split $userEnv($u,action)] {
+				if {[string first ROOTSYS= $p] != -1} {
+					set p [lindex [split $p =] 1]
+					if {[catch {exec sed -n "s,.*ROOT_RELEASE *\\\"\\\(.*\\\)\\\".*,\\1,p" $p/include/RVersion.h} rvers] != 0} { set rvers "??" }
+				}
+				if {[string first MARABOU= $p] != -1} {
+					set p [lindex [split $p =] 1]
+					if {[catch {exec sed -n "s,.*MARABOU_RELEASE *\\\"\\\(.*\\\)\\\".*,\\1,p" $p/include/MVersion.h} mvers] != 0} { set mvers "??" }
+				}
+			}
+			set xr [string first %r $userEnv($u,version)]
+			if {$xr >= 0} { set userEnv($u,version) [string replace $userEnv($u,version) $xr [expr $xr + 1] $rvers] }
+			set xm [string first %m $userEnv($u,version)]
+			if {$xm >= 0} { set userEnv($u,version) [string replace $userEnv($u,version) $xm [expr $xm + 1] $mvers] }
+		}
+	}		
+}
+
 proc setTooltip {widget text} {
 	if { $text != "" } {
 		bind $widget <Any-Enter> [list after 1000 [list showTooltip %W $text]]
@@ -167,24 +163,28 @@ proc showTooltip {widget text} {
 	raise $tooltip
 }
 
-if {$argc > 2} {
+if {$argc > 1} {
 	puts stderr "msetup: Wrong number of arguments - $argc"
-	usage
 	exit
 }
 
-if {$argc >= 1} {
-	set setupFile [lindex $argv 0]
-} elseif {[info exists env(MSETUP_DB)]} {
+if {$argc == 1} {
+	set env(MSETUP_MODE) q
+	set env(MARABOU_ENV) [lindex $argv 0]
+}
+
+if {[info exists env(MSETUP_DB)]} {
 	set setupFile $env(MSETUP_DB)
 } else {
 	set setupFile $env(HOME)/marabou/tools/m.tcl
 }
-if {$argc == 2} {
-	set envFile [lindex $argv 1]
+
+if {[info exists env(MSETUP_OUT)]} {
+	set envFile $env(MSETUP_OUT)
 } else {
 	set envFile $env(HOME)/.msetup
 }
+
 exec rm -f $envFile
 exec touch $envFile
 
@@ -207,7 +207,7 @@ if {![info exists env(MARABOU_ENV)]} { set env(MARABOU_ENV) pro }
 if {[info vars tk_version] == ""} {
 	set isWish 0
 	if {$env(DISPLAY) != "" && $env(MSETUP_MODE) != "t" && $env(MSETUP_MODE) != "q"} {
-		exec wish [info script] $setupFile $envFile
+		exec wish [info script]
 		exit
 	}
 } else {
@@ -217,8 +217,6 @@ if {[info vars tk_version] == ""} {
 if {[file exists $setupFile]} {
 	source $setupFile
 
-	expandTitle
-	
 	set uVar $userEnv(var)
 	if {[lsearch -exact $lofUserEnvs quit] == -1} {
 		set userEnv(quit,name)			quit
@@ -242,6 +240,8 @@ if {[file exists $setupFile]} {
 
 checkLock $isAdmin $isWish
 
+extractVersion
+
 if {$env(MSETUP_MODE) == "q"} {
 	set m $env(MARABOU_ENV)
 	set x [lsearch $lofUserEnvs $m]
@@ -263,21 +263,13 @@ if {$env(MSETUP_MODE) == "q"} {
 								createLock $u $isAdmin $linux $release $arch; \
 								exit"
 		set title $userEnv($u,title)
-		if {$title == ""} { set t $u } else { set t "$u: $title" }
-		set xt1 [string first @ $t]
-		set xt2 $xt1
-		incr xt2
-		if {$xt1 != -1} {
-			if {[string index $t $xt2] == "@"} {
-				setTooltip .b$u "$userEnv($u,version,root), $userEnv($u,version,marabou)"
-			} elseif {[string index $t $xt2] == "r"} {
-				setTooltip .b$u $userEnv($u,version,root)
-			} elseif {[string index $t $xt2] == "m"} {
-				setTooltip .b$u $userEnv($u,version,marabou)
-			}
-			set t [string replace $t $xt1 $xt2]
+		if {$title == ""} { set title $u } else { set title "$u: $title" }
+		set xt [string first %v $title]
+		if {$xt != -1} {
+			set title [string replace $title $xt [expr $xt + 1]]
+			setTooltip .b$u $userEnv($u,version)
 		}			
-		.b$u config -text $t
+		.b$u config -text $title
 		pack .b$u -side top -fill x
 	}
 } else {
@@ -285,21 +277,10 @@ if {$env(MSETUP_MODE) == "q"} {
 	puts "User environments available:"
 	foreach u $lofUserEnvs {
 		set title $userEnv($u,title)
-		if {$title == ""} { set t $u } else { set t "$u: $title" }
-		set xt1 [string first @ $t]
-		set xt2 $xt1
-		incr xt2
-		if {$xt1 != -1} {
-			set t [string replace $t $xt1 $xt2]
-			if {[string index $t $xt2] == "@"} {
-				set t [string replace $t $xt1 $xt2 "$userEnv($u,version,root), $userEnv($u,version,marabou)"]
-			} elseif {[string index $t $xt2] == "r"} {
-				set t [string replace $t $xt1 $xt2 $userEnv($u,version,root)]
-			} elseif {[string index $t $xt2] == "m"} {
-				set t [string replace $t $xt1 $xt2 $userEnv($u,version,marabou)]
-			}
-		}			
-		puts "\[$n\] $t"
+		if {$title == ""} { set title $u } else { set title "$u: $title" }
+		set xt [string first %v $title]
+		if {$xt != -1} { set title [string replace $title $xt [expr $xt + 1] $userEnv($u,version)] }
+		puts "\[$n\] $title"
 		incr n
 	}
 	while {1} {
