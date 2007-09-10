@@ -33,9 +33,6 @@ proc writeEnv {uEnv linux release arch admin} {
 		foreach e $clnpEnvs {
 			set newEnv {}
 			set envVal [split $env($e) ":"]
-			if {$e == "PATH"} {
-				puts stderr [exec path]
-			}
 			foreach v $envVal {
 				foreach w $clnpWhat {
 					if {![string match $w $v]} {
