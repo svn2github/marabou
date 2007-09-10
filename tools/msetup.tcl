@@ -27,23 +27,31 @@ proc writeEnv {uEnv linux release arch admin} {
 	global userEnv envFile env
 	set uVar $userEnv(var)
 	set f [open $envFile w]
+	puts stderr "@@@ $userEnv($uEnv,cleanup,envs)"
+	puts stderr "@@@ $userEnv($uEnv,cleanup,what)"
 	set clnpEnvs [split $userEnv($uEnv,cleanup,envs) ":"]
 	if {[llength $clnpEnvs] > 0} {
 		set clnpWhat [split $userEnv($uEnv,cleanup,what) ":"]
 		foreach e $clnpEnvs {
 			set newEnv {}
 			set envVal [split $env($e) ":"]
-			foreach w $clnpWhat {
-				foreach v $envVal {
+			if {$e == "PATH"} {
+				puts stderr [exec path]
+			}
+			foreach v $envVal {
+				foreach w $clnpWhat {
 					if {![string match $w $v]} {
-						if {[lsearch $newEnv $v] == -1} { lappend newEnv $v }
+						puts stderr "@@@ do not remove: $e $w $v"
 						set removeIt 0
 					} else {
+						puts stderr "@@@ remove: $e $w $v"
 						set removeIt 1
 						break
 					}
 				}
-				if {$removeIt == 1} { break }
+				if {$removeIt == 0} {
+					if {[lsearch $newEnv $v] == -1} { lappend newEnv $v }
+				}
 			}
 			puts $f "$e=[join $newEnv :]"
 		}
