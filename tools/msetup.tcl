@@ -301,8 +301,22 @@ if {$env(MSETUP_MODE) == "q"} {
 	label .arch -text $userEnv(arch) -background blue -foreground white -borderwidth 2 -relief ridge -width 40
 	pack .arch -side top
 	
+	set nofEnvs [llength $lofUserEnvs]
+	set envsPerCol [expr $nofEnvs * 20 / ($nofEnvs + 20)]
+	set n 0
+	set lofFrames {}
 	foreach u $lofUserEnvs {
-		button .b$u -command " writeEnv $u $linux $release $arch $isAdmin; \
+		if {$nofEnvs > $envsPerCol} {
+			if {[expr $n % $envsPerCol] == 0} {
+				set frameName .f$n
+				frame $frameName
+				lappend lofFrames $frameName
+			}
+			set buttonName $frameName.b$u
+		} else {
+			set buttonName .b$u
+		}
+		button $buttonName -command " writeEnv $u $linux $release $arch $isAdmin; \
 								createLock $u $isAdmin $linux $release $arch; \
 								exit"
 		set title ""
@@ -311,11 +325,13 @@ if {$env(MSETUP_MODE) == "q"} {
 		if {$xt != -1} {
 			set title [string replace $title $xt [expr $xt + 1]]
 			if {$title == ""} { set title $u } else { set title "$u: $title" }
-			setTooltip .b$u $userEnv($u,version)
+			setTooltip $buttonName $userEnv($u,version)
 		}			
-		.b$u config -text $title
-		pack .b$u -side top -fill x
+		$buttonName config -text $title
+		pack $buttonName -side top -fill x
+		incr n
 	}
+	foreach f $lofFrames { pack $f -side left -fill y }
 } else {
 	set n 1
 	puts "User environments available:"
