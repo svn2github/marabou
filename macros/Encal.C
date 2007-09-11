@@ -9,18 +9,18 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.27 2007-09-06 11:25:32 Rudolf.Lutter Exp $
-// Date:             Tue Sep  4 14:37:09 2007
+// Revision:         $Id: Encal.C,v 1.28 2007-09-11 14:05:11 Rudolf.Lutter Exp $
+// Date:             Fri Sep  7 08:31:12 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
 //                   Width:               780
 //                   Aclic:               +
-//                   Modify:              yes
+//                   Modify:              no
 //                   GuiPtrMode:          GuiPtr
 //                   UserStart:           on
 //                   RcFile:              .EncalLoadLibs.C
-//                   NofArgs:             38
+//                   NofArgs:             39
 //                   Arg1.Name:           Tab_1
 //                   Arg1.Title:          Init & Files
 //                   Arg1.Type:           Int_t
@@ -35,7 +35,7 @@
 //                   Arg2.AddLofValues:   No
 //                   Arg2.Base:           dec
 //                   Arg2.Orientation:    horizontal
-//                   Arg3.Name:           SetupFile
+//                   Arg3.Name:           LoadSetup
 //                   Arg3.Title:          Load setup from file
 //                   Arg3.Type:           Char_t *
 //                   Arg3.EntryType:      File
@@ -364,18 +364,27 @@
 //                   Arg37.Type:          Int_t
 //                   Arg37.EntryType:     Check
 //                   Arg37.Default:       1
-//                   Arg37.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2
+//                   Arg37.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2:thumbs|show thumbnail plot=4
 //                   Arg37.AddLofValues:  No
 //                   Arg37.Base:          dec
 //                   Arg37.Orientation:   horizontal
-//                   Arg38.Name:          CtrlButtons
-//                   Arg38.Title:         What to be done next?
-//                   Arg38.Type:          Int_t
-//                   Arg38.EntryType:     TextButton
-//                   Arg38.Values:        Start=0:Prev=1:Same=2:Next/ok=3:Next/discard=4:Stop=5:Quit=6
+//                   Arg38.Name:          SaveSetup
+//                   Arg38.Title:         Save setup to file
+//                   Arg38.Type:          Char_t *
+//                   Arg38.EntryType:     File
+//                   Arg38.Default:       .Encal.env
+//                   Arg38.Values:        Encal environment files:.Encal*.env
 //                   Arg38.AddLofValues:  No
 //                   Arg38.Base:          dec
 //                   Arg38.Orientation:   horizontal
+//                   Arg39.Name:          CtrlButtons
+//                   Arg39.Title:         What to be done next?
+//                   Arg39.Type:          Int_t
+//                   Arg39.EntryType:     TextButton
+//                   Arg39.Values:        Start=0:Prev=1:Same=2:Next/ok=3:Next/discard=4:Stop=5:Quit=6
+//                   Arg39.AddLofValues:  No
+//                   Arg39.Base:          dec
+//                   Arg39.Orientation:   horizontal
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
@@ -390,8 +399,9 @@
 #include "TObjArray.h"
 #include "TObjString.h"
 #include "TCanvas.h"
-#include "TCanvas.h"
 #include "TGraphErrors.h"
+#include "TLine.h"
+#include "TLatex.h"
 #include "TFile.h"
 #include "TH1.h"
 #include "TH2.h"
@@ -420,10 +430,10 @@
 //////////////////////////////////////////////////////////////////////////////
 //+ArgNums
 
-enum EEArgNums {
+enum EEncalArgNums {
  		kArgTab_1 = 1,
  		kArgSection_STP = 2,
- 		kArgSetupFile = 3,
+ 		kArgLoadSetup = 3,
  		kArgSection_IC = 4,
  		kArgCalSource = 5,
  		kArgEnergies = 6,
@@ -458,7 +468,8 @@ enum EEArgNums {
  		kArgNewFrame_1 = 35,
  		kArgSection_CTRL = 36,
  		kArgDisplayMode = 37,
- 		kArgCtrlButtons = 38,
+ 		kArgSaveSetup = 38,
+ 		kArgCtrlButtons = 39,
  	};
 //-ArgNums
 
@@ -470,7 +481,7 @@ enum EEArgNums {
 //////////////////////////////////////////////////////////////////////////////
 //+Enums
 
-enum EEEnums {
+enum EEncalEnums {
  		kCalSourceCo60 = 1,
  		kCalSourceEu152 = 2,
  		kCalSource3Alpha = 4,
@@ -486,6 +497,7 @@ enum EEEnums {
  		kPeakMatchOn = 1,
  		kDisplayModeStep = 1,
  		kDisplayMode2dim = 2,
+ 		kDisplayModeThumbNails = 4,
  	};
 //-Enums
 
@@ -536,6 +548,8 @@ Bool_t fButtonFlag = kFALSE;
 Bool_t fButtonNext = kTRUE;
 Bool_t fButtonOk = kTRUE;
 Bool_t fButtonStop = kFALSE;
+Bool_t fButtonQuit = kFALSE;
+Bool_t fStarted = kFALSE;
 
 EEncalHisto fNextHisto = kNextHisto;
 
@@ -582,6 +596,7 @@ TFile * fFitResults;	// histograms + fits
 
 TCanvas * fMainCanvas;	// canvas to display histo + fit
 TCanvas * f2DimCanvas;	// 2nd canvas: 2-dim histo
+TCanvas * fThumbCanvas;	// thumbnails
 
 TFile * fHistoFile; 	// root file containing histograms
 TString fHistoFileName; // name of root file
@@ -627,6 +642,7 @@ Bool_t OpenCalFiles();
 Bool_t SetCalSource();
 TH1F * GetNextHisto();
 Bool_t FindPeaks();
+void MarkPeak(Double_t X, Double_t E, const Char_t * GaugeName);
 void Calibrate();
 Int_t GetNofHistosCalibrated();
 void WaitForSignal(Bool_t StepFlag = kFALSE);
@@ -636,6 +652,7 @@ TCanvas * OpenCanvas();
 void CloseCanvas() { if (fMainCanvas) fMainCanvas->Close(); if (f2DimCanvas) f2DimCanvas->Close(); }
 void WriteCalibration();
 void ShowResults2dim();
+void ShowThumbNails();
 void UpdateStatusLine();
 void SetFitStatus(Int_t FitStatus, const Char_t * Reason = NULL);
 void WriteResults();
@@ -668,6 +685,7 @@ Int_t GetFitMode() { return(fFitMode); };
 Int_t GetFitGrouping() { return(fFitGrouping); };
 Bool_t StepMode() { return((fDisplayMode & kDisplayModeStep) != 0); };
 Bool_t TwoDimMode() { return((fDisplayMode & kDisplayMode2dim) != 0); };
+Bool_t ThumbNailMode() { return((fDisplayMode & kDisplayModeThumbNails) != 0); };
 Bool_t IsVerbose() { return(fVerboseMode); };
 void SetVerboseMode(Bool_t Flag) { fVerboseMode = Flag; };
 Int_t GetLowerLim(Int_t Region = 0) { return(fLowerLim[Region]); };
@@ -895,7 +913,7 @@ Bool_t OpenCalFiles() {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fClearFlag) {
-		TString rmCmd = Form("rm -f %s %s", fCalFile.Data(), fResFile.Data());
+		TString rmCmd = Form("rm -f %s %s %s", fCalFile.Data(), fResFile.Data(), fFitFile.Data());
 		gSystem->Exec(rmCmd.Data());
 		if (IsVerbose()) OutputMessage("OpenCalFiles", Form("Removing existing files - %s %s", fCalFile.Data(), fResFile.Data()));
 	}
@@ -961,6 +979,7 @@ void WaitForSignal(Bool_t StepFlag) {
 		fButtonNext = kFALSE;
 		fButtonOk = kTRUE;
 		fButtonStop = kFALSE;
+		fButtonQuit = kFALSE;
 		fButtonFlag = kFALSE;
 		fNextHisto = kNextHisto;
 		while (!fButtonFlag) {
@@ -989,18 +1008,32 @@ void ProcessSignal(TGMrbMacroFrame * GuiPtr, Int_t ArgNo, const Char_t * ArgName
 	TString argName = ArgName;
 	if (ArgNo == kArgCtrlButtons) {
 		switch (Signal) {
-			case kButtonStart:		GuiPtr->ExecMacro(); break;
+			case kButtonStart:		fStarted = kTRUE; GuiPtr->ExecMacro(); break;
 			case kButtonPrev:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kPrevHisto; break;
 			case kButtonSame:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kSameHisto; break;
 			case kButtonNext:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kNextHisto; break;
 			case kButtonDiscard:	fButtonFlag = kTRUE; fButtonOk = kFALSE; break;
 			case kButtonStop:		fButtonFlag = kTRUE; fButtonStop = kTRUE; break;
-			case kButtonQuit:		gSystem->Exit(0);
+			case kButtonQuit:		if (!fStarted) gSystem->Exit(0); fButtonFlag = kTRUE; fButtonQuit = kTRUE; break;
 		}
-	} else if (ArgNo == kArgSetupFile) {
-		TString setupFile;
-		GuiPtr->GetArgValue("SetupFile", setupFile);
-		SetArguments(GuiPtr, setupFile.Data());
+	} else if (ArgNo == kArgLoadSetup) {
+		TString setupPath;
+		GuiPtr->GetArgValue("LoadSetup", setupPath);
+		TString setupFile = gSystem->BaseName(setupPath.Data());
+		if (!setupFile.BeginsWith(".Encal") || !setupFile.EndsWith(".env")) {
+			OutputMessage("ProcessSignal", Form("Not an Encal environment file - %s", setupFile.Data()), kTRUE);
+		} else {
+			SetArguments(GuiPtr, setupFile.Data());
+		}
+	} else if (ArgNo == kArgSaveSetup) {
+		TString setupPath;
+		GuiPtr->GetArgValue("SaveSetup", setupPath);
+		TString setupFile = gSystem->BaseName(setupPath.Data());
+		if (!setupFile.BeginsWith(".Encal") || !setupFile.EndsWith(".env")) {
+			OutputMessage("ProcessSignal", Form("Not an Encal environment file - %s", setupFile.Data()), kTRUE);
+		} else {
+			gSystem->Exec(Form("cp .Encal.env %s", setupPath.Data()));
+		}
 	}
 }
 
@@ -1356,13 +1389,16 @@ void Calibrate() {
 			pIter = fFitList->MakeIterator();
 			while (p = (FhPeak *) pIter->Next()) {
 				if (np < fNofPeaks - fNofPeaksNeeded) {
+					p->SetUsed(0);
 					fCalibration->SetGaugePoint(np, 0);
 				} else {
 					Double_t e = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.E", fSourceName.Data(), npg), 0.0);
 					Double_t eerr = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Eerr", fSourceName.Data(), npg), 1.0);
 					Double_t intens = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Intensity", fSourceName.Data(), npg), 0.0);
+					TString gauge = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Source", fSourceName.Data(), npg), "??");
 					fCalibration->SetGaugePoint(np, 1, p->GetMean(), e, p->GetMeanError(), eerr);
 					p->SetUsed(1);
+					p->SetGaugeName(gauge.Data());
 					p->SetNominalEnergy(e);
 					p->SetNominalEnergyError(eerr);
 					p->SetIntensity(intens);
@@ -1388,6 +1424,11 @@ void Calibrate() {
 				fNofPeaksUsed++;
 			}
 		}
+		fMainCanvas->cd(1);
+		pIter = fFitList->MakeIterator();
+		while (p = (FhPeak *) pIter->Next()) {
+			if (p->GetUsed()) MarkPeak(p->GetMean(), p->GetNominalEnergy(), p->GetGaugeName());
+		}
 		ClearCanvas(2);
 		TGraphErrors * gr = new TGraphErrors(fNofPeaksUsed, x.GetArray(), y.GetArray(), xerr.GetArray(), yerr.GetArray()); 
 		gr->SetMarkerStyle(4);
@@ -1405,6 +1446,41 @@ void Calibrate() {
 		OutputMessage("Calibrate", Form("Too few peaks - %d (%s calibration needs at least %d peaks)", fNofPeaks, fSourceName.Data(), fNofPeaksNeeded), kTRUE);
 		SetFitStatus(kFitDiscard, "Too few peaks");
 	}
+}
+
+void MarkPeak(Double_t X, Double_t E, const Char_t * GaugeName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           MarkCalibratedPeaks
+// Purpose:        Mark a peak
+// Arguments:      Double_t X          -- x (fitted mean value)
+//                 Double_t E          -- energy (nominal gauge value)
+//                 Char_t * GaugeName  -- source name
+// Results:        --
+// Description:    Marks a peak with energy and gauge name
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t bin = fCurHisto->FindBin(X);
+	Double_t yv = fCurHisto->GetBinContent(bin);
+	Double_t yr = fCurHisto->GetMaximum();
+	Double_t xr = fCurHisto->GetBinCenter(fCurHisto->GetXaxis()->GetLast()) 
+					- fCurHisto->GetBinCenter(fCurHisto->GetXaxis()->GetFirst());
+	TLine * l = new TLine(X + 0.025 * xr, yv + 0.025*yr, X, yv);
+	l->SetLineWidth(2);
+	l->Draw();
+         
+	TString t = GaugeName;
+
+	Int_t ie = (Int_t) E;
+	t +=  "(";
+	t += ie;
+	t += ")";
+	TLatex latex; 
+	latex.SetTextSize(0.05);
+	latex.SetTextColor(kBlue);
+	latex.DrawLatex(X + 0.025 * xr, yv + 0.025*yr, t);
+	gPad->Modified();
+	gPad->Update();
 }
 
 void WriteResults() {
@@ -1448,6 +1524,7 @@ void WriteResults() {
 		}
 		np++;
 	}
+	if (fFitResults) fFitResults->Append(fCurHisto);
 }
 
 void WriteCalibration() {
@@ -1582,9 +1659,56 @@ void ShowResults2dim() {
 				yAxis->SetBinLabel(n + 1, hn.Data());
 			}
 		}
+		f2DimCanvas->SetLeftMargin(.1);
 		f2DimFitResults->Draw();
 		f2DimCanvas->Update();
 	}
+}
+
+void ShowThumbNails() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           ShowThumbNails
+// Purpose:        Show a thumbnail plot
+// Arguments:      --
+// Results:        --
+// Description:    Shows all histos and fits in one canvas
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * hIter;
+	TObjString * oh;
+
+	if (ThumbNailMode()) {
+ 		fThumbCanvas = new TCanvas(Form("File %s: thumbsnails", fHistoFile->GetName()));
+		Int_t nh = GetNofHistosCalibrated();
+		Int_t nx = (Int_t) (sqrt((Float_t) nh) + .5);
+		Int_t ny = (Int_t) (((Float_t) nh) / nx + .5);
+		fThumbCanvas->Divide(nx, ny);
+		hIter = fLofHistos.MakeIterator();
+		oh = NULL;
+		Int_t nc = 1;
+		for (Int_t i = 0; i < nx; i++) {
+			for (Int_t j = 0; j < ny; j++) {
+				fThumbCanvas->cd(nc++);
+				oh = (TObjString *) hIter->Next();
+				if (oh == NULL) break;
+				TH1F * h = (TH1F *) fHistoFile->Get(oh->GetString());
+				if (h) h->Draw();
+			}
+			if (oh == NULL) break;
+		}
+		fThumbCanvas->Update();
+	}
+	hIter = fLofHistos.MakeIterator();
+	oh = NULL;
+	TString hlName = fFitFile;
+	hlName.ReplaceAll(".root", 5, ".histlist", 9);
+	ofstream hl(hlName.Data());
+	while(oh = (TObjString *) hIter->Next()) {
+		TString hName = oh->GetString();
+		hl << hName << endl;
+	}
+	hl.close();
 }
 
 void GetArguments(TGMrbMacroFrame * GuiPtr) {
@@ -1786,15 +1910,18 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 	argX = lofArgs.FindByName("Region1");
 	if (argX) {
 		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		cout << "@@@ " << argX->GetName() << " " << envStr << endl;
 		TObjArray * a = envStr.Tokenize(":");
 		TString tf = ((TObjString *) a->At(2))->GetString();
 		if (tf.CompareTo("T") == 0) {
 			GuiPtr->SetArgCheck("Region1", 1);
+			cout << "@@@ " << argX->GetName() << " check=TRUE" << endl;
 			envStr = ((TObjString *) a->At(0))->GetString();
 			GuiPtr->SetArgValue("Region1", envStr.Atoi(), 0);
 			envStr = ((TObjString *) a->At(1))->GetString();
 			GuiPtr->SetArgValue("Region1", envStr.Atoi(), 1);
 		} else {
+			cout << "@@@ " << argX->GetName() << " check=FALSE" << endl;
 			GuiPtr->SetArgCheck("Region1", 0);
 			GuiPtr->SetArgValue("Region1", 0, 0);
 			GuiPtr->SetArgValue("Region1", 0, 1);
@@ -1804,15 +1931,18 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 	argX = lofArgs.FindByName("Region2");
 	if (argX) {
 		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		cout << "@@@ " << argX->GetName() << " " << envStr << endl;
 		TObjArray * a = envStr.Tokenize(":");
 		TString tf = ((TObjString *) a->At(2))->GetString();
 		if (tf.CompareTo("T") == 0) {
+			cout << "@@@ " << argX->GetName() << " check=TRUE" << endl;
 			GuiPtr->SetArgCheck("Region2", 1);
 			envStr = ((TObjString *) a->At(0))->GetString();
 			GuiPtr->SetArgValue("Region2", envStr.Atoi(), 0);
 			envStr = ((TObjString *) a->At(1))->GetString();
 			GuiPtr->SetArgValue("Region2", envStr.Atoi(), 1);
 		} else {
+			cout << "@@@ " << argX->GetName() << " check=FALSE" << endl;
 			GuiPtr->SetArgCheck("Region2", 0);
 			GuiPtr->SetArgValue("Region2", 0, 0);
 			GuiPtr->SetArgValue("Region2", 0, 1);
@@ -1822,15 +1952,18 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 	argX = lofArgs.FindByName("Region3");
 	if (argX) {
 		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		cout << "@@@ " << argX->GetName() << " " << envStr << endl;
 		TObjArray * a = envStr.Tokenize(":");
 		TString tf = ((TObjString *) a->At(2))->GetString();
 		if (tf.CompareTo("T") == 0) {
+			cout << "@@@ " << argX->GetName() << " check=TRUE" << endl;
 			GuiPtr->SetArgCheck("Region3", 1);
 			envStr = ((TObjString *) a->At(0))->GetString();
 			GuiPtr->SetArgValue("Region3", envStr.Atoi(), 0);
 			envStr = ((TObjString *) a->At(1))->GetString();
 			GuiPtr->SetArgValue("Region3", envStr.Atoi(), 1);
 		} else {
+			cout << "@@@ " << argX->GetName() << " check=FALSE" << endl;
 			GuiPtr->SetArgCheck("Region3", 0);
 			GuiPtr->SetArgValue("Region3", 0, 0);
 			GuiPtr->SetArgValue("Region3", 0, 1);
@@ -1976,7 +2109,7 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 		if (h == NULL) {
 			ClearCanvas(0);
 			WaitForSignal();
-			if (fButtonStop) { Stop(); break; }
+			if (fButtonStop || fButtonQuit) { Stop(); break; }
 			continue;
 		}
 
@@ -2004,10 +2137,11 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 		}
 
 		WaitForSignal();
-		if (fButtonStop) { Stop(); break; }
+		if (fButtonStop || fButtonQuit) { Stop(); break; }
 	}
 
 	ShowResults2dim();
+	ShowThumbNails();
 
 	CloseEnvFiles();
 
@@ -2016,6 +2150,7 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 	WaitForSignal(kTRUE);
 
 	CloseRootFile();
+	if (fButtonQuit) { gSystem->Exit(0); }
 
 	return;
 }

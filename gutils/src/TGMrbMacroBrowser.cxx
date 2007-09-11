@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.44 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.45 2007-09-11 14:06:04 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -2662,6 +2662,7 @@ Bool_t TGMrbMacroFrame::SetArgCheck(const Char_t * ArgName, UInt_t Check) {
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
 					ap->fEntry->SetCheckButtons(Check);
+					ap->fEntry->Layout();
 					return(kTRUE);
 				default:
 					return(kFALSE);

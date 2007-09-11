@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.8 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.9 2007-09-11 14:06:04 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -310,6 +310,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 		} else {
 			TMrbNamedX *namedX;
 			TIterator * bIter = fButtons.MakeIterator();
+			EButtonState invState = (State == kButtonUp) ? kButtonDown : kButtonUp;
 			while (namedX = (TMrbNamedX *) bIter->Next()) {
 				TGButton * button = (TGButton *) namedX->GetAssignedObject();
 				if (button->GetState() != kButtonDisabled) {
@@ -317,6 +318,8 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 						button->SetState(State);
 					} else if (sbutton) {
 						button->SetState(kButtonUp);
+					} else {
+						button->SetState(invState);
 					}
 				}
 			}
