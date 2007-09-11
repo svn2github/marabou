@@ -27,9 +27,11 @@ proc writeEnv {uEnv linux release arch admin} {
 	global userEnv envFile env
 	set uVar $userEnv(var)
 	set f [open $envFile w]
-	set clnpEnvs [split $userEnv($uEnv,cleanup,envs) ":"]
+	set clnpEnvs {}
+	if {[info exists userEnv($uEnv,cleanup,envs)]} { set clnpEnvs [split $userEnv($uEnv,cleanup,envs) ":"] }
 	if {[llength $clnpEnvs] > 0} {
-		set clnpWhat [split $userEnv($uEnv,cleanup,what) ":"]
+		set clnpWhat {}
+		if {[info exists userEnv($uEnv,cleanup,what)]} { set clnpWhat [split $userEnv($uEnv,cleanup,what) ":"] }
 		foreach e $clnpEnvs {
 			set newEnv {}
 			set envVal [split $env($e) ":"]
@@ -115,7 +117,8 @@ proc extractVersion {} {
 	foreach u [array get userEnv "*,name"] {
 		if {$odd == 1} { set odd 0; continue }
 		set odd 1
-		set xt [string first %v $userEnv($u,title)]
+		set xt -1
+		if {[info exists userEnv($u,title)]} { set xt [string first %v $userEnv($u,title)] }
 		if {$xt != -1 && [info exists userEnv($u,version)]} {
 			foreach p [split $userEnv($u,action)] {
 				if {[string first ROOTSYS= $p] != -1} {
@@ -162,6 +165,45 @@ proc showTooltip {widget text} {
 
 	wm geometry $tooltip [join  "$width x $height + $positionX + $positionY" {}]
 	raise $tooltip
+}
+
+proc fillLofUserEnvs envSpecs {
+	global env userEnv lofUserEnvs
+
+	set envList {}
+	set envPath {}
+	if {[file isdirectory $envSpecs]} {
+		set dirList [glob -nocomplain $envSpecs/*]
+		set envPath $envSpecs
+		foreach d $dirList {
+			if {[file isdirectory $d]} { lappend envList $d }
+		}
+	} elseif {[file isfile $envSpecs]} {
+		if {[catch "open $envSpecs r" f] != 0} {
+			puts stderr "msetup: $f - $envSpecs"
+		}
+		while {[gets $f d] != -1} { lappend envList $d }
+		close $f
+	} else {
+		puts stderr "msetup: No such file or directory - $envSpecs"
+	}
+	if {[llength $envList] == 0} {
+		puts stderr "msetup: No entries found - $envSpecs"
+	}
+	set lofUserEnvs {}
+	foreach u $envList {
+		set un [file tail $u]
+		set userEnv($un,name) $un
+		set userEnv($un,title) %v
+		if {$envPath == ""} {
+			set userEnv($un,action)		"export CWD=$u"
+			set userEnv($un,version)	$u
+		} else {
+			set userEnv($un,action)		"export CWD=$envPath/$un"
+			set userEnv($un,version)	$envPath/$u
+		}
+		lappend lofUserEnvs $un
+	}
 }
 
 if {$argc > 1} {
@@ -263,11 +305,12 @@ if {$env(MSETUP_MODE) == "q"} {
 		button .b$u -command " writeEnv $u $linux $release $arch $isAdmin; \
 								createLock $u $isAdmin $linux $release $arch; \
 								exit"
-		set title $userEnv($u,title)
-		if {$title == ""} { set title $u } else { set title "$u: $title" }
+		set title ""
+		if {[info exists userEnv($u,title)]} { set title $userEnv($u,title) }
 		set xt [string first %v $title]
 		if {$xt != -1} {
 			set title [string replace $title $xt [expr $xt + 1]]
+			if {$title == ""} { set title $u } else { set title "$u: $title" }
 			setTooltip .b$u $userEnv($u,version)
 		}			
 		.b$u config -text $title
@@ -277,10 +320,11 @@ if {$env(MSETUP_MODE) == "q"} {
 	set n 1
 	puts "User environments available:"
 	foreach u $lofUserEnvs {
-		set title $userEnv($u,title)
-		if {$title == ""} { set title $u } else { set title "$u: $title" }
+		set title ""
+		if {[info exists userEnv($u,title)]} { set title $userEnv($u,title) }
 		set xt [string first %v $title]
 		if {$xt != -1} { set title [string replace $title $xt [expr $xt + 1] $userEnv($u,version)] }
+		if {$title == ""} { set title $u } else { set title "$u: $title" }
 		puts "\[$n\] $title"
 		incr n
 	}
@@ -294,18 +338,32 @@ if {$env(MSETUP_MODE) == "q"} {
 			if {$x == -1} {
 				puts -nonewline "Enter number or name to select environment: "
 			} else {
-				incr x 1
+				incr x
 				puts -nonewline "Enter number or name to select environment \[$m or $x]: "
 			}
 		}
 		flush stdout
 		gets stdin envIdx
 		if {$envIdx == ""} { set envIdx $x }
-		set l [llength $lofUserEnvs]
-		if {$envIdx <= 0 || $envIdx > $l} {
-			puts stderr "Illegal input - $envIdx (should be in \[1,$l\])"
+		if {[string is integer $envIdx]} {
+			set l [llength $lofUserEnvs]
+			if {$envIdx <= 0 || $envIdx > $l} {
+				puts stderr "Illegal input - $envIdx (should be in \[1,$l\])"
+				set envIdx -1
+			}
 		} else {
-			incr envIdx -1
+			set envList [lsearch -all $lofUserEnvs $envIdx*]
+			if {[llength $envList] == 0} {
+				puts stderr "Illegal input - \"$envIdx\" not found"
+				set envIdx -1
+			} elseif {[llength $envList] == 1} {
+				set envIdx [lindex $envList 0]
+			} else {
+				puts stderr "Illegal input - $envIdx is not unique"
+				set envIdx -1
+			}
+		} 
+		if {$envIdx != -1} {
 			writeEnv [lindex $lofUserEnvs $envIdx] $linux $release $arch $isAdmin
 			createLock [lindex $lofUserEnvs $envIdx] $isAdmin $linux $release $arch;
 			exit
