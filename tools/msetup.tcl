@@ -302,7 +302,11 @@ if {$env(MSETUP_MODE) == "q"} {
 	pack .arch -side top
 	
 	set nofEnvs [llength $lofUserEnvs]
-	set envsPerCol [expr $nofEnvs * 20 / ($nofEnvs + 20)]
+	if {$nofEnvs > 20} {
+		set envsPerCol [expr $nofEnvs * 20 / ($nofEnvs + 20)]
+	} else {
+		set envsPerCol $nofEnvs
+	}
 	set n 0
 	set lofFrames {}
 	foreach u $lofUserEnvs {
