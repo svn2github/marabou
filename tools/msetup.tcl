@@ -249,7 +249,7 @@ if {![info exists env(MARABOU_ENV)]} { set env(MARABOU_ENV) pro }
 
 if {[info vars tk_version] == ""} {
 	set isWish 0
-	if {$env(DISPLAY) != "" && $env(MSETUP_MODE) != "t" && $env(MSETUP_MODE) != "q"} {
+	if {[info exists env(DISPLAY)] && $env(DISPLAY) != "" && $env(MSETUP_MODE) != "t" && $env(MSETUP_MODE) != "q"} {
 		exec wish [info script]
 		exit
 	}
