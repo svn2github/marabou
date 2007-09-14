@@ -11,7 +11,7 @@
 //                                           a list box containing file objects
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFileObject.h,v 1.10 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.h,v 1.11 2007-09-14 13:37:41 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -70,17 +70,19 @@ class TGMrbFileObjectCombo: public TGCompositeFrame, public TGMrbObject {
 
 		void SetFileEntry(const Char_t * File);
 		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file
-		Int_t GetSelectionAsString(TString & SelString, Bool_t FullPath = kTRUE) const;  // get selected file/object -- string
-		Int_t GetSelection(TObjArray & SelArr, Bool_t FullPath = kTRUE) const;	// ... -- array
-		void SetSelectionFromString(TString & SelString);  					// set items
-		void SetSelection(TObjArray & SelArr); 								// ... -- array
+		Int_t GetSelectionAsString(TString & SelString, Bool_t FullPath = kTRUE) const; // get selected file/object -- string
+		Int_t GetSelection(TObjArray & SelArr, Bool_t FullPath = kTRUE) const;			// ... -- array
+		void SetSelectionFromString(TString & SelString, Bool_t IsNewFile = kFALSE);  	// set items
+		void SetSelection(TObjArray & SelArr, Bool_t IsNewFile = kFALSE); 				// ... -- array
 
 		inline void Associate(const TGWindow * Window) { fCombo->Associate(Window); };	// where to go if combobox
 																					// selection changes
 		inline const Char_t * GetText() const { return(fText.Data()); };					// return text field data
 		inline void SetText(const Char_t * Text) { fText = Text; }; 				// set text field
 		
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		inline const Char_t * GetFileName() { return(fFileName.Data()); };
+
+ 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -92,6 +94,7 @@ class TGMrbFileObjectCombo: public TGCompositeFrame, public TGMrbObject {
 		TGComboBox * fCombo;				//!
 		TGPictureButton * fBrowse;	 		//!
 
+		TString fFileName;					// file name
 		TString fText;
 
 		TGFileInfo fFileInfo; 				//!
@@ -148,15 +151,17 @@ class TGMrbFileObjectListBox: public TGCompositeFrame, public TGMrbObject {
 		void SetFileEntry(const Char_t * File);
 		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file
 		Int_t GetSelectionAsString(TString & SelString, Bool_t FullPath = kTRUE) const;	// get selected file/object -- string
-		Int_t GetSelection(TObjArray & SelArr, Bool_t FullPath = kTRUE) const;	// ... -- array
-		void SetSelectionFromString(TString & SelString);  					// set items
-		void SetSelection(TObjArray & SelArr); 								// ... -- array
+		Int_t GetSelection(TObjArray & SelArr, Bool_t FullPath = kTRUE) const;			// ... -- array
+		void SetSelectionFromString(TString & SelString, Bool_t IsNewFile = kFALSE);  	// set items
+		void SetSelection(TObjArray & SelArr, Bool_t IsNewFile = kFALSE); 				// ... -- array
 
 		inline void Associate(const TGWindow * Window) { fListBox->Associate(Window); };	// where to go if combobox
 																					// selection changes
 		inline const Char_t * GetText() const { return(fText.Data()); };					// return text field data
 		inline void SetText(const Char_t * Text) { fText = Text; }; 				// set text field
 		
+		inline const Char_t * GetFileName() { return(fFileName.Data()); };
+
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
@@ -176,7 +181,8 @@ class TGMrbFileObjectListBox: public TGCompositeFrame, public TGMrbObject {
 		TGTextButton * fTBApply;			//!
 
 		Int_t fStartIndex;
-		TMrbLofNamedX fLofListItems;
+		TString fFileName;					// file name
+		TMrbLofNamedX fLofListItems;		// entries
 
 		TString fText;
 

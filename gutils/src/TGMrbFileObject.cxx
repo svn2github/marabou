@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.18 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.19 2007-09-14 13:37:41 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -292,12 +292,13 @@ Int_t TGMrbFileObjectCombo::GetSelection(TObjArray & SelArr, Bool_t FullPath) co
 	return(0);
 }
 
-void TGMrbFileObjectCombo::SetSelectionFromString(TString & SelString) {
+void TGMrbFileObjectCombo::SetSelectionFromString(TString & SelString, Bool_t IsNewFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbFileObjectListBox::SetSelectionFromString
 // Purpose:        Fill file entry and listbox from array
-// Arguments:      TString & SelArr     -- string containing file name and file items
+// Arguments:      TString & SelString     -- string containing file name and file items
+//                 Bool_t IsNewFile        -- open new file anyway
 // Results:        
 // Exceptions:     
 // Description:    Inserts file name into file entry and file items into listbox.
@@ -309,18 +310,22 @@ void TGMrbFileObjectCombo::SetSelectionFromString(TString & SelString) {
 	TString item;
 	Int_t id = -1;
 	while (SelString.Tokenize(item, from, ":")) {
-		if (id == -1) fEntry->SetText(item.Data());
-		else fCombo->AddEntry(item.Data(), id);
+		if (id == -1) {
+			if (IsNewFile || fFileName.CompareTo(item.Data()) != 0) this->OpenFile(item.Data());
+		} else {
+			fCombo->AddEntry(item.Data(), id);
+		}
 		id++;
 	}
 }
 
-void TGMrbFileObjectCombo::SetSelection(TObjArray & SelArr) {
+void TGMrbFileObjectCombo::SetSelection(TObjArray & SelArr, Bool_t IsNewFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbFileObjectListBox::SetSelection
 // Purpose:        Fill file entry and listbox from array
 // Arguments:      TObjArray & SelArr     -- array containing file name and file items
+//                 Bool_t IsNewFile        -- open new file anyway
 // Results:        
 // Exceptions:     
 // Description:    Inserts file name into file entry and file items into listbox.
@@ -332,8 +337,11 @@ void TGMrbFileObjectCombo::SetSelection(TObjArray & SelArr) {
 	TObjString * o;
 	Int_t id = -1;
 	while (o = (TObjString *) iter->Next()) {
-		if (id == -1) fEntry->SetText(o->GetString());
-		else fCombo->AddEntry(o->GetString(), id);
+		if (id == -1) {
+			if (IsNewFile || fFileName.CompareTo(o->GetString()) != 0) this->OpenFile(o->GetString());
+		} else {
+			fCombo->AddEntry(o->GetString(), id);
+		}
 		id++;
 	}
 }
@@ -356,11 +364,11 @@ Bool_t TGMrbFileObjectCombo::OpenFile(const Char_t * FileName) {
 		new TGMsgBox(fClient->GetRoot(), this, "TGMrbFileObjectCombo: Error", err.Data(), kMBIconStop);
 		return(kFALSE);
 	}
+	fFileName = FileName;
 	this->SetFileEntry(FileName);
 	TList * fileKeys = rootFile->GetListOfKeys();
 	Int_t idx = 0;
-	Int_t nofEntries = fCombo->GetListBox()->GetNumberOfEntries();
-	fCombo->RemoveEntries(0, nofEntries - 1);
+	this->ClearList();
 	TKey * key;
 	TIterator * keyIter = fileKeys->MakeIterator();
 	while (key = (TKey *) keyIter->Next()) {
@@ -499,6 +507,7 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 
 	TGLayoutHints * tbLayout = new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 10, 10, 0, 0);
 	fHeap.AddFirst((TObject *) tbLayout);
+
 	fTBClear = new TGTextButton(fEB2, "clear", kBtnClear);
 	fHeap.AddFirst((TObject *) fTBClear);
 	fEB2->AddFrame(fTBClear, tbLayout);
@@ -547,11 +556,7 @@ Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 
 						case kBtnClear:
 							{
-#if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
-  								fListBox->RemoveAll();
-#else
-    							fListBox->RemoveEntries(0, 1000);
-#endif
+  								this->ClearList();
 								TIterator * iter = fLofListItems.MakeIterator();
 								TMrbNamedX * nx;
 								while (nx = (TMrbNamedX *) iter->Next()) {
@@ -573,11 +578,7 @@ Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 									lofSelected.AddNamedX(idx, lbe->GetText()->GetString());
 									idx++;
 								}
-#if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
-  								fListBox->RemoveAll();
-#else
-    							fListBox->RemoveEntries(0, 1000);
-#endif
+  								this->ClearList();
 								iter = lofSelected.MakeIterator();
 								TMrbNamedX * nx;
 								while (nx = (TMrbNamedX *) iter->Next()) {
@@ -791,12 +792,13 @@ Int_t TGMrbFileObjectListBox::GetSelection(TObjArray & SelArr, Bool_t FullPath) 
 	return(nofSelected);
 }
 
-void TGMrbFileObjectListBox::SetSelectionFromString(TString & SelString) {
+void TGMrbFileObjectListBox::SetSelectionFromString(TString & SelString, Bool_t IsNewFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbFileObjectListBox::SetSelectionFromString
 // Purpose:        Fill file entry and listbox from array
-// Arguments:      TString & SelArr     -- string containing file name and file items
+// Arguments:      TString & SelString     -- string containing file name and file items
+//                 Bool_t IsNewFile        -- open new file anyway
 // Results:        
 // Exceptions:     
 // Description:    Inserts file name into file entry and file items into listbox.
@@ -808,18 +810,23 @@ void TGMrbFileObjectListBox::SetSelectionFromString(TString & SelString) {
 	TString item;
 	Int_t id = -1;
 	while (SelString.Tokenize(item, from, ":")) {
-		if (id == -1) fEntry->SetText(item.Data());
-		else fListBox->AddEntry(item.Data(), id);
+		if (id == -1) {
+			if (IsNewFile || fFileName.CompareTo(item.Data()) != 0) this->OpenFile(item.Data());
+			this->ClearList();
+		} else {
+			fListBox->AddEntry(item.Data(), id);
+		}
 		id++;
 	}
 }
 
-void TGMrbFileObjectListBox::SetSelection(TObjArray & SelArr) {
+void TGMrbFileObjectListBox::SetSelection(TObjArray & SelArr, Bool_t IsNewFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbFileObjectListBox::SetSelection
 // Purpose:        Fill file entry and listbox from array
 // Arguments:      TObjArray & SelArr     -- array containing file name and file items
+//                 Bool_t IsNewFile        -- open new file anyway
 // Results:        
 // Exceptions:     
 // Description:    Inserts file name into file entry and file items into listbox.
@@ -831,8 +838,12 @@ void TGMrbFileObjectListBox::SetSelection(TObjArray & SelArr) {
 	TObjString * o;
 	Int_t id = -1;
 	while (o = (TObjString *) iter->Next()) {
-		if (id == -1) fEntry->SetText(o->GetString());
-		else fListBox->AddEntry(o->GetString(), id);
+		if (id == -1) {
+			if (IsNewFile || fFileName.CompareTo(o->GetString()) != 0) this->OpenFile(o->GetString());
+			this->ClearList();
+		} else {
+			fListBox->AddEntry(o->GetString(), id);
+		}
 		id++;
 	}
 }
@@ -855,11 +866,11 @@ Bool_t TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
 		new TGMsgBox(fClient->GetRoot(), this, "TGMrbFileObjectListBox: Error", err.Data(), kMBIconStop);
 		return(kFALSE);
 	}
+	fFileName = FileName;
 	this->SetFileEntry(FileName);
 	TList * fileKeys = rootFile->GetListOfKeys();
 	Int_t idx = 0;
-	Int_t nofEntries = fListBox->GetNumberOfEntries();
-	fListBox->RemoveEntries(0, nofEntries - 1);
+	this->ClearList();
 	fLofListItems.Delete();
 	TKey * key;
 	TIterator * keyIter = fileKeys->MakeIterator();

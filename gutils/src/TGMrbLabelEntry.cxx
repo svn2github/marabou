@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.17 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.18 2007-09-14 13:37:41 Rudolf.Lutter Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -323,7 +323,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 //					if (fFocusList) fFocusList->FocusForward(fEntry);
 					break;
 				case kTE_ENTER:
-					entryNo = Param1 / 10;
+					entryNo = (Param1 & 0xFFFF) / 10;
 					fEntry[entryNo]->SendSignal(entryNo);
 					break;
 			}
