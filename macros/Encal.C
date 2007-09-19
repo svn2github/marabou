@@ -9,14 +9,14 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.29 2007-09-14 13:38:21 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.30 2007-09-19 13:09:01 Rudolf.Lutter Exp $
 // Date:             Thu Sep 13 08:33:10 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
 //                   Width:               780
 //                   Aclic:               +g
-//                   Modify:              yes
+//                   Modify:              no
 //                   GuiPtrMode:          GuiPtr
 //                   UserStart:           on
 //                   RcFile:              .EncalLoadLibs.C
@@ -156,7 +156,8 @@
 //                   Arg17.Name:          Rebin
 //                   Arg17.Title:         Rebin histograms
 //                   Arg17.Type:          Int_t
-//                   Arg17.EntryType:     UpDown
+//                   Arg17.EntryType:     Entry
+//                   Arg17.Width:         100
 //                   Arg17.Default:       1
 //                   Arg17.AddLofValues:  No
 //                   Arg17.Base:          dec
@@ -164,9 +165,9 @@
 //                   Arg18.Name:          Limits
 //                   Arg18.Title:         Limits: lower, upper
 //                   Arg18.Type:          Int_t
-//                   Arg18.EntryType:     UpDown-MX
+//                   Arg18.EntryType:     Entry-M
 //                   Arg18.NofEntryFields:2
-//                   Arg18.Width:         150
+//                   Arg18.Width:         100
 //                   Arg18.Default:       0:0
 //                   Arg18.AddLofValues:  No
 //                   Arg18.LowerLimit:    0:0
@@ -188,7 +189,7 @@
 //                   Arg19.Base:          dec
 //                   Arg19.Orientation:   horizontal
 //                   Arg20.Name:          Efficiency
-//                   Arg20.Title:         Normalize with efficiency: yeff(x) = y(x) / (a0 * exp(-a1 * x))
+//                   Arg20.Title:         Normalize with efficiency: yeff(x) = y(x) / (a0 * exp(a1 * x))
 //                   Arg20.Type:          Double_t
 //                   Arg20.EntryType:     Entry-MC
 //                   Arg20.NofEntryFields:2
@@ -203,7 +204,8 @@
 //                   Arg21.Name:          PeakFrac
 //                   Arg21.Title:         Threshold [% of max peak]
 //                   Arg21.Type:          Int_t
-//                   Arg21.EntryType:     UpDown-X
+//                   Arg21.EntryType:     Entry
+//                   Arg21.Width:         100
 //                   Arg21.Default:       1
 //                   Arg21.AddLofValues:  No
 //                   Arg21.LowerLimit:    1
@@ -214,7 +216,8 @@
 //                   Arg22.Name:          Sigma
 //                   Arg22.Title:         Sigma
 //                   Arg22.Type:          Double_t
-//                   Arg22.EntryType:     UpDown-X
+//                   Arg22.EntryType:     Entry
+//                   Arg22.Width:         100
 //                   Arg22.Default:       3
 //                   Arg22.AddLofValues:  No
 //                   Arg22.LowerLimit:    0
@@ -223,9 +226,10 @@
 //                   Arg22.Base:          dec
 //                   Arg22.Orientation:   horizontal
 //                   Arg23.Name:          TwoPeakSep
-//                   Arg23.Title:         Two-peak separation [sigma]
+//                   Arg23.Title:         Two-peaks separation [sigma]
 //                   Arg23.Type:          Double_t
-//                   Arg23.EntryType:     UpDown-X
+//                   Arg23.EntryType:     Entry
+//                   Arg23.Width:         100
 //                   Arg23.Default:       1
 //                   Arg23.AddLofValues:  No
 //                   Arg23.LowerLimit:    1
@@ -269,7 +273,8 @@
 //                   Arg28.Name:          FitRange
 //                   Arg28.Title:         Range [sigma]
 //                   Arg28.Type:          Double_t
-//                   Arg28.EntryType:     UpDown
+//                   Arg28.EntryType:     Entry
+//                   Arg28.Width:         100
 //                   Arg28.Default:       3
 //                   Arg28.AddLofValues:  No
 //                   Arg28.LowerLimit:    0
@@ -295,7 +300,7 @@
 //                   Arg31.Name:          TestbedHisto
 //                   Arg31.Title:         Testbed histogram: nbins, xmin, xmax
 //                   Arg31.Type:          Int_t
-//                   Arg31.EntryType:     UpDown-M
+//                   Arg31.EntryType:     Entry-M
 //                   Arg31.NofEntryFields:3
 //                   Arg31.Width:         100
 //                   Arg31.Default:       0:0:0
@@ -308,7 +313,7 @@
 //                   Arg32.Name:          MatchOffset
 //                   Arg32.Title:         Offset: min, step, max
 //                   Arg32.Type:          Double_t
-//                   Arg32.EntryType:     UpDown-M
+//                   Arg32.EntryType:     Entry-M
 //                   Arg32.NofEntryFields:3
 //                   Arg32.Width:         100
 //                   Arg32.Default:       0:0:0
@@ -321,7 +326,7 @@
 //                   Arg33.Name:          MatchGain
 //                   Arg33.Title:         Gain: min, step, max
 //                   Arg33.Type:          Double_t
-//                   Arg33.EntryType:     UpDown-M
+//                   Arg33.EntryType:     Entry-M
 //                   Arg33.NofEntryFields:3
 //                   Arg33.Width:         100
 //                   Arg33.Default:       1:1:100
@@ -367,7 +372,7 @@
 //                   Arg38.Title:         What to be done next?
 //                   Arg38.Type:          Int_t
 //                   Arg38.EntryType:     TextButton
-//                   Arg38.Values:        Start=0:Prev=1:Same=2:Next/ok=3:Next/discard=4:Stop=5:Quit=6
+//                   Arg38.Values:        Start=0:Prev=1:Same=2:Next=3:Stop=4:Quit=5
 //                   Arg38.AddLofValues:  No
 //                   Arg38.Base:          dec
 //                   Arg38.Orientation:   horizontal
@@ -506,7 +511,6 @@ enum EEncalButtons		{	kButtonStart,
 							kButtonPrev,
 							kButtonSame,
 							kButtonNext,
-							kButtonDiscard,
 							kButtonStop,
 							kButtonQuit
 						};
@@ -531,7 +535,6 @@ Int_t fitTailSide = 1;
 
 Bool_t fButtonFlag = kFALSE;
 Bool_t fButtonNext = kTRUE;
-Bool_t fButtonOk = kTRUE;
 Bool_t fButtonStop = kFALSE;
 Bool_t fButtonQuit = kFALSE;
 Bool_t fStarted = kFALSE;
@@ -593,6 +596,8 @@ Int_t fNofHistos;		// number of histograms (selected from root file)
 Int_t fNofHistosCalibrated;	// number of histograms calibrated
 
 TString fPreCalFile;	// precalibration file
+
+TMrbLofNamedX fLofFitStatusFlags;
 
 TH2S * f2DimFitResults;	// 2-dim histo to show re-calibrated histograms
 
@@ -780,21 +785,18 @@ TH1F * GetNextHisto() {
 
 	if (fCurHistoNo == -1) {
 		fCurHistoNo = 0;
-		fPeakFinder = NULL;
-		fFitOneDim = NULL;
-		fCalibration = NULL;
 	} else if (fNextHisto == kPrevHisto) {
 		fCurHistoNo--;
-		if (fCurHistoNo < 0) fCurHistoNo = 0;
-		fPeakFinder = NULL;
-		fFitOneDim = NULL;
-		fCalibration = NULL;
+		if (fCurHistoNo < 0) {
+			OutputMessage("GetNextHisto", Form("Reached beginning of histo list - %s", fHistoFile->GetName()), "w");
+			fCurHistoNo = 0;
+		}
 	} else if (fNextHisto == kNextHisto) {
 		fCurHistoNo++;
-		fPeakFinder = NULL;
-		fFitOneDim = NULL;
-		fCalibration = NULL;
 	}
+	fPeakFinder = NULL;
+	fFitOneDim = NULL;
+	fCalibration = NULL;
 	if (fCurHistoNo >= 0 && fCurHistoNo < fNofHistos) {
 		TString hName = ((TObjString *) fLofHistos[fCurHistoNo])->GetString();
 		if (fFitResults) {
@@ -888,7 +890,6 @@ void WaitForSignal(Bool_t StepFlag) {
 
 	if (StepFlag || StepMode()) {
 		fButtonNext = kFALSE;
-		fButtonOk = kTRUE;
 		fButtonStop = kFALSE;
 		fButtonQuit = kFALSE;
 		fButtonFlag = kFALSE;
@@ -897,8 +898,6 @@ void WaitForSignal(Bool_t StepFlag) {
 			gSystem->Sleep(50);
 			gSystem->ProcessEvents();
 		}
-	} else {
-		fButtonOk = kTRUE;
 	}
 	fButtonFlag = kFALSE;
 }
@@ -920,10 +919,9 @@ void ProcessSignal(TGMrbMacroFrame * GuiPtr, Int_t ArgNo, const Char_t * ArgName
 	if (ArgNo == kArgCtrlButtons) {
 		switch (Signal) {
 			case kButtonStart:		fStarted = kTRUE; GuiPtr->ExecMacro(); break;
-			case kButtonPrev:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kPrevHisto; break;
-			case kButtonSame:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kSameHisto; break;
-			case kButtonNext:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fButtonOk = kTRUE; fNextHisto = kNextHisto; break;
-			case kButtonDiscard:	fButtonFlag = kTRUE; fButtonOk = kFALSE; break;
+			case kButtonPrev:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fNextHisto = kPrevHisto; break;
+			case kButtonSame:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fNextHisto = kSameHisto; break;
+			case kButtonNext:		fButtonFlag = kTRUE; fButtonNext = kTRUE; fNextHisto = kNextHisto; break;
 			case kButtonStop:		fButtonFlag = kTRUE; fButtonStop = kTRUE; break;
 			case kButtonQuit:		if (!fStarted) gSystem->Exit(0); fButtonFlag = kTRUE; fButtonQuit = kTRUE; break;
 		}
@@ -1163,7 +1161,6 @@ void CloseRootFile() {
 // Description:    Closes root file containing histo + fit data
 //////////////////////////////////////////////////////////////////////////////
 
-	cout << "@@@ close" << endl;
 	if (fFitResults && fFitResults->IsOpen()) {
 		fFitResults->Write();
 		fFitResults->Close();
@@ -1209,18 +1206,9 @@ Bool_t FindPeaks() {
 	if (fRebin > 1) fCurHisto->Rebin(fRebin);
 
 	if (fNormHistoEff) {
-		TH1F hcop;
-		hcop.Reset();
-		fCurHisto->Copy(hcop);
-		fCurHisto->Reset();
 		for (Int_t i = fMinX; i < fMaxX; i++) {
-			Int_t bCont = (Int_t) hcop.GetBinContent(i);
-			Double_t bCent = hcop.GetBinCenter(i);
-			for (Int_t j = 0; j < bCont; j++) {
-				Double_t x = bCent + gRandom->Rndm() - 0.5;
-				Double_t w = 1.0 / (fEfficiencyA0 * exp(fEfficiencyA1 * x));
-				fCurHisto->Fill(x, w);
-			}
+			Int_t bCont = (Int_t) fCurHisto->GetBinContent(i);
+			fCurHisto->SetBinContent(i, bCont / (fEfficiencyA0 * exp(fEfficiencyA1 * i)));
 		}
 	}
 
@@ -1536,6 +1524,11 @@ void SetFitStatus(Int_t FitStatus, const Char_t * Reason) {
 
 	fFitStatus = FitStatus;
 	fReason = (Reason == NULL || *Reason == '\0') ? "" : Reason;
+	TMrbNamedX * fs = fLofFitStatusFlags.FindByIndex(fFitStatus);
+	TString fsStr = (fs != NULL) ? fs->GetName() : "";
+	if (!fReason.IsNull()) fsStr += Form(": %s", fReason.Data());
+	if (fEnvResults) fEnvResults->SetValue(Form("Calib.%s.FitStatus", fCurHisto->GetName()), fsStr.Data());
+	if (fEnvCalib) fEnvCalib->SetValue(Form("Calib.%s.FitStatus", fCurHisto->GetName()), fsStr.Data());
 }
 
 void ShowResults2dim() {
@@ -2064,6 +2057,10 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 	if (f2DimCanvas) { delete f2DimCanvas; f2DimCanvas = NULL; }
 	if (fThumbCanvas) { delete fThumbCanvas; fThumbCanvas = NULL; }
 	if (fPopupCanvas) { delete fPopupCanvas; fPopupCanvas = NULL; }
+
+	fLofFitStatusFlags.AddNamedX(kFitDiscard, "Discarded");
+	fLofFitStatusFlags.AddNamedX(kFitOk, "Ok");
+	fLofFitStatusFlags.AddNamedX(kFitAuto, "Auto");
 
 	if (!OpenHistoFile()) return;
 
