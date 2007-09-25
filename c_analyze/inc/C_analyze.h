@@ -39,6 +39,8 @@ class FhMainFrame : public TGMainFrame {
 
 private:
    TList *fWidgets;
+   TGGC fYellowTextGC;
+
    TGCompositeFrame   *fHFr, *fHFrHalf,*fLabelFr;
    TRootEmbeddedCanvas *fRateHist;
    TGTextButton        *fConfigButton, *fStartStopButton, *fClearButton, 

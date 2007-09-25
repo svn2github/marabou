@@ -8,6 +8,7 @@
 #include <TVirtualX.h>
 
 #include <TGClient.h>
+#include <TGResourcePool.h>
 #include <TGFrame.h>
 #include <TGIcon.h>
 #include <TGLabel.h>
@@ -370,7 +371,8 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 
 FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h, 
                          Int_t attachid, Int_t attachsock)
-             : TGMainFrame(p, w, h){
+             : TGMainFrame(p, w, h), fYellowTextGC(TGButton::GetDefaultGC())
+{
 
 // if attachid > 0 try to attach to a running M_analyze with Id given on command line
 // otherwise try to find a socket to communicate with M_analyze (9091-9095)
@@ -433,42 +435,65 @@ trying to attach?",
    gClient->GetColorByName("cyan", cyan);
    gClient->GetColorByName("yellow", yellow);
 
-   FontStruct_t labelfont;
-   labelfont = gClient->GetFontByName(gEnv->GetValue("Gui.BoldFont",
-                "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
+   TGFont *myfont = fClient->GetFont("-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
+   FontStruct_t labelfont(myfont->GetFontStruct());
+//   labelfont = gClient->GetFontByName(gEnv->GetValue("Gui.BoldFont",
+//                "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
 
-   GContext_t   fRedTextGC;
-   GCValues_t   gvalred;
-   gvalred.fMask = kGCForeground | kGCFont;
-   gvalred.fFont = gVirtualX->GetFontHandle(labelfont);
-   gClient->GetColorByName("red",   gvalred.fForeground);
-   fRedTextGC   = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalred);
+//   TGGC myGC = *fClient->GetResourcePool()->GetFrameGC();
+//   TGFont *myfont = fClient->GetFont("-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
+//   if (myfont) myGC.SetFont(myfont->GetFontHandle());
+/*
+   TGGC fRedTextGC(TGButton::GetDefaultGC());
+   Pixel_t red;
+   fClient->GetColorByName("red", red);
+   fRedTextGC.SetForeground(red);
+//   GCValues_t   gvalred;
+//   gvalred.fMask = kGCForeground | kGCFont;
+//   gvalred.fFont = gVirtualX->GetFontHandle(labelfont);
+//   gClient->GetColorByName("red",   gvalred.fForeground);
+ //  fRedTextGC   = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalred);
 
-   GContext_t   fBlueTextGC;
-   GCValues_t   gvalblue;
-   gvalblue.fMask = kGCForeground | kGCFont;
-   gvalblue.fFont = gVirtualX->GetFontHandle(labelfont);
-   gClient->GetColorByName("blue",  gvalblue.fForeground);
-   fBlueTextGC  = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalblue);
+   TGGC fBlueTextGC(TGButton::GetDefaultGC());
+   Pixel_t blue;
+   fClient->GetColorByName("blue", blue);
+   fBlueTextGC.SetForeground(blue);
+//   GCValues_t   gvalblue;
+//   gvalblue.fMask = kGCForeground | kGCFont;
+//   gvalblue.fFont = gVirtualX->GetFontHandle(labelfont);
+//   gClient->GetColorByName("blue",  gvalblue.fForeground);
+//   fBlueTextGC  = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalblue);
 
-   GContext_t   fBrownTextGC;
-   GCValues_t   gvalbrown;
-   gvalbrown.fMask = kGCForeground | kGCFont;
-   gvalbrown.fFont = gVirtualX->GetFontHandle(labelfont);
-   gClient->GetColorByName("brown", gvalbrown.fForeground);
-   fBrownTextGC = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalbrown);
+   TGGC fBrownTextGC(TGButton::GetDefaultGC());
+   Pixel_t brown;
+   fClient->GetColorByName("brown", brown);
+   fBrownTextGC.SetForeground(brown);
 
-   GContext_t   fYellowTextGC;
-   GCValues_t   gvalyellow;
-   gvalyellow.fMask = kGCForeground | kGCFont;
-   gvalyellow.fFont = gVirtualX->GetFontHandle(labelfont);
-   gClient->GetColorByName("yellow", gvalyellow.fForeground);
-   fYellowTextGC = gVirtualX->CreateGC(gClient->GetRoot()->GetId(),&gvalyellow);
-   GContext_t   fGreenTextGC;
-   GCValues_t   gvalgreen;
-   gvalgreen.fMask = kGCBackground;
-   gClient->GetColorByName("green", gvalgreen.fBackground);
-   fGreenTextGC = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalgreen);
+//   GCValues_t   gvalbrown;
+//   gvalbrown.fMask = kGCForeground | kGCFont;
+//   gvalbrown.fFont = gVirtualX->GetFontHandle(labelfont);
+//   gClient->GetColorByName("brown", gvalbrown.fForeground);
+//   fBrownTextGC = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalbrown);
+
+ //  GCValues_t   gvalyellow;
+//   gvalyellow.fMask = kGCForeground | kGCFont;
+ //  gvalyellow.fFont = gVirtualX->GetFontHandle(labelfont);
+//   gClient->GetColorByName("yellow", gvalyellow.fForeground);
+//   fYellowTextGC = gVirtualX->CreateGC(gClient->GetRoot()->GetId(),&gvalyellow);
+   TGGC fGreenTextGC(TGButton::GetDefaultGC());
+   Pixel_t green;
+   fClient->GetColorByName("green", green);
+   fGreenTextGC.SetForeground(green);
+//   GCValues_t   gvalgreen;
+ //  gvalgreen.fMask = kGCBackground;
+//   gClient->GetColorByName("green", gvalgreen.fBackground);
+//   fGreenTextGC = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalgreen);
+*/
+//   TGGC fYellowTextGC(TGButton::GetDefaultGC());
+
+   Pixel_t yellowp;
+   fClient->GetColorByName("yellow", yellowp);
+   fYellowTextGC.SetForeground(yellowp);
 
    fLO1 = new TGLayoutHints(kLHintsTop | kLHintsExpandX,
                            2, 2, 2, 2);
@@ -894,7 +919,7 @@ trying to attach?",
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
    fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
 
-   fSaveMapButton = new TGTextButton(fHFrHalf, "Save", M_SAVEMAP, fYellowTextGC );
+   fSaveMapButton = new TGTextButton(fHFrHalf, "Save", M_SAVEMAP, fYellowTextGC() );
    fSaveMapButton->ChangeBackground(blue);
    fSaveMapButton->Associate(this);
    fHFrHalf->AddFrame(fSaveMapButton, fLO1);
@@ -962,7 +987,8 @@ trying to attach?",
    fHFr  = new TGCompositeFrame(this, 60, 20, kHorizontalFrame);
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
    fParButton = new TGTextButton( fHFrHalf, 
-               "Reload", M_LOADPAR, fYellowTextGC);
+               "Reload", M_LOADPAR, fYellowTextGC());
+   fParButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fParButton->ChangeBackground(blue);
    fParButton->Associate(this);
    fHFrHalf->AddFrame(fParButton, fLO1);
@@ -985,7 +1011,8 @@ trying to attach?",
    fHFr = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
    fWhichHistButton = new TGTextButton( fHFrHalf, 
-               "Switch to DeadTime", M_WHICHHIST, fYellowTextGC);
+               "Switch to DeadTime", M_WHICHHIST, fYellowTextGC());
+   fWhichHistButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fWhichHistButton->ChangeBackground(blue);
    fWhichHistButton->Associate(this);
    fHFrHalf->AddFrame(fWhichHistButton, fLO1);
@@ -1016,19 +1043,21 @@ trying to attach?",
 
    fHFr  = new TGCompositeFrame(this, 60, 20, kHorizontalFrame);
 
-   fClearButton = new TGTextButton( fHFr, "Clear MBS", M_CLEAR, fYellowTextGC);
+   fClearButton = new TGTextButton( fHFr, "Clear MBS", M_CLEAR, fYellowTextGC());
+   fClearButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
 //   if(!(*fInputSource) == "TcpIp")fStartStopButton->SetText(new TGHotString("NoOp"));
    fClearButton->ChangeBackground(blue);
    fClearButton->Associate(this);
    if(*fInputSource != "TcpIp")fClearButton->SetState(kButtonDisabled);
    fHFr->AddFrame(fClearButton, fLO1);
 
-//   fMbsSetupButton = new TGTextButton( fHFr, "Mbs Setup", M_MBSSETUP, fYellowTextGC);
+//   fMbsSetupButton = new TGTextButton( fHFr, "Mbs Setup", M_MBSSETUP, fYellowTextGC());
 //   fMbsSetupButton->ChangeBackground(blue);
 //   fMbsSetupButton->Associate(this);
 //   fHFr->AddFrame(fMbsSetupButton, fLO1);
 
-   fConfigButton = new TGTextButton( fHFr, "Configure", M_CONFIG, fYellowTextGC);
+   fConfigButton = new TGTextButton( fHFr, "Configure", M_CONFIG, fYellowTextGC());
+   fConfigButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fConfigButton->ChangeBackground(blue);
    fConfigButton->Associate(this);
    if(*fInputSource != "TcpIp")fConfigButton->SetState(kButtonDisabled);
@@ -1036,29 +1065,33 @@ trying to attach?",
 
 
    if(fAttach)fStartStopButton = 
-       new TGTextButton( fHFr, "Stop", M_START_STOP, fYellowTextGC);
+       new TGTextButton( fHFr, "Stop", M_START_STOP, fYellowTextGC());
    else fStartStopButton = 
-       new TGTextButton( fHFr, "Start", M_START_STOP, fYellowTextGC);
+       new TGTextButton( fHFr, "Start", M_START_STOP, fYellowTextGC());
+   fStartStopButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fStartStopButton->ChangeBackground(blue);
    fStartStopButton->Associate(this);
    fHFr->AddFrame(fStartStopButton, fLO1);
 
    if(fM_Status == M_PAUSING) fPauseButton =
-       new TGTextButton( fHFr, "Resume", M_PAUSE, fYellowTextGC);
+       new TGTextButton( fHFr, "Resume", M_PAUSE, fYellowTextGC());
    else  fPauseButton = 
-       new TGTextButton( fHFr, "Pause", M_PAUSE, fYellowTextGC);
+       new TGTextButton( fHFr, "Pause", M_PAUSE, fYellowTextGC());
+   fPauseButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fPauseButton->ChangeBackground(blue);
    if(!fM_Status == M_RUNNING && !fM_Status == M_PAUSING)
       fPauseButton->SetState(kButtonDisabled);
    fPauseButton->Associate(this);
    fHFr->AddFrame(fPauseButton, fLO1);
 
-   fResetButton = new TGTextButton( fHFr, "ResetHist", M_PAUSE_RESET, fYellowTextGC);
+   fResetButton = new TGTextButton( fHFr, "ResetHist", M_PAUSE_RESET, fYellowTextGC());
+   fResetButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fResetButton->ChangeBackground(blue);
    fResetButton->Associate(this);
    fHFr->AddFrame(fResetButton, fLO1);
 
-   fQuitButton = new TGTextButton( fHFr, "Quit", M_QUIT, fYellowTextGC);
+   fQuitButton = new TGTextButton( fHFr, "Quit", M_QUIT, fYellowTextGC());
+   fQuitButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fQuitButton->ChangeBackground(blue);
    fQuitButton->Associate(this);
    fHFr->AddFrame(fQuitButton, fLO1);
