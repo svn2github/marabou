@@ -9,7 +9,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.30 2007-09-19 13:09:01 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.31 2007-09-26 07:53:27 Rudolf.Lutter Exp $
 // Date:             Thu Sep 13 08:33:10 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
