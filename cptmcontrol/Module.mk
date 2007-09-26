@@ -39,7 +39,7 @@ INCLUDEFILES += $(CptmCDEP)
 
 ##### extra libs needed #####
 OCptmCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbC2Lynx -lTMrbEsone -lEsoneClient \
-                 -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser
+                 -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser -lGrEdit -lFitCal
 
 ##### local rules #####
 
