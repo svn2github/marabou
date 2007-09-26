@@ -8,13 +8,16 @@
 // Class:          TGMrbLayout                  -- layout & graphic context
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLayout.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLayout.h,v 1.5 2007-09-26 07:42:42 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Rtypes.h"
 #include "GuiTypes.h"
+#include "TGGC.h"
+#include "TGFont.h"
+#include "TGResourcePool.h"
 
 #include "TGLayout.h"
 #include "TSystem.h"
@@ -35,23 +38,21 @@ class TGMrbLayout : public TObject {
 					const Char_t * Background = "white",
 					TGLayoutHints * Hints = NULL);
 
-		TGMrbLayout(const Char_t * Font, ULong_t Foreground, ULong_t Background, TGLayoutHints * Hints = NULL);
+		TGMrbLayout(const Char_t * Font, Pixel_t Foreground, Pixel_t Background, TGLayoutHints * Hints = NULL);
 
 		~TGMrbLayout() {};						// dtor
 
-		inline GContext_t GC() const { return(fGC); };
+		inline GContext_t GC() const { return(fGC.GetGC()); };
 
 		Bool_t SetFont(const Char_t * Font);
-		inline void SetFont(FontStruct_t Font) { fFont = Font; };
-		inline FontStruct_t Font() const { return(fFont); };
+		inline FontStruct_t Font() const { return(fFont->GetFontStruct()); };
+		inline FontH_t FontHandle() const { return(fFont->GetFontHandle()); };
 
 		Bool_t SetFG(const Char_t * Foreground);
-		inline void SetFG(ULong_t Foreground) { fForeground = Foreground; };
-		inline ULong_t FG() const { return(fForeground); };
+		inline Pixel_t FG() const { return(fGC.GetForeground()); };
 
 		Bool_t SetBG(const Char_t * Background);
-		inline void SetBG(ULong_t Background) { fBackground = Background; };
-		inline ULong_t BG() const { return(fBackground); };
+		inline Pixel_t BG() const { return(fGC.GetBackground()); };
 
 		inline void SetLH(TGLayoutHints * Hints) { fLayoutHints = Hints; };
 		inline TGLayoutHints * LH() const { return(fLayoutHints); };
@@ -59,13 +60,11 @@ class TGMrbLayout : public TObject {
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
-		GContext_t CreateGC(FontStruct_t Font, ULong_t Foreground, ULong_t Background);
+		void CreateGC(TGFont * Font, Pixel_t Foreground, Pixel_t Background, TGLayoutHints * Hints = NULL);
 
 	protected:
-		GContext_t fGC;
-		FontStruct_t fFont;
-		ULong_t fForeground;
-		ULong_t fBackground;
+		TGGC fGC;
+		TGFont * fFont;
 		TGLayoutHints * fLayoutHints;
 
 	ClassDef(TGMrbLayout, 0)		// [GraphUtils] Describe a graphical layout (colors, fonts, layout hints)

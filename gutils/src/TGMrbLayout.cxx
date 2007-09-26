@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLayout.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbLayout.cxx,v 1.5 2007-09-26 07:42:42 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -19,7 +19,6 @@ namespace std {} using namespace std;
 #include <fstream>
 
 #include "TEnv.h"
-#include "TVirtualX.h"
 #include "TGWindow.h"
 #include "TGClient.h"
 #include "TGMrbLayout.h"
@@ -45,17 +44,17 @@ TGMrbLayout::TGMrbLayout(const Char_t * Font, const Char_t * Foreground, const C
 
 	TString fontStr;
 
-	FontStruct_t font;
-	ULong_t fg;
-	ULong_t bg;
+	TGFont * font;
+	Pixel_t fg;
+	Pixel_t bg;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
 	fontStr = (*Font == '-') ? Font : gEnv->GetValue(Font, "");
-	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0) {
+	if ((fontStr.Length() == 0) || (font = gClient->GetFont(fontStr.Data())) == 0) {
 		gMrbLog->Err() << "No such font - " << fontStr << endl;
 		gMrbLog->Flush("TGMrbLayout");
-		font = gClient->GetFontByName(gEnv->GetValue("Gui.NormalFont",
+		font = gClient->GetFont(gEnv->GetValue("Gui.NormalFont",
 													"-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
 	}
 
@@ -71,14 +70,10 @@ TGMrbLayout::TGMrbLayout(const Char_t * Font, const Char_t * Foreground, const C
 		gClient->GetColorByName("white", bg);
 	}
 
-	fGC = this->CreateGC(font, fg, bg);
-	fFont = font;
-	fForeground = fg;
-	fBackground = bg;
-	fLayoutHints = Hints;
+	this->CreateGC(font, fg, bg, Hints);
 }
 
-TGMrbLayout::TGMrbLayout(const Char_t * Font, ULong_t Foreground, ULong_t Background, TGLayoutHints * Hints) {
+TGMrbLayout::TGMrbLayout(const Char_t * Font, Pixel_t Foreground, Pixel_t Background, TGLayoutHints * Hints) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLayout
@@ -92,21 +87,16 @@ TGMrbLayout::TGMrbLayout(const Char_t * Font, ULong_t Foreground, ULong_t Backgr
 
 	TString fontStr;
 
-	FontStruct_t font;
+	TGFont * font;
 
 	fontStr = (*Font == '-') ? Font : gEnv->GetValue(Font, "");
-	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0) {
+	if ((fontStr.Length() == 0) || (font = gClient->GetFont(fontStr.Data())) == 0) {
 		gMrbLog->Err() << "No such font - " << fontStr << endl;
 		gMrbLog->Flush("TGMrbLayout");
-		font = gClient->GetFontByName(gEnv->GetValue("Gui.NormalFont",
-													"-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
+		font = gClient->GetFont(gEnv->GetValue("Gui.NormalFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
 	}
 
-	fGC = this->CreateGC(font, Foreground, Background);
-	fFont = font;
-	fForeground = Foreground;
-	fBackground = Background;
-	fLayoutHints = Hints;
+	this->CreateGC(font, Foreground, Background, Hints);
 }
 
 Bool_t TGMrbLayout::SetFont(const Char_t * Font) {
@@ -122,16 +112,16 @@ Bool_t TGMrbLayout::SetFont(const Char_t * Font) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString fontStr;
-	FontStruct_t font;
+	TGFont * font;
 
 	fontStr = (*Font == '-') ? Font : gEnv->GetValue(Font, "");
-	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0) {
+	if ((fontStr.Length() == 0) || (font = gClient->GetFont(fontStr.Data())) == 0) {
 		gMrbLog->Err() << "No such font - " << fontStr << endl;
 		gMrbLog->Flush("TGMrbLayout", "SetFont");
-		return(kFALSE);
+		font = gClient->GetFont(gEnv->GetValue("Gui.NormalFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
 	}
-	fFont = font; 
-	fGC = this->CreateGC(font, fForeground, fBackground);
+	fFont = font;
+	fGC.SetFont(font->GetFontHandle());
 	return(kTRUE);
 }
 
@@ -147,16 +137,14 @@ Bool_t TGMrbLayout::SetFG(const Char_t * Foreground) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	ULong_t color;
+	Pixel_t color;
 
 	if (!gClient->GetColorByName(Foreground, color)) {
 		gMrbLog->Err() << "No such color - " << Foreground << " (foreground)" << endl;
 		gMrbLog->Flush("TGMrbLayout", "SetFG");
 		gClient->GetColorByName("black", color);
 	}
-
-	fForeground = color; 
-	fGC = this->CreateGC(fFont, fForeground, fBackground);
+	fGC.SetForeground(color);
 	return(kTRUE);
 }
 
@@ -172,40 +160,36 @@ Bool_t TGMrbLayout::SetBG(const Char_t * Background) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	ULong_t color;
+	Pixel_t color;
 
 	if (!gClient->GetColorByName(Background, color)) {
 		gMrbLog->Err() << "No such color - " << Background << " (background)" << endl;
 		gMrbLog->Flush("TGMrbLayout", "SetBG");
 		gClient->GetColorByName("white", color);
 	}
-
-	fBackground = color; 
-	fGC = this->CreateGC(fFont, fForeground, fBackground);
+	fGC.SetBackground(color);
 	return(kTRUE);
 }
 
-GContext_t TGMrbLayout::CreateGC(FontStruct_t Font, ULong_t Foreground, ULong_t Background) {
+void TGMrbLayout::CreateGC(TGFont * Font, Pixel_t Foreground, Pixel_t Background, TGLayoutHints * Hints) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLayout::CreateGC
 // Purpose:        Create a new GC
-// Arguments:      FontStruct_t Font     -- font
-//                 ULong_t Foreground    -- foreground
-//                 ULong_t Background    -- background
-// Results:        GContext_t GC         -- graphic context
+// Arguments:      TGFont * Font         -- font
+//                 Pixel_t Foreground    -- foreground
+//                 Pixel_t Background    -- background
+// Results:        
 // Exceptions:
 // Description:    Creates a new GC.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	GCValues_t gval;
-
-	gval.fMask = kGCForeground | kGCBackground | kGCFont | kGCFillStyle | kGCGraphicsExposures;
-	gval.fFillStyle = kFillSolid;
-	gval.fGraphicsExposures = kFALSE;
-	gval.fForeground = Foreground;
-	gval.fBackground = Background;
-	gval.fFont = gVirtualX->GetFontHandle(Font);
-	return(gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gval));
+	fFont = Font;
+	fGC = *gClient->GetResourcePool()->GetFrameGC();
+	fGC.SetFont(Font->GetFontHandle());
+	fGC.SetForeground(Foreground);
+	fGC.SetBackground(Background);
+	if (Hints) fLayoutHints = Hints;
 }
+
