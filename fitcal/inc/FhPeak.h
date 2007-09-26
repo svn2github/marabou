@@ -10,6 +10,7 @@ namespace std {} using namespace std;
 class FhPeak : public TObject {
 
 private:
+   TString fGaugeName;
    Double_t fNominalEnergy;
    Double_t fCalibratedEnergy;
    Double_t fEstimate;
@@ -31,6 +32,7 @@ public:
    FhPeak(Double_t pos);
 
    ~FhPeak() {};
+   const Char_t * GetGaugeName() const {return fGaugeName.Data();};
    Double_t GetNominalEnergy() const {return fNominalEnergy;};
    Double_t GetCalibratedEnergy() const {return fCalibratedEnergy;};
    Double_t GetContent()             {return fContent;};
@@ -48,6 +50,7 @@ public:
    Bool_t   GetUsed() const          {return fUsed;};
 
 
+   void SetGaugeName(const Char_t * val){fGaugeName=val;};
    void SetNominalEnergy(Double_t val){fNominalEnergy=val;};
    void SetCalibratedEnergy(Double_t val){fCalibratedEnergy=val;};
    void SetContent(Double_t val)      {fContent=val;};

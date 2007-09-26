@@ -147,6 +147,7 @@ The procedure to use previously fitted peaks is as follows:\n\
    } else {
       fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
    }
+
 //  function name
    fFuncName = fSelHist->GetName();
    Int_t ip = fFuncName.Index(";");
@@ -546,7 +547,7 @@ void CalibrationDialog::ExecuteAutoSelect()
    for (Int_t i = 0; i < MAXPEAKS; i++) 
       fAssigned[i] = 0;
    TH1F * htest;
-   htest = (TH1F*)gROOT->GetList()->FindObject("testbed");
+   htest = (TH1F*)gDirectory->GetList()->FindObject("testbed");
    if (htest) delete htest;
    htest = new TH1F("testbed", "Test bed" ,fMatchNbins, fMatchMin, fMatchMax);
    for (Int_t i = 0; i < fNpeaks; i++)
@@ -559,9 +560,9 @@ void CalibrationDialog::ExecuteAutoSelect()
    Double_t off, gain;
    Int_t nbscanX = TMath::Nint((fOffMax - fOffMin + fOffStep) / fOffStep);
    Int_t nbscanY = TMath::Nint((fGainMax - fGainMin + fGainStep) / fGainStep);
-   TH2C *hscan = (TH2C*)gROOT->GetList()->FindObject("hscan");
+   TH2C *hscan = (TH2C*)gDirectory->GetList()->FindObject("hscan");
    if (hscan) {
-      gROOT->GetList()->Remove(hscan);
+      gDirectory->GetList()->Remove(hscan);
       delete hscan;
    }
    hscan = new TH2C("hscan", "Matches vs offset and gain;Offset;Gain",
@@ -686,12 +687,12 @@ void CalibrationDialog::ExecuteAutoSelect()
        p->SetIntensity(fGaugeIntensity[ass]);
        p->SetRelEfficiency(fCont[np] / max_cont / fGaugeIntensity[ass]);
      } else {
+       fUse[np] = 0;
        p->SetUsed(0);
        p->SetNominalEnergy(0);
        p->SetNominalEnergyError(0);
        p->SetIntensity(0);
        p->SetRelEfficiency(0);
-       fUse[np] = 0;
      }
      np++;
    }
@@ -762,7 +763,7 @@ void CalibrationDialog::SetValues()
 }
 //____________________________________________________________________________________ 
 
-void CalibrationDialog::CalculateFunction()
+TF1 * CalibrationDialog::CalculateFunction()
 {
    if (fCalFunc) {delete fCalFunc; fCalFunc = NULL;}
    fCalFunc = new TF1(fFuncName,(const char*)fFormula);
@@ -771,29 +772,31 @@ void CalibrationDialog::CalculateFunction()
       Int_t retval;
       new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning","Need at least pol1 (2 pars)",kMBIconExclamation, kMBDismiss, &retval);
       delete fCalFunc; fCalFunc = NULL;
-      return;
+      return NULL;
    }
+   TIterator * pIter = fPeakList.MakeIterator();
+   FhPeak * p;
    Int_t nuse = 0;
-   for (Int_t i = 0; i < fNpeaks; i++) {
-      if (fUse[i] != 0) 
-         nuse++;
+   while (p = (FhPeak *) pIter->Next()) {
+     if (p->GetUsed()) nuse++;
    }
    if (nuse < 2) {
 //      WarnBox("Need at least 2 data points", fParentWindow);
       Int_t retval;
       new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning","Need at least 2 data points",kMBIconExclamation, kMBDismiss, &retval);
       delete fCalFunc; fCalFunc = NULL;
-      return;
+      return NULL;
    }
 
    TGraphErrors *gr = new TGraphErrors(nuse); 
+   pIter = fPeakList.MakeIterator();
    Int_t np = 0;
-   for (Int_t i = 0; i < fNpeaks; i++) {
-      if (fUse[i] != 0) {
-         gr->SetPoint(np, fX[i], fY[i]);
-         gr->SetPointError(np, fXE[i], fYE[i]);
-         np++;
-      }
+   while (p = (FhPeak *) pIter->Next()) {
+     if (p->GetUsed()) {
+        gr->SetPoint(np, p->GetMean(), p->GetNominalEnergy());
+        gr->SetPointError(np, p->GetMeanError(), p->GetNominalEnergyError());
+        np++;
+     }
    }
    gr->SetMarkerStyle(4);
    gr->SetMarkerSize(2);
@@ -819,6 +822,8 @@ void CalibrationDialog::CalculateFunction()
 							->GetBinUpEdge(fSelHist->GetNbinsX()));
 		cout << "fCalibratedNbinsX ,xl, xu " << fCalibratedNbinsX << " xl " << xl<< " xu " << xu<< endl;
    }
+
+   return fCalFunc;
 }
 
 //________________________________________________________________________________
@@ -992,7 +997,7 @@ void CalibrationDialog::FillCalibratedHist()
 }
 //____________________________________________________________________________________ 
 
-void CalibrationDialog::UpdatePeakList()
+TList * CalibrationDialog::UpdatePeakList()
 {
 //   Int_t npeaks = 0;
    cout << "UpdatePeakList: # of functions: " << 
@@ -1057,7 +1062,7 @@ void CalibrationDialog::UpdatePeakList()
    if (fNpeaks < 1) {
       fPeakList.Delete();
       cout << " Not enough peaks defined: " << fNpeaks << endl;
-      return;
+      return NULL;
    }
    fPeakList.Sort();
    TIter next1(&fPeakList);
@@ -1078,7 +1083,8 @@ void CalibrationDialog::UpdatePeakList()
       fNpeaks++;
    }
    cout << "UpdatePeakList: # of peaks: " << fNpeaks << endl;
-//   fPeakList.Delete();
+
+   return &fPeakList;
 }
 //_______________________________________________________________________
 
@@ -1195,4 +1201,14 @@ void CalibrationDialog::EnableDialogs()
 	if (fDialog) fDialog->EnableCancelButton();
 	if (fDialogSetNominal) fDialogSetNominal->EnableCancelButton();
 	if (fAutoSelectDialog) fAutoSelectDialog->EnableCancelButton();
+}
+
+void CalibrationDialog::SetGaugePoint(Int_t N, Int_t Use, Double_t X, Double_t Y, Double_t Xerr, Double_t Yerr) {
+	if ((N >= 0) && (N < fNpeaks)) {
+		fX[N] = X;
+		fY[N] = Y;
+		fXE[N] = Xerr;
+		fYE[N] = Yerr;
+		fUse[N] = Use;
+	}
 }

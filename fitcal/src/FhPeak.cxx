@@ -20,10 +20,7 @@ void FhPeak::Print(Option_t * Option) const {
           fContent, fMean, fMeanError, fWidth, fChi2oNdf);
 //    cout << setw(12)<< fContent << setw(12)<< fMean 
 //         << setw(12)<< fMeanError << setw(12)<< fChi2oNdf;
-    if (0) {
-       if (fUsed) cout << "  yes";
-       else       cout << "   no";
-    } 
+    if (fUsed) cout << "  in use";
     cout << endl;
 };
 void FhPeak::PrintHeadLine(){
