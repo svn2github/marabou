@@ -90,7 +90,7 @@ public:
    Int_t ReadGaugeFile();
    void SetValues();
    void AutoSelectDialog();
-   void ExecuteAutoSelect();
+   Bool_t ExecuteAutoSelect();
    Int_t FindNumberOfPeaks();
 //   void ClearHistPeakList();
    void SaveDefaults();

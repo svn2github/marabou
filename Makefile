@@ -96,9 +96,9 @@ endif
 
 # the following modules are for special hardware
 
-# ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
-# MODULES      += xiadgf dgfcontrol cptmcontrol
-# endif
+ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
+MODULES      += xiadgf dgfcontrol cptmcontrol
+endif
 
 ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
 MODULES      += polar
@@ -106,6 +106,10 @@ endif
 
 ifeq ($(shell if [ -d snake ] ; then echo yes; fi), yes)
 MODULES      += snake
+endif
+
+ifeq ($(shell if [ -d mbssim ] ; then echo yes; fi), yes)
+MODULES      += mbssim
 endif
 
 ##### ROOT libraries #####

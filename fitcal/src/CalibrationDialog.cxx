@@ -514,7 +514,7 @@ static const Char_t helptext[] =
 }
 //________________________________________________________________________
  
-void CalibrationDialog::ExecuteAutoSelect()
+Bool_t CalibrationDialog::ExecuteAutoSelect()
 {
    if ( fGaugeNpeaks == 0) {
       if ( fCustomGauge ) {
@@ -525,12 +525,12 @@ void CalibrationDialog::ExecuteAutoSelect()
    }
    if (fGaugeNpeaks == 0) {
       cout << "Cant set GaugeValues" << endl;
-      return;
+      return kFALSE;
    }
    UpdatePeakList();
    if (fNpeaks < 2) {
       cout << "Need at least 2 peaks defined" << endl;
-      return;
+      return kFALSE;
    }
    for (Int_t i = 0; i < fGaugeNpeaks; i++) {
 	   if (fVerbose) 
@@ -539,7 +539,7 @@ void CalibrationDialog::ExecuteAutoSelect()
           cout << "Gauge Peak: " << fGaugeEnergy[i] 
                << " outside testbed histogram range: [" 
                << fMatchMin << ", " << fMatchMax <<  "]" << endl;
-          return;
+          return kFALSE;
       }
    }    
    DisableDialogs();
@@ -598,7 +598,7 @@ void CalibrationDialog::ExecuteAutoSelect()
    if (best <= 0) {
 
       cout << " No match found, you might need to lower Nbins in testbed histogram" << endl;
-      return;
+      return kFALSE;
    }
    std::cout << "Best match: Hits, offset, gain " <<  best << " " << best_off << " " << best_gain<< std::endl;
    if (fVerbose) 
@@ -735,7 +735,9 @@ void CalibrationDialog::ExecuteAutoSelect()
    }
    SaveDefaults();
    fAutoAssigned = 1;
+   return kTRUE;
 }
+
 //________________________________________________________________________
  
 void CalibrationDialog::SetValues()

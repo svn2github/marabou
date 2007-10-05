@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.18 2007-09-14 13:37:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.19 2007-10-05 08:32:55 Rudolf.Lutter Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -240,7 +240,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data(), entryNo);
 							}
-							fEntry[entryNo]->SendSignal(entryNo);
+							fEntry[entryNo]->EntryChanged(entryNo);
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonDown:
 							s = this->GetText(entryNo);
@@ -263,7 +263,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data(), entryNo);
 							}
-							fEntry[entryNo]->SendSignal(entryNo);
+							fEntry[entryNo]->EntryChanged(entryNo);
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonBegin:
 							s = this->GetText(entryNo);
@@ -286,7 +286,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data(), entryNo);
 							}
-							fEntry[entryNo]->SendSignal(entryNo);
+							fEntry[entryNo]->EntryChanged(entryNo);
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonEnd:
 							s = this->GetText(entryNo);
@@ -309,7 +309,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								s.FromDouble(dblVal, fWidth, fPrecision);
 								this->SetText(s.Data(), entryNo);
 							}
-							fEntry[entryNo]->SendSignal(entryNo);
+							fEntry[entryNo]->EntryChanged(entryNo);
 							break;
 					}
 			}
@@ -324,7 +324,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 					break;
 				case kTE_ENTER:
 					entryNo = (Param1 & 0xFFFF) / 10;
-					fEntry[entryNo]->SendSignal(entryNo);
+					fEntry[entryNo]->EntryChanged(entryNo);
 					break;
 			}
 			break;

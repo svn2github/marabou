@@ -106,8 +106,8 @@ public:
    void DisplayMenu(Int_t type = 1);
    virtual ~FitOneDimDialog();
    void RecursiveRemove(TObject * obj);
-   void FitPeakList();
-   void FitGausExecute();
+   Bool_t FitPeakList();
+   Bool_t FitGausExecute();
    void FitExpExecute();
    void DrawExpExecute();
    void CalcStartParExp();

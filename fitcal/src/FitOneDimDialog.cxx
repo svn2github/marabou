@@ -782,13 +782,13 @@ void FitOneDimDialog::ClearFunctionList()
 }
 //__________________________________________________________________________
 
-void FitOneDimDialog::FitPeakList()
+Bool_t FitOneDimDialog::FitPeakList()
 {
    Int_t confirm = fConfirmStartValues;
    TList * p = (TList*)fSelHist->GetListOfFunctions()->FindObject("spectrum_peaklist");
    if (!p) {
       cout << "No peaklist found" << endl;
-      return;
+      return kFALSE;
    }
    if (fDialog) fDialog->DisableCancelButton();
    Int_t addall_save = fFitOptAddAll;
@@ -833,7 +833,7 @@ void FitOneDimDialog::FitPeakList()
         if (fPrintStartValues) 
            cout << "Exit Mark at: " << mark << endl;
         fMarkers->Sort();
-        FitGausExecute();
+        if (!FitGausExecute()) return kFALSE;
         ClearMarkers();
         break;
      }
@@ -866,10 +866,11 @@ void FitOneDimDialog::FitPeakList()
    fConfirmStartValues = confirm;
    fFitPeakListDone = kTRUE;
    if (fDialog) fDialog->EnableCancelButton();
+   return kTRUE;
 }
  //__________________________________________________________________________
 
-void FitOneDimDialog::FitGausExecute()
+Bool_t FitOneDimDialog::FitGausExecute()
 {
   Int_t retval = 0;
    if (fGraph != NULL && fGraph->GetN() == 0) {
@@ -877,7 +878,7 @@ void FitOneDimDialog::FitGausExecute()
                 "Warning",
                 "No histogram nore graph defined\n Use Draw only" ,
                 kMBIconExclamation, kMBDismiss, &retval);
-      return;
+      return kFALSE;
    }
    static TArrayD * par = NULL;
    Int_t ind = 0;
@@ -929,7 +930,7 @@ void FitOneDimDialog::FitGausExecute()
       new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
                 "Warning", "No marks set,\n need at least 2" ,
                 kMBIconExclamation, kMBDismiss, &retval);
-      return;
+      return kFALSE;
    }
    if (fOnesig == 0) 
       npars = fNpeaks * 3;
@@ -1132,7 +1133,7 @@ void FitOneDimDialog::FitGausExecute()
 								ncols, npars, *par, precission,
 								&col_lab, &row_lab, fbflags, 0,
 								NULL, "Do fit", "Draw only");
-		if (ret < 0) return;
+		if (ret < 0) return kFALSE;
 	   do_fit = (ret == 0);
       if (fPrintStartValues) {
 			cout <<
@@ -1333,6 +1334,7 @@ void FitOneDimDialog::FitGausExecute()
    gPad->Update();
    gPad->GetFrame()->SetBit(TBox::kCannotMove);
    SaveDefaults();
+   return kTRUE;
 }
 
 //____________________________________________________________________________________ 

@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.15 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.16 2007-10-05 08:32:55 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -56,10 +56,6 @@ class TGMrbTextEntry: public TGTextEntry {
 		~TGMrbTextEntry() {};
 		
 		inline void SendReturnPressedOnButtonClick(Bool_t Flag) { fSendReturnPressed = Flag; };
-		inline void SendSignal(Int_t EntryNo) {		// ReturnPressed() or TextChanged() depending on ReturnPressed flag
-			if (fSendReturnPressed) TGTextEntry::ReturnPressed(); else TGTextEntry::TextChanged();
-			this->EntryChanged(EntryNo);
-		};
 		inline void ConnectSigToSlot(const Char_t * Signal, TObject * Receiver, const Char_t * Slot) {
 			this->Connect(Signal, Receiver->ClassName(), Receiver, Slot);
 		}
