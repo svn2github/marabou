@@ -8,8 +8,8 @@
 // Class:          MbsSimRdo            -- base class
 // Description:    Class definitions to simulate MBS i/o
 // Author:         R. Lutter
-// Revision:       $Id: MbsSimRdo.h,v 1.1 2007-10-05 08:32:55 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-10-05 08:32:55 $
+// Revision:       $Id: MbsSimRdo.h,v 1.2 2007-10-05 08:34:43 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-10-05 08:34:43 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -488,7 +488,6 @@ class MbsSimModule : public TNamed {
 		inline Int_t Addr() { return(fIsCamac ? -1 : fAddr); };
 
 	protected:
-		EMbsSimModuleType fType;
 		Int_t fIsCamac;
 		Int_t fCrate;
 		Int_t fStation;
