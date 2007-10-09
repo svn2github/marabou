@@ -8,8 +8,8 @@
 // Class:          MbsSimRdo            -- base class
 // Description:    Class definitions to simulate MBS i/o
 // Author:         R. Lutter
-// Revision:       $Id: MbsSimRdo.h,v 1.2 2007-10-05 08:34:43 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-10-05 08:34:43 $
+// Revision:       $Id: MbsSimRdo.h,v 1.3 2007-10-09 12:05:24 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-10-09 12:05:24 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -309,7 +309,6 @@ struct pdparam_master {};
 #define RDO_C2MI_32_C()	gMbsSimRdo->RdoC2M(0xFFFFFFFF)
 
 #define RDO_C2MI_16_C_M(mask)	gMbsSimRdo->RdoC2M(mask, kTRUE)
-#define RDO_C2MI_16_C_M(mask)	gMbsSimRdo->RdoC2M(mask)
 
 #define RDO_BLTI_16_C(wc)	gMbsSimRdo->RdoC2M(0xFFFF, kTRUE)
 #define RDO_BLTI_24_C(wc)	gMbsSimRdo->RdoC2M(0xFFFFFF)
@@ -475,23 +474,50 @@ class MbsSimModule : public TNamed {
 
 	public:
 
-		MbsSimModule();
-		MbsSimModule(const Char_t * Module, const Char_t * Type, Int_t Crate, Int_t Station);
-		MbsSimModule(const Char_t * Module, const Char_t * Type, Int_t Addr);
+		MbsSimModule() {};
+
+		MbsSimModule(const Char_t * Module, TMrbNamedX * Type, Int_t Serial, Int_t Crate, Int_t Station) : TNamed(Module, Type->GetTitle()) {
+			fModuleType = Type;
+			fSerial = Serial;
+			fCrate = Crate;
+			fStation = Station;
+			fIsCamac = kTRUE;
+		};
+
+		MbsSimModule(const Char_t * Module, TMrbNamedX * Type, Int_t Serial, Int_t Addr) : TNamed(Module, Type->GetTitle()) {
+			fModuleType = Type;
+			fSerial = Serial;
+			fVmeAddr = Addr;
+			fIsCamac = kFALSE;
+		};
+
 
 		~MbsSimModule() {}; 
 
+		inline void SetInterface(Bool_t CamacFlag) { fIsCamac = CamacFlag; };
 		inline Bool_t IsCamac() { return(fIsCamac); };
 		inline Bool_t IsVME() { return(!fIsCamac); };
+
+		inline void SetCamacAddr(Int_t Crate, Int_t Station) { fCrate = Crate; fStation = Station; };
 		inline Int_t Crate() { return(fIsCamac ? fCrate : -1); };
 		inline Int_t Station() { return(fIsCamac ? fStation : -1); };
-		inline Int_t Addr() { return(fIsCamac ? -1 : fAddr); };
+
+		inline void SetSerial(Int_t Serial) { fSerial = Serial; };
+		inline Int_t Serial() { return(fSerial); };
+
+		inline void SetVmeAddr(Int_t Addr) { fVmeAddr = Addr; };
+		inline Int_t VmeAddr() { return(fIsCamac ? -1 : fVmeAddr); };
+
+		inline void SetType(TMrbNamedX * Type) { fModuleType = Type; };
+		inline TMrbNamedX * GetType() { return(fModuleType); };
 
 	protected:
 		Int_t fIsCamac;
+		Int_t fSerial;
+		TMrbNamedX * fModuleType;
 		Int_t fCrate;
 		Int_t fStation;
-		Int_t fAddr;
+		Int_t fVmeAddr;
 
 	ClassDef(MbsSimModule, 1)		// [MBS Simulate Readout] Define module
 };
@@ -505,11 +531,30 @@ class MbsSimModule : public TNamed {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class MbsSimRdo : public TNamed {
+class MbsSimRdo : public TObject {
+
+	public:
+		enum EMbsSimModuleType	{	kMbsSimMtypeCamac			= 0x1000000,
+									kMbsSimMtypeVme 			= 0x2000000,
+									kMbsSimMtypeCaen 			= 0x0010000,
+									kMbsSimMtypeSis 			= 0x0020000,
+									kMbsSimMtypeSilena  		= 0x0030000,
+									kMbsSimMtypeXia 			= 0x0040000,
+									kMbsSimMtypeSilena4418V  	= kMbsSimMtypeCamac | kMbsSimMtypeSilena | 0x1,
+									kMbsSimMtypeSilena4418T  	= kMbsSimMtypeCamac | kMbsSimMtypeSilena | 0x2,
+									kMbsSimMtypeCaenV785 		= kMbsSimMtypeVme | kMbsSimMtypeCaen | 0x1,
+									kMbsSimMtypeCaenV775 		= kMbsSimMtypeVme | kMbsSimMtypeCaen | 0x2,
+									kMbsSimMtypeSis3300 		= kMbsSimMtypeVme | kMbsSimMtypeSis | 0x1,
+									kMbsSimMtypeSis3600 		= kMbsSimMtypeVme | kMbsSimMtypeSis | 0x2,
+									kMbsSimMtypeSis3801 		= kMbsSimMtypeVme | kMbsSimMtypeSis | 0x3,
+									kMbsSimMtypeSis3820 		= kMbsSimMtypeVme | kMbsSimMtypeSis | 0x4,
+									kMbsSimMtypeXiaDgf4C		= kMbsSimMtypeCamac | kMbsSimMtypeXia | 0x1,
+								};
 
 	public:
 
-		MbsSimRdo(const Char_t ConfigFile = "");	
+		MbsSimRdo() {};	
+		MbsSimRdo(const Char_t * ConfigFile);	
 		~MbsSimRdo() {}; 
 
 		Bool_t SetConfigFile(const Char_t * ConfigFile);
@@ -518,6 +563,11 @@ class MbsSimRdo : public TNamed {
 		MbsSimModule * FindModule(Int_t Crate, Int_t Station, Bool_t CreateIt = kFALSE);
 		MbsSimModule * FindModule(Int_t Addr, Bool_t CreateIt = kFALSE);
 		
+		void Init();
+
+		inline void SetVerbose(Bool_t Flag) { fVerbose = Flag; };
+		inline Bool_t IsVerbose() { return(fVerbose); };
+
 		unsigned long * BcnafAddr(Int_t branch, Int_t crate, Int_t nstation, Int_t addr, Int_t function);
 		volatile unsigned long * CioSetBase(Int_t branch, Int_t crate, Int_t nstation);
 		void CioCtrl(Int_t branch, Int_t crate, Int_t station, Int_t function, Int_t addr);
@@ -537,7 +587,15 @@ class MbsSimRdo : public TNamed {
 		void Rdo2Mem(Int_t data, Int_t mask, Bool_t shortflag = kFALSE);
 
 	protected:
+		MbsSimModule * CreateModule(const Char_t * ModuleName);
+		Int_t GetConfig(const Char_t * ModuleName, const Char_t * ConfigItem, Int_t Default);
+		Bool_t GetConfig(const Char_t * ModuleName, const Char_t * ConfigItem, Bool_t Default);
+		const Char_t * GetConfig(const Char_t * ModuleName, const Char_t * ConfigItem, const Char_t * Default);
+
+	protected:
+		Bool_t fVerbose;
 		TString fConfigFile;
+		TEnv * fConfig;
 		TMrbLofNamedX fLofModuleTypes;
 		TMrbLofNamedX fLofModules;
 

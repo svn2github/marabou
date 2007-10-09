@@ -9,7 +9,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.31 2007-09-26 07:53:27 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.32 2007-10-09 12:05:38 Rudolf.Lutter Exp $
 // Date:             Thu Sep 13 08:33:10 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -20,7 +20,7 @@
 //                   GuiPtrMode:          GuiPtr
 //                   UserStart:           on
 //                   RcFile:              .EncalLoadLibs.C
-//                   NofArgs:             38
+//                   NofArgs:             39
 //                   Arg1.Name:           Tab_1
 //                   Arg1.Title:          Init & Files
 //                   Arg1.Type:           Int_t
@@ -336,46 +336,55 @@
 //                   Arg33.Increment:     1:.1:1
 //                   Arg33.Base:          dec
 //                   Arg33.Orientation:   horizontal
-//                   Arg34.Name:          NewFrame_1
-//                   Arg34.Title:         Control
+//                   Arg34.Name:          MatchAccept
+//                   Arg34.Title:         Acceptance window [chns]
 //                   Arg34.Type:          Int_t
-//                   Arg34.EntryType:     Frame
+//                   Arg34.EntryType:     UpDown
+//                   Arg34.NofEntryFields:1
+//                   Arg34.Default:       2
 //                   Arg34.AddLofValues:  No
 //                   Arg34.Base:          dec
 //                   Arg34.Orientation:   horizontal
-//                   Arg35.Name:          Section_CTRL
-//                   Arg35.Title:         6. Control
+//                   Arg35.Name:          NewFrame_1
+//                   Arg35.Title:         Control
 //                   Arg35.Type:          Int_t
-//                   Arg35.EntryType:     Group
+//                   Arg35.EntryType:     Frame
 //                   Arg35.AddLofValues:  No
 //                   Arg35.Base:          dec
 //                   Arg35.Orientation:   horizontal
-//                   Arg36.Name:          DisplayMode
-//                   Arg36.Title:         Display results
+//                   Arg36.Name:          Section_CTRL
+//                   Arg36.Title:         6. Control
 //                   Arg36.Type:          Int_t
-//                   Arg36.EntryType:     Check
-//                   Arg36.Default:       1
-//                   Arg36.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2:thumbs|show thumbnail plot=4
+//                   Arg36.EntryType:     Group
 //                   Arg36.AddLofValues:  No
 //                   Arg36.Base:          dec
 //                   Arg36.Orientation:   horizontal
-//                   Arg37.Name:          SaveSetup
-//                   Arg37.Title:         Save setup to file
-//                   Arg37.Type:          Char_t *
-//                   Arg37.EntryType:     File
-//                   Arg37.Default:       .Encal.env
-//                   Arg37.Values:        Encal environment files:.Encal*.env
+//                   Arg37.Name:          DisplayMode
+//                   Arg37.Title:         Display results
+//                   Arg37.Type:          Int_t
+//                   Arg37.EntryType:     Check
+//                   Arg37.Default:       1
+//                   Arg37.Values:        step|show each fit=1:2dim|show 2-dim histo after calibration=2:thumbs|show thumbnail plot=4
 //                   Arg37.AddLofValues:  No
 //                   Arg37.Base:          dec
 //                   Arg37.Orientation:   horizontal
-//                   Arg38.Name:          CtrlButtons
-//                   Arg38.Title:         What to be done next?
+//                   Arg38.Name:          SaveSetup
+//                   Arg38.Title:         Save setup to file
 //                   Arg38.Type:          Int_t
-//                   Arg38.EntryType:     TextButton
-//                   Arg38.Values:        Start=0:Prev=1:Same=2:Next=3:Stop=4:Quit=5
+//                   Arg38.EntryType:     File
+//                   Arg38.Default:       .Encal.env
+//                   Arg38.Values:        Encal environment files:.Encal*.env
 //                   Arg38.AddLofValues:  No
 //                   Arg38.Base:          dec
 //                   Arg38.Orientation:   horizontal
+//                   Arg39.Name:          CtrlButtons
+//                   Arg39.Title:         What to be done next?
+//                   Arg39.Type:          Int_t
+//                   Arg39.EntryType:     TextButton
+//                   Arg39.Values:        Start=0:Prev=1:Same=2:Next=3:Stop=4:Quit=5
+//                   Arg39.AddLofValues:  No
+//                   Arg39.Base:          dec
+//                   Arg39.Orientation:   horizontal
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
@@ -398,6 +407,7 @@
 #include "TH2.h"
 #include "TRandom.h"
 #include "TGraphErrors.h"
+#include "TGMsgBox.h"
 #include "TF1.h"
 #include "TEnv.h"
 #include "TGFrame.h"
@@ -455,11 +465,12 @@ enum EEncalArgNums {
  		kArgTestbedHisto = 31,
  		kArgMatchOffset = 32,
  		kArgMatchGain = 33,
- 		kArgNewFrame_1 = 34,
- 		kArgSection_CTRL = 35,
- 		kArgDisplayMode = 36,
- 		kArgSaveSetup = 37,
- 		kArgCtrlButtons = 38,
+ 		kArgMatchAccept = 34,
+ 		kArgNewFrame_1 = 35,
+ 		kArgSection_CTRL = 36,
+ 		kArgDisplayMode = 37,
+ 		kArgSaveSetup = 38,
+ 		kArgCtrlButtons = 39,
  	};
 //-ArgNums
 
@@ -502,7 +513,8 @@ enum					{	kCanvasHeight = 600 };
 
 enum					{	kNofRegions = 4 };
 
-enum EEncalFitStatus	{	kFitDiscard = 0,
+enum EEncalFitStatus	{	kFitUndef = 0,
+							kFitDiscard,
 							kFitOk,
 							kFitAuto
 						};
@@ -574,6 +586,7 @@ Double_t fMatchOffsetMax;
 Double_t fMatchGainMin;
 Double_t fMatchGainStep;
 Double_t fMatchGainMax;
+Int_t fMatchAccept;
 Int_t fDisplayMode;
 Bool_t fVerboseMode;
 
@@ -596,6 +609,8 @@ Int_t fNofHistos;		// number of histograms (selected from root file)
 Int_t fNofHistosCalibrated;	// number of histograms calibrated
 
 TString fPreCalFile;	// precalibration file
+
+TString fEnvFile;		// where to save arguments
 
 TMrbLofNamedX fLofFitStatusFlags;
 
@@ -638,7 +653,7 @@ Bool_t SetCalSource();
 TH1F * GetNextHisto();
 Bool_t FindPeaks();
 void MarkPeak(Double_t X, Double_t E, const Char_t * GaugeName);
-void Calibrate();
+Bool_t Calibrate();
 Int_t GetNofHistosCalibrated();
 void WaitForSignal(Bool_t StepFlag = kFALSE);
 void ClearCanvas(Int_t PadNo);
@@ -655,6 +670,7 @@ Bool_t WriteGaugeFile();
 void CloseEnvFiles();
 void CloseRootFile();
 void SetFullRange(TH1F * Histo);
+void SaveEnvFile();
 void Stop();
 void Exit();
 
@@ -725,6 +741,7 @@ void OutputMessage(const Char_t * Method, const Char_t * Text, const Char_t * Ms
 	if (*MsgType == 'e') {
 		msg->Err() << Text << endl;
 		msg->Flush(cName.Data(), method.Data());
+		new TGMsgBox(gClient->GetRoot(), gClient->GetRoot(), Form("%s: Error", method.Data()), Text, kMBIconStop);
 	} else if (*MsgType == 'w') {
 		msg->Wrn() << Text << endl;
 		msg->Flush(cName.Data(), method.Data());
@@ -807,6 +824,7 @@ TH1F * GetNextHisto() {
 		TH1F * h = (TH1F *) fHistoFile->Get(hName.Data());
 		if (h) {
 			h->GetListOfFunctions()->Delete();
+//			h->SetDirectory(gROOT);
 		} else {
 			OutputMessage("GetNextHisto", Form("No such histogram - %s:%s", fHistoFile->GetName(), hName.Data()), "e");
 		}
@@ -935,14 +953,27 @@ void ProcessSignal(TGMrbMacroFrame * GuiPtr, Int_t ArgNo, const Char_t * ArgName
 			SetArguments(GuiPtr, setupFile.Data());
 		}
 	} else if (ArgNo == kArgSaveSetup) {
-		TString setupPath;
-		GuiPtr->GetArgValue("SaveSetup", setupPath);
-		TString setupFile = gSystem->BaseName(setupPath.Data());
-		if (!setupFile.BeginsWith(".Encal") || !setupFile.EndsWith(".env")) {
-			OutputMessage("ProcessSignal", Form("Not an Encal environment file - %s", setupFile.Data()), "e");
-		} else {
-			gSystem->Exec(Form("cp .Encal.env %s", setupPath.Data()));
-		}
+		SaveEnvFile();
+	}
+}
+
+void SaveEnvFile() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           SaveEnvFile
+// Purpose:        Save arguments to given .env file
+// Arguments:      --
+// Results:        --
+// Description:    Stops calibration loop
+//////////////////////////////////////////////////////////////////////////////
+
+	fGuiPtr->GetArgValue("SaveSetup", fEnvFile);
+	TString envFile = gSystem->BaseName(fEnvFile.Data());
+	if (!envFile.BeginsWith(".Encal") || !envFile.EndsWith(".env")) {
+		OutputMessage("SaveEnvFile", Form("Not an Encal environment file - %s", envFile.Data()), "e");
+	} else {
+		gSystem->Exec(Form("cp .Encal.env %s", fEnvFile.Data()));
+		OutputMessage("SaveEnvFile", Form("Arguments saved to file %s", envFile.Data()));
 	}
 }
 
@@ -971,6 +1002,7 @@ void Exit() {
 //////////////////////////////////////////////////////////////////////////////
 
 	Stop();
+	SaveEnvFile();
 	gSystem->Exit(0);
 }
 
@@ -1199,30 +1231,41 @@ Bool_t FindPeaks() {
 // Description:    Peak finding
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fPeakFinder == NULL) fPeakFinder = new FindPeakDialog(fCurHisto, kFALSE);
-
 	Double_t pmax = (Double_t) fPeakFrac / 100.;
 
 	if (fRebin > 1) fCurHisto->Rebin(fRebin);
 
+	TH1F * pfHisto;
+	TH1F hEff;
 	if (fNormHistoEff) {
+		fCurHisto->Copy(hEff);
+		pfHisto = &hEff;
 		for (Int_t i = fMinX; i < fMaxX; i++) {
-			Int_t bCont = (Int_t) fCurHisto->GetBinContent(i);
-			fCurHisto->SetBinContent(i, bCont / (fEfficiencyA0 * exp(fEfficiencyA1 * i)));
+			Int_t bCont = (Int_t) hEff.GetBinContent(i);
+			Double_t eff = 1. / (fEfficiencyA0 * exp(fEfficiencyA1 * i));
+			hEff.SetBinContent(i, bCont * eff);
+			hEff.SetBinError(i, sqrt(bCont) * eff);
 		}
+	} else {
+		pfHisto = fCurHisto;
 	}
+
+	if (fPeakFinder) delete fPeakFinder;
+	fPeakFinder = new FindPeakDialog(pfHisto, kFALSE);
 
 	Bool_t sts = kTRUE;
 	Int_t npeaks = 0;
+	TList * pfList;
 	for (Int_t i = 0; i < fNofRegions; i++) {
 		fPeakFinder->SetFrom(fLowerLim[i]);
 		fPeakFinder->SetTo(fUpperLim[i]);
 		fPeakFinder->SetThreshold(pmax);
-		fPeakFinder->SetSigma(fSigma);
-		fPeakFinder->SetTwoPeakSeparation(fTwoPeakSep);
+		Double_t sigmaPeakFinder = fSigma * fTwoPeakSep / 3;
+		fPeakFinder->SetSigma(sigmaPeakFinder);
+		fPeakFinder->SetTwoPeakSeparation(1);
 		fPeakFinder->ExecuteFindPeak();
-		if (i == 0) fPeakList = (TList *) fCurHisto->GetListOfFunctions()->FindObject("spectrum_peaklist");
-		fNofPeaks = fPeakList->GetEntries();
+		if (i == 0) pfList = (TList *) pfHisto->GetListOfFunctions()->FindObject("spectrum_peaklist");
+		fNofPeaks = pfList->GetEntries();
 		if ((fNofPeaks - npeaks) >= 200) {
 			OutputMessage("FindPeaks", Form("Too many peaks in region [%d, %d] - max 200", fLowerLim[i], fUpperLim[i]), "e");
 			sts = kFALSE;
@@ -1231,13 +1274,34 @@ Bool_t FindPeaks() {
 		npeaks = fNofPeaks;
 	}
 
-	fNofPeaks = fPeakList ? fPeakList->GetEntries() : 0;
+	fNofPeaks = pfList ? pfList->GetEntries() : 0;
 	if (fNofPeaks == 0) {
 		OutputMessage("FindPeaks", Form("No peaks found in histogram - %s", fCurHisto->GetName()), "e");
 		sts = kFALSE;
 	}
 
 	SetFullRange(fCurHisto);
+
+	if (fNormHistoEff) {
+		if (fPeakList) delete fPeakList;
+		fPeakList = new TList();
+		fPeakList->SetName("spectrum_peaklist");
+		TIterator * pIter = pfList->MakeIterator();
+		FhPeak * p;
+		while (p = (FhPeak *) pIter->Next()) fPeakList->Add(p);
+		fCurHisto->GetListOfFunctions()->Add(fPeakList);
+		TPolyMarker * pm = (TPolyMarker *) pfHisto->GetListOfFunctions()->FindObject("TPolyMarker");
+		TArrayD y(pm->GetN());
+		Double_t *x = pm->GetX();
+		for (Int_t i = 0; i < pm->GetN(); i++) y[i] = fCurHisto->GetBinContent((Int_t) *x++);
+		TPolyMarker * pmnew = new TPolyMarker(pm->GetN(), pm->GetX(), y.GetArray());
+		pmnew->SetMarkerStyle(23);
+		pmnew->SetMarkerColor(kRed);
+		pmnew->SetMarkerSize(1.3);
+		fCurHisto->GetListOfFunctions()->Add(pmnew);
+	} else {
+		fPeakList = pfList;
+	}
 
 	fCurHisto->Draw();
 	return(sts);
@@ -1253,7 +1317,8 @@ Bool_t FitPeaks() {
 // Description:    Peak fitting
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fFitOneDim == NULL) fFitOneDim = new FitOneDimDialog(fCurHisto, 1, kFALSE);
+	if (fFitOneDim) delete fFitOneDim;
+	fFitOneDim = new FitOneDimDialog(fCurHisto, 1, kFALSE);
 	fFitOneDim->SetPeakSep(fTwoPeakSep);
 	fFitOneDim->SetFitWindow(fFitRange);
 	fFitOneDim->SetBackg0(kFALSE);
@@ -1262,12 +1327,11 @@ Bool_t FitPeaks() {
 	fFitOneDim->SetHightail(fFitMode == kFitModeRightTail);
 	fFitOneDim->SetConfirmStartValues(kFALSE);
 	fFitOneDim->SetShowcof(kTRUE);
-	fFitOneDim->FitPeakList();
 
-	return(kTRUE);
+	return(fFitOneDim->FitPeakList());
 }
 
-void Calibrate() {
+Bool_t Calibrate() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           Calibrate
@@ -1280,101 +1344,107 @@ void Calibrate() {
 	TIterator * pIter;
 	FhPeak * p;
 
-	if (!fEnableCalib) return;
+	if (!fEnableCalib) return(kFALSE);
 
-	if (fNofPeaks >= fNofPeaksNeeded) { 
-		if (fCalibration == NULL) fCalibration = new CalibrationDialog(fCurHisto, kFALSE);
-		if (fMatchFlag) {
-			fCalibration->SetVerbose(fVerboseMode);
-			fCalibration->SetCustomGauge(kTRUE);
-			fCalibration->SetCustomGaugeFile(fGaugeFile);
-			fCalibration->SetMatchNbins(fMatchNbins);
-			fCalibration->SetMatchMin(fMatchEmin);
-			fCalibration->SetMatchMax(fMatchEmax);
-			fCalibration->SetOffMin(fMatchOffsetMin);
-			fCalibration->SetOffStep(fMatchOffsetStep);
-			fCalibration->SetOffMax(fMatchOffsetMax);
-			fCalibration->SetGainMin(fMatchGainMin);
-			fCalibration->SetGainStep(fMatchGainStep);
-			fCalibration->SetGainMax(fMatchGainMax);
-			fCalibration->ExecuteAutoSelect();
-			fFitList = fCalibration->GetPeakList();
-		} else {
-			Int_t np = 0;
-			Int_t npg = 0;
-			fFitList = fCalibration->UpdatePeakList();
-			pIter = fFitList->MakeIterator();
-			while (p = (FhPeak *) pIter->Next()) {
-				if (np < fNofPeaks - fNofPeaksNeeded) {
-					p->SetUsed(0);
-					fCalibration->SetGaugePoint(np, 0);
-				} else {
-					Double_t e = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.E", fSourceName.Data(), npg), 0.0);
-					Double_t eerr = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Eerr", fSourceName.Data(), npg), 1.0);
-					Double_t intens = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Intensity", fSourceName.Data(), npg), 0.0);
-					TString gauge = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Source", fSourceName.Data(), npg), "??");
-					fCalibration->SetGaugePoint(np, 1, p->GetMean(), e, p->GetMeanError(), eerr);
-					p->SetUsed(1);
-					p->SetGaugeName(gauge.Data());
-					p->SetNominalEnergy(e);
-					p->SetNominalEnergyError(eerr);
-					p->SetIntensity(intens);
-					npg++;
-				}
-				np++;
-			}
-		}
-		fCalibFct = fCalibration->CalculateFunction();
-		fMainCanvas->cd(2);
-		TArrayD x(fNofPeaks);
-		TArrayD xerr(fNofPeaks);
-		TArrayD y(fNofPeaks);
-		TArrayD yerr(fNofPeaks);
-		pIter = fFitList->MakeIterator();
-		fNofPeaksUsed = 0;
-		while (p = (FhPeak *) pIter->Next()) {
-			if (p->GetUsed()) {
-				x[fNofPeaksUsed] = p->GetMean();
-				xerr[fNofPeaksUsed] = p->GetMeanError();
-				y[fNofPeaksUsed] = p->GetNominalEnergy();
-				yerr[fNofPeaksUsed] = p->GetNominalEnergyError();
-				fNofPeaksUsed++;
-			}
-		}
-		if (fNofPeaksUsed < fNofPeaksNeeded) {
-			OutputMessage("Calibrate", Form("Too few peaks - %d (%s calibration needs at least %d peaks)", fNofPeaksUsed, fSourceName.Data(), fNofPeaksNeeded), "w");
-			SetFitStatus(kFitDiscard, "Too few peaks");
-		}
-		if (!fMatchFlag) {
-			fMainCanvas->cd(1);
-			pIter = fFitList->MakeIterator();
-			while (p = (FhPeak *) pIter->Next()) {
-				if (p->GetUsed()) MarkPeak(p->GetMean(), p->GetNominalEnergy(), p->GetGaugeName());
-			}
-		}
-		ClearCanvas(2);
-		TGraphErrors * gr = new TGraphErrors(fNofPeaksUsed, x.GetArray(), y.GetArray(), xerr.GetArray(), yerr.GetArray()); 
-		gr->SetMarkerStyle(4);
-		gr->SetMarkerSize(1);
-		gr->Draw("A*");
-		if (fCalibFct) {
-			fCalibFct->Draw("SAME"); 
-			fCalibFct->SetLineWidth(1);
-			fCalibFct->SetLineColor(7);
-			TString grName = Form("%g + %g * x", fCalibFct->GetParameter(0), fCalibFct->GetParameter(1));
-			gr->SetTitle(grName.Data());
-		}
-		gr->GetHistogram()->SetBins(fMaxX - fMinX, fMinX, fMaxX);
-		fCalibFct->SetName(Form("Cal_Fct_%s", fCurHisto->GetName()));
-		gr->GetListOfFunctions()->Add(fCalibFct);
-		gr->SetName(Form("Cal_Graph_%s", fCurHisto->GetName()));
-		fCurHisto->GetListOfFunctions()->Add(gr);
-		gPad->Modified();
-		gPad->Update();
-	} else {
-		OutputMessage("Calibrate", Form("Too few peaks - %d (%s calibration needs at least %d peaks)", fNofPeaks, fSourceName.Data(), fNofPeaksNeeded), "e");
+	if (fNofPeaks < fNofPeaksNeeded) { 
+		OutputMessage("Calibrate", Form("Too few peaks - %d (%s calibration needs at least %d peaks)", fNofPeaks, fSourceName.Data(), fNofPeaksNeeded), "w");
 		SetFitStatus(kFitDiscard, "Too few peaks");
 	}
+
+	if (fCalibration) delete fCalibration;
+	fCalibration = new CalibrationDialog(fCurHisto, kFALSE);
+	if (fMatchFlag) {
+		fCalibration->SetVerbose(fVerboseMode);
+		fCalibration->SetCustomGauge(kTRUE);
+		fCalibration->SetCustomGaugeFile(fGaugeFile);
+		fCalibration->SetMatchNbins(fMatchNbins);
+		fCalibration->SetMatchMin(fMatchEmin);
+		fCalibration->SetMatchMax(fMatchEmax);
+		fCalibration->SetOffMin(fMatchOffsetMin);
+		fCalibration->SetOffStep(fMatchOffsetStep);
+		fCalibration->SetOffMax(fMatchOffsetMax);
+		fCalibration->SetGainMin(fMatchGainMin);
+		fCalibration->SetGainStep(fMatchGainStep);
+		fCalibration->SetGainMax(fMatchGainMax);
+		fCalibration->SetAccept((Double_t) fMatchAccept);
+		if (!fCalibration->ExecuteAutoSelect()) return(kFALSE);
+		fFitList = fCalibration->GetPeakList();
+	} else {
+		Int_t np = 0;
+		Int_t npg = 0;
+		fFitList = fCalibration->UpdatePeakList();
+		pIter = fFitList->MakeIterator();
+		while (p = (FhPeak *) pIter->Next()) {
+			if (np < fNofPeaks - fNofPeaksNeeded) {
+				p->SetUsed(0);
+				fCalibration->SetGaugePoint(np, 0);
+			} else {
+				Double_t e = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.E", fSourceName.Data(), npg), 0.0);
+				Double_t eerr = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Eerr", fSourceName.Data(), npg), 1.0);
+				Double_t intens = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Intensity", fSourceName.Data(), npg), 0.0);
+				TString gauge = fEnvEnergies->GetValue(Form("Calib.%s.Line.%d.Source", fSourceName.Data(), npg), "??");
+				fCalibration->SetGaugePoint(np, 1, p->GetMean(), e, p->GetMeanError(), eerr);
+				p->SetUsed(1);
+				p->SetGaugeName(gauge.Data());
+				p->SetNominalEnergy(e);
+				p->SetNominalEnergyError(eerr);
+				p->SetIntensity(intens);
+				npg++;
+			}
+			np++;
+		}
+	}
+	fCalibFct = fCalibration->CalculateFunction();
+	if (fCalibFct == NULL) return(kFALSE);
+	fMainCanvas->cd(2);
+	TArrayD x(fNofPeaks);
+	TArrayD xerr(fNofPeaks);
+	TArrayD y(fNofPeaks);
+	TArrayD yerr(fNofPeaks);
+	pIter = fFitList->MakeIterator();
+	fNofPeaksUsed = 0;
+	while (p = (FhPeak *) pIter->Next()) {
+		if (p->GetUsed()) {
+			x[fNofPeaksUsed] = p->GetMean();
+			xerr[fNofPeaksUsed] = p->GetMeanError();
+			y[fNofPeaksUsed] = p->GetNominalEnergy();
+			yerr[fNofPeaksUsed] = p->GetNominalEnergyError();
+			fNofPeaksUsed++;
+		}
+	}
+	if (fNofPeaksUsed < fNofPeaksNeeded) {
+		OutputMessage("Calibrate", Form("Too few peaks - %d (%s calibration needs at least %d peaks)", fNofPeaksUsed, fSourceName.Data(), fNofPeaksNeeded), "w");
+		SetFitStatus(kFitDiscard, "Too few peaks");
+	}
+	if (!fMatchFlag) {
+		fMainCanvas->cd(1);
+		pIter = fFitList->MakeIterator();
+		while (p = (FhPeak *) pIter->Next()) {
+			if (p->GetUsed()) MarkPeak(p->GetMean(), p->GetNominalEnergy(), p->GetGaugeName());
+		}
+	}
+	ClearCanvas(2);
+	TGraphErrors * gr = new TGraphErrors(fNofPeaksUsed, x.GetArray(), y.GetArray(), xerr.GetArray(), yerr.GetArray()); 
+	gr->SetMarkerStyle(4);
+	gr->SetMarkerSize(1);
+	gr->Draw("A*");
+	if (fCalibFct) {
+		fCalibFct->Draw("SAME"); 
+		fCalibFct->SetLineWidth(1);
+		fCalibFct->SetLineColor(7);
+		TString grName = Form("%s Calibration, histo %s: %g + %g * x",
+											fSourceName.Data(), fCurHisto->GetName(),
+											fCalibFct->GetParameter(0), fCalibFct->GetParameter(1));
+		gr->SetTitle(grName.Data());
+	}
+	gr->GetHistogram()->SetBins(fMaxX - fMinX, fMinX, fMaxX);
+	fCalibFct->SetName(Form("Cal_Fct_%s", fCurHisto->GetName()));
+	gr->GetListOfFunctions()->Add(fCalibFct);
+	gr->SetName(Form("Cal_Graph_%s", fCurHisto->GetName()));
+	if (fFitResults) fFitResults->Append(gr);
+	gPad->Modified();
+	gPad->Update();
+	return(kTRUE);
 }
 
 void MarkPeak(Double_t X, Double_t E, const Char_t * GaugeName) {
@@ -1522,13 +1592,15 @@ void SetFitStatus(Int_t FitStatus, const Char_t * Reason) {
 // Description:    stores fit status
 //////////////////////////////////////////////////////////////////////////////
 
-	fFitStatus = FitStatus;
-	fReason = (Reason == NULL || *Reason == '\0') ? "" : Reason;
-	TMrbNamedX * fs = fLofFitStatusFlags.FindByIndex(fFitStatus);
-	TString fsStr = (fs != NULL) ? fs->GetName() : "";
-	if (!fReason.IsNull()) fsStr += Form(": %s", fReason.Data());
-	if (fEnvResults) fEnvResults->SetValue(Form("Calib.%s.FitStatus", fCurHisto->GetName()), fsStr.Data());
-	if (fEnvCalib) fEnvCalib->SetValue(Form("Calib.%s.FitStatus", fCurHisto->GetName()), fsStr.Data());
+	if (fFitStatus = kFitUndef) {
+		fFitStatus = FitStatus;
+		fReason = (Reason == NULL || *Reason == '\0') ? "" : Reason;
+		TMrbNamedX * fs = fLofFitStatusFlags.FindByIndex(fFitStatus);
+		TString fsStr = (fs != NULL) ? fs->GetName() : "";
+		if (!fReason.IsNull()) fsStr += Form(": %s", fReason.Data());
+		if (fEnvResults) fEnvResults->SetValue(Form("Calib.%s.FitStatus", fCurHisto->GetName()), fsStr.Data());
+		if (fEnvCalib) fEnvCalib->SetValue(Form("Calib.%s.FitStatus", fCurHisto->GetName()), fsStr.Data());
+	}
 }
 
 void ShowResults2dim() {
@@ -1686,7 +1758,7 @@ void PopupHisto(TH1F * Histo) {
 		c->Divide(1,2);
 		c->cd(1);
 		Histo->Draw();
-		TGraphErrors * gr = (TGraphErrors *) Histo->GetListOfFunctions()->FindObject(Form("Cal_Graph_%s", Histo->GetName()));
+		TGraphErrors * gr = (TGraphErrors *) gROOT->FindObject(Form("Cal_Graph_%s", Histo->GetName()));
 		if (gr) {
 			c->cd(2);
 			gr->Draw("A*");
@@ -1795,12 +1867,31 @@ void GetArguments(TGMrbMacroFrame * GuiPtr) {
 	GuiPtr->GetArgValue("TestbedHisto", fMatchEmin, 1);
 	GuiPtr->GetArgValue("TestbedHisto", fMatchEmax, 2);
 	GuiPtr->GetArgValue("PeakMatch", fMatchFlag);
-	GuiPtr->GetArgValue("MatchOffset", fMatchOffsetMin, 0);
-	GuiPtr->GetArgValue("MatchOffset", fMatchOffsetStep, 1);
-	GuiPtr->GetArgValue("MatchOffset", fMatchOffsetMax, 2);
-	GuiPtr->GetArgValue("MatchGain", fMatchGainMin, 0);
-	GuiPtr->GetArgValue("MatchGain", fMatchGainStep, 1);
-	GuiPtr->GetArgValue("MatchGain", fMatchGainMax, 2);
+	if (fMatchFlag) {
+		GuiPtr->GetArgValue("MatchOffset", fMatchOffsetMin, 0);
+		GuiPtr->GetArgValue("MatchOffset", fMatchOffsetStep, 1);
+		GuiPtr->GetArgValue("MatchOffset", fMatchOffsetMax, 2);
+		if ((fMatchOffsetMax - fMatchOffsetMin) <= 0) {
+			OutputMessage("GetArguments", Form("Wrong offset range - [%d,%d]", fMatchOffsetMin, fMatchOffsetMax), "e");
+			fMatchFlag = kFALSE;
+		}
+		if (fMatchOffsetStep <= 0) {
+			OutputMessage("GetArguments", Form("Wrong offset step size - %d", fMatchOffsetStep), "e");
+			fMatchFlag = kFALSE;
+		}
+		GuiPtr->GetArgValue("MatchGain", fMatchGainMin, 0);
+		GuiPtr->GetArgValue("MatchGain", fMatchGainStep, 1);
+		GuiPtr->GetArgValue("MatchGain", fMatchGainMax, 2);
+		if ((fMatchGainMax - fMatchGainMin) <= 0) {
+			OutputMessage("GetArguments", Form("Wrong gain range - [%d,%d]", fMatchGainMin, fMatchGainMax), "e");
+			fMatchFlag = kFALSE;
+		}
+		if (fMatchGainStep <= 0) {
+			OutputMessage("GetArguments", Form("Wrong gain step size - %d", fMatchGainStep), "e");
+			fMatchFlag = kFALSE;
+		}
+		GuiPtr->GetArgValue("MatchAccept", fMatchAccept);
+	}
 	GuiPtr->GetArgValue("DisplayMode", fDisplayMode);
 	GuiPtr->GetArgValue("VerboseMode", fVerboseMode);
 }
@@ -2017,6 +2108,11 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 		}
 		delete a;
 	}
+	argX = lofArgs.FindByName("MatchAccept");
+	if (argX) {
+		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 2);
+		GuiPtr->SetArgValue("MatchAccept", envInt);
+	}
 	argX = lofArgs.FindByName("DisplayMode");
 	if (argX) {
 		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), kDisplayModeStep);
@@ -2090,15 +2186,17 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 		fMainCanvas->cd(1);
 		h->Draw("");
 
+		SetFitStatus(kFitUndef);
+
 		if (FindPeaks()) {
 
-			FitPeaks();
+			if (FitPeaks()) {
 
-			Calibrate();
-
-			WriteCalibration();
-			WriteResults();
-
+				if (Calibrate()) {
+					WriteCalibration();
+					WriteResults();
+				}
+			}
 			fMainCanvas->Update();
 			gSystem->ProcessEvents();
 		} else {
@@ -2123,7 +2221,7 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 	if (!fButtonQuit) WaitForSignal(kTRUE);
 
 	CloseRootFile();
-	if (fButtonQuit) { gSystem->Exit(0); }
+	if (fButtonQuit) { Exit(); }
 
 	return;
 }

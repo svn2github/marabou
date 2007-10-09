@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.46 2007-09-14 13:37:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.47 2007-10-09 12:05:24 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -145,7 +145,7 @@ const SMrbNamedX kGMrbMacroLofArgTypes[] =
 					{TGMrbMacroArg::kGMrbMacroArgUInt, 		"UInt_t",		"Unsigned integer value"		},
 					{TGMrbMacroArg::kGMrbMacroArgFloat, 	"Float_t",		"Floating point value"			},
 					{TGMrbMacroArg::kGMrbMacroArgDouble,	"Double_t", 	"Double precision value"		},
-					{TGMrbMacroArg::kGMrbMacroArgChar,		"Char_t *", 	"String of characters"			},
+					{TGMrbMacroArg::kGMrbMacroArgChar,		"Char_t *",  	"String of characters"			},
 					{TGMrbMacroArg::kGMrbMacroArgBool,		"Bool_t",		"Boolean value" 				},
 					{TGMrbMacroArg::kGMrbMacroArgObjArr,	"TObjArray *",	"Array of ROOT objects" 		},
 					{0, 									NULL,			NULL							}
@@ -829,8 +829,8 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 
 	TString macroName, macroPath, titleBar;
 	TString argResource, argName, argTitle, argType, argEntryType, addLofValues;
-	TMrbString argString;
-	TMrbString argValue;
+	TString argString;
+	TString argValue;
 	TString prefix;
 	TMrbNamedX * button;
 
@@ -838,7 +838,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	Int_t intBase;
 	TString currentValue;
 	TString defaultValue;
-	TMrbString value;
+	TString value;
 	TString cintString;
 
 	TGMrbLayout * updownGC;
@@ -1320,9 +1320,9 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 				macroArg->fButtons.Delete();
 				macroArg->fButtons.SetPatternMode();
 				lofSubstrings.Delete();
-				Int_t nstr = argString.Split(lofSubstrings);
-				for (Int_t nn = 0; nn < nstr; nn++) {
-					TMrbString str = ((TObjString *) lofSubstrings[nn])->GetString().Data();
+				Int_t from = 0;
+				TString str;
+				while (argString.Tokenize(str, from, ":")) {
 					intBase = macroEnv->GetValue(macroArg->GetResource(argResource, "Base"), 10);
 					Int_t nsep = str.Index("=", 0);
 					TString tip = "";
@@ -1351,8 +1351,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					HEAP(macroArg->fRadio);
 					parentFrame->AddFrame(macroArg->fRadio, frameGC->LH());
 					value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
-					Int_t val;
-					value.ToInteger(val);
+					Int_t val = value.Atoi();
 					if ((button = macroArg->fButtons.FindByIndex(val)) != NULL) {
 						macroArg->fRadio->SetState(val, kButtonDown);
 					}
@@ -1368,8 +1367,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					HEAP(macroArg->fCheck);
 					parentFrame->AddFrame(macroArg->fCheck, frameGC->LH());
 					value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
-					Int_t pattern;
-					value.ToInteger(pattern);
+					Int_t pattern = value.Atoi();
 					macroArg->fCheck->SetState(pattern, kButtonDown);
 					macroArg->fCheck->ConnectSigToSlot("ButtonPressed(Int_t)", this, "ProcessSignal(Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryText) {
@@ -1405,8 +1403,13 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			nft = 0;
 			if (argString.Length() != 0) {
 				macroArg->fFileTypes.Delete();
-				nft = argString.Split(macroArg->fFileTypes);
-				for (Int_t nn = 0; nn < nft; nn++) macroArg->fPtrFileTypes[nn] = ((TObjString *) macroArg->fFileTypes[nn])->GetString();
+				Int_t nn = 0;
+				TString ft;
+				Int_t from = 0;
+				while(argString.Tokenize(ft, from, ":")) {
+					macroArg->fPtrFileTypes[nn++] = ft;
+					macroArg->fFileTypes.Add(new TObjString(ft));
+				}
 			}
 			if (nft % 2) {
 				gMrbLog->Err()	<< Macro->GetName() << ": " << macroArg->fEntryType->GetName()
@@ -2792,7 +2795,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 //////////////////////////////////////////////////////////////////////////////
 
 	TString macroName, macroPath, titleBar;
-	TMrbString argValue;
+	TString argValue;
 
 
 	UInt_t frameWidth;
@@ -2970,6 +2973,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fArgNumber->Associate(this);
 	fArgNumber->SetRange(1, TGMrbMacroEdit::kMaxNofArgs);
 	fArgNumber->SetIncrement(1);
+	fArgNumber->GetTextEntry()->ConnectSigToSlot("EntryChanged(Int_t)", this, "SwitchToArg(Int_t)");
 
 	fArgAction = new TGMrbTextButtonList(fMacroArg, NULL, &fLofArgActions, -1, 1, frameWidth / 2, TGMrbMacroEdit::kLineHeight,
 														frameGC, labelGC, buttonGC);
@@ -2993,18 +2997,17 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	HEAP(fArgTitle);
 	fMacroLayout->AddFrame(fArgTitle, frameGC->LH());
 
-	fArgType = new TGMrbRadioButtonList(fMacroLayout, "Type",
-														&fLofArgTypes, -1, 4,
+	fArgType = new TGMrbLabelCombo(fMacroLayout, "Type", &fLofArgTypes, -1, 0,
 														frameWidth - 20,
-														TGMrbMacroFrame::kLineHeight,
+														TGMrbMacroFrame::kLineHeight, 100,
 														frameGC, labelGC, buttonGC);
 	HEAP(fArgType);
 	fMacroLayout->AddFrame(fArgType, frameGC->LH());
 
-	fArgEntryType = new TGMrbRadioButtonList(fMacroLayout, "Entry type",
-														&fLofEntryTypes, -1, 3,
+	fArgEntryType = new TGMrbLabelCombo(fMacroLayout, "Entry type",
+														&fLofEntryTypes, -1, 0,
 														frameWidth - 20,
-														TGMrbMacroFrame::kLineHeight,
+														TGMrbMacroFrame::kLineHeight, 100,
 														frameGC, labelGC, buttonGC);
 	HEAP(fArgEntryType);
 	fMacroLayout->AddFrame(fArgEntryType, frameGC->LH());
@@ -3046,23 +3049,13 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	HEAP(fArgAddLofValues);
 	fMacroLayout->AddFrame(fArgAddLofValues, frameGC->LH());
 
-	fArgLowerLimit = new TGMrbLabelEntry(fMacroLayout, "Lower limit", 40, -1, frameWidth - 20,
+	fArgLimits = new TGMrbLabelEntry(fMacroLayout, "Limits (lower, incr, upper)", 40, -1, frameWidth - 20,
 														TGMrbMacroEdit::kLineHeight, 100,
-														frameGC, labelGC, entryGC);
-	HEAP(fArgLowerLimit);
-	fMacroLayout->AddFrame(fArgLowerLimit, frameGC->LH());
-
-	fArgUpperLimit = new TGMrbLabelEntry(fMacroLayout, "Upper limit", 40, -1, frameWidth - 20,
-														TGMrbMacroEdit::kLineHeight, 100,
-														frameGC, labelGC, entryGC);
-	HEAP(fArgUpperLimit);
-	fMacroLayout->AddFrame(fArgUpperLimit, frameGC->LH());
-
-	fArgIncrement = new TGMrbLabelEntry(fMacroLayout, "Increment", 40, -1, frameWidth - 20,
-														TGMrbMacroEdit::kLineHeight, 100,
-														frameGC, labelGC, entryGC);
-	HEAP(fArgIncrement);
-	fMacroLayout->AddFrame(fArgIncrement, frameGC->LH());
+														frameGC, labelGC, entryGC,
+														NULL, kFALSE, NULL, NULL, NULL, NULL,
+														kHorizontalFrame, kSunkenFrame | kDoubleBorder, 3);
+	HEAP(fArgLimits);
+	fMacroLayout->AddFrame(fArgLimits, frameGC->LH());
 
 	fArgBase = new TGMrbRadioButtonList(fMacroLayout, "Base",
 														&fLofIntegerBases, -1, 1,
@@ -3136,8 +3129,7 @@ Bool_t TGMrbMacroEdit::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString argValue;
-	Int_t intVal;
+	TString argValue;
 
 	TGFileInfo fo;
 
@@ -3216,30 +3208,46 @@ Bool_t TGMrbMacroEdit::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 				case kTE_TEXTCHANGED:
 				case kTE_ENTER:
 					this->StoreArg();
-					argValue = fArgNumber->GetEntry()->GetText();
-					if (argValue.ToInteger(intVal)) {
-						if (intVal < 1) {
-							this->StoreArg();
-							fCurrentArg.SetIndex(1); 
-							argValue = 1;
-							fArgNumber->GetEntry()->SetText(argValue.Data());
-							this->UpdateArg();
-						} else if (intVal > fNofArgs) {
-							this->StoreArg();
-							fCurrentArg.SetIndex(fNofArgs); 
-							argValue = fNofArgs;
-							fArgNumber->GetEntry()->SetText(argValue.Data());
-							this->UpdateArg();
-						} else {
-							this->StoreArg();
-							fCurrentArg.SetIndex(intVal); 
-							this->UpdateArg();
-						}
-					}
+					this->SwitchToArg();
 					break;
 			}
 			break;
 		default:	break;
+	}
+	return(kTRUE);
+}
+
+Bool_t TGMrbMacroEdit::SwitchToArg(Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMacroEdit::SwitchToArg
+// Purpose:        Switch to next argument
+// Arguments:      Int_t EntryNo   -- entry number (ignored)
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Switches to argument given by text field
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString argValue = fArgNumber->GetEntry()->GetText();
+	Int_t argNo = argValue.Atoi();
+	argValue = "";
+	if (argNo < 1) {
+		this->StoreArg();
+		fCurrentArg.SetIndex(1); 
+		argValue += 1;
+		fArgNumber->GetEntry()->SetText(argValue.Data());
+		this->UpdateArg();
+	} else if (argNo > fNofArgs) {
+		this->StoreArg();
+		fCurrentArg.SetIndex(fNofArgs); 
+		argValue += fNofArgs;
+		fArgNumber->GetEntry()->SetText(argValue.Data());
+		this->UpdateArg();
+	} else {
+		this->StoreArg();
+		fCurrentArg.SetIndex(argNo); 
+		this->UpdateArg();
 	}
 	return(kTRUE);
 }
@@ -3256,7 +3264,7 @@ Bool_t TGMrbMacroEdit::UpdateArg(Int_t ArgNo) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString argValue, argType, argEntryType, argBase, argOrientation;
+	TString argValue, argType, argEntryType, argBase, argOrientation;
 
 	TMrbNamedX * nx;
 	Int_t idx;
@@ -3280,12 +3288,12 @@ Bool_t TGMrbMacroEdit::UpdateArg(Int_t ArgNo) {
 	argType = fCurrentEnv->GetValue(thisArg.GetResource(argValue, "Type"), "");
 	nx = fLofArgTypes.FindByName(argType.Data());
 	idx = nx ? nx->GetIndex() : 0;
-	fArgType->SetState(idx, kButtonDown);
+	fArgType->Select(idx);
 
 	argEntryType = fCurrentEnv->GetValue(thisArg.GetResource(argValue, "EntryType"), "");
 	nx = fLofEntryTypes.FindByName(argEntryType.Data());
 	idx = nx ? nx->GetIndex() : 0;
-	fArgEntryType->SetState(idx, kButtonDown);
+	fArgEntryType->Select(idx);
 
 	fArgNofEntryFields->GetEntry()->SetText(fCurrentEnv->GetValue(thisArg.GetResource(argValue, "NofEntryFields"), ""));
 	fArgEntryWidth->GetEntry()->SetText(fCurrentEnv->GetValue(thisArg.GetResource(argValue, "Width"), ""));
@@ -3295,9 +3303,9 @@ Bool_t TGMrbMacroEdit::UpdateArg(Int_t ArgNo) {
 	nx = fYesNo.FindByName(argValue.Data());
 	if (nx) fArgAddLofValues->SetState(nx->GetIndex(), kButtonDown);
 	else	fArgAddLofValues->SetState(TGMrbMacroArg::kGMrbMacroEntryNo, kButtonDown);
-	fArgLowerLimit->GetEntry()->SetText(fCurrentEnv->GetValue(thisArg.GetResource(argValue, "LowerLimit"), ""));
-	fArgUpperLimit->GetEntry()->SetText(fCurrentEnv->GetValue(thisArg.GetResource(argValue, "UpperLimit"), ""));
-	fArgIncrement->GetEntry()->SetText(fCurrentEnv->GetValue(thisArg.GetResource(argValue, "Increment"), ""));
+	fArgLimits->GetEntry(0)->SetText(fCurrentEnv->GetValue(thisArg.GetResource(argValue, "LowerLimit"), ""));
+	fArgLimits->GetEntry(1)->SetText(fCurrentEnv->GetValue(thisArg.GetResource(argValue, "Increment"), ""));
+	fArgLimits->GetEntry(2)->SetText(fCurrentEnv->GetValue(thisArg.GetResource(argValue, "UpperLimit"), ""));
 
 	argBase = fCurrentEnv->GetValue(thisArg.GetResource(argValue, "Base"), "");
 	nx = fLofEntryTypes.FindByName(argBase.Data());
@@ -3367,7 +3375,7 @@ Bool_t TGMrbMacroEdit::StoreArg(Int_t ArgNo) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString argName, argValue, argType, argEntryType, argBase, argOrientation;
+	TString argName, argValue, argType, argEntryType, argBase, argOrientation;
 
 	TMrbNamedX * nx;
 	Int_t idx;
@@ -3389,12 +3397,12 @@ Bool_t TGMrbMacroEdit::StoreArg(Int_t ArgNo) {
 	argValue = fArgTitle->GetEntry()->GetText();
 	fCurrentEnv->SetValue(thisArg.GetResource(argName, "Title"), argValue.Data(), kEnvChange);
 
-	idx = fArgType->GetActive();
+	idx = fArgType->GetSelected();
 	nx  = fLofArgTypes.FindByIndex(idx);
 	argType = nx ? nx->GetName() : "";
 	fCurrentEnv->SetValue(thisArg.GetResource(argName, "Type"), argType.Data(), kEnvChange);
 
-	idx = fArgEntryType->GetActive();
+	idx = fArgEntryType->GetSelected();
 	nx = fLofEntryTypes.FindByIndex(idx);
 	argEntryType = nx ? nx->GetName() : "";
 	fCurrentEnv->SetValue(thisArg.GetResource(argName, "EntryType"), argEntryType.Data(), kEnvChange);
@@ -3410,12 +3418,12 @@ Bool_t TGMrbMacroEdit::StoreArg(Int_t ArgNo) {
 	nx = fYesNo.FindByIndex(fArgAddLofValues->GetActive());
 	if (nx) argValue = nx->GetName(); else argValue = "No";
 	fCurrentEnv->SetValue(thisArg.GetResource(argName, "AddLofValues"), argValue.Data(), kEnvChange);
-	argValue = fArgLowerLimit->GetEntry()->GetText();
+	argValue = fArgLimits->GetEntry(0)->GetText();
 	fCurrentEnv->SetValue(thisArg.GetResource(argName, "LowerLimit"), argValue.Data(), kEnvChange);
-	argValue = fArgUpperLimit->GetEntry()->GetText();
-	fCurrentEnv->SetValue(thisArg.GetResource(argName, "UpperLimit"), argValue.Data(), kEnvChange);
-	argValue = fArgIncrement->GetEntry()->GetText();
+	argValue = fArgLimits->GetEntry(1)->GetText();
 	fCurrentEnv->SetValue(thisArg.GetResource(argName, "Increment"), argValue.Data(), kEnvChange);
+	argValue = fArgLimits->GetEntry(2)->GetText();
+	fCurrentEnv->SetValue(thisArg.GetResource(argName, "UpperLimit"), argValue.Data(), kEnvChange);
 
 	idx = fArgBase->GetActive();
 	nx = fLofIntegerBases.FindByIndex(idx);
@@ -3445,7 +3453,7 @@ Bool_t TGMrbMacroEdit::RemoveArg(Int_t ArgNo) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString argValue;
+	TString argValue;
 
 	if (ArgNo == -1) ArgNo = fCurrentArg.GetIndex();
 
@@ -3483,7 +3491,7 @@ Bool_t TGMrbMacroEdit::InsertArg(Int_t ArgNo) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString argValue;
+	TString argValue;
 
 	if (ArgNo == -1) ArgNo = fCurrentArg.GetIndex();
 
@@ -3596,7 +3604,7 @@ Bool_t TGMrbMacroEdit::UpdateNofArgs() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString argValue = fNofArgs;
+	TString argValue = fNofArgs;
 	fMacroNofArgs->GetEntry()->SetText(argValue.Data());
 	return(kTRUE);
 }
@@ -3616,7 +3624,7 @@ Bool_t TGMrbMacroEdit::ChangeEnv(Int_t ArgNo, Bool_t Delete) {
 
 	TGMrbMacroArg thisArg, nextArg;
 	TString argEnv, envName, envVal;
-	TMrbString argName;
+	TString argName;
 	TEnv * newEnv;
 	TMrbNamedX * nx;
 
@@ -4472,13 +4480,11 @@ Int_t TGMrbMacroEdit::ExtractEnums(TMrbLofNamedX & LofEnums, Int_t ArgNo) {
 	if (argEntryType.CompareTo("Radio") != 0 && argEntryType.CompareTo("Check") != 0) return(0);
 	if (argType.CompareTo("Int_t") != 0) return(0);
 
-	TMrbString argVals = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Values"), "");
-	TObjArray lofSubstrings;
-	Int_t nvals = argVals.Split(lofSubstrings);
+	TString argVals = fCurrentEnv->GetValue(thisArg.GetResource(argEnv, "Values"), "");
 	TString valName;
 	TString val = "";
-	for (Int_t nn = 0; nn < nvals; nn++) {
-		valName = ((TObjString *) lofSubstrings[nn])->GetString();
+	Int_t from = 0;
+	while (argVals.Tokenize(valName, from, ":")) {
 		Int_t nsep = valName.Index("=", 0);
 		if (nsep > 0) {
 			val = valName(nsep + 1, 1000);
@@ -4521,7 +4527,7 @@ const Char_t * TGMrbMacroArg::GetResource(TString & Resource, const Char_t * Res
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString arg;
+	TString arg;
 
 	arg = "Arg";
 	arg += this->GetIndex();

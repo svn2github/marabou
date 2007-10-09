@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.19 2007-09-14 13:37:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.20 2007-10-09 12:05:24 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -806,12 +806,14 @@ void TGMrbFileObjectListBox::SetSelectionFromString(TString & SelString, Bool_t 
 //////////////////////////////////////////////////////////////////////////////
 
 	this->ClearList();
-	Int_t from;
+	Int_t from = 0;
 	TString item;
 	Int_t id = -1;
 	while (SelString.Tokenize(item, from, ":")) {
 		if (id == -1) {
-			if (IsNewFile || fFileName.CompareTo(item.Data()) != 0) this->OpenFile(item.Data());
+			if (IsNewFile || fFileName.CompareTo(item.Data()) != 0) {
+				if (!gSystem->AccessPathName(item.Data())) this->OpenFile(item.Data());
+			}
 			this->ClearList();
 		} else {
 			fListBox->AddEntry(item.Data(), id);

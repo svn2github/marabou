@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.26 2007-09-14 13:37:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.27 2007-10-09 12:05:24 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -41,7 +41,6 @@ namespace std {} using namespace std;
 #include "RQ_OBJECT.h"
 
 #include "TMrbNamedX.h"
-#include "TMrbString.h"
 #include "TMrbLofNamedX.h"
 #include "TMrbLofMacros.h"
 
@@ -154,8 +153,8 @@ class TGMrbMacroArg : public TMrbNamedX {
 		TMrbNamedX * fType;				// argument type
 		TMrbNamedX * fEntryType; 		// entry type;
 
-		TMrbString fCurrentValue;		// current
-		TMrbString fDefaultValue;		// default
+		TString fCurrentValue;		// current
+		TString fDefaultValue;		// default
 
 		Bool_t fAddLofValues;			// add list of values on exec?
 
@@ -365,6 +364,8 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
 
+		Bool_t SwitchToArg(Int_t EntryNo = -1); 			// switch to argument (signal/slot)
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
@@ -410,17 +411,15 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		TGGroupFrame * fMacroLayout;
 		TGMrbLabelEntry * fArgName;
 		TGMrbLabelEntry * fArgTitle;
-		TGMrbRadioButtonList * fArgType;
-		TGMrbRadioButtonList * fArgEntryType;
+		TGMrbLabelCombo * fArgType;
+		TGMrbLabelCombo * fArgEntryType;
 		TGMrbLabelEntry * fArgNofEntryFields;
 		TGMrbLabelEntry * fArgEntryWidth;
 		TGMrbLabelEntry * fArgDefaultValue;
 		TGMrbLabelEntry * fArgValues;
 		TGMrbRadioButtonList * fArgAddLofValues;
 		TGMrbRadioButtonList * fArgBase;
-		TGMrbLabelEntry * fArgLowerLimit;
-		TGMrbLabelEntry * fArgUpperLimit;
-		TGMrbLabelEntry * fArgIncrement;
+		TGMrbLabelEntry * fArgLimits;
 		TGMrbRadioButtonList * fArgOrientation;
 		TGMrbLabelEntry * fArgNofCL;
 		TGMrbLabelEntry * fArgExecFunct;
