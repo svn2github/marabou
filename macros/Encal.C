@@ -9,16 +9,16 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.33 2007-10-09 12:29:00 Rudolf.Lutter Exp $
-// Date:             Thu Sep 13 08:33:10 2007
+// Revision:         $Id: Encal.C,v 1.34 2007-10-09 14:39:18 Rudolf.Lutter Exp $
+// Date:             Tue Oct  9 15:53:06 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
 //                   Width:               780
 //                   Aclic:               +g
-//                   Modify:              no
+//                   Modify:              yes
 //                   GuiPtrMode:          GuiPtr
-//                   UserStart:           on
+//                   UserStart:           off
 //                   RcFile:              .EncalLoadLibs.C
 //                   NofArgs:             39
 //                   Arg1.Name:           Tab_1
@@ -202,15 +202,16 @@
 //                   Arg20.Base:          dec
 //                   Arg20.Orientation:   horizontal
 //                   Arg21.Name:          PeakFrac
-//                   Arg21.Title:         Threshold [% of max peak]
+//                   Arg21.Title:         Thresholds [% of max peak]
 //                   Arg21.Type:          Int_t
-//                   Arg21.EntryType:     Entry
-//                   Arg21.Width:         100
-//                   Arg21.Default:       1
+//                   Arg21.EntryType:     Entry-M
+//                   Arg21.NofEntryFields:4
+//                   Arg21.Width:         40
+//                   Arg21.Default:       10:10:10:10
 //                   Arg21.AddLofValues:  No
-//                   Arg21.LowerLimit:    1
-//                   Arg21.UpperLimit:    50
-//                   Arg21.Increment:     1
+//                   Arg21.LowerLimit:    1:1:1:1
+//                   Arg21.UpperLimit:    90:90:90:90
+//                   Arg21.Increment:     10:10:10:10
 //                   Arg21.Base:          dec
 //                   Arg21.Orientation:   horizontal
 //                   Arg22.Name:          Sigma
@@ -569,7 +570,7 @@ Int_t fMaxX;
 Bool_t fNormHistoEff;
 Double_t fEfficiencyA0;
 Double_t fEfficiencyA1;
-Int_t fPeakFrac;
+Int_t fPeakFrac[4];
 Double_t fSigma;
 Double_t fTwoPeakSep;
 Int_t fFitMode;
@@ -1231,8 +1232,6 @@ Bool_t FindPeaks() {
 // Description:    Peak finding
 //////////////////////////////////////////////////////////////////////////////
 
-	Double_t pmax = (Double_t) fPeakFrac / 100.;
-
 	if (fRebin > 1) fCurHisto->Rebin(fRebin);
 
 	TH1F * pfHisto;
@@ -1256,9 +1255,12 @@ Bool_t FindPeaks() {
 	Bool_t sts = kTRUE;
 	Int_t npeaks = 0;
 	TList * pfList;
+	Double_t pmaxSave = 0.1;
 	for (Int_t i = 0; i < fNofRegions; i++) {
 		fPeakFinder->SetFrom(fLowerLim[i]);
 		fPeakFinder->SetTo(fUpperLim[i]);
+		Double_t pmax = (Double_t) fPeakFrac[i] / 100.;
+		if (pmax < .01) pmax = pmaxSave; else pmaxSave = pmax;
 		fPeakFinder->SetThreshold(pmax);
 		Double_t sigmaPeakFinder = fSigma * fTwoPeakSep / 3;
 		fPeakFinder->SetSigma(sigmaPeakFinder);
@@ -1855,7 +1857,11 @@ void GetArguments(TGMrbMacroFrame * GuiPtr) {
 		fEfficiencyA1 = 0;
 	}
 
-	GuiPtr->GetArgValue("PeakFrac", fPeakFrac);
+	for (Int_t i = 0; i < 4; i++) {
+		Int_t pfrac;
+		GuiPtr->GetArgValue("PeakFrac", pfrac, i);
+		fPeakFrac[i] = pfrac;
+	}
 	GuiPtr->GetArgValue("Sigma", fSigma);
 	GuiPtr->GetArgValue("TwoPeakSep", fTwoPeakSep);
 	GuiPtr->GetArgValue("FitMode", fFitMode);
@@ -2039,8 +2045,13 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 	}
 	argX = lofArgs.FindByName("PeakFrac");
 	if (argX) {
-		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 1);
-		GuiPtr->SetArgValue("PeakFrac", envInt);
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		TObjArray * a = envStr.Tokenize(":");
+		for (Int_t k = 0; k < 4; k++) {
+			envStr = ((TObjString *) a->At(k))->GetString();
+			GuiPtr->SetArgValue("PeakFrac", envStr.Atoi(), k);
+		}
+		delete a;
 	}
 	argX = lofArgs.FindByName("Sigma");
 	if (argX) {
@@ -2121,6 +2132,12 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 	if (argX) {
 		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), kFALSE);
 		GuiPtr->SetArgValue("VerboseMode", envInt);
+	}
+	argX = lofArgs.FindByName("SaveSetup");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		if (envStr.IsNull()) envStr = "Encal.cal";
+		GuiPtr->SetArgValue("SaveSetup", envStr.Data());
 	}
 }
 
