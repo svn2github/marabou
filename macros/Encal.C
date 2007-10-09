@@ -9,7 +9,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.32 2007-10-09 12:05:38 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.33 2007-10-09 12:29:00 Rudolf.Lutter Exp $
 // Date:             Thu Sep 13 08:33:10 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -741,7 +741,7 @@ void OutputMessage(const Char_t * Method, const Char_t * Text, const Char_t * Ms
 	if (*MsgType == 'e') {
 		msg->Err() << Text << endl;
 		msg->Flush(cName.Data(), method.Data());
-		new TGMsgBox(gClient->GetRoot(), gClient->GetRoot(), Form("%s: Error", method.Data()), Text, kMBIconStop);
+		if (StepMode()) new TGMsgBox(gClient->GetRoot(), gClient->GetRoot(), Form("%s: Error", method.Data()), Text, kMBIconStop);
 	} else if (*MsgType == 'w') {
 		msg->Wrn() << Text << endl;
 		msg->Flush(cName.Data(), method.Data());
@@ -1592,7 +1592,7 @@ void SetFitStatus(Int_t FitStatus, const Char_t * Reason) {
 // Description:    stores fit status
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fFitStatus = kFitUndef) {
+	if (FitStatus != kFitUndef && fFitStatus == kFitUndef) {
 		fFitStatus = FitStatus;
 		fReason = (Reason == NULL || *Reason == '\0') ? "" : Reason;
 		TMrbNamedX * fs = fLofFitStatusFlags.FindByIndex(fFitStatus);
@@ -1713,10 +1713,9 @@ void ShowThumbNails() {
 				hName = oh->GetString();
 				TH1F * fThumbHisto = (TH1F *) fHistoFile->Get(hName.Data());
 				if (fThumbHisto) {
-					TPad * p = (TPad *) gPad;
 					TString cmd(Form("PopupHisto((TH1F*) %#x);", fThumbHisto)); 
-					p->SetToolTipText(hName.Data());
-					p->AddExec("popupHisto", cmd.Data());
+					gPad->SetToolTipText(hName.Data());
+					gPad->AddExec("popupHisto", cmd.Data());
 					fThumbHisto->Draw();
 					gPad->Modified();
 					gPad->Update();
@@ -2186,7 +2185,7 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 		fMainCanvas->cd(1);
 		h->Draw("");
 
-		SetFitStatus(kFitUndef);
+		fFitStatus = kFitUndef;
 
 		if (FindPeaks()) {
 
