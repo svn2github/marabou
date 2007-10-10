@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.57 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-07-27 11:17:23 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.58 2007-10-10 07:04:46 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-10-10 07:04:46 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -29,7 +29,6 @@ namespace std {} using namespace std;
 #include "TMrbTemplate.h"
 #include "TMrbLogger.h"
 #include "TMrbSystem.h"
-#include "TMrbWildcard.h"
 
 #include "TMbsSetup.h"
 
@@ -208,8 +207,8 @@ Bool_t TMbsSetup::GetRcVal(UInt_t & RcValue, const Char_t * Resource, const Char
 	TIterator * iter = lofSettings->MakeIterator();
 	TEnvRec * r;
 	while (r = (TEnvRec *) iter->Next()) {
-		TMrbWildcard w(r->GetName());
-		if (w.Match(res.Data())) {
+		TRegexp w(r->GetName(), kTRUE);
+		if (res.Index(w, 0) != -1) {
 			valStr = r->GetValue();	
 			RcValue = strtoul(valStr.Data(), NULL, 0);
 			return(kTRUE);
