@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.47 2007-10-09 12:05:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.48 2007-10-12 08:43:24 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -1403,12 +1403,12 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			nft = 0;
 			if (argString.Length() != 0) {
 				macroArg->fFileTypes.Delete();
-				Int_t nn = 0;
 				TString ft;
 				Int_t from = 0;
 				while(argString.Tokenize(ft, from, ":")) {
-					macroArg->fPtrFileTypes[nn++] = ft;
-					macroArg->fFileTypes.Add(new TObjString(ft));
+					TObjString * oft = new TObjString(ft);
+					macroArg->fPtrFileTypes[nft++] = oft->GetString();
+					macroArg->fFileTypes.Add(oft);
 				}
 			}
 			if (nft % 2) {
@@ -1417,7 +1417,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 				gMrbLog->Flush(this->ClassName());
 				nft = 0;
 			}
-			macroArg->fPtrFileTypes[nft++] = "All files";
+			macroArg->fPtrFileTypes[nft++] = "All files blabla";
 			macroArg->fPtrFileTypes[nft] = "*";
 			macroArg->fFileInfo->fIniDir = (Char_t *) gSystem->WorkingDirectory();
 			macroArg->fFileInfo->fFileTypes = (const Char_t **) macroArg->fPtrFileTypes;

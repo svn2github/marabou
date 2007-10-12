@@ -634,7 +634,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
          }
       }
       if (fVerbose) 
-         printf("Energy, Gauge: %8.2f %8.2f", e, fGaugeEnergy[best]);
+         printf("Energy, Gauge, deltaE: %8.2f %8.2f %8.2f", e, fGaugeEnergy[best], closest);
       fAssigned[i] = -1;
       if (closest < fAccept) {
          if (fVerbose) 

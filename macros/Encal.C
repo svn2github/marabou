@@ -9,16 +9,16 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.34 2007-10-09 14:39:18 Rudolf.Lutter Exp $
-// Date:             Tue Oct  9 15:53:06 2007
+// Revision:         $Id: Encal.C,v 1.35 2007-10-12 08:44:04 Rudolf.Lutter Exp $
+// Date:             Fri Oct 12 09:43:56 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
 //                   Width:               780
 //                   Aclic:               +g
-//                   Modify:              yes
+//                   Modify:              no
 //                   GuiPtrMode:          GuiPtr
-//                   UserStart:           off
+//                   UserStart:           on
 //                   RcFile:              .EncalLoadLibs.C
 //                   NofArgs:             39
 //                   Arg1.Name:           Tab_1
@@ -93,41 +93,42 @@
 //                   Arg9.AddLofValues:   No
 //                   Arg9.Base:           dec
 //                   Arg9.Orientation:    horizontal
-//                   Arg10.Name:          CalFile
-//                   Arg10.Title:         Calibration data (.cal)
+//                   Arg10.Name:          HistoMask
+//                   Arg10.Title:         Histogram selection mask(s)
 //                   Arg10.Type:          Char_t *
-//                   Arg10.EntryType:     File
-//                   Arg10.Width:         150
-//                   Arg10.Default:       Encal.cal
-//                   Arg10.Values:        Calib files:*.cal
+//                   Arg10.EntryType:     Entry
+//                   Arg10.Width:         350
+//                   Arg10.Default:       *
 //                   Arg10.AddLofValues:  No
 //                   Arg10.Base:          dec
 //                   Arg10.Orientation:   horizontal
-//                   Arg11.Name:          ResFile
-//                   Arg11.Title:         Calibration results (.res)
+//                   Arg11.Name:          CalFile
+//                   Arg11.Title:         Calibration data (.cal)
 //                   Arg11.Type:          Char_t *
 //                   Arg11.EntryType:     File
 //                   Arg11.Width:         150
-//                   Arg11.Default:       Encal.res
-//                   Arg11.Values:        Result files:*.res
+//                   Arg11.Default:       Encal.cal
+//                   Arg11.Values:        Calib files:*.cal
 //                   Arg11.AddLofValues:  No
 //                   Arg11.Base:          dec
 //                   Arg11.Orientation:   horizontal
-//                   Arg12.Name:          FitFile
-//                   Arg12.Title:         Fit results (.root)
+//                   Arg12.Name:          ResFile
+//                   Arg12.Title:         Calibration results (.res)
 //                   Arg12.Type:          Char_t *
 //                   Arg12.EntryType:     File
 //                   Arg12.Width:         150
-//                   Arg12.Default:       Encal.root
-//                   Arg12.Values:        Fit data files:*.root
+//                   Arg12.Default:       Encal.res
+//                   Arg12.Values:        Result files:*.res
 //                   Arg12.AddLofValues:  No
 //                   Arg12.Base:          dec
 //                   Arg12.Orientation:   horizontal
-//                   Arg13.Name:          PreCalFile
-//                   Arg13.Title:         Precalibration file (.cal)
+//                   Arg13.Name:          FitFile
+//                   Arg13.Title:         Fit results (.root)
 //                   Arg13.Type:          Char_t *
 //                   Arg13.EntryType:     File
-//                   Arg13.Default:       none
+//                   Arg13.Width:         150
+//                   Arg13.Default:       Encal.root
+//                   Arg13.Values:        Fit data files:*.root
 //                   Arg13.AddLofValues:  No
 //                   Arg13.Base:          dec
 //                   Arg13.Orientation:   horizontal
@@ -156,62 +157,62 @@
 //                   Arg17.Name:          Rebin
 //                   Arg17.Title:         Rebin histograms
 //                   Arg17.Type:          Int_t
-//                   Arg17.EntryType:     Entry
+//                   Arg17.EntryType:     Entry-C
 //                   Arg17.Width:         100
-//                   Arg17.Default:       1
+//                   Arg17.Default:       1:F
 //                   Arg17.AddLofValues:  No
 //                   Arg17.Base:          dec
 //                   Arg17.Orientation:   horizontal
-//                   Arg18.Name:          Limits
-//                   Arg18.Title:         Limits: lower, upper
+//                   Arg18.Name:          Region1
+//                   Arg18.Title:         Regions (1): lower, upper, fraction
 //                   Arg18.Type:          Int_t
-//                   Arg18.EntryType:     Entry-M
-//                   Arg18.NofEntryFields:2
+//                   Arg18.EntryType:     Entry-MC
+//                   Arg18.NofEntryFields:3
 //                   Arg18.Width:         100
-//                   Arg18.Default:       0:0
+//                   Arg18.Default:       0:0:10:F
 //                   Arg18.AddLofValues:  No
-//                   Arg18.LowerLimit:    0:0
-//                   Arg18.UpperLimit:    65535:65535
-//                   Arg18.Increment:     100:100
+//                   Arg18.LowerLimit:    0:65000:1
+//                   Arg18.UpperLimit:    0:65000:100
+//                   Arg18.Increment:     100:100:10
 //                   Arg18.Base:          dec
 //                   Arg18.Orientation:   horizontal
-//                   Arg19.Name:          Intersection
-//                   Arg19.Title:         Intersection points
+//                   Arg19.Name:          Region2
+//                   Arg19.Title:         Regions (2)
 //                   Arg19.Type:          Int_t
 //                   Arg19.EntryType:     Entry-MC
 //                   Arg19.NofEntryFields:3
 //                   Arg19.Width:         100
-//                   Arg19.Default:       0:0:0:F
+//                   Arg19.Default:       0:0:10
 //                   Arg19.AddLofValues:  No
-//                   Arg19.LowerLimit:    0:0:0
-//                   Arg19.UpperLimit:    65535:65535:65535
-//                   Arg19.Increment:     100:100:100
+//                   Arg19.LowerLimit:    0:65000:1
+//                   Arg19.UpperLimit:    0:65000:100
+//                   Arg19.Increment:     100:100:10
 //                   Arg19.Base:          dec
 //                   Arg19.Orientation:   horizontal
-//                   Arg20.Name:          Efficiency
-//                   Arg20.Title:         Normalize with efficiency: yeff(x) = y(x) / (a0 * exp(a1 * x))
-//                   Arg20.Type:          Double_t
+//                   Arg20.Name:          Region3
+//                   Arg20.Title:         Regions (3)
+//                   Arg20.Type:          Int_t
 //                   Arg20.EntryType:     Entry-MC
-//                   Arg20.NofEntryFields:2
+//                   Arg20.NofEntryFields:3
 //                   Arg20.Width:         100
-//                   Arg20.Default:       0:0:F
+//                   Arg20.Default:       0:0:10
 //                   Arg20.AddLofValues:  No
-//                   Arg20.LowerLimit:    0:0
-//                   Arg20.UpperLimit:    1000:0.1
-//                   Arg20.Increment:     10:0.05
+//                   Arg20.LowerLimit:    0:65000:1
+//                   Arg20.UpperLimit:    0:65000:100
+//                   Arg20.Increment:     100:100:10
 //                   Arg20.Base:          dec
 //                   Arg20.Orientation:   horizontal
-//                   Arg21.Name:          PeakFrac
-//                   Arg21.Title:         Thresholds [% of max peak]
-//                   Arg21.Type:          Int_t
-//                   Arg21.EntryType:     Entry-M
-//                   Arg21.NofEntryFields:4
-//                   Arg21.Width:         40
-//                   Arg21.Default:       10:10:10:10
+//                   Arg21.Name:          Efficiency
+//                   Arg21.Title:         Normalize with efficiency: yeff(x) = y(x) / (a0 * exp(a1 * x))
+//                   Arg21.Type:          Double_t
+//                   Arg21.EntryType:     Entry-MC
+//                   Arg21.NofEntryFields:2
+//                   Arg21.Width:         100
+//                   Arg21.Default:       0:0:F
 //                   Arg21.AddLofValues:  No
-//                   Arg21.LowerLimit:    1:1:1:1
-//                   Arg21.UpperLimit:    90:90:90:90
-//                   Arg21.Increment:     10:10:10:10
+//                   Arg21.LowerLimit:    0:0
+//                   Arg21.UpperLimit:    1000:0.1
+//                   Arg21.Increment:     10:0.05
 //                   Arg21.Base:          dec
 //                   Arg21.Orientation:   horizontal
 //                   Arg22.Name:          Sigma
@@ -400,6 +401,7 @@
 #include "TObjArray.h"
 #include "TObjString.h"
 #include "TCanvas.h"
+#include "TRegexp.h"
 #include "TGraphErrors.h"
 #include "TLine.h"
 #include "TLatex.h"
@@ -442,18 +444,18 @@ enum EEncalArgNums {
  		kArgVerboseMode = 7,
  		kArgSection_FH = 8,
  		kArgHistoFile = 9,
- 		kArgCalFile = 10,
- 		kArgResFile = 11,
- 		kArgFitFile = 12,
- 		kArgPreCalFile = 13,
+ 		kArgHistoMask = 10,
+ 		kArgCalFile = 11,
+ 		kArgResFile = 12,
+ 		kArgFitFile = 13,
  		kArgClearFlag = 14,
  		kArgTab_2 = 15,
  		kArgSection_PFND = 16,
  		kArgRebin = 17,
- 		kArgLimits = 18,
- 		kArgIntersection = 19,
- 		kArgEfficiency = 20,
- 		kArgPeakFrac = 21,
+ 		kArgRegion1 = 18,
+ 		kArgRegion2 = 19,
+ 		kArgRegion3 = 20,
+ 		kArgEfficiency = 21,
  		kArgSigma = 22,
  		kArgTwoPeakSep = 23,
  		kArgSection_PFIT = 24,
@@ -604,12 +606,11 @@ TCanvas * fPopupCanvas;
 
 TFile * fHistoFile; 	// root file containing histograms
 TString fHistoFileName; // name of root file
+TString fHistoMask; 	// wildcard mask
 TH1F * fCurHisto;		// current histogram
 Int_t fCurHistoNo; 		// position of current histo in list
 Int_t fNofHistos;		// number of histograms (selected from root file)
 Int_t fNofHistosCalibrated;	// number of histograms calibrated
-
-TString fPreCalFile;	// precalibration file
 
 TString fEnvFile;		// where to save arguments
 
@@ -652,6 +653,7 @@ Bool_t OpenHistoFile();
 Bool_t OpenCalFiles();
 Bool_t SetCalSource();
 TH1F * GetNextHisto();
+Bool_t WithinHistoMask(const Char_t * HistoName);
 Bool_t FindPeaks();
 void MarkPeak(Double_t X, Double_t E, const Char_t * GaugeName);
 Bool_t Calibrate();
@@ -699,7 +701,6 @@ Int_t GetFitGrouping() { return(fFitGrouping); };
 Bool_t StepMode() { return((fDisplayMode & kDisplayModeStep) != 0); };
 Bool_t TwoDimMode() { return((fDisplayMode & kDisplayMode2dim) != 0); };
 Bool_t ThumbNailMode() { return((fDisplayMode & kDisplayModeThumbs) != 0); };
-Bool_t IsVerbose() { return(fVerboseMode); };
 void SetVerboseMode(Bool_t Flag) { fVerboseMode = Flag; };
 Int_t GetLowerLim(Int_t Region = 0) { return(fLowerLim[Region]); };
 Int_t GetUpperLim(Int_t Region = 0) { return(fUpperLim[Region]); };
@@ -754,6 +755,39 @@ void OutputMessage(const Char_t * Method, const Char_t * Text, const Char_t * Ms
 		msg->Flush(cName.Data(), method.Data(), tCol);
 	}
 }
+
+Bool_t WithinHistoMask(const Char_t * HistoName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           WithinHistoMask
+// Purpose:        Apply mask to histogram
+// Arguments:      Char_t * HistoName     -- histogram
+// Results:        kTRUE/kFALSE
+// Description:    Check if histo is within given mask(s)
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fHistoMask.CompareTo("*") == 0) return(kTRUE);
+
+	if (!fHistoMask.Contains(":")) fHistoMask += ":";
+
+	TString hName = HistoName;
+	TString hMask;
+	Int_t from = 0;
+	while (fHistoMask.Tokenize(hMask, from, ":")) {
+		if (hMask.BeginsWith("!")) {
+			hMask = hMask(1, 1000);
+			TRegexp w(hMask.Data(), kTRUE);
+			if (hName.Index(w, 0) == -1) return(kTRUE);
+		} else {
+			TRegexp w(hMask.Data(), kTRUE);
+			if (hName.Index(w, 0) != -1) return(kTRUE);
+		}
+	}
+	return(kFALSE);
+}			
+			
+
+
 
 Bool_t OpenHistoFile() {
 //________________________________________________________________[C++ METHOD]
@@ -825,7 +859,6 @@ TH1F * GetNextHisto() {
 		TH1F * h = (TH1F *) fHistoFile->Get(hName.Data());
 		if (h) {
 			h->GetListOfFunctions()->Delete();
-//			h->SetDirectory(gROOT);
 		} else {
 			OutputMessage("GetNextHisto", Form("No such histogram - %s:%s", fHistoFile->GetName(), hName.Data()), "e");
 		}
@@ -847,18 +880,18 @@ Bool_t OpenCalFiles() {
 	if (fClearFlag) {
 		TString rmCmd = Form("rm -f %s %s %s", fCalFile.Data(), fResFile.Data(), fFitFile.Data());
 		gSystem->Exec(rmCmd.Data());
-		if (IsVerbose()) OutputMessage("OpenCalFiles", Form("Removing existing files - %s %s", fCalFile.Data(), fResFile.Data()));
+		if (fVerboseMode) OutputMessage("OpenCalFiles", Form("Removing existing files - %s %s", fCalFile.Data(), fResFile.Data()));
 	}
 
 	fEnvCalib = new TEnv(fCalFile.Data());
-	if (IsVerbose()) OutputMessage("OpenCalFiles", Form("Writing calibration data to file %s", fCalFile.Data()));
+	if (fVerboseMode) OutputMessage("OpenCalFiles", Form("Writing calibration data to file %s", fCalFile.Data()));
 
 	fEnvCalib->SetValue("Calib.ROOTFile", fHistoFile->GetName());
 	fEnvCalib->SetValue("Calib.Source", fSourceName.Data());
 	fEnvCalib->SetValue("Calib.Energies", fEnergies.Data());
 
 	fEnvResults = new TEnv(fResFile.Data());
-	if (IsVerbose()) OutputMessage("OpenCalFiles", Form("Writing results to file %s", fResFile.Data()));
+	if (fVerboseMode) OutputMessage("OpenCalFiles", Form("Writing results to file %s", fResFile.Data()));
 
 	fEnvResults->SetValue("Calib.ROOTFile", fHistoFile->GetName());
 	fEnvResults->SetValue("Calib.Source", fSourceName.Data());
@@ -868,7 +901,7 @@ Bool_t OpenCalFiles() {
 	if (!fFitResults->IsOpen()) {
 		OutputMessage("OpenCalFiles", Form("Can't open file - %s", fFitFile.Data()), "e");
 		fFitResults = NULL;
-	} else if (IsVerbose()) {
+	} else if (fVerboseMode) {
 		OutputMessage("OpenCalFiles", Form("Writing fit data to file %s", fFitFile.Data()));
 	}
 
@@ -968,13 +1001,17 @@ void SaveEnvFile() {
 // Description:    Stops calibration loop
 //////////////////////////////////////////////////////////////////////////////
 
-	fGuiPtr->GetArgValue("SaveSetup", fEnvFile);
-	TString envFile = gSystem->BaseName(fEnvFile.Data());
-	if (!envFile.BeginsWith(".Encal") || !envFile.EndsWith(".env")) {
-		OutputMessage("SaveEnvFile", Form("Not an Encal environment file - %s", envFile.Data()), "e");
-	} else {
-		gSystem->Exec(Form("cp .Encal.env %s", fEnvFile.Data()));
-		OutputMessage("SaveEnvFile", Form("Arguments saved to file %s", envFile.Data()));
+	if (fGuiPtr) {
+		fGuiPtr->GetArgValue("SaveSetup", fEnvFile);
+		TString envFile = gSystem->BaseName(fEnvFile.Data());
+		if (!envFile.BeginsWith(".Encal") || !envFile.EndsWith(".env")) {
+			OutputMessage("SaveEnvFile", Form("Not an Encal environment file - %s", envFile.Data()), "e");
+		} else {
+			gSystem->Exec(Form("cp .Encal.env %s", fEnvFile.Data()));
+			OutputMessage("SaveEnvFile", Form("Arguments saved to file %s", envFile.Data()));
+		}
+	} else{
+		OutputMessage("SaveEnvFile", "Can't save setup - press \"Start\" first", "e");
 	}
 }
 
@@ -1254,7 +1291,7 @@ Bool_t FindPeaks() {
 
 	Bool_t sts = kTRUE;
 	Int_t npeaks = 0;
-	TList * pfList;
+	TList * pfList = NULL;
 	Double_t pmaxSave = 0.1;
 	for (Int_t i = 0; i < fNofRegions; i++) {
 		fPeakFinder->SetFrom(fLowerLim[i]);
@@ -1329,6 +1366,7 @@ Bool_t FitPeaks() {
 	fFitOneDim->SetHightail(fFitMode == kFitModeRightTail);
 	fFitOneDim->SetConfirmStartValues(kFALSE);
 	fFitOneDim->SetShowcof(kTRUE);
+	fFitOneDim->SetFitOptVerbose(fVerboseMode);
 
 	return(fFitOneDim->FitPeakList());
 }
@@ -1679,7 +1717,7 @@ void ShowResults2dim() {
 			}
 		}
 		f2DimCanvas->SetLeftMargin(.1);
-		f2DimFitResults->Draw("ARR");
+		f2DimFitResults->Draw();
 		f2DimCanvas->Update();
 	}
 }
@@ -1694,51 +1732,52 @@ void ShowThumbNails() {
 // Description:    Shows all histos and fits in one canvas
 //////////////////////////////////////////////////////////////////////////////
 
-	TIterator * hIter;
-	TObjString * oh;
-	TString hName;
+	TObjArray lofHistos;
+	lofHistos.Delete();
 
-	Int_t nh = GetNofHistosCalibrated();
+	TIterator * hIter = fLofHistos.MakeIterator();
+	TObjString * oh = NULL;
+	while (oh = (TObjString *) hIter->Next()) {
+		if (WithinHistoMask(oh->GetString())) lofHistos.Add(new TObjString(oh->GetString()));
+	}
+	Int_t nh = lofHistos.GetEntriesFast();
+
 	if (ThumbNailMode() && (nh > 1)) {
- 		fThumbCanvas = new TCanvas(Form("File %s: thumbsnails", fHistoFile->GetName()));
+
+		fThumbCanvas = new TCanvas(Form("File %s: thumbsnails", fHistoFile->GetName()));
 		Int_t nx = (Int_t) (sqrt((Float_t) nh) + .5);
 		Int_t ny = (Int_t) (((Float_t) nh) / nx + .5);
 		fThumbCanvas->Divide(nx, ny);
-		hIter = fLofHistos.MakeIterator();
-		oh = NULL;
 		Int_t nc = 1;
 		for (Int_t i = 0; i < nx; i++) {
 			for (Int_t j = 0; j < ny; j++) {
+				if (nc > nh) break;
+				TString hName = ((TObjString *) lofHistos[nc - 1])->GetString();
 				fThumbCanvas->cd(nc++);
-				oh = (TObjString *) hIter->Next();
-				if (oh == NULL) break;
-				hName = oh->GetString();
-				TH1F * fThumbHisto = (TH1F *) fHistoFile->Get(hName.Data());
-				if (fThumbHisto) {
-					TString cmd(Form("PopupHisto((TH1F*) %#x);", fThumbHisto)); 
-					gPad->SetToolTipText(hName.Data());
-					gPad->AddExec("popupHisto", cmd.Data());
-					fThumbHisto->Draw();
-					gPad->Modified();
-					gPad->Update();
+				if (WithinHistoMask(hName.Data())) {
+					TH1F * fThumbHisto = (TH1F *) fHistoFile->Get(hName.Data());
+					if (fThumbHisto) {
+						TString cmd(Form("PopupHisto((TH1F*) %#x);", fThumbHisto)); 
+						gPad->SetToolTipText(hName.Data(), 250);
+						gPad->AddExec("popupHisto", cmd.Data());
+						fThumbHisto->Draw();
+						gPad->Modified();
+						gPad->Update();
+					}
 				}
 			}
-			if (oh == NULL) break;
+			if (nc > nh) break;
 		}
 		fThumbCanvas->Modified();
 		fThumbCanvas->Update();
 	}
-	hIter = fLofHistos.MakeIterator();
-	oh = NULL;
+
 	TString hlName = fFitFile;
 	hlName.ReplaceAll(".root", 5, ".histlist", 9);
 	gSystem->Exec(Form("rm -f %s", hlName.Data()));
 	if (nh > 1) {
 		ofstream hl(hlName.Data());
-		while(oh = (TObjString *) hIter->Next()) {
-			hName = oh->GetString();
-			hl << hName << endl;
-		}
+		for (Int_t i = 0; i < nh; i++) hl << ((TObjString *) lofHistos[i])->GetString() << endl;
 		hl.close();
 	} 
 }
@@ -1778,11 +1817,12 @@ void GetArguments(TGMrbMacroFrame * GuiPtr) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (GuiPtr == NULL) {
-		OutputMessage("GetArguments", "Pointer to MacrBrowser GUI is NULL - can't continue", "e");
+		OutputMessage("GetArguments", "Pointer to MacroBrowser GUI is NULL - can't continue", "e");
 		gSystem->Exit(1);
 	}
 
 	GuiPtr->GetArgValue("HistoFile", fLofHistos);
+	GuiPtr->GetArgValue("HistoMask", fHistoMask);
 	fHistoFileName = ((TObjString *) fLofHistos[0])->GetString();
 	fLofHistos.RemoveAt(0);
 	fLofHistos.Compress();
@@ -1796,55 +1836,46 @@ void GetArguments(TGMrbMacroFrame * GuiPtr) {
 	if (fResFile.IsNull()) { fResFile = fCalFile; fResFile.ReplaceAll(".cal", 4, ".res", 4); }
 	GuiPtr->GetArgValue("FitFile", fFitFile);
 	if (fFitFile.IsNull()) { fFitFile = fCalFile; fFitFile.ReplaceAll(".cal", 4, ".root", 5); }
-	GuiPtr->GetArgValue("PreCalFile", fPreCalFile);
 	GuiPtr->GetArgValue("ClearFlag", fClearFlag);
 
-	GuiPtr->GetArgValue("Rebin", fRebin);
+	if (GuiPtr->ArgIsChecked("Rebin")) GuiPtr->GetArgValue("Rebin", fRebin); else fRebin = 1;
 
-	Int_t low, up, isp[3];
-	Double_t a0, a1;
 
-	low = up = 0;
-	for (Int_t i = 0; i < 3; i++) isp[i] = 0;
-	GuiPtr->GetArgValue("Limits", low, 0);
-	GuiPtr->GetArgValue("Limits", up, 1);
-	if (GuiPtr->ArgIsChecked("Intersection")) {
-		for (Int_t i = 0; i < 3; i++) {
-			Int_t ispx = 0;
-			GuiPtr->GetArgValue("Intersection", ispx, i);
-			if (ispx > 0 && (ispx <= low || ispx >= up)) {
+	fNofRegions = 0;
+	for (Int_t i = 1; i <= 3; i++) {
+		TString arg = Form("Region%d", i);
+		if (GuiPtr->ArgIsChecked(arg.Data())) {
+			Int_t chnlow;
+			GuiPtr->GetArgValue(arg.Data(), chnlow, 0);
+			fLowerLim[fNofRegions] = chnlow;
+			Int_t chnup;
+			GuiPtr->GetArgValue(arg.Data(), chnup, 1);
+			fUpperLim[fNofRegions] = chnup;
+			if (chnup < chnlow) {
 				OutputMessage("GetArguments",
-					Form("Intersection point %d out of range - %d (should be in [%d, %d])", i, ispx, low, up), "e");
-				ispx = 0;
-				for (Int_t k = 0; k < i; k++) {
-					if (ispx <= isp[k]) {
-						OutputMessage("GetArguments", Form("Intersection point %d out of order - %d)", i, ispx), "e");
-						ispx = 0;
-						break;
-					}
-				}
+					Form("Upper limit region %d out of range - %d (should be > %d)", i, chnup, chnlow), "e");
+				continue;
 			}
-			isp[i] = ispx;
+			Int_t pfrac;
+			GuiPtr->GetArgValue(arg.Data(), pfrac, 2);
+			fPeakFrac[fNofRegions] = pfrac;
+			fNofRegions++;
 		}
 	}
-	fNofRegions = 0;
+
+	if (fNofRegions == 0) {
+		OutputMessage("GetArguments", "At least 1 region [lower,upper] necessary", "e");
+		gSystem->Exit(1);
+	}
+
 	fMinX = 1000000;
 	fMaxX = 0;
-	fLowerLim[0] = low;
-	for (Int_t i = 0; i < 3; i++) {
-		if (isp[i] != 0) {
-			fUpperLim[fNofRegions] = isp[i];
-			fNofRegions++;
-			fLowerLim[fNofRegions] = isp[i] + 1;
-		}
-	}
-	fUpperLim[fNofRegions] = up;
-	fNofRegions++;
 	for (Int_t i = 0; i < fNofRegions; i++) {
 		if (fMinX > fLowerLim[i]) fMinX = fLowerLim[i];
 		if (fMaxX < fUpperLim[i]) fMaxX = fUpperLim[i];
 	}
 
+	Double_t a0, a1;
 	if (GuiPtr->ArgIsChecked("Efficiency")) {
 		GuiPtr->GetArgValue("Efficiency", a0, 0);
 		GuiPtr->GetArgValue("Efficiency", a1, 1);
@@ -1857,11 +1888,6 @@ void GetArguments(TGMrbMacroFrame * GuiPtr) {
 		fEfficiencyA1 = 0;
 	}
 
-	for (Int_t i = 0; i < 4; i++) {
-		Int_t pfrac;
-		GuiPtr->GetArgValue("PeakFrac", pfrac, i);
-		fPeakFrac[i] = pfrac;
-	}
 	GuiPtr->GetArgValue("Sigma", fSigma);
 	GuiPtr->GetArgValue("TwoPeakSep", fTwoPeakSep);
 	GuiPtr->GetArgValue("FitMode", fFitMode);
@@ -1947,6 +1973,13 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 		GuiPtr->SetArgValue("HistoFile", ha);
 	}
 
+	argX = lofArgs.FindByName("HistoMask");
+	if (argX) {
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "*");
+		if (envStr.IsNull()) envStr = "*";
+		GuiPtr->SetArgValue("HistoMask", envStr.Data());
+	}
+
 	argX = lofArgs.FindByName("CalSource");
 	if (argX) {
 		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 0);
@@ -1981,12 +2014,6 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 		GuiPtr->SetArgValue("FitFile", envStr.Data());
 	}
 
-	argX = lofArgs.FindByName("PreCalFile");
-	if (argX) {
-		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
-		GuiPtr->SetArgValue("PreCalFile", envStr.Data());
-	}
-
 	argX = lofArgs.FindByName("ClearFlag");
 	if (argX) {
 		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), kTRUE);
@@ -1995,8 +2022,16 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 
 	argX = lofArgs.FindByName("Rebin");
 	if (argX) {
-		envInt = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), 1);
-		GuiPtr->SetArgValue("Rebin", envInt);
+		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+		TObjArray * a = envStr.Tokenize(":");
+		TString tf = ((TObjString *) a->At(1))->GetString();
+		if (tf.CompareTo("T") == 0) {
+			GuiPtr->SetArgValue("Rebin", 1);
+		} else {
+			envStr = ((TObjString *) a->At(0))->GetString();
+			GuiPtr->SetArgValue("Rebin", envStr.Atoi(), 0);
+		}
+		delete a;
 	}
 
 	argX = lofArgs.FindByName("Limits");
@@ -2009,23 +2044,29 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 		}
 		delete a;
 	}
-	argX = lofArgs.FindByName("Intersection");
-	if (argX) {
-		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
-		TObjArray * a = envStr.Tokenize(":");
-		TString tf = ((TObjString *) a->At(2))->GetString();
-		if (tf.CompareTo("T") == 0) {
-			GuiPtr->SetArgCheck("Intersection", 1);
-			for (Int_t i = 0; i < 3; i++) {
-				envStr = ((TObjString *) a->At(i))->GetString();
-				GuiPtr->SetArgValue("Intersection", envStr.Atoi(), i);
+
+	for (Int_t reg = 0; reg < 3; reg++) {
+		TString arg = Form("Region%d", reg);
+		argX = lofArgs.FindByName(arg.Data());
+		if (argX) {
+			envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
+			TObjArray * a = envStr.Tokenize(":");
+			TString tf = ((TObjString *) a->At(2))->GetString();
+			if (tf.CompareTo("T") == 0) {
+				GuiPtr->SetArgCheck(arg.Data(), 1);
+				for (Int_t i = 0; i < 3; i++) {
+					envStr = ((TObjString *) a->At(i))->GetString();
+					GuiPtr->SetArgValue(arg.Data(), envStr.Atoi(), i);
+				}
+			} else {
+				GuiPtr->SetArgCheck("Intersection", 0);
+				for (Int_t i = 0; i < 2; i++)  GuiPtr->SetArgValue(arg.Data(), 0, i);
+				GuiPtr->SetArgValue(arg.Data(), 10, 2);
 			}
-		} else {
-			GuiPtr->SetArgCheck("Intersection", 0);
-			for (Int_t i = 0; i < 3; i++)  GuiPtr->SetArgValue("Intersection", 0, i);
+			delete a;
 		}
-		delete a;
 	}
+
 	argX = lofArgs.FindByName("Efficiency");
 	if (argX) {
 		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
@@ -2195,6 +2236,8 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 			if (fButtonStop || fButtonQuit) { Stop(); break; }
 			continue;
 		}
+
+		if (!WithinHistoMask(h->GetName())) continue;
 
 		SetCurHisto(h);
 		SetFullRange(h);
