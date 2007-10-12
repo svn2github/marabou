@@ -9,7 +9,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.35 2007-10-12 08:44:04 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.36 2007-10-12 10:14:20 Rudolf.Lutter Exp $
 // Date:             Fri Oct 12 09:43:56 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -2034,24 +2034,13 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 		delete a;
 	}
 
-	argX = lofArgs.FindByName("Limits");
-	if (argX) {
-		envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
-		TObjArray * a = envStr.Tokenize(":");
-		for (Int_t i = 0; i < 2; i++) {
-			envStr = ((TObjString *) a->At(i))->GetString();
-			GuiPtr->SetArgValue("Limits", envStr.Atoi(), i);
-		}
-		delete a;
-	}
-
-	for (Int_t reg = 0; reg < 3; reg++) {
+	for (Int_t reg = 1; reg <= 3; reg++) {
 		TString arg = Form("Region%d", reg);
 		argX = lofArgs.FindByName(arg.Data());
 		if (argX) {
 			envStr = env->GetValue(Form("Arg%d.Current", argX->GetIndex()), "");
 			TObjArray * a = envStr.Tokenize(":");
-			TString tf = ((TObjString *) a->At(2))->GetString();
+			TString tf = ((TObjString *) a->At(3))->GetString();
 			if (tf.CompareTo("T") == 0) {
 				GuiPtr->SetArgCheck(arg.Data(), 1);
 				for (Int_t i = 0; i < 3; i++) {
@@ -2059,7 +2048,7 @@ void SetArguments(TGMrbMacroFrame * GuiPtr, const Char_t * EnvFile) {
 					GuiPtr->SetArgValue(arg.Data(), envStr.Atoi(), i);
 				}
 			} else {
-				GuiPtr->SetArgCheck("Intersection", 0);
+				GuiPtr->SetArgCheck(arg.Data(), 0);
 				for (Int_t i = 0; i < 2; i++)  GuiPtr->SetArgValue(arg.Data(), 0, i);
 				GuiPtr->SetArgValue(arg.Data(), 10, 2);
 			}
