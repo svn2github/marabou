@@ -1146,7 +1146,6 @@ void CalibrationDialog::RestoreDefaults()
 void CalibrationDialog::SaveDefaults()
 {
    cout << "CalibrationDialog:: SaveDefaults() kEnvLocal" << endl;
-//   this->Dump();
    TEnv env(".rootrc");
    env.SetValue("CalibrationDialog.BinsX", fCalibratedNbinsX);
    env.SetValue("CalibrationDialog.fCalibratedXlow", fCalibratedXlow);
