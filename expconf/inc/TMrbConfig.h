@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.79 2007-06-01 08:24:05 Marabou Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.80 2007-10-16 14:24:04 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -467,7 +467,8 @@ class TMrbConfig : public TNamed {
 									kManufactMpiHD		=	BIT(23),
 									kManufactSis		=	BIT(24),
 									kManufactCologne	=	BIT(25),
-									kManufactISN		=	BIT(26)
+									kManufactISN		=	BIT(26),
+									kManufactMesytec	=	BIT(27)
 								};
 
 		enum EMrbModuleID		{	kModuleSilena4418V		=   kManufactSilena + 0x1,  // modules ids *** insert new modules at end of list !!! ***
@@ -503,6 +504,7 @@ class TMrbConfig : public TNamed {
 									kModuleSis_3300 		=	kManufactSis + 0x1f,
 									kModuleCaenV965 		=	kManufactCaen + 0x20,
 									kModuleISN4481	 		=	kManufactISN + 0x21,
+									kModuleMesytecMux16	 	=	kManufactMesytec + 0x22,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};
@@ -536,6 +538,7 @@ class TMrbConfig : public TNamed {
 			fLofSubevents.Delete();
 			fLofModules.Delete();
 			fLofScalers.Delete();
+			fLofMuxs.Delete();
 			fLofReadoutTags.Delete();
 			fLofAnalyzeTags.Delete();
 			fLofConfigTags.Delete();
@@ -647,6 +650,13 @@ class TMrbConfig : public TNamed {
 			fLofScalers.Add(Scaler);
 			fNofScalers++;
 		};
+
+		inline void  AddMux(TObject * Multiplexer) {			 				// add a new multiplexer
+			fLofMuxs.Add(Multiplexer);
+			fNofMuxs++;
+		};
+
+		Bool_t WriteMuxConfig(const Char_t * CfgFile);				// write multiplexer config
 
 		Bool_t SetMbsBranch(TMrbNamedX & MbsBranch, Int_t MbsBranchNo, const Char_t * MbsBranchName = NULL);	// mbs branch
 		Int_t CheckMbsBranchSettings();
@@ -783,6 +793,7 @@ class TMrbConfig : public TNamed {
 		inline TObjArray * GetLofSubevents() { return(&fLofSubevents); };
 		inline TObjArray * GetLofModules() { return(&fLofModules); };
 		inline TObjArray * GetLofScalers(){ return(&fLofScalers); };
+		inline TObjArray * GetLofMuxs(){ return(&fLofMuxs); };
 		inline TObjArray * GetLofUserHistograms() { return(&fLofUserHistograms); };
 		inline TObjArray * GetLofXhits(){ return(&fLofXhits); };
 		inline TObjArray * GetLofRdoIncludes(){ return(&fLofRdoIncludes); };
@@ -883,6 +894,9 @@ class TMrbConfig : public TNamed {
 
 		Int_t fNofScalers;					// list of scalers
 		TObjArray fLofScalers;
+
+		Int_t fNofMuxs;						// list of multiplexers
+		TObjArray fLofMuxs;
 
 		UInt_t fMultiBorC;					// multi branch? multi crate?
 

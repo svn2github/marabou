@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.148 2007-07-27 11:17:22 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.149 2007-10-16 14:24:04 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -40,6 +40,7 @@
 #include "TMrbVMEModule.h"
 #include "TMrbCamacScaler.h"
 #include "TMrbNamedArray.h"
+#include "TMrbMesytec_Mux16.h"
 
 #include "TMbsSetup.h"
 
@@ -449,6 +450,7 @@ const SMrbNamedXShort kMrbLofModuleIDs[] =
 								{TMrbConfig::kModuleCaenV879,				"Caen_V879" 					},
 								{TMrbConfig::kModuleCaenV965,				"Caen_V965" 					},
 								{TMrbConfig::kModuleISN4481,				"ISN_4481" 						},
+								{TMrbConfig::kModuleMesytecMux16,			"Mesytec_Mux16" 				},
 								{TMrbConfig::kModuleSoftModule, 	 		"@SoftMod@" 					},
 								{0, 										NULL							}
 							};
@@ -670,6 +672,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofSubevents.SetName("List of subevents");
 		fLofModules.SetName("List of modules");
 		fLofScalers.SetName("List of scalers");
+		fLofMuxs.SetName("List of multiplexers");
 
 		UpdateTriggerTable();									// initialize trigger table								
 
@@ -700,6 +703,9 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fMbsVVersion = "";
 		fMbsVersion = "";
 		fLynxVersion = "";
+
+		fNofScalers = 0;
+		fNofMuxs = 0;
 
 		gMrbConfig = this; 		// holds addr of current config def
 		gDirectory->Append(this);
@@ -8055,3 +8061,54 @@ Bool_t TMrbConfig::CreateHistoArrays() {
 	return(kTRUE);
 }
 
+Bool_t TMrbConfig::WriteMuxConfig(const Char_t * CfgFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::WriteMuxConfig
+// Purpose:        Write multiplexer configuration to file
+// Arguments:      Char_t * CfgFile   -- filename
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Writes mux config data using TEnv.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fNofMuxs == 0) {
+		gMrbLog->Err()	<< "No MUX defined" << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteMuxConfig");
+		return(kFALSE);
+	}
+
+	TEnv * mux = new TEnv(CfgFile);
+	mux->SetValue("TMrbConfig.Mux.NofMultiplexers", fNofMuxs);
+
+	Int_t minMux = 1000;
+	Int_t maxMux = 0;
+	TIterator * mIter = fLofMuxs.MakeIterator();
+	TMrbMesytec_Mux16 * m;
+	TString mstr = "";
+	while (m = (TMrbMesytec_Mux16 *) mIter->Next()) {
+		if (!mstr.IsNull()) mstr += ":";
+		Int_t serial = m->GetModuleSerial();
+		if (serial > maxMux) maxMux = serial;
+		if (serial < minMux) minMux = serial;
+		mstr += m->GetName();
+	}
+	mux->SetValue("TMrbConfig.Mux.LofMultiplexers", mstr.Data());
+	mux->SetValue("TMrbConfig.Mux.Smin", minMux);
+	mux->SetValue("TMrbConfig.Mux.Smax", maxMux);
+
+	mIter = fLofMuxs.MakeIterator();
+	Int_t nmux = 0;
+	while (m = (TMrbMesytec_Mux16 *) mIter->Next()) {
+		mux->SetValue(Form("TMrbConfig.Mux.%d.Name", nmux), m->GetName());
+		mux->SetValue(Form("TMrbConfig.Mux.%d.Module", nmux), m->GetModule()->GetName());
+		mux->SetValue(Form("TMrbConfig.Mux.%d.Serial", nmux), m->GetModuleSerial());
+		mux->SetValue(Form("TMrbConfig.Mux.%d.FirstChannel", nmux), m->GetFirstChannel());
+		mux->SetValue(Form("TMrbConfig.Mux.%d.Lookup", nmux), Form("%s.lkp", m->GetName()));
+		m->WriteLookup(Form("%s.lkp", m->GetName()));
+		nmux++;
+	}
+	mux->SaveLevel(kEnvLocal);
+	return(kTRUE);	
+}

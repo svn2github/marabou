@@ -12,6 +12,8 @@
 #pragma link C++ class TUsrHit+;
 #pragma link C++ class TUsrHitBuffer+;
 #pragma link C++ class TUsrHBX+;
+#pragma link C++ class TUsrMuxEntry+;
+#pragma link C++ class TUsrMux+;
 #pragma link C++ class TMrbModuleListEntry+;
 #pragma link C++ class TMrbParamListEntry+;
 #pragma link C++ class TMrbHistoListEntry+;

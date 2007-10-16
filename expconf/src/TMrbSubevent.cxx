@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.32 2007-06-29 11:37:08 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.33 2007-10-16 14:24:04 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -237,13 +237,14 @@ TObject * TMrbSubevent::FindModuleBySerial(Int_t ModuleSerial) const {
 	return(NULL);
 }
 
-Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment) {
+Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment, Bool_t BookHistos) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::Use
 // Purpose:        Assign parameters
 // Arguments:      Char_t * ModuleName  -- module which houses these channels
 //                 Char_t * Assignment  -- param name(s) & channel number(s)
+//                 Bool_t BookHistos    -- kTRUE if to book histograms for these channels
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Defines which subaddresses to be used by assigning meangingful names.
@@ -400,7 +401,7 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment) {
 			paramName = paramName(0,nch);
 		}
 
-		histoMode = TMrbModuleChannel::kMrbHasHistogramDefault;
+		histoMode = BookHistos ? TMrbModuleChannel::kMrbHasHistogramDefault : TMrbModuleChannel::kMrbHasHistogramFalse;
 
 		if (chnStatus == TMrbConfig::kChannelArray) {
 			histoFlag = paramName(nx2 + 1);
@@ -434,7 +435,7 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment) {
 				histoMode = TMrbModuleChannel::kMrbHasHistogramFalse;
 			}
 			if (histoMode != TMrbModuleChannel::kMrbHasHistogramDefault)
-															paramName = paramName(0, paramName.Length() - 2);
+															paramName = paramName(0, paramName.Length() - 1);
 		}
 
 		if ((cp = (TMrbModuleChannel *) this->FindParam(paramName.Data())) != NULL) {

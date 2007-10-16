@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.19 2007-06-04 05:54:55 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.20 2007-10-16 14:24:04 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -99,8 +99,8 @@ class TMrbSubevent : public TNamed {
 
 		TObject * FindModuleBySerial(Int_t ModuleSerial) const;				 		// find module by its serial number
 
-		Bool_t Use(const Char_t * ModuleName, const Char_t * Assignment); 		// assign parameters
-		inline Bool_t Use(const Char_t * Assignment) { return(Use(NULL, Assignment)); };
+		Bool_t Use(const Char_t * ModuleName, const Char_t * Assignment, Bool_t BookHistos = kTRUE); 		// assign parameters
+		inline Bool_t Use(const Char_t * Assignment, Bool_t BookHistos = kTRUE) { return(Use(NULL, Assignment, BookHistos)); };
 
 		inline Int_t GetSerial() const { return(fSerial); };  	 					// return unique subevent id
 

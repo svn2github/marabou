@@ -77,5 +77,6 @@
 #pragma link C++ class TMrbSis_3801;
 #pragma link C++ class TMrbSis_3820;
 #pragma link C++ class TMrbCologne_CPTM;
+#pragma link C++ class TMrbMesytec_Mux16;
 #pragma link C++ class TMrbModuleRaw;
 #endif
