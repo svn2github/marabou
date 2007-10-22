@@ -574,14 +574,6 @@ const char *FitMacroTemplates[nFitTemplates] = {
    &Landau[0],
    &Pol2Sine[0]
 };
-// Fit a pol1 + 1 or 2 or 3 gaus + optionally tails
-//____________________________________________________________________________________ 
-
-void FitHist::Fit1DimDialog(Int_t type)
-{
-   if (fFit1DimD == NULL) 
-      fFit1DimD = new FitOneDimDialog(fSelHist, type);
-}
 //____________________________________________________________________________
 
 Int_t FitHist::FitPolyHist(Int_t degree)

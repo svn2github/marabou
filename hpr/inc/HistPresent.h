@@ -123,7 +123,8 @@ protected:
    Int_t fRememberZoom; 
    Int_t fUseAttributeMacro;
    Int_t fShowAllAsFirst; 
-   Int_t fAlwaysNewLimits; 
+   Int_t fAlwaysFindLimits; 
+   Int_t fAlwaysRequestLimits; 
    Int_t fNtupleVersioning; 
    Int_t fNtupleSeqNr; 
    Int_t fRealStack; 
@@ -154,8 +155,6 @@ protected:
    Double_t fLogScaleMin;
    Double_t fLinScaleMin;
    Int_t    fAutoUpdateDelay;
-   Double_t fPeakThreshold;
-   Int_t    fPeakMwidth;
    Int_t    fLiveStat1dim;
    Int_t    fLiveStat2dim;
    Int_t    fLiveGauss;
@@ -387,6 +386,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void Set2DimColorOpt(TGWindow * win = 0, FitHist * fh = 0);  
    void SetGraphOptions(TGWindow * win = 0, TCanvas * ca = 0);  
    void SetVariousOptions(TGWindow * win = 0, FitHist * fh = 0);
+   void SetShowTreeOptions(TGWindow * win = 0, FitHist * fh = 0);
+   void SetShowTreeOptionsCint(const char *pointer = 0);
    void SetWindowSizes(TGWindow * win = 0, FitHist * fh = 0);
 
    void SetStatDefaults(TCanvas *);

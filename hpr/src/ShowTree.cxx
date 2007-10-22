@@ -85,10 +85,10 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    sel = "mypres->ToggleGraphCut()";
    fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
 
-//   cmd = "mypres->UseHist()";
-//   nam = "Use selected hist";
+   cmd = "mypres->SetShowTreeOptionsCint()_"; // dont add address of button
+   nam = "Set Options";
 //   sel = "mypres->ToggleUseHist()";
-//   fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
+   fCmdLine->Add(new CmdListEntry(cmd, nam, empty, empty));
 
    cmd = "mypres->ShowLeaf(\"";
    cmd = cmd + fname + "\",\"" + dir + "\",\"" + tname + "\",\"\")";
@@ -369,9 +369,9 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    TString cmd;
    TString hname = "hist_";
    Int_t nent = 1;
-   static Double_t nbin[4] = {0, 0, 0, 0};
-   static Double_t vmin[4] = {0, 0, 0, 0};
-   static Double_t vmax[4] = {0, 0, 0, 0};
+   Double_t nbin[4] = {0, 0, 0, 0};
+   Double_t vmin[4] = {0, 0, 0, 0};
+   Double_t vmax[4] = {0, 0, 0, 0};
    static Int_t first_event = 0;
    static Int_t nof_events = 0;
 
@@ -564,6 +564,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    for(Int_t i = 0; i < nent; i++) {
      if (nbin[i] == 0) must_find_limits = kTRUE;
    } 
+   if (fAlwaysFindLimits) must_find_limits = kTRUE;
    if (must_find_limits) limits_defined = kFALSE;
 
    Bool_t modified = kFALSE;
@@ -573,7 +574,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       TH1* htemp = (TH1*)gDirectory->FindObject("htemp");
       if (htemp) {
          for(Int_t i = 0; i < nent; i++) {
-            if (nbin[i] > 0) continue;
+//            if (nbin[i] > 0) continue;
             modified = kTRUE;
             TAxis * a = 0;
             if      (i == 0) a = htemp->GetXaxis();
@@ -582,11 +583,11 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          	vmin[i] = a->GetXmin();
          	vmax[i] = a->GetXmax();
             cout << i << " " << vmin[i] << " " << vmax[i] << endl;
-            nbin[i] = 100;
+            if (nbin[i] <= 0) nbin[i] = 100;
          }
       }
    }
-   if (!limits_defined || fAlwaysNewLimits) {
+   if (!limits_defined || fAlwaysRequestLimits) {
       TOrdCollection *row_lab = new TOrdCollection(); 
       TOrdCollection *col_lab = new TOrdCollection();
       col_lab->Add(new TObjString("Nbins"));
@@ -657,12 +658,14 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       } 
 //      delete [] xyvals;
       if (modified && fRememberTreeHists) {
+/*
          Int_t buttons= kMBYes | kMBNo, retval;
          EMsgBoxIcon icontype = kMBIconQuestion;
          new TGMsgBox(gClient->GetRoot(), pwin,
           "Qustion","Save values to ntuplerc",
           icontype, buttons, &retval);
          if (retval == kMBYes) {
+*/
             for(Int_t i = 0; i < nent; i++) {
                tag = *leaf[i]; tag += ".nbin";
                env->SetValue(tag.Data(),(Int_t)nbin[i]);
@@ -674,7 +677,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
             env->SetValue("FirstEvent", first_event);
             env->SetValue("NofEvents", nof_events);
             env->SaveLevel(kEnvLocal);
-         }
+//         }
       }
    }
 

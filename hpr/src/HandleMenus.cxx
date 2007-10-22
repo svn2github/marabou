@@ -203,12 +203,10 @@ enum ERootCanvasCommands {
    kFHFitPolyHist,
    kFHFitPolyMarks,
    kFHFindPeaks,
-   kFHFindPeaksO,
    kFHCalibrate,
    kFHCalDialog,
    kFHCalibrateNew,
    kFHDeleteCal,
-   kFHClearCalib,
    kFHShowPeaks,
    kFHRedefineAxis,
    kFHAddAxisX,
@@ -328,10 +326,6 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
    if(fHistPresent){
       hbrowser=fHistPresent->GetHelpBrowser();
    }
-   Int_t np;
-//   fHCanvas->cd();
-//   cout << fCanvasWindow->GetTitle() << endl;
-//   TRootHelpDialog *hd;
 
    switch (GET_MSG(msg)) {
 
@@ -1127,30 +1121,10 @@ again:
                      break;
 
                   case kFHCalibrate:
-                     fFitHist->Calibrate(0); 
-                     break;
-                  case kFHCalDialog:
-                     fFitHist->Calibrate(2); 
-                     break;
-                  case kFHCalibrateNew:
-                     fFitHist->Calibrate(1); 
-                     break;
-                  case kFHClearCalib:
-                     fFitHist->ClearCalib(); 
-//                     fFitHist->SetDeleteCalFlag(); 
-                     break;
-                  case kFHDeleteCal:
-                     fFitHist->ClearCalibration(); 
-//                     fFitHist->SetDeleteCalFlag(); 
+                     fFitHist->Calibrate(); 
                      break;
                   case kFHFindPeaks:
-                     np=fFitHist->FindPeaks(); 
-                     break;
-                  case kFHFindPeaksO:
-                     np=fFitHist->FindPeaks(1); 
-                     break;
-                  case kFHShowPeaks:
-                     np=fFitHist->ShowPeaks(); 
+                     fFitHist->FindPeaks(); 
                      break;
                   case kFHRedefineAxis:
                      fFitHist->RedefineAxis(); 
@@ -1491,8 +1465,6 @@ void HandleMenus::BuildMenus()
       	if(fFitHist->InsideState()) fDisplayMenu->CheckEntry(kFHSelectInside);
       	else                        fDisplayMenu->UnCheckEntry(kFHSelectInside);
       	fDisplayMenu->AddSeparator();
-      	if(!is2dim)fDisplayMenu->AddEntry("Show Peaks",     kFHShowPeaks);
-      	fDisplayMenu->AddSeparator();
       	fDisplayMenu->AddEntry("Magnify",     kFHMagnify    );
       	fDisplayMenu->AddEntry("Redefine Axis",     kFHRedefineAxis);
       	fDisplayMenu->AddEntry("Add new X axis",     kFHAddAxisX);
@@ -1601,20 +1573,10 @@ void HandleMenus::BuildMenus()
 //      if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "fitting.html");
       
       if(!is2dim){
- //        fFitMenu->AddEntry("Help On Fitting 1-dim",       kFH_Help_Fit1);
- //        fFitMenu->AddSeparator();
-         fFitMenu->AddEntry("Calibration Dialog",            kFHCalDialog);
-//         fFitMenu->AddEntry("Calibrate, Generate new hist",  kFHCalibrateNew);
-//         fFitMenu->AddEntry("Calibrate, change scale only",  kFHCalibrate);
-//         if (fFitHist->IsCalibrated())
-//            fFitMenu->AddEntry("Clear Calibration",          kFHDeleteCal);
-         fFitMenu->AddSeparator();
-//         fFitMenu->AddEntry("Clear Calib Peaks List",        kFHClearCalib);
+         fFitMenu->AddEntry("Calibration Dialog",            kFHCalibrate);
          fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
-         fFitMenu->AddEntry("FindPeaksO",         kFHFindPeaksO);
-//         if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "calibration.html");
       }
-//      fFitMenu->AddSeparator();
+      fFitMenu->AddSeparator();
       fFitMenu->AddEntry("Kolmogorov Test",         kFHKolmogorov);
  //     fFitMenu->AddSeparator();
       fFitMenu->AddEntry("Fast Fourier Transform",  kFHfft);

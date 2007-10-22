@@ -68,8 +68,8 @@
 #include "TGMrbSliders.h"
 #include "TGMrbInputDialog.h"
 #include "TGMrbValuesAndText.h"
-#include "FitOneDimDialog.h"
 #include "Save2FileDialog.h"
+#include "FitOneDimDialog.h"
 
 //extern HistPresent* hp;
 extern TFile *fWorkfile;
@@ -620,6 +620,17 @@ void FitHist::handle_mouse()
                return;
             }
          }
+      }
+   }
+   if (event == kButton1Down) {
+      if (select->InheritsFrom("TF1")) {
+         TF1 *f = (TF1*)select;
+         cout  << endl << "------  Function " << f->GetName() << " --------" << endl;
+         for (Int_t i = 0; i < f->GetNpar(); i++) {
+            cout << f->GetParName(i) << "  " << f->GetParameter(i) << endl;
+         }
+         cout  << endl << "----------------------------" << endl;
+         return;
       }
    }
    if ( (!fLiveStat1dim && fDimension == 1) || (!fLiveStat2dim && fDimension == 2) ||
@@ -3737,3 +3748,23 @@ void FitHist::AdjustHLS(Int_t row , Int_t val)
    hp->SetColorPalette();
    this->UpdateCanvas();
 }
+//____________________________________________________________________________________ 
+
+void FitHist::Fit1DimDialog(Int_t type)
+{
+   if (fFit1DimD == NULL) 
+      fFit1DimD = new FitOneDimDialog(fSelHist, type);
+}
+//__________________________________________________________________
+
+void FitHist::FindPeaks() 
+{ 
+   new FindPeakDialog(fSelHist);
+};
+
+//__________________________________________________________________
+
+void FitHist::Calibrate() 
+{ 
+      new CalibrationDialog(fSelHist, 1);
+};

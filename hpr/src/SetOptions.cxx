@@ -96,21 +96,20 @@ void HistPresent::RestoreOptions()
    fShowListsOnly     = env.GetValue("HistPresent.ShowListsOnly", 0);
    fRememberTreeHists = env.GetValue("HistPresent.RememberTreeHists", 0);
    fNtupleVersioning  = env.GetValue("HistPresent.NtupleVersioning", 1);
-   fAlwaysNewLimits   = env.GetValue("HistPresent.AlwaysNewLimits", 0);
+   fAlwaysRequestLimits = env.GetValue("HistPresent.AlwaysRequestLimits", 1);
+   fAlwaysFindLimits   = env.GetValue("HistPresent.AlwaysFindLimits", 1);
    fRememberLastSet   = env.GetValue("HistPresent.RememberLastSet", 1);
    fRememberZoom      = env.GetValue("HistPresent.RememberZoom", 1);
    fUseAttributeMacro = env.GetValue("HistPresent.UseAttributeMacro", 0);
-   fShowAllAsFirst    = env.GetValue("HistPresent.ShowAllAsFirst", 0);
+   fShowAllAsFirst    = env.GetValue("GroupOfHists.fShowAllAsFirst", 0);
    fRealStack         = env.GetValue("HistPresent.RealStack", 1);
    fUseRegexp         = env.GetValue("HistPresent.UseRegexp", 0);
    fProjectBothRatio  = env.GetValue("HistPresent.ProjectBothRatio", 0.6);
-   fDivMarginX        = env.GetValue("HistPresent.DivMarginX", 0.001);
-   fDivMarginY        = env.GetValue("HistPresent.DivMarginY", 0.001);
+   fDivMarginX        = env.GetValue("GroupOfHists.fDivMarginX", 0.001);
+   fDivMarginY        = env.GetValue("GroupOfHists.fDivMarginY", 0.001);
    fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
    fLinScaleMin = atof(env.GetValue("HistPresent.LinScaleMin", "0"));
    fAutoUpdateDelay  = env.GetValue("HistPresent.AutoUpdateDelay", 2);
-   fPeakMwidth       = env.GetValue("HistPresent.fPeakMwidth", 11);
-   fPeakThreshold    = env.GetValue("HistPresent.fPeakThreshold", 3.);
    fLiveStat1dim     = env.GetValue("HistPresent.LiveStat1dim", 0);
    fLiveStat2dim     = env.GetValue("HistPresent.LiveStat2dim", 0);
    fLiveGauss        = env.GetValue("HistPresent.LiveGauss", 0);
@@ -402,12 +401,13 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.AutoShowPSFile", fShowPSFile);
    env.SetValue("HistPresent.ShowListsOnly", fShowListsOnly);
    env.SetValue("HistPresent.RememberTreeHists", fRememberTreeHists);
-   env.SetValue("HistPresent.AlwaysNewLimits", fAlwaysNewLimits);
+   env.SetValue("HistPresent.AlwaysRequestLimits", fAlwaysRequestLimits);
+   env.SetValue("HistPresent.AlwaysFindLimits", fAlwaysFindLimits);
    env.SetValue("HistPresent.NtupleVersioning", fNtupleVersioning);
    env.SetValue("HistPresent.RememberLastSet", fRememberLastSet);
    env.SetValue("HistPresent.RememberZoom", fRememberZoom);
    env.SetValue("HistPresent.UseAttributeMacro", fUseAttributeMacro);
-   env.SetValue("HistPresent.ShowAllAsFirst",    fShowAllAsFirst);
+   env.SetValue("GroupOfHists.fShowAllAsFirst",    fShowAllAsFirst);
    env.SetValue("HistPresent.RealStack",    fRealStack);
    env.SetValue("HistPresent.UseRegexp", fUseRegexp);
    env.SetValue("HistPresent.MaxListEntries", fMaxListEntries);
@@ -419,14 +419,12 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim->Data());
    env.SetValue("HistPresent.HostToConnect", fHostToConnect->Data());
    env.SetValue("HistPresent.SocketToConnect", fSocketToConnect);
-   env.SetValue("HistPresent.DivMarginX", fDivMarginX);
-   env.SetValue("HistPresent.DivMarginY", fDivMarginY);
+   env.SetValue("GroupOfHists.fDivMarginX", fDivMarginX);
+   env.SetValue("GroupOfHists.fDivMarginY", fDivMarginY);
    env.SetValue("HistPresent.ProjectBothRatio", fProjectBothRatio);
    env.SetValue("HistPresent.LinScaleMin", fLinScaleMin);
    env.SetValue("HistPresent.LogScaleMin", fLogScaleMin);
    env.SetValue("HistPresent.AutoUpdateDelay", fAutoUpdateDelay);
-   env.SetValue("HistPresent.fPeakMwidth", fPeakMwidth);
-   env.SetValue("HistPresent.fPeakThreshold", fPeakThreshold);
    env.SetValue("HistPresent.LiveStat1dim", fLiveStat1dim);
    env.SetValue("HistPresent.LiveStat2dim", fLiveStat2dim);
    env.SetValue("HistPresent.LiveGauss", fLiveGauss);
@@ -1378,6 +1376,7 @@ void HistPresent::SetZaxisAttributes(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetAxisAtt()
 {
+   cout << "SetAxisAtt fAxisColorY "<< fAxisColorY<< endl;
    if (fLabelMaxDigits > 0) TGaxis::SetMaxDigits(fLabelMaxDigits);
    gStyle->SetNdivisions( fNdivisionsX); 
    gStyle->SetAxisColor(  fAxisColorX);  
@@ -1442,12 +1441,7 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("CheckButton+Live Gauss fit")); 
    valp[ind++] = &fLiveGauss; 
    row_lab->Add(new TObjString("CheckButton_Use linear background in live fit"));
-   valp[ind++] = &fLiveBG; 
-   row_lab->Add(new TObjString("PlainIntVal_Width of response func in fpeak"));
-   valp[ind++] = &fPeakMwidth;
-   row_lab->Add(new TObjString("DoubleValue_Threshold in fpeak"));
-    valp[ind++] = &fPeakThreshold;
- 
+   valp[ind++] = &fLiveBG;  
    Bool_t ok; 
    Int_t itemwidth = 240;
    ok = GetStringExt("How to draw a 1-dim hist", NULL, itemwidth, win,
@@ -1611,7 +1605,7 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
    valp[ind++] = &fLinScaleMin;
 
    Bool_t ok; 
-   Int_t itemwidth = 240;
+   Int_t itemwidth = 280;
    ok = GetStringExt("How to draw a 1-dim hist", NULL, itemwidth, win
                      ,NULL, NULL, row_lab, valp
                      ,NULL, NULL, &helptext[0]);
@@ -1681,9 +1675,11 @@ void HistPresent::Set2DimColorOpt(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("PlainIntVal_End   color in RGB trans"));
    valp[ind++] = &fStartColor;
    valp[ind++] = &fEndColor;
+   row_lab->Add(new TObjString("PlainIntVal_Nof color trans levels"));
+   valp[ind++] = &fNofTransLevels;
 
    Bool_t ok; 
-   Int_t itemwidth = 240;
+   Int_t itemwidth = 280;
    ok = GetStringExt("2 Dim Color Mode", NULL, itemwidth, win,
                       NULL, NULL, row_lab, valp);
    if (!ok) return;
@@ -1766,55 +1762,44 @@ void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
 // *INDENT-OFF* 
 static const char helptext[] = 
 "\n\
-With sockets, show lists only\n\
+___________________________________________________________\n\
+Force style, show hist with current style\n\
+-----------------------------------------\n\
+Use graphics option currently in use instead of options\n\
+stored with the histogram on file\n\
+___________________________________________________________\n\
+Max Ents in Lists\n\
+-----------------\n\
+Too many entries in histlist (e.g. > 1000) make build up\n\
+of lists slow and may even crash X on some older systems\n\
+With this option one can limit this number\n\
+___________________________________________________________\n\
+Show lists only\n\
 -----------------------------\n\
 If very many histograms are used this option allows\n\
 to display user defined lists of histograms only.\n\
-This avoids fetching the statistics of all histograms\n\
-when tables are assembled.\n\
 \n\
 Show PS file after creation\n\
 ---------------------------\n\
 Automatically invoke ghostview when a PostScript file is\n\
 generated.\n\
 ____________________________________________________________\n\
-Enable calibration\n\
-------------------\n\
-The X - scale of of a 1-dim histogram may be recalibrated\n\
-providing (more than 1) x-y-points. If this option is active\n\
-the user is asked after a fit to a peak if the mean value \n\
-should be added to the list of calibration points.\n\
-____________________________________________________________\n\
-Auto Display calibrated hist\n\
-----------------------------\n\
-Display automatically a calibrated histogram if calibration\n\
-data are storteed in defaulsts file\n\
-____________________________________________________________\n\
-Display fitted curves\n\
----------------------\n\
-Draw a fitted curve into the histogram.\n\
-____________________________________________________________\n\
-Remember hist limits if showing trees\n\
--------------------------------------\n\
-When displaying trees (ntuples) limits for histograms \n\
-(number of channels, lower, upper edge), these values\n\
-may be remembered for each tree entry between sessions.\n\
-____________________________________________________________\n\
 Remember Expand settings (Marks) \n\
 -----------------------------------\n\
 Using marks expanded parts of hists may be shown. This\n\
-option allows to pass these to later sessions.\n\
+option allows to remember these settings in later sessions.\n\
 ____________________________________________________________\n\
 Remember Zoomings (by left mouse)\n\
 ---------------------------------\n\
 Pressing the left mouse button in the scale of a histogram\n\
-dragging to the required limit allows to zoom in the picture\n\
-This option allows to pass these limits to later sessions.\n\
+and dragging to the required limit allows to zoom\n\
+in the picture. This  option allows to remember these\n\
+settings in later sessions.\n\
 _____________________________________________________________\n\
 Use Attribute Macro \n\
 -------------------\n\
-Each time a histogram is display a macro (FH_setdefaults.C)\n\
-may be executed. This option can be switched on or off.\n\
+With this option activ each time after a histogram is\n\
+displayed a macro (FH_setdefaults.C) is executed.\n\
 ____________________________________________________________\n\
 Use Regular expression syntax\n\
 ------------------------------\n\
@@ -1822,72 +1807,151 @@ Normally wild card syntax (e.g. ls *.root to list all\n\
 files ending with .root) is used in file/histo selection\n\
 masks. One may switch to the more powerful Regular expression\n\
 For details consult a book on Unix.\n\
-_____________________________________________________________\n\
-Max Ents in Lists\n\
------------------\n\
-Too many entries in histlist (e.g. > 1000) make build up\n\
-of lists slow and may even crash X on some older systems\n\
-With this option one can limit this number\n\
 ____________________________________________________________\n\
 Auto Update Interval\n\
 Histograms may be updated automatically, this number is the\n\
 update interval in seconds\n\
 ____________________________________________________________\n\
-Nof color transition levels\n\
----------------------------\n\
-Number of transition levels in color palettes.\n\
-\n\
+The following options apply when  showing trees\n\
+____________________________________________________________\n\
+Remember hist limits\n\
+--------------------\n\
+When displaying trees (ntuples) remember limits for histograms \n\
+(number of channels, lower, upper edge)\n\
+____________________________________________________________\n\
+Always ask for hist limits\n\
+--------------------------\n\
+As default only the first time a variable (leaf) is\n\
+displayed the histogram limits are shown and may be\n\
+changed from a menu.\n\
+____________________________________________________________\n\
+Always recalculate hist limits\n\
+------------------------------\n\
+As default only the first time a variable (leaf) is\n\
+displayed the histogram limits calculated since this\n\
+requires to read the complete leaf\n\
+____________________________________________________________\n\
+Keep all hists (add version# to name)\n\
+-------------------------------------\n\
+As default histograms for the same leaf are overwritten\n\
+if they are shown again\n\
 ";
 // *INDENT-ON* 
    TList *row_lab = new TList();
    static void *valp[50];
    Int_t ind = 0;
-   row_lab->Add(new TObjString("CheckButton_Force style)); i.e show histograms with current style"));
+   static Int_t dummy;
+   row_lab->Add(new TObjString("CheckButton_Force style,show hist with current style"));
    valp[ind++] = &fForceStyle;
    row_lab->Add(new TObjString("CheckButton_Show histlists only"));
    valp[ind++] = &fShowListsOnly;
    row_lab->Add(new TObjString("CheckButton_Show PS file after creation"));
    valp[ind++] = &fShowPSFile;
-   row_lab->Add(new TObjString("CheckButton_Enable calibration"));
-   valp[ind++] = &fEnableCalibration;
-   row_lab->Add(new TObjString("CheckButton_Auto Display calibrated hist"));
-   valp[ind++] = &fDisplayCalibrated;
-   row_lab->Add(new TObjString("CheckButton_Display compents of fit function"));
-   valp[ind++] = &fShowFittedCurves;
-   row_lab->Add(new TObjString("CheckButton_Remember hist limits when showing trees"));
-   valp[ind++] = &fRememberTreeHists;
-   row_lab->Add(new TObjString("CheckButton_Ask always for hist limits when showing trees"));
-   valp[ind++] = &fAlwaysNewLimits;
-   row_lab->Add(new TObjString("CheckButton_Keep old hists when showing trees (add version # to name)"));
-   valp[ind++] = &fNtupleVersioning;
    row_lab->Add(new TObjString("CheckButton_Remember Expand settings (Marks)"));
    valp[ind++] = &fRememberLastSet;
    row_lab->Add(new TObjString("CheckButton_Remember Zoomings (by left mouse)"));
    valp[ind++] = &fRememberZoom;
    row_lab->Add(new TObjString("CheckButton_Use Attribute Macro"));
    valp[ind++] = &fUseAttributeMacro;
-   row_lab->Add(new TObjString("CheckButton_In Show Selected: Show All As First"));
-   valp[ind++] = &fShowAllAsFirst;
-   row_lab->Add(new TObjString("CheckButton_Really stack (instead of superimpose)"));
-   valp[ind++] = &fRealStack;
    row_lab->Add(new TObjString("CheckButton_Use Regular expression syntax"));
    valp[ind++] = &fUseRegexp;
    row_lab->Add(new TObjString("PlainIntVal_Max Ents in Lists"));
    valp[ind++] = &fMaxListEntries;
+   row_lab->Add(new TObjString("CommentOnly_Options with Show/Stack selected hists:"));
+   valp[ind++] = &dummy;
+   row_lab->Add(new TObjString("CheckButton_In Show Selected: Show All As First"));
+   valp[ind++] = &fShowAllAsFirst;
+   row_lab->Add(new TObjString("CheckButton_Really stack (instead of superimpose)"));
+   valp[ind++] = &fRealStack;
    row_lab->Add(new TObjString("PlainIntVal_Auto Update Interval"));
    valp[ind++] = &fAutoUpdateDelay;
-   row_lab->Add(new TObjString("PlainIntVal_Nof color transition levels"));
-   valp[ind++] = &fNofTransLevels;
+   row_lab->Add(new TObjString("CommentOnly_Options when showing trees:"));
+   valp[ind++] = &dummy;
+   row_lab->Add(new TObjString("CheckButton_Remember histogram limits"));
+   valp[ind++] = &fRememberTreeHists;
+   row_lab->Add(new TObjString("CheckButton_Always ask for hist limits"));
+   valp[ind++] = &fAlwaysRequestLimits;
+   row_lab->Add(new TObjString("CheckButton_Always recalculate hist limits"));
+   valp[ind++] = &fAlwaysFindLimits;
+   row_lab->Add(new TObjString("CheckButton_Keep all hists (add vers# to name)"));
+   valp[ind++] = &fNtupleVersioning;
 
    Bool_t ok; 
-   Int_t itemwidth = 240;
-   ok = GetStringExt("How to draw a 1-dim hist", NULL, itemwidth, win
+   Int_t itemwidth = 280;
+   ok = GetStringExt("Various options", NULL, itemwidth, win
                      ,NULL, NULL, row_lab, valp
                      ,NULL, NULL, helptext);
    if (!ok) return;
 
    if (fForceStyle > 0) gROOT->ForceStyle();
    else                 gROOT->ForceStyle(kFALSE);
+   SaveOptions();
+}
+
+//_______________________________________________________________________
+
+void HistPresent::SetShowTreeOptionsCint(const char *pointer)
+{
+	if (pointer) {
+		TCanvas* c = (TCanvas *)strtoul(pointer, 0, 16);
+		TRootCanvas * win = (TRootCanvas*)c->GetCanvasImp();         SetShowTreeOptions(win);
+	}
+}
+//_______________________________________________________________________
+
+void HistPresent::SetShowTreeOptions(TGWindow * win, FitHist * fh)
+{
+// *INDENT-OFF* 
+static const char helptext[] = 
+"\n\
+____________________________________________________________\n\
+The following options apply when  showing trees\n\
+____________________________________________________________\n\
+Remember hist limits\n\
+--------------------\n\
+When displaying trees (ntuples) remember limits for histograms \n\
+(number of channels, lower, upper edge)\n\
+____________________________________________________________\n\
+Always ask for hist limits\n\
+--------------------------\n\
+As default only the first time a variable (leaf) is\n\
+displayed the histogram limits are shown and may be\n\
+changed from a menu.\n\
+____________________________________________________________\n\
+Always recalculate hist limits\n\
+------------------------------\n\
+As default only the first time a variable (leaf) is\n\
+displayed the histogram limits calculated since this\n\
+requires to read the complete leaf\n\
+____________________________________________________________\n\
+Keep all hists (add version# to name)\n\
+-------------------------------------\n\
+As default histograms for the same leaf are overwritten\n\
+if they are shown again\n\
+";
+// *INDENT-ON* 
+   TList *row_lab = new TList();
+   static void *valp[50];
+   Int_t ind = 0;
+   static Int_t dummy;
+   row_lab->Add(new TObjString("CommentOnly_Options when showing trees:"));
+   valp[ind++] = &dummy;
+   row_lab->Add(new TObjString("CheckButton_Remember histogram limits"));
+   valp[ind++] = &fRememberTreeHists;
+   row_lab->Add(new TObjString("CheckButton_Always ask for hist limits"));
+   valp[ind++] = &fAlwaysRequestLimits;
+   row_lab->Add(new TObjString("CheckButton_Always recalculate hist limits"));
+   valp[ind++] = &fAlwaysFindLimits;
+   row_lab->Add(new TObjString("CheckButton_Keep all hists (add vers# to name)"));
+   valp[ind++] = &fNtupleVersioning;
+
+   Bool_t ok; 
+   Int_t itemwidth = 280;
+   ok = GetStringExt("Set Show tree options", NULL, itemwidth, win
+                     ,NULL, NULL, row_lab, valp
+                     ,NULL, NULL, helptext);
+   if (!ok) return;
+
    SaveOptions();
 }
 

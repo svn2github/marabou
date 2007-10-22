@@ -18,6 +18,8 @@
 #include "FhMarker.h"
 #include "FhPeak.h"
 #include "TableOfLabels.h"
+#include "FindPeakDialog.h"
+#include "CalibrationDialog.h"
 
 namespace std {} using namespace std;
 
@@ -218,8 +220,6 @@ public:
    Int_t Fit2dim(Int_t, Int_t);            // fit polynoms
    Int_t FitPolyHist(Int_t);               // fit polynoms hist 
    Int_t FitPolyMarks(Int_t);              // fit  polynoms to marks
-   Int_t FindPeaks(Int_t mode = 0);
-   Int_t ShowPeaks();
    void  Expand();                     // expand
    void  ProjectX();
    void  ProjectY();
@@ -241,12 +241,6 @@ public:
    void Superimpose(Int_t);               
    void KolmogorovTest();
    void WarnBox(const char *);
-   void PrintCalib();
-   void ClearCalib(){fPeaks->Clear();};
-   TList * GetPeakList(){return fPeaks;};
-   void SetDeleteCalFlag(){fDeleteCalFlag = kTRUE; SaveDefaults();};
-   Bool_t Calibrate(Int_t flag = 1);
-   void ClearCalibration();
    void SetCanvasIsDeleted(){fCanvasIsAlive = kFALSE;};
    void SetSelectedPad(){cHist->cd();};
    void UpdateCanvas(){
@@ -274,7 +268,9 @@ public:
    void AdjustBrightness(Int_t row , Int_t val); // *SIGNAL*
    void SetHLS();
    void AdjustHLS(Int_t row , Int_t val); // *SIGNAL*
-   
+   void FindPeaks();
+   void Calibrate();
+
    void FastFT();
    
 ClassDef(FitHist,0)      // A histogram presenter

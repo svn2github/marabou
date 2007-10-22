@@ -274,7 +274,12 @@ TButton *CommandButton(TString & cmd, TString & tit,
    TString buf;
    if (cmd.Contains("\""))
       buf = ",";
-   buf += Form("\"%x\")", button);
+   if (newcmd.EndsWith("_")) {
+      newcmd = newcmd.Chop();
+      buf += Form("\"%x\")", gPad);
+   } else {
+      buf += Form("\"%x\")", button);
+   }
    newcmd(brace) = buf.Data();
 //   cout << "CommandButton: " << newcmd << endl;
    button->SetBit(kCommand);
