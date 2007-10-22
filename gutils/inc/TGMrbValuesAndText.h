@@ -97,6 +97,9 @@ private:
    TList				  *fEntries;
    TGGC              fRedTextGC;
    TGGC              fBlueTextGC;
+   TGGC              fGreyTextGC;
+   TGGC              fLightGreyTextGC;
+   Int_t             fButtonId;
    Bool_t            fEmitClose;
    Bool_t            fCallClose;
 //   Int_t             fFinis; 
@@ -115,11 +118,14 @@ public:
    void StoreValues();
    void ReloadValues();
    void CloseWindow();
+   void CRBPressed();
    void CloseWindowExt();
    void SaveList();
    Int_t GetColorPixelByInd(Int_t index);
-   void EnableCancelButton() { fCancelButton->SetEnabled(kTRUE); };
-   void DisableCancelButton() { fCancelButton->SetEnabled(kFALSE); };
+   void EnableButton(Int_t id)  { TGButton *b = (TGButton *)fEntries->At(id); if (b) b->SetEnabled(kTRUE); };
+   void DisableButton(Int_t id) { TGButton *b = (TGButton *)fEntries->At(id); if (b) b->SetEnabled(kFALSE); };
+   void EnableCancelButton()    { fCancelButton->SetEnabled(kTRUE); };
+   void DisableCancelButton()   { fCancelButton->SetEnabled(kFALSE); };
 
 ClassDef(TGMrbValuesAndText,0)		// [GraphUtils] A dialog box
 };   
