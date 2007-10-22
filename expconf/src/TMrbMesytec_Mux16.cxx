@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Mux16.cxx,v 1.1 2007-10-16 14:24:04 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-10-16 14:24:04 $
+// Revision:       $Id: TMrbMesytec_Mux16.cxx,v 1.2 2007-10-22 12:20:58 Marabou Exp $       
+// Date:           $Date: 2007-10-22 12:20:58 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -98,7 +98,7 @@ const Char_t * TMrbMesytec_Mux16::GetParamNames(TString & ParamNames) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	ParamNames = Form("%sE1- %sE2- %sP1- %sP2-", this->GetName(), this->GetName(), this->GetName(), this->GetName());
+	ParamNames = Form("%sE1 %sP1 %sE2 %sP2 ", this->GetName(), this->GetName(), this->GetName(), this->GetName());
 	return(ParamNames.Data());
 }
 
@@ -122,9 +122,64 @@ Bool_t TMrbMesytec_Mux16::SetHistoName(Int_t Channel, const Char_t * HistoName, 
 		return(kFALSE);
 	}
 	TString hstr = HistoName;
+	if (hstr(0,1) != 'h') {
+		hstr(0,1).ToUpper();
+		hstr.Prepend("h");
+	}
 	if (HistoTitle != NULL && *HistoTitle != '\0') hstr += Form(":%s", HistoTitle);
 	fHistoNames[Channel] = new TObjString(hstr);
 	return(kTRUE);
+}
+
+const Char_t * TMrbMesytec_Mux16::GetHistoName(Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Mux16::GetHistoName
+// Purpose:        Return histo name
+// Arguments:      Int_t Channel        -- channel to be set
+// Results:        Char_t * HistoName   -- name
+// Exceptions:
+// Description:    Returns histogram name
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Channel < 0 || Channel >= this->GetNofChannels()) {
+		gMrbLog->Err() << this->GetName() << ": Channel out of range - " << Channel << endl;
+		gMrbLog->Flush(this->ClassName(), "GetHistoName");
+		return(NULL);
+	}
+	TObjString * o = (TObjString *) fHistoNames[Channel];
+	if (o == NULL) return("");
+	TString hName = o->GetString();
+	Int_t idx = hName.Index(":", 0);
+	if (idx != -1) hName = hName(0, idx);
+	return(hName.Data());
+}
+
+const Char_t * TMrbMesytec_Mux16::GetHistoTitle(Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Mux16::GetHistoTitle
+// Purpose:        Return histo title
+// Arguments:      Int_t Channel        -- channel to be set
+// Results:        Char_t * HistoName   -- title
+// Exceptions:
+// Description:    Returns histogram title
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Channel < 0 || Channel >= this->GetNofChannels()) {
+		gMrbLog->Err() << this->GetName() << ": Channel out of range - " << Channel << endl;
+		gMrbLog->Flush(this->ClassName(), "GetHistoTitle");
+		return(NULL);
+	}
+	TObjString * o = (TObjString *) fHistoNames[Channel];
+	if (o == NULL) return("");
+	TString hTitle = o->GetString();
+	Int_t idx = hTitle.Index(":", 0);
+	if (idx == -1) return("");
+	hTitle = hTitle(idx + 1, hTitle.Length());
+	return(hTitle.Data());
 }
 
 Bool_t TMrbMesytec_Mux16::BookHistograms() {
@@ -159,17 +214,18 @@ Bool_t TMrbMesytec_Mux16::BookHistograms() {
 		gMrbConfig->BookHistogram(this->GetName(), "TH1F",	hName.Data(), hTitle.Data(),
 															this->GetRange(), 0, this->GetRange());
 	}
-	for (Int_t pos = 0; pos < 2; pos++) {
-		gMrbConfig->BookHistogram(this->GetName(), "TH1F",	Form("hP%s%d", this->GetName(), pos),
-															Form("Mux %s, position %d", this->GetName(), pos),
-															kPosRangePerMux, 0, kPosRangePerMux);
-		gMrbConfig->BookHistogram(this->GetName(), "TH1F",	Form("hL%s%d", this->GetName(), pos),
-															Form("Mux %s, lookup %d", this->GetName(), pos),
-															kPosRangePerMux, 0, kPosRangePerMux);
-		gMrbConfig->BookHistogram(this->GetName(), "TH1F",	Form("hU%s%d", this->GetName(), pos),
-															Form("Mux %s, unidentified %d", this->GetName(), pos),
-															this->GetRange(), 0, this->GetRange());
-	}
+	TString muxNameUC = this->GetName();
+	muxNameUC(0,1).ToUpper();
+
+	gMrbConfig->BookHistogram(this->GetName(), "TH1F",	Form("hPos%s", muxNameUC.Data()),
+														Form("Position Mux %s", this->GetName()),
+														this->GetRange(), 0, this->GetRange());
+	gMrbConfig->BookHistogram(this->GetName(), "TH1F",	Form("hLkp%s", muxNameUC.Data()),
+														Form("Lookup Mux %s", this->GetName()),
+														this->GetRange(), 0, this->GetRange());
+	gMrbConfig->BookHistogram(this->GetName(), "TH1F",	Form("hBad%s", muxNameUC.Data()),
+														Form("Unidentified data Mux %s", this->GetName()),
+														this->GetRange(), 0, this->GetRange());
 	return(kTRUE);
 }
 
@@ -186,25 +242,25 @@ Bool_t TMrbMesytec_Mux16::WriteLookup(const Char_t * LkpFile) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TEnv * mux = new TEnv(LkpFile);
+	TString muxNameUC = this->GetName();
+	muxNameUC(0,1).ToUpper();
+
 	mux->SetValue("TUsrMux.Name", this->GetName());
 	mux->SetValue("TUsrMux.Module", this->GetModule()->GetName());
+	mux->SetValue("TUsrMux.ModuleRange", this->GetModule()->GetRange());
 	mux->SetValue("TUsrMux.Serial", this->GetModuleSerial());
 	mux->SetValue("TUsrMux.NofSubmodules", this->GetNofSubmodules());
 	mux->SetValue("TUsrMux.NofChannels", this->GetNofChannels());
-	for (Int_t i = 0; i < 2; i++) {
-		mux->SetValue(Form("TUsrMux.Position.%d", i), Form("hP%s%d", this->GetName(), i));
-		mux->SetValue(Form("TUsrMux.Lookup.%d", i), Form("hL%s%d", this->GetName(), i));
-		mux->SetValue(Form("TUsrMux.Unidentified.%d", i), Form("hU%s%d", this->GetName(), i));
-	}
+	mux->SetValue("TUsrMux.Position", Form("hPos%s", muxNameUC.Data()));
+	mux->SetValue("TUsrMux.Lookup", Form("hLkp%s", muxNameUC.Data()));
+	mux->SetValue("TUsrMux.Unidentified", Form("hBad%s", muxNameUC.Data()));
 	for (Int_t i = 0; i < this->GetNofChannels(); i++) {
-		for (Int_t k = 0; k < 2; k++) {
-			Int_t n = mux->GetValue(Form("TUsrMux.%d.Chn%d.Xmin", k, i), 0);
-			mux->SetValue(Form("TUsrMux.%d.Chn%d.Xmin", k, i), n);
-			n = mux->GetValue(Form("TUsrMux.%d.Chn%d.Xmax", k, i), 0);
-			mux->SetValue(Form("TUsrMux.%d.Chn%d.Xmax", k, i), n);
-		}
-		TObjString * o = (TObjString *) fHistoNames[i];
-		TString hName = o ? o->GetString() : Form("hE%s%02d", this->GetName(), i);
+		Int_t n = mux->GetValue(Form("TUsrMux.%d.Xmin", i), 0);
+		mux->SetValue(Form("TUsrMux.%d.Xmin", i), n);
+		n = mux->GetValue(Form("TUsrMux.%d.Xmax", i), 0);
+		mux->SetValue(Form("TUsrMux.%d.Xmax", i), n);
+		TString hName = this->GetHistoName(i);
+		if (hName.IsNull()) hName = Form("hE%s%02d", this->GetName(), i);
 		mux->SetValue(Form("TUsrMux.%d.Histogram", i), hName.Data());
 	}
 	mux->SaveLevel(kEnvLocal);

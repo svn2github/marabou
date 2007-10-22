@@ -100,9 +100,9 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%BeginOfCode%%
 %N% 	memset(h$prefix$paramNameUC, 0, $indexRange * sizeof(TH1 *));	// $sevtNameLC.$paramNameLC
 %A% 	h$sevtNameUCArray.Expand($nofParams); h$sevtNameUCArray.Clear();	// $sevtNameLC
-%A% 	h$sevtNameUCArray.SetName("h$sevtNameUCArray"); gROOT->Append(h$sevtNameUCArray);
+%A% 	h$sevtNameUCArray.SetName("h$sevtNameUCArray"); gROOT->Append(&h$sevtNameUCArray);
 %U% 	$hArrayName.Expand($nofHistos); $hArrayName.Clear();	// user-defined histos in array $hArrayName
-%U% 	$hArrayName.SetName("$hArrayName"); gROOT->Append($hArrayName);
+%U% 	$hArrayName.SetName("$hArrayName"); gROOT->Append(&$hArrayName);
 %%EndOfCode%%
 %%HISTO_INIT_ARRAYS%%
 

@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a hit
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrHit.h,v 1.2 2006-01-25 12:16:09 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHit.h,v 1.3 2007-10-22 12:20:58 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -63,6 +63,9 @@ class TUsrHit : public TObject {
 		enum	{	kHitCounterT1	=	2	};	// 32 bit counter T1
 		enum	{	kHitCounterT2	=	4	};	// 32 bit counter T2
 
+// alternate layout used by c_ptm module
+		enum	{	kHitMuxChannel	=	0	};	// channel number for multiplexer
+
 	public:
 		TUsrHit() { this->Reset(); };
 		TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
@@ -95,6 +98,9 @@ class TUsrHit : public TObject {
 		inline UShort_t GetFastTrigger() const { return(fData[kHitFastTrigger]); };
 		Double_t GetCalEnergy(Bool_t Randomize = kTRUE) const;
 		Double_t GetDCorrEnergy(Bool_t Randomize = kTRUE) const;
+
+		inline Int_t GetMuxChannel() const { return((Int_t) fData[kHitMuxChannel]); };
+		inline void SetMuxChannel(Int_t Channel) { fData[kHitMuxChannel] = (UShort_t) Channel; };
 
 		inline UInt_t GetPatternWord() { return(* (UInt_t *) &fData[kHitPattern]); }; // for c_ptm modules only
 		inline UInt_t GetCounterT1() { return(* (UInt_t *) &fData[kHitCounterT1]); };

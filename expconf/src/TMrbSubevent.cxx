@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.33 2007-10-16 14:24:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.34 2007-10-22 12:20:58 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -446,7 +446,6 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment, B
 		}
 
 		useLongNames = this->HistosToBeAllocated() ? (gMrbConfig->FindParam(paramName.Data()) != NULL) : kFALSE;
-
 		for (nch = 0; nch < indexRange; nch++, channelNo++) {
 			if ((cp = (TMrbModuleChannel *) module->GetChannel(channelNo)) == NULL) {
 				gMrbLog->Err()	<< ModuleName << ": Channel out of range - " << paramName;

@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Mux16        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Mux16.h,v 1.1 2007-10-16 14:24:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Mux16.h,v 1.2 2007-10-22 12:20:58 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -38,9 +38,6 @@ namespace std {} using namespace std;
 class TMrbMesytec_Mux16 : public TMrbModule {
 
 	public:
-		enum {	kPosRangePerMux =	500	};
-
-	public:
 		TMrbMesytec_Mux16() {};  													// default ctor
 		TMrbMesytec_Mux16(const Char_t * MuxName, const Char_t * ModuleName, Int_t FirstChannel, Int_t NofSubmodules = 1); 	// define a new module
 		~TMrbMesytec_Mux16() {};													// default dtor
@@ -50,6 +47,7 @@ class TMrbMesytec_Mux16 : public TMrbModule {
 		Bool_t SetHistoName(Int_t Channel, const Char_t * HistoName, const Char_t * HistoTitle = "");
 		const Char_t * GetHistoName(Int_t Channel);
 		const Char_t * GetHistoTitle(Int_t Channel);
+		inline TObjArray * GetHistoNames() { return(&fHistoNames); };
 
 		Bool_t BookHistograms();
 

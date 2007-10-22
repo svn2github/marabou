@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.149 2007-10-16 14:24:04 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.150 2007-10-22 12:20:58 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -8100,15 +8100,33 @@ Bool_t TMrbConfig::WriteMuxConfig(const Char_t * CfgFile) {
 
 	mIter = fLofMuxs.MakeIterator();
 	Int_t nmux = 0;
+	Int_t moduleChans = 0;
+	Int_t moduleRange = 0;
 	while (m = (TMrbMesytec_Mux16 *) mIter->Next()) {
+		if (moduleChans == 0) moduleChans = m->GetModule()->GetNofChannels();
+		if (moduleChans != m->GetModule()->GetNofChannels()) {
+			gMrbLog->Err()	<< m->GetName() << "/" << m->GetModule()->GetName()
+							<< ": Number of channels changed - " << m->GetModule()->GetNofChannels()
+							<< " (should be " << moduleChans << ")" << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteMuxConfig");
+		}
+		if (moduleRange == 0) moduleRange = m->GetModule()->GetRange();
+		if (moduleRange != m->GetModule()->GetRange()) {
+			gMrbLog->Err()	<< m->GetName() << "/" << m->GetModule()->GetName()
+							<< ": Modole range changed - " << m->GetModule()->GetRange()
+							<< " (should be " << moduleRange << ")" << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteMuxConfig");
+		}
 		mux->SetValue(Form("TMrbConfig.Mux.%d.Name", nmux), m->GetName());
 		mux->SetValue(Form("TMrbConfig.Mux.%d.Module", nmux), m->GetModule()->GetName());
 		mux->SetValue(Form("TMrbConfig.Mux.%d.Serial", nmux), m->GetModuleSerial());
 		mux->SetValue(Form("TMrbConfig.Mux.%d.FirstChannel", nmux), m->GetFirstChannel());
-		mux->SetValue(Form("TMrbConfig.Mux.%d.Lookup", nmux), Form("%s.lkp", m->GetName()));
+		mux->SetValue(Form("TMrbConfig.Mux.%d.LookupFile", nmux), Form("%s.lkp", m->GetName()));
 		m->WriteLookup(Form("%s.lkp", m->GetName()));
 		nmux++;
 	}
+	mux->SetValue("TMrbConfig.Mux.NofModuleChannels", moduleChans);
+	mux->SetValue("TMrbConfig.Mux.ModuleRange", moduleRange);
 	mux->SaveLevel(kEnvLocal);
 	return(kTRUE);	
 }
