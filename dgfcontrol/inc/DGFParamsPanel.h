@@ -8,7 +8,7 @@
 // Class:          DGFParamsPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFParamsPanel.h,v 1.8 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFParamsPanel.h,v 1.9 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -73,6 +73,8 @@ class DGFParamsPanel : public TGCompositeFrame {
 		Bool_t ReadParams();
 		Bool_t ApplyParams(Bool_t Marked = kFALSE);
 		
+		void RadioButtonPressed(Int_t Button);		// signal catcher
+
 	protected:
 		Int_t fActiveParam; 						// index of active param
 	

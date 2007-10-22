@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.24 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.25 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -197,7 +197,7 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(TGCompositeFrame * TabFrame) :
 																200, kDGFUntrigTraceXwait,
 																kLEWidth,
 																kLEHeight,
-																kEntryWidth,
+																150,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fXwait);
 	fXFrame->AddFrame(fXwait, frameGC->LH());

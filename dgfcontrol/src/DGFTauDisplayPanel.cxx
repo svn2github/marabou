@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.11 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.12 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -196,12 +196,13 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * scbLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
-	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame,  "Channel", &fLofChannels, kDGFTauSelectChannel, 1, 
+	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame,  "Channel", &fLofChannels,
+													kDGFTauSelectChannel << TGMrbButtonFrame::kFrameIdShift, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fSelectChannel);
 	fSelectChannel->SetState(gDGFControlData->GetSelectedChannelIndex());
-	fSelectChannel->Associate(this);	// get informed if channel number changes
+	fSelectChannel->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
 	fSelectFrame->AddFrame(fSelectChannel, frameGC->LH());
 
 // trace settings
@@ -542,13 +543,6 @@ Bool_t DGFTauDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							break;
 					}
 					break;
-				case kCM_RADIOBUTTON:
-					switch (Param1) {
-						case kDGFTauSelectChannel:
-							gDGFControlData->SetSelectedChannelIndex(fSelectChannel->GetActive());
-							break;
-					}
-					break;
 				case kCM_COMBOBOX:
 					gDGFControlData->SetSelectedModuleIndex(Param2);
 					dgf = gDGFControlData->GetSelectedModule()->GetAddr();
@@ -577,6 +571,22 @@ Bool_t DGFTauDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 			
 	}
 	return(kTRUE);
+}
+
+void DGFTauDisplayPanel::RadioButtonPressed(Int_t Button) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::RadioButtonPressed
+// Purpose:        Signal catcher for radio buttons
+// Arguments:      Int_t Button   -- button
+// Results:        --
+// Exceptions:     
+// Description:    Will be called on radio button events.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t value = Button & 0xFFFF;
+	gDGFControlData->SetSelectedChannelIndex(value);
 }
 
 Bool_t DGFTauDisplayPanel::AcquireTraces() {

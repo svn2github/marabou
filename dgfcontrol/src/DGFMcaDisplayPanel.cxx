@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.20 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.21 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -215,7 +215,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	fRunTimeEntry = new TGMrbLabelEntry(fAccuFrame, NULL, 200,	kDGFMcaDisplayRunTime,
 																kLEWidth,
 																kLEHeight,
-																200,
+																150,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fRunTimeEntry);
 	fAccuFrame->AddFrame(fRunTimeEntry, frameGC->LH());
@@ -279,18 +279,18 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
 	fDisplayChannel = new TGMrbRadioButtonList(fDisplayFrame, "Channel", &fLofChannels,
-													kDGFMcaDisplaySelectChannel, 1, 
+													kDGFMcaDisplaySelectChannel << TGMrbButtonFrame::kFrameIdShift, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fDisplayChannel);
 	fDisplayChannel->SetState(1);
-	fDisplayChannel->Associate(this);	// get informed if channel number changes
+	fDisplayChannel->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
 	fDisplayFrame->AddFrame(fDisplayChannel, frameGC->LH());
 
 	fRefreshTimeEntry = new TGMrbLabelEntry(fDisplayFrame, "Refresh (s)", 200,	kDGFMcaDisplayRefreshDisplay,
 																kLEWidth,
 																kLEHeight,
-																100,
+																150,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fRefreshTimeEntry);
 	fDisplayFrame->AddFrame(fRefreshTimeEntry, frameGC->LH());
@@ -384,23 +384,6 @@ Bool_t DGFMcaDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 					}
 
 					break;
-				case kCM_RADIOBUTTON:
-					switch (Param1) {
-						case kDGFMcaDisplaySelectChannel:
-							{
-								UInt_t chn = fDisplayChannel->GetActive();
-								UInt_t chnPattern = fSelectChannel->GetActive();
-								if ((chnPattern & chn) == 0) {
-									gMrbLog->Err()	<< "Display channel not active - 0x" << chn << endl;
-									gMrbLog->Flush(this->ClassName(), "ProcessMessage");
-									fDisplayChannel->SetState(0);
-								} else {
-									fDisplayChannel->SetState(chn);
-								}
-							}
-							break;
-					}
-					break;
 				case kCM_COMBOBOX:
 					fModuleToBeDisplayed = gDGFControlData->GetModule(Param2);
 					break;
@@ -421,6 +404,26 @@ Bool_t DGFMcaDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 			
 	}
 	return(kTRUE);
+}
+
+void DGFMcaDisplayPanel::RadioButtonPressed(Int_t Button) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::RadioButtonPressed
+// Purpose:        Signal catcher for radio buttons
+// Arguments:      Int_t Button   -- button
+// Results:        --
+// Exceptions:     
+// Description:    Will be called on radio button events.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t chn = Button & 0xFFFF;
+	UInt_t chnPattern = fSelectChannel->GetActive();
+	if ((chnPattern & chn) == 0) {
+		gMrbLog->Err()	<< "Display channel not active - 0x" << chn << endl;
+		gMrbLog->Flush(this->ClassName(), "ProcessMessage");
+	}
 }
 
 Bool_t DGFMcaDisplayPanel::AcquireHistos() {

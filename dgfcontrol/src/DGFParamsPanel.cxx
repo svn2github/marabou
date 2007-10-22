@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.20 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.21 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -212,12 +212,13 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 		c++;
 		bit <<= 1;
 	}
-	fAlpha = new TGMrbRadioButtonList(fSelectFrame, NULL, &fLofInitials, kDGFParamsSelectChannel, 13, 
+	fAlpha = new TGMrbRadioButtonList(fSelectFrame, NULL, &fLofInitials,
+													0, 13, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fAlpha);
 	fAlpha->SetState(1);
-	fAlpha->Associate(this);	// get informed if channel number changes
+	fAlpha->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
 	fSelectFrame->AddFrame(fAlpha, frameGC->LH());
 
 // values
@@ -342,27 +343,6 @@ Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 					}
 					break;
 					
-				case kCM_RADIOBUTTON:
-					switch (Param1) {
-						case kDGFParamsSelectChannel:
-							{
-								UInt_t btn = fAlpha->GetActive();
-								TMrbNamedX * nx = fLofInitials.FindByIndex(btn);
-								TString x = nx->GetName();
-								Char_t c = x(0);
-								nx = (TMrbNamedX *) fLofParams.First();
-								while (nx) {
-									x = nx->GetName();
-									if (x(0) == c) {
-										fSelectParam->GetComboBox()->Select(nx->GetIndex());
-										break;
-									}
-									nx = (TMrbNamedX *) fLofParams.After(nx);
-								}
-							}
-					}
-					break;
-
 				case kCM_COMBOBOX:
 					fActiveParam = Param2;
 					this->ReadParams();
@@ -373,6 +353,23 @@ Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 
 	}
 	return(kTRUE);
+}
+
+void DGFParamsPanel::RadioButtonPressed(Int_t Button) {
+	TMrbNamedX * nx = fLofInitials.FindByIndex(Button);
+	if (nx) {
+		TString x = nx->GetName();
+		Char_t c = x(0);
+		nx = (TMrbNamedX *) fLofParams.First();
+		while (nx) {
+			x = nx->GetName();
+			if (x(0) == c) {
+				fSelectParam->GetComboBox()->Select(nx->GetIndex());
+				break;
+			}
+			nx = (TMrbNamedX *) fLofParams.After(nx);
+		}
+	}
 }
 
 Bool_t DGFParamsPanel::ReadParams() {

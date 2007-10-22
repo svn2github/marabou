@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.25 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.26 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -190,7 +190,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame) :
 																200, kDGFTraceDisplayTraceLength,
 																kLEWidth,
 																kLEHeight,
-																kEntryWidth,
+																150,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fTraceLength);
 	fTFrame->AddFrame(fTraceLength, frameGC->LH());
@@ -208,7 +208,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame) :
 																200, kDGFTraceDisplayXwait,
 																kLEWidth,
 																kLEHeight,
-																kEntryWidth,
+																150,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fXwait);
 	fXFrame->AddFrame(fXwait, frameGC->LH());

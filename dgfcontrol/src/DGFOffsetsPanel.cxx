@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFOffsetsPanel.cxx,v 1.14 2007-05-09 14:12:28 Marabou Exp $       
+// Revision:       $Id: DGFOffsetsPanel.cxx,v 1.15 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -206,7 +206,7 @@ DGFOffsetsPanel::DGFOffsetsPanel(TGCompositeFrame * TabFrame) :
 	fOffsetValue = new TGMrbLabelEntry(fOffsetFrame, NULL,	200, 1,
 																kLEWidth,
 																kLEHeight,
-																kEntryWidth,
+																150,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fOffsetValue);
 	fOffsetFrame->AddFrame(fOffsetValue, frameGC->LH());

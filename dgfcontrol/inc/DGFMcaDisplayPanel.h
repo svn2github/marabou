@@ -8,7 +8,7 @@
 // Class:          DGFMcaDisplayPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFMcaDisplayPanel.h,v 1.8 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.h,v 1.9 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -102,6 +102,8 @@ class DGFMcaDisplayPanel : public TGCompositeFrame {
 
 		Bool_t McaPause();
 		Bool_t McaResume();
+
+		void RadioButtonPressed(Int_t Button);			// signal catcher
 
 	protected:
 		Bool_t ResetValues();													// clear entry fields

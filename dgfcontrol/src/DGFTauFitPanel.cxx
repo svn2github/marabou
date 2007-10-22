@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauFitPanel.cxx,v 1.11 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFTauFitPanel.cxx,v 1.12 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -262,15 +262,15 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * accuLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, accuLayout);
 	HEAP(accuLayout);
-	fAccuFrame = new TGGroupFrame(fHFrame, "Accu Settings", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	fAccuFrame = new TGGroupFrame(fHFrame, "Run Time", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fAccuFrame);
 	fHFrame->AddFrame(fAccuFrame, frameGC->LH());
 
-	fRunTimeEntry = new TGMrbLabelEntry(fAccuFrame, "Run time",
+	fRunTimeEntry = new TGMrbLabelEntry(fAccuFrame, NULL,
 																200, kDGFTauFitRunTime,
 																kLEWidth,
 																kLEHeight,
-																kEntryWidth,
+																150,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fRunTimeEntry);
 	fAccuFrame->AddFrame(fRunTimeEntry, frameGC->LH());

@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.17 2005-11-02 08:37:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.18 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -50,7 +50,7 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFInstrCmdId 	{
-									kDGFInstrSelectModule, 				//		module
+									kDGFInstrSelectModule = 100, 		//		module
 									kDGFInstrSelectChannel, 			//		channel
 									kDGFInstrEnergyPeakTimeEntry, 		//		energy peak time
 									kDGFInstrEnergyGapTimeEntry,	  	//		energy gap time
@@ -124,6 +124,8 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 
 		Bool_t InitializeValues(Bool_t ReadFromDSP = kFALSE);					// initialize entry fields with dgf values
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+
+		void RadioButtonPressed(Int_t Channel);				// signal catcher
 
 	protected:
 		Bool_t WriteDSP(DGFModule * Module, Int_t ChannelId);					// update DSP

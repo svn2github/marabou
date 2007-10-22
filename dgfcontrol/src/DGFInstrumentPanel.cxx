@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.30 2006-09-12 11:45:01 Marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.31 2007-10-22 16:45:37 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -189,12 +189,13 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * scbLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
-	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame, "Channel", &fLofChannels, kDGFInstrSelectChannel, 1, 
+	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame, "Channel", &fLofChannels,
+													kDGFInstrSelectChannel << TGMrbButtonFrame::kFrameIdShift, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fSelectChannel);
 	fSelectChannel->SetState(gDGFControlData->GetSelectedChannelIndex());
-	fSelectChannel->Associate(this);	// get informed if channel number changes
+	fSelectChannel->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
 	fSelectFrame->AddFrame(fSelectChannel, frameGC->LH());
 
 // 2 vertical frames, left and right
@@ -568,12 +569,13 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceRightFrame->AddFrame(fTraceUPSAFrame, groupGC->LH());
 
 #if 0
-	fTraceUPSAOnOffButton = new TGMrbRadioButtonList(fTraceUPSAFrame, "PSA enable", &fInstrUPSAOnOff, kDGFInstrTraceUPSAOnOffButton, 1, 
+	fTraceUPSAOnOffButton = new TGMrbRadioButtonList(fTraceUPSAFrame, "PSA enable", &fInstrUPSAOnOff,
+													kDGFInstrTraceUPSAOnOffButton << TGMrbButtonFrame::kFrameIdShift, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fTraceUPSAOnOffButton);
 	fTraceUPSAOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrUPSAOff);
-	fTraceUPSAOnOffButton->Associate(this);
+	fTraceUPSAOnOffButton->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
 	fTraceUPSAFrame->AddFrame(fTraceUPSAOnOffButton, frameGC->LH());
 #endif
 
@@ -745,12 +747,13 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDRegEntry->AddToFocusList(&fFocusList);
 	fCFDRegEntry->Associate(this);
 
-	fCFDOnOffButton = new TGMrbRadioButtonList(fCFDDataFrame, "CFD enable", &fInstrCFDOnOff, kDGFInstrCFDOnOffButton, 1, 
+	fCFDOnOffButton = new TGMrbRadioButtonList(fCFDDataFrame, "CFD enable", &fInstrCFDOnOff,
+													kDGFInstrCFDOnOffButton << TGMrbButtonFrame::kFrameIdShift, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fCFDOnOffButton);
 	fCFDOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrCFDOff);
-	fCFDOnOffButton->Associate(this);
+	fCFDOnOffButton->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
 	fCFDDataFrame->AddFrame(fCFDOnOffButton, frameGC->LH());
 
 	fCFDDelayBeforeLEEntry = new TGMrbLabelEntry(fCFDDataFrame, "Delay before LE [ns]",
@@ -801,12 +804,13 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDWalkEntry->AddToFocusList(&fFocusList);
 	fCFDWalkEntry->Associate(this);
 
-	fCFDFractionButton = new TGMrbRadioButtonList(fCFDDataFrame, "Fraction", &fInstrCFDFraction, kDGFInstrCFDFractionButton, 1, 
+	fCFDFractionButton = new TGMrbRadioButtonList(fCFDDataFrame, "Fraction", &fInstrCFDFraction,
+													kDGFInstrCFDFractionButton << TGMrbButtonFrame::kFrameIdShift, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fCFDFractionButton);
 	fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract00);
-	fCFDFractionButton->Associate(this);
+	fCFDFractionButton->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
 	fCFDDataFrame->AddFrame(fCFDFractionButton, frameGC->LH());
 
 // place an unvisible label to pad group frame vertically
@@ -1151,20 +1155,6 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							break;	
 					}
 					break;
-				case kCM_RADIOBUTTON:
-					switch (Param1) {
-						case kDGFInstrSelectChannel:
-							gDGFControlData->SetSelectedChannelIndex(fSelectChannel->GetActive());
-							this->InitializeValues(kFALSE);
-							break;
-						case kDGFInstrCFDOnOffButton:
-							this->InitializeCFD((Int_t) fCFDOnOffButton->GetActive(), -1);
-							break;
-						case kDGFInstrCFDFractionButton:
-							this->InitializeCFD(-1, (Int_t) fCFDFractionButton->GetActive());
-							break;
-					}
-					break;
 				case kCM_COMBOBOX:
 					gDGFControlData->SetSelectedModuleIndex(Param2);
 					this->InitializeValues(kFALSE);
@@ -1190,6 +1180,34 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 			
 	}
 	return(kTRUE);
+}
+
+void DGFInstrumentPanel::RadioButtonPressed(Int_t Button) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::RadioButtonPressed
+// Purpose:        Signal catcher for radio buttons
+// Arguments:      Int_t Button   -- button
+// Results:        --
+// Exceptions:     
+// Description:    Will be called on radio button events.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t value = Button & 0xFFFF;
+	Int_t frame = Button >> TGMrbButtonFrame::kFrameIdShift;
+	switch (frame) {
+		case kDGFInstrSelectChannel:
+			gDGFControlData->SetSelectedChannelIndex(value);
+			this->InitializeValues(kFALSE);
+			break;
+		case kDGFInstrCFDOnOffButton:
+			this->InitializeCFD(value, -1);
+			break;
+		case kDGFInstrCFDFractionButton:
+			this->InitializeCFD(-1, value);
+			break;
+	}
 }
 
 Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
