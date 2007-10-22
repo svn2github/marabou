@@ -85,6 +85,7 @@ ClassImp(GEdit)
 GEdit::GEdit(HTCanvas * parent)
 {
    fHistPresent = parent->GetHistPresent();
+   fParent = parent;
    Constructor();
 }
 #endif

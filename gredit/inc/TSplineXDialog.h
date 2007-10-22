@@ -40,6 +40,7 @@ public:
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown();
+   void CRButtonPressed(){};
 
 ClassDef(TSplineXDialog,0)
 };
