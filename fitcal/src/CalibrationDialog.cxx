@@ -183,6 +183,8 @@ The procedure to use previously fitted peaks is as follows:\n\
 		valp[ind++] = &dummy;
 		row_lab->Add(new TObjString("CommentOnly+Error"));
 		valp[ind++] = &dummy;
+		row_lab->Add(new TObjString("CommentOnly+Content"));
+		valp[ind++] = &dummy;
 		row_lab->Add(new TObjString("CommentRigh+Use it "));
 		valp[ind++] = &dummy;
 		for (Int_t i = 0; i < fMaxPeaks; i++) {
@@ -194,6 +196,8 @@ The procedure to use previously fitted peaks is as follows:\n\
 			valp[ind++] = &fY[i];
 			row_lab->Add(new TObjString("DoubleValue+"));
 			valp[ind++] = &fYE[i];
+			row_lab->Add(new TObjString("DoubleValue+"));
+			valp[ind++] = &fCont[i];
 			row_lab->Add(new TObjString("CheckButton+"));
 			valp[ind++] = &fUse[i];
 		} 
@@ -458,20 +462,24 @@ Int_t CalibrationDialog::ReadGaugeFile()
 void CalibrationDialog::AutoSelectDialog()
 {
 static const Char_t helptext[] =
-"	Vary gain and offset and find the best match\n\
+"  Vary gain and offset and find the best match\n\
    between the (fitted) peaks in the measured spectrum\n\
    and the gauge peaks. \"Xlow\" and \"Xup\" define the range\n\
-   of the testbed histogram. Units are those of the calibrated\n\
-   histogram hence the values of the gauge peaks must be within\n\
-   the range of this histogram. The sensivity can\n\
-	be adjusted by varying Nbins and Gain/Offset Steps.\n\
+   of the testbed histogram. Units are those of the \n\
+   calibrated histogram, therefore the values of the \n\
+   gauge peaks must be within the range of this histogram.\n\
+   The sensivity can be adjusted by varying Nbins and \n\
+   Gain/Offset Steps.\n\
    Smaller \"Nbins\" leads to a wider binwidth of the \n\
-   test histogram resulting to more likely matches\n\
-   but finally to ambiguities\n\
+   test histogram resulting in more likely matches\n\
+   but finally lead to ambiguities.\n\
    The binwidths should be typically 2-4 times the peakwidth\n\
    \"Accept Limits\" defines the maximum allowed difference in\n\
-   the position of the calibrated and gauge peak\n\
-";   
+   the position of the calibrated and gauge peak __after__\n\
+   the matching process.\n\
+   Peaks with small (gauss)content may be suppressed by\n\
+   \"ContentThresh\" measured as fraction of the max peak.\n\
+ ";   
    TString label;
    TList *row_lab = new TList(); 
    static TString ascmd("ExecuteAutoSelect()");
@@ -498,11 +506,13 @@ static const Char_t helptext[] =
    valp[ind++] = &fOffMax;
    row_lab->Add(new TObjString("DoubleValue+OffStep"));
    valp[ind++] = &fOffStep;
+   row_lab->Add(new TObjString("DoubleValue_ContentThresh"));
+   valp[ind++] = &fContThresh;
+   row_lab->Add(new TObjString("DoubleValue+Accept Limit"));
+   valp[ind++] = &fAccept;
    row_lab->Add(new TObjString("CheckButton_Verbose Print"));
    valp[ind++] = &fVerbose;
-   row_lab->Add(new TObjString("DoubleValue-Accept Limit"));
-   valp[ind++] = &fAccept;
-   row_lab->Add(new TObjString("CommandButt-ExecuteSelect"));
+   row_lab->Add(new TObjString("CommandButt+ExecuteSelect"));
    valp[ind++] = &ascmd;
 
    Int_t itemwidth = 400;
@@ -552,8 +562,19 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    htest = new TH1F("testbed", "Test bed" ,fMatchNbins, fMatchMin, fMatchMax);
    for (Int_t i = 0; i < fNpeaks; i++)
       fAssigned[i] = 0;
-    for (Int_t i = 0; i < fGaugeNpeaks; i++)
+   for (Int_t i = 0; i < fGaugeNpeaks; i++)
       fSetFlag[i] = 0;
+// find max content
+   Double_t maxcont = 0;
+	for (Int_t i = 0; i < fNpeaks; i++) {
+	   if (fCont[i] > maxcont) 
+         maxcont = fCont[i]; 
+	}
+   if ( maxcont <= 0 ) {
+      cout << "No peak with content > 0 found" << endl;
+      return kFALSE;
+   }
+
    Int_t best = 0;
    Double_t best_off  = 0;
    Double_t best_gain = 0;
@@ -574,8 +595,10 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 			for (Int_t i = 0; i < fGaugeNpeaks; i++)
 				htest->Fill(fGaugeEnergy[i]);
 			for (Int_t i = 0; i < fNpeaks; i++) {
-				Double_t e = off + gain*fX[i]; 
-				htest->Fill(e);
+            if (fCont[i] >= maxcont * fContThresh) {
+				   Double_t e = off + gain*fX[i]; 
+				   htest->Fill(e);
+            }
 			}
 			Int_t twohits = 0;
 			for (Int_t i = 1; i <= htest->GetNbinsX(); i++) {
@@ -609,19 +632,27 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
          Int_t ic = (Int_t)hscan->GetCellContent(io, ig);
          if (ic == best) {
             if (fVerbose) 
-               printf("At Offset, gain: %10.4f %10.4f found: %2d matches\n", 
-                 hscan->GetXaxis()->GetBinCenter(io), 
-                 hscan->GetYaxis()->GetBinCenter(ig), best);
+               if (namb > 1)
+                 printf("At Offset, gain: %10.4f %10.4f found: %2d matches\n", 
+                   hscan->GetXaxis()->GetBinCenter(io), 
+                   hscan->GetYaxis()->GetBinCenter(ig), best);
                namb++;
          }
       }
    }
-   if (namb > 0) 
-      cout << "Warning: " << namb << " ambiguities found " << endl;
+   if (namb > 1) 
+      cout << "Warning: " << namb -1  << " ambiguities found " << endl;
    cout << "-------------------------------------------" << endl;
-   Double_t max_cont = 0;
+   Double_t max_cont_ass = 0;
    Int_t nassigned = 0;
    for (Int_t i = 0; i < fNpeaks; i++) {
+      fAssigned[i] = -1;
+      if (fCont[i] < maxcont * fContThresh) {
+         if (fVerbose) 
+            cout << "Discard peak at: " << fX[i]
+                 << " Cont: " << fCont[i] << endl;
+         continue;
+      }
 	   Double_t e = best_off + best_gain*fX[i]; 
       Double_t ecal = 0;
       Double_t closest = 10000;
@@ -634,15 +665,14 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
          }
       }
       if (fVerbose) 
-         printf("Energy, Gauge, deltaE: %8.2f %8.2f %8.2f", e, fGaugeEnergy[best], closest);
-      fAssigned[i] = -1;
+         printf("Energy, Gauge: %8.2f %8.2f", e, fGaugeEnergy[best]);
       if (closest < fAccept) {
          if (fVerbose) 
            printf(" accepted %3d\n", best);
          fAssigned[i] = best;
          fSetFlag[best] = 1;
-         if (fCont[i] > max_cont)
-            max_cont = fCont[i];
+         if (fCont[i] > max_cont_ass)
+            max_cont_ass = fCont[i];
          nassigned++;
          Int_t bin = fSelHist->FindBin(fX[i]);
          Double_t yv = fSelHist->GetBinContent(bin);
@@ -675,7 +705,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    TIter next(&fPeakList);
    FhPeak * p;
    Int_t np = 0;
-   while (p = (FhPeak *) next()) {
+   while ( (p = (FhPeak *) next()) ) {
      Int_t ass = fAssigned[np];
      if (ass >= 0) {
        fY[np]=  fGaugeEnergy[ass];
@@ -685,7 +715,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
        p->SetNominalEnergy(fY[np]);
        p->SetNominalEnergyError(fYE[np]);
        p->SetIntensity(fGaugeIntensity[ass]);
-       p->SetRelEfficiency(fCont[np] / max_cont / fGaugeIntensity[ass]);
+       p->SetRelEfficiency(fCont[np] / max_cont_ass / fGaugeIntensity[ass]);
      } else {
        fUse[np] = 0;
        p->SetUsed(0);
@@ -709,9 +739,9 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 			Int_t ass = fAssigned[i];
 			if (ass >= 0) {
 				fY[i]=  fGaugeEnergy[ass];
-				Double_t norm_int = fCont[i] / max_cont / fGaugeIntensity[ass];
+				Double_t norm_int = fCont[i] / max_cont_ass / fGaugeIntensity[ass];
 				printf ("%8.2f %8.2f %8.2f %8.2f %8.2f\n",
-               fY[i], fGaugeIntensity[ass], fCont[i], fCont[i] / max_cont, norm_int);
+               fY[i], fGaugeIntensity[ass], fCont[i], fCont[i] / max_cont_ass, norm_int);
 			
 				eff->SetPoint(na, fY[i], norm_int);
 				na++;
@@ -779,7 +809,7 @@ TF1 * CalibrationDialog::CalculateFunction()
    TIterator * pIter = fPeakList.MakeIterator();
    FhPeak * p;
    Int_t nuse = 0;
-   while (p = (FhPeak *) pIter->Next()) {
+   while ( (p = (FhPeak *) pIter->Next()) ) {
      if (p->GetUsed()) nuse++;
    }
    if (nuse < 2) {
@@ -793,7 +823,7 @@ TF1 * CalibrationDialog::CalculateFunction()
    TGraphErrors *gr = new TGraphErrors(nuse); 
    pIter = fPeakList.MakeIterator();
    Int_t np = 0;
-   while (p = (FhPeak *) pIter->Next()) {
+   while ( (p = (FhPeak *) pIter->Next()) ) {
      if (p->GetUsed()) {
         gr->SetPoint(np, p->GetMean(), p->GetNominalEnergy());
         gr->SetPointError(np, p->GetMeanError(), p->GetNominalEnergyError());
@@ -1066,6 +1096,11 @@ TList * CalibrationDialog::UpdatePeakList()
       cout << " Not enough peaks defined: " << fNpeaks << endl;
       return NULL;
    }
+//   if (fInteractive > 0) {
+ //     fDialog->ReloadValues();
+//      fDialogSetNominal->ReloadValues(); 
+ //     EnableDialogs();
+//   }
    fPeakList.Sort();
    TIter next1(&fPeakList);
    FhPeak *p;
@@ -1083,6 +1118,11 @@ TList * CalibrationDialog::UpdatePeakList()
 	   fUse[fNpeaks] = 1;
       fCont[fNpeaks] = p->GetContent();
       fNpeaks++;
+   }
+   if (fInteractive > 0) {
+      fDialog->ReloadValues();
+      cout << "UpdatePeakList:  ReloadValues" << endl;
+      EnableDialogs();
    }
    cout << "UpdatePeakList: # of peaks: " << fNpeaks << endl;
 
@@ -1133,6 +1173,7 @@ void CalibrationDialog::RestoreDefaults()
    fOffMax   = env.GetValue("CalibrationDialog.fOffMax",   100 );
    fOffStep  = env.GetValue("CalibrationDialog.fOffStep",  0.5 );
    fAccept   = env.GetValue("CalibrationDialog.fAccept",     2 );
+   fContThresh   = env.GetValue("CalibrationDialog.fContThresh",  0.01);
    fVerbose  = env.GetValue("CalibrationDialog.fVerbose",    0 );
 //   fInteractive  = env.GetValue("CalibrationDialog.fInteractive", 1);
    fCustomGauge   = env.GetValue("CalibrationDialog.fCustomGauge",     0 );
@@ -1162,6 +1203,7 @@ void CalibrationDialog::SaveDefaults()
    env.SetValue("CalibrationDialog.fOffMax",  fOffMax  );
    env.SetValue("CalibrationDialog.fOffStep", fOffStep );
    env.SetValue("CalibrationDialog.fAccept",  fAccept  );
+   env.SetValue("CalibrationDialog.fContThresh", fContThresh);
    env.SetValue("CalibrationDialog.fVerbose", fVerbose);
 //   env.SetValue("CalibrationDialog.fInteractive", fInteractive);
    env.SetValue("CalibrationDialog.fCustomGauge", fCustomGauge);

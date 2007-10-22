@@ -5,6 +5,7 @@
 #pragma link off all functions;
 
 #pragma link C++ class FhPeak;
+#pragma link C++ class PeakFinder;
 
 #pragma link C++ class FhMarker;
 #pragma link C++ class FhMarkerList;

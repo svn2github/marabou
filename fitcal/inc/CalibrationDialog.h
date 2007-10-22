@@ -72,6 +72,7 @@ private:
    Double_t fOffMin;          // Min offset value for scanning
    Double_t fOffMax;          // Max offset value for scanning
    Double_t fOffStep;         // Step size for offset for scanning
+   Double_t fContThresh;      // Threshol on peak content relative to max
    Double_t fAccept;          // Acceptance limit: Abs (gauge - measured)
 
 public:
@@ -99,6 +100,7 @@ public:
    void CloseDown();
    void DisableDialogs();
    void EnableDialogs();
+   void CRButtonPressed(){};
    inline void SetInteractive( Int_t interactive) { fInteractive = interactive; };
    inline void SetVerbose(Int_t val) { fVerbose = val; };
    inline void SetCalibratedNbinsX( Int_t calibratednbinsx) { fCalibratedNbinsX = calibratednbinsx; };
@@ -146,7 +148,6 @@ public:
    inline Int_t GetY88Gauge()   { return fY88Gauge; };
 
    inline TList * GetPeakList()   { return &fPeakList; };
-
 
 ClassDef(CalibrationDialog,0)
 };

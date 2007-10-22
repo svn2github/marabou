@@ -28,11 +28,21 @@ private:
                                  //       use dont clear list (see below)
    Double_t fSigma;              // Assumed peakwidth
    Double_t fTwoPeakSeparation;  // mimimum separation of two peaks, unit: sigma
-   Int_t    fClearList;          // clear list of found peaks before new search
    Int_t    fMarkow;					// use Markow algorithm
    Int_t    fRemoveBG;           // remove background before deconvolution
    Int_t    fShowMarkers;        // draw polymarker at found peak
    Int_t    fFindPeakDone;       // number of peaksearches executed
+   Int_t    fUseTSpectrum ;      // trigger TSpectrum method
+   Int_t    fUseSQWaveFold;
+   Double_t fThresholdSigma;     // threshold in Square wave folding search
+   Int_t    fPeakMwidth;         // width Square wave folding search
+                               
+   Int_t    fThresholdEntry;            
+   Int_t    fSigmaEntry;            
+   Int_t    fMarkowEntry;					
+   Int_t    fRemoveBGEntry;         
+   Int_t    fThresholdSigmaEntry;   
+   Int_t    fPeakMwidthEntry;       
 
 public:
    FindPeakDialog(TH1 * hist, Int_t interactive =1);
@@ -45,12 +55,12 @@ public:
    void RestoreDefaults();
    void CloseDialog();
    void CloseDown();
+   void CRButtonPressed();
    void SetFrom( Double_t from) { fFrom = from; };
    void SetTo( Double_t to) { fTo = to; };
    void SetThreshold( Double_t threshold) { fThreshold = threshold; };
    void SetSigma( Double_t sigma) { fSigma = sigma; };
    void SetTwoPeakSeparation( Double_t twopeakseparation) { fTwoPeakSeparation = twopeakseparation; };
-   void SetClearList( Int_t clearlist) { fClearList = clearlist; };
    void SetMarkow( Int_t markow) { fMarkow = markow; };
    void SetRemoveBG( Int_t removebg) { fRemoveBG = removebg; };
    void SetShowMarkers( Int_t showmarkers) { fShowMarkers = showmarkers; };
@@ -59,7 +69,6 @@ public:
    Double_t GetThreshold() { return fThreshold; };
    Double_t GetSigma() { return fSigma; };
    Double_t GetTwoPeakSeparation() { return fTwoPeakSeparation; };
-   Int_t GetClearList() { return fClearList; };
    Int_t GetMarkow() { return fMarkow; };
    Int_t GetRemoveBG() { return fRemoveBG; };
    Int_t GetShowMarkers() { return fShowMarkers; };

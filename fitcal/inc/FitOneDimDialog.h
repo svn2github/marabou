@@ -193,6 +193,7 @@ public:
    Int_t GetFitOptNoDraw() { return fFitOptNoDraw; };
    Int_t GetFitOptAddAll() { return fFitOptAddAll; };
    Int_t GetFitPrintCovariance() { return fFitPrintCovariance; };
+   void CRButtonPressed(){};
 
 ClassDef(FitOneDimDialog,0)
 };

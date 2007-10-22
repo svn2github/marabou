@@ -706,7 +706,7 @@ the root doc at: http://root.cern.ch\n\
 			history = hist_file;
 			text = &fFormula;
 		}
-		row_lab->Add(new TObjString("CommandButt_Options / Params"));
+		row_lab->Add(new TObjString("CommandButt_Options/Params"));
 		valp[ind++] = &sfocmd;
 		row_lab->Add(new TObjString("CommandButt+Print Markers"));
 		valp[ind++] = &prtcmd;
