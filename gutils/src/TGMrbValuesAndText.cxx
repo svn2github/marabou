@@ -720,13 +720,19 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                          fRedTextGC(TGButton::GetDefaultGC())
 {
    // Create  input dialog.
-   ULong_t brown;
-   gClient->GetColorByName("firebrick", brown);
-   Pixel_t red, blue;
+
+   Pixel_t red, blue, lblue, brown, grey, lgrey, wheat;
+   fClient->GetColorByName("firebrick", brown);
    fClient->GetColorByName("red", red);
    fRedTextGC.SetForeground(red);
    fClient->GetColorByName("blue", blue);
+   fClient->GetColorByName("LightSteelBlue1", lblue);
    fBlueTextGC.SetForeground(blue);
+   fClient->GetColorByName("grey", grey);
+   fLightGreyTextGC.SetForeground(lgrey);
+   fClient->GetColorByName("grey90", lgrey);
+   fLightGreyTextGC.SetForeground(lgrey);
+   fClient->GetColorByName("wheat", wheat);
 
    TGGC myGC = *fClient->GetResourcePool()->GetFrameGC();
    TGFont *myfont = fClient->GetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
@@ -756,6 +762,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    
    if (calling_class != NULL && win_width > 0) {
       this->Connect("CloseWindow()",cname, calling_class, "CloseDown()");
+      this->Connect("CRBPressed()", cname, calling_class, "CRButtonPressed()"); 
    }
    if (win_width < 0) {
       fCallClose = kFALSE;
@@ -830,6 +837,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             if (lab.Length() > 12) {
                lab.Remove(0,12);
                label = new TGLabel(hframe, new TGString((const char *)lab));
+               label->ChangeBackground(lgrey);
 			      fWidgets->Add(label);
                if (l.BeginsWith("CommentRigh")) loc = lor;
                hframe->AddFrame(label, loc);
@@ -847,6 +855,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          }
 
          if (l.BeginsWith("Comment")) {
+            label->ChangeBackground(wheat);
 
          } else if (l.BeginsWith("CheckButton")) {
             cbutton = new TGCheckButton(hframe, new TGHotString(""), i);
@@ -859,6 +868,8 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fEntries->Add(cbutton);
             cbutton->Associate(this);
             hframe->AddFrame(cbutton, locy);
+//            if (calling_class)
+//               cbutton->Connect("Clicked()", cname, calling_class, "ButtonPressed()"); 
          } else if (l.BeginsWith("RadioButton")) {
             cbutton = new TGRadioButton(hframe, new TGHotString(""), i);
             Int_t state = *(Int_t*)fValPointers[i];
@@ -870,7 +881,9 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fEntries->Add(cbutton);
             cbutton->Associate(this);
             hframe->AddFrame(cbutton, locy);
-         } else if (l.BeginsWith("ColorSelect")) {
+//            if (calling_class)
+//               cbutton->Connect("Clicked()", cname, calling_class, "ButtonPressed()");  
+       } else if (l.BeginsWith("ColorSelect")) {
             Int_t col = GetColorPixelByInd(*(Color_t*)fValPointers[i]);
             cbutton = new TGColorSelect(hframe, col, i);
 //            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
@@ -884,9 +897,11 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             TString *sr = (TString*)fValPointers[i];
             TString lab(l);
             lab.Remove(0,12);
-            cbutton = new TGTextButton(hframe, new TGHotString(lab.Data()), i + 100* kIdCommand,
-                          fBlueTextGC());
+            cbutton = new TGTextButton(hframe, new TGHotString(lab.Data()), i + 100* kIdCommand);
             cbutton->Connect("Clicked()", cname, calling_class,sr->Data());
+            cbutton->SetForegroundColor(blue);
+            ((TGTextButton*)cbutton)->SetFont("-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
+            cbutton->SetBackgroundColor(lblue);
             cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
 //            cbutton->Resize(cbutton->GetDefaultWidth(), 20);
             fWidgets->Add(cbutton);
@@ -1303,7 +1318,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                     TString temp(fHelpText);
                     Int_t nl = temp.CountChar('\n');
                     nl *= 15;
-                    TRootHelpDialog * hd = new TRootHelpDialog(this, fPrompt, 450, nl+20);
+                    TRootHelpDialog * hd = new TRootHelpDialog(this, fPrompt, 500, nl+25);
                     hd->SetText(fHelpText);
                     hd->Popup();
                 } else {
@@ -1569,6 +1584,7 @@ void TGMrbValuesAndText::StoreValues(){
           Int_t state = 0;
           if (cbutton->GetState() == kButtonDown) state = 1;
           *(Int_t*)fValPointers[i] = state;
+          CRBPressed();
           
        } else if (obj->InheritsFrom("TGNumberEntry")) {
          
@@ -1804,11 +1820,20 @@ void TGMrbValuesAndText::CloseWindowExt()
 }
 //_______________________________________________________________________________________
 
+void TGMrbValuesAndText::CRBPressed()
+{
+//   cout << "TGMrbValuesAndText::Emit: CRBPressed() ";
+//   cout  << endl << flush;
+   Emit("CRBPressed()");
+}
+//_______________________________________________________________________________________
+
 void TGMrbValuesAndText::CloseWindow()
 {
 //   cout << "TGMrbValuesAndText::CloseWindow() ";
 //   cout  << endl << flush;
    if (fEmitClose) Emit("CloseDown()");
+//   Emit("CRButtonPressed()");
    DeleteWindow();
 }
 //_______________________________________________________________________________________
