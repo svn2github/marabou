@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.82 2007-08-08 11:16:00 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.83 2007-10-25 17:24:12 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1370,6 +1370,33 @@ Int_t TMrbAnalyze::GetModuleIndex(const Char_t * ModuleName) const {
 	} else {
 		return(nx->GetIndex());
 	}
+}
+
+Int_t TMrbAnalyze::GetModuleIndexByParam(const Char_t * ParamName) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetModuleIndexByParam
+// Purpose:        Get module index by param name
+// Arguments:      Char_t * ParamName      -- param name
+// Results:        Int_t ModuleIndex       -- module index
+// Exceptions:     
+// Description:    Searches for a param with specified name
+//                 Returns module index.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	TMrbParamListEntry * ple;
+
+	nx = fParamList.FindByName(ParamName);
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "No such param - " << ParamName << endl;
+		gMrbLog->Flush(this->ClassName(), "GetParamIndex");
+		return(-1);
+	}
+
+	ple = (TMrbParamListEntry *) nx->GetAssignedObject();				// relative param index
+	return(ple->GetModule()->GetIndex());
 }
 
 TMrbModuleListEntry * TMrbAnalyze::GetModuleListEntry(Int_t ModuleIndex) const {
@@ -2979,6 +3006,40 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 	return(kTRUE);
 }
 
+Int_t TMrbAnalyze::GetHistoIndex(Int_t ModuleIndex, Int_t RelParamIndex) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetHistoIndex
+// Purpose:        Return absolute histo index
+// Arguments:      Int_t ModuleIndex      -- list index
+//                 Int_t RelParamIndex    -- relative param index
+// Results:        Int_t HistoIndex       -- index
+// Exceptions:     
+// Description:    Returns histo index
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nmx;
+	TMrbModuleListEntry * mle;
+	Int_t px;
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+		gMrbLog->Err()	<< "Module index out of range - " << ModuleIndex
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetHistoIndex");
+		return(kFALSE);
+	}
+	nmx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	if (nmx == NULL) {
+		gMrbLog->Err()	<< "Module index not in use - " << ModuleIndex << endl;
+		gMrbLog->Flush(this->ClassName(), "GetHistoIndex");
+		return(kFALSE);
+	}
+	mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
+	px = mle->GetIndexOfFirstParam();
+	return(px + RelParamIndex);
+}
+
 Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleIndex, Int_t RelParamIndex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -3358,3 +3419,31 @@ Int_t TMrbAnalyze::GetTimeOffset(Int_t ModuleIndex) const {
 	}
 	return(((TMrbModuleListEntry *) nx->GetAssignedObject())->GetTimeOffset());
 }
+
+void TMrbAnalyze::WaitForLock(const Char_t * Lockfile, const Char_t * Msg) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::WaitForLock
+// Purpose:        Wait for lock file to disappear
+// Arguments:      Char_t * Lockfile       -- lock file
+//                 Char_t * Msg            -- message
+// Results:        --
+// Exceptions:     
+// Description:    Loops on file 'Lockfile'. Tests every second if it has disappeared.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t first = kTRUE;
+	while (!gSystem->AccessPathName(Lockfile)) {
+		if (first) {
+			cout << "Break: ";
+			if (Msg != NULL && *Msg != '\0') cout << Msg << "... ";
+			cout << "Remove file \"" << Lockfile << "\" to continue ..." << endl;
+		}
+		first = kFALSE;
+		sleep(1);
+	}
+	cout << "[Continuing]" << endl;
+	gSystem->Exec(Form("touch %s", Lockfile));
+}
+

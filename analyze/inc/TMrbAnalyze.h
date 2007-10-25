@@ -7,7 +7,7 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.52 2007-08-08 11:15:59 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.53 2007-10-25 17:24:12 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -165,6 +165,7 @@ class TMrbAnalyze : public TObject {
 		const Char_t * GetModuleName(Int_t ModuleIndex) const;			// get module name by index
 		const Char_t * GetModuleTitle(Int_t ModuleIndex) const;			// get module title by index
 		Int_t GetModuleIndex(const Char_t * ModuleName) const;			// get module index by name
+		Int_t GetModuleIndexByParam(const Char_t * ParamName) const;		// get module index by param name
 		const Char_t * GetParamName(Int_t ModuleIndex, Int_t RelParamIndex) const;	// get param name by relative index
 		const Char_t * GetParamName(Int_t AbsParamIndex) const;			// get param name by absolute index
 		Int_t GetParamIndex(const Char_t * ParamName, Bool_t AbsFlag = kTRUE) const;	// get param index by name (rel or abs)
@@ -183,6 +184,7 @@ class TMrbAnalyze : public TObject {
 												Int_t NofParams, Int_t TimeOffset = 0);
 		Bool_t AddParamToList(const Char_t * ParamName, TObject * ParamAddr, Int_t ModuleIndex, Int_t RelParamIndex);
 		Bool_t AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t RelParamIndex);
+		Int_t GetHistoIndex(Int_t ModuleIndex, Int_t RelParamIndex) const;			// get absolute histo index
 
 		TMrbModuleListEntry * GetModuleListEntry(Int_t ModuleIndex) const;
 		TMrbModuleListEntry * GetModuleListEntry(const Char_t * ModuleName) const;
@@ -231,6 +233,8 @@ class TMrbAnalyze : public TObject {
 
 		inline Int_t GetNofModules() const { return(fNofModules); };		// number of modules
 		inline Int_t GetNofParams() const { return(fNofParams); };		// number of params
+		inline Int_t GetNofHistos() const { return(fHistoList.GetEntriesFast()); };		// number of histos
+		inline TMrbLofNamedX * GetLofHistos() { return(&fHistoList); };		// list of histos
 
 		Bool_t SetTimeOffset(Int_t ModuleNumber, Int_t Offset); 	// set time offset
 		Int_t GetTimeOffset(Int_t ModuleNumber) const;					// get time offset
@@ -263,6 +267,8 @@ class TMrbAnalyze : public TObject {
 
 		inline TMrbLogger * GetMessageLogger() const { return(fMessageLogger); };
 		
+		void WaitForLock(const Char_t * LockFile, const Char_t * Msg = NULL);
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:

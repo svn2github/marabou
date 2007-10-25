@@ -25,6 +25,8 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_HB {
 		inline const Char_t * GetName() const { return(fSevtName.Data()); };
 		inline Int_t GetSerial() const { return(kMrbSevt%%SEVT_NAME_UC%%); };
 
+		inline Int_t GetNofParams() const { return(%%SEVT_NOF_PARAMS%%); };
+
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
 		Bool_t BookParams();					// book params
 %%BeginOfCode%%

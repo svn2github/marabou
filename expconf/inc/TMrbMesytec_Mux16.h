@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Mux16        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Mux16.h,v 1.2 2007-10-22 12:20:58 Marabou Exp $       
+// Revision:       $Id: TMrbMesytec_Mux16.h,v 1.3 2007-10-25 17:24:12 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -25,7 +25,8 @@ namespace std {} using namespace std;
 #include "TSystem.h"
 #include "TObject.h"
 
-#include "TMrbModule.h"
+#include "TMrbModuleRaw.h"
+#include "TMrbModuleChannel.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -35,7 +36,7 @@ namespace std {} using namespace std;
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbMesytec_Mux16 : public TMrbModule {
+class TMrbMesytec_Mux16 : public TMrbModuleRaw {
 
 	public:
 		TMrbMesytec_Mux16() {};  													// default ctor

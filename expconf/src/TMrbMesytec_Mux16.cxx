@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Mux16.cxx,v 1.2 2007-10-22 12:20:58 Marabou Exp $       
-// Date:           $Date: 2007-10-22 12:20:58 $
+// Revision:       $Id: TMrbMesytec_Mux16.cxx,v 1.3 2007-10-25 17:24:13 Marabou Exp $       
+// Date:           $Date: 2007-10-25 17:24:13 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -33,7 +33,7 @@ extern TMrbLogger * gMrbLog;
 ClassImp(TMrbMesytec_Mux16)
 
 TMrbMesytec_Mux16::TMrbMesytec_Mux16(const Char_t * MuxName, const Char_t * ModuleName, Int_t FirstChannel, Int_t NofSubmodules) :
-										TMrbModule(MuxName, "Mesytec_Mux16", NofSubmodules * 16, 1 << 12) {
+										TMrbModuleRaw(MuxName, "Mesytec_Mux16", NofSubmodules * 16, 1 << 12) {
 
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -56,10 +56,6 @@ TMrbMesytec_Mux16::TMrbMesytec_Mux16(const Char_t * MuxName, const Char_t * Modu
 			gMrbLog->Err() << "No config defined" << endl;
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
-		} else if (gMrbConfig->FindModule(MuxName)) {
-			gMrbLog->Err() << MuxName << ": Mux name already in use" << endl;
-			gMrbLog->Flush(this->ClassName());
-			this->MakeZombie();
 		} else if ((module = (TMrbModule *) gMrbConfig->FindModule(ModuleName)) == NULL) {
 			gMrbLog->Err() << MuxName << ": No such module - " << ModuleName << endl;
 			gMrbLog->Flush(this->ClassName());
@@ -80,8 +76,12 @@ TMrbMesytec_Mux16::TMrbMesytec_Mux16(const Char_t * MuxName, const Char_t * Modu
 			fNofSubmodules = NofSubmodules;
 			fHistoNames.Expand(NofSubmodules * 16);
 			fHistoNames.Clear();
-			gMrbConfig->AddMux(this);
-			gDirectory->Append(this);
+			for (Int_t i = 0; i < NofSubmodules * 16; i++) {
+				TMrbModuleChannel * chn = (TMrbModuleChannel *) fChannelSpec[i];
+				chn->MarkUsed(NULL);
+			}
+			gMrbConfig->AddMux(this);							// and to list of muxes
+			gDirectory->Append(this);							// make object visible in memory
 		}
 	}
 }
@@ -214,18 +214,6 @@ Bool_t TMrbMesytec_Mux16::BookHistograms() {
 		gMrbConfig->BookHistogram(this->GetName(), "TH1F",	hName.Data(), hTitle.Data(),
 															this->GetRange(), 0, this->GetRange());
 	}
-	TString muxNameUC = this->GetName();
-	muxNameUC(0,1).ToUpper();
-
-	gMrbConfig->BookHistogram(this->GetName(), "TH1F",	Form("hPos%s", muxNameUC.Data()),
-														Form("Position Mux %s", this->GetName()),
-														this->GetRange(), 0, this->GetRange());
-	gMrbConfig->BookHistogram(this->GetName(), "TH1F",	Form("hLkp%s", muxNameUC.Data()),
-														Form("Lookup Mux %s", this->GetName()),
-														this->GetRange(), 0, this->GetRange());
-	gMrbConfig->BookHistogram(this->GetName(), "TH1F",	Form("hBad%s", muxNameUC.Data()),
-														Form("Unidentified data Mux %s", this->GetName()),
-														this->GetRange(), 0, this->GetRange());
 	return(kTRUE);
 }
 
@@ -248,19 +236,26 @@ Bool_t TMrbMesytec_Mux16::WriteLookup(const Char_t * LkpFile) {
 	mux->SetValue("TUsrMux.Name", this->GetName());
 	mux->SetValue("TUsrMux.Module", this->GetModule()->GetName());
 	mux->SetValue("TUsrMux.ModuleRange", this->GetModule()->GetRange());
-	mux->SetValue("TUsrMux.Serial", this->GetModuleSerial());
+	mux->SetValue("TUsrMux.Serial", this->GetSerial());
+	mux->SetValue("TUsrMux.AdcSerial", this->GetModuleSerial());
 	mux->SetValue("TUsrMux.NofSubmodules", this->GetNofSubmodules());
-	mux->SetValue("TUsrMux.NofChannels", this->GetNofChannels());
-	mux->SetValue("TUsrMux.Position", Form("hPos%s", muxNameUC.Data()));
-	mux->SetValue("TUsrMux.Lookup", Form("hLkp%s", muxNameUC.Data()));
-	mux->SetValue("TUsrMux.Unidentified", Form("hBad%s", muxNameUC.Data()));
+	mux->SetValue("TUsrMux.NofParams", this->GetNofChannels());
 	for (Int_t i = 0; i < this->GetNofChannels(); i++) {
 		Int_t n = mux->GetValue(Form("TUsrMux.%d.Xmin", i), 0);
 		mux->SetValue(Form("TUsrMux.%d.Xmin", i), n);
 		n = mux->GetValue(Form("TUsrMux.%d.Xmax", i), 0);
 		mux->SetValue(Form("TUsrMux.%d.Xmax", i), n);
 		TString hName = this->GetHistoName(i);
-		if (hName.IsNull()) hName = Form("hE%s%02d", this->GetName(), i);
+		TString pName;
+		if (hName.IsNull()) {
+			hName = Form("hE%s%02d", this->GetName(), i);
+			pName = Form("%s%02d", this->GetName(), i);
+		} else {
+			pName = hName;
+			if (pName(0) == 'h') pName = pName(1, pName.Length() - 1);
+			pName(0,1).ToLower();
+		}
+		mux->SetValue(Form("TUsrMux.%d.Param", i), pName.Data());
 		mux->SetValue(Form("TUsrMux.%d.Histogram", i), hName.Data());
 	}
 	mux->SaveLevel(kEnvLocal);

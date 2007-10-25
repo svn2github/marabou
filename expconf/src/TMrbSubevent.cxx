@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.34 2007-10-22 12:20:58 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.35 2007-10-25 17:24:13 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -674,8 +674,16 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 					break;
 				case TMrbConfig::kAnaSevtSerial:
 					{
-						TMrbString sid(fSerial);
+						TString sid = "";
+						sid += fSerial;
 						AnaStrm << anaTmpl.Encode(line, sid) << endl;
+					}
+					break;
+				case TMrbConfig::kAnaSevtNofParams:
+					{
+						TString nofParams = "";
+						nofParams += fNofParams;
+						AnaStrm << anaTmpl.Encode(line, nofParams) << endl;
 					}
 					break;
 				case TMrbConfig::kAnaSevtXhitClass:

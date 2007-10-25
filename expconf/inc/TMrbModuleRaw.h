@@ -8,7 +8,7 @@
 // Class:          TMrbModuleRaw     -- a user-defined module
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModuleRaw.h,v 1.6 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModuleRaw.h,v 1.7 2007-10-25 17:24:12 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -41,12 +41,14 @@ class TMrbModuleRaw : public TMrbModule {
 
 		TMrbModuleRaw() {};														// default ctor
 		TMrbModuleRaw(const Char_t * ModuleName, const Char_t * ModuleID, Int_t NofChannels, Int_t Range,
-																Option_t * DataType = "I");	// ctor
+																	Option_t * DataType = "I");	// ctor
 		~TMrbModuleRaw() {};														// remove silena adc from list
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
+
+		Bool_t AddToListOfModules(); 							// raw modules has to be added to list explicitly
 
 		inline Bool_t ConvertToInt() const { return(kFALSE); };						// data type remains unchanged
 		virtual inline Bool_t IsRaw() const { return(kTRUE); };						// indicates raw (user-defined) mode

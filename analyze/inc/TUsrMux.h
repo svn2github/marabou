@@ -7,8 +7,8 @@
 // Purpose:        Class to describe data structure of Mesytec Mux16 multiplexer
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrMux.h,v 1.2 2007-10-22 12:20:58 Marabou Exp $       
-// Date:           $Date: 2007-10-22 12:20:58 $
+// Revision:       $Id: TUsrMux.h,v 1.3 2007-10-25 17:24:12 Marabou Exp $       
+// Date:           $Date: 2007-10-25 17:24:12 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -40,13 +40,12 @@ class TUsrMuxLookup : public TNamed, public TArrayI {
 	friend class TUsrMux;
 
 	public:
-		TUsrMuxLookup(const Char_t * MuxName, Int_t FirstChan, Int_t LastChan)
-											: TNamed(MuxName, MuxName) {
-			fFirstChan = FirstChan;
-			fLastChan = LastChan;
+		TUsrMuxLookup(const Char_t * MuxName, Int_t Size) : TNamed(MuxName, MuxName) {
 			fGoodHits = 0;
 			fBadHits = 0;
 			fHitRatio = 0;
+			this->Set(Size);
+			this->Reset(0);
 		};
 
 		inline void CountHit(Int_t Channel) {
@@ -68,8 +67,6 @@ class TUsrMuxLookup : public TNamed, public TArrayI {
 		inline Double_t CalculateRatio() { if (fGoodHits > 0) fHitRatio = fBadHits / fGoodHits; return(fHitRatio); };
 
 	protected:		
-		Int_t fFirstChan;			// first channel in mux vector
-		Int_t fLastChan;			// last channel
 		Double_t fGoodHits; 		// count good hits (central half of window)
 		Double_t fBadHits;			// count bad hits (outer quarters of window)
 		Double_t fHitRatio; 		// ratio bad/good
@@ -90,11 +87,9 @@ class TUsrMuxEntry : public TObject {
 	friend class TUsrMux;
 
 	public:
-		TUsrMuxEntry(TEnv * LkpEnv, TUsrMuxLookup * Lookup, TH1F * Position, TH1F * BadData, TUsrHit * Hit = NULL) {
+		TUsrMuxEntry(TEnv * LkpEnv, TUsrMuxLookup * Lookup, TUsrHit * Hit = NULL) {
 			fLkpEnv = LkpEnv;
 			fLookup = Lookup;
-			fPos = Position;
-			fBad = BadData;
 			fHit = Hit;
 		};
 
@@ -105,8 +100,6 @@ class TUsrMuxEntry : public TObject {
 	protected:		
 		TEnv * fLkpEnv;
 		TUsrMuxLookup * fLookup;
-		TH1F * fPos;
-		TH1F * fBad;
 		TUsrHit * fHit;
 		
 	ClassDef(TUsrMuxEntry, 0)				// [Analyze] Multiplexer entry
@@ -130,7 +123,7 @@ class TUsrMux : public TObject {
 		Bool_t Init(const Char_t * ConfigFile);
 		void ClearTables();
 		
-		TUsrMuxLookup * MakeLookupTable(TEnv * LkpEnv, Int_t FirstChan, TH1F * LkpHisto = NULL);
+		TUsrMuxLookup * MakeLookupTable(TEnv * LkpEnv);
 
 		TUsrMuxEntry * IsMuxChannel(TUsrHit * Hit);
 		Bool_t CollectHits(TUsrHBX * HbufIndex);
@@ -139,12 +132,13 @@ class TUsrMux : public TObject {
 		inline TUsrHit * NextHit() { return((TUsrHit *) fHitIter->Next()); };
 		inline Int_t GetNofHits() { return(fLofMuxHits.GetEntriesFast()); };
 
-		inline TObjArray * GetLofHistograms() { return(&fLofHistograms); };
 		inline TObjArray * GetLofLookups() { return(&fLofLookups); };
 
 		inline Bool_t IsVerbose() { return(fVerbose); };
+		inline Bool_t IsDebug() { return(fDebug); };
 
-		TH1F * GetHistogram(Int_t Channel);
+		inline Int_t GetIndexOfFirstHisto() { return(fIndexOfFirstHisto); };
+		inline Int_t GetNofHistograms() { return(fNofHistograms); };
 
 		void PrintChanTable();
 		void PrintLookup(TUsrMuxLookup * Lookup);
@@ -153,17 +147,19 @@ class TUsrMux : public TObject {
 	protected:		
 		TEnv * fConfig;
 		Bool_t fVerbose;
-		Bool_t fDebug;
+		Bool_t fDebug;					// debug flag
+		TString fDebugLock; 			// lock file for debug
 		Int_t fSmin;					// min serial number
 		Int_t fSmax;					// max serial number
 		Int_t fChansPerModule;			// number of mux pchannels per adc
 		Int_t fModuleRange; 			// number of channels per adc
+		Int_t fIndexOfFirstHisto; 		// index of first mux histo in histo list
+		Int_t fNofHistograms; 			// number of histograms
 		TIterator * fHitIter;			// hit iterator
 		TObjArray fChanTable;			// describes where mux channels are located in the adcs
 		TObjArray fLofMuxEntries;  		// collects mux channels (TUsrMuxEntry) of current event
 		TObjArray fLofMuxHits; 			// collects mux hits (TUsrHit) of current event
 		TObjArray fLofLookups; 			// list of lookups generated (TUsrMuxLookup)
-		TObjArray fLofHistograms;		// list of histos
 		
 	ClassDef(TUsrMux, 1)				// [Analyze] Mesytec Mux16 Multiplexer
 };

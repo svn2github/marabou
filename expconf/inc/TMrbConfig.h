@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.80 2007-10-16 14:24:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.81 2007-10-25 17:24:12 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -169,6 +169,7 @@ class TMrbConfig : public TNamed {
 									kAnaSevtTitle,
 									kAnaSevtSetName,
 									kAnaSevtSerial,
+									kAnaSevtNofParams,
 									kAnaSevtSerialEnum,
 									kAnaSevtBitsEnum,
 									kAnaSevtIndicesEnum,
@@ -443,13 +444,13 @@ class TMrbConfig : public TNamed {
 									kHistoRate			=	kHistoTH1 | kHistoTHF | kHistoTHR
 								};
 
-		enum EMrbModuleType  	{	kModuleRaw			=	TMrbConfig::kCrateUnused,		// module types
-									kModuleCamac		=	TMrbConfig::kCrateCamac,
+		enum EMrbModuleType  	{	kModuleCamac		=	TMrbConfig::kCrateCamac,
 									kModuleVME			=	TMrbConfig::kCrateVME,
-									kModuleListMode		=	BIT(2),
-									kModuleSingleMode	=	BIT(3),
-									kModuleScaler		=	BIT(4),
-									kModuleControl		=	BIT(5)
+									kModuleRaw			=	BIT(2),
+									kModuleListMode		=	BIT(3),
+									kModuleSingleMode	=	BIT(4),
+									kModuleScaler		=	BIT(5),
+									kModuleControl		=	BIT(6)
 								};
 
 		enum EMrbManufacturers	{	kManufactOther		=	0,

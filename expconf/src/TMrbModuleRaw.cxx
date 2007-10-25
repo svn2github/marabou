@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModuleRaw.cxx,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbModuleRaw.cxx,v 1.5 2007-10-25 17:24:13 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -86,11 +86,28 @@ TMrbModuleRaw::TMrbModuleRaw(const Char_t * ModuleName, const Char_t * ModuleID,
 				}
 
 				DefineRegisters();
-				gMrbConfig->AddModule(this);				// append to list of modules
 				gDirectory->Append(this);
 			}
 		}
 	}
+}
+
+Bool_t TMrbModuleRaw::AddToListOfModules() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModuleRaw::AddToListOfModules
+// Purpose:        Add to list of modules
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Writes readout code for a user-defined module.
+//                 Not yet implemented.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fSerial = gMrbConfig->AssignModuleSerial();
+	gMrbConfig->AddModule(this);
+	return(kTRUE);
 }
 
 Bool_t TMrbModuleRaw::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) {

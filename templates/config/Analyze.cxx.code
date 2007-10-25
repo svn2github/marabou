@@ -121,6 +121,8 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%EndOfCode%%
 %%MODULE_TIME_OFFSET%%
 
+	gDirectory = gROOT;
+
 %%BeginOfCode%%
 %B%// instantiate event classes and book histograms
 %CX%	if (g$pointerName == NULL) {

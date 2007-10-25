@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.150 2007-10-22 12:20:58 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.151 2007-10-25 17:24:12 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -265,6 +265,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaSevtTitle, 				"SEVT_TITLE"					},
 								{TMrbConfig::kAnaSevtSetName,				"SEVT_SET_NAME" 				},
 								{TMrbConfig::kAnaSevtSerial,				"SEVT_SERIAL"					},
+								{TMrbConfig::kAnaSevtNofParams,				"SEVT_NOF_PARAMS"				},
 								{TMrbConfig::kAnaSevtSerialEnum,			"SEVT_SERIAL_ENUM"				},
 								{TMrbConfig::kAnaSevtBitsEnum,				"SEVT_BITS_ENUM" 				},
 								{TMrbConfig::kAnaSevtIndicesEnum,	 		"SEVT_INDICES_ENUM" 			},
@@ -7804,8 +7805,11 @@ Bool_t TMrbConfig::CheckConfig() {
 	TIterator * modIter = fLofModules.MakeIterator();
 	while (module = (TMrbModule *) modIter->Next()) {
 		Int_t mtype = (module->GetType())->GetIndex();
-		if ((mtype & TMrbConfig::kModuleListMode) && !(mtype & TMrbConfig::kModuleScaler)) {
+		if ((mtype & TMrbConfig::kModuleListMode)
+			&& !(mtype & TMrbConfig::kModuleScaler)
+			&& !(mtype & TMrbConfig::kModuleRaw)) {
 			if (module->GetNofChannelsUsed() == 0) {
+				cout << "@@@ " << mtype << " " << (module->GetType())->GetName() << endl;
 				gMrbLog->Err()	<< "Module \"" << module->GetName()
 								<< "\" (serial " << module->GetSerial()
 								<< "): Not used by any subevent" << endl;
@@ -8119,13 +8123,16 @@ Bool_t TMrbConfig::WriteMuxConfig(const Char_t * CfgFile) {
 		}
 		mux->SetValue(Form("TMrbConfig.Mux.%d.Name", nmux), m->GetName());
 		mux->SetValue(Form("TMrbConfig.Mux.%d.Module", nmux), m->GetModule()->GetName());
-		mux->SetValue(Form("TMrbConfig.Mux.%d.Serial", nmux), m->GetModuleSerial());
+		mux->SetValue(Form("TMrbConfig.Mux.%d.Serial", nmux), m->GetSerial());
+		mux->SetValue(Form("TMrbConfig.Mux.%d.AdcSerial", nmux), m->GetModuleSerial());
+		mux->SetValue(Form("TMrbConfig.Mux.%d.NofParams", nmux), moduleChans);
+		mux->SetValue(Form("TMrbConfig.Mux.%d.Serial", nmux), m->GetSerial());
 		mux->SetValue(Form("TMrbConfig.Mux.%d.FirstChannel", nmux), m->GetFirstChannel());
 		mux->SetValue(Form("TMrbConfig.Mux.%d.LookupFile", nmux), Form("%s.lkp", m->GetName()));
 		m->WriteLookup(Form("%s.lkp", m->GetName()));
 		nmux++;
 	}
-	mux->SetValue("TMrbConfig.Mux.NofModuleChannels", moduleChans);
+	mux->SetValue("TMrbConfig.Mux.NofParams", moduleChans);
 	mux->SetValue("TMrbConfig.Mux.ModuleRange", moduleRange);
 	mux->SaveLevel(kEnvLocal);
 	return(kTRUE);	

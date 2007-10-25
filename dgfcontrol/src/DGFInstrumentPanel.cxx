@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.31 2007-10-22 16:45:37 Marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.32 2007-10-25 17:24:12 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -1072,7 +1072,7 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 				case kCM_BUTTON:
 					switch (Param1) {
 						case kDGFInstrStatRegChanCSRAEditButton:
-                    		new DGFEditChanCSRAPanel(fClient->GetRoot(), fStatRegChanCSRAEntry->GetEntry(),
+							new DGFEditChanCSRAPanel(fClient->GetRoot(), fStatRegChanCSRAEntry->GetEntry(),
 											DGFEditChanCSRAPanel::kFrameWidth, DGFEditChanCSRAPanel::kFrameHeight);
 							this->UpdateValue(kDGFInstrStatRegChanCSRAEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
@@ -1156,6 +1156,7 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 					}
 					break;
 				case kCM_COMBOBOX:
+                    cout << "@@@ combo" << endl;
 					gDGFControlData->SetSelectedModuleIndex(Param2);
 					this->InitializeValues(kFALSE);
 					break;
@@ -1194,18 +1195,18 @@ void DGFInstrumentPanel::RadioButtonPressed(Int_t Button) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t value = Button & 0xFFFF;
+	Int_t btn = Button & 0xFFFF;
 	Int_t frame = Button >> TGMrbButtonFrame::kFrameIdShift;
 	switch (frame) {
 		case kDGFInstrSelectChannel:
-			gDGFControlData->SetSelectedChannelIndex(value);
+			gDGFControlData->SetSelectedChannelIndex(btn);
 			this->InitializeValues(kFALSE);
 			break;
 		case kDGFInstrCFDOnOffButton:
-			this->InitializeCFD(value, -1);
+			this->InitializeCFD(btn, -1);
 			break;
 		case kDGFInstrCFDFractionButton:
-			this->InitializeCFD(-1, value);
+			this->InitializeCFD(-1, btn);
 			break;
 	}
 }

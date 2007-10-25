@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.21 2007-10-22 16:45:37 Marabou Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.22 2007-10-25 17:24:12 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -361,13 +361,19 @@ void DGFParamsPanel::RadioButtonPressed(Int_t Button) {
 		TString x = nx->GetName();
 		Char_t c = x(0);
 		nx = (TMrbNamedX *) fLofParams.First();
+		Bool_t found = kFALSE;
 		while (nx) {
 			x = nx->GetName();
 			if (x(0) == c) {
 				fSelectParam->GetComboBox()->Select(nx->GetIndex());
+				found = kTRUE;
 				break;
 			}
 			nx = (TMrbNamedX *) fLofParams.After(nx);
+		}
+		if (!found) {
+			gMrbLog->Err() << "No param found - " << c << "..." << endl;
+			gMrbLog->Flush(this->ClassName(), "RadioButtonPressed");
 		}
 	}
 }

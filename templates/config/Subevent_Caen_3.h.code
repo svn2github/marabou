@@ -25,6 +25,8 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Caen {
 		inline const Char_t * GetName() const { return(fSevtName.Data()); };
 		inline Int_t GetSerial() const { return(kMrbSevt%%SEVT_NAME_UC%%); };
 
+		inline Int_t GetNofParams() const { return(%%SEVT_NOF_PARAMS%%); };
+
 		Bool_t BookParams();					// book params
 %%BeginOfCode%%
 %R% 		void Reset(Int_t InitValue = $iniVal, Bool_t DataOnly = kFALSE);		// reset param data

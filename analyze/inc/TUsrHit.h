@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a hit
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrHit.h,v 1.3 2007-10-22 12:20:58 Marabou Exp $       
+// Revision:       $Id: TUsrHit.h,v 1.4 2007-10-25 17:24:12 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -64,7 +64,8 @@ class TUsrHit : public TObject {
 		enum	{	kHitCounterT2	=	4	};	// 32 bit counter T2
 
 // alternate layout used by c_ptm module
-		enum	{	kHitMuxChannel	=	0	};	// channel number for multiplexer
+		enum	{	kHitMuxModNo	=	2	};	// module number for multiplexer
+		enum	{	kHitMuxChannel	=	3	};	// channel number for multiplexer
 
 	public:
 		TUsrHit() { this->Reset(); };
@@ -96,9 +97,11 @@ class TUsrHit : public TObject {
 
 		inline UShort_t GetEnergy() const { return(fData[kHitEnergy]); };
 		inline UShort_t GetFastTrigger() const { return(fData[kHitFastTrigger]); };
-		Double_t GetCalEnergy(Bool_t Randomize = kTRUE) const;
+		Double_t GetCalEnergy(Bool_t Randomize = kTRUE, Bool_t WithinLimits = kFALSE) const;
 		Double_t GetDCorrEnergy(Bool_t Randomize = kTRUE) const;
 
+		inline Int_t GetMuxModuleNumber() const { return((Int_t) fData[kHitMuxModNo]); };
+		inline void SetMuxModuleNumber(Int_t ModuleNumber) { fData[kHitMuxModNo] = (UShort_t) ModuleNumber; };
 		inline Int_t GetMuxChannel() const { return((Int_t) fData[kHitMuxChannel]); };
 		inline void SetMuxChannel(Int_t Channel) { fData[kHitMuxChannel] = (UShort_t) Channel; };
 
