@@ -2041,7 +2041,8 @@ Bool_t FhMainFrame::StartDAQ()
 //
 //     here M_analyze is launched
 
-      gSystem->Exec(startCmd.Data());
+		gSystem->Exec(startCmd.Data());
+
 
       fTotal_livetime = 0;
       SetTime();
@@ -3336,7 +3337,7 @@ Int_t FhMainFrame::IsAnalyzeRunning(Int_t ps_check){
 
 //   TString our_pid_file = "M_analyze.pid";
    Int_t status = fM_Status;
-//    cout << "fOurPidFile->Data() " <<fOurPidFile->Data() << endl;
+//    cout << "pidFile: " << fOurPidFile->Data() << " " << gSystem->AccessPathName(fOurPidFile->Data()) << endl;
    if(!gSystem->AccessPathName(fOurPidFile->Data())){
       ifstream wstream;
 //      TString wline;
