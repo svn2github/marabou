@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.58 2007-10-10 07:04:46 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-10-10 07:04:46 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.59 2007-10-31 09:34:06 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-10-31 09:34:06 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -726,13 +726,13 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 		}
 	}
 
+	TString domain = "";
 	if (ok) {
 		if (this->IsVerbose()) {
 			gMrbLog->Out() << "Reading entries from file " << rhFile << " (" << rhTmpl << ")" << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 		}
 		TString rhLine;
-		TString domain = "";
 		TString hname;
 		TString dname;
 		TString haddr;
@@ -759,13 +759,13 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 					gMrbLog->Out() << "Setting default domain - " << domain << endl;
 					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 				}
-			} else {
-				if (n != 1) {
-					gMrbLog->Err() << "[" << rhFile << ", line " << lineNo << "] Wrong format - should be \"domainName\" (starting with \".\")" << endl;
-					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
-					delete rhArr;
-					continue;
-				}
+				delete rhArr;
+				continue;
+			} else if (n != 1) {
+				gMrbLog->Err() << "[" << rhFile << ", line " << lineNo << "] Wrong format - should be \"domainName\" (starting with \".\")" << endl;
+				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				delete rhArr;
+				continue;
 			}
 			Int_t m;
 			Bool_t isAddr = kFALSE;
@@ -789,7 +789,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 			TMrbNamedX * nx;
 			if (isAddr) {
 				nx = new TMrbNamedX(lineNo, hname.Data(), "");
-			} else {
+			} else  {
 				nx = new TMrbNamedX(lineNo, hname.Data(), dname.Data());
 			}
 			if (n == 2) {
@@ -822,7 +822,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 		} else {
 			if (this->IsVerbose()) {
 				gMrbLog->Out() << "Reading entries from file " << RhostsFile << endl;
-					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 			}
 			TString rhLine;
 			TString hname;
@@ -840,10 +840,11 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 				n = rhLine.Index(".", 0);
 				Bool_t isAddr = kFALSE;
 				if (n != -1) {
-					TObjArray * hArr = hname.Tokenize(".");
+					TObjArray * hArr = rhLine.Tokenize(".");
 					TString h1 = ((TObjString *) hArr->At(0))->GetString();
 					if (h1.IsDigit()) {
 						isAddr = kTRUE;
+						hname = rhLine;
 					} else {
 						isAddr = kFALSE;
 						hname = rhLine;
@@ -891,7 +892,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 			gMrbLog->Out() << "Adding to list of host names - " << hostName << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 		}
-		lofHosts.AddNamedX(0, hostName.Data(), "");
+		lofHosts.AddNamedX(0, hostName.Data(), domain.Data());
 	}
 
 	TString ppcName;
@@ -922,10 +923,15 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 	Int_t nofHosts = 0;
 	while (hx = (TMrbNamedX *) rhIter->Next()) {
 		TString hname = hx->GetName();
+		TString htitle = hx->GetTitle();
+		if (!htitle.IsNull()) {
+			hname += ".";
+			hname += htitle;
+		}
 		TInetAddress * ia = new TInetAddress(gSystem->GetHostByName(hname.Data()));
 		TString hlong = ia->GetHostName();
 		TString haddr = ia->GetHostAddress();
-		if (hlong.CompareTo("UnknownHost") == 0 || haddr.CompareTo("0.0.0.0") == 0) {
+		if (hlong.CompareTo("UnknownHost") == 0 || hlong.CompareTo("UnNamedHost") == 0 || haddr.CompareTo("0.0.0.0") == 0) {
 			gMrbLog->Err() << "Can't resolve host name - " << hname << " (ignored)" << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 			continue;
@@ -937,6 +943,9 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 			if (!dn.IsNull() && dn.CompareTo("(none)") != 0) {
 				hlong += ".";
 				hlong += dn;
+			} else if (!domain.IsNull()) {
+				hlong += ".";
+				hlong += domain;
 			}
 		}
 		if (this->IsVerbose()) {
