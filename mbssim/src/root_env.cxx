@@ -4,11 +4,13 @@
 // @(#)Purpose:    Read ROOT's environment file using plain C
 // Description:    Provides a means to get values from ROOT's environment
 // @(#)Author:     R. Lutter
-// @(#)Revision:   $Id: root_env.cxx,v 1.1 2007-10-05 08:32:55 Rudolf.Lutter Exp $
-// @(#)Date:       $Date: 2007-10-05 08:32:55 $
+// @(#)Revision:   $Id: root_env.cxx,v 1.2 2007-11-05 13:29:57 Rudolf.Lutter Exp $
+// @(#)Date:       $Date: 2007-11-05 13:29:57 $
 // URL:            
 // Keywords:       
 ////////////////////////////////////////////////////////////////////////////*/
+
+#include "root_env.h"
 
 #ifdef MBS_SIMUL_RDO
 namespace std {} using namespace std;
@@ -17,9 +19,6 @@ namespace std {} using namespace std;
 #else
 #	include <stdio.h>
 #endif
-
-#include "root_env.h"
-
 
 #ifdef MBS_SIMUL_RDO
 	void * calloc(size_t, size_t);

@@ -10,6 +10,8 @@
 // Keywords:       
 ////////////////////////////////////////////////////////////////////////////*/
 
+#include "unix_string.h"
+
 #ifdef MBS_SIMUL_RDO
 namespace std {} using namespace std;
 #	include <iostream>
@@ -17,8 +19,6 @@ namespace std {} using namespace std;
 #else
 #	include <stdio.h>
 #endif
-
-#include "unix_string.h"
 
 FILE * _unix_open(const char * FileName);
 TUnixEntry * _unix_find_entry(const char * EntryName, int ValueNumber);

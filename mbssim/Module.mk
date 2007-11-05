@@ -29,10 +29,6 @@ ALLLIBS     += $(MBSSIMLIB)
 # include all dependency files
 INCLUDEFILES += $(MBSSIMDEP)
 
-# add simulation flag
-
-CXXFLAGS += -DMBS_SIMUL_RDO
-
 ##### local rules #####
 
 include/%.h:    $(MBSSIMDIRI)/%.h

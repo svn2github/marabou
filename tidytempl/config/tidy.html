@@ -178,7 +178,7 @@ static Int_t recNo = 0;
 <tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::Initialize</pre></td></tr>
 <tr><td>Purpose:</td><td colspan="3">Instantiate user objects, initialize values</td></tr>
 <tr><td>Arguments:</td><td><pre class="mtag">TMrbIOSpec</pre></td><td><pre class="mtag">*IOSpec</pre></td><td>i/o specifications</td></tr>
-<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td></tr>
 <tr><td>Description:</td><td colspan="3">Instantiates events, histgrams, windows etc. and initializes values</td></tr>
 </table></div>
 <br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::Initialize(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> *IOSpec) {</pre>
@@ -282,6 +282,7 @@ static Int_t recNo = 0;
 <b>[7] &lt;ms&gt; [switch]</b><br>
 <table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
 </table></div>
+<br>
 <div class="header3">
 <b>[8] &lt;mx&gt; [expand]</b><br>
 <table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
@@ -292,6 +293,7 @@ static Int_t recNo = 0;
 <tr><td></td><td><pre class="arg1">paramIndex</pre></td><td>parameter index</td></tr>
 </table></div>
 <pre class="code">   <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">gMrbAnalyze</a>->AddModuleToList("<em title="module name">moduleName</em>", "<em title="module title">moduleTitle</em>", kMrbModule<em title="module name (1st char upper case)">ModuleName</em>, <em title="parameter index">paramIndex</em>, <em title="number of parameters">nofParams</em>, 0);</pre><br>
+<br>
 <br>
    <pre class="code">
 </pre><br>
@@ -335,6 +337,7 @@ static Int_t recNo = 0;
 <b>[7] &lt;ms&gt; [switch]</b><br>
 <table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
 </table></div>
+<br>
 <div class="header3">
 <b>[8] &lt;mx&gt; [expand]</b><br>
 <table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
@@ -342,6 +345,7 @@ static Int_t recNo = 0;
 <tr><td>Substitutions (inherited):</td><td><pre class="arg1">evtName</pre></td><td>event name</td></tr>
 </table></div>
 <pre class="code">         err |= !g<em title="event name (1st char upper case)">EvtName</em>->AllocHitBuffers();</pre><br>
+<br>
    <pre class="code">      }
       if (err) {
          <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbLogger.html">gMrbLog</a>-&gt;Err() &lt;&lt; "Something went wrong while creating event \"<em title="event name">evtName</em>\"" &lt;&lt; endl;
@@ -574,7 +578,7 @@ static Int_t recNo = 0;
 <div class="header2">
 <b>[5] &lt;mc&gt; [code]</b><br>
 <table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
-<tr><td>Comment:</td><td colspan="3"><b>default method</b>, may be replaced by user-defined code</td></tr>
+<tr><td>Comment:</td><td colspan="3">**default method**, may be replaced by user-defined code</td></tr>
 <tr><td>Tag:</td><td colspan="3"><pre class="mtag">HANDLE_MESSAGES (TMrbConfig::kAnaUserMessages)</pre></td></tr>
 </table></div>
 <br>
@@ -585,7 +589,7 @@ static Int_t recNo = 0;
 <tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::HandleMessage</pre></td></tr>
 <tr><td>Purpose:</td><td colspan="3">Execute a message</td></tr>
 <tr><td>Arguments:</td><td><pre class="mtag">Char_t *</pre></td><td><pre class="mtag">Args</pre></td><td>argument list</td></tr>
-<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td></tr>
 <tr><td>Description:</td><td colspan="3">Executes a message sent by message handler</td></tr>
 </table></div>
 <br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::HandleMessage(Char_t * Args) {</pre>
@@ -598,7 +602,7 @@ static Int_t recNo = 0;
 <div class="header2">
 <b>[5] &lt;mc&gt; [code]</b><br>
 <table summary="mc"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
-<tr><td>Comment:</td><td colspan="3"><b>default method</b>, may be replaced by user-defined code</td></tr>
+<tr><td>Comment:</td><td colspan="3">**default method**, may be replaced by user-defined code</td></tr>
 <tr><td>Tag:</td><td colspan="3"><pre class="mtag">RELOAD_PARAMS (TMrbConfig::kAnaUserReloadParams)</pre></td></tr>
 </table></div>
 <br>
@@ -609,7 +613,7 @@ static Int_t recNo = 0;
 <tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::ReloadParams</pre></td></tr>
 <tr><td>Purpose:</td><td colspan="3">Reload parameters from file</td></tr>
 <tr><td>Arguments:</td><td><pre class="mtag">TMrbIOSpec</pre></td><td><pre class="mtag">*IOSpec</pre></td><td>i/o specifications</td></tr>
-<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td></tr>
 <tr><td>Description:</td><td colspan="3">Reloads params (vars, wdws, functions etc.) from root file</td></tr>
 </table></div>
 <br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::ReloadParams(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> *IOSpec) {</pre>
@@ -632,7 +636,7 @@ static Int_t recNo = 0;
 <tr><td>Type:</td><td colspan="3"><pre class="mtag">C++ METHOD</pre></td></tr>
 <tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::AdjustWindowPointers</pre></td></tr>
 <tr><td>Purpose:</td><td colspan="3">Adjust pointers to windows after reload</td></tr>
-<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td></tr>
 <tr><td>Description:</td><td colspan="3">Updates pointers to windows (2-dim only)</td></tr>
 </table></div>
 <br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::AdjustWindowPointers() {</pre>
@@ -668,7 +672,7 @@ static Int_t recNo = 0;
 <tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::WriteRootTree</pre></td></tr>
 <tr><td>Purpose:</td><td colspan="3">Open a file to write raw data to tree</td></tr>
 <tr><td>Arguments:</td><td><pre class="mtag">TMrbIOSpec</pre></td><td><pre class="mtag">*IOSpec</pre></td><td>i/o specifications</td></tr>
-<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td></tr>
 <tr><td>Description:</td><td colspan="3">Opens a ROOT file and creates trees</td></tr>
 </table></div>
 <br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::WriteRootTree(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> *IOSpec) {</pre>
@@ -809,7 +813,7 @@ static Int_t recNo = 0;
 <tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::OpenRootFile</pre></td></tr>
 <tr><td>Purpose:</td><td colspan="3">Open a file to replay tree data</td></tr>
 <tr><td>Arguments:</td><td><pre class="mtag">TMrbIOSpec</pre></td><td><pre class="mtag">*IOSpec</pre></td><td>i/o specifications</td></tr>
-<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td></tr>
 <tr><td>Description:</td><td colspan="3">Opens a ROOT file for input (replay only)</td></tr>
 </table></div>
 <br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::OpenRootFile(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> *IOSpec) {</pre>
@@ -995,7 +999,7 @@ static Int_t recNo = 0;
 <tr><td>Name:</td><td colspan="3"><pre class="mtag">TMrbAnalyze::ReplayEvents</pre></td></tr>
 <tr><td>Purpose:</td><td colspan="3">Read data from ROOT file</td></tr>
 <tr><td>Arguments:</td><td><pre class="mtag">TMrbIOSpec</pre></td><td><pre class="mtag">*IOSpec</pre></td><td>i/o specifications</td></tr>
-<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td><td> </td></tr>
+<tr><td>Return:</td><td><pre class="mtag">Bool_t</pre></td><td><pre class="mtag">TrueOrFalse</pre></td></tr>
 <tr><td>Description:</td><td colspan="3">Replays event data</td></tr>
 </table></div>
 <br><pre class="method">Bool_t <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbAnalyze.html">TMrbAnalyze</a>::ReplayEvents(<a href="http://www.bl.physik.uni-muenchen.de/marabou/html/TMrbIOSpec.html">TMrbIOSpec</a> *IOSpec) {</pre>
@@ -1198,6 +1202,7 @@ static Int_t recNo = 0;
 <b>[8] &lt;ms&gt; [switch]</b><br>
 <table summary="ms"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
 </table></div>
+<br>
 <div class="header3">
 <b>[9] &lt;mx&gt; [expand]</b><br>
 <table summary="mx"><tr><td width="200"></td><td width="150"></td><td width="150"></td><td></td></tr>
@@ -1206,6 +1211,7 @@ static Int_t recNo = 0;
 <tr><td></td><td><pre class="arg1">procEvent</pre></td><td>method how to process an event</td></tr>
 </table></div>
 <pre class="code">         sts = g<em title="event name (1st char upper case)">EvtName</em>-><em title="method how to process an event">procEvent</em>();</pre><br>
+<br>
    <pre class="code">         pthread_mutex_unlock(&amp;global_data_mutex);
          return(sts);
 </pre><br>

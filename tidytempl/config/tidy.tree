@@ -66,7 +66,9 @@ Document mrb-test (file Analyze.cxx.code): structure as analyzed by D. Raggett's
 [ 7] ....... <mx> type=Start/End(7) tag=MNODE(202) parent=mc indent=1 string="gMrbAnalyz..."
 [ 7] ....... <text> type=Text(4) parent=mc text='   ...'
 [ 7] ....... <ms> type=StartTag(5) tag=MNODE(205) parent=mc indent=1
+[ 8] ........ <text> type=Text(4) parent=ms text='      ...'
 [ 8] ........ <mx> type=Start/End(7) tag=MNODE(202) parent=ms indent=1 mcase="ML:add module" string='gMrbAnalyz...'
+[ 8] ........ <text> type=Text(4) parent=ms text='   ...'
 [ 7] ....... <text> type=Text(4) parent=mc text=<empty>
 [ 6] ...... <text> type=Text(4) parent=mc text='<cr>...'
 [ 6] ...... <mc> type=StartTag(5) tag=MNODE(203) parent=mc indent=1 mtag="MODULE_TIME_OFFSET" atag="TMrbConfig::kAnaModuleTimeOffset" comment="// set time offsets for modules" subst=" moduleName:module name, moduleTitle:module title, timeOffset:time offset" iter="one entry per module"
@@ -75,7 +77,9 @@ Document mrb-test (file Analyze.cxx.code): structure as analyzed by D. Raggett's
 [ 6] ...... <mc> type=StartTag(5) tag=MNODE(203) parent=mc indent=1 mtag="EVT_CLASS_INSTANCE" atag="TMrbConfig::kAnaEventClassInstance" comment="// instantiate event classes and book histograms" subst=" evtName:event name, trigNo:trigger number" iter="one entry per readout class"
 [ 7] ....... <text> type=Text(4) parent=mc text=' <cr>   if (g...'
 [ 7] ....... <ms> type=StartTag(5) tag=MNODE(205) parent=mc indent=1
+[ 8] ........ <text> type=Text(4) parent=ms text='          ...'
 [ 8] ........ <mx> type=Start/End(7) tag=MNODE(202) parent=ms indent=3 mcase="HB:event uses hit buffers" indent="+1" string="err |= !g#..."
+[ 8] ........ <text> type=Text(4) parent=ms text='         ...'
 [ 7] ....... <text> type=Text(4) parent=mc text='      }<cr>  ...'
 [ 6] ...... <text> type=Text(4) parent=mc text='<cr>...'
 [ 6] ...... <mc> type=StartTag(5) tag=MNODE(203) parent=mc indent=1 mtag="EVT_USER_CLASS_INSTANCE" atag="TMrbConfig::kAnaEventUserClassInstance" comment="// instantiate user-defined event classes" subst="className:name of user class" iter="one entry per user class"
@@ -264,7 +268,9 @@ Document mrb-test (file Analyze.cxx.code): structure as analyzed by D. Raggett's
 [ 7] ....... <mc> type=StartTag(5) tag=MNODE(203) parent=mc indent=1 subst=" evtName:event name, trigNo:trigger number, procEvent:method how to process an event" iter="one entry per trigger"
 [ 8] ........ <text> type=Text(4) parent=mc text=' <cr>      ca...'
 [ 8] ........ <ms> type=StartTag(5) tag=MNODE(205) parent=mc indent=1
+[ 9] ......... <text> type=Text(4) parent=ms text='          ...'
 [ 9] ......... <mx> type=Start/End(7) tag=MNODE(202) parent=ms indent=3 mcase="P" indent="+1" string="sts = g#ev..."
+[ 9] ......... <text> type=Text(4) parent=ms text='         ...'
 [ 8] ........ <text> type=Text(4) parent=mc text='         p...'
 [ 7] ....... <text> type=Text(4) parent=mc text=<empty>
 [ 7] ....... <mc> type=StartTag(5) tag=MNODE(203) parent=mc indent=1 mtag="EVT_IGNORE_TRIGGER" atag="TMrbConfig::kAnaEventIgnoreTrigger" comment="ignore trigger number" subst="trigNo:trigger number" iter="one entry per trigger number"

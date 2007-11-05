@@ -54,19 +54,23 @@ pre.code {
    width: 90%
 }
 pre.mtag {
+   padding-top: 1em;
    font: 12pt courier;
    color: darkblue;
 }
 pre.arg1 {
+   padding-top: 1em;
    font: 12pt courier;
    color: darkblue;
 }
 pre.arg2 {
+   padding-top: 1em;
    font: 12pt courier;
    background-color: red;
    color: white;
 }
 pre.method {
+   padding-top: 1em;
    font: 12pt courier;
    font-style: normal;
    font-weight: bold;
