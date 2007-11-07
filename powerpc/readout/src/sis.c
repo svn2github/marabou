@@ -67,7 +67,7 @@
 #include "errnum_def.h"
 
 
-void sis_module_info(volatile unsigned char * module);
+void sis_module_info(unsigned long physAddr, volatile unsigned char * vmeAddr, unsigned long addrMod);
 
 static struct pdparam_master s_param; 		/* vme segment params */
 
@@ -80,16 +80,18 @@ int main(int argc, char *argv[]) {
 
 	int i;
 	int version;
-	unsigned long addr;
+	unsigned long physAddr;
+	unsigned long addrMod;
 	unsigned short srval;
 	unsigned long bcval;
 	volatile char * sis;
 
 	if (argc <= 1) {
-		fprintf(stderr, "sis: Read status of sis\nUsage: sis <addr>   (vme addr)\n");
+		fprintf(stderr, "sis: Read status of SIS modules\nUsage: sis <addr> [<mod=0x09>]\n");
 		exit(1);
 	}
-	addr = strtol(argv[1], NULL, 16);
+	physAddr = strtol(argv[1], NULL, 16);
+	if (argc > 2) addrMod = strtol(argv[2], NULL, 16); else addrMod = 0x09;
 
 	s_param.iack = 1;						/* prepare vme segment */
  	s_param.rdpref = 0;
@@ -97,17 +99,21 @@ int main(int argc, char *argv[]) {
  	s_param.swap = SINGLE_AUTO_SWAP;
  	s_param.dum[0] = 0; 					/* forces static mapping! */
 
- 	sis = (volatile char *) find_controller(addr, 0x200L, 0x39, 0, 0, &s_param);
-	sis_module_info(sis);
+ 	sis = (volatile char *) find_controller(physAddr, 0x200L, addrMod, 0, 0, &s_param);
+	if (sis == (volatile char *) -1) {
+		fprintf(stderr, "sis: Can't map addr %#lx (mod=%#lx)\n", physAddr, addrMod);
+		exit(1);
+	}
+	sis_module_info(physAddr, sis, addrMod);
 }
 
-void sis_module_info(volatile unsigned char * module) {
+void sis_module_info(unsigned long physAddr, volatile unsigned char * vmeAddr, unsigned long addrMod) {
 	char str[128];
 	unsigned long ident;
 	unsigned short modId;
 	unsigned short version;
-	ident = *SIS_3801_A_IDENT(module);
+	ident = *SIS_3801_A_IDENT(vmeAddr);
 	modId = (ident >> 16) & 0xFFFF;
 	version = (ident >> 12) & 0xF;
-	printf("SIS module info: addr %#lx, id %#x, version %x\n", module, modId, version);
+	printf("SIS module info: addr (phys) %#lx, addr (vme) %#lx, mod %#lx, id %#x, version %x\n", physAddr, vmeAddr, addrMod, modId, version);
 }

@@ -255,7 +255,7 @@
 #include "err_mask_def.h"
 #include "errnum_def.h"
 
-void caen_module_info(long addr, volatile unsigned short * firmWare);
+void caen_module_info(unsigned long physAddr, volatile unsigned char * vmeAddr, unsigned long addrMod);
 
 static struct pdparam_master s_param; 		/* vme segment params */
 
@@ -268,16 +268,18 @@ int main(int argc, char *argv[]) {
 
 	int i;
 	int version;
-	unsigned int addr;
+	unsigned int physAddr;
+	unsigned int addrMod;
 	unsigned short srval;
 	unsigned long bcval;
 	volatile char * caen;
 
 	if (argc <= 1) {
-		fprintf(stderr, "caen: Read status of caen\nUsage: caen <addr>   (vme addr)\n");
+		fprintf(stderr, "caen: Read status of CAEN modules\nUsage: sis <addr> [<mod=0x39>]\n");
 		exit(1);
 	}
-	addr = strtol(argv[1], NULL, 16);
+	physAddr = strtol(argv[1], NULL, 16);
+	if (argc > 2) addrMod = strtol(argv[2], NULL, 16); else addrMod = 0x39;
 
 	s_param.iack = 1;						/* prepare vme segment */
  	s_param.rdpref = 0;
@@ -285,17 +287,23 @@ int main(int argc, char *argv[]) {
  	s_param.swap = SINGLE_AUTO_SWAP;
  	s_param.dum[0] = 0; 					/* forces static mapping! */
 
- 	caen = (volatile char *) find_controller(addr, 0x10000L, 0x39, 0, 0, &s_param);
-	caen_module_info(addr, CAEN_V785_A_ROM(caen));
+ 	caen = (volatile char *) find_controller(physAddr, 0x10000L, addrMod, 0, 0, &s_param);
+	if (caen == (volatile char *) -1) {
+		fprintf(stderr, "caen: Can't map addr %#lx (mod=%#lx)\n", physAddr, addrMod);
+		exit(1);
+	}
+	caen_module_info(physAddr, caen, addrMod);
 }
 
-void caen_module_info(long addr, volatile unsigned short * firmWare) {
+void caen_module_info(unsigned long physAddr, volatile unsigned char * vmeAddr, unsigned long addrMod) {
 	unsigned short revision;
 	unsigned short serialMSB, serialLSB;
 	unsigned short boardIdMSB, boardIdLSB;
 	int serial, boardId;
 	char str[256];
 	
+	volatile unsigned short * firmWare = CAEN_V785_A_ROM(vmeAddr);
+
 	boardIdMSB = *(firmWare + 0x3A / sizeof(unsigned short)) & 0xFF;
 	boardIdLSB = *(firmWare + 0x3E / sizeof(unsigned short)) & 0xFF;
 	boardId = (int) (boardIdMSB << 8) + (int) boardIdLSB;
@@ -303,7 +311,7 @@ void caen_module_info(long addr, volatile unsigned short * firmWare) {
 	serialLSB = *(firmWare + 0xF06 / sizeof(unsigned short)) & 0xFF;
 	serialMSB = *(firmWare + 0xF02 / sizeof(unsigned short)) & 0xFF;
 	serial = (int) (serialMSB << 8) + (int) serialLSB;
-	printf("CAEN module info: addr %#lx, type V%d, serial# %d, revision %d\n", addr, boardId, serial, revision);
+	printf("CAEN module info: addr (phys) %#lx, addr (vme) %#lx, mod %#lx, type V%d, serial# %d, revision %d\n", physAddr, vmeAddr, addrMod, boardId, serial, revision);
 	if (boardId != 785 && boardId != 775 && boardId != 965) {
 		printf("CAEN module info: Illegal board ID %d - should be 785\n", boardId);
 	}
