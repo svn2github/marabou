@@ -25,10 +25,10 @@ enum M_status {M_ABSENT, M_STARTING, M_RUNNING,
                M_CONFIGURED, M_CONFIGURING};
 const Int_t MAXTIMEOUT = 50;
 
-static const Int_t NPPC = 18, MBSV = 2, TRIGS = 2;
+static const Int_t NPPC = 19, MBSV = 2, TRIGS = 2;
 
-static const Char_t * masters[] = {"ppc-0", "ppc-1", "ppc-2", "ppc-3", "ppc-4", "ppc-5", "ppc-6", "ppc-7", "ppc-8", "ppc-1", "ppc-3", "ppc-5", "ppc-7", "ppc-10", "ppc-12", "ppc-13", "ppc-14", "ppc-15"};   
-static const Char_t * slaves[]  = {"ppc-0", "ppc-0", "ppc-2", "ppc-2", "ppc-4", "ppc-4", "ppc-6", "ppc-6", "ppc-8", "ppc-1", "ppc-3", "ppc-5", "ppc-7", "ppc-10", "ppc-12", "ppc-13", "ppc-14", "ppc-15"};
+static const Char_t * masters[] = {"ppc-0", "ppc-1", "ppc-2", "ppc-3", "ppc-4", "ppc-5", "ppc-6", "ppc-7", "ppc-8", "ppc-1", "ppc-3", "ppc-5", "ppc-7", "ppc-10", "ppc-12", "ppc-13", "ppc-14", "ppc-15", "ppc-16"};   
+static const Char_t * slaves[]  = {"ppc-0", "ppc-0", "ppc-2", "ppc-2", "ppc-4", "ppc-4", "ppc-6", "ppc-6", "ppc-8", "ppc-1", "ppc-3", "ppc-5", "ppc-7", "ppc-10", "ppc-12", "ppc-13", "ppc-14", "ppc-15", "ppc-16"};
 static const Char_t * triggers[]  = {"VME", "CAMAC"}; 
 
 static const Int_t  MINSOCKET = 9090, MAXSOCKET = 9095;
