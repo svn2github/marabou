@@ -135,6 +135,7 @@
 //- dummy prefixes, never used
 %VR%
 %SS%
+%SI%
 %AL%
 %XS%
 %XI%
