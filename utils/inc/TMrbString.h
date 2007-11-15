@@ -8,12 +8,13 @@
 // Class:          TMrbString     -- a TString providing number conversion
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbString.h,v 1.10 2007-07-27 11:16:00 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbString.h,v 1.11 2007-11-15 12:05:24 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Rtypes.h"
+#include "RVersion.h"
 #include "TString.h"
 #include "TSystem.h"
 
@@ -155,6 +156,10 @@ class TMrbString : public TString {
 
 		inline void SetBase(Int_t Base) { fBase = Base; };
 		inline void ResetBase() { fBase = TMrbString::kDefaultBase; };
+
+#if ROOT_VERSION_CODE < ROOT_VERSION(5,16,0)
+		Bool_t Tokenize(TString& tok, Ssiz_t& from, const char* delim = " ") const;
+#endif
 
  	protected:
 		Bool_t CheckBase(Int_t Base, Char_t * Method) const;	// check base
