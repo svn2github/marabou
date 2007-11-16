@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.151 2007-10-25 17:24:12 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.152 2007-11-16 13:33:27 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -930,7 +930,7 @@ const Char_t * TMrbConfig::GetMbsVersion(Bool_t Vformat, Bool_t Verbose)  {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetMbsVersion
-// Purpose:        Returnd MBS version
+// Purpose:        Return MBS version
 // Arguments:      Bool_t Vformat       -- return old format vNN if kTRUE
 //                 Bool_t Verbose       -- output error message if not ok
 // Results:        Char_t * MbsVersion  -- result
@@ -998,7 +998,7 @@ const Char_t * TMrbConfig::GetLynxVersion(Bool_t Verbose)  {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetLynxVersion
-// Purpose:        Returnd LynxOs version
+// Purpose:        Return LynxOs version
 // Arguments:      Bool_t Verbose        -- output error message if not ok
 // Results:        Char_t * LynxVersion  -- result
 // Exceptions:
@@ -1050,6 +1050,44 @@ const Char_t * TMrbConfig::GetLynxVersion(Bool_t Verbose)  {
 	}
 
 	return(fLynxVersion.Data());
+}
+
+const Char_t * TMrbConfig::GetProcType(Bool_t Verbose) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetProcType
+// Purpose:        Return processor type
+// Arguments:      Bool_t Verbose        -- output error message if not ok
+// Results:        Char_t * ProcType     -- result
+// Exceptions:
+// Description:    Returns ppc type: PPC (=RIO2) or RIO3
+//                 Type is read from rootrc environment: TMbsSetup.ProcType
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString procType;
+	if (fProcType.IsNull()) {
+		procType = gEnv->GetValue("TMbsSetup.ProcType", "");
+		if (procType.IsNull()) {
+			if (Verbose) {
+				gMrbLog->Err() << "Processor type not defined - set TMbsSetup.ProcType in .rootrc properly" << endl;
+				gMrbLog->Flush(this->ClassName(), "GetProcType");
+			}
+			return("");
+		} else {
+			if (	procType.CompareTo("PPC") != 0
+			&&		procType.CompareTo("RIO2") != 0
+			&&		procType.CompareTo("RIO3") != 0) {
+				if (Verbose) {
+					gMrbLog->Err() << "Wrong processor type - " << procType << ", set TMbsSetup.ProcType in .rootrc properly" << endl;
+					gMrbLog->Flush(this->ClassName(), "GetProcType");
+				}
+				return("");
+			}
+			fProcType = procType;
+		}
+	}
+	return(fProcType.Data());
 }
 
 Bool_t TMrbConfig::CheckModuleAddress(TObject * Module, Bool_t WrnOnly) const {
@@ -1510,6 +1548,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	if (mbsVersion.IsNull()) return(kFALSE);
 	TString lynxVersion = this->GetLynxVersion(kTRUE);
 	if (lynxVersion.IsNull()) return(kFALSE);
+	TString procType = this->GetProcType(kTRUE);
+	if (procType.IsNull()) return(kFALSE);
 
 	TString mbsv = Form("v%cx", mbsVersion(0));			// make file depends on major mbs version: v22 -> v2x, v42 & v43 -> v4x
 	TString mkFile = Form("Readout_%s.mk.code", mbsv.Data());
@@ -7122,17 +7162,11 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	if (mbsVersion.IsNull()) return(kFALSE);
 	TString lynxVersion = this->GetLynxVersion(kTRUE);
 	if (lynxVersion.IsNull()) return(kFALSE);
+	TString procType = this->GetProcType(kTRUE);
+	if (procType.IsNull()) return(kFALSE);
 
 	mbsSetup->Set("MbsVersion", mbsVersion.Data());
 	mbsSetup->Set("LynxVersion", lynxVersion.Data());
-
-	TString procType = gEnv->GetValue("TMbsSetup.ProcType", "");
-	if (!procType.IsNull()) {
-		mbsSetup->EvtBuilder()->SetType(procType.Data());
-		mbsSetup->ReadoutProc(0)->SetType(procType.Data());
-		gMrbLog->Out() << "Setting MBS proc type to \"" << procType << "\"" << endl;
-		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup", setblue);
-	}
 
 	TString trigMode = gEnv->GetValue("TMbsSetup.TriggerMode", "");
 	if (!trigMode.IsNull()) {
@@ -7700,6 +7734,8 @@ Bool_t TMrbConfig::CheckConfig() {
 	if (mbsVersion.IsNull()) return(kFALSE);
 	TString lynxVersion = this->GetLynxVersion(kTRUE);
 	if (lynxVersion.IsNull()) return(kFALSE);
+	TString procType = this->GetProcType(kTRUE);
+	if (procType.IsNull()) return(kFALSE);
 
 	TString lv = "";
 	if (fMbsVersion.CompareTo("2.2") == 0) {

@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.81 2007-10-25 17:24:12 Marabou Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.82 2007-11-16 13:33:27 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -844,6 +844,7 @@ class TMrbConfig : public TNamed {
 
 		const Char_t * GetMbsVersion(Bool_t Vformat = kTRUE, Bool_t Verbose = kFALSE);
 		const Char_t * GetLynxVersion(Bool_t Verbose = kFALSE);
+		const Char_t * GetProcType(Bool_t Verbose = kFALSE);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -943,6 +944,7 @@ class TMrbConfig : public TNamed {
 		TString fMbsVersion;				// MBS version, format N.M
 		TString fMbsVVersion;				// ... format vNN
 		TString fLynxVersion;				// lynxOs version, format N.M
+		TString fProcType;					// processor type: PPC, RIO2, or RIO3
 
 	ClassDef(TMrbConfig, 1) 	// [Config] Base class to describe an experimental setup in MARaBOU
 };	
