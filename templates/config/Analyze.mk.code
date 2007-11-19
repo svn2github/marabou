@@ -96,7 +96,7 @@ $userLib:
 
 .Config.done:	Config.C
 			@root -b Config.C
-			$touch .Config.done
+			@touch .Config.done
 
 doc:		$(AFILE).cxx
 			@if [ ! -d HTML ]; then mkdir HTML; fi
