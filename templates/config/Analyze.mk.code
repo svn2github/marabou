@@ -61,7 +61,7 @@ ALL			=	\
 
 all:		$(ALL)
 
-M_analyze:	$(OBJPATH)/M_analyze.o lib$(AFILE).so
+M_analyze:	.Config.done $(OBJPATH)/M_analyze.o lib$(AFILE).so
 			$(LD) $(LFLAGS) -o M_analyze $(OBJPATH)/M_analyze.o \
 					-L. -l$(AFILE) \
 					$(USER_LIBS) \
@@ -93,6 +93,10 @@ $userLib:
 
 %%EndOfCode%%
 %%MAKE_ULIB_RULES%%
+
+.Config.done:	Config.C
+			@root -b Config.C
+			$touch .Config.done
 
 doc:		$(AFILE).cxx
 			@if [ ! -d HTML ]; then mkdir HTML; fi
