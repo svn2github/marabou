@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.60 2007-11-16 13:33:27 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-11-16 13:33:27 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.61 2007-11-19 11:53:05 Marabou Exp $       
+// Date:           $Date: 2007-11-19 11:53:05 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -1074,14 +1074,6 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 	this->Get(lynxVersion, "LynxVersion");
 	if (lynxVersion.IsNull()) {
 		gMrbLog->Err() << "Lynx version not given - set TMbsSetup.LynxVersion properly" << endl;
-		gMrbLog->Flush(this->ClassName(), "ExpandFile");
-		return(kFALSE);
-	}
-
-	TString procType;
-	this->Get(procType, "ProcType");
-	if (procType.IsNull()) {
-		gMrbLog->Err() << "Processor type not given - set TMbsSetup.ProcType properly" << endl;
 		gMrbLog->Flush(this->ClassName(), "ExpandFile");
 		return(kFALSE);
 	}
