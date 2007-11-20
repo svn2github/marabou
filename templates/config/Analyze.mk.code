@@ -116,7 +116,7 @@ doc:		$(AFILE).cxx
 
 clean:
 			%%MAKE_CLEAN%%
-			rm -f *.o $(USER_OBJS) lib$(AFILE).so $(AFILE)Dict.cxx
+			rm -f *.o $(USER_OBJS) lib$(AFILE).so $(AFILE)Dict.cxx .Config.done
 
 .cxx.o:
 			$(CXX) $(CXXFLAGS) -o $@ $<
