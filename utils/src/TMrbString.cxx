@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbString.cxx,v 1.20 2007-11-15 12:05:24 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-11-15 12:05:24 $
+// Revision:       $Id: TMrbString.cxx,v 1.21 2007-11-20 08:14:51 Rudolf.Lutter Exp $       
+// Date:           $Date: 2007-11-20 08:14:51 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -864,36 +864,4 @@ Bool_t TMrbString::CheckBase(Int_t Base, Char_t * Method) const {
 	gMrbLog->Flush("TMrbString", Method);
 	return(kFALSE);
 }
-
-#if ROOT_VERSION_CODE < ROOT_VERSION(5,16,0)
-Bool_t TMrbString::Tokenize(TString & Token, Int_t & Index, const Char_t * Delim) const {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbString::Tokenize
-// Purpose:        Divide string into tokens
-// Arguments:      TString & Token        -- where to place next token
-//                 Int_t & Index          -- index
-//                 Char_t * Delim         -- delimiter
-// Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    Returns tokens one by one
-//                 **** This method will be standard TString for ROOT >= 5.16
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Bool_t sts;
-	TObjArray * tokArr = this->Tokenize(Delim);
-	Int_t nofTokens = tokArr->GetEntriesFast();
-	if (Index >= 0 && Index < nofTokens) {
-		Token = ((TObjString *) tokArr->At(Index))->GetString();
-		Index++;
-		sts = kTRUE;
-	} else {
-		Token = "";
-		sts = kFALSE;
-	}
-	delete tokArr;
-	return(sts);
-}
-#endif
 
