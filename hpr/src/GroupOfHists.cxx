@@ -8,7 +8,11 @@
 #include "support.h"
 #include "SetColor.h"
 #include "GroupOfHists.h"
-#include "GroupOfHists.h"
+#include "Set1DimOptDialog.h"
+#include "Set2DimOptDialog.h"
+#include "SetColorModeDialog.h"
+#include "WindowSizeDialog.h"
+
 
 ClassImp (GoHTimer)
 ClassImp (GroupOfHists)
@@ -34,18 +38,24 @@ enum EGoHCommandIds {
    M_AllAsFirst,
    M_SetOptions,
    M_AllAsSelRangeOnly,
-   M_ActivateTimer
+   M_ActivateTimer,
+   M_Option1Dim,
+   M_Option2Dim,
+   M_Option2DimCol
 };
 //________________________________________________________________________
 
-GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title) 
-            : fHistPresent(hpr) 
+GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title)
+            : fHistPresent(hpr)
 {
  //  cout << " ctor GroupOfHists::" << this << endl;
    fCanvas = NULL;
    fTimer = NULL;
+   fDialog = NULL;
    fAnyFromSocket = kFALSE;
    RestoreDefaults();
+   SetColorModeDialog::RestoreDefaults();
+   SetColorModeDialog::SetColorMode();
 //
    Int_t nsel = hlist->GetSize();
    Int_t nx = 1, ny =1;
@@ -57,11 +67,11 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
    } else if (nsel > 32) {
       cout << setred << "Maximum 32 histograms allowed" << setblack << endl;
       return;
-   } 
+   }
 
 //  make a copy of  hlist, add its pointer to list of histlists fHistListList
 //  pass its pointer to HTCanvas,
-//  destructor of HTCanvas shall delete the list and remove its 
+//  destructor of HTCanvas shall delete the list and remove its
 //  pointer from fHistListList
    TIter next(hlist);
    while ( TObjString * objs = (TObjString*)next()) {
@@ -92,10 +102,11 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
 //   this->SetTitle(tit);
    gROOT->GetList()->Add(this);
    gROOT->GetListOfCleanups()->Add(this);
-   fCanvas =  new HTCanvas(buf.Data(), "GroupOfHists", 
-              fHistPresent->fWincurx, fHistPresent->fWincury, fWindowXWidth, fWindowYWidth);
-   fHistPresent->fWincurx = fHistPresent->fWintopx;
-   fHistPresent->fWincury += fHistPresent->fWinshifty;
+   fCanvas =  new HTCanvas(buf.Data(), "GroupOfHists",
+              WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, fWindowXWidth, fWindowYWidth);
+   fCanvas->SetBit(kMustCleanup);
+   WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
+   WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
 
    fHistPresent->fCanvasList->Add(fCanvas);
    fCanvas->Divide(nx, ny, fMarginX, fMarginY);
@@ -107,16 +118,16 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
    for(Int_t i=0; i<nsel; i++) {
       fCanvas->cd(i+1);
       TPad * p = (TPad *)gPad;
-      TString cmd2("((GroupOfHists*)gROOT->GetList()->FindObject(\""); 
+      TString cmd2("((GroupOfHists*)gROOT->GetList()->FindObject(\"");
       cmd2 += GetName();
       cmd2 += "\"))->auto_exec()";
       p->AddExec("ex2", cmd2.Data());
       if (firstpad == NULL) firstpad = p;
-      hist = fHistPresent->GetSelHistAt(i, hlist); 
+      hist = fHistPresent->GetSelHistAt(i, hlist);
       if (!hist) {
-//         cout << " Hist not found at: " << i << endl;  
+//         cout << " Hist not found at: " << i << endl;
          continue;
-      } 
+      }
       TString fname = ((TObjString *)hlist->At(i))->String();
       if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
       hname = hist->GetName();
@@ -125,19 +136,19 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
       Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
       if(last_us >0)hname.Remove(last_us);
       TRegexp sem(";");
-      hname(sem) ="_"; 
+      hname(sem) ="_";
       hist->SetName(hname);
       lastset = GetDefaults(hname);
 //      cout << "GetDefaults: "  << hname << " " << lastset << endl;
       if (lastset) {
 //         lastset->Print();
          if (lastset->Lookup("fRangeLowX") )
-            hist->GetXaxis()->Set(hist->GetNbinsX(), 
-            lastset->GetValue("fRangeLowX", 0), 
+            hist->GetXaxis()->Set(hist->GetNbinsX(),
+            lastset->GetValue("fRangeLowX", 0),
             lastset->GetValue("fRangeUpX",  0));
          if (lastset->Lookup("fBinlx") )
          {
-            hist->GetXaxis()->SetRange( 
+            hist->GetXaxis()->SetRange(
             lastset->GetValue("fBinlx", 0),
             lastset->GetValue("fBinux", 0));
          }
@@ -148,16 +159,16 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
       }
 
       if (hist->GetDimension() == 2) {
-         hist->Draw(fHistPresent->fDrawOpt2Dim->Data());
+         hist->Draw(fDrawOpt2Dim);
          if (lastset) {
             if (lastset->GetValue("LogZ", 0) )p->SetLogz();
             if (lastset->Lookup("fRangeLowY") )
-               hist->GetXaxis()->Set(hist->GetNbinsY(), 
-               lastset->GetValue("fRangeLowY", 0), 
+               hist->GetXaxis()->Set(hist->GetNbinsY(),
+               lastset->GetValue("fRangeLowY", 0),
                lastset->GetValue("fRangeUpY",  0));
             if (lastset->Lookup("fBinly") )
             {
-               hist->GetYaxis()->SetRange( 
+               hist->GetYaxis()->SetRange(
                lastset->GetValue("fBinly", 0),
                lastset->GetValue("fBinuy", 0));
             }
@@ -166,13 +177,13 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
          if (lastset && lastset->GetValue("LogY", 0) )p->SetLogy();
          TString drawopt;
          hist->Draw(drawopt.Data());
-         gStyle->SetOptTitle(fHistPresent->GetShowTitle());
-         if (fHistPresent->fShowContour) drawopt = "hist";
-         if (fHistPresent->fShowErrors)  drawopt += "e1";
-         hist->SetLineColor(fHistPresent->fHistLineColor);
-         if (fHistPresent->fFill1Dim) {
-            hist->SetFillStyle(fHistPresent->fHistFillStyle);
-            hist->SetFillColor(fHistPresent->fHistFillColor);
+//         gStyle->SetOptTitle(fHistPresent->GetShowTitle());
+         if (fShowContour) drawopt = "hist";
+         if (fShowErrors)  drawopt += "e1";
+         hist->SetLineColor(fHistLineColor);
+         if (fFill1Dim) {
+            hist->SetFillStyle(fHistFillStyle);
+            hist->SetFillColor(fHistFillColor);
 //            cout << "fHistPresent->fHistFillStyle " << fHistPresent->fHistFillStyle << endl;
          } else {
             hist->SetFillStyle(0);
@@ -187,11 +198,11 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
          ya->SetTitleSize(gStyle->GetTitleSize("Y") * 0.5 * ny);
          if (nx > 3)xa->SetNdivisions(205);
          if (ny > 3)ya->SetNdivisions(205);
-          
+
 //        hist->SetTitleSize(gStyle->GetTitleSize("C") * 0.8 * ny);
-      }  
+      }
       fHistPresent->SetCurrentHist(hist);
-/*      
+/*
       if (fHistPresent->fUseAttributeMacro && !gSystem->AccessPathName(attrname, kFileExists)) {
          gROOT->LoadMacro(attrname);
          TString cmd = attrname;
@@ -204,12 +215,14 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
       }
 */
    }
+   if (!fCanvas->GetAutoExec())
+       fCanvas->ToggleAutoExec();
    gPad->Modified(kTRUE);
    gPad->Update();
    BuildMenu();
-   if (firstpad) { 
-      if (fShowAllAsFirst != 0 || (fMarginX <= 0 && fMarginY <= 0)) 
-//         ShowAllAsSelected(firstpad, fCanvas, 0, NULL);
+   if (firstpad) {
+      if (fShowAllAsFirst != 0 || (fMarginX <= 0 && fMarginY <= 0))
+         ShowAllAsSelected(firstpad, fCanvas, 0, NULL);
       firstpad->cd();
    }
    fCanvas->SetEditable(kTRUE);
@@ -218,9 +231,12 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
 
 void GroupOfHists::RecursiveRemove(TObject *obj)
 {
+//   cout <<  "RecursiveRemove,obj " << obj << " "  << obj->GetName() << endl;
    if (obj == fCanvas) {
       fWindowXWidth = fCanvas->GetWindowWidth();
       fWindowYWidth = fCanvas->GetWindowHeight();
+      gROOT->GetList()->Remove(this);
+      gROOT->GetListOfCleanups()->Remove(this);
  //     cout <<  "RecursiveRemove,fWindowXWidth  " << fWindowXWidth << endl;
       delete this;
    }
@@ -229,6 +245,8 @@ void GroupOfHists::RecursiveRemove(TObject *obj)
 
 GroupOfHists::~GroupOfHists()
 {
+//   cout <<"dtor GroupOfHists, fDialog " << fDialog << endl;
+   if (fDialog) fDialog->CloseWindowExt();
    if (fTimer) delete fTimer;
    gROOT->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
@@ -243,14 +261,14 @@ void GroupOfHists::ActivateTimer(Int_t delay)
       delete fTimer;
       fTimer = 0;
    }
-   if(delay > 0) fTimer = new GoHTimer(delay, kTRUE, this);      
+   if(delay > 0) fTimer = new GoHTimer(delay, kTRUE, this);
 }
 //________________________________________________________________________
 
 void GroupOfHists::UpdateHists()
 {
 //   if (!fHistPresent) return;
-//   if (!fHistList)    return; 
+//   if (!fHistList)    return;
 //   if (fHistPresent->fAnyFromSocket && !(fHistPresent->fComSocket)) return;
 //      TList * hlist = fHistPresent->GetSelectedHist();
 //   cout << "GroupOfHists::UpdateHists() " << endl;
@@ -261,8 +279,8 @@ void GroupOfHists::UpdateHists()
       fCanvas->cd(i+1);
 //         TPad * p = gPad;
       TH1 * hold  = GetTheHist(gPad);
-      fx =  hold->GetXaxis()->GetFirst(); 
-      lx =  hold->GetXaxis()->GetLast(); 
+      fx =  hold->GetXaxis()->GetFirst();
+      lx =  hold->GetXaxis()->GetLast();
       TH1 * hist = fHistPresent->GetSelHistAt(i,&fHistList);
       if (!hist) {
          cout << setred << "Cant get histogram, M_analyze stopped? " << endl;
@@ -278,16 +296,16 @@ void GroupOfHists::UpdateHists()
       }
 //     hist->Print();
       if(hist->GetDimension() == 2){
-         fy =  hold->GetYaxis()->GetFirst(); 
-         ly =  hold->GetYaxis()->GetLast();        
-         hist->Draw(fHistPresent->fDrawOpt2Dim->Data());
+         fy =  hold->GetYaxis()->GetFirst();
+         ly =  hold->GetYaxis()->GetLast();
+         hist->Draw(fDrawOpt2Dim);
          hist->GetXaxis()->SetRange(fx, lx);
          hist->GetYaxis()->SetRange(fy, ly);
-      } else { 
+      } else {
          TString drawopt;
-         if(fHistPresent->fShowContour)drawopt = "hist";
-         if(fHistPresent->fShowErrors)drawopt += "e1";
-//         if(fHistPresent->fFill1Dim){
+         if(fShowContour)drawopt = "hist";
+         if(fShowErrors)drawopt += "e1";
+//         if(fFill1Dim){
 //            hist->SetFillStyle(1001);
 //			hist->SetFillColor(44);
 //         } else hist->SetFillStyle(0);
@@ -317,12 +335,20 @@ void GroupOfHists::BuildMenu()
    fMenu->AddEntry("Rebin all",  M_RebinAll);
    fMenu->AddSeparator();
    fMenu->AddEntry("Activate automatic update",  M_ActivateTimer);
-//   fMenu->AddEntry("Activate simultanous rotation", M_CommonRotate);
-   fMenu->AddEntry("Set Options / Params", M_SetOptions);
    fMenu->Connect("Activated(Int_t)", "GroupOfHists", this,
-                      "HandleMenu(Int_t)");
+                  "HandleMenu(Int_t)");
+   fMenu->AddEntry("Activate simultanous rotation", M_CommonRotate);
+
+   fOptionMenu     = new TGPopupMenu(fRootCanvas->GetParent());
+   menubar->AddPopup("Options", fOptionMenu, layoh_left, menubar->GetPopup("Help"));
+   fOptionMenu->AddEntry("Specific to this window", M_SetOptions);
+   fOptionMenu->AddEntry("How to display a 1-dim histogram", M_Option1Dim);
+   fOptionMenu->AddEntry("How to display a 2-dim histogram ", M_Option2Dim);
+   fOptionMenu->AddEntry("Color mode of 2-dim histogram", M_Option2DimCol);
+   fOptionMenu->Connect("Activated(Int_t)", "GroupOfHists", this,
+                        "HandleMenu(Int_t)");
    menubar->MapSubwindows();
-   menubar->Layout(); 
+   menubar->Layout();
 }
 //________________________________________________________________________
 
@@ -334,7 +360,7 @@ void GroupOfHists::HandleMenu(Int_t id)
          if (fTimer != NULL) {
             ActivateTimer(-1);    // deactivate
             fMenu->UnCheckEntry(M_ActivateTimer);
-         } else { 
+         } else {
             Int_t tms = 0;
             tms = (Int_t)(1000 * fAutoUpdateDelay);
             if(tms <= 0) tms = 2000;
@@ -342,12 +368,12 @@ void GroupOfHists::HandleMenu(Int_t id)
             ActivateTimer(tms);    // in milli second
             fMenu->CheckEntry(M_ActivateTimer);
          }
-         break;            
+         break;
       case M_RebinAll:
          RebinAll(fCanvas);
          break;
       case M_AllAsSelRangeOnly:
-         ShowAllAsSelected(gPad, fCanvas, 0, 
+         ShowAllAsSelected(gPad, fCanvas, 0,
                    (TGWindow*)fRootCanvas);
          break;
 //      case M_CalAllAsSel:
@@ -369,7 +395,7 @@ void GroupOfHists::HandleMenu(Int_t id)
             fCommonRotate = 1;
             fMenu->CheckEntry(M_CommonRotate);
          }
-         TEnv env(".rootrc");		// inspect ROOT's environment
+         TEnv env(".hprrc");		// inspect ROOT's environment
          env.SetValue("GroupOfHists.CommonRotate", fCommonRotate);
          env.SaveLevel(kEnvLocal);
          }
@@ -383,11 +409,23 @@ void GroupOfHists::HandleMenu(Int_t id)
             fShowAllAsFirst = 1;
             fMenu->CheckEntry(M_AllAsFirst);
          }
-         TEnv env(".rootrc");		// inspect ROOT's environment
+         TEnv env(".hprrc");		// inspect ROOT's environment
          env.SetValue("GroupOfHists.ShowAllAsFirst", fShowAllAsFirst);
          env.SaveLevel(kEnvLocal);
          }
          break;
+
+		case M_Option1Dim:
+            new Set1DimOptDialog(fRootCanvas);
+			break;
+
+		case M_Option2Dim:
+            new Set2DimOptDialog(fRootCanvas);
+			break;
+
+		case M_Option2DimCol:
+            new SetColorModeDialog(fRootCanvas);
+			break;
    }
 }
 //________________________________________________________________________
@@ -406,18 +444,18 @@ void GroupOfHists::auto_exec()
    if(gPad == gPad->GetMother()){
     cout << "not in divided" << endl;
       return;
-   } 
+   }
    if (select->InheritsFrom("TPad")) {
       TVirtualPad *pad = (TVirtualPad*)select;
       TH1 * hist = GetTheHist(pad);
       if (hist && hist->GetDimension() == 1 && event == kButton1Down) {
          if (fHistPresent) fHistPresent->ShowHist(hist);
-      } 
+      }
       return;
    }
    if (select->InheritsFrom("TH2")) {
       if (!fCommonRotate) {
-         if(event == kButton1Down) { 
+         if(event == kButton1Down) {
             if (fHistPresent) {
                TH1 *hist = (TH1*)select;
                fHistPresent->ShowHist(hist);
@@ -433,8 +471,11 @@ void GroupOfHists::auto_exec()
       while ( (o = next()) ){
          if (o->InheritsFrom("TH2")) {
             TH1* h = (TH1*)o;
- //           cout << "h->GetDrawOption() " << h->GetDrawOption()<< endl;
-            if (!strncmp(h->GetDrawOption(), "lego", 4)) { 
+//            cout << "h->GetDrawOption() " << h->GetDrawOption()<< endl;
+            TString dropt = h->GetDrawOption();
+
+            if (dropt.Contains("LEGO",TString::kIgnoreCase) ||
+                dropt.Contains("SURF",TString::kIgnoreCase) ) {
             	if (event == kButton1Down) {
                	phi = gPad->GetPhi();
                	theta = gPad->GetTheta();
@@ -454,7 +495,7 @@ void GroupOfHists::auto_exec()
                         	pp->Update();
                      	}
                   	}
-               	}                   
+               	}
             	}
             }
             return;
@@ -480,6 +521,7 @@ TH1 * GroupOfHists::GetTheHist(TVirtualPad * pad)
 void GroupOfHists::ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode, TGWindow * win)
 {
 // find reference histogram
+
    TList *l = canvas->GetListOfPrimitives();
    TObject *obj;
    TH1 *href = GetTheHist(pad);
@@ -503,7 +545,7 @@ void GroupOfHists::ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t 
           ("Selected pad contains no hist,\n please select with middle mouse", win);
       return;
    }
-
+   cout << "ShowAllAsSelected " << href->GetName()<< endl;
    TAxis *xa = href->GetXaxis();
    Axis_t lowedge = xa->GetBinLowEdge(xa->GetFirst());
    Axis_t upedge = xa->GetBinLowEdge(xa->GetLast()) +
@@ -552,7 +594,7 @@ void GroupOfHists::RebinAll(TCanvas * canvas)
          TPad *p = (TPad *) obj;
          TH1 *hist = GetTheHist(p);
          if (hist) {
-//            cout << hist->GetName()<< ", first, last, min, max  " 
+//            cout << hist->GetName()<< ", first, last, min, max  "
 //            << first << " " << last  << " " << min << " " << max<< endl;
             Int_t first = hist->GetXaxis()->GetFirst();
             Int_t last = hist->GetXaxis()->GetLast();
@@ -572,72 +614,83 @@ void GroupOfHists::RebinAll(TCanvas * canvas)
 void GroupOfHists::SetOptions()
 {
 static const Char_t helptext[] =
-"X- Y Margin in ShowSelected\n\
-This controls the space between the pictures when\n\
+"This menu controls the parameters when\n\
 multiple histograms are shown in one canvas.\n\
-Auto Update Interval\n\
-Histograms may be updated automatically, this number is the\n\
-update interval in seconds\n\
+\"X - Y Width\":  Size of the canvas in pixel\n\
+\"X - Y Margin\": The space between the pictures.\n\
+Histograms may be updated automatically:\n\
+\"AutoUpdateDelay\": determines the interval (sec)\n\
+With 3d Views (LEGO, SURF) 2-dim histograms\n\
+are rotated simultanously, if \n\
+\"Enable CommonRotate\" is activated\n\
+\"Always ShowAllAsFirst\": Always use range of first\n\
+histogram displayed.\n\
+Histograms may be arranged: on top of each other,\n\
+side by side or as tiles\n\
 ";
-	TList *row_lab = new TList(); 
-	static void *valp[50];
+   fRow_lab = new TList();
+	static void *fValp[50];
 	Int_t ind = 0;
 //	static Int_t dummy = 0;
-   row_lab->Add(new TObjString("PlainIntVal_Window X Width"));
-   valp[ind++] = &fWindowXWidth;
-   row_lab->Add(new TObjString("PlainIntVal+Window Y Width"));
-   valp[ind++] = &fWindowYWidth;
-   row_lab->Add(new TObjString("DoubleValue_X Margin"));
-   valp[ind++] = &fMarginX;
-   row_lab->Add(new TObjString("DoubleValue+Y Margin"));
-   valp[ind++] = &fMarginY;
-   row_lab->Add(new TObjString("PlainIntVal_AutoUpdateDelay"));
-   valp[ind++] = &fAutoUpdateDelay;
-   row_lab->Add(new TObjString("CheckButton+Enable CommonRotate"));
-   valp[ind++] = &fCommonRotate;
-   row_lab->Add(new TObjString("CheckButton+Always ShowAllAsFirst"));
-   valp[ind++] = &fShowAllAsFirst;
-   row_lab->Add(new TObjString("RadioButton_ArrangeOnTop"));
-   valp[ind++] = &fArrangeOnTop;
-   row_lab->Add(new TObjString("RadioButton+ArrangeSideBySide"));
-   valp[ind++] = &fArrangeSideBySide;
-   row_lab->Add(new TObjString("RadioButton+ArrangeAsTiles"));
-   valp[ind++] = &fArrangeAsTiles;
+   fRow_lab->Add(new TObjString("PlainIntVal_Window X Width"));
+   fValp[ind++] = &fWindowXWidth;
+   fRow_lab->Add(new TObjString("PlainIntVal+Window Y Width"));
+   fValp[ind++] = &fWindowYWidth;
+   fRow_lab->Add(new TObjString("DoubleValue_X Margin"));
+   fValp[ind++] = &fMarginX;
+   fRow_lab->Add(new TObjString("DoubleValue+Y Margin"));
+   fValp[ind++] = &fMarginY;
+   fRow_lab->Add(new TObjString("PlainIntVal_AutoUpdateDelay"));
+   fValp[ind++] = &fAutoUpdateDelay;
+   fRow_lab->Add(new TObjString("CheckButton+Enable CommonRotate"));
+   fValp[ind++] = &fCommonRotate;
+   fRow_lab->Add(new TObjString("CheckButton+Always ShowAllAsFirst"));
+   fValp[ind++] = &fShowAllAsFirst;
+   fRow_lab->Add(new TObjString("RadioButton_ArrangeOnTop"));
+   fValp[ind++] = &fArrangeOnTop;
+   fRow_lab->Add(new TObjString("RadioButton+ArrangeSideBySide"));
+   fValp[ind++] = &fArrangeSideBySide;
+   fRow_lab->Add(new TObjString("RadioButton+ArrangeAsTiles"));
+   fValp[ind++] = &fArrangeAsTiles;
    Int_t itemwidth = 420;
-   Int_t ok = 0;
+   static Int_t ok = 0;
    fDialog =
 		new TGMrbValuesAndText ("Set Params", NULL, &ok, itemwidth,
-								fRootCanvas, NULL, NULL, row_lab, valp,
-								NULL, NULL, helptext);
-   if (fMarginX > 0.2) {
-      cout << "X Margin > 0.2, setting to 0.01" << endl;
-      fMarginX = 0.01;
-   }
-   if (fMarginY > 0.2) {
-      cout << "Y Margin > 0.2, setting to 0.01" << endl;
-      fMarginY = 0.01;
-   }
-   SaveDefaults();
+								fRootCanvas, NULL, NULL, fRow_lab, fValp,
+								NULL, NULL, helptext, this, this->ClassName());
 }
 //_______________________________________________________
 void GroupOfHists::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fWindowXWidth = env.GetValue("GroupOfHists.fWindowXWidth", 800);
    fWindowYWidth = env.GetValue("GroupOfHists.fWindowYWidth", 800);
+   if (fWindowXWidth < 20 || fWindowXWidth > 1600) fWindowXWidth = 800;
+   if (fWindowYWidth < 20 || fWindowYWidth > 1200) fWindowYWidth = 800;
    fMarginX = env.GetValue("GroupOfHists.fMarginX", 0.01);
    fMarginY = env.GetValue("GroupOfHists.fMarginY", 0.01);
+   if (fMarginX < 0 || fMarginX > 0.3) fMarginX = 0.01;
+   if (fMarginY < 0 || fMarginY > 0.3) fMarginY = 0.01;
    fAutoUpdateDelay = env.GetValue("GroupOfHists.fAutoUpdateDelay", 5);
    fCommonRotate = env.GetValue("GroupOfHists.fCommonRotate", 1);
    fShowAllAsFirst = env.GetValue("GroupOfHists.fShowAllAsFirst", 0);
    fArrangeOnTop = env.GetValue("GroupOfHists.fArrangeOnTop", 0);
    fArrangeSideBySide = env.GetValue("GroupOfHists.fArrangeSideBySide", 0);
    fArrangeAsTiles = env.GetValue("GroupOfHists.fArrangeAsTiles", 1);
+   fFill1Dim      = env.GetValue("Set1DimOptDialog.fFill1Dim", 0);
+   fHistFillColor = env.GetValue("Set1DimOptDialog.fHistFillColor", 2);
+   fHistLineColor = env.GetValue("Set1DimOptDialog.fHistLineColor", 1);
+   fHistFillStyle = env.GetValue("Set1DimOptDialog.fHistFillStyle", 0);
+   fHistLineStyle = env.GetValue("Set1DimOptDialog.fHistLineStyle", 1);
+   fHistLineWidth = env.GetValue("Set1DimOptDialog.fHistLineWidth", 2);
+   fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
+   fShowErrors    = env.GetValue("Set1DimOptDialog.fShowErrors", 0);
+   fDrawOpt2Dim  = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
 }
 //_______________________________________________________
 void GroupOfHists::SaveDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
  //  fWindowXWidth = fCanvas->GetWw();
  //  fWindowYWidth = fCanvas->GetWh();
    env.SetValue("GroupOfHists.fWindowXWidth", fWindowXWidth);
@@ -651,5 +704,28 @@ void GroupOfHists::SaveDefaults()
    env.SetValue("GroupOfHists.fArrangeSideBySide", fArrangeSideBySide);
    env.SetValue("GroupOfHists.fArrangeAsTiles", fArrangeAsTiles);
    env.SaveLevel(kEnvLocal);
+   if (!fCanvas->GetAutoExec())
+       fCanvas->ToggleAutoExec();
+}
+//_______________________________________________________________________
+
+void GroupOfHists::CloseDown(Int_t)
+{
+//   cout << "GroupOfHists::CloseDown() fDialog " << fDialog<< endl;
+   fDialog = NULL;
+}
+//_______________________________________________________________________
+void GroupOfHists::CRButtonPressed(Int_t widgetId, Int_t buttonId, TObject *obj)
+{
+//   cout << "GroupOfHists::CRButtonPressed " << widgetId << " " << buttonId << endl;
+   if (fMarginX > 0.2) {
+      cout << "X Margin > 0.2, setting to 0.01" << endl;
+      fMarginX = 0.01;
+   }
+   if (fMarginY > 0.2) {
+      cout << "Y Margin > 0.2, setting to 0.01" << endl;
+      fMarginY = 0.01;
+   }
+   SaveDefaults();
 }
 

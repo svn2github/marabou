@@ -180,7 +180,7 @@ void EmptyHistDialog::BuildMenu()
 void EmptyHistDialog::SaveDefaults()
 {
    cout << "EmptyHistDialog::SaveDefaults() " << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("EmptyHistDialog.HistName"		 , fHistName       );
    env.SetValue("EmptyHistDialog.HistSelPad" 	 , fHistSelPad     );
    env.SetValue("EmptyHistDialog.HistNewPad" 	 , fHistNewPad     );
@@ -215,7 +215,7 @@ void EmptyHistDialog::HandleMenu(Int_t id)
             
 void EmptyHistDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fHistName        = env.GetValue("EmptyHistDialog.HistName"  		, "hs");
    fHistSelPad      = env.GetValue("EmptyHistDialog.HistSelPad"		, 0);
    fHistNewPad      = env.GetValue("EmptyHistDialog.HistNewPad"		, 1);
@@ -233,7 +233,7 @@ void EmptyHistDialog::RestoreDefaults()
 }
 //_________________________________________________________________________
             
-void EmptyHistDialog::CloseDown()
+void EmptyHistDialog::CloseDown(Int_t wid)
 {
 //   cout << "EmptyHistDialog::CloseDown() " << endl;
    if (fCanvas) delete fCanvas;

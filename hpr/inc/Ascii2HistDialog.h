@@ -50,7 +50,7 @@ public:
    void Show_Head_of_File();
    void SaveDefaults();
    void RestoreDefaults();
-   void CloseDown();
+   void CloseDown(Int_t wid);
 
 ClassDef(Ascii2HistDialog,0)
 };

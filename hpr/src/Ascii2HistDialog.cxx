@@ -319,7 +319,7 @@ void Ascii2HistDialog::Show_Head_of_File()
 void Ascii2HistDialog::SaveDefaults()
 {
    cout << "Ascii2HistDialog::SaveDefaults() " << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("Ascii2HistDialog.Ascii2HistHistFileName",   fHistFileName);
    env.SetValue("Ascii2HistDialog.Ascii2HistHistName",		  fHistName);
    env.SetValue("Ascii2HistDialog.Ascii2HistHistTitle",		  fHistTitle);
@@ -347,7 +347,7 @@ void Ascii2HistDialog::SaveDefaults()
 				
 void Ascii2HistDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fHistFileName    = env.GetValue("Ascii2HistDialog.Ascii2HistHistFileName",  "values.dat");
    fHistName 		  = env.GetValue("Ascii2HistDialog.Ascii2HistHistName",		  "h1");
    fHistTitle  	  = env.GetValue("Ascii2HistDialog.Ascii2HistHistTitle",  	  "h1");
@@ -373,7 +373,7 @@ void Ascii2HistDialog::RestoreDefaults()
 }
 //_________________________________________________________________________
             
-void Ascii2HistDialog::CloseDown()
+void Ascii2HistDialog::CloseDown(Int_t wid)
 {
    cout << "Ascii2HistDialog::CloseDown() " << endl;
    delete this;

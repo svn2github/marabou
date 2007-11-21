@@ -44,7 +44,7 @@
 #include "FhContour.h"
 #include "FitHist_Help.h"
 #include "support.h"
-#include "TGMrbValuesAndText.h"
+//#include "TGMrbValuesAndText.h"
 #include "TGMrbInputDialog.h"
 #include "TMrbStatistics.h"
 #include "HTCanvas.h"
@@ -54,7 +54,11 @@
 #include "TMrbString.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
-#include "TMrbHelpBrowser.h" 
+#include "TMrbHelpBrowser.h"
+#include "SetColorModeDialog.h"
+#include "WindowSizeDialog.h"
+#include "GeneralAttDialog.h"
+#include "GraphAttDialog.h"
 
 #include <iostream>
 #include <iomanip>
@@ -206,18 +210,17 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fPageNumber = 0;
    fNtupleSeqNr = 0;
 
-   fNwindows=   0;
-
-//   cout<< "HistPresent ctor , fWintopx " <<  fWintopx  <<endl;
+   WindowSizeDialog::fNwindows=   0;
+   fDialogShowTree = NULL;
    fRootFile = NULL;
    activeFile= NULL;
    activeHist= NULL;
    fFileList = NULL;
    fControlBar = NULL;
    fMainCanvas=0;
-   fMainWidth = 300;
+   WindowSizeDialog::fMainWidth = 300;
    lastcanvas=0;
-   
+
    fByTitle=kFALSE;
 
    fCanvasList = new TList();
@@ -245,8 +248,6 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fHistSelMask = new TString();
    fHistSelMask_1 = new TString();
    fHistSelMask_2 = new TString();
-   fDrawOpt2Dim = new TString("COLZ");
-   f2DimColorPalette = new TString("REGB");
 //   fAutoExecName_1 = new TString();
 //   fAutoExecName_2 = new TString();
    fHelpDir        = new TString();
@@ -262,12 +263,23 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fCanvasClosing = kFALSE;
 
    RestoreOptions();
+   TEnv env(".rootrc");
+   TString defdir(gSystem->Getenv("MARABOU"));
+   defdir += "/doc/hpr";
+   *fHelpDir =
+       env.GetValue("HistPresent.HelpDir",defdir.Data());
+   if (!gSystem->AccessPathName(fHelpDir->Data()))
+      fHelpBrowser = new TMrbHelpBrowser(fHelpDir->Data());
+   else
+      fHelpBrowser = NULL;
+ //  SetColorPalette();
+
 // look if we are in a NX session
    TString display(gSystem->Getenv("DISPLAY"));
    if (display.BeginsWith("unix")) {
       cout << "Running in NX session, force WindowWidth >= 300" << endl;
-      if (fMainWidth < 300)     fMainWidth     = 300;
-      if (fWinwidx_hlist < 300) fWinwidx_hlist = 300;
+      if (WindowSizeDialog::fMainWidth < 300)     WindowSizeDialog::fMainWidth     = 300;
+      if (WindowSizeDialog::fWinwidx_hlist < 300) WindowSizeDialog::fWinwidx_hlist = 300;
    }
    fCmdLine = new TList();
    if (gDirectory) {
@@ -299,12 +311,17 @@ HistPresent::~HistPresent()
 //________________________________________________________________
 void HistPresent::RecursiveRemove(TObject * obj)
 {
-//   cout << "------> Enter HistPresent::RecursiveRemove for: " 
+//   cout << "------> Enter HistPresent::RecursiveRemove for: "
 //        << obj << " " << obj->ClassName() <<  endl;
 //   if (obj->InheritsFrom("TCanvas")) {
 //      HTCanvas * c = (HTCanvas*)obj;
 //      cout << "Name: " << c->GetName() <<  endl;
 //   obj->Dump();
+//   }
+//   if (obj == fShowTreeCanvas) {
+ //     cout << " delete fShowTreeDialog " << endl;
+//      delete fShowTreeDialog;
+//      fShowTreeCanvas = NULL;
 //   }
    fCanvasList->Remove(obj);
 #if ROOTVERSION > 40302
@@ -325,14 +342,20 @@ void HistPresent::RecursiveRemove(TObject * obj)
    fSelectCut->Remove(obj);
    fSelectWindow->Remove(obj);
    fSelectLeaf->Remove(obj);
+   if (obj == cHPr) {
+      cHPr = NULL;
+      cout << "Thats the end of HistPresent" <<endl;
+ //     CloseAllCanvases();
+      gApplication->Terminate(0);
+   }
 }
 //________________________________________________________________
 void HistPresent::ShowMain()
 {
    nHists=0;
-   Int_t mainheight = (Int_t)(fMainWidth * 1.6);
-   cHPr = new HTCanvas("cHPr", "HistPresent",5,5, fMainWidth, mainheight, this, 0);
-//   cHPr = new TCanvas("cHPr", "HistPresent",5,5, fMainWidth, mainheight);
+   Int_t mainheight = (Int_t)(WindowSizeDialog::fMainWidth * 1.6);
+   cHPr = new HTCanvas("cHPr", "HistPresent",5,5, WindowSizeDialog::fMainWidth, mainheight, this, 0);
+//   cHPr = new TCanvas("cHPr", "HistPresent",5,5, WindowSizeDialog::fMainWidth, mainheight);
    cHPr->cd();
    fMainCanvas = GetMyCanvas();
 
@@ -446,7 +469,7 @@ void HistPresent::ShowMain()
 
    cHPr->SetEditable(kFALSE);
    cHPr->Update();
-//   CreateDefaultsDir(fMainCanvas); 
+//   CreateDefaultsDir(fMainCanvas);
    if (gSystem->AccessPathName(gSystem->WorkingDirectory(), kWritePermission))
       WarnBox("You have no write permission on current working directory\n\
 you will be unable to save current settings etc.");
@@ -466,9 +489,9 @@ void HistPresent::Editrootrc()
       if (!gSystem->AccessPathName(EditCmd.Data())) {
          cout << "Using " << EditCmd.Data() << endl;
          fok = kTRUE;
-      }   
+      }
    }
-   if (fok) { 
+   if (fok) {
       EditCmd.Prepend("nedit ");
       gSystem->Exec(EditCmd.Data()); EditCmd += "&";
    }
@@ -499,8 +522,8 @@ void HistPresent::EditAttrFile()
 void HistPresent::ShowFiles(const char *how, const char *bp)
 {
    if (fFileList) {
-      if (gROOT->FindObject("Filelist")) delete fFileList; 
-      activeFile=NULL; 
+      if (gROOT->GetListOfCanvases()->FindObject("FileList")) delete fFileList;
+      activeFile=NULL;
       fFileList=NULL;
    }
    const char *fname;
@@ -515,7 +538,7 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
          if (sname.Index(endwithlist) >= 0 &&
             contains_filenames(fname) <= 0) continue;
          if (fFileSelMask->Length() > 0) {
-            TRegexp re((const char *)*fFileSelMask, !fUseRegexp);
+            TRegexp re((const char *)*fFileSelMask, !GeneralAttDialog::fUseRegexp);
             if (sname.Index(re) <0) continue;
          }
          Long_t  id, flags, modtime;
@@ -528,14 +551,14 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
          } else {
             cmd = cmd + "Contents(\"" + fname + "\", \"\" )";
          }
-        
+
          TString nam=fname;
          TString tit;
          TString sel;
 
-         if      (!strcmp(how,"A")) 
+         if      (!strcmp(how,"A"))
             fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel));
-         else if (!strcmp(how,"R")) 
+         else if (!strcmp(how,"R"))
             fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel, kTRUE));
          else
             fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel,modtime));
@@ -545,7 +568,7 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
       Int_t buttons= kMBYes | kMBNo, retval=0;
       EMsgBoxIcon icontype = kMBIconQuestion;
       new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
-       "No files found?", 
+       "No files found?",
        "No ROOT files in CWD found \n\
 Should we create a sample file",
        icontype, buttons, &retval);
@@ -553,7 +576,7 @@ Should we create a sample file",
          Int_t ierr;
          gSystem->Exec("cp $MARABOU/macros/hsimple_hpr.C .");
          if (gSystem->AccessPathName("hsimple_hpr.C")) {
-            cout << setred << "Cant copy file: $MARABOU/macros/hsimple_hpr.C" 
+            cout << setred << "Cant copy file: $MARABOU/macros/hsimple_hpr.C"
                  << setblack << endl;
          } else {
             cout <<  "Copy and execute file: $MARABOU/macros/hsimple_hpr.C as example" << endl;
@@ -564,9 +587,9 @@ Should we create a sample file",
 //      WarnBox("No files found, check File Selection Mask");
    } else {
       fCmdLine->Sort();
-      Int_t yoff = (Int_t)(fMainWidth * 1.6 + 30);
+      Int_t yoff = (Int_t)(WindowSizeDialog::fMainWidth * 1.6 + 30);
       fFileList = CommandPanel(gSystem->BaseName(gSystem->WorkingDirectory()),
-                               fCmdLine, 5, yoff, this, fWinwidx_hlist);
+                               fCmdLine, 5, yoff, this, WindowSizeDialog::fWinwidx_hlist);
       fFileList->SetName("FileList");
    }
 //   fCmdLine->Print();
@@ -580,7 +603,7 @@ void HistPresent::ListMacros(const char *bp)
 {
 //   if (fControlBar) {
 //      if (fControlBar->TestBit(TObject::kNotDeleted) &&
-//          !fControlBar->TestBit(0xf0000000)) delete fControlBar; 
+//          !fControlBar->TestBit(0xf0000000)) delete fControlBar;
 //      fControlBar=0;
 //   }
    Bool_t first = kTRUE;
@@ -588,7 +611,7 @@ void HistPresent::ListMacros(const char *bp)
    void* dirp=gSystem->OpenDirectory(".");
    ifstream wstream;
    TString wline;
-   TRegexp dotC = "\\.C$";   
+   TRegexp dotC = "\\.C$";
    while ( (fname=gSystem->GetDirEntry(dirp)) ) {
       TString sname(fname);
       if (sname.Index(dotC)>0) {
@@ -604,7 +627,7 @@ void HistPresent::ListMacros(const char *bp)
 	      wline.Strip();
          Int_t len =wline.Length();
 	      Int_t n = wline.Index("Hint:");
-         if (len > 0 && n >= 0) { 
+         if (len > 0 && n >= 0) {
             n+=5;
 //            if (!fControlBar)
             if (first) {
@@ -612,13 +635,13 @@ void HistPresent::ListMacros(const char *bp)
                first = kFALSE;
             }
             TString cmd =".x "; cmd += fname;
-            TString hint = wline(n,len);  
+            TString hint = wline(n,len);
             fControlBar->AddButton(fname, cmd.Data(), hint.Data());
          }
          wstream.close();
       }
    }
-   if (fControlBar) {fControlBar->Show(); 
+   if (fControlBar) {fControlBar->Show();
 
 
 gROOT->SaveContext();}
@@ -628,17 +651,17 @@ gROOT->SaveContext();}
 
 void HistPresent::TurnButtonGreen(TVirtualPad ** pad)
 {
-   if (*pad && (*pad)->TestBit(TObject::kNotDeleted) 
+   if (*pad && (*pad)->TestBit(TObject::kNotDeleted)
            && !((*pad)->TestBit(0xf0000000)) )
-   { 
+   {
       if (strcmp((*pad)->ClassName(), "TButton")) {
          cout << "No longer a TButton, but " << (*pad)->ClassName() << endl;
       } else {
-         (*pad)->SetFillColor(0); 
+         (*pad)->SetFillColor(0);
          (*pad)->Modified(kTRUE);
          (*pad)->Update();
-      } 
-   } 
+      }
+   }
    gPad->SetFillColor(3);
 //   cout << " Green" << setbase(16) << gPad << endl;
    *pad=gPad;
@@ -663,10 +686,10 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    TString hint;
    TString sel;
    Int_t maxkey = 0;
-   if (fMaxListEntries > 1500) {
-      cout << "Warning: Max number of entries in list of histograms set to: 1500" 
+   if (GeneralAttDialog::fMaxListEntries > 1500) {
+      cout << "Warning: Max number of entries in list of histograms set to: 1500"
            << endl;
-      fMaxListEntries = 1500;
+      GeneralAttDialog::fMaxListEntries = 1500;
    }
 //   TurnButtonGreen(&activeFile);
 
@@ -715,19 +738,19 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       if ( (fixnames(&rfile, kTRUE) )) {
          if (QuestionBox("File contains objects with illegal names\n\
 (see transcript output)\n\
-Should we create a new file with corrected names?", fMainCanvas)) { 
+Should we create a new file with corrected names?", fMainCanvas)) {
             fixnames(&rfile, kFALSE);
 //               rfile->ls();
             TString mess("A new file: ");
             mess += rfile->GetName();
             mess += "\nhas been created\n Please redisplay filelist";
-            InfoBox(mess.Data(), fMainCanvas); 
+            InfoBox(mess.Data(), fMainCanvas);
             rfile->Close();
             return;
          }
-      } 
-*/  
-      if (fShowListsOnly > 0) {  
+      }
+*/
+      if (GeneralAttDialog::fShowListsOnly > 0) {
          st = NULL;
          nstat = 0;
          cout << "Skip hists in file, show hist lists only" << endl;
@@ -782,10 +805,10 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          if (!fComSocket->IsValid()) {
             fComSocket->Close();
             fComSocket = 0;
-            cout << setred << 
+            cout << setred <<
             "Cant connect to remote M_analyze" << setblack << endl;
             return;
-         } else {  
+         } else {
 //           Wait till we get the start message
             TMessage * mess;
             fComSocket->Recv(mess);
@@ -793,18 +816,18 @@ Should we create a new file with corrected names?", fMainCanvas)) {
             	char str[30];
             	mess->ReadString(str, 25);
             	TString  smess = str; smess = smess.Strip(TString::kBoth);
-            	if (smess(0,6) != "accept") {               
-               	cerr << "Connection not accepted, message: " 
+            	if (smess(0,6) != "accept") {
+               	cerr << "Connection not accepted, message: "
 			      	<< setred << smess << setblack << endl;
                	fComSocket->Close();
-               	fComSocket = 0;   
+               	fComSocket = 0;
                	if (mess) delete mess;
                	return;
             	}
             }
          }
       }
-      if (fShowListsOnly <= 0) {  
+      if (GeneralAttDialog::fShowListsOnly <= 0) {
       	st = getstat(fComSocket);
       	if (!st) {
          	cout << setred << "Cant get stat, Connection lost?" << setblack << endl;
@@ -843,70 +866,70 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          title = "Save";
          fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
       }
-        
+
    } else {
        WarnBox("Unknown file");
        return;
-   } 
-//   if (nstat > fMaxListEntries) { 
+   }
+//   if (nstat > GeneralAttDialog::fMaxListEntries) {
 //      cout << setred << "Too many entries in list: " << nstat << endl;
 //      cout << "this might crash X, please use selection mask"<< endl;
-//      cout << "to reduce number of entries below: " <<  fMaxListEntries  << endl;
+//      cout << "to reduce number of entries below: " <<  GeneralAttDialog::fMaxListEntries  << endl;
  //     cout << "WARNING: Only histlists will be shown" << setblack << endl;
 //   } else if (nstat <= 0) {
 //      WarnBox("Nothing found, Check Hist Selection Mask");
 //   }
 //  list of 1 and 2 dim, histograms
-//   if (nstat > 0 && nstat <= fMaxListEntries) { 
+//   if (nstat > 0 && nstat <= GeneralAttDialog::fMaxListEntries) {
    Int_t not_shown = 0;
-   if (nstat > 0) { 
-      
+   if (nstat > 0) {
+
       TMrbStatEntry * stent;
       TIter nextentry(st->GetListOfEntries());
       while ( (stent = (TMrbStatEntry*)nextentry()) ) {
          if (fHistSelMask->Length() > 0) {
             TString tn(stent->GetName());
             if        (fHistSelOp == kHsOp_None) {
-               TRegexp re((const char *)*fHistSelMask, !fUseRegexp);
+               TRegexp re((const char *)*fHistSelMask, !GeneralAttDialog::fUseRegexp);
                if (tn.Index(re) <0) continue;
-            } else if (fUseRegexp) {
+            } else if (GeneralAttDialog::fUseRegexp) {
                TRegexp re1((const char *)*fHistSelMask_1);
                TRegexp re2((const char *)*fHistSelMask_2);
                if (fHistSelOp == kHsOp_And) {
-                  if (tn.Index(re1) < 0 || 
+                  if (tn.Index(re1) < 0 ||
                      tn.Index(re2) < 0) continue;
                } else if (fHistSelOp == kHsOp_Or) {
-                  if (tn.Index(re1) < 0 && 
+                  if (tn.Index(re1) < 0 &&
                      tn.Index(re2) < 0) continue;
                } else if (fHistSelOp == kHsOp_Not) {
                   if (( fHistSelMask_1->Length() > 0 &&
-                     tn.Index(re1) < 0) || 
+                     tn.Index(re1) < 0) ||
                     (tn.Index(re2) >=0)) continue;
                }
-            } else {           
+            } else {
                if (fHistSelOp == kHsOp_And) {
-                  if (!tn.Contains(fHistSelMask_1->Data()) || 
+                  if (!tn.Contains(fHistSelMask_1->Data()) ||
                      !tn.Contains(fHistSelMask_2->Data())) continue;
                } else if (fHistSelOp == kHsOp_Or) {
-                  if (!tn.Contains(fHistSelMask_1->Data()) && 
+                  if (!tn.Contains(fHistSelMask_1->Data()) &&
                      !tn.Contains(fHistSelMask_2->Data())) continue;
                } else if (fHistSelOp == kHsOp_Not) {
                   if (( fHistSelMask_1->Length() > 0 &&
-                    !tn.Contains(fHistSelMask_1->Data())) || 
+                    !tn.Contains(fHistSelMask_1->Data())) ||
                      (tn.Contains(fHistSelMask_2->Data()))) continue;
                }
             }
          }
          cmd = fname;
          cmd = cmd + "\",\"";
-         cmd += dir;  
+         cmd += dir;
          cmd = cmd + "\",\"" + stent->GetName();
          if (stent->GetCycle() > 0) {
             cmd += ";";
             cmd += stent->GetCycle();
-         } 
+         }
          cmd += "\")";
-         sel = cmd; 
+         sel = cmd;
          cmd.Prepend("mypres->ShowHist(\"");
          sel.Prepend("mypres->SelectHist(\"");
 
@@ -916,7 +939,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          if (stent->GetCycle() > 1) {
             title += ";";
             title += stent->GetCycle();
-         }   
+         }
          hint = title;
          if     ( stent->GetDimension() == 1  )title.Prepend("1d ");
          else if (stent->GetDimension() == 2 )title.Prepend("2d ");
@@ -928,8 +951,8 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          if (stent->GetDimension() == 1)     hint += " 1d hist Ent: ";
          else if (stent->GetDimension() == 2 )hint += " 2d hist Ent: ";
          else                               hint += " 3d hist Ent: ";
-         hint += " "; 
-         hint += (Int_t)stent->GetEntries(); 
+         hint += " ";
+         hint += (Int_t)stent->GetEntries();
          hint += " Title: ";
          hint += stent->GetTitle();
          TString tmp = fname;
@@ -939,15 +962,15 @@ Should we create a new file with corrected names?", fMainCanvas)) {
             cout << "Already selected: " << tmp.Data() << endl;
             sel += " YES";
          }
-         if (fCmdLine->GetSize() < fMaxListEntries) { 
+         if (fCmdLine->GetSize() < GeneralAttDialog::fMaxListEntries) {
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-            anything_to_delete++; 
+            anything_to_delete++;
          } else {
             if (not_shown <= 0){
                cout << setred << "Too many entries in list: " << nstat << endl;
                cout << "this might crash X, please use selection mask"<< endl;
-               cout << "to reduce number of entries below: " <<  fMaxListEntries  << endl;
-               cout << "On your own risk you may increase value beyond: " << fMaxListEntries << endl;
+               cout << "to reduce number of entries below: " <<  GeneralAttDialog::fMaxListEntries  << endl;
+               cout << "On your own risk you may increase value beyond: " << GeneralAttDialog::fMaxListEntries << endl;
                cout << "WARNING: not all hists will be shown" << setblack << endl;
             }
             not_shown++;
@@ -963,7 +986,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          TObjString * objs;
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
-            TString name(title); 
+            TString name(title);
             cmd = fname;
             cmd = cmd + "\",\"" + name.Data() + "\")";
             sel = cmd;
@@ -973,7 +996,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
             hint =  title;
             hint+=" 1-dim window";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-            anything_to_delete++; 
+            anything_to_delete++;
          }
       }
       if (lofW2.GetSize() > 0) {
@@ -981,7 +1004,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          TObjString * objs;
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
-            TString name(title); 
+            TString name(title);
             cmd = fname;
             cmd = cmd + "\",\"" + name.Data() + "\")";
             sel = cmd;
@@ -998,7 +1021,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          cmd = cmd + fname + "\")";
          sel = "";
          fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-         anything_to_delete++; 
+         anything_to_delete++;
       }
    //  functions
       if (lofF.GetSize() > 0) {
@@ -1016,7 +1039,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
             hint =  title;
             hint+=" function";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-            anything_to_delete++; 
+            anything_to_delete++;
          }
       }
    //  canvases
@@ -1035,7 +1058,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
             hint =  title;
             hint+=" canvas";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-            anything_to_delete++; 
+            anything_to_delete++;
          }
       }
    //  user contours
@@ -1055,7 +1078,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
             hint =  title;
             hint+=" contour";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-            anything_to_delete++; 
+            anything_to_delete++;
          }
       }
       if (lofG.GetSize() > 0) {
@@ -1073,7 +1096,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
             hint =  title;
             hint+=" graph";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-            anything_to_delete++; 
+            anything_to_delete++;
          }
       }
    //  trees
@@ -1116,7 +1139,7 @@ Should we create a new file with corrected names?", fMainCanvas)) {
    hint = "Show statistics of all histograms and save to file";
    sel.Resize(0);
    fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
-   if (strstr(fname,"Socket")) { 
+   if (strstr(fname,"Socket")) {
       cmd = "mypres->SaveFromSocket(\"";
       cmd = cmd + fname + "\")";
       hint = "Save all hists to a local ROOT file ";
@@ -1143,8 +1166,8 @@ Should we create a new file with corrected names?", fMainCanvas)) {
          TString cmd_title(fname);
          if (strlen(dir) > 0) cmd_title = cmd_title + "_" + dir;
 //         cout << "HistPresent: CommandPanel: " << fCmdLine->GetSize() << endl;
-         HTCanvas *ccont = CommandPanel(cmd_title.Data(), fCmdLine, 
-                           fMainWidth + 10, ycanvas, this, fWinwidx_hlist);
+         HTCanvas *ccont = CommandPanel(cmd_title.Data(), fCmdLine,
+                           WindowSizeDialog::fMainWidth + 10, ycanvas, this, WindowSizeDialog::fWinwidx_hlist);
          ccont->SetName("ObjectList");
          if (fHistLists)fHistLists->Add(ccont);
    }
@@ -1200,7 +1223,7 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
          return;
       }
    } else if (sname.Index(rname) > 0) {
-      sname(rname) = "";      
+      sname(rname) = "";
       TFile * rfile =0;
       rfile = new TFile(fname);
 
@@ -1214,7 +1237,7 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
       } else nstat = st->GetListOfEntries()->GetSize();
       if (rfile )rfile->Close();
    } else if (sname.Index(mname) > 0) {
-      sname(mname) = "";      
+      sname(mname) = "";
       TMapFile * mfile =0;
       mfile = TMapFile::Create(fname);
       st = (TMrbStatistics*)mfile->Get("TMrbStatistics");
@@ -1241,7 +1264,7 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
    gDirectory = gROOT;
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::ComposeList(const char* bp)
 {
    Int_t nselect=fSelectHist->GetSize();
@@ -1251,7 +1274,7 @@ void HistPresent::ComposeList(const char* bp)
    }
    TString fname  = ((TObjString *)fSelectHist->At(0))->String();
    Int_t pp = fname.Index(" ");
-   fname.Resize(pp); 
+   fname.Resize(pp);
    Bool_t put_file = kFALSE;
    TString listname  =  fname;
    if      (fname.Contains(".root")) {
@@ -1286,14 +1309,14 @@ void HistPresent::ComposeList(const char* bp)
       hname.Remove(0,pp+1);
 		TRegexp vers(";[0-9]*");
 		hname(vers) = "";
-      if (put_file) wstream << fname.Data() << " "; 
+      if (put_file) wstream << fname.Data() << " ";
       wstream << hname.Data() << endl;
    }
    wstream.close();
 };
 //_______________________________ShowList_________________________________________________________
-// Show List 
-  
+// Show List
+
 void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
 {
    static Int_t ycanvas=20;
@@ -1307,13 +1330,13 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
       return;
    } else if (status == 0) cfn = kFALSE;
 
-   TString fname = fcur;    
+   TString fname = fcur;
    ifstream wstream;
    wstream.open(sl.Data(), ios::in);
    TH1 *hist=0;
    TMapFile *mfile = 0;
    TString cmd; TString tit; TString sel;
-   if (strstr(fname, "Socket")) 
+   if (strstr(fname, "Socket"))
       cout << "Warning: Validity of entries in list are not checked" << endl;
    while ( 1) {
       TString line;
@@ -1329,13 +1352,13 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
          Int_t pp = line.Index(" ");
          if (pp <= 0) continue;
          fname = line(0,pp);
-         line.Remove(0,pp+1);             
+         line.Remove(0,pp+1);
       }
 
       cmd = "mypres->ShowHist(\"";
 //      if (is_a_file(fname))cmd += "ShowHist(\"";
 //      else                cmd += "ShowMap(\"";
-      cmd += fname; 
+      cmd += fname;
 		TString hname(line);
 		TString dname;
 		Int_t pp = line.Index(" ");
@@ -1345,7 +1368,7 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
 			dname.Remove(0,pp+1);
 		}
 		cmd = cmd + "\",\"" + dname + "\",\"";
-//      cmd +=  "\",\"\",\""; 
+//      cmd +=  "\",\"\",\"";
       sel = "mypres->SelectHist";
 //      sel = sel + "(\"" + fname + "\",\"\",\"";
       sel = sel + "(\"" + fname + "\",\"" + dname + "\",\"";
@@ -1369,7 +1392,7 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
       } else if (strstr(fname, "Socket")) {
 //
       }
-      if (hist) { 
+      if (hist) {
          if (is2dim(hist))   line.Prepend("2d ");
          else                line.Prepend("1d ");
          line +=  " " ;
@@ -1410,18 +1433,18 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
       fCmdLine->AddFirst(new CmdListEntry(cmd, tit, hint, sel));
 
 //      TString cname = fname;
-//      cname = cname + "_" +lname; 
-      TCanvas *ccont = CommandPanel(sl.Data(), fCmdLine, fMainWidth + 10, ycanvas, this);
+//      cname = cname + "_" +lname;
+      TCanvas *ccont = CommandPanel(sl.Data(), fCmdLine, WindowSizeDialog::fMainWidth + 10, ycanvas, this);
       fHistLists->Add(ccont);
       ycanvas += 50;
       if (ycanvas >= 500) ycanvas=5;
-   } 
-   fCmdLine->Delete(); 
+   }
+   fCmdLine->Delete();
    gDirectory=gROOT;
 }
 //________________________________________________________________________________________
-// Show List 
-  
+// Show List
+
 void HistPresent::StackInOneCanvas(const char *bp)
 {
    TList * hlist = BuildList(bp);
@@ -1431,8 +1454,8 @@ void HistPresent::StackInOneCanvas(const char *bp)
    }
 }
 //________________________________________________________________________________________
-// Show List 
-  
+// Show List
+
 void HistPresent::ShowInOneCanvas(const char *bp)
 {
    TList * hlist = BuildList(bp);
@@ -1442,7 +1465,7 @@ void HistPresent::ShowInOneCanvas(const char *bp)
    }
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::GetFileSelMask(const char* bp)
 {
     Bool_t ok;
@@ -1450,46 +1473,46 @@ void HistPresent::GetFileSelMask(const char* bp)
     "Edit File Selection Mask",(const char *)*fFileSelMask, &ok, fMainCanvas);
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::GetHistSelMask(const char* bp)
 {
 
     Bool_t yesno = kFALSE;
-    if (fUseRegexp) yesno=kTRUE;
+    if (GeneralAttDialog::fUseRegexp) yesno=kTRUE;
     Bool_t ok;
     *fHistSelMask=GetString(
                   "Edit Hist Selection Mask",(const char *)*fHistSelMask, &ok,
-                  fMainCanvas, "Use Regexp syntax", &yesno, 
+                  fMainCanvas, "Use Regexp syntax", &yesno,
                   Help_SelectionMask_text);
      if (!ok) return;
-     if (yesno) fUseRegexp = 1;
-     else         fUseRegexp = 0;
-//    if (!fUseRegexp) {
+     if (yesno) GeneralAttDialog::fUseRegexp = 1;
+     else         GeneralAttDialog::fUseRegexp = 0;
+//    if (!GeneralAttDialog::fUseRegexp) {
       if      (fHistSelMask->Contains("&")) {
          fHistSelOp = kHsOp_And;
          Int_t indop = fHistSelMask->Index("&");
          *fHistSelMask_1 = (*fHistSelMask)(0, indop);
-         *fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());         
+         *fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
       } else if (fHistSelMask->Contains("|")) {
          fHistSelOp = kHsOp_Or;
          Int_t indop = fHistSelMask->Index("|");
          *fHistSelMask_1 = (*fHistSelMask)(0, indop);
-         *fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());         
+         *fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
       } else if (fHistSelMask->Contains("!")) {
          fHistSelOp = kHsOp_Not;
          Int_t indop = fHistSelMask->Index("!");
          *fHistSelMask_1 = (*fHistSelMask)(0, indop);
-         *fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());         
+         *fHistSelMask_2 = (*fHistSelMask)(indop+1, fHistSelMask->Length());
       } else                                 fHistSelOp = kHsOp_None;
       *fHistSelMask_1 = fHistSelMask_1->Strip(TString::kBoth);
       *fHistSelMask_2 = fHistSelMask_2->Strip(TString::kBoth);
 //      cout << fHistSelOp  << " " << "|" <<
 //      fHistSelMask_1->Data() << "|" << " "<< "|"  << fHistSelMask_2->Data() << "|" << endl;
-//   }   
+//   }
 }
 //________________________________________________________________________________________
 // Save histograms from mapped file
-  
+
 void HistPresent::SaveMap(const char* mapname, const char* bp)
 {
    TMapFile *mfile;
@@ -1498,14 +1521,14 @@ void HistPresent::SaveMap(const char* mapname, const char* bp)
       cout << "MapFile not found: " << mapname << endl;
       gDirectory=gROOT;
       return;
-   }   
+   }
    TString fname = mapname;
    Int_t pp = fname.Index(".");
    if (pp) fname.Resize(pp);
    fname+=".root";
 
    Bool_t ok;
-   const char * foutname=GetString("File Name",(const char *)fname, 
+   const char * foutname=GetString("File Name",(const char *)fname,
                                    &ok, GetMyCanvas());
    if (!ok) return;
    if (!gSystem->AccessPathName((const char *)foutname, kFileExists)) {
@@ -1524,7 +1547,7 @@ void HistPresent::SaveMap(const char* mapname, const char* bp)
          hist    = (TH1 *) mfile->Get(name, hist);
          if (hist) hist->Write();
          cout << "Writing: " << name << endl;
-         mr=mr->GetNext();         
+         mr=mr->GetNext();
       }
    }
    if (f) f->Close();
@@ -1533,14 +1556,14 @@ void HistPresent::SaveMap(const char* mapname, const char* bp)
 }
 //________________________________________________________________________________________
 // Save histograms from mapped file
-  
+
 void HistPresent::SaveFromSocket(const char * name, const char* bp)
 {
    if (!fComSocket) return;
    TString fname ("hists_XX.root");
 
    Bool_t ok;
-   const char * foutname=GetString("File Name",(const char *)fname, 
+   const char * foutname=GetString("File Name",(const char *)fname,
                                    &ok, GetMyCanvas());
    if (!ok) return;
    if (!gSystem->AccessPathName((const char *)foutname, kFileExists)) {
@@ -1584,7 +1607,7 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
 
 //________________________________________________________________________________________
 // Show Function
-  
+
 void HistPresent::ShowFunction(const char* fname, const char* dir, const char* name, const char* bp)
 {
    TF1* func;
@@ -1600,27 +1623,27 @@ void HistPresent::ShowFunction(const char* fname, const char* dir, const char* n
    }
 //  gROOT->ls();
    if (func) {
-      if (fNwindows>0) {       // not the 1. time
-         if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
-         else   {fWincurx = fWintopx; fWincury += fWinshifty;}
+      if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
+         if (WindowSizeDialog::WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::WindowSizeDialog::fNwindows%2 != 0) WindowSizeDialog::WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
+         else   {WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx; WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;}
       }
-      fNwindows++;
-      TCanvas * ccc = new TCanvas(name,name, fWincurx, fWincury, 300, 300);
+      WindowSizeDialog::fNwindows++;
+      TCanvas * ccc = new TCanvas(name,name, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, 300, 300);
       fCanvasList->Add(ccc);
-      func->Draw(); 
+      func->Draw();
       cout << "Parameter values of: " << name << endl;
       for (Int_t i = 0; i < func->GetNpar(); i++) {
          cout << func->GetParName(i) << ": " << func->GetParameter(i) << endl;
       }
       cout << "-----------------------------------------------" << endl;
- //      func->Print(); 
-  
+ //      func->Print();
+
    } else     WarnBox("Function not found");
    if (fRootFile) fRootFile->Close();
 }
 //________________________________________________________________________________________
 // Show user contour
-  
+
 void HistPresent::ShowContour(const char* fname, const char* dir, const char* name, const char* bp)
 {
    FhContour * co;
@@ -1639,7 +1662,7 @@ void HistPresent::ShowContour(const char* fname, const char* dir, const char* na
       TArrayI colsav(*(co->GetColorArray()));
       TArrayD levsav(*(co->GetLevelArray()));
 
-      Int_t result = co->Edit(GetMyCanvas()); 
+      Int_t result = co->Edit(GetMyCanvas());
 
       if (result >= 0){
          Bool_t changed = kFALSE;
@@ -1674,7 +1697,7 @@ void HistPresent::ShowContour(const char* fname, const char* dir, const char* na
 }
 //________________________________________________________________________________________
 // Show a graph
-  
+
 void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name, const char* bp)
 {
    TGraphErrors * graph;
@@ -1691,17 +1714,17 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
    if (graph) {
       TString cname = name;
       cname.Prepend("C_");
-      if (fNwindows>0) {       // not the 1. time
-         if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
-         else   {fWincurx = fWintopx; fWincury += fWinshifty;}
+      if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
+         if (WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::fNwindows%2 != 0) WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
+         else   {WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx; WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;}
       }
-      fNwindows++;
-      HTCanvas * cg = new HTCanvas(cname, cname, fWincurx, fWincury,
-                                 fWinwidx_1dim, fWinwidy_1dim, this, 0, graph);
+      WindowSizeDialog::fNwindows++;
+      HTCanvas * cg = new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
+                                 WindowSizeDialog::fWinwidx_1dim, WindowSizeDialog::fWinwidy_1dim, this, 0, graph);
       fCanvasList->Add(cg);
 //      graph->SetName(hname);
 //      graph->SetTitle(htitle);
-      graph->Draw(fDrawOptGraph);
+      graph->Draw(GraphAttDialog::fDrawOptGraph);
       graph->GetHistogram()->SetStats(kFALSE);
    } else {
       WarnBox("Graph not found");
@@ -1709,11 +1732,11 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
    if (fRootFile) fRootFile->Close();
 }
 //________________________________________________________________________________________
-// set rebin val 
-  
-void HistPresent::SetRebinValue(Int_t val) 
+// set rebin val
+
+void HistPresent::SetRebinValue(Int_t val)
 {
-   Bool_t ok; 
+   Bool_t ok;
    if (val == 0) {
       Int_t i = GetInteger("Rebin value", fRebin, &ok, fMainCanvas);
       if (!ok || i <= 0) return;
@@ -1728,14 +1751,14 @@ void HistPresent::SetRebinValue(Int_t val)
       if (val == 2) {fRebin4->SetFillColor(2); fRebin2->SetFillColor(3);}
       if (val == 32) {fRebin4->SetFillColor(3); fRebin2->SetFillColor(2);}
    }
-   fRebinOth->Modified(kTRUE); 
+   fRebinOth->Modified(kTRUE);
    fRebin2->Modified(kTRUE);
    fRebin4->Modified(kTRUE);
 }
 //________________________________________________________________________________________
-// set rebin val 
-  
-void HistPresent::SetRebinMethod() 
+// set rebin val
+
+void HistPresent::SetRebinMethod()
 {
    if (fRMethod == 1) {
       fRebinSumAvg->SetTitle("Sum");
@@ -1746,19 +1769,19 @@ void HistPresent::SetRebinMethod()
    }
    fRebinSumAvg->Modified(kTRUE); fRebinSumAvg->Update();
 }
-//____________________________________________________________________________________ 
-  
-void HistPresent::SetOperateVal() 
+//____________________________________________________________________________________
+
+void HistPresent::SetOperateVal()
 {
-   Bool_t ok; 
+   Bool_t ok;
    Float_t fac = GetFloat("Factor", fOpfac, &ok, fMainCanvas);
    fOpfac = fac;
    fValButton->SetTitle(Form("%lg", fac));
 }
 //________________________________________________________________________________________
-// Operate on  histograms 
-  
-void HistPresent::OperateHist(Int_t op) 
+// Operate on  histograms
+
+void HistPresent::OperateHist(Int_t op)
 {
    Int_t nselect=fSelectHist->GetSize();
    if (nselect < 1) {
@@ -1766,13 +1789,13 @@ void HistPresent::OperateHist(Int_t op)
       return;
    }
 //   if (nselect < 2 && op == 1) {
-//      WarnBox("Less than 2 selections for Add, to scale choose *");     
+//      WarnBox("Less than 2 selections for Add, to scale choose *");
 //      return;
 //   }
    if (nselect > 2 && op != 1) {
       WarnBox("More than 2 selections only allowed for Add (+)");
-//      nselect = 2;     
-      return;     
+//      nselect = 2;
+      return;
    }
    if (nselect == 1 && op == 3) {
      cout << "OperateHist: Scale errors linearly" << endl;
@@ -1797,10 +1820,10 @@ void HistPresent::OperateHist(Int_t op)
          if (hist2->GetNbinsX() != hist1->GetNbinsX()
              || (hresult->GetDimension() == 2 &&
              (hist2->GetNbinsY() != hist1->GetNbinsY()))) {
-            cout << setred << " canceled" << endl 
-            << "Cant operate on hists with different number of bins " 
+            cout << setred << " canceled" << endl
+            << "Cant operate on hists with different number of bins "
             << nbinsx_1 << " " << hist2->GetNbinsX();
-            if (hist1->GetDimension() == 2) 
+            if (hist1->GetDimension() == 2)
                cout << " " << hist1->GetNbinsY() << " " << hist1->GetNbinsX();
             cout << setblack << endl;
             return;
@@ -1809,28 +1832,28 @@ void HistPresent::OperateHist(Int_t op)
          last_sem = name2.Last(';');    // chop off version
          if (last_sem > 0) name2.Remove(last_sem);
          switch (op) {
-            case 1: 
+            case 1:
                hresult->Add(hist2, fOpfac);
                name1 = name1 + "_plus_" + name2;
                cout << " + " <<  fOpfac << " * " << name2;
                break;
-            case 2: 
+            case 2:
                hresult->Add(hist2, -1.*fOpfac);
                nameop = "_minus_";
                cout << " - "<<  fOpfac << " * "  << name2;
                break;
-            case 3: 
+            case 3:
                hresult->Multiply(hist1, hist2, 1., fOpfac);
                nameop = "_times_";
                cout << " * "<<  fOpfac << " * " << name2;
                break;
-            case 4: 
+            case 4:
                hresult->Divide(hist1, hist2, 1., fOpfac);
                nameop = "_divby_";
                cout << " / "<<  fOpfac << " * " << name2;
                break;
          }
-      }  
+      }
    } else {
       Float_t fac = fOpfac;
       Int_t nbinsx;
@@ -1868,7 +1891,7 @@ void HistPresent::OperateHist(Int_t op)
             }
             cout<< " + " << fac;
             break;
-         case 4:                       // divide 
+         case 4:                       // divide
             if (fOpfac != 0.) fac = 1./fOpfac;
             else                fac = 1.;
 //            break;
@@ -1890,7 +1913,7 @@ void HistPresent::OperateHist(Int_t op)
 //      TDatime td;
 //      name1 = "hist_";
 //      ostrstream buf;
-      
+
  //     buf << setfill('0') << setw(6) << td.GetTime()<< '\0';
  //     name1 += buf.str();
  //     buf.rdbuf()->freeze(0);
@@ -1902,18 +1925,18 @@ void HistPresent::OperateHist(Int_t op)
 }
 //________________________________________________________________________________________
 // Differentiate histogram
-  
-void HistPresent::DiffHist() 
+
+void HistPresent::DiffHist()
 {
    TH1* hist = GetSelHistAt(0);
    if (!hist) return;
    if (fSelectHist->GetSize() > 1) {
       WarnBox("More than 1 selection, take first");
-   } 
+   }
    if (is2dim(hist)) {
       WarnBox("2 dim not supported yet");
       return;
-   }       
+   }
 //  gROOT->ls();
    if (hist) {
       // create a clone of the old histogram
@@ -1936,26 +1959,26 @@ void HistPresent::DiffHist()
       hnew->SetEntries(nbins);
       ShowHist(hnew);
    } else {
-      WarnBox("No hist found"); 
+      WarnBox("No hist found");
    }
-   
+
 }
 //________________________________________________________________________________________
-// Rebin histograms 
-  
-void HistPresent::RebinHist() 
+// Rebin histograms
+
+void HistPresent::RebinHist()
 {
    TH1* hist = GetSelHistAt(0);
    if (!hist) {WarnBox("No hist found"); return;}
    if (fSelectHist->GetSize() > 1) {
       WarnBox("More than 1 selection, take first");
-   } 
+   }
    if (is2dim(hist)) {
       WarnBox("2 dim not supported yet");
       return;
-   } 
+   }
    TString buf(hist->GetName());
-   buf += "_rebinby_";  buf += fRebin;  
+   buf += "_rebinby_";  buf += fRebin;
 //   TString name = hist->GetName();
 //   name += "_rebin_";
    TH1* hold=(TH1*)gROOT->FindObject(buf.Data());
@@ -1968,9 +1991,9 @@ void HistPresent::RebinHist()
    ShowHist(hnew);
 }
 //________________________________________________________________________________________
-// 
-  
-TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory) 
+//
+
+TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
 {
    TList * hlist;
    if (hl) hlist = hl;
@@ -1982,7 +2005,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
    if (hlist->GetSize() < pos) {
       WarnBox("Requested non existing entry");
       return NULL;
-   } 
+   }
 
    TObjString * obj = (TObjString *)hlist->At(pos);
 //  Bool_t ok;
@@ -2025,8 +2048,8 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
          hist->Delete();
 //         WarnBox("Using existing histogram");
 //         return hist;
-      } 
-   } 
+      }
+   }
    if (strstr(fname,"Socket")) {
       if(!fComSocket){
           cout << setred << "No connection open"  << setblack << endl;
@@ -2066,9 +2089,9 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
    return hist;
 }
 //________________________________________________________________________________________
-// 
-  
-TGraph* HistPresent::GetSelGraphAt(Int_t pos) 
+//
+
+TGraph* HistPresent::GetSelGraphAt(Int_t pos)
 {
    TList * hlist = fSelectGraph;
    if (hlist->IsEmpty()) {
@@ -2078,7 +2101,7 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
    if (hlist->GetSize() < pos) {
       WarnBox("Requested non existing entry");
       return NULL;
-   } 
+   }
  //  Bool_t ok;
    TObjString * obj = (TObjString *)hlist->At(pos);
 
@@ -2121,7 +2144,7 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
    if (dname.Length() > 0) fRootFile->cd(dname);
    hist = (TGraph*)gDirectory->Get(hname);
    if (fRootFile) {fRootFile->Close(); fRootFile=NULL;};
-   
+
    gDirectory=gROOT;
 //  gROOT->ls();
    TString newname(hname.Data());
@@ -2131,8 +2154,8 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
    return hist;
 }
 //________________________________________________________________________________________
-// Get Ccut  
-  
+// Get Ccut
+
 void HistPresent::SelectCut(const char* fname, const char* cname, const char* bp)
 {
    if (!gPad) cout << "Cut: Cant find Pad, call debugger" << endl;
@@ -2148,14 +2171,14 @@ void HistPresent::SelectCut(const char* fname, const char* cname, const char* bp
 }
 //_______________________________________________________________________
 
-void HistPresent::CloseHistLists() 
-{  
+void HistPresent::CloseHistLists()
+{
    ClearSelect();
    fHistLists->Delete();
 }
 //________________________________________________________________________________________
 // Select
-  
+
 void HistPresent::SelectHist(const char* fname, const char* dir, const char* hname, const char* bp)
 {
    cout << fname << " " << hname << endl;
@@ -2184,7 +2207,7 @@ void HistPresent::SelectHist(const char* fname, const char* dir, const char* hna
 }
 //________________________________________________________________________________________
 // Select
-  
+
 void HistPresent::SelectContour(const char* fname, const char* hname, const char* bp)
 {
 //   cout << fname << " " << hname << endl;
@@ -2222,7 +2245,7 @@ void HistPresent::SelectContour(const char* fname, const char* hname, const char
 }
 //________________________________________________________________________________________
 // Select
-  
+
 void HistPresent::SelectGraph(const char* fname, const char* dir, const char* hname, const char* bp)
 {
 //   cout << fname << " " << hname << endl;
@@ -2290,8 +2313,8 @@ void HistPresent::CutsToASCII(const char* name, const char* bp)
    0, 0, helpText);
    if (!ok) {
       cout << " Canceled " << endl;
-      return; 
-   } 
+      return;
+   }
    if (!gSystem->AccessPathName((const char *)fname, kFileExists)) {
 //      cout << fname << " exists" << endl;
       int buttons= kMBOk | kMBDismiss, retval=0;
@@ -2322,7 +2345,7 @@ void HistPresent::CutsToASCII(const char* name, const char* bp)
    outfile.close();
 }
 //________________________________________________________________________________________
-void HistPresent::CutsFromASCII(TGWindow * win) 
+void HistPresent::CutsFromASCII(TGWindow * win)
 {
    const char helpText[] = "Read values of cuts (Window2D) from ASCII file";
    TRegexp endwithwdw2D("wdw2D$");
@@ -2336,8 +2359,8 @@ void HistPresent::CutsFromASCII(TGWindow * win)
    fname = GetString("Filename",fname.Data(), &ok, win,0, 0, helpText);
    if (!ok) {
       cout << " Canceled " << endl;
-      return; 
-   } 
+      return;
+   }
    ifstream infile;
    infile.open((const char *)fname, ios::in);
 	if (!infile.good()) {
@@ -2346,7 +2369,7 @@ void HistPresent::CutsFromASCII(TGWindow * win)
 			<< endl;
 		return;
 	}
-	TString cutname; 
+	TString cutname;
    Int_t npoints;
    Float_t x,y;
    while ( 1) {
@@ -2361,11 +2384,11 @@ void HistPresent::CutsFromASCII(TGWindow * win)
       cout << endl;
       cout << cutname.Data() << " " << npoints << endl;
       if (npoints <= 0) {WarnBox("npoints <= 0"); return;}
-         
+
       TMrbWindow2D * wdw = new TMrbWindow2D((const char *)cutname, npoints);
       for(Int_t i = 0; i < npoints; i++) {
          infile >> x; infile >> y;
-         wdw->SetPoint(i, x, y); 
+         wdw->SetPoint(i, x, y);
       }
       fAllCuts->Add(wdw);
    }
@@ -2383,12 +2406,12 @@ void HistPresent::LoadCut(const char* fname, const char* hname, const char* bp)
 //   if (color != 3) {
       if (!strncmp("Memory",fname,6)) {
          cout << " Cut was removed" << endl;
-      } else { 
+      } else {
          if (fRootFile) fRootFile->Close();
          fRootFile=new TFile(fname);
          TCutG* cut= (TCutG*)fRootFile->Get(hname);
 //         cout << "TCutG, class " << cut->ClassName() << endl;
-         TMrbWindow2D * wdw2d= 
+         TMrbWindow2D * wdw2d=
          new TMrbWindow2D(cut->GetName(),cut->GetN(),cut->GetX(),cut->GetY());
          fAllCuts->Add(wdw2d);
 //  cut->SetDirectory(gROOT);
@@ -2418,10 +2441,10 @@ void HistPresent::LoadCut(const char* fname, const char* hname, const char* bp)
 //      TCutG* cc=(TCutG*)gROOT->FindObject(hname);
       if (cc) {
          cout << "remove from memory: " << hname << endl;
-         fAllCuts->Remove(cc);        
+         fAllCuts->Remove(cc);
          delete cc;
       }
-      fSelectCut->Remove(&tobjs);    
+      fSelectCut->Remove(&tobjs);
       b->SetFillColor(16);
       b->ResetBit(kSelected);
    }
@@ -2510,9 +2533,9 @@ void HistPresent::LoadFunction(const char* fname, const char* dir, const char* h
 //      cout << sel.Data() << endl;
 //      fun = fAllFunctions->FindObject(sel.Data());
 //      if (fun) {
-//         cout << "Remove:" << tobjs.GetString()<< endl; 
+//         cout << "Remove:" << tobjs.GetString()<< endl;
          fAllFunctions->Remove(&tobjs);
-//      }    
+//      }
       b->SetFillColor(16);
       b->ResetBit(kSelected);
    }
@@ -2581,7 +2604,7 @@ void HistPresent::LoadWindow(const char* fname, const char* hname, const char* b
       gDirectory=gROOT;
 //     case not already selected
       b->SetFillColor(3);
-      b->SetBit(kSelected);      
+      b->SetBit(kSelected);
    } else {
       TMrbWindow* cc=(TMrbWindow*)fAllWindows->FindObject(hname);
       TList *tl=gDirectory->GetList();
@@ -2590,8 +2613,8 @@ void HistPresent::LoadWindow(const char* fname, const char* hname, const char* b
          if (!(strncmp(obj->ClassName(),"FitHist",7))) {
             FitHist *fhist=(FitHist*)obj;
             if (fhist->UseWindow(cc)) {
-               cout << "Window: " << hname << 
-               " used by FitHist " << fhist->GetName() 
+               cout << "Window: " << hname <<
+               " used by FitHist " << fhist->GetName()
                << " cant remove from memory" << endl;
                return;
             }
@@ -2601,23 +2624,23 @@ void HistPresent::LoadWindow(const char* fname, const char* hname, const char* b
 //      cout << "remove from list: ";
 //      tobjs.Print(" ");
 //      TCutG* cc=(TCutG*)gROOT->FindObject(hname);
-      fSelectWindow->Remove(&tobjs);    
-      fAllWindows->Remove(&tobjs);    
-      fAllCuts->Remove(&tobjs);    
+      fSelectWindow->Remove(&tobjs);
+      fAllWindows->Remove(&tobjs);
+      fAllCuts->Remove(&tobjs);
       if (cc) {
 //         cout << "remove from memory: " << hname << endl;
-         gDirectory->GetList()->Remove(cc);        
+         gDirectory->GetList()->Remove(cc);
          delete cc;
       }
       b->SetFillColor(16);
-      b->ResetBit(kSelected);      
+      b->ResetBit(kSelected);
    }
    b->Modified(kTRUE);
    b->Update();
 }
 //__________________________________________________________________________________
 
-void HistPresent::ClearSelect() 
+void HistPresent::ClearSelect()
 {
       if (fHistLists->GetSize() > 0) {
          TIter next(fHistLists);
@@ -2646,10 +2669,10 @@ void HistPresent::ClearSelect()
       fSelectWindow->Clear();
       fSelectContour->Clear();
       fSelectGraph->Clear();
-}; 
+};
 //__________________________________________________________________________________
-  
-void HistPresent::ListSelect() 
+
+void HistPresent::ListSelect()
 {
    TObjString *sel;
    cout << "-------------------- " << endl;
@@ -2710,8 +2733,8 @@ void HistPresent::ListSelect()
    cout << "-------------------- " << endl;
 };
 //_______________________________________________________________________
-  
-TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname) 
+
+TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
 {
 //   TurnButtonGreen(&activeHist);
    TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
@@ -2719,9 +2742,9 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
    TString shname = hname;
 //    shname = shname.Strip(TString::kBoth);
    if (strstr(fname,".root")) {
-      TString newhname;  
+      TString newhname;
       if (fRootFile) fRootFile->Close();
-      newhname = gSystem->BaseName(fname);   
+      newhname = gSystem->BaseName(fname);
       Int_t pp = newhname.Index(".");
       if (pp) newhname.Resize(pp);
       newhname = newhname + "_" + shname.Data();
@@ -2747,7 +2770,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       if(hist) {
 //         cout << "delete existing: " << hn << endl;
          CleanWindowLists(hist);
-         delete hist; 
+         delete hist;
          hist = NULL;
       }
 
@@ -2774,12 +2797,12 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
             hist->SetUniqueID(dt.Convert());
       	   hist->SetName(newhname);
          } else {
-            cout << "Histogram: " << hname << 
+            cout << "Histogram: " << hname <<
                     " not found in: " << fname << endl;
          }
       	fRootFile->Close();
-      } 
-   
+      }
+
    } else if (strstr(fname,"Socket")) {
       if(!fComSocket){
           cout << setred << "No connection open"  << setblack << endl;
@@ -2807,7 +2830,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
          while ( TList * oc = (TList *)next()) {
 //            TObjString * os = (TObjString *)oc->FindObject(temp.Data());
             if (oc->FindObject(temp.Data())) {
-               cout << "Found inlist: " << temp.Data() << endl;            
+               cout << "Found inlist: " << temp.Data() << endl;
                inlist = kTRUE;
                break;
             }
@@ -2816,7 +2839,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       if (!inlist) {
          TH1* temp = (TH1*)gROOT->FindObject(shname.Data());
          if (temp) {
- //           cout << "GetHist(map): Deleting existing: " << hname 
+ //           cout << "GetHist(map): Deleting existing: " << hname
  //                << " at: " << temp << endl;
             CleanWindowLists(temp);
             temp->Delete();
@@ -2859,7 +2882,7 @@ void HistPresent::RemoveFromLists(TObject * obj)
 void HistPresent::CleanWindowLists(TH1* hist)
 {
    if (!hist) return;
-//   cout << "CleanWindowLists" << endl; 
+//   cout << "CleanWindowLists" << endl;
    TList *lof = hist->GetListOfFunctions();
    if (lof) {
       TObject *p;
@@ -2871,10 +2894,10 @@ void HistPresent::CleanWindowLists(TH1* hist)
          fSelectCut->Remove(p);
          fSelectWindow->Remove(p);
       }
-   } 
+   }
 }
 //_______________________________________________________________________
-  
+
 void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname, const char* bp)
 {
    TH1* hist = GetHist(fname, dir, hname);
@@ -2890,13 +2913,15 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
            b->Update();}
       }
 //      TurnButtonGreen(&activeHist);
-      ShowHist(hist, hname);   
+      ShowHist(hist, hname);
    } else     WarnBox("Histogram not found");
 }
 //_______________________________________________________________________
 
-FitHist * HistPresent::ShowHist(TH1* hist, const char* hname) 
+FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 {
+//   RestoreOptions();
+
    static TString FHnameSave;
    static FitHist *fh=0;
    TString origname;
@@ -2914,7 +2939,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
       origname(notascii) = "_";
    }
    if (gDirectory) {
-      TList *tl=gDirectory->GetList();   
+      TList *tl=gDirectory->GetList();
       FitHist *fhist = (FitHist*)tl->FindObject(FHname);
       if (fhist) {
 //         Warning("In ShowHist:"," Delete  existing : %s",FHname.Data());
@@ -2940,41 +2965,41 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 //   gROOT->Reset();
    nHists++;
    if (FHnameSave != FHname) {
-      if (fNwindows>0) {       // not the 1. time
-//         if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
-//         else   {fWincurx = fWintopx; fWincury += fWinshifty;}
-         fWincurx += fWinshiftx;
-         fWincury += fWinshifty;
+      if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
+//         if (WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::fNwindows%2 != 0) WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
+//         else   {WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx; WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;}
+         WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
+         WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
       }
-      fNwindows++;
+      WindowSizeDialog::fNwindows++;
       FHnameSave = FHname;
    }
-   if (fNwindows > 10) {
+   if (WindowSizeDialog::fNwindows > 10) {
 //       cout << "fLastWindow " << fLastWindow <<endl;
       if (QuestionBox("More than 10 hists on screen!! Remove them?", fLastWindow))
-          CloseAllCanvases();        
+          CloseAllCanvases();
    }
-   Int_t wwidx; 
-   Int_t wwidy; 
+   Int_t wwidx;
+   Int_t wwidy;
 
    if (hist->GetDimension() == 1) {
-     wwidx = fWinwidx_1dim;
-     wwidy = fWinwidy_1dim;
+     wwidx = WindowSizeDialog::fWinwidx_1dim;
+     wwidy = WindowSizeDialog::WindowSizeDialog::fWinwidy_1dim;
    } else {
-      wwidx = fWinwidx_2dim;
-      wwidy = fWinwidy_2dim;
+      wwidx = WindowSizeDialog::fWinwidx_2dim;
+      wwidy = WindowSizeDialog::fWinwidy_2dim;
    }
 //   cout << "FHname " << FHname << endl;
 //   cout << "hist->GetName() " << hist->GetName() << endl;
 //   cout << "origname " << origname << endl;
    fh=new FitHist((const char*)FHname,"A FitHist object",hist, origname.Data(),
-          fWincurx, fWincury, wwidx, wwidy);
+          WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, wwidx, wwidy);
    fLastWindow = fh->GetMyCanvas();
    return fh;
 }
 //_______________________________________________________________________
 
-void HistPresent::CloseAllCanvases() 
+void HistPresent::CloseAllCanvases()
 {
 //     Cleaning all FitHist objects
 //   cout << "Enter CloseAllCanvases()" << endl;
@@ -2993,21 +3018,21 @@ void HistPresent::CloseAllCanvases()
       rc->ShowEditor(kFALSE);
       rc->SendCloseMessage();
    }
-   fNwindows= 0;
-   fWincury = fWintopy;
-   fWincurx = fWintopx;
+   WindowSizeDialog::fNwindows= 0;
+   WindowSizeDialog::fWincury = WindowSizeDialog::fWintopy;
+   WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
    fNtupleSeqNr = 0;
 //   cout << "Exit CloseAllCanvases()" << endl;
 }
 //_______________________________________________________________________
-  
-void HistPresent::StackSelectedHists(const char *bp) 
+
+void HistPresent::StackSelectedHists(const char *bp)
 {
    StackSelectedHists(fSelectHist);
 }
 //_______________________________________________________________________
-  
-void HistPresent::StackSelectedHists(TList * hlist, const char* title) 
+
+void HistPresent::StackSelectedHists(TList * hlist, const char* title)
 {
    Int_t nsel = hlist->GetSize();
    Int_t nx = 1, ny =1;
@@ -3019,10 +3044,10 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
    } else if (nsel > 32) {
       WarnBox("Maximum 32 histograms allowed");
       return;
-   } 
+   }
 //  make a copy of  hlist, add its pointer to list of histlists fHistListList
 //  pass its pointer to HTCanvas,
-//  destructor of HTCanvas shall delete the list and remove its 
+//  destructor of HTCanvas shall delete the list and remove its
 //  pointer from fHistListList
    TList * savelist = new TList();
    TIter next(hlist);
@@ -3051,25 +3076,25 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
    buf += fSeqNumberMany++;
    const char * tit = buf.Data();
    if (title) tit = title;
-   HTCanvas * cmany = 
-       new HTCanvas(buf.Data(), tit, fWincurx, fWincury, wwx, wwy,
+   HTCanvas * cmany =
+       new HTCanvas(buf.Data(), tit, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, wwx, wwy,
                     this);
-   fWincurx = fWintopx; fWincury += fWinshifty;
+   WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx; WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
 
    fCanvasList->Add(cmany);
    TString hname;
    TString stitle("Stacked: ");
-   
+
 //   TString ytitle("");
-   Int_t nbins = 0, binlx = 0, binux = 0, binly = 0, binuy = 0; 
+   Int_t nbins = 0, binlx = 0, binux = 0, binly = 0, binuy = 0;
    THStack * hs = new THStack("hstack","");
    fAnyFromSocket = kFALSE;
    for(Int_t i=0; i<nsel; i++) {
-      hist = GetSelHistAt(i, hlist); 
+      hist = GetSelHistAt(i, hlist);
       if (!hist) {
-//         cout << " Hist not found at: " << i << endl;  
+//         cout << " Hist not found at: " << i << endl;
          continue;
-      }  
+      }
       hname = hist->GetName();
       Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
       if(last_us >0)hname.Remove(last_us);
@@ -3112,17 +3137,17 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
       hs->GetXaxis()->SetRange(binlx, binux);
       hs->GetHistogram()->GetXaxis()->SetRange(binlx, binux);
    }
-   if (hist->GetDimension() == 2 && binly != 0 && binuy != 0) { 
+   if (hist->GetDimension() == 2 && binly != 0 && binuy != 0) {
       hs->GetYaxis()->SetRange(binly, binuy);
       hs->GetHistogram()->GetYaxis()->SetRange(binly, binuy);
    }
    hs->SetTitle(stitle.Data());
 
    for(Int_t i=0; i<nsel; i++) {
-      hist = GetSelHistAt(i, hlist); 
+      hist = GetSelHistAt(i, hlist);
       if (!hist) {
          continue;
-      }  
+      }
       Float_t x1 = 0.7;
       Float_t x2 = 0.9;
       Float_t y1 = 1 - 0.04 * (3.5 + i);
@@ -3139,14 +3164,14 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
    cmany->Update();
 }
 //_______________________________________________________________________
-  
-void HistPresent::ShowSelectedHists(const char *bp) 
+
+void HistPresent::ShowSelectedHists(const char *bp)
 {
    ShowSelectedHists(fSelectHist);
 }
 //_______________________________________________________________________
-  
-void HistPresent::ShowSelectedHists(TList * hlist, const char* title) 
+
+void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
 {
    new GroupOfHists(hlist, this, title);
 }
@@ -3161,7 +3186,7 @@ void HistPresent::WarnBox(const char *message)
 }
 //____________________________________________________________________________
 
-Int_t NofEditorPages() 
+Int_t NofEditorPages()
 {
    Int_t n = 0;
    TIter next(gROOT->GetListOfCanvases());
@@ -3175,7 +3200,7 @@ Int_t NofEditorPages()
 
 void HistPresent::DinA4Page(Int_t form)
 {
-   HTCanvas *c1 = NULL; 
+   HTCanvas *c1 = NULL;
    TString name("page_");
    fPageNumber++;
    name += fPageNumber;
@@ -3208,7 +3233,7 @@ void HistPresent::DinA4Page(Int_t form)
       Xwidth = fEditPoXwidth;
       Ywidth = fEditPoYwidth;
       XRange = fEditPoXRange;
-   } 
+   }
    TMrbString temp;
    row_lab->Add(new TObjString("StringValue_Name of page"));
    row_lab->Add(new TObjString("PlainIntVal_X Position"));
@@ -3222,7 +3247,7 @@ void HistPresent::DinA4Page(Int_t form)
    valp[ind++] = &Xwidth;
    valp[ind++] = &Ywidth;
    valp[ind++] = &XRange;
-   Bool_t ok; 
+   Bool_t ok;
    Int_t itemwidth = 240;
    ok = GetStringExt("Canvas parameters", NULL, itemwidth, fMainCanvas,
                       NULL, NULL, row_lab, valp);
@@ -3247,10 +3272,10 @@ void HistPresent::DinA4Page(Int_t form)
       fEditPoXwidth = Xwidth;
       fEditPoYwidth = Ywidth;
       fEditPoXRange = XRange;
-   } 
+   }
 
    c1= new HTCanvas(name.Data(), name.Data(),
-                  Xlow, Ylow, Xwidth, Ywidth, this, NULL, NULL, 
+                  Xlow, Ylow, Xwidth, Ywidth, this, NULL, NULL,
                   HTCanvas::kIsAEditorPage);
 
    //compute the pad range to get a fix aspect ratio
@@ -3260,7 +3285,7 @@ void HistPresent::DinA4Page(Int_t form)
 
 //   cout << "XRange, YRange " << XRange << " " << YRange << endl;
 //   c1->SetFixedAspectRatio();
-   c1->Range(xmin,ymin,XRange,YRange); 
+   c1->Range(xmin,ymin,XRange,YRange);
 
    GetCanvasList()->Add(c1);
 	c1->SetRightMargin(0);
@@ -3277,7 +3302,7 @@ void HistPresent::DinA4Page(Int_t form)
 }
 //________________________________________________________________________________________
 // Show Canvas
-  
+
 void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* name, const char* bp)
 {
    cout << "ShowCanvas: " << fname << " " << dir << " " << name << endl;
@@ -3300,7 +3325,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
 //      c->Draw();
       TList * logr = new TList();
       Int_t ngr = FindGraphs(gPad, logr);
-      if (ngr > 0) { 
+      if (ngr > 0) {
          c->Draw();
          c->BuildHprMenus(this,0, (TGraph*)logr->First());
          delete logr;
@@ -3317,7 +3342,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       c->SetBit(HTCanvas::kIsAEditorPage);
    }
    c->SetBit(HTCanvas::kIsAEditorPage);
-   HTCanvas* oldc = (HTCanvas*)gROOT->GetListOfCanvases()->FindObject(name); 
+   HTCanvas* oldc = (HTCanvas*)gROOT->GetListOfCanvases()->FindObject(name);
    if (oldc) {
       cout << new_name << " already exists, please save und delete" << endl;
       if (fRootFile) fRootFile->Close();
@@ -3344,7 +3369,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
                       c->GetWindowTopX(), c->GetWindowTopY(),
                       ww, wh, this, NULL, NULL, HTCanvas::kIsAEditorPage);
    cout << "HTCanvas *c1 = new (HTCanvas*)"<< c1 << endl;
-   
+
    Double_t x1, y1, x2, y2;
    c->GetRange(x1, y1, x2, y2);
    c1->Range(x1, y1, x2, y2);
@@ -3369,7 +3394,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
          if (obj->InheritsFrom("TPad")){
             lpads.Add(obj);
          } else {
-//             cout << "At HistPresent::ShowCanvas -= " 
+//             cout << "At HistPresent::ShowCanvas -= "
 //               << obj->GetName()  << endl;
 //            obj->Dump();
             obj->SetDrawOption(obj->GetOption());
@@ -3378,7 +3403,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
          }
       }
       lnk = (TObjOptLink*)lnk->Next();
-      
+
    }
    if (lpads.GetSize() > 0) {
       TIter next(&lpads);
@@ -3413,21 +3438,21 @@ void HistPresent::SelectFromOtherDir()
    fi->fFileTypes = filter;
    new  TGFileDialog(gClient->GetRoot(), GetMyCanvas(), kFDOpen, fi);
    cout << "SelectFromOtherDir() " <<fi->fFilename << endl;
-   if (fi->fFilename) ShowContents(fi->fFilename , "", NULL); 
+   if (fi->fFilename) ShowContents(fi->fFilename , "", NULL);
    delete fi;
 }
 //________________________________________________________________
 
 Int_t HistPresent::GetWindowPosition(Int_t * winx, Int_t * winy)
 {
-   if (fNwindows>0) {       // not the 1. time
-      if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
-      else   {fWincurx = fWintopx; fWincury += fWinshifty;}
+   if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
+      if (WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::fNwindows%2 != 0) WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
+      else   {WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx; WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;}
    }
-   fNwindows++;
-   *winx = fWincurx;
-   *winy = fWincury;
-   return fNwindows;
+   WindowSizeDialog::fNwindows++;
+   *winx = WindowSizeDialog::fWincurx;
+   *winy = WindowSizeDialog::fWincury;
+   return WindowSizeDialog::fNwindows;
 }
 //________________________________________________________________
 
@@ -3478,8 +3503,8 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 //                  cout << "Set color for: " << histname << endl;
                   b->SetFillColor(17);
                   b->Modified(kTRUE);
-                  b->Update(); 
-               } 
+                  b->Update();
+               }
             }
          }
          delete next1;
@@ -3502,8 +3527,8 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 //                  cout << "Set color for: " << fname << endl;
                b->SetFillColor(17);
                b->Modified(kTRUE);
-               b->Update(); 
-            } 
+               b->Update();
+            }
          }
       }
    }

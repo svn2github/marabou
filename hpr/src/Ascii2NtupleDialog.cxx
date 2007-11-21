@@ -68,7 +68,7 @@ void Ascii2NtupleDialog::Fill_The_Ntuple()
 void Ascii2NtupleDialog::SaveDefaults()
 {
    cout << "Ascii2NtupleDialog::SaveDefaults() " << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
 	env.SetValue("Ascii2NtupleDialog.InputFileName"  , fInputFileName );
 	env.SetValue("Ascii2NtupleDialog.OutputFileName" , fOutputFileName);
 	env.SetValue("Ascii2NtupleDialog.NtupleName"  	, fNtupleName    );
@@ -80,7 +80,7 @@ void Ascii2NtupleDialog::SaveDefaults()
             
 void Ascii2NtupleDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
 	fInputFileName  = env.GetValue("Ascii2NtupleDialog.InputFileName"  ,"nt.asc");
 	fOutputFileName = env.GetValue("Ascii2NtupleDialog.OutputFileName" ,"nt.root");
 	fNtupleName 	 = env.GetValue("Ascii2NtupleDialog.NtupleName"  	,"nt0");
@@ -98,7 +98,7 @@ void Ascii2NtupleDialog::Show_Head_of_File()
 }
 //_________________________________________________________________________
             
-void Ascii2NtupleDialog::CloseDown()
+void Ascii2NtupleDialog::CloseDown(Int_t wid)
 {
    cout << "Ascii2NtupleDialog::CloseDown()" << endl;
    delete this;

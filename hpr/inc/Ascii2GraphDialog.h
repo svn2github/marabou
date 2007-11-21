@@ -60,7 +60,7 @@ public:
    Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads);
    void SaveDefaults();
    void RestoreDefaults();
-   void CloseDown();
+   void CloseDown(Int_t wid);
 
 ClassDef(Ascii2GraphDialog,0)
 };

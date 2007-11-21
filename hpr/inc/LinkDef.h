@@ -17,4 +17,13 @@
 #pragma link C++ class Ascii2HistDialog;
 #pragma link C++ class Ascii2NtupleDialog;
 #pragma link C++ class EmptyHistDialog;
+#pragma link C++ class SetHistOptDialog;
+#pragma link C++ class Set1DimOptDialog;
+#pragma link C++ class Set2DimOptDialog;
+#pragma link C++ class SetColorModeDialog;
+#pragma link C++ class SetCanvasAttDialog;
+#pragma link C++ class WhatToShowDialog;
+#pragma link C++ class GeneralAttDialog;
+#pragma link C++ class GraphAttDialog;
+#pragma link C++ class WindowSizeDialog;
 #endif

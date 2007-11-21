@@ -19,8 +19,9 @@
 #include "SetColor.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
-#include "TMrbHelpBrowser.h" 
+#include "TMrbHelpBrowser.h"
 #include "CmdListEntry.h"
+#include "WindowSizeDialog.h"
 
 #include <iostream>
 #include <iomanip>
@@ -30,7 +31,7 @@
 
 //________________________________________________________________________________________
 
-void AddMathExpressions(TList * var_list) 
+void AddMathExpressions(TList * var_list)
 {
    if (!var_list) return;
    var_list->Add(new TObjString("TMath::Sqrt("));
@@ -49,8 +50,8 @@ void AddMathExpressions(TList * var_list)
    var_list->Add(new TObjString("TMath::DegToRad("));
 }
 //________________________________________________________________________________________
-// Show Tree 
-  
+// Show Tree
+
 void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname, const char* bp)
 {
   static Int_t ycanvas=100;
@@ -146,16 +147,16 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    fRootFile->Close();
    TString title("Tree: ");
    title += tname;
-   HTCanvas *ccont = CommandPanel(title.Data(), fCmdLine, 
-                     fMainWidth + 10, ycanvas, this, fWinwidx_hlist);
+   HTCanvas *ccont = CommandPanel(title.Data(), fCmdLine,
+                     WindowSizeDialog::fMainWidth + 10, ycanvas, this, WindowSizeDialog::fWinwidx_hlist);
    if (fHistLists)fHistLists->Add(ccont);
    ycanvas += 50;
    if (ycanvas >= 500) ycanvas=5;
-   fCmdLine->Delete(); 
+   fCmdLine->Delete();
 
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::SelectLeaf(const char* lname, const char* bp)
 {
    if (!bp) return;
@@ -172,7 +173,7 @@ void HistPresent::SelectLeaf(const char* lname, const char* bp)
 //      b->SetTitle("");
       b->ResetBit(kSelected);
    } else {
-      fSelectLeaf->Add(new TObjString((const char *)sel));     
+      fSelectLeaf->Add(new TObjString((const char *)sel));
 //      cout << " Add leaf " << lname << " Index: " << fSelectLeaf->LastIndex()<< endl;
 //      b->SetTitle(Form("%d", fSelectLeaf->LastIndex()));
       b->SetFillColor(3);
@@ -181,7 +182,7 @@ void HistPresent::SelectLeaf(const char* lname, const char* bp)
 //   b->Paint();
    if (fSelectLeaf->GetSize() > 0) {
       cout << "Current selection:" << endl;
-      for (Int_t i = 0; i < fSelectLeaf->GetSize(); i++) 
+      for (Int_t i = 0; i < fSelectLeaf->GetSize(); i++)
          cout << i << " " << aname[i] << ": " <<  ((TObjString*)fSelectLeaf->At(i))->GetString() << endl;
    }
    b->Modified(kTRUE);b->Update();
@@ -197,7 +198,7 @@ void HistPresent::ToggleExpression(const char* bp)
       if (b->TestBit(kSelected)) {
          cout << "set use expression =kFALSE"<< endl;
          fApplyExpression = kFALSE;
-         b->SetFillColor(16);     
+         b->SetFillColor(16);
          b->ResetBit(kSelected);
       } else {
          cout << "set use expression =kTRUE"<< endl;
@@ -208,14 +209,14 @@ void HistPresent::ToggleExpression(const char* bp)
    }
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::UseHist(const char* bp)
 {
    ShowContents("Memory", "");
    if (!fUseHist) ToggleUseHist();
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::ToggleUseHist(const char* bp)
 {
    if (bp) {
@@ -224,7 +225,7 @@ void HistPresent::ToggleUseHist(const char* bp)
       if (b->TestBit(kSelected)) {
          cout << "set UseHist = kFALSE"<< endl;
          fUseHist = kFALSE;
-         b->SetFillColor(16);     
+         b->SetFillColor(16);
          b->ResetBit(kSelected);
       } else {
          cout << "set UseHist= kTRUE"<< endl;
@@ -235,7 +236,7 @@ void HistPresent::ToggleUseHist(const char* bp)
    }
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::ToggleLeafCut(const char* bp)
 {
    if (bp) {
@@ -244,13 +245,13 @@ void HistPresent::ToggleLeafCut(const char* bp)
       if (b->TestBit(kSelected)) {
          cout << "set formula cut =kFALSE"<< endl;
          fApplyLeafCut = kFALSE;
-         b->SetFillColor(16);     
+         b->SetFillColor(16);
          b->ResetBit(kSelected);
       } else {
          if (fApplyGraphCut) {
             WarnBox("Cant have formula and graphical cut simultanously");
             return;
-         }         
+         }
          cout << "set formula cut =kTRUE "<< endl;
          fApplyLeafCut = kTRUE;
          b->SetFillColor(3);
@@ -259,7 +260,7 @@ void HistPresent::ToggleLeafCut(const char* bp)
    }
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::ToggleGraphCut(const char* bp)
 {
    if (bp) {
@@ -268,12 +269,12 @@ void HistPresent::ToggleGraphCut(const char* bp)
       if (b->TestBit(kSelected)) {
          cout << "set graphical cut =kFALSE"<< endl;
          fApplyGraphCut = kFALSE;
-         b->SetFillColor(16);     
+         b->SetFillColor(16);
       } else {
          if (fApplyLeafCut) {
             WarnBox("Cant have formula and graphical cut simultanously");
             return;
-         }         
+         }
          cout << "set graphical cut =kTRUE"<< endl;
          fApplyGraphCut = kTRUE;
          b->SetFillColor(3);
@@ -281,7 +282,7 @@ void HistPresent::ToggleGraphCut(const char* bp)
    }
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::EditExpression(const char* vl, const char* bp)
 {
    Bool_t ok;
@@ -299,10 +300,10 @@ void HistPresent::EditExpression(const char* vl, const char* bp)
       cout << *fExpression<< endl;
       cout << "Press grey button to activate" << endl;
 //       if (!fApplyExpression)ToggleExpression();
-    }   
+    }
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::EditLeafCut(const char* vl, const char* bp)
 {
 
@@ -317,14 +318,14 @@ void HistPresent::EditLeafCut(const char* vl, const char* bp)
                          &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
    if (!ok) return;
     if (strlen(*fLeafCut) > 1) {
-       
+
 //       if (!fApplyLeafCut)ToggleLeafCut();
        cout << *fLeafCut << endl;
        cout << "Please press grey button to activate" << endl;
-    } 
+    }
 }
 //________________________________________________________________________________________
-  
+
 void HistPresent::DefineGraphCut(const char* bp)
 {
    Bool_t ok;
@@ -350,7 +351,7 @@ void HistPresent::DefineGraphCut(const char* bp)
       cout << "Enable: " << *fGraphCut << endl;
    } else {
       if (fApplyGraphCut) ToggleGraphCut();
-   }   
+   }
 //  svalues->Delete();
 //  delete svalues;
 }
@@ -375,7 +376,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    static Int_t first_event = 0;
    static Int_t nof_events = 0;
 
-//   cout << "leafname " << leafname << " " << strlen(leafname) 
+//   cout << "leafname " << leafname << " " << strlen(leafname)
 //    << " nent " << fSelectLeaf->GetSize() << endl;
    if (strlen(leafname)>0) {
       leaf0=leafname;
@@ -426,10 +427,10 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
                continue;
             }
             *leaf[nent] = cmd(sind, colind-sind);
-             
+
             sind = colind + 1;
             nent++;
-   		} 
+   		}
          *leaf[nent] = cmd(sind, cmd.Length() - sind);
          nent++;
       }
@@ -459,14 +460,14 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
             WarnBox("2 args expected, only 1 given");
             return;
          } else {while (cmd.Index(a2)>=0) {cmd(a2)=leaf1.Data();}}
-      }  
+      }
       TRegexp a3("\\$3");
       if (cmd.Index(a3)>=0) {
       	if (nent <3) {
          	WarnBox("3 args expected");
          	return;
       	} else {while (cmd.Index(a3)>=0) {cmd(a3)=leaf2.Data();}}
-      }  
+      }
    }
    if (nent > 0) hname += leaf0;
    else hname += "userdef";
@@ -516,7 +517,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 
    TEnv * env = 0;
    Bool_t limits_defined = kFALSE;
-   TString tag = leaf0.Data(); 
+   TString tag = leaf0.Data();
    if (nent > 0 && fRememberTreeHists) {
       if (gSystem->AccessPathName("ntuplerc")) {
          ofstream rcfile("ntuplerc", ios::out);
@@ -535,9 +536,9 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
             Int_t nb;
             tag = *leaf[i]; tag += ".nbin";
             if (env->Lookup(tag.Data())) {
-               nb = (Int_t)nbin[i]; 
+               nb = (Int_t)nbin[i];
                nb = env->GetValue(tag, nb); nbin[i] = nb;
-            } else { 
+            } else {
                limits_defined = kFALSE;
             }
             tag = *leaf[i]; tag += ".min";
@@ -563,13 +564,13 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    Bool_t must_find_limits = kFALSE;
    for(Int_t i = 0; i < nent; i++) {
      if (nbin[i] == 0) must_find_limits = kTRUE;
-   } 
+   }
    if (fAlwaysFindLimits) must_find_limits = kTRUE;
    if (must_find_limits) limits_defined = kFALSE;
 
    Bool_t modified = kFALSE;
    if (must_find_limits) {
-      cout << setblue << "Do tree->Draw() to find limits" << setblack << endl; 
+      cout << setblue << "Do tree->Draw() to find limits" << setblack << endl;
       tree->Draw(cmd_orig.Data(),"","goff");
       TH1* htemp = (TH1*)gDirectory->FindObject("htemp");
       if (htemp) {
@@ -588,7 +589,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       }
    }
    if (!limits_defined || fAlwaysRequestLimits) {
-      TOrdCollection *row_lab = new TOrdCollection(); 
+      TOrdCollection *row_lab = new TOrdCollection();
       TOrdCollection *col_lab = new TOrdCollection();
       col_lab->Add(new TObjString("Nbins"));
       col_lab->Add(new TObjString("Min or 1. Ev"));
@@ -613,49 +614,49 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          pwin = (TRootCanvas *)(b->GetCanvas()->GetCanvasImp());
       }
 
-      Int_t ret = 0,  itemwidth=120, precission = 5; 
-      TGMrbTableOfDoubles(pwin, &ret, "Set axis ranges", 
+      Int_t ret = 0,  itemwidth=120, precission = 5;
+      TGMrbTableOfDoubles(pwin, &ret, "Set axis ranges",
                         itemwidth,3, nent + 1, xyvals, precission,
                        col_lab, row_lab);
       delete row_lab; delete col_lab;
       if (ret < 0) {
- //        delete [] vmin; delete [] vmax; delete [] nbin; 
+ //        delete [] vmin; delete [] vmax; delete [] nbin;
 //         delete [] xyvals;
          return;
       }
       p = 0;
-      for(Int_t i = 0; i < nent; i++) { 
+      for(Int_t i = 0; i < nent; i++) {
          if   (nbin[i] != xyvals[p]) {
             nbin[i] = xyvals[p];
             modified = kTRUE;
-         } 
+         }
          p++;
       }
       p++;      // skip
-      for(Int_t i = 0; i < nent; i++) { 
+      for(Int_t i = 0; i < nent; i++) {
          if   (vmin[i] != xyvals[p]) {
             vmin[i] = xyvals[p];
             modified = kTRUE;
-         } 
+         }
          p++;
       }
 
       if (first_event != (Int_t)xyvals[p]) {
          first_event = (Int_t)xyvals[p];
          modified = kTRUE;
-      } 
+      }
       p++;
-      for(Int_t i = 0; i < nent; i++) { 
+      for(Int_t i = 0; i < nent; i++) {
          if   (vmax[i] != xyvals[p]) {
             vmax[i] = xyvals[p];
             modified = kTRUE;
-         } 
+         }
          p++;
       }
       if (nof_events != (Int_t)xyvals[p]) {
          nof_events = (Int_t)xyvals[p];
          modified = kTRUE;
-      } 
+      }
 //      delete [] xyvals;
       if (modified && fRememberTreeHists) {
 /*
@@ -682,19 +683,19 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    }
 
    if (nent==1) new TH1F(hname.Data(),hname.Data(),
-               	  (Int_t)nbin[0],vmin[0], vmax[0]); 
+               	  (Int_t)nbin[0],vmin[0], vmax[0]);
    if (nent==2) new TH2F(hname.Data(),hname.Data(),
-               	 (Int_t)nbin[0],vmin[0], vmax[0], 
-               	 (Int_t)nbin[1],vmin[1], vmax[1]); 
+               	 (Int_t)nbin[0],vmin[0], vmax[0],
+               	 (Int_t)nbin[1],vmin[1], vmax[1]);
    if (nent==3) new TH3F(hname.Data(),hname.Data(),
-               	 (Int_t)nbin[0],vmin[0], vmax[0], 
-               	 (Int_t)nbin[1],vmin[1], vmax[1], 
-               	 (Int_t)nbin[2],vmin[2], vmax[2]); 
+               	 (Int_t)nbin[0],vmin[0], vmax[0],
+               	 (Int_t)nbin[1],vmin[1], vmax[1],
+               	 (Int_t)nbin[2],vmin[2], vmax[2]);
 
 //   delete [] vmin; delete [] vmax; delete [] nbin;
    if (env) delete env;
 
-   
+
 //   TEnv rootenv(".rootrc");		// inspect ROOT's environment
 //   Int_t max_events = 10000000;
 //   max_events = rootenv.GetValue("HistPresent.MaxEvents", max_events);
@@ -710,34 +711,34 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
             WarnBox("2 args expected, only 1 given");
             return;
          } else { while (cut.Index(a2)>=0) {cut(a2)=leaf1.Data();}}
-      }  
+      }
       TRegexp a3("\\$3");
       if (cut.Index(a3)>=0) {
         if (nent < 3) {
            WarnBox("3 args expected");
            return;
         } else { while (cut.Index(a3)>=0) {cut(a3)=leaf2.Data();}}
-      }  
-      cout << "Execute: " << cmd << " Cut: " << cut << " 1.Ev, NofEv: " 
+      }
+      cout << "Execute: " << cmd << " Cut: " << cut << " 1.Ev, NofEv: "
                           << first_event << " " <<nof_events << endl;
       tree->Draw((const char*)cmd, cut.Data(),option.Data(), nof_events, first_event);
    } else if (fApplyGraphCut && nent == 2) {
       tree->Draw((const char*)cmd, fGraphCut->Data(),option.Data(),
-                  nof_events, first_event); 
-      cout << "Execute: " << cmd << " 1.Ev, NofEv: " 
+                  nof_events, first_event);
+      cout << "Execute: " << cmd << " 1.Ev, NofEv: "
                           << first_event << " " <<nof_events << endl;
-      cout << "Apply graphical cut: " <<  fGraphCut->Data() << 
-      " with X :" << fCutVarX->Data() <<   
-      " and Y :" << fCutVarX->Data() <<  endl;  
+      cout << "Apply graphical cut: " <<  fGraphCut->Data() <<
+      " with X :" << fCutVarX->Data() <<
+      " and Y :" << fCutVarX->Data() <<  endl;
    } else {
-      cout << "Execute: " << cmd << " 1.Ev, NofEv: " 
+      cout << "Execute: " << cmd << " 1.Ev, NofEv: "
                           << first_event << " " <<nof_events << endl;
       tree->Draw((const char*)cmd,"",option.Data(), nof_events, first_event);
    }
    fRootFile->Close();
    fRootFile=NULL;
    TObject *obj = (TObject *)gROOT->FindObject(hname.Data());
-//  if (!obj)WarnBox("No Object"); 
+//  if (!obj)WarnBox("No Object");
    TH1* hist = (TH1*)obj;
    if (hist) {
          hist->GetXaxis()->SetTitle(*leaf[0]);
@@ -745,8 +746,8 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          if (nent >= 3) hist->GetZaxis()->SetTitle(*leaf[2]);
          ShowHist(hist);
    } else {
-      WarnBox("No hist"); 
-   }   
+      WarnBox("No hist");
+   }
 }
 
 //________________________________________________________________________________________
@@ -760,10 +761,93 @@ void HistPresent::MkClass( const char* fname, const char* dir, const char* tname
    TTree *tree = (TTree*)gDirectory->Get(tname);
    Bool_t ok;
    TString clname(tname);
-   if (clname.Index(";") > 0)clname.Resize(clname.Index(";")); 
+   if (clname.Index(";") > 0)clname.Resize(clname.Index(";"));
    clname = GetString("Name of generated class", clname.Data(), &ok);
    if (!ok) return;
    tree->MakeClass(clname.Data());
    gDirectory = gROOT;
 }
+//_______________________________________________________________________
+
+void HistPresent::SetShowTreeOptionsCint(const char *pointer)
+{
+	if (pointer) {
+		TCanvas* c = (TCanvas *)strtoul(pointer, 0, 16);
+		TRootCanvas * win = (TRootCanvas*)c->GetCanvasImp();         SetShowTreeOptions(win);
+	}
+}
+//_______________________________________________________________________
+
+void HistPresent::SetShowTreeOptions(TGWindow * win, FitHist * fh)
+{
+// *INDENT-OFF*
+static const char helptext[] =
+"\n\
+____________________________________________________________\n\
+The following options apply when  showing trees\n\
+____________________________________________________________\n\
+Remember hist limits\n\
+--------------------\n\
+When displaying trees (ntuples) remember limits for histograms \n\
+(number of channels, lower, upper edge)\n\
+____________________________________________________________\n\
+Always ask for hist limits\n\
+--------------------------\n\
+As default only the first time a variable (leaf) is\n\
+displayed the histogram limits are shown and may be\n\
+changed from a menu.\n\
+____________________________________________________________\n\
+Always recalculate hist limits\n\
+------------------------------\n\
+As default only the first time a variable (leaf) is\n\
+displayed the histogram limits calculated since this\n\
+requires to read the complete leaf\n\
+____________________________________________________________\n\
+Keep all hists (add version# to name)\n\
+-------------------------------------\n\
+As default histograms for the same leaf are overwritten\n\
+if they are shown again\n\
+";
+// *INDENT-ON*
+   TList *row_lab = new TList();
+   static void *valp[50];
+   Int_t ind = 0;
+   static Int_t dummy;
+   row_lab->Add(new TObjString("CommentOnly_Options when showing trees:"));
+   valp[ind++] = &dummy;
+   row_lab->Add(new TObjString("CheckButton_Remember histogram limits"));
+   valp[ind++] = &fRememberTreeHists;
+   row_lab->Add(new TObjString("CheckButton_Always ask for hist limits"));
+   valp[ind++] = &fAlwaysRequestLimits;
+   row_lab->Add(new TObjString("CheckButton_Always recalculate hist limits"));
+   valp[ind++] = &fAlwaysFindLimits;
+   row_lab->Add(new TObjString("CheckButton_Keep all hists (add vers# to name)"));
+   valp[ind++] = &fNtupleVersioning;
+
+   static Int_t ok;
+   Int_t itemwidth = 280;
+   fDialogShowTree =
+      new TGMrbValuesAndText("Set Show tree options",
+           NULL, &ok,itemwidth, win,
+           NULL, NULL, row_lab, valp,
+           NULL, NULL, helptext, this, this->ClassName());
+}
+//_______________________________________________________________________
+
+void HistPresent::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
+{
+//   TCanvas *c = (TCanvas *)obj;
+//   cout << "CRButtonPressed(" << wid<< ", " <<bid;
+//   if (obj) cout  << ", " << c->GetName() << ")";
+//   cout << endl;
+}
+//________________________________________________________________________
+
+void HistPresent::CloseDown(Int_t wid)
+{
+   cout << "HistPresent::CloseDown(" << wid << ")" << endl;
+   fDialogShowTree= NULL;
+   SaveOptions();
+}
+
 //________________________________________________________________________________________

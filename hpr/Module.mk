@@ -34,6 +34,15 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/Ascii2HistDialog.h \
  					$(HPRDIRI)/Ascii2NtupleDialog.h \
  					$(HPRDIRI)/EmptyHistDialog.h \
+ 					$(HPRDIRI)/SetHistOptDialog.h \
+ 					$(HPRDIRI)/Set1DimOptDialog.h \
+ 					$(HPRDIRI)/Set2DimOptDialog.h \
+  					$(HPRDIRI)/SetColorModeDialog.h \
+					$(HPRDIRI)/SetCanvasAttDialog.h \
+ 					$(HPRDIRI)/WhatToShowDialog.h \
+ 					$(HPRDIRI)/GeneralAttDialog.h \
+ 					$(HPRDIRI)/GraphAttDialog.h \
+ 					$(HPRDIRI)/WindowSizeDialog.h \
  					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)

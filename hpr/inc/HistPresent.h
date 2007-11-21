@@ -19,6 +19,7 @@
 
 #include "FitHist.h"
 #include "TMrbHelpBrowser.h"
+#include "TGMrbValuesAndText.h"
 
 namespace std {} using namespace std;
 
@@ -27,7 +28,7 @@ enum e_HsOp {kHsOp_None, kHsOp_And, kHsOp_Or, kHsOp_Not};
 const Int_t MAXCAN=10;
 class FitHist;
 class GroupOfHists;
- 
+
 class HistPresent : public TNamed , public TQObject {
 
 friend class FitHist;
@@ -43,6 +44,7 @@ protected:
    TH1 * fCurrentHist;
    TRootCanvas *fMainCanvas;
    TRootCanvas *lastcanvas;
+   TGMrbValuesAndText *fDialogShowTree;
    Bool_t fByTitle;
    Int_t fRebin, fRMethod;
    TVirtualPad *activeFile;
@@ -79,86 +81,28 @@ protected:
    TList *fAllContours;
 
    TMrbHelpBrowser * fHelpBrowser;
-   Int_t fMainWidth;
-   Int_t fNwindows; 
-   Int_t fWintopx;     // origin of window
-   Int_t fWintopy; 
-   Int_t fWincury;
-   Int_t fWincurx;
-   Int_t fWinwidx_2dim;
-   Int_t fWinwidy_2dim; 
-   Int_t fWinwidx_1dim;
-   Int_t fWinwidy_1dim; 
-   Int_t fWinshiftx;
-   Int_t fWinshifty;
-   Int_t fWinwidx_hlist; 
    Int_t fSeqNumberMany;
    Int_t fPageNumber;
    Int_t fOptStat;
    Int_t fShowDateBox;
    Int_t fShowStatBox;
    Int_t fUseTimeOfDisplay;
-   Int_t fUseRegexp;
-   Int_t fShowListsOnly;
    Int_t fShowTitle;
    Int_t fShowFitBox;
    Int_t fLikelyHood;
-   Int_t fShowContour; 
-   Int_t fFill1Dim;    
-   Int_t fFill2Dim;
-   Int_t f2DimBackgroundColor;
 
-   TString  fGraphFile;    
-   TString  fDrawOptGraph;    
-   TString * fDrawOpt2Dim;    
-   TString * f2DimColorPalette;    
-   Int_t fShowErrors;  
-   Int_t fDrawAxisAtTop;
-   Int_t fEnableCalibration;
-   Int_t fDisplayCalibrated;
-   Int_t fShowPSFile;
-   Int_t fShowFittedCurves;
+   TString  fGraphFile;
+
    Int_t fRememberTreeHists;
-   Int_t fRememberLastSet; 
-   Int_t fRememberZoom; 
-   Int_t fUseAttributeMacro;
-   Int_t fShowAllAsFirst; 
-   Int_t fAlwaysFindLimits; 
-   Int_t fAlwaysRequestLimits; 
-   Int_t fNtupleVersioning; 
-   Int_t fNtupleSeqNr; 
-   Int_t fRealStack; 
-
-   Int_t fNofColorLevels;
-   Int_t fStartColorIndex;
-   Int_t * fPalette;
-
-   Int_t   fNofTransLevels;
-   Int_t * fTransPaletteRGB;
-   Int_t * fTransPaletteHLS;
-   Int_t   fStartColor;
-   Int_t   fEndColor;
-   Float_t fEnhenceRed;
-   Float_t fEnhenceGreen;
-   Float_t fEnhenceBlue;
-   Int_t   fStartHue;
-   Int_t   fEndHue;
-   Float_t fLightness;
-   Float_t fSaturation;
-
-   Int_t   fNofGreyLevels;
-   Int_t * fGreyPalette;
-   Int_t * fGreyPaletteInv;
-   Int_t   fMaxListEntries;
+   Int_t fAlwaysFindLimits;
+   Int_t fAlwaysRequestLimits;
+   Int_t fNtupleVersioning;
+   Int_t fNtupleSeqNr;
+   Int_t fRealStack;
    TString * fHelpDir;
-   Double_t fProjectBothRatio;
    Double_t fLogScaleMin;
    Double_t fLinScaleMin;
    Int_t    fAutoUpdateDelay;
-   Int_t    fLiveStat1dim;
-   Int_t    fLiveStat2dim;
-   Int_t    fLiveGauss;
-   Int_t    fLiveBG;
 
    TButton * fRebin2;
    TButton * fRebin4;
@@ -177,175 +121,44 @@ protected:
    TGWindow * fLastWindow;
    TGWindow * fcHprWindow;
 //  Graphics attributes
-   
-   Float_t      fDivMarginX;
-   Float_t      fDivMarginY;
-   Int_t         fLabelMaxDigits;  
 
-   Int_t        fNdivisionsX; 
-   Color_t      fAxisColorX;  
-   Color_t      fLabelColorX; 
-   Style_t      fLabelFontX;  
-   Float_t      fLabelOffsetX;
-   Float_t      fLabelSizeX;  
-   Float_t      fTickLengthX; 
-   Float_t      fTitleOffsetX;
-   Float_t      fTitleSizeX;  
-   Color_t      fTitleColorX; 
-   Style_t      fTitleFontX;  
+   Int_t         fLabelMaxDigits;
 
-   Int_t        fNdivisionsY; 
-   Color_t      fAxisColorY;  
-   Color_t      fLabelColorY; 
-   Style_t      fLabelFontY;  
-   Float_t      fLabelOffsetY;
-   Float_t      fLabelSizeY;  
-   Float_t      fTickLengthY; 
-   Float_t      fTitleOffsetY;
-   Float_t      fTitleSizeY;  
-   Color_t      fTitleColorY; 
-   Style_t      fTitleFontY;  
+   Color_t       fFuncColor;
+   Style_t       fFuncStyle;
+   Width_t       fFuncWidth;
 
-   Int_t        fNdivisionsZ; 
-   Color_t      fAxisColorZ;  
-   Color_t      fLabelColorZ; 
-   Style_t      fLabelFontZ;  
-   Float_t      fLabelOffsetZ;
-   Float_t      fLabelSizeZ;  
-   Float_t      fTickLengthZ; 
-   Float_t      fTitleOffsetZ;
-   Float_t      fTitleSizeZ;  
-   Color_t      fTitleColorZ; 
-   Style_t      fTitleFontZ;  
-
-   Color_t       fHistFillColor;
-   Color_t       fHistLineColor;
-   Style_t       fHistFillStyle;
-   Style_t       fHistLineStyle;
-   Width_t       fHistLineWidth;
-   Float_t       fEndErrorSize;
-   Float_t       fErrorX;      
-   Color_t       fFuncColor;   
-   Style_t       fFuncStyle;   
-   Width_t       fFuncWidth;   
-
-   Color_t       fStatColor;     
-   Color_t       fStatTextColor; 
-   Width_t       fStatBorderSize;
-   Style_t       fStatFont;      
-   Float_t       fStatFontSize;  
-   Style_t       fStatStyle;     
-   Float_t       fStatX;         
-   Float_t       fStatY;         
-   Float_t       fStatW;         
-   Float_t       fStatH;
-
-   Color_t       fPadColor;       
-   Width_t       fPadBorderSize;  
-   Int_t         fPadBorderMode;  
-   Float_t       fPadBottomMargin;
-   Float_t       fPadTopMargin;   
-   Float_t       fPadLeftMargin;  
-   Float_t       fPadRightMargin; 
-   Int_t         fPadGridX;       
-   Int_t         fPadGridY;       
-   Int_t         fPadTickX;       
-   Int_t         fPadTickY;  
-	Color_t       fFrameFillColor;    //pad frame fill color
-	Color_t       fFrameLineColor;    //pad frame line color
-	Style_t       fFrameFillStyle;    //pad frame fill style
-	Style_t       fFrameLineStyle;    //pad frame line style
-	Width_t       fFrameLineWidth;    //pad frame line width
-	Width_t       fFrameBorderSize;   //pad frame border size
-	Short_t         fFrameBorderMode;   //pad frame border mode
-	Color_t       fCanvasColor;       //canvas color
-	Width_t       fCanvasBorderSize;  //canvas border size
-   Short_t        fCanvasBorderMode;  //canvas border mode
-	Int_t         fCanvasDefH;        //default canvas height
-	Int_t         fCanvasDefW;        //default canvas width
-	Int_t         fCanvasDefX;        //default canvas top X position
-	Int_t         fCanvasDefY;        //default canvas top Y position
-
-   Color_t       fTitleColor;     
-   Color_t       fTitleTextColor; 
-   Width_t       fTitleBorderSize;
-   Style_t       fTitleFont;      
-   Float_t       fTitleFontSize;  
-   Style_t       fTitleStyle;     
-   Float_t       fTitleX;         
-   Float_t       fTitleY;         
-   Float_t       fTitleW;         
-   Float_t       fTitleH; 
-   Short_t       fTitleAlign;        //Text alignment
-
-   Color_t    fLineColor;           //line color
-   Style_t    fLineStyle;           //line style
-   Width_t    fLineWidth;           //line width
-   Color_t    fMarkerColor;           //Marker color
-   Style_t    fMarkerStyle;           //Marker style
-   Float_t    fMarkerSize;           //Marker width
-
-   Float_t    fTextSize ;            //Text size
-   Float_t    fTextAngle ;            //Text angle
-   Short_t    fTextAlign;           //Text alignment
-   Color_t    fTextColor;           //Text color index
-   Font_t     fTextFont ;            //Text font number
-   Color_t    fFillColor;           //fill area color
-   Style_t    fFillStyle;           //fill area style
-
-   Float_t    fArrowAngle ;     // Arrow opening angle (degrees)
-   Float_t    fArrowSize  ;     // Arrow Size
-   Style_t    fArrowFill  ;     // Arrow fill style
-   Color_t    fArrowColor ;     // Arrow color (line + fill)
-   Width_t    fArrowWidth ;     // Arrow line width    
-   Int_t      fArrowShape ;      //  Arrow shapes (e.g. -|>-)
-   Style_t    fArrowStyle ;     // Arrow line style
-//   TString    fArrowOption;     // Arrow shapes (e.g. -|>-)
-   Double_t   fCurlyWaveLength; // wavelength of sinusoid in percent of pad height
-   Double_t   fCurlyAmplitude;  // amplitude of sinusoid in percent of pad height
-   Color_t    fCurlyColor ;     // C  urly line color 
-   Width_t      fCurlyWidth ;     // Curly line width
-   Style_t      fCurlyStyle ;     // Curly line style
-   Int_t      fIsCurly    ;     // true: Gluon, false: Gamma
-   Color_t    fArcFillColor;
-   Style_t    fArcFillStyle;
-   Color_t    fArcLineColor;
-   Style_t    fArcLineStyle;
-   Width_t    fArcLineWidth;
- 
-   Int_t      fForceStyle;  
-
-   Int_t      fEditUsXlow  ;  
-   Int_t      fEditUsYlow  ; 
+   Int_t      fEditUsXlow  ;
+   Int_t      fEditUsYlow  ;
    Int_t      fEditUsXwidth;
    Int_t      fEditUsYwidth;
-   Double_t   fEditUsXRange; 
+   Double_t   fEditUsXRange;
 
-   Int_t      fEditLsXlow  ;  
-   Int_t      fEditLsYlow  ; 
+   Int_t      fEditLsXlow  ;
+   Int_t      fEditLsYlow  ;
    Int_t      fEditLsXwidth;
    Int_t      fEditLsYwidth;
-   Double_t   fEditLsXRange; 
+   Double_t   fEditLsXRange;
 
-   Int_t      fEditPoXlow  ;  
-   Int_t      fEditPoYlow  ; 
+   Int_t      fEditPoXlow  ;
+   Int_t      fEditPoYlow  ;
    Int_t      fEditPoXwidth;
    Int_t      fEditPoYwidth;
-   Double_t   fEditPoXRange; 
-                   
+   Double_t   fEditPoXRange;
+
     Float_t fXXXXX;
 
 public:
-enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, 
-                       k1dimHistWeight, k2dimHist, k2dimHistWeight, 
+enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
+                       k1dimHistWeight, k2dimHist, k2dimHistWeight,
                        kGraph, kGraphError, kGraphAsymmError,
                        k3dimHist, k3dimHistWeight,};
 
    HistPresent(const Text_t *name = "mypres" , const Text_t *title = "mypres");
    ~HistPresent();
    void RecursiveRemove(TObject *);
-   TRootCanvas* GetMyCanvas(){return lastcanvas;};  
-   void  SetMyCanvas(TRootCanvas *myc){lastcanvas = myc;}; 
+   TRootCanvas* GetMyCanvas(){return lastcanvas;};
+   void  SetMyCanvas(TRootCanvas *myc){lastcanvas = myc;};
    void SaveOptions();
    void RestoreOptions();
    void EditAttrFile();
@@ -353,84 +166,58 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void CloseAllCanvases();
    void CloseHistLists();
    void HandleDeleteCanvas(HTCanvas * htc);
-   void SetRebinValue(Int_t);               // 
-   void SetRebinMethod();               // 
-   void DiffHist();                 // 
-   void RebinHist();               // 
-   void OperateHist(Int_t);               // 
-   void SetOperateVal();               // 
-   void ListSelect(); 
-   void SetGeneralAtt();
-   void SetPadAtt();
-   void SetTitleAtt();
-   void SetHistAtt();
-   void SetStatAtt();
-   void SetAxisAtt();
-   void SetGreyLevels();
-   void SetTransLevelsRGB();
-   void SetTransLevelsHLS();
-   void SetColorPalette();
-   void SetCurlyAttributes(TGWindow * win = 0, FitHist * fh = 0);
-   void SetCurlyAtt();
-   void SetPadAttributes(TGWindow * win = 0, FitHist * fh = 0);
-   void SetGeneralAttributes(TGWindow * win = 0, FitHist * fh = 0);
-   void SetTitleAttributes(TGWindow * win = 0, FitHist * fh = 0);
-   void SetHistAttributes(TGWindow * win = 0, FitHist * fh = 0);
-   void SetStatAttributes(TGWindow * win = 0, FitHist * fh = 0);
-   void SetXaxisAttributes(TGWindow * win = 0, FitHist * fh = 0);
-   void SetYaxisAttributes(TGWindow * win = 0, FitHist * fh = 0);
-   void SetZaxisAttributes(TGWindow * win = 0, FitHist * fh = 0);
-   void SetDisplayOptions(TGWindow * win = 0, FitHist * fh = 0);  
-   void Set1DimOptions(TGWindow * win = 0, FitHist * fh = 0);  
-   void Set2DimOptions(TGWindow * win = 0, FitHist * fh = 0);  
-   void Set2DimColorOpt(TGWindow * win = 0, FitHist * fh = 0);  
-   void SetGraphOptions(TGWindow * win = 0, TCanvas * ca = 0);  
-   void SetVariousOptions(TGWindow * win = 0, FitHist * fh = 0);
+   void SetRebinValue(Int_t);               //
+   void SetRebinMethod();               //
+   void DiffHist();                 //
+   void RebinHist();               //
+   void OperateHist(Int_t);               //
+   void SetOperateVal();               //
+   void ListSelect();
    void SetShowTreeOptions(TGWindow * win = 0, FitHist * fh = 0);
    void SetShowTreeOptionsCint(const char *pointer = 0);
-   void SetWindowSizes(TGWindow * win = 0, FitHist * fh = 0);
 
-   void SetStatDefaults(TCanvas *);
+   void CRButtonPressed(Int_t, Int_t, TObject*);
+   void CloseDown(Int_t wid);
 //   void CheckAutoExecFiles();
-   void ClearSelect(); 
-   void ShowMain();               // 
+   void ClearSelect();
+   void ShowMain();               //
 
-   void ListMacros(const char* bp =0);               // 
-   void GetFileSelMask(const char* bp =0);               // 
-   void GetHistSelMask(const char* bp =0);               // 
-   void SelectCut(const char* , const char*, const char* bp =0); 
-   void SelectContour(const char* , const char*, const char* bp =0); 
-   void SelectGraph(const char*  , const char* dir, const char*, const char* bp =0); 
-   void SelectLeaf(const char*, const char* bp =0); 
-   void EditLeafCut(const char* vl =0, const char* bp = 0); 
-   void ToggleLeafCut(const char* bp = 0); 
-   void UseHist(const char* bp =0);  
-   void ToggleUseHist(const char* bp = 0);  
-   void DefineGraphCut(const char* bp =0);  
-   void ToggleGraphCut(const char* bp =0);  
-   void EditExpression(const char* vl =0, const char* bp =0);  
-   void ToggleExpression(const char* bp =0);  
-   void ShowFiles(const char* , const char* bp =0);               // 
+   void ListMacros(const char* bp =0);               //
+   void GetFileSelMask(const char* bp =0);               //
+   void GetHistSelMask(const char* bp =0);               //
+   void SelectCut(const char* , const char*, const char* bp =0);
+   void SelectContour(const char* , const char*, const char* bp =0);
+   void SelectGraph(const char*  , const char* dir, const char*, const char* bp =0);
+   void SelectLeaf(const char*, const char* bp =0);
+   void EditLeafCut(const char* vl =0, const char* bp = 0);
+   void ToggleLeafCut(const char* bp = 0);
+   void UseHist(const char* bp =0);
+   void ToggleUseHist(const char* bp = 0);
+   void DefineGraphCut(const char* bp =0);
+   void ToggleGraphCut(const char* bp =0);
+   void EditExpression(const char* vl =0, const char* bp =0);
+   void ToggleExpression(const char* bp =0);
+   void ShowFiles(const char* , const char* bp =0);               //
    void SelectFromOtherDir();
-   void ShowContents(const char* fname, const char* dir = 0,const char* bp =0);    // 
-   void ShowFunction(const char*, const char*, const char*, const char* bp =0); 
-   void LoadFunction(const char*, const char*, const char*, const char* bp =0); 
-   void ShowCanvas(const char* , const char*, const char*, const char* bp =0); 
-   void ShowContour(const char*, const char*, const char*, const char* bp =0); 
-   void ShowGraph(const char*, const char* , const char*, const char* bp =0); 
-   void ComposeList(const char* bp =0); 
-   void ShowList(const char* , const char*, const char* bp =0); 
-   void PrintCut(const char* , const char*, const char* bp =0); 
-   void LoadCut(const char* , const char*, const char* bp =0); 
-   void CutsToASCII(const char *, const char* bp =0); 
-   void PrintWindow(const char* , const char*, const char* bp =0); 
-   void LoadWindow(const char* , const char*, const char* bp =0); 
-//   void ShowMap(const char* , const char*);  
-   void ShowHist(const char * fname , const char* dir, const char  * hname, const char* bp =0); 
-   void SelectHist(const char*  fname , const char* dir , const char * hname, const char* bp =0); 
-   void ShowStatOfAll(const char* , const char* , const char* bp =0); 
-   void PurgeEntries(const char* , const char* bp =0); 
-   void DeleteSelectedEntries(const char* , const char* bp =0); 
+   void ShowContents(const char* fname, const char* dir = 0,const char* bp =0);    //
+   void ShowFunction(const char*, const char*, const char*, const char* bp =0);
+   void LoadFunction(const char*, const char*, const char*, const char* bp =0);
+   void ShowCanvas(const char* , const char*, const char*, const char* bp =0);
+   void ShowContour(const char*, const char*, const char*, const char* bp =0);
+   void ShowGraph(const char*, const char* , const char*, const char* bp =0);
+   void ComposeList(const char* bp =0);
+   void ShowList(const char* , const char*, const char* bp =0);
+   void PrintCut(const char* , const char*, const char* bp =0);
+   void LoadCut(const char* , const char*, const char* bp =0);
+   void CutsToASCII(const char *, const char* bp =0);
+   void PrintWindow(const char* , const char*, const char* bp =0);
+   void LoadWindow(const char* , const char*, const char* bp =0);
+//   void ShowMap(const char* , const char*);
+   void ShowHist(const char * fname , const char* dir, const char  * hname, const char* bp =0);
+   void SelectHist(const char*  fname , const char* dir , const char * hname, const char* bp =0);
+   void ShowStatOfAll(const char* , const char* , const char* bp =0);
+   void PurgeEntries(const char* , const char* bp =0);
+   void DeleteSelectedEntries(const char* , const char* bp =0);
    void ShowSelectedHists(const char* bp =0);
    void ShowSelectedHists(TList *, const char* title =0);
    void StackSelectedHists(const char* bp =0);
@@ -441,14 +228,14 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void ShowLeaf(const char*, const char*, const char*, const char* l=0, const char* bp =0);  // display hist of leaf
    void MkClass(const char*, const char*, const char*, const char* l=0, const char* bp =0);  // display hist of leaf
 
-   void CutsFromASCII(TGWindow * win = 0); 
-   void HistFromASCII(TGWindow * win = 0); 
-   void GraphFromASCII(TGWindow * win = 0); 
-   void NtupleFromASCII(TGWindow * win = 0); 
-   void SaveMap(const char*, const char* bp =0);  
-   void SaveFromSocket(const char*, const char* bp =0);  
-   TH1*  GetHist(const char*, const char*, const char*); 
-   FitHist * ShowHist(TH1*, const char* origname=0);  
+   void CutsFromASCII(TGWindow * win = 0);
+   void HistFromASCII(TGWindow * win = 0);
+   void GraphFromASCII(TGWindow * win = 0);
+   void NtupleFromASCII(TGWindow * win = 0);
+   void SaveMap(const char*, const char* bp =0);
+   void SaveFromSocket(const char*, const char* bp =0);
+   TH1*  GetHist(const char*, const char*, const char*);
+   FitHist * ShowHist(TH1*, const char* origname=0);
    TList* GetCanvasList(){return fCanvasList;};
    TList* GetHistList(){return fHistLists;};
    TList* GetSelectedHist(){return fSelectHist;};
@@ -463,23 +250,12 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    TH1 *  GetCurrentHist(){return fCurrentHist;};
    void   SetCurrentHist(TH1 * hist){fCurrentHist = hist;};
    Int_t  GetOptStat(){return fOptStat;};
-   Bool_t GetRememberLastSet(){return fRememberLastSet;};
-   Bool_t GetShowDateBox(){return fShowDateBox;};
-   Bool_t GetShowStatBox(){return fShowStatBox;};
-   Bool_t GetUseTimeOfDisplay(){return fUseTimeOfDisplay;};
-   Bool_t GetShowTitle(){return fShowTitle;};
-   Bool_t GetShowFit(){return fShowFitBox;};
-   Bool_t GetShowPSFile(){return fShowPSFile;};
-   Bool_t GetShowFittedCurves(){return fShowFittedCurves;};
-   Bool_t GetEnableCalibration(){return fEnableCalibration;};
-   Int_t  GetAutoUpdateDelay(){return fAutoUpdateDelay;};
    TMrbHelpBrowser * GetHelpBrowser(){return fHelpBrowser;};
    void WarnBox(const char *);
    void CleanWindowLists(TH1* hist);
 //   void RemoveFromLists(TObject * obj);
    void DinA4Page(Int_t form);
    Int_t GetWindowPosition(Int_t * winx, Int_t * winy);
-   Int_t GetMainWidth() {return fMainWidth;};
    void SuperimposeGraph(TCanvas * = NULL);
 
 ClassDef(HistPresent,0)      // A histogram presenter

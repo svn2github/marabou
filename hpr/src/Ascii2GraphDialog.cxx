@@ -414,7 +414,7 @@ Int_t Ascii2GraphDialog::FindGraphs(TVirtualPad * ca, TList * logr, TList * pads
 void Ascii2GraphDialog::SaveDefaults()
 {
    cout << "Ascii2GraphDialog::SaveDefaults() " << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("Ascii2GraphDialog.fEmptyPad"  	    , fEmptyPad        );
    env.SetValue("Ascii2GraphDialog.Graph_Simple"	 , fGraph_Simple    );
    env.SetValue("Ascii2GraphDialog.Graph_Error" 	 , fGraph_Error     );
@@ -453,7 +453,7 @@ void Ascii2GraphDialog::SaveDefaults()
             
 void Ascii2GraphDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fEmptyPad         = env.GetValue("Ascii2GraphDialog.fEmptyPad"  	   , 0);
    fGraph_Simple     = env.GetValue("Ascii2GraphDialog.Graph_Simple"  	, 0);
    fGraph_Error      = env.GetValue("Ascii2GraphDialog.Graph_Error"		, 1);
@@ -505,7 +505,7 @@ void Ascii2GraphDialog::Show_Tail_of_File()
 }
 //_________________________________________________________________________
             
-void Ascii2GraphDialog::CloseDown()
+void Ascii2GraphDialog::CloseDown(Int_t wid)
 {
    cout << "Ascii2GraphDialog::CloseDown() " << endl;
    delete this;

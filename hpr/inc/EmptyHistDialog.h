@@ -44,7 +44,7 @@ public:
    void HandleMenu(Int_t id);
    void SaveDefaults();
    void RestoreDefaults();
-   void CloseDown();
+   void CloseDown(Int_t wid);
 
 ClassDef(EmptyHistDialog,0)
 };

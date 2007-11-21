@@ -34,13 +34,16 @@ class HistPresent;
 class GroupOfHists : public TNamed {
 
 private:
+   void *fValp[100];
+   TList *fRow_lab;
+   TGMrbValuesAndText *fDialog;
    HistPresent *fHistPresent;
    HTCanvas    *fCanvas;
    TList       fHistList;
    GoHTimer    *fTimer;
    TGPopupMenu *fMenu;
+   TGPopupMenu *fOptionMenu;
    TRootCanvas *fRootCanvas;   
-   TGMrbValuesAndText *fDialog;
    Bool_t      fAnyFromSocket;
 
    Int_t       fWindowXWidth;
@@ -53,6 +56,15 @@ private:
    Int_t       fArrangeOnTop;
    Int_t       fArrangeSideBySide;
    Int_t       fArrangeAsTiles;
+   Int_t   fFill1Dim;      
+   Color_t fHistFillColor ;
+   Style_t fHistFillStyle; 
+   Color_t fHistLineColor; 
+   Style_t fHistLineStyle;
+   Width_t fHistLineWidth;
+   Int_t   fShowContour;   
+   Int_t   fShowErrors;    
+   TString fDrawOpt2Dim;
   
 public:
    GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title = NULL);
@@ -71,6 +83,9 @@ public:
    void   SetOptions();
    void   SaveDefaults();
    void   RestoreDefaults();
+   void   CloseDown(Int_t wid);
+   void   CRButtonPressed(Int_t, Int_t, TObject*);
+
 ClassDef(GroupOfHists,0)
 };
 #endif

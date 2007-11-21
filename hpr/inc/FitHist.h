@@ -46,7 +46,7 @@ private:
    Bool_t fKeepParameters;
    Bool_t fCallMinos;
    Int_t  fOldMode;
-   TH1    *fSelHist, *fOrigHist;          // pointer to the selected histogram 
+   TH1    *fSelHist, *fOrigHist;          // pointer to the selected histogram
    TH1    *fCalHist;
    FitHist  *fCalFitHist;
    TF1      *fCalFunc;
@@ -56,8 +56,8 @@ private:
    TH1     *expHist, *projHist, *projHistX, *projHistY,*projHistF;
    TString fHname;
    TString fCname;
-   TString fCtitle; 
-   TString fEname; 
+   TString fCtitle;
+   TString fEname;
    TString fCutname;
 
    TVirtualPad *fSelPad;          // pointer to the selected pad
@@ -95,69 +95,89 @@ private:
 //   TPaveText *datebox;
    Int_t fDimension;
    Bool_t fCanvasIsAlive;
-   TString fXtitle; 
-   TString fYtitle; 
-   TString fFitMacroName; 
+   TString fXtitle;
+   TString fYtitle;
+   TString fFitMacroName;
    TString fTemplateMacro;
    TString fFitSliceYMacroName;
-   Int_t fFirstUse; 
+   Int_t fFirstUse;
    Bool_t fDeleteCalFlag;
    HTCanvas * fCutPanel;
    TableOfLabels * fTofLabels;
-   Int_t fLiveStat1dim;
-   Int_t fLiveStat2dim;
+
+   Int_t fFill1Dim;
+   Color_t fHistFillColor;
+   Color_t f2DimBackgroundColor;
+   Int_t fHistLineColor;
+   Float_t fHistLineWidth;
+   Int_t fHistFillStyle;
+   Int_t fShowContour;
+   Int_t fShowErrors;
+   Int_t fShowDateBox;
+   Int_t fShowStatBox;
+   Int_t fUseTimeOfDisplay;
+   Int_t fShowTitle;
+   Int_t fShowFitBox;
+   Int_t fLiveStat1Dim;
+   Int_t fLiveStat2Dim;
    Int_t fLiveGauss;
    Int_t fLiveBG;
+   Int_t fDrawAxisAtTop;
+   TString fDrawOpt2Dim;
+   Int_t fOptStat;
+   Int_t fTitleCenterX;
+   Int_t fTitleCenterY;
+   Int_t fTitleCenterZ;
    TText * fDateText;
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
-           const Text_t *hname, Int_t win_topx = 520, Int_t win_topy = 5, 
+           const Text_t *hname, Int_t win_topx = 520, Int_t win_topy = 5,
            Int_t win_widx = 750, Int_t win_widy = 550);
    ~FitHist();
    void SaveDefaults(Bool_t recalculate = kTRUE);
    void RestoreDefaults();
    void DisplayHist(TH1*, Int_t, Int_t, Int_t, Int_t);  // display hists
-//   void DrawHist();                      // 
-   void Draw1Dim();                      // 
-   void Draw2Dim();                      // 
-   void Draw3Dim();                      // 
-   const Char_t * GetCanvasName(){return fCname.Data();};             // 
-   TRootCanvas* GetMyCanvas(){return mycanvas;};  
-   HTCanvas* GetCanvas(){return cHist;};  
-   void  SetMyCanvas(TRootCanvas *myc){mycanvas = myc;}; 
-   TH1* GetSelHist(){return fSelHist;}; 
+//   void DrawHist();                      //
+   void Draw1Dim();                      //
+   void Draw2Dim();                      //
+   void Draw3Dim();                      //
+   const Char_t * GetCanvasName(){return fCname.Data();};             //
+   TRootCanvas* GetMyCanvas(){return mycanvas;};
+   HTCanvas* GetCanvas(){return cHist;};
+   void  SetMyCanvas(TRootCanvas *myc){mycanvas = myc;};
+   TH1* GetSelHist(){return fSelHist;};
    TH1* SetHist(TH1* newhist){
       TH1* temp = fSelHist;
       fSelHist = newhist;
       if(newhist->InheritsFrom("TH2"))Draw2Dim();
       else                            Draw1Dim();
       return temp;
-   }; 
-   TH1* GetOneHist(); 
-   Bool_t IsThereAnyHist(); 
-   void Entire();                  // 
-   void SetXaxisRange();                  // 
-   void SetYaxisRange();                  // 
-   void SetZaxisRange();                  // 
-   void ProfileX();                  // 
-   void ProfileY();                  // 
-   void RebinOne();                  // 
-   void ExecDefMacro();                  // 
-   void ExecFitMacro();                  // 
-   void EditFitMacro();                  // 
-   void ExecFitSliceYMacro();                  // 
-   void EditFitSliceYMacro();                  // 
-   void SetTemplateMacro(const char * name){fTemplateMacro = name;};                  // 
-   void SetFitSliceYMacroName(const char *name){fFitSliceYMacroName = name;};                  // 
-   void RedefineAxis();                  // 
-   void AddAxis(Int_t where);           // 
-   void Magnify();                 // 
-   void GetLimits();               // 
+   };
+   TH1* GetOneHist();
+   Bool_t IsThereAnyHist();
+   void Entire();                  //
+   void SetXaxisRange();                  //
+   void SetYaxisRange();                  //
+   void SetZaxisRange();                  //
+   void ProfileX();                  //
+   void ProfileY();                  //
+   void RebinOne();                  //
+   void ExecDefMacro();                  //
+   void ExecFitMacro();                  //
+   void EditFitMacro();                  //
+   void ExecFitSliceYMacro();                  //
+   void EditFitSliceYMacro();                  //
+   void SetTemplateMacro(const char * name){fTemplateMacro = name;};                  //
+   void SetFitSliceYMacroName(const char *name){fFitSliceYMacroName = name;};                  //
+   void RedefineAxis();                  //
+   void AddAxis(Int_t where);           //
+   void Magnify();                 //
+   void GetLimits();               //
    void GetRange();                // get range from another hist
    void AddMark(TPad *, Int_t, Int_t);
-   
+
    Int_t GetMarks(TH1*);
-   void ClearMarks();               // 
+   void ClearMarks();               //
    Bool_t GetKeepPar(){return fKeepParameters;};
    void SetKeepPar(Bool_t keeppar)
         {fKeepParameters=keeppar;if(!keeppar)fOldMode=-1;};
@@ -168,63 +188,63 @@ public:
    void SetLogx(Int_t state) {fLogx = state; cHist->SetLogx(state);};
    void SetLogy(Int_t state) {fLogy = state; cHist->SetLogy(state);};
    void SetLogz(Int_t state);
-   void SaveUserContours();               // 
-   void SetUserContours();               // 
-   void ClearUserContours();               // 
+   void SaveUserContours();               //
+   void SetUserContours();               //
+   void ClearUserContours();               //
    void UseSelectedContour();
-  
+
    Int_t GetLogx() {return fLogx;};
    Int_t GetLogy() {return fLogy;};
    Int_t GetLogz() {return fLogz;};
 
    Bool_t InsideState(){return fSelInside;};
-   void PaintMarks();               // 
-   void PrintMarks();               // 
-   void Set2Marks();               // 
+   void PaintMarks();               //
+   void PrintMarks();               //
+   void Set2Marks();               //
    TObjArray* GetPointertoMarks(){return fMarkers;};
    void AddFunctionsToHist();
 
-   void MarksToWindow();               // 
-   void ClearWindows();               // 
-   void DrawWindows();               // 
-   void WriteOutWindows();               // 
-   void ListWindows();                       // 
-   void AddWindow(const char *, const char * bp=NULL);            // 
+   void MarksToWindow();               //
+   void ClearWindows();               //
+   void DrawWindows();               //
+   void WriteOutWindows();               //
+   void ListWindows();                       //
+   void AddWindow(const char *, const char * bp=NULL);            //
    void AddWindowsToHist();
-   void EditWindow(const char *); 
+   void EditWindow(const char *);
 
-   Int_t Nwindows(){return fActiveWindows->GetSize();};    
-   Int_t Ncuts(){return fActiveCuts->GetSize();};                  // 
-   void InitCut();                       // 
-   void EditCut(const char *); 
-   void PrintOneCut(TMrbWindow2D *);      // 
-   void CloseCuts();                       // 
-   void ListCuts();                       // 
-   void AddCut(const char *, const char * bp=NULL);            // 
-   Float_t DrawCut();                      // 
-   void DrawCutName();                      // 
-   void MarksToCut();               // 
+   Int_t Nwindows(){return fActiveWindows->GetSize();};
+   Int_t Ncuts(){return fActiveCuts->GetSize();};                  //
+   void InitCut();                       //
+   void EditCut(const char *);
+   void PrintOneCut(TMrbWindow2D *);      //
+   void CloseCuts();                       //
+   void ListCuts();                       //
+   void AddCut(const char *, const char * bp=NULL);            //
+   Float_t DrawCut();                      //
+   void DrawCutName();                      //
+   void MarksToCut();               //
    void AddCutsToHist();
-   void DrawDate();                      // 
-   Bool_t UseCut(TMrbWindow2D *);         // 
-   Bool_t UseWindow(TMrbWindow *);         // 
-   Bool_t InsideCut(Float_t, Float_t);               // 
-   void ClearCut();                   // 
-   void UpdateCut();                  // 
+   void DrawDate();                      //
+   Bool_t UseCut(TMrbWindow2D *);         //
+   Bool_t UseWindow(TMrbWindow *);         //
+   Bool_t InsideCut(Float_t, Float_t);               //
+   void ClearCut();                   //
+   void UpdateCut();                  //
    void UpdateDrawOptions();
-   Bool_t IsCalibrated() {return fSetRange;}                       // 
-   Bool_t Its2dim(){return fOrigHist->InheritsFrom("TH2");};               // 
+   Bool_t IsCalibrated() {return fSetRange;}                       //
+   Bool_t Its2dim(){return fOrigHist->InheritsFrom("TH2");};               //
 //   void FitGBg(Int_t tail, Int_t force_zero_bg =0);  // fit gaus + lin bg max 3 peaks
    void Fit1DimDialog(Int_t type = 1);       // fit gaus + lin bg any number of peaks
    Int_t Fit1dim(Int_t, Int_t);            // fit polynoms
    Int_t Fit2dim(Int_t, Int_t);            // fit polynoms
-   Int_t FitPolyHist(Int_t);               // fit polynoms hist 
+   Int_t FitPolyHist(Int_t);               // fit polynoms hist
    Int_t FitPolyMarks(Int_t);              // fit  polynoms to marks
    void  Expand();                     // expand
    void  ProjectX();
    void  ProjectY();
    void  ProjectBoth();
-   void  ProjectF();                   // project along a function 
+   void  ProjectF();                   // project along a function
    void  Transpose();
    void  Rotate(Int_t sense);
    void OutputStat();
@@ -238,7 +258,7 @@ public:
    void WriteOutCut();
 //   void WriteHistasASCII(const char *, Bool_t);
    void WriteHistasASCII(Int_t what = 0);
-   void Superimpose(Int_t);               
+   void Superimpose(Int_t);
    void KolmogorovTest();
    void WarnBox(const char *);
    void SetCanvasIsDeleted(){fCanvasIsAlive = kFALSE;};
@@ -253,26 +273,22 @@ public:
       gPad = (TVirtualPad*)cHist;
       cHist->cd(); cHist->Modified(kTRUE); cHist->Update();
 //      cout << " UpdateCanvas() done " << endl;
-   }; 
+   };
    void RecursiveRemove(TObject * obj);
    void handle_mouse();
    void DrawTopAxis();
-   void ColorMarked(); 
+   void ColorMarked();
 
    void ClearTofl() {
-//      cout << "ClearTofl()" << endl; 
+//      cout << "ClearTofl()" << endl;
       fTofLabels = 0;
    }
 	void DrawSelectedFunctions();
-   void SetBrightness();
-   void AdjustBrightness(Int_t row , Int_t val); // *SIGNAL*
-   void SetHLS();
-   void AdjustHLS(Int_t row , Int_t val); // *SIGNAL*
    void FindPeaks();
    void Calibrate();
 
    void FastFT();
-   
+
 ClassDef(FitHist,0)      // A histogram presenter
 };
 #endif

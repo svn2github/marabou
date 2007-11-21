@@ -269,7 +269,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
       fSelected->ExecuteEvent(event, px, py);
 
-      RunAutoExec();
+      if (GetAutoExec()) RunAutoExec();
 
       break;
 
@@ -354,7 +354,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
             cout << "Please use selected pad" << endl;
          }
            
-         RunAutoExec();
+         if (GetAutoExec()) RunAutoExec();
       }
 
       break;
@@ -410,7 +410,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
                FeedbackMode(kTRUE);
             }
          }
-         RunAutoExec();
+          if (GetAutoExec()) RunAutoExec();
 //         if (GetShowEventStatus()) DrawEventStatus(event, px, py, fSelected);
       }
 
@@ -457,7 +457,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          if (fSelected == fPadSave || gROOT->GetEditorMode() == 0)
             fSelected->ExecuteEvent(event, px, py);
 
-         RunAutoExec();
+          if (GetAutoExec()) RunAutoExec();
          if (fPadSave->TestBit(kNotDeleted))
             gPad = fPadSave;
          else {
@@ -484,9 +484,10 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
       fSelected->Pop();           // pop object to foreground
       pad->cd();                  // and make its pad the current pad
-      if (gDebug)
+      if (gDebug) {
          printf("Current Pad: %s / %s \n", pad->GetName(), pad->GetTitle());
-
+         cout << "fSelected: " << fSelected << " pad " << pad << endl;
+      }
       // loop over all canvases to make sure that only one pad is highlighted
       {
          TIter next(gROOT->GetListOfCanvases());
