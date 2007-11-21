@@ -11,7 +11,6 @@ class GraphAttDialog : public TObject {
 
 private:
 
-static const kNopt = 8;
    void *fValp[100];
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
