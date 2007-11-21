@@ -59,6 +59,7 @@ public:
    virtual void CloseWindow();
    virtual Bool_t ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
    void SliderEvent(Int_t, Int_t);
+   void SliderClosed(TObject*);
    void Wakeup();
 ClassDef(TGMrbSliders,0)		// [GraphUtils] A box with sliders
 };

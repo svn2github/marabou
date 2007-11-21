@@ -270,7 +270,8 @@ TGMrbSliders::~TGMrbSliders()
 void TGMrbSliders::CloseWindow()
 {
    // Called when window is closed via the window manager.
-
+//   cout << "TGMrbSliders::CloseWindow() " << endl;
+   SliderClosed(this);
    DeleteWindow();
 }
 
@@ -382,4 +383,13 @@ void  TGMrbSliders::SliderEvent(Int_t row, Int_t val)
  
    Emit("SliderEvent(Int_t, Int_t)", args);
 };
-  
+//______________________________________________________________
+
+void  TGMrbSliders::SliderClosed(TObject* obj)
+{
+   Long_t args[1];   // row, value
+   args[0] = (Long_t)obj;
+//   cout << "SliderEvent: Emit " << id << " " << row << " " << val << endl;
+ 
+   Emit("SliderClosed(TObject*)", args);
+} 

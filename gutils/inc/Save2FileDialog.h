@@ -27,7 +27,7 @@ public:
    void ExecuteSave();
    void SaveDefaults();
    void RestoreDefaults();
-   void CloseDown();
+   void CloseDown(Int_t wid);
 
 ClassDef(Save2FileDialog,0)
 };

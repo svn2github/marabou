@@ -1,6 +1,7 @@
 #ifndef HPR_VALUESANDTEXT
 #define HPR_VALUESANDTEXT
 #include <TGWindow.h>
+#include <TCanvas.h>
 #include <TGTextEntry.h>
 #include <TGFrame.h>
 #include <TGButton.h>
@@ -8,6 +9,7 @@
 #include <TGComboBox.h>
 #include "TGedMarkerSelect.h"
 #include "TGedPatternSelect.h"
+#include <TObjString.h>
 #include "TOrdCollection.h"
 #include "TArrayI.h"
 
@@ -63,6 +65,7 @@ class TGMrbValuesAndText : public TGTransientFrame {
 
 private:
    const TGWindow   *fMyWindow;
+   TCanvas          *fCallingCanvas;
    TGTextEntry      *fTE;        // text entry widget
    TGTextEntry      *fFileNameEntry;     // for file content 
    TList            *fWidgets;   // keep track of widgets to be deleted in dtor
@@ -76,6 +79,7 @@ private:
    TGListBox        *fListBoxReq;
    TString          fClassName;
    TString          fFileName;
+   Int_t            fWidgetId;
    TGTextButton     *fCancelButton;
    const char       *fPrompt;
    const char       *fHelpText;
@@ -95,13 +99,10 @@ private:
    Style_t            fMarker;
    Style_t            fPattern;
    TList				  *fEntries;
-   TGGC              fRedTextGC;
-   TGGC              fBlueTextGC;
-   TGGC              fGreyTextGC;
-   TGGC              fLightGreyTextGC;
    Int_t             fButtonId;
    Bool_t            fEmitClose;
    Bool_t            fCallClose;
+   Int_t             fLastColorSelect;
 //   Int_t             fFinis; 
 public:
    TGMrbValuesAndText(const char *prompt, TString * text, 
@@ -110,20 +111,22 @@ public:
                              TList * rowlabs = 0, void **val_pointers = 0,
                              TArrayI * Flags = 0, const char * Flagslabel = 0,
                              const char *helptext=0, TObject * calling_class = 0, 
-                             const char * cname = 0);
+                             const char * cname = 0, const Int_t id = 0);
    virtual ~TGMrbValuesAndText();
 
    virtual Bool_t  ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
    void UpdateRequestBox(const char *fname);
    void StoreValues();
    void ReloadValues();
-   void CloseWindow();
-   void CRBPressed();
+   void ReloadValue(TObject *obj, TObjString *objs, Int_t ipos);
+   void CloseDown(Int_t wid);
+   void CRButtonPressed(Int_t, Int_t, TObject*);
    void CloseWindowExt();
+   void CloseWindow();
    void SaveList();
    Int_t GetColorPixelByInd(Int_t index);
-   void EnableButton(Int_t id)  { TGButton *b = (TGButton *)fEntries->At(id); if (b) b->SetEnabled(kTRUE); };
-   void DisableButton(Int_t id) { TGButton *b = (TGButton *)fEntries->At(id); if (b) b->SetEnabled(kFALSE); };
+   void EnableButton(Int_t id) ;
+   void DisableButton(Int_t id);
    void EnableCancelButton()    { fCancelButton->SetEnabled(kTRUE); };
    void DisableCancelButton()   { fCancelButton->SetEnabled(kFALSE); };
 
