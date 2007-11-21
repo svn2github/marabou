@@ -89,6 +89,7 @@
 #define SIS_3820_A_PRESET_VALUE_2(module)		((unsigned long *) (module + SIS_3820_R_PRESET_VALUE_2))
 #define SIS_3820_A_FIFO_WC(module)				((unsigned long *) (module + SIS_3820_R_FIFO_WC))
 #define SIS_3820_A_FIFO_WC_THRESH(module)		((unsigned long *) (module + SIS_3820_R_FIFO_WC_THRESH))
+#define SIS_3820_A_LNE_CHAN_SELECT(module)			((unsigned long *) (module + SIS_3820_R_LNE_CHAN_SELECT))
 #define SIS_3820_A_ACQ_OPER_MODE(module)		((unsigned long *) (module + SIS_3820_R_ACQ_OPER_MODE))
 #define SIS_3820_A_COPY_DISABLE(module) 		((unsigned long *) (module + SIS_3820_R_COPY_DISABLE))
 #define SIS_3820_A_LNE_CHAN_SELECT(module)		((unsigned long *) (module + SIS_3820_R_LNE_CHAN_SELECT))
@@ -111,6 +112,7 @@
 #define SIS_3820_DISABLE_COPY(module, b)		*SIS_3820_A_COPY_DISABLE(module) = b
 #define SIS_3820_INHIBIT_COUNTING(module, b) 	*SIS_3820_A_INHIBIT_COUNTING(module) = b
 #define SIS_3820_WRITE_FIFO_THRESH(module, b)	*SIS_3820_A_FIFO_WC_THRESH(module) = b
+#define SIS_3820_SELECT_LNE_CHANNEL(module, c) 	*SIS_3820_A_LNE_CHAN_SELECT(module) = c
 #define SIS_3820_RESET(module)					*SIS_3820_A_KEY_RESET(module) = 0
 #define SIS_3820_KEY_VME_LNE(module)				*SIS_3820_A_KEY_VME_LNE(module) = 0
 #define SIS_3820_CLEAR_FIFO(module)				*SIS_3820_A_KEY_FIFO_RESET(module) = 0
@@ -142,6 +144,7 @@
 							SIS_3820_ACQ_B_LNE_SOURCE_$lneSource |		/* LNE source */
 							SIS_3820_ACQ_B_DATA_FORMAT_$dataFormat |		/* data format */
 							SIS_3820_ACQ_B_$clearOnCopy);				/* clear on copy? */
+					SIS_3820_SELECT_LNE_CHANNEL($moduleName, $LNEChannel);	/* set chn N to be LNE source */
 					SIS_3820_WRITE_FIFO_THRESH($moduleName, 1);
 					SIS_3820_INHIBIT_COUNTING($moduleName, 0xFFFFFFFF);
 					SIS_3820_DISABLE_COPY($moduleName, 0xFFFFFFFF);

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.11 2007-07-04 13:59:34 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.12 2007-11-21 12:02:46 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -80,6 +80,7 @@ TMrbSis_3820::TMrbSis_3820(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 				fBlockReadout = kTRUE;			// module has block readout
 				fNonClearingMode = kFALSE;		// clear on copy
 				fDataFormat24 = kFALSE; 		// output 32 bit, no channel ids
+				fLNEChannel = 0; 				// LNE channel
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gMrbConfig->AddScaler(this);				// and to list of scalers
 				gDirectory->Append(this);
@@ -193,6 +194,7 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.Substitute("$clearOnCopy", this->NonClearingMode() ? "NON_CLEARING_MODE" : "CLEAR_ON_COPY");
 				fCodeTemplates.Substitute("$dataFormat", this->DataFormat24() ? 24 : 32);
 				fCodeTemplates.Substitute("$rpEnaDis", this->RefPulserIsOn() ? "ENABLE" : "DISABLE");
+				fCodeTemplates.Substitute("$LNEChannel", this->GetLNEChannel());
 				Int_t pat;
 				if (this->GetNofChannelsUsed() < 32) {
 					if (this->CheckIfPatternIsContiguous()) {

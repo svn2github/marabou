@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3820        -- 32 chn 32 bit VME scaler
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3820.h,v 1.9 2007-07-04 13:59:34 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3820.h,v 1.10 2007-11-21 12:02:46 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -70,6 +70,9 @@ class TMrbSis_3820 : public TMrbVMEScaler {
 		inline void EnableRefPulser(Bool_t Flag = kTRUE) { fEnableRefPulser = Flag; };
 		inline Bool_t RefPulserIsOn() { return(fEnableRefPulser); };
 
+		inline void SelectLNEChannel(Int_t Channel) { fLNEChannel = Channel; };
+		inline Int_t GetLNEChannel() { return(fLNEChannel); };
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
@@ -77,6 +80,7 @@ class TMrbSis_3820 : public TMrbVMEScaler {
 
 	protected:
 		Int_t fFifoDepth;			// fifo depth per channel
+		Int_t fLNEChannel;			// channel to act as LNE source
 		Bool_t fNonClearingMode;	// kTRUE if non-clearing mode
 		Bool_t fDataFormat24;		// kTRUE data format 24 bit + channel + user
 		Bool_t fEnableRefPulser;	// kTRUE if reference pulser is to be used in ch0
