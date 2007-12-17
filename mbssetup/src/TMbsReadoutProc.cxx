@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.22 2007-03-06 12:28:38 Marabou Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.23 2007-12-17 14:36:50 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -295,6 +295,7 @@ TMrbNamedX * TMbsReadoutProc::GetType() const {
 
 	gMbsSetup->Get(resValue, gMbsSetup->Resource(r, "Readout", fId, "Type"));
 	if ((n = resValue.Index("(")) >= 0) resValue = resValue(0, n);
+	if (resValue.IsNull()) resValue = gEnv->GetValue("TMbsSetup.ProcType", "undef");
 	procType = gMbsSetup->fLofProcs.FindByName(resValue, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	return(procType);
 }

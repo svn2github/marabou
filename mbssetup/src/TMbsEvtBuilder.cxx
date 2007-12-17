@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsEvtBuilder.cxx,v 1.9 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsEvtBuilder.cxx,v 1.10 2007-12-17 14:36:49 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -246,6 +246,7 @@ TMrbNamedX * TMbsEvtBuilder::GetType() const {
 
 	gMbsSetup->Get(resValue, "EvtBuilder.Type");
 	if ((n = resValue.Index("(")) >= 0) resValue = resValue(0, n);
+	if (resValue.IsNull()) resValue = gEnv->GetValue("TMbsSetup.ProcType", "undef");
 	procType = gMbsSetup->fLofProcs.FindByName(resValue, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	return(procType);
 }
