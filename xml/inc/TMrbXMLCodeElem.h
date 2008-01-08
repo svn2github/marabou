@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeElem    -- XML code elemenet/node
 // Description:    Class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeElem.h,v 1.1 2007-12-20 07:54:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.h,v 1.2 2008-01-08 15:09:21 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -60,6 +60,7 @@ enum EMrbXmlElements {
 		kMrbXml_Slist,
 		kMrbXml_Subst,
 		kMrbXml_Name,
+		kMrbXml_Aname,
 		kMrbXml_Gname,
 		kMrbXml_Cname,
 		kMrbXml_Vname,
@@ -94,14 +95,12 @@ enum	{	kMrbXmlZombie = -1 };
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbXMLCodeElem: public TMrbNamedX {
+class TMrbXMLCodeElem: public TMrbNamedX, public TQObject {
 
 	public:
 
     	TMrbXMLCodeElem(TMrbNamedX * Element = NULL, Int_t NestingLevel = 0);
 		virtual ~TMrbXMLCodeElem() {};
-
-		inline const Char_t * Tag() { return(fTag.Data()); };
 
 		inline void AddCode(const Char_t * Code) { fCode += Code; };
 		inline const Char_t * GetCode() { return(fCode.Data()); };
@@ -111,8 +110,7 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		inline TMrbXMLCodeElem * Parent() { return(fParent); };
 
 		inline TEnv * LofAttr() { return(&fLofAttr); };
-		inline TEnv * LofChildren() { return(&fLofChildren); };
-
+		inline TEnv * LofChildCodes() { return(&fLofChildCodes); };
 		inline TEnv * LofSubst() { return(&fLofSubst); };
 
 		inline IsRootElement() { return(fParent == NULL); };
@@ -123,11 +121,21 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 
 	protected:
 
-		inline void SetTag(const Char_t * Tag) { fTag = Tag; };
-		Bool_t CheckParent(const Char_t * ParentName);
-		Bool_t CheckName(const Char_t * ElemName);
-		inline Bool_t CopyCodeToParent() { fParent->AddCode(fCode); return(kTRUE); };
-		Bool_t CopySubstToParent();
+		Bool_t ParentIs(const Char_t * ParentName);
+		Bool_t NameIs(const Char_t * ElemName);
+		Bool_t HasChild(const Char_t * ChildName);
+		Bool_t HasChild(const Char_t * ChildName, TString & ChildCode);
+		TMrbXMLCodeElem * HasAncestor(const Char_t * Ancestor);
+		Bool_t CopyCodeToParent(const Char_t * Ename = NULL);
+		Bool_t CopySubstToParent(const Char_t * Sname = NULL, const Char_t * Sval = NULL);
+		Bool_t GetFromParent(const Char_t * ElemName, TString & ElemCode);
+		Bool_t InheritTag(TString & Tag);
+		Bool_t RequestItemValue(const Char_t * Tag, const Char_t * ItemName, TString & ItemValue) { return(kTRUE); };
+		Bool_t RequestFlag(const Char_t * Tag, const Char_t * FlagName, TString & FlagValue) { return(kTRUE); };
+		void ClearSubst();
+		Bool_t RequestSubst(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TEnv * LofSubst) { return(kTRUE); };
+		Bool_t Substitute() { return(kTRUE); };
+		Bool_t ExpandSwitchAndIf() { return(kTRUE); };
 
 		Bool_t ProcessElement_MrbCode();
 		Bool_t ProcessElement_File();
@@ -161,6 +169,7 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		Bool_t ProcessElement_Slist();
 		Bool_t ProcessElement_Subst();
 		Bool_t ProcessElement_Name();
+		Bool_t ProcessElement_Aname();
 		Bool_t ProcessElement_Gname();
 		Bool_t ProcessElement_Cname();
 		Bool_t ProcessElement_Vname();
@@ -192,8 +201,8 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		TEnv fAttr; 				// attributes
 		TString fCode;				// code
 		TEnv fLofAttr;				// attributes: <tag attr="...">
-		TEnv fLofChildren;			// (code produced by) children
 		TEnv fLofSubst; 			// substitutions: <S>subst</S>, <s>subst</s>
+		TEnv fLofChildCodes;		// code produced by children
 
 	ClassDef(TMrbXMLCodeElem, 1) 	// [XML] Code element
 };
