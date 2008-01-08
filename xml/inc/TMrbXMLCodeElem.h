@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeElem    -- XML code elemenet/node
 // Description:    Class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeElem.h,v 1.2 2008-01-08 15:09:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.h,v 1.3 2008-01-08 15:46:59 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -121,7 +121,7 @@ class TMrbXMLCodeElem: public TMrbNamedX, public TQObject {
 
 	protected:
 
-		Bool_t ParentIs(const Char_t * ParentName);
+		Bool_t ParentIs(const Char_t * LofParents);
 		Bool_t NameIs(const Char_t * ElemName);
 		Bool_t HasChild(const Char_t * ChildName);
 		Bool_t HasChild(const Char_t * ChildName, TString & ChildCode);
