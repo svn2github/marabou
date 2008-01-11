@@ -6,12 +6,9 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXMLCodeElem.cxx,v 1.3 2008-01-08 15:46:59 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.cxx,v 1.4 2008-01-11 07:21:29 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
-
-#include <iostream>
-#include <fstream>
 
 #include "TList.h"
 
@@ -43,6 +40,9 @@ TMrbXMLCodeElem::TMrbXMLCodeElem(TMrbNamedX * Element, Int_t NestingLevel)
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("sax.log");
 	fParent = (TMrbXMLCodeElem *) Element->GetAssignedObject();
 	fNestingLevel = NestingLevel;
+	fCode = "";
+	if (Element->GetIndex() == kMrbXmlIsZombie) this->MakeZombie();
+	fHasOwnText = (Element->GetIndex() & kMrbXmlHasOwnText);
 }
 
 Bool_t TMrbXMLCodeElem::SetAttributes(const TList * LofAttr) {
@@ -60,19 +60,22 @@ Bool_t TMrbXMLCodeElem::SetAttributes(const TList * LofAttr) {
 	return(kTRUE);
 }
 
-Bool_t TMrbXMLCodeElem::NameIs(const Char_t * ElemName) {
+Bool_t TMrbXMLCodeElem::NameIs(const Char_t * ElemName, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXMLCodeElem::NameIs
 // Purpose:        Compare name (of end tag) with element name
 // Arguments:      Char_t * ElemName   -- element name
+//                 Bool_t Verbose        -- output error if kTRUE
 // Results:        kTRUE/kFALSE
 //////////////////////////////////////////////////////////////////////////////
 
 	TString elemName = this->GetName();
 	if (elemName.CompareTo(ElemName) != 0) {
-		gMrbLog->Err() << "[" << this->GetName() << "] XML tag out of phase - </" << ElemName << ">" << endl;
-		gMrbLog->Flush(this->ClassName(), "NameIs");
+		if (Verbose) {
+			gMrbLog->Err() << "[" << this->GetName() << "] XML tag out of phase - </" << ElemName << ">" << endl;
+			gMrbLog->Flush(this->ClassName(), "NameIs");
+		}
 		return(kFALSE);
 	} else {
 		return(kTRUE);
@@ -80,12 +83,13 @@ Bool_t TMrbXMLCodeElem::NameIs(const Char_t * ElemName) {
 }
 
 
-Bool_t TMrbXMLCodeElem::ParentIs(const Char_t * LofParents) {
+Bool_t TMrbXMLCodeElem::ParentIs(const Char_t * LofParents, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXMLCodeElem::ParentIs
 // Purpose:        Check if we have the right parent
 // Arguments:      Char_t * LofParents   -- name(s) of possible parent element(s)
+//                 Bool_t Verbose        -- output error if kTRUE
 // Results:        kTRUE/kFALSE
 //////////////////////////////////////////////////////////////////////////////
 
@@ -97,59 +101,70 @@ Bool_t TMrbXMLCodeElem::ParentIs(const Char_t * LofParents) {
 		while (lofParents.Tokenize(pn, from, "|")) {
 			if (pname.CompareTo(pn.Data()) == 0) return(kTRUE);
 		}
-		gMrbLog->Err() << "[" << this->GetName() << "] Wrong parent element - <" << pname << "> (should be in <" << LofParents << ">)" << endl;
-		gMrbLog->Flush(this->ClassName(), "ParentIs");
+		if (Verbose) {
+			gMrbLog->Err() << "[" << this->GetName() << "] Wrong parent element - <" << pname << "> (should be in <" << LofParents << ">)" << endl;
+			gMrbLog->Flush(this->ClassName(), "ParentIs");
+		}
 		return(kFALSE);
 	} else {
-		gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
-		gMrbLog->Flush(this->ClassName(), "ParentIs");
+		if (Verbose) {
+			gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
+			gMrbLog->Flush(this->ClassName(), "ParentIs");
+		}
 		return(kFALSE);
 	}
 }
 
-Bool_t TMrbXMLCodeElem::HasChild(const Char_t * ChildName) {
+Bool_t TMrbXMLCodeElem::HasChild(const Char_t * ChildName, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXMLCodeElem::HasChild
 // Purpose:        Check if there is a given child element
 // Arguments:      Char_t * ChildName   -- name of child element
+//                 Bool_t Verbose        -- output error if kTRUE
 // Results:        kTRUE/kFALSE
 //////////////////////////////////////////////////////////////////////////////
 
-	TString childCode = fLofChildCodes.GetValue(ChildName, "");
+	TString childCode = fLofChilds.GetValue(ChildName, "");
 	if (childCode.IsNull()) {
-		gMrbLog->Err() << "[" << this->GetName() << "] Child element missing - <" << ChildName << ">" << endl;
-		gMrbLog->Flush(this->ClassName(), "HasChild");
+		if (Verbose) {
+			gMrbLog->Err() << "[" << this->GetName() << "] Child element missing - <" << ChildName << ">" << endl;
+			gMrbLog->Flush(this->ClassName(), "HasChild");
+		}
 		return(kFALSE);
 	}
 	return(kTRUE);
 }
 
-Bool_t TMrbXMLCodeElem::HasChild(const Char_t * ChildName, TString & ChildCode) {
+Bool_t TMrbXMLCodeElem::HasChild(const Char_t * ChildName, TString & ChildCode, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXMLCodeElem::HasChild
 // Purpose:        Check if there is a given child element
 // Arguments:      Char_t * ChildName   -- name of child element
 //                 TString & ChildCode  -- where to store its code
+//                 Bool_t Verbose        -- output error if kTRUE
 // Results:        kTRUE/kFALSE
 //////////////////////////////////////////////////////////////////////////////
 
-	ChildCode = fLofChildCodes.GetValue(ChildName, "");
+	ChildCode = fLofChilds.GetValue(ChildName, "");
 	if (ChildCode.IsNull()) {
-		gMrbLog->Err() << "[" << this->GetName() << "] Child element missing - <" << ChildName << ">" << endl;
-		gMrbLog->Flush(this->ClassName(), "HasChild");
+		if (Verbose) {
+			gMrbLog->Err() << "[" << this->GetName() << "] Child element missing - <" << ChildName << ">" << endl;
+			gMrbLog->Flush(this->ClassName(), "HasChild");
+		}
 		return(kFALSE);
 	}
 	return(kTRUE);
 }
 
-TMrbXMLCodeElem * TMrbXMLCodeElem::HasAncestor(const Char_t * Ancestor) {
+TMrbXMLCodeElem * TMrbXMLCodeElem::HasAncestor(const Char_t * Ancestor, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXMLCodeElem::HasAncestor
 // Purpose:        Check if there is a given ancestor element
 // Arguments:      Char_t * Ancestor            -- name of ancestor element
+//                 Bool_t Verbose        -- output error if kTRUE
 // Results:        TMrbXMLCodeElem * Ancestor   -- address of ancestor
 //////////////////////////////////////////////////////////////////////////////
 
@@ -160,39 +175,67 @@ TMrbXMLCodeElem * TMrbXMLCodeElem::HasAncestor(const Char_t * Ancestor) {
 			if (ename.CompareTo(Ancestor) == 0) return(e);
 			e = e->Parent();
 		}
-		gMrbLog->Err() << "[" << this->GetName() << "] No ancestor <" << Ancestor << "> found" << endl;
-		gMrbLog->Flush(this->ClassName(), "HasAncestor");
+		if (Verbose) {
+			gMrbLog->Err() << "[" << this->GetName() << "] No ancestor <" << Ancestor << "> found" << endl;
+			gMrbLog->Flush(this->ClassName(), "HasAncestor");
+		}
 		return(NULL);
 	} else {
-		gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
-		gMrbLog->Flush(this->ClassName(), "HasAncestor");
+		if (Verbose) {
+			gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
+			gMrbLog->Flush(this->ClassName(), "HasAncestor");
+		}
 		return(NULL);
 	}
 }
 
-Bool_t TMrbXMLCodeElem::CopyCodeToParent(const Char_t * Ename) {
+Bool_t TMrbXMLCodeElem::CopyCodeToParent() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXMLCodeElem::CopyCodeToParent
 // Purpose:        Copy code to parent node
-// Arguments:      Char_t * Ename    -- element name to be used
+// Arguments:      --
 // Results:        kTRUE/kFALSE
 // Description:    Copies code to parent element
-//                 either to parent's buffer
-//                 or to a separate list to be used for subsequent formatting
-//                 depending on Ename
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fParent) {
-		if (Ename == NULL || *Ename == '\0') {
-			fParent->AddCode(fCode);
-		} else {
-			fParent->LofChildCodes()->SetValue(Ename, fCode);
-		}
+		fParent->AddCode(fCode);
 		return(kTRUE);
 	} else {
 		gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
 		gMrbLog->Flush(this->ClassName(), "CopyCodeToParent");
+		return(kFALSE);
+	}
+}
+
+Bool_t TMrbXMLCodeElem::CopyChildToParent(const Char_t * ChildName, const Char_t * ChildCode) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::PassChildToParent
+// Purpose:        Xfer child to parent
+// Arguments:      Char_t * ChildName    -- child element to be copied
+//                 Char_t * ChildCode    -- code
+// Results:        kTRUE/kFALSE
+// Description:    Copies child code to parent element:
+//                 If no 'ChildCode' is given xfers child 'ChildName'
+//                 to list of parent childs.
+//                 If 'ChildCode' is present creates a new child in the
+//                 parent's list of childs
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fParent) {
+		TString childCode;
+		if (ChildCode == NULL) {
+			if (!this->HasChild(ChildName, childCode)) return(kFALSE);
+		} else {
+			childCode = ChildCode;
+		}
+		fParent->LofChilds()->SetValue(ChildName, childCode);
+		return(kTRUE);
+	} else {
+		gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyChildToParent");
 		return(kFALSE);
 	}
 }
@@ -240,7 +283,7 @@ Bool_t TMrbXMLCodeElem::GetFromParent(const Char_t * ElemName, TString & ElemCod
 
 	ElemCode = "";
 	if (fParent) {
-		ElemCode = fParent->LofChildCodes()->GetValue(ElemName, "");
+		ElemCode = fParent->LofChilds()->GetValue(ElemName, "");
 		if (ElemCode.IsNull()) {
 			gMrbLog->Err()	<< "[" << this->GetName() << "] Couldn't get element <" << ElemName
 							<< "> from parent <" << fParent->GetName() << ">" << endl;
@@ -269,7 +312,7 @@ Bool_t TMrbXMLCodeElem::InheritTag(TString & Tag) {
 	if (fParent) {
 		TMrbXMLCodeElem * e = fParent;
 		while (e) {
-			Tag = e->LofChildCodes()->GetValue("tag", "");
+			Tag = e->LofChilds()->GetValue("tag", "");
 			if (!Tag.IsNull()) return(kTRUE);
 			e = e->Parent();
 		}
@@ -310,12 +353,12 @@ Bool_t TMrbXMLCodeElem::ProcessElement(const Char_t * ElemName) {
 // Results:        kTRUE/kFALSE
 //////////////////////////////////////////////////////////////////////////////
 
-	if (!this->NameIs(ElemName)) this->SetIndex(kMrbXmlZombie);
+	if (!this->NameIs(ElemName)) this->MakeZombie();
 
 	Bool_t sts;
 
-	if (this->GetIndex() != kMrbXmlZombie) {
-		switch (this->GetIndex()) {
+	if (!this->IsZombie()) {
+		switch (this->GetIndex() & 0xFFF) {
 			case kMrbXml_MrbCode:		sts = this->ProcessElement_MrbCode(); break;
 			case kMrbXml_File:			sts = this->ProcessElement_File(); break;
 			case kMrbXml_FileHdr:		sts = this->ProcessElement_FileHdr(); break;
@@ -345,9 +388,12 @@ Bool_t TMrbXMLCodeElem::ProcessElement(const Char_t * ElemName) {
 			case kMrbXml_Inheritance:	sts = this->ProcessElement_Inheritance(); break;
 			case kMrbXml_ClassRef:		sts = this->ProcessElement_ClassRef(); break;
 			case kMrbXml_Tag:			sts = this->ProcessElement_Tag(); break;
+			case kMrbXml_Flag:			sts = this->ProcessElement_Flag(); break;
 			case kMrbXml_Slist: 		sts = this->ProcessElement_Slist(); break;
 			case kMrbXml_Subst: 		sts = this->ProcessElement_Subst(); break;
-			case kMrbXml_Name:			sts = this->ProcessElement_Name(); break;
+			case kMrbXml_Xname:			sts = this->ProcessElement_Xname(); break;
+			case kMrbXml_Mname:			sts = this->ProcessElement_Mname(); break;
+			case kMrbXml_Fname:			sts = this->ProcessElement_Fname(); break;
 			case kMrbXml_Aname:			sts = this->ProcessElement_Aname(); break;
 			case kMrbXml_Gname: 		sts = this->ProcessElement_Gname(); break;
 			case kMrbXml_Cname: 		sts = this->ProcessElement_Cname(); break;
@@ -363,6 +409,11 @@ Bool_t TMrbXMLCodeElem::ProcessElement(const Char_t * ElemName) {
 			case kMrbXml_s: 			sts = this->ProcessElement_s(); break;
 			case kMrbXml_S: 			sts = this->ProcessElement_S(); break;
 			case kMrbXml_L: 			sts = this->ProcessElement_L(); break;
+			case kMrbXml_M: 			sts = this->ProcessElement_M(); break;
+			case kMrbXml_Mm: 			sts = this->ProcessElement_Mm(); break;
+			case kMrbXml_R: 			sts = this->ProcessElement_R(); break;
+			case kMrbXml_Rm: 			sts = this->ProcessElement_Rm(); break;
+			case kMrbXml_Nl: 			sts = this->ProcessElement_Nl(); break;
 		}
 		return(kTRUE);
 	} else {
@@ -370,7 +421,23 @@ Bool_t TMrbXMLCodeElem::ProcessElement(const Char_t * ElemName) {
 	}
 }
 
-Bool_t TMrbXMLCodeElem::ProcessElement_MrbCode() { return(kTRUE); };
+Bool_t TMrbXMLCodeElem::ProcessElement_MrbCode() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::ProcessElement_MrbCode
+// Purpose:        File statement: <mrbcode>...</mrbcode>
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    XML root element
+//////////////////////////////////////////////////////////////////////////////
+
+	TString xname;
+	if (this->HasChild("xname", xname)) {
+		gMrbLog->Out() << "[" << this->GetName() << "] XML data parsed from file " << xname << endl;
+		gMrbLog->Flush(this->ClassName(), "ProcessElement_MrbCode", setblue);
+	}
+	return(kTRUE);
+}
 
 Bool_t TMrbXMLCodeElem::ProcessElement_File() {
 //________________________________________________________________[C++ METHOD]
@@ -384,6 +451,9 @@ Bool_t TMrbXMLCodeElem::ProcessElement_File() {
 
 	TString gname;
 	if (!this->HasChild("gname", gname)) return(kFALSE);
+
+	if (!this->CopyChildToParent("xname")) return(kFALSE);
+
 	ofstream file(gname.Data(), ios::out);
 	if (!file.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << gname << endl;
@@ -405,7 +475,8 @@ Bool_t TMrbXMLCodeElem::ProcessElement_FileHdr() {
 // Arguments:      --
 // Results:        kTRUE/kFALSE
 // Description:    Creates a standard file header
-// Elements:       <gname>       -- name of generated code file
+// Parent elems:   <file>        -- file
+// Child elems:    <gname>       -- name of generated code file
 //                 <purp>        -- purpose
 //                 <descr>       -- description
 //                 <author>      -- author
@@ -415,16 +486,20 @@ Bool_t TMrbXMLCodeElem::ProcessElement_FileHdr() {
 //                 <date>        -- modification date
 //////////////////////////////////////////////////////////////////////////////
 
+	if (!this->ParentIs("file")) return(kFALSE);
+
+	this->CopyChildToParent("xname");
+	this->CopyChildToParent("gname");
 	fCode =  "//___________________________________________________________[C++ FILE HEADER]\n";
 	fCode += "//////////////////////////////////////////////////////////////////////////////\n";
-	fCode += "// Name:           "; fCode += fLofChildCodes.GetValue("gname", ""); fCode += "\n";
-	fCode += "// Purpose:        "; fCode += fLofChildCodes.GetValue("purp", ""); fCode += "\n";
-	fCode += "// Description:    "; fCode += fLofChildCodes.GetValue("descr", ""); fCode += "\n";
-	fCode += "// Author:         "; fCode += fLofChildCodes.GetValue("author", ""); fCode += "\n";
-	fCode += "// Revision:       "; fCode += fLofChildCodes.GetValue("version", ""); fCode += "\n";
-	fCode += "// Date:           "; fCode += fLofChildCodes.GetValue("date", ""); fCode += "\n";
-	fCode += "// URL:            "; fCode += fLofChildCodes.GetValue("url", ""); fCode += "\n";
-	fCode += "//////////////////////////////////////////////////////////////////////////////";
+	fCode += "// Name:           "; fCode += fLofChilds.GetValue("gname", ""); fCode += "\n";
+	fCode += "// Purpose:        "; fCode += fLofChilds.GetValue("purp", ""); fCode += "\n";
+	fCode += "// Description:    "; fCode += fLofChilds.GetValue("descr", ""); fCode += "\n";
+	fCode += "// Author:         "; fCode += fLofChilds.GetValue("author", ""); fCode += "\n";
+	fCode += "// Revision:       "; fCode += fLofChilds.GetValue("version", ""); fCode += "\n";
+	fCode += "// Date:           "; fCode += fLofChilds.GetValue("date", ""); fCode += "\n";
+	fCode += "// URL:            "; fCode += fLofChilds.GetValue("url", ""); fCode += "\n";
+	fCode += "//////////////////////////////////////////////////////////////////////////////\n";
 	this->CopyCodeToParent();
 	return(kTRUE);
 }
@@ -447,10 +522,10 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Code() {
 // Results:        kTRUE/kFALSE
 // Description:    Main code container. If tagged performs substsitutions.
 //                 Then copies code to parent.
-// Elements:       <tag>      -- (opt) identifying tag
+// Child elems:    <tag>      -- (opt) identifying tag
 //////////////////////////////////////////////////////////////////////////////
 
-	TString tag = fLofChildCodes.GetValue("tag", "");
+	TString tag = fLofChilds.GetValue("tag", "");
 	Bool_t err = kFALSE;
 	if (!tag.IsNull()) {
 		this->ClearSubst();
@@ -483,12 +558,12 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Foreach() {
 // Arguments:      --
 // Results:        kTRUE/kFALSE
 // Description:    Loops over list of <item>s and copies code to parent
-// Elements:       <item>      -- list of item to loop on
+// Child elems:    <item>      -- list of item to loop on
 //////////////////////////////////////////////////////////////////////////////
 
 	TString itemName;
 	if (!this->HasChild("item", itemName)) return(kFALSE);
-	if (this->HasAncestor("foreach")) {
+	if (this->HasAncestor("foreach", kFALSE)) {
 		gMrbLog->Err() << "[" << this->GetName() << "] Can't be nested" << endl;
 		gMrbLog->Flush(this->ClassName(), "ProcessElement_Foreach");
 		return(kFALSE);
@@ -496,7 +571,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Foreach() {
 	TString tag;
 	if (!this->InheritTag(tag)) return(kFALSE);
 	TString lofItems;
-	if (!this->RequestItemValue(tag.Data(), itemName.Data(), lofItems)) return(kFALSE);
+	if (!this->RequestLofItems(tag.Data(), itemName.Data(), lofItems)) return(kFALSE);
 	TString origCode = fCode;
 	Int_t from = 0;
 	TString item;
@@ -520,31 +595,31 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Switch() {
 // Arguments:      --
 // Results:        kTRUE/kFALSE
 // Description:    If <switch> is child of a <foreach>
-//                 copy all <case> elements to parent and add "#switch|item# to code.
+//                 copy all <case> elements to parent and add "@switch|item# to code.
 //                 If not, ask for an item value and look for a matching <case>
-// Elements:       <item>      -- item to be compared to <case> values
+// Child elems:    <item>      -- item to be compared to <case> values
 //////////////////////////////////////////////////////////////////////////////
 
 	TString item;
 	if (!this->HasChild("item", item)) return(kFALSE);
 	TMrbXMLCodeElem * foreach;
 	if (foreach = this->HasAncestor("foreach")) {
-		TList * lchild = (TList *) fLofChildCodes.GetTable();
+		TList * lchild = (TList *) fLofChilds.GetTable();
 		if (lchild) {
 			TIterator * iter = lchild->MakeIterator();
 			TEnvRec * r;
 			while (r = (TEnvRec *) iter->Next()) {
 				TString rname = r->GetName();
-				if (rname.BeginsWith("case")) foreach->LofChildCodes()->SetValue(r->GetName(), r->GetValue());
+				if (rname.BeginsWith("case")) foreach->LofChilds()->SetValue(r->GetName(), r->GetValue());
 			}
 		}
-		fCode = Form("#switch|%s#\n", item.Data());
-		fLofSubst.SetValue(Form("#s|%s#\n", item.Data()), "");
+		fCode = Form("@switch|%s@\n", item.Data());
+		fLofSubst.SetValue(Form("@s|%s@", item.Data()), "");
 	} else {
 		TString tag;
 		if (!this->InheritTag(tag)) return(kFALSE);
 		TString itemVal;
-		if (!this->RequestItemValue(tag.Data(), item.Data(), itemVal)) return(kFALSE);
+		if (!this->RequestLofItems(tag.Data(), item.Data(), itemVal)) return(kFALSE);
 		if (!this->HasChild(Form("case_%s_%s", item.Data(), itemVal.Data()), fCode)) return(kFALSE);
 	}
 	Bool_t err = !this->CopyCodeToParent();
@@ -559,16 +634,16 @@ Bool_t TMrbXMLCodeElem::ProcessElement_If() {
 // Purpose:        Condition statement: <if>...</if>
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Description:    If <if> is child of a <foreach> add "#if|flag# to code.
+// Description:    If <if> is child of a <foreach> add "@if|flag# to code.
 //                 If not, ask for a flag value and copy code to parent if TRUE
-// Elements:       <flag>      -- boolean flag to be checked
+// Child elems:    <flag>      -- boolean flag to be checked
 //////////////////////////////////////////////////////////////////////////////
 
 	TString flag;
 	if (!this->HasChild("flag", flag)) return(kFALSE);
 	if (this->HasAncestor("foreach")) {
-		fCode = Form("#if|%s#\n", flag.Data());
-		fLofSubst.SetValue(Form("#s|%s#\n", flag.Data()), "");
+		fCode = Form("@if|%s@\n", flag.Data());
+		fLofSubst.SetValue(Form("@s|%s@", flag.Data()), "");
 	} else {
 		TString tag;
 		if (!this->InheritTag(tag)) return(kFALSE);
@@ -589,7 +664,8 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Case() {
 // Arguments:      --
 // Results:        kTRUE/kFALSE
 // Description:    Passes code and substitutions to parent element <switch>
-// Elements:       <tag>      -- case tag
+// Parent elems:   <switch>   -- switch statement
+// Child elems:    <tag>      -- case tag
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->ParentIs("switch")) return(kFALSE);
@@ -598,7 +674,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Case() {
 	
 	TString itemName;
 	if (!this->GetFromParent("item", itemName)) return(kFALSE);
-	Bool_t err = !this->CopyCodeToParent(Form("case_%s_%s", itemName.Data(), caseTag.Data()));
+	Bool_t err = !this->CopyChildToParent(Form("case_%s_%s", itemName.Data(), caseTag.Data()), fCode);
 	err |= !this->CopySubstToParent();
 	return(!err);
 }
@@ -612,11 +688,13 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Arg() {
 // Results:        kTRUE/kFALSE
 // Description:    Passes argument to parent <argList>
 //                 arguments will be stored in a :-separated string
-// Elements:       <aname>      -- argument name
+// Parent elems:   <argList>    -- list of arguments
+//                 <returnVal>  -- return value
+// Child elems:    <aname>      -- argument name
 //                 <atype>      -- type
 //////////////////////////////////////////////////////////////////////////////
 
-	if (this->ParentIs("argList")) {
+	if (this->ParentIs("argList|returnVal")) {
 		TString aname;
 		if (!this->HasChild("aname", aname)) return(kFALSE);
 		TString atype;
@@ -642,6 +720,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Comment() {
 	TString type = fLofAttr.GetValue("type", "");
 	if (type.CompareTo("code") == 0) {
 		fCode.Prepend("// ");
+		fCode += "\n";
 		return(this->CopyCodeToParent());
 	}
 	return(kTRUE);
@@ -656,7 +735,10 @@ Bool_t TMrbXMLCodeElem::ProcessElement_ClassRef() {
 // Results:        kTRUE/kFALSE
 // Description:    Passes class reference to parent <inheritance>
 //                 class refs will be stored in a :-separated string
-// Elements:       <cname>      -- class name
+// Parent elems:   <inheritance>    -- class inheritance
+//                 <rootClassList>  -- list of ROOT classes used
+//                 <mrbClassList>   -- list of MARaBOU classes used
+// Child elems:    <cname>          -- class name
 //////////////////////////////////////////////////////////////////////////////
 
 	if (this->ParentIs("inheritance|rootClassList|mrbClassList")) {
@@ -677,13 +759,31 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Tag() {
 // Arguments:      --
 // Results:        kTRUE/kFALSE
 // Description:    Passes tag to parent
+// Parent elems:   <code>    -- tagged code block
+//                 <case>    -- case statement within <switch>
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fParent) {
-		return(this->CopyCodeToParent(this->GetName()));
+	if (this->ParentIs("code|case")) {
+		return(this->CopyChildToParent(this->GetName(), fCode));
 	} else {
-		gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
-		gMrbLog->Flush(this->ClassName(), "ProcessElement_Tag");
+		return(kFALSE);
+	}
+}
+
+Bool_t TMrbXMLCodeElem::ProcessElement_Flag() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::ProcessElement_Flag
+// Purpose:        Tag: <flag>...</flag>
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    Passes flag to parent
+// Parent elems:   <if>    -- if clause
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->ParentIs("if")) {
+		return(this->CopyChildToParent(this->GetName(), fCode));
+	} else {
 		return(kFALSE);
 	}
 }
@@ -695,11 +795,11 @@ Bool_t TMrbXMLCodeElem::ProcessElement_s() {
 // Purpose:        Substitute: <s>...</s>
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Description:    Wraps "#s|...#" (substitution, lower case) around code
+// Description:    Wraps "@s|...@" (substitution, lower case) around code
 //                 then adds code to list of substitutions
 //////////////////////////////////////////////////////////////////////////////
 
-	fCode = Form("#s|%s#", fCode.Data());
+	fCode = Form("@s|%s@", fCode.Data());
 	Bool_t err = !this->CopySubstToParent(fCode, "");
 	err |= !this->CopyCodeToParent();
 	return(!err);
@@ -712,11 +812,11 @@ Bool_t TMrbXMLCodeElem::ProcessElement_S() {
 // Purpose:        Substitute: <S>...</S>
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Description:    Wraps "#S|...#" (substitution, upper case) around code
+// Description:    Wraps "@S|...@" (substitution, upper case) around code
 //                 then adds code to list of substitutions
 //////////////////////////////////////////////////////////////////////////////
 
-	fCode = Form("#S|%s#", fCode.Data());
+	fCode = Form("@S|%s@", fCode.Data());
 	Bool_t err = !this->CopySubstToParent(fCode, "");
 	err |= !this->CopyCodeToParent();
 	return(!err);
@@ -748,25 +848,27 @@ Bool_t TMrbXMLCodeElem::ProcessElement_L() {
 // Description:    Adds code to a separate list to be used later on by parent
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t TMrbXMLCodeElem::ProcessElement_ArgList() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_ReturnVal() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Inheritance() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Name() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Aname() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Gname() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Cname() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Vname() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Sname() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Purp() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Descr() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Author() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Mail() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Url() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Version() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Date() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Atype() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Item() { return(this->CopyCodeToParent(this->GetName())); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Ftype() { return(this->CopyCodeToParent(this->GetName())); };
+Bool_t TMrbXMLCodeElem::ProcessElement_ArgList() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_ReturnVal() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Inheritance() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Xname() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Mname() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Fname() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Aname() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Gname() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Cname() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Vname() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Sname() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Purp() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Descr() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Author() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Mail() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Url() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Version() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Date() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Atype() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Item() { return(this->CopyChildToParent(this->GetName(), fCode)); };
+Bool_t TMrbXMLCodeElem::ProcessElement_Ftype() { return(this->CopyChildToParent(this->GetName(), fCode)); };
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -778,6 +880,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Ftype() { return(this->CopyCodeToParent(t
 //                 <i> ... </i>    italic
 //                 <u> ... </u>    underline
 //                 <bx> ... </bx>  boxed
+//                 <nl>            new line
 //                 Code will be copied to parent
 //////////////////////////////////////////////////////////////////////////////
 
@@ -785,6 +888,8 @@ Bool_t TMrbXMLCodeElem::ProcessElement_B() { return(this->CopyCodeToParent()); }
 Bool_t TMrbXMLCodeElem::ProcessElement_I() { return(this->CopyCodeToParent()); };
 Bool_t TMrbXMLCodeElem::ProcessElement_U() { return(this->CopyCodeToParent()); };
 Bool_t TMrbXMLCodeElem::ProcessElement_Bx() { return(this->CopyCodeToParent()); };
+
+Bool_t TMrbXMLCodeElem::ProcessElement_Nl() { fCode = "\n"; return(this->CopyCodeToParent()); };
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -821,3 +926,88 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Subst() { return(kTRUE); };
 Bool_t TMrbXMLCodeElem::ProcessElement_RootClassList() { return(kTRUE); };
 Bool_t TMrbXMLCodeElem::ProcessElement_MrbClassList() { return(kTRUE); };
 
+void TMrbXMLCodeElem::Debug(ostream & Out, TString & FocusOnElement, TString & FocusOnTag, Bool_t OnStart) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::Debug
+// Purpose:        Debugger
+//////////////////////////////////////////////////////////////////////////////
+
+	if (FocusOnElement.CompareTo("any") != 0) {
+		if (FocusOnElement.CompareTo(this->GetName()) != 0) return;
+	}
+	if (FocusOnTag.CompareTo("any") != 0) {
+		TString tag;
+		if (!this->HasChild("tag", tag, kFALSE)) return;
+		if (FocusOnTag.CompareTo(tag.Data()) != 0) return;
+	}
+
+	TString x, s;
+	if (OnStart) {
+		x = "<xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx";
+		s = Form("[Start <%s>]", this->GetName());
+		x(2, s.Length()) = s;
+		this->Indent(Out); Out << x.Data() << endl;
+	} else {
+		x = "/==========================================================================================";
+		s = Form("[End <%s>]", this->GetName());
+		x(2, s.Length()) = s;
+		this->Indent(Out); Out << x.Data() << endl;
+		x = "|------------------------------------------------------------------------------------------";
+		TList * l = (TList *) fLofChilds.GetTable();
+		if (l) {
+			this->Indent(Out); Out << "| List of child elements:" << endl;
+			TIterator * iter = l->MakeIterator();
+			TEnvRec * r;
+			while (r = (TEnvRec *) iter->Next()) {
+				TString name = r->GetName();
+				TString code = r->GetValue();
+				Int_t from = 0;
+				while (code.Tokenize(code, from, "\n")) {
+					this->Indent(Out); Out << Form("|   %-15s  |%s|", name.Data(), code.Data()) << endl;
+					name = "";
+				}
+			}
+			this->Indent(Out); Out << x.Data() << endl;
+		}
+		l = (TList *) fLofSubst.GetTable();
+		if (l) {
+			this->Indent(Out); Out << "| List of substitutions:" << endl;
+			TIterator * iter = l->MakeIterator();
+			TEnvRec * r;
+			while (r = (TEnvRec *) iter->Next()) {
+				TString name = r->GetName();
+				TString code = r->GetValue();
+				Int_t from = 0;
+				while (code.Tokenize(code, from, "\n")) {
+					this->Indent(Out); Out << Form("|   %-15s  |%s|", name.Data(), code.Data()) << endl;
+					name = "";
+				}
+			}
+			this->Indent(Out); Out << x.Data() << endl;
+		}
+		Int_t from = 0;
+		TString line;
+		TString name = "Code:";
+		while (fCode.Tokenize(line, from, "\n")) {
+			this->Indent(Out); Out << Form("| %-17s  |%s|", name.Data(), line.Data()) << endl;
+			name = "";
+		}
+		x(0) = '\\';
+		this->Indent(Out); Out << x.Data() << endl;
+	}
+}
+
+void TMrbXMLCodeElem::Indent(ostream & Out) {
+	Out << Form("[%2d]", fNestingLevel);
+	for (Int_t i = 0; i < fNestingLevel; i++) Out << "  ";
+}
+
+Bool_t TMrbXMLCodeElem::RequestLofItems(const Char_t * Tag, const Char_t * ItemName, TString & LofItems) {
+	cout << "Enter list of items:" << endl;
+	cout << "   Tag:    " << Tag << endl;
+	cout << "   Item:   " << ItemName << endl;
+	cout << "   >> ";
+	cin >> LofItems;
+	return(kTRUE);
+}

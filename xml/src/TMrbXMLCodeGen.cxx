@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXMLCodeGen.cxx,v 1.1 2007-12-20 07:54:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeGen.cxx,v 1.2 2008-01-11 07:21:29 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -20,6 +20,8 @@
 ClassImp(TMrbXMLCodeGen)
 
 extern TMrbLogger * gMrbLog;
+
+ofstream debug;
 
 TMrbXMLCodeGen::TMrbXMLCodeGen(const Char_t * XmlFile) {
 									
@@ -39,18 +41,18 @@ TMrbXMLCodeGen::TMrbXMLCodeGen(const Char_t * XmlFile) {
 	fParser = new TSAXParser();
 	if (!fParser->IsZombie()) {
 		fParser->ConnectToHandler(this->ClassName(), this);
-		this->InitializeElements();
+		this->Initialize();
 		fRoot = NULL;
 		fCurrent = NULL;
 		this->ParseFile(XmlFile);
 	}
 }
 
-void TMrbXMLCodeGen::InitializeElements() {
+void TMrbXMLCodeGen::Initialize() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbXMLCodeGen::InitializeElements
-// Purpose:        Initialize list of elements
+// Name:           TMrbXMLCodeGen::Initialize
+// Purpose:        Initialization
 // Arguments:      --
 // Results:        --
 //////////////////////////////////////////////////////////////////////////////
@@ -73,43 +75,69 @@ void TMrbXMLCodeGen::InitializeElements() {
 	fLofElements.AddNamedX(kMrbXml_Foreach, "foreach", "<foreach>...</foreach>");
 	fLofElements.AddNamedX(kMrbXml_Switch, "switch", "<switch>...</switch>");
 	fLofElements.AddNamedX(kMrbXml_Case, "case", "<case>...</case>");
-	fLofElements.AddNamedX(kMrbXml_Item, "item", "<item>...</item>");
-	fLofElements.AddNamedX(kMrbXml_Ftype, "ftype", "<ftype>...</ftype>");
+	fLofElements.AddNamedX(kMrbXml_Item | kMrbXmlHasOwnText, "item", "<item>...</item>");
+	fLofElements.AddNamedX(kMrbXml_Ftype | kMrbXmlHasOwnText, "ftype", "<ftype>...</ftype>");
 	fLofElements.AddNamedX(kMrbXml_ArgList, "argList", "<argList>...</argList>");
 	fLofElements.AddNamedX(kMrbXml_Arg, "arg", "<arg>...</arg>");
-	fLofElements.AddNamedX(kMrbXml_Atype, "atype", "<atype>...</atype>");
+	fLofElements.AddNamedX(kMrbXml_Atype | kMrbXmlHasOwnText, "atype", "<atype>...</atype>");
 	fLofElements.AddNamedX(kMrbXml_ReturnVal, "returnVal", "<returnVal>...</returnVal>");
-	fLofElements.AddNamedX(kMrbXml_Comment, "comment", "<comment>...</comment>");
+	fLofElements.AddNamedX(kMrbXml_Comment | kMrbXmlHasOwnText, "comment", "<comment>...</comment>");
 	fLofElements.AddNamedX(kMrbXml_RootClassList, "rootClassList", "<rootClassList>...</rootClassList>");
 	fLofElements.AddNamedX(kMrbXml_MrbClassList, "mrbClassList", "<mrbClassList>...</mrbClassList>");
 	fLofElements.AddNamedX(kMrbXml_Inheritance, "inheritance", "<inheritance>...</inheritance>");
 	fLofElements.AddNamedX(kMrbXml_ClassRef, "classRef", "<classRef>...</classRef>");
-	fLofElements.AddNamedX(kMrbXml_Tag, "tag", "<tag>...</tag>");
+	fLofElements.AddNamedX(kMrbXml_Tag | kMrbXmlHasOwnText, "tag", "<tag>...</tag>");
+	fLofElements.AddNamedX(kMrbXml_Flag | kMrbXmlHasOwnText, "flag", "<flag>...</flag>");
 	fLofElements.AddNamedX(kMrbXml_Slist, "slist", "<slist>...</slist>");
 	fLofElements.AddNamedX(kMrbXml_Subst, "subst", "<subst>...</subst>");
-	fLofElements.AddNamedX(kMrbXml_Name, "name", "<name>...</name>");
-	fLofElements.AddNamedX(kMrbXml_Gname, "gname", "<gname>...</gname>");
-	fLofElements.AddNamedX(kMrbXml_Cname, "cname", "<cname>...</cname>");
-	fLofElements.AddNamedX(kMrbXml_Vname, "vname", "<vname>...</vname>");
-	fLofElements.AddNamedX(kMrbXml_Sname, "sname", "<sname>...</sname>");
-	fLofElements.AddNamedX(kMrbXml_Purp, "purp", "<purp>...</purp>");
-	fLofElements.AddNamedX(kMrbXml_Descr, "descr", "<descr>...</descr>");
-	fLofElements.AddNamedX(kMrbXml_Author, "author", "<author>...</author>");
-	fLofElements.AddNamedX(kMrbXml_Mail, "mail", "<mail>...</mail>");
-	fLofElements.AddNamedX(kMrbXml_Url, "url", "<url>...</url>");
-	fLofElements.AddNamedX(kMrbXml_Version, "version", "<version>...</version>");
-	fLofElements.AddNamedX(kMrbXml_Date, "date", "<date>...</date>");
-	fLofElements.AddNamedX(kMrbXml_s, "s", "<s>...</s>");
-	fLofElements.AddNamedX(kMrbXml_S, "S", "<S>...</S>");
-	fLofElements.AddNamedX(kMrbXml_L, "l", "<l>...</l>");
-	fLofElements.AddNamedX(kMrbXml_B, "b", "<b>...</b>");
-	fLofElements.AddNamedX(kMrbXml_I, "i", "<i>...</i>");
-	fLofElements.AddNamedX(kMrbXml_U, "u", "<u>...</u>");
-	fLofElements.AddNamedX(kMrbXml_Bx, "bx", "<bx>...</bx>");
-	fLofElements.AddNamedX(kMrbXml_M, "m", "<m>...</m>");
+	fLofElements.AddNamedX(kMrbXml_Xname | kMrbXmlHasOwnText, "xname", "<xname>...</xname>");
+	fLofElements.AddNamedX(kMrbXml_Mname | kMrbXmlHasOwnText, "mname", "<mname>...</mname>");
+	fLofElements.AddNamedX(kMrbXml_Fname | kMrbXmlHasOwnText, "fname", "<fname>...</fname>");
+	fLofElements.AddNamedX(kMrbXml_Gname | kMrbXmlHasOwnText, "gname", "<gname>...</gname>");
+	fLofElements.AddNamedX(kMrbXml_Cname | kMrbXmlHasOwnText, "cname", "<cname>...</cname>");
+	fLofElements.AddNamedX(kMrbXml_Aname | kMrbXmlHasOwnText, "aname", "<aname>...</aname>");
+	fLofElements.AddNamedX(kMrbXml_Vname | kMrbXmlHasOwnText, "vname", "<vname>...</vname>");
+	fLofElements.AddNamedX(kMrbXml_Sname | kMrbXmlHasOwnText, "sname", "<sname>...</sname>");
+	fLofElements.AddNamedX(kMrbXml_Purp | kMrbXmlHasOwnText, "purp", "<purp>...</purp>");
+	fLofElements.AddNamedX(kMrbXml_Descr | kMrbXmlHasOwnText, "descr", "<descr>...</descr>");
+	fLofElements.AddNamedX(kMrbXml_Author | kMrbXmlHasOwnText, "author", "<author>...</author>");
+	fLofElements.AddNamedX(kMrbXml_Mail | kMrbXmlHasOwnText, "mail", "<mail>...</mail>");
+	fLofElements.AddNamedX(kMrbXml_Url | kMrbXmlHasOwnText, "url", "<url>...</url>");
+	fLofElements.AddNamedX(kMrbXml_Version | kMrbXmlHasOwnText, "version", "<version>...</version>");
+	fLofElements.AddNamedX(kMrbXml_Date | kMrbXmlHasOwnText, "date", "<date>...</date>");
+	fLofElements.AddNamedX(kMrbXml_s | kMrbXmlHasOwnText, "s", "<s>...</s>");
+	fLofElements.AddNamedX(kMrbXml_S | kMrbXmlHasOwnText, "S", "<S>...</S>");
+	fLofElements.AddNamedX(kMrbXml_L | kMrbXmlHasOwnText, "l", "<l>...</l>");
+	fLofElements.AddNamedX(kMrbXml_B | kMrbXmlHasOwnText, "b", "<b>...</b>");
+	fLofElements.AddNamedX(kMrbXml_I | kMrbXmlHasOwnText, "i", "<i>...</i>");
+	fLofElements.AddNamedX(kMrbXml_U | kMrbXmlHasOwnText, "u", "<u>...</u>");
+	fLofElements.AddNamedX(kMrbXml_Bx | kMrbXmlHasOwnText, "bx", "<bx>...</bx>");
+	fLofElements.AddNamedX(kMrbXml_M | kMrbXmlHasOwnText, "m", "<m>...</m>");
 	fLofElements.AddNamedX(kMrbXml_Mm, "mm", "<mm>...</mm>");
-	fLofElements.AddNamedX(kMrbXml_R, "r", "<r>...</r>");
+	fLofElements.AddNamedX(kMrbXml_R | kMrbXmlHasOwnText, "r", "<r>...</r>");
 	fLofElements.AddNamedX(kMrbXml_Rm, "rm", "<rm>...</rm>");
+	fLofElements.AddNamedX(kMrbXml_Nl, "nl", "<nl>...</nl>");
+
+	fDebugMode = gEnv->GetValue("TMrbXML.Debug.Mode", "off");
+	if (fDebugMode.IsNull()) fDebugMode = "off";
+	fDebugFocusOnElement = gEnv->GetValue("TMrbXML.Debug.FocusOnElement", "any");
+	if (fDebugFocusOnElement.IsNull()) fDebugFocusOnElement = "any";
+	fDebugFocusOnTag = gEnv->GetValue("TMrbXML.Debug.FocusOnTag", "any");
+	if (fDebugFocusOnTag.IsNull()) fDebugFocusOnTag = "any";
+	fDebugOutput = gEnv->GetValue("TMrbXML.Debug.Output", "cout");
+	if (fDebugOutput.IsNull()) fDebugOutput = "cout";
+
+	if (fDebugMode.CompareTo("on") == 0 && fDebugOutput.CompareTo("cout") != 0) {
+		debug.open(fDebugOutput.Data(), ios::out);
+		if (!debug.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << fDebugOutput << endl;
+			gMrbLog->Flush(this->ClassName(), "Initialize");
+			fDebugMode = "off";
+		} else {
+			gMrbLog->Out() << "Writing DEBUG info to file " << fDebugOutput << endl;
+			gMrbLog->Flush(this->ClassName(), "Initialize");
+		}
+	}
 }
 
 Bool_t TMrbXMLCodeGen::ParseFile(const Char_t * XmlFile) {
@@ -148,13 +176,20 @@ void TMrbXMLCodeGen::OnStartElement(const Char_t * ElemName, const TList * LofAt
 	if (elem == NULL) {
 		gMrbLog->Err() << "No such XML element - <" << ElemName << ">" << endl;
 		gMrbLog->Flush(this->ClassName(), "OnStartElement");
-		elem = new TMrbNamedX(kMrbXmlZombie, ElemName);
+		elem = new TMrbNamedX(kMrbXmlIsZombie, ElemName);
 	}
 	elem->AssignObject(fCurrent);
-	if (fCurrent && fCurrent->GetIndex() == kMrbXmlZombie) elem->SetIndex(kMrbXmlZombie);
+	if (fCurrent && fCurrent->IsZombie()) elem->SetIndex(kMrbXmlIsZombie);
 	fCurrent = new TMrbXMLCodeElem(elem, nestingLevel);
 	if (nestingLevel == 0) fRoot = fCurrent;
 	fCurrent->SetAttributes(LofAttr);
+	if (fDebugMode.CompareTo("on") == 0) {
+		if (fDebugOutput.CompareTo("cout") == 0) {
+			fCurrent->Debug(cout, fDebugFocusOnElement, fDebugFocusOnTag, kTRUE);
+		} else {
+			fCurrent->Debug(debug, fDebugFocusOnElement, fDebugFocusOnTag, kTRUE);
+		}
+	}
 }
 
 void TMrbXMLCodeGen::OnEndElement(const Char_t * ElemName) {
@@ -167,6 +202,13 @@ void TMrbXMLCodeGen::OnEndElement(const Char_t * ElemName) {
 //////////////////////////////////////////////////////////////////////////////
 
 	fCurrent->ProcessElement(ElemName); 				// process element
+	if (fDebugMode.CompareTo("on") == 0) {
+		if (fDebugOutput.CompareTo("cout") == 0) {
+			fCurrent->Debug(cout, fDebugFocusOnElement, fDebugFocusOnTag, kFALSE);
+		} else {
+			fCurrent->Debug(debug, fDebugFocusOnElement, fDebugFocusOnTag, kFALSE);
+		}
+	}
 
 	if (fCurrent != fRoot) {							// preserve root element
 		TMrbXMLCodeElem * parent = fCurrent->Parent();	// any other elements go 1 level up
@@ -184,7 +226,7 @@ void TMrbXMLCodeGen::OnCharacters(const Char_t * Text) {
 // Results:        --
 //////////////////////////////////////////////////////////////////////////////
 
-   if (fCurrent->GetIndex() != kMrbXmlZombie) fCurrent->AddCode(Text);
+	if (!fCurrent->IsZombie() && fCurrent->HasOwnText()) fCurrent->AddCode(Text);
 }
 
 void TMrbXMLCodeGen::OnWarning(const Char_t * Msg) {

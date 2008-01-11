@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeGen    -- Marabou's SAX parser implementation
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeGen.h,v 1.1 2007-12-20 07:54:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeGen.h,v 1.2 2008-01-11 07:21:29 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ class TMrbXMLCodeGen: public TObject {
 
 	protected:
 
-		void InitializeElements();					// initialize list of elements
+		void Initialize();							// initialize
 		Bool_t ParseFile(const Char_t * XmlFile); 	// parse xml data
 
 	protected:
@@ -64,6 +64,11 @@ class TMrbXMLCodeGen: public TObject {
 		TMrbXMLCodeElem * fCurrent; 	// current element
 
 		TMrbLofNamedX fLofElements;		// list of elements
+
+		TString fDebugMode;				// debug mode: on | off
+		TString fDebugFocusOnElement; 	// debug focus on element: off | <elem>
+		TString fDebugFocusOnTag;		// debug focus on tag: off | <tag>
+		TString fDebugOutput;			// debug output: cout | <file>
 
 	ClassDef(TMrbXMLCodeGen, 1) 		// [XML] code generator
 };
