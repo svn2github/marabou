@@ -8,7 +8,7 @@
 // Class:          TMrbXia_DGF_4C     -- xia's digital gamma finder
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXia_DGF_4C.h,v 1.20 2006-10-09 10:40:08 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.h,v 1.21 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -27,6 +27,9 @@ namespace std {} using namespace std;
 
 #include "TMrbCamacModule.h"
 
+class TMrbCamacChannel;
+class TMrbSubevent;
+
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXia_DGF_4C
@@ -44,7 +47,7 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		virtual ~TMrbXia_DGF_4C() {};												// remove module from list
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbCamacChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		Bool_t MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, const Char_t * Extension);	// generate part of analyzing code
 
@@ -52,7 +55,7 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		
 		virtual inline const Char_t * GetMnemonic() const { return("dgf"); }; 	// module mnemonic
 
-		virtual Bool_t CheckSubeventType(TObject * Subevent) const;		// check if subevent type is [10,2x]
+		virtual Bool_t CheckSubeventType(TMrbSubevent * Subevent) const;		// check if subevent type is [10,2x]
 
 		Bool_t ReadNameTable(); 							 		// read parameter names from file
 		inline TMrbNamedX * FindParam(const Char_t * ParamName) const { return((TMrbNamedX *) fParamNames.FindByName(ParamName)); };

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V260.cxx,v 1.7 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V260.cxx,v 1.8 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -166,7 +166,7 @@ Bool_t TMrbCaen_V260::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 
 
 Bool_t TMrbCaen_V260::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TObject * Channel,
+															TMrbVMEChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -174,7 +174,7 @@ Bool_t TMrbCaen_V260::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 // Purpose:        Write a piece of code for a caen scaler
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 TMrbVMEChannel * Channel     -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -182,10 +182,7 @@ Bool_t TMrbCaen_V260::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbVMEChannel * chn;
 	TString mnemoLC, mnemoUC;
-
-	chn = (TMrbVMEChannel *) Channel;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "
@@ -212,8 +209,8 @@ Bool_t TMrbCaen_V260::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;

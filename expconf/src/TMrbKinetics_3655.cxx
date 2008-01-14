@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbKinetics_3655.cxx,v 1.6 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbKinetics_3655.cxx,v 1.7 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -561,7 +561,7 @@ Bool_t TMrbKinetics_3655::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbMo
 
 
 Bool_t TMrbKinetics_3655::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TObject * Channel,
+															TMrbCamacChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -569,7 +569,7 @@ Bool_t TMrbKinetics_3655::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMo
 // Purpose:        Write a piece of code for a Kinetics-3655
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 TMrbCamacChannel * Channel   -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -577,10 +577,7 @@ Bool_t TMrbKinetics_3655::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMo
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbCamacChannel * chn;
 	TString mnemoLC, mnemoUC;
-
-	chn = (TMrbCamacChannel *) Channel;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "

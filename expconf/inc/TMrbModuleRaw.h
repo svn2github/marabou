@@ -8,7 +8,7 @@
 // Class:          TMrbModuleRaw     -- a user-defined module
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModuleRaw.h,v 1.7 2007-10-25 17:24:12 Marabou Exp $       
+// Revision:       $Id: TMrbModuleRaw.h,v 1.8 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -26,6 +26,8 @@ namespace std {} using namespace std;
 #include "TObject.h"
 
 #include "TMrbModule.h"
+
+class TMrbModuleChannel;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -45,7 +47,7 @@ class TMrbModuleRaw : public TMrbModule {
 		~TMrbModuleRaw() {};														// remove silena adc from list
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbModuleChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
 		Bool_t AddToListOfModules(); 							// raw modules has to be added to list explicitly

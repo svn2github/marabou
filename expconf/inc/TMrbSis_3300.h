@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3300        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3300.h,v 1.6 2007-06-06 07:37:12 Marabou Exp $       
+// Revision:       $Id: TMrbSis_3300.h,v 1.7 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -24,6 +24,8 @@ namespace std {} using namespace std;
 #include "Rtypes.h"
 #include "TSystem.h"
 #include "TObject.h"
+
+class TMrbVMEChannel;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -122,7 +124,7 @@ class TMrbSis_3300 : public TMrbVMEModule {
 		~TMrbSis_3300() {};													// default dtor
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbVMEChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		virtual inline const Char_t * GetMnemonic() const { return("sis_3300"); }; 	// module mnemonic
 

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXMLCodeGen.cxx,v 1.2 2008-01-11 07:21:29 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeGen.cxx,v 1.3 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -23,7 +23,7 @@ extern TMrbLogger * gMrbLog;
 
 ofstream debug;
 
-TMrbXMLCodeGen::TMrbXMLCodeGen(const Char_t * XmlFile) {
+TMrbXMLCodeGen::TMrbXMLCodeGen(const Char_t * XmlFile, TMrbXMLCodeClient * Client) {
 									
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -42,9 +42,10 @@ TMrbXMLCodeGen::TMrbXMLCodeGen(const Char_t * XmlFile) {
 	if (!fParser->IsZombie()) {
 		fParser->ConnectToHandler(this->ClassName(), this);
 		this->Initialize();
+		fClient = Client;
 		fRoot = NULL;
 		fCurrent = NULL;
-		this->ParseFile(XmlFile);
+		if (XmlFile != NULL && *XmlFile != '\0') this->ParseFile(XmlFile);
 	}
 }
 
@@ -180,7 +181,7 @@ void TMrbXMLCodeGen::OnStartElement(const Char_t * ElemName, const TList * LofAt
 	}
 	elem->AssignObject(fCurrent);
 	if (fCurrent && fCurrent->IsZombie()) elem->SetIndex(kMrbXmlIsZombie);
-	fCurrent = new TMrbXMLCodeElem(elem, nestingLevel);
+	fCurrent = new TMrbXMLCodeElem(elem, nestingLevel, this);
 	if (nestingLevel == 0) fRoot = fCurrent;
 	fCurrent->SetAttributes(LofAttr);
 	if (fDebugMode.CompareTo("on") == 0) {

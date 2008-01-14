@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSilena_4418V.cxx,v 1.6 2006-02-23 09:28:50 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSilena_4418V.cxx,v 1.7 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -101,7 +101,7 @@ TMrbSilena_4418V::TMrbSilena_4418V(const Char_t * ModuleName, const Char_t * Mod
 	}
 }
 
-Bool_t TMrbSilena_4418V::CheckSubeventType(TObject * Subevent) const {
+Bool_t TMrbSilena_4418V::CheckSubeventType(TMrbSubevent * Subevent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSilena_4418V::CheckSubeventType
@@ -115,13 +115,10 @@ Bool_t TMrbSilena_4418V::CheckSubeventType(TObject * Subevent) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbSubevent *sevt;
-
 	if (!this->HasZeroSuppression()) return(kTRUE);
 	
-	sevt = (TMrbSubevent *) Subevent;
-	if (sevt->GetType() != 10 || sevt->GetSubtype() < 31 || sevt->GetSubtype() > 39)	return(kFALSE);
-	else																				return(kTRUE);
+	if (Subevent->GetType() != 10 || Subevent->GetSubtype() < 31 || Subevent->GetSubtype() > 39)	return(kFALSE);
+	else																							return(kTRUE);
 }
 
 void TMrbSilena_4418V::DefineRegisters() {
@@ -277,7 +274,7 @@ Bool_t TMrbSilena_4418V::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbMod
 
 
 Bool_t TMrbSilena_4418V::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TObject * Channel,
+															TMrbCamacChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -285,7 +282,7 @@ Bool_t TMrbSilena_4418V::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMod
 // Purpose:        Write a piece of code for a silena adc
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 TMrbCamacChannel * Channel   -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -293,10 +290,7 @@ Bool_t TMrbSilena_4418V::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMod
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbCamacChannel * chn;
 	TString mnemoLC, mnemoUC;
-
-	chn = (TMrbCamacChannel *) Channel;
 
 	mnemoLC = this->GetMnemonic();
 	mnemoUC = mnemoLC;
@@ -315,11 +309,11 @@ Bool_t TMrbSilena_4418V::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMod
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
-			fCodeTemplates.Substitute("$lowerThresh", chn->Get(TMrbSilena_4418V::kRegLowerThresh));
-			fCodeTemplates.Substitute("$upperThresh", chn->Get(TMrbSilena_4418V::kRegUpperThresh));
-			fCodeTemplates.Substitute("$offset", chn->Get(TMrbSilena_4418V::kRegOffset));
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$lowerThresh", Channel->Get(TMrbSilena_4418V::kRegLowerThresh));
+			fCodeTemplates.Substitute("$upperThresh", Channel->Get(TMrbSilena_4418V::kRegUpperThresh));
+			fCodeTemplates.Substitute("$offset", Channel->Get(TMrbSilena_4418V::kRegOffset));
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleWriteSubaddr:
@@ -327,9 +321,9 @@ Bool_t TMrbSilena_4418V::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMod
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
-			fCodeTemplates.Substitute("$subaddr", chn->GetAddr() + 1);
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$subaddr", Channel->GetAddr() + 1);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleSetupReadout:
@@ -337,8 +331,8 @@ Bool_t TMrbSilena_4418V::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMod
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
@@ -350,8 +344,8 @@ Bool_t TMrbSilena_4418V::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMod
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;

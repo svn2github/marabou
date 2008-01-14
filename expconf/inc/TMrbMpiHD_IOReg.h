@@ -8,7 +8,7 @@
 // Class:          TMrbMpiHD_IOReg        -- 16 bit i/o reg (MPI HD)
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMpiHD_IOReg.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMpiHD_IOReg.h,v 1.8 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -26,6 +26,8 @@ namespace std {} using namespace std;
 #include "TObject.h"
 
 #include "TMrbVMEModule.h"
+
+class TMrbVMEChannel;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -49,7 +51,7 @@ class TMrbMpiHD_IOReg : public TMrbVMEModule {
 		~TMrbMpiHD_IOReg() {};												// default dtor
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbVMEChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		virtual inline const Char_t * GetMnemonic() const { return("mpiorl"); }; 	// module mnemonic
 

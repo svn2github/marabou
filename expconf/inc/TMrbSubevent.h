@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.20 2007-10-16 14:24:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.21 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -35,6 +35,10 @@ namespace std {} using namespace std;
 #include "TMrbCamacModule.h"
 #include "TMrbVMEModule.h"
 
+class TMrbEvent;
+class TMrbModule;
+class TMrbModuleChannel;
+
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent
@@ -58,46 +62,46 @@ class TMrbSubevent : public TNamed {
 
 		TMrbSubevent(const TMrbSubevent &) : TNamed() {};			// default copy ctor
 
-		inline void AddEvent(TObject * Evt) {		 	// add a parent event
+		inline void AddEvent(TMrbEvent * Evt) {		 	// add a parent event
 			fLofEvents.Add(Evt);
 			fNofEvents++;
 		};
 
-		inline TObject * FindEvent(const Char_t * EvtName) const {	// find a parent
-			return (fLofEvents.FindObject(EvtName));
+		inline TMrbEvent * FindEvent(const Char_t * EvtName) const {	// find a parent
+			return ((TMrbEvent *) fLofEvents.FindObject(EvtName));
 		};
 
-		Bool_t AddParam(TObject * Param);			 	// add a new parameter
+		Bool_t AddParam(TMrbModuleChannel * Param);			 	// add a new parameter
 
-		inline TObject * FindParam(const Char_t * ParamName) const {		// find param by its name
-			return(fLofParams.FindObject(ParamName));
+		inline TMrbModuleChannel * FindParam(const Char_t * ParamName) const {		// find param by its name
+			return((TMrbModuleChannel *) fLofParams.FindObject(ParamName));
 		};
 
-		inline Bool_t AddModule(TObject * Module) {		 	// add a new module
+		inline Bool_t AddModule(TMrbModule * Module) {		 	// add a new module
 			fLofModules.Add(Module);
 			fNofModules++;
 			return(kTRUE);
 		};
 
-		inline TObject * NextModule(TObject * After = NULL) const {	// get next module from list
-			return((After == NULL) ? fLofModules.First() : fLofModules.After(After));
+		inline TMrbModule * NextModule(TMrbModule * After = NULL) const {	// get next module from list
+			return((After == NULL) ? (TMrbModule *) fLofModules.First() : (TMrbModule *) fLofModules.After((TObject *) After));
 		};
 
-		inline TObject * FindModule(const Char_t * ModuleName) const {	// find a module
-			return (fLofModules.FindObject(ModuleName));
+		inline TMrbModule * FindModule(const Char_t * ModuleName) const {	// find a module
+			return ((TMrbModule *) fLofModules.FindObject(ModuleName));
 		};
 
-		TObject * FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After = NULL) const; 		// find module by its id
-		inline TObject * FindModuleByID(TMrbNamedX * ModuleID, TObject * After = NULL) const {
+		TMrbModule * FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TMrbModule * After = NULL) const; 		// find module by its id
+		inline TMrbModule * FindModuleByID(TMrbNamedX * ModuleID, TMrbModule * After = NULL) const {
 			return(this->FindModuleByID((TMrbConfig::EMrbModuleID) ModuleID->GetIndex(), After));
 		};
 
-		TObject * FindModuleByType(UInt_t ModuleType, TObject * After = NULL) const; 	// find module by its type
-		inline TObject * FindModuleByType(TMrbNamedX * ModuleType, TObject * After = NULL) const {
+		TMrbModule * FindModuleByType(UInt_t ModuleType, TMrbModule * After = NULL) const; 	// find module by its type
+		inline TMrbModule * FindModuleByType(TMrbNamedX * ModuleType, TMrbModule * After = NULL) const {
 			return(this->FindModuleByType(ModuleType->GetIndex(), After));
 		};
 
-		TObject * FindModuleBySerial(Int_t ModuleSerial) const;				 		// find module by its serial number
+		TMrbModule * FindModuleBySerial(Int_t ModuleSerial) const;				 		// find module by its serial number
 
 		Bool_t Use(const Char_t * ModuleName, const Char_t * Assignment, Bool_t BookHistos = kTRUE); 		// assign parameters
 		inline Bool_t Use(const Char_t * Assignment, Bool_t BookHistos = kTRUE) { return(Use(NULL, Assignment, BookHistos)); };

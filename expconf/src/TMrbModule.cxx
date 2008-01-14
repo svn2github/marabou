@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.20 2007-06-02 07:28:11 Marabou Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.21 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -305,20 +305,20 @@ void TMrbModule::SetType(UInt_t ModuleType, Bool_t OrFlag) {
 	fModuleType.Set(ModuleType, mType.Data());
 }
 
-TObject * TMrbModule::GetChannel(Int_t Channel) const {
+TMrbModuleChannel * TMrbModule::GetChannel(Int_t Channel) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModule::GetChannel
 // Purpose:        Return addr of specified channel
-// Arguments:      Int_t Channel     -- channel number
-// Results:        TObject * ChAddr  -- channel addr or NULL on error
+// Arguments:      Int_t Channel               -- channel number
+// Results:        TMrbModuleChannel * ChAddr  -- channel addr or NULL on error
 // Exceptions:     Channel out of range
 // Description:    Checks if channel number is legal and return addr of class object
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Channel < 0 || Channel >= fNofChannels) return(NULL);
-	return(fChannelSpec[Channel]);
+	return((TMrbModuleChannel *) fChannelSpec[Channel]);
 }
 
 Bool_t TMrbModule::Set(const Char_t * RegName, Int_t Value, Int_t Channel) {

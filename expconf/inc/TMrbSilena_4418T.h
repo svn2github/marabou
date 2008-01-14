@@ -8,7 +8,7 @@
 // Class:          TMrbSilena_4418T     -- silena tdc 4418/T
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSilena_4418T.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSilena_4418T.h,v 1.8 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -26,6 +26,9 @@ namespace std {} using namespace std;
 #include "TObject.h"
 
 #include "TMrbCamacModule.h"
+
+class TMrbCamacChannel;
+class TMrbSubevent;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -63,14 +66,14 @@ class TMrbSilena_4418T : public TMrbCamacModule {
 		~TMrbSilena_4418T() {};														// remove silena tdc from list
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbCamacChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		inline void SetZeroSuppression(Bool_t Flag = kTRUE) { fZeroSuppression = Flag; };	// zero compression on/off
 		inline Bool_t HasZeroSuppression() const { return(fZeroSuppression); };
 		
 		virtual inline const Char_t * GetMnemonic() const { return("sil_4418t"); }; 	// module mnemonic
 
-		virtual Bool_t CheckSubeventType(TObject * Subevent) const;		// check if subevent type is [10,3x]
+		virtual Bool_t CheckSubeventType(TMrbSubevent * Subevent) const;		// check if subevent type is [10,3x]
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

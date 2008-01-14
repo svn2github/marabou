@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.82 2007-11-16 13:33:27 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.83 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -35,6 +35,13 @@ namespace std {} using namespace std;
 
 #include "TMrbCNAF.h"
 #include "TMrbLogger.h"
+
+class TMrbEvent;
+class TMrbSubevent;
+class TMrbModule;
+class TMrbModuleChannel;
+class TMrbScaler;
+class TMrbMesytec_Mux16;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -590,86 +597,73 @@ class TMrbConfig : public TNamed {
 		Int_t GetNofErrors() const;							// number of errors
 		Int_t PrintErrors(Bool_t ErrorsOnly = kTRUE) const; // print error summary
 		
-		inline void AddEvent(TObject * Evt) {				 				// add a new event
-			fLofEvents.Add(Evt);
-			fNofEvents++;
+		void AddEvent(TMrbEvent * Evt);
+
+		inline TMrbEvent * FindEvent(const Char_t * EvtName) const {				// find an event
+			return ((TMrbEvent *) fLofEvents.FindObject(EvtName));
 		};
 
-		inline TObject * FindEvent(const Char_t * EvtName) const {				// find an event
-			return (fLofEvents.FindObject(EvtName));
+		TMrbEvent * FindEvent(Int_t Trigger) const;								// find event by its trigger
+
+		inline Int_t GetNofEvents() { return(fNofEvents); };			// add a new event
+
+		void AddSubevent(TMrbSubevent * Sevt);							// add a new subevent
+
+		inline TMrbSubevent * NextSubevent(TMrbSubevent * After = NULL) const {					// get next subevent from list
+			return((After == NULL) ? (TMrbSubevent *) fLofSubevents.First() : (TMrbSubevent *) fLofSubevents.After((TObject *) After));
 		};
 
-		TObject * FindEvent(Int_t Trigger) const;								// find event by its trigger
-
-		inline Int_t GetNofEvents() { return(fNofEvents); };
-
-		inline void AddSubevent(TObject * Sevt) {							// add a new subevent
-			fLofSubevents.Add(Sevt);
-			fNofSubevents++;
+		inline TMrbSubevent * FindSubevent(const Char_t * SevtName) const {			// find a subevent
+			return ((TMrbSubevent *) fLofSubevents.FindObject(SevtName));
 		};
 
-		inline TObject * NextSubevent(TObject * After = NULL) const {					// get next subevent from list
-			return((After == NULL) ? fLofSubevents.First() : fLofSubevents.After(After));
-		};
+		TMrbSubevent * FindSubevent(TClass * Class, TMrbSubevent * After = NULL) const;		// find a subevent by class type
 
-		inline TObject * FindSubevent(const Char_t * SevtName) const {			// find a subevent
-			return (fLofSubevents.FindObject(SevtName));
-		};
-
-		TObject * FindSubevent(TClass * Class, TObject * After = NULL) const;		// find a subevent by class type
-
-		TObject * FindSubevent(Int_t SevtSerial) const;							// find subevent by its serial number
+		TMrbSubevent * FindSubevent(Int_t SevtSerial) const;							// find subevent by its serial number
 
 		inline Int_t AssignSevtSerial() const { return(fNofSubevents + 1); }; 	// get unique serial number for a subevent
 			
-		inline void AddModule(TObject * Module) { 							// add a new module
-			fLofModules.Add(Module);
+		inline void AddModule(TMrbModule * Module) { 							// add a new module
+			fLofModules.Add((TObject *) Module);
 			fNofModules++;
 		};
 
-		inline TObject * NextModule(TObject * After = NULL) const {						// get next module from list
-			return((After == NULL) ? fLofModules.First() : fLofModules.After(After));
+		inline TMrbModule * NextModule(TMrbModule * After = NULL) const {						// get next module from list
+			return((After == NULL) ? (TMrbModule *) fLofModules.First() : (TMrbModule *) fLofModules.After((TObject *) After));
 		};
 
-		inline TObject * FindModule(const Char_t * ModuleName) const {			// find module by its name
-			return (fLofModules.FindObject(ModuleName));
+		inline TMrbModule * FindModule(const Char_t * ModuleName) const {			// find module by its name
+			return ((TMrbModule *) fLofModules.FindObject(ModuleName));
 		};
 
-		TObject * FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After = NULL) const; 		// find (next) module by its id
-		TObject * FindModuleByType(UInt_t ModuleType, TObject * After = NULL) const; 	// find (next) module by its type
-		TObject * FindModuleByCrate(Int_t Crate, TObject * After = NULL) const;		// find (next) module by crate number
-		TObject * FindModuleBySerial(Int_t ModuleSerial) const;						// find module by its unique serial
+		TMrbModule * FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TMrbModule * After = NULL) const; 		// find (next) module by its id
+		TMrbModule * FindModuleByType(UInt_t ModuleType, TMrbModule * After = NULL) const; 	// find (next) module by its type
+		TMrbModule * FindModuleByCrate(Int_t Crate, TMrbModule * After = NULL) const;		// find (next) module by crate number
+		TMrbModule * FindModuleBySerial(Int_t ModuleSerial) const;						// find module by its unique serial
 
 		inline Int_t AssignModuleSerial() const { return(fNofModules + 1); }; 		// set unique serial number for a module
 			
-		Bool_t CheckModuleAddress(TObject * Module, Bool_t WrnOnly = kTRUE) const;	// check if module address or position legal
+		Bool_t CheckModuleAddress(TMrbModule * Module, Bool_t WrnOnly = kTRUE) const;	// check if module address or position legal
 
 		inline Bool_t HasCamacModules() const { return(FindModuleByType(TMrbConfig::kModuleCamac) != NULL); };	// camac?
 		inline Bool_t HasVMEModules() const { return(FindModuleByType(TMrbConfig::kModuleVME) != NULL); };		// vme?
 
-		inline void  AddScaler(TObject * Scaler) {			 					// add a new scaler
-			fLofScalers.Add(Scaler);
-			fNofScalers++;
-		};
-
-		inline void  AddMux(TObject * Multiplexer) {			 				// add a new multiplexer
-			fLofMuxs.Add(Multiplexer);
-			fNofMuxs++;
-		};
+		void AddScaler(TMrbModule * Scaler);				// add a scaler to list
+		void AddMux(TMrbModule * Multiplexer);				// add a multiplexer to list
 
 		Bool_t WriteMuxConfig(const Char_t * CfgFile);				// write multiplexer config
 
 		Bool_t SetMbsBranch(TMrbNamedX & MbsBranch, Int_t MbsBranchNo, const Char_t * MbsBranchName = NULL);	// mbs branch
 		Int_t CheckMbsBranchSettings();
 
-		TObject * FindParam(const Char_t * ParamName) const;							// find a param 
+		TMrbModuleChannel * FindParam(const Char_t * ParamName) const;							// find a param 
 
 		Bool_t HistogramExists(const Char_t * HistoName) const;						// check if histo exists
 
-		inline TObject * FindScaler(const Char_t * ScalerName) const {				// find a scaler
-			return (fLofScalers.FindObject(ScalerName));
+		inline TMrbModule * FindScaler(const Char_t * ScalerName) const {				// find a scaler
+			return((TMrbModule *) fLofScalers.FindObject(ScalerName));
 		};
-		TObject * FindScalerByCrate(Int_t Crate, TObject * After = NULL) const;		// find (next) scaler in a given crate
+		TMrbModule * FindScalerByCrate(Int_t Crate, TMrbModule * After = NULL) const;		// find (next) scaler in a given crate
 
 		void GetAuthor();						// author's name
 
@@ -699,7 +693,7 @@ class TMrbConfig : public TNamed {
 		Bool_t WriteDeadTime(const Char_t * Scaler, Int_t Interval = 1000);				// write a dead time events
 		inline Bool_t DeadTimeToBeWritten() const { return(fDeadTimeInterval > 0); }; 	// check if dead time enabled
 		inline Int_t GetDeadTimeInterval() const { return(fDeadTimeInterval); };			// get interval
-		inline TObject * GetDeadTimeScaler() const { return(fDeadTimeScaler); };			// get scaler def
+		inline TMrbScaler * GetDeadTimeScaler() const { return(fDeadTimeScaler); };			// get scaler def
 
 																					// include user-specific code
 		Bool_t IncludeUserCode(const Char_t * IclPath, const Char_t * UserFile, Bool_t AutoGenFlag = kFALSE);
@@ -914,7 +908,7 @@ class TMrbConfig : public TNamed {
 		Bool_t fWriteTimeStamp; 			// kTRUE if user wants a time stamp to be added to each event
 
 		Int_t fDeadTimeInterval;			// number of events a new dead time event will be created
-		TObject * fDeadTimeScaler;	 		// dead-time scaler
+		TMrbScaler * fDeadTimeScaler;	 		// dead-time scaler
 
 		TString fCreationDate;				// creation date & time
 		TString fUser;						// user name

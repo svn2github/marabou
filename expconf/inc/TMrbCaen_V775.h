@@ -8,7 +8,7 @@
 // Class:          TMrbCaen_V775        -- 16/32 chn TDC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V775.h,v 1.10 2006-11-16 09:28:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V775.h,v 1.11 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -26,6 +26,9 @@ namespace std {} using namespace std;
 #include "TObject.h"
 
 #include "TMrbVMEModule.h"
+
+class TMrbSubevent;
+class TMrbVMEChannel;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -108,7 +111,7 @@ class TMrbCaen_V775 : public TMrbVMEModule {
 		~TMrbCaen_V775() {};												// default dtor
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbVMEChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		virtual inline const Char_t * GetMnemonic() const { return("caen_V775"); }; 	// module mnemonic
 
@@ -131,7 +134,7 @@ class TMrbCaen_V775 : public TMrbVMEModule {
 		inline void SetOverRangeCheck(Bool_t OrFlag = kTRUE) { fOverRangeCheck = OrFlag; }; 	// range check on/off
 		inline Bool_t HasOverRangeCheck() const { return(fOverRangeCheck); };
 		
-		virtual Bool_t CheckSubeventType(TObject * Subevent) const;		// check if subevent type is [10,4x]
+		virtual Bool_t CheckSubeventType(TMrbSubevent * Subevent) const;		// check if subevent type is [10,4x]
 
 		inline Bool_t HasRandomReadout() const { return(kFALSE); };
 

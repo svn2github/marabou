@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModuleRaw.cxx,v 1.5 2007-10-25 17:24:13 Marabou Exp $       
+// Revision:       $Id: TMrbModuleRaw.cxx,v 1.6 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -82,7 +82,7 @@ TMrbModuleRaw::TMrbModuleRaw(const Char_t * ModuleName, const Char_t * ModuleID,
 				fCrate = 0;
 
 				for (Int_t nch = 0; nch < NofChannels; nch++) { 		// create array of params
-					fChannelSpec.Add((TObject *) new TMrbModuleChannel(this, nch));
+					fChannelSpec.Add(new TMrbModuleChannel(this, nch));
 				}
 
 				DefineRegisters();
@@ -129,7 +129,7 @@ Bool_t TMrbModuleRaw::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 
 
 Bool_t TMrbModuleRaw::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TObject * Channel,
+															TMrbModuleChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -137,7 +137,7 @@ Bool_t TMrbModuleRaw::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 // Purpose:        Write a piece of readout code
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 TMrbModuleChannel * Channel  -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:

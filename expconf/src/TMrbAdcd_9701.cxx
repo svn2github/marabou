@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAdcd_9701.cxx,v 1.6 2006-02-23 09:28:49 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAdcd_9701.cxx,v 1.7 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -179,15 +179,15 @@ Bool_t TMrbAdcd_9701::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 
 
 Bool_t TMrbAdcd_9701::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TObject * Channel,
+															TMrbCamacChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAdcd_9701::MakeReadoutCode
 // Purpose:        Write a piece of code for an adcd flash adc
 // Arguments:      ofstream & RdoStrm           -- file output stream
-//                 EMrbModuleTag TagIndex        -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
+//                 TMrbCamacChannel * Channel   -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -195,10 +195,7 @@ Bool_t TMrbAdcd_9701::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbCamacChannel * chn;
 	TString mnemoLC, mnemoUC;
-
-	chn = (TMrbCamacChannel *) Channel;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "

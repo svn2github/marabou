@@ -8,7 +8,7 @@
 // Class:          TMrbLeCroy_1176        -- 32 chn peak sensing ADC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLeCroy_1176.h,v 1.4 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLeCroy_1176.h,v 1.5 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -26,6 +26,9 @@ namespace std {} using namespace std;
 #include "TObject.h"
 
 #include "TMrbVMEModule.h"
+
+class TMrbVMEChannel;
+class TMrbSubevent;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +51,7 @@ class TMrbLeCroy_1176 : public TMrbVMEModule {
 		~TMrbLeCroy_1176() {};												// default dtor
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbVMEChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		virtual inline const Char_t * GetMnemonic() const { return("lecroy_1176"); }; 	// module mnemonic
 
@@ -56,7 +59,7 @@ class TMrbLeCroy_1176 : public TMrbVMEModule {
 		inline void SetCommonStop(Bool_t CommonStopFlag = kTRUE) { fCommonStart = !CommonStopFlag; };
 		inline Bool_t IsCommonStart() const { return(fCommonStart); };
 
-		inline Bool_t CheckSubeventType(TObject * Subevent) const { return(kTRUE); };
+		inline Bool_t CheckSubeventType(TMrbSubevent * Subevent) const { return(kTRUE); };
 
 		inline Bool_t HasRandomReadout() const { return(kFALSE); };
 

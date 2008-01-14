@@ -8,7 +8,7 @@
 // Class:          TMrbCamacModule      -- base class for camac modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCamacModule.h,v 1.8 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCamacModule.h,v 1.9 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -27,6 +27,8 @@ namespace std {} using namespace std;
 #include "TMrbTemplate.h"
 #include "TMrbCNAF.h"
 #include "TMrbModule.h"
+
+class TMrbSubevent;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -58,7 +60,7 @@ class TMrbCamacModule : public TMrbModule {
 		
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL); // generate readout code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) { return(kFALSE); };  	// generate code for given channel
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Subevent, Int_t Value = 0) { return(kFALSE); }; 
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbSubevent * Subevent, Int_t Value = 0) { return(kFALSE); }; 
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

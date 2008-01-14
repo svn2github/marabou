@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMpiHD_IOReg.cxx,v 1.6 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMpiHD_IOReg.cxx,v 1.7 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -148,7 +148,7 @@ Bool_t TMrbMpiHD_IOReg::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModu
 
 
 Bool_t TMrbMpiHD_IOReg::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TObject * Channel,
+															TMrbVMEChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -156,7 +156,7 @@ Bool_t TMrbMpiHD_IOReg::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModu
 // Purpose:        Write a piece of code for a caen adc
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 TMrbVMEChannel * Channel     -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -164,10 +164,7 @@ Bool_t TMrbMpiHD_IOReg::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModu
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbVMEChannel * chn;
 	TString mnemoLC, mnemoUC;
-
-	chn = (TMrbVMEChannel *) Channel;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "

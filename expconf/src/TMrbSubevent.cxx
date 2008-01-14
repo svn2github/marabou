@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.35 2007-10-25 17:24:13 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.36 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -134,38 +134,36 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 	}
 }
 
-Bool_t TMrbSubevent::AddParam(TObject * Param) {
+Bool_t TMrbSubevent::AddParam(TMrbModuleChannel * Param) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::AddParam
 // Purpose:        Add a new param to subevent
-// Arguments:      TObject * Param        -- param addr
+// Arguments:      TMrbModuleChannel * Param        -- param addr
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Adds a param to list.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbModuleChannel * chn;
 	TMrbModule * module;
 	
-	chn = (TMrbModuleChannel *) Param;
-	module = chn->Parent();
+	module = Param->Parent();
 	
-	fLofParams.Add(chn);
+	fLofParams.Add(Param);
 	fNofParams++;
 	fNofShorts += module->GetNofShortsPerChannel();
 	return(kTRUE);
 }
 
-TObject * TMrbSubevent::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After) const {
+TMrbModule * TMrbSubevent::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TMrbModule * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::FindModuleByID
 // Purpose:        Find a module by its id
 // Arguments:      EMrbModuleID ModuleID  -- module id
-//                 TObject * After        -- search to be started after this module
-// Results:        TObject * Module       -- module address
+//                 TMrbModule * After     -- search to be started after this module
+// Results:        TMrbModule * Module    -- module address
 // Exceptions:
 // Description:    Loops thru the list of modules to find
 //                 next module having specified id
@@ -186,14 +184,14 @@ TObject * TMrbSubevent::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObjec
 	return(NULL);
 }
 
-TObject * TMrbSubevent::FindModuleByType(UInt_t ModuleType, TObject * After) const {
+TMrbModule * TMrbSubevent::FindModuleByType(UInt_t ModuleType, TMrbModule * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::FindModuleByType
 // Purpose:        Find a module by its type
 // Arguments:      UInt_t ModuleType     -- module type
-//                 TObject * After       -- search to be started after this module
-// Results:        TObject * Module      -- module address
+//                 TMrbModule * After    -- search to be started after this module
+// Results:        TMrbModule * Module   -- module address
 // Exceptions:
 // Description:    Loops thru the list of modules to find
 //                 next module having specified type
@@ -214,13 +212,13 @@ TObject * TMrbSubevent::FindModuleByType(UInt_t ModuleType, TObject * After) con
 	return(NULL);
 }
 
-TObject * TMrbSubevent::FindModuleBySerial(Int_t ModuleSerial) const {
+TMrbModule * TMrbSubevent::FindModuleBySerial(Int_t ModuleSerial) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::FindModuleBySerial
 // Purpose:        Find a module by its unique serial number
 // Arguments:      Int_t ModuleSerial       -- serial number
-// Results:        TObject * Module         -- module address
+// Results:        TMrbModule * Module      -- module address
 // Exceptions:
 // Description:    Loops thru the list of modules to find
 //                 specified serial number
@@ -1011,7 +1009,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 									}
 									param = (TMrbModuleChannel *) fLofParams.After(param);
 								}
-								evt = (TMrbEvent *) fLofEvents.After((TObject *) evt);
+								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
 							onceOnly.Delete();
 						}
@@ -1137,7 +1135,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								anaTmpl.InitializeCode("%E%");
 								anaTmpl.WriteCode(AnaStrm);
 							}
-							evt = (TMrbEvent *) fLofEvents.After((TObject *) evt);
+							evt = (TMrbEvent *) fLofEvents.After(evt);
 						}
 						if (stdHistosOK) {
 							anaTmpl.InitializeCode("%E%");
@@ -1234,7 +1232,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								anaTmpl.InitializeCode("%E%");
 								anaTmpl.WriteCode(AnaStrm);
 							}
-							evt = (TMrbEvent *) fLofEvents.After((TObject *) evt);
+							evt = (TMrbEvent *) fLofEvents.After(evt);
 						}	
 						if (stdHistosOK) {
 							anaTmpl.InitializeCode("%E%");
@@ -1455,7 +1453,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 						Template.Substitute("$nofParams", this->GetNofParams());
 						Template.WriteCode(AnaStrm);
 					}
-					evt = (TMrbEvent *) fLofEvents.After((TObject *) evt);
+					evt = (TMrbEvent *) fLofEvents.After(evt);
 				}
 			}
 			break;
@@ -1521,7 +1519,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 							}
 						}
 					}
-					evt = (TMrbEvent *) fLofEvents.After((TObject *) evt);
+					evt = (TMrbEvent *) fLofEvents.After(evt);
 				}
 			}
 			break;

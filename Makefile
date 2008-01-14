@@ -72,6 +72,10 @@ ifeq ($(shell if [ -d tidy ] ; then echo yes; fi), yes)
 MODULES      += tidy tidylib
 endif
 
+ifeq ($(shell if [ -d xml ] ; then echo yes; fi), yes)
+MODULES      += xml
+endif
+
 ifeq ($(shell if [ -d macrobrowser ] ; then echo yes; fi), yes)
 MODULES      += macrobrowser
 endif

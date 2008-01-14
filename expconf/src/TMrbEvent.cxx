@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.24 2007-08-06 13:33:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.25 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -194,25 +194,25 @@ TMrbEvent::TMrbEvent(Int_t Trigger, const Char_t * EvtName, const Char_t * EvtTi
 	}
 }
 
-TObject * TMrbEvent::FindSubeventByCrate(Int_t Crate, TObject * After) const {
+TMrbSubevent * TMrbEvent::FindSubeventByCrate(Int_t Crate, TMrbSubevent * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEvent::FindSubeventByCrate
 // Purpose:        Find a subevent with given crate number
-// Arguments:      Int_t Crate           -- crate number
-//                 TObject * After       -- start search after obj
-// Results:        TObject * Subevent    -- subevent
+// Arguments:      Int_t Crate              -- crate number
+//                 TMrbSubevent * After     -- start search after obj
+// Results:        TMrbSubevent * Subevent  -- subevent
 // Exceptions:
 // Description:    Searches for next subevent in crate "Crate".
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObject * sevt;
+	TMrbSubevent * sevt;
 
-	sevt = (After == NULL) ? fLofSubevents.First() : fLofSubevents.After(After);
+	sevt = (After == NULL) ? (TMrbSubevent *) fLofSubevents.First() : (TMrbSubevent *) fLofSubevents.After(After);
 	while (sevt) {
-		if (((TMrbSubevent *) sevt)->GetCrate() == Crate) return(sevt);
-		sevt = fLofSubevents.After(sevt);
+		if (sevt->GetCrate() == Crate) return(sevt);
+		sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 	}
 	return(NULL);
 }

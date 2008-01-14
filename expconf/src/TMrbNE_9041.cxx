@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbNE_9041.cxx,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbNE_9041.cxx,v 1.7 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -137,15 +137,15 @@ Bool_t TMrbNE_9041::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTa
 
 
 Bool_t TMrbNE_9041::MakeReadoutCode(ofstream & RdoStrm, 	TMrbConfig::EMrbModuleTag TagIndex,
-															TObject * Channel,
+															TMrbCamacChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbNE_9041::MakeReadoutCode
 // Purpose:        Write a piece of code for a nuclear enterprise register
 // Arguments:      ofstream & RdoStrm           -- file output stream
-//                 EMrbModuleTag TagIndex        -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
+//                 TMrbCamacChannel * Channel   -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -153,13 +153,11 @@ Bool_t TMrbNE_9041::MakeReadoutCode(ofstream & RdoStrm, 	TMrbConfig::EMrbModuleT
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbCamacChannel * chn;
 	Int_t chnNo;
 	TString iniTag;
 	TString mnemoLC, mnemoUC;
 
-	chn = (TMrbCamacChannel *) Channel;
-	chnNo = chn->GetAddr();
+	chnNo = Channel->GetAddr();
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "
@@ -187,7 +185,7 @@ Bool_t TMrbNE_9041::MakeReadoutCode(ofstream & RdoStrm, 	TMrbConfig::EMrbModuleT
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
 			fCodeTemplates.Substitute("$chnNo", chnNo);
 			fCodeTemplates.Substitute("$subAddr", chnNo & 1);
 			fCodeTemplates.WriteCode(RdoStrm);
@@ -197,7 +195,7 @@ Bool_t TMrbNE_9041::MakeReadoutCode(ofstream & RdoStrm, 	TMrbConfig::EMrbModuleT
 				fCodeTemplates.Substitute("$moduleName", this->GetName());
 				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-				fCodeTemplates.Substitute("$chnName", chn->GetName());
+				fCodeTemplates.Substitute("$chnName", Channel->GetName());
 				fCodeTemplates.Substitute("$chnNo", chnNo);
 				fCodeTemplates.WriteCode(RdoStrm);
 			}

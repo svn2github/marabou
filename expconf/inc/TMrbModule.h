@@ -8,7 +8,7 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.17 2007-06-02 07:28:11 Marabou Exp $       
+// Revision:       $Id: TMrbModule.h,v 1.18 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -33,6 +33,9 @@ namespace std {} using namespace std;
 #include "TMrbTemplate.h"
 
 #include "TMrbConfig.h"
+
+class TMrbSubevent;
+class TMrbModuleChannel;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -136,14 +139,14 @@ class TMrbModule : public TNamed {
 
 		inline TObjArray * GetLofChannels() { return(&fChannelSpec); };			// list of channels
 
-		TObject * GetChannel(Int_t) const;											// get channel addr
+		TMrbModuleChannel * GetChannel(Int_t) const;											// get channel addr
 
 		Bool_t LoadCodeTemplates(const Char_t * TemplateFile);					// load code templates
 
 		virtual Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
 		virtual Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) { return(kFALSE); };  	// generate code for given channel
-		virtual Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Subevent, Int_t Value = 0) { return(kFALSE); }; 
+		virtual Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbModuleChannel * Channel, Int_t Value = 0) { return(kFALSE); }; 
 
 		virtual Bool_t MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, const Char_t * Extension);	// generate part of analyzing code
 
@@ -162,7 +165,7 @@ class TMrbModule : public TNamed {
 		virtual inline Int_t GetNofSubDevices() const { return(1); }; 						// 1 subdevice per default
 		virtual inline Bool_t HasRandomReadout() const { return(kTRUE); };					// modules allow random readout normally
 		virtual inline Bool_t IsRaw() const { return(kFALSE); };								// not raw (user-defined) mode
-		virtual inline Bool_t CheckSubeventType(TObject * Subevent) const { return(kTRUE); }; // module may be stored in any subevent
+		virtual inline Bool_t CheckSubeventType(TMrbSubevent * Subevent) const { return(kTRUE); }; // module may be stored in any subevent
 
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 					// normal code generation
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };

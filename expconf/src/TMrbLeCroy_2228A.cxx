@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLeCroy_2228A.cxx,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbLeCroy_2228A.cxx,v 1.6 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -155,15 +155,15 @@ Bool_t TMrbLeCroy_2228A::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbMod
 
 
 Bool_t TMrbLeCroy_2228A::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-																TObject * Channel,
+																TMrbCamacChannel * Channel,
 																Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLeCroy_2228A::MakeReadoutCode
 // Purpose:        Write a piece of code for a lecroy tdc
 // Arguments:      ofstream & RdoStrm           -- file output stream
-//                 EMrbModuleTag TagIndex        -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
+//                 TMrbCamacChannel * Channel   -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -171,10 +171,7 @@ Bool_t TMrbLeCroy_2228A::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMod
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbCamacChannel * chn;
 	TString mnemoLC, mnemoUC;
-
-	chn = (TMrbCamacChannel *) Channel;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "
@@ -193,8 +190,8 @@ Bool_t TMrbLeCroy_2228A::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMod
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleWriteSubaddr:
@@ -202,9 +199,9 @@ Bool_t TMrbLeCroy_2228A::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMod
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
-			fCodeTemplates.Substitute("$subaddr", chn->GetAddr() + 1);
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$subaddr", Channel->GetAddr() + 1);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleSetupReadout:
@@ -216,8 +213,8 @@ Bool_t TMrbLeCroy_2228A::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMod
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;

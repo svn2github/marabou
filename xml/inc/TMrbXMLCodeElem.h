@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeElem    -- XML code elemenet/node
 // Description:    Class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeElem.h,v 1.4 2008-01-11 07:21:29 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.h,v 1.5 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -28,6 +28,10 @@ namespace std {} using namespace std;
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
+
+#include "TMrbXMLCodeClient.h"
+
+class TMrbXMLCodeGen;
 
 // element indices
 
@@ -104,11 +108,11 @@ enum	{	kMrbXmlIsZombie = 0x8000 };
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbXMLCodeElem: public TMrbNamedX, public TQObject {
+class TMrbXMLCodeElem: public TMrbNamedX {
 
 	public:
 
-    	TMrbXMLCodeElem(TMrbNamedX * Element = NULL, Int_t NestingLevel = 0);
+    	TMrbXMLCodeElem(TMrbNamedX * Element = NULL, Int_t NestingLevel = 0, TMrbXMLCodeGen * Parser = NULL);
 		virtual ~TMrbXMLCodeElem() {};
 
 		inline void AddCode(const Char_t * Code) { fCode += Code; };
@@ -144,7 +148,7 @@ class TMrbXMLCodeElem: public TMrbNamedX, public TQObject {
 		Bool_t GetFromParent(const Char_t * ElemName, TString & ElemCode);
 		Bool_t InheritTag(TString & Tag);
 		Bool_t RequestLofItems(const Char_t * Tag, const Char_t * ItemName, TString & LofItems);
-		Bool_t RequestFlag(const Char_t * Tag, const Char_t * FlagName, TString & FlagValue) { return(kTRUE); };
+		Bool_t RequestConditionFlag(const Char_t * Tag, const Char_t * FlagName, TString & FlagValue) { return(kTRUE); };
 		void ClearSubst();
 		Bool_t RequestSubst(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TEnv * LofSubst) { return(kTRUE); };
 		Bool_t Substitute() { return(kTRUE); };
@@ -221,6 +225,8 @@ class TMrbXMLCodeElem: public TMrbNamedX, public TQObject {
 		TEnv fLofAttr;				// attributes: <tag attr="...">
 		TEnv fLofSubst; 			// substitutions: <S>subst</S>, <s>subst</s>
 		TEnv fLofChilds;			// code produced by children
+
+		TMrbXMLCodeGen * fParser;	// connect to calling parser object
 
 	ClassDef(TMrbXMLCodeElem, 1) 	// [XML] Code element
 };

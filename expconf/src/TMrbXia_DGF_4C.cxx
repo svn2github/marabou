@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.27 2006-10-09 10:30:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.28 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -262,7 +262,7 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 
 
 Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TObject * Channel,
+															TMrbCamacChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -270,15 +270,13 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModul
 // Purpose:        Write a piece of code for a DGF module
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 TMrbCamacChannel * Channel   -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Writes code for readout of a DGF-4C module.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
-
-	TMrbCamacChannel * chn;
 
 	TString mnemoLC, mnemoUC;
 	TString moduleNameUC;
@@ -288,8 +286,6 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModul
 	mnemoLC = this->GetMnemonic();
 	mnemoUC = mnemoLC;
 	mnemoUC.ToUpper();
-
-	chn = (TMrbCamacChannel *) Channel;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "
@@ -307,9 +303,9 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModul
 			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC.Data());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
-			fCodeTemplates.Substitute("$subaddr", chn->GetAddr() + 1);
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$subaddr", Channel->GetAddr() + 1);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleSetupReadout:
@@ -322,8 +318,8 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModul
 			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC.Data());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
@@ -331,7 +327,7 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModul
 	return(kTRUE);
 }
 
-Bool_t TMrbXia_DGF_4C::CheckSubeventType(TObject * Subevent) const {
+Bool_t TMrbXia_DGF_4C::CheckSubeventType(TMrbSubevent * Subevent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXia_DGF_4C::CheckSubeventType
@@ -346,7 +342,7 @@ Bool_t TMrbXia_DGF_4C::CheckSubeventType(TObject * Subevent) const {
 
 	TMrbSubevent *sevt;
 
-	sevt = (TMrbSubevent *) Subevent;
+	sevt = Subevent;
 	if (sevt->GetType() != 10) return(kFALSE);
 	if (sevt->GetSubtype() == 32) return(kTRUE);
 	if (sevt->GetSubtype() < 21 || sevt->GetSubtype() > 29) return(kFALSE);

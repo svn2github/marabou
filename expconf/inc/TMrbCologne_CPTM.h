@@ -8,7 +8,7 @@
 // Class:          TMrbCologne_CPTM     -- clock and programmable trigger module
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCologne_CPTM.h,v 1.3 2005-12-14 08:33:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCologne_CPTM.h,v 1.4 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -27,6 +27,9 @@ namespace std {} using namespace std;
 
 #include "TMrbCamacModule.h"
 
+class TMrbCamacChannel;
+class TMrbSubevent;
+
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCologne_CPTM
@@ -44,13 +47,13 @@ class TMrbCologne_CPTM : public TMrbCamacModule {
 		virtual ~TMrbCologne_CPTM() {};												// remove module from list
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbCamacChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		Bool_t MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag TagIndex, const Char_t * ResourceName);
 		
 		virtual inline const Char_t * GetMnemonic() const { return("cptm"); }; 	// module mnemonic
 
-		virtual Bool_t CheckSubeventType(TObject * Subevent) const;		// check if subevent type is [10,2x]
+		virtual Bool_t CheckSubeventType(TMrbSubevent * Subevent) const;		// check if subevent type is [10,2x]
 
 		virtual inline Bool_t HasRandomReadout() const { return(kFALSE); };	// block mode only
 		

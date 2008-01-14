@@ -8,7 +8,7 @@
 // Class:          TMrbEvent            -- event connected to a trigger
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEvent.h,v 1.12 2006-11-08 10:02:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.h,v 1.13 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -29,6 +29,8 @@ namespace std {} using namespace std;
 
 #include "TMrbLofNamedX.h"
 #include "TMrbTemplate.h"
+
+class TMrbSubevent;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -57,10 +59,10 @@ class TMrbEvent : public TNamed {
 		Bool_t HasSubevent(const Char_t * Assignment);		// add subevent(s)
 		Bool_t ShareSubevents(TMrbEvent * Event);			// share subevent(s) with another event
 
-		inline TObject * FindSubevent(const Char_t * SevtName) const {					// find a subevent
-			return (fLofSubevents.FindObject(SevtName));
+		inline TMrbSubevent * FindSubevent(const Char_t * SevtName) const {					// find a subevent
+			return ((TMrbSubevent *) fLofSubevents.FindObject(SevtName));
 		};
-		TObject * FindSubeventByCrate(Int_t Crate, TObject * After = NULL) const;	// find a subevent with specified crate
+		TMrbSubevent * FindSubeventByCrate(Int_t Crate, TMrbSubevent * After = NULL) const;	// find a subevent with specified crate
 
 		inline Int_t GetTrigger() const { return(fTrigger); };							// return trigger number
 		inline TMrbConfig::EMrbTriggerStatus GetTriggerStatus() const { return(fTriggerStatus); };	// return trigger status

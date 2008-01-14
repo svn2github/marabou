@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.152 2007-11-16 13:33:27 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.153 2008-01-14 09:48:52 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -860,13 +860,13 @@ Bool_t TMrbConfig::HandleMultipleTriggers(Int_t T1, Int_t T2, Int_t T3, Int_t T4
 	}
 }
 
-TObject * TMrbConfig::FindEvent(Int_t Trigger) const {
+TMrbEvent * TMrbConfig::FindEvent(Int_t Trigger) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindEvent
 // Purpose:        Find an event by its trigger number
 // Arguments:      Int_t Trigger       -- trigger number
-// Results:        TObject * Event     -- event address
+// Results:        TMrbEvent * Event   -- event address
 // Exceptions:
 // Description:    Loops thru the list of events to find specified trigger.
 // Keywords:
@@ -880,13 +880,13 @@ TObject * TMrbConfig::FindEvent(Int_t Trigger) const {
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindSubevent(Int_t SevtSerial) const {
+TMrbSubevent * TMrbConfig::FindSubevent(Int_t SevtSerial) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindSubevent
 // Purpose:        Find a subevent by its serial number
-// Arguments:      Int_t SevtSerial    -- unique subevent id
-// Results:        TObject * Subevent  -- subevent address
+// Arguments:      Int_t SevtSerial         -- unique subevent id
+// Results:        TMrbSubevent * Subevent  -- subevent address
 // Exceptions:
 // Description:    Loops thru the list of subevents to find specified id.
 // Keywords:
@@ -900,14 +900,14 @@ TObject * TMrbConfig::FindSubevent(Int_t SevtSerial) const {
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindSubevent(TClass * Class, TObject * After) const {
+TMrbSubevent * TMrbConfig::FindSubevent(TClass * Class, TMrbSubevent * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindSubevent
 // Purpose:        Find a subevent by its class
-// Arguments:      TClass * Class      -- class
-//                 TObject * After     -- subevent addr from last call
-// Results:        TObject * Subevent  -- subevent address
+// Arguments:      TClass * Class           -- class
+//                 TMrbSubevent * After     -- subevent addr from last call
+// Results:        TMrbSubevent * Subevent  -- subevent address
 // Exceptions:
 // Description:    Loops thru the list of subevents to find specified class.
 // Keywords:
@@ -1090,13 +1090,13 @@ const Char_t * TMrbConfig::GetProcType(Bool_t Verbose) {
 	return(fProcType.Data());
 }
 
-Bool_t TMrbConfig::CheckModuleAddress(TObject * Module, Bool_t WrnOnly) const {
+Bool_t TMrbConfig::CheckModuleAddress(TMrbModule * Module, Bool_t WrnOnly) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::CheckModuleAddress
 // Purpose:        Check if module address or position is legal
-// Arguments:      TObject * Module  -- module address
-//                 Bool_t WrnOnly    -- give warning only
+// Arguments:      TMrbModule * Module  -- module address
+//                 Bool_t WrnOnly       -- give warning only
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Checks module address or position:
@@ -1114,15 +1114,15 @@ Bool_t TMrbConfig::CheckModuleAddress(TObject * Module, Bool_t WrnOnly) const {
 	UInt_t startAddr, sa;
 	UInt_t endAddr, ea;
 
-	mType = ((TMrbModule *) Module)->GetType()->GetIndex() & (TMrbConfig::kModuleCamac | TMrbConfig::kModuleVME);
+	mType = Module->GetType()->GetIndex() & (TMrbConfig::kModuleCamac | TMrbConfig::kModuleVME);
 	if (mType == TMrbConfig::kModuleCamac) {							// camac module
 		cnaf = ((TMrbCamacModule *) Module)->GetPosition(); 			// get camac B.C.N
 		camac = (TMrbCamacModule *) this->FindModuleByType(TMrbConfig::kModuleCamac);
 		while (camac) { 												// step thru list of camac modules
 			if (camac != Module && camac->GetMbsBranchNo() == ((TMrbModule *) Module)->GetMbsBranchNo()) {
 				if (cnaf.CompareTo(camac->GetPosition()) == 0) {			// same B.C.N: check if subdevice
-					if	((((TMrbModule *) Module)->GetModuleID()->GetIndex() != camac->GetModuleID()->GetIndex())
-					||	 (((TMrbModule *) Module)->GetSubDevice() == camac->GetSubDevice())) {	// id different or subdevice same
+					if	((Module->GetModuleID()->GetIndex() != camac->GetModuleID()->GetIndex())
+					||	 (Module->GetSubDevice() == camac->GetSubDevice())) {	// id different or subdevice same
 						gMrbLog->Wrn()	<< Module->GetName() << ": Camac slot " << cnaf
 										<< " already occupied by module " << camac->GetName()
 										<< " (" << camac->GetTitle() << ")" << endl;
@@ -1160,14 +1160,14 @@ Bool_t TMrbConfig::CheckModuleAddress(TObject * Module, Bool_t WrnOnly) const {
 	return(kTRUE);
 }
 
-TObject * TMrbConfig::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After) const {
+TMrbModule * TMrbConfig::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TMrbModule * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindModuleByID
 // Purpose:        Find a module by its id
-// Arguments:      EMrbModuleID ModuleID  -- module id
-//                 TObject * After        -- search to be started after this module
-// Results:        TObject * Module       -- module address
+// Arguments:      EMrbModuleID ModuleID     -- module id
+//                 TMrbModule * After        -- search to be started after this module
+// Results:        TMrbModule * Module       -- module address
 // Exceptions:
 // Description:    Loops thru the list of modules to find
 //                 next module having specified id
@@ -1188,14 +1188,14 @@ TObject * TMrbConfig::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject 
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindModuleByType(UInt_t ModuleType, TObject * After) const {
+TMrbModule * TMrbConfig::FindModuleByType(UInt_t ModuleType, TMrbModule * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindModuleByType
 // Purpose:        Find a module by its type
 // Arguments:      UInt_t ModuleType        -- module type
-//                 TObject * After          -- search to be started after this module
-// Results:        TObject * Module         -- module address
+//                 TMrbModule * After       -- search to be started after this module
+// Results:        TMrbModule * Module      -- module address
 // Exceptions:
 // Description:    Loops thru the list of modules to find
 //                 next module having specified type
@@ -1215,14 +1215,14 @@ TObject * TMrbConfig::FindModuleByType(UInt_t ModuleType, TObject * After) const
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindModuleByCrate(Int_t Crate, TObject * After) const {
+TMrbModule * TMrbConfig::FindModuleByCrate(Int_t Crate, TMrbModule * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindModuleByCrate
 // Purpose:        Find a module by crate number
 // Arguments:      Int_t Crate              -- crate number
-//                 TObject * After          -- search to be started after this module
-// Results:        TObject * Module         -- module address
+//                 TMrbModule * After       -- search to be started after this module
+// Results:        TMrbModule * Module      -- module address
 // Exceptions:
 // Description:    Loops thru the list of modules to find
 //                 next module in specified crate
@@ -1242,13 +1242,13 @@ TObject * TMrbConfig::FindModuleByCrate(Int_t Crate, TObject * After) const {
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindModuleBySerial(Int_t ModuleSerial) const {
+TMrbModule * TMrbConfig::FindModuleBySerial(Int_t ModuleSerial) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindModuleBySerial
 // Purpose:        Find a module by its unique serial number
 // Arguments:      Int_t ModuleSerial       -- serial number
-// Results:        TObject * Module         -- module address
+// Results:        TMrbModule * Module      -- module address
 // Exceptions:
 // Description:    Loops thru the list of modules to find
 //                 specified serial number
@@ -1264,26 +1264,28 @@ TObject * TMrbConfig::FindModuleBySerial(Int_t ModuleSerial) const {
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindScalerByCrate(Int_t Crate, TObject * After) const {
+TMrbModule * TMrbConfig::FindScalerByCrate(Int_t Crate, TMrbModule * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindScalerByCrate
 // Purpose:        Find a scaler by crate number
 // Arguments:      Int_t Crate              -- crate number
-//                 TObject * After          -- search to be started after this module
-// Results:        TObject * Scaler         -- scaler address
+//                 TMrbModule * After  -- search to be started after this module
+// Results:        TMrbModule * Scaler -- scaler address
 // Exceptions:
 // Description:    Loops thru the list of scalers to find
-//                 next scaler in specified crate
+//                 next scaler in specified crate.
+//                 Returned TMrbModule object has to be casted as TMrbCamacScaler.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t ok = (After == NULL);
-	TMrbCamacScaler * scaler;
+	TMrbModule * scaler;
 	TIterator * scaIter = fLofScalers.MakeIterator();
-	while (scaler = (TMrbCamacScaler *) scaIter->Next()) {
+	while (scaler = (TMrbModule *) scaIter->Next()) {
 		if (ok) {
-			if (scaler->GetCrate() == Crate) return(scaler);
+			TMrbNamedX * type = scaler->GetType();
+			if ((type->GetIndex() & TMrbConfig::kModuleCamac) && (((TMrbCamacScaler *)scaler)->GetCrate() == Crate)) return(scaler);
 		} else {
 			ok = (scaler == After);
 		}
@@ -1418,20 +1420,20 @@ Bool_t TMrbConfig::SetControllerType(Int_t Crate, const Char_t * Type) {
 	}
 }
 
-TObject * TMrbConfig::FindParam(const Char_t * ParamName) const {
+TMrbModuleChannel * TMrbConfig::FindParam(const Char_t * ParamName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::Findparam
 // Purpose:        Find a parameter thru all subevents
-// Arguments:      Char_t * ParamName   -- param name
-// Results:        TObject * Param      -- param/channel addr
+// Arguments:      Char_t * ParamName        -- param name
+// Results:        TMrbCamacScaler * Param   -- param/channel addr
 // Exceptions:
 // Description:    Search for a parameter name throughout the system.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbSubevent * sevt;
-	TObject * param;
+	TMrbModuleChannel * param;
 
 	TIterator * sevtIter = fLofSubevents.MakeIterator();
 	while (sevt = (TMrbSubevent *) sevtIter->Next()) {
@@ -1457,9 +1459,9 @@ Bool_t TMrbConfig::HistogramExists(const Char_t * HistoName) const {
 	TMrbSubevent * sevt;
 	TIterator * sevtIter = fLofSubevents.MakeIterator();
 	while (sevt = (TMrbSubevent *) sevtIter->Next()) {
-		TObject * param;
+		TMrbModuleChannel * param;
 		TIterator * paramIter = sevt->GetLofParams()->MakeIterator();
-		while (param = paramIter->Next()) {
+		while (param = (TMrbModuleChannel *) paramIter->Next()) {
 			TString pName = param->GetName();
 			pName(0,1).ToUpper();
 			pName.Prepend("h");
@@ -4841,9 +4843,6 @@ Bool_t TMrbConfig::WriteDeadTime(const Char_t * Scaler, Int_t Interval) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbCamacScaler * sca;
-	TString pos;
-
 	if (this->DeadTimeToBeWritten()) {
 		cout	<< setred
 				<< this->ClassName() << "::WriteDeadTime(): Dead time scaler in "
@@ -4853,8 +4852,8 @@ Bool_t TMrbConfig::WriteDeadTime(const Char_t * Scaler, Int_t Interval) {
 		return(kFALSE);
 	}
 
-	sca = (TMrbCamacScaler *) fLofScalers.FindObject(Scaler);
-	if (sca == NULL) {
+	TMrbModule * module = this->FindScaler(Scaler);
+	if (module == NULL) {
 		gMrbLog->Err()	<< "No such scaler - " << Scaler << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteDeadTime");
 		return(kFALSE);
@@ -4866,6 +4865,7 @@ Bool_t TMrbConfig::WriteDeadTime(const Char_t * Scaler, Int_t Interval) {
 		return(kFALSE);
 	}
 
+	TMrbScaler * sca = (TMrbScaler *) module;
 	sca->SetDTScaler();
 	fDeadTimeInterval = Interval;
 	fDeadTimeScaler = sca;
@@ -5772,6 +5772,70 @@ Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 	return(kTRUE);
 }
 	
+void TMrbConfig::AddEvent(TMrbEvent * Evt) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::AddEvent
+// Purpose:        Add event to list
+// Arguments:      TMrbEvent * Evt   -- event
+// Results:        --
+// Exceptions:
+// Description:    Adds an event to list of events
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofEvents.Add(Evt);
+	fNofEvents++;
+}
+
+void TMrbConfig::AddSubevent(TMrbSubevent * Sevt) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::AddSubevent
+// Purpose:        Add subevent to list
+// Arguments:      TMrbEvent * Sevt   -- subevent
+// Results:        --
+// Exceptions:
+// Description:    Adds a subevent to list of subevents
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofSubevents.Add(Sevt);
+	fNofSubevents++;
+}
+
+void TMrbConfig::AddScaler(TMrbModule * Scaler) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::AddScaler
+// Purpose:        Add scaler to list
+// Arguments:      TMrbModule * Scaler   -- scaler
+// Results:        --
+// Exceptions:
+// Description:    Adds a scaler to list of scalers
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofScalers.Add(Scaler);
+	fNofScalers++;
+}
+
+void TMrbConfig::AddMux(TMrbModule * Multiplexer) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::AddMux
+// Purpose:        Add (Mesytec) multiplexer to list
+// Arguments:      TMrbMesytec_Mux16 * Multiplexer   -- multiplexer
+// Results:        --
+// Exceptions:
+// Description:    Adds a multiplexer to list of multiplexers
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofMuxs.Add(Multiplexer);
+	fNofMuxs++;
+}
+
 void TMrbConfig::AddToTagList(const Char_t * CodeFile, Int_t TagIndex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

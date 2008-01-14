@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXMLCodeElem.cxx,v 1.4 2008-01-11 07:21:29 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.cxx,v 1.5 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -14,6 +14,7 @@
 
 #include "TMrbLogger.h"
 #include "TMrbXMLCodeElem.h"
+#include "TMrbXMLCodeGen.h"
 
 #include "SetColor.h"
 
@@ -21,7 +22,7 @@ ClassImp(TMrbXMLCodeElem)
 
 extern TMrbLogger * gMrbLog;
 
-TMrbXMLCodeElem::TMrbXMLCodeElem(TMrbNamedX * Element, Int_t NestingLevel)
+TMrbXMLCodeElem::TMrbXMLCodeElem(TMrbNamedX * Element, Int_t NestingLevel, TMrbXMLCodeGen * Parser)
 				: TMrbNamedX(Element ? Element->GetIndex() : 0, Element ? Element->GetName() : "") {
 									
 //__________________________________________________________________[C++ CTOR]
@@ -38,6 +39,7 @@ TMrbXMLCodeElem::TMrbXMLCodeElem(TMrbNamedX * Element, Int_t NestingLevel)
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("sax.log");
+	fParser = Parser;
 	fParent = (TMrbXMLCodeElem *) Element->GetAssignedObject();
 	fNestingLevel = NestingLevel;
 	fCode = "";
@@ -344,6 +346,33 @@ void TMrbXMLCodeElem::ClearSubst() {
 	}
 }
 
+Bool_t TMrbXMLCodeElem::RequestLofItems(const Char_t * Tag, const Char_t * ItemName, TString & LofItems) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::RequestLofItems
+// Purpose:        Ask client for a list of items
+// Arguments:      Char_t * Tag    -- current tag
+//                 Char_t * ItemName  -- name of item
+//                 TString & LofItems -- list of item values
+// Results:        kTRUE/kFALSE
+// Description:    Interface to client object: Call for item values
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fParser) {
+		TMrbXMLCodeClient * client = fParser->Client();
+		if (client) {
+			return(client->ProvideLofItems(Tag, ItemName, LofItems));
+		} else {
+			gMrbLog->Err() << "No client connected - can't get item values for tag=\"" << Tag << "\", item=\"" << ItemName << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "RequestLofItems");
+			return(kFALSE);
+		}
+	} else {
+		gMrbLog->Err() << "No XML parser connected - can't get item values for tag=\"" << Tag << "\", item=\"" << ItemName << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "RequestLofItems");
+		return(kFALSE);
+	}
+}
 Bool_t TMrbXMLCodeElem::ProcessElement(const Char_t * ElemName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -648,7 +677,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_If() {
 		TString tag;
 		if (!this->InheritTag(tag)) return(kFALSE);
 		TString flagVal;
-		if (!this->RequestFlag(tag.Data(), flag.Data(), flagVal)) return(kFALSE);
+		if (!this->RequestConditionFlag(tag.Data(), flag.Data(), flagVal)) return(kFALSE);
 		if (flagVal.CompareTo("TRUE") != 0) return(kFALSE);
 	}
 	Bool_t err = !this->CopyCodeToParent();
@@ -1001,13 +1030,4 @@ void TMrbXMLCodeElem::Debug(ostream & Out, TString & FocusOnElement, TString & F
 void TMrbXMLCodeElem::Indent(ostream & Out) {
 	Out << Form("[%2d]", fNestingLevel);
 	for (Int_t i = 0; i < fNestingLevel; i++) Out << "  ";
-}
-
-Bool_t TMrbXMLCodeElem::RequestLofItems(const Char_t * Tag, const Char_t * ItemName, TString & LofItems) {
-	cout << "Enter list of items:" << endl;
-	cout << "   Tag:    " << Tag << endl;
-	cout << "   Item:   " << ItemName << endl;
-	cout << "   >> ";
-	cin >> LofItems;
-	return(kTRUE);
 }

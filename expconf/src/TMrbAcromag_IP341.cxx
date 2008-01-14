@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAcromag_IP341.cxx,v 1.7 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAcromag_IP341.cxx,v 1.8 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -169,7 +169,7 @@ Bool_t TMrbAcromag_IP341::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbMo
 
 
 Bool_t TMrbAcromag_IP341::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TObject * Channel,
+															TMrbVMEChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -177,7 +177,7 @@ Bool_t TMrbAcromag_IP341::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMo
 // Purpose:        Write a piece of code for an Acromag 9660 module
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 TMrbVMEChannel * Channel     -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -185,10 +185,7 @@ Bool_t TMrbAcromag_IP341::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMo
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbVMEChannel * chn;
 	TString mnemoLC, mnemoUC;
-
-	chn = (TMrbVMEChannel *) Channel;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "
@@ -215,8 +212,8 @@ Bool_t TMrbAcromag_IP341::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMo
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;

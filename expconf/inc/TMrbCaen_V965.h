@@ -8,7 +8,7 @@
 // Class:          TMrbCaen_V965        -- 32 chn QDC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V965.h,v 1.2 2006-11-17 13:15:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V965.h,v 1.3 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -26,6 +26,9 @@ namespace std {} using namespace std;
 #include "TObject.h"
 
 #include "TMrbVMEModule.h"
+
+class TMrbSubevent;
+class TMrbVMEChannel;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -105,14 +108,14 @@ class TMrbCaen_V965 : public TMrbVMEModule {
 		~TMrbCaen_V965() {};												// default dtor
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbVMEChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		virtual inline const Char_t * GetMnemonic() const { return("caen_v965"); }; 	// module mnemonic
 
 		inline void SetFFMode(Bool_t FFFlag = kTRUE) { fFFMode = FFFlag; };
 		inline Bool_t IsFFMode() const { return(fFFMode); };
 
-		virtual Bool_t CheckSubeventType(TObject * Subevent) const;		// check if subevent type is [10,4x]
+		virtual Bool_t CheckSubeventType(TMrbSubevent * Subevent) const;		// check if subevent type is [10,4x]
 
 		inline Bool_t HasRandomReadout() const { return(kFALSE); };
 

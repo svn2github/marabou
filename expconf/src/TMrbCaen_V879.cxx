@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V879.cxx,v 1.6 2006-11-21 12:43:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V879.cxx,v 1.7 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -349,7 +349,7 @@ Bool_t TMrbCaen_V879::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 
 
 Bool_t TMrbCaen_V879::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TObject * Channel,
+															TMrbVMEChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -357,7 +357,7 @@ Bool_t TMrbCaen_V879::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 // Purpose:        Write a piece of code for a caen adc/tac
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TObject * Channel            -- channel
+//                 TMrbVMEChannel * Channel     -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -365,10 +365,7 @@ Bool_t TMrbCaen_V879::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbVMEChannel * chn;
 	TString mnemoLC, mnemoUC;
-
-	chn = (TMrbVMEChannel *) Channel;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "
@@ -383,14 +380,14 @@ Bool_t TMrbCaen_V879::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 
 	switch (TagIndex) {
 		case TMrbConfig::kModuleInitChannel:
-			if (chn->IsUsed())	fCodeTemplates.InitializeCode("%U%");
+			if (Channel->IsUsed())	fCodeTemplates.InitializeCode("%U%");
 			else				fCodeTemplates.InitializeCode("%N%");
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
-			fCodeTemplates.Substitute("$lowerThresh", chn->Get(TMrbCaen_V879::kRegThresh));
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$lowerThresh", Channel->Get(TMrbCaen_V879::kRegThresh));
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleWriteSubaddr:
@@ -405,8 +402,8 @@ Bool_t TMrbCaen_V879::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$moduleSerial", this->GetSerial());
-			fCodeTemplates.Substitute("$chnName", chn->GetName());
-			fCodeTemplates.Substitute("$chnNo", chn->GetAddr());
+			fCodeTemplates.Substitute("$chnName", Channel->GetName());
+			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
@@ -414,7 +411,7 @@ Bool_t TMrbCaen_V879::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 	return(kTRUE);
 }
 
-Bool_t TMrbCaen_V879::CheckSubeventType(TObject * Subevent) const {
+Bool_t TMrbCaen_V879::CheckSubeventType(TMrbSubevent * Subevent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCaen_V879::CheckSubeventType
@@ -427,12 +424,9 @@ Bool_t TMrbCaen_V879::CheckSubeventType(TObject * Subevent) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbSubevent *sevt;
-
-	sevt = (TMrbSubevent *) Subevent;
-	if (sevt->GetType() != 10) return(kFALSE);
-	if (sevt->GetSubtype() < 41 || sevt->GetSubtype() > 49) return(kFALSE);
-	else													return(kTRUE);
+	if (Subevent->GetType() != 10) return(kFALSE);
+	if (Subevent->GetSubtype() < 41 || Subevent->GetSubtype() > 49) return(kFALSE);
+	else															return(kTRUE);
 }
 
 Bool_t TMrbCaen_V879::SetRange(Int_t Slope, Int_t Offset) {

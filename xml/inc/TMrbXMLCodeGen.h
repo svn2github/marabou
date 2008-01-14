@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeGen    -- Marabou's SAX parser implementation
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeGen.h,v 1.2 2008-01-11 07:21:29 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeGen.h,v 1.3 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -22,7 +22,10 @@ namespace std {} using namespace std;
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
+
 #include "TMrbXMLCodeElem.h"
+#include "TMrbXMLCodeClient.h"
+
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -36,7 +39,7 @@ class TMrbXMLCodeGen: public TObject {
 
 	public:
 
-    	TMrbXMLCodeGen(const Char_t * XmlFile);
+    	TMrbXMLCodeGen(const Char_t * XmlFile = NULL, TMrbXMLCodeClient * Client = NULL);
 		virtual ~TMrbXMLCodeGen() {};
 
 		void OnStartDocument() {};
@@ -50,11 +53,14 @@ class TMrbXMLCodeGen: public TObject {
 		void OnFatalError(const char * Msg);
 		void OnCdataBlock(const char * Data, Int_t Length) {};
 
+		Bool_t ParseFile(const Char_t * XmlFile); 	// parse xml data
+
+		inline TMrbXMLCodeClient * Client() { return(fClient); };
+		inline void ConnectToClient(TMrbXMLCodeClient * Client) { fClient = Client; }; // connect to client object
 
 	protected:
 
 		void Initialize();							// initialize
-		Bool_t ParseFile(const Char_t * XmlFile); 	// parse xml data
 
 	protected:
 
@@ -69,6 +75,8 @@ class TMrbXMLCodeGen: public TObject {
 		TString fDebugFocusOnElement; 	// debug focus on element: off | <elem>
 		TString fDebugFocusOnTag;		// debug focus on tag: off | <tag>
 		TString fDebugOutput;			// debug output: cout | <file>
+
+		TMrbXMLCodeClient * fClient;	// client connect to code generator
 
 	ClassDef(TMrbXMLCodeGen, 1) 		// [XML] code generator
 };
