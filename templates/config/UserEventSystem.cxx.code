@@ -99,6 +99,13 @@ Bool_t %%USER_EVENT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 
 	if (fReplayMode) {
 		if (!this->IsFakeMode()) nofEntries = (Int_t) fTreeIn->GetEntries();
+
+		if (nofEntries == 0) {
+			gMrbLog->Err()	<< "No events found in tree - " << fTreeIn->GetName() << endl;
+			gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+			return(kFALSE);
+		}
+
 		startEvent = IOSpec->GetStartEvent();
 		stopEvent = IOSpec->GetStopEvent();
 

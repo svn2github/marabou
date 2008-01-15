@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.83 2007-10-25 17:24:12 Marabou Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.84 2008-01-15 08:32:24 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1204,13 +1204,17 @@ void TMrbAnalyze::PrintStartStop(TUsrEvtStart * StartEvent, TUsrEvtStop * StopEv
 		StartEvent->Print("START Acquisition");
 		StopEvent->GetTreeIn()->GetEvent(0);
 		StopEvent->Print("STOP Acquisition");
-		runTime = StopEvent->GetTime() - StartEvent->GetTime();
-		Int_t h = runTime / 3600;
-		runTime = runTime % 3600;
-		Int_t m = runTime / 60;
-		Int_t s = runTime % 60;
-		cout	<< setblue
-				<< "Runtime             :   " << h << ":" << m << ":" << s << endl;
+		Int_t stop = StopEvent->GetTime();
+		Int_t start = StartEvent->GetTime();
+		if (stop > start) {
+			runTime = StopEvent->GetTime() - StartEvent->GetTime();
+			Int_t h = runTime / 3600;
+			runTime = runTime % 3600;
+			Int_t m = runTime / 60;
+			Int_t s = runTime % 60;
+			cout	<< setblue
+					<< "Runtime             :   " << h << ":" << m << ":" << s << endl;
+		}
 		cout	<< setblue
 				<< "--------------------------------------------------------------------------------"
 				<< setblack << endl;

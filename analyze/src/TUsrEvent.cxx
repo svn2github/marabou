@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvent.cxx,v 1.4 2007-08-08 11:16:00 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvent.cxx,v 1.5 2008-01-15 08:32:24 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -14,6 +14,8 @@
 #include "TUsrEvent.h"
 #include "mbsio_protos.h"
 #include "SetColor.h"
+
+extern TMrbLogger * gMrbLog;					// message logger
 
 ClassImp(TUsrEvent)
 
@@ -28,6 +30,8 @@ TUsrEvent::TUsrEvent() {
 // Description:    Class constructor
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
 	fBranch = NULL;
 	fTreeOut = NULL;
@@ -202,8 +206,14 @@ void TUsrEvent::Print(const Char_t * Text, UInt_t TimeStamp) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (TimeStamp == 0) TimeStamp = fClockSecs;
-	TDatime d;
-	d.Set((UInt_t) TimeStamp, kFALSE);
-	cout	<< setblue << this->ClassName() << "::Print(): " << Text << " at " << d.AsString() << setblack << endl;
+	if (TimeStamp > 0) {
+		TDatime d;
+		d.Set((UInt_t) TimeStamp, kFALSE);
+		gMrbLog->Out() << Text << " at " << d.AsString() << endl;
+		gMrbLog->Flush(this->ClassName(), "Print", setblue);
+	} else {
+		gMrbLog->Wrn() << Text << ": No time stamp given" << endl;
+		gMrbLog->Flush(this->ClassName(), "Print");
+	}
 }
 
