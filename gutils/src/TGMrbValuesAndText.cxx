@@ -44,7 +44,7 @@ namespace std {} using namespace std;
 
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-// General purpose dialog widget to request input of a text string       // 
+// General purpose dialog widget to request input of a text string       //
 // and any number of ints, floats, colors etc. arranged in a table       //
 // each optionally with a checkbutton                                    //
 // The string input part implements a history and text completion        //
@@ -69,6 +69,7 @@ namespace std {} using namespace std;
 // ColorSelect : Color_t																 //
 // RadioButton : radio button 														 //
 // CheckButton : check button 														 //
+// Exec_Button : only emit signal button clicked								 //
 // FileRequest : file name (invokes file dialog)								 //
 // FileContReq : invoke file dialog and present listbox with content		 //
 //             : arg: filename | classname | object name                 //
@@ -100,7 +101,7 @@ namespace std {} using namespace std;
 // void ** valpointers  array with pointers to the requested values  	 //
 // TArrayI * Flags      pointer to integer array of flags, a checkbutton //
 //                      is added to each value  								 //
-// Char_t * flaglabel   label of the (opotional)flags / checkbuttons 	 // 
+// Char_t * flaglabel   label of the (opotional)flags / checkbuttons 	 //
 //                      column														 //
 // Char_t * helptext    helptext displayed when pressing (optional)  	 //
 //                      Help button 												 //
@@ -128,7 +129,7 @@ namespace std {} using namespace std;
 //extern Int_t Matches(TList * list, const char * s, Int_t * matchlength);
 //________________________________________________________________________________________
 
-Ssiz_t IndexOfLastSpecial(TString &str) 
+Ssiz_t IndexOfLastSpecial(TString &str)
 {
    // return index  of not (letter, number or _ ) in str searching backwards
    // Skip ::
@@ -147,7 +148,7 @@ Ssiz_t IndexOfLastSpecial(TString &str)
       if (indspc == 0) {
          if (sp[ind] != c) return ind;
          if (sp[ind] == c && (sp[ind -1] != c || ind == 0)) {
-            if (ind == 0) cout << setred 
+            if (ind == 0) cout << setred
                          << "Warning: Expression begins with ':' "
                          << setblack << endl;
             return ind;
@@ -157,10 +158,10 @@ Ssiz_t IndexOfLastSpecial(TString &str)
       ind--;
    }
    return -1;
-} 
+}
 //________________________________________________________________________________________
 
-Ssiz_t IndexOfLast(TString &str, char &c) 
+Ssiz_t IndexOfLast(TString &str, char &c)
 {
    // return index of detached char c in str searching backwards
    if (str.Index(c) < 0) return -1;    // no occurence
@@ -174,7 +175,7 @@ Ssiz_t IndexOfLast(TString &str, char &c)
       if (sp[ind+1] == c)ind--;
    }
    return -1;
-} 
+}
 //________________________________________________________________________________________
 
 Int_t Matches(TList * list, const char * s, Int_t * matchlength)
@@ -190,7 +191,7 @@ Int_t Matches(TList * list, const char * s, Int_t * matchlength)
 //        cout << "Input: " << s << " matches: " << var << endl;
          if (pos >=0) unique = kFALSE;
          pos = i;
-         if (var.Length() < lmax) lmax = var.Length(); 
+         if (var.Length() < lmax) lmax = var.Length();
          *matchlength = var.Length();
       }
    }
@@ -214,10 +215,10 @@ Int_t Matches(TList * list, const char * s, Int_t * matchlength)
                   *matchlength = lm;
 //                  cout << "pso, lm: " << pos << " " << lm << endl;
                   return pos;
-               } 
+               }
             }
          }
-         lm++;    
+         lm++;
       }
    }
    *matchlength = lmax;
@@ -234,7 +235,7 @@ Int_t Matches(TList * list, const char * s, Int_t * matchlength)
 ClassImp(TGedAlignSelect)
 ClassImp(TGedAlignPopup)
 
-EWidgetMessageTypes kC_ALIGNSEL = (EWidgetMessageTypes)1001, 
+EWidgetMessageTypes kC_ALIGNSEL = (EWidgetMessageTypes)1001,
                     kALI_SELCHANGED = (EWidgetMessageTypes)2;
 
 
@@ -690,7 +691,7 @@ void TGedAlignSelect::SetAlignStyle(Style_t alignStyle)
 void TGedAlignSelect::SavePrimitive(ostream &out, Option_t *)
 #else
 void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *)
-#endif 
+#endif
 {
    // Save the pattern select widget as a C++ statement(s) on output stream out
 
@@ -701,21 +702,21 @@ void TGedAlignSelect::SavePrimitive(ofstream &out, Option_t *)
 //________________________________________________________________________________________
 
 enum buttonId {kIdOk = 101, kIdCancel = 102, kIdHelp = 103, kIdClearHist = 104,
-               kIdText = 201, kIdFileName = 202, kIdTextValue = 301, 
+               kIdText = 201, kIdFileName = 202, kIdTextValue = 301,
                kIdTextSelect, kIdListBoxReq = 401,
-               kIdFileDialog = 4, kIdFileDialogCont = 5, kIdFontS = 6, kIdCommand = 7, 
-               kIdLineS, kIdArrowS, kIdAlignS, kIdMarkS, kIdFillS};
- 
+               kIdFileDialog = 4, kIdFileDialogCont = 5, kIdFontS = 6, kIdCommand = 7,
+					kIdExec, kIdLineS, kIdArrowS, kIdAlignS, kIdMarkS, kIdFillS};
+
 ClassImp(TGMrbValuesAndText)
 
 //________________________________________________________________________________________
 
-TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text, 
+TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                   Int_t * ok, Int_t win_width, const TGWindow *Win,
                   const char * FileName, TList * complist,
                   TList * RowLabels, void **val_pointers,
                   TArrayI * Flags, const char * Flagslabel,
-                  const char *helptext, TObject * calling_class, 
+                  const char *helptext, TObject * calling_class,
                   const char * cname, Int_t id):
 							    TGTransientFrame(gClient->GetRoot(), Win, 10, 10)
 {
@@ -740,6 +741,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    fWidgets = new TList;
    fFlagButtons = new TList;
 //   fFinis = 0;
+   SetBit(kMustCleanup);
    fEmitClose = kTRUE;
    fListBox = NULL;
    fLabels = RowLabels;
@@ -765,15 +767,15 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    TString CancelCmd;
    Bool_t has_commands = kFALSE;
    fCallClose = kTRUE;
-   
+
    if (calling_class != NULL && win_width > 0) {
       this->Connect("CloseDown(Int_t)",cname, calling_class, "CloseDown(Int_t)");
-      this->Connect("CRButtonPressed(Int_t, Int_t, TObject*)", cname, calling_class, "CRButtonPressed(Int_t, Int_t, TObject*)"); 
+      this->Connect("CRButtonPressed(Int_t, Int_t, TObject*)", cname, calling_class, "CRButtonPressed(Int_t, Int_t, TObject*)");
    }
    if (win_width < 0) {
       fCallClose = kFALSE;
       win_width *= -1;
-   } 
+   }
 
 //   cout << "win_width " <<win_width << endl;
 
@@ -834,11 +836,11 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
              hframe = NULL;
          }
          if (hframe == NULL) {
-            hframe = new TGCompositeFrame(this, win_width, 20, kHorizontalFrame);  
+            hframe = new TGCompositeFrame(this, win_width, 20, kHorizontalFrame);
             fWidgets->Add(hframe);
          }
-         if (!l.BeginsWith("CommandButt")) {
-// label 
+         if (!l.BeginsWith("CommandButt") && !l.BeginsWith("Exec_Button")) {
+// label
             TString lab(l);
             if (lab.Length() > 12) {
                lab.Remove(0,12);
@@ -852,53 +854,16 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
 //            if (l.BeginsWith("CheckButton") || l.BeginsWith("RadioButton"))
 //               hframe->AddFrame(label, l3);
- //           else 
+ //           else
 //             save space but allow for non vertical align
 //               if (l[11] == '+' || l[11] == '-')
 //                  hframe->AddFrame(label, l1);
-//               else 
+//               else
 //                  hframe->AddFrame(label, l3);
          }
 
          if (l.BeginsWith("Comment")) {
             label->ChangeBackground(wheat);
-
-         } else if (l.BeginsWith("CheckButton")) {
-            cbutton = new TGCheckButton(hframe, new TGHotString(""), i + 1000);
-            Int_t state = *(Int_t*)fValPointers[i];
-            if (state != 0) cbutton->SetState(kButtonDown);
-            else                    cbutton->SetState(kButtonUp);
-//            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
-            cbutton->Resize(win_width / 6, cbutton->GetDefaultHeight());
-            fWidgets->Add(cbutton);
-            fEntries->Add(cbutton);
-            cbutton->Associate(this);
-            hframe->AddFrame(cbutton, locy);
-//            if (calling_class)
-//               cbutton->Connect("Clicked()", cname, calling_class, "ButtonPressed()"); 
-         } else if (l.BeginsWith("RadioButton")) {
-            cbutton = new TGRadioButton(hframe, new TGHotString(""), i + 1000);
-            Int_t state = *(Int_t*)fValPointers[i];
-            if (state != 0) cbutton->SetState(kButtonDown);
-            else                    cbutton->SetState(kButtonUp);
-//            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
-            cbutton->Resize(win_width / 6, cbutton->GetDefaultHeight());
-            fWidgets->Add(cbutton);
-            fEntries->Add(cbutton);
-            cbutton->Associate(this);
-            hframe->AddFrame(cbutton, locy);
-//            if (calling_class)
-//               cbutton->Connect("Clicked()", cname, calling_class, "ButtonPressed()");  
-       } else if (l.BeginsWith("ColorSelect")) {
-            Int_t col = GetColorPixelByInd(*(Color_t*)fValPointers[i]);
-            cbutton = new TGColorSelect(hframe, col, i + 1000);
-//            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
-//            cbutton->Resize(win_width / 4, cbutton->GetDefaultHeight());
-            fWidgets->Add(cbutton);
-            fEntries->Add(cbutton);
-            cbutton->Associate(this);
-            hframe->AddFrame(cbutton, loc);
-            fLastColorSelect = i;          // TGColor doesnt set Id correctly
 
          } else if (l.BeginsWith("CommandButt")) {
             TString *sr = (TString*)fValPointers[i];
@@ -916,6 +881,55 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             hframe->AddFrame(cbutton, lo1);
             has_commands = kTRUE;
             cbutton->Associate(this);
+
+         } else if (l.BeginsWith("Exec_Button")) {
+            TString lab(l);
+            lab.Remove(0,12);
+            cbutton = new TGTextButton(hframe, new TGHotString(lab.Data()), i + 1000*kIdExec);
+            cbutton->SetForegroundColor(blue);
+            ((TGTextButton*)cbutton)->SetFont("-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
+            cbutton->SetBackgroundColor(lblue);
+            cbutton->Resize(win_width / 6, cbutton->GetDefaultHeight());
+            fWidgets->Add(cbutton);
+            fEntries->Add(cbutton);
+            cbutton->Associate(this);
+            hframe->AddFrame(cbutton, locy);
+
+         } else if (l.BeginsWith("CheckButton")) {
+            cbutton = new TGCheckButton(hframe, new TGHotString(""), i + 1000);
+            Int_t state = *(Int_t*)fValPointers[i];
+            if (state != 0) cbutton->SetState(kButtonDown);
+            else                    cbutton->SetState(kButtonUp);
+            cbutton->Resize(win_width / 6, cbutton->GetDefaultHeight());
+            fWidgets->Add(cbutton);
+            fEntries->Add(cbutton);
+            cbutton->Associate(this);
+            hframe->AddFrame(cbutton, locy);
+//            if (calling_class)
+//               cbutton->Connect("Clicked()", cname, calling_class, "ButtonPressed()");
+         } else if (l.BeginsWith("RadioButton")) {
+            cbutton = new TGRadioButton(hframe, new TGHotString(""), i + 1000);
+            Int_t state = *(Int_t*)fValPointers[i];
+            if (state != 0) cbutton->SetState(kButtonDown);
+            else                    cbutton->SetState(kButtonUp);
+//            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
+            cbutton->Resize(win_width / 6, cbutton->GetDefaultHeight());
+            fWidgets->Add(cbutton);
+            fEntries->Add(cbutton);
+            cbutton->Associate(this);
+            hframe->AddFrame(cbutton, locy);
+//            if (calling_class)
+//               cbutton->Connect("Clicked()", cname, calling_class, "ButtonPressed()");
+       } else if (l.BeginsWith("ColorSelect")) {
+            Int_t col = GetColorPixelByInd(*(Color_t*)fValPointers[i]);
+            cbutton = new TGColorSelect(hframe, col, i + 1000);
+//            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
+//            cbutton->Resize(win_width / 4, cbutton->GetDefaultHeight());
+            fWidgets->Add(cbutton);
+            fEntries->Add(cbutton);
+            cbutton->Associate(this);
+            hframe->AddFrame(cbutton, loc);
+            fLastColorSelect = i;          // TGColor doesnt set Id correctly
          } else if (l.BeginsWith("Mark_Select")) {
             Style_t fMarker = *(Style_t*)fValPointers[i];
             fMarkerSelect = new TGedMarkerSelect(hframe, fMarker, i + 1000*kIdMarkS);
@@ -992,7 +1006,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else if (l.BeginsWith("Float_Value")) {
 //               scol = Form("%f", *(Float_t*)fValPointers[i]);
             Double_t neval = *(Float_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESReal); 
+            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESReal);
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hframe->AddFrame(tnentry, l2);
 			   fWidgets->Add(tnentry);
@@ -1001,7 +1015,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else if (l.BeginsWith("DoubleValue")) {
 //               scol = Form("%g", *(Double_t*)fValPointers[i]);
             Double_t neval = *(Double_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hframe,neval, 5,  i + 1000, TGNumberFormat::kNESReal); 
+            tnentry = new TGNumberEntry(hframe,neval, 5,  i + 1000, TGNumberFormat::kNESReal);
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hframe->AddFrame(tnentry, l2);
 			   fWidgets->Add(tnentry);
@@ -1011,7 +1025,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else if (l.BeginsWith("PlainIntVal")) {
 //               scol = Form("%d", *(Int_t*)fValPointers[i]);
             Double_t neval = *(Int_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESInteger ); 
+            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESInteger );
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hframe->AddFrame(tnentry, l2);
 			   fWidgets->Add(tnentry);
@@ -1020,7 +1034,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else if (l.BeginsWith("PlainShtVal")) {
 //               scol = Form("%d", *(Short_t*)fValPointers[i]);
             Double_t neval = *(Short_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESInteger ); 
+            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESInteger );
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hframe->AddFrame(tnentry, l2);
 			   fWidgets->Add(tnentry);
@@ -1047,7 +1061,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 			   fWidgets->Add(tentry);
             tentry->Associate(this);
             fEntries->Add(tentry);
-            TGPictureButton * tb = new TGPictureButton(hframe, 
+            TGPictureButton * tb = new TGPictureButton(hframe,
                          fClient->GetPicture("arrow_down.xpm"), i + 1000 * kIdFileDialog);
             tb->Resize(20, 20);
             tb->SetToolTipText("Browse");
@@ -1061,14 +1075,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             TString fname("none");
             fClassName = "TF1";
             TString ename("none");
- 
+
             scol = *(TString*)fValPointers[i];
             TObjArray * oa = scol.Tokenize("|");
             Int_t nent = oa->GetEntries();
             if (nent > 0) fname =((TObjString*)oa->At(0))->String();
             if (nent > 1) fClassName =((TObjString*)oa->At(1))->String();
             if (nent > 2) ename =((TObjString*)oa->At(2))->String();
-            fFileNameEntry = 
+            fFileNameEntry =
                new TGTextEntry(hframe, tbuf = new TGTextBuffer(100),  i + 1000*kIdFileName);
             fFileNameEntry->GetBuffer()->AddText(0, (const char *)fname);
 //            tentry->Resize(win_width/2, tentry->GetDefaultHeight());
@@ -1076,7 +1090,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 			   fWidgets->Add(fFileNameEntry);
             fFileNameEntry->Associate(this);
             fEntries->Add(fFileNameEntry);
-            TGPictureButton * tb = new TGPictureButton(hframe, 
+            TGPictureButton * tb = new TGPictureButton(hframe,
                          fClient->GetPicture("arrow_down.xpm"), i + 1000 * kIdFileDialogCont);
             tb->Resize(20, 20);
             tb->SetToolTipText("Browse");
@@ -1087,7 +1101,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 			   fWidgets->Add(tb);
             tb->Associate(this);
 //
-            fListBoxReq = new TGListBox(this,  i + 1000*kIdListBoxReq);  
+            fListBoxReq = new TGListBox(this,  i + 1000*kIdListBoxReq);
             fListBoxReq->AddEntry(ename.Data(), 0);
             fListBoxReq->Resize(win_width , 20);
             fListBoxReq->Layout();
@@ -1115,7 +1129,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    }
    TGTextButton *b;
 // create Prompt label and textentry widget
-    
+
    if (fText) {
       hframe = new TGCompositeFrame(this, win_width, 20, kHorizontalFrame);
       TGLabel *label = new TGLabel(hframe, Prompt);
@@ -1149,7 +1163,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             ifstream selections(FileName);
             TString line;
             Int_t id = 0;
-            fListBox = new TGListBox(this,  1000*kIdTextSelect);  
+            fListBox = new TGListBox(this,  1000*kIdTextSelect);
             while (1) {
                line.ReadLine(selections);
                if (selections.eof()) break;
@@ -1199,7 +1213,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //      fCancelButton = new TGTextButton(hf, "Close Dialog", kIdCancel);
 //      fCancelButton->SetEnabled(kTRUE);
 //      if (fCallClose) fCancelButton->Connect("Clicked()", cname, //calling_class, "CloseDown()");
-//   } 
+//   }
    fWidgets->AddFirst(fCancelButton);
    fCancelButton->Associate(this);
    hf->AddFrame(fCancelButton, l3);
@@ -1306,7 +1320,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
    }
    switch (GET_MSG(msg)) {
       case kC_COMMAND:
-         switch (GET_SUBMSG(msg)) { 
+         switch (GET_SUBMSG(msg)) {
              case kCM_BUTTON:
                 {
                 if (idCmd == kIdOk) {
@@ -1331,7 +1345,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 #endif
                       gClient->NeedRedraw(fListBox);
                       idButton = -1;
- 
+
                    }
                 } else if (idCmd == kIdCancel) {
                     idButton = -2;
@@ -1355,12 +1369,12 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
  //                     const char * filter[] = {"data files", "*", 0, 0};
                       fi->fFileTypes = filetypes;
    						 new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
-  						    if (fi->fFilename) { 
+  						    if (fi->fFilename) {
                          fn = fi->fFilename;
                          TString pwd(gSystem->Getenv("PWD"));
                          if (fn.BeginsWith(pwd.Data()))fn.Remove(0,pwd.Length()+1);
                          TGTextEntry *te = (TGTextEntry*)fEntries->At(entryNr);
-                
+
                          te->SetText(fn.Data());
                          gClient->NeedRedraw(te);
                          gClient->NeedRedraw(this);
@@ -1375,16 +1389,16 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                 break;
                 }
              case kCM_RADIOBUTTON:
-                {   
+                {
  //                  cout << "toggle TGRadioButtons " << parm1 << endl;
                    TIter nextent(fEntries);
                    TObject * obj;
                    Int_t i = 0;
                    while ( (obj = nextent()) ) {
-                      if (obj->InheritsFrom("TGRadioButton"))  { 
-                        if (i == idButton) 
+                      if (obj->InheritsFrom("TGRadioButton"))  {
+                        if (i == idButton)
                            ((TGRadioButton*)obj)->SetState(kButtonDown);
-                         else 
+                         else
                            ((TGRadioButton*)obj)->SetState(kButtonUp);
                       }
                       i++;
@@ -1435,11 +1449,12 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                 }
                 break;
              case kTE_ENTER:
-                cout << "kTE_ENTERparm1 " << idCmd << " kIdText" << kIdText << endl;
+//                cout << "kTE_ENTER parm1 " << idCmd << " kIdText " << kIdText << " " << fText << endl;
                 if (idCmd == kIdFileName) {
                    TString fn = fFileNameEntry->GetBuffer()->GetString();
                    UpdateRequestBox(fn);
                 }
+/*
                 if (idCmd != kIdText) break;
                 // here copy the string from text buffer to return variable
                 if (fText) {
@@ -1451,11 +1466,12 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 //                   StoreValues();
                 }
 //                delete this;
+*/
                 break;
              default:
-                if (fText && idCmd == kIdTextValue) { 
+                if (fText && idCmd == kIdTextValue) {
                    *fText = fTE->GetBuffer()->GetString();
-//                    cout << "kC_TEXTENTRY: " << GET_SUBMSG(msg) << " " 
+//                    cout << "kC_TEXTENTRY: " << GET_SUBMSG(msg) << " "
 //                    << idCmd << " " << parm2 << endl;
                 }
                 break;
@@ -1463,13 +1479,13 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
           break;
 
        default:
-//      	 if (fValPointers != NULL) 
+//      	 if (fValPointers != NULL)
 //         	 StoreValues();
           break;
    }
 //   cout << "ProcessMessage fValPointers " << fValPointers  << endl;
-//  only if a command is executed 
-   if (  GET_MSG(msg) == kC_COMMAND 
+//  only if a command is executed
+   if (  GET_MSG(msg) == kC_COMMAND
       && GET_SUBMSG(msg) == kCM_BUTTON
       && idCmd== kIdCommand) {
 //
@@ -1477,10 +1493,10 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 	   if (fFileName && fFileName.Length() > 0) this->SaveList();
       ReloadValues();
 //      StoreValues();
-   } else if (fValPointers != NULL && idButton >= 0) {
+   } else if (fValPointers != NULL && idButton >= 0  && idButton != kIdExec ) {
       StoreValues();
    }
-   if (idButton >= 0) 
+   if (idButton >= 0)
      CRButtonPressed(fWidgetId, idButton, fCallingCanvas);
    return kTRUE;
 }
@@ -1504,7 +1520,7 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname)
    TObject* obj;
    Int_t id = 0;
    while( (key = (TKey*)next()) ){
-      obj = (TObject*)key->ReadObj(); 
+      obj = (TObject*)key->ReadObj();
 //        cout << "AddEntry " << fClassName<< " " <<  obj->ClassName()<< endl;
         if (obj->InheritsFrom(fClassName)) {
          TString s(obj->GetName());
@@ -1530,16 +1546,16 @@ void TGMrbValuesAndText::StoreValues(){
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbValuesAndText::StoreValues()
 // Purpose:        Store return values
-// Arguments:  
-//             
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Arguments:
+//
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
-  
+
 //   cout << "StoreValues()" << endl;
-   
+
 //   if (fFinis != 0) return;
    if (!fEntries) return;
 
@@ -1556,7 +1572,7 @@ void TGMrbValuesAndText::StoreValues(){
        obj=nextent();
        fButtonId = i;
 //       cout << "fValue: " << objs->String() << endl;
-       if (obj->InheritsFrom("TGColorSelect")){ 
+       if (obj->InheritsFrom("TGColorSelect")){
           colsel = (TGColorSelect*)obj;
           Int_t col = colsel->GetColor();
           Color_t val =  TColor::GetColor((Int_t)col);
@@ -1578,15 +1594,15 @@ void TGMrbValuesAndText::StoreValues(){
           *(Color_t*)fValPointers[i] = val;
 
        } else if (obj->InheritsFrom("TGedAlignSelect")) {
-          Short_t align =((TGedAlignSelect*)obj)->GetAlignStyle(); 
+          Short_t align =((TGedAlignSelect*)obj)->GetAlignStyle();
           *(Short_t*)fValPointers[i] = align;
 
        } else if (obj->InheritsFrom("TGedMarkerSelect")) {
-          fMarker = ((TGedMarkerSelect*)obj)->GetMarkerStyle(); 
+          fMarker = ((TGedMarkerSelect*)obj)->GetMarkerStyle();
           *(Style_t*)fValPointers[i] = fMarker;
 
        } else if (obj->InheritsFrom("TGedPatternSelect")) {
-          Style_t sel = ((TGedPatternSelect*)obj)->GetPattern(); 
+          Style_t sel = ((TGedPatternSelect*)obj)->GetPattern();
           *(Style_t*)fValPointers[i] = sel;
 
        } else if (obj->InheritsFrom("TGComboBox")) {
@@ -1616,9 +1632,9 @@ void TGMrbValuesAndText::StoreValues(){
           Int_t state = 0;
           if (cbutton->GetState() == kButtonDown) state = 1;
           *(Int_t*)fValPointers[i] = state;
-          
+
        } else if (obj->InheritsFrom("TGNumberEntry")) {
-         
+
           TGNumberEntry * tnentry = (TGNumberEntry*)obj;
           TString tmp(objs->String());
 //           cout << "TGTextEntry " << tmp << endl;
@@ -1658,17 +1674,18 @@ void TGMrbValuesAndText::StoreValues(){
                 }
                 *sr = retstr.Data();
              } else {
+//                cout << "TGTextEntry *sr... " << tentry->GetBuffer()->GetString()<< endl;
                 *sr = tentry->GetBuffer()->GetString();
              }
           }
-       } 
+       }
 
        if (fFlags) {
           cbutton = (TGCheckButton*)fFlagButtons->At(i);
           if (cbutton->GetState() == kButtonDown) (*fFlags)[i]= 1;
           else                                    (*fFlags)[i]= 0;
        }
-       i++; 
+       i++;
    }
 }
 //_____________________________________________________________________________
@@ -1677,16 +1694,16 @@ void TGMrbValuesAndText::ReloadValues(){
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbValuesAndText::ReloadValues()
-// Purpose:        Reload values which might been modified 
+// Purpose:        Reload values which might been modified
 //                 during execution of a command
-// Arguments:  
-//             
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Arguments:
+//
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
-  
+
    if (!fEntries) return;
 
    TIter nextent(fEntries);
@@ -1699,7 +1716,7 @@ void TGMrbValuesAndText::ReloadValues(){
    while((objs = (TObjString*)next())){
        obj=nextent();
        ReloadValue(obj, objs, i);
-       i++; 
+       i++;
    }
 }
 //_____________________________________________________________________________
@@ -1708,14 +1725,14 @@ void TGMrbValuesAndText::ReloadValue(TObject * obj, TObjString *objs, Int_t ipos
 {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Purpose:        Reload value which might been modified 
+// Purpose:        Reload value which might been modified
 //                 during execution of a command
-// Arguments:  
-//             
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Arguments:
+//
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 //       cout << "fValue: " << objs->String() << endl;
 	if (obj->InheritsFrom("TGColorSelect")){
@@ -1747,7 +1764,7 @@ void TGMrbValuesAndText::ReloadValue(TObject * obj, TObjString *objs, Int_t ipos
 		if (state != 0) cbutton->SetState(kButtonDown);
 		else                    cbutton->SetState(kButtonUp);
 	} else if (obj->InheritsFrom("TGNumberEntry")) {
-		
+
 		TGNumberEntry * tnentry = (TGNumberEntry*)obj;
 		TString tmp(objs->String());
 		if (tmp.BeginsWith("DoubleValue")) {
@@ -1772,7 +1789,7 @@ void TGMrbValuesAndText::ReloadValue(TObject * obj, TObjString *objs, Int_t ipos
 			TString * sr = (TString*)fValPointers[ipos];
 			tentry->SetText(sr->Data());
 		}
-	} 
+	}
 }
 //_______________________________________________________________________________________
 
@@ -1780,7 +1797,7 @@ void TGMrbValuesAndText::SaveList()
 {
 //   cout << "enter SaveList() " << endl;
    if (fListBox == NULL) {
-      fListBox = new TGListBox(this, kIdTextSelect);           
+      fListBox = new TGListBox(this, kIdTextSelect);
       fListBox->AddEntry(fTE->GetBuffer()->GetString(), 0);
       fWidgets->AddFirst(fListBox);
       gClient->NeedRedraw(this);
@@ -1812,7 +1829,7 @@ void TGMrbValuesAndText::SaveList()
       }
    }
    if (!in) {
-      cout << "Put: " << sel.Data() << endl;
+//      cout << "Put: " << sel.Data() << endl;
       fListBox->AddEntry(sel.Data(), ne);
       Int_t wid = 8 * fTE->GetBuffer()->GetTextLength();
       fListBox->Resize(TMath::Max(wid,320), TMath::Min(200, (ne+1)*20));
@@ -1889,32 +1906,32 @@ Int_t TGMrbValuesAndText::GetColorPixelByInd(Int_t index)
 }
 //______________________________________________________________________________
 void TGMrbValuesAndText::EnableButton(Int_t id)
-{ 
+{
    TGButton *b = (TGButton *)fEntries->At(id);
    TObjString *objs = (TObjString*)fLabels->At(id);
-   if (b) b->SetEnabled(kTRUE); 
+   if (b) b->SetEnabled(kTRUE);
    ReloadValue(b, objs, id);
 };
 //______________________________________________________________________________
 
-void TGMrbValuesAndText::DisableButton(Int_t id) 
-{ 
-   TGButton *b = (TGButton *)fEntries->At(id); 
-   if (b) b->SetEnabled(kFALSE); 
+void TGMrbValuesAndText::DisableButton(Int_t id)
+{
+   TGButton *b = (TGButton *)fEntries->At(id);
+   if (b) b->SetEnabled(kFALSE);
 };
 //______________________________________________________________________________
 
-Bool_t GetStringExt(const char *Prompt, TString  *text , 
-                        Int_t win_width, TGWindow *Win,  
+Bool_t GetStringExt(const char *Prompt, TString  *text ,
+                        Int_t win_width, TGWindow *Win,
                         const char *FileName, TList * Complist,
                         TList * rowlabs, void **val_pointers,
                         TArrayI * Flags, const char * Flagslabel,
-                        const char *helptext, TObject * calling_class, 
+                        const char *helptext, TObject * calling_class,
                         const char * cname)
-{ 
+{
    Int_t ret = 0;
- 
-   new TGMrbValuesAndText(Prompt, text, &ret, win_width,  Win,  
+
+   new TGMrbValuesAndText(Prompt, text, &ret, win_width,  Win,
        FileName, Complist, rowlabs, val_pointers,Flags, Flagslabel, helptext,
        calling_class, cname);
    if(ret == 0) return kTRUE;
