@@ -1,4 +1,5 @@
-#include "TCurlyLineWithArrow.h"
+#include "TROOT.h"
+#include "THprCurlyLineWithArrow.h"
 #include "TCanvas.h"
 #include "TEnv.h"
 #include "TRootCanvas.h"
@@ -17,63 +18,99 @@ ClassImp(CurlyLineWithArrowDialog)
 CurlyLineWithArrowDialog::CurlyLineWithArrowDialog()
 {
    cout << "InsertCurlyLineWithArrow()" << endl;
-   RestoreDefaults();
-   static void *valp[25];
+static const Char_t helptext[] =
+"no help yet\n\
+";
+   gROOT->GetListOfCleanups()->Add(this);
+   fCanvas = gPad->GetCanvas();
+   TRootCanvas* win = NULL;
+   if (fCanvas)
+      win = (TRootCanvas*)fCanvas->GetCanvasImp();
    Int_t ind = 0;
+   RestoreDefaults();
+   fRow_lab = new TList();
    static TString exc("ExecuteInsert()");
-   TList * row_lab = new TList(); 
-   row_lab->Add(new TObjString("DoubleValue_Ampl"));
-   valp[ind++] = &fWaveLength;
-   row_lab->Add(new TObjString("DoubleValue+WaveL"));
-   valp[ind++] = &fAmplitude;
-   row_lab->Add(new TObjString("ColorSelect_LColor"));
-   valp[ind++] = &fColor;
-   row_lab->Add(new TObjString("PlainShtVal+LWidth"));
-   valp[ind++] = &fWidth;
-   row_lab->Add(new TObjString("LineSSelect+LStyle"));
-   valp[ind++] = &fStyle;
-   row_lab->Add(new TObjString("CheckButton_Arrow@Start"));
-   valp[ind++] = &fArrowAtStart;
-   row_lab->Add(new TObjString("CheckButton+Arrow@End"));
-   valp[ind++] = &fArrowAtEnd;
-   row_lab->Add(new TObjString("Float_Value_ArLength"));
-   valp[ind++] = &fArrowSize;
-//   row_lab->Add(new TObjString("DoubleValue+ArAngle"));
-//   valp[ind++] = &fArrowAngle;
-   row_lab->Add(new TObjString("CommandButt_Execute_Insert"));  
-   valp[ind++] = &exc;
+   TList * fRow_lab = new TList();
+   fRow_lab->Add(new TObjString("DoubleValue_Ampl"));
+   fValp[ind++] = &fWaveLength;
+   fRow_lab->Add(new TObjString("DoubleValue+WaveL"));
+   fValp[ind++] = &fAmplitude;
+   fRow_lab->Add(new TObjString("ColorSelect_LColor"));
+   fValp[ind++] = &fColor;
+   fRow_lab->Add(new TObjString("PlainShtVal+LWidth"));
+   fValp[ind++] = &fWidth;
+   fRow_lab->Add(new TObjString("LineSSelect+LStyle"));
+   fValp[ind++] = &fStyle;
+   fRow_lab->Add(new TObjString("CheckButton_Curly"));
+   fValp[ind++] = &fCurly;
+   fRow_lab->Add(new TObjString("CheckButton+Arrow@Start"));
+   fValp[ind++] = &fArrowAtStart;
+   fRow_lab->Add(new TObjString("CheckButton+Arrow@End"));
+   fValp[ind++] = &fArrowAtEnd;
+   fRow_lab->Add(new TObjString("Float_Value_ArLength"));
+   fValp[ind++] = &fArrowSize;
+//   fRow_lab->Add(new TObjString("DoubleValue+ArAngle"));
+//   fValp[ind++] = &fArrowAngle;
+   fRow_lab->Add(new TObjString("CommandButt_Execute_Insert"));
+   fValp[ind++] = &exc;
 
-   Bool_t ok; 
    Int_t itemwidth = 320;
-   TRootCanvas* rc = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
-   ok = GetStringExt("Curly Arrow Params", NULL, itemwidth, rc,
-                      NULL, NULL, row_lab, valp,
-                      NULL, NULL, NULL, this, this->ClassName());
+   static Int_t ok;
+   fDialog =
+      new TGMrbValuesAndText("Curly / Wave line with arrow", NULL, &ok,itemwidth, win,
+                      NULL, NULL, fRow_lab, fValp,
+                      NULL, NULL, helptext, this, this->ClassName());
 }
 //_________________________________________________________________________
-            
-CurlyLineWithArrowDialog::~CurlyLineWithArrowDialog() 
+
+CurlyLineWithArrowDialog::~CurlyLineWithArrowDialog()
 {
    SaveDefaults();
 };
+//_______________________________________________________________________
+
+void CurlyLineWithArrowDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void CurlyLineWithArrowDialog::CloseDialog()
+{
+//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
+   gROOT->GetListOfCleanups()->Remove(this);
+   if (fDialog) fDialog->CloseWindowExt();
+   fRow_lab->Delete();
+   delete fRow_lab;
+   delete this;
+}
 //______________________________________________________________________________
 
 void CurlyLineWithArrowDialog::ExecuteInsert()
-{   	
-//   const char * ArrowOption[] = 
+{
+//   const char * ArrowOption[] =
 //     {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
    TLine * gr = (TLine*)gPad->WaitPrimitive("TLine");
+	if (gr == NULL) {
+		cout << "Interrupted Input" << endl;
+		return;
+	}
    gr = (TLine *)gPad->GetListOfPrimitives()->Last();
    Int_t where = 0;
    if (fArrowAtStart) where += 1;
    if (fArrowAtEnd)   where += 2;
-   TCurlyLineWithArrow* cwa = 
-     new TCurlyLineWithArrow(gr->GetX1(), gr->GetY1(), gr->GetX2(), gr->GetY2(), 
+   THprCurlyLineWithArrow* cwa =
+     new THprCurlyLineWithArrow(gr->GetX1(), gr->GetY1(), gr->GetX2(), gr->GetY2(),
                              fWaveLength, fAmplitude, where, fArrowSize);
-   cwa->Draw();
+   cwa->TPolyLine::Draw();
    cwa->SetLineColor(fColor);
    cwa->SetLineWidth(fWidth);
    cwa->SetLineStyle(fStyle);
+   if (fCurly) cwa->SetCurly();
+   else        cwa->SetWavy();
    delete gr;
 //   cwa->SetDrawOption(ArrowOption[fArrowStyle]);
 //   cwa->SetOption(ArrowOption[fArrowStyle]);
@@ -88,35 +125,35 @@ void CurlyLineWithArrowDialog::SaveDefaults()
    TEnv env(".rootrc");
    env.SetValue("CurlyLineWithArrowDialog.fWaveLength" , fWaveLength );
    env.SetValue("CurlyLineWithArrowDialog.fAmplitude"  , fAmplitude  );
-   env.SetValue("CurlyLineWithArrowDialog.fColor"		 , fColor 	   ); 
+   env.SetValue("CurlyLineWithArrowDialog.fColor"		 , fColor 	   );
    env.SetValue("CurlyLineWithArrowDialog.fWidth"		 , fWidth 	   );
-   env.SetValue("CurlyLineWithArrowDialog.fStyle"      , fStyle      ); 
-   env.SetValue("CurlyLineWithArrowDialog.fArrowAngle" , fArrowAngle ); 
-   env.SetValue("CurlyLineWithArrowDialog.fArrowSize"  , fArrowSize  ); 
-   env.SetValue("CurlyLineWithArrowDialog.fArrowStyle" , fArrowStyle ); 
-   env.SetValue("CurlyLineWithArrowDialog.fArrowAtStart", fArrowAtStart ); 
-   env.SetValue("CurlyLineWithArrowDialog.fArrowAtEnd"  , fArrowAtEnd ); 
+   env.SetValue("CurlyLineWithArrowDialog.fStyle"      , fStyle      );
+   env.SetValue("CurlyLineWithArrowDialog.fArrowAngle" , fArrowAngle );
+   env.SetValue("CurlyLineWithArrowDialog.fArrowSize"  , fArrowSize  );
+   env.SetValue("CurlyLineWithArrowDialog.fArrowStyle" , fArrowStyle );
+   env.SetValue("CurlyLineWithArrowDialog.fArrowAtStart", fArrowAtStart );
+   env.SetValue("CurlyLineWithArrowDialog.fArrowAtEnd"  , fArrowAtEnd );
    env.SaveLevel(kEnvUser);
 }
 //_________________________________________________________________________
-            
+
 void CurlyLineWithArrowDialog::RestoreDefaults()
 {
    TEnv env(".rootrc");
    fWaveLength = env.GetValue("CurlyLineWithArrowDialog.fWaveLength" , 0.02);
    fAmplitude  = env.GetValue("CurlyLineWithArrowDialog.fAmplitude"  , 0.01);
-   fColor   	= env.GetValue("CurlyLineWithArrowDialog.fColor"      , 1); 
-   fStyle      = env.GetValue("CurlyLineWithArrowDialog.fStyle"      , 1); 
+   fColor   	= env.GetValue("CurlyLineWithArrowDialog.fColor"      , 1);
+   fStyle      = env.GetValue("CurlyLineWithArrowDialog.fStyle"      , 1);
    fWidth   	= env.GetValue("CurlyLineWithArrowDialog.fWidth"  	   , 2);
-   fArrowAngle = env.GetValue("CurlyLineWithArrowDialog.fArrowAngle" , 30.); 
-   fArrowSize  = env.GetValue("CurlyLineWithArrowDialog.fArrowSize"  , 0.03); 
-   fArrowStyle = env.GetValue("CurlyLineWithArrowDialog.fArrowStyle" , 3); 
-   fArrowAtStart = env.GetValue("CurlyLineWithArrowDialog.fArrowAtStart" , 0); 
-   fArrowAtEnd   = env.GetValue("CurlyLineWithArrowDialog.fArrowAtEnd" , 1); 
-} 
+   fArrowAngle = env.GetValue("CurlyLineWithArrowDialog.fArrowAngle" , 30.);
+   fArrowSize  = env.GetValue("CurlyLineWithArrowDialog.fArrowSize"  , 0.03);
+   fArrowStyle = env.GetValue("CurlyLineWithArrowDialog.fArrowStyle" , 3);
+   fArrowAtStart = env.GetValue("CurlyLineWithArrowDialog.fArrowAtStart" , 0);
+   fArrowAtEnd   = env.GetValue("CurlyLineWithArrowDialog.fArrowAtEnd" , 1);
+}
 //_________________________________________________________________________
-            
-void CurlyLineWithArrowDialog::CloseDown()
+
+void CurlyLineWithArrowDialog::CloseDown(Int_t wid)
 {
    cout << "CurlyLineWithArrowDialog::CloseDown()" << endl;
    delete this;

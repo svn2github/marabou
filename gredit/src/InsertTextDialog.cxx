@@ -2,7 +2,7 @@
 #include "TEnv.h"
 //#include "TPad.h"
 #include "TCanvas.h"
-#include "TLatex.h"
+#include "THprLatex.h"
 #include "TMarker.h"
 #include "TObjString.h"
 #include "TRegexp.h"
@@ -25,7 +25,7 @@ ClassImp(InsertTextDialog)
 
 //______________________________________________________________________________
 
-Int_t getm(TString& cmd, Int_t sind) 
+Int_t getm(TString& cmd, Int_t sind)
 {
    Int_t ind = sind;
    Int_t nbopen = 0;
@@ -39,7 +39,7 @@ Int_t getm(TString& cmd, Int_t sind)
    }
    return -1;
 }
-Int_t getmb(TString& cmd, Int_t sind) 
+Int_t getmb(TString& cmd, Int_t sind)
 {
    Int_t ind = sind;
    Int_t nclose = 0;
@@ -54,7 +54,7 @@ Int_t getmb(TString& cmd, Int_t sind)
    return -1;
 }
 //______________________________________________________________________________
-TString lat2root(TString& cmd) 
+TString lat2root(TString& cmd)
 {
 // this tries to translate standard Latex into ROOTs
 // latex like formular processor TLatex format
@@ -81,7 +81,7 @@ TString lat2root(TString& cmd)
    }
 //    make sure super / sub scripts are enclosed in {}
    TRegexp supsub("[_^]");
-   TString rep; 
+   TString rep;
    sind = 0;
    while (cmd.Index(supsub, sind) >=0) {
       ind = 1 + cmd.Index(supsub, sind);
@@ -97,7 +97,7 @@ TString lat2root(TString& cmd)
       }
    }
 
-//   add space around operators 
+//   add space around operators
 
    TRegexp oper("[-+*/=]");
    sind = 0;
@@ -110,19 +110,19 @@ TString lat2root(TString& cmd)
 
       TString le = cmd(0, ind -1);
       Int_t ob = le.Last('{');
-      if (ob > 0 && (cmd(ob-1) == '^' 
+      if (ob > 0 && (cmd(ob-1) == '^'
                  || (cmd(ob-1) == '_'))) {
          if (getm(le, ob) == - 1)  continue; // no match before
       }
       if (c != ' ' && c!= '{' && c!= '}') {
-         if (ind > -1 && ind < cmd.Length()) { 
+         if (ind > -1 && ind < cmd.Length()) {
             cmd.Insert(ind," ");
             sind += 1;
          }
       }
       if (ind > 1) {
          c = cmd[ind - 2];
-         if (c != ' ' && c!= '{' && c!= '}') { 
+         if (c != ' ' && c!= '{' && c!= '}') {
             cmd.Insert(ind-1," ");
             sind += 1;
          }
@@ -174,101 +174,132 @@ TString lat2root(TString& cmd)
 }
 //___________________________________________________________________________
 
-InsertTextDialog::InsertTextDialog(Bool_t from_file) 
+InsertTextDialog::InsertTextDialog(Bool_t from_file)
 {
-   static void *valp[25];
+static const Char_t helptext[] =
+"no help yet\n\
+";
+   gROOT->GetListOfCleanups()->Add(this);
+   fCanvas = gPad->GetCanvas();
+   TRootCanvas* win = NULL;
+   if (fCanvas)
+      win = (TRootCanvas*)fCanvas->GetCanvasImp();
    Int_t ind = 0;
-
+   fRow_lab = new TList();
    RestoreDefaults();
    fEditTextFromFile = (Int_t)from_file;
 
    static TString excmd("InsertTextExecute()");
    static TString showcmd("Show_Head_of_File()");
-   TList *row_lab = new TList(); 
- 
+
    if (fEditTextFromFile) {
-      row_lab->Add(new TObjString("FileRequest_File Name with text"));
-      valp[ind++] = &fEditTextFileName;
+      fRow_lab->Add(new TObjString("FileRequest_File Name with text"));
+      fValp[ind++] = &fEditTextFileName;
       fEditTextMarkCompound = 1;
    } else {
       fEditTextMarkCompound = 0;
    }
-   row_lab->Add(new TObjString("DoubleValue_X Position"));
-   valp[ind++] = &fEditTextX0;
-   row_lab->Add(new TObjString("DoubleValue-Y Position"));
-   valp[ind++] = &fEditTextY0;
-   row_lab->Add(new TObjString("DoubleValue_Line spacing"));
-   valp[ind++] = &fEditTextDy;
-   row_lab->Add(new TObjString("Float_Value-Size"));
-   valp[ind++] = &fEditTextSize;
-   row_lab->Add(new TObjString("CfontSelect_Font"));
-   valp[ind++] = &fEditTextFont;
-   row_lab->Add(new TObjString("PlainIntVal-Precission"));
-   valp[ind++] = &fEditTextPrec;
-   row_lab->Add(new TObjString("ColorSelect_Color"));
-   valp[ind++] = &fEditTextColor;
-   row_lab->Add(new TObjString("AlignSelect-Alignment"));
-   valp[ind++] = &fEditTextAlign;
-   row_lab->Add(new TObjString("Float_Value-Angle"));
-   valp[ind++] = &fEditTextAngle;
-   row_lab->Add(new TObjString("CheckButton_Mark as compound"));
-    valp[ind++] = &fEditTextMarkCompound;
-   row_lab->Add(new TObjString("CheckButton-Apply latex filter"));
-   valp[ind++] = &fEditTextLatexFilter;
-   row_lab->Add(new TObjString("CommandButt_InsertTextExecute"));
-   valp[ind++] = &excmd;
+   fRow_lab->Add(new TObjString("DoubleValue_X Position"));
+   fValp[ind++] = &fEditTextX0;
+   fRow_lab->Add(new TObjString("DoubleValue-Y Position"));
+   fValp[ind++] = &fEditTextY0;
+   fRow_lab->Add(new TObjString("DoubleValue_Line spacing"));
+   fValp[ind++] = &fEditTextDy;
+   fRow_lab->Add(new TObjString("Float_Value-Size"));
+   fValp[ind++] = &fEditTextSize;
+   fRow_lab->Add(new TObjString("CfontSelect_Font"));
+   fValp[ind++] = &fEditTextFont;
+   fRow_lab->Add(new TObjString("PlainIntVal-Precission"));
+   fValp[ind++] = &fEditTextPrec;
+   fRow_lab->Add(new TObjString("ColorSelect_Color"));
+   fValp[ind++] = &fEditTextColor;
+   fRow_lab->Add(new TObjString("AlignSelect-Alignment"));
+   fValp[ind++] = &fEditTextAlign;
+   fRow_lab->Add(new TObjString("Float_Value-Angle"));
+   fValp[ind++] = &fEditTextAngle;
+   fRow_lab->Add(new TObjString("CheckButton_Mark as compound"));
+    fValp[ind++] = &fEditTextMarkCompound;
+   fRow_lab->Add(new TObjString("CheckButton-Apply latex filter"));
+   fValp[ind++] = &fEditTextLatexFilter;
+   fRow_lab->Add(new TObjString("CommandButt_InsertTextExecute"));
+   fValp[ind++] = &excmd;
    if (fEditTextFromFile) {
-      row_lab->Add(new TObjString("CommandButt_Show_Head_of_File"));
-      valp[ind++] = &showcmd;
+      fRow_lab->Add(new TObjString("CommandButt_Show_Head_of_File"));
+      fValp[ind++] = &showcmd;
    }
 
 //   if (!from_file) {
-//       row_lab->Add(new TObjString("CheckButton_Keep Dialog"));
-//       valp[ind++] = &keepdialog;
+//       fRow_lab->Add(new TObjString("CheckButton_Keep Dialog"));
+//       fValp[ind++] = &keepdialog;
 //   }
-  
+
    static TString text;
-//   TString * tpointer = 0; 
+//   TString * tpointer = 0;
    fEditTextPointer = NULL;
    const char * history = 0;
    if (fEditTextFromFile == 0) {
       fEditTextPointer = &text;
       const char hist_file[] = {"text_hist.txt"};
       history = hist_file;
-      if (gROOT->GetVersionInt() < 40000) history = NULL;
+//      if (gROOT->GetVersionInt() < 40000) history = NULL;
    }
    fEditTextX0 = 0;
    fEditTextY0 = 0;
    cout << "fEditTextSize " << fEditTextSize<< endl;
-   Bool_t ok; 
    Int_t itemwidth = 280;
-   TRootCanvas* rc = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
-   ok = GetStringExt("Text (latex) string", fEditTextPointer, itemwidth, rc,
-                      history, NULL, row_lab, valp,
-                      NULL, NULL, NULL, this, this->ClassName());
-//   if (!ok) return;
-};  
-//_________________________________________________________________________
-            
-InsertTextDialog::~InsertTextDialog() 
-{
-   SaveDefaults();
+   static Int_t ok;
+   fDialog =
+      new TGMrbValuesAndText("Insert Text", fEditTextPointer, &ok,itemwidth, win,
+                      history, NULL, fRow_lab, fValp,
+                      NULL, NULL, helptext, this, this->ClassName());
 };
 //_________________________________________________________________________
-            
+
+InsertTextDialog::~InsertTextDialog()
+{
+   gROOT->GetListOfCleanups()->Remove(this);
+   SaveDefaults();
+};
+//_______________________________________________________________________
+
+void InsertTextDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void InsertTextDialog::CloseDialog()
+{
+//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
+   gROOT->GetListOfCleanups()->Remove(this);
+   if (fDialog) fDialog->CloseWindowExt();
+   fRow_lab->Delete();
+   delete fRow_lab;
+   delete this;
+}
+//_________________________________________________________________________
+
 void InsertTextDialog::InsertTextExecute()
 {
    if (fEditTextX0 == 0 && fEditTextY0 == 0) {
    	cout << "Mark position with left mouse" << endl;
       TMarker * mark  = (TMarker*)gPad->WaitPrimitive("TMarker");
+		if (mark == NULL) {
+			cout << "Interrupted Input" << endl;
+			return;
+		}
+
       fEditTextX0 = mark->GetX();
       fEditTextY0 = mark->GetY();
       delete mark;
    }
-   
+
    ifstream infile;
    TString line;
-   TString cmd; 
+   TString cmd;
    TString converted_line;
 
    TLatex  * latex;
@@ -285,7 +316,7 @@ void InsertTextDialog::InsertTextExecute()
       }
    }
    while(loop) {
-// read lines, concatinate lines ending with 
+// read lines, concatinate lines ending with
       if (fEditTextFromFile != 0) {
       	line.ReadLine(infile);
       	if (infile.eof()) {
@@ -309,7 +340,7 @@ void InsertTextDialog::InsertTextExecute()
       }
       if (fEditTextLatexFilter > 0) converted_line = lat2root(cmd);
       else             converted_line = cmd;
-      latex = new TLatex(xt, yt, converted_line.Data());
+      latex = new THprLatex(xt, yt, converted_line.Data());
       latex->SetTextAlign(fEditTextAlign);
       latex->SetTextFont(fEditTextFont * 10 + fEditTextPrec);
       latex->SetTextSize(fEditTextSize);
@@ -392,23 +423,23 @@ void InsertTextDialog::InsertTextExecute()
    fEditTextY0 = 0;
 };
 //_________________________________________________________________________
-            
+
 void InsertTextDialog::SaveDefaults()
 {
    TEnv env(".rootrc");
    env.SetValue("InsertTextDialog.EditTextFileName"	, fEditTextFileName   );
    env.SetValue("InsertTextDialog.EditTextDy"			, fEditTextDy  		 );
-   env.SetValue("InsertTextDialog.EditTextAlign"		, fEditTextAlign  	 ); 
-   env.SetValue("InsertTextDialog.EditTextColor"		, fEditTextColor  	 ); 
-   env.SetValue("InsertTextDialog.EditTextFont" 		, fEditTextFont		 ); 
-   env.SetValue("InsertTextDialog.EditTextPrec" 		, fEditTextPrec		 ); 
+   env.SetValue("InsertTextDialog.EditTextAlign"		, fEditTextAlign  	 );
+   env.SetValue("InsertTextDialog.EditTextColor"		, fEditTextColor  	 );
+   env.SetValue("InsertTextDialog.EditTextFont" 		, fEditTextFont		 );
+   env.SetValue("InsertTextDialog.EditTextPrec" 		, fEditTextPrec		 );
    env.SetValue("InsertTextDialog.EditTextSize" 		, fEditTextSize		 );
    env.SetValue("InsertTextDialog.EditTextAngle"		, fEditTextAngle  	 );
    env.SetValue("InsertTextDialog.EditTextLatexFilter", fEditTextLatexFilter);
    env.SaveLevel(kEnvUser);
 }
 //_________________________________________________________________________
-            
+
 void InsertTextDialog::RestoreDefaults()
 {
 //   cout << "HTCanvas::InsertTextSetDefaults()" << endl;
@@ -422,16 +453,16 @@ void InsertTextDialog::RestoreDefaults()
 
    fEditTextFileName    = env.GetValue("InsertTextDialog.EditTextFileName"   , "latex.txt");
    fEditTextDy          = env.GetValue("InsertTextDialog.EditTextDy"  		  , 10);
-   fEditTextAlign       = env.GetValue("InsertTextDialog.EditTextAlign"  	  , 11); 
-   fEditTextColor       = env.GetValue("InsertTextDialog.EditTextColor"  	  , 1); 
-   fEditTextFont        = env.GetValue("InsertTextDialog.EditTextFont"		  , 6); 
-   fEditTextPrec        = env.GetValue("InsertTextDialog.EditTextPrec"		  , 2); 
+   fEditTextAlign       = env.GetValue("InsertTextDialog.EditTextAlign"  	  , 11);
+   fEditTextColor       = env.GetValue("InsertTextDialog.EditTextColor"  	  , 1);
+   fEditTextFont        = env.GetValue("InsertTextDialog.EditTextFont"		  , 6);
+   fEditTextPrec        = env.GetValue("InsertTextDialog.EditTextPrec"		  , 2);
    fEditTextSize        = env.GetValue("InsertTextDialog.EditTextSize"		  , 0.02);
    fEditTextAngle       = env.GetValue("InsertTextDialog.EditTextAngle"  	  , 0);
    fEditTextLatexFilter = env.GetValue("InsertTextDialog.EditTextLatexFilter", 1);
 }
 //_________________________________________________________________________
-            
+
 void InsertTextDialog::Show_Head_of_File()
 {
    TString cmd(fEditTextFileName.Data());
@@ -440,10 +471,10 @@ void InsertTextDialog::Show_Head_of_File()
    gSystem->Exec(cmd);
 }
 //_________________________________________________________________________
-            
-void InsertTextDialog::CloseDown()
+
+void InsertTextDialog::CloseDown(Int_t wid)
 {
    cout << "InsertTextDialog::CloseDown()" << endl;
    delete this;
 }
- 
+

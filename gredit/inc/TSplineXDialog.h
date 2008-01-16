@@ -3,6 +3,8 @@
 #include "Gtypes.h"
 #include "TGWindow.h"
 #include "TObject.h"
+#include "TGMrbValuesAndText.h"
+#include "TCanvas.h"
 #include <iostream>
 //_____________________________________________________________________________________
 
@@ -12,6 +14,10 @@ namespace std {} using namespace std;
 class TSplineXDialog : public TObject {
 
 private:
+   void *fValp[100];
+   TList *fRow_lab;
+   TGMrbValuesAndText *fDialog;
+   TCanvas      *fCanvas;
    TString   fCommand;
 	Int_t    fClosed;  
 	Int_t    fApprox; 
@@ -39,8 +45,10 @@ public:
    void Draw_The_TSplineX();
    void SaveDefaults();
    void RestoreDefaults();
-   void CloseDown();
-   void CRButtonPressed(){};
+   void RecursiveRemove(TObject * obj);
+   void CloseDialog();
+   void CloseDown(Int_t wid);
+   void CRButtonPressed(Int_t, Int_t, TObject *){};
 
 ClassDef(TSplineXDialog,0)
 };

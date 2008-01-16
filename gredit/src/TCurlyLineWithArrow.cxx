@@ -114,6 +114,8 @@ void TCurlyLineWithArrow::Paint(const Option_t *opt)
    Double_t x1, x2, y1, y2;
    Float_t as;
    Double_t dc, da;
+   SetStartPoint(fX1, fY1);
+   SetEndPoint(fX2, fY2);
    if (fArrowStart) {
 //  at end
 //   dist arrow head - start of line

@@ -1,13 +1,14 @@
+#include "TROOT.h"
 #include "TCanvas.h"
 #include "TEnv.h"
 #include "TGraph.h"
 #include "TObjString.h"
 #include "TRootCanvas.h"
 #include "TSplineXDialog.h"
-#include "TSplineX.h"
+#include "THprSplineX.h"
 #include "TGMrbValuesAndText.h"
 
-static const Char_t helpText[] = 
+static const Char_t helpText[] =
 "This class helps to construct a Xspline with\n\
 additional graphical elements:\n\
 Arrows at either ends\n\
@@ -18,97 +19,84 @@ ClassImp(TSplineXDialog)
 
 TSplineXDialog::TSplineXDialog()
 {
-
-   static void *valp[25];
+static const Char_t helptext[] =
+"This class helps to construct a Xspline with\n\
+additional graphical elements:\n\
+Arrows at either ends\n\
+Railway like filling etc.\n\
+";
+   gROOT->GetListOfCleanups()->Add(this);
+   fCanvas = gPad->GetCanvas();
+   TRootCanvas* win = NULL;
+   if (fCanvas)
+      win = (TRootCanvas*)fCanvas->GetCanvasImp();
    Int_t ind = 0;
-   TList * row_lab = new TList(); 
-/*
-   fClosed  = 0;
-   fApprox  = 1;
-   fFixends = 1;
-   fPrec 	= 0.2;
-   fShowcp  = 1;
-   fColor	= gStyle->GetLineColor();
-   fLwidth  = gStyle->GetLineWidth();
-   fLstyle  = gStyle->GetLineStyle();
-   fFcolor  = gStyle->GetFillColor();
-   fFstyle  = gStyle->GetFillStyle();
-
-   fFilled  		= 0;
-   fEmpty			= 5;
-   fGage 			= 0;
-   fArrow_at_start = 0;
-   fArrow_at_end  = 0;
-   fArrow_filled  = 0;
-   fArrow_size 	= 10;
-   fArrow_angle	= 30;
-   fArrow_indent_angle  = -30;
-*/
+   fRow_lab = new TList();
    RestoreDefaults();
    fCommand = "Draw_The_TSplineX()";
 
-   row_lab->Add(new TObjString("CheckButton_Closed curve"));
-   valp[ind++] = &fClosed;
-   row_lab->Add(new TObjString("CheckButton+Approximate"));
-   valp[ind++] = &fApprox;
-   row_lab->Add(new TObjString("CheckButton+Fix endpoints"));
-   valp[ind++] = &fFixends;
-   row_lab->Add(new TObjString("DoubleValue_Precision"));
-   valp[ind++] = &fPrec;
-   row_lab->Add(new TObjString("CheckButton+Show Controlpoints"));
-   valp[ind++] = &fShowcp;
-   row_lab->Add(new TObjString("ColorSelect_Line Col"));
-   valp[ind++] = &fColor;
-   row_lab->Add(new TObjString("PlainShtVal+L Width"));
-   valp[ind++] = &fLwidth;
-   row_lab->Add(new TObjString("LineSSelect+L Style"));
-   valp[ind++] = &fLstyle;
-   row_lab->Add(new TObjString("CheckButton_Arrow@Start"));
-   valp[ind++] = &fArrow_at_start;
-   row_lab->Add(new TObjString("CheckButton+Arrow@End"));
-   valp[ind++] = &fArrow_at_end;
-   row_lab->Add(new TObjString("CheckButton+Fill Arrow"));
-   valp[ind++] = &fArrow_filled;
-   row_lab->Add(new TObjString("DoubleValue_ArLen"));
-   valp[ind++] = &fArrow_size;
-   row_lab->Add(new TObjString("DoubleValue+ArAng"));
-   valp[ind++] = &fArrow_angle;
-   row_lab->Add(new TObjString("DoubleValue+InAng"));
-   valp[ind++] = &fArrow_indent_angle;
-//   row_lab->Add(new TObjString("CheckButton_Railway (double line)"));
-//   valp[ind++] = &railway;
-   row_lab->Add(new TObjString("DoubleValue_Rail Gage"));
-   valp[ind++] = &fGage;
-   row_lab->Add(new TObjString("DoubleValue+SleeperL"));
-   valp[ind++] = &fFilled;
-   row_lab->Add(new TObjString("DoubleValue+SleeperD"));
-   valp[ind++] = &fEmpty;
-   row_lab->Add(new TObjString("ColorSelect_Fill Color"));
-   valp[ind++] = &fFcolor;
-   row_lab->Add(new TObjString("Fill_Select+Fill Style"));
-   valp[ind++] = &fFstyle;
-   row_lab->Add(new TObjString("CommandButt_Draw_the_TSplineX"));
-   valp[ind++] = &fCommand;
+   fRow_lab->Add(new TObjString("CheckButton_Closed curve"));
+   fValp[ind++] = &fClosed;
+   fRow_lab->Add(new TObjString("CheckButton+Approximate"));
+   fValp[ind++] = &fApprox;
+   fRow_lab->Add(new TObjString("CheckButton+Fix endpoints"));
+   fValp[ind++] = &fFixends;
+   fRow_lab->Add(new TObjString("DoubleValue_Precision"));
+   fValp[ind++] = &fPrec;
+   fRow_lab->Add(new TObjString("CheckButton+Show Controlpoints"));
+   fValp[ind++] = &fShowcp;
+   fRow_lab->Add(new TObjString("ColorSelect_Line Col"));
+   fValp[ind++] = &fColor;
+   fRow_lab->Add(new TObjString("PlainShtVal+L Width"));
+   fValp[ind++] = &fLwidth;
+   fRow_lab->Add(new TObjString("LineSSelect+L Style"));
+   fValp[ind++] = &fLstyle;
+   fRow_lab->Add(new TObjString("CheckButton_Arrow@Start"));
+   fValp[ind++] = &fArrow_at_start;
+   fRow_lab->Add(new TObjString("CheckButton+Arrow@End"));
+   fValp[ind++] = &fArrow_at_end;
+   fRow_lab->Add(new TObjString("CheckButton+Fill Arrow"));
+   fValp[ind++] = &fArrow_filled;
+   fRow_lab->Add(new TObjString("DoubleValue_ArLen"));
+   fValp[ind++] = &fArrow_size;
+   fRow_lab->Add(new TObjString("DoubleValue+ArAng"));
+   fValp[ind++] = &fArrow_angle;
+   fRow_lab->Add(new TObjString("DoubleValue+InAng"));
+   fValp[ind++] = &fArrow_indent_angle;
+//   fRow_lab->Add(new TObjString("CheckButton_Railway (double line)"));
+//   fValp[ind++] = &railway;
+   fRow_lab->Add(new TObjString("DoubleValue_Rail Gage"));
+   fValp[ind++] = &fGage;
+   fRow_lab->Add(new TObjString("DoubleValue+SleeperL"));
+   fValp[ind++] = &fFilled;
+   fRow_lab->Add(new TObjString("DoubleValue+SleeperD"));
+   fValp[ind++] = &fEmpty;
+   fRow_lab->Add(new TObjString("ColorSelect_Fill Color"));
+   fValp[ind++] = &fFcolor;
+   fRow_lab->Add(new TObjString("Fill_Select+Fill Style"));
+   fValp[ind++] = &fFstyle;
+   fRow_lab->Add(new TObjString("CommandButt_Draw_the_TSplineX"));
+   fValp[ind++] = &fCommand;
 
-   Bool_t ok; 
    Int_t itemwidth = 320;
-   TRootCanvas* rc = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
-   ok = GetStringExt("TSplineX Params", NULL, itemwidth, rc,
-                     NULL, NULL, row_lab, valp,
-                     NULL, NULL, helpText, this, this->ClassName());
+   static Int_t ok;
+   fDialog =
+      new TGMrbValuesAndText("TSplineXDialog", NULL, &ok,itemwidth, win,
+                      NULL, NULL, fRow_lab, fValp,
+                      NULL, NULL, helptext, this, this->ClassName());
 }
 //______________________________________________________________________
 
 void TSplineXDialog::Draw_The_TSplineX()
 {
 
-  cout << "Input a  Polyline defining the controlpoints" << endl;
+  cout << "Input a Polyline defining the controlpoints" << endl;
   TIter next(gPad->GetListOfPrimitives());
   TObject * obj;
   while ( (obj = next()) ) {
      if (obj->IsA() == TGraph::Class()) {
         TGraph * g = (TGraph*)obj;
-        if(!(strncmp(g->GetName(), "Graph", 5))) { 
+        if(!(strncmp(g->GetName(), "Graph", 5))) {
            cout << "Rename existing Graph" << endl;
            g->SetName("Hprgraph");
         }
@@ -146,8 +134,8 @@ void TSplineXDialog::Draw_The_TSplineX()
    Bool_t closed_spline;
    if (fClosed != 0) closed_spline = kTRUE;
    else              closed_spline = kFALSE;
-   TSplineX* xsp = 
-     new TSplineX(npoints, x, y, shape_factors.GetArray(), fPrec, closed_spline);
+   THprSplineX* xsp =
+     new THprSplineX(npoints, x, y, shape_factors.GetArray(), fPrec, closed_spline);
    xsp->Draw("L");
    xsp->SetFillColor(fFcolor);
    xsp->SetFillStyle(fFstyle);
@@ -169,11 +157,11 @@ void TSplineXDialog::Draw_The_TSplineX()
    SaveDefaults();
 }
 //_________________________________________________________________________
-            
+
 void TSplineXDialog::SaveDefaults()
 {
    TEnv env(".rootrc");
-   env.SetValue("TSplineXDialog.Closed"            , fClosed            );  
+   env.SetValue("TSplineXDialog.Closed"            , fClosed            );
    env.SetValue("TSplineXDialog.Approx"            , fApprox            );
    env.SetValue("TSplineXDialog.Fixends"           , fFixends           );
    env.SetValue("TSplineXDialog.Prec"              , fPrec              );
@@ -191,15 +179,15 @@ void TSplineXDialog::SaveDefaults()
    env.SetValue("TSplineXDialog.Arrow_filled"      , fArrow_filled      );
    env.SetValue("TSplineXDialog.Arrow_size"        , fArrow_size        );
    env.SetValue("TSplineXDialog.Arrow_angle"       , fArrow_angle       );
-   env.SetValue("TSplineXDialog.Arrow_indent_angle", fArrow_indent_angle);   
+   env.SetValue("TSplineXDialog.Arrow_indent_angle", fArrow_indent_angle);
    env.SaveLevel(kEnvUser);
 }
 //_________________________________________________________________________
-            
+
 void TSplineXDialog::RestoreDefaults()
 {
    TEnv env(".rootrc");
-   fClosed             = env.GetValue("TSplineXDialog.Closed"            , 0);  
+   fClosed             = env.GetValue("TSplineXDialog.Closed"            , 0);
    fApprox             = env.GetValue("TSplineXDialog.Approx"            , 1);
    fFixends            = env.GetValue("TSplineXDialog.Fixends"           , 1);
    fPrec               = env.GetValue("TSplineXDialog.Prec"              , 0.2);
@@ -217,11 +205,31 @@ void TSplineXDialog::RestoreDefaults()
    fArrow_filled       = env.GetValue("TSplineXDialog.Arrow_filled"      , 0);
    fArrow_size         = env.GetValue("TSplineXDialog.Arrow_size"        , 10);
    fArrow_angle        = env.GetValue("TSplineXDialog.Arrow_angle"       , 30);
-   fArrow_indent_angle = env.GetValue("TSplineXDialog.Arrow_indent_angle", -20);   
+   fArrow_indent_angle = env.GetValue("TSplineXDialog.Arrow_indent_angle", -20);
 }
 //_______________________________________________________________________
 
-void TSplineXDialog::CloseDown()
+void TSplineXDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void TSplineXDialog::CloseDialog()
+{
+//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
+   gROOT->GetListOfCleanups()->Remove(this);
+   if (fDialog) fDialog->CloseWindowExt();
+   fRow_lab->Delete();
+   delete fRow_lab;
+   delete this;
+}
+//_______________________________________________________________________
+
+void TSplineXDialog::CloseDown(Int_t wid)
 {
    cout << "TSplineXDialog::CloseDown() " << endl;
    SaveDefaults();

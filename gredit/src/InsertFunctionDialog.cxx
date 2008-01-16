@@ -2,11 +2,13 @@
 #include "TCanvas.h"
 #include "TEnv.h"
 #include "TF1.h"
+#include "TH1.h"
 #include "TList.h"
 #include "TObjString.h"
 #include "TVirtualPad.h"
 #include "TRootCanvas.h"
 #include "TSystem.h"
+#include "TStyle.h"
 #include "TGMrbValuesAndText.h"
 #include "InsertFunctionDialog.h"
 #include <iostream>
@@ -20,46 +22,52 @@ ClassImp(InsertFunctionDialog)
 
 //___________________________________________________________________________
 
-InsertFunctionDialog::InsertFunctionDialog() 
+InsertFunctionDialog::InsertFunctionDialog()
 {
-   static void *valp[25];
+static const Char_t helptext[] =
+"no help yet\n\
+";
+   gROOT->GetListOfCleanups()->Add(this);
+   fCanvas = gPad->GetCanvas();
+   TRootCanvas* win = NULL;
+   if (fCanvas)
+      win = (TRootCanvas*)fCanvas->GetCanvasImp();
    Int_t ind = 0;
+   fRow_lab = new TList();
    RestoreDefaults();
    static TString excmd("InsertFunctionExecute()");
-   TList *row_lab = new TList(); 
-   ind = 0;
-   row_lab->Clear();
-   row_lab->Add(new TObjString("StringValue_Function Name"));
-   valp[ind++] = &fName;
+   fRow_lab->Clear();
+   fRow_lab->Add(new TObjString("StringValue_Function Name"));
+   fValp[ind++] = &fName;
 
-   row_lab->Add(new TObjString("StringValue_Title X"));
-   valp[ind++] = &fXtitle;
-   row_lab->Add(new TObjString("StringValue-Title Y"));
-   valp[ind++] = &fYtitle;
-   row_lab->Add(new TObjString("PlainIntVal_Npar"));
-   valp[ind++] = &fNpar;
-   row_lab->Add(new TObjString("DoubleValue-From"));
-   valp[ind++] = &fFrom;
-   row_lab->Add(new TObjString("DoubleValue-To"));
-   valp[ind++] = &fTo;
+   fRow_lab->Add(new TObjString("StringValue_Title X"));
+   fValp[ind++] = &fXtitle;
+   fRow_lab->Add(new TObjString("StringValue-Title Y"));
+   fValp[ind++] = &fYtitle;
+   fRow_lab->Add(new TObjString("PlainIntVal_Npar"));
+   fValp[ind++] = &fNpar;
+   fRow_lab->Add(new TObjString("DoubleValue-From"));
+   fValp[ind++] = &fFrom;
+   fRow_lab->Add(new TObjString("DoubleValue-To"));
+   fValp[ind++] = &fTo;
 
    for (Int_t i =0; i < 10; i += 2) {
-      row_lab->Add(new TObjString(Form("DoubleValue_Par[%d]",i)));
-      valp[ind++] = &fPar[i];
-      row_lab->Add(new TObjString(Form("DoubleValue+Par[%d]",i+1)));
-      valp[ind++] = &fPar[i+1];
+      fRow_lab->Add(new TObjString(Form("DoubleValue_Par[%d]",i)));
+      fValp[ind++] = &fPar[i];
+      fRow_lab->Add(new TObjString(Form("DoubleValue+Par[%d]",i+1)));
+      fValp[ind++] = &fPar[i+1];
    }
-   row_lab->Add(new TObjString("PlainIntVal_Pad Opacity "));
-   valp[ind++] = &fPadOpacity;
-   row_lab->Add(new TObjString("ColorSelect-Drawing color"));
-   valp[ind++] = &fCol;
-   row_lab->Add(new TObjString("CheckButton_Create new canvas"));
-   valp[ind++] = &fNew_canvas;
-   row_lab->Add(new TObjString("CommandButt_InsertFunctionExecute"));
-   valp[ind++] = &excmd;
+   fRow_lab->Add(new TObjString("PlainIntVal_Pad Opacity "));
+   fValp[ind++] = &fPadOpacity;
+   fRow_lab->Add(new TObjString("ColorSelect-Drawing color"));
+   fValp[ind++] = &fCol;
+   fRow_lab->Add(new TObjString("CheckButton_Create new canvas"));
+   fValp[ind++] = &fNew_canvas;
+   fRow_lab->Add(new TObjString("CommandButt_InsertFunctionExecute"));
+   fValp[ind++] = &excmd;
 
    static TString text;
-   fTpointer = NULL; 
+   fTpointer = NULL;
    const char * history = 0;
    fTpointer = &text;
    const char hist_file[] = {"text_formulas.txt"};
@@ -68,23 +76,43 @@ InsertFunctionDialog::InsertFunctionDialog()
       ofstream hfile(history);
       hfile << "[0]*exp([1]*x)*cos([2]*x)" << endl;
       hfile.close();
-   } 
+   }
    if (gROOT->GetVersionInt() < 40000) history = NULL;
-   TRootCanvas* rc = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
-   Bool_t ok;
    Int_t itemwidth = 280;
-   ok = GetStringExt("Function formula", fTpointer, itemwidth, rc,
-                      history, NULL, row_lab, valp,
-                      NULL, NULL, NULL, this, this->ClassName());
- };  
+   static Int_t ok;
+   fDialog =
+      new TGMrbValuesAndText("Function Dialog", fTpointer, &ok,itemwidth, win,
+                      history, NULL, fRow_lab, fValp,
+                      NULL, NULL, helptext, this, this->ClassName());
+ };
 //_________________________________________________________________________
-            
-InsertFunctionDialog::~InsertFunctionDialog() 
+
+InsertFunctionDialog::~InsertFunctionDialog()
 {
    SaveDefaults();
 };
+//_______________________________________________________________________
+
+void InsertFunctionDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "InsertFunctionDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void InsertFunctionDialog::CloseDialog()
+{
+//   cout << "InsertFunctionDialog::CloseDialog() " << endl;
+   gROOT->GetListOfCleanups()->Remove(this);
+   if (fDialog) fDialog->CloseWindowExt();
+   fRow_lab->Delete();
+   delete fRow_lab;
+   delete this;
+}
 //_________________________________________________________________________
-            
+
 void InsertFunctionDialog::InsertFunctionExecute()
 {
    Bool_t same = kFALSE;
@@ -99,7 +127,7 @@ void InsertFunctionDialog::InsertFunctionExecute()
    }
 //   cout << "InsertFunctionExecute() " << fNpar << endl;
    while (gROOT->GetListOfFunctions()->FindObject(fName)) {
-      cout << "Function with name: " << fName << 
+      cout << "Function with name: " << fName <<
       " already exists, will increment index" << endl;
       this->IncrementIndex(&fName);
    }
@@ -112,6 +140,9 @@ void InsertFunctionDialog::InsertFunctionExecute()
        cout << "Error in formula, watch printout" << endl;
    }
    f->SetParameters(fPar);
+   for (Int_t ip =0; ip < f->GetNpar(); ip++) {
+     f->SetParLimits(ip, fPar[ip] - 2 * TMath::Abs(fPar[ip]) , fPar[ip] + 2 * TMath::Abs(fPar[ip]));
+   }
    f->SetLineColor(fCol);
    if ( fPadOpacity > 0) {
       if ( fPadOpacity > 100) fPadOpacity = 100;
@@ -120,14 +151,25 @@ void InsertFunctionDialog::InsertFunctionExecute()
    if (fNew_canvas != 0) {
       new TCanvas("cc", "cc", 600,400);
       f->Draw();
-   } else { 
-      if (same) f->Draw("same");
-      else      f->Draw();
+   } else {
+      if (same) {
+        f->Draw("same");
+      } else  {
+         f->Draw();
+         if (gPad != gPad->GetMother()) {
+            TH1 *hist = f->GetHistogram();
+            Double_t whndc = (Double_t)gPad->GetHNDC();
+            if (whndc > 0) {
+               hist->SetLabelSize(gStyle->GetLabelSize("X") / whndc, "X");
+               hist->SetLabelSize(gStyle->GetLabelSize("Y") / whndc, "Y");
+            }
+         }
+      }
    }
    gPad->Update();
 };
 //_________________________________________________________________________
-            
+
 void InsertFunctionDialog::SaveDefaults()
 {
    cout << "HTCanvas::InsertFunction::SaveDefaults()" << endl;
@@ -145,16 +187,16 @@ void InsertFunctionDialog::SaveDefaults()
    env.SetValue("InsertFunctionDialog.fPar9" 	  , fPar[9]);
    env.SetValue("InsertFunctionDialog.Name"  	  , fName		 );
    env.SetValue("InsertFunctionDialog.Xtitle"	  , fXtitle 	 );
-   env.SetValue("InsertFunctionDialog.Ytitle"	  , fYtitle 	 ); 
-   env.SetValue("InsertFunctionDialog.From"  	  , fFrom		 ); 
-   env.SetValue("InsertFunctionDialog.To" 		  , fTo  		 ); 
-   env.SetValue("InsertFunctionDialog.Col"		  , fCol 		 ); 
+   env.SetValue("InsertFunctionDialog.Ytitle"	  , fYtitle 	 );
+   env.SetValue("InsertFunctionDialog.From"  	  , fFrom		 );
+   env.SetValue("InsertFunctionDialog.To" 		  , fTo  		 );
+   env.SetValue("InsertFunctionDialog.Col"		  , fCol 		 );
    env.SetValue("InsertFunctionDialog.PadOpacity", fPadOpacity );
    env.SetValue("InsertFunctionDialog.New_canvas" , fNew_canvas );
    env.SaveLevel(kEnvUser);
 }
 //_________________________________________________________________________
-            
+
 void InsertFunctionDialog::RestoreDefaults()
 {
 //   cout << "HTCanvas::InsertFunctionSetDefaults()" << endl;
@@ -172,16 +214,16 @@ void InsertFunctionDialog::RestoreDefaults()
    fPar[9]      = env.GetValue("InsertFunctionDialog.fPar9"		  , (Double_t)0);
    fName		    = env.GetValue("InsertFunctionDialog.Name"		  , "expcos");
    fXtitle 	    = env.GetValue("InsertFunctionDialog.Xtitle" 	  , "Xa");
-   fYtitle 	    = env.GetValue("InsertFunctionDialog.Ytitle" 	  , "Ya"); 
-   fFrom		    = env.GetValue("InsertFunctionDialog.From"		  , 0); 
-   fTo			 = env.GetValue("InsertFunctionDialog.To"  		  , 10); 
-   fCol 		    = env.GetValue("InsertFunctionDialog.Col" 		  , 4); 
+   fYtitle 	    = env.GetValue("InsertFunctionDialog.Ytitle" 	  , "Ya");
+   fFrom		    = env.GetValue("InsertFunctionDialog.From"		  , 0);
+   fTo			 = env.GetValue("InsertFunctionDialog.To"  		  , 10);
+   fCol 		    = env.GetValue("InsertFunctionDialog.Col" 		  , 4);
    fPadOpacity  = env.GetValue("InsertFunctionDialog.PadOpacity", 30);
 	fNew_canvas  = env.GetValue("InsertFunctionDialog.New_canvas" , 0);
 }
 //_________________________________________________________________________
-            
-void InsertFunctionDialog::CloseDown()
+
+void InsertFunctionDialog::CloseDown(Int_t wid)
 {
    cout << "InsertFunctionDialog::CloseDown()" << endl;
    delete this;
@@ -205,7 +247,7 @@ void InsertFunctionDialog::IncrementIndex(TString * arg)
    }
    if (first_digit == ind) {
      *arg += "_0";
-   } else { 
+   } else {
       subs = (*arg)(first_digit, len - first_digit);
       Int_t num = atol(subs.Data());
       arg->Resize(first_digit);
@@ -271,4 +313,4 @@ Int_t InsertFunctionDialog::GetFunctionPad(TPad *ipad)
    }
    return -1;   // no suitable pad found
 }
- 
+

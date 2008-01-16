@@ -1,10 +1,12 @@
 #include "TROOT.h"
 #include "TArrayC.h"
 #include "TASImage.h"
+#include "HprElement.h"
 #include <iostream>
 namespace std {} using namespace std;
 
-class HprImage : public TNamed {
+class HprImage : public TNamed, public HprElement
+{
 private:
    TArrayC * fBuffer;
    TImage * fImage; //! dont stream
@@ -20,6 +22,17 @@ public:
    TImage * GetImage() {return fImage;};
    Bool_t IsGood(){return fIsGood;};
    void Paint(Option_t * opt = 0);
+   Bool_t IsSortable() const {return kTRUE;}
+   Int_t Compare( const TObject *obj) const
+   {
+      const HprElement* hpre = dynamic_cast<const HprElement*>(obj);
+      if (GetPlane()== hpre->GetPlane())
+         return 0;
+      if (GetPlane() > hpre->GetPlane())
+         return 1;
+      else
+         return -1;
+   }
 //
    Int_t ToFile(const Char_t * fname);
    ClassDef(HprImage,1)   // A TNamed object containing a sequence of bytes

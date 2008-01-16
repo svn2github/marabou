@@ -36,7 +36,7 @@ private:
    Double_t       fVisibleGridX;
    Double_t       fVisibleGridY;
    Int_t          fUseEditGrid;
-   Bool_t         fInsertMacrosAsGroup;  
+   Bool_t         fInsertMacrosAsGroup;
    Bool_t         fCommonRotate;         //! dont stream
    UInt_t         fOrigWw;
    UInt_t         fOrigWh;
@@ -57,10 +57,10 @@ public:
    Bool_t   SloppyInside(TCutG * cut, Double_t x, Double_t y);
    Double_t MinElement(Int_t n, Double_t * x);
    Double_t MaxElement(Int_t n, Double_t * x);
-   void SetAllArrowSizes(TList *list, Double_t size,  Bool_t abs); 
+   void SetAllArrowSizes(TList *list, Double_t size,  Bool_t abs);
    void SetAllCurlySizes(TList *list, Double_t wl, Double_t amp, Bool_t abs);
    void SetAllTextSizes(TList *list, Double_t size, Bool_t abs);
- 
+
    void     BuildMenu();
    void     HandleMenu(Int_t id);
    void     InitEditCommands();
@@ -105,6 +105,7 @@ public:
 //#endif
    void    InsertArc();
    void    InsertGraph();
+   void    InsertPad();
    void    GrabImage();
    void    InsertImage();
    void    InsertAxis();
@@ -136,7 +137,7 @@ public:
    void    UnZoom();
    void    SaveDefaults();
    void    RestoreDefaults();
-   
+
 
 //   void    MyClose();
    ClassDef(GEdit,0)  //Graphics canvas

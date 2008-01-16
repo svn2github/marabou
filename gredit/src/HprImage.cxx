@@ -7,7 +7,7 @@
 ClassImp(HprImage)
 //_________________________________________________________________________
 //
-// This class puts a file into a TNamed object, this allows 
+// This class puts a file into a TNamed object, this allows
 // the contents of the file to written to a root file and retrieved by name
 //_________________________________________________________________________
 HprImage::HprImage(const Char_t * fname, TPad * pad) :
@@ -43,18 +43,18 @@ HprImage::HprImage(const Char_t * fname, TPad * pad) :
 
 HprImage::~HprImage()
 {
-//   if (fPad) {  
+//   if (fPad) {
 //      delete fPad;
 //   }
    cout << "HprImage:: dtor" << endl;
    fPad = 0;
    if(fBuffer)delete fBuffer;
-   fBuffer = 0; 
+   fBuffer = 0;
 };
 //______________________________________________
 
 void HprImage:: RecursiveRemove(TObject * obj) {
-//   cout << "HprImage::RecursiveRemove: " 
+//   cout << "HprImage::RecursiveRemove: "
 //        << this << " " << fPad << " " << fImage << " " << obj <<  endl;
    if (obj == fImage) {
       gROOT->GetListOfCleanups()->Remove(this);
@@ -92,6 +92,8 @@ Int_t HprImage::ToFile(const Char_t * fname){
 void HprImage::Paint(Option_t * opt)
 {
    if (opt);
+   if (GetVisibility() == 0)
+      return;
    TString name(GetName());
    name.Prepend("temp_");
 //   cout << "HprImage::Paint(): " << name << endl;
@@ -99,7 +101,7 @@ void HprImage::Paint(Option_t * opt)
    TObject *obj;
    TIter next_img(lop);
    while ( (obj = next_img()) ) {
-      if (obj->InheritsFrom("TASImage")) { 
+      if (obj->InheritsFrom("TASImage")) {
  //        cout << "GetHeight(): " << ((TImage*)obj)->GetHeight() << endl;
          if (((TImage*)obj)->GetHeight() > 5) return;
       }
@@ -115,7 +117,7 @@ void HprImage::Paint(Option_t * opt)
       lnk = (TObjOptLink*)lnk->Next();
    }
    cout << "HprImage::Paint(): after Remove TASImage" << endl;
-   
+
    lnk = (TObjOptLink*)lop->FirstLink();
    while (lnk) {
       obj = lnk->GetObject();
@@ -139,10 +141,10 @@ void HprImage::Paint(Option_t * opt)
 // make sure image is drawn first
    TIter next(lop);
    while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TASImage")) { 
+      if (obj->InheritsFrom("TASImage")) {
          break;
       } else {
-         if (!obj->InheritsFrom("HprImage")) { 
+         if (!obj->InheritsFrom("HprImage")) {
 //            cout << "Pop " << obj << endl;
             obj->Pop();
          }

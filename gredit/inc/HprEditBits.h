@@ -1,3 +1,5 @@
+#ifndef HPREDITBITS
+#define HPREDITBITS
 #include "Rtypes.h"
 
 enum {
@@ -6,3 +8,4 @@ enum {
    kIsEnclosingCut = BIT(22),
    kIsAEditorPage  = BIT(23)
 };
+#endif

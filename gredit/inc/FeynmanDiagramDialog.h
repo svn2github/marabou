@@ -1,12 +1,18 @@
 #ifndef FEYNMANDIAGRAMDIALOG
 #define FEYNMANDIAGRAMDIALOG
 #include "TObject.h"
+#include "TGMrbValuesAndText.h"
+#include "TCanvas.h"
 //_____________________________________________________________________________________
 
 
 class FeynmanDiagramDialog : public TObject {
 
 private:
+   void *fValp[100];
+   TList *fRow_lab;
+   TGMrbValuesAndText *fDialog;
+   TCanvas      *fCanvas;
    Double_t   fWaveLength; // wavelength of sinusoid in percent of pad height
    Double_t   fAmplitude;  // amplitude of sinusoid in percent of pad height
    Color_t    fColor ;  	// Feynman line color 
@@ -19,16 +25,21 @@ public:
    FeynmanDiagramDialog();
    virtual ~FeynmanDiagramDialog();
    void    FeynmanArrow();
+   void    FeynmanCurlyWavyLine(Int_t curly);
    void    FeynmanWavyLine();
-   void    FeynmanWavyArc();
    void    FeynmanCurlyLine();
+   void    FeynmanCurlyWavyArc(Int_t curly);
+   void    FeynmanWavyArc();
    void    FeynmanCurlyArc();
    void    FeynmanSolidLine();
    void    FeynmanDashedLine();
+   void    FeynmanLine(Style_t);
    void    SaveDefaults();
    void    RestoreDefaults();
-   void    CloseDown();
-
+   void    RecursiveRemove(TObject * obj);
+   void    CloseDialog();
+   void    CloseDown(Int_t wid);
+   void    CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
 ClassDef(FeynmanDiagramDialog,0)
 };
 #endif

@@ -1,4 +1,4 @@
-// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.1 2007-08-09 13:53:46 Otto.Schaile Exp $
+// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.2 2008-01-16 15:07:03 Otto.Schaile Exp $
 // Author: Carsten Hof   16/08/04
 
 /*************************************************************************
@@ -84,18 +84,18 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
    TGLabel * label = new TGLabel(f1, "<|");
    f1->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 0));
    fArrowAtStart = new TGCheckButton(f1, "",kARROW_START);
-   fArrowAtStart->SetToolTipText("Draw an Arrow at Start"); 
+   fArrowAtStart->SetToolTipText("Draw an Arrow at Start");
    f1->AddFrame(fArrowAtStart, new TGLayoutHints(kLHintsLeft, 1, 1, 0, 3));
    label = new TGLabel(f1, "|>");
    f1->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 0));
    fArrowAtEnd = new TGCheckButton(f1, "",kARROW_END);
-   fArrowAtEnd->SetToolTipText("Draw an Arrow At End"); 
+   fArrowAtEnd->SetToolTipText("Draw an Arrow At End");
    f1->AddFrame(fArrowAtEnd, new TGLayoutHints(kLHintsLeft, 1, 1, 0, 3));
 
    label = new TGLabel(f1, "Fill");
    f1->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 0));
    fArrowFill = new TGCheckButton(f1, "",kARROW_FILL);
-   fArrowFill->SetToolTipText("Fill Arrow"); 
+   fArrowFill->SetToolTipText("Fill Arrow");
    f1->AddFrame(fArrowFill, new TGLayoutHints(kLHintsLeft, 1, 1, 0, 3));
 
    fg0->AddFrame(f1, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
@@ -152,13 +152,13 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
    f8->AddFrame(fEmptyLength, new TGLayoutHints(kLHintsExpandX, 1, 1, 0, 1));
    fg1->AddFrame(f8, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
    AddFrame(fg1, new TGLayoutHints(kLHintsTop, 1, 1, 1, 1));
-   
+
    TGCompositeFrame *f9 = new TGCompositeFrame(this, 80, 20, kVerticalFrame);
    fControlGraphMixer = new TGTextButton(f9,"ControlGraph Mixer",kCONTROLGRAPHMIXER);
    fControlGraphMixer->SetToolTipText("Modify Shapefactors of ControlPoints");
    f9->AddFrame(fControlGraphMixer, new TGLayoutHints(kLHintsTop, 5, 1, 0, 3));
    AddFrame(f9, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
-   
+
    TGCompositeFrame *f10 = new TGCompositeFrame(this, 80, 20, kHorizontalFrame);
    fAddParallel = new TGTextButton(f10,"Add Parallel",kADDPARALLEL);
    fAddParallel->SetToolTipText("Add a parallel line ");
@@ -255,7 +255,7 @@ void TSplineXEditor::ConnectSignals2Slots()
 #if ROOTVERSION >= 51304
 void TSplineXEditor::SetModel(TObject* obj)
 {
-   fSplineX = (TSplineX *)obj;
+   fSplineX = dynamic_cast<TSplineX *>(obj);
 #else
 void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
 {
@@ -268,7 +268,7 @@ void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
       return;
    }
 
-   fSplineX = (TSplineX *)obj;
+   fSplineX = dynamic_cast<TSplineX *>(obj);
    fModel = obj;
    fPad = pad;
 #endif

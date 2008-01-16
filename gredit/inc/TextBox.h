@@ -3,6 +3,7 @@
 #include "TPave.h"
 #include "TList.h"
 #include "TTimer.h"
+#include "HprEditBits.h"
 #include <iostream>
 
 namespace std {} using namespace std;
@@ -10,11 +11,11 @@ namespace std {} using namespace std;
 
 class TextBox;
 
-class TbTimer : public TTimer 
+class TbTimer : public TTimer
 {
 private:
    TextBox *fTextBox;
-public:  
+public:
    TbTimer(Long_t ms, Bool_t synch,  TextBox *textbox);
    virtual ~TbTimer(){};
    Bool_t Notify();
@@ -31,7 +32,8 @@ private:
    Bool_t    fFirst;
    Int_t fAlignType;    // 0 no align, 1 on edges only, 2 center
 public:
-   TextBoxMember(TObject *obj, Short_t align, Int_t align_type) 
+   TextBoxMember(){};
+   TextBoxMember(TObject *obj, Short_t align, Int_t align_type)
    : fObject(obj), fAlign(align),  fAlignType(align_type)
 {
 }
@@ -63,6 +65,7 @@ private:
    Int_t    fAlignType;    // 0 no align, 1 on edges only, 2 center
 public:
    TextBox(Double_t x1, Double_t y1, Double_t x2, Double_t y2,const char *name = NULL);
+   TextBox(){};
    ~TextBox();
    void RecursiveRemove(TObject * obj);
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
@@ -77,14 +80,14 @@ public:
    TextBoxMember *FindMember(TObject *obj);
    void      PrintMembers();                 // *MENU*
    Bool_t   IsInside(Double_t x, Double_t y) {
-      return (x > GetX1()-fSmall && x < GetX2() + fSmall 
+      return (x > GetX1()-fSmall && x < GetX2() + fSmall
            && y > GetY1()-fSmall && y < GetY2() + fSmall);
    }
    Double_t PhiOfLine(Double_t x1, Double_t y1, Double_t x2, Double_t y2, Int_t align);
 
    Double_t GetXbyAlign(Short_t align, Double_t ts = 0);
    Double_t GetYbyAlign(Short_t align, Double_t ts = 0);
-   Short_t  GetAlignbyXY(Double_t x, Double_t y, Bool_t its_line = kFALSE); 
+   Short_t  GetAlignbyXY(Double_t x, Double_t y, Bool_t its_line = kFALSE);
    Int_t GetAlignType() { return fAlignType;};
    void  SetAlignType(Int_t at) {fAlignType = at;};  // *MENU*
    TList *GetListOfMembers() {return &fMembers;};

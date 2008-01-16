@@ -1,14 +1,20 @@
 #ifndef INSERTFUNCTIONDIALOG
 #define INSERTFUNCTIONDIALOG
 #include "TObject.h"
+#include "TCanvas.h"
 #include "TPad.h"
 #include "TString.h"
+#include "TGMrbValuesAndText.h"
 //_____________________________________________________________________________________
 
 
 class InsertFunctionDialog : public TObject {
 
 private:
+   void *fValp[100];
+   TList *fRow_lab;
+   TGMrbValuesAndText *fDialog;
+   TCanvas      *fCanvas;
    TString  *fTpointer;
    Double_t fPar[10];
    Int_t 	fNpar;
@@ -27,9 +33,12 @@ public:
    void InsertFunctionExecute();
    void SaveDefaults();
    void RestoreDefaults();
-   void CloseDown();
+   void RecursiveRemove(TObject * obj);
+   void CloseDialog();
+   void CloseDown(Int_t wid);
    void IncrementIndex(TString * arg);
    Int_t GetFunctionPad(TPad *ipad = NULL);
+   void    CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) {};
 
 ClassDef(InsertFunctionDialog,0)
 };

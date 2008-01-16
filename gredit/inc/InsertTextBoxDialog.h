@@ -1,5 +1,7 @@
 #ifndef INSERTTEXTBOXDIALOG
 #define INSERTTEXTBOXDIALOG
+#include "TGMrbValuesAndText.h"
+#include "TCanvas.h"
 #include "TObject.h"
 //_____________________________________________________________________________________
 
@@ -7,6 +9,10 @@
 class InsertTextBoxDialog : public TObject {
 
 private:
+   void *fValp[100];
+   TList *fRow_lab;
+   TGMrbValuesAndText *fDialog;
+   TCanvas      *fCanvas;
    Double_t   fX1;         //
    Double_t   fY1;         // 
    Double_t   fDx;         //
@@ -30,7 +36,10 @@ public:
    void    ExecuteInsert();
    void    SaveDefaults();
    void    RestoreDefaults();
-   void    CloseDown();
+   void    RecursiveRemove(TObject * obj);
+   void    CloseDialog();
+   void    CloseDown(Int_t wid);
+   void    CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) {};
 
 ClassDef(InsertTextBoxDialog,0)
 };

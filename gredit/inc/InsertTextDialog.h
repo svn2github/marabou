@@ -2,12 +2,18 @@
 #define INSERTTEXTDIALOG
 #include "TObject.h"
 #include "TString.h"
+#include "TGMrbValuesAndText.h"
+#include "TCanvas.h"
 //_____________________________________________________________________________________
 
 
 class InsertTextDialog : public TObject {
 
 private:
+   void *fValp[100];
+   TList *fRow_lab;
+   TGMrbValuesAndText *fDialog;
+   TCanvas      *fCanvas;
    TString        *fEditTextPointer;
    TString        fEditTextFileName;
    Int_t          fEditTextFromFile;
@@ -30,7 +36,10 @@ public:
    void SaveDefaults();
    void RestoreDefaults();
    void Show_Head_of_File();
-   void CloseDown();
+   void    RecursiveRemove(TObject * obj);
+   void    CloseDialog();
+   void CloseDown(Int_t wid);
+   void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) {};
 
 ClassDef(InsertTextDialog,0)
 };
