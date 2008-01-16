@@ -1,0 +1,214 @@
+<!--	mrbcode.dtd
+		Code Generator for MARaBOU
+		Version 1.0
+		19-Nov-2007
+		R. Lutter
+		Email: Rudi.Lutter@Physik.Uni-Muenchen.DE
+-->
+
+<!-- entities -->
+
+<!-- as known form html -->
+<!ENTITY amp "&#38;">
+<!ENTITY gt "&#62;">
+<!ENTITY lt "&#60;">
+
+<!-- derived -->
+<!ENTITY sout "&lt;&lt;">
+<!ENTITY addr "&amp;">
+<!ENTITY ptr "-&gt;">
+<!ENTITY and "&amp;&amp;">
+
+<!ELEMENT mrbcode (file)>
+
+<!-- text with substitutions -->
+<!ENTITY % stext "(#PCDATA | s | S | m | mm | r | rm)*">
+<!-- text to be used in comments: substitutions, bold/italic/underlined, boxed, and line break -->
+<!ENTITY % ctext "(#PCDATA | s | S | m | mm  | r | rm | b | i | u | bx | nl)*">
+
+<!-- file spec -->
+<!ELEMENT file (fileHdr, code*, (class | method | funct)+)>
+
+<!-- file header -->
+<!ELEMENT fileHdr (xname, gname, purp?, descr?, rootClassList?, mrbClassList?, author, mail, url, version, date?)>
+
+<!-- C++ class definition -->
+<!ELEMENT class (classHdr, code)>
+<!-- C++ class header -->
+<!ELEMENT classHdr (cname, purp, inheritance?, argList?, descr?)>
+<!-- C++ class constructor -->
+<!ELEMENT ctor (ctorHdr, code)>
+<!-- C++ constructor header -->
+<!ELEMENT ctorHdr (cname, purp, argList?, descr?)>
+
+<!-- C++ class method definition -->
+<!ELEMENT method (methodHdr, code)>
+<!-- C++ class method header -->
+<!ELEMENT methodHdr (mname, cname, purp, argList?, returnVal, descr?)>
+
+<!-- function definition -->
+<!ELEMENT funct (functHdr, code)>
+<!-- function header -->
+<!ELEMENT functHdr (fname, ftype, purp, argList?, returnVal, descr?)>
+
+<!-- piece of code -->
+<!ELEMENT code (tag?, comment?, slist?, (switch | foreach | if | code | cbody)*)>
+<!-- code body -->
+<!ELEMENT cbody (switch | if | l | nl)*>
+
+ <!-- if clause -->
+<!ELEMENT if (flag, descr?, cbody)>
+
+<!-- code loop -->
+<!ELEMENT foreach (item, descr?, (cbody | switch | if)+)>
+
+<!-- code selection depending on tag -->
+<!ELEMENT switch (item, case+)>
+<!-- case: tagged piece of code -->
+<!ELEMENT case (tag, descr?, cbody)>
+
+<!-- item -->
+<!ELEMENT item (#PCDATA)>
+
+<!-- function type -->
+<!ELEMENT ftype (#PCDATA)>
+
+<!-- argument list -->
+<!ELEMENT argList (arg)+>
+<!-- single argument -->
+<!ELEMENT arg (aname, atype, descr?)>
+<!-- argument type -->
+<!ELEMENT atype %stext;>
+<!-- return value (class method or function) -->
+<!ELEMENT returnVal (arg)>
+
+<!-- comment -->
+<!ELEMENT comment %ctext;>
+
+<!-- list of links referencing ROOT objects -->
+<!ELEMENT rootClassList (classRef+)>
+<!-- list of links referencing MARaBOU objects -->
+<!ELEMENT mrbClassList (classRef+)>
+<!-- inheritance list to be included in class header -->
+<!ELEMENT inheritance (classRef+)>
+<!-- class reference -->
+<!ELEMENT classRef (cname, descr?)>
+
+<!-- tags to mark pieces of code -->
+<!ELEMENT tag (#PCDATA)>
+<!-- flag to be used in if clause -->
+<!ELEMENT flag (#PCDATA)>
+
+<!-- list of substitutions -->
+<!ELEMENT slist (subst)+>
+<!-- substitution: to be replaced by value on code generation -->
+<!ELEMENT subst (sname, descr?)>
+
+<!-- name of xml file -->
+<!ELEMENT xname %stext;>
+<!-- name of generated code file -->
+<!ELEMENT gname %stext;>
+<!-- class name -->
+<!ELEMENT cname %stext;>
+<!-- method name -->
+<!ELEMENT mname %stext;>
+<!-- function name -->
+<!ELEMENT fname %stext;>
+<!-- name of a variable-->
+<!ELEMENT vname %stext;>
+<!-- name of argument -->
+<!ELEMENT aname %stext;>
+<!-- name of substitution -->
+<!ELEMENT sname %stext;>
+<!-- purpose -->
+<!ELEMENT purp %stext;>
+<!-- description (file, class, method, etc ...) -->
+<!ELEMENT descr %ctext;>
+<!-- author's name -->
+<!ELEMENT author %stext;>
+<!-- author's mail -->
+<!ELEMENT mail %stext;>
+<!-- author's url -->
+<!ELEMENT url %stext;>
+
+<!-- version (cvs: $Id: mrbcode.dtd,v 1.1 2008-01-16 07:56:47 Rudolf.Lutter Exp $) -->
+<!ELEMENT version (#PCDATA)>
+<!-- date (cvs: $Date: 2008-01-16 07:56:47 $) -->
+<!ELEMENT date (#PCDATA)>
+
+<!-- to be substituted -->
+<!ELEMENT s (#PCDATA)>
+<!-- to be substituted (1st char upper case) -->
+<!ELEMENT S (#PCDATA)>
+
+<!-- line of code -->
+<!ELEMENT l %stext;>
+
+<!-- bold, italic, underline, box -->
+<!ELEMENT b (#PCDATA)>
+<!ELEMENT i (#PCDATA)>
+<!ELEMENT u (#PCDATA)>
+<!ELEMENT bx (#PCDATA)>
+
+<!-- newline -->
+<!ELEMENT nl EMPTY>
+
+<!-- root and marabou links -->
+<!ELEMENT r (#PCDATA)>
+<!ELEMENT m (#PCDATA)>
+<!ELEMENT rm (#PCDATA)>
+<!ELEMENT mm (#PCDATA)>
+
+<!-- attribut lists -->
+
+<!-- indentation -->
+<!ATTLIST  class
+    indent    CDATA    "0"
+>
+<!ATTLIST  method
+    indent    CDATA    "0"
+>
+<!ATTLIST  funct
+    indent    CDATA    "0"
+>
+<!ATTLIST  code
+    indent    CDATA    "0"
+>
+<!ATTLIST  switch
+    indent    CDATA    "0"
+>
+<!ATTLIST  foreach
+    indent    CDATA    "0"
+>
+<!ATTLIST  if
+    indent    CDATA    "0"
+>
+<!ATTLIST  cbody
+    indent    CDATA    "0"
+>
+
+<!-- comment -->
+<!ATTLIST comment
+    type    (code|doc) "code"
+ >
+ 
+ <!-- inheritance type -->
+<!ATTLIST inheritance
+    type    (root|mrb) #REQUIRED
+ >
+ 
+<!-- r (root) and m (marabou) class refs -->
+<!ATTLIST r
+    class CDATA #IMPLIED
+ >
+<!ATTLIST m
+    class CDATA #IMPLIED
+ >
+<!-- r (root) and m (marabou) method refs -->
+<!ATTLIST rm
+    class CDATA #REQUIRED
+ >
+<!ATTLIST mm
+    class CDATA #REQUIRED
+ >
+ 
