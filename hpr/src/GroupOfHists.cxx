@@ -545,7 +545,7 @@ void GroupOfHists::ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t 
           ("Selected pad contains no hist,\n please select with middle mouse", win);
       return;
    }
-   cout << "ShowAllAsSelected " << href->GetName()<< endl;
+//   cout << "ShowAllAsSelected " << href->GetName()<< endl;
    TAxis *xa = href->GetXaxis();
    Axis_t lowedge = xa->GetBinLowEdge(xa->GetFirst());
    Axis_t upedge = xa->GetBinLowEdge(xa->GetLast()) +
@@ -704,8 +704,8 @@ void GroupOfHists::SaveDefaults()
    env.SetValue("GroupOfHists.fArrangeSideBySide", fArrangeSideBySide);
    env.SetValue("GroupOfHists.fArrangeAsTiles", fArrangeAsTiles);
    env.SaveLevel(kEnvLocal);
-   if (!fCanvas->GetAutoExec())
-       fCanvas->ToggleAutoExec();
+//   if (!fCanvas->GetAutoExec())
+//       fCanvas->ToggleAutoExec();
 }
 //_______________________________________________________________________
 
@@ -727,5 +727,7 @@ void GroupOfHists::CRButtonPressed(Int_t widgetId, Int_t buttonId, TObject *obj)
       fMarginY = 0.01;
    }
    SaveDefaults();
+   if (!fCanvas->GetAutoExec())
+       fCanvas->ToggleAutoExec();
 }
 

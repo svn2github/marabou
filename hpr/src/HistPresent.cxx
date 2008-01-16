@@ -3015,7 +3015,10 @@ void HistPresent::CloseAllCanvases()
    HTCanvas * htc;
    while ( (htc =(HTCanvas *)next()) ) {
       TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
-      rc->ShowEditor(kFALSE);
+      if (htc->TestBit(HTCanvas::kIsAEditorPage)) {
+         cout << "rc->ShowEditor(kFALSE);"<< endl;
+         rc->ShowEditor(kFALSE);
+      }
       rc->SendCloseMessage();
    }
    WindowSizeDialog::fNwindows= 0;
@@ -3332,6 +3335,8 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
          return;
       }
       delete logr;
+   } else {
+      cout << "kIsAEditorPage " << endl;
    }
 
    TString new_name(c->GetName());
@@ -3350,6 +3355,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
 //         gROOT->GetListOfCanvases()->Remove(oldc);
 //         delete oldc;
    }
+   gROOT->ForceStyle(kFALSE);
    TString tempname(c->GetName());
    if (!c->TestBit(HTCanvas::kIsAEditorPage)) {
       c->Draw();

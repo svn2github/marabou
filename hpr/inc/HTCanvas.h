@@ -27,6 +27,7 @@ namespace std {} using namespace std;
 class FitHist;
 class HistPresent;
 class HandleMenus;
+class HprElement;
 
 class HTCanvas : public TCanvas {
 
@@ -40,15 +41,15 @@ private:
    HandleMenus    * fHandleMenus;   //! dont stream
    Bool_t         fHasConnection;    //! dont stream
 
-//   TList          fConnectedClasses; //!
-   
+   TList          *fHiddenPrimitives;
+
    Double_t       fEditGridX;
    Double_t       fEditGridY;
    Int_t          fUseEditGrid;
    Int_t          fSaveUseEditGrid;
    UInt_t         fOrigWw;
    UInt_t         fOrigWh;
-
+   Int_t          fCurrentPlane;
    void Build();
 //
 public:
@@ -73,13 +74,27 @@ public:
    Double_t GetEditGridX() {return fEditGridX;};
    Double_t GetEditGridY() {return fEditGridY;};
    void     SetEditGrid(Double_t x, Double_t y) {fEditGridX = x, fEditGridY = y;};
-   void     SetUseEditGrid(Int_t use = 1) {fUseEditGrid = use;};
+   void    SetUseEditGrid(Int_t use = 1) {fUseEditGrid = use;};
    Int_t   GetUseEditGrid() {return fUseEditGrid;};
    void    Add2ConnectedClasses(TObject *obj);
-   void    ObjectCreated(Int_t, Int_t, TObject*); 
-   void    ObjectMoved(Int_t, Int_t, TObject*); 
+   void    ObjectCreated(Int_t, Int_t, TObject*);
+   void    ObjectMoved(Int_t, Int_t, TObject*);
+   Double_t PutOnGridX(Double_t);
+   Double_t PutOnGridY(Double_t);
+   Double_t PutOnGridX_NDC(Double_t);
+   Double_t PutOnGridY_NDC(Double_t);
+   void     HideObject(TObject*);
+   void     ViewObject(TObject*);
+   void     ViewAllObjects(); // *MENU*
+   Int_t    GetCurrentPlane() {return fCurrentPlane;};
+   void     SetCurrentPlane(Int_t p) {fCurrentPlane = p;};
+   TList    *GetHiddenPrimitives() {return fHiddenPrimitives;};
+   void PrintAddress()  {std::cout << ClassName() << "* aa = "
+                         << "(" << ClassName() << "*)" << this
+                         << std::endl; }; // *MENU*
+
 //   TList   *GetConnectedClasses() { return &fConnectedClasses;};
-   ClassDef(HTCanvas,1)  //Graphics canvas
+   ClassDef(HTCanvas,3)  //Graphics canvas
 };
 
 #endif

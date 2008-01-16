@@ -538,6 +538,7 @@ again:
                        if (fHCanvas->GetAutoExec()) fHCanvas->ToggleAutoExec();
                        fRootCanvas->ShowEditor();
                        fRootCanvas->ShowToolBar();
+                       fHCanvas->SetBit(HTCanvas::kIsAEditorPage);
                        new GEdit(fHCanvas);
 //                     if (!fEditor) CreateEditor();
                      break;

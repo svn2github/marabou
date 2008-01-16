@@ -24,11 +24,12 @@
 #include "HistPresent.h"
 #include "support.h"
 #include "SetColor.h"
-#include "TMrbHelpBrowser.h" 
+#include "TMrbHelpBrowser.h"
 #include "TMrbString.h"
 #include "TGMrbValuesAndText.h"
 #include "EditMarker.h"
 #include "HprEditBits.h"
+#include "HprElement.h"
 #include "GroupOfGObjects.h"
 
 const Size_t kDefaultCanvasSize   = 20;
@@ -38,13 +39,13 @@ ClassImp(HTCanvas)
 //____________________________________________________________________________
 HTCanvas::HTCanvas():TCanvas()
 {
-   fHistPresent = NULL; 
-   fFitHist = NULL;     
-   fGraph = NULL;       
-   fRootCanvas = NULL;  
-   fHandleMenus = NULL;  
+   fHistPresent = NULL;
+   fFitHist = NULL;
+   fGraph = NULL;
+   fRootCanvas = NULL;
+   fHandleMenus = NULL;
    fHasConnection = kFALSE;
-//   fGObjectGroups = NULL; 
+   fHiddenPrimitives  = NULL;
 };
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
@@ -85,7 +86,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    SetBit(kShowToolBar    ,0);
    SetBit(kShowEditor	  ,0);
    SetBit(kMoveOpaque	  ,0);
-   SetBit(kResizeOpaque   ,0); 
+   SetBit(kResizeOpaque   ,0);
 #endif
    Init();
 #if ROOTVERSION > 50000
@@ -103,7 +104,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    if (wtopx < 0) {
       wtopx    = -wtopx;
       fMenuBar = kFALSE;
-   } 
+   }
 #endif
 
    fCw           = ww;
@@ -137,17 +138,18 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    SetTitle(title); // requires fCanvasImp set
    fEditGridX = 0;
    fEditGridY = 0;
-   fHandleMenus = NULL;  
+   fHandleMenus = NULL;
+   fHiddenPrimitives = new TList();
    fUseEditGrid = 0;
    fHasConnection = kFALSE;
-
+   fCurrentPlane      = 50;
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
    Build();
    if (TestBit(kMenuBar)) {
-      fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph); 
+      fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
-      fHandleMenus->BuildMenus(); 
+      fHandleMenus->BuildMenus();
       if (flag & HTCanvas::kIsAEditorPage) {
          SetBit(HTCanvas::kIsAEditorPage);
       }
@@ -165,11 +167,11 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
       fRootCanvas->DontCallClose();
       TQObject::Connect((TGMainFrame*)fRootCanvas, "CloseWindow()",
                         this->ClassName(), this, "MyClose()");
-   }        
+   }
    fOrigWw = GetWw();
    fOrigWh = GetWh();
 
-//   cout << "ctor HTCanvas: " << this << " " << name 
+//   cout << "ctor HTCanvas: " << this << " " << name
 //        << " Id " << fRootCanvas->GetId() << endl;
 };
 //______________________________________________________________________________________
@@ -223,17 +225,25 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    TObject      *prevSelObj = 0;
    TPad         *prevSelPad = 0;
 
-   if (gROOT->GetEditorMode() != 0) in_edit = kTRUE;
+   if (gROOT->GetEditorMode() != 0) {
+      in_edit = kTRUE;
+   }
    if (fSelected && fSelected->TestBit(kNotDeleted))
       prevSelObj = fSelected;
    if (fSelectedPad && fSelectedPad->TestBit(kNotDeleted))
       prevSelPad = (TPad*) fSelectedPad;
 
    fPadSave = (TPad*)gPad;
-//   if (event == kButton1Down) { 
+   if (event == kButton1Down) {
 //      cout << "kButton1Down fSelected " << fSelected->ClassName() << " gPad " << gPad
 //        << " fSelectedPad " << fSelectedPad <<  endl;
-//   }
+      if (gROOT->GetEditorMode() != 0 && fSelectedPad != gPad) {
+         cout << "Please use selected pad" << endl;
+         gROOT->SetEditorMode();
+         gROOT->SetSelectedPad(NULL);
+         return;
+      }
+   }
    cd();        // make sure this canvas is the current canvas
 
 //   if (event == kButton1Down)  cout << "gPad " << gPad << endl;
@@ -304,7 +314,6 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
      // find pad in which input occured
       pad = Pick(px, py, prevSelObj);
       if (!pad) return;
-//      if (!fSelected) return;
 
       gPad = pad;   // don't use cd() because we won't draw in pad
                     // we will only use its coordinate system
@@ -312,7 +321,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          pad_of_image = pad;
          fSelected = pad_of_image;
       }
-   
+
 //OS start
       pxB1down = px;
       pyB1down = py;
@@ -344,16 +353,13 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
             }
 //         cout << "x y grid " << x << " " << y << endl;
       }
-   
+
 //OS end
       if (fSelected) {
          FeedbackMode(kTRUE);   // to draw in rubberband mode
          if (fSelected == fPadSave || gROOT->GetEditorMode() == 0) {
             fSelected->ExecuteEvent(event, px, py);
-         } else if  (gROOT->GetEditorMode() != 0) {
-            cout << "Please use selected pad" << endl;
          }
-           
          if (GetAutoExec()) RunAutoExec();
       }
 
@@ -393,7 +399,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          }
 
 //OS end
-         if (fSelected == fPadSave || gROOT->GetEditorMode() == 0) 
+         if (fSelected == fPadSave || gROOT->GetEditorMode() == 0)
             fSelected->ExecuteEvent(event, px, py);
             gVirtualX->Update();
 
@@ -419,7 +425,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    case kButton1Up:
       if (fSelected) {
          gPad = fSelectedPad;
-//         cout << "kButton1Up: this " << this 
+//         cout << "kButton1Up: this " << this
  //             << " fSelected " << fSelected->ClassName() << " gPad " << gPad << endl;
          if (fSelected->TestBit(kIsBound)) break;
          if (in_image) {
@@ -428,9 +434,9 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
             in_image = kFALSE;
          }
 //OS start
-//         cout << "name, px, py, bef " << fSelected->ClassName() << " " << pxB1down << " " << pyB1down 
+//         cout << "name, px, py, bef " << fSelected->ClassName() << " " << pxB1down << " " << pyB1down
 //                 << " "  << px << " " << py << endl;
-         
+
          if (px != pxB1down || py != pyB1down) obj_moved = kTRUE;
          if (fUseEditGrid && fSelectedPad == this &&
           !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
@@ -495,7 +501,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          while ((tc = (TCanvas *)next()))
             tc->Update();
       }
-//     Otto 
+//     Otto
       {
          if(fFitHist) fFitHist->AddMark((TPad*)gPad,px,py);
          else {
@@ -663,7 +669,7 @@ void HTCanvas::Build()
 
       fContextMenu = new TContextMenu("ContextMenu");
    } else {
-      // Make sure that batch interactive canvas sizes are the same 
+      // Make sure that batch interactive canvas sizes are the same
       fCw -= 4;
       fCh -= 28;
    }
@@ -738,9 +744,9 @@ void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)
    if (fh)  fFitHist = fh;
    if (gr)  fGraph= gr;
 
-   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph); 
+   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
-   fHandleMenus->BuildMenus(); 
+   fHandleMenus->BuildMenus();
    fCanvasImp->ShowEditor(kFALSE);
    fCanvasImp->ShowToolBar(kFALSE);
    fCanvasImp->ShowStatusBar(kFALSE);
@@ -750,9 +756,9 @@ void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)
 
 void HTCanvas::Add2ConnectedClasses(TObject *obj)
 {
-   this->Connect("ObjectCreated(Int_t, Int_t, TObject*)", obj->ClassName(), obj, 
+   this->Connect("ObjectCreated(Int_t, Int_t, TObject*)", obj->ClassName(), obj,
                  "ObjCreated(Int_t, Int_t, TObject*)");
-   this->Connect("ObjectMoved(Int_t, Int_t, TObject*)", obj->ClassName(), obj, 
+   this->Connect("ObjectMoved(Int_t, Int_t, TObject*)", obj->ClassName(), obj,
                  "ObjMoved(Int_t, Int_t, TObject*)");
    fHasConnection = kTRUE;
 }
@@ -782,4 +788,68 @@ void HTCanvas::ObjectMoved(Int_t px, Int_t py, TObject *obj)
       Emit("ObjectMoved(Int_t, Int_t, TObject*)", args );
    }
 }
+//______________________________________________________________________________
+
+Double_t HTCanvas::PutOnGridX(Double_t x)
+{
+   if (fEditGridX ==  0) return x;
+   Int_t n = (Int_t)((x + TMath::Sign(0.5*fEditGridX, x)) / fEditGridX);
+   return (Double_t)n * fEditGridX;
+}
+//______________________________________________________________________________
+
+Double_t HTCanvas::PutOnGridY(Double_t y)
+{
+   if (fEditGridY ==  0) return y;
+   Int_t n = (Int_t)((y + TMath::Sign(0.5*fEditGridY, y)) / fEditGridY);
+   return (Double_t)n * fEditGridY;
+}
+//______________________________________________________________________________
+
+Double_t HTCanvas::PutOnGridX_NDC(Double_t x)
+{
+   if (fEditGridX <=  0) return x;
+   Double_t px1 = gPad->GetX1();
+   Double_t px2 = gPad->GetX2();
+	Double_t gNDC = fEditGridX /(px2 - px1);
+
+   Int_t n = (Int_t)((x + TMath::Sign(0.5*gNDC, x)) / gNDC);
+   return (Double_t)n * gNDC;
+}
+//______________________________________________________________________________
+
+Double_t HTCanvas::PutOnGridY_NDC(Double_t y)
+{
+   if (fEditGridY ==  0) return y;
+   Double_t py1 = gPad->GetY1();
+   Double_t py2 = gPad->GetY2();
+	Double_t gNDC = fEditGridY /(py2 - py1);
+
+   Int_t n = (Int_t)((y + TMath::Sign(0.5*gNDC, y)) / gNDC);
+   return (Double_t)n * gNDC;
+}
+//______________________________________________________________________________
+
+void HTCanvas::HideObject(TObject *obj)
+{
+   if (!obj || obj == this || GetListOfPrimitives()->GetEntries()  <= 0 ) return;
+   std::cout << "HideObject obj, gPad " << obj << " " << gPad << endl;
+   HprElement::MoveObject(obj, GetListOfPrimitives(), fHiddenPrimitives);
+}
+//______________________________________________________________________________
+
+void HTCanvas::ViewObject(TObject *obj)
+{
+   std::cout << "ViewObject obj, gPad " << obj << " " << gPad << endl;
+   HprElement::MoveObject(obj, fHiddenPrimitives, GetListOfPrimitives());
+}
+
+//______________________________________________________________________________
+
+void HTCanvas::ViewAllObjects()
+{
+   if (!fHiddenPrimitives || fHiddenPrimitives->GetEntries() <=0 ) return;
+   HprElement::MoveAllObjects(fHiddenPrimitives, GetListOfPrimitives(), 0, 1);
+}
+//____________________________________________________________________________
 
