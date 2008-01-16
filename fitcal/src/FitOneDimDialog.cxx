@@ -2097,7 +2097,7 @@ void FitOneDimDialog::FillHistRandom()
 
 void FitOneDimDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fFitOptLikelihood = env.GetValue("FitOneDimDialog.FitOptLikelihood", 0);
    fFitOptQuiet      = env.GetValue("FitOneDimDialog.FitOptQuiet", 0);
    fFitOptVerbose    = env.GetValue("FitOneDimDialog.FitOptVerbose", 0);
@@ -2160,7 +2160,7 @@ void FitOneDimDialog::RestoreDefaults()
 
 void FitOneDimDialog::SaveDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("FitOneDimDialog.FitOptLikelihood", fFitOptLikelihood);
    env.SetValue("FitOneDimDialog.FitOptQuiet",      fFitOptQuiet);
    env.SetValue("FitOneDimDialog.FitOptVerbose",    fFitOptVerbose);
@@ -2226,12 +2226,12 @@ void FitOneDimDialog::CloseDialog()
 {
  //  cout << "FitOneDimDialog::CloseDialog() " << endl;
    gROOT->GetListOfCleanups()->Remove(this);
-   if (fDialog) fDialog->CloseWindow();
+   if (fDialog) fDialog->CloseWindowExt();
    delete this;
 }
 //_______________________________________________________________________
 
-void FitOneDimDialog::CloseDown()
+void FitOneDimDialog::CloseDown(Int_t wid)
 {
 //   cout << "FitOneDimDialog::CloseDown() " << endl;
    SaveDefaults();

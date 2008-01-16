@@ -19,9 +19,10 @@ Int_t FoldSqareWave(Int_t i, Int_t j,Int_t m){
 }
 //_____________________________________________________________________
 
-PeakFinder::PeakFinder(TH1 * hist, Int_t mwidth, Double_t thresh)
-               : fSelHist(hist), fPeakMwidth(mwidth), fPeakThreshold(thresh)
+PeakFinder::PeakFinder(TH1 * hist, Double_t pwidth, Double_t thresh)
+               : fSelHist(hist), fPeakThreshold(thresh)
 {
+   fPeakMwidth = (Int_t) (pwidth / hist->GetBinWidth(1));
    static Int_t LENINC = 50;
    fPositions.Set(LENINC);
    fWidths.Set(LENINC);
@@ -44,6 +45,7 @@ PeakFinder::PeakFinder(TH1 * hist, Int_t mwidth, Double_t thresh)
 
    Int_t bin, i, L, start=0, wid;
    Stat_t fold, var;
+   fNpeaks = 0;
 //   cout << "PeakFinder: fPeakMwidth fPeakThreshold: " << fPeakMwidth << " " << fPeakThreshold<< endl;
    Int_t nbins   = fSelHist->GetNbinsX();
    for (bin = 1;bin<=nbins-1;bin++) {
@@ -78,9 +80,11 @@ PeakFinder::PeakFinder(TH1 * hist, Int_t mwidth, Double_t thresh)
                   Float_t x = fSelHist->GetBinCenter(maxp);
                   Int_t l = fPositions.GetSize();
                   if (fNpeaks >= l) {
+                     cout << "PeakFinder fNpeaks" << fNpeaks <<endl;
 							fPositions.Set(l + LENINC);
 							fWidths.Set(l + LENINC);
 							fHeights.Set(l + LENINC);
+                     cout << "PeakFinderL  " << fPositions.GetSize() << endl;
                   }   
                   fPositions[fNpeaks] = x;
                   fWidths[fNpeaks] = wid;

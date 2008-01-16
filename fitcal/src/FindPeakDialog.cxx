@@ -46,6 +46,7 @@ Parameters for square wave convolution:\n\
    fInteractive = interactive;
    fFindPeakDone = 0;
    fSelHist = hist;
+   fName = hist->GetName();
    fParentWindow = NULL; 
    SetBit(kMustCleanup);
    fSelPad = gPad;
@@ -56,20 +57,22 @@ Parameters for square wave convolution:\n\
       if (c->GetListOfPrimitives()->FindObject(fName)) {
          fSelPad = c;
          fSelPad->cd();
-//         cout << "fSelPad " << fSelPad << endl;
+//         cout << "fSelPad " << fSelPad << " name: " << fName<< endl;
          break;
       }
    }
+  
    if (fSelPad == NULL) {
      cout << "fSelPad = 0!!" <<  endl;
    } else {
+      
       fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
    }
    TAxis *ax = fSelHist->GetXaxis();
    fFrom = fSelHist->GetBinCenter(ax->GetFirst());
    fTo = fSelHist->GetBinCenter(ax->GetLast());
    RestoreDefaults();
-   cout << "fSigma " <<fSigma << endl;
+//   cout << "fSigma " <<fSigma << endl;
    if ( interactive > 0 ) {
 		TList *row_lab = new TList(); 
 		static void *valp[50];
@@ -83,8 +86,10 @@ Parameters for square wave convolution:\n\
 		row_lab->Add(new TObjString("DoubleValue+To"));
 		valp[ind++] = &fTo;
 		row_lab->Add(new TObjString("RadioButton_TSpectrum"));
+      fUseTSpectrumEntry = ind;
 		valp[ind++] = &fUseTSpectrum;
 		row_lab->Add(new TObjString("RadioButton+SQWaveConv"));
+      fUseSQWaveFoldEntry = ind;
 		valp[ind++] = &fUseSQWaveFold;
 		row_lab->Add(new TObjString("CommentOnly_Parameters for TSpectrum"));
 		valp[ind++] = &dummy;
@@ -109,7 +114,7 @@ Parameters for square wave convolution:\n\
 		valp[ind++] = &fThresholdSigma;
 //		row_lab->Add(new TObjString("DoubleValue+2 Peak Sep[sig]"));
 //		valp[ind++] = &fTwoPeakSeparation;
-		row_lab->Add(new TObjString("PlainIntVal+PeakMWidth"));
+		row_lab->Add(new TObjString("DoubleValue+PeakMWidth"));
       fPeakMwidthEntry = ind;
 		valp[ind++] = &fPeakMwidth;
 		row_lab->Add(new TObjString("CommandButt_Execute Find"));
@@ -124,7 +129,7 @@ Parameters for square wave convolution:\n\
 		new TGMrbValuesAndText ("FindPeaks", NULL, &ok, itemwidth,
 								fParentWindow, NULL, NULL, row_lab, valp,
 								NULL, NULL, helptext, this, this->ClassName());
-      CRButtonPressed();
+      CRButtonPressed(0, fUseTSpectrumEntry, NULL);
    }
 }
 //__________________________________________________________________________
@@ -138,7 +143,9 @@ FindPeakDialog::~FindPeakDialog()
 
 void FindPeakDialog::RecursiveRemove(TObject * obj)
 {
-   if (obj == fSelHist) { 
+//   cout << "FindPeakDialog: RecursiveRemove " << obj << endl;
+   if (obj == fSelPad) { 
+//      cout << "FindPeakDialog: CloseDialog "  << endl;
       CloseDialog(); 
    }
 }
@@ -216,7 +223,7 @@ void FindPeakDialog::ExecuteFindPeak()
       xpeaks = pf->GetPositionX();
       nfound = pf->GetNpeaks();
    }
-
+   if (nfound > 100) nfound = 100;
    for (Int_t i=0;i<nfound;i++) {
       Float_t xp = xpeaks[i];
       if (xp < fFrom || xp > fTo) continue;
@@ -249,7 +256,7 @@ void FindPeakDialog::ExecuteFindPeak()
 
 void FindPeakDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fFrom      = env.GetValue("FindPeakDialog.fFrom", 0.);
    fTo        = env.GetValue("FindPeakDialog.fTo", 2000.);
    fThreshold = env.GetValue("FindPeakDialog.fThreshold", 0.001);
@@ -267,7 +274,7 @@ void FindPeakDialog::RestoreDefaults()
 
 void FindPeakDialog::SaveDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("FindPeakDialog.fFrom",      fFrom     );
    env.SetValue("FindPeakDialog.fTo",        fTo       );
    env.SetValue("FindPeakDialog.fThreshold", fThreshold);
@@ -288,36 +295,38 @@ void FindPeakDialog::CloseDialog()
 {
    cout << "FindPeakDialog::CloseDialog() " << endl;
    gROOT->GetListOfCleanups()->Remove(this);
-   if (fInteractive >  0) fDialog->CloseWindow();
+   if (fInteractive >  0) fDialog->CloseWindowExt();
    delete this;
 }
 //_______________________________________________________________________
 
-void FindPeakDialog::CloseDown()
+void FindPeakDialog::CloseDown(Int_t wid)
 {
-   cout << "FindPeakDialog::CloseDown() " << endl;
+   cout << "FindPeakDialog::CloseDown() " << wid<< endl;
    SaveDefaults();
    delete this;
 }
 //_______________________________________________________________________
 
-void FindPeakDialog::CRButtonPressed() 
+void FindPeakDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) 
 {
-	if (fUseTSpectrum) {
-		fDialog->DisableButton(fThresholdSigmaEntry);
-		fDialog->DisableButton(fPeakMwidthEntry    );
-		fDialog->EnableButton(fThresholdEntry);
-		fDialog->EnableButton(fSigmaEntry    );
-		fDialog->EnableButton(fMarkowEntry   );
-		fDialog->EnableButton(fRemoveBGEntry );
-	} else {
-		fDialog->DisableButton(fThresholdEntry);
-		fDialog->DisableButton(fSigmaEntry    );
-		fDialog->DisableButton(fMarkowEntry   );
-		fDialog->DisableButton(fRemoveBGEntry );
-		fDialog->EnableButton(fThresholdSigmaEntry);
-		fDialog->EnableButton(fPeakMwidthEntry    );
-	}
-//   cout << "FindPeakDialog::Btp " <<endl;
+   if (bid == fUseTSpectrumEntry || bid == fUseSQWaveFoldEntry) {
+		if (fUseTSpectrum) {
+			fDialog->DisableButton(fThresholdSigmaEntry);
+			fDialog->DisableButton(fPeakMwidthEntry    );
+			fDialog->EnableButton(fThresholdEntry);
+			fDialog->EnableButton(fSigmaEntry    );
+			fDialog->EnableButton(fMarkowEntry   );
+			fDialog->EnableButton(fRemoveBGEntry );
+		} else {
+			fDialog->DisableButton(fThresholdEntry);
+			fDialog->DisableButton(fSigmaEntry    );
+			fDialog->DisableButton(fMarkowEntry   );
+			fDialog->DisableButton(fRemoveBGEntry );
+			fDialog->EnableButton(fThresholdSigmaEntry);
+			fDialog->EnableButton(fPeakMwidthEntry    );
+		}
+   }
+//   cout << "FindPeakDialog::Btp " << wid << " " << bid << endl;
 }
 

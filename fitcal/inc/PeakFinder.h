@@ -20,7 +20,7 @@ private:
    TArrayD  fHeights;
 public:
    PeakFinder(){};
-   PeakFinder(TH1 * hist, Int_t mwidth, Double_t thresh);
+   PeakFinder(TH1 * hist, Double_t mwidth, Double_t thresh);
 
    ~PeakFinder() {};
    Float_t  *GetPositionX() { return fPositions.GetArray(); };

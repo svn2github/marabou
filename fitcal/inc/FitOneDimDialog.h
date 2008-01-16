@@ -139,7 +139,7 @@ public:
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDialog();
-   void CloseDown();
+   void CloseDown(Int_t wid);
    void IncrementIndex(TString * arg);
 //
    void SetPeakSep( Double_t peaksep) { fPeakSep = peaksep; };
@@ -193,7 +193,7 @@ public:
    Int_t GetFitOptNoDraw() { return fFitOptNoDraw; };
    Int_t GetFitOptAddAll() { return fFitOptAddAll; };
    Int_t GetFitPrintCovariance() { return fFitPrintCovariance; };
-   void CRButtonPressed(){};
+   void CRButtonPressed(Int_t, Int_t, TObject *){};
 
 ClassDef(FitOneDimDialog,0)
 };

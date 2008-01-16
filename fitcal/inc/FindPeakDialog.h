@@ -33,16 +33,18 @@ private:
    Int_t    fShowMarkers;        // draw polymarker at found peak
    Int_t    fFindPeakDone;       // number of peaksearches executed
    Int_t    fUseTSpectrum ;      // trigger TSpectrum method
-   Int_t    fUseSQWaveFold;
+   Int_t    fUseSQWaveFold;      // trigger Square wave convolution  method
    Double_t fThresholdSigma;     // threshold in Square wave folding search
-   Int_t    fPeakMwidth;         // width Square wave folding search
-                               
-   Int_t    fThresholdEntry;            
-   Int_t    fSigmaEntry;            
-   Int_t    fMarkowEntry;					
-   Int_t    fRemoveBGEntry;         
-   Int_t    fThresholdSigmaEntry;   
-   Int_t    fPeakMwidthEntry;       
+   Double_t fPeakMwidth;         // width Square wave folding search
+
+   Int_t    fUseTSpectrumEntry ;
+   Int_t    fUseSQWaveFoldEntry;
+   Int_t    fThresholdEntry;
+   Int_t    fSigmaEntry;
+   Int_t    fMarkowEntry;
+   Int_t    fRemoveBGEntry;
+   Int_t    fThresholdSigmaEntry;
+   Int_t    fPeakMwidthEntry;
 
 public:
    FindPeakDialog(TH1 * hist, Int_t interactive =1);
@@ -54,8 +56,8 @@ public:
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDialog();
-   void CloseDown();
-   void CRButtonPressed();
+   void CloseDown(Int_t wid);
+   void CRButtonPressed(Int_t, Int_t, TObject*);
    void SetFrom( Double_t from) { fFrom = from; };
    void SetTo( Double_t to) { fTo = to; };
    void SetThreshold( Double_t threshold) { fThreshold = threshold; };
@@ -64,6 +66,10 @@ public:
    void SetMarkow( Int_t markow) { fMarkow = markow; };
    void SetRemoveBG( Int_t removebg) { fRemoveBG = removebg; };
    void SetShowMarkers( Int_t showmarkers) { fShowMarkers = showmarkers; };
+   void SetUseTSpectrum() {fUseTSpectrum =1; fUseSQWaveFold =0;};
+   void SetUseSQWaveFold() {fUseTSpectrum =0; fUseSQWaveFold =1;};
+   void SetThresholdSigma(Double_t val) {fThresholdSigma = val;};
+   void SetPeakMwidth(Int_t val) {fPeakMwidth = val;};
    Double_t GetFrom() { return fFrom; };
    Double_t GetTo() { return fTo; };
    Double_t GetThreshold() { return fThreshold; };
@@ -72,6 +78,10 @@ public:
    Int_t GetMarkow() { return fMarkow; };
    Int_t GetRemoveBG() { return fRemoveBG; };
    Int_t GetShowMarkers() { return fShowMarkers; };
+   Int_t GetUseTSpectrum() {return fUseTSpectrum;};
+   Int_t GetUseSQWaveFold() {return fUseSQWaveFold;};
+   Double_t GetThresholdSigma() {return fThresholdSigma;};
+   Int_t GetPeakMwidth() {return fPeakMwidth;};
 
 ClassDef(FindPeakDialog,0)
 };

@@ -77,8 +77,8 @@ private:
 
 public:
    CalibrationDialog(TH1 * hist, Int_t interactive = 1);
-   virtual ~CalibrationDialog(){};
-//   void RecursiveRemove(TObject * obj) {};
+   virtual ~CalibrationDialog();
+   void RecursiveRemove(TObject * obj);
    TF1 * CalculateFunction();
    void SaveFunction();
    void GetFunction();
@@ -97,10 +97,10 @@ public:
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDialog();
-   void CloseDown();
+   void CloseDown(Int_t wid);
    void DisableDialogs();
    void EnableDialogs();
-   void CRButtonPressed(){};
+   void CRButtonPressed(Int_t, Int_t, TObject *){};
    inline void SetInteractive( Int_t interactive) { fInteractive = interactive; };
    inline void SetVerbose(Int_t val) { fVerbose = val; };
    inline void SetCalibratedNbinsX( Int_t calibratednbinsx) { fCalibratedNbinsX = calibratednbinsx; };
