@@ -21,7 +21,7 @@ private:
 
 public:
    HprElement(TObject * daughter = NULL);
-   ~HprElement();
+   virtual ~HprElement();
    void  SetPlane(Int_t plane) { fPlane = plane; };         // *MENU*
    Int_t GetPlane() const      { return fPlane; };          // *MENU*
    void  SetMustAlign(Int_t al){ fMustAlign = al; };        // *MENU*
