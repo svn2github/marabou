@@ -81,7 +81,7 @@ public:
    Int_t GetUseTSpectrum() {return fUseTSpectrum;};
    Int_t GetUseSQWaveFold() {return fUseSQWaveFold;};
    Double_t GetThresholdSigma() {return fThresholdSigma;};
-   Int_t GetPeakMwidth() {return fPeakMwidth;};
+   Int_t GetPeakMwidth() {return (Int_)fPeakMwidth;};
 
 ClassDef(FindPeakDialog,0)
 };
