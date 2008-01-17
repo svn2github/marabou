@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXMLCodeGen.cxx,v 1.3 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeGen.cxx,v 1.4 2008-01-17 09:26:13 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -147,6 +147,7 @@ Bool_t TMrbXMLCodeGen::ParseFile(const Char_t * XmlFile) {
 // Name:           TMrbXMLCodeGen::ParseFile
 // Purpose:        Parse XML data from file
 // Arguments:      Char_t * XmlFile   -- filename
+//                 Char_t * Prefix    -- prefix to be prepended to file name
 // Results:        kTRUE/kFALSE
 //////////////////////////////////////////////////////////////////////////////
 

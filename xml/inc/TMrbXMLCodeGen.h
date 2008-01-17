@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeGen    -- Marabou's SAX parser implementation
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeGen.h,v 1.3 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeGen.h,v 1.4 2008-01-17 09:26:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ class TMrbXMLCodeGen: public TObject {
 		Bool_t ParseFile(const Char_t * XmlFile); 	// parse xml data
 
 		inline TMrbXMLCodeClient * Client() { return(fClient); };
-		inline void ConnectToClient(TMrbXMLCodeClient * Client) { fClient = Client; }; // connect to client object
+		inline void ConnectToClient(TMrbXMLCodeClient * Client) { fClient = Client; };					// connect to client object
 
 	protected:
 

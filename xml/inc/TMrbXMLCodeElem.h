@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeElem    -- XML code elemenet/node
 // Description:    Class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeElem.h,v 1.6 2008-01-16 07:56:47 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.h,v 1.7 2008-01-17 09:26:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -144,14 +144,15 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		TMrbXMLCodeElem * HasAncestor(const Char_t * Ancestor, Bool_t Verbose = kTRUE);
 		Bool_t CopyCodeToParent();
 		Bool_t CopyChildToParent(const Char_t * ChildName, const Char_t * ChildCode = NULL);
-		Bool_t CopySubstToParent(const Char_t * Sname = NULL, Bool_t UpperCase = kFALSE, const Char_t * Svalue = "", const Char_t * Tag = NULL);
-		Bool_t GetFromParent(const Char_t * ElemName, TString & ElemCode);
-		Bool_t InheritTag(TString & Tag, Bool_t Verbose = kTRUE);
+		Bool_t CopySubstToParent(const Char_t * Sname = NULL, const Char_t * Descr = NULL, const Char_t * Tag = NULL);
+		Bool_t GetChildFromParent(const Char_t * ElemName, TString & ElemCode);
+		Bool_t FindTag(TString & Tag, Bool_t Verbose = kTRUE);
+		Bool_t FindSubst(TString & Subst, Bool_t Verbose = kTRUE);
 		Bool_t RequestLofItems(const Char_t * Tag, const Char_t * ItemName, TString & LofItems);
 		Bool_t RequestConditionFlag(const Char_t * Tag, const Char_t * FlagName, TString & FlagValue);
 		void ClearSubst();
 		Bool_t RequestSubst(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TEnv * LofSubst);
-		Bool_t Substitute() { return(kTRUE); };
+		Bool_t Substitute(TString & Code) { return(kTRUE); };
 		Bool_t ExpandSwitchAndIf() { return(kTRUE); };
 
 		void Indent(ostream & Out);

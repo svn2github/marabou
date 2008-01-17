@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXMLCodeElem.cxx,v 1.6 2008-01-16 07:56:47 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.cxx,v 1.7 2008-01-17 09:26:13 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -242,22 +242,23 @@ Bool_t TMrbXMLCodeElem::CopyChildToParent(const Char_t * ChildName, const Char_t
 	}
 }
 
-Bool_t TMrbXMLCodeElem::CopySubstToParent(const Char_t * Sname, Bool_t UpperCase, const Char_t * Svalue, const Char_t * Tag) {
+Bool_t TMrbXMLCodeElem::CopySubstToParent(const Char_t * Sname, const Char_t * Descr, const Char_t * Tag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXMLCodeElem::CopySubstToParent
 // Purpose:        Copy substitutions to parent node
 // Arguments:      Char_t * Sname    -- name of subst
-//                 Char_t * Sval     -- value
+//                 Char_t * Descr    -- description
+//                 Char_t * tag      -- associated tag
 // Results:        kTRUE/kFALSE
-// Description:    Copies substitutions (<s>...</s> and <S>...</S>) to parent node
+// Description:    Copies substitutions (<subst>...</subst>) to parent node
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fParent) {
 		if (Sname != NULL) {
-			fParent->LofSubst()->SetValue(Form("%s.Name", Sname), (Svalue == NULL ? "" : Svalue));
-			fParent->LofSubst()->SetValue(Form("%s.UpperCase", Sname), (UpperCase ? "TRUE" : "FALSE"));
-			fParent->LofSubst()->SetValue(Form("%s.RequestFrom", Sname), Form("%s:%s", this->GetName(), (Tag == NULL) ? "NoTag" : Tag));
+			fParent->LofSubst()->SetValue(Form("%s.Value", Sname), "");
+			fParent->LofSubst()->SetValue(Form("%s.Descr", Sname), (Descr == NULL) ? "" : Descr);
+			fParent->LofSubst()->SetValue(Form("%s.Tag", Sname), (Tag == NULL || *Tag == '\0') ? "XML_ROOT" : Tag);
 		} else {
 			TList * lsubst = (TList *) fLofSubst.GetTable();
 			if (lsubst) {
@@ -274,11 +275,11 @@ Bool_t TMrbXMLCodeElem::CopySubstToParent(const Char_t * Sname, Bool_t UpperCase
 	}
 }
 
-Bool_t TMrbXMLCodeElem::GetFromParent(const Char_t * ElemName, TString & ElemCode) {
+Bool_t TMrbXMLCodeElem::GetChildFromParent(const Char_t * ElemName, TString & ElemCode) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbXMLCodeElem::GetFromParent
-// Purpose:        Get a sub-element from parent
+// Name:           TMrbXMLCodeElem::GetChildFromParent
+// Purpose:        Get a child element from parent
 // Arguments:      Char_t * ElemName  -- element name
 //                 TString & ElemCode -- code
 // Results:        kTRUE/kFALSE
@@ -291,28 +292,31 @@ Bool_t TMrbXMLCodeElem::GetFromParent(const Char_t * ElemName, TString & ElemCod
 		if (ElemCode.IsNull()) {
 			gMrbLog->Err()	<< "[" << this->GetName() << "] Couldn't get element <" << ElemName
 							<< "> from parent <" << fParent->GetName() << ">" << endl;
-			gMrbLog->Flush(this->ClassName(), "GetFromParent");
+			gMrbLog->Flush(this->ClassName(), "GetChildFromParent");
 			return(kFALSE);
 		}
 		return(kTRUE);
 	} else {
 		gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetFromParent");
+		gMrbLog->Flush(this->ClassName(), "GetChildFromParent");
 		return(kFALSE);
 	}
 }
 
-Bool_t TMrbXMLCodeElem::InheritTag(TString & Tag, Bool_t Verbose) {
+Bool_t TMrbXMLCodeElem::FindTag(TString & Tag, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbXMLCodeElem::InheritTag
-// Purpose:        Ask ancestors for a tag
+// Name:           TMrbXMLCodeElem::FindTag
+// Purpose:        Search for a tag
 // Arguments:      TString & Tag  -- tag name
 // Results:        kTRUE/kFALSE
-// Description:    Passes a element from parent to child
+// Description:    Searches for a given tag thru the list of ancestors
 //////////////////////////////////////////////////////////////////////////////
 
 	Tag = "";
+
+	if (this->HasChild("tag", Tag, kFALSE)) return(kTRUE);
+
 	if (fParent) {
 		TMrbXMLCodeElem * e = fParent;
 		while (e) {
@@ -321,14 +325,14 @@ Bool_t TMrbXMLCodeElem::InheritTag(TString & Tag, Bool_t Verbose) {
 			e = e->Parent();
 		}
 		if (Verbose) {
-			gMrbLog->Err() << "[" << this->GetName() << "] No ancestor found having a tag" << endl;
-			gMrbLog->Flush(this->ClassName(), "InheritTag");
+			gMrbLog->Err() << "[" << this->GetName() << "] No tag found, neither as child nor in list of ancestors" << endl;
+			gMrbLog->Flush(this->ClassName(), "FindTag");
 		}
 		return(kFALSE);
 	} else {
 		if (Verbose) {
 			gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
-			gMrbLog->Flush(this->ClassName(), "InheritTag");
+			gMrbLog->Flush(this->ClassName(), "FindTag");
 		}
 		return(kFALSE);
 	}
@@ -380,14 +384,14 @@ Bool_t TMrbXMLCodeElem::RequestLofItems(const Char_t * Tag, const Char_t * ItemN
 	}
 }
 
-Bool_t TMrbXMLCodeElem::RequestSubst(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TEnv * LofSubst) {
+Bool_t TMrbXMLCodeElem::RequestSubst(const Char_t * Tag, const Char_t * ItemName, const Char_t * ItemData, TEnv * LofSubst) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXMLCodeElem::RequestSubst
 // Purpose:        Ask client for a list of substitutions
 // Arguments:      Char_t * Tag    -- current tag
 //                 Char_t * ItemName  -- name of item
-//                 Char_t * Item      -- item value
+//                 Char_t * ItemData  -- item value
 //                 TEnv * LofSubst    -- list of substitutions
 // Results:        kTRUE/kFALSE
 // Description:    Interface to client object: Call for substitutions
@@ -396,16 +400,16 @@ Bool_t TMrbXMLCodeElem::RequestSubst(const Char_t * Tag, const Char_t * ItemName
 	if (fParser) {
 		TMrbXMLCodeClient * client = fParser->Client();
 		if (client) {
-			return(client->ProvideSubst(this->GetName(), Tag, ItemName, Item, LofSubst));
+			return(client->ProvideSubst(this->GetName(), Tag, ItemName, ItemData, LofSubst));
 		} else {
 			gMrbLog->Err()	<< "[" << this->GetName() << "] No client connected - can't get substitutions for tag=\""
-							<< Tag << "\", item \"" << ItemName << "=" << Item << "\"" << endl;
+							<< Tag << "\", item \"" << ItemName << "=" << ItemData << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "RequestSubst");
 			return(kFALSE);
 		}
 	} else {
 		gMrbLog->Err()	<< "[" << this->GetName() << "] No XML parser connected - can't get substitutions for tag=\""
-						<< Tag << "\", item \"" << ItemName << "=" << Item << "\"" << endl;
+						<< Tag << "\", item \"" << ItemName << "=" << ItemData << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "RequestSubst");
 		return(kFALSE);
 	}
@@ -549,6 +553,11 @@ Bool_t TMrbXMLCodeElem::ProcessElement_File() {
 
 	if (!this->CopyChildToParent("xname")) return(kFALSE);
 
+	Bool_t err = !this->RequestSubst("XML_ROOT", NULL, NULL, this->LofSubst());
+	err |= !this->Substitute(fCode);
+
+	err |= !this->Substitute(gname);
+
 	ofstream file(gname.Data(), ios::out);
 	if (!file.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << gname << endl;
@@ -625,7 +634,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Code() {
 	if (!tag.IsNull()) {
 		this->ClearSubst();
 		err |= !this->RequestSubst(tag.Data(), NULL, NULL, this->LofSubst());
-		err |= !this->Substitute();
+		err |= !this->Substitute(fCode);
 	}
 	err |= !this->CopyCodeToParent();
 	return(!err);
@@ -664,7 +673,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Foreach() {
 		return(kFALSE);
 	}
 	TString tag;
-	if (!this->InheritTag(tag)) return(kFALSE);
+	if (!this->FindTag(tag)) return(kFALSE);
 	TString lofItems;
 	if (!this->RequestLofItems(tag.Data(), itemName.Data(), lofItems)) return(kFALSE);
 	TString origCode = fCode;
@@ -675,7 +684,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Foreach() {
 		fCode = origCode;
 		this->ClearSubst();
 		err |= !this->RequestSubst(tag.Data(), itemName.Data(), item.Data(), this->LofSubst());
-		err |= !this->Substitute();
+		err |= !this->Substitute(fCode);
 		err |= !this->ExpandSwitchAndIf();
 		err |= !this->CopyCodeToParent();
 	}
@@ -712,7 +721,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Switch() {
 		fLofSubst.SetValue(Form("@s|%s@", item.Data()), "");
 	} else {
 		TString tag;
-		if (!this->InheritTag(tag)) return(kFALSE);
+		if (!this->FindTag(tag)) return(kFALSE);
 		TString itemVal;
 		if (!this->RequestLofItems(tag.Data(), item.Data(), itemVal)) return(kFALSE);
 		if (!this->HasChild(Form("case_%s_%s", item.Data(), itemVal.Data()), fCode)) return(kFALSE);
@@ -741,7 +750,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_If() {
 		fLofSubst.SetValue(Form("@s|%s@", flag.Data()), "");
 	} else {
 		TString tag;
-		if (!this->InheritTag(tag)) return(kFALSE);
+		if (!this->FindTag(tag)) return(kFALSE);
 		TString flagVal;
 		if (!this->RequestConditionFlag(tag.Data(), flag.Data(), flagVal)) return(kFALSE);
 		if (flagVal.CompareTo("TRUE") != 0) return(kFALSE);
@@ -768,7 +777,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Case() {
 	if (!this->HasChild("tag", caseTag)) return(kFALSE);
 	
 	TString itemName;
-	if (!this->GetFromParent("item", itemName)) return(kFALSE);
+	if (!this->GetChildFromParent("item", itemName)) return(kFALSE);
 	Bool_t err = !this->CopyChildToParent(Form("case_%s_%s", itemName.Data(), caseTag.Data()), fCode);
 	err |= !this->CopySubstToParent();
 	return(!err);
@@ -883,6 +892,40 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Flag() {
 	}
 }
 
+Bool_t TMrbXMLCodeElem::ProcessElement_Slist() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::ProcessElement_Slist
+// Purpose:        Substitute: <slist>...</slist>
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    Copies own list of substitutions to parent
+//////////////////////////////////////////////////////////////////////////////
+
+	return(this->CopySubstToParent());
+}
+
+Bool_t TMrbXMLCodeElem::ProcessElement_Subst() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::ProcessElement_Subst
+// Purpose:        Substitute: <subst>...</subst>
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    Adds a substitution item to list of substitutions
+//                 then adds code to list of substitutions
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->ParentIs("slist")) return(kFALSE);
+	TString sname;
+	if (!this->HasChild("sname", sname)) return(kFALSE);
+	TString descr;
+	this->HasChild("descr", descr, kFALSE);
+	TString tag;
+	this->FindTag(tag, kFALSE);
+	return(this->CopySubstToParent(sname.Data(), descr.Data(), tag.Data()));
+};
+
 Bool_t TMrbXMLCodeElem::ProcessElement_s() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -894,12 +937,8 @@ Bool_t TMrbXMLCodeElem::ProcessElement_s() {
 //                 then adds code to list of substitutions
 //////////////////////////////////////////////////////////////////////////////
 
-	TString tag;
-	this->InheritTag(tag, kFALSE);
-	Bool_t err = !this->CopySubstToParent(fCode, kFALSE, "", tag.Data());
 	fCode = Form("@s|%s@", fCode.Data());
-	err |= !this->CopyCodeToParent();
-	return(!err);
+	return(this->CopyCodeToParent());
 };
 
 Bool_t TMrbXMLCodeElem::ProcessElement_S() {
@@ -913,12 +952,8 @@ Bool_t TMrbXMLCodeElem::ProcessElement_S() {
 //                 then adds code to list of substitutions
 //////////////////////////////////////////////////////////////////////////////
 
-	TString tag;
-	this->InheritTag(tag, kFALSE);
-	Bool_t err = !this->CopySubstToParent(fCode, kTRUE, "", tag.Data());
 	fCode = Form("@S|%s@", fCode.Data());
-	err |= !this->CopyCodeToParent();
-	return(!err);
+	return(this->CopyCodeToParent());
 };
 
 Bool_t TMrbXMLCodeElem::ProcessElement_L() {
@@ -1014,14 +1049,10 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Rm() { return(this->CopyCodeToParent()); 
 // Purpose:        Elements which have meaning for HTML only, NOP here
 // Arguments:      --
 // Results:        kTRUE
-// Description:    <slist>...</slist>                  MARaBOU substitution
-//                 <subst>...</subst>                  ...
-//                 <mrbClassList>...</mrbClassList>    list of MARaBOU classes
+// Description:    <mrbClassList>...</mrbClassList>    list of MARaBOU classes
 //                 <rootClassList>...</rootClassList>  list of ROOT classes
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t TMrbXMLCodeElem::ProcessElement_Slist() { return(kTRUE); };
-Bool_t TMrbXMLCodeElem::ProcessElement_Subst() { return(kTRUE); };
 Bool_t TMrbXMLCodeElem::ProcessElement_RootClassList() { return(kTRUE); };
 Bool_t TMrbXMLCodeElem::ProcessElement_MrbClassList() { return(kTRUE); };
 

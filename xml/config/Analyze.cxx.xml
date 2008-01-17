@@ -5,10 +5,17 @@
 
 <mrbcode>
 	<file>
+		<slist>
+			<subst><sname>prefix</sname><descr>description/name of experiment</descr></subst>
+			<subst><sname>author</sname><descr>author's name</descr></subst>
+			<subst><sname>mailAddr</sname><descr>author's mail address</descr></subst>
+			<subst><sname>URL</sname><descr>author's URL</descr></subst>
+			<subst><sname>purpose</sname><descr>purpose of this code</descr></subst>
+		</slist>
 		<fileHdr>
 			<xname>Analyze.cxx.xml</xname>
-			<gname>Analyze.cxx</gname>
-			<purp>MARaBOU's code generator: Main program</purp>
+			<gname><S>prefix</S>Analyze.cxx</gname>
+			<purp><s>purpose</s></purp>
 			<rootClassList>	<classRef><cname>TSystem</cname><descr>Interface ROOT&lt;-&gt;Linux</descr></classRef>
 						<classRef><cname>TEnv</cname><descr>ROOT's environment</descr></classRef>
 			</rootClassList>
@@ -21,28 +28,22 @@
 						<classRef><cname>TUsrEvtStop</cname><descr>Stop event</descr></classRef>
 						<classRef><cname>TUsrDeadTime</cname><descr>Dead time monitor</descr></classRef>
 			</mrbClassList>
-			<author>R. Lutter</author>
-			<mail>Rudi.Lutter@Physik.Uni-Muenchen.DE</mail>
-			<url>http://www.bl.physik.uni-muenchen.de/marabou/html</url>
-			<version>$Id: Analyze.cxx.xml,v 1.1 2008-01-16 07:56:47 Rudolf.Lutter Exp $</version>
-			<date>$Date: 2008-01-16 07:56:47 $</date>
+			<author><s>author</s></author>
+			<mail><s>mailAddr</s></mail>
+			<url><s>URL</s></url>
+			<version>$Id: Analyze.cxx.xml,v 1.2 2008-01-17 09:26:12 Rudolf.Lutter Exp $</version>
+			<date>$Date: 2008-01-17 09:26:12 $</date>
 		</fileHdr>
 		<code indent="1">
 			<comment type="code">class definitions</comment>
-			<slist>
-				<subst><sname>fname</sname><descr>name of file w/o extension</descr></subst>
-			</slist>
 			<cbody>
-				<l>#include "<s>fname</s>.h"</l>
+				<l>#include "<S>prefix</S>Analyze.h"</l>
 			</cbody>
 		</code>
 		<code indent="1">
 			<comment type="code">common index declarations for analysis and readout</comment>
-			<slist>
-				<subst><sname>fprefix</sname><descr>description/name of experiment</descr></subst>
-			</slist>
 			<cbody>
-				<l>#include "<S>fprefix</S>CommonIndices.h"</l>
+				<l>#include "<S>prefix</S>CommonIndices.h"</l>
 			</cbody>
 		</code>
 		<code indent="1">
@@ -64,11 +65,8 @@
 		</code>
 		<code indent="1">
 			<comment type="code">global objects</comment>
-			<slist>
-				<subst><sname>fname</sname><descr>name of file w/o extension</descr></subst>
-			</slist>
 			<cbody>
-				<l>#include "<s>fname</s>Globals.h"</l>
+				<l>#include "<S>prefix</S>AnalyzeGlobals.h"</l>
 			</cbody>
 		</code>
 		<code indent="1">

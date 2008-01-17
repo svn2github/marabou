@@ -27,7 +27,7 @@
 <!ENTITY % ctext "(#PCDATA | s | S | m | mm  | r | rm | b | i | u | bx | nl)*">
 
 <!-- file spec -->
-<!ELEMENT file (fileHdr, code*, (class | method | funct)+)>
+<!ELEMENT file (slist?, fileHdr, code*, (class | method | funct)+)>
 
 <!-- file header -->
 <!ELEMENT fileHdr (xname, gname, purp?, descr?, rootClassList?, mrbClassList?, author, mail, url, version, date?)>
@@ -131,9 +131,9 @@
 <!-- author's url -->
 <!ELEMENT url %stext;>
 
-<!-- version (cvs: $Id: mrbcode.dtd,v 1.1 2008-01-16 07:56:47 Rudolf.Lutter Exp $) -->
+<!-- version (cvs: $Id: mrbcode.dtd,v 1.2 2008-01-17 09:26:12 Rudolf.Lutter Exp $) -->
 <!ELEMENT version (#PCDATA)>
-<!-- date (cvs: $Date: 2008-01-16 07:56:47 $) -->
+<!-- date (cvs: $Date: 2008-01-17 09:26:12 $) -->
 <!ELEMENT date (#PCDATA)>
 
 <!-- to be substituted -->
