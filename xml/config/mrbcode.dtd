@@ -27,7 +27,7 @@
 <!ENTITY % ctext "(#PCDATA | s | S | m | mm  | r | rm | b | i | u | bx | nl)*">
 
 <!-- file spec -->
-<!ELEMENT file (slist?, fileHdr, code*, (class | method | funct)+)>
+<!ELEMENT file (tag, slist?, fileHdr, code*, (class | method | funct)+)>
 
 <!-- file header -->
 <!ELEMENT fileHdr (xname, gname, purp?, descr?, rootClassList?, mrbClassList?, author, mail, url, version, date?)>
@@ -131,9 +131,9 @@
 <!-- author's url -->
 <!ELEMENT url %stext;>
 
-<!-- version (cvs: $Id: mrbcode.dtd,v 1.2 2008-01-17 09:26:12 Rudolf.Lutter Exp $) -->
+<!-- version (cvs: $Id: mrbcode.dtd,v 1.3 2008-01-18 13:35:16 Rudolf.Lutter Exp $) -->
 <!ELEMENT version (#PCDATA)>
-<!-- date (cvs: $Date: 2008-01-17 09:26:12 $) -->
+<!-- date (cvs: $Date: 2008-01-18 13:35:16 $) -->
 <!ELEMENT date (#PCDATA)>
 
 <!-- to be substituted -->
@@ -190,6 +190,16 @@
 <!-- comment -->
 <!ATTLIST comment
     type    (code|doc) "code"
+ >
+ 
+<!-- slist -->
+<!ATTLIST slist
+    type    (global|local) "global"
+ >
+ 
+<!-- tag -->
+<!ATTLIST tag
+    type    (root|local) "local"
  >
  
  <!-- inheritance type -->

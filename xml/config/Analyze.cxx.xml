@@ -5,7 +5,8 @@
 
 <mrbcode>
 	<file>
-		<slist>
+		<tag type="root">ANA_XML_ROOT</tag>
+		<slist type="global">
 			<subst><sname>prefix</sname><descr>description/name of experiment</descr></subst>
 			<subst><sname>author</sname><descr>author's name</descr></subst>
 			<subst><sname>mailAddr</sname><descr>author's mail address</descr></subst>
@@ -15,7 +16,7 @@
 		<fileHdr>
 			<xname>Analyze.cxx.xml</xname>
 			<gname><S>prefix</S>Analyze.cxx</gname>
-			<purp><s>purpose</s></purp>
+			<purp><S>purpose</S></purp>
 			<rootClassList>	<classRef><cname>TSystem</cname><descr>Interface ROOT&lt;-&gt;Linux</descr></classRef>
 						<classRef><cname>TEnv</cname><descr>ROOT's environment</descr></classRef>
 			</rootClassList>
@@ -28,11 +29,11 @@
 						<classRef><cname>TUsrEvtStop</cname><descr>Stop event</descr></classRef>
 						<classRef><cname>TUsrDeadTime</cname><descr>Dead time monitor</descr></classRef>
 			</mrbClassList>
-			<author><s>author</s></author>
+			<author><S>author</S></author>
 			<mail><s>mailAddr</s></mail>
 			<url><s>URL</s></url>
-			<version>$Id: Analyze.cxx.xml,v 1.2 2008-01-17 09:26:12 Rudolf.Lutter Exp $</version>
-			<date>$Date: 2008-01-17 09:26:12 $</date>
+			<version>$Id: Analyze.cxx.xml,v 1.3 2008-01-18 13:35:16 Rudolf.Lutter Exp $</version>
+			<date>$Date: 2008-01-18 13:35:16 $</date>
 		</fileHdr>
 		<code indent="1">
 			<comment type="code">class definitions</comment>

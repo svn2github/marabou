@@ -9,43 +9,45 @@
     </xsl:template>
     
     <xsl:template match="file">
+        <h3 align="center"><xsl:value-of select="fileHdr/xname" /></h3>
+        <hr/>
         <xsl:apply-templates />
-        <div  style="background-color: #ffa500;">[end of file:&#160;<xsl:value-of select="fileHdr/gname"/>]</div>
+        <div  style="background-color: #ffa500;">[end of file:&#160;<xsl:apply-templates select="fileHdr/gname"/>]</div>
     </xsl:template>
     
     <xsl:template match="fileHdr">
-        <h3 align="center"><xsl:value-of select="xname" /></h3>
-        <hr/>
+        <br/>
         <table align="center" width="98%" bgcolor="#ffa500">
-            <tr><td colspan="2" bgcolor="#cdc9a5">[file header]</td><td colspan="2"  bgcolor="#cdc9a5"><xsl:value-of select="purp"/></td></tr>
-            <tr><td width="1%"></td><td width="13%">Generated code</td><td  width="85%"><xsl:value-of select="gname"/></td></tr>
-             <tr><td width="1%"></td><td width="13%">Author</td><td  width="85%"><xsl:value-of select="author"/></td></tr>
+             <tr><td colspan="2" bgcolor="#cdc9a5">[file header]</td><td colspan="2"  bgcolor="#cdc9a5"><xsl:apply-templates select="purp"/></td></tr>
+            <tr><td width="1%"></td><td width="13%">Generated code</td><td  width="85%"><xsl:apply-templates select="gname"/></td></tr>
+             <tr><td width="1%"></td><td width="13%">Author</td><td  width="85%"><xsl:apply-templates select="author"/></td></tr>
             <tr><td width="1%"></td><td width="13%">Mail</td><td  width="85%">
-                <a><xsl:attribute name="href">mailto:<xsl:value-of select="mail"/></xsl:attribute><xsl:value-of select="mail"/></a>
+                <a><xsl:attribute name="href">mailto:<xsl:value-of select="mail"/></xsl:attribute><xsl:apply-templates select="mail"/></a>
             </td></tr>
             <tr><td width="1%"></td><td width="13%">URL</td><td  width="85%">
-                <a><xsl:attribute name="href"><xsl:value-of select="url"/></xsl:attribute><xsl:value-of select="url"/></a>
+                <a><xsl:attribute name="href"><xsl:value-of select="url"/></xsl:attribute><xsl:apply-templates select="url"/></a>
             </td></tr>
             <tr><td width="1%"></td><td width="13%">Revision</td><td  width="85%"><xsl:value-of select="version"/></td></tr>
             <tr><td width="1%"></td><td width="13%">Date</td><td  width="85%"><xsl:value-of select="date"/></td></tr>
         </table>
         <xsl:apply-templates select="rootClassList"/>
         <xsl:apply-templates select="mrbClassList"/>
-        <hr/>
+         <hr/>
     </xsl:template>
     
-    <xsl:template match="method">
+     <xsl:template match="method">
         <br/>
         <div><xsl:attribute name="style">margin-left: <xsl:value-of select="@indent"/>%</xsl:attribute>
             <xsl:apply-templates />
             <table align="center" width="98%">
                 <tr><td><b>}</b></td></tr>
-                <tr><td  bgcolor="#ffa500">[end of method:&#160;<xsl:value-of select="methodHdr/cname"/>::<xsl:value-of select="methodHdr/name"/>()]</td></tr>
+                <tr><td  bgcolor="#ffa500">[end of method:&#160;<xsl:value-of select="methodHdr/cname"/>::<xsl:value-of select="methodHdr/mname"/>()]</td></tr>
             </table>
         </div>
     </xsl:template>
     
     <xsl:template match="methodHdr">
+        <br/>
         <table align="center" width="98%" bgcolor="#ffa500">
             <tr><td colspan="2" bgcolor="#cdc9a5">[C++ method]</td><td colspan="2"  bgcolor="#cdc9a5"><xsl:value-of select="purp"/></td></tr>
             <tr><td width="1%"></td><td width="13%">Name</td><td  width="85%"><xsl:apply-templates select="mname" />()</td></tr>
@@ -78,7 +80,8 @@
                                 <xsl:choose>
                                     <xsl:when test="position() =last()">)&#160;{</xsl:when>
                                     <xsl:otherwise>,</xsl:otherwise>
-                                </xsl:choose></xsl:for-each>
+                                </xsl:choose>
+                            </xsl:for-each>
                         </b>
                     </td>
                 </tr>
@@ -283,11 +286,7 @@
             <xsl:apply-templates/>
         </div>
     </xsl:template>
-    
-    <!-- these templates have been processed in the "elseif" preamble already -->
-    <xsl:template match="elseif/tag"></xsl:template>
-    <xsl:template match="elseif/descr"></xsl:template>
-    
+       
     <xsl:template match="else">
         <div><xsl:attribute name="style">margin-left: <xsl:value-of select="@indent"/>%</xsl:attribute>
             <table align="center" width="98%" bgcolor="#f5deb3">
@@ -335,7 +334,7 @@
     <xsl:template match="rootClassList">
         <xsl:if test='. !=""'>
             <table align="center" width="98%" bgcolor="#f5deb3">
-            <xsl:for-each select="classRef">
+                    <xsl:for-each select="classRef">
                 <xsl:sort select="cname" order="ascending" data-type="text" />
                 <tr>
                     <td width="1%"></td>
@@ -405,13 +404,14 @@
     
     <xsl:template match="slist">
         <table align="center" width="98%" bgcolor="#f5deb3">
+            <xsl:if test='@type="global"'>
+                <tr><td colspan="2" bgcolor="#cdc9a5">[global section]</td><td colspan="2"  bgcolor="#cdc9a5"><xsl:apply-templates select="purp"/></td></tr>
+            </xsl:if>
             <xsl:for-each select="subst">
                 <tr>
                     <td width="1%"></td>
                     <td width="13%">
-                        <xsl:choose>
-                            <xsl:when test="position() =1">Substitutions</xsl:when>
-                        </xsl:choose>
+                          <xsl:if test="position() =1">Substitutions</xsl:if>
                     </td>
                     <td width="13%"><xsl:value-of select="sname"/></td>
                     <td><xsl:value-of select="descr"/></td>

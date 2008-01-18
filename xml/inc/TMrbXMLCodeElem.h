@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeElem    -- XML code elemenet/node
 // Description:    Class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeElem.h,v 1.7 2008-01-17 09:26:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.h,v 1.8 2008-01-18 13:35:16 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -119,7 +119,7 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		inline const Char_t * GetCode() { return(fCode.Data()); };
 		inline void ClearCode() { fCode.Resize(0); };
 
-		inline NestingLevel() { return(fNestingLevel); };
+		inline Int_t NestingLevel() { return(fNestingLevel); };
 		inline TMrbXMLCodeElem * Parent() { return(fParent); };
 
 		inline TEnv * LofAttr() { return(&fLofAttr); };
@@ -142,7 +142,7 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		Bool_t HasChild(const Char_t * ChildName, Bool_t Verbose = kTRUE);
 		Bool_t HasChild(const Char_t * ChildName, TString & ChildCode, Bool_t Verbose = kTRUE);
 		TMrbXMLCodeElem * HasAncestor(const Char_t * Ancestor, Bool_t Verbose = kTRUE);
-		Bool_t CopyCodeToParent();
+		Bool_t CopyCodeToParent(const Char_t * IndentString = "");
 		Bool_t CopyChildToParent(const Char_t * ChildName, const Char_t * ChildCode = NULL);
 		Bool_t CopySubstToParent(const Char_t * Sname = NULL, const Char_t * Descr = NULL, const Char_t * Tag = NULL);
 		Bool_t GetChildFromParent(const Char_t * ElemName, TString & ElemCode);
@@ -152,7 +152,7 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		Bool_t RequestConditionFlag(const Char_t * Tag, const Char_t * FlagName, TString & FlagValue);
 		void ClearSubst();
 		Bool_t RequestSubst(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TEnv * LofSubst);
-		Bool_t Substitute(TString & Code) { return(kTRUE); };
+		Bool_t Substitute(TString & Code, Bool_t Verbose = kFALSE);
 		Bool_t ExpandSwitchAndIf() { return(kTRUE); };
 
 		void Indent(ostream & Out);
