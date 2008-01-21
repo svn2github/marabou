@@ -31,9 +31,8 @@ try:
 			break
 		else:
 			if (t == ldap.RES_SEARCH_ENTRY):
-				for x in d[0][1]:
-					if (item == x):
-						print d[0][1][x][0]
+				if (d[0][1].has_key(item)):
+						print d[0][1][item][0]
 
 except ldap.LDAPError, e:
 	print "LDAP error: ", e
@@ -47,9 +46,8 @@ try:
 			break
 		else:
 			if (t == ldap.RES_SEARCH_ENTRY):
-				for x in d[0][1]:
-					if (item == x):
-						print d[0][1][x][0]
+				if (d[0][1].has_key(item)):
+						print d[0][1][item][0]
 
 except ldap.LDAPError, e:
 	print "LDAP error: ", e
