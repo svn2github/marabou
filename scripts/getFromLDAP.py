@@ -9,15 +9,38 @@ try:
 except ldap.LDAPError, e:
 	print "Can't open LDAP connection: ", e
 
-if (sys.argv[1] == ''):
-	filter = "cn=*"
-elif (sys.argv[1] == 'L'):
-	filter = "cn=*"
-elif (sys.argv[1] == 'C'):
-	filter = "cn=*"
-else:
-	filter = "cn=" + sys.argv[1]
-	item = sys.argv[2];
+searchLocal = True
+searchCampus = True
+
+try:
+	if (len(sys.argv) == 3):
+		if (sys.argv[1] == ''):
+			filter = "cn=*"
+		elif (sys.argv[1] == 'L'):
+			filter = "cn=*"
+			searchLocal = True
+			searchCampus = False
+		elif (sys.argv[1] == 'C'):
+			filter = "cn=*"
+			searchLocal = False
+			searchCampus = True
+		else:
+			filter = "cn=" + sys.argv[1]
+			searchLocal = True
+			searchCampus = True
+
+		item = sys.argv[2];
+	else:
+		raise
+
+except:
+	print "Usage:    getFromLDAP.py <userName|L|C> [attribute=*]"
+	print
+	print "Examples: getFromLDAP.py Hans.Meier       -- get account data for specified user"
+	print "          getFromLDAP.py Hans.Meier mail  -- get mail address for specified user"
+	print "          getFromLDAP.py C                -- get all campus accounts"
+	print
+	sys.exit(1)
 
 scope = ldap.SCOPE_SUBTREE
 retrieve = None
