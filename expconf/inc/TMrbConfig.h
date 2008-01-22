@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.83 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.84 2008-01-22 07:44:24 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -665,7 +665,8 @@ class TMrbConfig : public TNamed {
 		};
 		TMrbModule * FindScalerByCrate(Int_t Crate, TMrbModule * After = NULL) const;		// find (next) scaler in a given crate
 
-		void GetAuthor();						// author's name
+		const Char_t * GetAuthor();				// author's name
+		const Char_t * GetMailAddr();			// author's mail addr
 
 		inline UInt_t GetReadoutOptions() const { return(fReadoutOptions); }; // return MakeReadoutCode() options
 		inline UInt_t GetAnalyzeOptions() const { return(fAnalyzeOptions); }; // return MakeAnalyzeCode() options
@@ -912,7 +913,8 @@ class TMrbConfig : public TNamed {
 
 		TString fCreationDate;				// creation date & time
 		TString fUser;						// user name
-		TString fAuthor;
+		TString fAuthor;					// ...
+		TString fMailAddr;					// user's mail address
 
 		UInt_t fTriggerMask;				// trigger bits defined so far
 		Bool_t fSingleBitTriggersOnly;		// triggers 1,2,4, or 8 only

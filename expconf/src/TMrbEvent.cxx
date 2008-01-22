@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.25 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.26 2008-01-22 07:44:24 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -770,7 +770,49 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 					anaTmpl.WriteCode(ana);
 					break;
 				case TMrbConfig::kAnaEventAddBranches:
+					if (this->IsStartEvent()) {
+						anaTmpl.InitializeCode("%S%");
+						anaTmpl.Substitute("$evt", "start");
+						anaTmpl.WriteCode(ana);
+					} else if (this->IsStopEvent()) {
+						anaTmpl.InitializeCode("%S%");
+						anaTmpl.Substitute("$evt", "stop");
+						anaTmpl.WriteCode(ana);
+					}
+					sevt = (TMrbSubevent *) fLofSubevents.First();
+					while (sevt) {
+						sevtNameLC = sevt->GetName();
+						sevtNameUC = sevtNameLC;
+						sevtNameUC(0,1).ToUpper();
+						anaTmpl.InitializeCode("%N%");
+						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+						anaTmpl.WriteCode(ana);
+						sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+					}
+					break;
 				case TMrbConfig::kAnaEventInitializeBranches:
+					if (this->IsStartEvent()) {
+						anaTmpl.InitializeCode("%S%");
+						anaTmpl.Substitute("$evt", "start");
+						anaTmpl.WriteCode(ana);
+					} else if (this->IsStopEvent()) {
+						anaTmpl.InitializeCode("%S%");
+						anaTmpl.Substitute("$evt", "stop");
+						anaTmpl.WriteCode(ana);
+					}
+					sevt = (TMrbSubevent *) fLofSubevents.First();
+					while (sevt) {
+						sevtNameLC = sevt->GetName();
+						sevtNameUC = sevtNameLC;
+						sevtNameUC(0,1).ToUpper();
+						anaTmpl.InitializeCode("%N%");
+						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+						anaTmpl.WriteCode(ana);
+						sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+					}
+					break;
 				case TMrbConfig::kAnaSevtClassInstance:
 				case TMrbConfig::kAnaSevtGetAddr:
 				case TMrbConfig::kAnaSevtSetName:

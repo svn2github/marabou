@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.153 2008-01-14 09:48:52 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.154 2008-01-22 07:44:24 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -649,7 +649,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fCNAFNames.SetPatternMode();
 		fCNAFNames.AddNamedX(kMrbCNAFNames);
 
-		fLofModuleTags.SetName("Readout Tags");					// ... tags
+		fLofModuleTags.SetName("Module Tags");					// ... tags
 		fLofModuleTags.AddNamedX(kMrbLofModuleTags);
 
 		fLofModuleIDs.SetName("Modules"); 						// ... modules available
@@ -665,6 +665,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofMbsBranches.SetName("MBS branches");
 
 		this->GetAuthor();		 								// author's name
+		this->GetMailAddr();		 							// author's name
 
 		TDatime dt; 											// creation date
 		fCreationDate = dt.AsString();
@@ -3069,13 +3070,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						}
 						break;
 					case TMrbConfig::kAnaEventDefinePointers:
-					case TMrbConfig::kAnaEventSetFakeMode:
 					case TMrbConfig::kAnaEventCreateTree:
 					case TMrbConfig::kAnaEventInitializeTree:
-					case TMrbConfig::kAnaEventSetReplayMode:
 					case TMrbConfig::kAnaEventSetWriteTree:
-					case TMrbConfig::kAnaEventReplayTree:
-					case TMrbConfig::kAnaEventSetScaleDown:
 						{
 							TIterator * evtIter = fLofEvents.MakeIterator();
 							while (evt = (TMrbEvent *) evtIter->Next()) {
@@ -3091,6 +3088,43 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$pointerName", evt->GetPointerName());
 									anaTmpl.WriteCode(anaStrm);
 								}
+							}
+							TMrbNamedX * ucl;
+							TIterator * uclIter = fLofUserClasses.MakeIterator();
+							while (ucl = (TMrbNamedX *) uclIter->Next()) {
+								if (ucl->GetIndex() == kIclOptUserDefinedEvent) {
+									TString classNameUC = ucl->GetName();
+									TString classNameLC = classNameUC;
+									classNameLC(0,1).ToLower();
+									anaTmpl.InitializeCode("%U%");
+									anaTmpl.Substitute("$classNameLC", classNameLC);
+									anaTmpl.Substitute("$classNameUC", classNameUC);
+									anaTmpl.WriteCode(anaStrm);
+								}
+							}
+						} 
+						break;
+					case TMrbConfig::kAnaEventSetFakeMode:
+					case TMrbConfig::kAnaEventSetReplayMode:
+					case TMrbConfig::kAnaEventReplayTree:
+					case TMrbConfig::kAnaEventSetScaleDown:
+						{
+							TIterator * evtIter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) evtIter->Next()) {
+								switch (evt->GetTrigger()) {
+									case TMrbConfig::kTriggerStartAcq:	evtNameLC = "startEvent"; break;
+									case TMrbConfig::kTriggerStopAcq:	evtNameLC = "stopEvent"; break;
+									default:							evtNameLC = evt->GetName(); break;
+								}
+								evtNameUC = evtNameLC;
+								evtNameUC(0,1).ToUpper();
+								anaTmpl.InitializeCode("%E%");
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+								anaTmpl.Substitute("$pointerName", evt->GetPointerName());
+								anaTmpl.WriteCode(anaStrm);
 							}
 							TMrbNamedX * ucl;
 							TIterator * uclIter = fLofUserClasses.MakeIterator();
@@ -3223,6 +3257,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
 								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
 								anaTmpl.Substitute("$processEvent", method.Data());
+								anaTmpl.WriteCode(anaStrm);
+							} else {
+								anaTmpl.InitializeCode("%N%");
 								anaTmpl.WriteCode(anaStrm);
 							}
 							anaTmpl.InitializeCode("%E%");
@@ -7096,30 +7133,58 @@ void TMrbConfig::SetGlobalAddress() {
 	gMrbConfig = this;
 };
 
-void TMrbConfig::GetAuthor() {
+const Char_t * TMrbConfig::GetAuthor() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetAuthor
-// Purpose:        Get author's name from yp database
-// Arguments:      
+// Purpose:        Get author's name from ldap database
+// Arguments: 
 // Results:        
 // Exceptions:
-// Description:    Reads the author's name via yp.
+// Description:    Reads the author's name via python-ldap.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	struct passwd *pw;
-	TString pwString;
-
 	fUser = gSystem->Getenv("USER");
 	fAuthor = "";
-	pw = getpwnam(fUser.Data());
-	if (pw != NULL) {
-		pwString = pw->pw_gecos;
-		Int_t n = pwString.Index(",");
-		if (n != -1) pwString.Resize(n);
-		fAuthor = pwString;
+	TString cmd = Form("%s/scripts/getFromLDAP.py %s %s 2>/dev/null", gSystem->Getenv("MARABOU"), fUser.Data(), "cn");
+	FILE * ldap = gSystem->OpenPipe(cmd.Data(), "r");
+	if (ldap) {
+		Char_t result[512];
+		fread(result, 1, 512, ldap);
+		fclose(ldap);
+		fAuthor = (result[0] == '\0') ? fUser : result;
+		Int_t x = fAuthor.Index("\n", 0);
+		if (x > 0) fAuthor(x) = '\0';
 	}
+	return(fAuthor.Data());
+}
+
+const Char_t * TMrbConfig::GetMailAddr() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetMailAddr
+// Purpose:        Get author's mail address from ldap database
+// Arguments:      
+// Results:        
+// Exceptions:
+// Description:    Reads the author's name via python-ldap.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fUser = gSystem->Getenv("USER");
+	fMailAddr = "";
+	TString cmd = Form("%s/scripts/getFromLDAP.py %s %s 2>/dev/null", gSystem->Getenv("MARABOU"), fUser.Data(), "mail");
+	FILE * ldap = gSystem->OpenPipe(cmd.Data(), "r");
+	if (ldap) {
+		Char_t result[512];
+		fread(result, 1, 512, ldap);
+		fclose(ldap);
+		fMailAddr = result;
+		Int_t x = fMailAddr.Index("\n", 0);
+		if (x > 0) fMailAddr(x) = '\0';
+	}
+	return(fMailAddr.Data());
 }
 
 Bool_t TMrbConfig::NameNotLegal(const Char_t * ObjType, const Char_t * ObjName) const {
