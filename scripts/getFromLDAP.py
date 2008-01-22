@@ -9,38 +9,17 @@ try:
 except ldap.LDAPError, e:
 	print "Can't open LDAP connection: ", e
 
-searchLocal = True
-searchCampus = True
+filter = "cn=*"
+item = "*"
 
-try:
-	if (len(sys.argv) == 3):
-		if (sys.argv[1] == ''):
-			filter = "cn=*"
-		elif (sys.argv[1] == 'L'):
-			filter = "cn=*"
-			searchLocal = True
-			searchCampus = False
-		elif (sys.argv[1] == 'C'):
-			filter = "cn=*"
-			searchLocal = False
-			searchCampus = True
-		else:
-			filter = "cn=" + sys.argv[1]
-			searchLocal = True
-			searchCampus = True
-
-		item = sys.argv[2];
+if (len(sys.argv) >= 2):
+	if (sys.argv[1] == ''):
+		filter = "cn=*"
 	else:
-		raise
+		filter = "cn=" + sys.argv[1]
 
-except:
-	print "Usage:    getFromLDAP.py <userName|L|C> [attribute=*]"
-	print
-	print "Examples: getFromLDAP.py Hans.Meier       -- get account data for specified user"
-	print "          getFromLDAP.py Hans.Meier mail  -- get mail address for specified user"
-	print "          getFromLDAP.py C                -- get all campus accounts"
-	print
-	sys.exit(1)
+if (len(sys.argv) == 3):
+	item = sys.argv[2]
 
 scope = ldap.SCOPE_SUBTREE
 retrieve = None
@@ -54,8 +33,16 @@ try:
 			break
 		else:
 			if (t == ldap.RES_SEARCH_ENTRY):
-				if (d[0][1].has_key(item)):
-						print d[0][1][item][0]
+				if (item == "*"):
+					for it in d[0][1]:
+						nx = len(d[0][1][it])
+						for x in range(nx):
+							print d[0][1][it][x]
+				else:
+					if (d[0][1].has_key(item)):
+						nx = len(d[0][1][item])
+						for x in range(nx):
+							print d[0][1][item][x]
 
 except ldap.LDAPError, e:
 	print "LDAP error: ", e
@@ -69,8 +56,16 @@ try:
 			break
 		else:
 			if (t == ldap.RES_SEARCH_ENTRY):
-				if (d[0][1].has_key(item)):
-						print d[0][1][item][0]
+				if (item == "*"):
+					for it in d[0][1]:
+						nx = len(d[0][1][it])
+						for x in range(nx):
+							print d[0][1][it][x]
+				else:
+					if (d[0][1].has_key(item)):
+						nx = len(d[0][1][item])
+						for x in range(nx):
+							print d[0][1][item][x]
 
 except ldap.LDAPError, e:
 	print "LDAP error: ", e
