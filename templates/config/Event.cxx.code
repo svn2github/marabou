@@ -153,7 +153,8 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::CreateTree() {
 
 //- add a branch for every subevent
 %%BeginOfCode%%
-		$sevtNameLC.AddBranch(fTreeOut);		// branch for subevent $sevtNameLC
+%S%		fTreeOut->Branch("$evt", &fClockSecs, "$evt/i");	// timestamp of $evt event
+%N%		$sevtNameLC.AddBranch(fTreeOut);					// branch for subevent $sevtNameLC
 %%EndOfCode%%
 %%EVT_ADD_BRANCHES%%
 	}
@@ -191,7 +192,8 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::InitializeTree(TFile * RootFile) {
 
 // initialize branches and assign addresses
 %%BeginOfCode%%
-	$sevtNameLC.InitializeBranch(fTreeIn);
+%S%	fTreeIn->SetBranchAddress("$evt", &fClockSecs);		// timestamp for $evt event
+%N%	$sevtNameLC.InitializeBranch(fTreeIn);
 %%EndOfCode%%
 %%EVT_INITIALIZE_BRANCHES%%
 
