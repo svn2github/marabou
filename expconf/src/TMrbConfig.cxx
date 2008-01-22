@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.154 2008-01-22 07:44:24 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.155 2008-01-22 07:49:15 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3741,6 +3741,21 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 		gMrbLog->Flush("", "", setblue);
 	}
 
+// let's now check if there is a tree output anywhere to prevent user from getting sad when replaying data
+
+	FILE * grep = gSystem->OpenPipe("grep 'fTreeOut->Fill' *.cxx */*.cxx 2>/dev/null", "r");
+	char tmp[200];
+	if (fread(tmp, 1, 200, grep) == 0) {
+		gMrbLog->Err() << "There is NO TREE OUTPUT in your code" << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+		gMrbLog->Err()	<< "You should include a statement" << endl
+						<< "                               >>> "
+						<< setblack
+						<< "if (this->TreeToBeWritten()) fTreeOut->Fill();" << setred << " <<<" << endl
+						<< "                               somewhere in your Analyze() code" << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+	}
+
 	return(kTRUE);
 }
 
@@ -5262,12 +5277,11 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 		gMrbLog->Wrn()	<< endl
 						<< "                      Execute command" << endl
-						<< "                      ==> "
-						<< setblue
+						<< "                      >>> "
+						<< setblack
 						<< "export LD_LIBRARY_PATH="
 						<< libPath
-						<< ":$LD_LIBRARY_PATH" << endl
-						<< setmagenta
+						<< ":$LD_LIBRARY_PATH" << setmagenta << " <<<" << endl
 						<< "                      or add it to your profile permanently" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 	}
