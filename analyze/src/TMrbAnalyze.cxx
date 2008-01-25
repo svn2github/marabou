@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.85 2008-01-25 13:30:40 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.86 2008-01-25 14:05:34 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -993,23 +993,19 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TString histoFile;
-	TString histoFileVersioned;
-	TString pattern;
-	TRegexp * rexp;
-	Int_t count;
-
 	if (IOSpec && (IOSpec->GetHistoMode() & TMrbIOSpec::kHistoSave) == 0) return(0);
 
-	pattern = Pattern;
+	TString pattern = Pattern;
 	pattern = pattern.Strip(TString::kBoth);
-	count = 0;
-	rexp = NULL;
+	Int_t histoCount = 0;
+	Int_t wdwCount = 0;
+	Int_t cutCount = 0;
+	TRegexp * rexp = NULL;
 
 	if (pattern.CompareTo("*") == 0) rexp = new TRegexp(pattern.Data(), kTRUE);
 // generate a versioned filename
-	histoFile = IOSpec->GetHistoFile();
-	histoFileVersioned = histoFile;
+	TString histoFile = IOSpec->GetHistoFile();
+	TString histoFileVersioned = histoFile;
 	histoFileVersioned += ".";
 	histoFileVersioned += fHistFileVersion++;
 	
@@ -1044,33 +1040,42 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 				if (ok) {
 					TObject * obj = NULL;
 					obj = fMapFile->Get(name, obj);
-					if (obj) {
-						obj->Write();
-						count++;
-					}
+					if (obj) obj->Write();
 					if (this->IsVerbose()) cout << "   Writing: " << name << endl;
         		}
 		   	 mr = mr->GetNext();         
 			}
 		}
    } else {
-      TIter next(gROOT->GetList());
-      TObject * obj;
-      while( (obj = (TObject*)next()) ){
-         if(obj->InheritsFrom("TH1") || obj->InheritsFrom("TMrbWindow") || obj->InheritsFrom("TCutG")){
-            TString shh(obj->GetName());
-    		   if(shh.Index(*rexp) >= 0){
-               obj->Write();
-				   count++;
-				  	if (this->IsVerbose()) cout << "   Writing: " << obj->GetName() << endl;
-            }
-         }
-      }
-   }
-	gMrbLog->Out()	<< count << " histogram(s) saved to " << histoFile << endl;
-	gMrbLog->Flush(this->ClassName(), "SaveHistograms", setblue);
-//System->Sleep(15000);
-//out << setgreen << "end of sleep" << setblack << endl;
+		TIter next(gROOT->GetList());
+		TObject * obj;
+		while( (obj = (TObject*)next()) ){
+			Bool_t writeIt = kFALSE;
+			TString otype;
+			TString shh(obj->GetName());
+			if(shh.Index(*rexp) >= 0) {
+				if(obj->InheritsFrom("TH1")) { writeIt = kTRUE; otype = "histo"; histoCount++; }
+				else if (obj->InheritsFrom("TMrbWindow")) { writeIt = kTRUE; otype = "window"; wdwCount++; }
+				else if (obj->InheritsFrom("TCutG")) { writeIt = kTRUE; otype = "cut"; cutCount++; }
+				if (writeIt) {
+					obj->Write();
+					if (this->IsVerbose()) cout << "   Writing " << otype << " " << obj->GetName() << endl;
+            	}
+			}
+		}
+	}
+	if (histoCount) {
+		gMrbLog->Out()	<< histoCount << " histogram(s) saved to " << histoFile << endl;
+		gMrbLog->Flush(this->ClassName(), "SaveHistograms", setblue);
+	}
+	if (wdwCount) {
+		gMrbLog->Out()	<< wdwCount << " 1dim window(s) saved to " << histoFile << endl;
+		gMrbLog->Flush(this->ClassName(), "SaveHistograms", setblue);
+	}
+	if (cutCount) {
+		gMrbLog->Out()	<< cutCount << " 2dim cut(s) saved to " << histoFile << endl;
+		gMrbLog->Flush(this->ClassName(), "SaveHistograms", setblue);
+	}
 	hf->Close();
 	pthread_mutex_unlock(&global_data_mutex);
 // set link to newly created file, remove old
@@ -1086,7 +1091,7 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 	      gSystem->Unlink(oldfile.Data());
 	   }
 	}
-	return(count);
+	return(histoCount + wdwCount + cutCount);
 }
 
 Int_t TMrbAnalyze::ClearHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
