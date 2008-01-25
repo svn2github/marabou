@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.84 2008-01-15 08:32:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.85 2008-01-25 13:30:40 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1057,7 +1057,7 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
       TIter next(gROOT->GetList());
       TObject * obj;
       while( (obj = (TObject*)next()) ){
-         if(obj->InheritsFrom("TH1")){
+         if(obj->InheritsFrom("TH1") || obj->InheritsFrom("TMrbWindow") || obj->InheritsFrom("TCutG")){
             TString shh(obj->GetName());
     		   if(shh.Index(*rexp) >= 0){
                obj->Write();
