@@ -1663,7 +1663,7 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
    static Int_t last_binX   = 0;
    static Int_t first_binY  = 0;
    static Int_t last_binY   = 0;
-
+   static Int_t suppress_zeros = 1;
 
    static TString fname;
    fname = fSelHist->GetName();
@@ -1697,6 +1697,8 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
       row_lab->Add(new TObjString("PlainIntVal_last_binY"));
       valp[ind++] = &last_binY;
    }
+   row_lab->Add(new TObjString("CheckButton_Suppress channels with zero content"));
+   valp[ind++] = &suppress_zeros;
 
    Int_t   itemwidth=250;
    ok = GetStringExt("Write hist as ASCII-file", NULL, itemwidth, mycanvas,
@@ -1731,6 +1733,8 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
 
    if (!is2dim(fSelHist)) {
       for (Int_t i = nbx1; i <= nbx2; i++) {
+         if (bincenters && suppress_zeros && 
+             fSelHist->GetBinContent(i)  == 0) continue;
          if (channels)
             outfile << i << "\t";
          if (bincenters)
@@ -1753,6 +1757,7 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
       TAxis * ya = fSelHist->GetYaxis();
       for (Int_t i = nbx1; i <= nbx2; i++) {
          for (Int_t k = nby1; k <= nby2; k++) {
+            if (suppress_zeros && fSelHist->GetCellContent(i, k)  == 0) continue;
             outfile << xa->GetBinCenter(i) << "\t";
             outfile << ya->GetBinCenter(k) << "\t";
 
@@ -2359,7 +2364,8 @@ void FitHist::Superimpose(Int_t mode)
       TString drawopt = fSelHist->GetDrawOption();
       if (!drawopt.Contains("E", TString::kIgnoreCase))
          drawopt += "hist";
-      drawopt += "same";
+      drawopt += "SAME";
+ //     drawopt += "same";
 //      cout << "drawopt |" << drawopt << "|" << endl;
 //      fSelHist->DrawCopy(drawopt.Data());
 //      TH1* hnew =  (TH1*)hdisp->Clone();

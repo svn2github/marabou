@@ -1654,6 +1654,7 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
       dirname.Remove(lslash, 100);
       if (gSystem->AccessPathName(dirname.Data())) {
          if (checkonly) return kFALSE;
+/*
          fok = kFALSE;
          TString question = dirname;
          question += " does not exist, create it?";
@@ -1663,6 +1664,7 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
                       "Warning", (const char *) question,
                       icontype, buttons, &retval);
          if (retval == kMBYes) {
+*/
             if (gSystem->MakeDirectory((const char *) dirname) == 0) {
                fok = kTRUE;
             } else {
@@ -1671,7 +1673,7 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
                dirname.Append(gSystem->GetError());
                WarnBox(dirname.Data());
             }
-         }
+//         }
       } else {
          return kTRUE;
       }

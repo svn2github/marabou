@@ -46,7 +46,6 @@ private:
    Double_t       fEditGridX;
    Double_t       fEditGridY;
    Int_t          fUseEditGrid;
-   Int_t          fSaveUseEditGrid;
    UInt_t         fOrigWw;
    UInt_t         fOrigWh;
    Int_t          fCurrentPlane;
@@ -54,6 +53,7 @@ private:
 //
 public:
    enum {
+      kIsObjectList  = BIT(22),
       kIsAEditorPage = BIT(23)
    };
    HTCanvas();

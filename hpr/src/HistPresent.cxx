@@ -1158,17 +1158,17 @@ Should we create a new file with corrected names?", fMainCanvas)) {
 //      CheckList(fHistLists, "HTCanvas");
       TObject *obj =  fHistLists->FindObject(fname);
       if (obj) {
-         cout << "Delete canvas: " << fname << endl;
+//         cout << "Delete canvas: " << fname << endl;
          fHistLists->Remove(obj);
          delete obj;
       }
          ycanvas = 5 + 50 * fHistLists->GetSize();
          TString cmd_title(fname);
          if (strlen(dir) > 0) cmd_title = cmd_title + "_" + dir;
-//         cout << "HistPresent: CommandPanel: " << fCmdLine->GetSize() << endl;
          HTCanvas *ccont = CommandPanel(cmd_title.Data(), fCmdLine,
                            WindowSizeDialog::fMainWidth + 10, ycanvas, this, WindowSizeDialog::fWinwidx_hlist);
-         ccont->SetName("ObjectList");
+//         cout << "HistPresent: CommandPanel: " <<ccont->GetName() << " " << ccont->GetTitle() << endl;
+
          if (fHistLists)fHistLists->Add(ccont);
    }
    fCmdLine->Delete();
@@ -3300,7 +3300,7 @@ void HistPresent::DinA4Page(Int_t form)
    c1->Update();
    c1->SetEditable(kTRUE);
    c1->GetCanvasImp()->ShowEditor();
-   c1->GetCanvasImp()->ShowToolBar();
+//   c1->GetCanvasImp()->ShowToolBar();
    new GEdit(c1);
 }
 //________________________________________________________________________________________
@@ -3429,7 +3429,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
    c1->Update();
    c1->SetEditable(kTRUE);
    c1->GetCanvasImp()->ShowEditor();
-   c1->GetCanvasImp()->ShowToolBar();
+//   c1->GetCanvasImp()->ShowToolBar();
    if (fRootFile) fRootFile->Close();
    c1->cd();
    new GEdit(c1);
@@ -3518,10 +3518,10 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
       return;
    }
 //  is it a list of objects, look in filelist
-   TString name = htc->GetName();
-   if (name == "ObjectList" && fFileList != NULL) {
+//   TString name = htc->GetName();
+   TString title = htc->GetTitle();
+   if (title.EndsWith(".root") && fFileList != NULL) {
 //      cout << "|" << htc->GetTitle()<< "|" << endl;
-      fname = htc->GetTitle();
       TIter next(fFileList->GetListOfPrimitives());
       while ( (obj = next()) ) {
          if (obj->InheritsFrom("TButton")) {
@@ -3529,7 +3529,7 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 //            cout << "|" << b->GetTitle()<< "|" << endl;
             line =  b->GetTitle();
             line = line.Strip();
-            if (line == fname) {
+            if (line == title) {
 //                  cout << "Set color for: " << fname << endl;
                b->SetFillColor(17);
                b->Modified(kTRUE);

@@ -46,6 +46,13 @@ HTCanvas::HTCanvas():TCanvas()
    fHandleMenus = NULL;
    fHasConnection = kFALSE;
    fHiddenPrimitives  = NULL;
+   fEditGridX = 0;
+   fEditGridY = 0;
+   fUseEditGrid = 0;
+   fHasConnection = kFALSE;
+   fCurrentPlane      = 50;
+   fOrigWw = 0;
+   fOrigWh = 0;
 };
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
@@ -134,6 +141,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //      fCanvasImp->Show();
       fBatch = kFALSE;
    }
+
    SetName(name);
    SetTitle(title); // requires fCanvasImp set
    fEditGridX = 0;

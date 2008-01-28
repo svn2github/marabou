@@ -45,6 +45,7 @@ public:
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown(Int_t wid);
+   void CRButtonPressed(Int_t, Int_t, TObject*) {};
 
 ClassDef(EmptyHistDialog,0)
 };
