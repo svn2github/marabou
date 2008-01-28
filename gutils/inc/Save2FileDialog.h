@@ -20,7 +20,7 @@ private:
    Int_t   fKeepDialog;
    Int_t   fAsList;
    TGMrbValuesAndText * fWidget;
- 
+
 public:
    Save2FileDialog(TObject *obj, const char *lname = NULL);
    ~Save2FileDialog();
@@ -28,6 +28,7 @@ public:
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown(Int_t wid);
+   void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) {};
 
 ClassDef(Save2FileDialog,0)
 };

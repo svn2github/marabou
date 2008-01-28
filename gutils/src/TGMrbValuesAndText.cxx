@@ -706,6 +706,9 @@ enum buttonId {kIdOk = 101, kIdCancel = 102, kIdHelp = 103, kIdClearHist = 104,
                kIdTextSelect, kIdListBoxReq = 401,
                kIdFileDialog = 4, kIdFileDialogCont = 5, kIdFontS = 6, kIdCommand = 7,
 					kIdExec, kIdLineS, kIdArrowS, kIdAlignS, kIdMarkS, kIdFillS};
+enum {
+   kIsAEditorPage  = BIT(23)
+};
 
 ClassImp(TGMrbValuesAndText)
 
@@ -1197,14 +1200,21 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    // create OK and Cancel buttons in their own frame (hf)
 
    UInt_t  nb = 0, width = 0, height = 0;
-//   if (!has_commands) {
+   if (!has_commands) {
       b = new TGTextButton(hf, "Apply",  1000*kIdOk);
-      fWidgets->AddFirst(b);
-      b->Associate(this);
-      hf->AddFrame(b, l3);
-      height = b->GetDefaultHeight();
-      width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
-      fCancelButton = new TGTextButton(hf, "Cancel",  1000*kIdCancel);
+      b->SetToolTipText("Apply action and close dialog");
+
+   } else {
+      b = new TGTextButton(hf, "Save and Quit",  1000*kIdOk);
+      b->SetToolTipText("Save current parameters and close dialog");
+   }
+	fWidgets->AddFirst(b);
+	b->Associate(this);
+	hf->AddFrame(b, l3);
+	height = b->GetDefaultHeight();
+	width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
+	fCancelButton = new TGTextButton(hf, "Quit",  1000*kIdCancel);
+   fCancelButton->SetToolTipText("Close dialog, dont save parameters");
 //      if (calling_class != NULL) {
 //         b->Connect("Clicked()", cname, calling_class, "CloseDown(Int_t)");
 //         fCancelButton->Connect("Clicked()", cname, //calling_class,"CloseDown(Int_t)");
@@ -1262,6 +1272,10 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                           ax, ay, wdum);
 
    ax = ax - (int)( win_width );
+   if (fCallingCanvas && fCallingCanvas->TestBit(kIsAEditorPage) ) {
+      ax += 180;
+   }
+
 //   ax = ax - (int)( win_width >> 1);
    ay = ay - (int)( height) - 30;
 
