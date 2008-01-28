@@ -9,7 +9,7 @@ class THprCurlyLineWithArrow : public  TCurlyLineWithArrow,
 {
 
 public:
-   THprCurlyLineWithArrow(){};
+   THprCurlyLineWithArrow(){ SetDaughter(this);};
    THprCurlyLineWithArrow(Double_t x1, Double_t y1, Double_t x2, Double_t y2,
               Double_t wl = .02, Double_t amp = .01,
               Int_t where = 2, Float_t arrowsize=0);

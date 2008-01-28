@@ -6,7 +6,7 @@
 class THprArc : public TArc, public HprElement
 {
 public:
-   THprArc(){};
+   THprArc(){ SetDaughter(this);};
    THprArc(Double_t x1, Double_t y1, Double_t rad,
              Double_t phimin=0, Double_t phimax=360);
    ~THprArc(){};

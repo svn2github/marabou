@@ -15,12 +15,12 @@ private:
    TCanvas      *fCanvas;
    Double_t   fWaveLength; // wavelength of sinusoid in percent of pad height
    Double_t   fAmplitude;  // amplitude of sinusoid in percent of pad height
-   Color_t    fColor ;  	// Feynman line color 
+   Color_t    fColor ;  	// Feynman line color
    Width_t    fWidth ;  	// Feynman line width
    Int_t      fPhi1; 		// Phi1 angle for curly arcs
    Int_t      fPhi2; 		// Phi2 angle for curly arcs
    Float_t    fArrowSize;  //
-   Style_t    fArrowStyle;  //
+   Int_t      fArrowStyle;  //
 public:
    FeynmanDiagramDialog();
    virtual ~FeynmanDiagramDialog();

@@ -5,6 +5,7 @@
 #include "TList.h"
 #include "TPad.h"
 #include "TCutG.h"
+#include "HprElement.h"
 
 //___________________________________________________________________
 
@@ -21,11 +22,11 @@ protected:
    Bool_t   fIsVisible;
    Bool_t   fForceVerticalShiftOnly;
    Bool_t   fForceHorizontalShiftOnly;
-   TList    fMembers;       // Members 
+   TList    fMembers;       // Members
 public:
    GroupOfGObjects(){};
 
-   GroupOfGObjects(const char * name, 
+   GroupOfGObjects(const char * name,
                    Double_t x, Double_t y,  TCutG* cut);
    virtual ~GroupOfGObjects();
    void    RecursiveRemove(TObject * obj);
@@ -41,9 +42,9 @@ public:
    Int_t   GetNMembers() {return fMembers.GetSize();};
    Int_t   AddMembersToList(TPad * pad, Double_t xoff = 0, Double_t yoff = 0,
                             Double_t scaleNDC = 1,Double_t scaleG = 1,
-                            Double_t angle = 0, Int_t align = 11, Int_t draw_cut=0);
+                            Double_t angle = 0, Int_t align = 11, Int_t draw_cut=0, Int_t plane = -1);
    void Transform(Double_t x, Double_t y, Double_t xoff,Double_t yoff,
-                    Double_t scale, Double_t angle,Int_t  align, Double_t* xt, Double_t* yt);  
+                    Double_t scale, Double_t angle,Int_t  align, Double_t* xt, Double_t* yt);
    void Print();                                                // *MENU*
    void         ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void Paint(Option_t* opt) {if (fIsVisible) TGraph::Paint(opt);};
@@ -55,9 +56,10 @@ public:
    void ForceVerticalShiftOnly(Bool_t fs) {fForceVerticalShiftOnly = fs;};   // *MENU*
    void ForceHorizontalShiftOnly(Bool_t fs) {fForceHorizontalShiftOnly = fs;};   // *MENU*
    void ShiftObjects(Double_t xshift, Double_t yshift, Bool_t shiftcut = kTRUE);        // *MENU*
-   void BindReleaseObjects(Bool_t bind) ; 
+   void BindReleaseObjects(Bool_t bind) ;
    Bool_t SloppyInside(Double_t x, Double_t y);
-        
+   void SetPlane(Int_t plane);                    // *MENU*
+
 ClassDef(GroupOfGObjects,2)
 };
 #endif

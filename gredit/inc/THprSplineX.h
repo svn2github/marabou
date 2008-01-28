@@ -6,7 +6,7 @@
 class THprSplineX : public TSplineX, public HprElement
 {
 public:
-   THprSplineX(){};
+   THprSplineX(){ SetDaughter(this);};
    THprSplineX(Int_t npoints, Double_t *x = NULL, Double_t *y = NULL,
            Float_t *sf = NULL, Float_t prec = 0.2, Bool_t closed = kFALSE);
    ~THprSplineX(){};

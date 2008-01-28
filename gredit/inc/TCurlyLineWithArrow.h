@@ -15,6 +15,7 @@ public:
    TCurlyLineArrow(Double_t x1, Double_t y1, Double_t x2, Double_t y2,
               Float_t arrowsize=0.05,Option_t *option="|>");
    ~TCurlyLineArrow(){};
+//   void Paint(const Option_t *opt) {};
    void  SetWhere(Int_t where) {fWhere = where;}
    Int_t GetWhere() {return fWhere;}
    void SetParent(TCurlyLineWithArrow *p) {fParent = p;};

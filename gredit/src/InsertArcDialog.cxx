@@ -94,32 +94,6 @@ radius is not 0 only the center must be marked  \n\
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
-//_________________________________________________________________________
-
-InsertArcDialog::~InsertArcDialog()
-{
-   SaveDefaults();
-};
-//_______________________________________________________________________
-
-void InsertArcDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "InsertArcDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
-//_______________________________________________________________________
-
-void InsertArcDialog::CloseDialog()
-{
-//   cout << "InsertArcDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
-   if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
-   delete this;
-}
 //______________________________________________________________________________
 
 void InsertArcDialog::ArcByCenterAndRadius()
@@ -251,7 +225,7 @@ void InsertArcDialog::ArcByPointsOnCF()
 void InsertArcDialog::SaveDefaults()
 {
    cout << "InsertArcDialog::InsertFunction::SaveDefaults()" << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("InsertArcDialog.fColor" , fColor);
    env.SetValue("InsertArcDialog.fStyle" , fStyle);
    env.SetValue("InsertArcDialog.fWidth" , fWidth);
@@ -268,7 +242,7 @@ void InsertArcDialog::SaveDefaults()
 
 void InsertArcDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fColor = env.GetValue("InsertArcDialog.fColor" , 1);
    fStyle = env.GetValue("InsertArcDialog.fStyle" , 1);
    fWidth = env.GetValue("InsertArcDialog.fWidth" , 2);
@@ -279,13 +253,6 @@ void InsertArcDialog::RestoreDefaults()
 //   fPhi1	 = env.GetValue("InsertArcDialog.fPhi1"  , 0.);
 //   fPhi2	 = env.GetValue("InsertArcDialog.fPhi2"  , 360.);
    fSense = env.GetValue("InsertArcDialog.fSense" , 1);
-}
-//_________________________________________________________________________
-
-void InsertArcDialog::CloseDown(Int_t wid)
-{
-   cout << "InsertArcDialog::CloseDown()" << endl;
-   delete this;
 }
 //_________________________________________________________________________
 
@@ -369,5 +336,40 @@ Double_t InsertArcDialog::GetRatioXY()
 	Double_t pixeltoX  = xrange / pxrange;
 	Double_t pixeltoY  = yrange/pyrange;
    return pixeltoY / pixeltoX;
+}
+//_________________________________________________________________________
+//_________________________________________________________________________
+
+InsertArcDialog::~InsertArcDialog()
+{
+   gROOT->GetListOfCleanups()->Remove(this);
+   fRow_lab->Delete();
+   delete fRow_lab;
+};
+//_______________________________________________________________________
+
+void InsertArcDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+//      cout << "InsertArcDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void InsertArcDialog::CloseDialog()
+{
+//   cout << "InsertArcDialog::CloseDialog() " << endl;
+   if (fDialog) fDialog->CloseWindowExt();
+   fDialog = NULL;
+   delete this;
+}
+//_________________________________________________________________________
+
+void InsertArcDialog::CloseDown(Int_t wid)
+{
+//   cout << "InsertArcDialog::CloseDown()" << endl;
+   if (wid != -2) SaveDefaults();
+   delete this;
 }
 

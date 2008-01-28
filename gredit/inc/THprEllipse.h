@@ -6,7 +6,7 @@
 class THprEllipse : public TEllipse, public HprElement
 {
 public:
-   THprEllipse(){};
+   THprEllipse(){ SetDaughter(this);};
    THprEllipse(Double_t x1, Double_t y1, Double_t r1, Double_t r2 =0,
              Double_t phimin=0, Double_t phimax=360,
              Double_t theta=0);

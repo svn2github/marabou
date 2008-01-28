@@ -22,7 +22,7 @@ private:
    Int_t      fCurly;
    Float_t    fArrowAngle;   //
    Float_t    fArrowSize;   //
-   Style_t    fArrowStyle;  //
+   Int_t      fArrowStyle;  //
    Int_t      fArrowAtStart;
    Int_t      fArrowAtEnd;
 public:

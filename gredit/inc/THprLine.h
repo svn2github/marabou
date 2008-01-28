@@ -6,7 +6,7 @@
 class THprLine : public TLine, public HprElement
 {
 public:
-   THprLine(){};
+   THprLine(){ SetDaughter(this);};
    THprLine(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
    ~THprLine(){};
    void Paint(const Option_t *opt);

@@ -8,7 +8,7 @@
 #include "TDialogCanvas.h"
 #include "TCurlyArc.h"
 #include "TCurlyLine.h"
-#include "TEllipse.h"
+#include "THprEllipse.h"
 #include "TEnv.h"
 #include "TF1.h"
 #include "TH1.h"
@@ -47,9 +47,11 @@
 #include "InsertFunctionDialog.h"
 #include "FeynmanDiagramDialog.h"
 #include "THprLine.h"
+#include "THprMarker.h"
 #include "THprArrow.h"
 #include "THprCurlyLine.h"
 #include "THprCurlyArc.h"
+#include "HprPlaneManager.h"
 #include "THprCurlyLineWithArrow.h"
 #include "CurlyLineWithArrowDialog.h"
 #include "SetColor.h"
@@ -76,7 +78,9 @@ enum EGeditCommandIds {
    M_PutObjectsOnGrid,
    M_ExtractGObjects,
    M_MarkGObjects,
-   M_InsertGObjectsG,
+   M_GrabFromScreen,
+   M_PlaneManager,
+   M_ExtractGObjectsG,
    M_InsertGObjects,
    M_WriteGObjects,
    M_DeleteObjects,
@@ -106,12 +110,18 @@ GEdit::GEdit(TCanvas * parent)
 void GEdit::Constructor()
 {
    cout << "ctor GEdit, parent " << fParent << endl;
+   SetName("HprGEdit");
    fRootCanvas = (TRootCanvas*)fParent->GetCanvas()->GetCanvasImp();
    fOrigWw = fParent->GetWw();
    fOrigWh = fParent->GetWh();
    RestoreDefaults();
    BuildMenu();
-   InitEditCommands();
+   fEditCommands = NULL;
+//   InitEditCommands();
+   fGObjectGroups = NULL;
+   fToolBar = NULL;
+   ShowToolBar(kTRUE);
+
    if (2 * fEditGridX  > gPad->GetX2() - gPad->GetX1() ||
        2 * fEditGridY  > gPad->GetY2() - gPad->GetY1()) {
       cout << "Edit grid too coarse, disable it" << endl;
@@ -130,6 +140,7 @@ void GEdit::Constructor()
    }
    SetBit(kMustCleanup);
    gROOT->GetListOfCleanups()->Add(this);
+   gROOT->GetListOfSpecials()->Add(this);
 }
 //______________________________________________________________________________
 
@@ -137,6 +148,8 @@ GEdit::~GEdit()
 {
    cout << "~GEdit " << this << endl;
    SaveDefaults();
+   gROOT->GetListOfCleanups()->Remove(this);
+   gROOT->GetListOfSpecials()->Remove(this);
    if (fEditCommands) delete fEditCommands;
 }
 
@@ -164,8 +177,18 @@ void GEdit::BuildMenu()
    fEditMenu->AddEntry("Read macro objects from file",     M_ReadGObjects);
    fEditMenu->AddEntry("Display list of macro objects",    M_ShowGallery);
    fEditMenu->AddSeparator();
+   Bool_t has_xgrabsc = kFALSE;
+   char * xgrabsc = gSystem->Which(gSystem->Getenv("PATH"), "xgrabsc");
+   if (xgrabsc != NULL) {
+      has_xgrabsc = kTRUE;
+      delete [] xgrabsc;
+   }
+   fEditMenu->AddEntry("Plane / Depths Manager", M_PlaneManager);
+   if (has_xgrabsc)
+      fEditMenu->AddEntry("Grab image from screen", M_GrabFromScreen);
    fEditMenu->AddEntry("Mark selected objects as compound", M_MarkGObjects);
    fEditMenu->AddEntry("Extract selected objects as compound",  M_ExtractGObjects);
+   fEditMenu->AddEntry("Insert a compound object",  M_InsertGObjects);
    fEditMenu->AddEntry("Delete selected objects",          M_DeleteObjects);
 
    fEditMenu->AddSeparator();
@@ -216,6 +239,18 @@ void GEdit::HandleMenu(Int_t id)
 
       case M_MarkGObjects:
          MarkGObjects();
+         break;
+
+      case M_PlaneManager:
+         new HprPlaneManager((TRootCanvas*)fParent->GetCanvasImp());
+         break;
+
+      case M_GrabFromScreen:
+         GrabImage();
+         break;
+
+      case M_InsertGObjects:
+         InsertGObjects();
          break;
 
       case M_ExtractGObjects:
@@ -509,8 +544,8 @@ void GEdit::ListAllObjects()
       if (obj->IsA() == EditMarker::Class()) continue;
       if (obj->TestBit(kCantEdit)) continue;
       row_lab->Add(new TObjString(obj->ClassName()));
-      if (obj->IsA() == TMarker::Class()) {
-         TMarker * m = (TMarker*)obj;
+      if (obj->IsA() == THprMarker::Class()) {
+         THprMarker * m = (THprMarker*)obj;
          x = m->GetX();
          y = m->GetY();
          if (x > far) {x -= far; flags[ind] = 0;}
@@ -521,8 +556,8 @@ void GEdit::ListAllObjects()
          y = m->GetY1();
          if (x > far) {x -= far; flags[ind] = 0;}
 
-      } else if (obj->IsA() == TEllipse::Class()) {
-         TEllipse * m = (TEllipse*)obj;
+      } else if (obj->IsA() == THprEllipse::Class()) {
+         THprEllipse * m = (THprEllipse*)obj;
          x = m->GetX1();
          y = m->GetY1();
          if (x > far) {x -= far; flags[ind] = 0;}
@@ -592,8 +627,8 @@ void GEdit::ListAllObjects()
          y = m->GetY1();
          if (x > far) {x -= far; flags[ind] = 0;}
 
-      } else if (obj->IsA() == TPad::Class()) {
-         TPad * m = (TPad*)obj;
+      } else if (obj->IsA() == HTPad::Class()) {
+         HTPad * m = (HTPad*)obj;
          x = m->GetAbsXlowNDC();
          y = m->GetAbsYlowNDC();
 //         convert to user
@@ -627,8 +662,8 @@ void GEdit::ListAllObjects()
       if (obj->IsA() == EditMarker::Class()) continue;
       if (obj->TestBit(kCantEdit)) continue;
       if (ind >= nrows)break;
-      if (obj->IsA() == TMarker::Class()) {
-         TMarker * m = (TMarker*)obj;
+      if (obj->IsA() == THprMarker::Class()) {
+         THprMarker * m = (THprMarker*)obj;
          x1 = m->GetX();
          if (flags[ind] == 0) {
             if (x1 < far) x1 += far;    // move away
@@ -651,8 +686,8 @@ void GEdit::ListAllObjects()
          if (flags[ind + nrows] != 0)
             m->Pop();
 
-      } else if (obj->IsA() == TEllipse::Class()) {
-         TEllipse * m = (TEllipse*)obj;
+      } else if (obj->IsA() == THprEllipse::Class()) {
+         THprEllipse * m = (THprEllipse*)obj;
          x1 = m->GetX1();
          if (flags[ind] == 0) {
             if (x1 < far) x1 += far;    // move away
@@ -771,8 +806,8 @@ void GEdit::ListAllObjects()
          if (flags[ind + nrows] != 0)
             m->Pop();
 
-      } else if (obj->IsA() == TPad::Class()) {
-         TPad * m = (TPad*)obj;
+      } else if (obj->IsA() == HTPad::Class()) {
+         HTPad * m = (HTPad*)obj;
          x1 = m->GetAbsXlowNDC();
          x2 = x1 + m->GetAbsWNDC();
          y1 = m->GetAbsYlowNDC();
@@ -1215,9 +1250,9 @@ void GEdit::ModifyEllipses()
    Int_t ncols = 7;
    TIter next(gPad->GetListOfPrimitives());
    TObject * obj;
-   TEllipse * cl;
+   THprEllipse * cl;
    while ( (obj = next()) ) {
-      if (obj->IsA() == TEllipse::Class()) nrows++;
+      if (obj->IsA() == THprEllipse::Class()) nrows++;
    }
    if (nrows <= 0) {
       WarnBox("No Ellipse in active pad", fRootCanvas);
@@ -1229,8 +1264,8 @@ void GEdit::ModifyEllipses()
    Int_t prec = 3;
    TIter next_1(gPad->GetListOfPrimitives());
    while ( (obj = next_1()) ) {
-      if (obj->IsA() == TEllipse::Class()) {
-         cl = (TEllipse*)obj;
+      if (obj->IsA() == THprEllipse::Class()) {
+         cl = (THprEllipse*)obj;
 
          values[ind + 0 * nrows] = cl->GetX1();
          values[ind + 1 * nrows] = cl->GetY1();
@@ -1262,9 +1297,9 @@ void GEdit::ModifyEllipses()
    Bool_t changed = kFALSE;
    TIter next_2(gPad->GetListOfPrimitives());
    while ( (obj = next_2()) ) {
-      if (obj->IsA() == TEllipse::Class()) {
+      if (obj->IsA() == THprEllipse::Class()) {
          if (flags[ind] >0) {
-            cl = (TEllipse*)obj;
+            cl = (THprEllipse*)obj;
             cl->SetX1(values[ind + 0 * nrows]);
             cl->SetY1(values[ind + 1 * nrows]);
             cl->SetR1  (values[ind + 2 * nrows]);
@@ -1293,9 +1328,9 @@ void GEdit::ModifyMarkers()
    TIter next(gPad->GetListOfPrimitives());
 //	TObjString * os;
    TObject * obj;
-   TMarker * cl;
+   THprMarker * cl;
    while ( (obj = next()) ) {
-      if (obj->IsA() == TMarker::Class()) nrows++;
+      if (obj->IsA() == THprMarker::Class()) nrows++;
    }
    if (nrows <= 0) {
       WarnBox("No Marker in active pad", fRootCanvas);
@@ -1307,8 +1342,8 @@ void GEdit::ModifyMarkers()
    Int_t prec = 3;
    TIter next_1(gPad->GetListOfPrimitives());
    while ( (obj = next_1()) ) {
-      if (obj->IsA() == TMarker::Class()) {
-         cl = (TMarker*)obj;
+      if (obj->IsA() == THprMarker::Class()) {
+         cl = (THprMarker*)obj;
 
          values[ind + 0 * nrows] = cl->GetX();
          values[ind + 1 * nrows] = cl->GetY();
@@ -1332,9 +1367,9 @@ void GEdit::ModifyMarkers()
    Bool_t changed = kFALSE;
    TIter next_2(gPad->GetListOfPrimitives());
    while ( (obj = next_2()) ) {
-      if (obj->IsA() == TMarker::Class()) {
+      if (obj->IsA() == THprMarker::Class()) {
          if (flags[ind] >0) {
-            cl = (TMarker*)obj;
+            cl = (THprMarker*)obj;
             cl->SetX(values[ind + 0 * nrows]);
             cl->SetY(values[ind + 1 * nrows]);
             cl->SetMarkerSize (values[ind + 2 * nrows]);
@@ -1360,9 +1395,9 @@ void GEdit::ModifyPads()
    Int_t ncols = 4;
    TIter next(gPad->GetListOfPrimitives());
    TObject * obj;
-   TPad * b;
+   HTPad * b;
    while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TPad")) nrows++;
+      if (obj->InheritsFrom("HTPad")) nrows++;
    }
    if (nrows <= 0) {
       WarnBox("No Pad in active pad", fRootCanvas);
@@ -1375,8 +1410,8 @@ void GEdit::ModifyPads()
    Int_t prec = 3;
    TIter next_1(gPad->GetListOfPrimitives());
    while ( (obj = next_1()) ) {
-      if (obj->InheritsFrom("TPad")) {
-         b = (TPad*)obj;
+      if (obj->InheritsFrom("HTPad")) {
+         b = (HTPad*)obj;
          x1 = b->GetAbsXlowNDC();
          y1 = b->GetAbsYlowNDC();
          x2 = x1 + b->GetAbsWNDC();
@@ -1410,9 +1445,9 @@ void GEdit::ModifyPads()
    Bool_t changed = kFALSE;
    TIter next_2(gPad->GetListOfPrimitives());
    while ( (obj = next_2()) ) {
-      if (obj->InheritsFrom("TPad")) {
+      if (obj->InheritsFrom("HTPad")) {
          if (flags[ind] >0) {
-            b = (TPad*)obj;
+            b = (HTPad*)obj;
             x1 = (values[ind + 0 * nrows] - gPad->GetX1()) / (gPad->GetX2() - gPad->GetX1());
             y1 = (values[ind + 1 * nrows] - gPad->GetY1()) / (gPad->GetY2() - gPad->GetY1());
             x2 = x1 + (values[ind + 2 * nrows] - gPad->GetX1()) / (gPad->GetX2() - gPad->GetX1());
@@ -1771,14 +1806,14 @@ void GEdit::SetVisibilityOfEnclosingCuts(Bool_t visible)
 }
 //______________________________________________________________________________
 
-TPad*  GEdit::GetEmptyPad()
+HTPad*  GEdit::GetEmptyPad()
 {
    TIter next(fParent->GetListOfPrimitives());
    TObject * obj;
-   TPad* pad  = NULL;
+   HTPad* pad  = NULL;
    while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TPad")) {
-         pad = (TPad*)obj;
+      if (obj->InheritsFrom("HTPad")) {
+         pad = (HTPad*)obj;
          if (pad->GetListOfPrimitives()->GetSize() == 0) {
             pad->cd(0);
             gROOT->SetSelectedPad(pad);
@@ -1796,7 +1831,7 @@ void GEdit::InsertHist()
 //   cout << "GEdit::InsertHist() " << endl;
    fParent->cd();
 //   if (!fHistPresent) return;
-   TPad* pad = GetEmptyPad();
+   HTPad* pad = GetEmptyPad();
    if (pad) {
      gROOT->SetSelectedPad(pad);
    } else {
@@ -1922,7 +1957,7 @@ void GEdit::InsertPad()
 void GEdit::InsertGraph()
 {
    fParent->cd();
-   TPad* pad = GetEmptyPad();
+   HTPad* pad = GetEmptyPad();
    if (pad) {
      gROOT->SetSelectedPad(pad);
    } else {
@@ -2161,7 +2196,7 @@ void GEdit::GrabImage()
       x2 = x1 + (Double_t) xwg / (Double_t)gPad->GetWw();
       y2 = y1 + (Double_t) ywg / (Double_t)gPad->GetWh();
 
-      TPad * pad = new TPad(pname.Data(), "For HprImage",
+      HTPad * pad = new HTPad(pname.Data(), "For HprImage",
                             x1, y1, x2, y2);
       pad->Draw();
       TImage *hprimg = TImage::Open(pname.Data());
@@ -2178,7 +2213,7 @@ void GEdit::GrabImage()
 void GEdit::InsertImage()
 {
    fParent->cd();
-   TPad* pad = 0;
+   HTPad* pad = 0;
    const char hist_file[] = {"images_hist.txt"};
    Bool_t ok = kFALSE;
    static TString name;
@@ -2243,7 +2278,7 @@ void GEdit::InsertImage()
 
    if (new_pad) {
       pad = GetEmptyPad();
-      pad = (TPad*)gPad;
+      pad = (HTPad*)gPad;
       if (pad) {
          gROOT->SetSelectedPad(pad);
    		Double_t aspect_ratio = img_height * fParent->GetXsizeReal()
@@ -2405,8 +2440,8 @@ tryagain:
             gg->AddMember(b,  lnk->GetOption());
          }
 
-      } else if (obj->InheritsFrom("TPad")) {
-         TPad * b = (TPad*)obj;
+      } else if (obj->InheritsFrom("HTPad")) {
+         HTPad * b = (HTPad*)obj;
          Double_t x1 = b->GetAbsXlowNDC();
          Double_t y1 = b->GetAbsYlowNDC();
          Double_t x2 = x1 + b->GetAbsWNDC();
@@ -2422,7 +2457,7 @@ tryagain:
             |cut->IsInside(x2, y1)
             |cut->IsInside(x2, y2) ) {
             if (!markonly) {
-               b = (TPad*)obj->Clone();
+               b = (HTPad*)obj->Clone();
                x1 = (x1 - gg->fXLowEdge) / (gg->fXUpEdge - gg->fXLowEdge);
                x2 = (x2 - gg->fXLowEdge) / (gg->fXUpEdge - gg->fXLowEdge);
                y1 = (y1 - gg->fYLowEdge) / (gg->fYUpEdge - gg->fYLowEdge);
@@ -2432,12 +2467,12 @@ tryagain:
             gg->AddMember(b,  lnk->GetOption());
          }
 
-      } else if (obj->InheritsFrom("TLine")){
-         TLine * b = (TLine*)obj;
+      } else if (obj->InheritsFrom("THprLine")){
+         THprLine * b = (THprLine*)obj;
          if (cut->IsInside(b->GetX1(), b->GetY1())
             |cut->IsInside(b->GetX2(), b->GetY2()) ) {
             if (!markonly) {
-               b = (TLine*)obj->Clone();
+               b = (THprLine*)obj->Clone();
                b->SetX1(b->GetX1() - xoff);
                b->SetX2(b->GetX2() - xoff);
                b->SetY1(b->GetY1() - yoff);
@@ -2446,12 +2481,12 @@ tryagain:
             gg->AddMember(b,  lnk->GetOption());
          }
 
-      } else if (obj->InheritsFrom("TArrow")) {
-         TArrow * b = (TArrow*)obj;
+      } else if (obj->InheritsFrom("THprArrow")) {
+         THprArrow * b = (THprArrow*)obj;
          if (cut->IsInside(b->GetX1(), b->GetY1())
             |cut->IsInside(b->GetX2(), b->GetY2()) ) {
             if (!markonly) {
-               b = (TArrow*)obj->Clone();
+               b = (THprArrow*)obj->Clone();
                b->SetX1(b->GetX1() - xoff);
                b->SetX2(b->GetX2() - xoff);
                b->SetY1(b->GetY1() - yoff);
@@ -2460,22 +2495,22 @@ tryagain:
             gg->AddMember(b,  lnk->GetOption());
          }
 
-      } else if (obj->InheritsFrom("TCurlyLine")) {
-         TCurlyLine * b = (TCurlyLine*)obj;
+      } else if (obj->InheritsFrom("THprCurlyLine")) {
+         THprCurlyLine * b = (THprCurlyLine*)obj;
          if (cut->IsInside(b->GetStartX(), b->GetStartY())
             |cut->IsInside(b->GetEndX(), b->GetEndY()) ) {
             if (!markonly) {
-               b = (TCurlyLine*)obj->Clone();
+               b = (THprCurlyLine*)obj->Clone();
                b->SetStartPoint(b->GetStartX() - xoff, b->GetStartY() - yoff);
                b->SetEndPoint(b->GetEndX() - xoff, b->GetEndY() - yoff);
             }
             gg->AddMember(b,  lnk->GetOption());
          }
-      } else if (obj->InheritsFrom("TMarker")) {
-         TMarker * b = (TMarker*)obj;
+      } else if (obj->InheritsFrom("THprMarker")) {
+         THprMarker * b = (THprMarker*)obj;
          if (SloppyInside(cut, b->GetX(), b->GetY()) ) {
             if (!markonly) {
-               b = (TMarker*)obj->Clone();
+               b = (THprMarker*)obj->Clone();
                b->SetX(b->GetX() - xoff);
                b->SetY(b->GetY() - yoff);
             }
@@ -2493,8 +2528,8 @@ tryagain:
             gg->AddMember(b,  lnk->GetOption());
          }
 
-      } else if (obj->InheritsFrom("TEllipse")) {
-         TEllipse * b = (TEllipse*)obj;
+      } else if (obj->InheritsFrom("THprEllipse")) {
+         THprEllipse * b = (THprEllipse*)obj;
          Bool_t inside = kFALSE;
          if (cut->IsInside(b->GetX1(), b->GetY1()))inside = kTRUE;
 
@@ -2514,7 +2549,7 @@ tryagain:
          }
          if (inside) {
             if (!markonly) {
-               b = (TEllipse*)obj->Clone();
+               b = (THprEllipse*)obj->Clone();
                b->SetX1(b->GetX1() - xoff);
                b->SetY1(b->GetY1() - yoff);
             }
@@ -2694,7 +2729,14 @@ void GEdit::InsertGObjects(const char * objname)
          }
       }
    }
-   gg->AddMembersToList(fParent, x0, y0, scaleNDC, scaleU, angle, align, draw_cut);
+   Int_t current_plane = -1;
+   HTCanvas *cc = dynamic_cast<HTCanvas*>(gPad);
+   if (!cc) {
+      cout << "Cant get active canvas" << endl;
+   } else {
+      current_plane = cc->GetCurrentPlane();
+   }
+   gg->AddMembersToList(fParent, x0, y0, scaleNDC, scaleU, angle, align, draw_cut, current_plane);
    x0 = y0 = 0;
    fParent->Modified();
    fParent->Update();
@@ -2710,7 +2752,7 @@ void GEdit::WriteGObjects()
    }
    Bool_t ok;
    TString name = "Graph_macros.root";
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    name = env.GetValue("HistPresent.GraphMacrosFileName", name.Data());
    name = GetString("File name", name.Data(), &ok,
         (TGWindow*)fRootCanvas);
@@ -2733,7 +2775,7 @@ void GEdit::ReadGObjects()
    fParent->cd();
    Bool_t ok;
    TString name = "Graph_macros.root";
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    name = env.GetValue("HistPresent.GraphMacrosFileName", name.Data());
    name = GetString("File name", name.Data(), &ok,
         (TGWindow*)fRootCanvas);
@@ -2782,11 +2824,12 @@ void GEdit::ShowGallery()
       n = 25;
    }
    TText * tt;
+   cout << "ShowGallery " << endl;
    for (Int_t i = 0; i < n; i++) {
       go = (GroupOfGObjects*)fGObjectGroups->At(i);
       oname = go->GetName();
-      cmd = "((TCanvas*)(gROOT->GetListOfCanvases()->FindObject(\"";
-      cmd += fParent->GetName();
+      cmd = "((GEdit*)(gROOT->GetListOfSpecials()->FindObject(\"";
+      cmd += "HprGEdit";
       cmd += "\")))->InsertGObjects(\"";
       cmd += oname;
       cmd += "\");";
@@ -2913,8 +2956,8 @@ void GEdit::PutObjectsOnGrid(TList* list)
          if (doy) b->SetY1(PutOnGridY(b->GetY1()));
          if (doy) b->SetY2(PutOnGridY(b->GetY2()));
 
-      } else if (obj->InheritsFrom("TPad") && dopad) {
-         TPad * b = (TPad*)obj;
+      } else if (obj->InheritsFrom("HTPad") && dopad) {
+         HTPad * b = (HTPad*)obj;
          x1 = b->GetAbsXlowNDC();
          y1 = b->GetAbsYlowNDC();
          x2 = x1 + b->GetAbsWNDC();
@@ -3050,8 +3093,8 @@ void GEdit::DeleteObjects()
              delete obj;
          }
 
-      } else if (obj->InheritsFrom("TPad")) {
-         TPad * b = (TPad*)obj;
+      } else if (obj->InheritsFrom("HTPad")) {
+         HTPad * b = (HTPad*)obj;
          Double_t x1 = b->GetAbsXlowNDC();
          Double_t y1 = b->GetAbsYlowNDC();
          Double_t x2 = x1 + b->GetAbsWNDC();
@@ -3089,8 +3132,8 @@ void GEdit::DeleteObjects()
             |cut->IsInside(b->GetEndX(), b->GetEndY()) ) {
              delete obj;
          }
-      } else if (obj->InheritsFrom("TMarker")) {
-         TMarker * b = (TMarker*)obj;
+      } else if (obj->InheritsFrom("THprMarker")) {
+         THprMarker * b = (THprMarker*)obj;
          if (SloppyInside(cut, b->GetX(), b->GetY()) ) {
              delete obj;
          }
@@ -3100,8 +3143,8 @@ void GEdit::DeleteObjects()
              delete obj;
          }
 
-      } else if (obj->InheritsFrom("TEllipse")) {
-         TEllipse * b = (TEllipse*)obj;
+      } else if (obj->InheritsFrom("THprEllipse")) {
+         THprEllipse * b = (THprEllipse*)obj;
          Bool_t inside = kFALSE;
          if (cut->IsInside(b->GetX1(), b->GetY1()))inside = kTRUE;
 
@@ -3462,7 +3505,7 @@ void GEdit::DrawEditGrid(Bool_t visible)
 
 void GEdit::SaveDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("GEdit.RootFileName",   fRootFileName);
    env.SetValue("GEdit.PictureName",    fPictureName);
    env.SetValue("GEdit.EditGridX",      fEditGridX);
@@ -3475,7 +3518,7 @@ void GEdit::SaveDefaults()
 //_____________________________________________________________________
 void GEdit::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fRootFileName    = env.GetValue("GEdit.RootFileName", "pictures.root");
    fPictureName     = env.GetValue("GEdit.PictureName",  "pict");
    fEditGridX       = env.GetValue("GEdit.EditGridX",      5.);

@@ -77,32 +77,6 @@ static const Char_t helptext[] =
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
-//_________________________________________________________________________
-
-InsertTextBoxDialog::~InsertTextBoxDialog()
-{
-   SaveDefaults();
-};
-//_______________________________________________________________________
-
-void InsertTextBoxDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
-//_______________________________________________________________________
-
-void InsertTextBoxDialog::CloseDialog()
-{
-//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
-   if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
-   delete this;
-}
 //____________________________________________________________________________
 
 void InsertTextBoxDialog::ExecuteInsert()
@@ -180,7 +154,7 @@ void InsertTextBoxDialog::ExecuteInsert()
 void InsertTextBoxDialog::SaveDefaults()
 {
 //   cout << "InsertTextBoxDialog::InsertFunction::SaveDefaults()" << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("InsertTextBoxDialog.fDx"            ,fDx);
    env.SetValue("InsertTextBoxDialog.fDy"            ,fDy);
    env.SetValue("InsertTextBoxDialog.fColor"         ,fColor);
@@ -202,7 +176,7 @@ void InsertTextBoxDialog::SaveDefaults()
 
 void InsertTextBoxDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fDx            = env.GetValue("InsertTextBoxDialog.fDx" ,0.);
    fDy            = env.GetValue("InsertTextBoxDialog.fDy" ,0.);
    fColor         = env.GetValue("InsertTextBoxDialog.fColor" ,1);
@@ -221,8 +195,37 @@ void InsertTextBoxDialog::RestoreDefaults()
 }
 //_________________________________________________________________________
 
-void InsertTextBoxDialog::CloseDown(Int_t wid)
+InsertTextBoxDialog::~InsertTextBoxDialog()
 {
-   cout << "InsertTextBoxDialog::CloseDown()" << endl;
+   gROOT->GetListOfCleanups()->Remove(this);
+   fRow_lab->Delete();
+   delete fRow_lab;
+};
+//_______________________________________________________________________
+
+void InsertTextBoxDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "InsertTextBoxDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void InsertTextBoxDialog::CloseDialog()
+{
+//   cout << "InsertTextBoxDialog::CloseDialog() " << endl;
+   if (fDialog) fDialog->CloseWindowExt();
+   fDialog = NULL;
    delete this;
 }
+//_________________________________________________________________________
+
+void InsertTextBoxDialog::CloseDown(Int_t wid)
+{
+//   cout << "InsertTextBoxDialog::CloseDown()" << endl;
+   if (wid != -2) SaveDefaults();
+   delete this;
+}
+
+

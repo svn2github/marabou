@@ -255,33 +255,6 @@ static const Char_t helptext[] =
 };
 //_________________________________________________________________________
 
-InsertTextDialog::~InsertTextDialog()
-{
-   gROOT->GetListOfCleanups()->Remove(this);
-   SaveDefaults();
-};
-//_______________________________________________________________________
-
-void InsertTextDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
-//_______________________________________________________________________
-
-void InsertTextDialog::CloseDialog()
-{
-//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
-   if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
-   delete this;
-}
-//_________________________________________________________________________
-
 void InsertTextDialog::InsertTextExecute()
 {
    if (fEditTextX0 == 0 && fEditTextY0 == 0) {
@@ -426,7 +399,7 @@ void InsertTextDialog::InsertTextExecute()
 
 void InsertTextDialog::SaveDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("InsertTextDialog.EditTextFileName"	, fEditTextFileName   );
    env.SetValue("InsertTextDialog.EditTextDy"			, fEditTextDy  		 );
    env.SetValue("InsertTextDialog.EditTextAlign"		, fEditTextAlign  	 );
@@ -443,7 +416,7 @@ void InsertTextDialog::SaveDefaults()
 void InsertTextDialog::RestoreDefaults()
 {
 //   cout << "HTCanvas::InsertTextSetDefaults()" << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fEditTextFileName = "latex.txt";
    fEditTextFromFile = 0;
    fEditTextX0 = 0;
@@ -470,11 +443,38 @@ void InsertTextDialog::Show_Head_of_File()
 //   cmd.Append("\")");
    gSystem->Exec(cmd);
 }
+
+//_________________________________________________________________________
+
+InsertTextDialog::~InsertTextDialog()
+{
+   gROOT->GetListOfCleanups()->Remove(this);
+   fRow_lab->Delete();
+   delete fRow_lab;
+};
+//_______________________________________________________________________
+
+void InsertTextDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "InsertTextDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void InsertTextDialog::CloseDialog()
+{
+//   cout << "InsertTextDialog::CloseDialog() " << endl;
+   if (fDialog) fDialog->CloseWindowExt();
+   fDialog = NULL;
+   delete this;
+}
 //_________________________________________________________________________
 
 void InsertTextDialog::CloseDown(Int_t wid)
 {
-   cout << "InsertTextDialog::CloseDown()" << endl;
+//   cout << "InsertTextDialog::CloseDown()" << endl;
+   if (wid != -2) SaveDefaults();
    delete this;
 }
-

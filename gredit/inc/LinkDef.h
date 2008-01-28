@@ -38,6 +38,7 @@
 #pragma link C++ class THprCurlyArc;
 #pragma link C++ class THprTextBox;
 #pragma link C++ class THprLine;
+#pragma link C++ class THprPolyLine;
 #pragma link C++ class THprArrow;
 #pragma link C++ class THprMarker;
 #pragma link C++ class THprGraph;
@@ -47,5 +48,6 @@
 #pragma link C++ class THprCurlyLineWithArrow;
 #pragma link C++ class TCurlyLineWithArrow;
 #pragma link C++ class CurlyLineWithArrowDialog;
+#pragma link C++ class MarkerLineDialog;
 #pragma link C++ class HprPlaneManager;
 #endif

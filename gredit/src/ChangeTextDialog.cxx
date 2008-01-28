@@ -84,25 +84,9 @@ static const Char_t helptext[] =
 };
 //_________________________________________________________________________
 
-ChangeTextDialog::~ChangeTextDialog()
-{
-   gROOT->GetListOfCleanups()->Remove(this);
-   SaveDefaults();
-};
-//_______________________________________________________________________
-
-void ChangeTextDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
-//_________________________________________________________________________
-
 void ChangeTextDialog::SaveDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("ChangeTextDialog.ChangeTextAlign"		, fChangeTextAlign  	 );
    env.SetValue("ChangeTextDialog.ChangeTextColor"		, fChangeTextColor  	 );
    env.SetValue("ChangeTextDialog.ChangeTextFont" 		, fChangeTextFont		 );
@@ -118,7 +102,7 @@ void ChangeTextDialog::SaveDefaults()
 void ChangeTextDialog::RestoreDefaults()
 {
 //   cout << "HTCanvas::ChangeTextSetDefaults()" << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
 
    fChangeTextAlign       = env.GetValue("ChangeTextDialog.ChangeTextAlign"  , 11);
    fChangeTextColor       = env.GetValue("ChangeTextDialog.ChangeTextColor"  , 1);
@@ -128,17 +112,6 @@ void ChangeTextDialog::RestoreDefaults()
    fChangeTextSizeMin     = env.GetValue("ChangeTextDialog.ChangeTextSizeMin"   , 0.0);
    fChangeTextSizeMax     = env.GetValue("ChangeTextDialog.ChangeTextSizeMax"   , 1.0);
    fChangeTextAngle       = env.GetValue("ChangeTextDialog.ChangeTextAngle"  , 0);
-}
-//_______________________________________________________________________
-
-void ChangeTextDialog::CloseDialog()
-{
-//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
-   if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
-   delete this;
 }
 //_________________________________________________________________________
 
@@ -194,9 +167,37 @@ void ChangeTextDialog::ChangeTextExecute()
 };
 //_________________________________________________________________________
 
+ChangeTextDialog::~ChangeTextDialog()
+{
+   gROOT->GetListOfCleanups()->Remove(this);
+   fRow_lab->Delete();
+   delete fRow_lab;
+};
+//_______________________________________________________________________
+
+void ChangeTextDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void ChangeTextDialog::CloseDialog()
+{
+//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
+   if (fDialog) fDialog->CloseWindowExt();
+   fDialog = NULL;
+   delete this;
+}
+//_________________________________________________________________________
+
 void ChangeTextDialog::CloseDown(Int_t wid)
 {
    cout << "ChangeTextDialog::CloseDown()" << endl;
+   if (wid != -2 )
+      SaveDefaults();
    delete this;
 }
 

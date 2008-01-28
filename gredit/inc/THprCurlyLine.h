@@ -6,7 +6,7 @@
 class THprCurlyLine : public TCurlyLine, public HprElement
 {
 public:
-   THprCurlyLine(){};
+   THprCurlyLine(){ SetDaughter(this);};
    THprCurlyLine(Double_t x1, Double_t y1, Double_t x2, Double_t y2,
                   Double_t wl = .02, Double_t amp = .01);
    ~THprCurlyLine(){};

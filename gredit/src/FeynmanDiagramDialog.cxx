@@ -76,32 +76,6 @@ static const Char_t helptext[] =
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
-//_________________________________________________________________________
-
-FeynmanDiagramDialog::~FeynmanDiagramDialog()
-{
-   SaveDefaults();
-};
-//_______________________________________________________________________
-
-void FeynmanDiagramDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
-//_______________________________________________________________________
-
-void FeynmanDiagramDialog::CloseDialog()
-{
-//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
-   if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
-   delete this;
-}
 //______________________________________________________________________________
 
 void FeynmanDiagramDialog::FeynmanArrow()
@@ -236,7 +210,7 @@ void FeynmanDiagramDialog::FeynmanLine(Style_t lstyle )
 
 void FeynmanDiagramDialog::SaveDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("FeynmanDiagramDialog.fWaveLength" , fWaveLength);
    env.SetValue("FeynmanDiagramDialog.fAmplitude"  , fAmplitude );
    env.SetValue("FeynmanDiagramDialog.fColor"		, fColor 	 );
@@ -251,7 +225,7 @@ void FeynmanDiagramDialog::SaveDefaults()
 
 void FeynmanDiagramDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fWaveLength = env.GetValue("FeynmanDiagramDialog.fWaveLength" , 0.02);
    fAmplitude  = env.GetValue("FeynmanDiagramDialog.fAmplitude"  , 0.01);
    fColor   	= env.GetValue("FeynmanDiagramDialog.fColor"      , 1);
@@ -265,17 +239,44 @@ void FeynmanDiagramDialog::RestoreDefaults()
 
 void FeynmanDiagramDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
-   TCanvas *canvas = (TCanvas *)obj;
+//   TCanvas *canvas = (TCanvas *)obj;
 //  cout << " FeynmanDiagramDialog::CRButtonPressed(" << wid<< ", " <<bid;
-   if (obj) cout  << ", " << canvas->GetName() << ")";
-   cout << endl;
+//   if (obj) cout  << ", " << canvas->GetName() << ")";
+//   cout << endl;
 }
 
+//_________________________________________________________________________
+
+FeynmanDiagramDialog::~FeynmanDiagramDialog()
+{
+   gROOT->GetListOfCleanups()->Remove(this);
+   fRow_lab->Delete();
+   delete fRow_lab;
+};
+//_______________________________________________________________________
+
+void FeynmanDiagramDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void FeynmanDiagramDialog::CloseDialog()
+{
+//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
+   if (fDialog) fDialog->CloseWindowExt();
+   fDialog = NULL;
+   delete this;
+}
 //_________________________________________________________________________
 
 void FeynmanDiagramDialog::CloseDown(Int_t wid)
 {
 //   cout << "FeynmanDiagramDialog::CloseDown()" << endl;
-   fDialog = NULL;
+   if (wid != -2) SaveDefaults();
+   delete this;
 }
 

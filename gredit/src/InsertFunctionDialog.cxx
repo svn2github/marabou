@@ -78,39 +78,13 @@ static const Char_t helptext[] =
       hfile.close();
    }
    if (gROOT->GetVersionInt() < 40000) history = NULL;
-   Int_t itemwidth = 280;
+   Int_t itemwidth = 320;
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Function Dialog", fTpointer, &ok,itemwidth, win,
                       history, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
  };
-//_________________________________________________________________________
-
-InsertFunctionDialog::~InsertFunctionDialog()
-{
-   SaveDefaults();
-};
-//_______________________________________________________________________
-
-void InsertFunctionDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "InsertFunctionDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
-//_______________________________________________________________________
-
-void InsertFunctionDialog::CloseDialog()
-{
-//   cout << "InsertFunctionDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
-   if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
-   delete this;
-}
 //_________________________________________________________________________
 
 void InsertFunctionDialog::InsertFunctionExecute()
@@ -173,7 +147,7 @@ void InsertFunctionDialog::InsertFunctionExecute()
 void InsertFunctionDialog::SaveDefaults()
 {
    cout << "HTCanvas::InsertFunction::SaveDefaults()" << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("InsertFunctionDialog.fNpar"		  , fNpar);
    env.SetValue("InsertFunctionDialog.fPar0" 	  , fPar[0]);
    env.SetValue("InsertFunctionDialog.fPar1" 	  , fPar[1]);
@@ -200,7 +174,7 @@ void InsertFunctionDialog::SaveDefaults()
 void InsertFunctionDialog::RestoreDefaults()
 {
 //   cout << "HTCanvas::InsertFunctionSetDefaults()" << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fNpar        = env.GetValue("InsertFunctionDialog.fNpar"		  ,           3);
    fPar[0]      = env.GetValue("InsertFunctionDialog.fPar0"		  , (Double_t)1);
    fPar[1]      = env.GetValue("InsertFunctionDialog.fPar1"		  , (Double_t)0);
@@ -220,13 +194,6 @@ void InsertFunctionDialog::RestoreDefaults()
    fCol 		    = env.GetValue("InsertFunctionDialog.Col" 		  , 4);
    fPadOpacity  = env.GetValue("InsertFunctionDialog.PadOpacity", 30);
 	fNew_canvas  = env.GetValue("InsertFunctionDialog.New_canvas" , 0);
-}
-//_________________________________________________________________________
-
-void InsertFunctionDialog::CloseDown(Int_t wid)
-{
-   cout << "InsertFunctionDialog::CloseDown()" << endl;
-   delete this;
 }
 //________________________________________________________________
 void InsertFunctionDialog::IncrementIndex(TString * arg)
@@ -313,4 +280,39 @@ Int_t InsertFunctionDialog::GetFunctionPad(TPad *ipad)
    }
    return -1;   // no suitable pad found
 }
+//_________________________________________________________________________
+
+InsertFunctionDialog::~InsertFunctionDialog()
+{
+   gROOT->GetListOfCleanups()->Remove(this);
+   fRow_lab->Delete();
+   delete fRow_lab;
+};
+//_______________________________________________________________________
+
+void InsertFunctionDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "InsertFunctionDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void InsertFunctionDialog::CloseDialog()
+{
+//   cout << "InsertFunctionDialog::CloseDialog() " << endl;
+   if (fDialog) fDialog->CloseWindowExt();
+   fDialog = NULL;
+   delete this;
+}
+//_________________________________________________________________________
+
+void InsertFunctionDialog::CloseDown(Int_t wid)
+{
+//   cout << "InsertFunctionDialog::CloseDown()" << endl;
+   if (wid != -2) SaveDefaults();
+   delete this;
+}
+
 

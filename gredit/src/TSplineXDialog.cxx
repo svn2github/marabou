@@ -160,7 +160,7 @@ void TSplineXDialog::Draw_The_TSplineX()
 
 void TSplineXDialog::SaveDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("TSplineXDialog.Closed"            , fClosed            );
    env.SetValue("TSplineXDialog.Approx"            , fApprox            );
    env.SetValue("TSplineXDialog.Fixends"           , fFixends           );
@@ -186,7 +186,7 @@ void TSplineXDialog::SaveDefaults()
 
 void TSplineXDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fClosed             = env.GetValue("TSplineXDialog.Closed"            , 0);
    fApprox             = env.GetValue("TSplineXDialog.Approx"            , 1);
    fFixends            = env.GetValue("TSplineXDialog.Fixends"           , 1);
@@ -209,10 +209,19 @@ void TSplineXDialog::RestoreDefaults()
 }
 //_______________________________________________________________________
 
+TSplineXDialog::~TSplineXDialog()
+{
+   cout << "dtor:~TSplineXDialog()"<<endl;
+   gROOT->GetListOfCleanups()->Remove(this);
+   fRow_lab->Delete();
+   delete fRow_lab;
+}
+//_______________________________________________________________________
+
 void TSplineXDialog::RecursiveRemove(TObject * obj)
 {
    if (obj == fCanvas) {
- //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
+      cout << "TSplineXDialog::RecursiveRemove:  CloseDialog "  << endl;
       CloseDialog();
    }
 }
@@ -220,11 +229,9 @@ void TSplineXDialog::RecursiveRemove(TObject * obj)
 
 void TSplineXDialog::CloseDialog()
 {
-//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
+   cout << "TSplineXDialog::CloseDialog() " << endl;
    if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
+   fDialog = NULL;
    delete this;
 }
 //_______________________________________________________________________
@@ -232,6 +239,6 @@ void TSplineXDialog::CloseDialog()
 void TSplineXDialog::CloseDown(Int_t wid)
 {
    cout << "TSplineXDialog::CloseDown() " << endl;
-   SaveDefaults();
+   if (wid != -2) SaveDefaults();
    delete this;
 }

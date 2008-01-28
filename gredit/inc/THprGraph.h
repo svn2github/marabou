@@ -6,7 +6,7 @@
 class THprGraph : public TGraph, public HprElement
 {
 public:
-   THprGraph(){};
+   THprGraph(){ SetDaughter(this);};
    THprGraph(Int_t npoints, Double_t *x, Double_t *y);
    ~THprGraph(){};
    void Paint(const Option_t *opt);

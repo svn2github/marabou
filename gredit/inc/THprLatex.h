@@ -6,7 +6,7 @@
 class THprLatex : public TLatex, public HprElement
 {
 public:
-   THprLatex(){};
+   THprLatex(){ SetDaughter(this);};
    THprLatex(Double_t x, Double_t y, const Char_t * text);
    ~THprLatex(){};
    void Paint(const Option_t *opt);

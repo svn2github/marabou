@@ -15,20 +15,20 @@ private:
    Int_t fVisibilityFlag;
    Int_t fMustAlign;
    TList fMemberships;
-   HTPad * fHTPad;
-   HTCanvas * fHTCanvas;
-   TObject *  fDaughter;
+   HTPad * fHTPad;             //!   dont stream
+   HTCanvas * fHTCanvas;       //!   dont stream
+   TObject *  fDaughter;       //!   dont stream
 
 public:
    HprElement(TObject * daughter = NULL);
    virtual ~HprElement();
-   void  SetPlane(Int_t plane) { fPlane = plane; };         // *MENU*
-   Int_t GetPlane() const      { return fPlane; };          // *MENU*
+   virtual void  SetPlane(Int_t plane) { fPlane = plane; }; // *MENU*
+   Int_t GetPlane() const      { return fPlane; };
    void  SetMustAlign(Int_t al){ fMustAlign = al; };        // *MENU*
-   Int_t GetMustAlign()        { return fMustAlign; };      // *MENU*
+   Int_t GetMustAlign()        { return fMustAlign; };
    void  SetVisibilityFlag(Int_t vis){ fVisibilityFlag = vis; };
-   Int_t GetVisibilityFlag()   { return fVisibilityFlag; }; // *MENU*
-   Int_t GetVisibility()       { return fVisibilityFlag; }; // *MENU*
+   Int_t GetVisibilityFlag()   { return fVisibilityFlag; };
+   Int_t GetVisibility()       { return fVisibilityFlag; };
    void  SetVisibility(Int_t vis);                          // *MENU*
    void  SetDaughter(TObject *d) { fDaughter = d;};
    TObject * GetDaughter() {return fDaughter;};

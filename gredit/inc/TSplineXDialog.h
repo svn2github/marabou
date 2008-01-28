@@ -41,7 +41,7 @@ private:
 	Double_t fArrow_indent_angle;
 public:
    TSplineXDialog();
-   virtual ~TSplineXDialog() {cout << "dtor:~TSplineXDialog()" << endl;};
+   virtual ~TSplineXDialog();
    void Draw_The_TSplineX();
    void SaveDefaults();
    void RestoreDefaults();

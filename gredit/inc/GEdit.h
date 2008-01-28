@@ -11,13 +11,19 @@
 #include "TGraph.h"
 #include "TCutG.h"
 #include <TGMenu.h>
+#include <TGWindow.h>
 #include <iostream>
 
 using std::cout;
 using std::endl;
 
 class HprEditCommands;
-class GEdit : public TObject {
+class TGToolBar;
+class TGHorizontal3DLine;
+class TGVertical3DLine;
+class TGDockableFrame;
+class HTPad;
+class GEdit : public TGFrame {
 
 private:
 #ifdef MARABOUVERS
@@ -40,9 +46,21 @@ private:
    Bool_t         fCommonRotate;         //! dont stream
    UInt_t         fOrigWw;
    UInt_t         fOrigWh;
-
+//  from TRootCanvas
    Int_t          fFeynmanPhi1;
    Int_t          fFeynmanPhi2;
+   TGToolBar           *fToolBar;            // icon button toolbar
+   TGHorizontal3DLine  *fToolBarSep;         // toolbar separator
+   TGLayoutHints       *fMainFrameLayout;    // layout for main frame
+   TGVertical3DLine    *fVertical1;          // toolbar vertical separator
+   TGVertical3DLine    *fVertical2;          // toolbar vertical separator
+   TGHorizontal3DLine  *fHorizontal1;        // toolbar sepatator
+   TGLayoutHints       *fVertical1Layout;    // layout hints for separator
+   TGLayoutHints       *fVertical2Layout;    // layout hints for separator
+   TGLayoutHints       *fHorizontal1Layout;  // layout hints for separator
+   TGDockableFrame     *fToolDock;           // dockable frame holding the toolbar
+   TGLayoutHints       *fDockLayout;         // layout hints for dockable frame widget
+   const TGPicture     *fIconPic;            // icon picture
 
 public:
    GEdit() {};
@@ -129,7 +147,7 @@ public:
    void    InsertTextF(){InsertText(kTRUE);};
    void    InsertTextK(){InsertText(kFALSE);};
    void    InsertFunction();
-   TPad*   GetEmptyPad();
+   HTPad*   GetEmptyPad();
    void    WarnBox(const Char_t *text, TRootCanvas *win = NULL);
    Bool_t  QuestionBox(const Char_t *text, TRootCanvas *win = NULL);
    void    ZoomIn();
@@ -138,6 +156,9 @@ public:
    void    SaveDefaults();
    void    RestoreDefaults();
 
+   void     ShowToolBar(Bool_t show = kTRUE);
+   void     AdjustSize();
+   Bool_t   ProcessMessage(Long_t msg, Long_t parm1, Long_t);
 
 //   void    MyClose();
    ClassDef(GEdit,0)  //Graphics canvas

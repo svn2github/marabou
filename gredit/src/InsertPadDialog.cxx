@@ -61,32 +61,6 @@ static const Char_t helptext[] =
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
-//_________________________________________________________________________
-
-InsertPadDialog::~InsertPadDialog()
-{
-   SaveDefaults();
-};
-//_______________________________________________________________________
-
-void InsertPadDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
-//_______________________________________________________________________
-
-void InsertPadDialog::CloseDialog()
-{
-//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
-   if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
-   delete this;
-}
 //____________________________________________________________________________
 
 void InsertPadDialog::ExecuteInsert()
@@ -149,6 +123,7 @@ void InsertPadDialog::ExecuteInsert()
 	Double_t yup  = (Y2 - py1) /(py2 - py1);
 
    HTPad *tb;
+
    tb = new HTPad(Form("%s_%d",gPad->GetName(),n+1), "HprPad",
                     xlow, ylow, xup, yup);
    cout << xlow << " " <<ylow << " " << xup << " " << yup<< endl;
@@ -161,6 +136,7 @@ void InsertPadDialog::ExecuteInsert()
    fX1 = fY1 = 0;
    gPad->Modified();
    gPad->Update();
+   tb->cd();
    SaveDefaults();
 };
 //____________________________________________________________________________
@@ -168,7 +144,7 @@ void InsertPadDialog::ExecuteInsert()
 void InsertPadDialog::SaveDefaults()
 {
 //   cout << "InsertPadDialog::InsertFunction::SaveDefaults()" << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    env.SetValue("InsertPadDialog.fDx"            ,fDx);
    env.SetValue("InsertPadDialog.fDy"            ,fDy);
    env.SetValue("InsertPadDialog.fFillColor"     ,fFillColor);
@@ -181,7 +157,7 @@ void InsertPadDialog::SaveDefaults()
 
 void InsertPadDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fDx            = env.GetValue("InsertPadDialog.fDx" ,0.);
    fDy            = env.GetValue("InsertPadDialog.fDy" ,0.);
    fFillColor     = env.GetValue("InsertPadDialog.fFillColor" ,1);
@@ -191,8 +167,36 @@ void InsertPadDialog::RestoreDefaults()
 }
 //_________________________________________________________________________
 
-void InsertPadDialog::CloseDown(Int_t wid)
+InsertPadDialog::~InsertPadDialog()
 {
-   cout << "InsertPadDialog::CloseDown()" << endl;
+   gROOT->GetListOfCleanups()->Remove(this);
+   fRow_lab->Delete();
+   delete fRow_lab;
+};
+//_______________________________________________________________________
+
+void InsertPadDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "InsertPadDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void InsertPadDialog::CloseDialog()
+{
+//   cout << "InsertPadDialog::CloseDialog() " << endl;
+   if (fDialog) fDialog->CloseWindowExt();
+   fDialog = NULL;
    delete this;
 }
+//_________________________________________________________________________
+
+void InsertPadDialog::CloseDown(Int_t wid)
+{
+//   cout << "InsertPadDialog::CloseDown()" << endl;
+   if (wid != -2) SaveDefaults();
+   delete this;
+}
+

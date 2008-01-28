@@ -12,12 +12,14 @@ HprElement::HprElement(TObject * daughter) :
    fMustAlign = 0;
    fHTPad = NULL;
    fHTCanvas = NULL;
-   if (gPad->GetMother() == gPad) {
-      fHTCanvas = (HTCanvas*)gPad;
-      fPlane = fHTCanvas->GetCurrentPlane();
-   } else {
-      fHTPad  = (HTPad*)gPad;
-      fPlane   = fHTPad->GetCurrentPlane();
+   if (gPad->TestBit(HTCanvas::kIsAEditorPage) || gPad->InheritsFrom("HTPad")) {
+		if (gPad && gPad->GetMother() == gPad) {
+			fHTCanvas = (HTCanvas*)gPad;
+			fPlane = fHTCanvas->GetCurrentPlane();
+		} else {
+			fHTPad  = (HTPad*)gPad;
+			fPlane   = fHTPad->GetCurrentPlane();
+		}
    }
 //   std::cout << "HprElement this: " << this  << " fHTCanvas " << fHTCanvas<< " fHTPad " << fHTPad << " fPlane " << fPlane << std::endl;
 };

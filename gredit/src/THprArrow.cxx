@@ -12,6 +12,7 @@ THprArrow::THprArrow(
            Float_t arrowsize ,Option_t *option)
            : TArrow(x1, y1, x2, y2, arrowsize, option)
 {
+   SetDaughter(this);
 }
 //________________________________________________________________________
 

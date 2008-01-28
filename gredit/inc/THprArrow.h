@@ -7,7 +7,10 @@
 class THprArrow : public TArrow, public HprElement
 {
 public:
-   THprArrow(){};
+   THprArrow()
+   {
+      SetDaughter(this);
+   };
    THprArrow(Double_t x1, Double_t y1, Double_t x2, Double_t y2,
              Float_t arrowsize=0.05 ,Option_t *option=">");
    ~THprArrow(){};

@@ -9,7 +9,7 @@ ClassImp(TCurlyLineWithArrow)
 
 
 TCurlyLineArrow::TCurlyLineArrow(Double_t x1, Double_t y1, Double_t x2, Double_t y2,
-              Float_t as, Option_t *opt) 
+              Float_t as, Option_t *opt)
               : TArrow(x1, y1, x2, y2, as,opt )
 {
    fParent = NULL;
@@ -20,7 +20,7 @@ void TCurlyLineArrow::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 {
 //   static Double_t da, dc;
 //   if (event == kButton1Down) {
-//    remember distance of arrow head to end of curly 
+//    remember distance of arrow head to end of curly
  //     da = fParent->GetDistToArrow(1);
 //      std::cout << "TCurlyLineArrow::ExecuteEvent "<< std::endl;
 //   }
@@ -39,7 +39,7 @@ void TCurlyLineArrow::ExecuteEvent(Int_t event, Int_t px, Int_t py)
             fParent->SetY1(aoe->GetY2());
             fParent->SetStartPoint(aoe->GetX2(),aoe->GetY2());
          }
- 
+
          fParent->Paint();
       }
       if (fWhere == 1) {
@@ -60,9 +60,9 @@ void TCurlyLineArrow::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 
 TCurlyLineWithArrow::TCurlyLineWithArrow(Double_t x1, Double_t y1, Double_t x2, Double_t y2,
               Double_t wl, Double_t amp,
-              Int_t where, Float_t arrowsize) 
+              Int_t where, Float_t arrowsize)
               : TCurlyLine(x1, y1, x2, y2, wl, amp), fX1(x1), fY1(y1),
-                           fX2(x2), fY2(y2), fWhere(where), 
+                           fX2(x2), fY2(y2), fWhere(where),
                            fDefaultArrowSize(arrowsize)
 {
    fArrowStart = NULL;
@@ -81,31 +81,32 @@ TCurlyLineWithArrow::TCurlyLineWithArrow(Double_t x1, Double_t y1, Double_t x2, 
       fArrowEnd->SetWhere(2);
       fArrowEnd->SetArrowSize(fDefaultArrowSize);
       fArrowEnd->Draw();
-   }      
+   }
+   Paint();
 }
 //________________________________________________________________________
 
 void TCurlyLineWithArrow::SetArrowSize(Int_t where, Float_t arrowsize)
 {
-   if (fArrowStart && where & 1) 
+   if (fArrowStart && where & 1)
       fArrowStart->SetArrowSize(arrowsize);
-   if (fArrowEnd && where & 2) 
+   if (fArrowEnd && where & 2)
       fArrowEnd->SetArrowSize(arrowsize);
-}  
+}
 //________________________________________________________________________
 
 Double_t  TCurlyLineWithArrow::GetDistToArrow(Int_t where)
 {
    Double_t da = 0;
-   if (fArrowStart && where & 1) 
+   if (fArrowStart && where & 1)
        da = TMath::Sqrt((fX1 - GetStartX())* (fX1 - GetStartX())
                      + (fY1 - GetStartY())* (fY1 - GetStartY()));
-  
-   if (fArrowEnd && where & 2) 
+
+   if (fArrowEnd && where & 2)
       da = TMath::Sqrt((fX2 - GetEndX())* (fX2 - GetEndX())
                      + (fY2 - GetEndY())* (fY2 - GetEndY()));
    return da;
-}  
+}
 //________________________________________________________________________
 
 void TCurlyLineWithArrow::Paint(const Option_t *opt)
@@ -127,7 +128,7 @@ void TCurlyLineWithArrow::Paint(const Option_t *opt)
          SetStartPoint((fX2 - fX1) * (0.75*as) / dc + fX1,
                        (fY2 - fY1) * (0.75*as) / dc + fY1);
          Build();
-      }   
+      }
       x1 = GetStartX();
       x2 = fX1;
       y1 = GetStartY();
@@ -136,10 +137,10 @@ void TCurlyLineWithArrow::Paint(const Option_t *opt)
       fArrowStart->SetLineColor(GetLineColor());
       fArrowStart->SetFillColor(GetLineColor());
       fArrowStart->SetFillStyle(1001);
-      fArrowStart->SetX1(x1); 
-      fArrowStart->SetX2(x2); 
-      fArrowStart->SetY1(y1); 
-      fArrowStart->SetY2(y2); 
+      fArrowStart->SetX1(x1);
+      fArrowStart->SetX2(x2);
+      fArrowStart->SetY1(y1);
+      fArrowStart->SetY2(y2);
       fArrowStart->Paint("|>");
 //      std::cout << "TCurlyLineWithArrow::Paint fArrowStart"<< fY1<< std::endl;
    }
@@ -154,7 +155,7 @@ void TCurlyLineWithArrow::Paint(const Option_t *opt)
          SetEndPoint((fX2 - fX1) * (dc-0.75*as) / dc + fX1,
                      (fY2 - fY1) * (dc-0.75*as) / dc + fY1);
          Build();
-      }   
+      }
       x1 = GetEndX();
       x2 = fX2;
       y1 = GetEndY();
@@ -163,10 +164,10 @@ void TCurlyLineWithArrow::Paint(const Option_t *opt)
       fArrowEnd->SetLineColor(GetLineColor());
       fArrowEnd->SetFillColor(GetLineColor());
       fArrowEnd->SetFillStyle(1001);
-      fArrowEnd->SetX1(x1); 
-      fArrowEnd->SetX2(x2); 
-      fArrowEnd->SetY1(y1); 
-      fArrowEnd->SetY2(y2); 
+      fArrowEnd->SetX1(x1);
+      fArrowEnd->SetX2(x2);
+      fArrowEnd->SetY1(y1);
+      fArrowEnd->SetY2(y2);
       fArrowEnd->Paint("|>");
 //      std::cout << "TCurlyLineWithArrow::Paint fArrowEnd"<< fY2<< std::endl;
    }
@@ -180,7 +181,7 @@ void TCurlyLineWithArrow::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 {
    static Double_t daend, dastart,dc;
    if (event == kButton1Down) {
-//    remember distance of arrow head to end of curly 
+//    remember distance of arrow head to end of curly
 //      std::cout << "TCurlyLineWithArrow::Enter "<< GetStartX()<< std::endl;
       daend = TMath::Sqrt((fX2 - GetEndX())* (fX2 - GetEndX())
                     + (fY2 - GetEndY())* (fY2 - GetEndY()));
@@ -195,12 +196,12 @@ void TCurlyLineWithArrow::ExecuteEvent(Int_t event, Int_t px, Int_t py)
                      + (GetEndY() - GetStartY())* (GetEndY() - GetStartY()));
          fX1 = GetStartX() - (GetEndX() - GetStartX())*(dastart)/dc;
          fY1 = GetStartY() - (GetEndY() - GetStartY())*(dastart)/dc;
-    
+
       } else {
           fX1 = GetStartX();
           fY1 = GetStartY();
       }
-      if (fArrowEnd) { 
+      if (fArrowEnd) {
          dc = TMath::Sqrt((GetEndX() - GetStartX())* (GetEndX() - GetStartX())
                      + (GetEndY() - GetStartY())* (GetEndY() - GetStartY()));
          fX2 = GetStartX() + (GetEndX() - GetStartX())*(dc + daend)/dc;
@@ -231,22 +232,22 @@ void TCurlyLineWithArrow::SavePrimitive(ofstream &out, Option_t *)
    } else {
       out<<"    TCurlyLineWithArrow *";
    }
-   
+
    out<<"clwa = new TCurlyLineWithArrow("<< fX1  <<","<< fY1 <<","
        << fX2 <<","<< fY2 <<"," << GetWaveLength()  <<","<< GetAmplitude()<<","
-       << fWhere<<","<<fDefaultArrowSize; 
+       << fWhere<<","<<fDefaultArrowSize;
           out << ");"<<endl;
 
    SaveLineAttributes(out,"clwa",0,0,0);
-   
-   out<<"clwa->Draw();"<<endl;  
-   if(fArrowStart) { 
+
+   out<<"clwa->Draw();"<<endl;
+   if(fArrowStart) {
       out<<"clwa->GetArrowStart()->SetArrowSize(" <<
          fArrowStart->GetArrowSize()<< ");"<<endl;
       out<<"clwa->GetArrowStart()->SetAngle(" <<
          fArrowStart->GetAngle()<< ");"<<endl;
    }
-   if(fArrowEnd) { 
+   if(fArrowEnd) {
       out<<"clwa->GetArrowEnd()->SetArrowSize(" <<
          fArrowEnd->GetArrowSize()<< ");"<<endl;
       out<<"clwa->GetArrowEnd()->SetAngle(" <<

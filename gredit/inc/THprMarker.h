@@ -6,8 +6,8 @@
 class THprMarker : public TMarker, public HprElement
 {
 public:
-   THprMarker(){};
-   THprMarker(Double_t x, Double_t y, Style_t style);
+   THprMarker(){ SetDaughter(this);};
+   THprMarker(Double_t x, Double_t y, Style_t style = 2);
    ~THprMarker(){};
    void Paint(const Option_t *opt);
    Bool_t IsSortable() const {return kTRUE;}

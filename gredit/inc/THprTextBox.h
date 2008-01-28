@@ -6,7 +6,7 @@
 class THprTextBox : public TextBox, public HprElement
 {
 public:
-   THprTextBox(){};
+   THprTextBox(){ SetDaughter(this);};
    THprTextBox(Double_t x1, Double_t y1, Double_t x2, Double_t y2,
                const Char_t *name = NULL);
    ~THprTextBox(){};

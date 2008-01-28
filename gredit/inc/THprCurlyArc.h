@@ -6,7 +6,7 @@
 class THprCurlyArc : public TCurlyArc, public HprElement
 {
 public:
-   THprCurlyArc(){};
+   THprCurlyArc(){ SetDaughter(this);};
    THprCurlyArc(Double_t x1, Double_t y1, Double_t rad,
              Double_t phimin, Double_t phimax,
              Double_t wl = .02, Double_t amp = .01);

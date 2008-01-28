@@ -12,6 +12,7 @@ HprPlaneManager::HprPlaneManager(TGWindow * win)
 
 //   TRootCanvas *rc = (TRootCanvas*)win;
 //   fCanvas = rc->Canvas();
+   fCanvas = gPad->GetCanvas();
    fWindow = win;
    fDialog = NULL;
    gROOT->GetListOfCleanups()->Add(this);

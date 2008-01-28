@@ -61,32 +61,6 @@ static const Char_t helptext[] =
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
-//_________________________________________________________________________
-
-CurlyLineWithArrowDialog::~CurlyLineWithArrowDialog()
-{
-   SaveDefaults();
-};
-//_______________________________________________________________________
-
-void CurlyLineWithArrowDialog::RecursiveRemove(TObject * obj)
-{
-   if (obj == fCanvas) {
- //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
-}
-//_______________________________________________________________________
-
-void CurlyLineWithArrowDialog::CloseDialog()
-{
-//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
-   if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
-   delete this;
-}
 //______________________________________________________________________________
 
 void CurlyLineWithArrowDialog::ExecuteInsert()
@@ -121,13 +95,14 @@ void CurlyLineWithArrowDialog::ExecuteInsert()
 
 void CurlyLineWithArrowDialog::SaveDefaults()
 {
-   cout << "CurlyLineWithArrowDialog::InsertFunction::SaveDefaults()" << endl;
-   TEnv env(".rootrc");
+   cout << "CurlyLineWithArrowDialog::SaveDefaults()" << endl;
+   TEnv env(".hprrc");
    env.SetValue("CurlyLineWithArrowDialog.fWaveLength" , fWaveLength );
    env.SetValue("CurlyLineWithArrowDialog.fAmplitude"  , fAmplitude  );
    env.SetValue("CurlyLineWithArrowDialog.fColor"		 , fColor 	   );
    env.SetValue("CurlyLineWithArrowDialog.fWidth"		 , fWidth 	   );
    env.SetValue("CurlyLineWithArrowDialog.fStyle"      , fStyle      );
+   env.SetValue("CurlyLineWithArrowDialog.fCurly"      , fCurly      );
    env.SetValue("CurlyLineWithArrowDialog.fArrowAngle" , fArrowAngle );
    env.SetValue("CurlyLineWithArrowDialog.fArrowSize"  , fArrowSize  );
    env.SetValue("CurlyLineWithArrowDialog.fArrowStyle" , fArrowStyle );
@@ -139,11 +114,12 @@ void CurlyLineWithArrowDialog::SaveDefaults()
 
 void CurlyLineWithArrowDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
    fWaveLength = env.GetValue("CurlyLineWithArrowDialog.fWaveLength" , 0.02);
    fAmplitude  = env.GetValue("CurlyLineWithArrowDialog.fAmplitude"  , 0.01);
    fColor   	= env.GetValue("CurlyLineWithArrowDialog.fColor"      , 1);
    fStyle      = env.GetValue("CurlyLineWithArrowDialog.fStyle"      , 1);
+   fCurly      = env.GetValue("CurlyLineWithArrowDialog.fCurly"      , 0);
    fWidth   	= env.GetValue("CurlyLineWithArrowDialog.fWidth"  	   , 2);
    fArrowAngle = env.GetValue("CurlyLineWithArrowDialog.fArrowAngle" , 30.);
    fArrowSize  = env.GetValue("CurlyLineWithArrowDialog.fArrowSize"  , 0.03);
@@ -153,9 +129,36 @@ void CurlyLineWithArrowDialog::RestoreDefaults()
 }
 //_________________________________________________________________________
 
+CurlyLineWithArrowDialog::~CurlyLineWithArrowDialog()
+{
+   gROOT->GetListOfCleanups()->Remove(this);
+   fRow_lab->Delete();
+   delete fRow_lab;
+};
+//_______________________________________________________________________
+
+void CurlyLineWithArrowDialog::RecursiveRemove(TObject * obj)
+{
+   if (obj == fCanvas) {
+ //     cout << "FeynmanDiagramDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
+}
+//_______________________________________________________________________
+
+void CurlyLineWithArrowDialog::CloseDialog()
+{
+//   cout << "FeynmanDiagramDialog::CloseDialog() " << endl;
+   if (fDialog) fDialog->CloseWindowExt();
+   fDialog = NULL;
+   delete this;
+}
+//_________________________________________________________________________
+
 void CurlyLineWithArrowDialog::CloseDown(Int_t wid)
 {
    cout << "CurlyLineWithArrowDialog::CloseDown()" << endl;
+   if (wid != -2) SaveDefaults();
    delete this;
 }
 
