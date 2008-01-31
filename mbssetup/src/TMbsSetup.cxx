@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.63 2008-01-31 12:01:53 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-01-31 12:01:53 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.64 2008-01-31 13:39:53 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-01-31 13:39:53 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -89,16 +89,29 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 
 		defaultSetupPath = gEnv->GetValue("TMbsSetup.DefaultSetupPath", ".:$(MARABOU)/templates/mbssetup");
 
-		TString testIt = gSystem->ConcatFileName(gSystem->HomeDirectory(), SetupFile);
-		if(!gSystem->AccessPathName(testIt.Data(), (EAccessMode) F_OK)) {		// file existing in home dir?
-			gMrbLog->Err() << "Setup file in the way - " << testIt << " - please remove it, then start over" << endl;
+		TEnv * e = new TEnv(SetupFile);
+		TList * l = (TList *) e->GetTable();
+		Bool_t removeIt = kFALSE;
+		if (l) {
+			TIterator * envIter = l->MakeIterator();
+			TEnvRec * r;
+			while(r = (TEnvRec *) envIter->Next()) {
+				if (r->GetLevel() != kEnvLocal) {
+					gMrbLog->Wrn() << "Setup variable not local - " << r->GetName() << endl;
+					gMrbLog->Flush(this->ClassName());
+					removeIt = kTRUE;
+				}
+			}
+		}
+		delete e;
+		if (removeIt) {
+			gMrbLog->Err() << "Setup file may be in the way - " << gSystem->ConcatFileName(gSystem->HomeDirectory(), SetupFile) << " - please remove it, then start over" << endl;
 			gMrbLog->Flush(this->ClassName());
 			gSystem->Exit(1);
 		}
 
 		setupFile = SetupFile;
 		this->Open(setupFile.Data());			// open resource file
-
 		gSystem->ExpandPathName(defaultSetupPath);
 		TMrbSystem ux;
 		TString tmplFile = "mbssetup.tmpl";
