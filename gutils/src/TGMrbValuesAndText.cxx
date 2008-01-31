@@ -1193,11 +1193,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    }
    // create frame and layout hints for Ok and Cancel buttons
 
-   TGHorizontalFrame *hf = new TGHorizontalFrame(this, 60, 20, kFixedWidth);
+   TGHorizontalFrame *hf = new TGHorizontalFrame(this, win_width, 20, kFixedWidth);
    fWidgets->AddFirst(hf);
    // put hf as last in list to be deleted
 
    // create OK and Cancel buttons in their own frame (hf)
+   TGLayoutHints * ll = new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsCenterY , 2, 2, 0, 0);
+   TGLayoutHints * lc = new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsCenterY , 2, 2, 0, 0);
+   TGLayoutHints * lr = new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsCenterY , 2, 2, 0, 0);
 
    UInt_t  nb = 0, width = 0, height = 0;
    if (!has_commands) {
@@ -1205,12 +1208,12 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       b->SetToolTipText("Apply action and close dialog");
 
    } else {
-      b = new TGTextButton(hf, "Save and Quit",  1000*kIdOk);
+      b = new TGTextButton(hf, "Save-Quit",  1000*kIdOk);
       b->SetToolTipText("Save current parameters and close dialog");
    }
 	fWidgets->AddFirst(b);
 	b->Associate(this);
-	hf->AddFrame(b, l3);
+	hf->AddFrame(b, ll);
 	height = b->GetDefaultHeight();
 	width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
 	fCancelButton = new TGTextButton(hf, "Quit",  1000*kIdCancel);
@@ -1226,14 +1229,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //   }
    fWidgets->AddFirst(fCancelButton);
    fCancelButton->Associate(this);
-   hf->AddFrame(fCancelButton, l3);
+   hf->AddFrame(fCancelButton, lc);
    height = fCancelButton->GetDefaultHeight();
    width  = TMath::Max(width, fCancelButton->GetDefaultWidth()); ++nb;
    if(helptext){
       b = new TGTextButton(hf, "Help", 1000 * kIdHelp);
       fWidgets->AddFirst(b);
       b->Associate(this);
-      hf->AddFrame(b, l3);
+      hf->AddFrame(b, lr);
       height = b->GetDefaultHeight();
       width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
    }
