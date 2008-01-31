@@ -19,7 +19,12 @@ namespace std {} using namespace std;
 Set2DimOptDialog::Set2DimOptDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
-"SCAT  : Draw a scatter-plot (default)\n\
+"Most of the value in this widget are self explaining\n\
+If \"Live statbox\" a box is displayed when dragging the\n\
+pressed mouse in the histogram area showing various statistics\n\
+values.\n\
+\n\
+SCAT  : Draw a scatter-plot (default)\n\
 BOX   : a box is drawn for each cell with surface proportional to the\n\
           content's absolute value. A negative content is marked with a X.\n\
 BOX1  : a button is drawn for each cell with surface proportional to\n\

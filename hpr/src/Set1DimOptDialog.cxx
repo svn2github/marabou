@@ -19,7 +19,12 @@ namespace std {} using namespace std;
 Set1DimOptDialog::Set1DimOptDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
-"no help yet\n\
+"Most of the value in this widget are self explaining\n\
+If \"Live statbox\" a box is displayed when dragging the\n\
+pressed mouse in the histogram area showing various statistics\n\
+values. Selecting \"Live Gauss fit\" fits a gaussian to the\n\
+dragged region. Normally \"Linear background in fit\" should also\n\
+be selected.\n\
 ";
 
    RestoreDefaults();

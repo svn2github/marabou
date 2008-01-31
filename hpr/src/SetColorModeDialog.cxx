@@ -46,7 +46,9 @@ ClassImp(SetColorModeDialog)
 SetColorModeDialog::SetColorModeDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
-"no help yet\n\
+"This determines which color palette should be used.\n\
+Nice effects may be produced playing with RGB (Red/Green/Blue)\n\
+or HLS (Hue/Lightness/Saturation) transitions\n\
 ";
 
    fRgbSlider = NULL;

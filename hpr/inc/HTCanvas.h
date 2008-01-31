@@ -91,7 +91,7 @@ public:
    TList    *GetHiddenPrimitives() {return fHiddenPrimitives;};
    void PrintAddress()  {std::cout << ClassName() << "* aa = "
                          << "(" << ClassName() << "*)" << this
-                         << std::endl; }; // *MENU*
+                         << std::endl; GetListOfPrimitives()->ls();}; // *MENU*
 
 //   TList   *GetConnectedClasses() { return &fConnectedClasses;};
    ClassDef(HTCanvas,3)  //Graphics canvas

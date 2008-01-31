@@ -18,7 +18,8 @@ namespace std {} using namespace std;
 WhatToShowDialog::WhatToShowDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
-" no help yet";
+"This determines what to show for a histogram,\n\
+especially which values to display in the statistics box";
 
 
    TRootCanvas *rc = (TRootCanvas*)win;
@@ -163,9 +164,9 @@ void WhatToShowDialog::CloseDown(Int_t wid)
 void WhatToShowDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
-//  cout << "CRButtonPressed(" << wid<< ", " <<bid;
-//   if (obj) cout  << ", " << canvas->GetName() << ")";
-//   cout << endl;
+   cout << "CRButtonPressed(" << wid<< ", " <<bid;
+   if (obj) cout  << ", " << canvas->GetName() << ")";
+   cout << endl;
    SetWhatToShowNow(canvas);
 }
 

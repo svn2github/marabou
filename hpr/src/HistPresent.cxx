@@ -3433,6 +3433,9 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
    if (fRootFile) fRootFile->Close();
    c1->cd();
    new GEdit(c1);
+   c1->cd();
+   c1->Modified(kTRUE);
+   c1->Update();
    cout << "gPad " << gPad << endl;
 }
 //________________________________________________________________
