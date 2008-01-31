@@ -28,6 +28,9 @@ private:
    TGMrbValuesAndText *fDialog;
    TGMrbValuesAndText *fDialogSetNominal;
    TGMrbValuesAndText *fAutoSelectDialog;
+   TCanvas            *fCalValCanvas;
+   TCanvas            *fScanCanvas;
+   TCanvas            *fEffCanvas;
    TString     fFuncName;
    TString     fFuncFromFile;
    TString     fFormula;

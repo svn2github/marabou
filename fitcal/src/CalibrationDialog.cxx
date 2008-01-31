@@ -122,6 +122,10 @@ The procedure to use previously fitted peaks is as follows:\n\
 	fAutoSelectDialog = NULL;
    fCalHist = NULL;
    fCalFunc = NULL;
+	fCalValCanvas = NULL;  
+	fScanCanvas = NULL;
+	fEffCanvas = NULL;
+
    Int_t maxPeaks = FindNumberOfPeaks();
    if (maxPeaks <= 0) {
       fMaxPeaks = 3;
@@ -142,6 +146,7 @@ The procedure to use previously fitted peaks is as follows:\n\
    fAutoAssigned = 0;
    fParentWindow =  NULL;
    fSelPad = gPad;
+   cout << "fSelPad " <<  fSelPad << endl;
    if (fSelPad == NULL) {
      cout << "gPad = 0!!" <<  endl;
    } else {
@@ -249,22 +254,6 @@ The procedure to use previously fitted peaks is as follows:\n\
 								fParentWindow, hist_file, NULL, row_lab, valp,
 								NULL, NULL, helptext, this, this->ClassName());
   }
-}
-CalibrationDialog::~CalibrationDialog()
-{
-   gROOT->GetListOfCleanups()->Remove(this);
-}
-//__________________________________________________________________________
-
-void CalibrationDialog::RecursiveRemove(TObject * obj)
-{
-//   cout << "CalibrationDialog::RecursiveRemove " << obj << endl;
-   if (obj == fDialog) 
-      fDialog = NULL;
-   if (obj == fDialogSetNominal) 
-      fDialogSetNominal = NULL;
-   if (obj == fAutoSelectDialog)
-      fAutoSelectDialog = NULL;
 }
 //________________________________________________________________________
 
@@ -763,9 +752,9 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
      np++;
    }
    if (fVerbose) {
-		TCanvas  *cscan = new TCanvas("cscan", "cscan", 500, 500, 500, 500);
+		fScanCanvas = new TCanvas("cscan", "cscan", 500, 500, 500, 500);
 		hscan->Draw("col");
-		cscan->Update();
+		fScanCanvas->Update();
 		cout << "Compare measured intensity with published values" << endl;
 		TGraph * eff = new TGraph(nassigned);
 		eff->SetTitle("Effeciciency vs calibrated energy");
@@ -787,12 +776,12 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 				fUse[i] = 0;
 			}
 		}
-		TCanvas *c = new TCanvas("effec", "Efficiency", 200, 600, 500, 200);
-		c->Draw();
+		fEffCanvas  = new TCanvas("effec", "Efficiency", 200, 600, 500, 200);
+		fEffCanvas->Draw();
 		eff->Draw("A*");
 		eff->GetHistogram()->GetXaxis()->SetLabelSize(0.1);
 		eff->GetHistogram()->GetYaxis()->SetLabelSize(0.1);
-		c->Update();
+		fEffCanvas->Update();
    }
    if (fInteractive > 0) {
       if (fDialog)           fDialog->ReloadValues();
@@ -898,13 +887,13 @@ TF1 * CalibrationDialog::CalculateFunction()
         <<  fCalFunc->GetParameter(0)<< " +- " << fCalFunc->GetParError(0) << " b: "
         << fCalFunc->GetParameter(1)<< " +- " << fCalFunc->GetParError(1) << endl;
    if (fVerbose) {
-		TCanvas * cc = new TCanvas("cc","cc", 200, 200, 500, 500);
+		fCalValCanvas = new TCanvas("cc","cc", 200, 200, 500, 500);
 		gr->Draw("AP");
 	//   PrintGraph(gr);
 		fCalFunc->Draw("SAME");
 		fCalFunc->SetLineWidth(1);
 		fCalFunc->SetLineColor(7);
-		cc->Update();
+		fCalValCanvas->Update();
 		Double_t xl = fCalFunc->Eval(fSelHist->GetXaxis()->GetBinLowEdge(1));
 		Double_t xu = fCalFunc->Eval(fSelHist->GetXaxis()
 							->GetBinUpEdge(fSelHist->GetNbinsX()));
@@ -1211,6 +1200,17 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 }
 //_______________________________________________________________________
 
+void CalibrationDialog::SetGaugePoint(Int_t N, Int_t Use, Double_t X, Double_t Y, Double_t Xerr, Double_t Yerr) {
+	if ((N >= 0) && (N < fNpeaks)) {
+		fX[N] = X;
+		fY[N] = Y;
+		fXE[N] = Xerr;
+		fYE[N] = Yerr;
+		fUse[N] = Use;
+	}
+}
+//_______________________________________________________________________
+
 void CalibrationDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
@@ -1269,6 +1269,44 @@ void CalibrationDialog::SaveDefaults()
    env.SetValue("CalibrationDialog.fCustomGaugeFile", fCustomGaugeFile.Data());
    env.SaveLevel(kEnvLocal);
 }
+//__________________________________________________________________________
+
+CalibrationDialog::~CalibrationDialog()
+{
+   gROOT->GetListOfCleanups()->Remove(this);
+   if ( fCalValCanvas )
+		delete fCalValCanvas;  
+   if ( fScanCanvas )
+		delete fScanCanvas;
+   if ( fEffCanvas )
+		delete fEffCanvas;
+   if ( fDialogSetNominal )
+     fDialogSetNominal->CloseWindowExt();
+   if ( fAutoSelectDialog )
+      fAutoSelectDialog->CloseWindowExt();
+}
+//__________________________________________________________________________
+
+void CalibrationDialog::RecursiveRemove(TObject * obj)
+{  
+//    cout << "CalibrationDialog::RecursiveRemove " << obj << endl;
+   if (obj == fSelPad) { 
+//      cout << "FindPeakDialog: CloseDialog "  << endl;
+      CloseDialog(); 
+   }
+   if (obj == fDialog) 
+      fDialog = NULL;
+   if (obj == fDialogSetNominal) 
+      fDialogSetNominal = NULL;
+   if (obj == fAutoSelectDialog)
+      fAutoSelectDialog = NULL;
+   if ( obj == fCalValCanvas )
+		fCalValCanvas = NULL;  
+   if ( obj == fScanCanvas )
+		fScanCanvas = NULL;
+   if ( obj == fEffCanvas )
+		fEffCanvas = NULL;
+}
 //_______________________________________________________________________
 
 void CalibrationDialog::CloseDialog()
@@ -1276,12 +1314,23 @@ void CalibrationDialog::CloseDialog()
 //   cout << "CalibrationDialog::CloseDialog() " << endl;
    gROOT->GetListOfCleanups()->Remove(this);
    fDialog->CloseWindowExt();
+   delete this;
+
 }
 //_______________________________________________________________________
 
 void CalibrationDialog::CloseDown(Int_t wid)
 {
 //   cout << "CalibrationDialog::CloseDown() " << endl;
+   if ( fDialogSetNominal ) {
+//       cout << "CalibrationDialog::fDialogSetNominal->CloseWindowExt()" << endl;
+      fDialogSetNominal->CloseWindowExt();
+      fDialogSetNominal = NULL;
+   }
+   if ( fAutoSelectDialog ) {
+      fAutoSelectDialog->CloseWindowExt();
+      fAutoSelectDialog = NULL;
+   }
    SaveDefaults();
    delete this;
 }
@@ -1300,14 +1349,4 @@ void CalibrationDialog::EnableDialogs()
 	if (fDialog) fDialog->EnableCancelButton();
 	if (fDialogSetNominal) fDialogSetNominal->EnableCancelButton();
 	if (fAutoSelectDialog) fAutoSelectDialog->EnableCancelButton();
-}
-
-void CalibrationDialog::SetGaugePoint(Int_t N, Int_t Use, Double_t X, Double_t Y, Double_t Xerr, Double_t Yerr) {
-	if ((N >= 0) && (N < fNpeaks)) {
-		fX[N] = X;
-		fY[N] = Y;
-		fXE[N] = Xerr;
-		fYE[N] = Yerr;
-		fUse[N] = Use;
-	}
 }
