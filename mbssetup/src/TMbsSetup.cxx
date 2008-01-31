@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.61 2007-11-19 11:53:05 Marabou Exp $       
-// Date:           $Date: 2007-11-19 11:53:05 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.62 2008-01-31 11:50:48 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-01-31 11:50:48 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -87,9 +87,18 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 		fLofSetupTags.SetName("Setup Tags");				// ... setup tags
 		fLofSetupTags.AddNamedX(kMbsSetupTags);
 
-		defaultSetupPath = gEnv->GetValue("TMbsSetup.DefaultSetupPath", ".:$HOME:$(MARABOU)/templates/mbssetup");
+		defaultSetupPath = gEnv->GetValue("TMbsSetup.DefaultSetupPath", ".:$(MARABOU)/templates/mbssetup");
 
-		setupFile = SetupFile;
+		setupFile = gSystem->ConcatFileName(gSystem->pwd(), SetupFile);
+		Bool_t fileExists = !gSystem->AccessPathName(setupFile.Data(), (EAccessMode) F_OK);
+
+		TString testIt = gSystem->ConcatFileName(gSystem->HomeDirectory(), SetupFile);
+		if(!gSystem->AccessPathName(testIt.Data(), (EAccessMode) F_OK)) {		// file existing in home dir?
+			if (fileExists) gMrbLog->Wrn() << "Setup file in the way - " << testIt << " - using " << setupFile << endl;
+			else			gMrbLog->Wrn() << "Setup file in the way - " << testIt << " - discarded" << endl;
+			gMrbLog->Flush(this->ClassName());
+		}
+
 		this->Open(setupFile.Data());			// open resource file
 
 		gSystem->ExpandPathName(defaultSetupPath);
