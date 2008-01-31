@@ -7,8 +7,11 @@
 ClassImp(HprImage)
 //_________________________________________________________________________
 //
-// This class puts a file into a TNamed object, this allows
-// the contents of the file to written to a root file and retrieved by name
+// This class wraps a TImage object. It stores
+// the content of the image file in a byte buffer
+// The image itself is only painted, i.e. not added
+// to the ListOfPrimitives. In this way the image file
+// itself is stored by a pad->Write rather then its pixmap
 //_________________________________________________________________________
 HprImage::HprImage(const Char_t * fname, TPad * pad) :
           TNamed(gSystem->BaseName(fname), ""), fPad(pad){
@@ -29,14 +32,11 @@ HprImage::HprImage(const Char_t * fname, TPad * pad) :
          return;
       }
       fBuffer = new TArrayC(size);
-//         Char_t * b = (Char_t *)&fBuffer[0];
       ifstream inf(fname);
       inf.read(fBuffer->fArray,size);
-//         inf.close();
       fIsGood = kTRUE;
       gPad->Modified(kTRUE);
    }
-//   fPad = pad;
    gROOT->GetListOfCleanups()->Add(this);
 };
 //______________________________________________
@@ -60,18 +60,35 @@ void HprImage:: RecursiveRemove(TObject * obj) {
       gROOT->GetListOfCleanups()->Remove(this);
       if (fPad) {
         fPad->GetListOfPrimitives()->Remove(this);
-//        fPad->GetListOfPrimitives()->Delete("slow");
       }
-//      cout << "HprImage::RecursiveRemove: delete this " <<  endl;
       delete this;
    }
 };
 //_________________________________________________________________________
 
-Int_t HprImage::ToFile(const Char_t * fname){
+Int_t HprImage::FileExists()
+{
+   if ( gSystem->AccessPathName( GetName() ) )
+      return -1;
+   Long_t id, size, flags, modtime;
+   gSystem->GetPathInfo(GetName(), &id, &size, &flags, &modtime);
+   if ( fBuffer->GetSize() != size ) {
+      cout << "File exists, but size differ, file: " << size
+           << " buffer " << fBuffer->GetSize()  << endl;
+      return 0;
+   } else {
+      return 1;
+   }
+}
+//_________________________________________________________________________
 
+//_________________________________________________________________________
+
+Int_t HprImage::ToFile(const Char_t * fname)
+{
 // Write buffer contents to a file with name fname
-//   cout << "HprImage::ToFile(): " << fname << endl;
+// for later reading by TImage::Open(
+// cout << "HprImage::ToFile(): " << fname << endl;
    if(!fBuffer){
       cerr << "Buffer is empty"  << endl;
       return -1;
@@ -82,7 +99,6 @@ Int_t HprImage::ToFile(const Char_t * fname){
       cerr << "Cant open " << fname << endl;
       return -2;
    }
-//      Char_t * b = (Char_t *)&fBuffer[0];
    of.write(fBuffer->fArray, fBuffer->GetSize());
    of.close();
    return fBuffer->GetSize();
@@ -94,15 +110,13 @@ void HprImage::Paint(Option_t * opt)
    if (opt);
    if (GetVisibility() == 0)
       return;
-   TString name(GetName());
-   name.Prepend("temp_");
 //   cout << "HprImage::Paint(): " << name << endl;
    TList * lop = gPad->GetListOfPrimitives();
    TObject *obj;
    TIter next_img(lop);
    while ( (obj = next_img()) ) {
       if (obj->InheritsFrom("TASImage")) {
- //        cout << "GetHeight(): " << ((TImage*)obj)->GetHeight() << endl;
+         cout << "TASImage GetHeight(): " << ((TImage*)obj)->GetHeight() << endl;
          if (((TImage*)obj)->GetHeight() > 5) return;
       }
    }
@@ -110,23 +124,36 @@ void HprImage::Paint(Option_t * opt)
 //   Dump();
 //   if (fImage) fImage->Dump();
    TObjOptLink *lnk = (TObjOptLink*)lop->FirstLink();
-   cout << "HprImage::Paint(): bef Remove TASImage" << endl;
+//   cout << "HprImage::Paint(): bef Remove TASImage" << endl;
    while (lnk) {
       obj = lnk->GetObject();
-      if (obj->InheritsFrom("TASImage")) lop->Remove(lnk);
+      if (obj->InheritsFrom("TASImage")) {
+         lop->Remove(lnk);
+         cout << "Remove TASImage" << endl;
+      }
       lnk = (TObjOptLink*)lnk->Next();
    }
-   cout << "HprImage::Paint(): after Remove TASImage" << endl;
+//   cout << "HprImage::Paint(): after Remove TASImage" << endl;
 
-   lnk = (TObjOptLink*)lop->FirstLink();
-   while (lnk) {
-      obj = lnk->GetObject();
-      if (obj->InheritsFrom("TFrame")) lop->Remove(lnk);
-      lnk = (TObjOptLink*)lnk->Next();
-   }
+//   lnk = (TObjOptLink*)lop->FirstLink();
+//   while (lnk) {
+//      obj = lnk->GetObject();
+//      if (obj->InheritsFrom("TFrame")) {
+
+//      }
+//      lnk = (TObjOptLink*)lnk->Next();
+//   }
 
    if (!fImage || !fIsGood) {
-      ToFile(name.Data());
+      TString name(GetName());
+// if file exits and has correct length skip reading
+      Int_t fex = FileExists();
+      if ( fex <= 0) {
+         if (fex == 0) name.Prepend("temp_"); // exists, dont overwrite
+         ToFile(name.Data());
+      }
+//       cout << "HprImage::ToFile " << endl;
+
       fImage = TImage::Open(name.Data());
       if (!fImage) {
          cout << "Could not create an image... exit" << endl;
@@ -136,7 +163,7 @@ void HprImage::Paint(Option_t * opt)
    fImage->SetConstRatio(kTRUE);
    fImage->SetEditable(kTRUE);
    fImage->SetImageQuality(TAttImage::kImgBest);
-   fImage->Draw("xxx");
+   fImage->Paint("X");
 //   lop->ls();
 // make sure image is drawn first
    TIter next(lop);

@@ -24,7 +24,16 @@ ClassImp(InsertPadDialog)
 InsertPadDialog::InsertPadDialog()
 {
 static const Char_t helptext[] =
-"no help yet\n\
+"A pad is used to include other objects which\n\
+an own coordinate system like function and pictures\n\
+(jpeg, gif, png). But in principal they may contain\n\
+any graphical object.\n\
+Note: \n\
+To draw an object in a pad the pad must activated\n\
+by clicking with the middle mouse button in it.\n\
+To make the main canvas it also must be clicked\n\
+After creation of a pad it is made automatically\n\
+active.\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
@@ -54,7 +63,7 @@ static const Char_t helptext[] =
    fValp[ind++] = &fFillStyle;
    fRow_lab->Add(new TObjString("CommandButt_Execute Insert()"));
    fValp[ind++] = &execute_cmd;
-   Int_t itemwidth = 280;
+   Int_t itemwidth = 300;
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Graphics Pad", NULL, &ok,itemwidth, win,

@@ -1781,6 +1781,16 @@ void GEdit::WritePrimitives()
                  (TGWindow*)fRootCanvas);
    if (!ok)
       return;
+   TList * lop = gPad->GetListOfPrimitives();
+   TObject *obj;
+   TObjOptLink *lnk = (TObjOptLink*)lop->FirstLink();
+   cout << "GEdit::WritePrimitives: bef Remove TASImage" << endl;
+   while (lnk) {
+      obj = lnk->GetObject();
+      if (obj->InheritsFrom("TASImage")) lop->Remove(lnk);
+      lnk = (TObjOptLink*)lnk->Next();
+   }
+   cout << "GEdit::WritePrimitives: after Remove TASImage" << endl;
 
    TFile *f = new TFile(fn, "UPDATE");
    RemoveEditGrid();
@@ -1791,7 +1801,7 @@ void GEdit::WritePrimitives()
    fRootFileName = fn;
    SaveDefaults();
 }
-///______________________________________________________________________________
+//_____________________________________________________________________________
 
 void GEdit::SetVisibilityOfEnclosingCuts(Bool_t visible)
 {
@@ -2266,9 +2276,9 @@ void GEdit::InsertImage()
                    hist_file, NULL, row_lab, valp);
    if (!ok) return;
 
-   TImage *img = TImage::Open(name.Data());
-//   HprImage * hprimg = new HprImage(name.Data(), pad);
-//   TImage *img = hprimg->GetImage();
+//   TImage *img = TImage::Open(name.Data());
+   HprImage * hprimg = new HprImage(name.Data(), pad);
+   TImage *img = hprimg->GetImage();
    if (!img) {
       cout << "Could not create an image... exit" << endl;
       return;
@@ -2326,8 +2336,8 @@ void GEdit::InsertImage()
       drawopt += ",#ffffff";
    }
 //   cout << drawopt << endl;
-//   hprimg->Draw(drawopt);
-   img->Draw(drawopt);
+   hprimg->Draw(drawopt);
+//   img->Draw(drawopt);
 //   hprimg->Paint();
 //   if(pad) pad->Range(0,0, (GetUxmax() - GetUxmin())* pad->GetWNDC()
 //                       , (GetUymax() - GetUymin())* pad->GetHNDC());

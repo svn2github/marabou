@@ -19,7 +19,8 @@ CurlyLineWithArrowDialog::CurlyLineWithArrowDialog()
 {
    cout << "InsertCurlyLineWithArrow()" << endl;
 static const Char_t helptext[] =
-"no help yet\n\
+"This widgets inserts a curly / wavy line with optional\n\
+arrows at the ends\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();

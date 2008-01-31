@@ -177,7 +177,12 @@ TString lat2root(TString& cmd)
 InsertTextDialog::InsertTextDialog(Bool_t from_file)
 {
 static const Char_t helptext[] =
-"no help yet\n\
+"This widget is used to insert text either directly\n\
+from the keyboard or from a file. In the keyboard case\n\
+text is edit in this widget and placed by clicking \n\
+\"ExecuteTextInsert\" and then at the desired position.\n\
+In the file case serveral lines may be arranged as a compound\n\
+which may shifted together\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();

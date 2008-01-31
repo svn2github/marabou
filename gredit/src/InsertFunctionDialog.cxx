@@ -25,7 +25,11 @@ ClassImp(InsertFunctionDialog)
 InsertFunctionDialog::InsertFunctionDialog()
 {
 static const Char_t helptext[] =
-"no help yet\n\
+"This widget helps to insert a function defined as\n\
+a formula: e.g. [0]*sin([1]*x +[2]), [0] , [1] correspond\n\
+to the parameters of the function. Normally a new pad should\n\
+be created to hold the function otherwise a complete new canvas\n\
+may be created.\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();

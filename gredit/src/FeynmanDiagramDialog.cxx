@@ -21,7 +21,13 @@ ClassImp(FeynmanDiagramDialog)
 FeynmanDiagramDialog::FeynmanDiagramDialog()
 {
 static const Char_t helptext[] =
-"no help yet\n\
+"This is a collection for graphics primitives\n\
+used to draw feynman diagrams. Note: Sizes are\n\
+defined as fraction relative to the pad size.\n\
+Arcs are defined by clicking at the center and\n\
+dragging the pressed mouse to a point on the \n\
+circumference. Start and end point are defined\n\
+by Phi start / end. (counterclock wise)\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
@@ -69,7 +75,7 @@ static const Char_t helptext[] =
    fValp[ind++] = &fPhi1;
    fRow_lab->Add(new TObjString("PlainIntVal+Phi end"));
    fValp[ind++] = &fPhi2;
-   Int_t itemwidth = 220;
+   Int_t itemwidth = 260;
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Feynman diagram", NULL, &ok,itemwidth, win,

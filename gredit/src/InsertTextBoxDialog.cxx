@@ -22,7 +22,10 @@ ClassImp(InsertTextBoxDialog)
 InsertTextBoxDialog::InsertTextBoxDialog()
 {
 static const Char_t helptext[] =
-"no help yet\n\
+"This widget is for text and boxes. These objects\n\
+may be arranged automatically at the corners or centered\n\
+at the edges. It also may adopt other objects like polylines\n\
+xsplines which end at its borders. In this case these objects remain attached if the text box gets shifted.\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();

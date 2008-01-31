@@ -21,6 +21,7 @@ public:
    void RecursiveRemove(TObject * obj) ;
    TImage * GetImage() {return fImage;};
    Bool_t IsGood(){return fIsGood;};
+   Int_t FileExists();
    void Paint(Option_t * opt = 0);
    Bool_t IsSortable() const {return kTRUE;}
    Int_t Compare( const TObject *obj) const
