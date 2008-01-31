@@ -2756,7 +2756,7 @@ void _mbs_output_error(MBSDataIO *mbs) {
 		strftime(datestr, MBS_L_STR, "%e-%b-%Y %H:%M:%S", localtime(&now));
 		fprintf(log_out, "%-18s: %s\n", datestr, loc_errbuf);
 	}
-	if (mbs->buf_to_be_dumped != 0)_mbs_dump_buffer(mbs);
+	if (mbs && mbs->buf_to_be_dumped != 0)_mbs_dump_buffer(mbs);
 }
 
 void _mbs_output_log(MBSDataIO *mbs) {
