@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLogger.cxx,v 1.11 2006-07-17 12:30:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLogger.cxx,v 1.12 2008-02-18 13:29:37 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -47,7 +47,7 @@ const SMrbNamedXShort kMrbMsgOpenModes[] =
 TMrbLogger * gMrbLog = NULL;			// global access to logging system
 
 TMrbLogMessage::TMrbLogMessage(EMrbMsgType Type, const Char_t * Color,
-									const Char_t * ClassName, const Char_t * Method, const Char_t * Text) {
+									const Char_t * ClassName, const Char_t * Method, const Char_t * Text, Bool_t Indent) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogMessage
@@ -57,6 +57,7 @@ TMrbLogMessage::TMrbLogMessage(EMrbMsgType Type, const Char_t * Color,
 //                 Char_t * ClassName     -- calling class
 //                 Char_t * Method        -- calling method
 //                 Char_t * Text          -- message text
+//                 Bool_t Indent          -- don't output class/method but indent text	
 // Description:    Message book keeping.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -73,6 +74,7 @@ TMrbLogMessage::TMrbLogMessage(EMrbMsgType Type, const Char_t * Color,
 	fClassName = ClassName ? ClassName : "";
 	fMethod = Method ? Method : "";
 	fText = Text;
+	fIndent = Indent;
 };
 		
 const Char_t * TMrbLogMessage::Get(TString & FmtMsg,
@@ -110,6 +112,8 @@ const Char_t * TMrbLogMessage::Get(TString & FmtMsg,
 	}
 	if (WithColors) FmtMsg += fColor;
 
+	TString fmt = FmtMsg;
+
 	if (fClassName.Length() > 0) {
 		FmtMsg += fClassName;
 		FmtMsg += ":";
@@ -124,6 +128,11 @@ const Char_t * TMrbLogMessage::Get(TString & FmtMsg,
 		FmtMsg += fMethod;
 		FmtMsg += "(): ";
 	}
+
+	if (fIndent) {
+		Int_t l = FmtMsg.Length() - fmt.Length();
+		FmtMsg = Form("%s%*s", fmt.Data(), l, "");
+ 	}
 
 	FmtMsg += fText;
 	if (WithColors) FmtMsg += setblack;
@@ -250,14 +259,15 @@ Bool_t TMrbLogger::Close() {
 	} else return(kFALSE);
 }
  
-Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const Char_t * Color) {
+Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const Char_t * Color, Bool_t Indent) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogger::Flush
 // Purpose:        Output message(s).
 // Arguments:      Char_t * ClassName    -- calling class
 //                 Char_t * Method       -- calling method
-//                 Char_t * Color        -- text color to be used	
+//                 Char_t * Color        -- text color to be used
+//                 Bool_t Indent         -- don't output class/method but indent text	
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Outputs contents of out and err strings
@@ -271,7 +281,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	*fOut << ends;
 	str = fOut->str().c_str();
 	if (str.Length() != 0) {
-		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgMessage, Color, ClassName, Method, str);
+		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgMessage, Color, ClassName, Method, str, Indent);
 		fLofMessages.Add(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCout) cout << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName, kTRUE, kFALSE) << flush;
@@ -282,7 +292,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	*fErr << ends;
 	str = fErr->str().c_str();
 	if (str.Length() != 0) {
-		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgError, Color, ClassName, Method, str);
+		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgError, Color, ClassName, Method, str, Indent);
 		fLofMessages.Add(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;
@@ -293,7 +303,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	*fWrn << ends;
 	str = fWrn->str().c_str();
 	if (str.Length() != 0) {
-		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgWarning, Color, ClassName, Method, str);
+		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgWarning, Color, ClassName, Method, str, Indent);
 		fLofMessages.Add(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;
@@ -307,7 +317,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 }
 
 Bool_t TMrbLogger::OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char_t * Msg,
-						const Char_t * ClassName, const Char_t * Method, const Char_t * Color) {
+						const Char_t * ClassName, const Char_t * Method, const Char_t * Color, Bool_t Indent) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogger::OutputMessage
@@ -317,6 +327,7 @@ Bool_t TMrbLogger::OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char
 //                 Char_t * ClassName    -- calling class
 //                 Char_t * Method       -- calling method
 //                 Char_t * Color        -- text color to be used	
+//                 Bool_t Indent         -- don't output class/method but indent text	
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Outputs message directly
@@ -330,17 +341,17 @@ Bool_t TMrbLogger::OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char
 	TMrbLogMessage * msg;
 		
 	if (MsgType == TMrbLogMessage::kMrbMsgMessage) {
-		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgMessage, Color, ClassName, Method, str);
+		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgMessage, Color, ClassName, Method, str, Indent);
 		fLofMessages.Add(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCout) cout << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName, kTRUE, kFALSE) << flush;
 	} else if (MsgType == TMrbLogMessage::kMrbMsgError) {
-		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgError, Color, ClassName, Method, str);
+		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgError, Color, ClassName, Method, str, Indent);
 		fLofMessages.Add(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;
 	} else if (MsgType == TMrbLogMessage::kMrbMsgWarning) {
-		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgWarning, Color, ClassName, Method, str);
+		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgWarning, Color, ClassName, Method, str, Indent);
 		fLofMessages.Add(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;

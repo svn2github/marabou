@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSilena_7420.cxx,v 1.7 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSilena_7420.cxx,v 1.8 2008-02-18 13:32:24 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -146,15 +146,17 @@ Bool_t TMrbSilena_7420::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModu
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleInitModule:
-			fCodeTemplates.InitializeCode();
-			fCodeTemplates.Substitute("$moduleName", this->GetName());
-			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
-			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
-			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
-			fCodeTemplates.WriteCode(RdoStrm);
-			TMrbCamacChannel * chn = (TMrbCamacChannel *) fChannelSpec[0];
-			if (chn->IsUsed()) this->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleInitChannel, chn);
+			{
+				fCodeTemplates.InitializeCode();
+				fCodeTemplates.Substitute("$moduleName", this->GetName());
+				fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
+				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
+				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+				fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
+				fCodeTemplates.WriteCode(RdoStrm);
+				TMrbCamacChannel * chn = (TMrbCamacChannel *) fChannelSpec[0];
+				if (chn->IsUsed()) this->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleInitChannel, chn);
+			}
 			break;
 		case TMrbConfig::kModuleStartAcquisition:
 		case TMrbConfig::kModuleStopAcquisition:

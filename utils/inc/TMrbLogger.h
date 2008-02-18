@@ -8,7 +8,7 @@
 // Class:          TMrbLogger    -- message/error logging
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLogger.h,v 1.10 2005-11-11 09:58:47 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLogger.h,v 1.11 2008-02-18 13:29:36 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ class TMrbLogMessage: public TObject {
 
 		TMrbLogMessage() {};
 		TMrbLogMessage(EMrbMsgType Type, const Char_t * Color,
-										const Char_t * ClassName, const Char_t * Method, const Char_t * Text);
+										const Char_t * ClassName, const Char_t * Method, const Char_t * Text, Bool_t Indent = kFALSE);
 		
 		~TMrbLogMessage() {};
 		
@@ -66,6 +66,7 @@ class TMrbLogMessage: public TObject {
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
+		Bool_t fIndent;
 		TDatime fDatime;
 		EMrbMsgType fType;
 		TString fColor;
@@ -101,7 +102,7 @@ class TMrbLogger: public TNamed {
 
 		~TMrbLogger() { Reset(); };						// dtor
 
-		Bool_t Flush(const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL);
+		Bool_t Flush(const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL, Bool_t Indent = kFALSE);
 		Bool_t Open(const Char_t * LogFile = "marabou.log", const Char_t * Option = "APPEND");
 		Bool_t Close();
 				
@@ -164,7 +165,7 @@ class TMrbLogger: public TNamed {
 
 	protected:
 		Bool_t OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char_t * Msg,
-									const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL);
+									const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL, Bool_t Indent = kFALSE);
 
 	protected:
 
