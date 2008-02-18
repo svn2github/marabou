@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXMLCodeGen.cxx,v 1.4 2008-01-17 09:26:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeGen.cxx,v 1.5 2008-02-18 12:29:03 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -23,16 +23,18 @@ extern TMrbLogger * gMrbLog;
 
 ofstream debug;
 
-TMrbXMLCodeGen::TMrbXMLCodeGen(const Char_t * XmlFile, TMrbXMLCodeClient * Client) {
-									
+TMrbXMLCodeGen::TMrbXMLCodeGen(const Char_t * XmlFile, TMrbXMLCodeClient * Client, Bool_t VerboseFlag) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXMLCodeGen
 // Purpose:        Marabou's SAX parser implementation
-// Arguments:      Char_t * XmlFile    -- xml file
+// Arguments:      Char_t * XmlFile           -- xml file
+//                 TMrbXMLCodeClient * Client -- client class
+//                 Bool_t VerboseFlag         -- be verbose if kTRUE
 // Results:        --
 // Exceptions:
 // Description:    Connects to TSAXParser and parses xml data from file
+//                 This ctor has to be used for *CONTIGUOUS* mode
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,11 +43,66 @@ TMrbXMLCodeGen::TMrbXMLCodeGen(const Char_t * XmlFile, TMrbXMLCodeClient * Clien
 	fParser = new TSAXParser();
 	if (!fParser->IsZombie()) {
 		fParser->ConnectToHandler(this->ClassName(), this);
-		this->Initialize();
 		fClient = Client;
 		fRoot = NULL;
 		fCurrent = NULL;
+		fSelectionTag = "";
+		fSelectiveMode = kFALSE;
+		fStopParsing = kFALSE;
+
+		fExtractedCode = "";
+		fLofChildren = NULL;
+		fLofSubst = NULL;
+
+		if (fClient)	fVerboseMode = fClient->IsVerbose();
+		else			fVerboseMode = gEnv->GetValue("TMrbXML.VerboseMode", VerboseFlag);
+
+		this->Initialize();
+
 		if (XmlFile != NULL && *XmlFile != '\0') this->ParseFile(XmlFile);
+	}
+}
+
+TMrbXMLCodeGen::TMrbXMLCodeGen(const Char_t * XmlFile, TMrbXMLCodeClient * Client, const Char_t * Tag, TEnv * LofChildren, TEnv * LofSubst, TString & Code, Bool_t VerboseFlag) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeGen
+// Purpose:        Marabou's SAX parser implementation
+// Arguments:      Char_t * XmlFile           -- xml file
+//                 TMrbXMLCodeClient * Client -- client class
+//                 Char_t * Tag               -- tag to be selected
+//                 TEnv * LofChildren         -- list of xml sub-tags
+//                 TEnv * LofSubst            -- list of substutitions
+//                 TString & Code             -- extracted code to be returned
+//                 Bool_t VerboseFlag         -- be verbose if kTRUE
+// Results:        TString & Code
+// Exceptions:
+// Description:    Connects to TSAXParser and parses xml data from file
+//                 This ctor has to be used for *SELECTIVE* mode
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("sax.log");
+
+	fParser = new TSAXParser();
+	if (!fParser->IsZombie()) {
+		fParser->ConnectToHandler(this->ClassName(), this);
+		fClient = Client;
+		fRoot = NULL;
+		fCurrent = NULL;
+		fSelectiveMode = kTRUE;
+		fSelectionTag = Tag;
+		fStopParsing = kFALSE;
+
+		fVerboseMode = fClient->IsVerbose();
+
+		this->Initialize();
+
+		fExtractedCode = "";
+		fLofChildren = LofChildren;
+		fLofSubst = LofSubst;
+		this->ParseFile(XmlFile);
+		Code = fExtractedCode;
 	}
 }
 
@@ -72,6 +129,7 @@ void TMrbXMLCodeGen::Initialize() {
 	fLofElements.AddNamedX(kMrbXml_FunctHdr, "functHdr", "<functHdr>...</functHdr>");
 	fLofElements.AddNamedX(kMrbXml_Code, "code", "<code>...</code>");
 	fLofElements.AddNamedX(kMrbXml_Cbody, "cbody", "<cbody>...</cbody>");
+	fLofElements.AddNamedX(kMrbXml_Include, "include", "<include>...</include>");
 	fLofElements.AddNamedX(kMrbXml_If, "if", "<if>...</if>");
 	fLofElements.AddNamedX(kMrbXml_Foreach, "foreach", "<foreach>...</foreach>");
 	fLofElements.AddNamedX(kMrbXml_Switch, "switch", "<switch>...</switch>");
@@ -89,6 +147,7 @@ void TMrbXMLCodeGen::Initialize() {
 	fLofElements.AddNamedX(kMrbXml_ClassRef, "classRef", "<classRef>...</classRef>");
 	fLofElements.AddNamedX(kMrbXml_Tag | kMrbXmlHasOwnText, "tag", "<tag>...</tag>");
 	fLofElements.AddNamedX(kMrbXml_Flag | kMrbXmlHasOwnText, "flag", "<flag>...</flag>");
+	fLofElements.AddNamedX(kMrbXml_Fpath | kMrbXmlHasOwnText, "fpath", "<fpath>...</fpath>");
 	fLofElements.AddNamedX(kMrbXml_Slist, "slist", "<slist>...</slist>");
 	fLofElements.AddNamedX(kMrbXml_Subst, "subst", "<subst>...</subst>");
 	fLofElements.AddNamedX(kMrbXml_Xname | kMrbXmlHasOwnText, "xname", "<xname>...</xname>");
@@ -114,9 +173,9 @@ void TMrbXMLCodeGen::Initialize() {
 	fLofElements.AddNamedX(kMrbXml_U | kMrbXmlHasOwnText, "u", "<u>...</u>");
 	fLofElements.AddNamedX(kMrbXml_Bx | kMrbXmlHasOwnText, "bx", "<bx>...</bx>");
 	fLofElements.AddNamedX(kMrbXml_M | kMrbXmlHasOwnText, "m", "<m>...</m>");
-	fLofElements.AddNamedX(kMrbXml_Mm, "mm", "<mm>...</mm>");
+	fLofElements.AddNamedX(kMrbXml_Mm | kMrbXmlHasOwnText, "mm", "<mm>...</mm>");
 	fLofElements.AddNamedX(kMrbXml_R | kMrbXmlHasOwnText, "r", "<r>...</r>");
-	fLofElements.AddNamedX(kMrbXml_Rm, "rm", "<rm>...</rm>");
+	fLofElements.AddNamedX(kMrbXml_Rm | kMrbXmlHasOwnText, "rm", "<rm>...</rm>");
 	fLofElements.AddNamedX(kMrbXml_Nl, "nl", "<nl>...</nl>");
 
 	fDebugMode = gEnv->GetValue("TMrbXML.Debug.Mode", "off");
@@ -152,6 +211,7 @@ Bool_t TMrbXMLCodeGen::ParseFile(const Char_t * XmlFile) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!gSystem->AccessPathName(XmlFile)) {
+		fExtractedCode = "";
 		fXmlFile = XmlFile;
 		Int_t err = fParser->ParseFile(fXmlFile.Data());	// parse xml data frttom file
 		return(err == 0);
@@ -163,6 +223,62 @@ Bool_t TMrbXMLCodeGen::ParseFile(const Char_t * XmlFile) {
 	return(kTRUE);
 }
 
+const Char_t * TMrbXMLCodeGen::GetSelectionTag() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeGen::GetSelectionTag
+// Purpose:        Return tag in selective mode
+// Arguments:      --
+// Results:        Char_t * Tag    -- selection tag
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->SelectiveMode()) {
+		return(fSelectionTag.Data());
+	} else {
+		gMrbLog->Err() << "Not valid in *CONTIGUOUS* mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetSelectionTag");
+		return(NULL);
+	}
+}
+
+Bool_t TMrbXMLCodeGen::StopParsing(Bool_t Flag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeGen::StopParsing
+// Purpose:        Set stop flag in selective mode
+// Arguments:      Bool_t Flag     -- kTRUE/kFALSE
+// Results:        kTRUE/kFALSE
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->SelectiveMode()) {
+		fStopParsing = Flag;
+		return(kTRUE);
+	} else {
+		gMrbLog->Err() << "Not valid in *CONTIGUOUS* mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "StopParsing");
+		return(kFALSE);
+	}
+}
+
+Bool_t TMrbXMLCodeGen::SetExtractedCode(const Char_t * Code) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeGen::SetExtractedCode
+// Purpose:        Xfer extracted code to parser
+// Arguments:      Char_t * Code   -- Code
+// Results:        -- kTRtion tag
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->SelectiveMode()) {
+		fExtractedCode = Code;
+		return(kTRUE);
+	} else {
+		gMrbLog->Err() << "Not valid in *CONTIGUOUS* mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetExtractedCode");
+		return(kFALSE);
+	}
+}
+
 void TMrbXMLCodeGen::OnStartElement(const Char_t * ElemName, const TList * LofAttr) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -172,6 +288,8 @@ void TMrbXMLCodeGen::OnStartElement(const Char_t * ElemName, const TList * LofAt
 //                 TList * LofAttr     -- list of attributes
 // Results:        --
 //////////////////////////////////////////////////////////////////////////////
+
+	if (fStopParsing) return;
 
 	Int_t nestingLevel = fCurrent ? fCurrent->NestingLevel() + 1 : 0;
 	TMrbNamedX * elem = fLofElements.FindByName(ElemName, TMrbLofNamedX::kFindExact);
@@ -202,6 +320,8 @@ void TMrbXMLCodeGen::OnEndElement(const Char_t * ElemName) {
 // Arguments:      Char_t * ElemName   -- name of element
 // Results:        --
 //////////////////////////////////////////////////////////////////////////////
+
+	if (fStopParsing) return;
 
 	fCurrent->ProcessElement(ElemName); 				// process element
 	if (fDebugMode.CompareTo("on") == 0) {

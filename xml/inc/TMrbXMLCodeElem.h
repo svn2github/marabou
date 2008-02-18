@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeElem    -- XML code elemenet/node
 // Description:    Class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeElem.h,v 1.8 2008-01-18 13:35:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.h,v 1.9 2008-02-18 12:29:03 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -49,6 +49,7 @@ enum EMrbXmlElements {
 		kMrbXml_FunctHdr,
 		kMrbXml_Code,
 		kMrbXml_Cbody,
+		kMrbXml_Include,
 		kMrbXml_If,
 		kMrbXml_Foreach,
 		kMrbXml_Switch,
@@ -66,6 +67,8 @@ enum EMrbXmlElements {
 		kMrbXml_ClassRef,
 		kMrbXml_Tag,
 		kMrbXml_Flag,
+		kMrbXml_FlagValue,
+		kMrbXml_Fpath,
 		kMrbXml_Slist,
 		kMrbXml_Subst,
 		kMrbXml_Xname,
@@ -126,6 +129,8 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		inline TEnv * LofChildren() { return(&fLofChildren); };
 		inline TEnv * LofSubst() { return(&fLofSubst); };
 
+		Bool_t FindSubst(const Char_t * Sname, TString & Svalue, Bool_t Verbose = kTRUE);
+
 		inline Bool_t IsRootElement() { return(fParent == NULL); };
 		inline Bool_t HasOwnText() { return(fHasOwnText); };
 
@@ -135,25 +140,36 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 
 		void Debug(ostream & Out, TString & FocusOnElement, TString & FocusOnTag, Bool_t OnStart);
 
+		inline Bool_t SubstOk() { return(fLofSubst.GetValue("@Request.OK", kTRUE)); }
+
+		inline Bool_t IsVerbose() { return(fVerboseMode); };
+
+		inline TMrbXMLCodeGen * Parser() { return(fParser); };
+
 	protected:
 
-		Bool_t ParentIs(const Char_t * LofParents, Bool_t Verbose = kTRUE);
+		Bool_t fVerboseMode;				// kTRUE: be verbose
+
 		Bool_t NameIs(const Char_t * ElemName, Bool_t Verbose = kTRUE);
+		Bool_t ParentIs(const Char_t * LofParents, Bool_t Verbose = kTRUE);
+		Bool_t TopLevelTypeIs(const Char_t * Type);
 		Bool_t HasChild(const Char_t * ChildName, Bool_t Verbose = kTRUE);
 		Bool_t HasChild(const Char_t * ChildName, TString & ChildCode, Bool_t Verbose = kTRUE);
 		TMrbXMLCodeElem * HasAncestor(const Char_t * Ancestor, Bool_t Verbose = kTRUE);
-		Bool_t CopyCodeToParent(const Char_t * IndentString = "");
-		Bool_t CopyChildToParent(const Char_t * ChildName, const Char_t * ChildCode = NULL);
-		Bool_t CopySubstToParent(const Char_t * Sname = NULL, const Char_t * Descr = NULL, const Char_t * Tag = NULL);
-		Bool_t GetChildFromParent(const Char_t * ElemName, TString & ElemCode);
+		Bool_t CopyCodeToAncestor(TMrbXMLCodeElem * Ancestor, const Char_t * IndentString = "");
+		Bool_t CopyChildToAncestor(TMrbXMLCodeElem * Ancestor, const Char_t * ChildName, const Char_t * ChildCode = NULL);
+		Bool_t CopySubstToAncestor(TMrbXMLCodeElem * Ancestor, const Char_t * Sname = NULL, const Char_t * Descr = NULL, const Char_t * Tag = NULL);
+		Bool_t GetChildFromAncestor(TMrbXMLCodeElem * Ancestor, const Char_t * ElemName, TString & ElemCode, Bool_t Verbose = kTRUE);
 		Bool_t FindTag(TString & Tag, Bool_t Verbose = kTRUE);
-		Bool_t FindSubst(TString & Subst, Bool_t Verbose = kTRUE);
 		Bool_t RequestLofItems(const Char_t * Tag, const Char_t * ItemName, TString & LofItems);
 		Bool_t RequestConditionFlag(const Char_t * Tag, const Char_t * FlagName, TString & FlagValue);
 		void ClearSubst();
 		Bool_t RequestSubst(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TEnv * LofSubst);
+		Bool_t RequestCode(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TString & Code);
 		Bool_t Substitute(TString & Code, Bool_t Verbose = kFALSE);
-		Bool_t ExpandSwitchAndIf() { return(kTRUE); };
+		Bool_t ExpandSwitch(TString & Code);
+		Bool_t ExpandIf(TString & Code);
+		Bool_t ExpandInclude(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TString & Code);
 
 		void Indent(ostream & Out);
 
@@ -170,6 +186,7 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		Bool_t ProcessElement_FunctHdr();
 		Bool_t ProcessElement_Code();
 		Bool_t ProcessElement_Cbody();
+		Bool_t ProcessElement_Include();
 		Bool_t ProcessElement_If();
 		Bool_t ProcessElement_Foreach();
 		Bool_t ProcessElement_Switch();
@@ -187,6 +204,8 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		Bool_t ProcessElement_ClassRef();
 		Bool_t ProcessElement_Tag();
 		Bool_t ProcessElement_Flag();
+		Bool_t ProcessElement_FlagValue();
+		Bool_t ProcessElement_Fpath();
 		Bool_t ProcessElement_Slist();
 		Bool_t ProcessElement_Subst();
 		Bool_t ProcessElement_Xname();

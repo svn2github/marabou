@@ -19,53 +19,56 @@
 <!ENTITY ptr "-&gt;">
 <!ENTITY and "&amp;&amp;">
 
-<!ELEMENT mrbcode (file)>
+<!ELEMENT mrbcode (file | (code | class | method | funct | ctor | include)*)>
 
 <!-- text with substitutions -->
-<!ENTITY % stext "(#PCDATA | s | S | m | mm | r | rm)*">
+<!ENTITY % stext "(#PCDATA | s | S |  m | mm | r | rm)*">
 <!-- text to be used in comments: substitutions, bold/italic/underlined, boxed, and line break -->
-<!ENTITY % ctext "(#PCDATA | s | S | m | mm  | r | rm | b | i | u | bx | nl)*">
+<!ENTITY % ctext "(#PCDATA | s | S |  m | mm  | r | rm | b | i | u | bx | nl)*">
 
 <!-- file spec -->
-<!ELEMENT file (tag, slist?, fileHdr, code*, (class | method | funct)+)>
+<!ELEMENT file (tag, slist?, fileHdr, (code | foreach)*, (class | method | funct | include)+)>
 
 <!-- file header -->
 <!ELEMENT fileHdr (xname, gname, purp?, descr?, rootClassList?, mrbClassList?, author, mail, url, version, date?)>
 
 <!-- C++ class definition -->
-<!ELEMENT class (classHdr, code)>
+<!ELEMENT class (tag?, classHdr, code)>
 <!-- C++ class header -->
 <!ELEMENT classHdr (cname, purp, inheritance?, argList?, descr?)>
 <!-- C++ class constructor -->
-<!ELEMENT ctor (ctorHdr, code)>
+<!ELEMENT ctor (tag?, ctorHdr, code)>
 <!-- C++ constructor header -->
 <!ELEMENT ctorHdr (cname, purp, argList?, descr?)>
 
 <!-- C++ class method definition -->
-<!ELEMENT method (methodHdr, code)>
+<!ELEMENT method (tag?, methodHdr, (code | include)+)>
 <!-- C++ class method header -->
 <!ELEMENT methodHdr (mname, cname, purp, argList?, returnVal, descr?)>
 
 <!-- function definition -->
-<!ELEMENT funct (functHdr, code)>
+<!ELEMENT funct (tag?, functHdr, (code | include)+)>
 <!-- function header -->
 <!ELEMENT functHdr (fname, ftype, purp, argList?, returnVal, descr?)>
 
+<!-- include code from other file -->
+<!ELEMENT include (tag?, fpath?, descr?)>
+
 <!-- piece of code -->
-<!ELEMENT code (tag?, comment?, slist?, (switch | foreach | if | code | cbody)*)>
+<!ELEMENT code (tag?, comment?, slist?, (switch | foreach | if | code | cbody | include | nl)*)>
 <!-- code body -->
 <!ELEMENT cbody (switch | if | l | nl)*>
 
  <!-- if clause -->
-<!ELEMENT if (flag, descr?, cbody)>
+<!ELEMENT if (flag, flagValue?, descr?, (cbody | include)+)>
 
 <!-- code loop -->
-<!ELEMENT foreach (item, descr?, (cbody | switch | if)+)>
+<!ELEMENT foreach (tag?, comment?, item, descr?, slist?, (cbody | switch | if | include)+)>
 
 <!-- code selection depending on tag -->
 <!ELEMENT switch (item, case+)>
 <!-- case: tagged piece of code -->
-<!ELEMENT case (tag, descr?, cbody)>
+<!ELEMENT case (tag, descr?, (cbody | include)+)>
 
 <!-- item -->
 <!ELEMENT item (#PCDATA)>
@@ -98,12 +101,16 @@
 <!ELEMENT tag (#PCDATA)>
 <!-- flag to be used in if clause -->
 <!ELEMENT flag (#PCDATA)>
+<!-- flag value to be used in if clause -->
+<!ELEMENT flagValue (#PCDATA)>
 
 <!-- list of substitutions -->
 <!ELEMENT slist (subst)+>
 <!-- substitution: to be replaced by value on code generation -->
 <!ELEMENT subst (sname, descr?)>
 
+<!-- file path -->
+<!ELEMENT fpath %stext;>
 <!-- name of xml file -->
 <!ELEMENT xname %stext;>
 <!-- name of generated code file -->
@@ -131,9 +138,9 @@
 <!-- author's url -->
 <!ELEMENT url %stext;>
 
-<!-- version (cvs: $Id: mrbcode.dtd,v 1.3 2008-01-18 13:35:16 Rudolf.Lutter Exp $) -->
+<!-- version (cvs: $Id: mrbcode.dtd,v 1.4 2008-02-18 12:29:03 Rudolf.Lutter Exp $) -->
 <!ELEMENT version (#PCDATA)>
-<!-- date (cvs: $Date: 2008-01-18 13:35:16 $) -->
+<!-- date (cvs: $Date: 2008-02-18 12:29:03 $) -->
 <!ELEMENT date (#PCDATA)>
 
 <!-- to be substituted -->
@@ -161,6 +168,11 @@
 
 <!-- attribut lists -->
 
+<!-- mrbcode -->
+<!ATTLIST  mrbcode
+   type    (contiguous|selective) "contiguous"
+>
+
 <!-- indentation -->
 <!ATTLIST  class
     indent    CDATA    "0"
@@ -174,6 +186,7 @@
 <!ATTLIST  code
     indent    CDATA    "0"
 >
+
 <!ATTLIST  switch
     indent    CDATA    "0"
 >
@@ -184,6 +197,10 @@
     indent    CDATA    "0"
 >
 <!ATTLIST  cbody
+    indent    CDATA    "0"
+>
+
+<!ATTLIST  include
     indent    CDATA    "0"
 >
 
