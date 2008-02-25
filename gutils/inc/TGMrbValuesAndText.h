@@ -77,6 +77,7 @@ private:
    TList            *fFlagButtons;
    TGListBox        *fListBox;
    TGListBox        *fListBoxReq;
+   TGTextEntry      *fFileDialogContTextEntry;
    TString          fClassName;
    TString          fFileName;
    Int_t            fWidgetId;
@@ -84,6 +85,8 @@ private:
    const char       *fPrompt;
    const char       *fHelpText;
    TList            *fCompList;
+   Int_t            fWindowWidth;
+
    Int_t            fNrows;
    Int_t            fAlign;
    Int_t            fArrowShape;
@@ -115,7 +118,7 @@ public:
    virtual ~TGMrbValuesAndText();
 
    virtual Bool_t  ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
-   void UpdateRequestBox(const char *fname);
+   void UpdateRequestBox(const char *fname, Bool_t store = kTRUE);
    void StoreValues();
    void ReloadValues();
    void ReloadValue(TObject *obj, TObjString *objs, Int_t ipos);

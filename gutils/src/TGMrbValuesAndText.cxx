@@ -705,7 +705,7 @@ enum buttonId {kIdOk = 101, kIdCancel = 102, kIdHelp = 103, kIdClearHist = 104,
                kIdText = 201, kIdFileName = 202, kIdTextValue = 301,
                kIdTextSelect, kIdListBoxReq = 401,
                kIdFileDialog = 4, kIdFileDialogCont = 5, kIdFontS = 6, kIdCommand = 7,
-					kIdExec, kIdLineS, kIdArrowS, kIdAlignS, kIdMarkS, kIdFillS};
+					kIdExec, kIdLineS, kIdArrowS, kIdAlignS, kIdMarkS, kIdFillS, kIdColorS};
 enum {
    kIsAEditorPage  = BIT(23)
 };
@@ -741,6 +741,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    TGFont *myfont = fClient->GetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    if (myfont) myGC.SetFont(myfont->GetFontHandle());
    fWidgetId = id;
+   fWindowWidth = win_width;
    fWidgets = new TList;
    fFlagButtons = new TList;
 //   fFinis = 0;
@@ -925,7 +926,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //               cbutton->Connect("Clicked()", cname, calling_class, "ButtonPressed()");
        } else if (l.BeginsWith("ColorSelect")) {
             Int_t col = GetColorPixelByInd(*(Color_t*)fValPointers[i]);
-            cbutton = new TGColorSelect(hframe, col, i + 1000);
+            cbutton = new TGColorSelect(hframe, col, i + 1000*kIdColorS);
 //            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
 //            cbutton->Resize(win_width / 4, cbutton->GetDefaultHeight());
             fWidgets->Add(cbutton);
@@ -1092,7 +1093,8 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             hframe->AddFrame(fFileNameEntry, l3);
 			   fWidgets->Add(fFileNameEntry);
             fFileNameEntry->Associate(this);
-            fEntries->Add(fFileNameEntry);
+//            fEntries->Add(fFileNameEntry);
+            fFileDialogContTextEntry = fFileNameEntry;
             TGPictureButton * tb = new TGPictureButton(hframe,
                          fClient->GetPicture("arrow_down.xpm"), i + 1000 * kIdFileDialogCont);
             tb->Resize(20, 20);
@@ -1106,13 +1108,13 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //
             fListBoxReq = new TGListBox(this,  i + 1000*kIdListBoxReq);
             fListBoxReq->AddEntry(ename.Data(), 0);
-            fListBoxReq->Resize(win_width , 20);
+            fListBoxReq->Resize(win_width , 100);
             fListBoxReq->Layout();
             fListBoxReq->Associate(this);
             fWidgets->AddFirst(fListBoxReq);
             this->AddFrame(fListBoxReq, l2);
             fEntries->Add(fListBoxReq);
-            UpdateRequestBox(fFileNameEntry->GetBuffer()->GetString());
+            UpdateRequestBox(fFileNameEntry->GetBuffer()->GetString(),  kFALSE);
          }
          if (fFlags) {
             hframe1 = new TGCompositeFrame(hframe, win_width*1/6, 20, kFixedWidth);
@@ -1324,18 +1326,20 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 {
    // Handle button and text enter events
 //  cout << "TGMrbValuesAndText::ProcessMessage " << GET_MSG(msg) << " "
-//       << GET_SUBMSG(msg) << " bid " << parm1 << " " << parm2 << endl;
+//       << GET_SUBMSG(msg) << " parm1 " << parm1 << " parm2 " << parm2 << endl;
 
    if (!fEmitClose) return kTRUE;
    Int_t idButton, idCmd;
    if (parm1 >= 1000) {
       idCmd = parm1 / 1000;
       idButton = parm1%1000 ;
-   } else {
-       idButton = 999;
-       cout << " parm1 < 1000 !!! " << parm1 << " set idButton to " <<idButton << endl;
-   }
-   switch (GET_MSG(msg)) {
+      if ( GET_MSG(msg) == kC_COLORSEL ) {
+         idCmd    = kIdColorS;
+         idButton = fLastColorSelect;
+      }
+//      cout << "idButton: " <<idButton << endl;
+      
+   }    switch (GET_MSG(msg)) {
       case kC_COMMAND:
          switch (GET_SUBMSG(msg)) {
              case kCM_BUTTON:
@@ -1380,18 +1384,20 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                 } else {
  //                  Int_t id = parm1 / 100;
                    if (idCmd == kIdFileDialog || idCmd == kIdFileDialogCont) {
-                      Int_t entryNr = idButton;
+//                      Int_t entryNr = idButton;
                       TString fn;
                       TGFileInfo* fi = new TGFileInfo();
  //                     const char * filter[] = {"data files", "*", 0, 0};
                       fi->fFileTypes = filetypes;
+                      fi->fFileTypeIdx = 2;
    						 new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
   						    if (fi->fFilename) {
                          fn = fi->fFilename;
+
                          TString pwd(gSystem->Getenv("PWD"));
                          if (fn.BeginsWith(pwd.Data()))fn.Remove(0,pwd.Length()+1);
-                         TGTextEntry *te = (TGTextEntry*)fEntries->At(entryNr);
-
+//                         TGTextEntry *te = (TGTextEntry*)fEntries->At(entryNr);
+                         TGTextEntry *te = fFileDialogContTextEntry;
                          te->SetText(fn.Data());
                          gClient->NeedRedraw(te);
                          gClient->NeedRedraw(this);
@@ -1520,10 +1526,10 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 
 //_____________________________________________________________________________
 
-void TGMrbValuesAndText::UpdateRequestBox(const char *fname)
+void TGMrbValuesAndText::UpdateRequestBox(const char *fname, Bool_t store)
 {
    if (gSystem->AccessPathName(fname)) {
-      cout << "Cant find: " << fname << endl;
+      if ( fname )cout << "Cant find: " << fname << endl;
       return;
    }
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,10,0)
@@ -1552,8 +1558,11 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname)
    fListBoxReq->Resize(fListBoxReq->GetDefaultWidth(), TMath::Min(200, (id+1)*20));
    fListBoxReq->Layout();
    gClient->NeedRedraw(fListBoxReq);
+//   cout << "width " << width<< endl;
+   this->Resize((UInt_t) fWindowWidth, this->GetDefaultHeight());
    gClient->NeedRedraw(this);
-   StoreValues();
+   if (store)
+      StoreValues();
 }
 //________________________________________________________________[C++ METHOD]
 //_____________________________________________________________________________
@@ -1588,7 +1597,7 @@ void TGMrbValuesAndText::StoreValues(){
    while((objs = (TObjString*)next())){
        obj=nextent();
        fButtonId = i;
-//       cout << "fValue: " << objs->String() << endl;
+//       cout << "fValue: " << objs->String() << " " << obj->ClassName()  << endl;
        if (obj->InheritsFrom("TGColorSelect")){
           colsel = (TGColorSelect*)obj;
           Int_t col = colsel->GetColor();
@@ -1654,7 +1663,7 @@ void TGMrbValuesAndText::StoreValues(){
 
           TGNumberEntry * tnentry = (TGNumberEntry*)obj;
           TString tmp(objs->String());
-//           cout << "TGTextEntry " << tmp << endl;
+//           cout << "TGNumberEntry " << tmp << " " << tnentry->GetNumber()<< endl;
           if (tmp.BeginsWith("DoubleValue")) {
               *(Double_t*)fValPointers[i] = tnentry->GetNumber();
 
@@ -1666,13 +1675,18 @@ void TGMrbValuesAndText::StoreValues(){
           } else if (tmp.BeginsWith("PlainShtVal")) {
              *(Short_t*)fValPointers[i] = (Short_t)tnentry->GetIntNumber();
           }
-       } else if (obj->InheritsFrom("TGTextEntry")) {
-          TGTextEntry   * tentry  = (TGTextEntry*)obj;
+       } else if (obj->InheritsFrom("TGTextEntry") || obj->InheritsFrom("TGListBox")) {
+          TGTextEntry   * tentry;
+          if (obj->InheritsFrom("TGListBox"))
+             tentry = fFileDialogContTextEntry;
+          else
+             tentry = (TGTextEntry*)obj;
           TString tmp(objs->String());
+//          cout << "TGTextEntry " << tmp << endl;
           if (tmp.BeginsWith("StringValue") || tmp.BeginsWith("FileRequest")
              || tmp.BeginsWith("FileContReq") ) {
              TString * sr = (TString*)fValPointers[i];
-//             cout << tmp << " " << *sr << endl;
+//             cout << " " << tmp << " " << *sr << endl;
              if (tmp.BeginsWith("FileContReq")) {
                 TString retstr(tentry->GetBuffer()->GetString());
                 retstr += "|";
