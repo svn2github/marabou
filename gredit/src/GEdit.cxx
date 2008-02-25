@@ -34,6 +34,7 @@
 #include "InsertArcDialog.h"
 #include "InsertTextBoxDialog.h"
 #include "InsertPadDialog.h"
+#include "XGrabDialog.h"
 #include "HTPad.h"
 #include "InsertTextDialog.h"
 #include "ChangeTextDialog.h"
@@ -246,7 +247,8 @@ void GEdit::HandleMenu(Int_t id)
          break;
 
       case M_GrabFromScreen:
-         GrabImage();
+          new XGrabDialog();
+//         GrabImage();
          break;
 
       case M_InsertGObjects:
@@ -415,10 +417,6 @@ void GEdit::InitEditCommands()
    if (has_xgrabsc)
       labels->Add(new TObjString("Grab image from screen"));
    labels->Add(new TObjString("Insert image (gif, jpg"));
-#ifdef MARABOUVERS
-   labels->Add(new TObjString("Insert histogram "));
-#endif
-   labels->Add(new TObjString("Insert graph"));
    labels->Add(new TObjString("Insert Pad"));
    labels->Add(new TObjString("Insert Function Dialog"));
    labels->Add(new TObjString("Feynman Dialog"));
@@ -446,10 +444,6 @@ void GEdit::InitEditCommands()
    if (has_xgrabsc)
       methods->Add(new TObjString("GrabImage()"));
    methods->Add(new TObjString("InsertImage()"));
-#ifdef MARABOUVERS
-   methods->Add(new TObjString("InsertHist()"));
-#endif
-   methods->Add(new TObjString("InsertGraph()"));
    methods->Add(new TObjString("InsertPad()"));
    methods->Add(new TObjString("InsertFunction()"));
    methods->Add(new TObjString("FeynmanDiagMenu()"));
@@ -1781,13 +1775,44 @@ void GEdit::WritePrimitives()
                  (TGWindow*)fRootCanvas);
    if (!ok)
       return;
+   fParent->cd();
    TList * lop = gPad->GetListOfPrimitives();
    TObject *obj;
+   TList laxis;
    TObjOptLink *lnk = (TObjOptLink*)lop->FirstLink();
    cout << "GEdit::WritePrimitives: bef Remove TASImage" << endl;
    while (lnk) {
       obj = lnk->GetObject();
       if (obj->InheritsFrom("TASImage")) lop->Remove(lnk);
+      if (obj->InheritsFrom("HTPad")) {
+         HTPad *p = (HTPad*)obj;
+//         cout << " HTPad "  << p << endl;
+         TIter next(p->GetListOfPrimitives());
+         TObject *obj1;
+         TAxis *xa = NULL;
+         TAxis *ya = NULL;
+         while ( (obj1 = next() )) {
+            if (obj1->InheritsFrom("TF1")) {
+               TF1 *f =(TF1*)obj1;
+//               cout << "TF1 "  << f << endl;
+               TH1 *h = f->GetHistogram();
+//               cout << "TH1 "  << h << endl;
+               if ( h ) {
+                  xa = h->GetXaxis();
+                  ya = h->GetYaxis();
+               }
+            }
+         }
+         if ( xa ) {
+            p->GetListOfPrimitives()->Add(xa);
+            laxis.Add(xa);
+            cout << " add " << xa << " to " << p << endl;
+         }
+         if ( ya ) {
+            p->GetListOfPrimitives()->Add(ya);
+            laxis.Add(ya);
+         }
+      }
       lnk = (TObjOptLink*)lnk->Next();
    }
    cout << "GEdit::WritePrimitives: after Remove TASImage" << endl;
@@ -1797,9 +1822,62 @@ void GEdit::WritePrimitives()
    RemoveControlGraphs();
    fParent->Write(name.Data());
    f->Close();
+// remove axis
+   lnk = (TObjOptLink*)lop->FirstLink();
+   cout << "GEdit::WritePrimitives: bef Remove axis" << endl;
+   while (lnk) {
+      obj = lnk->GetObject();
+      if (obj->InheritsFrom("HTPad")) {
+         TList *lop = ((HTPad*)obj)->GetListOfPrimitives();
+         TIter next(&laxis);
+         TObject *obj1;
+         while ( (obj1 = next() )) {
+            lop->Remove(obj1);
+            cout << " remove " << obj1  << " from " << obj << endl;
+        }
+      }
+      lnk = (TObjOptLink*)lnk->Next();
+   }
    fPictureName =  name;
    fRootFileName = fn;
    SaveDefaults();
+}
+//_____________________________________________________________________________
+
+void GEdit::RestoreAxisAtts(TPad * pad)
+{
+   TObject *obj;
+   TObjOptLink *lnk = (TObjOptLink*)pad->GetListOfPrimitives()->FirstLink();
+   while (lnk) {
+      obj = lnk->GetObject();
+      if (obj->InheritsFrom("HTPad")) {
+         TAxis *xa = NULL;
+         TAxis *ya = NULL;
+         TList *lop = ((HTPad*)obj)->GetListOfPrimitives();
+         TIter next(lop);
+         TObject *obj1;
+         TH1 *hist = NULL;
+         while ( (obj1 = next() )) {
+            if (obj1->InheritsFrom("TAxis")) {
+               TString name = ((TAxis*)obj1)->GetName();
+               if (name.BeginsWith("x")) 
+                  xa = (TAxis*)obj1;
+               if (name.BeginsWith("y")) 
+                  ya = (TAxis*)obj1;
+            } 
+            if (obj1->InheritsFrom("TF1")) {
+               hist = ((TF1*)obj1)->GetHistogram();
+            }
+         }  
+         if ( hist ) {
+            if ( xa )
+               hist->GetXaxis()->ImportAttributes(xa);
+            if ( ya )
+               hist->GetYaxis()->ImportAttributes(ya);
+         }
+      }
+      lnk = (TObjOptLink*)lnk->Next();
+   }
 }
 //_____________________________________________________________________________
 
@@ -1818,7 +1896,7 @@ void GEdit::SetVisibilityOfEnclosingCuts(Bool_t visible)
 
 HTPad*  GEdit::GetEmptyPad()
 {
-   TIter next(fParent->GetListOfPrimitives());
+   TIter next(gPad->GetListOfPrimitives());
    TObject * obj;
    HTPad* pad  = NULL;
    while ( (obj = next()) ) {
@@ -1833,516 +1911,11 @@ HTPad*  GEdit::GetEmptyPad()
    }
    return NULL;
 }
-//#ifdef MARABOUVERS
-//______________________________________________________________________________
-
-void GEdit::InsertHist()
-{
-//   cout << "GEdit::InsertHist() " << endl;
-   fParent->cd();
-//   if (!fHistPresent) return;
-   HTPad* pad = GetEmptyPad();
-   if (pad) {
-     gROOT->SetSelectedPad(pad);
-   } else {
-      WarnBox("Please create a new Pad in this Canvas", fRootCanvas);
-      return;
-   }
-   static void *valp[25];
-   Int_t ind = 0;
-//      if ( fParent->GetListOfPrimitives()->Contains(selected)) {
-   TList *row_lab = new TList();
-   static TString fname;
-   static TString gname;
-   static TString drawopt;
-//   static Int_t select_from_list = 1;
-   static Double_t scale = 1;
-
-   ind = 0;
-   row_lab->Add(new TObjString("StringValue_Name of ROOT file"));
-   valp[ind++] = &fname;
-   row_lab->Add(new TObjString("StringValue_Name of Histogram"));
-   valp[ind++] = &gname;
-//   row_lab->Add(new TObjString("CheckButton_Select hist from Filelist"));
-//   valp[ind++] = &select_from_list;
-   row_lab->Add(new TObjString("DoubleValue_Scale factor for labels titles etc."));
-   valp[ind++] = &scale;
-   row_lab->Add(new TObjString("StringValue_Drawing option"));
-   valp[ind++] = &drawopt;
-
-   Bool_t ok;
-   Int_t itemwidth = 320;
-
-   ok = GetStringExt("Insert Hist Params", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, row_lab, valp);
-   if (!ok) return;
-   TH1* hist = 0;
-/*
-   if (select_from_list > 0) {
-      if (!fHistPresent) {
-         cout << "No HistPresent" << endl;
-         return;
-      }
-      if (fHistPresent->fSelectHist->GetSize() != 1) {
-         WarnBox("Please select exactly 1 histogram", fRootCanvas);
-         return;
-      } else {
-         hist = fHistPresent->GetSelHistAt(0, NULL, kTRUE);
-      }
-   } else {
-*/
-      if (gname.Length()) {
-         if (fname.Length() > 0) {
-            TFile * rfile = new TFile(fname.Data());
-            if (!rfile->IsOpen()) {
-               cout << "Cant open file: " << fname.Data() << endl;
-               return;
-            }
-            hist = (TH1*)rfile->Get(gname.Data());
-         }
-// else {
-//            hist = (TH1F*)gROOT->FindObject(gname.Data());
-//         }
-         if (!hist) {
-            cout << "Cant find histogram: " << gname.Data() << endl;
-            return;
-         } else {
-            hist->SetDirectory(gROOT);
-         }
-      } else {
-         cout << "No Histogram defined" << endl;
-      }
-//   }
-   if (!hist) return;
-   TString hn = hist->GetName();
-   if (hn.Index(";") > 0) {
-      hn.Resize(hn.Index(";"));
-      hist->SetName(hn);
-   }
-   pad->cd();
-   if (TMath::Abs(scale -1) > 0.0001) {
-      TAxis * a = hist->GetXaxis();
-      if (a) {
-         a->SetLabelSize( scale * a->GetLabelSize());
-         a->SetTickLength( scale * a->GetTickLength());
-      }
-      a = hist->GetYaxis();
-      if (a) {
-         a->SetLabelSize( scale * a->GetLabelSize());
-         a->SetTickLength( scale * a->GetTickLength());
-      }
-   }
-   hist->Draw(drawopt.Data());
-/*
-   if (fHistPresent && drawopt.Length() == 0) {
-      if (hist->GetDimension() == 1) {
-         if (fHistPresent->fShowContour)
-            drawopt = "";
-         if (fHistPresent->fShowErrors)
-            drawopt += "e1";
-         if (fHistPresent->fFill1Dim) {
-            hist->SetFillStyle(1001);
-            hist->SetFillColor(fHistPresent->fHistFillColor);
-         } else
-            hist->SetFillStyle(0);
-      } else if (hist->GetDimension() == 2) {
-         drawopt = fHistPresent->fDrawOpt2Dim->Data();
-      }
-      hist->SetOption(drawopt.Data());
-      hist->SetDrawOption(drawopt.Data());
-      pad->Modified();
-   }
-*/
-   fParent->Update();
-}
-//#endif
 //______________________________________________________________________________
 
 void GEdit::InsertPad()
 {
    new InsertPadDialog();
-}
-//______________________________________________________________________________
-
-void GEdit::InsertGraph()
-{
-   fParent->cd();
-   HTPad* pad = GetEmptyPad();
-   if (pad) {
-     gROOT->SetSelectedPad(pad);
-   } else {
-      WarnBox("Please create a new Pad in this Canvas", fRootCanvas);
-      return;
-   }
-//      if ( fParent->GetListOfPrimitives()->Contains(selected)) {
-   static void *valp[25];
-   Int_t ind = 0;
-   TList *row_lab = new TList();
-   static TString fname;
-   static TString gname;
-   static TString goption;
-//   static Int_t select_from_list = 1;
-   static Double_t scale = 1;
-//   if (fHistPresent) goption = fHistPresent->fDrawOptGraph;
-//   else
-   goption = "AL";
-
-   row_lab->Add(new TObjString("StringValue_Name of ROOT file"));
-   valp[ind++] = &fname;
-   row_lab->Add(new TObjString("StringValue_Name of TGraph"));
-   valp[ind++] = &gname;
-//   row_lab->Add(new TObjString("CheckButton_Select graph from Filelist"));
-//   valp[ind++] = &select_from_list;
-   row_lab->Add(new TObjString("DoubleValue_Scale factor for labels titles etc."));
-   valp[ind++] = &scale;
-   row_lab->Add(new TObjString("StringValue_Drawing option"));
-   valp[ind++] = &goption;
-
-   Bool_t ok;
-   Int_t itemwidth = 320;
-
-   ok = GetStringExt("Insert Graph Params", NULL, itemwidth, fRootCanvas,
-                      NULL, NULL, row_lab, valp);
-   if (!ok) return;
-   TGraph* graph = 0;
-/*
-#ifdef MARABOUVERS
-
-   if (select_from_list > 0) {
-      if (!fHistPresent) {
-         cout << "No HistPresent" << endl;
-         return;
-      }
-      if (fHistPresent->fSelectGraph->GetSize() != 1) {
-         WarnBox("Please select exactly 1 graph", fRootCanvas);
-         return;
-      } else {
-         graph = fHistPresent->GetSelGraphAt(0);
-      }
-   } else {
-#endif
-*/
-      if (fname.Length() > 0 && gname.Length()) {
-         TFile * rfile = new TFile(fname.Data());
-         if (!rfile->IsOpen()) {
-            cout << "Cant open file: " << fname.Data() << endl;
-            return;
-         }
-         graph = (TGraph*)rfile->Get(gname.Data());
-         if (!graph) {
-            cout << "Cant find graph: " << gname.Data() << endl;
-            return;
-         }
-      }
-/*
-#ifdef MARABOUVERS
-   }
-#endif
-*/
-   if (!graph) return;
-
-//   graph->Print();
-   pad->cd();
-   if (TMath::Abs(scale -1) > 0.0001) {
-      TAxis * a = graph->GetXaxis();
-      if (a) {
-         a->SetLabelSize( scale * a->GetLabelSize());
-         a->SetTickLength( scale * a->GetTickLength());
-      }
-      a = graph->GetYaxis();
-      if (a) {
-         a->SetLabelSize( scale * a->GetLabelSize());
-         a->SetTickLength( scale * a->GetTickLength());
-      }
-   }
-   graph->Draw(goption.Data());
-   pad->Modified();
-   fParent->Update();
-}
-
-//______________________________________________________________________________
-
-void GEdit::GrabImage()
-{
-   fParent->cd();
-   static void *valp[25];
-   Int_t ind = 0;
-   TList *row_lab = new TList();
-   static Int_t fix_size = 1;
-   static Short_t align    = 11;
-   static Int_t delay    = 1;
-   static Int_t xw = 100;
-   static Int_t yw = 100;
-   static Int_t sernr = 0;
-   static Int_t query_ok = 1;
-   static TString pname;
-   pname = "pict_";
-   pname += sernr;
-   pname += ".gif";
-
-   row_lab->Add(new TObjString("CheckButton_Fixed size"));
-   valp[ind++] = &fix_size;
-   row_lab->Add(new TObjString("AlignSelect_Alignment"));
-   valp[ind++] = &align;
-   row_lab->Add(new TObjString("PlainIntVal_Delay [sec]"));
-   valp[ind++] = &delay;
-   row_lab->Add(new TObjString("PlainIntVal_X Width"));
-   valp[ind++] = &xw;
-   row_lab->Add(new TObjString("PlainIntVal_Y Width"));
-   valp[ind++] = &yw;
-   row_lab->Add(new TObjString("StringValue_Picture name"));
-   valp[ind++] = &pname;
-   row_lab->Add(new TObjString("CheckButton_Ask for ok after grab"));
-   valp[ind++] = &query_ok;
-
-   Int_t itemwidth = 320;
-   Bool_t ok = kFALSE;
-
-   ok = GetStringExt("Grab picture", NULL, itemwidth, fRootCanvas,
-                   NULL, NULL, row_lab, valp);
-   if (!ok) return;
-
-
-   cout << "Mark pick area" << endl;
-
-   TString cmd("xgrabsc -ppm -verbose 1> /dev/null 2> xgrabsc.log");
-   gSystem->Exec(cmd.Data());
-
-   Int_t xleg = 0, yleg = 0, xwg = 0, ywg = 0;
-   ifstream str("xgrabsc.log");
-   TString line;
-   TString number;
-   while (1) {
-      line.ReadLine(str);
-      if(str.eof()) break;
-      if (!line.Contains("bounding box")) continue;
-      Int_t ip;
-      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
-      number = line(0,ip);
-      xleg = number.Atoi();
-
-      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
-      number = line(0,ip);
-      yleg = number.Atoi();
-
-      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
-      number = line(0,ip);
-      xwg = number.Atoi();
-
-      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index("]");
-      number = line(0,ip);
-      ywg = number.Atoi();
-      break;
-   }
-//   str.close();
-   if (xwg == 0 && fix_size == 0) {
-      cout << setred
-      << "Variable width requested, please mark area with Button 1 pressed"
-      << setblack  << endl;
-      return;
-   }
-// alignment
-   if (fix_size != 0) {
-      if        (align%10 == 1) {
-         yleg = yleg + ywg - yw;
-      } else if (align%10 == 2) {
-         yleg = yleg + (ywg - yw) / 2;
-      }
-      if        (align/10 == 3) {
-         xleg = xleg + xwg - xw;
-      } else if (align/10 == 2) {
-         xleg = xleg + (xwg - xw) / 2;
-      }
-      xwg = xw;
-      ywg = yw;
-   }
-   sernr++;
-   cmd = "xgrabsc -ppm -coords ";
-   cmd += xwg; cmd += "x"; cmd += ywg;
-   cmd += "+";  cmd += xleg;
-   cmd += "+"; cmd += yleg;
-   cmd += " | convert - ";
-   cmd += pname.Data();
-   cmd += " &";
-
-   cout << "Cmd: " << cmd << endl;
-   if (delay > 0) {
-      cout << "Waiting " << delay << " seconds before grab" << endl;
-      Int_t wt = 10 * delay;
-      while (wt-- >= 0) {
-         gSystem->ProcessEvents();
-         gSystem->Sleep(100);
-      }
-   }
-   gSystem->Exec(cmd.Data());
-   gSystem->ProcessEvents();
-
-   if (query_ok != 0) {
-      gSystem->Exec(cmd.Data());
-      cmd = "kuickshow ";
-      cmd += pname.Data();
-      cmd += "&";
-      gSystem->Exec(cmd.Data());
-      Bool_t accept = QuestionBox("Is it ok?",fRootCanvas);
-      cmd = "killall kuickshow";
-      gSystem->Exec(cmd.Data());
-      if (!accept) return;
-   }
-   cout << "Mark position where to put (lower left corner)" << endl;
-   TObject * obj = gPad->WaitPrimitive("TMarker");
-
-   if (obj->IsA() == TMarker::Class()) {
-      TMarker * ma = (TMarker*)obj;
-      Double_t x1, y1, x2, y2, xr1, yr1, xr2, yr2;
-      x1 = ma->GetX();
-      y1 = ma->GetY();
-      delete ma;
-      x2 = x1 + fParent->AbsPixeltoX(xwg);
-      y2 = y1 + fParent->AbsPixeltoY(ywg);
-
-      gPad->GetRange(xr1, yr1, xr2, yr2);
-      x1 = (x1 - xr1) / (xr2 - xr1);
-      y1 = (y1 - yr1) / (yr2 - yr1);
-      x2 = x1 + (Double_t) xwg / (Double_t)gPad->GetWw();
-      y2 = y1 + (Double_t) ywg / (Double_t)gPad->GetWh();
-
-      HTPad * pad = new HTPad(pname.Data(), "For HprImage",
-                            x1, y1, x2, y2);
-      pad->Draw();
-      TImage *hprimg = TImage::Open(pname.Data());
-//      HprImage * hprimg = new HprImage(pname.Data(), pad);
-      gROOT->SetSelectedPad(pad);
-      pad->cd();
-      hprimg->Draw("xxx");
-      fParent->cd();
-      fParent->Update();
-   }
-}
-//______________________________________________________________________________
-
-void GEdit::InsertImage()
-{
-   fParent->cd();
-   HTPad* pad = 0;
-   const char hist_file[] = {"images_hist.txt"};
-   Bool_t ok = kFALSE;
-   static TString name;
-   Int_t itemwidth = 320;
-   ofstream hfile(hist_file);
-   const char *fname;
-   void* dirp=gSystem->OpenDirectory(".");
-   TRegexp dotGif = "\\.gif$";
-   TRegexp dotJpg = "\\.jpg$";
-   TRegexp dotPng = "\\.png$";
-   Long_t id, size, flags, modtime;
-   while ( (fname=gSystem->GetDirEntry(dirp)) ) {
-      TString sname(fname);
-      if (!sname.BeginsWith("temp_") &&
-          (sname.Index(dotGif)>0 || sname.Index(dotJpg)>0
-         || sname.Index(dotPng)>0)) {
-         size = 0;
-         gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
-         if (size <= 0)
-            cout << "Warning, empty file: " << fname << endl;
-         else
-            hfile << fname << endl;
-         if (name.Length() < 1) name = fname;
-      }
-   }
-   TList *row_lab = new TList();
-   static void *valp[25];
-   Int_t ind = 0;
-   static Int_t new_pad = 1;
-   static Int_t fix_h = 0;
-   static Int_t fix_w = 1;
-   static Int_t fix_wh = 0;
-   static Int_t offset_x = 0;
-   static Int_t offset_y = 0;
-
-   row_lab->Add(new TObjString("CheckButton_Use a new pad"));
-   valp[ind++] = &new_pad;
-   row_lab->Add(new TObjString("RadioButton_Preserve defined height"));
-   valp[ind++] = &fix_h;
-   row_lab->Add(new TObjString("RadioButton_Preserve defined width"));
-   valp[ind++] = &fix_w;
-   row_lab->Add(new TObjString("RadioButton_Preserve width and height"));
-   valp[ind++] = &fix_wh;
-   row_lab->Add(new TObjString("PlainIntVal_Offset X"));
-   valp[ind++] = &offset_x;
-   row_lab->Add(new TObjString("PlainIntVal_Offset Y"));
-   valp[ind++] = &offset_y;
-
-    ok = GetStringExt("Picture name", &name, itemwidth, fRootCanvas,
-                   hist_file, NULL, row_lab, valp);
-   if (!ok) return;
-
-//   TImage *img = TImage::Open(name.Data());
-   HprImage * hprimg = new HprImage(name.Data(), pad);
-   TImage *img = hprimg->GetImage();
-   if (!img) {
-      cout << "Could not create an image... exit" << endl;
-      return;
-   }
-   Double_t img_width = (Double_t )img->GetWidth();
-   Double_t img_height = (Double_t )img->GetHeight();
-
-   if (new_pad) {
-      pad = GetEmptyPad();
-      pad = (HTPad*)gPad;
-      if (pad) {
-         gROOT->SetSelectedPad(pad);
-   		Double_t aspect_ratio = img_height * fParent->GetXsizeReal()
-                        		/ (img_width* fParent->GetYsizeReal());
-
-   		if (fix_w) {
-      		pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
-                  		pad->GetXlowNDC() + pad->GetWNDC(),
-                  		pad->GetYlowNDC() + pad->GetWNDC() * aspect_ratio);
-   		} else if (fix_h) {
-      		pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
-                  		pad->GetXlowNDC() + pad->GetHNDC() / aspect_ratio,
-                  		pad->GetYlowNDC() + pad->GetHNDC());
-   		}
-
-//   		pad->SetTopMargin(.0);
-//   		pad->SetBottomMargin(0.0);
-//   		pad->SetLeftMargin(0.0);
-//   		pad->SetRightMargin(0.0);
-//
-//         pad->Range(0,0, (GetUxmax() - GetUxmin())* pad->GetWNDC()
-//                       , (GetUymax() - GetUymin())* pad->GetHNDC());
-
-      } else {
-         WarnBox("Please create a new Pad in this Canvas", fRootCanvas);
-         return;
-      }
-   }
-
-   cout << "InsertImage(): " <<  gPad->GetXlowNDC() << " " << gPad->GetYlowNDC() << " "
-        <<  gPad->GetWNDC()    << " " << gPad->GetHNDC()    << endl;
-   cout << "Image size, X,Y: " << img_width
-                        << " " << img_height << endl;
-   img->SetConstRatio(kTRUE);
-   img->SetEditable(kTRUE);
-   img->SetImageQuality(TAttImage::kImgBest);
-   TString drawopt;
-   if (offset_x == 0 && offset_y == 0) {
-      drawopt= "xxx";
-   } else {
-      drawopt = "T";
-      drawopt += offset_x;
-      drawopt += ",";
-      drawopt += offset_x;
-      drawopt += ",#ffffff";
-   }
-//   cout << drawopt << endl;
-   hprimg->Draw(drawopt);
-//   img->Draw(drawopt);
-//   hprimg->Paint();
-//   if(pad) pad->Range(0,0, (GetUxmax() - GetUxmin())* pad->GetWNDC()
-//                       , (GetUymax() - GetUymin())* pad->GetHNDC());
-//   img->Pop();
-   fParent->Update();
 }
 
 //______________________________________________________________________________

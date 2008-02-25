@@ -41,6 +41,7 @@
 #pragma link C++ class THprPolyLine;
 #pragma link C++ class THprArrow;
 #pragma link C++ class THprMarker;
+#pragma link C++ class THprGaxis;
 #pragma link C++ class THprGraph;
 #pragma link C++ class THprLatex;
 #pragma link C++ class HTPad;
@@ -50,4 +51,8 @@
 #pragma link C++ class CurlyLineWithArrowDialog;
 #pragma link C++ class MarkerLineDialog;
 #pragma link C++ class HprPlaneManager;
+#pragma link C++ class InsertImageDialog;
+#pragma link C++ class InsertHistGraphDialog;
+#pragma link C++ class InsertAxisDialog;
+#pragma link C++ class XGrabDialog;
 #endif

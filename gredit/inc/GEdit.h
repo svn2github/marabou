@@ -118,19 +118,14 @@ public:
    void    DrawControlGraphs();
    void    SetVisibilityOfEnclosingCuts(Bool_t visible);
 
-//#ifdef MARABOUVERS
-   void    InsertHist();
-//#endif
    void    InsertArc();
-   void    InsertGraph();
    void    InsertPad();
-   void    GrabImage();
-   void    InsertImage();
    void    InsertAxis();
    void    InsertCurlyArrow();
    void    FeynmanDiagMenu();
    void    InsertTSplineX();
    void    WritePrimitives();
+   static void RestoreAxisAtts(TPad * pad);
    void    DefineBox();
    void    DefinePolygone();
    Int_t   ExtractGObjectsE();
@@ -147,7 +142,7 @@ public:
    void    InsertTextF(){InsertText(kTRUE);};
    void    InsertTextK(){InsertText(kFALSE);};
    void    InsertFunction();
-   HTPad*   GetEmptyPad();
+   static  HTPad*   GetEmptyPad();
    void    WarnBox(const Char_t *text, TRootCanvas *win = NULL);
    Bool_t  QuestionBox(const Char_t *text, TRootCanvas *win = NULL);
    void    ZoomIn();

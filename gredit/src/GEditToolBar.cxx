@@ -7,12 +7,15 @@
 #include "TDialogCanvas.h"
 #include "TGMrbInputDialog.h"
 #include "InsertArcDialog.h"
+#include "InsertAxisDialog.h"
 #include "InsertTextBoxDialog.h"
 #include "InsertPadDialog.h"
 #include "InsertTextDialog.h"
 #include "ChangeTextDialog.h"
 #include "TSplineXDialog.h"
 #include "InsertFunctionDialog.h"
+#include "InsertImageDialog.h"
+#include "InsertHistGraphDialog.h"
 #include "FeynmanDiagramDialog.h"
 #include "CurlyLineWithArrowDialog.h"
 #include "MarkerLineDialog.h"
@@ -24,10 +27,12 @@ enum ERootCanvasCommands {
    kToolDiamond,
    kToolEllipse,
    kToolPolyLine,
+   kToolAxis,
    kToolTSplineX,
    kToolPad,
    kToolPave,
    kToolGraph,
+   kToolHist,
    kToolCurlyLine,
    kToolCurlyLineArrow,
    kToolLatex,
@@ -65,6 +70,7 @@ static ToolBarData_t gHprToolBarData1[] = {
    { "marker.xpm",     "Marker",           kFALSE,    kToolMarker,     0 },
    { "ellipse.xpm",    "Circle / Arc / Ellipse",    kFALSE,    kToolEllipse,    0 },
    { "graph.xpm",      "Polyline",         kFALSE,    kToolPolyLine,   0 },
+   { "gaxis.xpm",      "Axis",             kFALSE,    kToolAxis,   0 },
    { "curlyline.xpm",  "Feynman Diagram",  kFALSE,    kToolCurlyLine,  0 },
    { "curlyline_arrow.xpm","Curlyline with Arrow",  kFALSE,    kToolCurlyLineArrow,  0 },
    { "tsplinex.xpm",   "TSplineX",         kFALSE,    kToolTSplineX,  0 },
@@ -72,6 +78,7 @@ static ToolBarData_t gHprToolBarData1[] = {
    { "pave.xpm",       "TextBox",          kFALSE,    kToolPave,       0 },
    { "latex_keyboard.xpm", "Text/Latex form keyboard", kFALSE,  kToolLatex, 0 },
    { "latex_file.xpm",     "Text/Latex from file",    kFALSE,  kToolLatexFile,0 },
+   { "h1_t.xpm",     "Histogram from file",           kFALSE,  kToolHist,      0 },
    { "graph_file.xpm",     "Graph from file",         kFALSE,  kToolGraph,      0 },
    { "function.xpm",       "Function",                kFALSE,  kToolFunction,0 },
    { "picture.xpm",        "Picture, JPEG, GIF, PNG", kFALSE,  kToolPicture,0 },
@@ -240,6 +247,9 @@ Bool_t GEdit::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kToolLine:
                     new MarkerLineDialog();
                      break;
+                  case kToolAxis:
+                    new InsertAxisDialog();
+                     break;
                   case kToolPolyLine:
                     new MarkerLineDialog();
                      break;
@@ -263,10 +273,14 @@ Bool_t GEdit::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
 //                  case kToolPsText:
 //                     gROOT->SetEditorMode("PavesText");
                      break;
-                  case kToolGraph:
-                     InsertGraph();
+                  case kToolHist:
+                     new InsertHistGraphDialog(0);
                      break;
-                  case kToolTSplineX:
+                   case kToolGraph:
+                     new InsertHistGraphDialog(1);
+//                     InsertGraph();
+                     break;
+                 case kToolTSplineX:
                      new TSplineXDialog();
                      break;
                   case kToolCurlyLine:
@@ -285,8 +299,9 @@ Bool_t GEdit::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      new InsertFunctionDialog();
                      break;
                   case kToolPicture:
-                     InsertImage();
-                     break;
+                     new InsertImageDialog();
+//                     InsertImage();
+                    break;
 //                  case kToolMarker:
 //                     gROOT->SetEditorMode("Marker");
 //                     break;
