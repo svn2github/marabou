@@ -122,9 +122,10 @@ The procedure to use previously fitted peaks is as follows:\n\
 	fAutoSelectDialog = NULL;
    fCalHist = NULL;
    fCalFunc = NULL;
-	fCalValCanvas = NULL;  
+	fCalValCanvas = NULL;
 	fScanCanvas = NULL;
 	fEffCanvas = NULL;
+   fUpdatePeakListDone = 0;
 
    Int_t maxPeaks = FindNumberOfPeaks();
    if (maxPeaks <= 0) {
@@ -146,7 +147,7 @@ The procedure to use previously fitted peaks is as follows:\n\
    fAutoAssigned = 0;
    fParentWindow =  NULL;
    fSelPad = gPad;
-   cout << "fSelPad " <<  fSelPad << endl;
+//   cout << "fSelPad " <<  fSelPad << endl;
    if (fSelPad == NULL) {
      cout << "gPad = 0!!" <<  endl;
    } else {
@@ -425,7 +426,7 @@ Int_t CalibrationDialog::ReadGaugeFile()
 
 		val = ((TObjString*)oa->At(1))->String();
 //       cout << "val " << val<< endl;
-      
+
 		if (!val.IsFloat()) {
 			cout << "Illegal double: " << val << " at line: " << n+1 << endl;
 			return 0;
@@ -576,11 +577,11 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    for (Int_t i = 0; i < fNpeaks; i++)
       fAssigned[i] = 0;
    for (Int_t i = 0; i < fGaugeNpeaks; i++)
-      fSetFlag[i] = 0;
+      fSetFlag[i] = -1;
 // find max content
    Double_t maxcont = 0, maxpos = 0;
 	for (Int_t i = 0; i < fNpeaks; i++) {
-	   if (fCont[i] > maxcont) {
+	   if (fUse[i] > 0  && fCont[i] > maxcont) {
          maxcont = fCont[i];
          maxpos  = fX[i];
       }
@@ -591,7 +592,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    }
    Int_t ngood = 0;
    for (Int_t i = 0; i < fNpeaks; i++) {
-      if (fCont[i] > maxcont * fContThresh) ngood++;
+      if (fUse[i] > 0  && fCont[i] > maxcont * fContThresh) ngood++;
    }
    if (ngood <= 1) {
       cout << setred << "Only 1 peak left after threshold check: "
@@ -620,7 +621,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 			for (Int_t i = 0; i < fGaugeNpeaks; i++)
 				htest->Fill(fGaugeEnergy[i]);
 			for (Int_t i = 0; i < fNpeaks; i++) {
-            if (fCont[i] >= maxcont * fContThresh) {
+            if (fUse[i] > 0  && fCont[i] >= maxcont * fContThresh) {
 				   Double_t e = off + gain*fX[i];
 				   htest->Fill(e);
             }
@@ -648,31 +649,33 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
       cout << " No or only 1 match found, you might need to lower Nbins in testbed histogram" << endl;
       return kFALSE;
    }
-   std::cout << "Best match: Hits, offset, gain " <<  best << " " << best_off << " " << best_gain<< std::endl;
-   if (fVerbose)
-      cout << "Checking for ambiguities (should be 1 line only)" << endl;
+   if (fVerbose) {
+      std::cout << "Best match: Hits, offset, gain " <<  best << " " << best_off << " " << best_gain<< std::endl;
+//      cout << "Checking for ambiguities (should be 1 line only)" << endl;
+   }
    Int_t namb = 0;
    for (Int_t io = 1; io <= hscan->GetNbinsX(); io++) {
       for (Int_t ig = 1; ig <= hscan->GetNbinsY(); ig++) {
          Int_t ic = (Int_t)hscan->GetCellContent(io, ig);
          if (ic == best) {
             if (fVerbose && namb > 1)
-              printf("At Offset, gain: %10.4f %10.4f found: %2d matches\n",
+              printf("Ambiguous: at Offset, gain: %10.4f %10.4f found: %2d matches\n",
                    hscan->GetXaxis()->GetBinCenter(io),
                    hscan->GetYaxis()->GetBinCenter(ig), best);
             namb++;
          }
       }
    }
-   if (namb > 1)
+   if (fVerbose && namb > 1) {
       cout << "Warning: " << namb -1  << " ambiguities found " << endl;
-   cout << "-------------------------------------------" << endl;
+      cout << "-------------------------------------------" << endl;
+   }
    Double_t max_cont_ass = 0;
    Int_t nassigned = 0;
    fSelPad->cd();
    for (Int_t i = 0; i < fNpeaks; i++) {
       fAssigned[i] = -1;
-      if (fCont[i] < maxcont * fContThresh) {
+      if (fUse[i] > 0  && fCont[i] < maxcont * fContThresh) {
          if (fVerbose)
             cout << "Discard too small peak at: " << fX[i]
                  << " Cont: " << fCont[i] << endl;
@@ -695,38 +698,68 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
          if (fVerbose)
            printf(" accepted %3d\n", best);
          fAssigned[i] = best;
+         if ( fSetFlag[best] >= 0 ) {
+            Int_t which_ass = -1;
+            for (Int_t k = 0; k < i; k++) {
+               if (fAssigned[k] == best)
+                  which_ass = k;
+            }
+            cout << setred << "When assigning peak at: " << fX[i] << endl;
+            cout << "Warning: Calibration peak "
+                 << fGaugeEnergy[best] <<  " already assigned to "
+                 << fX[which_ass] << endl;
+            cout << "You should decrease \"Accept Limit\" now at: "
+                 << fAccept << endl;
+            e = best_off + best_gain*fX[i];
+            Double_t epr  = best_off + best_gain*fX[which_ass];
+
+            if ( TMath::Abs(e - fGaugeEnergy[best]) <
+               ( TMath::Abs(epr - fGaugeEnergy[best]))) {
+               fAssigned[which_ass] = -1;
+               cout << "Remove assignment from " << fX[which_ass] << endl;
+            } else {
+               cout << "Keep assignment for " << fX[which_ass] << endl;
+               continue;
+            }
+            cout << setblack << endl;
+         }
          fSetFlag[best] = 1;
-         if (fCont[i] > max_cont_ass)
+         if (fUse[i] > 0  && fCont[i] > max_cont_ass)
             max_cont_ass = fCont[i];
          nassigned++;
-         Int_t bin = fSelHist->FindBin(fX[i]);
-         Double_t yv = fSelHist->GetBinContent(bin);
-         Double_t yr = fSelHist->GetMaximum();
-         Double_t xr = fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetLast())
-                     - fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetFirst());
-         TLine * l = new TLine(fX[i] + 0.025 * xr, yv + 0.025*yr, fX[i], yv);
-         l->SetLineWidth(2);
-         l->Draw();
 
-         TString t;
-         TObjString *gn = (TObjString*)fGaugeName.At(best);
-         t = gn->String();
-
-         Int_t ie = (Int_t) fGaugeEnergy[best];
-         t +=  "(";
-         t += ie;
-         t += ")";
-         TLatex latex;
-         latex.SetTextSize(0.02);
-         latex.SetTextColor(kBlue);
-         latex.DrawLatex(fX[i] + 0.025 * xr, yv + 0.025*yr, t);
-         gPad->Modified();
-         gPad->Update();
       } else {
          if (fVerbose)
             printf("\n");
       }
    }
+	for (Int_t i = 0; i < fNpeaks; i++) {
+		best = fAssigned[i];
+		if ( best < 0 ) continue;
+		Int_t bin = fSelHist->FindBin(fX[i]);
+		Double_t yv = fSelHist->GetBinContent(bin);
+		Double_t yr = fSelHist->GetMaximum();
+		Double_t xr = fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetLast())
+						- fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetFirst());
+		TLine * l = new TLine(fX[i] + 0.025 * xr, yv + 0.025*yr, fX[i], yv);
+		l->SetLineWidth(2);
+		l->Draw();
+
+		TString t;
+		TObjString *gn = (TObjString*)fGaugeName.At(best);
+		t = gn->String();
+
+		Int_t ie = (Int_t) fGaugeEnergy[best];
+		t +=  "(";
+		t += ie;
+		t += ")";
+		TLatex latex;
+		latex.SetTextSize(0.02);
+		latex.SetTextColor(kBlue);
+		latex.DrawLatex(fX[i] + 0.025 * xr, yv + 0.025*yr, t);
+		gPad->Modified();
+		gPad->Update();
+	}
    TIter next(&fPeakList);
    FhPeak * p;
    Int_t np = 0;
@@ -807,7 +840,7 @@ void CalibrationDialog::SetValues()
          nusp++;
    }
    for (Int_t i = 0; i < fGaugeNpeaks; i++) {
-      if (fSetFlag[i] !=0 ) 
+      if (fSetFlag[i] !=0 )
          nug++;
    }
    Int_t ngauge = 0;
@@ -821,13 +854,13 @@ void CalibrationDialog::SetValues()
                <<setblack << endl << "Used peaks in spectrum: " << nusp
                << " Used gauge peaks: " << nug << endl;
                return;
-            } 
-         } 
+            }
+         }
 			fY[i]=  fGaugeEnergy[ngauge];
 			fYE[i] = Sc_EnError[ngauge];
          p->SetNominalEnergy(fY[i]);
          p->SetNominalEnergyError(fYE[i]);
-			cout << "SetValues() fX[" << i << "] = " << fX[i] 
+			cout << "SetValues() fX[" << i << "] = " << fX[i]
 				<< "fY[" << i << "] = " << fY[i]<< endl;
 			ngauge++;
       }
@@ -917,10 +950,22 @@ Note: As default the last entry is selected\n\
    static TString nvcmd("SetValues()");
    static void *valp[100];
    Int_t ind = 0;
+   static Double_t dummy = 1;
+   static Double_t dummy1 = 2;
+   static Double_t dummy2 = 3;
+   static TString  dummy4;
    static TString gfcmd("ExecuteGetFunction()");
 
    row_lab->Add(new TObjString("FileContReq_File name"));
    valp[ind++] = &fFuncFromFile;
+//   valp[ind++] = &dummy4;
+
+   row_lab->Add(new TObjString("DoubleValue_dummy"));
+   valp[ind++] = &dummy;
+   row_lab->Add(new TObjString("DoubleValue_dummy1"));
+   valp[ind++] = &dummy1;
+   row_lab->Add(new TObjString("DoubleValue_dummy2"));
+   valp[ind++] = &dummy2;
    row_lab->Add(new TObjString("CommandButt_Read function"));
    valp[ind++] = &gfcmd;
    Int_t itemwidth = 300;
@@ -1076,8 +1121,11 @@ void CalibrationDialog::FillCalibratedHist()
 
 TList * CalibrationDialog::UpdatePeakList()
 {
-//   Int_t npeaks = 0;
-   cout << "UpdatePeakList: # of functions: " <<
+//   Int_t npeaks = 0
+   if ( fUpdatePeakListDone > 0 )
+       return &fPeakList;
+   if ( fVerbose )
+      cout << "UpdatePeakList: # of functions: " <<
    fSelHist->GetListOfFunctions()->GetSize() << endl;
    TIter next(fSelHist->GetListOfFunctions());
    TObject *obj;
@@ -1169,8 +1217,9 @@ TList * CalibrationDialog::UpdatePeakList()
       cout << "UpdatePeakList:  ReloadValues" << endl;
       EnableDialogs();
    }
-   cout << "UpdatePeakList: # of peaks: " << fNpeaks << endl;
-
+   if ( fVerbose )
+      cout << "UpdatePeakList: # of peaks: " << fNpeaks << endl;
+   fUpdatePeakListDone = 1;
    return &fPeakList;
 }
 //_______________________________________________________________________
@@ -1195,7 +1244,8 @@ Int_t CalibrationDialog::FindNumberOfPeaks()
 			}
 		}
 	}
-   cout << "Found " << npeaks << " peaks with Ga_Mean" << endl;
+   if ( fVerbose )
+      cout << "Found " << npeaks << " peaks with Ga_Mean" << endl;
 	return npeaks;
 }
 //_______________________________________________________________________
@@ -1242,7 +1292,7 @@ void CalibrationDialog::RestoreDefaults()
 
 void CalibrationDialog::SaveDefaults()
 {
-   cout << "CalibrationDialog:: SaveDefaults() kEnvLocal" << endl;
+//   cout << "CalibrationDialog:: SaveDefaults() kEnvLocal" << endl;
    TEnv env(".hprrc");
    env.SetValue("CalibrationDialog.BinsX", fCalibratedNbinsX);
    env.SetValue("CalibrationDialog.fCalibratedXlow", fCalibratedXlow);
@@ -1275,7 +1325,7 @@ CalibrationDialog::~CalibrationDialog()
 {
    gROOT->GetListOfCleanups()->Remove(this);
    if ( fCalValCanvas )
-		delete fCalValCanvas;  
+		delete fCalValCanvas;
    if ( fScanCanvas )
 		delete fScanCanvas;
    if ( fEffCanvas )
@@ -1288,20 +1338,20 @@ CalibrationDialog::~CalibrationDialog()
 //__________________________________________________________________________
 
 void CalibrationDialog::RecursiveRemove(TObject * obj)
-{  
+{
 //    cout << "CalibrationDialog::RecursiveRemove " << obj << endl;
-   if (obj == fSelPad) { 
+   if (obj == fSelPad) {
 //      cout << "FindPeakDialog: CloseDialog "  << endl;
-      CloseDialog(); 
+      CloseDialog();
    }
-   if (obj == fDialog) 
+   if (obj == fDialog)
       fDialog = NULL;
-   if (obj == fDialogSetNominal) 
+   if (obj == fDialogSetNominal)
       fDialogSetNominal = NULL;
    if (obj == fAutoSelectDialog)
       fAutoSelectDialog = NULL;
    if ( obj == fCalValCanvas )
-		fCalValCanvas = NULL;  
+		fCalValCanvas = NULL;
    if ( obj == fScanCanvas )
 		fScanCanvas = NULL;
    if ( obj == fEffCanvas )
@@ -1313,7 +1363,7 @@ void CalibrationDialog::CloseDialog()
 {
 //   cout << "CalibrationDialog::CloseDialog() " << endl;
    gROOT->GetListOfCleanups()->Remove(this);
-   fDialog->CloseWindowExt();
+   if ( fDialog ) fDialog->CloseWindowExt();
    delete this;
 
 }

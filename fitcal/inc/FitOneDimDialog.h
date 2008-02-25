@@ -14,7 +14,7 @@
 class FitOneDimDialog : public TObject {
 
 private:
-   TRootCanvas* fParentWindow; 
+   TRootCanvas* fParentWindow;
    TGMrbValuesAndText *fDialog;
    TString fFuncName;
    Int_t   fFuncNumber;
@@ -65,14 +65,14 @@ private:
    Int_t fFormFixD;
    Int_t fFormFixE;
    Int_t fFormFixF;
-  
+
    Int_t    fAdded;
    Double_t fLinBgConst;
    Double_t fLinBgSlope;
    Bool_t   fLinBgSet;
    Int_t fUseoldpars;        // use parameters of previous fit
    Int_t fUsedbg;            // use prederminated linear background
-   Int_t fNpeaks;            // number peaks used 
+   Int_t fNpeaks;            // number peaks used
    Int_t fReqNmarks;
    Int_t fNmarks;
    Int_t fNevents;
@@ -80,25 +80,32 @@ private:
    Bool_t fFitPeakListDone;
    Int_t fAutoClearMarks;    // Clear marks after fit
 // The following parameters should be set with "FitPeakList"
-   Int_t    fInteractive;    // Run interactivly, ie. really present dialog widgets 
+   Int_t    fInteractive;    // Run interactivly, ie. really present dialog widgets
    Double_t fPeakSep;        // if peaks are closer (unit of sigma) they are fitted together
    Double_t fFitWindow;      // Fit window: peak pos += fFitWindow
    Int_t fBackg0;            // Force background = 0
    Int_t fSlope0;            // Force background slope = 0 (use constant background)
    Int_t fOnesig;            // Use same sigma for all peaks ( if fittted together)
-   Int_t fLowtail;           // Use low tail 
-   Int_t fHightail;          // Use high tail 
+   Int_t fLowtail;           // Use low tail
+   Int_t fHightail;          // Use high tail
    Int_t fShowcof;           // Display components of fit
    Int_t fConfirmStartValues;// Present a widget with start values before fitting
    Int_t fPrintStartValues;  // Print start values
    Int_t fFitOptLikelihood;  // Use Likelihood method (default chi2)
    Int_t fFitOptQuiet;       // Suppress printout during fitting
-   Int_t fFitOptVerbose;     // Verbose printout during fitting 
+   Int_t fFitOptOneLine;     // One line / peak
+    Int_t fFitOptVerbose;     // Verbose printout during fitting
    Int_t fFitOptMinos;       // Use minos to improve fit after migrad
    Int_t fFitOptErrors1;     // Set all errors to 1`
    Int_t fFitOptIntegral;    // Use integral of bin
    Int_t fFitOptNoDraw;      // dont draw fit result
    Int_t fFitPrintCovariance;// Print Correlation matrix (normalized covariance)
+   Int_t   fNpeaksList;
+   Int_t   fNpeaksListIndex;
+   TArrayD fConstantList;
+   TArrayD fMeanList;
+   TArrayD fSigmaList;
+   TArrayD fChi2List;
 
 public:
    FitOneDimDialog(TH1 * hist, Int_t type = 1, Int_t interactive = 1);
@@ -115,7 +122,8 @@ public:
    void FitPolExecute();
    void DrawPolExecute();
    void PolExecute(Int_t draw_only = 0);
-   void PrintCorrelation(); 
+   void PrintCorrelation();
+   void AddPeaktoList(TF1 *func);
    void FitFormExecute();
    void DrawFormExecute();
    void FormExecute(Int_t draw_only = 0);
@@ -124,9 +132,9 @@ public:
 //   void AddToCalibration();
    void SetFitOptions(){};
    Int_t GetMaxBin(TH1 * h1, Int_t binl, Int_t binu);
-   void GetGaussEstimate(TH1 *h, Double_t from, Double_t to,  
+   void GetGaussEstimate(TH1 *h, Double_t from, Double_t to,
                          Double_t bg,TArrayD & par);
-   void GetGaussEstimate(TGraph *g, Double_t from, Double_t to,  
+   void GetGaussEstimate(TGraph *g, Double_t from, Double_t to,
                          Double_t bg,TArrayD & par);
    void DetLinearBackground();
    Int_t GetMarkers();
@@ -160,6 +168,7 @@ public:
    void SetConfirmStartValues( Int_t confirmstartvalues) { fConfirmStartValues = confirmstartvalues; };
    void SetFitOptLikelihood( Int_t fitoptlikelihood) { fFitOptLikelihood = fitoptlikelihood; };
    void SetFitOptQuiet( Int_t fitoptquiet) { fFitOptQuiet = fitoptquiet; };
+   void SetFitOptOneLine( Int_t val) {fFitOptOneLine  = val; };
    void SetFitOptVerbose( Int_t fitoptverbose) { fFitOptVerbose = fitoptverbose; };
    void SetFitOptMinos( Int_t fitoptminos) { fFitOptMinos = fitoptminos; };
    void SetFitOptErrors1( Int_t fitopterrors1) { fFitOptErrors1 = fitopterrors1; };
@@ -167,7 +176,7 @@ public:
    void SetFitOptNoDraw( Int_t fitoptnodraw) { fFitOptNoDraw = fitoptnodraw; };
    void SetFitOptAddAll( Int_t fitoptaddall) { fFitOptAddAll = fitoptaddall; };
    void SetFitPrintCovariance( Int_t fitprintcovariance) { fFitPrintCovariance = fitprintcovariance; };
-// 
+//
    Double_t GetPeakSep() { return fPeakSep; };
    Double_t GetFitWindow() { return fFitWindow; };
    Int_t GetUseoldpars() { return fUseoldpars; };
@@ -186,6 +195,7 @@ public:
    Int_t GetConfirmStartValues() { return fConfirmStartValues; };
    Int_t GetFitOptLikelihood() { return fFitOptLikelihood; };
    Int_t GetFitOptQuiet() { return fFitOptQuiet; };
+   Int_t GetFitOptOneLine() {return fFitOptOneLine; };
    Int_t GetFitOptVerbose() { return fFitOptVerbose; };
    Int_t GetFitOptMinos() { return fFitOptMinos; };
    Int_t GetFitOptErrors1() { return fFitOptErrors1; };

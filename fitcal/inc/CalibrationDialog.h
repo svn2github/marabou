@@ -24,7 +24,7 @@ private:
 #ifdef MARABOUVERS
    HistPresent *fHistPresent;
 #endif
-   TRootCanvas        *fParentWindow; 
+   TRootCanvas        *fParentWindow;
    TGMrbValuesAndText *fDialog;
    TGMrbValuesAndText *fDialogSetNominal;
    TGMrbValuesAndText *fAutoSelectDialog;
@@ -54,8 +54,8 @@ private:
    TArrayD  fGaugeEnergy;
    TArrayD  fGaugeError;
    TArrayD  fGaugeIntensity;
-   Int_t    fAutoAssigned;  
-   
+   Int_t    fAutoAssigned;
+
    Int_t    fInteractive;     // Flag for user interaction, 0: no Dialog
    Int_t    fVerbose;         // Verbose printout
    Int_t    fCalibratedNbinsX;// Params for calibrated histogram, Nbins
@@ -77,7 +77,7 @@ private:
    Double_t fOffStep;         // Step size for offset for scanning
    Double_t fContThresh;      // Threshol on peak content relative to max
    Double_t fAccept;          // Acceptance limit: Abs (gauge - measured)
-
+   Int_t    fUpdatePeakListDone;
 public:
    CalibrationDialog(TH1 * hist, Int_t interactive = 1);
    virtual ~CalibrationDialog();
