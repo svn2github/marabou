@@ -244,7 +244,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    if (env.GetValue("HistPresent.FitOptKeepPar", 0) != 0)fKeepParameters  = kTRUE;
    else                                                  fKeepParameters = kFALSE;
    fOldMode = -1;
-   fColSuperimpose = 2;
+   fColSuperimpose = 1;
    fMax = hist->GetMaximum();
    fMin = hist->GetMinimum();
    fXmin = hist->GetXaxis()->GetXmin();
@@ -1733,7 +1733,7 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
 
    if (!is2dim(fSelHist)) {
       for (Int_t i = nbx1; i <= nbx2; i++) {
-         if (bincenters && suppress_zeros && 
+         if (bincenters && suppress_zeros &&
              fSelHist->GetBinContent(i)  == 0) continue;
          if (channels)
             outfile << i << "\t";
@@ -2238,6 +2238,17 @@ void FitHist::GetRange()
    if (!hist)
       return;
 
+   fSelHist->GetXaxis()->SetRange(hist->GetXaxis()->GetFirst(),
+                                  hist->GetXaxis()->GetLast());
+   if ( fSelHist->GetDimension() > 1 )
+      fSelHist->GetYaxis()->SetRange(hist->GetYaxis()->GetFirst(),
+                                     hist->GetYaxis()->GetLast());
+   if ( fSelHist->GetDimension() > 2 )
+      fSelHist->GetZaxis()->SetRange(hist->GetZaxis()->GetFirst(),
+                                     hist->GetZaxis()->GetLast());
+   cHist->Modified();
+   cHist->Update();
+/*
    Axis_t xold, yold;
    xold = hist->GetXaxis()->GetXmin();
    if (is2dim(hist))
@@ -2265,6 +2276,7 @@ void FitHist::GetRange()
    }
    fMarkers->Add(new FhMarker(xold, yold, 2));
    Expand();
+*/
 }
 
 //____________________________________________________________________________________
@@ -2298,105 +2310,104 @@ void FitHist::Superimpose(Int_t mode)
          return;
       }
       hist = hp->GetSelHistAt(0);
-   } else
+   } else {
       hist = GetOneHist();      // look in memory
-//   if(hist){
-//      hist->SetLineColor(fColSuperimpose);
-//      cHist->cd();
-//      hist->DrawCopy("same");
-//      cHist->Update();
-//      return;
-//   }
-   if (hist) {
-      if (hist->GetDimension() != fSelHist->GetDimension()) {
-         WarnBox("Dimensions of histograms differ");
-         return;
-      }
-
-      TGaxis *naxis = 0;
-      TH1 *hdisp = hist;
-      if (mode == 1 && !is2dim(fSelHist)) {	// scale
-         cout << "!!!!!!!!!!!!!!!!" << endl;
-         Stat_t maxy = 0;
-         if (fSelHist->GetXaxis()->GetNbins() != hist->GetXaxis()->GetNbins()) {
-//  case expanded histogram
-            Axis_t x, xmin, xmax;
-            xmin = fSelHist->GetXaxis()->GetXmin();
-            xmax = fSelHist->GetXaxis()->GetXmax();
-            for (Int_t i = 1; i <= hist->GetXaxis()->GetNbins(); i++) {
-               x = hist->GetBinCenter(i);
-               if (x >= xmin && x < xmax && hist->GetBinContent(i) > maxy)
-                  maxy = hist->GetBinContent(i);
-            }
-         } else {
-//  case zoomed histogram
-            for (Int_t i = fSelHist->GetXaxis()->GetFirst();
-                    i <= fSelHist->GetXaxis()->GetLast();
-                    i++) {
-                if (hist->GetBinContent(i) > maxy)
-                  maxy = hist->GetBinContent(i);
-            }
-
-         }
-         if (fSelHist->GetMaximum() > 0 && maxy > 0) {
-            hdisp = (TH1 *) hist->Clone();
-            TString name = hdisp->GetName();
-            name += "_scaled";
-            hdisp->SetName(name.Data());
-            Float_t sf = fSelHist->GetMaximum() / maxy;
-            cout << "Scale " << hdisp->GetName() << " by " << sf << endl;
-            hdisp->Scale(sf);
-            for (Int_t i = 1; i <= hist->GetNbinsX(); i++) {
-               hdisp->SetBinError(i, sf * hist->GetBinError(i));
-            }
-            cout << "Superimpose: Scale errors linearly" << endl;
-            naxis = new TGaxis(fSelHist->GetXaxis()->GetXmax(),
-                               fSelHist->GetYaxis()->GetXmin(),
-                               fSelHist->GetXaxis()->GetXmax(),
-                               fSelHist->GetMaximum(),
-                               hist->GetYaxis()->GetXmin(), maxy, 510,
-                               "+");
-            naxis->SetLabelOffset(0.05);
-         }
-      }
-      hdisp->SetLineColor(fColSuperimpose);
-      cHist->cd();
-      TString drawopt = fSelHist->GetDrawOption();
-      if (!drawopt.Contains("E", TString::kIgnoreCase))
-         drawopt += "hist";
-      drawopt += "SAME";
- //     drawopt += "same";
-//      cout << "drawopt |" << drawopt << "|" << endl;
-//      fSelHist->DrawCopy(drawopt.Data());
-//      TH1* hnew =  (TH1*)hdisp->Clone();
-        hdisp->DrawCopy(drawopt.Data());
-//      hcop->SetDrawOption(drawopt.Data());
-//      hcop->SetOption(drawopt.Data());
-//      hdisp->GetXaxis()->SetName("xaxis");
-      Float_t x1 = 0.2;
-      Float_t x2 = 0.3;
-      Float_t y1 = 1 - 0.05 * fColSuperimpose;
-      Float_t y2 = y1 + 0.05;
-
-      tname = new TPaveLabel(x1, y1, x2, y2, hdisp->GetName(), "NDC");
-//      tname->SetNDC(kTRUE);
-      tname->SetFillColor(0);
-      tname->SetTextColor(fColSuperimpose);
-      tname->Draw();
-
-      if (naxis) {
-         naxis->Draw();
-         naxis->SetLineColor(fColSuperimpose);
-         naxis->SetTextColor(fColSuperimpose);
-      }
-      fColSuperimpose += 1;
-      if (fColSuperimpose > 7)
-         fColSuperimpose = 2;
-      cHist->Update();
-      //     return;
-
-   } else
+   }
+   if ( !hist ) {
       WarnBox("No hist selected");
+      return;
+   }
+	if (hist->GetDimension() != fSelHist->GetDimension()) {
+		WarnBox("Dimensions of histograms differ");
+		return;
+	}
+   if ( hist->GetDimension() == 3 ) {
+      if ( hist->GetMarkerColor() <= 1 ) {
+      	fColSuperimpose += 1;
+       	if ( fColSuperimpose > 7 )
+		      fColSuperimpose = 2;
+         hist->SetMarkerColor(fColSuperimpose);
+      }
+   } else if ( hist->GetDimension() == 1 ) {
+      if ( hist->GetLineColor() <= 1 ) {
+      	fColSuperimpose += 1;
+       	if (fColSuperimpose > 7)
+		      fColSuperimpose = 2;
+      }
+   }
+
+	TGaxis *naxis = 0;
+	TH1 *hdisp = hist;
+	if (mode == 1 && !is2dim(fSelHist)) {	// scale
+		cout << "!!!!!!!!!!!!!!!!" << endl;
+		Stat_t maxy = 0;
+		if (fSelHist->GetXaxis()->GetNbins() != hist->GetXaxis()->GetNbins()) {
+//  case expanded histogram
+			Axis_t x, xmin, xmax;
+			xmin = fSelHist->GetXaxis()->GetXmin();
+			xmax = fSelHist->GetXaxis()->GetXmax();
+			for (Int_t i = 1; i <= hist->GetXaxis()->GetNbins(); i++) {
+				x = hist->GetBinCenter(i);
+				if (x >= xmin && x < xmax && hist->GetBinContent(i) > maxy)
+					maxy = hist->GetBinContent(i);
+			}
+		} else {
+//  case zoomed histogram
+			for (Int_t i = fSelHist->GetXaxis()->GetFirst();
+					i <= fSelHist->GetXaxis()->GetLast();
+					i++) {
+				if (hist->GetBinContent(i) > maxy)
+					maxy = hist->GetBinContent(i);
+			}
+
+		}
+		if (fSelHist->GetMaximum() > 0 && maxy > 0) {
+			hdisp = (TH1 *) hist->Clone();
+			TString name = hdisp->GetName();
+			name += "_scaled";
+			hdisp->SetName(name.Data());
+			Float_t sf = fSelHist->GetMaximum() / maxy;
+			cout << "Scale " << hdisp->GetName() << " by " << sf << endl;
+			hdisp->Scale(sf);
+			for (Int_t i = 1; i <= hist->GetNbinsX(); i++) {
+				hdisp->SetBinError(i, sf * hist->GetBinError(i));
+			}
+			cout << "Superimpose: Scale errors linearly" << endl;
+			naxis = new TGaxis(fSelHist->GetXaxis()->GetXmax(),
+									fSelHist->GetYaxis()->GetXmin(),
+									fSelHist->GetXaxis()->GetXmax(),
+									fSelHist->GetMaximum(),
+									hist->GetYaxis()->GetXmin(), maxy, 510,
+									"+");
+			naxis->SetLabelOffset(0.05);
+		}
+	}
+	cHist->cd();
+   TString drawopt = fSelHist->GetDrawOption();
+   if ( hist->GetDimension() == 1 ) {
+	   hdisp->SetLineColor(fColSuperimpose);
+	   if (!drawopt.Contains("E", TString::kIgnoreCase))
+		   drawopt += "hist";
+   }
+	drawopt += "SAME";
+   cout << "drawopt " << drawopt << endl;
+	hdisp->DrawCopy(drawopt.Data());
+	Float_t x1 = 0.2;
+	Float_t x2 = 0.3;
+	Float_t y1 = 1 - 0.05 * fColSuperimpose;
+	Float_t y2 = y1 + 0.05;
+
+	tname = new TPaveLabel(x1, y1, x2, y2, hdisp->GetName(), "NDC");
+	tname->SetFillColor(0);
+	tname->SetTextColor(fColSuperimpose);
+	tname->Draw();
+
+	if (naxis) {
+		naxis->Draw();
+		naxis->SetLineColor(fColSuperimpose);
+		naxis->SetTextColor(fColSuperimpose);
+	}
+	cHist->Update();
 }
 
 //____________________________________________________________________________________

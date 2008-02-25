@@ -3436,6 +3436,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
    c1->cd();
    c1->Modified(kTRUE);
    c1->Update();
+   GEdit::RestoreAxisAtts(c1);
    cout << "gPad " << gPad << endl;
 }
 //________________________________________________________________

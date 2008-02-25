@@ -25,5 +25,8 @@
 #pragma link C++ class WhatToShowDialog;
 #pragma link C++ class GeneralAttDialog;
 #pragma link C++ class GraphAttDialog;
+#pragma link C++ class HprTh3Dialog;
 #pragma link C++ class WindowSizeDialog;
 #endif
+
+

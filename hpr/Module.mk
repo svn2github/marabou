@@ -22,6 +22,7 @@ HPRO        := $(filter-out $(HPRMAINO),$(HPROM))
 
 
 HPRDH			:= $(HPRDIRI)/defineMarabou.h \
+ 					$(HPRDIRI)/HprTh3Dialog.h \
                $(HPRDIRI)/HTCanvas.h \
  					$(HPRDIRI)/HandleMenus.h \
  					$(HPRDIRI)/FitHist.h \
@@ -37,13 +38,13 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/SetHistOptDialog.h \
  					$(HPRDIRI)/Set1DimOptDialog.h \
  					$(HPRDIRI)/Set2DimOptDialog.h \
-  					$(HPRDIRI)/SetColorModeDialog.h \
-					$(HPRDIRI)/SetCanvasAttDialog.h \
+ 					$(HPRDIRI)/SetColorModeDialog.h \
+ 					$(HPRDIRI)/SetCanvasAttDialog.h \
  					$(HPRDIRI)/WhatToShowDialog.h \
  					$(HPRDIRI)/GeneralAttDialog.h \
  					$(HPRDIRI)/GraphAttDialog.h \
- 					$(HPRDIRI)/WindowSizeDialog.h \
- 					$(HPRDIRI)/LinkDef.h
+					$(HPRDIRI)/WindowSizeDialog.h \
+  					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)
 HPRDEP      += $(MODDIRS)/main.d
@@ -88,7 +89,7 @@ $(HPRLIB):     $(HPRDO) $(HPRO)
 
 $(HPRDS):     $(HPRDH) $(HPRL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -p -Iinclude $(HPRDH) 
+		$(ROOTCINT) -f $@  -c -p -Iinclude $(HPRDH)
 
 $(HPRDO):     $(HPRDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

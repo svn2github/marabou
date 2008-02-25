@@ -27,77 +27,77 @@ static const Char_t helptext[] =" no help yet";
    fCanvas = rc->Canvas();
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
-   
+
    Int_t ind = 0;
    static Int_t dummy;
    static TString stycmd("SetCanvasAttPerm()");
 
    fRow_lab->Add(new TObjString("CommentOnly_Pad Attributes"));
    fValp[ind++] = &dummy;
-   fRow_lab->Add(new TObjString("ColorSelect_Color"));       
-   fRow_lab->Add(new TObjString("PlainShtVal+BorderSize"));  
-   fRow_lab->Add(new TObjString("PlainIntVal+BorderMode"));  
+   fRow_lab->Add(new TObjString("ColorSelect_Color"));
+   fRow_lab->Add(new TObjString("PlainShtVal+BorderSize"));
+   fRow_lab->Add(new TObjString("PlainIntVal+BorderMode"));
    fRow_lab->Add(new TObjString("Float_Value_BottomMargin"));
-   fRow_lab->Add(new TObjString("Float_Value+TopMargin"));   
-   fRow_lab->Add(new TObjString("CheckButton+GridY"));       
-   fRow_lab->Add(new TObjString("Float_Value_LeftMargin"));  
-   fRow_lab->Add(new TObjString("Float_Value+RightMargin")); 
-   fRow_lab->Add(new TObjString("CheckButton+GridX"));       
-//   fRow_lab->Add(new TObjString("CheckButton+TickX"));       
+   fRow_lab->Add(new TObjString("Float_Value+TopMargin"));
+   fRow_lab->Add(new TObjString("CheckButton+GridY"));
+   fRow_lab->Add(new TObjString("Float_Value_LeftMargin"));
+   fRow_lab->Add(new TObjString("Float_Value+RightMargin"));
+   fRow_lab->Add(new TObjString("CheckButton+GridX"));
+//   fRow_lab->Add(new TObjString("CheckButton+TickX"));
 //   fRow_lab->Add(new TObjString("CheckButton+TickY"));
-   fValp[ind++] = &fPadColor;       
+   fValp[ind++] = &fPadColor;
    fValp[ind++] = &fPadBorderSize;
-   fValp[ind++] = &fPadBorderMode; 
+   fValp[ind++] = &fPadBorderMode;
    fValp[ind++] = &fPadBottomMargin;
    fValp[ind++] = &fPadTopMargin;
-   fValp[ind++] = &fPadGridY;      
-   fValp[ind++] = &fPadLeftMargin; 
+   fValp[ind++] = &fPadGridY;
+   fValp[ind++] = &fPadLeftMargin;
    fValp[ind++] = &fPadRightMargin;
-   fValp[ind++] = &fPadGridX;      
-//   fValp[ind++] = &fPadTickX;     
+   fValp[ind++] = &fPadGridX;
+//   fValp[ind++] = &fPadTickX;
  //  fValp[ind++] = &fPadTickY;
 
    fRow_lab->Add(new TObjString("CommentOnly_Frame Attributes"));
    fValp[ind++] = &dummy;
-   fRow_lab->Add(new TObjString("ColorSelect_FillColor"));   
-   fRow_lab->Add(new TObjString("Fill_Select+FillStyle"));   
-   fRow_lab->Add(new TObjString("ColorSelect_LineColor"));   
-   fRow_lab->Add(new TObjString("LineSSelect+LineStyle"));   
-   fRow_lab->Add(new TObjString("PlainShtVal+LineWidth"));   
-   fRow_lab->Add(new TObjString("PlainShtVal_BorderSize"));  
-   fRow_lab->Add(new TObjString("PlainIntVal+BorderMode"));  
-   fValp[ind++] = &fFrameFillColor; 
-   fValp[ind++] = &fFrameFillStyle; 
-   fValp[ind++] = &fFrameLineColor; 
-   fValp[ind++] = &fFrameLineStyle; 
+   fRow_lab->Add(new TObjString("ColorSelect_FillColor"));
+   fRow_lab->Add(new TObjString("Fill_Select+FillStyle"));
+   fRow_lab->Add(new TObjString("ColorSelect_LineColor"));
+   fRow_lab->Add(new TObjString("LineSSelect+LineStyle"));
+   fRow_lab->Add(new TObjString("PlainShtVal+LineWidth"));
+   fRow_lab->Add(new TObjString("PlainShtVal_BorderSize"));
+   fRow_lab->Add(new TObjString("PlainIntVal+BorderMode"));
+   fValp[ind++] = &fFrameFillColor;
+   fValp[ind++] = &fFrameFillStyle;
+   fValp[ind++] = &fFrameLineColor;
+   fValp[ind++] = &fFrameLineStyle;
    fValp[ind++] = &fFrameLineWidth;
-   fValp[ind++] = &fFrameBorderSize; 
-   fValp[ind++] = &fFrameBorderMode; 
+   fValp[ind++] = &fFrameBorderSize;
+   fValp[ind++] = &fFrameBorderMode;
 
    fRow_lab->Add(new TObjString("CommentOnly_Canvas Attributes"));
    fValp[ind++] = &dummy;
-   fRow_lab->Add(new TObjString("ColorSelect_Color"));  	 
-   fRow_lab->Add(new TObjString("PlainShtVal+BorderSize")); 
-   fRow_lab->Add(new TObjString("PlainIntVal+BorderMode")); 
-   fRow_lab->Add(new TObjString("PlainIntVal_DefHeight"));		 
-   fRow_lab->Add(new TObjString("PlainIntVal+DefWidth"));		 
-   fRow_lab->Add(new TObjString("PlainIntVal_DefXpos"));		 
-   fRow_lab->Add(new TObjString("PlainIntVal+DefYpos"));		   
-   fValp[ind++] = &fCanvasColor; 	
+   fRow_lab->Add(new TObjString("ColorSelect_Color"));
+   fRow_lab->Add(new TObjString("PlainShtVal+BorderSize"));
+   fRow_lab->Add(new TObjString("PlainIntVal+BorderMode"));
+   fRow_lab->Add(new TObjString("PlainIntVal_DefHeight"));
+   fRow_lab->Add(new TObjString("PlainIntVal+DefWidth"));
+   fRow_lab->Add(new TObjString("PlainIntVal_DefXpos"));
+   fRow_lab->Add(new TObjString("PlainIntVal+DefYpos"));
+   fValp[ind++] = &fCanvasColor;
    fValp[ind++] = &fCanvasBorderSize;
    fValp[ind++] = &fCanvasBorderMode;
-   fValp[ind++] = &fCanvasDefH;     
-   fValp[ind++] = &fCanvasDefW;     
-   fValp[ind++] = &fCanvasDefX;     
+   fValp[ind++] = &fCanvasDefH;
+   fValp[ind++] = &fCanvasDefW;
+   fValp[ind++] = &fCanvasDefX;
    fValp[ind++] = &fCanvasDefY;
 
 
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
 
-   static Int_t ok; 
+   static Int_t ok;
    Int_t itemwidth = 360;
-   fDialog = 
+   fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
@@ -106,9 +106,9 @@ static const Char_t helptext[] =" no help yet";
 
 void SetCanvasAttDialog::RecursiveRemove(TObject * obj)
 {
-   if (obj == fCanvas) { 
+   if (obj == fCanvas) {
  //     cout << "SetCanvasAttDialog: CloseDialog "  << endl;
-      CloseDialog(); 
+      CloseDialog();
    }
 }
 //_______________________________________________________________________
@@ -127,18 +127,18 @@ void SetCanvasAttDialog::CloseDialog()
 void SetCanvasAttDialog::SetCanvasAtt(TCanvas *canvas)
 {
    if (!canvas) return;
-//   gStyle->SetPadColor       (fPadColor       ); 
-//   gStyle->SetPadBorderSize  (fPadBorderSize  ); 
-//   gStyle->SetPadBorderMode  (fPadBorderMode  ); 
+//   gStyle->SetPadColor       (fPadColor       );
+//   gStyle->SetPadBorderSize  (fPadBorderSize  );
+//   gStyle->SetPadBorderMode  (fPadBorderMode  );
 
-   canvas->SetBottomMargin(fPadBottomMargin); 
-   canvas->SetTopMargin   (fPadTopMargin   ); 
-   canvas->SetLeftMargin  (fPadLeftMargin  ); 
-   canvas->SetRightMargin (fPadRightMargin ); 
-   canvas->SetGridx       ((Bool_t)fPadGridX); 
-   canvas->SetGridy       ((Bool_t)fPadGridY); 
-   canvas->SetTickx       (fPadTickX       ); 
-   canvas->SetTicky       (fPadTickY       ); 
+   canvas->SetBottomMargin(fPadBottomMargin);
+   canvas->SetTopMargin   (fPadTopMargin   );
+   canvas->SetLeftMargin  (fPadLeftMargin  );
+   canvas->SetRightMargin (fPadRightMargin );
+   canvas->SetGridx       ((Bool_t)fPadGridX);
+   canvas->SetGridy       ((Bool_t)fPadGridY);
+   canvas->SetTickx       (fPadTickX       );
+   canvas->SetTicky       (fPadTickY       );
    canvas->GetFrame()->SetFillColor (fFrameFillColor  );
    canvas->GetFrame()->SetLineColor (fFrameLineColor  );
    canvas->GetFrame()->SetFillStyle (fFrameFillStyle  );
@@ -158,7 +158,7 @@ void SetCanvasAttDialog::SetCanvasAtt(TCanvas *canvas)
 	canvas->cd();
 	canvas->Modified();
 	canvas->Update();
-}                  
+}
 //______________________________________________________________________
 
 void SetCanvasAttDialog::SaveDefaults()
@@ -217,27 +217,32 @@ void SetCanvasAttDialog::RestoreDefaults()
    fCanvasColor      = env.GetValue("SetCanvasAttDialog.fCanvasColor", 0);
    fCanvasBorderSize = env.GetValue("SetCanvasAttDialog.fCanvasBorderSize", 1);
    fCanvasBorderMode = env.GetValue("SetCanvasAttDialog.fCanvasBorderMode", 0);
-   fCanvasDefH       = env.GetValue("SetCanvasAttDialog.fCanvasDefH", 0);
-   fCanvasDefW       = env.GetValue("SetCanvasAttDialog.fCanvasDefW", 0);
-   fCanvasDefX       = env.GetValue("SetCanvasAttDialog.fCanvasDefX", 0);
-   fCanvasDefY       = env.GetValue("SetCanvasAttDialog.fCanvasDefY", 0);
+   fCanvasDefH       = env.GetValue("SetCanvasAttDialog.fCanvasDefH", 500);
+   fCanvasDefW       = env.GetValue("SetCanvasAttDialog.fCanvasDefW", 700);
+   fCanvasDefX       = env.GetValue("SetCanvasAttDialog.fCanvasDefX", 400);
+   fCanvasDefY       = env.GetValue("SetCanvasAttDialog.fCanvasDefY", 10);
+   if ( fCanvasDefH == 0 ) fCanvasDefH = 500;
+   if ( fCanvasDefW == 0 ) fCanvasDefW = 700;
+   if ( fCanvasDefX == 0 ) fCanvasDefX = 400;
+   if ( fCanvasDefY == 0 ) fCanvasDefY = 10;
+
 }
 //______________________________________________________________________
 
 void SetCanvasAttDialog::SetDefaults()
 {
    TEnv env(".hprrc");
-   gStyle->SetPadColor        (env.GetValue("SetCanvasAttDialog.fPadColor", 0)); 
-   gStyle->SetPadBorderSize   (env.GetValue("SetCanvasAttDialog.fPadBorderSize", 1)); 
-   gStyle->SetPadBorderMode   (env.GetValue("SetCanvasAttDialog.fPadBorderMode", 1)); 
-   gStyle->SetPadBottomMargin (env.GetValue("SetCanvasAttDialog.fPadBottomMargin", 0.1)); 
-   gStyle->SetPadTopMargin    (env.GetValue("SetCanvasAttDialog.fPadTopMargin", 0.1)); 
-   gStyle->SetPadLeftMargin   (env.GetValue("SetCanvasAttDialog.fPadLeftMargin", 0.1)); 
-   gStyle->SetPadRightMargin  (env.GetValue("SetCanvasAttDialog.fPadRightMargin", 0.1)); 
-   gStyle->SetPadGridX        (env.GetValue("SetCanvasAttDialog.fPadGridX", 0)); 
-   gStyle->SetPadGridY        (env.GetValue("SetCanvasAttDialog.fPadGridY", 0)); 
-//   gStyle->SetPadTickX        (env.GetValue("SetCanvasAttDialog.fPadTickX", 0)); 
-//   gStyle->SetPadTickY        (env.GetValue("SetCanvasAttDialog.fPadTickY", 0)); 
+   gStyle->SetPadColor        (env.GetValue("SetCanvasAttDialog.fPadColor", 0));
+   gStyle->SetPadBorderSize   (env.GetValue("SetCanvasAttDialog.fPadBorderSize", 1));
+   gStyle->SetPadBorderMode   (env.GetValue("SetCanvasAttDialog.fPadBorderMode", 1));
+   gStyle->SetPadBottomMargin (env.GetValue("SetCanvasAttDialog.fPadBottomMargin", 0.1));
+   gStyle->SetPadTopMargin    (env.GetValue("SetCanvasAttDialog.fPadTopMargin", 0.1));
+   gStyle->SetPadLeftMargin   (env.GetValue("SetCanvasAttDialog.fPadLeftMargin", 0.1));
+   gStyle->SetPadRightMargin  (env.GetValue("SetCanvasAttDialog.fPadRightMargin", 0.1));
+   gStyle->SetPadGridX        (env.GetValue("SetCanvasAttDialog.fPadGridX", 0));
+   gStyle->SetPadGridY        (env.GetValue("SetCanvasAttDialog.fPadGridY", 0));
+//   gStyle->SetPadTickX        (env.GetValue("SetCanvasAttDialog.fPadTickX", 0));
+//   gStyle->SetPadTickY        (env.GetValue("SetCanvasAttDialog.fPadTickY", 0));
    gStyle->SetFrameFillColor  (env.GetValue("SetCanvasAttDialog.fFrameFillColor", 1));
    gStyle->SetFrameLineColor  (env.GetValue("SetCanvasAttDialog.fFrameLineColor", 1));
    gStyle->SetFrameFillStyle  (env.GetValue("SetCanvasAttDialog.fFrameFillStyle", 0));
@@ -248,27 +253,32 @@ void SetCanvasAttDialog::SetDefaults()
    gStyle->SetCanvasColor     (env.GetValue("SetCanvasAttDialog.fCanvasColor", 0));
    gStyle->SetCanvasBorderSize(env.GetValue("SetCanvasAttDialog.fCanvasBorderSize", 1));
    gStyle->SetCanvasBorderMode(env.GetValue("SetCanvasAttDialog.fCanvasBorderMode", 1));
-   gStyle->SetCanvasDefH      (env.GetValue("SetCanvasAttDialog.fCanvasDefH", 0));
-   gStyle->SetCanvasDefW      (env.GetValue("SetCanvasAttDialog.fCanvasDefW", 0));
-   gStyle->SetCanvasDefX      (env.GetValue("SetCanvasAttDialog.fCanvasDefX", 0));
-   gStyle->SetCanvasDefY      (env.GetValue("SetCanvasAttDialog.fCanvasDefY", 0));
+   gStyle->SetCanvasDefH      (env.GetValue("SetCanvasAttDialog.fCanvasDefH", 500));
+   gStyle->SetCanvasDefW      (env.GetValue("SetCanvasAttDialog.fCanvasDefW", 700));
+   gStyle->SetCanvasDefX      (env.GetValue("SetCanvasAttDialog.fCanvasDefX", 400));
+   gStyle->SetCanvasDefY      (env.GetValue("SetCanvasAttDialog.fCanvasDefY", 10));
+   if ( gStyle->GetCanvasDefH()  == 0 )  gStyle->SetCanvasDefH(500);
+   if ( gStyle->GetCanvasDefW()  == 0 )  gStyle->SetCanvasDefW(700);
+   if ( gStyle->GetCanvasDefX()  == 0 )  gStyle->SetCanvasDefX(400);
+   if ( gStyle->GetCanvasDefY()  == 0 )  gStyle->SetCanvasDefY(10);
+
 }
 //______________________________________________________________________
 
 void SetCanvasAttDialog::SetCanvasAttPerm()
 {
    SaveDefaults();
-   gStyle->SetPadColor        (fPadColor        ); 
-   gStyle->SetPadBorderSize   (fPadBorderSize   ); 
-   gStyle->SetPadBorderMode   (fPadBorderMode   ); 
-   gStyle->SetPadBottomMargin (fPadBottomMargin ); 
-   gStyle->SetPadTopMargin    (fPadTopMargin    ); 
-   gStyle->SetPadLeftMargin   (fPadLeftMargin   ); 
-   gStyle->SetPadRightMargin  (fPadRightMargin  ); 
-   gStyle->SetPadGridX        ((Bool_t)fPadGridX); 
-   gStyle->SetPadGridY        ((Bool_t)fPadGridY); 
-//   gStyle->SetPadTickX        (fPadTickX        ); 
-//   gStyle->SetPadTickY        (fPadTickY        ); 
+   gStyle->SetPadColor        (fPadColor        );
+   gStyle->SetPadBorderSize   (fPadBorderSize   );
+   gStyle->SetPadBorderMode   (fPadBorderMode   );
+   gStyle->SetPadBottomMargin (fPadBottomMargin );
+   gStyle->SetPadTopMargin    (fPadTopMargin    );
+   gStyle->SetPadLeftMargin   (fPadLeftMargin   );
+   gStyle->SetPadRightMargin  (fPadRightMargin  );
+   gStyle->SetPadGridX        ((Bool_t)fPadGridX);
+   gStyle->SetPadGridY        ((Bool_t)fPadGridY);
+//   gStyle->SetPadTickX        (fPadTickX        );
+//   gStyle->SetPadTickY        (fPadTickY        );
    gStyle->SetFrameFillColor  (fFrameFillColor  );
    gStyle->SetFrameLineColor  (fFrameLineColor  );
    gStyle->SetFrameFillStyle  (fFrameFillStyle  );

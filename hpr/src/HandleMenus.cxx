@@ -39,6 +39,7 @@
 #include "WindowSizeDialog.h"
 #include "GeneralAttDialog.h"
 #include "GraphAttDialog.h"
+#include "HprTh3Dialog.h"
 
 void EditFitMacroG(TGWindow * win);
 void ExecFitMacroG(TGraph * graph, TGWindow * win);
@@ -131,6 +132,7 @@ enum ERootCanvasCommands {
    kFHZaxisRange,
    kFHMagnify,
    kFHSuperimpose,
+   kFHTh3Dialog,
    kFHSuperimposeGraph,
    kFHSetAxisGraph,
    kFHKolmogorov,
@@ -405,13 +407,9 @@ again:
                      break;
                   case kFileSaveAsC:
                      {
-//                     cout << "GetName() " << GetName()<< endl;
-                     TString csave = GetName();
-                     TString nname = GetName();
-                     nname += "_save";
-                     fHCanvas->SetName(nname.Data());
-                     fHCanvas->SaveSource();
-                     fHCanvas->SetName(csave.Data());
+                     TString nname = fHCanvas->GetName();
+                     nname += "_save.C";
+                     fHCanvas->SaveSource(nname);
                      }
                      break;
                   case kFileSaveAsPS:
@@ -714,6 +712,9 @@ again:
                      break;
                   case kFHMagnify:
                      fFitHist->Magnify();
+                     break;
+                  case kFHTh3Dialog:
+                     new HprTh3Dialog((TH3*)fFitHist->GetSelHist());
                      break;
                   case kFHSuperimpose:
                      fFitHist->Superimpose(0);
@@ -1043,10 +1044,16 @@ void HandleMenus::BuildMenus()
       hbrowser=fHistPresent->GetHelpBrowser();
       if (fHCanvas->TestBit(HTCanvas::kIsAEditorPage)) edit_menus = kTRUE;
    }
-   if (fFitHist != 0 && fFitHist->GetSelHist()->GetDimension() != 3) {
-     fh_menus = kTRUE;
+//   if (fFitHist != 0 && fFitHist->GetSelHist()->GetDimension() != 3) {
+//     fh_menus = kTRUE;
 //     edit_menus = kTRUE;
+//   }
+   Int_t nDim = 0;
+   if ( fFitHist ) {
+     fh_menus = kTRUE;
+     nDim = fFitHist->GetSelHist()->GetDimension();
    }
+
    TGPopupMenu * pm;
    const TList * l;
    TGMenuEntry * e;
@@ -1288,31 +1295,31 @@ void HandleMenus::BuildMenus()
    	if (fh_menus) {
       	fFitHist->SetMyCanvas(fRootCanvas);
       	is2dim = fFitHist->Its2dim();
-
-      	fDisplayMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
-      	fDisplayMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
-       	fDisplayMenu->AddEntry("Set X Axis Range",      kFHXaxisRange     );
-         if (fFitHist->GetSelHist()->GetDimension() > 1)
-       	   fDisplayMenu->AddEntry("Set Y Axis Range",      kFHYaxisRange     );
-         if (fFitHist->GetSelHist()->GetDimension() > 2)
-      	   fDisplayMenu->AddEntry("Set Z Axis Range",      kFHZaxisRange     );
-     	   fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
-      	if (is2dim) {
-      	   fDisplayMenu->AddSeparator();
-            fDisplayMenu->AddEntry("Set User Contours",   kFHUserCont);
-            fDisplayMenu->AddEntry("Use Selected Contours",   kFHUserContUse);
-            fDisplayMenu->AddEntry("Clear User Contours",   kFHUserContClear);
-            fDisplayMenu->AddEntry("Save User Contours",   kFHUserContSave);
+         if (nDim < 3) {
+				fDisplayMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
+				fDisplayMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
+				fDisplayMenu->AddEntry("Set X Axis Range",      kFHXaxisRange     );
+				if (fFitHist->GetSelHist()->GetDimension() > 1)
+					fDisplayMenu->AddEntry("Set Y Axis Range",      kFHYaxisRange     );
+				if (fFitHist->GetSelHist()->GetDimension() > 2)
+					fDisplayMenu->AddEntry("Set Z Axis Range",      kFHZaxisRange     );
+				fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
+				if ( nDim == 2 ) {
+					fDisplayMenu->AddSeparator();
+					fDisplayMenu->AddEntry("Set User Contours",   kFHUserCont);
+					fDisplayMenu->AddEntry("Use Selected Contours",   kFHUserContUse);
+					fDisplayMenu->AddEntry("Clear User Contours",   kFHUserContClear);
+					fDisplayMenu->AddEntry("Save User Contours",   kFHUserContSave);
+				}
+				fDisplayMenu->AddSeparator();
+				fDisplayMenu->AddEntry("ClearMarks",   kFHClearMarks);
+				fDisplayMenu->AddEntry("PrintMarks",   kFHPrintMarks);
+				fDisplayMenu->AddEntry("Set2Marks",    kFHSet2Marks);
+				fDisplayMenu->AddEntry("Highlight marked area",    kFHColorMarked);
+		//      fDisplayMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
+				fDisplayMenu->AddSeparator();
          }
-      	fDisplayMenu->AddSeparator();
-      	fDisplayMenu->AddEntry("ClearMarks",   kFHClearMarks);
-      	fDisplayMenu->AddEntry("PrintMarks",   kFHPrintMarks);
-      	fDisplayMenu->AddEntry("Set2Marks",    kFHSet2Marks);
-      	fDisplayMenu->AddEntry("Highlight marked area",    kFHColorMarked);
-	//      fDisplayMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
-      	fDisplayMenu->AddSeparator();
-
-      	if(is2dim) {
+      	if ( nDim == 2 ) {
             fDisplayMenu->AddEntry("ProjectX",    kFHProjectX   );
       	   fDisplayMenu->AddEntry("ProjectY",    kFHProjectY   );
       	   fDisplayMenu->AddEntry("ProjectBoth", kFHProjectB   );
@@ -1322,47 +1329,53 @@ void HandleMenus::BuildMenus()
       	   fDisplayMenu->AddEntry("Transpose",   kFHTranspose  );
       	   fDisplayMenu->AddEntry("Rotate Clockwise", kFHRotateClock);
       	   fDisplayMenu->AddEntry("Rotate Counter Clockwise", kFHRotateCClock);
-         } else {
+         } else if ( nDim == 1 ){
       	   fDisplayMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
          }
+// for all typ
       	fDisplayMenu->AddEntry("Superimpose", kFHSuperimpose);
       	fDisplayMenu->AddEntry("Show in same Range",    kFHGetRange   );
-
-      	fDisplayMenu->AddSeparator();
-      	fDisplayMenu->AddEntry("Show Statistics only",  kFHOutputStat );
-      	fDisplayMenu->AddEntry("SelectInside",  kFHSelectInside);
-      	if(fFitHist->InsideState()) fDisplayMenu->CheckEntry(kFHSelectInside);
-      	else                        fDisplayMenu->UnCheckEntry(kFHSelectInside);
-      	fDisplayMenu->AddSeparator();
-      	fDisplayMenu->AddEntry("Magnify",     kFHMagnify    );
-      	fDisplayMenu->AddEntry("Redefine Axis",     kFHRedefineAxis);
-      	fDisplayMenu->AddEntry("Add new X axis",     kFHAddAxisX);
-      	fDisplayMenu->AddEntry("Add new Y axis",     kFHAddAxisY);
-
-      	if (fFitHist->GetSelHist()->GetDimension() == 1) {
-         	fDisplayMenu->AddEntry("Log Y scale",  kFHLogY);
-         	if (fFitHist->GetLogy()) fDisplayMenu->CheckEntry(kFHLogY);
-         	else                   fDisplayMenu->UnCheckEntry(kFHLogY);
-      	} else if (fFitHist->GetSelHist()->GetDimension() == 2) {
-         	fDisplayMenu->AddEntry("Log Z scale",  kFHLogY);
-         	if (fFitHist->GetLogz()) fDisplayMenu->CheckEntry(kFHLogY);
-         	else                   fDisplayMenu->UnCheckEntry(kFHLogY);
-      	}
-
-
-      	if(hbrowser)hbrowser->DisplayMenu(fDisplayMenu, "display.html");
-         if (!strncmp(fHCanvas->GetName(), "cstack", 5)){
-      	   fDisplayMenu->AddEntry("Real stack", kFHStack);
-            if (fHistPresent->fRealStack) fDisplayMenu->CheckEntry(kFHStack);
-            else                          fDisplayMenu->UnCheckEntry(kFHStack);
-
-      	   fDisplayMenu->AddEntry("Set Minimum of Yscale", kFHStackMin);
-      	   fDisplayMenu->AddEntry("Set Maximum of Yscale", kFHStackMax);
+         if ( nDim == 3 ) {
+          	fDisplayMenu->AddEntry("TH3 Dialog", kFHTh3Dialog);
          }
+
+         if ( nDim < 3 ) {
+				fDisplayMenu->AddSeparator();
+				fDisplayMenu->AddEntry("Show Statistics only",  kFHOutputStat );
+				fDisplayMenu->AddEntry("SelectInside",  kFHSelectInside);
+				if(fFitHist->InsideState()) fDisplayMenu->CheckEntry(kFHSelectInside);
+				else                        fDisplayMenu->UnCheckEntry(kFHSelectInside);
+				fDisplayMenu->AddSeparator();
+				fDisplayMenu->AddEntry("Magnify",     kFHMagnify    );
+				fDisplayMenu->AddEntry("Redefine Axis",     kFHRedefineAxis);
+				fDisplayMenu->AddEntry("Add new X axis",     kFHAddAxisX);
+				fDisplayMenu->AddEntry("Add new Y axis",     kFHAddAxisY);
+
+				if (fFitHist->GetSelHist()->GetDimension() == 1) {
+					fDisplayMenu->AddEntry("Log Y scale",  kFHLogY);
+					if (fFitHist->GetLogy()) fDisplayMenu->CheckEntry(kFHLogY);
+					else                   fDisplayMenu->UnCheckEntry(kFHLogY);
+				} else if (fFitHist->GetSelHist()->GetDimension() == 2) {
+					fDisplayMenu->AddEntry("Log Z scale",  kFHLogY);
+					if (fFitHist->GetLogz()) fDisplayMenu->CheckEntry(kFHLogY);
+					else                   fDisplayMenu->UnCheckEntry(kFHLogY);
+				}
+
+
+				if(hbrowser)hbrowser->DisplayMenu(fDisplayMenu, "display.html");
+				if (!strncmp(fHCanvas->GetName(), "cstack", 5)){
+					fDisplayMenu->AddEntry("Real stack", kFHStack);
+					if (fHistPresent->fRealStack) fDisplayMenu->CheckEntry(kFHStack);
+					else                          fDisplayMenu->UnCheckEntry(kFHStack);
+
+					fDisplayMenu->AddEntry("Set Minimum of Yscale", kFHStackMin);
+					fDisplayMenu->AddEntry("Set Maximum of Yscale", kFHStackMax);
+				}
       	fDisplayMenu->AddSeparator();
+         }
    	}
    }
-   if(fh_menus){
+   if(fh_menus && nDim < 3){
       fCutsMenu     = new TGPopupMenu(fRootCanvas->GetParent());
       if(is2dim){
          fCutsMenu->AddEntry("InitCut",     kFHInitCut    );
@@ -1441,7 +1454,7 @@ void HandleMenus::BuildMenus()
 
 //      if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "fitting.html");
 
-      if(!is2dim){
+      if( nDim == 1 ){
          fFitMenu->AddEntry("Calibration Dialog",            kFHCalibrate);
          fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
       }
@@ -1472,18 +1485,6 @@ void HandleMenus::BuildMenus()
    	fEditMenu->AddEntry("Write this picture to root file",  kFH_WritePrim);
       fEditMenu->AddSeparator();
 
-//   	fEditMenu->AddEntry("Insert  image (gif, jpg) into selected pad", kFH_InsertImage);
-//   	fEditMenu->AddEntry("Insert selected histogram into selected pad",  kFH_DrawHist);
-//   	fEditMenu->AddEntry("Insert graph into seperate pad",  kFH_DrawGraph);
-//      fEditMenu->AddSeparator();
-//   	fEditMenu->AddEntry("Insert text (Latex) from file", kFH_InsertLatexF);
-//   	fEditMenu->AddEntry("Insert text (Latex) from keyboard", kFH_InsertLatex);
-//   	fEditMenu->AddEntry("Draw an axis", kFH_InsertAxis);
-//   	fEditMenu->AddEntry("Insert macro object",  kFH_InsertGObjects);
- //     fEditMenu->AddSeparator();
-//   	fEditMenu->AddEntry("Keep connection when inserting macro objects", kFH_InsertGObjectsG);
-//      if (fHCanvas->fInsertMacrosAsGroup) fEditMenu->CheckEntry(kFH_InsertGObjectsG);
-//      else                                fEditMenu->UnCheckEntry(kFH_InsertGObjectsG);
    	fEditMenu->AddEntry("Write macro objects to file",  kFH_WriteGObjects);
    	fEditMenu->AddEntry("Read macro objects from file",  kFH_ReadGObjects);
    	fEditMenu->AddEntry("Display list of macro objects",  kFH_ShowGallery);
@@ -1533,7 +1534,7 @@ void HandleMenus::BuildMenus()
    }
    if (fViewMenu) fRootsMenuBar->AddPopup("&View", fViewMenu,  fMenuBarItemLayout, pmi);
    if (fDisplayMenu) fRootsMenuBar->AddPopup("&Display", fDisplayMenu,  fMenuBarItemLayout, pmi);
-   if(fh_menus){
+   if(fh_menus && nDim < 3){
       fRootsMenuBar->AddPopup("Cuts/Windows",    fCutsMenu,  fMenuBarItemLayout, pmi);
       fRootsMenuBar->AddPopup("Fit/Calib/FFT", fFitMenu,   fMenuBarItemLayout, pmi);
    }
