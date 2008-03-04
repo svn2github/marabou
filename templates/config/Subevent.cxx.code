@@ -258,8 +258,13 @@ Bool_t TUsrSevt%%SEVT_NAME_UC%%::AddBranch(TTree * Tree) {
 %BR%//////////////////////////////////////////////////////////////////////////////
 %BR%
 %BR%	fBranch = Tree->GetBranch("$sevtNameLC");
-%BR%	fMyAddr = this;
-%BR%	fBranch->SetAddress(&fMyAddr);
+%BR%	if (fBranch) {
+%BR%		fMyAddr = this;
+%BR%		fBranch->SetAddress(&fMyAddr);
+%BR%	} else {
+%BR%		cout	<< setred << this->ClassName() << "::InitializeBranch(): branch \"$sevtNameLC\" not found in tree \""
+%BR%				<< Tree->GetName() << "\"" << setblack << endl;
+%BR%	}
 %BR%
 %BR%	return(kTRUE);
 %BR%}
