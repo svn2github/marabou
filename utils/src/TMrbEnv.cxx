@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEnv.cxx,v 1.21 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEnv.cxx,v 1.22 2008-03-05 09:34:13 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -729,6 +729,7 @@ Int_t TMrbEnv::CopyDefaults(const Char_t * Resource, Bool_t ExactMatch, Bool_t O
 			return(nofRes);
 		}
 	}
+	return(0);
 }
 
 Int_t TMrbEnv::CopyDefaults(const TRegexp & Regexp, Bool_t OverWrite, TMrbLofNamedX * LofSubstitutions) {
