@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.86 2008-01-25 14:05:34 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.87 2008-03-05 08:41:31 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3193,7 +3193,6 @@ void TMrbAnalyze::PrintLists(ostream & Out) const {
 	TMrbParamListEntry * ple;
 	TMrbHistoListEntry * hle;
 	TString hName;
-	TMrbString addr;
 
 	Out	<< endl;
 	for (i = 0; i <= fModuleList.GetLast(); i++) {
@@ -3216,19 +3215,17 @@ void TMrbAnalyze::PrintLists(ostream & Out) const {
 					ple = (TMrbParamListEntry *) npx->GetAssignedObject();
 					nhx = (TMrbNamedX *) fHistoList[px];
 					hle = (TMrbHistoListEntry *) nhx->GetAssignedObject();
-					addr.FromInteger((Int_t) ple->GetAddress(), 0, 16, kTRUE);
 					Out	<< setiosflags(ios::left) << setw(10) << npx->GetName()
 							<< resetiosflags(ios::left)	<< setw(4) << j
 							<< setw(5) << npx->GetIndex()
-							<< setw(15) << addr;
+							<< setw(15) << ple->GetAddress();
 					if (nhx && hle) {
 						hName = nhx->GetName();
 						hName += " (";
 						hName += nhx->GetTitle();
 						hName += ")";
-						addr.FromInteger((Int_t) hle->GetAddress(), 0, 16, kTRUE);
 						Out	<< "     " << setiosflags(ios::left) << setw(30) << hName
-								<< resetiosflags(ios::left) << addr;
+								<< resetiosflags(ios::left) << hle->GetAddress();
 					}
 				}
 				Out	<< endl;
