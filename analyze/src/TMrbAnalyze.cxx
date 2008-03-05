@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.87 2008-03-05 08:41:31 Marabou Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.88 2008-03-05 12:35:46 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3215,7 +3215,7 @@ void TMrbAnalyze::PrintLists(ostream & Out) const {
 					ple = (TMrbParamListEntry *) npx->GetAssignedObject();
 					nhx = (TMrbNamedX *) fHistoList[px];
 					hle = (TMrbHistoListEntry *) nhx->GetAssignedObject();
-					Out	<< setiosflags(ios::left) << setw(10) << npx->GetName()
+					Out 	<< setiosflags(ios::left) << setw(10) << npx->GetName()
 							<< resetiosflags(ios::left)	<< setw(4) << j
 							<< setw(5) << npx->GetIndex()
 							<< setw(15) << ple->GetAddress();
@@ -3224,8 +3224,8 @@ void TMrbAnalyze::PrintLists(ostream & Out) const {
 						hName += " (";
 						hName += nhx->GetTitle();
 						hName += ")";
-						Out	<< "     " << setiosflags(ios::left) << setw(30) << hName
-								<< resetiosflags(ios::left) << hle->GetAddress();
+						Out	<< "     "	<< setiosflags(ios::left) << setw(30) << hName
+										<< resetiosflags(ios::left) << hle->GetAddress();
 					}
 				}
 				Out	<< endl;

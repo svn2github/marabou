@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditChanCSRAPanel.cxx,v 1.8 2006-09-12 11:45:01 Marabou Exp $       
+// Revision:       $Id: DGFEditChanCSRAPanel.cxx,v 1.9 2008-03-05 12:35:46 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -172,7 +172,6 @@ Bool_t DGFEditChanCSRAPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 							btnState = fCSRAFrame->GetActive();
 							intStr.FromInteger(btnState, 0, 16, kTRUE);
 							fEntry->SetText(intStr);
-							cout << "@@@ " << btnState << " " << intStr << endl;
 							this->CloseWindow();
 							break;
 						case kDGFEditChanCSRAButtonReset:

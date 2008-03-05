@@ -63,10 +63,26 @@ EXTRA_CXXFLAGS += -g -Wno-switch -Wno-parentheses -I$(ROOTSYS)/include
 
 # for HistPresent only the following modules are needed
 
-MODULES       = build utils gutils \
-						helpbrowser fitcal gredit hpr \
+MODULES       = build utils gutils helpbrowser fitcal gredit hpr
 
 # if offline data analysis in the marabou framework is needed
+
+ifeq ($(shell if [ -d analyze ] ; then echo yes; fi), yes)
+MODULES      += c_analyze analyze mbssetup mbsio transport
+endif
+
+ifeq ($(shell if [ -f .useXML ] ; then echo yes; fi), yes)
+ifeq ($(shell if [ -d expconf-xml ] ; then echo yes; fi), yes)
+MODULES      += expconf-xml
+endif
+ifeq ($(shell if [ -d xml ] ; then echo yes; fi), yes)
+MODULES      += xml
+endif
+else
+ifeq ($(shell if [ -d expconf ] ; then echo yes; fi), yes)
+MODULES      += expconf
+endif
+endif
 
 ifeq ($(shell if [ -d tidy ] ; then echo yes; fi), yes)
 MODULES      += tidy tidylib
@@ -78,10 +94,6 @@ endif
 
 ifeq ($(shell if [ -d macrobrowser ] ; then echo yes; fi), yes)
 MODULES      += macrobrowser
-endif
-
-ifeq ($(shell if [ -d analyze ] ; then echo yes; fi), yes)
-MODULES      += expconf c_analyze analyze mbssetup mbsio transport
 endif
 
 ifeq ($(shell if [ -d dgfcomm ] ; then echo yes; fi), yes)

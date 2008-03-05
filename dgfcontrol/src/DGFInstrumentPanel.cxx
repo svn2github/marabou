@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.32 2007-10-25 17:24:12 Marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.33 2008-03-05 12:35:46 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -1156,7 +1156,6 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 					}
 					break;
 				case kCM_COMBOBOX:
-                    cout << "@@@ combo" << endl;
 					gDGFControlData->SetSelectedModuleIndex(Param2);
 					this->InitializeValues(kFALSE);
 					break;

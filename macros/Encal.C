@@ -9,7 +9,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.36 2007-10-12 10:14:20 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.37 2008-03-05 12:35:46 Rudolf.Lutter Exp $
 // Date:             Fri Oct 12 09:43:56 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -2264,7 +2264,7 @@ void Encal(TGMrbMacroFrame * GuiPtr)
 
 	CloseEnvFiles();
 
-	OutputMessage(NULL, Form("%s - %d histogram(s), press \"execute\" to restart or \"quit\" to exit", HistoFile()->GetName(), GetNofHistosCalibrated()), "o");
+	OutputMessage(NULL, Form("%s - %d histogram(s), press \"start\" to restart or \"quit\" to exit", HistoFile()->GetName(), GetNofHistosCalibrated()), "o");
 
 	if (!fButtonQuit) WaitForSignal(kTRUE);
 
