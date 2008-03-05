@@ -383,13 +383,16 @@ Bool_t TMrbAnalyze::OpenRootFile(TMrbIOSpec * IOSpec) {
 			gMrbLog->Err()	<< "No such file - " << rootFile << endl;
 			gMrbLog->Flush(this->ClassName(), "OpenRootFile");
 			return(kFALSE);
-		} else {
-			if (verboseMode) {
-				gMrbLog->Out()	<< "Opening ROOT file \"" << rootFile << "\"" << endl;
-				gMrbLog->Flush(this->ClassName(), "OpenRootFile");
-			}
 		}
 		fRootFileIn = new TFile(rootFile.Data(), "READ");
+		if (fRootFileIn.IsZombie() || !fRootFileIn.IsOpen()) {
+			gMrbLog->Err()	<< "Can't open ROOT file - " << rootFile << endl;
+			gMrbLog->Flush(this->ClassName(), "OpenRootFile");
+			return(kFALSE);
+		} else if (verboseMode) {
+			gMrbLog->Out()	<< "Opening ROOT file \"" << rootFile << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "OpenRootFile");
+		}
 
 // initialize ROOT trees
 %%BeginOfCode%%
