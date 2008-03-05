@@ -385,7 +385,7 @@ Bool_t TMrbAnalyze::OpenRootFile(TMrbIOSpec * IOSpec) {
 			return(kFALSE);
 		}
 		fRootFileIn = new TFile(rootFile.Data(), "READ");
-		if (fRootFileIn.IsZombie() || !fRootFileIn.IsOpen()) {
+		if (fRootFileIn->IsZombie() || !fRootFileIn->IsOpen()) {
 			gMrbLog->Err()	<< "Can't open ROOT file - " << rootFile << endl;
 			gMrbLog->Flush(this->ClassName(), "OpenRootFile");
 			return(kFALSE);
