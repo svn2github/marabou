@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeElem    -- XML code elemenet/node
 // Description:    Class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeElem.h,v 1.9 2008-02-18 12:29:03 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.h,v 1.10 2008-03-05 12:23:44 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -54,6 +54,7 @@ enum EMrbXmlElements {
 		kMrbXml_Foreach,
 		kMrbXml_Switch,
 		kMrbXml_Case,
+		kMrbXml_Task,
 		kMrbXml_Item,
 		kMrbXml_Ftype,
 		kMrbXml_ArgList,
@@ -66,11 +67,14 @@ enum EMrbXmlElements {
 		kMrbXml_Inheritance,
 		kMrbXml_ClassRef,
 		kMrbXml_Tag,
+		kMrbXml_Subtag,
 		kMrbXml_Flag,
 		kMrbXml_FlagValue,
 		kMrbXml_Fpath,
 		kMrbXml_Slist,
 		kMrbXml_Subst,
+		kMrbXml_Clist,
+		kMrbXml_Content,
 		kMrbXml_Xname,
 		kMrbXml_Mname,
 		kMrbXml_Fname,
@@ -118,9 +122,10 @@ class TMrbXMLCodeElem: public TMrbNamedX {
     	TMrbXMLCodeElem(TMrbNamedX * Element = NULL, Int_t NestingLevel = 0, TMrbXMLCodeGen * Parser = NULL);
 		virtual ~TMrbXMLCodeElem() {};
 
+		inline void ClearCode() { fCode.Resize(0); };
+		inline void SetCode(const Char_t * Code) { fCode = Code; };
 		inline void AddCode(const Char_t * Code) { fCode += Code; };
 		inline const Char_t * GetCode() { return(fCode.Data()); };
-		inline void ClearCode() { fCode.Resize(0); };
 
 		inline Int_t NestingLevel() { return(fNestingLevel); };
 		inline TMrbXMLCodeElem * Parent() { return(fParent); };
@@ -130,6 +135,7 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		inline TEnv * LofSubst() { return(&fLofSubst); };
 
 		Bool_t FindSubst(const Char_t * Sname, TString & Svalue, Bool_t Verbose = kTRUE);
+		Bool_t FindAttr(const Char_t * Aname, TString & Avalue, Bool_t Verbose = kTRUE);
 
 		inline Bool_t IsRootElement() { return(fParent == NULL); };
 		inline Bool_t HasOwnText() { return(fHasOwnText); };
@@ -138,17 +144,17 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 
 		Bool_t ProcessElement(const Char_t * ElemName);
 
+		const Char_t * MsgHdr();
+
 		void Debug(ostream & Out, TString & FocusOnElement, TString & FocusOnTag, Bool_t OnStart);
 
-		inline Bool_t SubstOk() { return(fLofSubst.GetValue("@Request.OK", kTRUE)); }
+		inline Bool_t SubstOk(TEnv * LofSubst = NULL) { return(LofSubst ? LofSubst->GetValue("@Request.OK", kTRUE) : fLofSubst.GetValue("@Request.OK", kTRUE)); }
 
 		inline Bool_t IsVerbose() { return(fVerboseMode); };
 
 		inline TMrbXMLCodeGen * Parser() { return(fParser); };
 
 	protected:
-
-		Bool_t fVerboseMode;				// kTRUE: be verbose
 
 		Bool_t NameIs(const Char_t * ElemName, Bool_t Verbose = kTRUE);
 		Bool_t ParentIs(const Char_t * LofParents, Bool_t Verbose = kTRUE);
@@ -165,12 +171,14 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		Bool_t RequestConditionFlag(const Char_t * Tag, const Char_t * FlagName, TString & FlagValue);
 		void ClearSubst();
 		Bool_t RequestSubst(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TEnv * LofSubst);
-		Bool_t RequestCode(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TString & Code);
-		Bool_t Substitute(TString & Code, Bool_t Verbose = kFALSE);
+		Bool_t RequestCode(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TString & Code, const Char_t * Suffix = NULL);
+		Bool_t RequestTask(const Char_t * Tag, const Char_t * Subtag = NULL);
+		Bool_t Substitute(TString & Code, TEnv * LofSubst = NULL, Bool_t Verbose = kFALSE);
 		Bool_t ExpandSwitch(TString & Code);
 		Bool_t ExpandIf(TString & Code);
 		Bool_t ExpandInclude(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TString & Code);
 
+		const Char_t * FormatHeaderLine(TString & FmtText, const Char_t * LineHdr, const Char_t * Text);
 		void Indent(ostream & Out);
 
 		Bool_t ProcessElement_MrbCode();
@@ -191,6 +199,7 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		Bool_t ProcessElement_Foreach();
 		Bool_t ProcessElement_Switch();
 		Bool_t ProcessElement_Case();
+		Bool_t ProcessElement_Task();
 		Bool_t ProcessElement_Item();
 		Bool_t ProcessElement_Ftype();
 		Bool_t ProcessElement_ArgList();
@@ -203,11 +212,14 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 		Bool_t ProcessElement_Inheritance();
 		Bool_t ProcessElement_ClassRef();
 		Bool_t ProcessElement_Tag();
+		Bool_t ProcessElement_Subtag();
 		Bool_t ProcessElement_Flag();
 		Bool_t ProcessElement_FlagValue();
 		Bool_t ProcessElement_Fpath();
 		Bool_t ProcessElement_Slist();
 		Bool_t ProcessElement_Subst();
+		Bool_t ProcessElement_Clist();
+		Bool_t ProcessElement_Content();
 		Bool_t ProcessElement_Xname();
 		Bool_t ProcessElement_Mname();
 		Bool_t ProcessElement_Fname();
@@ -238,6 +250,7 @@ class TMrbXMLCodeElem: public TMrbNamedX {
 
 	protected:
 
+		Bool_t fVerboseMode;		// kTRUE: be verbose
 		Int_t fNestingLevel;		// nesting
 		Bool_t fHasOwnText;			// kTRUE if element is not a container but has its own text
 		TMrbXMLCodeElem * fParent;	// parent element

@@ -8,7 +8,7 @@
 // Class:          TMrbXMLCodeGen    -- Marabou's SAX parser implementation
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeGen.h,v 1.5 2008-02-18 12:29:03 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeGen.h,v 1.6 2008-03-05 12:23:44 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ class TMrbXMLCodeGen: public TObject {
 	public:
 
     	TMrbXMLCodeGen(const Char_t * XmlFile = NULL, TMrbXMLCodeClient * Client = NULL, Bool_t VerboseFlag = kFALSE);
-    	TMrbXMLCodeGen(const Char_t * XmlFile, TMrbXMLCodeClient * Client, const Char_t * Tag, TEnv * LofChildren, TEnv * LofSubst, TString & Code, Bool_t VerboseFlag = kFALSE);
+    	TMrbXMLCodeGen(const Char_t * XmlFile, TMrbXMLCodeClient * Client, const Char_t * Tag, TEnv * LofSubst, Bool_t VerboseFlag = kFALSE);
 		virtual ~TMrbXMLCodeGen() {};
 
 		void OnStartDocument() {};
@@ -59,13 +59,15 @@ class TMrbXMLCodeGen: public TObject {
 		inline TMrbXMLCodeClient * Client() { return(fClient); };
 		inline void ConnectToClient(TMrbXMLCodeClient * Client) { fClient = Client; };					// connect to client object
 
+		inline const Char_t * GetCode() { return(fRoot ? fRoot->GetCode() : NULL); };
 		inline Bool_t SelectiveMode() { return(fSelectiveMode); };
-		const Char_t * GetSelectionTag();
-		Bool_t SetExtractedCode(const Char_t * Code);
+
+		const Char_t * SelectionTag();
 		Bool_t StopParsing(Bool_t Flag = kTRUE);
-		inline TEnv * GetLofChildren() { return(fLofChildren); };
-		inline TEnv * GetLofSubst() { return(fLofSubst); };
+		inline TEnv * LofSubst() { return(fLofSubst); };
 		inline Bool_t ParsingToBeStopped() { return(fStopParsing); };
+		inline void FoundMatchingTag(Bool_t Flag = kTRUE) { fMatchingTag = Flag; };
+		inline Bool_t TagMatched() { return(fMatchingTag); };
 
 		inline const Char_t * GetXmlFile() { return(fXmlFile.Data()); };
 
@@ -82,11 +84,10 @@ class TMrbXMLCodeGen: public TObject {
 										// kTRUE: selective mode - extract one given tag only
 
 		Bool_t fStopParsing;			// stop flag
+		Bool_t fMatchingTag;			// kTRUE if tag matched in selective mode
 
 		TString fSelectionTag;			// if in selective mode: tag to be searched for
-		TEnv * fLofChildren;			// ... list of xml sub-tags
 		TEnv * fLofSubst;				// ... list of substitutions
-		TString fExtractedCode;			// ... code extracted due to tag selection
 
 		TSAXParser * fParser;			// connection to SAX parser
 		TString fXmlFile;				// xml document

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXMLCodeElem.cxx,v 1.9 2008-02-18 12:29:03 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.cxx,v 1.10 2008-03-05 12:23:44 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -78,7 +78,7 @@ Bool_t TMrbXMLCodeElem::NameIs(const Char_t * ElemName, Bool_t Verbose) {
 	TString elemName = this->GetName();
 	if (elemName.CompareTo(ElemName) != 0) {
 		if (Verbose) {
-			gMrbLog->Err() << "[" << this->GetName() << "] Wrong element (should be <" << ElemName << ">)" << endl;
+			gMrbLog->Err() << this->MsgHdr() << "Wrong element (should be <" << ElemName << ">)" << endl;
 			gMrbLog->Flush(this->ClassName(), "NameIs");
 		}
 		return(kFALSE);
@@ -106,13 +106,13 @@ Bool_t TMrbXMLCodeElem::ParentIs(const Char_t * LofParents, Bool_t Verbose) {
 			if (pname.CompareTo(pn.Data()) == 0) return(kTRUE);
 		}
 		if (Verbose) {
-			gMrbLog->Err() << "[" << this->GetName() << "] Wrong parent element - <" << pname << "> (should be one of these: " << LofParents << ")" << endl;
+			gMrbLog->Err() << this->MsgHdr() << "Wrong parent element - <" << pname << "> (should be one of these: " << LofParents << ")" << endl;
 			gMrbLog->Flush(this->ClassName(), "ParentIs");
 		}
 		return(kFALSE);
 	} else {
 		if (Verbose) {
-			gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
+			gMrbLog->Err() << this->MsgHdr() << "No parent element found" << endl;
 			gMrbLog->Flush(this->ClassName(), "ParentIs");
 		}
 		return(kFALSE);
@@ -132,7 +132,7 @@ Bool_t TMrbXMLCodeElem::HasChild(const Char_t * ChildName, Bool_t Verbose) {
 	TString childCode = fLofChildren.GetValue(ChildName, "");
 	if (childCode.IsNull()) {
 		if (Verbose) {
-			gMrbLog->Err() << "[" << this->GetName() << "] Child element missing - <" << ChildName << ">" << endl;
+			gMrbLog->Err() << this->MsgHdr() << "Child element missing - <" << ChildName << ">" << endl;
 			gMrbLog->Flush(this->ClassName(), "HasChild");
 		}
 		return(kFALSE);
@@ -154,7 +154,7 @@ Bool_t TMrbXMLCodeElem::HasChild(const Char_t * ChildName, TString & ChildCode, 
 	ChildCode = fLofChildren.GetValue(ChildName, "");
 	if (ChildCode.IsNull()) {
 		if (Verbose) {
-			gMrbLog->Err() << "[" << this->GetName() << "] Child element missing - <" << ChildName << ">" << endl;
+			gMrbLog->Err() << this->MsgHdr() << "Child element missing - <" << ChildName << ">" << endl;
 			gMrbLog->Flush(this->ClassName(), "HasChild");
 		}
 		return(kFALSE);
@@ -180,44 +180,17 @@ TMrbXMLCodeElem * TMrbXMLCodeElem::HasAncestor(const Char_t * Ancestor, Bool_t V
 			e = e->Parent();
 		}
 		if (Verbose) {
-			gMrbLog->Err() << "[" << this->GetName() << "] No ancestor <" << Ancestor << "> found" << endl;
+			gMrbLog->Err() << this->MsgHdr() << "No ancestor <" << Ancestor << "> found" << endl;
 			gMrbLog->Flush(this->ClassName(), "HasAncestor");
 		}
 		return(NULL);
 	} else {
 		if (Verbose) {
-			gMrbLog->Err() << "[" << this->GetName() << "] No parent element found" << endl;
+			gMrbLog->Err() << this->MsgHdr() << "No parent element found" << endl;
 			gMrbLog->Flush(this->ClassName(), "HasAncestor");
 		}
 		return(NULL);
 	}
-}
-
-Bool_t TMrbXMLCodeElem::TopLevelTypeIs(const Char_t * Type) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbXMLCodeElem::TopLevelTypeIs
-// Purpose:        Check if top level has expected type
-// Arguments:      Char_t * Type   -- type
-// Results:        kTRUE/kFALSE
-//////////////////////////////////////////////////////////////////////////////
-
-	TString mtype;
-	if (fNestingLevel == 0) 		mtype = fLofAttr.GetValue("type", "");
-	else if (fNestingLevel == 1)	mtype = fParent->LofAttr()->GetValue("type", "");
-	else							return(kTRUE);
-
-	if (mtype.IsNull()) {
-		gMrbLog->Err() << "[" << this->GetName() << "] Attribute missing - <mrbcode type=\"...\"> " << endl;
-		gMrbLog->Flush(this->ClassName(), "TopLevelTypeIs");
-		return(kFALSE);
-	}
-
-	if (mtype.CompareTo(Type) == 0) return(kTRUE);
-
-	gMrbLog->Err() << "[" << this->GetName() << "] Wrong attribute - <mrbcode type=\"" << mtype << "\"> (should be \"selective\")" << endl;
-	gMrbLog->Flush(this->ClassName(), "TopLevelTypeIs");
-	return(kFALSE);
 }
 
 Bool_t TMrbXMLCodeElem::CopyCodeToAncestor(TMrbXMLCodeElem * Ancestor, const Char_t * IndentString) {
@@ -238,7 +211,9 @@ Bool_t TMrbXMLCodeElem::CopyCodeToAncestor(TMrbXMLCodeElem * Ancestor, const Cha
 			TString line;
 			Int_t from = 0;
 			while (fCode.Tokenize(line, from, "\n")) {
-				if (!line.IsNull()) {
+				if (line.IsNull()) {
+					line = "\n";
+				} else {
 					if (line.BeginsWith("^")) line = line(1, line.Length());
 					else if (!line.BeginsWith("//")) line.Prepend(IndentString);
 				}
@@ -248,7 +223,7 @@ Bool_t TMrbXMLCodeElem::CopyCodeToAncestor(TMrbXMLCodeElem * Ancestor, const Cha
 		}
 		return(kTRUE);
 	} else {
-		gMrbLog->Err() << "[" << this->GetName() << "] No ancestor given" << endl;
+		gMrbLog->Err() << this->MsgHdr() << "No ancestor given" << endl;
 		gMrbLog->Flush(this->ClassName(), "CopyCodeToAncestor");
 		return(kFALSE);
 	}
@@ -280,7 +255,7 @@ Bool_t TMrbXMLCodeElem::CopyChildToAncestor(TMrbXMLCodeElem * Ancestor, const Ch
 		Ancestor->LofChildren()->SetValue(ChildName, childCode);
 		return(kTRUE);
 	} else {
-		gMrbLog->Err() << "[" << this->GetName() << "] No ancestor element given" << endl;
+		gMrbLog->Err() << this->MsgHdr() << "No ancestor element given" << endl;
 		gMrbLog->Flush(this->ClassName(), "CopyChildToAncestor");
 		return(kFALSE);
 	}
@@ -314,7 +289,7 @@ Bool_t TMrbXMLCodeElem::CopySubstToAncestor(TMrbXMLCodeElem * Ancestor, const Ch
 		}
 		return(kTRUE);
 	} else {
-		gMrbLog->Err() << "[" << this->GetName() << "] No ancestor element given" << endl;
+		gMrbLog->Err() << this->MsgHdr() << "No ancestor element given" << endl;
 		gMrbLog->Flush(this->ClassName(), "CopySubstToAncestor");
 		return(kFALSE);
 	}
@@ -336,7 +311,7 @@ Bool_t TMrbXMLCodeElem::GetChildFromAncestor(TMrbXMLCodeElem * Ancestor, const C
 		ElemCode = Ancestor->LofChildren()->GetValue(ElemName, "");
 		if (ElemCode.IsNull()) {
 			if (Verbose) {
-				gMrbLog->Err()	<< "[" << this->GetName() << "] Couldn't get element <" << ElemName
+				gMrbLog->Err()	<< this->MsgHdr() << "Couldn't get element <" << ElemName
 								<< "> from ancestor <" << Ancestor->GetName() << ">" << endl;
 				gMrbLog->Flush(this->ClassName(), "GetChildFromAncestor");
 			}
@@ -344,7 +319,7 @@ Bool_t TMrbXMLCodeElem::GetChildFromAncestor(TMrbXMLCodeElem * Ancestor, const C
 		}
 		return(kTRUE);
 	} else {
-		gMrbLog->Err() << "[" << this->GetName() << "] No ancestor element given" << endl;
+		gMrbLog->Err() << this->MsgHdr() << "No ancestor element given" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetChildFromAncestor");
 		return(kFALSE);
 	}
@@ -438,12 +413,13 @@ void TMrbXMLCodeElem::ClearSubst() {
 	}
 }
 
-Bool_t TMrbXMLCodeElem::Substitute(TString & Code, Bool_t Verbose) {
+Bool_t TMrbXMLCodeElem::Substitute(TString & Code, TEnv * LofSubst, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXMLCodeElem::Substitute
 // Purpose:        Replace substitutions
 // Arguments:      TString & Code   -- code containing substitutions
+//                 TEnv * LofSubst  -- list of substitutions
 //                 Bool_t Verbose   -- verbose flag
 // Results:        kTRUE/kFALSE
 // Description:    Searches for string '@#@' and replaces it
@@ -454,58 +430,88 @@ Bool_t TMrbXMLCodeElem::Substitute(TString & Code, Bool_t Verbose) {
 	Bool_t sts = kTRUE;
 	Int_t idx1 = 0;
 
+	Int_t hdrl = strlen("@#@");
 	while ((idx1 = Code.Index("@#@", idx1)) >= 0) {
-		idx1 += sizeof("@#@") - 1;
+		idx1 += hdrl;
 		Int_t idx2 = Code.Index("@", idx1);
 		if (idx2 < 0) {
-			gMrbLog->Err() << "[" << this->GetName() << "] Missing '@' at char pos " << idx1 << "+N - cant' resolve \"@#@|...@\"" << endl;
+			gMrbLog->Err() << this->MsgHdr() << "Missing '@' at char pos " << idx1 << "+N - cant' resolve \"@#@|...@\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "Substitute");
 			sts = kFALSE;
 		} else {
 			TString subst = Code(idx1, idx2 - idx1);
 			Int_t idx3 = subst.Index("|", 0);
 			if (idx3 < 0) {
-				gMrbLog->Err() << "[" << this->GetName() << "] Missing '|' at char pos " << idx1 << "+N - cant' resolve \"@#@|...@\"" << endl;
+				gMrbLog->Err() << this->MsgHdr() << "Missing '|' at char pos " << idx1 << "+N - cant' resolve \"@#@|...@\"" << endl;
 				gMrbLog->Flush(this->ClassName(), "Substitute");
 				sts = kFALSE;
 			} else {
 				TString attr = subst(0, idx3);
-				idx3 += sizeof("|") - 1;
+				idx3 += strlen("|");
 				TString sname = subst(idx3, subst.Length() - idx3);
 				TString res = Form("%s.Value", sname.Data());
-				TString sval = fLofSubst.GetValue(res.Data(), "undef");
+				TString sval = LofSubst ? LofSubst->GetValue(res.Data(), "undef") : fLofSubst.GetValue(res.Data(), "undef");
 				sval = sval.Strip(TString::kBoth);
 				if (sval.CompareTo("undef") == 0) {
 					if (Verbose) {
-						gMrbLog->Err() << "[" << this->GetName() << "] No such subst - " << sname << " (attr=" << attr << ")" << endl;
+						gMrbLog->Err() << this->MsgHdr() << "No such subst - " << sname << " (attr=" << attr << ")" << endl;
 						gMrbLog->Flush(this->ClassName(), "Substitute");
 						sts = kFALSE;
 					}
 				} else {
-					cout << "@@@ " << attr << " " << sname << " " << sval << endl;
 					if (attr.CompareTo("switch") == 0 || attr.CompareTo("if") == 0) {
 						Code(idx1 + idx3, idx2 - idx3 - idx1) = Form("%s|%s", sname.Data(), sval.Data());
 					} else if (attr.CompareTo("S") == 0) {
 						if (sval.IsNull()) {
-							Code.Remove(idx1 - sizeof("@#@") + 1, idx2 - idx1 + sizeof("@#@"));
+							Code.Remove(idx1 - hdrl, idx2 - idx1 + hdrl + 1);
 						} else {
 							sval(0,1).ToUpper();
-							Code(idx1 - sizeof("@#@") + 1, idx2 - idx1 + sizeof("@#@")) = sval;
+							Code(idx1 - hdrl, idx2 - idx1 + hdrl + 1) = sval;
 						}
 					} else if (attr.CompareTo("s") == 0) {
 						if (sval.IsNull()) {
-							Code.Remove(idx1 - sizeof("@#@") + 1, idx2 - idx1 + sizeof("@#@"));
+							Code.Remove(idx1 - hdrl, idx2 - idx1 + hdrl + 1);
 						} else {
-							Code(idx1 - sizeof("@#@") + 1, idx2 - idx1 + sizeof("@#@")) = sval;
+							Code(idx1 - hdrl, idx2 - idx1 + hdrl + 1) = sval;
 						}
-						cout << "@@@ " << Code << endl;
 					}
-					idx1 -= sizeof("@#@") - 1;
+					idx1 -= hdrl;
 				}
 			}
 		}
 	}
 	return(sts);
+}
+
+Bool_t TMrbXMLCodeElem::FindAttr(const Char_t * Aname, TString & Avalue, Bool_t Verbose) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::FindAttr
+// Purpose:        Search for a given attribute
+// Arguments:      Char_t * Aname    -- attr name
+//                 TString & Avalue  -- value
+// Results:        kTRUE/kFALSE
+// Description:    Searches for a given attribute
+//////////////////////////////////////////////////////////////////////////////
+
+	Avalue = "";
+	TList * lattr = (TList *) fLofAttr.GetTable();
+	if (lattr) {
+		TIterator * iter = lattr->MakeIterator();
+		TEnvRec * r;
+		while (r = (TEnvRec *) iter->Next()) {
+			TString s = r->GetName();
+			if (s.CompareTo(Aname) == 0) {
+				Avalue = r->GetValue();
+				return(kTRUE);
+			}
+		}
+	}
+	if (Verbose) {
+		gMrbLog->Err() << "[" << this->GetName() << "] No such attribute - " << Aname << endl;
+		gMrbLog->Flush(this->ClassName(), "FindAttr");
+	}
+	return(kFALSE);
 }
 
 Bool_t TMrbXMLCodeElem::ExpandSwitch(TString & Code) {
@@ -617,28 +623,69 @@ Bool_t TMrbXMLCodeElem::ExpandInclude(const Char_t * Tag, const Char_t * ItemNam
 
 	if (!this->NameIs("foreach")) return(kFALSE);
 
+	Int_t hdrl = strlen("@#@include|");
 	Bool_t sts = kTRUE;
 	Int_t idx1 = 0;
 	while ((idx1 = Code.Index("@#@include|", idx1)) >= 0) {
-		idx1 += sizeof("@#@include|") - 1;
+		cout << "@@@0 idx1=" << idx1 << " code=" << Code << endl;
+		idx1 += hdrl;
 		Int_t idx2 = Code.Index("@", idx1);
 		if (idx2 < 0) {
 			gMrbLog->Err() << "[" << this->GetName() << "] Missing '@' at char pos " << idx1 << "+N - cant' resolve \"@#@include|...@\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "ExpandInclude");
 			sts = kFALSE;
 		} else {
+			TString code = "";
 			TString item = Code(idx1, idx2 - idx1);
-			TString code;
-			this->RequestCode(Tag, ItemName, Item, code);
-			if (code.IsNull()) {
-				Code.Remove(idx1 - sizeof("@#@include|") + 1, idx2 - idx1 + sizeof("@#@include|"));
+			cout << "@@@0 idx2=" << idx2 << " item=" << item << endl;
+			Int_t idx3 = item.Index("|", 0);
+			getchar();
+			if (idx3 < 0) {
+				gMrbLog->Err() << this->MsgHdr() << "Missing '|' at char pos " << idx1 << "+N - cant' resolve \"@#@include|...@\"" << endl;
+				gMrbLog->Flush(this->ClassName(), "ExpandInclude");
+				sts = kFALSE;
 			} else {
-				Code(idx1 - sizeof("@#@include|") + 1, idx2 - idx1 + sizeof("@#@include|")) = code;
+				idx3 += strlen("|");
+				TString codeFile = item(idx3, item.Length() - idx3);
+				cout << "@@@ " << codeFile << " " << Tag << endl;
+				getchar();
+				gSystem->ExpandPathName(codeFile);
+				TString xmlPath = gEnv->GetValue("TMrbConfig.XMLPath", ".:config:$(MARABOU)/xml/config");
+				gSystem->ExpandPathName(xmlPath);
+
+				TString xmlFile = "";
+				TMrbSystem ux;
+				ux.Which(xmlFile, xmlPath.Data(), codeFile.Data());
+				if (xmlFile.IsNull()) {
+					gMrbLog->Err() << this->MsgHdr() << "XML file not found - " << codeFile << endl;
+					gMrbLog->Flush(this->ClassName(), "ExpandInclude");
+					gMrbLog->Err()	<< "Searching on path " << xmlPath << endl;
+					gMrbLog->Flush(this->ClassName(), "ExpandInclude", setred, kTRUE);
+				} else {
+					TMrbXMLCodeGen * codeGen = new TMrbXMLCodeGen(xmlFile.Data(), fParser->Client(), Tag, &fLofSubst, this->IsVerbose());
+					if (codeGen->IsZombie()) {
+						gMrbLog->Err() << this->MsgHdr() << "Can't process XML file - " << codeFile << endl;
+						gMrbLog->Flush("TMrbConfig", "ExpandInclude");
+						sts = kFALSE;
+					} else {
+						TString code = codeGen->GetCode();
+					}
+					delete codeGen;
+					codeGen = NULL;
+				}
+			}
+			if (code.IsNull()) {
+				Code.Remove(idx1 - hdrl, idx2 - idx1 + hdrl + 1);
+			} else {
+				Code(idx1 - hdrl, idx2 - idx1 + hdrl + 1) = code;
 			}
 		}
+		cout << "@@@1 code=|" << Code << "|" << endl;
+		getchar();
 	}
  	return(sts);
 }
+
 
 Bool_t TMrbXMLCodeElem::RequestLofItems(const Char_t * Tag, const Char_t * ItemName, TString & LofItems) {
 //________________________________________________________________[C++ METHOD]
@@ -728,33 +775,31 @@ Bool_t TMrbXMLCodeElem::RequestConditionFlag(const Char_t * Tag, const Char_t * 
 	}
 }
 
-Bool_t TMrbXMLCodeElem::RequestCode(const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TString & Code) {
+Bool_t TMrbXMLCodeElem::RequestTask(const Char_t * Tag, const Char_t * Subtag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbXMLCodeElem::RequestCode
-// Purpose:        Ask client for a piece of code
-// Arguments:      Char_t * Tag       -- current tag
-//                 Char_t * ItemName  -- item name
-//                 Char_t * Item      -- item value
-//                 TString & Code     -- where to place code
+// Name:           TMrbXMLCodeElem::RequestTask
+// Purpose:        Request task execution
+// Arguments:      Char_t * Tag             -- current tag
+//                 Char_t * Subtag          -- subtag
 // Results:        kTRUE/kFALSE
-// Description:    Interface to client object: Call for code
+// Description:    Interface to client object: Execute task
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fParser) {
 		TMrbXMLCodeClient * client = fParser->Client();
 		if (client) {
-			return(client->ProvideCode(this->GetName(), Tag, ItemName, Item, Code));
+			return(client->ExecuteTask(this->GetName(), Tag, Subtag));
 		} else {
-			gMrbLog->Err()	<< "[" << this->GetName() << "] No client connected - can't get substitutions for tag=\""
-							<< Tag << "\", item " << ItemName << "=\"" << Item << "\"" << endl;
-			gMrbLog->Flush(this->ClassName(), "RequestSubst");
+			gMrbLog->Err()	<< "[" << this->GetName() << "] No client connected - can't execute task for tag=\""
+							<< Tag << "\", subtag=\"" << Subtag << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "RequestTask");
 			return(kFALSE);
 		}
 	} else {
-		gMrbLog->Err()	<< "[" << this->GetName() << "] No XML parser connected - can't get substitutions for tag=\""
-						<< Tag << "\", item=\"" << Item << "\"" << endl;
-		gMrbLog->Flush(this->ClassName(), "RequestSubst");
+		gMrbLog->Err()	<< "[" << this->GetName() << "] No XML parser connected - can't execute task for tag=\""
+							<< Tag << "\", subtag=\"" << Subtag << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "RequestTask");
 		return(kFALSE);
 	}
 }
@@ -796,6 +841,7 @@ Bool_t TMrbXMLCodeElem::ProcessElement(const Char_t * ElemName) {
 			case kMrbXml_Foreach:		sts = this->ProcessElement_Foreach(); break;
 			case kMrbXml_Switch:		sts = this->ProcessElement_Switch(); break;
 			case kMrbXml_Case:			sts = this->ProcessElement_Case(); break;
+			case kMrbXml_Task:			sts = this->ProcessElement_Task(); break;
 			case kMrbXml_Item:			sts = this->ProcessElement_Item(); break;
 			case kMrbXml_Ftype: 		sts = this->ProcessElement_Ftype(); break;
 			case kMrbXml_ArgList:		sts = this->ProcessElement_ArgList(); break;
@@ -808,11 +854,14 @@ Bool_t TMrbXMLCodeElem::ProcessElement(const Char_t * ElemName) {
 			case kMrbXml_Inheritance:	sts = this->ProcessElement_Inheritance(); break;
 			case kMrbXml_ClassRef:		sts = this->ProcessElement_ClassRef(); break;
 			case kMrbXml_Tag:			sts = this->ProcessElement_Tag(); break;
+			case kMrbXml_Subtag:		sts = this->ProcessElement_Subtag(); break;
 			case kMrbXml_Flag:			sts = this->ProcessElement_Flag(); break;
 			case kMrbXml_FlagValue:		sts = this->ProcessElement_FlagValue(); break;
 			case kMrbXml_Fpath:			sts = this->ProcessElement_Fpath(); break;
 			case kMrbXml_Slist: 		sts = this->ProcessElement_Slist(); break;
 			case kMrbXml_Subst: 		sts = this->ProcessElement_Subst(); break;
+			case kMrbXml_Clist: 		sts = this->ProcessElement_Clist(); break;
+			case kMrbXml_Content: 		sts = this->ProcessElement_Content(); break;
 			case kMrbXml_Xname:			sts = this->ProcessElement_Xname(); break;
 			case kMrbXml_Mname:			sts = this->ProcessElement_Mname(); break;
 			case kMrbXml_Fname:			sts = this->ProcessElement_Fname(); break;
@@ -877,8 +926,6 @@ Bool_t TMrbXMLCodeElem::ProcessElement_File() {
 
 	if (!this->ParentIs("mrbcode")) return(kFALSE);
 
-	if (!this->TopLevelTypeIs("contiguous")) return(kFALSE);
-
 	TString gname;
 	if (!this->HasChild("gname", gname)) return(kFALSE);
 
@@ -889,8 +936,8 @@ Bool_t TMrbXMLCodeElem::ProcessElement_File() {
 
 	Bool_t err = !this->RequestSubst(tag.Data(), NULL, NULL, this->LofSubst());
 	if (this->SubstOk()) {
-		err |= !this->Substitute(gname, kTRUE);
-		err |= !this->Substitute(fCode, kTRUE);
+		err |= !this->Substitute(gname, NULL, kTRUE);
+		err |= !this->Substitute(fCode, NULL, kTRUE);
 	}
 
 	ofstream file(gname.Data(), ios::out);
@@ -899,8 +946,11 @@ Bool_t TMrbXMLCodeElem::ProcessElement_File() {
 		gMrbLog->Flush(this->ClassName(), "ProcessElement_File");
 		return(kFALSE);
 	}
-	file << fCode << endl;
+	file << fCode << endl;					// write code to file
 	file.close();
+
+	this->CopyCodeToAncestor(fParent);		// pass code to root element, too
+
 	if (this->IsVerbose()) {
 		gMrbLog->Out() << "[" << this->GetName() << "] Generated code written to file " << gname << endl;
 		gMrbLog->Flush(this->ClassName(), "ProcessElement_File");
@@ -935,7 +985,8 @@ Bool_t TMrbXMLCodeElem::ProcessElement_FileHdr() {
 	fCode += "//////////////////////////////////////////////////////////////////////////////\n";
 	fCode += "// Name:           "; fCode += fLofChildren.GetValue("gname", ""); fCode += "\n";
 	fCode += "// Purpose:        "; fCode += fLofChildren.GetValue("purp", ""); fCode += "\n";
-	fCode += "// Description:    "; fCode += fLofChildren.GetValue("descr", ""); fCode += "\n";
+	TString hdrLine;
+	fCode += this->FormatHeaderLine(hdrLine, "// Description:    ", fLofChildren.GetValue("descr", ""));
 	fCode += "// Author:         "; fCode += fLofChildren.GetValue("author", ""); fCode += "\n";
 	fCode += "// Mail:           "; fCode += fLofChildren.GetValue("mail", ""); fCode += "\n";
 	fCode += "// Revision:       "; fCode += fLofChildren.GetValue("version", ""); fCode += "\n";
@@ -957,23 +1008,29 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Method() {
 // Description:    Generates code for a C++ method
 //////////////////////////////////////////////////////////////////////////////
 
-	if (!this->TopLevelTypeIs("selective")) return(kFALSE);
-
 	TString tag;
 	Bool_t err = kFALSE;
 	if (this->HasChild("tag", tag, kFALSE)) {
 		this->ClearSubst();
-		err |= !this->RequestSubst(tag.Data(), NULL, NULL, this->LofSubst());
 
 		if (fParser && fParser->SelectiveMode()) {
-			if (this->SubstOk()) {
-				err |= !this->Substitute(fCode);
-				if (tag.CompareTo(fParser->GetSelectionTag()) == 0) {
-					fParser->SetExtractedCode(fCode.Data());
+			if (this->SubstOk(this->Parser()->LofSubst())) {
+				err |= !this->Substitute(fCode, this->Parser()->LofSubst());
+				if (tag.CompareTo(fParser->SelectionTag()) == 0) {
 					fParser->StopParsing();
+					fParser->FoundMatchingTag();
+				} else {
+					return(!err);
 				}
-			} else if (tag.CompareTo(fParser->GetSelectionTag()) == 0) fParser->StopParsing();
-		} else if (!this->SubstOk()) return(kTRUE);
+			} else if (tag.CompareTo(fParser->SelectionTag()) == 0) {
+				fParser->StopParsing();
+				fParser->FoundMatchingTag();
+				return(!err);
+			}
+		} else {
+			err |= !this->RequestSubst(tag.Data(), NULL, NULL, this->LofSubst());
+			if (!this->SubstOk()) return(kTRUE);
+		}
 	}
 
 	err |= !this->CopyCodeToAncestor(fParent, "\t");
@@ -1007,7 +1064,8 @@ Bool_t TMrbXMLCodeElem::ProcessElement_MethodHdr() {
 
 	fCode = "\n^";
 	TString str = fLofChildren.GetValue("returnVal", "");
-	fCode += str(0, str.Index("|", 0));
+	if (str.IsNull())	fCode += "void";
+	else				fCode += str(0, str.Index("|", 0));
 	fCode += Form(" %s::%s(", fLofChildren.GetValue("cname", ""), fLofChildren.GetValue("mname", ""));
 
 	TString argList = fLofChildren.GetValue("argList", "");
@@ -1017,8 +1075,8 @@ Bool_t TMrbXMLCodeElem::ProcessElement_MethodHdr() {
 		TObjArray * a = str.Tokenize("|");
 		Int_t n = a->GetEntriesFast();
 		TString atype = (n >= 1) ? ((TObjString *) a->At(0))->GetString() : "";
-		TString aname = (n >= 1) ? ((TObjString *) a->At(1))->GetString() : "";
-		TString adescr = (n >= 1) ? ((TObjString *) a->At(2))->GetString() : "";
+		TString aname = (n >= 2) ? ((TObjString *) a->At(1))->GetString() : "";
+		TString adescr = (n >= 3) ? ((TObjString *) a->At(2))->GetString() : "";
 		if (argn > 0) fCode += ", ";
 		fCode += Form("%s %s", atype.Data(), aname.Data());
 		delete a;
@@ -1038,8 +1096,8 @@ Bool_t TMrbXMLCodeElem::ProcessElement_MethodHdr() {
 		TObjArray * a = str.Tokenize("|");
 		Int_t n = a->GetEntriesFast();
 		TString atype = (n >= 1) ? ((TObjString *) a->At(0))->GetString() : "";
-		TString aname = (n >= 1) ? ((TObjString *) a->At(1))->GetString() : "";
-		TString adescr = (n >= 1) ? ((TObjString *) a->At(2))->GetString() : "";
+		TString aname = (n >= 2) ? ((TObjString *) a->At(1))->GetString() : "";
+		TString adescr = (n >= 3) ? ((TObjString *) a->At(2))->GetString() : "";
 		aname = Form("%s %s", atype.Data(), aname.Data());
 		fCode += Form("%s%-20s -- %s\n", head.Data(), aname.Data(), adescr.Data());
 		head = "                   ";
@@ -1052,13 +1110,14 @@ Bool_t TMrbXMLCodeElem::ProcessElement_MethodHdr() {
 	TObjArray * a = str.Tokenize("|");
 	Int_t n = a->GetEntriesFast();
 	TString atype = (n >= 1) ? ((TObjString *) a->At(0))->GetString() : "";
-	TString aname = (n >= 1) ? ((TObjString *) a->At(1))->GetString() : "";
-	TString adescr = (n >= 1) ? ((TObjString *) a->At(2))->GetString() : "";
+	TString aname = (n >= 2) ? ((TObjString *) a->At(1))->GetString() : "";
+	TString adescr = (n >= 3) ? ((TObjString *) a->At(2))->GetString() : "";
 	aname = Form("%s %s", atype.Data(), aname.Data());
 	fCode += Form("%s%-20s -- %s\n", head.Data(), aname.Data(), adescr.Data());
 	delete a;
 
-	fCode += "// Description:    "; fCode += fLofChildren.GetValue("descr", ""); fCode += "\n";
+	TString hdrLine;
+	fCode += this->FormatHeaderLine(hdrLine, "// Description:    ", fLofChildren.GetValue("descr", ""));
 	fCode += "//////////////////////////////////////////////////////////////////////////////\n\n";
 
 	Bool_t err = !this->CopyCodeToAncestor(fParent);
@@ -1085,23 +1144,28 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Code() {
 // Child elems:    <tag>      -- (opt) identifying tag
 //////////////////////////////////////////////////////////////////////////////
 
-	if (!this->TopLevelTypeIs("selective")) return(kFALSE);
-
 	Bool_t err = kFALSE;
 	TString tag;
 	if (this->HasChild("tag", tag, kFALSE)) {
+
 		this->ClearSubst();
-		err |= !this->RequestSubst(tag.Data(), NULL, NULL, this->LofSubst());
 
 		if (fParser && fParser->SelectiveMode()) {
-			if (this->SubstOk()) {
-				err |= !this->Substitute(fCode);
-				if (tag.CompareTo(fParser->GetSelectionTag()) == 0) {
-					fParser->SetExtractedCode(fCode.Data());
+			if (this->SubstOk(this->Parser()->LofSubst())) {
+				err |= !this->Substitute(fCode, this->Parser()->LofSubst());
+				if (tag.CompareTo(fParser->SelectionTag()) == 0) {
 					fParser->StopParsing();
+					fParser->FoundMatchingTag();
+				} else {
+					return(!err);
 				}
-			} else if (tag.CompareTo(fParser->GetSelectionTag()) == 0) fParser->StopParsing();
+			} else if (tag.CompareTo(fParser->SelectionTag())) {
+				fParser->StopParsing();
+				fParser->FoundMatchingTag();
+				return(!err);
+			}
 		} else {
+			err |= !this->RequestSubst(tag.Data(), NULL, NULL, this->LofSubst());
 			if (this->SubstOk())	err |= !this->Substitute(fCode);
 			else					return(kTRUE);
 		}
@@ -1123,6 +1187,27 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Cbody() {
 //////////////////////////////////////////////////////////////////////////////
 
 	return(this->CopyCodeToAncestor(fParent));
+}
+
+Bool_t TMrbXMLCodeElem::ProcessElement_Task() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::ProcessElement_Task
+// Purpose:        Task execution: <task>...</task>
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    Execute external task
+// Child elems:    <subtag>      -- (opt) identifying subtag
+//                 <descr>       -- (opt) description
+//////////////////////////////////////////////////////////////////////////////
+
+	TString tag;
+	if (!this->FindTag(tag)) return(kFALSE);
+
+	TString subtag;
+	this->HasChild("subtag", subtag, kFALSE);
+
+	return(this->RequestTask(tag.Data(), subtag.Data()));
 }
 
 Bool_t TMrbXMLCodeElem::ProcessElement_Foreach() {
@@ -1332,12 +1417,20 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Include() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString fpath;
-	if (this->HasChild("fpath", fpath, kFALSE)) {
+	if (!this->HasChild("fpath", fpath)) return(kFALSE);
+
+	if (this->ParentIs("foreach", kFALSE)) {
 		TString tag;
-		if (!this->HasChild("tag", tag)) return(kFALSE);
+		if (!this->FindTag(tag)) return(kFALSE);
+		TString item;
+		if (!this->GetChildFromAncestor(fParent, "item", item)) return(kFALSE);
+		fCode = Form("@#@include|%s|%s@\n", item.Data(), fpath.Data());
+		return(this->CopyCodeToAncestor(fParent));
+	} else {
+		TString tag;
+		Bool_t hasTag = this->HasChild("tag", tag, kFALSE);
 
 		gSystem->ExpandPathName(fpath);
-
 		TString xmlPath = gEnv->GetValue("TMrbConfig.XMLPath", ".:config:$(MARABOU)/xml/config");
 		gSystem->ExpandPathName(xmlPath);
 
@@ -1345,33 +1438,35 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Include() {
 		TMrbSystem ux;
 		ux.Which(xmlFile, xmlPath.Data(), fpath.Data());
 		if (xmlFile.IsNull()) {
-			gMrbLog->Err() << "[" << this->GetName() << "] XML file not found - " << fpath << endl;
+			gMrbLog->Err() << this->MsgHdr() << "XML file not found - " << fpath << endl;
 			gMrbLog->Flush(this->ClassName(), "ProcessElement_Include");
 			gMrbLog->Err()	<< "Searching on path " << xmlPath << endl;
 			gMrbLog->Flush(this->ClassName(), "ProcessElement_Include", setred, kTRUE);
 			return(kFALSE);
 		}
+
 		fCode = "";
-		TMrbXMLCodeGen * codeGen = new TMrbXMLCodeGen(xmlFile, fParser->Client(), tag.Data(), &fLofChildren, &fLofSubst, fCode, this->IsVerbose());
+		TMrbXMLCodeGen * codeGen;
+		if (hasTag) {
+			codeGen = new TMrbXMLCodeGen(xmlFile, fParser->Client(), tag.Data(), &fLofSubst, this->IsVerbose());
+			if (!codeGen->TagMatched()) {
+				gMrbLog->Err() << this->MsgHdr() << "No such tag - " << tag << " (file " << gSystem->BaseName(xmlFile.Data()) << ")" << endl;
+				gMrbLog->Flush(this->ClassName(), "ProcessElement_Include");
+			}
+		} else {
+			codeGen = new TMrbXMLCodeGen(xmlFile, fParser->Client(), this->IsVerbose());
+		}
+
 		if (codeGen->IsZombie()) {
-			gMrbLog->Err() << "Can't process XML file - " << xmlFile << endl;
+			gMrbLog->Err() << this->MsgHdr() << "Can't process XML file - " << xmlFile << endl;
 			gMrbLog->Flush("TMrbConfig", "ProcessElement_Include");
 			return(kFALSE);
 		}
+
+		fCode = codeGen->GetCode();
 		delete codeGen;
 		codeGen = NULL;
-		return(kTRUE);
-	} else if (this->ParentIs("foreach", kFALSE)) {
-		TString tag;
-		if (!this->FindTag(tag)) return(kFALSE);
-		TString item;
-		if (!this->GetChildFromAncestor(fParent, "item", item)) return(kFALSE);
-		fCode = Form("@#@include|%s@\n", item.Data());
 		return(this->CopyCodeToAncestor(fParent));
-	} else {
-		TString tag;
-		if (!this->HasChild("tag", tag)) return(kFALSE);
-		return(this->RequestCode(tag.Data(), NULL, NULL, fCode));
 	}
 }
 
@@ -1430,11 +1525,36 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Tag() {
 // Arguments:      --
 // Results:        kTRUE/kFALSE
 // Description:    Passes tag to parent
-// Parent elems:   <code>    -- tagged code block
+// Parent elems:   <file>    -- file
+//                 <class>   -- c++ class
+//                 <ctor>    -- c++ constructor
+//                 <method>  -- c++ method
+//                 <funct>   -- function
+//                 <includr> -- include code (from file)
+//                 <foreach> -- loop
+//                 <code>    -- tagged code block
 //                 <case>    -- case statement within <switch>
 //////////////////////////////////////////////////////////////////////////////
 
 	if (this->ParentIs("file|class|ctor|method|funct|include|foreach|code|case")) {
+		return(this->CopyChildToAncestor(fParent, this->GetName(), fCode));
+	} else {
+		return(kFALSE);
+	}
+}
+
+Bool_t TMrbXMLCodeElem::ProcessElement_Subtag() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::ProcessElement_Tag
+// Purpose:        Tag: <tag>...</tag>
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    Passes tag to parent
+// Parent elems:   <task>    -- execute external task
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->ParentIs("task")) {
 		return(this->CopyChildToAncestor(fParent, this->GetName(), fCode));
 	} else {
 		return(kFALSE);
@@ -1532,6 +1652,34 @@ Bool_t TMrbXMLCodeElem::ProcessElement_Subst() {
 	this->FindTag(tag, kFALSE);
 	return(this->CopySubstToAncestor(fParent, sname.Data(), descr.Data(), tag.Data()));
 };
+
+Bool_t TMrbXMLCodeElem::ProcessElement_Clist() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::ProcessElement_Clist
+// Purpose:        List of contents: <clist>...</clist>
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    --
+// Parent elems:   <include>    -- include file
+//////////////////////////////////////////////////////////////////////////////
+
+	return(this->ParentIs("include"));
+}
+
+Bool_t TMrbXMLCodeElem::ProcessElement_Content() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::ProcessElement_Content
+// Purpose:        Content element: <content>...</content>
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    --
+// Parent elems:   <clist>    -- list of contents
+//////////////////////////////////////////////////////////////////////////////
+
+	return(this->ParentIs("clist"));
+}
 
 Bool_t TMrbXMLCodeElem::ProcessElement_s() {
 //________________________________________________________________[C++ METHOD]
@@ -1735,7 +1883,62 @@ void TMrbXMLCodeElem::Debug(ostream & Out, TString & FocusOnElement, TString & F
 	}
 }
 
+const Char_t * TMrbXMLCodeElem::MsgHdr() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::MsgHdr
+// Purpose:        Format message header
+// Arguments:      --    
+// Description:    Format header for (erro) output
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fParser) {
+		return(Form("[%s <%s>] ", gSystem->BaseName(fParser->GetXmlFile()), this->GetName()));
+	} else {
+		return(Form("[<%s>] ", this->GetName()));
+	}
+}
+
+
+const Char_t * TMrbXMLCodeElem::FormatHeaderLine(TString & FmtText, const Char_t * LineHdr, const Char_t * Text) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::FormatHeaderLine
+// Purpose:        Format a header line
+// Arguments:      TString & FmtText    -- where to write formatted output
+//                 Char_t * LineHdr     -- start of header line
+//                 Char_t * Text        -- text to be formatted
+// Results:        Char_t * FmtText     -- ptr to formatted output     
+// Description:    Wraps "@#@s|...@" (substitution, lower case) around code
+//                 then adds code to list of substitutions
+//////////////////////////////////////////////////////////////////////////////
+
+	FmtText = "";
+	Int_t lng = strlen(LineHdr) - 2;
+	Int_t from = 0;
+	TString line;
+	TString text = Text;
+	while (text.Tokenize(line, from, "\n")) {
+		line = line.Strip(TString::kBoth);
+		if (line.IsNull()) continue;
+		line.Prepend(LineHdr);
+		LineHdr = Form("//%*s", lng, " ");
+		FmtText += line;
+		FmtText += "\n";
+	}
+	return(FmtText.Data());
+}
+
 void TMrbXMLCodeElem::Indent(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXMLCodeElem::Indent
+// Purpose:        Indent text
+// Arguments:      ostream & Out     -- output stream
+// Results:        -- 
+// Description:    Indents text according to nesting level
+//////////////////////////////////////////////////////////////////////////////
+
 	Out << Form("[%2d]", fNestingLevel);
 	for (Int_t i = 0; i < fNestingLevel; i++) Out << "  ";
 }

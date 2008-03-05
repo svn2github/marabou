@@ -10,7 +10,7 @@
 // Class:          TMrbXMLCodeClient    -- Virtual class to connect to XML code generator
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXMLCodeClient.h,v 1.2 2008-02-18 12:29:03 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeClient.h,v 1.3 2008-03-05 12:23:44 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,8 @@ class TMrbXMLCodeClient {
 		virtual Bool_t ProvideLofItems(const Char_t * Element, const Char_t * Tag, const Char_t * ItemName, TString & LofItems);
 		virtual Bool_t ProvideConditionFlag(const Char_t * Element, const Char_t * Tag, const Char_t * FlagName, TString & FlagValue);
 		virtual Bool_t ProvideSubst(const Char_t * Element, const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TEnv * LofSubst);
-		virtual Bool_t ProvideCode(const Char_t * Element, const Char_t * Tag, const Char_t * ItemName, const Char_t * Item, TString & Code);
+		virtual Bool_t ProvideCode(const Char_t * Element, const Char_t * Tag, TEnv * LofSubst, const Char_t * ItemName, const Char_t * Item, TString & Code);
+		virtual Bool_t ExecuteTask(const Char_t * Element, const Char_t * Tag, const Char_t * Subtag);
 
 		inline Bool_t IsVerbose() { return(fVerboseMode); };
 
