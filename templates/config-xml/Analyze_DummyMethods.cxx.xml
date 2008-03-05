@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE mrbcode SYSTEM "mrbcode.dtd">
+
+<?xml-stylesheet type="text/xsl" href="mrbcode.xsl" ?>
+
+<mrbcode type="selective">
+    <method indent="1">
+    <tag>DUMMY_INITIALIZE_CODE</tag>
+    <methodHdr>
+        <mname>InitializeUserCode</mname>
+        <cname><m>TMrbAnalyze</m></cname>
+        <purp>Initialize user code</purp>
+        <argList>
+            <arg>
+                <aname>IOSpec</aname>
+                <atype><m>TMrbIOSpec</m> *</atype>
+                <descr>i/o specifications</descr>
+            </arg>
+            <arg>
+                <aname>BeforeHB</aname>
+                <atype>Bool_t</atype>
+                <descr>kTRUE if called before booking histos</descr>
+            </arg>
+        </argList>
+        <returnVal>
+            <arg>
+                <aname>Flag</aname>
+                <atype>Bool_t</atype>
+                <descr>kTRUE/kFALSE</descr>
+            </arg>
+        </returnVal>
+        <descr>Dummy method, may be overwritten by user's own code<nl/>Will be called twice: <b>before</b> and <b>after</b> booking histograms</descr>
+    </methodHdr>
+    <code indent="2">
+        <cbody>
+            <l>return(kFALSE);</l>
+        </cbody>
+    </code>			
+</method>
+<method indent="1">
+    <tag>DUMMY_HANDLE_MESSAGES</tag>
+    <methodHdr>
+        <mname>HandleMessage</mname>
+        <cname><m>TMrbAnalyze</m></cname>
+        <purp>Respond to message requests sent by the message handler</purp>
+        <argList>
+            <arg>
+                <aname>Args</aname>
+                <atype>Char_t *</atype>
+                <descr>argument list</descr>
+            </arg>
+        </argList>
+        <returnVal>
+            <arg>
+                <aname>Flag</aname>
+                <atype>Bool_t</atype>
+                <descr>kTRUE/kFALSE</descr>
+            </arg>
+        </returnVal>
+        <descr>Dummy method, may be overwritten by user's own code</descr>
+    </methodHdr>
+    <code indent="2"><cbody>
+        <l>return(kFALSE);</l>
+    </cbody></code>			
+</method>
+<method indent="1">
+    <tag>DUMMY_RELOAD_PARAMS</tag>
+    <methodHdr>
+        <mname>ReloadParams</mname>
+        <cname><m>TMrbAnalyze</m></cname>
+        <purp>Reload parameters from file</purp>
+        <argList>
+            <arg>
+                <aname>IOSpec</aname>
+                <atype><m>TMrbIOSpec</m> *</atype>
+                <descr>i/o specifications</descr>
+            </arg>
+        </argList>
+        <returnVal>
+            <arg>
+                <aname>Flag</aname>
+                <atype>Bool_t</atype>
+                <descr>kTRUE/kFALSE</descr>
+            </arg>
+        </returnVal>
+        <descr>Dummy method, may be overwritten by user's own code</descr>
+    </methodHdr>
+    <code indent="2">
+        <cbody>
+            <l>Bool_t sts = <m class="TMrbAnalyze">this</m>-><mm class="TMrbAnalyze">ReloadVarsAndWdws</mm>(<m class="TMrbIOSpec">IOSpec</m>);	// read specs from file (ascii or ROOT)</l>
+            <l><m class="TMrbAnalyze">this</m>->AdjustWindowPointers();	// fix address for 2-dim windows</l>
+            <l>return(sts);	</l>
+        </cbody>
+    </code>			
+</method>
+<method indent="1">
+    <tag>DUMMY_FINISH_RUN</tag>
+    <methodHdr>
+        <mname>FinishRun</mname>
+        <cname><m>TMrbAnalyze</m></cname>
+        <purp>Do some work at end of run</purp>
+        <argList>
+            <arg>
+                <aname>BeforeSH</aname>
+                <atype>Bool_t</atype>
+                <descr>kTRUE if called before saving histos</descr>
+            </arg>
+        </argList>
+        <returnVal>
+            <arg>
+                <aname>Flag</aname>
+                <atype>Bool_t</atype>
+                <descr>kTRUE/kFALSE</descr>
+            </arg>
+        </returnVal>
+        <descr>Dummy method, may be overwritten by user's own code<nl/>Will be called twice: <b>before</b> and <b>after</b> saving histograms</descr>
+    </methodHdr>
+    <code indent="2">
+        <cbody>
+            <l>return(kFALSE);</l>
+        </cbody>
+    </code>			
+</method>
+</mrbcode>

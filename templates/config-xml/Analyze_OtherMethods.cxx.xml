@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE mrbcode SYSTEM "mrbcode.dtd">
+
+<?xml-stylesheet type="text/xsl" href="mrbcode.xsl" ?>
+
+<mrbcode type="selective"><method indent="1">
+    <tag>WDW_ADJUST_POINTERS</tag>
+    <methodHdr>
+        <mname>AdjustWindowPointers</mname>
+        <cname><m>TMrbAnalyze</m></cname>
+        <purp>Adjust pointers to (2-dim) windows after reload</purp>
+        <returnVal>
+            <arg>
+                <aname>Flag</aname>
+                <atype>Bool_t</atype>
+                <descr>kTRUE/kFALSE</descr>
+            </arg>
+        </returnVal>
+        <descr>2-dim window objects have changed their addresses after reload.<nl/>Pointers therefore have to be adjusted to new addresses.</descr>
+    </methodHdr>
+    <foreach indent="2">
+        <item>window</item>
+        <slist>
+            <subst><sname>wdwName</sname><descr>window name</descr></subst>
+            <subst><sname>wdwClass</sname><descr>class name</descr></subst>
+        </slist>
+        <cbody>
+            <l><s>wdwName</s> = (<s>wdwClass</s> *) <m class="TMrbLofUserVars">gMrbLofUserVars</m>-><mm class="TMrbLofUserVars">Find</mm>("<s>wdwName</s>");</l>
+        </cbody>
+    </foreach>			
+    <code indent="2">
+        <cbody>
+            <l>return(kTRUE);</l>
+        </cbody>
+    </code>			
+</method>
+    <method indent="1">
+        <tag>EVT_SET_SCALEDOWN</tag>
+        <methodHdr>
+            <mname>SetScaleDown</mname>
+            <cname><m>TMrbAnalyze</m></cname>
+            <purp>Set a scale-down value common to all events</purp>
+            <argList>
+                <arg>
+                    <aname>ScaleDown</aname>
+                    <atype>Int_t</atype>
+                    <descr>scale-down factor</descr>
+                </arg>
+            </argList>
+            <descr>Defines a global scale-down factor valid for all events.</descr>
+        </methodHdr>
+        <code>			
+            <cbody><l>fScaleDown = ScaleDown;</l></cbody>
+        </code>
+        <foreach indent="2">
+            <comment type="code">set scale down individually for each event</comment>
+            <item>event</item>
+            <descr>once per event</descr>
+            <slist>
+                <subst><sname>className</sname><descr>class name</descr></subst>
+                <subst><sname>evtName</sname><descr>event name</descr></subst>
+                <subst><sname>trigNo</sname><descr>trigger number</descr></subst>
+                <subst><sname>eventType</sname><descr>event type: E=readout/hardware, U=user-defined</descr></subst>
+            </slist>
+            <switch indent="3">
+                <item>eventType</item>
+                <case>
+                    <tag>E</tag>
+                    <descr>normal (hardware) event</descr>
+                    <cbody>
+                        <l>// event <s>evtName</s>, trigger <s>trigNo</s></l>
+                        <l>g<S>evtName</S>->SetScaleDown(ScaleDown);</l>
+                    </cbody>
+                </case>
+                <case>
+                    <tag>U</tag>
+                    <descr>user-defined event</descr>
+                    <cbody>
+                        <l>// user-defined event <s>className</s></l>
+                        <l>g<S>className</S>->SetScaleDown(ScaleDown);</l>
+                    </cbody>
+                </case>
+            </switch>
+        </foreach>
+    </method>
+</mrbcode>

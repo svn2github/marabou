@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE mrbcode SYSTEM "mrbcode.dtd">
+
+<?xml-stylesheet type="text/xsl" href="mrbcode.xsl" ?>
+
+<mrbcode type="contiguous">
+	<file>
+		<tag type="root">ANA_XML_ROOT</tag>
+		<slist type="global">
+			<subst><sname>xprefix</sname><descr>description/name of experiment</descr></subst>
+			<subst><sname>expTitle</sname><descr>title of experiment</descr></subst>
+			<subst><sname>author</sname><descr>author's name</descr></subst>
+			<subst><sname>mailAddr</sname><descr>author's mail address</descr></subst>
+			<subst><sname>URL</sname><descr>author's URL</descr></subst>
+			<subst><sname>purpose</sname><descr>purpose of this code</descr></subst>
+		</slist>
+		<fileHdr>
+			<xname>Analyze.cxx.xml</xname>
+			<gname><S>xprefix</S>Analyze.cxx</gname>
+			<purp><S>purpose</S></purp>
+			<rootClassList>	<classRef><cname>TSystem</cname><descr>Interface ROOT&lt;-&gt;Linux</descr></classRef>
+						<classRef><cname>TEnv</cname><descr>ROOT's environment</descr></classRef>
+			</rootClassList>
+			<mrbClassList>	<classRef><cname>TMrbLogger</cname><descr>Message logger</descr></classRef>
+						<classRef><cname>TMrbTransport</cname><descr>Transport manager MBS-&gt;ROOT</descr></classRef>
+						<classRef><cname>TMrbAnalyze</cname><descr>Base object for user's acquisition/analysis</descr></classRef>
+						<classRef><cname>TMrbLofUserVars</cname><descr>List of user variables</descr></classRef>
+						<classRef><cname>TMrbIOSpec</cname><descr>I/O specifications</descr></classRef>
+						<classRef><cname>TUsrEvtStart</cname><descr>Start event</descr></classRef>
+						<classRef><cname>TUsrEvtStop</cname><descr>Stop event</descr></classRef>
+						<classRef><cname>TUsrDeadTime</cname><descr>Dead time monitor</descr></classRef>
+			</mrbClassList>
+			<author><S>author</S></author>
+			<mail><s>mailAddr</s></mail>
+			<url><s>URL</s></url>
+			<version>$Id: Analyze.cxx.xml,v 1.1 2008-03-05 12:43:17 Rudolf.Lutter Exp $</version>
+			<date>$Date: 2008-03-05 12:43:17 $</date>
+		</fileHdr>
+		<code indent="1">
+			<comment type="code">class definitions</comment>
+			<cbody>
+				<l>#include "<S>xprefix</S>Analyze.h"</l>
+			</cbody>
+		</code>
+		<code indent="1">
+			<comment type="code">common index declarations for analysis and readout</comment>
+			<cbody>
+				<l>#include "<S>xprefix</S>CommonIndices.h"</l>
+			</cbody>
+		</code>
+		<code indent="1">
+			<cbody>
+				<l>#include "SetColor.h"</l><l>#include "pthread.h" 	// pthread header file</l>
+			</cbody>
+		</code>
+		<foreach indent="1">
+			<tag>INCLUDE_USER_GLOBALS</tag>
+			<comment type="code">global defs supplied by user</comment>
+			<item>file</item>
+			<descr>more than one file possible</descr>
+			<slist><subst><sname>iclFile</sname><descr>file containing globals defined by user</descr></subst></slist>
+			<cbody>
+				<l>#include "<s>iclFile</s>"</l>
+			</cbody>
+		</foreach>
+		<code indent="1">
+			<comment type="code">global objects</comment>
+			<cbody>
+				<l>#include "<S>xprefix</S>AnalyzeGlobals.h"</l>
+			</cbody>
+		</code>
+		<code indent="1">
+			<tag>INCLUDE_EVT_SEVT_MOD_GLOBALS</tag>
+			<comment type="code">special global defs for events, subevents, and modules</comment>
+			<foreach indent="2">
+				<item>event</item>
+				<descr>once per event</descr>
+				<slist>
+					<subst><sname>evtName</sname><descr>event name</descr></subst>
+					<subst><sname>codeFile</sname><descr>file containing global defs</descr></subst>
+				</slist>
+				<include indent="3"><fpath type="subst"><s>codeFile</s></fpath><descr>event-specific definitions</descr></include>
+			</foreach>
+			<foreach indent="2">
+				<item>subevent</item>
+				<descr>once per subevent</descr>
+				<slist>
+					<subst><sname>sevtName</sname><descr>subevent name</descr></subst>
+					<subst><sname>codeFile</sname><descr>file containing global defs</descr></subst>
+				</slist>
+				<include indent="3"><fpath type="subst"><s>codeFile</s></fpath><descr>subevent-specific definitions</descr></include>
+			</foreach>
+			<foreach indent="2">
+				<item>module</item>
+				<descr>once per module</descr>
+				<slist>
+					<subst><sname>moduleName</sname><descr>module name</descr></subst>
+					<subst><sname>codeFile</sname><descr>file containing global defs</descr></subst>
+				</slist>
+				<include indent="3"><fpath type="subst"><s>codeFile</s></fpath><descr>module-specific definitions</descr></include>
+			</foreach>
+		</code>
+		<foreach indent="1">
+			<tag>IMPLEMENT_CLASSES</tag>
+			<comment type="code">implement class defs</comment>
+			<item>class</item>
+			<descr>one statement per class</descr>
+			<slist><subst><sname>cname</sname><descr>class name</descr></subst></slist>
+			<cbody>
+				<l>ClassImp(<s>cname</s>)</l>
+			</cbody>
+		</foreach>
+		<code indent="1">
+			<comment type="code">global vars and external refs</comment>
+			<cbody>
+				<l>extern pthread_mutex_t global_data_mutex;			//  global pthread mutex to protect TMapped data</l>
+				<nl/>
+				<l>extern <m>TMrbLogger</m> * gMrbLog;					//  MARaBOU's logging mechanism</l>
+				<nl/>
+				<l>extern <m>TMrbTransport</m> * gMrbTransport;				//  base class for MBS transport</l>
+				<l>extern <m>TMrbAnalyze</m> * gMrbAnalyze;				//  base class for user's analysis</l>
+				<nl/>				
+				<l>extern <m>TUsrEvtStart</m> * gStartEvent;					//  start + stop events</l>
+				<l>extern <m>TUsrEvtStop</m> * gStopEvent;</l>
+				<l>extern <m>TUsrDeadTime</m> * gDeadTime;				//  dead-time data</l>
+				<nl/>				
+				<l>extern <m>TMrbLofUserVars</m> * gMrbLofUserVars;			//  list of user vars/wdws</l>
+				<nl/>				
+				<l>static Bool_t verboseMode = kFALSE;					//  verbosity flag;</l>
+				<l>static Bool_t forcedDump = kFALSE;				//  kTRUE -> dump records</l>
+				<l>static Int_t recNo = 0;</l>
+			</cbody>
+		</code>
+		
+		<include indent="1">
+			<fpath>Analyze_Initialize.cxx.xml</fpath>
+			<clist><content><cname><m>TMrbAnalyze</m>::Initialize()</cname><descr>[C++ method]</descr></content></clist>
+			<descr>Instantiate user objects, initialize values</descr>
+		</include>
+		<include indent="1">
+			<tag>DUMMY_INITIALIZE_CODE</tag>
+			<fpath>Analyze_DummyMethods.cxx.xml</fpath>
+			<clist><content><cname><m>TMrbAnalyze</m>::InitializeUserCode()</cname><descr>[C++ method] Initialize user code</descr></content></clist>
+			<descr>Dummy methods, may be overwritten by user code</descr>
+		</include>
+		<include indent="1">
+			<tag>DUMMY_HANDLE_MESSAGES</tag>
+			<fpath>Analyze_DummyMethods.cxx.xml</fpath>
+			<clist><content><cname><m>TMrbAnalyze</m>::HandleMessage()</cname><descr>[C++ method] Respond to message requests sent by the message handler</descr></content></clist>
+			<descr>Dummy methods, may be overwritten by user code</descr>
+		</include>
+		<include indent="1">
+			<tag>DUMMY_RELOAD_PARAMS</tag>
+			<fpath>Analyze_DummyMethods.cxx.xml</fpath>
+			<clist><content><cname><m>TMrbAnalyze</m>::ReloadParams()</cname><descr>[C++ method] Reload parameters from file</descr></content></clist>
+			<descr>Dummy methods, may be overwritten by user code</descr>
+		</include>
+		<include indent="1">
+			<tag>DUMMY_FINISH_RUN</tag>
+			<fpath>Analyze_DummyMethods.cxx.xml</fpath>
+			<clist><content><cname><m>TMrbAnalyze</m>::FinishRun()</cname><descr>[C++ method] Do some work at end of run</descr></content></clist>
+			<descr>Dummy methods, may be overwritten by user code</descr>
+		</include>
+		<include indent="1">
+			<fpath>Analyze_WriteRootTree.cxx.xml</fpath>
+			<clist><content><cname><m>TMrbAnalyze</m>::WriteRootTree()</cname><descr>[C++ method]</descr></content></clist>
+			<descr>Open a file to write raw data to tree</descr>
+		</include>
+		<include indent="1">
+			<fpath>Analyze_OpenRootFile.cxx.xml</fpath>
+			<clist><content><cname><m>TMrbAnalyze</m>::OpenRootFile()</cname><descr>[C++ method]</descr></content></clist>
+			<descr>Open a file to replay tree data</descr>
+		</include>
+		<include indent="1">
+			<fpath>Analyze_ReplayTreeData.cxx.xml</fpath>
+			<clist><content><cname><m>TMrbAnalyze</m>::ReplayTreeData()</cname><descr>[C++ method]</descr></content></clist>
+			<descr>Read data from ROOT file (replay only)</descr>
+		</include>
+		<include indent="1">
+			<tag>EVT_SET_SCALEDOWN</tag>
+			<fpath>Analyze_OtherMethods.cxx.xml</fpath>
+			<clist><content><cname><m>TMrbAnalyze</m>::SetScaleDown()</cname><descr>[C++ method]</descr></content></clist>
+			<descr>Set a scale-down value common to all events</descr>
+		</include>
+		<include indent="1">
+			<tag>WDW_ADJUST_POINTERS</tag>
+			<fpath>Analyze_OtherMethods.cxx.xml</fpath>
+			<clist><content><cname><m>TMrbAnalyze</m>::AdjustWindowPointers()</cname><descr>[C++ method]</descr></content></clist>
+			<descr>Adjust pointers to (2-dim) windows after reload</descr>
+		</include>
+	</file>
+</mrbcode>

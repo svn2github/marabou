@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE mrbcode SYSTEM "mrbcode.dtd">
+
+<?xml-stylesheet type="text/xsl" href="mrbcode.xsl" ?>
+
+<mrbcode type="contiguous">
+    <method indent="1">
+    <methodHdr>
+        <mname>ReplayEvents</mname>
+        <cname><m>TMrbAnalyze</m></cname>
+        <purp>Read data from ROOT file</purp>
+        <argList>
+            <arg>
+                <aname>IOSpec</aname>
+                <atype><m>TMrbIOSpec</m> *</atype>
+                <descr>i/o specifications</descr>
+            </arg>
+        </argList>
+        <returnVal>
+            <arg>
+                <aname>Flag</aname>
+                <atype>Bool_t</atype>
+                <descr>kTRUE/kFALSE</descr>
+            </arg>
+        </returnVal>
+        <descr>Opens an existing raw data file (replay mode only)</descr>
+    </methodHdr>
+    <code>			
+        <cbody><l>Bool_t sts;</l>
+            <l>if (!<m class="TMrbAnalyze">this</m>-><mm class="TMrbAnalyze">IsFakeMode</mm>()) {</l>
+            <l>	if (fRootFileIn == NULL) {</l>
+            <l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Err</mm>() &lt;&lt; "No ROOT file open" &lt;&lt; endl;</l>
+            <l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Flush</mm>(<m class="TMrbAnalyze">this</m>-><rm class="TObject">ClassName</rm>(), "ReplayEvents");</l>
+            <l>		return(kFALSE);</l>
+            <l>	}</l>
+            <nl/>
+            <l>// output start/stop time stamps</l>
+            <l>	this->PrintStartStop();</l>
+            <l>}</l>
+            <nl/>
+            <l>sts = kTRUE;</l>
+        </cbody>
+        <foreach indent="2">
+            <tag>EVT_REPLAY_TREE</tag>
+            <comment type="code">replay tree data for each event with replay mode turned-on</comment>
+            <item>event</item>
+            <descr>once per event</descr>
+            <slist>
+                <subst><sname>className</sname><descr>class name</descr></subst>
+                <subst><sname>evtName</sname><descr>event name</descr></subst>
+                <subst><sname>trigNo</sname><descr>trigger number</descr></subst>
+                <subst><sname>eventType</sname><descr>event type: E=readout/hardware, U=user-defined</descr></subst>
+            </slist>
+            <switch indent="3">
+                <item>eventType</item>
+                <case>
+                    <tag>E</tag>
+                    <descr>normal (hardware) event</descr>
+                    <cbody>
+                        <l>// event <s>evtName</s>, trigger <s>trigNo</s></l>
+                        <l>if (g<S>evtName</S>->IsReplayMode()) {</l>									
+                        <l>	if (!g<S>evtName</S>->ReplayTreeData(<m class="TMrbIOSpec">IOSpec</m>)) sts = kFALSE;</l>
+                        <l>}</l>
+                    </cbody>
+                </case>
+                <case>
+                    <tag>U</tag>
+                    <descr>user-defined event</descr>
+                    <cbody>
+                        <l>// user-defined event <s>className</s></l>
+                        <l>if (g<S>className</S>->IsReplayMode()) {</l>
+                        <l>	if (!g<S>className</S>->ReplayTreeData(<m class="TMrbIOSpec">IOSpec</m>)) sts = kFALSE;</l>
+                        <l>}</l>
+                    </cbody>
+                </case>
+            </switch>
+        </foreach>
+        <cbody><l>return(sts);</l></cbody>
+    </code>
+</method>
+</mrbcode>

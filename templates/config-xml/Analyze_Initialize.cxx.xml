@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE mrbcode SYSTEM "mrbcode.dtd">
+
+<?xml-stylesheet type="text/xsl" href="mrbcode.xsl" ?>
+
+<mrbcode type="contiguous">
+    <method indent="1">
+    	<methodHdr>
+    		<mname>Initialize</mname>
+    		<cname><m>TMrbAnalyze</m></cname>
+    		<purp>Instantiate user objects, initialize values</purp>
+    		<argList>
+    			<arg>
+    				<aname>IOSpec</aname>
+    				<atype><m>TMrbIOSpec</m> *</atype>
+    				<descr>i/o specifications</descr>
+    			</arg>
+    		</argList>
+    		<returnVal>
+    			<arg>
+    				<aname>Flag</aname>
+    				<atype>Bool_t</atype>
+    				<descr>kTRUE/kFALSE</descr>
+    			</arg>
+    		</returnVal>
+    	</methodHdr>
+    	<code>
+    		<cbody>
+    			<l>verboseMode = (Bool_t) <r class="TEnv">gEnv</r>-><rm class="TEnv">GetValue</rm>("<m>TMrbAnalyze</m>.VerboseMode", kFALSE);</l>
+    			<l>forcedDump = (Bool_t) <r class="TEnv">gEnv</r>-><rm class="TEnv">GetValue</rm>("<m>TMrbAnalyze</m>.ForcedDump", kFALSE);</l>		
+    		</cbody>
+    		<foreach indent="2">
+    			<tag>ADD_USER_ENV</tag>
+    			<comment type="code">add user's environment defs</comment>
+    			<item>file</item>
+    			<descr>more than one file possible</descr>
+    			<slist><subst><sname>rcFile</sname><descr>file containing env definitions</descr></subst></slist>
+    			<cbody>
+    				<l>Bool_t fileOk = <m class="TMrbAnalyze">this</m>-><mm class="TMrbAnalyze">AddResourcesFromFile</mm>("<s>rcFile</s>");</l>
+    				<l>if (verboseMode &amp;&amp; fileOk) {</l>
+    				<l>	<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Out</mm>() &lt;&lt; "Reading user's environment defs from file <s>rcFile</s>" &lt;&lt;  endl;</l>
+    				<l>	<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Flush</mm>(<m class="TMrbAnalyze">this</m>-><rm class="">ClassName</rm>(), "Initialize", setblue);</l>
+    				<l>}</l>
+    			</cbody>
+    		</foreach>
+    		<foreach indent="2">
+    			<tag>HISTO_INIT_ARRAYS</tag>
+    			<comment type="code">initialize histogram arrays</comment>
+    			<item>array</item>
+    			<descr>once per histogram array</descr>
+    			<slist>
+    				<subst><sname>sevtName</sname><descr>subevent name</descr></subst>
+    				<subst><sname>paramName</sname><descr>parameter name</descr></subst>
+    				<subst><sname>nofParams</sname><descr>number of parameters</descr></subst>
+    				<subst><sname>nofHistos</sname><descr>number of histograms</descr></subst>
+    				<subst><sname>hArrayName</sname><descr>name of histogram array</descr></subst>
+    				<subst><sname>indexRange</sname><descr>range of histogram index</descr></subst>
+    				<subst ><sname>hprefix</sname><descr>prefix</descr></subst>
+    				<subst ><sname>arrayType</sname><descr>type of array</descr></subst>
+    			</slist>
+    			<switch indent="3">
+    				<item>arrayType</item>
+    				<case>
+    					<tag>N</tag>
+    					<descr>normal</descr>
+    					<cbody>
+    						<l>hArray<S>hprefix</S><S>paramName</S>.Expand(<s>indexRange</s>); 	hArray<S>hprefix</S><S>paramName</S>.Clear();	//  subevent <s>sevtName</s>, param <s>paramName</s>[<s>indexRange</s>]</l>
+    					</cbody>
+    				</case>
+    				<case>
+    					<tag>A</tag>
+    					<descr>array mode</descr>
+    					<cbody>
+    						<l>h<S>hprefix</S><S>sevtName</S>Array.Expand(<s>nofParams</s>); h<S>hprefix</S><S>sevtName</S>Array.Clear();	//  <s>sevtName</s></l>
+    					</cbody>
+    				</case>
+    				<case>
+    					<tag>U</tag>
+    					<descr>user-defined array</descr>
+    					<cbody>
+    						<l><s>hArrayname</s>.Expand(<s>nofHistos</s>); <s>hArrayname</s>.Clear();	//  user-defined histos in array <s>hArrayName</s></l>
+    					</cbody>
+    				</case>
+    			</switch>
+    		</foreach>
+    		<code indent="2">
+    			<tag>MODULE_INIT_LIST</tag>
+    			<comment type="code">initialize list of modules</comment>
+    			<slist>
+    				<subst><sname>nofModules</sname><descr>number of modules</descr></subst>
+    				<subst><sname>nofParams</sname><descr>total number of parameters</descr></subst>
+    			</slist>
+    			<cbody>
+    				<l><m class="TMrbAnalyze">gMrbAnalyze</m>->InitializeLists(<s>nofModules</s>, <s>nofParams</s>);</l>
+    			</cbody>
+    			<foreach indent="3">
+    				<item>module</item>
+    				<descr>once per module</descr>
+    				<slist>
+    					<subst><sname>moduleName</sname><descr>module name</descr></subst>
+    					<subst><sname>moduleTitle</sname><descr>module title</descr></subst>
+    					<subst><sname>paramIndex</sname><descr>parameter index</descr></subst>
+    					<subst><sname>nofParamsUsed</sname><descr>number of parameters used of this module</descr></subst>
+    				</slist>
+    				<cbody>
+    					<l><m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">AddModuleToList</mm>("<s>moduleName</s>", "<s>moduleTitle</s>", kMrbModule<S>moduleName</S>, <s>paramIndex</s>, <s>nofParamsUsed</s>, 0);</l>
+    				</cbody>
+    			</foreach>
+    		</code>
+    		<code indent="2">
+    			<comment type="code">set time offsets for modules</comment>
+    			<cbody>
+    				<l>Int_t timeOffset;</l>
+    			</cbody>
+    			<foreach indent="3">
+    				<tag>MODULE_TIME_OFFSET</tag>
+    				<item>module</item>
+    				<descr>once per module</descr>
+    				<slist>
+    					<subst><sname>moduleName</sname><descr>module name</descr></subst>
+    					<subst><sname>moduleTitle</sname><descr>module title</descr></subst>
+    					<subst><sname>timeOffset</sname><descr>time offset</descr></subst>
+    				</slist>
+    				<cbody>
+    					<l>timeOffset = gEnv->GetValue(<m class="TMrbAnalyze">gMrbAnalyze</m>->GetResource("Module.<S>moduleName</S>.TimeOffset"), <s>timeOffset</s>); //  <s>moduleName</s> (<s>moduleTitle</s>)</l>
+    					<l><m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">SetTimeOffset</mm>(kMrbModule<S>moduleName</S>, timeOffset);</l>
+    				</cbody>
+    			</foreach>
+    		</code>
+    		<foreach indent="2">
+    			<tag>EVT_CLASS_INSTANCE</tag>
+    			<comment type="code">instantiate event classes and book histograms</comment>
+    			<item>event</item>
+    			<descr>once per event/trigger</descr>
+    			<slist>
+    				<subst><sname>evtName</sname><descr>event name</descr></subst>
+    				<subst><sname>ptrName</sname><descr>event pointer</descr></subst>
+    				<subst><sname>trigNo</sname><descr>trigger number</descr></subst>
+    				<subst><sname>HBflag</sname><descr>allocate hit buffer if TRUE</descr></subst>
+    			</slist>
+    			<cbody>
+    				<l>if (g<S>ptrName</S> == NULL) {		//  event <s>evtName</s>, trigger <s>trigNo</s></l>
+    				<l>	g<S>ptrName</S> = new TUsrEvt<S>evtName</S>();</l>
+    				<l>	Bool_t err = g<S>ptrName</S>->IsZombie();</l>
+    				<l>	if (!err) {</l>
+    				<l>		err |= !g<S>ptrName</S>->BookParams();</l>
+    				<l>		err |= !g<S>ptrName</S>->BookHistograms();</l>
+    				<if indent="3">
+    					<flag>HBflag</flag>
+    					<descr>event uses hit buffer</descr>
+    					<cbody><l>		err |= !g<S>ptrName</S>->AllocHitBuffers();</l></cbody>
+    				</if>
+    				<l>	}</l>
+    				<l>	if (err) {</l>
+    				<l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Err</mm>() &lt;&lt;  "Something went wrong while creating event \"<s>evtName</s>\"" &lt;&lt; endl;</l>
+    				<l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Flush</mm>(<m class="TMrbAnalyze">this</m>-><rm class="TObject">ClassName</rm>(), "Initialize");</l>
+    				<l>	}</l>
+    				<l>}</l>
+    			</cbody>
+    		</foreach>
+    		<foreach indent="2">
+    			<tag>EVT_USER_CLASS_INSTANCE</tag>
+    			<comment type="code">instantiate user-defined event classes</comment>
+    			<item>class</item>
+    			<descr>once per user class</descr>
+    			<slist>
+    				<subst><sname>className</sname><descr>class name</descr></subst>
+    			</slist>
+    			<cbody>
+    				<l>if (g<S>className</S> == NULL) {		//  event <s>className</s></l>
+    				<l>	g<S>className</S> = new <S>className</S>();</l>
+    				<l>	Bool_t err = g<S>className</S>->IsZombie();</l>
+    				<l>	if (err) {</l>
+    				<l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger"></mm>Err() &lt;&lt; "Something went wrong while creating user-defined event \"<s>className</s>\"" &lt;&lt; endl;</l>
+    				<l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger"></mm>Flush(<m class="TMrbAnalyze">this</m>-><rm class="TObject">ClassName</rm>(), "Initialize");</l>
+    				<l>	}</l>
+    				<l>}</l>
+    				
+    			</cbody>
+    		</foreach>
+    		<code indent="2">
+    			<comment type="code">instantiate windows</comment>
+    			<cbody>
+    				<l>Double_t cut_x0 = 0.; Double_t cut_y0 = 0.;</l>
+    			</cbody>
+    			<foreach indent="3">
+    				<tag>WDW_CLASS_INSTANCE</tag>
+    				<item>window</item>
+    				<descr>once per window</descr>
+    				<slist>
+    					<subst><sname>wdwClass</sname><descr>window class</descr></subst>
+    					<subst><sname>wdwType</sname><descr>window type (1 or 2 dim)</descr></subst>
+    					<subst><sname>wdwName</sname><descr>window name</descr></subst>
+    					<subst><sname>wdwLower</sname><descr>lower limit</descr></subst>
+    					<subst><sname>wdwUpper</sname><descr>upper limit</descr></subst>
+    				</slist>
+    				<switch indent="4">
+    					<item>wdwType</item>
+    					<case>
+    						<tag>1D</tag>
+    						<descr>1dim window</descr>
+    						<cbody>
+    							<l>if (<s>wdwName</s> == NULL) <s>wdwName</s> = new <s>wdwClass</s>("<s>wdwName</s>", <s>wdwLower</s>, <s>wdwUpper</s>);</l>
+    						</cbody>
+    					</case>
+    					<case>
+    						<tag>2D</tag>
+    						<descr>2dim window</descr>
+    						<cbody>
+    							<l>if (<s>wdwName</s> == NULL) <s>wdwName</s> = new <s>wdwClass</s>("<s>wdwName</s>", 1, &amp;cut_x0, &amp;cut_y0);</l>
+    						</cbody>
+    					</case>
+    				</switch>
+    			</foreach>
+    		</code>
+    		<code indent="2">
+    			<tag>INITIALIZE_SEVT_MODS</tag>
+    			<comment type="code">initialize subevents and modules</comment>
+    			<foreach indent="2">
+    				<item>subevent</item>
+    				<descr>once per subevent</descr>
+    				<slist>
+    					<subst><sname>sevtName</sname><descr>subevent name</descr></subst>
+    					<subst><sname>codeFile</sname><descr>file containing global defs</descr></subst>
+    				</slist>
+    				<include indent="3"><fpath type="subst"><s>codeFile</s></fpath><descr>subevent-specific init</descr></include>
+    			</foreach>
+    			<foreach indent="2">
+    				<item>module</item>
+    				<descr>once per module</descr>
+    				<slist>
+    					<subst><sname>moduleName</sname><descr>module name</descr></subst>
+    					<subst><sname>codeFile</sname><descr>file containing global defs</descr></subst>
+    				</slist>
+    				<include indent="3"><fpath type="subst"><s>codeFile</s></fpath><descr>module-specific init</descr></include>
+    			</foreach>
+    		</code>
+    		<code indent="2">
+    			<tag>INCLUDE_USER_INITIALIZE_BEFORE_HB</tag>
+    			<comment type="code">initialize user code (objects, variables ...) - 1st call <b>before</b> booking histograms</comment>
+    			<slist><subst><sname>initUcode</sname><descr>method to initialize user code</descr></subst></slist>
+    			<cbody>
+    				<l><m class="TMrbAnalyze">this</m>-><s>initUcode</s>(<m class="TMrbIOSpec">IOSpec</m>, kTRUE);</l>
+    			</cbody>
+    		</code>
+    		<foreach indent="2">
+    			<tag>HISTO_BOOK_USER_DEFINED</tag>
+    			<comment type="code">book histograms defined by user</comment>
+    			<item>histogram</item>
+    			<descr>once per histogram</descr>
+    			<slist>
+    				<subst><sname>hName</sname><descr>histo name</descr></subst>
+    				<subst><sname>hType</sname><descr>histo type (THxx)</descr></subst>
+    				<subst><sname>hTitle</sname><descr>histo title</descr></subst>
+    				<subst><sname>binSizeX</sname><descr>bin size X</descr></subst>
+    				<subst><sname>lowerX</sname><descr>lower edge X</descr></subst>
+    				<subst><sname>upperX</sname><descr>upper edge X</descr></subst>
+    				<subst><sname>binSizeY</sname><descr>bin size Y</descr></subst>
+    				<subst><sname>lowerY</sname><descr>lower edge Y</descr></subst>
+    				<subst><sname>upperY</sname><descr>upper edge Y</descr></subst>
+    				<subst><sname>condition</sname><descr>condition</descr></subst>
+    				<subst><sname>args</sname><descr>arg list</descr></subst>
+    				<subst><sname>bookingMode</sname><descr>booking mode</descr></subst>
+    			</slist>
+    			<switch indent="3">
+    				<item>bookingMode</item>
+    				<case><tag>UD1</tag><descr>1dim</descr>
+    					<cbody>
+    						<l>if (<s>hName</s> == NULL) <s>hName</s> = new <s>hType</s>("<s>hName</s>", "<s>hTitle</s>", <s>binSizeX</s>, <s>lowerX</s>, <s>upperX</s>);</l>
+    					</cbody>
+    				</case>
+    				<case><tag>UD2</tag><descr>2dim</descr>
+    					<cbody>
+    						<l>if (<s>hName</s> == NULL) <s>hName</s> = new <s>hType</s>("<s>hName</s>", "<s>hTitle</s>", <s>binSizeX</s>, <s>lowerX</s>, <s>upperX</s>, <s>binSizeY</s>, <s>lowerY</s>, <s>upperY</s>);</l>
+    					</cbody>
+    				</case>
+    				<case><tag>UD1C</tag><descr>1dim + condition</descr>
+    					<cbody>
+    						<l>if (<s>hName</s> == NULL &amp;&amp; (<s>condition</s>)) <s>hName</s> = new <s>hType</s>("<s>hName</s>", "<s>hTitle</s>", <s>binSizeX</s>, <s>lowerX</s>, <s>upperX</s>);</l>
+    					</cbody>
+    				</case>
+    				<case><tag>UD2C</tag><descr>2dim + condition</descr>
+    					<cbody>
+    						<l>if (<s>hName</s> == NULL &amp;&amp; (<s>condition</s>)) <s>hName</s> = new <s>hType</s>("<s>hName</s>", "<s>hTitle</s>", <s>binSizeX</s>, <s>lowerX</s>, <s>upperX</s>, <s>binSizeY</s>, <s>lowerY</s>, <s>upperY</s>);</l>
+    					</cbody>
+    				</case>
+    				<case><tag>UDS</tag><descr>arg string</descr>
+    					<cbody>
+    						<l>if (<s>hName</s> == NULL) <s>hName</s> = new <s>hType</s>("<s>hName</s>", "<s>hTitle</s>", <s>args</s>);</l>
+    					</cbody>
+    				</case>
+    				<case><tag>UDSC</tag><descr>arg string + condition</descr>
+    					<cbody>
+    						<l>if (<s>hName</s> == NULL &amp;&amp; (<s>condition</s>)) <s>hName</s> = new <s>hType</s>("<s>hName</s>", "<s>hTitle</s>", <s>args</s>);</l>
+    					</cbody>
+    				</case>
+    			</switch>	
+    		</foreach>
+    		<code indent="2">
+    			<tag>HISTO_FILL_ARRAYS</tag>
+    			<task indent="3"><subtag>Init</subtag><descr>initialize filling</descr></task><foreach indent="3">
+    				<comment type="code">fill histogram arrays</comment>
+    				<item>histogram</item>
+    				<descr>once per histogram</descr>
+    				<slist>
+    					<subst><sname>hArrayName</sname><descr>array name</descr></subst>
+    					<subst><sname>hName</sname><descr>histo name</descr></subst>
+    				</slist>
+    				<cbody>
+    					<l>if (<s>hArrayName</s>.FindObject("<s>hName</s>") == NULL) <s>hArrayName</s>.Add(<s>hName</s>);</l>
+    				</cbody>
+    			</foreach>
+    		</code>
+    		<code indent="2">
+    			<tag>INCLUDE_USER_INITIALIZE_AFTER_HB</tag>
+    			<comment type="code">initialize user code (objects, variables ...) - 2nd call <b>after</b> booking histograms</comment>
+    			<slist><subst><sname>initUcode</sname><descr>method to initialize user code</descr></subst></slist>
+    			<cbody>
+    				<l><m class="TMrbAnalyze">this</m>-><s>initUcode</s>(<m class="TMrbIOSpec">IOSpec</m>, kFALSE);</l>
+    			</cbody>
+    		</code>
+    		<cbody indent="2">
+    			<l>return(kTRUE);</l>
+    		</cbody>
+    	</code>
+    </method>
+</mrbcode>

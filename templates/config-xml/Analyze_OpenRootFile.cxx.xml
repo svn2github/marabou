@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE mrbcode SYSTEM "mrbcode.dtd">
+
+<?xml-stylesheet type="text/xsl" href="mrbcode.xsl" ?>
+
+<mrbcode type="contiguous">
+    <method indent="1">
+    <methodHdr>
+        <mname>OpenRootFile</mname>
+        <cname><m>TMrbAnalyze</m></cname>
+        <purp>Open a file to replay tree data</purp>
+        <argList>
+            <arg>
+                <aname>IOSpec</aname>
+                <atype><m>TMrbIOSpec</m> *</atype>
+                <descr>i/o specifications</descr>
+            </arg>
+        </argList>
+        <returnVal>
+            <arg>
+                <aname>Flag</aname>
+                <atype>Bool_t</atype>
+                <descr>kTRUE/kFALSE</descr>
+            </arg>
+        </returnVal>
+        <descr>Opens an existing raw data file (replay mode only)</descr>
+    </methodHdr>
+    <code>
+        <cbody>
+            <l><r>TString</r> rootFile;</l>
+            <l>if ((<m class="TMrbIOSpec">IOSpec</m>->GetInputMode() &amp; <m>TMrbIOSpec</m>::kInputRoot) == 0) return(kTRUE);</l>
+            
+            <l>if (fRootFileIn != NULL) {</l>
+            <l>	<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Err</mm>() &lt;&lt; "ROOT file already open - " &lt;&lt; fRootFileOut-><rm class="TObject">GetName</rm>() &lt;&lt; endl;</l>
+            <l>	<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Flush</mm>(<m class="TMrbAnalyze">this</m>-><rm class="TObject">ClassName</rm>(), "OpenRootFile");</l>
+            <l>	return(kFALSE);</l>
+            <l>}</l>
+            <l>rootFile = IOSpec->GetInputFile();</l>
+            <l>if (rootFile.<rm class="TString">CompareTo</rm>("fake.root") == 0) {</l>
+            <l>	<m class="TMrbAnalyze">this</m>->SetFakeMode();</l>
+        </cbody>
+        <foreach indent="2">
+            <tag>EVT_SET_FAKE_MODE</tag>
+            <comment type="code">set fake mode for all trees</comment>
+            <item>event</item>
+            <descr>once per event</descr>
+            <slist>
+                <subst><sname>className</sname><descr>class name</descr></subst>
+                <subst><sname>evtName</sname><descr>event name</descr></subst>
+                <subst><sname>trigNo</sname><descr>trigger number</descr></subst>
+                <subst><sname>eventType</sname><descr>event type: E=readout/hardware, U=user-defined</descr></subst>
+            </slist>
+            <switch indent="3">
+                <item>eventType</item>
+                <case>
+                    <tag>E</tag>
+                    <descr>normal (hardware) event</descr>
+                    <cbody>
+                        <l>// event <s>evtName</s>, trigger <s>trigNo</s></l>
+                        <l>	g<S>className</S>->SetFakeMode();</l>										
+                    </cbody>
+                </case>
+                <case>
+                    <tag>U</tag>
+                    <descr>user-defined event</descr>
+                    <cbody>
+                        <l>// user-defined event <s>className</s></l>
+                        <l>g<S>className</S>->SetFakeMode();</l>
+                    </cbody>
+                </case>
+            </switch>
+        </foreach>
+        <cbody>
+            <l>	if (verboseMode) {</l>
+            <l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Err</mm>() &lt;&lt; "Running in FAKE mode" &lt;&lt; endl;</l>
+            <l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Flush</mm>(<m class="TMrbAnalyze">this</m>-><rm class="TObject">ClassName</rm>(), "OpenRootFile");</l>
+            <l>		return(kFALSE);</l>
+            <l>	}</l>
+            <l>} else {</l>
+            <l>	<m class="TSystem">gSystem</m>-><mm class="TSystem">ExpandPathName</mm>(rootFile);</l>
+            <l>	if(<m class="TSystem">gSystem</m>-><mm class="TSystem">AccessPathName</mm>(rootFile, kFileExists)){</l>
+            <l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Err</mm>() &lt;&lt; "No such file - " &lt;&lt;  rootFile &lt;&lt; endl;</l>
+            <l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Flush</mm>(<m class="TMrbAnalyze">this</m>-><rm class="TObject">ClassName</rm>(), "OpenRootFile");</l>
+            <l>		return(kFALSE);</l>
+            <l>	} else if (verboseMode) {</l>
+            <l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Out</mm>() &lt;&lt; "Opening ROOT file \"" &lt;&lt; rootFile &lt;&lt; "\"" &lt;&lt; endl;</l>
+            <l>		<m class="TMrbLogger">gMrbLog</m>-><mm class="TMrbLogger">Flush</mm>(<m class="TMrbAnalyze">this</m>-><rm class="TObject">ClassName</rm>(), "WriteRootTree");</l>
+            <l>	}</l>
+            <l>}</l>
+        </cbody>
+    </code>
+</method>
+</mrbcode>

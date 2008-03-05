@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<!DOCTYPE mrbcode SYSTEM "mrbcode.dtd">
+
+<?xml-stylesheet type="text/xsl" href="mrbcode.xsl" ?>
+
+<mrbcode type="selective">
+	<method>
+		<tag>SEVT_CLASS_METHODS</tag>
+		<methodHdr>
+			<mname>FillSubevent</mname>
+			<cname>TMrbSubevent_Caen</cname>
+			<purp>Decode CAEN buffer</purp>
+			<argList>
+				<arg>
+					<aname>SevtData</aname>
+					<atype>const UShort_t *</atype>
+					<descr>pointer to unpacked subevent data</descr>
+				</arg>
+				<arg>
+					<aname>SevtWC</aname>
+					<atype>Int_t</atype>
+					<descr>word count</descr>
+				</arg>
+				<arg>
+					<aname>TimeStamp</aname>
+					<atype>Int_t</atype>
+					<descr>time since last start</descr>
+				</arg>
+			</argList>
+			<returnVal>
+				<arg>
+					<aname>Flag</aname>
+					<atype>Bool_t</atype>
+					<descr>kTRUE/kFALSE</descr>
+				</arg>
+			</returnVal>
+			<descr>Decodes data from a CAEN Vxxx</descr>
+		</methodHdr>
+		<code>
+			<cbody>
+				<l>fTimeStamp = TimeStamp; 				// store time since last "start acquisition"</l>
+				<l>this->SetTimeStamp(TimeStamp);				// passed as argument by parent event</l>
+				<l>this->GetHitBuffer()->Reset();				// clear hit buffer</l>
+				<nl/>
+				<l>recNo++;							// count this record</l>	
+				<l>Int_t origSevtWC = SevtWC;				// save original subevent wc</l>
+				<l>if (forcedDump &amp;&amp; (SevtWC > 0)) <m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">DumpData</mm>("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);</l>
+				<l>Int_t wordsProcessed = 0; 				// words processed so far</l>
+				<l>UShort_t * dataPtr = (UShort_t *) SevtData;</l>
+				<l>Int_t eventsProcessed = 0;</l>
+				<l>while (SevtWC > 0) {					// subevent may contain several CAEN modules</l>
+				<l>	Int_t header = (*dataPtr++) &lt;&lt; 16; 			// header word (MSB)</l>
+				<l>	header |= *dataPtr++; 				// header word (LSB)</l>
+				<l>	if ((header &amp; CAEN_Vxxx_D_HDR) == 0) {</l>
+				<l>		<m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">DumpData</mm>("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);</l>
+				<l>		cerr	&lt;&lt; setred</l>
+				<l>			&lt;&lt; this->ClassName() &lt;&lt; "::FillSubevent() [sevtWC="</l>
+				<l>			&lt;&lt; wordsProcessed &lt;&lt; "] Wrong header - 0x" &lt;&lt; setbase(16) &lt;&lt; header &lt;&lt; setbase(10)</l>
+				<l>			&lt;&lt; setblack &lt;&lt; endl;</l>
+				<l>		return(kTRUE);</l>
+				<l>	}</l>
+				<l>	Int_t wc = (header >> CAEN_Vxxx_SH_WC) &amp; CAEN_Vxxx_M_WC;				// extract wc</l>
+				<l>	Int_t wcs = wc;</l>
+				<l>	if (wc &lt; 0 || wc &gt; 32) {				// max 32 data words</l>
+				<l>		<m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">DumpData</mm>("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, origSevtWC);</l>
+				<l>		cerr	&lt;&lt; setred</l>
+				<l>			&lt;&lt; this->ClassName() &lt;&lt; "::FillSubevent() [sevtWC="</l>
+				<l>			&lt;&lt; wordsProcessed &lt;&lt; "] Wrong word count - " &lt;&lt; wc &lt;&lt; setblack &lt;&lt; endl;</l>
+				<l>		return(kTRUE);</l>
+				<l>	}</l>
+				<l>	Int_t moduleNumber = header &amp; CAEN_Vxxx_M_MSERIAL;	// extract module number</l>
+				<l>	TMrbModuleListEntry * mle = <m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">GetModuleListEntry</mm>(moduleNumber);</l>
+				<l>	if (mle == NULL) {</l>
+				<l>		<m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">DumpData</mm>("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);</l>
+				<l>		cerr	&lt;&lt; setred</l>
+				<l>			&lt;&lt; this->ClassName() &lt;&lt; "::FillSubevent() [sevtWC="</l>
+				<l>			&lt;&lt; wordsProcessed &lt;&lt; "] Wrong module number - " &lt;&lt; moduleNumber</l>
+				<l>			&lt;&lt; setblack &lt;&lt; endl;</l>
+				<l>		return(kTRUE);</l>
+				<l>	}</l>
+				<nl/>
+				<l>	if (eventsProcessed >= CAEN_Vxxx_N_MAXEVENTS) {</l>
+				<l>		<m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">DumpData</mm>("sevt", recNo, this->ClassName(), "FillSubevent", "Too many events", SevtData, origSevtWC);</l>
+				<l>		cerr	&lt;&lt; setred</l>
+				<l>			&lt;&lt; this->ClassName() &lt;&lt; "::FillSubevent(): [Module "</l>
+				<l>			&lt;&lt; <m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">GetModuleName</mm>(moduleNumber) &lt;&lt; " (" &lt;&lt; moduleNumber &lt;&lt; "), sevtWC="</l>
+				<l>			&lt;&lt; wordsProcessed &lt;&lt; "] Too many events - max " &lt;&lt; CAEN_Vxxx_N_MAXEVENTS &lt;&lt; setblack &lt;&lt; endl;</l>
+				<l>		return(kTRUE);</l>
+				<l>	}</l>
+				<nl/>
+				<l>	mle->IncrEventHits();				// count this event</l>
+				<nl/>
+				<l>	UShort_t evtData[2];</l>
+				<l>	for (; wc; wc--) {</l>
+				<l>		Int_t data = (*dataPtr++) &lt;&lt; 16;		// data (MSB)</l>
+				<l>		data |= *dataPtr++; 			// data (LSB)</l>
+				<l>		if ((data &amp; CAEN_Vxxx_M_ID) != CAEN_Vxxx_D_DATA) {</l>
+				<l>			if ((data &amp; CAEN_Vxxx_M_ID) == CAEN_Vxxx_D_EOB) {</l>
+				<l>				<m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">DumpData</mm>("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected EOB", SevtData, origSevtWC);</l>
+				<l>				cerr	&lt;&lt; setred</l>
+				<l>					&lt;&lt; this->ClassName() &lt;&lt; "::FillSubevent(): [Module "</l>
+				<l>					&lt;&lt; <m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">GetModuleName</mm>(moduleNumber) &lt;&lt; " (" &lt;&lt; moduleNumber &lt;&lt; "), sevtWC=" &lt;&lt; wordsProcessed</l>
+				<l>					&lt;&lt; "] Unexpected EOB - remaining wc=" &lt;&lt; wc &lt;&lt; " ignored. Continuing with next event."</l>
+				<l>					&lt;&lt; setblack &lt;&lt; endl;</l>
+				<l>				dataPtr -= 2;</l>
+				<l>				wcs -= wc;</l>
+				<l>				break;</l>
+				<l>			} else {</l>
+				<l>				<m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">DumpData</mm>("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong data", SevtData, origSevtWC);</l>
+				<l>				cerr	&lt;&lt; setred</l>
+				<l>					&lt;&lt; this->ClassName() &lt;&lt; "::FillSubevent(): [Module "</l>
+				<l>					&lt;&lt; <m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">GetModuleName</mm>(moduleNumber) &lt;&lt; " (" &lt;&lt; moduleNumber &lt;&lt; "), sevtWC="</l>
+				<l>					&lt;&lt; wordsProcessed &lt;&lt; "] Wrong data - 0x" &lt;&lt; setbase(16) &lt;&lt; data &lt;&lt; setbase(10)</l>
+				<l>					&lt;&lt; setblack &lt;&lt; endl;</l>
+				<l>				return(kTRUE);</l>
+				<l>			}</l>
+				<l>		}</l>
+				<l>		Int_t chn = (data >> CAEN_Vxxx_SH_CHN) &amp; CAEN_Vxxx_M_CHN;</l>
+				<l>		mle->IncrChannelHits(chn);			// count this channel</l>
+				<l>		evtData[0] = 0;</l>
+				<l>		if (data &amp; CAEN_Vxxx_B_OVERFLOW) evtData[1] = CAEN_Vxxx_B_OVERFLOW;</l>
+				<l>		else if (data &amp; CAEN_Vxxx_B_UNDERTHRESH) evtData[1] = (UShort_t) -1;</l>
+				<l>		else evtData[1] = (UShort_t) (data &amp; CAEN_Vxxx_M_ADCDATA);</l>
+				<l>		this->GetHitBuffer()->AddHit(	eventsProcessed,</l>
+				<l>							moduleNumber,</l>
+				<l>							chn,</l>
+				<l>							NULL,</l>
+				<l>							evtData, 2);</l>
+				<l>	}</l>
+				<l>	Int_t trailer = (*dataPtr++) &lt;&lt; 16; 					// trailer word (MSB)</l>
+				<l>	trailer |= *dataPtr++; 									// trailer word (LSB)</l>
+				<l>	if ((trailer &amp; CAEN_Vxxx_D_EOB) == 0) {</l>
+				<l>		<m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">DumpData</mm>("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOB", SevtData, origSevtWC);</l>
+				<l>		cerr	&lt;&lt; setred</l>
+				<l>			&lt;&lt; this->ClassName() &lt;&lt; "::FillSubevent(): [Module "</l>
+				<l>			&lt;&lt; <m class="TMrbAnalyze">gMrbAnalyze</m>-><mm class="TMrbAnalyze">GetModuleName</mm>(moduleNumber) &lt;&lt; " (" &lt;&lt; moduleNumber &lt;&lt; "), sevtWC="</l>
+				<l>			&lt;&lt; wordsProcessed &lt;&lt; "] Wrong EOB - 0x" &lt;&lt; setbase(16) &lt;&lt; trailer &lt;&lt; setbase(10)</l>
+				<l>			&lt;&lt; setblack &lt;&lt; endl;</l>
+				<l>		return(kTRUE);</l>
+				<l>	}</l>
+				<l>	wcs = (wcs + 2) * 2;</l>
+				<l>	SevtWC -= wcs;						// remaining subevent data</l>
+				<l>	wordsProcessed += wcs;</l>
+				<l>	eventsProcessed++;</l>
+				<l>}</l>
+				<l>return(kTRUE);</l>
+			</cbody>
+		</code>
+	</method>
+	<code>
+		<tag>INCLUDE_EVT_SEVT_MOD_GLOBALS</tag>
+		<cbody><l>// This was called by <s>sevtName</s></l></cbody>
+	</code>
+</mrbcode>
