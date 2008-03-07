@@ -44,6 +44,7 @@
 #pragma link C++ class TMrbSubeventRaw;
 #pragma link C++ class TMrbSubevent_Data_S;
 #pragma link C++ class TMrbSubevent_Data_I;
+#pragma link C++ class TMrbSubevent_HB_1;
 #pragma link C++ class TMrbSilena_4418V;
 #pragma link C++ class TMrbSilena_4418T;
 #pragma link C++ class TMrbUct_8904;

@@ -1,0 +1,60 @@
+%%BeginOfCode%%
+Bool_t TMrbSubevent_HB::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:		   TMrbSubevent_HB::FillSubevent
+// Purpose: 	   Fill data to hitbuffer
+// Arguments:	   const UShort_t * SevtData   -- pointer to unpacked subevent data
+//  			   Int_t SevtWC 			   -- word count
+//  			   Int_t TimeStamp  		   -- time since last start
+//  											  in units of 100 microsecs
+// Results: 	   kTRUE/kFALSE
+// Exceptions:     
+// Description:    Transfers dat to hitbuffer.
+// Keywords:	   
+//////////////////////////////////////////////////////////////////////////////
+
+	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
+	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
+
+	this->GetHitBuffer()->Reset();			// clear hit buffer
+
+	recNo++;						// count this record	
+	Int_t origSevtWC = SevtWC;				// save original subevent wc
+	if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
+	Int_t wordsProcessed = 0; 			// words processed so far
+	UShort_t * dataPtr = (UShort_t *) SevtData;
+	Int_t eventsProcessed = 0;
+
+	while (SevtWC > 0) {
+		Int_t chn = (*dataPtr++);
+		Int_t data = (*dataPtr++);
+		UShort_t evtData[2];
+		evtData[0] = 0;
+		evtData[1] = (UShort_t) data;
+		Int_t moduleNumber = 0;
+		this->GetHitBuffer()->AddHit(	eventsProcessed,
+										moduleNumber,
+										chn,
+										NULL,
+										evtData, 2);
+		SevtWC -= 2;
+		wordsProcessed += 2;
+		eventsProcessed++;
+	}
+	return(kTRUE);
+}
+
+%%EndOfCode%%
+%%SEVT_CLASS_METHODS%%
+
+		
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCLUDE_EVT_SEVT_MOD_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INITIALIZE_EVT_SEVT_MODS%%
