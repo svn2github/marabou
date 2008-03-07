@@ -263,6 +263,14 @@ static MBSBufferElem sevent_types[] = {
 					(void *) _mbs_show_sev_long,
 					(void *) _mbs_convert_sheader
 				},
+				{	MBS_STYPE_HITBUF_1,
+					"Hitbuffer (1)",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
+					(void *) _mbs_convert_sheader
+				},
 				{	MBS_STYPE_DATA_SHORT,
 					"Plain data (16 bit)",
 					sizeof(s_veshe),
