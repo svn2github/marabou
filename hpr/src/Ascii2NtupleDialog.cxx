@@ -7,7 +7,7 @@
 
 ClassImp(Ascii2NtupleDialog)
 
-Ascii2NtupleDialog::Ascii2NtupleDialog(TGWindow * win) 
+Ascii2NtupleDialog::Ascii2NtupleDialog(TGWindow * win)
 {
    const Char_t helpText[] = "Read values from ASCII file and fill ntuple \n\
 Values in variable list must ne separated by colons (:)";
@@ -19,7 +19,7 @@ Values in variable list must ne separated by colons (:)";
    fCommand = "Fill_The_Ntuple";
    fCommandHead = "Show_Head_of_File()";
    RestoreDefaults();
-   TList *row_lab = new TList(); 
+   TList *row_lab = new TList();
    row_lab->Add(new TObjString("FileRequest_Name of Inputfile"));
    row_lab->Add(new TObjString("StringValue_Name of Outputfile"));
    row_lab->Add(new TObjString("StringValue_Name of Ntuple"));
@@ -40,15 +40,15 @@ Values in variable list must ne separated by colons (:)";
    ok = GetStringExt("Define parameters", NULL, itemwidth, win,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0], this, this->ClassName());
-};  
+};
 //_________________________________________________________________________
-            
-Ascii2NtupleDialog::~Ascii2NtupleDialog() 
+
+Ascii2NtupleDialog::~Ascii2NtupleDialog()
 {
    SaveDefaults();
 };
 //_________________________________________________________________________
-            
+
 void Ascii2NtupleDialog::Fill_The_Ntuple()
 {
    if (gSystem->AccessPathName((const char *) fInputFileName, kFileExists)) {
@@ -64,7 +64,7 @@ void Ascii2NtupleDialog::Fill_The_Ntuple()
    return;
 };
 //_________________________________________________________________________
-            
+
 void Ascii2NtupleDialog::SaveDefaults()
 {
    cout << "Ascii2NtupleDialog::SaveDefaults() " << endl;
@@ -74,10 +74,10 @@ void Ascii2NtupleDialog::SaveDefaults()
 	env.SetValue("Ascii2NtupleDialog.NtupleName"  	, fNtupleName    );
 	env.SetValue("Ascii2NtupleDialog.NtupleTitle" 	, fNtupleTitle   );
 	env.SetValue("Ascii2NtupleDialog.ListOfVars"  	, fListOfVars    );
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
-            
+
 void Ascii2NtupleDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
@@ -88,7 +88,7 @@ void Ascii2NtupleDialog::RestoreDefaults()
 	fListOfVars 	 = env.GetValue("Ascii2NtupleDialog.ListOfVars"  	,"x:y:z");
 }
 //_________________________________________________________________________
-            
+
 void Ascii2NtupleDialog::Show_Head_of_File()
 {
    TString cmd(fInputFileName.Data());
@@ -97,10 +97,10 @@ void Ascii2NtupleDialog::Show_Head_of_File()
    gSystem->Exec(cmd);
 }
 //_________________________________________________________________________
-            
+
 void Ascii2NtupleDialog::CloseDown(Int_t wid)
 {
    cout << "Ascii2NtupleDialog::CloseDown()" << endl;
    delete this;
 }
- 
+

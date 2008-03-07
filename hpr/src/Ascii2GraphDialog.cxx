@@ -8,7 +8,7 @@
 #include "TGWindow.h"
 #ifdef MARABOUVERS
 #include "HTCanvas.h"
-#else 
+#else
 #include "TCanvas.h"
 #endif
 #include "Ascii2GraphDialog.h"
@@ -30,10 +30,10 @@ void ExecGausFitG(TGraph * graph, Int_t type)
 ClassImp(Ascii2GraphDialog)
 
 Ascii2GraphDialog::Ascii2GraphDialog(TGWindow * win, Int_t winx,  Int_t winy, TList * wlist)
-              : fWindowList(wlist), fWinx(winx), fWiny(winy) 
+              : fWindowList(wlist), fWinx(winx), fWiny(winy)
 {
-  
-static const Char_t helpText[] = 
+
+static const Char_t helpText[] =
 "Read values from ASCII file and construct a graph\n\
 Input data can have the formats:\n\
 X, Y:                     simple graph, no errors\n\
@@ -60,7 +60,7 @@ Default is to construct a new canvas\n\
    fCommandTail = "Show_Tail_of_File()";
    RestoreDefaults();
    fGraphSelPad = 0;    // start with new canvas as default
-   TList *row_lab = new TList(); 
+   TList *row_lab = new TList();
    row_lab->Add(new TObjString("RadioButton_Empty pad only"));
    row_lab->Add(new TObjString("RadioButton_Simple: X, Y no errors"));
    row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, Ex, Ey"));
@@ -138,15 +138,15 @@ Default is to construct a new canvas\n\
    ok = GetStringExt("Graphs parameters", NULL, itemwidth, win,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0], this, this->ClassName());
-};  
+};
 //_________________________________________________________________________
-            
-Ascii2GraphDialog::~Ascii2GraphDialog() 
+
+Ascii2GraphDialog::~Ascii2GraphDialog()
 {
    SaveDefaults();
 };
 //_________________________________________________________________________
-            
+
 void Ascii2GraphDialog::Draw_The_Graph()
 {
    if (fEmptyPad != 0) {
@@ -186,7 +186,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
          gh->GetYaxis()->SetTitle(fGraphYtitle.Data());
       graph->SetHistogram(gh);
       gPad->Update();
-      return; 
+      return;
    }
 
    TArrayD xval(100), yval(100), zval(100), wval(100), eyl(100), eyh(100);
@@ -200,7 +200,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 	}
    Int_t n = 0;
    Double_t x[6];
-   
+
    TString line;
    TString del(" ,\t");
    TObjArray * oa;
@@ -213,7 +213,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
          cout << "Not enough entries at: " << n+1 << endl;
          break;
       }
-      for ( Int_t i = 0; i < 6; i++ ) 
+      for ( Int_t i = 0; i < 6; i++ )
          x[i] = 0;
 		for (Int_t i = 0; i < nent; i++) {
 			TString val = ((TObjString*)oa->At(i))->String();
@@ -278,11 +278,11 @@ void Ascii2GraphDialog::Draw_The_Graph()
 
 //   TMrbString temp;
 
-//  TGraph part 
+//  TGraph part
 
    TGraph * graph = 0;
    if (fGraph_Simple == 1 || fGraphColSelect){
-      graph = new TGraph(n, xval.GetArray(), yval.GetArray()); 
+      graph = new TGraph(n, xval.GetArray(), yval.GetArray());
    } else if (fGraph_Error == 1) {
       graph = new TGraphErrors(n, xval.GetArray(), yval.GetArray(),
                                   zval.GetArray(), wval.GetArray());
@@ -385,7 +385,7 @@ Int_t Ascii2GraphDialog::FindGraphs(TVirtualPad * ca, TList * logr, TList * pads
    Int_t ngr = 0;
    TIter next(ca->GetListOfPrimitives());
    while (TObject * obj = next()) {
-      if (obj->InheritsFrom("TGraph")) { 
+      if (obj->InheritsFrom("TGraph")) {
           ngr++;
           if (logr) logr->Add(obj);
           if (pads) pads->Add(ca);
@@ -394,11 +394,11 @@ Int_t Ascii2GraphDialog::FindGraphs(TVirtualPad * ca, TList * logr, TList * pads
 // look for subpads
    TIter next1(ca->GetListOfPrimitives());
    while (TObject * obj = next1()) {
-      if (obj->InheritsFrom("TPad")) { 
+      if (obj->InheritsFrom("TPad")) {
           TPad * p = (TPad*)obj;
           TIter next2(p->GetListOfPrimitives());
           while (TObject * obj = next2()) {
-             if (obj->InheritsFrom("TGraph")) { 
+             if (obj->InheritsFrom("TGraph")) {
                 ngr++;
                 if (logr) logr->Add(obj);
                 if (pads) pads->Add(p);
@@ -410,7 +410,7 @@ Int_t Ascii2GraphDialog::FindGraphs(TVirtualPad * ca, TList * logr, TList * pads
 };
 
 //_________________________________________________________________________
-            
+
 void Ascii2GraphDialog::SaveDefaults()
 {
    cout << "Ascii2GraphDialog::SaveDefaults() " << endl;
@@ -447,10 +447,10 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.GraphFillStyle"  , fGraphFillStyle  );
    env.SetValue("Ascii2GraphDialog.GraphFillColor"  , fGraphFillColor  );
    env.SetValue("Ascii2GraphDialog.GraphLineWidth"  , fGraphLineWidth  );
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
-            
+
 void Ascii2GraphDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
@@ -488,7 +488,7 @@ void Ascii2GraphDialog::RestoreDefaults()
    fGraphLineWidth   = env.GetValue("Ascii2GraphDialog.GraphLineWidth"  , 2);
 }
 //_________________________________________________________________________
-            
+
 void Ascii2GraphDialog::Show_Head_of_File()
 {
    TString cmd(fGraphFileName.Data());
@@ -496,7 +496,7 @@ void Ascii2GraphDialog::Show_Head_of_File()
    gSystem->Exec(cmd);
 }
 //_________________________________________________________________________
-            
+
 void Ascii2GraphDialog::Show_Tail_of_File()
 {
    TString cmd(fGraphFileName.Data());
@@ -504,7 +504,7 @@ void Ascii2GraphDialog::Show_Tail_of_File()
    gSystem->Exec(cmd);
 }
 //_________________________________________________________________________
-            
+
 void Ascii2GraphDialog::CloseDown(Int_t wid)
 {
    cout << "Ascii2GraphDialog::CloseDown() " << endl;

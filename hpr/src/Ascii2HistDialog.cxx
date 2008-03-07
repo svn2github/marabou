@@ -16,14 +16,14 @@
 
 //Double_t LocMin(Int_t n, Double_t *x)
 //{
-//   Double xmin = 
+//   Double xmin =
 
 ClassImp(Ascii2HistDialog)
 
-Ascii2HistDialog::Ascii2HistDialog( TGWindow * win) 
+Ascii2HistDialog::Ascii2HistDialog( TGWindow * win)
 {
-  
-static const Char_t helpText[] = 
+
+static const Char_t helpText[] =
 "Read values from ASCII file and fill histogram\n\
 Input data can have the formats:\n\
 W:          1 dim: Spectrum, Channel Contents only\n\
@@ -53,7 +53,7 @@ for the axis can be calculated if the option\n\
    fReadCommand = "Read_Input()";
    fCommandHead = "Show_Head_of_File()";
    RestoreDefaults();
-   TList *row_lab = new TList(); 
+   TList *row_lab = new TList();
    row_lab->Add(new TObjString("RadioButton_1 Dim, Spectrum, channel content, no X "));
    row_lab->Add(new TObjString("RadioButton_1 Dim, X values to be filled"));
    row_lab->Add(new TObjString("RadioButton_1 Dim, X, Weight"));
@@ -79,27 +79,27 @@ for the axis can be calculated if the option\n\
    row_lab->Add(new TObjString("CommandButt_Read_Input"));
    row_lab->Add(new TObjString("CommandButt_Draw_the_Histogram"));
 
-   valp[ind++] = &fSpectrum;      
-   valp[ind++] = &f1Dim;          
+   valp[ind++] = &fSpectrum;
+   valp[ind++] = &f1Dim;
    valp[ind++] = &f1DimWithWeight;
-   valp[ind++] = &f2Dim;          
+   valp[ind++] = &f2Dim;
    valp[ind++] = &f2DimWithWeight;
-   valp[ind++] = &f3Dim;          
+   valp[ind++] = &f3Dim;
    valp[ind++] = &f3DimWithWeight;
    valp[ind++] = &fHistFileName;
    valp[ind++] = &fHistName;
    valp[ind++] = &fHistTitle;
-   valp[ind++] = &fNbinsX; 
-   valp[ind++] = &fXlow;  
-   valp[ind++] = &fXup;   
-   valp[ind++] = &fNbinsY; 
-   valp[ind++] = &fYlow;  
-   valp[ind++] = &fYup;   
-   valp[ind++] = &fNbinsZ; 
-   valp[ind++] = &fZlow;  
-   valp[ind++] = &fZup;   
-   valp[ind++] = &fKeepLimits; 
-   valp[ind++] = &fError; 
+   valp[ind++] = &fNbinsX;
+   valp[ind++] = &fXlow;
+   valp[ind++] = &fXup;
+   valp[ind++] = &fNbinsY;
+   valp[ind++] = &fYlow;
+   valp[ind++] = &fYup;
+   valp[ind++] = &fNbinsZ;
+   valp[ind++] = &fZlow;
+   valp[ind++] = &fZup;
+   valp[ind++] = &fKeepLimits;
+   valp[ind++] = &fError;
    valp[ind++] = &fCommandHead;
    valp[ind++] = &fReadCommand;
    valp[ind++] = &fCommand;
@@ -108,15 +108,15 @@ for the axis can be calculated if the option\n\
    ok = GetStringExt("Hists parameters", NULL, itemwidth, win,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0], this, this->ClassName());
-};  
+};
 //_________________________________________________________________________
-            
-Ascii2HistDialog::~Ascii2HistDialog() 
+
+Ascii2HistDialog::~Ascii2HistDialog()
 {
    SaveDefaults();
 };
 //_________________________________________________________________________
-            
+
 void Ascii2HistDialog::Read_Input()
 {
    fNvalues = 0;
@@ -143,7 +143,7 @@ void Ascii2HistDialog::Read_Input()
       cout << "Invalid mode: " << endl;
       return;
    }
-  
+
    TString line;
    while ( 1 ) {
       Int_t i = 0;
@@ -193,7 +193,7 @@ void Ascii2HistDialog::Read_Input()
    } else {
       if (fKeepLimits <= 0) {
    	   if (f1DimWithWeight ) fNbinsX = fNvalues;
-         fXlow = fXval[TMath::LocMin(fNvalues, fXval.GetArray())]; 
+         fXlow = fXval[TMath::LocMin(fNvalues, fXval.GetArray())];
          fXup  = fXval[TMath::LocMax(fNvalues, fXval.GetArray())];
          Double_t binw2 = 0.5 * (fXup - fXlow) / (Double_t) fNbinsX;
          fXlow -= binw2;
@@ -202,8 +202,8 @@ void Ascii2HistDialog::Read_Input()
       }
    	if (f2Dim ||f2DimWithWeight ) {
          if (fKeepLimits <= 0) {
-      	   fYlow = fYval[TMath::LocMin(fNvalues, fYval.GetArray())]; 
-      	   fYup  = fYval[TMath::LocMax(fNvalues, fYval.GetArray())]; 
+      	   fYlow = fYval[TMath::LocMin(fNvalues, fYval.GetArray())];
+      	   fYup  = fYval[TMath::LocMax(fNvalues, fYval.GetArray())];
       	   Double_t binw2 = 0.5 * (fYup - fYlow) / (Double_t) fNbinsY;
       	   fYlow -= binw2;
       	   fYup  += binw2;
@@ -212,8 +212,8 @@ void Ascii2HistDialog::Read_Input()
     	}
       if (f3Dim || f3DimWithWeight) {
          if (fKeepLimits <= 0) {
-      	   fZlow = fZval[TMath::LocMin(fNvalues, fZval.GetArray())]; 
-      	   fZup  = fZval[TMath::LocMax(fNvalues, fZval.GetArray())]; 
+      	   fZlow = fZval[TMath::LocMin(fNvalues, fZval.GetArray())];
+      	   fZup  = fZval[TMath::LocMax(fNvalues, fZval.GetArray())];
       	   Double_t binw2 = 0.5 * (fZup - fZlow) / (Double_t) fNbinsZ;
       	   fZlow -= binw2;
       	   fZup  += binw2;
@@ -226,7 +226,7 @@ void Ascii2HistDialog::Read_Input()
    return;
 }
 //_________________________________________________________________________
-            
+
 void Ascii2HistDialog::Draw_The_Hist()
 {
    if (fNvalues <= 0) {
@@ -255,11 +255,11 @@ void Ascii2HistDialog::Draw_The_Hist()
             if (hist1->GetBinError(i+1) != 0)
                hist1->SetBinError(i+1, fError);
          }
-      }    
+      }
    }
-   
+
    if (f2Dim || f2DimWithWeight) {
-      TH2F * hist2 = new TH2F(fHistName, fHistTitle, fNbinsX, fXlow, fXup, 
+      TH2F * hist2 = new TH2F(fHistName, fHistTitle, fNbinsX, fXlow, fXup,
                                             fNbinsY, fYlow, fYup);
       hist = hist2;
       if (f2Dim) {
@@ -278,10 +278,10 @@ void Ascii2HistDialog::Draw_The_Hist()
                   hist2->SetCellError(i+1, k+1, fError);
             }
          }
-      }    
+      }
    }
    if (f3Dim || f3DimWithWeight) {
-      TH3F * hist3 = new TH3F(fHistName, fHistTitle, fNbinsX, fXlow, fXup, 
+      TH3F * hist3 = new TH3F(fHistName, fHistTitle, fNbinsX, fXlow, fXup,
                              fNbinsY, fYlow, fYup, fNbinsZ, fZlow, fZup);
       hist = hist3;
       if (f3Dim) {
@@ -307,7 +307,7 @@ void Ascii2HistDialog::Draw_The_Hist()
 
 }
 //_________________________________________________________________________
-            
+
 void Ascii2HistDialog::Show_Head_of_File()
 {
    TString cmd(fHistFileName.Data());
@@ -315,7 +315,7 @@ void Ascii2HistDialog::Show_Head_of_File()
    gSystem->Exec(cmd);
 }
 //_________________________________________________________________________
-            
+
 void Ascii2HistDialog::SaveDefaults()
 {
    cout << "Ascii2HistDialog::SaveDefaults() " << endl;
@@ -323,56 +323,56 @@ void Ascii2HistDialog::SaveDefaults()
    env.SetValue("Ascii2HistDialog.Ascii2HistHistFileName",   fHistFileName);
    env.SetValue("Ascii2HistDialog.Ascii2HistHistName",		  fHistName);
    env.SetValue("Ascii2HistDialog.Ascii2HistHistTitle",		  fHistTitle);
-   env.SetValue("Ascii2HistDialog.Ascii2HistSpectrum",		  fSpectrum); 		
-   env.SetValue("Ascii2HistDialog.Ascii2Hist1Dim", 			  f1Dim);  			
-   env.SetValue("Ascii2HistDialog.Ascii2Hist1DimWithWeight", f1DimWithWeight); 
-   env.SetValue("Ascii2HistDialog.Ascii2Hist2Dim", 			  f2Dim);  			
-   env.SetValue("Ascii2HistDialog.Ascii2Hist2DimWithWeight", f2DimWithWeight); 
-   env.SetValue("Ascii2HistDialog.Ascii2Hist3Dim", 			  f3Dim);  			
-   env.SetValue("Ascii2HistDialog.Ascii2Hist3DimWithWeight", f3DimWithWeight); 
-   env.SetValue("Ascii2HistDialog.Ascii2HistError",  		     fError); 
-   env.SetValue("Ascii2HistDialog.Ascii2HistNbinsX",  		  fNbinsX); 
-   env.SetValue("Ascii2HistDialog.Ascii2HistXlow",  			  fXlow);  
-   env.SetValue("Ascii2HistDialog.Ascii2HistXup",   			  fXup);	
-   env.SetValue("Ascii2HistDialog.Ascii2HistNbinsY",  		  fNbinsY); 
-   env.SetValue("Ascii2HistDialog.Ascii2HistYlow",  			  fYlow);  
-   env.SetValue("Ascii2HistDialog.Ascii2HistYup",   			  fYup);	
-   env.SetValue("Ascii2HistDialog.Ascii2HistNbinsZ",  		  fNbinsZ); 
-   env.SetValue("Ascii2HistDialog.Ascii2HistZlow",  			  fZlow);  
-   env.SetValue("Ascii2HistDialog.Ascii2HistZup",   			  fZup);	
-   env.SetValue("Ascii2HistDialog.Ascii2HistKeepLimits",   		  fKeepLimits);	
-   env.SaveLevel(kEnvUser);
+   env.SetValue("Ascii2HistDialog.Ascii2HistSpectrum",		  fSpectrum);
+   env.SetValue("Ascii2HistDialog.Ascii2Hist1Dim", 			  f1Dim);
+   env.SetValue("Ascii2HistDialog.Ascii2Hist1DimWithWeight", f1DimWithWeight);
+   env.SetValue("Ascii2HistDialog.Ascii2Hist2Dim", 			  f2Dim);
+   env.SetValue("Ascii2HistDialog.Ascii2Hist2DimWithWeight", f2DimWithWeight);
+   env.SetValue("Ascii2HistDialog.Ascii2Hist3Dim", 			  f3Dim);
+   env.SetValue("Ascii2HistDialog.Ascii2Hist3DimWithWeight", f3DimWithWeight);
+   env.SetValue("Ascii2HistDialog.Ascii2HistError",  		     fError);
+   env.SetValue("Ascii2HistDialog.Ascii2HistNbinsX",  		  fNbinsX);
+   env.SetValue("Ascii2HistDialog.Ascii2HistXlow",  			  fXlow);
+   env.SetValue("Ascii2HistDialog.Ascii2HistXup",   			  fXup);
+   env.SetValue("Ascii2HistDialog.Ascii2HistNbinsY",  		  fNbinsY);
+   env.SetValue("Ascii2HistDialog.Ascii2HistYlow",  			  fYlow);
+   env.SetValue("Ascii2HistDialog.Ascii2HistYup",   			  fYup);
+   env.SetValue("Ascii2HistDialog.Ascii2HistNbinsZ",  		  fNbinsZ);
+   env.SetValue("Ascii2HistDialog.Ascii2HistZlow",  			  fZlow);
+   env.SetValue("Ascii2HistDialog.Ascii2HistZup",   			  fZup);
+   env.SetValue("Ascii2HistDialog.Ascii2HistKeepLimits",   		  fKeepLimits);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
-				
+
 void Ascii2HistDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
    fHistFileName    = env.GetValue("Ascii2HistDialog.Ascii2HistHistFileName",  "values.dat");
    fHistName 		  = env.GetValue("Ascii2HistDialog.Ascii2HistHistName",		  "h1");
    fHistTitle  	  = env.GetValue("Ascii2HistDialog.Ascii2HistHistTitle",  	  "h1");
-   fSpectrum        = env.GetValue("Ascii2HistDialog.Ascii2HistSpectrum",		   0);	  
-   f1Dim            = env.GetValue("Ascii2HistDialog.Ascii2Hist1Dim", 			   0); 		  
-   f1DimWithWeight  = env.GetValue("Ascii2HistDialog.Ascii2Hist1DimWithWeight", 1); 
-   f2Dim            = env.GetValue("Ascii2HistDialog.Ascii2Hist2Dim", 			   0); 		  
-   f2DimWithWeight  = env.GetValue("Ascii2HistDialog.Ascii2Hist2DimWithWeight", 0); 
-   f3Dim            = env.GetValue("Ascii2HistDialog.Ascii2Hist3Dim", 			   0); 		  
-   f3DimWithWeight  = env.GetValue("Ascii2HistDialog.Ascii2Hist3DimWithWeight", 0); 
-   fError           = env.GetValue("Ascii2HistDialog.Ascii2HistError",  		  0.0); 
-   fNbinsX  		  = env.GetValue("Ascii2HistDialog.Ascii2HistNbinsX",  	    100); 
-   fXlow    		  = env.GetValue("Ascii2HistDialog.Ascii2HistXlow", 			   0.);  
-   fXup     		  = env.GetValue("Ascii2HistDialog.Ascii2HistXup",  			 100.); 
-   fNbinsY  		  = env.GetValue("Ascii2HistDialog.Ascii2HistNbinsY",  		 100); 
-   fYlow    		  = env.GetValue("Ascii2HistDialog.Ascii2HistYlow", 			   0.);  
-   fYup     		  = env.GetValue("Ascii2HistDialog.Ascii2HistYup",  			 100.); 
-   fNbinsZ  		  = env.GetValue("Ascii2HistDialog.Ascii2HistNbinsZ",  		 100); 
-   fZlow    		  = env.GetValue("Ascii2HistDialog.Ascii2HistZlow", 			   0.);  
-   fZup     		  = env.GetValue("Ascii2HistDialog.Ascii2HistZup",  			 100.); 
-   fKeepLimits      = env.GetValue("Ascii2HistDialog.Ascii2HistKeepLimits",  		0 ); 
+   fSpectrum        = env.GetValue("Ascii2HistDialog.Ascii2HistSpectrum",		   0);
+   f1Dim            = env.GetValue("Ascii2HistDialog.Ascii2Hist1Dim", 			   0);
+   f1DimWithWeight  = env.GetValue("Ascii2HistDialog.Ascii2Hist1DimWithWeight", 1);
+   f2Dim            = env.GetValue("Ascii2HistDialog.Ascii2Hist2Dim", 			   0);
+   f2DimWithWeight  = env.GetValue("Ascii2HistDialog.Ascii2Hist2DimWithWeight", 0);
+   f3Dim            = env.GetValue("Ascii2HistDialog.Ascii2Hist3Dim", 			   0);
+   f3DimWithWeight  = env.GetValue("Ascii2HistDialog.Ascii2Hist3DimWithWeight", 0);
+   fError           = env.GetValue("Ascii2HistDialog.Ascii2HistError",  		  0.0);
+   fNbinsX  		  = env.GetValue("Ascii2HistDialog.Ascii2HistNbinsX",  	    100);
+   fXlow    		  = env.GetValue("Ascii2HistDialog.Ascii2HistXlow", 			   0.);
+   fXup     		  = env.GetValue("Ascii2HistDialog.Ascii2HistXup",  			 100.);
+   fNbinsY  		  = env.GetValue("Ascii2HistDialog.Ascii2HistNbinsY",  		 100);
+   fYlow    		  = env.GetValue("Ascii2HistDialog.Ascii2HistYlow", 			   0.);
+   fYup     		  = env.GetValue("Ascii2HistDialog.Ascii2HistYup",  			 100.);
+   fNbinsZ  		  = env.GetValue("Ascii2HistDialog.Ascii2HistNbinsZ",  		 100);
+   fZlow    		  = env.GetValue("Ascii2HistDialog.Ascii2HistZlow", 			   0.);
+   fZup     		  = env.GetValue("Ascii2HistDialog.Ascii2HistZup",  			 100.);
+   fKeepLimits      = env.GetValue("Ascii2HistDialog.Ascii2HistKeepLimits",  		0 );
    cout << "fXup " << fXup<< endl;
 }
 //_________________________________________________________________________
-            
+
 void Ascii2HistDialog::CloseDown(Int_t wid)
 {
    cout << "Ascii2HistDialog::CloseDown() " << endl;

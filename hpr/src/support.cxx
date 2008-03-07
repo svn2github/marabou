@@ -1032,7 +1032,7 @@ a shift value of 10 will only shift by 5 cm";
    env.SetValue("HistPresent.PrintScale", scale);
    env.SetValue("HistPresent.AutoShowPSFile", view_ps);
    env.SetValue("HistPresent.PlainStyle", plain);
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 
 //_______________________________________________________________________________________
@@ -1643,7 +1643,7 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
    if (env.Lookup("HistPresent.LastSettingsName") == NULL) {
       cout << "Setting defaults dir/name to: " << defname.Data() << endl;
       env.SetValue("HistPresent.LastSettingsName", defname.Data());
-      env.SaveLevel(kEnvUser);
+      env.SaveLevel(kEnvLocal);
    } else {
       defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
    }
@@ -1654,17 +1654,6 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
       dirname.Remove(lslash, 100);
       if (gSystem->AccessPathName(dirname.Data())) {
          if (checkonly) return kFALSE;
-/*
-         fok = kFALSE;
-         TString question = dirname;
-         question += " does not exist, create it?";
-         int buttons = kMBYes | kMBNo, retval = 0;
-         EMsgBoxIcon icontype = kMBIconQuestion;
-         new TGMsgBox(gClient->GetRoot(), mycanvas,
-                      "Warning", (const char *) question,
-                      icontype, buttons, &retval);
-         if (retval == kMBYes) {
-*/
             if (gSystem->MakeDirectory((const char *) dirname) == 0) {
                fok = kTRUE;
             } else {

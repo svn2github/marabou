@@ -61,7 +61,7 @@ public:
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown(Int_t wid);
-
+   void    CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) {};
 ClassDef(Ascii2GraphDialog,0)
 };
 #endif

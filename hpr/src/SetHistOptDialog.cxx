@@ -295,6 +295,7 @@ void SetHistOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
    if (!canvas) return;
    // remove title and statbox in case they changed,
    // they will be recomputed
+//   cout << "SetHistAtt: " << bid<< endl;
 
 	Bool_t st = gStyle->GetOptTitle();
 	if (st && ((bid == 999) || (bid >= fTitleCmd1 && bid <= fTitleCmd2))) {
@@ -558,16 +559,16 @@ void SetHistOptDialog::RestoreDefaults()
    fLabelFont     = env.GetValue("SetHistOptDialog.fLabelFont", 62);
    fLabelOffsetX  = env.GetValue("SetHistOptDialog.fLabelOffsetX", 0.01);
    fLabelOffsetY  = env.GetValue("SetHistOptDialog.fLabelOffsetY", 0.01);
-   fLabelOffsetZ  = env.GetValue("SetHistOptDialog.fLabelOffsetZ", 0.10);
+   fLabelOffsetZ  = env.GetValue("SetHistOptDialog.fLabelOffsetZ", 0.01);
    fLabelSize     = env.GetValue("SetHistOptDialog.fLabelSize", 0.02);
-   fLabelMaxDigits= env.GetValue("SetHistOptDialog.fLabelMaxDigits", 0);
+   fLabelMaxDigits= env.GetValue("SetHistOptDialog.fLabelMaxDigits", 4);
    fTickLength    = env.GetValue("SetHistOptDialog.fTickLength", 0.01);
    fTickSideX     = env.GetValue("SetHistOptDialog.fTickSideX", "+");
    fTickSideY     = env.GetValue("SetHistOptDialog.fTickSideY", "-");
    fTickSideZ     = env.GetValue("SetHistOptDialog.fTickSideZ", "+");
-   fTitleOffsetX  = env.GetValue("SetHistOptDialog.fTitleOffsetX", 0.01);
-   fTitleOffsetY  = env.GetValue("SetHistOptDialog.fTitleOffsetY", 0.01);
-   fTitleOffsetZ  = env.GetValue("SetHistOptDialog.fTitleOffsetZ", 0.01);
+   fTitleOffsetX  = env.GetValue("SetHistOptDialog.fTitleOffsetX", 1.);
+   fTitleOffsetY  = env.GetValue("SetHistOptDialog.fTitleOffsetY", 1.);
+   fTitleOffsetZ  = env.GetValue("SetHistOptDialog.fTitleOffsetZ", 1.);
    fTitleSize     = env.GetValue("SetHistOptDialog.fTitleSize", 0.03);
    fTitleColorA   = env.GetValue("SetHistOptDialog.fTitleColorA", 1);
    fTitleFontA    = env.GetValue("SetHistOptDialog.fTitleFontA", 62);
@@ -641,7 +642,7 @@ void SetHistOptDialog::SetDefaults()
    gStyle->SetTitleSize    (env.GetValue("SetHistOptDialog.fTitleSize", 0.03),   "Z");
    gStyle->SetTitleColor   (env.GetValue("SetHistOptDialog.fTitleColorA", 1),  "Z");
    gStyle->SetTitleFont    (env.GetValue("SetHistOptDialog.fTitleFontA", 62),   "Z");
-   TGaxis::SetMaxDigits    (env.GetValue("SetHistOptDialog.fLabelMaxDigits", 0));
+   TGaxis::SetMaxDigits    (env.GetValue("SetHistOptDialog.fLabelMaxDigits", 4));
 
    gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.TitleColor",     0), "t");
    gStyle->SetTitleTextColor (env.GetValue("SetHistOptDialog.TitleTextColor", 1));
