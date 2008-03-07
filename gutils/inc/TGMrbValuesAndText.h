@@ -12,6 +12,7 @@
 #include <TObjString.h>
 #include "TOrdCollection.h"
 #include "TArrayI.h"
+#include <iostream>
 
 //________________________________________________________________________
 
@@ -49,12 +50,13 @@ public:
 void SavePrimitive(ostream &out, Option_t *);
 #else
 void SavePrimitive(ofstream &out, Option_t *);
-#endif 
+#endif
 
    virtual TGDimension GetDefaultSize() const { return TGDimension(38, 21); }
 
-   virtual void AlignSelected(Style_t align = 0) 
-                { Emit("AlignSelected(Style_t)", align ? align : GetAlignStyle()); }  // *SIGNAL*
+   virtual void AlignSelected(Style_t align = 0)
+                { //std::cout << "  Emit(\"AlignSelected(Style_t)\"" << std::endl;
+                   Emit("AlignSelected(Style_t)", align ? align : GetAlignStyle()); }  // *SIGNAL*
 
    ClassDef(TGedAlignSelect,0)  // Align selection button
 };
@@ -67,10 +69,10 @@ private:
    const TGWindow   *fMyWindow;
    TCanvas          *fCallingCanvas;
    TGTextEntry      *fTE;        // text entry widget
-   TGTextEntry      *fFileNameEntry;     // for file content 
+   TGTextEntry      *fFileNameEntry;     // for file content
    TList            *fWidgets;   // keep track of widgets to be deleted in dtor
    TString          *fText;      // address to store return string
-   Int_t            *fReturn;    // address to store cancel = -1 / ok =0 
+   Int_t            *fReturn;    // address to store cancel = -1 / ok =0
    TList            *fLabels;
    void            **fValPointers;
    TArrayI          *fFlags;
@@ -106,14 +108,14 @@ private:
    Bool_t            fEmitClose;
    Bool_t            fCallClose;
    Int_t             fLastColorSelect;
-//   Int_t             fFinis; 
+//   Int_t             fFinis;
 public:
-   TGMrbValuesAndText(const char *prompt, TString * text, 
-                             Int_t * ok, Int_t win_width, const TGWindow *win=0, 
+   TGMrbValuesAndText(const char *prompt, TString * text,
+                             Int_t * ok, Int_t win_width, const TGWindow *win=0,
                              const char * FileName = 0, TList * complist=0,
                              TList * rowlabs = 0, void **val_pointers = 0,
                              TArrayI * Flags = 0, const char * Flagslabel = 0,
-                             const char *helptext=0, TObject * calling_class = 0, 
+                             const char *helptext=0, TObject * calling_class = 0,
                              const char * cname = 0, const Int_t id = 0);
    virtual ~TGMrbValuesAndText();
 
@@ -134,14 +136,14 @@ public:
    void DisableCancelButton()   { fCancelButton->SetEnabled(kFALSE); };
 
 ClassDef(TGMrbValuesAndText,0)		// [GraphUtils] A dialog box
-};   
+};
 //_________________________________________________________________________________________
 
-Bool_t  GetStringExt(const char *prompt, TString * text, 
-                             Int_t win_width, TGWindow *win = 0, 
+Bool_t  GetStringExt(const char *prompt, TString * text,
+                             Int_t win_width, TGWindow *win = 0,
                              const char * FileName = 0, TList * complist=0,
                              TList * rowlabs =0 , void ** val_pointers=0,
                              TArrayI * Flags = 0, const char * Flagslabel = 0,
-                             const char *helptext = 0, TObject * calling_class = 0, 
+                             const char *helptext = 0, TObject * calling_class = 0,
                              const char * cname = 0);
 #endif

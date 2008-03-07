@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.21 2008-02-19 15:32:30 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.22 2008-03-07 08:15:22 Otto.Schaile Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -391,7 +391,6 @@ Bool_t TGMrbFileObjectCombo::OpenFile(const Char_t * FileName) {
 			fCombo->AddEntry(keyName.Data(), idx);
 			idx++;
 		}
-		delete obj;
 	}
 	return(kTRUE);
 }
@@ -898,7 +897,7 @@ Bool_t TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
 			fLofListItems.AddNamedX(idx, key->GetName(), keyName.Data());
 			idx++;
 		}
-		delete obj;
+		key = (TKey *) fileKeys->After(key);
 	}
 	fListBox->Layout();
 	return(kTRUE);

@@ -616,7 +616,7 @@ TGedAlignSelect::TGedAlignSelect(const TGWindow *p, Style_t alignStyle, Int_t id
 //_____________________________________________________________________________
 Bool_t TGedAlignSelect::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 {
-//   cout << "TGedAlignSelect::ProcessMessage " <<fWidgetId << endl;
+//   std::cout << "TGedAlignSelect::ProcessMessage " <<fWidgetId << std::endl;
    if (GET_MSG(msg) == kC_ALIGNSEL && GET_SUBMSG(msg) == kALI_SELCHANGED) {
       SetAlignStyle(parm2);
       SendMessage(fMsgWindow, MK_MSG(kC_ALIGNSEL, kALI_SELCHANGED),
@@ -682,6 +682,7 @@ void TGedAlignSelect::SetAlignStyle(Style_t alignStyle)
 //      fPicture = gClient->GetPicture(md->filename);
       SetToolTipText(md->name);
    }
+//   std::cout << "AlignSelected(fAlignStyle); " << fAlignStyle << endl;
    gClient->NeedRedraw(this);
    AlignSelected(fAlignStyle);
 }
@@ -1059,6 +1060,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             TString scol;
             scol = *(TString*)fValPointers[i];
             tentry = new TGTextEntry(hframe, tbuf = new TGTextBuffer(100), i + 1000*kIdText);
+            fFileDialogContTextEntry  = tentry;
             tentry->GetBuffer()->AddText(0, (const char *)scol);
 //            tentry->Resize(win_width/2, tentry->GetDefaultHeight());
             hframe->AddFrame(tentry, l3);
@@ -1338,7 +1340,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
          idButton = fLastColorSelect;
       }
 //      cout << "idButton: " <<idButton << endl;
-      
+
    }    switch (GET_MSG(msg)) {
       case kC_COMMAND:
          switch (GET_SUBMSG(msg)) {
@@ -1389,7 +1391,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                       TGFileInfo* fi = new TGFileInfo();
  //                     const char * filter[] = {"data files", "*", 0, 0};
                       fi->fFileTypes = filetypes;
-                      fi->fFileTypeIdx = 2;
+//                      fi->fFileTypeIdx = 2;
    						 new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
   						    if (fi->fFilename) {
                          fn = fi->fFilename;
@@ -1506,7 +1508,8 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 //         	 StoreValues();
           break;
    }
-//   cout << "ProcessMessage fValPointers " << fValPointers  << endl;
+//cout << "ProcessMessage  " << fValPointers  << " " 
+//     << idButton << " " << kIdExec << endl;
 //  only if a command is executed
    if (  GET_MSG(msg) == kC_COMMAND
       && GET_SUBMSG(msg) == kCM_BUTTON
@@ -1516,7 +1519,8 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 	   if (fFileName && fFileName.Length() > 0) this->SaveList();
       ReloadValues();
 //      StoreValues();
-   } else if (fValPointers != NULL && idButton >= 0  && idButton != kIdExec ) {
+//   } else if (fValPointers != NULL && idButton >= 0  && idButton != kIdExec ) {
+   } else if (fValPointers != NULL && idButton >= 0) {
       StoreValues();
    }
    if (idButton >= 0)
@@ -1554,7 +1558,7 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname, Bool_t store)
          id++;
       }
    }
-   cout << "fListBoxReq->Resize " << (id+1)*20 << endl;
+//   cout << "fListBoxReq->Resize " << (id+1)*20 << endl;
    fListBoxReq->Resize(fListBoxReq->GetDefaultWidth(), TMath::Min(200, (id+1)*20));
    fListBoxReq->Layout();
    gClient->NeedRedraw(fListBoxReq);
