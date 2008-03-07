@@ -1,4 +1,4 @@
-// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.h,v 1.1 2007-08-09 13:53:46 Otto.Schaile Exp $
+// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.h,v 1.2 2008-03-07 08:14:48 Otto.Schaile Exp $
 // Author: Carsten Hof 28/07/04
 
 /*************************************************************************
@@ -35,6 +35,10 @@ class TGNumberEntry;
 class TGTextEntry;
 class TGCheckButton;
 class TGRadioButton;
+class TGedAlignSelect;
+class TGFontTypeComboBox;
+class TGColorSelect;
+class HprText;
 
 class TSplineXEditor : public TGedFrame {
 
@@ -42,19 +46,29 @@ protected:
    TSplineX            *fSplineX;      // SplineX object
    TGCheckButton       *fOpenClose;   // close / open TSplineX
    TGCheckButton       *fMarkerOnOff;  // set Controlpoints visible/unvisible
-   TGCheckButton       *fArrowAtStart; // 
-   TGCheckButton       *fArrowAtEnd;   // 
-   TGCheckButton       *fArrowFill;    // 
+   TGCheckButton       *fArrowAtStart; //
+   TGCheckButton       *fArrowAtEnd;   //
+   TGCheckButton       *fArrowFill;    //
    TGNumberEntry       *fArrowLength;    //
    TGNumberEntry       *fArrowAngle;    //
    TGNumberEntry       *fArrowIndentAngle;    //
    TGNumberEntry       *fRailwayGage;    //
    TGNumberEntry       *fFilledLength;    //
    TGNumberEntry       *fEmptyLength;    //
-   TGTextButton        *fControlGraphMixer;    // 
-   TGTextButton        *fAddParallel;    // 
+   TGTextButton        *fControlGraphMixer;    //
+   TGTextButton        *fAddParallel;    //
    TGNumberEntry       *fDistParallelEntry;    //
+
+   TGColorSelect       *fTextColorSelect;
+   TGTextEntry         *fTextEntry;
+   TGNumberEntry       *fTextSize;
+   TGedAlignSelect     *fTextAlign;
+   TGFontTypeComboBox  *fTextFont;
+   TList               *fTextList;
+   Short_t             fAlign;
+   HprText             *fHprText;
    Double_t             fDistParallel;
+   Bool_t               fInit;
    virtual void ConnectSignals2Slots();
 
 public:
@@ -63,10 +77,11 @@ public:
 #else
    TSplineXEditor(const TGWindow *p, Int_t id,
 #endif
-               Int_t width = 140, Int_t height = 30,
+               Int_t width = 120, Int_t height = 30,
                UInt_t options = kChildFrame,
                Pixel_t back = GetDefaultFrameBackground());
    virtual ~TSplineXEditor();
+   Double_t Dist(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
 #if ROOT_VERSION_CODE >= ROOT_VERSION(5,13,4)
    void ActivateBaseClassEditors(TClass* cl);
    virtual void SetModel(TObject *obj);
@@ -89,7 +104,12 @@ public:
    virtual void DoControlGraphMixer();
    virtual void DoAddParallel();
    virtual void DoDistParallelEntry();
-
+   virtual void DoSetTextColor();
+   virtual void DoSetText();
+   virtual void DoSetTextSize();
+   virtual void DoSetTextAlign(Style_t al);
+   virtual void DoSetTextFont();
+   Int_t        GetColorPixelByInd(Int_t index);
    ClassDef(TSplineXEditor,0)        // ParallelGraph editor
 };
 
@@ -98,8 +118,8 @@ class ParallelGraphEditor : public TGedFrame {
 protected:
    ParallelGraph       *fParallel;          // ParallelGraph object
    TGNumberEntry       *fDistance;          //
-   TGTextButton        *fFillToParallel;    // 
-   TGTextButton        *fClearToParallel;    // 
+   TGTextButton        *fFillToParallel;    //
+   TGTextButton        *fClearToParallel;    //
    TGNumberEntry       *fDistParallelEntry; //
    Double_t             fDistParallel;
    virtual void ConnectSignals2Slots();
@@ -121,7 +141,7 @@ public:
    virtual void SetModel(TVirtualPad *pad, TObject *obj, Int_t event);
 #endif
 
-   // 
+   //
    virtual void DoDistance();
    virtual void DoFillToParallel();
    virtual void DoClearToParallel();

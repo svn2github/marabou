@@ -109,7 +109,7 @@ void CurlyLineWithArrowDialog::SaveDefaults()
    env.SetValue("CurlyLineWithArrowDialog.fArrowStyle" , fArrowStyle );
    env.SetValue("CurlyLineWithArrowDialog.fArrowAtStart", fArrowAtStart );
    env.SetValue("CurlyLineWithArrowDialog.fArrowAtEnd"  , fArrowAtEnd );
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 

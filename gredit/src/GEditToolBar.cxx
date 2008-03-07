@@ -106,17 +106,10 @@ void GEdit::ShowToolBar(Bool_t show)
             spacing = 6;
             continue;
          }
-         const TGPicture *pic = fClient->GetPicture(gHprToolBarData[i].fPixmap);
-         if (!pic) {
-            std::cout << "Pixmap not found: " << gHprToolBarData[i].fPixmap << std::endl;
-            std::cout << "Add \":$MARABOU/icons\"  to \"Gui.IconPath:\" in your \"$HOME/.rootrc\"" << std::endl;
-         } else {
-            TGButton * button =
-            fToolBar->AddButton(fRootCanvas, &gHprToolBarData[i], spacing);
-            button->Associate(this);
-         }
+         TGButton * button =
+         fToolBar->AddButton(fRootCanvas, &gHprToolBarData[i], spacing);
+         button->Associate(this);
          spacing = 0;
-        
       }
       fVertical1 = new TGVertical3DLine(fToolBar);
       fVertical2 = new TGVertical3DLine(fToolBar);
@@ -131,15 +124,9 @@ void GEdit::ShowToolBar(Bool_t show)
             spacing = 6;
             continue;
          }
-         const TGPicture *pic = fClient->GetPicture(gHprToolBarData1[i].fPixmap);
-         if (!pic) {
-            std::cout << "Pixmap not found: " << gHprToolBarData1[i].fPixmap << std::endl;
-            std::cout << "Add \":$MARABOU/icons\"  to \"Gui.IconPath:\" in your \"$HOME/.rootrc\"" << std::endl;
-         } else {
-            TGButton * button =
-            fToolBar->AddButton(fRootCanvas, &gHprToolBarData1[i], spacing);
-            button->Associate(this);
-         }
+         TGButton * button =
+         fToolBar->AddButton(fRootCanvas, &gHprToolBarData1[i], spacing);
+         button->Associate(this);
          spacing = 0;
       }
       fToolDock->MapSubwindows();

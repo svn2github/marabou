@@ -12,6 +12,7 @@
 #include "TStyle.h"
 #include "TVirtualPad.h"
 #include "Buttons.h"
+#include "HprText.h"
 #include <iostream>
 
 class TSplineX;
@@ -194,7 +195,7 @@ public:
 };
 //____________________________________________________________________________________
 
-class TSplineX : public TPolyLine, public TAttText
+class TSplineX : public TPolyLine
 {
 
 friend class ControlGraph;
@@ -219,6 +220,8 @@ private:
    PolyLineNoEdit *fArrowAtStart;    //!
    PolyLineNoEdit *fArrowAtEnd;      //!
    TList         fDPolyLines;        //!
+   Double_t      fCornersX[3][3];     //!
+   Double_t      fCornersY[3][3];     //!
 
    Float_t       fPrec;
    Bool_t        fClosed;
@@ -237,11 +240,9 @@ private:
    Double_t      fArrowAngle;
    Double_t      fArrowIndentAngle;
    Double_t      fRatioXY;
-   TString       fText;
-//   Color_t       fTextColor;
-//   Size_t        fTextSize;
-//   Font_t        fTextFont;
-//   Short_t       fTextAlign;
+   TList         *fTextList;
+
+//_________________________________________________________________
 
 	Double_t f_blend(Double_t numerator, Double_t denominator);
 	Double_t g_blend(Double_t u, Double_t q);
@@ -284,6 +285,10 @@ protected:
    void Midpoint(Double_t phi1, Double_t phi2, Double_t x, Double_t y,
                         Double_t dist ,Double_t* a, Double_t* b);
 
+   Double_t GetArrowLength(Double_t dist,Double_t al,Double_t aa, Double_t aia);
+//_____________________________________________________________________________________
+
+
 public:
    TSplineX();
    TSplineX(Int_t npoints, Double_t *x = NULL, Double_t *y = NULL,
@@ -321,10 +326,6 @@ public:
 
    void Paint(Option_t * option = " ");
    void PaintArrow(Int_t where);
-   void PaintText(Int_t where = 0);
-   Double_t GetLengthOfText(Double_t csep);
-   Double_t GetLengthOfSpline();
-   Double_t GetPhiXY(Double_t s, Double_t &x, Double_t &y);
    void     DrawParallelGraphs();
    ParallelGraph* AddParallelGraph(Double_t dist = 2, Color_t color=0,
                             Width_t width=0, Style_t style=0);        // *MENU*
@@ -359,10 +360,15 @@ public:
    Bool_t   GetPaintArrowAtEnd()            {return fPaintArrowAtEnd;};
    Int_t    GetArrowFill()                  {return fArrowFill;};
    void     SetArrowFill(Bool_t filled);                              // *MENU*
-//   void     SetTextSize(Size_t size)        {fTextSize = size;};      // *MENU*
-//   void     SetTextColor(Color_t col)       {fTextColor = col;};      // *MENU*
-//   void     SetTextFont(Font_t font)        {fTextFont = font;};      // *MENU*
-   void     SetText(const Char_t *text)     {fText = text;};          // *MENU*
+   void     AddText(TObject *hprtext);
+   TList    *GetTextList()                  {return fTextList;};
+   void PaintText();
+   Double_t GetLengthOfText(HprText *t, Double_t csep);
+   Double_t GetLengthOfSpline();
+   Double_t GetPhiXY(Double_t s, Double_t &x, Double_t &y);
+   Double_t *GetCornersX()                   {return &fCornersX[0][0]; } // *MENU*
+   Double_t *GetCornersY()                   {return &fCornersY[0][0]; } // *MENU*
+   void      PrintAddress(){std::cout << "TSplineX *sp = (TSplineX*)" << this << std::endl;} // *MENU*
 
    #if ROOT_VERSION_CODE >= ROOT_VERSION(5,12,0)
    void SavePrimitive(ostream &, Option_t *);
@@ -370,7 +376,9 @@ public:
    void SavePrimitive(ofstream &, Option_t *);
    #endif
    void CRButtonPressed(Int_t, Int_t){};
+//_____________________________________________________________________________________
 
-   ClassDef(TSplineX, 1)
+
+   ClassDef(TSplineX, 2)
 };
 #endif

@@ -132,7 +132,7 @@ void FeynmanDiagramDialog::FeynmanCurlyWavyLine(Int_t curly)
    ha->Draw();
    if (curly)
      ha->SetCurly();
-   else 
+   else
      ha->SetWavy();
    ha->SetAmplitude(fAmplitude);
    ha->SetWaveLength(fWaveLength);
@@ -168,7 +168,7 @@ void FeynmanDiagramDialog::FeynmanCurlyWavyArc(Int_t curly)
 
    if (curly)
      ha->SetCurly();
-   else 
+   else
      ha->SetWavy();
 //   cout << "TCurlyArc" <<endl;
    ha->SetCurly();
@@ -225,7 +225,7 @@ void FeynmanDiagramDialog::SaveDefaults()
    env.SetValue("FeynmanDiagramDialog.fPhi2" 		, fPhi2  	 );
    env.SetValue("FeynmanDiagramDialog.fArrowSize"  ,fArrowSize  );
    env.SetValue("FeynmanDiagramDialog.fArrowStyle" ,fArrowStyle  );
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 

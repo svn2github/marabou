@@ -95,7 +95,7 @@ void ChangeTextDialog::SaveDefaults()
    env.SetValue("ChangeTextDialog.ChangeTextSizeMin"  , fChangeTextSizeMin  );
    env.SetValue("ChangeTextDialog.ChangeTextSizeMax"  , fChangeTextSizeMax  );
    env.SetValue("ChangeTextDialog.ChangeTextAngle"		, fChangeTextAngle  	 );
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 
@@ -127,15 +127,15 @@ void ChangeTextDialog::ChangeTextExecute()
          TLatex *t = (TLatex*)obj;
          if (cut) {
             if (!cut->IsInside(t->GetX(), t->GetY())) continue;
-         } 
-         if (fDoChangeTextColor)  
+         }
+         if (fDoChangeTextColor)
             t->SetTextColor(fChangeTextColor);
          if (fDoChangeTextSize) {
-            if (t->GetTextSize() > fChangeTextSizeMin && 
-                t->GetTextSize() < fChangeTextSizeMax) 
+            if (t->GetTextSize() > fChangeTextSizeMin &&
+                t->GetTextSize() < fChangeTextSizeMax)
                 t->SetTextSize(fChangeTextSize);
          }
-         if (fDoChangeTextAngle) 
+         if (fDoChangeTextAngle)
             t->SetTextAngle(fChangeTextAngle);
          if (fDoChangeTextAlign)
             t->SetTextAlign(fChangeTextAlign);
@@ -146,15 +146,15 @@ void ChangeTextDialog::ChangeTextExecute()
          TPaveText *t = (TPaveText*)obj;
          if (cut) {
             if (!cut->IsInside(t->GetX1(), t->GetY1())) continue;
-         } 
-         if (fDoChangeTextColor)  
+         }
+         if (fDoChangeTextColor)
             t->SetTextColor(fChangeTextColor);
          if (fDoChangeTextSize) {
-            if (t->GetTextSize() > fChangeTextSizeMin && 
-                t->GetTextSize() < fChangeTextSizeMax) 
+            if (t->GetTextSize() > fChangeTextSizeMin &&
+                t->GetTextSize() < fChangeTextSizeMax)
                 t->SetTextSize(fChangeTextSize);
          }
-         if (fDoChangeTextAngle) 
+         if (fDoChangeTextAngle)
             t->SetTextAngle(fChangeTextAngle);
          if (fDoChangeTextAlign)
             t->SetTextAlign(fChangeTextAlign);

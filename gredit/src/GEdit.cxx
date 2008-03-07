@@ -110,7 +110,7 @@ GEdit::GEdit(TCanvas * parent)
 }
 void GEdit::Constructor()
 {
-//   cout << "ctor GEdit, parent " << fParent << endl;
+   cout << "ctor GEdit, parent " << fParent << endl;
    SetName("HprGEdit");
    fRootCanvas = (TRootCanvas*)fParent->GetCanvas()->GetCanvasImp();
    fOrigWw = fParent->GetWw();
@@ -147,7 +147,7 @@ void GEdit::Constructor()
 
 GEdit::~GEdit()
 {
-//   cout << "~GEdit " << this << endl;
+   cout << "~GEdit " << this << endl;
    SaveDefaults();
    gROOT->GetListOfCleanups()->Remove(this);
    gROOT->GetListOfSpecials()->Remove(this);
@@ -1860,15 +1860,15 @@ void GEdit::RestoreAxisAtts(TPad * pad)
          while ( (obj1 = next() )) {
             if (obj1->InheritsFrom("TAxis")) {
                TString name = ((TAxis*)obj1)->GetName();
-               if (name.BeginsWith("x")) 
+               if (name.BeginsWith("x"))
                   xa = (TAxis*)obj1;
-               if (name.BeginsWith("y")) 
+               if (name.BeginsWith("y"))
                   ya = (TAxis*)obj1;
-            } 
+            }
             if (obj1->InheritsFrom("TF1")) {
                hist = ((TF1*)obj1)->GetHistogram();
             }
-         }  
+         }
          if ( hist ) {
             if ( xa )
                hist->GetXaxis()->ImportAttributes(xa);
@@ -2365,7 +2365,7 @@ void GEdit::ReadGObjects()
    if (!ok) return;
    TFile * infile = new TFile(name);
    env.SetValue("HistPresent.GraphMacrosFileName", name.Data());
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
    if (!fGObjectGroups) fGObjectGroups = new TList();
    GroupOfGObjects * obj;
    TIter next(infile->GetListOfKeys());
@@ -3096,7 +3096,7 @@ void GEdit::SaveDefaults()
    env.SetValue("GEdit.VisibleGridX",   fVisibleGridX);
    env.SetValue("GEdit.VisibleGridY",   fVisibleGridY);
    env.SetValue("GEdit.UseEditGrid",    fUseEditGrid);
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_____________________________________________________________________
 void GEdit::RestoreDefaults()

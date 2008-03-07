@@ -30,9 +30,19 @@ private:
    Int_t          fEditTextLatexFilter;
    Int_t          fEditTextSeqNr;
 public:
-   InsertTextDialog(Bool_t from_file = kFALSE);
+   InsertTextDialog(Bool_t from_file = kFALSE, TObject *caller = NULL);
    virtual ~InsertTextDialog();
    void InsertTextExecute();
+   TString        *GetTextPointer() { return fEditTextPointer; } ;
+   Size_t GetEditTextSize() { return fEditTextSize; };
+   Float_t GetEditTextAngle() { return fEditTextAngle; };
+   Short_t GetEditTextAlign() { return fEditTextAlign; };
+   Color_t GetEditTextColor() { return fEditTextColor; };
+   Font_t GetEditTextFont() { return fEditTextFont; };
+   Int_t GetEditTextPrec() { return fEditTextPrec; };
+   Double_t GetEditTextX0() { return fEditTextX0; };
+   Double_t GetEditTextY0() { return fEditTextY0; };
+
    void SaveDefaults();
    void RestoreDefaults();
    void Show_Head_of_File();

@@ -171,7 +171,7 @@ void InsertFunctionDialog::SaveDefaults()
    env.SetValue("InsertFunctionDialog.Col"		  , fCol 		 );
    env.SetValue("InsertFunctionDialog.PadOpacity", fPadOpacity );
    env.SetValue("InsertFunctionDialog.New_canvas" , fNew_canvas );
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 

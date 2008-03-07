@@ -62,6 +62,8 @@ HprElementEditor::HprElementEditor(const TGWindow *p, Int_t width,
 #endif
 {
    // Constructor of Arc GUI.
+//   Pixel_t lblue;
+//   fClient->GetColorByName("LightSteelBlue1", lblue);
 
    fHprElement = 0;
 
@@ -70,8 +72,8 @@ HprElementEditor::HprElementEditor(const TGWindow *p, Int_t width,
    TGCompositeFrame *f4 = new TGCompositeFrame(fg0, 80, 20, kHorizontalFrame);
    fg0->AddFrame(f4, new TGLayoutHints(kLHintsTop, 1, 1, 3, 0));
 
-   TGLabel *fPlaneLabel = new TGLabel(f4, "Plane:");
-   f4->AddFrame(fPlaneLabel, new TGLayoutHints(kLHintsNormal, 20, 0, 5, 5));
+   TGLabel *fPlaneLabel = new TGLabel(f4, "Plane ");
+   f4->AddFrame(fPlaneLabel, new TGLayoutHints(kLHintsNormal, 1, 0, 3, 5));
    fPlaneEntry = new TGNumberEntry(f4, 0, 7, kCRLA_FMIN,
                                     TGNumberFormat::kNESInteger,
                                     TGNumberFormat::kNEANonNegative,
@@ -81,12 +83,13 @@ HprElementEditor::HprElementEditor(const TGWindow *p, Int_t width,
 
    TGCompositeFrame *f5 = new TGCompositeFrame(this, 80, 20, kHorizontalFrame);
    fg0->AddFrame(f5, new TGLayoutHints(kLHintsTop, 1, 1, 3, 0));
-   TGLabel *fVisLabel = new TGLabel(f5, "Visiblity:");
-   f5->AddFrame(fVisLabel, new TGLayoutHints(kLHintsNormal, 8, 0, 5, 5));
+   TGLabel *fVisLabel = new TGLabel(f5, "Visible");
+   f5->AddFrame(fVisLabel, new TGLayoutHints(kLHintsNormal, 0, 0, 3, 5));
    fVisEntry = new TGNumberEntry(f5, 0, 7, kCRLA_FMIN,
                                     TGNumberFormat::kNESInteger);
    fVisEntry->GetNumberEntry()->SetToolTipText("Set Visiblity");
    f5->AddFrame(fVisEntry, new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1));
+//   fg0->SetBackgroundColor(lblue);
    this->AddFrame(fg0, new TGLayoutHints(kLHintsTop, 1, 1, 1, 1));
 
 #if ROOTVERSION < 51304

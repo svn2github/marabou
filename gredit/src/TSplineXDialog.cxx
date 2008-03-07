@@ -180,7 +180,7 @@ void TSplineXDialog::SaveDefaults()
    env.SetValue("TSplineXDialog.Arrow_size"        , fArrow_size        );
    env.SetValue("TSplineXDialog.Arrow_angle"       , fArrow_angle       );
    env.SetValue("TSplineXDialog.Arrow_indent_angle", fArrow_indent_angle);
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 

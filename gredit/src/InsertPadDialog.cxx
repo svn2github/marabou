@@ -160,7 +160,7 @@ void InsertPadDialog::SaveDefaults()
    env.SetValue("InsertPadDialog.fFillStyle"     ,fFillStyle);
    env.SetValue("InsertPadDialog.fBorderSize"    ,fBorderSize);
    env.SetValue("InsertPadDialog.fBorderMode"    ,fBorderMode);
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 

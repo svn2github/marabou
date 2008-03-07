@@ -236,7 +236,7 @@ void InsertArcDialog::SaveDefaults()
 //   env.SetValue("InsertArcDialog.fPhi1"  , fPhi1 );
  //  env.SetValue("InsertArcDialog.fPhi2"  , fPhi2 );
    env.SetValue("InsertArcDialog.fSense" , fSense);
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 

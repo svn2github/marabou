@@ -173,7 +173,7 @@ void InsertTextBoxDialog::SaveDefaults()
    env.SetValue("InsertTextBoxDialog.fNoAlign"       ,fNoAlign);
    env.SetValue("InsertTextBoxDialog.fWeakAlign"     ,fWeakAlign);
    env.SetValue("InsertTextBoxDialog.fStrongAlign"   ,fStrongAlign);
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 

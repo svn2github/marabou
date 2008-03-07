@@ -174,7 +174,7 @@ TString lat2root(TString& cmd)
 }
 //___________________________________________________________________________
 
-InsertTextDialog::InsertTextDialog(Bool_t from_file)
+InsertTextDialog::InsertTextDialog(Bool_t from_file, TObject *calling_object)
 {
 static const Char_t helptext[] =
 "This widget is used to insert text either directly\n\
@@ -204,10 +204,10 @@ which may shifted together\n\
    } else {
       fEditTextMarkCompound = 0;
    }
-   fRow_lab->Add(new TObjString("DoubleValue_X Position"));
-   fValp[ind++] = &fEditTextX0;
-   fRow_lab->Add(new TObjString("DoubleValue-Y Position"));
-   fValp[ind++] = &fEditTextY0;
+	fRow_lab->Add(new TObjString("DoubleValue_X Pos or Offset"));
+	fValp[ind++] = &fEditTextX0;
+	fRow_lab->Add(new TObjString("DoubleValue-Y Pos or Offset"));
+	fValp[ind++] = &fEditTextY0;
    fRow_lab->Add(new TObjString("DoubleValue_Line spacing"));
    fValp[ind++] = &fEditTextDy;
    fRow_lab->Add(new TObjString("Float_Value-Size"));
@@ -253,10 +253,12 @@ which may shifted together\n\
    cout << "fEditTextSize " << fEditTextSize<< endl;
    Int_t itemwidth = 280;
    static Int_t ok;
+   TObject *caller = this;
+   if ( calling_object ) caller = calling_object;
    fDialog =
       new TGMrbValuesAndText("Insert Text", fEditTextPointer, &ok,itemwidth, win,
                       history, NULL, fRow_lab, fValp,
-                      NULL, NULL, helptext, this, this->ClassName());
+                      NULL, NULL, helptext, caller, caller->ClassName());
 };
 //_________________________________________________________________________
 
@@ -405,6 +407,7 @@ void InsertTextDialog::InsertTextExecute()
 void InsertTextDialog::SaveDefaults()
 {
    TEnv env(".hprrc");
+//   cout << "InsertTextDialog SaveDefaults()" << endl;
    env.SetValue("InsertTextDialog.EditTextFileName"	, fEditTextFileName   );
    env.SetValue("InsertTextDialog.EditTextDy"			, fEditTextDy  		 );
    env.SetValue("InsertTextDialog.EditTextAlign"		, fEditTextAlign  	 );
@@ -414,7 +417,7 @@ void InsertTextDialog::SaveDefaults()
    env.SetValue("InsertTextDialog.EditTextSize" 		, fEditTextSize		 );
    env.SetValue("InsertTextDialog.EditTextAngle"		, fEditTextAngle  	 );
    env.SetValue("InsertTextDialog.EditTextLatexFilter", fEditTextLatexFilter);
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 
@@ -479,7 +482,7 @@ void InsertTextDialog::CloseDialog()
 
 void InsertTextDialog::CloseDown(Int_t wid)
 {
-//   cout << "InsertTextDialog::CloseDown()" << endl;
+   cout << "InsertTextDialog::CloseDown()" << endl;
    if (wid != -2) SaveDefaults();
    delete this;
 }

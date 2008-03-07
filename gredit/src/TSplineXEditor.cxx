@@ -1,5 +1,4 @@
-// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.2 2008-01-16 15:07:03 Otto.Schaile Exp $
-// Author: Carsten Hof   16/08/04
+// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.3 2008-03-07 08:14:48 Otto.Schaile Exp $
 
 /*************************************************************************
  * Copyright (C) 1995-2004, Rene Brun and Fons Rademakers.               *
@@ -25,6 +24,7 @@
 */
 //End_Html
 
+#include "TROOT.h"
 #include "TGComboBox.h"
 #include "TGButton.h"
 //#include "TGGroupFrame.h"
@@ -33,6 +33,7 @@
 #include "TGedFrame.h"
 #include "TGNumberEntry.h"
 #include "TGTextEntry.h"
+#include "TGColorSelect.h"
 #include "TGToolTip.h"
 #include "TGLabel.h"
 #include "TGClient.h"
@@ -40,6 +41,9 @@
 #include "TVirtualPad.h"
 #include "TStyle.h"
 #include "TClass.h"
+#include "TMath.h"
+#include "TGMrbValuesAndText.h"
+#include "HprText.h"
 
 ClassImp(TSplineXEditor)
 ClassImp(ParallelGraphEditor)
@@ -56,6 +60,10 @@ enum ESplineXWid {
    kADDPARALLEL,
    kDISTPARALLEL,
    kCONTROLGRAPHMIXER,
+   kCOLOR,
+   kTEXT_SIZE,
+   kTEXT_FONT,
+   kTEXT_ALIGN
 };
 
 //______________________________________________________________________________
@@ -73,14 +81,25 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
    // Constructor of SplineX editor.
 
    fSplineX = 0;
-
+   fInit = kTRUE;
    // TextEntry to change the title
-//   MakeTitle("Title");
+   MakeTitle("TSplineX");
+
+   Pixel_t red, blue, lblue, brown, grey, lgrey, wheat;
+   fClient->GetColorByName("firebrick", brown);
+   fClient->GetColorByName("red", red);
+   fClient->GetColorByName("blue", blue);
+   fClient->GetColorByName("LightSteelBlue1", lblue);
+   fClient->GetColorByName("grey", grey);
+//   fLightGreyTextGC.SetForeground(lgrey);
+   fClient->GetColorByName("grey90", lgrey);
+//   fLightGreyTextGC.SetForeground(lgrey);
+   fClient->GetColorByName("wheat", wheat);
 
    // Buttons to change the draw options of the SplineX
    TGGroupFrame *fg0 = new TGGroupFrame(this, "Arrow options");
 
-   TGCompositeFrame *f1 = new TGCompositeFrame(fg0, 60, 20, kHorizontalFrame);
+   TGCompositeFrame *f1 = new TGCompositeFrame(fg0, 50, 20, kHorizontalFrame);
    TGLabel * label = new TGLabel(f1, "<|");
    f1->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 0));
    fArrowAtStart = new TGCheckButton(f1, "",kARROW_START);
@@ -100,24 +119,24 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
 
    fg0->AddFrame(f1, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
-   TGCompositeFrame *f2 = new TGCompositeFrame(fg0, 80, 20, kHorizontalFrame);
+   TGCompositeFrame *f2 = new TGCompositeFrame(fg0, 50, 20, kHorizontalFrame);
    label = new TGLabel(f2, "Length");
-   f2->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 30, 1, 0, 3));
+//    f2->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 12, 1, 0, 3));
    fArrowLength = new TGNumberEntry(f2, 10, 4, kARROW_LENGTH);
    fArrowLength->GetNumberEntry()->SetToolTipText("Arrow Length");
-   f2->AddFrame(fArrowLength, new TGLayoutHints(kLHintsExpandX, 7, 1, 1, 1));
+   f2->AddFrame(fArrowLength, new TGLayoutHints(kLHintsExpandX, 8, 1, 1, 1));
    fg0->AddFrame(f2, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
-   TGCompositeFrame *f3 = new TGCompositeFrame(fg0, 80, 20, kHorizontalFrame);
+   TGCompositeFrame *f3 = new TGCompositeFrame(fg0, 50, 20, kHorizontalFrame);
    label = new TGLabel(f3, "Angle");
-   f3->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 35, 1, 0, 3));
+   f3->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 19, 1, 0, 3));
    fArrowAngle = new TGNumberEntry(f3, 30, 4, kARROW_ANGLE);
    fArrowAngle->GetNumberEntry()->SetToolTipText("Arrow Opening Angle");
-   f3->AddFrame(fArrowAngle, new TGLayoutHints(kLHintsRight, 7, 1, 1, 1));
+   f3->AddFrame(fArrowAngle, new TGLayoutHints(kLHintsRight, 6, 1, 1, 1));
    fg0->AddFrame(f3, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
-   TGCompositeFrame *f4 = new TGCompositeFrame(fg0, 80, 20, kHorizontalFrame);
-   label = new TGLabel(f4, "IndentAngle");
+   TGCompositeFrame *f4 = new TGCompositeFrame(fg0, 50, 20, kHorizontalFrame);
+   label = new TGLabel(f4, "IndAngle");
    f4->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
    fArrowIndentAngle = new TGNumberEntry(f4, 0., 4, kARROW_INDENTANGLE);
    fArrowIndentAngle->GetNumberEntry()->SetToolTipText("Arrow Indent Angle");
@@ -127,16 +146,16 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
 
    TGGroupFrame *fg1 = new TGGroupFrame(this, "Railway options");
 
-   TGCompositeFrame *f6 = new TGCompositeFrame(fg1, 80, 20, kHorizontalFrame);
+   TGCompositeFrame *f6 = new TGCompositeFrame(fg1, 50, 20, kHorizontalFrame);
    label = new TGLabel(f6, "Gage");
-   f6->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 38, 1, 0, 3));
+   f6->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 21, 1, 0, 3));
    fRailwayGage = new TGNumberEntry(f6, 10, 4, kARROW_LENGTH);
    fRailwayGage->GetNumberEntry()->SetToolTipText("Railway gage");
    f6->AddFrame(fRailwayGage, new TGLayoutHints(kLHintsExpandX, 7, 1, 1, 1));
    fg1->AddFrame(f6, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
-   TGCompositeFrame *f7 = new TGCompositeFrame(fg1, 80, 20, kHorizontalFrame);
-   label = new TGLabel(f7, "Filled Length");
+   TGCompositeFrame *f7 = new TGCompositeFrame(fg1, 50, 20, kHorizontalFrame);
+   label = new TGLabel(f7, "Filled Len");
    f7->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
    fFilledLength = new TGNumberEntry(f7, 10, 4, kARROW_LENGTH);
    fFilledLength->GetNumberEntry()->SetToolTipText("Railway filled Length");
@@ -144,8 +163,8 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
    fg1->AddFrame(f7, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
 
-   TGCompositeFrame *f8 = new TGCompositeFrame(fg1, 80, 20, kHorizontalFrame);
-   label = new TGLabel(f8, "Blank Length");
+   TGCompositeFrame *f8 = new TGCompositeFrame(fg1, 50, 20, kHorizontalFrame);
+   label = new TGLabel(f8, "Blank Len");
    f8->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
    fEmptyLength = new TGNumberEntry(f8, 10, 4, kARROW_LENGTH);
    fEmptyLength->GetNumberEntry()->SetToolTipText("Railway empty Length");
@@ -153,39 +172,68 @@ TSplineXEditor::TSplineXEditor(const TGWindow *p, Int_t width,
    fg1->AddFrame(f8, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
    AddFrame(fg1, new TGLayoutHints(kLHintsTop, 1, 1, 1, 1));
 
-   TGCompositeFrame *f9 = new TGCompositeFrame(this, 80, 20, kVerticalFrame);
-   fControlGraphMixer = new TGTextButton(f9,"ControlGraph Mixer",kCONTROLGRAPHMIXER);
+   TGCompositeFrame *f9 = new TGCompositeFrame(this, 50, 20, kVerticalFrame);
+   fControlGraphMixer = new TGTextButton(f9,"  ControlGraph Mixer  " ,kCONTROLGRAPHMIXER);
    fControlGraphMixer->SetToolTipText("Modify Shapefactors of ControlPoints");
    f9->AddFrame(fControlGraphMixer, new TGLayoutHints(kLHintsTop, 5, 1, 0, 3));
    AddFrame(f9, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
-   TGCompositeFrame *f10 = new TGCompositeFrame(this, 80, 20, kHorizontalFrame);
-   fAddParallel = new TGTextButton(f10,"Add Parallel",kADDPARALLEL);
+   TGCompositeFrame *f10 = new TGCompositeFrame(this, 50, 20, kHorizontalFrame);
+   fAddParallel = new TGTextButton(f10,"Add ||  ",kADDPARALLEL);
    fAddParallel->SetToolTipText("Add a parallel line ");
 //   fAddParallel->Resize(60, fAddParallel->GetDefaultHeight());
    f10->AddFrame(fAddParallel, new TGLayoutHints(kLHintsLeft, 2, 1, 0, 3));
-   label = new TGLabel(f10, "Dist");
+   label = new TGLabel(f10, "Dist ");
    f10->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 2, 1, 0, 3));
    fDistParallelEntry = new TGNumberEntry(f10, 10, 4, kDISTPARALLEL);
    fDistParallelEntry ->GetNumberEntry()->SetToolTipText("Distance to TSplineX");
    f10->AddFrame(fDistParallelEntry , new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1));
+//   f10->SetBackgroundColor(lblue);
 
    AddFrame(f10, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
    // CheckBox to activate/deactivate the drawing of the Marker
-   TGCompositeFrame *f11 = new TGCompositeFrame(this, 80, 20, kVerticalFrame);
-   fOpenClose = new TGCheckButton(f11,"Closed TSplineX",kOPEN_CLOSE);
+   TGCompositeFrame *f11 = new TGCompositeFrame(this, 50, 20, kHorizontalFrame);
+   fOpenClose = new TGCheckButton(f11,"Closed",kOPEN_CLOSE);
    fOpenClose->SetToolTipText("Toggle open / closed TSplineX");
-   f11->AddFrame(fOpenClose, new TGLayoutHints(kLHintsTop, 5, 1, 0, 3));
+   f11->AddFrame(fOpenClose, new TGLayoutHints(kLHintsTop, 1, 1, 1, 1));
+
+   fMarkerOnOff = new TGCheckButton(f11,"Show M",kMARKER_ONOFF);
+   fMarkerOnOff->SetToolTipText("Make ControlGraphs Markers visible/invisible");
+   f11->AddFrame(fMarkerOnOff, new TGLayoutHints(kLHintsTop, 1, 1, 1, 1));
+//   f11->SetBackgroundColor(lblue);
+
    AddFrame(f11, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
 
+   TGGroupFrame *fg2 = new TGGroupFrame(this, "Text");
 
-   // CheckBox to activate/deactivate the drawing of the Marker
-   TGCompositeFrame *f12 = new TGCompositeFrame(this, 80, 20, kVerticalFrame);
-   fMarkerOnOff = new TGCheckButton(f12,"Show Marker",kMARKER_ONOFF);
-   fMarkerOnOff->SetToolTipText("Make ControlGraphs Markers visible/invisible");
-   f12->AddFrame(fMarkerOnOff, new TGLayoutHints(kLHintsTop, 5, 1, 0, 3));
-   AddFrame(f12, new TGLayoutHints(kLHintsTop, 1, 1, 0, 0));
+   fTextEntry = new TGTextEntry(fg2, new TGTextBuffer(100), 0);
+   fTextEntry->Resize(117, 20);
+   fg2->AddFrame(fTextEntry, new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1));
+
+   TGCompositeFrame *fh1 = new TGCompositeFrame(fg2, 50, 20, kHorizontalFrame);
+   fTextColorSelect = new TGColorSelect(fh1, 0, kCOLOR);
+   fh1->AddFrame(fTextColorSelect, new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1));
+   label = new TGLabel(fh1, "Sz");
+   fh1->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 3));
+   fTextSize = new TGNumberEntry(fh1, 10, 4, kTEXT_SIZE);
+   fh1->AddFrame(fTextSize, new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1));
+   fg2->AddFrame(fh1, new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1));
+
+   TGCompositeFrame *fh2 = new TGCompositeFrame(fg2, 50, 20, kHorizontalFrame);
+   label = new TGLabel(fh2, "Align");
+   fh2->AddFrame(label,new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 1, 1, 0, 0));
+   fAlign = 11;
+   fTextAlign = new TGedAlignSelect(fh2, fAlign, kTEXT_ALIGN);
+   fh2->AddFrame(fTextAlign, new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1));
+   fg2->AddFrame(fh2, new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1));
+
+   fTextFont = new TGFontTypeComboBox(fg2, kTEXT_FONT);
+   fTextFont->Resize(117, 20);
+   fg2->AddFrame(fTextFont, new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1));
+//   fg2->SetBackgroundColor(lblue);
+
+   AddFrame(fg2, new TGLayoutHints(kLHintsTop, 0, 0, 0, 0));
 
    // initialises the window layout
 #if ROOTVERSION < 51304
@@ -247,9 +295,21 @@ void TSplineXEditor::ConnectSignals2Slots()
    (fDistParallelEntry)->Connect("ValueChanged(Long_t)","TSplineXEditor",this,"DoDistParallelEntry())");
    fAddParallel->Connect("Clicked()","TSplineXEditor",this,"DoAddParallel()");
 
+   fTextColorSelect->Connect("ColorSelected(Pixel_t)","TSplineXEditor",this,"DoSetTextColor())");
+   fTextSize->Connect("ValueSet(Long_t)","TSplineXEditor",this,       "DoSetTextSize())");
+   fTextAlign->Connect("AlignSelected(Style_t)","TSplineXEditor",this,  "DoSetTextAlign(Style_t))");
+   fTextFont->Connect("Selected(Int_t)","TSplineXEditor",this,        "DoSetTextFont())");
+   fTextEntry->Connect("ReturnPressed()","TSplineXEditor",this,  "DoSetText())");
+//   fTextEntry->Connect("TextChanged(const char*)","TSplineXEditor",this,  "DoSetText())");
    fInit = kFALSE;  // connect the slots to the signals only once
 }
 
+//______________________________________________________________________________
+
+Double_t TSplineXEditor::Dist(Double_t x1, Double_t y1, Double_t x2, Double_t y2)
+{
+   return TMath::Sqrt((x2 - x1)*(x2 - x1) + (y2 - y1)*(y2 - y1));
+}
 //______________________________________________________________________________
 
 #if ROOTVERSION >= 51304
@@ -272,6 +332,12 @@ void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
    fModel = obj;
    fPad = pad;
 #endif
+   Double_t xp = gPad->AbsPixeltoX(gPad->GetEventX());
+   Double_t yp = gPad->AbsPixeltoY(gPad->GetEventY());
+   Double_t *cx = fSplineX->GetCornersX();
+   Double_t *cy = fSplineX->GetCornersY();
+
+//   std::cout << "TSplineXEditor::SetModel: " << xp << " " << yp << std::endl;
    // Pick up the used values of graph attributes.
    if (fSplineX->GetIsClosed())         fOpenClose->SetState(kButtonDown);
    else                                 fOpenClose->SetState(kButtonUp);
@@ -301,6 +367,52 @@ void TSplineXEditor::SetModel(TVirtualPad *pad, TObject *obj, Int_t event)
    fDistParallel = 10;
    fDistParallelEntry->SetNumber(fDistParallel);
 
+   fTextList = fSplineX->GetTextList();
+   if ( fTextList && fTextList->GetSize() > 0 ) {
+      fTextAlign->SetEnabled(kTRUE);
+      fTextColorSelect->SetEnabled(kTRUE);
+//      fTextSize->SetEnabled(kFALSE);
+      fTextFont->SetEnabled(kTRUE);
+      fHprText = (HprText*)fTextList->At(0);
+      Int_t valign = 1, halign = 1;
+      Double_t xc, yc;
+      Double_t mdist = 1e100;
+      if (fTextList->GetSize() > 1) {
+         for (Int_t ha = 0; ha < 3; ha++) {
+            for (Int_t va = 0; va < 3; va++) {
+               xc = cx[ha*3 + va];
+               yc = cy[ha*3 + va];
+               if ( xc == -11111 && yc == -11111 ) continue;
+               if ( Dist(xc, yc, xp, yp)  < mdist ) {
+                  mdist = Dist(xc, yc, xp, yp);
+                  valign = va;
+                  halign = ha;
+               }
+            }
+         }
+         halign++;
+         valign++;
+         Int_t align = valign + 10*halign;
+         for (Int_t i = 0; i < fTextList->GetSize(); i++ ) {
+            fHprText = (HprText*)fTextList->At(i);
+            if (fHprText->GetTextAlign() == align) break;
+         }
+//         std::cout << "mdist, ha, va " << mdist << " " << halign << " " << valign << std::endl;
+      }
+//      std::cout<< " fHprText->GetTextFont() "  << fHprText->GetTextFont() << std::endl;
+      fTextAlign->SetAlignStyle(fHprText->GetTextAlign());
+      Int_t col = GetColorPixelByInd(fHprText->GetTextColor());
+      fTextColorSelect->SetColor(col);
+      fTextSize->SetNumber(fHprText->GetTextSize());
+      fTextFont->Select(fHprText->GetTextFont()/10);
+      fTextEntry->GetBuffer()->Clear();
+      fTextEntry->GetBuffer()->AddText(0, fHprText->GetText());
+   } else {
+      fTextAlign->SetEnabled(kFALSE);
+      fTextColorSelect->SetEnabled(kFALSE);
+//      fTextSize->SetEnabled(kFALSE);
+      fTextFont->SetEnabled(kFALSE);
+   }
    if (fInit) ConnectSignals2Slots();
 //   SetActive();  // activates this Editor
 }
@@ -315,6 +427,7 @@ void TSplineXEditor::ActivateBaseClassEditors(TClass* cl)
    TGedFrame::ActivateBaseClassEditors(cl);
 }
 #endif
+
 //______________________________________________________________________________
 
 void TSplineXEditor::DoControlGraphMixer()
@@ -344,6 +457,7 @@ void TSplineXEditor::DoMarkerOnOff(Bool_t on)
 
 void TSplineXEditor::DoOpenClose(Bool_t on)
 {
+//   std::cout << "DoOpenClose "<< std::endl;
    // Toggle open / closed TSplineX.
    fSplineX->SetIsClosed(on);
    gPad->Update();
@@ -435,7 +549,62 @@ void TSplineXEditor::DoEmptyLength()
    fSplineX->NeedReCompute();
    fSplineX->Paint();
 }
+//______________________________________________________________________________
 
+void TSplineXEditor::DoSetTextColor()
+{
+   if (fHprText) {
+      Int_t col = fTextColorSelect->GetColor();
+      Color_t val =  TColor::GetColor((Int_t)col);
+//      std::cout << "DoSetTextColor " <<val<< std::endl;
+      fHprText->SetTextColor(val);
+   }
+}
+//______________________________________________________________________________
+
+void TSplineXEditor::DoSetTextSize()
+{
+   if ( !fHprText ) return;
+   fHprText->SetTextSize(fTextSize->GetNumber());
+   fSplineX->Paint();
+}
+//______________________________________________________________________________
+
+void TSplineXEditor::DoSetTextAlign(Style_t al)
+{
+   if ( !fHprText ) return;
+   fHprText->SetTextAlign(fTextAlign->GetAlignStyle());
+   fSplineX->Paint();
+}
+//______________________________________________________________________________
+
+void TSplineXEditor::DoSetTextFont()
+{
+   if ( !fHprText ) return;
+   fHprText->SetTextFont(10 * fTextFont->GetSelected() + 2);
+   fSplineX->Paint();
+}
+//______________________________________________________________________________
+
+void TSplineXEditor::DoSetText()
+{
+   if ( !fHprText ) return;
+   fHprText->SetText(fTextEntry->GetBuffer()->GetString());
+   fSplineX->Paint();
+}
+//_____________________________________________________________________________
+
+Int_t TSplineXEditor::GetColorPixelByInd(Int_t index)
+{
+   Int_t pixels = 0;
+   TIter next(gROOT->GetListOfColors());
+   while (TColor * c = (TColor *)next()) {
+      if (c->GetNumber() == index) {
+         pixels = c->GetPixel();;
+      }
+   }
+   return pixels;
+}
 //______________________________________________________________________________
 
 #if ROOTVERSION >= 51304

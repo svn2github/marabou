@@ -161,7 +161,7 @@ void InsertImageDialog::SaveDefaults()
    env.SetValue("InsertImageDialog.fFix_wh", fFix_wh);
    env.SetValue("InsertImageDialog.fOffset_x", fOffset_x);
    env.SetValue("InsertImageDialog.fOffset_y", fOffset_y);
-   env.SaveLevel(kEnvUser);
+   env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 

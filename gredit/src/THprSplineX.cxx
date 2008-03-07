@@ -1,6 +1,7 @@
 #include "TROOT.h"
 #include "Riostream.h"
 #include "THprSplineX.h"
+#include "HprText.h"
 #include "HTCanvas.h"
 
 ClassImp(THprSplineX)
@@ -12,6 +13,39 @@ THprSplineX::THprSplineX(Int_t npoints, Double_t *x, Double_t *y,
 {
    SetDaughter(this);
 }
+//_____________________________________________________________________________________
+
+void THprSplineX::AddTextDialog()
+{
+   Bool_t from_file = kFALSE;
+   fTextDialog = new InsertTextDialog(from_file, this);
+}
+//_____________________________________________________________________________________
+
+void THprSplineX::InsertTextExecute()
+{
+   std::cout << "TSplineX::InsertTextExecute:" << std::endl;
+   std::cout << *(fTextDialog->GetTextPointer()) << std::endl;
+   HprText *ht = new HprText( fTextDialog->GetTextPointer()->Data());
+	ht->SetTextAlign(fTextDialog->GetEditTextAlign());
+	ht->SetTextFont(fTextDialog->GetEditTextFont() * 10 + fTextDialog->GetEditTextPrec());
+	ht->SetTextSize(fTextDialog->GetEditTextSize());
+	ht->SetTextColor(fTextDialog->GetEditTextColor());
+	ht->SetTextAngle(fTextDialog->GetEditTextAngle());
+   ht->SetOffset(fTextDialog->GetEditTextX0());
+
+   AddText(ht);
+   gPad->Modified();
+   gPad->Update();
+}
+//_____________________________________________________________________________________
+
+void THprSplineX::CloseDown(Int_t flag)
+{
+   std::cout << "THprSplineX::CloseDown "<<  flag<< std::endl;
+   fTextDialog->SaveDefaults();
+   fTextDialog = NULL;
+};
 //________________________________________________________________________
 
 void THprSplineX::Paint(const Option_t *opt)

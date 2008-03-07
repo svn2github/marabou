@@ -32,6 +32,7 @@
 #pragma link C++ class TCurlyLineArrow;
 #pragma link C++ class TArcEditor;
 #pragma link C++ class HprElement;
+#pragma link C++ class HprText;
 #pragma link C++ class HprElementEditor;
 #pragma link C++ class THprArc;
 #pragma link C++ class THprEllipse;

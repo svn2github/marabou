@@ -2,14 +2,21 @@
 #define THPRSPLINEX
 #include "HprElement.h"
 #include "TSplineX.h"
+#include "InsertTextDialog.h"
 
 class THprSplineX : public TSplineX, public HprElement
 {
+private:
+  InsertTextDialog *fTextDialog;
 public:
    THprSplineX(){ SetDaughter(this);};
    THprSplineX(Int_t npoints, Double_t *x = NULL, Double_t *y = NULL,
            Float_t *sf = NULL, Float_t prec = 0.2, Bool_t closed = kFALSE);
    ~THprSplineX(){};
+   void AddTextDialog();    // *MENU*
+   void InsertTextExecute();
+   void CloseDown(Int_t flag);
+   void CRButtonPressed(int,int,TObject* obj) {};
    void Paint(const Option_t *opt);
    Bool_t IsSortable() const {return kTRUE;}
    Int_t Compare( const TObject *obj) const

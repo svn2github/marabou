@@ -45,6 +45,7 @@
 #include "TLatex.h"
 #include "TGMrbSliders.h"
 
+
 //___________________________________________________________________________/
 //                                                                           //
 //                     The T S P L I N E X  Class									  //
@@ -486,6 +487,20 @@ void TSplineX::Midpoint(Double_t phi1, Double_t phi2, Double_t x, Double_t y,
    *a = x + r * TMath::Cos(phi3);
    *b = y + fRatioXY * r * TMath::Sin(phi3);
 }
+//_____________________________________________________________________________________
+
+Double_t TSplineX::GetArrowLength(Double_t dist, Double_t alength,Double_t aangle,Double_t aindent_angle)
+{
+   Double_t deg2rad = TMath::Pi() / 180;
+   Double_t p2 = 0.5 * aangle * deg2rad;
+   Double_t a2 = aindent_angle *deg2rad;
+   Double_t ay = alength * TMath::Tan(p2);
+   Double_t dabs = TMath::Abs(dist);
+//   cout << ay << " " << dabs << endl;
+   Double_t reallength = alength  - ay * TMath::Tan(a2)
+           * (1 - dabs / ay);
+  return reallength;
+}
 //____________________________________________________________________________________
 
 TSplineX::TSplineX()
@@ -542,10 +557,7 @@ TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
    fArrowLength = 10;
    fArrowAngle  = 30;
    fArrowIndentAngle = 15;
-   SetTextSize(0.02);
-   SetTextFont (62);
-   SetTextColor (1);
-   SetTextAlign (22);
+   fTextList = NULL;
 	Double_t ww = (Double_t)gPad->GetWw();
 	Double_t wh = (Double_t)gPad->GetWh();
 	Double_t pxrange = gPad->GetAbsWNDC()*ww;
@@ -1072,24 +1084,15 @@ void TSplineX::Paint(Option_t * opt)
 //   fComputeDone = kTRUE;
 
    if (fArrowAtStart) {
-//      fArrowSize  = fArrowAtStart->GetArrowSize();
-//      fArrowAngle = fArrowAtStart->GetAngle();
- //     if (fArrowAtStart->GetFillStyle() != 0) fArrowFill = kTRUE;
-//      else                                    fArrowFill = kFALSE;
       gPad->GetListOfPrimitives()->Remove(fArrowAtStart);
       delete fArrowAtStart;
       fArrowAtStart = NULL;
    }
    if (fArrowAtEnd) {
-//      fArrowSize  = fArrowAtEnd->GetArrowSize();
-//      fArrowAngle = fArrowAtEnd->GetAngle();
- //     if (fArrowAtEnd->GetFillStyle() != 0) fArrowFill = kTRUE;
- //     else                                  fArrowFill = kFALSE;
       gPad->GetListOfPrimitives()->Remove(fArrowAtEnd);
       delete fArrowAtEnd;
       fArrowAtEnd = NULL;
    }
-
 
    if (fDPolyLines.GetSize() > 0) {
       TIter next(&fDPolyLines);
@@ -1101,7 +1104,7 @@ void TSplineX::Paint(Option_t * opt)
    if (fPaintArrowAtStart) PaintArrow(0);
    if (fPaintArrowAtEnd)   PaintArrow(1);
 
-   if (fText.Length() > 0) PaintText();
+   PaintText();
    if (fRailwaylike > 0) {
       if (fRailL == 0) SetRailwaylike(fRailwayGage);
 //  fill parallel graphs
@@ -1167,38 +1170,14 @@ void TSplineX::Paint(Option_t * opt)
 //  avoid closing line at end
           rg->Paint("L");
           lg->Paint("L");
-/*
-         pl->SetPolyLine(rg->GetLastPoint() + 1);
-         Double_t * px = rg->GetX();
-         Double_t * py = rg->GetY();
-         n = 0;
- 			for (Int_t i = 0; i < rg->GetLastPoint(); i++) {
-				pl->SetPoint(n, px[i], py[i]);
-				n++;
-			}
-//         pl->SetPoint(n, px[0], py[0]);
-         pl->Paint("L");
-         pl->SetPolyLine(lg->GetLastPoint() + 1);
-         px = lg->GetX();
-         py = lg->GetY();
-         n = 0;
- 			for (Int_t i = 0; i < lg->GetLastPoint(); i++) {
-				pl->SetPoint(n, px[i], py[i]);
-				n++;
-			}
-//         pl->SetPoint(n, px[0], py[0]);
-         pl->Paint("L");
-*/
       } else {
          pl->Paint("L");
       }
- //     if (fRailL) fRailL->Paint("L");
- //     if (fRailR) fRailR->Paint("L");
-      gPad->Modified();
-      gPad->Update();
    }
    fPaintArrowAtStart = aas;
    fPaintArrowAtEnd   = aae;
+   gPad->Modified();
+   gPad->Update();
 
    if (fFilledLength <= 0 || fEmptyLength <= 0 || fRailwaylike <= 0) {
 //  currently no arrays with railway sleepers allowed
@@ -1391,21 +1370,22 @@ Double_t TSplineX::GetLengthOfSpline()
 }
 //_____________________________________________________________________________________
 
-Double_t TSplineX::GetLengthOfText(Double_t csep)
+Double_t TSplineX::GetLengthOfText(HprText *t, Double_t csep)
 {
-   Int_t np = fText.Length();
+   TString s(t->GetText());
+   Int_t np = s.Length();
    Double_t len = 0;
    UInt_t w, h;
    TLatex tt;
-   tt.SetTextSize(GetTextSize());
-   tt.SetTextFont(GetTextFont());
+   tt.SetTextSize(t->GetTextSize());
+   tt.SetTextFont(t->GetTextFont());
    tt.GetTextExtent(w, h, "X");
-   tt.GetTextExtent(w, h, fText.Data());
+   tt.GetTextExtent(w, h, s.Data());
    for (Int_t i=0; i < np; i++) {
-      TString subs = fText[i];
+      TString subs = s[i];
       tt.GetTextExtent(w, h, subs.Data());
-      len += gPad->AbsPixeltoX((Int_t)w);
-      len += csep;
+      Double_t clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
+      len += (clen + csep);
    }
    return len;
 }
@@ -1435,51 +1415,132 @@ Double_t TSplineX::GetPhiXY(Double_t s, Double_t &x, Double_t &y)
    }
    return -999;
 }
+
 //_____________________________________________________________________________________
 
-void TSplineX::PaintText(Int_t where)
+void TSplineX::AddText(TObject *t)
 {
-   if (fText.Length() <= 0) return;
-   Int_t np = fText.Length();
+   if ( !fTextList )
+      fTextList = new TList();
+   fTextList->Add(t);
+}
+//_____________________________________________________________________________________
 
-   Double_t len = 0, s = 0;
-   UInt_t w, h;
-   Double_t x, y, phi, a, b;
-   TLatex tt;
-   tt.SetTextSize(GetTextSize());
-   tt.SetTextFont(GetTextFont());
-   tt.SetTextColor(GetTextColor());
-   tt.GetTextExtent(w, h, "i");
-   Double_t csep =  0.1* gPad->AbsPixeltoX((Int_t)w);
-//   csep = ;
-   tt.GetTextExtent(w, h, "X");
-   Double_t ch = gPad->AbsPixeltoX((Int_t)h);
-   Int_t valign = 1;
-   if (GetTextAlign() / 10 == 2) {
-      s = 0.5 * (GetLengthOfSpline() - GetLengthOfText(csep));
-   } else if (GetTextAlign() / 10 == 3) {
-      s = (GetLengthOfSpline() - GetLengthOfText(csep));
-   }
-   if (GetTextAlign() % 10 == 2) {
-      valign = 2;
-      ch *= 0.5;
-   } else if (GetTextAlign() % 10 == 3) {
-      valign = 3;
-   }
-   tt.SetTextAlign(11);
-   for (Int_t i=0; i < np; i++) {
-      TString subs = fText[i];
-      tt.GetTextExtent(w, h, subs.Data());
-      len = gPad->AbsPixeltoX((Int_t)w);
-      phi = GetPhiXY(s, x, y);
-      if (valign >= 2) {
-         Endpoint(phi, x, y, ch, &a, &b);
-         x = a;
-         y = b;
+void TSplineX::PaintText()
+{
+   for (Int_t i = 0; i < 3; i++) {
+      for (Int_t j = 0; i < 3; i++) {
+         fCornersX[i][j] = -1111;
+         fCornersY[i][j] = -1111;
       }
-      phi  *=  (180 / TMath::Pi());
-      tt.PaintLatex(x, y, phi, GetTextSize(), subs.Data());
-      s += (csep + len);
+   }
+   if ( !fTextList ||  fTextList->GetSize() <= 0 ) return;
+   for (Int_t i = 0; i < fTextList->GetSize(); i++) {
+      HprText *t = (HprText*)fTextList->At(i);
+      TLatex latex;
+      latex.SetTextSize(t->GetTextSize());
+      latex.SetTextFont(t->GetTextFont());
+      latex.SetTextColor(t->GetTextColor());
+		UInt_t w, h;
+		latex.GetTextExtent(w, h, "i");
+		Double_t csep = 0.1 * (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
+	//   csep = ;
+		latex.GetTextExtent(w, h, "X");
+		Double_t chShift=   (gPad->AbsPixeltoX((Int_t)h) - gPad->AbsPixeltoX(0));
+		Double_t clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
+	// default bolatexom left
+      Short_t align = t->GetTextAlign();
+		Int_t halign = align / 10;
+      Int_t valign = align % 10;
+		Double_t s = 0;
+		Double_t als = 0, ale = 0;
+		if (fArrowAtStart || fArrowAtEnd) {
+			Double_t al = GetArrowLength(0.5 * fRailwayGage, fArrowLength, fArrowAngle, fArrowIndentAngle);
+			if ( fArrowAtStart )
+				als = al;
+			if ( fArrowAtEnd )
+				ale = al;
+      }
+		if ( halign / 10 == 1) {
+	   	s += (als +t->GetOffset());
+		} else if ( halign == 2) {
+	// center along spline
+			s = 0.5 * (GetLengthOfSpline() - GetLengthOfText(t, csep));
+		} else if ( halign == 3) {
+	// right along spline
+			s = (GetLengthOfSpline() - GetLengthOfText(t, csep)) - (ale + t->GetOffset());
+		}
+		if ( valign == 2 ) {
+	// center vertical
+			chShift *= 0.5;
+		} else if ( valign == 3 ) {
+			if ( fRailwayGage > 0 )
+			chShift += 0.5 * fRailwayGage;
+		} else {
+			chShift = 0;
+			if ( fRailwayGage > 0 )
+			chShift -= 0.5 * fRailwayGage;
+		}
+
+		latex.SetTextAlign(11);
+		Double_t x, y, phi, a, b;
+      TString text = t->GetText();
+//		cout << " valign, ch " << valign << " " << chShift << " " << text << endl;
+      Int_t mc = text.Length() / 2;
+		for (Int_t i=0; i < text.Length(); i++) {
+			TString subs = text[i];
+			latex.GetTextExtent(w, h, subs.Data());
+			clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
+			phi = GetPhiXY(s, x, y);
+         a = x;
+         b = y;
+			if ( chShift != 0 ) {
+				Endpoint(phi, x, y, chShift, &a, &b);
+			}
+			phi  *=  (180 / TMath::Pi());
+			latex.PaintLatex(a, b, phi, t->GetTextSize(), subs.Data());
+			s += (csep + clen);
+//
+         if ( i == 0 && halign == 1) {
+            if        ( valign == 2 ) {
+               fCornersX[halign-1][valign-1] = x;
+               fCornersY[halign-1][valign-1] = y;
+            } else if ( valign == 1 ) {
+               fCornersX[halign-1][valign-1] = a;
+               fCornersY[halign-1][valign-1] = b;
+            } else if ( valign == 3 ) {
+               Endpoint(phi, x, y, -0.5 * fRailwayGage, &a, &b);
+               fCornersX[halign-1][valign-1] = a;
+               fCornersY[halign-1][valign-1] = b;
+            } 
+         }
+         if ( i == text.Length()-1 && halign == 3) {
+            if        ( valign == 2 ) {
+               fCornersX[halign-1][valign-1] = x;
+               fCornersY[halign-1][valign-1] = y;
+            } else if ( valign == 1 ) {
+               fCornersX[halign-1][valign-1] = a;
+               fCornersY[halign-1][valign-1] = b;
+            } else if ( valign == 3 ) {
+               Endpoint(phi, x, y, -0.5 * fRailwayGage, &a, &b);
+               fCornersX[halign-1][valign-1] = a;
+               fCornersY[halign-1][valign-1] = b;
+            } 
+         }
+         if ( i == mc && halign == 2) {
+            if        ( valign == 2 ) {
+               fCornersX[halign-1][valign-1] = x;
+               fCornersY[halign-1][valign-1] = y;
+            } else if ( valign == 1 ) {
+               fCornersX[halign-1][valign-1] = a;
+               fCornersY[halign-1][valign-1] = b;
+            } else if ( valign == 3 ) {
+               Endpoint(phi, x, y, -0.5 * fRailwayGage, &a, &b);
+               fCornersX[halign-1][valign-1] = a;
+               fCornersY[halign-1][valign-1] = b;
+            } 
+         }
+		}
    }
 }
 //_____________________________________________________________________________________
@@ -2054,18 +2115,12 @@ void ParallelGraph::CorrectForArrows(Double_t rxy, Double_t alength,Double_t aan
 
    Double_t chop, seglen, xm, ym;
    Int_t ip = 0;
-   Double_t deg2rad = TMath::Pi() / 180;
-   Double_t p2 = 0.5 * aangle * deg2rad;
-   Double_t a2 = aindent_angle *deg2rad;
-   Double_t ay = alength * TMath::Tan(p2);
-   Double_t dabs = TMath::Abs(fDist);
-//   cout << ay << " " << dabs << endl;
-   Double_t reallength = alength  - ay * TMath::Tan(a2)
-           * (1 - dabs / ay);
+
    Double_t* xp = this->GetX();
    Double_t* yp = this->GetY();
    Int_t n = fParent->GetLastPoint() + 1;
-//   cout << "CorrectForArrows:  " << this->GetLastPoint() + 1<< endl;
+   Double_t reallength = fParent->GetArrowLength(fDist, alength, aangle, aindent_angle);
+//   cout << "CorrectForArrows:  " << alength << " " << reallength << endl;
 
    if (at_end) {
       chop = reallength ;
