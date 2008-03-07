@@ -224,15 +224,13 @@ void FindPeakDialog::ExecuteFindPeak()
       nfound = pf->GetNpeaks();
    }
    if (nfound > 100) nfound = 100;
-   if (fInteractive)
-      cout << endl; 
    for (Int_t i=0;i<nfound;i++) {
       Float_t xp = xpeaks[i];
       if (xp < fFrom || xp > fTo) continue;
       Int_t bin = fSelHist->GetXaxis()->FindBin(xp);
       Float_t yp = fSelHist->GetBinContent(bin);
       if (fInteractive) 
-         cout << Form("Pos: %8.1f Cont@Pos:  %8.1f", xp, yp) << endl;
+         printf("Pos: %8.1f Cont@Pos:  %8.1f\n", xp, yp);
 		FhPeak *pe = new FhPeak(xp);
 		pe->SetWidth(fSigma);
 		pe->SetContent(yp);

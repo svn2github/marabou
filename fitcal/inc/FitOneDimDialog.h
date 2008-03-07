@@ -18,7 +18,7 @@ private:
    TGMrbValuesAndText *fDialog;
    TString fFuncName;
    Int_t   fFuncNumber;
-   TVirtualPad *fSelPad;
+   TCanvas *fSelPad;
    TH1     *fSelHist;
    TGraph  *fGraph;
    Color_t fColor;
@@ -124,6 +124,7 @@ public:
    void PolExecute(Int_t draw_only = 0);
    void PrintCorrelation();
    void AddPeaktoList(TF1 *func);
+   void PrintPeakList();
    void FitFormExecute();
    void DrawFormExecute();
    void FormExecute(Int_t draw_only = 0);

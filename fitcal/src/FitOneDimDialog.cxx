@@ -506,11 +506,12 @@ the root doc at: http://root.cern.ch\n\
    fMeanError  = 0;
    fAdded      = -1;
    RestoreDefaults();
-   fSelPad = gPad;
+   fSelPad = NULL;
    SetBit(kMustCleanup);
    fFuncName = Form("_%d", fFuncNumber);
    fFuncNumber++;
    fNpeaks = 1;
+   fNpeaksList = 0;
    fUseoldpars = 0;
    fLinBgSet = kFALSE;
    fMarkers = NULL;
@@ -868,35 +869,7 @@ Bool_t FitOneDimDialog::FitPeakList()
       }
    }
    if ( fFitOptOneLine ) {
-
-      Double_t median;
-      median = TMath::Median(fNpeaksList, fConstantList.GetArray());
-      Double_t minc = 1, maxc = median *100;
-//      Double_t minm = 1, maxm = 10000;
-      median = TMath::Median(fNpeaksList, fSigmaList.GetArray());
-      Double_t mins = 0, maxs = median * 3;
-      median = TMath::Median(fNpeaksList, fChi2List.GetArray());
-      Double_t minch =0, maxch = median * 10;
-
-      cout << "-------------------------------------" << endl;
-      cout << "Fitting results                      " << endl;
-      cout << "-------------------------------------" << endl;
-      cout << "   Content      Mean     Sigma   Chi2/Ndf" << endl;
-      for (Int_t i = 0; i < fNpeaksList; i++) {
-         if ( fConstantList[i] > maxc || fConstantList[i] < minc )
-            cout << setred;
-         cout << Form("%10.4g", fConstantList[i]); cout << setblack;
-//         if ( fMeanList[i] > maxm || fMeanList[i] < minm )
-//            cout << setred;
-         cout << Form("%10.4g", fMeanList[i]); cout << setblack;
-         if ( fSigmaList[i] > maxs || fSigmaList[i] < mins )
-            cout << setred;
-         cout << Form("%10.4g", fSigmaList[i]); cout << setblack;
-         if ( fChi2List[i] > maxch || fChi2List[i] < minch )
-            cout << setred;
-         cout << Form("%10.4g", fChi2List[i]); cout << setblack;
-         cout << endl;
-      }
+      PrintPeakList();
    }
    fFitOptAddAll = addall_save;
    fShowcof = showcof_save;
@@ -904,6 +877,38 @@ Bool_t FitOneDimDialog::FitPeakList()
    fFitPeakListDone = kTRUE;
    if (fDialog) fDialog->EnableCancelButton();
    return kTRUE;
+}
+//__________________________________________________________________________
+
+void FitOneDimDialog::PrintPeakList()
+{
+	Double_t median;
+   Int_t np = fConstantList.GetSize();
+	median = TMath::Median(np, fConstantList.GetArray());
+	Double_t minc = 1, maxc = median *100;
+	median = TMath::Median(np, fSigmaList.GetArray());
+	Double_t mins = 0, maxs = median * 3;
+	median = TMath::Median(np, fChi2List.GetArray());
+	Double_t minch =0, maxch = median * 10;
+
+	cout << endl
+        << "-------------------------------------" << endl;
+	cout << "Fitting results                      " << endl;
+	cout << "-------------------------------------" << endl;
+	cout << "   Content      Mean     Sigma   Chi2/Ndf" << endl;
+	for (Int_t i = 0; i < np; i++) {
+		if ( fConstantList[i] > maxc || fConstantList[i] < minc )
+			cout << setred;
+		cout << Form("%10.4g", fConstantList[i]); cout << setblack;
+		cout << Form("%10.4g", fMeanList[i]); cout << setblack;
+		if ( fSigmaList[i] > maxs || fSigmaList[i] < mins )
+			cout << setred;
+		cout << Form("%10.4g", fSigmaList[i]); cout << setblack;
+		if ( fChi2List[i] > maxch || fChi2List[i] < minch )
+			cout << setred;
+		cout << Form("%10.4g", fChi2List[i]); cout << setblack;
+		cout << endl;
+	}
 }
  //__________________________________________________________________________
 
@@ -1277,9 +1282,18 @@ Bool_t FitOneDimDialog::FitGausExecute()
 //     cout << (*par)[i] << endl;
    }
 
-   if ( fFitOptOneLine )
+   if ( fFitOptOneLine ) {
+      if ( fNpeaksList == 0) {
+         fNpeaksListIndex = 0;
+         fConstantList.Set(fNpeaks);
+			fMeanList.Set(fNpeaks);
+			fSigmaList.Set(fNpeaks);
+			fChi2List.Set(fNpeaks);
+      }
       AddPeaktoList(func);
-
+      if ( fNpeaksList == 0)
+          PrintPeakList();
+   }
    if (fShowcof != 0 && fGraph == NULL) {
 //      func->GetParameters(par->GetArray());
       Double_t fdpar[4];
@@ -1557,6 +1571,7 @@ void FitOneDimDialog::ClearMarkers() {
       fSelPad->Modified();
       fSelPad->Update();
    }
+//   cout << "Clear Markers" << endl;
 };
 //____________________________________________________________________________________
 
@@ -1570,6 +1585,8 @@ Int_t  FitOneDimDialog::SetMarkers() {
                 kMBIconExclamation, kMBDismiss, &retval);
       return 0;
    }
+   if ( fSelPad->GetAutoExec() ) 
+      fSelPad->ToggleAutoExec();
    ClearMarkers();
    fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
    if (fMarkers == NULL) {
@@ -1594,6 +1611,7 @@ Int_t  FitOneDimDialog::SetMarkers() {
       delete m1;
       nmarks++;
    }
+   PrintMarkers();
    if (fSelPad) fSelPad->Update();
    if (fDialog) fDialog->ReloadValues();
    return nmarks;
@@ -2243,7 +2261,7 @@ void FitOneDimDialog::RestoreDefaults()
    fNevents          = env.GetValue("FitOneDimDialog.fNevents", 10000);
    fPeakSep          = env.GetValue("FitOneDimDialog.fPeakSep", 3);
    fFitWindow        = env.GetValue("FitOneDimDialog.fFitWindow", 3);
-   fConfirmStartValues  = env.GetValue("FitOneDimDialog.fConfirmStartValues", 1);
+   fConfirmStartValues  = env.GetValue("FitOneDimDialog.fConfirmStartValues", 0);
    fPrintStartValues  = env.GetValue("FitOneDimDialog.fPrintStartValues", 0);
 }
 //_______________________________________________________________________
