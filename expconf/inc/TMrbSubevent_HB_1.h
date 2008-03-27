@@ -9,7 +9,7 @@
 //                                         format similar to [10,1] but with hitbuffer
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_HB_1.h,v 1.1 2008-03-07 14:35:54 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_HB_1.h,v 1.2 2008-03-27 15:49:37 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -31,7 +31,7 @@ namespace std {} using namespace std;
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_HB_1
-// Purpose:        Define MBS subevents of type [10,j71]
+// Purpose:        Define MBS subevents of type [10,71]
 // Methods:        MakeReadoutCode  -- output readout code for subevent [10,71]
 // Description:    Defines a MBS subevent of type [10,71] - a special format
 //                 reflecting CAEN's data structure.

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Caen_1.cxx,v 1.10 2006-11-21 09:51:27 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_1.cxx,v 1.11 2008-03-27 15:49:37 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -52,13 +52,13 @@ TMrbSubevent_Caen_1::TMrbSubevent_Caen_1(const Char_t * SevtName, const Char_t *
 //                 -  only 1 event per module
 //
 //                 31---------------16|15------8|7---------0
-//                 |                  |    wc   | modser#  | header
+//                 |  0x200  |        |    wc   | modser#  | header
 //                 |==================|====================|
-//                 |     channel      |        data        | channel data
-//                 |------------------|---------|----------|
-//                 |        ...       |        ...         |
+//                 |  0x000  | chan   |        data        | channel data
+//                 |------------------|--------------------|
+//                 |         |        |        ...         |
 //                 |==================|====================|
-//                 |         |         event count         | trailer
+//                 |  0x400  |         event count         | trailer
 //                 31======================================0
 //
 // Keywords:

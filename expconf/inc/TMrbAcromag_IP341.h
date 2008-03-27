@@ -8,7 +8,7 @@
 // Class:          TMrbAcromag_IP341          -- a 16 channel sampling adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAcromag_IP341.h,v 1.8 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAcromag_IP341.h,v 1.9 2008-03-27 15:49:37 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -54,8 +54,13 @@ class TMrbAcromag_IP341 : public TMrbVMEModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("acro_ip341"); }; 	// module mnemonic
 
+		virtual Bool_t CheckSubeventType(TMrbSubevent * Subevent) const;		// check if subevent type is HB_1 [10,71]
+
 		virtual inline Int_t GetNofSubDevices() const { return(4); };				// houses up to 4 ip modules
 		inline Bool_t HasRandomReadout() const { return(kFALSE); };				// has to be read out as a whole
+
+		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
+		virtual inline const Char_t * GetPrivateCodeFile() const { return("Module_HB"); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

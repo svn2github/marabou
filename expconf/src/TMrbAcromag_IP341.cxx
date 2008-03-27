@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAcromag_IP341.cxx,v 1.8 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAcromag_IP341.cxx,v 1.9 2008-03-27 15:49:37 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -157,6 +157,7 @@ Bool_t TMrbAcromag_IP341::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbMo
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
+			fCodeTemplates.Substitute("$moduleSerial", this->GetSerial());
 			fCodeTemplates.Substitute("$nofParams", this->GetNofChannelsUsed());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
@@ -219,4 +220,21 @@ Bool_t TMrbAcromag_IP341::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbMo
 			break;
 	}
 	return(kTRUE);
+}
+
+Bool_t TMrbAcromag_IP341::CheckSubeventType(TMrbSubevent * Subevent) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAcromag_IP341::CheckSubeventType
+// Purpose:        Check if calling subevent is applicable
+// Arguments:      
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Makes sure that a subevent of type [10,71] (HB_1) is calling.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Subevent->GetType() != 10)		return(kFALSE);
+	if (Subevent->GetSubtype() != 71)	return(kFALSE);
+	else								return(kTRUE);
 }

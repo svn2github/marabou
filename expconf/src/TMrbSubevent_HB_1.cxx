@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_HB_1.cxx,v 1.1 2008-03-07 14:35:54 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_HB_1.cxx,v 1.2 2008-03-27 15:49:37 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +44,7 @@ TMrbSubevent_HB_1::TMrbSubevent_HB_1(const Char_t * SevtName, const Char_t * Sev
 // Results:        --
 // Exceptions:
 // Description:    Create a new subevent of type [10,71]
-//                 used to store CAEN data DGF-4C list-mode format
+//                 used to store data DGF-4C list-mode format
 //
 //
 //                 Data format as given by the producer (MBS):
@@ -52,13 +52,13 @@ TMrbSubevent_HB_1::TMrbSubevent_HB_1(const Char_t * SevtName, const Char_t * Sev
 //                 -  several modules per buffer
 //
 //                 31---------------16|15------8|7---------0
-//                 |                  |    wc   | modser#  | header
+//                 |  0x200  |        |    wc   | modser#  | header
 //                 |==================|====================|
-//                 |     channel      |        data        | channel data
-//                 |------------------|---------|----------|
-//                 |        ...       |        ...         |
+//                 |  0x000  | chan   |        data        | channel data
+//                 |------------------|--------------------|
+//                 |         |        |        ...         |
 //                 |==================|====================|
-//                 |         |         event count         | trailer
+//                 |  0x400  |         event count         | trailer
 //                 31======================================0
 //
 //
@@ -90,7 +90,7 @@ TMrbSubevent_HB_1::TMrbSubevent_HB_1(const Char_t * SevtName, const Char_t * Sev
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->IsZombie()) {
-		fSevtDescr = "like [10,1] but data stored in hit buffer";
+		fSevtDescr = "CAEN-like format, data stored in hit buffer";
 		fSevtType = 10; 	 							// set subevent type & subtype
 		fSevtSubtype = 71;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));

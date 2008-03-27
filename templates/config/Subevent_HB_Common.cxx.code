@@ -3,14 +3,14 @@ Bool_t TMrbSubevent_HB::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, In
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:		   TMrbSubevent_HB::FillSubevent
-// Purpose: 	   Fill data to hitbuffer
+// Purpose: 	   Decode CAEN-like data
 // Arguments:	   const UShort_t * SevtData   -- pointer to unpacked subevent data
 //  			   Int_t SevtWC 			   -- word count
 //  			   Int_t TimeStamp  		   -- time since last start
 //  											  in units of 100 microsecs
 // Results: 	   kTRUE/kFALSE
 // Exceptions:     
-// Description:    Transfers dat to hitbuffer.
+// Description:    Decodes data from written in a CAEN-like format.
 // Keywords:	   
 //////////////////////////////////////////////////////////////////////////////
 
@@ -25,21 +25,88 @@ Bool_t TMrbSubevent_HB::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, In
 	Int_t wordsProcessed = 0; 			// words processed so far
 	UShort_t * dataPtr = (UShort_t *) SevtData;
 	Int_t eventsProcessed = 0;
+	while (SevtWC > 0) {									// subevent may contain several modules
+		Int_t header = (*dataPtr++) << 16; 					// header word (MSB)
+		header |= *dataPtr++; 								// header word (LSB)
+		if ((header & HB_D_HDR) == 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Wrong header - 0x" << setbase(16) << header << setbase(10)
+					<< setblack << endl;
+			return(kTRUE);
+		}
+		Int_t wc = (header >> HB_SH_WC) & HB_M_WC;				// extract wc
+		Int_t wcs = wc;
+		if (wc < 0 || wc > 32) {				// max 32 data words
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Wrong word count - " << wc << setblack << endl;
+			return(kTRUE);
+		}
+		Int_t moduleNumber = header & HB_M_MSERIAL;	// extract module number
+		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
+		if (mle == NULL) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Wrong module number - " << moduleNumber
+					<< setblack << endl;
+			return(kTRUE);
+		}
 
-	while (SevtWC > 0) {
-		Int_t chn = (*dataPtr++);
-		Int_t data = (*dataPtr++);
+		mle->IncrEventHits();				// count this event
+
 		UShort_t evtData[2];
-		evtData[0] = 0;
-		evtData[1] = (UShort_t) data;
-		Int_t moduleNumber = 0;
-		this->GetHitBuffer()->AddHit(	eventsProcessed,
-										moduleNumber,
-										chn,
-										NULL,
-										evtData, 2);
-		SevtWC -= 2;
-		wordsProcessed += 2;
+		for (; wc; wc--) {
+			Int_t data = (*dataPtr++) << 16;		// data (MSB)
+			data |= *dataPtr++; 			// data (LSB)
+			if ((data & HB_M_ID) != HB_D_DATA) {
+				if ((data & HB_M_ID) == HB_D_EOB) {
+					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected EOB", SevtData, origSevtWC);
+					cerr	<< setred
+							<< this->ClassName() << "::FillSubevent(): [Module "
+							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC=" << wordsProcessed
+							<< "] Unexpected EOB - remaining wc=" << wc << " ignored. Continuing with next event."
+							<< setblack << endl;
+					dataPtr -= 2;
+					wcs -= wc;
+					break;
+				} else {
+					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong data", SevtData, origSevtWC);
+					cerr	<< setred
+							<< this->ClassName() << "::FillSubevent(): [Module "
+							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+							<< wordsProcessed << "] Wrong data - 0x" << setbase(16) << data << setbase(10)
+							<< setblack << endl;
+					return(kTRUE);
+				}
+			}
+			Int_t chn = (data >> HB_SH_CHN) & HB_M_CHN;
+			mle->IncrChannelHits(chn);			// count this channel
+			evtData[0] = 0;
+			evtData[1] = (UShort_t) (data & HB_M_ADCDATA);
+			this->GetHitBuffer()->AddHit(	eventsProcessed,
+											moduleNumber,
+											chn,
+											NULL,
+											evtData, 2);
+		}
+		Int_t trailer = (*dataPtr++) << 16; 					// trailer word (MSB)
+		trailer |= *dataPtr++; 									// trailer word (LSB)
+		if ((trailer & HB_D_EOB) == 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOB", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): [Module "
+					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+					<< wordsProcessed << "] Wrong EOB - 0x" << setbase(16) << trailer << setbase(10)
+					<< setblack << endl;
+			return(kTRUE);
+		}
+		wcs = (wcs + 2) * 2;
+		SevtWC -= wcs;						// remaining subevent data
+		wordsProcessed += wcs;
 		eventsProcessed++;
 	}
 	return(kTRUE);
