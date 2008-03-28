@@ -1,0 +1,28 @@
+%%BeginOfCode%%
+#ifndef __HBDefs__
+#define __HBDefs__
+// definitions for modules using CAEN-like data format
+
+#define HB_SH_WC							8
+#define HB_SH_CHN						16
+
+#define CAEN_V965A_SH_CHN						18
+#define CAEN_V965A_SH_HIGH_RANGE				3
+
+#define HB_D_HDR							0x02000000
+#define HB_D_DATA							0x00000000
+#define HB_D_EOB							0x04000000
+#define HB_D_INVALID						0x06000000
+
+#define HB_M_MSERIAL						0xFF
+#define HB_M_WC								0x3F
+#define HB_M_CHN							0xFF
+#define HB_M_ID								0x07000000
+#define HB_M_HDR							0x07FFFFFF
+#define HB_M_DATA 							0x07FFFFFF
+#define HB_M_ADCDATA	 					0x00000FFF
+
+#endif
+
+%%EndOfCode%%
+%%INCLUDES_AND_DEFS_ANALYZE%%
