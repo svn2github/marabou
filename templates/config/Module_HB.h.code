@@ -20,7 +20,7 @@
 #define HB_M_ID								0x07000000
 #define HB_M_HDR							0x07FFFFFF
 #define HB_M_DATA 							0x07FFFFFF
-#define HB_M_ADCDATA	 					0x00000FFF
+#define HB_M_ADCDATA	 					0x0000FFFF
 
 #endif
 
