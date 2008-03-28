@@ -94,16 +94,16 @@
 %%BeginOfCode%%
 					/* read fifo data from $moduleName, $moduleTitle */
 					$moduleNameWC = 0;
-					$moduleNameHdr = evt.out16++; 		/* pointer to header */
+					$moduleNameHeader = evt.out32++; 		/* pointer to header */
 					while (*$moduleNameControl & $mnemoUC_CCSR_FNE) { 	/* fifo containing data? */
-						$moduleNameData = ((short) *$moduleNameFifoData) / 4 + 8192; /* data port MUST be read first!! */
-						$moduleNameTag = *$moduleNameFifoTag;						/* channel */
-						RDO_2MEM_16($moduleNameTag);						/* write addr */
-						RDO_2MEM_16($moduleNameData);	/* write data: adjust to 14 bits positive */
-						$moduleNameWC++;					/* we have to count 32 bit words! */
+						$moduleNameData = ((long) *$moduleNameFifoData) / 4 + 8192; /* data port MUST be read first!! */
+						$moduleNameTag = ((short) *$moduleNameFifoTag);				/* channel */
+						$moduleNameData |= ($moduleNameTag << 16);					/* merge tag and data */
+						RDO_2MEM_32($moduleNameData);								/* write to subevent buffer */
+						$moduleNameWC++;											/* count this item */
 					}
-					*$moduleNameHdr = HB_D_HDR | ($moduleNameWC << HB_SH_WC) | $moduleSerial; /* write header (may be empty frame) */
-					RDO_2MEM_16(HB_D_EOB);				/* write trailer (EOB) */
+					*$moduleNameHeader = ((long) HB_D_HDR) | ($moduleNameWC << HB_SH_WC) | $moduleSerial; /* write header (may be empty frame) */
+					RDO_2MEM_32((long) HB_D_EOB);									/* write trailer (EOB) */
 %%EndOfCode%%
 %%READ_MODULE%%
 
@@ -216,8 +216,8 @@ volatile char * $moduleNameFifoTag;
 
 %%BeginOfCode%%
 	short $moduleNameTag;
-	short $moduleNameData;
-	short * $moduleNameHdr;
+	long $moduleNameData;
+	long * $moduleNameHeader;
 	short $moduleNameWC;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
