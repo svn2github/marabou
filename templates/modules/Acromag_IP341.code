@@ -40,7 +40,7 @@
 #define $mnemoUC_ADDR_DATA(module)			((unsigned short *) (module + $mnemoUC_DATA))
 #define $mnemoUC_ADDR_TAG(module)			(module + $mnemoUC_TAG)
 
-/* definitions describing CAEN like data format */
+/* definitions for CAEN-like data format */
 #define HB_SH_WC							8
 
 #define HB_D_HDR							0x02000000
@@ -93,16 +93,24 @@
 
 %%BeginOfCode%%
 					/* read fifo data from $moduleName, $moduleTitle */
-					$moduleNameWC = 0;
-					$moduleNameHeader = evt.out32++; 		/* pointer to header */
+					$moduleNameLastTag = 1000;
 					while (*$moduleNameControl & $mnemoUC_CCSR_FNE) { 	/* fifo containing data? */
 						$moduleNameData = ((long) *$moduleNameFifoData) / 4 + 8192; /* data port MUST be read first!! */
 						$moduleNameTag = ((short) *$moduleNameFifoTag);				/* channel */
-						$moduleNameData |= ($moduleNameTag << 16);					/* merge tag and data */
-						RDO_2MEM_32($moduleNameData);								/* write to subevent buffer */
-						$moduleNameWC++;											/* count this item */
+						if ($moduleNameTag <= $moduleNameLastTag) {
+							if ($moduleNameLastTag != 1000) {						/* check for end of event */
+								*$moduleNameHeader = ((long) HB_D_HDR) | ($moduleNameWC << HB_SH_WC) | $moduleSerial; /* update header */
+								RDO_2MEM_32((long) HB_D_EOB);						/* write trailer (EOB) */
+							}
+							$moduleNameWC = 0;										/* start new event */
+							$moduleNameHeader = evt.out32++; 						/* store pointer to header */
+							$moduleNameData |= ($moduleNameTag << 16);				/* merge tag and data */
+							RDO_2MEM_32($moduleNameData);							/* write to subevent buffer */
+							$moduleNameWC++;										/* count this item */
+							$moduleNameLastTag = $moduleNameTag;					/* store channel number */
+						}
 					}
-					*$moduleNameHeader = ((long) HB_D_HDR) | ($moduleNameWC << HB_SH_WC) | $moduleSerial; /* write header (may be empty frame) */
+					*$moduleNameHeader = ((long) HB_D_HDR) | ($moduleNameWC << HB_SH_WC) | $moduleSerial; /* update last header */
 					RDO_2MEM_32((long) HB_D_EOB);									/* write trailer (EOB) */
 %%EndOfCode%%
 %%READ_MODULE%%
@@ -219,6 +227,7 @@ volatile char * $moduleNameFifoTag;
 	long $moduleNameData;
 	long * $moduleNameHeader;
 	short $moduleNameWC;
+	int $moduleNameLastTag;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
 
