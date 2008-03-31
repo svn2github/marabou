@@ -104,11 +104,11 @@
 							}
 							$moduleNameWC = 0;										/* start new event */
 							$moduleNameHeader = evt.out32++; 						/* store pointer to header */
-							$moduleNameData |= ($moduleNameTag << 16);				/* merge tag and data */
-							RDO_2MEM_32($moduleNameData);							/* write to subevent buffer */
-							$moduleNameWC++;										/* count this item */
-							$moduleNameLastTag = $moduleNameTag;					/* store channel number */
 						}
+						$moduleNameData |= ($moduleNameTag << 16);				/* merge tag and data */
+						RDO_2MEM_32($moduleNameData);							/* write to subevent buffer */
+						$moduleNameWC++;										/* count this item */
+						$moduleNameLastTag = $moduleNameTag;					/* store channel number */
 					}
 					*$moduleNameHeader = ((long) HB_D_HDR) | ($moduleNameWC << HB_SH_WC) | $moduleSerial; /* update last header */
 					RDO_2MEM_32((long) HB_D_EOB);									/* write trailer (EOB) */
