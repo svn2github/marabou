@@ -142,6 +142,7 @@ void GEdit::Constructor()
    SetBit(kMustCleanup);
    gROOT->GetListOfCleanups()->Add(this);
    gROOT->GetListOfSpecials()->Add(this);
+   fParent->cd();
 }
 //______________________________________________________________________________
 

@@ -1,4 +1,4 @@
-// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.3 2008-03-07 08:14:48 Otto.Schaile Exp $
+// @(#)root/ged:$Name: not supported by cvs2svn $:$Id: TSplineXEditor.cxx,v 1.4 2008-04-01 09:02:29 Otto.Schaile Exp $
 
 /*************************************************************************
  * Copyright (C) 1995-2004, Rene Brun and Fons Rademakers.               *
@@ -564,9 +564,10 @@ void TSplineXEditor::DoSetTextColor()
 
 void TSplineXEditor::DoSetTextSize()
 {
-   if ( !fHprText ) return;
-   fHprText->SetTextSize(fTextSize->GetNumber());
-   fSplineX->Paint();
+   if ( fHprText ) {
+      fHprText->SetTextSize(fTextSize->GetNumber());
+      fSplineX->Paint();
+   }
 }
 //______________________________________________________________________________
 

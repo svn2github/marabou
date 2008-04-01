@@ -7,7 +7,7 @@
 class THprSplineX : public TSplineX, public HprElement
 {
 private:
-  InsertTextDialog *fTextDialog;
+  InsertTextDialog *fTextDialog;   //! dont stream
 public:
    THprSplineX(){ SetDaughter(this);};
    THprSplineX(Int_t npoints, Double_t *x = NULL, Double_t *y = NULL,

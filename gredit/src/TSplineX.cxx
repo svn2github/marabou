@@ -42,7 +42,7 @@
 #include "TSplineX.h"
 #include "TROOT.h"
 #include "TMath.h"
-#include "TLatex.h"
+#include "THprLatex.h"
 #include "TGMrbSliders.h"
 
 
@@ -1435,18 +1435,25 @@ void TSplineX::PaintText()
       }
    }
    if ( !fTextList ||  fTextList->GetSize() <= 0 ) return;
+   Double_t* xp;
+   Double_t* yp;
+   Int_t np = this->GetResult(xp, yp);
+   Double_t direction = 1;
+   if ( xp[0] > xp[np-1] )
+      direction = -1;
    for (Int_t i = 0; i < fTextList->GetSize(); i++) {
       HprText *t = (HprText*)fTextList->At(i);
-      TLatex latex;
+      THprLatex latex;
       latex.SetTextSize(t->GetTextSize());
       latex.SetTextFont(t->GetTextFont());
       latex.SetTextColor(t->GetTextColor());
+      latex.SetBit(THprLatex::kValignNoShift);
 		UInt_t w, h;
 		latex.GetTextExtent(w, h, "i");
 		Double_t csep = 0.1 * (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
 	//   csep = ;
 		latex.GetTextExtent(w, h, "X");
-		Double_t chShift=   (gPad->AbsPixeltoX((Int_t)h) - gPad->AbsPixeltoX(0));
+		Double_t chShift=  0.5 * (gPad->AbsPixeltoX((Int_t)h) - gPad->AbsPixeltoX(0));
 		Double_t clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
 	// default bolatexom left
       Short_t align = t->GetTextAlign();
@@ -1462,7 +1469,7 @@ void TSplineX::PaintText()
 				ale = al;
       }
 		if ( halign / 10 == 1) {
-	   	s += (als +t->GetOffset());
+	      s += (als + t->GetOffset());
 		} else if ( halign == 2) {
 	// center along spline
 			s = 0.5 * (GetLengthOfSpline() - GetLengthOfText(t, csep));
@@ -1470,19 +1477,20 @@ void TSplineX::PaintText()
 	// right along spline
 			s = (GetLengthOfSpline() - GetLengthOfText(t, csep)) - (ale + t->GetOffset());
 		}
+      if (direction < 0 )
+         s += GetLengthOfText(t, csep);
 		if ( valign == 2 ) {
 	// center vertical
-			chShift *= 0.5;
-		} else if ( valign == 3 ) {
+         chShift = 0;
+		} else if ( valign == 1 ) {
 			if ( fRailwayGage > 0 )
-			chShift += 0.5 * fRailwayGage;
+			chShift = direction * (chShift + 0.5 * fRailwayGage);
 		} else {
-			chShift = 0;
 			if ( fRailwayGage > 0 )
-			chShift -= 0.5 * fRailwayGage;
+			chShift = - direction * (chShift + 0.5 * fRailwayGage);
 		}
 
-		latex.SetTextAlign(11);
+		latex.SetTextAlign(12);
 		Double_t x, y, phi, a, b;
       TString text = t->GetText();
 //		cout << " valign, ch " << valign << " " << chShift << " " << text << endl;
@@ -1498,8 +1506,13 @@ void TSplineX::PaintText()
 				Endpoint(phi, x, y, chShift, &a, &b);
 			}
 			phi  *=  (180 / TMath::Pi());
+         if ( direction < 0 ) {
+            phi += 180;
+            if (phi > 360)
+               phi -= 360;
+         }
 			latex.PaintLatex(a, b, phi, t->GetTextSize(), subs.Data());
-			s += (csep + clen);
+			s += direction * (csep + clen);
 //
          if ( i == 0 && halign == 1) {
             if        ( valign == 2 ) {
@@ -1624,6 +1637,9 @@ void TSplineX::PaintArrow(Int_t where)
       Double_t px1o = x[1];
       Double_t py1o = y[1];
       x[0] = px2;
+      Double_t* xp;
+      Double_t* yp;
+      GetResult(xp, yp);
       y[0] = py2;
       x[1] = px3;
       y[1] = py3;

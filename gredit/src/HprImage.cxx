@@ -16,9 +16,10 @@ ClassImp(HprImage)
 HprImage::HprImage(const Char_t * fname, TPad * pad) :
           TNamed(gSystem->BaseName(fname), ""), fPad(pad){
 
-   Long_t id, size, flags, modtime;
+   Long_t id, size = 0, flags, modtime;
 //   cout << "norm ctor HprImage: " << fname << endl;
    gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
+   fIsPainted = kFALSE;
    if(size <= 0){
 //      cout << "File: " << fname << " does not exist of empty" << endl;
       fIsGood = kFALSE;
@@ -108,18 +109,35 @@ Int_t HprImage::ToFile(const Char_t * fname)
 void HprImage::Paint(Option_t * opt)
 {
    if (opt);
-   if (GetVisibility() == 0)
+   if ( GetVisibility() == 0 )
       return;
-//   cout << "HprImage::Paint(): " << name << endl;
+   cout << "HprImage::Paint(): " << endl;
    TList * lop = gPad->GetListOfPrimitives();
    TObject *obj;
    TIter next_img(lop);
+   TObject *hpri = NULL;
+   TObject *aimg = NULL;
+   Bool_t found = kFALSE;
    while ( (obj = next_img()) ) {
       if (obj->InheritsFrom("TASImage")) {
          cout << "TASImage GetHeight(): " << ((TImage*)obj)->GetHeight() << endl;
-         if (((TImage*)obj)->GetHeight() > 5) return;
+         if (((TImage*)obj)->GetHeight() > 5) aimg = obj;
       }
+      if (obj->InheritsFrom("HprImage")) hpri = obj;
    }
+   if ( aimg ) {
+      if (aimg && aimg != lop->First()) {
+         lop->Remove(aimg);
+         lop->AddFirst(aimg,"X");
+      }
+      if (hpri && hpri != lop->First()) {
+         lop->Remove(hpri);
+         lop->AddFirst(hpri,"X");
+         gPad->Modified(kTRUE);
+         gPad->Update();
+      }
+      return;
+   }  
 //   cout << "HprImage::Paint(): " << name << endl;
 //   Dump();
 //   if (fImage) fImage->Dump();
@@ -166,18 +184,14 @@ void HprImage::Paint(Option_t * opt)
    fImage->Paint("X");
 //   lop->ls();
 // make sure image is drawn first
-   TIter next(lop);
-   while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TASImage")) {
-         break;
-      } else {
-         if (!obj->InheritsFrom("HprImage")) {
-//            cout << "Pop " << obj << endl;
-            obj->Pop();
-         }
-      }
+   if (fImage != lop->First()) {
+      lop->Remove((TObject*)fImage);
+      lop->AddFirst(fImage,"X");
+       cout << "HprImage:: AddFirst" << endl;
+   } else {
+       cout << "HprImage:: is 1. "<<fImage<< endl;
    }
 //   lop->ls();
    gPad->Modified(kTRUE);
-
+   fIsPainted = kTRUE;
 }

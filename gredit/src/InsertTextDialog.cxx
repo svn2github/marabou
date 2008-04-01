@@ -456,6 +456,7 @@ void InsertTextDialog::Show_Head_of_File()
 
 InsertTextDialog::~InsertTextDialog()
 {
+//   cout << "InsertTextDialog: dtor "  << endl;
    gROOT->GetListOfCleanups()->Remove(this);
    fRow_lab->Delete();
    delete fRow_lab;
@@ -465,7 +466,7 @@ InsertTextDialog::~InsertTextDialog()
 void InsertTextDialog::RecursiveRemove(TObject * obj)
 {
    if (obj == fCanvas) {
- //     cout << "InsertTextDialog: CloseDialog "  << endl;
+//      cout << "InsertTextDialog: CloseDialog "  << endl;
       CloseDialog();
    }
 }
@@ -482,7 +483,7 @@ void InsertTextDialog::CloseDialog()
 
 void InsertTextDialog::CloseDown(Int_t wid)
 {
-   cout << "InsertTextDialog::CloseDown()" << endl;
+//   cout << "InsertTextDialog::CloseDown()" << endl;
    if (wid != -2) SaveDefaults();
    delete this;
 }

@@ -6,9 +6,13 @@
 class THprLatex : public TLatex, public HprElement
 {
 public:
+      // TLatex status bits
+    enum { kValignNoShift = BIT(16) };
    THprLatex(){ SetDaughter(this);};
    THprLatex(Double_t x, Double_t y, const Char_t * text);
    ~THprLatex(){};
+   THprLatex       *DrawLatex(Double_t x, Double_t y, const char *text);
+   virtual void    PaintLatex(Double_t x, Double_t y, Double_t angle, Double_t size, const char *text);
    void Paint(const Option_t *opt);
    Bool_t IsSortable() const {return kTRUE;}
    Int_t Compare( const TObject *obj) const

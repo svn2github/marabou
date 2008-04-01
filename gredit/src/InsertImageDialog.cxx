@@ -79,8 +79,8 @@ static const Char_t helptext[] =
    Int_t itemwidth = 300;
    static Int_t ok;
    fDialog =
-      new TGMrbValuesAndText("Insert Image", &fPname, &ok,
-          itemwidth, fWindow, NULL, NULL,
+      new TGMrbValuesAndText("Image file", &fPname, &ok,
+          itemwidth, fWindow, hist_file, NULL,
           fRow_lab, fValp, NULL, NULL,
           helptext, this, this->ClassName());
 }

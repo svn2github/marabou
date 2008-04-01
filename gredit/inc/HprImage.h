@@ -12,6 +12,7 @@ private:
    TImage * fImage; //! dont stream
    TPad * fPad;    //! dont stream
    Bool_t fIsGood; //! dont stream
+   Bool_t fIsPainted; //! dont stream   
 
 public:
 
