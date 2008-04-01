@@ -98,6 +98,10 @@ protected:
    Int_t fAlwaysRequestLimits;
    Int_t fNtupleVersioning;
    Int_t fNtupleSeqNr;
+   Int_t f2dimAsGraph;
+   Style_t fMarkStyle;
+   Size_t  fMarkSize;
+   Color_t fMarkColor;
    Int_t fRealStack;
    TString * fHelpDir;
    Double_t fLogScaleMin;

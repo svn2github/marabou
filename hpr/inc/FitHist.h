@@ -256,11 +256,8 @@ public:
    void WriteOutCanvas();
    void WriteOutHist();
    void WriteOutCut();
-//   void WriteHistasASCII(const char *, Bool_t);
-   void WriteHistasASCII(Int_t what = 0);
    void Superimpose(Int_t);
    void KolmogorovTest();
-   void WarnBox(const char *);
    void SetCanvasIsDeleted(){fCanvasIsAlive = kFALSE;};
    void SetSelectedPad(){cHist->cd();};
    void UpdateCanvas(){

@@ -44,6 +44,7 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/GeneralAttDialog.h \
  					$(HPRDIRI)/GraphAttDialog.h \
 					$(HPRDIRI)/WindowSizeDialog.h \
+ 					$(HPRDIRI)/AddFitMenus.h \
   					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)

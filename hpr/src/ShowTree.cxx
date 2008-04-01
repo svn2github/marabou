@@ -6,6 +6,7 @@
 #include "TGMsgBox.h"
 #include "TRootCanvas.h"
 #include "TCanvasImp.h"
+#include "TPaletteAxis.h"
 
 #include "HistPresent.h"
 #include "FitHist.h"
@@ -58,7 +59,8 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
 //  const Int_t MAXLEAF=33;
   if (fRootFile) fRootFile->Close();
   fRootFile=new TFile(fname);
-  fRootFile->ls();
+  if ( gDebug > 1 )
+     fRootFile->ls();
   if (strlen(dir) > 0) fRootFile->cd(dir);
   TTree *tree = (TTree*)gDirectory->Get(tname);
    TObjArray *leaves = tree->GetListOfLeaves();
@@ -388,8 +390,8 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          return;
       }
       nent = fSelectLeaf->GetSize();
-      if (nent > 3) {
-         WarnBox("More the 3 leafs selected");
+      if (nent > 4) {
+         WarnBox("More the 4 leafs selected");
          return;
       }
       if (nent > 0) {
@@ -404,11 +406,18 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
             cmd.Prepend(":");
             cmd.Prepend(leaf1.Data());
          }
-         if (nent == 3) {
+         if (nent > 2) {
             objs = (TObjString *)next();
             leaf2 = objs->String();
             cmd.Prepend(":");
             cmd.Prepend(leaf2.Data());
+         }
+         if (nent > 3) {
+            objs = (TObjString *)next();
+            leaf3 = objs->String();
+// nota bene 4 dim is special
+            cmd.Append(":");
+            cmd.Append(leaf3.Data());
          }
       }
    }
@@ -473,6 +482,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    else hname += "userdef";
    if (nent > 1) hname += "_"; hname += leaf1;
    if (nent > 2) hname += "_"; hname += leaf2;
+   if (nent > 3) hname += "_"; hname += leaf3;
 
    TString option = "goff";
 
@@ -569,12 +579,32 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    if (must_find_limits) limits_defined = kFALSE;
 
    Bool_t modified = kFALSE;
+      Double_t xmin=0, xmax=0, ymin=0, ymax=0, zmin=0, zmax=0, umin=0, umax=0;
    if (must_find_limits) {
-      cout << setblue << "Do tree->Draw() to find limits" << setblack << endl;
+      cout << setblue << "Do tree->Draw() to find limits: "<< cmd_orig << setblack << endl;
+      xmin = tree->GetMinimum((*leaf[0]).Data());
+      xmax = tree->GetMaximum((*leaf[0]).Data());
+//      cout << "xmin, xmax " << xmin << " " << xmax << endl;
+      if (nent > 1) {
+			ymin = tree->GetMinimum((*leaf[1]).Data());
+			ymax = tree->GetMaximum((*leaf[1]).Data());
+//			cout << "ymin, ymax " << ymin << " " << ymax << endl;
+      }
+      if (nent > 2) {
+			zmin = tree->GetMinimum((*leaf[2]).Data());
+			zmax = tree->GetMaximum((*leaf[2]).Data());
+//			cout << "zmin, zmax " << zmin << " " << zmax << endl;
+      }
+      if (nent > 3) {
+			umin = tree->GetMinimum((*leaf[3]).Data());
+			umax = tree->GetMaximum((*leaf[3]).Data());
+//			cout << "umin, umax " << umin << " " << umax << endl;
+      }
+
       tree->Draw(cmd_orig.Data(),"","goff");
       TH1* htemp = (TH1*)gDirectory->FindObject("htemp");
       if (htemp) {
-         for(Int_t i = 0; i < nent; i++) {
+         for(Int_t i = 0; i < TMath::Min(nent, 3); i++) {
 //            if (nbin[i] > 0) continue;
             modified = kTRUE;
             TAxis * a = 0;
@@ -583,12 +613,12 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
             else if (i == 2) a = htemp->GetZaxis();
          	vmin[i] = a->GetXmin();
          	vmax[i] = a->GetXmax();
-            cout << i << " " << vmin[i] << " " << vmax[i] << endl;
+//            cout << i << " " << vmin[i] << " " << vmax[i] << endl;
             if (nbin[i] <= 0) nbin[i] = 100;
          }
       }
    }
-   if (!limits_defined || fAlwaysRequestLimits) {
+   if ((!limits_defined || fAlwaysRequestLimits) && nent < 4) {
       TOrdCollection *row_lab = new TOrdCollection();
       TOrdCollection *col_lab = new TOrdCollection();
       col_lab->Add(new TObjString("Nbins"));
@@ -596,7 +626,8 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       col_lab->Add(new TObjString("Max or NofEv"));
       row_lab->Add(new TObjString((*leaf[0]).Data()));
       if (nent > 1 ) row_lab->Add(new TObjString((*leaf[1]).Data()));
-      if (nent == 3) row_lab->Add(new TObjString((*leaf[2]).Data()));
+      if (nent > 2 ) row_lab->Add(new TObjString((*leaf[2]).Data()));
+      if (nent > 3 ) row_lab->Add(new TObjString((*leaf[3]).Data()));
       row_lab->Add(new TObjString("Event Select"));
       TArrayD xyvals(3*(nent + 1));
       Int_t p = 0;
@@ -681,17 +712,47 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 //         }
       }
    }
-
-   if (nent==1) new TH1F(hname.Data(),hname.Data(),
-               	  (Int_t)nbin[0],vmin[0], vmax[0]);
-   if (nent==2) new TH2F(hname.Data(),hname.Data(),
-               	 (Int_t)nbin[0],vmin[0], vmax[0],
-               	 (Int_t)nbin[1],vmin[1], vmax[1]);
-   if (nent==3) new TH3F(hname.Data(),hname.Data(),
-               	 (Int_t)nbin[0],vmin[0], vmax[0],
-               	 (Int_t)nbin[1],vmin[1], vmax[1],
-               	 (Int_t)nbin[2],vmin[2], vmax[2]);
-
+   TCanvas *cc = NULL;
+   if (nent==1) {
+      new TH1F(hname.Data(),hname.Data(),
+             (Int_t)nbin[0],vmin[0], vmax[0]);
+   } else if ( nent < 4 && f2dimAsGraph == 0 ) {
+		if ( nent==2 )
+			new TH2F(hname.Data(),hname.Data(),
+					(Int_t)nbin[0],vmin[0], vmax[0],
+					(Int_t)nbin[1],vmin[1], vmax[1]);
+		if ( nent==3 )
+			new TH3F(hname.Data(),hname.Data(),
+						(Int_t)nbin[0],vmin[0], vmax[0],
+						(Int_t)nbin[1],vmin[1], vmax[1],
+						(Int_t)nbin[2],vmin[2], vmax[2]);
+	} else {
+      if (nent < 4 ) {
+			cmd += " (";
+			cmd += (Int_t)nbin[0]; cmd += ",";
+			cmd += vmin[0]; cmd += ",";
+			cmd += vmax[0]; cmd += ",";
+			cmd += (Int_t)nbin[1]; cmd += ",";
+			cmd += vmin[1]; cmd += ",";
+			cmd += vmax[1];
+			if (nent > 2) {
+				cmd += ",";
+				cmd += (Int_t)nbin[2]; cmd += ",";
+				cmd += vmin[2]; cmd += ",";
+				cmd += vmax[2];
+			}
+			if (nent > 3) {
+				cmd += ",";
+				cmd += (Int_t)nbin[3]; cmd += ",";
+				cmd += vmin[3]; cmd += ",";
+				cmd += vmax[3];
+			}
+			cmd += ")";
+			}
+		option = "";
+		cc = new TCanvas("cc", "cc", 500,10, 800, 800);
+		cc->Draw();
+	}
 //   delete [] vmin; delete [] vmax; delete [] nbin;
    if (env) delete env;
 
@@ -700,6 +761,10 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 //   Int_t max_events = 10000000;
 //   max_events = rootenv.GetValue("HistPresent.MaxEvents", max_events);
 //   cout << cmd << endl;
+   tree->SetMarkerStyle(fMarkStyle);
+   tree->SetMarkerSize(fMarkSize);
+   tree->SetMarkerColor(fMarkColor);
+
    if (nof_events <= 0) nof_events = 100000000;
    if (fApplyLeafCut) {
       TString cut = *fLeafCut;
@@ -731,23 +796,41 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       " with X :" << fCutVarX->Data() <<
       " and Y :" << fCutVarX->Data() <<  endl;
    } else {
-      cout << "Execute: " << cmd << " 1.Ev, NofEv: "
+      cout << "Execute: " << cmd << " DrawOpt: "<< option  << " 1.Ev, NofEv: "
                           << first_event << " " <<nof_events << endl;
-      tree->Draw((const char*)cmd,"",option.Data(), nof_events, first_event);
+      tree->Draw((const char*)cmd,"",option, nof_events, first_event);
    }
    fRootFile->Close();
    fRootFile=NULL;
+   if ( cc ) cc->Modified();
+//   if (nent > 1 && f2dimAsGraph != 0) return;
    TObject *obj = (TObject *)gROOT->FindObject(hname.Data());
-//  if (!obj)WarnBox("No Object");
+//  if (!obj)WarnBox("No Object"); if (nent==2 && f2dimAsGraph == 0)
    TH1* hist = (TH1*)obj;
    if (hist) {
-         hist->GetXaxis()->SetTitle(*leaf[0]);
-         if (nent >= 2) hist->GetYaxis()->SetTitle(*leaf[1]);
-         if (nent >= 3) hist->GetZaxis()->SetTitle(*leaf[2]);
-         ShowHist(hist);
+		hist->GetXaxis()->SetTitle(*leaf[0]);
+		if (nent >= 2) hist->GetYaxis()->SetTitle(*leaf[1]);
+		if (nent >= 3) hist->GetZaxis()->SetTitle(*leaf[2]);
+      if (nent != 4 && f2dimAsGraph == 0)
+		   ShowHist(hist);
+      if (nent == 4) {
+         TH2F* h3 = (TH2F*)gROOT->FindObject("DummyForTPaletteAxis");
+         if ( !h3)
+			   h3 = new TH2F("DummyForTPaletteAxis","v",2,0,10, 2,0,10);
+			h3->SetMinimum(umin);
+			h3->SetMaximum(umax);
+			Double_t uc[50];
+			for (int i=0; i < 50; i++) uc[i] = umin + i * (umax - umin) / 50.;
+			h3->SetContour(50,uc);
+			TPaletteAxis *pa = new TPaletteAxis(0.85, -0.9,0.9,0.9, h3);
+			pa->Draw();
+
+      }
    } else {
       WarnBox("No hist");
    }
+   gPad->Modified();
+   gPad->Update();
 }
 
 //________________________________________________________________________________________
@@ -823,6 +906,14 @@ if they are shown again\n\
    valp[ind++] = &fAlwaysFindLimits;
    row_lab->Add(new TObjString("CheckButton_Keep all hists (add vers# to name)"));
    valp[ind++] = &fNtupleVersioning;
+   row_lab->Add(new TObjString("CheckButton_Show 2dim as graph"));
+   valp[ind++] = &f2dimAsGraph;
+   row_lab->Add(new TObjString("Mark_Select_MarkStyle"));
+   valp[ind++] = &fMarkStyle;
+   row_lab->Add(new TObjString("ColorSelect+MarkColor"));
+   valp[ind++] = &fMarkColor;
+   row_lab->Add(new TObjString("Float_Value_MarkSize"));
+   valp[ind++] = &fMarkSize;
 
    static Int_t ok;
    Int_t itemwidth = 280;

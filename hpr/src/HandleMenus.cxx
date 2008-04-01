@@ -40,6 +40,7 @@
 #include "GeneralAttDialog.h"
 #include "GraphAttDialog.h"
 #include "HprTh3Dialog.h"
+#include "hprbase.h"
 
 void EditFitMacroG(TGWindow * win);
 void ExecFitMacroG(TGraph * graph, TGWindow * win);
@@ -536,7 +537,7 @@ again:
                        if (fHCanvas->GetAutoExec()) fHCanvas->ToggleAutoExec();
                        fRootCanvas->ShowEditor();
 //                       fRootCanvas->ShowToolBar();
-                       fHCanvas->SetBit(HTCanvas::kIsAEditorPage);
+//                       fHCanvas->SetBit(HTCanvas::kIsAEditorPage);
                        new GEdit(fHCanvas);
 //                     if (!fEditor) CreateEditor();
                      break;
@@ -807,7 +808,7 @@ again:
                      Canvas2RootFile(fHCanvas, fRootCanvas);
                      break;
                   case kFHHistToASCII:
-                     fFitHist->WriteHistasASCII(0);
+                     Hpr::WriteHistasASCII(fFitHist->GetSelHist(), fRootCanvas);
                      break;
 
                   case kFHASCIIToHist:

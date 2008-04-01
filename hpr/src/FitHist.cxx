@@ -47,7 +47,6 @@
 #include "TArrayI.h"
 #include "TExec.h"
 
-#include "TGMsgBox.h"
 #include "TGWidget.h"
 #include "TGaxis.h"
 #include "FHCommands.h"
@@ -74,6 +73,8 @@
 #include "SetColorModeDialog.h"
 #include "WindowSizeDialog.h"
 #include "GeneralAttDialog.h"
+
+#include "hprbase.h"
 
 //extern HistPresent* hp;
 extern TFile *fWorkfile;
@@ -1062,10 +1063,11 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 
    hist->SetDirectory(gROOT);
 //   if ( (is2dim(hist) && fLiveStat2Dim) || (!is2dim(hist) && fLiveStat1Dim) ){
+
       TString cmd("((FitHist*)gROOT->FindObject(\"");
       cmd += GetName();
       cmd += "\"))->handle_mouse()";
- //  cout << "cmd: " << cmd << endl;
+//      cout << "FitHist::DisplayHist cmd: " << cmd << endl;
       cHist->AddExec("handle_mouse", cmd.Data());
 //   }
    gDirectory = gROOT;
@@ -1092,30 +1094,6 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
                         win_widy + (win_widy - cHist->GetWh()));
 //  look if there exists a calibrated version of this histogram
    gSystem->ProcessEvents();
-/*
-   TEnv *lastset = 0;
-   if (hp && hp->fDisplayCalibrated && (lastset = GetDefaults(fHname)) ) {
-      if (lastset->Lookup("CalFuncName")) {
-         fCalFunc = new TF1(lastset->GetValue("CalFuncName", "xx"), lastset->GetValue("CalFuncForm", "xx"));
-         Int_t npar = lastset->GetValue("CalFuncNpar", 2);
-//          cout << "npar " << npar << endl;
-         TString parname;
-         for (Int_t i = 0; i < npar; i++) {
-            parname = "CalFuncPar";
-            parname += Form("%d", i);
-            fCalFunc->SetParameter(i, (Axis_t)(lastset->GetValue(parname.Data(), 0.)));
-//            cout << parname  << (Axis_t)(lastset->GetValue(parname.Data(), 0.)) << endl;
-         }
-         Int_t nbin_cal = lastset->GetValue("CalHistNbin", 0);
-         Axis_t low_cal = lastset->GetValue("CalHistXmin", 0);
-         Axis_t up_cal  = lastset->GetValue("CalHistXmax", 0);
-         fCalHist = calhist(fSelHist,   fCalFunc, nbin_cal,
-                              low_cal, up_cal,(const char *)fHname);
-         hp->ShowHist(fCalHist);
-      }
-      if (lastset) delete lastset;
-   }
-*/
 };
 
 //------------------------------------------------------
@@ -1124,7 +1102,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 void FitHist::Magnify()
 {
    if (is2dim(fSelHist)) {
-      WarnBox("Magnify 2 dim not yet supported ");
+      Hpr::WarnBox("Magnify 2 dim not yet supported ");
       return;
    }
    Int_t newx = (Int_t) (2.1 * fSelHist->GetNbinsX());
@@ -1259,13 +1237,13 @@ void FitHist::RebinOne()
          nbinsXnew += 1;
          TString warn("Warning: Number of bins X not multiple of ");
          warn += ngroupX;
-         WarnBox(warn.Data());
+         Hpr::WarnBox(warn.Data());
       }
       if (nbinsYnew * ngroupY != fSelHist->GetNbinsY()) {
          nbinsYnew += 1;
          TString warn("Warning: Number of bins Y not multiple of ");
          warn += ngroupY;
-         WarnBox(warn.Data());
+         Hpr::WarnBox(warn.Data());
       }
       TH2* h2 = (TH2*)fSelHist;
       newhist = h2->Rebin2D(ngroupX, ngroupY, name.Data());
@@ -1291,7 +1269,7 @@ void FitHist::RebinOne()
 void FitHist::RedefineAxis()
 {
    if (expHist) {
-      WarnBox("RedefineAxis not implemented \
+      Hpr::WarnBox("RedefineAxis not implemented \
 for expanded Histogram");
       return;
    }
@@ -1431,14 +1409,14 @@ void FitHist::SaveUserContours()
    if (!ok) return;
    Int_t ncont = fSelHist->GetContour();
    if (ncont <= 0) {
-      WarnBox("No Contours defined");
+      Hpr::WarnBox("No Contours defined");
       return;
    }
    TMrbNamedArrayI * colors = 0;
    colors = dynamic_cast<TMrbNamedArrayI*>(fSelHist->
               GetListOfFunctions()->FindObject("Pixel"));
    if (!colors) {
-      WarnBox("No User Colors defined");
+      Hpr::WarnBox("No User Colors defined");
       return;
    }
    FhContour * contour = new FhContour(hname.Data(), "User contours", ncont);
@@ -1469,10 +1447,10 @@ void FitHist::UseSelectedContour()
 {
    if (!hp) return;
    if(hp->fSelectContour->GetSize() <= 0) {
-      WarnBox("No contour selected");
+      Hpr::WarnBox("No contour selected");
       return;
    } else if (hp->fSelectContour->GetSize() > 1) {
-      WarnBox("More then one selected\n\
+      Hpr::WarnBox("More then one selected\n\
 Take first");
    }
    TObjString * objs = (TObjString *)hp->fSelectContour->At(0);
@@ -1639,141 +1617,6 @@ void FitHist::SetUserContours()
 }
 //_______________________________________________________________________________________
 
-void FitHist::WriteHistasASCII(Int_t what)
-{
-
-// *INDENT-OFF*
-  const char helpText[] =
-"As default only the channel contents is written\n\
-to the file.|n\
-\"Binwidth/2\" and \"Errors\" is useful if file should be used\n\
-as input to Ascii2Graph: X, Y, ErrX, ErrY";
-// *INDENT-ON*
-
-   if (what);
-   if (is3dim(fSelHist)) {
-      WarnBox(" WriteHistasASCII: 3 dim not yet supported ");
-      return;
-   }
-   static Int_t channels   = 0;
-   static Int_t bincenters = 1;
-   static Int_t binw2      = 0;
-   static Int_t errors     = 0;
-   static Int_t first_binX  = 0;
-   static Int_t last_binX   = 0;
-   static Int_t first_binY  = 0;
-   static Int_t last_binY   = 0;
-   static Int_t suppress_zeros = 1;
-
-   static TString fname;
-   fname = fSelHist->GetName();
- //  fname = fHname;
-   fname += ".ascii";
-
-   TList *row_lab = new TList();
-   static void *valp[50];
-   Int_t ind = 0;
-   Bool_t ok = kTRUE;
-;
-   row_lab->Add(new TObjString("StringValue_File name"));
-   valp[ind++] = &fname;
-   if (fSelHist->GetDimension() == 1) {
-      row_lab->Add(new TObjString("CheckButton_Channel Numbers"));
-      valp[ind++] = &channels;
-      row_lab->Add(new TObjString("CheckButton_Bin Centers"));
-      valp[ind++] = &bincenters;
-      row_lab->Add(new TObjString("CheckButton_Bwidth/Sqrt(12) Errors X"));
-      valp[ind++] = &binw2;
-   }
-   row_lab->Add(new TObjString("CheckButton_Errors Content (Y)"));
-   valp[ind++] = &errors;
-   row_lab->Add(new TObjString("PlainIntVal_first_binX"));
-   valp[ind++] = &first_binX;
-   row_lab->Add(new TObjString("PlainIntVal_last_binX"));
-   valp[ind++] = &last_binX;
-   if (fSelHist->GetDimension() == 2) {
-      row_lab->Add(new TObjString("PlainIntVal_first_binY"));
-      valp[ind++] = &first_binY;
-      row_lab->Add(new TObjString("PlainIntVal_last_binY"));
-      valp[ind++] = &last_binY;
-   }
-   row_lab->Add(new TObjString("CheckButton_Suppress channels with zero content"));
-   valp[ind++] = &suppress_zeros;
-
-   Int_t   itemwidth=250;
-   ok = GetStringExt("Write hist as ASCII-file", NULL, itemwidth, mycanvas,
-                   NULL, NULL, row_lab, valp, NULL, NULL, &helpText[0]);
-   if (!ok) {
-      return;
-   }
-
-
-   if (!gSystem->AccessPathName((const char *) fname, kFileExists)) {
-//      cout << fname << " exists" << endl;
-      int buttons = kMBOk | kMBDismiss, retval = 0;
-      EMsgBoxIcon icontype = kMBIconQuestion;
-      new TGMsgBox(gClient->GetRoot(), mycanvas,
-                   "Question", "File exists, overwrite?",
-                   icontype, buttons, &retval);
-      if (retval == kMBDismiss)
-         return;
-   }
-   ofstream outfile;
-   outfile.open((const char *) fname);
-//   ofstream outfile((const char *)fname);
-   if (outfile.fail()) {
-      cout << "Opening: " << fname << " failed" << endl;
-      return;
-   }
-   Int_t nl = 0;
-   Int_t nbx1 = 1;
-   Int_t nbx2 = fSelHist->GetNbinsX();
-   if (first_binX > 0) nbx1 = first_binX;
-   if (last_binX > 0)  nbx2 = last_binX;
-
-   if (!is2dim(fSelHist)) {
-      for (Int_t i = nbx1; i <= nbx2; i++) {
-         if (bincenters && suppress_zeros &&
-             fSelHist->GetBinContent(i)  == 0) continue;
-         if (channels)
-            outfile << i << "\t";
-         if (bincenters)
-            outfile << fSelHist->GetBinCenter(i) << "\t";
-         outfile << fSelHist->GetBinContent(i);
-         if (binw2)
-            outfile << "\t" <<  fSelHist->GetBinWidth(i) / TMath::Sqrt(12);
-         if (errors)
-            outfile << "\t" << fSelHist->GetBinError(i);
-         outfile << endl;
-         nl++;
-      }
-
-   } else {
-      Int_t nby1 = 1;
-      Int_t nby2 = fSelHist->GetNbinsY();
-      if (first_binY > 0) nby1 = first_binY;
-      if (last_binY > 0)  nby2 = last_binY;
-      TAxis * xa = fSelHist->GetXaxis();
-      TAxis * ya = fSelHist->GetYaxis();
-      for (Int_t i = nbx1; i <= nbx2; i++) {
-         for (Int_t k = nby1; k <= nby2; k++) {
-            if (suppress_zeros && fSelHist->GetCellContent(i, k)  == 0) continue;
-            outfile << xa->GetBinCenter(i) << "\t";
-            outfile << ya->GetBinCenter(k) << "\t";
-
-            outfile << fSelHist->GetCellContent(i,k);
-            if (errors)
-            outfile << "\t" << fSelHist->GetCellError(i,k);
-            outfile << endl;
-            nl++;
-         }
-      }
-   }
-   cout << nl << " lines written to: " << (const char *) fname << endl;
-   outfile.close();
-};
-//_______________________________________________________________________________________
-
 void FitHist::PictToPSFile(Int_t plain_flag)
 {
    if (fSelHist) {
@@ -1863,7 +1706,7 @@ void FitHist::WriteOutCanvas()
       if (!ok)
          return;
       if ((obj = gROOT->FindObject(hname.Data()))) {
-         WarnBox("Object with this name already exists");
+         Hpr::WarnBox("Object with this name already exists");
          cout << setred << "Object with this name already exists: "
              << obj->ClassName() << setblack << endl;
          return;
@@ -2190,7 +2033,7 @@ TH1 *FitHist::GetOneHist()
       }
    }
    if (nhists <= 0) {
-      WarnBox("No Histogram found");
+      Hpr::WarnBox("No Histogram found");
       return 0;
    }
 
@@ -2221,10 +2064,10 @@ TH1 *FitHist::GetOneHist()
    }
    delete entries;
    if (!hist) {
-      WarnBox("No Histogram found");
+      Hpr::WarnBox("No Histogram found");
    }
    if (hist == fSelHist) {
-      WarnBox("Cant use same histogram");
+      Hpr::WarnBox("Cant use same histogram");
       hist = NULL;
    }
    return hist;
@@ -2286,7 +2129,7 @@ void FitHist::KolmogorovTest()
    TH1 *hist;
    if (hp->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
       if (hp->GetSelectedHist()->GetSize() > 1) {
-         WarnBox("More than 1 selection");
+         Hpr::WarnBox("More than 1 selection");
          return;
       }
       hist = hp->GetSelHistAt(0);
@@ -2306,7 +2149,7 @@ void FitHist::Superimpose(Int_t mode)
 //   Int_t nh = hp->GetSelectedHist()->GetSize();
    if (hp->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
       if (hp->GetSelectedHist()->GetSize() > 1) {
-         WarnBox("More than 1 selection,\n please choose only one");
+         Hpr::WarnBox("More than 1 selection,\n please choose only one");
          return;
       }
       hist = hp->GetSelHistAt(0);
@@ -2314,11 +2157,11 @@ void FitHist::Superimpose(Int_t mode)
       hist = GetOneHist();      // look in memory
    }
    if ( !hist ) {
-      WarnBox("No hist selected");
+      Hpr::WarnBox("No hist selected");
       return;
    }
 	if (hist->GetDimension() != fSelHist->GetDimension()) {
-		WarnBox("Dimensions of histograms differ");
+		Hpr::WarnBox("Dimensions of histograms differ");
 		return;
 	}
    if ( hist->GetDimension() == 3 ) {
@@ -2390,7 +2233,7 @@ void FitHist::Superimpose(Int_t mode)
 		   drawopt += "hist";
    }
 	drawopt += "SAME";
-   cout << "drawopt " << drawopt << endl;
+//   cout << "drawopt " << drawopt << endl;
 	hdisp->DrawCopy(drawopt.Data());
 	Float_t x1 = 0.2;
 	Float_t x2 = 0.3;
@@ -2514,7 +2357,7 @@ void FitHist::OutputStat()
       Float_t xlow, xup;
       if (Nwindows() == 0) {
          if (GetMarks(fSelHist) != 2) {
-            WarnBox("Please select 1 window or exactly 2 marks");
+            Hpr::WarnBox("Please select 1 window or exactly 2 marks");
             return;
          }
          GetLimits();
@@ -2523,7 +2366,7 @@ void FitHist::OutputStat()
          cout << "Using marks " << endl;
       } else {
          if (Nwindows() > 1) {
-            WarnBox("Please select one window");
+            Hpr::WarnBox("Please select one window");
             return;
          }
          TMrbWindow *wdw = (TMrbWindow *) fActiveWindows->First();
@@ -2842,7 +2685,7 @@ void FitHist::FastFT()
 void FitHist::Rotate(Int_t sense)
 {
    if (!is2dim(fSelHist)) {
-      WarnBox("Only 2dim hist can be rotated");
+      Hpr::WarnBox("Only 2dim hist can be rotated");
       return;
    }
    Double_t tan_alpha = 0;
@@ -2867,7 +2710,7 @@ void FitHist::Rotate(Int_t sense)
       alpha_deg = (Double_t)GetFloat("Enter angle in degrees or 0 to define Pol1",
          0, &ok, mycanvas);
       if (!ok ||  alpha_deg == 0) {
-         WarnBox("Please fit a Pol1 to define rotation angle");
+         Hpr::WarnBox("Please fit a Pol1 to define rotation angle");
          return;
       }
       alpha_deg = TMath::Abs(alpha_deg);
@@ -2889,7 +2732,7 @@ void FitHist::Rotate(Int_t sense)
 void FitHist::Transpose()
 {
    if (!is2dim(fSelHist)) {
-      WarnBox("Only 2dim hist can be transposed");
+      Hpr::WarnBox("Only 2dim hist can be transposed");
       return;
    }
    TH2F *h2 = (TH2F *)fOrigHist;
@@ -2923,7 +2766,7 @@ void FitHist::Transpose()
 void FitHist::ProfileX()
 {
    if (!is2dim(fSelHist)) {
-      WarnBox("Only 2dim hist can be profiled");
+      Hpr::WarnBox("Only 2dim hist can be profiled");
       return;
    }
    TH2F *h2 = (TH2F *)fOrigHist;
@@ -2977,7 +2820,7 @@ void FitHist::ProfileX()
 void FitHist::ProfileY()
 {
    if (!is2dim(fSelHist)) {
-      WarnBox("Only 2dim hist can be profiled");
+      Hpr::WarnBox("Only 2dim hist can be profiled");
       return;
    }
    TH2F *h2 = (TH2F *)fOrigHist;
@@ -3114,12 +2957,12 @@ void FitHist::ExpandProject(Int_t what)
          while (TObject * obj =(TObject *)next()) {
             if (is_a_function(obj)) {
                if (func != NULL)
-                  WarnBox("More than 1 function defined, take first");
+                  Hpr::WarnBox("More than 1 function defined, take first");
                 else func =(TF1 *)obj;
             }
          }
          if (!func) {
-            WarnBox("No function found");
+            Hpr::WarnBox("No function found");
             return;
          }
       }
@@ -3385,16 +3228,6 @@ void FitHist::ExpandProject(Int_t what)
 
 //____________________________________________________________________________
 
-void FitHist::WarnBox(const char *message)
-{
-   int retval = 0;
-   new TGMsgBox(gClient->GetRoot(), mycanvas,
-                "Warning", message, kMBIconExclamation, kMBDismiss,
-                &retval);
-}
-
-//____________________________________________________________________________
-
 void FitHist::ExecDefMacro()
 {
    if (!gSystem->AccessPathName(attrname, kFileExists)) {
@@ -3444,7 +3277,7 @@ void FitHist::Draw1Dim()
    } else
       fSelHist->SetFillStyle(0);
    fSelHist->SetOption(drawopt.Data());
-   fSelHist->Draw();
+   fSelHist->DrawCopy();
    if (fTitleCenterX)
       fSelHist->GetXaxis()->CenterTitle(kTRUE);
    if (fTitleCenterY)
@@ -3534,7 +3367,7 @@ void FitHist::Draw2Dim()
 //   if (->GetShowTitle())
 //      gStyle->SetTitleFont(hp->fTitleFont);
 // cout << "FitHist::rawOpt2Dim: " <<fDrawOpt2Dim << endl;
-   fSelHist->Draw(fDrawOpt2Dim);
+   fSelHist->DrawCopy(fDrawOpt2Dim);
    fSelHist->SetOption(fDrawOpt2Dim);
    fSelHist->SetDrawOption(fDrawOpt2Dim);
    fSelHist->SetStats(0);
@@ -3623,7 +3456,7 @@ void FitHist::AddFunctionsToHist()
          cHist->Modified(kTRUE);
          cHist->Update();
       }
-   } else WarnBox("No function selected");
+   } else Hpr::WarnBox("No function selected");
 }
 //______________________________________________________________________________________
 

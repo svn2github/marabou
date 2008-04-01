@@ -52,6 +52,11 @@ void HistPresent::RestoreOptions()
    fNtupleVersioning  = env.GetValue("HistPresent.NtupleVersioning", 1);
    fAlwaysRequestLimits = env.GetValue("HistPresent.AlwaysRequestLimits", 1);
    fAlwaysFindLimits   = env.GetValue("HistPresent.AlwaysFindLimits", 1);
+   f2dimAsGraph        = env.GetValue("HistPresent.f2dimAsGraph", 0);
+   fMarkStyle          = env.GetValue("HistPresent.fMarkStyle", 20);
+   fMarkSize           = env.GetValue("HistPresent.fMarkSize", 1);
+   fMarkColor          = env.GetValue("HistPresent.fMarkColor", 1);
+
    fRealStack         = env.GetValue("HistPresent.fRealStack", 1);
    fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
    fLinScaleMin = atof(env.GetValue("HistPresent.LinScaleMin", "0"));
@@ -121,6 +126,10 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.RememberTreeHists", fRememberTreeHists);
    env.SetValue("HistPresent.AlwaysRequestLimits", fAlwaysRequestLimits);
    env.SetValue("HistPresent.AlwaysFindLimits", fAlwaysFindLimits);
+   env.SetValue("HistPresent.f2dimAsGraph", f2dimAsGraph);
+   env.SetValue("HistPresent.fMarkStyle",fMarkStyle);
+   env.SetValue("HistPresent.fMarkSize", fMarkSize );
+   env.SetValue("HistPresent.fMarkColor",fMarkColor);
    env.SetValue("HistPresent.NtupleVersioning", fNtupleVersioning);
    env.SetValue("HistPresent.GraphFile", fGraphFile.Data());
    env.SetValue("HistPresent.HostToConnect", fHostToConnect->Data());

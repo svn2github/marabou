@@ -59,6 +59,7 @@
 #include "WindowSizeDialog.h"
 #include "GeneralAttDialog.h"
 #include "GraphAttDialog.h"
+#include "AddFitMenus.h"
 
 #include <iostream>
 #include <iomanip>
@@ -3346,7 +3347,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       new_name += fPageNumber;
       c->SetBit(HTCanvas::kIsAEditorPage);
    }
-   c->SetBit(HTCanvas::kIsAEditorPage);
+//   c->SetBit(HTCanvas::kIsAEditorPage);
    HTCanvas* oldc = (HTCanvas*)gROOT->GetListOfCanvases()->FindObject(name);
    if (oldc) {
       cout << new_name << " already exists, please save und delete" << endl;
@@ -3356,11 +3357,30 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
 //         delete oldc;
    }
    gROOT->ForceStyle(kFALSE);
-   TString tempname(c->GetName());
    if (!c->TestBit(HTCanvas::kIsAEditorPage)) {
       c->Draw();
+      TList *lofe = c->GetListOfExecs();
+      if (lofe) {
+//         lofe->ls();
+         lofe->Clear();
+      }
+      c->BuildHprMenus(this, NULL, NULL);
+      TIter next(c->GetListOfPrimitives());
+      while (TObject * obj = next()) {
+         if (obj->InheritsFrom("TH1")) {
+            TH1*h = (TH1*)obj;
+            obj->SetBit(kCanDelete);
+            if (h->GetDimension() == 1) {
+               new AddFitMenus(c, h);
+               break;
+            }
+         }
+      }
+//      cout << "not kIsAEditorPage " << endl;
+      c->cd();
       return;
    }
+   TString tempname(c->GetName());
    c->SetName("abcxyz");
    UInt_t ww, wh;
    ww = c->GetWw() + 2 * (gStyle->GetCanvasBorderSize() + 1);
@@ -3394,6 +3414,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       if (obj->InheritsFrom(TH1::Class())) {
          h = (TH1*)obj;
          h->SetDirectory(gROOT);
+         h->Draw();
       } else {
          obj->ResetBit(kCanDelete);
 
