@@ -970,9 +970,22 @@ Bool_t FitOneDimDialog::FitGausExecute()
    if ( GetMarkers() < 2 ) {
       Int_t retval = 0;
       new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
-                "Warning", "No marks set,\n need at least 2" ,
+                "Warning", "No marks set,\n use whole range" ,
                 kMBIconExclamation, kMBDismiss, &retval);
-      return kFALSE;
+		if (fMarkers == NULL) {
+			fMarkers = new  FhMarkerList();
+			fSelHist->GetListOfFunctions()->Add(fMarkers);
+		}
+      Double_t x = fSelHist->GetBinLowEdge(fSelHist->GetXaxis()->GetFirst());
+	   FhMarker *m = new FhMarker(x, 0, 28);
+		fMarkers->Add(m);
+      x = fSelHist->GetBinLowEdge(fSelHist->GetXaxis()->GetLast())
+                   + fSelHist->GetBinWidth(1);
+
+	   m = new FhMarker(x, 0, 28);
+		fMarkers->Add(m);
+		//      return kFALSE;
+      GetMarkers();
    }
    if (fOnesig == 0)
       npars = fNpeaks * 3;
@@ -1253,7 +1266,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
          }
 
       } else {
-         fSelHist->Fit(fFuncName.Data(), fitopt.Data());	//  here fitting is done
+         fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
    //     add to ListOfFunctions if requested
          if (fFitOptAddAll) {
             TList *lof = fSelHist->GetListOfFunctions();

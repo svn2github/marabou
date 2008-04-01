@@ -212,11 +212,11 @@ void FindPeakDialog::ExecuteFindPeak()
 	//   if (fTwoPeakSeparation <= 0) fTwoPeakSeparation = 3.;
 	//   s->SetResolution(3. / fTwoPeakSeparation);
 	//   cout << " SetResolution " << 3. / fTwoPeakSeparation << endl;
-		TString opt;
+		TString opt("same");
 		if (!fMarkow) opt += "noMarkov";
 		if (!fRemoveBG) opt += "nobackground";
 		if (!fShowMarkers) opt += "goff";
-		nfound = s->Search(fSelHist,fSigma,"",fThreshold);
+		nfound = s->Search(fSelHist,fSigma, opt,fThreshold);
 		xpeaks = s->GetPositionX();
    } else {
       pf = new PeakFinder(fSelHist, fPeakMwidth, fThresholdSigma);
