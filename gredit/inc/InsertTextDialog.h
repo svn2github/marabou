@@ -13,7 +13,8 @@ private:
    void *fValp[100];
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
-   TCanvas      *fCanvas;
+   TCanvas        *fCanvas;
+   TObject        *fCaller;
    TString        *fEditTextPointer;
    TString        fEditTextFileName;
    Int_t          fEditTextFromFile;

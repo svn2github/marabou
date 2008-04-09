@@ -363,7 +363,7 @@ public:
    void     AddText(TObject *hprtext);
    TList    *GetTextList()                  {return fTextList;};
    void PaintText();
-   Double_t GetLengthOfText(HprText *t, Double_t csep);
+   Double_t GetLengthOfText(HprText *t, Double_t csep, Int_t start, Int_t end, Int_t step, Double_t s0);
    Double_t GetLengthOfSpline();
    Double_t GetPhiXY(Double_t s, Double_t &x, Double_t &y);
    Double_t *GetCornersX()                   {return &fCornersX[0][0]; } // *MENU*

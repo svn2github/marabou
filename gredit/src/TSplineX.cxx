@@ -1363,31 +1363,36 @@ Double_t TSplineX::GetLengthOfSpline()
    Double_t* yp;
    Int_t np = this->GetResult(xp, yp);
    Double_t len = 0;
-   for (Int_t i=0; i < np-1; i++) {
+   for (Int_t i=0; i < np-2; i++) {
      len += Length(xp[i], yp[i], xp[i+1], yp[i+1]);
    }
    return len;
 }
 //_____________________________________________________________________________________
 
-Double_t TSplineX::GetLengthOfText(HprText *t, Double_t csep)
+Double_t TSplineX::GetLengthOfText(HprText *t, Double_t csep, Int_t start, Int_t end, Int_t step, Double_t s0)
 {
-   TString s(t->GetText());
-   Int_t np = s.Length();
-   Double_t len = 0;
+   TString str(t->GetText());
+   Double_t s = s0;
    UInt_t w, h;
    TLatex tt;
    tt.SetTextSize(t->GetTextSize());
    tt.SetTextFont(t->GetTextFont());
    tt.GetTextExtent(w, h, "X");
-   tt.GetTextExtent(w, h, s.Data());
-   for (Int_t i=0; i < np; i++) {
-      TString subs = s[i];
+	Double_t clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
+	Double_t yx = (gPad->AbsPixeltoY((Int_t)w) - gPad->AbsPixeltoY(0)) / clen;
+   for (Int_t i=start; i != (end + step); i+=step) {
+      TString subs = str[i];
       tt.GetTextExtent(w, h, subs.Data());
+      Double_t x, y;
+		Double_t phirad = GetPhiXY(s, x, y);
       Double_t clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
-      len += (clen + csep);
+      Double_t co = TMath::Cos(phirad);
+      Double_t si = TMath::Sin(phirad);
+      Double_t xylen = TMath::Sqrt(co*co + yx*yx*si*si);
+		s += step * (csep + clen) * xylen;
    }
-   return len;
+   return step * (s - s0);
 }
 //_____________________________________________________________________________________
 
@@ -1395,8 +1400,8 @@ Double_t TSplineX::GetPhiXY(Double_t s, Double_t &x, Double_t &y)
 {
    x = y = 0;
    if (s < 0 || s >= GetLengthOfSpline()) {
-      cout << " GetPhi: s > len " << s << " " << GetLengthOfSpline() << endl;
-      return -999;
+//      cout << " GetPhi: s > len " << s << " " << GetLengthOfSpline() << endl;
+      return 0;
    }
 
    Double_t* xp;
@@ -1413,7 +1418,7 @@ Double_t TSplineX::GetPhiXY(Double_t s, Double_t &x, Double_t &y)
         return PhiOfLine(xp[i], yp[i], xp[i+1], yp[i+1]);
      }
    }
-   return -999;
+   return 0;
 }
 
 //_____________________________________________________________________________________
@@ -1455,7 +1460,12 @@ void TSplineX::PaintText()
 		latex.GetTextExtent(w, h, "X");
 		Double_t chShift=  0.5 * (gPad->AbsPixeltoX((Int_t)h) - gPad->AbsPixeltoX(0));
 		Double_t clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
-	// default bolatexom left
+	   Double_t yx = (gPad->AbsPixeltoY((Int_t)w) - gPad->AbsPixeltoY(0)) / clen;
+
+      TString text = t->GetText();
+      Int_t nchar  = text.Length();
+//      Int_t midc   = TMath::Min(nchar / 2 + 1, nchar-1);
+      Int_t midc   = nchar / 2;
       Short_t align = t->GetTextAlign();
 		Int_t halign = align / 10;
       Int_t valign = align % 10;
@@ -1468,34 +1478,45 @@ void TSplineX::PaintText()
 			if ( fArrowAtEnd )
 				ale = al;
       }
-		if ( halign / 10 == 1) {
-	      s += (als + t->GetOffset());
+      Double_t s0 = GetLengthOfSpline();
+      Double_t lot;
+      Double_t co;
+      Double_t si;
+      Double_t xylen;
+		Double_t x, y, phi, a, b;
+		if ( halign == 1) {
+			phi = GetPhiXY(0.05 * s0, x, y);
+         co = TMath::Cos(phi);
+         si = TMath::Sin(phi);
+         xylen = TMath::Sqrt(co*co + yx*yx*si*si);
+	      s += (als + t->GetOffset()) * xylen;
 		} else if ( halign == 2) {
 	// center along spline
-			s = 0.5 * (GetLengthOfSpline() - GetLengthOfText(t, csep));
+        lot = GetLengthOfText(t, csep,midc, 0, -1, s0);
+			s = 0.5 * s0 - lot;
 		} else if ( halign == 3) {
 	// right along spline
-			s = (GetLengthOfSpline() - GetLengthOfText(t, csep)) - (ale + t->GetOffset());
+			phi = GetPhiXY(0.05 * s0, x, y);
+         co = TMath::Cos(phi);
+         si = TMath::Sin(phi);
+         xylen = TMath::Sqrt(co*co + yx*yx*si*si);
+         s0 -=  (ale + t->GetOffset()) * xylen;
+         lot = GetLengthOfText(t, csep, nchar-1, 0, -1, s0);
+			s = s0 - lot - t->GetOffset() * xylen;
 		}
       if (direction < 0 )
-         s += GetLengthOfText(t, csep);
+         s += lot;
 		if ( valign == 2 ) {
 	// center vertical
          chShift = 0;
 		} else if ( valign == 1 ) {
-			if ( fRailwayGage > 0 )
 			chShift = direction * (chShift + 0.5 * fRailwayGage);
 		} else {
-			if ( fRailwayGage > 0 )
 			chShift = - direction * (chShift + 0.5 * fRailwayGage);
 		}
 
 		latex.SetTextAlign(12);
-		Double_t x, y, phi, a, b;
-      TString text = t->GetText();
-//		cout << " valign, ch " << valign << " " << chShift << " " << text << endl;
-      Int_t mc = text.Length() / 2;
-		for (Int_t i=0; i < text.Length(); i++) {
+		for (Int_t i=0; i < nchar; i++) {
 			TString subs = text[i];
 			latex.GetTextExtent(w, h, subs.Data());
 			clen = (gPad->AbsPixeltoX((Int_t)w) - gPad->AbsPixeltoX(0));
@@ -1505,6 +1526,9 @@ void TSplineX::PaintText()
 			if ( chShift != 0 ) {
 				Endpoint(phi, x, y, chShift, &a, &b);
 			}
+         Double_t co = TMath::Cos(phi);
+         Double_t si = TMath::Sin(phi);
+         Double_t xylen = TMath::Sqrt(co*co + yx*yx*si*si);
 			phi  *=  (180 / TMath::Pi());
          if ( direction < 0 ) {
             phi += 180;
@@ -1512,8 +1536,8 @@ void TSplineX::PaintText()
                phi -= 360;
          }
 			latex.PaintLatex(a, b, phi, t->GetTextSize(), subs.Data());
-			s += direction * (csep + clen);
-//
+			s += direction * (csep + clen) * xylen;
+// at start
          if ( i == 0 && halign == 1) {
             if        ( valign == 2 ) {
                fCornersX[halign-1][valign-1] = x;
@@ -1525,8 +1549,9 @@ void TSplineX::PaintText()
                Endpoint(phi, x, y, -0.5 * fRailwayGage, &a, &b);
                fCornersX[halign-1][valign-1] = a;
                fCornersY[halign-1][valign-1] = b;
-            } 
+            }
          }
+// at end
          if ( i == text.Length()-1 && halign == 3) {
             if        ( valign == 2 ) {
                fCornersX[halign-1][valign-1] = x;
@@ -1538,9 +1563,10 @@ void TSplineX::PaintText()
                Endpoint(phi, x, y, -0.5 * fRailwayGage, &a, &b);
                fCornersX[halign-1][valign-1] = a;
                fCornersY[halign-1][valign-1] = b;
-            } 
+            }
          }
-         if ( i == mc && halign == 2) {
+//  center
+         if ( i == midc && halign == 2) {
             if        ( valign == 2 ) {
                fCornersX[halign-1][valign-1] = x;
                fCornersY[halign-1][valign-1] = y;
@@ -1551,7 +1577,7 @@ void TSplineX::PaintText()
                Endpoint(phi, x, y, -0.5 * fRailwayGage, &a, &b);
                fCornersX[halign-1][valign-1] = a;
                fCornersY[halign-1][valign-1] = b;
-            } 
+            }
          }
 		}
    }

@@ -48,7 +48,7 @@ may be created.\n\
    fValp[ind++] = &fXtitle;
    fRow_lab->Add(new TObjString("StringValue-Title Y"));
    fValp[ind++] = &fYtitle;
-   fRow_lab->Add(new TObjString("PlainIntVal_Npar"));
+   fRow_lab->Add(new TObjString("PlainIntVal_Npar;1;10"));
    fValp[ind++] = &fNpar;
    fRow_lab->Add(new TObjString("DoubleValue-From"));
    fValp[ind++] = &fFrom;

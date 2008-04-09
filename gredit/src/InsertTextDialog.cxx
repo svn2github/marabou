@@ -189,6 +189,7 @@ which may shifted together\n\
    TRootCanvas* win = NULL;
    if (fCanvas)
       win = (TRootCanvas*)fCanvas->GetCanvasImp();
+   fCaller = calling_object;
    Int_t ind = 0;
    fRow_lab = new TList();
    RestoreDefaults();
@@ -250,11 +251,12 @@ which may shifted together\n\
    }
    fEditTextX0 = 0;
    fEditTextY0 = 0;
-   cout << "fEditTextSize " << fEditTextSize<< endl;
    Int_t itemwidth = 280;
    static Int_t ok;
    TObject *caller = this;
-   if ( calling_object ) caller = calling_object;
+   if ( fCaller )
+      caller =  fCaller;
+//   cout << "TObject* co = (TObject*) " <<caller << endl;
    fDialog =
       new TGMrbValuesAndText("Insert Text", fEditTextPointer, &ok,itemwidth, win,
                       history, NULL, fRow_lab, fValp,
@@ -465,8 +467,8 @@ InsertTextDialog::~InsertTextDialog()
 
 void InsertTextDialog::RecursiveRemove(TObject * obj)
 {
-   if (obj == fCanvas) {
-//      cout << "InsertTextDialog: CloseDialog "  << endl;
+   if (obj == fCanvas || obj == fCaller) {
+      cout << "InsertTextDialog: CloseDialog "  << endl;
       CloseDialog();
    }
 }
