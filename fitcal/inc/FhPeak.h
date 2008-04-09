@@ -68,7 +68,10 @@ public:
    void SetUsed(Bool_t  used)         {fUsed = used;};
 
    Bool_t IsEqual(const TObject *obj) const {
-      return GetMean() == ((FhPeak*)obj)->GetMean();
+      if (obj->IsA() == FhPeak::Class()) 
+         return GetMean() == ((FhPeak*)obj)->GetMean();
+      else
+         return obj == this;
    };
 
    Bool_t IsSortable() const {return kTRUE;};

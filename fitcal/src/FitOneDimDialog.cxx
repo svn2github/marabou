@@ -438,8 +438,11 @@ The command \"FitPeakList\" can be used to fit gaussians\n\
 (optionally with tails) to many peaks automatically\n\
 The estimated positions of the peaks must previously\n\
 be defined with \"FindPeakDialog\"\n\
-The value \"fPeakSep\" determines if close peaks\n\
-should be treated by a common fit.\n\
+\"Half Window\" determines the width of the fit window\n\
+The value \"fPeakSep\" (\"Peak Separation\")determines\n\
+when close peaks should be treated by a common fit.\n\
+Note: These two values are in units of \"Sigma\" used\n\
+as used in the \"FindPeak\" operation.\n\
 This procedure may be exercised manually setting\n\
 \"fConfirmStartValues\" on\n\
 Normally the fitted functions are added to the \n\
@@ -1016,6 +1019,9 @@ Bool_t FitOneDimDialog::FitGausExecute()
    Int_t bin_to   = fSelHist->FindBin(fTo);
 //   Int_t bin = 0;
    TF1 * func;
+   fFuncName = Form("_%d", fFuncNumber);
+   fFuncNumber++;
+   fFuncName.Prepend("gaus_fun");
    if (lTailSide) {
       func = new TF1(fFuncName, gaus_tail, fFrom, fTo, npars+kFix);
       cout << "lTailSide " << lTailSide<< endl;
@@ -1248,14 +1254,15 @@ Bool_t FitOneDimDialog::FitGausExecute()
       if (fFitOptMinos)     fitopt += "E";
       if (fFitOptErrors1)   fitopt += "W";
       if (fFitOptIntegral)  fitopt += "I";
-      if (fFitOptNoDraw)    fitopt += "0";
+//      if (fFitOptNoDraw)    fitopt += "0";
       if (fFitOptAddAll)    fitopt += "+";
       if (bound)            fitopt += "B";   // some pars are bound
-
- //     cout << "fitopt.Data() " << fitopt.Data() << endl;
+      fitopt += "0";
+//      cout << fFuncName.Data()<< " fitopt.Data() " << fitopt.Data() << endl;
       if (fGraph != NULL) {
-         fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
+         fGraph->Fit(fFuncName.Data(), fitopt.Data(), "");	//  here fitting is done
    //     add to ListOfFunctions if requested
+         if (!fFitOptNoDraw) func->Draw("same");
          if (fFitOptAddAll) {
             TList *lof = fGraph->GetListOfFunctions();
             if (lof->GetSize() > 1) {
@@ -1266,9 +1273,14 @@ Bool_t FitOneDimDialog::FitGausExecute()
          }
 
       } else {
-         fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
+    //  here fitting is done
+         fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "");
+         if (!fFitOptNoDraw) func->Draw("same");
+//         TList * lof = gPad->GetListOfPrimitives();
+//         TH1* hh = (TH1*)lof->FindObject(fSelHist->GetName());
+//         if (hh) hh->GetListOfFunctions()->AddFirst(func);
    //     add to ListOfFunctions if requested
-         if (fFitOptAddAll) {
+        if (fFitOptAddAll) {
             TList *lof = fSelHist->GetListOfFunctions();
             if (lof->GetSize() > 1) {
                TObject *last = lof->Last();
@@ -1328,8 +1340,8 @@ Bool_t FitOneDimDialog::FitGausExecute()
          back->SetLineStyle(3);
          back->Draw("same");
 //         back->Print();
-         fSelHist->GetListOfFunctions()->Add(back);
-         back->SetParent(fSelHist);
+//         fSelHist->GetListOfFunctions()->Add(back);
+//         back->SetParent(fSelHist);
       }
 //
       Int_t offset = 0;
@@ -1360,10 +1372,10 @@ Bool_t FitOneDimDialog::FitGausExecute()
          gaus->Copy(*g1);
          g1->SetLineColor(6);
          g1->SetLineStyle(4);
-   //         g1->Draw("same");
-         fSelHist->GetListOfFunctions()->Add(g1);
-         g1->SetParent(fSelHist);
-         g1->Save(fFrom, fTo, 0, 0, 0, 0);
+         g1->Draw("same");
+//         fSelHist->GetListOfFunctions()->Add(g1);
+//         g1->SetParent(fSelHist);
+//         g1->Save(fFrom, fTo, 0, 0, 0, 0);
          if (lTailSide != 0) {
             fdpar[0] = (*par)[0] * (*par)[0 + offset + mult * j];	// const
             fdpar[1] = (*par)[1 + offset + mult * j];	// position
@@ -1380,9 +1392,9 @@ Bool_t FitOneDimDialog::FitGausExecute()
             tail->Save(fFrom, fTo, 0, 0, 0, 0);
             tail->SetLineColor(7);
             tail->SetLineStyle(2);
-   //            tail->Draw("same");
-            fSelHist->GetListOfFunctions()->Add(tail);
-            tail->SetParent(fSelHist);
+            tail->Draw("same");
+//            fSelHist->GetListOfFunctions()->Add(tail);
+//            tail->SetParent(fSelHist);
    //            if(fOrigHist != fSelHist)fOrigHist->GetListOfFunctions()->Add(tail);
          }
       }
@@ -1390,14 +1402,14 @@ Bool_t FitOneDimDialog::FitGausExecute()
    delete fbflags;
 //   delete par;
 //   if (fUseoldpars == 0 && do_fit) ClearMarks();
-   TString drawopt = fSelHist->GetOption();
+//   TString drawopt = fSelHist->GetOption();
 //   cout << "drawopt " <<drawopt << endl;
 
-   TRegexp hist("hist");
-   drawopt(hist) = "";
+//   TRegexp hist("hist");
+//   drawopt(hist) = "";
 //   cout << "new drawopt " <<drawopt << endl;
-   fSelHist->SetDrawOption(drawopt);
-   fSelHist->SetOption(drawopt);
+//   fSelHist->SetDrawOption(drawopt);
+//   fSelHist->SetOption(drawopt);
    gPad->Modified(kTRUE);
    gPad->Update();
    gPad->GetFrame()->SetBit(TBox::kCannotMove);
@@ -1441,6 +1453,12 @@ void FitOneDimDialog::AddPeaktoList(TF1 *func)
          np--;
 		}
       if ( np  == 0 ) {
+         if (fConstantList.GetSize() <= fNpeaksListIndex) {
+				fConstantList.Set(fNpeaksListIndex + 1);
+				fMeanList.Set(fNpeaksListIndex + 1);
+				fSigmaList.Set(fNpeaksListIndex + 1);
+				fChi2List.Set(fNpeaksListIndex + 1);
+         }
          fConstantList[fNpeaksListIndex] = cont;
          fMeanList[fNpeaksListIndex]     = mean;
          fSigmaList[fNpeaksListIndex]    = sigma;
@@ -1552,8 +1570,10 @@ Int_t FitOneDimDialog::GetMarkers()
 //   }
 // find number of peaks to fit
    TAxis * xa = fSelHist->GetXaxis();
-   fFrom = xa->GetBinUpEdge(xa->GetFirst());
+   fFrom = xa->GetBinLowEdge(xa->GetFirst());
    fTo   = xa->GetBinLowEdge(xa->GetLast());
+//   fFrom = xa->GetBinUpEdge(xa->GetFirst());
+//   fTo   = xa->GetBinLowEdge(xa->GetLast());
    fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
    if (fMarkers != NULL) {
       if (fMarkers->GetEntries() <= 0) return fNmarks;
@@ -1598,7 +1618,7 @@ Int_t  FitOneDimDialog::SetMarkers() {
                 kMBIconExclamation, kMBDismiss, &retval);
       return 0;
    }
-   if ( fSelPad->GetAutoExec() ) 
+   if ( fSelPad->GetAutoExec() )
       fSelPad->ToggleAutoExec();
    ClearMarkers();
    fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");

@@ -126,6 +126,7 @@ The procedure to use previously fitted peaks is as follows:\n\
 	fScanCanvas = NULL;
 	fEffCanvas = NULL;
    fUpdatePeakListDone = 0;
+   RestoreDefaults();
 
    Int_t maxPeaks = FindNumberOfPeaks();
    if (maxPeaks <= 0) {
@@ -163,7 +164,6 @@ The procedure to use previously fitted peaks is as follows:\n\
    fFuncName.Prepend("CalF_");
    const char hist_file[] = {"caldialog_hist.txt"};
    fFuncFromFile="workfile.root|TF1|ff";
-   RestoreDefaults();
    if (fInteractive > 0) {
 		TList *row_lab = new TList();
 		static void *valp[1000];
@@ -263,7 +263,6 @@ void CalibrationDialog::SetBuiltinGaugeValues()
 	fGaugeEnergy.Set(kSc_Npeaks);
 	fGaugeError.Set(kSc_Npeaks);
 	fGaugeIntensity.Set(kSc_Npeaks);
-	fGaugeNpeaks = kSc_Npeaks;
    TString name;
    Int_t n = 0;
    if        (fEu152Gauge) {
@@ -276,15 +275,15 @@ void CalibrationDialog::SetBuiltinGaugeValues()
       cout << "No builtin gauge source selected" << endl;
       return;
    }
-//   ofstream ofile("cal_eu.txt", ios::out);
    fGaugeName.Clear();
- 	for (Int_t i = 0; i < fGaugeNpeaks; i++) {
+ 	for (Int_t i = 0; i < kSc_Npeaks; i++) {
       TString gn (Sc_Name[i]);
       if ( gn.Contains(name) ) {
 			fGaugeEnergy[n]= Sc_Energy[i];
 			fGaugeError[n] = Sc_EnError[i];
 			fGaugeIntensity[n] = Sc_Intensity[i];
 			fGaugeName.Add(new TObjString(Sc_Name[i]));
+         fSetFlag[n] = 1;
          n++;
       }
 //      TString cn(Sc_Name[i]);
@@ -709,7 +708,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
                  << fGaugeEnergy[best] <<  " already assigned to "
                  << fX[which_ass] << endl;
             cout << "You should decrease \"Accept Limit\" now at: "
-                 << fAccept << endl;
+                 << fAccept << setblack << endl;
             e = best_off + best_gain*fX[i];
             Double_t epr  = best_off + best_gain*fX[which_ass];
 
@@ -886,7 +885,7 @@ TF1 * CalibrationDialog::CalculateFunction()
    while ( (p = (FhPeak *) pIter->Next()) ) {
      p->SetUsed( fUse[n]);
      n++;
-     cout << "n " << fUse[n] << " p->GetUsed() " << p->GetUsed()<< endl;
+//     cout << "n " << fUse[n] << " p->GetUsed() " << p->GetUsed()<< endl;
      if (p->GetUsed()) nuse++;
    }
    if (nuse < 2) {
@@ -902,7 +901,7 @@ TF1 * CalibrationDialog::CalculateFunction()
    Int_t np = 0;
    while ( (p = (FhPeak *) pIter->Next()) ) {
      if (p->GetUsed()) {
-        cout << " " << n << " " << p->GetMean() << " " << p->GetNominalEnergy() << endl;
+//        cout << " " << n << " " << p->GetMean() << " " << p->GetNominalEnergy() << endl;
         gr->SetPoint(np, p->GetMean(), p->GetNominalEnergy());
         gr->SetPointError(np, p->GetMeanError(), p->GetNominalEnergyError());
         np++;
@@ -1340,10 +1339,6 @@ CalibrationDialog::~CalibrationDialog()
 void CalibrationDialog::RecursiveRemove(TObject * obj)
 {
 //    cout << "CalibrationDialog::RecursiveRemove " << obj << endl;
-   if (obj == fSelPad) {
-//      cout << "FindPeakDialog: CloseDialog "  << endl;
-      CloseDialog();
-   }
    if (obj == fDialog)
       fDialog = NULL;
    if (obj == fDialogSetNominal)
@@ -1356,6 +1351,10 @@ void CalibrationDialog::RecursiveRemove(TObject * obj)
 		fScanCanvas = NULL;
    if ( obj == fEffCanvas )
 		fEffCanvas = NULL;
+   if (obj == fSelPad) {
+//      cout << "FindPeakDialog: CloseDialog "  << endl;
+      CloseDialog();
+   }
 }
 //_______________________________________________________________________
 

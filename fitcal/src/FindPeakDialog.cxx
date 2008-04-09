@@ -93,12 +93,12 @@ Parameters for square wave convolution:\n\
 		valp[ind++] = &fUseSQWaveFold;
 		row_lab->Add(new TObjString("CommentOnly_Parameters for TSpectrum"));
 		valp[ind++] = &dummy;
-		row_lab->Add(new TObjString("DoubleValue_Sigma"));
+		row_lab->Add(new TObjString("DoubleValue_Sigma;0.;"));
       fSigmaEntry = ind;
 		valp[ind++] = &fSigma;
 //		row_lab->Add(new TObjString("DoubleValue+2 Peak Sep[sig]"));
 //		valp[ind++] = &fTwoPeakSeparation;
-		row_lab->Add(new TObjString("DoubleValue+Thresh"));
+		row_lab->Add(new TObjString("DoubleValue+Thresh;0.0;0.5"));
       fThresholdEntry = ind;
 		valp[ind++] = &fThreshold;
 		row_lab->Add(new TObjString("CheckButton_Markow Alg"));
@@ -212,7 +212,7 @@ void FindPeakDialog::ExecuteFindPeak()
 	//   if (fTwoPeakSeparation <= 0) fTwoPeakSeparation = 3.;
 	//   s->SetResolution(3. / fTwoPeakSeparation);
 	//   cout << " SetResolution " << 3. / fTwoPeakSeparation << endl;
-		TString opt("same");
+		TString opt("");
 		if (!fMarkow) opt += "noMarkov";
 		if (!fRemoveBG) opt += "nobackground";
 		if (!fShowMarkers) opt += "goff";
