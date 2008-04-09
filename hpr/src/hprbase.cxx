@@ -159,4 +159,29 @@ Bool_t QuestionBox(const char *message, TGWindow *window)
        return ( retval != kMBDismiss );
 }
 
+//_______________________________________________________________________________________
+
+TH1 * FindHistOfTF1(TVirtualPad * ca, const char * fname, Int_t push_pop)
+{
+   if (!ca) return NULL;
+   TIter next(ca->GetListOfPrimitives());
+   while (TObject * obj = next()) {
+      if (obj->InheritsFrom("TH1")) {
+         TList *lof = ((TH1*)obj)->GetListOfFunctions();
+         TObject *o = lof->FindObject(fname);
+         if (o) {
+            if (push_pop != 0) {
+               lof->Remove(o);
+               if (push_pop > 0) 
+                  lof->AddFirst(o);
+               else
+                  lof->Add(0);
+            }
+            return (TH1*)o;
+         }
+      }
+   }
+   return NULL;
+};
+
 }   // end namespace Hpr

@@ -101,14 +101,14 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win)
    fValp[ind++] = &fTitleBorderSize;
 
    fRow_lab->Add(new TObjString("CfontSelect_TextFont"));
-   fRow_lab->Add(new TObjString("Float_Value+FontSize"));
+   fRow_lab->Add(new TObjString("Float_Value+FontSize;0;1"));
    fRow_lab->Add(new TObjString("Fill_Select+FillStyle"));
    fValp[ind++] = &fTitleFont;
    fValp[ind++] = &fTitleFontSize;
    fValp[ind++] = &fTitleStyle;
 
-   fRow_lab->Add(new TObjString("Float_Value_X"));
-   fRow_lab->Add(new TObjString("Float_Value-Y"));
+   fRow_lab->Add(new TObjString("Float_Value_X;0;1"));
+   fRow_lab->Add(new TObjString("Float_Value-Y;0;1"));
 //   fRow_lab->Add(new TObjString("Float_Value_W"));
 //   fRow_lab->Add(new TObjString("Float_Value_H"));
    fRow_lab->Add(new TObjString("AlignSelect-Align"));
@@ -125,12 +125,12 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win)
    fRow_lab->Add(new TObjString("ColorSelect+TextColor "));
    fRow_lab->Add(new TObjString("PlainShtVal+BorderSz"));
    fRow_lab->Add(new TObjString("CfontSelect_Font      "));
-   fRow_lab->Add(new TObjString("Float_Value+FontSize  "));
+   fRow_lab->Add(new TObjString("Float_Value+FontSize;0;1  "));
    fRow_lab->Add(new TObjString("Fill_Select+Style (0 transp)"));
-   fRow_lab->Add(new TObjString("Float_Value_X (upright)"));
-   fRow_lab->Add(new TObjString("Float_Value+Y (upright)"));
-   fRow_lab->Add(new TObjString("Float_Value_W         "));
-   fRow_lab->Add(new TObjString("Float_Value+H         "));
+   fRow_lab->Add(new TObjString("Float_Value_X (upright);0;1"));
+   fRow_lab->Add(new TObjString("Float_Value+Y (upright);0;1"));
+   fRow_lab->Add(new TObjString("Float_Value_W ;0;1        "));
+   fRow_lab->Add(new TObjString("Float_Value+H ;0;1        "));
 
    fValp[ind++] = &fStatColor;
    fValp[ind++] = &fStatTextColor;
@@ -206,7 +206,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win)
    fRow_lab->Add(new TObjString("CommentOnly_Label Attributes"));
    fRow_lab->Add(new TObjString("ColorSelect_Col"));
    fRow_lab->Add(new TObjString("CfontSelect-Font"));
-   fRow_lab->Add(new TObjString("Float_Value-Size"));
+   fRow_lab->Add(new TObjString("Float_Value-Size;0;1"));
    fRow_lab->Add(new TObjString("PlainIntVal-MaxDigs"));
    fRow_lab->Add(new TObjString("Float_Value_Offset X"));
    fRow_lab->Add(new TObjString("Float_Value+Offset Y"));
@@ -222,7 +222,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win)
    fRow_lab->Add(new TObjString("CommentOnly_Axis Title Attributes"));
    fRow_lab->Add(new TObjString("ColorSelect_Color"));
    fRow_lab->Add(new TObjString("CfontSelect+Font"));
-   fRow_lab->Add(new TObjString("Float_Value+Size"));
+   fRow_lab->Add(new TObjString("Float_Value+Size;0;1"));
    fValp[ind++] = &dummy;
    fValp[ind++] = &fTitleColorA;
    fValp[ind++] = &fTitleFontA;

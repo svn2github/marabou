@@ -444,33 +444,6 @@ void FitHist::SaveDefaults(Bool_t recalculate)
          	env->SetValue("fRangeUpY", fSelHist->GetYaxis()->GetXmax());
       	}
    	}
-/*
-      if (fCalFunc == NULL) {
-         TIter next(fSelHist->GetListOfFunctions());
-         TObject *obj;
-         while ( (obj = next()) ) {
-            TString name(obj->GetName());
-            if (name.BeginsWith("CalF_")) {
-               fCalFunc = (TF1*)obj;
-               fCalHist = (TH1*)fCalFunc->GetParent();
-            }
-         }
-      }
-      if (fCalFunc) {
-         env->SetValue("CalFuncName", fCalFunc->GetName());
-         env->SetValue("CalFuncForm", fCalFunc->GetTitle());
-         env->SetValue("CalFuncNpar", fCalFunc->GetNpar());
-         for (Int_t i =0; i < fCalFunc->GetNpar(); i++) {
-           TString s ("CalFuncPar"); s += i;
-           env->SetValue(s.Data(), fCalFunc->GetParameter(i));
-         }
-      }
-      if (fCalHist) {
-         env->SetValue("CalHistNbin", fCalHist->GetNbinsX());
-         env->SetValue("CalHistXmin", fCalHist->GetXaxis()->GetXmin());
-         env->SetValue("CalHistXmax", fCalHist->GetXaxis()->GetXmax());
-      }
-*/
    }
 
 //   cout << "env->SaveLevel(kEnvLocal): " << fBinlx << " " << fBinux << endl;
@@ -655,6 +628,8 @@ void FitHist::handle_mouse()
             cout << f->GetParName(i) << "  " << f->GetParameter(i) << endl;
          }
          cout  << endl << "----------------------------" << endl;
+         TH1 * h = Hpr::FindHistOfTF1(gPad, f->GetName(), 1);
+         if (h) cout << "popped " << f << endl;
          return;
       }
    }
@@ -1183,6 +1158,12 @@ void FitHist::Entire()
       Draw3Dim();
    } else {
       Draw1Dim();
+      TIter next(fSelHist->GetListOfFunctions());
+      while (TObject *o = next()) {
+         if (o->InheritsFrom("TF1")) {
+           ((TF1*)o)->Draw("same");
+         }
+      }
    }
    cHist->Modified(kTRUE);
    cHist->Update();
@@ -1757,6 +1738,7 @@ void FitHist::WriteOutCanvas()
 void FitHist::WriteOutHist()
 {
    if (fSelHist) {
+/*
       TString hname = fSelHist->GetName();
       Int_t pp = hname.Index(";");
       if (pp > 0) hname.Resize(pp);
@@ -1766,6 +1748,7 @@ void FitHist::WriteOutHist()
       if (!ok)
          return;
       fSelHist->SetName(hname.Data());
+*/
       new Save2FileDialog(fSelHist);
 //      if (OpenWorkFile(mycanvas)) {
 //        fSelHist->Write();
@@ -2091,35 +2074,6 @@ void FitHist::GetRange()
                                      hist->GetZaxis()->GetLast());
    cHist->Modified();
    cHist->Update();
-/*
-   Axis_t xold, yold;
-   xold = hist->GetXaxis()->GetXmin();
-   if (is2dim(hist))
-      yold = hist->GetYaxis()->GetXmin();
-   else {
-      if (is2dim(fSelHist))
-         yold = fSelHist->GetYaxis()->GetXmin();
-      else
-         yold = 0;
-   }
-   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
-   if (fMarkers == NULL) {
-      fMarkers = new  FhMarkerList();
-      fSelHist->GetListOfFunctions()->Add(fMarkers);
-   }
-   fMarkers->Add(new FhMarker(xold, yold, 2));
-   xold = hist->GetXaxis()->GetXmax();
-   if (is2dim(hist))
-      yold = hist->GetYaxis()->GetXmax();
-   else {
-      if (is2dim(fSelHist))
-         yold = fSelHist->GetYaxis()->GetXmax();
-      else
-         yold = 0;
-   }
-   fMarkers->Add(new FhMarker(xold, yold, 2));
-   Expand();
-*/
 }
 
 //____________________________________________________________________________________
@@ -3277,7 +3231,8 @@ void FitHist::Draw1Dim()
    } else
       fSelHist->SetFillStyle(0);
    fSelHist->SetOption(drawopt.Data());
-   fSelHist->DrawCopy();
+//   fSelHist->DrawCopy();
+   fSelHist->Draw();
    if (fTitleCenterX)
       fSelHist->GetXaxis()->CenterTitle(kTRUE);
    if (fTitleCenterY)
