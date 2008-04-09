@@ -53,8 +53,8 @@ include config/Makefile.$(ARCH)
 
 -include MyConfig.mk
 
-EXTRA_CFLAGS   += -g -Wno-switch -Wno-parentheses -I$(ROOTSYS)/include
-EXTRA_CXXFLAGS += -g -Wno-switch -Wno-parentheses -I$(ROOTSYS)/include 
+EXTRA_CFLAGS   += -g -Wno-switch -I$(ROOTSYS)/include
+EXTRA_CXXFLAGS += -g -Wno-switch -I$(ROOTSYS)/include
 
 ##### Modules to build #####
 
@@ -88,10 +88,6 @@ ifeq ($(shell if [ -d tidy ] ; then echo yes; fi), yes)
 MODULES      += tidy tidylib
 endif
 
-ifeq ($(shell if [ -d xml ] ; then echo yes; fi), yes)
-MODULES      += xml
-endif
-
 ifeq ($(shell if [ -d macrobrowser ] ; then echo yes; fi), yes)
 MODULES      += macrobrowser
 endif
@@ -107,7 +103,7 @@ endif
 # if online data acquisition is needed in addition
 
 ifeq ($(shell if [ -d camcli  ] ; then echo yes; fi), yes)
-MODULES      += camcli esone 
+MODULES      += camcli esone
 endif
 
 # the following modules are for special hardware
@@ -124,9 +120,9 @@ ifeq ($(shell if [ -d snake ] ; then echo yes; fi), yes)
 MODULES      += snake
 endif
 
-#ifeq ($(shell if [ -d mbssim ] ; then echo yes; fi), yes)
-#MODULES      += mbssim
-#endif
+ifeq ($(shell if [ -d mbssim ] ; then echo yes; fi), yes)
+MODULES      += mbssim
+endif
 
 ##### ROOT libraries #####
 
@@ -138,12 +134,13 @@ LPATH         = lib
 RPATH        := -L$(LPATH)
 
 ROOTCFLAGS    := $(shell root-config --cflags)
-#ROOTLIBS      := $(shell root-config --libs)
-ROOTLIBS      := $(shell root-config --new --libs)
+ROOTLIBS      := $(shell root-config --libs)
+#ROOTLIBS      := $(shell root-config --new --libs)
 ROOTLIBS      += -lGed
-#ROOTGLIBS     := $(shell root-config --glibs)
-ROOTGLIBS     := $(shell root-config --new --glibs)
+ROOTGLIBS     := $(shell root-config --glibs)
+#ROOTGLIBS     := $(shell root-config --new --glibs)
 ROOTGLIBS      += -lGed
+ROOTGLIBS      += -lHistPainter
 
 ROOTCINT      :=rootcint
 
@@ -280,9 +277,9 @@ printdep:
 dist:
 	@$(MAKEDIST)
 
-clean::	
+clean::
 	@rm -f __compiledata __makeinfo *~ core
-	@rm */src/G__* 
+	@rm */src/G__*
 	@rm */src/*.d
 
 ifeq ($(CXX),KCC)
@@ -301,7 +298,7 @@ version: $(CINTTMP)
 	@$(MAKEVERSION)
 
 
-html: 
+html:
 	@$(MAKEHTML)
 	@$(HTMLCLEANUP)
 
