@@ -844,11 +844,46 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             hframe = new TGCompositeFrame(this, win_width, 20, kHorizontalFrame);
             fWidgets->Add(hframe);
          }
+         Double_t lowlim = 0;
+         Double_t  uplim = 0;
+         Bool_t has_lowlim = kFALSE;
+         Bool_t has_uplim = kFALSE;
+         TGNumberFormat::ELimit limsw = TGNumberFormat::kNELNoLimits;
+
          if (!l.BeginsWith("CommandButt") && !l.BeginsWith("Exec_Button")) {
 // label
             TString lab(l);
             if (lab.Length() > 12) {
                lab.Remove(0,12);
+// look for min / max for number entries
+               TObjArray * tokens;
+               tokens = lab.Tokenize(";");
+               Int_t nt = tokens->GetEntries();
+               if (nt > 1) {
+                  Int_t ft = lab.Index(";");
+                  lab.Resize(ft);
+						TString s = ((TObjString*)tokens->At(1))->String();
+						if (s.Length() > 1) {
+							lowlim = s.Atof();
+							has_lowlim = kTRUE;
+						}
+                  if (nt > 2) {
+                     s = ((TObjString*)tokens->At(2))->String();
+                     if (s.Length() > 1) {
+                        uplim = s.Atof();
+                        has_uplim = kTRUE;
+                     }
+                  }
+               }  
+               delete tokens;   
+					if ( has_lowlim && has_uplim ) {
+						limsw = TGNumberFormat::kNELLimitMinMax;
+					} else if ( has_lowlim ) {
+						limsw = TGNumberFormat::kNELLimitMin;
+					} else if  ( has_uplim ) {
+						limsw = TGNumberFormat::kNELLimitMax;
+					}
+//            cout << " lim " << nt << " " << limsw << " " << lowlim << " " << uplim << endl;
                label = new TGLabel(hframe, new TGString((const char *)lab));
                label->ChangeBackground(lgrey);
 			      fWidgets->Add(label);
@@ -1011,7 +1046,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else if (l.BeginsWith("Float_Value")) {
 //               scol = Form("%f", *(Float_t*)fValPointers[i]);
             Double_t neval = *(Float_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESReal);
+            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESReal, TGNumberFormat::kNEAAnyNumber, limsw, lowlim, uplim);
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hframe->AddFrame(tnentry, l2);
 			   fWidgets->Add(tnentry);
@@ -1020,7 +1055,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else if (l.BeginsWith("DoubleValue")) {
 //               scol = Form("%g", *(Double_t*)fValPointers[i]);
             Double_t neval = *(Double_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hframe,neval, 5,  i + 1000, TGNumberFormat::kNESReal);
+            tnentry = new TGNumberEntry(hframe,neval, 5,  i + 1000, TGNumberFormat::kNESReal, TGNumberFormat::kNEAAnyNumber, limsw, lowlim, uplim);
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hframe->AddFrame(tnentry, l2);
 			   fWidgets->Add(tnentry);
@@ -1030,7 +1065,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else if (l.BeginsWith("PlainIntVal")) {
 //               scol = Form("%d", *(Int_t*)fValPointers[i]);
             Double_t neval = *(Int_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESInteger );
+            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESInteger, TGNumberFormat::kNEAAnyNumber, limsw, lowlim, uplim );
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hframe->AddFrame(tnentry, l2);
 			   fWidgets->Add(tnentry);
@@ -1039,7 +1074,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          } else if (l.BeginsWith("PlainShtVal")) {
 //               scol = Form("%d", *(Short_t*)fValPointers[i]);
             Double_t neval = *(Short_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESInteger );
+            tnentry = new TGNumberEntry(hframe,neval, 5, i + 1000, TGNumberFormat::kNESInteger, TGNumberFormat::kNEAAnyNumber, limsw, lowlim, uplim );
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hframe->AddFrame(tnentry, l2);
 			   fWidgets->Add(tnentry);
