@@ -36,11 +36,12 @@ if {[file exists $destDir/.version]} {
 foreach f $lofFiles {
 	set fileName [file tail $f]
 	exec cp $f $destDir/$fileName.$version 
+	set oldDir [pwd]
 	cd $destDir
 	exec ln -fs $fileName.$version $fileName
 	exec rm -f $fileName.$oldVersion
 	puts "\[$f -> $destDir/$fileName.$version\]"
-	cd ..
+	cd $oldDir
 }
 
 # save version number to file .version
