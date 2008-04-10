@@ -29,6 +29,12 @@ if {[file exists $destDir/.version]} {
 	set version 1
 }
 
+# save version number to file .version
+
+set vf [open $destDir/.version w]
+puts $vf $version
+close $vf
+
 # copy files to destination dir, append version number
 # link main file name to new version
 # remove old files - will actually be removed as soon as last consumer stops
@@ -43,9 +49,3 @@ foreach f $lofFiles {
 	puts "\[$f -> $destDir/$fileName.$version\]"
 	cd $oldDir
 }
-
-# save version number to file .version
-
-set vf [open $destDir/.version w]
-puts $vf $version
-close $vf
