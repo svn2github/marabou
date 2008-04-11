@@ -69,7 +69,7 @@ void root2asc(const Char_t * FileNHisto)
 	}
 
 	TFile * root = new TFile(rootFile.Data());
-	if (!root.IsOpen()) {
+	if (!root->IsOpen()) {
 		cerr	<< setred
 				<< "root2asc.C: Can't open ROOT file - " << rootFile
 				<< setblack << endl;
