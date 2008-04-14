@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.22 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.23 2008-04-14 08:30:57 Otto.Schaile Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -413,7 +413,7 @@ const Char_t * TMrbSystem::Which(TString & Result, const Char_t * Search, const 
 	const Char_t * res = gSystem->Which(s.Data(), File, Mode);
 	if (res) {
 		Result = res;
-		delete res;
+		delete [] res;
 	}
 	return(Result.Data());
 }
