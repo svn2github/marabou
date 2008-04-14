@@ -386,6 +386,13 @@ FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h,
    fMbsControl = 0;
    fMessageServer = 0; 
    fWasStarted = 0;
+   fSetup = NULL;
+   fC_Status = M_ABSENT;
+   fM_Status = M_ABSENT;
+   fForcedStop = kFALSE;
+   fAutoRestart   = kFALSE;
+   fAutoRestartRT = kFALSE;
+
    fDefFile = new TString("C_analyze.def");
    if(!GetDefaults())cout << "something went wrong getting defaults" << endl;
    fM_Status = IsAnalyzeRunning(1);
@@ -435,8 +442,8 @@ trying to attach?",
    gClient->GetColorByName("cyan", cyan);
    gClient->GetColorByName("yellow", yellow);
 
-   TGFont *myfont = fClient->GetFont("-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
-   FontStruct_t labelfont(myfont->GetFontStruct());
+//   TGFont *myfont = fClient->GetFont("-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
+//   FontStruct_t labelfont(myfont->GetFontStruct());
 //   labelfont = gClient->GetFontByName(gEnv->GetValue("Gui.BoldFont",
 //                "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
 
