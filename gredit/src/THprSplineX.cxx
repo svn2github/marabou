@@ -24,7 +24,7 @@ void THprSplineX::AddTextDialog()
 
 void THprSplineX::InsertTextExecute()
 {
-   std::cout << "TSplineX::InsertTextExecute:" << std::endl;
+//   std::cout << "TSplineX::InsertTextExecute:" << std::endl;
    std::cout << *(fTextDialog->GetTextPointer()) << std::endl;
    HprText *ht = new HprText( fTextDialog->GetTextPointer()->Data());
 	ht->SetTextAlign(fTextDialog->GetEditTextAlign());
@@ -42,7 +42,7 @@ void THprSplineX::InsertTextExecute()
 
 void THprSplineX::CloseDown(Int_t flag)
 {
-   std::cout << "THprSplineX::CloseDown "<<  flag<< std::endl;
+//   std::cout << "THprSplineX::CloseDown "<<  flag<< std::endl;
    if (fTextDialog) {
       fTextDialog->SaveDefaults();
       delete fTextDialog;

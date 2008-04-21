@@ -615,7 +615,7 @@ TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
    gROOT->GetListOfCleanups()->Add(&fPGraphs);
    fPGraphs.Clear();
    fDPolyLines.Clear();
-   cout << "TSplineX* tsx =(TSplineX*)" << this << ";"<< endl;
+//   cout << "TSplineX* tsx =(TSplineX*)" << this << ";"<< endl;
 }
 //____________________________________________________________________________________
 
@@ -643,7 +643,7 @@ TSplineX::~TSplineX()
    fPGraphs.Delete();
    Delete_ControlPoints();
    Delete_ShapeFactors();
-   cout << "exit ~TSplineX(): "<< this  << endl << flush;
+//   cout << "exit ~TSplineX(): "<< this  << endl << flush;
 
 }
 //______________________________________________________________________________
@@ -1490,10 +1490,16 @@ void TSplineX::PaintText()
          si = TMath::Sin(phi);
          xylen = TMath::Sqrt(co*co + yx*yx*si*si);
 	      s += (als + t->GetOffset()) * xylen;
+         if (direction < 0 ) {
+            lot = GetLengthOfText(t, csep, 0, nchar-1, 1, s);
+            s += lot;
+         }
 		} else if ( halign == 2) {
 	// center along spline
         lot = GetLengthOfText(t, csep,midc, 0, -1, s0);
 			s = 0.5 * s0 - lot;
+         if (direction < 0 )
+            s += 2 * lot;
 		} else if ( halign == 3) {
 	// right along spline
 			phi = GetPhiXY(0.05 * s0, x, y);
@@ -1503,9 +1509,9 @@ void TSplineX::PaintText()
          s0 -=  (ale + t->GetOffset()) * xylen;
          lot = GetLengthOfText(t, csep, nchar-1, 0, -1, s0);
 			s = s0 - lot - t->GetOffset() * xylen;
+         if (direction < 0 )
+            s += lot;
 		}
-      if (direction < 0 )
-         s += lot;
 		if ( valign == 2 ) {
 	// center vertical
          chShift = 0;

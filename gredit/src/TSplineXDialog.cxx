@@ -211,7 +211,7 @@ void TSplineXDialog::RestoreDefaults()
 
 TSplineXDialog::~TSplineXDialog()
 {
-   cout << "dtor:~TSplineXDialog()"<<endl;
+//   cout << "dtor:~TSplineXDialog()"<<endl;
    gROOT->GetListOfCleanups()->Remove(this);
    fRow_lab->Delete();
    delete fRow_lab;
@@ -221,7 +221,7 @@ TSplineXDialog::~TSplineXDialog()
 void TSplineXDialog::RecursiveRemove(TObject * obj)
 {
    if (obj == fCanvas) {
-      cout << "TSplineXDialog::RecursiveRemove:  CloseDialog "  << endl;
+//     cout << "TSplineXDialog::RecursiveRemove:  CloseDialog "  << endl;
       CloseDialog();
    }
 }
@@ -229,7 +229,7 @@ void TSplineXDialog::RecursiveRemove(TObject * obj)
 
 void TSplineXDialog::CloseDialog()
 {
-   cout << "TSplineXDialog::CloseDialog() " << endl;
+//   cout << "TSplineXDialog::CloseDialog() " << endl;
    if (fDialog) fDialog->CloseWindowExt();
    fDialog = NULL;
    delete this;

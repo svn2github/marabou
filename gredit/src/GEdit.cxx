@@ -110,7 +110,7 @@ GEdit::GEdit(TCanvas * parent)
 }
 void GEdit::Constructor()
 {
-   cout << "ctor GEdit, parent " << fParent << endl;
+//   cout << "ctor GEdit, parent " << fParent << endl;
    SetName("HprGEdit");
    fRootCanvas = (TRootCanvas*)fParent->GetCanvas()->GetCanvasImp();
    fOrigWw = fParent->GetWw();
@@ -148,7 +148,7 @@ void GEdit::Constructor()
 
 GEdit::~GEdit()
 {
-   cout << "~GEdit " << this << endl;
+//   cout << "~GEdit " << this << endl;
    SaveDefaults();
    gROOT->GetListOfCleanups()->Remove(this);
    gROOT->GetListOfSpecials()->Remove(this);
@@ -3051,8 +3051,8 @@ void GEdit::DrawEditGrid(Bool_t visible)
 	if (dx <= 0 || dy <= 0) return;
    Double_t xl, yl, xh, yh;
    fParent->GetRange(xl, yl, xh, yh);
-   cout << "DrawEditGrid, GetRange(xl, yl, xh, yh) "
-     << xl << " " << yl << " " << xh << " " << yh << endl;
+//   cout << "DrawEditGrid, GetRange(xl, yl, xh, yh) "
+//     << xl << " " << yl << " " << xh << " " << yh << endl;
 
    Double_t x0, y0, x, y;
    Int_t n = (Int_t)(xl / dx);
