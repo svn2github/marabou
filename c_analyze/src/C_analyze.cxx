@@ -1186,13 +1186,13 @@ Int_t FhMainFrame::MessageToM_analyze(const char * mess) {
     delete mess0;
     if(!strncmp(str0, "ACK", 3))  // on ACK just exit
     {
-      cout << str0 << endl;
+      if (fVerbLevel > 0) cout << str0 << endl;
       delete str0;
       break;
    }
     if(!strncmp(str0,"ERROR",5))  // on error, print and exit
     {
-      cout << str0 << endl;
+      if (fVerbLevel > 0) cout << str0 << endl;
       delete str0;
       break;
     }
@@ -3495,7 +3495,7 @@ void FhMainFrame::Runloop(){
          	  if ( nobs > 0 ) {
             	  char *str0 = new char[nobs];
             	  message->ReadString(str0, nobs);
-                 cout << "Got string: " << str0 << endl;
+                 if (fVerbLevel > 0) cout << "Got string: " << str0 << endl;
             	  delete str0;
          	  }
       	  } else if ( message->What() == kMESS_OBJECT ) {
