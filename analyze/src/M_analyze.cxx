@@ -64,7 +64,6 @@ extern TMrbTransport * gMrbTransport;
 TMrbIOSpec * ioSpec;
 
 TServerSocket *ss = 0;
-
 // if Offline (replay) dont use TMapFile
 extern Bool_t kUseMap;
 Int_t  gComSocket;
@@ -597,6 +596,8 @@ int main(int argc, char **argv) {
 
 //	start the two pthreads HERE
 
+//	gSystem->Sleep(1000);       // give main  some time 
+
    if (gComSocket > 0) pthread_create(&msg_thread, NULL, &msg_handler, NULL);
    if (gComSocket > 0 || kUseMap) pthread_create(&update_thread, NULL, &update_handler, NULL);
 
@@ -645,9 +646,9 @@ int main(int argc, char **argv) {
 //      cout << " u_analyze->SaveHistograms(*, ioSpec);" << endl;
    	ioSpec->SetHistoFile(histo_file.Data(), histo_mode);
 
-	u_analyze->FinishRun(ioSpec, kTRUE);	// finish run, do some work BEFORE saving histos
-	u_analyze->SaveHistograms("*", ioSpec);	// save histos if needed
-	u_analyze->FinishRun(ioSpec, kFALSE);	// finish run AFTER saving histos
+		u_analyze->FinishRun(ioSpec, kTRUE);	// finish run, do some work BEFORE saving histos
+		u_analyze->SaveHistograms("*", ioSpec);	// save histos if needed
+		u_analyze->FinishRun(ioSpec, kFALSE);	// finish run AFTER saving histos
 
 //	read events from root files in a loop
 	} else {
@@ -956,6 +957,7 @@ void * msg_handler(void * dummy) {
             else arg = smess(0,nc);
          }
          Bool_t send_ack = kTRUE;
+//         if ( verboseMode ) cout << "M_analyze::msg_handler(): Message " << cmd << endl;
 
          if     (cmd == "terminate") {
 			   u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
@@ -983,7 +985,7 @@ void * msg_handler(void * dummy) {
          } else if ( cmd == "gethist" ) {
 			   pthread_mutex_lock(&global_data_mutex);
             TH1 * hist = (TH1 *)gROOT->GetList()->FindObject(arg.Data());
-            if ( hist ) {
+            if ( hist && u_analyze->GetEventsProcessed() > 0) {
                TMessage * message = new  TMessage(kMESS_OBJECT);
                message->WriteObject(hist);     // write object in message buffer
 //               hist->Print();
@@ -993,8 +995,9 @@ void * msg_handler(void * dummy) {
             } else {
                TMessage * message = new  TMessage(kMESS_STRING);
                message->WriteString("Histo not found");
-               cout << setred << "Histo not found |" 
-               <<arg.Data() << "|" << setblack << endl;
+               if (verboseMode)
+                  cout << setred << "Histo not found |" 
+                  <<arg.Data() << "|" << setblack << endl;
 			      pthread_mutex_unlock(&global_data_mutex);
                sock->Send(*message);          // send message
                delete message;
