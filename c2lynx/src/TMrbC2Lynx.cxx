@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.2 2007-04-25 06:41:01 Rudolf.Lutter Exp $     
-// Date:           $Date: 2007-04-25 06:41:01 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.3 2008-04-23 07:48:48 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-04-23 07:48:48 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -98,6 +98,8 @@ TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, Int_t Por
 		cmd2 += fPort;
 		cmd2 += " ";
 		cmd2 += (fNonBlocking ? 1 : 0);
+		cmd2 += " ";
+		cmd2 += (fVerboseMode ? 1 : 0);
 
 		if (fDebugMode) {
 			gMrbLog->Out()	<< "[Debug mode] Start manually @ " << fHost << " >> " << cmd2 << " <<" << endl;
