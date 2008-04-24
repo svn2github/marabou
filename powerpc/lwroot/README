@@ -1,0 +1,7 @@
+LIGHT WEIGHT ROOT
+
+These files are intended to provide a ROOT-like environment
+to be used where full ROOT functionality can't be installed
+(i.e. under LynxOs @ PPC).
+
+O. Schaile, R. Lutter, MLL
