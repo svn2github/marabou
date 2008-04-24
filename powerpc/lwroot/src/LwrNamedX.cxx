@@ -7,14 +7,14 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: LwrNamedX.cxx,v 1.1 2008-04-24 11:40:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: LwrNamedX.cxx,v 1.2 2008-04-24 12:50:13 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 // Special 'Light Weight ROOT' edition                                      //
 // R. Lutter                                                                //
 //////////////////////////////////////////////////////////////////////////////
 
-#include "NR_NamedX.h"
+#include "LwrNamedX.h"
 
 const Char_t * TMrbNamedX::GetFullName(TString & FullName, Int_t Base, Bool_t IndexFlag) const {
 //________________________________________________________________[C++ METHOD]

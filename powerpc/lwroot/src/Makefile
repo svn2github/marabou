@@ -29,6 +29,8 @@ INCS		=	$(INC)/LwrObject.h \
 				$(INC)/LwrString.h \
 				$(INC)/LwrUnixSystem.h \
 				$(INC)/LwrVarargs.h \
+				$(INC)/LwrNamedX.h \
+				$(INC)/LwrLofNamedX.h \
 				$(M2LINC)/M2L_MessageTypes.h \
 				$(M2LINC)/M2L_CommonStructs.h
 
