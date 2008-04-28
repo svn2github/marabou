@@ -44,7 +44,7 @@ AUFRUF
 	int bytord;
 
 .	char *bto_get_int32(out, in, cnt, bytord)
-	long *out;
+	int *out;
 	char *in;
 	int cnt;
 	int bytord;
@@ -56,7 +56,7 @@ AUFRUF
 	int bytord;
 
 .	char *bto_put_int32(out, in, cnt, bytord)
-	long *out;
+	int *out;
 	char *in;
 	int cnt;
 	int bytord;
@@ -85,7 +85,7 @@ SONSTIGES
 
 char *bto_get_short(short *out, char *in, int cnt, int bytord) {
 
-	register int i;
+	int i;
 	union x {
 		short s;
 		char b[2];
@@ -116,7 +116,7 @@ char *bto_get_short(short *out, char *in, int cnt, int bytord) {
 
 char *bto_get_int32(int *out, char *in, int cnt, int bytord) {
 
-	register int i;
+	int i;
 	union x {
 		int l;
 		char b[4];
@@ -169,8 +169,8 @@ char *bto_get_int32(int *out, char *in, int cnt, int bytord) {
 
 char *bto_get_string(char *out, char *in, int cnt, int bytord) {
 
-	register int i;
-	register char b;
+	int i;
+	char b;
 
 	switch (bytord)
 	{
@@ -212,7 +212,7 @@ char *bto_get_string(char *out, char *in, int cnt, int bytord) {
 
 char *bto_put_int32(int *out, char *in, int cnt, int bytord) {
 
-	register int i;
+	int i;
 	union x {
 		int l;
 		char b[4];

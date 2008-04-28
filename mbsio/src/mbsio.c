@@ -2195,15 +2195,15 @@ void _mbs_show_sev_9000_1(MBSDataIO *mbs, FILE *out) {
 /////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
-	unsigned long *dp;
+	unsigned int *dp;
 	char tstr[100];
-	unsigned long sec;
+	unsigned int sec;
 
 	if (out == NULL) out = stdout;
 
 	sh = (s_veshe *) mbs->sevtpt;
 
-	dp = (unsigned long *) mbs->sevt_data;
+	dp = (unsigned int *) mbs->sevt_data;
 
 	fprintf(out, "\n==============================================================================\n");
 	fprintf(out, "  SUBEVENT HEADER: %s, buf# %d (%d), evt# %d, sevt# %d",
@@ -2254,11 +2254,11 @@ unsigned int *_mbs_unpack_sev_9000_X(MBSDataIO *mbs) {
 		else memset(mbs->sevt_data, 0, mbs->sevtsiz * sizeof(unsigned short));
 	} else {
 		if (mbs->sevt_data != NULL) free(mbs->sevt_data);
-		mbs->sevt_data = calloc(wc, sizeof(unsigned long));
+		mbs->sevt_data = calloc(wc, sizeof(unsigned int));
 		mbs->sevtsiz = wc2;
 	}
 
-	memcpy(mbs->sevt_data, dp, wc * sizeof(unsigned long));
+	memcpy(mbs->sevt_data, dp, wc * sizeof(unsigned int));
 
 	return((unsigned int *) mbs->sevt_data);
 }
@@ -2277,18 +2277,18 @@ void _mbs_show_sev_9000_2(MBSDataIO *mbs, FILE *out) {
 /////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
-	unsigned long *dp;
+	unsigned int *dp;
 	char tstr[100];
-	long sec;
-	long dtevc;
-	long scacon;
+	int sec;
+	int dtevc;
+	int scacon;
 	float dtime;
 
 	if (out == NULL) out = stdout;
 
 	sh = (s_veshe *) mbs->sevtpt;
 
-	dp = (unsigned long *) mbs->sevt_data;
+	dp = (unsigned int *) mbs->sevt_data;
 
 	fprintf(out, "\n==============================================================================\n");
 	fprintf(out, "  SUBEVENT HEADER: %s, buf# %d (%d), evt# %d, sevt# %d",
@@ -2372,7 +2372,7 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
-	unsigned long bo_tag;
+	unsigned int bo_tag;
 	unsigned int byte_order;
 	unsigned int btype;
 	s_bufhe *bh;
@@ -2869,8 +2869,8 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
-	long infoWord;
-	long swInfoWord;
+	int infoWord;
+	int swInfoWord;
 
 	errno = 0;
 
