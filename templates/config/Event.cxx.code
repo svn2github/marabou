@@ -372,12 +372,12 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, MBSDataIO * B
 
 	UInt_t SevtType;
 	const UShort_t * SevtData;
-	const ULong_t * ClockData;
-	const ULong_t * DeadTimeData;
+	const UInt_t * ClockData;
+	const UInt_t * DeadTimeData;
 	Int_t timeStamp;
 	Int_t dtTotalEvents, dtAccuEvents, dtScalerContents;
 
-	fEventNumber = (ULong_t) EventData->l_count;
+	fEventNumber = (UInt_t) EventData->l_count;
 	fNofEvents++;
 	gMrbAnalyze->IncrEventCount();
 
@@ -417,7 +417,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, MBSDataIO * B
 
 			case kMrbSevtTimeStamp:					// subevent type [9000,1] (ROOT Id=999): time stamp
 				if ((SevtData = NextSubeventData(BaseAddr, 100, kFALSE)) == NULL) return(kFALSE);
-				ClockData = (ULong_t *) SevtData;
+				ClockData = (UInt_t *) SevtData;
 				fClockRes = *ClockData++;
 				fClockSecs = *ClockData++;
 				fClockNsecs = *ClockData++;
@@ -427,7 +427,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, MBSDataIO * B
 
 			case kMrbSevtDeadTime:					// subevent type [9000,2] (ROOT Id=998): dead time data
 				if ((SevtData = NextSubeventData(BaseAddr, 100, kFALSE)) == NULL) return(kFALSE);
-				DeadTimeData = (ULong_t *) SevtData;
+				DeadTimeData = (UInt_t *) SevtData;
 				fClockRes = *DeadTimeData++;
 				fClockSecs = *DeadTimeData++;
 				fClockNsecs = *DeadTimeData++;
