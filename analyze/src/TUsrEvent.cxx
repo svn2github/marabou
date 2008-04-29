@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvent.cxx,v 1.5 2008-01-15 08:32:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvent.cxx,v 1.6 2008-04-29 12:26:22 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -177,7 +177,8 @@ Int_t TUsrEvent::CalcTimeRS() {
 	Int_t timeRS = 0;
 	TDatime * trs;
 	
-	et = localtime((const long *) &fClockSecs);				// convert to time struct
+	time_t cls = fClockSecs;
+	et = localtime((time_t *) &cls);					// convert to time struct
 	trs = new TDatime();						// date/time in ROOT style
 
 	trs->Set(	et->tm_year + 1900,				// set time components
