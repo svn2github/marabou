@@ -779,7 +779,21 @@ void FitOneDimDialog::ClearFunctionList()
 //      delete obj;
    }
    temp.Delete();
+
    if (gPad) {
+		TList temp1;
+		TList *lof1 = gPad->GetListOfPrimitives();
+		TIter next2(lof1);
+		while ( (obj = next2()) ) {
+			if (obj->InheritsFrom("TF1"))
+				temp1.Add(obj);
+		}
+		TIter next3(&temp);
+		while ( (obj = next3()) ) {
+			lof1->Remove(obj);
+	//      delete obj;
+		}
+      temp1.Delete();
       gPad->Modified();
       gPad->Update();
    }
