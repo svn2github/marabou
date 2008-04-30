@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.156 2008-04-30 06:56:38 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.157 2008-04-30 07:00:39 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1686,8 +1686,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							iclPath += "-I";
 							TString ip = gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "$(MARABOU)/powerpc/include");
 							gSystem->ExpandPathName(ip);
-							ip.ReplaceAll("/share/cernlib", "/usr/cern");
 							iclPath += ip;
+							iclPath.ReplaceAll("/share/cernlib", "/usr/cern");
 							rdoStrm << rdoTmpl.Encode(line, iclPath.Data()) << endl << endl;
 						}
 						break;
@@ -1715,8 +1715,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							rdoLibs += "/lib_utils.a";
 							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", rdoLibs.Data());
 							gSystem->ExpandPathName(ip);
-							ip.ReplaceAll("/share/cernlib", "/usr/cern");
 							libString += ip;
+							libString.ReplaceAll("/share/cernlib", "/usr/cern");
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
 						}
 						break;

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMEModule.cxx,v 1.7 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbVMEModule.cxx,v 1.8 2008-04-30 06:56:38 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +34,7 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbVMEModule
-// Purpose:        Create a camac module
+// Purpose:        Create a vme module
 // Arguments:      Char_t * ModuleName      -- module name
 //                 Char_t * ModuleID        -- module type
 //                 UInt_t BaseAddr          -- vme base address
@@ -45,7 +45,7 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 //                 Int_t Range              -- number of data points
 // Results:        --
 // Exceptions:
-// Description:    Defines a new camac module having specified number of channels
+// Description:    Defines a new vme module having specified number of channels
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
