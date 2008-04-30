@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.157 2008-04-30 07:00:39 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.158 2008-04-30 07:15:20 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4866,15 +4866,15 @@ Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Cha
 		cmd = fUserMacroCmd;
 		cmd.SetBase(16);
 		cmd += "((ofstream *) ";
-		cmd += Form("%#lx", (UInt_t) Strm);
+		cmd += Form("%#lx", (ULong_t) Strm);
 		cmd += ", (TMrbConfig *) ";
-		cmd += Form("%#lx", (UInt_t) this);
+		cmd += Form("%#lx", (ULong_t) this);
 		cmd += ", (TObject *) ";
-		cmd += Form("%#lx", (UInt_t) CfgObject);
+		cmd += Form("%#lx", (ULong_t) CfgObject);
 		cmd += ", \"";
 		cmd += TagWord;
 		cmd += "\", (Bool_t *) ";
-		cmd += Form("%#lx", (UInt_t) &result);
+		cmd += Form("%#lx", (ULong_t) &result);
 		cmd += ")";
 		cmd.ResetBase();
 		gROOT->ProcessLine(cmd.Data());
