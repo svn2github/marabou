@@ -2013,7 +2013,7 @@ Bool_t FhMainFrame::StartDAQ()
       startCmd += " ";
       startCmd += fTbMapSize->GetString();
       startCmd += " "; 
-      cout << "Startdaq, fSockNr " << fSockNr << endl;
+//      cout << "Startdaq, fSockNr " << fSockNr << endl;
 
 //     socket for communication
       startCmd += " ";
@@ -2021,8 +2021,8 @@ Bool_t FhMainFrame::StartDAQ()
       startCmd += " ";
       startCmd += fHsaveIntervall;
 
-      cout << "Startdaq, fSockNr " << fSockNr << endl;
-      cout << "startCmd: " << startCmd << endl;
+//      cout << "Startdaq, fSockNr " << fSockNr << endl;
+//      cout << "startCmd: " << startCmd << endl;
       if (fDebugMode > 0){
          TString gdbCmd("run ");
          gdbCmd += startCmd.Data();
@@ -3255,7 +3255,7 @@ Bool_t FhMainFrame::GetDefaults(){
 
 Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
 {
-   Bool_t ok = kFALSE;
+//   Bool_t ok = kFALSE;
 //   fComSocket = 0;
    Int_t socknr = 0;
    TString pidfile("/tmp/M_analyze_");
@@ -3278,9 +3278,32 @@ Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
       sock1 = MINSOCKET+1;
       sock2 = MAXSOCKET;
    }
+   
    for (Int_t sock = sock1; sock <= sock2; sock++) {
-      pidfile.Resize(baselength);
-      pidfile += sock;
+      TString cmd("/usr/sbin/lsof -i :");
+      cmd += sock;
+      cmd += " | grep LISTEN";
+//      cout << cmd << endl;
+      FILE *fp = gSystem->OpenPipe(cmd, "r");
+      TString result;
+      if ( result.Gets(fp) ) {
+         cout << "Port: " << sock << " in use by: " << result << endl;
+         if  ( attachid > 0 && sock == attachsock ) {
+            socknr = sock;
+             gSystem->ClosePipe(fp);
+            break;
+         }
+      } else {
+         socknr = sock;
+         pidfile.Resize(baselength);
+         pidfile += socknr;
+         *fOurPidFile = pidfile;
+         gSystem->ClosePipe(fp);
+         break;
+      }
+      gSystem->ClosePipe(fp);
+   }
+   if ( socknr != 0 ) {
       if ( !gSystem->AccessPathName(pidfile.Data()) ) {
 //  case pidfile exists
       	ifstream wstream;
@@ -3292,9 +3315,8 @@ Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
          TString procs = "/proc/";
          procs += pid;
          if ( !gSystem->AccessPathName(procs.Data()) ){
-            if ( attachid > 0 & attachid == pid ) {
+            if ( attachid > 0 && attachid == pid ) {
                *fOurPidFile = pidfile;
-               socknr = sock;
                return socknr;
             }
 
@@ -3313,16 +3335,17 @@ Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
                TString RmCmd = "rm "; 
                RmCmd += pidfile;
                gSystem->Exec((const char *)RmCmd);
+            } else {
+               socknr = 0;
             }
          }  
    	}
 //     
-      if ( socknr == 0 && gSystem->AccessPathName(pidfile.Data()) ) {
-         cout << sock << " " << pidfile.Data() << endl;
-         socknr = sock; 
-         *fOurPidFile = pidfile;
-         ok = kTRUE;
-      }
+//      if ( socknr == 0 && gSystem->AccessPathName(pidfile.Data()) ) {
+//         cout << socknr << " " << pidfile.Data() << endl;
+//         *fOurPidFile = pidfile;
+ //        ok = kTRUE;
+//      }
    }
    if ( attachid > 0 )
       cout <<  setred << "Cant find running M_analyze with pid: " << attachid
@@ -3332,6 +3355,7 @@ Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
    if ( socknr == 0 )
       cout << setred << "Cant get free Socket, more than 5 M_analyze running?"
           << setblack << endl;
+//    cout << "GetComSocket return: " << socknr << endl;
     return socknr;
 }
 //________________________________________________________________________________
@@ -3358,7 +3382,7 @@ Int_t FhMainFrame::IsAnalyzeRunning(Int_t ps_check){
          procs += pid;
 //         cout << procs.Data() << endl;
          if(!gSystem->AccessPathName(procs.Data())){
-//             cout << "found " << procs.Data() << endl;
+             cout << "found " << procs.Data() << endl;
 
          } else {
              cout << "Didnt find " << procs.Data() 
