@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.155 2008-01-22 07:49:15 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.156 2008-04-30 06:56:38 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1686,6 +1686,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							iclPath += "-I";
 							TString ip = gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "$(MARABOU)/powerpc/include");
 							gSystem->ExpandPathName(ip);
+							ip.ReplaceAll("/share/cernlib", "/usr/cern");
 							iclPath += ip;
 							rdoStrm << rdoTmpl.Encode(line, iclPath.Data()) << endl << endl;
 						}
@@ -1714,6 +1715,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							rdoLibs += "/lib_utils.a";
 							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", rdoLibs.Data());
 							gSystem->ExpandPathName(ip);
+							ip.ReplaceAll("/share/cernlib", "/usr/cern");
 							libString += ip;
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
 						}
@@ -4864,15 +4866,15 @@ Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Cha
 		cmd = fUserMacroCmd;
 		cmd.SetBase(16);
 		cmd += "((ofstream *) ";
-		cmd += Form("%#lx", (ULong_t) Strm);
+		cmd += Form("%#lx", (UInt_t) Strm);
 		cmd += ", (TMrbConfig *) ";
-		cmd += Form("%#lx", (ULong_t) this);
+		cmd += Form("%#lx", (UInt_t) this);
 		cmd += ", (TObject *) ";
-		cmd += Form("%#lx", (ULong_t) CfgObject);
+		cmd += Form("%#lx", (UInt_t) CfgObject);
 		cmd += ", \"";
 		cmd += TagWord;
 		cmd += "\", (Bool_t *) ";
-		cmd += Form("%#lx", (ULong_t) &result);
+		cmd += Form("%#lx", (UInt_t) &result);
 		cmd += ")";
 		cmd.ResetBase();
 		gROOT->ProcessLine(cmd.Data());
