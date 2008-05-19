@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.158 2008-04-30 07:15:20 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.159 2008-05-19 09:42:31 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7162,16 +7162,21 @@ const Char_t * TMrbConfig::GetAuthor() {
 //////////////////////////////////////////////////////////////////////////////
 
 	fUser = gSystem->Getenv("USER");
-	fAuthor = "";
-	TString cmd = Form("%s/scripts/getFromLDAP.py %s %s 2>/dev/null", gSystem->Getenv("MARABOU"), fUser.Data(), "cn");
-	FILE * ldap = gSystem->OpenPipe(cmd.Data(), "r");
-	if (ldap) {
-		Char_t result[512];
-		fread(result, 1, 512, ldap);
-		fclose(ldap);
-		fAuthor = (result[0] == '\0') ? fUser : result;
-		Int_t x = fAuthor.Index("\n", 0);
-		if (x > 0) fAuthor(x) = '\0';
+	fAuthor = fUser;
+	TString marabouAtHome = "$MARABOU/data/marabouAtHome";
+	gSystem->ExpandPathName(marabouAtHome);
+	Bool_t atHome = !gSystem->AccessPathName(marabouAtHome.Data());
+	if (atHome) {
+		TString cmd = Form("%s/scripts/getFromLDAP.py %s %s 2>/dev/null", gSystem->Getenv("MARABOU"), fUser.Data(), "cn");
+		FILE * ldap = gSystem->OpenPipe(cmd.Data(), "r");
+		if (ldap) {
+			Char_t result[512];
+			fread(result, 1, 512, ldap);
+			fclose(ldap);
+			fAuthor = (result[0] == '\0') ? fUser : result;
+			Int_t x = fAuthor.Index("\n", 0);
+			if (x > 0) fAuthor(x) = '\0';
+		}
 	}
 	return(fAuthor.Data());
 }
