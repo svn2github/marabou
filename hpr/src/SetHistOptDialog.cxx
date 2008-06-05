@@ -9,6 +9,7 @@
 #include "TGraph.h"
 #include "TH1.h"
 #include "TStyle.h"
+#include "TPaletteAxis.h"
 #include "SetHistOptDialog.h"
 #include <iostream>
 
@@ -354,6 +355,13 @@ void SetHistOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 			ya->SetTitleColor( fTitleColorA);
 			ya->SetTitleFont(  fTitleFontA);
          if (za != NULL) {
+            TPaletteAxis *pl = (TPaletteAxis*)hist->GetListOfFunctions()->FindObject("palette");
+            if ( pl != NULL ) {
+				   pl->SetLabelColor( fLabelColor);
+				   pl->SetLabelFont(  fLabelFont);
+				   pl->SetLabelOffset(fLabelOffsetZ);
+				   pl->SetLabelOffset(fLabelSize);
+            }
 				za->SetNdivisions( fNdivisionsZ);
 				za->SetAxisColor(  fAxisColor);
 				za->SetLabelColor( fLabelColor);

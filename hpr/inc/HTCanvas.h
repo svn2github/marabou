@@ -40,6 +40,7 @@ private:
    TRootCanvas    * fRootCanvas;    //! dont stream
    HandleMenus    * fHandleMenus;   //! dont stream
    Bool_t         fHasConnection;    //! dont stream
+   Bool_t         fButtonsEnabled;    //! dont stream
 
    TList          *fHiddenPrimitives;
 
@@ -92,7 +93,8 @@ public:
    void PrintAddress()  {std::cout << ClassName() << "* aa = "
                          << "(" << ClassName() << "*)" << this
                          << std::endl; GetListOfPrimitives()->ls();}; // *MENU*
-
+   void     SetEnableButtons(Bool_t enable = kTRUE) {fButtonsEnabled = enable;};
+   Bool_t   GetEnableButtons() {return fButtonsEnabled ;};
 //   TList   *GetConnectedClasses() { return &fConnectedClasses;};
    ClassDef(HTCanvas,3)  //Graphics canvas
 };

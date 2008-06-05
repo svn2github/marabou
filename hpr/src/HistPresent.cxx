@@ -70,6 +70,8 @@
 static const char  *fHlistSuffix=".histlist";
 Int_t nHists;
 extern TH1 * gHpHist;
+static Int_t kSemaphore = 0;
+
 //_____________________________________________________________________________________
 
 const char AttrTemplate[]=
@@ -2776,10 +2778,13 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       }
 
       if (!hist) {
+//         gROOT->ProcessLine("mypres->WarnBox(\"aaaaaaa\")");
       	fRootFile=new TFile(fname);
          if (strlen(dir) > 0) fRootFile->cd(dir);
-//	      cout << "GetHist: |" << shname.Data()<< "|"
-//         << dir << "|" << endl;
+//	      cout << "GetHist: |" << shname.Data()<< "|"<< dir << "|" << endl;
+//         gROOT->ProcessLine("mypres->WarnBox(\"aaaaaaa\")");
+//         gROOT->ProcessLine("mypres->NofEditorPages()");
+//         gSystem->Sleep(1000);
          Int_t kn = 9999;
          Int_t is = shname.Index(";");
          if (is > 0){
@@ -2858,6 +2863,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
    } else {
       hist=(TH1*)gROOT->GetList()->FindObject(shname.Data());
    }
+//   cout << "End GetHist" << endl;
    gDirectory=gROOT;
    return hist;
 }
@@ -2901,21 +2907,35 @@ void HistPresent::CleanWindowLists(TH1* hist)
 
 void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname, const char* bp)
 {
-   TH1* hist = GetHist(fname, dir, hname);
-   if (hist) {
-      if (bp) {
-         TButton * b;
-         b = (TButton *)strtoul(bp, 0, 16);
-//         cout << "bp " << b << endl;
-         if (b) {
-           b->SetBit(kSelected);
-           b->SetFillColor(3);
-           b->Modified(kTRUE);
-           b->Update();}
+   TButton * b = NULL;
+   HTCanvas *mother_canvas = NULL;
+   if (bp) {
+      b = (TButton *)strtoul(bp, 0, 16);
+      if ( b ) {
+         mother_canvas = (HTCanvas*)b->GetCanvas();
+         mother_canvas->SetEnableButtons(kFALSE);
       }
+   }
+//   if (kSemaphore != 0) {
+//      cout<< setred << "Cool down please!" << setblack << endl;
+//      gSystem->Sleep(1000);
+//      return;
+//   }
+   kSemaphore = 1;
+   TH1* hist = GetHist(fname, dir, hname);
+   if ( hist ) {
+      if ( b ) {
+			b->SetBit(kSelected);
+			b->SetFillColor(3);
+			b->Modified(kTRUE);
+			b->Update();
+		}
 //      TurnButtonGreen(&activeHist);
       ShowHist(hist, hname);
    } else     WarnBox("Histogram not found");
+//   kSemaphore = 0;
+    if (mother_canvas)
+       mother_canvas->SetEnableButtons(kTRUE);
 }
 //_______________________________________________________________________
 
@@ -2965,6 +2985,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
    }
 //   gROOT->Reset();
    nHists++;
+    cout << "FHname, save " << FHname << " " <<FHnameSave << endl;
    if (FHnameSave != FHname) {
       if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
 //         if (WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::fNwindows%2 != 0) WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
@@ -2975,8 +2996,8 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
       WindowSizeDialog::fNwindows++;
       FHnameSave = FHname;
    }
+   cout << " fNwindows " << WindowSizeDialog::fNwindows << " " <<WindowSizeDialog::fWinshiftx<< endl;
    if (WindowSizeDialog::fNwindows > 10) {
-//       cout << "fLastWindow " << fLastWindow <<endl;
       if (QuestionBox("More than 10 hists on screen!! Remove them?", fLastWindow))
           CloseAllCanvases();
    }
@@ -2985,7 +3006,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 
    if (hist->GetDimension() == 1) {
      wwidx = WindowSizeDialog::fWinwidx_1dim;
-     wwidy = WindowSizeDialog::WindowSizeDialog::fWinwidy_1dim;
+     wwidy = WindowSizeDialog::fWinwidy_1dim;
    } else {
       wwidx = WindowSizeDialog::fWinwidx_2dim;
       wwidy = WindowSizeDialog::fWinwidy_2dim;
@@ -3022,11 +3043,11 @@ void HistPresent::CloseAllCanvases()
       }
       rc->SendCloseMessage();
    }
-   WindowSizeDialog::fNwindows= 0;
+//   WindowSizeDialog::fNwindows= 0;
    WindowSizeDialog::fWincury = WindowSizeDialog::fWintopy;
    WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
    fNtupleSeqNr = 0;
-//   cout << "Exit CloseAllCanvases()" << endl;
+   cout << "Exit CloseAllCanvases() " << WindowSizeDialog::fNwindows << endl;
 }
 //_______________________________________________________________________
 

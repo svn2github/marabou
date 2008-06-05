@@ -151,6 +151,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fUseEditGrid = 0;
    fHasConnection = kFALSE;
    fCurrentPlane      = 50;
+   fButtonsEnabled = kTRUE;
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
    Build();
@@ -232,6 +233,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    TPad         *pad;
    TObject      *prevSelObj = 0;
    TPad         *prevSelPad = 0;
+
+   if ( !fButtonsEnabled ) return;
 
    if (gROOT->GetEditorMode() != 0) {
       in_edit = kTRUE;

@@ -38,7 +38,7 @@ static const Char_t helpText[] =
 Input data can have the formats:\n\
 X, Y:                     simple graph, no errors\n\
 X, Y, Ex, Ey:             symmetric errors in X and Y\n\
-   if only 3 values are given the 3rd is assumed to be Ey\n\
+Note: if only 3 values are given the 3rd is assumed to be Ey\n\
 X, Y, Exl, Exu, Eyl, Eyu: asymmetric errors in X and Y\n\
    Values after Y may be ommitted, they are set to 0\n\
 \n\
@@ -63,7 +63,7 @@ Default is to construct a new canvas\n\
    TList *row_lab = new TList();
    row_lab->Add(new TObjString("RadioButton_Empty pad only"));
    row_lab->Add(new TObjString("RadioButton_Simple: X, Y no errors"));
-   row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, Ex, Ey"));
+   row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, (Ex), Ey"));
    row_lab->Add(new TObjString("RadioButton_Asym Ers: X,Y,Exl,Exu,Eyl,Eyu"));
    row_lab->Add(new TObjString("RadioButton_Select columns, X, Y"));
    row_lab->Add(new TObjString("PlainIntVal_Col Sel"));
