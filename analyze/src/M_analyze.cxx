@@ -985,7 +985,9 @@ void * msg_handler(void * dummy) {
          } else if ( cmd == "gethist" ) {
 			   pthread_mutex_lock(&global_data_mutex);
             TH1 * hist = (TH1 *)gROOT->GetList()->FindObject(arg.Data());
-            if ( hist && u_analyze->GetEventsProcessed() > 0) {
+            if ( hist && (u_analyze->GetRunStatus() == TMrbAnalyze::M_RUNNING
+                      || u_analyze->GetRunStatus() == TMrbAnalyze::M_PAUSING)) {
+//            if ( hist && u_analyze->GetEventsProcessed() > 0) {
                TMessage * message = new  TMessage(kMESS_OBJECT);
                message->WriteObject(hist);     // write object in message buffer
 //               hist->Print();
