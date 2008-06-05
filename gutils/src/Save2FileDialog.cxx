@@ -14,10 +14,11 @@ ClassImp(Save2FileDialog)
 
 Save2FileDialog::Save2FileDialog(TObject * obj, const char *lname) 
 {
-   const Char_t helpText[] = "Save object to root file, \n\
-if subdirs dont exist they will be created \n\
+   static const Char_t helpText[] = 
+"Save object to file in current unix directory.\n\
+It can be saved into a subdir in the rootfile.\n\
+If it does not exist it will be created \n\
 more than one level of subdirs is allowed";
-
 
    static void *valp[50];
    Int_t ind = 0;
@@ -39,7 +40,7 @@ more than one level of subdirs is allowed";
    }
    TList *row_lab = new TList(); 
    row_lab->Add(new TObjString("StringValue_Name of Output root file"));
-   row_lab->Add(new TObjString("StringValue_Name of directory"));
+   row_lab->Add(new TObjString("StringValue_Name of dir in root file"));
    row_lab->Add(new TObjString("StringValue_Save object with name"));
    if (fList)
       row_lab->Add(new TObjString("CheckButton_Write functions as list"));
@@ -60,7 +61,7 @@ more than one level of subdirs is allowed";
    fWidget = new TGMrbValuesAndText("Define parameters", NULL, 
                    &dum, itemwidth, win,
                    NULL, NULL, row_lab, valp,
-                   NULL, NULL, &helpText[0], this, this->ClassName());
+                   NULL, NULL, helpText, this, this->ClassName());
 //   if (dum);
 //   ok = GetStringExt("Define parameters", NULL, itemwidth, win,
 //                   NULL, NULL, row_lab, valp,
@@ -105,13 +106,13 @@ void Save2FileDialog::ExecuteSave()
       else 
          fList->Write();
    } else {
-//      TString sname(fObject->GetName());
-//      TNamed *tn = (TNamed *)fObject;
-//      tn->SetName(fObjName);
-      cout << "Saving " << fObject->GetName() << " at: "
+      TString sname(fObject->GetName());
+      TNamed *tn = (TNamed *)fObject;
+      tn->SetName(fObjName);
+      cout << "Saving " << fObject->GetName() << " to: "
         << gDirectory->GetPath() <<endl;
       fObject->Write(fObjName);
-//      tn->SetName(sname);
+      tn->SetName(sname);
    }
    outfile->Close();
    if (fKeepDialog <= 0) {

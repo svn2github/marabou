@@ -46,20 +46,25 @@ namespace std {} using namespace std;
 //                                                                       //
 // General purpose dialog widget to request input of a text string       //
 // and any number of ints, floats, colors etc. arranged in a table       //
-// each optionally with a checkbutton                                    //
+//                                                                       //
 // The string input part implements a history and text completion        //
 // facility                                                              //
 //                                                                       //
 // The meaning of the requested values are stored in the first 11        //
-// characters terminated by _, + of the row labels as follows:           //
-// The termination char _, + determine if the dialog entry starts        //
-// on new row: _: start new row, +: continue on same row                 //
-// 																							 //
-// StringValue : Text string															 //
+// characters terminated by _, +, - of the row labels as follows:        //
+// The termination char _, +, - determine if the dialog entry starts     //
+// on new row: _: start new row,                                         //
+//              +: continue on same row, equalize  distances             //
+//              -: continue on same row, pack as close as possible       //
+// The remainder of the text is the label of the button        			 //
+//                                                                       //
+// StringValue : Text string	(this has no history/text completion 	    //
 // PlainShtVal : Short_t																 //
 // PlainIntVal : Int_t  																 //
 // DoubleValue : Double_t																 //
 // Float_Value : Float_t																 //
+// Min,max values may be given after the label field separated by ;      //
+// (semicolon)                                                           //
 // ArrowSelect : a arrow selection (Style_t) 									 //
 // LineSSelect : Line Style  (Style_t) 											 //
 // CfontSelect : Character Font (Font_t)											 //
@@ -73,11 +78,18 @@ namespace std {} using namespace std;
 // FileRequest : file name (invokes file dialog)								 //
 // FileContReq : invoke file dialog and present listbox with content		 //
 //             : arg: filename | classname | object name                 //
+// Pressing one of the above buttons emits a signal which is connected   //
+// to a slot:  CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)       //
+// which must be implemented in thee "calling_class"                     //
+//                                                                       //
 // CommandButt : Command button implemented as follows:						 //
 //               assume: CommandButt_DrawArrow()								 //
 //               when pressed will emit:											 //
 //               ("Clicked()", Char_t * cname,  								 //
 //                 TObject * calling_class,"DrawArrow()")					 //
+// Note: A CommandButt can be connected to any slot (method) whereas     //
+//       an Exec_Button is connected to a fixed slot                     //
+//                                                                       //
 // 																							 //
 // and a help text button                                                //
 //                                                                       //
@@ -110,7 +122,7 @@ namespace std {} using namespace std;
 // Char_t * classname   name of the calling class  							 //
 //                                                                       //
 //                                                                       //
-// This class is normally accessed via the following utility function:   //
+// This class can be accessed via the following utility function:        //
 //                                                                       //
 //                                                                       //
 // Bool_t GetStringExt(const char *Prompt, TString  *text , 				 //
