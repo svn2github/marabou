@@ -540,7 +540,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %SF%			gStartEvent->FillEvent(EventData, BaseAddr);
 %SF%			gStartEvent->Print("START Acquisition");
 %SP%			sts = gStartEvent->$processEvent();
-%E%			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_STARTING);
+%E%			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
 %E%			return(kTRUE);
 %%EndOfCode%%
 %%EVT_TRIGGER_START_ACQUISITION%%
@@ -552,7 +552,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %SF%			gStopEvent->FillEvent(EventData, BaseAddr);
 %SF%			gStopEvent->Print("STOP Acquisition");
 %SP%			sts = gStopEvent->$processEvent();
-%E%			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
+%E%			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
 %E%			return(kFALSE);
 %%EndOfCode%%
 %%EVT_TRIGGER_STOP_ACQUISITION%%
