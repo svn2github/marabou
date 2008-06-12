@@ -230,6 +230,8 @@ The procedure to use previously fitted peaks is as follows:\n\
 		valp[ind++] = &fCustomGauge;
 		row_lab->Add(new TObjString("StringValue_Custom gauge file"));
 		valp[ind++] = &fCustomGaugeFile;
+      row_lab->Add(new TObjString("CheckButton-Verbose Print"));
+      valp[ind++] = &fVerbose;
 
 		row_lab->Add(new TObjString("CommandButt_Update Peaklist"));
 		valp[ind++] = &udcmd;
@@ -884,6 +886,8 @@ TF1 * CalibrationDialog::CalculateFunction()
    Int_t nuse = 0, n = 0;
    while ( (p = (FhPeak *) pIter->Next()) ) {
      p->SetUsed( fUse[n]);
+     p->SetNominalEnergy(fY[n]);
+     p->SetNominalEnergyError(fYE[n]);
      n++;
 //     cout << "n " << fUse[n] << " p->GetUsed() " << p->GetUsed()<< endl;
      if (p->GetUsed()) nuse++;
@@ -901,7 +905,7 @@ TF1 * CalibrationDialog::CalculateFunction()
    Int_t np = 0;
    while ( (p = (FhPeak *) pIter->Next()) ) {
      if (p->GetUsed()) {
-//        cout << " " << n << " " << p->GetMean() << " " << p->GetNominalEnergy() << endl;
+        cout << " " << n << " " << p->GetMean() << " " << p->GetNominalEnergy() << endl;
         gr->SetPoint(np, p->GetMean(), p->GetNominalEnergy());
         gr->SetPointError(np, p->GetMeanError(), p->GetNominalEnergyError());
         np++;
