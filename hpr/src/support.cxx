@@ -1660,7 +1660,8 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
                dirname.Prepend("Error creating ");
                dirname.Append(": ");
                dirname.Append(gSystem->GetError());
-               WarnBox(dirname.Data());
+               cout << dirname.Data() << endl;
+//               WarnBox(dirname.Data());
             }
 //         }
       } else {
