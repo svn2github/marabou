@@ -207,7 +207,7 @@ TInetAddress TUnixSystem::GetHostByName(const char *hostname)
    } else if ((host_ptr = gethostbyname(hostname))) {
       // Check the address type for an internet host
       if (host_ptr->h_addrtype != AF_INET) {
-         printf("GetHostByName", "%s is not an internet host\n", hostname);
+         cerr << "TUnixSystem::GetHostByName(): " << hostname << " is not an internet host" << endl;
          return TInetAddress();
       }
       memcpy(&addr, host_ptr->h_addr, host_ptr->h_length);
@@ -235,7 +235,7 @@ TInetAddress TUnixSystem::GetSockName(int sock)
 #endif
 
    if (getsockname(sock, (struct sockaddr *)&addr, &len) == -1) {
-      printf("GetSockName", "getsockname");
+      cerr << "TUnixSystem::GetSockName(): error" << endl;
       return TInetAddress();
    }
 
@@ -273,7 +273,7 @@ TInetAddress TUnixSystem::GetPeerName(int sock)
 #endif
 
    if (getpeername(sock, (struct sockaddr *)&addr, &len) == -1) {
-      printf("GetPeerName", "getpeername");
+      cerr << "TUnixSystem::GetPeerName(): error" << endl;
       return TInetAddress();
    }
 
@@ -304,8 +304,8 @@ int TUnixSystem::GetServiceByName(const char *servicename)
    struct servent *sp;
 
    if ((sp = getservbyname(servicename, kProtocolName)) == 0) {
-      printf("GetServiceByName", "no service \"%s\" with protocol \"%s\"\n",
-              servicename, kProtocolName);
+      cerr << "TUnixSystem::GetServiceByName(): no service "
+				<< servicename << " with protocol " << kProtocolName << endl;
       return -1;
    }
    return ntohs(sp->s_port);
@@ -319,9 +319,7 @@ char *TUnixSystem::GetServiceByPort(int port)
    struct servent *sp;
 
    if ((sp = getservbyport(port, kProtocolName)) == 0) {
-      //::printf("GetServiceByPort", "no service \"%d\" with protocol \"%s\"",
-      //        port, kProtocolName);
-      return Form("%d", port);
+       return Form("%d", port);
    }
    return sp->s_name;
 }
@@ -383,7 +381,7 @@ int TUnixSystem::AcceptConnection(int sock)
       if (GetErrno() == EWOULDBLOCK)
          return -2;
       else {
-         printf("AcceptConnection", "accept");
+         cerr << "TUnixSystem::AcceptConnection(): error" << endl;
          return -1;
       }
    }
@@ -419,11 +417,11 @@ int TUnixSystem::RecvBuf(int sock, void *buf, int length)
       int count = ntohl(header);
 
       if (count > length) {
-         printf("RecvBuf", "record header exceeds buffer size");
+         cerr << "TUnixSystem::RecvBuf(): record header exceeds buffer size" << endl;
          return -1;
       } else if (count > 0) {
          if (UnixRecv(sock, buf, count, 0) < 0) {
-            printf("RecvBuf", "cannot receive buffer");
+            cerr << "TUnixSystem::RecvBuf(): cannot receive buffer" << endl;
             return -1;
          }
       }
@@ -441,12 +439,12 @@ int TUnixSystem::SendBuf(int sock, const void *buf, int length)
    Int_t header = htonl(length);
 
    if (UnixSend(sock, &header, sizeof(header), 0) < 0) {
-      printf("SendBuf", "cannot send header");
+      cerr << "TUnixSystem::SendBuf(): cannot send header" << endl;
       return -1;
    }
    if (length > 0) {
       if (UnixSend(sock, buf, length, 0) < 0) {
-         printf("SendBuf", "cannot send buffer");
+         cerr << "TUnixSystem::SendBuf(): cannot send buffer" << endl;
          return -1;
       }
    }
@@ -484,7 +482,7 @@ int TUnixSystem::RecvRaw(int sock, void *buf, int length, int opt)
    int n;
    if ((n = UnixRecv(sock, buf, length, flag)) <= 0) {
       if (n == -1 && GetErrno() != EINTR)
-         printf("RecvRaw", "cannot receive buffer");
+         cerr << "TUnixSystem::RecvRaw(): cannot receive buffer" << endl;
       return n;
    }
    return length;
@@ -512,8 +510,8 @@ int TUnixSystem::SendRaw(int sock, const void *buf, int length, int opt)
       break;
    }
 
-   if (UnixSend(sock, buf, length, flag) < 0) {
-      printf("SendRaw", "cannot send buffer");
+   if (this->UnixSend(sock, buf, length, flag) < 0) {
+      cerr << "TUnixSystem::SendRaw(): cannot send buffer" << endl;
       return -1;
    }
    return length;
@@ -529,56 +527,56 @@ int TUnixSystem::SetSockOpt(int sock, int opt, int val)
    switch (opt) {
    case kSendBuffer:
       if (setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*)&val, sizeof(val)) == -1) {
-         printf("SetSockOpt", "setsockopt(SO_SNDBUF)");
+         cerr << "TUnixSystem::SetSockOpt(): setsockopt(SO_SNDBUF)" << endl;
          return -1;
       }
       break;
    case kRecvBuffer:
       if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*)&val, sizeof(val)) == -1) {
-         printf("SetSockOpt", "setsockopt(SO_RCVBUF)");
+         cerr << "TUnixSystem::SetSockOpt(): setsockopt(SO_RCVBUF)" << endl;
          return -1;
       }
       break;
    case kOobInline:
       if (setsockopt(sock, SOL_SOCKET, SO_OOBINLINE, (char*)&val, sizeof(val)) == -1) {
-         printf("SetSockOpt", "setsockopt(SO_OOBINLINE)");
+         cerr << "TUnixSystem::SetSockOpt(): setsockopt(SO_OOBINLINE)" << endl;
          return -1;
       }
       break;
    case kKeepAlive:
       if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&val, sizeof(val)) == -1) {
-         printf("SetSockOpt", "setsockopt(SO_KEEPALIVE)");
+         cerr << "TUnixSystem::SetSockOpt(): setsockopt(SO_KEEPALIVE)" << endl;
          return -1;
       }
       break;
    case kReuseAddr:
       if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&val, sizeof(val)) == -1) {
-         printf("SetSockOpt", "setsockopt(SO_REUSEADDR)");
+         cerr << "TUnixSystem::SetSockOpt(): setsockopt(SO_REUSEADDR)" << endl;
          return -1;
       }
       break;
    case kNoDelay:
       if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&val, sizeof(val)) == -1) {
-         printf("SetSockOpt", "setsockopt(TCP_NODELAY)");
+         cerr << "TUnixSystem::SetSockOpt(): setsockopt(TCP_NODELAY)" << endl;
          return -1;
       }
       break;
    case kNoBlock:
       if (ioctl(sock, FIONBIO, (char*)&val) == -1) {
-         printf("SetSockOpt", "ioctl(FIONBIO)");
+         cerr << "TUnixSystem::SetSockOpt(): ioctl(FIONBIO)" << endl;
          return -1;
       }
       break;
    case kProcessGroup:
       if (ioctl(sock, SIOCSPGRP, (char*)&val) == -1) {
-         printf("SetSockOpt", "ioctl(SIOCSPGRP)");
+         cerr << "TUnixSystem::SetSockOpt(): ioctl(SIOCSPGRP)" << endl;
          return -1;
       }
       break;
    case kAtMark:       // read-only option (see GetSockOpt)
    case kBytesToRead:  // read-only option
    default:
-      printf("SetSockOpt", "illegal option (%d)", opt);
+      cerr << "TUnixSystem::SetSockOpt(): illegal option - " << opt << endl;
       return -1;
    }
    return 0;
@@ -602,44 +600,44 @@ int TUnixSystem::GetSockOpt(int sock, int opt, int *val)
    switch (opt) {
    case kSendBuffer:
       if (getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*)val, &optlen) == -1) {
-         printf("GetSockOpt", "getsockopt(SO_SNDBUF)");
+         cerr << "TUnixSystem::GetSockOpt(): getsockopt(SO_SNDBUF)" << endl;
          return -1;
       }
       break;
    case kRecvBuffer:
       if (getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*)val, &optlen) == -1) {
-         printf("GetSockOpt", "getsockopt(SO_RCVBUF)");
+         cerr << "TUnixSystem::GetSockOpt(): getsockopt(SO_RCVBUF)" << endl;
          return -1;
       }
       break;
    case kOobInline:
       if (getsockopt(sock, SOL_SOCKET, SO_OOBINLINE, (char*)val, &optlen) == -1) {
-         printf("GetSockOpt", "getsockopt(SO_OOBINLINE)");
+         cerr << "TUnixSystem::GetSockOpt(): getsockopt(SO_OOBINLINE)" << endl;
          return -1;
       }
       break;
    case kKeepAlive:
       if (getsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)val, &optlen) == -1) {
-         printf("GetSockOpt", "getsockopt(SO_KEEPALIVE)");
+         cerr << "TUnixSystem::GetSockOpt(): getsockopt(SO_KEEPALIVE)" << endl;
          return -1;
       }
       break;
    case kReuseAddr:
       if (getsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)val, &optlen) == -1) {
-         printf("GetSockOpt", "getsockopt(SO_REUSEADDR)");
+         cerr << "TUnixSystem::GetSockOpt(): getsockopt(SO_REUSEADDR)" << endl;
          return -1;
       }
       break;
    case kNoDelay:
       if (getsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)val, &optlen) == -1) {
-         printf("GetSockOpt", "getsockopt(TCP_NODELAY)");
+         cerr << "TUnixSystem::GetSockOpt(): getsockopt(TCP_NODELAY)" << endl;
          return -1;
       }
       break;
    case kNoBlock:
       int flg;
       if ((flg = fcntl(sock, F_GETFL, 0)) == -1) {
-         printf("GetSockOpt", "fcntl(F_GETFL)");
+         cerr << "TUnixSystem::GetSockOpt(): fcntl(F_GETFL)" << endl;
          return -1;
       }
       *val = flg & O_NDELAY;
@@ -647,38 +645,38 @@ int TUnixSystem::GetSockOpt(int sock, int opt, int *val)
    case kProcessGroup:
 #if !defined(R__LYNXOS)
       if (ioctl(sock, SIOCGPGRP, (char*)val) == -1) {
-         printf("GetSockOpt", "ioctl(SIOCGPGRP)");
+         cerr << "TUnixSystem::GetSockOpt(): ioctl(SIOCGPGRP)" << endl;
          return -1;
       }
 #else
-      printf("GetSockOpt", "ioctl(SIOCGPGRP) not supported on LynxOS");
+      cerr << "TUnixSystem::GetSockOpt(): ioctl(SIOCGPGRP) not supported on LynxOS" << endl;
       return -1;
 #endif
       break;
    case kAtMark:
 #if !defined(R__LYNXOS)
       if (ioctl(sock, SIOCATMARK, (char*)val) == -1) {
-         printf("GetSockOpt", "ioctl(SIOCATMARK)");
+         cerr << "TUnixSystem::GetSockOpt(): ioctl(SIOCATMARK)" << endl;
          return -1;
       }
 #else
-      printf("GetSockOpt", "ioctl(SIOCATMARK) not supported on LynxOS");
+      cerr << "TUnixSystem::GetSockOpt(): ioctl(SIOCATMARK) not supported on LynxOS" << endl;
       return -1;
 #endif
       break;
    case kBytesToRead:
 #if !defined(R__LYNXOS)
       if (ioctl(sock, FIONREAD, (char*)val) == -1) {
-         printf("GetSockOpt", "ioctl(FIONREAD)");
+         cerr << "TUnixSystem::GetSockOpt(): ioctl(FIONREAD)" << endl;
          return -1;
       }
 #else
-      printf("GetSockOpt", "ioctl(FIONREAD) not supported on LynxOS");
+      cerr << "TUnixSystem::GetSockOpt(): ioctl(FIONREAD) not supported on LynxOS" << endl;
       return -1;
 #endif
       break;
    default:
-      printf("GetSockOpt", "illegal option (%d)", opt);
+      cerr << "TUnixSystem::GetSockOpt(): illegal option - " << opt << endl;
       *val = 0;
       return -1;
    }
@@ -712,7 +710,7 @@ int TUnixSystem::UnixTcpConnect(const char *hostname, int port)
    // Create socket
    int sock;
    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-      printf("TUnixSystem::UnixConnectTcp", "socket");
+      cerr << "TUnixSystem::UnixConnectTcp(): socket error" << endl;
       return -1;
    }
 
@@ -739,7 +737,7 @@ int TUnixSystem::UnixUnixConnect(int port)
 
    // Open socket
    if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
-      printf("TUnixSystem::UnixUnixConnect", "socket");
+      cerr << "TUnixSystem::UnixUnixConnect(): socket error" << endl;
       return -1;
    }
 
@@ -768,7 +766,7 @@ int TUnixSystem::UnixTcpService(int port, Bool_t reuse, int backlog)
    // Create tcp socket
    int sock;
    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
-      printf("TUnixSystem::UnixTcpService", "socket");
+      cerr << "TUnixSystem::UnixTcpService(): socket error" << endl;
       return -1;
    }
 
@@ -783,13 +781,13 @@ int TUnixSystem::UnixTcpService(int port, Bool_t reuse, int backlog)
 
    // Bind socket
    if (bind(sock, (struct sockaddr*) &inserver, sizeof(inserver))) {
-      printf("TUnixSystem::UnixTcpService", "bind");
+      cerr << "TUnixSystem::UnixTcpService(): bind error" << endl;
       return -2;
    }
 
    // Start accepting connections
    if (listen(sock, backlog)) {
-      printf("TUnixSystem::UnixTcpService", "listen");
+      cerr << "TUnixSystem::UnixTcpService(): listen error" << endl;
       return -3;
    }
 
@@ -819,18 +817,18 @@ int TUnixSystem::UnixUnixService(int port, int backlog)
 
    // Create socket
    if ((sock = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
-      printf("TUnixSystem::UnixUnixService", "socket");
+      cerr << "TUnixSystem::UnixUnixService(): socket error" << endl;
       return -1;
    }
 
    if (bind(sock, (struct sockaddr*) &unserver, strlen(unserver.sun_path)+2)) {
-      printf("TUnixSystem::UnixUnixService", "bind");
+      cerr << "TUnixSystem::UnixUnixService(): bind error" << endl;
       return -1;
    }
 
    // Start accepting connections
    if (listen(sock, backlog)) {
-      printf("TUnixSystem::UnixUnixService", "listen");
+      cerr << "TUnixSystem::UnixUnixService(): listen error" << endl;
       return -1;
    }
 
@@ -866,7 +864,7 @@ int TUnixSystem::UnixRecv(int sock, void *buffer, int length, int flag)
             return -4;
          else {
             if (GetErrno() != EINTR)
-               printf("TUnixSystem::UnixRecv", "recv");
+               cerr << "TUnixSystem::UnixRecv(): recv error" << endl;
             return -1;
          }
       }
@@ -887,7 +885,7 @@ int TUnixSystem::UnixSend(int sock, const void *buffer, int length, int flag)
 
    for (n = 0; n < length; n += nsent) {
       if ((nsent = send(sock, buf+n, length-n, flag)) <= 0) {
-         printf("TUnixSystem::UnixSend", "send");
+         cerr << "TUnixSystem::UnixSend(): send error" << endl;
          return nsent;
       }
    }

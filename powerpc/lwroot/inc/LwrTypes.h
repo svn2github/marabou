@@ -57,5 +57,4 @@ const Ssiz_t    kNPOS        = ~(Ssiz_t)0;
 #define CLRBIT(n,i)  ((n) &= ~BIT(i))
 #define TESTBIT(n,i) ((Bool_t)(((n) & BIT(i)) != 0))
 
-
 #endif

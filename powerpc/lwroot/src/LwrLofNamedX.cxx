@@ -6,19 +6,21 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: LwrLofNamedX.cxx,v 1.1 2008-04-24 11:40:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: LwrLofNamedX.cxx,v 1.2 2008-06-16 15:00:21 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 // Special 'Light Weight ROOT' edition                                      //
 // R. Lutter                                                              //
 //////////////////////////////////////////////////////////////////////////////
 
-namespace std {} using namespace std;
-
 #include <cstdlib>
+#include "iostream.h"
+#include "iomanip.h"
+
 #include "LwrObjString.h"
 #include "LwrSetColor.h"
 #include "LwrLofNamedX.h"
+#include "LwrLogger.h"
 
 TMrbLofNamedX::TMrbLofNamedX(const Char_t * Name, Bool_t PatternMode) {
 //__________________________________________________________________[C++ CTOR]
@@ -205,7 +207,7 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 	TMrbNamedX * k;
 	
 	if (this->GetEntries() == 0) {
-		cerr << this->ClassName() << "::Print(): No indices defined" << endl;
+		cerr << setred << this->ClassName() << "::Print(): No indices defined" << setblack << endl;
 		return;
 	}
 
@@ -325,35 +327,31 @@ TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode
 
 	TString::ECaseCompare cmp = (FindMode & TMrbLofNamedX::kFindIgnoreCase) ? TString::kIgnoreCase : TString::kExact;
 
+	shortName = ShortName;
+	
 	TMrbNamedX * namedX = NULL;
 
 	TMrbNamedX * xPnt;
-	for(;;) {
-		TIterator * iter = this->MakeIterator();
-		if (FindMode & TMrbLofNamedX::kFindUnique) {
-			lng = shortName.Length();
-			while (xPnt = (TMrbNamedX *) iter->Next()) {
-				xName = xPnt->GetName();
-				xName.Resize(lng);
-				if (xName.CompareTo(shortName, cmp) == 0) {
-					if (namedX != NULL) {
-						namedX = NULL;
-						break;
-					}
-					namedX = xPnt;
-				}
-			}
-		} else {
-			while (xPnt = (TMrbNamedX *) iter->Next()) {
-				xName = xPnt->GetName();
-				if (xName.CompareTo(shortName, cmp) == 0) return(xPnt);
+	TIterator * iter = this->MakeIterator();
+	if (FindMode & TMrbLofNamedX::kFindUnique) {
+		lng = shortName.Length();
+		while (xPnt = (TMrbNamedX *) iter->Next()) {
+			xName = xPnt->GetName();
+			xName.Resize(lng);
+			if (xName.CompareTo(shortName, cmp) == 0) {
+				if (namedX != NULL) return(NULL);
+				namedX = xPnt;
 			}
 		}
-		if (namedX == NULL) {
-			cerr << this->ClassName() << "::FindByName(): Illegal index - " << shortName.Data() << endl;
-		} else {
-			return(namedX);
+		return(namedX);
+	} else {
+		while (xPnt = (TMrbNamedX *) iter->Next()) {
+			xName = xPnt->GetName();
+			if (xName.CompareTo(shortName, cmp) == 0) {
+				return(xPnt);
+			}
 		}
+		return(NULL);
 	}
 }
 
@@ -402,9 +400,9 @@ UInt_t TMrbLofNamedX::FindPattern(const Char_t * IndexString, UInt_t FindMode, c
 
 	if (!fPatternMode) {
 		if (fName.IsNull()) {
-			cerr << this->ClassName() << "::FindPattern(): Index list not in pattern mode" << endl;
+			cerr << setred << this->ClassName() << "::FindPattern(): Index list not in pattern mode" << setblack << endl;
 		} else {
-			cerr << this->ClassName() << "::FindPattern(): Not in pattern mode" << endl;
+			cerr << setred << this->ClassName() << "::FindPattern(): Not in pattern mode" << setblack << endl;
 		}
 		return(TMrbLofNamedX::kIllIndexBit);
 	}
@@ -437,7 +435,7 @@ UInt_t TMrbLofNamedX::FindPattern(const Char_t * IndexString, UInt_t FindMode, c
 			start = end + sepl;
 		}
 		if (pattern == TMrbLofNamedX::kIllIndexBit) {
-			cerr << this->ClassName() << "::FindPattern(): Illegal index string - " << xString.Data() << endl;
+			cerr << setred << this->ClassName() << "::FindPattern(): Illegal index string - " << xString.Data() << setblack << endl;
 		} else {
 			return(pattern);
 		}
@@ -461,9 +459,9 @@ const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString,
 
 	if (!fPatternMode) {
 		if (fName.IsNull()) {
-			cerr << this->ClassName() << "::Pattern2String(): Index list not in pattern mode" << endl;
+			cerr << setred << this->ClassName() << "::Pattern2String(): Index list not in pattern mode" << setblack << endl;
 		} else {
-			cerr << this->ClassName() << "::Pattern2String(): Not in pattern mode" << endl;
+			cerr << setred << this->ClassName() << "::Pattern2String(): Not in pattern mode" << setblack << endl;
 		}
 		return("");
 	}
@@ -515,17 +513,12 @@ UInt_t TMrbLofNamedX::CheckPattern(const Char_t * ClassName, const Char_t * Meth
 	this->SetPatternMode();
 	opt = this->FindPattern(IndexString, Mode);
 	if (opt == TMrbLofNamedX::kIllIndexBit) {
-		cerr << this->ClassName() << "::CheckPattern(): Illegal index string - " << IndexString << endl;
+		cerr << setred << this->ClassName() << "::CheckPattern(): Illegal index string - " << IndexString << setblack << endl;
 		if (this->GetEntries() > 0) {
-			cerr	<< setred
-					<< this->ClassName() << "::CheckPattern(): Legal index names are - "
-					<< endl;
+			cerr << setred << this->ClassName() << "::CheckPattern(): Legal index names are - " << setblack << endl;
 			this->Print(cerr, "       -> ");
-			cerr	<< setblack << endl;
 		} else {
-			cerr	<< setred
-					<< this->ClassName() << "::CheckPattern(): No legal index names present"
-					<< setblack << endl;
+			cerr << setred << this->ClassName() << "::CheckPattern(): No legal index names present" << setblack << endl;
 		}
 	}
 	return(opt);

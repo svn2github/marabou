@@ -33,6 +33,7 @@ public:
    virtual TObject *Next() = 0;
    virtual void Reset() = 0;
    TObject *operator()() { return Next(); }
+   inline const Char_t * ClassName() const { return "TIterator"; };
 };
 
 #endif

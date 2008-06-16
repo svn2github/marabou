@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: MbsSimRdo.cxx,v 1.2 2007-10-09 12:05:25 Rudolf.Lutter Exp $       
-// Date:           $Date: 2007-10-09 12:05:25 $
+// Revision:       $Id: MbsSimRdo.cxx,v 1.3 2008-06-16 15:00:21 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-06-16 15:00:21 $
 //
 //////////////////////////////////////////////////////////////////////////////
 
@@ -311,16 +311,16 @@ const Char_t * MbsSimRdo::GetConfig(const Char_t * ModuleName, const Char_t * Co
 	return(fConfig->GetValue(Form("TMrbConfig.Module.%s", ConfigItem), Default));
 }
 
-unsigned long * MbsSimRdo::BcnafAddr(Int_t branch, Int_t crate, Int_t nstation, Int_t addr, Int_t function) { return(NULL); };
-volatile unsigned long * MbsSimRdo::CioSetBase(Int_t branch, Int_t crate, Int_t nstation) { return(NULL); };
+unsigned int * MbsSimRdo::BcnafAddr(Int_t branch, Int_t crate, Int_t nstation, Int_t addr, Int_t function) { return(NULL); };
+volatile unsigned int * MbsSimRdo::CioSetBase(Int_t branch, Int_t crate, Int_t nstation) { return(NULL); };
 void MbsSimRdo::CioCtrl(Int_t branch, Int_t crate, Int_t station, Int_t function, Int_t addr) {};
-void MbsSimRdo::CioCtrlR2b(unsigned long * base, Int_t function, Int_t addr) {};
+void MbsSimRdo::CioCtrlR2b(unsigned int * base, Int_t function, Int_t addr) {};
 Int_t MbsSimRdo::CioRead(Int_t branch, Int_t crate, Int_t station, Int_t function, Int_t addr, Int_t mask) { return(-1); };
-Int_t MbsSimRdo::CioReadR2b(unsigned long * base, Int_t function, Int_t addr, Int_t mask) { return(-1); };
+Int_t MbsSimRdo::CioReadR2b(unsigned int * base, Int_t function, Int_t addr, Int_t mask) { return(-1); };
 void MbsSimRdo::CioWrite(Int_t branch, Int_t crate, Int_t station, Int_t function, Int_t addr, Int_t data) {};
-void MbsSimRdo::CioWriteR2b(unsigned long * base, Int_t function, Int_t addr, Int_t data) {};
-void MbsSimRdo::RdoSetup(unsigned long *  base, Int_t function, Int_t addr) {};
-void MbsSimRdo::RdoSetupVme(unsigned long * base, Int_t offset) {};
+void MbsSimRdo::CioWriteR2b(unsigned int * base, Int_t function, Int_t addr, Int_t data) {};
+void MbsSimRdo::RdoSetup(unsigned int *  base, Int_t function, Int_t addr) {};
+void MbsSimRdo::RdoSetupVme(unsigned int * base, Int_t offset) {};
 void MbsSimRdo::RdoC2M(Int_t mask, Bool_t shortflag) {};
 void MbsSimRdo::RdoBlt(Int_t wc, Int_t mask, Bool_t shortflag) {};
 void MbsSimRdo::RdoBltSw(Int_t wc, Int_t mask) {};

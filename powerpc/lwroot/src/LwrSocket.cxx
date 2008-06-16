@@ -18,7 +18,6 @@
 #include "LwrTypes.h"
 #include "LwrSocket.h"
 #include "LwrUnixSystem.h"
-#include "LwrBytes.h"
 
 UInt_t TSocket::fgBytesSent = 0;
 UInt_t TSocket::fgBytesRecv = 0;
@@ -189,66 +188,6 @@ Int_t TSocket::GetLocalPort()
 }
 
 //______________________________________________________________________________
-Int_t TSocket::Send(Int_t Kind)
-{
-   // Send a single message opcode. Use kind (opcode) to set the
-   // TMessage "what" field. Returns the number of bytes that were sent
-   // (always sizeof(Int_t)) and -1 in case of error. In case the kind has
-   // been or'ed with kMESS_ACK, the call will only return after having
-   // received an acknowledgement, making the sending process synchronous.
-
-	TMessage mess(Kind);
-	return this->Send(mess);
-}
-
-//______________________________________________________________________________
-Int_t TSocket::Send(const char * Str, Int_t Kind)
-{
-   // Send a character string buffer. Use kind to set the TMessage "what" field.
-   // Returns the number of bytes in the string str that were sent and -1 in
-   // case of error. In case the kind has been or'ed with kMESS_ACK, the call
-   // will only return after having received an acknowledgement, making the
-   // sending process synchronous.
-
-	TMessage mess(Kind);
-	if (Str) mess.WriteString(Str);
-
-	Int_t nsent;
-	if ((nsent = this->Send(mess)) < 0) return -1;
-
-	return nsent - sizeof(Int_t);    // - TMessage::What()
-}
-
-//______________________________________________________________________________
-Int_t TSocket::Send(TMessage & Mess)
-{
-   // Send a TMessage object. Returns the number of bytes in the TMessage
-   // that were sent and -1 in case of error. In case the TMessage::What
-   // has been or'ed with kMESS_ACK, the call will only return after having
-   // received an acknowledgement, making the sending process synchronous.
-
-	if (fSocket == -1) return -1;
-
-	Int_t nsent;
-	Mess.SetLength();   //write length in first word of buffer
-	if ((nsent = gSystem->SendRaw(fSocket, Mess.Buffer(), Mess.Length(), 0)) < 0) return -1;
-
-	fBytesSent  += nsent;
-	fgBytesSent += nsent;
-
-   // If acknowledgement is desired, wait for it
-	if (Mess.What() & kMESS_ACK) {
-		Char_t buf[2];
-		if (gSystem->RecvRaw(fSocket, buf, sizeof(buf), 0) < 0) return -1;
-		if (strncmp(buf, "ok", 2)) return -1;
-		fBytesRecv  += 2;
-		fgBytesRecv += 2;
-	}
-
-	return nsent - sizeof(UInt_t);  //length - length header
-}
-
-//______________________________________________________________________________
 Int_t TSocket::SendRaw(const void * Buffer, Int_t Length, ESendRecvOptions Opt)
 {
    // Send a raw buffer of specified length. Using option kOob one can send
@@ -264,76 +203,6 @@ Int_t TSocket::SendRaw(const void * Buffer, Int_t Length, ESendRecvOptions Opt)
 	fgBytesSent += nsent;
 
 	return nsent;
-}
-
-//______________________________________________________________________________
-Int_t TSocket::Recv(TMessage & Mess)
-{
-	if (fSocket == -1)  return -1;
-
-	Int_t  n;
-	UInt_t len;
-	n = gSystem->RecvRaw(fSocket, &len, sizeof(Int_t), 0);
-	if (n <= 0) return n;
-	len = net2host(len);		// from network to host byte order
-
-	UInt_t what;
-	n = gSystem->RecvRaw(fSocket, &what, sizeof(UInt_t), 0);
-	if (n <= 0) return n;
-	what = net2host(what);		// from network to host byte order
-	len -= sizeof(UInt_t);		// compensate for 'what' item
-
-	Mess.AllocBuffer(len);
-	if ((n = gSystem->RecvRaw(fSocket, Mess.Data(), len, 0)) <= 0) return n;
-
-	Mess.SetWhat(what);
-
-	fBytesRecv  += n + sizeof(UInt_t);
-	fgBytesRecv += n + sizeof(UInt_t);
-
-	this->Acknowledge(Mess);
-
-	return n;
-}
-
-//______________________________________________________________________________
-Int_t TSocket::Recv(char * Str, Int_t Max)
-{
-   // Receive a character string message of maximum max length. The expected
-   // message must be of type kMESS_STRING. Returns length of received string
-   // (can be 0 if otherside of connection is closed) or -1 in case of error
-   // or -4 in case a non-blocking socket would block (i.e. there is nothing
-   // to be read).
-
-	Int_t n, kind;
-
-	if ((n = Recv(Str, Max, kind)) <= 0) return n;
-
-	if (kind != kMESS_STRING) return -1;
-
-	return n;
-}
-
-//______________________________________________________________________________
-Int_t TSocket::Recv(char * Str, Int_t Max, Int_t & Kind)
-{
-   // Receive a character string message of maximum max length. Returns in
-   // kind the message type. Returns length of received string (can be 0 if
-   // other side of connection is closed) or -1 in case of error or -4 in
-   // case a non-blocking socket would block (i.e. there is nothing to be read).
-
-	Int_t     n;
-	TMessage mess;
-
-	if ((n = Recv(mess)) <= 0) return n;
-
-	Kind = mess.What();
-	if (Str) {
-		if (mess.Length() > (Int_t)sizeof(Int_t)) mess.ReadString(Str, Max);
-		else Str[0] = 0;
-	}
-
-	return n - sizeof(Int_t);   // number of bytes read - TMessage::What()
 }
 
 //______________________________________________________________________________
@@ -386,22 +255,4 @@ Int_t TSocket::GetErrorCode() const
 	if (!IsValid()) return fSocket;
 
 	return 0;
-}
-
-//______________________________________________________________________________
-void TSocket::Acknowledge(TMessage & Mess)
-{
-	if ((Mess.What() & (kMESS_ACK | kM2L_MESS_AWD)) == 0) return;
-
-	if ((Mess.What() & kM2L_MESS_AWD) != 0) {
-		Mess.SetWhat(Mess.What() & ~kM2L_MESS_AWD);
-	} else {
-		char ok[2] = { 'o', 'k' };
-		if (gSystem->SendRaw(fSocket, ok, sizeof(ok), 0) < 0) return -1;
-		Mess.SetWhat(Mess.What() & ~kMESS_ACK);
-
-		fBytesSent  += 2;
-		fgBytesSent += 2;
-	}
-	return;
 }

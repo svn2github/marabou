@@ -21,7 +21,6 @@ INCS		=	$(INC)/LwrObject.h \
 				$(INC)/LwrArrayI.h \
 				$(INC)/LwrConfig.h \
 				$(INC)/LwrInetAddress.h \
-				$(INC)/LwrMessage.h \
 				$(INC)/LwrRefCnt.h \
 				$(INC)/LwrTypes.h \
 				$(INC)/LwrServerSocket.h \
@@ -31,6 +30,8 @@ INCS		=	$(INC)/LwrObject.h \
 				$(INC)/LwrVarargs.h \
 				$(INC)/LwrNamedX.h \
 				$(INC)/LwrLofNamedX.h \
+				$(INC)/LwrDatime.h \
+				$(INC)/LwrLogger.h \
 				$(M2LINC)/M2L_MessageTypes.h \
 				$(M2LINC)/M2L_CommonStructs.h
 
@@ -43,18 +44,20 @@ OBJS		=	$(LWRLIB)(LwrArray.$(ObjSuf)) \
 				$(LWRLIB)(LwrSeqCollection.$(ObjSuf)) \
 				$(LWRLIB)(LwrList.$(ObjSuf)) \
 				$(LWRLIB)(LwrObjString.$(ObjSuf)) \
-				$(LWRLIB)(LwrMessage.$(ObjSuf)) \
 				$(LWRLIB)(LwrInetAddress.$(ObjSuf)) \
 				$(LWRLIB)(LwrSocket.$(ObjSuf)) \
 				$(LWRLIB)(LwrUnixSystem.$(ObjSuf))\
 				$(LWRLIB)(LwrServerSocket.$(ObjSuf))\
 				$(LWRLIB)(LwrString.$(ObjSuf)) \
 				$(LWRLIB)(LwrNamedX.$(ObjSuf)) \
-				$(LWRLIB)(LwrLofNamedX.$(ObjSuf))
+				$(LWRLIB)(LwrLofNamedX.$(ObjSuf)) \
+				$(LWRLIB)(LwrDatime.$(ObjSuf)) \
+				$(LWRLIB)(LwrLogger.$(ObjSuf)) \
+				$(LWRLIB)(LwrSwap.$(ObjSuf))
 
 .SUFFIXES: .$(SrcSuf)
 
-all:			libNR.$(LibSuf)  
+all:			libLwr.$(LibSuf)  
  
 clean:
 				rm -f *.o ../lib/*.a
@@ -62,7 +65,7 @@ clean:
 tst:			tst.o $(LWRLIB)
 				$(CXX) -o tst tst.o -L ../lib -lNR
 
-libNR.$(LibSuf):  $(OBJS)
+libLwr.$(LibSuf):  $(OBJS)
 
 .$(SrcSuf).$(ObjSuf):
 			$(CXX) $(CXXFLAGS) -c $<

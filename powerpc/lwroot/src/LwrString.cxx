@@ -14,7 +14,6 @@
 
 #include "LwrTypes.h"
 #include "LwrString.h"
-#include "LwrBytes.h"
 #include "LwrVarargs.h"
 
 // Amount to shift hash values to avoid clustering

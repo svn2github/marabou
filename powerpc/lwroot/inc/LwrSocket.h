@@ -17,7 +17,6 @@
 
 #include "LwrNamed.h"
 #include "LwrInetAddress.h"
-#include "LwrMessage.h"
 #include "M2L_MessageTypes.h"
 
 enum ESockOptions {
@@ -39,8 +38,6 @@ enum ESendRecvOptions {
    kPeek               // peek at incoming message (receive only)
 };
 
-
-class TMessage;
 
 class TSocket : public TNamed {
 
@@ -81,20 +78,12 @@ public:
    virtual Int_t         GetLocalPort();
    UInt_t                GetBytesSent() const { return fBytesSent; }
    UInt_t                GetBytesRecv() const { return fBytesRecv; }
-   virtual Int_t         Send(TMessage &mess);
-   virtual Int_t         Send(Int_t kind);
-   virtual Int_t         Send(const char * mess, Int_t kind = kMESS_STRING);
    virtual Int_t         SendRaw(const void *buffer, Int_t length, ESendRecvOptions opt = kDefault);
-   virtual Int_t         Recv(TMessage &mess);
-   virtual Int_t         Recv(char *mess, Int_t max);
-   virtual Int_t         Recv(char *mess, Int_t max, Int_t &kind);
    virtual Int_t         RecvRaw(void *buffer, Int_t length, ESendRecvOptions opt = kDefault);
    Bool_t                IsValid() const { return fSocket < 0 ? kFALSE : kTRUE; }
    Int_t                 GetErrorCode() const;
    virtual Int_t         SetOption(ESockOptions opt, Int_t val);
    virtual Int_t         GetOption(ESockOptions opt, Int_t &val);
-
-   void                  Acknowledge(TMessage & Mess);
 
    static  UInt_t        GetSocketBytesSent() { return fgBytesSent; }
    static  UInt_t        GetSocketBytesRecv() { return fgBytesRecv; }

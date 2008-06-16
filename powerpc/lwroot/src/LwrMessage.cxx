@@ -48,10 +48,10 @@ void * TMessage::AllocBuffer(Int_t BufferSize)
 }
 
 //______________________________________________________________________________
-Int_t TMessage::ReadBuf(Char_t * Buffer, Int_t Max)
+Int_t TMessage::ReadBuf(Char_t * Buffer, Int_t Length)
 {
-	if (Max == 0) Max = this->Length();
-	Int_t nofBytes = (Max > this->Length()) ? this->Length() : Max;
+	if (Length == 0) Length = this->Length();
+	Int_t nofBytes = (Length > this->Length()) ? this->Length() : Length;
 	memcpy(Buffer, fData, nofBytes);
 	return(nofBytes);
 }
@@ -64,6 +64,14 @@ void TMessage::WriteString(const Char_t * String)
 		memcpy(fData, String, sizeof(String));
 		this->SetWhat(kMESS_STRING);
 	} 
+}
+
+//______________________________________________________________________________
+void TMessage::WriteBuf(Char_t * Buffer, Int_t Length)
+{
+	this->AllocBuffer(Length);
+	memcpy(fData, Buffer, Length);
+	this->SetWhat(kM2L_MESS_RAWBUF);
 }
 
 //______________________________________________________________________________
@@ -125,4 +133,22 @@ void TMessage::SetWhat(UInt_t What)
 {
 	if (What == 0) What = fWhat; else fWhat = What;
 	if (fHeader) fHeader->fWhat = What;
+}
+
+//______________________________________________________________________________
+UInt_t TMessage::SwapInt32(UInt_t Data)
+{
+
+	union x {
+		int l;
+		char b[4];
+	} x;
+	UInt_t d = Data;
+	Char_t * ip = (Char_t *) &d;
+
+	x.b[3] = *ip++;
+	x.b[2] = *ip++;
+	x.b[1] = *ip++;
+	x.b[0] = *ip++;
+	return(x.l);
 }

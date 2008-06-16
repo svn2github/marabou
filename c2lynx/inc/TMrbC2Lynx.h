@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.2 2008-04-23 07:48:48 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-04-23 07:48:48 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.3 2008-06-16 15:00:21 Rudolf.Lutter Exp $   
+// Date:           $Date: 2008-06-16 15:00:21 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -23,8 +23,6 @@
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
-
-#include "MessageTypes.h"
 
 #include "M2L_MessageTypes.h"
 #include "M2L_CommonStructs.h"
@@ -43,13 +41,14 @@ class TMrbC2Lynx : public TObject {
 
 		TMrbC2Lynx() { this->Reset(); };												// default ctor		
 
-		TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, Int_t Port = 9010, Bool_t NonBlocking = kFALSE, Bool_t UseXterm = kTRUE);		// ctor: connect to host
+		TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Char_t * LogFile = NULL, Int_t Port = 9010, Bool_t NonBlocking = kFALSE, Bool_t UseXterm = kTRUE);		// ctor: connect to host
 
 		~TMrbC2Lynx() {};							// default dtor
 
 		inline const Char_t * GetHost() { return(fHost.Data()); };
 		inline const Char_t * GetServerName() { return(fServerName.Data()); };
 		inline const Char_t * GetServerPath() { return(fServerPath.Data()); };
+		inline const Char_t * GetLogFile() { return(fLogFile.Data()); };
 		inline Int_t GetPort() { return(fPort); };
 
 		inline TSocket * GetSocket() { return(fSocket); };
@@ -62,7 +61,17 @@ class TMrbC2Lynx : public TObject {
 		inline Bool_t IsNonBlocking() { return(fNonBlocking); };
 		inline Bool_t UseXterm() { return(fUseXterm); };
 
-		inline Bool_t IsConnected() { return(fSocket != NULL); };
+		inline Bool_t IsConnected() { return(fSocket != NULL); }
+
+		Bool_t Connect();
+
+		Bool_t Send(M2L_MsgHdr * Hdr);
+		Bool_t Recv(M2L_MsgHdr * Hdr);
+
+		inline UInt_t What(M2L_MsgHdr * Hdr) { return(Hdr->fWhat); };
+		inline Int_t Length(M2L_MsgHdr * Hdr) { return(Hdr->fLength); };
+ 
+		void Bye();
 
 	protected:
 		void Reset(); 								// reset
@@ -77,6 +86,7 @@ class TMrbC2Lynx : public TObject {
 		TString fHost;								// host name
 		TString fServerPath;						// where to start server from
 		TString fServerName;						// server program
+		TString fLogFile;							// where to write log info
 		TSocket * fSocket;							//! connection to server
 		Int_t fPort;								// port number
 

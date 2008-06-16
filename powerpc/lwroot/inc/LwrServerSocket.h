@@ -38,17 +38,6 @@ public:
    virtual Int_t         GetLocalPort();
 
    inline const Char_t * ClassName() const { return "TServerSocket"; };
-
-#if 0
-   Int_t         Send(const TMessage &);
-   Int_t         Send(Int_t);
-   Int_t         Send(const char *, Int_t = kMESS_STRING);
-   Int_t         SendRaw(const void *, Int_t, ESendRecvOptions = kDefault);
-   Int_t         Recv(TMessage &);
-   Int_t         Recv(char *, Int_t);
-   Int_t         Recv(char *, Int_t, Int_t &);
-   Int_t         RecvRaw(void *, Int_t, ESendRecvOptions = kDefault);
-#endif
 };
 
 #endif
