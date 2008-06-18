@@ -1355,7 +1355,7 @@ void CalibrationDialog::RecursiveRemove(TObject * obj)
 		fScanCanvas = NULL;
    if ( obj == fEffCanvas )
 		fEffCanvas = NULL;
-   if (obj == fSelPad) {
+   if (obj == fSelPad && fInteractive) {
 //      cout << "FindPeakDialog: CloseDialog "  << endl;
       CloseDialog();
    }

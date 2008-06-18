@@ -814,7 +814,7 @@ Bool_t FitOneDimDialog::FitPeakList()
    fFitOptAddAll = 1;
    fShowcof = 0;
    p->Sort();
-//   p->Print();
+   p->Print();
    fNpeaksList = p->GetSize();
    fNpeaksListIndex = 0;
 
@@ -1508,7 +1508,7 @@ void FitOneDimDialog::GetGaussEstimate(TH1 * h, Double_t from, Double_t to,
       else
          par[2] = 1;
    } else {
-      par[1] = 0.5 * (to - from);
+      par[1] = 0.5 * (to + from);
       par[2] = 1;
    }
 }
