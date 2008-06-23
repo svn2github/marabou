@@ -9,7 +9,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.38 2008-06-23 12:45:55 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.39 2008-06-23 12:47:32 Rudolf.Lutter Exp $
 // Date:             Fri Oct 12 09:43:56 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -182,7 +182,7 @@
 //                   Arg19.EntryType:     Entry-MC
 //                   Arg19.NofEntryFields:3
 //                   Arg19.Width:         100
-//                   Arg19.Default:       0:0:10
+//                   Arg19.Default:       0:0:10:F
 //                   Arg19.AddLofValues:  No
 //                   Arg19.LowerLimit:    0:65000:1
 //                   Arg19.UpperLimit:    0:65000:100
@@ -195,7 +195,7 @@
 //                   Arg20.EntryType:     Entry-MC
 //                   Arg20.NofEntryFields:3
 //                   Arg20.Width:         100
-//                   Arg20.Default:       0:0:10
+//                   Arg20.Default:       0:0:10:F
 //                   Arg20.AddLofValues:  No
 //                   Arg20.LowerLimit:    0:65000:1
 //                   Arg20.UpperLimit:    0:65000:100
