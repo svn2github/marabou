@@ -9,7 +9,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.37 2008-03-05 12:35:46 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.38 2008-06-23 12:45:55 Rudolf.Lutter Exp $
 // Date:             Fri Oct 12 09:43:56 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -1697,7 +1697,6 @@ void ShowResults2dim() {
 		Int_t llim = (Int_t) emin;
 		Int_t ulim = (Int_t) emax;
 		f2DimFitResults = new TH2S("hCalResults", hTitle.Data(), ulim - llim, llim, ulim, nh, 0, nh);
-		if (fFitResults) fFitResults->Append(f2DimFitResults);
 		TAxis * yAxis = f2DimFitResults->GetYaxis();
 
 		for (Int_t n = 0; n < nh; n++) {
