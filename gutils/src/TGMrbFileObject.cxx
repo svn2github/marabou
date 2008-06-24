@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.22 2008-03-07 08:15:22 Otto.Schaile Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.23 2008-06-24 11:47:11 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -578,7 +578,8 @@ Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 									lofSelected.AddNamedX(idx, lbe->GetText()->GetString());
 									idx++;
 								}
-  								this->ClearList();
+  								selected.Clear();	// as 'selected' contains entries from listbox
+								this->ClearList();	// it has to be cleared *before* clearing the list !!!
 								iter = lofSelected.MakeIterator();
 								TMrbNamedX * nx;
 								while (nx = (TMrbNamedX *) iter->Next()) {
