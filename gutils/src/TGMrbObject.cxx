@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbObject.cxx,v 1.3 2008-06-24 08:21:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbObject.cxx,v 1.4 2008-06-24 08:29:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -36,12 +36,12 @@ TGMrbLayout * TGMrbObject::SetupGC(TGMrbLayout * Layout, UInt_t FrameOptions) {
 	if (layout == NULL) {
 		font = gEnv->GetValue("Gui.NormalFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
 		layout = new TGMrbLayout(font, "black", "white");
-		fHeap.AddFirst((TObject *) Layout);
+		fHeap.AddFirst(layout);
 	}
 	if (layout->LH() == NULL) {
 		if (FrameOptions & kHorizontalFrame)	hints = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 2, 2, 2, 2);
 		else									hints = new TGLayoutHints(kLHintsCenterY | kLHintsExpandY, 2, 2, 2, 2);
-		fHeap.AddFirst((TObject *) hints);
+		fHeap.AddFirst(hints);
 		layout->SetLH(hints);
 	}
 	return(layout);
