@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLayout.cxx,v 1.5 2007-09-26 07:42:42 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLayout.cxx,v 1.6 2008-06-24 08:36:37 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -70,6 +70,8 @@ TGMrbLayout::TGMrbLayout(const Char_t * Font, const Char_t * Foreground, const C
 		gClient->GetColorByName("white", bg);
 	}
 
+	fLayoutHints = NULL;
+
 	this->CreateGC(font, fg, bg, Hints);
 }
 
@@ -95,6 +97,8 @@ TGMrbLayout::TGMrbLayout(const Char_t * Font, Pixel_t Foreground, Pixel_t Backgr
 		gMrbLog->Flush("TGMrbLayout");
 		font = gClient->GetFont(gEnv->GetValue("Gui.NormalFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
 	}
+
+	fLayoutHints = NULL;
 
 	this->CreateGC(font, Foreground, Background, Hints);
 }
