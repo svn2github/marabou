@@ -4,16 +4,20 @@ ClassImp(FhPeak)
 FhPeak::FhPeak(Double_t pos) : fEstimate(pos), fMean(pos){
    fNominalEnergy = 0;
    fCalibratedEnergy = 0;
+//   fEstimate = 0;
    fContent = 0;
+//   fMean = 0;
    fWidth = 0;
-   fMeanError = 0;
    fNominalEnergyError = 0;
    fContentError = 0;
-   fWidthError =0;
+   fMeanError = 0;
+   fWidthError = 0;
    fChi2oNdf = 0;
    fTailContent = 0;
    fTailWidth = 0;
-   fUsed =kFALSE;
+   fIntensity = 0;
+   fRelEfficiency = 0;
+   fUsed = kFALSE;
 };
 void FhPeak::Print(Option_t * Option) const {
    printf("%10.2f %10.2f %10.2f %10.2f %10.2f", 

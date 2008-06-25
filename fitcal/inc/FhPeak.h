@@ -67,13 +67,6 @@ public:
    void SetRelEfficiency(Double_t val) {fRelEfficiency=val;};
    void SetUsed(Bool_t  used)         {fUsed = used;};
 
-   Bool_t IsEqual(const TObject *obj) const {
-      if (obj->IsA() == FhPeak::Class()) 
-         return GetMean() == ((FhPeak*)obj)->GetMean();
-      else
-         return obj == this;
-   };
-
    Bool_t IsSortable() const {return kTRUE;};
 
    Int_t Compare(const TObject *obj) const;

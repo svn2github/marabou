@@ -293,7 +293,7 @@ void FindPeakDialog::SaveDefaults()
 
 void FindPeakDialog::CloseDialog()
 {
-   cout << "FindPeakDialog::CloseDialog() " << endl;
+//   cout << "FindPeakDialog::CloseDialog() " << endl;
    gROOT->GetListOfCleanups()->Remove(this);
    if (fInteractive >  0) fDialog->CloseWindowExt();
    delete this;
@@ -302,7 +302,7 @@ void FindPeakDialog::CloseDialog()
 
 void FindPeakDialog::CloseDown(Int_t wid)
 {
-   cout << "FindPeakDialog::CloseDown() " << wid<< endl;
+//   cout << "FindPeakDialog::CloseDown() " << wid<< endl;
    SaveDefaults();
    delete this;
 }

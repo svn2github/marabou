@@ -6,6 +6,7 @@
 #include "TLatex.h"
 #include "TLine.h"
 #include "TH1D.h"
+#include "TH2C.h"
 #include "TF1.h"
 #include "TGraphErrors.h"
 #include "TEnv.h"
@@ -15,6 +16,7 @@
 #include "TRandom.h"
 #include "TGMsgBox.h"
 #include "THLimitsFinder.h"
+#include "TGMenu.h"
 #include "CalibrationDialog.h"
 #include "Save2FileDialog.h"
 #include "FhPeak.h"
@@ -141,18 +143,29 @@ The procedure to use previously fitted peaks is as follows:\n\
       fUse[i] = fAssigned[i] = 0;
    }
    cout << "Setting fMaxPeaks = " << fMaxPeaks << endl;
-#ifdef MARABOUVERS
-   fHistPresent = (HistPresent*)gROOT->GetList()->FindObject("mypres");
-#endif
+//#ifdef MARABOUVERS
+//   fHistPresent = (HistPresent*)gROOT->GetList()->FindObject("mypres");
+//#endif
    static Int_t fFuncNumber = 0;
    fAutoAssigned = 0;
    fParentWindow =  NULL;
-   fSelPad = gPad;
+// find Canvas with sel hist
+   TIter next(gROOT->GetListOfCanvases());
+   fSelCanvas = NULL;
+   TCanvas *c;
+   while ( (c = (TCanvas*)next()) ) {
+      if ( (c->GetListOfPrimitives()->FindObject(fSelHist->GetName())) ) {
+         fSelCanvas = c;
+         break;
+      }
+   }
+//   fSelPad = gPad;
 //   cout << "fSelPad " <<  fSelPad << endl;
-   if (fSelPad == NULL) {
-     cout << "gPad = 0!!" <<  endl;
+   if (fSelCanvas == NULL && fInteractive) {
+     cout << "fSelCanvas = 0!!" <<  endl;
    } else {
-      fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
+      cout << "TCanvas* ca = (TCanvas*)" << fSelCanvas <<   endl;
+      fParentWindow = (TRootCanvas*)fSelCanvas->GetCanvasImp();
    }
 
 //  function name
@@ -163,7 +176,7 @@ The procedure to use previously fitted peaks is as follows:\n\
    fFuncName.Prepend(Form("%d_", fFuncNumber));
    fFuncName.Prepend("CalF_");
    const char hist_file[] = {"caldialog_hist.txt"};
-   fFuncFromFile="workfile.root|TF1|ff";
+//   fFuncFromFile="workfile.root|TF1|ff";
    if (fInteractive > 0) {
 		TList *row_lab = new TList();
 		static void *valp[1000];
@@ -319,7 +332,11 @@ The following options are provided:\n\
     be adjusted in newly created widget.\n\
     For more details consult \"Help\" in that widget\n\
 ";
-
+   if ( !fInteractive ) {
+      cout << setred << "SetNominalValues() only useful in interactive mode "
+           << setblack << endl;
+      return;
+   }
    if (fCustomGauge) {
       if ( ReadGaugeFile() <=0 )  {
 //         WarnBox("Read gauge file first", fParentWindow);
@@ -370,6 +387,11 @@ static const Char_t helptext[] =
 "Read gauge peaks from file.\n\
 Format: Name(eg. 60Co) energy error intensity\n\
 ";
+   if ( !fInteractive ) {
+      cout << setred << "QueryReadGaugeFile() only useful in interactive mode "
+           << setblack << endl;
+      return;
+   }
 	TList *row_l = new TList();
 	static TString rdcmd("ReadGaugeFile()");
 	static void *va[10];
@@ -393,8 +415,12 @@ Int_t CalibrationDialog::ReadGaugeFile()
       TString warn("Cant open ");
       warn += fCustomGaugeFile;
 //      WarnBox(warn, fParentWindow);
-      Int_t retval;
-      new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning",warn ,kMBIconExclamation, kMBDismiss, &retval);
+      if ( fInteractive ) {      
+         Int_t retval;
+         new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning",warn ,kMBIconExclamation, kMBDismiss, &retval);
+      } else {
+         cout << setred << warn << setblack << endl;
+      }
       return 0;
    }
    ifstream infile;
@@ -495,6 +521,11 @@ static const Char_t helptext[] =
    \"ContentThresh\" measured as fraction of the max peak.\n\
    Watch out, this may suppress real peaks.\n\
  ";
+   if ( !fInteractive ) {
+      cout << setred << "AutoSelectDialog() only useful in interactive mode "
+           << setblack << endl;
+      return;
+   }
    TString label;
    TList *row_lab = new TList();
    static TString ascmd("ExecuteAutoSelect()");
@@ -673,7 +704,8 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    }
    Double_t max_cont_ass = 0;
    Int_t nassigned = 0;
-   fSelPad->cd();
+   if (fSelCanvas) 
+      fSelCanvas->cd();
    for (Int_t i = 0; i < fNpeaks; i++) {
       fAssigned[i] = -1;
       if (fUse[i] > 0  && fCont[i] < maxcont * fContThresh) {
@@ -949,26 +981,31 @@ Click on the required function name to select it\n\
 Then use \"Read function\" to read it in.\n\
 Note: As default the last entry is selected\n\
 ";
+   if ( !fInteractive ) {
+      cout << setred << "GetFunction() only useful in interactive mode "
+           << setblack << endl;
+      return;
+   }
    TList *row_lab = new TList();
    static TString nvcmd("SetValues()");
    static void *valp[100];
    Int_t ind = 0;
-   static Double_t dummy = 1;
-   static Double_t dummy1 = 2;
-   static Double_t dummy2 = 3;
+//   static Double_t dummy = 1;
+//   static Double_t dummy1 = 2;
+//   static Double_t dummy2 = 3;
    static TString  dummy4;
    static TString gfcmd("ExecuteGetFunction()");
 
    row_lab->Add(new TObjString("FileContReq_File name"));
    valp[ind++] = &fFuncFromFile;
-//   valp[ind++] = &dummy4;
-
+/*
    row_lab->Add(new TObjString("DoubleValue_dummy"));
    valp[ind++] = &dummy;
    row_lab->Add(new TObjString("DoubleValue_dummy1"));
    valp[ind++] = &dummy1;
    row_lab->Add(new TObjString("DoubleValue_dummy2"));
    valp[ind++] = &dummy2;
+*/
    row_lab->Add(new TObjString("CommandButt_Read function"));
    valp[ind++] = &gfcmd;
    Int_t itemwidth = 300;
@@ -1038,7 +1075,7 @@ void CalibrationDialog::SaveFunction()
 void CalibrationDialog::FillCalibratedHist()
 {
    Bool_t bare_function = kFALSE;
-   if (fCalFunc == NULL) {
+   if (fCalFunc == NULL && fInteractive) {
       if (fFormula.Contains("*")) {
          TString question("Should we use: ");
          question += (const char*)fFormula;
@@ -1099,6 +1136,7 @@ void CalibrationDialog::FillCalibratedHist()
          fCalHist->Fill(bcent_cal);
       }
    }
+/*
 #ifdef MARABOUVERS
    if (fHistPresent) {
       fHistPresent->ShowHist(fCalHist);
@@ -1107,17 +1145,59 @@ void CalibrationDialog::FillCalibratedHist()
       gPad->Modified();
    } else {
 #endif
+*/
+   if ( fInteractive ) {
       TString title(hname_cal);
       title.Prepend("C_");
-      TCanvas *ch = new TCanvas("ccal", title, 500, 100, 600,400);
+      UInt_t wlx = 400, wly = 100, wwx = 600, wwy = 400;
+      if ( fSelCanvas ) {
+			wlx = fSelCanvas->GetWindowTopX()+20;
+			wly = fSelCanvas->GetWindowTopY()+20;
+			wwx = fSelCanvas->GetWindowWidth();
+			wwy = fSelCanvas->GetWindowHeight();
+      }   
+      TCanvas *ch = new TCanvas("ccal", title, wlx, wly, wwx, wwy);
       fCalHist->Draw("E");
+      AddMenu(ch);
       ch->Update();
+   }
+/*
 #ifdef MARABOUVERS
    }
 #endif
+*/
    if (bare_function) {
       delete fCalFunc;
       fCalFunc = NULL;
+   }
+}
+//________________________________________________________________________
+
+void CalibrationDialog::AddMenu(TCanvas *canvas)
+{
+//   cout << "EmptyHistDialog::BuildMenu() " <<this << endl;
+   TRootCanvas * rc = (TRootCanvas*)canvas->GetCanvas()->GetCanvasImp();
+   TGMenuBar * menubar = rc->GetMenuBar();
+   TGPopupMenu * filemenu = menubar->GetPopup("File");
+   if (filemenu) {
+      const TList * el = filemenu->GetListOfEntries();
+      TGMenuEntry *en = (TGMenuEntry*)el->First();
+      filemenu->AddEntry("Save hist to rootfile", M_Save2File, NULL, NULL, en);
+      filemenu->Connect("Activated(Int_t)", "CalibrationDialog", this,
+                      "HandleMenu(Int_t)");
+   }    
+   menubar->MapSubwindows();
+   menubar->Layout(); 
+}
+//________________________________________________________________________
+
+void CalibrationDialog::HandleMenu(Int_t id)
+{
+   switch (id) {
+
+      case M_Save2File:
+         new Save2FileDialog(fCalHist);
+         break;
    }
 }
 //____________________________________________________________________________________
@@ -1355,7 +1435,7 @@ void CalibrationDialog::RecursiveRemove(TObject * obj)
 		fScanCanvas = NULL;
    if ( obj == fEffCanvas )
 		fEffCanvas = NULL;
-   if (obj == fSelPad && fInteractive) {
+   if (obj == fSelCanvas && fInteractive) {
 //      cout << "FindPeakDialog: CloseDialog "  << endl;
       CloseDialog();
    }

@@ -4,26 +4,23 @@
 #include "TGraph.h"
 #include "TList.h"
 #include "TH1.h"
-#include "TVirtualPad.h"
+//#include "TVirtualPad.h"
 #include "TPad.h"
 #include "TRootCanvas.h"
 #include "TString.h"
 #include "TGMrbValuesAndText.h"
 //#include "defineMarabou.h"
-#ifdef MARABOUVERS
-#include "HistPresent.h"
-#endif
+//#ifdef MARABOUVERS
+//#include "HistPresent.h"
+//#endif
 //_____________________________________________________________________________________
 
 class CalibrationDialog : public TObject {
 
 static const Int_t MAXPEAKS = 100;
 static const Int_t MAXNOMPEAKS = 100;
-
+enum EMenuIds {M_Save2File = 1001};
 private:
-#ifdef MARABOUVERS
-   HistPresent *fHistPresent;
-#endif
    TRootCanvas        *fParentWindow;
    TGMrbValuesAndText *fDialog;
    TGMrbValuesAndText *fDialogSetNominal;
@@ -34,7 +31,7 @@ private:
    TString     fFuncName;
    TString     fFuncFromFile;
    TString     fFormula;
-   TVirtualPad *fSelPad;
+   TCanvas     *fSelCanvas;
    TH1         *fSelHist;
    TH1         *fCalHist;
    TF1         *fCalFunc;
@@ -78,6 +75,9 @@ private:
    Double_t fContThresh;      // Threshol on peak content relative to max
    Double_t fAccept;          // Acceptance limit: Abs (gauge - measured)
    Int_t    fUpdatePeakListDone;
+//#ifdef MARABOUVERS
+//   HistPresent *fHistPresent;
+//#endif
 public:
    CalibrationDialog(TH1 * hist, Int_t interactive = 1);
    virtual ~CalibrationDialog();
@@ -104,6 +104,9 @@ public:
    void DisableDialogs();
    void EnableDialogs();
    void CRButtonPressed(Int_t, Int_t, TObject *){};
+   void AddMenu(TCanvas *canvas);
+   void HandleMenu(Int_t id);
+
    inline void SetInteractive( Int_t interactive) { fInteractive = interactive; };
    inline void SetVerbose(Int_t val) { fVerbose = val; };
    inline void SetCalibratedNbinsX( Int_t calibratednbinsx) { fCalibratedNbinsX = calibratednbinsx; };
@@ -111,7 +114,7 @@ public:
    inline void SetCalibratedXup( Double_t calibratedxup) { fCalibratedXup = calibratedxup; };
    inline void SetCustomGauge( Int_t customgauge) { fCustomGauge = customgauge; };
    inline void SetCustomGaugeFile(const Char_t * customgaugefile) { fCustomGaugeFile = customgaugefile; };
-   inline void SetFormula(const Char_t * formula) { fCustomGaugeFile = formula; };
+   inline void SetFormula(const Char_t * formula) { fFormula = formula; };
    inline void SetMatchNbins( Int_t matchnbins) { fMatchNbins = matchnbins; };
    inline void SetMatchMin( Double_t matchmin) { fMatchMin = matchmin; };
    inline void SetMatchMax( Double_t matchmax) { fMatchMax = matchmax; };

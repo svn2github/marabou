@@ -24,7 +24,7 @@ public:
 
    ~FhMarker() {};
 
-   Bool_t IsEqual(const TObject *obj) const; 
+//   Bool_t IsEqual(const TObject *obj) const; 
 //                 {return GetX() == ((FhMarker*)obj)->GetX();};
 
    Bool_t IsSortable() const {return kTRUE;};
@@ -39,6 +39,6 @@ public:
                                       return +1;
                                  };
 */
-ClassDef(FhMarker, 0)
+ClassDef(FhMarker, 1)
 };
 #endif
