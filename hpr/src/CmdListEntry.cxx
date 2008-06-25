@@ -1,11 +1,11 @@
 #include "CmdListEntry.h"
 #include <sstream>
 
-Bool_t CmdListEntry::IsEqual(const TObject *obj)const  {
-   if(fModDate > 0) {
-      return ((CmdListEntry*)obj)->fModDate == fModDate;
-   } else             return fNam == ((CmdListEntry*)obj)->fNam;
-}
+//Bool_t CmdListEntry::IsEqual(const TObject *obj)const  {
+//   if(fModDate > 0) {
+//      return ((CmdListEntry*)obj)->fModDate == fModDate;
+//   } else             return fNam == ((CmdListEntry*)obj)->fNam;
+//}
 
 Int_t CmdListEntry::Compare(const TObject *obj) const {
    if(fModDate > 0){

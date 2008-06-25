@@ -34,7 +34,7 @@ public:
 
    ~CmdListEntry(){};
 
-   Bool_t IsEqual(const TObject *obj) const;
+//   Bool_t IsEqual(const TObject *obj) const;
 
    Bool_t IsSortable() const {return kTRUE;}
    Long_t GetDate(){return fModDate;};

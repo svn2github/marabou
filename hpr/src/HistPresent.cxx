@@ -91,16 +91,16 @@ const char AttrTemplate[]=
 //  gROOT->Reset();\n\
 // find pointer to HistPresent object\n\
   class HistPresent;\n\
-  HistPresent * mypres = (HistPresent*)gROOT->FindObject(\"mypres\");\n\
+  HistPresent * mypres = (HistPresent*)gROOT->GetList()->FindObject(\"mypres\");\n\
   if (!mypres) { \n\
      cout << \"histogram presenter object not found\" << endl;\n\
      return 0;\n\
   }\n\
-  TCanvas* canvas = (TCanvas*)gROOT->FindObject(cname);\n\
+  TCanvas* canvas = (TCanvas*)gROOT->GetListOfCanvases()->FindObject(cname);\n\
   TH1* hist = 0;\n\
   if (gROOT->GetVersionInt() >= 22306) \n\
      TH1* hist = mypres->GetCurrentHist();   // assure backward comp\n\
-  else    hist = (TH1*)gROOT->FindObject(hname);\n\
+  else    hist = (TH1*)gROOT->GetList()->FindObject(hname);\n\
 \n\
   if (!hist || !canvas) {\n\
      cout << \"hist or canvas not found\" << endl;\n\
@@ -1622,7 +1622,7 @@ void HistPresent::ShowFunction(const char* fname, const char* dir, const char* n
 //      func->SetDirectory(gROOT);
 //      fRootFile->Close();
    } else {
-      func=(TF1*)gROOT->FindObject(name);
+      func=(TF1*)gROOT->GetListOfFunctions()->FindObject(name);
    }
 //  gROOT->ls();
    if (func) {
@@ -1658,7 +1658,7 @@ void HistPresent::ShowContour(const char* fname, const char* dir, const char* na
 //      func->SetDirectory(gROOT);
       fRootFile->Close();
    } else {
-      co = (FhContour*)gROOT->FindObject(name);
+      co = (FhContour*)gROOT->GetList()->FindObject(name);
    }
 //  gROOT->ls();
    if (co) {
@@ -1712,7 +1712,7 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 //      func->SetDirectory(gROOT);
 //      fRootFile->Close();
    } else {
-      graph = (TGraphErrors*)gROOT->FindObject(name);
+      graph = (TGraphErrors*)gROOT->GetList()->FindObject(name);
    }
    if (graph) {
       TString cname = name;
@@ -1984,7 +1984,7 @@ void HistPresent::RebinHist()
    buf += "_rebinby_";  buf += fRebin;
 //   TString name = hist->GetName();
 //   name += "_rebin_";
-   TH1* hold=(TH1*)gROOT->FindObject(buf.Data());
+   TH1* hold=(TH1*)gROOT->GetList()->FindObject(buf.Data());
    if (hold) {
 //      cout << "Delete existing " <<  buf.str()<< endl;
       delete hold;
@@ -2278,7 +2278,7 @@ void HistPresent::PrintCut(const char* fname, const char* hname, const char* bp)
 {
    TCutG* cut;
    if (is_memory(fname)) {
-      cut = (TCutG*)gROOT->FindObject(hname);
+      cut = (TCutG*)gROOT->GetList()->FindObject(hname);
    } else {
       if (fRootFile) fRootFile->Close();
       fRootFile=new TFile(fname);
@@ -2441,7 +2441,6 @@ void HistPresent::LoadCut(const char* fname, const char* hname, const char* bp)
       TObjString tobjs((const char *)sel);
       cout << "remove from list: ";
       tobjs.Print(" ");
-//      TCutG* cc=(TCutG*)gROOT->FindObject(hname);
       if (cc) {
          cout << "remove from memory: " << hname << endl;
          fAllCuts->Remove(cc);
@@ -2461,7 +2460,7 @@ void HistPresent::PrintWindow(const char* fname, const char* hname, const char* 
    TObject * obj = NULL;
    TString sel = fname;
    if (is_memory(fname)) {
-      wdw = (TMrbWindow*)gROOT->FindObject(hname);
+      wdw = (TMrbWindow*)gROOT->GetList()->FindObject(hname);
    } else if (sel.Contains(".map")) {
        TMapFile *mfile;
        mfile = TMapFile::Create(fname);
@@ -2624,9 +2623,6 @@ void HistPresent::LoadWindow(const char* fname, const char* hname, const char* b
          }
       }
       TObjString tobjs((const char *)sel);
-//      cout << "remove from list: ";
-//      tobjs.Print(" ");
-//      TCutG* cc=(TCutG*)gROOT->FindObject(hname);
       fSelectWindow->Remove(&tobjs);
       fAllWindows->Remove(&tobjs);
       fAllCuts->Remove(&tobjs);
@@ -2768,7 +2764,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
          gDirectory->GetList()->Remove(fhist);
          delete fhist;
       }
-      hist=(TH1*)gROOT->FindObject(hn);
+      hist=(TH1*)gROOT->GetList()->FindObject(hn);
 
       if(hist) {
 //         cout << "delete existing: " << hn << endl;
@@ -2843,7 +2839,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
          }
       }
       if (!inlist) {
-         TH1* temp = (TH1*)gROOT->FindObject(shname.Data());
+         TH1* temp = (TH1*)gROOT->GetList()->FindObject(shname.Data());
          if (temp) {
  //           cout << "GetHist(map): Deleting existing: " << hname
  //                << " at: " << temp << endl;
@@ -2974,7 +2970,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
             fhist=(FitHist*)obj;
             const char * cn=fhist->GetCanvasName();
             if (cn) {
-               if (!(gROOT->FindObject(cn))) {
+               if (!(gROOT->GetListOfCanvases()->FindObject(cn))) {
                   cout << "Deleting unused: " << fhist << " " << fhist->GetName() << endl;
                   fhist->Delete();
                }
@@ -2985,7 +2981,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
    }
 //   gROOT->Reset();
    nHists++;
-    cout << "FHname, save " << FHname << " " <<FHnameSave << endl;
+//    cout << "FHname, save " << FHname << " " <<FHnameSave << endl;
    if (FHnameSave != FHname) {
       if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
 //         if (WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::fNwindows%2 != 0) WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
@@ -2996,7 +2992,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
       WindowSizeDialog::fNwindows++;
       FHnameSave = FHname;
    }
-   cout << " fNwindows " << WindowSizeDialog::fNwindows << " " <<WindowSizeDialog::fWinshiftx<< endl;
+//   cout << " fNwindows " << WindowSizeDialog::fNwindows << " " <<WindowSizeDialog::fWinshiftx<< endl;
    if (WindowSizeDialog::fNwindows > 10) {
       if (QuestionBox("More than 10 hists on screen!! Remove them?", fLastWindow))
           CloseAllCanvases();
@@ -3341,7 +3337,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       if (strlen(dir) > 0) fRootFile->cd(dir);
       c = (HTCanvas*)gDirectory->Get(sname);
    } else {
-      c=(HTCanvas*)gROOT->FindObject(sname);
+      c=(HTCanvas*)gROOT->GetListOfCanvases()->FindObject(sname);
    }
    gDirectory = gROOT;
    if (!c)  return;
