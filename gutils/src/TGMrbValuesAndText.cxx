@@ -1601,16 +1601,17 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname, Bool_t store)
          s += " | ";
          s += obj->GetTitle();
          fListBoxReq->AddEntry(s.Data(), id);
-//         cout << "AddEntry " << obj->GetName()<< endl;
+//         cout << "AddEntry |" << s.Data() << "|"<< endl;
          id++;
       }
    }
-//   cout << "fListBoxReq->Resize " << (id+1)*20 << endl;
+   if ( id > 0 ) 
+      fListBoxReq->Select(0, kTRUE);
+//   cout << "fListBoxReq->GetDefaultWidth()" << fListBoxReq->GetDefaultWidth() << endl;
    fListBoxReq->Resize(fListBoxReq->GetDefaultWidth(), TMath::Min(200, (id+1)*20));
    fListBoxReq->Layout();
    gClient->NeedRedraw(fListBoxReq);
-//   cout << "width " << width<< endl;
-   this->Resize((UInt_t) fWindowWidth, this->GetDefaultHeight());
+   this->Resize((UInt_t) TMath::Abs(fWindowWidth), this->GetDefaultHeight());
    gClient->NeedRedraw(this);
    if (store)
       StoreValues();

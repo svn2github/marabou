@@ -71,7 +71,7 @@ more than one level of subdirs is allowed";
             
 Save2FileDialog::~Save2FileDialog() 
 {
-   cout << "dtor Save2FileDialog" << endl;
+//   cout << "dtor Save2FileDialog" << endl;
 };
 //_________________________________________________________________________
             
@@ -126,7 +126,7 @@ void Save2FileDialog::ExecuteSave()
             
 void Save2FileDialog::SaveDefaults()
 {
-   cout << "Save2FileDialog::SaveDefaults() " << endl;
+//   cout << "Save2FileDialog::SaveDefaults() " << endl;
    TEnv env(".rootrc");
 	env.SetValue("Save2FileDialog.FileName", fFileName);
 	env.SetValue("Save2FileDialog.Dir",      fDir);
@@ -146,7 +146,7 @@ void Save2FileDialog::RestoreDefaults()
             
 void Save2FileDialog::CloseDown(Int_t wid)
 {
-   cout << "Save2FileDialog::CloseDown()" << endl;
+//   cout << "Save2FileDialog::CloseDown()" << endl;
    SaveDefaults();
    delete this;
 }
