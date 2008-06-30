@@ -38,6 +38,9 @@ class TMrbSubevent_Sis33xx : public TObject {
 		inline void SetEmpty(Bool_t EmptyFlag = kTRUE) { fIsEmpty = EmptyFlag; };
 		inline Bool_t IsEmpty() { return(fIsEmpty); };
 
+		inline Bool_t IsVerbose() { return(fVerboseMode); };
+		inline Bool_t ShaperIsVerbose() { return(fShaperVerbose); };
+
 		Bool_t InitializeShaper(const Char_t * SettingsFile = NULL, const Char_t * Module = NULL, Int_t NofChannels = -1);
 		Bool_t Shaper(Int_t Channel, Int_t ShapeIdx);
 
@@ -55,6 +58,9 @@ class TMrbSubevent_Sis33xx : public TObject {
 	protected:
 		TObject * fMyAddr;						//! ptr to subevent to be used in TTree::Branch() (online)
 		TBranch * fBranch;						//! branch address (replay only)
+
+		Bool_t fVerboseMode;					// verbose mode
+		Bool_t fShaperVerbose;					// ... show shaper data
 
 		Int_t fTimeStamp;						// time stamp, same as fUniqueID
 

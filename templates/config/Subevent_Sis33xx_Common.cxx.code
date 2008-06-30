@@ -198,6 +198,7 @@ Bool_t  TMrbSubevent_Sis33xx::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 }
 
 Bool_t  TMrbSubevent_Sis33xx::InitializeShaper(const Char_t * SettingsFile, const Char_t * Module, Int_t NofChannels) {
+//________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Sis33xx::InitializeShaper
 // Purpose:        Initialize shaping constants
@@ -224,8 +225,8 @@ Bool_t  TMrbSubevent_Sis33xx::InitializeShaper(const Char_t * SettingsFile, cons
 		settings = new TEnv(SettingsFile);
 	}
 
-	Bool_t verboseMode = settings->GetValue("SIS3300.VerboseMode", kFALSE)
-							|| gEnv->GetValue("TMrbAnalyze.VerboseMode", kFALSE);
+	fVerboseMode = settings->GetValue("SIS3300.VerboseMode", kFALSE) || gEnv->GetValue("TMrbAnalyze.VerboseMode", kFALSE);
+	fShaperVerbose = settings->GetValue("SIS3300.ShaperVerbose", kFALSE);
 
 // same values for all channels
 	if (NofChannels == -1) {
@@ -263,7 +264,7 @@ Bool_t  TMrbSubevent_Sis33xx::InitializeShaper(const Char_t * SettingsFile, cons
 		}
 	}
 
-	if (verboseMode) {
+	if (this->IsVerbose()) {
 		cout << endl << "Shaper settings from file " << SettingsFile << endl;
 		cout << Form("%3s%-30s%-30s", "", "PeakTime", "GapTime") << endl;
 		cout << Form("%3s%-15s%-15s%-15s%-15s", "", "short", "long", "short", "long") << endl;
@@ -277,11 +278,102 @@ Bool_t  TMrbSubevent_Sis33xx::InitializeShaper(const Char_t * SettingsFile, cons
 				fGapTime[kShapeLong * kNofChannels + chn]);
 		}
 		cout << endl;
+
 	}
 
 	return(kTRUE);
 }
 			
+Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis33xx::Shaper
+// Purpose:        Perform shaping
+// Arguments:      Int_t Channel      -- channel
+//                 Int_t ShaperIdx    -- shaper index (short/long)
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Performs trapezoidal shaping
+//                 (Origin: L. Maier, E12)
+//                 (Improved: V. Bildstein, Jun 2008)
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (ShaperIdx == kShapeBoth) {
+		Bool_t sts = this->Shaper(Channel, kShapeShort);
+		sts &= this->Shaper(Channel, kShapeLong);
+		return(sts);
+	}
+
+	Int_t shIdx = ShaperIdx * kNofChannels + Channel;		// different settings for each channel
+
+	fShapeMin[shIdx] = DBL_MAX;
+	fShapeMax[shIdx] = DBL_MIN;
+
+	Double_t * data = fShapedData[shIdx];
+	//loop over data
+	Double_t BaseLine = 0.;
+	for (Int_t sample = 0; sample < 100.; sample++) 
+	  {
+	    BaseLine += fChanData[Channel][sample];
+	  }
+	BaseLine /= 100.;
+	
+	data[0] = fChanData[Channel][0];// - BaseLine;
+
+	Bool_t trace = kFALSE;
+
+	for (Int_t sample = 1; sample < 512; sample++) 
+	  {
+	    data[sample] = data[sample-1] + fChanData[Channel][sample];
+	    if(sample - ((Int_t) fPeakTime[shIdx]) > 0)
+	      {
+			if (this->ShaperIsVerbose()) cout << setw(8) << sample - ((Int_t) fPeakTime[shIdx]);
+			data[sample] -= fChanData[Channel][sample - ((Int_t) fPeakTime[shIdx])];
+	      }
+	    if(sample - ((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]) > 0)
+	      {
+			if (this->ShaperIsVerbose()) cout << setw(8)<< sample - ((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]);
+			data[sample] -= fChanData[Channel][sample - ((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx])];
+	      }
+	    if(sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]) > 0)
+	      {
+			if (this->ShaperIsVerbose()) cout << setw(8) << sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]);
+			data[sample] += fChanData[Channel][sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx])];
+	      }
+
+	    //data[sample] -= BaseLine;
+
+	    if(sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]) > 0)
+	      {
+			if (fShapeMax[shIdx] < data[sample]) fShapeMax[shIdx] = data[sample];
+			if (fShapeMin[shIdx] > data[sample]) fShapeMin[shIdx] = data[sample];
+	      }
+	    
+	    if(fChanData[Channel][sample] != 0)
+	      {
+			trace = kTRUE;
+			if (this->ShaperIsVerbose()) {
+				cout	<< shIdx << setw(8) << Channel << setw(8) << sample << setw(8) << fChanData[Channel][sample]
+						<< " " << setw(8) << data[sample] << endl;
+			}
+	      }
+	  }
+
+	if(trace && this->ShaperIsVerbose() )
+	  {
+		cout << setw(2) << shIdx << setw(10) << fShapeMin[shIdx] << " " << setw(10) << fShapeMax[shIdx] << " " << setw(8) << BaseLine << endl;
+	  }
+
+	//correct the min and max with the baseline
+	fShapeMin[shIdx] -= BaseLine;
+	fShapeMax[shIdx] -= BaseLine;
+
+	return(kTRUE);
+}
+
+#if 0
+// *********************************** old version, no longer used ******************************
 Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -335,6 +427,7 @@ Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
 	}
 	return(kTRUE);
 }
+#endif
 
 Double_t  TMrbSubevent_Sis33xx::Trapezoid(Double_t X, Double_t Offset, Double_t PeakTime, Double_t GapTime) {
 //________________________________________________________________[C++ METHOD]
