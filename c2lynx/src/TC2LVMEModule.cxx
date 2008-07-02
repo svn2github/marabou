@@ -1,0 +1,99 @@
+//__________________________________________________[C++ CLASS IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TC2LVMEModule.cxx
+// Purpose:        MARaBOU client to connect to LynxOs/VME
+// Description:    Implements class methods to connect to VME modules
+// Keywords:
+// Author:         R. Lutter
+// Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+// Revision:       $Id: TC2LVMEModule.cxx,v 1.1 2008-07-02 07:12:45 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-07-02 07:12:45 $
+//////////////////////////////////////////////////////////////////////////////
+
+namespace std {} using namespace std;
+
+#include <iostream>
+#include <iomanip>
+
+#include "Rtypes.h"
+#include "TEnv.h"
+#include "TROOT.h"
+
+#include "TMrbC2Lynx.h"
+#include "TC2LVMEModule.h"
+
+#include "TMrbLogger.h"
+#include "SetColor.h"
+
+extern TMrbLogger * gMrbLog;
+
+extern TMrbC2Lynx * gMrbC2Lynx;
+
+ClassImp(TC2LVMEModule)
+
+TC2LVMEModule::TC2LVMEModule(const Char_t * ModuleName, const Char_t * ModuleType, UInt_t Address, Int_t NofChannels)
+																				: TMrbNamedX(0, ModuleName, ModuleType) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TC2LVMEModule
+// Purpose:        Connect to a VME module
+// Arguments:      Char_t * ModuleName    -- module name
+//                 Char_t * ModuleType    -- type
+//                 UInt_t Address         -- VME address
+//                 Int_t NofChannels      -- number of channels used
+// Results:        --
+// Description:    Class constructor
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("c2lynx.log");
+
+	if (this->Connect(Address, NofChannels)) {
+		gROOT->Append(this);
+	} else {
+		this->MakeZombie();
+	}
+}
+
+Bool_t TC2LVMEModule::Connect(UInt_t Address, Int_t NofChannels) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TC2LVMEModule::Connect
+// Purpose:        Connect to module via tcp socket
+// Arguments:      UInt_t Address         -- VME address
+//                 Int_t NofChannels      -- number of channels used
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Asks LynxOs server to connect to given module
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbC2Lynx == NULL) {
+		gMrbLog->Err()	<< "No connection to LynxOs server" << endl;
+		gMrbLog->Flush(this->ClassName(), "Connect");
+		return(kFALSE);
+	}
+	if (this->GetHandle()) {
+		gMrbLog->Err()	<< "Module already connected - " << this->GetName() << ", VME addr "
+						<< setbase(16) << this->GetAddress() << setbase(10) << endl;
+		gMrbLog->Flush(this->ClassName(), "Connect");\
+		return(kFALSE);
+	}
+
+	M2L_VME_Connect c;
+	gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &c, sizeof(M2L_VME_Connect), kM2L_MESS_VME_CONNECT);
+	strcpy(c.fModuleName, this->GetName());
+	strcpy(c.fModuleType, this->GetType());
+	c.fBaseAddr = Address;
+	c.fNofChannels = NofChannels;
+	if (gMrbC2Lynx->Send((M2L_MsgHdr *) &c)) {
+		M2L_VME_Return_Handle h;
+		gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &h, sizeof(M2L_VME_Return_Handle), kM2L_MESS_VME_CONNECT);
+		if (gMrbC2Lynx->Recv((M2L_MsgHdr *) &h)) this->SetHandle(h.fHandle);
+	}
+	if (this->GetHandle() == 0) {
+		gMrbLog->Err()	<< "Can't connect to module - " << this->GetName() << " (server reports error)" << endl;
+		gMrbLog->Flush(this->ClassName(), "Connect");
+		return(kFALSE);
+	}
+	return(kTRUE);
+}
