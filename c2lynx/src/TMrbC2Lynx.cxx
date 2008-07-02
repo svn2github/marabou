@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.4 2008-06-16 15:00:21 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-06-16 15:00:21 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.5 2008-07-02 07:03:20 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-07-02 07:03:20 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -35,6 +35,8 @@ namespace std {} using namespace std;
 
 extern TMrbLogger * gMrbLog;
 
+TMrbC2Lynx * gMrbC2Lynx = NULL;
+
 ClassImp(TMrbC2Lynx)
 
 TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Char_t * LogFile, Int_t Port, Bool_t NonBlocking, Bool_t UseXterm) {
@@ -52,21 +54,27 @@ TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Cha
 // Description:    Class constructor
 //////////////////////////////////////////////////////////////////////////////
 
-	this->Reset();
+	if (gMrbC2Lynx != NULL) {
+		gMrbLog->Err()	<< "Connection to LynxOs already established" << endl;
+		gMrbLog->Flush(this->ClassName());
+		this->MakeZombie();
+	} else {
+		this->Reset();
 
-	fHost = HostName;
-	fPort = Port;
+		fHost = HostName;
+		fPort = Port;
 
-	fNonBlocking = NonBlocking;
-	fUseXterm = UseXterm;
+		fNonBlocking = NonBlocking;
+		fUseXterm = UseXterm;
 
-	fSocket = NULL;
+		fSocket = NULL;
 	
-	fServerPath = Server;
-	fServerName = gSystem->BaseName(Server);
-	fLogFile = (LogFile == NULL || *LogFile == '\0') ? Form("%s/c2lynx.log", gSystem->WorkingDirectory()) : LogFile;
+		fServerPath = Server;
+		fServerName = gSystem->BaseName(Server);
+		fLogFile = (LogFile == NULL || *LogFile == '\0') ? Form("%s/c2lynx.log", gSystem->WorkingDirectory()) : LogFile;
 
-	if (!this->Connect()) this->MakeZombie();
+		if (this->Connect()) gMrbC2Lynx = this; else this->MakeZombie();
+	}
 }
 
 Bool_t TMrbC2Lynx::Connect() {
@@ -227,19 +235,43 @@ Bool_t TMrbC2Lynx::Recv(M2L_MsgHdr * Hdr) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (this->IsConnected()) {
-		Int_t n = fSocket->RecvRaw((void *) Hdr, sizeof(M2L_MsgHdr));
-		if (n != sizeof(M2L_MsgHdr)) {
-			gMrbLog->Err()	<< "Couldn't receive header (code=" << n << ")" << endl;
+		M2L_MsgHdr reqHdr;
+		memcpy(&reqHdr, Hdr, sizeof(M2L_MsgHdr));
+		if (reqHdr.fLength) {
+			Int_t n = fSocket->RecvRaw((void *) Hdr, sizeof(M2L_MsgHdr));
+			if (n != sizeof(M2L_MsgHdr)) {
+				gMrbLog->Err()	<< "Couldn't receive header (error code=" << n << ")" << endl;
+				gMrbLog->Flush(this->ClassName(), "Recv");
+				return(kFALSE);
+			}
+			if (Hdr->fWhat >= kM2L_MESS_ACK_OK && Hdr->fWhat < kM2L_MESS_ACK_END) {
+				M2L_Acknowledge ack;
+				n = fSocket->RecvRaw((void *) ack.fText, Hdr->fLength - sizeof(M2L_MsgHdr));
+				if (n <= 0) {
+					gMrbLog->Err()	<< "Couldn't receive message (error code=" << n << ")" << endl;
+					gMrbLog->Flush(this->ClassName(), "Recv");
+					return(kFALSE);
+				}
+				switch (Hdr->fWhat) {
+					case kM2L_MESS_ACK_OK:			return(kTRUE);
+					case kM2L_MESS_ACK_MESSAGE: 	cout << "*-" << ack.fText << endl; break;
+					case kM2L_MESS_ACK_WARNING: 	cerr << "%-" << ack.fText << endl; break;
+					case kM2L_MESS_ACK_ERROR:		cerr << setred << "?-" << ack.fText << setblack << endl; break;
+				}
+				return(kFALSE);
+			}
+			n = fSocket->RecvRaw((void *)((Char_t *) Hdr + sizeof(M2L_MsgHdr)), Hdr->fLength - sizeof(M2L_MsgHdr));
+			if (n <= 0) {
+				gMrbLog->Err()	<< "Couldn't receive message (error code=" << n << ")" << endl;
+				gMrbLog->Flush(this->ClassName(), "Recv");
+				return(kFALSE);
+			}
+			return(kTRUE);
+		} else {
+			gMrbLog->Err()	<< "Requested message length is 0" << endl;
 			gMrbLog->Flush(this->ClassName(), "Recv");
 			return(kFALSE);
-		}
-		n = fSocket->RecvRaw((void *)((Char_t *) Hdr + sizeof(M2L_MsgHdr)), Hdr->fLength - sizeof(M2L_MsgHdr));
-		if (n <= 0) {
-			gMrbLog->Err()	<< "Couldn't receive message (code=" << n << ")" << endl;
-			gMrbLog->Flush(this->ClassName(), "Recv");
-			return(kFALSE);
-		}
-		return(kTRUE);		
+		}	
 	} else {
 		gMrbLog->Err()	<< "Not connected to server" << endl;
 		gMrbLog->Flush(this->ClassName(), "Recv");
@@ -272,3 +304,23 @@ void TMrbC2Lynx::Bye() {
 	}
 	return;
 }
+
+void TMrbC2Lynx::InitMessage(M2L_MsgHdr * Hdr, Int_t Length, UInt_t What) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbC2Lynx::InitMessage
+// Purpose:        Initialize message
+// Arguments:      M2L_MsgHdr * Hdr    -- ptr to message (header)
+//                 Int_t Length        -- message length
+//                 UInt_t What         -- message type
+// Results:        --
+// Exceptions:
+// Description:    Clears message data and fills header
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	memset((Char_t *) Hdr, 0, Length);
+	Hdr->fLength = Length;
+	Hdr->fWhat = What;
+}
+

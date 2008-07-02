@@ -4,8 +4,6 @@
 //                                                                      //
 // This class implements client sockets. A socket is an endpoint for    //
 // communication between two machines.                                  //
-// The actual work is done via the TSystem class (either TUnixSystem,   //
-// TWin32System or TMacSystem).                                         //
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 // Special 'Light Weight ROOT' edition                                  //
@@ -17,12 +15,12 @@
 
 #include "LwrTypes.h"
 #include "LwrSocket.h"
-#include "LwrUnixSystem.h"
+#include "LwrLynxOsSystem.h"
 
 UInt_t TSocket::fgBytesSent = 0;
 UInt_t TSocket::fgBytesRecv = 0;
 
-extern TUnixSystem * gSystem;
+extern TLynxOsSystem * gSystem;
 
 //______________________________________________________________________________
 TSocket::TSocket(TInetAddress addr, const char *service)
@@ -33,8 +31,9 @@ TSocket::TSocket(TInetAddress addr, const char *service)
    // sockets list which will make sure that any open sockets are properly
    // closed on program termination.
 
-	if(!gSystem) printf("UnixSystem not initialized\n");
+	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
+		fIsServerSocket = kFALSE;
 		fService = service;
 		fAddress = addr;
 		fAddress.fPort = gSystem->GetServiceByName(service);
@@ -58,8 +57,9 @@ TSocket::TSocket(TInetAddress addr, Int_t port)
    // sockets list which will make sure that any open sockets are properly
    // closed on program termination.
 
-	if(!gSystem) printf("UnixSystem not initialized\n");
+	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
+		fIsServerSocket = kFALSE;
 		fService = gSystem->GetServiceByPort(port);
 		fAddress = addr;
 		fAddress.fPort = port;
@@ -80,8 +80,9 @@ TSocket::TSocket(const char *host, const char *service)
    // sockets list which will make sure that any open sockets are properly
    // closed on program termination.
 
-	if(!gSystem) printf("UnixSystem not initialized\n");
+	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
+		fIsServerSocket = kFALSE;
 		fService = service;
 		fAddress = gSystem->GetHostByName(host);
 		fAddress.fPort = gSystem->GetServiceByName(service);
@@ -105,8 +106,9 @@ TSocket::TSocket(const char *host, Int_t port)
    // sockets list which will make sure that any open sockets are properly
    // closed on program termination.
 
-	if(!gSystem) printf("UnixSystem not initialized\n");
+	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
+		fIsServerSocket = kFALSE;
 		fService = gSystem->GetServiceByPort(port);
 		fAddress = gSystem->GetHostByName(host);
 		fAddress.fPort = port;
@@ -123,8 +125,9 @@ TSocket::TSocket(Int_t desc)
 {
    // Create a socket. The socket will use descriptor desc.
 
-	if(!gSystem) printf("UnixSystem not initialized\n");
+	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
+		fIsServerSocket = kFALSE;
 		fBytesSent = 0;
 		fBytesRecv = 0;
 
@@ -142,6 +145,7 @@ TSocket::TSocket(const TSocket &s)
 {
    // TSocket copy ctor.
 
+	fIsServerSocket = kFALSE;
 	fSocket       = s.fSocket;
 	fService      = s.fService;
 	fAddress      = s.fAddress;

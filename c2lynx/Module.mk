@@ -16,7 +16,7 @@ C2LYNXL        := $(MODDIRI)/LinkDef.h
 C2LYNXDS       := $(MODDIRS)/G__TMrbC2LynxDict.cxx
 C2LYNXDO       := $(C2LYNXDS:.cxx=.o)
 C2LYNXH        := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
-C2LYNXDH       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/TMrb*.h))
+C2LYNXDH       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/TMrb*.h) $(wildcard $(MODDIRI)/TC2L*.h))
 C2LYNXS        := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
 C2LYNXO        := $(C2LYNXS:.cxx=.o)
 

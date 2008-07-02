@@ -7,8 +7,6 @@
 //                                                                      //
 // This class implements client sockets. A socket is an endpoint for    //
 // communication between two machines.                                  //
-// The actual work is done via the TSystem class (either TUnixSystem,   //
-// TWin32System or TMacSystem).                                         //
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 // Special 'Light Weight ROOT' edition for LynxOs                       //
@@ -16,6 +14,7 @@
 //////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"
+#include "LwrNamedX.h"
 #include "LwrInetAddress.h"
 #include "M2L_MessageTypes.h"
 
@@ -44,11 +43,16 @@ class TSocket : public TNamed {
 friend class TServerSocket;
 
 protected:
-   Int_t         fSocket;         // socket descriptor
-   TString       fService;        // name of service (matches remote port #)
-   TInetAddress  fAddress;        // remote internet address and port #
+	Bool_t        fIsServerSocket; // as we don't have an IsA() we use this flag to distinguish between socket types
+	Int_t         fSocket;         // socket descriptor
+	TString       fService;        // name of service (matches remote port #)
+	TInetAddress  fAddress;        // remote internet address and port #
 
-   TSocket() { fSocket = -1; fBytesSent = fBytesRecv = 0; }
+	TSocket() {
+		fSocket = -1;
+		fBytesSent = fBytesRecv = 0;
+		fIsServerSocket = kFALSE;
+	}
 
 private:
    TInetAddress  fLocalAddress;   // local internet address and port #
@@ -84,6 +88,8 @@ public:
    Int_t                 GetErrorCode() const;
    virtual Int_t         SetOption(ESockOptions opt, Int_t val);
    virtual Int_t         GetOption(ESockOptions opt, Int_t &val);
+
+   inline Bool_t         IsServerSocket() { return fIsServerSocket; };
 
    static  UInt_t        GetSocketBytesSent() { return fgBytesSent; }
    static  UInt_t        GetSocketBytesRecv() { return fgBytesRecv; }

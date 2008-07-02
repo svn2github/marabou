@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.19 2007-10-05 08:32:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.20 2008-07-02 07:03:20 Rudolf.Lutter Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -435,8 +435,9 @@ void TGMrbLabelEntry::SetTextAlignment(ETextJustification Align, Int_t EntryNo) 
 
 	if (EntryNo == -1) {
 		for (Int_t i = 0; i < fNofEntries; i++) this->SetTextAlignment(Align, i);
+	} else {
+		fEntry[EntryNo]->SetAlignment(Align);
 	}
-	fEntry[EntryNo]->SetAlignment(Align);
 }
 
 TGMrbTextEntry * TGMrbLabelEntry::GetTextEntry(Int_t EntryNo) {

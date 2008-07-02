@@ -8,7 +8,7 @@
 // Class:          TMrbLogger    -- message/error logging
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: LwrLogger.h,v 1.1 2008-06-16 15:00:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: LwrLogger.h,v 1.2 2008-07-02 07:03:20 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -23,11 +23,11 @@
 
 #include "LwrObject.h"
 #include "LwrNamed.h"
-#include "LwrUnixSystem.h"
+#include "LwrLynxOsSystem.h"
 #include "LwrDatime.h"
 #include "LwrList.h"
 
-extern TUnixSystem * gSystem;
+extern TLynxOsSystem * gSystem;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////

@@ -10,7 +10,8 @@ SrcSuf		=	cxx
 LibSuf		=	a
 LWRLIB		=	../lib/libLwr.$(LibSuf)
 
-INCS		=	$(INC)/LwrObject.h \
+INCS		=	$(INC)/LwrUtils.h \
+				$(INC)/LwrObject.h \
 				$(INC)/LwrNamed.h \
 				$(INC)/LwrCollection.h \
 				$(INC)/LwrSeqCollection.h \
@@ -25,8 +26,10 @@ INCS		=	$(INC)/LwrObject.h \
 				$(INC)/LwrTypes.h \
 				$(INC)/LwrServerSocket.h \
 				$(INC)/LwrSocket.h \
+				$(INC)/LwrFileHandler.h \
+				$(INC)/LwrMonitor.h \
 				$(INC)/LwrString.h \
-				$(INC)/LwrUnixSystem.h \
+				$(INC)/LwrLynxOsSystem.h \
 				$(INC)/LwrVarargs.h \
 				$(INC)/LwrNamedX.h \
 				$(INC)/LwrLofNamedX.h \
@@ -36,7 +39,8 @@ INCS		=	$(INC)/LwrObject.h \
 				$(M2LINC)/M2L_CommonStructs.h
 
 
-OBJS		=	$(LWRLIB)(LwrArray.$(ObjSuf)) \
+OBJS		=	$(LWRLIB)(LwrUtils.$(ObjSuf)) \
+				$(LWRLIB)(LwrArray.$(ObjSuf)) \
 				$(LWRLIB)(LwrArrayI.$(ObjSuf)) \
 				$(LWRLIB)(LwrObject.$(ObjSuf)) \
 				$(LWRLIB)(LwrNamed.$(ObjSuf)) \
@@ -46,14 +50,15 @@ OBJS		=	$(LWRLIB)(LwrArray.$(ObjSuf)) \
 				$(LWRLIB)(LwrObjString.$(ObjSuf)) \
 				$(LWRLIB)(LwrInetAddress.$(ObjSuf)) \
 				$(LWRLIB)(LwrSocket.$(ObjSuf)) \
-				$(LWRLIB)(LwrUnixSystem.$(ObjSuf))\
+				$(LWRLIB)(LwrFileHandler.$(ObjSuf)) \
+				$(LWRLIB)(LwrMonitor.$(ObjSuf)) \
+				$(LWRLIB)(LwrLynxOsSystem.$(ObjSuf))\
 				$(LWRLIB)(LwrServerSocket.$(ObjSuf))\
 				$(LWRLIB)(LwrString.$(ObjSuf)) \
 				$(LWRLIB)(LwrNamedX.$(ObjSuf)) \
 				$(LWRLIB)(LwrLofNamedX.$(ObjSuf)) \
 				$(LWRLIB)(LwrDatime.$(ObjSuf)) \
-				$(LWRLIB)(LwrLogger.$(ObjSuf)) \
-				$(LWRLIB)(LwrSwap.$(ObjSuf))
+				$(LWRLIB)(LwrLogger.$(ObjSuf))
 
 .SUFFIXES: .$(SrcSuf)
 

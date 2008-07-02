@@ -3,8 +3,7 @@
 
 enum {	kM2L_L_NAME 		=	32	};
 enum {	kM2L_L_TYPE 		=	32	};
-enum {	kM2L_L_ACK_TYPE 	=	8	};
-enum {	kM2L_L_ACK_TEXT 	=	512	};
+enum {	kM2L_L_TEXT 		=	512	};
 
 typedef struct {
 	Int_t fLength;
@@ -21,14 +20,18 @@ typedef struct {
 
 typedef struct {
 	M2L_MsgHdr fHdr;
+	UInt_t fHandle;
+} M2L_VME_Return_Handle;
+
+typedef struct {
+	M2L_MsgHdr fHdr;
 	UInt_t fModuleHandle;
 	UInt_t fOffset;
 } M2L_VME_Exec_Funct;
 
 typedef struct {
 	M2L_MsgHdr fHdr;
-	Char_t fType[kM2L_L_ACK_TYPE];
-	Char_t fText[kM2L_L_ACK_TEXT];
+	Char_t fText[kM2L_L_TEXT];
 } M2L_Acknowledge;
 
 #endif

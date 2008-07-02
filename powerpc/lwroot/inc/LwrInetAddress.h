@@ -20,7 +20,7 @@
 
 class TInetAddress : public TNamed {
 
-friend class TUnixSystem;
+friend class TLynxOsSystem;
 friend class TSocket;
 friend class TServerSocket;
 

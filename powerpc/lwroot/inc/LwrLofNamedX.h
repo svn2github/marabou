@@ -8,7 +8,7 @@
 // Class:          TMrbLofNamedX    -- a list of named indices
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: LwrLofNamedX.h,v 1.1 2008-04-24 11:40:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: LwrLofNamedX.h,v 1.2 2008-07-02 07:03:20 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -16,7 +16,7 @@
 #include "LwrTypes.h"
 #include "LwrList.h"
 #include "LwrString.h"
-#include "LwrUnixSystem.h"
+#include "LwrLynxOsSystem.h"
 #include "LwrNamedX.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]

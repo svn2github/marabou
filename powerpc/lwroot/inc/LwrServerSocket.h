@@ -8,8 +8,7 @@
 // This class implements server sockets. A server socket waits for      //
 // requests to come in over the network. It performs some operation     //
 // based on that request and then possibly returns a result to the      //
-// requester. The actual work is done via the TSystem class (either     //
-// TUnixSystem, TWin32System or TMacSystem).                            //
+// requester.                                                           //
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 // Special 'Light Weight ROOT' edition for LynxOs                       //
@@ -22,7 +21,7 @@
 class TServerSocket : public TSocket {
 
 private:
-   TServerSocket() { }
+   TServerSocket() { fIsServerSocket = kFALSE; };
    TServerSocket(const TServerSocket &);
    void operator=(const TServerSocket &);
 

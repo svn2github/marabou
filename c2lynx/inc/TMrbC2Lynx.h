@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.3 2008-06-16 15:00:21 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-06-16 15:00:21 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.4 2008-07-02 07:03:20 Rudolf.Lutter Exp $   
+// Date:           $Date: 2008-07-02 07:03:20 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -53,8 +53,6 @@ class TMrbC2Lynx : public TObject {
 
 		inline TSocket * GetSocket() { return(fSocket); };
 
-		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
-
 		inline Bool_t IsVerbose() { return(fVerboseMode); };
 		inline Bool_t IsDebug() { return(fDebugMode); };
 
@@ -71,7 +69,11 @@ class TMrbC2Lynx : public TObject {
 		inline UInt_t What(M2L_MsgHdr * Hdr) { return(Hdr->fWhat); };
 		inline Int_t Length(M2L_MsgHdr * Hdr) { return(Hdr->fLength); };
  
+		void InitMessage(M2L_MsgHdr * Hdr, Int_t Length, UInt_t What);
+
 		void Bye();
+
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void Reset(); 								// reset

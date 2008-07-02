@@ -5,8 +5,7 @@
 // This class implements server sockets. A server socket waits for      //
 // requests to come in over the network. It performs some operation     //
 // based on that request and then possibly returns a full duplex socket //
-// to the requester. The actual work is done via the TSystem class      //
-// (either TUnixSystem, TWin32System or TMacSystem).                    //
+// to the requester.                                                    //
 //                                                                      //
 //////////////////////////////////////////////////////////////////////////
 // Special 'Light Weight ROOT' edition                                  //
@@ -19,9 +18,9 @@
 #include "LwrTypes.h"
 #include "LwrServerSocket.h"
 #include "LwrSocket.h"
-#include "LwrUnixSystem.h"
+#include "LwrLynxOsSystem.h"
 
-extern TUnixSystem * gSystem;
+extern TLynxOsSystem * gSystem;
 
 //______________________________________________________________________________
 TServerSocket::TServerSocket(const char *service, Bool_t reuse, Int_t backlog)
@@ -40,19 +39,18 @@ TServerSocket::TServerSocket(const char *service, Bool_t reuse, Int_t backlog)
    // will make sure that any open sockets are properly closed on
    // program termination.
 
-   if(!gSystem) printf("UnixSystem not initialized\n");
-   else {
-//   SetName("ServerSocket");
+	if(!gSystem) printf("TLynxOsSystem not initialized\n");
+	else {
+		int port = gSystem->GetServiceByName(service);
+		fService = service;
 
-      int port = gSystem->GetServiceByName(service);
-      fService = service;
-
-      if (port != -1) {
-         fSocket = gSystem->AnnounceTcpService(port, reuse, backlog);
-//         if (fSocket >= 0) gROOT->GetListOfSockets()->Add(this);
-      } else
-         fSocket = -1;
-      }
+		if (port != -1) {
+			fSocket = gSystem->AnnounceTcpService(port, reuse, backlog);
+		} else {
+			fSocket = -1;
+		}
+		fIsServerSocket = kTRUE;
+	}
 }
 
 //______________________________________________________________________________
@@ -72,10 +70,11 @@ TServerSocket::TServerSocket(Int_t port, Bool_t reuse, Int_t backlog)
    // will make sure that any open sockets are properly closed on
    // program termination.
 
-   if(!gSystem) printf("UnixSystem not initialized\n");
-   else {
-      fService = gSystem->GetServiceByPort(port);
-      fSocket = gSystem->AnnounceTcpService(port, reuse, backlog);
+	if(!gSystem) printf("TLynxOsSystem not initialized\n");
+	else {
+		fService = gSystem->GetServiceByPort(port);
+		fSocket = gSystem->AnnounceTcpService(port, reuse, backlog);
+		fIsServerSocket = kTRUE;
    }
 }
 

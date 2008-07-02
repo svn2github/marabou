@@ -8,7 +8,7 @@
 // Class:          TMrbNamedX    -- a TNamed with an index assigned
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: LwrNamedX.h,v 1.1 2008-04-24 11:40:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: LwrNamedX.h,v 1.2 2008-07-02 07:03:20 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -20,7 +20,7 @@ namespace std {} using namespace std;
 #include "LwrTypes.h"
 #include "LwrObject.h"
 #include "LwrNamed.h"
-#include "LwrUnixSystem.h"
+#include "LwrLynxOsSystem.h"
 #include "LwrString.h"
 
 //_______________________________________________________________[C STRUCTURE]
