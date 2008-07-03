@@ -3,12 +3,12 @@ CXX 		=	g++
 INC 		=	../inc
 M2LINC		=	../../../c2lynx/inc
 
-CXXFLAGS	=	-g -w -DR__LYNXOS -I$(INC) -I$(M2LINC)
+CXXFLAGS	=	-g -w -DR__LYNXOS -DLYNX_VERSION=$(LV_CPP) -I$(INC) -I$(M2LINC)
 
 ObjSuf		=	o
 SrcSuf		=	cxx
 LibSuf		=	a
-LWRLIB		=	../lib/libLwr.$(LibSuf)
+LWRLIB		=	../lib/$(LYNX_VERSION)/libLwr.$(LibSuf)
 
 INCS		=	$(INC)/LwrUtils.h \
 				$(INC)/LwrObject.h \
@@ -62,15 +62,12 @@ OBJS		=	$(LWRLIB)(LwrUtils.$(ObjSuf)) \
 
 .SUFFIXES: .$(SrcSuf)
 
-all:			libLwr.$(LibSuf)  
+all:			$(LWRLIB)
  
 clean:
-				rm -f *.o ../lib/*.a
+				rm -f *.o ../lib/$(LYNX_VERSION)/*.a
 
-tst:			tst.o $(LWRLIB)
-				$(CXX) -o tst tst.o -L ../lib -lNR
-
-libLwr.$(LibSuf):  $(OBJS)
+$(LWRLIB):  $(OBJS)
 
 .$(SrcSuf).$(ObjSuf):
 			$(CXX) $(CXXFLAGS) -c $<
