@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LVMEModule.cxx,v 1.1 2008-07-02 07:12:45 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-07-02 07:12:45 $
+// Revision:       $Id: TC2LVMEModule.cxx,v 1.2 2008-07-04 11:58:06 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-07-04 11:58:06 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -88,7 +88,10 @@ Bool_t TC2LVMEModule::Connect(UInt_t Address, Int_t NofChannels) {
 	if (gMrbC2Lynx->Send((M2L_MsgHdr *) &c)) {
 		M2L_VME_Return_Handle h;
 		gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &h, sizeof(M2L_VME_Return_Handle), kM2L_MESS_VME_CONNECT);
-		if (gMrbC2Lynx->Recv((M2L_MsgHdr *) &h)) this->SetHandle(h.fHandle);
+		if (gMrbC2Lynx->Recv((M2L_MsgHdr *) &h)) {
+			this->SetHandle(h.fHandle);
+			gMrbC2Lynx->AddModule(this);
+		}
 	}
 	if (this->GetHandle() == 0) {
 		gMrbLog->Err()	<< "Can't connect to module - " << this->GetName() << " (server reports error)" << endl;
@@ -96,4 +99,40 @@ Bool_t TC2LVMEModule::Connect(UInt_t Address, Int_t NofChannels) {
 		return(kFALSE);
 	}
 	return(kTRUE);
+}
+
+Bool_t TC2LVMEModule::GetModuleInfo() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TC2LVMEModule::GetModuleInfo
+// Purpose:        Get module info from server
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Asks server for module info
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	M2L_VME_Exec_Function x;
+	gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &x, sizeof(M2L_VME_Exec_Function), kM2L_MESS_VME_EXEC_FUNCTION);
+	x.fXhdr.fHandle = this->GetHandle();
+	x.fXhdr.fCode = kM2L_FCT_GET_MODULE_INFO;
+	if (gMrbC2Lynx->Send((M2L_MsgHdr *) &x)) {
+		M2L_VME_Return_Module_Info r;
+		gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &r, sizeof(M2L_VME_Return_Module_Info), kM2L_MESS_VME_EXEC_FUNCTION);
+		if (gMrbC2Lynx->Recv((M2L_MsgHdr *) &r)) {
+			gMrbLog->Out()	<< "[" << this->GetName() << "] type=" << this->GetTitle()
+							<< " boardId=" << r.fBoardId;
+			if (r.fSerial >= 0) gMrbLog->Out() << " serial=" << r.fSerial;
+			gMrbLog->Out()	<< " version=" << r.fMajorVersion;
+			if (r.fMinorVersion >= 0) gMrbLog->Out() << "." << r.fMinorVersion;
+			gMrbLog->Out()	<< endl;
+			gMrbLog->Flush(this->ClassName(), "GetModuleInfo");
+			return(kTRUE);		
+		} else {
+			return(kFALSE);
+		}
+	} else {
+		return(kFALSE);
+	}
 }

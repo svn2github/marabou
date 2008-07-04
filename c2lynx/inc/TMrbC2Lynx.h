@@ -9,13 +9,14 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.4 2008-07-02 07:03:20 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-07-02 07:03:20 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.5 2008-07-04 11:58:06 Rudolf.Lutter Exp $   
+// Date:           $Date: 2008-07-04 11:58:06 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TSystem.h"
 #include "TString.h"
+#include "TNamed.h"
 
 #include "TServerSocket.h"
 #include "TSocket.h"
@@ -23,6 +24,8 @@
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
+
+#include "TC2LVMEModule.h"
 
 #include "M2L_MessageTypes.h"
 #include "M2L_CommonStructs.h"
@@ -35,13 +38,13 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbC2Lynx : public TObject {
+class TMrbC2Lynx : public TNamed {
 
 	public:
 
 		TMrbC2Lynx() { this->Reset(); };												// default ctor		
 
-		TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Char_t * LogFile = NULL, Int_t Port = 9010, Bool_t NonBlocking = kFALSE, Bool_t UseXterm = kTRUE);		// ctor: connect to host
+		TMrbC2Lynx(const Char_t * HostName, const Char_t * Server = NULL, const Char_t * LogFile = NULL, Int_t Port = 9010, Bool_t NonBlocking = kFALSE, Bool_t UseXterm = kTRUE);		// ctor: connect to host
 
 		~TMrbC2Lynx() {};							// default dtor
 
@@ -66,10 +69,14 @@ class TMrbC2Lynx : public TObject {
 		Bool_t Send(M2L_MsgHdr * Hdr);
 		Bool_t Recv(M2L_MsgHdr * Hdr);
 
+		inline void AddModule(TC2LVMEModule * Module) { fLofModules.Add(Module); };
+		inline TMrbLofNamedX * GetLofModules() { return(&fLofModules); };
+
 		inline UInt_t What(M2L_MsgHdr * Hdr) { return(Hdr->fWhat); };
 		inline Int_t Length(M2L_MsgHdr * Hdr) { return(Hdr->fLength); };
  
 		void InitMessage(M2L_MsgHdr * Hdr, Int_t Length, UInt_t What);
+		M2L_MsgHdr * AllocMessage(Int_t Length, Int_t Wc, UInt_t What);
 
 		void Bye();
 
@@ -91,6 +98,8 @@ class TMrbC2Lynx : public TObject {
 		TString fLogFile;							// where to write log info
 		TSocket * fSocket;							//! connection to server
 		Int_t fPort;								// port number
+
+		TMrbLofNamedX fLofModules;					// list of vme/camac modules connected
 
 	ClassDef(TMrbC2Lynx, 1)		// [Access to LynxOs] Establish connection to LynxOs/VME
 };

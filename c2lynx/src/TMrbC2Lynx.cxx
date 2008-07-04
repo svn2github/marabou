@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.5 2008-07-02 07:03:20 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-07-02 07:03:20 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.6 2008-07-04 11:58:06 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-07-04 11:58:06 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -20,6 +20,7 @@ namespace std {} using namespace std;
 #include <fstream>
 
 #include "Rtypes.h"
+#include "TROOT.h"
 #include "TSystem.h"
 #include "TEnv.h"
 #include "TObjString.h"
@@ -37,9 +38,13 @@ extern TMrbLogger * gMrbLog;
 
 TMrbC2Lynx * gMrbC2Lynx = NULL;
 
+static Char_t * gMsgBuffer = NULL; 			// common data storage for messages
+static Int_t gBytesAllocated = 0;			// size of message storage
+
 ClassImp(TMrbC2Lynx)
 
-TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Char_t * LogFile, Int_t Port, Bool_t NonBlocking, Bool_t UseXterm) {
+TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Char_t * LogFile,
+					Int_t Port, Bool_t NonBlocking, Bool_t UseXterm) : TNamed("C2Lynx", "Marabou-Lynx connection") {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbC2Lynx
@@ -69,11 +74,27 @@ TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Cha
 
 		fSocket = NULL;
 	
-		fServerPath = Server;
-		fServerName = gSystem->BaseName(Server);
-		fLogFile = (LogFile == NULL || *LogFile == '\0') ? Form("%s/c2lynx.log", gSystem->WorkingDirectory()) : LogFile;
+		if (Server == NULL || *Server == '\0') {
+			TString lynxVersion = gEnv->GetValue("TMrbC2Lynx.LynxVersion", "");
+			if (lynxVersion.IsNull()) lynxVersion = gEnv->GetValue("TMbsSetup.LynxVersion", "");
+			if (lynxVersion.IsNull()) {
+				gMrbLog->Err()	<< "Lynx version missing - set \"TMrbC2Lynx.LynxVersion\" properly" << endl;
+				gMrbLog->Flush(this->ClassName());
+				this->MakeZombie();
+			} else {
+				fServerPath = Form("$MARABOU/powerpc/bin/%s/mrbLynxOsSrv", lynxVersion.Data());
+				gSystem->ExpandPathName(fServerPath);
+			}
+		} else {
+			fServerPath = Server;
+		}
+		if (!this->IsZombie()) {
+			fServerName = gSystem->BaseName(fServerPath.Data());
+			fLogFile = (LogFile == NULL || *LogFile == '\0') ? Form("%s/c2lynx.log", gSystem->WorkingDirectory()) : LogFile;
 
-		if (this->Connect()) gMrbC2Lynx = this; else this->MakeZombie();
+			if (this->Connect()) gMrbC2Lynx = this; else this->MakeZombie();
+			gROOT->Append(this);
+		}
 	}
 }
 
@@ -136,7 +157,7 @@ Bool_t TMrbC2Lynx::Connect() {
 			gMrbLog->Flush(this->ClassName(), "Connect");
 		} else {
 			cmd1 += cmd2;
-			cmd1 += " &";
+			cmd1 += " 1>/dev/null 2>/dev/null &";
 			if (fVerboseMode) {
 				gMrbLog->Out()	<< "Exec >> " << cmd1 << " <<" << endl;
 				gMrbLog->Flush(this->ClassName());
@@ -296,8 +317,12 @@ void TMrbC2Lynx::Bye() {
 		bye.fWhat = kM2L_MESS_BYE;
 		bye.fLength = sizeof(M2L_MsgHdr);
 		this->Send(&bye);
-		fSocket->Close();
-		fSocket = NULL;
+		M2L_Acknowledge a;
+		this->InitMessage((M2L_MsgHdr *) &a, sizeof(M2L_Acknowledge), kM2L_MESS_BYE);
+		if (this->Recv((M2L_MsgHdr *) &a)) {
+			fSocket->Close();
+			fSocket = NULL;
+		}
 	} else {
 		gMrbLog->Err()	<< "Not connected to server" << endl;
 		gMrbLog->Flush(this->ClassName(), "Bye");
@@ -322,5 +347,36 @@ void TMrbC2Lynx::InitMessage(M2L_MsgHdr * Hdr, Int_t Length, UInt_t What) {
 	memset((Char_t *) Hdr, 0, Length);
 	Hdr->fLength = Length;
 	Hdr->fWhat = What;
+}
+
+M2L_MsgHdr * TMrbC2Lynx::AllocMessage(Int_t Length, Int_t Wc, UInt_t What) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbC2Lynx::AllocMessage
+// Purpose:        Allocate message
+// Arguments:      Int_t Length        -- message length
+//                 Int_t Wc            -- length of data (words)
+//                 UInt_t What         -- message type
+// Results:        M2L_MsgHdr * Hdr    -- ptr to message (header)
+// Exceptions:
+// Description:    Allocates message on heap
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t lengthNeeded = Length + (Wc - 1) * sizeof(Int_t);
+	if (gMsgBuffer) {
+		if (gBytesAllocated < lengthNeeded) {
+			free(gMsgBuffer);
+			gMsgBuffer = NULL;
+			gBytesAllocated = 0;
+		}
+	}
+	if (gMsgBuffer == NULL) {
+		gMsgBuffer = (Char_t *) calloc(1, lengthNeeded);
+		gBytesAllocated = lengthNeeded;
+	}
+	memset(gMsgBuffer, 0, gBytesAllocated);
+	this->InitMessage((M2L_MsgHdr *) gMsgBuffer, lengthNeeded, What);
+	return((M2L_MsgHdr *) gMsgBuffer);
 }
 
