@@ -120,10 +120,6 @@ ifeq ($(shell if [ -d snake ] ; then echo yes; fi), yes)
 MODULES      += snake
 endif
 
-ifeq ($(shell if [ -d mbssim ] ; then echo yes; fi), yes)
-MODULES      += mbssim
-endif
-
 ##### ROOT libraries #####
 
 LPATH         = lib

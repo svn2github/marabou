@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.5 2008-07-04 11:58:06 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-07-04 11:58:06 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.6 2008-07-15 08:14:06 Rudolf.Lutter Exp $   
+// Date:           $Date: 2008-07-15 08:14:06 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -70,7 +70,8 @@ class TMrbC2Lynx : public TNamed {
 		Bool_t Recv(M2L_MsgHdr * Hdr);
 
 		inline void AddModule(TC2LVMEModule * Module) { fLofModules.Add(Module); };
-		inline TMrbLofNamedX * GetLofModules() { return(&fLofModules); };
+		inline TMrbLofNamedX * LofModules() { return(&fLofModules); };
+		inline TC2LVMEModule * FindModule(const Char_t * ModuleName) { return((TC2LVMEModule *) fLofModules.FindByName(ModuleName)); };
 
 		inline UInt_t What(M2L_MsgHdr * Hdr) { return(Hdr->fWhat); };
 		inline Int_t Length(M2L_MsgHdr * Hdr) { return(Hdr->fLength); };
