@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.159 2008-05-19 09:42:31 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.160 2008-07-17 13:53:41 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4504,8 +4504,11 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 						rcTmpl.Substitute("$expName", this->GetName());
 						rcTmpl.Substitute("$expTitle", this->GetTitle());
 						rcTmpl.Substitute("$nofEvents", fNofEvents);
+						rcTmpl.Substitute("$lofEvents", this->GetLofEventsAsString(lofModules));
 						rcTmpl.Substitute("$nofSubevents", fNofSubevents);
+						rcTmpl.Substitute("$lofSubevents", this->GetLofSubeventsAsString(lofModules));
 						rcTmpl.Substitute("$nofModules", fNofModules);
+						rcTmpl.Substitute("$lofModules", this->GetLofModulesAsString(lofModules));
 						rcTmpl.Substitute("$nofCrates", this->GetNofCrates());
 						rcTmpl.Substitute("$cratePattern", (Int_t) this->GetCratePattern(), 16);
 						rcTmpl.Substitute("$author", fAuthor);
@@ -8323,3 +8326,82 @@ Bool_t TMrbConfig::WriteMuxConfig(const Char_t * CfgFile) {
 	mux->SaveLevel(kEnvLocal);
 	return(kTRUE);	
 }
+
+const Char_t * TMrbConfig::GetLofEventsAsString(TString & LofEvents) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetLofEventsAsString
+// Purpose:        Return a colon-separated string with event names
+// Arguments:      TString & LofEvents    -- where to store event names
+// Results:        Char_t * LofEvents     -- string containing event names
+// Exceptions:
+// Description:    Returns a colon-separated string with event names.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbEvent * evt;
+
+	LofEvents = "";
+	if (fNofEvents > 0) {
+		evt = (TMrbEvent *) fLofEvents.First();
+		while (evt) {
+			if (LofEvents.Length() > 0) LofEvents += ":";
+			LofEvents += evt->GetName();
+			evt = (TMrbEvent *) fLofEvents.After(evt);
+		}
+	}
+	return(LofEvents.Data());
+}
+
+const Char_t * TMrbConfig::GetLofSubeventsAsString(TString & LofSubevents) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetLofSubeventsAsString
+// Purpose:        Return a colon-separated string with subevent names
+// Arguments:      TString & LofSubevents    -- where to store subevent names
+// Results:        Char_t * LofSubevents     -- string containing subevent names
+// Exceptions:
+// Description:    Returns a colon-separated string with subevent names.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbSubevent * sevt;
+
+	LofSubevents = "";
+	if (fNofSubevents > 0) {
+		sevt = (TMrbSubevent *) fLofSubevents.First();
+		while (sevt) {
+			if (LofSubevents.Length() > 0) LofSubevents += ":";
+			LofSubevents += sevt->GetName();
+			sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+		}
+	}
+	return(LofSubevents.Data());
+}
+
+const Char_t * TMrbConfig::GetLofModulesAsString(TString & LofModules) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetLofModulesAsString
+// Purpose:        Return a colon-separated string with module names
+// Arguments:      TString & LofModules      -- where to store module names
+// Results:        Char_t * LofModules       -- string containing module names
+// Exceptions:
+// Description:    Returns a colon-separated string with module names.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbModule * module;
+
+	LofModules = "";
+	if (fNofModules > 0) {
+		module = (TMrbModule *) fLofModules.First();
+		while (module) {
+			if (LofModules.Length() > 0) LofModules += ":";
+			LofModules += module->GetName();
+			module = (TMrbModule *) fLofModules.After(module);
+		}
+	}
+	return(LofModules.Data());
+}
+

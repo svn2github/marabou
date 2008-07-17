@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.84 2008-01-22 07:44:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.85 2008-07-17 13:53:41 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -788,6 +788,9 @@ class TMrbConfig : public TNamed {
 		inline TObjArray * GetLofEvents() { return(&fLofEvents); };		// get address of ...
 		inline TObjArray * GetLofSubevents() { return(&fLofSubevents); };
 		inline TObjArray * GetLofModules() { return(&fLofModules); };
+		const Char_t * GetLofEventsAsString(TString & LofEvents) const;
+		const Char_t * GetLofSubeventsAsString(TString & LofSubevents) const;
+		const Char_t * GetLofModulesAsString(TString & LofModules) const;
 		inline TObjArray * GetLofScalers(){ return(&fLofScalers); };
 		inline TObjArray * GetLofMuxs(){ return(&fLofMuxs); };
 		inline TObjArray * GetLofUserHistograms() { return(&fLofUserHistograms); };

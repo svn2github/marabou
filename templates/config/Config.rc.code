@@ -3,8 +3,11 @@ TMrbConfig.ResourceName:				$resource
 $resource.Name:							$expName
 $resource.Title:						$expTitle
 $resource.NofEvents:					$nofEvents
-$resource.NofSubevents:					$nofSubevents
+$resource.LofEvents:					$lofEvents
+$resource.NofSubevents:				$nofSubevents
+$resource.LofSubevents:				$lofSubevents
 $resource.NofModules: 					$nofModules
+$resource.LofModules: 					$lofModules
 $resource.NofCrates:					$nofCrates
 $resource.CratePattern: 				$cratePattern
 $resource.Author: 	 					$author
