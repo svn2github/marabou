@@ -7,6 +7,7 @@
 #pragma link C++ class TMrbLofNamedX;
 #pragma link C++ class TMrbTemplate;
 #pragma link C++ class TMrbEnv;
+#pragma link C++ class TMrbResource;
 #pragma link C++ class TMrbVariable;
 #pragma link C++ class TMrbWindow;
 #pragma link C++ class TMrbVarI;

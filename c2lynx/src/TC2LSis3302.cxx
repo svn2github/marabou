@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.2 2008-07-15 08:14:06 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-07-15 08:14:06 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.3 2008-07-22 08:42:19 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-07-22 08:42:19 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -109,7 +109,7 @@ Bool_t TC2LSis3302::WriteDac(TArrayI & DacValues, Int_t AdcNo) {
 Bool_t TC2LSis3302::KeyAddr(Int_t Key) {
 	TArrayI keyData(1);
 	keyData[0] = Key;
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_DAC, keyData, keyData));
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_KEY_ADDR, keyData, keyData));
 }
 
 Bool_t TC2LSis3302::ReadEventConfig(Int_t & Bits, Int_t AdcNo) {
@@ -139,6 +139,14 @@ Bool_t TC2LSis3302::GetHeaderBits(Int_t & Bits, Int_t AdcNo) {
 	TArrayI bits;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_HEADER_BITS, dataSend, bits, AdcNo)) return(kFALSE);
 	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::GetGroupId(Int_t & GroupId, Int_t AdcNo) {
+	TArrayI dataSend(0);
+	TArrayI bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_GROUP_ID, dataSend, bits, AdcNo)) return(kFALSE);
+	GroupId = bits[0];
 	return(kTRUE);
 }
 
@@ -217,17 +225,32 @@ Bool_t TC2LSis3302::WriteTrigGateLength(Int_t & Gate, Int_t AdcNo) {
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadRawDataBufConfig(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadRawDataSampleLength(Int_t & Bits, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_RAW_DATA_BUF_CONFIG, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_RAW_DATA_SAMPLE_LENGTH, dataSend, bits, AdcNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteRawDataBufConfig(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteRawDataSampleLength(Int_t & Bits, Int_t AdcNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_RAW_DATA_BUF_CONFIG, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_RAW_DATA_SAMPLE_LENGTH, bits, bits, AdcNo)) return(kFALSE);
+	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::ReadRawDataStartIndex(Int_t & Bits, Int_t AdcNo) {
+	TArrayI dataSend(0);
+	TArrayI bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_RAW_DATA_START_INDEX, dataSend, bits, AdcNo)) return(kFALSE);
+	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::WriteRawDataStartIndex(Int_t & Bits, Int_t AdcNo) {
+	TArrayI bits(1); bits[0] = Bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_RAW_DATA_START_INDEX, bits, bits, AdcNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
@@ -256,7 +279,7 @@ Bool_t TC2LSis3302::ReadActualSample(Int_t & Data, Int_t AdcNo) {
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadTriggerPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	TArrayI peakgap;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIG_PEAK_AND_GAP, dataSend, peakgap, AdcNo)) return(kFALSE);
@@ -265,7 +288,7 @@ Bool_t TC2LSis3302::ReadTriggerPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteTriggerPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
 	TArrayI peakgap(2); peakgap[0] = Peak; peakgap[1] = Gap;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIG_PEAK_AND_GAP, peakgap, peakgap, AdcNo)) return(kFALSE);
 	Peak = peakgap[0];
@@ -273,7 +296,7 @@ Bool_t TC2LSis3302::WriteTriggerPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcN
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadTriggerPulseLength(Int_t & PulseLength, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadTrigPulseLength(Int_t & PulseLength, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	TArrayI pulse;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIG_PULSE_LENGTH, dataSend, pulse, AdcNo)) return(kFALSE);
@@ -281,14 +304,14 @@ Bool_t TC2LSis3302::ReadTriggerPulseLength(Int_t & PulseLength, Int_t AdcNo) {
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteTriggerPulseLength(Int_t & PulseLength, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteTrigPulseLength(Int_t & PulseLength, Int_t AdcNo) {
 	TArrayI pulse(1); pulse[0] = PulseLength;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIG_PULSE_LENGTH, pulse, pulse, AdcNo)) return(kFALSE);
 	PulseLength = pulse[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadTriggerThreshold(Int_t & Thresh, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadTrigThreshold(Int_t & Thresh, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	TArrayI thresh;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIG_THRESH, dataSend, thresh, AdcNo)) return(kFALSE);
@@ -296,7 +319,7 @@ Bool_t TC2LSis3302::ReadTriggerThreshold(Int_t & Thresh, Int_t AdcNo) {
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteTriggerThreshold(Int_t & Thresh, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteTrigThreshold(Int_t & Thresh, Int_t AdcNo) {
 	TArrayI thresh(1); thresh[0] = Thresh;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIG_THRESH, thresh, thresh, AdcNo)) return(kFALSE);
 	Thresh = thresh[0];
@@ -602,13 +625,180 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							tmpl.Substitute("$chGrp", chGrp);
 							Int_t hdrBits;
 							this->GetHeaderBits(hdrBits, i);
-							tmpl.Substitute("$hdrBits",hdrBits, 16);
+							tmpl.Substitute("$hdrBits", hdrBits, 16);
+							Int_t groupId;
+							this->GetGroupId(groupId, i);
+							tmpl.Substitute("$groupId", groupId, 16);
 							Int_t trigMode;
 							this->GetTriggerMode(trigMode, i);
-							tmpl.Substitute("$trigMode",trigMode, 16);
+							Char_t * tm;
+							switch (trigMode) {
+								case 0: tm = "NoTrig"; break;
+								case 1: tm = "Int"; break;
+								case 2: tm = "Ext"; break;
+								case 3: tm = "Ext|Int"; break;
+							}
+							tmpl.Substitute("$trigMode", Form("%#x (%s)", trigMode, tm));
 							Bool_t invert;
 							this->GetPolarity(invert, i);
-							tmpl.Substitute("$invert",invert ? "TRUE" : "FALSE");
+							tmpl.Substitute("$invert", invert ? "TRUE" : "FALSE");
+							tmpl.WriteCode(settings);
+						}
+
+						tmpl.InitializeCode("%EndAddrThresh%");
+						tmpl.WriteCode(settings);
+						chGrp = 12;
+						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+							tmpl.InitializeCode("%EndAddrThreshLoop%");
+							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$chGrp", chGrp);
+							Int_t addr;
+							this->ReadEndAddrThresh(addr, i);
+							tmpl.Substitute("$addr", addr, 16);
+							tmpl.WriteCode(settings);
+						}
+
+						tmpl.InitializeCode("%TrigDelayGate%");
+						tmpl.WriteCode(settings);
+						chGrp = 12;
+						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+							tmpl.InitializeCode("%TrigDelayGateLoop%");
+							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$chGrp", chGrp);
+							Int_t delay;
+							this->ReadPreTrigDelay(delay, i);
+							tmpl.Substitute("$delay", delay);
+							Int_t gate;
+							this->ReadTrigGateLength(gate, i);
+							tmpl.Substitute("$gate", gate);
+							tmpl.WriteCode(settings);
+						}
+
+						tmpl.InitializeCode("%RawDataSample%");
+						tmpl.WriteCode(settings);
+						chGrp = 12;
+						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+							tmpl.InitializeCode("%RawDataSampleLoop%");
+							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$chGrp", chGrp);
+							Int_t length;
+							this->ReadRawDataSampleLength(length, i);
+							tmpl.Substitute("$length", length);
+							Int_t start;
+							this->ReadRawDataStartIndex(start, i);
+							tmpl.Substitute("$start", start);
+							tmpl.WriteCode(settings);
+						}
+
+						tmpl.InitializeCode("%SampleAddr%");
+						tmpl.WriteCode(settings);
+						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+							tmpl.InitializeCode("%SampleAddrLoop%");
+							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$adc", i);
+							Int_t addr;
+							this->ReadNextSampleAddr(addr, i);
+							tmpl.Substitute("$nextAddr", addr, 16);
+							this->ReadPrevBankSampleAddr(addr, i);
+							tmpl.Substitute("$prevAddr", addr, 16);
+							tmpl.WriteCode(settings);
+						}
+
+						tmpl.InitializeCode("%TriggerSetup%");
+						tmpl.WriteCode(settings);
+						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+							tmpl.InitializeCode("%TriggerSetupLoop%");
+							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$adc", i);
+							Int_t peak, gap;
+							this->ReadTrigPeakAndGap(peak, gap, i);
+							tmpl.Substitute("$peakTime", peak);
+							tmpl.Substitute("$gapTime", gap);
+							Int_t length;
+							this->ReadTrigPulseLength(length, i);
+							tmpl.Substitute("$length", length);
+							tmpl.WriteCode(settings);
+						}
+
+						tmpl.InitializeCode("%TriggerThresh%");
+						tmpl.WriteCode(settings);
+						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+							tmpl.InitializeCode("%TriggerThreshLoop%");
+							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$adc", i);
+							Int_t thresh;
+							this->ReadTrigThreshold(thresh, i);
+							tmpl.Substitute("$thresh", thresh);
+							Bool_t gt, out;
+							this->GetTriggerGT(gt, i);
+							tmpl.Substitute("$gt", gt ? "TRUE" : "FALSE");
+							this->GetTriggerOut(out, i);
+							tmpl.Substitute("$out", out ? "TRUE" : "FALSE");
+							tmpl.WriteCode(settings);
+						}
+
+						tmpl.InitializeCode("%EnergySetup%");
+						tmpl.WriteCode(settings);
+						chGrp = 12;
+						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+							tmpl.InitializeCode("%EnergySetupLoop%");
+							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$chGrp", chGrp);
+							Int_t peak, gap;
+							this->ReadEnergyPeakAndGap(peak, gap, i);
+							tmpl.Substitute("$peakTime", peak);
+							tmpl.Substitute("$gapTime", gap);
+							Int_t decim;
+							this->GetDecimation(decim, i);
+							tmpl.Substitute("$decim", decim);
+							tmpl.WriteCode(settings);
+						}
+
+						tmpl.InitializeCode("%EnergyGate%");
+						tmpl.WriteCode(settings);
+						chGrp = 12;
+						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+							tmpl.InitializeCode("%EnergyGateLoop%");
+							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$chGrp", chGrp);
+							Int_t gate;
+							this->ReadEnergyGateLength(gate, i);
+							tmpl.Substitute("$gate", gate);
+							Int_t test;
+							this->GetTestBits(test, i);
+							tmpl.Substitute("$test", test);
+							tmpl.WriteCode(settings);
+						}
+
+						tmpl.InitializeCode("%EnergySample%");
+						tmpl.WriteCode(settings);
+						chGrp = 12;
+						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+							tmpl.InitializeCode("%EnergySampleLoop%");
+							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$chGrp", chGrp);
+							Int_t length;
+							this->ReadEnergySampleLength(length, i);
+							tmpl.Substitute("$length", length);
+							Int_t start;
+							this->ReadStartIndex(start, 1, i);
+							tmpl.Substitute("$start1", start);
+							this->ReadStartIndex(start, 2, i);
+							tmpl.Substitute("$start2", start);
+							this->ReadStartIndex(start, 3, i);
+							tmpl.Substitute("$start3", start);
+							tmpl.WriteCode(settings);
+						}
+
+						tmpl.InitializeCode("%TauFactor%");
+						tmpl.WriteCode(settings);
+						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+							tmpl.InitializeCode("%TauFactorLoop%");
+							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$adc", i);
+							Int_t tau;
+							this->ReadTauFactor(tau, i);
+							tmpl.Substitute("$tau", tau);
 							tmpl.WriteCode(settings);
 						}
 					}
@@ -618,5 +808,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 	}
 	settings.close();
 	fSettingsFile = settingsFile;
+	gMrbLog->Out()  << "[" << this->GetName() << "] Settings saved to file " << settingsFile << endl;
+	gMrbLog->Flush(this->ClassName(), "SaveSettings", setblue);
 	return(kTRUE);
 }

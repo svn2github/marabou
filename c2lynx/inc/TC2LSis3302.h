@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.2 2008-07-15 08:14:06 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-07-15 08:14:06 $
+// Revision:       $Id: TC2LSis3302.h,v 1.3 2008-07-22 08:42:19 Rudolf.Lutter Exp $   
+// Date:           $Date: 2008-07-22 08:42:19 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -54,8 +54,10 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t SetPolarity(Bool_t & InvertFlag, Int_t AdcNo = kSis3302AllAdcs);
 		Bool_t GetTriggerMode(Int_t & Bits, Int_t AdcNo);
 		Bool_t SetTriggerMode(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
+
 		Bool_t GetHeaderBits(Int_t & Bits, Int_t AdcNo);
 		Bool_t SetHeaderBits(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t GetGroupId(Int_t & GroupId, Int_t AdcNo);
 
 		Bool_t ReadEndAddrThresh(Int_t & Thresh, Int_t AdcNo);
 		Bool_t WriteEndAddrThresh(Int_t & Thresh, Int_t AdcNo = kSis3302AllAdcs);
@@ -65,20 +67,22 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t ReadTrigGateLength(Int_t & Gate, Int_t AdcNo);
 		Bool_t WriteTrigGateLength(Int_t & Gate, Int_t AdcNo = kSis3302AllAdcs);
 
-		Bool_t ReadRawDataBufConfig(Int_t & Bits, Int_t AdcNo);
-		Bool_t WriteRawDataBufConfig(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadRawDataSampleLength(Int_t & Bits, Int_t AdcNo);
+		Bool_t WriteRawDataSampleLength(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadRawDataStartIndex(Int_t & Bits, Int_t AdcNo);
+		Bool_t WriteRawDataStartIndex(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
 
 		Bool_t ReadNextSampleAddr(Int_t & Addr, Int_t AdcNo);
 		Bool_t ReadPrevBankSampleAddr(Int_t & Addr, Int_t AdcNo);
 		Bool_t ReadActualSample(Int_t & Data, Int_t AdcNo);
 
-		Bool_t ReadTriggerPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo);
-		Bool_t WriteTriggerPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo);
-		Bool_t ReadTriggerPulseLength(Int_t & PulseLength, Int_t AdcNo);
-		Bool_t WriteTriggerPulseLength(Int_t & PulseLength, Int_t AdcNo);
+		Bool_t ReadTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo);
+		Bool_t WriteTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo);
+		Bool_t ReadTrigPulseLength(Int_t & PulseLength, Int_t AdcNo);
+		Bool_t WriteTrigPulseLength(Int_t & PulseLength, Int_t AdcNo);
 
-		Bool_t ReadTriggerThreshold(Int_t & Thresh, Int_t AdcNo);
-		Bool_t WriteTriggerThreshold(Int_t & Thresh, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadTrigThreshold(Int_t & Thresh, Int_t AdcNo);
+		Bool_t WriteTrigThreshold(Int_t & Thresh, Int_t AdcNo = kSis3302AllAdcs);
 		Bool_t GetTriggerGT(Bool_t & GTFlag, Int_t AdcNo);
 		Bool_t SetTriggerGT(Bool_t & GTFlag, Int_t AdcNo = kSis3302AllAdcs);
 		Bool_t GetTriggerOut(Bool_t & TrigOutFlag, Int_t AdcNo);
