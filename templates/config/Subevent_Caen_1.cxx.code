@@ -26,6 +26,9 @@
 %B%	Int_t * paramAddr;
 %B%	Int_t wordsProcessed;
 %B%						
+%B% static Bool_t checkIfMultiHitAllowed = kTRUE;
+%B% static Bool_t allowMultiHit = kFALSE;
+%B%
 %C%	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 %C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 %C%
@@ -90,12 +93,23 @@
 %C%			paramAddr = (Int_t*) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
 %C%			if (paramAddr) {
 %C% 			if (*paramAddr != 0) {
-%C% 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Multiple hit", SevtData, origSevtWC);
-%C% 				cerr	<< setred
-%C% 						<< this->ClassName() << "::FillSubevent(): [Module "
-%C% 						<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
-%C% 						<< wordsProcessed << "] Multiple hit for channel " << chn << " - prev data =" << *paramAddr
-%C% 						<< setblack << endl;
+%C% 				if (checkIfMultiHitAllowed) {
+%C% 					allowMultiHit = gEnv->GetValue(Form("%s.AllowMultiHit", this->ClassName()), kFALSE);
+%C% 					checkIfMultiHitAllowed = kFALSE;
+%C% 					if (allowMultiHit) {
+%C% 						cerr	<< setred
+%C% 								<< this->ClassName() << "::FillSubevent(): Multiple hits detected (no further messages)"
+%C% 								<< setblack << endl;
+%C% 					}
+%C% 				}
+%C% 				if (!allowMultiHit) {
+%C% 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Multiple hit", SevtData, origSevtWC);
+%C% 					cerr	<< setred
+%C% 							<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C% 							<< wordsProcessed << "] Multiple hit for channel " << chn << " - prev data =" << *paramAddr
+%C% 							<< setblack << endl;
+%C% 				}
 %C% 			} else {
 %C%					if ((data & CAEN_Vxxx_B_OVERFLOW) != 0) {
 %C%						data = CAEN_Vxxx_B_OVERFLOW;
