@@ -8,7 +8,7 @@
 // Class:          CptmControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: CptmControlData.h,v 1.1 2005-04-29 11:35:22 rudi Exp $       
+// Revision:       $Id: CptmControlData.h,v 1.2 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -22,7 +22,7 @@
 #include "TGMrbLayout.h"
 
 #include "TMrbNamedX.h"
-#include "TMrbDGF.h"
+#include "TMrbResource.h"
 
 // geometry settings
 enum						{	kAutoWidth			= 1 		};
@@ -96,11 +96,10 @@ class CptmControlData : public TNamed {
 			Layout2->SetLH(Hints);
 		};
 		
-		const Char_t * GetResource(TString & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
-		Int_t GetResource(Int_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource, Int_t Base = 10);
-		Bool_t GetResource(Bool_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
-	
 		Bool_t CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly = kFALSE);
+
+		inline TMrbResource * Rootrc() { return(fRootrc ? fRootrc : NULL); };
+		inline TMrbResource * Cptmrc() { return(fCptmrc ? fCptmrc : NULL); };
 
 	protected:
 		TList fHeap;								//!
@@ -126,6 +125,9 @@ class CptmControlData : public TNamed {
 		ULong_t fColorGreen;
 		ULong_t fColorYellow;
 		ULong_t fColorRed;
+
+		TMrbResource * fRootrc;						// environment
+		TMrbResource * fCptmrc;
 
 	ClassDef(CptmControlData, 1) 		// [CptmControl] Common data base
 };

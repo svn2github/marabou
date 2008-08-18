@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: CptmControlData.cxx,v 1.1 2005-04-29 11:35:22 rudi Exp $       
+// Revision:       $Id: CptmControlData.cxx,v 1.2 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -17,8 +17,6 @@
 #include "TGClient.h"
 #include "TObjString.h"
 
-#include "TMrbNamedX.h"
-#include "TMrbEnv.h"
 #include "TMrbLogger.h"
 #include "TMrbSystem.h"
 
@@ -42,13 +40,14 @@ CptmControlData::CptmControlData() : TNamed("CptmControlData", "CptmControlData"
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbEnv env;
-
 	fCAMACHost = "";
 	fDefaultCrate = -1;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
+// open ROOT's resource data base
+	fRootrc = new TMrbResource("CptmControl", ".rootrc");
+
 // initialize colors
 	gClient->GetColorByName("black", fColorBlack);
 	gClient->GetColorByName("blue", fColorDarkBlue);
@@ -88,18 +87,17 @@ CptmControlData::CptmControlData() : TNamed("CptmControlData", "CptmControlData"
 // paths and filenames
 	TString errMsg;
 	Bool_t panic = kFALSE;
-	TString path;
 
-	env.Find(fCAMACHost, "DGFControl:TMrbDGF:TMrbEsone", "HostName", "ppc-0");
+	fCAMACHost = fRootrc->Get(".HostName", "ppc-0");
 
-	env.Find(path, "CptmControl", "CptmCodeFile", "");
-	if (path.Length() == 0) env.Find(path, "TMrbCPTM", "CodeFile", "cptm.rbf");
+	TString path = fRootrc->Get(".CptmCodeFile", "");
+	if (path.Length() == 0) path = fRootrc->Get("TMrbCPTM.CodeFile", "cptm.rbf");
 	fCptmCodeFile = path;
 	gSystem->ExpandPathName(fCptmCodeFile);
 	this->CheckAccess(fCptmCodeFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
-	env.Find(path, "CptmControl", "CptmSettingsPath", "");
-	if (path.Length() == 0) env.Find(path, "TMrbCPTM", "SettingsPath", "../cptmSettings");
+	path = fRootrc->Get(".CptmSettingsPath", "");
+	if (path.Length() == 0) path = fRootrc->Get("TMrbCPTM.SettingsPath", "../cptmSettings");
 	fCptmSettingsPath = path;
 	gSystem->ExpandPathName(fCptmSettingsPath);
 	this->CheckAccess(fCptmSettingsPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
@@ -110,143 +108,6 @@ CptmControlData::CptmControlData() : TNamed("CptmControlData", "CptmControlData"
 		gSystem->Exit(1);
 	}
 
-}
-
-const Char_t * CptmControlData::GetResource(TString & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           CptmControlData::GetResource
-// Purpose:        Get resource from environment
-// Arguments:      TString & Result   -- where to put resulting value
-//                 Char_t * Prefix    -- prefix "CptmControl.XXX"
-//                 Int_t Serial       -- serial number
-//                 Char_t * Name      -- name
-//                 Char_t * Resource  -- resource name
-// Results:        Char_t * Result    -- resource value
-// Exceptions:     
-// Description:    Reads an ascii resource value from ROOT's environment.
-//                 Resource name is either
-//                        <Prefix>.<Serial>.<Resource>
-//                 or     <Prefix>.<Name>.<Resource>
-//                 Example: To get the address of module #1 with name "xyz"
-//                          it looks for "CptmControl.Module.1.Address"
-//                          and for      "CptmControl.Module.Xyz.Address"
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbString resStr;
-		
-	Result = "";
-	if (Serial >= 0) {
-		resStr = Prefix;
-		resStr += ".";
-		resStr += Serial;
-		resStr += ".";
-		resStr += Resource;
-		Result = gEnv->GetValue(resStr.Data(), "");
-	}
-	if (Result.Length() == 0 && Name != NULL) {
-		resStr = Name;
-		resStr(0,1).ToUpper();
-		resStr.Prepend(".");
-		resStr.Prepend(Prefix);
-		resStr += ".";
-		resStr += Resource;
-		Result = gEnv->GetValue(resStr.Data(), "");
-	}
-	return(Result.Data());
-}
-
-Int_t CptmControlData::GetResource(Int_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource, Int_t Base) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           CptmControlData::GetResource
-// Purpose:        Get resource from environment
-// Arguments:      Int_t & Result     -- where to put resulting value
-//                 Char_t * Prefix    -- prefix "CptmControl.XXX"
-//                 Int_t Serial       -- serial number
-//                 Char_t * Name      -- name
-//                 Char_t * Resource  -- resource name
-//                 Int_t Base         -- numerical base
-// Results:        Int_t Result       -- resource value
-// Exceptions:     
-// Description:    Reads an integer resource value from ROOT's environment.
-//                 Resource name is either
-//                        <Prefix>.<Serial>.<Resource>
-//                 or     <Prefix>.<Name>.<Resource>
-//                 Example: To get the address of module #1 with name "xyz"
-//                          it looks for "CptmControl.Module.1.Address"
-//                          and for      "CptmControl.Module.Xyz.Address"
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbString resStr, resVal;
-		
-	resVal = "";
-	if (Serial >= 0) {
-		resStr = Prefix;
-		resStr += ".";
-		resStr += Serial;
-		resStr += ".";
-		resStr += Resource;
-		resVal = gEnv->GetValue(resStr.Data(), "");
-	}
-	if (resVal.Length() == 0 && Name != NULL) {
-		resStr = Name;
-		resStr(0,1).ToUpper();
-		resStr.Prepend(".");
-		resStr.Prepend(Prefix);
-		resStr += ".";
-		resStr += Resource;
-		resVal = gEnv->GetValue(resStr.Data(), "");
-	}
-	resVal.ToInteger(Result, Base);
-	return(Result);
-}
-
-Bool_t CptmControlData::GetResource(Bool_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           CptmControlData::GetResource
-// Purpose:        Get resource from environment
-// Arguments:      Bool_t & Result    -- where to put resulting value
-//                 Char_t * Prefix    -- prefix "CptmControl.XXX"
-//                 Int_t Serial       -- serial number
-//                 Char_t * Name      -- name
-//                 Char_t * Resource  -- resource name
-// Results:        Int_t Result       -- resource value
-// Exceptions:     
-// Description:    Reads an boolean resource value from ROOT's environment.
-//                 Resource name is either
-//                        <Prefix>.<Serial>.<Resource>
-//                 or     <Prefix>.<Name>.<Resource>
-//                 Example: To get the address of module #1 with name "xyz"
-//                          it looks for "CptmControl.Module.1.Address"
-//                          and for      "CptmControl.Module.Xyz.Address"
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbString resStr, resVal;
-		
-	if (Serial >= 0) {
-		resStr = Prefix;
-		resStr += ".";
-		resStr += Serial;
-		resStr += ".";
-		resStr += Resource;
-		resVal = gEnv->GetValue(resStr.Data(), "");
-	}
-	if (resVal.Length() == 0 && Name != NULL) {
-		resStr = Name;
-		resStr(0,1).ToUpper();
-		resStr.Prepend(".");
-		resStr.Prepend(Prefix);
-		resStr += ".";
-		resStr += Resource;
-		resVal = gEnv->GetValue(resStr.Data(), "");
-	}
-	if (resVal.CompareTo("TRUE") == 0 || resVal.CompareTo("true") == 0) Result = kTRUE; else Result = kFALSE;
-	return(Result);
 }
 
 Bool_t CptmControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly) {

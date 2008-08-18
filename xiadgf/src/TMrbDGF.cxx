@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.48 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.49 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -516,6 +516,7 @@ Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag, const Char_t * Prefix, TEnv
 // Purpose:        Set switch bus register to default value
 // Arguments:      Bool_t IndiFlag            -- kTRUE if switch bus to be set individually
 //                 Char_t * Prefix            -- resource prefix
+//                 TEnv * Env                 -- resource data base
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Sets switchbus bits:

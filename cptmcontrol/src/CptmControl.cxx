@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: CptmControl.cxx,v 1.2 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: CptmControl.cxx,v 1.3 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -49,7 +49,7 @@ int main(Int_t argc, Char_t **argv)
 	Int_t nofModules;
 	TRint theApp("CptmControl", &argc, argv);
 
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("", "cptmControl.log");
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("cptmControl.log");
 
 	nofModules = 0;
 	gEnv->ReadFile(".DGFControl.rc", kEnvLocal);

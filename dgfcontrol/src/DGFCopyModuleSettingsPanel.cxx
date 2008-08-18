@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCopyModuleSettingsPanel.cxx,v 1.8 2005-11-16 13:47:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFCopyModuleSettingsPanel.cxx,v 1.9 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -323,9 +323,10 @@ Bool_t DGFCopyModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, L
 						Bool_t select = ((Param1 & 1) == 0);
 						UInt_t bit = 0x1 << (Param1 >> 1);
 						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-							if (gDGFControlData->GetPatInUse(cl) & bit) {
-								if (select) fCluster[cl]->SetState(bit, kButtonDown);
-								else		fCluster[cl]->SetState(bit, kButtonUp);
+							if (gDGFControlData->GetPatEnabled(cl) & bit) {
+								UInt_t act = fCluster[cl]->GetActive();
+								UInt_t down = select ? (act | bit) : (act & ~bit);
+								fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
 							}
 						}
 					}

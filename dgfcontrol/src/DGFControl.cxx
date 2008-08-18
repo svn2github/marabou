@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControl.cxx,v 1.5 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControl.cxx,v 1.6 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -48,7 +48,7 @@ int main(Int_t argc, Char_t **argv)
 	Int_t nofModules;
 	TRint theApp("DGFControl", &argc, argv);
 
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("", "dgfControl.log");
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("dgfControl.log");
 
 	nofModules = 0;
 	gDGFControlData = new DGFControlData(".DGFControl.rc");

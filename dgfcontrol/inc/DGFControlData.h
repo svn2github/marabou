@@ -8,7 +8,7 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.15 2007-05-11 08:15:47 Marabou Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.16 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -24,6 +24,7 @@
 
 #include "HistPresent.h"
 
+#include "TMrbResource.h"
 #include "TMrbNamedX.h"
 #include "TMrbDGF.h"
 
@@ -151,22 +152,13 @@ class DGFControlData : public TNamed {
 			Layout2->SetLH(Hints);
 		};
 		
-		const Char_t * GetResource(TString & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
-		Int_t GetResource(Int_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource, Int_t Base = 10);
-		Bool_t GetResource(Bool_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
-	
 		Bool_t CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly = kFALSE);
 
 		void UpdateParamsAndFPGAs();
 		void AddToUpdateList(DGFModule * Module);
 
-		inline TEnv * GetEnv() { return(fEnv); };
-		void UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, const Char_t * TrueFalse);
-		void UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, Int_t Value);
-		void UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, Double_t Value);
-		inline void WriteLocalEnv() {	fEnv->SaveLevel(kEnvChange);
-										fEnv->SaveLevel(kEnvLocal);
-										fEnv->SaveLevel(kEnvUser); };
+		inline TMrbResource * Rootrc() { return(fRootrc ? fRootrc : NULL); };
+		inline TMrbResource * Dgfrc() { return(fDgfrc ? fDgfrc : NULL); };
 
 	protected:
 		TList fHeap;								//!
@@ -229,8 +221,8 @@ class DGFControlData : public TNamed {
 		ULong_t fColorYellow;
 		ULong_t fColorRed;
 
-		TString fRcFile;							// rc file
-		TEnv * fEnv;								// local resource data base
+		TMrbResource * fRootrc;						// environment
+		TMrbResource * fDgfrc;
 
 	ClassDef(DGFControlData, 1) 		// [DGFControl] Common data base
 };

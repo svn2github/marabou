@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.18 2007-10-22 16:45:37 Marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.19 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -49,7 +49,7 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 	public:
 
 		// cmd ids to dispatch over X events in this panel
-		enum EDGFInstrCmdId 	{
+		enum EVMEServerCmdId 	{
 									kDGFInstrSelectModule = 100, 		//		module
 									kDGFInstrSelectChannel, 			//		channel
 									kDGFInstrEnergyPeakTimeEntry, 		//		energy peak time

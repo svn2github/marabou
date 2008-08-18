@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.36 2007-06-04 10:07:15 Marabou Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.37 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -96,7 +96,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	TMrbString intStr;
 			
 	TObjArray * lofSpecialButtons;
-	TMrbLofNamedX gSelect[kNofModulesPerCluster];
+	TMrbLofNamedX colSelect[kNofModulesPerCluster];
 	TMrbLofNamedX allSelect;
 	TMrbLofNamedX lofModuleKeys;
 	
@@ -139,12 +139,12 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
 	
-//	create buttons to select/deselct groups of modules
+//	create buttons to select/deselect groups of modules
 	Int_t idx = kDGFSetupModuleSelectColumn;
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++, idx += 2) {
-		gSelect[i].Delete();							// (de)select columns
-		gSelect[i].AddNamedX(idx, "cbutton_all.xpm");
-		gSelect[i].AddNamedX(idx + 1, "cbutton_none.xpm");
+		colSelect[i].Delete();							// (de)select columns
+		colSelect[i].AddNamedX(idx, "cbutton_all.xpm");
+		colSelect[i].AddNamedX(idx + 1, "cbutton_none.xpm");
 	}
 	allSelect.Delete();							// (de)select all
 	allSelect.AddNamedX(kDGFSetupModuleSelectAll, "cbutton_all.xpm");
@@ -261,12 +261,12 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	fModules->AddFrame(fSelectFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fSelectFrame,  NULL, &gSelect[i], -1, 1, 
+		fColSelect[i] = new TGMrbPictureButtonList(fSelectFrame,  NULL, &colSelect[i], -1, 1, 
 							TabFrame->GetWidth(), kLEHeight,
 							frameGC, labelGC, buttonGC);
-		HEAP(fGroupSelect[i]);
-		fSelectFrame->AddFrame(fGroupSelect[i], frameGC->LH());
-		fGroupSelect[i]->Associate(this);
+		HEAP(fColSelect[i]);
+		fSelectFrame->AddFrame(fColSelect[i], frameGC->LH());
+		fColSelect[i]->Associate(this);
 	}
 	fAllSelect = new TGMrbPictureButtonList(fSelectFrame,  NULL, &allSelect, -1, 1, 
 							TabFrame->GetWidth(), kLEHeight,
@@ -364,8 +364,9 @@ Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2)
 						UInt_t bit = 0x1 << (Param1 >> 1);
 						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 							if (gDGFControlData->GetPatEnabled(cl) & bit) {
-								if (select) fCluster[cl]->SetState(bit, kButtonDown);
-								else		fCluster[cl]->SetState(bit, kButtonUp);
+								UInt_t act = fCluster[cl]->GetActive();
+								UInt_t down = select ? (act | bit) : (act & ~bit);
+								fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
 							}
 						}
 					}
@@ -512,7 +513,7 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 							if (dgf->Data()->AddToNameTable(gDGFControlData->fUPSAParamsFile, "UserPSA") > 0) upsaLoaded = kTRUE;
 						}
 						if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
-						if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->GetEnv())) nerr++;
+						if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->Dgfrc()->Env())) nerr++;
 						if (!this->TurnUserPSAOnOff(dgfModule, gDGFControlData->fUserPSA)) nerr++;
 						gDGFControlData->fDeltaT = dgf->GetDeltaT();
 						Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
@@ -529,7 +530,7 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 				dgfModule = gDGFControlData->NextModule(dgfModule);
 			}
 			delete pgb;
-			gDGFControlData->WriteLocalEnv();
+			gDGFControlData->Dgfrc()->Write();
 		}
 	}
 
@@ -743,7 +744,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 							TMrbDGF * dgf = dgfModule->GetAddr();
 							if (dgf->IsConnected()) {
 								if (!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
-								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->GetEnv())) nerr++;
+								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->Dgfrc()->Env())) nerr++;
 								if (!this->TurnUserPSAOnOff(dgfModule, gDGFControlData->fUserPSA)) nerr++;
 								gDGFControlData->fDeltaT = dgf->GetDeltaT();
 								Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
@@ -755,7 +756,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 						}
 						dgfModule = gDGFControlData->NextModule(dgfModule);
 					}
-					gDGFControlData->WriteLocalEnv();
+					gDGFControlData->Dgfrc()->Write();
 				}
 			}
 		}
@@ -959,7 +960,7 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 		onoff = ActivateFlag ? "ON" : "OFF";
 		gMrbLog->Out()	<< "User PSA code turned " << onoff << endl;
 		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff", setblue);
-		gDGFControlData->WriteLocalEnv();
+		gDGFControlData->Dgfrc()->Write();
 		return(kTRUE);
 	} else {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
@@ -985,7 +986,7 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(DGFModule * Module, Bool_t ActivateFlag) 
 	TString trueFalse = ActivateFlag ? "TRUE" : "FALSE";
 	TMrbDGF * dgf = Module->GetAddr();
 	if (!offlineMode) dgf->ActivateUserPSACode(ActivateFlag);
-	gDGFControlData->UpdateLocalEnv("DGFControl.Module", Module->GetName(), "ActivateUserPSACode", trueFalse);
+	gDGFControlData->Dgfrc()->Set(".Module", Module->GetName(), "ActivateUserPSACode", trueFalse);
 	return(kTRUE);
 }
 
@@ -1032,7 +1033,7 @@ Bool_t DGFSetupPanel::SetSwitchBus(Bool_t IndivFlag) {
 		if (((fCluster[cl]->GetActive() & bits) == bits ) && dgfModule->IsActive()) {
 			if (!offlineMode) {
 				TMrbDGF * dgf = dgfModule->GetAddr();
-				if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->GetEnv())) nerr++;
+				if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->Dgfrc()->Env())) nerr++;
 			}
 			found = kTRUE;
 			pgb->Increment(1, dgfModule->GetName());
@@ -1051,7 +1052,7 @@ Bool_t DGFSetupPanel::SetSwitchBus(Bool_t IndivFlag) {
 		indiv = IndivFlag ? "individually" : "for cores only";
 		gMrbLog->Out()	<< "Switchbus terminated " << indiv << endl;
 		gMrbLog->Flush(this->ClassName(), "SetSwitchBus", setblue);
-		gDGFControlData->WriteLocalEnv();
+		gDGFControlData->Dgfrc()->Write();
 		return(kTRUE);
 	} else {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
@@ -1117,7 +1118,7 @@ Bool_t DGFSetupPanel::SetSynchWait(Bool_t SyncFlag) {
 		onoff = SyncFlag ? "ON" : "OFF";
 		gMrbLog->Out()	<< "Busy/sync loop turned " << onoff << endl;
 		gMrbLog->Flush(this->ClassName(), "SetSynchWait", setblue);
-		gDGFControlData->WriteLocalEnv();
+		gDGFControlData->Dgfrc()->Write();
 		return(kTRUE);
 	} else {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
@@ -1143,7 +1144,7 @@ Bool_t DGFSetupPanel::SetSynchWait(DGFModule * Module, Bool_t SyncFlag) {
 	Int_t onoff = SyncFlag ? 1 : 0;
 	TMrbDGF * dgf = Module->GetAddr();
 	if (!offlineMode) dgf->SetSynchWait(SyncFlag, kTRUE);
-	gDGFControlData->UpdateLocalEnv("DGFControl.Module", Module->GetName(), "SynchWait", onoff);
+	gDGFControlData->Dgfrc()->Set(".Module", Module->GetName(), "SynchWait", onoff);
 	return(kTRUE);
 }
 
@@ -1205,7 +1206,7 @@ Bool_t DGFSetupPanel::SetInSynch(Bool_t SyncFlag) {
 		onoff = SyncFlag ? "ON" : "OFF";
 		gMrbLog->Out()	<< "Synchronizing clock with run turned " << onoff << endl;
 		gMrbLog->Flush(this->ClassName(), "SetInSynch", setblue);
-		gDGFControlData->WriteLocalEnv();
+		gDGFControlData->Dgfrc()->Write();
 		return(kTRUE);
 	} else {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
@@ -1231,7 +1232,7 @@ Bool_t DGFSetupPanel::SetInSynch(DGFModule * Module, Bool_t SyncFlag) {
 	Int_t onoff = SyncFlag ? 0 : 1;
 	TMrbDGF * dgf = Module->GetAddr();
 	if (!offlineMode) dgf->SetSynchWait(onoff, kTRUE);
-	gDGFControlData->UpdateLocalEnv("DGFControl.Module", Module->GetName(), "InSynch", onoff);
+	gDGFControlData->Dgfrc()->Set(".Module", Module->GetName(), "InSynch", onoff);
 	return(kTRUE);
 }
 

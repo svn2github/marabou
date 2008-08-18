@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCptmPanel.cxx,v 1.11 2007-07-27 11:17:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFCptmPanel.cxx,v 1.12 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -453,25 +453,22 @@ Int_t DGFCptmPanel::GetLofCptmModules() {
 	fLofCptmModules.Delete();
 	Int_t nofCptmModules = 0;
 
-	Int_t nofSevts = gDGFControlData->GetEnv()->GetValue("DGFControl.NofSubevents", 0);
+	Int_t nofSevts = gDGFControlData->Dgfrc()->Get(".NofSubevents", 0);
 	for (Int_t i = 0; i < nofSevts; i++) {
-		TString sevtName;
-		gDGFControlData->GetResource(sevtName, "DGFControl.Subevent", i, NULL, "Name");
+		TString sevtName = gDGFControlData->Dgfrc()->Get(".Subevent", Form("%d", i), "Name", "");
 		if (sevtName.Length() > 0) {
-			TString sevtClass;
-			gDGFControlData->GetResource(sevtClass, "DGFControl.Subevent", i, sevtName.Data(), "ClassName");
+			TString sevtNuna = Form("%d:%s", i, sevtName.Data());
+			TString sevtClass = gDGFControlData->Dgfrc()->Get(".Subevent", sevtNuna.Data(), "ClassName", "");
 			if (sevtClass.Index("TMrbSubevent_CPTM", 0) == 0) {
-				Int_t nofModules;
-				gDGFControlData->GetResource(nofModules, "DGFControl.Subevent", i, sevtName.Data(), "NofModules");
+				Int_t nofModules = gDGFControlData->Dgfrc()->Get(".Subevent", sevtNuna.Data(), "NofModules", 0);
 				if (nofModules > 0) {
-					TString sevtLofModules;
-					gDGFControlData->GetResource(sevtLofModules, "DGFControl.Subevent", i, sevtName.Data(), "LofModules");
+					TString sevtLofModules = gDGFControlData->Dgfrc()->Get(".Subevent", sevtNuna.Data(), "LofModules", "");
 					TString cptmName;
 					Int_t from = 0;
 					while (sevtLofModules.Tokenize(cptmName, from, ":")) {
-						Int_t crate, station;
-						gDGFControlData->GetResource(crate, "DGFControl.Module", i, cptmName.Data(), "Crate");
-						gDGFControlData->GetResource(station, "DGFControl.Module", i, cptmName.Data(), "Station");
+						TString cptmNuna = Form("%d:%s", i, cptmName.Data());
+						Int_t crate = gDGFControlData->Dgfrc()->Get(".Module", cptmNuna.Data(), "Crate", 0);
+						Int_t station = gDGFControlData->Dgfrc()->Get(".Module", cptmNuna.Data(), "Station", 0);
 						TMrbCPTM * cptm = new TMrbCPTM(cptmName.Data(), gDGFControlData->fCAMACHost.Data(), crate, station);
 						if (!cptm->IsZombie())	{
 							nofCptmModules++;

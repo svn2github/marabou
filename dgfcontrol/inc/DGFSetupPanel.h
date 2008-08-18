@@ -8,7 +8,7 @@
 // Class:          DGFSetupPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFSetupPanel.h,v 1.11 2006-10-09 08:59:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSetupPanel.h,v 1.12 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -110,7 +110,7 @@ class DGFSetupPanel : public TGCompositeFrame {
 		TGGroupFrame * fModules;			 		// module list
 		TGMrbCheckButtonList * fCluster[kNofClusters];
 		TGHorizontalFrame * fSelectFrame;
-		TGMrbPictureButtonList * fGroupSelect[kNofModulesPerCluster];
+		TGMrbPictureButtonList * fColSelect[kNofModulesPerCluster];
 		TGMrbPictureButtonList * fAllSelect;
 		TGMrbTextButtonGroup * fActionFrame;		// connect to camac
 

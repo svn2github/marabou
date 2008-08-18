@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.33 2008-03-05 12:35:46 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.34 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -1275,7 +1275,7 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 // TraceXPsaOffsetEntry:
 	fTraceXPSAOffsetEntry->SetText(dgf->GetPSAOffset(chn));
 // StatRegModICSREntry:
-	dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->GetEnv());
+	dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->Dgfrc()->Env());
 	fStatRegModICSREntry->SetText((Int_t) dgf->GetSwitchBus());
 // StatRegChanCSRAEntry:
 	fStatRegChanCSRAEntry->SetText((Int_t) dgf->GetChanCSRA(chn));

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRunControlPanel.cxx,v 1.16 2005-08-03 12:40:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFRunControlPanel.cxx,v 1.17 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -139,7 +139,7 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 //	Macros menu
 	fLofMacros = new TMrbLofMacros();
 	HEAP(fLofMacros);
-	fLofMacros->AddMacro("*.C");
+	fLofMacros->AddMacro("*.C", "DGF");
 	hasMacros = (fLofMacros->GetLast() >= 0);
 
 	if (hasMacros) {
