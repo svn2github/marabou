@@ -8,7 +8,7 @@
 // Classes:        TMrbLofMacros     -- a list of root macros
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofMacros.h,v 1.14 2007-09-04 11:04:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofMacros.h,v 1.15 2008-08-18 08:18:57 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -33,6 +33,8 @@ class TMrbLofMacros: public TMrbLofNamedX {
 	public:
 		enum EMrbMacroEnvNames	{	kMrbMacroName,  		
 									kMrbMacroTitle, 		
+									kMrbMacroAuthor, 		
+									kMrbMacroKeyWords, 		
 									kMrbMacroPath, 			
 									kMrbMacroWidth, 		
 									kMrbMacroAclic, 		
@@ -69,8 +71,8 @@ class TMrbLofMacros: public TMrbLofNamedX {
 		inline void SetPath(const Char_t * Path) { fPath = Path; gSystem->ExpandPathName(fPath); };	// define search path
 		inline const Char_t * GetPath() const { return(fPath); };
 
-		Bool_t AddMacro(const Char_t * MacroName); 						// add macro
-		Bool_t AskForArgs(const Char_t * MacroName) const {return kTRUE;};					// interactively ask for macro args
+		Bool_t AddMacro(const Char_t * MacroName, const Char_t * KeyWords = NULL); 	// add macro
+		Bool_t AskForArgs(const Char_t * MacroName) const {return kTRUE;};		// interactively ask for macro args
 
 		inline TMrbNamedX * FirstMacro() const { return((TMrbNamedX *) First()); };		// loop thru list of macros
 		inline TMrbNamedX * NextMacro(TMrbNamedX * Last) const { return((TMrbNamedX *) After(Last)); };
@@ -87,6 +89,7 @@ class TMrbLofMacros: public TMrbLofNamedX {
 	protected:
 		TMrbNamedX * ProcessMacro(const Char_t * MacroPath, const Char_t * MdefPath = NULL, Bool_t TestFormat = kTRUE);
 		Bool_t CheckMacro(TMrbNamedX * Macro) const;
+		Bool_t CheckKey(TMrbNamedX * Macro, const Char_t * Key) const;
 
 	protected:
 		TString fPath;

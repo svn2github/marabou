@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofMacros.cxx,v 1.16 2007-09-04 11:04:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofMacros.cxx,v 1.17 2008-08-18 08:18:57 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -35,6 +35,8 @@ const SMrbNamedXShort kMrbMacroLofEnvNames[] =
 							{
 								{TMrbLofMacros::kMrbMacroName,  			"Name"				},
 								{TMrbLofMacros::kMrbMacroTitle, 			"Title" 			},
+								{TMrbLofMacros::kMrbMacroAuthor,	 		"Author"	 		},
+								{TMrbLofMacros::kMrbMacroKeyWords,	 		"KeyWords"	 		},
 								{TMrbLofMacros::kMrbMacroPath, 				"Path"				},
 								{TMrbLofMacros::kMrbMacroWidth, 			"Width" 			},
 								{TMrbLofMacros::kMrbMacroAclic, 			"Aclic" 			},
@@ -106,12 +108,13 @@ TMrbLofMacros::TMrbLofMacros(const Char_t * Path) {
 	fLofEnvNames.AddNamedX(kMrbMacroLofEnvNames);
 }
 
-Bool_t TMrbLofMacros::AddMacro(const Char_t * MacroName) {
+Bool_t TMrbLofMacros::AddMacro(const Char_t * MacroName, const Char_t * Key) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofMacros::AddMacro
 // Purpose:        Add a macro to the list
 // Arguments:      Char_t * MacroName    -- macro name
+//                 Char_t * Key          -- key word
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Adds a new macro to the list. Macro name may be wildcarded.
@@ -176,7 +179,8 @@ Bool_t TMrbLofMacros::AddMacro(const Char_t * MacroName) {
 			} else {
 				macroIdx = this->ProcessMacro(macroPath.Data(), NULL, kFALSE);
 			}
-			if (macroIdx) this->AddNamedX(macroIdx);
+			if (macroIdx == NULL) continue;
+			if (this->CheckKey(macroIdx, Key)) this->AddNamedX(macroIdx);
 		}
 		fLofFilePatterns.Add(new TNamed(macroName.Data(), ""));
 		return(kTRUE);
@@ -199,6 +203,7 @@ Bool_t TMrbLofMacros::AddMacro(const Char_t * MacroName) {
 		}
 		macroIdx = this->ProcessMacro(macroPath.Data(), NULL, kTRUE);
 		if (macroIdx) {
+			if (!this->CheckKey(macroIdx, Key)) return(kFALSE);
 			this->AddNamedX(macroIdx);
 			fLofFilePatterns.Add(new TNamed(macroName.Data(), ""));
 			return(kTRUE);
@@ -384,6 +389,33 @@ TMrbNamedX * TMrbLofMacros::ProcessMacro(const Char_t * MacroPath, const Char_t 
 	if (!this->CheckMacro(macroIdx)) return(NULL);
 
 	return(macroIdx);
+}
+
+Bool_t TMrbLofMacros::CheckKey(TMrbNamedX * Macro, const Char_t * Key) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbLofMacro::CheckKey
+// Purpose:        Check if key words match
+// Arguments:      TMrbNamedX * Macro     -- macro definition
+//                 Char_t * Key           -- :-separated list of key words
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks if key matches entries in macro header.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString key = Key;
+	if (key.IsNull()) return(kTRUE);
+	key.ToLower();
+	TString macroKeys = ((TEnv *) Macro->GetAssignedObject())->GetValue("KeyWords", "");
+	if (macroKeys.IsNull()) return(kFALSE);
+	Int_t from = 0;
+	TString mk;
+	while (macroKeys.Tokenize(mk, from, ":")) {
+		mk.ToLower();
+		if (mk.CompareTo(key.Data()) == 0) return(kTRUE);
+	}
+	return(kFALSE);
 }
 
 Bool_t TMrbLofMacros::CheckMacro(TMrbNamedX * Macro) const {

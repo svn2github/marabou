@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLogger.cxx,v 1.12 2008-02-18 13:29:37 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLogger.cxx,v 1.13 2008-08-18 08:18:57 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -140,7 +140,7 @@ const Char_t * TMrbLogMessage::Get(TString & FmtMsg,
 	return(FmtMsg.Data());
 }
 	
-TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile) {
+TMrbLogger::TMrbLogger(const Char_t * LogFile, const Char_t * ProgName) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogger
@@ -150,8 +150,8 @@ TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fLog = NULL;
-	if (LogFile != NULL && *LogFile != '\0') fLog = new ofstream();
+	fLogFile = LogFile;
+	fLog = fLogFile.IsNull() ? NULL : new ofstream();
 
 	fOut = new ostringstream();
 	fErr = new ostringstream();
@@ -163,8 +163,8 @@ TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile) {
 	fGUI = NULL;
 	gROOT->Append(this);
 	this->SetProgName(ProgName);
-	if (fLog) this->Open(LogFile);
-	this->SetName((fProgName.Length() > 0) ? fProgName.Data() : fLogFile.Data());
+	if (fLog) this->Open(fLogFile.Data());
+	this->SetName(fProgName.IsNull() ? (fLogFile.IsNull() ? "TMrbLogger" : fLogFile.Data()) : fProgName.Data());
 	this->SetTitle("MARaBOU's (error) message logger");
 	gROOT->Append(this);
 }
@@ -182,7 +182,7 @@ void TMrbLogger::SetProgName(const Char_t * ProgName) {
 //////////////////////////////////////////////////////////////////////////////
 
 	fProgName = ProgName;
-	if (fProgName.Length() > 0) this->SetName(fProgName.Data());
+	if (!fProgName.IsNull()) this->SetName(fProgName.Data());
 }
 
 Bool_t TMrbLogger::Open(const Char_t * LogFile, const Char_t * Option) {

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbResource.cxx,v 1.1 2008-07-22 08:42:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbResource.cxx,v 1.2 2008-08-18 08:18:57 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -44,16 +44,14 @@ TMrbResource::TMrbResource(const Char_t * Prefix, const Char_t * ResourceFile) {
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
 	if (gSystem->AccessPathName(ResourceFile)) {
-		gMrbLog->Err() << gSystem->GetError() << "-" << ResourceFile << endl;
+		gMrbLog->Wrn() << gSystem->GetError() << " - " << ResourceFile << endl;
 		gMrbLog->Flush(this->ClassName());
-		this->MakeZombie();
-	} else {
-		fEnv = new TEnv(ResourceFile);
-		fRcName = ResourceFile;
-		fLofPrefixes.Delete();
-		fLastPrefix = "";
-		this->AddPrefix(Prefix);
 	}
+	fEnv = new TEnv(ResourceFile);
+	fRcName = ResourceFile;
+	fLofPrefixes.Delete();
+	fLastPrefix = "";
+	this->AddPrefix(Prefix);
 }
 
 TMrbResource::TMrbResource(const Char_t * Prefix, TEnv * Environment) {
@@ -151,6 +149,23 @@ Bool_t TMrbResource::Get(const Char_t * Res1, const Char_t * Res2, const Char_t 
 	return(r ? fEnv->GetValue(r, Default) : Default);
 }
 
+Double_t TMrbResource::Get(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, Double_t Default) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbResource::Get()
+// Purpose:        Get a value from environment
+// Results:        Double_t Result    -- result
+//////////////////////////////////////////////////////////////////////////////
+
+	const Char_t * r = this->Find(Res1, Res2, Res3);
+	if (r) {
+		Char_t * endptr;
+		Double_t d = strtod((Char_t *) r, &endptr);
+		if (*endptr == '\0') return(d);
+	}
+	return(Default);
+}
+
 TMrbNamedX * TMrbResource::Get(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, TMrbLofNamedX * List) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -168,14 +183,13 @@ TMrbNamedX * TMrbResource::Get(const Char_t * Res1, const Char_t * Res2, const C
 
 	Int_t intRes;
 	TString strRes;
-	TString res;
-	res = this->Find(Res1, Res2, Res3);
+	TString res = this->Find(Res1, Res2, Res3);
 	if (res.IsNull()) return(NULL);
 	if (!this->Convert(res, strRes, intRes)) return(NULL);
 	TMrbNamedX * nx;
-	if (intRes != 0xaffec0c0) nx = List->FindByIndex(intRes); else nx = List->FindByName(strRes);
+	if (intRes != (Int_t) 0xaffec0c0) nx = List->FindByIndex(intRes); else nx = List->FindByName(strRes);
 	if (nx == NULL) return(kFALSE);
-	if (intRes != 0xaffec0c0 && !strRes.IsNull()) {
+	if (intRes != (Int_t) 0xaffec0c0 && !strRes.IsNull()) {
 		strRes.ToLower();
 		TString x = nx->GetName();
 		x.ToLower();
@@ -189,6 +203,136 @@ TMrbNamedX * TMrbResource::Get(const Char_t * Res1, const Char_t * Res2, const C
 	return(nx);
 }
 
+void TMrbResource::Set(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, const Char_t * TrueFalse) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbResource::Set()
+// Purpose:        Set (local) environment
+// Arguments:      Char_t * Res1      -- resource part 1
+//                 Char_t * Res2      -- resource part 2
+//                 Char_t * Res3      -- resource part 3
+//                 Char_t * TrueFalse -- TRUE or FALSE
+// Results:        --
+// Exceptions:     
+// Description:    Sets the local environment: <Prefix>.<Res1>.<Res2>.<Res3>: <TrueFalse>
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString res = this->Find(Res1, Res2, Res3);
+	if (res.IsNull()) {
+		res = ((TObjString *) fLofPrefixes[0])->GetString();
+		if (Res1) { res += "."; res += Res1; }
+		if (Res2) { res += "."; res += Res2; }
+		if (Res3) { res += "."; res += Res3; }
+	}
+	fEnv->SetValue(res, TrueFalse);
+}
+
+void TMrbResource::Set(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3,Bool_t TrueFalse) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbResource::Set()
+// Purpose:        Set (local) environment
+// Arguments:      Char_t * Res1    -- resource part 1
+//                 Char_t * Res2    -- resource part 2
+//                 Char_t * Res3    -- resource part 3
+//                 Bool_t TrueFalse -- TRUE or FALSE
+// Results:        --
+// Exceptions:     
+// Description:    Sets the local environment: <Prefix>.<Res1>.<Res2>.<Res3>: <TrueFalse>
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString res = this->Find(Res1, Res2, Res3);
+	if (res.IsNull()) {
+		res = ((TObjString *) fLofPrefixes[0])->GetString();
+		if (Res1) { res += "."; res += Res1; }
+		if (Res2) { res += "."; res += Res2; }
+		if (Res3) { res += "."; res += Res3; }
+	}
+	fEnv->SetValue(res, TrueFalse ? "TRUE" : "FALSE");
+}
+
+void TMrbResource::Set(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, Int_t IntVal, const Char_t * StrVal) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbResource::Set()
+// Purpose:        Set (local) environment
+// Arguments:      Char_t * Res1      -- resource part 1
+//                 Char_t * Res2      -- resource part 2
+//                 Char_t * Res3      -- resource part 3
+//                 Int_t IntVal       -- resource value (integer)
+//                 Int_t StrVal       -- ... (string)
+// Results:        --
+// Exceptions:     
+// Description:    Sets the local environment: <Prefix>.<Res1>.<Res2>.<Res3>: <IntVal>(<StrVal>)
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString res = this->Find(Res1, Res2, Res3);
+	if (res.IsNull()) {
+		res = ((TObjString *) fLofPrefixes[0])->GetString();
+		if (Res1) { res += "."; res += Res1; }
+		if (Res2) { res += "."; res += Res2; }
+		if (Res3) { res += "."; res += Res3; }
+	}
+	if (StrVal != NULL && *StrVal != '\0') {
+		fEnv->SetValue(res, Form("%d (%s)", IntVal, StrVal));
+	} else {
+		fEnv->SetValue(res, IntVal);
+	}
+}
+
+void TMrbResource::Set(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, Double_t Value) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbResource::Set()
+// Purpose:        Set (local) environment
+// Arguments:      Char_t * Res1      -- resource part 1
+//                 Char_t * Res2      -- resource part 2
+//                 Char_t * Res3      -- resource part 3
+//                 Double_t Value     -- resource value
+// Results:        --
+// Exceptions:     
+// Description:    Sets the local environment: <Prefix>.<Res1>.<Res2>.<Res3>: <Value>
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString res = this->Find(Res1, Res2, Res3);
+	if (res.IsNull()) {
+		res = ((TObjString *) fLofPrefixes[0])->GetString();
+		if (Res1) { res += "."; res += Res1; }
+		if (Res2) { res += "."; res += Res2; }
+		if (Res3) { res += "."; res += Res3; }
+	}
+	fEnv->SetValue(res, Value);
+}
+
+void TMrbResource::Set(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, TMrbNamedX * Nx) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbResource::Set()
+// Purpose:        Set (local) environment
+// Arguments:      Char_t * Res1      -- resource part 1
+//                 Char_t * Res2      -- resource part 2
+//                 Char_t * Res3      -- resource part 3
+//                 TMrbNamedX * Nx    -- resource value (int & str)
+// Results:        --
+// Exceptions:     
+// Description:    Sets the local environment: <Prefix>.<Res1>.<Res2>.<Res3>: <IntVal>(<StrVal>)
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString res = this->Find(Res1, Res2, Res3);
+	if (res.IsNull()) {
+		res = ((TObjString *) fLofPrefixes[0])->GetString();
+		if (Res1) { res += "."; res += Res1; }
+		if (Res2) { res += "."; res += Res2; }
+		if (Res3) { res += "."; res += Res3; }
+	}
+	fEnv->SetValue(res, Form("%d (%s)", Nx->GetIndex(), Nx->GetName()));
+}
+
 const Char_t * TMrbResource::Find(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -200,29 +344,49 @@ const Char_t * TMrbResource::Find(const Char_t * Res1, const Char_t * Res2, cons
 // Results:        Char_t * Resource  -- resulting resource
 // Exceptions:
 // Description:    Checks if environment contains a resource
-//                 <Prefix1>.<Res1>.<ItemName>.<ResName>
-//                 <Prefix1> will be taken from list of prefixes
+//                 [<Prefix1>.]<Res1>.<Res2>.<Res3>
+//                 If <Res1> starts with a dot <Prefix> will be omitted.
+//                 Otherwise <Prefix1> will be taken from list of prefixes.
+//                 <Res2> (containing the item name or number) may be multi-valued,
+//                 separated by ":".
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString r = "";
-	if (Res1) r += Form(".%s", Res1);
-	if (Res2 && *Res2 != '\0') r += Form(".%s", Res2);
-	if (Res3) r += Form(".%s", Res3);
-	if (r.IsNull()) return(NULL);
-
-	if (!fLastPrefix.IsNull()) {
-		fResource = Form("%s%s", fLastPrefix.Data(), r.Data());
-		if (fEnv->Lookup(fResource.Data())) return(fResource.Data());
+	TString res2 = Res2;
+	if (!res2.IsNull() && res2.Contains(":")) {
+		Int_t from = 0;
+		TString r;
+		while (res2.Tokenize(r, from, ":")) {
+			const Char_t * rp = this->Find(Res1, r.Data(), Res3);
+			if (rp) return(rp);
+		}
+		return(NULL);
 	}
 
-	TIterator * iter = fLofPrefixes.MakeIterator();
-	TObjString * p;
-	while(p = (TObjString *) iter->Next()) {
-		fResource = Form("%s%s", p->GetString().Data(), r.Data());
-		if (fEnv->Lookup(fResource.Data())) {
-			fLastPrefix = p->GetString();
-			return(fResource.Data());
+	TString r = "";
+	Bool_t withDot = (Res1 && *Res1 == '.');
+	if (withDot) r += Res1; else if (Res1) r += Form(".%s", Res1);
+	if (Res2 && *Res2 != '\0') r += Form(".%s", Res2);
+	if (Res3 && *Res3 != '\0') r += Form(".%s", Res3);
+	if (r.IsNull()) return(NULL);
+
+	if (!withDot) {
+		fResource = r;
+		if (fEnv->Lookup(fResource.Data())) return(fResource.Data());
+	} else {
+		if (!fLastPrefix.IsNull()) {
+			fResource = Form("%s%s", fLastPrefix.Data(), r.Data());
+			if (fEnv->Lookup(fResource.Data())) return(fResource.Data());
+		}
+
+		TIterator * iter = fLofPrefixes.MakeIterator();
+		TObjString * p;
+		while(p = (TObjString *) iter->Next()) {
+			fResource = Form("%s%s", p->GetString().Data(), r.Data());
+			if (fEnv->Lookup(fResource.Data())) {
+				fLastPrefix = p->GetString();
+				return(fResource.Data());
+			}
 		}
 	}
 	return(NULL);
@@ -333,7 +497,7 @@ Bool_t TMrbResource::ToInteger(const Char_t * Resource, Int_t & IntResult) {
 	TString s;
 	Int_t n = 0xaffec0c0;
 	if (!this->Convert(Resource, s, n)) return(kFALSE);
-	if (n == 0xaffec0c0) return(kFALSE);
+	if (n == (Int_t) 0xaffec0c0) return(kFALSE);
 	IntResult = n;
 	return(kTRUE);
 }

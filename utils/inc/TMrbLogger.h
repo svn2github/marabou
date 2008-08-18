@@ -8,7 +8,7 @@
 // Class:          TMrbLogger    -- message/error logging
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLogger.h,v 1.11 2008-02-18 13:29:36 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLogger.h,v 1.12 2008-08-18 08:18:57 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ class TMrbLogger: public TNamed {
 								};
 
 	public:
-		TMrbLogger(const Char_t * ProgName = "", const Char_t * LogFile = "marabou.log"); 	// ctor
+		TMrbLogger(const Char_t * LogFile = "marabou.log", const Char_t * ProgName = "");   // ctor
 
 		~TMrbLogger() { Reset(); };						// dtor
 

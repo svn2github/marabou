@@ -8,7 +8,7 @@
 // Class:          TMrbTail    -- tail utility
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTail.h,v 1.9 2006-01-25 12:21:27 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTail.h,v 1.10 2008-08-18 08:18:57 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -23,6 +23,7 @@ namespace std {} using namespace std;
 
 #include "TTimer.h"
 
+#include "TMrbNamedX.h"
 #include "TMrbLogger.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
@@ -33,15 +34,25 @@ namespace std {} using namespace std;
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbTail: public TMrbLogger {
+class TMrbTail: public TMrbNamedX {
+
+	public:
+		enum EMrbTailOut		{	kMrbTailOutUndef = 0,
+									kMrbTailOutLogger,
+									kMrbTailOutStdio,
+									kMrbTailOutArray
+								};
 
 	public:
 		TMrbTail() {};												 	// default ctor
-		TMrbTail(const Char_t * TailName, const Char_t * TailFile); 	// ctor
-		virtual ~TMrbTail() {};						// dtor
+		TMrbTail(const Char_t * TailName, const Char_t * TailFile); 	// explicit ctors
+		TMrbTail(const Char_t * TailName, FILE * TailStrm);
 
-		inline void SkipOrigPrefix(Bool_t Skip = kTRUE) { fSkipOrigPrefix = Skip; };
-		inline void SetNewPrefix(const Char_t * Prefix = NULL) { fNewPrefix = (Prefix == NULL) ? "" : Prefix; };
+		virtual ~TMrbTail() {};											// dtor
+
+		Bool_t SetOutput(TMrbLogger * Logger);							// define output: logger
+		Bool_t SetOutput(ostream & Stdout, ostream & StdErr);			// ... stdio
+		Bool_t SetOutput(TObject * Receiver, TObjArray * TextArray);	// ... array of TObjStrings
 
 		void Start(Bool_t SkipToEnd = kFALSE);		// start
 		inline void Stop() { fTimer->TurnOff(); fStopIt = kTRUE; };
@@ -51,14 +62,23 @@ class TMrbTail: public TMrbLogger {
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
-		TString fTailFile;
-		Int_t fFilDes;  		// file descriptor (open(2))
-		FILE * fStrm;			//! ... stream (fdopen(3))
-		Bool_t fStopIt;			// kTRUE stops output
-		TTimer * fTimer;		//!
+		void ToLogger(TString & Text);
+		void ToStdio(TString & Text);
+		void ToArray(TString & Text);
 
-		Bool_t fSkipOrigPrefix;		// kTRUE if line prefix (=date) is to be skipped on output
-		TString fNewPrefix; 		// prefix to replace the original one
+	protected:
+		TString fTailFile;
+		Int_t fFilDes;  			// file descriptor (open(2))
+		FILE * fStrm;				//! ... stream (fdopen(3))
+		Bool_t fStopIt;				// kTRUE stops output
+		TTimer * fTimer;			//!
+
+		EMrbTailOut fOutputMode;	// output mode: logger, stdio, array
+		TMrbLogger * fLogger;
+		ostream * fStdout;
+		ostream * fStderr;
+		TObject * fReceiver;
+		TObjArray * fTextArray;
 
 	ClassDef(TMrbTail, 1) 		// [Utils] Tail utility
 };
