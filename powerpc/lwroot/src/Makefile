@@ -1,40 +1,41 @@
 CXX 		=	g++
 
-INC 		=	../inc
+PPCINC		=	../../inc
+LWRINC 		=	../inc
 M2LINC		=	../../../c2lynx/inc
 
-CXXFLAGS	=	-g -w -DR__LYNXOS -DLYNX_VERSION=$(LV_CPP) -I$(INC) -I$(M2LINC)
+CXXFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE=$(GSI_CPU_PLATFORM) -DLYNX_VERSION=$(LV_CPP) -I$(LWRINC) -I$(M2LINC) -I$(PPCINC) 
 
 ObjSuf		=	o
 SrcSuf		=	cxx
 LibSuf		=	a
 LWRLIB		=	../lib/$(LYNX_VERSION)/libLwr.$(LibSuf)
 
-INCS		=	$(INC)/LwrUtils.h \
-				$(INC)/LwrObject.h \
-				$(INC)/LwrNamed.h \
-				$(INC)/LwrCollection.h \
-				$(INC)/LwrSeqCollection.h \
-				$(INC)/LwrList.h \
-				$(INC)/LwrObjString.h \
-				$(INC)/LwrBytes.h \
-				$(INC)/LwrArray.h \
-				$(INC)/LwrArrayI.h \
-				$(INC)/LwrConfig.h \
-				$(INC)/LwrInetAddress.h \
-				$(INC)/LwrRefCnt.h \
-				$(INC)/LwrTypes.h \
-				$(INC)/LwrServerSocket.h \
-				$(INC)/LwrSocket.h \
-				$(INC)/LwrFileHandler.h \
-				$(INC)/LwrMonitor.h \
-				$(INC)/LwrString.h \
-				$(INC)/LwrLynxOsSystem.h \
-				$(INC)/LwrVarargs.h \
-				$(INC)/LwrNamedX.h \
-				$(INC)/LwrLofNamedX.h \
-				$(INC)/LwrDatime.h \
-				$(INC)/LwrLogger.h \
+INCS		=	$(LWRINC)/LwrUtils.h \
+				$(LWRINC)/LwrObject.h \
+				$(LWRINC)/LwrNamed.h \
+				$(LWRINC)/LwrCollection.h \
+				$(LWRINC)/LwrSeqCollection.h \
+				$(LWRINC)/LwrList.h \
+				$(LWRINC)/LwrObjString.h \
+				$(LWRINC)/LwrBytes.h \
+				$(LWRINC)/LwrArray.h \
+				$(LWRINC)/LwrArrayI.h \
+				$(LWRINC)/LwrConfig.h \
+				$(LWRINC)/LwrInetAddress.h \
+				$(LWRINC)/LwrRefCnt.h \
+				$(LWRINC)/LwrTypes.h \
+				$(LWRINC)/LwrServerSocket.h \
+				$(LWRINC)/LwrSocket.h \
+				$(LWRINC)/LwrFileHandler.h \
+				$(LWRINC)/LwrMonitor.h \
+				$(LWRINC)/LwrString.h \
+				$(LWRINC)/LwrLynxOsSystem.h \
+				$(LWRINC)/LwrVarargs.h \
+				$(LWRINC)/LwrNamedX.h \
+				$(LWRINC)/LwrLofNamedX.h \
+				$(LWRINC)/LwrDatime.h \
+				$(LWRINC)/LwrLogger.h \
 				$(M2LINC)/M2L_MessageTypes.h \
 				$(M2LINC)/M2L_CommonStructs.h
 

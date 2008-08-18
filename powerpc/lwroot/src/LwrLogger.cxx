@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: LwrLogger.cxx,v 1.1 2008-07-03 07:14:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: LwrLogger.cxx,v 1.2 2008-08-18 08:18:16 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -18,8 +18,8 @@ namespace std {} using namespace std;
 
 #include "LwrNamedX.h"
 #include "LwrLofNamedX.h"
-#include "LwrSetColor.h"
 #include "LwrLogger.h"
+#include "SetColor.h"
 
 const SMrbNamedXShort kMrbMsgTypes[] =
 							{

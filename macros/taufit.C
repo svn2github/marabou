@@ -22,11 +22,12 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: taufit.C,v 1.8 2007-08-17 11:09:36 Rudolf.Lutter Exp $
+// Revision:         $Id: taufit.C,v 1.9 2008-08-18 08:20:21 Rudolf.Lutter Exp $
 // Date:             Wed Aug  1 13:14:51 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                taufit.C
 //                   Title:               Taufit
+//                   KeyWords:            DGF
 //                   Width:               700
 //                   Aclic:               +g
 //                   Modify:              1

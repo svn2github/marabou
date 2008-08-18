@@ -25,6 +25,7 @@
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                mca.C
 //                   Title:               Accumulate MCA histogram
+//                   KeyWords:            DGF               
 //                   Width:               
 //                   NofArgs:             7
 //                   Arg1.Name:           Module

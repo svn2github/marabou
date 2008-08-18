@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbGeometry.cxx,v 1.2 2007-02-16 11:48:44 Otto.Schaile Exp $       
+// Revision:       $Id: TGMrbGeometry.cxx,v 1.3 2008-08-18 08:20:21 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -49,7 +49,7 @@ TGMrbGeometry::TGMrbGeometry(TGWindow * Parent, Double_t ScaleFactor) {
 		ULong_t wdwId = Parent ? Parent->GetId() : gClient->GetRoot()->GetId();
 		gVirtualX->GetWindowSize(wdwId, fParentX, fParentX, fParentWidth, fParentHeight);
 		if (!this->SetScaleFactor(ScaleFactor)) this->MakeZombie();
-		if (Parent == NULL) gMrbGeometry = this;
+		gMrbGeometry = this;
 	}
 }
 

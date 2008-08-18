@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: LwrLofNamedX.cxx,v 1.2 2008-06-16 15:00:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: LwrLofNamedX.cxx,v 1.3 2008-08-18 08:18:16 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 // Special 'Light Weight ROOT' edition                                      //
@@ -18,9 +18,9 @@
 #include "iomanip.h"
 
 #include "LwrObjString.h"
-#include "LwrSetColor.h"
 #include "LwrLofNamedX.h"
 #include "LwrLogger.h"
+#include "SetColor.h"
 
 TMrbLofNamedX::TMrbLofNamedX(const Char_t * Name, Bool_t PatternMode) {
 //__________________________________________________________________[C++ CTOR]

@@ -13,6 +13,7 @@
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                esone.C
 //                   Title:               Connect to ESONE server
+//                   KeyWords:            CAMAC:DGF
 //                   Width:               
 //                   Aclic:               none
 //                   NofArgs:             1

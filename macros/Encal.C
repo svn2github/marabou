@@ -9,11 +9,12 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.39 2008-06-23 12:47:32 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.40 2008-08-18 08:20:21 Rudolf.Lutter Exp $
 // Date:             Fri Oct 12 09:43:56 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
 //                   Title:               Energy calibration for 1-dim histograms
+//                   KeyWords:            DGF
 //                   Width:               780
 //                   Aclic:               +g
 //                   Modify:              no
