@@ -411,10 +411,9 @@ install-ppc:
 		for LIB in powerpc/lib/*/*; do \
 			DIR=`dirname $$LIB`; \
 			SUBDIR=`basename $$DIR`; \
-			echo $(LIB) $(DIR) $(SUBDIR); \
 			$(INSTALLDIR) $(PPCDIR)/lib/$$SUBDIR; \
-			echo $(INSTALLDATA) $(LIB) $(PPCDIR)/lib/$$SUBDIR; \
-			$(INSTALLDATA) $(LIB) $(PPCDIR)/lib/$$SUBDIR; \
+			echo $(INSTALLDATA) $$LIB $(PPCDIR)/lib/$$SUBDIR; \
+			$(INSTALLDATA) $$LIB $(PPCDIR)/lib/$$SUBDIR; \
 		done; \
 		echo "Installing ppc binaries in $(PPCDIR)/bin/*"; \
 		for FLIST in powerpc/bin/*/*; do \
