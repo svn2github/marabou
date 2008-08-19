@@ -408,20 +408,15 @@ install-ppc:
 		$(INSTALLDATA) powerpc/inc/* $(PPCDIR)/include; \
 		$(INSTALLDATA) powerpc/*/inc/* $(PPCDIR)/include; \
 		echo "Installing ppc libraries in $(PPCDIR)/lib/*"; \
-		for LIB in powerpc/lib/*/*; do \
-			DIR=`dirname $$LIB`; \
-			SUBDIR=`basename $$DIR`; \
-			$(INSTALLDIR) $(PPCDIR)/lib/$$SUBDIR; \
-			echo $(INSTALLDATA) $$LIB $(PPCDIR)/lib/$$SUBDIR; \
-			$(INSTALLDATA) $$LIB $(PPCDIR)/lib/$$SUBDIR; \
-		done; \
+		$(INSTALLDATA) powerpc/lib/2.5 $(PPCDIR)/lib; \
+		$(INSTALLDATA) powerpc/lib/2.5/* $(PPCDIR)/lib/2.5; \
+		$(INSTALLDATA) powerpc/lib/3.1 $(PPCDIR)/lib; \
+		$(INSTALLDATA) powerpc/lib/3.1/* $(PPCDIR)/lib/3.1; \
 		echo "Installing ppc binaries in $(PPCDIR)/bin/*"; \
-		for FLIST in powerpc/bin/*/*; do \
-			DIR=`dirname $$FLIST`; \
-			SUBDIR=`basename $$DIR`; \
-			$(INSTALLDIR) $(PPCDIR)/bin/$$SUBDIR; \
-			$(INSTALLDATA) $(FLIST) $(PPCDIR)/bin/$$SUBDIR; \
-		done; \
+		$(INSTALLDATA) powerpc/bin/2.5 $(PPCDIR)/bin; \
+		$(INSTALLDATA) powerpc/bin/2.5/* $(PPCDIR)/bin/2.5; \
+		$(INSTALLDATA) powerpc/bin/3.1 $(PPCDIR)/bin; \
+		$(INSTALLDATA) powerpc/bin/3.1/* $(PPCDIR)/bin/3.1; \
 		echo "Installing ppc module headers in $(PPCDIR)/include"; \
 		$(INSTALLDATA) powerpc/modules/*/inc/* $(PPCDIR)/include; \
 		echo "Installing ppc module libraries in $(PPCDIR)/lib/*"; \
