@@ -53,8 +53,8 @@ include config/Makefile.$(ARCH)
 
 -include MyConfig.mk
 
-EXTRA_CFLAGS   += -g -Wno-switch -I$(ROOTSYS)/include
-EXTRA_CXXFLAGS += -g -Wno-switch -I$(ROOTSYS)/include
+EXTRA_CFLAGS   += -g -Wno-switch -Wno-parentheses -I$(ROOTSYS)/include
+EXTRA_CXXFLAGS += -g -Wno-switch -Wno-parentheses -I$(ROOTSYS)/include
 
 ##### Modules to build #####
 
@@ -108,9 +108,9 @@ endif
 
 # the following modules are for special hardware
 
-#ifeq ($(shell if [ -d vmecontrol ] ; then echo yes; fi), yes)
-#MODULES      += vmecontrol
-#endif
+ifeq ($(shell if [ -d vmecontrol ] ; then echo yes; fi), yes)
+MODULES      += vmecontrol
+endif
 
 ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
 MODULES      += xiadgf dgfcontrol cptmcontrol
@@ -408,21 +408,21 @@ install-ppc:
 		$(INSTALLDATA) powerpc/inc/* $(PPCDIR)/include; \
 		$(INSTALLDATA) powerpc/*/inc/* $(PPCDIR)/include; \
 		echo "Installing ppc libraries in $(PPCDIR)/lib/*"; \
-		for FLIST in powerpc/*/lib/*/*; do \
+		for FLIST in powerpc/lib/*/*; do \
 			DIR=`dirname $$FLIST`; \
 			SUBDIR=`basename $$DIR`; \
 			if [ -d $$DIR ]; then \
 				$(INSTALLDIR) $(PPCDIR)/lib/$$SUBDIR; \
-				$(INSTALLDATA) powerpc/*/lib/$$SUBDIR/* $(PPCDIR)/lib/$$SUBDIR; \
+				$(INSTALLDATA) powerpc/lib/$$SUBDIR/* $(PPCDIR)/lib/$$SUBDIR; \
 			fi; \
 		done; \
 		echo "Installing ppc binaries in $(PPCDIR)/bin/*"; \
-		for FLIST in powerpc/*/bin/*/*; do \
+		for FLIST in powerpc/bin/*/*; do \
 			DIR=`dirname $$FLIST`; \
 			SUBDIR=`basename $$DIR`; \
 			if [ -d $$DIR ]; then \
 				$(INSTALLDIR) $(PPCDIR)/bin/$$SUBDIR; \
-				$(INSTALLDATA) powerpc/*/bin/$$SUBDIR/* $(PPCDIR)/bin/$$SUBDIR; \
+				$(INSTALLDATA) powerpc/bin/$$SUBDIR/* $(PPCDIR)/bin/$$SUBDIR; \
 			fi; \
 		done; \
 		echo "Installing ppc module headers in $(PPCDIR)/include"; \
