@@ -24,9 +24,6 @@
 #include "unix_string.h"
 #include "root_env.h"
 
-#include "err_mask_def.h"
-#include "errnum_def.h"
-
 #define FIPPI_REVD	3
 #define FIPPI_REVE	4
 

@@ -15,13 +15,8 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <time.h>
-#include "s_evhe.h"
-#include "s_veshe.h"
 #include "cc32_camio.h"
 #include "ces/vmelib.h"
-
-#include "err_mask_def.h"
-#include "errnum_def.h"
 
 extern volatile unsigned long * cc32_baseAddr;
 

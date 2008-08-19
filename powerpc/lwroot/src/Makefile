@@ -9,7 +9,7 @@ CXXFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE=$(GSI_CPU_PLATFORM) -DLYNX_VERSION=$(LV_
 ObjSuf		=	o
 SrcSuf		=	cxx
 LibSuf		=	a
-LWRLIB		=	../lib/$(LYNX_VERSION)/libLwr.$(LibSuf)
+LWRLIB		=	../../lib/$(LYNX_VERSION)/libLwr.$(LibSuf)
 
 INCS		=	$(LWRINC)/LwrUtils.h \
 				$(LWRINC)/LwrObject.h \
@@ -66,7 +66,7 @@ OBJS		=	$(LWRLIB)(LwrUtils.$(ObjSuf)) \
 all:			$(LWRLIB)
  
 clean:
-				rm -f *.o ../lib/$(LYNX_VERSION)/*.a
+				rm -f *.o $(LWRLIB)
 
 $(LWRLIB):  $(OBJS)
 

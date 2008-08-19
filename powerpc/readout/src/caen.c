@@ -248,12 +248,7 @@
 #include <stdio.h>
 #include <sys/stat.h>
 #include <time.h>
-#include "s_evhe.h"
-#include "s_veshe.h"
 #include "vmelib.h"
-
-#include "err_mask_def.h"
-#include "errnum_def.h"
 
 void caen_module_info(unsigned long physAddr, volatile unsigned char * vmeAddr, unsigned long addrMod);
 
