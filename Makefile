@@ -411,6 +411,7 @@ install-ppc:
 		for LIB in powerpc/lib/*/*; do \
 			DIR=`dirname $$LIB`; \
 			SUBDIR=`basename $$DIR`; \
+			echo $(LIB) $(DIR) $(SUBDIR); \
 			$(INSTALLDIR) $(PPCDIR)/lib/$$SUBDIR; \
 			echo $(INSTALLDATA) $(LIB) $(PPCDIR)/lib/$$SUBDIR; \
 			$(INSTALLDATA) $(LIB) $(PPCDIR)/lib/$$SUBDIR; \
