@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.160 2008-07-17 13:53:41 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.161 2008-08-26 06:30:53 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -364,7 +364,7 @@ const SMrbNamedXShort kMrbLofRcFileTags[] =
 								{TMrbConfig::kRcEvtData,					"EVT_DATA"						},
 								{TMrbConfig::kRcSevtData,					"SEVT_DATA"						},
 								{TMrbConfig::kRcModuleData,					"MODULE_DATA"					},
-								{TMrbConfig::kRcModuleSettings,				"MODULE_SETTINGS"					},
+								{TMrbConfig::kRcModuleSettings,				"MODULE_SETTINGS"				},
 								{TMrbConfig::kRcUserGlobals,				"USER_GLOBALS"					},
 								{0, 										NULL							}
 							};
@@ -1711,8 +1711,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								libString += " ";
 							}
 							TString rdoLibs = "$(MARABOU)/powerpc/lib/";
-							rdoLibs += this->GetMbsVersion(kTRUE, kTRUE);
-							rdoLibs += "/lib_utils.a";
+							rdoLibs += this->GetLynxVersion(kTRUE);
+							rdoLibs += "/libUti.a";
 							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", rdoLibs.Data());
 							gSystem->ExpandPathName(ip);
 							libString += ip;
@@ -7998,7 +7998,6 @@ Bool_t TMrbConfig::CheckConfig() {
 			&& !(mtype & TMrbConfig::kModuleScaler)
 			&& !(mtype & TMrbConfig::kModuleRaw)) {
 			if (module->GetNofChannelsUsed() == 0) {
-				cout << "@@@ " << mtype << " " << (module->GetType())->GetName() << endl;
 				gMrbLog->Err()	<< "Module \"" << module->GetName()
 								<< "\" (serial " << module->GetSerial()
 								<< "): Not used by any subevent" << endl;
