@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLogger.cxx,v 1.13 2008-08-18 08:18:57 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLogger.cxx,v 1.14 2008-08-26 06:33:24 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -160,7 +160,6 @@ TMrbLogger::TMrbLogger(const Char_t * LogFile, const Char_t * ProgName) {
 	if (fLog) fEnabled |= TMrbLogger::kMrbMsgLog;
 	fLofMessages.Delete();
 	fIndexOfLastPrinted = 0;
-	fGUI = NULL;
 	gROOT->Append(this);
 	this->SetProgName(ProgName);
 	if (fLog) this->Open(fLogFile.Data());
@@ -311,8 +310,8 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	delete fWrn;
 	fWrn = new ostringstream();
 
-	if (fGUI) fGUI->Notify();		// trigger GUI object
-		
+	this->Emit("Flush()");
+
 	return(kTRUE);
 }
 

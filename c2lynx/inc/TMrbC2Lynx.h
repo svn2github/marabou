@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.6 2008-07-15 08:14:06 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-07-15 08:14:06 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.7 2008-08-26 06:33:23 Rudolf.Lutter Exp $   
+// Date:           $Date: 2008-08-26 06:33:23 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,12 +41,23 @@
 class TMrbC2Lynx : public TNamed {
 
 	public:
+		enum EC2LServerLog	{	kC2LServerLogNone	=	BIT(0),
+								kC2LServerLogXterm	=	BIT(1),
+								kC2LServerLogPipe	=	BIT(2)
+		};
+
+	public:
 
 		TMrbC2Lynx() { this->Reset(); };												// default ctor		
 
-		TMrbC2Lynx(const Char_t * HostName, const Char_t * Server = NULL, const Char_t * LogFile = NULL, Int_t Port = 9010, Bool_t NonBlocking = kFALSE, Bool_t UseXterm = kTRUE);		// ctor: connect to host
+		TMrbC2Lynx(const Char_t * HostName, const Char_t * Server = NULL, const Char_t * LogFile = NULL, Int_t Port = 9010,
+						const Char_t * ServerLog = "None", Bool_t ConnectFlag = kTRUE);		// ctor: connect to host
 
 		~TMrbC2Lynx() {};							// default dtor
+
+		Bool_t SetServerLog(const Char_t * Output);
+		Bool_t SetServerLog(EC2LServerLog Output);
+		inline void SetNonBlocking(Bool_t Flag = kFALSE) { fNonBlocking = Flag; };
 
 		inline const Char_t * GetHost() { return(fHost.Data()); };
 		inline const Char_t * GetServerName() { return(fServerName.Data()); };
@@ -60,11 +71,15 @@ class TMrbC2Lynx : public TNamed {
 		inline Bool_t IsDebug() { return(fDebugMode); };
 
 		inline Bool_t IsNonBlocking() { return(fNonBlocking); };
-		inline Bool_t UseXterm() { return(fUseXterm); };
+		inline Bool_t Log2Xterm() { return(fServerLog->GetIndex() & kC2LServerLogXterm); };
+		inline Bool_t Log2Pipe() { return(fServerLog->GetIndex() & kC2LServerLogPipe); };
+		inline TMrbNamedX * GetServerLog() { return(fServerLog); };
+		inline FILE * GetPipe() { return(fPipe); };
 
 		inline Bool_t IsConnected() { return(fSocket != NULL); }
 
-		Bool_t Connect();
+		Bool_t Connect(Bool_t WaitFlag = kTRUE);
+		Bool_t WaitForConnection();
 
 		Bool_t Send(M2L_MsgHdr * Hdr);
 		Bool_t Recv(M2L_MsgHdr * Hdr);
@@ -81,6 +96,8 @@ class TMrbC2Lynx : public TNamed {
 
 		void Bye();
 
+		Bool_t CheckVersion(TString & Cpu, TString & Lynx, const Char_t * ServerPath = NULL);
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
@@ -90,6 +107,7 @@ class TMrbC2Lynx : public TNamed {
 		Bool_t fVerboseMode;						// kTRUE if verbose mode on
 		Bool_t fDebugMode;							// kTRUE if debug, includes verbose=on
 
+		TMrbNamedX * fServerLog;					// where to output server messages
 		Bool_t fNonBlocking;						// non-blocking mode
 		Bool_t fUseXterm;							// kTRUE if server logs to be shown in a xterm window
 
@@ -100,6 +118,9 @@ class TMrbC2Lynx : public TNamed {
 		TSocket * fSocket;							//! connection to server
 		Int_t fPort;								// port number
 
+		FILE * fPipe;								// stream for pipe output
+
+		TMrbLofNamedX fLofServerLogs;				// list of server log modes
 		TMrbLofNamedX fLofModules;					// list of vme/camac modules connected
 
 	ClassDef(TMrbC2Lynx, 1)		// [Access to LynxOs] Establish connection to LynxOs/VME

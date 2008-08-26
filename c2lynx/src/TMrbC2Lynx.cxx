@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.6 2008-07-04 11:58:06 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-07-04 11:58:06 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.7 2008-08-26 06:33:23 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-08-26 06:33:23 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -43,8 +43,16 @@ static Int_t gBytesAllocated = 0;			// size of message storage
 
 ClassImp(TMrbC2Lynx)
 
+const SMrbNamedX kC2LLofServerLogs[] =
+			{
+				{TMrbC2Lynx::kC2LServerLogNone, 	"None",		"No output" 				},
+				{TMrbC2Lynx::kC2LServerLogXterm, 	"Xterm",	"Output to XTERM window"	},
+				{TMrbC2Lynx::kC2LServerLogPipe, 	"Pipe",		"Output to pipe"			},
+				{0, 								NULL,			NULL					}
+			};
+
 TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Char_t * LogFile,
-					Int_t Port, Bool_t NonBlocking, Bool_t UseXterm) : TNamed("C2Lynx", "Marabou-Lynx connection") {
+					Int_t Port, const Char_t * ServerLog, Bool_t ConnectFlag) : TNamed(HostName, "Marabou-Lynx connection") {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbC2Lynx
@@ -53,8 +61,8 @@ TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Cha
 //                 Char_t * Server        -- server path
 //                 Char_t * LogFile       -- where to write log messages
 //                 Int_t Port             -- tcp port
-//                 Bool_t NonBlocking     -- kTRUE, if non-blocking mode
-//                 Bool_t UseXterm        -- open cterm to show server output
+//                 Char_t * ServerLog     -- where to output server logs
+//                 Bool_t ConnectFlag     -- try to establish connection
 // Results:        --
 // Description:    Class constructor
 //////////////////////////////////////////////////////////////////////////////
@@ -66,44 +74,62 @@ TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Cha
 	} else {
 		this->Reset();
 
+		fLofServerLogs.SetName("Server output modes");
+		fLofServerLogs.AddNamedX(kC2LLofServerLogs);
+		fLofServerLogs.SetPatternMode();
+
 		fHost = HostName;
 		fPort = Port;
 
-		fNonBlocking = NonBlocking;
-		fUseXterm = UseXterm;
-
+		fNonBlocking = kFALSE;
+		fPipe = NULL;
 		fSocket = NULL;
-	
-		if (Server == NULL || *Server == '\0') {
-			TString lynxVersion = gEnv->GetValue("TMrbC2Lynx.LynxVersion", "");
-			if (lynxVersion.IsNull()) lynxVersion = gEnv->GetValue("TMbsSetup.LynxVersion", "");
-			if (lynxVersion.IsNull()) {
-				gMrbLog->Err()	<< "Lynx version missing - set \"TMrbC2Lynx.LynxVersion\" properly" << endl;
-				gMrbLog->Flush(this->ClassName());
-				this->MakeZombie();
-			} else {
-				fServerPath = Form("$MARABOU/powerpc/bin/%s/mrbLynxOsSrv", lynxVersion.Data());
-				gSystem->ExpandPathName(fServerPath);
-			}
-		} else {
-			fServerPath = Server;
-		}
-		if (!this->IsZombie()) {
-			fServerName = gSystem->BaseName(fServerPath.Data());
-			fLogFile = (LogFile == NULL || *LogFile == '\0') ? Form("%s/c2lynx.log", gSystem->WorkingDirectory()) : LogFile;
 
-			if (this->Connect()) gMrbC2Lynx = this; else this->MakeZombie();
-			gROOT->Append(this);
+		fServerLog = fLofServerLogs.FindByName(ServerLog);
+		if (fServerLog == NULL) {
+			gMrbLog->Err()	<< "Illegal server output mode - " << ServerLog << endl;
+			gMrbLog->Flush(this->ClassName());
+			this->MakeZombie();
+		}
+
+		if (!this->IsZombie()) {
+			if (Server == NULL || *Server == '\0') {
+				TString lynxVersion = gEnv->GetValue("TMrbC2Lynx.LynxVersion", "");
+				if (lynxVersion.IsNull()) lynxVersion = gEnv->GetValue("TMbsSetup.LynxVersion", "");
+				if (lynxVersion.IsNull()) {
+					gMrbLog->Err()	<< "Lynx version missing - set \"TMrbC2Lynx.LynxVersion\" properly" << endl;
+					gMrbLog->Flush(this->ClassName());
+					this->MakeZombie();
+				} else {
+					fServerPath = Form("$MARABOU/powerpc/bin/%s/mrbLynxOsSrv", lynxVersion.Data());
+					gSystem->ExpandPathName(fServerPath);
+				}
+			} else {
+				fServerPath = Server;
+			}
+			if (!this->IsZombie()) {
+				fServerName = gSystem->BaseName(fServerPath.Data());
+				fLogFile = (LogFile == NULL || *LogFile == '\0') ? Form("%s/c2lynx.log", gSystem->WorkingDirectory()) : LogFile;
+
+				if (ConnectFlag) {
+					if (this->Connect(kTRUE)) {
+						gMrbC2Lynx = this;
+						gROOT->Append(this);
+					} else {
+						this->MakeZombie();
+					}
+				}
+			}
 		}
 	}
 }
 
-Bool_t TMrbC2Lynx::Connect() {
+Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbC2Lynx::Connect
 // Purpose:        Connect to server
-// Arguments:      --
+// Arguments:      Bool_t WaitFlag  -- wait for connection to establish if kTRUE
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    (Re)Connects to server.
@@ -111,6 +137,13 @@ Bool_t TMrbC2Lynx::Connect() {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (this->IsConnected()) return(kTRUE);
+
+	TString cpu, lynx;
+	if (!this->CheckVersion(cpu, lynx, fServerPath.Data())) {
+		gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
+		gMrbLog->Flush(this->ClassName(), "Connect");
+		return(kFALSE);
+	}
 
 	TSocket * s = new TSocket(fHost.Data(), fPort);
 	Bool_t sockOk = s->IsValid();
@@ -130,7 +163,7 @@ Bool_t TMrbC2Lynx::Connect() {
 		}
 		delete s;
 		TString cmd1, cmd2;
-		if (fUseXterm) {
+		if (this->Log2Xterm()) {
 			cmd1 = "xterm -title ";
 			cmd1 += fServerName;
 			cmd1 += "@";
@@ -157,35 +190,56 @@ Bool_t TMrbC2Lynx::Connect() {
 			gMrbLog->Flush(this->ClassName(), "Connect");
 		} else {
 			cmd1 += cmd2;
-			cmd1 += " 1>/dev/null 2>/dev/null &";
+			cmd1 += this->Log2Pipe() ? " 2>&1" : " 1>/dev/null 2>/dev/null";
+			cmd1 += " &";;
 			if (fVerboseMode) {
 				gMrbLog->Out()	<< "Exec >> " << cmd1 << " <<" << endl;
 				gMrbLog->Flush(this->ClassName());
 			}
-			gSystem->Exec(cmd1.Data());
+			if (this->Log2Pipe()) {
+				fPipe = gSystem->OpenPipe(cmd1.Data(), "r");
+			} else {
+				gSystem->Exec(cmd1.Data());
+			}
 		}
+
+		if (!WaitFlag) return(kTRUE);
 
 		Int_t wait = fDebugMode ? 100 : 10;
 		for (Int_t i = 0; i < wait; i++) {
 			sleep(1);
-			cout << "." << flush;
-			s = new TSocket(fHost.Data(), fPort);
-			sockOk = s->IsValid();
-			if (sockOk) break;
-			delete s;
+			if(this->WaitForConnection()) return(kTRUE);
 		}
-		if (sockOk) {
-			cout << " done." << endl;
-			fSocket = s;
-			return(kTRUE);
-		} else {
-			cout << endl;
-			gMrbLog->Err()	<< "Can't connect to server/port " << fHost << ":" << fPort << endl;
-			gMrbLog->Flush(this->ClassName(), "Connect");
-			fSocket = NULL;
-			return(kFALSE);
-		}
+		gMrbLog->Err()	<< "Can't connect to server/port " << fHost << ":" << fPort << endl;
+		gMrbLog->Flush(this->ClassName(), "Connect");
+		fSocket = NULL;
+		return(kFALSE);
 	}
+}
+
+Bool_t TMrbC2Lynx::WaitForConnection() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbC2Lynx::WaitForConnection
+// Purpose:        Connect to server
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Wait for connection to establish.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->IsConnected()) return(kTRUE);
+	TSocket * s = new TSocket(fHost.Data(), fPort);
+	Bool_t sockOk = s->IsValid();
+	if (sockOk) {
+		fSocket = s;
+		gMrbC2Lynx = this;
+		gROOT->Append(this);
+		return(kTRUE);
+	}
+	delete s;
+	return(kFALSE);
 }
 	
 void TMrbC2Lynx::Reset() {
@@ -206,7 +260,7 @@ void TMrbC2Lynx::Reset() {
 	fDebugMode = gEnv->GetValue("TMrbC2Lynx.DebugMode", kFALSE);
 
 	fNonBlocking = kFALSE;
-	fUseXterm = kFALSE;
+	fServerLog = fLofServerLogs.FindByIndex(kC2LServerLogNone);
 
 	fHost.Resize(0);								// host name
 	fServerPath.Resize(0);
@@ -214,6 +268,54 @@ void TMrbC2Lynx::Reset() {
 
 	fPort = -1;
 	fSocket = NULL;
+
+	fPipe = NULL;
+}
+
+Bool_t TMrbC2Lynx::SetServerLog(const Char_t * Output) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbC2Lynx::SetServerLog
+// Purpose:        Define output mode
+// Arguments:      Char_t * Output   -- output mode
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Defines output mode for server logs
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * sl = fLofServerLogs.FindByName(Output);
+	if (sl == NULL) {
+		gMrbLog->Err()	<< "Illegal output mode " << Output << endl;
+		gMrbLog->Flush(this->ClassName(), "SetServerLog");
+		return(kFALSE);
+	} else {
+		fServerLog = sl;
+		return(kTRUE);
+	}
+}
+
+Bool_t TMrbC2Lynx::SetServerLog(EC2LServerLog Output) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbC2Lynx::SetServerLog
+// Purpose:        Define output mode
+// Arguments:      EC2LServerLog Output   -- output mode
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Defines output mode for server logs
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * sl = fLofServerLogs.FindByIndex(Output);
+	if (sl == NULL) {
+		gMrbLog->Err()	<< "Illegal output mode " << setbase(16) << Output << setbase(10) << endl;
+		gMrbLog->Flush(this->ClassName(), "SetServerLog");
+		return(kFALSE);
+	} else {
+		fServerLog = sl;
+		return(kTRUE);
+	}
 }
 
 Bool_t TMrbC2Lynx::Send(M2L_MsgHdr * Hdr) {
@@ -380,3 +482,59 @@ M2L_MsgHdr * TMrbC2Lynx::AllocMessage(Int_t Length, Int_t Wc, UInt_t What) {
 	return((M2L_MsgHdr *) gMsgBuffer);
 }
 
+Bool_t TMrbC2Lynx::CheckVersion(TString & Cpu, TString & Lynx, const Char_t * ServerPath) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbC2Lynx::CheckVersion
+// Purpose:        Check server version
+// Arguments:      Char_t * ServerPath  -- path to lynxOs server
+// Results:        TString & Cpu        -- cpu version
+//                 TString & Lynx       -- lynx version
+// Exceptions:
+// Description:    Checks server for occurrence of "@#@" strings:
+//                 @#@CPU=RIOn
+//                 @#@LynxOs=n.n
+//                 Returns a string CPU:LynxOs as a result: "RIO2:2.5" or "RIO3:3.1"
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Cpu = "n.a";
+	Lynx = "n.a";
+
+	TString serverPath = ServerPath;
+	if (serverPath.IsNull()) serverPath = fServerPath;
+
+	if (gSystem->AccessPathName(serverPath.Data())) {
+		gMrbLog->Err()	<< "No such file - " << serverPath << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckVersion");
+		return(kFALSE);
+	}
+
+	TString cmd = Form("strings %s | grep @#@", serverPath.Data());
+	FILE * grep = gSystem->OpenPipe(cmd.Data(), "r");
+	if (!grep) {
+		gMrbLog->Err()	<< "Can't exec grep command - \"" << cmd << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckVersion");
+		return(kFALSE);
+	}
+
+	Char_t buf[128];
+	while (fgets(buf, 128, grep)) {
+		TString str = buf;
+		str.Resize(str.Length() - 1);
+		if (str.Contains("@#@")) {
+			Int_t x = str.Index("CPU=", 0);
+			if (x > 0) {
+				Cpu = str(x + 4, 10);
+				continue;
+			}
+			x = str.Index("LynxOs=", 0);
+			if (x > 0) {
+				Lynx = str(x + 7, 10);
+				continue;
+			}
+		}
+	}
+	fclose(grep);
+	return(Cpu.CompareTo("n.a") != 0 && Lynx.CompareTo("n.a") != 0);
+}

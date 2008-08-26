@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.49 2008-07-02 07:03:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.50 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -1174,7 +1174,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 														NULL, NULL, checkBtn);
 			}
 			HEAP(macroArg->fEntry);
-			macroArg->fEntry->GetTextEntry()->ConnectSigToSlot("EntryChanged(Int_t)", this, "ProcessSignal(Int_t)");
+			macroArg->fEntry->GetTextEntry()->Connect("EntryChanged(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
 			parentFrame->AddFrame(macroArg->fEntry, frameGC->LH());
 
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
@@ -1300,7 +1300,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			} else {
 				macroArg->fRadio->SetState(TGMrbMacroArg::kGMrbMacroEntryNo, kButtonDown);
 			}
-			macroArg->fRadio->ConnectSigToSlot("ButtonPressed(Int_t)", this, "ProcessSignal(Int_t)");
+			((TGMrbButtonFrame *) macroArg->fRadio)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryRadio
 						|| entryType == TGMrbMacroArg::kGMrbMacroEntryCheck
 						|| entryType == TGMrbMacroArg::kGMrbMacroEntryText
@@ -1355,7 +1355,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					if ((button = macroArg->fButtons.FindByIndex(val)) != NULL) {
 						macroArg->fRadio->SetState(val, kButtonDown);
 					}
-					macroArg->fRadio->ConnectSigToSlot("ButtonPressed(Int_t)", this, "ProcessSignal(Int_t)");
+					((TGMrbButtonFrame *) macroArg->fRadio)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryCheck) {
 					macroArg->fCheck = new TGMrbCheckButtonList(parentFrame, argTitle.Data(),
 														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, macroArg->fNofCL,
@@ -1369,7 +1369,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
 					Int_t pattern = value.Atoi();
 					macroArg->fCheck->SetState(pattern, kButtonDown);
-					macroArg->fCheck->ConnectSigToSlot("ButtonPressed(Int_t)", this, "ProcessSignal(Int_t)");
+					((TGMrbButtonFrame *) macroArg->fCheck)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryText) {
 					macroArg->fText = new TGMrbTextButtonList(parentFrame, argTitle.Data(),
 														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, macroArg->fNofCL,
@@ -1379,7 +1379,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 														macroArg->fOrientation);
 					HEAP(macroArg->fText);
 					parentFrame->AddFrame(macroArg->fText, frameGC->LH());
-					macroArg->fText->ConnectSigToSlot("ButtonPressed(Int_t)", this, "ProcessSignal(Int_t)");
+					((TGMrbButtonFrame *) macroArg->fText)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryCombo) {
 					macroArg->fCombo = new TGMrbLabelCombo(parentFrame, argTitle.Data(), &macroArg->fButtons,
 														argNo << TGMrbButtonFrame::kFrameIdShift, -1,
@@ -1432,7 +1432,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			parentFrame->AddFrame(macroArg->fFile, frameGC->LH());
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
 			macroArg->fFile->GetEntry()->SetText(value.Data());
-			macroArg->fFile->ConnectSigToSlot("EntryChanged(Int_t)", this, "ProcessSignal(Int_t)");
+			macroArg->fFile->Connect("EntryChanged(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) {
 			macroArg->fFObjCombo = new TGMrbFileObjectCombo(parentFrame, argTitle.Data(), 100,
 												argNo << TGMrbButtonFrame::kFrameIdShift,
@@ -2973,7 +2973,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fArgNumber->Associate(this);
 	fArgNumber->SetRange(1, TGMrbMacroEdit::kMaxNofArgs);
 	fArgNumber->SetIncrement(1);
-	fArgNumber->GetTextEntry()->ConnectSigToSlot("EntryChanged(Int_t)", this, "SwitchToArg(Int_t)");
+	fArgNumber->GetTextEntry()->Connect("EntryChanged(Int_t)", this->ClassName(), this, "SwitchToArg(Int_t)");
 
 	fArgAction = new TGMrbTextButtonList(fMacroArg, NULL, &fLofArgActions, -1, 1, frameWidth / 2, TGMrbMacroEdit::kLineHeight,
 														frameGC, labelGC, buttonGC);

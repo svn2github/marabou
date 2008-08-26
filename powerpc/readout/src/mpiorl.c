@@ -22,6 +22,8 @@
 #include "err_mask_def.h"
 #include "errnum_def.h"
 
+#include "Version.h"
+
 #define HD_IOReg_R_DATART	0x00
 #define HD_IOReg_R_DATARS	0x02
 #define HD_IOReg_R_DATARL	0x04

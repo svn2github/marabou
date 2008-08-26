@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.7 2005-09-09 07:48:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.8 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -73,6 +73,8 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 	fBegin = NULL;
 	fEnd = NULL;
 
+	Int_t comboWidth = ComboWidth;
+
 	if (Label != NULL) {
 		label = new TGLabel(this, new TGString(Label), LabelGC->GC(), LabelGC->Font(), kChildFrame, LabelGC->BG());
 		fHeap.AddFirst((TObject *) label);
@@ -91,6 +93,7 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 			bSize = fEnd->GetDefaultWidth();
 			this->AddFrame(fEnd, btnLayout);
 			fEnd->Associate(this);
+			comboWidth -= fEnd->GetWidth();
 		}
 		fUp = new TGPictureButton(this, fClient->GetPicture("arrow_right.xpm"), kGMrbComboButtonUp, UpDownBtnGC->GC());
 		fHeap.AddFirst((TObject *) fUp);
@@ -99,6 +102,7 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 		bSize += fUp->GetDefaultWidth();
 		this->AddFrame(fUp, btnLayout);
 		fUp->Associate(this);
+		comboWidth -= fUp->GetWidth();
 		fDown = new TGPictureButton(this, fClient->GetPicture("arrow_left.xpm"), kGMrbComboButtonDown, UpDownBtnGC->GC());
 		fHeap.AddFirst((TObject *) fDown);
 		fDown->ChangeBackground(UpDownBtnGC->BG());
@@ -106,6 +110,7 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 		bSize += fDown->GetDefaultWidth();
 		this->AddFrame(fDown, btnLayout);
 		fDown->Associate(this);
+		comboWidth -= fDown->GetWidth();
 		if (BeginEndBtns) {
 			fBegin = new TGPictureButton(this, fClient->GetPicture("arrow_leftleft.xpm"), kGMrbComboButtonBegin, UpDownBtnGC->GC());
 			fHeap.AddFirst((TObject *) fBegin);
@@ -114,6 +119,7 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 			bSize += fBegin->GetDefaultWidth();
 			this->AddFrame(fBegin, btnLayout);
 			fBegin->Associate(this);
+			comboWidth -= fBegin->GetWidth();
 		}
 	}
 
@@ -122,8 +128,10 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 	this->AddFrame(fCombo, ComboGC->LH());
 	fEntries.Delete();
 	this->AddEntries(Entries);
-	fCombo->Resize(ComboWidth, Height);
+	fCombo->Select(Selected, kFALSE);
+	fCombo->Resize(comboWidth, Height);
 	fCombo->Associate(this);
+	fCombo->Layout();
 }
 
 Bool_t TGMrbLabelCombo::AddEntries(TMrbLofNamedX * Entries) {
@@ -168,9 +176,6 @@ Bool_t TGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 
 		case kC_COMMAND:
 			switch (GET_SUBMSG(MsgId)) {
-				case kCM_COMBOBOX:
-					fText = ((TGTextLBEntry *) fCombo->GetSelectedEntry())->GetText()->GetString();
-					break;
 				case kCM_BUTTON:
 					switch (Param1) {
 						case TGMrbLabelCombo::kGMrbComboButtonDown:
@@ -183,6 +188,7 @@ Bool_t TGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							}
 							fCombo->Select(nx->GetIndex());
 							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
+							this->SelectionChanged();
 							break;
 						case TGMrbLabelCombo::kGMrbComboButtonUp:
 							idx = fCombo->GetSelected();
@@ -194,6 +200,7 @@ Bool_t TGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							}
 							fCombo->Select(nx->GetIndex());
 							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
+							this->SelectionChanged();
 							break;								
 						case TGMrbLabelCombo::kGMrbComboButtonBegin:
 							nx = (TMrbNamedX *) fEntries.First();
@@ -204,6 +211,7 @@ Bool_t TGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							nx = (TMrbNamedX *) fEntries.Last();
 							fCombo->Select(nx->GetIndex());
 							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
+							this->SelectionChanged();
 							break;
 					}
 					break;

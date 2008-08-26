@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEsone.cxx,v 1.16 2008-06-16 15:00:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEsone.cxx,v 1.17 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -504,7 +504,9 @@ Bool_t TMrbEsone::StartMarabouServer(const Char_t * HostName) {
 	Bool_t useXterm = gEnv->GetValue("TMrbEsone.StartSrvInXterm", kTRUE);
 	Bool_t nonBlocking = gEnv->GetValue("TMrbEsone.NonBlockingMode", kFALSE);
 
-	fLynxClient = new TMrbC2Lynx(fHost.Data(), fServerPath.Data(), NULL, fPort, nonBlocking, useXterm);
+	fLynxClient = new TMrbC2Lynx(fHost.Data(), fServerPath.Data(), NULL, fPort);
+	fLynxClient->SetNonBlocking(nonBlocking);
+	fLynxClient->SetServerLog(useXterm ? TMrbC2Lynx::kC2LServerLogXterm : TMrbC2Lynx::kC2LServerLogNone);
 
 	if ((fSocket = fLynxClient->GetSocket()) == NULL) {
 		gMrbLog->Err()	<< "Can't connect to server/port " << fHost << ":" << fPort << endl;

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMessageViewer.cxx,v 1.3 2005-04-28 10:25:49 rudi Exp $       
+// Revision:       $Id: TGMrbMessageViewer.cxx,v 1.4 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 //
 //Begin_Html
@@ -103,7 +103,7 @@ TGMrbMessageViewer::TGMrbMessageViewer( const TGWindow * Parent,
 	fMsgLog = MsgLog;
 	fLogFile = File ? File : "";
 
-	if (Connect && fMsgLog) fMsgLog->SetGUI(this);
+	if (Connect && fMsgLog) fMsgLog->Connect("Flush()", "TGMrbMessageViewer", this, "Notify()");
 
 	fTextView->Resize(Width, Height - fAction->GetDefaultHeight() - 10);
 
@@ -134,19 +134,18 @@ Int_t TGMrbMessageViewer::AddEntries(UInt_t Type, Int_t Start, Bool_t WithDate) 
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t nofMessages;
+	const Char_t * progName = fMsgLog->GetProgName();
 	TObjArray lofMessages;
-	TMrbLogMessage * msg;
-	const Char_t * progName;
-	TString msgText;
-					
-	progName = fMsgLog->GetProgName();
 	fMsgLog->GetEntriesByType(lofMessages, Start, Type);
-	msg = (TMrbLogMessage *) lofMessages.First();
-	nofMessages = 0;
-	while (msg) {
-		fTextView->AddLine(msg->Get(msgText, progName, WithDate, kFALSE));
-		msg = (TMrbLogMessage *) lofMessages.After(msg);
+	Int_t nofMessages = 0;
+	TIterator * iter = lofMessages.MakeIterator();
+	TMrbLogMessage * msg;
+	while (msg = (TMrbLogMessage *) iter->Next()) {
+		TString msgText;
+		msg->Get(msgText, progName, WithDate, kFALSE);
+		msgText = msgText.Strip(TString::kBoth);
+		msgText.Resize(msgText.Length() - 1);
+		fTextView->AddLine(msgText);
 		nofMessages++;
 	}
 	return(nofMessages);
@@ -166,12 +165,15 @@ Bool_t TGMrbMessageViewer::Notify() {
 
 	TMrbLogMessage * msg;
 	const Char_t * progName;
-	TString msgText;
 					
 	progName = fMsgLog->GetProgName();
 	msg = fMsgLog->GetLast(fEnabled);
 	if (msg) {
-		fTextView->AddLine(msg->Get(msgText, progName, fWithDate, kFALSE));
+		TString msgText;
+		msg->Get(msgText, progName, fWithDate, kFALSE);
+		msgText = msgText.Strip(TString::kBoth);
+		msgText.Resize(msgText.Length() - 1);
+		fTextView->AddLine(msgText);
 		return(kTRUE);
 	} else return(kFALSE);
 }
@@ -201,16 +203,19 @@ Bool_t TGMrbMessageViewer::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 						case TGMrbMessageViewer::kGMrbViewerIdAll:
 							fTextView->Clear();
 							this->AddEntries();
+							this->Enable(TMrbLogMessage::kMrbMsgAny);
 							break;
 						case TGMrbMessageViewer::kGMrbViewerIdErrors:
 							fTextView->Clear();
 							this->AddEntries(TMrbLogMessage::kMrbMsgError);
+							this->Disable(TMrbLogMessage::kMrbMsgAny);
+							this->Enable(TMrbLogMessage::kMrbMsgError);
 							break;
 						case TGMrbMessageViewer::kGMrbViewerIdAdjust:
 							if (fTextView->ReturnLineCount() > 1) this->Resize(fTextView->ReturnLongestLineWidth(), fHeight);
 							break;
 						case TGMrbMessageViewer::kGMrbViewerIdClose:
-							fMsgLog->SetGUI(NULL);
+							fMsgLog->Disconnect("Flush()", this, "Notify()");
 							delete this;
 							break;
 					}

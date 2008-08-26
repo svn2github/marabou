@@ -24,6 +24,8 @@
 #include "unix_string.h"
 #include "root_env.h"
 
+#include "Version.h"
+
 #define FIPPI_REVD	3
 #define FIPPI_REVE	4
 

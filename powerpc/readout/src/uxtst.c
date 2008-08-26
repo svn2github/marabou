@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "unix_string.h"
 
+#include "Version.h"
+
 TUnixEntry * unix_string_get_entry(int EntryNumber);
 
 main(int argc, char * argv[])

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTail.cxx,v 1.4 2008-08-18 08:18:57 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTail.cxx,v 1.5 2008-08-26 06:33:24 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -17,6 +17,8 @@
 #include "TObjString.h"
 #include "SetColor.h"
 #include "TMrbTail.h"
+
+#include "TSysEvtHandler.h"
 
 extern TMrbLogger * gMrbLog;
 
@@ -35,8 +37,8 @@ TMrbTail::TMrbTail(const Char_t * TailName, const Char_t * TailFile) : TMrbNamed
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
-	fFilDes = open(TailFile, O_RDONLY | O_NONBLOCK);
-	if (fFilDes == -1) {
+	fStrm = fopen(TailFile, "r");
+	if (fStrm == NULL) {
 		gMrbLog->Err() << "Can't open file - " << TailFile << endl;
 		gMrbLog->Flush(this->ClassName());
 		this->MakeZombie();
@@ -46,15 +48,7 @@ TMrbTail::TMrbTail(const Char_t * TailName, const Char_t * TailFile) : TMrbNamed
 		title += TailFile;
 		title += ")";
 		this->SetTitle(title.Data());
-		fStrm = fdopen(fFilDes, "r");
-		fTimer = new TTimer(this, 100);
-		fStopIt = kTRUE;
-		fOutputMode = kMrbTailOutUndef;
-		fLogger = NULL;
-		fStdout = NULL;
-		fStderr = NULL;
-		fReceiver = NULL;
-		fTextArray = NULL;
+		this->Setup();
 	}
 }
 		
@@ -71,76 +65,86 @@ TMrbTail::TMrbTail(const Char_t * TailName, FILE * TailStrm) : TMrbNamedX(0, Tai
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
-	fFilDes = fileno(TailStrm);
-	if (fFilDes == -1) {
-		gMrbLog->Err() << "Can't open tail file" << endl;
+	if (TailStrm == NULL) {
+		gMrbLog->Err() << "Can't connect to stream" << endl;
 		gMrbLog->Flush(this->ClassName());
 		this->MakeZombie();
 	} else {
 		this->SetTitle(TailName);
 		fStrm = TailStrm;
-		ioctl(fFilDes, O_RDONLY | O_NONBLOCK);
-		fTimer = new TTimer(this, 100);
-		fStopIt = kTRUE;
-		fOutputMode = kMrbTailOutUndef;
-		fLogger = NULL;
-		fStdout = NULL;
-		fStderr = NULL;
-		fReceiver = NULL;
-		fTextArray = NULL;
+		this->Setup();
 	}
 }
 		
-void TMrbTail::Start(Bool_t SkipToEnd) {
+void TMrbTail::Setup() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTail::Setup
+// Purpose:        Common init part
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Inbbitializes tail mechanism.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t fd = fileno(fStrm);
+	this->SetIndex(fd);
+
+	fStopIt = kTRUE;
+	fOutputMode = kMrbTailOutUndef;
+	fLogger = NULL;
+	fStdout = NULL;
+	fStderr = NULL;
+	fFH = NULL;
+}
+
+void TMrbTail::Start() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTail::Start
 // Purpose:        Start output
-// Arguments:      Bool_t SkipToEnd  -- if kTRUE only future lines will be output
+// Arguments:      --
 // Results:        --
 // Exceptions:     
-// Description:    Starts 
+// Description:    Starts timer
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Char_t str[1024];
-
-	if (SkipToEnd) while (fgets(str, 1024, fStrm) != NULL);
-	if (fOutputMode == kMrbTailOutUndef) this->SetOutput(gMrbLog ? gMrbLog : new TMrbLogger("tail.log"));
-	if (fOutputMode == kMrbTailOutArray) fTextArray->Delete();
-	fTimer->TurnOn();
-	fStopIt = kFALSE;
+	if (fFH == NULL) {
+		TFileHandler * fFH = new TFileHandler(this->GetIndex(), TFileHandler::kRead);
+		fFH->Add();
+		if (kMrbTailOutSlot) {
+			fFH->Connect("Notified()", fRecv.GetName(), fRecv.GetAssignedObject(), fRecv.GetTitle());
+		} else {
+			fFH->Connect("Notified()", this->ClassName(), this, "HandleInput()");
+		}
+	}
 }
 
-Bool_t TMrbTail::HandleTimer(TTimer * Timer) {
+void TMrbTail::HandleInput() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbTail::HandleTimer
-// Purpose:        Timer interrupt
-// Arguments:      TTImer * Timer   -- timer
-// Results:        kTRUE/kFALSE
+// Name:           TMrbTail::HandleInput
+// Purpose:        Called on signal Notified()
+// Arguments:      TTimer * Timer   -- timer
+// Results:        --
 // Exceptions:     
-// Description:    Services a timer interrupt.
+// Description:    Handle input from selected stream
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Char_t str[1024];
 
-	Bool_t newData = kFALSE;
-	while (fgets(str, 1024, fStrm) != NULL) {
-		newData = kTRUE;
+	if (fgets(str, 1024, fStrm)) {
 		str[strlen(str) - 1] = '\0';
 		TString xstr = str;
 		switch (fOutputMode) {
 			case kMrbTailOutLogger: 	this->ToLogger(xstr); break;
 			case kMrbTailOutStdio:		this->ToStdio(xstr); break;
-			case kMrbTailOutArray:		this->ToArray(xstr); break;
+			case kMrbTailOutSlot:		break;
 		}	
 	}
-	if (newData && (fOutputMode == kMrbTailOutArray)) fReceiver->Notify();
-
-	if (!fStopIt) Timer->TurnOn();
-	return(kTRUE);
 }
 
 Bool_t TMrbTail::SetOutput(TMrbLogger * Logger) {
@@ -191,13 +195,14 @@ Bool_t TMrbTail::SetOutput(ostream & Stdout, ostream & Stderr) {
 	}
 }
 
-Bool_t TMrbTail::SetOutput(TObject * Receiver, TObjArray * TextArray) {
+Bool_t TMrbTail::SetOutput(const Char_t * RecvName, TObject * Recv, const Char_t * Slot) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTail::SetOutput
 // Purpose:        Define output mode
-// Arguments:      TObject * Receiver    -- receiving object, to be notified
-//                 TObjArray * TextArray -- text array
+// Arguments:      Char_t * RecvName      -- name of receiving class
+//                 TObject * Recv         -- receiving class
+//                 Char_t * Slot          -- slot method
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Defines output mode.
@@ -209,9 +214,10 @@ Bool_t TMrbTail::SetOutput(TObject * Receiver, TObjArray * TextArray) {
 		gMrbLog->Flush(this->ClassName());
 		return(kFALSE);
 	} else {
-		fReceiver = Receiver;
-		fTextArray = TextArray;
-		fOutputMode = kMrbTailOutArray;
+		fRecv.SetName(RecvName);
+		fRecv.SetTitle(Slot);
+		fRecv.AssignObject(Recv);
+		fOutputMode = kMrbTailOutSlot;
 		return(kTRUE);
 	}
 }
@@ -249,19 +255,4 @@ void TMrbTail::ToStdio(TString & Text) {
 	if (Text(0) == '?') 		*fStderr << Text << endl;
 	else if (Text(0) == '%')	*fStderr << Text << endl;
 	else						*fStdout << Text << endl;
-}
-
-void TMrbTail::ToArray(TString & Text) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbTail::ToArray
-// Purpose:        Output to array
-// Arguments:      TString & Text   -- line of text to be output
-// Results:        --
-// Exceptions:     
-// Description:    Outputs text to array
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	fTextArray->Add(new TObjString(Text.Data()));
 }

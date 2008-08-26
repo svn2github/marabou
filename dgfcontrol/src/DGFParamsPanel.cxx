@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.22 2007-10-25 17:24:12 Marabou Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.23 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -218,7 +218,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, comboGC);
 	HEAP(fAlpha);
 	fAlpha->SetState(1);
-	fAlpha->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fAlpha)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
 	fSelectFrame->AddFrame(fAlpha, frameGC->LH());
 
 // values

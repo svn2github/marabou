@@ -18,6 +18,8 @@
 #include "cc32_camio.h"
 #include "ces/vmelib.h"
 
+#include "Version.h"
+
 extern volatile unsigned long * cc32_baseAddr;
 
 static volatile unsigned long * addr0;		/* crate#1, N(0).A(0).F(0) */

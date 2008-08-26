@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.34 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.35 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -195,7 +195,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, comboGC);
 	HEAP(fSelectChannel);
 	fSelectChannel->SetState(gDGFControlData->GetSelectedChannelIndex());
-	fSelectChannel->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fSelectChannel)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
 	fSelectFrame->AddFrame(fSelectChannel, frameGC->LH());
 
 // 2 vertical frames, left and right
@@ -575,7 +575,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, comboGC);
 	HEAP(fTraceUPSAOnOffButton);
 	fTraceUPSAOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrUPSAOff);
-	fTraceUPSAOnOffButton->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fTraceUPSAOnOffButton)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
 	fTraceUPSAFrame->AddFrame(fTraceUPSAOnOffButton, frameGC->LH());
 #endif
 
@@ -753,7 +753,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, comboGC);
 	HEAP(fCFDOnOffButton);
 	fCFDOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrCFDOff);
-	fCFDOnOffButton->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fCFDOnOffButton)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
 	fCFDDataFrame->AddFrame(fCFDOnOffButton, frameGC->LH());
 
 	fCFDDelayBeforeLEEntry = new TGMrbLabelEntry(fCFDDataFrame, "Delay before LE [ns]",
@@ -810,7 +810,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, comboGC);
 	HEAP(fCFDFractionButton);
 	fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract00);
-	fCFDFractionButton->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fCFDFractionButton)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
 	fCFDDataFrame->AddFrame(fCFDFractionButton, frameGC->LH());
 
 // place an unvisible label to pad group frame vertically

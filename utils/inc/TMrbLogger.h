@@ -8,7 +8,7 @@
 // Class:          TMrbLogger    -- message/error logging
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLogger.h,v 1.12 2008-08-18 08:18:57 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLogger.h,v 1.13 2008-08-26 06:33:24 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -26,6 +26,8 @@ namespace std {} using namespace std;
 #include "TSystem.h"
 #include "TObjArray.h"
 #include "TDatime.h"
+
+#include "RQ_OBJECT.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -87,6 +89,8 @@ class TMrbLogMessage: public TObject {
 
 class TMrbLogger: public TNamed {
 
+	RQ_OBJECT("TMrbLogger")
+
 	public:
 		enum EMrbMsgRoute		{	kMrbMsgCout 	= BIT(0), 		// stdout/cout
 									kMrbMsgCerr 	= BIT(1), 		// stderr/cerr
@@ -102,7 +106,7 @@ class TMrbLogger: public TNamed {
 
 		~TMrbLogger() { Reset(); };						// dtor
 
-		Bool_t Flush(const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL, Bool_t Indent = kFALSE);
+		Bool_t Flush(const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL, Bool_t Indent = kFALSE);	// *SIGNAL*
 		Bool_t Open(const Char_t * LogFile = "marabou.log", const Char_t * Option = "APPEND");
 		Bool_t Close();
 				
@@ -127,8 +131,6 @@ class TMrbLogger: public TNamed {
 		
 		inline UInt_t Enable(UInt_t Bits) { fEnabled |= Bits; return(fEnabled); };
 		inline UInt_t Disable(UInt_t Bits) { fEnabled &= ~Bits; return(fEnabled); };
-		
-		inline void SetGUI(TObject * GUI) { fGUI = GUI; };
 		
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(Int_t Tail = 0, const Char_t * Option = "*") const;
@@ -182,8 +184,6 @@ class TMrbLogger: public TNamed {
 		Int_t fIndexOfLastPrinted;	// index at last printout
 		TObjArray fLofMessages; 	// list of messages
 		
-		TObject * fGUI; 			//! connect to GUI (class TGMrbMessageViewer)
-
 	ClassDef(TMrbLogger, 1) 		// [Utils] Message/error logger
 };
 

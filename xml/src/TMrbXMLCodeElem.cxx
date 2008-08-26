@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXMLCodeElem.cxx,v 1.10 2008-03-05 12:23:44 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXMLCodeElem.cxx,v 1.11 2008-08-26 06:33:24 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -627,7 +627,6 @@ Bool_t TMrbXMLCodeElem::ExpandInclude(const Char_t * Tag, const Char_t * ItemNam
 	Bool_t sts = kTRUE;
 	Int_t idx1 = 0;
 	while ((idx1 = Code.Index("@#@include|", idx1)) >= 0) {
-		cout << "@@@0 idx1=" << idx1 << " code=" << Code << endl;
 		idx1 += hdrl;
 		Int_t idx2 = Code.Index("@", idx1);
 		if (idx2 < 0) {
@@ -637,7 +636,6 @@ Bool_t TMrbXMLCodeElem::ExpandInclude(const Char_t * Tag, const Char_t * ItemNam
 		} else {
 			TString code = "";
 			TString item = Code(idx1, idx2 - idx1);
-			cout << "@@@0 idx2=" << idx2 << " item=" << item << endl;
 			Int_t idx3 = item.Index("|", 0);
 			getchar();
 			if (idx3 < 0) {
@@ -647,8 +645,6 @@ Bool_t TMrbXMLCodeElem::ExpandInclude(const Char_t * Tag, const Char_t * ItemNam
 			} else {
 				idx3 += strlen("|");
 				TString codeFile = item(idx3, item.Length() - idx3);
-				cout << "@@@ " << codeFile << " " << Tag << endl;
-				getchar();
 				gSystem->ExpandPathName(codeFile);
 				TString xmlPath = gEnv->GetValue("TMrbConfig.XMLPath", ".:config:$(MARABOU)/xml/config");
 				gSystem->ExpandPathName(xmlPath);
@@ -680,8 +676,6 @@ Bool_t TMrbXMLCodeElem::ExpandInclude(const Char_t * Tag, const Char_t * ItemNam
 				Code(idx1 - hdrl, idx2 - idx1 + hdrl + 1) = code;
 			}
 		}
-		cout << "@@@1 code=|" << Code << "|" << endl;
-		getchar();
 	}
  	return(sts);
 }

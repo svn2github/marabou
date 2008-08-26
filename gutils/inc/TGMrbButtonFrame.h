@@ -8,7 +8,7 @@
 // Class:          TGMrbButtonFrame    -- a composite frame containing buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbButtonFrame.h,v 1.8 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbButtonFrame.h,v 1.9 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -98,9 +98,6 @@ class TGMrbButtonFrame: public TGMrbObject {
 		void SetState(UInt_t Pattern, EButtonState State = kButtonDown);	// set button state
 		UInt_t GetActive(); 												// return button state
 
-		inline void ConnectSigToSlot(const Char_t * Signal, TObject * Receiver, const Char_t * Slot) {
-			this->Connect(Signal, Receiver->ClassName(), Receiver, Slot);
-		}
 		inline void ButtonPressed(Int_t Signal) { this->Emit("ButtonPressed(Int_t)", fFrameId + Signal); };	//*SIGNAL*
 
 		void FlipState(UInt_t Pattern);					// flip state

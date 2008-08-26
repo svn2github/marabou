@@ -61,6 +61,7 @@
 #include <time.h>
 #include "vmelib.h"
 
+#include "Version.h"
 
 void sis_module_info(unsigned long physAddr, volatile unsigned char * vmeAddr, unsigned long addrMod);
 

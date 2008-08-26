@@ -1,6 +1,8 @@
 #include <stdio.h>
 #include "root_env.h"
 
+#include "Version.h"
+
 main(int argc, char * argv[])
 
 {

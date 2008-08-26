@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileEntry.cxx,v 1.6 2007-09-06 11:25:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileEntry.cxx,v 1.7 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -67,15 +67,15 @@ TGMrbFileEntry::TGMrbFileEntry(const TGWindow * Parent,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TGLabel * label;
-	Int_t bSize;
 
 	LabelGC = this->SetupGC(LabelGC, FrameOptions);
 	EntryGC = this->SetupGC(EntryGC, FrameOptions);
 	BrowseGC = this->SetupGC(BrowseGC, FrameOptions);
 
+	Int_t entryWidth = EntryWidth;
+
 	if (Label != NULL) {
-		label = new TGLabel(this, new TGString(Label), LabelGC->GC(), LabelGC->Font(), kChildFrame, LabelGC->BG());
+		TGLabel * label = new TGLabel(this, new TGString(Label), LabelGC->GC(), LabelGC->Font(), kChildFrame, LabelGC->BG());
 		fHeap.AddFirst((TObject *) label);
 		this->AddFrame(label, LabelGC->LH());
 		label->SetTextJustify(kTextLeft);
@@ -92,8 +92,8 @@ TGMrbFileEntry::TGMrbFileEntry(const TGWindow * Parent,
 		fBrowse->ChangeBackground(BrowseGC->BG());
 		fBrowse->SetToolTipText("Browse files", 500);
 		fBrowse->Associate(this);
-		bSize = fBrowse->GetDefaultWidth();
-	} else bSize = 0;
+		entryWidth -= fBrowse->GetWidth();;
+	}
 
 	fFrameId = EntryId;
 
@@ -104,7 +104,7 @@ TGMrbFileEntry::TGMrbFileEntry(const TGWindow * Parent,
 	fHeap.AddFirst((TObject *) fEntry);
 	this->AddFrame(fEntry, EntryGC->LH());
 	fEntry->Associate(this);
-	fEntry->Resize(EntryWidth - bSize, Height);
+	fEntry->Resize(entryWidth, Height);
 }
 
 Bool_t TGMrbFileEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
@@ -130,7 +130,7 @@ Bool_t TGMrbFileEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 					case 0:
 						new TGFileDialog(fClient->GetRoot(), this, fDialogMode, &fFileInfo);
 						if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') fEntry->SetText(fFileInfo.fFilename);
-						this->EntryChanged(0);
+						this->EntryChanged();
 						break;
 				}
 		}
@@ -139,7 +139,7 @@ Bool_t TGMrbFileEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 			case kTE_TAB:
 				break;
 			case kTE_ENTER:
-				this->EntryChanged(0);
+				this->EntryChanged();
 				break;
 		}
 	}

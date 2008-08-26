@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.12 2007-10-22 16:45:37 Marabou Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.13 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -202,7 +202,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fSelectChannel);
 	fSelectChannel->SetState(gDGFControlData->GetSelectedChannelIndex());
-	fSelectChannel->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fSelectChannel)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
 	fSelectFrame->AddFrame(fSelectChannel, frameGC->LH());
 
 // trace settings

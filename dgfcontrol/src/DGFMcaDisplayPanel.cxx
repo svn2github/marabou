@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.21 2007-10-22 16:45:37 Marabou Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.22 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -284,7 +284,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fDisplayChannel);
 	fDisplayChannel->SetState(1);
-	fDisplayChannel->ConnectSigToSlot("ButtonPressed(Int_t)", this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fDisplayChannel)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
 	fDisplayFrame->AddFrame(fDisplayChannel, frameGC->LH());
 
 	fRefreshTimeEntry = new TGMrbLabelEntry(fDisplayFrame, "Refresh (s)", 200,	kDGFMcaDisplayRefreshDisplay,

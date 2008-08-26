@@ -250,6 +250,8 @@
 #include <time.h>
 #include "vmelib.h"
 
+#include "Version.h"
+
 void caen_module_info(unsigned long physAddr, volatile unsigned char * vmeAddr, unsigned long addrMod);
 
 static struct pdparam_master s_param; 		/* vme segment params */

@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.16 2007-10-05 08:32:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.17 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ class TGMrbTextEntry: public TGTextEntry {
 
 		inline void EntryChanged(Int_t Signal) { this->Emit("EntryChanged(Int_t)", fFrameId + Signal); };	//*SIGNAL*
 
-		virtual void TextChanged(const Char_t * Text) {};	// no operation, action handled by SendSignal()
+		virtual void TextChanged(const Char_t * Text) {};	// no operation, action handled by EntryChanged()
 		
 		virtual Bool_t HandleButton(Event_t * Event);
 
