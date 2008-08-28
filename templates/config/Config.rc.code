@@ -67,6 +67,7 @@ $resource.ClassName:					$className
 %NUM%$resource.Module.$modNo.ClassName:		$className
 %NUM%$resource.Module.$modNo.Type:			$moduleType
 %NUM%$resource.Module.$modNo.Address:			$moduleAddr
+%NUM%$resource.Module.$modNo.HexAddr:			$moduleHexAddr
 %NUM%$resource.Module.$modNo.Crate:			$moduleCrate
 %NUM%$resource.Module.$modNo.Station:			$moduleStation
 %NUM%$resource.Module.$modNo.NofSubdevices:	$nofSubdevices
@@ -81,6 +82,7 @@ $resource.ClassName:					$className
 %NAM%$resource.Module.$moduleNameUC.ClassName:		$className
 %NAM%$resource.Module.$moduleNameUC.Type:			$moduleType
 %NAM%$resource.Module.$moduleNameUC.Address:			$moduleAddr
+%NAM%$resource.Module.$moduleNameUC.HexAddr:			$moduleHexAddr
 %NAM%$resource.Module.$moduleNameUC.Crate:			$moduleCrate
 %NAM%$resource.Module.$moduleNameUC.Station:			$moduleStation
 %NAM%$resource.Module.$moduleNameUC.NofSubdevices:	$nofSubdevices

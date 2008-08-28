@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.7 2008-08-26 06:33:23 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-08-26 06:33:23 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.8 2008-08-28 07:16:48 Rudolf.Lutter Exp $   
+// Date:           $Date: 2008-08-28 07:16:48 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -35,6 +35,8 @@
 // Name:           TMrbC2Lynx
 // Purpose:        MARaBOU client to connect to LynxOs/VME.
 // Description:    Creates a MARaBOU client to connect to LynxOs.
+class TC2LVMEModule;
+
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -84,7 +86,7 @@ class TMrbC2Lynx : public TNamed {
 		Bool_t Send(M2L_MsgHdr * Hdr);
 		Bool_t Recv(M2L_MsgHdr * Hdr);
 
-		inline void AddModule(TC2LVMEModule * Module) { fLofModules.Add(Module); };
+		inline void AddModule(TMrbNamedX * Module) { fLofModules.Add(Module); };
 		inline TMrbLofNamedX * LofModules() { return(&fLofModules); };
 		inline TC2LVMEModule * FindModule(const Char_t * ModuleName) { return((TC2LVMEModule *) fLofModules.FindByName(ModuleName)); };
 

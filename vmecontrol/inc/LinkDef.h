@@ -4,6 +4,6 @@
 #pragma link off all functions;
 
 #pragma link C++ class VMEControlData;
-#pragma link C++ class VMESystemPanel;
+#pragma link C++ class VMEMainFrame;
 #pragma link C++ class VMEServerPanel;
 #endif

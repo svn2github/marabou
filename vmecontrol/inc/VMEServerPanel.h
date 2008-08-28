@@ -8,8 +8,8 @@
 // Class:          VMEServerPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMEServerPanel.h,v 1.1 2008-08-26 06:33:24 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-08-26 06:33:24 $
+// Revision:       $Id: VMEServerPanel.h,v 1.2 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-08-28 07:16:48 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -80,6 +80,8 @@ class VMEServerPanel : public TGCompositeFrame {
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
+
+		Bool_t fAbortConnection;					// kTRUE if connection to be aborted
 
 		TGGroupFrame * fServerFrame; 				// server
 		TGMrbLabelCombo * fSelectHost;  			//		host

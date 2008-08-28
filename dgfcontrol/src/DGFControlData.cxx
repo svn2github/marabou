@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.17 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.18 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -30,7 +30,7 @@ ClassImp(DGFControlData)
 
 extern TMrbLogger * gMrbLog;
 
-DGFControlData::DGFControlData(const Char_t * RcFile) : TNamed("DGFControlData", "DGFControlData") {
+DGFControlData::DGFControlData() {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFControlData
@@ -77,22 +77,22 @@ DGFControlData::DGFControlData(const Char_t * RcFile) : TNamed("DGFControlData",
 	}		
 
 // global switches
-	if (gEnv->GetValue("DGFControl.DebugMode", kFALSE))		fStatus |= DGFControlData::kDGFDebugMode;
-	else													fStatus &= ~DGFControlData::kDGFDebugMode;
-	if (gEnv->GetValue("DGFControl.VerboseMode", kFALSE))	fStatus |= DGFControlData::kDGFVerboseMode;
-	else													fStatus &= ~DGFControlData::kDGFVerboseMode;
-	if (gEnv->GetValue("DGFControl.ModNumGlobal", kTRUE))	fStatus |= DGFControlData::kDGFModNumGlobal;
-	else													fStatus &= ~DGFControlData::kDGFModNumGlobal;
-	if (gEnv->GetValue("DGFControl.OfflineMode", kFALSE))	fStatus |= DGFControlData::kDGFOfflineMode;
-	else													fStatus &= ~DGFControlData::kDGFOfflineMode;
-	if (gEnv->GetValue("DGFControl.SingleStepMode", kFALSE)) fStatus |= DGFControlData::kDGFEsoneSingleStepMode;
-	else													fStatus &= ~DGFControlData::kDGFEsoneSingleStepMode;
+	if (fRootrc->Get(".DebugMode", kFALSE))			fStatus |= DGFControlData::kDGFDebugMode;
+	else											fStatus &= ~DGFControlData::kDGFDebugMode;
+	if (fRootrc->Get(".VerboseMode", kFALSE))		fStatus |= DGFControlData::kDGFVerboseMode;
+	else											fStatus &= ~DGFControlData::kDGFVerboseMode;
+	if (fRootrc->Get(".ModNumGlobal", kTRUE))		fStatus |= DGFControlData::kDGFModNumGlobal;
+	else											fStatus &= ~DGFControlData::kDGFModNumGlobal;
+	if (fRootrc->Get(".OfflineMode", kFALSE))		fStatus |= DGFControlData::kDGFOfflineMode;
+	else											fStatus &= ~DGFControlData::kDGFOfflineMode;
+	if (fRootrc->Get(".SingleStepMode", kFALSE))	fStatus |= DGFControlData::kDGFEsoneSingleStepMode;
+	else											fStatus &= ~DGFControlData::kDGFEsoneSingleStepMode;
 
 // paths and filenames
 	TString errMsg;
 
 // open DGF specific resource data base
-	TString rcFile = RcFile;
+	TString rcFile = fRootrc->Get(".RcFile", ".DGFControl.rc");
 	gSystem->ExpandPathName(rcFile);
 	Bool_t ok = this->CheckAccess(rcFile.Data(), kDGFAccessRead, errMsg, kFALSE);
 	if (ok) {

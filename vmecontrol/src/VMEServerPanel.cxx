@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.1 2008-08-26 06:33:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMEServerPanel.cxx,v 1.2 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -110,7 +110,6 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 
 // geometry
 	Int_t frameWidth = this->GetWidth();
-	Int_t frameHeight = this->GetHeight();
 
 //	Initialize several lists
 	fServerActions.SetName("Server actions");
@@ -222,7 +221,8 @@ Bool_t VMEServerPanel::ActionButton(Int_t ButtonId) {
 
 	switch (ButtonId) {
 		case kVMEServerButtonConnect:	return(this->Connect());
-		case kVMEServerButtonAbort: 	return(kTRUE);
+		case kVMEServerButtonAbort: 	fAbortConnection = kTRUE;
+										return(kTRUE);
 		case kVMEServerButtonRestart:	return(kTRUE);
 		default:
 			gMrbLog->Err()	<< "Illegal button id - " << ButtonId << endl;
@@ -296,17 +296,23 @@ Bool_t VMEServerPanel::Connect() {
 
 	if (!c2l->Connect(kFALSE)) return(kFALSE);
 
-	TGMrbProgressBar * pgb = new TGMrbProgressBar(gClient->GetRoot(), this, "Connecting to LynxOs server ...", 400, "blue", NULL, kTRUE);
+	TGMrbProgressBar * pgb = new TGMrbProgressBar(gClient->GetRoot(), this,
+								Form("Connecting to LynxOs server @ %s:%d ...", ppc.Data(), portNo), 400, "blue", NULL, kTRUE);
 	pgb->SetRange(0, kVMEServerWaitForConnection);
+	fAbortConnection = kFALSE;
 	for (Int_t wait = 0; wait < kVMEServerWaitForConnection; wait++) {
 		pgb->Increment(1, Form("%d out of %d", wait + 1, kVMEServerWaitForConnection));
 		gSystem->ProcessEvents();
+		if (fAbortConnection) {
+			new TGMsgBox(gClient->GetRoot(), this, "VMEControl: Abort", "Pending connection to LynxOs server aborted", kMBIconStop);
+			break;
+		}
 		if (c2l->WaitForConnection()) break;
 		sleep(1);
 	}
 	delete pgb;
 	if (!c2l->IsConnected()) {
-		gMrbLog->Err()	<< "Unable to connect to LynxOs server - " << ppc << ":" << portNo << endl;
+		gMrbLog->Err()	<< "Unable to connect to LynxOs server @ " << ppc << ":" << portNo << endl;
 		gMrbLog->Flush(this->ClassName(), "Connect");
 		return(kFALSE);
 	}

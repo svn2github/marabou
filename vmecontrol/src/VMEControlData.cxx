@@ -6,8 +6,8 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.1 2008-08-26 06:33:24 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-08-26 06:33:24 $
+// Revision:       $Id: VMEControlData.cxx,v 1.2 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-08-28 07:16:48 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -22,6 +22,7 @@
 #include "TMrbSystem.h"
 
 #include "VMEControlData.h"
+#include "TC2LSis3302.h"
 
 #include "SetColor.h"
 
@@ -29,7 +30,7 @@ ClassImp(VMEControlData)
 
 extern TMrbLogger * gMrbLog;
 
-VMEControlData::VMEControlData(const Char_t * RcFile) : TNamed("VMEControlData", "VMEControlData") {
+VMEControlData::VMEControlData() {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMEControlData
@@ -46,15 +47,9 @@ VMEControlData::VMEControlData(const Char_t * RcFile) : TNamed("VMEControlData",
 // open ROOT's resource data base
 	fRootrc = new TMrbResource("VMEControl", ".rootrc");
 
-// open VMEcontrol's resource data base
-	fRcFile = RcFile;
-	if (fRcFile.IsNull()) fRcFile = ".VMEControl.rc";
-	fVctrlrc = new TMrbResource("VMEControl", fRcFile.Data());
-
+// GUI dims
 	fFrameWidth = fRootrc->Get(".FrameWidth", 0);
-	if (fFrameWidth <= 0) fFrameWidth = fVctrlrc->Get(".FrameWidth", kFrameWidth);
 	fFrameHeight = fRootrc->Get(".FrameHeight", 0);
-	if (fFrameHeight <= 0) fFrameHeight = fVctrlrc->Get(".FrameHeight", kFrameHeight);
 
 // initialize colors
 	gClient->GetColorByName("black", fColorBlack);
@@ -81,12 +76,27 @@ VMEControlData::VMEControlData(const Char_t * RcFile) : TNamed("VMEControlData",
 		gMrbLog->Flush("VMEControlData");
 		fSlantedFont = fNormalFont;
 	}		
-	fFixedFont = gEnv->GetValue("Gui.FixedFont", "-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
+	fFixedFont = gEnv->GetValue("Gui.FixedFont", "-adobe-courier-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
 	if (gClient->GetFontByName(fFixedFont.Data()) == 0) {
 		gMrbLog->Err()	<< "No such font - " << fFixedFont << " (normal font used instead)" << endl;
 		gMrbLog->Flush("VMEControlData");
 		fFixedFont = fNormalFont;
 	}		
+// open VMEcontrol's resource data base
+	TString errMsg;
+	fRcFile = fRootrc->Get(".RcFile", ".VMEControl.rc");
+	gSystem->ExpandPathName(fRcFile);
+	Bool_t ok = this->CheckAccess(fRcFile.Data(), kVMEAccessRead, errMsg, kFALSE);
+	if (ok) {
+		fVctrlrc = new TMrbResource("VMEControl", fRcFile.Data());
+		fLofModules.SetName("List of VME modules");
+		fLofModules.Delete();
+		if (fFrameWidth <= 0) fFrameWidth = fVctrlrc->Get(".FrameWidth", kFrameWidth);
+		if (fFrameHeight <= 0) fFrameHeight = fVctrlrc->Get(".FrameHeight", kFrameHeight);
+		if (this->SetupModuleList() <= 0) this->MakeZombie();
+	} else {
+		this->MakeZombie();
+	}
 }
 
 Bool_t VMEControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly) {
@@ -140,5 +150,79 @@ Bool_t VMEControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, 
 	}
 
 	return(ok);
+}
+
+Int_t VMEControlData::SetupModuleList() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMEControlData::SetupModuleList()
+// Purpose:        Create module list
+// Arguments:      --
+// Results:        Int_t NofModules   -- number of VME modules
+// Exceptions:     
+// Description:    Decodes env file and fills module list 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofModules.Delete();
+	fNofModules = 0;
+
+	TString lofModules = fVctrlrc->Get(".LofModules", "");
+	if (lofModules.IsNull()) {
+		gMrbLog->Err()	<< "No (VME) modules defined in file " << fRcFile << endl;
+		gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+		return(-1);
+	}
+
+	Int_t errCnt = 0;
+	Int_t from = 0;
+	TString moduleName;
+	while (lofModules.Tokenize(moduleName, from, ":")) {
+		TString interface = fVctrlrc->Get(".Module", moduleName.Data(), "Interface", "");
+		if (interface.CompareTo("VME") == 0) {
+			TString className = fVctrlrc->Get(".Module", moduleName.Data(), "ClassName", "");
+			if (className.IsNull()) {
+				gMrbLog->Err()	<< "[" << moduleName << "] Class name missing" << endl;
+				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+				errCnt++;
+				continue;
+			}
+			UInt_t vmeAddr = fVctrlrc->Get(".Module", moduleName.Data(), "HexAddr", 0);
+			if (vmeAddr == 0) {
+				gMrbLog->Err()	<< "[" << moduleName << "] VME addr missing" << endl;
+				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+				errCnt++;
+				continue;
+			}
+			Int_t nofChannels = fVctrlrc->Get(".Module", moduleName.Data(), "NofChannelsUsed", 0);
+			if (nofChannels == 0) {
+				gMrbLog->Wrn()	<< "[" << moduleName << "] No channels assigned" << endl;
+				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+			}
+			if (className.CompareTo("TMrbSis_3302") == 0) {
+				TC2LSis3302 * module = new TC2LSis3302(moduleName.Data(), vmeAddr, nofChannels);
+				if (module->IsZombie()) {
+					errCnt++;
+				} else {
+					fNofModules++;
+					fLofModules.AddNamedX(module);
+				}
+			} else if (className.CompareTo("TMrbCaen_V785") == 0) {
+				gMrbLog->Wrn()	<< "[" << moduleName << "] Class " << className << " - not yet implemented" << endl;
+				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+			} else {
+				gMrbLog->Err()	<< "[" << moduleName << "] Unknown class name - " << className << endl;
+				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+				errCnt++;
+			}
+		}
+	}
+	if (fNofModules == 0) {
+		gMrbLog->Err()	<< "No VME modules defined in file " << fRcFile << endl;
+		gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+		return(-1);
+	}
+
+	return(fNofModules);
 }
 

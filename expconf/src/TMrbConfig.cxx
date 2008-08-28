@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.161 2008-08-26 06:30:53 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.162 2008-08-28 07:16:48 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4607,6 +4607,7 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 								} else if (module->IsVME()) {
 										rcTmpl.Substitute("$interface", "VME");
 										rcTmpl.Substitute("$moduleAddr", ((TMrbVMEModule *) module)->GetPosition());
+										rcTmpl.Substitute("$moduleHexAddr", ((TMrbVMEModule *) module)->GetBaseAddr(), 16);
 										rcTmpl.Substitute("$moduleCrate", ((TMrbCamacModule *) module)->GetCrate());
 										rcTmpl.Substitute("$moduleStation", 0);
 								}

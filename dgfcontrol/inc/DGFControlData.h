@@ -8,7 +8,7 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.16 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.17 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -38,7 +38,7 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFControlData : public TNamed {
+class DGFControlData : public TObject {
 
 	friend class DGFRunControlPanel;
 	friend class DGFSetupPanel;
@@ -83,7 +83,7 @@ class DGFControlData : public TNamed {
 								};
 
 	public:
-		DGFControlData(const Char_t * RcFile = ".DGFControl.rc");				// default ctor
+		DGFControlData();				// ctor
 
 		virtual ~DGFControlData() { 	// dtor
 			fHeap.Delete();

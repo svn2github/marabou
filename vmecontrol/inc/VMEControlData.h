@@ -8,8 +8,8 @@
 // Class:          VMEControlData
 // Description:    A GUI to control VME modules
 // Author:         R. Lutter
-// Revision:       $Id: VMEControlData.h,v 1.1 2008-08-26 06:33:24 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-08-26 06:33:24 $
+// Revision:       $Id: VMEControlData.h,v 1.2 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-08-28 07:16:48 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -54,9 +54,9 @@ enum						{	kVMENofPPCs 		= 20					};
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class VMEControlData : public TNamed {
+class VMEControlData : public TObject {
 
-	friend class VMESystemPanel;
+	friend class VMEMainFrame;
 	friend class VMEServerPanel;
 
 	public:
@@ -73,7 +73,7 @@ class VMEControlData : public TNamed {
 								};
 
 	public:
-		VMEControlData(const Char_t * RcFile = ".VMEControl.rc");				// default ctor
+		VMEControlData();						// ctor
 
 		inline const Char_t * NormalFont() { return(fNormalFont.Data()); };
 		inline const Char_t * BoldFont() { return(fBoldFont.Data()); };
@@ -92,6 +92,10 @@ class VMEControlData : public TNamed {
 		inline TMrbResource * Rootrc() { return(fRootrc); };
 		inline TMrbResource * Vctrlrc() { return(fVctrlrc); };
 
+		Int_t SetupModuleList();
+		inline TMrbLofNamedX * GetLofModules() { return(&fLofModules); };
+		inline Int_t GetNofModules() { return(fNofModules); };
+
 		virtual ~VMEControlData() {};
 
 	protected:
@@ -101,7 +105,7 @@ class VMEControlData : public TNamed {
 
 		TMrbResource * fRootrc; 		// environment (ROOT)
 		TMrbResource * fVctrlrc; 		// ... (VMEControl)
-		TString fRcFile;
+		TString fRcFile;				// name of rc file (VMEControl)
 
 		TString fNormalFont; 			// gui fonts
 		TString fBoldFont;
@@ -120,6 +124,9 @@ class VMEControlData : public TNamed {
 		ULong_t fColorGreen;
 		ULong_t fColorYellow;
 		ULong_t fColorRed;
+
+		Int_t fNofModules;
+		TMrbLofNamedX fLofModules;		// list of modules
 
 	ClassDef(VMEControlData, 0) 		// [VMEControl] Common data base
 };

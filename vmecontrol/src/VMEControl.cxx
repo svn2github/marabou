@@ -6,8 +6,8 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControl.cxx,v 1.1 2008-08-26 06:33:24 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-08-26 06:33:24 $
+// Revision:       $Id: VMEControl.cxx,v 1.2 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-08-28 07:16:48 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -20,7 +20,7 @@
 #include "TGMrbGeometry.h"
 #include "TMrbLogger.h"
 #include "VMEControlData.h"
-#include "VMESystemPanel.h"
+#include "VMEMainFrame.h"
 
 extern VMEControlData * gVMEControlData;
 extern TMrbLogger * gMrbLog;
@@ -49,7 +49,7 @@ int main(Int_t argc, Char_t **argv)
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("vmeControl.log");
 
-	gVMEControlData = new VMEControlData(".VMEControl.rc");
+	gVMEControlData = new VMEControlData();
 	if (gVMEControlData->IsZombie()) {
 		gMrbLog->Err()	<< "Sorry - can't proceed." << endl;
 		gMrbLog->Flush("VMEControl");
@@ -57,7 +57,7 @@ int main(Int_t argc, Char_t **argv)
 	}
 
 
-	VMESystemPanel * mainWindow = new VMESystemPanel(gClient->GetRoot(), gVMEControlData->GetFrameWidth(), gVMEControlData->GetFrameHeight());
+	VMEMainFrame * mainWindow = new VMEMainFrame(gClient->GetRoot(), gVMEControlData->GetFrameWidth(), gVMEControlData->GetFrameHeight());
 
 	new TGMrbGeometry(mainWindow);
 
