@@ -8,7 +8,7 @@
 // Class:          VMEMainFrame
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: VMEMainFrame.h,v 1.1 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMEMainFrame.h,v 1.2 2008-09-03 14:23:55 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -23,7 +23,6 @@
 #include "TGTab.h"
 
 #include "TMrbLofNamedX.h"
-#include "TMrbDGF.h"
 
 #include "TGMrbTextButton.h"
 #include "TGMrbLabelEntry.h"
@@ -32,6 +31,8 @@
 #include "TGMrbLofKeyBindings.h"
 
 #include "VMEServerPanel.h"
+#include "VMESis3302Panel.h"
+#include "VMECaen785Panel.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -60,11 +61,10 @@ class VMEMainFrame : public TGMainFrame {
 								};
 
 		enum EVMEMainFrameTabId {
-									kVMEMainFrameTabServer = 0,
-									kVMEMainFrameTabModules,
-									kVMEMainFrameTabSave,
-									kVMEMainFrameTabRestore,
-									kVMEMainFrameTabCopy
+									kVMETabServer = 0,
+									kVMETabSis3302,
+									kVMETabCaen785,
+									kVMELastTab
 								};
 
 
@@ -90,20 +90,15 @@ class VMEMainFrame : public TGMainFrame {
 		TGMrbMacroBrowserPopup * fMenuMacros;		//					pulldown menu: macros
 		TGPopupMenu * fMenuHelp;					//					pulldown menu: help
 
-													// system panel
-		TGTab * fSystemTab; 						//					vert. frame to store different items
+		TGTab * fTabFrame; 							// main tab frame
 
 		TGCompositeFrame * fServerTab;
-//		TGCompositeFrame * fModulesTab;
-//		TGCompositeFrame * fSaveTab;
-//		TGCompositeFrame * fRestoreTab;
-//		TGCompositeFrame * fCopyTab;
+		TGCompositeFrame * fSis3302Tab;
+		TGCompositeFrame * fCaen785Tab;
 
 		VMEServerPanel * fServerPanel;
-//		VMEModulesPanel * fModulesPanel;
-//		VMESaveSettingsPanel * fSaveSettingsPanel;
-//		VMERestoreSettingsPanel * fRestoreSettingsPanel;
-//		VMECopySettingsPanel * fCopySettingsPanel;
+		VMESis3302Panel * fSis3302Panel;
+		VMECaen785Panel * fCaen785Panel;
 
 		TMrbLofMacros * fLofMacros; 				// list of macros
 

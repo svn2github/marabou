@@ -8,8 +8,8 @@
 // Class:          VMEControlData
 // Description:    A GUI to control VME modules
 // Author:         R. Lutter
-// Revision:       $Id: VMEControlData.h,v 1.2 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-08-28 07:16:48 $
+// Revision:       $Id: VMEControlData.h,v 1.3 2008-09-03 14:23:55 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-09-03 14:23:55 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -21,6 +21,7 @@
 
 #include "TGLayout.h"
 #include "TGClient.h"
+#include "TGMsgBox.h"
 
 #include "TGMrbLayout.h"
 
@@ -58,6 +59,9 @@ class VMEControlData : public TObject {
 
 	friend class VMEMainFrame;
 	friend class VMEServerPanel;
+	friend class VMESis3302Panel;
+	friend class VMESis3302SettingsPanel;
+	friend class VMECaen785Panel;
 
 	public:
 		// global status bits
@@ -89,12 +93,12 @@ class VMEControlData : public TObject {
 		inline Int_t GetFrameHeight() { return(fFrameHeight); };
 		inline Int_t GetFrameWidth() { return(fFrameWidth); };
 
+		Int_t MsgBox(TGWindow * Caller, const Char_t * Method, const Char_t * Title, const Char_t * Msg, EMsgBoxIcon Icon = kMBIconStop, Int_t Buttons = kMBDismiss);
+
 		inline TMrbResource * Rootrc() { return(fRootrc); };
 		inline TMrbResource * Vctrlrc() { return(fVctrlrc); };
 
-		Int_t SetupModuleList();
-		inline TMrbLofNamedX * GetLofModules() { return(&fLofModules); };
-		inline Int_t GetNofModules() { return(fNofModules); };
+		Bool_t SetupModuleList(TMrbLofNamedX & LofModules, const Char_t * ClassName = NULL);
 
 		virtual ~VMEControlData() {};
 
@@ -124,9 +128,6 @@ class VMEControlData : public TObject {
 		ULong_t fColorGreen;
 		ULong_t fColorYellow;
 		ULong_t fColorRed;
-
-		Int_t fNofModules;
-		TMrbLofNamedX fLofModules;		// list of modules
 
 	ClassDef(VMEControlData, 0) 		// [VMEControl] Common data base
 };

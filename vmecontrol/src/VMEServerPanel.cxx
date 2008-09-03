@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.2 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMEServerPanel.cxx,v 1.3 2008-09-03 14:23:55 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -33,9 +33,9 @@
 
 const SMrbNamedX kVMEServerButtons[] =
 			{
-				{VMEServerPanel::kVMEServerButtonConnect,		"Connect", 	"Connect to LynxOs server"		},
-				{VMEServerPanel::kVMEServerButtonAbort, 		"Abort",	"Abort connection in progress"	},
-				{VMEServerPanel::kVMEServerButtonRestart,		"Restart",	"Restart LynxOs server"			},
+				{VMEServerPanel::kVMEServerButtonConnect,		"Connect to LynxOs", 	"Connect to LynxOs server"		},
+				{VMEServerPanel::kVMEServerButtonAbort, 		"Abort connection",	"Abort connection in progress"	},
+				{VMEServerPanel::kVMEServerButtonRestart,		"Restart server",	"Restart LynxOs server"			},
 				{0, 											NULL,	NULL								}
 			};
 
@@ -54,6 +54,7 @@ static Char_t * kVMEServerFileTypes[]	=	{	"All files",			"*",
 												NULL,					NULL
 											};
 
+extern TMrbC2Lynx * gMrbC2Lynx;
 extern VMEControlData * gVMEControlData;
 extern TMrbLogger * gMrbLog;
 
@@ -130,7 +131,7 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	entryGC->SetLH(loXpndX);
 	comboGC->SetLH(loNormal);
 
-	fServerFrame = new TGGroupFrame(this, "LynxOs server", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	fServerFrame = new TGGroupFrame(this, "LynxOs Server", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fServerFrame);
 	this->AddFrame(fServerFrame, groupGC->LH());
 
@@ -243,6 +244,11 @@ Bool_t VMEServerPanel::Connect() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	if (gMrbC2Lynx) {
+		gVMEControlData->MsgBox(this, "Connect", "Already connected ...",
+						Form("Already connected to LynxOs server @ %s:%d", gMrbC2Lynx->GetHost(), gMrbC2Lynx->GetPort()));
+	}
+
 	TString ppc = fSelectHost->GetText();
 	Int_t ppcNo = -1;
 	if (ppc.Contains("ppc-")) {
@@ -304,7 +310,7 @@ Bool_t VMEServerPanel::Connect() {
 		pgb->Increment(1, Form("%d out of %d", wait + 1, kVMEServerWaitForConnection));
 		gSystem->ProcessEvents();
 		if (fAbortConnection) {
-			new TGMsgBox(gClient->GetRoot(), this, "VMEControl: Abort", "Pending connection to LynxOs server aborted", kMBIconStop);
+			gVMEControlData->MsgBox(this, "Connect", "Abort", "Pending connection to LynxOs server aborted");
 			break;
 		}
 		if (c2l->WaitForConnection()) break;
@@ -312,19 +318,25 @@ Bool_t VMEServerPanel::Connect() {
 	}
 	delete pgb;
 	if (!c2l->IsConnected()) {
-		gMrbLog->Err()	<< "Unable to connect to LynxOs server @ " << ppc << ":" << portNo << endl;
-		gMrbLog->Flush(this->ClassName(), "Connect");
+		gVMEControlData->MsgBox(this, "Connect", "Abort", Form("Unable to connect to LynxOs server @ %s:%d", ppc.Data(), portNo), kMBIconStop);
 		return(kFALSE);
 	}
 
 	fPipe = c2l->GetPipe();
-	fServerLog = new TMrbTail("mrb2lynx", fPipe);
-	if (fServerLog->IsZombie()) {
-		gMrbLog->Wrn()	<< "Connection to server log failed - no output" << endl;
-		gMrbLog->Flush(this->ClassName(), "Connect");
+	if (fPipe) {
+		fServerLog = new TMrbTail("mrb2lynx", fPipe);
+		if (fServerLog->IsZombie()) {
+			gMrbLog->Wrn()	<< "Connection to server log failed - no output" << endl;
+			gMrbLog->Flush(this->ClassName(), "Connect");
+		} else {
+			fServerLog->SetOutput(this->ClassName(), this, "FillTextView()");
+			fServerLog->Start();
+		}
 	} else {
-		fServerLog->SetOutput(this->ClassName(), this, "FillTextView()");
-		fServerLog->Start();
+		fTextView->AddLine("Connecting to running server - no server log possible");
+		fTextView->AdjustWidth();
+		gMrbLog->Wrn()	<< "Connecting to running server - no server log possible" << endl;
+		gMrbLog->Flush(this->ClassName(), "Connect");
 	}
 
 	return(kTRUE);
@@ -362,6 +374,8 @@ void VMEServerPanel::FillTextView() {
 		fTextView->AddLine(str.Data());
 		fTextView->AdjustWidth();
 		fTextView->ShowBottom();
+	} else {
+		cout << endl;
 	}
 }
 

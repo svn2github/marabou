@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LVMEModule.cxx,v 1.2 2008-07-04 11:58:06 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-07-04 11:58:06 $
+// Revision:       $Id: TC2LVMEModule.cxx,v 1.3 2008-09-03 14:23:55 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-09-03 14:23:55 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -98,6 +98,8 @@ Bool_t TC2LVMEModule::Connect(UInt_t Address, Int_t NofChannels) {
 		gMrbLog->Flush(this->ClassName(), "Connect");
 		return(kFALSE);
 	}
+	this->SetAddress(Address);
+	this->SetNofChannels(NofChannels);
 	return(kTRUE);
 }
 

@@ -6,8 +6,8 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.2 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-08-28 07:16:48 $
+// Revision:       $Id: VMEControlData.cxx,v 1.3 2008-09-03 14:23:55 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-09-03 14:23:55 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -21,6 +21,7 @@
 #include "TMrbLogger.h"
 #include "TMrbSystem.h"
 
+#include "TMrbC2Lynx.h"
 #include "VMEControlData.h"
 #include "TC2LSis3302.h"
 
@@ -28,6 +29,7 @@
 
 ClassImp(VMEControlData)
 
+extern TMrbC2Lynx * gMrbC2Lynx;
 extern TMrbLogger * gMrbLog;
 
 VMEControlData::VMEControlData() {
@@ -89,11 +91,8 @@ VMEControlData::VMEControlData() {
 	Bool_t ok = this->CheckAccess(fRcFile.Data(), kVMEAccessRead, errMsg, kFALSE);
 	if (ok) {
 		fVctrlrc = new TMrbResource("VMEControl", fRcFile.Data());
-		fLofModules.SetName("List of VME modules");
-		fLofModules.Delete();
 		if (fFrameWidth <= 0) fFrameWidth = fVctrlrc->Get(".FrameWidth", kFrameWidth);
 		if (fFrameHeight <= 0) fFrameHeight = fVctrlrc->Get(".FrameHeight", kFrameHeight);
-		if (this->SetupModuleList() <= 0) this->MakeZombie();
 	} else {
 		this->MakeZombie();
 	}
@@ -152,77 +151,117 @@ Bool_t VMEControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, 
 	return(ok);
 }
 
-Int_t VMEControlData::SetupModuleList() {
+Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t * ClassName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMEControlData::SetupModuleList()
 // Purpose:        Create module list
-// Arguments:      --
-// Results:        Int_t NofModules   -- number of VME modules
+// Arguments:      TMrbLofNamedX & LofModules  -- list of modules
+//                 Char_t * ClassName          -- class name
+// Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Decodes env file and fills module list 
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fLofModules.Delete();
-	fNofModules = 0;
+	LofModules.Delete();
 
-	TString lofModules = fVctrlrc->Get(".LofModules", "");
-	if (lofModules.IsNull()) {
+	TString lm = fVctrlrc->Get(".LofModules", "");
+	if (lm.IsNull()) {
 		gMrbLog->Err()	<< "No (VME) modules defined in file " << fRcFile << endl;
 		gMrbLog->Flush(this->ClassName(), "SetupModuleList");
-		return(-1);
+		return(kFALSE);
 	}
 
 	Int_t errCnt = 0;
 	Int_t from = 0;
 	TString moduleName;
-	while (lofModules.Tokenize(moduleName, from, ":")) {
-		TString interface = fVctrlrc->Get(".Module", moduleName.Data(), "Interface", "");
+	while (lm.Tokenize(moduleName, from, ":")) {
+		TString mnuc = moduleName;
+		mnuc(0,1).ToUpper();
+		TString interface = fVctrlrc->Get(".Module", mnuc.Data(), "Interface", "");
 		if (interface.CompareTo("VME") == 0) {
-			TString className = fVctrlrc->Get(".Module", moduleName.Data(), "ClassName", "");
+			TString className = fVctrlrc->Get(".Module", mnuc.Data(), "ClassName", "");
 			if (className.IsNull()) {
 				gMrbLog->Err()	<< "[" << moduleName << "] Class name missing" << endl;
 				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
 				errCnt++;
 				continue;
 			}
-			UInt_t vmeAddr = fVctrlrc->Get(".Module", moduleName.Data(), "HexAddr", 0);
+			UInt_t vmeAddr = fVctrlrc->Get(".Module", mnuc.Data(), "HexAddr", 0);
 			if (vmeAddr == 0) {
 				gMrbLog->Err()	<< "[" << moduleName << "] VME addr missing" << endl;
 				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
 				errCnt++;
 				continue;
 			}
-			Int_t nofChannels = fVctrlrc->Get(".Module", moduleName.Data(), "NofChannelsUsed", 0);
+			Int_t nofChannels = fVctrlrc->Get(".Module", mnuc.Data(), "NofChannelsUsed", 0);
 			if (nofChannels == 0) {
 				gMrbLog->Wrn()	<< "[" << moduleName << "] No channels assigned" << endl;
 				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
 			}
-			if (className.CompareTo("TMrbSis_3302") == 0) {
-				TC2LSis3302 * module = new TC2LSis3302(moduleName.Data(), vmeAddr, nofChannels);
-				if (module->IsZombie()) {
-					errCnt++;
+			if (ClassName == NULL || className.CompareTo(ClassName) == 0) {
+				if (className.CompareTo("TMrbSis_3302") == 0) {
+					TC2LSis3302 * module = NULL;
+					if (gMrbC2Lynx && (module = (TC2LSis3302 *) gMrbC2Lynx->FindModule(moduleName.Data()))) {
+						if (module->GetAddress() != vmeAddr || module->GetNofChannels() != nofChannels) {
+							gMrbLog->Wrn()	<< "[" << moduleName << "] Module already defined - addr="
+											<< setbase(16) << module->GetAddress() << ", chns="
+											<< setbase(10) << module->GetNofChannels() << endl;
+							gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+							errCnt++;
+						}
+					}
+					if (module == NULL) module = new TC2LSis3302(moduleName.Data(), vmeAddr, nofChannels);
+					if (module->IsZombie()) {
+						errCnt++;
+					} else {
+						LofModules.AddNamedX(module);
+					}
+				} else if (className.CompareTo("TMrbCaen_V785") == 0) {
+					gMrbLog->Wrn()	<< "[" << moduleName << "] Class " << className << " - not yet implemented" << endl;
+					gMrbLog->Flush(this->ClassName(), "SetupModuleList");
 				} else {
-					fNofModules++;
-					fLofModules.AddNamedX(module);
+					gMrbLog->Err()	<< "[" << moduleName << "] Unknown class name - " << className << endl;
+					gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+					errCnt++;
 				}
-			} else if (className.CompareTo("TMrbCaen_V785") == 0) {
-				gMrbLog->Wrn()	<< "[" << moduleName << "] Class " << className << " - not yet implemented" << endl;
-				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
-			} else {
-				gMrbLog->Err()	<< "[" << moduleName << "] Unknown class name - " << className << endl;
-				gMrbLog->Flush(this->ClassName(), "SetupModuleList");
-				errCnt++;
 			}
 		}
 	}
-	if (fNofModules == 0) {
-		gMrbLog->Err()	<< "No VME modules defined in file " << fRcFile << endl;
+	if (errCnt > 0) {
+		gMrbLog->Err()	<< "Some errors occurred while processing file " << fRcFile << endl;
 		gMrbLog->Flush(this->ClassName(), "SetupModuleList");
-		return(-1);
+		return(kFALSE);
 	}
-
-	return(fNofModules);
+	return(LofModules.GetEntries() > 0);
 }
 
+Int_t VMEControlData::MsgBox(TGWindow * Caller, const Char_t * Method, const Char_t * Title, const Char_t * Msg, EMsgBoxIcon Icon, Int_t Buttons) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMEControlData::MsgBox()
+// Purpose:        Show a message box
+// Arguments:      TGWindow * Caller           -- calling class
+//                 Char_t * Method             -- class method
+//                 Char_t * Title              -- title
+//                 Char_t * Msg                -- message
+//                 EMsgBoxIcon Icon            -- icon to be displayed
+//                 Int_t Buttons               -- button(s) to be shown
+// Results:        Int_t Retval                -- return value as passed from TGMsgBox
+// Exceptions:     
+// Description:    Shows a message box and outputs message to gMrbLog, too.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t retVal;
+	TString title = Caller->ClassName();
+	if (Method && *Method != '\0') title += Form("::%s()", Method);
+	if (Title && *Title != '\0') title += Form(": %s", Title);
+	if (Icon == kMBIconStop || Icon == kMBIconExclamation) {
+		gMrbLog->Err()	<< Msg << endl;
+		gMrbLog->Flush(Caller->ClassName(), Method);
+	}
+	new TGMsgBox(gClient->GetRoot(), Caller, title.Data(), Msg, Icon, Buttons, &retVal);
+	return (retVal);
+}

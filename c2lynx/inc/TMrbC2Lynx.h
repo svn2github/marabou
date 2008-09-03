@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.8 2008-08-28 07:16:48 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-08-28 07:16:48 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.9 2008-09-03 14:23:54 Rudolf.Lutter Exp $   
+// Date:           $Date: 2008-09-03 14:23:54 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -45,7 +45,8 @@ class TMrbC2Lynx : public TNamed {
 	public:
 		enum EC2LServerLog	{	kC2LServerLogNone	=	BIT(0),
 								kC2LServerLogXterm	=	BIT(1),
-								kC2LServerLogPipe	=	BIT(2)
+								kC2LServerLogPipe	=	BIT(2),
+								kC2LServerLogDebug	=	BIT(3)
 		};
 
 	public:

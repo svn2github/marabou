@@ -28,9 +28,9 @@
 						kSis3302HeaderMask	 		= 0x7FFF,
 						// trigger mode
 						kSis3302TriggerOff			= 0x0,
-						kSis3302TriggerIntern		= 0x1,
-						kSis3302TriggerExtern		= 0x2,	
-						kSis3302TriggerBoth 		= 0x3,
+						kSis3302TriggerIntern		= BIT(0),
+						kSis3302TriggerExtern		= BIT(1),	
+						kSis3302TriggerBoth 		= kSis3302TriggerIntern | kSis3302TriggerExtern,
 						// polarity
 						kSis3302PolarityPositive	= 0x0,
 						kSis3302PolarityNegative	= 0x1,

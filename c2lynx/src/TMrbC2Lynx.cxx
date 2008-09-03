@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.7 2008-08-26 06:33:23 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-08-26 06:33:23 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.8 2008-09-03 14:23:55 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-09-03 14:23:55 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -45,10 +45,11 @@ ClassImp(TMrbC2Lynx)
 
 const SMrbNamedX kC2LLofServerLogs[] =
 			{
-				{TMrbC2Lynx::kC2LServerLogNone, 	"None",		"No output" 				},
-				{TMrbC2Lynx::kC2LServerLogXterm, 	"Xterm",	"Output to XTERM window"	},
-				{TMrbC2Lynx::kC2LServerLogPipe, 	"Pipe",		"Output to pipe"			},
-				{0, 								NULL,			NULL					}
+				{TMrbC2Lynx::kC2LServerLogNone, 	"None",		"No output" 					},
+				{TMrbC2Lynx::kC2LServerLogXterm, 	"Xterm",	"Output to XTERM window"		},
+				{TMrbC2Lynx::kC2LServerLogPipe, 	"Pipe",		"Output to pipe"				},
+				{TMrbC2Lynx::kC2LServerLogDebug, 	"Debug",	"(Debug) output to cout/cerr"	},
+				{0, 								NULL,			NULL						}
 			};
 
 TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Char_t * LogFile,
@@ -138,6 +139,8 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 
 	if (this->IsConnected()) return(kTRUE);
 
+	fPipe = NULL;
+
 	TString cpu, lynx;
 	if (!this->CheckVersion(cpu, lynx, fServerPath.Data())) {
 		gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
@@ -154,6 +157,8 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 			gMrbLog->Flush(this->ClassName(), "Connect");
 		}
 		fSocket = s;
+		gMrbC2Lynx = this;
+		gROOT->Append(this);
 		return(kTRUE);
 	} else {
 		if (fVerboseMode || fDebugMode) {
@@ -175,7 +180,7 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 		cmd1 += fHost;
 		cmd1 += " ";
 
-		cmd2 += fServerPath;
+		cmd2 = fServerPath;
 		cmd2 += " ";
 		cmd2 += fPort;
 		cmd2 += " ";
@@ -190,8 +195,16 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 			gMrbLog->Flush(this->ClassName(), "Connect");
 		} else {
 			cmd1 += cmd2;
-			cmd1 += this->Log2Pipe() ? " 2>&1" : " 1>/dev/null 2>/dev/null";
-			cmd1 += " &";;
+			TMrbNamedX * sl = this->GetServerLog();
+			if (sl) {
+				switch (sl->GetIndex()) {
+					case kC2LServerLogDebug: 	break;
+					case kC2LServerLogNone:
+					case kC2LServerLogXterm:	cmd1 += " 1>/dev/null 2>/dev/null"; break;
+					case kC2LServerLogPipe: 	cmd1 += " 2>&1"; break;
+				}
+			}
+			cmd1 += " &";
 			if (fVerboseMode) {
 				gMrbLog->Out()	<< "Exec >> " << cmd1 << " <<" << endl;
 				gMrbLog->Flush(this->ClassName());

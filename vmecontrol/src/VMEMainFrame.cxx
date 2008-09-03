@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEMainFrame.cxx,v 1.1 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMEMainFrame.cxx,v 1.2 2008-09-03 14:23:55 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -36,6 +36,7 @@ namespace std {} using namespace std;
 
 #include "TMrbLogger.h"
 #include "TMrbSystem.h"
+#include "TMrbC2Lynx.h"
 
 #include "VMEControlData.h"
 #include "VMEMainFrame.h"
@@ -44,6 +45,7 @@ namespace std {} using namespace std;
 
 VMEControlData * gVMEControlData;
 extern TMrbLogger * gMrbLog;
+extern TMrbC2Lynx * gMrbC2Lynx;
 
 ClassImp(VMEMainFrame)
 
@@ -165,27 +167,23 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 	fMenuBar->ChangeBackground(gVMEControlData->fColorDarkBlue);
 
 //	create main tab object
-	fSystemTab = new TGTab(this, kTabWidth, kTabHeight);
-	HEAP(fSystemTab);
+	fTabFrame = new TGTab(this, kTabWidth, kTabHeight);
+	HEAP(fTabFrame);
 	TGLayoutHints * tabLayout = new TGLayoutHints(kLHintsBottom | kLHintsExpandX | kLHintsExpandY, 5, 5, 5, 5);
 	HEAP(tabLayout);
-	this->AddFrame(fSystemTab, tabLayout);
+	this->AddFrame(fTabFrame, tabLayout);
 
 // add tabs
 	fServerPanel = NULL;
-//	fModulesPanel = NULL;
-//	fSaveSettingsPanel = NULL;
-//	fRestoreSettingsPanel = NULL;
-//	fCopySettingsPanel = NULL;
+	fSis3302Panel = NULL;
+	fCaen785Panel = NULL;
 
-	fServerTab = fSystemTab->AddTab("Server");
-//	fModulesTab = fSystemTab->AddTab("Modules");
-//	fSaveTab = fSystemTab->AddTab("Save");
-//	fRestoreTab = fSystemTab->AddTab("Restore");
-//	fCopyTab = fSystemTab->AddTab("Copy");
+	fServerTab = fTabFrame->AddTab("Server");
+	fSis3302Tab = fTabFrame->AddTab("Sis 3302");
+	fCaen785Tab = fTabFrame->AddTab("Caen V785");
 
-	fSystemTab->SetTab(kVMEMainFrameTabServer);
-	this->SendMessage(this, MK_MSG(kC_COMMAND, kCM_TAB), kVMEMainFrameTabServer, 0);
+	fTabFrame->SetTab(kVMETabServer);
+	this->SendMessage(this, MK_MSG(kC_COMMAND, kCM_TAB), kVMETabServer, 0);
 
 //	create a message viewer window if wanted
 	if (		gEnv->GetValue("VMEControl.ViewMessages", kFALSE)
@@ -274,6 +272,7 @@ Bool_t VMEMainFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) 
 							break;
 							
 						case kVMEFileExit:
+							if (gMrbC2Lynx) gMrbC2Lynx->Bye();
 							this->CloseWindow();
 							break;
 
@@ -313,15 +312,26 @@ Bool_t VMEMainFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) 
 					break;
 
 				case kCM_TAB:
-					for (Int_t i = kVMEMainFrameTabServer; i <= kVMEMainFrameTabServer; i++) {
-						fSystemTab->GetTabTab(i)->ChangeBackground(gVMEControlData->fColorGray);
+					for (Int_t i = kVMETabServer; i < kVMELastTab; i++) {
+						fTabFrame->GetTabTab(i)->ChangeBackground(gVMEControlData->fColorGray);
 					}
-					fSystemTab->GetTabTab(Param1)->ChangeBackground(gVMEControlData->fColorGold);
+					fTabFrame->GetTabTab(Param1)->ChangeBackground(gVMEControlData->fColorGold);
 
 					switch (Param1) {
 
-						case kVMEMainFrameTabServer:
+						case kVMETabServer:
                     		if (fServerPanel == NULL) fServerPanel = new VMEServerPanel(fServerTab);
+							fServerPanel->UpdateTextView();
+							break;
+
+						case kVMETabSis3302:
+                    		if (fSis3302Panel == NULL) fSis3302Panel = new VMESis3302Panel(fSis3302Tab);
+							fSis3302Panel->SetupModuleList();
+							break;
+
+						case kVMETabCaen785:
+                    		if (fCaen785Panel == NULL) fCaen785Panel = new VMECaen785Panel(fCaen785Tab);
+							fCaen785Panel->SetupModuleList();
 							break;
 
 						default:

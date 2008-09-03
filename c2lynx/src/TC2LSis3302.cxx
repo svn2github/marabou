@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.3 2008-07-22 08:42:19 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-07-22 08:42:19 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.4 2008-09-03 14:23:55 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-09-03 14:23:55 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -511,14 +511,14 @@ Bool_t TC2LSis3302::SetInternalTrigger(Bool_t & Itrig) {
 Bool_t TC2LSis3302::GetClockSource(Int_t & ClockSource) {
 	TArrayI dataSend(0);
 	TArrayI clk;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_INTERNAL_TRIGGER, dataSend, clk, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_CLOCK_SOURCE, dataSend, clk, kSis3302AllAdcs)) return(kFALSE);
 	ClockSource = clk[0];
 	return(kTRUE);
 }
 
 Bool_t TC2LSis3302::SetClockSource(Int_t & ClockSource) {
 	TArrayI clk(1); clk[0] = ClockSource;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_INTERNAL_TRIGGER, clk, clk, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_CLOCK_SOURCE, clk, clk, kSis3302AllAdcs)) return(kFALSE);
 	ClockSource = clk[0];
 	return(kTRUE);
 }

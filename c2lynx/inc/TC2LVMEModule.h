@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LVMEModule.h,v 1.2 2008-07-04 11:58:06 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-07-04 11:58:06 $
+// Revision:       $Id: TC2LVMEModule.h,v 1.3 2008-09-03 14:23:54 Rudolf.Lutter Exp $   
+// Date:           $Date: 2008-09-03 14:23:54 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -42,6 +42,7 @@ class TC2LVMEModule : public TMrbNamedX {
 		inline const Char_t * GetType() { return(this->GetTitle()); };
 
 		inline UInt_t GetAddress() { return(fBaseAddress); };
+		inline Int_t GetNofChannels() { return(fNofChannels); };
 
 		Bool_t Connect(UInt_t Address, Int_t NofChannels);
 		Bool_t GetModuleInfo();
@@ -50,6 +51,7 @@ class TC2LVMEModule : public TMrbNamedX {
 
 	protected:
 		inline void SetAddress(UInt_t Address) { fBaseAddress = Address; };
+		inline void SetNofChannels(Int_t NofChannels) { fNofChannels = NofChannels; };
 		inline void SetHandle(UInt_t Handle) { this->SetIndex((Int_t) Handle); };
 
 	protected:
