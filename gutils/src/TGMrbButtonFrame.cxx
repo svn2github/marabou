@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.9 2007-09-11 14:06:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.10 2008-09-03 14:57:24 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -370,6 +370,35 @@ UInt_t TGMrbButtonFrame::GetActive() {
 		}
 	}
 	return(pattern);
+}
+
+TMrbNamedX * TGMrbButtonFrame::GetActiveNx() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbButtonFrame::GetActiveNx
+// Purpose:        Get index and name of selected (radio) button
+// Arguments:      --
+// Results:        TMrbNamedX * SelBtn  -- selected button
+// Exceptions:     
+// Description:    Returns index and name of selected button
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fType & kGMrbRadioButton) {
+		UInt_t pattern;
+		TMrbNamedX *namedX;
+		TIterator * bIter = fButtons.MakeIterator();
+		while (namedX = (TMrbNamedX *) bIter->Next()) {
+			TGButton * button = (TGButton *) namedX->GetAssignedObject();
+			UInt_t bState = button->GetState();
+			if (bState == kButtonDown && ((fRBState & namedX->GetIndex()) == 0)) pattern |= namedX->GetIndex();
+		}
+		if (pattern == 0) pattern = fRBState;
+		this->SetState(pattern);
+		return(fButtons.FindByIndex(pattern));
+	} else {
+		return(NULL);
+	}
 }
 
 void TGMrbButtonFrame::FlipState(UInt_t Pattern) {

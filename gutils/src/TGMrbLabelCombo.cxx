@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.8 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.9 2008-09-03 14:57:24 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -123,7 +123,8 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 		}
 	}
 
-	fCombo = new TGComboBox(this, ComboId, ComboOptions, ComboGC->BG());
+	fComboId = ComboId;
+	fCombo = new TGComboBox(this, fComboId, ComboOptions, ComboGC->BG());
 	fHeap.AddFirst((TObject *) fCombo);
 	this->AddFrame(fCombo, ComboGC->LH());
 	fEntries.Delete();
@@ -188,7 +189,7 @@ Bool_t TGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							}
 							fCombo->Select(nx->GetIndex());
 							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
-							this->SelectionChanged();
+							this->SelectionChanged(nx->GetIndex());
 							break;
 						case TGMrbLabelCombo::kGMrbComboButtonUp:
 							idx = fCombo->GetSelected();
@@ -200,20 +201,25 @@ Bool_t TGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							}
 							fCombo->Select(nx->GetIndex());
 							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
-							this->SelectionChanged();
+							this->SelectionChanged(nx->GetIndex());
 							break;								
 						case TGMrbLabelCombo::kGMrbComboButtonBegin:
 							nx = (TMrbNamedX *) fEntries.First();
 							fCombo->Select(nx->GetIndex());
 							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
+							this->SelectionChanged(nx->GetIndex());
 							break;
 						case TGMrbLabelCombo::kGMrbComboButtonEnd:
 							nx = (TMrbNamedX *) fEntries.Last();
 							fCombo->Select(nx->GetIndex());
 							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
-							this->SelectionChanged();
+							this->SelectionChanged(nx->GetIndex());
 							break;
 					}
+					break;
+
+				case kCM_COMBOBOX:
+					this->SelectionChanged(Param1);
 					break;
 			}
 			break;

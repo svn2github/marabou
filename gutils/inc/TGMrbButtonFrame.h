@@ -8,7 +8,7 @@
 // Class:          TGMrbButtonFrame    -- a composite frame containing buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbButtonFrame.h,v 1.9 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbButtonFrame.h,v 1.10 2008-09-03 14:57:24 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -97,6 +97,7 @@ class TGMrbButtonFrame: public TGMrbObject {
 
 		void SetState(UInt_t Pattern, EButtonState State = kButtonDown);	// set button state
 		UInt_t GetActive(); 												// return button state
+		TMrbNamedX * GetActiveNx();
 
 		inline void ButtonPressed(Int_t Signal) { this->Emit("ButtonPressed(Int_t)", fFrameId + Signal); };	//*SIGNAL*
 

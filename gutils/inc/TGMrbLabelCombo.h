@@ -9,7 +9,7 @@
 //                                        a combo box
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelCombo.h,v 1.7 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelCombo.h,v 1.8 2008-09-03 14:57:24 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -71,17 +71,19 @@ class TGMrbLabelCombo: public TGCompositeFrame, public TGMrbObject {
 
 		inline void Associate(const TGWindow * Window) { fClientWindow = (TGWindow *) Window; fCombo->Associate(Window); };	// where to go if combobox
 																					// selection changes
-		inline void SelectionChanged() { this->Emit("SelectionChanged()"); };		//*SIGNAL*
+		inline void SelectionChanged(Int_t SelectId) { this->Emit("SelectionChanged(Int_t)", fComboId + SelectId); };		//*SIGNAL*
 
 		inline const Char_t * GetText() const { return(((TGTextLBEntry *) fCombo->GetSelectedEntry())->GetText()->GetString()); };	// return text field data
 		inline void SetText(const Char_t * Text) { TGString * s = (TGString *) ((TGTextLBEntry *) fCombo->GetSelectedEntry())->GetText(); s->SetString(Text); };	  // set text field
 
 		inline void Select(Int_t ItemIdx) { fCombo->Select(ItemIdx, kFALSE); };
 		inline Int_t GetSelected() { return(fCombo->GetSelected()); };
+		inline TMrbNamedX * GetSelectedNx() { return(fEntries.FindByIndex(fCombo->GetSelected())); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
+		Int_t fComboId;
 		TGComboBox * fCombo;			//!
 
 		TGWindow * fClientWindow;
