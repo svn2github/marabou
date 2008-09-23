@@ -82,9 +82,14 @@ int root_env_getval_i(const char * ResourceName, int DefaultValue) {
 ///////////////////////////////////////////////////////////////////////////*/
 
 	TEnvEntry * ep;
+	char * sp;
+	char valstr[64];
 	int val;
 	if ((ep = _env_find_resource(ResourceName)) == NULL) return(DefaultValue);	
-	val = (int) strtol(ep->value, NULL, 0);
+	strcpy(valstr, ep->value);
+	sp = strchr(valstr, '(');
+	if (sp) *sp = '\0';
+	val = (int) strtol(valstr, NULL, 0);
 	return(val);
 }
 
@@ -102,12 +107,15 @@ int root_env_getval_x(const char * ResourceName, int DefaultValue) {
 ///////////////////////////////////////////////////////////////////////////*/
 
 	TEnvEntry * ep;
-	char str[64];
+	char * sp;
+	char valstr[64];
 	int n, val;
 	if ((ep = _env_find_resource(ResourceName)) == NULL) return(DefaultValue);	
-	strcpy(str, ep->value);
-	n = (strncmp(str, "0x", 2) == 0) ? 2 : 0;
-	sscanf(&str[n], "%x", &val);
+	strcpy(valstr, ep->value);
+	sp = strchr(valstr, '(');
+	if (sp) *sp = '\0';
+	n = (strncmp(valstr, "0x", 2) == 0) ? 2 : 0;
+	sscanf(&valstr[n], "%x", &val);
 	return(val);
 }
 

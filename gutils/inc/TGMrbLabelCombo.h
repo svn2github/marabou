@@ -9,7 +9,7 @@
 //                                        a combo box
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelCombo.h,v 1.9 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelCombo.h,v 1.10 2008-09-23 10:47:20 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ class TGMrbLabelCombo: public TGCompositeFrame, public TGMrbObject {
 
 		inline void Select(Int_t ItemIdx) { fCombo->Select(ItemIdx, kFALSE); };
 		inline Int_t GetSelected() { return(fCombo->GetSelected()); };
-		inline TMrbNamedX * GetSelectedNx() { return((TMrbNamedX *) fEntries.FindByIndex(fCombo->GetSelected())); };
+		inline TMrbNamedX * GetSelectedNx() { return(fEntries.FindByIndex(fCombo->GetSelected())); };
 
 		inline TMrbNamedX * GetEntry(Int_t Index) { return((TMrbNamedX *) fEntries.FindByIndex(Index)); };
 
@@ -83,7 +83,6 @@ class TGMrbLabelCombo: public TGCompositeFrame, public TGMrbObject {
 
 		inline void SelectionChanged(Int_t Selection) { this->SelectionChanged(fFrameId, Selection); };
 		void SelectionChanged(Int_t FrameId, Int_t Selection); 			// *SIGNAL*
-		inline TMrbNamedX * GetSelectedNx() { return(fEntries.FindByIndex(fCombo->GetSelected())); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

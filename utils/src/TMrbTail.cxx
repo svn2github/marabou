@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTail.cxx,v 1.5 2008-08-26 06:33:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTail.cxx,v 1.6 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -127,7 +127,7 @@ void TMrbTail::HandleInput() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTail::HandleInput
 // Purpose:        Called on signal Notified()
-// Arguments:      TTimer * Timer   -- timer
+// Arguments:      --
 // Results:        --
 // Exceptions:     
 // Description:    Handle input from selected stream

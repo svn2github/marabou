@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.23 2008-06-24 11:47:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.24 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -45,7 +45,7 @@ ClassImp(TGMrbFileObjectListBox)
 TGMrbFileObjectCombo::TGMrbFileObjectCombo(const TGWindow * Parent,
 												const Char_t * Label,
 												Int_t BufferSize,
-												Int_t EntryId, Int_t ComboId,
+												Int_t FrameId,
 												Int_t Width, Int_t Height,
 												Int_t EntryWidth, Int_t ComboWidth,
 												TGMrbLayout * FrameGC,
@@ -64,8 +64,7 @@ TGMrbFileObjectCombo::TGMrbFileObjectCombo(const TGWindow * Parent,
 // Arguments:      TGWindow * Parent           -- parent window
 //                 Char_t * Label              -- label text
 //                 Int_t BufferSize            -- buffer size
-//                 Int_t EntryId               -- id to be used in ProcessMessage
-//                 Int_t ComboId               -- ...
+//                 Int_t FrameId               -- id to be used with signal/slot mechanism
 //                 Int_t Width                 -- frame width
 //                 Int_t Height                -- frame height
 //                 Int_t EntryWidth            -- width of the entry field
@@ -84,16 +83,15 @@ TGMrbFileObjectCombo::TGMrbFileObjectCombo(const TGWindow * Parent,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TGLabel * label;
-	Int_t bSize;
-
 	LabelGC = this->SetupGC(LabelGC, FrameOptions);
 	EntryGC = this->SetupGC(EntryGC, FrameOptions);
 	BrowseGC = this->SetupGC(BrowseGC, FrameOptions);
 	ComboGC = this->SetupGC(ComboGC, FrameOptions);
 
+	fFrameId = FrameId;
+
 	if (Label != NULL) {
-		label = new TGLabel(this, new TGString(Label), LabelGC->GC(), LabelGC->Font(), kChildFrame, LabelGC->BG());
+		TGLabel * label = new TGLabel(this, new TGString(Label), LabelGC->GC(), LabelGC->Font(), kChildFrame, LabelGC->BG());
 		fHeap.AddFirst((TObject *) label);
 		this->AddFrame(label, LabelGC->LH());
 		label->SetTextJustify(kTextLeft);
@@ -119,69 +117,71 @@ TGMrbFileObjectCombo::TGMrbFileObjectCombo(const TGWindow * Parent,
 	fEB->AddFrame(fBrowse, btnLayout);
 	fBrowse->ChangeBackground(BrowseGC->BG());
 	fBrowse->SetToolTipText("Browse files", 500);
-	fBrowse->Associate(this);
-	bSize = fBrowse->GetDefaultWidth();
+	fBrowse->Connect("Clicked()", this->ClassName(), this, "Browse()");
+	Int_t bSize = fBrowse->GetDefaultWidth();
 
-	fEntry = new TGTextEntry(fEB, new TGTextBuffer(BufferSize), EntryId);
+	fEntry = new TGTextEntry(fEB, new TGTextBuffer(BufferSize), FrameId);
 	fEntry->SetFont(EntryGC->Font());
 	fEntry->SetBackgroundColor(EntryGC->BG());
-	fEntry->Associate(this);
+	fEntry->Connect("ReturnPressed()", this->ClassName(), this, "EntryChanged()");
+	fEntry->Connect("TabPressed()", this->ClassName(), this, "EntryChanged()");
 
 	fHeap.AddFirst((TObject *) fEntry);
 	fEB->AddFrame(fEntry, EntryGC->LH());
 	fEntry->Resize(EntryWidth - bSize, Height);
 	
-	fCombo = new TGComboBox(fEC, ComboId, ComboOptions, ComboGC->BG());
+	fCombo = new TGComboBox(fEC, FrameId, ComboOptions, ComboGC->BG());
 	fHeap.AddFirst((TObject *) fCombo);
 	fEC->AddFrame(fCombo, ComboGC->LH());
 	((TGListBox *) fCombo->GetListBox())->SetHeight(Height * 10);
 	fCombo->Resize(ComboWidth, Height);
+	fCombo->Connect("Selected(Int_t)", this->ClassName(), this, "SelectionChanged(Int_t)");
 	
 }
 
-Bool_t TGMrbFileObjectCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TGMrbFileObjectCombo::Browse() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbFileObjectCombo::ProcessMessage
+// Name:           TGMrbFileObjectCombo::Browse
 // Purpose:        Message handler for browse button
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
-// Results:        
+// Arguments:      --
+// Results:        --
 // Exceptions:     
 // Description:    Handle message received from browse button
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case 0:
-							new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fFileInfo);
-							if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') {
-								this->OpenFile(fFileInfo.fFilename);
-								fCombo->Select(0);
-							}
-							break;
-					}
-					break;
-			}
-			break;
-		case kC_TEXTENTRY:
-			switch (GET_SUBMSG(MsgId)) {
-				case kTE_ENTER:
-					{
-						TString fName;
-						this->GetFileEntry(fName, kTRUE);
-						this->OpenFile(fName.Data());
-						fCombo->Select(0);
-					}
-					break;
-			}
-			break;
+	new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fFileInfo);
+	if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') {
+		if (this->OpenFile(fFileInfo.fFilename)) {
+			fCombo->Select(0);
+			this->FileChanged(fFrameId);
+		} else {
+			this->ClearList();
+		}
 	}
-	return(kTRUE);
+}
+
+void TGMrbFileObjectCombo::EntryChanged() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectCombo::EntryChanged
+// Purpose:        Message handler for return/tab
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Handle message received from browse button
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString fName;
+	this->GetFileEntry(fName, kTRUE);
+	if (this->OpenFile(fName.Data())) {
+		fCombo->Select(0);
+		this->FileChanged(fFrameId);
+	} else {
+		this->ClearList();
+	}
 }
 
 void TGMrbFileObjectCombo::SetFileEntry(const Char_t * FileName) {
@@ -395,10 +395,52 @@ Bool_t TGMrbFileObjectCombo::OpenFile(const Char_t * FileName) {
 	return(kTRUE);
 }
 
+void TGMrbFileObjectCombo::FileChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectCombo::FileChanged
+// Purpose:        Signal handler
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t Selection  -- selection index
+// Results:        --
+// Exceptions:     
+// Description:    Emits signal on "file selection changed" 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+   Long_t args[2];
+
+   args[0] = FrameId;
+   args[1] = Selection;
+
+   this->Emit("FileChanged(Int_t, Int_t)", args);
+}
+
+void TGMrbFileObjectCombo::SelectionChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectCombo::SelectionChanged
+// Purpose:        Signal handler
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t Selection  -- selection index
+// Results:        --
+// Exceptions:     
+// Description:    Emits signal on "object selection changed" 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+   Long_t args[2];
+
+   args[0] = FrameId;
+   args[1] = Selection;
+
+   this->Emit("SelectionChanged(Int_t, Int_t)", args);
+}
+
 TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 												const Char_t * Label,
 												Int_t BufferSize,
-												Int_t EntryId, Int_t ListBoxId,
+												Int_t FrameId,
 												Int_t Width, Int_t Height,
 												Int_t EntryWidth, Int_t ListBoxWidth,
 												TGMrbLayout * FrameGC,
@@ -417,8 +459,7 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 // Arguments:      TGWindow * Parent           -- parent window
 //                 Char_t * Label              -- label text
 //                 Int_t BufferSize            -- buffer size
-//                 Int_t EntryId               -- id to be used in ProcessMessage
-//                 Int_t ListBoxId             -- ...
+//                 Int_t FrameId               -- id to be used with signal-slot mechanism
 //                 Int_t Width                 -- frame width
 //                 Int_t Height                -- frame height
 //                 Int_t EntryWidth            -- width of the entry field
@@ -444,6 +485,8 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 	EntryGC = this->SetupGC(EntryGC, FrameOptions);
 	BrowseGC = this->SetupGC(BrowseGC, FrameOptions);
 	ListBoxGC = this->SetupGC(ListBoxGC, FrameOptions);
+
+	fFrameId = FrameId;
 
 	if (Label != NULL) {
 		label = new TGLabel(this, new TGString(Label), LabelGC->GC(), LabelGC->Font(), kChildFrame, LabelGC->BG());
@@ -476,13 +519,14 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 	fEB1->AddFrame(fBrowse, btnLayout);
 	fBrowse->ChangeBackground(BrowseGC->BG());
 	fBrowse->SetToolTipText("Browse files", 500);
-	fBrowse->Associate(this);
+	fBrowse->Connect("Clicked()", this->ClassName(), this, "Browse()");
 	bSize = fBrowse->GetDefaultWidth();
 
-	fEntry = new TGTextEntry(fEB1, new TGTextBuffer(BufferSize), EntryId);
+	fEntry = new TGTextEntry(fEB1, new TGTextBuffer(BufferSize), fFrameId);
 	fEntry->SetFont(EntryGC->Font());
 	fEntry->SetBackgroundColor(EntryGC->BG());
-	fEntry->Associate(this);
+	fEntry->Connect("ReturnPressed()", this->ClassName(), this, "EntryChanged()");
+	fEntry->Connect("TabPressed()", this->ClassName(), this, "EntryChanged()");
 
 	fHeap.AddFirst((TObject *) fEntry);
 	fEB1->AddFrame(fEntry, EntryGC->LH());
@@ -495,14 +539,14 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 	fEB2->AddFrame(fRBSingle, rbLayout);
 	fRBSingle->SetToolTipText("Select single objects", 500);
 	fRBSingle->SetState(kButtonUp);
-	fRBSingle->Associate(this);
+	fRBSingle->Connect("Clicked()", this->ClassName(), this, "Single()");
 
 	fRBRange = new TGRadioButton(fEB2, "range", kBtnRange);
 	fHeap.AddFirst((TObject *) fRBRange);
 	fEB2->AddFrame(fRBRange, rbLayout);
 	fRBRange->SetToolTipText("Select range of objects", 500);
 	fRBRange->SetState(kButtonDown);
-	fRBRange->Associate(this);
+	fRBRange->Connect("Clicked()", this->ClassName(), this, "Range()");
 	fStartIndex = -1;
 
 	TGLayoutHints * tbLayout = new TGLayoutHints(kLHintsLeft | kLHintsCenterY, 10, 10, 0, 0);
@@ -512,128 +556,171 @@ TGMrbFileObjectListBox::TGMrbFileObjectListBox(const TGWindow * Parent,
 	fHeap.AddFirst((TObject *) fTBClear);
 	fEB2->AddFrame(fTBClear, tbLayout);
 	fTBClear->SetToolTipText("Clear selection", 500);
-	fTBClear->Associate(this);
+	fTBClear->Connect("Clicked()", this->ClassName(), this, "Clear()");
 
 	fTBApply = new TGTextButton(fEB2, "apply", kBtnApply);
 	fHeap.AddFirst((TObject *) fTBApply);
 	fEB2->AddFrame(fTBApply, tbLayout);
 	fTBApply->SetToolTipText("Apply selection", 500);
-	fTBApply->Associate(this);
+	fTBApply->Connect("Clicked()", this->ClassName(), this, "Apply()");
 
-	fListBox = new TGListBox(fEC, ListBoxId, ListBoxOptions, ListBoxGC->BG());
+	fListBox = new TGListBox(fEC, fFrameId, ListBoxOptions, ListBoxGC->BG());
 	fHeap.AddFirst((TObject *) fListBox);
 	fEC->AddFrame(fListBox, ListBoxGC->LH());
 	fListBox->SetHeight(Height * 10);
 	fListBox->Resize(ListBoxWidth, fListBox->GetHeight());
 	fListBox->SetMultipleSelections(kTRUE);
-	fListBox->Associate(this);
+	fListBox->Connect("Selected(Int_t)", this->ClassName(), this, "ListBoxChanged(Int_t)");
 }
 
-Bool_t TGMrbFileObjectListBox::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TGMrbFileObjectListBox::Browse() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbFileObjectListBox::ProcessMessage
-// Purpose:        Message handler for browse button
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
-// Results:        
+// Name:           TGMrbLabelEntry::Browse
+// Purpose:        Slot method
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Called upon Clicked() events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fFileInfo);
+	if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') {
+		if (this->OpenFile(fFileInfo.fFilename)) this->FileChanged(fFrameId);
+	}
+}
+
+void TGMrbFileObjectListBox::Clear() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::Clear
+// Purpose:        Slot method
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Called upon Clicked() events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->ClearList();
+	TIterator * iter = fLofListItems.MakeIterator();
+	TMrbNamedX * nx;
+	while (nx = (TMrbNamedX *) iter->Next()) {
+		fListBox->AddEntry(nx->GetTitle(), nx->GetIndex());
+	}
+	fListBox->Layout();
+	fStartIndex = -1;
+	this->SelectionChanged(0);
+}
+
+void TGMrbFileObjectListBox::Apply() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::Apply
+// Purpose:        Slot method
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Called upon Clicked() events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TList selected;
+	fListBox->GetSelectedEntries(&selected);
+	TMrbLofNamedX lofSelected;
+	TIterator * iter = selected.MakeIterator();
+	TGTextLBEntry * lbe;
+	Int_t idx = 0;
+	while (lbe = (TGTextLBEntry *) iter->Next()) {
+		lofSelected.AddNamedX(idx, lbe->GetText()->GetString());
+		idx++;
+	}
+	selected.Clear();	// as 'selected' contains entries from listbox
+	this->ClearList();	// it has to be cleared *before* clearing the list !!!
+	iter = lofSelected.MakeIterator();
+	TMrbNamedX * nx;
+	while (nx = (TMrbNamedX *) iter->Next()) {
+		fListBox->AddEntry(nx->GetName(), nx->GetIndex());
+	}
+	fListBox->Layout();
+	fStartIndex = -1;
+	this->SelectionChanged(0);
+}
+
+void TGMrbFileObjectListBox::Single() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::Single
+// Purpose:        Slot method
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Called upon Clicked() events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fRBSingle->SetState(kButtonDown);
+	fRBRange->SetState(kButtonUp);
+}
+
+void TGMrbFileObjectListBox::Range() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::Range
+// Purpose:        Slot method
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Called upon Clicked() events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fRBRange->SetState(kButtonDown);
+	fRBSingle->SetState(kButtonUp);
+}
+
+void TGMrbFileObjectListBox::ListBoxChanged(Int_t Selected) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::ListBoxChanged
+// Purpose:        Slot method
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Called upon SelectionChanged() events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fRBRange->GetState() == kButtonDown) {
+		if (fStartIndex == -1) {
+			fStartIndex = Selected;
+		} else {
+			if (fStartIndex <= Selected) {
+				for (Int_t i = fStartIndex; i <= Selected; i++) fListBox->Select(i, kTRUE);
+			} else {
+				for (Int_t i = Selected; i < fStartIndex; i++) fListBox->Select(i, kTRUE);
+			}
+			fStartIndex = -1;
+		}
+	}
+}
+
+void TGMrbFileObjectListBox::EntryChanged() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectListBox::EntryChanged
+// Purpose:        Message handler for return/tab
+// Arguments:      --
+// Results:        --
 // Exceptions:     
 // Description:    Handle message received from browse button
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case kBtnBrowse:
-							new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fFileInfo);
-							if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') {
-								this->OpenFile(fFileInfo.fFilename);
-							}
-							break;
-
-						case kBtnClear:
-							{
-  								this->ClearList();
-								TIterator * iter = fLofListItems.MakeIterator();
-								TMrbNamedX * nx;
-								while (nx = (TMrbNamedX *) iter->Next()) {
-									fListBox->AddEntry(nx->GetTitle(), nx->GetIndex());
-								}
-								fListBox->Layout();
-								fStartIndex = -1;
-							}
-							break;
-						case kBtnApply:
-							{
-								TList selected;
-								fListBox->GetSelectedEntries(&selected);
-								TMrbLofNamedX lofSelected;
-								TIterator * iter = selected.MakeIterator();
-								TGTextLBEntry * lbe;
-								Int_t idx = 0;
-								while (lbe = (TGTextLBEntry *) iter->Next()) {
-									lofSelected.AddNamedX(idx, lbe->GetText()->GetString());
-									idx++;
-								}
-  								selected.Clear();	// as 'selected' contains entries from listbox
-								this->ClearList();	// it has to be cleared *before* clearing the list !!!
-								iter = lofSelected.MakeIterator();
-								TMrbNamedX * nx;
-								while (nx = (TMrbNamedX *) iter->Next()) {
-									fListBox->AddEntry(nx->GetName(), nx->GetIndex());
-								}
-								fListBox->Layout();
-								fStartIndex = -1;
-							}
-							break;
-					}
-					break;
-
-				case kCM_RADIOBUTTON:
-					switch (Param1) {
-						case kBtnSingle:
-							fRBSingle->SetState(kButtonDown);
-							fRBRange->SetState(kButtonUp);
-							break;
-						case kBtnRange:
-							fRBRange->SetState(kButtonDown);
-							fRBSingle->SetState(kButtonUp);
-							break;
-					}
-					break;
-
-				case kCM_LISTBOX:
-					if (fRBRange->GetState() == kButtonDown) {
-						if (fStartIndex == -1) {
-							fStartIndex = Param2;
-						} else {
-							if (fStartIndex <= Param2) {
-								for (Int_t i = fStartIndex; i <= Param2; i++) fListBox->Select(i, kTRUE);
-							} else {
-								for (Int_t i = Param2; i < fStartIndex; i++) fListBox->Select(i, kTRUE);
-							}
-							fStartIndex = -1;
-						}
-					}
-					break;
-			}
-			break;
-		case kC_TEXTENTRY:
-			switch (GET_SUBMSG(MsgId)) {
-				case kTE_ENTER:
-					{
-						TString fName;
-						this->GetFileEntry(fName, kTRUE);
-						this->OpenFile(fName.Data());
-					}
-					break;
-			}
-			break;
-	}
-	return(kTRUE);
+	TString fName;
+	this->GetFileEntry(fName, kTRUE);
+	if (this->OpenFile(fName.Data())) this->FileChanged(fFrameId);
 }
 
 void TGMrbFileObjectListBox::SetList(TObjArray & LofEntries) {
@@ -904,3 +991,44 @@ Bool_t TGMrbFileObjectListBox::OpenFile(const Char_t * FileName) {
 	return(kTRUE);
 }
 
+void TGMrbFileObjectListBox::FileChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectListBox::FileChanged
+// Purpose:        Signal handler
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t Selection  -- selection index
+// Results:        --
+// Exceptions:     
+// Description:    Emits signal on "file selection changed" 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+   Long_t args[2];
+
+   args[0] = FrameId;
+   args[1] = Selection;
+
+   this->Emit("FileChanged(Int_t, Int_t)", args);
+}
+
+void TGMrbFileObjectListBox::SelectionChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileObjectListBox::SelectionChanged
+// Purpose:        Signal handler
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t Selection  -- selection index
+// Results:        --
+// Exceptions:     
+// Description:    Emits signal on "object selection changed" 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+   Long_t args[2];
+
+   args[0] = FrameId;
+   args[1] = Selection;
+
+   this->Emit("SelectionChanged(Int_t, Int_t)", args);
+}

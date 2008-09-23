@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEMainFrame.cxx,v 1.2 2008-09-03 14:23:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMEMainFrame.cxx,v 1.3 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -87,12 +87,14 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 	HEAP(fMenuFile);
 
 	fMenuFile->AddEntry("&Exit ... Ctrl-q", kVMEFileExit);
+	fMenuFile->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
 
 //	View menu
 	fMenuView = new TGPopupMenu(fClient->GetRoot());
 	HEAP(fMenuView);
 
 	fMenuView->AddEntry("&Errors", kVMEViewErrors);
+	fMenuView->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
 
 //	General menu
 	fMenuGeneral = new TGPopupMenu(fClient->GetRoot());
@@ -105,6 +107,7 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 
 	fMenuGeneral->AddEntry("Offline", kVMEGeneralOffline);
 	fMenuGeneral->AddEntry("Online", kVMEGeneralOnline);
+	fMenuGeneral->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
 
 //	Macros menu
 	fLofMacros = new TMrbLofMacros();
@@ -124,15 +127,7 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 	fMenuHelp->AddEntry("&Contents", kVMEHelpContents);
 	fMenuHelp->AddSeparator();
 	fMenuHelp->AddEntry("&About VMEControl", kVMEHelpAbout);
-
-//	Menu button messages are handled by the main frame (i.e. "this")
-//	ProcessMessage() method.
-//	(fMenuMacros will be handled by its own ProcessMessage())
-	fMenuFile->Associate(this);
-	fMenuView->Associate(this);
-	fMenuGeneral->Associate(this);
-	fMenuHelp->Associate(this);
-	if (hasMacros) fMenuMacros->Associate(fMenuMacros);
+	fMenuHelp->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
 
 //	Main menu bar
 	fMenuBar = new TGMenuBar(this, 1, 1, kHorizontalFrame | kSunkenFrame);
@@ -167,11 +162,12 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 	fMenuBar->ChangeBackground(gVMEControlData->fColorDarkBlue);
 
 //	create main tab object
-	fTabFrame = new TGTab(this, kTabWidth, kTabHeight);
+	fTabFrame = new TGTab(this, gVMEControlData->GetFrameWidth(), gVMEControlData->GetFrameHeight());
 	HEAP(fTabFrame);
 	TGLayoutHints * tabLayout = new TGLayoutHints(kLHintsBottom | kLHintsExpandX | kLHintsExpandY, 5, 5, 5, 5);
 	HEAP(tabLayout);
 	this->AddFrame(fTabFrame, tabLayout);
+	fTabFrame->Connect("Selected(Int_t)", this->ClassName(), this, "TabChanged(Int_t)");
 
 // add tabs
 	fServerPanel = NULL;
@@ -183,7 +179,7 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 	fCaen785Tab = fTabFrame->AddTab("Caen V785");
 
 	fTabFrame->SetTab(kVMETabServer);
-	this->SendMessage(this, MK_MSG(kC_COMMAND, kCM_TAB), kVMETabServer, 0);
+	this->TabChanged(kVMETabServer);
 
 //	create a message viewer window if wanted
 	if (		gEnv->GetValue("VMEControl.ViewMessages", kFALSE)
@@ -246,110 +242,88 @@ void VMEMainFrame::PopupMessageViewer() {
 	fMsgViewer->AddEntries();
 }
 
-Bool_t VMEMainFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
-//________________________________________________________________[C++ METHOD]
+void VMEMainFrame::MenuSelect(Int_t Selection) {
 //////////////////////////////////////////////////////////////////////////////
-// Name:           VMEMainFrame::ProcessMessage
-// Purpose:        Message handler for the main frame widget
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
-// Results:        
+// Name:           VMEMainFrame::MenuSelect
+// Purpose:        Slot method
+// Arguments:      Int_t Selection    -- selection index
+// Results:        --
 // Exceptions:     
-// Description:    Handle messages sent to VMEMainFrame.
-//                 E.g. all menu button messages.
+// Description:    Called upon 'menu select' events
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_MENU:
-					switch (Param1) {
-						case kVMEViewErrors:
-							if (fMsgViewer != NULL) delete fMsgViewer;
-							this->PopupMessageViewer();
-							break;
-							
-						case kVMEFileExit:
-							if (gMrbC2Lynx) gMrbC2Lynx->Bye();
-							this->CloseWindow();
-							break;
-
-						case kVMEGeneralOutputNormal:
-							gVMEControlData->fStatus &= ~(VMEControlData::kVMEVerboseMode | VMEControlData::kVMEDebugMode);
-							fMenuGeneral->RCheckEntry(kVMEGeneralOutputNormal, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
-							break;
-
-						case kVMEGeneralOutputVerbose:
-							gVMEControlData->fStatus &= ~VMEControlData::kVMEDebugMode;
-							gVMEControlData->fStatus |= VMEControlData::kVMEVerboseMode;
-							fMenuGeneral->RCheckEntry(kVMEGeneralOutputVerbose, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
-							break;
-
-						case kVMEGeneralOutputDebug:
-							gVMEControlData->fStatus |= VMEControlData::kVMEVerboseMode | VMEControlData::kVMEDebugMode;
-							fMenuGeneral->RCheckEntry(kVMEGeneralOutputDebug, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
-							break;
-
-						case kVMEGeneralOffline:
-							gMrbLog->Out()	<< "Running in OFFLINE mode" << endl;
-							gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
-							gVMEControlData->fStatus |= VMEControlData::kVMEOfflineMode;
-							fMenuGeneral->RCheckEntry(kVMEGeneralOffline, kVMEGeneralOffline, kVMEGeneralOnline);
-							break;
-
-						case kVMEGeneralOnline:
-							gMrbLog->Out()	<< "Running in ONLINE mode" << endl;
-							gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
-							gVMEControlData->fStatus &= ~VMEControlData::kVMEOfflineMode;
-							fMenuGeneral->RCheckEntry(kVMEGeneralOnline, kVMEGeneralOffline, kVMEGeneralOnline);
-							break;
-
-						default:
-							break;
-					}
-					break;
-
-				case kCM_TAB:
-					for (Int_t i = kVMETabServer; i < kVMELastTab; i++) {
-						fTabFrame->GetTabTab(i)->ChangeBackground(gVMEControlData->fColorGray);
-					}
-					fTabFrame->GetTabTab(Param1)->ChangeBackground(gVMEControlData->fColorGold);
-
-					switch (Param1) {
-
-						case kVMETabServer:
-                    		if (fServerPanel == NULL) fServerPanel = new VMEServerPanel(fServerTab);
-							fServerPanel->UpdateTextView();
-							break;
-
-						case kVMETabSis3302:
-                    		if (fSis3302Panel == NULL) fSis3302Panel = new VMESis3302Panel(fSis3302Tab);
-							fSis3302Panel->SetupModuleList();
-							break;
-
-						case kVMETabCaen785:
-                    		if (fCaen785Panel == NULL) fCaen785Panel = new VMECaen785Panel(fCaen785Tab);
-							fCaen785Panel->SetupModuleList();
-							break;
-
-						default:
-							break;
-					}
-					break;
-			}
+	switch (Selection) {
+		case kVMEViewErrors:
+			if (fMsgViewer != NULL) delete fMsgViewer;
+			this->PopupMessageViewer();
 			break;
-			
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionExit:
-					gApplication->Terminate(0);
-					break;
-				default:
-					break;
-			}
+							
+		case kVMEFileExit:
+			if (gMrbC2Lynx) gMrbC2Lynx->Bye();
+			this->CloseWindow();
+			break;
+
+		case kVMEGeneralOutputNormal:
+			gVMEControlData->fStatus &= ~(VMEControlData::kVMEVerboseMode | VMEControlData::kVMEDebugMode);
+			fMenuGeneral->RCheckEntry(kVMEGeneralOutputNormal, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+			break;
+
+		case kVMEGeneralOutputVerbose:
+			gVMEControlData->fStatus &= ~VMEControlData::kVMEDebugMode;
+			gVMEControlData->fStatus |= VMEControlData::kVMEVerboseMode;
+			fMenuGeneral->RCheckEntry(kVMEGeneralOutputVerbose, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+			break;
+
+		case kVMEGeneralOutputDebug:
+			gVMEControlData->fStatus |= VMEControlData::kVMEVerboseMode | VMEControlData::kVMEDebugMode;
+			fMenuGeneral->RCheckEntry(kVMEGeneralOutputDebug, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+			break;
+
+		case kVMEGeneralOffline:
+			gMrbLog->Out()	<< "Running in OFFLINE mode" << endl;
+			gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
+			gVMEControlData->fStatus |= VMEControlData::kVMEOfflineMode;
+			fMenuGeneral->RCheckEntry(kVMEGeneralOffline, kVMEGeneralOffline, kVMEGeneralOnline);
+			break;
+
+		case kVMEGeneralOnline:
+			gMrbLog->Out()	<< "Running in ONLINE mode" << endl;
+			gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
+			gVMEControlData->fStatus &= ~VMEControlData::kVMEOfflineMode;
+			fMenuGeneral->RCheckEntry(kVMEGeneralOnline, kVMEGeneralOffline, kVMEGeneralOnline);
 			break;
 	}
-	return(kTRUE);
+}
+
+void VMEMainFrame::TabChanged(Int_t Selection) {
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMEMainFrame::TabChanged
+// Purpose:        Slot method
+// Arguments:      Int_t Selection    -- selection index
+// Results:        --
+// Exceptions:     
+// Description:    Called upon 'tab select' events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	for (Int_t i = kVMETabServer; i < kVMELastTab; i++) {
+		fTabFrame->GetTabTab(i)->ChangeBackground(gVMEControlData->fColorGray);
+	}
+	fTabFrame->GetTabTab(Selection)->ChangeBackground(gVMEControlData->fColorGold);
+
+	switch (Selection) {
+		case kVMETabServer:
+			if (fServerPanel == NULL) fServerPanel = new VMEServerPanel(fServerTab);
+			fServerPanel->UpdateTextView();
+			break;
+
+		case kVMETabSis3302:
+			if (fSis3302Panel == NULL) fSis3302Panel = new VMESis3302Panel(fSis3302Tab);
+			break;
+
+		case kVMETabCaen785:
+			if (fCaen785Panel == NULL) fCaen785Panel = new VMECaen785Panel(fCaen785Tab);
+			break;
+	}			
 }

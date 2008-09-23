@@ -4,7 +4,7 @@ PPCINC		=	../../inc
 LWRINC 		=	../inc
 M2LINC		=	../../../c2lynx/inc
 
-CXXFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE=$(GSI_CPU_PLATFORM) -DLYNX_VERSION=$(LV_CPP) -I$(LWRINC) -I$(M2LINC) -I$(PPCINC) 
+CXXFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(LWRINC) -I$(M2LINC) -I$(PPCINC) 
 
 ObjSuf		=	o
 SrcSuf		=	cxx

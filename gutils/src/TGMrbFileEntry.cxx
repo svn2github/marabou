@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileEntry.cxx,v 1.7 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileEntry.cxx,v 1.8 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -31,7 +31,7 @@ ClassImp(TGMrbFileEntry)
 
 TGMrbFileEntry::TGMrbFileEntry(const TGWindow * Parent,
 												const Char_t * Label,
-												Int_t BufferSize, Int_t EntryId,
+												Int_t BufferSize, Int_t FrameId,
 												Int_t Width, Int_t Height,
 												Int_t EntryWidth,
 												TGFileInfo * FileInfo, EFileDialogMode DialogMode,
@@ -49,7 +49,7 @@ TGMrbFileEntry::TGMrbFileEntry(const TGWindow * Parent,
 // Arguments:      TGWindow * Parent           -- parent window
 //                 Char_t * Label              -- label text
 //                 Int_t BufferSize            -- size of text buffer in chars
-//                 Int_t EntryId               -- id to be used in ProcessMessage
+//                 Int_t FrameId               -- id to be used with signal/slots
 //                 Int_t Width                 -- frame width
 //                 Int_t Height                -- frame height
 //                 Int_t EntryWidth            -- widht of the entry field
@@ -74,6 +74,8 @@ TGMrbFileEntry::TGMrbFileEntry(const TGWindow * Parent,
 
 	Int_t entryWidth = EntryWidth;
 
+	fFrameId = FrameId;
+
 	if (Label != NULL) {
 		TGLabel * label = new TGLabel(this, new TGString(Label), LabelGC->GC(), LabelGC->Font(), kChildFrame, LabelGC->BG());
 		fHeap.AddFirst((TObject *) label);
@@ -91,30 +93,28 @@ TGMrbFileEntry::TGMrbFileEntry(const TGWindow * Parent,
 		this->AddFrame(fBrowse, btnLayout);
 		fBrowse->ChangeBackground(BrowseGC->BG());
 		fBrowse->SetToolTipText("Browse files", 500);
-		fBrowse->Associate(this);
+		fBrowse->Connect("Clicked()", this->ClassName(), this, "Browse()");
 		entryWidth -= fBrowse->GetWidth();;
 	}
 
-	fFrameId = EntryId;
-
-	fEntry = new TGTextEntry(this, new TGTextBuffer(BufferSize), EntryId);
+	fEntry = new TGTextEntry(this, new TGTextBuffer(BufferSize), fFrameId);
 	fEntry->SetFont(EntryGC->Font());
 	fEntry->SetBackgroundColor(EntryGC->BG());
+	fEntry->Connect("ReturnPressed()", this->ClassName(), this, Form("EntryChanged(Int_t=%d)", fFrameId));
+	fEntry->Connect("TabPressed()", this->ClassName(), this, Form("EntryChanged(Int_t=%d)", fFrameId));
 
 	fHeap.AddFirst((TObject *) fEntry);
 	this->AddFrame(fEntry, EntryGC->LH());
-	fEntry->Associate(this);
 	fEntry->Resize(entryWidth, Height);
 }
 
-Bool_t TGMrbFileEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TGMrbFileEntry::Browse() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbFileEntry::ProcessMessage
+// Name:           TGMrbFileEntry::Browse
 // Purpose:        Message handler for browse button
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
-// Results:        
+// Arguments:      --
+// Results:        --
 // Exceptions:     
 // Description:    Handle message received from browse button
 // Keywords:       
@@ -122,28 +122,9 @@ Bool_t TGMrbFileEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 
 	TMrbSystem ux;
 	TGFileInfo fi;
-
-	if (GET_MSG(MsgId) == kC_COMMAND) {
-		switch (GET_SUBMSG(MsgId)) {
-			case kCM_BUTTON:
-				switch (Param1) {
-					case 0:
-						new TGFileDialog(fClient->GetRoot(), this, fDialogMode, &fFileInfo);
-						if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') fEntry->SetText(fFileInfo.fFilename);
-						this->EntryChanged();
-						break;
-				}
-		}
-	} else if (GET_MSG(MsgId) == kC_TEXTENTRY) {
-		switch (GET_SUBMSG(MsgId)) {
-			case kTE_TAB:
-				break;
-			case kTE_ENTER:
-				this->EntryChanged();
-				break;
-		}
-	}
-	return(kTRUE);
+	new TGFileDialog(fClient->GetRoot(), this, fDialogMode, &fFileInfo);
+	if (fFileInfo.fFilename != NULL && *fFileInfo.fFilename != '\0') fEntry->SetText(fFileInfo.fFilename);
+	this->EntryChanged(fFrameId);
 }
 
 void TGMrbFileEntry::FileButtonEnable(Bool_t Flag) {
@@ -164,3 +145,23 @@ void TGMrbFileEntry::FileButtonEnable(Bool_t Flag) {
 	}
 }
 
+void TGMrbFileEntry::EntryChanged(Int_t FrameId, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbFileEntry::EntryChanged
+// Purpose:        Signal handler
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t EntryNo    -- entry number
+// Results:        --
+// Exceptions:     
+// Description:    Emits signal on "entry changed" 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+   Long_t args[2];
+
+   args[0] = FrameId;
+   args[1] = EntryNo;
+
+   this->Emit("EntryChanged(Int_t, Int_t)", args);
+}

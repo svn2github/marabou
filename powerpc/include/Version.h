@@ -1,15 +1,18 @@
-#if (CPU_TYPE == RIO2)
+#ifdef CPU_TYPE_RIO2
 static char * cpuType = "@#@CPU=RIO2";
-#if (LYNX_VERSION == 25)
+#ifdef LYNX_VERSION_25
 	static char * lynxVersion = "@#@LynxOs=2.5";
-#elif (LYNX_VERSION == 31)
+#endif
+#ifdef LYNX_VERSION_31
 	static char * lynxVersion = "@#@LynxOs=3.1";
 #endif
-#elif (CPU_TYPE == RIO3)
+#endif
+#ifdef CPU_TYPE_RIO3
 static char * cpuType = "@#@CPU=RIO3";
-#if (LYNX_VERSION == 25)
+#ifdef LYNX_VERSION_25
 	static char * lynxVersion = "@#@LynxOs=2.5";
-#elif (LYNX_VERSION == 31)
+#endif
+#ifdef LYNX_VERSION_31
 	static char * lynxVersion = "@#@LynxOs=3.1";
 #endif
 #endif

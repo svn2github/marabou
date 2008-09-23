@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.10 2008-09-03 14:57:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.11 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -133,13 +133,15 @@ void TGMrbButtonFrame::PlaceButtons() {
 			subFrame = btnFrame;
 		}
 		btnId = nx->GetIndex();
-		switch (fType & (kGMrbCheckButton | kGMrbRadioButton | kGMrbTextButton | kGMrbPictureButton)) {
+		Int_t btnType = fType & (kGMrbCheckButton | kGMrbRadioButton | kGMrbTextButton | kGMrbPictureButton);
+		switch (btnType) {
 			case kGMrbCheckButton:
 				cbtn = new TGCheckButton(subFrame,	nx->GetName(),
 													btnId,
 													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
 				fHeap.AddFirst((TObject *) cbtn);
 				btn = (TGButton *) cbtn;
+				btn->Connect("Clicked()", "TGMrbButtonFrame", this, Form("CheckButtonClicked(Int_t=%d)", btnId));
 				break;
 			case kGMrbRadioButton:
 				rbtn = new TGRadioButton(subFrame,	nx->GetName(),
@@ -147,6 +149,7 @@ void TGMrbButtonFrame::PlaceButtons() {
 													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
 				fHeap.AddFirst((TObject *) rbtn);
 				btn = (TGButton *) rbtn;
+				btn->Connect("Clicked()", "TGMrbButtonFrame", this, Form("RadioButtonClicked(Int_t=%d)", btnId));
 				break;
 			case kGMrbTextButton:
 				tbtn = new TGTextButton(subFrame,	nx->GetName(),
@@ -154,6 +157,7 @@ void TGMrbButtonFrame::PlaceButtons() {
 													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
 				fHeap.AddFirst((TObject *) tbtn);
 				btn = (TGButton *) tbtn;
+				btn->Connect("Clicked()", "TGMrbButtonFrame", this, Form("TextButtonClicked(Int_t=%d)", btnId));
 				break;
 			case kGMrbPictureButton:
 				pbtn = new TGPictureButton(subFrame, fParentClient->GetPicture(nx->GetName()),
@@ -161,11 +165,11 @@ void TGMrbButtonFrame::PlaceButtons() {
 													fButtonGC->GC(), fButtonOptions);
 				fHeap.AddFirst((TObject *) pbtn);
 				btn = (TGButton *) pbtn;
+				btn->Connect("Clicked()", "TGMrbButtonFrame", this, Form("PictureButtonClicked(Int_t=%d)", btnId));
 				break;
 		}
 		btn->ChangeBackground(fButtonGC->BG());
 		subFrame->AddFrame(btn, fButtonGC->LH());
-		btn->Associate(fFrame);
 		nx->AssignObject(btn);
 		if (nx->HasTitle()) btn->SetToolTipText(nx->GetTitle(), 500);
 		btnNo++;
@@ -192,19 +196,20 @@ void TGMrbButtonFrame::PlaceButtons() {
 													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
 				fHeap.AddFirst((TObject *) cbtn);
 				btn = (TGButton *) cbtn;
+				btn->Connect("Clicked()", "TGMrbButtonFrame", this, Form("CheckButtonClicked(Int_t=%d)", sbtn2->GetIndex()));
 			} else {
 				pbtn = new TGPictureButton(subFrame, fParentClient->GetPicture(sbtn2->GetPicture()),
 													sbtn2->GetIndex(),
 													fButtonGC->GC(), fButtonOptions | kRaisedFrame);
 				fHeap.AddFirst((TObject *) pbtn);
 				btn = (TGButton *) pbtn;
+				btn->Connect("Clicked()", "TGMrbButtonFrame", this, Form("PictureButtonClicked(Int_t=%d)", sbtn2->GetIndex()));
 			}
 			btn->ChangeBackground(fButtonGC->BG());
 			subFrame->AddFrame(btn, new TGLayoutHints(kLHintsCenterY,	fButtonGC->LH()->GetPadLeft(),
 															fButtonGC->LH()->GetPadRight(),
 															fButtonGC->LH()->GetPadTop(),
 															fButtonGC->LH()->GetPadBottom()));
-			btn->Associate(fFrame);
 			sbtn2->AssignObject(btn);
 			if (sbtn2->HasTitle()) btn->SetToolTipText(sbtn2->GetTitle(), 500);
 			btnNo++;
@@ -213,26 +218,6 @@ void TGMrbButtonFrame::PlaceButtons() {
 	}
 }
 				
-void TGMrbButtonFrame::Associate(const TGWindow * Window) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbButtonFrame::Associate
-// Purpose:        Associate button events with specified window
-// Arguments:      TGWindow * Window    -- window which will care about button events
-// Results:        
-// Exceptions:     
-// Description:    Redirects button events to another window.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbNamedX * namedX;
-	TIterator * bIter = fButtons.MakeIterator();
-	while (namedX = (TMrbNamedX *) bIter->Next()) {
-		TGButton * button = (TGButton *) namedX->GetAssignedObject();
-		button->Associate(Window);
-	}
-}
-
 void TGMrbButtonFrame::ClearAll() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -472,24 +457,6 @@ void TGMrbButtonFrame::UpdateState(UInt_t Pattern) {
 	}
 }
 
-void TGMrbButtonFrame::AddButton(TGButton * Button, TMrbNamedX * ButtonSpecs) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbButtonFrame::AddButton
-// Purpose:        Add a button to the list
-// Arguments:      TGButton * Button         -- button widget
-//                 TMrbNamedX * ButtonSpecs  -- name and index
-// Results:        
-// Exceptions:     
-// Description:    Adds a button to the list. No window mapping is done.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	ButtonSpecs->AssignObject((TObject *) Button);
-	Button->Associate((const TGWindow *) this);
-	fButtons.AddNamedX(ButtonSpecs);
-}
-
 TGButton * TGMrbButtonFrame::GetButton(Int_t ButtonIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -635,29 +602,6 @@ void TGMrbButtonFrame::JustifyButton(ETextJustification Justify, Int_t ButtonInd
 	}
 }
 
-Bool_t TGMrbButtonFrame::ButtonFrameMessage(Long_t MsgId, Long_t MsgParm) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbButtonFrame::ProcessMessage
-// Purpose:        Message handler for a list of buttons
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t MsgParmX   -- message parameter   
-// Results:        
-// Exceptions:     
-// Description:    Handle messages sent to the list of buttons.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	if (GET_MSG(MsgId) == kC_COMMAND) {
-		switch(GET_SUBMSG(MsgId)) {
-			case kCM_RADIOBUTTON:	this->SetState((UInt_t) MsgParm); return(kTRUE);
-			case kCM_CHECKBUTTON:	this->UpdateState((UInt_t) MsgParm); return(kTRUE);
-			case kCM_BUTTON:		this->UpdateState((UInt_t) MsgParm); return(kTRUE);
-		}
-	}
-	return(kTRUE);
-}
-
 TGMrbSpecialButton * TGMrbButtonFrame::FindSpecialButton(Int_t Index) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -678,4 +622,25 @@ TGMrbSpecialButton * TGMrbButtonFrame::FindSpecialButton(Int_t Index) {
 		if (sbtn->GetIndex() == Index) return(sbtn);
 	}
 	return(NULL);
+}
+
+void TGMrbButtonFrame::ButtonPressed(Int_t FrameId, Int_t Button) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbButtonFrame::ButtonPressed
+// Purpose:        Signal handler
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t Button     -- button index
+// Results:        --
+// Exceptions:     
+// Description:    Emits signal on "button pressed" 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Long_t args[2];
+
+	args[0] = FrameId;
+	args[1] = Button;
+
+	this->Emit("ButtonPressed(Int_t, Int_t)", args);
 }

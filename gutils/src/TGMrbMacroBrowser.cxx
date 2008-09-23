@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.50 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.51 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -31,7 +31,6 @@
 #include <unistd.h>
 
 #include "TEnv.h"
-#include "TApplication.h"
 #include "TObjArray.h"
 #include "TObjString.h"
 #include "Token.h"
@@ -279,20 +278,20 @@ TGMrbMacroBrowserMain::TGMrbMacroBrowserMain(const TGWindow * Parent, TMrbLofMac
 		fMenuFile->AddEntry("Open ... Ctrl-o", kGMrbMacroMenuFileOpen);
 		fMenuFile->AddSeparator();
 		fMenuFile->AddEntry("Exit ... Ctrl-q", kGMrbMacroMenuFileExit);
-		fMenuFile->Associate(this);
+		fMenuFile->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
 
 		fMenuView = new TGPopupMenu(fClient->GetRoot());
 		HEAP(fMenuView);
 
 		fMenuView->AddEntry("&Errors", kGMrbMacroMenuViewErrors);
-		fMenuView->Associate(this);
+		fMenuView->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
 
 		fMenuHelp = new TGPopupMenu(fClient->GetRoot());
 		HEAP(fMenuHelp);
 
 		fMenuHelp->AddEntry("&Contents", kGMrbMacroMenuHelpContents);
 		fMenuHelp->AddEntry("&About", kGMrbMacroMenuHelpAbout);
-		fMenuHelp->Associate(this);
+		fMenuHelp->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
 
 		fMenuBar = new TGMenuBar(this, 500, 20, kHorizontalFrame | kRaisedFrame);
 		HEAP(fMenuBar);
@@ -353,14 +352,13 @@ TGMrbMacroBrowserMain::TGMrbMacroBrowserMain(const TGWindow * Parent, TMrbLofMac
 	}
 }
 
-Bool_t TGMrbMacroBrowserMain::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TGMrbMacroBrowserMain::MenuSelect(Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbMacroBrowserMain::ProcessMessage
+// Name:           TGMrbMacroBrowserMain::MenuSelect
 // Purpose:        Message handler
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
-// Results:        
+// Arguments:      Int_t Selection    -- item number
+// Results:        =-
 // Exceptions:     
 // Description:    Handle messages sent to TGMrbMacroBrowserMain.
 // Keywords:       
@@ -368,97 +366,37 @@ Bool_t TGMrbMacroBrowserMain::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t
 
 	TMrbNamedX * macro;
 	TEnv * macroEnv;
-
 	TGFileInfo fi;
-
 	TMrbLofMacros lofMacros;
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_MENU:
-					switch (Param1) {
-						case TGMrbMacroBrowserMain::kGMrbMacroMenuFileNew:
-							macro = new TMrbNamedX(0, "macro.C");
-							macroEnv = new TEnv(".new");
-							macroEnv->SetValue("NofArgs=1");
-							macro->AssignObject(macroEnv);
-							new TGMrbMacroEdit(fClient->GetRoot(), this, macro, 100, 100);
-							break;
-						case TGMrbMacroBrowserMain::kGMrbMacroMenuFileOpen:
-							fi.fFileTypes = (const char **) macroFileTypes;
-							new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fi);
-							if (fi.fFilename != NULL && *fi.fFilename != '\0') {
-								if (lofMacros.AddMacro(fi.fFilename)) {
-									macro = lofMacros.FirstMacro();
-									if (macro) new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
-								}
-							}
-							break;
-						case TGMrbMacroBrowserMain::kGMrbMacroMenuViewErrors:
-							if (fMsgViewer != NULL) delete fMsgViewer;
-							this->PopupMessageViewer();
-							break;
-						case TGMrbMacroBrowserMain::kGMrbMacroMenuFileExit:
-							this->CloseWindow();
-							break;
-					}
-					break;
-
-					default:
-						break;
+	switch (Selection) {
+		case TGMrbMacroBrowserMain::kGMrbMacroMenuFileNew:
+			macro = new TMrbNamedX(0, "macro.C");
+			macroEnv = new TEnv(".new");
+			macroEnv->SetValue("NofArgs=1");
+			macro->AssignObject(macroEnv);
+			new TGMrbMacroEdit(fClient->GetRoot(), this, macro, 100, 100);
+			break;
+		case TGMrbMacroBrowserMain::kGMrbMacroMenuFileOpen:
+			fi.fFileTypes = (const char **) macroFileTypes;
+			new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fi);
+			if (fi.fFilename != NULL && *fi.fFilename != '\0') {
+				if (lofMacros.AddMacro(fi.fFilename)) {
+					macro = lofMacros.FirstMacro();
+					if (macro) new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
 				}
-				break;
-				
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionExit:
-					gApplication->Terminate(0);
-					break;
-				case TGMrbLofKeyBindings::kGMrbKeyActionNew:
-					macro = new TMrbNamedX(0, "macro.C");
-					macroEnv = new TEnv(".new");
-					macroEnv->SetValue("NofArgs=1");
-					macro->AssignObject(macroEnv);
-					new TGMrbMacroEdit(fClient->GetRoot(), this, macro, 100, 100);
-					break;
-				case TGMrbLofKeyBindings::kGMrbKeyActionOpen:
-					fi.fFileTypes = (const char **) macroFileTypes;
-					new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fi);
-					if (fi.fFilename != NULL && *fi.fFilename != '\0') {
-						if (lofMacros.AddMacro(fi.fFilename)) {
-							macro = lofMacros.FirstMacro();
-							if (macro) new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
-						}
-					}
-					break;
 			}
 			break;
+		case TGMrbMacroBrowserMain::kGMrbMacroMenuViewErrors:
+			if (fMsgViewer != NULL) delete fMsgViewer;
+			this->PopupMessageViewer();
+			break;
+		case TGMrbMacroBrowserMain::kGMrbMacroMenuFileExit:
+			this->CloseWindow();
+			break;
 	}
-	return(kTRUE);
 }
-
-void TGMrbMacroBrowserMain::CloseWindow() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbMacroBrowserMain::CloseWindow
-// Purpose:        Close window and terminate application
-// Arguments:      
-// Results:        
-// Exceptions:     
-// Description:    Got close message for this MainFrame.
-//                 Calls parent's CloseWindow()
-//                 (which destroys the window) and terminates the application.
-//                 The close message is generated by the window manager when
-//                 its close window menu item is selected.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-   TGMainFrame::CloseWindow();
-   gApplication->Terminate(0);
-}
-
+				
 void TGMrbMacroBrowserMain::PopupMessageViewer() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -591,36 +529,32 @@ TGMrbMacroBrowserPopup::TGMrbMacroBrowserPopup(const TGWindow * Parent, TMrbLofM
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * macro;
-	TEnv * macroEnv;
-	TString macroName;
-	TString macroTitle;
-
 	fLofMacros = LofMacros;
 
-	macro = fLofMacros->FirstMacro();
+	TMrbNamedX * macro = fLofMacros->FirstMacro();
 	this->AddEntry("&New", TGMrbMacroBrowserPopup::kGMrbPopupNew);
 	this->AddEntry("&Open", TGMrbMacroBrowserPopup::kGMrbPopupOpen);
 	this->AddSeparator();
+	this->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
+
 	while (macro) {
-		macroEnv = (TEnv *) macro->GetAssignedObject();
-		macroName = macro->GetName();
+		TEnv * macroEnv = (TEnv *) macro->GetAssignedObject();
+		TString macroName = macro->GetName();
 		macroName += ": ";
-		macroTitle = macroEnv->GetValue("Title", "");
+		TString macroTitle = macroEnv->GetValue("Title", "");
 		macroName += macroTitle;
 		this->AddEntry(macroName.Data(), macro->GetIndex());
 		macro = fLofMacros->NextMacro(macro);
 	}
 }
 
-Bool_t TGMrbMacroBrowserPopup::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TGMrbMacroBrowserPopup::MenuSelect(Int_t Selected) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroBrowserPopup::ProcessMessage
 // Purpose:        Message handler
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
-// Results:        
+// Arguments:      Int_t Selected    -- entry selection
+// Results:        --
 // Exceptions:     
 // Description:    Handle messages sent to TGMrbMacroBrowserPopup.
 // Keywords:       
@@ -628,49 +562,29 @@ Bool_t TGMrbMacroBrowserPopup::ProcessMessage(Long_t MsgId, Long_t Param1, Long_
 
 	TMrbNamedX * macro;
 	TEnv * macroEnv;
-
 	TGFileInfo fi;
-	TString ifile;
 
 	TMrbLofMacros lofMacros;
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_MENU:
-					switch (Param1) {
-						case TGMrbMacroBrowserPopup::kGMrbPopupNew:
-							macro = new TMrbNamedX(0, "macro.C");
-							macroEnv = new TEnv(".new");
-							macroEnv->SetValue("NofArgs=1");
-							macro->AssignObject(macroEnv);
-							new TGMrbMacroEdit(fClient->GetRoot(), this, macro, 100, 100);
-							break;
-						case TGMrbMacroBrowserPopup::kGMrbPopupOpen:
-							fi.fFileTypes = (const char **) macroFileTypes;
-							new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fi);
-							if (fi.fFilename != NULL && *fi.fFilename != '\0') {
-								if (lofMacros.AddMacro(fi.fFilename)) {
-									macro = lofMacros.FirstMacro();
-									if (macro) new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
-								}
-							}
-							break;
-						default:
-							macro = fLofMacros->FindByIndex(Param1);
-							if (macro) new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
-							break;
-					}
-					break;
-
-				default:	break;
+	switch (Selected) {
+		case TGMrbMacroBrowserPopup::kGMrbPopupNew:
+			macro = new TMrbNamedX(0, "macro.C");
+			macroEnv = new TEnv(".new");
+			macroEnv->SetValue("NofArgs=1");
+			macro->AssignObject(macroEnv);
+			new TGMrbMacroEdit(fClient->GetRoot(), this, macro, 100, 100);
+			break;
+		case TGMrbMacroBrowserPopup::kGMrbPopupOpen:
+			fi.fFileTypes = (const char **) macroFileTypes;
+			new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fi);
+			if (fi.fFilename != NULL && *fi.fFilename != '\0') {
+				if (lofMacros.AddMacro(fi.fFilename)) {
+					macro = lofMacros.FirstMacro();
+					if (macro) new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
+				}
 			}
 			break;
-
-		default:	break;
 	}
-	return(kTRUE);
 }
 
 TGMrbMacroBrowserTransient::TGMrbMacroBrowserTransient(const TGWindow * Parent, const TGWindow * Main,
@@ -764,42 +678,26 @@ TGMrbMacroList::TGMrbMacroList(const TGWindow * Parent, TMrbLofMacros * LofMacro
 														FrameGC, NULL, ButtonGC, FrameOptions, ButtonOptions);
 	HEAP(fButtonList);
 	this->AddFrame(fButtonList, FrameGC->LH());
-	fButtonList->Associate(this);
+	((TGMrbButtonFrame *) fButtonList)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectMacro(Int_t, Int_t)");
 
 	this->ChangeBackground(FrameGC->BG());
 }
 
-Bool_t TGMrbMacroList::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TGMrbMacroList::SelectMacro(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbMacroList::ProcessMessage
-// Purpose:        Message handler
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           TGMrbMacroList::SelectMacro
+// Purpose:        Slot method
+// Arguments:      Int_t FrameId     -- frame id
+//                 Int_t Selection   -- macro selection
 // Results:        
 // Exceptions:     
 // Description:    Handle messages sent to TGMrbMacroList.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * macro;
-
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					macro = fLofMacros->FindByIndex(Param1);
-					if (macro) new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
-					break;
-
-				default:	break;
-			}
-			break;
-
-		default:	break;
-	}
-	return(kTRUE);
+	TMrbNamedX * macro = fLofMacros->FindByIndex(Selection);
+	if (macro) new TGMrbMacroFrame(fClient->GetRoot(), this, macro, 100, 100);
 }
 
 TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main, TMrbNamedX * Macro,
@@ -1174,7 +1072,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 														NULL, NULL, checkBtn);
 			}
 			HEAP(macroArg->fEntry);
-			macroArg->fEntry->GetTextEntry()->Connect("EntryChanged(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
+			macroArg->fEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "ProcessSignal(Int_t, Int_t)");
 			parentFrame->AddFrame(macroArg->fEntry, frameGC->LH());
 
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
@@ -1300,7 +1198,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			} else {
 				macroArg->fRadio->SetState(TGMrbMacroArg::kGMrbMacroEntryNo, kButtonDown);
 			}
-			((TGMrbButtonFrame *) macroArg->fRadio)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
+			((TGMrbButtonFrame *) macroArg->fRadio)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ProcessSignal(Int_t, Int_t)");
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryRadio
 						|| entryType == TGMrbMacroArg::kGMrbMacroEntryCheck
 						|| entryType == TGMrbMacroArg::kGMrbMacroEntryText
@@ -1355,7 +1253,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					if ((button = macroArg->fButtons.FindByIndex(val)) != NULL) {
 						macroArg->fRadio->SetState(val, kButtonDown);
 					}
-					((TGMrbButtonFrame *) macroArg->fRadio)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
+					((TGMrbButtonFrame *) macroArg->fRadio)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ProcessSignal(Int_t, Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryCheck) {
 					macroArg->fCheck = new TGMrbCheckButtonList(parentFrame, argTitle.Data(),
 														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, macroArg->fNofCL,
@@ -1369,7 +1267,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
 					Int_t pattern = value.Atoi();
 					macroArg->fCheck->SetState(pattern, kButtonDown);
-					((TGMrbButtonFrame *) macroArg->fCheck)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
+					((TGMrbButtonFrame *) macroArg->fCheck)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ProcessSignal(Int_t, Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryText) {
 					macroArg->fText = new TGMrbTextButtonList(parentFrame, argTitle.Data(),
 														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, macroArg->fNofCL,
@@ -1379,7 +1277,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 														macroArg->fOrientation);
 					HEAP(macroArg->fText);
 					parentFrame->AddFrame(macroArg->fText, frameGC->LH());
-					((TGMrbButtonFrame *) macroArg->fText)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
+					((TGMrbButtonFrame *) macroArg->fText)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ProcessSignal(Int_t, Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryCombo) {
 					macroArg->fCombo = new TGMrbLabelCombo(parentFrame, argTitle.Data(), &macroArg->fButtons,
 														argNo << TGMrbButtonFrame::kFrameIdShift, -1,
@@ -1432,10 +1330,9 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			parentFrame->AddFrame(macroArg->fFile, frameGC->LH());
 			value = (currentValue.Length() == 0) ? defaultValue.Data() : currentValue.Data();
 			macroArg->fFile->GetEntry()->SetText(value.Data());
-			macroArg->fFile->Connect("EntryChanged(Int_t)", this->ClassName(), this, "ProcessSignal(Int_t)");
+			macroArg->fFile->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "ProcessSignal(Int_t, Int_t)");
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) {
 			macroArg->fFObjCombo = new TGMrbFileObjectCombo(parentFrame, argTitle.Data(), 100,
-												argNo << TGMrbButtonFrame::kFrameIdShift,
 												argNo << TGMrbButtonFrame::kFrameIdShift,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
@@ -1455,7 +1352,6 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			}
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
 			macroArg->fFObjListBox = new TGMrbFileObjectListBox(parentFrame, argTitle.Data(), 100,
-												argNo << TGMrbButtonFrame::kFrameIdShift,
 												argNo << TGMrbButtonFrame::kFrameIdShift,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
@@ -1507,7 +1403,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 		if (fAction) {
 			HEAP(fAction);
 			this->AddFrame(fAction, frameGC->LH());
-			fAction->Associate(this);
+			((TGMrbButtonFrame *) fAction)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ActionButtonPressed(Int_t, Int_t)");
 		}
 
 		Window_t wdum;
@@ -1532,20 +1428,21 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	}
 }
 
-void TGMrbMacroFrame::ProcessSignal(Int_t SignalId) {
+void TGMrbMacroFrame::ProcessSignal(Int_t FrameId, Int_t Signal) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroFrame::ProcessSignal
 // Purpose:        Signal handler
-// Arguments:      Int_t SignalId      -- signal id
+// Arguments:      Int_t FrameId     -- frame id
+//                 Int_t Signal      -- signal
 // Results:        --
 // Exceptions:     
 // Description:    Pass signals to consumer.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t id = SignalId & 0xFFFF;
-	Int_t argNo = (SignalId >> TGMrbButtonFrame::kFrameIdShift) & 0xFF;
+	Int_t id = Signal;
+	Int_t argNo = FrameId;
 	if (argNo > 0) {
 		TEnv * macroEnv = (TEnv *) fMacro->GetAssignedObject();
 		TString argName = macroEnv->GetValue(Form("Arg%d.Name", argNo), "???");
@@ -1553,57 +1450,43 @@ void TGMrbMacroFrame::ProcessSignal(Int_t SignalId) {
 	}
 }
 
-Bool_t TGMrbMacroFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TGMrbMacroFrame::ActionButtonPressed(Int_t FrameId, Int_t Signal) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbMacroFrame::ProcessMessage
-// Purpose:        Message handler
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
-// Results:        
+// Name:           TGMrbMacroFrame::ActionButtonPressed
+// Purpose:        slot method
+// Arguments:      Int_t FrameId     -- frame id
+//                 Int_t Signal      -- signal
+// Results:        --
 // Exceptions:     
 // Description:    Handle messages sent to TGMrbMacroFrame.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case TGMrbMacroFrame::kGMrbMacroIdModifyHeader:
-							this->ModifyMacroHeader();
-							break;
-						case TGMrbMacroFrame::kGMrbMacroIdModifySource:
-							this->ModifyMacroSource();
-							break;
-						case TGMrbMacroFrame::kGMrbMacroIdClose:
-							this->CloseWindow();
-							break;
-						case TGMrbMacroFrame::kGMrbMacroIdReset:
-							this->ResetMacroArgs();
-							break;
-						case TGMrbMacroFrame::kGMrbMacroIdExec:
-							this->ExecMacro(kFALSE);
-							break;
-						case TGMrbMacroFrame::kGMrbMacroIdExecClose:
-							this->ExecMacro(kFALSE);
-							this->CloseWindow();
-							break;
-						case TGMrbMacroFrame::kGMrbMacroIdQuit:
-							gSystem->Exit(0);
-							break;
-					}
-					break;
-
-				default:	break;
-			}
+	switch (Signal) {
+		case TGMrbMacroFrame::kGMrbMacroIdModifyHeader:
+			this->ModifyMacroHeader();
 			break;
-
-		default:	break;
+		case TGMrbMacroFrame::kGMrbMacroIdModifySource:
+			this->ModifyMacroSource();
+			break;
+		case TGMrbMacroFrame::kGMrbMacroIdClose:
+			this->CloseWindow();
+			break;
+		case TGMrbMacroFrame::kGMrbMacroIdReset:
+			this->ResetMacroArgs();
+			break;
+		case TGMrbMacroFrame::kGMrbMacroIdExec:
+			this->ExecMacro(kFALSE);
+			break;
+		case TGMrbMacroFrame::kGMrbMacroIdExecClose:
+			this->ExecMacro(kFALSE);
+			this->CloseWindow();
+			break;
+		case TGMrbMacroFrame::kGMrbMacroIdQuit:
+			gSystem->Exit(0);
+			break;
 	}
-	return(kTRUE);
 }
 
 Bool_t TGMrbMacroFrame::ResetMacroArgs() {
@@ -2688,7 +2571,7 @@ Bool_t TGMrbMacroFrame::SetArgCheck(const Char_t * ArgName, UInt_t Check) {
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
-					ap->fEntry->SetCheckButtons(Check);
+					ap->fEntry->SetCheckButtonBits(Check);
 					ap->fEntry->Layout();
 					return(kTRUE);
 				default:
@@ -2725,7 +2608,7 @@ Bool_t TGMrbMacroFrame::GetArgCheck(const Char_t * ArgName, UInt_t & Check) {
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
-					Check = ap->fEntry->GetCheckButtons();
+					Check = ap->fEntry->GetCheckButtonBits();
 					return(kTRUE);
 				default:
 					return(kFALSE);
@@ -2760,7 +2643,7 @@ Bool_t TGMrbMacroFrame::ArgIsChecked(const Char_t * ArgName) {
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownC2:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC:
 				case TGMrbMacroArg::kGMrbMacroEntryUpDownXC2:
-					return(ap->fEntry->GetCheckButtons() != 0);
+					return(ap->fEntry->GetCheckButtonBits() != 0);
 				default:
 					return(kFALSE);
 			}
@@ -2970,16 +2853,15 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 														frameGC, labelGC, entryGC, labelGC, kTRUE);
 	HEAP(fArgNumber);
 	fMacroArg->AddFrame(fArgNumber, curargLayout);
-	fArgNumber->Associate(this);
 	fArgNumber->SetRange(1, TGMrbMacroEdit::kMaxNofArgs);
 	fArgNumber->SetIncrement(1);
-	fArgNumber->GetTextEntry()->Connect("EntryChanged(Int_t)", this->ClassName(), this, "SwitchToArg(Int_t)");
+	fArgNumber->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "SwitchToArg(Int_t, Int_t)");
 
 	fArgAction = new TGMrbTextButtonList(fMacroArg, NULL, &fLofArgActions, -1, 1, frameWidth / 2, TGMrbMacroEdit::kLineHeight,
 														frameGC, labelGC, buttonGC);
 	HEAP(fArgAction);
 	fMacroArg->AddFrame(fArgAction, frameGC->LH());
-	fArgAction->Associate(this);
+	((TGMrbButtonFrame *) fArgAction)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ActionButtonPressed(Int_t, Int_t)");
 
 	fMacroLayout = new TGGroupFrame(this, "Layout", kVerticalFrame, frameGC->GC(), frameGC->Font(), frameGC->BG());
 	HEAP(fMacroLayout);
@@ -3092,7 +2974,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fAction = new TGMrbTextButtonGroup(this, "Macro action", &fLofActions, -1, 1, frameGC, buttonGC);
 	HEAP(fAction);
 	this->AddFrame(fAction, frameGC->LH());
-	fAction->Associate(this);
+	((TGMrbButtonFrame *) fAction)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ActionButtonPressed(Int_t, Int_t)");
 
 	this->ChangeBackground(gray);
 	this->SetWindowName(titleBar.Data());
@@ -3116,14 +2998,14 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	gClient->WaitFor(this);
 }
 
-Bool_t TGMrbMacroEdit::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TGMrbMacroEdit::ActionButtonPressed(Int_t FrameId, Int_t Button) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbMacroEdit::ProcessMessage
-// Purpose:        Message handler
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
-// Results:        
+// Name:           TGMrbMacroEdit::ActionButtonPressed
+// Purpose:        Slot method
+// Arguments:      Int_t FrameId     -- frame id
+//                 Int_t Button      -- button number
+// Results:        --
 // Exceptions:     
 // Description:    Handle messages sent to TGMrbMacroEdit.
 // Keywords:       
@@ -3136,93 +3018,71 @@ Bool_t TGMrbMacroEdit::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 	TMrbLofMacros lofMacros;
 	TMrbNamedX * macro;
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case kGMrbMacroEditIdRemoveArg:
-							this->RemoveArg();
-							this->UpdateNofArgs();
-							this->UpdateArg();
-							break;
-						case kGMrbMacroEditIdResetArg:
-							this->RestoreArg();
-							this->UpdateArg();
-							break;
-						case kGMrbMacroEditIdNewArgBefore:
-							this->StoreArg();
-							this->InsertArg(fCurrentArg.GetIndex());
-							this->UpdateNofArgs();
-							this->UpdateArg();
-							break;
-						case kGMrbMacroEditIdNewArgAfter:
-							this->StoreArg();
-							this->InsertArg(fCurrentArg.GetIndex() + 1);
-							this->UpdateNofArgs();
-							this->UpdateArg();
-							break;
-						case kGMrbMacroEditIdResetAll:
-							this->RestoreHeader();
-							fNofArgs = fOriginalEnv->GetValue("NofArgs", 1);
-							this->UpdateNofArgs();
-							this->RestoreAllArgs();
-							this->UpdateArg();
-							break;
-						case kGMrbMacroEditIdResetHeader:
-							this->RestoreHeader();
-							break;
-						case kGMrbMacroEditIdResetAllArgs:
-							this->RestoreAllArgs();
-							fNofArgs = fOriginalEnv->GetValue("NofArgs", 1);
-							this->UpdateNofArgs();
-							this->UpdateArg();
-							break;
-						case kGMrbMacroEditIdSave:
-							fo.fFileTypes = (const char **) macroFileTypes;
-							new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fo);
-							if (fo.fFilename != NULL && *fo.fFilename != '\0') {
-								if (this->SaveMacro(fo.fFilename, fMacro->GetName())) {
-									if (lofMacros.AddMacro(fo.fFilename)) {
-										macro = lofMacros.FirstMacro();
-										fMacro->GetAssignedObject()->Delete();
-										fMacro->AssignObject(macro->GetAssignedObject());
-										this->CloseWindow();
-									}
-								}
-							}
-							break;
-						case kGMrbMacroEditIdClose:
-							this->CloseWindow();
-							break;
+	switch (Button) {
+		case kGMrbMacroEditIdRemoveArg:
+			this->RemoveArg();
+			this->UpdateNofArgs();
+			this->UpdateArg();
+			break;
+		case kGMrbMacroEditIdResetArg:
+			this->RestoreArg();
+			this->UpdateArg();
+			break;
+		case kGMrbMacroEditIdNewArgBefore:
+			this->StoreArg();
+			this->InsertArg(fCurrentArg.GetIndex());
+			this->UpdateNofArgs();
+			this->UpdateArg();
+			break;
+		case kGMrbMacroEditIdNewArgAfter:
+			this->StoreArg();
+			this->InsertArg(fCurrentArg.GetIndex() + 1);
+			this->UpdateNofArgs();
+			this->UpdateArg();
+			break;
+		case kGMrbMacroEditIdResetAll:
+			this->RestoreHeader();
+			fNofArgs = fOriginalEnv->GetValue("NofArgs", 1);
+			this->UpdateNofArgs();
+			this->RestoreAllArgs();
+			this->UpdateArg();
+			break;
+		case kGMrbMacroEditIdResetHeader:
+			this->RestoreHeader();
+			break;
+		case kGMrbMacroEditIdResetAllArgs:
+			this->RestoreAllArgs();
+			fNofArgs = fOriginalEnv->GetValue("NofArgs", 1);
+			this->UpdateNofArgs();
+			this->UpdateArg();
+			break;
+		case kGMrbMacroEditIdSave:
+			fo.fFileTypes = (const char **) macroFileTypes;
+			new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fo);
+			if (fo.fFilename != NULL && *fo.fFilename != '\0') {
+				if (this->SaveMacro(fo.fFilename, fMacro->GetName())) {
+					if (lofMacros.AddMacro(fo.fFilename)) {
+						macro = lofMacros.FirstMacro();
+						fMacro->GetAssignedObject()->Delete();
+						fMacro->AssignObject(macro->GetAssignedObject());
+						this->CloseWindow();
 					}
-					break;
-
-				default:	break;
+				}
 			}
 			break;
-
-		case kC_TEXTENTRY:
-			switch (GET_SUBMSG(MsgId)) {
-				case kTE_TEXTCHANGED:
-				case kTE_ENTER:
-					this->StoreArg();
-					this->SwitchToArg();
-					break;
-			}
+		case kGMrbMacroEditIdClose:
+			this->CloseWindow();
 			break;
-		default:	break;
 	}
-	return(kTRUE);
 }
 
-Bool_t TGMrbMacroEdit::SwitchToArg(Int_t EntryNo) {
+Bool_t TGMrbMacroEdit::SwitchToArg(Int_t FrameId, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroEdit::SwitchToArg
 // Purpose:        Switch to next argument
-// Arguments:      Int_t EntryNo   -- entry number (ignored)
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t EntryNo     -- entry number (ignored)
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Switches to argument given by text field

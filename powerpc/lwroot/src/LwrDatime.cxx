@@ -243,7 +243,7 @@ void TDatime::Set()
 
    time_t tloc   = time(0);
    struct tm tp;
-#if (LYNX_VERSION == 25)
+#ifdef LYNX_VERSION_25
    localtime_r(&tp, &tloc);
 #else
    localtime_r(&tloc, &tp);

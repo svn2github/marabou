@@ -9,7 +9,7 @@
 //                                             displaying messages
 // Description:        Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMessageViewer.h,v 1.5 2006-10-09 08:58:59 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMessageViewer.h,v 1.6 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ class TGMrbMessageViewer: public TGTransientFrame {
 		Int_t AddEntries(UInt_t Type = TMrbLogMessage::kMrbMsgAny, Int_t Start = 0, Bool_t WithDate = kTRUE);
 		virtual Bool_t Notify();
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void ActionButtonPressed(Int_t FrameId, Int_t Button);		// slot method
 
 		inline UInt_t Enable(UInt_t Bits) { fEnabled |= Bits; return(fEnabled); };
 		inline UInt_t Disable(UInt_t Bits) { fEnabled &= ~Bits; return(fEnabled); };

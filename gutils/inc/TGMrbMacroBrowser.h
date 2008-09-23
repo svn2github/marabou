@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.27 2007-10-09 12:05:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.28 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -30,6 +30,7 @@ namespace std {} using namespace std;
 #include "TList.h"
 #include "TObjArray.h"
 #include "TEnv.h"
+#include "TApplication.h"
 
 #include "TGWindow.h"
 #include "TGFrame.h"
@@ -226,9 +227,6 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main, TMrbNamedX * Macro, UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		~TGMrbMacroFrame() { fHeap.Delete(); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
-		virtual void CloseWindow() { delete this; };
-
 		Bool_t ResetMacroArgs();						// reset arguments
 		Bool_t ExecMacro(Bool_t UserStart = kFALSE);	// exec macro
 		Bool_t ModifyMacroHeader(); 					// modify header
@@ -254,7 +252,8 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		Bool_t GetArgCheck(const Char_t * ArgName, UInt_t & Check);
 		Bool_t ArgIsChecked(const Char_t * ArgName);
 
-		void ProcessSignal(Int_t SignalId);
+		void ProcessSignal(Int_t FrameId, Int_t Signal); 			// slot methods
+		void ActionButtonPressed(Int_t FrameId, Int_t Signal);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -361,10 +360,8 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, TMrbNamedX * Macro, UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		~TGMrbMacroEdit() { fHeap.Delete(); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
-		virtual void CloseWindow() { delete this; };
-
-		Bool_t SwitchToArg(Int_t EntryNo = -1); 			// switch to argument (signal/slot)
+		Bool_t SwitchToArg(Int_t FrameId, Int_t EntryNo = -1);				// slot methods
+		void ActionButtonPressed(Int_t FrameId, Int_t Button);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -469,8 +466,7 @@ class TGMrbMacroList : public TGVerticalFrame {
 																UInt_t ButtonOptions = kRaisedFrame | kDoubleBorder);
 		~TGMrbMacroList() { fHeap.Delete(); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
-		virtual void CloseWindow() { delete this; };
+		void SelectMacro(Int_t FrameId, Int_t Selection);	 	// slot method
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -511,12 +507,13 @@ class TGMrbMacroBrowserMain : public TGMainFrame {
 
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		
+		void MenuSelect(Int_t Selection);			// slot method
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
-		void CloseWindow();
+		inline void CloseWindow() { TGMainFrame::CloseWindow(); gApplication->Terminate(0); };
 
 	protected:
 		void PopupMessageViewer();
@@ -558,8 +555,6 @@ class TGMrbMacroBrowserVertical : public TGVerticalFrame {
 
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) { return(kTRUE); };
-
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
@@ -586,8 +581,6 @@ class TGMrbMacroBrowserGroup : public TGGroupFrame {
 		virtual ~TGMrbMacroBrowserGroup() {};
 
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
-
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) { return(kTRUE); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -621,7 +614,7 @@ class TGMrbMacroBrowserPopup : public TGPopupMenu {
 
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void MenuSelect(Int_t Signal);			// slot method
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -649,8 +642,6 @@ class TGMrbMacroBrowserTransient : public TGTransientFrame {
 		virtual ~TGMrbMacroBrowserTransient() {fHeap.Delete(); };
 
 		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
-
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) { return(kTRUE); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

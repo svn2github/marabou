@@ -8,8 +8,8 @@
 // Class:          VMEServerPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMEServerPanel.h,v 1.3 2008-09-03 14:23:55 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-09-03 14:23:55 $
+// Revision:       $Id: VMEServerPanel.h,v 1.4 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-09-23 10:44:11 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ class VMEServerPanel : public TGCompositeFrame {
 		};
 
 		Bool_t Connect();							// connect to lynxos server
-		Bool_t ActionButton(Int_t);					// will be called on 'button pressed'
+		Bool_t ActionButton(Int_t, Int_t);			// will be called on 'button pressed'
 		void FillTextView();						// fill text view window with server messages
 		inline void UpdateTextView() { fTextView->Update(); };
 

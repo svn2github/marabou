@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMessageViewer.cxx,v 1.4 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMessageViewer.cxx,v 1.5 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 //
 //Begin_Html
@@ -93,7 +93,7 @@ TGMrbMessageViewer::TGMrbMessageViewer( const TGWindow * Parent,
 	fAction = new TGMrbTextButtonList(this, NULL, &fLofActions, -1, 1, Width, 10, frameGC, labelGC, buttonGC);
 	HEAP(fAction);
 	this->AddFrame(fAction, frameGC->LH());
-	fAction->Associate(this);
+	((TGMrbButtonFrame *) fAction)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ActionButtonPressed(Int_t, Int_t)");
 
 	fWidth = Width;
 	fHeight = Height;
@@ -178,55 +178,41 @@ Bool_t TGMrbMessageViewer::Notify() {
 	} else return(kFALSE);
 }
 
-Bool_t TGMrbMessageViewer::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TGMrbMessageViewer::ActionButtonPressed(Int_t FrameId, Int_t Button) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbMessageViewer::ProcessMessage
+// Name:           TGMrbMessageViewer::ActionButtonPressed
 // Purpose:        Message handler
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t Button     -- button number
 // Results:        
 // Exceptions:     
 // Description:    Handle messages sent to TGMrbMessageViewer.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case TGMrbMessageViewer::kGMrbViewerIdReset:
-							fTextView->Clear();
-							break;
-						case TGMrbMessageViewer::kGMrbViewerIdAll:
-							fTextView->Clear();
-							this->AddEntries();
-							this->Enable(TMrbLogMessage::kMrbMsgAny);
-							break;
-						case TGMrbMessageViewer::kGMrbViewerIdErrors:
-							fTextView->Clear();
-							this->AddEntries(TMrbLogMessage::kMrbMsgError);
-							this->Disable(TMrbLogMessage::kMrbMsgAny);
-							this->Enable(TMrbLogMessage::kMrbMsgError);
-							break;
-						case TGMrbMessageViewer::kGMrbViewerIdAdjust:
-							if (fTextView->ReturnLineCount() > 1) this->Resize(fTextView->ReturnLongestLineWidth(), fHeight);
-							break;
-						case TGMrbMessageViewer::kGMrbViewerIdClose:
-							fMsgLog->Disconnect("Flush()", this, "Notify()");
-							delete this;
-							break;
-					}
-					break;
-
-				default:	break;
-			}
+	switch (Button) {
+		case TGMrbMessageViewer::kGMrbViewerIdReset:
+			fTextView->Clear();
 			break;
-
-		default:	break;
+		case TGMrbMessageViewer::kGMrbViewerIdAll:
+			fTextView->Clear();
+			this->AddEntries();
+			this->Enable(TMrbLogMessage::kMrbMsgAny);
+			break;
+		case TGMrbMessageViewer::kGMrbViewerIdErrors:
+			fTextView->Clear();
+			this->AddEntries(TMrbLogMessage::kMrbMsgError);
+			this->Disable(TMrbLogMessage::kMrbMsgAny);
+			this->Enable(TMrbLogMessage::kMrbMsgError);
+			break;
+		case TGMrbMessageViewer::kGMrbViewerIdAdjust:
+			if (fTextView->ReturnLineCount() > 1) this->Resize(fTextView->ReturnLongestLineWidth(), fHeight);
+			break;
+		case TGMrbMessageViewer::kGMrbViewerIdClose:
+			fMsgLog->Disconnect("Flush()", this, "Notify()");
+			delete this;
+			break;
 	}
-	return(kTRUE);
 }
 

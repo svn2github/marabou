@@ -11,7 +11,7 @@
 //                                            radio buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbRadioButton.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbRadioButton.h,v 1.6 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,10 +48,6 @@ class TGMrbRadioButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 
 		~TGMrbRadioButtonList() {};				// default dtor
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {		// process mouse clicks
-			return(ButtonFrameMessage(MsgId, Param1));
-		};
-
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TGMrbRadioButtonList, 1)		// [GraphUtils] A list of radio buttons
@@ -77,10 +73,6 @@ class TGMrbRadioButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 													UInt_t ButtonOptions = 0);
 
 		~TGMrbRadioButtonGroup() {};				// default dtor
-
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
-			return(ButtonFrameMessage(MsgId, Param1));
-		};
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.9 2008-09-03 14:57:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.10 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -25,7 +25,7 @@ ClassImp(TGMrbLabelCombo)
 TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 												const Char_t * Label,
 												TMrbLofNamedX * Entries,
-												Int_t ComboId, Int_t Selected,
+												Int_t FrameId, Int_t Selected,
 												Int_t Width, Int_t Height, Int_t ComboWidth,
 												TGMrbLayout * FrameGC,
 												TGMrbLayout * LabelGC,
@@ -42,7 +42,7 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 // Arguments:      TGWindow * Parent           -- parent window
 //                 Char_t * Label              -- label text
 //                 TMrbLofNamedX * Entries     -- combo box entries
-//                 Int_t ComboId               -- id to be used in ProcessMessage
+//                 Int_t FrameId               -- id to be used with slignal/slot communication
 //                 Int_t Selected              -- id of item to be displayed at startup
 //                 Int_t Width                 -- frame width
 //                 Int_t Height                -- frame height
@@ -61,12 +61,11 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 //////////////////////////////////////////////////////////////////////////////
 
 	TGLabel * label;
-	Int_t bSize;
-
-	fClientWindow = NULL;
 
 	LabelGC = this->SetupGC(LabelGC, FrameOptions);
 	ComboGC = this->SetupGC(ComboGC, FrameOptions);
+
+	fFrameId = FrameId;
 
 	fUp = NULL;
 	fDown = NULL;
@@ -90,48 +89,45 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 			fHeap.AddFirst((TObject *) fEnd);
 			fEnd->ChangeBackground(UpDownBtnGC->BG());
 			fEnd->SetToolTipText("->End", 500);
-			bSize = fEnd->GetDefaultWidth();
 			this->AddFrame(fEnd, btnLayout);
-			fEnd->Associate(this);
+			fEnd->Connect("Clicked()", this->ClassName(), this, "EndButtonPressed()");
 			comboWidth -= fEnd->GetWidth();
 		}
 		fUp = new TGPictureButton(this, fClient->GetPicture("arrow_right.xpm"), kGMrbComboButtonUp, UpDownBtnGC->GC());
 		fHeap.AddFirst((TObject *) fUp);
 		fUp->ChangeBackground(UpDownBtnGC->BG());
 		fUp->SetToolTipText("Increment", 500);
-		bSize += fUp->GetDefaultWidth();
 		this->AddFrame(fUp, btnLayout);
-		fUp->Associate(this);
+		fUp->Connect("Clicked()", this->ClassName(), this, "UpButtonPressed()");
 		comboWidth -= fUp->GetWidth();
 		fDown = new TGPictureButton(this, fClient->GetPicture("arrow_left.xpm"), kGMrbComboButtonDown, UpDownBtnGC->GC());
 		fHeap.AddFirst((TObject *) fDown);
 		fDown->ChangeBackground(UpDownBtnGC->BG());
 		fDown->SetToolTipText("Decrement", 500);
-		bSize += fDown->GetDefaultWidth();
 		this->AddFrame(fDown, btnLayout);
-		fDown->Associate(this);
+		fDown->Connect("Clicked()", this->ClassName(), this, "DownButtonPressed()");
 		comboWidth -= fDown->GetWidth();
 		if (BeginEndBtns) {
 			fBegin = new TGPictureButton(this, fClient->GetPicture("arrow_leftleft.xpm"), kGMrbComboButtonBegin, UpDownBtnGC->GC());
 			fHeap.AddFirst((TObject *) fBegin);
 			fBegin->ChangeBackground(UpDownBtnGC->BG());
 			fBegin->SetToolTipText("->Start", 500);
-			bSize += fBegin->GetDefaultWidth();
 			this->AddFrame(fBegin, btnLayout);
-			fBegin->Associate(this);
+			fBegin->Connect("Clicked()", this->ClassName(), this, "BeginButtonPressed()");
 			comboWidth -= fBegin->GetWidth();
 		}
 	}
 
-	fComboId = ComboId;
-	fCombo = new TGComboBox(this, fComboId, ComboOptions, ComboGC->BG());
+	TGLayoutHints * comboLayout = new TGLayoutHints(kLHintsRight | kLHintsCenterY, 0, 0, 1, 0);
+	fHeap.AddFirst((TObject *) comboLayout);
+	fCombo = new TGComboBox(this, FrameId, ComboOptions, ComboGC->BG());
 	fHeap.AddFirst((TObject *) fCombo);
-	this->AddFrame(fCombo, ComboGC->LH());
+	this->AddFrame(fCombo, comboLayout);
 	fEntries.Delete();
 	this->AddEntries(Entries);
 	fCombo->Select(Selected, kFALSE);
 	fCombo->Resize(comboWidth, Height);
-	fCombo->Associate(this);
+	fCombo->Connect("Selected(Int_t)", this->ClassName(), this, "SelectionChanged(Int_t)");
 	fCombo->Layout();
 }
 
@@ -157,74 +153,84 @@ Bool_t TGMrbLabelCombo::AddEntries(TMrbLofNamedX * Entries) {
 	return(kTRUE);
 }
 
-Bool_t TGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TGMrbLabelCombo::BeginButtonPressed() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbLabelCombo::ProcessMessage
-// Purpose:        Message handler for combo boxes
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
-// Results:        
+// Name:           TGMrbLabelEntry::BeginButtonPressed
+// Purpose:        Slot method
+// Arguments:      --
+// Results:        --
 // Exceptions:     
-// Description:    Handle combo box messages
+// Description:    Called upon ButtonPressed() events
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t idx;
-	TMrbNamedX * nx;
+	TMrbNamedX * nx = (TMrbNamedX *) fEntries.First();
+	fCombo->Select(nx->GetIndex());
+	this->SelectionChanged(nx->GetIndex());
+}
 
-	switch (GET_MSG(MsgId)) {
+void TGMrbLabelCombo::EndButtonPressed() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::EndButtonPressed
+// Purpose:        Slot method
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Called upon ButtonPressed() events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
 
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case TGMrbLabelCombo::kGMrbComboButtonDown:
-							idx = fCombo->GetSelected();
-							nx = fEntries.FindByIndex(idx);
-							if (nx == fEntries.First()) {
-								nx = (TMrbNamedX *) fEntries.Last();
-							} else {
-								nx = (TMrbNamedX *) fEntries.At(fEntries.IndexOf(nx) - 1);
-							}
-							fCombo->Select(nx->GetIndex());
-							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
-							this->SelectionChanged(nx->GetIndex());
-							break;
-						case TGMrbLabelCombo::kGMrbComboButtonUp:
-							idx = fCombo->GetSelected();
-							nx = fEntries.FindByIndex(idx);
-							if (nx == fEntries.Last()) {
-								nx = (TMrbNamedX *) fEntries.First();
-							} else {
-								nx = (TMrbNamedX *) fEntries.At(fEntries.IndexOf(nx) + 1);
-							}
-							fCombo->Select(nx->GetIndex());
-							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
-							this->SelectionChanged(nx->GetIndex());
-							break;								
-						case TGMrbLabelCombo::kGMrbComboButtonBegin:
-							nx = (TMrbNamedX *) fEntries.First();
-							fCombo->Select(nx->GetIndex());
-							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
-							this->SelectionChanged(nx->GetIndex());
-							break;
-						case TGMrbLabelCombo::kGMrbComboButtonEnd:
-							nx = (TMrbNamedX *) fEntries.Last();
-							fCombo->Select(nx->GetIndex());
-							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
-							this->SelectionChanged(nx->GetIndex());
-							break;
-					}
-					break;
+	TMrbNamedX * nx = (TMrbNamedX *) fEntries.Last();
+	fCombo->Select(nx->GetIndex());
+	this->SelectionChanged(nx->GetIndex());
+}
 
-				case kCM_COMBOBOX:
-					this->SelectionChanged(Param1);
-					break;
-			}
-			break;
+void TGMrbLabelCombo::UpButtonPressed() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::UpButtonPressed
+// Purpose:        Slot method
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Called upon Clicked() events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t idx = fCombo->GetSelected();
+	TMrbNamedX * nx = fEntries.FindByIndex(idx);
+	if (nx == fEntries.Last()) {
+		nx = (TMrbNamedX *) fEntries.First();
+	} else {
+		nx = (TMrbNamedX *) fEntries.At(fEntries.IndexOf(nx) + 1);
 	}
-	return(kTRUE);
+	fCombo->Select(nx->GetIndex());
+	this->SelectionChanged(nx->GetIndex());
+}
+
+void TGMrbLabelCombo::DownButtonPressed() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::DownButtonPressed
+// Purpose:        Slot method
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Called upon Clicked() events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t idx = fCombo->GetSelected();
+	TMrbNamedX * nx = fEntries.FindByIndex(idx);
+	if (nx == fEntries.First()) {
+		nx = (TMrbNamedX *) fEntries.Last();
+	} else {
+		nx = (TMrbNamedX *) fEntries.At(fEntries.IndexOf(nx) - 1);
+	}
+	fCombo->Select(nx->GetIndex());
+	this->SelectionChanged(nx->GetIndex());
 }
 
 void TGMrbLabelCombo::UpDownButtonEnable(Bool_t Flag) {
@@ -246,3 +252,23 @@ void TGMrbLabelCombo::UpDownButtonEnable(Bool_t Flag) {
 	}
 }
 
+void TGMrbLabelCombo::SelectionChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelCombo::SelectionChanged
+// Purpose:        Signal handler
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t Selection  -- selection index
+// Results:        --
+// Exceptions:     
+// Description:    Emits signal on "selection changed" 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+   Long_t args[2];
+
+   args[0] = FrameId;
+   args[1] = Selection;
+
+   this->Emit("SelectionChanged(Int_t, Int_t)", args);
+}

@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.17 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.18 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -42,33 +42,16 @@
 class TGMrbTextEntry: public TGTextEntry {
 
 	public:
-		enum						{	kFrameIdShift 		=	16	};
-
-	public:
 		TGMrbTextEntry(const TGWindow * Parent, TGTextBuffer * Text, Int_t Id,
 								GContext_t Context, FontStruct_t Font, UInt_t Option, ULong_t Back) :
 														TGTextEntry(Parent, Text, Id) {
 			this->SetFont(Font);
 			this->SetBackgroundColor(Back);
-			fSendReturnPressed = kTRUE;
 		};
 
 		~TGMrbTextEntry() {};
 		
-		inline void SendReturnPressedOnButtonClick(Bool_t Flag) { fSendReturnPressed = Flag; };
-		inline void ConnectSigToSlot(const Char_t * Signal, TObject * Receiver, const Char_t * Slot) {
-			this->Connect(Signal, Receiver->ClassName(), Receiver, Slot);
-		}
-
-		inline void EntryChanged(Int_t Signal) { this->Emit("EntryChanged(Int_t)", fFrameId + Signal); };	//*SIGNAL*
-
-		virtual void TextChanged(const Char_t * Text) {};	// no operation, action handled by EntryChanged()
-		
 		virtual Bool_t HandleButton(Event_t * Event);
-
-	protected:
-		Bool_t fSendReturnPressed;
-		Int_t fFrameId;
 
 	ClassDef(TGMrbTextEntry, 1) 	// [GraphUtils] A text entry
 };
@@ -104,9 +87,8 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 
 	public:
 		TGMrbLabelEntry(const TGWindow * Parent, const Char_t * Label,				// ctor
-									Int_t BufferSize, Int_t EntryId,
-									Int_t Width, Int_t Height,
-									Int_t EntryWidth,
+									Int_t BufferSize, Int_t FrameId,
+									Int_t Width, Int_t Height, Int_t EntryWidth,
 									TGMrbLayout * FrameGC,
 									TGMrbLayout * LabelGC = NULL,
 									TGMrbLayout * EntryGC = NULL,
@@ -141,10 +123,14 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		inline TGMrbCheckButtonList * GetLofCheckButtons() const { return(fCheckBtns); };
 		inline TGMrbRadioButtonList * GetLofRadioButtons() const { return(fRadioBtns); };
 
-		inline void SetCheckButtons(UInt_t Bits) { if (fCheckBtns) fCheckBtns->SetState(Bits, kButtonDown); };
-		inline void SetRadioButtons(UInt_t Bits) { if (fRadioBtns) fRadioBtns->SetState(Bits, kButtonDown); };
-		inline UInt_t GetCheckButtons() { return(fCheckBtns ? fCheckBtns->GetActive() : 0); };
-		inline UInt_t GetRadioButtons() { return(fRadioBtns ? fRadioBtns->GetActive() : 0); };
+		inline TGMrbCheckButtonList * CheckBtns() { return(fCheckBtns); };
+		inline TGMrbRadioButtonList * RadioBtns() { return(fRadioBtns); };
+		inline TGTextButton * ActionBtn() { return(fAction); };
+
+		inline void SetCheckButtonBits(UInt_t Bits) { if (fCheckBtns) fCheckBtns->SetState(Bits, kButtonDown); };
+		inline void SetRadioButtonBits(UInt_t Bits) { if (fRadioBtns) fRadioBtns->SetState(Bits, kButtonDown); };
+		inline UInt_t GetCheckButtonBits() { return(fCheckBtns ? fCheckBtns->GetActive() : 0); };
+		inline UInt_t GetRadioButtonBits() { return(fRadioBtns ? fRadioBtns->GetActive() : 0); };
 
 		void UpDownButtonEnable(Bool_t Flag = kTRUE);			// enable/disable up/down buttons
 		void ActionButtonEnable(Bool_t Flag = kTRUE);			// enable/disable action button
@@ -159,13 +145,19 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 
 		void SetTextAlignment(ETextJustification Align, Int_t EntryNo = -1);		// set text alignment
 
+		void SetState(Bool_t Flag, Int_t EntryNo = -1); 		// enable/disable
+
 		inline TGLabel * GetLabel() { return(fLabel); };
 
 		void ShowToolTip(Bool_t Flag = kTRUE, Bool_t ShowRange = kFALSE);
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void BeginButtonPressed(Int_t EntryNo);		// slot methods called upon ButtonPressed() signals
+		void EndButtonPressed(Int_t EntryNo);
+		void UpButtonPressed(Int_t EntryNo);
+		void DownButtonPressed(Int_t EntryNo);
+		inline void EntryChanged(Int_t EntryNo) { this->EntryChanged(fFrameId, EntryNo); };
 
-		inline void Associate(const TGWindow * Window, Int_t EntryNo = 0) { fEntry[EntryNo]->Associate(Window); };	// where to go if text field data change
+		void EntryChanged(Int_t FrameId, Int_t EntryNo);			// *SIGNAL*
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -173,7 +165,8 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		void CreateToolTip(Int_t EntryNo = 0);
 
 	protected:
-		Int_t fNofEntries;									// number of entries (1 or 2)
+		Int_t fFrameId;										// id
+		Int_t fNofEntries;									// number of entries
 		TGLabel * fLabel;									//! label
 		TGMrbTextEntry * fEntry[kGMrbEntryNofEntries];		//! entry widget(s)
 		TGPictureButton * fUp[kGMrbEntryNofEntries]; 		//! button ">", increment

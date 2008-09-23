@@ -9,7 +9,7 @@
 //                                           a combo box containing file objects
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbObjectCombo.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbObjectCombo.h,v 1.5 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ class TGMrbObjectCombo: public TGCompositeFrame, public TGMrbObject {
 
 	public:
 		TGMrbObjectCombo(TGWindow * Parent, const Char_t * Label,				// ctor
-							Int_t BufferSize, Int_t EntryId, Int_t ComboId,
+							Int_t BufferSize, Int_t FrameId,
 							Int_t Width, Int_t Height,
 							Int_t EntryWidth, Int_t ComboWidth,
 							TGMrbLayout * FrameGC,
@@ -60,16 +60,14 @@ class TGMrbObjectCombo: public TGCompositeFrame, public TGMrbObject {
 		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file
 		const Char_t * GetSelection(TString & SelItem, Bool_t FullPath = kTRUE) const;	// get selected file/object
 
-		inline void Associate(TGWindow * Window) { fCombo->Associate(Window); };	// where to go if combobox
-																					// selection changes
-		inline const Char_t * GetText() const { return(fText.Data()); };					// return text field data
+		inline const Char_t * GetText() const { return(fText.Data()); };			// return text field data
 		inline void SetText(const Char_t * Text) { fText = Text; }; 				// set text field
 		
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
-
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
+		Int_t fFrameId;
+
 		TGVerticalFrame * fEC;				//!
 		TGHorizontalFrame * fEB;			//!
 			

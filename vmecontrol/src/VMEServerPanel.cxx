@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.3 2008-09-03 14:23:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMEServerPanel.cxx,v 1.4 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -188,7 +188,7 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	fServerButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fServerActions, 0, 1, groupGC, buttonGC);
 	HEAP(fServerButtonFrame);
 	this->AddFrame(fServerButtonFrame, buttonGC->LH());
-	((TGMrbButtonFrame *) fServerButtonFrame)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "ActionButton(Int_t)");
+	((TGMrbButtonFrame *) fServerButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ActionButton(Int_t, Int_t)");
 
 //	server log
 	fLogFrame = new TGGroupFrame(this, "Server Log", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -208,13 +208,14 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	MapWindow();
 }
 
-Bool_t VMEServerPanel::ActionButton(Int_t ButtonId) {
+Bool_t VMEServerPanel::ActionButton(Int_t FrameId, Int_t ButtonId) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESystemPanel::ActionButton
 // Purpose:        Action taken on 'button pressed'
-// Arguments:      Int_t ButtonId     -- button id
-// Results:        kTRUE/kFALSE
+// Arguments:      Int_t FrameId      -- framek id
+//                 Int_t ButtonId     -- button id
+// Results:        --
 // Exceptions:     
 // Description:    Handles action buttons.
 // Keywords:       
