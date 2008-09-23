@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.9 2008-09-03 14:23:54 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-09-03 14:23:54 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.10 2008-09-23 10:44:11 Rudolf.Lutter Exp $   
+// Date:           $Date: 2008-09-23 10:44:11 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -35,8 +35,6 @@
 // Name:           TMrbC2Lynx
 // Purpose:        MARaBOU client to connect to LynxOs/VME.
 // Description:    Creates a MARaBOU client to connect to LynxOs.
-class TC2LVMEModule;
-
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 

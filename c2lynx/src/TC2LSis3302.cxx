@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.4 2008-09-03 14:23:55 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-09-03 14:23:55 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.5 2008-09-23 10:44:11 Rudolf.Lutter Exp $     
+// Date:           $Date: 2008-09-23 10:44:11 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -428,7 +428,7 @@ Bool_t TC2LSis3302::ReadEnergySampleLength(Int_t & SampleLength, Int_t AdcNo) {
 
 Bool_t TC2LSis3302::WriteEnergySampleLength(Int_t & SampleLength, Int_t AdcNo) {
 	TArrayI sample(1); sample[0] = SampleLength;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_ENERGY_SAMPLE_LENGTH, sample, sample, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_ENERGY_SAMPLE_LENGTH, sample, sample, AdcNo)) return(kFALSE);
 	SampleLength = sample[0];
 	return(kTRUE);
 }
@@ -442,7 +442,7 @@ Bool_t TC2LSis3302::ReadStartIndex(Int_t & IdxVal, Int_t IdxNo, Int_t AdcNo) {
 }
 
 Bool_t TC2LSis3302::WriteStartIndex(Int_t & IdxVal, Int_t IdxNo, Int_t AdcNo) {
-	TArrayI idxVal; idxVal[0] = IdxNo;  idxVal[1] = IdxVal;
+	TArrayI idxVal(2); idxVal[0] = IdxNo;  idxVal[1] = IdxVal;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_START_INDEX, idxVal, idxVal, AdcNo)) return(kFALSE);
 	IdxVal = idxVal[0];
 	return(kTRUE);
@@ -781,11 +781,11 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							this->ReadEnergySampleLength(length, i);
 							tmpl.Substitute("$length", length);
 							Int_t start;
-							this->ReadStartIndex(start, 1, i);
+							this->ReadStartIndex(start, 0, i);
 							tmpl.Substitute("$start1", start);
-							this->ReadStartIndex(start, 2, i);
+							this->ReadStartIndex(start, 1, i);
 							tmpl.Substitute("$start2", start);
-							this->ReadStartIndex(start, 3, i);
+							this->ReadStartIndex(start, 2, i);
 							tmpl.Substitute("$start3", start);
 							tmpl.WriteCode(settings);
 						}

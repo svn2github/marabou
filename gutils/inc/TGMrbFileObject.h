@@ -11,7 +11,7 @@
 //                                           a list box containing file objects
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFileObject.h,v 1.11 2007-09-14 13:37:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileObject.h,v 1.12 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ class TGMrbFileObjectCombo: public TGCompositeFrame, public TGMrbObject {
 
 	public:
 		TGMrbFileObjectCombo(const TGWindow * Parent, const Char_t * Label,				// ctor
-							Int_t BufferSize, Int_t EntryId, Int_t ComboId,
+							Int_t BufferSize, Int_t FrameId,
 							Int_t Width, Int_t Height,
 							Int_t EntryWidth, Int_t ComboWidth,
 							TGMrbLayout * FrameGC,
@@ -75,18 +75,23 @@ class TGMrbFileObjectCombo: public TGCompositeFrame, public TGMrbObject {
 		void SetSelectionFromString(TString & SelString, Bool_t IsNewFile = kFALSE);  	// set items
 		void SetSelection(TObjArray & SelArr, Bool_t IsNewFile = kFALSE); 				// ... -- array
 
-		inline void Associate(const TGWindow * Window) { fCombo->Associate(Window); };	// where to go if combobox
-																					// selection changes
 		inline const Char_t * GetText() const { return(fText.Data()); };					// return text field data
 		inline void SetText(const Char_t * Text) { fText = Text; }; 				// set text field
 		
 		inline const Char_t * GetFileName() { return(fFileName.Data()); };
 
- 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void Browse();												// slot methods
+		void EntryChanged();
+		inline void SelectionChanged(Int_t Selection) { this->SelectionChanged(fFrameId, Selection); };
+
+		void FileChanged(Int_t FrameId, Int_t Selection = 0); 		//*SIGNAL*
+		void SelectionChanged(Int_t FrameId, Int_t Selection);		//*SIGNAL*
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
+		Int_t fFrameId;
+
 		TGVerticalFrame * fEC;				//!
 		TGHorizontalFrame * fEB;			//!
 			
@@ -123,7 +128,7 @@ class TGMrbFileObjectListBox: public TGCompositeFrame, public TGMrbObject {
 
 	public:
 		TGMrbFileObjectListBox(const TGWindow * Parent, const Char_t * Label,				// ctor
-							Int_t BufferSize, Int_t EntryId, Int_t ListBoxId,
+							Int_t BufferSize, Int_t FrameId,
 							Int_t Width, Int_t Height,
 							Int_t EntryWidth, Int_t ListBoxWidth,
 							TGMrbLayout * FrameGC,
@@ -155,18 +160,29 @@ class TGMrbFileObjectListBox: public TGCompositeFrame, public TGMrbObject {
 		void SetSelectionFromString(TString & SelString, Bool_t IsNewFile = kFALSE);  	// set items
 		void SetSelection(TObjArray & SelArr, Bool_t IsNewFile = kFALSE); 				// ... -- array
 
-		inline void Associate(const TGWindow * Window) { fListBox->Associate(Window); };	// where to go if combobox
-																					// selection changes
 		inline const Char_t * GetText() const { return(fText.Data()); };					// return text field data
 		inline void SetText(const Char_t * Text) { fText = Text; }; 				// set text field
 		
 		inline const Char_t * GetFileName() { return(fFileName.Data()); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void Browse();											// slot methods
+		void EntryChanged();
+		void ListBoxChanged(Int_t);
+		void Single();
+		void Range();
+		void Clear();
+		void Apply();
+		inline void SelectionChanged(Int_t Selection) { this->SelectionChanged(fFrameId, Selection); };
+
+		void FileChanged(Int_t FrameId, Int_t Selection = 0); 		//*SIGNAL*
+		void SelectionChanged(Int_t FrameId, Int_t Selection);	//*SIGNAL*
+
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
+		Int_t fFrameId;
+
 		TGVerticalFrame * fEC;				//!
 		TGHorizontalFrame * fEB1;			//!
 		TGHorizontalFrame * fEB2;			//!

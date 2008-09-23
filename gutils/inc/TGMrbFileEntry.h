@@ -9,7 +9,7 @@
 //                                           browse files
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFileEntry.h,v 1.6 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbFileEntry.h,v 1.7 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -58,14 +58,11 @@ class TGMrbFileEntry: public TGCompositeFrame, public TGMrbObject {
 		inline const Char_t * GetText() { return(fEntry->GetText()); };
 		inline void SetText(const Char_t * Text) { fEntry->SetText(Text); };
 
-		inline void ConnectSigToSlot(const Char_t * Signal, TObject * Receiver, const Char_t * Slot) {
-			this->Connect(Signal, Receiver->ClassName(), Receiver, Slot);
-		}
-		inline void EntryChanged() { this->Emit("EntryChanged()"); };	//*SIGNAL*
-
 		void FileButtonEnable(Bool_t Flag = kTRUE);			// enable/disable file button
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void Browse();										// slot method called upon Clicked() signal
+
+		void EntryChanged(Int_t FrameId, Int_t Signal = 0); //*SIGNAL*
 
 		inline void Help() const { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); }
 

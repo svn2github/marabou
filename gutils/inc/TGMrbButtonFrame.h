@@ -8,7 +8,7 @@
 // Class:          TGMrbButtonFrame    -- a composite frame containing buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbButtonFrame.h,v 1.10 2008-09-03 14:57:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbButtonFrame.h,v 1.11 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -99,7 +99,13 @@ class TGMrbButtonFrame: public TGMrbObject {
 		UInt_t GetActive(); 												// return button state
 		TMrbNamedX * GetActiveNx();
 
-		inline void ButtonPressed(Int_t Signal) { this->Emit("ButtonPressed(Int_t)", fFrameId + Signal); };	//*SIGNAL*
+		inline void CheckButtonClicked(Int_t Button) { this->UpdateState((UInt_t) Button); }; 	// slot methods
+		inline void RadioButtonClicked(Int_t Button) { this->SetState((UInt_t) Button); };
+		inline void TextButtonClicked(Int_t Button)  { this->UpdateState((UInt_t) Button); };
+		inline void PictureButtonClicked(Int_t Button) { this->UpdateState((UInt_t) Button); };
+		inline void ButtonPressed(Int_t Button) { this->ButtonPressed(fFrameId, Button); };
+
+		void ButtonPressed(Int_t FrameId, Int_t Button); 	//*SIGNAL*
 
 		void FlipState(UInt_t Pattern);					// flip state
 		void UpdateState(UInt_t Pattern);				// update state
@@ -109,13 +115,8 @@ class TGMrbButtonFrame: public TGMrbObject {
 		Int_t GetButtonWidth(Int_t ButtonIndex = 0) const;	// get button width
 		void JustifyButton(ETextJustification Justify, Int_t ButtonIndex = 0);	// justify button text
 		TGButton * GetButton(Int_t ButtonIndex) const;		// get button by index
-		void AddButton(TGButton * Button, TMrbNamedX * ButtonSpecs);	// add a button
 
 		void ChangeButtonBackground(ULong_t Color, Int_t Index = 0); 	// set background color
-
-		Bool_t ButtonFrameMessage(Long_t, Long_t);		// process mouse clocks
-
-		void Associate(const TGWindow * Window);		// redirect button events
 
 		inline void Help() { gSystem->Exec("mrbHelp TGMrbButtonFrame"); };
 
@@ -126,7 +127,7 @@ class TGMrbButtonFrame: public TGMrbObject {
 	protected:
 		const TGWindow * fParent; 						// parent window
 		UInt_t fType;								// button type: text, radio, check, or picture; list or group
-		Int_t fFrameId;								// frame id to be used with Associate()
+		Int_t fFrameId;								// frame id to be used with signals/slots
 		TString fLabel; 							// label text
 		TMrbLofNamedX fButtons;						// list of buttons: labels, indices, widgets
 		Int_t fWidth;								// frame width

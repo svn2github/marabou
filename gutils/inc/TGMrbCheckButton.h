@@ -11,7 +11,7 @@
 //                                           group frame
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbCheckButton.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbCheckButton.h,v 1.6 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -49,10 +49,6 @@ class TGMrbCheckButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 
 		~TGMrbCheckButtonList() {};				// default dtor
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
-			return(ButtonFrameMessage(MsgId, Param1));
-		};
-
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TGMrbCheckButtonList, 1)		// [GraphUtils] A list of check buttons
@@ -79,10 +75,6 @@ class TGMrbCheckButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 													UInt_t ButtonOptions = 0);
 
 		~TGMrbCheckButtonGroup() {};				// default dtor
-
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
-			return(ButtonFrameMessage(MsgId, Param1));
-		};
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

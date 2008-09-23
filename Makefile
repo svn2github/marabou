@@ -112,9 +112,9 @@ ifeq ($(shell if [ -d vmecontrol ] ; then echo yes; fi), yes)
 MODULES      += vmecontrol
 endif
 
-ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
-MODULES      += xiadgf dgfcontrol cptmcontrol
-endif
+#ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
+#MODULES      += xiadgf dgfcontrol cptmcontrol
+#endif
 
 ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
 MODULES      += polar
