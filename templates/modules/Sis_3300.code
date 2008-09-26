@@ -169,7 +169,7 @@ static struct s_sis_3300 * s_$moduleName;
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L$marabouPath/powerpc/lib/$mbsVersion -lsis_3300
+	-L$marabouPath/powerpc/lib/$lynxVersion -lSis_3300
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.162 2008-08-28 07:16:48 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.163 2008-09-26 11:54:15 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -442,6 +442,7 @@ const SMrbNamedXShort kMrbLofModuleIDs[] =
 								{TMrbConfig::kModuleKinetics3655,			"Kinetics_3655"					},
 								{TMrbConfig::kModuleMpiHD_IOReg,			"MpiHD_IOReg"					},
 								{TMrbConfig::kModuleSis_3300,				"Sis_3300"						},
+								{TMrbConfig::kModuleSis_3302,				"Sis_3302"						},
 								{TMrbConfig::kModuleSis_3600,				"Sis_3600"						},
 								{TMrbConfig::kModuleSis_3801,				"Sis_3801"						},
 								{TMrbConfig::kModuleSis_3820,				"Sis_3820"						},
@@ -452,6 +453,7 @@ const SMrbNamedXShort kMrbLofModuleIDs[] =
 								{TMrbConfig::kModuleCaenV965,				"Caen_V965" 					},
 								{TMrbConfig::kModuleISN4481,				"ISN_4481" 						},
 								{TMrbConfig::kModuleMesytecMux16,			"Mesytec_Mux16" 				},
+								{TMrbConfig::kModuleMesytecMadc32,			"Mesytec_Madc32" 				},
 								{TMrbConfig::kModuleSoftModule, 	 		"@SoftMod@" 					},
 								{0, 										NULL							}
 							};
@@ -946,7 +948,7 @@ const Char_t * TMrbConfig::GetMbsVersion(Bool_t Vformat, Bool_t Verbose)  {
 		mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "");
 		if (mbsVersion.IsNull()) {
 			if (Verbose) {
-				gMrbLog->Err() << "MBS version not defined - set TMbsSetup.MBsVersion in .rootrc properly" << endl;
+				gMrbLog->Err() << "MBS version not defined - set TMbsSetup.MbsVersion in .rootrc properly" << endl;
 				gMrbLog->Flush(this->ClassName(), "GetMbsVersion");
 			}
 			return("");

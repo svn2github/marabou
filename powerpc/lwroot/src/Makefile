@@ -11,6 +11,9 @@ SrcSuf		=	cxx
 LibSuf		=	a
 LWRLIB		=	../../lib/$(LYNX_VERSION)/libLwr.$(LibSuf)
 
+AR = ar
+ARFLAG = -rv
+
 INCS		=	$(LWRINC)/LwrUtils.h \
 				$(LWRINC)/LwrObject.h \
 				$(LWRINC)/LwrNamed.h \
@@ -69,6 +72,7 @@ clean:
 				rm -f *.o $(LWRLIB)
 
 $(LWRLIB):  $(OBJS)
+				ranlib $@
 
 .$(SrcSuf).$(ObjSuf):
 			$(CXX) $(CXXFLAGS) -c $<

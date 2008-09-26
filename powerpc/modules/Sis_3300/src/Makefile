@@ -1,10 +1,11 @@
 CC = gcc 
-#CFLAGS =  -pipe -g -O3 -ansi -DLOG_PERROR_DOESNT_WORK
-CFLAGS =  -pipe -g -O3 -ansi 
 
-CPPFLAGS =
+PPCINC 		=	../../../inc
+CESINC		=	/usr/include/ces
+RDOINC		=	../../../readout/inc
+MBSINC		=	$(MBSROOT)/inc
 
-INCDIR = -I../inc -I$(MBSROOT)/inc -I$(MARABOU_PATH)/powerpc/include 
+CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I../inc -I$(RDOINC) -I$(PPCINC) -I$(MBSINC) -I$(CESINC)
 
 # ------------ Libaries ------------------------------------------------
 
@@ -13,9 +14,9 @@ ARFLAG = -rv
 
 # ------------ Library-Objects ----------------------------------------
 
-LIB_TARGETS = ../../lib/$(MBS_VERSION)/libsis_3300.a
+LIB_TARGETS = ../../../lib/$(LYNX_VERSION)/libSis_3300.a
 
-libsis_3300.OBJS = sis_3300.o sis_3300_readout.o block.o
+libSis_3300.OBJS = sis_3300.o sis_3300_readout.o block.o
 
 # ------------ Suffix Rules -------------------------------------------
 
@@ -23,15 +24,15 @@ libsis_3300.OBJS = sis_3300.o sis_3300_readout.o block.o
 
 # ----- C Code ---------
 %.o: %.c
-	$(CC) $< -c $(CPPFLAGS) $(CFLAGS) $(INCDIR) -o $@ 
+	$(CC) $< -c $(CFLAGS) -o $@ 
 
 .SUFFIXES: .o .c 
 
 # ------------ Targets -------------------------------------------------
 
-all: $(LIB_TARGETS)
+all: $(LIB_TARGETS)$(CPPFLAGS) 
 
-$(LIB_TARGETS): $(libsis_3300.OBJS)
+$(LIB_TARGETS): $(libSis_3300.OBJS)
 	$(AR) $(ARFLAGS) $@ $^
 	ranlib $@
 

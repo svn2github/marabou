@@ -13,7 +13,6 @@
 #include <stdio.h>
 #include <math.h>
 #include <string.h>
-#include <allParam.h>
 #include <ces/bmalib.h>
 
 #include "gd_readout.h"
