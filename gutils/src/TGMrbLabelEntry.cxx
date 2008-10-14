@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.22 2008-10-14 17:27:06 Marabou Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.23 2008-10-14 18:42:02 Marabou Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -143,8 +143,15 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 		fAction->ChangeBackground(ActionGC->BG());
 		this->AddFrame(fAction, actLayout);
 		TObject * assObj = Action->GetAssignedObject();
-		TString slot = Form("%s(Int_t=%d)", Action->GetTitle(), Action->GetIndex());
-		fAction->Connect("Clicked()", assObj->ClassName(), assObj, slot.Data());			
+		TString slot = Action->GetTitle();
+		if (!slot.EndsWith("(Int_t)")) {
+			if (fLabel) gMrbLog->Err() << "[" << fLabel->GetTitle() << "] ";
+			gMrbLog->Err() << "Wrong slot syntax - \"" << slot << "\" (arg \"(Int_t)\" missing)" << endl;
+			gMrbLog->Flush(this->ClassName());
+		} else {
+			slot.ReplaceAll("(Int_t)", Form("(Int_t=%d)", Action->GetIndex()));
+			fAction->Connect("Clicked()", assObj->ClassName(), assObj, slot.Data());			
+		}
 		entryWidth -= fAction->GetWidth();
 	}
 
@@ -540,7 +547,7 @@ Int_t TGMrbLabelEntry::GetText2Int(Int_t EntryNo) {
 		}
 		this->CreateToolTip(EntryNo);
 	} else {
-		if (fLabel) gMrbLog->Err() << fLabel << ": ";
+		if (fLabel) gMrbLog->Err() << fLabel->GetTitle() << ": ";
 		gMrbLog->Err() << "Not a INTEGER entry" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetText2Int");
 		new TGMsgBox(fClient->GetRoot(), this, "TGMrbLabelEntry: Error", gMrbLog->GetLast()->GetText(), kMBIconStop);
@@ -566,7 +573,7 @@ Double_t TGMrbLabelEntry::GetText2Double(Int_t EntryNo) {
 		dblStr.ToDouble(dblVal);
 		this->CreateToolTip(EntryNo);
 	} else {
-		if (fLabel) gMrbLog->Err() << fLabel << ": ";
+		if (fLabel) gMrbLog->Err() << fLabel->GetTitle() << ": ";
 		gMrbLog->Err() << "Not a DOUBLE entry" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetText2Double");
 		new TGMsgBox(fClient->GetRoot(), this, "TGMrbLabelEntry: Error", gMrbLog->GetLast()->GetText(), kMBIconStop);
@@ -768,7 +775,7 @@ Bool_t TGMrbLabelEntry::CheckRange(Double_t Value, Int_t EntryNo, Bool_t Verbose
 	Bool_t withinRange = (Value >= fLowerLimit[EntryNo] && Value <= fUpperLimit[EntryNo]);
 	if (withinRange) return(kTRUE);
 	if (Verbose || Popup) {
-		if (fLabel) gMrbLog->Err() << "[" << fLabel->GetText()->GetString() << "] ";
+		if (fLabel) gMrbLog->Err() << "[" << fLabel->GetTitle() << "] ";
 		gMrbLog->Err() << "Value out of range - " << Value << " (should be in [" << fLowerLimit[EntryNo] << "," << fUpperLimit[EntryNo] << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckRange");
 		if (Popup) new TGMsgBox(fClient->GetRoot(), this, "TGMrbLabelEntry: Error", gMrbLog->GetLast()->GetText(), kMBIconStop);

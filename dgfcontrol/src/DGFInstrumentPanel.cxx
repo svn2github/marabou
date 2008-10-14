@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.37 2008-10-14 17:27:05 Marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.38 2008-10-14 18:42:01 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -649,7 +649,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSAT90ThreshEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	entryGC->SetLH(psaLayout);
-	fUserPsaCSREditButton = new TMrbNamedX(kDGFInstrStatRegUserPsaCSREditButton, "Edit", "EditBits");
+	fUserPsaCSREditButton = new TMrbNamedX(kDGFInstrStatRegUserPsaCSREditButton, "Edit", "EditBits(Int_t)");
 	fUserPsaCSREditButton->AssignObject(this);
 	fStatRegUserPsaCSREntry = new TGMrbLabelEntry(fTraceUPSAFrame, "PSA CSR",
 																200, kDGFInstrStatRegUserPsaCSREntry,
@@ -836,7 +836,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * micsrLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(micsrLayout);
 	HEAP(micsrLayout);
-	fModICSREditButton = new TMrbNamedX(kDGFInstrStatRegModICSREditButton, "Edit", "EditBits");
+	fModICSREditButton = new TMrbNamedX(kDGFInstrStatRegModICSREditButton, "Edit", "EditBits(Int_t)");
 	fModICSREditButton->AssignObject(this);
 	fStatRegModICSREntry = new TGMrbLabelEntry(fStatRegEntryFrame, "SwitchBus Register",
 																200, kDGFInstrStatRegModICSREntry,
@@ -857,7 +857,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * ccsraLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(ccsraLayout);
 	HEAP(ccsraLayout);
-	fChanCSRAEditButton = new TMrbNamedX(kDGFInstrStatRegChanCSRAEditButton, "Edit", "EditBits");
+	fChanCSRAEditButton = new TMrbNamedX(kDGFInstrStatRegChanCSRAEditButton, "Edit", "EditBits(Int_t)");
 	fChanCSRAEditButton->AssignObject(this);
 	fStatRegChanCSRAEntry = new TGMrbLabelEntry(fStatRegEntryFrame, "Channel CSRA",
 																200, kDGFInstrStatRegChanCSRAEntry,
@@ -878,7 +878,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * coincLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(coincLayout);
 	HEAP(coincLayout);
-	fCoincPatternEditButton = new TMrbNamedX(kDGFInstrStatCoincPatternEditButton, "Edit", "EditBits");
+	fCoincPatternEditButton = new TMrbNamedX(kDGFInstrStatCoincPatternEditButton, "Edit", "EditBits(Int_t)");
 	fCoincPatternEditButton->AssignObject(this);
 	fStatCoincPatternEntry = new TGMrbLabelEntry(fStatRegEntryFrame, "Coinc Pattern",
 																200, kDGFInstrStatCoincPatternEntry,
@@ -899,7 +899,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * runtaskLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(runtaskLayout);
 	HEAP(runtaskLayout);
-	fRunTaskEditButton = new TMrbNamedX(kDGFInstrStatRunTaskEditButton, "Edit", "EditBits");
+	fRunTaskEditButton = new TMrbNamedX(kDGFInstrStatRunTaskEditButton, "Edit", "EditBits(Int_t)");
 	fRunTaskEditButton->AssignObject(this);
 	fStatRunTaskEntry = new TGMrbLabelEntry(fStatRegEntryFrame, "RUNTASK",
 																200, kDGFInstrStatRunTaskEntry,
