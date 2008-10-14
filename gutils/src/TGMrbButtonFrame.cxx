@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.12 2008-10-14 10:22:29 Marabou Exp $       
+// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.13 2008-10-14 12:16:55 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -262,7 +262,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 				TGButton * button = (TGButton *) namedX->GetAssignedObject();
 				if ((namedX->GetIndex() & Pattern) == (UInt_t) namedX->GetIndex()) {
 					button->SetState(State);
-					this->ButtonPressed(namedX->GetIndex());
+//					this->ButtonPressed(namedX->GetIndex());
 				}
 			}
 		} else {
@@ -274,7 +274,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 				if (button->GetState() != kButtonDisabled) {
 					if ((UInt_t) namedX->GetIndex() == Pattern) {
 						button->SetState(State);
-						if (State == kButtonDown) this->ButtonPressed(namedX->GetIndex());
+//						if (State == kButtonDown) this->ButtonPressed(namedX->GetIndex());
 						fRBState |= Pattern;
 					} else {
 						button->SetState(kButtonUp);
@@ -309,7 +309,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 				}
 			}
 		}
-		this->ButtonPressed(this->GetActive());
+//		this->ButtonPressed(this->GetActive());
 	} else if (fType & kGMrbTextButton) {
 		TMrbNamedX *namedX;
 		TIterator * bIter = fButtons.MakeIterator();
@@ -317,7 +317,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 			TGButton * button = (TGButton *) namedX->GetAssignedObject();
 			if ((UInt_t) namedX->GetIndex() == Pattern) {
 				button->SetState(State);
-				this->ButtonPressed(namedX->GetIndex());
+//				this->ButtonPressed(namedX->GetIndex());
 			}
 		}
 	}

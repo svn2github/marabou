@@ -8,7 +8,7 @@
 // Class:          DGFSetupPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFSetupPanel.h,v 1.13 2008-10-14 10:22:29 Marabou Exp $       
+// Revision:       $Id: DGFSetupPanel.h,v 1.14 2008-10-14 12:16:55 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -82,8 +82,6 @@ class DGFSetupPanel : public TGCompositeFrame {
 
 		void SelectModule(Int_t FrameId, Int_t Selection);		// slot methods
 		void PerformAction(Int_t FrameId, Int_t Selection);
-		void SelectOption(Int_t FrameId, Int_t Selection);
-
 
 		Bool_t ConnectToEsone();					// connect modules to esone server
 		Bool_t ReloadDGFs();						// reload dgf code
@@ -99,6 +97,7 @@ class DGFSetupPanel : public TGCompositeFrame {
 		
 	protected:
 		Bool_t DaqIsRunning();						// check if a daq is running
+		void SetupGeneral();						// set global options
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
