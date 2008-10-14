@@ -8,7 +8,7 @@
 // Class:          DGFEditUserPsaCSRPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFEditUserPsaCSRPanel.h,v 1.3 2008-10-14 10:22:29 Marabou Exp $       
+// Revision:       $Id: DGFEditUserPsaCSRPanel.h,v 1.4 2008-10-14 17:27:05 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -64,7 +64,7 @@ class DGFEditUserPsaCSRPanel : public TGMainFrame {
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditUserPsaCSRPanel() { fHeap.Delete(); };
 
-		inline virtual void CloseWindow() { delete this; };
+		inline virtual void CloseWindow() { TGMainFrame::CloseWindow(); };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 
 		void PerformAction(Int_t FrameId, Int_t Selection); 	// slot method

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.39 2008-10-14 12:16:55 Marabou Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.40 2008-10-14 17:27:06 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -65,8 +65,6 @@ const SMrbNamedX kDGFSetupConnect[] =
 			};
 
 TMrbEsone * esoneCold = NULL;
-
-Bool_t firstCall = kTRUE;
 
 extern DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
@@ -171,24 +169,8 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	fDGFFrame = new TGMrbCheckButtonGroup(this, "DGF General", &fSetupDGFModes, -1, 1, groupGC, labelGC, NULL, kVerticalFrame);
 	HEAP(fDGFFrame);
 	this->AddFrame(fDGFFrame, groupGC->LH());
-	fDGFFrame->SetState(gDGFControlData->fStatus);
+//	fDGFFrame->SetState(gDGFControlData->fStatus);
 
-	if (firstCall) {
-		gDGFControlData->fSimulStartStop = gEnv->GetValue("DGFControl.StartStopSimultaneously", kTRUE) ? kButtonDown : kButtonUp;
-		gDGFControlData->fSyncClocks = gEnv->GetValue("DGFControl.SynchronizeClocks", kTRUE) ? kButtonDown : kButtonUp;
-		TString xIndivTerm = gEnv->GetValue("DGFControl.TerminateSwitchBusIndividually", "");
-		if (xIndivTerm.IsNull()) {
-			gDGFControlData->fIndivSwitchBusTerm = gEnv->GetValue("TMrbDGF.TerminateSwitchBusIndividually", kFALSE) ? kButtonDown : kButtonUp;
-		} else {
-			gDGFControlData->fIndivSwitchBusTerm = gEnv->GetValue("DGFControl.TerminateSwitchBusIndividually", kFALSE) ? kButtonDown : kButtonUp;
-		}
-		TString xActivatePSA = gEnv->GetValue("DGFControl.ActivateUserPSACode", "");
-		if (xActivatePSA.IsNull()) {
-			gDGFControlData->fUserPSA = gEnv->GetValue("TMrbDGF.ActivateUserPSACode", kFALSE) ? kButtonDown : kButtonUp;
-		} else {
-			gDGFControlData->fUserPSA = gEnv->GetValue("DGFControl.ActivateUserPSACode", kFALSE) ? kButtonDown : kButtonUp;
-		}
-	}
 	fDGFFrame->SetState(DGFControlData::kDGFSimulStartStop, gDGFControlData->fSimulStartStop ? kButtonDown : kButtonUp);
 	fDGFFrame->SetState(DGFControlData::kDGFSyncClocks, gDGFControlData->fSyncClocks ? kButtonDown : kButtonUp);
 	fDGFFrame->SetState(DGFControlData::kDGFIndivSwitchBusTerm, gDGFControlData->fIndivSwitchBusTerm ? kButtonDown : kButtonUp);
@@ -285,8 +267,6 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	((TGMrbButtonFrame *) fActionFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	this->ChangeBackground(gDGFControlData->fColorBlue);
-
-	firstCall = kFALSE;
 
 	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
 	HEAP(dgfFrameLayout);

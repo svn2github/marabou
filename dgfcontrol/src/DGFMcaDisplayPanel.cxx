@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.23 2008-10-14 10:22:29 Marabou Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.24 2008-10-14 17:27:06 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -279,7 +279,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
 	fDisplayChannel = new TGMrbRadioButtonList(fDisplayFrame, "Channel", &fLofChannels,
-													kDGFMcaDisplaySelectChannel << TGMrbButtonFrame::kFrameIdShift, 1, 
+													kDGFMcaDisplaySelectChannel, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fDisplayChannel);

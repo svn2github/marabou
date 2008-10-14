@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.36 2008-10-14 10:22:29 Marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.37 2008-10-14 17:27:05 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -22,6 +22,7 @@
 #include "TGMsgBox.h"
 
 #include "TMrbLogger.h"
+#include "TGMrbProgressBar.h"
 
 #include "DGFControlData.h"
 #include "DGFInstrumentPanel.h"
@@ -190,7 +191,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
 	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame, "Channel", &fLofChannels,
-													kDGFInstrSelectChannel << TGMrbButtonFrame::kFrameIdShift, 1, 
+													kDGFInstrSelectChannel, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fSelectChannel);
@@ -570,7 +571,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 
 #if 0
 	fTraceUPSAOnOffButton = new TGMrbRadioButtonList(fTraceUPSAFrame, "PSA enable", &fInstrUPSAOnOff,
-													kDGFInstrTraceUPSAOnOffButton << TGMrbButtonFrame::kFrameIdShift, 1, 
+													kDGFInstrTraceUPSAOnOffButton, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fTraceUPSAOnOffButton);
@@ -648,7 +649,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSAT90ThreshEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	entryGC->SetLH(psaLayout);
-	fUserPsaCSREditButton = new TMrbNamedX(kDGFInstrStatRegUserPsaCSREditButton, "Edit");
+	fUserPsaCSREditButton = new TMrbNamedX(kDGFInstrStatRegUserPsaCSREditButton, "Edit", "EditBits");
 	fUserPsaCSREditButton->AssignObject(this);
 	fStatRegUserPsaCSREntry = new TGMrbLabelEntry(fTraceUPSAFrame, "PSA CSR",
 																200, kDGFInstrStatRegUserPsaCSREntry,
@@ -748,7 +749,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDRegEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fCFDOnOffButton = new TGMrbRadioButtonList(fCFDDataFrame, "CFD enable", &fInstrCFDOnOff,
-													kDGFInstrCFDOnOffButton << TGMrbButtonFrame::kFrameIdShift, 1, 
+													kDGFInstrCFDOnOffButton, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fCFDOnOffButton);
@@ -805,7 +806,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDWalkEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fCFDFractionButton = new TGMrbRadioButtonList(fCFDDataFrame, "Fraction", &fInstrCFDFraction,
-													kDGFInstrCFDFractionButton << TGMrbButtonFrame::kFrameIdShift, 1, 
+													kDGFInstrCFDFractionButton, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fCFDFractionButton);
@@ -835,7 +836,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * micsrLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(micsrLayout);
 	HEAP(micsrLayout);
-	fModICSREditButton = new TMrbNamedX(kDGFInstrStatRegModICSREditButton, "Edit");
+	fModICSREditButton = new TMrbNamedX(kDGFInstrStatRegModICSREditButton, "Edit", "EditBits");
 	fModICSREditButton->AssignObject(this);
 	fStatRegModICSREntry = new TGMrbLabelEntry(fStatRegEntryFrame, "SwitchBus Register",
 																200, kDGFInstrStatRegModICSREntry,
@@ -856,7 +857,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * ccsraLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(ccsraLayout);
 	HEAP(ccsraLayout);
-	fChanCSRAEditButton = new TMrbNamedX(kDGFInstrStatRegChanCSRAEditButton, "Edit");
+	fChanCSRAEditButton = new TMrbNamedX(kDGFInstrStatRegChanCSRAEditButton, "Edit", "EditBits");
 	fChanCSRAEditButton->AssignObject(this);
 	fStatRegChanCSRAEntry = new TGMrbLabelEntry(fStatRegEntryFrame, "Channel CSRA",
 																200, kDGFInstrStatRegChanCSRAEntry,
@@ -877,7 +878,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * coincLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(coincLayout);
 	HEAP(coincLayout);
-	fCoincPatternEditButton = new TMrbNamedX(kDGFInstrStatCoincPatternEditButton, "Edit");
+	fCoincPatternEditButton = new TMrbNamedX(kDGFInstrStatCoincPatternEditButton, "Edit", "EditBits");
 	fCoincPatternEditButton->AssignObject(this);
 	fStatCoincPatternEntry = new TGMrbLabelEntry(fStatRegEntryFrame, "Coinc Pattern",
 																200, kDGFInstrStatCoincPatternEntry,
@@ -898,7 +899,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * runtaskLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(runtaskLayout);
 	HEAP(runtaskLayout);
-	fRunTaskEditButton = new TMrbNamedX(kDGFInstrStatRunTaskEditButton, "Edit");
+	fRunTaskEditButton = new TMrbNamedX(kDGFInstrStatRunTaskEditButton, "Edit", "EditBits");
 	fRunTaskEditButton->AssignObject(this);
 	fStatRunTaskEntry = new TGMrbLabelEntry(fStatRegEntryFrame, "RUNTASK",
 																200, kDGFInstrStatRunTaskEntry,
@@ -1062,38 +1063,9 @@ void DGFInstrumentPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-
 	gDGFControlData->AddToUpdateList(gDGFControlData->GetSelectedModule());
 
 	switch (Selection) {
-		case kDGFInstrStatRegChanCSRAEditButton:
-			new DGFEditChanCSRAPanel(fClient->GetRoot(), fStatRegChanCSRAEntry->GetEntry(),
-											DGFEditChanCSRAPanel::kFrameWidth, DGFEditChanCSRAPanel::kFrameHeight);
-			this->UpdateValue(kDGFInstrStatRegChanCSRAEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-			break;
-		case kDGFInstrStatRegUserPsaCSREditButton:
-			new DGFEditUserPsaCSRPanel(fClient->GetRoot(), fStatRegUserPsaCSREntry->GetEntry(),
-											DGFEditUserPsaCSRPanel::kFrameWidth, DGFEditUserPsaCSRPanel::kFrameHeight);
-			this->UpdateValue(kDGFInstrStatRegUserPsaCSREntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-			break;
-		case kDGFInstrStatCoincPatternEditButton:
-			new DGFEditCoincPatternPanel(fClient->GetRoot(), fStatCoincPatternEntry->GetEntry(),
-											DGFEditCoincPatternPanel::kFrameWidth, DGFEditCoincPatternPanel::kFrameHeight);
-			this->UpdateValue(kDGFInstrStatCoincPatternEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-			break;
-		case kDGFInstrStatRunTaskEditButton:
-			new DGFEditRunTaskPanel(fClient->GetRoot(), fStatRunTaskEntry->GetEntry(),
-											DGFEditRunTaskPanel::kFrameWidth, DGFEditRunTaskPanel::kFrameHeight);
-			this->UpdateValue(kDGFInstrStatRunTaskEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-			break;
 		case kDGFInstrButtonUpdateFPGAs:
 			gDGFControlData->UpdateParamsAndFPGAs();
 			break;
@@ -1213,6 +1185,50 @@ void DGFInstrumentPanel::RadioButtonPressed(Int_t FrameId, Int_t Selection) {
 	}
 }
 
+void DGFInstrumentPanel::EditBits(Int_t ButtonId) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::EditBits
+// Purpose:        Slot method: call bit editor
+// Arguments:      Int_t ButtonId    -- button id
+// Results:        
+// Exceptions:     
+// Description:    Called if action button pressed for TGMrbLabelEntry
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch(ButtonId) {
+		case kDGFInstrStatRegChanCSRAEditButton:
+			new DGFEditChanCSRAPanel(fClient->GetRoot(), fStatRegChanCSRAEntry->GetEntry(),
+											DGFEditChanCSRAPanel::kFrameWidth, DGFEditChanCSRAPanel::kFrameHeight);
+			this->UpdateValue(kDGFInstrStatRegChanCSRAEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+			break;
+		case kDGFInstrStatRegUserPsaCSREditButton:
+			new DGFEditUserPsaCSRPanel(fClient->GetRoot(), fStatRegUserPsaCSREntry->GetEntry(),
+											DGFEditUserPsaCSRPanel::kFrameWidth, DGFEditUserPsaCSRPanel::kFrameHeight);
+			this->UpdateValue(kDGFInstrStatRegUserPsaCSREntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+			break;
+		case kDGFInstrStatCoincPatternEditButton:
+			new DGFEditCoincPatternPanel(fClient->GetRoot(), fStatCoincPatternEntry->GetEntry(),
+											DGFEditCoincPatternPanel::kFrameWidth, DGFEditCoincPatternPanel::kFrameHeight);
+			this->UpdateValue(kDGFInstrStatCoincPatternEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+			break;
+		case kDGFInstrStatRunTaskEditButton:
+			new DGFEditRunTaskPanel(fClient->GetRoot(), fStatRunTaskEntry->GetEntry(),
+											DGFEditRunTaskPanel::kFrameWidth, DGFEditRunTaskPanel::kFrameHeight);
+			this->UpdateValue(kDGFInstrStatRunTaskEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+			break;
+	}
+}
+
 Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1235,13 +1251,18 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 
 	ok = kTRUE;
 	if (ReadFromDSP) {
+		TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Reading DSP ...", 400, "blue", NULL, kTRUE);
+		pgb->SetRange(0, gDGFControlData->GetNofModules());
 		dgfModule = gDGFControlData->FirstModule();
 		while (dgfModule) {
 			if (gDGFControlData->ModuleInUse(dgfModule)) {
 				if (!this->ReadDSP(dgfModule, -1)) ok = kFALSE;
+				pgb->Increment(1, dgfModule->GetName());
+				gSystem->ProcessEvents();
 			}
 			dgfModule = gDGFControlData->NextModule(dgfModule);
 		}
+		delete pgb;
 	}
 	if (!ok) {
 		gMrbLog->Err()	<< "Can't read param memory from DSP (try to re-connect)" << endl;

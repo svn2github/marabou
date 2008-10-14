@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.13 2008-10-14 12:16:55 Marabou Exp $       
+// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.14 2008-10-14 17:27:06 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -241,13 +241,14 @@ void TGMrbButtonFrame::ClearAll() {
 	}
 }
 
-void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
+void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State, Bool_t Emit) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbButtonFrame::SetState
 // Purpose:        Mark button(s) as (in)active
 // Arguments:      UInt_t Pattern       -- pattern describing button(s) to be set
 //                 EButtonState State   -- button up or down
+//                 Bool_t Emit          -- if signal is to be emitted
 // Results:        
 // Exceptions:     
 // Description:    Sets button(s) given by pattern to (in)active.
@@ -262,7 +263,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 				TGButton * button = (TGButton *) namedX->GetAssignedObject();
 				if ((namedX->GetIndex() & Pattern) == (UInt_t) namedX->GetIndex()) {
 					button->SetState(State);
-//					this->ButtonPressed(namedX->GetIndex());
+					if (Emit) this->ButtonPressed(namedX->GetIndex());
 				}
 			}
 		} else {
@@ -274,7 +275,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 				if (button->GetState() != kButtonDisabled) {
 					if ((UInt_t) namedX->GetIndex() == Pattern) {
 						button->SetState(State);
-//						if (State == kButtonDown) this->ButtonPressed(namedX->GetIndex());
+						if (Emit && State == kButtonDown) this->ButtonPressed(namedX->GetIndex());
 						fRBState |= Pattern;
 					} else {
 						button->SetState(kButtonUp);
@@ -303,13 +304,11 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 						button->SetState(State);
 					} else if (sbutton) {
 						button->SetState(kButtonUp);
-					} else {
-						button->SetState(invState);
 					}
 				}
 			}
 		}
-//		this->ButtonPressed(this->GetActive());
+		if (Emit) this->ButtonPressed(this->GetActive());
 	} else if (fType & kGMrbTextButton) {
 		TMrbNamedX *namedX;
 		TIterator * bIter = fButtons.MakeIterator();
@@ -317,7 +316,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 			TGButton * button = (TGButton *) namedX->GetAssignedObject();
 			if ((UInt_t) namedX->GetIndex() == Pattern) {
 				button->SetState(State);
-//				this->ButtonPressed(namedX->GetIndex());
+				if (Emit) this->ButtonPressed(namedX->GetIndex());
 			}
 		}
 	}
@@ -454,6 +453,8 @@ void TGMrbButtonFrame::UpdateState(UInt_t Pattern) {
 			}
 		}
 		this->ButtonPressed(this->GetActive());
+	} else if (fType & kGMrbRadioButton) {
+		this->ButtonPressed(Pattern);
 	} else if (fType & kGMrbPictureButton) {
 		this->ButtonPressed(Pattern);
 	}

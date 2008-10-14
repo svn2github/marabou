@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.21 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.22 2008-10-14 17:27:06 Marabou Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -141,7 +141,10 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 		fAction = new TGTextButton(this, Action->GetName(), Action->GetIndex(), ActionGC->GC(), ActionGC->Font());
 		fHeap.AddFirst((TObject *) fAction);
 		fAction->ChangeBackground(ActionGC->BG());
-		this->AddFrame(fAction, actLayout);			
+		this->AddFrame(fAction, actLayout);
+		TObject * assObj = Action->GetAssignedObject();
+		TString slot = Form("%s(Int_t=%d)", Action->GetTitle(), Action->GetIndex());
+		fAction->Connect("Clicked()", assObj->ClassName(), assObj, slot.Data());			
 		entryWidth -= fAction->GetWidth();
 	}
 

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.18 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.19 2008-10-14 17:27:05 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -97,6 +97,11 @@ DGFControlData::DGFControlData() {
 	Bool_t ok = this->CheckAccess(rcFile.Data(), kDGFAccessRead, errMsg, kFALSE);
 	if (ok) {
 		fDgfrc = new TMrbResource("DGFControl", rcFile.Data());
+
+		fSimulStartStop = fRootrc->Get(".StartStopSimultaneously", kFALSE);
+		fSyncClocks = fRootrc->Get(".SynchronizeClocks", kFALSE);
+		fIndivSwitchBusTerm = fRootrc->Get(".TerminateSwitchBusIndividually", kFALSE);
+		fUserPSA = fRootrc->Get(".ActivateUserPSACode", kFALSE);
 
 		fDataPath = fRootrc->Get(".DataPath", gSystem->WorkingDirectory());
 		gSystem->ExpandPathName(fDataPath);
