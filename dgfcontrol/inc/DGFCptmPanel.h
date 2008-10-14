@@ -8,7 +8,7 @@
 // Class:          DGFCptmPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFCptmPanel.h,v 1.4 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFCptmPanel.h,v 1.5 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -94,7 +94,6 @@ class DGFCptmPanel : public TGCompositeFrame {
 		Int_t GetLofCptmModules();
 		inline Int_t GetNofCptmModules() { return(fLofCptmModules.GetEntriesFast()); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		void InitializeValues(Int_t ModuleIndex = -1);
 
 		void Reset(Int_t ModuleIndex = -1);
@@ -105,6 +104,10 @@ class DGFCptmPanel : public TGCompositeFrame {
 		void ShowNextEvent(Int_t ModuleIndex);
 		void ShowBuffer(Int_t ModuleIndex, const Char_t * FileName = NULL);
 		void ResetAddrPointers(Int_t ModuleIndex);
+
+		void PerformAction(Int_t FrameId, Int_t Selection); 	// slot methods
+		void EntryChanged(Int_t FrameId, Int_t Selection);
+		void SelectModule(Int_t FrameId, Int_t Selection);
 
 	protected:
 		void UpdateValue(Int_t EntryId, Int_t ModuleIndex);

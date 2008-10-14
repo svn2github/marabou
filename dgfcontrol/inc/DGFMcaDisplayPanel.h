@@ -8,7 +8,7 @@
 // Class:          DGFMcaDisplayPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFMcaDisplayPanel.h,v 1.9 2007-10-22 16:45:37 Marabou Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.h,v 1.10 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -97,13 +97,16 @@ class DGFMcaDisplayPanel : public TGCompositeFrame {
 		DGFMcaDisplayPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFMcaDisplayPanel() { fHeap.Delete(); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual Bool_t HandleTimer(TTimer * Timer);
+
+		void SelectModule(Int_t FrameId, Int_t Selection);		// slot methods
+		void SelectDisplay(Int_t FrameId, Int_t Selection);
+		void EntryChanged(Int_t FrameId, Int_t Selection);
+		void PerformAction(Int_t FrameId, Int_t Selection);
+		void RadioButtonPressed(Int_t FrameId, Int_t Selection);
 
 		Bool_t McaPause();
 		Bool_t McaResume();
-
-		void RadioButtonPressed(Int_t Button);			// signal catcher
 
 	protected:
 		Bool_t ResetValues();													// clear entry fields

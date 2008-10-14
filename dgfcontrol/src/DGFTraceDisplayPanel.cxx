@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.26 2007-10-22 16:45:37 Marabou Exp $       
+// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.27 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -159,7 +159,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame) :
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
-		fGroupSelect[i]->Associate(this);
+		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
@@ -169,7 +169,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame) :
 																			frameGC->LH()->GetPadRight(),
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
-	fAllSelect->Associate(this);
+	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 			
 	fHFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
@@ -229,7 +229,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fActionFrame);
 	this->AddFrame(fActionFrame, groupGC->LH());
 	fActionFrame->JustifyButton(kTextCenterX);
-	fActionFrame->Associate(this);
+	((TGMrbButtonFrame *) fActionFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
@@ -244,80 +244,68 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame) :
 	MapWindow();
 }
 
-Bool_t DGFTraceDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFTraceDisplayPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFTraceDisplayPanel::ProcessMessage
-// Purpose:        Message handler for the setup panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFTraceDisplayPanel::SelectModule
+// Purpose:        Slot method: select module
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFTraceDisplayPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbPictureButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString intStr;
-
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					if (Param1 < kDGFTraceDisplaySelectColumn) {
-						switch (Param1) {
-							case kDGFTraceDisplayNormal:
-								this->StartTrace(kFALSE);
-								break;
-							case kDGFTraceDisplayAutoTrig:
-								this->StartTrace(kTRUE);
-								break;
-							case kDGFTraceDisplayStop:
-								lofDgfs.Abort();
-								break;
-							case kDGFTraceDisplaySelectAll:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
-								}
-								break;
-							case kDGFTraceDisplaySelectNone:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
-									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-								break;							
-							default:	break;
-						}
-					} else {
-						Param1 -= kDGFTraceDisplaySelectColumn;
-						Bool_t select = ((Param1 & 1) == 0);
-						UInt_t bit = 0x1 << (Param1 >> 1);
-						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-							if (gDGFControlData->GetPatInUse(cl) & bit) {
-								if (select) fCluster[cl]->SetState(bit, kButtonDown);
-								else		fCluster[cl]->SetState(bit, kButtonUp);
-							}
-						}
-					}
-					break;
-				default:	break;
+	if (Selection < kDGFTraceDisplaySelectColumn) {
+		switch (Selection) {
+			case kDGFTraceDisplaySelectAll:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
+				break;
+			case kDGFTraceDisplaySelectNone:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
+				break;							
+		}
+	} else {
+		Selection -= kDGFTraceDisplaySelectColumn;
+		Bool_t select = ((Selection & 1) == 0);
+		UInt_t bit = 0x1 << (Selection >> 1);
+		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+			if (gDGFControlData->GetPatInUse(cl) & bit) {
+				UInt_t act = fCluster[cl]->GetActive();
+				UInt_t down = select ? (act | bit) : (act & ~bit);
+				fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
 			}
-			break;
-			
-		case kC_TEXTENTRY:
-			switch (GET_SUBMSG(MsgId)) {
-				case kTE_ENTER:
-					this->Update(Param1);
-					break;
-				case kTE_TAB:
-					this->Update(Param1);
-					this->MoveFocus(Param1);
-					break;
-			}
-			break;
-			
-		default:	break;
+		}
 	}
-	return(kTRUE);
+}
+			
+void DGFTraceDisplayPanel::PerformAction(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFTraceDisplayPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbTextButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Selection) {
+		case kDGFTraceDisplayNormal:
+			this->StartTrace(kFALSE);
+			break;
+		case kDGFTraceDisplayAutoTrig:
+			this->StartTrace(kTRUE);
+			break;
+		case kDGFTraceDisplayStop:
+			lofDgfs.Abort();
+			break;
+	}
 }
 
 Bool_t DGFTraceDisplayPanel::Update(Int_t EntryId) {

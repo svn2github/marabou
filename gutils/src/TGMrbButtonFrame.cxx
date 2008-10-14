@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.11 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.12 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -454,6 +454,8 @@ void TGMrbButtonFrame::UpdateState(UInt_t Pattern) {
 			}
 		}
 		this->ButtonPressed(this->GetActive());
+	} else if (fType & kGMrbPictureButton) {
+		this->ButtonPressed(Pattern);
 	}
 }
 

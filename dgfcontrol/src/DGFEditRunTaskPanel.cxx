@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditRunTaskPanel.cxx,v 1.2 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFEditRunTaskPanel.cxx,v 1.3 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -127,7 +127,7 @@ DGFEditRunTaskPanel::DGFEditRunTaskPanel(const TGWindow * Window, TGTextEntry * 
 												frameGC, NULL, buttonGC);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
-	fButtonFrame->Associate(this);
+	((TGMrbButtonFrame *) fButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 //	key bindings
 	fKeyBindings.SetParent(this);
@@ -144,52 +144,34 @@ DGFEditRunTaskPanel::DGFEditRunTaskPanel(const TGWindow * Window, TGTextEntry * 
 	gClient->WaitFor(this);
 }
 
-Bool_t DGFEditRunTaskPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFEditRunTaskPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFEditRunTaskPanel::ProcessMessage
-// Purpose:        Message handler for the setup panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFEditRunTaskPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFEditRunTaskPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbTextButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
 	UInt_t btnState;
 	TMrbString intStr;
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case kDGFEditRunTaskButtonApply:
-							btnState = fRunTaskFrame->GetActive();
-							intStr.FromInteger(btnState, 0, 16, kTRUE);
-							fEntry->SetText(intStr);
-							this->CloseWindow();
-							break;
-						case kDGFEditRunTaskButtonReset:
-							fRunTaskFrame->SetState((UInt_t) -1, kButtonUp);
-							break;
-						case kDGFEditRunTaskButtonClose:
-							this->CloseWindow();
-							break;
-					}
-			}
+	switch (Selection) {
+		case kDGFEditRunTaskButtonApply:
+			btnState = fRunTaskFrame->GetActive();
+			intStr.FromInteger(btnState, 0, 16, kTRUE);
+			fEntry->SetText(intStr);
+			this->CloseWindow();
 			break;
-			
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
+		case kDGFEditRunTaskButtonReset:
+			fRunTaskFrame->SetState((UInt_t) -1, kButtonUp);
+			break;
+		case kDGFEditRunTaskButtonClose:
+			this->CloseWindow();
 			break;
 	}
-	return(kTRUE);
 }

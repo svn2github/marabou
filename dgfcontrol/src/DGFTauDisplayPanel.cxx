@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.13 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.14 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -180,12 +180,12 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 											&fLofModuleKeys,
 											DGFTauDisplayPanel::kDGFTauSelectModule, 2,
 											kTabWidth, kLEHeight,
-											(Int_t) (1.5 * kEntryWidth),
+											kComboWidth,
 											frameGC, labelGC, comboGC, buttonGC, kTRUE);
 	HEAP(fSelectModule);
 	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
 	fSelectModule->GetComboBox()->Select(gDGFControlData->GetSelectedModuleIndex());
-	fSelectModule->Associate(this); 	// get informed if module selection changes
+	fSelectModule->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 
 	TGLayoutHints * scfLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 10, 1, 10, 1);
 	frameGC->SetLH(scfLayout);
@@ -202,7 +202,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fSelectChannel);
 	fSelectChannel->SetState(gDGFControlData->GetSelectedChannelIndex());
-	((TGMrbButtonFrame *) fSelectChannel)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fSelectChannel)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t, Int_t)");
 	fSelectFrame->AddFrame(fSelectChannel, frameGC->LH());
 
 // trace settings
@@ -229,7 +229,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fTraceLengthEntry->SetRange(100, 8001);
 	fTraceLengthEntry->SetIncrement(100);
 	fTraceLengthEntry->AddToFocusList(&fFocusList);
-	fTraceLengthEntry->Associate(this);
+	fTraceLengthEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fXwaitEntry = new TGMrbLabelEntry(fTraceFrame, "Xwait states",
 																200, kDGFTauXwait,
@@ -258,7 +258,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fNofTracesEntry->SetRange(0, 99);
 	fNofTracesEntry->SetIncrement(1);
 	fNofTracesEntry->AddToFocusList(&fFocusList);
-	fNofTracesEntry->Associate(this);
+	fNofTracesEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // fit settings
 	fHFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
@@ -298,7 +298,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fFitFromEntry->SetRange(0, 8001);
 	fFitFromEntry->SetIncrement(100);
 	fFitFromEntry->AddToFocusList(&fFocusList);
-	fFitFromEntry->Associate(this);
+	fFitFromEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fFitToEntry = new TGMrbLabelEntry(fFitFrame, "To sample",
 																200, kDGFTauFitTo,
@@ -312,7 +312,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fFitToEntry->SetRange(0, 4095);
 	fFitToEntry->SetIncrement(100);
 	fFitToEntry->AddToFocusList(&fFocusList);
-	fFitToEntry->Associate(this);
+	fFitToEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fFitA0Entry = new TGMrbLabelEntry(fFitFrame, "A0 (const)",
 																200, kDGFTauFitParamA0,
@@ -326,7 +326,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fFitA0Entry->SetRange(0, 10000);
 	fFitA0Entry->SetIncrement(100);
 	fFitA0Entry->AddToFocusList(&fFocusList);
-	fFitA0Entry->Associate(this);
+	fFitA0Entry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fFitA1Entry = new TGMrbLabelEntry(fFitFrame, "A1 (ampl)",
 																200, kDGFTauFitParamA1,
@@ -340,7 +340,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fFitA1Entry->SetRange(0, 20000);
 	fFitA1Entry->SetIncrement(100);
 	fFitA1Entry->AddToFocusList(&fFocusList);
-	fFitA1Entry->Associate(this);
+	fFitA1Entry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fFitA2Entry = new TGMrbLabelEntry(fFitFrame, "A2 (tau)",
 																200, kDGFTauFitParamA2,
@@ -354,7 +354,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fFitA2Entry->SetRange(0, 10000);
 	fFitA2Entry->SetIncrement(100);
 	fFitA2Entry->AddToFocusList(&fFocusList);
-	fFitA2Entry->Associate(this);
+	fFitA2Entry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fFitErrorEntry = new TGMrbLabelEntry(fFitFrame, "Error",
 																200, kDGFTauFitError,
@@ -368,7 +368,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fFitErrorEntry->SetRange(0, 20);
 	fFitErrorEntry->SetIncrement(.5);
 	fFitErrorEntry->AddToFocusList(&fFocusList);
-	fFitErrorEntry->Associate(this);
+	fFitErrorEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fFitChiSquareEntry = new TGMrbLabelEntry(fFitFrame, "Chi square",
 																200, kDGFTauFitChiSquare,
@@ -382,7 +382,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fFitChiSquareEntry->SetRange(0, 20);
 	fFitChiSquareEntry->SetIncrement(.5);
 	fFitChiSquareEntry->AddToFocusList(&fFocusList);
-	fFitChiSquareEntry->Associate(this);
+	fFitChiSquareEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // display
 	TGLayoutHints * dispLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
@@ -408,7 +408,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fDispTraceNoEntry->SetRange(0, 99);
 	fDispTraceNoEntry->SetIncrement(1);
 	fDispTraceNoEntry->AddToFocusList(&fFocusList);
-	fDispTraceNoEntry->Associate(this);
+	fDispTraceNoEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fDispStatBox = new TGMrbRadioButtonList(fDisplayFrame,  "Stat box", &fDispStatBoxButtons, -1, 1, 
 													kTabWidth, kLEHeight,
@@ -438,8 +438,8 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fDisplayFrame->AddFrame(fDispCurTauEntry, frameGC->LH());
 	fDispCurTauEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
 	fDispCurTauEntry->SetText("0.0");
-	fDispTraceNoEntry->AddToFocusList(&fFocusList);
-	fDispTraceNoEntry->Associate(this);
+	fDispCurTauEntry->AddToFocusList(&fFocusList);
+	fDispCurTauEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fDispBestTauEntry = new TGMrbLabelEntry(fDisplayFrame, "Best tau",
 																200, kDGFTauDispBestTau,
@@ -460,7 +460,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fTauActions, -1, 1, groupGC, buttonGC);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
-	fButtonFrame->Associate(this);
+	((TGMrbButtonFrame *) fButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 // no trace acquisition active
 	fIsRunning = kFALSE;
@@ -485,108 +485,108 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	MapWindow();
 }
 
-Bool_t DGFTauDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFTauDisplayPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFTauDisplayPanel::ProcessMessage
-// Purpose:        Message handler for the instrument panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFTauDisplayPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFTauDisplayPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbTextButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString intStr;
-	TMrbString dblStr;
-
-	TMrbDGF * dgf;
-	Int_t chn;
 	Double_t tau;
 		
-	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
-	chn = gDGFControlData->GetSelectedChannel();
+	TMrbDGF * dgf = gDGFControlData->GetSelectedModule()->GetAddr();
+	Int_t chn = gDGFControlData->GetSelectedChannel();
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case kDGFTauButtonAcquire:
-							if (fIsRunning) {
-								dgf->AbortRun();
-								this->SetRunning(kFALSE);
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Warning", "Aborting trace acquisition", kMBIconExclamation);
-							} else {
-								this->AcquireTraces();
-							}
-							break;
-						case kDGFTauButtonTauOK:
-							tau = fDispCurTauEntry->GetText2Double();
-							dgf->SetTau(chn, tau);
-							break;
-						case kDGFTauButtonBestTau:
-							tau = fDispBestTauEntry->GetText2Double();
-							dgf->SetTau(chn, tau);
-							break;
-						case kDGFTauButtonRemoveTraces:
-							this->RemoveTrace(-1, -1);
-							break;
-						case kDGFTauButtonSaveTrace:
-							new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fTraceFileInfo);
-							if (fTraceFileInfo.fFilename != NULL && *fTraceFileInfo.fFilename != '\0') this->SaveTrace(fTraceFileInfo.fFilename);
-							break;
-						case kDGFTauButtonReset:
-							break;
-					}
-					break;
-				case kCM_COMBOBOX:
-					gDGFControlData->SetSelectedModuleIndex(Param2);
-					dgf = gDGFControlData->GetSelectedModule()->GetAddr();
-					for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++) {
-						if (dgf->HasTriggerBitSet(i)) {
-							gDGFControlData->SetSelectedChannel(i);
-							break;
-						}
-					}
-					fSelectChannel->SetState(gDGFControlData->GetSelectedChannelIndex());
-					break;
+	switch (Selection) {
+		case kDGFTauButtonAcquire:
+			if (fIsRunning) {
+				dgf->AbortRun();
+				this->SetRunning(kFALSE);
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Warning", "Aborting trace acquisition", kMBIconExclamation);
+			} else {
+				this->AcquireTraces();
 			}
 			break;
-
-		case kC_TEXTENTRY:
-			switch (GET_SUBMSG(MsgId)) {
-				case kTE_ENTER:
-					this->Update(Param1);
-					break;
-				case kTE_TAB:
-					this->Update(Param1);
-					this->MoveFocus(Param1);
-					break;
-			}
+		case kDGFTauButtonTauOK:
+			tau = fDispCurTauEntry->GetText2Double();
+			dgf->SetTau(chn, tau);
 			break;
-			
+		case kDGFTauButtonBestTau:
+			tau = fDispBestTauEntry->GetText2Double();
+			dgf->SetTau(chn, tau);
+			break;
+		case kDGFTauButtonRemoveTraces:
+			this->RemoveTrace(-1, -1);
+			break;
+		case kDGFTauButtonSaveTrace:
+			new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fTraceFileInfo);
+			if (fTraceFileInfo.fFilename != NULL && *fTraceFileInfo.fFilename != '\0') this->SaveTrace(fTraceFileInfo.fFilename);
+			break;
+		case kDGFTauButtonReset:
+			break;
 	}
-	return(kTRUE);
 }
 
-void DGFTauDisplayPanel::RadioButtonPressed(Int_t Button) {
+void DGFTauDisplayPanel::SelectModule(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFTauDisplayPanel::SelectModule
+// Purpose:        Slot method: select module
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	gDGFControlData->SetSelectedModuleIndex(Selection);
+	TMrbDGF * dgf = gDGFControlData->GetSelectedModule()->GetAddr();
+	for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++) {
+		if (dgf->HasTriggerBitSet(i)) {
+			gDGFControlData->SetSelectedChannel(i);
+			break;
+		}
+	}
+	fSelectChannel->SetState(gDGFControlData->GetSelectedChannelIndex());
+}
+
+void DGFTauDisplayPanel::EntryChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFTauDisplayPanel::EntryChanged
+// Purpose:        Slot method: update after entry changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->Update(Selection);
+}
+
+void DGFTauDisplayPanel::RadioButtonPressed(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFInstrumentPanel::RadioButtonPressed
 // Purpose:        Signal catcher for radio buttons
-// Arguments:      Int_t Button   -- button
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        --
 // Exceptions:     
 // Description:    Will be called on radio button events.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t value = Button & 0xFFFF;
-	gDGFControlData->SetSelectedChannelIndex(value);
+	gDGFControlData->SetSelectedChannelIndex(Selection);
 }
 
 Bool_t DGFTauDisplayPanel::AcquireTraces() {

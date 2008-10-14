@@ -8,7 +8,7 @@
 // Class:          DGFRestoreModuleSettingsPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.h,v 1.9 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.h,v 1.10 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -63,7 +63,8 @@ class DGFRestoreModuleSettingsPanel : public TGCompositeFrame {
 		DGFRestoreModuleSettingsPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFRestoreModuleSettingsPanel() { fHeap.Delete(); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void SelectModule(Int_t FrameId, Int_t Selection);		// slot methods
+		void PerformAction(Int_t FrameId, Int_t Selection);
 
 	protected:
 		Bool_t LoadDatabase(Bool_t LoadPSA);		// restore dgf settings from file

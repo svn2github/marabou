@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.35 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.36 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -173,12 +173,12 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 											&fLofModuleKeys,
 											DGFInstrumentPanel::kDGFInstrSelectModule, 2,
 											kTabWidth, kLEHeight,
-											kEntryWidth,
+											kComboWidth,
 											frameGC, labelGC, comboGC, buttonGC, kTRUE);
 	HEAP(fSelectModule);
 	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
 	fSelectModule->GetComboBox()->Select(gDGFControlData->GetSelectedModuleIndex());
-	fSelectModule->Associate(this); 	// get informed if module selection changes
+	fSelectModule->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 
 	TGLayoutHints * scfLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 80, 1, 10, 1);
 	frameGC->SetLH(scfLayout);
@@ -195,7 +195,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, comboGC);
 	HEAP(fSelectChannel);
 	fSelectChannel->SetState(gDGFControlData->GetSelectedChannelIndex());
-	((TGMrbButtonFrame *) fSelectChannel)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fSelectChannel)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t, Int_t)");
 	fSelectFrame->AddFrame(fSelectChannel, frameGC->LH());
 
 // 2 vertical frames, left and right
@@ -250,7 +250,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fEnergyPeakTimeEntry->SetIncrement(gDGFControlData->fDeltaT);
 	fEnergyPeakTimeEntry->ShowToolTip(kTRUE, kTRUE);
 	fEnergyPeakTimeEntry->AddToFocusList(&fFocusList);
-	fEnergyPeakTimeEntry->Associate(this);
+	fEnergyPeakTimeEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fEnergyGapTimeEntry = new TGMrbLabelEntry(fEnergyFilterFrame, "Gap [us]",
 																200, kDGFInstrEnergyGapTimeEntry,
@@ -266,7 +266,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fEnergyGapTimeEntry->SetIncrement(gDGFControlData->fDeltaT);
 	fEnergyGapTimeEntry->ShowToolTip(kTRUE, kTRUE);
 	fEnergyGapTimeEntry->AddToFocusList(&fFocusList);
-	fEnergyGapTimeEntry->Associate(this);
+	fEnergyGapTimeEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fEnergyAveragingEntry = new TGMrbLabelEntry(fEnergyFilterFrame, "Averaging 2^",
 																200, kDGFInstrEnergyAveragingEntry,
@@ -281,7 +281,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fEnergyAveragingEntry->SetRange(-10, -1);
 	fEnergyAveragingEntry->ShowToolTip(kTRUE, kTRUE);
 	fEnergyAveragingEntry->AddToFocusList(&fFocusList);
-	fEnergyAveragingEntry->Associate(this);
+	fEnergyAveragingEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fEnergyTauEntry = new TGMrbLabelEntry(fEnergyFilterFrame, "Tau value",
 																200, kDGFInstrEnergyTauEntry,
@@ -297,7 +297,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fEnergyTauEntry->SetIncrement(0.2);
 	fEnergyTauEntry->ShowToolTip(kTRUE, kTRUE);
 	fEnergyTauEntry->AddToFocusList(&fFocusList);
-	fEnergyTauEntry->Associate(this);
+	fEnergyTauEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // left/right: trigger
 	TGLayoutHints * tfLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
@@ -324,7 +324,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTriggerPeakTimeEntry->SetIncrement(.025);
 	fTriggerPeakTimeEntry->ShowToolTip(kTRUE, kTRUE);
 	fTriggerPeakTimeEntry->AddToFocusList(&fFocusList);
-	fTriggerPeakTimeEntry->Associate(this);
+	fTriggerPeakTimeEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fTriggerGapTimeEntry = new TGMrbLabelEntry(fTriggerFilterFrame, "Gap [us]",
 																200, kDGFInstrTriggerGapTimeEntry,
@@ -340,7 +340,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTriggerGapTimeEntry->SetIncrement(.025);
 	fTriggerGapTimeEntry->ShowToolTip(kTRUE, kTRUE);
 	fTriggerGapTimeEntry->AddToFocusList(&fFocusList);
-	fTriggerGapTimeEntry->Associate(this);
+	fTriggerGapTimeEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fTriggerThresholdEntry = new TGMrbLabelEntry(fTriggerFilterFrame, "Threshold",
 																200, kDGFInstrTriggerThresholdEntry,
@@ -355,7 +355,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTriggerThresholdEntry->SetRange(0, 1000);
 	fTriggerThresholdEntry->ShowToolTip(kTRUE, kTRUE);
 	fTriggerThresholdEntry->AddToFocusList(&fFocusList);
-	fTriggerThresholdEntry->Associate(this);
+	fTriggerThresholdEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // place an unvisible label to pad group frame vertically
 	TGLayoutHints * dmyLayout = new TGLayoutHints(kLHintsLeft, 0, 0, 12, 0);
@@ -395,7 +395,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fDACGainEntry->SetIncrement(1);
 	fDACGainEntry->ShowToolTip(kTRUE, kTRUE);
 	fDACGainEntry->AddToFocusList(&fFocusList);
-	fDACGainEntry->Associate(this);
+	fDACGainEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fDACVVEntry = new TGMrbLabelEntry(fDACGainFrame, "V/V",
 																200, kDGFInstrDACVVEntry,
@@ -411,7 +411,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fDACVVEntry->SetIncrement(.1);
 	fDACVVEntry->ShowToolTip(kTRUE, kTRUE);
 	fDACVVEntry->AddToFocusList(&fFocusList);
-	fDACVVEntry->Associate(this);
+	fDACVVEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // place an unvisible label to pad group frame vertically
 	dmyLayout = new TGLayoutHints(kLHintsLeft, 0, 0, 36, 0);
@@ -443,7 +443,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fDACOffsetEntry->SetIncrement(1);
 	fDACOffsetEntry->ShowToolTip(kTRUE, kTRUE);
 	fDACOffsetEntry->AddToFocusList(&fFocusList);
-	fDACOffsetEntry->Associate(this);
+	fDACOffsetEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fDACVoltEntry = new TGMrbLabelEntry(fDACOffsetFrame, "Volt",
 																200, kDGFInstrDACVoltEntry,
@@ -459,7 +459,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fDACVoltEntry->SetIncrement(.1);
 	fDACVoltEntry->ShowToolTip(kTRUE, kTRUE);
 	fDACVoltEntry->AddToFocusList(&fFocusList);
-	fDACVoltEntry->Associate(this);
+	fDACVoltEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // place an unvisible label to pad group frame vertically
 	frameGC->SetLH(dmyLayout);
@@ -499,7 +499,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceLengthEntry->SetIncrement(.5);
 	fTraceLengthEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceLengthEntry->AddToFocusList(&fFocusList);
-	fTraceLengthEntry->Associate(this);
+	fTraceLengthEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	TGLayoutHints * tdLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(tdLayout);
@@ -518,7 +518,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceDelayEntry->SetIncrement(.1);
 	fTraceDelayEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceDelayEntry->AddToFocusList(&fFocusList);
-	fTraceDelayEntry->Associate(this);
+	fTraceDelayEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fTraceXPSAFrame = new TGGroupFrame(fTraceLeftFrame, "XIA PSA", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fTraceXPSAFrame);
@@ -541,7 +541,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceXPSALengthEntry->SetIncrement(.5);
 	fTraceXPSALengthEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceXPSALengthEntry->AddToFocusList(&fFocusList);
-	fTraceXPSALengthEntry->Associate(this);
+	fTraceXPSALengthEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	entryGC->SetLH(psaLayout);
 	fTraceXPSAOffsetEntry = new TGMrbLabelEntry(fTraceXPSAFrame, "Offset [us]",
@@ -558,7 +558,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceXPSAOffsetEntry->SetIncrement(.1);
 	fTraceXPSAOffsetEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceXPSAOffsetEntry->AddToFocusList(&fFocusList);
-	fTraceXPSAOffsetEntry->Associate(this);
+	fTraceXPSAOffsetEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fTraceRightFrame = new TGVerticalFrame(fTraceFrame, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
 	HEAP(fTraceRightFrame);
@@ -575,7 +575,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, comboGC);
 	HEAP(fTraceUPSAOnOffButton);
 	fTraceUPSAOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrUPSAOff);
-	((TGMrbButtonFrame *) fTraceUPSAOnOffButton)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fTraceUPSAOnOffButton)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t, Int_t)");
 	fTraceUPSAFrame->AddFrame(fTraceUPSAOnOffButton, frameGC->LH());
 #endif
 
@@ -594,7 +594,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSABaselineEntry->SetIncrement(1);
 	fTraceUPSABaselineEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceUPSABaselineEntry->AddToFocusList(&fFocusList);
-	fTraceUPSABaselineEntry->Associate(this);
+	fTraceUPSABaselineEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	entryGC->SetLH(psaLayout);
 	fTraceUPSAEnergyCutoffEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Energy cutoff",
@@ -611,10 +611,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSAEnergyCutoffEntry->SetIncrement(1);
 	fTraceUPSAEnergyCutoffEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceUPSAEnergyCutoffEntry->AddToFocusList(&fFocusList);
-	fTraceUPSAEnergyCutoffEntry->Associate(this);
+	fTraceUPSAEnergyCutoffEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	entryGC->SetLH(psaLayout);
-	fTraceUPSATriggerThreshEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Trigger threshold",
+	fTraceUPSATriggerThreshEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Trigger thres",
 																200, kDGFInstrTraceUPSATriggerThreshEntry,
 																kLEWidth,
 																kLEHeight,
@@ -628,10 +628,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSATriggerThreshEntry->SetIncrement(1);
 	fTraceUPSATriggerThreshEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceUPSATriggerThreshEntry->AddToFocusList(&fFocusList);
-	fTraceUPSATriggerThreshEntry->Associate(this);
+	fTraceUPSATriggerThreshEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	entryGC->SetLH(psaLayout);
-	fTraceUPSAT90ThreshEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "T90 threshold",
+	fTraceUPSAT90ThreshEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "T90 thresh",
 																200, kDGFInstrTraceUPSAT90ThreshEntry,
 																kLEWidth,
 																kLEHeight,
@@ -645,7 +645,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSAT90ThreshEntry->SetIncrement(1);
 	fTraceUPSAT90ThreshEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceUPSAT90ThreshEntry->AddToFocusList(&fFocusList);
-	fTraceUPSAT90ThreshEntry->Associate(this);
+	fTraceUPSAT90ThreshEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	entryGC->SetLH(psaLayout);
 	fUserPsaCSREditButton = new TMrbNamedX(kDGFInstrStatRegUserPsaCSREditButton, "Edit");
@@ -664,7 +664,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fStatRegUserPsaCSREntry->SetRange(0, 0xffff);
 	fStatRegUserPsaCSREntry->ShowToolTip(kTRUE, kTRUE);
 	fStatRegUserPsaCSREntry->AddToFocusList(&fFocusList);
-	fStatRegUserPsaCSREntry->Associate(this);
+	fStatRegUserPsaCSREntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	entryGC->SetLH(psaLayout);
 	fTraceUPSAOffsetEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Offset",
@@ -681,7 +681,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSAOffsetEntry->SetIncrement(1);
 	fTraceUPSAOffsetEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceUPSAOffsetEntry->AddToFocusList(&fFocusList);
-	fTraceUPSAOffsetEntry->Associate(this);
+	fTraceUPSAOffsetEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	entryGC->SetLH(psaLayout);
 	fTraceUPSALengthEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Length",
@@ -698,7 +698,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSALengthEntry->SetIncrement(1);
 	fTraceUPSALengthEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceUPSALengthEntry->AddToFocusList(&fFocusList);
-	fTraceUPSALengthEntry->Associate(this);
+	fTraceUPSALengthEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	entryGC->SetLH(psaLayout);
 	fTraceUPSATFAEnergyCutoffEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "TFA cutoff",
@@ -715,7 +715,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSATFAEnergyCutoffEntry->SetIncrement(1);
 	fTraceUPSATFAEnergyCutoffEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceUPSATFAEnergyCutoffEntry->AddToFocusList(&fFocusList);
-	fTraceUPSATFAEnergyCutoffEntry->Associate(this);
+	fTraceUPSATFAEnergyCutoffEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // right: cfd
 	TGLayoutHints * cfdLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
@@ -745,7 +745,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDRegEntry->SetRange(0, 0x1 << 16);
 	fCFDRegEntry->ShowToolTip(kTRUE, kTRUE);
 	fCFDRegEntry->AddToFocusList(&fFocusList);
-	fCFDRegEntry->Associate(this);
+	fCFDRegEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fCFDOnOffButton = new TGMrbRadioButtonList(fCFDDataFrame, "CFD enable", &fInstrCFDOnOff,
 													kDGFInstrCFDOnOffButton << TGMrbButtonFrame::kFrameIdShift, 1, 
@@ -753,7 +753,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, comboGC);
 	HEAP(fCFDOnOffButton);
 	fCFDOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrCFDOff);
-	((TGMrbButtonFrame *) fCFDOnOffButton)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fCFDOnOffButton)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t, Int_t)");
 	fCFDDataFrame->AddFrame(fCFDOnOffButton, frameGC->LH());
 
 	fCFDDelayBeforeLEEntry = new TGMrbLabelEntry(fCFDDataFrame, "Delay before LE [ns]",
@@ -770,7 +770,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDDelayBeforeLEEntry->SetIncrement(25);
 	fCFDDelayBeforeLEEntry->ShowToolTip(kTRUE, kTRUE);
 	fCFDDelayBeforeLEEntry->AddToFocusList(&fFocusList);
-	fCFDDelayBeforeLEEntry->Associate(this);
+	fCFDDelayBeforeLEEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fCFDDelayBipolarEntry = new TGMrbLabelEntry(fCFDDataFrame, "Delay bipolar signal [ns]",
 																200, kDGFInstrCFDDelayBipolarEntry,
@@ -786,7 +786,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDDelayBipolarEntry->SetIncrement(25);
 	fCFDDelayBipolarEntry->ShowToolTip(kTRUE, kTRUE);
 	fCFDDelayBipolarEntry->AddToFocusList(&fFocusList);
-	fCFDDelayBipolarEntry->Associate(this);
+	fCFDDelayBipolarEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fCFDWalkEntry = new TGMrbLabelEntry(fCFDDataFrame, "Walk",
 																200, kDGFInstrCFDWalkEntry,
@@ -802,7 +802,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDWalkEntry->SetIncrement(8);
 	fCFDWalkEntry->ShowToolTip(kTRUE, kTRUE);
 	fCFDWalkEntry->AddToFocusList(&fFocusList);
-	fCFDWalkEntry->Associate(this);
+	fCFDWalkEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fCFDFractionButton = new TGMrbRadioButtonList(fCFDDataFrame, "Fraction", &fInstrCFDFraction,
 													kDGFInstrCFDFractionButton << TGMrbButtonFrame::kFrameIdShift, 1, 
@@ -810,7 +810,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, comboGC);
 	HEAP(fCFDFractionButton);
 	fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract00);
-	((TGMrbButtonFrame *) fCFDFractionButton)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fCFDFractionButton)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t, Int_t)");
 	fCFDDataFrame->AddFrame(fCFDFractionButton, frameGC->LH());
 
 // place an unvisible label to pad group frame vertically
@@ -851,7 +851,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fStatRegModICSREntry->SetIncrement(0x2400);
 	fStatRegModICSREntry->ShowToolTip(kTRUE, kTRUE);
 	fStatRegModICSREntry->AddToFocusList(&fFocusList);
-	fStatRegModICSREntry->Associate(this);
+	fStatRegModICSREntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	TGLayoutHints * ccsraLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(ccsraLayout);
@@ -872,7 +872,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fStatRegChanCSRAEntry->SetRange(0, 0xffff);
 	fStatRegChanCSRAEntry->ShowToolTip(kTRUE, kTRUE);
 	fStatRegChanCSRAEntry->AddToFocusList(&fFocusList);
-	fStatRegChanCSRAEntry->Associate(this);
+	fStatRegChanCSRAEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	TGLayoutHints * coincLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(coincLayout);
@@ -893,7 +893,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fStatCoincPatternEntry->SetRange(0, 0xf);
 	fStatCoincPatternEntry->ShowToolTip(kTRUE, kTRUE);
 	fStatCoincPatternEntry->AddToFocusList(&fFocusList);
-	fStatCoincPatternEntry->Associate(this);
+	fStatCoincPatternEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	TGLayoutHints * runtaskLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(runtaskLayout);
@@ -914,7 +914,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fStatRunTaskEntry->SetRange(0x100, 0x301);
 	fStatRunTaskEntry->ShowToolTip(kTRUE, kTRUE);
 	fStatRunTaskEntry->AddToFocusList(&fFocusList);
-	fStatRunTaskEntry->Associate(this);
+	fStatRunTaskEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // right: mca
 	TGLayoutHints * mcaLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
@@ -956,7 +956,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fMCAEnergyEntry->SetIncrement(100);
 	fMCAEnergyEntry->ShowToolTip(kTRUE, kTRUE);
 	fMCAEnergyEntry->AddToFocusList(&fFocusList);
-	fMCAEnergyEntry->Associate(this);
+	fMCAEnergyEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	TGLayoutHints * mcaebLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(mcaebLayout);
@@ -974,7 +974,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fMCAEnergyBinsEntry->SetRange(-10, -1);
 	fMCAEnergyBinsEntry->ShowToolTip(kTRUE, kTRUE);
 	fMCAEnergyBinsEntry->AddToFocusList(&fFocusList);
-	fMCAEnergyBinsEntry->Associate(this);
+	fMCAEnergyBinsEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // place an unvisible label to pad group frame vertically
 	dmyLayout = new TGLayoutHints(kLHintsLeft, 0, 0, 35, 0);
@@ -1004,7 +1004,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fMCABaselineDCEntry->SetRange(0, 1024);
 	fMCABaselineDCEntry->ShowToolTip(kTRUE, kTRUE);
 	fMCABaselineDCEntry->AddToFocusList(&fFocusList);
-	fMCABaselineDCEntry->Associate(this);
+	fMCABaselineDCEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	TGLayoutHints * mcabbLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(mcabbLayout);
@@ -1022,7 +1022,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fMCABaselineBinsEntry->SetRange(0, 16);
 	fMCABaselineBinsEntry->ShowToolTip(kTRUE, kTRUE);
 	fMCABaselineBinsEntry->AddToFocusList(&fFocusList);
-	fMCABaselineBinsEntry->Associate(this);
+	fMCABaselineBinsEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // place an unvisible label to pad group frame vertically
 	frameGC->SetLH(dmyLayout);
@@ -1034,7 +1034,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fModuleButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fInstrModuleActions, -1, 1, groupGC, buttonGC);
 	HEAP(fModuleButtonFrame);
 	this->AddFrame(fModuleButtonFrame, buttonGC->LH());
-	fModuleButtonFrame->Associate(this);
+	((TGMrbButtonFrame *) fModuleButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 // initialize data fields
 	this->InitializeValues(kTRUE);
@@ -1049,163 +1049,166 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	MapWindow();
 }
 
-Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFInstrumentPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFInstrumentPanel::ProcessMessage
-// Purpose:        Message handler for the instrument panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFInstrumentPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFInstrumentPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbTextButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+
 	gDGFControlData->AddToUpdateList(gDGFControlData->GetSelectedModule());
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case kDGFInstrStatRegChanCSRAEditButton:
-							new DGFEditChanCSRAPanel(fClient->GetRoot(), fStatRegChanCSRAEntry->GetEntry(),
+	switch (Selection) {
+		case kDGFInstrStatRegChanCSRAEditButton:
+			new DGFEditChanCSRAPanel(fClient->GetRoot(), fStatRegChanCSRAEntry->GetEntry(),
 											DGFEditChanCSRAPanel::kFrameWidth, DGFEditChanCSRAPanel::kFrameHeight);
-							this->UpdateValue(kDGFInstrStatRegChanCSRAEntry,
+			this->UpdateValue(kDGFInstrStatRegChanCSRAEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-							break;
-						case kDGFInstrStatRegUserPsaCSREditButton:
-                    		new DGFEditUserPsaCSRPanel(fClient->GetRoot(), fStatRegUserPsaCSREntry->GetEntry(),
+			break;
+		case kDGFInstrStatRegUserPsaCSREditButton:
+			new DGFEditUserPsaCSRPanel(fClient->GetRoot(), fStatRegUserPsaCSREntry->GetEntry(),
 											DGFEditUserPsaCSRPanel::kFrameWidth, DGFEditUserPsaCSRPanel::kFrameHeight);
-							this->UpdateValue(kDGFInstrStatRegUserPsaCSREntry,
+			this->UpdateValue(kDGFInstrStatRegUserPsaCSREntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-							break;
-						case kDGFInstrStatCoincPatternEditButton:
-                    		new DGFEditCoincPatternPanel(fClient->GetRoot(), fStatCoincPatternEntry->GetEntry(),
+			break;
+		case kDGFInstrStatCoincPatternEditButton:
+			new DGFEditCoincPatternPanel(fClient->GetRoot(), fStatCoincPatternEntry->GetEntry(),
 											DGFEditCoincPatternPanel::kFrameWidth, DGFEditCoincPatternPanel::kFrameHeight);
-							this->UpdateValue(kDGFInstrStatCoincPatternEntry,
+			this->UpdateValue(kDGFInstrStatCoincPatternEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-							break;
-						case kDGFInstrStatRunTaskEditButton:
-                    		new DGFEditRunTaskPanel(fClient->GetRoot(), fStatRunTaskEntry->GetEntry(),
+			break;
+		case kDGFInstrStatRunTaskEditButton:
+			new DGFEditRunTaskPanel(fClient->GetRoot(), fStatRunTaskEntry->GetEntry(),
 											DGFEditRunTaskPanel::kFrameWidth, DGFEditRunTaskPanel::kFrameHeight);
-							this->UpdateValue(kDGFInstrStatRunTaskEntry,
+			this->UpdateValue(kDGFInstrStatRunTaskEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-							break;
-						case kDGFInstrButtonUpdateFPGAs:
-                    		gDGFControlData->UpdateParamsAndFPGAs();
-							break;
-						case kDGFInstrButtonShowParams:
-                    		this->ShowModuleSettings();
-							break;
-						case kDGFInstrDACGainEntry:
-							this->UpdateValue(kDGFInstrDACGainEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-		
-							break;	
-						case kDGFInstrDACVVEntry:
-							this->UpdateValue(kDGFInstrDACVVEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-		
-							break;	
-						case kDGFInstrDACOffsetEntry:
-							this->UpdateValue(kDGFInstrDACOffsetEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-		
-							break;	
-						case kDGFInstrDACVoltEntry:
-							this->UpdateValue(kDGFInstrDACVoltEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-		
-							break;	
-						case kDGFInstrCFDRegEntry:
-							this->UpdateValue(kDGFInstrCFDRegEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-		
-							break;	
-						case kDGFInstrCFDDelayBeforeLEEntry:
-							this->UpdateValue(kDGFInstrCFDDelayBeforeLEEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-		
-							break;	
-						case kDGFInstrCFDDelayBipolarEntry:
-							this->UpdateValue(kDGFInstrCFDDelayBipolarEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-		
-							break;	
-						case kDGFInstrCFDWalkEntry:
-							this->UpdateValue(kDGFInstrCFDWalkEntry,
-											gDGFControlData->GetSelectedModuleIndex(),
-											gDGFControlData->GetSelectedChannelIndex());
-		
-							break;	
-					}
-					break;
-				case kCM_COMBOBOX:
-					gDGFControlData->SetSelectedModuleIndex(Param2);
-					this->InitializeValues(kFALSE);
-					break;
-			}
 			break;
-
-		case kC_TEXTENTRY:
-			switch (GET_SUBMSG(MsgId)) {
-				case kTE_ENTER:
-					this->UpdateValue(Param1,	gDGFControlData->GetSelectedModuleIndex(),
-												gDGFControlData->GetSelectedChannelIndex());
-
-					break;
-				case kTE_TAB:
-					this->UpdateValue(Param1,	gDGFControlData->GetSelectedModuleIndex(),
-												gDGFControlData->GetSelectedChannelIndex());
-
-					this->MoveFocus(Param1);
-					break;
-			}
+		case kDGFInstrButtonUpdateFPGAs:
+			gDGFControlData->UpdateParamsAndFPGAs();
 			break;
-			
+		case kDGFInstrButtonShowParams:
+			this->ShowModuleSettings();
+			break;
+		case kDGFInstrDACGainEntry:
+			this->UpdateValue(kDGFInstrDACGainEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+			break;	
+		case kDGFInstrDACVVEntry:
+			this->UpdateValue(kDGFInstrDACVVEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+			break;	
+		case kDGFInstrDACOffsetEntry:
+			this->UpdateValue(kDGFInstrDACOffsetEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+			break;	
+		case kDGFInstrDACVoltEntry:
+			this->UpdateValue(kDGFInstrDACVoltEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+			break;	
+		case kDGFInstrCFDRegEntry:
+			this->UpdateValue(kDGFInstrCFDRegEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+			break;	
+		case kDGFInstrCFDDelayBeforeLEEntry:
+			this->UpdateValue(kDGFInstrCFDDelayBeforeLEEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+			break;	
+		case kDGFInstrCFDDelayBipolarEntry:
+			this->UpdateValue(kDGFInstrCFDDelayBipolarEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+			break;	
+		case kDGFInstrCFDWalkEntry:
+			this->UpdateValue(kDGFInstrCFDWalkEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+			break;
 	}
-	return(kTRUE);
+}
+	
+void DGFInstrumentPanel::SelectModule(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::SelectModule
+// Purpose:        Slot method: select module
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	gDGFControlData->SetSelectedModuleIndex(Selection);
+	this->InitializeValues(kFALSE);
 }
 
-void DGFInstrumentPanel::RadioButtonPressed(Int_t Button) {
+void DGFInstrumentPanel::EntryChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::EntryChanged
+// Purpose:        Slot method: update after entry changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->UpdateValue(Selection,	gDGFControlData->GetSelectedModuleIndex(),
+									gDGFControlData->GetSelectedChannelIndex());
+
+}
+
+void DGFInstrumentPanel::RadioButtonPressed(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFInstrumentPanel::RadioButtonPressed
 // Purpose:        Signal catcher for radio buttons
-// Arguments:      Int_t Button   -- button
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        --
 // Exceptions:     
 // Description:    Will be called on radio button events.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t btn = Button & 0xFFFF;
-	Int_t frame = Button >> TGMrbButtonFrame::kFrameIdShift;
-	switch (frame) {
+	switch (FrameId) {
 		case kDGFInstrSelectChannel:
-			gDGFControlData->SetSelectedChannelIndex(btn);
+			gDGFControlData->SetSelectedChannelIndex(Selection);
 			this->InitializeValues(kFALSE);
 			break;
 		case kDGFInstrCFDOnOffButton:
-			this->InitializeCFD(btn, -1);
+			this->InitializeCFD(Selection, -1);
 			break;
 		case kDGFInstrCFDFractionButton:
-			this->InitializeCFD(-1, btn);
+			this->InitializeCFD(-1, Selection);
 			break;
 	}
 }

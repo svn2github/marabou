@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.16 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.17 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -163,7 +163,7 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
-		fGroupSelect[i]->Associate(this);
+		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
@@ -173,7 +173,7 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 																			frameGC->LH()->GetPadRight(),
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
-	fAllSelect->Associate(this);
+	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 			
 // action buttons
 	TGLayoutHints * aFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
@@ -193,7 +193,7 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 	HEAP(fActionButtons);
 	fActionFrame->AddFrame(fActionButtons, groupGC->LH());
 	fActionButtons->JustifyButton(kTextCenterX);
-	fActionButtons->Associate(this);
+	((TGMrbButtonFrame *) fActionButtons)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
@@ -208,60 +208,61 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 	MapWindow();
 }
 
-Bool_t DGFSaveModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFSaveModuleSettingsPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFSaveModuleSettingsPanel::ProcessMessage
-// Purpose:        Message handler for the setup panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFSaveModuleSettingsPanel::SelectModule
+// Purpose:        Slot method: select module(s)
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFSaveModuleSettingsPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbPictureButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString intStr;
-
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					if (Param1 < kDGFSaveModuleSettingsSelectColumn) {
-						switch (Param1) {
-							case kDGFSaveModuleSettingsRestore:
-								this->SaveDatabase();
-								break;
-							case kDGFSaveModuleSettingsSelectAll:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+	if (Selection < kDGFSaveModuleSettingsSelectColumn) {
+		switch (Selection) {
+			case kDGFSaveModuleSettingsSelectAll:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
-								break;
-							case kDGFSaveModuleSettingsSelectNone:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+				break;
+			case kDGFSaveModuleSettingsSelectNone:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-								break;							
-							default:	break;
-						}
-					} else {
-						Param1 -= kDGFSaveModuleSettingsSelectColumn;
-						Bool_t select = ((Param1 & 1) == 0);
-						UInt_t bit = 0x1 << (Param1 >> 1);
-						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-							if (gDGFControlData->GetPatInUse(cl) & bit) {
-								if (select) fCluster[cl]->SetState(bit, kButtonDown);
-								else		fCluster[cl]->SetState(bit, kButtonUp);
-							}
-						}
-					}
-					break;
-				default:	break;
+		}
+	} else {
+		Selection -= kDGFSaveModuleSettingsSelectColumn;
+		Bool_t select = ((Selection & 1) == 0);
+		UInt_t bit = 0x1 << (Selection >> 1);
+		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+			if (gDGFControlData->GetPatInUse(cl) & bit) {
+				UInt_t act = fCluster[cl]->GetActive();
+				UInt_t down = select ? (act | bit) : (act & ~bit);
+				fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
 			}
-			break;
-
+		}
 	}
-	return(kTRUE);
+}
+
+void DGFSaveModuleSettingsPanel::PerformAction(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSaveModuleSettingsPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbTextButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Selection) {
+		case kDGFSaveModuleSettingsRestore:
+			this->SaveDatabase();
+			break;
+	}
 }
 
 Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {

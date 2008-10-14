@@ -8,7 +8,7 @@
 // Class:          DGFUntrigTracePanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFUntrigTracePanel.h,v 1.8 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFUntrigTracePanel.h,v 1.9 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -65,7 +65,8 @@ class DGFUntrigTracePanel : public TGCompositeFrame {
 		DGFUntrigTracePanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFUntrigTracePanel() { fHeap.Delete(); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void PerformAction(Int_t FrameId, Int_t Selection); 	// slot methods
+		void SelectModule(Int_t FrameId, Int_t Selection);
 
 	protected:
 		Bool_t StartTrace();

@@ -8,7 +8,7 @@
 // Class:          CptmPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: CptmPanel.h,v 1.1 2005-04-29 11:35:22 rudi Exp $       
+// Revision:       $Id: CptmPanel.h,v 1.2 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -92,7 +92,6 @@ class CptmPanel : public TGMainFrame {
 		inline Int_t GetNofCptmModules() { return(fLofCptmModules.GetEntriesFast()); };
 
 		virtual void CloseWindow();
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		void InitializeValues(Int_t ModuleIndex = -1);
 
 		void Reset(Int_t ModuleIndex = -1);
@@ -101,6 +100,11 @@ class CptmPanel : public TGMainFrame {
 		Bool_t RestoreSettings(Int_t ModuleIndex = -1);
 		void EnableSynch(Int_t ModuleIndex = -1, Bool_t ResetClock = kFALSE);
 		void ShowBuffer(Int_t ModuleIndex) {};
+
+		void PerformAction(Int_t FrameId, Int_t Selection); 	// slot methods
+		void EntryChanged(Int_t FrameId, Int_t Selection);
+		void MaskRegChanged(Int_t FrameId, Int_t Selection);
+		void SelectModule(Int_t FrameId, Int_t Selection);
 
 	protected:
 		void UpdateValue(Int_t EntryId, Int_t ModuleIndex);

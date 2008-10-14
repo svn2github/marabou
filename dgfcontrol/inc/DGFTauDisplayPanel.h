@@ -8,7 +8,7 @@
 // Class:          DGFTauDisplayPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFTauDisplayPanel.h,v 1.7 2007-10-22 16:45:37 Marabou Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.h,v 1.8 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -96,9 +96,10 @@ class DGFTauDisplayPanel : public TGCompositeFrame {
 		DGFTauDisplayPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFTauDisplayPanel() { fHeap.Delete(); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
-
-		void RadioButtonPressed(Int_t Button);			// signal catcher
+		void PerformAction(Int_t FrameId, Int_t Selection); 	// slot methods
+		void EntryChanged(Int_t FrameId, Int_t Selection);
+		void SelectModule(Int_t FrameId, Int_t Selection);
+		void RadioButtonPressed(Int_t FrameId, Int_t Selection);
 
 	protected:
 		Bool_t ResetValues();													// clear entry fields

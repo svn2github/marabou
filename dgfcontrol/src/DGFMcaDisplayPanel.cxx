@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.22 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.23 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -178,7 +178,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
-		fGroupSelect[i]->Associate(this);
+		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
@@ -188,7 +188,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 																			frameGC->LH()->GetPadRight(),
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
-	fAllSelect->Associate(this);
+	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 			
 	fHFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
@@ -224,7 +224,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	fRunTimeEntry->SetRange(0, 1000);
 	fRunTimeEntry->SetIncrement(1);
 	fRunTimeEntry->AddToFocusList(&fFocusList);
-	fRunTimeEntry->Associate(this);
+	fRunTimeEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fMcaTimeScaleButtons,
 													-1, 1, 
@@ -262,12 +262,12 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 											&fLofModuleKeys,
 											DGFMcaDisplayPanel::kDGFMcaDisplaySelectDisplay, 2,
 											kTabWidth, kLEHeight,
-											kEntryWidth,
+											kComboWidth,
 											frameGC, labelGC, comboGC, buttonGC, kTRUE);
 	HEAP(fDisplayModule);
 	fDisplayFrame->AddFrame(fDisplayModule, frameGC->LH());
 	fDisplayModule->GetComboBox()->Select(((TMrbNamedX *) fLofModuleKeys.First())->GetIndex());
-	fDisplayModule->Associate(this); 	// get informed if module selection changes
+	fDisplayModule->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "SelectDisplay(Int_t, Int_t)");
 
 	TGLayoutHints * scfLayout = new TGLayoutHints(kLHintsLeft, 80, 1, 10, 1);
 	frameGC->SetLH(scfLayout);
@@ -284,7 +284,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fDisplayChannel);
 	fDisplayChannel->SetState(1);
-	((TGMrbButtonFrame *) fDisplayChannel)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fDisplayChannel)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t, Int_t)");
 	fDisplayFrame->AddFrame(fDisplayChannel, frameGC->LH());
 
 	fRefreshTimeEntry = new TGMrbLabelEntry(fDisplayFrame, "Refresh (s)", 200,	kDGFMcaDisplayRefreshDisplay,
@@ -299,7 +299,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	fRefreshTimeEntry->SetRange(0, 60);
 	fRefreshTimeEntry->SetIncrement(10);
 	fRefreshTimeEntry->AddToFocusList(&fFocusList);
-	fRefreshTimeEntry->Associate(this);
+	fRefreshTimeEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 //	buttons
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
@@ -308,7 +308,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fMcaActions, -1, 1, groupGC, buttonGC);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
-	fButtonFrame->Associate(this);
+	((TGMrbButtonFrame *) fButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	this->ResetValues();
 	fAccuTimer = NULL;
@@ -325,100 +325,120 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	MapWindow();
 }
 
-Bool_t DGFMcaDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFMcaDisplayPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFMcaDisplayPanel::ProcessMessage
-// Purpose:        Message handler for the instrument panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFMcaDisplayPanel::SelectModule
+// Purpose:        Slot method: select module(s)
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFMcaDisplayPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbPictureButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString intStr;
-	TMrbString dblStr;
-
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					if (Param1 < kDGFMcaDisplaySelectColumn) {
-						switch (Param1) {
-							case kDGFMcaDisplayAcquire:
-								this->AcquireHistos();
-								break;
-							case kDGFMcaDisplayHisto:
-								this->DisplayHisto(kFALSE);
-								break;
-							case kDGFMcaDisplayHistoClear:
-								this->DisplayHisto(kTRUE);
-								break;
-							case kDGFMcaDisplayStop:
-								fStopAccu = kTRUE;
-								break;
-							case kDGFMcaDisplaySelectAll:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
-								}
-								break;
-							case kDGFMcaDisplaySelectNone:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
-									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-								break;							
-						}
-					} else {
-						Param1 -= kDGFMcaDisplaySelectColumn;
-						Bool_t select = ((Param1 & 1) == 0);
-						UInt_t bit = 0x1 << (Param1 >> 1);
-						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-							if (gDGFControlData->GetPatInUse(cl) & bit) {
-								if (select) fCluster[cl]->SetState(bit, kButtonDown);
-								else		fCluster[cl]->SetState(bit, kButtonUp);
-							}
-						}
-					}
-
-					break;
-				case kCM_COMBOBOX:
-					fModuleToBeDisplayed = gDGFControlData->GetModule(Param2);
-					break;
+	if (Selection < kDGFMcaDisplaySelectColumn) {
+		switch (Selection) {
+			case kDGFMcaDisplaySelectAll:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
+				}
+				break;
+			case kDGFMcaDisplaySelectNone:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
+					break;							
+		}
+	} else {
+		Selection -= kDGFMcaDisplaySelectColumn;
+		Bool_t select = ((Selection & 1) == 0);
+		UInt_t bit = 0x1 << (Selection >> 1);
+		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+			if (gDGFControlData->GetPatInUse(cl) & bit) {
+				UInt_t act = fCluster[cl]->GetActive();
+				UInt_t down = select ? (act | bit) : (act & ~bit);
+				fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
 			}
-			break;
-
-		case kC_TEXTENTRY:
-			switch (GET_SUBMSG(MsgId)) {
-				case kTE_ENTER:
-					this->Update(Param1);
-					break;
-				case kTE_TAB:
-					this->Update(Param1);
-					this->MoveFocus(Param1);
-					break;
-			}
-			break;
-			
+		}
 	}
-	return(kTRUE);
 }
 
-void DGFMcaDisplayPanel::RadioButtonPressed(Int_t Button) {
+void DGFMcaDisplayPanel::PerformAction(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFCptmPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbTextButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Selection) {
+		case kDGFMcaDisplayAcquire:
+			this->AcquireHistos();
+			break;
+		case kDGFMcaDisplayHisto:
+			this->DisplayHisto(kFALSE);
+			break;
+		case kDGFMcaDisplayHistoClear:
+			this->DisplayHisto(kTRUE);
+			break;
+		case kDGFMcaDisplayStop:
+			fStopAccu = kTRUE;
+			break;
+	}
+}
+
+void DGFMcaDisplayPanel::SelectDisplay(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::SelectDisplay
+// Purpose:        Slot method: select module to be displayed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fModuleToBeDisplayed = gDGFControlData->GetModule(Selection);
+}
+
+void DGFMcaDisplayPanel::EntryChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::EntryChanged
+// Purpose:        Slot method: update after entry changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->Update(Selection);
+}
+
+void DGFMcaDisplayPanel::RadioButtonPressed(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFInstrumentPanel::RadioButtonPressed
 // Purpose:        Signal catcher for radio buttons
-// Arguments:      Int_t Button   -- button
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        --
 // Exceptions:     
 // Description:    Will be called on radio button events.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	UInt_t chn = Button & 0xFFFF;
+	UInt_t chn = Selection;
 	UInt_t chnPattern = fSelectChannel->GetActive();
 	if ((chnPattern & chn) == 0) {
 		gMrbLog->Err()	<< "Display channel not active - 0x" << chn << endl;

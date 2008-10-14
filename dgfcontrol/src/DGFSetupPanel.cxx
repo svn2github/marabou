@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.37 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.38 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -171,7 +171,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	fDGFFrame = new TGMrbCheckButtonGroup(this, "DGF General", &fSetupDGFModes, -1, 1, groupGC, labelGC, NULL, kVerticalFrame);
 	HEAP(fDGFFrame);
 	this->AddFrame(fDGFFrame, groupGC->LH());
-	fDGFFrame->Associate(this);
+	((TGMrbButtonFrame *) fDGFFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectOption(Int_t, Int_t)");
 	fDGFFrame->SetState(gDGFControlData->fStatus);
 
 	if (firstCall) {
@@ -190,10 +190,6 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 			gDGFControlData->fUserPSA = gEnv->GetValue("DGFControl.ActivateUserPSACode", kFALSE) ? kButtonDown : kButtonUp;
 		}
 	}
-	fDGFFrame->SetState(DGFControlData::kDGFSimulStartStop, gDGFControlData->fSimulStartStop ? kButtonDown : kButtonUp);
-	fDGFFrame->SetState(DGFControlData::kDGFSyncClocks, gDGFControlData->fSyncClocks ? kButtonDown : kButtonUp);
-	fDGFFrame->SetState(DGFControlData::kDGFIndivSwitchBusTerm, gDGFControlData->fIndivSwitchBusTerm ? kButtonDown : kButtonUp);
-	fDGFFrame->SetState(DGFControlData::kDGFUserPSA, gDGFControlData->fUserPSA ? kButtonDown : kButtonUp);
 
 //	CAMAC defs
 	TGLayoutHints * camacLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 10, 1);
@@ -266,7 +262,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 							frameGC, labelGC, buttonGC);
 		HEAP(fColSelect[i]);
 		fSelectFrame->AddFrame(fColSelect[i], frameGC->LH());
-		fColSelect[i]->Associate(this);
+		((TGMrbButtonFrame *) fColSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
 	fAllSelect = new TGMrbPictureButtonList(fSelectFrame,  NULL, &allSelect, -1, 1, 
 							TabFrame->GetWidth(), kLEHeight,
@@ -276,18 +272,22 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 																			frameGC->LH()->GetPadRight(),
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
-	fAllSelect->Associate(this);
+	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 
 // Connect buttons
 	fActionFrame = new TGMrbTextButtonGroup(this, "Actions", &fSetupConnect, -1, 1, groupGC, labelGC);
 	HEAP(fActionFrame);
 	this->AddFrame(fActionFrame, groupGC->LH());
 	fActionFrame->JustifyButton(kTextCenterX);
-	fActionFrame->Associate(this);
+	((TGMrbButtonFrame *) fActionFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	this->ChangeBackground(gDGFControlData->fColorBlue);
 
 	firstCall = kFALSE;
+	fDGFFrame->SetState(DGFControlData::kDGFSimulStartStop, gDGFControlData->fSimulStartStop ? kButtonDown : kButtonUp);
+	fDGFFrame->SetState(DGFControlData::kDGFSyncClocks, gDGFControlData->fSyncClocks ? kButtonDown : kButtonUp);
+	fDGFFrame->SetState(DGFControlData::kDGFIndivSwitchBusTerm, gDGFControlData->fIndivSwitchBusTerm ? kButtonDown : kButtonUp);
+	fDGFFrame->SetState(DGFControlData::kDGFUserPSA, gDGFControlData->fUserPSA ? kButtonDown : kButtonUp);
 
 	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
 	HEAP(dgfFrameLayout);
@@ -300,105 +300,117 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	MapWindow();
 }
 
-Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFSetupPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFSetupPanel::ProcessMessage
-// Purpose:        Message handler for the setup panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFSetupPanel::SelectModule
+// Purpose:        Slot method: select module(s)
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFSetupPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbPictureButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString intStr;
-
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					if (Param1 < kDGFSetupModuleSelectColumn) {
-						switch (Param1) {
-							case kDGFSetupConnectToEsone:
-								if (this->ConnectToEsone()) {
-									gDGFControlData->fStatus |= fDGFFrame->GetActive();
-								}
-								break;
-							case kDGFSetupReloadDGFs:
-								if (this->ReloadDGFs()) {
-									gDGFControlData->fStatus |= fDGFFrame->GetActive();
-								}
-								break;
-							case kDGFSetupAbortBusySync:
-								if (this->AbortDGFs()) {
-									gDGFControlData->fStatus |= fDGFFrame->GetActive();
-								}
-								break;
-							case kDGFSetupRestartEsone:
-								if (this->RestartEsone()) {
-									gDGFControlData->fStatus |= fDGFFrame->GetActive();
-								}
-								break;
-							case kDGFSetupAbortEsone:
-								if (esoneCold) esoneCold->Abort();
-								break;
-							case kDGFSetupModuleSelectAll:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-									fCluster[cl]->SetState(gDGFControlData->GetPatEnabled(cl), kButtonDown);
-								}
-								break;
-							case kDGFSetupModuleSelectNone:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-									fCluster[cl]->SetState(gDGFControlData->GetPatEnabled(cl), kButtonUp);
-								}
-								break;							
-							default:	break;
-						}
-					} else {
-						Param1 -= kDGFSetupModuleSelectColumn;
-						Bool_t select = ((Param1 & 1) == 0);
-						UInt_t bit = 0x1 << (Param1 >> 1);
-						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-							if (gDGFControlData->GetPatEnabled(cl) & bit) {
-								UInt_t act = fCluster[cl]->GetActive();
-								UInt_t down = select ? (act | bit) : (act & ~bit);
-								fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
-							}
-						}
-					}
-					break;
-
-				case kCM_CHECKBUTTON:
-					switch (Param1) {
-						case DGFControlData::kDGFSimulStartStop:
-							gDGFControlData->fSimulStartStop = (fDGFFrame->GetActive() & Param1) != 0;
-							this->SetSynchWait(gDGFControlData->fSimulStartStop);
-							break;
-						case DGFControlData::kDGFSyncClocks:
-							gDGFControlData->fSyncClocks = (fDGFFrame->GetActive() & Param1) != 0;
-							this->SetInSynch(gDGFControlData->fSyncClocks);
-							break;
-						case DGFControlData::kDGFIndivSwitchBusTerm:
-							gDGFControlData->fIndivSwitchBusTerm = (fDGFFrame->GetActive() & Param1) != 0;
-							this->SetSwitchBus(gDGFControlData->fIndivSwitchBusTerm);
-							break;
-						case DGFControlData::kDGFUserPSA:
-							gDGFControlData->fUserPSA = (fDGFFrame->GetActive() & Param1) != 0;
-							this->TurnUserPSAOnOff(gDGFControlData->fUserPSA);
-							break;
-						default:	break;
-					}
-					break;
-
-				default:	break;
+	if (Selection < kDGFSetupModuleSelectColumn) {
+		switch (Selection) {
+			case kDGFSetupModuleSelectAll:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+					fCluster[cl]->SetState(gDGFControlData->GetPatEnabled(cl), kButtonDown);
+				}
+				break;
+			case kDGFSetupModuleSelectNone:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+					fCluster[cl]->SetState(gDGFControlData->GetPatEnabled(cl), kButtonUp);
+				}
+				break;							
+		}
+	} else {
+		Selection -= kDGFSetupModuleSelectColumn;
+		Bool_t select = ((Selection & 1) == 0);
+		UInt_t bit = 0x1 << (Selection >> 1);
+		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+			if (gDGFControlData->GetPatEnabled(cl) & bit) {
+				UInt_t act = fCluster[cl]->GetActive();
+				UInt_t down = select ? (act | bit) : (act & ~bit);
+				fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
 			}
+		}
+	}
+}
+
+void DGFSetupPanel::SelectOption(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::SelectOption
+// Purpose:        Slot method: select general options
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbCheckButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Selection) {
+		case DGFControlData::kDGFSimulStartStop:
+			gDGFControlData->fSimulStartStop = (fDGFFrame->GetActive() & Selection) != 0;
+			this->SetSynchWait(gDGFControlData->fSimulStartStop);
+			break;
+		case DGFControlData::kDGFSyncClocks:
+			gDGFControlData->fSyncClocks = (fDGFFrame->GetActive() & Selection) != 0;
+			this->SetInSynch(gDGFControlData->fSyncClocks);
+			break;
+		case DGFControlData::kDGFIndivSwitchBusTerm:
+			gDGFControlData->fIndivSwitchBusTerm = (fDGFFrame->GetActive() & Selection) != 0;
+			this->SetSwitchBus(gDGFControlData->fIndivSwitchBusTerm);
+			break;
+		case DGFControlData::kDGFUserPSA:
+			gDGFControlData->fUserPSA = (fDGFFrame->GetActive() & Selection) != 0;
+			this->TurnUserPSAOnOff(gDGFControlData->fUserPSA);
 			break;
 	}
-	return(kTRUE);
+}
+
+void DGFSetupPanel::PerformAction(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbTextButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Selection) {
+		case kDGFSetupConnectToEsone:
+			if (this->ConnectToEsone()) {
+				gDGFControlData->fStatus |= fDGFFrame->GetActive();
+			}
+			break;
+		case kDGFSetupReloadDGFs:
+			if (this->ReloadDGFs()) {
+				gDGFControlData->fStatus |= fDGFFrame->GetActive();
+			}
+			break;
+		case kDGFSetupAbortBusySync:
+			if (this->AbortDGFs()) {
+				gDGFControlData->fStatus |= fDGFFrame->GetActive();
+			}
+			break;
+		case kDGFSetupRestartEsone:
+			if (this->RestartEsone()) {
+				gDGFControlData->fStatus |= fDGFFrame->GetActive();
+			}
+			break;
+		case kDGFSetupAbortEsone:
+			if (esoneCold) esoneCold->Abort();
+			break;
+	}
 }
 
 Bool_t DGFSetupPanel::ConnectToEsone() {
@@ -985,7 +997,7 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(DGFModule * Module, Bool_t ActivateFlag) 
 	
 	TString trueFalse = ActivateFlag ? "TRUE" : "FALSE";
 	TMrbDGF * dgf = Module->GetAddr();
-	if (!offlineMode) dgf->ActivateUserPSACode(ActivateFlag);
+	if (dgf && !offlineMode) dgf->ActivateUserPSACode(ActivateFlag);
 	gDGFControlData->Dgfrc()->Set(".Module", Module->GetName(), "ActivateUserPSACode", trueFalse);
 	return(kTRUE);
 }
@@ -1033,7 +1045,7 @@ Bool_t DGFSetupPanel::SetSwitchBus(Bool_t IndivFlag) {
 		if (((fCluster[cl]->GetActive() & bits) == bits ) && dgfModule->IsActive()) {
 			if (!offlineMode) {
 				TMrbDGF * dgf = dgfModule->GetAddr();
-				if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->Dgfrc()->Env())) nerr++;
+				if (dgf && !dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->Dgfrc()->Env())) nerr++;
 			}
 			found = kTRUE;
 			pgb->Increment(1, dgfModule->GetName());
@@ -1143,7 +1155,7 @@ Bool_t DGFSetupPanel::SetSynchWait(DGFModule * Module, Bool_t SyncFlag) {
 	
 	Int_t onoff = SyncFlag ? 1 : 0;
 	TMrbDGF * dgf = Module->GetAddr();
-	if (!offlineMode) dgf->SetSynchWait(SyncFlag, kTRUE);
+	if (dgf && !offlineMode) dgf->SetSynchWait(SyncFlag, kTRUE);
 	gDGFControlData->Dgfrc()->Set(".Module", Module->GetName(), "SynchWait", onoff);
 	return(kTRUE);
 }
@@ -1231,7 +1243,7 @@ Bool_t DGFSetupPanel::SetInSynch(DGFModule * Module, Bool_t SyncFlag) {
 	
 	Int_t onoff = SyncFlag ? 0 : 1;
 	TMrbDGF * dgf = Module->GetAddr();
-	if (!offlineMode) dgf->SetSynchWait(onoff, kTRUE);
+	if (dgf && !offlineMode) dgf->SetSynchWait(onoff, kTRUE);
 	gDGFControlData->Dgfrc()->Set(".Module", Module->GetName(), "InSynch", onoff);
 	return(kTRUE);
 }

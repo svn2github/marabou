@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCopyModuleSettingsPanel.cxx,v 1.9 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFCopyModuleSettingsPanel.cxx,v 1.10 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -181,12 +181,12 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 										&fLofSrcModuleKeys,
 										DGFCopyModuleSettingsPanel::kDGFCopySelectModule, 2,
 										kTabWidth, kLEHeight,
-										kEntryWidth,
+										kComboWidth,
 										frameGC, labelGC, comboGC, buttonGC, kTRUE);
 	HEAP(fSelectModule);
 	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
 	fSelectModule->GetComboBox()->Select(gDGFControlData->GetSelectedModuleIndex());
-	fSelectModule->Associate(this);
+	fSelectModule->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "SelectSource(Int_t, Int_t)");
 	
 	TGLayoutHints * scfLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 40, 1, 10, 1);
 	frameGC->SetLH(scfLayout);
@@ -253,7 +253,7 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
-		fGroupSelect[i]->Associate(this);
+		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectDestination(Int_t, Int_t)");
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
@@ -263,14 +263,14 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 																		frameGC->LH()->GetPadRight(),
 																		frameGC->LH()->GetPadTop(),
 																		frameGC->LH()->GetPadBottom()));
-	fAllSelect->Associate(this);
+	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectDestination(Int_t, Int_t)");
 
 // buttons
 	gDGFControlData->SetLH(groupGC, frameGC, vFrameLayout);
 	fButtonFrame = new TGMrbTextButtonGroup(this, "Action", &fLofButtons, -1, 1, groupGC, buttonGC, kHorizontalFrame);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, groupGC->LH());
-	fButtonFrame->Associate(this);
+	((TGMrbButtonFrame *) fButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
 	HEAP(dgfFrameLayout);
@@ -283,63 +283,78 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 	MapWindow();
 }
 
-Bool_t DGFCopyModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFCopyModuleSettingsPanel::SelectSource(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFCoincModuleSettingsPanel::ProcessMessage
-// Purpose:        Message handler for the setup panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFCopyModuleSettingsPanel::SelectSource
+// Purpose:        Slot method: select source module
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFCoincModuleSettingsPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString intStr;
+	fModuleFrom = Selection;
+}
 
-	switch (GET_MSG(MsgId)) {
+void DGFCopyModuleSettingsPanel::SelectDestination(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFCopyModuleSettingsPanel::SelectDestination
+// Purpose:        Slot method: select destination module(s)
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbPictureButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
 
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					if (Param1 < kDGFCopyModuleSelectColumn) {
-						switch (Param1) {
-							case kDGFCopyModuleSettingsButtonCopy:
-								this->CopyModuleSettings();
-								break;
-							case kDGFCopyModuleSelectAll:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
-									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
-								break;
-							case kDGFCopyModuleSelectNone:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
-									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-								break;							
-						}
-					} else {
-						Param1 -= kDGFCopyModuleSelectColumn;
-						Bool_t select = ((Param1 & 1) == 0);
-						UInt_t bit = 0x1 << (Param1 >> 1);
-						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-							if (gDGFControlData->GetPatEnabled(cl) & bit) {
-								UInt_t act = fCluster[cl]->GetActive();
-								UInt_t down = select ? (act | bit) : (act & ~bit);
-								fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
-							}
-						}
-					}
-					break;
-						
-				case kCM_COMBOBOX:
-					fModuleFrom = Param2;
-					break;
+	if (Selection < kDGFCopyModuleSelectColumn) {
+		switch (Selection) {
+			case kDGFCopyModuleSelectAll:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
+				break;
+			case kDGFCopyModuleSelectNone:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
+				break;							
+		}
+	} else {
+		Selection -= kDGFCopyModuleSelectColumn;
+		Bool_t select = ((Selection & 1) == 0);
+		UInt_t bit = 0x1 << (Selection >> 1);
+		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+			if (gDGFControlData->GetPatEnabled(cl) & bit) {
+				UInt_t act = fCluster[cl]->GetActive();
+				UInt_t down = select ? (act | bit) : (act & ~bit);
+				fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
 			}
-			break;
-			
+		}
 	}
-	return(kTRUE);
+}
+
+void DGFCopyModuleSettingsPanel::PerformAction(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFCopyModuleSettingsPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbTextButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Selection) {
+		case kDGFCopyModuleSettingsButtonCopy:
+			this->CopyModuleSettings();
+			break;
+	}
 }
 
 Bool_t DGFCopyModuleSettingsPanel::CopyModuleSettings() {

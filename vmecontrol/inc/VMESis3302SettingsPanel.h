@@ -8,8 +8,8 @@
 // Class:          VMESis3302SettingsPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302SettingsPanel.h,v 1.1 2008-09-23 10:47:20 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-09-23 10:47:20 $
+// Revision:       $Id: VMESis3302SettingsPanel.h,v 1.2 2008-10-14 10:22:29 Marabou Exp $       
+// Date:           $Date: 2008-10-14 10:22:29 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -35,8 +35,6 @@
 
 #include "M2L_CommonDefs.h"
 #include "VMEControlData.h"
-
-#include "Signal.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////

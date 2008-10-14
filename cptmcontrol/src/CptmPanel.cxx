@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: CptmPanel.cxx,v 1.8 2008-07-17 12:17:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: CptmPanel.cxx,v 1.9 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -179,7 +179,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
 	fCptmIndex = 0;
 	fSelectModule->GetComboBox()->Select(((TMrbNamedX *) fLofCptmModules[fCptmIndex])->GetIndex());
-	fSelectModule->Associate(this);
+	fSelectModule->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 
 	TGLayoutHints * layout = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
 	frameGC->SetLH(layout);
@@ -207,7 +207,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	fGeDelayEntry->SetIncrement(0.1);
 	fGeDelayEntry->AddToFocusList(&fFocusList);
 	fGeDelayEntry->ShowToolTip(kTRUE, kTRUE);
-	fGeDelayEntry->Associate(this);
+	fGeDelayEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fGeWidthEntry = new TGMrbLabelEntry(fGeFrame, "Width [us]",
 												200, kCptmGeWidthEntry,
@@ -223,7 +223,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	fGeWidthEntry->SetIncrement(0.1);
 	fGeWidthEntry->AddToFocusList(&fFocusList);
 	fGeWidthEntry->ShowToolTip(kTRUE, kTRUE);
-	fGeWidthEntry->Associate(this);
+	fGeWidthEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fAuxFrame = new TGGroupFrame(fH1Frame, "DGG (Aux)", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fGeFrame);
@@ -243,7 +243,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	fAuxDelayEntry->SetIncrement(0.1);
 	fAuxDelayEntry->AddToFocusList(&fFocusList);
 	fAuxDelayEntry->ShowToolTip(kTRUE, kTRUE);
-	fAuxDelayEntry->Associate(this);
+	fAuxDelayEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fAuxWidthEntry = new TGMrbLabelEntry(fAuxFrame, "Width [us]",
 												200, kCptmAuxWidthEntry,
@@ -259,7 +259,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	fAuxWidthEntry->SetIncrement(0.1);
 	fAuxWidthEntry->AddToFocusList(&fFocusList);
 	fAuxWidthEntry->ShowToolTip(kTRUE, kTRUE);
-	fAuxWidthEntry->Associate(this);
+	fAuxWidthEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fTimeWdwEntry = new TGMrbLabelEntry(fAuxFrame, "Time wdw [us]",
 												200, kCptmTimeWdwEntry,
@@ -275,7 +275,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	fTimeWdwEntry->SetIncrement(0.1);
 	fTimeWdwEntry->AddToFocusList(&fFocusList);
 	fTimeWdwEntry->ShowToolTip(kTRUE, kTRUE);
-	fTimeWdwEntry->Associate(this);
+	fTimeWdwEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fMultFrame = new TGGroupFrame(fH1Frame, "Multiplicity", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fMultFrame);
@@ -295,7 +295,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	fMultValueEntry->SetIncrement(1);
 	fMultValueEntry->AddToFocusList(&fFocusList);
 	fMultValueEntry->ShowToolTip(kTRUE, kTRUE);
-	fMultValueEntry->Associate(this);
+	fMultValueEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fMultDacEntry = new TGMrbLabelEntry(fMultFrame, "DAC [mV]",
 												200, kCptmMultDacEntry,
@@ -311,7 +311,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	fMultDacEntry->SetIncrement(35);
 	fMultDacEntry->AddToFocusList(&fFocusList);
 	fMultDacEntry->ShowToolTip(kTRUE, kTRUE);
-	fMultDacEntry->Associate(this);
+	fMultDacEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fH2Frame = new TGHorizontalFrame(this, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
 	HEAP(fH2Frame);
@@ -329,7 +329,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	HEAP(fCptmMaskReg);
 	fH2Frame->AddFrame(fCptmMaskReg, groupGC->LH());
 	fCptmMaskReg->SetState(0xffffffff, kButtonUp);
-	fCptmMaskReg->Associate(this);
+	((TGMrbButtonFrame *) fCptmMaskReg)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "MaskRegChanged(Int_t, Int_t)");
 	
 	fAddrFrame = new TGGroupFrame(fH2Frame, "Addr Pointers", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fAddrFrame);
@@ -359,7 +359,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	fCptmButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fCptmActions, -1, 1, groupGC, buttonGC);
 	HEAP(fCptmButtonFrame);
 	this->AddFrame(fCptmButtonFrame, buttonGC->LH());
-	fCptmButtonFrame->Associate(this);
+	((TGMrbButtonFrame *) fCptmButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	this->InitializeValues(fCptmIndex);
 
@@ -390,83 +390,91 @@ void CptmPanel::CloseWindow() {
    gApplication->Terminate(0);
 }
 
-Bool_t CptmPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void CptmPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           CptmPanel::ProcessMessage
-// Purpose:        Message handler for the instrument panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           CptmPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to CptmPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbTextButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_MENU:
-					switch (Param1) {
-						case kCptmFileExit:
-							this->CloseWindow();
-							break;
-					}
-					break;
-				case kCM_BUTTON:
-					switch (Param1) {
-						case kCptmButtonDownloadCode:
-							this->DownloadCode(fCptmIndex);
-							break;
-						case kCptmButtonReset:
-							this->Reset(fCptmIndex);
-							break;
-						case kCptmButtonSave:
-							this->SaveSettings(fCptmIndex);
-							break;
-						case kCptmButtonRestore:
-							this->RestoreSettings(fCptmIndex);
-							break;
-						case kCptmButtonSynchEnable:
-							this->EnableSynch(fCptmIndex, kFALSE);
-							break;
-						case kCptmButtonSynchEnableReset:
-							this->EnableSynch(fCptmIndex, kTRUE);
-							break;
-						case kCptmButtonShowBuffer:
-							this->ShowBuffer(fCptmIndex);
-							break;
-					}
-					break;
-				case kCM_CHECKBUTTON:
-					this->UpdateValue(Param1, fCptmIndex);
-					break;
-				case kCM_RADIOBUTTON:
-					this->UpdateValue(Param1, fCptmIndex);
-					break;
-				case kCM_COMBOBOX:
-					fCptmIndex = Param2;
-					this->InitializeValues(fCptmIndex);
-					break;
-			}
+	switch (Selection) {
+		case kCptmButtonDownloadCode:
+			this->DownloadCode(fCptmIndex);
 			break;
-
-		case kC_TEXTENTRY:
-			switch (GET_SUBMSG(MsgId)) {
-				case kTE_ENTER:
-					this->UpdateValue(Param1, fCptmIndex);
-					break;
-				case kTE_TAB:
-					this->UpdateValue(Param1, fCptmIndex);
-					this->MoveFocus(Param1);
-					break;
-			}
+		case kCptmButtonReset:
+			this->Reset(fCptmIndex);
 			break;
-			
+		case kCptmButtonSave:
+			this->SaveSettings(fCptmIndex);
+			break;
+		case kCptmButtonRestore:
+			this->RestoreSettings(fCptmIndex);
+			break;
+		case kCptmButtonSynchEnable:
+			this->EnableSynch(fCptmIndex, kFALSE);
+			break;
+		case kCptmButtonSynchEnableReset:
+			this->EnableSynch(fCptmIndex, kTRUE);
+			break;
+		case kCptmButtonShowBuffer:
+			this->ShowBuffer(fCptmIndex);
+			break;
 	}
-	return(kTRUE);
+}
+
+void CptmPanel::SelectModule(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           CptmPanel::SelectModule
+// Purpose:        Slot method: select module
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fCptmIndex = Selection;
+	this->InitializeValues(fCptmIndex);
+}
+
+void CptmPanel::EntryChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           CptmPanel::EntryChanged
+// Purpose:        Slot method: update after entry changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->UpdateValue(Selection, fCptmIndex);
+}
+
+void CptmPanel::MaskRegChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           CptmPanel::MaskRegChanged
+// Purpose:        Slot method: check button pressed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbCheckButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->UpdateValue(Selection, fCptmIndex);
 }
 
 Int_t CptmPanel::GetLofCptmModules() {

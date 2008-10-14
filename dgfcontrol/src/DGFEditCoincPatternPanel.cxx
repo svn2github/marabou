@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditCoincPatternPanel.cxx,v 1.7 2006-07-14 08:02:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFEditCoincPatternPanel.cxx,v 1.8 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -164,7 +164,7 @@ DGFEditCoincPatternPanel::DGFEditCoincPatternPanel(const TGWindow * Window, TGTe
 												frameGC, NULL, buttonGC);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
-	fButtonFrame->Associate(this);
+	((TGMrbButtonFrame *) fButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 //	key bindings
 	fKeyBindings.SetParent(this);
@@ -181,63 +181,44 @@ DGFEditCoincPatternPanel::DGFEditCoincPatternPanel(const TGWindow * Window, TGTe
 	gClient->WaitFor(this);
 }
 
-Bool_t DGFEditCoincPatternPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFEditCoincPatternPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFEditCoincPatternPanel::ProcessMessage
-// Purpose:        Message handler for the setup panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFEditCoincPatternPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFEditCoincPatternPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbTextButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case kDGFEditCoincPatternButtonApply:
-							if (!gDGFControlData->IsOffline()) {
-								TMrbDGF * dgf = gDGFControlData->GetSelectedModule()->GetAddr();
-								UInt_t patMask = fLeftFrame->GetActive();
-								patMask |= fRightFrame->GetActive();
-								dgf->SetCoincPattern(patMask);
-								UInt_t pattern = dgf->GetCoincPattern();
-								TMrbString intStr;
-								intStr.FromInteger((Int_t) pattern, 0, 16, kTRUE);
-								fEntry->SetText(intStr.Data());
-							} else {
-								fEntry->SetText("0x0000");
-							}
-							this->CloseWindow();
-							break;
-						case kDGFEditCoincPatternButtonSetAll:
-							fLeftFrame->SetState(0xffffffff, kButtonDown);
-							fRightFrame->SetState(0xffffffff, kButtonDown);
-							break;
-						case kDGFEditCoincPatternButtonReset:
-							fLeftFrame->SetState(0xffffffff, kButtonUp);
-							fRightFrame->SetState(0xffffffff, kButtonUp);
-							break;
-						case kDGFEditCoincPatternButtonClose:
-							this->CloseWindow();
-							break;
-					}
+	switch (Selection) {
+		case kDGFEditCoincPatternButtonApply:
+			if (!gDGFControlData->IsOffline()) {
+				TMrbDGF * dgf = gDGFControlData->GetSelectedModule()->GetAddr();
+				UInt_t patMask = fLeftFrame->GetActive();
+				patMask |= fRightFrame->GetActive();
+				dgf->SetCoincPattern(patMask);
+				UInt_t pattern = dgf->GetCoincPattern();
+				TMrbString intStr;
+				intStr.FromInteger((Int_t) pattern, 0, 16, kTRUE);
+				fEntry->SetText(intStr.Data());
+			} else {
+				fEntry->SetText("0x0000");
 			}
+			this->CloseWindow();
 			break;
-						
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
+		case kDGFEditCoincPatternButtonSetAll:
+			fLeftFrame->SetState(0xffffffff, kButtonDown);
+			fRightFrame->SetState(0xffffffff, kButtonDown);
 			break;
+		case kDGFEditCoincPatternButtonReset:
+			fLeftFrame->SetState(0xffffffff, kButtonUp);
+			fRightFrame->SetState(0xffffffff, kButtonUp);
+			break;
+		case kDGFEditCoincPatternButtonClose:
+			this->CloseWindow();
 	}
-	return(kTRUE);
 }

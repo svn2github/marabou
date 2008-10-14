@@ -8,7 +8,7 @@
 // Class:          DGFMiscPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFMiscPanel.h,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFMiscPanel.h,v 1.5 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -64,7 +64,8 @@ class DGFMiscPanel : public TGCompositeFrame {
 		DGFMiscPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFMiscPanel() { fHeap.Delete(); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void SelectModule(Int_t FrameId, Int_t Selection);		// slot methods
+		void PerformAction(Int_t FrameId, Int_t Selection);
 
 	protected:
 		Bool_t StartRamp();

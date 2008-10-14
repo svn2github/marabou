@@ -8,7 +8,7 @@
 // Class:          DGFTraceDisplayPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFTraceDisplayPanel.h,v 1.11 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: DGFTraceDisplayPanel.h,v 1.12 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -67,7 +67,9 @@ class DGFTraceDisplayPanel : public TGCompositeFrame {
 		DGFTraceDisplayPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFTraceDisplayPanel() { fHeap.Delete(); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void PerformAction(Int_t FrameId, Int_t Selection); 	// slot methods
+		void SelectModule(Int_t FrameId, Int_t Selection);
+
 
 	protected:
 		Bool_t StartTrace(Bool_t AutoTrigFlag);

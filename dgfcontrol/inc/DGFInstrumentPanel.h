@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.19 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.20 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -123,9 +123,11 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 		};
 
 		Bool_t InitializeValues(Bool_t ReadFromDSP = kFALSE);					// initialize entry fields with dgf values
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
-		void RadioButtonPressed(Int_t Channel);				// signal catcher
+		void PerformAction(Int_t FrameId, Int_t Selection); 	// slot methods
+		void EntryChanged(Int_t FrameId, Int_t Selection);
+		void SelectModule(Int_t FrameId, Int_t Selection);
+		void RadioButtonPressed(Int_t FrameId, Int_t Selection);
 
 	protected:
 		Bool_t WriteDSP(DGFModule * Module, Int_t ChannelId);					// update DSP

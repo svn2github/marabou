@@ -7,7 +7,7 @@
 // Purpose:        Common defs for the DGF-4C GUI
 // Description:    Defines common values to be used for DGFControl
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlCommon.h,v 1.10 2005-05-25 13:38:47 marabou Exp $       
+// Revision:       $Id: DGFControlCommon.h,v 1.11 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -58,6 +58,7 @@ enum						{	kVFrameWidth			= kTabWidth / 2 		};
 enum						{	kVFrameHeight			= kTabHeight / 2 		};
 enum						{	kLEWidth				= kAutoWidth			};
 enum						{	kEntryWidth				= 100					};
+enum						{	kComboWidth				= 200					};
 enum						{	kFileEntryWidth			= 200					};
 enum						{	kLEHeight				= 20					};
 enum						{	kButtonWidth			= 400					};

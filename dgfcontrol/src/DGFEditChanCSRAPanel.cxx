@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditChanCSRAPanel.cxx,v 1.9 2008-03-05 12:35:46 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFEditChanCSRAPanel.cxx,v 1.10 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -128,7 +128,7 @@ DGFEditChanCSRAPanel::DGFEditChanCSRAPanel(const TGWindow * Window, TGTextEntry 
 												frameGC, NULL, buttonGC);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
-	fButtonFrame->Associate(this);
+	((TGMrbButtonFrame *) fButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 //	key bindings
 	fKeyBindings.SetParent(this);
@@ -145,52 +145,33 @@ DGFEditChanCSRAPanel::DGFEditChanCSRAPanel(const TGWindow * Window, TGTextEntry 
 	gClient->WaitFor(this);
 }
 
-Bool_t DGFEditChanCSRAPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFEditChanCSRAPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFEditChanCSRAPanel::ProcessMessage
-// Purpose:        Message handler for the setup panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFEditChanCSRAPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFEditChanCSRAPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbTextButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
 	UInt_t btnState;
 	TMrbString intStr;
-
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case kDGFEditChanCSRAButtonApply:
-							btnState = fCSRAFrame->GetActive();
-							intStr.FromInteger(btnState, 0, 16, kTRUE);
-							fEntry->SetText(intStr);
-							this->CloseWindow();
-							break;
-						case kDGFEditChanCSRAButtonReset:
-							fCSRAFrame->SetState((UInt_t) -1, kButtonUp);
-							break;
-						case kDGFEditChanCSRAButtonClose:
-							this->CloseWindow();
-							break;
-					}
-			}
+	switch (Selection) {
+		case kDGFEditChanCSRAButtonApply:
+			btnState = fCSRAFrame->GetActive();
+			intStr.FromInteger(btnState, 0, 16, kTRUE);
+			fEntry->SetText(intStr);
+			this->CloseWindow();
 			break;
-			
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
+		case kDGFEditChanCSRAButtonReset:
+			fCSRAFrame->SetState((UInt_t) -1, kButtonUp);
+			break;
+		case kDGFEditChanCSRAButtonClose:
+			this->CloseWindow();
 			break;
 	}
-	return(kTRUE);
 }

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.23 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.24 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -160,7 +160,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
-		fGroupSelect[i]->Associate(this);
+		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
@@ -170,7 +170,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 																			frameGC->LH()->GetPadRight(),
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
-	fAllSelect->Associate(this);
+	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 			
 // param selection
 	fSelectFrame = new TGGroupFrame(this, "Select", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -196,12 +196,12 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 	fSelectParam = new TGMrbLabelCombo(fSelectFrame,  "Param", &fLofParams,
 													kDGFParamsSelectParam, 2,
 													kTabWidth, kLEHeight,
-													kEntryWidth,
+													kComboWidth,
 													frameGC, labelGC, comboGC, buttonGC, kTRUE);
 	HEAP(fSelectParam);
 	fSelectFrame->AddFrame(fSelectParam, frameGC->LH());
 	fSelectParam->GetComboBox()->Select(gDGFControlData->GetSelectedModuleIndex());
-	fSelectParam->Associate(this); 	// get informed if param selection changes
+	fSelectParam->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "SelectParam(Int_t, Int_t)");
 	fActiveParam = pNameAddr->FindByName("MODNUM")->GetIndex();
 		
 	Char_t c = 'A';
@@ -218,7 +218,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 													frameGC, labelGC, comboGC);
 	HEAP(fAlpha);
 	fAlpha->SetState(1);
-	((TGMrbButtonFrame *) fAlpha)->Connect("ButtonPressed(Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t)");
+	((TGMrbButtonFrame *) fAlpha)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "RadioButtonPressed(Int_t, Int_t)");
 	fSelectFrame->AddFrame(fAlpha, frameGC->LH());
 
 // values
@@ -260,7 +260,6 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 				fParVal[n]->SetText(0);
 				fParVal[n]->SetRange(0, 100000);
 				fParVal[n]->SetIncrement(1);
-				fParVal[n]->Associate(this);
 			}
 		}
 	}
@@ -276,7 +275,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fActionFrame);
 	this->AddFrame(fActionFrame, groupGC->LH());
 	fActionFrame->JustifyButton(kTextCenterX);
-	fActionFrame->Associate(this);
+	((TGMrbButtonFrame *) fActionFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
@@ -291,72 +290,101 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 	MapWindow();
 }
 
-Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFParamsPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFParamsPanel::ProcessMessage
-// Purpose:        Message handler for the setup panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFParamsPanel::SelectModule
+// Purpose:        Slot method: select module(s)
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFParamsPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbPictureButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					if (Param1 < kDGFParamsSelectColumn) {
-						switch (Param1) {
-							case kDGFParamsRead:
-								this->ReadParams();
-								break;
-							case kDGFParamsApply:
-								this->ApplyParams(kFALSE);
-								break;
-							case kDGFParamsApplyMarked:
-								this->ApplyParams(kTRUE);
-								break;
-							case kDGFParamsSelectAll:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+	if (Selection < kDGFParamsSelectColumn) {
+		switch (Selection) {
+			case kDGFParamsSelectAll:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
-								break;
-							case kDGFParamsSelectNone:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+				break;
+			case kDGFParamsSelectNone:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-								break;							
-							default:	break;
-						}
-					} else {
-						Param1 -= kDGFParamsSelectColumn;
-						Bool_t select = ((Param1 & 1) == 0);
-						UInt_t bit = 0x1 << (Param1 >> 1);
-						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-							if (gDGFControlData->GetPatInUse(cl) & bit) {
-								if (select) fCluster[cl]->SetState(bit, kButtonDown);
-								else		fCluster[cl]->SetState(bit, kButtonUp);
-							}						}
-					}
-					break;
-					
-				case kCM_COMBOBOX:
-					fActiveParam = Param2;
-					this->ReadParams();
-					break;
-				default:	break;
+				break;							
+		}
+	} else {
+		Selection -= kDGFParamsSelectColumn;
+		Bool_t select = ((Selection & 1) == 0);
+		UInt_t bit = 0x1 << (Selection >> 1);
+		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+			if (gDGFControlData->GetPatInUse(cl) & bit) {
+				UInt_t act = fCluster[cl]->GetActive();
+				UInt_t down = select ? (act | bit) : (act & ~bit);
+				fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
 			}
-			break;
-
+		}
 	}
-	return(kTRUE);
+}
+					
+void DGFParamsPanel::SelectParam(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFParamsPanel::SelectParam
+// Purpose:        Slot method: select param
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fActiveParam = Selection;
+	this->ReadParams();
 }
 
-void DGFParamsPanel::RadioButtonPressed(Int_t Button) {
-	TMrbNamedX * nx = fLofInitials.FindByIndex(Button);
+void DGFParamsPanel::PerformAction(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFParamsPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbTextButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Selection) {
+		case kDGFParamsRead:
+			this->ReadParams();
+			break;
+		case kDGFParamsApply:
+			this->ApplyParams(kFALSE);
+			break;
+		case kDGFParamsApplyMarked:
+			this->ApplyParams(kTRUE);
+			break;
+	}
+}
+
+void DGFParamsPanel::RadioButtonPressed(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFParamsPanel::RadioButtonPressed
+// Purpose:        Signal catcher for radio buttons
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        --
+// Exceptions:     
+// Description:    Will be called on radio button events.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = fLofInitials.FindByIndex(Selection);
 	if (nx) {
 		TString x = nx->GetName();
 		Char_t c = x(0);

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMiscPanel.cxx,v 1.7 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFMiscPanel.cxx,v 1.8 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -159,7 +159,7 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
-		fGroupSelect[i]->Associate(this);
+		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
@@ -169,7 +169,7 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 																			frameGC->LH()->GetPadRight(),
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
-	fAllSelect->Associate(this);
+	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 			
 // action buttons
 	TGLayoutHints * aFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
@@ -194,7 +194,7 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fActionButtons);
 	fActionFrame->AddFrame(fActionButtons, groupGC->LH());
 	fActionButtons->JustifyButton(kTextCenterX);
-	fActionButtons->Associate(this);
+	((TGMrbButtonFrame *) fActionButtons)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
@@ -209,66 +209,68 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 	MapWindow();
 }
 
-Bool_t DGFMiscPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFMiscPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFMiscPanel::ProcessMessage
-// Purpose:        Message handler for the setup panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFMiscPanel::SelectModule
+// Purpose:        Slot method: select module(s)
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFMiscPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbPictureButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString intStr;
-
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					if (Param1 < kDGFMiscSelectColumn) {
-						switch (Param1) {
-							case kDGFMiscSetGFLT:
-								this->SetGFLT(kTRUE);
-								break;
-							case kDGFMiscClearGFLT:
-								this->SetGFLT(kFALSE);
-								break;
-							case kDGFMiscSetCoincWait:
-								this->SetCoincWait();
-								break;
-							case kDGFMiscSelectAll:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
-									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
-								break;
-							case kDGFMiscSelectNone:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
-									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-								break;							
-							default:	break;
-						}
-					} else {
-						Param1 -= kDGFMiscSelectColumn;
-						Bool_t select = ((Param1 & 1) == 0);
-						UInt_t bit = 0x1 << (Param1 >> 1);
-						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-							if (gDGFControlData->GetPatInUse(cl) & bit) {
-								if (select) fCluster[cl]->SetState(bit, kButtonDown);
-								else		fCluster[cl]->SetState(bit, kButtonUp);
-							}
-						}
-					}
-					break;
-				default:	break;
+	if (Selection < kDGFMiscSelectColumn) {
+		switch (Selection) {
+			case kDGFMiscSelectAll:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
+				break;
+			case kDGFMiscSelectNone:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
+				break;							
+		}
+	} else {
+		Selection -= kDGFMiscSelectColumn;
+		Bool_t select = ((Selection & 1) == 0);
+		UInt_t bit = 0x1 << (Selection >> 1);
+		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+			if (gDGFControlData->GetPatInUse(cl) & bit) {
+				UInt_t act = fCluster[cl]->GetActive();
+				UInt_t down = select ? (act | bit) : (act & ~bit);
+				fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
 			}
-			break;
-
+		}
 	}
-	return(kTRUE);
+}
+
+void DGFMiscPanel::PerformAction(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMiscPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbTextButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Selection) {
+		case kDGFMiscSetGFLT:
+			this->SetGFLT(kTRUE);
+			break;
+		case kDGFMiscClearGFLT:
+			this->SetGFLT(kFALSE);
+			break;
+		case kDGFMiscSetCoincWait:
+			this->SetCoincWait();
+			break;
+	}
 }
 
 Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {

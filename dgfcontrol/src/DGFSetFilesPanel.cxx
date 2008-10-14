@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetFilesPanel.cxx,v 1.8 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSetFilesPanel.cxx,v 1.9 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -292,7 +292,7 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
 												frameGC, NULL, labelGC);
 	HEAP(fButtonFrame);
 	fActionFrame->AddFrame(fButtonFrame, labelGC->LH());
-	fButtonFrame->Associate(this);
+	((TGMrbButtonFrame *) fButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
 	HEAP(dgfFrameLayout);
@@ -304,44 +304,30 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
 	MapWindow();
 }
 
-Bool_t DGFSetFilesPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFSetFilesPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFSetFilesPanel::ProcessMessage
-// Purpose:        Message handler for the setup panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFSetFilesPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFSetFilesPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbTextButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					switch (Param1) {
-						case kDGFSetFilesApply:
-							gDGFControlData->fDSPCodeFile = fSystemDSPCodeEntry->GetText();
-							gDGFControlData->fDSPParamsFile = fSystemDSPParamsEntry->GetText();
-							gDGFControlData->fSystemFPGAConfigFile = fSystemSystemFPGAConfigEntry->GetText();
-							gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevD] = fSystemFippiFPGAConfig[TMrbDGFData::kRevD]->GetText();
-							gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevE] = fSystemFippiFPGAConfig[TMrbDGFData::kRevE]->GetText();
-							gDGFControlData->fDgfSettingsPath = fSystemDgfSettingsEntry->GetText();
-							gDGFControlData->fCptmSettingsPath = fSystemCptmSettingsEntry->GetText();
-							gDGFControlData->fCptmCodeFile = fSystemCptmCodeEntry->GetText();
-							gDGFControlData->fRunDataFile = fUserRunDataEntry->GetText();
-							break;
-						default:	break;
-					}
-					break;
-				default:	break;
-			}
+	switch (Selection) {
+		case kDGFSetFilesApply:
+			gDGFControlData->fDSPCodeFile = fSystemDSPCodeEntry->GetText();
+			gDGFControlData->fDSPParamsFile = fSystemDSPParamsEntry->GetText();
+			gDGFControlData->fSystemFPGAConfigFile = fSystemSystemFPGAConfigEntry->GetText();
+			gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevD] = fSystemFippiFPGAConfig[TMrbDGFData::kRevD]->GetText();
+			gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevE] = fSystemFippiFPGAConfig[TMrbDGFData::kRevE]->GetText();
+			gDGFControlData->fDgfSettingsPath = fSystemDgfSettingsEntry->GetText();
+			gDGFControlData->fCptmSettingsPath = fSystemCptmSettingsEntry->GetText();
+			gDGFControlData->fCptmCodeFile = fSystemCptmCodeEntry->GetText();
+			gDGFControlData->fRunDataFile = fUserRunDataEntry->GetText();
 			break;
-
 	}
-	return(kTRUE);
 }

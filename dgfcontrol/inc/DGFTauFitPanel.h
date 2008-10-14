@@ -8,7 +8,7 @@
 // Class:          DGFTauFitPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFTauFitPanel.h,v 1.3 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: DGFTauFitPanel.h,v 1.4 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -82,7 +82,9 @@ class DGFTauFitPanel : public TGCompositeFrame {
 		DGFTauFitPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFTauFitPanel() { fHeap.Delete(); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		void PerformAction(Int_t FrameId, Int_t Selection); 	// slot methods
+		void EntryChanged(Int_t FrameId, Int_t Selection);
+		void SelectModule(Int_t FrameId, Int_t Selection);
 
 	protected:
 		Bool_t ResetValues();													// clear entry fields

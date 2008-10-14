@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauFitPanel.cxx,v 1.12 2007-10-22 16:45:37 Marabou Exp $       
+// Revision:       $Id: DGFTauFitPanel.cxx,v 1.13 2008-10-14 10:22:29 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -179,7 +179,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
-		fGroupSelect[i]->Associate(this);
+		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
@@ -189,7 +189,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 																			frameGC->LH()->GetPadRight(),
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
-	fAllSelect->Associate(this);
+	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 			
 	fHFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
@@ -226,7 +226,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	fTauStartEntry->SetRange(1, 100);
 	fTauStartEntry->SetIncrement(.5);
 	fTauStartEntry->AddToFocusList(&fFocusList);
-	fTauStartEntry->Associate(this);
+	fTauStartEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fTauStepEntry = new TGMrbLabelEntry(fTauFrame, "Step",
 																200, kDGFTauFitRangeStep,
@@ -241,7 +241,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	fTauStepEntry->SetRange(.1, 5);
 	fTauStepEntry->SetIncrement(.1);
 	fTauStepEntry->AddToFocusList(&fFocusList);
-	fTauStepEntry->Associate(this);
+	fTauStepEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fTauStopEntry = new TGMrbLabelEntry(fTauFrame, "Stop",
 																200, kDGFTauFitRangeStop,
@@ -256,7 +256,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	fTauStopEntry->SetRange(1, 100);
 	fTauStopEntry->SetIncrement(.5);
 	fTauStopEntry->AddToFocusList(&fFocusList);
-	fTauStopEntry->Associate(this);
+	fTauStopEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 // accu settings
 	TGLayoutHints * accuLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
@@ -279,7 +279,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	fRunTimeEntry->SetRange(1, 1000);
 	fRunTimeEntry->SetIncrement(1);
 	fRunTimeEntry->AddToFocusList(&fFocusList);
-	fRunTimeEntry->Associate(this);
+	fRunTimeEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fTauFitTimeScaleButtons, -1, 1, 
 													kTabWidth, kLEHeight,
@@ -295,7 +295,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fTauFitActions, -1, 1, groupGC, buttonGC);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
-	fButtonFrame->Associate(this);
+	((TGMrbButtonFrame *) fButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
 //	no accu running
 	fIsRunning = kFALSE;
@@ -313,83 +313,86 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	MapWindow();
 }
 
-Bool_t DGFTauFitPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFTauFitPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFTauFitPanel::ProcessMessage
-// Purpose:        Message handler for the instrument panel
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFTauFitPanel::SelectModule
+// Purpose:        Slot method: select destination module(s)
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFTauFitPanel.
-//                 E.g. all menu button messages.
+// Description:    Called on TGMrbPictureButton::ButtonPressed()
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString intStr;
-	TMrbString dblStr;
-
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_BUTTON:
-					if (Param1 < kDGFTauFitSelectColumn) {
-						switch (Param1) {
-							case kDGFTauFitStartFit:
-								if (fIsRunning) {
-									this->SetRunning(kFALSE);
-									new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Warning", "Aborting histogram acquisition", kMBIconExclamation);
-								} else {
-									this->TauFit();
-								}
-								break;
-							case kDGFTauFitStop:
-								abortAccu = kTRUE;
-								break;
-							case kDGFTauFitReset:
-								break;
-							case kDGFTauFitSelectAll:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
-								}
-								break;
-							case kDGFTauFitSelectNone:
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
-									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-								break;							
-						}
-					} else {
-						Param1 -= kDGFTauFitSelectColumn;
-						Bool_t select = ((Param1 & 1) == 0);
-						UInt_t bit = 0x1 << (Param1 >> 1);
-						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-							if (gDGFControlData->GetPatInUse(cl) & bit) {
-								if (select) fCluster[cl]->SetState(bit, kButtonDown);
-								else		fCluster[cl]->SetState(bit, kButtonUp);
-							}
-						}
-					}
-
-					break;
+	if (Selection < kDGFTauFitSelectColumn) {
+		switch (Selection) {
+			case kDGFTauFitSelectAll:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
+				break;
+			case kDGFTauFitSelectNone:
+				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
+				break;							
+		}
+	} else {
+		Selection -= kDGFTauFitSelectColumn;
+		Bool_t select = ((Selection & 1) == 0);
+		UInt_t bit = 0x1 << (Selection >> 1);
+		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+			if (gDGFControlData->GetPatInUse(cl) & bit) {
+				UInt_t act = fCluster[cl]->GetActive();
+				UInt_t down = select ? (act | bit) : (act & ~bit);
+				fCluster[cl]->SetState(down & 0xFFFF, kButtonDown);
 			}
-			break;
-
-		case kC_TEXTENTRY:
-			switch (GET_SUBMSG(MsgId)) {
-				case kTE_ENTER:
-					this->Update(Param1);
-					break;
-				case kTE_TAB:
-					this->Update(Param1);
-					this->MoveFocus(Param1);
-					break;
-			}
-			break;
-			
+		}
 	}
-	return(kTRUE);
+}void DGFTauFitPanel::EntryChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFTauFitPanel::EntryChanged
+// Purpose:        Slot method: update after entry changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->Update(Selection);
+}
+
+void DGFTauFitPanel::PerformAction(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFTauFitPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbTextButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Selection) {
+		case kDGFTauFitStartFit:
+			if (fIsRunning) {
+				this->SetRunning(kFALSE);
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Warning", "Aborting histogram acquisition", kMBIconExclamation);
+			} else {
+				this->TauFit();
+			}
+			break;
+		case kDGFTauFitStop:
+			abortAccu = kTRUE;
+			break;
+		case kDGFTauFitReset:
+			break;
+	}
 }
 
 Bool_t DGFTauFitPanel::TauFit() {
