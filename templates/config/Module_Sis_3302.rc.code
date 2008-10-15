@@ -1,0 +1,193 @@
+%%BeginOfCode%%
+%%Begin(Preamble)%%
+#___________________________________________________[MODULE PARAM DEFINITION]
+#////////////////////////////////////////////////////////////////////////////
+# Name:           Module_Sis_3302.rc.code
+# Purpose:        Param defs for SIS3302 flash ADC
+# Description:        
+# Author:         $author
+# Date:           $date  
+#////////////////////////////////////////////////////////////////////////////
+
+SIS3302.ModuleName: 						$moduleName
+SIS3302.ModuleSerial: 						$moduleSerial
+
+SIS3302.Firmware: 							$moduleFirmware
+
+SIS3302.VerboseMode:						FALSE
+SIS3302.DumpRegisters:						FALSE
+
+%%End(Preamble)%%
+
+%%Begin(AcquisitionControl)%%
+
+#-----------------------------------------------------------------------------
+# Acquisition Control
+#-----------------------------------------------------------------------------
+
+# clock source          0  -->  100 MHz intern
+#                       1  -->   50 MHz intern
+#                       2  -->   25 MHz intern
+#                       3  -->   10 MHz intern
+#                       4  -->    1 MHz intern
+#                       5  -->  100 kHz intern
+#                       6  -->  extern (front panel lemo)
+SIS3302.$moduleName.ClockSource: 			$clockSource
+
+# trigger settings
+SIS3302.$moduleName.InternalTrigger: 		$intTrig
+SIS3302.$moduleName.ExternalTrigger: 		$extTrig
+
+# time stamp clear
+SIS3302.$moduleName.ExternalTimestampClear: $tsClear
+%%End(AcquisitionControl)%%
+
+%%Begin(DacSettings)%%
+
+#-----------------------------------------------------------------------------
+# DAC settings (per adc/channel)
+#-----------------------------------------------------------------------------
+%%End(DacSettings)%%
+%%Begin(DacSettingsLoop)%%
+SIS3302.$moduleName.DacValue.$adcNo:		$dacValue
+%%End(DacSettingsLoop)%%
+
+%%Begin(EventConfig)%%
+
+#-----------------------------------------------------------------------------
+# Event configuration (per channel group)
+#-----------------------------------------------------------------------------
+%%End(EventConfig)%%
+%%Begin(EventConfigLoop)%%
+# channel group $chGrp:
+SIS3302.$moduleName.HeaderBits.$chGrp:	 	$hdrBits
+SIS3302.$moduleName.GroupId.$chGrp:		 	$groupId
+SIS3302.$moduleName.TriggerMode.$chGrp: 	$trigMode
+SIS3302.$moduleName.InvertSignal.$chGrp:	$invert
+%%End(EventConfigLoop)%%
+
+%%Begin(EndAddrThresh)%%
+
+#-----------------------------------------------------------------------------
+# Event configuration (per channel group)
+#-----------------------------------------------------------------------------
+%%End(EndAddrThresh)%%
+%%Begin(EndAddrThreshLoop)%%
+# channel group $chGrp:
+SIS3302.$moduleName.EndAddrThresh.$chGrp:	$addr
+%%End(EndAddrThreshLoop)%%
+
+%%Begin(TrigDelayGate)%%
+
+#-----------------------------------------------------------------------------
+# Pretrigger delay and trigger gate length (per channel group)
+#-----------------------------------------------------------------------------
+%%End(TrigDelayGate)%%
+%%Begin(TrigDelayGateLoop)%%
+# channel group $chGrp:
+SIS3302.$moduleName.PretrigDelay.$chGrp:	$delay
+SIS3302.$moduleName.TrigGateLength.$chGrp:	$gate
+%%End(TrigDelayGateLoop)%%
+
+%%Begin(RawDataSample)%%
+
+#-----------------------------------------------------------------------------
+# Raw data sample length & start index (per channel group)
+#-----------------------------------------------------------------------------
+%%End(RawDataSample)%%
+%%Begin(RawDataSampleLoop)%%
+# channel group $chGrp:
+SIS3302.$moduleName.RawDataSampleLength.$chGrp:	$length
+SIS3302.$moduleName.RawDataSampleStart.$chGrp:	$start
+%%End(RawDataSampleLoop)%%
+
+%%Begin(SampleAddr)%%
+
+#-----------------------------------------------------------------------------
+# Sample address (per adc/channel)
+#-----------------------------------------------------------------------------
+%%End(SampleAddr)%%
+%%Begin(SampleAddrLoop)%%
+# adc/channel $adc:
+SIS3302.$moduleName.NextSampleAddress.$adc: 		$nextAddr
+SIS3302.$moduleName.PrevBankSampleAddress.$adc:	$prevAddr
+%%End(SampleAddrLoop)%%
+
+%%Begin(TriggerSetup)%%
+
+#-----------------------------------------------------------------------------
+# Trigger (fast) setup (per adc/channel)
+#-----------------------------------------------------------------------------
+%%End(TriggerSetup)%%
+%%Begin(TriggerSetupLoop)%%
+# adc/channel $adc:
+SIS3302.$moduleName.TrigPeakTime.$adc:			$peakTime
+SIS3302.$moduleName.TrigGapTime.$adc:			$gapTime
+SIS3302.$moduleName.TrigPulseLength.$adc:		$length
+%%End(TriggerSetupLoop)%%
+
+%%Begin(TriggerThresh)%%
+
+#-----------------------------------------------------------------------------
+# Trigger threshold (per adc/channel)
+#-----------------------------------------------------------------------------
+%%End(TriggerThresh)%%
+%%Begin(TriggerThreshLoop)%%
+# adc/channel $adc:
+SIS3302.$moduleName.TrigThresh.$adc:			$thresh
+SIS3302.$moduleName.TrigGT.$adc:				$gt
+SIS3302.$moduleName.TrigOut.$adc:				$out
+%%End(TriggerThreshLoop)%%
+
+%%Begin(EnergySetup)%%
+
+#-----------------------------------------------------------------------------
+# Energy (slow) setup (per channel group)
+#-----------------------------------------------------------------------------
+%%End(EnergySetup)%%
+%%Begin(EnergySetupLoop)%%
+# channel group $chGrp:
+SIS3302.$moduleName.EnergyPeakTime.$chGrp:		$peakTime
+SIS3302.$moduleName.EnergyGapTime.$chGrp:		$gapTime
+SIS3302.$moduleName.Decimation.$chGrp:			$decim
+%%End(EnergySetupLoop)%%
+
+%%Begin(EnergyGate)%%
+
+#-----------------------------------------------------------------------------
+# Energy gate length & test bits (per channel group)
+#-----------------------------------------------------------------------------
+%%End(EnergyGate)%%
+%%Begin(EnergyGateLoop)%%
+# channel group $chGrp:
+SIS3302.$moduleName.EnergyGateLength.$chGrp:	$gate
+SIS3302.$moduleName.EnergyTestBits.$chGrp:		$test
+%%End(EnergyGateLoop)%%
+
+%%Begin(EnergySample)%%
+
+#-----------------------------------------------------------------------------
+# Energy sample length & start (per channel group)
+#-----------------------------------------------------------------------------
+%%End(EnergySample)%%
+%%Begin(EnergySampleLoop)%%
+# channel group $chGrp:
+SIS3302.$moduleName.EnergySampleLength.$chGrp:		$length
+SIS3302.$moduleName.EnergySampleStart1.$chGrp:		$start1
+SIS3302.$moduleName.EnergySampleStart2.$chGrp:		$start2
+SIS3302.$moduleName.EnergySampleStart3.$chGrp:		$start3
+%%End(EnergySampleLoop)%%
+
+%%Begin(TauFactor)%%
+
+#-----------------------------------------------------------------------------
+# Energy tau factor (per adc/channel)
+#-----------------------------------------------------------------------------
+%%End(TauFactor)%%
+%%Begin(TauFactorLoop)%%
+SIS3302.$moduleName.EnergyTauFactor.$adc:		$tau
+%%End(TauFactorLoop)%%
+
+%%EndOfCode%%
+%%MODULE_SETTINGS%%
+
