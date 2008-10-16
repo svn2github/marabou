@@ -61,7 +61,6 @@ SIS3302.$moduleName.DacValue.$adcNo:		$dacValue
 %%Begin(EventConfigLoop)%%
 # channel group $chGrp:
 SIS3302.$moduleName.HeaderBits.$chGrp:	 	$hdrBits
-SIS3302.$moduleName.GroupId.$chGrp:		 	$groupId
 SIS3302.$moduleName.TriggerMode.$chGrp: 	$trigMode
 SIS3302.$moduleName.InvertSignal.$chGrp:	$invert
 %%End(EventConfigLoop)%%
@@ -100,18 +99,6 @@ SIS3302.$moduleName.TrigGateLength.$chGrp:	$gate
 SIS3302.$moduleName.RawDataSampleLength.$chGrp:	$length
 SIS3302.$moduleName.RawDataSampleStart.$chGrp:	$start
 %%End(RawDataSampleLoop)%%
-
-%%Begin(SampleAddr)%%
-
-#-----------------------------------------------------------------------------
-# Sample address (per adc/channel)
-#-----------------------------------------------------------------------------
-%%End(SampleAddr)%%
-%%Begin(SampleAddrLoop)%%
-# adc/channel $adc:
-SIS3302.$moduleName.NextSampleAddress.$adc: 		$nextAddr
-SIS3302.$moduleName.PrevBankSampleAddress.$adc:	$prevAddr
-%%End(SampleAddrLoop)%%
 
 %%Begin(TriggerSetup)%%
 

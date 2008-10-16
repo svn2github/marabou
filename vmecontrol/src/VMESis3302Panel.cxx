@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.1 2008-09-23 10:47:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.2 2008-10-16 08:28:50 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -27,6 +27,7 @@
 #include "TObjString.h"
 #include "TApplication.h"
 
+#include "TC2LSis3302.h"
 #include "VMEControlData.h"
 #include "VMESis3302Panel.h"
 
@@ -98,6 +99,9 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fSettingsPanel = NULL;
 	fSettingsTab = fTabFrame->AddTab("Settings");
 
+	fSaveRestorePanel = NULL;
+	fSaveRestoreTab = fTabFrame->AddTab("Save/Restore");
+
 	fTabFrame->SetTab(kVMETabSettings);
 	this->TabChanged(kVMETabSettings);
 
@@ -132,6 +136,12 @@ void VMESis3302Panel::TabChanged(Int_t Selection) {
 				fSettingsPanel = new VMESis3302SettingsPanel(fSettingsTab, &fLofModules);
 			}
 			fSettingsPanel->UpdateGUI();
+			break;
+		case kVMETabSaveRestore:
+			if (fSaveRestorePanel == NULL) {
+				this->SetupModuleList();
+				fSaveRestorePanel = new VMESis3302SaveRestorePanel(fSaveRestoreTab, &fLofModules);
+			}
 			break;
 	}
 }

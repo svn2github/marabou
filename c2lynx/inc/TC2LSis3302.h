@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.3 2008-07-22 08:42:19 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-07-22 08:42:19 $
+// Revision:       $Id: TC2LSis3302.h,v 1.4 2008-10-16 08:28:50 Marabou Exp $   
+// Date:           $Date: 2008-10-16 08:28:50 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -115,6 +115,7 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t SetClockSource(Int_t & ClockSource);
 
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
+		Bool_t RestoreSettings(const Char_t * SettingsFile = NULL);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 		

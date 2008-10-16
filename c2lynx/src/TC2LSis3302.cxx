@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.5 2008-09-23 10:44:11 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-09-23 10:44:11 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.6 2008-10-16 08:28:50 Marabou Exp $     
+// Date:           $Date: 2008-10-16 08:28:50 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -26,6 +26,7 @@ namespace std {} using namespace std;
 #include "TMrbTemplate.h"
 #include "TMrbNamedX.h"
 #include "TMrbLogger.h"
+#include "TMrbResource.h"
 #include "SetColor.h"
 
 #include "M2L_CommonDefs.h"
@@ -523,6 +524,142 @@ Bool_t TC2LSis3302::SetClockSource(Int_t & ClockSource) {
 	return(kTRUE);
 }
 
+Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TC2LSis3302::RestoreSettings
+// Purpose:        Read settings from file
+// Arguments:      Char_t * SettingsFile   -- settings file
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Reads env data from file.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fSettingsFile.IsNull()) fSettingsFile = Form("%sSettings.rc", this->GetName());
+
+	if (SettingsFile == NULL || *SettingsFile == '\0') SettingsFile = fSettingsFile.Data();
+
+	TString settingsFile = SettingsFile;
+	gSystem->ExpandPathName(settingsFile);
+	if (gSystem->AccessPathName(settingsFile.Data())) {
+		gMrbLog->Err()	<< "Settings file not found - " << settingsFile << endl;
+		gMrbLog->Flush("RestoreSettings");
+		return(kFALSE);
+	}
+
+	TMrbResource * settings = new TMrbResource("SIS3302", settingsFile.Data());
+	TString moduleName = settings->Get("ModuleName", "");
+	if (moduleName.IsNull()) {
+		gMrbLog->Err()	<< "[" << settingsFile << "] Wrong format - module name missing" << endl;
+		gMrbLog->Flush("RestoreSettings");
+		return(kFALSE);
+	}
+
+	Int_t clockSource = settings->Get(moduleName.Data(), NULL, "ClockSource", 0);
+	this->SetClockSource(clockSource);
+
+	Bool_t itrig = settings->Get(moduleName.Data(), NULL, "InternalTrigger", kFALSE);
+	this->SetInternalTrigger(itrig);
+
+	Bool_t xtrig = settings->Get(moduleName.Data(), NULL, "ExternalTrigger", kFALSE);
+	this->SetInternalTrigger(xtrig);
+
+	Bool_t tsClear = settings->Get(moduleName.Data(), NULL, "ExternalTimestampClear", kFALSE);
+	this->SetExternalTimestampClear(tsClear);
+
+	TArrayI dacValues(kSis3302NofAdcs);
+	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+		dacValues[i] = settings->Get(moduleName.Data(), "DacValue", Form("%d", i), 0);
+	}
+	this->WriteDac(dacValues, kSis3302AllAdcs);
+
+	Int_t chGrp = 12;
+	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+		Int_t hdrBits = settings->Get(moduleName.Data(), "HeaderBits", Form("%d", chGrp), 0);
+		this->SetHeaderBits(hdrBits, i);
+		Int_t trigMode = settings->Get(moduleName.Data(), "TriggerMode", Form("%d", chGrp), 0);
+		this->SetTriggerMode(trigMode, i);
+		Bool_t invert = settings->Get(moduleName.Data(), "InvertSignal", Form("%d", chGrp), kFALSE);
+		this->SetPolarity(invert, i);
+	}
+
+	chGrp = 12;
+	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+		Int_t addr = settings->Get(moduleName.Data(), "EndAddrThresh", Form("%d", chGrp), 0);
+		this->WriteEndAddrThresh(addr, i);
+	}
+
+	chGrp = 12;
+	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+		Int_t delay = settings->Get(moduleName.Data(), "PretrigDelay", Form("%d", chGrp), 0);
+		this->WritePreTrigDelay(delay, i);
+		Int_t gate = settings->Get(moduleName.Data(), "TrigGateLength", Form("%d", chGrp), 0);
+		this->WriteTrigGateLength(gate, i);
+	}
+
+	chGrp = 12;
+	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+		Int_t length = settings->Get(moduleName.Data(), "RawDataSampleLength", Form("%d", chGrp), 0);
+		this->WriteRawDataSampleLength(length, i);
+		Int_t start = settings->Get(moduleName.Data(), "RawDataSampleStart", Form("%d", chGrp), 0);
+		this->WriteRawDataStartIndex(start, i);
+	}
+
+	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+		Int_t peak = settings->Get(moduleName.Data(), "TrigPeakTime", Form("%d", chGrp), 0);
+		Int_t gap = settings->Get(moduleName.Data(), "TrigGapTime", Form("%d", chGrp), 0);
+		this->WriteTrigPeakAndGap(peak, gap, i);
+		Int_t length = settings->Get(moduleName.Data(), "TrigPulseLength", Form("%d", chGrp), 0);
+		this->WriteTrigPulseLength(length, i);
+	}
+
+	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+		Int_t thresh = settings->Get(moduleName.Data(), "TrigThresh", Form("%d", chGrp), 0);
+		this->WriteTrigThreshold(thresh, i);
+		Bool_t gt = settings->Get(moduleName.Data(), "TrigGT", Form("%d", chGrp), kFALSE);
+		this->SetTriggerGT(gt, i);
+		Bool_t out = settings->Get(moduleName.Data(), "TrigOut", Form("%d", chGrp), kFALSE);
+		this->SetTriggerOut(out, i);
+	}
+
+	chGrp = 12;
+	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+		Int_t peak = settings->Get(moduleName.Data(), "EnergyPeakTime", Form("%d", chGrp), 0);
+		Int_t gap = settings->Get(moduleName.Data(), "EnergyGapTime", Form("%d", chGrp), 0);
+		this->WriteEnergyPeakAndGap(peak, gap, i);
+		Int_t decim = settings->Get(moduleName.Data(), "Decimation", Form("%d", chGrp), 0);
+		this->SetDecimation(decim, i);
+	}
+
+	chGrp = 12;
+	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+		Int_t gate = settings->Get(moduleName.Data(), "EnergyGateLength", Form("%d", chGrp), 0);
+		this->WriteEnergyGateLength(gate, i);
+		Int_t test = settings->Get(moduleName.Data(), "EnergyTestBits", Form("%d", chGrp), 0);
+		this->SetTestBits(test, i);
+	}
+
+	chGrp = 12;
+	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+		Int_t length = settings->Get(moduleName.Data(), "EnergySampleLength", Form("%d", chGrp), 0);
+		this->WriteEnergySampleLength(length, i);
+		Int_t start = settings->Get(moduleName.Data(), "EnergySampleStart1", Form("%d", chGrp), 0);
+		this->WriteStartIndex(start, 0, i);
+		start = settings->Get(moduleName.Data(), "EnergySampleStart2", Form("%d", chGrp), 0);
+		this->WriteStartIndex(start, 1, i);
+		start = settings->Get(moduleName.Data(), "EnergySampleStart3", Form("%d", chGrp), 0);
+		this->WriteStartIndex(start, 2, i);
+	}
+
+	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+		Int_t tau = settings->Get(moduleName.Data(), "EnergyTauFactor", Form("%d", chGrp), 0);
+		this->WriteTauFactor(tau, i);
+	}
+
+	return(kTRUE);
+}
+
 Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -626,9 +763,6 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							Int_t hdrBits;
 							this->GetHeaderBits(hdrBits, i);
 							tmpl.Substitute("$hdrBits", hdrBits, 16);
-							Int_t groupId;
-							this->GetGroupId(groupId, i);
-							tmpl.Substitute("$groupId", groupId, 16);
 							Int_t trigMode;
 							this->GetTriggerMode(trigMode, i);
 							Char_t * tm;
@@ -687,20 +821,6 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							Int_t start;
 							this->ReadRawDataStartIndex(start, i);
 							tmpl.Substitute("$start", start);
-							tmpl.WriteCode(settings);
-						}
-
-						tmpl.InitializeCode("%SampleAddr%");
-						tmpl.WriteCode(settings);
-						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
-							tmpl.InitializeCode("%SampleAddrLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
-							tmpl.Substitute("$adc", i);
-							Int_t addr;
-							this->ReadNextSampleAddr(addr, i);
-							tmpl.Substitute("$nextAddr", addr, 16);
-							this->ReadPrevBankSampleAddr(addr, i);
-							tmpl.Substitute("$prevAddr", addr, 16);
 							tmpl.WriteCode(settings);
 						}
 

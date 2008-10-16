@@ -6,8 +6,8 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.3 2008-09-03 14:23:55 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-09-03 14:23:55 $
+// Revision:       $Id: VMEControlData.cxx,v 1.4 2008-10-16 08:28:50 Marabou Exp $       
+// Date:           $Date: 2008-10-16 08:28:50 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -84,6 +84,7 @@ VMEControlData::VMEControlData() {
 		gMrbLog->Flush("VMEControlData");
 		fFixedFont = fNormalFont;
 	}		
+
 // open VMEcontrol's resource data base
 	TString errMsg;
 	fRcFile = fRootrc->Get(".RcFile", ".VMEControl.rc");
@@ -96,6 +97,10 @@ VMEControlData::VMEControlData() {
 	} else {
 		this->MakeZombie();
 	}
+
+	fSettingsPath = fRootrc->Get(".SettingsPath", "../SettingsPath");
+	gSystem->ExpandPathName(fSettingsPath);
+	this->CheckAccess(fSettingsPath.Data(), kVMEAccessDirectory | kVMEAccessWrite, errMsg, kTRUE);
 }
 
 Bool_t VMEControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly) {
@@ -164,7 +169,7 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	LofModules.Delete();
+	LofModules.Clear(); 	// clear list - don't delete objects!!
 
 	TString lm = fVctrlrc->Get(".LofModules", "");
 	if (lm.IsNull()) {
@@ -216,7 +221,7 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 					if (module->IsZombie()) {
 						errCnt++;
 					} else {
-						LofModules.AddNamedX(module);
+						LofModules.AddLast(module);
 					}
 				} else if (className.CompareTo("TMrbCaen_V785") == 0) {
 					gMrbLog->Wrn()	<< "[" << moduleName << "] Class " << className << " - not yet implemented" << endl;

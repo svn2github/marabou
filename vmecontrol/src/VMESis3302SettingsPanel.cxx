@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302SettingsPanel.cxx,v 1.1 2008-09-23 10:47:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMESis3302SettingsPanel.cxx,v 1.2 2008-10-16 08:28:50 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -30,6 +30,7 @@
 #include "TC2LSis3302.h"
 #include "VMESis3302Panel.h"
 #include "VMESis3302SettingsPanel.h"
+#include "VMESis3302SaveRestorePanel.h"
 
 #include "SetColor.h"
 
