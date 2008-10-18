@@ -8,7 +8,7 @@
 // Class:          VMEMainFrame
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: VMEMainFrame.h,v 1.3 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMEMainFrame.h,v 1.4 2008-10-18 17:09:14 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -64,7 +64,7 @@ class VMEMainFrame : public TGMainFrame {
 									kVMETabServer = 0,
 									kVMETabSis3302,
 									kVMETabCaen785,
-									kVMELastTab
+									kVMELastTab				// init of tabs has to be done in same order!!
 								};
 
 

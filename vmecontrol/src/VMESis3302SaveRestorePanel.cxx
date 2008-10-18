@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.1 2008-10-16 08:29:33 Marabou Exp $       
+// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.2 2008-10-18 17:09:14 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -134,6 +134,7 @@ VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(TGCompositeFrame * TabFra
 		fLofSelected.AddNamedX(bit, module->GetName(), "", module);
 		bit <<= 1;
 	}
+	fLofSelected.SetPatternMode();
 
 	fModules = new TGMrbCheckButtonGroup(this, "Modules", &fLofSelected,
 													kVMESis3302Modules, 1, 
@@ -226,8 +227,7 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 	if (baseName1.CompareTo(baseName2.Data()) == 0) loadDir = dirName;	// double click: strip off last part
 	
 	if (!uxSys.IsDirectory(loadDir.Data())) {
-		errMsg = "No such directory - ";
-		errMsg += loadDir;
+		errMsg = Form("Not a directory - %s, please go one level up", loadDir.Data());
 		gVMEControlData->MsgBox(this, "RestoreSettings", "Error", errMsg);
 		return(kFALSE);
 	}
@@ -265,7 +265,7 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 						<< nerr << " error(s))" << endl;
 		gMrbLog->Flush(this->ClassName(), "RestoreSettings", setblue);
 	}
-
+	return(kTRUE);
 }
 
 Bool_t VMESis3302SaveRestorePanel::SaveSettings() {

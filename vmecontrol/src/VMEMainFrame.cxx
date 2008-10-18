@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEMainFrame.cxx,v 1.3 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMEMainFrame.cxx,v 1.4 2008-10-18 17:09:14 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -243,6 +243,7 @@ void VMEMainFrame::PopupMessageViewer() {
 }
 
 void VMEMainFrame::MenuSelect(Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMEMainFrame::MenuSelect
 // Purpose:        Slot method
@@ -297,6 +298,7 @@ void VMEMainFrame::MenuSelect(Int_t Selection) {
 }
 
 void VMEMainFrame::TabChanged(Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMEMainFrame::TabChanged
 // Purpose:        Slot method

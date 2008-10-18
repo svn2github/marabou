@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.4 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMEServerPanel.cxx,v 1.5 2008-10-18 17:09:14 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -245,9 +245,15 @@ Bool_t VMEServerPanel::Connect() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	if (gVMEControlData->IsOffline()) {
+		gVMEControlData->MsgBox(this, "Connect", "OFFLINE", "Running in OFFLINE mode - no access to LynxOs");
+		return(kTRUE);
+	}
+
 	if (gMrbC2Lynx) {
 		gVMEControlData->MsgBox(this, "Connect", "Already connected ...",
 						Form("Already connected to LynxOs server @ %s:%d", gMrbC2Lynx->GetHost(), gMrbC2Lynx->GetPort()));
+		return(kTRUE);
 	}
 
 	TString ppc = fSelectHost->GetText();

@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LVMEModule.cxx,v 1.3 2008-09-03 14:23:55 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-09-03 14:23:55 $
+// Revision:       $Id: TC2LVMEModule.cxx,v 1.4 2008-10-18 17:09:14 Marabou Exp $     
+// Date:           $Date: 2008-10-18 17:09:14 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -25,14 +25,17 @@ namespace std {} using namespace std;
 #include "TMrbLogger.h"
 #include "SetColor.h"
 
+#include "M2L_MessageTypes.h"
+
 extern TMrbLogger * gMrbLog;
 
 extern TMrbC2Lynx * gMrbC2Lynx;
 
 ClassImp(TC2LVMEModule)
 
-TC2LVMEModule::TC2LVMEModule(const Char_t * ModuleName, const Char_t * ModuleType, UInt_t Address, Int_t NofChannels)
-																				: TMrbNamedX(0, ModuleName, ModuleType) {
+TC2LVMEModule::TC2LVMEModule(const Char_t * ModuleName, const Char_t * ModuleType,
+								UInt_t Address, Int_t NofChannels, Bool_t Offline)
+																: TMrbNamedX(0, ModuleName, ModuleType) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TC2LVMEModule
@@ -41,11 +44,16 @@ TC2LVMEModule::TC2LVMEModule(const Char_t * ModuleName, const Char_t * ModuleTyp
 //                 Char_t * ModuleType    -- type
 //                 UInt_t Address         -- VME address
 //                 Int_t NofChannels      -- number of channels used
+//                 Bool_t Offline         -- kTRUE if in offline mode
 // Results:        --
 // Description:    Class constructor
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("c2lynx.log");
+
+	fOffline = Offline;
+
+	fLofFunctionTypes.AddNamedX(kMrbLofFunctionTypes);
 
 	if (this->Connect(Address, NofChannels)) {
 		gROOT->Append(this);
@@ -67,7 +75,7 @@ Bool_t TC2LVMEModule::Connect(UInt_t Address, Int_t NofChannels) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (gMrbC2Lynx == NULL) {
+	if (gMrbC2Lynx == NULL && !this->IsOffline()) {
 		gMrbLog->Err()	<< "No connection to LynxOs server" << endl;
 		gMrbLog->Flush(this->ClassName(), "Connect");
 		return(kFALSE);
@@ -79,20 +87,25 @@ Bool_t TC2LVMEModule::Connect(UInt_t Address, Int_t NofChannels) {
 		return(kFALSE);
 	}
 
-	M2L_VME_Connect c;
-	gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &c, sizeof(M2L_VME_Connect), kM2L_MESS_VME_CONNECT);
-	strcpy(c.fModuleName, this->GetName());
-	strcpy(c.fModuleType, this->GetType());
-	c.fBaseAddr = Address;
-	c.fNofChannels = NofChannels;
-	if (gMrbC2Lynx->Send((M2L_MsgHdr *) &c)) {
-		M2L_VME_Return_Handle h;
-		gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &h, sizeof(M2L_VME_Return_Handle), kM2L_MESS_VME_CONNECT);
-		if (gMrbC2Lynx->Recv((M2L_MsgHdr *) &h)) {
-			this->SetHandle(h.fHandle);
-			gMrbC2Lynx->AddModule(this);
+	if (this->IsOffline()) {
+		this->SetHandle(0xAFFEC0C0);
+	} else {
+		M2L_VME_Connect c;
+		gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &c, sizeof(M2L_VME_Connect), kM2L_MESS_VME_CONNECT);
+		strcpy(c.fModuleName, this->GetName());
+		strcpy(c.fModuleType, this->GetType());
+		c.fBaseAddr = Address;
+		c.fNofChannels = NofChannels;
+		if (gMrbC2Lynx->Send((M2L_MsgHdr *) &c)) {
+			M2L_VME_Return_Handle h;
+			gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &h, sizeof(M2L_VME_Return_Handle), kM2L_MESS_VME_CONNECT);
+			if (gMrbC2Lynx->Recv((M2L_MsgHdr *) &h)) {
+				this->SetHandle(h.fHandle);
+				gMrbC2Lynx->AddModule(this);
+			}
 		}
 	}
+
 	if (this->GetHandle() == 0) {
 		gMrbLog->Err()	<< "Can't connect to module - " << this->GetName() << " (server reports error)" << endl;
 		gMrbLog->Flush(this->ClassName(), "Connect");
@@ -115,26 +128,33 @@ Bool_t TC2LVMEModule::GetModuleInfo() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	M2L_VME_Exec_Function x;
-	gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &x, sizeof(M2L_VME_Exec_Function), kM2L_MESS_VME_EXEC_FUNCTION);
-	x.fXhdr.fHandle = this->GetHandle();
-	x.fXhdr.fCode = kM2L_FCT_GET_MODULE_INFO;
-	if (gMrbC2Lynx->Send((M2L_MsgHdr *) &x)) {
-		M2L_VME_Return_Module_Info r;
-		gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &r, sizeof(M2L_VME_Return_Module_Info), kM2L_MESS_VME_EXEC_FUNCTION);
-		if (gMrbC2Lynx->Recv((M2L_MsgHdr *) &r)) {
-			gMrbLog->Out()	<< "[" << this->GetName() << "] type=" << this->GetTitle()
-							<< " boardId=" << r.fBoardId;
-			if (r.fSerial >= 0) gMrbLog->Out() << " serial=" << r.fSerial;
-			gMrbLog->Out()	<< " version=" << r.fMajorVersion;
-			if (r.fMinorVersion >= 0) gMrbLog->Out() << "." << r.fMinorVersion;
-			gMrbLog->Out()	<< endl;
-			gMrbLog->Flush(this->ClassName(), "GetModuleInfo");
-			return(kTRUE);		
+	if (this->IsOffline()) {
+		gMrbLog->Out()	<< "[" << this->GetName() << "] type=" << this->GetTitle()
+						<< " running on OFFLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetModuleInfo");
+		return(kTRUE);		
+	} else {
+		M2L_VME_Exec_Function x;
+		gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &x, sizeof(M2L_VME_Exec_Function), kM2L_MESS_VME_EXEC_FUNCTION);
+		x.fXhdr.fHandle = this->GetHandle();
+		x.fXhdr.fCode = kM2L_FCT_GET_MODULE_INFO;
+		if (gMrbC2Lynx->Send((M2L_MsgHdr *) &x)) {
+			M2L_VME_Return_Module_Info r;
+			gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &r, sizeof(M2L_VME_Return_Module_Info), kM2L_MESS_VME_EXEC_FUNCTION);
+			if (gMrbC2Lynx->Recv((M2L_MsgHdr *) &r)) {
+				gMrbLog->Out()	<< "[" << this->GetName() << "] type=" << this->GetTitle()
+								<< " boardId=" << r.fBoardId;
+				if (r.fSerial >= 0) gMrbLog->Out() << " serial=" << r.fSerial;
+				gMrbLog->Out()	<< " version=" << r.fMajorVersion;
+				if (r.fMinorVersion >= 0) gMrbLog->Out() << "." << r.fMinorVersion;
+				gMrbLog->Out()	<< endl;
+				gMrbLog->Flush(this->ClassName(), "GetModuleInfo");
+				return(kTRUE);		
+			} else {
+				return(kFALSE);
+			}
 		} else {
 			return(kFALSE);
 		}
-	} else {
-		return(kFALSE);
 	}
 }

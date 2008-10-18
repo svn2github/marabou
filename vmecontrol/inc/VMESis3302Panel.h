@@ -8,8 +8,8 @@
 // Class:          VMESis3302Panel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302Panel.h,v 1.2 2008-10-16 08:28:50 Marabou Exp $       
-// Date:           $Date: 2008-10-16 08:28:50 $
+// Revision:       $Id: VMESis3302Panel.h,v 1.3 2008-10-18 17:09:14 Marabou Exp $       
+// Date:           $Date: 2008-10-18 17:09:14 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -35,6 +35,7 @@
 
 #include "VMESis3302SettingsPanel.h"
 #include "VMESis3302SaveRestorePanel.h"
+#include "VMESis3302CopyPanel.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -50,8 +51,9 @@ class VMESis3302Panel : public TGCompositeFrame {
 	public:
 		enum EVMEMainFrameTabId {
 									kVMETabSettings = 0,
+									kVMETabCopy,
 									kVMETabSaveRestore,
-									kVMELastTab
+									kVMELastTab 				// init of tabs has to be done in same order!!
 								};
 
 		enum					{	kVMENofSis3302Chans =	8	};
@@ -78,6 +80,8 @@ class VMESis3302Panel : public TGCompositeFrame {
 		VMESis3302SettingsPanel * fSettingsPanel;
 		TGCompositeFrame * fSaveRestoreTab;
 		VMESis3302SaveRestorePanel * fSaveRestorePanel;
+		TGCompositeFrame * fCopyTab;
+		VMESis3302CopyPanel * fCopyPanel;
 
 		TMrbLofNamedX fLofModules;	// list of SIS 3302 modules
 

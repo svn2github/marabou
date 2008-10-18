@@ -8,8 +8,8 @@
 // Class:          VMESis3302SettingsPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302SettingsPanel.h,v 1.2 2008-10-14 10:22:29 Marabou Exp $       
-// Date:           $Date: 2008-10-14 10:22:29 $
+// Revision:       $Id: VMESis3302SettingsPanel.h,v 1.3 2008-10-18 17:09:14 Marabou Exp $       
+// Date:           $Date: 2008-10-18 17:09:14 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -79,6 +79,7 @@ class VMESis3302SettingsPanel : public TGCompositeFrame {
 										kVMESis3302EnergyDataStart2,
 										kVMESis3302EnergyDataStart3,
 										kVMESis3302EnergyDataLength,
+										kVMESis3302ActionReset,
 									};
 
 		enum EVMESis3302Clock		{
@@ -162,6 +163,9 @@ class VMESis3302SettingsPanel : public TGCompositeFrame {
 		void EnergyDataStart2Changed(Int_t FrameId, Int_t Selection);
 		void EnergyDataStart3Changed(Int_t FrameId, Int_t Selection);
 		void EnergyDataLengthChanged(Int_t FrameId, Int_t Selection);
+		void ResetModule();
+
+		void PerformAction(Int_t FrameId, Int_t Selection);
 
 	protected:
 		void UpdateAdcCounts();
@@ -214,6 +218,10 @@ class VMESis3302SettingsPanel : public TGCompositeFrame {
 		TGMrbLabelEntry * fEnergyDataStart2;		//			start index 2
 		TGMrbLabelEntry * fEnergyDataStart3;		//			start index 3
 		TGMrbLabelEntry * fEnergyDataLength;		//			length
+
+		TGMrbTextButtonGroup * fActionButtons;	 	// actions
+		
+		TMrbLofNamedX fActions;
 
 		TMrbLofNamedX * fLofModules;
 

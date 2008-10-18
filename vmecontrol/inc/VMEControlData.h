@@ -8,8 +8,8 @@
 // Class:          VMEControlData
 // Description:    A GUI to control VME modules
 // Author:         R. Lutter
-// Revision:       $Id: VMEControlData.h,v 1.5 2008-10-16 08:28:50 Marabou Exp $       
-// Date:           $Date: 2008-10-16 08:28:50 $
+// Revision:       $Id: VMEControlData.h,v 1.6 2008-10-18 17:09:14 Marabou Exp $       
+// Date:           $Date: 2008-10-18 17:09:14 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -35,8 +35,8 @@ enum						{	kAutoWidth			= 1 		};
 enum						{	kAutoHeight			= 1 		};
 
 // geometry settings
-enum						{	kFrameWidth 		= 1000		};
-enum						{	kFrameHeight 		= 600		};
+enum						{	kFrameWidth 		= 1200		};
+enum						{	kFrameHeight 		= 800		};
 enum						{	kTabWidth 			= kFrameWidth		};
 enum						{	kTabHeight 			= kFrameHeight		};
 enum						{	kLEWidth			= kFrameWidth/2			};
@@ -62,6 +62,7 @@ class VMEControlData : public TObject {
 	friend class VMESis3302Panel;
 	friend class VMESis3302SettingsPanel;
 	friend class VMESis3302SaveRestorePanel;
+	friend class VMESis3302CopyPanel;
 	friend class VMECaen785Panel;
 
 	public:

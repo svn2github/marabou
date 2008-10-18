@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.4 2008-10-16 08:28:50 Marabou Exp $   
-// Date:           $Date: 2008-10-16 08:28:50 $
+// Revision:       $Id: TC2LSis3302.h,v 1.5 2008-10-18 17:09:14 Marabou Exp $   
+// Date:           $Date: 2008-10-18 17:09:14 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -33,10 +33,10 @@ class TC2LSis3302 : public TC2LVMEModule {
 
 	public:
 
-		TC2LSis3302() { fSettingsFile = ""; };		// default ctor		
+		TC2LSis3302() {};		// default ctor		
 
-		TC2LSis3302(const Char_t * ModuleName, UInt_t Address = 0, Int_t NofChannels = 0)
-								: TC2LVMEModule(ModuleName, "Sis3302", Address, NofChannels) { fSettingsFile = ""; };
+		TC2LSis3302(const Char_t * ModuleName, UInt_t Address = 0, Int_t NofChannels = 0, Bool_t Offline = kFALSE)
+								: TC2LVMEModule(ModuleName, "Sis3302", Address, NofChannels, Offline) {};
 
 		~TC2LSis3302() {};							// default dtor
 
@@ -117,13 +117,15 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 		Bool_t RestoreSettings(const Char_t * SettingsFile = NULL);
 
+		Bool_t GetSingleEvent(TArrayI & Data, Int_t AdcNo);
+
+		Bool_t AccuHistogram(TArrayI & Data, Int_t AdcNo, Int_t NofEvents = -1);
+		Bool_t StartRun(Int_t AdcNo, Int_t NofEvents = -1);
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 		
 	protected:
 		Bool_t ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & DataRecv, Int_t Adc = kSis3302AllAdcs);
-
-	protected:
-		TString fSettingsFile;
 
 	ClassDef(TC2LSis3302, 1)		// [Access to LynxOs] Connect to a Sis3302 adc
 };

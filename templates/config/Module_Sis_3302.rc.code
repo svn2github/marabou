@@ -52,29 +52,30 @@ SIS3302.$moduleName.ExternalTimestampClear: $tsClear
 SIS3302.$moduleName.DacValue.$adcNo:		$dacValue
 %%End(DacSettingsLoop)%%
 
-%%Begin(EventConfig)%%
+%%Begin(EventHeader)%%
 
 #-----------------------------------------------------------------------------
-# Event configuration (per channel group)
+# Event configuration: header (per channel group)
 #-----------------------------------------------------------------------------
-%%End(EventConfig)%%
-%%Begin(EventConfigLoop)%%
+%%End(EventHeader)%%
+%%Begin(EventHeaderLoop)%%
 # channel group $chGrp:
 SIS3302.$moduleName.HeaderBits.$chGrp:	 	$hdrBits
-SIS3302.$moduleName.TriggerMode.$chGrp: 	$trigMode
-SIS3302.$moduleName.InvertSignal.$chGrp:	$invert
-%%End(EventConfigLoop)%%
+%%End(EventHeaderLoop)%%
 
-%%Begin(EndAddrThresh)%%
+%%Begin(EventTrigModePol)%%
 
 #-----------------------------------------------------------------------------
-# Event configuration (per channel group)
+# Event configuration: trigger mode and polarity
 #-----------------------------------------------------------------------------
-%%End(EndAddrThresh)%%
-%%Begin(EndAddrThreshLoop)%%
-# channel group $chGrp:
-SIS3302.$moduleName.EndAddrThresh.$chGrp:	$addr
-%%End(EndAddrThreshLoop)%%
+%%End(EventTrigModePol)%%
+%%Begin(EventTrigModeLoop)%%
+SIS3302.$moduleName.TriggerMode.$adcNo: 	$trigMode
+%%End(EventTrigModeLoop)%%
+
+%%Begin(EventTrigPolLoop)%%
+SIS3302.$moduleName.InvertSignal.$adcNo:	$invert
+%%End(EventTrigPolLoop)%%
 
 %%Begin(TrigDelayGate)%%
 

@@ -9,5 +9,6 @@
 #pragma link C++ class VMESis3302Panel;
 #pragma link C++ class VMESis3302SettingsPanel;
 #pragma link C++ class VMESis3302SaveRestorePanel;
+#pragma link C++ class VMESis3302CopyPanel;
 #pragma link C++ class VMECaen785Panel;
 #endif

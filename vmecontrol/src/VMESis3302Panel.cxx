@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.2 2008-10-16 08:28:50 Marabou Exp $       
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.3 2008-10-18 17:09:14 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -99,6 +99,9 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fSettingsPanel = NULL;
 	fSettingsTab = fTabFrame->AddTab("Settings");
 
+	fCopyPanel = NULL;
+	fCopyTab = fTabFrame->AddTab("Copy");
+
 	fSaveRestorePanel = NULL;
 	fSaveRestoreTab = fTabFrame->AddTab("Save/Restore");
 
@@ -137,6 +140,13 @@ void VMESis3302Panel::TabChanged(Int_t Selection) {
 			}
 			fSettingsPanel->UpdateGUI();
 			break;
+		case kVMETabCopy:
+			if (fCopyPanel == NULL) {
+				this->SetupModuleList();
+				fCopyPanel = new VMESis3302CopyPanel(fCopyTab, &fLofModules);
+			}
+			fCopyPanel->StartGUI();
+			break;
 		case kVMETabSaveRestore:
 			if (fSaveRestorePanel == NULL) {
 				this->SetupModuleList();
@@ -158,7 +168,7 @@ Bool_t VMESis3302Panel::SetupModuleList() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	if (gMrbC2Lynx) {
+	if (gVMEControlData->IsOffline() || gMrbC2Lynx) {
 		if (gVMEControlData->SetupModuleList(fLofModules, "TMrbSis_3302")) return(kTRUE);
 		if (this->GetNofModules() == 0) {
 			gVMEControlData->MsgBox(this, "SetupModuleList", "No modules", "No SIS 3302 modules found");

@@ -6,8 +6,8 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.4 2008-10-16 08:28:50 Marabou Exp $       
-// Date:           $Date: 2008-10-16 08:28:50 $
+// Revision:       $Id: VMEControlData.cxx,v 1.5 2008-10-18 17:09:14 Marabou Exp $       
+// Date:           $Date: 2008-10-18 17:09:14 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -217,7 +217,9 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 							errCnt++;
 						}
 					}
-					if (module == NULL) module = new TC2LSis3302(moduleName.Data(), vmeAddr, nofChannels);
+					if (module == NULL) {
+						module = new TC2LSis3302(moduleName.Data(), vmeAddr, nofChannels, this->IsOffline());
+					}
 					if (module->IsZombie()) {
 						errCnt++;
 					} else {

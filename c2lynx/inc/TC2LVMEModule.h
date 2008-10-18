@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LVMEModule.h,v 1.3 2008-09-03 14:23:54 Rudolf.Lutter Exp $   
-// Date:           $Date: 2008-09-03 14:23:54 $
+// Revision:       $Id: TC2LVMEModule.h,v 1.4 2008-10-18 17:09:14 Marabou Exp $   
+// Date:           $Date: 2008-10-18 17:09:14 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -34,7 +34,8 @@ class TC2LVMEModule : public TMrbNamedX {
 
 		TC2LVMEModule() {};								// default ctor		
 
-		TC2LVMEModule(const Char_t * ModuleName, const Char_t * ModuleType, UInt_t Address = 0, Int_t NofChannels = 0);
+		TC2LVMEModule(const Char_t * ModuleName, const Char_t * ModuleType,
+								UInt_t Address = 0, Int_t NofChannels = 0, Bool_t Offline = kFALSE);
 
 		~TC2LVMEModule() {};							// default dtor
 
@@ -47,6 +48,13 @@ class TC2LVMEModule : public TMrbNamedX {
 		Bool_t Connect(UInt_t Address, Int_t NofChannels);
 		Bool_t GetModuleInfo();
 
+		inline TMrbNamedX * FindFunction(Int_t Fcode) { return(fLofFunctionTypes.FindByIndex(Fcode)); };
+
+		inline void SetOffline(Bool_t Flag = kTRUE) { fOffline = Flag; };
+		inline Bool_t IsOffline() { return(fOffline); };
+		inline void SetVerbose(Bool_t Flag = kTRUE) { fVerbose = Flag; };
+		inline Bool_t IsVerbose() { return(fVerbose); };
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
@@ -55,10 +63,15 @@ class TC2LVMEModule : public TMrbNamedX {
 		inline void SetHandle(UInt_t Handle) { this->SetIndex((Int_t) Handle); };
 
 	protected:
+		Bool_t fVerbose;			// verbose mode
+		Bool_t fOffline;			// kTRUE if offline
 		UInt_t fBaseAddress; 		// module address
 		Int_t fNofChannels; 		// number of channels used
-		
-	ClassDef(TC2LVMEModule, 1)		// [Access to LynxOs] Connect to a VME module
+		TString fSettingsFile;		// where to store settings
+
+		TMrbLofNamedX fLofFunctionTypes;
+
+		ClassDef(TC2LVMEModule, 1)		// [Access to LynxOs] Connect to a VME module
 };
 
 #endif

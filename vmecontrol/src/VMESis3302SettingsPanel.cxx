@@ -6,16 +6,11 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302SettingsPanel.cxx,v 1.2 2008-10-16 08:28:50 Marabou Exp $       
+// Revision:       $Id: VMESis3302SettingsPanel.cxx,v 1.3 2008-10-18 17:09:14 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
 // Layout:
-//Begin_Html
-/*
-<img src=dgfcontrol/DGFInstrumentPanel.gif>
-*/
-//End_Html
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TObjString.h"
@@ -30,7 +25,6 @@
 #include "TC2LSis3302.h"
 #include "VMESis3302Panel.h"
 #include "VMESis3302SettingsPanel.h"
-#include "VMESis3302SaveRestorePanel.h"
 
 #include "SetColor.h"
 
@@ -99,6 +93,12 @@ const SMrbNamedX kVMESample[] =
 				{VMESis3302SettingsPanel::kVMESampleMinMax,			"min/max", "min/max energy values only (no trace data)"	},
 				{VMESis3302SettingsPanel::kVMESampleProg,			"progr trace", "programmable trace (up to 510 steps) + min/max"	},
 				{0, 												NULL			}
+			};
+
+const SMrbNamedX kVMEActions[] =
+			{
+				{VMESis3302SettingsPanel::kVMESis3302ActionReset,	"Reset",		"Reset module to power-up values"	},
+				{0, 												NULL,			NULL								}
 			};
 
 static TC2LSis3302 * curModule = NULL;
@@ -170,6 +170,10 @@ VMESis3302SettingsPanel::VMESis3302SettingsPanel(TGCompositeFrame * TabFrame, TM
 	buttonGC->SetLH(loNormal);
 	entryGC->SetLH(loNormal);
 	groupGC->SetLH(loXpndX);
+
+//	Initialize several lists
+	fActions.SetName("Actions");
+	fActions.AddNamedX(kVMEActions);
 
 //	module / channel selection
 	fSelectFrame = new TGGroupFrame(this, "Select module", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -459,6 +463,8 @@ VMESis3302SettingsPanel::VMESis3302SettingsPanel(TGCompositeFrame * TabFrame, TM
 															frameGC, labelGC, entryGC);
 	HEAP(fEnergyGate);
 	evr->AddFrame(fEnergyGate, groupGC->LH());
+	fEnergyGate->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fEnergyGate->SetTextAlignment(kTextRight);
 	fEnergyGate->SetState(kFALSE);
 
 	fTrigGate = new TGMrbLabelEntry(evr, "Trig gate",		200, kVMESis3302TrigGate,
@@ -466,6 +472,8 @@ VMESis3302SettingsPanel::VMESis3302SettingsPanel(TGCompositeFrame * TabFrame, TM
 															frameGC, labelGC, entryGC);
 	HEAP(fTrigGate);
 	evr->AddFrame(fTrigGate, groupGC->LH());
+	fTrigGate->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTrigGate->SetTextAlignment(kTextRight);
 	fTrigGate->SetState(kFALSE);
 
 	TGHorizontalFrame * h3 = new TGHorizontalFrame(fSettingsFrame);
@@ -505,7 +513,7 @@ VMESis3302SettingsPanel::VMESis3302SettingsPanel(TGCompositeFrame * TabFrame, TM
 	HEAP(fRawDataLength);
 	fRawDataLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fRawDataLength->SetText(0);
-	fRawDataLength->SetRange(0, 4095);
+	fRawDataLength->SetRange(0, 1024);
 	fRawDataLength->SetIncrement(4);
 	fRawDataLength->ShowToolTip(kTRUE, kTRUE);
 	rdvl->AddFrame(fRawDataLength, groupGC->LH());
@@ -578,16 +586,44 @@ VMESis3302SettingsPanel::VMESis3302SettingsPanel(TGCompositeFrame * TabFrame, TM
 	fEnergyDataLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fEnergyDataLength->SetText(0);
 	fEnergyDataLength->SetRange(0, 2047);
-	fEnergyDataLength->SetIncrement(2);
+	fEnergyDataLength->SetIncrement(128);
 	fEnergyDataLength->ShowToolTip(kTRUE, kTRUE);
 	edvl->AddFrame(fEnergyDataLength, groupGC->LH());
 	fEnergyDataLength->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EnergyDataLengthChanged(Int_t, Int_t)");
 
-	ChangeBackground(gVMEControlData->fColorGreen);
+// action buttons
+	fActionButtons = new TGMrbTextButtonGroup(this, "Actions", &fActions, -1, 1, frameGC, buttonGC);
+	HEAP(fActionButtons);
+	this->AddFrame(fActionButtons, groupGC->LH());
+	fActionButtons->JustifyButton(kTextCenterX);
+	((TGMrbButtonFrame *) fActionButtons)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
+
+	this->ChangeBackground(gVMEControlData->fColorGreen);
+
 	MapSubwindows();
 	Resize(GetDefaultSize());
 	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
 	MapWindow();
+}
+
+void VMESis3302SettingsPanel::PerformAction(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302SettingsPanel::PerformAction
+// Purpose:        Slot method: perform action
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        
+// Exceptions:     
+// Description:    Called on TGMrbTextButton::ButtonPressed()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Selection) {
+		case VMESis3302SettingsPanel::kVMESis3302ActionReset:
+			this->ResetModule();
+			break;
+	}
 }
 
 void VMESis3302SettingsPanel::UpdateGUI() {
@@ -605,6 +641,8 @@ void VMESis3302SettingsPanel::UpdateGUI() {
 	if (curModule == NULL) {
 		curModule = (TC2LSis3302 *) fLofModules->At(0);
 		if (curModule == NULL) return;
+		curModule->SetVerbose(gVMEControlData->IsVerbose());
+		curModule->SetOffline(gVMEControlData->IsOffline());
 	}
 
 	fSelectModule->Select(curModule->GetIndex());
@@ -631,7 +669,12 @@ void VMESis3302SettingsPanel::UpdateGUI() {
 	if (curModule->ReadDac(dacVal, curChannel)) fDacOffset->SetText(dacVal[0]);
 
 	Int_t p, g;
-	curModule->ReadTrigPeakAndGap(p, g, curChannel);
+	if (curModule->IsOffline()) {
+		p = fTrigPeaking->GetText2Int();
+		g = fTrigGap->GetText2Int();
+	} else {
+		curModule->ReadTrigPeakAndGap(p, g, curChannel);
+	}
 	if (p > 16) p = 16;
 	if (p < 1) p = 1;
 	if (g > 16) g = 16;
@@ -712,6 +755,8 @@ void VMESis3302SettingsPanel::ModuleChanged(Int_t FrameId, Int_t Selection) {
 //////////////////////////////////////////////////////////////////////////////
 
 	curModule = (TC2LSis3302 *) fLofModules->FindByIndex(Selection);
+	curModule->SetVerbose(gVMEControlData->IsVerbose());
+	curModule->SetOffline(gVMEControlData->IsOffline());
 	this->UpdateGUI();
 }
 
@@ -814,7 +859,12 @@ void VMESis3302SettingsPanel::TrigPeakingChanged(Int_t FrameId, Int_t EntryNo) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t p, psav, g;
-	curModule->ReadTrigPeakAndGap(psav, g, curChannel);
+	if (curModule->IsOffline()) {
+		psav = fTrigPeaking->GetText2Int();
+		g = fTrigGap->GetText2Int();
+	} else {
+		curModule->ReadTrigPeakAndGap(psav, g, curChannel);
+	}
 	fTrigPeaking->SetRange(1, 16 - g);
 
 	p = fTrigPeaking->GetText2Int(EntryNo);
@@ -840,7 +890,12 @@ void VMESis3302SettingsPanel::TrigGapChanged(Int_t FrameId, Int_t EntryNo) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t p, g, gsav;
-	curModule->ReadTrigPeakAndGap(p, gsav, curChannel);
+	if (curModule->IsOffline()) {
+		p = fTrigPeaking->GetText2Int();
+		gsav = fTrigGap->GetText2Int();
+	} else {
+		curModule->ReadTrigPeakAndGap(p, gsav, curChannel);
+	}
 	fTrigGap->SetRange(0, 16 - p);
 
 	g = fTrigGap->GetText2Int(EntryNo);
@@ -1124,12 +1179,12 @@ void VMESis3302SettingsPanel::EnergyDataModeChanged(Int_t FrameId, Int_t Selecti
 
 	Int_t val;
 	switch (Selection) {
-		case kVMESampleFull:	val = 510; break;
-		case kVMESampleMinMax:	val = 2; break;
+		case kVMESampleFull:	val = 512; break;
+		case kVMESampleMinMax:	val = 0; break;
 		default:				val = 0; break;
 	}
-	curModule->WriteEnergySampleLength(val);
 	fEnergyDataLength->SetText(val);
+	curModule->WriteEnergySampleLength(val);
 	this->UpdateGates();
 }
 
@@ -1248,8 +1303,14 @@ void VMESis3302SettingsPanel::UpdateAdcCounts() {
 
 	Int_t p, g, th;
 
-	curModule->ReadTrigPeakAndGap(p, g, curChannel);
-	curModule->ReadTrigThreshold(th, curChannel);
+	if (curModule->IsOffline()) {
+		p = fTrigPeaking->GetText2Int();
+		g = fTrigGap->GetText2Int();
+		th = fTrigThresh->GetText2Int();
+	} else {
+		curModule->ReadTrigPeakAndGap(p, g, curChannel);
+		curModule->ReadTrigThreshold(th, curChannel);
+	}
 	Int_t c = th * 16 / p;
 	fTrigSumG->SetText(p + g);
 	fTrigCounts->SetText(c);
@@ -1270,16 +1331,28 @@ void VMESis3302SettingsPanel::UpdateDecayTime() {
 	Int_t cs[]	=	{	100000, 50000,	25000,	10000,	1000	};
 
 	Int_t clockSource = 0;
-	curModule->GetClockSource(clockSource);
+	if (curModule->IsOffline()) {
+		clockSource = fClockSource->GetSelectedNx()->GetIndex();
+	} else {
+		curModule->GetClockSource(clockSource);
+	}
 	if (clockSource > kVMEClockSource1) {
 		fEnergyDecayTime->SetText("n/a");
 		return;
 	}
 
 	Int_t decim;
-	curModule->GetDecimation(decim, curChannel);
+	if (curModule->IsOffline()) {
+		decim = fEnergyDecimation->GetSelectedNx()->GetIndex();
+	} else {
+		curModule->GetDecimation(decim, curChannel);
+	}
 	Int_t tau;
-	curModule->ReadTauFactor(tau, curChannel);
+	if (curModule->IsOffline()) {
+		tau = fEnergyTauFactor->GetText2Int();
+	} else {
+		curModule->ReadTauFactor(tau, curChannel);
+	}
 
 	Double_t sampling;
 	switch (decim) {
@@ -1312,8 +1385,16 @@ void VMESis3302SettingsPanel::UpdateGates() {
 	Int_t edl;
 	Int_t val;
 	Int_t mode;
-	curModule->ReadEnergySampleLength(edl, curChannel);
-	if (edl == 510) {
+	if (curModule->IsOffline()) {
+		mode = fEnergyDataMode->GetSelectedNx()->GetIndex();
+		switch (mode) {
+			case kVMESampleFull: edl = 512; break;
+			case kVMESampleMinMax: edl = 0; break;
+		}
+	} else {
+		curModule->ReadEnergySampleLength(edl, curChannel);
+	}
+	if (edl == 512) {
 		mode = kVMESampleFull;
 		fEnergyDataMode->Select(mode);
 		val = 1; fEnergyDataStart1->SetText(val); curModule->WriteStartIndex(val, 0);
@@ -1323,7 +1404,7 @@ void VMESis3302SettingsPanel::UpdateGates() {
 		fEnergyDataStart2->SetState(kFALSE);
 		fEnergyDataStart3->SetState(kFALSE);
 		fEnergyDataLength->SetState(kFALSE);
-	} else if (edl == 2) {
+	} else if (edl == 0) {
 		mode = kVMESampleMinMax;
 		fEnergyDataMode->Select(mode);
 		val = 1; fEnergyDataStart1->SetText(val); curModule->WriteStartIndex(val, 0);
@@ -1343,9 +1424,18 @@ void VMESis3302SettingsPanel::UpdateGates() {
 	}
 
 	Int_t preTrigDel;
-	curModule->ReadPreTrigDelay(preTrigDel, curChannel);
+	if (curModule->IsOffline()) {
+		preTrigDel = fPreTrigDelay->GetText2Int();
+	} else {
+		curModule->ReadPreTrigDelay(preTrigDel, curChannel);
+	}
+
 	Int_t decim;
-	curModule->GetDecimation(decim, curChannel);
+	if (curModule->IsOffline()) {
+		decim = fEnergyDecimation->GetSelectedNx()->GetIndex();
+	} else {
+		curModule->GetDecimation(decim, curChannel);
+	}
 
 	Int_t delay;
 	switch (decim) {
@@ -1356,7 +1446,12 @@ void VMESis3302SettingsPanel::UpdateGates() {
 	}
 
 	Int_t peak, gap;
-	curModule->ReadEnergyPeakAndGap(peak, gap, curChannel);
+	if (curModule->IsOffline()) {
+		peak = fEnergyPeaking->GetText2Int();
+		gap = fEnergyGap->GetText2Int();
+	} else {
+		curModule->ReadEnergyPeakAndGap(peak, gap, curChannel);
+	}
 
 	Int_t egate;
 	if (mode == kVMESampleMinMax) {
@@ -1364,12 +1459,17 @@ void VMESis3302SettingsPanel::UpdateGates() {
 	} else {
 		egate = delay + 600;
 	}
-	curModule->WriteEnergyGateLength(egate, curChannel);
 	fEnergyGate->SetText(egate);
+	curModule->WriteEnergyGateLength(egate, curChannel);
 
 	Int_t rds, rdl;
-	curModule->ReadRawDataStartIndex(rds, curChannel);
-	curModule->ReadRawDataSampleLength(rdl, curChannel);
+	if (curModule->IsOffline()) {
+		rds = fRawDataStart->GetText2Int();
+		rdl = fRawDataLength->GetText2Int();
+	} else {
+		curModule->ReadRawDataStartIndex(rds, curChannel);
+		curModule->ReadRawDataSampleLength(rdl, curChannel);
+	}
 
 	Int_t tgate, tgate2;
 	tgate = delay + 2 * peak + gap;
@@ -1378,4 +1478,20 @@ void VMESis3302SettingsPanel::UpdateGates() {
 	tgate += 16;
 	fTrigGate->SetText(tgate);
 	curModule->WriteTrigGateLength(tgate, curChannel);
+}
+
+void VMESis3302SettingsPanel::ResetModule() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302SettingsPanel::ResetModule
+// Purpose:        Reset module to power-up settings
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Reset
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	curModule->KeyAddr(kSis3302KeyReset);
+	this->UpdateGUI();
 }
