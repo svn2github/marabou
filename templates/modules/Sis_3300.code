@@ -27,6 +27,9 @@
 					s_$moduleName = sis_3300_alloc($baseAddrL, $moduleName, "$moduleName", $moduleSerial); /* allocate data struct */
 					sis_3300_module_info(s_$moduleName);						/* read module info */
 					sis_3300_fill_struct(s_$moduleName, "$settingsFile");		/* fill sis struct from environment data */
+					sis_3300_stopSampling(s_$moduleName);						/* stop sampling, disarm banks */
+					sis_3300_disarmBank(s_$moduleName, 0);
+					sis_3300_disarmBank(s_$moduleName, 1);
 					sis_3300_initialize(s_$moduleName); 						/* initialize module */
 
 %%EndOfCode%%
@@ -119,7 +122,7 @@
 
 %%BeginOfCode%%
 					if (s_$moduleName->autoBankSwitch) {
-						sis_3300_startAutoBankSwitch(s_$moduleName);
+						sis_3300_stopAutoBankSwitch(s_$moduleName);
 					} else {
 						sis_3300_stopSampling(s_$moduleName);
 						sis_3300_disarmBank(s_$moduleName, 0);
