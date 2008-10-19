@@ -43,6 +43,7 @@ enum EM2L_FunctionType {
 	kM2L_FCT_GET_MODULE_INFO	=	0x1, 					// get module info
 	kM2L_FCT_CAEN_875			=	0x100,					// caen adc v875
 	kM2L_FCT_SIS_3302			=	0x200,					// sis flash adc 3302
+	kM2L_FCT_SIS_3302_SET_TIMEOUT,
 	kM2L_FCT_SIS_3302_READ_DAC,
 	kM2L_FCT_SIS_3302_WRITE_DAC,
 	kM2L_FCT_SIS_3302_KEY_ADDR,
@@ -110,6 +111,7 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_GET_MODULE_INFO,		"get module info"},
 		{kM2L_FCT_CAEN_875, 			"exec function (CAEN V785)"},
 		{kM2L_FCT_SIS_3302, 			"exec function (SIS 3302)"},
+		{kM2L_FCT_SIS_3302_SET_TIMEOUT,					"set timeout (cycles)"},
 		{kM2L_FCT_SIS_3302_READ_DAC,					"read dac offsets"},
 		{kM2L_FCT_SIS_3302_WRITE_DAC,					"write dac offsets"},
 		{kM2L_FCT_SIS_3302_KEY_ADDR,					"exec key addr command"},
@@ -167,6 +169,9 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_SIS_3302_SET_INTERNAL_TRIGGER,		"set internal trigger"},
 		{kM2L_FCT_SIS_3302_GET_CLOCK_SOURCE,			"get clock source"},
 		{kM2L_FCT_SIS_3302_SET_CLOCK_SOURCE,			"set clock source"},
+		{kM2L_FCT_SIS_3302_GET_SINGLE_EVENT,			"get single event"},
+		{kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,				"accu histogram"},
+		{kM2L_FCT_SIS_3302_START_RUN,					"start run"},
 		{0, 											NULL}
 	};
 #endif

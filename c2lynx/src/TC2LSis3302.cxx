@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.7 2008-10-18 17:09:14 Marabou Exp $     
-// Date:           $Date: 2008-10-18 17:09:14 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.8 2008-10-19 17:29:21 Marabou Exp $     
+// Date:           $Date: 2008-10-19 17:29:21 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -56,7 +56,7 @@ Bool_t TC2LSis3302::ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & Data
 		TString fn = f ? f->GetName() : "???";
 		TString an = (AdcNo == kSis3302AllAdcs) ? "all" : Form("chn%d", AdcNo);
 		cout << "[" << this->GetName() << ", " << an << "] Exec function - \""
-					<< fn << " (0x" << setbase(16) << Fcode << setbase(10) << ")";
+					<< fn << "\" (0x" << setbase(16) << Fcode << setbase(10) << ")";
 		for (Int_t i = 0; i < DataSend.GetSize(); i++) {
 			if (i == 0) cout	<< ", data: "; else cout << ", ";
 			cout	<< DataSend[i]

@@ -43,4 +43,10 @@
 						kSis3302TrigGateLengthMax 	= 1024,
 					};
 
+	enum			{	kSis3302EventPreHeader 		= 2 };
+	enum			{	kSis3302EventHeader 		= 2 };
+	enum			{	kSis3302EventMinMax 		= 2 };
+	enum			{	kSis3302EventTrailer 		= 2 };
+
+
 #endif

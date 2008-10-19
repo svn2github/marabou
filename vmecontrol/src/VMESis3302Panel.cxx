@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.4 2008-10-19 09:14:35 Marabou Exp $       
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.5 2008-10-19 17:29:21 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -26,6 +26,7 @@
 #include "VMESis3302Panel.h"
 #include "VMESis3302SaveRestorePanel.h"
 #include "VMESis3302CopyPanel.h"
+#include "VMESis3302StartRunPanel.h"
 
 #include "SetColor.h"
 
@@ -523,7 +524,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fRawDataLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fRawDataLength->SetText(0);
 	fRawDataLength->SetRange(0, 1024);
-	fRawDataLength->SetIncrement(4);
+	fRawDataLength->SetIncrement(128);
 	fRawDataLength->ShowToolTip(kTRUE, kTRUE);
 	rdvl->AddFrame(fRawDataLength, groupGC->LH());
 	fRawDataLength->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "RawDataLengthChanged(Int_t, Int_t)");
@@ -570,7 +571,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fEnergyDataStart2);
 	fEnergyDataStart2->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fEnergyDataStart2->SetText(0);
-	fEnergyDataStart2->SetRange(0, 2047);
+	fEnergyDataStart2->SetRange(0, 4095);
 	fEnergyDataStart2->SetIncrement(1);
 	fEnergyDataStart2->ShowToolTip(kTRUE, kTRUE);
 	edvl->AddFrame(fEnergyDataStart2, groupGC->LH());
@@ -582,7 +583,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fEnergyDataStart3);
 	fEnergyDataStart3->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fEnergyDataStart3->SetText(0);
-	fEnergyDataStart3->SetRange(0, 2047);
+	fEnergyDataStart3->SetRange(0, 4095);
 	fEnergyDataStart3->SetIncrement(1);
 	fEnergyDataStart3->ShowToolTip(kTRUE, kTRUE);
 	edvl->AddFrame(fEnergyDataStart3, groupGC->LH());
@@ -594,8 +595,8 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fEnergyDataLength);
 	fEnergyDataLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fEnergyDataLength->SetText(0);
-	fEnergyDataLength->SetRange(0, 2047);
-	fEnergyDataLength->SetIncrement(128);
+	fEnergyDataLength->SetRange(0, 512);
+	fEnergyDataLength->SetIncrement(32);
 	fEnergyDataLength->ShowToolTip(kTRUE, kTRUE);
 	edvl->AddFrame(fEnergyDataLength, groupGC->LH());
 	fEnergyDataLength->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EnergyDataLengthChanged(Int_t, Int_t)");
@@ -633,6 +634,7 @@ void VMESis3302Panel::PerformAction(Int_t FrameId, Int_t Selection) {
 			this->ResetModule();
 			break;
 		case VMESis3302Panel::kVMESis3302ActionRun:
+			new VMESis3302StartRunPanel(fClient->GetRoot(), &fLofModules, frameWidth*2/3, frameHeight);
 			break;
 		case VMESis3302Panel::kVMESis3302ActionSaveRestore:
 			new VMESis3302SaveRestorePanel(fClient->GetRoot(), &fLofModules, frameWidth/4, frameHeight/3);
@@ -1218,7 +1220,7 @@ void VMESis3302Panel::EnergyDataStart1Changed(Int_t FrameId, Int_t EntryNo) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	this->EnergyDataStartChanged(0, fEnergyDataStart1, EntryNo);
+	this->EnergyDataStartOrLengthChanged(0, fEnergyDataStart1, EntryNo);
 }
 
 void VMESis3302Panel::EnergyDataStart2Changed(Int_t FrameId, Int_t EntryNo) {
@@ -1234,7 +1236,7 @@ void VMESis3302Panel::EnergyDataStart2Changed(Int_t FrameId, Int_t EntryNo) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	this->EnergyDataStartChanged(1, fEnergyDataStart2, EntryNo);
+	this->EnergyDataStartOrLengthChanged(1, fEnergyDataStart2, EntryNo);
 }
 
 void VMESis3302Panel::EnergyDataStart3Changed(Int_t FrameId, Int_t EntryNo) {
@@ -1250,32 +1252,7 @@ void VMESis3302Panel::EnergyDataStart3Changed(Int_t FrameId, Int_t EntryNo) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	this->EnergyDataStartChanged(2, fEnergyDataStart3, EntryNo);
-}
-
-void VMESis3302Panel::EnergyDataStartChanged(Int_t IdxNo, TGMrbLabelEntry * Entry, Int_t EntryNo) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           VMESis3302Panel::EnergyDataStartChanged
-// Purpose:        Slot method: trigger settings changed
-// Arguments:      Int_t FrameId     -- frame id (ignored)
-//                 Int_t EntryNo     -- entry (ignored)
-// Results:        --
-// Exceptions:     
-// Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	Int_t eds, edssav;
-	curModule->ReadStartIndex(edssav, IdxNo, curChannel);
-
-	eds = Entry->GetText2Int(EntryNo);
-	if (!Entry->CheckRange(eds, EntryNo, kTRUE, kTRUE)) {
-		Entry->SetText(edssav, EntryNo);
-	} else {
-		curModule->WriteStartIndex(eds, IdxNo);
-	}
-	this->UpdateGates();
+	this->EnergyDataStartOrLengthChanged(2, fEnergyDataStart3, EntryNo);
 }
 
 void VMESis3302Panel::EnergyDataLengthChanged(Int_t FrameId, Int_t EntryNo) {
@@ -1291,15 +1268,61 @@ void VMESis3302Panel::EnergyDataLengthChanged(Int_t FrameId, Int_t EntryNo) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	this->EnergyDataStartOrLengthChanged(-1, fEnergyDataLength, EntryNo);
+}
+
+void VMESis3302Panel::EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntry * Entry, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::EnergyDataStartOrLengthChanged
+// Purpose:        Slot method: trigger settings changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t EntryNo     -- entry (ignored)
+// Results:        --
+// Exceptions:     
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (IdxNo >= 0) {
+		Int_t eds, edssav;
+		curModule->ReadStartIndex(edssav, IdxNo, curChannel);
+
+		eds = Entry->GetText2Int(EntryNo);
+		if (!Entry->CheckRange(eds, EntryNo, kTRUE, kTRUE)) {
+			Entry->SetText(edssav, EntryNo);
+		} else {
+			curModule->WriteStartIndex(eds, IdxNo);
+		}
+	}
+
 	Int_t edl, edlsav;
 	curModule->ReadEnergySampleLength(edlsav, curChannel);
+
+	Int_t nofStarts = 0;
+	if (curModule->IsOffline()) {
+		Int_t start = fEnergyDataStart1->GetText2Int(); if (start > 0) nofStarts++;
+		start = fEnergyDataStart2->GetText2Int(); if (start > 0) nofStarts++;
+		start = fEnergyDataStart3->GetText2Int(); if (start > 0) nofStarts++;
+	} else {
+		for (Int_t i = 0; i < 3; i++) {
+			Int_t start = 0;
+			curModule->ReadStartIndex(start, i, curChannel);
+			if (start > 0) nofStarts++;
+		}
+	}
 
 	edl = fEnergyDataLength->GetText2Int(EntryNo);
 	if (!fEnergyDataLength->CheckRange(edl, EntryNo, kTRUE, kTRUE)) {
 		fEnergyDataLength->SetText(edlsav, EntryNo);
 	} else if (edl & 1) {
-		gVMEControlData->MsgBox(this, "EnergyDataLengthChanged", "Error", Form("Illegal sampling length - %d (has to be even)", edl));
+		gVMEControlData->MsgBox(this, "EnergyDataStartOrLengthChanged", "Error", Form("Illegal sampling length - %d (has to be even)", edl));
 		fEnergyDataLength->SetText(edlsav, EntryNo);
+	} else if (edl * nofStarts > 512) {
+		gVMEControlData->MsgBox(this, "EnergyDataStartOrLengthChanged", "Error", Form("Wrong sampling length - %d * %d (exceeds 512)", nofStarts, edl));
+		Int_t dl = 512 / nofStarts;
+		if (dl & 1) dl--;
+		fEnergyDataLength->SetText(dl, EntryNo);
 	} else {
 		curModule->WriteEnergySampleLength(edl);
 	}

@@ -8,8 +8,8 @@
 // Class:          VMESis3302Panel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302Panel.h,v 1.4 2008-10-19 09:14:35 Marabou Exp $       
-// Date:           $Date: 2008-10-19 09:14:35 $
+// Revision:       $Id: VMESis3302Panel.h,v 1.5 2008-10-19 17:29:21 Marabou Exp $       
+// Date:           $Date: 2008-10-19 17:29:21 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -177,7 +177,7 @@ class VMESis3302Panel : public TGCompositeFrame {
 		void UpdateAdcCounts();
 		void UpdateGates();
 		void UpdateDecayTime();
-		void EnergyDataStartChanged(Int_t IdxNo, TGMrbLabelEntry * Entry, Int_t EntryNo);
+		void EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntry * Entry, Int_t EntryNo);
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
