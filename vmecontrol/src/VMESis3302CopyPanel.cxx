@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302CopyPanel.cxx,v 1.1 2008-10-18 17:09:14 Marabou Exp $       
+// Revision:       $Id: VMESis3302CopyPanel.cxx,v 1.2 2008-10-19 09:14:35 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -36,14 +36,16 @@ ClassImp(VMESis3302CopyPanel)
 const SMrbNamedX kVMEActions[] =
 			{
 				{VMESis3302CopyPanel::kVMESis3302ActionCopy,	"Copy",		"Copy settings from source to dest"	},
+				{VMESis3302CopyPanel::kVMESis3302ActionClose,	"Close",	"Close window"	},
 				{0, 												NULL,			NULL								}
 			};
 
 static TC2LSis3302 * curModule = NULL;
 static Int_t curChannel = 0;
 
-VMESis3302CopyPanel::VMESis3302CopyPanel(TGCompositeFrame * TabFrame, TMrbLofNamedX * LofModules) :
-				TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
+VMESis3302CopyPanel::VMESis3302CopyPanel(const TGWindow * Window, TMrbLofNamedX * LofModules,
+												UInt_t Width, UInt_t Height, UInt_t Options)
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302CopyPanel
@@ -187,7 +189,7 @@ VMESis3302CopyPanel::VMESis3302CopyPanel(TGCompositeFrame * TabFrame, TMrbLofNam
 
 	MapSubwindows();
 	Resize(GetDefaultSize());
-	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
+	Resize(Width, Height);
 	MapWindow();
 }
 
@@ -230,6 +232,9 @@ void VMESis3302CopyPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 	switch (Selection) {
 		case VMESis3302CopyPanel::kVMESis3302ActionCopy:
 			this->CopySettings();
+			break;
+		case VMESis3302CopyPanel::kVMESis3302ActionClose:
+			this->CloseWindow();
 			break;
 	}
 }

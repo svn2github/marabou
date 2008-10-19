@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEMainFrame.cxx,v 1.4 2008-10-18 17:09:14 Marabou Exp $       
+// Revision:       $Id: VMEMainFrame.cxx,v 1.5 2008-10-19 09:14:35 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -322,6 +322,7 @@ void VMEMainFrame::TabChanged(Int_t Selection) {
 
 		case kVMETabSis3302:
 			if (fSis3302Panel == NULL) fSis3302Panel = new VMESis3302Panel(fSis3302Tab);
+			fSis3302Panel->UpdateGUI();
 			break;
 
 		case kVMETabCaen785:

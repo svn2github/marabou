@@ -8,7 +8,7 @@
 // Class:          VMESis3302SaveRestorePanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302SaveRestorePanel.h,v 1.1 2008-10-16 08:29:33 Marabou Exp $       
+// Revision:       $Id: VMESis3302SaveRestorePanel.h,v 1.2 2008-10-19 09:14:35 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -48,18 +48,20 @@ namespace std {} using namespace std;
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class VMESis3302SaveRestorePanel : public TGCompositeFrame {
+class VMESis3302SaveRestorePanel : public TGMainFrame {
 
 	public:
 
 		// cmd ids to dispatch over X events in this panel
 		enum EVMESis3302SaveRestoreId 		{	kVMESis3302Save,
 												kVMESis3302Restore,
+												kVMESis3302Close,
 												kVMESis3302Modules,
 											};
 				
 	public:
-		VMESis3302SaveRestorePanel(TGCompositeFrame * TabFrame, TMrbLofNamedX * LofModules);
+		VMESis3302SaveRestorePanel(const TGWindow * Parent, TMrbLofNamedX * LofModules,
+							UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~VMESis3302SaveRestorePanel() { fHeap.Delete(); };
 
 		void PerformAction(Int_t FrameId, Int_t Selection);
@@ -67,6 +69,7 @@ class VMESis3302SaveRestorePanel : public TGCompositeFrame {
 	protected:
 		Bool_t SaveSettings();			// save settings to file
 		Bool_t RestoreSettings();		// restore settings from file
+		inline void CloseWindow() { TGMainFrame::CloseWindow(); };
 
 	protected:
 		TList fHeap;								//! list of objects created on heap

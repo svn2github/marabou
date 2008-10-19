@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.2 2008-10-18 17:09:14 Marabou Exp $       
+// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.3 2008-10-19 09:14:35 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -46,6 +46,7 @@ const SMrbNamedX kVMESis302SaveRestoreActions[] =
 			{
 				{VMESis3302SaveRestorePanel::kVMESis3302Save,		"Save",			"Save module settings"	},
 				{VMESis3302SaveRestorePanel::kVMESis3302Restore,	"Restore",		"Restore module settings"	},
+				{VMESis3302SaveRestorePanel::kVMESis3302Close,		"Close",		"Close window"	},
 				{0, 											NULL,			NULL								}
 			};
 
@@ -55,8 +56,9 @@ extern TMrbLogger * gMrbLog;
 ClassImp(VMESis3302SaveRestorePanel)
 
 
-VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(TGCompositeFrame * TabFrame, TMrbLofNamedX * LofModules) :
-				TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
+VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(const TGWindow * Window, TMrbLofNamedX * LofModules,
+												UInt_t Width, UInt_t Height, UInt_t Options)
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302SaveRestorePanel
@@ -153,7 +155,7 @@ VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(TGCompositeFrame * TabFra
 
 	MapSubwindows();
 	Resize(GetDefaultSize());
-	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
+	Resize(Width, Height);
 	MapWindow();
 }
 
@@ -176,6 +178,9 @@ void VMESis3302SaveRestorePanel::PerformAction(Int_t FrameId, Int_t Selection) {
 			break;
 		case VMESis3302SaveRestorePanel::kVMESis3302Restore:
 			this->RestoreSettings();
+			break;
+		case VMESis3302SaveRestorePanel::kVMESis3302Close:
+			this->CloseWindow();
 			break;
 	}
 }

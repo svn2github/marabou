@@ -8,8 +8,8 @@
 // Class:          VMESis3302CopyPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302CopyPanel.h,v 1.1 2008-10-18 17:09:14 Marabou Exp $       
-// Date:           $Date: 2008-10-18 17:09:14 $
+// Revision:       $Id: VMESis3302CopyPanel.h,v 1.2 2008-10-19 09:14:35 Marabou Exp $       
+// Date:           $Date: 2008-10-19 09:14:35 $
 // URL:            
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -45,18 +45,20 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class VMESis3302CopyPanel : public TGCompositeFrame {
+class VMESis3302CopyPanel : public TGMainFrame {
 
 	public:
 		enum EVMESis3302CmdId 		{
 										kVMESis3302SelectModuleFrom,
 										kVMESis3302SelectChannelFrom,
 										kVMESis3302ActionCopy,
+										kVMESis3302ActionClose,
 										kVMESis3302SelectModuleTo		// has to be last entry in list!!
 									};
 
 	public:
-		VMESis3302CopyPanel(TGCompositeFrame * TabFrame, TMrbLofNamedX * LofModules);
+		VMESis3302CopyPanel(const TGWindow * Parent, TMrbLofNamedX * LofModules,
+							UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~VMESis3302CopyPanel() {
 			fFocusList.Clear();
 			fHeap.Delete();
@@ -70,6 +72,7 @@ class VMESis3302CopyPanel : public TGCompositeFrame {
 
 	protected:
 		void CopySettings();
+		inline void CloseWindow() { TGMainFrame::CloseWindow(); };
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
