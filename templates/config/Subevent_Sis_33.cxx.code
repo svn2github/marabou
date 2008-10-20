@@ -45,15 +45,23 @@
 %B%// Keywords: 	  
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%B% 	memset(fChanData, sizeof(fChanData), 0);
-%B% 	memset(fShapedData, sizeof(fShapedData), 0);
+%B% 	fChanData.Clear();
+%B% 	fShapedData.Clear();
 %CB%	if (gMrbAnalyze->FindParam("$paramNameLC$type") == NULL) {
-%ST% 		gMrbAnalyze->AddParamToList("$paramNameLC$type", (TObject *) $paramNameLC$type, kMrbModule$moduleNameUC, $paramIndex);
-%ST% 		fChanData[$chnIndex] = $paramNameLC$type;
+%ST% 		gMrbAnalyze->AddParamToList("$paramNameLC$type", (TObject *) &$paramNameLC$type, kMrbModule$moduleNameUC, $paramIndex);
+%ST% 		$paramNameLC$type.SetName("$paramNameLC$type");
+%ST% 		$paramNameLC$type.Set($pageSize);
+%ST% 		fChanData.Expand(kNofChannels);
+%ST% 		fChanData[$chnIndex] = &$paramNameLC$type;
 %ST% 		fDataSize[$chnIndex] = $pageSize;
 %ST% 		fPageSize[$chnIndex] = $pageSize;
-%SH%		fShapedData[$chnIndex] = $paramNameLCSS;
-%SH%		fShapedData[kNofChannels + $chnIndex] = $paramNameLCLS;
+%SH% 		$paramNameLCSS.SetName("$paramNameLCSS");
+%SH% 		$paramNameLCSS.Set($pageSize);
+%SH% 		$paramNameLCLS.SetName("$paramNameLCLS");
+%SH% 		$paramNameLCLS.Set($pageSize);
+%SH%		fShapedData.Expand(2 * kNofChannels);
+%SH%		fShapedData[$chnIndex] = &$paramNameLCSS;
+%SH%		fShapedData[kNofChannels + $chnIndex] = &$paramNameLCLS;
 %CE% 	}
 %E%
 %E%	return(kTRUE);

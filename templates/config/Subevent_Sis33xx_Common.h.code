@@ -44,8 +44,13 @@ class TMrbSubevent_Sis33xx : public TObject {
 		Bool_t InitializeShaper(const Char_t * SettingsFile = NULL, const Char_t * Module = NULL, Int_t NofChannels = -1);
 		Bool_t Shaper(Int_t Channel, Int_t ShapeIdx);
 
-		inline UInt_t * GetChanData(Int_t Channel) { return(fChanData[Channel]); };
-		inline Double_t * GetShapedData(Int_t Channel, Int_t ShapeIdx) { return(fShapedData[kNofChannels * ShapeIdx + Channel]); };
+		inline Int_t * GetChanData(Int_t Channel) {
+				return(((TMrbNamedArrayI *) fChanData[Channel])->GetArray());
+		};
+
+		inline Double_t * GetShapedData(Int_t Channel, Int_t ShapeIdx) {
+				return(((TMrbNamedArrayD *) fShapedData[kNofChannels * ShapeIdx + Channel])->GetArray());
+		};
 		inline Double_t GetShapeMin(Int_t Channel, Int_t ShapeIdx) { return(fShapeMin[kNofChannels * ShapeIdx + Channel]); };
 		inline Double_t GetShapeMax(Int_t Channel, Int_t ShapeIdx) { return(fShapeMax[kNofChannels * ShapeIdx + Channel]); };
 		inline Double_t GetPeakTime(Int_t Channel, Int_t ShapeIdx) { return(fPeakTime[kNofChannels * ShapeIdx + Channel]); };
@@ -64,8 +69,8 @@ class TMrbSubevent_Sis33xx : public TObject {
 
 		Int_t fTimeStamp;						// time stamp, same as fUniqueID
 
-		UInt_t * fChanData[kNofChannels];			// pointer to samples data
-		Double_t * fShapedData[2 * kNofChannels]; 	// pointer to shaped data
+		TObjArray fChanData;						// *pointer* (!!) to samples data
+		TObjArray fShapedData;					 	// *pointer* (!!) to shaped data
 		Bool_t fChanTriggered[kNofChannels];		// kTRUE if channel triggered
 		Bool_t fChanOverflow[kNofChannels]; 		// channel has overflow
 		Int_t fDataSize[kNofChannels];				// size of data

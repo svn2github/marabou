@@ -25,6 +25,7 @@
 #include "TEnv.h"
 #include "TMrbLogger.h"
 #include "TMrbString.h"
+#include "TMrbNamedArray.h"
 
 #include "TMrbAnalyze.h"
 #include "TMrbTransport.h"

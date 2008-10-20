@@ -143,7 +143,7 @@ Bool_t  TMrbSubevent_Sis33xx::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 						break;
 				}
     
-				UInt_t * pch0 = fChanData[ch0];
+				Int_t * pch0 = ((TMrbNamedArrayI *) fChanData[ch0])->GetArray();
 				if (pch0 == NULL) {
 					cerr	<< setred
 							<< this->ClassName() << "::FillSubevent(): [Module "
@@ -152,7 +152,7 @@ Bool_t  TMrbSubevent_Sis33xx::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 							<< setblack << endl;
 					return(kTRUE);
 				}
-				UInt_t * pch1 = fChanData[ch1];
+				Int_t * pch1 = ((TMrbNamedArrayI *) fChanData[ch1])->GetArray();
 				if (pch1 == NULL) {
 					cerr	<< setred
 							<< this->ClassName() << "::FillSubevent(): [Module "
@@ -310,36 +310,37 @@ Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
 	fShapeMin[shIdx] = DBL_MAX;
 	fShapeMax[shIdx] = DBL_MIN;
 
-	Double_t * data = fShapedData[shIdx];
+	Double_t * data = ((TMrbNamedArrayD *) fShapedData[shIdx])->GetArray();
+	Int_t * chnData = ((TMrbNamedArrayI *) fChanData[Channel])->GetArray();
 	//loop over data
 	Double_t BaseLine = 0.;
 	for (Int_t sample = 0; sample < 100.; sample++) 
 	  {
-	    BaseLine += fChanData[Channel][sample];
+	    BaseLine += chnData[sample];
 	  }
 	BaseLine /= 100.;
 	
-	data[0] = fChanData[Channel][0];// - BaseLine;
+	data[0] = chnData[0];// - BaseLine;
 
 	Bool_t trace = kFALSE;
 
 	for (Int_t sample = 1; sample < 512; sample++) 
 	  {
-	    data[sample] = data[sample-1] + fChanData[Channel][sample];
+	    data[sample] = data[sample-1] + chnData[sample];
 	    if(sample - ((Int_t) fPeakTime[shIdx]) > 0)
 	      {
 			if (this->ShaperIsVerbose()) cout << setw(8) << sample - ((Int_t) fPeakTime[shIdx]);
-			data[sample] -= fChanData[Channel][sample - ((Int_t) fPeakTime[shIdx])];
+			data[sample] -= chnData[sample - ((Int_t) fPeakTime[shIdx])];
 	      }
 	    if(sample - ((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]) > 0)
 	      {
 			if (this->ShaperIsVerbose()) cout << setw(8)<< sample - ((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]);
-			data[sample] -= fChanData[Channel][sample - ((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx])];
+			data[sample] -= chnData[sample - ((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx])];
 	      }
 	    if(sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]) > 0)
 	      {
 			if (this->ShaperIsVerbose()) cout << setw(8) << sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]);
-			data[sample] += fChanData[Channel][sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx])];
+			data[sample] += chnData[sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx])];
 	      }
 
 	    //data[sample] -= BaseLine;
@@ -350,11 +351,11 @@ Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
 			if (fShapeMin[shIdx] > data[sample]) fShapeMin[shIdx] = data[sample];
 	      }
 	    
-	    if(fChanData[Channel][sample] != 0)
+	    if(chnData[sample] != 0)
 	      {
 			trace = kTRUE;
 			if (this->ShaperIsVerbose()) {
-				cout	<< shIdx << setw(8) << Channel << setw(8) << sample << setw(8) << fChanData[Channel][sample]
+				cout	<< shIdx << setw(8) << Channel << setw(8) << sample << setw(8) << chnData[sample]
 						<< " " << setw(8) << data[sample] << endl;
 			}
 	      }
@@ -477,15 +478,15 @@ void TMrbSubevent_Sis33xx::Reset(Int_t InitValue, Bool_t DataOnly) {
 		fIsEmpty = kFALSE;
 		fChanTriggered[chn] = kFALSE;
 		fChanOverflow[chn] = kFALSE;
-		UInt_t * idp = fChanData[chn];
+		Int_t * idp = ((TMrbNamedArrayI *) fChanData[chn])->GetArray();
 		if (idp != NULL) {
 			for (Int_t i = 0; i < fPageSize[chn]; i++)  *idp++ = InitValue;
 		}
-		Double_t * dp = fShapedData[kShapeShort * kNofChannels + chn];
+		Double_t * dp = ((TMrbNamedArrayD *) fShapedData[kShapeShort * kNofChannels + chn])->GetArray();
 		if (dp != NULL) {
 			for (Int_t i = 0; i < fPageSize[chn]; i++)  *dp++ = 0;
 		}
-		dp = fShapedData[kShapeLong * kNofChannels + chn];
+		dp = ((TMrbNamedArrayD *) fShapedData[kShapeLong * kNofChannels + chn])->GetArray();
 		if (dp != NULL) {
 			for (Int_t i = 0; i < fPageSize[chn]; i++)  *dp++ = 0;
 		}

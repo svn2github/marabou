@@ -37,9 +37,9 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Sis33xx {
 //%%SEVT_USER_METHODS%%			user-specific methods may be included here
 
 %%BeginOfCode%%
-%ST%		inline UInt_t * GetAddr$paramNameUC$type() { return($paramNameLC$type); };	// addr of $paramNameLC$type
-%SH%		inline Double_t * GetAddr$paramNameUCSS() { return($paramNameLCSS); };	// shaper (short)
-%SH%		inline Double_t * GetAddr$paramNameUCLS() { return($paramNameLCLS); };	// ... (long)
+%ST%		inline Int_t * GetAddr$paramNameUC$type() { return($paramNameLC$type.GetArray()); };	// addr of $paramNameLC$type
+%SH%		inline Double_t * GetAddr$paramNameUCSS() { return($paramNameLCSS.GetArray()); };	// shaper (short)
+%SH%		inline Double_t * GetAddr$paramNameUCLS() { return($paramNameLCLS.GetArray()); };	// ... (long)
 %%EndOfCode%%
 %%SEVT_DEFINE_ADDR%%
 
@@ -51,9 +51,9 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Sis33xx {
 
 // define private data members here
 %%BeginOfCode%%	
-%ST% 		UInt_t $paramNameLC$type[$pageSize];	// $sevtNameLC.$paramNameLC $xtype
-%SH%		Double_t $paramNameLCSS[$pageSize];		// shaped data (short))
-%SH%		Double_t $paramNameLCLS[$pageSize]; 	// ... (long)
+%ST% 		TMrbNamedArrayI $paramNameLC$type;	// $sevtNameLC.$paramNameLC $xtype
+%SH%		TMrbNamedArrayD $paramNameLCSS;		// shaped data (short))
+%SH%		TMrbNamedArrayD $paramNameLCLS; 	// ... (long)
 %%EndOfCode%%
 %%SEVT_PRIVATE_DATA%%
 
