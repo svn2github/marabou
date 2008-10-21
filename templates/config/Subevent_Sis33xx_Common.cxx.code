@@ -264,7 +264,14 @@ Bool_t  TMrbSubevent_Sis33xx::InitializeShaper(const Char_t * SettingsFile, cons
 		}
 	}
 
+<<<<<<< Subevent_Sis33xx_Common.cxx.code
+	fTauWindow = settings->GetValue("SIS3300.TauCorrection.Window", 0);
+	fTauValue = settings->GetValue("SIS3300.TauCorrection.TauValue", 0.0);
+
+	if (verboseMode) {
+=======
 	if (this->IsVerbose()) {
+>>>>>>> 1.3
 		cout << endl << "Shaper settings from file " << SettingsFile << endl;
 		cout << Form("%3s%-30s%-30s", "", "PeakTime", "GapTime") << endl;
 		cout << Form("%3s%-15s%-15s%-15s%-15s", "", "short", "long", "short", "long") << endl;
@@ -284,6 +291,116 @@ Bool_t  TMrbSubevent_Sis33xx::InitializeShaper(const Char_t * SettingsFile, cons
 	return(kTRUE);
 }
 			
+Bool_t  TMrbSubevent_Sis33xx::TauCorrection(Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis33xx::TauCorrection
+// Purpose:        Tau correction
+// Arguments:      Int_t Channel      -- channel
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fTauValue == 0.0 || fTauWindow <= 0) return(kTRUE);	// nothing to do
+
+	UInt_t origData[512];
+	for (Int_t i = 0; i < 512; i++) origData[i] = fChanData[Channel][i];
+
+	Int_t sum = origData[0] * fTauWindow;
+	for (Int_t sample = 0; sample < 512; sample++) {
+	    sum += origData[sample];
+	    if ((sample - fTauWindow) > 0) {
+			sum -= origData[sample - fTauWindow];
+			fChanData[Channel][sample] =
+					(Int_t) (origData[sample] - origData[sample - fTauWindow] + sum / fTauValue);
+		} else {
+			sum -= origData[0];
+			fChanData[Channel][sample] =
+					(Int_t) (origData[sample] - origData[0] + sum / fTauValue);
+		}
+	}
+	return(kTRUE);
+}
+
+Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis33xx::Shaper
+// Purpose:        Perform shaping
+// Arguments:      Int_t Channel      -- channel
+//                 Int_t ShaperIdx    -- shaper index (short/long)
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Performs trapezoidal shaping
+//                 (Origin: L. Maier, E12)
+//                 (Improved: V. Bildstein, Jun 2008)
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (ShaperIdx == kShapeBoth) {
+		Bool_t sts = this->Shaper(Channel, kShapeShort);
+		sts &= this->Shaper(Channel, kShapeLong);
+		return(sts);
+	}
+
+	Int_t shIdx = ShaperIdx * kNofChannels + Channel;		// different settings for each channel
+
+	fShapeMin[shIdx] = DBL_MAX;
+	fShapeMax[shIdx] = DBL_MIN;
+
+	Double_t * data = fShapedData[shIdx];
+	//loop over data
+	Double_t BaseLine = 0.;
+	for (Int_t sample = 0; sample < 100.; sample++) 
+	  {
+	    BaseLine += fChanData[Channel][sample];
+	  }
+	BaseLine /= 100.;
+	
+	data[0] = fChanData[Channel][0];// - BaseLine;
+
+	Bool_t trace = kFALSE;
+
+	for (Int_t sample = 1; sample < 512; sample++) 
+	  {
+	    data[sample] = data[sample-1] + fChanData[Channel][sample];
+	    if(sample - ((Int_t) fPeakTime[shIdx]) > 0)
+	      {
+			data[sample] -= fChanData[Channel][sample - ((Int_t) fPeakTime[shIdx])];
+	      }
+	    if(sample - ((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]) > 0)
+	      {
+			data[sample] -= fChanData[Channel][sample - ((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx])];
+	      }
+	    if(sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]) > 0)
+	      {
+			data[sample] += fChanData[Channel][sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx])];
+	      }
+
+	    //data[sample] -= BaseLine;
+
+	    if(sample - 2*((Int_t) fPeakTime[shIdx]) - ((Int_t) fGapTime[shIdx]) > 0)
+	      {
+			if (fShapeMax[shIdx] < data[sample]) fShapeMax[shIdx] = data[sample];
+			if (fShapeMin[shIdx] > data[sample]) fShapeMin[shIdx] = data[sample];
+	      }
+	    
+	    if(fChanData[Channel][sample] != 0)
+	      {
+			trace = kTRUE;
+	      }
+	  }
+
+	//correct the min and max with the baseline
+	fShapeMin[shIdx] -= BaseLine;
+	fShapeMax[shIdx] -= BaseLine;
+
+	return(kTRUE);
+}
+
+#if 0
 Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

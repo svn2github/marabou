@@ -43,6 +43,7 @@ class TMrbSubevent_Sis33xx : public TObject {
 
 		Bool_t InitializeShaper(const Char_t * SettingsFile = NULL, const Char_t * Module = NULL, Int_t NofChannels = -1);
 		Bool_t Shaper(Int_t Channel, Int_t ShapeIdx);
+		Bool_t TauCorrection(Int_t Channel);
 
 		inline Int_t * GetChanData(Int_t Channel) {
 				return(((TMrbNamedArrayI *) fChanData[Channel])->GetArray());
@@ -80,6 +81,9 @@ class TMrbSubevent_Sis33xx : public TObject {
 		Double_t fShapeMax[2 * kNofChannels];
 		Double_t fPeakTime[2 * kNofChannels];
 		Double_t fGapTime[2 * kNofChannels];
+
+		Int_t fTauWindow;							// tau corr: window
+		Double_t fTauValue;							// tau corr: tau value
 
 		Bool_t fIsEmpty;							// kTRUE if empty event
 
