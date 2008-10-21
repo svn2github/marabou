@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.163 2008-09-26 11:54:15 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.164 2008-10-21 07:53:28 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3747,18 +3747,23 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 
 // let's now check if there is a tree output anywhere to prevent user from getting sad when replaying data
 
-	FILE * grep = gSystem->OpenPipe("grep 'fTreeOut->Fill' *.cxx */*.cxx 2>/dev/null", "r");
-	char tmp[200];
-	if (fread(tmp, 1, 200, grep) == 0) {
-		gMrbLog->Err() << "There is NO TREE OUTPUT in your code" << endl;
-		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
-		gMrbLog->Err()	<< "You should include a statement" << endl
-						<< "                               >>> "
-						<< setblack
-						<< "if (this->TreeToBeWritten()) fTreeOut->Fill();" << setred << " <<<" << endl
-						<< "                               somewhere in your Analyze() code" << endl;
-		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+	TString rawDataFormat = gEnv->GetValue("TMrbConfig.RawDataFormat", "root");
+	rawDataFormat.ToLower();
+	if (rawDataFormat.CompareTo("root") == 0) {
+		FILE * grep = gSystem->OpenPipe("grep 'fTreeOut->Fill' *.cxx */*.cxx 2>/dev/null", "r");
+		char tmp[200];
+		if (fread(tmp, 1, 200, grep) == 0) {
+			gMrbLog->Wrn() << "There is NO TREE OUTPUT in your code" << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+			gMrbLog->Wrn()	<< "You should include a statement" << endl
+							<< "                               >>> "
+							<< setblack
+							<< "if (this->TreeToBeWritten()) fTreeOut->Fill();" << setmagenta << " <<<" << endl
+							<< "                               somewhere in your Analyze() code" << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+		}
 	}
+
 
 	return(kTRUE);
 }
