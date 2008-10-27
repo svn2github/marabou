@@ -10,7 +10,7 @@ Bool_t TMrbSubevent_Sis::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 //  											  in units of 100 microsecs
 // Results: 	   kTRUE/kFALSE
 // Exceptions:     
-// Description:    Decodes data from a SIS 3XXX.
+// Description:    Decodes data from a SIS 3801 and Sis 3600
 // Keywords:	   
 //////////////////////////////////////////////////////////////////////////////
 
@@ -73,14 +73,17 @@ Bool_t TMrbSubevent_Sis::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 				mle->IncrEventHits();			// therefore: event hit == channel hit
 			}
 			lastChn = chn;
-			mle->IncrChannelHits(chn);			// count this channel
-			evtData[0] = 0;
-			evtData[1] = data;
+			mle->IncrChannelHits(chn);						// count this channel
+			evtData[TUsrHit::kHitFastTrigger] = 0;			// fast trigger time
+			evtData[TUsrHit::kHitEnergy] = data & 0xFFFF; 	// data (16 bit)
+			UInt_t * dp = (UInt_t *) &evtData[TUsrHit::kHitEnergyLong];
+			*dp = data; 									// data (24 / 32 bit)
+
 			this->GetHitBuffer()->AddHit(	eventsProcessed,
 													moduleNumber,
 													chn,
 													NULL,
-													evtData, 2);
+													evtData, 4);
 			eventsProcessed++;
 		}
 		SevtWC -= wcs;

@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a hit
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrHit.h,v 1.4 2007-10-25 17:24:12 Marabou Exp $       
+// Revision:       $Id: TUsrHit.h,v 1.5 2008-10-27 11:35:42 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -58,12 +58,16 @@ class TUsrHit : public TObject {
 		enum	{	kHitPSA6		=	7	};
 		enum	{	kHitPSA_T90		=	kHitPSA6	};
 
-// alternate layout used by c_ptm module
-		enum	{	kHitPattern 	=	0	};	// 32 bit hit pattern
-		enum	{	kHitCounterT1	=	2	};	// 32 bit counter T1
-		enum	{	kHitCounterT2	=	4	};	// 32 bit counter T2
+// alternate layout used for 32 bit energy data
+
+		enum	{	kHitEnergyLong	=	2	};
 
 // alternate layout used by c_ptm module
+		enum	{	kHitPattern 	=	2	};	// 32 bit hit pattern
+		enum	{	kHitCounterT1	=	4	};	// 32 bit counter T1
+		enum	{	kHitCounterT2	=	6	};	// 32 bit counter T2
+
+// alternate layout used by mux module
 		enum	{	kHitMuxModNo	=	2	};	// module number for multiplexer
 		enum	{	kHitMuxChannel	=	3	};	// channel number for multiplexer
 
@@ -99,6 +103,9 @@ class TUsrHit : public TObject {
 		inline UShort_t GetFastTrigger() const { return(fData[kHitFastTrigger]); };
 		Double_t GetCalEnergy(Bool_t Randomize = kTRUE, Bool_t WithinLimits = kFALSE) const;
 		Double_t GetDCorrEnergy(Bool_t Randomize = kTRUE) const;
+
+		inline UInt_t GetDataLong(Int_t Index = TUsrHit::kHitEnergyLong) const { UInt_t * dp = (UInt_t *) &fData[Index]; return(*dp); };
+		inline UInt_t GetEnergyLong() const { UInt_t * dp = (UInt_t *) &fData[kHitEnergyLong]; return(*dp); };
 
 		inline Int_t GetMuxModuleNumber() const { return((Int_t) fData[kHitMuxModNo]); };
 		inline void SetMuxModuleNumber(Int_t ModuleNumber) { fData[kHitMuxModNo] = (UShort_t) ModuleNumber; };
