@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.8 2008-10-19 17:29:21 Marabou Exp $     
-// Date:           $Date: 2008-10-19 17:29:21 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.9 2008-10-27 12:26:07 Marabou Exp $     
+// Date:           $Date: 2008-10-27 12:26:07 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -117,6 +117,21 @@ Bool_t TC2LSis3302::GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t &
 	}
 }
 	
+Bool_t TC2LSis3302::SetTimeout(Int_t & Timeout) {
+	TArrayI timeout(1); timeout[0] = Timeout;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TIMEOUT, timeout, timeout, kSis3302AllAdcs)) return(kFALSE);
+	Timeout = timeout[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::GetTimeout(Int_t & Timeout) {
+	TArrayI dataSend(0);
+	TArrayI timeout;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TIMEOUT, dataSend, timeout, kSis3302AllAdcs)) return(kFALSE);
+	Timeout = timeout[0];
+	return(kTRUE);
+}
+
 Bool_t TC2LSis3302::ReadDac(TArrayI & DacValues, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_READ_DAC, dataSend, DacValues, AdcNo));

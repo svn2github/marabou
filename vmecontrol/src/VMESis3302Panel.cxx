@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.5 2008-10-19 17:29:21 Marabou Exp $       
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.6 2008-10-27 12:26:07 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -602,7 +602,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fEnergyDataLength->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EnergyDataLengthChanged(Int_t, Int_t)");
 
 // action buttons
-	fActionButtons = new TGMrbTextButtonGroup(this, "Actions", &fActions, -1, 1, frameGC, buttonGC);
+	fActionButtons = new TGMrbTextButtonGroup(this, "Actions", &fActions, -1, 1, groupGC, buttonGC);
 	HEAP(fActionButtons);
 	this->AddFrame(fActionButtons, groupGC->LH());
 	fActionButtons->JustifyButton(kTextCenterX);

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.3 2008-10-19 09:14:35 Marabou Exp $       
+// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.4 2008-10-27 12:26:07 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -140,12 +140,12 @@ VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(const TGWindow * Window, 
 
 	fModules = new TGMrbCheckButtonGroup(this, "Modules", &fLofSelected,
 													kVMESis3302Modules, 1, 
-													frameGC, buttonGC, lofSpecialButtons);
+													groupGC, buttonGC, lofSpecialButtons);
 	HEAP(fModules);
 	this->AddFrame(fModules, groupGC->LH());
 
 // action buttons
-	fActionButtons = new TGMrbTextButtonGroup(this, "Actions", &fActions, -1, 1, frameGC, buttonGC);
+	fActionButtons = new TGMrbTextButtonGroup(this, "Actions", &fActions, -1, 1, groupGC, buttonGC);
 	HEAP(fActionButtons);
 	this->AddFrame(fActionButtons, groupGC->LH());
 	fActionButtons->JustifyButton(kTextCenterX);

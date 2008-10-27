@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302CopyPanel.cxx,v 1.2 2008-10-19 09:14:35 Marabou Exp $       
+// Revision:       $Id: VMESis3302CopyPanel.cxx,v 1.3 2008-10-27 12:26:07 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -179,7 +179,7 @@ VMESis3302CopyPanel::VMESis3302CopyPanel(const TGWindow * Window, TMrbLofNamedX 
 	}
 
 // action buttons
-	fActionButtons = new TGMrbTextButtonGroup(this, "Actions", &fActions, -1, 1, frameGC, buttonGC);
+	fActionButtons = new TGMrbTextButtonGroup(this, "Actions", &fActions, -1, 1, groupGC, buttonGC);
 	HEAP(fActionButtons);
 	this->AddFrame(fActionButtons, groupGC->LH());
 	fActionButtons->JustifyButton(kTextCenterX);

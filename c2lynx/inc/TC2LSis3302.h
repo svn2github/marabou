@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.5 2008-10-18 17:09:14 Marabou Exp $   
-// Date:           $Date: 2008-10-18 17:09:14 $
+// Revision:       $Id: TC2LSis3302.h,v 1.6 2008-10-27 12:26:07 Marabou Exp $   
+// Date:           $Date: 2008-10-27 12:26:07 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +41,9 @@ class TC2LSis3302 : public TC2LVMEModule {
 		~TC2LSis3302() {};							// default dtor
 
 		Bool_t GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t & MinorVersion);
+
+		Bool_t GetTimeout(Int_t & Timeout);
+		Bool_t SetTimeout(Int_t & Timeout);
 
 		Bool_t ReadDac(TArrayI & DacValues, Int_t Adc = -1);
 		Bool_t WriteDac(TArrayI & DacValues, Int_t Adc = -1);
