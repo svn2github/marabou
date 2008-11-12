@@ -16,7 +16,7 @@ Values in variable list must ne separated by colons (:)";
    static void *valp[50];
    Int_t ind = 0;
    Bool_t ok = kTRUE;
-   fCommand = "Fill_The_Ntuple";
+   fCommand = "Fill_The_Ntuple()";
    fCommandHead = "Show_Head_of_File()";
    RestoreDefaults();
    TList *row_lab = new TList();
@@ -103,4 +103,8 @@ void Ascii2NtupleDialog::CloseDown(Int_t wid)
    cout << "Ascii2NtupleDialog::CloseDown()" << endl;
    delete this;
 }
+//_________________________________________________________________________
 
+void Ascii2NtupleDialog::CRButtonPressed(Int_t widgetId, Int_t buttonId, TObject *obj)
+{
+}

@@ -38,6 +38,7 @@
 #include "TList.h"
 #include "TMessage.h"
 #include "TGraphErrors.h"
+#include "TGraph2D.h"
 #include "CmdListEntry.h"
 #include "HistPresent.h"
 #include "FitHist.h"
@@ -70,7 +71,7 @@
 static const char  *fHlistSuffix=".histlist";
 Int_t nHists;
 extern TH1 * gHpHist;
-static Int_t kSemaphore = 0;
+//static Int_t kSemaphore = 0;
 
 //_____________________________________________________________________________________
 
@@ -1703,34 +1704,52 @@ void HistPresent::ShowContour(const char* fname, const char* dir, const char* na
 
 void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name, const char* bp)
 {
-   TGraphErrors * graph;
+   TGraph     * graph1d = NULL;
+   TGraph2D   * graph2d = NULL;
+   TObject    * obj;
    if (strstr(fname,".root")) {
       if (fRootFile) fRootFile->Close();
       fRootFile = new TFile(fname);
       if (strlen(dir) > 0) fRootFile->cd(dir);
-      graph = (TGraphErrors*)fRootFile->Get(name);
-//      func->SetDirectory(gROOT);
+      obj = fRootFile->Get(name);
 //      fRootFile->Close();
    } else {
-      graph = (TGraphErrors*)gROOT->GetList()->FindObject(name);
+      obj = gROOT->GetList()->FindObject(name);
    }
-   if (graph) {
-      TString cname = name;
-      cname.Prepend("C_");
-      if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
-         if (WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::fNwindows%2 != 0) WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
-         else   {WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx; WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;}
+   if ( obj->InheritsFrom("TGraph2D") ) {
+      graph2d = (TGraph2D*)obj;
+      graph2d->SetDirectory(gROOT);
+   } else if ( obj->InheritsFrom("TGraph") ) {
+      graph1d = (TGraph*)obj;
+   } else {
+      cout << "Graph not found" << endl;
+      return;
+   }
+	TString cname = name;
+	cname.Prepend("C_");
+	if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
+		if (WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::fNwindows%2 != 0) {
+         WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
+		} else {
+         WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx; WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
       }
-      WindowSizeDialog::fNwindows++;
-      HTCanvas * cg = new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
-                                 WindowSizeDialog::fWinwidx_1dim, WindowSizeDialog::fWinwidy_1dim, this, 0, graph);
-      fCanvasList->Add(cg);
+	}
+	WindowSizeDialog::fNwindows++;
+	HTCanvas * cg = NULL;
+
 //      graph->SetName(hname);
 //      graph->SetTitle(htitle);
-      graph->Draw(GraphAttDialog::fDrawOptGraph);
-      graph->GetHistogram()->SetStats(kFALSE);
+   if ( graph2d ) {
+      cg = new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
+								WindowSizeDialog::fWinwidx_1dim, WindowSizeDialog::fWinwidy_1dim, this, 0, (TGraph*)graph2d);
+      TEnv env(".hprrc");
+      graph2d->Draw(env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "cont5"));
    } else {
-      WarnBox("Graph not found");
+      cg = new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
+								WindowSizeDialog::fWinwidx_1dim, WindowSizeDialog::fWinwidy_1dim, this, 0, graph1d);
+      graph1d->Draw(GraphAttDialog::fDrawOptGraph);
+      TH1 * hist = graph1d->GetHistogram();
+      if ( hist ) hist->SetStats(kFALSE);
    }
    if (fRootFile) fRootFile->Close();
 }
@@ -2917,7 +2936,7 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 //      gSystem->Sleep(1000);
 //      return;
 //   }
-   kSemaphore = 1;
+//   kSemaphore = 1;
    TH1* hist = GetHist(fname, dir, hname);
    if ( hist ) {
       if ( b ) {

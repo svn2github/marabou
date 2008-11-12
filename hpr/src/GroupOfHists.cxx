@@ -9,6 +9,8 @@
 #include "SetColor.h"
 #include "GroupOfHists.h"
 #include "Set1DimOptDialog.h"
+#include "SetCanvasAttDialog.h"
+#include "SetHistOptDialog.h"
 #include "Set2DimOptDialog.h"
 #include "SetColorModeDialog.h"
 #include "WindowSizeDialog.h"
@@ -35,10 +37,13 @@ enum EGoHCommandIds {
    M_RebinAll,
    M_CalAllAsSel,
    M_CommonRotate,
+   M_Redraw,
    M_AllAsFirst,
    M_SetOptions,
    M_AllAsSelRangeOnly,
    M_ActivateTimer,
+   M_OptionCanvasAtt,
+   M_OptionAxisAtt,
    M_Option1Dim,
    M_Option2Dim,
    M_Option2DimCol
@@ -46,9 +51,9 @@ enum EGoHCommandIds {
 //________________________________________________________________________
 
 GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title)
-            : fHistPresent(hpr)
+            : fHList(hlist), fHistPresent(hpr)
 {
- //  cout << " ctor GroupOfHists::" << this << endl;
+   cout << " ctor GroupOfHists::" << this << endl;
    fCanvas = NULL;
    fTimer = NULL;
    fDialog = NULL;
@@ -57,9 +62,10 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
    SetColorModeDialog::RestoreDefaults();
    SetColorModeDialog::SetColorMode();
 //
-   Int_t nsel = hlist->GetSize();
-   Int_t nx = 1, ny =1;
-   TH1* hist = 0;
+   Int_t nsel = fHList->GetSize();
+   fNx = 1;
+   fNy =1;
+//   TH1* hist = 0;
    if (nsel == 0) {
       cout << setred << "No histogram selected" << setblack << endl;
       return;
@@ -73,26 +79,26 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
 //  pass its pointer to HTCanvas,
 //  destructor of HTCanvas shall delete the list and remove its
 //  pointer from fHistListList
-   TIter next(hlist);
+   TIter next(fHList);
    while ( TObjString * objs = (TObjString*)next()) {
       fHistList.Add(new TObjString(*objs));
    }
-   if (nsel == 2 ) {nx = 1, ny = 2;};
-   if (nsel >= 3 ) {nx = 2, ny = 2;};
-   if (nsel >= 5 ) {nx = 2, ny = 3;};
-   if (nsel >= 7 ) {nx = 3, ny = 3;};
-   if (nsel >= 10) {nx = 3, ny = 4;};
-   if (nsel >= 13) {nx = 4, ny = 4;};
+   if (nsel == 2 ) {fNx = 1, fNy = 2;};
+   if (nsel >= 3 ) {fNx = 2, fNy = 2;};
+   if (nsel >= 5 ) {fNx = 2, fNy = 3;};
+   if (nsel >= 7 ) {fNx = 3, fNy = 3;};
+   if (nsel >= 10) {fNx = 3, fNy = 4;};
+   if (nsel >= 13) {fNx = 4, fNy = 4;};
 
-   if (nsel >= 16) {nx = 4, ny = 5;};
-   if (nsel == 21) {nx = 7, ny = 3;};
-   if (nsel >  21) {nx = 5, ny = 5;};
+   if (nsel >= 16) {fNx = 4, fNy = 5;};
+   if (nsel == 21) {fNx = 7, fNy = 3;};
+   if (nsel >  21) {fNx = 5, fNy = 5;};
 
-   if (nsel > 25) {nx = 6, ny = 5;};
-   if (nsel == 32) {nx = 8, ny = 4;};
+   if (nsel > 25) {fNx = 6, fNy = 5;};
+   if (nsel == 32) {fNx = 8, fNy = 4;};
 
-   if (fArrangeOnTop)      {nx = 1; ny = nsel;};
-   if (fArrangeSideBySide) {nx =  nsel; ny = 1;};
+   if (fArrangeOnTop)      {fNx = 1; fNy = nsel;};
+   if (fArrangeSideBySide) {fNx =  nsel; fNy = 1;};
    TString buf("cmany_");
    buf += fHistPresent->fSeqNumberMany++;
 //   const char * tit = buf.Data();
@@ -102,20 +108,48 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
 //   this->SetTitle(tit);
    gROOT->GetList()->Add(this);
    gROOT->GetListOfCleanups()->Add(this);
-   fCanvas =  new HTCanvas(buf.Data(), "GroupOfHists",
-              WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, fWindowXWidth, fWindowYWidth);
-   fCanvas->SetBit(kMustCleanup);
-   WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
-   WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
+   BuildCanvas();
+   BuildMenu();
+}
+//________________________________________________________________________
 
-   fHistPresent->fCanvasList->Add(fCanvas);
-   fCanvas->Divide(nx, ny, fMarginX, fMarginY);
+void GroupOfHists::BuildCanvas()
+{
+   Int_t nsel = fHList->GetSize();
+   if ( fCanvas  == NULL ) {
+      fCanvas =  new HTCanvas(GetName(), "GroupOfHists",
+              WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, fWindowXWidth, fWindowYWidth);
+   
+       fCanvas->SetBit(kMustCleanup);
+   
+       WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
+       WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
+
+       fHistPresent->fCanvasList->Add(fCanvas);
+   } else {
+      fCanvas->Clear();
+      fCanvas->SetLeftMargin(gStyle->GetPadLeftMargin());
+      fCanvas->SetRightMargin(gStyle->GetPadRightMargin());
+      fCanvas->SetBottomMargin(gStyle->GetPadBottomMargin());
+      fCanvas->SetTopMargin(gStyle->GetPadTopMargin());
+   }
+
+   Double_t mx, my;
+   if (fNoSpace ) {
+      mx = -1;
+      my = -1;
+   } else {
+      mx = 0.00001;
+      my = 0.00001;
+   }
+   fCanvas->Divide(fNx, fNy, mx, my);
 //   fCanvas->SetEditable(kTRUE);
    TEnv * lastset = 0;
    TString hname;
    fAnyFromSocket = kFALSE;
    TPad * firstpad = NULL;
-   for(Int_t i=0; i<nsel; i++) {
+   TH1* hist;
+   for(Int_t i=0; i < nsel; i++) {
       fCanvas->cd(i+1);
       TPad * p = (TPad *)gPad;
       TString cmd2("((GroupOfHists*)gROOT->GetList()->FindObject(\"");
@@ -123,12 +157,12 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
       cmd2 += "\"))->auto_exec()";
       p->AddExec("ex2", cmd2.Data());
       if (firstpad == NULL) firstpad = p;
-      hist = fHistPresent->GetSelHistAt(i, hlist);
+      hist = fHistPresent->GetSelHistAt(i, fHList);
       if (!hist) {
 //         cout << " Hist not found at: " << i << endl;
          continue;
       }
-      TString fname = ((TObjString *)hlist->At(i))->String();
+      TString fname = ((TObjString *)fHList->At(i))->String();
       if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
       hname = hist->GetName();
  //     cout << "Bef: " << hname << endl;
@@ -189,39 +223,24 @@ GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title
             hist->SetFillStyle(0);
          }
          hist->Draw(drawopt.Data());
-
-         TAxis * xa = hist->GetXaxis();
-         TAxis * ya = hist->GetYaxis();
-         ya->SetLabelSize(gStyle->GetLabelSize("Y") * 0.5 * ny); // nb y det text size
-         xa->SetLabelSize(gStyle->GetLabelSize("X") * 0.5 * ny);
-         xa->SetTitleSize(gStyle->GetTitleSize("X") * 0.5 * ny);
-         ya->SetTitleSize(gStyle->GetTitleSize("Y") * 0.5 * ny);
-         if (nx > 3)xa->SetNdivisions(205);
-         if (ny > 3)ya->SetNdivisions(205);
-
-//        hist->SetTitleSize(gStyle->GetTitleSize("C") * 0.8 * ny);
       }
+		TAxis * xa = hist->GetXaxis();
+		TAxis * ya = hist->GetYaxis();
+		ya->SetLabelSize(gStyle->GetLabelSize("Y") * fMagFac); // nb y det text size
+		xa->SetLabelSize(gStyle->GetLabelSize("X") * fMagFac);
+		xa->SetTitleSize(gStyle->GetTitleSize("X") * fMagFac);
+		ya->SetTitleSize(gStyle->GetTitleSize("Y") * fMagFac);
+		if (fNx > 1)xa->SetNdivisions(205);
+		if (fNy > 2)ya->SetNdivisions(205);
+      hist->SetTitleSize(gStyle->GetTitleSize("C") * fMagFac);
       fHistPresent->SetCurrentHist(hist);
-/*
-      if (fHistPresent->fUseAttributeMacro && !gSystem->AccessPathName(attrname, kFileExists)) {
-         gROOT->LoadMacro(attrname);
-         TString cmd = attrname;
-         cmd.Remove(cmd.Index("."),100);
-         cmd = cmd + "(\"" + gPad->GetName()  + "\",\"" + hist->GetName() + "\")";
-//         cout << cmd << endl;
-         gROOT->ProcessLine((const char *)cmd);
-         gPad->Modified(kTRUE);
-         gPad->Update();
-      }
-*/
    }
    if (!fCanvas->GetAutoExec())
        fCanvas->ToggleAutoExec();
    gPad->Modified(kTRUE);
    gPad->Update();
-   BuildMenu();
    if (firstpad) {
-      if (fShowAllAsFirst != 0 || (fMarginX <= 0 && fMarginY <= 0))
+      if (fShowAllAsFirst != 0 )
          ShowAllAsSelected(firstpad, fCanvas, 0, NULL);
       firstpad->cd();
    }
@@ -338,13 +357,17 @@ void GroupOfHists::BuildMenu()
    fMenu->Connect("Activated(Int_t)", "GroupOfHists", this,
                   "HandleMenu(Int_t)");
    fMenu->AddEntry("Activate simultanous rotation", M_CommonRotate);
+   fMenu->AddEntry("Redraw picture", M_Redraw);
 
    fOptionMenu     = new TGPopupMenu(fRootCanvas->GetParent());
    menubar->AddPopup("Options", fOptionMenu, layoh_left, menubar->GetPopup("Help"));
    fOptionMenu->AddEntry("Specific to this window", M_SetOptions);
+   fOptionMenu->AddEntry("Axis / title statbox attributes", M_OptionAxisAtt);
+   fOptionMenu->AddEntry("Canvas / pad attributes", M_OptionCanvasAtt);
    fOptionMenu->AddEntry("How to display a 1-dim histogram", M_Option1Dim);
    fOptionMenu->AddEntry("How to display a 2-dim histogram ", M_Option2Dim);
    fOptionMenu->AddEntry("Color mode of 2-dim histogram", M_Option2DimCol);
+   fOptionMenu->AddEntry("Redraw picture", M_Redraw);
    fOptionMenu->Connect("Activated(Int_t)", "GroupOfHists", this,
                         "HandleMenu(Int_t)");
    menubar->MapSubwindows();
@@ -383,6 +406,9 @@ void GroupOfHists::HandleMenu(Int_t id)
       case M_AllAsSel:
          ShowAllAsSelected(gPad, fCanvas, 1);
          break;
+      case M_Redraw:
+         BuildCanvas();
+         break;
       case M_SetOptions:
          SetOptions();
          break;
@@ -415,6 +441,12 @@ void GroupOfHists::HandleMenu(Int_t id)
          }
          break;
 
+		case M_OptionAxisAtt:
+            new SetHistOptDialog(fRootCanvas);
+			break;
+		case M_OptionCanvasAtt:
+            new SetCanvasAttDialog(fRootCanvas);
+			break;
 		case M_Option1Dim:
             new Set1DimOptDialog(fRootCanvas);
 			break;
@@ -614,19 +646,26 @@ void GroupOfHists::RebinAll(TCanvas * canvas)
 void GroupOfHists::SetOptions()
 {
 static const Char_t helptext[] =
-"This menu controls the parameters when\n\
-multiple histograms are shown in one canvas.\n\
-\"X - Y Width\":  Size of the canvas in pixel\n\
-\"X - Y Margin\": The space between the pictures.\n\
+"This menu controls the parameters when multiple histograms are\n\
+shown in one canvas.\n\
+\"X - Y Width\":  Size of the main canvas in pixel\n\
+The apparent distance between pads is determined / dominated by the\n\
+values of the pad margins (\"Canvas, pad attributes\")\n\
+With option \"No space between pads\" the pictures are clued together.\n\
+Only labels  of the yaxis of the pads on the left side and the xaxis\n\
+of the bottom pads are shown. The space reserved for that is\n\
+determined by the values of RightMargin and BottomMargin for pads\n\
+(\"Canvas, pad attributes\")\n\
+Changing the above parameters needs a complete redrawing of the\n\
+canvas and will only be effective with the next command.\n\
 Histograms may be updated automatically:\n\
 \"AutoUpdateDelay\": determines the interval (sec)\n\
-With 3d Views (LEGO, SURF) 2-dim histograms\n\
-are rotated simultanously, if \n\
+With 3d Views (LEGO, SURF) 2-dim hists are rotated simultanously, if \n\
 \"Enable CommonRotate\" is activated\n\
-\"Always ShowAllAsFirst\": Always use range of first\n\
-histogram displayed.\n\
-Histograms may be arranged: on top of each other,\n\
-side by side or as tiles\n\
+\"Always ShowAllAsFirst\": Always use range of first histogram\n\
+displayed for the other hists.\n\
+Histograms may be arranged: on top of each other, side by side\n\
+or as tiles\n\
 ";
    fRow_lab = new TList();
 	static void *fValp[50];
@@ -636,21 +675,23 @@ side by side or as tiles\n\
    fValp[ind++] = &fWindowXWidth;
    fRow_lab->Add(new TObjString("PlainIntVal+Window Y Width"));
    fValp[ind++] = &fWindowYWidth;
-   fRow_lab->Add(new TObjString("DoubleValue_X Margin"));
-   fValp[ind++] = &fMarginX;
-   fRow_lab->Add(new TObjString("DoubleValue+Y Margin"));
-   fValp[ind++] = &fMarginY;
-   fRow_lab->Add(new TObjString("PlainIntVal_AutoUpdateDelay"));
+   fRow_lab->Add(new TObjString("CheckButton_No Space between pads"));
+   fNoSpaceButton = ind;
+   fValp[ind++] = &fNoSpace;
+   fRow_lab->Add(new TObjString("DoubleValue_Label Magnification"));
+   fMagFacButton = ind;
+   fValp[ind++] = &fMagFac;
+   fRow_lab->Add(new TObjString("PlainIntVal+AutoUpdateDelay"));
    fValp[ind++] = &fAutoUpdateDelay;
-   fRow_lab->Add(new TObjString("CheckButton+Enable CommonRotate"));
+   fRow_lab->Add(new TObjString("CheckButton_CommonRotate"));
    fValp[ind++] = &fCommonRotate;
-   fRow_lab->Add(new TObjString("CheckButton+Always ShowAllAsFirst"));
+   fRow_lab->Add(new TObjString("CheckButton+ShowAllAsFirst"));
    fValp[ind++] = &fShowAllAsFirst;
    fRow_lab->Add(new TObjString("RadioButton_ArrangeOnTop"));
    fValp[ind++] = &fArrangeOnTop;
-   fRow_lab->Add(new TObjString("RadioButton+ArrangeSideBySide"));
+   fRow_lab->Add(new TObjString("RadioButton+SideBySide"));
    fValp[ind++] = &fArrangeSideBySide;
-   fRow_lab->Add(new TObjString("RadioButton+ArrangeAsTiles"));
+   fRow_lab->Add(new TObjString("RadioButton+AsTiles"));
    fValp[ind++] = &fArrangeAsTiles;
    Int_t itemwidth = 420;
    static Int_t ok = 0;
@@ -667,12 +708,10 @@ void GroupOfHists::RestoreDefaults()
    fWindowYWidth = env.GetValue("GroupOfHists.fWindowYWidth", 800);
    if (fWindowXWidth < 20 || fWindowXWidth > 1600) fWindowXWidth = 800;
    if (fWindowYWidth < 20 || fWindowYWidth > 1200) fWindowYWidth = 800;
-   fMarginX = env.GetValue("GroupOfHists.fMarginX", 0.01);
-   fMarginY = env.GetValue("GroupOfHists.fMarginY", 0.01);
-   if (fMarginX < 0 || fMarginX > 0.3) fMarginX = 0.01;
-   if (fMarginY < 0 || fMarginY > 0.3) fMarginY = 0.01;
    fAutoUpdateDelay = env.GetValue("GroupOfHists.fAutoUpdateDelay", 5);
+   fMagFac          = env.GetValue("GroupOfHists.fMagFac", 2);
    fCommonRotate = env.GetValue("GroupOfHists.fCommonRotate", 1);
+   fNoSpace = env.GetValue("GroupOfHists.fNoSpace", 0);
    fShowAllAsFirst = env.GetValue("GroupOfHists.fShowAllAsFirst", 0);
    fArrangeOnTop = env.GetValue("GroupOfHists.fArrangeOnTop", 0);
    fArrangeSideBySide = env.GetValue("GroupOfHists.fArrangeSideBySide", 0);
@@ -691,21 +730,17 @@ void GroupOfHists::RestoreDefaults()
 void GroupOfHists::SaveDefaults()
 {
    TEnv env(".hprrc");
- //  fWindowXWidth = fCanvas->GetWw();
- //  fWindowYWidth = fCanvas->GetWh();
    env.SetValue("GroupOfHists.fWindowXWidth", fWindowXWidth);
    env.SetValue("GroupOfHists.fWindowYWidth", fWindowYWidth);
-   env.SetValue("GroupOfHists.fMarginX", fMarginX);
-   env.SetValue("GroupOfHists.fMarginY", fMarginY);
    env.SetValue("GroupOfHists.fAutoUpdateDelay", fAutoUpdateDelay);
+   env.SetValue("GroupOfHists.fMagFac", fMagFac);
+   env.SetValue("GroupOfHists.fNoSpace", fNoSpace);
    env.SetValue("GroupOfHists.fCommonRotate", fCommonRotate);
    env.SetValue("GroupOfHists.fShowAllAsFirst", fShowAllAsFirst);
    env.SetValue("GroupOfHists.fArrangeOnTop", fArrangeOnTop);
    env.SetValue("GroupOfHists.fArrangeSideBySide", fArrangeSideBySide);
    env.SetValue("GroupOfHists.fArrangeAsTiles", fArrangeAsTiles);
    env.SaveLevel(kEnvLocal);
-//   if (!fCanvas->GetAutoExec())
-//       fCanvas->ToggleAutoExec();
 }
 //_______________________________________________________________________
 
@@ -718,15 +753,16 @@ void GroupOfHists::CloseDown(Int_t)
 void GroupOfHists::CRButtonPressed(Int_t widgetId, Int_t buttonId, TObject *obj)
 {
 //   cout << "GroupOfHists::CRButtonPressed " << widgetId << " " << buttonId << endl;
-   if (fMarginX > 0.2) {
-      cout << "X Margin > 0.2, setting to 0.01" << endl;
-      fMarginX = 0.01;
-   }
-   if (fMarginY > 0.2) {
-      cout << "Y Margin > 0.2, setting to 0.01" << endl;
-      fMarginY = 0.01;
+   if (fCanvas->GetWindowWidth() != (UInt_t)fWindowXWidth ||
+       fCanvas->GetWindowHeight()!= (UInt_t)fWindowYWidth) {
+       fCanvas->SetWindowSize(fWindowXWidth,fWindowYWidth);
+   } 
+   if (buttonId == fNoSpaceButton || buttonId == fMagFacButton) {
+      BuildCanvas();
    }
    SaveDefaults();
+   fCanvas->Modified();
+   fCanvas->Update();
    if (!fCanvas->GetAutoExec())
        fCanvas->ToggleAutoExec();
 }

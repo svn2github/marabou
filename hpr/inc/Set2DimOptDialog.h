@@ -21,6 +21,7 @@ private:
    TString fDrawOpt2Dim;
    Int_t fHideFrontBox;
    Int_t fHideBackBox;
+   Int_t fShowZScale;
    Int_t fLiveStat2Dim;
    Double_t fLogScaleMin;
    Double_t fLogScaleMax;

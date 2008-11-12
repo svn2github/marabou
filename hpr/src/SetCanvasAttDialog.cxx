@@ -127,37 +127,42 @@ void SetCanvasAttDialog::CloseDialog()
 void SetCanvasAttDialog::SetCanvasAtt(TCanvas *canvas)
 {
    if (!canvas) return;
-//   gStyle->SetPadColor       (fPadColor       );
-//   gStyle->SetPadBorderSize  (fPadBorderSize  );
-//   gStyle->SetPadBorderMode  (fPadBorderMode  );
-
-   canvas->SetBottomMargin(fPadBottomMargin);
-   canvas->SetTopMargin   (fPadTopMargin   );
-   canvas->SetLeftMargin  (fPadLeftMargin  );
-   canvas->SetRightMargin (fPadRightMargin );
-   canvas->SetGridx       ((Bool_t)fPadGridX);
-   canvas->SetGridy       ((Bool_t)fPadGridY);
-   canvas->SetTickx       (fPadTickX       );
-   canvas->SetTicky       (fPadTickY       );
-   canvas->GetFrame()->SetFillColor (fFrameFillColor  );
-   canvas->GetFrame()->SetLineColor (fFrameLineColor  );
-   canvas->GetFrame()->SetFillStyle (fFrameFillStyle  );
-   canvas->GetFrame()->SetLineStyle (fFrameLineStyle  );
-   canvas->GetFrame()->SetLineWidth (fFrameLineWidth  );
-   canvas->GetFrame()->SetBorderSize(fFrameBorderSize );
-   canvas->GetFrame()->SetBorderMode(fFrameBorderMode );
-   canvas->SetFillColor  	  (fCanvasColor     );
-   canvas->SetBorderSize  (fCanvasBorderSize);
-   canvas->SetBorderMode  (fCanvasBorderMode);
-//   canvas->SetCanvasDefH		  (fCanvasDefH		  );
-//   canvas->SetCanvasDefW		  (fCanvasDefW		  );
-//   canvas->SetCanvasDefX		  (fCanvasDefX		  );
-//   canvas->SetCanvasDefY		  (fCanvasDefY		  );
-
+   TIter next(canvas->GetListOfPrimitives());
+   TObject *obj;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TPad"))
+         SetPadAtt((TPad*)obj); 
+   } 
+   SetPadAtt((TPad*)canvas);
 	canvas->Pop();
 	canvas->cd();
 	canvas->Modified();
 	canvas->Update();
+}
+//_______________________________________________________________________
+
+void SetCanvasAttDialog::SetPadAtt(TPad *pad)
+{
+   if (!pad) return;
+   pad->SetBottomMargin(fPadBottomMargin);
+   pad->SetTopMargin   (fPadTopMargin   );
+   pad->SetLeftMargin  (fPadLeftMargin  );
+   pad->SetRightMargin (fPadRightMargin );
+   pad->SetGridx       ((Bool_t)fPadGridX);
+   pad->SetGridy       ((Bool_t)fPadGridY);
+   pad->SetTickx       (fPadTickX       );
+   pad->SetTicky       (fPadTickY       );
+   pad->GetFrame()->SetFillColor (fFrameFillColor  );
+   pad->GetFrame()->SetLineColor (fFrameLineColor  );
+   pad->GetFrame()->SetFillStyle (fFrameFillStyle  );
+   pad->GetFrame()->SetLineStyle (fFrameLineStyle  );
+   pad->GetFrame()->SetLineWidth (fFrameLineWidth  );
+   pad->GetFrame()->SetBorderSize(fFrameBorderSize );
+   pad->GetFrame()->SetBorderMode(fFrameBorderMode );
+   pad->SetFillColor  	  (fCanvasColor     );
+   pad->SetBorderSize  (fCanvasBorderSize);
+   pad->SetBorderMode  (fCanvasBorderMode);
+	pad->Modified();
 }
 //______________________________________________________________________
 
@@ -308,9 +313,9 @@ void SetCanvasAttDialog::CloseDown(Int_t wid)
 void SetCanvasAttDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
-//  cout << "CRButtonPressed(" << wid<< ", " <<bid;
-//   if (obj) cout  << ", " << canvas->GetName() << ")";
-//   cout << endl;
+  cout << "CRButtonPressed(" << wid<< ", " <<bid;
+   if (obj) cout  << ", " << canvas->GetName() << ")";
+   cout << endl;
    SetCanvasAtt(canvas);
 }
 

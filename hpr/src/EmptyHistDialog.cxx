@@ -13,8 +13,6 @@
 #endif
 #include "TGMrbValuesAndText.h"
 #include "EmptyHistDialog.h"
-#include "FitOneDimDialog.h"
-#include "Save2FileDialog.h"
 #include <fstream>
 //______________________________________________________________________________
 
@@ -38,6 +36,8 @@ divided into pads to allow for more than one histogram\n\
    Bool_t ok = kTRUE;
    fCommand = "Draw_The_Hist()";
    fCanvas = NULL;
+//   fSave2FileDialog = NULL;
+//   fDialog = NULL;
    gROOT->GetListOfCleanups()->Add(this);
    RestoreDefaults();
    TList *row_lab = new TList(); 
@@ -97,7 +97,7 @@ void EmptyHistDialog::RecursiveRemove(TObject * obj)
    if (obj == fCanvas) { 
  //      cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "  
  //       << obj << " fSelHist " <<  fSelHist <<  endl;
-      fCanvas = NULL;
+     fCanvas = NULL;
    }
 }
 //_________________________________________________________________________

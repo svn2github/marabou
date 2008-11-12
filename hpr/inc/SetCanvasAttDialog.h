@@ -46,6 +46,7 @@ public:
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetCanvasAtt(TCanvas *canvas);
+   void SetPadAtt(TPad *pad);
    void SetCanvasAttPerm();
    void SaveDefaults();
    void RestoreDefaults();

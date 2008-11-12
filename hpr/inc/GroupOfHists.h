@@ -36,6 +36,7 @@ class GroupOfHists : public TNamed {
 private:
    void *fValp[100];
    TList *fRow_lab;
+   TList *fHList;
    TGMrbValuesAndText *fDialog;
    HistPresent *fHistPresent;
    HTCanvas    *fCanvas;
@@ -48,10 +49,23 @@ private:
 
    Int_t       fWindowXWidth;
    Int_t       fWindowYWidth;
+   Int_t       fNx;
+   Int_t       fNy;
+
+   Double_t    fMagFac;
+   Int_t       fMagFacButton;
+/*
    Double_t    fMarginX;
    Double_t    fMarginY;
+   Double_t    fLeftMargin;
+   Double_t    fRightMargin;
+   Double_t    fTopMargin; 
+   Double_t    fBotMargin;  
+*/
    Int_t       fAutoUpdateDelay;
    Int_t       fCommonRotate;
+   Int_t       fNoSpace;
+   Int_t       fNoSpaceButton;
    Int_t       fShowAllAsFirst;
    Int_t       fArrangeOnTop;
    Int_t       fArrangeSideBySide;
@@ -69,7 +83,8 @@ private:
 public:
    GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title = NULL);
    ~GroupOfHists();
-   void RecursiveRemove(TObject *obj);
+   void   BuildCanvas();
+   void   RecursiveRemove(TObject *obj);
    void   ActivateTimer(Int_t delay);    // start timer, delay(milli seconds)
    void   UpdateHists();
    void   BuildMenu();

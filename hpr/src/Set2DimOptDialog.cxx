@@ -1,6 +1,7 @@
 #include "TROOT.h"
 #include "TCanvas.h"
 #include "TRootCanvas.h"
+#include "TGraph2D.h"
 #include "TMath.h"
 #include "TObjString.h"
 #include "TObject.h"
@@ -38,7 +39,7 @@ CONT1 : Draw a contour plot using line styles to distinguish contours\n\
 CONT2 : Draw a contour plot using the same line style for all contours\n\
 CONT3 : Draw a contour plot using fill area colors\n\
 CONT4 : Draw a contour plot using surface colors (SURF option at theta = 0)\n\
-CONT5 : (TGraph2D only) Draw a contour plot using Delaunay triangles\n\
+TRI2  : (TGraph2D only) Draw a contour plot using Delaunay triangles\n\
 LEGO  : Draw a lego plot with hidden line removal\n\
 LEGO1 : Draw a lego plot with hidden surface removal\n\
 LEGO2 : Draw a lego plot using colors to show the cell contents\n\
@@ -56,10 +57,10 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 ";
 
    char *fDrawOpt2[kNdrawopt] =
-   {"SCAT",  "BOX0",  "BOX1",  "COLZ",   "COL",
-    "CONT0", "CONT1", "CONT2", "CONT3", "CONT4", 
-    "SURF0", "SURF1", "SURF2", "SURF3", "SURF4", 
-    "LEGO",  "LEGO1", "LEGO2", "ARR",   "TEXT"}; 
+   {"SCAT",  "BOX0",  "BOX1",  "COL",   "CONT0",
+    "CONT1", "CONT2", "CONT3", "CONT4", "TRI2",
+    "SURF0", "SURF1", "SURF2", "SURF3", "SURF4",
+    "LEGO",  "LEGO1", "LEGO2", "ARR",   "TEXT"};
 
    RestoreDefaults();
    Int_t selected = -1;
@@ -72,14 +73,14 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
          }
       } else {
          fOptRadio[i] = 0;
-      } 
-   } 
+      }
+   }
 
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
-   
+
    Int_t ind = 0;
    Int_t indopt = 0;
    static Int_t dummy;
@@ -91,7 +92,7 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 //   cout << " indopt  " <<  indopt << endl;
        TString text("RadioButton");
        if (i == 0)text += "_";
-       else       text += "+"; 
+       else       text += "+";
        text += fDrawOpt2DimArray[indopt];
        fRow_lab->Add(new TObjString(text.Data()));
        fValp[ind++] = &fOptRadio[indopt++];
@@ -102,7 +103,7 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
    for (Int_t i = 0; i < 5; i++) {
        TString text("RadioButton");
        if (i == 0)text += "_";
-       else       text += "+"; 
+       else       text += "+";
        text += fDrawOpt2DimArray[indopt];
        fRow_lab->Add(new TObjString(text.Data()));
        fValp[ind++] = &fOptRadio[indopt++];
@@ -112,7 +113,7 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
    for (Int_t i = 0; i < 5; i++) {
        TString text("RadioButton");
        if (i == 0)text += "_";
-       else       text += "+"; 
+       else       text += "+";
        text += fDrawOpt2DimArray[indopt];
        fRow_lab->Add(new TObjString(text.Data()));
        fValp[ind++] = &fOptRadio[indopt++];
@@ -122,14 +123,16 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
    for (Int_t i = 0; i < 5; i++) {
        TString text("RadioButton");
        if (i == 0)text += "_";
-       else       text += "+"; 
+       else       text += "+";
        text += fDrawOpt2DimArray[indopt];
        fRow_lab->Add(new TObjString(text.Data()));
        fValp[ind++] = &fOptRadio[indopt++];
    }
-   fRow_lab->Add(new TObjString("CheckButton_Hide front box"));
-   fRow_lab->Add(new TObjString("CheckButton+Hide back box"));
-   fRow_lab->Add(new TObjString("CheckButton+Live start box"));
+   fRow_lab->Add(new TObjString("CheckButton_Z Scale"));
+   fRow_lab->Add(new TObjString("CheckButton+No Fbox"));
+   fRow_lab->Add(new TObjString("CheckButton+No Bbox"));
+   fRow_lab->Add(new TObjString("CheckButton+Live stat"));
+   fValp[ind++] = &fShowZScale;
    fValp[ind++] = &fHideFrontBox;
    fValp[ind++] = &fHideBackBox;
    fValp[ind++] = &fLiveStat2Dim;
@@ -142,9 +145,9 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
 
-   static Int_t ok; 
+   static Int_t ok;
    Int_t itemwidth = 360;
-   fDialog = 
+   fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
@@ -153,9 +156,9 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 
 void Set2DimOptDialog::RecursiveRemove(TObject * obj)
 {
-   if (obj == fCanvas) { 
+   if (obj == fCanvas) {
  //     cout << "Set2DimOptDialog: CloseDialog "  << endl;
-      CloseDialog(); 
+      CloseDialog();
    }
 }
 //_______________________________________________________________________
@@ -175,8 +178,10 @@ void Set2DimOptDialog::SetHistAttNow(TCanvas *canvas)
 {
    for (Int_t i = 0; i < kNdrawopt; i++) {
       if (fOptRadio[i] == 1) {
-//          cout << "fDrawOpt2DimArray[" << i << "]" << endl;
+//         cout << "fDrawOpt2DimArray[" << i << "]" << endl;
          fDrawOpt2Dim = fDrawOpt2DimArray[i];
+//         if (fShowZScale)   fDrawOpt2Dim += "Z";
+
       }
    }
    if (!canvas) return;
@@ -187,17 +192,27 @@ void Set2DimOptDialog::SetHistAttNow(TCanvas *canvas)
 void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
 {
    if (!canvas) return;
+	canvas->cd();
    TIter next(canvas->GetListOfPrimitives());
    TObject *obj;
    fDrawOpt = fDrawOpt2Dim;
+   if ( fShowZScale && (
+        fDrawOpt.Contains("COL")   || fDrawOpt.Contains("CONT0") 
+      ||fDrawOpt.Contains("CONT1") || fDrawOpt.Contains("CONT4") 
+      ||fDrawOpt.Contains("TRI2") || fDrawOpt.Contains("SURF1") 
+      ||fDrawOpt.Contains("SURF2") || fDrawOpt.Contains("SURF3") 
+      ||fDrawOpt.Contains("LEGO2") ) )
+      fDrawOpt += "Z";
    if (fHideFrontBox) fDrawOpt += "FB";
-   if (fHideBackBox) fDrawOpt  += "BB";
-   
+   if (fHideBackBox)  fDrawOpt += "BB";
+
    while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TH2")) {
+      if (obj->InheritsFrom("TGraph2D")) {
+         ((TGraph2D*)obj)->SetDrawOption(fDrawOpt);
+     } else if (obj->InheritsFrom("TH2")) {
          ((TH2*)obj)->SetDrawOption(fDrawOpt);
          ((TH2*)obj)->SetOption(fDrawOpt);
-     } else if ((obj->InheritsFrom("TPad"))) {
+      } else if ((obj->InheritsFrom("TPad"))) {
          TPad *pad = (TPad*)obj;
          TIter next1(pad->GetListOfPrimitives());
          TObject *obj1;
@@ -214,17 +229,16 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
    }
    if (gPad == gPad->GetMother()) {
 		if (fLiveStat2Dim) {
-//			cout << "SetAutoExec() true" << endl; 
+//			cout << "SetAutoExec() true" << endl;
 			if (!canvas->GetAutoExec())
 				canvas->ToggleAutoExec();
 		} else {
-//			cout << "SetAutoExec() false" << endl; 
+//			cout << "SetAutoExec() false" << endl;
 			if (canvas->GetAutoExec())
 				canvas->ToggleAutoExec();
 		}
    }
 	canvas->Pop();
-	canvas->cd();
 	canvas->Modified();
 	canvas->Update();
 }
@@ -245,6 +259,7 @@ void Set2DimOptDialog::SetHistAttPerm()
    env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim);
    env.SetValue("Set2DimOptDialog.fDrawOpt2Dim", fDrawOpt2Dim);
    env.SetValue("Set2DimOptDialog.fLiveStat2Dim", fLiveStat2Dim);
+   env.SetValue("Set2DimOptDialog.fShowZScale", fShowZScale);
    env.SaveLevel(kEnvLocal);
 }
 //______________________________________________________________________
@@ -254,6 +269,7 @@ void Set2DimOptDialog::SaveDefaults()
    TEnv env(".hprrc");
    env.SetValue("Set2DimOptDialog.fDrawOpt2Dim", fDrawOpt2Dim);
    env.SetValue("Set2DimOptDialog.fLiveStat2Dim", fLiveStat2Dim);
+   env.SetValue("Set2DimOptDialog.fShowZScale", fShowZScale);
    env.SaveLevel(kEnvLocal);
 }
 
@@ -264,6 +280,7 @@ void Set2DimOptDialog::RestoreDefaults()
    TEnv env(".hprrc");
    fDrawOpt2Dim  = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
    fLiveStat2Dim = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
+   fShowZScale   = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
 }
 //______________________________________________________________________
 
@@ -279,7 +296,7 @@ void Set2DimOptDialog::CloseDown(Int_t wid)
 void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
-//  cout << "CRButtonPressed(" << wid<< ", " <<bid;
+//   cout << "CRButtonPressed(" << wid<< ", " <<bid;
 //   if (obj) cout  << ", " << canvas->GetName() << ")";
 //   cout << endl;
    SetHistAttNow(canvas);

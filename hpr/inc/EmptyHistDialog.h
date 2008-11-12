@@ -4,6 +4,8 @@
 #include "TRootCanvas.h"
 #include "TGMenu.h"
 #include "TString.h"
+#include "FitOneDimDialog.h"
+#include "Save2FileDialog.h"
 #include <iostream>
 //_____________________________________________________________________________________
 
@@ -14,6 +16,8 @@ class EmptyHistDialog : public TObject {
 
 private:
    TCanvas *fCanvas;
+//   FitOneDimDialog * fDialog;
+ //  Save2FileDialog * fSave2FileDialog;
    TH1D    *fHist;
    Int_t   fWinx;
    Int_t   fWiny;

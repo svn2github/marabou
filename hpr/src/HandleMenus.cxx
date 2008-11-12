@@ -1040,6 +1040,15 @@ void HandleMenus::BuildMenus()
    Bool_t fh_menus = kFALSE;
    Bool_t edit_menus = kFALSE;
    Bool_t autops = kFALSE;
+   Bool_t graph1d = kFALSE;
+   Bool_t graph2d = kFALSE;
+   if ( fGraph ) {
+      if ( fGraph->InheritsFrom("TGraph2D") ) {
+         graph2d = kTRUE;
+      } else {
+         graph1d = kTRUE;
+      }
+   }
    if(fHistPresent){
       autops = GeneralAttDialog::fShowPSFile;
       hbrowser=fHistPresent->GetHelpBrowser();
@@ -1059,6 +1068,17 @@ void HandleMenus::BuildMenus()
    const TList * l;
    TGMenuEntry * e;
 
+   pm = fRootsMenuBar->GetPopup("Tools");
+   if (pm) {
+      l = pm->GetListOfEntries();
+      if (l) {
+         TIter next(l);
+         while ( (e = (TGMenuEntry *)next()) ) {
+            pm->DeleteEntry(e);
+         }
+         fRootsMenuBar->RemovePopup("Tools");
+      }
+   }
    pm = fRootsMenuBar->GetPopup("Help");
    if (pm) {
       l = pm->GetListOfEntries();
@@ -1184,9 +1204,10 @@ void HandleMenus::BuildMenus()
   // Create menus
    fFileMenu = new TGPopupMenu(fRootCanvas->GetParent());
 //   fFileMenu->AddEntry("&New Canvas",         kFileNewCanvas);
-   if (fGraph) {
+   if (graph1d ||graph2d) {
       fFileMenu->AddEntry("Graph_to_ROOT-File",      kFHGraphToFile);
-      fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
+      if ( graph1d )
+         fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
       fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
    }
    if(fHistPresent){
@@ -1247,11 +1268,11 @@ void HandleMenus::BuildMenus()
    if (!fGraph) fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
    if((!fGraph && !fFitHist) || (fFitHist && !(fFitHist->Its2dim())))
       fOptionMenu->AddEntry("How to display a 1-dim histogram", kOption1Dim);
-   if ((!fGraph && !fFitHist) || (fFitHist && fFitHist->Its2dim())) {
+   if ( graph2d || (fFitHist && fFitHist->Its2dim())) {
       fOptionMenu->AddEntry("How to display a 2-dim histogram ", kOption2Dim);
       fOptionMenu->AddEntry("Color mode of 2-dim histogram", kOption2DimCol);
    }
-   if (!fFitHist) {
+   if ( graph1d ) {
 		fOptionMenu->AddEntry("How to display a graph", kOptionGraph);
       if (!fGraph) {
 		   fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
@@ -1286,7 +1307,7 @@ void HandleMenus::BuildMenus()
    fViewMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
    fViewMenu->AddEntry("Show Line Attr",          kViewLineStyles);
 
-   if (fGraph ) {
+   if ( graph1d ) {
    	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
       fDisplayMenu->AddEntry("Superimpose selected graph", kFHSuperimposeGraph);
       fDisplayMenu->AddEntry("Set range of X-axis", kFHSetAxisGraph);
@@ -1470,7 +1491,7 @@ void HandleMenus::BuildMenus()
 //      fCascadeMenu1->Associate(this);
    }
 
-   if (fGraph) {
+   if ( graph1d ) {
       fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
       fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUserG);
       fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUserG);
@@ -1542,7 +1563,7 @@ void HandleMenus::BuildMenus()
    if(edit_menus){
          fRootsMenuBar->AddPopup("Hpr-Edit",            fEditMenu,  fMenuBarItemLayout, pmi);
    }
-   if (fGraph) {
+   if ( graph1d ) {
       fRootsMenuBar->AddPopup("Fit", fFitMenu,   fMenuBarItemLayout, pmi);
    }
    if(hbrowser) {

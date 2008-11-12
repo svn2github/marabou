@@ -28,7 +28,7 @@ public:
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown(Int_t wid);
-
+   void CRButtonPressed(Int_t widgetId, Int_t buttonId, TObject *obj);
 ClassDef(Ascii2NtupleDialog,0)
 };
 #endif
