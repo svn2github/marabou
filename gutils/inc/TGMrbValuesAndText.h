@@ -93,6 +93,8 @@ private:
    Int_t            fAlign;
    Int_t            fArrowShape;
    TGComboBox       *fArrowComboBox;
+   TGComboBox       *fComboBox;
+   TString          *fComboSelect;
    Int_t            fFont;
    TGFontTypeComboBox *fFontComboBox;
    Style_t           fLineStyle;

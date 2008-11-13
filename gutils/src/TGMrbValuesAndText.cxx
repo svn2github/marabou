@@ -72,6 +72,7 @@ namespace std {} using namespace std;
 // Fill_Select : Fill style															 //
 // Mark_Select : Marker style 														 //
 // ColorSelect : Color_t																 //
+// ComboSelect : a Combo box																 //
 // RadioButton : radio button 														 //
 // CheckButton : check button 														 //
 // Exec_Button : only emit signal button clicked								 //
@@ -718,7 +719,7 @@ enum buttonId {kIdOk = 101, kIdCancel = 102, kIdHelp = 103, kIdClearHist = 104,
                kIdText = 201, kIdFileName = 202, kIdTextValue = 301,
                kIdTextSelect, kIdListBoxReq = 401,
                kIdFileDialog = 4, kIdFileDialogCont = 5, kIdFontS = 6, kIdCommand = 7,
-					kIdExec, kIdLineS, kIdArrowS, kIdAlignS, kIdMarkS, kIdFillS, kIdColorS};
+					kIdExec, kIdLineS, kIdArrowS, kIdComboS,kIdAlignS, kIdMarkS, kIdFillS, kIdColorS};
 enum {
    kIsAEditorPage  = BIT(23)
 };
@@ -874,20 +875,22 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                if (nt > 1) {
                   Int_t ft = lab.Index(";");
                   lab.Resize(ft);
-						TString s = ((TObjString*)tokens->At(1))->String();
-						if (s.Length() > 1) {
-							lowlim = s.Atof();
-							has_lowlim = kTRUE;
-						}
-                  if (nt > 2) {
-                     s = ((TObjString*)tokens->At(2))->String();
-                     if (s.Length() > 1) {
-                        uplim = s.Atof();
-                        has_uplim = kTRUE;
-                     }
+                  if (!l.BeginsWith("ComboSelect")) {
+							TString s = ((TObjString*)tokens->At(1))->String();
+							if (s.Length() > 1) {
+								lowlim = s.Atof();
+								has_lowlim = kTRUE;
+							}
+							if (nt > 2) {
+								s = ((TObjString*)tokens->At(2))->String();
+								if (s.Length() > 1) {
+									uplim = s.Atof();
+									has_uplim = kTRUE;
+								}
+							}
                   }
-               }  
-               delete tokens;   
+               }
+               delete tokens;
 					if ( has_lowlim && has_uplim ) {
 						limsw = TGNumberFormat::kNELLimitMinMax;
 					} else if ( has_lowlim ) {
@@ -1054,6 +1057,37 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fArrowComboBox->Associate(this);
             fArrowComboBox->Resize(win_width / 5, 20);
             hframe->AddFrame(fArrowComboBox, l3);
+
+         } else if (l.BeginsWith("ComboSelect")) {
+            fComboSelect = (TString*)fValPointers[i];
+            fComboBox = new TGComboBox(hframe, i + 1000*kIdComboS);
+            TString lab(l);
+            Int_t sel = 0;
+            if (lab.Length() > 12) {
+               lab.Remove(0,12);
+// look for min / max for number entries
+               TObjArray * tokens;
+               tokens = lab.Tokenize(";");
+               Int_t nt = tokens->GetEntries();
+               if (nt > 1) {
+                  Int_t ft = lab.Index(";");
+                  lab.Resize(ft);
+                  for (Int_t iv = 1; iv < nt; iv++) {
+						   TString s = ((TObjString*)tokens->At(iv))->String();
+                     fComboBox->AddEntry(s,iv-1);
+//                     cout << " fComboSelect " << *fComboSelect << " " << s << endl;
+                     if (s == *fComboSelect)
+                        sel = iv-1;
+                  }
+               }
+               delete tokens;
+            }
+            fComboBox->Select(sel-1);
+            fWidgets->Add(fComboBox);
+            fEntries->Add(fComboBox);
+            fComboBox->Associate(this);
+            fComboBox->Resize(win_width / 5, 20);
+            hframe->AddFrame(fComboBox, l3);
 
          } else if (l.BeginsWith("Float_Value")) {
 //               scol = Form("%f", *(Float_t*)fValPointers[i]);
@@ -1386,7 +1420,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
          idCmd    = kIdColorS;
          idButton = fLastColorSelect;
       }
-//      cout << "idButton: " <<idButton << endl;
+ //     cout << "idButton: " <<idButton << endl;
 
    }    switch (GET_MSG(msg)) {
       case kC_COMMAND:
@@ -1462,7 +1496,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                 }
              case kCM_RADIOBUTTON:
                 {
- //                  cout << "toggle TGRadioButtons " << parm1 << endl;
+//                   cout << "toggle TGRadioButtons " << parm1 << endl;
                    TIter nextent(fEntries);
                    TObject * obj;
                    Int_t i = 0;
@@ -1555,7 +1589,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 //         	 StoreValues();
           break;
    }
-//cout << "ProcessMessage  " << fValPointers  << " " 
+//cout << "ProcessMessage  " << fValPointers  << " "
 //     << idButton << " " << kIdExec << endl;
 //  only if a command is executed
    if (  GET_MSG(msg) == kC_COMMAND
@@ -1605,7 +1639,7 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname, Bool_t store)
          id++;
       }
    }
-   if ( id > 0 ) 
+   if ( id > 0 )
       fListBoxReq->Select(0, kTRUE);
 //   cout << "fListBoxReq->GetDefaultWidth()" << fListBoxReq->GetDefaultWidth() << endl;
    fListBoxReq->Resize(fListBoxReq->GetDefaultWidth(), TMath::Min(200, (id+1)*20));
@@ -1687,16 +1721,21 @@ void TGMrbValuesAndText::StoreValues(){
           Short_t sel = -1;
           if (((TGComboBox*)obj)->WidgetId() / 1000 == kIdArrowS) {
              sel = ((TGComboBox*)obj)->GetSelected();
-
+             *(Short_t*)fValPointers[i] = sel;
           } else if (((TGComboBox*)obj)->WidgetId() / 1000 == kIdFontS) {
              sel = ((TGComboBox*)obj)->GetSelected();
              Font_t tf = *(Short_t*)fValPointers[i];
              if (tf >= 12) sel = sel * 10 + 2;
+             *(Short_t*)fValPointers[i] = sel;
 
           } else if (((TGComboBox*)obj)->WidgetId()  / 1000== kIdLineS) {
              sel = ((TGComboBox*)obj)->GetSelected();
+             *(Short_t*)fValPointers[i] = sel;
+
+          } else if (((TGComboBox*)obj)->WidgetId()  / 1000== kIdComboS) {
+             TGTextLBEntry *sent = (TGTextLBEntry*)((TGComboBox*)obj)->GetSelectedEntry();
+             *(TString*)fValPointers[i]  = sent->GetText()->GetString();
           }
-          *(Short_t*)fValPointers[i] = sel;
 
        } else if (obj->InheritsFrom("TGCheckButton")) {
           cbutton = (TGCheckButton*)obj;
@@ -1801,6 +1840,7 @@ void TGMrbValuesAndText::ReloadValues(){
        ReloadValue(obj, objs, i);
        i++;
    }
+   if (fText && fTE) fTE->SetText(fText->Data());
 }
 //_____________________________________________________________________________
 
@@ -1990,17 +2030,34 @@ Int_t TGMrbValuesAndText::GetColorPixelByInd(Int_t index)
 //______________________________________________________________________________
 void TGMrbValuesAndText::EnableButton(Int_t id)
 {
-   TGButton *b = (TGButton *)fEntries->At(id);
+//   TGButton *b = (TGButton *)fEntries->At(id);
    TObjString *objs = (TObjString*)fLabels->At(id);
-   if (b) b->SetEnabled(kTRUE);
-   ReloadValue(b, objs, id);
+   if (fEntries->At(id)->InheritsFrom("TGButton")) {
+      TGButton *b = (TGButton *)fEntries->At(id);
+      if (b) {
+          b->SetEnabled(kTRUE);
+          ReloadValue(b, objs, id);
+      }
+   } else if (fEntries->At(id) ->InheritsFrom("TGNumberEntry")) {
+      TGNumberEntry *b = (TGNumberEntry *)fEntries->At(id);
+      if (b) {
+         b->SetState(kTRUE);
+         ReloadValue(b, objs, id);
+      }
+   }
 };
 //______________________________________________________________________________
 
 void TGMrbValuesAndText::DisableButton(Int_t id)
 {
-   TGButton *b = (TGButton *)fEntries->At(id);
-   if (b) b->SetEnabled(kFALSE);
+   if (fEntries->At(id) ->InheritsFrom("TGButton")) {
+      TGButton *b = (TGButton *)fEntries->At(id);
+      if (b) b->SetEnabled(kFALSE);
+   } else if (fEntries->At(id) ->InheritsFrom("TGNumberEntry")) {
+      TGNumberEntry *b = (TGNumberEntry *)fEntries->At(id);
+      if (b) b->SetState(kFALSE);
+   }
+
 };
 //______________________________________________________________________________
 
