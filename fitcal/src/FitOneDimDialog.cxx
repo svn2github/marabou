@@ -4,6 +4,7 @@
 #include "TCanvas.h"
 #include "TH1.h"
 #include "TF1.h"
+#include "TFile.h"
 #include "TEnv.h"
 #include "TFrame.h"
 #include "TString.h"
@@ -16,7 +17,9 @@
 #include "TVirtualPad.h"
 #include "TGMrbTableFrame.h"
 #include "FitOneDimDialog.h"
+#include "Save2FileDialog.h"
 #include "FhPeak.h"
+#include "TF1Range.h"
 #include "SetColor.h"
 #include <iostream>
 //#ifdef MARABOUVERS
@@ -518,6 +521,7 @@ the root doc at: http://root.cern.ch\n\
    fUseoldpars = 0;
    fLinBgSet = kFALSE;
    fMarkers = NULL;
+   fCalFunc = NULL;
    fReqNmarks= 0;
    fDialog = NULL;
    TAxis *xaxis = fSelHist->GetXaxis();
@@ -541,6 +545,7 @@ the root doc at: http://root.cern.ch\n\
       fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
    }
    if (fInteractive > 0 ) {
+      TString title;
 		TList *row_lab = new TList();
 		static void *valp[50];
 		Int_t ind = 0;
@@ -561,6 +566,8 @@ the root doc at: http://root.cern.ch\n\
 		static TString prtcmd("PrintMarkers()");
 		static TString sfocmd("SetFittingOptions()");
 		static TString fhrcmd("FillHistRandom()");
+		static TString svcmd("SaveFunction()");
+		static TString gfcmd("GetFunction()");
 		static Int_t dummy = 0;
 		TString * text = NULL;
 		const char * history = NULL;
@@ -570,7 +577,11 @@ the root doc at: http://root.cern.ch\n\
 
 	//   fSelHist->Dump();
 		const char * helptext = NULL;
+		Int_t itemwidth = 320;
+      TString tagname;
 		if (type == 1) {
+         title = "Gauss + background";
+         itemwidth = 340;
 			helptext = helptext_gaus;
 			fFuncName.Prepend(fGausFuncName);
 			fNmarks = GetMarkers();
@@ -593,6 +604,7 @@ the root doc at: http://root.cern.ch\n\
 			row_lab->Add(new TObjString("CheckButton+Show components of fit"));
 			valp[ind++] = &fShowcof;
 		} else if (type == 2) {
+         title = "Exponential";
 			helptext = helptext_exp;
 			fFuncName.Prepend(fExpFuncName);
 	//      row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
@@ -618,57 +630,44 @@ the root doc at: http://root.cern.ch\n\
 			valp[ind++] = &dummy;
 
 		} else if (type == 3) {
+         title = "Polynomial";
 			helptext = helptext_pol;
 			fFuncName.Prepend(fPolFuncName);
 			row_lab->Add(new TObjString("CommentOnly_Pol: a0 + a1*x +.."));
 			valp[ind++] = &dummy;
 			row_lab->Add(new TObjString("PlainIntVal+Degree"));
 			valp[ind++] = &fPolN;
-			row_lab->Add(new TObjString("DoubleValue_a0"));
-			valp[ind++] = &fPolA;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
-			valp[ind++] = &fPolFixA;
-			row_lab->Add(new TObjString("DoubleValue-a1"));
-			valp[ind++] = &fPolB;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
-			valp[ind++] = &fPolFixB;
-			row_lab->Add(new TObjString("DoubleValue_a2"));
-			valp[ind++] = &fPolC;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
-			valp[ind++] = &fPolFixC;
-			row_lab->Add(new TObjString("DoubleValue+a3"));
-			valp[ind++] = &fPolD;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
-			valp[ind++] = &fPolFixD;
+
+         for ( Int_t i = 0; i < 6; i ++ ) {
+            tagname = "DoubleValue";
+            if ( i%2 == 0 ) tagname += "_a";
+            else       tagname += "-a";
+            tagname += i;
+			   row_lab->Add(new TObjString(tagname));
+		   	valp[ind++] = &fPolPar[i];
+            tagname = "CheckButton";
+            tagname += "-Fix";
+		    	row_lab->Add(new TObjString(tagname));
+		      valp[ind++] = &fPolFixPar[i];
+         }
 		} else if (type == 4) {
+         title = "User defined formula";
 			helptext = helptext_form;
 			fFuncName.Prepend(fFormFuncName);
 			row_lab->Add(new TObjString("CommentOnly_User defined formula"));
 			valp[ind++] = &dummy;
-			row_lab->Add(new TObjString("DoubleValue_p0"));
-			valp[ind++] = &fFormA;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
-			valp[ind++] = &fFormFixA;
-			row_lab->Add(new TObjString("DoubleValue-p1"));
-			valp[ind++] = &fFormB;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
-			valp[ind++] = &fFormFixB;
-			row_lab->Add(new TObjString("DoubleValue_p2"));
-			valp[ind++] = &fFormC;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
-			valp[ind++] = &fFormFixC;
-			row_lab->Add(new TObjString("DoubleValue+p3"));
-			valp[ind++] = &fFormD;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
-			valp[ind++] = &fFormFixD;
-			row_lab->Add(new TObjString("DoubleValue_p4"));
-			valp[ind++] = &fFormE;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
-			valp[ind++] = &fFormFixE;
-			row_lab->Add(new TObjString("DoubleValue+p5"));
-			valp[ind++] = &fFormF;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
-			valp[ind++] = &fFormFixF;
+         for ( Int_t i = 0; i < 6; i ++ ) {
+            tagname = "DoubleValue";
+            if ( i%2 == 0 ) tagname += "_a";
+            else           tagname += "-a";
+            tagname += i;
+			   row_lab->Add(new TObjString(tagname));
+		   	valp[ind++] = &fFormPar[i];
+            tagname = "CheckButton";
+            tagname += "-Fix";
+		    	row_lab->Add(new TObjString(tagname));
+		      valp[ind++] = &fFormFixPar[i];
+         }
 		}
 		row_lab->Add(new TObjString("DoubleValue_From"));
 		valp[ind++] = &fFrom;
@@ -712,11 +711,11 @@ the root doc at: http://root.cern.ch\n\
 		}
 		row_lab->Add(new TObjString("CommandButt_Options/Params"));
 		valp[ind++] = &sfocmd;
-		row_lab->Add(new TObjString("CommandButt+Print Markers"));
-		valp[ind++] = &prtcmd;
 		row_lab->Add(new TObjString("CommandButt+Clear FuncList"));
 		valp[ind++] = &clfcmd;
-		row_lab->Add(new TObjString("CommandButt_Clear Marks"));
+		row_lab->Add(new TObjString("CommandButt_Print Marks"));
+		valp[ind++] = &prtcmd;
+		row_lab->Add(new TObjString("CommandButt+Clear Marks"));
 		valp[ind++] = &clmcmd;
 		if (type == 1) {
 			row_lab->Add(new TObjString("CommandButt-Set N Marks"));
@@ -724,20 +723,23 @@ the root doc at: http://root.cern.ch\n\
 			row_lab->Add(new TObjString("PlainIntVal-N"));
 			valp[ind++] = &fReqNmarks;
 		} else {
-			row_lab->Add(new TObjString("CommandButt-Set 2 Marks"));
+			row_lab->Add(new TObjString("CommandButt+Set 2 Marks"));
 			fReqNmarks = 2;
 			valp[ind++] = &setmcmd;
 		}
 		if (type == 4) {
+	   	row_lab->Add(new TObjString("CommandButt_Save Func to File"));
+		   valp[ind++] = &svcmd;
+		   row_lab->Add(new TObjString("CommandButt+Get Func from File"));
+		   valp[ind++] = &gfcmd;
 			row_lab->Add(new TObjString("CommandButt_Fill random"));
 			valp[ind++] = &fhrcmd;
 			row_lab->Add(new TObjString("PlainIntVal-N events"));
 			valp[ind++] = &fNevents;
 		}
-		Int_t itemwidth = 320;
 		Int_t ok = 0;
 		fDialog =
-		new TGMrbValuesAndText ("FitOneDim Dialog ", text, &ok, itemwidth,
+		new TGMrbValuesAndText (title.Data(), text, &ok, itemwidth,
 								fParentWindow, history, NULL, row_lab, valp,
 								NULL, NULL, helptext, this, this->ClassName());
    }
@@ -1062,6 +1064,9 @@ Bool_t FitOneDimDialog::FitGausExecute()
    func->SetParName(0, "BinW");
    func->SetParName(1, "Npeaks");
    func->SetParName(2, "TailSide");
+
+//   cout << " ????????????????????????????? " << endl;
+//   cout << "Formula: |" << func->GetTitle() << "|"<< endl;
 // in case it was not incremented
    ind = npars;
 // add bound and fixflags
@@ -1816,6 +1821,8 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
 //   func->SetParName(3, "d (x_off)");
    func->SetLineWidth(fWidth);
    func->SetLineColor(fColor);
+//   cout << " ????????????????????????????? " << endl;
+//   cout << "Formula: |" << func->GetTitle() << "|"<< endl;
    if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
       func->Draw("same");
       func->Print();
@@ -1935,6 +1942,8 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
  //               kMBIconExclamation, kMBDismiss, &retval);
 //      return;
 //   }
+   GetMarkers();
+   cout << "Fitting interval: " << fFrom << " : " << fTo << endl;
    TString fn;
    TString pn;
 //   TArrayD par(fPolN+1);
@@ -1946,26 +1955,13 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
          fn += "*x";
       }
    }
-   cout << "fn: " << fn << endl;
+//   cout << "fn: " << fn << endl;
    TF1 *func = new TF1(fFuncName.Data(),fn.Data(), fFrom, fTo);
    for (Int_t i = 0; i <= fPolN; i++) {
       pn = "a"; pn += i;
       func->SetParName(i, pn);
-      if (i == 0) {
-         func->SetParameter(i, fPolA);
-         if (fPolFixA |= 0) func->FixParameter(i, fPolA);
-      } else if (i == 1) {
-         func->SetParameter(i, fPolB);
-         if (fPolFixB |= 0) func->FixParameter(i, fPolB);
-      } else if (i == 2) {
-         func->SetParameter(i, fPolC);
-         if (fPolFixC |= 0) func->FixParameter(i, fPolC);
-      } else if (i == 3) {
-         func->SetParameter(i, fPolD);
-         if (fPolFixD |= 0) func->FixParameter(i, fPolD);
-      } else {
-          func->SetParameter(i, 0.);
-      }
+      func->SetParameter(i, fPolPar[i]);
+      if (fPolFixPar[i] |= 0) func->FixParameter(i, fPolPar[i]);
    }
    func->SetLineWidth(fWidth);
    func->SetLineColor(fColor);
@@ -1982,8 +1978,11 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
       if (fFitOptIntegral)  fitopt += "I";
       if (fFitOptNoDraw)    fitopt += "0";
       if (fFitOptAddAll)    fitopt += "+";
-      Bool_t bound = (fPolFixA + fPolFixB + fPolFixC + fPolFixD) != 0;
-      if (bound)            fitopt += "B";   // some pars are bound
+      Int_t bound = 0;
+      for (Int_t i = 0; i < 6; i++) {
+         bound += fFormFixPar[i];
+      }
+      if (bound > 0)            fitopt += "B";   // some pars are bound
       if (fGraph != NULL) {
          fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
    //     add to ListOfFunctions if requested
@@ -2008,11 +2007,9 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
             }
          }
       }
-
-		fPolA = func->GetParameter(0);
-		if (fPolN > 0) fPolB = func->GetParameter(1);
-		if (fPolN > 1) fPolC = func->GetParameter(2);
-		if (fPolN > 2) fPolD = func->GetParameter(3);
+      for (Int_t i = 0; i < fPolN; i++) {
+         fPolPar[i] = func->GetParameter(i);
+      }
       IncrementIndex(&fFuncName);
       if (fAutoClearMarks) ClearMarkers();
       PrintCorrelation();
@@ -2051,12 +2048,14 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
          fGraph = NULL;
       }
    }
+   GetMarkers();
+   cout << "Fitting interval: " << fFrom << " : " << fTo << endl;
 
    TString fn;
    TString pn;
    TF1 *func = new TF1(fFuncName,(const char*)fFormula, fFrom, fTo);
    if (func->GetNdim() <= 0) {
-      cout << "Something wrong with formula" << endl;
+      cout << setred << "Something wrong with formula"<< setblack << endl;
       return;
    }
    Int_t npars = func->GetNpar();
@@ -2067,25 +2066,8 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
    for (Int_t i = 0; i < npars; i++) {
       pn = "a"; pn += i;
       func->SetParName(i, pn);
-      if (i == 0) {
-         func->SetParameter(i, fFormA);
-         if (fFormFixA |= 0) func->FixParameter(i, fFormA);
-      } else if (i == 1) {
-         func->SetParameter(i, fFormB);
-         if (fFormFixB |= 0) func->FixParameter(i, fFormB);
-      } else if (i == 2) {
-         func->SetParameter(i, fFormC);
-         if (fFormFixC |= 0) func->FixParameter(i, fFormC);
-      } else if (i == 3) {
-         func->SetParameter(i, fFormD);
-         if (fFormFixD |= 0) func->FixParameter(i, fFormD);
-      } else if (i == 4) {
-         func->SetParameter(i, fFormE);
-         if (fFormFixE |= 0) func->FixParameter(i, fFormE);
-      } else if (i == 5) {
-         func->SetParameter(i, fFormF);
-         if (fFormFixF |= 0) func->FixParameter(i, fFormF);
-      }
+      func->SetParameter(i, fFormPar[i]);
+      if (fFormFixPar[i] |= 0) func->FixParameter(i, fFormPar[i]);
    }
    func->Print();
    func->SetLineWidth(fWidth);
@@ -2100,12 +2082,15 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
       if (fFitOptQuiet)     fitopt += "Q";
       if (fFitOptVerbose)   fitopt += "V";
       if (fFitOptMinos)     fitopt += "E";
-      if (fFitOptErrors1)    fitopt += "W";
+      if (fFitOptErrors1)   fitopt += "W";
       if (fFitOptIntegral)  fitopt += "I";
       if (fFitOptNoDraw)    fitopt += "0";
       if (fFitOptAddAll)    fitopt += "+";
-      Bool_t bound = (fFormFixA + fFormFixB + fFormFixC + fFormFixD+ fFormFixE + fFormFixF) != 0;
-      if (bound)            fitopt += "B";   // some pars are bound
+      Int_t bound = 0;
+      for (Int_t i = 0; i < 6; i++) {
+         bound += fFormFixPar[i];
+      }
+      if (bound > 0)            fitopt += "B";   // some pars are bound
       if ( fGraph != NULL && fGraph->GetN() > 1) {
          fGraph->Fit(fFuncName.Data(), fitopt.Data(), "SAMES");	//  here fitting is done
    //     add to ListOfFunctions if requested
@@ -2131,13 +2116,10 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
          }
       }
 
-
-		fFormA = func->GetParameter(0);
-		if (npars > 1) fFormB = func->GetParameter(1);
-		if (npars > 2) fFormC = func->GetParameter(2);
-		if (npars > 3) fFormD = func->GetParameter(3);
-		if (npars > 4) fFormE = func->GetParameter(4);
-		if (npars > 5) fFormF = func->GetParameter(5);
+      for (Int_t i = 0; i < npars; i++) {
+         fFormPar[i] = func->GetParameter(i);
+      }
+      fCalFunc = func;
       IncrementIndex(&fFuncName);
       if (fAutoClearMarks) ClearMarkers();
       PrintCorrelation();
@@ -2208,7 +2190,9 @@ void FitOneDimDialog::FillHistRandom()
    gStyle->SetOptStat(1111111);
    TString fn;
    TString pn;
-   TF1 *func = new TF1(fFuncName,(const char*)fFormula, fFrom, fTo);
+   TString newname(fFuncName);
+   newname += "_range";
+   TF1Range *func = new TF1Range(newname,(const char*)fFormula, fFrom, fTo);
    if (func->GetNdim() <= 0) {
       cout << "Something wrong with formula" << endl;
       return;
@@ -2221,29 +2205,17 @@ void FitOneDimDialog::FillHistRandom()
    for (Int_t i = 0; i < npars; i++) {
       pn = "a"; pn += i;
       func->SetParName(i, pn);
-      if (i == 0) {
-         func->SetParameter(i, fFormA);
-         if (fFormFixA |= 0) func->FixParameter(i, fFormA);
-      } else if (i == 1) {
-         func->SetParameter(i, fFormB);
-         if (fFormFixB |= 0) func->FixParameter(i, fFormB);
-      } else if (i == 2) {
-         func->SetParameter(i, fFormC);
-         if (fFormFixC |= 0) func->FixParameter(i, fFormC);
-      } else if (i == 3) {
-         func->SetParameter(i, fFormD);
-         if (fFormFixD |= 0) func->FixParameter(i, fFormD);
-      } else if (i == 4) {
-         func->SetParameter(i, fFormE);
-         if (fFormFixE |= 0) func->FixParameter(i, fFormE);
-      } else if (i == 5) {
-         func->SetParameter(i, fFormF);
-         if (fFormFixF |= 0) func->FixParameter(i, fFormF);
-      }
+      func->SetParameter(i, fFormPar[i]);
    }
-   hist->FillRandom(fFuncName, fNevents);
+   Double_t integral = func->Integral(fFrom, fTo);
+   cout << "Integral[" << fFrom << ", "<< fTo  << "] = " << integral << endl;
+//   func->Dump();
+   Int_t fillN = fNevents;
+   if ( fillN <= 0 ) 
+      fillN = (Int_t)integral;
+   hist->FillRandom(newname, fillN);
    hist->SetMaximum(hist->GetBinContent(hist->GetMaximumBin()));
-   hist->Print();
+//   hist->Print();
    gPad->Modified();
    gPad->Update();
 }
@@ -2281,26 +2253,23 @@ void FitOneDimDialog::RestoreDefaults()
    fExpFixC          = env.GetValue("FitOneDimDialog.fExpFixC", 0);
 //   fExpFixD          = env.GetValue("FitOneDimDialog.fExpFixD", 1);
    fPolN             = env.GetValue("FitOneDimDialog.fPolN", 1);
-   fPolA             = env.GetValue("FitOneDimDialog.fPolA", 0.);
-   fPolB             = env.GetValue("FitOneDimDialog.fPolB", 1.);
-   fPolC             = env.GetValue("FitOneDimDialog.fPolC", 1.);
-   fPolD             = env.GetValue("FitOneDimDialog.fPolD", 0.);
-   fPolFixA          = env.GetValue("FitOneDimDialog.fPolFixA", 0);
-   fPolFixB          = env.GetValue("FitOneDimDialog.fPolFixB", 0);
-   fPolFixC          = env.GetValue("FitOneDimDialog.fPolFixC", 0);
-   fPolFixD          = env.GetValue("FitOneDimDialog.fPolFixD", 0);
-   fFormA             = env.GetValue("FitOneDimDialog.fFormA", 1.);
-   fFormB             = env.GetValue("FitOneDimDialog.fFormB", 1.);
-   fFormC             = env.GetValue("FitOneDimDialog.fFormC", 1.);
-   fFormD             = env.GetValue("FitOneDimDialog.fFormD", 0.);
-   fFormE             = env.GetValue("FitOneDimDialog.fFormE", 1.);
-   fFormF             = env.GetValue("FitOneDimDialog.fFormF", 0.);
-   fFormFixA          = env.GetValue("FitOneDimDialog.fFormFixA", 0);
-   fFormFixB          = env.GetValue("FitOneDimDialog.fFormFixB", 0);
-   fFormFixC          = env.GetValue("FitOneDimDialog.fFormFixC", 0);
-   fFormFixD          = env.GetValue("FitOneDimDialog.fFormFixD", 0);
-   fFormFixE          = env.GetValue("FitOneDimDialog.fFormFixE", 0);
-   fFormFixF          = env.GetValue("FitOneDimDialog.fFormFixF", 0);
+   TString tagname;
+   for ( Int_t i = 0; i < 6; i++ ) {
+      tagname = "FitOneDimDialog.fPolPar";
+      tagname += i;
+      fPolPar[i] = env.GetValue(tagname, 1.);
+      tagname = "FitOneDimDialog.fPolFixPar";
+      tagname += i;
+      fPolFixPar[i] = env.GetValue(tagname, 0);
+   }
+   for ( Int_t i = 0; i < 6; i++ ) {
+      tagname = "FitOneDimDialog.fFormPar";
+      tagname += i;
+      fFormPar[i] = env.GetValue(tagname, 1.);
+      tagname = "FitOneDimDialog.fFormFixPar";
+      tagname += i;
+      fFormFixPar[i] = env.GetValue(tagname, 0);
+   }
    fGausFuncName     = env.GetValue("FitOneDimDialog.fGausFuncName", "gaus_fun");
    fExpFuncName      = env.GetValue("FitOneDimDialog.fExpFuncName", "exp_fun");
    fPolFuncName      = env.GetValue("FitOneDimDialog.fPolFuncName", "pol_fun");
@@ -2308,8 +2277,9 @@ void FitOneDimDialog::RestoreDefaults()
    fNevents          = env.GetValue("FitOneDimDialog.fNevents", 10000);
    fPeakSep          = env.GetValue("FitOneDimDialog.fPeakSep", 3);
    fFitWindow        = env.GetValue("FitOneDimDialog.fFitWindow", 3);
-   fConfirmStartValues  = env.GetValue("FitOneDimDialog.fConfirmStartValues", 0);
+   fConfirmStartValues = env.GetValue("FitOneDimDialog.fConfirmStartValues", 0);
    fPrintStartValues  = env.GetValue("FitOneDimDialog.fPrintStartValues", 0);
+   fFuncFromFile      = env.GetValue("FitOneDimDialog.fFuncFromFile", "f1");
 }
 //_______________________________________________________________________
 
@@ -2345,26 +2315,23 @@ void FitOneDimDialog::SaveDefaults()
    env.SetValue("FitOneDimDialog.fExpFixC",fExpFixC );
 //   env.SetValue("FitOneDimDialog.fExpFixD",fExpFixD );
    env.SetValue("FitOneDimDialog.fPolN",   fPolN    );
-   env.SetValue("FitOneDimDialog.fPolA",   fPolA    );
-   env.SetValue("FitOneDimDialog.fPolB",   fPolB    );
-   env.SetValue("FitOneDimDialog.fPolC",   fPolC    );
-   env.SetValue("FitOneDimDialog.fPolD",   fPolD    );
-   env.SetValue("FitOneDimDialog.fPolFixA",fPolFixA );
-   env.SetValue("FitOneDimDialog.fPolFixB",fPolFixB );
-   env.SetValue("FitOneDimDialog.fPolFixC",fPolFixC );
-   env.SetValue("FitOneDimDialog.fPolFixD",fPolFixD );
-   env.SetValue("FitOneDimDialog.fFormA",   fFormA    );
-   env.SetValue("FitOneDimDialog.fFormB",   fFormB    );
-   env.SetValue("FitOneDimDialog.fFormC",   fFormC    );
-   env.SetValue("FitOneDimDialog.fFormD",   fFormD    );
-   env.SetValue("FitOneDimDialog.fFormE",   fFormE    );
-   env.SetValue("FitOneDimDialog.fFormF",   fFormF    );
-   env.SetValue("FitOneDimDialog.fFormFixA",fFormFixA );
-   env.SetValue("FitOneDimDialog.fFormFixB",fFormFixB );
-   env.SetValue("FitOneDimDialog.fFormFixC",fFormFixC );
-   env.SetValue("FitOneDimDialog.fFormFixD",fFormFixD );
-   env.SetValue("FitOneDimDialog.fFormFixE",fFormFixE );
-   env.SetValue("FitOneDimDialog.fFormFixF",fFormFixF );
+   TString tagname;
+   for ( Int_t i = 0; i < 6; i++ ) {
+      tagname = "FitOneDimDialog.fPolPar";
+      tagname += i;
+      env.SetValue(tagname, fPolPar[i]);
+      tagname = "FitOneDimDialog.fPolFixPar";
+      tagname += i;
+      env.SetValue(tagname, fPolFixPar[i]);
+   }
+   for ( Int_t i = 0; i < 6; i++ ) {
+      tagname = "FitOneDimDialog.fFormPar";
+      tagname += i;
+      env.SetValue(tagname, fFormPar[i]);
+      tagname = "FitOneDimDialog.fFormFixPar";
+      tagname += i;
+      env.SetValue(tagname, fFormFixPar[i]);
+   }
    env.SetValue("FitOneDimDialog.fGausFuncName", fGausFuncName);
    env.SetValue("FitOneDimDialog.fExpFuncName",  fExpFuncName );
    env.SetValue("FitOneDimDialog.fPolFuncName",  fPolFuncName );
@@ -2374,6 +2341,7 @@ void FitOneDimDialog::SaveDefaults()
    env.SetValue("FitOneDimDialog.fFitWindow", fFitWindow);
    env.SetValue("FitOneDimDialog.fConfirmStartValues", fConfirmStartValues);
    env.SetValue("FitOneDimDialog.fPrintStartValues", fPrintStartValues);
+   env.SetValue("FitOneDimDialog.fFuncFromFile", fFuncFromFile);
    env.SaveLevel(kEnvLocal);
 }
 //_______________________________________________________________________
@@ -2419,3 +2387,111 @@ void FitOneDimDialog::IncrementIndex(TString * arg)
       *arg += (num + 1);
    }
 }
+//________________________________________________________________________________
+
+void FitOneDimDialog::GetFunction()
+{
+static const Char_t helptext[] =
+"Select file name with the browser (use arrow)\n\
+Click on the required function name to select it\n\
+Then use \"Read function\" to read it in.\n\
+Note: As default the last entry is selected\n\
+";
+   if ( !fInteractive ) {
+      cout << setred << "GetFunction() only useful in interactive mode "
+           << setblack << endl;
+      return;
+   }
+   TList *row_lab = new TList();
+   static TString nvcmd("SetValues()");
+   static void *valp[100];
+   Int_t ind = 0;
+//   static Double_t dummy = 1;
+//   static Double_t dummy1 = 2;
+//   static Double_t dummy2 = 3;
+   static TString  dummy4;
+   static TString gfcmd("ExecuteGetFunction()");
+
+   row_lab->Add(new TObjString("FileContReq_File name"));
+   valp[ind++] = &fFuncFromFile;
+/*
+   row_lab->Add(new TObjString("DoubleValue_dummy"));
+   valp[ind++] = &dummy;
+   row_lab->Add(new TObjString("DoubleValue_dummy1"));
+   valp[ind++] = &dummy1;
+   row_lab->Add(new TObjString("DoubleValue_dummy2"));
+   valp[ind++] = &dummy2;
+*/
+   row_lab->Add(new TObjString("CommandButt_Read function"));
+   valp[ind++] = &gfcmd;
+   Int_t itemwidth = 300;
+   Int_t ok = 0;
+   new TGMrbValuesAndText ("Get Function from file", NULL, &ok, -itemwidth,
+                      fParentWindow, NULL, NULL, row_lab, valp,
+                      NULL, NULL, helptext, this, this->ClassName());
+}
+//________________________________________________________________________________
+
+void FitOneDimDialog::ExecuteGetFunction()
+{
+   TString fname;
+   TString cname;
+   TString oname;
+
+	TObjArray * oa = fFuncFromFile.Tokenize("|");
+	Int_t nent = oa->GetEntries();
+   if (nent < 3) {
+      cout << "fFuncFromFile not enough (3) fields" << endl;
+      return;
+   }
+	fname =((TObjString*)oa->At(0))->String();
+	cname =((TObjString*)oa->At(1))->String();
+   if (cname != "TF1") {
+      cout << "fFuncFromFile " << oname << " is not a function " << endl;
+      return;
+   }
+	oname =((TObjString*)oa->At(2))->String();
+   TFile f(fname);
+   fCalFunc = (TF1*)f.Get(oname);
+   if (fCalFunc == NULL) {
+      cout << "No function found / selected" << endl;
+      return;
+   }
+   fCalFunc->Print();
+   TString formula(fCalFunc->GetExpFormula());
+   if ( formula.Length() < 2 ) {
+      cout << "Function is not a Formula" << endl;
+   } else {
+      fFormula = formula;
+      Int_t npars = fCalFunc->GetNpar();
+      if ( npars < 1 ) {
+         cout << "Illegal formula Npars: " << npars << endl;
+         return;
+      }
+      if ( npars > 6 ) {
+         cout << "WARNING Npars: " << npars << endl;
+      }
+      for (Int_t i = 0; i < npars; i++) {
+         fFormPar[i] = fCalFunc->GetParameter(i);
+         cout << " fFormPar[" << i << "] " <<  fFormPar[i] << endl;
+      }
+      if (fDialog) fDialog->ReloadValues();
+   }
+}
+//____________________________________________________________________________________
+
+void FitOneDimDialog::SaveFunction()
+{
+   if (!fCalFunc) {
+      cout << "No function defined" << endl;
+      return;
+   }
+//   if (!fCalHist) {
+//     cout << "Execute Fill histogram first" <<  endl;
+//      return;
+//   }
+//   fCalFunc->SetParent(fCalHist);
+//   fSelHist->GetListOfFunctions()->Add(fCalFunc);
+   new Save2FileDialog(fCalFunc);
+}
+//____________________________________________________________________________________

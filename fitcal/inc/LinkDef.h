@@ -12,4 +12,5 @@
 #pragma link C++ class FitOneDimDialog;
 #pragma link C++ class FindPeakDialog;
 #pragma link C++ class CalibrationDialog;
+#pragma link C++ class TF1Range;
 #endif

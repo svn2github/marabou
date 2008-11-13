@@ -18,8 +18,10 @@ private:
    TGMrbValuesAndText *fDialog;
    TString fFuncName;
    Int_t   fFuncNumber;
+   TString fFuncFromFile;
    TCanvas *fSelPad;
    TH1     *fSelHist;
+   TF1     *fCalFunc;
    TGraph  *fGraph;
    Color_t fColor;
    Width_t fWidth;
@@ -45,26 +47,10 @@ private:
    Int_t fExpFixC;
 //   Int_t fExpFixD;
    Int_t fPolN;
-   Double_t fPolA;
-   Double_t fPolB;
-   Double_t fPolC;
-   Double_t fPolD;
-   Int_t fPolFixA;
-   Int_t fPolFixB;
-   Int_t fPolFixC;
-   Int_t fPolFixD;
-   Double_t fFormA;
-   Double_t fFormB;
-   Double_t fFormC;
-   Double_t fFormD;
-   Double_t fFormE;
-   Double_t fFormF;
-   Int_t fFormFixA;
-   Int_t fFormFixB;
-   Int_t fFormFixC;
-   Int_t fFormFixD;
-   Int_t fFormFixE;
-   Int_t fFormFixF;
+   Double_t fPolPar[6];
+   Int_t    fPolFixPar[6];
+   Double_t fFormPar[6];
+   Int_t    fFormFixPar[6];
 
    Int_t    fAdded;
    Double_t fLinBgConst;
@@ -150,6 +136,9 @@ public:
    void CloseDialog();
    void CloseDown(Int_t wid);
    void IncrementIndex(TString * arg);
+   void SaveFunction();
+   void GetFunction();
+   void ExecuteGetFunction();
 //
    void SetPeakSep( Double_t peaksep) { fPeakSep = peaksep; };
    void SetFitWindow( Double_t fitwindow) { fFitWindow = fitwindow; };

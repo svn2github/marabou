@@ -39,6 +39,6 @@ public:
                                       return +1;
                                  };
 */
-ClassDef(FhMarker, 1)
+ClassDef(FhMarker, 0)
 };
 #endif
