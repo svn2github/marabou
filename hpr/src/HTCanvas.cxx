@@ -266,8 +266,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    if (fSelected) {
       if (event == kButton1Down && !strncmp(fSelected->ClassName(), "TASI", 4)) {
-         cout << "HTCanvas: " << fSelected->GetName()<< " gPad " <<
-              gPad << endl;
+//         cout << "HTCanvas: " << fSelected->GetName()<< " gPad " <<
+//              gPad << endl;
 //         gPad->Dump();
          in_image = kTRUE;
       }
