@@ -111,7 +111,7 @@ void HprImage::Paint(Option_t * opt)
    if (opt);
    if ( GetVisibility() == 0 )
       return;
-   cout << "HprImage::Paint(): " << endl;
+//   cout << "HprImage::Paint(): " << endl;
    TList * lop = gPad->GetListOfPrimitives();
    TObject *obj;
    TIter next_img(lop);
@@ -120,7 +120,7 @@ void HprImage::Paint(Option_t * opt)
    Bool_t found = kFALSE;
    while ( (obj = next_img()) ) {
       if (obj->InheritsFrom("TASImage")) {
-         cout << "TASImage GetHeight(): " << ((TImage*)obj)->GetHeight() << endl;
+//         cout << "TASImage GetHeight(): " << ((TImage*)obj)->GetHeight() << endl;
          if (((TImage*)obj)->GetHeight() > 5) aimg = obj;
       }
       if (obj->InheritsFrom("HprImage")) hpri = obj;

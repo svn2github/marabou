@@ -2,6 +2,7 @@
 #include "THprArrow.h"
 #include "THprCurlyArc.h"
 #include "THprCurlyLine.h"
+#include "THprGraph.h"
 #include "THprLine.h"
 #include "THprPolyLine.h"
 #include "TEnv.h"
@@ -166,14 +167,15 @@ void MarkerLineDialog::PolyLine()
       return;
    }
    gr->SetName("abc");
-   THprPolyLine * ha =  new THprPolyLine(gr->GetN());
-   Double_t *px = gr->GetX();
-   Double_t *py = gr->GetY();
-   for (Int_t i = 0; i < gr->GetN(); i ++) {
-      ha->SetPoint(i, px[i], py[i]);
-   }
+//   THprPolyLine * ha =  new THprPolyLine(gr->GetN());
+   THprGraph * ha =  new THprGraph(gr->GetN(), gr->GetX(), gr->GetY());
+//   Double_t *px = gr->GetX();
+//   Double_t *py = gr->GetY();
+//   for (Int_t i = 0; i < gr->GetN(); i ++) {
+//     ha->SetPoint(i, px[i], py[i]);
+//   }
    delete gr;
-   ha->Draw();
+   ha->Draw("L");
    ha->SetLineColor(fLineColor);
    ha->SetLineWidth(fLineWidth);
    ha->SetLineStyle(fLineStyle);

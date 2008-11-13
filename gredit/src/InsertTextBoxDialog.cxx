@@ -7,6 +7,7 @@
 #include "TRootCanvas.h"
 #include "TStyle.h"
 #include "TObjString.h"
+#include "TPavesText.h"
 //#include "TString.h"
 #include "THprTextBox.h"
 #include "InsertTextBoxDialog.h"
@@ -25,7 +26,10 @@ static const Char_t helptext[] =
 "This widget is for text and boxes. These objects\n\
 may be arranged automatically at the corners or centered\n\
 at the edges. It also may adopt other objects like polylines\n\
-xsplines which end at its borders. In this case these objects remain attached if the text box gets shifted.\n\
+xsplines which end at its borders. In this case these objects remain\n\
+attached if the text box gets shifted.\n\
+If Npaves > 1 a root-standard TPavesText is drawn\n\
+This has not the features of auto-align and adopt.\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
@@ -51,10 +55,12 @@ xsplines which end at its borders. In this case these objects remain attached if
    fValp[ind++] = &fBorderSize;
    fRow_lab->Add(new TObjString("AlignSelect+ShPos"));
    fValp[ind++] = &fShadowPosition;
-   fRow_lab->Add(new TObjString("CheckButton_Round Corners"));
+   fRow_lab->Add(new TObjString("CheckButton_Round Cors"));
    fValp[ind++] = &fRoundCorners;
-   fRow_lab->Add(new TObjString("DoubleValue+Corner Radius"));
+   fRow_lab->Add(new TObjString("DoubleValue+Co Radius"));
    fValp[ind++] = &fCornerRadius;
+   fRow_lab->Add(new TObjString("PlainIntVal+Npaves"));
+   fValp[ind++] = &fNpaves;
    fRow_lab->Add(new TObjString("ColorSelect_LineColor"));
    fValp[ind++] = &fColor;
    fRow_lab->Add(new TObjString("LineSSelect+Style"));
@@ -73,7 +79,7 @@ xsplines which end at its borders. In this case these objects remain attached if
    fValp[ind++] = &fStrongAlign;
    fRow_lab->Add(new TObjString("CommandButt_Execute Insert()"));
    fValp[ind++] = &execute_cmd;
-   Int_t itemwidth = 280;
+   Int_t itemwidth = 320;
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Text Box", NULL, &ok,itemwidth, win,
@@ -122,31 +128,42 @@ void InsertTextBoxDialog::ExecuteInsert()
    if (m1) delete m1;
    if (ma) delete ma;
    THprTextBox *tb;
-   tb = new THprTextBox(fX1, fY1, X2, Y2);
-   Int_t halign = fShadowPosition / 10;
-   Int_t valign = fShadowPosition % 10;
-   TString opt;
-   if (fRoundCorners != 0) {
-      fCornerRadius = TMath::Min(fCornerRadius, 0.49999);
-      tb->SetCornerRadius(fCornerRadius);
-      opt += "arc";
+   TPavesText *tpt;
+   TPave *tp;
+   if ( fNpaves <= 1 ) {
+		tb = new THprTextBox(fX1, fY1, X2, Y2);
+		if      (fNoAlign)   tb->SetAlignType(0);
+		else if (fWeakAlign) tb->SetAlignType(1);
+		else                 tb->SetAlignType(2);
+		tb->Draw();
+      tp = tb;
+   } else {
+      tpt = new TPavesText(fX1, fY1, X2, Y2, fNpaves);
+		tpt->Draw();
+      tp = tpt;
    }
-   if (valign == 3) opt += "T";
-   else             opt += "B";
-   if (halign == 1) opt += "L";
-   else             opt += "R";
-   tb->Draw(opt);
-   tb->SetLineColor(fColor);
-   tb->SetLineStyle(fStyle);
-   tb->SetLineWidth(fWidth);
-   tb->SetFillColor(fFillColor);
-   tb->SetFillStyle(fFillStyle);
-   if (fShowShadow != 0) tb->SetBorderSize(fBorderSize);
-   else                  tb->SetBorderSize(1);
-   if      (fNoAlign)   tb->SetAlignType(0);
-   else if (fWeakAlign) tb->SetAlignType(1);
-   else                 tb->SetAlignType(2);
-   cout << opt << endl;
+	Int_t halign = fShadowPosition / 10;
+	Int_t valign = fShadowPosition % 10;
+	TString opt;
+	if (valign == 3) opt += "T";
+	else             opt += "B";
+	if (halign == 1) opt += "L";
+	else             opt += "R";
+	if (fRoundCorners != 0) {
+		fCornerRadius = TMath::Min(fCornerRadius, 0.49999);
+		tp->SetCornerRadius(fCornerRadius);
+		opt += "arc";
+	}
+   tp->SetDrawOption(opt);
+   cout <<"Draw(opt)  " << opt << endl;
+   tp->SetLineColor(fColor);
+   tp->SetLineStyle(fStyle);
+   tp->SetLineWidth(fWidth);
+   tp->SetFillColor(fFillColor);
+   tp->SetFillStyle(fFillStyle);
+   if (fShowShadow != 0) tp->SetBorderSize(fBorderSize);
+   else                  tp->SetBorderSize(1);
+// cout << opt << endl;
    fX1 = fY1 = 0;
    gPad->Modified();
    gPad->Update();
@@ -173,6 +190,7 @@ void InsertTextBoxDialog::SaveDefaults()
    env.SetValue("InsertTextBoxDialog.fNoAlign"       ,fNoAlign);
    env.SetValue("InsertTextBoxDialog.fWeakAlign"     ,fWeakAlign);
    env.SetValue("InsertTextBoxDialog.fStrongAlign"   ,fStrongAlign);
+   env.SetValue("InsertTextBoxDialog.fNpaves"        ,fNpaves);
    env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
@@ -195,6 +213,7 @@ void InsertTextBoxDialog::RestoreDefaults()
    fNoAlign       = env.GetValue("InsertTextBoxDialog.fNoAlign"    ,0);
    fWeakAlign     = env.GetValue("InsertTextBoxDialog.fWeakAlign"  ,1);
    fStrongAlign   = env.GetValue("InsertTextBoxDialog.fStrongAlign",0);
+   fNpaves        = env.GetValue("InsertTextBoxDialog.fNpaves"     ,1);
 }
 //_________________________________________________________________________
 

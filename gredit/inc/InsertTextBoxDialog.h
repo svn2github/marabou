@@ -30,6 +30,7 @@ private:
    Int_t      fNoAlign;
    Int_t      fWeakAlign;
    Int_t      fStrongAlign;
+   Int_t      fNpaves;
 public:
    InsertTextBoxDialog();
    virtual ~InsertTextBoxDialog();

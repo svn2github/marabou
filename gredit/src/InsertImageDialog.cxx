@@ -24,6 +24,22 @@ InsertImageDialog::InsertImageDialog()
 {
 static const Char_t helptext[] =
 "Insert a gif, jpg, png picture\n\
+Merge Modes:\n\
+add            - color addition with saturation \n\
+alphablend     - alpha-blending\n\
+allanon        - color values averaging\n\
+colorize       - hue and saturate bottom image same as top image\n\
+darken         - use lowest color value from both images\n\
+diff           - use absolute value of the color difference between two images\n\
+dissipate      - randomly alpha-blend images\n\
+hue            - hue bottom image same as top image\n\
+lighten        - use highest color value from both images\n\
+overlay        - some wierd image overlaying(see GIMP)\n\
+saturate       - saturate bottom image same as top image\n\
+screen         - another wierd image overlaying(see GIMP)\n\
+sub            - color substraction with saturation\n\
+tint           - tinting image with image\n\
+value          - value bottom image same as top image\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
@@ -70,12 +86,16 @@ static const Char_t helptext[] =
    fValp[ind++] = &fOffset_x;
    fRow_lab->Add(new TObjString("PlainIntVal+Offset Y"));
    fValp[ind++] = &fOffset_y;
-
-
+   fRow_lab->Add(new TObjString("ComboSelect_Merge Mode;add;allanon;colorize;darken;diff;dissipate;hue;lighten;overlay;saturate;screen;sub;tint;value"));
+   fValp[ind++] = &fMergeMode;
+   fMergeMode = "allanon";
 //   TImage *img = TImage::Open(name.Data());
    static TString execute_cmd("ExecuteInsert()");
    fRow_lab->Add(new TObjString("CommandButt_Execute Insert()"));
    fValp[ind++] = &execute_cmd;
+   static TString merge_cmd("ExecuteMerge()");
+   fRow_lab->Add(new TObjString("CommandButt_Execute Merge()"));
+   fValp[ind++] = &merge_cmd;
    Int_t itemwidth = 300;
    static Int_t ok;
    fDialog =
@@ -90,13 +110,13 @@ void InsertImageDialog::ExecuteInsert()
 {
    HTPad *pad = NULL;
    HprImage * hprimg = new HprImage(fPname.Data(), pad);
-   TImage *img = hprimg->GetImage();
-   if (!img) {
+   fImage = hprimg->GetImage();
+   if (!fImage) {
       cout << "Could not create an image... exit" << endl;
       return;
    }
-   Double_t img_width = (Double_t )img->GetWidth();
-   Double_t img_height = (Double_t )img->GetHeight();
+   Double_t img_width = (Double_t )fImage->GetWidth();
+   Double_t img_height = (Double_t )fImage->GetHeight();
 
    if (fNewPad) {
       pad = GEdit::GetEmptyPad();
@@ -131,9 +151,9 @@ void InsertImageDialog::ExecuteInsert()
         <<  gPad->GetWNDC()    << " " << gPad->GetHNDC()    << endl;
    cout << "Image size, X,Y: " << img_width
                         << " " << img_height << endl;
-   img->SetConstRatio(kTRUE);
-   img->SetEditable(kTRUE);
-   img->SetImageQuality(TAttImage::kImgBest);
+   fImage->SetConstRatio(kTRUE);
+   fImage->SetEditable(kTRUE);
+   fImage->SetImageQuality(TAttImage::kImgBest);
    TString drawopt;
    if (fOffset_x == 0 && fOffset_y == 0) {
       drawopt= "xxx";
@@ -149,6 +169,24 @@ void InsertImageDialog::ExecuteInsert()
    gPad->Modified();
    gPad->Update();
 };
+//____________________________________________________________________________
+
+void InsertImageDialog::ExecuteMerge()
+{
+   TImage *img = TImage::Open(fPname);
+   if (!fImage) {
+      printf("No base image... exit\n");
+      return;
+   }
+   if (!img) {
+      printf("Could not create an image... exit\n");
+      return;
+   }
+   cout << "Merge: " << fMergeMode.Data()<< endl;
+   fImage->Merge(img, fMergeMode.Data(),fOffset_x, fOffset_y);
+   gPad->Modified();
+   gPad->Update();
+}
 //____________________________________________________________________________
 
 void InsertImageDialog::SaveDefaults()

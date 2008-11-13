@@ -1,5 +1,6 @@
 #ifndef INSERTIMAGEDIALOG
 #define INSERTIMAGEDIALOG
+#include "TASImage.h"
 #include "TString.h"
 #include "TList.h"
 #include "TGMrbValuesAndText.h"
@@ -17,6 +18,7 @@ private:
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
    TRootCanvas *fWindow;
+   TImage *fImage;
    Int_t fNewPad;
    Int_t fFix_h;
    Int_t fFix_w;
@@ -24,11 +26,13 @@ private:
    Int_t fOffset_x;
    Int_t fOffset_y;
    TString fPname;
+   TString fMergeMode;
 
 public:
    InsertImageDialog();
    virtual ~InsertImageDialog();
    void    ExecuteInsert();
+   void    ExecuteMerge();
    void    SaveDefaults();
    void    RestoreDefaults();
    void    RecursiveRemove(TObject * obj);
