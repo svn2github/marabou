@@ -8,7 +8,7 @@
 // Class:          TMrbLofNamedX    -- a list of named indices
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofNamedX.h,v 1.9 2005-11-28 13:16:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofNamedX.h,v 1.10 2008-11-19 12:56:34 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -101,7 +101,7 @@ class TMrbLofNamedX: public TObjArray {
 						Bool_t CrFlag = kTRUE) const;
 
 		inline virtual void Sort(Int_t UpTo) { TObjArray::Sort(UpTo); };
-		void Sort(Bool_t SortByName);						// sort entries by name or index
+		void Sort(Bool_t SortByName = kTRUE);						// sort entries by name or index
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
