@@ -13,8 +13,8 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-#include <iostream>
-#include <iomanip>
+#include <iostream.h>
+#include <iomanip.h>
 #include <fstream.h>
 #include <stdlib.h>
 #include <unistd.h>
