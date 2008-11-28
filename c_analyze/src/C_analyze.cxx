@@ -384,6 +384,7 @@ FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h,
 
    fWidgets = new TList();
    fMbsControl = 0;
+   fMbsDebug = kFALSE;
    fMessageServer = 0; 
    fWasStarted = 0;
    fSetup = NULL;
