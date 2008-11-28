@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.64 2008-01-31 13:39:53 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-01-31 13:39:53 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.65 2008-11-28 12:00:28 Rudolf.Lutter Exp $       
+// Date:           $Date: 2008-11-28 12:00:28 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -1769,6 +1769,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$mbsVersion", mbsv.Data());
+						stpTmpl.Substitute("$lynxVersion", lynxVersion.Data());
 						stpTmpl.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
 						stpTmpl.WriteCode(stp);
 					}
