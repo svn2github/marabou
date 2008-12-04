@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V260.cxx,v 1.8 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V260.cxx,v 1.9 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -75,6 +75,8 @@ TMrbCaen_V260::TMrbCaen_V260(const Char_t * ModuleName, UInt_t BaseAddr) :
 				fModuleType.Set(mTypeBits, mType.Data());
 				fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 				fNofShortsPerChannel = 2;
+				fNofShortsPerDatum = 2;
+				fNofDataBits = 24;
 
 				this->SetFunctionName("caen_v260_dead_time", TMrbConfig::kScalerFctDeadTime);
 

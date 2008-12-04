@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbUct_8904.cxx,v 1.7 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbUct_8904.cxx,v 1.8 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -73,6 +73,8 @@ TMrbUct_8904::TMrbUct_8904(const Char_t * ScalerName, const Char_t * ScalerPosit
 				fModuleType.Set(mTypeBits, mType.Data());
 				fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 				fNofShortsPerChannel = 2;
+				fNofShortsPerDatum = 2;
+				fNofDataBits = 24;
 
 				this->SetFunctionName("uct_init", TMrbConfig::kScalerFctInit);
 				this->SetFunctionName("uct_read", TMrbConfig::kScalerFctRead);

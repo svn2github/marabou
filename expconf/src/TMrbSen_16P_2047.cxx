@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSen_16P_2047.cxx,v 1.6 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSen_16P_2047.cxx,v 1.7 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -67,7 +67,7 @@ TMrbSen_16P_2047::TMrbSen_16P_2047(const Char_t * ModuleName, const Char_t * Mod
 			this->MakeZombie();
 		} else {
 			SetTitle("Pattern Unit SEN 16P 2047"); 			// set module type
-			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode | TMrbConfig::kModulePatternUnit;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 

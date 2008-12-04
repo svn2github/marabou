@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSilena_4418V.cxx,v 1.7 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSilena_4418V.cxx,v 1.8 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -83,7 +83,7 @@ TMrbSilena_4418V::TMrbSilena_4418V(const Char_t * ModuleName, const Char_t * Mod
 			this->MakeZombie();
 		} else {
 			SetTitle("Silena 4418/V ADC 8 x 4096"); 	// store module type
-			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode | TMrbConfig::kModuleAdc;
 			mType = gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 

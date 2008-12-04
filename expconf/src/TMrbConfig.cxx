@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.164 2008-10-21 07:53:28 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.165 2008-12-04 14:53:11 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -80,14 +80,21 @@ const SMrbNamedXShort kMrbLofControllerTypes[] =
 
 const SMrbNamedXShort kMrbLofModuleTypes[] =
 							{
-								{TMrbConfig::kModuleRaw,		"RAW"	 		},
-								{TMrbConfig::kModuleCamac,		"CAMAC" 		},
-								{TMrbConfig::kModuleVME, 		"VME"			},
-								{TMrbConfig::kModuleListMode,	"ListMode"		},
-								{TMrbConfig::kModuleSingleMode,	"SingleMode"	},
-								{TMrbConfig::kModuleScaler,		"Scaler"		},
-								{TMrbConfig::kModuleControl, 	"Control"		},
-								{0, 							NULL			}
+								{TMrbConfig::kModuleRaw,			"RAW"	 		},
+								{TMrbConfig::kModuleCamac,			"CAMAC" 		},
+								{TMrbConfig::kModuleVME, 			"VME"			},
+								{TMrbConfig::kModuleListMode,		"ListMode"		},
+								{TMrbConfig::kModuleSingleMode,		"SingleMode"	},
+								{TMrbConfig::kModuleMultiEvent,		"MultiEvent"	},
+								{TMrbConfig::kModuleTimeStamp,		"TimeStamp" 	},
+								{TMrbConfig::kModuleAdc,			"Adc"			},
+								{TMrbConfig::kModuleTdc,			"Tdc"			},
+								{TMrbConfig::kModuleQdc,			"Qdc"			},
+								{TMrbConfig::kModulePatternUnit,	"PatternUnit"	},
+								{TMrbConfig::kModuleScaler,			"Scaler"		},
+								{TMrbConfig::kModuleIOReg,			"I/O-Register"	},
+								{TMrbConfig::kModuleControl, 		"Control"		},
+								{0, 								NULL			}
 							};
 
 //_________________________________________________________________________________________________________ histogram types
@@ -4599,10 +4606,12 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 								rcTmpl.Substitute("$moduleNameUC", moduleNameUC.Data());
 								rcTmpl.Substitute("$moduleTitle", module->GetTitle());
 								rcTmpl.Substitute("$moduleSerial", module->GetSerial());
-								rcTmpl.Substitute("$moduleType", module->GetType()->GetIndex(), 16);
+								rcTmpl.Substitute("$moduleHexType", module->GetType()->GetIndex(), 16);
+								rcTmpl.Substitute("$moduleType", module->GetType()->GetName());
 								rcTmpl.Substitute("$className", module->ClassName());
 								rcTmpl.Substitute("$nofChannelsUsed", module->GetNofChannelsUsed());
 								rcTmpl.Substitute("$nofChannels", module->GetNofChannels());
+								rcTmpl.Substitute("$nofDataBits", module->GetNofDataBits());
 								rcTmpl.Substitute("$channelPattern", (Int_t) module->GetPatternOfChannelsUsed(), 16);
 								rcTmpl.Substitute("$nofSubdevices", module->GetNofSubDevices());
 								rcTmpl.Substitute("$subDevice", module->GetSubDevice());

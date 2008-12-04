@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbOrtec_413A.cxx,v 1.8 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbOrtec_413A.cxx,v 1.9 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -98,7 +98,7 @@ TMrbOrtec_413A::TMrbOrtec_413A(const Char_t * ModuleName, const Char_t * ModuleP
 			this->MakeZombie();
 		} else {
 			SetTitle("Ortec 413A ADC 4 x 8064"); 	// store module type
-			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode | TMrbConfig::kModuleAdc;
 			mType = gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 

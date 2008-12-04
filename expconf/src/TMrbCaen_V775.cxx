@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V775.cxx,v 1.15 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V775.cxx,v 1.16 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -102,11 +102,16 @@ TMrbCaen_V775::TMrbCaen_V775(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			title += NofChannels;		//16 or 32 channels
 			title += " x 12 bit";
 			SetTitle(title.Data()); 	// store module type
-			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleVME |
+						TMrbConfig::kModuleListMode |
+						TMrbConfig::kModuleMultiEvent |
+						TMrbConfig::kModuleTdc;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 			fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 			fNofShortsPerChannel = 2;
+			fNofShortsPerDatum = 1;
+			fNofDataBits = 12;
 			fFFMode = kFALSE;
 			fCommonStart = kTRUE;
 			fFullScaleRange = 0x1E; 				// set full scale range to 1200 ns

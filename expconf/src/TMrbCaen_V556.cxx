@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V556.cxx,v 1.10 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V556.cxx,v 1.11 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -67,11 +67,13 @@ TMrbCaen_V556::TMrbCaen_V556(const Char_t * ModuleName, UInt_t BaseAddr) :
 			this->MakeZombie();
 		} else {
 			SetTitle("CAEN V556 ADC 8 x 12 bit"); 	// store module type
-			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode | TMrbConfig::kModuleAdc;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 			fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 			fNofShortsPerChannel = 2;
+			fNofShortsPerDatum = 1;
+			fNofDataBits = 12;
 			fFFMode = kFALSE;
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLeCroy_4432.cxx,v 1.6 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLeCroy_4432.cxx,v 1.7 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -65,12 +65,14 @@ TMrbLeCroy_4432::TMrbLeCroy_4432(const Char_t * ModuleName, const Char_t * Modul
 			this->MakeZombie();
 		} else {
 			SetTitle("LeCroy 4432 Scaler 32 ch a 24 bits"); 	// store module type
-			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode | TMrbConfig::kModuleScaler;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 
 			fDataType = gMrbConfig->fLofDataTypes.FindByIndex(TMrbConfig::kDataUInt);
 			fNofShortsPerChannel = 2;
+			fNofShortsPerDatum = 2;
+			fNofDataBits = 24;
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {

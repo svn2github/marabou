@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLeCroy_2280.cxx,v 1.2 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLeCroy_2280.cxx,v 1.3 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -63,7 +63,7 @@ TMrbLeCroy_2280::TMrbLeCroy_2280(const Char_t * ModuleName, const Char_t * Modul
 			this->MakeZombie();
 		} else {
 			SetTitle("LeCroy 2280 QDC 48 x 4096 ch"); 	// store module type
-			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode | TMrbConfig::kModuleQdc;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 

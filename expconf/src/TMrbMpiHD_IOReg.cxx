@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMpiHD_IOReg.cxx,v 1.7 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMpiHD_IOReg.cxx,v 1.8 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -67,11 +67,13 @@ TMrbMpiHD_IOReg::TMrbMpiHD_IOReg(const Char_t * ModuleName, UInt_t BaseAddr) :
 			this->MakeZombie();
 		} else {
 			SetTitle("MPI HD I/O Reg 16 bit (8in/8out)"); 	// store module type
-			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode | TMrbConfig::kModuleIOReg;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 			fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUShort);
 			fNofShortsPerChannel = 1;
+			fNofShortsPerDatum = 1;
+			fNofDataBits = 8;
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {

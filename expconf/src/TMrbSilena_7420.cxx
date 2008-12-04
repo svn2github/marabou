@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSilena_7420.cxx,v 1.8 2008-02-18 13:32:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSilena_7420.cxx,v 1.9 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -64,7 +64,7 @@ TMrbSilena_7420::TMrbSilena_7420(const Char_t * ModuleName, const Char_t * Modul
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
 		} else {
-			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode | TMrbConfig::kModuleAdc;
 			mType = gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 

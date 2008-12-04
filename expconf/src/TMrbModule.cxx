@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.21 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.22 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -103,6 +103,8 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 			fIsActive = kTRUE;								// module is active
 			fExcludeFromReadout = kFALSE;					// module will be read out
 			fNofShortsPerChannel = 1;						// 16 bit words per channel
+			fNofShortsPerDatum = 1;							// ...
+			fNofDataBits = 16;
 			fTimeOffset = 0;								// time offset
 			if (fModuleID.GetIndex() != TMrbConfig::kModuleSoftModule) fSerial = gMrbConfig->AssignModuleSerial();		// assign a unique module number
 			fHistosToBeAllocated = kTRUE;					// create histograms for each channel

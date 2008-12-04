@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCologne_CPTM.cxx,v 1.6 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCologne_CPTM.cxx,v 1.7 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -70,7 +70,7 @@ TMrbCologne_CPTM::TMrbCologne_CPTM(const Char_t * ModuleName, const Char_t * Mod
 			this->MakeZombie();
 		} else {
 			SetTitle("C_PTM Clock and Programmable Trigger Module"); 	// store module type
-			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode | TMrbConfig::kModuleControl;
 			mType = gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 

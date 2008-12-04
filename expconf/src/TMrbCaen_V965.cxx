@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V965.cxx,v 1.7 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V965.cxx,v 1.8 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -92,11 +92,13 @@ TMrbCaen_V965::TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			this->MakeZombie();
 		} else {
 			SetTitle("CAEN V965 QDC 8/16 x 12 (15) bit, dual range"); 	// store module type
-			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
+			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode | TMrbConfig::kModuleQdc;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 			fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 			fNofShortsPerChannel = 2;
+			fNofShortsPerDatum = 1;
+			fNofDataBits = 12;
 			fFFMode = kFALSE;
 			fFineThresh = kTRUE;
 			fZeroSuppression = kTRUE;

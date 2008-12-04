@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.13 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.14 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -71,11 +71,15 @@ TMrbSis_3820::TMrbSis_3820(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
 				DefineRegisters();
-				mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode | TMrbConfig::kModuleScaler;
+				mTypeBits = TMrbConfig::kModuleVME |
+							TMrbConfig::kModuleListMode |
+							TMrbConfig::kModuleScaler;
 				gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 				fModuleType.Set(mTypeBits, mType.Data());
 				fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 				fNofShortsPerChannel = 2;
+				fNofShortsPerDatum = 2;
+				fNofDataBits = 32;
 				fFifoDepth = FifoDepth; 		// fifo depth per channel
 				fBlockReadout = kTRUE;			// module has block readout
 				fNonClearingMode = kFALSE;		// clear on copy

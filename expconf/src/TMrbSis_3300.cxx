@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.11 2008-09-26 11:54:15 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.12 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -133,11 +133,16 @@ TMrbSis_3300::TMrbSis_3300(const Char_t * ModuleName, UInt_t BaseAddr) :
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
 				DefineRegisters();
-				mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
+				mTypeBits = TMrbConfig::kModuleVME |
+							TMrbConfig::kModuleListMode |
+							TMrbConfig::kModuleMultiEvent |
+							TMrbConfig::kModuleAdc;
 				gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 				fModuleType.Set(mTypeBits, mType.Data());
 				fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 				fNofShortsPerChannel = 2;		// 32 bits
+				fNofShortsPerDatum = 1;
+				fNofDataBits = 12;
 				fBlockReadout = kTRUE;			// module has block readout
 
 				fBlockXfer = kFALSE;

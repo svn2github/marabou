@@ -8,7 +8,7 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.18 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.h,v 1.19 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -131,6 +131,8 @@ class TMrbModule : public TNamed {
 		inline Bool_t CheckID(TMrbConfig::EMrbModuleID ModuleID) const { return(fModuleID.GetIndex() == ModuleID); };
 		
 		inline Int_t GetNofShortsPerChannel() const { return(fNofShortsPerChannel); };	// 16 bit words per channel
+		inline Int_t GetNofShortsPerDatum() const { return(fNofShortsPerDatum); };		// 16 bit words per datum
+		inline Int_t GetNofDataBits() const { return(fNofDataBits); };					// data bits
 
 		inline Int_t GetNofChannels() const { return(fNofChannels); }; 				// max number of channels
 		Int_t GetNofChannelsUsed() const; 											// calculate number of channels in use
@@ -196,6 +198,8 @@ class TMrbModule : public TNamed {
 
 		TMrbNamedX * fDataType;					// data type
 		Int_t fNofShortsPerChannel; 			// number of 16 bit words per channel
+		Int_t fNofShortsPerDatum;  				// number of 16 bit words per datum
+		Int_t fNofDataBits; 					// length of data
 
 		TMrbNamedX fMbsBranch;					// branch within MBS
 

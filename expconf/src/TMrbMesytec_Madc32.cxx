@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.1 2008-09-26 11:54:15 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.2 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -208,11 +208,17 @@ TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAdd
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
 				DefineRegisters();
-				mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
+				mTypeBits = TMrbConfig::kModuleVME |
+							TMrbConfig::kModuleListMode |
+							TMrbConfig::kModuleMultiEvent |
+							TMrbConfig::kModuleTimeStamp |
+							TMrbConfig::kModuleAdc;
 				gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 				fModuleType.Set(mTypeBits, mType.Data());
 				fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 				fNofShortsPerChannel = 2;		// 32 bits
+				fNofShortsPerDatum = 1;
+				fNofDataBits = 13;
 				fBlockReadout = kTRUE;			// module has block readout
 
 				fBlockXfer = kFALSE;

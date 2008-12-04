@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V879.cxx,v 1.7 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V879.cxx,v 1.8 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -98,10 +98,14 @@ TMrbCaen_V879::TMrbCaen_V879(const Char_t * ModuleName, UInt_t BaseAddr, Bool_t 
 			title += " x 12 bit";
 			SetTitle(title.Data()); 	// store module type
 			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
+			if (IsTac)	mTypeBits |= TMrbConfig::kModuleTdc;
+			else 		mTypeBits |= TMrbConfig::kModuleAdc;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 			fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 			fNofShortsPerChannel = 2;
+			fNofShortsPerDatum = 1;
+			fNofDataBits = 12;
 			fFFMode = kFALSE;
 			fRangeSlope = 0;
 			fRangeOffset = 0;
