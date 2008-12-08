@@ -74,6 +74,8 @@ $resource.ClassName:					$className
 %NUM%$resource.Module.$modNo.NofSubdevices:	$nofSubdevices
 %NUM%$resource.Module.$modNo.Subdevice:		$subDevice
 %NUM%$resource.Module.$modNo.NofDataBits:		$nofDataBits
+%NUM%$resource.Module.$modNo.NofShortsPerChannel:	$nofShortsPerChannel
+%NUM%$resource.Module.$modNo.NofShortsPerDatum:		$nofShortsPerDatum
 %NUM%$resource.Module.$modNo.NofChannels:		$nofChannels
 %NUM%$resource.Module.$modNo.NofChannelsUsed:	$nofChannelsUsed
 %NUM%$resource.Module.$modNo.ChannelPattern:	$channelPattern
@@ -91,6 +93,8 @@ $resource.ClassName:					$className
 %NAM%$resource.Module.$moduleNameUC.NofSubdevices:	$nofSubdevices
 %NAM%$resource.Module.$moduleNameUC.Subdevice:		$subDevice
 %NAM%$resource.Module.$moduleNameUC.NofDataBits:		$nofDataBits
+%NAM%$resource.Module.$moduleNameUC.NofShortsPerChannel:	$nofShortsPerChannel
+%NAM%$resource.Module.$moduleNameUC.NofShortsPerDatum:		$nofShortsPerDatum
 %NAM%$resource.Module.$moduleNameUC.NofChannels:		$nofChannels
 %NAM%$resource.Module.$moduleNameUC.NofChannelsUsed:	$nofChannelsUsed
 %NAM%$resource.Module.$moduleNameUC.ChannelPattern:	$channelPattern

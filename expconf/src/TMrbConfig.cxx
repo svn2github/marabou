@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.165 2008-12-04 14:53:11 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.166 2008-12-08 12:54:48 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4612,12 +4612,16 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 								rcTmpl.Substitute("$nofChannelsUsed", module->GetNofChannelsUsed());
 								rcTmpl.Substitute("$nofChannels", module->GetNofChannels());
 								rcTmpl.Substitute("$nofDataBits", module->GetNofDataBits());
+								rcTmpl.Substitute("$nofShortsPerChannel", module->GetNofShortsPerChannel());
+								rcTmpl.Substitute("$nofShortsPerDatum", module->GetNofShortsPerDatum());
+								rcTmpl.Substitute("$nofDataBits", module->GetNofDataBits());
 								rcTmpl.Substitute("$channelPattern", (Int_t) module->GetPatternOfChannelsUsed(), 16);
 								rcTmpl.Substitute("$nofSubdevices", module->GetNofSubDevices());
 								rcTmpl.Substitute("$subDevice", module->GetSubDevice());
 								if (module->IsCamac()) {
 										rcTmpl.Substitute("$interface", "CAMAC");
 										rcTmpl.Substitute("$moduleAddr", ((TMrbCamacModule *) module)->GetPosition());
+										rcTmpl.Substitute("$moduleHexAddr", 0);
 										rcTmpl.Substitute("$moduleCrate", ((TMrbCamacModule *) module)->GetCrate());
 										rcTmpl.Substitute("$moduleStation", ((TMrbCamacModule *) module)->GetStation());
 								} else if (module->IsVME()) {
