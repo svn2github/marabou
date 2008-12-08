@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbOrtec_413A.cxx,v 1.9 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbOrtec_413A.cxx,v 1.10 2008-12-08 11:57:45 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -101,6 +101,9 @@ TMrbOrtec_413A::TMrbOrtec_413A(const Char_t * ModuleName, const Char_t * ModuleP
 			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode | TMrbConfig::kModuleAdc;
 			mType = gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
+			fNofShortsPerChannel = 1;
+			fNofShortsPerDatum = 1;
+			fNofDataBits = 13;
 
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";

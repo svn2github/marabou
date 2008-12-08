@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAdcd_9701.cxx,v 1.8 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAdcd_9701.cxx,v 1.9 2008-12-08 11:57:45 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -69,6 +69,9 @@ TMrbAdcd_9701::TMrbAdcd_9701(const Char_t * ModuleName, const Char_t * ModulePos
 			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode | TMrbConfig::kModuleAdc;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
+			fNofShortsPerChannel = 1;
+			fNofShortsPerDatum = 1;
+			fNofDataBits = 11;
 
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";

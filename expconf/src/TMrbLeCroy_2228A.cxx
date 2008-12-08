@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLeCroy_2228A.cxx,v 1.7 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLeCroy_2228A.cxx,v 1.8 2008-12-08 11:57:45 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -66,6 +66,9 @@ TMrbLeCroy_2228A::TMrbLeCroy_2228A(const Char_t * ModuleName, const Char_t * Mod
 			mTypeBits = TMrbConfig::kModuleCamac | TMrbConfig::kModuleListMode | TMrbConfig::kModuleTdc;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
+			fNofShortsPerChannel = 1;
+			fNofShortsPerDatum = 1;
+			fNofDataBits = 11;
 
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
