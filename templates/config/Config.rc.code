@@ -26,7 +26,6 @@ $resource.ClassName:					$className
 %NUM%$resource.Event.$evtNo.LofSubevents: 	$lofSubevents
 %NUMH%$resource.Event.$evtNo.HitBuffer.NofEntries: 	$nofEntries
 %NUMH%$resource.Event.$evtNo.HitBuffer.HighWater: 	$highWater
-%NUMH%$resource.Event.$evtNo.HitBuffer.Offset: 	$offset
 %NAM%$resource.Event.$evtNo.Name:				$evtNameLC
 %NAM%$resource.Event.$evtNameUC.Title:			$evtTitle
 %NAM%$resource.Event.$evtNameUC.Type: 			$evtType
@@ -37,7 +36,6 @@ $resource.ClassName:					$className
 %NAM%$resource.Event.$evtNameUC.LofSubevents: 	$lofSubevents
 %NAMH%$resource.Event.$evtNameUC.HitBuffer.NofEntries: 	$nofEntries
 %NAMH%$resource.Event.$evtNameUC.HitBuffer.HighWater: 	$highWater
-%NAMH%$resource.Event.$evtNameUC.HitBuffer.Offset: 	$offset
 %%EndOfCode%%
 %%EVT_DATA%%
 %%BeginOfCode%%
