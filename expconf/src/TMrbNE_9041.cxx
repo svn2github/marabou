@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbNE_9041.cxx,v 1.8 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbNE_9041.cxx,v 1.9 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -153,6 +153,8 @@ Bool_t TMrbNE_9041::MakeReadoutCode(ofstream & RdoStrm, 	TMrbConfig::EMrbModuleT
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	cout << "@@@ " << this->GetName() << endl;
+
 	Int_t chnNo;
 	TString iniTag;
 	TString mnemoLC, mnemoUC;
@@ -189,6 +191,7 @@ Bool_t TMrbNE_9041::MakeReadoutCode(ofstream & RdoStrm, 	TMrbConfig::EMrbModuleT
 			fCodeTemplates.Substitute("$chnNo", chnNo);
 			fCodeTemplates.Substitute("$subAddr", chnNo & 1);
 			fCodeTemplates.WriteCode(RdoStrm);
+			cout << "@@@ " << this->GetName() << " chn=" << chnNo << " sub=" << (chnNo & 1) << endl;
 			if ((chnNo & 1) && (chnNo < fNofChannels - 1)) {
 				fCodeTemplates.InitializeCode(iniTag.Data());
 				fCodeTemplates.Substitute("$crateNo", this->GetCrate());

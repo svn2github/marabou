@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.36 2008-01-14 09:48:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.37 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -227,10 +227,10 @@ TMrbModule * TMrbSubevent::FindModuleBySerial(Int_t ModuleSerial) const {
 
 	TMrbModule * module;
 
-	module = (TMrbModule *) fLofModules.First();
-	while (module) {
+	TIterator * miter;
+	miter = fLofModules.MakeIterator();
+	while (module = (TMrbModule *) miter->Next()) {
 		if (module->GetSerial() == ModuleSerial) return(module);
-		module = (TMrbModule *) fLofModules.After(module);
 	}
 	return(NULL);
 }
@@ -688,15 +688,16 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 					AnaStrm << anaTmpl.Encode(line, (this->HasXhit() ? "_Xhit" : "")) << endl;
 					break;
 				case TMrbConfig::kAnaSevtFriends:
-					evt = (TMrbEvent *) fLofEvents.First();
-					while (evt) {
-						evtNameLC = evt->GetName();
-						evtNameUC = evtNameLC;
-						evtNameUC(0,1).ToUpper();
-						anaTmpl.InitializeCode();
-						anaTmpl.Substitute("$className", evtNameUC);
-						anaTmpl.WriteCode(AnaStrm);
-						evt = (TMrbEvent *) fLofEvents.After(evt);
+					{
+						TIterator * eiter = fLofEvents.MakeIterator();
+						while (evt = (TMrbEvent *) eiter->Next()) {
+							evtNameLC = evt->GetName();
+							evtNameUC = evtNameLC;
+							evtNameUC(0,1).ToUpper();
+							anaTmpl.InitializeCode();
+							anaTmpl.Substitute("$className", evtNameUC);
+							anaTmpl.WriteCode(AnaStrm);
+						}
 					}
 					break;
 				case TMrbConfig::kAnaSevtCtor:
@@ -704,8 +705,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 						anaTmpl.InitializeCode("%AB%");
 						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
 						anaTmpl.WriteCode(AnaStrm);
-						param = (TMrbModuleChannel *) fLofParams.First();
-						while (param) {
+						TIterator * piter = fLofParams.MakeIterator();
+						while (param = (TMrbModuleChannel *) piter->Next()) {
 							module = (TMrbModule *) param->Parent();
 							paramStatus = param->GetStatus();
 							if (paramStatus != TMrbConfig::kChannelArrElem) {
@@ -728,7 +729,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 									anaTmpl.WriteCode(AnaStrm);
 								}
 							}
-							param = (TMrbModuleChannel *) fLofParams.After(param);
 						}
 						anaTmpl.InitializeCode("%AE%");
 						anaTmpl.WriteCode(AnaStrm);
@@ -739,26 +739,27 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 					}
 					break;
 				case TMrbConfig::kAnaSevtPrivateHistograms:
-					evt = (TMrbEvent *) fLofEvents.First();
-					stdHistosOK = kFALSE;
-					anaTmpl.InitializeCode("%R%");
-					anaTmpl.Substitute("$iniVal", this->HistosToBeFilledIfTrueHit() ? -1 : 0);
-					anaTmpl.WriteCode(AnaStrm);
-					while (evt) {
-						if (evt->HasPrivateHistograms()) {
-							evtNameLC = evt->GetName();
-							evtNameUC = evtNameLC;
-							evtNameUC(0,1).ToUpper();
-							anaTmpl.InitializeCode("%P%");
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.WriteCode(AnaStrm);
-						} else stdHistosOK = kTRUE;
-						evt = (TMrbEvent *) fLofEvents.After(evt);
-					}
-					if (stdHistosOK) {
-						anaTmpl.InitializeCode("%N%");
+					{
+						stdHistosOK = kFALSE;
+						anaTmpl.InitializeCode("%R%");
+						anaTmpl.Substitute("$iniVal", this->HistosToBeFilledIfTrueHit() ? -1 : 0);
 						anaTmpl.WriteCode(AnaStrm);
+						TIterator * eiter = fLofEvents.MakeIterator();
+						while (evt = (TMrbEvent *) eiter->Next()) {
+							if (evt->HasPrivateHistograms()) {
+								evtNameLC = evt->GetName();
+								evtNameUC = evtNameLC;
+								evtNameUC(0,1).ToUpper();
+								anaTmpl.InitializeCode("%P%");
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.WriteCode(AnaStrm);
+							} else stdHistosOK = kTRUE;
+						}
+						if (stdHistosOK) {
+							anaTmpl.InitializeCode("%N%");
+							anaTmpl.WriteCode(AnaStrm);
+						}
 					}
 					break;
 				case TMrbConfig::kAnaSevtDefineAddr:
@@ -775,8 +776,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 						anaTmpl.Substitute("$nofParams",this->GetNofParams());
 						anaTmpl.WriteCode(AnaStrm);
 					} else {
-						param = (TMrbModuleChannel *) fLofParams.First();
-						while (param) {
+						TIterator * piter = fLofParams.MakeIterator();
+						while (param = (TMrbModuleChannel *) piter->Next()) {
 							module = (TMrbModule *) param->Parent();
 							paramStatus = param->GetStatus();
 							if (paramStatus != TMrbConfig::kChannelArrElem) {
@@ -797,7 +798,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								anaTmpl.Substitute("$dataType", dataType->GetTitle());
 								anaTmpl.WriteCode(AnaStrm);
 							}
-							param = (TMrbModuleChannel *) fLofParams.After(param);
 						}
 					}
 					break;
@@ -855,9 +855,9 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 						}
 					} else {
 						wordsSoFar = 0;
-						param = (TMrbModuleChannel *) fLofParams.First();
 						lmodule = NULL;
-						while (param) {
+						TIterator * piter = fLofParams.MakeIterator();
+						while (param = (TMrbModuleChannel *) piter->Next()) {
 							module = (TMrbModule *) param->Parent();
 							if (module != lmodule) {
 								anaTmpl.InitializeCode("%MD%");
@@ -903,7 +903,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								anaTmpl.WriteCode(AnaStrm);
 								wordsSoFar += param->GetIndexRange() * wordsPerParam;
 							}
-							param = (TMrbModuleChannel *) fLofParams.After(param);
 						}
 					}
 					anaTmpl.InitializeCode("%E%");
@@ -927,8 +926,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							anaTmpl.Substitute("$nofParams", this->GetNofParams());
 							anaTmpl.WriteCode(AnaStrm);
 						} else {
-							param = (TMrbModuleChannel *) fLofParams.First();
-							while (param) {
+							TIterator * piter = fLofParams.MakeIterator();
+							while (param = (TMrbModuleChannel *) piter->Next()) {
 								module = (TMrbModule *) param->Parent();
 								paramStatus = param->GetStatus();
 								if (paramStatus != TMrbConfig::kChannelArrElem) {
@@ -950,7 +949,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 									anaTmpl.Substitute("$dataType", dataType->GetTitle());
 									anaTmpl.WriteCode(AnaStrm);
 								}
-								param = (TMrbModuleChannel *) fLofParams.After(param);
 							}
 						}
 						anaTmpl.InitializeCode("%LVE%");
@@ -973,14 +971,14 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 						if (this->IsA() != TMrbSubevent_Data_S::Class() && this->IsA() != TMrbSubevent_Data_I::Class()) {
 							pFlag = prependPrefix;
 							pUC = prefixUC;
-							evt = (TMrbEvent *) fLofEvents.First();
 							TList onceOnly;
-							while (evt) {
+							TIterator * eiter = fLofEvents.MakeIterator();
+							while (evt = (TMrbEvent *) eiter->Next()) {
 								evtNameLC = evt->GetName();
 								evtNameUC = evtNameLC;
 								evtNameUC(0,1).ToUpper();
-								param = (TMrbModuleChannel *) fLofParams.First();
-								while (param) {
+								TIterator * piter = fLofParams.MakeIterator();
+								while (param = (TMrbModuleChannel *) piter->Next()) {
 									if (onceOnly.FindObject(param->GetName()) == NULL) {
 										onceOnly.Add(new TNamed(param->GetName(), ""));
 										paramStatus = param->GetStatus();
@@ -1007,9 +1005,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 											anaTmpl.WriteCode(AnaStrm);
 										}
 									}
-									param = (TMrbModuleChannel *) fLofParams.After(param);
 								}
-								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
 							onceOnly.Delete();
 						}
@@ -1020,8 +1016,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 				case TMrbConfig::kAnaSevtBookHistograms:
 					{
 						stdHistosOK = kFALSE;
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
+						TIterator * eiter = fLofEvents.MakeIterator();
+						while (evt = (TMrbEvent *) eiter->Next()) {
 							evtNameLC = evt->GetName();
 							evtNameUC = evtNameLC;
 							evtNameUC(0,1).ToUpper();
@@ -1051,8 +1047,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 											defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramTrue;
 									else	defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramFalse;
 									if (this->IsInArrayMode()) {
-										param = (TMrbModuleChannel *) fLofParams.First();
-										while (param) {
+										TIterator * piter = fLofParams.MakeIterator();
+										while (param = (TMrbModuleChannel *) piter->Next()) {
 											histoMode = param->GetHistoMode();
 											if (histoMode == TMrbModuleChannel::kMrbHasHistogramDefault) histoMode = defaultHistoMode;
 											if (histoMode == TMrbModuleChannel::kMrbHasHistogramTrue) {
@@ -1088,11 +1084,10 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 													}
 												}
 											}
-											param = (TMrbModuleChannel *) fLofParams.After(param);
 										}
 									} else {
-										param = (TMrbModuleChannel *) fLofParams.First();
-										while (param) {
+										TIterator * piter = fLofParams.MakeIterator();
+										while (param = (TMrbModuleChannel *) piter->Next()) {
 											histoMode = param->GetHistoMode();
 											if (histoMode == TMrbModuleChannel::kMrbHasHistogramDefault) histoMode = defaultHistoMode;
 											if (histoMode == TMrbModuleChannel::kMrbHasHistogramTrue) {
@@ -1126,7 +1121,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 													}	
 												}
 											}
-											param = (TMrbModuleChannel *) fLofParams.After(param);
 										}
 									}
 								}
@@ -1135,7 +1129,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								anaTmpl.InitializeCode("%E%");
 								anaTmpl.WriteCode(AnaStrm);
 							}
-							evt = (TMrbEvent *) fLofEvents.After(evt);
 						}
 						if (stdHistosOK) {
 							anaTmpl.InitializeCode("%E%");
@@ -1146,8 +1139,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 				case TMrbConfig::kAnaSevtFillHistograms:
 					{
 						stdHistosOK = kFALSE;
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
+						TIterator * eiter = fLofEvents.MakeIterator();
+						while (evt = (TMrbEvent *) eiter->Next()) {
 							doIt = kFALSE;
 							if (evt->HasPrivateHistograms()) {
 								anaTmpl.InitializeCode("%BP%");
@@ -1196,8 +1189,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 									if (this->GetAnalyzeOptions(evt) & TMrbConfig::kAnaOptHistograms)
 												defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramTrue;
 									else		defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramFalse;
-									param = (TMrbModuleChannel *) fLofParams.First();
-									while (param) {
+									TIterator * piter = fLofParams.MakeIterator();
+									while (param = (TMrbModuleChannel *) piter->Next()) {
 										histoMode = param->GetHistoMode();
 										if (histoMode == TMrbModuleChannel::kMrbHasHistogramDefault) histoMode = defaultHistoMode;
 										if (histoMode == TMrbModuleChannel::kMrbHasHistogramTrue) {
@@ -1224,7 +1217,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 												}
 											}
 										}
-										param = (TMrbModuleChannel *) fLofParams.After(param);
 									}
 								}
 							}
@@ -1232,7 +1224,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								anaTmpl.InitializeCode("%E%");
 								anaTmpl.WriteCode(AnaStrm);
 							}
-							evt = (TMrbEvent *) fLofEvents.After(evt);
 						}	
 						if (stdHistosOK) {
 							anaTmpl.InitializeCode("%E%");
@@ -1256,8 +1247,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 						anaTmpl.Substitute("$nofParams", this->GetNofParams());
 						anaTmpl.WriteCode(AnaStrm);
 					} else {
-						param = (TMrbModuleChannel *) fLofParams.First();
-						while (param) {
+						TIterator * piter = fLofParams.MakeIterator();
+						while (param = (TMrbModuleChannel *) piter->Next()) {
 							module = (TMrbModule *) param->Parent();
 							paramStatus = param->GetStatus();
 							if (paramStatus != TMrbConfig::kChannelArrElem) {
@@ -1276,7 +1267,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								anaTmpl.Substitute("$nofBytes", nofBytes);
 								anaTmpl.WriteCode(AnaStrm);
 							}
-							param = (TMrbModuleChannel *) fLofParams.After(param);
 						}
 					}
 					break;
@@ -1347,10 +1337,12 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 
 	if (this->MakeSpecialAnalyzeCode(AnaStrm, TagIndex, Template)) return(kTRUE);
 
+	TIterator * piter;
+
 	switch (TagIndex) {
 		case TMrbConfig::kAnaEventSetBranchStatus:
-			param = (TMrbModuleChannel *) fLofParams.First();
-			while (param) {
+			piter = fLofParams.MakeIterator();
+			while (param = (TMrbModuleChannel *) piter->Next()) {
 				paramStatus = param->GetStatus();
 				if (paramStatus != TMrbConfig::kChannelArrElem) {
 					paramNameLC = param->GetName();
@@ -1367,14 +1359,13 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 					Template.Substitute("$indexRange", (Int_t) param->GetIndexRange());
 					Template.WriteCode(AnaStrm);
 				}
-				param = (TMrbModuleChannel *) fLofParams.After(param);
 			}
 			break;
 		case TMrbConfig::kAnaHistoDefinePointers:
 			if (this->GetAnalyzeOptions(Event) & TMrbConfig::kAnaOptHistograms) {
 				stdHistosOK = kFALSE;
-				evt = (TMrbEvent *) fLofEvents.First();
-				while (evt) {
+				TIterator * eiter = fLofEvents.MakeIterator();
+				while (evt = (TMrbEvent *) eiter->Next()) {
 					evtNameLC = evt->GetName();
 					evtNameUC = evtNameLC;
 					evtNameUC(0,1).ToUpper();
@@ -1407,8 +1398,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 						doIt = kTRUE;
 					} 
 					if (doIt) {
-						param = (TMrbModuleChannel *) fLofParams.First();
-						while (param) {
+						TIterator * piter = fLofParams.MakeIterator();
+						while (param = (TMrbModuleChannel *) piter->Next()) {
 							module = (TMrbModule *) param->Parent();
 							if (module->HistosToBeAllocated() && module->GetRange() > 0) {
 								paramStatus = param->GetStatus();
@@ -1430,7 +1421,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 									Template.WriteCode(AnaStrm);
 								}
 							}
-							param = (TMrbModuleChannel *) fLofParams.After(param);
 						}
 					}
 					if (this->IsInArrayMode()) {
@@ -1453,15 +1443,14 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 						Template.Substitute("$nofParams", this->GetNofParams());
 						Template.WriteCode(AnaStrm);
 					}
-					evt = (TMrbEvent *) fLofEvents.After(evt);
 				}
 			}
 			break;
 		case TMrbConfig::kAnaHistoInitializeArrays:
 			if (this->HistosToBeAllocated() && (this->GetAnalyzeOptions(Event) & TMrbConfig::kAnaOptHistograms)) {
 				stdHistosOK = kFALSE;
-				evt = (TMrbEvent *) fLofEvents.First();
-				while (evt) {
+				TIterator * eiter = fLofEvents.MakeIterator();
+				while (evt = (TMrbEvent *) eiter->Next()) {
 					evtNameLC = evt->GetName();
 					evtNameUC = evtNameLC;
 					evtNameUC(0,1).ToUpper();
@@ -1491,8 +1480,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 							Template.Substitute("$nofParams", this->GetNofParams());
 							Template.WriteCode(AnaStrm);
 						} else {
-							param = (TMrbModuleChannel *) fLofParams.First();
-							while (param) {
+							TIterator * piter = fLofParams.MakeIterator();
+							while (param = (TMrbModuleChannel *) piter->Next()) {
 								module = (TMrbModule *) param->Parent();
 								if (module->HistosToBeAllocated() && module->GetRange() > 0) {
 									paramStatus = param->GetStatus();
@@ -1515,11 +1504,9 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 										}
 									}
 								}
-								param = (TMrbModuleChannel *) fLofParams.After(param);
 							}
 						}
 					}
-					evt = (TMrbEvent *) fLofEvents.After(evt);
 				}
 			}
 			break;
@@ -1550,14 +1537,15 @@ Bool_t TMrbSubevent::MakeConfigCode(ofstream & CfgStrm,	TMrbConfig::EMrbConfigTa
 
 	Int_t chnNo;
 	TString lofParams;
+	TIterator * piter;
 
 	switch (TagIndex) {
 		case TMrbConfig::kCfgAssignParams:
-			param = (TMrbModuleChannel *) fLofParams.First();
 			lmodule = module;
 			lofParams = "";
 			chnNo = -1;
-			while (param) {
+			piter = fLofParams.MakeIterator();
+			while (param = (TMrbModuleChannel *) piter->Next()) {
 				module = (TMrbModule *) param->Parent();
 				if (lofParams.Length() > 65 || module != lmodule) {
 					lofParams = lofParams.Strip(TString::kBoth);
@@ -1582,7 +1570,6 @@ Bool_t TMrbSubevent::MakeConfigCode(ofstream & CfgStrm,	TMrbConfig::EMrbConfigTa
 					chnNo = param->GetAddr();
 					lofParams += " ";
 				}
-				param = (TMrbModuleChannel *) fLofParams.After(param);
 			}
 			lofParams = lofParams.Strip(TString::kBoth);
 			if (lofParams.Length() > 0) {
@@ -1621,11 +1608,8 @@ void TMrbSubevent::Print(ostream & OutStrm, const Char_t * Prefix) const {
 	OutStrm << Prefix << "       Type/Subtype  : [" << fSevtType << "," << fSevtSubtype << "]" << endl;
 	OutStrm << Prefix << "       Description   : " << fSevtDescr << endl;
 	OutStrm << Prefix << "       Trigger(s)    : ";
-	evt = (TMrbEvent *) fLofEvents.First();
-	while (evt) {
-		OutStrm << evt->GetName() << "(" << evt->GetTrigger() << ") ";
-		evt = (TMrbEvent *) fLofEvents.After(evt);
-	}
+	TIterator * eiter = fLofEvents.MakeIterator();
+	while (evt = (TMrbEvent *) eiter->Next()) OutStrm << evt->GetName() << "(" << evt->GetTrigger() << ") ";
 	OutStrm << endl;
 	OutStrm << Prefix << "       Parameters    : " << fNofParams << endl;
 	if (fNofParams > 0) {
@@ -1875,14 +1859,14 @@ const Char_t * TMrbSubevent::GetLofModulesAsString(TString & LofModules) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbModule * module;
+	TIterator * miter;
 
 	LofModules = "";
 	if (fNofModules > 0) {
-		module = (TMrbModule *) fLofModules.First();
-		while (module) {
+		miter = fLofModules.MakeIterator();
+		while (module = (TMrbModule *) miter->Next()) {
 			if (LofModules.Length() > 0) LofModules += ":";
 			LofModules += module->GetName();
-			module = (TMrbModule *) fLofModules.After(module);
 		}
 	}
 	return(LofModules.Data());
@@ -1904,11 +1888,10 @@ const Char_t * TMrbSubevent::GetLofParamsAsString(TString & LofParams) const {
 
 	LofParams = "";
 	if (fNofParams > 0) {
-		param = (TMrbModuleChannel *) fLofParams.First();
-		while (param) {
+		TIterator * piter = fLofParams.MakeIterator();
+		while (param = (TMrbModuleChannel *) piter->Next()) {
 			if (LofParams.Length() > 0) LofParams += ":";
 			LofParams += param->GetName();
-			param = (TMrbModuleChannel *) fLofParams.After(param);
 		}
 	}
 	return(LofParams.Data());

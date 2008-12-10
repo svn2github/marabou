@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_HB_1.cxx,v 1.2 2008-03-27 15:49:37 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_HB_1.cxx,v 1.3 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -123,6 +123,7 @@ Bool_t TMrbSubevent_HB_1::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbRe
 	Int_t nextChannel = 0;
 	Int_t thisChannel;
 	TString sevtName;
+	TIterator * miter;
 
 	switch (TagIndex) {
 		case TMrbConfig::kRdoOnTriggerXX:
@@ -153,11 +154,8 @@ Bool_t TMrbSubevent_HB_1::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbRe
 				parNo += parentModule->GetNofChannelsUsed();
 				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;				
 			}
-			module = (TMrbModule *) fLofModules.First();
-			while (module) {
-				module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleFinishReadout);
-				module = (TMrbModule *) fLofModules.After(module);
-			}
+			miter = fLofModules.MakeIterator();
+			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleFinishReadout);
 
 			Template.InitializeCode("%SE%");
 			Template.Substitute("$sevtNameLC", this->GetName());
@@ -165,11 +163,8 @@ Bool_t TMrbSubevent_HB_1::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbRe
 			break;
 
 		case TMrbConfig::kRdoIgnoreTriggerXX:
-			module = (TMrbModule *) fLofModules.First();
-			while (module) {
-				module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleClearModule);
-				module = (TMrbModule *) fLofModules.After(module);
-			}
+			miter = fLofModules.MakeIterator();
+			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleClearModule);
 			break;
 	}
 	return(kTRUE);

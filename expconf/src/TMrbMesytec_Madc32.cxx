@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.2 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.3 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -748,14 +748,14 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 	mnemoUC.ToUpper();
 
 	Int_t subType = 0;
-	TMrbSubevent * s = (TMrbSubevent *) gMrbConfig->GetLofSubevents()->First();
-	while (s) {
+	TMrbSubevent * s;
+	TIterator * siter = gMrbConfig->GetLofSubevents()->MakeIterator();
+	while (s = (TMrbSubevent *) siter->Next()) {
 		TMrbModule * m = (TMrbModule *) s->FindModuleBySerial(this->GetSerial());
 		if (m) {
 			subType = s->GetSubtype();
 			break;
 		}
-		s = (TMrbSubevent *) gMrbConfig->GetLofSubevents()->After(s);
 	}
 
 	TString pwd = gSystem->Getenv("PWD");

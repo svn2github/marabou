@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.22 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.23 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -737,12 +737,11 @@ void TMrbModule::DeleteRegisters() {
 
 	TMrbNamedX * kp;
 	TMrbModuleRegister * rp;
-	kp = (TMrbNamedX *) fLofRegisters.First();
-	while (kp) {
+	TIterator * kiter = fLofRegisters.MakeIterator();
+	while (kp = (TMrbNamedX *) kiter->Next()) {
 		rp = (TMrbModuleRegister *) kp->GetAssignedObject();
 		rp->Delete();
 		delete rp;
-		kp = (TMrbNamedX *) fLofRegisters.After(kp);
 	}
 	fLofRegisters.Delete();
 }

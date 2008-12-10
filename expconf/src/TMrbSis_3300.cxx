@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.12 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.13 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -741,14 +741,14 @@ Bool_t TMrbSis_3300::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 	mnemoUC.ToUpper();
 
 	Int_t subType = 0;
-	TMrbSubevent * s = (TMrbSubevent *) gMrbConfig->GetLofSubevents()->First();
-	while (s) {
+	TIterator * siter = gMrbConfig->GetLofSubevents()->MakeIterator();
+	TMrbSubevent * s;
+	while (s = (TMrbSubevent *) siter->Next()) {
 		TMrbModule * m = (TMrbModule *) s->FindModuleBySerial(this->GetSerial());
 		if (m) {
 			subType = s->GetSubtype();
 			break;
 		}
-		s = (TMrbSubevent *) gMrbConfig->GetLofSubevents()->After(s);
 	}
 
 	TString pwd = gSystem->Getenv("PWD");

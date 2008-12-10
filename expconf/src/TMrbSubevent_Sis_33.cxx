@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.8 2007-06-06 07:37:12 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.9 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -127,6 +127,7 @@ Bool_t TMrbSubevent_Sis_33::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 	TMrbModule * module;
 	TString sevtName;
 	TString moduleNameUC;
+	TIterator * miter;
 
 	switch (TagIndex) {
 		case TMrbConfig::kRdoOnTriggerXX:
@@ -141,8 +142,8 @@ Bool_t TMrbSubevent_Sis_33::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 			Template.Substitute("$crateNo", this->GetCrate());
 			Template.WriteCode(RdoStrm);
 
-			module = (TMrbModule *) fLofModules.First();
-			while (module) {
+			miter = fLofModules.MakeIterator();
+			while (module = (TMrbModule *) miter->Next()) {
 				Template.InitializeCode("%SMB%");
 				moduleNameUC = module->GetName();
 				moduleNameUC(0,1).ToUpper();
@@ -169,16 +170,12 @@ Bool_t TMrbSubevent_Sis_33::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 				Template.InitializeCode("%SE%");
 				Template.Substitute("$sevtNameLC", this->GetName());
 				Template.WriteCode(RdoStrm);
-				module = (TMrbModule *) fLofModules.After(module);
 			}
 			break;
 
 		case TMrbConfig::kRdoIgnoreTriggerXX:
-			module = (TMrbModule *) fLofModules.First();
-			while (module) {
-				module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleClearModule);
-				module = (TMrbModule *) fLofModules.After(module);
-			}
+			miter = fLofModules.MakeIterator();
+			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleClearModule);
 			break;
 	}
 	return(kTRUE);
@@ -206,6 +203,7 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 	TString pName[2];
 	Bool_t pIsTrig[2];
 	Int_t nofChansPerGroup;
+	TIterator * piter;
 
 	switch (TagIndex) {
 		case TMrbConfig::kAnaSevtBookHistograms:
@@ -216,9 +214,10 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 				AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 				AnaTmpl.Substitute("$sevtNameUC", sevtNameUC);
 				AnaTmpl.WriteCode(AnaStrm);
-				TMrbModuleChannel * param = (TMrbModuleChannel *) fLofParams.First();
 				Int_t pIdx = 0;
-				while (param) {
+				piter = fLofParams.MakeIterator();
+				TMrbModuleChannel * param;
+				while (param = (TMrbModuleChannel *) piter->Next()) {
 					TString paramNameLC = param->GetName();
 					TString paramNameUC = paramNameLC;
 					paramNameUC(0,1).ToUpper();
@@ -325,7 +324,6 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 						AnaTmpl.InitializeCode("%CE%");
 						AnaTmpl.WriteCode(AnaStrm);
 					}
-					param = (TMrbModuleChannel *) fLofParams.After(param);
 				}
 				AnaTmpl.InitializeCode("%E%");
 				AnaTmpl.Substitute("$sevtNameLC", sevtNameLC);
@@ -336,8 +334,9 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 		case TMrbConfig::kAnaSevtPrivateData:
 		case TMrbConfig::kAnaSevtDefineAddr:
 			{
-				TMrbModuleChannel * param = (TMrbModuleChannel *) fLofParams.First();
-				while (param) {
+				piter = fLofParams.MakeIterator();
+				TMrbModuleChannel * param;
+				while (param = (TMrbModuleChannel *) piter->Next()) {
 					TString paramNameLC = param->GetName();
 					TString paramNameUC = paramNameLC;
 					paramNameUC(0,1).ToUpper();
@@ -404,15 +403,15 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 							AnaTmpl.WriteCode(AnaStrm);
 						}
 					}
-					param = (TMrbModuleChannel *) fLofParams.After(param);
 				}
 				return(kTRUE);
 			}
 		case TMrbConfig::kAnaHistoDefinePointers:
 			{
-				TMrbModuleChannel * param = (TMrbModuleChannel *) fLofParams.First();
 				Int_t pIdx = 0;
-				while (param) {
+				piter = fLofParams.MakeIterator();
+				TMrbModuleChannel * param;
+				while (param = (TMrbModuleChannel *) piter->Next()) {
 					TMrbSis_3300 * module = (TMrbSis_3300 *) param->Parent();
 					TString moduleNameLC = module->GetName();
 					TString moduleNameUC = moduleNameLC;
@@ -504,7 +503,6 @@ Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfi
 							}
 						}
 					}
-					param = (TMrbModuleChannel *) fLofParams.After(param);
 				}
 				return(kTRUE);
 			}

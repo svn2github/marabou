@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Data_S.cxx,v 1.6 2005-05-25 09:33:54 marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Data_S.cxx,v 1.7 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -99,6 +99,7 @@ Bool_t TMrbSubevent_Data_S::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 	Int_t nextChannel = 0;
 	Int_t thisChannel, chDiff;
 	TString sevtName;
+	TIterator * piter;
 
 	switch (TagIndex) {
 		case TMrbConfig::kRdoOnTriggerXX:
@@ -113,9 +114,9 @@ Bool_t TMrbSubevent_Data_S::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 			Template.Substitute("$crateNo", this->GetCrate());
 			Template.WriteCode(RdoStrm);
 
-			param = (TMrbModuleChannel *) fLofParams.First();
+			piter = fLofParams.MakeIterator();
 			parNo = 0;
-			while (param) {
+			while (param = (TMrbModuleChannel *) piter->Next()) {
 				thisChannel = param->GetAddr();
 				chDiff = (thisChannel - nextChannel);
 				if (chDiff != 0) {
@@ -133,7 +134,6 @@ Bool_t TMrbSubevent_Data_S::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 				Template.Substitute("$parNo", parNo);
 				Template.WriteCode(RdoStrm);
 				nextChannel = thisChannel + 1;
-				param = (TMrbModuleChannel *) fLofParams.After(param);
 				parNo++;
 			}
 			break;

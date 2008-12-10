@@ -8,7 +8,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_10_14.cxx,v 1.7 2006-07-10 10:49:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_10_14.cxx,v 1.8 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -122,6 +122,8 @@ Bool_t TMrbSubevent_10_14::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 	Int_t shortsPerParam = 0;
 	Int_t shortsSoFar;
 
+	TIterator * miter;
+
 	switch (TagIndex) {
 		case TMrbConfig::kRdoOnTriggerXX:
 			Template.InitializeCode("%SB%");
@@ -171,11 +173,8 @@ Bool_t TMrbSubevent_10_14::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 					param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;				
 				}
 			}
-			module = (TMrbModule *) fLofModules.First();
-			while (module) {
-				module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleFinishReadout);
-				module = (TMrbModule *) fLofModules.After(module);
-			}
+			miter = fLofModules.MakeIterator();
+			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleFinishReadout);
 
 			if ((shortsSoFar % 2) == 1) {
 				Template.InitializeCode("%AL%");
@@ -188,11 +187,8 @@ Bool_t TMrbSubevent_10_14::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 			break;
 
 		case TMrbConfig::kRdoIgnoreTriggerXX:
-			module = (TMrbModule *) fLofModules.First();
-			while (module) {
-				module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleClearModule);
-				module = (TMrbModule *) fLofModules.After(module);
-			}
+			miter = fLofModules.MakeIterator();
+			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleClearModule);
 			break;
 	}
 	return(kTRUE);
