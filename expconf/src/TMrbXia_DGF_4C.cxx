@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.29 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.30 2008-12-10 12:13:50 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -266,7 +266,7 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 
 
 Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TMrbCamacChannel * Channel,
+															TMrbModuleChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -298,6 +298,8 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModul
 		return(kFALSE);
 	}
 
+	TMrbCamacChannel * camacChannel	= (TMrbCamacChannel *) Channel;
+
 	switch (TagIndex) {
 		case TMrbConfig::kModuleInitChannel:
 			break;
@@ -307,9 +309,9 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModul
 			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC.Data());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", Channel->GetName());
-			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
-			fCodeTemplates.Substitute("$subaddr", Channel->GetAddr() + 1);
+			fCodeTemplates.Substitute("$chnName", camacChannel->GetName());
+			fCodeTemplates.Substitute("$chnNo", camacChannel->GetAddr());
+			fCodeTemplates.Substitute("$subaddr", camacChannel->GetAddr() + 1);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleSetupReadout:
@@ -322,8 +324,8 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModul
 			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC.Data());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", Channel->GetName());
-			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$chnName", camacChannel->GetName());
+			fCodeTemplates.Substitute("$chnNo", camacChannel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;

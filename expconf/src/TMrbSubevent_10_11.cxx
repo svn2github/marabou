@@ -8,7 +8,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_10_11.cxx,v 1.7 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_10_11.cxx,v 1.8 2008-12-10 12:13:50 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -132,14 +132,11 @@ Bool_t TMrbSubevent_10_11::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 				if (param->Parent() != parentModule) {
 					parentModule = (TMrbModule *) param->Parent();
 					shortsPerParam = parentModule->GetNofShortsPerChannel();
-					cout << "@@@ " << this->GetName() << " parent=" << parentModule->GetName() << endl;
-					cout << "@@@ " << this->GetName() << " shorts=" << shortsPerParam << endl;
 					if (parentModule->GetDataType()->GetIndex() == TMrbConfig::kDataUInt && (shortsSoFar % 2) == 1) {
 						Template.InitializeCode("%AL%");
 						Template.WriteCode(RdoStrm);
 						shortsSoFar++;
 					}
-					cout << "@@@ " << this->GetName() << " setup" << endl;
 					parentModule->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleSetupReadout, param);
 					nextChannel = thisChannel;
 				}
@@ -151,7 +148,6 @@ Bool_t TMrbSubevent_10_11::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 					} else if (chDiff == 1) {
 						((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleIncrementChannel, param);
 					}
-					cout << "@@@ " << this->GetName() << " " << parentModule->GetName() << " read chan " << thisChannel << endl;
 					((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadChannel, param);
 
 					nextChannel = thisChannel + 1;
@@ -159,7 +155,6 @@ Bool_t TMrbSubevent_10_11::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 					parNo++;
 					shortsSoFar += shortsPerParam;
 				} else {
-					cout << "@@@ " << this->GetName() << " read module " << endl;
 					((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadModule);
 					parNo += parentModule->GetNofChannelsUsed();
 					shortsSoFar += parentModule->GetNofChannelsUsed() * shortsPerParam;

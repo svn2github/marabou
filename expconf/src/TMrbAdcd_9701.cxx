@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAdcd_9701.cxx,v 1.9 2008-12-08 11:57:45 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAdcd_9701.cxx,v 1.10 2008-12-10 12:13:49 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -182,7 +182,7 @@ Bool_t TMrbAdcd_9701::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 
 
 Bool_t TMrbAdcd_9701::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TMrbCamacChannel * Channel,
+															TMrbModuleChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -190,7 +190,7 @@ Bool_t TMrbAdcd_9701::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 // Purpose:        Write a piece of code for an adcd flash adc
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TMrbCamacChannel * Channel   -- channel
+//                 TMrbModuleChannel * Channel  -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -210,6 +210,8 @@ Bool_t TMrbAdcd_9701::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 	mnemoLC = this->GetMnemonic();
 	mnemoUC = mnemoLC;
 	mnemoUC.ToUpper();
+
+	TMrbCamacChannel * camacChannel	= (TMrbCamacChannel *) Channel;
 
 	switch (TagIndex) {
 		case TMrbConfig::kModuleInitChannel:

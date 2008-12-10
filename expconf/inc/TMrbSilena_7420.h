@@ -8,7 +8,7 @@
 // Class:          TMrbSilena_7420      -- silena adc (NIM) + input register (tum/w.liebl)
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSilena_7420.h,v 1.8 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSilena_7420.h,v 1.9 2008-12-10 12:13:49 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -27,7 +27,7 @@ namespace std {} using namespace std;
 
 #include "TMrbCamacModule.h"
 
-class TMrbCamacChannel;
+class TMrbModuleChannel;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ class TMrbSilena_7420 : public TMrbCamacModule {
 		~TMrbSilena_7420() {};												// remove silena adc from list
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagINdex);  	// generate part of code
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbCamacChannel * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbModuleChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		virtual inline const Char_t * GetMnemonic() const { return("smdw"); }; 	// module mnemonic
 

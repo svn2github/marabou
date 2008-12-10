@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbUct_8904.cxx,v 1.8 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbUct_8904.cxx,v 1.9 2008-12-10 12:13:50 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -146,7 +146,7 @@ Bool_t TMrbUct_8904::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 }
 
 Bool_t TMrbUct_8904::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TMrbCamacChannel * Channel,
+															TMrbModuleChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -175,6 +175,8 @@ Bool_t TMrbUct_8904::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleT
 	mnemoUC = mnemoLC;
 	mnemoUC.ToUpper();
 
+	TMrbCamacChannel * camacChannel	= (TMrbCamacChannel *) Channel;
+
 	switch (TagIndex) {
 		case TMrbConfig::kModuleInitChannel:
 			break;
@@ -189,8 +191,8 @@ Bool_t TMrbUct_8904::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleT
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", Channel->GetName());
-			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$chnName", camacChannel->GetName());
+			fCodeTemplates.Substitute("$chnNo", camacChannel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSilena_7420.cxx,v 1.10 2008-12-08 11:57:45 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSilena_7420.cxx,v 1.11 2008-12-10 12:13:50 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -185,7 +185,7 @@ Bool_t TMrbSilena_7420::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModu
 
 
 Bool_t TMrbSilena_7420::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TMrbCamacChannel * Channel,
+															TMrbModuleChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -214,14 +214,16 @@ Bool_t TMrbSilena_7420::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModu
 		return(kFALSE);
 	}
 
+	TMrbCamacChannel * camacChannel	= (TMrbCamacChannel *) Channel;
+
 	switch (TagIndex) {
 		case TMrbConfig::kModuleInitChannel:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", Channel->GetName());
-			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$chnName", camacChannel->GetName());
+			fCodeTemplates.Substitute("$chnNo", camacChannel->GetAddr());
 			fCodeTemplates.Substitute("$lowerThresh", this->Get(TMrbSilena_7420::kRegLowerThresh));
 			fCodeTemplates.Substitute("$upperThresh", this->Get(TMrbSilena_7420::kRegUpperThresh));
 			fCodeTemplates.WriteCode(RdoStrm);
@@ -231,9 +233,9 @@ Bool_t TMrbSilena_7420::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModu
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", Channel->GetName());
-			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
-			fCodeTemplates.Substitute("$subaddr", Channel->GetAddr() + 1);
+			fCodeTemplates.Substitute("$chnName", camacChannel->GetName());
+			fCodeTemplates.Substitute("$chnNo", camacChannel->GetAddr());
+			fCodeTemplates.Substitute("$subaddr", camacChannel->GetAddr() + 1);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleSetupReadout:
@@ -243,8 +245,8 @@ Bool_t TMrbSilena_7420::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModu
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", Channel->GetName());
-			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$chnName", camacChannel->GetName());
+			fCodeTemplates.Substitute("$chnNo", camacChannel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;

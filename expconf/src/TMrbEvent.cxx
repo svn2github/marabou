@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.27 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.28 2008-12-10 12:13:49 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -347,7 +347,6 @@ Bool_t TMrbEvent::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag
 				wtstmpFlag = kTRUE;
 				sevt = (TMrbSubevent *) this->FindSubeventByCrate(crate);
 				while (sevt) {
-					cout << "@@@ " << sevt->GetName() << " bno=" << sevt->GetMbsBranchNo() << " sel=" << this->GetSelectedBranchNo() << endl;
 					if (sevt->GetMbsBranchNo() == this->GetSelectedBranchNo()) sevt->MakeReadoutCode(RdoStrm, TagIndex, Template, "%S%");
 					sevt = (TMrbSubevent *) this->FindSubeventByCrate(crate, sevt);
 				}

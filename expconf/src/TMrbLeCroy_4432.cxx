@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLeCroy_4432.cxx,v 1.7 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLeCroy_4432.cxx,v 1.8 2008-12-10 12:13:49 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -173,7 +173,7 @@ Bool_t TMrbLeCroy_4432::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModu
 
 
 Bool_t TMrbLeCroy_4432::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TMrbCamacChannel * Channel,
+															TMrbModuleChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -181,7 +181,7 @@ Bool_t TMrbLeCroy_4432::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModu
 // Purpose:        Write a piece of code for a lecroy scaler
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TMrbCamacChannel * Channel   -- channel
+//                 TMrbModuleChannel * Channel  -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -201,6 +201,8 @@ Bool_t TMrbLeCroy_4432::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModu
 	mnemoLC = this->GetMnemonic();
 	mnemoUC = mnemoLC;
 	mnemoUC.ToUpper();
+
+	TMrbCamacChannel * camacChannel	= (TMrbCamacChannel *) Channel;
 
 	switch (TagIndex) {
 		case TMrbConfig::kModuleInitChannel:
@@ -222,8 +224,8 @@ Bool_t TMrbLeCroy_4432::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModu
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$chnName", Channel->GetName());
-			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$chnName", camacChannel->GetName());
+			fCodeTemplates.Substitute("$chnNo", camacChannel->GetAddr());
 			fCodeTemplates.Substitute("$data", Value);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
