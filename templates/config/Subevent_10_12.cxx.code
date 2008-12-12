@@ -117,8 +117,8 @@
 %S% 	}
 %X%	for (Int_t i = 0; i < $indexRange; i++) {
 %X% 		if (h$prefix$paramNameUC[i] == NULL) {
-%X% 			TMrbString hName = "h$prefix$paramNameUC"; hName += i;
-%X% 			TMrbString hTitle = "$sevtNameLC.$paramNameLC"; hTitle += i;
+%X% 			TString hName = Form("h$prefix$paramNameUC%d", i);
+%X% 			TString hTitle = Form("$sevtNameLC.$paramNameLC%d", i);
 %X% 			h$prefix$paramNameUC[i] = new TH1F(hName.Data(), hTitle.Data(), $hBinSize, $hLowerLim.0, $hUpperLim.0);
 %X% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 		}
@@ -149,7 +149,7 @@
 %B%
 %S% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &$paramNameLC, kMrbModule$moduleNameUC, $paramIndex);
 %X%	for (Int_t i = 0; i < $indexRange; i++) {
-%X% 		TMrbString pName = "$paramNameLC"; pName += i;
+%X% 		TString pName = Form("$paramNameLC%d", i);
 %X% 		if (gMrbAnalyze->FindParam(pName.Data()) == NULL) gMrbAnalyze->AddParamToList(pName.Data(), (TObject *) &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 	}
 %A% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &fData[k$paramNameUC], kMrbModule$moduleNameUC, $paramIndex);

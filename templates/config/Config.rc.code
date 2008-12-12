@@ -75,6 +75,7 @@ $resource.ClassName:					$className
 %NUM%$resource.Module.$modNo.NofShortsPerChannel:	$nofShortsPerChannel
 %NUM%$resource.Module.$modNo.NofShortsPerDatum:		$nofShortsPerDatum
 %NUM%$resource.Module.$modNo.NofChannels:		$nofChannels
+%NUM%$resource.Module.$modNo.LofChannels:		$lofChannels
 %NUM%$resource.Module.$modNo.NofChannelsUsed:	$nofChannelsUsed
 %NUM%$resource.Module.$modNo.ChannelPattern:	$channelPattern
 %NAM%$resource.Module.$modNo.Name:			$moduleNameLC
@@ -94,6 +95,7 @@ $resource.ClassName:					$className
 %NAM%$resource.Module.$moduleNameUC.NofShortsPerChannel:	$nofShortsPerChannel
 %NAM%$resource.Module.$moduleNameUC.NofShortsPerDatum:		$nofShortsPerDatum
 %NAM%$resource.Module.$moduleNameUC.NofChannels:		$nofChannels
+%NAM%$resource.Module.$moduleNameUC.LofChannels:		$lofChannels
 %NAM%$resource.Module.$moduleNameUC.NofChannelsUsed:	$nofChannelsUsed
 %NAM%$resource.Module.$moduleNameUC.ChannelPattern:	$channelPattern
 %%EndOfCode%%
