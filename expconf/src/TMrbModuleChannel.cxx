@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModuleChannel.cxx,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbModuleChannel.cxx,v 1.5 2008-12-12 13:09:58 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -51,6 +51,7 @@ TMrbModuleChannel::TMrbModuleChannel(TMrbModule * Module, Int_t Addr) {
 	fAddr = Addr; 					// current address / channel number
 	fParent = Module;				// parent addr
 	fArrayHead = NULL;				// not indexed
+	fHeadName = "";					// ...
 	fIndexRange = 1;				// single channel
 	fStatus = TMrbConfig::kChannelSingle;	//...
 	fIsUsed = kFALSE;				// not used
@@ -238,5 +239,57 @@ Int_t TMrbModuleChannel::GetIndex() const {
 		case TMrbConfig::kChannelSingle:
 		case TMrbConfig::kChannelArray:
 		default:							return(0);
+	}
+}
+
+Bool_t TMrbModuleChannel::SetHeadName(const Char_t * HeadName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModuleChannel::SetHeadName
+// Purpose:        Store head name for indexed params
+// Arguments:      Char_t * HeadName   -- name of param head
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Stores "param head" in case of indexed params
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (fStatus) {
+
+		case TMrbConfig::kChannelArrElem:
+		case TMrbConfig::kChannelArray:
+			fHeadName = HeadName;
+			return(kTRUE);
+
+		case TMrbConfig::kChannelSingle:
+		default:
+			fHeadName = "";
+			if (HeadName == NULL) return(kTRUE);
+			gMrbLog->Err()	<< fParent->GetName()
+							<< ":" << this->GetName() << " is not indexed" << endl;
+			gMrbLog->Flush(this->ClassName(), "SetHeadName");
+			return(kFALSE);
+	}
+}
+
+const Char_t * TMrbModuleChannel::GetHeadName() const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModuleChannel::GetHeadName
+// Purpose:        Return name of param head
+// Arguments:      --
+// Results:        Char_t * HeadName   -- name of param head
+// Exceptions:
+// Description:    Returns "param head" in case of indexed params
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (fStatus) {
+
+		case TMrbConfig::kChannelArrElem:
+		case TMrbConfig::kChannelArray: 		return(fHeadName.Data());
+
+		case TMrbConfig::kChannelSingle:
+		default:								return(this->GetName());
 	}
 }

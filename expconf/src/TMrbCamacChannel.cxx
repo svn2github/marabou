@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCamacChannel.cxx,v 1.5 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbCamacChannel.cxx,v 1.6 2008-12-12 13:09:57 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -78,15 +78,15 @@ void TMrbCamacChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFla
 		if (SevtFlag) parent = this->UsedBy()->GetName(); else parent = Parent()->GetName();
 
 		OutStrm << Prefix << Form("%-23s%-18s", "", cnaf.Data());
-		TMrbString par(this->GetName());
+		TString par;
 		if (this->GetStatus() == TMrbConfig::kChannelArray) {
 			if (ArrayFlag) {
-				par += "[";
-				par += this->GetIndexRange();
-				par += "]";
+				par = Form("%s[%d]", this->GetHeadName(), this->GetIndexRange());
 			} else {
-				par += 0;
+				par = this->GetName();
 			}
+		} else {
+			par = this->GetName();
 		}
 		OutStrm << Form("%-15s%s", par.Data(), parent.Data()) << endl;
 	} else {

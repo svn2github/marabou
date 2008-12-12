@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.37 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.38 2008-12-12 13:09:58 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -466,18 +466,19 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment, B
 					arrayHead = cp;
 					cp->SetIndexRange(indexRange);
 					cp->SetStatus(TMrbConfig::kChannelArray);
-					cp->SetName(paramName.Data());
+					cp->SetHeadName(paramName.Data());
 				} else {
 					cp->MarkIndexed(arrayHead);
 					cp->SetStatus(TMrbConfig::kChannelArrElem);
-					TMrbString pn(paramName.Data(), nch);
-					cp->SetName(pn.Data());
+					cp->SetHeadName(arrayHead->GetHeadName());
 				}
+				cp->SetName(Form("%s%d", paramName.Data(), nch));
 			} else {					
 				cp->SetIndexRange(1);
 				cp->MarkIndexed(NULL);
 				cp->SetName(paramName.Data());
 				cp->SetStatus(TMrbConfig::kChannelSingle);
+				cp->SetHeadName(NULL);
 			}
 			cp->MarkUsed(this);
 			cp->SetHistoMode(histoMode);
@@ -710,7 +711,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							module = (TMrbModule *) param->Parent();
 							paramStatus = param->GetStatus();
 							if (paramStatus != TMrbConfig::kChannelArrElem) {
-								paramNameLC = param->GetName();
+								paramNameLC = param->GetHeadName();
 								paramNameUC = paramNameLC;
 								paramNameUC(0,1).ToUpper();
 								if (paramStatus == TMrbConfig::kChannelArray) {
@@ -781,7 +782,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							module = (TMrbModule *) param->Parent();
 							paramStatus = param->GetStatus();
 							if (paramStatus != TMrbConfig::kChannelArrElem) {
-								paramNameLC = param->GetName();
+								paramNameLC = param->GetHeadName();
 								paramNameUC = paramNameLC;
 								paramNameUC(0,1).ToUpper();
 								if (paramStatus == TMrbConfig::kChannelSingle)	anaTmpl.InitializeCode("%S%");
@@ -878,7 +879,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							}
 							iniTag = this->IsRaw() ? "%UD" : "%";
 							if (paramStatus != TMrbConfig::kChannelArrElem) {
-								paramNameLC = param->GetName();
+								paramNameLC = param->GetHeadName();
 								paramNameUC = paramNameLC;
 								paramNameUC(0,1).ToUpper();
 								if (paramStatus == TMrbConfig::kChannelSingle)	iniTag += "S";
@@ -931,7 +932,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								module = (TMrbModule *) param->Parent();
 								paramStatus = param->GetStatus();
 								if (paramStatus != TMrbConfig::kChannelArrElem) {
-									paramNameLC = param->GetName();
+									paramNameLC = param->GetHeadName();
 									paramNameUC = paramNameLC;
 									paramNameUC(0,1).ToUpper();
 									if (paramStatus == TMrbConfig::kChannelSingle)		anaTmpl.InitializeCode("%LVS%");
@@ -987,7 +988,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 											moduleNameLC = module->GetName();
 											moduleNameUC = moduleNameLC;
 											moduleNameUC(0,1).ToUpper();
-											paramNameLC = param->GetName();
+											paramNameLC = param->GetHeadName();
 											paramNameUC = paramNameLC;
 											paramNameUC(0,1).ToUpper();
 											if (this->IsInArrayMode())							anaTmpl.InitializeCode("%A%");
@@ -1059,7 +1060,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 														moduleNameLC = module->GetName();
 														moduleNameUC = moduleNameLC;
 														moduleNameUC(0,1).ToUpper();
-														paramNameLC = param->GetName();
+														paramNameLC = param->GetHeadName();
 														paramNameUC = paramNameLC;
 														paramNameUC(0,1).ToUpper();
 														if (this->IsInArrayMode())							anaTmpl.InitializeCode("%A%");
@@ -1098,7 +1099,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 														moduleNameLC = module->GetName();
 														moduleNameUC = moduleNameLC;
 														moduleNameUC(0,1).ToUpper();	
-														paramNameLC = param->GetName();
+														paramNameLC = param->GetHeadName();
 														paramNameUC = paramNameLC;
 														paramNameUC(0,1).ToUpper();
 														if (this->IsInArrayMode())							anaTmpl.InitializeCode("%A%");
@@ -1198,7 +1199,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 											if (paramStatus != TMrbConfig::kChannelArrElem) {
 												module = (TMrbModule *) param->Parent();
 												if (module->HistosToBeAllocated() && module->GetRange() > 0) {
-													paramNameLC = param->GetName();
+													paramNameLC = param->GetHeadName();
 													paramNameUC = paramNameLC;
 													paramNameUC(0,1).ToUpper();
 													iniTag = this->HistosToBeFilledIfTrueHit() ? "%P" : "%";
@@ -1252,7 +1253,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							module = (TMrbModule *) param->Parent();
 							paramStatus = param->GetStatus();
 							if (paramStatus != TMrbConfig::kChannelArrElem) {
-								paramNameLC = param->GetName();
+								paramNameLC = param->GetHeadName();
 								paramNameUC = paramNameLC;
 								paramNameUC(0,1).ToUpper();
 								if (paramStatus == TMrbConfig::kChannelSingle)	iniTag = "%S%";
@@ -1345,7 +1346,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 			while (param = (TMrbModuleChannel *) piter->Next()) {
 				paramStatus = param->GetStatus();
 				if (paramStatus != TMrbConfig::kChannelArrElem) {
-					paramNameLC = param->GetName();
+					paramNameLC = param->GetHeadName();
 					paramNameUC = paramNameLC;
 					paramNameUC(0,1).ToUpper();
 					if (paramStatus == TMrbConfig::kChannelSingle)	Template.InitializeCode("%S%");
@@ -1404,7 +1405,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 							if (module->HistosToBeAllocated() && module->GetRange() > 0) {
 								paramStatus = param->GetStatus();
 								if (paramStatus != TMrbConfig::kChannelArrElem) {
-									paramNameLC = param->GetName();
+									paramNameLC = param->GetHeadName();
 									paramNameUC = paramNameLC;
 									paramNameUC(0,1).ToUpper();
 									if (paramStatus == TMrbConfig::kChannelSingle)	Template.InitializeCode(iniS);
@@ -1486,7 +1487,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 								if (module->HistosToBeAllocated() && module->GetRange() > 0) {
 									paramStatus = param->GetStatus();
 									if (paramStatus != TMrbConfig::kChannelArrElem) {
-										paramNameLC = param->GetName();
+										paramNameLC = param->GetHeadName();
 										paramNameUC = paramNameLC;
 										paramNameUC(0,1).ToUpper();
 										if (paramStatus == TMrbConfig::kChannelArray) {

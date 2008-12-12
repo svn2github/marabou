@@ -8,7 +8,7 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.19 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.h,v 1.20 2008-12-12 13:09:57 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -138,8 +138,8 @@ class TMrbModule : public TNamed {
 		Int_t GetNofChannelsUsed() const; 											// calculate number of channels in use
 		UInt_t GetPatternOfChannelsUsed() const; 										// pattern of channels actually used
 		Bool_t CheckIfPatternIsContiguous() const;						// check if channels have been assigned contiguously 
-
 		inline TObjArray * GetLofChannels() { return(&fChannelSpec); };			// list of channels
+		const Char_t * GetLofChannelsAsString(TString & LofChannels) const;
 
 		TMrbModuleChannel * GetChannel(Int_t) const;											// get channel addr
 

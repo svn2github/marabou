@@ -8,7 +8,7 @@
 // Class:          TMrbModuleChannel    -- base class to describe a single channel
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModuleChannel.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModuleChannel.h,v 1.8 2008-12-12 13:09:57 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -88,6 +88,9 @@ class TMrbModuleChannel : public TNamed {
 		inline void SetStatus(TMrbConfig::EMrbChannelStatus Status) { fStatus = Status; };	// set status bits
 		Int_t GetIndex() const;												// get index with respect to array head
 
+		Bool_t SetHeadName(const Char_t * HeadName); 				// store name of param head in case it is indexed
+		const Char_t * GetHeadName() const;							// return name w/o index
+
 		inline void SetOffset(Int_t Offset) { fOffset = Offset; };			// set channel offset within module
 		inline Int_t GetOffset() const { return(fOffset); }; 				// get offset
 
@@ -109,6 +112,8 @@ class TMrbModuleChannel : public TNamed {
 		TMrbModuleChannel * fArrayHead;			// address of channel with index 0
 		Int_t fIndexRange;	 					// number of subsequent channels indexed from this one
 		TMrbConfig::EMrbChannelStatus fStatus; 	// status bits
+
+		TString fHeadName; 						// name of param array if any
 
 		Int_t fAddr;							// channel address
 		Int_t fOffset;							// channel offset

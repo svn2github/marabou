@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.23 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.24 2008-12-12 13:09:58 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -136,6 +136,34 @@ Int_t TMrbModule::GetNofChannelsUsed() const {
 		if (chn->IsUsed()) nofChannelsUsed++;
 	}
 	return(nofChannelsUsed);
+}
+
+const Char_t * TMrbModule::GetLofChannelsAsString(TString & LofChannels) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModule::GetLofChannelsAsString
+// Purpose:        Return a list of channel names
+// Arguments:      TString & LofChannels   -- where to store list
+// Results:        Char_t * LofChannels    -- same as arg above
+// Exceptions:
+// Description:    Returns a :-separated list of channel names
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	LofChannels = "";
+	TIterator * iter = fChannelSpec.MakeIterator();
+	TMrbModuleChannel * chn;
+	while (chn = (TMrbModuleChannel *) iter->Next()) {
+		if (!chn->IsUsed()) continue;
+		if (chn->GetStatus() == TMrbConfig::kChannelArray) {
+			LofChannels = Form("%s[%d:%d]", chn->GetHeadName(), chn->GetIndex(), chn->GetIndexRange() - 1);
+			return(LofChannels.Data());
+		} else {
+			if (!LofChannels.IsNull()) LofChannels += ":";
+			LofChannels += chn->GetName();
+		}
+	}
+	return(LofChannels.Data());
 }
 
 Bool_t TMrbModule::SetXmin(Int_t Xmin) {

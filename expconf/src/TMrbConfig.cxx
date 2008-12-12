@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.166 2008-12-08 12:54:48 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.167 2008-12-12 13:09:57 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4611,6 +4611,8 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 								rcTmpl.Substitute("$className", module->ClassName());
 								rcTmpl.Substitute("$nofChannelsUsed", module->GetNofChannelsUsed());
 								rcTmpl.Substitute("$nofChannels", module->GetNofChannels());
+								TString lofChannels;
+								rcTmpl.Substitute("$lofChannels", module->GetLofChannelsAsString(lofChannels));
 								rcTmpl.Substitute("$nofDataBits", module->GetNofDataBits());
 								rcTmpl.Substitute("$nofShortsPerChannel", module->GetNofShortsPerChannel());
 								rcTmpl.Substitute("$nofShortsPerDatum", module->GetNofShortsPerDatum());
