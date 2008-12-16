@@ -15,8 +15,6 @@ class TMrbSubevent_DGF_Xhit : public TObject {
 
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
 
-		inline Int_t GetNofParams() const { return(%%SEVT_NOF_PARAMS%%); };
-
 		inline TUsrXhitBuffer * AllocHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater = 0) {	// allocate buffer space
 			fHitBuffer.SetName(Name);
 			fHitBuffer.AllocClonesArray("TUsrXhit", NofEntries, HighWater);
