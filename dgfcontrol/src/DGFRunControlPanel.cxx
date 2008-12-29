@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRunControlPanel.cxx,v 1.17 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFRunControlPanel.cxx,v 1.18 2008-12-29 13:48:25 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -90,12 +90,14 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(fMenuFile);
 
 	fMenuFile->AddEntry("Exit ... Ctrl-q", kDGFFileExit);
+	fMenuFile->Connect("Activated(Int_t)", this->ClassName(), this, "Activate(Int_t)");
 
 //	View menu
 	fMenuView = new TGPopupMenu(fClient->GetRoot());
 	HEAP(fMenuView);
 
 	fMenuView->AddEntry("&Errors", kDGFViewErrors);
+	fMenuView->Connect("Activated(Int_t)", this->ClassName(), this, "Activate(Int_t)");
 
 //	General menu
 	fMenuGeneral = new TGPopupMenu(fClient->GetRoot());
@@ -135,6 +137,7 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	} else {
 		fMenuGeneral->RCheckEntry(kDGFGeneralEsoneNormal, kDGFGeneralEsoneSingleStep, kDGFGeneralEsoneNormal);
 	}
+	fMenuGeneral->Connect("Activated(Int_t)", this->ClassName(), this, "Activate(Int_t)");
 
 //	Macros menu
 	fLofMacros = new TMrbLofMacros();
@@ -145,6 +148,7 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	if (hasMacros) {
 		fMenuMacros = new TGMrbMacroBrowserPopup(fClient->GetRoot(), fLofMacros);
 		HEAP(fMenuMacros);
+		fMenuMacros->Connect("Activated(Int_t)", this->ClassName(), this, "Activate(Int_t)");
 	}
 
 //	Help menu
@@ -154,15 +158,9 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	fMenuHelp->AddEntry("&Contents", kDGFHelpContents);
 	fMenuHelp->AddSeparator();
 	fMenuHelp->AddEntry("&About DGFControl", kDGFHelpAbout);
+	fMenuHelp->Connect("Activated(Int_t)", this->ClassName(), this, "Activate(Int_t)");
 
-//	Menu button messages are handled by the main frame (i.e. "this")
-//	ProcessMessage() method.
-//	(fMenuMacros will be handled by its own ProcessMessage())
-	fMenuFile->Associate(this);
-	fMenuView->Associate(this);
-	fMenuGeneral->Associate(this);
-	fMenuHelp->Associate(this);
-	if (hasMacros) fMenuMacros->Associate(fMenuMacros);
+	if (hasMacros) fMenuMacros->Connect("Activated(Int_t)", this->ClassName(), this, "Activate(Int_t)");
 
 //	Main menu bar
 	fMenuBar = new TGMenuBar(this, 1, 1, kHorizontalFrame | kSunkenFrame);
@@ -202,6 +200,7 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	TGLayoutHints * tabLayout = new TGLayoutHints(kLHintsBottom | kLHintsExpandX | kLHintsExpandY, 5, 5, 5, 5);
 	HEAP(tabLayout);
 	this->AddFrame(fRunControlTab, tabLayout);
+	fRunControlTab->Connect("Selected(Int_t)", this->ClassName(), this, "SelectTab(Int_t)");
 
 // add tabs
 	fSetupPanel = NULL;
@@ -237,7 +236,7 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	fCptmTab = fRunControlTab->AddTab("CPTM");
 
 	fRunControlTab->SetTab(kDGFRunControlTabSystem);
-	this->SendMessage(this, MK_MSG(kC_COMMAND, kCM_TAB), kDGFRunControlTabSystem, 0);
+	this->SelectTab(kDGFRunControlTabSystem);
 
 //	create a message viewer window if wanted
 	if (		gEnv->GetValue("DGFControl.ViewMessages", kFALSE)
@@ -245,6 +244,11 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 					this->PopupMessageViewer();
 	}
 
+//	key bindings
+	fKeyBindings.SetParent(this);
+	fKeyBindings.BindKey("Ctrl-q", TGMrbLofKeyBindings::kGMrbKeyActionExit);
+	fKeyBindings.Connect("KeyPressed(Int_t, Int_t)", this->ClassName(), this, "KeyPressed(Int_t, Int_t)");
+	
 	MapSubwindows();
 
 	Resize(GetDefaultSize());
@@ -300,232 +304,245 @@ void DGFRunControlPanel::PopupMessageViewer() {
 	fMsgViewer->AddEntries();
 }
 
-Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void DGFRunControlPanel::Activate(Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFRunControlPanel::ProcessMessage
-// Purpose:        Message handler for the main frame widget
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           DGFRunControlPanel::Activate
+// Purpose:        Slot method: activate menu entry
+// Arguments:      Int_t Selection    -- selected entry
 // Results:        
 // Exceptions:     
-// Description:    Handle messages sent to DGFRunControlPanel.
-//                 E.g. all menu button messages.
+// Description:    Called if popup menu entry activated
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-
-		case kC_COMMAND:
-			switch (GET_SUBMSG(MsgId)) {
-				case kCM_MENU:
-					switch (Param1) {
-						case kDGFViewErrors:
-							if (fMsgViewer != NULL) delete fMsgViewer;
-							this->PopupMessageViewer();
-							break;
+	switch (Selection) {
+		case kDGFViewErrors:
+			if (fMsgViewer != NULL) delete fMsgViewer;
+			this->PopupMessageViewer();
+			break;
 							
-						case kDGFFileExit:
-							this->CloseWindow();
-							break;
+		case kDGFFileExit:
+			this->CloseWindow();
+			break;
 
-						case kDGFGeneralOutputNormal:
-							gDGFControlData->fStatus &= ~(DGFControlData::kDGFVerboseMode | DGFControlData::kDGFDebugMode);
-							fMenuGeneral->RCheckEntry(kDGFGeneralOutputNormal, kDGFGeneralOutputNormal, kDGFGeneralOutputDebug);
-							break;
+		case kDGFGeneralOutputNormal:
+			gDGFControlData->fStatus &= ~(DGFControlData::kDGFVerboseMode | DGFControlData::kDGFDebugMode);
+			fMenuGeneral->RCheckEntry(kDGFGeneralOutputNormal, kDGFGeneralOutputNormal, kDGFGeneralOutputDebug);
+			break;
 
-						case kDGFGeneralOutputVerbose:
-							gDGFControlData->fStatus &= ~DGFControlData::kDGFDebugMode;
-							gDGFControlData->fStatus |= DGFControlData::kDGFVerboseMode;
-							fMenuGeneral->RCheckEntry(kDGFGeneralOutputVerbose, kDGFGeneralOutputNormal, kDGFGeneralOutputDebug);
-							break;
+		case kDGFGeneralOutputVerbose:
+			gDGFControlData->fStatus &= ~DGFControlData::kDGFDebugMode;
+			gDGFControlData->fStatus |= DGFControlData::kDGFVerboseMode;
+			fMenuGeneral->RCheckEntry(kDGFGeneralOutputVerbose, kDGFGeneralOutputNormal, kDGFGeneralOutputDebug);
+			break;
 
-						case kDGFGeneralOutputDebug:
-							gDGFControlData->fStatus |= DGFControlData::kDGFVerboseMode | DGFControlData::kDGFDebugMode;
-							fMenuGeneral->RCheckEntry(kDGFGeneralOutputDebug, kDGFGeneralOutputNormal, kDGFGeneralOutputDebug);
-							break;
+		case kDGFGeneralOutputDebug:
+			gDGFControlData->fStatus |= DGFControlData::kDGFVerboseMode | DGFControlData::kDGFDebugMode;
+			fMenuGeneral->RCheckEntry(kDGFGeneralOutputDebug, kDGFGeneralOutputNormal, kDGFGeneralOutputDebug);
+			break;
 
-						case kDGFGeneralModNumLocal:
-							gDGFControlData->fStatus &= ~DGFControlData::kDGFModNumGlobal;
-							fMenuGeneral->RCheckEntry(kDGFGeneralModNumLocal, kDGFGeneralModNumLocal, kDGFGeneralModNumGlobal);
-							break;
+		case kDGFGeneralModNumLocal:
+			gDGFControlData->fStatus &= ~DGFControlData::kDGFModNumGlobal;
+			fMenuGeneral->RCheckEntry(kDGFGeneralModNumLocal, kDGFGeneralModNumLocal, kDGFGeneralModNumGlobal);
+			break;
 
-						case kDGFGeneralModNumGlobal:
-							gDGFControlData->fStatus |= DGFControlData::kDGFModNumGlobal;
-							fMenuGeneral->RCheckEntry(kDGFGeneralModNumGlobal, kDGFGeneralModNumLocal, kDGFGeneralModNumGlobal);
-							break;
+		case kDGFGeneralModNumGlobal:
+			gDGFControlData->fStatus |= DGFControlData::kDGFModNumGlobal;
+			fMenuGeneral->RCheckEntry(kDGFGeneralModNumGlobal, kDGFGeneralModNumLocal, kDGFGeneralModNumGlobal);
+			break;
 
-						case kDGFGeneralOffline:
-							gMrbLog->Out()	<< "Running in OFFLINE mode" << endl;
-							gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
-							gDGFControlData->fStatus |= DGFControlData::kDGFOfflineMode;
-							fMenuGeneral->RCheckEntry(kDGFGeneralOffline, kDGFGeneralOffline, kDGFGeneralOnline);
-							break;
+		case kDGFGeneralOffline:
+			gMrbLog->Out()	<< "Running in OFFLINE mode" << endl;
+			gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
+			gDGFControlData->fStatus |= DGFControlData::kDGFOfflineMode;
+			fMenuGeneral->RCheckEntry(kDGFGeneralOffline, kDGFGeneralOffline, kDGFGeneralOnline);
+			break;
 
-						case kDGFGeneralOnline:
-							gMrbLog->Out()	<< "Running in ONLINE mode" << endl;
-							gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
-							gDGFControlData->fStatus &= ~DGFControlData::kDGFOfflineMode;
-							fMenuGeneral->RCheckEntry(kDGFGeneralOnline, kDGFGeneralOffline, kDGFGeneralOnline);
-							break;
+		case kDGFGeneralOnline:
+			gMrbLog->Out()	<< "Running in ONLINE mode" << endl;
+			gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
+			gDGFControlData->fStatus &= ~DGFControlData::kDGFOfflineMode;
+			fMenuGeneral->RCheckEntry(kDGFGeneralOnline, kDGFGeneralOffline, kDGFGeneralOnline);
+			break;
 
-						case kDGFGeneralEsoneNormal:
-							gMrbLog->Out()	<< "ESONE running in NORMAL mode" << endl;
-							gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
-							gDGFControlData->fStatus &= ~DGFControlData::kDGFEsoneSingleStepMode;
-							fMenuGeneral->RCheckEntry(kDGFGeneralEsoneNormal, kDGFGeneralEsoneSingleStep, kDGFGeneralEsoneNormal);
-							break;
+		case kDGFGeneralEsoneNormal:
+			gMrbLog->Out()	<< "ESONE running in NORMAL mode" << endl;
+			gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
+			gDGFControlData->fStatus &= ~DGFControlData::kDGFEsoneSingleStepMode;
+			fMenuGeneral->RCheckEntry(kDGFGeneralEsoneNormal, kDGFGeneralEsoneSingleStep, kDGFGeneralEsoneNormal);
+			break;
 
-						case kDGFGeneralEsoneSingleStep:
-							gMrbLog->Out()	<< "ESONE running in SINGLE STEP mode" << endl;
-							gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
-							gDGFControlData->fStatus |= DGFControlData::kDGFEsoneSingleStepMode;
-							fMenuGeneral->RCheckEntry(kDGFGeneralEsoneSingleStep, kDGFGeneralEsoneNormal, kDGFGeneralEsoneNormal);
-							break;
+		case kDGFGeneralEsoneSingleStep:
+			gMrbLog->Out()	<< "ESONE running in SINGLE STEP mode" << endl;
+			gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
+			gDGFControlData->fStatus |= DGFControlData::kDGFEsoneSingleStepMode;
+			fMenuGeneral->RCheckEntry(kDGFGeneralEsoneSingleStep, kDGFGeneralEsoneNormal, kDGFGeneralEsoneNormal);
+			break;
+	}
+}
 
-						default:
-							break;
-					}
-					break;
+void DGFRunControlPanel::SelectTab(Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFRunControlPanel::SelectTab
+// Purpose:        Slot method: select a tab
+// Arguments:      Int_t Selection    -- selected tab
+// Results:        
+// Exceptions:     
+// Description:    Called if a tab is being selected
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
 
-				case kCM_TAB:
-					for (Int_t i = kDGFRunControlTabSystem; i <= kDGFRunControlTabFiles; i++) {
-						fRunControlTab->GetTabTab(i)->ChangeBackground(gDGFControlData->fColorGray);
-					}
-					fRunControlTab->GetTabTab(Param1)->ChangeBackground(gDGFControlData->fColorGold);
+	for (Int_t i = kDGFRunControlTabSystem; i <= kDGFRunControlTabFiles; i++) {
+		fRunControlTab->GetTabTab(i)->ChangeBackground(gDGFControlData->fColorGray);
+	}
+	fRunControlTab->GetTabTab(Selection)->ChangeBackground(gDGFControlData->fColorGold);
 
-					if (fMcaDisplayPanel) {
-						if (Param1 == kDGFRunControlTabMCA || Param1 == kDGFRunControlTabCptm) {
-							fMcaDisplayPanel->McaResume();
-						} else {
-							fMcaDisplayPanel->McaPause();
-						}
-					}
+	if (fMcaDisplayPanel) {
+		if (Selection == kDGFRunControlTabMCA || Selection == kDGFRunControlTabCptm) {
+			fMcaDisplayPanel->McaResume();
+		} else {
+			fMcaDisplayPanel->McaPause();
+		}
+	}
 
-					gDGFControlData->UpdateParamsAndFPGAs();
+	gDGFControlData->UpdateParamsAndFPGAs();
 
-					switch (Param1) {
+	switch (Selection) {
 
-						case kDGFRunControlTabSystem:
-                    		if (fSetupPanel == NULL) fSetupPanel = new DGFSetupPanel(fSystemTab);
-							break;
-						case kDGFRunControlTabFiles:
-                    		if (fSetFilesPanel == NULL) fSetFilesPanel = new DGFSetFilesPanel(fFilesTab);
-							break;
-						case kDGFRunControlTabParams:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-                    			if (fParamsPanel == NULL) fParamsPanel = new DGFParamsPanel(fParamsTab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlTabModules:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-                    			if (fInstrumentPanel == NULL) fInstrumentPanel = new DGFInstrumentPanel(fModulesTab);
-								else fInstrumentPanel->InitializeValues(kFALSE);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlTabTrace:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fTraceDisplayPanel == NULL) fTraceDisplayPanel = new DGFTraceDisplayPanel(fTracesTab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlTabUntrigTrace:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fUntrigTracePanel == NULL) fUntrigTracePanel = new DGFUntrigTracePanel(fUntrigTracesTab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlTabOffsets:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fOffsetsPanel == NULL) fOffsetsPanel = new DGFOffsetsPanel(fOffsetsTab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
+		case kDGFRunControlTabSystem:
+			if (fSetupPanel == NULL) fSetupPanel = new DGFSetupPanel(fSystemTab);
+			break;
 
-						case kDGFRunControlTabMCA:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fMcaDisplayPanel == NULL) fMcaDisplayPanel = new DGFMcaDisplayPanel(fMCATab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
+		case kDGFRunControlTabFiles:
+			if (fSetFilesPanel == NULL) fSetFilesPanel = new DGFSetFilesPanel(fFilesTab);
+			break;
 
-						case kDGFRunControlTabTauFit1:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fTauDisplayPanel == NULL) fTauDisplayPanel = new DGFTauDisplayPanel(fTauDisplayTab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-
-						case kDGFRunControlTabTauFit2:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fTauFitPanel == NULL) fTauFitPanel = new DGFTauFitPanel(fTauFitTab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-
-						case kDGFRunControlTabSave:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fSaveModuleSettingsPanel == NULL) fSaveModuleSettingsPanel = new DGFSaveModuleSettingsPanel(fSaveTab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlTabRestore:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fRestoreModuleSettingsPanel == NULL) fRestoreModuleSettingsPanel = new DGFRestoreModuleSettingsPanel(fRestoreTab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlTabCopy:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fCopyModuleSettingsPanel == NULL) fCopyModuleSettingsPanel = new DGFCopyModuleSettingsPanel(fCopyTab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlTabMisc:
-							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fMiscPanel == NULL) fMiscPanel = new DGFMiscPanel(fMiscTab);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlTabCptm:
-							if (fCptmPanel == NULL) fCptmPanel = new DGFCptmPanel(fCptmTab);
-							if (fCptmPanel->GetNofCptmModules() == 0) {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "No CPTM module found", kMBIconStop);
-							} else {
-								fCptmPanel->InitializeValues();
-							}
-							break;
-
-						default:
-							break;
-					}
-					break;
+		case kDGFRunControlTabParams:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fParamsPanel == NULL) fParamsPanel = new DGFParamsPanel(fParamsTab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 			}
 			break;
-			
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionExit:
-					gApplication->Terminate(0);
-					break;
-				default:
-					break;
+
+		case kDGFRunControlTabModules:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fInstrumentPanel == NULL) fInstrumentPanel = new DGFInstrumentPanel(fModulesTab);
+				else fInstrumentPanel->InitializeValues(kFALSE);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabTrace:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fTraceDisplayPanel == NULL) fTraceDisplayPanel = new DGFTraceDisplayPanel(fTracesTab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabUntrigTrace:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fUntrigTracePanel == NULL) fUntrigTracePanel = new DGFUntrigTracePanel(fUntrigTracesTab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabOffsets:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fOffsetsPanel == NULL) fOffsetsPanel = new DGFOffsetsPanel(fOffsetsTab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabMCA:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fMcaDisplayPanel == NULL) fMcaDisplayPanel = new DGFMcaDisplayPanel(fMCATab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabTauFit1:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fTauDisplayPanel == NULL) fTauDisplayPanel = new DGFTauDisplayPanel(fTauDisplayTab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabTauFit2:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fTauFitPanel == NULL) fTauFitPanel = new DGFTauFitPanel(fTauFitTab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabSave:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fSaveModuleSettingsPanel == NULL) fSaveModuleSettingsPanel = new DGFSaveModuleSettingsPanel(fSaveTab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabRestore:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fRestoreModuleSettingsPanel == NULL) fRestoreModuleSettingsPanel = new DGFRestoreModuleSettingsPanel(fRestoreTab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabCopy:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fCopyModuleSettingsPanel == NULL) fCopyModuleSettingsPanel = new DGFCopyModuleSettingsPanel(fCopyTab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabMisc:
+			if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+				if (fMiscPanel == NULL) fMiscPanel = new DGFMiscPanel(fMiscTab);
+			} else {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+			}
+			break;
+
+		case kDGFRunControlTabCptm:
+			if (fCptmPanel == NULL) fCptmPanel = new DGFCptmPanel(fCptmTab);
+			if (fCptmPanel->GetNofCptmModules() == 0) {
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "No CPTM module found", kMBIconStop);
+			} else {
+				fCptmPanel->InitializeValues();
 			}
 			break;
 	}
-	return(kTRUE);
+}
+
+void DGFRunControlPanel::KeyPressed(Int_t FrameId, Int_t Key) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFRunControlPanel::KeyPressed
+// Purpose:        Slot method: handle special keys
+// Arguments:      Int_t FrameId   -- frame issuing this signal
+//                 Int_t Key       -- key code
+// Results:        
+// Exceptions:     
+// Description:    Called if a special (=control) char has been typed
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Key) {
+		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
+			gApplication->Terminate(0);
+			break;
+	}
 }

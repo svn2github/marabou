@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLofKeyBindings.cxx,v 1.2 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbLofKeyBindings.cxx,v 1.3 2008-12-29 13:48:24 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -105,28 +105,44 @@ Bool_t TGMrbLofKeyBindings::HandleKey(Event_t * Event) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t keyIndex;
-	TMrbNamedX * kb;
-	Long_t msgId;
-	Long_t action;
-					
 	if (Event->fType != kGKeyPress) return(kFALSE);
 	
 	if (fParent == NULL) {
-		gMrbLog->Err()	<< "Can't call \"TGMainFrame::ProcessMessage()\" - no parent frame defined" << endl;
+		gMrbLog->Err()	<< "No parent frame defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "HandleKey");
 		return(kFALSE);
 	}
 	
-	keyIndex = (Event->fState << TGMrbLofKeyBindings::kGMrbKeyModifierBit) | Event->fCode;
-	kb = this->FindByIndex(keyIndex, TGMrbLofKeyBindings::kGMrbKeyIndexMask);
+	Int_t keyIndex = (Event->fState << TGMrbLofKeyBindings::kGMrbKeyModifierBit) | Event->fCode;
+	TMrbNamedX * kb = this->FindByIndex(keyIndex, TGMrbLofKeyBindings::kGMrbKeyIndexMask);
 	if (kb) {
-		msgId = MK_MSG((EWidgetMessageTypes) kC_KEY, (EWidgetMessageTypes) 0);
-		action = (Long_t) ((kb->GetIndex() & TGMrbLofKeyBindings::kGMrbKeyActionMask) >> TGMrbLofKeyBindings::kGMrbKeyActionBit);
-		return(((TGMainFrame *) fParent->GetMainFrame())->ProcessMessage(msgId, action, 0));
+		this->KeyPressed(	fParent->GetId(),
+							(Long_t) ((kb->GetIndex() & TGMrbLofKeyBindings::kGMrbKeyActionMask) >> TGMrbLofKeyBindings::kGMrbKeyActionBit));
+		return(kTRUE);
 	} else {
 		gMrbLog->Err()	<< "Key code \"0x" << setbase(16) << Event->fCode << setbase(10) << "\" not bound" << endl;
 		gMrbLog->Flush(this->ClassName(), "HandleKey");
 		return(kFALSE);
 	}
+}
+
+
+void TGMrbLofKeyBindings::KeyPressed(Int_t FrameId, Int_t Key) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLofKeyBindings::KeyPressed
+// Purpose:        Signal handler
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t Kay        -- key code
+// Results:        --
+// Exceptions:     
+// Description:    Emits signal on "key pressed" 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Long_t args[2];
+
+	args[0] = FrameId;
+	args[1] = Key;
+	this->Emit("KeyPressed(Int_t, Int_t)", args);
 }

@@ -8,7 +8,7 @@
 // Class:          DGFEditUserPsaCSRPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFEditUserPsaCSRPanel.h,v 1.4 2008-10-14 17:27:05 Marabou Exp $       
+// Revision:       $Id: DGFEditUserPsaCSRPanel.h,v 1.5 2008-12-29 13:48:24 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -26,7 +26,6 @@
 
 #include "TGMrbTextButton.h"
 #include "TGMrbCheckButton.h"
-#include "TGMrbLofKeyBindings.h"
 
 #include "DGFControlCommon.h"
 
@@ -64,9 +63,6 @@ class DGFEditUserPsaCSRPanel : public TGMainFrame {
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditUserPsaCSRPanel() { fHeap.Delete(); };
 
-		inline virtual void CloseWindow() { TGMainFrame::CloseWindow(); };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
-
 		void PerformAction(Int_t FrameId, Int_t Selection); 	// slot method
 
 	protected:
@@ -77,8 +73,6 @@ class DGFEditUserPsaCSRPanel : public TGMainFrame {
 		TGTextEntry * fEntry;						// entry to be editied
 
 		TMrbLofNamedX fLofButtons;					// list of buttons
-
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
 
 	ClassDef(DGFEditUserPsaCSRPanel, 0)		// [DGFControl] Edit UserPSA control register
 };

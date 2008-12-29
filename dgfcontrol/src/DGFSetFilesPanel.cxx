@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetFilesPanel.cxx,v 1.9 2008-10-14 10:22:29 Marabou Exp $       
+// Revision:       $Id: DGFSetFilesPanel.cxx,v 1.10 2008-12-29 13:48:25 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -331,3 +331,4 @@ void DGFSetFilesPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 			break;
 	}
 }
+		

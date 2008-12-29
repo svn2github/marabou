@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.17 2008-10-14 10:22:29 Marabou Exp $       
+// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.18 2008-12-29 13:48:25 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -378,4 +378,3 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 
 	return(kTRUE);
 }
-		

@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.21 2008-10-14 17:27:05 Marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.22 2008-12-29 13:48:24 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -30,7 +30,6 @@
 #include "TGMrbLabelEntry.h"
 #include "TGMrbLabelCombo.h"
 #include "TGMrbMacroBrowser.h"
-#include "TGMrbLofKeyBindings.h"
 
 #include "DGFModule.h"
 #include "DGFControlCommon.h"

@@ -8,7 +8,7 @@
 // Class:          TGMrbLofKeyBindings          -- key bindings
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLofKeyBindings.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLofKeyBindings.h,v 1.6 2008-12-29 13:48:24 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -18,6 +18,8 @@
 #include "TGFrame.h"
 #include "WidgetMessageTypes.h"
 #include "TMrbLofNamedX.h"
+
+#include "RQ_OBJECT.h"
 
 enum				{	kC_KEY					= kC_USER + 100 	};	// to be used for ProcessMessage()
 		
@@ -30,6 +32,8 @@ enum				{	kC_KEY					= kC_USER + 100 	};	// to be used for ProcessMessage()
 //////////////////////////////////////////////////////////////////////////////
 
 class TGMrbLofKeyBindings : public TMrbLofNamedX {
+
+	RQ_OBJECT("TGMrbLofKeyBindings")
 
 	public:
 		// global status bits
@@ -66,6 +70,8 @@ class TGMrbLofKeyBindings : public TMrbLofNamedX {
 		Bool_t BindKey(const Char_t * Key, EGMrbKeyAction Action = TGMrbLofKeyBindings::kGMrbKeyActionAllDone);
 		Bool_t HandleKey(Event_t * Event);
 		
+		void KeyPressed(Int_t FrameId, Int_t Key);		 	//*SIGNAL*
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:

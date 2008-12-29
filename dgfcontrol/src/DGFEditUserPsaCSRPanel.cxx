@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditUserPsaCSRPanel.cxx,v 1.3 2008-10-14 10:22:29 Marabou Exp $       
+// Revision:       $Id: DGFEditUserPsaCSRPanel.cxx,v 1.4 2008-12-29 13:48:25 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -130,10 +130,6 @@ DGFEditUserPsaCSRPanel::DGFEditUserPsaCSRPanel(const TGWindow * Window, TGTextEn
 	this->AddFrame(fButtonFrame, buttonGC->LH());
 	((TGMrbButtonFrame *) fButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "PerformAction(Int_t, Int_t)");
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
 	SetWindowName("DGFControl: Edit UserPSA CSR");
 
 	MapSubwindows();

@@ -8,7 +8,7 @@
 // Class:          DGFEditRunTaskPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFEditRunTaskPanel.h,v 1.4 2008-10-14 17:27:05 Marabou Exp $       
+// Revision:       $Id: DGFEditRunTaskPanel.h,v 1.5 2008-12-29 13:48:24 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -26,7 +26,6 @@
 
 #include "TGMrbTextButton.h"
 #include "TGMrbRadioButton.h"
-#include "TGMrbLofKeyBindings.h"
 
 #include "DGFControlCommon.h"
 
@@ -64,9 +63,6 @@ class DGFEditRunTaskPanel : public TGMainFrame {
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditRunTaskPanel() { fHeap.Delete(); };
 
-		inline virtual void CloseWindow() { TGMainFrame::CloseWindow(); };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
-
 		void PerformAction(Int_t FrameId, Int_t Selection); 	// slot method
 
 	protected:
@@ -78,8 +74,6 @@ class DGFEditRunTaskPanel : public TGMainFrame {
 
 		TMrbLofNamedX fLofRunTaskBits;				// list of CSRA bits
 		TMrbLofNamedX fLofButtons;					// list of buttons
-
-		TGMrbLofKeyBindings fKeyBindings; 			// key bindings
 
 	ClassDef(DGFEditRunTaskPanel, 0)		// [DGFControl] Edit RUNTASK parameter
 };

@@ -8,7 +8,7 @@
 // Class:          DGFRestoreModuleSettingsPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.h,v 1.10 2008-10-14 10:22:29 Marabou Exp $       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.h,v 1.11 2008-12-29 13:48:25 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -34,7 +34,6 @@ namespace std {} using namespace std;
 #include "TGMrbPictureButton.h"
 #include "TGMrbLabelEntry.h"
 #include "TGMrbFocusList.h"
-#include "TGMrbLofKeyBindings.h"
 
 #include "DGFControlCommon.h"
 
