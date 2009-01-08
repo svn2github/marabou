@@ -26,17 +26,17 @@ enum EM2L_MessageType {
 
 const SMrbNamedXShort kMrbLofMessageTypes[] =
 	{
-		{kM2L_MESS_BYE, 				"terminate|died"},
-		{kM2L_MESS_ACK,					"acknowledge"},
+		{kM2L_MESS_BYE, 					"terminate|died"},
+		{kM2L_MESS_ACK,						"acknowledge"},
 		{kM2L_MESS_ACK_OK,					"ok, no message text"},
 		{kM2L_MESS_ACK_MESSAGE,				"ok + text"},
 		{kM2L_MESS_ACK_WARNING,				"warning"},
 		{kM2L_MESS_ACK_ERROR,				"error"},
-		{kM2L_MESS_VME_REQ,				"vme request"},
+		{kM2L_MESS_VME_REQ,					"vme request"},
 		{kM2L_MESS_VME_CONNECT,				"connect to module|return module handle"},
 		{kM2L_MESS_VME_EXEC_FUNCTION,		"exec function|return function results"},
-		{kM2L_MESS_EXEC_PROG,			"execute program"},
-		{0, 							NULL}
+		{kM2L_MESS_EXEC_PROG,				"execute program"},
+		{0, 								NULL}
 	};
 
 enum EM2L_FunctionType {
@@ -105,6 +105,16 @@ enum EM2L_FunctionType {
 	kM2L_FCT_SIS_3302_GET_SINGLE_EVENT,
 	kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,
 	kM2L_FCT_SIS_3302_START_RUN,
+
+	kM2L_FCT_VULOM_TB			=	0x300,					// vulom3 / triggerbox
+	kM2L_FCT_VULOM_TB_READ_SCALER,
+	kM2L_FCT_VULOM_TB_READ_CHANNEL,
+	kM2L_FCT_VULOM_TB_ENABLE_CHANNEL,
+	kM2L_FCT_VULOM_TB_DISABLE_CHANNEL,
+	kM2L_FCT_VULOM_TB_SET_ENABLE_MASK,
+	kM2L_FCT_VULOM_TB_GET_ENABLE_MASK,
+	kM2L_FCT_VULOM_TB_SET_SCALE_DOWN,
+	kM2L_FCT_VULOM_TB_GET_SCALE_DOWN
 };
 
 const SMrbNamedXShort kMrbLofFunctionTypes[] =
@@ -174,6 +184,15 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_SIS_3302_GET_SINGLE_EVENT,			"get single event"},
 		{kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,				"accu histogram"},
 		{kM2L_FCT_SIS_3302_START_RUN,					"start run"},
+		{kM2L_FCT_VULOM_TB, 							"exec function (VULOM3 / TRIGBOX)"},
+		{kM2L_FCT_VULOM_TB_READ_SCALER, 				"read scaler"},
+		{kM2L_FCT_VULOM_TB_READ_CHANNEL,				"read channel"},
+		{kM2L_FCT_VULOM_TB_ENABLE_CHANNEL,				"enable channel"},
+		{kM2L_FCT_VULOM_TB_DISABLE_CHANNEL, 			"disable channel"},
+		{kM2L_FCT_VULOM_TB_SET_ENABLE_MASK, 			"set enable mask"},
+		{kM2L_FCT_VULOM_TB_GET_ENABLE_MASK, 			"get enable mask"},
+		{kM2L_FCT_VULOM_TB_SET_SCALE_DOWN,				"set scale down"},
+		{kM2L_FCT_VULOM_TB_GET_SCALE_DOWN,				"get scale down"},
 		{0, 											NULL}
 	};
 #endif
