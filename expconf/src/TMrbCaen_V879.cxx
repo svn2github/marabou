@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V879.cxx,v 1.8 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V879.cxx,v 1.9 2009-01-08 12:16:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -79,7 +79,6 @@ TMrbCaen_V879::TMrbCaen_V879(const Char_t * ModuleName, UInt_t BaseAddr, Bool_t 
 	TString codeFile;
 	UInt_t mTypeBits;
 	TString mType;
-	TMrbString title;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
@@ -93,9 +92,7 @@ TMrbCaen_V879::TMrbCaen_V879(const Char_t * ModuleName, UInt_t BaseAddr, Bool_t 
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
 		} else {
-			title = "CAEN V879 ";
-			title += IsTac ? "TAC" : "ADC";
-			title += " x 12 bit";
+			TString title = Form("CAEN V879 %s 32 x 12 bit", (IsTac ? "TAC" : "ADC"));
 			SetTitle(title.Data()); 	// store module type
 			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode;
 			if (IsTac)	mTypeBits |= TMrbConfig::kModuleTdc;

@@ -8,7 +8,7 @@
 // Class:          VMEMainFrame
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: VMEMainFrame.h,v 1.4 2008-10-18 17:09:14 Marabou Exp $       
+// Revision:       $Id: VMEMainFrame.h,v 1.5 2009-01-08 12:16:23 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -73,11 +73,11 @@ class VMEMainFrame : public TGMainFrame {
 		virtual ~VMEMainFrame() { fHeap.Delete(); };
 
 		virtual void CloseWindow();
-
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		
 		void MenuSelect(Int_t Selection);			// slot methods
 		void TabChanged(Int_t Selection);
+		void KeyPressed(Int_t FrameId, Int_t Action);
 
 	protected:
 		void PopupMessageViewer();

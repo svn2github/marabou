@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEMainFrame.cxx,v 1.5 2008-10-19 09:14:35 Marabou Exp $       
+// Revision:       $Id: VMEMainFrame.cxx,v 1.6 2009-01-08 12:16:23 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -187,6 +187,11 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 					this->PopupMessageViewer();
 	}
 
+//	key bindings
+	fKeyBindings.SetParent(this);
+	fKeyBindings.BindKey("Ctrl-q", TGMrbLofKeyBindings::kGMrbKeyActionExit);
+	fKeyBindings.Connect("KeyPressed(Int_t, Int_t)", this->ClassName(), this, "KeyPressed(Int_t, Int_t)");
+	
 	MapSubwindows();
 
 	Resize(GetDefaultSize());
@@ -329,4 +334,24 @@ void VMEMainFrame::TabChanged(Int_t Selection) {
 			if (fCaen785Panel == NULL) fCaen785Panel = new VMECaen785Panel(fCaen785Tab);
 			break;
 	}			
+}
+
+void VMEMainFrame::KeyPressed(Int_t FrameId, Int_t Key) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMEMainFrame::KeyPressed
+// Purpose:        Slot method: handle special keys
+// Arguments:      Int_t FrameId   -- frame issuing this signal
+//                 Int_t Key       -- key code
+// Results:        
+// Exceptions:     
+// Description:    Called if a special (=control) char has been typed
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Key) {
+		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
+			gApplication->Terminate(0);
+			break;
+	}
 }

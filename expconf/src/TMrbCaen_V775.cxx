@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V775.cxx,v 1.16 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V775.cxx,v 1.17 2009-01-08 12:16:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -79,7 +79,6 @@ TMrbCaen_V775::TMrbCaen_V775(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 	TString codeFile;
 	UInt_t mTypeBits;
 	TString mType;
-	TMrbString title;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
@@ -98,9 +97,7 @@ TMrbCaen_V775::TMrbCaen_V775(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
 		} else {
-			title = "CAEN V775 TDC ";
-			title += NofChannels;		//16 or 32 channels
-			title += " x 12 bit";
+			TString title = Form("CAEN V775 TDC %d  x 12 bit", NofChannels);	//16 or 32 channels
 			SetTitle(title.Data()); 	// store module type
 			mTypeBits = TMrbConfig::kModuleVME |
 						TMrbConfig::kModuleListMode |

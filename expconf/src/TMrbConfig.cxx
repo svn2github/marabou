@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.167 2008-12-12 13:09:57 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.168 2009-01-08 12:16:23 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1521,7 +1521,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 
 	TString templatePath;
 	TString rdoTemplateFile;
-	TMrbString iniTag;
+	TString iniTag;
 	TString prefix;
 
 	TString pos;
