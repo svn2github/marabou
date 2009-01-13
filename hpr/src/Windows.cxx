@@ -440,6 +440,7 @@ void FitHist::RemoveAllCuts(){
    fAllCuts->Clear();
    if (hp) 
      hp->HandleRemoveAllCuts();
+   cHist->Modified();
    cHist->Update();
    
 //   gObjectTable->Print();
