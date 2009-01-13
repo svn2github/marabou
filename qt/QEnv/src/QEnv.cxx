@@ -1,14 +1,17 @@
-//_________________________________________________________[QT IMPLEMENTATION]
+//__________________________________________________________[QT IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv.cxx
-// Purpose:        QT utilities:
-//                 A class handling environment files used with ROOT (like TEnv)
-// Description:    Implements class methods to manage ROOT's TEnv files
-// Keywords:
-// Author:         R. Lutter
-// Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: QEnv.cxx,v 1.2 2009-01-13 08:15:34 Rudolf.Lutter Exp $       
-// Date:           
+//! \file
+//! \verbatim
+//! Name:           QEnv.cxx
+//! Purpose:        QT utilities:
+//!                 A class handling environment files used with ROOT (like TEnv)
+//! Description:    Implements class methods to manage ROOT's TEnv files
+//! Keywords:
+//! Author:         R. Lutter
+//! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+//! Revision:       $Id: QEnv.cxx,v 1.3 2009-01-13 13:31:24 Rudolf.Lutter Exp $       
+//! Date:           $Date: 2009-01-13 13:31:24 $
+//! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
 #include <sstream>
@@ -23,33 +26,60 @@ using namespace std;
 
 static QEnvRec emptyRec;
 
+//___________________________________________________________________[QT CLASS]
+//////////////////////////////////////////////////////////////////////////////
+//! \class QEnvRec QEnv.h "inc/QEnv.h"
+//! \verbatim
+//! Name:           QEnvRec::QEnvRec
+//! Purpose:        Instantiate a record to be used in QEnv database
+//! Arguments:      QString & key       -- key
+//!                 QString & value     -- value
+//! Description:    Contains a single entry in QEnv database
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 QEnvRec::QEnvRec(QString & key, QString & value) {
-//__________________________________________________________________[QT CLASS]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnvRec::QEnvRec
-// Purpose:        Instantiate a record to be used in QEnv database
-// Arguments:      QString & key       -- key
-//                 QString & value     -- value
-// Description:    Contains a single entry in QEnv database
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	qKey = key;
 	qValue = value;
 	qRecType = QEnvRec::kString;		// default: string
 };
 
+//___________________________________________________________________[QT CLASS]
+//////////////////////////////////////////////////////////////////////////////
+//! \class QEnv QEnv.h "inc/QEnv.h"
+//! \verbatim
+//! Name:           QEnv::QEnv
+//! Purpose:        Instantiate QEnv database
+//! Arguments:      const char * fileName  -- name of env file
+//!                 bool verbose           -- turn verbose flag on/off
+//! Description:    Main QEnv object
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
+QEnv::QEnv(const char * fileName, bool verbose) {
+
+	qVerbose = verbose;
+	if (this->readFile(fileName) > 0) qEnvFile = fileName;
+	qCurIndex = -1;
+}
+
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnvRec::setType
+//! Purpose:        Set entry type according to data type
+//! Arguments:      QString & value     -- value
+//! Results:        -- 
+//! Description:    Checks if data type is int, double, or string.
+//!                 Defaults to string.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 void QEnvRec::setType(QString & value) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnvRec::setType
-// Purpose:        Set entry type according to data type
-// Arguments:      QString & value     -- value
-// Results:        -- 
-// Description:    Checks if data type is int, double, or string.
-//                 Defaults to string.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	QString v = value;
 	v += " 0";									// append "<space>0"
@@ -64,17 +94,20 @@ void QEnvRec::setType(QString & value) {
 	qRecType = QEnvRec::kString;				// didn't work: take string as default
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnvRec::setType
+//! Purpose:        Set entry type according to data type
+//! Arguments:      QString & value     -- value
+//! Results:        -- 
+//! Description:    Checks if data type is int, double, or string.
+//!                 Defaults to string.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 void QEnvRec::print(int recNo, int lkey) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnvRec::setType
-// Purpose:        Set entry type according to data type
-// Arguments:      QString & value     -- value
-// Results:        -- 
-// Description:    Checks if data type is int, double, or string.
-//                 Defaults to string.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	QString type;
 	switch (this->getType()) {
@@ -91,31 +124,21 @@ void QEnvRec::print(int recNo, int lkey) {
 	}
 }
 
-QEnv::QEnv(const char * fileName, bool verbose) {
-//__________________________________________________________________[QT CLASS]
+//__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::QEnv
-// Purpose:        Instantiate QEnv database
-// Arguments:      const char * fileName  -- name of env file
-//                 bool verbose           -- turn verbose flag on/off
-// Description:    Main QEnv object
-// Keywords:
+//! \verbatim
+//! Name:           QEnv::readFile
+//! Purpose:        Read env data from file
+//! Arguments:      const char * fileName   -- name of env file
+//! Results:        int nofEntries          -- number of entries read
+//!                                            or -1 if error
+//! Description:    Reads env data line by line and builds database
+//!                 Call this method more than once to combine different databases.
+//! Keywords:
+//! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
-	qVerbose = verbose;
-	if (this->readFile(fileName) > 0) qEnvFile = fileName;
-}
 
 int QEnv::readFile(const char * fileName) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::readFile
-// Purpose:        Read env data from file
-// Arguments:      const char * fileName   -- name of env file
-// Results:        int nofEntries          -- number of entries read
-//                                            or -1 if error
-// Description:    Reads env dat line by line and builds database
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	QFile ifile(fileName);
 	if (!ifile.open(QIODevice::ReadOnly)) { 		// try to open file for input
@@ -140,28 +163,32 @@ int QEnv::readFile(const char * fileName) {
 		} else {
 			v = env[1].simplified();				// no more ":"s - we take 2nd list element as <value>
 		}
-		QEnvRec * e = new QEnvRec(k, v);				QEnvRec & lookup(const char * name);
-	// create a new database record
+		QEnvRec * e = new QEnvRec(k, v);			// create a new database record
 		e->setType(v);								// determine data type and set it
 		qEnvList.append(*e);						// add this record to list
 		nofEntries++;								// count entries
 	}
 	ifile.close();									// done.
+	qCurIndex = -1; 								// iteration has to be restarted
+
 	cout << "[QEnv::readFile(): " << nofEntries << " entries read from file " << fileName << "]" << endl;
 	return nofEntries;
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::writeFile
+//! Purpose:        Write env data to file
+//! Arguments:      const char * fileName   -- name of env file
+//! Results:        int nofEntries          -- number of entries written
+//!                                            or -1 if error
+//! Description:    Writes database to file
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 int QEnv::writeFile(const char * fileName) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::writeFile
-// Purpose:        Write env data to file
-// Arguments:      const char * fileName   -- name of env file
-// Results:        int nofEntries          -- number of entries written
-//                                            or -1 if error
-// Description:    Writes database to file
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	QString fn; 									// if there is no filename, take the initial one
 	if (*fileName == '\0') fn = qEnvFile; else fn = fileName;
@@ -187,22 +214,27 @@ int QEnv::writeFile(const char * fileName) {
 		nofEntries++;								// count this entry
 	}
 	ofile.close();									// all done.
+	qCurIndex = -1; 								// iteration has to be restarted
+
 	cout << "[QEnv::writeFile(): " << nofEntries << " entries written to file " << fn.toAscii().data() << "]" << endl;
 	return nofEntries;
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::setValue
+//! Purpose:        Set or create env entry from integer
+//! Arguments:      const char * key   -- key name
+//!                 int value          -- value
+//! Results:        -- 
+//! Description:    If entry already exists changes its value.
+//!                 Otherwise creates a new entry.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 void QEnv::setValue(const char * key, int value) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::setValue
-// Purpose:        Set or create env entry from integer
-// Arguments:      const char * key   -- key name
-//                 int value          -- value
-// Results:        -- 
-// Description:    If entry already exists changes its value.
-//                 Otherwise creates a new entry.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	int n = this->find(key);						// check if key already exists
 	if (n == -1) {
@@ -210,7 +242,8 @@ void QEnv::setValue(const char * key, int value) {
 		v.setNum(value);							// convert int value to string
 		QString k = key;							// define key name
 		QEnvRec * e = new QEnvRec(k, v);			// create new database record
-		e->setType(QEnvRec::kInteger); 			// type is integer
+		qCurIndex = -1; 							// iteration has to be restarted
+		e->setType(QEnvRec::kInteger); 				// type is integer
 		qEnvList.append(*e);						// add entry to list
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Creating entry \"" << key << "\", value = " << value << endl;
 	} else {
@@ -225,18 +258,21 @@ void QEnv::setValue(const char * key, int value) {
 	}
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::setValue
+//! Purpose:        Set or create env entry from double
+//! Arguments:      const char * key   -- key name
+//!                 double value       -- value
+//! Results:        -- 
+//! Description:    If entry already exists changes its value.
+//!                 Otherwise creates a new entry.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 void QEnv::setValue(const char * key, double value) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::setValue
-// Purpose:        Set or create env entry from double
-// Arguments:      const char * key   -- key name
-//                 double value       -- value
-// Results:        -- 
-// Description:    If entry already exists changes its value.
-//                 Otherwise creates a new entry.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	int n = this->find(key);
 	if (n == -1) {
@@ -245,6 +281,7 @@ void QEnv::setValue(const char * key, double value) {
 		QString k = key;
 		QEnvRec * e = new QEnvRec(k, v);
 		e->setType(QEnvRec::kDouble);
+		qCurIndex = -1; 							// iteration has to be restarted
 		qEnvList.append(*e);
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Creating entry \"" << key << "\", value = " << value << endl;
 	} else {
@@ -261,18 +298,21 @@ void QEnv::setValue(const char * key, double value) {
 }
 
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::setValue
+//! Purpose:        Set or create env entry from string
+//! Arguments:      const char * key      -- key name
+//!                 const char *  value   -- value
+//! Results:        -- 
+//! Description:    If entry already exists changes its value.
+//!                 Otherwise creates a new entry.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 void QEnv::setValue(const char * key, const char * value) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::setValue
-// Purpose:        Set or create env entry from string
-// Arguments:      const char * key      -- key name
-//                 const char *  value   -- value
-// Results:        -- 
-// Description:    If entry already exists changes its value.
-//                 Otherwise creates a new entry.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	int n = this->find(key);
 	if (n == -1) {
@@ -280,6 +320,7 @@ void QEnv::setValue(const char * key, const char * value) {
 		QString v = value;
 		QEnvRec * e = new QEnvRec(k, v);
 		e->setType(QEnvRec::kString);
+		qCurIndex = -1; 							// iteration has to be restarted
 		qEnvList.append(*e);
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Creating entry \"" << key << "\", value = " << value << endl;
 	} else {
@@ -295,18 +336,21 @@ void QEnv::setValue(const char * key, const char * value) {
 	}
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::getValue
+//! Purpose:        Get value of given entry
+//! Arguments:      const char * key      -- key name
+//!                 int defVal            -- default value
+//! Results:        int result            -- resulting value           
+//! Description:    If entry exists *and* its type is int returns value.
+//!                 Otherwise returns defVal.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 int QEnv::getValue(const char * key, int defVal) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::getValue
-// Purpose:        Get value of given entry
-// Arguments:      const char * key      -- key name
-//                 int defVal            -- default value
-// Results:        int result            -- resulting value           
-// Description:    If entry exists *and* its type is int returns value.
-//                 Otherwise returns defVal.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	int n = this->find(key);							// check if key is present
 	if (n == -1) return defVal; 						// not found: we take default
@@ -320,18 +364,21 @@ int QEnv::getValue(const char * key, int defVal) {
 	}
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::getValue
+//! Purpose:        Get value of given entry
+//! Arguments:      const char * key      -- key name
+//!                 double defVal         -- default value
+//! Results:        double result         -- resulting value           
+//! Description:    If entry exists *and* its type is double returns value.
+//!                 Otherwise returns defVal.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 double QEnv::getValue(const char * key, double defVal) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::getValue
-// Purpose:        Get value of given entry
-// Arguments:      const char * key      -- key name
-//                 double defVal         -- default value
-// Results:        double result         -- resulting value           
-// Description:    If entry exists *and* its type is double returns value.
-//                 Otherwise returns defVal.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	int n = this->find(key);
 	if (n == -1) return defVal;
@@ -345,36 +392,42 @@ double QEnv::getValue(const char * key, double defVal) {
 	}
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::getValue
+//! Purpose:        Get value of given entry
+//! Arguments:      const char * key      -- key name
+//!                 const char * defVal   -- default value
+//! Results:        const char * result   -- resulting value           
+//! Description:    If entry exists returns value (even if type doesn't match).
+//!                 Otherwise returns defVal.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 const char * QEnv::getValue(const char * key, const char * defVal) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::getValue
-// Purpose:        Get value of given entry
-// Arguments:      const char * key      -- key name
-//                 const char * defVal   -- default value
-// Results:        const char * result   -- resulting value           
-// Description:    If entry exists returns value (even if type doesn't match).
-//                 Otherwise returns defVal.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	int n = this->find(key);
 	if (n == -1) return defVal;
 	return qEnvList[n].getValue().toAscii().data();
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::lookup
+//! Purpose:        Search for a given key
+//! Arguments:      const char * key    -- name of key
+//! Results:        QEnvRec & record    -- database record
+//! Description:    Searches for a given entry. Returns record from database
+//!                 if found, an empty record otherwise.
+//!                 Can be tested by use of QEnvRec::isEmpty().
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 QEnvRec & QEnv::lookup(const char * key) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::lookup
-// Purpose:        Search for a given key
-// Arguments:      const char * key    -- name of key
-// Results:        QEnvRec & record    -- database record
-// Description:    Searches for a given entry. Returns record from database
-//                 if found, an empty record otherwise.
-//                 Can be tested by use of QEnvRec::isEmpty().
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	for (int i = 0; i < qEnvList.size(); i++) {
 		if (qEnvList[i].getKey() == key) return qEnvList[i];
@@ -382,17 +435,65 @@ QEnvRec & QEnv::lookup(const char * key) {
 	return emptyRec;
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::first
+//! Purpose:        Start iteration
+//! Arguments:      --
+//! Results:        QEnvRec & record     -- first record in database
+//! Description:    Starts iteration and returns first record in database
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
+QEnvRec & QEnv::first() {
+
+	if (qEnvList.size() == 0) return emptyRec;
+	qCurIndex = 0;
+	return qEnvList[qCurIndex];
+}
+
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::next
+//! Purpose:        Return next element in list
+//! Arguments:      --
+//! Results:        QEnvRec & record     -- next record in database
+//! Description:    Returns first record in database. Caller has to test
+//!                 if result is "empty" record.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
+QEnvRec & QEnv::next() {
+
+	if (qCurIndex == -1) {
+		cerr << "QEnv::next(): Iteration not initialized - call QEnv::first()" << endl;
+		return emptyRec;
+	}
+	if (++qCurIndex >= qEnvList.size()) {
+		qCurIndex = -1;
+		return emptyRec;
+	}
+	return qEnvList[qCurIndex];
+}
+
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::find
+//! Purpose:        Find entry
+//! Arguments:      const char * key    -- name of key
+//! Results:        int index           -- index of key in database
+//!                                        or -1 if not found      
+//! Description:    Searches for a given entry
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 int QEnv::find(const char * key) {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::find
-// Purpose:        Find entry
-// Arguments:      const char * key    -- name of key
-// Results:        int index           -- index of key in database
-//                                        or -1 if not found      
-// Description:    Searches for a given entry
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	for (int i = 0; i < qEnvList.size(); i++) {
 		if (qEnvList[i].getKey() == key) return i;
@@ -400,16 +501,19 @@ int QEnv::find(const char * key) {
 	return -1;
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::print
+//! Purpose:        Print entries
+//! Arguments:      --
+//! Results:        --      
+//! Description:    Prints all entries of QEnv database.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
 void QEnv::print() {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::print
-// Purpose:        Print entries
-// Arguments:      --
-// Results:        --      
-// Description:    Prints all entries of QEnv database.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	int lkey = this->getKeyLength();
 	cout << endl << "Environment read from file " << qEnvFile.toAscii().data() << ":" << endl;
@@ -423,16 +527,19 @@ void QEnv::print() {
 	cout << endl;
 }
 
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::getKeyLength                                      
+//! Purpose:        Calculate length of key names                           
+//! Arguments:      --                                                      
+//! Results:        int lkey           -- length of longest key name        
+//! Description:    Calcuates longest length of key                            
+//! Keywords: 
+//! \endverbatim                                                              
+//////////////////////////////////////////////////////////////////////////////
+
 int QEnv::getKeyLength() {
-//_________________________________________________________________[QT METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv::getKeyLength
-// Purpose:        Calculate length of key names
-// Arguments:      --
-// Results:        int lkey           -- length of longest key name
-// Description:    Calcuates late length of ke
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 	int lkey = 0;
 	for (int i = 0; i < qEnvList.size(); i++) {

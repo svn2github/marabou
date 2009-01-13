@@ -3,14 +3,17 @@
 
 //__________________________________________________[QT CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           QEnv.h
-// Purpose:        Define utilities to be used with QT
-// Class:          QEnv    -- an envirmonent manager like ROOT's TEnv
-// Description:    Common class definitions to be used with QT
-// Author:         R. Lutter
-// Revision:       $Id: QEnv.h,v 1.2 2009-01-13 08:15:34 Rudolf.Lutter Exp $       
-// Date:           
-// Keywords:
+//! \file
+//! \verbatim
+//! Name:           QEnv.h
+//! Purpose:        Define utilities to be used with QT
+//! Class:          QEnv    -- an envirmonent manager like ROOT's TEnv
+//! Description:    Common class definitions to be used with QT
+//! Author:         R. Lutter
+//! Revision:       $Id: QEnv.h,v 1.3 2009-01-13 13:31:24 Rudolf.Lutter Exp $       
+//! Date:           
+//! Keywords:
+//! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -86,6 +89,9 @@ class QEnv : public QObject {
 		inline void setVerbose(bool verbose = TRUE) { qVerbose = verbose; };	// turn verbosity on/off
 		inline bool isVerbose() { return qVerbose; };							// check if verbose
 
+		QEnvRec & first();													// start iteration
+		QEnvRec & next();													// return next element in database
+
 	protected:
 		int find(const char * key); 										// [internal] find entry, return index
 		int getKeyLength(); 												// calculate length of longest key name
@@ -94,6 +100,7 @@ class QEnv : public QObject {
 		bool qVerbose;
 		QString qEnvFile;
 		QList<QEnvRec> qEnvList;
+		int qCurIndex;
 };
 
 #endif
