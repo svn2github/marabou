@@ -503,14 +503,41 @@ Double_t TSplineX::GetArrowLength(Double_t dist, Double_t alength,Double_t aangl
 }
 //____________________________________________________________________________________
 
-TSplineX::TSplineX()
+TSplineX::TSplineX():
+     fShapeFactorList ( NULL) 
+   , fControlPointList ( NULL)
+   , fNofControlPoints( 0)
+   , fNpoints( 0)         
+   , fComputeDone ( kFALSE)     
+   , fX( 0)               
+   , fY( 0)               
+   , fCPDrawn ( kFALSE)         
+   , fMStyle( 0)          
+   , fMSize( 0)           
+   , fRailL ( NULL)
+   , fRailR ( NULL)          
+   , fArrowAtStart ( NULL)  
+   , fArrowAtEnd ( NULL)    
+   , fPrec( 0)
+   , fClosed ( kFALSE)
+   , fRailwaylike( 0)
+   , fRailwayGage( 0)
+   , fFilledLength( 0)    
+   , fEmptyLength( 0)     
+   , fLineStyle( 0)
+   , fLineWidth( 0)
+   , fLineColor( 0)
+   , fParallelFill( 0)
+   , fPaintArrowAtStart ( kFALSE)
+   , fPaintArrowAtEnd ( kFALSE)
+   , fArrowFill( 0)
+   , fArrowLength( 0)
+   , fArrowAngle( 0)
+   , fArrowIndentAngle( 0)
+   , fRatioXY( 0)
+   , fTextList ( NULL)
 {
    cout << "TSplineX: def ctor npoints " << GetLastPoint() + 1 << " " << endl;
-   fControlPointList = 0;
-   fShapeFactorList = 0;
-   fComputeDone = kFALSE;
-   fArrowAtStart = NULL;
-   fArrowAtEnd   = NULL;
 //   SetName("TSplineX");
 
 }
@@ -518,6 +545,40 @@ TSplineX::TSplineX()
 
 TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
          Float_t *sf, Float_t prec, Bool_t closed)
+
+    : fShapeFactorList ( NULL) 
+   , fControlPointList ( NULL)
+   , fNofControlPoints( 0)
+   , fNpoints( 0)         
+   , fComputeDone ( kFALSE)     
+   , fX( 0)               
+   , fY( 0)               
+   , fCPDrawn ( kFALSE)         
+   , fMStyle( 24)          
+   , fMSize( 2)           
+   , fRailL ( NULL)
+   , fRailR ( NULL)          
+   , fArrowAtStart ( NULL)  
+   , fArrowAtEnd ( NULL)    
+   , fPrec(prec)
+   , fClosed (closed)
+   , fRailwaylike( 0)
+   , fRailwayGage( 0)
+   , fFilledLength( 0)    
+   , fEmptyLength( 0)     
+   , fLineStyle( 1)
+   , fLineWidth( 2)
+   , fLineColor( 1)
+   , fParallelFill( 0)
+   , fPaintArrowAtStart ( kFALSE)
+   , fPaintArrowAtEnd ( kFALSE)
+   , fArrowFill( 0)
+   , fArrowLength( 10)
+   , fArrowAngle( 30)
+   , fArrowIndentAngle( 15)
+   , fRatioXY( 0)
+   , fTextList ( NULL)
+
 {
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*TSplineX constructor-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 //*-*                          ===================
@@ -526,6 +587,7 @@ TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
 // calculated for the resulting smooth curve.
 // The controlpoints of TSplineX are stored in its TGraph parent.
 //
+/*
    fControlPointList = 0;
    fShapeFactorList = 0;
    fPrec = prec;
@@ -558,6 +620,7 @@ TSplineX::TSplineX(Int_t npoints, Double_t *x, Double_t *y,
    fArrowAngle  = 30;
    fArrowIndentAngle = 15;
    fTextList = NULL;
+*/
 	Double_t ww = (Double_t)gPad->GetWw();
 	Double_t wh = (Double_t)gPad->GetWh();
 	Double_t pxrange = gPad->GetAbsWNDC()*ww;
@@ -1810,12 +1873,11 @@ void TSplineX::SetArrowFill(Bool_t filled)
 // as a TGraph
 //
 ControlGraph::ControlGraph (Int_t npoints, Double_t*  x, Double_t* y) :
-              TGraph(npoints, x, y) {
-   fParent = NULL;
-   fSelectedX = 0;
-   fSelectedY = 0;
-   fSelectedPoint = -1;
-   fSelectedShapeFactor = -1;
+              TGraph(npoints, x, y),
+              fParent(0), fShapeFactors(0), fSelectedPoint (-1), fSelectedX(0),  fSelectedY(0),
+              fSelectedShapeFactor(-1),fMixerValues(0), fMixerMinval(0),
+              fMixerMaxval(0), fMixerFlags(0)
+{
 };
 //______________________________________________________________________________
 
@@ -2088,15 +2150,16 @@ void RailwaySleeper::Draw(Option_t * opt)
 //_____________________________________________________________________________________
 //
 //
-ParallelGraph::ParallelGraph (TSplineX *ograph, Double_t dist, Bool_t closed)
-               : fParent(ograph), fDist(dist),fClosed(closed)
+ParallelGraph::ParallelGraph ()
+               : fParent(0),fSlave(0),fDistToSlave(0), fMaster(0), fDist(0),fClosed(1), fIsRail(0)
 {
-//   SetName("ParallelGraph");
-   fSlave = NULL;
-   fMaster = NULL;
-   fDistToSlave = 0;
-   fIsRail = kFALSE;
-//   Compute();
+}
+//_____________________________________________________________________________________
+//
+//
+ParallelGraph::ParallelGraph (TSplineX *ograph, Double_t dist, Bool_t closed)
+               : fParent(ograph),fSlave(0),fDistToSlave(0), fMaster(0), fDist(dist),fClosed(closed), fIsRail(0)
+{
 }
 //_____________________________________________________________________________________
 

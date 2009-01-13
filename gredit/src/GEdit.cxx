@@ -40,6 +40,7 @@
 #include "ChangeTextDialog.h"
 #include "TGMrbValuesAndText.h"
 
+#include "HprRaRegion.h"
 #include "HprImage.h"
 #include "HprEditBits.h"
 #include "HprEditCommands.h"
@@ -1630,7 +1631,8 @@ void GEdit::ModifyGraphs()
 
 void GEdit::DefineBox()
 {
-   fParent->cd();
+//   fParent->cd();
+//   cout << "GEdit::DefineBox " << gPad->GetName() << endl;
    TObject * obj = gPad->WaitPrimitive("TPave");
 	if (obj == NULL) {
 		cout << "Interrupted Input" << endl;
@@ -1640,26 +1642,10 @@ void GEdit::DefineBox()
    obj = gPad->GetListOfPrimitives()->Last();
    if (obj->IsA() == TPave::Class()) {
       TPave * p = (TPave*)obj;
-      Double_t x[5];
-      Double_t y[5];
-      x[0] =  p->GetX1();
-      x[1] =  p->GetX2();
-      x[2] =  x[1];
-      x[3] =  x[0];
-      x[4] =  x[0];
-      y[0] =  p->GetY1();
-      y[1] =  y[0];
-      y[2] =  p->GetY2();
-      y[3] =  y[2];
-      y[4] =  y[0];
-      TObject * otcut = gPad->GetListOfPrimitives()->FindObject("CUTG");
+      TObject * otcut = gPad->GetListOfPrimitives()->FindObject("HprRaRegion");
       if (otcut) delete otcut;
-      TCutG * cut = new TCutG("CUTG", 5, &x[0], &y[0]);
+      new HprRaRegion(p->GetX1(),p->GetY1(),p->GetX2(),p->GetY2());
       delete obj;
-      cut->Draw();
-      cut->SetLineWidth(1);
-      cut->SetLineStyle(2);
-      cut->SetLineColor(1);
       fParent->Update();
    } else {
        cout << "Error getting TPave" << endl;
@@ -1669,15 +1655,16 @@ void GEdit::DefineBox()
 
 void GEdit::DefinePolygone()
 {
-   fParent->cd();
-   TObject * obj = gPad->GetListOfPrimitives()->FindObject("CUTG");
+//   fParent->cd();
+   TObject * obj = gPad->GetListOfPrimitives()->FindObject("HprRaRegion");
    if (obj) delete obj;
    obj = gPad->WaitPrimitive("CUTG", "CutG");
 //   obj = gPad->GetListOfPrimitives()->Last();
-   if (obj->IsA() == TCutG::Class()) {
+   if (obj && obj->IsA() == TCutG::Class()) {
        ((TCutG*)obj)->SetLineWidth(1);
        ((TCutG*)obj)->SetLineStyle(2);
        ((TCutG*)obj)->SetLineColor(1);
+       ((TCutG*)obj)->SetName("HprRaRegion");
         fParent->Update();
    } else {
        cout << "Error getting TCutG" << endl;
@@ -1937,9 +1924,15 @@ Int_t GEdit::ExtractGObjects(Bool_t markonly)
 {
    fParent->cd();
    cout << "fParent " << fParent<< " gPad " << gPad << endl;
-   TCutG * cut = (TCutG *)gPad->FindObject("CUTG");
+   TObject *enclosingCut = gPad->FindObject("HprRaRegion");
+   TCutG * cut = NULL;
+   if ( enclosingCut->IsA() == TCutG::Class() ) {
+      cut = (TCutG*)enclosingCut;
+   } else {
+      cut = ((HprRaRegion*)enclosingCut)->CutG();
+   }
    if (!cut) {
-      WarnBox("Define a graphical cut first", fRootCanvas);
+      WarnBox("Define a region first", fRootCanvas);
       return -1;
    }
    static Int_t serNr = 1;
@@ -1985,7 +1978,7 @@ tryagain:
 //   TIter next( fParent->GetListOfPrimitives());
    while ( lnk ) {
       obj = lnk->GetObject();
-      if (obj == cut        // the enclosing TCutG itself
+      if (obj == enclosingCut    // the enclosing TCutG itself
           || obj->InheritsFrom("EditMarker")
           || obj->InheritsFrom("GroupOfGObjects")) {
          lnk = (TObjOptLink*)lnk->Next();
@@ -2201,8 +2194,8 @@ tryagain:
       }
       lnk = (TObjOptLink*)lnk->Next();
    }
-   if (cut) delete cut;
-   cout <<  gg->GetNMembers()<< " objects in list " << endl;
+   if (enclosingCut) delete enclosingCut;
+   cout << "Extracted: " <<  gg->GetNMembers() << " objects" << endl;
    if (gg->GetNMembers() > 0) {
       if (!markonly) {
          if (!fGObjectGroups) fGObjectGroups = new TList();
@@ -2656,16 +2649,22 @@ void GEdit::PutObjectsOnGrid(TList* list)
 void GEdit::DeleteObjects()
 {
    fParent->cd();
-   TCutG * cut = (TCutG *)FindObject("CUTG");
+   TObject *enclosingCut = gPad->FindObject("HprRaRegion");
+   TCutG * cut = NULL;
+   if ( enclosingCut->IsA() == TCutG::Class() ) {
+      cut = (TCutG*)enclosingCut;
+   } else {
+      cut = ((HprRaRegion*)enclosingCut)->CutG();
+   }
    if (!cut) {
-      WarnBox("Define a graphical cut first", fRootCanvas);
+      WarnBox("Define a region first", fRootCanvas);
       return;
    }
    if (QuestionBox("Really delete objects?", fRootCanvas) != kMBYes) return;
    TObject * obj;
    TIter next( fParent->GetListOfPrimitives());
    while ( (obj = next()) ) {
-      if (obj == cut) continue;      // the enclosing TCutG itself
+      if (obj == enclosingCut) continue;  // the enclosing TCutG itself
       if (obj->InheritsFrom("EditMarker")) continue;
 
       if (obj->InheritsFrom("TBox")) {
@@ -2768,7 +2767,7 @@ void GEdit::DeleteObjects()
 //         cout << obj->ClassName() << " not yet implemented" << endl;
       }
    }
-   if (cut) delete cut;
+   if (enclosingCut) delete enclosingCut;
 }
 //______________________________________________________________________________
 

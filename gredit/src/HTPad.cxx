@@ -42,9 +42,16 @@ HTPad::HTPad(const char *name, const char *title,
          n++;
       }
    }
-//   std::cout << "HTPad this: " << this   << std::endl;
+//   std::cout << "ctor HTPad this: " << this  << "++++++++++++++++++++++++++++++++++++++++++" <<  std::endl;
 }
-
+HTPad::~HTPad()
+{
+   if ( !TestBit(kNotDeleted) )
+      cout <<" dtor HTPad: " << this <<
+             " is deleted !!!!" << endl;
+//	cout << "dtor HTPad " << this << "++++++++++++++++++++++++++++++++++++++++++"  << endl;
+}
+;
 void HTPad::Paint(Option_t *opt)
 {
    HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
@@ -106,5 +113,19 @@ void HTPad::ViewAllObjects()
 {
    if (!fHiddenPrimitives || fHiddenPrimitives->GetEntries() <=0 ) return;
    HprElement::MoveAllObjects(fHiddenPrimitives, GetListOfPrimitives(), 0,1);
+}
+//______________________________________________________________________________
+
+void HTPad::RemoveImage()
+{
+   TIter next(GetListOfPrimitives());
+   TObject *obj;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("HprImage")) {
+         GetListOfPrimitives()->Remove(obj);;
+         Modified();
+         break;
+      }
+   }
 }
 

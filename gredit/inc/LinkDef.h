@@ -45,6 +45,7 @@
 #pragma link C++ class THprGaxis;
 #pragma link C++ class THprGraph;
 #pragma link C++ class THprLatex;
+#pragma link C++ class HprRaRegion;
 #pragma link C++ class HTPad;
 #pragma link C++ class THprCurlyLine;
 #pragma link C++ class THprCurlyLineWithArrow;

@@ -11,7 +11,8 @@ ClassImp(HprImage)
 // the content of the image file in a byte buffer
 // The image itself is only painted, i.e. not added
 // to the ListOfPrimitives. In this way the image file
-// itself is stored by a pad->Write rather then its pixmap
+// itself is stored on file not its pixmap
+// The pixmap may be saved via 
 //_________________________________________________________________________
 HprImage::HprImage(const Char_t * fname, TPad * pad) :
           TNamed(gSystem->BaseName(fname), ""), fPad(pad){
@@ -26,7 +27,7 @@ HprImage::HprImage(const Char_t * fname, TPad * pad) :
       fBuffer = NULL;
       fImage = NULL;
    } else {
-      cout << "ctor HprImage: size " << size << endl;
+      cout << "ctor HprImage this: " << this << "Pad: " << pad << endl;
       fImage = TImage::Open(fname);
       if (!fImage) {
          cout << "Could not create an image... exit" << endl;
@@ -44,10 +45,7 @@ HprImage::HprImage(const Char_t * fname, TPad * pad) :
 
 HprImage::~HprImage()
 {
-//   if (fPad) {
-//      delete fPad;
-//   }
-   cout << "HprImage:: dtor" << endl;
+//   cout << "HprImage:: dtor" << endl;
    fPad = 0;
    if(fBuffer)delete fBuffer;
    fBuffer = 0;
@@ -83,6 +81,16 @@ Int_t HprImage::FileExists()
 }
 //_________________________________________________________________________
 
+void HprImage::Print() const
+{
+   cout << "HprImage:: " << GetName() << endl;
+}
+//_________________________________________________________________________
+//void  HprImage::Draw(Option_t * opt)const
+//{
+//  if (opt);
+//  cout << "HprImage::Draw() " << endl;
+//}
 //_________________________________________________________________________
 
 Int_t HprImage::ToFile(const Char_t * fname)
@@ -111,33 +119,37 @@ void HprImage::Paint(Option_t * opt)
    if (opt);
    if ( GetVisibility() == 0 )
       return;
-//   cout << "HprImage::Paint(): " << endl;
+//   cout << "HprImage::Paint(): "<< this  << " Pad: " << gPad  << endl;
    TList * lop = gPad->GetListOfPrimitives();
    TObject *obj;
    TIter next_img(lop);
    TObject *hpri = NULL;
    TObject *aimg = NULL;
-   Bool_t found = kFALSE;
+//   Bool_t found = kFALSE;
    while ( (obj = next_img()) ) {
       if (obj->InheritsFrom("TASImage")) {
-//         cout << "TASImage GetHeight(): " << ((TImage*)obj)->GetHeight() << endl;
+         cout << "TASImage GetHeight(): " << ((TImage*)obj)->GetHeight() << endl;
          if (((TImage*)obj)->GetHeight() > 5) aimg = obj;
       }
       if (obj->InheritsFrom("HprImage")) hpri = obj;
    }
    if ( aimg ) {
+/*
       if (aimg && aimg != lop->First()) {
+         cout << "HprImage::Paint:  Remove aimg: " << aimg << endl;
          lop->Remove(aimg);
          lop->AddFirst(aimg,"X");
       }
+*/
       if (hpri && hpri != lop->First()) {
+         cout << "HprImage::Paint: move to top " << hpri << endl;
          lop->Remove(hpri);
          lop->AddFirst(hpri,"X");
          gPad->Modified(kTRUE);
          gPad->Update();
       }
       return;
-   }  
+   }
 //   cout << "HprImage::Paint(): " << name << endl;
 //   Dump();
 //   if (fImage) fImage->Dump();
@@ -185,9 +197,9 @@ void HprImage::Paint(Option_t * opt)
 //   lop->ls();
 // make sure image is drawn first
    if (fImage != lop->First()) {
-      lop->Remove((TObject*)fImage);
-      lop->AddFirst(fImage,"X");
-       cout << "HprImage:: AddFirst" << endl;
+//      lop->Remove((TObject*)fImage);
+//      lop->AddFirst(fImage,"X");
+//       cout << "HprImage:: AddFirst" << endl;
    } else {
        cout << "HprImage:: is 1. "<<fImage<< endl;
    }

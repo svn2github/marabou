@@ -16,12 +16,13 @@ public:
    HTPad(const char *name, const char *title,
            Double_t x1, Double_t y1, Double_t x2, Double_t y2,
            Color_t color=-1, Short_t bordersize=-1, Short_t bordermode=-2);
-   ~HTPad(){};
+   ~HTPad();
    void Paint(Option_t *option="");
    void PaintModified();
    virtual void PrintAddress()  {std::cout << ClassName() << "* aa = "
                          << "(" << ClassName() << "*)" << this
                          << std::endl; }; // *MENU*
+   void     RemoveImage(); // *MENU*
    void     HideObject(TObject*);
    void     ViewObject(TObject*);
    void     ViewAllObjects(); // *MENU*

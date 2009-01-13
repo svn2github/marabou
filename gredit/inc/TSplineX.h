@@ -115,7 +115,7 @@ private:
    Bool_t fClosed;
    Bool_t fIsRail;           // is part of a railway like track
 public:
-   ParallelGraph () {};
+   ParallelGraph ();
    ParallelGraph (TSplineX *parent, Double_t dist, Bool_t closed);
    virtual ~ParallelGraph();
    void    Compute();

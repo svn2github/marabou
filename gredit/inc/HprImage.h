@@ -12,7 +12,7 @@ private:
    TImage * fImage; //! dont stream
    TPad * fPad;    //! dont stream
    Bool_t fIsGood; //! dont stream
-   Bool_t fIsPainted; //! dont stream   
+   Bool_t fIsPainted; //! dont stream
 
 public:
 
@@ -24,6 +24,8 @@ public:
    Bool_t IsGood(){return fIsGood;};
    Int_t FileExists();
    void Paint(Option_t * opt = 0);
+   void Print() const;
+//   void Draw(Option_t * opt = NULL) const;
    Bool_t IsSortable() const {return kTRUE;}
    Int_t Compare( const TObject *obj) const
    {
