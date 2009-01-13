@@ -48,5 +48,9 @@
 	enum			{	kSis3302EventMinMax 		= 2 };
 	enum			{	kSis3302EventTrailer 		= 2 };
 
+	enum EVulomTB	{	kVulomTBNofScalers			= 3,
+						kVulomTBNofChannels 		= 16,
+						kVulomTBAllChannels 		= -1
+					};
 
 #endif
