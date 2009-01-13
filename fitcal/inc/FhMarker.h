@@ -2,7 +2,7 @@
 #define HPR_FHMARKER
 #include "TMarker.h"
 #include "TObjArray.h"
-
+#include <iostream>
 
 class FhMarkerList : public TObjArray {
 protected:
@@ -12,8 +12,10 @@ public:
 
    ~FhMarkerList() {};
 //   const char * GetName(){return fName;};
-
-ClassDef(FhMarkerList, 1)
+   void SavePrimitive(ostream & out, Option_t *)
+      { out << "   TList * FhMarkerList = new TList();" << std::endl;
+      }
+ClassDef(FhMarkerList, 0)
 };
 
 class FhMarker : public TMarker {
