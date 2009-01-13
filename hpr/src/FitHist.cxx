@@ -269,7 +269,12 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-//   cout << "FitHist::RecursiveRemove: obj fFit1DimD " << obj << " " << fFit1DimD<<  endl;
+//   cout << "FitHist::RecursiveRemove: " << obj << " ";
+//   if (obj && obj->InheritsFrom("TMrbWdw")) {
+//      cout << obj->GetName();
+//  }
+//   cout <<  endl;
+
    fActiveCuts->Remove(obj);
    fActiveWindows->Remove(obj);
    fActiveFunctions->Remove(obj);
@@ -1738,22 +1743,7 @@ void FitHist::WriteOutCanvas()
 void FitHist::WriteOutHist()
 {
    if (fSelHist) {
-/*
-      TString hname = fSelHist->GetName();
-      Int_t pp = hname.Index(";");
-      if (pp > 0) hname.Resize(pp);
-      Bool_t ok;
-      hname =
-          GetString("Save hist with name", hname.Data(), &ok, mycanvas);
-      if (!ok)
-         return;
-      fSelHist->SetName(hname.Data());
-*/
       new Save2FileDialog(fSelHist);
-//      if (OpenWorkFile(mycanvas)) {
-//        fSelHist->Write();
-//         CloseWorkFile();
-//     }
    }
 };
 

@@ -74,6 +74,42 @@ already exists, delete it? ", mycanvas)) {
    }
 }
 //______________________________________________________________________________________
+
+void FitHist::ClearRegion()
+{
+   fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
+   if (fMarkers &&  fMarkers->GetEntries() == 2)  {
+		FhMarker *ti;
+		if (is2dim(fSelHist)) {
+         ti = (FhMarker*)fMarkers->At(0);
+         Int_t binlx = XBinNumber(fSelHist, ti->GetX());
+         Int_t binly = YBinNumber(fSelHist, ti->GetY());
+         ti = (FhMarker*)fMarkers->At(1);
+         Int_t binux = XBinNumber(fSelHist, ti->GetX());
+         Int_t binuy = YBinNumber(fSelHist, ti->GetY());
+         cout <<binlx << " " <<binux << " "<<binly << " "<<binuy << endl;
+         for (Int_t binx = binlx; binx <= binux; binx++) {
+            for (Int_t biny = binly; biny <= binuy; biny++) {
+               fSelHist->SetCellContent(binx, biny, 0);
+            }
+         }
+		} else {
+         ti = (FhMarker*)fMarkers->At(0);
+         Int_t binl = fSelHist->FindBin(ti->GetX());
+         ti = (FhMarker*)fMarkers->At(1);
+         Int_t binu = fSelHist->FindBin(ti->GetX());
+         for (Int_t bin = binl; bin <= binu; bin++) {
+            fSelHist->SetBinContent(bin, 0);
+         }
+      }
+      gPad->Modified();
+      gPad->Update();
+   } else {
+      WarnBox("Please set exactly 2 marks");
+      return;
+   }
+}
+//______________________________________________________________________________________
 Bool_t FitHist::UseWindow(TMrbWindow * wdw){
    if(!Nwindows())return kFALSE;
    return fActiveWindows->Contains(wdw);
@@ -393,6 +429,20 @@ void FitHist::DrawCutName(){
       t->Draw();
    }
    cHist->Update();
+}
+//_____________________________________________________________________________________
+
+void FitHist::RemoveAllCuts(){
+   UpdateCut();
+//   gObjectTable->Print();
+   fActiveCuts->Clear();
+   fAllCuts->SetOwner();
+   fAllCuts->Clear();
+   if (hp) 
+     hp->HandleRemoveAllCuts();
+   cHist->Update();
+   
+//   gObjectTable->Print();
 }
 //_____________________________________________________________________________________
 

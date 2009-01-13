@@ -592,57 +592,6 @@ Bool_t QuestionBox(const char *message, TGWindow * win)
    else
       return kTRUE;
 }
-/*
-//------------------------------------------------------
-void CloseWorkFile(TGWindow * win)
-{
-   OpenWorkFile(win);
-//   if(fWorkfile){
-//      fWorkfile->Close();
-//      fWorkfile = NULL;
-//  }
-   gDirectory = gROOT;
-}
-
-//------------------------------------------------------
-Bool_t OpenWorkFile(TGWindow * win, TFile ** file)
-{
-   static const char *fWorkname = 0;
-   static TFile *fWorkfile = 0;
-   static const char *cfname;
-   if (fWorkfile) {
-//      WarnBox("Close open workfile");
-      fWorkfile->Close();
-      fWorkfile = NULL;
-      if (file) *file = NULL;
-      return kFALSE;
-   }
-   static TString fname = "workfile.root";
-   TEnv env(".rootrc");         // inspect ROOT's environment
-   if (!fWorkname) {
-      cfname = env.GetValue("HistPresent.WorkFileName", fname.Data());
-      fname = cfname;
-//      cout << " GetValue " << cfname << endl;
-   }
-//   else {
-//      cfname = fWorkname;
-//   }
-//   cout << " defval " << cfname << endl;
-   Bool_t ok;
-   fWorkname = GetString("Use File:", fname.Data(), &ok, win);
-   if (!ok) {
-      if (file) *file = NULL;
-      return kFALSE;
-   }
-   fname = fWorkname;
-   if (!gSystem->AccessPathName(fWorkname, kFileExists))
-      fWorkfile = new TFile(fWorkname, "UPDATE", "Output file");
-   else
-      fWorkfile = new TFile(fWorkname, "RECREATE", "Output file");
-   if (file) *file = fWorkfile;
-   return kTRUE;
-}
-*/
 //------------------------------------------------------
 Int_t GetUsedSize(TMapFile * mfile)
 {
@@ -665,6 +614,7 @@ Int_t GetUsedSize(TMapFile * mfile)
    return size;
 }
 //------------------------------------------------------
+
 Int_t GetObjects(TList & list, TDirectory * rfile, const char * classname)
 {
    Int_t maxkey = 0;

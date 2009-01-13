@@ -180,11 +180,13 @@ enum ERootCanvasCommands {
    kFHCut,
    kFHInitCut,
    kFHClearCut,
+   kFHRemoveAllCuts,
    kFHListCuts,
    kFHListWindows,
    kFHDrawCut,
    kFHDrawCutName,
    kFHMarksToCut,
+   kFHClearRegion,
    kFHWriteOutCut,
    kFHTerminate,
 
@@ -827,11 +829,17 @@ again:
                   case  kFHMarksToCut:
                      fFitHist->MarksToCut();
                      break;
+                  case  kFHClearRegion:
+                     fFitHist->ClearRegion();
+                     break;
                   case kFHInitCut:
                      fFitHist->InitCut();
                      break;
                   case kFHClearCut:
                      fFitHist->ClearCut();
+                     break;
+                  case kFHRemoveAllCuts:
+                     fFitHist->RemoveAllCuts();
                      break;
                   case kFHListCuts:
                      fFitHist->ListCuts();
@@ -1400,13 +1408,14 @@ void HandleMenus::BuildMenus()
    if(fh_menus && nDim < 3){
       fCutsMenu     = new TGPopupMenu(fRootCanvas->GetParent());
       if(is2dim){
-         fCutsMenu->AddEntry("InitCut",     kFHInitCut    );
-         fCutsMenu->AddEntry("MarksToCut",  kFHMarksToCut);
-         fCutsMenu->AddEntry("ClearCut",    kFHClearCut   );
-         fCutsMenu->AddEntry("ListCuts",    kFHListCuts    );
-         fCutsMenu->AddEntry("DrawCut",     kFHDrawCut    );
-         fCutsMenu->AddEntry("DrawCutName", kFHDrawCutName    );
-         fCutsMenu->AddEntry("CutsToHist",  kFHCutsToHist   );
+         fCutsMenu->AddEntry("InitCut",      kFHInitCut    );
+         fCutsMenu->AddEntry("MarksToCut",   kFHMarksToCut);
+         fCutsMenu->AddEntry("Clear Active Cuts",kFHClearCut   );
+         fCutsMenu->AddEntry("Remove All Cuts",kFHRemoveAllCuts   );
+         fCutsMenu->AddEntry("ListCuts",     kFHListCuts    );
+         fCutsMenu->AddEntry("DrawCut",      kFHDrawCut    );
+         fCutsMenu->AddEntry("DrawCutName",  kFHDrawCutName    );
+         fCutsMenu->AddEntry("CutsToHist",   kFHCutsToHist   );
          fCutsMenu->AddEntry("WriteOutCuts", kFHWriteOutCut);
       } else {
          fCutsMenu->AddEntry("MarksToWindow",   kFHMarksToWindow   );
@@ -1421,6 +1430,7 @@ void HandleMenus::BuildMenus()
       fCutsMenu->AddEntry("PrintMarks",   kFHPrintMarks);
       fCutsMenu->AddEntry("Set2Marks",    kFHSet2Marks);
       fCutsMenu->AddSeparator();
+      fCutsMenu->AddEntry("Clear Region",    kFHClearRegion);
       if(hbrowser)hbrowser->DisplayMenu(fCutsMenu, "cuts.html");
 //      fCutsMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
 //      fCutsMenu->AddEntry("Help On Cuts/Windows",  kFH_Help_Cuts);

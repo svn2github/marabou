@@ -203,7 +203,7 @@ public:
    void Set2Marks();               //
    TObjArray* GetPointertoMarks(){return fMarkers;};
    void AddFunctionsToHist();
-
+   void ClearRegion();
    void MarksToWindow();               //
    void ClearWindows();               //
    void DrawWindows();               //
@@ -230,6 +230,7 @@ public:
    Bool_t UseWindow(TMrbWindow *);         //
    Bool_t InsideCut(Float_t, Float_t);               //
    void ClearCut();                   //
+   void RemoveAllCuts();
    void UpdateCut();                  //
    void UpdateDrawOptions();
    Bool_t IsCalibrated() {return fSetRange;}                       //

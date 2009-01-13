@@ -645,11 +645,11 @@ void HistPresent::ListMacros(const char *bp)
          wstream.close();
       }
    }
-   if (fControlBar) {fControlBar->Show();
-
-
-gROOT->SaveContext();}
-   else           cout << " No macro containing a hint found " << endl;
+   if (fControlBar) {
+      fControlBar->Show();
+      gROOT->SaveContext();
+   } else 
+      cout << " No macro containing a hint found " << endl;
 };
 //________________________________________________________________________________________
 
@@ -3520,6 +3520,35 @@ Int_t HistPresent::GetWindowPosition(Int_t * winx, Int_t * winy)
    *winx = WindowSizeDialog::fWincurx;
    *winy = WindowSizeDialog::fWincury;
    return WindowSizeDialog::fNwindows;
+}
+
+//________________________________________________________________
+
+void HistPresent::HandleRemoveAllCuts()
+{
+   HTCanvas *c;
+   TButton *b;
+   TObject *obj;
+	TIter next(fHistLists);
+	TIter *next1;
+	TString space(" ");
+	TString line;
+	while ( (c = (HTCanvas*)next()) ) {
+		next1 = new TIter(c->GetListOfPrimitives());
+		while ( (obj = (*next1)()) ) {
+			if (obj->InheritsFrom("TButton")) {
+				b = (TButton*)obj;
+				line =  b->GetMethod();
+//             cout << "HandleDeleteCanvas " << line << endl;
+				if (line.Contains("LoadWindow") && b->TestBit(kSelected)) {
+					b->SetFillColor(17);
+					b->Modified(kTRUE);
+					b->Update();
+				}
+			}
+		}
+		delete next1;
+	}
 }
 //________________________________________________________________
 

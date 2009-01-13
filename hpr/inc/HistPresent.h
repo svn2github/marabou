@@ -231,7 +231,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void ShowTree(const char*, const char*, const char*, const char* bp =0);
    void ShowLeaf(const char*, const char*, const char*, const char* l=0, const char* bp =0);  // display hist of leaf
    void MkClass(const char*, const char*, const char*, const char* l=0, const char* bp =0);  // display hist of leaf
-
+   void HandleRemoveAllCuts();
    void CutsFromASCII(TGWindow * win = 0);
    void HistFromASCII(TGWindow * win = 0);
    void GraphFromASCII(TGWindow * win = 0);
