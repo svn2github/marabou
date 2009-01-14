@@ -9,8 +9,8 @@
 //! Keywords:
 //! Author:         R. Lutter
 //! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! Revision:       $Id: QEnv.cxx,v 1.5 2009-01-14 15:51:47 Rudolf.Lutter Exp $       
-//! Date:           $Date: 2009-01-14 15:51:47 $
+//! Revision:       $Id: QEnv.cxx,v 1.6 2009-01-14 16:15:33 Rudolf.Lutter Exp $       
+//! Date:           $Date: 2009-01-14 16:15:33 $
 //!
 //! Format:         Entry of the envrironment database:
 //!                      <key>: <value>
@@ -109,12 +109,12 @@ void QEnvRec::setType(QString & value) {
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
 //! \verbatim
-//! Name:           QEnvRec::setType
-//! Purpose:        Set entry type according to data type
-//! Arguments:      QString & value     -- value
+//! Name:           QEnvRec::print
+//! Purpose:        Print record
+//! Arguments:      int recNo          -- record number
+//!                 int lkey           -- max key length
 //! Results:        -- 
-//! Description:    Checks if data type is int, double, or string.
-//!                 Defaults to string.
+//! Description:    Outputs key name and key value to cout.
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
