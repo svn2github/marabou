@@ -9,8 +9,8 @@
 //! Keywords:
 //! Author:         R. Lutter
 //! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! Revision:       $Id: QEnv.cxx,v 1.4 2009-01-14 12:47:14 Rudolf.Lutter Exp $       
-//! Date:           $Date: 2009-01-14 12:47:14 $
+//! Revision:       $Id: QEnv.cxx,v 1.5 2009-01-14 15:51:47 Rudolf.Lutter Exp $       
+//! Date:           $Date: 2009-01-14 15:51:47 $
 //!
 //! Format:         Entry of the envrironment database:
 //!                      <key>: <value>
@@ -436,8 +436,9 @@ const char * QEnv::getValue(const char * key, const char * defVal) {
 //! Purpose:        Search for a given key
 //! Arguments:      const char * key    -- name of key
 //! Results:        QEnvRec & record    -- database record
-//! Description:    Searches for a given entry. Returns record from database
-//!                 if found, an empty record otherwise.
+//! Description:    Searches for a given entry.
+//!                 Returns record from database if found,
+//!                 returns an empty record otherwise.
 //!                 Can be tested by use of QEnvRec::isEmpty().
 //! Keywords:
 //! \endverbatim
@@ -477,8 +478,8 @@ QEnvRec & QEnv::first() {
 //! Purpose:        Return next element in list
 //! Arguments:      --
 //! Results:        QEnvRec & record     -- next record in database
-//! Description:    Returns first record in database. Caller has to test
-//!                 if result is "empty" record.
+//! Description:    Returns first record in database.
+//!                 Use QEnvRec::isEmpty() to check if end of list
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
