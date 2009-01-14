@@ -10,7 +10,7 @@
 //! Class:          QEnv    -- an envirmonent manager like ROOT's TEnv
 //! Description:    Common class definitions to be used with QT
 //! Author:         R. Lutter
-//! Revision:       $Id: QEnv.h,v 1.4 2009-01-14 12:47:14 Rudolf.Lutter Exp $       
+//! Revision:       $Id: QEnv.h,v 1.5 2009-01-14 14:56:33 Rudolf.Lutter Exp $       
 //! Date:           
 //! Keywords:
 //! \endverbatim
@@ -53,7 +53,7 @@ class QEnvRec {
 		inline ERecType getType() { return qRecType; }; 					// get record type
 
 		inline bool isEmpty() { return (qRecType == QEnvRec::kEmpty); };	// test if record is ...
-		inline bool isInteger() { return (qRecType & QEnvRec::kInteger); };
+		inline bool isInteger() { return (qRecType == QEnvRec::kInteger); };
 		inline bool isDouble() { return (qRecType == QEnvRec::kDouble); };
 		inline bool isString() { return (qRecType == QEnvRec::kString); };
 
