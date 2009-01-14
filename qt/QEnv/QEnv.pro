@@ -5,7 +5,7 @@ CONFIG	+= qt
 
 INCLUDEPATH += inc
 HEADERS	+= inc/QEnv.h
-SOURCES	+= src/QEnv.cxx src/envtst.cxx 
+SOURCES	+= src/QEnv.cxx src/qenvExample.cxx 
 
 unix {
   UI_DIR = .ui

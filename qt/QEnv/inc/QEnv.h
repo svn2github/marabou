@@ -10,7 +10,7 @@
 //! Class:          QEnv    -- an envirmonent manager like ROOT's TEnv
 //! Description:    Common class definitions to be used with QT
 //! Author:         R. Lutter
-//! Revision:       $Id: QEnv.h,v 1.3 2009-01-13 13:31:24 Rudolf.Lutter Exp $       
+//! Revision:       $Id: QEnv.h,v 1.4 2009-01-14 12:47:14 Rudolf.Lutter Exp $       
 //! Date:           
 //! Keywords:
 //! \endverbatim
@@ -28,7 +28,7 @@ using namespace std;
 class QEnvRec {
 	public:
 		// record types
-		enum ERecType	{	kNew,
+		enum ERecType	{	kNew		= 0,
 							kEmpty,
 							kInteger,
 							kDouble,
@@ -52,8 +52,8 @@ class QEnvRec {
 
 		inline ERecType getType() { return qRecType; }; 					// get record type
 
-		inline bool isEmpty() { return (qRecType == QEnvRec::kEmpty); };		// test if record is ...
-		inline bool isInteger() { return (qRecType == QEnvRec::kInteger); };
+		inline bool isEmpty() { return (qRecType == QEnvRec::kEmpty); };	// test if record is ...
+		inline bool isInteger() { return (qRecType & QEnvRec::kInteger); };
 		inline bool isDouble() { return (qRecType == QEnvRec::kDouble); };
 		inline bool isString() { return (qRecType == QEnvRec::kString); };
 
@@ -86,7 +86,7 @@ class QEnv : public QObject {
 
 		void print();														// print database
 
-		inline void setVerbose(bool verbose = TRUE) { qVerbose = verbose; };	// turn verbosity on/off
+		inline void setVerbose(bool verbose = TRUE) { qVerbose = verbose; };	//!< turn verbosity on/off
 		inline bool isVerbose() { return qVerbose; };							// check if verbose
 
 		QEnvRec & first();													// start iteration

@@ -9,8 +9,20 @@
 //! Keywords:
 //! Author:         R. Lutter
 //! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! Revision:       $Id: QEnv.cxx,v 1.3 2009-01-13 13:31:24 Rudolf.Lutter Exp $       
-//! Date:           $Date: 2009-01-13 13:31:24 $
+//! Revision:       $Id: QEnv.cxx,v 1.4 2009-01-14 12:47:14 Rudolf.Lutter Exp $       
+//! Date:           $Date: 2009-01-14 12:47:14 $
+//!
+//! Format:         Entry of the envrironment database:
+//!                      <key>: <value>
+//!                 where
+//!                      <key> is a dot-separated string like a X resource
+//!                      <value> is integer, double, or string
+//!                 Setting or getting a key value will be type-checked,
+//!                 thus you will get a warning when changing the type on setValue()
+//!                 and will get the default value instead of the true one
+//!                 when accessing a key with wrong type by getValue().
+//!                 Setting/getting a key via with type=string is always allowed
+//!                 as keys as well as values are being stored as strings.
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +40,7 @@ static QEnvRec emptyRec;
 
 //___________________________________________________________________[QT CLASS]
 //////////////////////////////////////////////////////////////////////////////
-//! \class QEnvRec QEnv.h "inc/QEnv.h"
+//! \class QEnvRec QEnv.h "/home/Rudolf.Lutter/marabou/QEnv/inc/QEnv.h"
 //! \verbatim
 //! Name:           QEnvRec::QEnvRec
 //! Purpose:        Instantiate a record to be used in QEnv database
@@ -48,7 +60,7 @@ QEnvRec::QEnvRec(QString & key, QString & value) {
 
 //___________________________________________________________________[QT CLASS]
 //////////////////////////////////////////////////////////////////////////////
-//! \class QEnv QEnv.h "inc/QEnv.h"
+//! \class QEnv QEnv.h "/home/Rudolf.Lutter/marabou/QEnv/inc/QEnv.h"
 //! \verbatim
 //! Name:           QEnv::QEnv
 //! Purpose:        Instantiate QEnv database
@@ -152,8 +164,12 @@ int QEnv::readFile(const char * fileName) {
 		line.remove(line.size() - 1, 1);			// remove traling <lf>
 		line = line.simplified();					// skip surrounding spaces
 		if (line.isEmpty()) continue;				// nothing in there
-		QStringList l = line.split("#");			// look for comments
+		QStringList l = line.split("#");			// look for # comments
 		if (l.size() > 1) line = l[0];				// we have one: skip it
+		if (line.isEmpty()) continue;				// line starts with # - nothing to do
+		l = line.split("//");						// look for // comments
+		if (l.size() > 1) line = l[0];				// we have one: take front part
+		if (line.isEmpty()) continue;				// line starts with // - nothing to do
 		QStringList env = line.split(":");			// look for delimiting ":" (in format "<key>: <value>")
 		QString k = env[0].simplified();			// extract key name
 		QString v;
@@ -243,13 +259,13 @@ void QEnv::setValue(const char * key, int value) {
 		QString k = key;							// define key name
 		QEnvRec * e = new QEnvRec(k, v);			// create new database record
 		qCurIndex = -1; 							// iteration has to be restarted
-		e->setType(QEnvRec::kInteger); 				// type is integer
+		e->setType(QEnvRec::kInteger); 			// type is integer (or octal or hex)
 		qEnvList.append(*e);						// add entry to list
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Creating entry \"" << key << "\", value = " << value << endl;
 	} else {
 		QEnvRec r = qEnvList[n];					// already present at position <n> in list
 		QEnvRec::ERecType type = r.getType();		// check if type is integer
-		if (type != QEnvRec::kInteger) {			// no - warning: type changed
+		if ((type == QEnvRec::kInteger) == 0) {		// no - warning: type changed
 			cerr << "QEnv::setValue(): Key " << r.getKey().toAscii().data() << " - changed type to \"int\"" << endl;
 		}
 		r.setValue(value);							// set new key value
