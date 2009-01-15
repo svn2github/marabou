@@ -9,8 +9,8 @@
 //! Keywords:
 //! Author:         R. Lutter
 //! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! Revision:       $Id: QEnv.cxx,v 1.7 2009-01-15 07:22:30 Rudolf.Lutter Exp $       
-//! Date:           $Date: 2009-01-15 07:22:30 $
+//! Revision:       $Id: QEnv.cxx,v 1.8 2009-01-15 12:08:44 Rudolf.Lutter Exp $       
+//! Date:           $Date: 2009-01-15 12:08:44 $
 //!
 //! Format:         Entry of the envrironment database:
 //!                      <key>: <value>
@@ -42,8 +42,8 @@
 //! Maintains environment lists. See also TEnv documentation.
 //!
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.7 $       
-//! $Date: 2009-01-15 07:22:30 $
+//! $Revision: 1.8 $       
+//! $Date: 2009-01-15 12:08:44 $
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
@@ -77,14 +77,14 @@ QEnvRec::QEnvRec(QString & key, QString & value) {
 //! \verbatim
 //! Name:           QEnv::QEnv
 //! Purpose:        Instantiate QEnv database
-//! Arguments:      const char * fileName  -- name of env file
-//!                 bool verbose           -- turn verbose flag on/off
+//! Arguments:      Char_t * fileName  -- name of env file
+//!                 Bool_t verbose     -- turn verbose flag on/off
 //! Description:    Main QEnv object
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-QEnv::QEnv(const char * fileName, bool verbose) {
+QEnv::QEnv(const Char_t * fileName, Bool_t verbose) {
 
 	qVerbose = verbose;
 	if (this->readFile(fileName) > 0) qEnvFile = fileName;
@@ -108,11 +108,11 @@ void QEnvRec::setType(QString & value) {
 
 	QString v = value;
 	v += " 0";									// append "<space>0"
-	int v1, v2;
+	Int_t v1, v2;
 	istringstream istr(v.toAscii().data()); 	// then decode using format "<int> <int>"
 	istr >> v1 >> v2;							// check if we got 2 ints: v1 should be same as <value>, v2 should be "0"
 	if (v2 == 0 && v1 == strtol(value.toAscii().data(), NULL, 10)) { qRecType = QEnvRec::kInteger; return; }
-	double v3;									// didn't work: try format "<double> <int>"
+	Double_t v3;									// didn't work: try format "<double> <int>"
 	istringstream dstr(v.toAscii().data());
 	dstr >> v3 >> v2;							// check if we got 1 double and 1 int: v1 should be same as <value>, v2 should be "0"
 	if (v2 == 0 && v3 == strtod(value.toAscii().data(), NULL)) { qRecType = QEnvRec::kDouble; return; }
@@ -124,15 +124,15 @@ void QEnvRec::setType(QString & value) {
 //! \verbatim
 //! Name:           QEnvRec::print
 //! Purpose:        Print record
-//! Arguments:      int recNo          -- record number
-//!                 int lkey           -- max key length
+//! Arguments:      Int_t recNo          -- record number
+//!                 Int_t lkey           -- max key length
 //! Results:        -- 
 //! Description:    Outputs key name and key value to cout.
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-void QEnvRec::print(int recNo, int lkey) {
+void QEnvRec::print(Int_t recNo, Int_t lkey) {
 
 	QString type;
 	switch (this->getType()) {
@@ -154,16 +154,16 @@ void QEnvRec::print(int recNo, int lkey) {
 //! \verbatim
 //! Name:           QEnv::readFile
 //! Purpose:        Read env data from file
-//! Arguments:      const char * fileName   -- name of env file
-//! Results:        int nofEntries          -- number of entries read
-//!                                            or -1 if error
+//! Arguments:      Char_t * fileName     -- name of env file
+//! Results:        Int_t nofEntries      -- number of entries read
+//!                                              or -1 if error
 //! Description:    Reads env data line by line and builds database
 //!                 Call this method more than once to combine different databases.
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-int QEnv::readFile(const char * fileName) {
+Int_t QEnv::readFile(const Char_t * fileName) {
 
 	QFile ifile(fileName);
 	if (!ifile.open(QIODevice::ReadOnly)) { 		// try to open file for input
@@ -171,7 +171,7 @@ int QEnv::readFile(const char * fileName) {
 		return -1;
 	}
 
-	int nofEntries = 0;
+	Int_t nofEntries = 0;
 	while (!ifile.atEnd()) {						// read line by line
 		QString line = ifile.readLine();
 		line.remove(line.size() - 1, 1);			// remove traling <lf>
@@ -209,15 +209,15 @@ int QEnv::readFile(const char * fileName) {
 //! \verbatim
 //! Name:           QEnv::writeFile
 //! Purpose:        Write env data to file
-//! Arguments:      const char * fileName   -- name of env file
-//! Results:        int nofEntries          -- number of entries written
-//!                                            or -1 if error
+//! Arguments:      Char_t * fileName     -- name of env file
+//! Results:        Int_t nofEntries      -- number of entries written
+//!                                          or -1 if error
 //! Description:    Writes database to file
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-int QEnv::writeFile(const char * fileName) {
+Int_t QEnv::writeFile(const Char_t * fileName) {
 
 	QString fn; 									// if there is no filename, take the initial one
 	if (*fileName == '\0') fn = qEnvFile; else fn = fileName;
@@ -228,15 +228,15 @@ int QEnv::writeFile(const char * fileName) {
 		return -1;
 	}
 
-	int lkey = this->getKeyLength();				// calculate length of longest key name
-	int nofEntries = 0;
-	for (int i = 0; i < qEnvList.size(); i++) { 	// loop thru database
+	Int_t lkey = this->getKeyLength();				// calculate length of longest key name
+	Int_t nofEntries = 0;
+	for (Int_t i = 0; i < qEnvList.size(); i++) { 	// loop thru database
 		QEnvRec e = qEnvList[i];					// next entry
 		QString k = e.getKey(); 					// key name
 		QString v = e.getValue();					// key value
 		QString line = k;							// output format is "<key>:   <value>"
 		line += ":";
-		for (int j = 0; j < (lkey - k.size()); j++) line += " ";	// pad with blanks
+		for (Int_t j = 0; j < (lkey - k.size()); j++) line += " ";	// pad with blanks
 		line += v;
 		line += '\n';
 		ofile.write(line.toAscii());				// write it to file
@@ -254,8 +254,8 @@ int QEnv::writeFile(const char * fileName) {
 //! \verbatim
 //! Name:           QEnv::setValue
 //! Purpose:        Set or create env entry from integer
-//! Arguments:      const char * key   -- key name
-//!                 int value          -- value
+//! Arguments:      Char_t * key     -- key name
+//!                 Int_t value      -- value
 //! Results:        -- 
 //! Description:    If entry already exists changes its value.
 //!                 Otherwise creates a new entry.
@@ -263,10 +263,11 @@ int QEnv::writeFile(const char * fileName) {
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-void QEnv::setValue(const char * key, int value) {
+void QEnv::setValue(const Char_t * key, Int_t value) {
 
-	int n = this->find(key);						// check if key already exists
-	if (n == -1) {
+	QList<Int_t> xl;
+	Int_t n = this->find(key, xl);					// check if key already exists
+	if (n == 0) {
 		QString v;									// not found
 		v.setNum(value);							// convert int value to string
 		QString k = key;							// define key name
@@ -275,8 +276,8 @@ void QEnv::setValue(const char * key, int value) {
 		e->setType(QEnvRec::kInteger); 			// type is integer (or octal or hex)
 		qEnvList.append(*e);						// add entry to list
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Creating entry \"" << key << "\", value = " << value << endl;
-	} else {
-		QEnvRec r = qEnvList[n];					// already present at position <n> in list
+	} else if (n == 1) {
+		QEnvRec r = qEnvList[xl[0]];					// already present at position <n> in list
 		QEnvRec::ERecType type = r.getType();		// check if type is integer
 		if ((type == QEnvRec::kInteger) == 0) {		// no - warning: type changed
 			cerr << "QEnv::setValue(): Key " << r.getKey().toAscii().data() << " - changed type to \"int\"" << endl;
@@ -284,6 +285,8 @@ void QEnv::setValue(const char * key, int value) {
 		r.setValue(value);							// set new key value
 		qEnvList.replace(n, r); 					// replace old entry at position <n> by modified one
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Changing entry \"" << key << "\", value = " << value << endl;
+	} else {
+		cerr << "QEnv::setValue(): Key " << key << " matches more than one entry" << endl;
 	}
 }
 
@@ -292,8 +295,8 @@ void QEnv::setValue(const char * key, int value) {
 //! \verbatim
 //! Name:           QEnv::setValue
 //! Purpose:        Set or create env entry from double
-//! Arguments:      const char * key   -- key name
-//!                 double value       -- value
+//! Arguments:      Char_t * key     -- key name
+//!                 Double_t value   -- value
 //! Results:        -- 
 //! Description:    If entry already exists changes its value.
 //!                 Otherwise creates a new entry.
@@ -301,10 +304,11 @@ void QEnv::setValue(const char * key, int value) {
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-void QEnv::setValue(const char * key, double value) {
+void QEnv::setValue(const Char_t * key, Double_t value) {
 
-	int n = this->find(key);
-	if (n == -1) {
+	QList<Int_t> xl;
+	Int_t n = this->find(key, xl);					// check if key already exists
+	if (n == 0) {
 		QString v;
 		v.setNum(value);
 		QString k = key;
@@ -313,8 +317,8 @@ void QEnv::setValue(const char * key, double value) {
 		qCurIndex = -1; 							// iteration has to be restarted
 		qEnvList.append(*e);
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Creating entry \"" << key << "\", value = " << value << endl;
-	} else {
-		QEnvRec r = qEnvList[n];
+	} else if (n == 1) {
+		QEnvRec r = qEnvList[xl[0]];
 		QEnvRec::ERecType type = r.getType();
 		if (type != QEnvRec::kDouble) {
 			cerr << "QEnv::setValue(): Key " << r.getKey().toAscii().data() << " - changed type to \"double\"" << endl;
@@ -323,6 +327,8 @@ void QEnv::setValue(const char * key, double value) {
 		r.setValue(value);
 		qEnvList.replace(n, r);
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Changing entry \"" << key << "\", value = " << value << endl;
+	} else {
+		cerr << "QEnv::setValue(): Key " << key << " matches more than one entry" << endl;
 	}
 }
 
@@ -332,8 +338,8 @@ void QEnv::setValue(const char * key, double value) {
 //! \verbatim
 //! Name:           QEnv::setValue
 //! Purpose:        Set or create env entry from string
-//! Arguments:      const char * key      -- key name
-//!                 const char *  value   -- value
+//! Arguments:      Char_t * key      -- key name
+//!                 Char_t *  value   -- value
 //! Results:        -- 
 //! Description:    If entry already exists changes its value.
 //!                 Otherwise creates a new entry.
@@ -341,10 +347,11 @@ void QEnv::setValue(const char * key, double value) {
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-void QEnv::setValue(const char * key, const char * value) {
+void QEnv::setValue(const Char_t * key, const Char_t * value) {
 
-	int n = this->find(key);
-	if (n == -1) {
+	QList<Int_t> xl;
+	Int_t n = this->find(key, xl);					// check if key already exists
+	if (n == 0) {
 		QString k = key;
 		QString v = value;
 		QEnvRec * e = new QEnvRec(k, v);
@@ -352,8 +359,8 @@ void QEnv::setValue(const char * key, const char * value) {
 		qCurIndex = -1; 							// iteration has to be restarted
 		qEnvList.append(*e);
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Creating entry \"" << key << "\", value = " << value << endl;
-	} else {
-		QEnvRec r = qEnvList[n];
+	} else if (n == 1) {
+		QEnvRec r = qEnvList[xl[0]];
 		QEnvRec::ERecType type = r.getType();
 		if (type != QEnvRec::kString) {
 			cerr << "QEnv::setValue(): Key " << r.getKey().toAscii().data() << " - changed type to \"string\"" << endl;
@@ -362,6 +369,8 @@ void QEnv::setValue(const char * key, const char * value) {
 		r.setValue(value);
 		qEnvList.replace(n, r);
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Changing entry \"" << key << "\", value = " << value << endl;
+	} else {
+		cerr << "QEnv::setValue(): Key " << key << " matches more than one entry" << endl;
 	}
 }
 
@@ -370,20 +379,21 @@ void QEnv::setValue(const char * key, const char * value) {
 //! \verbatim
 //! Name:           QEnv::getValue
 //! Purpose:        Get value of given entry
-//! Arguments:      const char * key      -- key name
-//!                 int defVal            -- default value
-//! Results:        int result            -- resulting value           
+//! Arguments:      Char_t * key        -- key name
+//!                 Int_t defVal        -- default value
+//! Results:        Int_t result        -- resulting value           
 //! Description:    If entry exists *and* its type is int returns value.
 //!                 Otherwise returns defVal.
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-int QEnv::getValue(const char * key, int defVal) {
+Int_t QEnv::getValue(const Char_t * key, Int_t defVal) {
 
-	int n = this->find(key);							// check if key is present
-	if (n == -1) return defVal; 						// not found: we take default
-	QEnvRec r = qEnvList[n];							// fetch entry from database
+	QList<Int_t> xl;
+	Int_t n = this->find(key, xl);						// check if key already exists
+	if (n != 1) return defVal; 							// not found or ambiguous: we take default
+	QEnvRec r = qEnvList[xl[0]];						// fetch entry from database
 	QEnvRec::ERecType type = r.getType();				// check if type is integer
 	if (type == QEnvRec::kInteger) {
 		return r.getValue().toInt();					// ok, return key value
@@ -398,24 +408,25 @@ int QEnv::getValue(const char * key, int defVal) {
 //! \verbatim
 //! Name:           QEnv::getValue
 //! Purpose:        Get value of given entry
-//! Arguments:      const char * key      -- key name
-//!                 double defVal         -- default value
-//! Results:        double result         -- resulting value           
+//! Arguments:      Char_t * key        -- key name
+//!                 Double_t defVal     -- default value
+//! Results:        Double_t result     -- resulting value           
 //! Description:    If entry exists *and* its type is double returns value.
 //!                 Otherwise returns defVal.
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-double QEnv::getValue(const char * key, double defVal) {
+Double_t QEnv::getValue(const Char_t * key, Double_t defVal) {
 
-	int n = this->find(key);
-	if (n == -1) return defVal;
-	QEnvRec r = qEnvList[n];
-	QEnvRec::ERecType type = r.getType();
+	QList<Int_t> xl;
+	Int_t n = this->find(key, xl);						// check if key already exists
+	if (n != 1) return defVal; 							// not found or ambiguous: we take default
+	QEnvRec r = qEnvList[xl[0]];						// fetch entry from database
+	QEnvRec::ERecType type = r.getType();				// check if type is double
 	if (type == QEnvRec::kDouble) {
-		return r.getValue().toDouble();
-	} else {
+		return r.getValue().toDouble(); 				// ok, return key val
+	} else {											// failed - warning: not the right type
 		cerr << "QEnv::getValue(): Key " << r.getKey().toAscii().data() << " - not of type \"double\"" << endl;
 		return defVal;
 	}
@@ -426,20 +437,21 @@ double QEnv::getValue(const char * key, double defVal) {
 //! \verbatim
 //! Name:           QEnv::getValue
 //! Purpose:        Get value of given entry
-//! Arguments:      const char * key      -- key name
-//!                 const char * defVal   -- default value
-//! Results:        const char * result   -- resulting value           
+//! Arguments:      Char_t * key          -- key name
+//!                 Char_t * defVal       -- default value
+//! Results:        Char_t * result       -- resulting value           
 //! Description:    If entry exists returns value (even if type doesn't match).
 //!                 Otherwise returns defVal.
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-const char * QEnv::getValue(const char * key, const char * defVal) {
+const Char_t * QEnv::getValue(const Char_t * key, const Char_t * defVal) {
 
-	int n = this->find(key);
-	if (n == -1) return defVal;
-	return qEnvList[n].getValue().toAscii().data();
+	QList<Int_t> xl;
+	Int_t n = this->find(key, xl);						// check if key already exists
+	if (n > 1) return defVal; 							// ambiguous: we take default
+	return qEnvList[xl[0]].getValue().toAscii().data();
 }
 
 //__________________________________________________________________[QT METHOD]
@@ -447,22 +459,50 @@ const char * QEnv::getValue(const char * key, const char * defVal) {
 //! \verbatim
 //! Name:           QEnv::lookup
 //! Purpose:        Search for a given key
-//! Arguments:      const char * key    -- name of key
+//! Arguments:      Char_t * key        -- name of key
+//!                 Bool_t singleMatch  -- kTRUE: look for unique match
 //! Results:        QEnvRec & record    -- database record
 //! Description:    Searches for a given entry.
-//!                 Returns record from database if found,
-//!                 returns an empty record otherwise.
-//!                 Can be tested by use of QEnvRec::isEmpty().
+//!                 Returns matching record from database.
+//!                 Returns empty record
+//!                         if key not found
+//!                         or singleMatch=kTRUE and more than 1 match
+//!                 Empty record can be tested by use of QEnvRec::isEmpty().
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-QEnvRec & QEnv::lookup(const char * key) {
+QEnvRec & QEnv::lookup(const Char_t * key, Bool_t singleMatch) {
 
-	for (int i = 0; i < qEnvList.size(); i++) {
-		if (qEnvList[i].getKey() == key) return qEnvList[i];
-	}
-	return emptyRec;
+	QList<Int_t> xl;
+	Int_t n = this->find(key, xl);						// check if key already exists
+	if (n == 0) return emptyRec;						// not found: return empty record
+	if (singleMatch && (n > 1)) return emptyRec; 		// more than 1 match: return empty record
+	return qEnvList[xl[0]]; 							// return matching (=first) entry
+}
+
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::lookup
+//! Purpose:        Search for a given key
+//! Arguments:      Char_t * key              -- name of key
+//!                 QList<QEnvRec> & recList  -- list of matching records
+//! Results:        Int_t nofEntries          -- number of entries in list
+//! Description:    Searches for a given entry.
+//!                 Returns matching record(s) from database in a list.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
+Int_t QEnv::lookup(const Char_t * key, QList<QEnvRec> & recList) {
+
+	QList<Int_t> xl;
+	Int_t n = find(key, xl);
+	recList.clear();
+	if (n == 0) return(0);
+	for (Int_t i = 0; i < n; i++) recList.append(qEnvList[xl[i]]);
+	return(n);
 }
 
 //__________________________________________________________________[QT METHOD]
@@ -515,20 +555,37 @@ QEnvRec & QEnv::next() {
 //! \verbatim
 //! Name:           QEnv::find
 //! Purpose:        Find entry
-//! Arguments:      const char * key    -- name of key
-//! Results:        int index           -- index of key in database
-//!                                        or -1 if not found      
+//! Arguments:      Char_t * key            -- name of key
+//!                 QList<Int_t> & idxList  -- list of indices
+//! Results:        Int_t nofEntries        -- number of matching entries
 //! Description:    Searches for a given entry
+//!                 As keys may contain dot-separated substrings we compare
+//!                 these substrings from right to left to check if <key>
+//!                 matches (part of) an entry in the list.
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
-int QEnv::find(const char * key) {
+Int_t QEnv::find(const Char_t * key, QList<Int_t> & idxList) {
 
-	for (int i = 0; i < qEnvList.size(); i++) {
-		if (qEnvList[i].getKey() == key) return i;
+	QString ks = key;
+	QStringList kl = ks.split(".");
+	Int_t klng = kl.size();
+
+	idxList.clear();
+	for (Int_t i = 0; i < qEnvList.size(); i++) {
+		QString es = qEnvList[i].getKey();
+		QStringList el = es.split(".");
+		Int_t elng = el.size();
+		if (klng > elng) continue;
+		Bool_t match = kTRUE;
+		Int_t ex = elng - 1;
+		for (Int_t kx = klng - 1; kx >= 0; kx--, ex--) {
+			if (kl[kx] != el[ex]) { match = kFALSE; break; }
+		}
+		if (match) idxList.append(i);
 	}
-	return -1;
+	return idxList.size();
 }
 
 //__________________________________________________________________[QT METHOD]
@@ -545,12 +602,12 @@ int QEnv::find(const char * key) {
 
 void QEnv::print() {
 
-	int lkey = this->getKeyLength();
+	Int_t lkey = this->getKeyLength();
 	cout << endl << "Environment read from file " << qEnvFile.toAscii().data() << ":" << endl;
 	cout << "-------------------------------------------------------------------------------" << endl;
 	printf("%-3s    %-*s %-6s %s\n", "idx", lkey, "key", "type", "value");
 	cout << "-------------------------------------------------------------------------------" << endl;
-	for (int i = 0; i < qEnvList.size(); i++) {
+	for (Int_t i = 0; i < qEnvList.size(); i++) {
 		QEnvRec e = qEnvList[i];
 		e.print(i, lkey);
 	}
@@ -563,16 +620,16 @@ void QEnv::print() {
 //! Name:           QEnv::getKeyLength                                      
 //! Purpose:        Calculate length of key names                           
 //! Arguments:      --                                                      
-//! Results:        int lkey           -- length of longest key name        
+//! Results:        Int_t lkey           -- length of longest key name        
 //! Description:    Calcuates longest length of key                            
 //! Keywords: 
 //! \endverbatim                                                              
 //////////////////////////////////////////////////////////////////////////////
 
-int QEnv::getKeyLength() {
+Int_t QEnv::getKeyLength() {
 
-	int lkey = 0;
-	for (int i = 0; i < qEnvList.size(); i++) {
+	Int_t lkey = 0;
+	for (Int_t i = 0; i < qEnvList.size(); i++) {
 		QString k = qEnvList[i].getKey();
 		if (k.size() > lkey) lkey = k.size();
 	}

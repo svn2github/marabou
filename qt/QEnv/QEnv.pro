@@ -3,7 +3,7 @@ LANGUAGE	= C++
 
 CONFIG	+= qt
 
-INCLUDEPATH += inc
+INCLUDEPATH += inc $(ROOTSYS)/include
 HEADERS	+= inc/QEnv.h
 SOURCES	+= src/QEnv.cxx src/qenvExample.cxx 
 TARGET = qenvExample
