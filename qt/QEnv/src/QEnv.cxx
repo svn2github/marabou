@@ -9,8 +9,8 @@
 //! Keywords:
 //! Author:         R. Lutter
 //! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! Revision:       $Id: QEnv.cxx,v 1.6 2009-01-14 16:15:33 Rudolf.Lutter Exp $       
-//! Date:           $Date: 2009-01-14 16:15:33 $
+//! Revision:       $Id: QEnv.cxx,v 1.7 2009-01-15 07:22:30 Rudolf.Lutter Exp $       
+//! Date:           $Date: 2009-01-15 07:22:30 $
 //!
 //! Format:         Entry of the envrironment database:
 //!                      <key>: <value>
@@ -33,6 +33,19 @@
 #include <QStringList>
 
 #include "QEnv.h"
+
+//__________________________________________________________[DOXYGEN MAINPAGE]
+//////////////////////////////////////////////////////////////////////////////
+//! \mainpage
+//! \verbatim
+//! Class QEnv: a QT equivalent for ROOT's TEnv class
+//! Maintains environment lists. See also TEnv documentation.
+//!
+//! $Author: Rudolf.Lutter $
+//! $Revision: 1.7 $       
+//! $Date: 2009-01-15 07:22:30 $
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
 
 using namespace std;
 
