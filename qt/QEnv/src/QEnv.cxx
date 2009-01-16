@@ -9,8 +9,8 @@
 //! Keywords:
 //! Author:         R. Lutter
 //! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! Revision:       $Id: QEnv.cxx,v 1.9 2009-01-16 12:53:42 Rudolf.Lutter Exp $       
-//! Date:           $Date: 2009-01-16 12:53:42 $
+//! Revision:       $Id: QEnv.cxx,v 1.10 2009-01-16 15:10:19 Rudolf.Lutter Exp $       
+//! Date:           $Date: 2009-01-16 15:10:19 $
 //!
 //! Format:         Entry of the envrironment database:
 //!                      <key>: <value>
@@ -43,8 +43,8 @@
 //! Maintains environment lists. See also TEnv documentation.
 //!
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.9 $       
-//! $Date: 2009-01-16 12:53:42 $
+//! $Revision: 1.10 $       
+//! $Date: 2009-01-16 15:10:19 $
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
@@ -109,15 +109,22 @@ QEnv::QEnv(const Char_t * fileName, Bool_t verbose) {
 void QEnvRec::setType(QString & value) {
 
 	QString v = value;
+
+	QString bv = v.toUpper();
+	if (bv == "TRUE" || bv == "T" || bv == "FALSE" || bv == "F") { qRecType = QEnvRec::kBoolean; return; }
+
 	v += " 0";									// append "<space>0"
+
 	Int_t v1, v2;
 	istringstream istr(v.toAscii().data()); 	// then decode using format "<int> <int>"
 	istr >> v1 >> v2;							// check if we got 2 ints: v1 should be same as <value>, v2 should be "0"
 	if (v2 == 0 && v1 == strtol(value.toAscii().data(), NULL, 10)) { qRecType = QEnvRec::kInteger; return; }
+
 	Double_t v3;									// didn't work: try format "<double> <int>"
 	istringstream dstr(v.toAscii().data());
 	dstr >> v3 >> v2;							// check if we got 1 double and 1 int: v1 should be same as <value>, v2 should be "0"
 	if (v2 == 0 && v3 == strtod(value.toAscii().data(), NULL)) { qRecType = QEnvRec::kDouble; return; }
+
 	qRecType = QEnvRec::kString;				// didn't work: take string as default
 }
 
@@ -142,6 +149,7 @@ void QEnvRec::print(Int_t recNo, Int_t lkey) {
 		case QEnvRec::kEmpty: return;
 		case QEnvRec::kInteger: type = "int"; break;
 		case QEnvRec::kDouble: type = "dbl"; break;
+		case QEnvRec::kBoolean: type = "bool"; break;
 		case QEnvRec::kString: type = "str"; break;
 	}
 	if (recNo == -1) {
@@ -275,14 +283,55 @@ void QEnv::setValue(const Char_t * key, Int_t value) {
 		QString k = key;							// define key name
 		QEnvRec * e = new QEnvRec(k, v);			// create new database record
 		qCurIndex = -1; 							// iteration has to be restarted
-		e->setType(QEnvRec::kInteger); 			// type is integer (or octal or hex)
+		e->setType(QEnvRec::kInteger); 				// type is integer
 		qEnvList.append(*e);						// add entry to list
 		if (this->isVerbose()) cout << "[QEnv::setValue():: Creating entry \"" << key << "\", value = " << value << endl;
 	} else if (n == 1) {
-		QEnvRec r = qEnvList[xl[0]];					// already present at position <n> in list
+		QEnvRec r = qEnvList[xl[0]];				// already present at position <n> in list
 		QEnvRec::ERecType type = r.getType();		// check if type is integer
-		if ((type == QEnvRec::kInteger) == 0) {		// no - warning: type changed
+		if (type != QEnvRec::kInteger) {			// no - warning: type changed
 			cerr << "QEnv::setValue(): Key " << r.getKey().toAscii().data() << " - changed type to \"int\"" << endl;
+		}
+		r.setValue(value);							// set new key value
+		qEnvList.replace(n, r); 					// replace old entry at position <n> by modified one
+		if (this->isVerbose()) cout << "[QEnv::setValue():: Changing entry \"" << key << "\", value = " << value << endl;
+	} else {
+		cerr << "QEnv::setValue(): Key " << key << " matches more than one entry" << endl;
+	}
+}
+
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::setValue
+//! Purpose:        Set or create env entry from integer
+//! Arguments:      Char_t * key     -- key name
+//!                 Bool_t value     -- value
+//! Results:        -- 
+//! Description:    If entry already exists changes its value.
+//!                 Otherwise creates a new entry.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
+void QEnv::setValue(const Char_t * key, Bool_t value) {
+
+	QList<Int_t> xl;
+	Int_t n = this->find(key, xl);					// check if key already exists
+	if (n == 0) {
+		QString v;									// not found
+		v.setNum(value);							// convert int value to string
+		QString k = key;							// define key name
+		QEnvRec * e = new QEnvRec(k, v);			// create new database record
+		qCurIndex = -1; 							// iteration has to be restarted
+		e->setType(QEnvRec::kBoolean); 				// type is boolean
+		qEnvList.append(*e);						// add entry to list
+		if (this->isVerbose()) cout << "[QEnv::setValue():: Creating entry \"" << key << "\", value = " << value << endl;
+	} else if (n == 1) {
+		QEnvRec r = qEnvList[xl[0]];				// already present at position <n> in list
+		QEnvRec::ERecType type = r.getType();		// check if type is integer
+		if (type != QEnvRec::kBoolean) {			// no - warning: type changed
+			cerr << "QEnv::setValue(): Key " << r.getKey().toAscii().data() << " - changed type to \"boolean\"" << endl;
 		}
 		r.setValue(value);							// set new key value
 		qEnvList.replace(n, r); 					// replace old entry at position <n> by modified one
@@ -401,6 +450,35 @@ Int_t QEnv::getValue(const Char_t * key, Int_t defVal) {
 		return r.getValue().toInt();					// ok, return key value
 	} else {											// failed - warning: not the right type
 		cerr << "QEnv::getValue(): Key " << r.getKey().toAscii().data() << " - not of type \"int\"" << endl;
+		return defVal;									// return default
+	}
+}
+
+//__________________________________________________________________[QT METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \verbatim
+//! Name:           QEnv::getValue
+//! Purpose:        Get value of given entry
+//! Arguments:      Char_t * key        -- key name
+//!                 Bool_t defVal       -- default value
+//! Results:        Bool_t result       -- resulting value           
+//! Description:    If entry exists *and* its type is boolean returns value.
+//!                 Otherwise returns defVal.
+//! Keywords:
+//! \endverbatim
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t QEnv::getValue(const Char_t * key, Bool_t defVal) {
+
+	QList<Int_t> xl;
+	Int_t n = this->find(key, xl);						// check if key already exists
+	if (n != 1) return defVal; 							// not found or ambiguous: we take default
+	QEnvRec r = qEnvList[xl[0]];						// fetch entry from database
+	QEnvRec::ERecType type = r.getType();				// check if type is integer
+	if (type == QEnvRec::kBoolean) {
+		return (r.getValue() == "TRUE");				// ok, return key value
+	} else {											// failed - warning: not the right type
+		cerr << "QEnv::getValue(): Key " << r.getKey().toAscii().data() << " - not of type \"boolean\"" << endl;
 		return defVal;									// return default
 	}
 }
