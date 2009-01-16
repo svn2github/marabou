@@ -5,7 +5,7 @@ CONFIG	+= qt
 
 INCLUDEPATH += inc $(ROOTSYS)/include
 HEADERS	+= inc/QEnv.h
-SOURCES	+= src/QEnv.cxx src/qenvExample.cxx 
+SOURCES	+= src/QEnv.cxx exa/qenvExample.cxx 
 TARGET = qenvExample
 
 unix {

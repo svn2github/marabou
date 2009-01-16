@@ -9,20 +9,21 @@
 //! Keywords:
 //! Author:         R. Lutter
 //! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! Revision:       $Id: QEnv.cxx,v 1.8 2009-01-15 12:08:44 Rudolf.Lutter Exp $       
-//! Date:           $Date: 2009-01-15 12:08:44 $
+//! Revision:       $Id: QEnv.cxx,v 1.9 2009-01-16 12:53:42 Rudolf.Lutter Exp $       
+//! Date:           $Date: 2009-01-16 12:53:42 $
 //!
 //! Format:         Entry of the envrironment database:
 //!                      <key>: <value>
 //!                 where
-//!                      <key> is a dot-separated string like a X resource
+//!                      <key> is a dot-separated string like a X resource,
+//!                            substrings between dots may be "*" to denote wildcard
 //!                      <value> is integer, double, or string
 //!                 Setting or getting a key value will be type-checked,
 //!                 thus you will get a warning when changing the type on setValue()
 //!                 and will get the default value instead of the true one
 //!                 when accessing a key with wrong type by getValue().
-//!                 Setting/getting a key via with type=string is always allowed
-//!                 as keys as well as values are being stored as strings.
+//!                 Setting/getting a key via type=string is always allowed
+//!                 as keys and values are being stored as strings.
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
@@ -42,8 +43,8 @@
 //! Maintains environment lists. See also TEnv documentation.
 //!
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.8 $       
-//! $Date: 2009-01-15 12:08:44 $
+//! $Revision: 1.9 $       
+//! $Date: 2009-01-16 12:53:42 $
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
@@ -82,6 +83,7 @@ QEnvRec::QEnvRec(QString & key, QString & value) {
 //! Description:    Main QEnv object
 //! Keywords:
 //! \endverbatim
+//! \example qenvExample.cxx
 //////////////////////////////////////////////////////////////////////////////
 
 QEnv::QEnv(const Char_t * fileName, Bool_t verbose) {
@@ -562,6 +564,7 @@ QEnvRec & QEnv::next() {
 //!                 As keys may contain dot-separated substrings we compare
 //!                 these substrings from right to left to check if <key>
 //!                 matches (part of) an entry in the list.
+//!                 A substring denotes a wildcard by setting it to "*".
 //! Keywords:
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
@@ -581,6 +584,7 @@ Int_t QEnv::find(const Char_t * key, QList<Int_t> & idxList) {
 		Bool_t match = kTRUE;
 		Int_t ex = elng - 1;
 		for (Int_t kx = klng - 1; kx >= 0; kx--, ex--) {
+			if (el[ex] == "*") continue;
 			if (kl[kx] != el[ex]) { match = kFALSE; break; }
 		}
 		if (match) idxList.append(i);
@@ -595,9 +599,10 @@ Int_t QEnv::find(const Char_t * key, QList<Int_t> & idxList) {
 //! Purpose:        Print entries
 //! Arguments:      --
 //! Results:        --      
-//! Description:    Prints all entries of QEnv database.
+//! Description:    Outputs all entries of QEnv database to cout.
 //! Keywords:
 //! \endverbatim
+//! \example rootrc.list
 //////////////////////////////////////////////////////////////////////////////
 
 void QEnv::print() {
