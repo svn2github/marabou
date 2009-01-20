@@ -1,21 +1,18 @@
 #ifndef C_STYLE_PROTOS
 #include <Rtypes.h>
-#define XC	extern "C"
+#define XC	extern "C"		/*!< ROOT/C==: extern "C", C: n/a */
 #else
 #define XC
 #endif
 
-//_________________________________________________________[C DEFINITION FILE]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbsio_protos.h
-// Purpose:        C interface to mbsio calls
-// Description:    C prototypes for mbsio
-// Author:         R. Lutter
-// Revision:       $Id: mbsio_protos.h,v 1.9 2006-11-07 12:31:51 Rudolf.Lutter Exp $       
-// Date:           
-// URL:            
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
+/******************************************************************************/
+/*! \file			mbsio_protos.h
+	\brief			C interface to mbsio calls
+	\details		Defines protoypes of mbsio calls to be used with C and C++
+	\author 		R. Lutter
+	\version		$Revision: 1.10 $       
+	\date           $Date: 2009-01-20 14:27:30 $
+*******************************************************************************/
 
 XC	char * bto_get_short(short * out, char * in, int cnt, int bytord);
 XC	char * bto_get_int32(int * out, char * in, int cnt, int bytord);

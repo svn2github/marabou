@@ -1,14 +1,21 @@
 #include "typedefs.h"
-/* Generated from EE$ROOT:[GOOFY.VME]SA$VESHE.VMETEMP;  */
-/* Swapping enabled           */
-  /*  ================= GSI VME Subevent header =======================  */
-typedef struct
+
+/******************************************************************************/
+/*!	\file		s_veshe.h
+	\brief		GSI VME subevent header
+	\author 	GSI
+	\version	$Revision: 1.2 $       
+	\date		$Date: 2009-01-20 14:27:30 $
+*******************************************************************************/
+
+struct _s_veshe 			/*! GSI VME subevent header */
 {
-INTS4 l_dlen;   /*  Data length +2 in words */
-INTS2 i_subtype; 
-INTS2 i_type; 
-CHARS h_control;   /*  Processor type code */
-CHARS h_subcrate;   /*  Subcrate number */
-INTS2 i_procid;   /*  Processor ID [as loaded from VAX] */
-} s_veshe;
-  /* ------------------------------------------------------------------ */
+	INTS4 l_dlen;			/*!< data length + 2 in words */
+	INTS2 i_subtype;		/*!< subtype */ 
+	INTS2 i_type;			/*!< type */ 
+	CHARS h_control;		/*!< processor type */
+	CHARS h_subcrate;		/*!< crate number */
+	INTS2 i_procid; 		/*!< processor ID */
+};
+
+typedef struct _s_veshe s_veshe;	/*!< GSI VME subevent header */

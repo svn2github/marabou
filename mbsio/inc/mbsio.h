@@ -1,416 +1,212 @@
-#ifndef __mbsio_h__
-#define __mbsio_h__
+#ifndef __MBSio_h__
+#define __MBSio_h__
 
-/*INCLUDEFILE*****************************************************************
-NAME
-	mbsio/inc/mbsio.h
-AUTHOR
-	R. Lutter
-PURPOSE
-	Structs & defs to read MBS data from tape or disk
-DATE
-	%G%
-VERSION
-	%I%
-TYPEDEFS
-
-KEYWORDS
-
-SEE ALSO
-
-*****************************************************************************/
+/******************************************************************************/
+/*! \file			mbsio.h
+	\brief			Structs for MBS I/O
+	\details		Defines structs to read MBS data streams
+	\author 		R. Lutter
+	\version		$Revision: 1.17 $       
+	\date           $Date: 2009-01-20 14:27:30 $
+*******************************************************************************/
 
 #include "typedefs.h"
 #include "s_bufhe.h"
 #include "s_evhe.h"
 #include "s_filhe.h"
 #include "s_vehe.h"
-#include "s_vesfb.h"
 #include "s_veshe.h"
 
-/*BITS & BYTES****************************************************************
-NAME
-	Miscellaneous
-AUTHOR
-	R. Lutter
-PURPOSE
-	Definitions, constants
-DEFINITION
-.	MBS_ID_WORD			-- internal struct id
-.	MBS_SIZEOF_DATA_W	-- length of data (words)
-.	MBS_SIZEOF_DATA_B	-- ... (bytes)
-
-							Connect type:
-.	MBS_CTYPE_FILE		--		file
-.	MBS_CTYPE_SYNC		--		synchronous via transport manager
-.	MBS_CTYPE_ASYNC 	--		asynchronous via stream server
-.	MBS_CTYPE_REMOTE	--		remote tape
-
-.	MBS_TY_BUFFER			Buffer type:
-.	MBS_BTYPE_FHEADER	--		FileHeader
-.	MBS_BTYPE_VME		--		VME formatted data
-.	MBS_BTYPE_EOF		--		End of file
-.	MBS_BTYPE_ERROR		--		Error
-.	MBS_BTYPE_RAW		--		Raw mode
-
-.	MBS_TY_EVENT			Event type:
-.	MBS_ETYPE_VME		--		VME formatted data
-.	MBS_ETYPE_EOF		--		End of file
-.	MBS_ETYPE_WAIT		--		Wait for write complete
-.	MBS_ETYPE_ERROR		--		Error
-.	MBS_ETYPE_RAW		--		Raw mode
-
-.	MBS_TY_SUBEVENT			Subevent type:
-.	MBS_STYPE_CAMAC		--		CAMAC data
-.	MBS_STYPE_CAMAC_WO_ID		--		CAMAC data without id
-.	MBS_STYPE_TIME_STAMP		--		Time stamp
-.	MBS_ETYPE_EOE		--		End of event
-.	MBS_STYPE_ERROR		--		Error
-.	MBS_STYPE_RAW		--		Raw mode
-.	MBS_STYPE_DUMMY		--		MBS dummy subevent
-
-.	MBS_L_STR			-- string length
-.	MBS_L_NAME          -- length of an object name
-
-.	MBS_N_BUFFERS		-- number of buffers in the buffer ring
-
-.	MBS_ODD_NOF_PARAMS	-- indicates an odd number of params
-DESCRIPTION
-
-KEYWORDS
-
-SEE ALSO
-
-*****************************************************************************/
-
-#define MBS_ID_WORD				"%MBS_RAW_DATA%"
-#define MBS_SIZEOF_DATA_W		0x4000
-#define MBS_SIZEOF_DATA_B		0x8000
+#define MBS_ID_WORD				"%MBS_RAW_DATA%"			/*!< magic id */
+#define MBS_SIZEOF_DATA_W		0x4000						/*!< length of data (words) */
+#define MBS_SIZEOF_DATA_B		0x8000						/*!< length of data (bytes) */
 
 #define MBS_RTYPE_ERROR			0xffffffff
 
-#define MBS_CTYPE_FILE			0x1
-#define MBS_CTYPE_SYNC			0x2
-#define MBS_CTYPE_ASYNC 		0x4
-#define MBS_CTYPE_REMOTE		0x8
-#define MBS_CTYPE_FILE_LMD		(MBS_CTYPE_FILE | 0x10)
-#define MBS_CTYPE_FILE_MED		(MBS_CTYPE_FILE | 0x20)
+#define MBS_CTYPE_FILE			0x1 						/*!< connection: file */
+#define MBS_CTYPE_SYNC			0x2 						/*!< connection: synchronous via transport manager */
+#define MBS_CTYPE_ASYNC 		0x4 						/*!< connection: asynchronous via stream server */
+#define MBS_CTYPE_REMOTE		0x8 						/*!< connection: remote tape */
+#define MBS_CTYPE_FILE_LMD		(MBS_CTYPE_FILE | 0x10) 	/*!< connection: file, format is LMD */
+#define MBS_CTYPE_FILE_MED		(MBS_CTYPE_FILE | 0x20) 	/*!< connection: file, format is MED */
 
-#define MBS_TY_FHEADER			0x1
-#define MBS_X_FHEADER			0
+#define MBS_TY_FHEADER			0x1 						/*!< type: file header */
+#define MBS_X_FHEADER			0 							/*!< index: file header */
 
-#define MBS_TY_BUFFER			0x2
-#define MBS_X_BUFFER			1
-#define MBS_BTYPE_FHEADER		0x000107d0		// [1,2000]
-#define MBS_BTYPE_VME			0x0001000a		// [1,10]
-#define MBS_BTYPE_EOF			0
-#define MBS_BTYPE_ERROR			0xffffffff
-#define MBS_BTYPE_ABORT			0xfffffffe
-#define MBS_BTYPE_RAW			0xfffffffd
+#define MBS_TY_BUFFER			0x2 						/*!< type: buffer */
+#define MBS_X_BUFFER			1 							/*!< index: buffer */ 
+#define MBS_BTYPE_FHEADER		0x000107d0					/*!< file header [1,2000] */
+#define MBS_BTYPE_VME			0x0001000a					/*!< vme event [1,10] */
+#define MBS_BTYPE_EOF			0							/*!< end of file */
+#define MBS_BTYPE_ERROR			0xffffffff					/*!< error */
+#define MBS_BTYPE_ABORT			0xfffffffe					/*!< abort */
+#define MBS_BTYPE_RAW			0xfffffffd					/*!< raw mode */
 
-#define MBS_TY_EVENT			0x4
-#define MBS_X_EVENT				2
-#define MBS_ETYPE_VME			0x0001000a		// [1,10]
-#define MBS_ETYPE_EOF			MBS_BTYPE_EOF
-#define MBS_ETYPE_ERROR			MBS_BTYPE_ERROR
-#define MBS_ETYPE_ABORT			MBS_BTYPE_ABORT
-#define MBS_ETYPE_RAW			MBS_BTYPE_RAW
-#define MBS_ETYPE_WAIT			0xfffffffc
-#define MBS_ETYPE_EOW			0xaffec0c0
-#define MBS_ETYPE_START			0xfffffffb
-#define MBS_ETYPE_STOP			0xfffffffa
+#define MBS_TY_EVENT			0x4 						/*!< type: event */
+#define MBS_X_EVENT				2 							/*!< index: event */ 
+#define MBS_ETYPE_VME			0x0001000a					/*!< vme event [1,10] */
+#define MBS_ETYPE_EOF			MBS_BTYPE_EOF				/*!< end of file */
+#define MBS_ETYPE_ERROR			MBS_BTYPE_ERROR				/*!< error */
+#define MBS_ETYPE_ABORT			MBS_BTYPE_ABORT				/*!< abort */
+#define MBS_ETYPE_RAW			MBS_BTYPE_RAW				/*!< raw mode */
+#define MBS_ETYPE_WAIT			0xfffffffc					/*!< wait for write complete */
+#define MBS_ETYPE_EOW			0xaffec0c0					/*!< end of wait loop */
+#define MBS_ETYPE_START			0xfffffffb					/*!< start event */
+#define MBS_ETYPE_STOP			0xfffffffa					/*!< stop event */
 
-#define MBS_TY_SUBEVENT				0x8
-#define MBS_X_SUBEVENT				3
-#define MBS_STYPE_CAMAC_1			0x0001000a		// [1,10]
-#define MBS_STYPE_CAMAC_WO_ID_1		0x000b000a		// [11,10]
-#define MBS_STYPE_CAMAC_MULT_MOD	0x000c000a		// [12,10]
-#define MBS_STYPE_CAMAC_2			0x000d000a		// [13,10]
-#define MBS_STYPE_CAMAC_WO_ID_2		0x000e000a		// [14,10]
-#define MBS_STYPE_CAMAC_RAW 		0x000F000a		// [15,10]
-#define MBS_STYPE_CAMAC_DGF_1		0x0015000a		// [21,10]
-#define MBS_STYPE_CAMAC_DGF_2		0x0016000a		// [22,10]
-#define MBS_STYPE_CAMAC_DGF_3		0x0017000a		// [23,10]
-#define MBS_STYPE_CAMAC_SILENA_1	0x001f000a		// [31,10]
-#define MBS_STYPE_CAMAC_SILENA_2	0x0020000a		// [32,10]
-#define MBS_STYPE_VME_CAEN_1		0x0029000a		// [41,10]
-#define MBS_STYPE_VME_CAEN_2		0x002a000a		// [42,10]
-#define MBS_STYPE_VME_CAEN_3		0x002b000a		// [43,10]
-#define MBS_STYPE_VME_CAEN_Q1		0x002c000a		// [44,10]
-#define MBS_STYPE_VME_SIS_1			0x0033000a		// [51,10]
-#define MBS_STYPE_VME_SIS_2			0x0034000a		// [52,10]
-#define MBS_STYPE_VME_SIS_3			0x0035000a		// [53,10]
-#define MBS_STYPE_VME_SIS_33		0x0036000a		// [54,10]
-#define MBS_STYPE_CAMAC_CPTM		0x003d000a		// [61,10]
-#define MBS_STYPE_DATA_SHORT		0x0040000a		// [64,10]
-#define MBS_STYPE_DATA_INT			0x0041000a		// [65,10]
-#define MBS_STYPE_DATA_FLOAT		0x0042000a		// [66,10]
-#define MBS_STYPE_HITBUF_1			0x0047000a		// [71,10]
-#define MBS_STYPE_TIME_STAMP		0x00012328		// [1,9000]
-#define MBS_STYPE_DEAD_TIME 		0x00022328		// [2,9000]
-#define MBS_STYPE_DUMMY 	 		0x006f006f		// [111,111]
-#define MBS_STYPE_EOE				MBS_BTYPE_EOF
-#define MBS_STYPE_ERROR				MBS_BTYPE_ERROR
-#define MBS_STYPE_ABORT				MBS_BTYPE_ABORT
-#define MBS_STYPE_RAW		 		MBS_BTYPE_RAW
+#define MBS_TY_SUBEVENT				0x8							/*!< type: subevent */
+#define MBS_X_SUBEVENT				3							/*!< index: subevent */ 
+#define MBS_STYPE_CAMAC_1			0x0001000a					/*!< subevent [1,10]: camac (chn,data) */
+#define MBS_STYPE_CAMAC_WO_ID_1		0x000b000a					/*!< subevent [11,10]: camac w/o chn number */
+#define MBS_STYPE_CAMAC_MULT_MOD	0x000c000a					/*!< subevent [12,10]: camac multi module */
+#define MBS_STYPE_CAMAC_2			0x000d000a					/*!< subevent [13,10]: camac, data stored in hit buffer */
+#define MBS_STYPE_CAMAC_WO_ID_2		0x000e000a					/*!< subevent [14,10]: camac, data stored in hit buffer */
+#define MBS_STYPE_CAMAC_RAW 		0x000F000a					/*!< subevent [15,10]: camac, raw format */
+#define MBS_STYPE_CAMAC_DGF_1		0x0015000a					/*!< subevent [21,10]: camac, dgf, accumulate histos directly */
+#define MBS_STYPE_CAMAC_DGF_2		0x0016000a					/*!< subevent [22,10]: camac, dgf, data stored in hit buffer */
+#define MBS_STYPE_CAMAC_DGF_3		0x0017000a					/*!< subevent [23,10]: camac, dgf, data stored in hit buffer */
+#define MBS_STYPE_CAMAC_SILENA_1	0x001f000a					/*!< subevent [31,10]: camac, silena 4418 */
+#define MBS_STYPE_CAMAC_SILENA_2	0x0020000a					/*!< subevent [32,10]: camac, silena 4418, data stored in hit buffer */
+#define MBS_STYPE_VME_CAEN_1		0x0029000a					/*!< subevent [41,10]: vme, caen v875, v775 */
+#define MBS_STYPE_VME_CAEN_2		0x002a000a					/*!< subevent [42,10]: vme, caen v875, v775, data stored in hit buffer */
+#define MBS_STYPE_VME_CAEN_3		0x002b000a					/*!< subevent [43,10]: vme, caen v875, v775, data stored in hit buffer */
+#define MBS_STYPE_VME_CAEN_Q1		0x002c000a					/*!< subevent [44,10]: vme, caen qdc */
+#define MBS_STYPE_VME_SIS_1			0x0033000a					/*!< subevent [51,10]: vme, struck/sis */
+#define MBS_STYPE_VME_SIS_2			0x0034000a					/*!< subevent [52,10]: vme, struck/sis, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3			0x0035000a					/*!< subevent [53,10]: vme, struck/sis, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_33		0x0036000a					/*!< subevent [54,10]: vme, struck/sis 33xx, data stored in hit buffer */
+#define MBS_STYPE_CAMAC_CPTM		0x003d000a					/*!< subevent [61,10]: camac, cptm Cologne */
+#define MBS_STYPE_DATA_SHORT		0x0040000a					/*!< subevent [64,10]: universal data container, short integer, 2 bytes */
+#define MBS_STYPE_DATA_INT			0x0041000a					/*!< subevent [65,10]: universal data container, integer, 4 bytes */
+#define MBS_STYPE_DATA_FLOAT		0x0042000a					/*!< subevent [66,10]: universal data container, float/double */
+#define MBS_STYPE_HITBUF_1			0x0047000a					/*!< subevent [71,10]: hit buffer */
+#define MBS_STYPE_TIME_STAMP		0x00012328					/*!< subevent [1,9000]: time stamp */
+#define MBS_STYPE_DEAD_TIME 		0x00022328					/*!< subevent [2,9000]: dead time */
+#define MBS_STYPE_DUMMY 	 		0x006f006f					/*!< subevent [111,111]: dummy */
+#define MBS_STYPE_EOE				MBS_BTYPE_EOF				/*!< end of event */
+#define MBS_STYPE_ERROR				MBS_BTYPE_ERROR				/*!< error */
+#define MBS_STYPE_ABORT				MBS_BTYPE_ABORT				/*!< abort */
+#define MBS_STYPE_RAW		 		MBS_BTYPE_RAW				/*!< raw mode */
 
-#define MBS_TY_STAT				0x10
-#define MBS_X_STAT				4
+#define MBS_TY_STAT				0x10						 	/*!< type: statistics */
+#define MBS_X_STAT				4						 		/*!< index: statistics */
 
-#define MBS_N_BELEMS			5
-#define MBS_N_TRIGGERS			16
-#define MBS_N_BUFFERS			5
+#define MBS_N_BELEMS			5								/*!< number if buffer elements */
+#define MBS_N_TRIGGERS			16								/*!< number of triggers */
+#define MBS_N_BUFFERS			5								/*!< number of buffers in buffer ring */
 
-#define MBS_L_STR				256
-#define MBS_L_NAME				64
+#define MBS_L_STR				256 							/*!< string length */
+#define MBS_L_NAME				64								/*!< lenght of a name string */
 
-#define MBS_ODD_NOF_PARAMS		1
+#define MBS_ODD_NOF_PARAMS		1								/*!< indicates an odd number of params */
 
-typedef int boolean;
+typedef int boolean;											/*!< type: boolean */
 
-/*C_STRUKTUR******************************************************************
-NAME
-	MBSShowElem
-AUTHOR
-	R. Lutter
-PURPOSE
-	Describe how to show a buffer element
-ELEMENTS
-.	out		-- stream to send output to
-.	redu	-- reduction rate
-DESCRIPTION
-	Structure to describe how to show a buffer element
-KEYWORDS
+struct _MBSShowElem  		/*! structure to describe how to show a buffer element */
+{
+	FILE *out;				/*!< stream to send output to */
+	int redu;				/*!< reduction */
+};
 
-SEE ALSO
+typedef struct _MBSShowElem MBSShowElem; /*!< mbsio: show a buffer element */
 
-*****************************************************************************/
+struct _MBSBufferElem 		/*! structure to describe how to process a buffer element */
+{
+	unsigned int type;		/*!< element type */
+	char *descr;			/*!< description */
+	int hsize;				/*!< header size (bytes) */
+	int hit;				/*!< # of hits */
+	int (*unpack)();		/*!< function to unpack element */
+	int (*show)();			/*!< function to to show element */
+	int (*convert)();		/*!< function to convert element data */
+};
 
-typedef struct {
-	FILE *out;
-	int redu;
-} MBSShowElem;
+typedef struct _MBSBufferElem MBSBufferElem;	 /*!< mbsio: process a buffer element */
 
-/*C_STRUKTUR******************************************************************
-NAME
-	MBSBufferElem
-AUTHOR
-	R. Lutter
-PURPOSE
-	Describe a buffer element
-ELEMENTS
-.	type	-- element type
-.	descr	-- description
-.	hsize	-- header size (bytes)
-.	hit		-- # of hits
-.	unpack	-- proc to unpack element
-.	show	-- ... to show element
-.	convert	-- ... to convert data
-DESCRIPTION
-	Structure to describe how to handle a buffer element
-KEYWORDS
+struct _MBSServerInfo 			/*! server info from MBS */
+{
+	boolean is_swapped; 		/*!< true, if data swapped */
+	int buf_size; 				/*!< buffer size */
+	int buf_p_stream; 			/*!< buffers per stream */
+	int nof_streams; 			/*!< number of streams */
+};
 
-SEE ALSO
+typedef struct _MBSServerInfo MBSServerInfo; 		/*!< mbsio: server info from MBS */
 
-*****************************************************************************/
+struct _MBSBufferPool			/*! establish a buffer pool */
+{
+	int bufno_mbs;				/*!< MBS buffer number */
+	char * data;				/*!< address of data */
+};
 
-typedef struct {
-	unsigned int type;
-	char *descr;
-	int hsize;
-	int hit;
-	int (*unpack)();
-	int (*show)();
-	int (*convert)();
-} MBSBufferElem;
+typedef struct _MBSBufferPool MBSBufferPool;	/*!< mbsio: establish a buffer pool */
 
-/*C_STRUKTUR******************************************************************
-NAME
-	MBSServerInfo
-AUTHOR
-	M. Muench
-PURPOSE
-	Server info from MBS
-ELEMENTS
-.	is_swapped		-- true, if data swapped
-.	buf_size 		-- buffer size
-.	buf_p_stream	-- buffers per stream
-.	nof_streams 	-- number of streams
-DESCRIPTION
-	Holds server info.
-KEYWORDS
+struct _MBSDataIO							/*! structure to describe MBS i/o */
+{
+	char id[16];							/*!< internal struct id: %MBS_RAW_DATA% */
+	FILE *input;							/*!< stream descr (fopen/fread) */
+	int fileno;								/*!< channel # (open/read) */
+	int filepos;							/*!< file position */
+	char device[MBS_L_STR];					/*!< name of input dev */
+	char host[MBS_L_STR];					/*!< host name */
+	unsigned int connection;				/*!< device type, MBS_DTYPE_xxxx */
+	boolean running;						/*!< trigger 14 found - running */
+	MBSBufferElem *buftype;					/*!< buffer typeE_xxxx */
+	int byte_order;							/*!< byte ordering */
+	MBSShowElem show_elems[MBS_N_BELEMS];	/*!< buffer elements to be shown automatically */
+	int bufsiz;								/*!< buffer sizeE_xxxx */
+	MBSServerInfo *server_info;				/*!< info block for server access */
+	int max_streams;						/*!< max # of streams to process */
+	int slow_down;							/*!< # of secs to wait after each stream */
+	int nof_streams;						/*!< # of streams processed so far */
+	int nof_buffers;						/*!< # of buffers */
+	int nof_events;							/*!< # of events */
+	int cur_bufno;							/*!< buffer number */
+	int cur_bufno_stream;					/*!< buffer number within current stream */
+	int bufno_mbs;							/*!< buffer number as given by MBS */
+	boolean buf_to_be_dumped;				/*!< if N>0 every Nth buffer will be dumped */
+	unsigned long long buf_ts;				/*!< buffer time stamp (vms format) */
+	unsigned long long buf_ts_start;		/*!< time stamp of first buffer */
+	char *hdr_data;							/*!< file header data */
+	MBSBufferPool buf_pool[MBS_N_BUFFERS];	/*!< buffer pool */
+	MBSBufferPool * poolpt;					/*!< pointer to current buffer in pool */
+	char *bufpt;							/*!< pointer to current data */
+	boolean buf_valid;						/*!< TRUE if buffer data valid */
+	int buf_oo_phase;						/*!< buffer out of phase */
+	MBSBufferElem *evttype;					/*!< event type */
+	int evtsiz;								/*!< event size (bytes) */
+	char *evtpt;							/*!< ptr to current event in buffer */
+	int evtno;								/*!< current event number within buffer */
+	int evtno_mbs;							/*!< event number as given by MBS */
+	char *evt_data;							/*!< copy of event data (original, byte-swapped if necessary) */
+	MBSBufferElem *sevttype;				/*!< subevent type */
+	int sevtsiz;							/*!< subevent size (bytes) */
+	char *sevtpt;							/*!< ptr to original subevent in evt_data */
+	int sevtno;								/*!< subevent number within event */
+	int nof_sevents;						/*!< # of subevents */
+	int sevt_id;							/*!< current subevent id */
+	unsigned int sevt_otype;				/*!< original subevent [subtype,type] */
+	int sevt_minwc;							/*!< min # of data words */
+	int sevt_wc;							/*!< # of data words */
+	char *sevt_data;						/*!< subevent data (unpacked) */
+};
 
-SEE ALSO
+typedef struct _MBSDataIO MBSDataIO;	/*!< mbsio: main struct to keep track of i/o */
 
-*****************************************************************************/
+struct _MBSCamacData			/*! camac data word */
+{
+	unsigned short data;		/*!< data word */
+	short subaddr;				/*!< camac subaddr A(x)+1 */
+};
 
-typedef struct {
-	boolean is_swapped;
-	int buf_size;
-	int buf_p_stream;
-	int nof_streams;
-} MBSServerInfo;
+typedef struct _MBSCamacData MBSCamacData;		/*!< mbsio: camac data word (subevent type [10,1]) */
 
-/*C_STRUKTUR******************************************************************
-NAME
-	MBSBufferPool
-AUTHOR
-	R. Lutter
-PURPOSE
-	Establish a buffer pool
-ELEMENTS
-.	bufno_mbs         -- MBS buffer number
-.	data              -- address of data
-DESCRIPTION
-	Structure to establish a buffer pool
-KEYWORDS
+struct _MBSCamacDataSW		/*! camac data word */
+{
+	unsigned short data;		/*!< data word */
+	short subaddr;				/*!< camac subaddr A(x)+1 */
+};
 
-SEE ALSO
-
-*****************************************************************************/
-
-typedef struct {
-	int bufno_mbs;
-	char * data;
-} MBSBufferPool;
-
-/*C_STRUCTURE*****************************************************************
-NAME
-	MBSDataIO
-AUTHOR
-	R. Lutter
-PURPOSE
-	MBS raw data structure
-ELEMENTS
-.	id					-- internal struct id: %MBS_RAW_DATA%
-.	input				-- input stream descr (fopen/fread)
-.	fileno				-- ... channel # (open/read)
-.	filepos             -- file position
-.	device				-- name of input dev
-.	host				-- host name
-.	connection			-- device type, MBS_DTYPE_xxxx
-.   running             -- trigger 14 found - running
-.	buftype				-- buffer type
-.	byte_order			-- byte ordering
-.	show_elems			-- buffer elements to be shown automatically
-.	bufsiz				-- buffer size
-.	server_info 		-- info block for server access
-.	max_streams 		-- max # of streams to process
-.	slow_down			-- # of secs to wait after each stream
-.	nof_streams 		-- # of streams processed so far
-.	nof_buffers			-- # of buffers
-.	nof_events			-- # of events
-.	cur_bufno			-- buffer number
-.	cur_bufno_stream	-- ... within current stream
-.	bufno_mbs           -- buffer number as given by MBS
-.   buf_to_be_dumped    -- if N>0 every Nth buffer will be dumped
-.   buf_ts              -- buffer time stamp (vms format)
-.   buf_ts_start        -- ... of first buffer
-.	hdr_data			-- file header data
-.	buf_pool			-- buffer pool
-.	poolpt              -- ... pointer to current buffer in pool
-.	bufpt				-- pointer to current data
-.	buf_valid			-- TRUE if buffer data valid
-.	buf_oo_phase        -- buffer out of phase
-.	evttype				-- event type
-.	evtsiz				-- event size (bytes)
-.	evtpt				-- ptr to current event in buffer
-.	evtno				-- current event number within buffer
-.	evtno_mbs           -- event number as given by MBS
-.	evt_data			-- copy of event data (original, byte-swapped if necessary)
-.	sevttype			-- subevent type
-.	sevtsiz				-- subevent size (bytes)
-.	sevtpt				-- ptr to original subevent in evt_data
-.	sevtno				-- current subevent number within event
-.	sevt_id				-- current subevent id
-.	sevt_otype			-- original subevent [subtype,type]
-.	sevt_minwc			-- min # of data words
-.	sevt_wc				-- # of data words
-.	sevt_data			-- subevent data (unpacked)
-DESCRIPTION
-	structure to keep track of input data
-KEYWORDS
-
-SEE ALSO
-
-*****************************************************************************/
-
-typedef struct {
-	char id[16];
-	FILE *input;
-	int fileno;
-	int filepos;
-	char device[MBS_L_STR];
-	char host[MBS_L_STR];
-	unsigned int connection;
-	boolean running;
-	MBSBufferElem *buftype;
-	int byte_order;
-	MBSShowElem show_elems[MBS_N_BELEMS];
-	int bufsiz;
-	MBSServerInfo *server_info;
-	int max_streams;
-	int slow_down;
-	int nof_streams;
-	int nof_buffers;
-	int nof_events;
-	int cur_bufno;
-	int cur_bufno_stream;
-	int bufno_mbs;
-	boolean buf_to_be_dumped;
-	unsigned long long buf_ts;
-	unsigned long long buf_ts_start;
-	char *hdr_data;
-	MBSBufferPool buf_pool[MBS_N_BUFFERS];
-	MBSBufferPool * poolpt;
-	char *bufpt;
-	boolean buf_valid;
-	int buf_oo_phase;
-	MBSBufferElem *evttype;
-	int evtsiz;
-	char *evtpt;
-	int evtno;
-	int evtno_mbs;
-	char *evt_data;
-	MBSBufferElem *sevttype;
-	int sevtsiz;
-	char *sevtpt;
-	int sevtno;
-	int nof_sevents;
-	int sevt_id;
-	unsigned int sevt_otype;
-	int sevt_minwc;
-	int sevt_wc;
-	char *sevt_data;
-} MBSDataIO;
-
-/*C_STRUKTUR******************************************************************
-NAME
-	MBSCamacData
-	MBSCamacDataSW
-AUTHOR
-	R. Lutter
-PURPOSE
-	Structure of a CAMAC data word (subevent type [10,1])
-ELEMENTS
-.	data		-- data word
-.	subaddr		-- camac subaddr A(x)+1
-DESCRIPTION
-	Describes one camac data word
-KEYWORDS
-
-SEE ALSO
-
-*****************************************************************************/
-
-typedef struct {
-	unsigned short data;
-	short subaddr;
-} MBSCamacData;
-
-typedef struct {
-	short subaddr;
-	unsigned short data;
-} MBSCamacDataSW;
+typedef struct _MBSCamacDataSW MBSCamacDataSW;	/*!< mbsio: camac data word (subevent type [10,1]) */
 
 #endif

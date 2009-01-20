@@ -1,14 +1,11 @@
-/*____________________________________________________________[C LIBRARY FILE]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbsio.c
-// Purpose:        MSB raw data input
-// Description:    Procedures to read MBS data from (remote) tape, disk, or tcp socket
-// Author:         R. Lutter
-// Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       
-// Date:           
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////// */
+/******************************************************************************/
+/*!	\file		mbsio.c
+	\brief		MSB raw data input
+	\details	Procedures to read MBS data from disk or tcp socket
+	\author 	R. Lutter
+	\version	$Revision: 1.39 $       
+	\date		$Date: 2009-01-20 14:27:31 $
+*****************************************************************************/
 
 /* include files needed by mbsio */
 
@@ -84,7 +81,7 @@ static MBSBufferElem buffer_types[] = {
 					sizeof(s_filhe),		// size
 					0,						// hits
 					NULL,					// proc to unpack
-					_mbs_show_fheader,		// proc to show data
+					(void *) _mbs_show_fheader,		// proc to show data
 					(void *) _mbs_copy_fheader		// proc to convert data
 				},
 				{	MBS_BTYPE_VME,
@@ -342,20 +339,19 @@ static MBSBufferElem sevent_type_error =
 				};
 #endif
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Open a MBS data file
+	\details	Opens an input stream to read mbs data from
+	\sa 		mbs_close_file()
+	\param[in]	device			-- name of input device
+	\param[in]	connection		-- mode of connection: f(ile), s(ynchronous), or a(synchronous)
+	\param[in]	bufsiz			-- buffer size, default = 16 kbytes
+	\param[in]	out				-- stream to send header info to (NULL = don't output header)
+	\retval 	mbs 			-- pointer to MBS database or NULL
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) {
-/*________________________________________________________[C PUBLIC FUNCTION]
-/////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_open_file
-// Purpose:        Open a MBS data file
-// Arguments:      char * device       -- name of input dev
-//                 char * connection   -- mode of connection: f(ile), s(ynchronous), or a(synchronous)
-//                 int bufsiz          -- buffer size, default = 16 kbytes
-//                 FILE * out          -- stream to send header info to (NULL = don't output header)
-// Results:        MBSDataIO * mbs     -- structure address or NULL
-// Exceptions:     mbs = NULL in case of errors
-// Description:    Opens an input stream for mbs data.
-// Keywords:
-/////////////////////////////////////////////////////////////////////////// */
 
 	FILE *input;
 	MBSDataIO *mbs;
@@ -519,17 +515,16 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	return(mbs);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Close MBS data file
+	\details	Close i/o stream and free memory
+	\sa 		mbs_open_file()
+	\param[in]	mbs 	-- ptr as returned by mbs_open_file()
+	\return 	TRUE/FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean mbs_close_file(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_close_file
-// Purpose:        Close MBS data file
-// Arguments:      MBSDataIO * mbs -- ptr as returned by mbs_open_file
-// Results:        --
-// Exceptions:     
-// Description:    Close i/o stream and free memory
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 	
 	if (!_mbs_check_active(mbs)) return(FALSE);
 
@@ -552,17 +547,14 @@ boolean mbs_close_file(MBSDataIO *mbs) {
 	return(TRUE);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Free data base
+	\details	Free memory allocated so far
+	\param[in] 	mbs 	-- ptr as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void mbs_free_dbase(MBSDataIO * mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_free_dbase
-// Purpose:        Free data base
-// Arguments:      MBSDataIO * mbs -- ptr as returned by mbs_open_file
-// Results:        --
-// Exceptions:     
-// Description:    Frees memory allocated so far.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 	
 	if (mbs != NULL) {
 		free(mbs->hdr_data);
@@ -573,18 +565,15 @@ void mbs_free_dbase(MBSDataIO * mbs) {
 	}
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		[internal] Setup access to next buffer
+	\details	Requests next buffer either from data source or from buffer pool
+	\param[in] 	mbs 	-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type	-- buffer type: MBS_BTYPE_xxxx
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_next_buffer
-// Purpose:        Get next buffer
-// Arguments:      mbs                -- ptr as returned by mbs_open_file
-// Results:        unsigned int type  -- buffer type: MBS_BTYPE_xxxx
-// Exceptions:     type = MBS_BTYPE_ERROR if error
-// Description:    Requests next buffer either from data source or from
-//                 buffer pool.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register MBSBufferPool * bpp;
 	int sc;
@@ -666,17 +655,15 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 	return(buffer_type);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		[internal] Read next buffer
+	\details	Reads one buffer and determines buffer type
+	\param[in] 	mbs 	-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type	-- buffer type: MBS_BTYPE_xxxx
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_read_buffer
-// Purpose:        Read next buffer
-// Arguments:      mbs                -- ptr as returned by mbs_open_file
-// Results:        unsigned int type  -- buffer type: MBS_BTYPE_xxxx
-// Exceptions:     type = MBS_BTYPE_ERROR if error
-// Description:    Reads one buffer and determines buffer type
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register MBSBufferPool * bpp;
 	int bytes;
@@ -756,17 +743,15 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 	return(buffer_type);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Setup access to next event
+	\details	Sets ptrs to next event struct
+	\param[in] 	mbs 	-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type	-- event type: MBS_ETYPE_xxxx
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int mbs_next_event(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_next_event
-// Purpose:        Setup next event
-// Arguments:      MBSDataIO * mbs     -- ptr as returned by mbs_open_file
-// Results:        unsigned int etype  -- event type
-// Exceptions:     etype = MBS_ETYPE_ERROR or MBS_ETYPE_EOF
-// Description:    Sets ptrs to next event struct
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	if (!_mbs_check_active(mbs)) return(MBS_ETYPE_ABORT);
 
@@ -774,33 +759,29 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 	else																return(_mbs_next_lmd_event(mbs));
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Return event trigger
+	\details	Returns trigger number assigned to current event
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	trigger 	-- event trigger
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 int mbs_get_event_trigger(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_get_event_trigger
-// Purpose:        Return event trigger
-// Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
-// Results:        int trigger              -- event trigger
-// Exceptions:     
-// Description:    Returns trigger number assigned to current event.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	return(((s_vehe *) mbs->evt_data)->i_trigger);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		[internal] Setup access to next event
+	\details	Sets ptrs to next event struct
+				(expects original LMD data from tcp or file)
+	\param[in] 	mbs 	-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type	-- event type: MBS_ETYPE_xxxx
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_next_lmd_event
-// Purpose:        Setup next event
-// Arguments:      MBSDataIO * mbs     -- ptr as returned by mbs_open_file
-// Results:        unsigned int etype  -- event type
-// Exceptions:     etype = MBS_ETYPE_ERROR or MBS_ETYPE_EOF
-// Description:    Sets ptrs to next event struct
-//                 (expects original LMD data from tcp or file)
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_bufhe *bh;
 	s_evhe *eh;
@@ -874,7 +855,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
  	memcpy(mbs->evt_data, mbs->evtpt, frag1);
 
 	eh = (s_evhe *) mbs->evt_data;
-	bto_get_int32(&etype, (char *) &eh->i_subtype, 1, bo);
+	bto_get_int32((int *) &etype, (char *) &eh->i_subtype, 1, bo);
 
 	mbs->evttype = _mbs_check_type(etype, mbs->evttype, event_types);
 	etype = (mbs->evttype)->type;
@@ -972,18 +953,16 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	return(etype);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		[internal] Setup access to next event
+	\details	Sets ptrs to next event struct
+				(expects MED data from tcp or file)
+	\param[in] 	mbs 	-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type	-- event type: MBS_ETYPE_xxxx
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_next_med_event
-// Purpose:        Setup next event
-// Arguments:      MBSDataIO * mbs     -- ptr as returned by mbs_open_file
-// Results:        unsigned int etype  -- event type [subtype,type]
-// Exceptions:     etype = MBS_ETYPE_ERROR or MBS_ETYPE_EOF
-// Description:    Sets ptrs to next event struct
-//                 (expects MBS event data from file)
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_evhe *eh;
 	s_vehe *vh;
@@ -1049,7 +1028,7 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	total += bytes_read;
 
 	eh = (s_evhe *) mbs->evt_data;
-	bto_get_int32(&etype, (char *) &eh->i_subtype, 1, bo);
+	bto_get_int32((int *) &etype, (char *) &eh->i_subtype, 1, bo);
 
 	mbs->evttype = _mbs_check_type(etype, mbs->evttype, event_types);
 
@@ -1094,17 +1073,15 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	return(etype);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Setup next subevent
+	\details	Sets ptrs to next subevent struct and decodes header
+	\param[in] 	mbs 	-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type	-- subevent type: MBS_STYPE_xxxx
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int mbs_next_sheader(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_next_sheader
-// Purpose:        Setup next subevent and decode header
-// Arguments:      MBSDataIO * mbs       -- ptr as returned by mbs_open_file
-// Results:        unsigned int setype   -- subevent type [subtype,type]
-// Exceptions:     setype = MBS_STYPE_ERROR
-// Description:    Sets ptrs to next subevent struct
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_evhe *eh;
 	s_evhe *sh;
@@ -1134,78 +1111,65 @@ unsigned int mbs_next_sheader(MBSDataIO *mbs) {
 	return(stype);
 }
 
-unsigned int mbs_get_sevent_subtypef(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_get_sevent_subtype
-// Purpose:        Return subevent subtype
-// Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
-// Results:        unsigned int subtype     -- subevent subtype
-// Exceptions:     
-// Description:    Returns subtype bits of current subevent
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Return subevent subtype
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	subtype 	-- subevent subtype
+*/
+/*-------------------------------------------------------------------------------------------*/
+
+unsigned int mbs_get_sevent_subtype(MBSDataIO *mbs) {
 
 	return(((mbs->sevttype)->type >> 16) & 0xFFFF);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Return subevent serial number
+	\details	Returns serial number of current subevent
+	\param[in] 	 mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	serial		-- subevent serial
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 int mbs_get_sevent_serial(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_get_sevent_serial
-// Purpose:        Return subevent serial number
-// Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
-// Results:        int serial               -- subevent serial
-// Exceptions:     
-// Description:    Returns serial number of current subevent
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	return(mbs->sevt_id);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Return subevent word count
+	\details	Returns word count of current subevent
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	wc			-- subevent wc
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 int mbs_get_sevent_wc(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_get_sevent_wc
-// Purpose:        Return subevent word count
-// Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
-// Results:        int wc                   -- subevent wc
-// Exceptions:     
-// Description:    Returns word count of current subevent
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	return(mbs->sevt_wc);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Return pointer to subevent data
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	data		-- ptr to subevent data
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned short * mbs_get_sevent_dataptr(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_get_sevent_dataptr
-// Purpose:        Return pointer to subevent data
-// Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
-// Results:        int seserial             -- subevent serial
-// Exceptions:     
-// Description:    Returns a pointer to subevent data
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	return((unsigned short *) mbs->sevt_data);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Get next subevent
+	\details	Converts next subevent. Needs mbs_next_sheader() to be called first
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type		-- subevent type: MBS_STYPE_xxxx
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int mbs_next_sdata(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_next_sdata
-// Purpose:        Get next subevent
-// Arguments:      MBSDataIO * mbs       -- ptr as returned by mbs_open_file
-// Results:        unsigned int setype   -- subevent type
-// Exceptions:     setype = MBS_STYPE_ERROR
-// Description:    Converts next subevent.
-//                 Needs 'mbs_next_sheader' to be called.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	int sc;
 	unsigned int (*s)();
@@ -1236,35 +1200,29 @@ unsigned int mbs_next_sdata(MBSDataIO *mbs) {
 	return(stype);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Get next subevent
+	\details	Reads next subevent in raw mode. Needs mbs_next_sheader() to be called first
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type		-- subevent type: MBS_STYPE_xxxx
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int mbs_next_sdata_raw(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_next_sdata_raw
-// Purpose:        Get next subevent (raw mode)
-// Arguments:      MBSDataIO * mbs       -- ptr as returned by mbs_open_file
-// Results:        unsigned int setype   -- subevent type
-// Exceptions:     setype = MBS_STYPE_ERROR
-// Description:    Reads next subevent in raw mode.
-//                 Needs 'mbs_next_sheader' to be called.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	mbs->sevttype = sevent_type_raw;
 	return(mbs_next_sdata(mbs));
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Decode next subevent
+	\details	Decodes next subevent. Retunrs error if subevent type unknown.
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type		-- subevent type: MBS_STYPE_xxxx
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int mbs_next_sevent(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_next_sevent
-// Purpose:        Decode next subevent
-// Arguments:      MBSDataIO * mbs       -- ptr as returned by mbs_open_file
-// Results:        unsigned int setype   -- subevent type
-// Exceptions:     setype = MBS_STYPE_ERROR
-// Description:    Decodes next subevent.
-//                 Error if subevent type unknown.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	unsigned int stype;
 	unsigned int stp, sstp;
@@ -1285,17 +1243,14 @@ unsigned int mbs_next_sevent(MBSDataIO *mbs) {
 	return(mbs_next_sdata(mbs));
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Get next subevent in raw mode
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type		-- subevent type: MBS_STYPE_xxxx
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int mbs_next_sevent_raw(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_next_sevent_raw
-// Purpose:        Get next subevent in raw mode
-// Arguments:      MBSDataIO * mbs       -- ptr as returned by mbs_open_file
-// Results:        unsigned int setype   -- subevent type
-// Exceptions:     setype = MBS_STYPE_ERROR
-// Description:    Reads next subevent using raw mode.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	unsigned int stype;
 
@@ -1305,21 +1260,17 @@ unsigned int mbs_next_sevent_raw(MBSDataIO *mbs) {
 	return(mbs_next_sdata(mbs));
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Pass subevent data to user
+	\details	Passes a subevent vector to the user
+				Subevent data are converted to a "stretched vector" padded with zeros
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[out] data 		-- array to hold subevent data (filled with zeros)
+	\retval 	wc			-- length of subevent vector
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 int mbs_pass_sevent(MBSDataIO *mbs, unsigned short *data) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_pass_sevent
-// Purpose:        Pass subevent data to user
-// Arguments:      MBSDataIO * mbs        -- ptr as returned by mbs_open_file
-//                 unsigned short * data  -- array to hold subevent data
-//                                           (filled with zeros)
-// Results:        int wc                 -- length of subevent vector
-// Exceptions:     |
-// Description:    Passes a subevent vector to the user.
-//                 Subevent data are converted to a "stretched vector"
-//                 filled with zeros
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	if (!_mbs_check_active(mbs)) return(-1);
 
@@ -1327,52 +1278,41 @@ int mbs_pass_sevent(MBSDataIO *mbs, unsigned short *data) {
 	return(mbs->sevt_wc);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Define min subevent length
+	\details	Sets the minimal length of a subevent
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	wc			-- minimal word count
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void mbs_set_sevt_minwc(MBSDataIO *mbs, int wc) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_set_sevt_minwc
-// Purpose:        Define min subevent length
-// Arguments:      MBSDataIO * mbs        -- ptr as returned by mbs_open_file
-//                 int wc                 -- minimal word count
-// Results:        
-// Exceptions:     
-// Description:    Sets the minimal length of a subevent.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	mbs->sevt_minwc = wc;
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*! \brief		Check run flag
+	\param[in] 	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean mbs_is_running(MBSDataIO *mbs) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_is_running
-// Purpose:        Check run flag
-// Arguments:      MBSDataIO * mbs        -- ptr as returned by mbs_open_file
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    Returns run flag.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	return(mbs->running);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Define statistics to be shown
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	redu		-- reduction: show statistics every redu-th buffer only
+	\param[in]	out 		-- stream to send output to (NULL = stdout)
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean mbs_set_stat(MBSDataIO *mbs, int redu, FILE *out) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_set_stat
-// Purpose:        Define statistics to be shown
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 int redu         -- reduction: show statistics every
-//                                                redu-th buffer only
-//                 FILE * out       -- stream to send output to
-//                                     (NULL = stdout)
-// Results:        --
-// Exceptions:     |
-// Description:    Defines how often to show events statistics
-// Keywords:       |
-/////////////////////////////////////////////////////////////////////////// */
 
 	register FILE *old;
 
@@ -1385,18 +1325,16 @@ boolean mbs_set_stat(MBSDataIO *mbs, int redu, FILE *out) {
 	return(TRUE);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Show event statistics
+	\details	Outputs header/data information
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	out 		-- stream to send output to (NULL = stdout)
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean mbs_show_stat(MBSDataIO *mbs, FILE *out) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_show_stat
-// Purpose:        Show event statistics
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 FILE * out       -- stream to send output to (NULL = stdout)
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    Shows header/data information on stdout.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	MBSBufferElem *tp;
 	register int i;
@@ -1470,21 +1408,17 @@ boolean mbs_show_stat(MBSDataIO *mbs, FILE *out) {
 	return(TRUE);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Show buffer element
+	\details	Outputs header/data information
+	\param[in]	mbs 			-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	show_elem		-- buffer element to be shown
+	\param[in]	out 			-- stream to send output to (NULL = stdout)
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_show
-// Purpose:        Show buffer element
-// Arguments:      MBSDataIO * mbs    -- ptr as returned by mbs_open_file
-//                 char * show_elem   -- buffer element to be shown
-//                                       (one char out of "FBES")
-//                 FILE * out         -- stream to send output to
-//                                       (NULL = stdout)
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    Shows header/data information on stdout.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	void (*s)();
 
@@ -1508,23 +1442,18 @@ boolean mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
 	return(TRUE);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Define buffer elements to be shown
+	\details	Defines buffer elements to be shown automatically
+	\param[in]	mbs 			-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	show_elems		-- buffer element to be shown
+	\param[in]	redu			-- reduction: show every redu-th element only
+	\param[in]	out 			-- stream to send output to (NULL = stdout)
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean mbs_set_show(MBSDataIO *mbs, const char *show_elems, int redu, FILE *out) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_set_show
-// Purpose:        Define buffer elements to be shown
-// Arguments:      MBSDataIO * mbs    -- ptr as returned by mbs_open_file
-//                 char * show_elems  -- buffer element(s) to be shown
-//                                       (out of "FBES")
-//                 int redu           -- reduction: show every redu-th
-//                                                  element only
-//                 FILE * out         -- stream to send output to
-//                                       (NULL = stdout)
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    Defines buffer elements to be shown automatically
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register FILE *old;
 	register char c;
@@ -1550,37 +1479,30 @@ boolean mbs_set_show(MBSDataIO *mbs, const char *show_elems, int redu, FILE *out
 	return(TRUE);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Define buffers to be dumped
+	\details	Defines every Nth buffer to be dumped to file
+	\param[in]	mbs 			-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	count			-- dump count
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void mbs_set_dump(MBSDataIO *mbs, int count) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_set_dump
-// Purpose:        Define buffers to be dumped
-// Arguments:      MBSDataIO * mbs    -- ptr as returned by mbs_open_file
-//                 int count          -- dump count
-// Results:        
-// Exceptions:     
-// Description:    Defines every Nth buffer to be dumped to file.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	mbs->buf_to_be_dumped = count;
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Define stream profile
+	\details	Defines how to process stream data
+	\param[in]	mbs 			-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	nstreams		-- max # of streams to be processed (0 = ad infinitum)
+	\param[in]	slow_down		-- # of secs to wait after each stream (0 = don't wait)
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_set_stream
-// Purpose:        Define stream profile
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 int nstreams     -- max # of streams to be processed
-//                                     (0 = ad infinitum)
-//                 int slow_down    -- # of secs to wait after each stream
-//                                     (0 = don't wait)
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    Defines how to process stream data
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	if (!_mbs_check_active(mbs)) return(FALSE);
 	if ((mbs->connection & (MBS_CTYPE_ASYNC | MBS_CTYPE_SYNC)) != 0) {
@@ -1594,17 +1516,14 @@ boolean mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
 	return(TRUE);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Open a file for (error) logging
+	\param[in]	logfile 		-- log file, will be opened in append mode
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean mbs_open_log(const char *logfile) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_open_log
-// Purpose:        Open a file for (error) logging
-// Arguments:      char * logfile     -- log file, will be opened in append mode
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    Defines buffer elements to be shown automatically
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	FILE * f;
 
@@ -1618,17 +1537,16 @@ boolean mbs_open_log(const char *logfile) {
 	return(TRUE);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Open a file for output
+	\details	Opens a file to store MED event data
+	\sa 		mbs_close_med()
+	\param[in]	medfile     	-- name of med file
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean mbs_open_med(const char *medfile) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_open_med
-// Purpose:        Open a file write raw event data
-// Arguments:      char * medfile     -- med file
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    Opens a file to store MBS event data.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	FILE * f;
 
@@ -1642,32 +1560,27 @@ boolean mbs_open_med(const char *medfile) {
 	return(TRUE);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Close med file
+	\sa 		mbs_open_med()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void mbs_close_med() {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_close_med
-// Purpose:        Close med file
-// Arguments:      --
-// Results:        
-// Exceptions:     
-// Description:    Closes med file if open.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	if (med_out) fclose(med_out);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Open a file for output
+	\details	Opens a file to store LMD event data
+	\sa 		mbs_close_lmd()
+	\param[in]	lmdfile     	-- name of lmd file
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean mbs_open_lmd(const char *lmdfile) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_open_lmd
-// Purpose:        Open a file to dump lmd data
-// Arguments:      char * lmdfile     -- lmd file
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    Opens a file to store original MBS data (LMD format)
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	FILE * f;
 
@@ -1681,49 +1594,37 @@ boolean mbs_open_lmd(const char *lmdfile) {
 	return(TRUE);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Close lmd file
+	\sa 		mbs_open_lmd()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void mbs_close_lmd() {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_close_lmd
-// Purpose:        Close lmd file
-// Arguments:      --
-// Results:        
-// Exceptions:     
-// Description:    Closes lmd file if open.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	if (lmd_out) fclose(lmd_out);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		Define an external buffer for error messages
+	\param[in]	errbuf  -- buffer to store error messages (NULL = output errors to stderr)
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void mbs_pass_errors(const char * errbuf) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_pass_errors
-// Purpose:        Define a external buffer for error messages
-// Arguments:      errbuf  -- buffer to store error messages
-//                            (NULL = output errors to stderr)
-// Results:        --
-// Exceptions:     
-// Description:    Defines a remote buffer to store errors.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	rem_errbuf = (char *) errbuf;
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output file header data
+	\details	Decodes file header data and outputs it to stream
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	out 		-- stream to send output to
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_show_fheader(MBSDataIO *mbs, FILE *out) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           	_mbs_show_fheader
-// Purpose:        Output file header data to stdout
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 FILE * out       -- stream to send output to
-// Results:        --
-// Exceptions:     
-// Description:    Decodes file header data and outputs them to stdout
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	s_filhe *fh;
@@ -1777,18 +1678,15 @@ void _mbs_show_fheader(MBSDataIO *mbs, FILE *out) {
 	}
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output buffer header data
+	\details	Decodes buffer header data and outputs it to stream
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	out 		-- stream to send output to
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_show_bheader(MBSDataIO *mbs, FILE *out) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           	_mbs_show_bheader
-// Purpose:        Output buffer header data to stdout
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 FILE * out       -- stream to send output to
-// Results:        --
-// Exceptions:     
-// Description:    Decodes buffer header data and outputs them to stdout
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_bufhe *bh;
 
@@ -1830,18 +1728,15 @@ char *mbs_xfht(char *t, int l, char *s)
 	return(t);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output event header
+	\details	Decodes event header data and outputs it to stream
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	out 		-- stream to send output to
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_show_evhe_10_1(MBSDataIO *mbs, FILE *out) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_show_evhe_10_1
-// Purpose:        Output current event header to stdout
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 FILE * out       -- stream to send output to
-// Results:        
-// Exceptions:     
-// Description:    Decodes event header data and outputs them to stdout
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_vehe *eh;
 
@@ -1862,19 +1757,15 @@ void _mbs_show_evhe_10_1(MBSDataIO *mbs, FILE *out) {
 	fprintf(out, "------------------------------------------------------------------------------\n");
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output subevent data
+	\details	Decodes subevent data (type [10,1] and outputs it to stream
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	out 		-- stream to send output to
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_show_sev_10_1(MBSDataIO *mbs, FILE *out) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_show_sev_10_1
-// Purpose:        Output subevent data (type [10,1], CAMAC)
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 FILE * out       -- stream to send output to
-// Results:        
-// Exceptions:     
-// Description:    Decodes subevent data and outputs them to stdout
-//                 See manual "GOOSY Buffer Structure" for details
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	int n;
@@ -1913,17 +1804,15 @@ void _mbs_show_sev_10_1(MBSDataIO *mbs, FILE *out) {
 	fprintf(out, "\n------------------------------------------------------------------------------\n");
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Unpack subevent
+	\details	Unpacks subevent data of type [10,1] (CAMAC)
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	sevtptr		-- pointer to subevent data
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int *_mbs_unpack_sev_10_1(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_unpack_sev_10_1
-// Purpose:        Unpack subevent (type [10,1] - CAMAC)
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-// Results:        unsigned int * sevtpt   -- pointer to subevent data
-// Exceptions:     
-// Description:    Unpacks subevent data of type [10,1] (CAMAC)
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	s_veshe *sh;
@@ -1969,18 +1858,15 @@ unsigned int *_mbs_unpack_sev_10_1(MBSDataIO *mbs) {
 	return((unsigned int *) mbs->sevt_data);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output subevent data
+	\details	Decodes subevent data (16 bit) and outputs it to stream
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	out 		-- stream to send output to
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_show_sev_short(MBSDataIO *mbs, FILE *out) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_show_sev_short
-// Purpose:        Output subevent data (16 bit ints)
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 FILE * out       -- stream to send output to
-// Results:        
-// Exceptions:     
-// Description:    Decodes subevent data and outputs them to stdout
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	s_veshe *sh;
@@ -2014,18 +1900,15 @@ void _mbs_show_sev_short(MBSDataIO *mbs, FILE *out) {
 	fprintf(out, "\n------------------------------------------------------------------------------\n");
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output subevent data
+	\details	Decodes subevent data (32 bit) and outputs it to stream
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	out 		-- stream to send output to
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_show_sev_long(MBSDataIO *mbs, FILE *out) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_show_sev_long
-// Purpose:        Output subevent data (32 bit ints)
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 FILE * out       -- stream to send output to
-// Results:        
-// Exceptions:     
-// Description:    Decodes subevent data and outputs them to stdout
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	s_veshe *sh;
@@ -2059,17 +1942,15 @@ void _mbs_show_sev_long(MBSDataIO *mbs, FILE *out) {
 	fprintf(out, "\n------------------------------------------------------------------------------\n");
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Unpack subevent
+	\details	Unpacks subevent data (16 bit) (CAMAC)
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	sevtptr		-- pointer to subevent data
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int *_mbs_unpack_sev_short(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_unpack_sev_short
-// Purpose:        Unpack subevent (16 bits ints)
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-// Results:        unsigned int * sevtpt   -- pointer to subevent data
-// Exceptions:     
-// Description:    Unpacks subevent data consisting of 16 bit ints
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
 	char *dp;
@@ -2100,17 +1981,15 @@ unsigned int *_mbs_unpack_sev_short(MBSDataIO *mbs) {
 	return((unsigned int *) mbs->sevt_data);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Unpack subevent
+	\details	Unpacks subevent data (32 bit) (CAMAC)
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	sevtptr		-- pointer to subevent data
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int *_mbs_unpack_sev_long(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_unpack_sev_long
-// Purpose:        Unpack subevent (32 bits ints)
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-// Results:        unsigned int * sevtpt   -- pointer to subevent data
-// Exceptions:     
-// Description:    Unpacks subevent data consisting of 32 bit ints
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
 	char *dp;
@@ -2141,17 +2020,15 @@ unsigned int *_mbs_unpack_sev_long(MBSDataIO *mbs) {
 	return((unsigned int *) mbs->sevt_data);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Unpack subevent
+	\details	Unpacks raw data. No byte ordering will be done.
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	sevtptr		-- pointer to subevent data
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int *_mbs_unpack_sev_raw(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_unpack_sev_raw
-// Purpose:        Unpack subevent with raw data
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-// Results:        unsigned int * sevtpt   -- pointer to subevent data
-// Exceptions:     
-// Description:    Unpacks raw data. No byte ordering will be done.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
 	char *dp;
@@ -2181,18 +2058,15 @@ unsigned int *_mbs_unpack_sev_raw(MBSDataIO *mbs) {
 	return((unsigned int *) mbs->sevt_data);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output subevent data
+	\details	Decodes subevent data (type [9000,1], TimeStamp) and outputs it to stream
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	out 		-- stream to send output to
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_show_sev_9000_1(MBSDataIO *mbs, FILE *out) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_show_sev_9000_1
-// Purpose:        Output subevent data (type [9000,1], TimeStamp)
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 FILE * out       -- stream to send output to
-// Results:        
-// Exceptions:     
-// Description:    Decodes subevent data and outputs them to stdout
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
 	unsigned int *dp;
@@ -2214,26 +2088,24 @@ void _mbs_show_sev_9000_1(MBSDataIO *mbs, FILE *out) {
 	fprintf(out, "  Data length          : %d words\n", sh->l_dlen);
 	fprintf(out, "  Type                 : %s [%d,%d]\n",
 							(mbs->sevttype)->descr, sh->i_type, sh->i_subtype);
-	fprintf(out, "  Clock resolution     : %ld nsecs\n", *dp++);
+	fprintf(out, "  Clock resolution     : %d nsecs\n", *dp++);
 	sec = *dp++;
-	fprintf(out, "  Seconds              : %ld\n", sec);
-	fprintf(out, "  Nano seconds         : %ld\n", *dp++);
-	strftime(tstr, 100, "%e-%b-%Y %H:%M:%S", localtime(&sec));
+	fprintf(out, "  Seconds              : %d\n", sec);
+	fprintf(out, "  Nano seconds         : %d\n", *dp++);
+	strftime(tstr, 100, "%e-%b-%Y %H:%M:%S", localtime((const time_t *) &sec));
 	fprintf(out, "  Time stamp           : %s\n", tstr);
 	fprintf(out, "------------------------------------------------------------------------------\n");
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Unpack subevent
+	\details	Unpack subevent (type [9000,X] - X=1:TimeStamp, X=2:DeadTime)
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	sevtptr		-- pointer to subevent data
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int *_mbs_unpack_sev_9000_X(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_unpack_sev_9000_X
-// Purpose:        Unpack subevent (type [9000,X] - X=1:TimeStamp, X=2:DeadTime)
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-// Results:        unsigned int * sevtpt   -- pointer to subevent data
-// Exceptions:     
-// Description:    Unpacks subevent data of type [9000,X] (TimeStamp or DeadTime)
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
 	char *dp;
@@ -2263,18 +2135,15 @@ unsigned int *_mbs_unpack_sev_9000_X(MBSDataIO *mbs) {
 	return((unsigned int *) mbs->sevt_data);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output subevent data
+	\details	Decodes subevent data (type [9000,2], DeadTime) and outputs it to stream
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	out 		-- stream to send output to
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_show_sev_9000_2(MBSDataIO *mbs, FILE *out) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_show_sev_9000_2
-// Purpose:        Output subevent data (type [9000,2], DeadTime)
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 FILE * out       -- stream to send output to
-// Results:        
-// Exceptions:     
-// Description:    Decodes subevent data and outputs them to stdout
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
 	unsigned int *dp;
@@ -2299,34 +2168,31 @@ void _mbs_show_sev_9000_2(MBSDataIO *mbs, FILE *out) {
 	fprintf(out, "  Data length          : %d words\n", sh->l_dlen);
 	fprintf(out, "  Type                 : %s [%d,%d]\n",
 							(mbs->sevttype)->descr, sh->i_type, sh->i_subtype);
-	fprintf(out, "  Clock resolution     : %ld nsecs\n", *dp++);
+	fprintf(out, "  Clock resolution     : %d nsecs\n", *dp++);
 	sec = *dp++;
-	fprintf(out, "  Seconds              : %ld\n", sec);
-	fprintf(out, "  Nano seconds         : %ld\n", *dp++);
-	strftime(tstr, 100, "%e-%b-%Y %H:%M:%S", localtime(&sec));
+	fprintf(out, "  Seconds              : %d\n", sec);
+	fprintf(out, "  Nano seconds         : %d\n", *dp++);
+	strftime(tstr, 100, "%e-%b-%Y %H:%M:%S", localtime((const time_t *) &sec));
 	fprintf(out, "  Time stamp           : %s\n", tstr);
-	fprintf(out, "  Events since start   : %ld\n", *dp++);
+	fprintf(out, "  Events since start   : %d\n", *dp++);
 	dtevc = *dp++;
-	fprintf(out, "  Events during interv : %ld\n", dtevc);
+	fprintf(out, "  Events during interv : %d\n", dtevc);
 	scacon = *dp++;
-	fprintf(out, "  Scaler contents      : %ld\n", scacon);
+	fprintf(out, "  Scaler contents      : %d\n", scacon);
 	dtime = (1. - (float) dtevc / (float) scacon) * 100.;
 	fprintf(out, "  Dead time            : %4.2f %%\n", dtime);
 	fprintf(out, "------------------------------------------------------------------------------\n");
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output subevent data
+	\details	Decodes subevent data and outputs it to stream
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	out 		-- stream to send output to
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_show_sev_raw(MBSDataIO *mbs, FILE *out) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_show_sev_raw
-// Purpose:        Output subevent raw data
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-//                 FILE * out       -- stream to send output to
-// Results:        
-// Exceptions:     
-// Description:    Decodes subevent data and outputs them to stdout
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	s_veshe *sh;
@@ -2360,17 +2226,15 @@ void _mbs_show_sev_raw(MBSDataIO *mbs, FILE *out) {
 	fprintf(out, "\n------------------------------------------------------------------------------\n");
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal]  Test and convert data
+	\details	Tests byte ordering and converts data
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	type		-- buffer type
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 unsigned int _mbs_convert_data(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_convert_data
-// Purpose:        Test and convert data
-// Arguments:      MBSDataIO * mbs    -- ptr as returned by mbs_open_file
-// Results:        unsigned int type  -- buffer type
-// Exceptions:     type = MBS_BTYPE_ERROR if error
-// Description:    Tests byte ordering, converts data, and determines data
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	unsigned int bo_tag;
 	unsigned int byte_order;
@@ -2386,10 +2250,10 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 	bo_tag = bh->l_free[0];
 	if (bo_tag == 0 && mbs->nof_buffers == 1) {
 		byte_order = BYTE_ORDER_1_TO_1;
-		bto_get_int32(&btype, (char *) &bh->i_subtype, 1, byte_order);
+		bto_get_int32((int *) &btype, (char *) &bh->i_subtype, 1, byte_order);
 		if (btype != MBS_BTYPE_FHEADER) {
 			byte_order = BYTE_ORDER_REV;
-			bto_get_int32(&btype, (char *) &bh->i_subtype, 1, byte_order);
+			bto_get_int32((int *) &btype, (char *) &bh->i_subtype, 1, byte_order);
 			if (btype != MBS_BTYPE_FHEADER) {
 				sprintf(loc_errbuf,
 "?ILLFMT-[_mbs_convert_data]- %s (buf %d): Can't determine byte ordering - %#x",
@@ -2417,7 +2281,7 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 
 	mbs->byte_order = byte_order;
 
-	bto_get_int32(&btype, (char *) &bh->i_subtype, 1, byte_order);
+	bto_get_int32((int *) &btype, (char *) &bh->i_subtype, 1, byte_order);
 	mbs->buftype = _mbs_check_type(btype, mbs->buftype, buffer_types);
 	btype = (mbs->buftype)->type;
 	if (btype == MBS_BTYPE_ERROR || btype == MBS_BTYPE_ABORT) {
@@ -2439,17 +2303,13 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 
 void _mbs_type_error(MBSDataIO *mbs) {}
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal]  Initialize hit count
+	\param[in]	tlist		-- list of buffer types
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_init_hit(MBSBufferElem *tlist) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_init_hit
-// Purpose:        Initialize buffer type
-// Arguments:      MBSBufferElem * tlist  -- list of types descriptions
-// Results:        --
-// Exceptions:     
-// Description:    Initializes type counters
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	while (tlist->type != 0) {
 		tlist->hit = 0;
@@ -2457,17 +2317,12 @@ void _mbs_init_hit(MBSBufferElem *tlist) {
 	}	
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal]  Initialize trigger list
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_init_triggers() {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_init_triggers
-// Purpose:        Initialize trigger list
-// Arguments:      --
-// Results:        --
-// Exceptions:     
-// Description:    Initializes triggers & trigger counters
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	MBSBufferElem * tp;
@@ -2482,19 +2337,16 @@ void _mbs_init_triggers() {
 	strcat(triggers[15].descr, " (Stop)");
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal]  Check buffer type
+	\param[in]	btype		-- buffer type to be tested
+	\param[in]	ltdescr 	-- ptr to previous type descr
+	\param[in]	tlist		-- list of types
+	\retval 	btpt		-- ptr to type descriptor
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 MBSBufferElem *_mbs_check_type(unsigned int btype, MBSBufferElem *ltdescr, MBSBufferElem *tlist) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_check_type
-// Purpose:        Check buffer type
-// Arguments:      unsigned int btype       -- buffer type to be tested
-//                 MBSBufferElem * ltdescr  -- ptr to previously found type descr
-//                 MBSBufferElem * tlist    -- list of types descriptions
-// Results:        MBSBufferElem * btpt     -- ptr to type descr
-// Exceptions:     NULL on error
-// Description:    Tests buffer / event / subevent types.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	unsigned int t;
 	if (ltdescr != NULL && (btype == ltdescr->type)) return(ltdescr);
@@ -2507,18 +2359,16 @@ MBSBufferElem *_mbs_check_type(unsigned int btype, MBSBufferElem *ltdescr, MBSBu
 	return(&buffer_type_error);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal]  Check if data in sequence
+	\details	Tests if subsequent buffers/events have increasing numbers
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in] 	type        -- type: buffer or event
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean _mbs_check_sequence(MBSDataIO *mbs, unsigned int type) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_check_sequence
-// Purpose:        Check if data in sequence
-// Arguments:      MbsDataIO * mbs          -- pointer to MBS data base
-//                 unsigned int type        -- type: buffer or event
-// Results:        TRUE/FALSE
-// Exceptions:     FALSE if data not in order
-// Description:    Tests if subsequent buffers/events have increasing numbers.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_bufhe *bh;
 	s_vehe *eh;
@@ -2533,17 +2383,14 @@ boolean _mbs_check_sequence(MBSDataIO *mbs, unsigned int type) {
 	return(TRUE);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal]  Copy file header (swapped)
+	\details	Copies file header data from input buffer to hdr_data
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_copy_fheader(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_copy_fheader
-// Purpose:        Copy file header (swapped)
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-// Results:        --
-// Exceptions:     
-// Description:    Copies file header data from input buffer to hdr_data.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	register char *ipnt;
@@ -2579,17 +2426,14 @@ void _mbs_copy_fheader(MBSDataIO *mbs) {
 	}
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal]  Convert buffer header
+	\details	Converts header data according to byte order
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_convert_bheader(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_convert_bheader
-// Purpose:        Convert header data
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-// Results:        --
-// Exceptions:     
-// Description:    Converts header data according to byte order
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register char *ipnt;
 	unsigned int bo;
@@ -2607,17 +2451,14 @@ void _mbs_convert_bheader(MBSDataIO *mbs) {
 	ipnt = bto_get_int32(&bh->l_buf, ipnt, 9, bo);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal]  Convert event header
+	\details	Converts header data according to byte order
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_convert_eheader(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_convert_eheader
-// Purpose:        Convert event header data
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-// Results:        --
-// Exceptions:     
-// Description:    Converts event header data.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register char *ipnt;
 	unsigned int bo;
@@ -2634,17 +2475,14 @@ void _mbs_convert_eheader(MBSDataIO *mbs) {
 	ipnt = bto_get_int32(&eh->l_count, ipnt, 1, bo);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal]  Convert subevent header
+	\details	Converts header data according to byte order
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_convert_sheader(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_convert_sev_10_1
-// Purpose:        Convert subevent data
-// Arguments:      MBSDataIO * mbs  -- ptr as returned by mbs_open_file
-// Results:        --
-// Exceptions:     
-// Description:    Converts subevent header data.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register char *ipnt;
 	unsigned int bo;
@@ -2662,18 +2500,15 @@ void _mbs_convert_sheader(MBSDataIO *mbs) {
 	mbs->sevt_id = seh->i_procid;
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Check if a given mbs struct is active
+	\details	Tests magic word of mbs database
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean _mbs_check_active(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_check_active
-// Purpose:        Check if a given mbs struct is active
-// Arguments:      MBSDataIO * mbs  -- pointer to mbs struct
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    	Tests the addr given by mbs and outputs an error message
-//                  it isn't a valid mbs i/o struct.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	if (mbs == NULL || mbs->fileno == -1) {
 		sprintf(loc_errbuf, "?MBSNAC-[mbs_check_active]- MBSIO not active");
@@ -2688,18 +2523,15 @@ boolean _mbs_check_active(MBSDataIO *mbs) {
 	}
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Check if a given mbs struct has valid data
+	\details	Tests magic word of mbs database
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean _mbs_check_dbase(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_check_dbase
-// Purpose:        Check if a given mbs struct has valid data
-// Arguments:      MBSDataIO * mbs  -- pointer to mbs struct
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    	Tests the addr given by mbs and outputs an error message
-//                  it isn't a valid mbs i/o struct.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	if (mbs == NULL) {
 		sprintf(loc_errbuf, "?MBSDNV-[mbs_check_dbase]- data base not valid");
@@ -2714,22 +2546,27 @@ boolean _mbs_check_dbase(MBSDataIO *mbs) {
 	}
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Check if buffer is empty
+	\details	Checks field 'used data' in buffer header
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\return 	TRUE or FALSE
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 boolean _mbs_check_buffer_empty(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_check_buffer_empty
-// Purpose:        Check if buffer is emptyr
-// Arguments:      mbs                -- ptr as returned by mbs_open_file
-// Results:        TRUE/FALSE
-// Exceptions:     
-// Description:    Checks 'used data field' in buffer header.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_bufhe * bh;
 	bh = (s_bufhe *) (mbs->poolpt)->data;
 	return((int) (bh->i_used == 0));
 }
+
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output error message
+	\details	Outputs an error message, either to stderr or to rem_errbuf
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
 
 void _mbs_output_error(MBSDataIO *mbs) {
 /*________________________________________________________[C PRIVATE FUNCTION]
@@ -2751,7 +2588,7 @@ void _mbs_output_error(MBSDataIO *mbs) {
 	if (mbs) filepos = mbs->filepos; else filepos = -1;
 
 	if (filepos >= 0) {
-		sprintf(fposstr, " (@ filepos = %d)", filepos);
+		sprintf(fposstr, " (@ filepos = %d)", (int) filepos);
 		strcat(loc_errbuf, fposstr);
 	}
 	if (rem_errbuf == NULL) {
@@ -2767,17 +2604,14 @@ void _mbs_output_error(MBSDataIO *mbs) {
 	if (mbs && mbs->buf_to_be_dumped != 0)_mbs_dump_buffer(mbs);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Output message to logfile
+	\details	Outputs a message to log channel
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_output_log(MBSDataIO *mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_output_log
-// Purpose:        Output message to logfile
-// Arguments:      MBSDataIO * mbs  -- pointer to mbs struct
-// Results:        --
-// Exceptions:     
-// Description:    Outputs a message to the log channel.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	char datestr[MBS_L_STR];
 	char fposstr[MBS_L_STR];
@@ -2787,7 +2621,7 @@ void _mbs_output_log(MBSDataIO *mbs) {
 	if (mbs) filepos = mbs->filepos; else filepos = -1;
 
 	if (filepos >= 0) {
-		sprintf(fposstr, " (@ filepos = %d)", filepos);
+		sprintf(fposstr, " (@ filepos = %d)", (int) filepos);
 		strcat(loc_logbuf, fposstr);
 	}
 	if (log_out) {
@@ -2797,19 +2631,15 @@ void _mbs_output_log(MBSDataIO *mbs) {
 	}
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Connect to MBS server
+	\param[in]	host			-- host name to connect to
+	\param[in]	server_type 	-- server type (MBS_CTYPE_xxxx)
+	\retval 	fildes			-- file descriptor or -1 if error
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 int _mbs_connect_to_server(char * host, unsigned int server_type) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_connect_to_server
-// Purpose:        Connect to MBS server
-// Arguments:      char * host              -- host name to connect to
-//                 unsigned int server_type -- server type (MBS_CTYPE_xxxx)
-// Results:        int fildes               -- file descriptor or -1 if error
-// Exceptions:     -1 if error
-// Description:    Connects to a MBS port.
-// Author:         M. Mnch Hades/E12
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	int s;
 	int len;
@@ -2855,19 +2685,15 @@ int _mbs_connect_to_server(char * host, unsigned int server_type) {
 	return(s);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Connect to MBS server
+	\param[in]	fildes			-- file descriptor for current connection
+	\param[in]	info			-- info block where to put data
+	\retval 	info			-- info block
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_read_server_info
-// Purpose:        Read info block from MBS server
-// Arguments:      int fildes            -- connection's file descriptor
-//                 MBSServerInfo * info  -- info block
-// Results:        MBSServerInfo * info  -- addr of info block or NULL if error.
-// Exceptions:     NULL on error
-// Description:    Reads the info block.
-// Author:         M. Mnch Hades/E12
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	int infoWord;
 	int swInfoWord;
@@ -2923,20 +2749,17 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 	return(info);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Read data from remote stream
+	\details	Reads a buffer from remote stream
+	\param[in]	fildes			-- file descriptor for current connection
+	\param[in]	buf 			-- ptr to output buffer
+	\param[in]	info			-- server info block
+	\retval 	bytes_read		-- number of bytes read by this request
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 int _mbs_read_stream(int fildes, char * buf, MBSServerInfo *info) {
-/*_______________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_read_stream
-// Purpose:        Read data from remote stream
-// Arguments:      int fildes           -- server's file descriptor
-//                 char * buf           -- addr where to put the data
-//                 MBSServerINfo * info -- server's info block
-// Results:        int bytes_read       -- number of bytes read by this request
-// Exceptions:     
-// Description:    Reads a buffer from remote stream.
-// Author:         M. Mnch Hades/E12
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	int nof_read, nof_tot_read;
 
@@ -2953,35 +2776,26 @@ int _mbs_read_stream(int fildes, char * buf, MBSServerInfo *info) {
 	return(nof_tot_read);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Request a stream from server
+	\details	Sends a request to server
+	\param[in]	fildes			-- file descriptor for current connection
+	\retval 	sts 			-- status
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 int _mbs_request_stream(int fildes) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_request_stream
-// Purpose:        Request a stream from server
-// Arguments:      int fildes  -- server's file descriptor
-// Results:        0/-1
-// Exceptions:     
-// Description:    Sends a request to server.
-// Author:         M. Mnch Hades/E12
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	return(write(fildes, "            ", 12));
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Disconnect from MBS server
+	\param[in]	fildes			-- file descriptor for current connection
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_disconnect_from_server(int fildes, unsigned int server_type) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_disconnect_from_server
-// Purpose:        Disconnect from MBS server
-// Arguments:      int fildes               -- server's file descriptor
-//                 unsigned int server_type -- server type (MBS_CTYPE_xxxx)
-// Results:        0/1
-// Exceptions:     
-// Description:    Disconnects from current MBS port.
-// Author:         M. Mnch Hades/E12
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	switch (server_type) {
 		case MBS_CTYPE_SYNC:
@@ -2994,18 +2808,15 @@ void _mbs_disconnect_from_server(int fildes, unsigned int server_type) {
 	close(fildes);
 }
 
+
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Initialize buffer pool
+	\details	Initializes buffer numbers and data pointers of buffer pool
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_init_pool(MBSDataIO * mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_init_pool
-// Purpose:        Initialize buffer pool
-// Arguments:      MBSDataIO * mbs    -- mbs data base
-// Results:        
-// Exceptions:     
-// Description:    Initializes buffer numbers and data pointers in the
-//                 buffer pool.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	register MBSBufferPool * bpp;
@@ -3019,17 +2830,13 @@ void _mbs_init_pool(MBSDataIO * mbs) {
 	mbs->buf_oo_phase = 0;
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Free memory allocated for the buffer pool
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_free_pool(MBSDataIO * mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_free_pool
-// Purpose:        Free memory allocated for the buffer pool
-// Arguments:      MBSDataIO * mbs    -- mbs data base
-// Results:        
-// Exceptions:     
-// Description:    Frees any memory allocated for the buffer pool.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	register MBSBufferPool * bpp;
@@ -3040,17 +2847,14 @@ void _mbs_free_pool(MBSDataIO * mbs) {
 	}
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Find an empty place in the buffer pool
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	bpp 		-- pointer to empty buffer
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 MBSBufferPool * _mbs_get_pool_pointer(MBSDataIO * mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_get_pool_pointer
-// Purpose:        Find an empty place in the buffer pool
-// Arguments:      MBSDataIO * mbs       -- mbs data base
-// Results:        MBSBufferPool * bpp   -- pointer to empty buffer
-// Exceptions:     Returns NULL if all buffers occupied
-// Description:    Searches for an empty position in the buffer pool.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	register MBSBufferPool * bpp;
@@ -3079,19 +2883,14 @@ MBSBufferPool * _mbs_get_pool_pointer(MBSDataIO * mbs) {
 	return(NULL);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Store current buffer number in pool header
+	\details	Extracts buffer number from MBS data and stores it in pool header
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
 
 void _mbs_store_bufno(MBSDataIO * mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_store_bufno
-// Purpose:        Store current buffer number in pool header
-// Arguments:      MBSDataIO * mbs       -- mbs data base
-// Results:        
-// Exceptions:     
-// Description:    Extracts buffer number from MBS data and stores it in
-//                 the pool header.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	MBSBufferPool * bpp;
 
@@ -3099,16 +2898,14 @@ void _mbs_store_bufno(MBSDataIO * mbs) {
 	bpp->bufno_mbs = ((s_bufhe *) bpp->data)->l_buf;
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Store time stamp
+	\details	Extracts buffer time stamp and stores is in MBS database
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_store_time_stamp(MBSDataIO * mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_store_time_stampbuffer time stamp
-// Arguments:      MBSDataIO * mbs       -- mbs data base
-// Results:        
-// Exceptions:     
-// Description:    Extracts buffer time stamp and stores is in MBSIO struct
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	s_bufhe *bh;
 	bh = (s_bufhe *) (mbs->poolpt)->data;
@@ -3117,18 +2914,15 @@ void _mbs_store_time_stamp(MBSDataIO * mbs) {
 	if (mbs->buf_ts_start == 0) mbs->buf_ts_start = mbs->buf_ts;
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Search for next buffer in the pool
+	\details	Inspects the buffer pool to find a buffer with the right buffer number = last+1
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\retval 	bpp 		-- pointer to selected buffer
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 MBSBufferPool * _mbs_find_subseq_buffer(MBSDataIO * mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_find_subseq_buffer
-// Purpose:        Search for next buffer in the pool
-// Arguments:      MBSDataIO * mbs       -- mbs data base
-// Results:        MBSBufferPool * bpp   -- pointer to selected buffer
-// Exceptions:     Returns NULL if buffer not found
-// Description:    Inspects the buffer pool to find a buffer with the right
-//                 buffer number = last+1.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	register MBSBufferPool * bpp;
@@ -3144,19 +2938,16 @@ MBSBufferPool * _mbs_find_subseq_buffer(MBSDataIO * mbs) {
 	return(NULL);
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Dump buffer data
+	\details	Opens a file named "XXX_buf_NNN.dmp"
+				where XXX is the device and NNN is the buffer number.
+				Dumps bufsiz data to file.
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_dump_buffer(MBSDataIO * mbs) {
-/*________________________________________________________[C PRIVATE FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_dump_buffer
-// Purpose:        Dump buffer data
-// Arguments:      MBSDataIO * mbs       -- mbs data base
-// Results:        
-// Exceptions:     
-// Description:    Opens a file named "XXX_buf_NNN.dmp"
-//                 XXX is the device and NNN is the buffer number.
-//                 Then dumps bufsiz data to this file.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	register FILE * f;
 	char fname[MBS_L_STR];
@@ -3191,18 +2982,14 @@ void _mbs_dump_buffer(MBSDataIO * mbs) {
 	}
 }
 
+/*-------------------------------------------------------------------------------------------*/
+/*!	\brief		[internal] Turn on/off run flag
+	\param[in]	mbs 		-- ptr to MBS database as returned by mbs_open_file()
+	\param[in]	flag		-- enable/disable run
+*/
+/*-------------------------------------------------------------------------------------------*/
+
 void _mbs_set_run_flag(MBSDataIO * mbs, boolean flag) {
-/*_________________________________________________________[C PUBLIC FUNCTION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           _mbs_set_run_flag
-// Purpose:        Turn on/off run flag
-// Arguments:      MBSDataIO * mbs        -- ptr as returned by mbs_open_file
-//                 boolean flag              -- enable/disable run
-// Results:        --
-// Exceptions:     
-// Description:    Turns run flag on/off.
-// Keywords:       
-/////////////////////////////////////////////////////////////////////////// */
 
 	mbs->running = flag;
 }

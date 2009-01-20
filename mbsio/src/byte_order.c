@@ -1,24 +1,11 @@
-/*FILE************************************************************************
-NAME
-	%M%
-AUTOR
-	R. Lutter
-FUNKTION
-	Zugriff zu Daten in unterschiedlicher Byte-Anordnung
-DATUM
-	%G%
-VERSION
-	%I%
-BESCHREIBUNG
-	Liest Daten und ordnet die Bytes
-MODULE
-
-INCLUDE
-
-STICHWORTE
-
-SONSTIGES
-
+/******************************************************************************/
+/*!	\file		byte_order.c
+	\brief		Bytewise data access
+	\details	Provides functions to access data of different type
+				with given byte ordering
+	\author 	R. Lutter
+	\version	$Revision: 1.7 $       
+	\date		$Date: 2009-01-20 14:27:30 $
 *****************************************************************************/
 
 static char sccs_id[] = "%W%";
@@ -26,65 +13,17 @@ static char sccs_id[] = "%W%";
 #include <string.h>
 #include "byte_order.h"
 
-/*BIBLIOTHEKSFUNKTION*********************************************************
-NAME
-	bto_get_short
-	bto_get_int32
-	bto_get_string
-	bto_put_int32
-AUTOR
-	R. Lutter
-FUNKTION
-	Konversion der Daten
-AUFRUF
-.	char *bto_get_short(out, in, cnt, bytord)
-	short *out;
-	char *in;
-	int cnt;
-	int bytord;
+/*! \brief		return \a cnt data of type \a short
+	\sa 		bto_get_int32(), bto_get_string()
+	\param[out] out			-- where to output short data
+	\param[in]	in;			-- where to read bytes from
+	\param[in]	cnt;		-- number of shorts to read
+	\param[in]	bytord	 	-- byte ordering
+	\return 	pointer to next input
+*/
 
-.	char *bto_get_int32(out, in, cnt, bytord)
-	int *out;
-	char *in;
-	int cnt;
-	int bytord;
-
-.	char *bto_get_string(out, in, cnt, bytord)
-	char *out;
-	char *in;
-	int cnt;
-	int bytord;
-
-.	char *bto_put_int32(out, in, cnt, bytord)
-	int *out;
-	char *in;
-	int cnt;
-	int bytord;
-ARGUMENTE
-.	out			-- Destination
-.	in			-- Source-Adresse
-.	cnt			-- Anzahl der Worte bzw. Bytes
-.	bytord		-- Anordnung der Bytes (BYTE_ORDER_xxx)
-RETURNWERT
-.	addr		-- neue Source-Adresse
-FEHLER
-
-BESCHREIBUNG
-	Konvertiert die Originaldaten.
-VERFAHREN
-
-FILES
-	
-ROUTINEN
-
-STICHWORTE
-
-SONSTIGES
-
-*****************************************************************************/
-
-char *bto_get_short(short *out, char *in, int cnt, int bytord) {
-
+char *bto_get_short(short *out, char *in, int cnt, int bytord)
+{
 	int i;
 	union x {
 		short s;
@@ -113,6 +52,15 @@ char *bto_get_short(short *out, char *in, int cnt, int bytord) {
 	}
 	return(in);
 }
+
+/*! \brief		return \a cnt data of type \a int
+	\sa 		bto_get_short(), bto_get_string()
+	\param[out] out			-- where to output int data
+	\param[in]	in			-- where to read bytes from
+	\param[in]	cnt			-- number of shorts to read
+	\param[in]	bytord 	-- byte ordering
+	\return 	pointer to next input
+*/
 
 char *bto_get_int32(int *out, char *in, int cnt, int bytord) {
 
@@ -167,6 +115,15 @@ char *bto_get_int32(int *out, char *in, int cnt, int bytord) {
 	return(in);
 }
 
+/*! \brief		return \a cnt data of type \a char*
+	\sa 		bto_get_short(), bto_get_int32()
+	\param[out] out			-- where to output string data
+	\param[in]	in			-- where to read bytes from
+	\param[in]	cnt			-- number of shorts to read
+	\param[in]	bytord  	-- byte ordering
+	\return 	pointer to next input
+*/
+
 char *bto_get_string(char *out, char *in, int cnt, int bytord) {
 
 	int i;
@@ -209,57 +166,3 @@ char *bto_get_string(char *out, char *in, int cnt, int bytord) {
 	}
 	return(in); 		/* will not be reached */
 }
-
-char *bto_put_int32(int *out, char *in, int cnt, int bytord) {
-
-	int i;
-	union x {
-		int l;
-		char b[4];
-	} x;
-
-	switch (bytord)
-	{
-		case BYTE_ORDER_1_TO_1:	for (i = 0; i < cnt; i++)
-								{
-									x.b[0] = *in++;
-									x.b[1] = *in++;
-									x.b[2] = *in++;
-									x.b[3] = *in++;
-									*out++ = x.l;
-								}
-								break;
-
-		case BYTE_ORDER_BSW:	for (i = 0; i < cnt; i++)
-								{
-									x.b[1] = *in++;
-									x.b[0] = *in++;
-									x.b[3] = *in++;
-									x.b[2] = *in++;
-									*out++ = x.l;
-								}
-								break;
-
-		case BYTE_ORDER_LSW:	for (i = 0; i < cnt; i++)
-								{
-									x.b[2] = *in++;
-									x.b[3] = *in++;
-									x.b[0] = *in++;
-									x.b[1] = *in++;
-									*out++ = x.l;
-								}
-								break;
-
-		case BYTE_ORDER_REV:	for (i = 0; i < cnt; i++)
-								{
-									x.b[3] = *in++;
-									x.b[2] = *in++;
-									x.b[1] = *in++;
-									x.b[0] = *in++;
-									*out++ = x.l;
-								}
-								break;
-	}
-	return(in);
-}
-
