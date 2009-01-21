@@ -1,10 +1,10 @@
 /******************************************************************************/
 /*!	\file		mbsio.c
-	\brief		MSB raw data input
+	\brief		MBS raw data input
 	\details	Procedures to read MBS data from disk or tcp socket
 	\author 	R. Lutter
-	\version	$Revision: 1.40 $       
-	\date		$Date: 2009-01-21 07:20:38 $
+	\version	$Revision: 1.41 $       
+	\date		$Date: 2009-01-21 07:27:48 $
 *****************************************************************************/
 
 /* include files needed by mbsio */
