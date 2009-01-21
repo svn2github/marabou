@@ -3,8 +3,8 @@
 	\brief		MSB raw data input
 	\details	Procedures to read MBS data from disk or tcp socket
 	\author 	R. Lutter
-	\version	$Revision: 1.39 $       
-	\date		$Date: 2009-01-20 14:27:31 $
+	\version	$Revision: 1.40 $       
+	\date		$Date: 2009-01-21 07:20:38 $
 *****************************************************************************/
 
 /* include files needed by mbsio */
@@ -17,8 +17,8 @@
 #include <ctype.h>
 #include "byte_order.h"
 
-#define TRUE	1
-#define FALSE	0
+#define TRUE	1			/*!< boolean TRUE */
+#define FALSE	0			/*!< boolean FALSE */
 
 #include "mbsio.h"
 
@@ -32,48 +32,28 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-#define C_STYLE_PROTOS
+#define C_STYLE_PROTOS		/*!< use C-style prototyping when in a C environment */
 #include "mbsio_protos.h"
 
 /* if you want to have remote tape access */
 
 extern int errno;
 
-char loc_errbuf[MBS_L_STR]; 		// where to store error messages
-char *rem_errbuf = NULL;
+char loc_errbuf[MBS_L_STR]; 		/*!< where to store error messages */
+char *rem_errbuf = NULL;			/*!< ptr to remote error buffer */
 
-char loc_logbuf[MBS_L_STR];
-char log_file[MBS_L_STR];
-FILE * log_out = NULL;
+char loc_logbuf[MBS_L_STR]; 		/*!< where to store log data */
+char log_file[MBS_L_STR]; 			/*!< name of log file */
+FILE * log_out = NULL; 				/*!< log file stream */
 
-char med_file[MBS_L_STR];
-FILE * med_out = NULL;
+char med_file[MBS_L_STR]; 			/*!< name of MED file */
+FILE * med_out = NULL; 				/*!< MED file stream */
 		
-char lmd_file[MBS_L_STR];
-FILE * lmd_out = NULL;
+char lmd_file[MBS_L_STR];			/*!< name of LMD file */
+FILE * lmd_out = NULL; 				/*!< LMD file stream */
 		
 int total = 0;
 
-
-void _mbs_show_bheader();
-void _mbs_show_evhe_10_1();
-void _mbs_show_sev_10_1();
-void _mbs_show_sev_short();
-void _mbs_show_sev_long();
-void _mbs_show_sev_raw();
-void _mbs_copy_fheader();
-void _mbs_convert_bheader();
-void _mbs_convert_eheader();
-void _mbs_convert_sheader();
-void _mbs_type_error();
-unsigned int *_mbs_unpack_sev_10_1();
-unsigned int *_mbs_unpack_sev_short();
-unsigned int *_mbs_unpack_sev_long();
-unsigned int *_mbs_unpack_sev_raw();
-
-void _mbs_show_sev_9000_1();
-void _mbs_show_sev_9000_2();
-unsigned int *_mbs_unpack_sev_9000_X();
 
 static MBSBufferElem buffer_types[] = {
 				{	MBS_BTYPE_FHEADER,		// [subtype,type]
@@ -2792,6 +2772,7 @@ int _mbs_request_stream(int fildes) {
 /*-------------------------------------------------------------------------------------------*/
 /*!	\brief		[internal] Disconnect from MBS server
 	\param[in]	fildes			-- file descriptor for current connection
+	\param[in]	server_type 	-- type of connection
 */
 /*-------------------------------------------------------------------------------------------*/
 

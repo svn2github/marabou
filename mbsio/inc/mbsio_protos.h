@@ -10,8 +10,8 @@
 	\brief			C interface to mbsio calls
 	\details		Defines protoypes of mbsio calls to be used with C and C++
 	\author 		R. Lutter
-	\version		$Revision: 1.10 $       
-	\date           $Date: 2009-01-20 14:27:30 $
+	\version		$Revision: 1.11 $       
+	\date           $Date: 2009-01-21 07:20:38 $
 *******************************************************************************/
 
 XC	char * bto_get_short(short * out, char * in, int cnt, int bytord);
@@ -78,3 +78,23 @@ XC	MBSBufferElem *_mbs_check_type(unsigned int btype, MBSBufferElem * ltdescr, M
 XC	void _mbs_set_run_flag(MBSDataIO * mbs, boolean flag);
 
 XC	void _mbs_show_fheader(MBSDataIO * mbs, FILE * out);
+XC	void _mbs_show_bheader();
+XC	void _mbs_show_evhe_10_1();
+XC	void _mbs_show_sev_10_1();
+XC	void _mbs_show_sev_short();
+XC	void _mbs_show_sev_long();
+XC	void _mbs_show_sev_raw();
+XC	void _mbs_copy_fheader();
+XC	void _mbs_convert_bheader();
+XC	void _mbs_convert_eheader();
+XC	void _mbs_convert_sheader();
+XC	void _mbs_type_error();
+XC	unsigned int *_mbs_unpack_sev_10_1();
+XC	unsigned int *_mbs_unpack_sev_short();
+XC	unsigned int *_mbs_unpack_sev_long();
+XC	unsigned int *_mbs_unpack_sev_raw();
+	
+XC	void _mbs_show_sev_9000_1();
+XC	void _mbs_show_sev_9000_2();
+XC	unsigned int *_mbs_unpack_sev_9000_X();
+

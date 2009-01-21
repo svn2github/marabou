@@ -6,8 +6,8 @@
 	\brief			Structs for MBS I/O
 	\details		Defines structs to read MBS data streams
 	\author 		R. Lutter
-	\version		$Revision: 1.17 $       
-	\date           $Date: 2009-01-20 14:27:30 $
+	\version		$Revision: 1.18 $       
+	\date           $Date: 2009-01-21 07:20:38 $
 *******************************************************************************/
 
 #include "typedefs.h"
@@ -21,7 +21,7 @@
 #define MBS_SIZEOF_DATA_W		0x4000						/*!< length of data (words) */
 #define MBS_SIZEOF_DATA_B		0x8000						/*!< length of data (bytes) */
 
-#define MBS_RTYPE_ERROR			0xffffffff
+#define MBS_RTYPE_ERROR			0xffffffff					/*!< error */
 
 #define MBS_CTYPE_FILE			0x1 						/*!< connection: file */
 #define MBS_CTYPE_SYNC			0x2 						/*!< connection: synchronous via transport manager */

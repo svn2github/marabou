@@ -1,8 +1,11 @@
+#define C_STYLE_PROTOS
+
 #include <stdio.h>
 #include "byte_order.h"
 #include "mbsio.h"
+#include "mbsio_protos.h"
 
-main(int argc, char *argv[])
+int main(int argc, char *argv[])
 
 {
 	register int i, j;
@@ -122,4 +125,5 @@ main(int argc, char *argv[])
 	}
 /*	mbs_close_file(mbs); */
 	mbs_show_stat(mbs, stdout);
+	exit(0);
 }

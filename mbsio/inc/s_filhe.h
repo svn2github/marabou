@@ -3,18 +3,20 @@
 /*!	\file		s_filhe.h
 	\brief		GSI file header
 	\author 	GSI
-	\version	$Revision: 1.2 $       
-	\date		$Date: 2009-01-20 14:27:30 $
+	\version	$Revision: 1.3 $       
+	\date		$Date: 2009-01-21 07:20:38 $
 *******************************************************************************/
 
-struct cv_string {						/*! comment string */
+struct cv_string						/*! comment string */
+{
 	INTS2 string_l; 					/*!< length of comment */
 	CHARS string[78]; 					/*!< comment string */
 };
 
 
 
-struct _s_filhe { 						/*! GSI file header */
+struct _s_filhe 						/*! GSI file header */
+{
 	INTS2 filhe_tlen;					/*!< total length of data in words */
 	INTS2 filhe_dlen;					/*!< length of data w/o header */
 	INTS2 filhe_subtype;				/*!< subtype = 1 */
