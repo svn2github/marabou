@@ -3,14 +3,14 @@
 //! \file
 //! \verbatim
 //! Name:           QEnv.cxx
-//! Purpose:        QT utilities:
+//! \brief			QT utilities:
 //!                 A class handling environment files used with ROOT (like TEnv)
-//! Description:    Implements class methods to manage ROOT's TEnv files
+//! \details		Implements class methods to manage ROOT's TEnv files
 //! Keywords:
 //! Author:         R. Lutter
 //! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! Revision:       $Id: QEnv.cxx,v 1.10 2009-01-16 15:10:19 Rudolf.Lutter Exp $       
-//! Date:           $Date: 2009-01-16 15:10:19 $
+//! Revision:       $Id: QEnv.cxx,v 1.11 2009-01-21 09:01:33 Rudolf.Lutter Exp $       
+//! Date:           $Date: 2009-01-21 09:01:33 $
 //!
 //! Format:         Entry of the envrironment database:
 //!                      <key>: <value>
@@ -43,8 +43,8 @@
 //! Maintains environment lists. See also TEnv documentation.
 //!
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.10 $       
-//! $Date: 2009-01-16 15:10:19 $
+//! $Revision: 1.11 $       
+//! $Date: 2009-01-21 09:01:33 $
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
@@ -55,14 +55,10 @@ static QEnvRec emptyRec;
 //___________________________________________________________________[QT CLASS]
 //////////////////////////////////////////////////////////////////////////////
 //! \class QEnvRec QEnv.h "/home/Rudolf.Lutter/marabou/QEnv/inc/QEnv.h"
-//! \verbatim
-//! Name:           QEnvRec::QEnvRec
-//! Purpose:        Instantiate a record to be used in QEnv database
-//! Arguments:      QString & key       -- key
-//!                 QString & value     -- value
-//! Description:    Contains a single entry in QEnv database
-//! Keywords:
-//! \endverbatim
+//! \brief			Instantiate a record to be used in QEnv database
+//! \details	    Contains a single entry in QEnv database
+//! \param[in]		key       -- key
+//! \param[in]		value     -- value
 //////////////////////////////////////////////////////////////////////////////
 
 QEnvRec::QEnvRec(QString & key, QString & value) {
@@ -75,15 +71,10 @@ QEnvRec::QEnvRec(QString & key, QString & value) {
 //___________________________________________________________________[QT CLASS]
 //////////////////////////////////////////////////////////////////////////////
 //! \class QEnv QEnv.h "/home/Rudolf.Lutter/marabou/QEnv/inc/QEnv.h"
-//! \verbatim
-//! Name:           QEnv::QEnv
-//! Purpose:        Instantiate QEnv database
-//! Arguments:      Char_t * fileName  -- name of env file
-//!                 Bool_t verbose     -- turn verbose flag on/off
-//! Description:    Main QEnv object
-//! Keywords:
-//! \endverbatim
-//! \example qenvExample.cxx
+//! \brief			Instantiate QEnv database
+//! \details		Main QEnv object
+//! \param[in]		fileName  -- name of env file
+//! \param[in]		verbose     -- turn verbose flag on/off
 //////////////////////////////////////////////////////////////////////////////
 
 QEnv::QEnv(const Char_t * fileName, Bool_t verbose) {
@@ -95,15 +86,10 @@ QEnv::QEnv(const Char_t * fileName, Bool_t verbose) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnvRec::setType
-//! Purpose:        Set entry type according to data type
-//! Arguments:      QString & value     -- value
-//! Results:        -- 
-//! Description:    Checks if data type is int, double, or string.
+//! \brief			Set entry type according to data type
+//! \details		Checks if data type is int, double, or string.
 //!                 Defaults to string.
-//! Keywords:
-//! \endverbatim
+//! \param[in]		value     -- key value
 //////////////////////////////////////////////////////////////////////////////
 
 void QEnvRec::setType(QString & value) {
@@ -130,15 +116,10 @@ void QEnvRec::setType(QString & value) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnvRec::print
-//! Purpose:        Print record
-//! Arguments:      Int_t recNo          -- record number
-//!                 Int_t lkey           -- max key length
-//! Results:        -- 
-//! Description:    Outputs key name and key value to cout.
-//! Keywords:
-//! \endverbatim
+//! \brief			Print record
+//! \details		Outputs key name and key value to cout.
+//! \param[in]		recNo          -- record number
+//! \param[in]		lkey           -- max key length
 //////////////////////////////////////////////////////////////////////////////
 
 void QEnvRec::print(Int_t recNo, Int_t lkey) {
@@ -161,16 +142,12 @@ void QEnvRec::print(Int_t recNo, Int_t lkey) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::readFile
-//! Purpose:        Read env data from file
-//! Arguments:      Char_t * fileName     -- name of env file
-//! Results:        Int_t nofEntries      -- number of entries read
-//!                                              or -1 if error
-//! Description:    Reads env data line by line and builds database
+//! \brief			Read env data from file
+//! \param[in]		fileName	-- name of env file
+//! \details		Reads env data line by line and builds database
 //!                 Call this method more than once to combine different databases.
-//! Keywords:
-//! \endverbatim
+//! \retval 		nofEntries	-- number of entries read
+//! 								or -1 if error
 //////////////////////////////////////////////////////////////////////////////
 
 Int_t QEnv::readFile(const Char_t * fileName) {
@@ -216,15 +193,11 @@ Int_t QEnv::readFile(const Char_t * fileName) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::writeFile
-//! Purpose:        Write env data to file
-//! Arguments:      Char_t * fileName     -- name of env file
-//! Results:        Int_t nofEntries      -- number of entries written
+//! \brief			Write env data to file
+//! \details		Writes database to file
+//! \param[in]		fileName		-- name of env file
+//! \retval 		nofEntries		-- number of entries written
 //!                                          or -1 if error
-//! Description:    Writes database to file
-//! Keywords:
-//! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
 Int_t QEnv::writeFile(const Char_t * fileName) {
@@ -261,16 +234,11 @@ Int_t QEnv::writeFile(const Char_t * fileName) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::setValue
-//! Purpose:        Set or create env entry from integer
-//! Arguments:      Char_t * key     -- key name
-//!                 Int_t value      -- value
-//! Results:        -- 
-//! Description:    If entry already exists changes its value.
+//! \brief			Set or create env entry from integer
+//! \details		If entry already exists changes its value.
 //!                 Otherwise creates a new entry.
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 		-- key name
+//! \param[in]		value		-- value
 //////////////////////////////////////////////////////////////////////////////
 
 void QEnv::setValue(const Char_t * key, Int_t value) {
@@ -302,16 +270,11 @@ void QEnv::setValue(const Char_t * key, Int_t value) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::setValue
-//! Purpose:        Set or create env entry from integer
-//! Arguments:      Char_t * key     -- key name
-//!                 Bool_t value     -- value
-//! Results:        -- 
-//! Description:    If entry already exists changes its value.
+//! \brief			Set or create env entry from integer
+//! \details		If entry already exists changes its value.
 //!                 Otherwise creates a new entry.
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 	-- key name
+//! \param[in]		value	-- value
 //////////////////////////////////////////////////////////////////////////////
 
 void QEnv::setValue(const Char_t * key, Bool_t value) {
@@ -343,16 +306,11 @@ void QEnv::setValue(const Char_t * key, Bool_t value) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::setValue
-//! Purpose:        Set or create env entry from double
-//! Arguments:      Char_t * key     -- key name
-//!                 Double_t value   -- value
-//! Results:        -- 
-//! Description:    If entry already exists changes its value.
+//! \brief			Set or create env entry from double
+//! \details		If entry already exists changes its value.
 //!                 Otherwise creates a new entry.
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 	-- key name
+//! \param[in]		value	-- key value
 //////////////////////////////////////////////////////////////////////////////
 
 void QEnv::setValue(const Char_t * key, Double_t value) {
@@ -386,16 +344,11 @@ void QEnv::setValue(const Char_t * key, Double_t value) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::setValue
-//! Purpose:        Set or create env entry from string
-//! Arguments:      Char_t * key      -- key name
-//!                 Char_t *  value   -- value
-//! Results:        -- 
-//! Description:    If entry already exists changes its value.
+//! \brief			Set or create env entry from string
+//! \details		If entry already exists changes its value.
 //!                 Otherwise creates a new entry.
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 	-- key name
+//! \param[in]		value	-- key value
 //////////////////////////////////////////////////////////////////////////////
 
 void QEnv::setValue(const Char_t * key, const Char_t * value) {
@@ -427,16 +380,12 @@ void QEnv::setValue(const Char_t * key, const Char_t * value) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::getValue
-//! Purpose:        Get value of given entry
-//! Arguments:      Char_t * key        -- key name
-//!                 Int_t defVal        -- default value
-//! Results:        Int_t result        -- resulting value           
-//! Description:    If entry exists *and* its type is int returns value.
+//! \brief			Get value of given entry
+//! \details		If entry exists *and* its type is int returns value.
 //!                 Otherwise returns defVal.
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 		-- key name
+//! \param[in]		defVal		-- default value
+//! \retval 		result		-- resulting value           
 //////////////////////////////////////////////////////////////////////////////
 
 Int_t QEnv::getValue(const Char_t * key, Int_t defVal) {
@@ -456,16 +405,12 @@ Int_t QEnv::getValue(const Char_t * key, Int_t defVal) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::getValue
-//! Purpose:        Get value of given entry
-//! Arguments:      Char_t * key        -- key name
-//!                 Bool_t defVal       -- default value
-//! Results:        Bool_t result       -- resulting value           
-//! Description:    If entry exists *and* its type is boolean returns value.
+//! \brief			Get value of given entry
+//! \details		If entry exists \a and its type is boolean returns value.
 //!                 Otherwise returns defVal.
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 		-- key name
+//! \param[in]		defVal		-- default value
+//! \retval 		result		-- resulting value           
 //////////////////////////////////////////////////////////////////////////////
 
 Bool_t QEnv::getValue(const Char_t * key, Bool_t defVal) {
@@ -485,16 +430,12 @@ Bool_t QEnv::getValue(const Char_t * key, Bool_t defVal) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::getValue
-//! Purpose:        Get value of given entry
-//! Arguments:      Char_t * key        -- key name
-//!                 Double_t defVal     -- default value
-//! Results:        Double_t result     -- resulting value           
-//! Description:    If entry exists *and* its type is double returns value.
+//! \brief			Get value of given entry
+//! \details		If entry exists \a and its type is double returns value.
 //!                 Otherwise returns defVal.
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 		-- key name
+//! \param[in]		defVal		-- default value
+//! \retval 		result		-- resulting value           
 //////////////////////////////////////////////////////////////////////////////
 
 Double_t QEnv::getValue(const Char_t * key, Double_t defVal) {
@@ -514,16 +455,12 @@ Double_t QEnv::getValue(const Char_t * key, Double_t defVal) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::getValue
-//! Purpose:        Get value of given entry
-//! Arguments:      Char_t * key          -- key name
-//!                 Char_t * defVal       -- default value
-//! Results:        Char_t * result       -- resulting value           
-//! Description:    If entry exists returns value (even if type doesn't match).
+//! \brief			Get value of given entry
+//! \details		If entry exists returns value (even if type doesn't match).
 //!                 Otherwise returns defVal.
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 		-- key name
+//! \param[in]		defVal		-- default value
+//! \retval 		result		-- resulting value           
 //////////////////////////////////////////////////////////////////////////////
 
 const Char_t * QEnv::getValue(const Char_t * key, const Char_t * defVal) {
@@ -536,20 +473,16 @@ const Char_t * QEnv::getValue(const Char_t * key, const Char_t * defVal) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::lookup
-//! Purpose:        Search for a given key
-//! Arguments:      Char_t * key        -- name of key
-//!                 Bool_t singleMatch  -- kTRUE: look for unique match
-//! Results:        QEnvRec & record    -- database record
-//! Description:    Searches for a given entry.
+//! \brief			Search for a given key
+//! \details		Searches for a given entry.
 //!                 Returns matching record from database.
 //!                 Returns empty record
 //!                         if key not found
 //!                         or singleMatch=kTRUE and more than 1 match
 //!                 Empty record can be tested by use of QEnvRec::isEmpty().
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 			-- name of key
+//! \param[in]		singleMatch 	-- kTRUE: look for unique match
+//! \retval 		record			-- database record
 //////////////////////////////////////////////////////////////////////////////
 
 QEnvRec & QEnv::lookup(const Char_t * key, Bool_t singleMatch) {
@@ -563,16 +496,12 @@ QEnvRec & QEnv::lookup(const Char_t * key, Bool_t singleMatch) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::lookup
-//! Purpose:        Search for a given key
-//! Arguments:      Char_t * key              -- name of key
-//!                 QList<QEnvRec> & recList  -- list of matching records
-//! Results:        Int_t nofEntries          -- number of entries in list
-//! Description:    Searches for a given entry.
+//! \brief			Search for a given key
+//! \details		Searches for a given entry.
 //!                 Returns matching record(s) from database in a list.
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 			-- name of key
+//! \param[in]		recList 		-- list of matching records
+//! \retval 		nofEntries		-- number of entries in list
 //////////////////////////////////////////////////////////////////////////////
 
 Int_t QEnv::lookup(const Char_t * key, QList<QEnvRec> & recList) {
@@ -587,14 +516,9 @@ Int_t QEnv::lookup(const Char_t * key, QList<QEnvRec> & recList) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::first
-//! Purpose:        Start iteration
-//! Arguments:      --
-//! Results:        QEnvRec & record     -- first record in database
-//! Description:    Starts iteration and returns first record in database
-//! Keywords:
-//! \endverbatim
+//! \brief			Start iteration
+//! \details		Starts iteration and returns first record in database
+//! \retval 		record		-- first record in database
 //////////////////////////////////////////////////////////////////////////////
 
 QEnvRec & QEnv::first() {
@@ -606,15 +530,10 @@ QEnvRec & QEnv::first() {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::next
-//! Purpose:        Return next element in list
-//! Arguments:      --
-//! Results:        QEnvRec & record     -- next record in database
-//! Description:    Returns first record in database.
+//! \brief			Return next element in list
+//! \details		Returns first record in database.
 //!                 Use QEnvRec::isEmpty() to check if end of list
-//! Keywords:
-//! \endverbatim
+//! \retval 		record		-- next record in database
 //////////////////////////////////////////////////////////////////////////////
 
 QEnvRec & QEnv::next() {
@@ -632,19 +551,15 @@ QEnvRec & QEnv::next() {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::find
-//! Purpose:        Find entry
-//! Arguments:      Char_t * key            -- name of key
-//!                 QList<Int_t> & idxList  -- list of indices
-//! Results:        Int_t nofEntries        -- number of matching entries
-//! Description:    Searches for a given entry
+//! \brief			Find entry
+//! \details		Searches for a given entry
 //!                 As keys may contain dot-separated substrings we compare
-//!                 these substrings from right to left to check if <key>
+//!                 these substrings from right to left to check if \a key
 //!                 matches (part of) an entry in the list.
 //!                 A substring denotes a wildcard by setting it to "*".
-//! Keywords:
-//! \endverbatim
+//! \param[in]		key 			-- name of key
+//! \param[in]		idxList 		-- list of indices
+//! \retval 		nofEntries		-- number of matching entries
 //////////////////////////////////////////////////////////////////////////////
 
 Int_t QEnv::find(const Char_t * key, QList<Int_t> & idxList) {
@@ -672,15 +587,8 @@ Int_t QEnv::find(const Char_t * key, QList<Int_t> & idxList) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::print
-//! Purpose:        Print entries
-//! Arguments:      --
-//! Results:        --      
-//! Description:    Outputs all entries of QEnv database to cout.
-//! Keywords:
-//! \endverbatim
-//! \example rootrc.list
+//! \brief			Print entries
+//! \details		Outputs all entries of QEnv database to cout.
 //////////////////////////////////////////////////////////////////////////////
 
 void QEnv::print() {
@@ -699,14 +607,9 @@ void QEnv::print() {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \verbatim
-//! Name:           QEnv::getKeyLength                                      
-//! Purpose:        Calculate length of key names                           
-//! Arguments:      --                                                      
-//! Results:        Int_t lkey           -- length of longest key name        
-//! Description:    Calcuates longest length of key                            
-//! Keywords: 
-//! \endverbatim                                                              
+//! \brief			Calculate length of key names                           
+//! \details		Calcuates longest length of key                            
+//! \retval 		lkey		-- length of longest key name        
 //////////////////////////////////////////////////////////////////////////////
 
 Int_t QEnv::getKeyLength() {
