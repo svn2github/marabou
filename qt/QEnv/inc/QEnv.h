@@ -7,8 +7,8 @@
 //! \brief			Define utilities to be used with QT
 //! \details		Common class definitions to be used with QT
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.11 $
-//! $Date: 2009-01-22 08:59:44 $
+//! $Revision: 1.12 $
+//! $Date: 2009-01-22 09:38:36 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -86,51 +86,51 @@ class QEnv : public QObject {
 		QEnv(const Char_t * fileName = ".qenvrc", Bool_t verbose = kFALSE);
 		~QEnv() {};
 
-		//! \brief read database from file
+		//! read database from file
 		Int_t readFile(const Char_t * fileName);
-		//! \brief write/save database to file
+		//! write/save database to file
 		Int_t writeFile(const Char_t * fileName = "");
 
- 		//! \brief create entry / modify its value (integer)
+ 		//! create entry / modify its value (integer)
 		void setValue(const Char_t * key, Int_t value);
- 		//! \brief create entry / modify its value (double)
+ 		//! create entry / modify its value (double)
 		void setValue(const Char_t * key, Double_t value);
- 		//! \brief create entry / modify its value (boolean)
+ 		//! create entry / modify its value (boolean)
 		void setValue(const Char_t * key, Bool_t value);
- 		//! \brief create entry / modify its value (string)
+ 		//! create entry / modify its value (string)
 		void setValue(const Char_t * key, const Char_t * value);
 
- 		//! \brief fetch key value (integer)
+ 		//! fetch key value (integer)
 		Int_t getValue(const Char_t * key, Int_t defVal = 0);
- 		//! \brief fetch key value (double)
+ 		//! fetch key value (double)
 		Double_t getValue(const Char_t * key, Double_t defVal = 0.0);
- 		//! \brief fetch key value (boolean)
+ 		//! fetch key value (boolean)
 		Bool_t getValue(const Char_t * key, Bool_t defVal = kFALSE);
- 		//! \brief fetch key value (string)
+ 		//! fetch key value (string)
 		const Char_t * getValue(const Char_t * key, const Char_t * defVal = "");
 
- 		//! \brief search for a given entry
+ 		//! search for a given entry
 		QEnvRec & lookup(const Char_t * key, Bool_t singleMatch = kTRUE);
- 		//! \brief search all matching entries
+ 		//! search all matching entries
 		Int_t lookup(const Char_t * key, QList<QEnvRec> & recList);
 
-		//! \brief print database
+		//! print database
 		void print();
 
-		//! \brief turn verbosity on/off
+		//! turn verbosity on/off
 		inline void setVerbose(Bool_t verbose = kTRUE) { qVerbose = verbose; };
-		//! \brief check if verbose
+		//! check if verbose
 		inline Bool_t isVerbose() { return qVerbose; };
 
-		//! \brief start iteration
+		//! start iteration
 		QEnvRec & first();
-		//! \brief return next element in database
+		//! return next element in database
 		QEnvRec & next();
 
 	protected:
-		 //!< find matching entries
+		 //! find matching entries
 		Int_t find(const Char_t * key, QList<Int_t> & idxList);
- 		//!< calculate length of longest key name
+ 		//! calculate length of longest key name
 		Int_t getKeyLength();
 
 	protected:
