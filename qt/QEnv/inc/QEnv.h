@@ -1,19 +1,14 @@
 #ifndef __QEnv_h__
 #define __QEnv_h__
 
-//__________________________________________________[QT CLASS DEFINITION FILE]
+//_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
-//! \file
-//! \verbatim
-//! Name:           QEnv.h
-//! Purpose:        Define utilities to be used with QT
-//! Class:          QEnv    -- an envirmonent manager like ROOT's TEnv
-//! Description:    Common class definitions to be used with QT
-//! Author:         R. Lutter
-//! Revision:       $Id: QEnv.h,v 1.8 2009-01-21 09:01:33 Rudolf.Lutter Exp $       
-//! Date:           
-//! Keywords:
-//! \endverbatim
+//! \file			QEnv.h
+//! \brief			Define utilities to be used with QT
+//! \details		Common class definitions to be used with QT
+//! \author 		R. Lutter
+//! \version		$Id: QEnv.h,v 1.9 2009-01-22 08:56:40 Rudolf.Lutter Exp $
+//! \date			$Date: 2009-01-22 08:56:40 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>

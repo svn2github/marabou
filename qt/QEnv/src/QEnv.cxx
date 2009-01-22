@@ -1,16 +1,9 @@
 //__________________________________________________________[QT IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-//! \file
-//! \verbatim
-//! Name:           QEnv.cxx
+//! \file			QEnv.cxx
 //! \brief			QT utilities:
 //!                 A class handling environment files used with ROOT (like TEnv)
 //! \details		Implements class methods to manage ROOT's TEnv files
-//! Keywords:
-//! Author:         R. Lutter
-//! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! Revision:       $Id: QEnv.cxx,v 1.11 2009-01-21 09:01:33 Rudolf.Lutter Exp $       
-//! Date:           $Date: 2009-01-21 09:01:33 $
 //!
 //! Format:         Entry of the envrironment database:
 //!                      <key>: <value>
@@ -24,6 +17,10 @@
 //!                 when accessing a key with wrong type by getValue().
 //!                 Setting/getting a key via type=string is always allowed
 //!                 as keys and values are being stored as strings.
+//! \author 		R. Lutter
+//! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+//! \version		$Revision: 1.12 $       
+//! \date			$Date: 2009-01-22 08:56:40 $
 //! \endverbatim
 //////////////////////////////////////////////////////////////////////////////
 
@@ -38,14 +35,12 @@
 //__________________________________________________________[DOXYGEN MAINPAGE]
 //////////////////////////////////////////////////////////////////////////////
 //! \mainpage
-//! \verbatim
 //! Class QEnv: a QT equivalent for ROOT's TEnv class
 //! Maintains environment lists. See also TEnv documentation.
 //!
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.11 $       
-//! $Date: 2009-01-21 09:01:33 $
-//! \endverbatim
+//! $Revision: 1.12 $       
+//! $Date: 2009-01-22 08:56:40 $
 //////////////////////////////////////////////////////////////////////////////
 
 using namespace std;
