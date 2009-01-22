@@ -8,8 +8,8 @@
 //! \details		Common class definitions to be used with QT
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.13 $
-//! $Date: 2009-01-22 10:59:47 $
+//! $Revision: 1.14 $
+//! $Date: 2009-01-22 11:18:37 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -39,40 +39,40 @@ class QEnvRec {
 		QEnvRec(QString & key, QString & value);
 		~QEnvRec() {};
 
- 		//! \brief get key name
+ 		//! get key name
 		inline QString & getKey() { return qKey; };
- 		//! \brief get key value
+ 		//! get key value
 		inline QString & getValue() { return qValue; };
 
-		//! \brief set key value to integer
+		//! set key value to integer
 		inline void setValue(Int_t value) { qValue.setNum(value); };
-		//! \brief set key value to double
+		//! set key value to double
 		inline void setValue(Double_t value) { qValue.setNum(value); };
-		//! \brief set key value to boolean
+		//! set key value to boolean
 		inline void setValue(Bool_t value) { qValue.setNum(value); };
-		//! \brief set key value to string
+		//! set key value to string
 		inline void setValue(const Char_t * value) { qValue = value; };
 
-		//! \brief set record type
+		//! set record type
 		inline void setType(ERecType type) { qRecType = type; };
-		//! \brief set record type according to data type
+		//! set record type according to data type
 		void setType(QString & value);
 
- 		//! \brief get record type
+ 		//! get record type
 		inline ERecType getType() { return qRecType; };
 
-		//! \brief test if record is empty
+		//! test if record is empty
 		inline Bool_t isEmpty() { return (qRecType == QEnvRec::kEmpty); };
-		//! \brief test if record is integer
+		//! test if record is integer
 		inline Bool_t isInteger() { return (qRecType == QEnvRec::kInteger); };
-		//! \brief test if record is double
+		//! test if record is double
 		inline Bool_t isDouble() { return (qRecType == QEnvRec::kDouble); };
-		//! \brief test if record is boolean
+		//! test if record is boolean
 		inline Bool_t isBoolean() { return (qRecType == QEnvRec::kBoolean); };
-		//! \brief test if record is string
+		//! test if record is string
 		inline Bool_t isString() { return (qRecType == QEnvRec::kString); };
 
-		//! \brief print record
+		//! print record
 		void print(Int_t recNo = -1, Int_t lkey = 2);
 
 	protected:
