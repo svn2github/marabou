@@ -17,11 +17,10 @@
 //!                 when accessing a key with wrong type by getValue().
 //!                 Setting/getting a key via type=string is always allowed
 //!                 as keys and values are being stored as strings.
-//! \author 		R. Lutter
+//! $Author: Rudolf.Lutter $
 //! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! \version		$Revision: 1.12 $       
-//! \date			$Date: 2009-01-22 08:56:40 $
-//! \endverbatim
+//! $Revision: 1.13 $      
+//! $Date: 2009-01-22 08:59:44 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <sstream>
@@ -39,8 +38,8 @@
 //! Maintains environment lists. See also TEnv documentation.
 //!
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.12 $       
-//! $Date: 2009-01-22 08:56:40 $
+//! $Revision: 1.13 $       
+//! $Date: 2009-01-22 08:59:44 $
 //////////////////////////////////////////////////////////////////////////////
 
 using namespace std;
