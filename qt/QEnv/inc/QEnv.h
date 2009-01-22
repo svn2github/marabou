@@ -8,8 +8,8 @@
 //! \details		Common class definitions to be used with QT
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.14 $
-//! $Date: 2009-01-22 11:18:37 $
+//! $Revision: 1.15 $
+//! $Date: 2009-01-22 12:06:01 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
@@ -39,40 +39,40 @@ class QEnvRec {
 		QEnvRec(QString & key, QString & value);
 		~QEnvRec() {};
 
- 		//! get key name
+ 		//! Get key name
 		inline QString & getKey() { return qKey; };
- 		//! get key value
+ 		//! Get key value
 		inline QString & getValue() { return qValue; };
 
-		//! set key value to integer
+		//! Set key value to integer
 		inline void setValue(Int_t value) { qValue.setNum(value); };
-		//! set key value to double
+		//! Set key value to double
 		inline void setValue(Double_t value) { qValue.setNum(value); };
-		//! set key value to boolean
+		//! Set key value to boolean
 		inline void setValue(Bool_t value) { qValue.setNum(value); };
-		//! set key value to string
+		//! Set key value to string
 		inline void setValue(const Char_t * value) { qValue = value; };
 
-		//! set record type
+		//! Set record type
 		inline void setType(ERecType type) { qRecType = type; };
-		//! set record type according to data type
+		//! Set record type according to data type
 		void setType(QString & value);
 
- 		//! get record type
+ 		//! Get record type
 		inline ERecType getType() { return qRecType; };
 
-		//! test if record is empty
+		//! Test if record is empty
 		inline Bool_t isEmpty() { return (qRecType == QEnvRec::kEmpty); };
-		//! test if record is integer
+		//! Test if record is integer
 		inline Bool_t isInteger() { return (qRecType == QEnvRec::kInteger); };
-		//! test if record is double
+		//! Test if record is double
 		inline Bool_t isDouble() { return (qRecType == QEnvRec::kDouble); };
-		//! test if record is boolean
+		//! Test if record is boolean
 		inline Bool_t isBoolean() { return (qRecType == QEnvRec::kBoolean); };
-		//! test if record is string
+		//! Test if record is string
 		inline Bool_t isString() { return (qRecType == QEnvRec::kString); };
 
-		//! print record
+		//! Print record
 		void print(Int_t recNo = -1, Int_t lkey = 2);
 
 	protected:
@@ -87,51 +87,51 @@ class QEnv : public QObject {
 		QEnv(const Char_t * fileName = ".qenvrc", Bool_t verbose = kFALSE);
 		~QEnv() {};
 
-		//! read database from file
+		//! Read database from file
 		Int_t readFile(const Char_t * fileName);
-		//! write/save database to file
+		//! Write/save database to file
 		Int_t writeFile(const Char_t * fileName = "");
 
- 		//! create entry / modify its value (integer)
+ 		//! Create entry / modify its value (integer)
 		void setValue(const Char_t * key, Int_t value);
- 		//! create entry / modify its value (double)
+ 		//! Create entry / modify its value (double)
 		void setValue(const Char_t * key, Double_t value);
- 		//! create entry / modify its value (boolean)
+ 		//! Create entry / modify its value (boolean)
 		void setValue(const Char_t * key, Bool_t value);
- 		//! create entry / modify its value (string)
+ 		//! Create entry / modify its value (string)
 		void setValue(const Char_t * key, const Char_t * value);
 
- 		//! fetch key value (integer)
+ 		//! Fetch key value (integer)
 		Int_t getValue(const Char_t * key, Int_t defVal = 0);
- 		//! fetch key value (double)
+ 		//! Fetch key value (double)
 		Double_t getValue(const Char_t * key, Double_t defVal = 0.0);
- 		//! fetch key value (boolean)
+ 		//! Fetch key value (boolean)
 		Bool_t getValue(const Char_t * key, Bool_t defVal = kFALSE);
- 		//! fetch key value (string)
+ 		//! Fetch key value (string)
 		const Char_t * getValue(const Char_t * key, const Char_t * defVal = "");
 
- 		//! search for a given entry
+ 		//! Search for a given entry
 		QEnvRec & lookup(const Char_t * key, Bool_t singleMatch = kTRUE);
- 		//! search all matching entries
+ 		//! Search all matching entries
 		Int_t lookup(const Char_t * key, QList<QEnvRec> & recList);
 
-		//! print database
+		//! Print database
 		void print();
 
-		//! turn verbosity on/off
+		//! Turn verbosity on/off
 		inline void setVerbose(Bool_t verbose = kTRUE) { qVerbose = verbose; };
-		//! check if verbose
+		//! Check if verbose
 		inline Bool_t isVerbose() { return qVerbose; };
 
-		//! start iteration
+		//! Start iteration
 		QEnvRec & first();
-		//! return next element in database
+		//! Return next element in database
 		QEnvRec & next();
 
 	protected:
-		 //! find matching entries
+		 //! Find matching entries
 		Int_t find(const Char_t * key, QList<Int_t> & idxList);
- 		//! calculate length of longest key name
+ 		//! Calculate length of longest key name
 		Int_t getKeyLength();
 
 	protected:

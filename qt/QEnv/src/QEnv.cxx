@@ -21,8 +21,8 @@
 //! 	</tr>
 //! $Author: Rudolf.Lutter $
 //! $Mail:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.15 $      
-//! $Date: 2009-01-22 10:59:47 $
+//! $Revision: 1.16 $      
+//! $Date: 2009-01-22 12:06:01 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <sstream>
@@ -40,8 +40,8 @@
 //! Maintains environment lists. See also TEnv documentation.
 //!
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.15 $       
-//! $Date: 2009-01-22 10:59:47 $
+//! $Revision: 1.16 $       
+//! $Date: 2009-01-22 12:06:01 $
 //////////////////////////////////////////////////////////////////////////////
 
 using namespace std;
@@ -50,7 +50,7 @@ static QEnvRec emptyRec;
 
 //___________________________________________________________________[QT CLASS]
 //////////////////////////////////////////////////////////////////////////////
-//! \class QEnvRec QEnv.h "/home/Rudolf.Lutter/marabou/QEnv/inc/QEnv.h"
+//! \class QEnvRec QEnv.h
 //! \brief			Instantiate a record to be used in QEnv database
 //! \details	    Contains a single entry in QEnv database
 //! \param[in]		key       -- key
@@ -66,7 +66,7 @@ QEnvRec::QEnvRec(QString & key, QString & value) {
 
 //___________________________________________________________________[QT CLASS]
 //////////////////////////////////////////////////////////////////////////////
-//! \class QEnv QEnv.h "/home/Rudolf.Lutter/marabou/QEnv/inc/QEnv.h"
+//! \class QEnv QEnv.h
 //! \brief			Instantiate QEnv database
 //! \details		Main QEnv object
 //! \param[in]		fileName  -- name of env file
@@ -82,7 +82,6 @@ QEnv::QEnv(const Char_t * fileName, Bool_t verbose) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Set entry type according to data type
 //! \details		Checks if data type is int, double, or string.
 //!                 Defaults to string.
 //! \param[in]		value     -- key value
@@ -112,7 +111,6 @@ void QEnvRec::setType(QString & value) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Print record
 //! \details		Outputs key name and key value to cout.
 //! \param[in]		recNo          -- record number
 //! \param[in]		lkey           -- max key length
@@ -138,7 +136,6 @@ void QEnvRec::print(Int_t recNo, Int_t lkey) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Read env data from file
 //! \param[in]		fileName	-- name of env file
 //! \details		Reads env data line by line and builds database.<br>
 //!                 Call this method more than once to combine different databases.
@@ -189,7 +186,6 @@ Int_t QEnv::readFile(const Char_t * fileName) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Write env data to file
 //! \details		Writes database to file
 //! \param[in]		fileName		-- name of env file
 //! \retval 		nofEntries		-- number of entries written
@@ -230,7 +226,6 @@ Int_t QEnv::writeFile(const Char_t * fileName) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Set or create env entry from integer
 //! \details		If entry already exists changes its value.<br>
 //!                 Otherwise creates a new entry.
 //! \param[in]		key 		-- key name
@@ -266,7 +261,6 @@ void QEnv::setValue(const Char_t * key, Int_t value) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Set or create env entry from integer
 //! \details		If entry already exists changes its value.<br>
 //!                 Otherwise creates a new entry.
 //! \param[in]		key 	-- key name
@@ -302,7 +296,6 @@ void QEnv::setValue(const Char_t * key, Bool_t value) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Set or create env entry from double
 //! \details		If entry already exists changes its value.<br>
 //!                 Otherwise creates a new entry.
 //! \param[in]		key 	-- key name
@@ -340,7 +333,6 @@ void QEnv::setValue(const Char_t * key, Double_t value) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Set or create env entry from string
 //! \details		If entry already exists changes its value.<br>
 //!                 Otherwise creates a new entry.
 //! \param[in]		key 	-- key name
@@ -376,7 +368,6 @@ void QEnv::setValue(const Char_t * key, const Char_t * value) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Get value of given entry
 //! \details		If entry exists *and* its type is int returns value.<br>
 //!                 Otherwise returns defVal.
 //! \param[in]		key 		-- key name
@@ -401,7 +392,6 @@ Int_t QEnv::getValue(const Char_t * key, Int_t defVal) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Get value of given entry
 //! \details		If entry exists <b>and</b> its type is boolean returns value.<br>
 //!                 Otherwise returns defVal.
 //! \param[in]		key 		-- key name
@@ -426,7 +416,6 @@ Bool_t QEnv::getValue(const Char_t * key, Bool_t defVal) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Get value of given entry
 //! \details		If entry exists \a and its type is double returns value.<br>
 //!                 Otherwise returns defVal.
 //! \param[in]		key 		-- key name
@@ -451,7 +440,6 @@ Double_t QEnv::getValue(const Char_t * key, Double_t defVal) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Get value of given entry
 //! \details		If entry exists returns value (even if type doesn't match).<br>
 //!                 Otherwise returns defVal.
 //! \param[in]		key 		-- key name
@@ -469,7 +457,6 @@ const Char_t * QEnv::getValue(const Char_t * key, const Char_t * defVal) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Search for a given key
 //! \details		Searches for a given entry.<br>
 //!                 Returns matching record from database.<br>
 //!                 Returns empty record
@@ -493,7 +480,6 @@ QEnvRec & QEnv::lookup(const Char_t * key, Bool_t singleMatch) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Search for a given key
 //! \details		Searches for a given entry.<br>
 //!                 Returns matching record(s) from database in a list.
 //! \param[in]		key 			-- name of key
@@ -513,7 +499,6 @@ Int_t QEnv::lookup(const Char_t * key, QList<QEnvRec> & recList) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Start iteration
 //! \details		Starts iteration and returns first record in database
 //! \retval 		record		-- first record in database
 //////////////////////////////////////////////////////////////////////////////
@@ -527,7 +512,6 @@ QEnvRec & QEnv::first() {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Return next element in list
 //! \details		Returns first record in database.<br>
 //!                 Use QEnvRec::isEmpty() to check if end of list
 //! \retval 		record		-- next record in database
@@ -548,7 +532,6 @@ QEnvRec & QEnv::next() {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Find entry
 //! \details		Searches for a given entry.<br>
 //!                 As keys may contain dot-separated substrings we compare
 //!                 these substrings from right to left to check if <b><i>key</i></b>
@@ -584,7 +567,6 @@ Int_t QEnv::find(const Char_t * key, QList<Int_t> & idxList) {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Print entries
 //! \details		Outputs all entries of QEnv database to cout.
 //////////////////////////////////////////////////////////////////////////////
 
@@ -604,7 +586,6 @@ void QEnv::print() {
 
 //__________________________________________________________________[QT METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			Calculate length of key names                           
 //! \details		Calcuates longest length of key                            
 //! \retval 		lkey		-- length of longest key name        
 //////////////////////////////////////////////////////////////////////////////
