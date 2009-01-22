@@ -7,8 +7,8 @@
 //! \brief			Define utilities to be used with QT
 //! \details		Common class definitions to be used with QT
 //! \author 		R. Lutter
-//! \version		$Id: QEnv.h,v 1.9 2009-01-22 08:56:40 Rudolf.Lutter Exp $
-//! \date			$Date: 2009-01-22 08:56:40 $
+//! \version		$Revision: 1.10 $
+//! \date			$Date: 2009-01-22 08:57:40 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>
