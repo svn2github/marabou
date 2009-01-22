@@ -7,8 +7,9 @@
 //! \brief			Define utilities to be used with QT
 //! \details		Common class definitions to be used with QT
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.12 $
-//! $Date: 2009-01-22 09:38:36 $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.13 $
+//! $Date: 2009-01-22 10:59:47 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <iostream>

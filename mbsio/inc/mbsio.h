@@ -5,9 +5,10 @@
 /*! \file			mbsio.h
 	\brief			Structs for MBS I/O
 	\details		Defines structs to read MBS data streams
-	\author 		R. Lutter
-	\version		$Revision: 1.18 $       
-	\date           $Date: 2009-01-21 07:20:38 $
+	$Author: Rudolf.Lutter $
+	$Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+	$Revision: 1.19 $       
+	$Date: 2009-01-22 10:59:47 $
 *******************************************************************************/
 
 #include "typedefs.h"

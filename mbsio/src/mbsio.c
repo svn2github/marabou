@@ -2,9 +2,10 @@
 /*!	\file		mbsio.c
 	\brief		MBS raw data input
 	\details	Procedures to read MBS data from disk or tcp socket
-	\author 	R. Lutter
-	\version	$Revision: 1.41 $       
-	\date		$Date: 2009-01-21 07:27:48 $
+	$Author: Rudolf.Lutter $
+	$Mail:		<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+	$Revision: 1.42 $       
+	$Date: 2009-01-22 10:59:47 $
 *****************************************************************************/
 
 /* include files needed by mbsio */

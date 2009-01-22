@@ -20,9 +20,9 @@
 //! 			as keys and values are being stored as strings.</td>
 //! 	</tr>
 //! $Author: Rudolf.Lutter $
-//! Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-//! $Revision: 1.14 $      
-//! $Date: 2009-01-22 09:38:36 $
+//! $Mail:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.15 $      
+//! $Date: 2009-01-22 10:59:47 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <sstream>
@@ -40,8 +40,8 @@
 //! Maintains environment lists. See also TEnv documentation.
 //!
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.14 $       
-//! $Date: 2009-01-22 09:38:36 $
+//! $Revision: 1.15 $       
+//! $Date: 2009-01-22 10:59:47 $
 //////////////////////////////////////////////////////////////////////////////
 
 using namespace std;
