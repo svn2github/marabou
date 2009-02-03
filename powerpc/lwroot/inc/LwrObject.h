@@ -5,17 +5,17 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrObject.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TObject
+//! \details		Class definitions for ROOT under LynxOs: TObject<br>
 //! 				The TObject class provides default behaviour and
-//! 				protocol for all objects in the ROOT system.
+//! 				protocol for all objects in the ROOT system.<br>
 //! 				It provides protocol for object I/O, error handling,
-//! 				sorting, inspection, printing, drawing, etc.
+//! 				sorting, inspection, printing, drawing, etc.<br>
 //! 				Every object which inherits from TObject can be stored
 //! 				in the ROOT collection classes.
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <iostream.h>

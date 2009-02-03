@@ -5,12 +5,12 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrDatime.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TDatime
+//! \details		Class definitions for ROOT under LynxOs: TDatime<br>
 //! 				Date & time handling class.
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
@@ -25,8 +25,7 @@ protected:
 public:
    TDatime();
    TDatime(const TDatime &d): fDatime(d.fDatime) { }
-   TDatime(UInt_t tloc, Bool_t dosDate = kFALSE): fDatime(0)
-     { Set(tloc, dosDate); }
+   TDatime(UInt_t tloc, Bool_t dosDate = kFALSE): fDatime(0) { Set(tloc, dosDate); }
    TDatime(Int_t date, Int_t time);
    TDatime(Int_t year, Int_t month, Int_t day,
            Int_t hour, Int_t min, Int_t sec);

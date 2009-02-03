@@ -5,12 +5,12 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrString.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TString
+//! \details		Class definitions for ROOT under LynxOs: TString<br>
 //! 				Basic string class
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
@@ -27,15 +27,6 @@ class TString;
 class TStringLong;
 class TSubString;
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-//  TStringRef                                                          //
-//                                                                      //
-//  This is the dynamically allocated part of a TString.                //
-//  It maintains a reference count. It contains no public member        //
-//  functions.                                                          //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
 class TStringRef : public TRefCnt {
 
 friend class TString;
@@ -64,24 +55,15 @@ private:
    static TStringRef *GetRep(Ssiz_t capac, Ssiz_t nchar);
 };
 
-
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-//  TSubString                                                          //
-//                                                                      //
-//  The TSubString class allows selected elements to be addressed.      //
-//  There are no public constructors.                                   //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
 class TSubString {
 
 friend class TStringLong;
 friend class TString;
 
 private:
-   TString      *fStr;           // Referenced string
-   Ssiz_t        fBegin;         // Index of starting character
-   Ssiz_t        fExtent;        // Length of TSubString
+   TString      *fStr;           //!< Referenced string
+   Ssiz_t        fBegin;         //!< Index of starting character
+   Ssiz_t        fExtent;        //!< Length of TSubString
 
    // NB: the only constructor is private
    TSubString(const TString& s, Ssiz_t start, Ssiz_t len);
@@ -116,24 +98,18 @@ public:
    int           operator!() const       { return fBegin == kNPOS; }
 };
 
-
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-//  TString                                                             //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
 class TString {
 
 friend class TSubString;
 friend class TStringRef;
 
 private:
-   static Ssiz_t  fgInitialCapac;   // Initial allocation Capacity
-   static Ssiz_t  fgResizeInc;      // Resizing increment
-   static Ssiz_t  fgFreeboard;      // Max empty space before reclaim
+   static Ssiz_t  fgInitialCapac;   //!< Initial allocation Capacity
+   static Ssiz_t  fgResizeInc;      //!< Resizing increment
+   static Ssiz_t  fgFreeboard;      //!< Max empty space before reclaim
 
-   void           Clone();          // Make self a distinct copy
-   void           Clone(Ssiz_t nc); // Make self a distinct copy w. capacity nc
+   void           Clone();          //!< Make self a distinct copy
+   void           Clone(Ssiz_t nc); //!< Make self a distinct copy w. capacity nc
 
    friend TString operator+(const TString& s1, const TString& s2);
    friend TString operator+(const TString& s,  const char *cs);
@@ -142,7 +118,7 @@ private:
    friend Bool_t  operator==(const TString& s1, const char *s2);
 
 protected:
-   char          *fData;          // ref. counted data (TStringRef is in front)
+   char          *fData;          //!< ref. counted data (TStringRef is in front)
 
    // Special concatenation constructor
    TString(const char *a1, Ssiz_t n1, const char *a2, Ssiz_t n2);
@@ -302,12 +278,6 @@ extern int strcasecmp(const char *str1, const char *str2);
 extern int strncasecmp(const char *str1, const char *str2, Ssiz_t n);
 #endif
 
-
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-//  Inlines                                                             //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
 
 inline void TStringRef::UnLink()
 { if (RemoveReference() == 0) delete [] (char*)this; }

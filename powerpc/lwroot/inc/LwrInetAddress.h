@@ -5,16 +5,17 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrInetAddress.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TInetAddress
-//! 				This class represents an Internet Protocol (IP) address.
+//! \details		Class definitions for ROOT under LynxOs: TInetAddress<br>
+//! 				This class represents an Internet Protocol (IP) address.<br>
 //! 				Objects of this class can not be created directly,
-//! 				but only via the TSystem GetHostByName(), GetSockName(),
-//! 				and GetPeerName() members and via members of the TServerSocket
-//! 				and TSocket classes.
-//! $Author: Rudolf.Lutter $
+//! 				but only via<br>
+//! 				TSystem::GetHostByName(), TSystem::GetSockName(),
+//! 				and TSystem::GetPeerName() members<br>
+//! 				and via members of the TServerSocket and TSocket classes.
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"

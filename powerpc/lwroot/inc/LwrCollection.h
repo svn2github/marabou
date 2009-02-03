@@ -5,13 +5,14 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrCollection.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TCollection
-//! 				Collection abstract base class. This class inherits from TObject
-//! 				because we want to be able to have collections of collections.
-//! $Author: Rudolf.Lutter $
+//! \details		Class definitions for ROOT under LynxOs: TCollection<br>
+//! 				Collection abstract base class.<br>
+//! 				This class inherits from TObject because we want to be able
+//!					to have collections of collections.
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrObject.h"
@@ -78,14 +79,13 @@ public:
 };
 
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TIter                                                                //
-//                                                                      //
-// Iterator wrapper. Type of iterator used depends on type of           //
-// collection.                                                          //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TIter
+//! 				Iterator wrapper.
+//! 				Type of iterator used depends on type of collection.
+//////////////////////////////////////////////////////////////////////////////
 
 class TIter {
 

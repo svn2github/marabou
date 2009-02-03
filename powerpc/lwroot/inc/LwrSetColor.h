@@ -1,15 +1,15 @@
-#ifndef __SetColor_h__
-#define __SetColor_h__
+#ifndef __LwrSetColor_h__
+#define __LwrSetColor_h__
 
 //_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
-//! \file			SetColor.h
+//! \file			LwrSetColor.h
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: Text colors
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 static const char setblack[]	=	"\033[39m"; 	// set "default" color - may be other than "black"

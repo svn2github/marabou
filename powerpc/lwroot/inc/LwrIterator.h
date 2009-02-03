@@ -5,13 +5,13 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrIterator.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TIterator
-//! 				Iterator abstract base class. This base class provides
-//! 				the interface for collection iterators.
-//! $Author: Rudolf.Lutter $
+//! \details		Class definitions for ROOT under LynxOs: TIterator<br>
+//! 				Iterator abstract base class.<br>
+//! 				This base class provides the interface for collection iterators.
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"

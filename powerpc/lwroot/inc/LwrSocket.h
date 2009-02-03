@@ -5,13 +5,13 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrSocket.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TSocket
-//! 				This class implements client sockets. A socket is an
-//! 				endpoint for communication between two machines.
-//! $Author: Rudolf.Lutter $
+//! \details		Class definitions for ROOT under LynxOs: TSocket<br>
+//! 				This class implements client sockets.<br> 
+//! 				A socket is an endpoint for communication between two machines.
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"
@@ -44,10 +44,10 @@ class TSocket : public TNamed {
 friend class TServerSocket;
 
 protected:
-	Bool_t        fIsServerSocket; // as we don't have an IsA() we use this flag to distinguish between socket types
-	Int_t         fSocket;         // socket descriptor
-	TString       fService;        // name of service (matches remote port #)
-	TInetAddress  fAddress;        // remote internet address and port #
+	Bool_t        fIsServerSocket; //!< as we don't have an IsA() we use this flag to distinguish between socket types
+	Int_t         fSocket;         //!< socket descriptor
+	TString       fService;        //!< name of service (matches remote port #)
+	TInetAddress  fAddress;        //!< remote internet address and port #
 
 	TSocket() {
 		fSocket = -1;
@@ -56,12 +56,12 @@ protected:
 	}
 
 private:
-   TInetAddress  fLocalAddress;   // local internet address and port #
-   UInt_t        fBytesSent;      // total bytes sent using this socket
-   UInt_t        fBytesRecv;      // total bytes received over this socket
+   TInetAddress  fLocalAddress;   //!< local internet address and port #
+   UInt_t        fBytesSent;      //!< total bytes sent using this socket
+   UInt_t        fBytesRecv;      //!< total bytes received over this socket
 
-   static UInt_t fgBytesSent;     // total bytes sent by all socket objects
-   static UInt_t fgBytesRecv;     // total bytes received by all socket objects
+   static UInt_t fgBytesSent;     //!< total bytes sent by all socket objects
+   static UInt_t fgBytesRecv;     //!< total bytes received by all socket objects
 
    void operator=(const TSocket &);  // not implemented
    void SetDescriptor(Int_t desc) { fSocket = desc; }

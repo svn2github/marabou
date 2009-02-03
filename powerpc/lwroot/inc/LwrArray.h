@@ -6,22 +6,14 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrArray.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TArray
-//! 				Abstract array base class. Used by TArrayC, TArrayS, TArrayI,
-//! 				TArrayL, TArrayF and TArrayD.
-//! $Author: Rudolf.Lutter $
+//! \details		Class definitions for ROOT under LynxOs: TArray<br>
+//! 				Abstract array base class.<br>
+//! 				Used by TArrayC, TArrayS, TArrayI, TArrayL, TArrayF and TArrayD.
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-03 08:29:19 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TArray                                                               //
-//                                                                      //
-// Abstract array base class. Used by TArrayC, TArrayS, TArrayI,        //
-// TArrayL, TArrayF and TArrayD.                                        //
-// Data member is public for historical reasons.                        //
-//                                                                      //
 //////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
@@ -30,30 +22,35 @@
 class TArray {
 
 protected:
-   Bool_t        OutOfBoundsError(const char *where, Int_t i) const;
-   inline Bool_t BoundsOk(const char *where, Int_t at) const
-   {
-      return (at < 0 || at >= fN)
-                  ? OutOfBoundsError(where, at)
-                  : kTRUE;
-   };
+	Bool_t        OutOfBoundsError(const char *where, Int_t i) const;
+	inline Bool_t BoundsOk(const char *where, Int_t at) const
+	{
+		return (at < 0 || at >= fN) ? OutOfBoundsError(where, at) : kTRUE;
+	};
 
 
 public:
-   Int_t     fN;            //Number of array elements
+	Int_t     fN;            //!< number of array elements
 
-   TArray(): fN(0) { }
-   TArray(Int_t n): fN(n) { }
-   TArray(const TArray &a): fN(a.fN) { }
-   TArray         &operator=(const TArray &rhs) 
-     {if(this!=&rhs) fN = rhs.fN; return *this; }
-   virtual        ~TArray() { fN = 0; }
+	//! Default constructor
+	TArray(): fN(0) { }
 
-   Int_t          GetSize() const { return fN; }
-   virtual void   Set(Int_t n) = 0;
+	//! Constructor
+	//! \param[in]	n	-- number of array elements
+	TArray(Int_t n): fN(n) { }
 
-   virtual Double_t GetAt(Int_t i) const = 0;
-   virtual void   SetAt(Double_t v, Int_t i) = 0;
+	//! Copy constructor
+	//! \param[in]	a	-- array to get copied
+	TArray(const TArray &a): fN(a.fN) { }
+
+	TArray         &operator=(const TArray &rhs) {if(this!=&rhs) fN = rhs.fN; return *this; }
+	virtual        ~TArray() { fN = 0; }
+
+	Int_t          GetSize() const { return fN; }
+	virtual void   Set(Int_t n) = 0;
+
+	virtual Double_t GetAt(Int_t i) const = 0;
+	virtual void   SetAt(Double_t v, Int_t i) = 0;
 
 };
 

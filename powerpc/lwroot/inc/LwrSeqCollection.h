@@ -6,14 +6,14 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrSeqCollection.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TSeqCollection
-//! 				Sequenceable collection abstract base class.
+//! \details		Class definitions for ROOT under LynxOs: TSeqCollection<br>
+//! 				Sequenceable collection abstract base class.<br>
 //! 				TSeqCollections have an ordering relation,
 //! 				i.e. there is a first and last element.
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrCollection.h"

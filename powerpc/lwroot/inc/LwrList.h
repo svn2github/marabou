@@ -5,13 +5,13 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrList.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TList
-//! 				A doubly linked list. All classes inheriting from TObject
-//! 				can be inserted in a TList.
-//! $Author: Rudolf.Lutter $
+//! \details		Class definitions for ROOT under LynxOs: TList<br>
+//! 				A doubly linked list.<br>
+//! 				All classes inheriting from TObject can be inserted in a TList.
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrSeqCollection.h"
@@ -29,10 +29,10 @@ class TList : public TSeqCollection {
 friend  class TListIter;
 
 protected:
-   TObjLink  *fFirst;     //! pointer to first entry in linked list
-   TObjLink  *fLast;      //! pointer to last entry in linked list
-   TObjLink  *fCache;     //! cache to speedup sequential calling of Before() and After() functions
-   Bool_t     fAscending; //! sorting order (when calling Sort() or for TSortedList)
+   TObjLink  *fFirst;     //!< pointer to first entry in linked list
+   TObjLink  *fLast;      //!< pointer to last entry in linked list
+   TObjLink  *fCache;     //!< cache to speedup sequential calling of Before() and After() functions
+   Bool_t     fAscending; //!< sorting order (when calling Sort() or for TSortedList)
 
    TObjLink          *LinkAt(Int_t idx) const;
    TObjLink          *FindLink(const TObject *obj, Int_t &idx) const;
@@ -86,13 +86,13 @@ public:
 };
 
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TObjLink                                                             //
-//                                                                      //
-// Wrapper around a TObject so it can be stored in a TList.             //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TObjLink
+//! 				Wrapper around a TObject so it can be stored in a TList.
+//////////////////////////////////////////////////////////////////////////////
+
 class TObjLink {
 
 friend  class TList;
@@ -123,14 +123,14 @@ public:
    TObjLink               *Prev() { return fPrev; }
 };
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TObjOptLink                                                          //
-//                                                                      //
-// Wrapper around a TObject so it can be stored in a TList including    //
-// an option string.                                                    //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TObjOptLink
+//! 				Wrapper around a TObject so it can be stored
+//! 				in a TList including an option string.
+//////////////////////////////////////////////////////////////////////////////
+
 class TObjOptLink : public TObjLink {
 
 private:
@@ -146,22 +146,21 @@ public:
 };
 
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TListIter                                                            //
-//                                                                      //
-// Iterator of linked list.                                             //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TListIter
+//! 				Iterator of linked list.
+//////////////////////////////////////////////////////////////////////////////
 
 class TListIter : public TIterator {
 
 protected:
-   const TList       *fList;         //list being iterated
-   TObjLink          *fCurCursor;    //current position in list
-   TObjLink          *fCursor;       //next position in list
-   Bool_t             fDirection;    //iteration direction
-   Bool_t             fStarted;      //iteration started
+   const TList       *fList;         //!< list being iterated
+   TObjLink          *fCurCursor;    //!< current position in list
+   TObjLink          *fCursor;       //!< next position in list
+   Bool_t             fDirection;    //!< /iteration direction
+   Bool_t             fStarted;      //!< iteration started
 
    TListIter() : fList(0), fCurCursor(0), fCursor(0), fDirection(kTRUE),
       fStarted(kFALSE) { }

@@ -5,12 +5,12 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrObjString.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TObjString
+//! \details		Class definitions for ROOT under LynxOs: TObjString<br>
 //! 				Collectable string class: a TObject containing a TString.
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrObject.h"

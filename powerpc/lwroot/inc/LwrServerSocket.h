@@ -5,15 +5,15 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrServerSocket.h
 //! \brief			Light Weight ROOT
-//! \details		Class definitions for ROOT under LynxOs: TServerSocket
-//! 				This class implements server sockets. A server socket
-//! 				waits for requests to come in over the network.
+//! \details		Class definitions for ROOT under LynxOs: TServerSocket<br>
+//! 				This class implements server sockets.<br>
+//! 				A server socket waits for requests to come in over the network.<br>
 //! 				It performs some operation based on that request and
-//! 				then possibly returns a result to the requester.                                                           //
-//! $Author: Rudolf.Lutter $
+//! 				then possibly returns a result to the requester.
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-02-03 13:30:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"
