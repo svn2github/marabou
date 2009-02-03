@@ -1,6 +1,17 @@
 #ifndef __LwrTypes_h__
 #define __LwrTypes_h__
 
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrTypes.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: Type definitions
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
+
 typedef char           Char_t;      //Signed Character 1 byte (char)
 typedef unsigned char  UChar_t;     //Unsigned Character 1 byte (unsigned char)
 typedef short          Short_t;     //Signed Short integer 2 bytes (short)

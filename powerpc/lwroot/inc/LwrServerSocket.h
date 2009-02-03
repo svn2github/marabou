@@ -1,19 +1,20 @@
 #ifndef __LwrServerSocket_h__
 #define __LwrServerSocket_h__
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TServerSocket                                                        //
-//                                                                      //
-// This class implements server sockets. A server socket waits for      //
-// requests to come in over the network. It performs some operation     //
-// based on that request and then possibly returns a result to the      //
-// requester.                                                           //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// O. Schaile                                                           //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrServerSocket.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TServerSocket
+//! 				This class implements server sockets. A server socket
+//! 				waits for requests to come in over the network.
+//! 				It performs some operation based on that request and
+//! 				then possibly returns a result to the requester.                                                           //
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"
 #include "LwrSocket.h"

@@ -3,23 +3,13 @@
 
 //_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           utils/inc/SetColor.h
-// Purpose:        Define utilities to be used with MARaBOU
-// Description:    Common class definitions to be used within MARaBOU
-// Author:         R. Lutter
-// Revision:       $Id: LwrSetColor.h,v 1.1 2008-04-24 11:40:21 Rudolf.Lutter Exp $       
-// Date:           
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-//______________________________________________________________[Bits & Bytes]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           set<color>
-// Purpose:        Define a foreground color
-// Description:    Defines esc sequences to set foreground colors
-//                 in vt100-style output:
-//                     cout << set<color> << .... << setblack << endl;
-// Keywords:       
+//! \file			SetColor.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: Text colors
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
 //////////////////////////////////////////////////////////////////////////////
 
 static const char setblack[]	=	"\033[39m"; 	// set "default" color - may be other than "black"

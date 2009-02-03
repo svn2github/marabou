@@ -1,18 +1,18 @@
 #ifndef __LwrCollection_h__
 #define __LwrCollection_h__
 
-
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TCollection                                                          //
-//                                                                      //
-// Collection abstract base class. This class inherits from TObject     //
-// because we want to be able to have collections of collections.       //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// R. Lutter, Apr 2008                                                  //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrCollection.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TCollection
+//! 				Collection abstract base class. This class inherits from TObject
+//! 				because we want to be able to have collections of collections.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrObject.h"
 #include "LwrIterator.h"

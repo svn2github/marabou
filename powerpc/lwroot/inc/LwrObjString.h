@@ -1,17 +1,17 @@
 #ifndef __LwrObjString_h__
 #define __LwrObjString_h__
 
-
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TObjString                                                           //
-//                                                                      //
-// Collectable string class. This is a TObject containing a TString.    //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// R. Lutter, Apr 2008                                                  //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrObjString.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TObjString
+//! 				Collectable string class: a TObject containing a TString.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrObject.h"
 #include "LwrString.h"

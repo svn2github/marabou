@@ -1,26 +1,17 @@
 #ifndef __LwrDatime_h__
 #define __LwrDatime_h__
 
-
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TDatime                                                              //
-//                                                                      //
-// This class stores the date and time with a precision of one second   //
-// in an unsigned 32 bit word (e.g. 950130 124559). The date is stored  //
-// with the origin being the 1st january 1995.                          //
-//                                                                      //
-// This class has no support for time zones. The time is assumed        //
-// to be in the local time of the machine where the object was created. //
-// As a result, TDatime objects are not portable between machines       //
-// operating in different time zones and unsuitable for storing the     //
-// date/time of data taking events and the like. If absolute time is    //
-// required, use TTimeStamp.                                            //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// R. Lutter, Apr 2008                                                  //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrDatime.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TDatime
+//! 				Date & time handling class.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
 

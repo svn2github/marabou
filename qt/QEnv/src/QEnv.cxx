@@ -21,8 +21,8 @@
 //! 	</tr>
 //! $Author: Rudolf.Lutter $
 //! $Mail:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.16 $      
-//! $Date: 2009-01-22 12:06:01 $
+//! $Revision: 1.17 $      
+//! $Date: 2009-02-03 08:29:20 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <sstream>
@@ -40,8 +40,8 @@
 //! Maintains environment lists. See also TEnv documentation.
 //!
 //! $Author: Rudolf.Lutter $
-//! $Revision: 1.16 $       
-//! $Date: 2009-01-22 12:06:01 $
+//! $Revision: 1.17 $       
+//! $Date: 2009-02-03 08:29:20 $
 //////////////////////////////////////////////////////////////////////////////
 
 using namespace std;
@@ -53,8 +53,6 @@ static QEnvRec emptyRec;
 //! \class QEnvRec QEnv.h
 //! \brief			Instantiate a record to be used in QEnv database
 //! \details	    Contains a single entry in QEnv database
-//! \param[in]		key       -- key
-//! \param[in]		value     -- value
 //////////////////////////////////////////////////////////////////////////////
 
 QEnvRec::QEnvRec(QString & key, QString & value) {
@@ -69,8 +67,6 @@ QEnvRec::QEnvRec(QString & key, QString & value) {
 //! \class QEnv QEnv.h
 //! \brief			Instantiate QEnv database
 //! \details		Main QEnv object
-//! \param[in]		fileName  -- name of env file
-//! \param[in]		verbose     -- turn verbose flag on/off
 //////////////////////////////////////////////////////////////////////////////
 
 QEnv::QEnv(const Char_t * fileName, Bool_t verbose) {

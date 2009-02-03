@@ -1,16 +1,17 @@
 #ifndef __LwrRefCnt_h__
 #define __LwrRefCnt_h__
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-//  TRefCnt                                                             //
-//                                                                      //
-//  Base class for reference counted objects.                           //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// O. Schaile                                                           //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrRefCnt.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TRefCnt
+//! 				Base class for reference counted objects.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
 

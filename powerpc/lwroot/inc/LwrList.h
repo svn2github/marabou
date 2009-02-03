@@ -1,18 +1,18 @@
 #ifndef __LwrList_h__
 #define __LwrList_h__
 
-
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TList                                                                //
-//                                                                      //
-// A doubly linked list. All classes inheriting from TObject can be     //
-// inserted in a TList.                                                 //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// R. Lutter, Apr 2008                                                  //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrList.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TList
+//! 				A doubly linked list. All classes inheriting from TObject
+//! 				can be inserted in a TList.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrSeqCollection.h"
 #include "LwrString.h"

@@ -3,16 +3,17 @@
 
 #include "LwrObject.h"
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TFileHandler                                                         //
-//                                                                      //
-// Handles events on file descriptors.                                  //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// R. Lutter                                                            //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrFileHandler.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TFileHandler
+//! 				Handles events on file descriptors.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 class TFileHandler : public TObject {
 

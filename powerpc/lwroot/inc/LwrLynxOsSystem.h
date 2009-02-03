@@ -1,16 +1,17 @@
 #ifndef __LwrLynxOsSystem_h__
 #define __LwrLynxOsSystem_h__
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TLynxOsSystem                                                        //
-//                                                                      //
-// Class providing an interface to the LynxOs Operating System.         //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// O. Schaile                                                           //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrLynxOsSystem.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TLynxOsSystem
+//! 				Class providing an interface to the LynxOs Operating System.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include <errno.h>
 #include "LwrTypes.h"

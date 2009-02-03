@@ -1,16 +1,17 @@
 #ifndef __LwrUnixSystem_h__
 #define __LwrUnixSystem_h__
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TUnixSystem                                                          //
-//                                                                      //
-// Class providing an interface to the UNIX Operating System.           //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// O. Schaile                                                           //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrUnixSystem.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TUnixSystem
+//! 				Class providing an interface to the UNIX Operating System
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include <errno.h>
 #include "LwrTypes.h"

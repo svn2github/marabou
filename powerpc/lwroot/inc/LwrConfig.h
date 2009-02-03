@@ -1,13 +1,16 @@
 #ifndef __LwrConfig_h__
 #define __LwrConfig_h__
 
-/*************************************************************************
- *                                                                       *
- * RConfig                                                               *
- *                                                                       *
- * Defines used by ROOT.                                                 *
- *                                                                       *
- *************************************************************************/
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrConfig.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: RConfig
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 /*---- machines --------------------------------------------------------------*/
 

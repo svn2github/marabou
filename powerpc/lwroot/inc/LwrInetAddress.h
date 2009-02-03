@@ -1,19 +1,21 @@
 #ifndef __LwrInetAddress_h__
 #define __LwrInetAddress_h__
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TInetAddress                                                         //
-//                                                                      //
-// This class represents an Internet Protocol (IP) address.             //
-// Objects of this class can not be created directly, but only via      //
-// the TSystem GetHostByName(), GetSockName(), and GetPeerName()        //
-// members and via members of the TServerSocket and TSocket classes.    //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// O. Schaile                                                           //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrInetAddress.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TInetAddress
+//! 				This class represents an Internet Protocol (IP) address.
+//! 				Objects of this class can not be created directly,
+//! 				but only via the TSystem GetHostByName(), GetSockName(),
+//! 				and GetPeerName() members and via members of the TServerSocket
+//! 				and TSocket classes.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"
 #include "LwrString.h"

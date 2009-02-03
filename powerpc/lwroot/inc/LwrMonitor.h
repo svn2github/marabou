@@ -1,21 +1,22 @@
 #ifndef __LwrMonitor_h__
 #define __LwrMonitor_h__
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TMonitor                                                             //
-//                                                                      //
-// This class monitors activity on a number of network sockets.         //
-// The actual monitoring is done by TSystem::DispatchOneEvent().        //
-// Typical usage: create a TMonitor object. Register a number of        //
-// TSocket objects and call TMonitor::Select(). Select() returns the    //
-// socket object which has data waiting. TSocket objects can be added,  //
-// removed, (temporary) enabled or disabled.                            //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// R. Lutter                                                            //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrMonitor.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TMonitor
+//! 				This class monitors activity on a number of network sockets.
+//! 				The actual monitoring is done by TSystem::DispatchOneEvent().
+//! 				Typical usage: create a TMonitor object. Register a number of
+//! 				TSocket objects and call TMonitor::Select(). Select() returns the
+//! 				socket object which has data waiting. TSocket objects can be added,
+//! 				removed, (temporary) enabled or disabled.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrObject.h"
 #include "LwrList.h"

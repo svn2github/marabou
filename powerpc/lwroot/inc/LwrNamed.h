@@ -1,18 +1,17 @@
 #ifndef __LwrNamed_h__
 #define __LwrNamed_h__
 
-
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TNamed                                                               //
-//                                                                      //
-// The basis for a named object (name, title).                          //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// R. Lutter                                                            //
-//////////////////////////////////////////////////////////////////////////
-
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrNamed.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TNamed
+//! 				Base class for a named object (name, title)
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrObject.h"
 #include "LwrString.h"

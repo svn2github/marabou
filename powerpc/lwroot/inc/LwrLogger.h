@@ -3,17 +3,14 @@
 
 //_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           LwrLogger.h
-// Purpose:        Define utilities to be used with MARaBOU
-// Class:          TMrbLogger    -- message/error logging
-// Description:    Common class definitions to be used within MARaBOU
-// Author:         R. Lutter
-// Revision:       $Id: LwrLogger.h,v 1.2 2008-07-02 07:03:20 Rudolf.Lutter Exp $       
-// Date:           
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                           //
-// R. Lutter, Apr 2008                                                      //
+//! \file			LwrLogger.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TMrbLogger
+//! 				A (error) message logger class.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 08:29:20 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"

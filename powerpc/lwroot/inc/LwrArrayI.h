@@ -3,13 +3,17 @@
 
 #include "LwrArray.h"
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TArrayI                                                              //
-//                                                                      //
-// Array of integers (32 bits per element).                             //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrArrayI.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TArrayI
+//! 				An array of integers (32 bits per element).
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 class TArrayI : public TArray {
 

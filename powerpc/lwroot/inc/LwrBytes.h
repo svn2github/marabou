@@ -1,22 +1,17 @@
 #ifndef __LwrBytes_h__
 #define __LwrBytes_h__
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// Bytes                                                                //
-//                                                                      //
-// A set of inline byte handling routines.                              //
-//                                                                      //
-// The set of tobuf() and frombuf() routines take care of packing a     //
-// basic type value into a buffer in network byte order (i.e. they      //
-// perform byte swapping when needed). The buffer does not have to      //
-// start on a machine (long) word boundary.                             //
-//                                                                      //
-// The set of host2net() and net2host() routines convert a basic type   //
-// value from host to network byte order and vice versa. On BIG ENDIAN  //
-// machines this is a no op.                                            //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrBytes.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: Bytes
+//! 				A set of inline byte handling routines.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
 

@@ -1,17 +1,18 @@
 #ifndef __LwrSocket_h__
 #define __LwrSocket_h__
 
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TSocket                                                              //
-//                                                                      //
-// This class implements client sockets. A socket is an endpoint for    //
-// communication between two machines.                                  //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// O. Schaile                                                           //
-//////////////////////////////////////////////////////////////////////////
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrSocket.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TSocket
+//! 				This class implements client sockets. A socket is an
+//! 				endpoint for communication between two machines.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-03 08:29:20 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"
 #include "LwrNamedX.h"

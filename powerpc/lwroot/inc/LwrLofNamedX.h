@@ -3,14 +3,14 @@
 
 //_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           LwrLofNamedX.h
-// Purpose:        Define utilities to be used with MARaBOU
-// Class:          TMrbLofNamedX    -- a list of named indices
-// Description:    Common class definitions to be used within MARaBOU
-// Author:         R. Lutter
-// Revision:       $Id: LwrLofNamedX.h,v 1.2 2008-07-02 07:03:20 Rudolf.Lutter Exp $       
-// Date:           
-// Keywords:
+//! \file			LwrLofNamedX.h
+//! \brief			Light Weight ROOT
+//! \details		Class definitions for ROOT under LynxOs: TMrbLofNamedX
+//! 				A list of TMrbnamedX objects
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-03 08:29:20 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
