@@ -224,6 +224,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
    fShowErrors    = env.GetValue("Set1DimOptDialog.fShowErrors", 0);
    fDrawOpt2Dim   = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
+   fShowZScale    = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
+   if ( fShowZScale != 0 )fDrawOpt2Dim += "Z";
    fOptStat       = env.GetValue("WhatToShowDialog.fOptStat", 11111);
    fShowDateBox   = env.GetValue("WhatToShowDialog.fShowDateBox", 1);
    fShowStatBox   = env.GetValue("WhatToShowDialog.fShowStatBox", 1);
@@ -3311,7 +3313,7 @@ void FitHist::Draw2Dim()
 //   gStyle->SetOptTitle(hp->GetShowTitle());
 //   if (->GetShowTitle())
 //      gStyle->SetTitleFont(hp->fTitleFont);
-// cout << "FitHist::rawOpt2Dim: " <<fDrawOpt2Dim << endl;
+   cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim << endl;
    fSelHist->DrawCopy(fDrawOpt2Dim);
    fSelHist->SetOption(fDrawOpt2Dim);
    fSelHist->SetDrawOption(fDrawOpt2Dim);

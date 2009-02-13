@@ -122,6 +122,7 @@ private:
    Int_t fLiveStat2Dim;
    Int_t fLiveGauss;
    Int_t fLiveBG;
+   Int_t fShowZScale;
    Int_t fDrawAxisAtTop;
    TString fDrawOpt2Dim;
    Int_t fOptStat;
