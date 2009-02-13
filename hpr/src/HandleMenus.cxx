@@ -228,7 +228,9 @@ enum ERootCanvasCommands {
    kFHDrawFunctions,
    kFHClearWindows,
    kFHWindowsToHist,
+   kFHWindowsFromHist,
    kFHCutsToHist,
+   kFHCutsFromHist,
    kFHWriteOutWindows,
    kFHCutsFromASCII,
    kFH_CASCADE1_0,
@@ -677,6 +679,9 @@ again:
                   case  kFHWindowsToHist:
                      fFitHist->AddWindowsToHist();
                      break;
+                  case  kFHWindowsFromHist:
+                     fFitHist->RemoveWindowsFromHist();
+                     break;
                   case  kFHClearWindows:
                      fFitHist->ClearWindows();
                      break;
@@ -859,7 +864,9 @@ again:
                   case  kFHCutsToHist:
                      fFitHist->AddCutsToHist();
                      break;
-
+                  case  kFHCutsFromHist:
+                     fFitHist->RemoveWindowsFromHist();
+                     break;
                   case kFHTerminate:
                      gApplication->Terminate(0);
                      break;
@@ -1273,8 +1280,13 @@ void HandleMenus::BuildMenus()
    fFileMenu->AddEntry("Terminate program",          kFileQuit);
 
    fOptionMenu = new TGPopupMenu(fRootCanvas->GetParent());
-   if (!fGraph) fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
-   if((!fGraph && !fFitHist) || (fFitHist && !(fFitHist->Its2dim())))
+   if(!fGraph && !fFitHist) {
+      fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
+		fOptionMenu->AddEntry("Default window sizes", kOptionWin);
+ 
+   }
+   if (!fGraph && fFitHist) fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
+   if (fFitHist && !(fFitHist->Its2dim()))
       fOptionMenu->AddEntry("How to display a 1-dim histogram", kOption1Dim);
    if ( graph2d || (fFitHist && fFitHist->Its2dim())) {
       fOptionMenu->AddEntry("How to display a 2-dim histogram ", kOption2Dim);
@@ -1408,29 +1420,31 @@ void HandleMenus::BuildMenus()
    if(fh_menus && nDim < 3){
       fCutsMenu     = new TGPopupMenu(fRootCanvas->GetParent());
       if(is2dim){
-         fCutsMenu->AddEntry("InitCut",      kFHInitCut    );
-         fCutsMenu->AddEntry("MarksToCut",   kFHMarksToCut);
+         fCutsMenu->AddEntry("Init Cut",      kFHInitCut    );
+         fCutsMenu->AddEntry("Marks To Cut",   kFHMarksToCut);
          fCutsMenu->AddEntry("Clear Active Cuts",kFHClearCut   );
          fCutsMenu->AddEntry("Remove All Cuts",kFHRemoveAllCuts   );
-         fCutsMenu->AddEntry("ListCuts",     kFHListCuts    );
-         fCutsMenu->AddEntry("DrawCut",      kFHDrawCut    );
+         fCutsMenu->AddEntry("List Cuts",     kFHListCuts    );
+         fCutsMenu->AddEntry("Draw Cuts",      kFHDrawCut    );
          fCutsMenu->AddEntry("DrawCutName",  kFHDrawCutName    );
-         fCutsMenu->AddEntry("CutsToHist",   kFHCutsToHist   );
-         fCutsMenu->AddEntry("WriteOutCuts", kFHWriteOutCut);
+         fCutsMenu->AddEntry("Add Cuts to Hist",   kFHCutsToHist   );
+         fCutsMenu->AddEntry("Remove Cuts from Hist",   kFHCutsFromHist   );
+         fCutsMenu->AddEntry("Write out Cuts", kFHWriteOutCut);
       } else {
-         fCutsMenu->AddEntry("MarksToWindow",   kFHMarksToWindow   );
-         fCutsMenu->AddEntry("ListWindows",     kFHListWindows     );
-         fCutsMenu->AddEntry("DrawWindows",     kFHDrawWindows     );
-         fCutsMenu->AddEntry("ClearWindows",    kFHClearWindows    );
-         fCutsMenu->AddEntry("WindowsToHist",   kFHWindowsToHist   );
-         fCutsMenu->AddEntry("WriteOutWindows", kFHWriteOutWindows);
+         fCutsMenu->AddEntry("Marks to Window",   kFHMarksToWindow   );
+         fCutsMenu->AddEntry("List Windows",     kFHListWindows     );
+         fCutsMenu->AddEntry("Draw Windows",     kFHDrawWindows     );
+         fCutsMenu->AddEntry("Set Windows inactive",    kFHClearWindows    );
+         fCutsMenu->AddEntry("Add Windows to Hist",   kFHWindowsToHist   );
+         fCutsMenu->AddEntry("Remove Windows from Hist",   kFHWindowsFromHist);
+         fCutsMenu->AddEntry("Writeout Windows", kFHWriteOutWindows);
       }
       fCutsMenu->AddSeparator();
       fCutsMenu->AddEntry("ClearMarks",   kFHClearMarks);
       fCutsMenu->AddEntry("PrintMarks",   kFHPrintMarks);
       fCutsMenu->AddEntry("Set2Marks",    kFHSet2Marks);
       fCutsMenu->AddSeparator();
-      fCutsMenu->AddEntry("Clear Region",    kFHClearRegion);
+      fCutsMenu->AddEntry("Clear (rectangular) Region",    kFHClearRegion);
       if(hbrowser)hbrowser->DisplayMenu(fCutsMenu, "cuts.html");
 //      fCutsMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
 //      fCutsMenu->AddEntry("Help On Cuts/Windows",  kFH_Help_Cuts);

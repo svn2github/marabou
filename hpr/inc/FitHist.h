@@ -211,6 +211,7 @@ public:
    void ListWindows();                       //
    void AddWindow(const char *, const char * bp=NULL);            //
    void AddWindowsToHist();
+   void RemoveWindowsFromHist();
    void EditWindow(const char *);
 
    Int_t Nwindows(){return fActiveWindows->GetSize();};

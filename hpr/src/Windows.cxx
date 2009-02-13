@@ -93,6 +93,7 @@ void FitHist::ClearRegion()
                fSelHist->SetCellContent(binx, biny, 0);
             }
          }
+         Draw2Dim();
 		} else {
          ti = (FhMarker*)fMarkers->At(0);
          Int_t binl = fSelHist->FindBin(ti->GetX());
@@ -113,6 +114,36 @@ void FitHist::ClearRegion()
 Bool_t FitHist::UseWindow(TMrbWindow * wdw){
    if(!Nwindows())return kFALSE;
    return fActiveWindows->Contains(wdw);
+}
+//______________________________________________________________________________________
+
+void FitHist::RemoveWindowsFromHist() {
+   TList temp;
+   TIter next(fSelHist->GetListOfFunctions());
+   TObject *obj;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TMrbWindow") | obj->InheritsFrom("TMrbWindow2D") ) {
+         temp.Add(obj);
+      }
+   }
+   cout<< "Remove " << temp.GetSize()<< " window" ;
+   if ( temp.GetSize() != 1 )
+      cout << "s";
+   cout << endl;
+   if (temp.GetSize() > 0) { 
+      if (fSelHist->GetDimension() == 1) 
+         ClearWindows();
+      else 
+         ClearCut();
+      TIter next1(&temp);
+      while ( (obj = next1()) ) {
+//         cout<< obj << endl;
+         fSelHist->GetListOfFunctions()->Remove(obj);
+         fSelPad->GetListOfPrimitives()->Remove(obj);
+      }
+      fSelPad->Modified();
+      fSelPad->Update();
+   }  
 }
 //______________________________________________________________________________________
 
