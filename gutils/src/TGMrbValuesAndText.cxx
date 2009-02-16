@@ -1292,16 +1292,17 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       b = new TGTextButton(hf, "Apply",  1000*kIdOk);
       b->SetToolTipText("Apply action and close dialog");
 
-   } else {
-      b = new TGTextButton(hf, "Save-Quit",  1000*kIdOk);
-      b->SetToolTipText("Save current parameters and close dialog");
+//   } else {
+//      b = new TGTextButton(hf, "Save-Quit",  1000*kIdOk);
+//      b->SetToolTipText("Save current parameters and close dialog");
+//   }
+		fWidgets->AddFirst(b);
+		b->Associate(this);
+		hf->AddFrame(b, ll);
+		height = b->GetDefaultHeight();
+		width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
    }
-	fWidgets->AddFirst(b);
-	b->Associate(this);
-	hf->AddFrame(b, ll);
-	height = b->GetDefaultHeight();
-	width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
-	fCancelButton = new TGTextButton(hf, "Quit",  1000*kIdCancel);
+	fCancelButton = new TGTextButton(hf, "Cancel",  1000*kIdCancel);
    fCancelButton->SetToolTipText("Close dialog, dont save parameters");
 //      if (calling_class != NULL) {
 //         b->Connect("Clicked()", cname, calling_class, "CloseDown(Int_t)");

@@ -1,3 +1,4 @@
+#include "TROOT.h"
 #include "TCanvas.h"
 #include "TCanvasImp.h"
 #include "TEnv.h"
@@ -12,9 +13,9 @@
 
 ClassImp(Save2FileDialog)
 
-Save2FileDialog::Save2FileDialog(TObject * obj, const char *lname) 
+Save2FileDialog::Save2FileDialog(TObject * obj, const char *lname, TRootCanvas *win)
 {
-   static const Char_t helpText[] = 
+   static const Char_t helpText[] =
 "Save object to file in current unix directory.\n\
 It can be saved into a subdir in the rootfile.\n\
 If it does not exist it will be created \n\
@@ -25,10 +26,11 @@ more than one level of subdirs is allowed";
 //   Bool_t ok = kTRUE;
    fCommand = "ExecuteSave()";
    RestoreDefaults();
+   SetBit(kMustCleanup);
    fKeepDialog = 0;
    fObject = obj;
    fObjName = obj->GetName();
-   if (lname) 
+   if (lname)
       fObjName = lname;
    else
       fObjName = obj->GetName();
@@ -38,7 +40,7 @@ more than one level of subdirs is allowed";
    } else {
       fList = NULL;
    }
-   TList *row_lab = new TList(); 
+   TList *row_lab = new TList();
    row_lab->Add(new TObjString("StringValue_Name of Output root file"));
    row_lab->Add(new TObjString("StringValue_Name of dir in root file"));
    row_lab->Add(new TObjString("StringValue_Save object with name"));
@@ -55,30 +57,34 @@ more than one level of subdirs is allowed";
       valp[ind++] = &fAsList;
    valp[ind++] = &fKeepDialog;
    valp[ind++] = &fCommand;
-   TRootCanvas* win = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
-   
+   TRootCanvas* window = win;
+   if ( window == NULL)
+      win = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
+   TString text = obj->ClassName();
+   text.Prepend ("Save ");
+   text.Append(" to rootfile");
    Int_t dum = 0;
-   fWidget = new TGMrbValuesAndText("Define parameters", NULL, 
-                   &dum, itemwidth, win,
+   fWidget = new TGMrbValuesAndText(text, NULL,
+                   &dum, itemwidth, window,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, helpText, this, this->ClassName());
 //   if (dum);
 //   ok = GetStringExt("Define parameters", NULL, itemwidth, win,
 //                   NULL, NULL, row_lab, valp,
 //                   NULL, NULL, &helpText[0], this, this->ClassName());
-};  
+};
 //_________________________________________________________________________
-            
-Save2FileDialog::~Save2FileDialog() 
+
+Save2FileDialog::~Save2FileDialog()
 {
 //   cout << "dtor Save2FileDialog" << endl;
 };
 //_________________________________________________________________________
-            
+
 void Save2FileDialog::ExecuteSave()
 {
    TFile * outfile;
-   if (!gSystem->AccessPathName(fFileName, kFileExists)) 
+   if (!gSystem->AccessPathName(fFileName, kFileExists))
       outfile = new TFile(fFileName, "UPDATE", "Output file");
    else
       outfile = new TFile(fFileName, "RECREATE", "Output file");
@@ -101,9 +107,9 @@ void Save2FileDialog::ExecuteSave()
       }
    }
    if (fList) {
-      if (fAsList) 
+      if (fAsList)
          fList->Write(fObjName, 1);
-      else 
+      else
          fList->Write();
    } else {
       TString sname(fObject->GetName());
@@ -123,31 +129,39 @@ void Save2FileDialog::ExecuteSave()
    }
 };
 //_________________________________________________________________________
-            
+
 void Save2FileDialog::SaveDefaults()
 {
 //   cout << "Save2FileDialog::SaveDefaults() " << endl;
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
 	env.SetValue("Save2FileDialog.FileName", fFileName);
 	env.SetValue("Save2FileDialog.Dir",      fDir);
 	env.SetValue("Save2FileDialog.AsList",   fAsList);
    env.SaveLevel(kEnvUser);
 }
 //_________________________________________________________________________
-            
+
 void Save2FileDialog::RestoreDefaults()
 {
-   TEnv env(".rootrc");
+   TEnv env(".hprrc");
 	fFileName = env.GetValue("Save2FileDialog.FileName", "workfile.root");
 	fDir = env.GetValue("Save2FileDialog.Dir", "");
    fAsList = env.GetValue("Save2FileDialog.AsList", 0);
 }
 //_________________________________________________________________________
-            
+
 void Save2FileDialog::CloseDown(Int_t wid)
 {
-//   cout << "Save2FileDialog::CloseDown()" << endl;
+   cout << "Save2FileDialog::CloseDown()" << endl;
    SaveDefaults();
    delete this;
 }
- 
+//_______________________________________________________________________
+
+void Save2FileDialog::CloseDialog()
+{
+ //  cout << "FitOneDimDialog::CloseDialog() " << endl;
+   gROOT->GetListOfCleanups()->Remove(this);
+   if ( fWidget ) fWidget->CloseWindowExt();
+   delete this;
+}

@@ -1,6 +1,7 @@
 #ifndef SAVE2FILEDIALOG
 #define SAVE2FILEDIALOG
 #include "TString.h"
+#include "TRootCanvas.h"
 #include "TGMrbValuesAndText.h"
 #include <iostream>
 //_____________________________________________________________________________________
@@ -22,12 +23,13 @@ private:
    TGMrbValuesAndText * fWidget;
 
 public:
-   Save2FileDialog(TObject *obj, const char *lname = NULL);
+   Save2FileDialog(TObject *obj, const char *lname = NULL, TRootCanvas *win = NULL);
    ~Save2FileDialog();
    void ExecuteSave();
    void SaveDefaults();
    void RestoreDefaults();
-   void CloseDown(Int_t wid);
+   void CloseDown(Int_t wid = 0);
+   void CloseDialog();
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj) {};
 
 ClassDef(Save2FileDialog,0)
