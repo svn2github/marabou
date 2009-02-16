@@ -120,6 +120,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 //   if(pp) fHname.Remove(0,pp+1);
 //   cout << "ctor: " << GetName() << " hname: " << fHname.Data()<< endl;
    fCutPanel = NULL;
+   fDialog  = NULL;
    fSetRange = kFALSE;
    fRangeLowX = 0;
    fRangeUpX = 0;
@@ -271,16 +272,13 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 
 void FitHist::RecursiveRemove(TObject * obj)
 {
-//   cout << "FitHist::RecursiveRemove: " << obj << " ";
-//   if (obj && obj->InheritsFrom("TMrbWdw")) {
-//      cout << obj->GetName();
-//  }
-//   cout <<  endl;
-
+//   cout << "FitHist::RecursiveRemove: " << obj << endl;
+   fSelHist->GetListOfFunctions()->Remove(obj);
    fActiveCuts->Remove(obj);
    fActiveWindows->Remove(obj);
    fActiveFunctions->Remove(obj);
    if (obj == fFit1DimD) fFit1DimD = NULL;
+   if (obj == fDialog) fDialog = NULL;
 }
 
 //------------------------------------------------------
@@ -294,10 +292,10 @@ FitHist::~FitHist()
    if (!expHist && hp && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
    gDirectory->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
-
-   if (fFit1DimD) fFit1DimD->CloseDialog();
+   if ( fDialog != NULL ) fDialog->CloseDialog();
+   if ( fFit1DimD ) fFit1DimD->CloseDialog();
    WindowSizeDialog::fNwindows -= 1;
-   if (expHist) {
+   if ( expHist ) {
 //      cout << "expHist " << expHist->GetName() << endl;
 //      dont delete possible windows
       expHist->GetListOfFunctions()->Clear("nodelete");
@@ -1422,7 +1420,7 @@ void FitHist::SaveUserContours()
 //
 //   }
    contour->Print();
-   new Save2FileDialog(contour);
+   new Save2FileDialog(contour, NULL, GetMyCanvas());
 //   if (OpenWorkFile(mycanvas)) {
 //      contour->Write();
 //      CloseWorkFile();
@@ -1673,7 +1671,7 @@ void FitHist::WriteFunctions()
 {
    if (fSelHist) {
       ClearMarks();
-      new Save2FileDialog(fSelHist->GetListOfFunctions());
+      new Save2FileDialog(fSelHist->GetListOfFunctions(), NULL, GetMyCanvas());
 //      if (OpenWorkFile()) {
 //         fSelHist->GetListOfFunctions()->Write();
 //         CloseWorkFile();
@@ -1735,7 +1733,7 @@ void FitHist::WriteOutCanvas()
             nc->ToggleAutoExec();
 //         nc->Write();
 //         CloseWorkFile();
-         new Save2FileDialog(nc);
+         new Save2FileDialog(nc, NULL, GetMyCanvas());
          delete nc;
 //      }
    }
@@ -1745,7 +1743,7 @@ void FitHist::WriteOutCanvas()
 void FitHist::WriteOutHist()
 {
    if (fSelHist) {
-      new Save2FileDialog(fSelHist);
+      new Save2FileDialog(fSelHist, NULL, GetMyCanvas());
    }
 };
 

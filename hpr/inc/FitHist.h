@@ -20,6 +20,7 @@
 #include "TableOfLabels.h"
 #include "FindPeakDialog.h"
 #include "CalibrationDialog.h"
+#include "Save2FileDialog.h"
 
 namespace std {} using namespace std;
 
@@ -130,6 +131,8 @@ private:
    Int_t fTitleCenterY;
    Int_t fTitleCenterZ;
    TText * fDateText;
+   Save2FileDialog *fDialog;
+
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
            const Text_t *hname, Int_t win_topx = 520, Int_t win_topy = 5,
@@ -168,7 +171,7 @@ public:
    void EditFitMacro();                  //
    void ExecFitSliceYMacro();                  //
    void EditFitSliceYMacro();                  //
-   void SetTemplateMacro(const char * name){fTemplateMacro = name;};                  //
+   void SetTemplateMacro(const char * name){fTemplateMacro = name;};
    void SetFitSliceYMacroName(const char *name){fFitSliceYMacroName = name;};                  //
    void RedefineAxis();                  //
    void AddAxis(Int_t where);           //

@@ -20,6 +20,8 @@ Int_t GeneralAttDialog::fRememberLastSet;
 Int_t GeneralAttDialog::fRememberZoom;
 Int_t GeneralAttDialog::fUseAttributeMacro;
 Int_t GeneralAttDialog::fMaxListEntries;
+Int_t GeneralAttDialog::fContentLowLimit;
+Int_t GeneralAttDialog::fVertAdjustLimit;
 //_______________________________________________________________________
 
 GeneralAttDialog::GeneralAttDialog(TGWindow * win)
@@ -99,7 +101,11 @@ ____________________________________________________________\n\
    fRow_lab->Add(new TObjString("CheckButton_Use Regular expression syntax"));
    fValp[ind++] = &fUseRegexp;
    fRow_lab->Add(new TObjString("PlainIntVal_Max Ents in Lists"));
-  fValp[ind++] = &fMaxListEntries;
+   fValp[ind++] = &fMaxListEntries;
+	fRow_lab->Add(new TObjString("PlainIntVal_Fit2Dim Content Limit"));
+	fValp[ind++] = &fContentLowLimit;
+	fRow_lab->Add(new TObjString("PlainIntVal_Fit2Dim Vertical Adjust Limit"));
+	fValp[ind++] = &fVertAdjustLimit;
 
    static Int_t ok;
    Int_t itemwidth = 360;
@@ -141,6 +147,8 @@ void GeneralAttDialog::SaveDefaults()
    env.SetValue("GeneralAttDialog.fRememberZoom", fRememberZoom);
    env.SetValue("GeneralAttDialog.fUseAttributeMacro", fUseAttributeMacro);
    env.SetValue("GeneralAttDialog.fMaxListEntries", fMaxListEntries);
+   env.SetValue("GeneralAttDialog.fVertAdjustLimit", fVertAdjustLimit);
+   env.SetValue("GeneralAttDialog.fContentLowLimit", fContentLowLimit);
    env.SaveLevel(kEnvLocal);
 }
 
@@ -160,6 +168,8 @@ void GeneralAttDialog::RestoreDefaults()
    fUseAttributeMacro = env.GetValue("GeneralAttDialog.fUseAttributeMacro", 0);
    fMaxListEntries =
    env.GetValue("GeneralAttDialog.fMaxListEntries", 333);
+   fVertAdjustLimit = env.GetValue("GeneralAttDialog.fVertAdjustLimit", 0);
+   fContentLowLimit = env.GetValue("GeneralAttDialog.fContentLowLimit", 0);
 }
 //______________________________________________________________________
 

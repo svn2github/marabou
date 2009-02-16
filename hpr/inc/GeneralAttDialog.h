@@ -23,6 +23,8 @@ public:
    static Int_t fRememberZoom;
    static Int_t fUseAttributeMacro;
    static Int_t fMaxListEntries;
+   static Int_t fContentLowLimit;
+   static Int_t fVertAdjustLimit;
 
    GeneralAttDialog(TGWindow * win = NULL);
    ~GeneralAttDialog() {};

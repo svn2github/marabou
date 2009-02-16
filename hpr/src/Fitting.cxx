@@ -60,8 +60,9 @@
 #include "TGMrbTableFrame.h"
 #include "SetColor.h"
 #include "TMrbWdw.h"
-#include "Save2FileDialog.h"
 #include "TMrbVarWdwCommon.h"
+#include "WindowSizeDialog.h"
+#include "GeneralAttDialog.h"
 
 extern HistPresent *hp;
 extern TFile *fWorkfile;
@@ -74,9 +75,9 @@ extern Int_t nHists;
 enum dowhat { expand, projectx, projecty, statonly, projectf,
        projectboth };
 
-//____________________________________________________________________________________ 
+//____________________________________________________________________________________
 /* *INDENT-OFF* */
-//____________________________________________________________________________________ 
+//____________________________________________________________________________________
 const char SliceYTemplate[]=
 "Double_t bw( Double_t *x, Double_t *par)\n\
 {\n\
@@ -691,7 +692,7 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
    TF1 *pol =
        new TF1(funcname, "func", (float) pfirst->GetX(),
                (float) plast->GetX());
-   TString fitopt = "R+";
+   TString fitopt = "R";
    cout << "fitopt.Data() " << fitopt.Data() << endl;
    fSelHist->Fit(funcname, fitopt.Data());	//  here fitting is done
    TList *lof = fSelHist->GetListOfFunctions();
@@ -711,7 +712,9 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
                 "Qustion", (const char *) question,
                 icontype, buttons, &retval);
    if (retval == kMBYes) {
-      new Save2FileDialog(pol);
+      if ( fDialog != NULL )
+        fDialog->CloseDialog();
+      fDialog = new Save2FileDialog(pol);
 //      if (OpenWorkFile()) {
 //         pol->Write();
 //         CloseWorkFile();
@@ -746,9 +749,9 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
       WarnBox("Not enough marks");
       return -1;
    }
-   cout << "Fit2dim ----------------" << endl;
-   fMarkers->Print();
-//     get values in orig hist      
+//  cout << "Fit2dim ----------------" << endl;
+//  fMarkers->Print();
+//     get values in orig hist
    TAxis *xaxis = fOrigHist->GetXaxis();
    Axis_t xmin = xaxis->GetXmin();
    Axis_t xmax = xaxis->GetXmax();
@@ -761,7 +764,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    Int_t nyb = fOrigHist->GetNbinsY();
    Axis_t ybinwidth = (ymax - ymin) / nyb;
 
-//     get values in expanded hist      
+//     get values in expanded hist
 
    FhMarker *pfirst = (FhMarker *) fMarkers->First();
    FhMarker *plast = (FhMarker *) fMarkers->Last();
@@ -772,7 +775,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 //   CheckList(fActiveCuts);
 //   if(Ncuts() > 0){
 //
-//   }  
+//   }
    Int_t binlx = XBinNumber(fSelHist, xlow);
    Int_t binux = XBinNumber(fSelHist, xup);
    if (binlx > binux) {
@@ -809,22 +812,58 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
       WarnBox("nxbins < 2 || nybins < 1");
       return -1;
    }
-//   TCanvas *ccc = new TCanvas("Fit2dimHist_temp","Fit2dimHist"
-//                   ,10,500, 500,500);
-//   hp->GetCanvasList()->Add(ccc);
-   HTCanvas *ccc =
-       new HTCanvas("Fit2dimHist_temp", "Fit2dimHist", 10, 500, 500, 500,
-                    hp, 0);
-   hp->GetCanvasList()->Add(ccc);
-   ccc->cd();
    double par[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
    double fpar[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-   TH1D *fithist = new TH1D("fithist_temp", "fithist_temp",
-                            nxbins, edgelx, edgeux);
+   const char *funcname;
+   TString sfunc = fHname;
+   Int_t ip = sfunc.Index(";");
+	if (ip > 0)sfunc.Resize(ip);
+   fFuncNumb++;
+   sfunc.Prepend(Form("%d_", fFuncNumb));
+   sfunc.Prepend("f");
+//   Bool_t ok;
+//   sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
+//   if (!ok)
+//      return 0;
+   funcname = (const char *) sfunc;
+   TString temp_hname ("fithist_temp");
+   temp_hname +=fFuncNumb;
+   cout << " <<<<<<<<<<<<<<<<<<<<<" << endl;
+
+   TH1D *fithist = new TH1D(temp_hname, funcname, nxbins, edgelx, edgeux);
+   cout << " >>>>>>>>>>>>>>>>>>>>>" <<endl;
 // case fit to histogram
 
    if (what == 0) {
       UpdateCut();
+      Stat_t low_limit = GeneralAttDialog::fContentLowLimit;
+      if ( fActiveCuts && fActiveCuts->GetSize() > 0 && GeneralAttDialog::fVertAdjustLimit > 0 ) {
+			if ( fActiveCuts->GetSize() > 1 )
+				cout << setred << "WARNING: More than 1 actice cut" << setblack << endl;
+			TCutG *cut = (TCutG*)fActiveCuts->At(0);
+			Int_t np = cut->GetN();
+			Double_t xmin = 1e12,  xmax = -1e12;
+			Double_t x, y;
+			Double_t cor_limit = GeneralAttDialog::fVertAdjustLimit *
+										fithist->GetBinWidth(1);
+			for ( Int_t i = 0; i < np; i++ ) {
+				cut->GetPoint(i, x, y);
+				if ( x < xmin ) xmin = x;
+				if ( x > xmax ) xmax = x;
+			}
+			for ( Int_t i = 0; i < np; i++ ) {
+				cut->GetPoint(i, x, y);
+				if ( x != xmin  && x - xmin <  cor_limit ) {
+					cut->SetPoint(i, xmin, y);
+			      cout << "Adjust point " << i << " from " << x << " to " << xmin << endl;
+				} else if ( x != xmax &&  xmax - x <  cor_limit ) {
+					cut->SetPoint(i, xmax, y);
+			      cout << "Adjust point " << i << " from " << x << " to " << xmax << endl;
+				}
+			}
+         cHist->Modified();
+         cHist->Update();
+      }
 //      Double_t cont = 0;
       double *sum = new double[nxbins];
       double *sumx = new double[nxbins];
@@ -856,7 +895,8 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 //    under/overflow cells
       mean[0] = mean[nxbins + 1] = sigma[0] = sigma[nxbins + 1] = 0;
       for (Int_t i = 0; i < nxbins; i++) {
-         if (sum[i] > 0) {
+//         if (sum[i] > 0) {
+         if (sum[i] > low_limit) {
             mean[i + 1] = sumx[i] / sum[i];
             if (sum[i] > 1.1) {
                double s2 = sumx2[i] / sum[i] - mean[i + 1] * mean[i + 1];
@@ -883,12 +923,11 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
          }
 //         cout << i << " " << sum[i]<< " "<< sumx[i] <<" " << sumx2[i] << " " << mean[i] << " " << sigma[i] << endl;
       }
-//     if nentries =1 replace error by max 
+//     if nentries =1 replace error by max
       for (Int_t i = 0; i < nxbins; i++) {
-         if (sum[i] > 0 && sum[i] < 1.1)
+         if (sum[i] > 0 && sum[i] > low_limit && sum[i] < 1.1)
             sigma[i + 1] = sigma_max;
       }
-
       fithist->SetContent((Stat_t *) mean);
       fithist->SetError((Stat_t *) sigma);
 
@@ -925,7 +964,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
       xmax = xaxis->GetXmax();
       while ( (p = (FhMarker *) next()) ) {
          cout << p->GetX() << " " << p->GetY() << endl;
-//         dont take default marks at corners     
+//         dont take default marks at corners
          if (p->GetX() > xmin && p->GetX() < xmax) {
             fithist->Fill(p->GetX(), p->GetY());
             mean += p->GetY();
@@ -944,29 +983,12 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
       }
       par[0] = mean;
    }
-   const char *funcname;
-   TString sfunc = fHname;
-   Int_t ip = sfunc.Index(";");
-	if (ip > 0)sfunc.Resize(ip);
-   fFuncNumb++;
-   sfunc.Prepend(Form("%d_", fFuncNumb));
-   sfunc.Prepend("f");
-   Bool_t ok;
-   sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
-   if (!ok)
-      return 0;
-   funcname = (const char *) sfunc;
+
    TFormula *func;
    if (ndim < 0) {
-      TString uformula("[0]+[1]*x+[2]*x^2");
-      uformula =
-          GetString("Formula", (const char *) uformula, &ok, mycanvas);
-      if (!ok)
          return 0;
-      func = new TFormula("func", uformula.Data());
-      cout << "Fitting user formula to ";
    } else {
-      cout << "Fitting polynomial of degree " << ndim << " to ";
+      cout << "Fitting pol" << ndim << " to ";
       switch (ndim) {
       case 0:
          func = new TFormula("func", "[0]");
@@ -1001,9 +1023,6 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
          break;
       }
    }
-   cout <<
-       "-------------------------------------------------------------"
-       << endl;
 
 //   cout << "Fitting: " << funcname << " (Pol " << ndim << ") to ";
    if (what == 0)
@@ -1017,16 +1036,24 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 
    TF1 *pol = new TF1(funcname, "func", (float) edgelx, (float) edgeux);
 //   DisplayHist(fithist);
+   pol->SetBit(kMustCleanup);
    pol->SetLineColor(ndim + 1);
    pol->SetLineWidth(2);
 
-   fithist->Fit(funcname, "R");
+   fithist->Fit(funcname, "R0");
    if (isnan(pol->GetChisquare()) != 0) {
       cout << "Something went wrong, FCN=Chisquare is infinite " << endl;
       return -1;
    }
-   fithist->Draw("E");
-   ccc->Update();
+
+   fithist->GetFunction(funcname)->ResetBit(TF1::kNotDraw);
+   TString FHname(fithist->GetName());
+   FHname.Prepend("Fh_");
+   FitHist *fith =
+   new FitHist(FHname,FHname,fithist,fithist->GetName() ,750,800, 800,400);
+//          WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, 800,400);
+
+//   ccc->Update();
    if (fOrigHist != fSelHist)
       fOrigHist->GetListOfFunctions()->Add(pol);
    fSelHist->GetListOfFunctions()->Add(pol);
@@ -1041,7 +1068,7 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
           scorr += Form("%f", fpar[i]);
           scorr += "*$2";
          if (i > 1) {
-            scorr += "^"; 
+            scorr += "^";
             scorr += i;
          }
       } else {
@@ -1050,23 +1077,28 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    }
    scorr += "):$2";
    cout << scorr << endl;
+// draw in 2 dim histogram
    fSelPad->cd();
    pol->Draw("same");
    fSelPad->Update();
+/*
    TString question = "Write function to workfile?";
    int buttons = kMBYes | kMBNo, retval = 0;
    EMsgBoxIcon icontype = kMBIconQuestion;
-   new TGMsgBox(gClient->GetRoot(), mycanvas,
-                "Qustion", (const char *) question,
+   new TGMsgBox(gClient->GetRoot(), fith->GetMyCanvas(),
+                "Question", (const char *) question,
                 icontype, buttons, &retval);
    if (retval == kMBYes) {
-      new Save2FileDialog(pol);
+*/
+   if ( fDialog != NULL )
+     fDialog->CloseDialog();
+   fDialog = new Save2FileDialog(pol, NULL, fith->GetMyCanvas());
 //      if (OpenWorkFile()) {
 //         pol->Write();
 //        CloseWorkFile();
 //      } else
 //         fFuncNumb--;
-   }
+//   }
    if (what == 0)
       ClearMarks();
    if (what == 1)
@@ -1101,7 +1133,7 @@ void FitHist::DrawSelectedFunctions()
 	cHist->Modified();
 	cHist->Update();
 }
-//____________________________________________________________________________________ 
+//____________________________________________________________________________________
 
 void FitHist::EditFitMacro()
 {
@@ -1136,7 +1168,7 @@ void FitHist::EditFitMacro()
          	Int_t cend = -1;
          	if (cstart >= 0) cend = temp.Index("*/");
          	TString mname("NoName");
-         	if (cstart >= 0 && cend > cstart) 
+         	if (cstart >= 0 && cend > cstart)
             	mname = temp(cstart + 2, cend - cstart - 2);
 
          	svalues->Add(new TObjString(mname.Data()));
@@ -1213,8 +1245,8 @@ void FitHist::ExecFitMacro()
    } else
       WarnBox("Macro not found");
 }
-//____________________________________________________________________________________ 
-//____________________________________________________________________________________ 
+//____________________________________________________________________________________
+//____________________________________________________________________________________
 
 void FitHist::EditFitSliceYMacro()
 {
@@ -1288,7 +1320,7 @@ void FitHist::ExecFitSliceYMacro()
       hname += "_";
       hname += ipar;
       TH1 * parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
-      if (parhist) delete parhist; 
+      if (parhist) delete parhist;
       else        break;
    }
    hname = fSelHist->GetName();
@@ -1307,8 +1339,8 @@ void FitHist::ExecFitSliceYMacro()
       Int_t binXlow = fSelHist->GetXaxis()->FindBin(xlow);
       Int_t binXup  = fSelHist->GetXaxis()->FindBin(xup);
 
-      cmd = cmd + "(\"" + fSelHist->GetName() + 
-                  "\"," 
+      cmd = cmd + "(\"" + fSelHist->GetName() +
+                  "\","
                   + Form("%f",ylow) + ","
                   + Form("%f",yup)  + ","
                   + Form("%d",binXlow)  + ","
@@ -1323,7 +1355,7 @@ void FitHist::ExecFitSliceYMacro()
          hname += "_chi2";
 
          TH1 * chi2hist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
-         if (chi2hist){ 
+         if (chi2hist){
             hname += " ";
             hname.Prepend("Memory ");
             hp->fSelectHist->Add(new TObjString((const char *)hname));
@@ -1333,7 +1365,7 @@ void FitHist::ExecFitSliceYMacro()
             hname += "_";
             hname += ipar;
             TH1 * parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
-            if (parhist){ 
+            if (parhist){
                hname.Prepend("Memory ");
                hname += " ";
                hp->fSelectHist->Add(new TObjString((const char *)hname));
@@ -1350,7 +1382,7 @@ void FitHist::ExecFitSliceYMacro()
          }
          hp->ShowSelectedHists(hp->fSelectHist, "Fitted values");
       }
-        
+
 //      fSelPad->Modified(kTRUE);
 //      fSelPad->Update();
 //      cHist->Modified(kTRUE);
@@ -1358,5 +1390,4 @@ void FitHist::ExecFitSliceYMacro()
    } else
       WarnBox("Macro not found");
 }
-
 

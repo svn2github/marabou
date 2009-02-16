@@ -1283,7 +1283,7 @@ void HandleMenus::BuildMenus()
    if(!fGraph && !fFitHist) {
       fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
 		fOptionMenu->AddEntry("Default window sizes", kOptionWin);
- 
+
    }
    if (!fGraph && fFitHist) fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
    if (fFitHist && !(fFitHist->Its2dim()))
@@ -1474,8 +1474,8 @@ void HandleMenus::BuildMenus()
       fCascadeMenu2->AddEntry("User Formula", kFH_CASCADE2_U);
 
       fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-      fFitMenu->AddPopup("FitPolyHist",  fCascadeMenu1);
       if(is2dim){
+         fFitMenu->AddPopup("FitPolyHist",  fCascadeMenu1);
          fFitMenu->AddPopup("FitPolyMarks", fCascadeMenu2);
       	fFitMenu->AddSeparator();
       	fFitMenu->AddEntry("Edit User Fit Slices Y Macro", kFHEditSlicesYUser);
