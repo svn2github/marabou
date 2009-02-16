@@ -522,6 +522,7 @@ the root doc at: http://root.cern.ch\n\
    fLinBgSet = kFALSE;
    fMarkers = NULL;
    fCalFunc = NULL;
+   fFitFunc = NULL;
    fReqNmarks= 0;
    fDialog = NULL;
    TAxis *xaxis = fSelHist->GetXaxis();
@@ -562,6 +563,7 @@ the root doc at: http://root.cern.ch\n\
 		static TString lbgcmd("DetLinearBackground()");
 		static TString clmcmd("ClearMarkers()");
 		static TString clfcmd("ClearFunctionList()");
+		static TString wrfcmd("WriteoutFunction()");
 		static TString setmcmd("SetMarkers()");
 		static TString prtcmd("PrintMarkers()");
 		static TString sfocmd("SetFittingOptions()");
@@ -709,10 +711,12 @@ the root doc at: http://root.cern.ch\n\
 			history = hist_file;
 			text = &fFormula;
 		}
-		row_lab->Add(new TObjString("CommandButt_Options/Params"));
+		row_lab->Add(new TObjString("CommandButt_Opts/Params"));
 		valp[ind++] = &sfocmd;
 		row_lab->Add(new TObjString("CommandButt+Clear FuncList"));
 		valp[ind++] = &clfcmd;
+		row_lab->Add(new TObjString("CommandButt+Writeout Func"));
+		valp[ind++] = &wrfcmd;
 		row_lab->Add(new TObjString("CommandButt_Print Marks"));
 		valp[ind++] = &prtcmd;
 		row_lab->Add(new TObjString("CommandButt+Clear Marks"));
@@ -1039,34 +1043,34 @@ Bool_t FitOneDimDialog::FitGausExecute()
    fFuncNumber++;
    fFuncName.Prepend("gaus_fun");
    if (lTailSide) {
-      func = new TF1(fFuncName, gaus_tail, fFrom, fTo, npars+kFix);
+      fFitFunc = new TF1(fFuncName, gaus_tail, fFrom, fTo, npars+kFix);
       cout << "lTailSide " << lTailSide<< endl;
    } else {
       if (fOnesig) {
          if (fBackg0 != 0)
-            func = new TF1(fFuncName, gaus_only, fFrom, fTo, npars+kFix);
+            fFitFunc = new TF1(fFuncName, gaus_only, fFrom, fTo, npars+kFix);
          else if (fSlope0 != 0)
-            func = new TF1(fFuncName, gaus_cbg,  fFrom, fTo, npars+kFix);
+            fFitFunc = new TF1(fFuncName, gaus_cbg,  fFrom, fTo, npars+kFix);
          else
-            func = new TF1(fFuncName, gaus_lbg,  fFrom, fTo, npars+kFix);
+            fFitFunc = new TF1(fFuncName, gaus_lbg,  fFrom, fTo, npars+kFix);
       } else {
          if (fBackg0 != 0)
-            func = new TF1(fFuncName, gaus_only_vsig, fFrom, fTo, npars+kFix);
+            fFitFunc = new TF1(fFuncName, gaus_only_vsig, fFrom, fTo, npars+kFix);
          else if (fSlope0 != 0)
-            func = new TF1(fFuncName, gaus_cbg_vsig,  fFrom, fTo, npars+kFix);
+            fFitFunc = new TF1(fFuncName, gaus_cbg_vsig,  fFrom, fTo, npars+kFix);
          else
-            func = new TF1(fFuncName, gaus_lbg_vsig,  fFrom, fTo, npars+kFix);
+            fFitFunc = new TF1(fFuncName, gaus_lbg_vsig,  fFrom, fTo, npars+kFix);
       }
    }
-   func->SetParameter(0, lBinW);
-   func->SetParameter(1, fNpeaks);
-   func->SetParameter(2, lTailSide);
-   func->SetParName(0, "BinW");
-   func->SetParName(1, "Npeaks");
-   func->SetParName(2, "TailSide");
+   fFitFunc->SetParameter(0, lBinW);
+   fFitFunc->SetParameter(1, fNpeaks);
+   fFitFunc->SetParameter(2, lTailSide);
+   fFitFunc->SetParName(0, "BinW");
+   fFitFunc->SetParName(1, "Npeaks");
+   fFitFunc->SetParName(2, "TailSide");
 
 //   cout << " ????????????????????????????? " << endl;
-//   cout << "Formula: |" << func->GetTitle() << "|"<< endl;
+//   cout << "Formula: |" << fFitFunc->GetTitle() << "|"<< endl;
 // in case it was not incremented
    ind = npars;
 // add bound and fixflags
@@ -1078,11 +1082,11 @@ Bool_t FitOneDimDialog::FitGausExecute()
    TOrdCollection row_lab;
 //   cout << par->GetSize() << endl;
    if (lTailSide != 0) {
-      func->SetParName(ind+kFix,      "Ta_fract");
+      fFitFunc->SetParName(ind+kFix,      "Ta_fract");
       row_lab.Add(new TObjString("Ta_fract"));
       if (setpars) (*par)[ind] = 1;
       ind++;
-      func->SetParName(ind+kFix,      "Ta_width");
+      fFitFunc->SetParName(ind+kFix,      "Ta_width");
       row_lab.Add(new TObjString("Ta_width"));
       if (setpars) (*par)[ind] = 5;
       ind++;
@@ -1093,13 +1097,13 @@ Bool_t FitOneDimDialog::FitGausExecute()
    Double_t bgest = 0.5 * (fSelHist->GetBinContent(bin_from)
                           + fSelHist->GetBinContent(bin_to));
    if (fBackg0 == 0 || fUsedbg == 1|| lTailSide != 0) {
-      func->SetParName(ind+kFix,      "Bg_Const");
+      fFitFunc->SetParName(ind+kFix,      "Bg_Const");
       row_lab.Add(new TObjString("Bg_Const"));
       if (setpars) (*par)[ind] = bgest/fSelHist->GetBinWidth(bin_from);
       ind++;
    }
    if (fSlope0 == 0 || fUsedbg == 1 || lTailSide != 0) {
-      func->SetParName(ind+kFix,      "Bg_Slope");
+      fFitFunc->SetParName(ind+kFix,      "Bg_Slope");
       row_lab.Add(new TObjString("Bg_Slope"));
       if (setpars) (*par)[ind] = 0;
       ind++;
@@ -1109,7 +1113,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
    Int_t ind_sigma = 0;
    if (fOnesig == 1) {
 //  use same sigma for all peaks
-      func->SetParName(ind+kFix,      "Ga_Sigma_");
+      fFitFunc->SetParName(ind+kFix,      "Ga_Sigma_");
       row_lab.Add(new TObjString("Ga_Sigma_"));
       ind_sigma = ind;
       if (setpars) (*par)[ind] = -1;                        // Sigma
@@ -1122,19 +1126,19 @@ Bool_t FitOneDimDialog::FitGausExecute()
          GetGaussEstimate(fSelHist, fFrom, fTo, bgest, gpar);
       else
          GetGaussEstimate(fGraph, fFrom, fTo, bgest, gpar);
-      func->SetParName(ind+kFix,      "Ga_Const0");
+      fFitFunc->SetParName(ind+kFix,      "Ga_Const0");
       row_lab.Add(new TObjString("Ga_Const0"));
       if (setpars) (*par)[ind]     = gpar[0];
       ind++;
       if (lTailSide != 0) (*par)[ind -1] *= 0.5;
-      func->SetParName(ind+kFix,      "Ga_Mean_0");
+      fFitFunc->SetParName(ind+kFix,      "Ga_Mean_0");
       row_lab.Add(new TObjString("Ga_Mean_0"));
       if (setpars) (*par)[ind]     = gpar[1];
       ind++;
       if (fOnesig == 1) {
          if (setpars) (*par)[ind_sigma] = gpar[2];
       } else {
-         func->SetParName(ind+kFix,      "Ga_Sigma_");
+         fFitFunc->SetParName(ind+kFix,      "Ga_Sigma_");
          row_lab.Add(new TObjString("Ga_Sigma_"));
          if (setpars) (*par)[ind] = gpar[2];                // Sigma
          ind++;
@@ -1156,13 +1160,13 @@ Bool_t FitOneDimDialog::FitGausExecute()
             GetGaussEstimate(fGraph, mpos-d1, mpos+d1, bgest, gpar);
          lab = "Ga_Const";
          lab += (i - 1);
-         func->SetParName(ind+kFix,  lab.Data() );
+         fFitFunc->SetParName(ind+kFix,  lab.Data() );
          row_lab.Add(new TObjString(lab.Data()));
          if (setpars) (*par)[ind]     = gpar[0];
          ind++;
          lab = "Ga_Mean_";
          lab += (i - 1);
-         func->SetParName(ind+kFix,  lab.Data() );
+         fFitFunc->SetParName(ind+kFix,  lab.Data() );
          row_lab.Add(new TObjString(lab.Data()));
          if (setpars) (*par)[ind]     = gpar[1];
          ind++;
@@ -1172,7 +1176,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
          } else {
             lab = "Ga_Sigma";
             lab += (i - 1);
-            func->SetParName(ind+kFix,  lab.Data() );
+            fFitFunc->SetParName(ind+kFix,  lab.Data() );
             row_lab.Add(new TObjString(lab.Data()));
             if (setpars) (*par)[ind]     = gpar[2];
             ind++;
@@ -1237,31 +1241,31 @@ Bool_t FitOneDimDialog::FitGausExecute()
    }
 //  Look for fix /bound flag
    Bool_t bound = kFALSE;
-   func->FixParameter(0, func->GetParameter(0));
-   func->FixParameter(1, func->GetParameter(1));
-   func->FixParameter(2, func->GetParameter(2));
+   fFitFunc->FixParameter(0, fFitFunc->GetParameter(0));
+   fFitFunc->FixParameter(1, fFitFunc->GetParameter(1));
+   fFitFunc->FixParameter(2, fFitFunc->GetParameter(2));
 
    for (Int_t i = 0; i < npars; i++) {
       if ((*fbflags)[i] == 1) {
-         func->FixParameter(i+kFix, (*par)[i]);
+         fFitFunc->FixParameter(i+kFix, (*par)[i]);
       }
 // bound flag
       if ((*fbflags)[i + npars] == 1) {
-         func->SetParLimits(i+kFix, (*par)[i + npars], (*par)[i + 2 * npars]);
+         fFitFunc->SetParLimits(i+kFix, (*par)[i + npars], (*par)[i + 2 * npars]);
          bound = kTRUE;
          if ((*par)[i + 2 * npars] == (*par)[i + npars]) {
             cout << "warning upper = lower bound" << endl;
          }
       }
-      func->SetParameter(i+kFix, (*par)[i]);
+      fFitFunc->SetParameter(i+kFix, (*par)[i]);
    }
-   func->SetLineWidth(fWidth);
-   func->SetLineColor(fColor);
+   fFitFunc->SetLineWidth(fWidth);
+   fFitFunc->SetLineColor(fColor);
 
-//   func->SetParameters(par->GetArray());
+//   fFitFunc->SetParameters(par->GetArray());
 
    if (fPrintStartValues) {
-      func->Print();
+      fFitFunc->Print();
    }
 //  now fit it
    gPad->cd();
@@ -1281,7 +1285,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
       if (fGraph != NULL) {
          fGraph->Fit(fFuncName.Data(), fitopt.Data(), "");	//  here fitting is done
    //     add to ListOfFunctions if requested
-         if (!fFitOptNoDraw) func->Draw("same");
+         if (!fFitOptNoDraw) fFitFunc->Draw("same");
          if (fFitOptAddAll) {
             TList *lof = fGraph->GetListOfFunctions();
             if (lof->GetSize() > 1) {
@@ -1294,7 +1298,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
       } else {
     //  here fitting is done
          fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "");
-         if (!fFitOptNoDraw) func->Draw("same");
+         if (!fFitOptNoDraw) fFitFunc->Draw("same");
 //         TList * lof = gPad->GetListOfPrimitives();
 //         TH1* hh = (TH1*)lof->FindObject(fSelHist->GetName());
 //         if (hh) hh->GetListOfFunctions()->AddFirst(func);
@@ -1309,12 +1313,12 @@ Bool_t FitOneDimDialog::FitGausExecute()
          }
       }
       PrintCorrelation();
-      func->SetFillStyle(0);
+      fFitFunc->SetFillStyle(0);
       if (fAutoClearMarks) ClearMarkers();
    } else {
 //    no fit requested draw
       gPad->cd();
-      func->Draw("same");
+      fFitFunc->Draw("same");
       cout << setblue << "No fit done, function drawn with start parameters"
           << setblack << endl;
    }
@@ -1322,7 +1326,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 //  draw components of fit, skip simple gaus without bg
 
    for (Int_t i = 0; i < npars; i++) {
-     (*par)[i] = func->GetParameter(i+kFix);
+     (*par)[i] = fFitFunc->GetParameter(i+kFix);
 //     cout << (*par)[i] << endl;
    }
 
@@ -1339,7 +1343,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
           PrintPeakList();
    }
    if (fShowcof != 0 && fGraph == NULL) {
-//      func->GetParameters(par->GetArray());
+//      fFitFunc->GetParameters(par->GetArray());
       Double_t fdpar[4];
       if (lTailSide != 0) {
          fdpar[0] = (*par)[2] ;
@@ -1442,33 +1446,33 @@ void FitOneDimDialog::AddPeaktoList(TF1 *func)
 //   cout << "PrintOneLine " << endl;
 	Double_t sigma, mean, cont, chi2;
 	Int_t npar_to_find = 3;
-	Int_t npar = func->GetNpar();
-   chi2 = func->GetChisquare() / func->GetNDF();
+	Int_t npar = fFitFunc->GetNpar();
+   chi2 = fFitFunc->GetChisquare() / fFitFunc->GetNDF();
 	TString parname;
 	if ( fOnesig ) {
 		npar_to_find = 2;
 		for (Int_t i = 0; i < npar; i++) {
-			parname = func->GetParName(i);
+			parname = fFitFunc->GetParName(i);
 			if (parname.BeginsWith("Ga_Sigma")) {
-				sigma = func->GetParameter(i);
+				sigma = fFitFunc->GetParameter(i);
 				break;
 			}
 		}
 	}
    Int_t np = npar_to_find;
 	for (Int_t i = 0; i < npar; i++) {
-		parname = func->GetParName(i);
+		parname = fFitFunc->GetParName(i);
 //      cout <<parname << endl;
 		if (!fOnesig && parname.BeginsWith("Ga_Sigma")) {
-			sigma = func->GetParameter(i);
+			sigma = fFitFunc->GetParameter(i);
          np--;
 		}
 		if (parname.BeginsWith("Ga_Const")) {
-			cont = func->GetParameter(i);
+			cont = fFitFunc->GetParameter(i);
          np--;
 		}
 		if (parname.BeginsWith("Ga_Mean")) {
-			mean = func->GetParameter(i);
+			mean = fFitFunc->GetParameter(i);
          np--;
 		}
       if ( np  == 0 ) {
@@ -1805,27 +1809,27 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
 //                kMBIconExclamation, kMBDismiss, &retval);
 //      return;
 //   }
-//   TF1 *func = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*(x - [3]))",fFrom,fTo);
-   TF1 *func = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*x)",fFrom,fTo);
-   func->SetParameter(0, fExpA);
-   if (fExpFixA |= 0) func->FixParameter(0, fExpA);
-   func->SetParName(0, "a (y_off)");
-   func->SetParameter(1, fExpB);
-   if (fExpFixB |= 0) func->FixParameter(1, fExpB);
-   func->SetParName(1, "b (const)");
-   func->SetParameter(2, fExpC);
-   if (fExpFixC |= 0) func->FixParameter(2, fExpC);
-   func->SetParName(2, "c (slope)");
-//   func->SetParameter(3, fExpD);
-//   if (fExpFixD |= 0) func->FixParameter(3, fExpD);
-//   func->SetParName(3, "d (x_off)");
-   func->SetLineWidth(fWidth);
-   func->SetLineColor(fColor);
+//   fFitFunc = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*(x - [3]))",fFrom,fTo);
+   fFitFunc = new TF1(fFuncName.Data(),"[0] + [1]*exp([2]*x)",fFrom,fTo);
+   fFitFunc->SetParameter(0, fExpA);
+   if (fExpFixA |= 0) fFitFunc->FixParameter(0, fExpA);
+   fFitFunc->SetParName(0, "a (y_off)");
+   fFitFunc->SetParameter(1, fExpB);
+   if (fExpFixB |= 0) fFitFunc->FixParameter(1, fExpB);
+   fFitFunc->SetParName(1, "b (const)");
+   fFitFunc->SetParameter(2, fExpC);
+   if (fExpFixC |= 0) fFitFunc->FixParameter(2, fExpC);
+   fFitFunc->SetParName(2, "c (slope)");
+//   fFitFunc->SetParameter(3, fExpD);
+//   if (fExpFixD |= 0) fFitFunc->FixParameter(3, fExpD);
+//   fFitFunc->SetParName(3, "d (x_off)");
+   fFitFunc->SetLineWidth(fWidth);
+   fFitFunc->SetLineColor(fColor);
 //   cout << " ????????????????????????????? " << endl;
-//   cout << "Formula: |" << func->GetTitle() << "|"<< endl;
+//   cout << "Formula: |" << fFitFunc->GetTitle() << "|"<< endl;
    if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
-      func->Draw("same");
-      func->Print();
+      fFitFunc->Draw("same");
+      fFitFunc->Print();
    } else {
       TString fitopt = "R";     // fit in range
       if (fFitOptLikelihood)fitopt += "L";
@@ -1863,10 +1867,10 @@ void FitOneDimDialog::ExpExecute(Int_t draw_only)
             }
          }
       }
-		fExpA = func->GetParameter(0);
-		fExpB = func->GetParameter(1);
-		fExpC = func->GetParameter(2);
-//		fExpD = func->GetParameter(3);
+		fExpA = fFitFunc->GetParameter(0);
+		fExpB = fFitFunc->GetParameter(1);
+		fExpC = fFitFunc->GetParameter(2);
+//		fExpD = fFitFunc->GetParameter(3);
       if (fAutoClearMarks) ClearMarkers();
       IncrementIndex(&fFuncName);
       PrintCorrelation();
@@ -1956,18 +1960,18 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
       }
    }
 //   cout << "fn: " << fn << endl;
-   TF1 *func = new TF1(fFuncName.Data(),fn.Data(), fFrom, fTo);
+   fFitFunc = new TF1(fFuncName.Data(),fn.Data(), fFrom, fTo);
    for (Int_t i = 0; i <= fPolN; i++) {
       pn = "a"; pn += i;
-      func->SetParName(i, pn);
-      func->SetParameter(i, fPolPar[i]);
-      if (fPolFixPar[i] |= 0) func->FixParameter(i, fPolPar[i]);
+      fFitFunc->SetParName(i, pn);
+      fFitFunc->SetParameter(i, fPolPar[i]);
+      if (fPolFixPar[i] |= 0) fFitFunc->FixParameter(i, fPolPar[i]);
    }
-   func->SetLineWidth(fWidth);
-   func->SetLineColor(fColor);
+   fFitFunc->SetLineWidth(fWidth);
+   fFitFunc->SetLineColor(fColor);
    if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
-      func->Draw("same");
-//      func->Print();
+      fFitFunc->Draw("same");
+//      fFitFunc->Print();
    } else {
       TString fitopt = "R";     // fit in range
       if (fFitOptLikelihood)fitopt += "L";
@@ -2008,7 +2012,7 @@ void FitOneDimDialog::PolExecute(Int_t draw_only)
          }
       }
       for (Int_t i = 0; i < fPolN; i++) {
-         fPolPar[i] = func->GetParameter(i);
+         fPolPar[i] = fFitFunc->GetParameter(i);
       }
       IncrementIndex(&fFuncName);
       if (fAutoClearMarks) ClearMarkers();
@@ -2053,29 +2057,29 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
 
    TString fn;
    TString pn;
-   TF1 *func = new TF1(fFuncName,(const char*)fFormula, fFrom, fTo);
-   if (func->GetNdim() <= 0) {
+   fFitFunc = new TF1(fFuncName,(const char*)fFormula, fFrom, fTo);
+   if (fFitFunc->GetNdim() <= 0) {
       cout << setred << "Something wrong with formula"<< setblack << endl;
       return;
    }
-   Int_t npars = func->GetNpar();
+   Int_t npars = fFitFunc->GetNpar();
    if (npars > 6) {
       cout << "Max 6 parameters allowed, correct function" << endl;
       return;
    }
    for (Int_t i = 0; i < npars; i++) {
       pn = "a"; pn += i;
-      func->SetParName(i, pn);
-      func->SetParameter(i, fFormPar[i]);
-      if (fFormFixPar[i] |= 0) func->FixParameter(i, fFormPar[i]);
+      fFitFunc->SetParName(i, pn);
+      fFitFunc->SetParameter(i, fFormPar[i]);
+      if (fFormFixPar[i] |= 0) fFitFunc->FixParameter(i, fFormPar[i]);
    }
-   func->Print();
-   func->SetLineWidth(fWidth);
-   func->SetLineColor(fColor);
+   fFitFunc->Print();
+   fFitFunc->SetLineWidth(fWidth);
+   fFitFunc->SetLineColor(fColor);
    if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
-      func->SetNpx(1000);
-      func->Draw("same");
-//      func->Print();
+      fFitFunc->SetNpx(1000);
+      fFitFunc->Draw("same");
+//      fFitFunc->Print();
    } else {
       TString fitopt = "R";     // fit in range
       if (fFitOptLikelihood)fitopt += "L";
@@ -2117,9 +2121,9 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
       }
 
       for (Int_t i = 0; i < npars; i++) {
-         fFormPar[i] = func->GetParameter(i);
+         fFormPar[i] = fFitFunc->GetParameter(i);
       }
-      fCalFunc = func;
+      fCalFunc = fFitFunc;
       IncrementIndex(&fFuncName);
       if (fAutoClearMarks) ClearMarkers();
       PrintCorrelation();
@@ -2192,26 +2196,26 @@ void FitOneDimDialog::FillHistRandom()
    TString pn;
    TString newname(fFuncName);
    newname += "_range";
-   TF1Range *func = new TF1Range(newname,(const char*)fFormula, fFrom, fTo);
-   if (func->GetNdim() <= 0) {
+   TF1Range *fFitFunc = new TF1Range(newname,(const char*)fFormula, fFrom, fTo);
+   if (fFitFunc->GetNdim() <= 0) {
       cout << "Something wrong with formula" << endl;
       return;
    }
-   Int_t npars = func->GetNpar();
+   Int_t npars = fFitFunc->GetNpar();
    if (npars > 6) {
       cout << "Max 6 parameters allowed, correct function" << endl;
       return;
    }
    for (Int_t i = 0; i < npars; i++) {
       pn = "a"; pn += i;
-      func->SetParName(i, pn);
-      func->SetParameter(i, fFormPar[i]);
+      fFitFunc->SetParName(i, pn);
+      fFitFunc->SetParameter(i, fFormPar[i]);
    }
-   Double_t integral = func->Integral(fFrom, fTo);
+   Double_t integral = fFitFunc->Integral(fFrom, fTo);
    cout << "Integral[" << fFrom << ", "<< fTo  << "] = " << integral << endl;
-//   func->Dump();
+//   fFitFunc->Dump();
    Int_t fillN = fNevents;
-   if ( fillN <= 0 ) 
+   if ( fillN <= 0 )
       fillN = (Int_t)integral;
    hist->FillRandom(newname, fillN);
    hist->SetMaximum(hist->GetBinContent(hist->GetMaximumBin()));
@@ -2477,6 +2481,16 @@ void FitOneDimDialog::ExecuteGetFunction()
       }
       if (fDialog) fDialog->ReloadValues();
    }
+}
+//____________________________________________________________________________________
+
+void FitOneDimDialog::WriteoutFunction()
+{
+   if (!fFitFunc) {
+      cout << "No function defined" << endl;
+      return;
+   }
+   new Save2FileDialog(fFitFunc, NULL, fParentWindow);
 }
 //____________________________________________________________________________________
 

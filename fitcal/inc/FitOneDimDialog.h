@@ -22,6 +22,7 @@ private:
    TCanvas *fSelPad;
    TH1     *fSelHist;
    TF1     *fCalFunc;
+   TF1     *fFitFunc;
    TGraph  *fGraph;
    Color_t fColor;
    Width_t fWidth;
@@ -127,6 +128,7 @@ public:
    Int_t GetMarkers();
    void ClearMarkers();
    void ClearFunctionList();
+   void WriteoutFunction();
    void PrintMarkers();
    Int_t SetMarkers();
    void SetFittingOptions();
