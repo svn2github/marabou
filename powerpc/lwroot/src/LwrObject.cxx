@@ -1,19 +1,17 @@
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TObject                                                              //
-//                                                                      //
-// Mother of all ROOT objects.                                          //
-//                                                                      //
-// The TObject class provides default behaviour and protocol for all    //
-// objects in the ROOT system. It provides protocol for object I/O,     //
-// error handling, sorting, inspection, printing, drawing, etc.         //
-// Every object which inherits from TObject can be stored in the        //
-// ROOT collection classes.                                             //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition                                  //
-// R. Lutter                                                            //
-//////////////////////////////////////////////////////////////////////////
+//________________________________________________________[C++ IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrObjString.cxx
+//! \brief			Light Weight ROOT: TObject
+//! \details		Class definitions for ROOT under LynxOs: TObject
+//! 				Mother of all ROOT objects<br>
+//! 				The TObject class provides default behaviour and protocol for all
+//! 				objects in the ROOT system. Every object which inherits
+//! 				from TObject can be stored in the ROOT collection classes.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-17 09:27:16 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
 #include <stdlib.h>
@@ -21,42 +19,47 @@
 
 #include "LwrObject.h"
 
-//______________________________________________________________________________
-TObject::TObject() :   fUniqueID(0), fBits(kNotDeleted)
-{
-   // TObject constructor. It sets the two data words of TObject to their
-   // initial values. The unique ID is set to 0 and the status word is
-   // set depending if the object is created on the stack or allocated
-   // on the heap. Of the status word the high 8 bits are reserved for
-   // system usage and the low 24 bits are user settable. Depending on
-   // the ROOT environment variable "Root.MemStat" (see TEnv.h) the object
-   // is added to the global TObjectTable for bookkeeping.
-}
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		TObject constructor. It sets the two data words of TObject to their
+//! 				initial values. The unique ID is set to 0 and the status word is
+//! 				set depending if the object is created on the stack or allocated
+//! 				on the heap. Of the status word the high 8 bits are reserved for
+//! 				system usage and the low 24 bits are user settable.
+/////////////////////////////////////////////////////////////////////////////
 
-//______________________________________________________________________________
-TObject::TObject(const TObject &obj)
-{
-   // TObject copy ctor.
+TObject::TObject() :   fUniqueID(0), fBits(kNotDeleted) {}
 
-   fUniqueID = obj.fUniqueID;  // when really unique don't copy
-   fBits     = obj.fBits;
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		TObject copy constructor
+//! \param[in]		Obj 	-- object to be copied
+/////////////////////////////////////////////////////////////////////////////
+
+TObject::TObject(const TObject & Obj)
+{
+   fUniqueID = Obj.fUniqueID;
+   fBits     = Obj.fBits;
 
    fBits &= ~kIsReferenced;
    fBits &= ~kCanDelete;
 }
 
-//______________________________________________________________________________
-TObject& TObject::operator=(const TObject &rhs)
-{
-   // TObject assignment operator.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		TObject assignment operator
+//! \param[in]		Rhs 	-- object on right hand side
+/////////////////////////////////////////////////////////////////////////////
 
-   if (this != &rhs) {
-      fUniqueID = rhs.fUniqueID;  // when really unique don't copy
-      if (IsOnHeap()) {           // test uses fBits so don't move next line
-         fBits  = rhs.fBits;
+TObject & TObject::operator=(const TObject & Rhs)
+{
+   if (this != &Rhs) {  			// when really unique don't copy
+      fUniqueID = Rhs.fUniqueID;
+      if (IsOnHeap()) {
+         fBits  = Rhs.fBits;
          fBits |= kIsOnHeap;
       } else {
-         fBits  = rhs.fBits;
+         fBits  = Rhs.fBits;
          fBits &= ~kIsOnHeap;
       }
       fBits &= ~kIsReferenced;
@@ -65,15 +68,18 @@ TObject& TObject::operator=(const TObject &rhs)
    return *this;
 }
 
-//______________________________________________________________________________
-void TObject::Copy(TObject &obj) const
-{
-   // Copy this to obj.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Copy object
+//! \param[in]		Obj 	-- object to hold the copy
+/////////////////////////////////////////////////////////////////////////////
 
-   obj.fUniqueID = fUniqueID;   // when really unique don't copy
-   if (obj.IsOnHeap()) {        // test uses fBits so don't move next line
-      obj.fBits  = fBits;
-      obj.fBits |= kIsOnHeap;
+void TObject::Copy(TObject & Obj) const
+{
+   Obj.fUniqueID = fUniqueID;
+   if (Obj.IsOnHeap()) {
+      Obj.fBits  = fBits;
+      Obj.fBits |= kIsOnHeap;
    } else {
       obj.fBits  = fBits;
       obj.fBits &= ~kIsOnHeap;
@@ -82,83 +88,77 @@ void TObject::Copy(TObject &obj) const
    obj.fBits &= ~kCanDelete;
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		TObject destructor
+/////////////////////////////////////////////////////////////////////////////
+
 TObject::~TObject()
 {
-   // TObject destructor. Removes object from all canvases and object browsers
-   // if observer bit is on and remove from the global object table.
-
    fBits &= ~kNotDeleted;
 }
 
-//______________________________________________________________________________
-const char * TObject::ClassName() const
-{
-   // Returns name of class to which the object belongs.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns class name "TObject"
+/////////////////////////////////////////////////////////////////////////////
 
-   return "TObject";
-}
+const Char_t * TObject::ClassName() const { return "TObject"; }
 
-//______________________________________________________________________________
-const char *TObject::GetName() const
-{
-   // Returns name of object. This default method returns the class name.
-   // Classes that give objects a name should override this method.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns name of object.<br>
+//! 				Classes that give objects a name should override this method.
+/////////////////////////////////////////////////////////////////////////////
 
-   return "TObject";
-}
+const Char_t * TObject::GetName() const { return "TObject"; }
 
-//______________________________________________________________________________
-UInt_t TObject::GetUniqueID() const
-{
-   // Return the unique object id.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns the unique object id
+/////////////////////////////////////////////////////////////////////////////
 
-   return fUniqueID;
-}
+UInt_t TObject::GetUniqueID() const { return fUniqueID; }
 
-//______________________________________________________________________________
-const char *TObject::GetTitle() const
-{
-   // Returns title of object. This default method returns the class title
-   // (i.e. description). Classes that give objects a title should override
-   // this method.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns title of object.<br>
+//! 				Classes that give objects a name should override this method.
+/////////////////////////////////////////////////////////////////////////////
 
-   return "Base object (\"non-ROOT\" version)";
-}
+const char *TObject::GetTitle() const { return "Base object (\"non-ROOT\" version)"; }
 
-//______________________________________________________________________________
-Bool_t TObject::IsFolder() const
-{
-   // Returns kTRUE in case object contains browsable objects (like containers
-   // or lists of other objects).
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns TRUE in case object contains browsable objects
+//! 				(like containers or lists of other objects).
+/////////////////////////////////////////////////////////////////////////////
 
-   return kFALSE;
-}
-//______________________________________________________________________________
-Bool_t TObject::IsEqual(const TObject *obj) const
-{
-   // Default equal comparison (objects are equal if they have the same
-   // address in memory). More complicated classes might want to override
-   // this function.
+Bool_t TObject::IsFolder() const {  return kFALSE; }
 
-   return obj == this;
-}
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Default equal comparison (objects are equal if they have
+//! 				the same address in memory).<BR>
+//! 				More complicated classes might want to override this function.
+//! \return 		TRUE or FALSE
+/////////////////////////////////////////////////////////////////////////////
 
-//______________________________________________________________________________
-void TObject::SetBit(UInt_t f, Bool_t set)
-{
-   // Set or unset the user status bits as specified in f.
+Bool_t TObject::IsEqual(const TObject *obj) const { return obj == this; }
 
-   if (set)
-      SetBit(f);
-   else
-      ResetBit(f);
-}
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets or unsets the user status bits as specified
+//! \param[in]		Bits		-- bits to be (un)set
+//! \param[in]		SetFlag 	-- TRUE = set, FALSE = unset	
+/////////////////////////////////////////////////////////////////////////////
 
-//______________________________________________________________________________
-void TObject::SetUniqueID(UInt_t uid)
-{
-   // Set the unique object id.
+void TObject::SetBit(UInt_t Bits, Bool_t SetFlag) { if (SetFlag) SetBit(Bits); else ResetBit(Bits); }
 
-   fUniqueID = uid;
-}
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets id as specified
+//! \param[in]		Uid			-- user id bits
+/////////////////////////////////////////////////////////////////////////////
+
+void TObject::SetUniqueID(UInt_t Uid) { fUniqueID = Uid; }
