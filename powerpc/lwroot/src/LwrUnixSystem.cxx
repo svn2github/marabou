@@ -1,13 +1,15 @@
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TUnixSystem                                                          //
-//                                                                      //
-// Class providing an interface to the UNIX Operating System.           //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light weight ROOT' edition                                  //
-// O. Schaile                                                           //
-//////////////////////////////////////////////////////////////////////////
+//________________________________________________________[C++ IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrUnixSystem.cxx
+//! \brief			Light Weight ROOT: TUnixSystem
+//! \details		Class definitions for ROOT under LynxOs: TUnixSystem
+//! 				Class providing an interface to the UNIX Operating System
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-17 08:02:26 $
+//////////////////////////////////////////////////////////////////////////////
+
 
 #include "LwrTypes.h"
 #include "LwrUnixSystem.h"
@@ -81,8 +83,8 @@
 #   include <dl.h>
 #   if defined(R__GNU)
        extern "C" {
-          extern shl_t cxxshl_load(const char *path, int flags, long address);
-          extern int   cxxshl_unload(shl_t handle);
+          extern shl_t cxxshl_load(const Char_t * path, Int_t flags, long address);
+          extern Int_t   cxxshl_unload(shl_t handle);
        }
 #   elif !defined(__STDCPP__)
 #      include <cxxdl.h>
@@ -91,10 +93,10 @@
     extern "C" void U_STACK_TRACE();
 #   if defined(hpux9)
 extern "C" {
-   extern void openlog(const char *, int, int);
-   extern void syslog(int, const char *, ...);
+   extern void openlog(const Char_t *, int, int);
+   extern void syslog(int, const Char_t *, ...);
    extern void closelog(void);
-   extern int setlogmask(int);
+   extern Int_t setlogmask(int);
 }
 #   define HASNOT_INETATON
 #   endif
@@ -116,8 +118,8 @@ extern "C" {
 
 #if defined(R__LYNXOS)
 extern "C" {
-   extern int putenv(const char *);
-   extern int inet_aton(const char *, struct in_addr *);
+   extern Int_t putenv(const Char_t *);
+   extern Int_t inet_aton(const Char_t *, struct in_addr *);
 };
 #endif
 
@@ -145,28 +147,30 @@ extern "C" {
 static STRUCT_UTMP *gUtmpContents;
 
 
-const char *kServerPath     = "/tmp";
-const char *kProtocolName   = "tcp";
+const Char_t *kServerPath     = "/tmp";
+const Char_t *kProtocolName   = "tcp";
 
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Provides an interface to the UNIX Operating System
+//////////////////////////////////////////////////////////////////////////////
+
 TUnixSystem::TUnixSystem()
 { }
 
-//______________________________________________________________________________
 TUnixSystem::~TUnixSystem()
+{ }
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns the system's host name
+//////////////////////////////////////////////////////////////////////////////
+
+const Char_t *TUnixSystem::HostName()
 {
-   // Reset to original state.
 
-//   UnixResetSignals();
-}
-
-//______________________________________________________________________________
-const char *TUnixSystem::HostName()
-{
-   // Return the system's host name.
-
-      char hn[64];
+      Char_t hn[64];
 #if defined(R__SOLARIS) && !defined(R__KCC)
       sysinfo(SI_HOSTNAME, hn, sizeof(hn));
 #else
@@ -175,76 +179,84 @@ const char *TUnixSystem::HostName()
       return hn;
 }
 
-//______________________________________________________________________________
-//---- RPC ---------------------------------------------------------------------
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Gets host's ip address.<br>
+//! 				Returns a TInetAddress object.<br>
+//! 				Use method TInetAddress::IsValid() to check if success.
+//! \param[in]		HostName	-- host name
+//! \retval 		InetAddr	-- ip addr
+/////////////////////////////////////////////////////////////////////////////
 
-//______________________________________________________________________________
-TInetAddress TUnixSystem::GetHostByName(const char *hostname)
+TInetAddress TUnixSystem::GetHostByName(const Char_t *HostName)
 {
-   // Get Internet Protocol (IP) address of host. Returns an TInetAddress
-   // object. To see if the hostname lookup was successfull call
-   // TInetAddress::IsValid().
 
    struct hostent *host_ptr;
    struct in_addr  ad;
-   const char     *host;
-   int             type;
+   const Char_t     *host;
+   Int_t             type;
    UInt_t          addr;    // good for 4 byte addresses
 
 #ifdef HASNOT_INETATON
-   if ((addr = (UInt_t)inet_addr(hostname)) != INADDR_NONE) {
+   if ((addr = (UInt_t)inet_addr(HostName)) != INADDR_NONE) {
 #else
-   if (inet_aton(hostname, &ad)) {
+   if (inet_aton(HostName, &ad)) {
       memcpy(&addr, &ad.s_addr, sizeof(ad.s_addr));
 #endif
-      if ((host_ptr = gethostbyaddr((const char *)&addr,
+      if ((host_ptr = gethostbyaddr((const Char_t *)&addr,
                                     sizeof(addr), AF_INET))) {
          host = host_ptr->h_name;
          type = AF_INET;
       } else {
          return TInetAddress("UnknownHost", ntohl(addr), -1);
       }
-   } else if ((host_ptr = gethostbyname(hostname))) {
+   } else if ((host_ptr = gethostbyname(HostName))) {
       // Check the address type for an internet host
       if (host_ptr->h_addrtype != AF_INET) {
-         cerr << "TUnixSystem::GetHostByName(): " << hostname << " is not an internet host" << endl;
+         cerr << "TUnixSystem::GetHostByName(): " << HostName << " is not an internet host" << endl;
          return TInetAddress();
       }
       memcpy(&addr, host_ptr->h_addr, host_ptr->h_length);
       host = host_ptr->h_name;
       type = host_ptr->h_addrtype;
    } else {
-      return TInetAddress(hostname, 0, -1);
+      return TInetAddress(HostName, 0, -1);
    }
 
    return TInetAddress(host, ntohl(addr), type);
 }
 
-//______________________________________________________________________________
-TInetAddress TUnixSystem::GetSockName(int sock)
-{
-   // Get Internet Protocol (IP) address of host and port #.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Gets local ip address of a socket.<br>
+//! 				Returns a TInetAddress object.<br>
+//! 				Use method TInetAddress::IsValid() to check if success.
+//! \param[in]		Sock		-- socket id
+//! \retval 		InetAddr	-- local ip addr
+/////////////////////////////////////////////////////////////////////////////
 
+TInetAddress TUnixSystem::GetSockName(Int_t Sock)
+{
    struct sockaddr_in addr;
 #if defined(R__AIX) || defined(R__FBSD)
    size_t len = sizeof(addr);
 #elif defined(R__GLIBC)
    socklen_t len = sizeof(addr);
 #else
-   int len = sizeof(addr);
+   Int_t len = sizeof(addr);
 #endif
 
-   if (getsockname(sock, (struct sockaddr *)&addr, &len) == -1) {
+   if (getsockname(Sock, (struct sockaddr *)&addr, &len) == -1) {
       cerr << "TUnixSystem::GetSockName(): error" << endl;
       return TInetAddress();
    }
 
    struct hostent *host_ptr;
-   const char *hostname;
-   int         family;
+   const Char_t *hostname;
+   Int_t         family;
    UInt_t      iaddr;
 
-   if ((host_ptr = gethostbyaddr((const char *)&addr.sin_addr,
+   if ((host_ptr = gethostbyaddr((const Char_t *)&addr.sin_addr,
                                  sizeof(addr.sin_addr), AF_INET))) {
       memcpy(&iaddr, host_ptr->h_addr, host_ptr->h_length);
       hostname = host_ptr->h_name;
@@ -258,31 +270,37 @@ TInetAddress TUnixSystem::GetSockName(int sock)
    return TInetAddress(hostname, ntohl(iaddr), family, ntohs(addr.sin_port));
 }
 
-//______________________________________________________________________________
-TInetAddress TUnixSystem::GetPeerName(int sock)
-{
-   // Get Internet Protocol (IP) address of remote host and port #.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Gets remote ip address of a socket.<br>
+//! 				Returns a TInetAddress object.<br>
+//! 				Use method TInetAddress::IsValid() to check if success.
+//! \param[in]		Sock		-- socket id
+//! \retval 		InetAddr	-- remote ip addr
+/////////////////////////////////////////////////////////////////////////////
 
+TInetAddress TUnixSystem::GetPeerName(Int_t Sock)
+{
    struct sockaddr_in addr;
 #if defined(R__AIX) || defined(R__FBSD)
    size_t len = sizeof(addr);
 #elif defined(R__GLIBC)
    socklen_t len = sizeof(addr);
 #else
-   int len = sizeof(addr);
+   Int_t len = sizeof(addr);
 #endif
 
-   if (getpeername(sock, (struct sockaddr *)&addr, &len) == -1) {
+   if (getpeername(Sock, (struct sockaddr *)&addr, &len) == -1) {
       cerr << "TUnixSystem::GetPeerName(): error" << endl;
       return TInetAddress();
    }
 
    struct hostent *host_ptr;
-   const char *hostname;
-   int         family;
+   const Char_t *hostname;
+   Int_t         family;
    UInt_t      iaddr;
 
-   if ((host_ptr = gethostbyaddr((const char *)&addr.sin_addr,
+   if ((host_ptr = gethostbyaddr((const Char_t *)&addr.sin_addr,
                                  sizeof(addr.sin_addr), AF_INET))) {
       memcpy(&iaddr, host_ptr->h_addr, host_ptr->h_length);
       hostname = host_ptr->h_name;
@@ -296,88 +314,136 @@ TInetAddress TUnixSystem::GetPeerName(int sock)
    return TInetAddress(hostname, ntohl(iaddr), family, ntohs(addr.sin_port));
 }
 
-//______________________________________________________________________________
-int TUnixSystem::GetServiceByName(const char *servicename)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns port number of internet service
+//! \param[in]		Service		-- name of service
+//! \retval 		Port		-- port number
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::GetServiceByName(const Char_t *  Service)
 {
    // Get port # of internet service.
 
    struct servent *sp;
 
-   if ((sp = getservbyname(servicename, kProtocolName)) == 0) {
+   if ((sp = getservbyname(Service, kProtocolName)) == 0) {
       cerr << "TUnixSystem::GetServiceByName(): no service "
-				<< servicename << " with protocol " << kProtocolName << endl;
+				<< Service << " with protocol " << kProtocolName << endl;
       return -1;
    }
    return ntohs(sp->s_port);
 }
 
-//______________________________________________________________________________
-char *TUnixSystem::GetServiceByPort(int port)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns service name for a given port
+//! \param[in]		Port		-- port number
+//! \retval 		Service		-- name of service
+/////////////////////////////////////////////////////////////////////////////
+
+Char_t * TUnixSystem::GetServiceByPort(Int_t Port)
 {
    // Get name of internet service.
 
    struct servent *sp;
 
-   if ((sp = getservbyport(port, kProtocolName)) == 0) {
-       return Form("%d", port);
-   }
+   if ((sp = getservbyport(Port, kProtocolName)) == 0) return Form("%d", Port);
    return sp->s_name;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::ConnectService(const char *servername, int port)
-{
-   // Connect to service servicename on server servername.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Connects to server
+//! \param[in]		Server		-- server name
+//! \param[in]		Port		-- port number
+//! \retval 		Socket		-- socket's file descr
+/////////////////////////////////////////////////////////////////////////////
 
-   if (!strcmp(servername, "unix"))
-      return UnixUnixConnect(port);
-   return UnixTcpConnect(servername, port);
+Int_t TUnixSystem::ConnectService(const Char_t * Server, Int_t Port)
+{
+
+   if (!strcmp(Host, "unix")) return this->UnixUnixConnect(Port);
+   return this->UnixTcpConnect(Server, Port);
 }
 
-//______________________________________________________________________________
-int TUnixSystem::OpenConnection(const char *server, int port)
-{
-   // Open a connection to a service on a server. Try 3 times with an
-   // interval of 1 second.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Tries to open connection to server.<br>
+//! 				Returns
+//! 					<ul>
+//! 					<li> socket's file descriptor
+//! 					<li> -1 after 3 unsuccessful trials
+//! 					</ul>
+//! \param[in]		Server		-- server name
+//! \param[in]		Port		-- port number
+//! \retval 		Socket		-- socket's file descr
+/////////////////////////////////////////////////////////////////////////////
 
-   for (int i = 0; i < 3; i++) {
-      int fd = ConnectService(server, port);
-      if (fd >= 0)
-         return fd;
+Int_t TUnixSystem::OpenConnection(const Char_t *  Server, Int_t Port)
+{
+   for (Int_t i = 0; i < 3; i++) {
+      Int_t fd = ConnectService(Server, Port);
+      if (fd >= 0) return fd;
       sleep(1);
    }
    return -1;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::AnnounceTcpService(int port, Bool_t reuse, int backlog)
-{
-   // Announce TCP/IP service.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Opens a socket, binds to it and starts listening
+//! 				for TCP/IP connections on given port.<br>
+//! 				If reuse is true reuse the address, backlog specifies
+//! 				how many sockets can be waiting to be accepted.<br>
+//! 				Returns
+//! 					<ul>
+//! 					<li> socket fd </li>
+//! 					<li> -1 if socket() failed
+//! 					<li> -2 if bind() failed
+//! 					<li> -3 if listen() failed
+//! 					</ul>
+//! \param[in]		Port		-- port number
+//! \param[in]		Reuse		-- TRUE or FALSE
+//! \param[in]		Backlog		-- number of sockets waiting
+//! \retval 		Socket		-- socket's file descr
+/////////////////////////////////////////////////////////////////////////////
 
-   return UnixTcpService(port, reuse, backlog);
+Int_t TUnixSystem::AnnounceTcpService(Int_t Port, Bool_t Reuse, Int_t Backlog)
+{
+   return UnixTcpService(Port, Reuse, Backlog);
 }
 
-//______________________________________________________________________________
-int TUnixSystem::AnnounceUnixService(int port, int backlog)
-{
-   // Announce unix domain service.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Announce unix domain service on path "kServerPath/<port>"
+//! \param[in]		Port		-- port number
+//! \param[in]		Backlog		-- number of sockets waiting
+//! \retval 		Socket		-- socket's file descr
+/////////////////////////////////////////////////////////////////////////////
 
-   return UnixUnixService(port, backlog);
+Int_t TUnixSystem::AnnounceUnixService(Int_t Port, Int_t Backlog)
+{
+   return UnixUnixService(Port, Backlog);
 }
 
-//______________________________________________________________________________
-int TUnixSystem::AcceptConnection(int sock)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Accepts a connection.<br>
+//! 				In case of an error returns -1.<br>
+//! 				In case non-blocking I/O is enabled
+//! 				and no connections are available returns -2.
+//! \param[in]		Sock		-- socket id
+//! \retval 		Status		-- connection status
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::AcceptConnection(Int_t Sock)
 {
-   // Accept a connection. In case of an error return -1. In case
-   // non-blocking I/O is enabled and no connections are available
-   // return -2.
+   Int_t sts = -1;
 
-   int soc = -1;
+   while ((sts = ::accept(Sock, 0, 0)) == -1 && GetErrno() == EINTR) ResetErrno();
 
-   while ((soc = ::accept(sock, 0, 0)) == -1 && GetErrno() == EINTR)
-      ResetErrno();
-
-   if (soc == -1) {
+   if (sts == -1) {
       if (GetErrno() == EWOULDBLOCK)
          return -2;
       else {
@@ -386,41 +452,56 @@ int TUnixSystem::AcceptConnection(int sock)
       }
    }
 
-   return soc;
+   return sts;
 }
 
-//______________________________________________________________________________
-void TUnixSystem::CloseConnection(int sock)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Closes socket
+//! \param[in]		Sock		-- socket id
+/////////////////////////////////////////////////////////////////////////////
+
+void TUnixSystem::CloseConnection(Int_t Sock)
 {
    // Close socket.
 
-   if (sock < 0) return;
+   if (Sock < 0) return;
 
 #if !defined(R__AIX) || defined(_AIX41) || defined(_AIX43)
    //::shutdown(sock, 2);   // will also close connection of parent
 #endif
 
-   while (::close(sock) == -1 && GetErrno() == EINTR)
-      ResetErrno();
+   while (::close(Sock) == -1 && GetErrno() == EINTR) ResetErrno();
 }
 
-//______________________________________________________________________________
-int TUnixSystem::RecvBuf(int sock, void *buf, int length)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Receives a buffer headed by a length indicator.<br>
+//! 				Length is the size of the buffer.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	the number of bytes received in buf
+//! 				<li>	or -1 in case of error
+//! 				</ul>
+//! \param[in]		Sock		-- socket id
+//! \param[in]		Buf 		-- buffer
+//! \param[in]		Length 		-- buffer length
+//! \retval 		NofBytes	-- number of bytes received
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::RecvBuf(Int_t Sock, void * Buf, Int_t Length)
 {
-   // Receive a buffer headed by a length indicator. Lenght is the size of
-   // the buffer. Returns the number of bytes received in buf or -1 in
-   // case of error.
 
    Int_t header;
 
-   if (UnixRecv(sock, &header, sizeof(header), 0) > 0) {
-      int count = ntohl(header);
+   if (UnixRecv(Sock, &header, sizeof(header), 0) > 0) {
+      Int_t count = ntohl(header);
 
-      if (count > length) {
+      if (count > Length) {
          cerr << "TUnixSystem::RecvBuf(): record header exceeds buffer size" << endl;
          return -1;
       } else if (count > 0) {
-         if (UnixRecv(sock, buf, count, 0) < 0) {
+         if (UnixRecv(Sock, Buf, count, 0) < 0) {
             cerr << "TUnixSystem::RecvBuf(): cannot receive buffer" << endl;
             return -1;
          }
@@ -430,41 +511,66 @@ int TUnixSystem::RecvBuf(int sock, void *buf, int length)
    return -1;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::SendBuf(int sock, const void *buf, int length)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sends a buffer headed by a length indicator.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	length of sent buffer
+//! 				<li>	or -1 in case of error.
+//! 				</ul>
+//! \param[in]		Sock		-- socket id
+//! \param[in]		Buf 		-- buffer
+//! \param[in]		Length 		-- buffer length
+//! \retval 		NofBytes	-- number of bytes sent
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::SendBuf(Int_t Sock, const void * Buf, Int_t Length)
 {
-   // Send a buffer headed by a length indicator. Returns length of sent buffer
-   // or -1 in case of error.
 
-   Int_t header = htonl(length);
+   Int_t header = htonl(Length);
 
-   if (UnixSend(sock, &header, sizeof(header), 0) < 0) {
+   if (UnixSend(Sock, &header, sizeof(header), 0) < 0) {
       cerr << "TUnixSystem::SendBuf(): cannot send header" << endl;
       return -1;
    }
-   if (length > 0) {
-      if (UnixSend(sock, buf, length, 0) < 0) {
+   if (Length > 0) {
+      if (UnixSend(Sock, Buf, Length, 0) < 0) {
          cerr << "TUnixSystem::SendBuf(): cannot send buffer" << endl;
          return -1;
       }
    }
-   return length;
+   return Length;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::RecvRaw(int sock, void *buf, int length, int opt)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Receive exactly length bytes into buffer.<br>
+//! 				Use Opt to receive out-of-band data or to have a peek
+//! 				at what is in the buffer (see TSocket).<br>
+//! 				Buffer must be able to store at least length bytes.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	the number of bytes received
+//! 						(can be 0 if other side of connection was closed)
+//! 				<li>	-1 in case of error
+//! 				<li>	-2 in case of MSG_OOB and errno == EWOULDBLOCK
+//! 				<li>	-3 in case of MSG_OOB and errno == EINVAL
+//! 				<li>	-4 in case of kNoBlock and errno == EWOULDBLOCK.
+//! 				</ul>
+//! \param[in]		Sock		-- socket id
+//! \param[in]		Buf 		-- buffer
+//! \param[in]		Length 		-- buffer length
+//! \param[in]		Opt 		-- option
+//! \retval 		NofBytes	-- number of bytes sent
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::RecvRaw(Int_t Sock, void * Buf, Int_t Length, Int_t Opt)
 {
-   // Receive exactly length bytes into buffer. Use opt to receive out-of-band
-   // data or to have a peek at what is in the buffer (see TSocket). Buffer
-   // must be able to store at least length bytes. Returns the number of
-   // bytes received (can be 0 if other side of connection was closed) or -1
-   // in case of error, -2 in case of MSG_OOB and errno == EWOULDBLOCK, -3
-   // in case of MSG_OOB and errno == EINVAL and -4 in case of kNoBlock and
-   // errno == EWOULDBLOCK.
 
-   int flag;
+   Int_t flag;
 
-   switch (opt) {
+   switch (Opt) {
    case kDefault:
       flag = 0;
       break;
@@ -479,25 +585,36 @@ int TUnixSystem::RecvRaw(int sock, void *buf, int length, int opt)
       break;
    }
 
-   int n;
-   if ((n = UnixRecv(sock, buf, length, flag)) <= 0) {
+   Int_t n;
+   if ((n = UnixRecv(Sock, Buf, Length, flag)) <= 0) {
       if (n == -1 && GetErrno() != EINTR)
          cerr << "TUnixSystem::RecvRaw(): cannot receive buffer" << endl;
       return n;
    }
-   return length;
+   return Length;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::SendRaw(int sock, const void *buf, int length, int opt)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sends exactly length bytes from buffer.<br>
+//! 				Use opt to send out-of-band data (see TSocket).<BR>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	the number of bytes sent
+//! 				<li>	or -1 in case of error.
+///! 				</ul>
+//! \param[in]		Sock		-- socket id
+//! \param[in]		Buf 		-- buffer
+//! \param[in]		Length 		-- buffer length
+//! \param[in]		Opt 		-- option
+//! \retval 		NofBytes	-- number of bytes sent
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::SendRaw(Int_t Sock, const void * Buf, Int_t Length, Int_t Opt)
 {
-   // Send exactly length bytes from buffer. Use opt to send out-of-band
-   // data (see TSocket). Returns the number of bytes sent or -1 in case of
-   // error.
+   Int_t flag;
 
-   int flag;
-
-   switch (opt) {
+   switch (Opt) {
    case kDefault:
       flag = 0;
       break;
@@ -510,65 +627,71 @@ int TUnixSystem::SendRaw(int sock, const void *buf, int length, int opt)
       break;
    }
 
-   if (this->UnixSend(sock, buf, length, flag) < 0) {
+   if (this->UnixSend(Sock, Buf, Length, flag) < 0) {
       cerr << "TUnixSystem::SendRaw(): cannot send buffer" << endl;
       return -1;
    }
-   return length;
+   return Length;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::SetSockOpt(int sock, int opt, int val)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets socket option
+//! \param[in]		Sock		-- socket id
+//! \param[in]		Opt 		-- option name
+//! \param[in]		Val 		-- option value
+//! \return 		0 or -1
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::SetSockOpt(Int_t Sock, Int_t Opt, Int_t Val)
 {
-   // Set socket option.
+   if (Sock < 0) return -1;
 
-   if (sock < 0) return -1;
-
-   switch (opt) {
+   switch (Opt) {
    case kSendBuffer:
-      if (setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*)&val, sizeof(val)) == -1) {
+      if (setsockopt(Sock, SOL_SOCKET, SO_SNDBUF, (char*)&Val, sizeof(Val)) == -1) {
          cerr << "TUnixSystem::SetSockOpt(): setsockopt(SO_SNDBUF)" << endl;
          return -1;
       }
       break;
    case kRecvBuffer:
-      if (setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*)&val, sizeof(val)) == -1) {
+      if (setsockopt(Sock, SOL_SOCKET, SO_RCVBUF, (char*)&Val, sizeof(Val)) == -1) {
          cerr << "TUnixSystem::SetSockOpt(): setsockopt(SO_RCVBUF)" << endl;
          return -1;
       }
       break;
    case kOobInline:
-      if (setsockopt(sock, SOL_SOCKET, SO_OOBINLINE, (char*)&val, sizeof(val)) == -1) {
+      if (setsockopt(Sock, SOL_SOCKET, SO_OOBINLINE, (char*)&Val, sizeof(Val)) == -1) {
          cerr << "TUnixSystem::SetSockOpt(): setsockopt(SO_OOBINLINE)" << endl;
          return -1;
       }
       break;
    case kKeepAlive:
-      if (setsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&val, sizeof(val)) == -1) {
+      if (setsockopt(Sock, SOL_SOCKET, SO_KEEPALIVE, (char*)&Val, sizeof(Val)) == -1) {
          cerr << "TUnixSystem::SetSockOpt(): setsockopt(SO_KEEPALIVE)" << endl;
          return -1;
       }
       break;
    case kReuseAddr:
-      if (setsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)&val, sizeof(val)) == -1) {
+      if (setsockopt(Sock, SOL_SOCKET, SO_REUSEADDR, (char*)&Val, sizeof(Val)) == -1) {
          cerr << "TUnixSystem::SetSockOpt(): setsockopt(SO_REUSEADDR)" << endl;
          return -1;
       }
       break;
    case kNoDelay:
-      if (setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&val, sizeof(val)) == -1) {
+      if (setsockopt(Sock, IPPROTO_TCP, TCP_NODELAY, (char*)&Val, sizeof(Val)) == -1) {
          cerr << "TUnixSystem::SetSockOpt(): setsockopt(TCP_NODELAY)" << endl;
          return -1;
       }
       break;
    case kNoBlock:
-      if (ioctl(sock, FIONBIO, (char*)&val) == -1) {
+      if (ioctl(Sock, FIONBIO, (char*)&Val) == -1) {
          cerr << "TUnixSystem::SetSockOpt(): ioctl(FIONBIO)" << endl;
          return -1;
       }
       break;
    case kProcessGroup:
-      if (ioctl(sock, SIOCSPGRP, (char*)&val) == -1) {
+      if (ioctl(Sock, SIOCSPGRP, (char*)&Val) == -1) {
          cerr << "TUnixSystem::SetSockOpt(): ioctl(SIOCSPGRP)" << endl;
          return -1;
       }
@@ -576,75 +699,81 @@ int TUnixSystem::SetSockOpt(int sock, int opt, int val)
    case kAtMark:       // read-only option (see GetSockOpt)
    case kBytesToRead:  // read-only option
    default:
-      cerr << "TUnixSystem::SetSockOpt(): illegal option - " << opt << endl;
+      cerr << "TUnixSystem::SetSockOpt(): illegal option - " << Opt << endl;
       return -1;
    }
    return 0;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::GetSockOpt(int sock, int opt, int *val)
-{
-   // Get socket option.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns socket option
+//! \param[in]		Sock		-- socket id
+//! \param[in]		Opt 		-- option name
+//! \param[out]		Val 		-- option value
+//! \return 		0 or -1
+/////////////////////////////////////////////////////////////////////////////
 
-   if (sock < 0) return -1;
+Int_t TUnixSystem::GetSockOpt(Int_t Sock, Int_t Opt, Int_t * Val)
+{
+   if (Sock < 0) return -1;
 
 #if defined(R__GLIBC) || defined(_AIX43)
-   socklen_t optlen = sizeof(*val);
+   Socklen_t Optlen = sizeof(*Val);
 #elif defined(R__FBSD)
-   size_t optlen = sizeof(*val);
+   size_t Optlen = sizeof(*Val);
 #else
-   int optlen = sizeof(*val);
+   Int_t Optlen = sizeof(*Val);
 #endif
 
-   switch (opt) {
+   switch (Opt) {
    case kSendBuffer:
-      if (getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*)val, &optlen) == -1) {
-         cerr << "TUnixSystem::GetSockOpt(): getsockopt(SO_SNDBUF)" << endl;
+      if (getSockOpt(Sock, SOL_SockET, SO_SNDBUF, (char*)Val, &Optlen) == -1) {
+         cerr << "TUnixSystem::GetSockOpt(): getSockOpt(SO_SNDBUF)" << endl;
          return -1;
       }
       break;
    case kRecvBuffer:
-      if (getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*)val, &optlen) == -1) {
-         cerr << "TUnixSystem::GetSockOpt(): getsockopt(SO_RCVBUF)" << endl;
+      if (getSockOpt(Sock, SOL_SockET, SO_RCVBUF, (char*)Val, &Optlen) == -1) {
+         cerr << "TUnixSystem::GetSockOpt(): getSockOpt(SO_RCVBUF)" << endl;
          return -1;
       }
       break;
    case kOobInline:
-      if (getsockopt(sock, SOL_SOCKET, SO_OOBINLINE, (char*)val, &optlen) == -1) {
-         cerr << "TUnixSystem::GetSockOpt(): getsockopt(SO_OOBINLINE)" << endl;
+      if (getSockOpt(Sock, SOL_SockET, SO_OOBINLINE, (char*)Val, &Optlen) == -1) {
+         cerr << "TUnixSystem::GetSockOpt(): getSockOpt(SO_OOBINLINE)" << endl;
          return -1;
       }
       break;
    case kKeepAlive:
-      if (getsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)val, &optlen) == -1) {
-         cerr << "TUnixSystem::GetSockOpt(): getsockopt(SO_KEEPALIVE)" << endl;
+      if (getSockOpt(Sock, SOL_SockET, SO_KEEPALIVE, (char*)Val, &Optlen) == -1) {
+         cerr << "TUnixSystem::GetSockOpt(): getSockOpt(SO_KEEPALIVE)" << endl;
          return -1;
       }
       break;
    case kReuseAddr:
-      if (getsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)val, &optlen) == -1) {
-         cerr << "TUnixSystem::GetSockOpt(): getsockopt(SO_REUSEADDR)" << endl;
+      if (getSockOpt(Sock, SOL_SockET, SO_REUSEADDR, (char*)Val, &Optlen) == -1) {
+         cerr << "TUnixSystem::GetSockOpt(): getSockOpt(SO_REUSEADDR)" << endl;
          return -1;
       }
       break;
    case kNoDelay:
-      if (getsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)val, &optlen) == -1) {
-         cerr << "TUnixSystem::GetSockOpt(): getsockopt(TCP_NODELAY)" << endl;
+      if (getSockOpt(Sock, IPPROTO_TCP, TCP_NODELAY, (char*)Val, &Optlen) == -1) {
+         cerr << "TUnixSystem::GetSockOpt(): getSockOpt(TCP_NODELAY)" << endl;
          return -1;
       }
       break;
    case kNoBlock:
-      int flg;
-      if ((flg = fcntl(sock, F_GETFL, 0)) == -1) {
+      Int_t flg;
+      if ((flg = fcntl(Sock, F_GETFL, 0)) == -1) {
          cerr << "TUnixSystem::GetSockOpt(): fcntl(F_GETFL)" << endl;
          return -1;
       }
-      *val = flg & O_NDELAY;
+      *Val = flg & O_NDELAY;
       break;
    case kProcessGroup:
 #if !defined(R__LYNXOS)
-      if (ioctl(sock, SIOCGPGRP, (char*)val) == -1) {
+      if (ioctl(Sock, SIOCGPGRP, (char*)Val) == -1) {
          cerr << "TUnixSystem::GetSockOpt(): ioctl(SIOCGPGRP)" << endl;
          return -1;
       }
@@ -655,7 +784,7 @@ int TUnixSystem::GetSockOpt(int sock, int opt, int *val)
       break;
    case kAtMark:
 #if !defined(R__LYNXOS)
-      if (ioctl(sock, SIOCATMARK, (char*)val) == -1) {
+      if (ioctl(Sock, SIOCATMARK, (char*)Val) == -1) {
          cerr << "TUnixSystem::GetSockOpt(): ioctl(SIOCATMARK)" << endl;
          return -1;
       }
@@ -666,7 +795,7 @@ int TUnixSystem::GetSockOpt(int sock, int opt, int *val)
       break;
    case kBytesToRead:
 #if !defined(R__LYNXOS)
-      if (ioctl(sock, FIONREAD, (char*)val) == -1) {
+      if (ioctl(Sock, FIONREAD, (char*)Val) == -1) {
          cerr << "TUnixSystem::GetSockOpt(): ioctl(FIONREAD)" << endl;
          return -1;
       }
@@ -676,28 +805,34 @@ int TUnixSystem::GetSockOpt(int sock, int opt, int *val)
 #endif
       break;
    default:
-      cerr << "TUnixSystem::GetSockOpt(): illegal option - " << opt << endl;
-      *val = 0;
+      cerr << "TUnixSystem::GetSockOpt(): illegal Option - " << Opt << endl;
+      *Val = 0;
       return -1;
    }
    return 0;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::UnixTcpConnect(const char *hostname, int port)
-{
-   // Open a TCP/IP connection to server and connect to a service (i.e. port).
-   // Is called via the TSocket constructor.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Opens a TCP/IP connection to server and connects to a service/port.<br>
+//! 				Called via the TSocket constructor.
+//! \param[in]		HostName	-- host
+//! \param[in]		Port 		-- port number
+//! \retval 		Sock		-- socket id
+/////////////////////////////////////////////////////////////////////////////
 
-   short  sport;
+Int_t TUnixSystem::UnixTcpConnect(const Char_t *  HostName, Int_t Port)
+{
+
+   Short_t sport;
    struct servent *sp;
 
-   if ((sp = getservbyport(port, kProtocolName)))
+   if ((sp = getservbyport(Port, kProtocolName)))
       sport = sp->s_port;
    else
-      sport = htons(port);
+      sport = htons(Port);
 
-   TInetAddress addr = GetHostByName(hostname);
+   TInetAddress addr = GetHostByName(HostName);
    if (!addr.IsValid()) return -1;
    UInt_t adr = htonl(addr.GetAddress());
 
@@ -708,7 +843,7 @@ int TUnixSystem::UnixTcpConnect(const char *hostname, int port)
    server.sin_port   = sport;
 
    // Create socket
-   int sock;
+   Int_t sock;
    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
       cerr << "TUnixSystem::UnixConnectTcp(): socket error" << endl;
       return -1;
@@ -721,16 +856,22 @@ int TUnixSystem::UnixTcpConnect(const char *hostname, int port)
    return sock;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::UnixUnixConnect(int port)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Connects to a Unix domain socket
+//! \param[in]		Port 		-- port number
+//! \retval 		Sock		-- socket id
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::UnixUnixConnect(Int_t Port)
 {
    // Connect to a Unix domain socket.
 
-   int sock;
-   char buf[100];
+   Int_t sock;
+   Char_t buf[100];
    struct sockaddr_un unserver;
 
-   sprintf(buf, "%s/%d", kServerPath, port);
+   sprintf(buf, "%s/%d", kServerPath, Port);
 
    unserver.sun_family = AF_UNIX;
    strcpy(unserver.sun_path, buf);
@@ -748,36 +889,48 @@ int TUnixSystem::UnixUnixConnect(int port)
    return sock;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::UnixTcpService(int port, Bool_t reuse, int backlog)
-{
-   // Open a socket, bind to it and start listening for TCP/IP connections
-   // on the port. Returns socket fd or -1 if socket() failed, -2 if bind() failed
-   // or -3 if listen() failed.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Opens a socket, binds to it
+//! 				and starts listening for TCP/IP connections on the port.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	socket fd
+//! 				<li>	-1 if socket() failed
+//! 				<li>	-2 if bind() failed
+//! 				<li>	-3 if listen() failed
+//! 				</ul>
+//! \param[in]		Port 		-- port number
+//! \param[in]		Reuse 		-- TRUE if socket is to be re-used
+//! \param[in]		Backlog
+//! \retval 		Sock		-- socket id
+/////////////////////////////////////////////////////////////////////////////
 
-   short  sport;
+Int_t TUnixSystem::UnixTcpService(Int_t Port, Bool_t Reuse, Int_t Backlog)
+{
+
+   Short_t sPort;
    struct servent *sp;
 
-   if ((sp = getservbyport(port, kProtocolName)))
-      sport = sp->s_port;
+   if ((sp = getservbyPort(Port, kProtocolName)))
+      sPort = sp->s_Port;
    else
-      sport = htons(port);
+      sPort = htons(Port);
 
    // Create tcp socket
-   int sock;
+   Int_t sock;
    if ((sock = socket(AF_INET, SOCK_STREAM, 0)) < 0) {
       cerr << "TUnixSystem::UnixTcpService(): socket error" << endl;
       return -1;
    }
 
-   if (reuse)
-      SetSockOpt(sock, kReuseAddr, 1);
+   if (Reuse) SetSockOpt(sock, kReuseAddr, 1);
 
    struct sockaddr_in inserver;
    memset(&inserver, 0, sizeof(inserver));
    inserver.sin_family = AF_INET;
    inserver.sin_addr.s_addr = htonl(INADDR_ANY);
-   inserver.sin_port = sport;
+   inserver.sin_Port = sPort;
 
    // Bind socket
    if (bind(sock, (struct sockaddr*) &inserver, sizeof(inserver))) {
@@ -786,7 +939,7 @@ int TUnixSystem::UnixTcpService(int port, Bool_t reuse, int backlog)
    }
 
    // Start accepting connections
-   if (listen(sock, backlog)) {
+   if (listen(sock, Backlog)) {
       cerr << "TUnixSystem::UnixTcpService(): listen error" << endl;
       return -3;
    }
@@ -794,14 +947,25 @@ int TUnixSystem::UnixTcpService(int port, Bool_t reuse, int backlog)
    return sock;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::UnixUnixService(int port, int backlog)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Opens a socket, binds to it and starts listening
+//! 				for Unix domain connections to it.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	socket fd
+//! 				<li>	-1 on error
+//! 				</ul>
+//! \param[in]		Port 		-- port number
+//! \param[in]		Backlog
+//! \retval 		Sock		-- socket id
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::UnixUnixService(Int_t Port, Int_t Backlog)
 {
-   // Open a socket, bind to it and start listening for Unix domain connections
-   // to it. Returns socket fd or -1.
 
    struct sockaddr_un unserver;
-   int sock, oldumask;
+   Int_t sock, oldumask;
 
    memset(&unserver, 0, sizeof(unserver));
    unserver.sun_family = AF_UNIX;
@@ -810,7 +974,7 @@ int TUnixSystem::UnixUnixService(int port, int backlog)
    oldumask = umask(0);
    ::mkdir(kServerPath, 0777);
    umask(oldumask);
-   sprintf(unserver.sun_path, "%s/%d", kServerPath, port);
+   sprintf(unserver.sun_path, "%s/%d", kServerPath, Port);
 
    // Remove old socket
    unlink(unserver.sun_path);
@@ -827,7 +991,7 @@ int TUnixSystem::UnixUnixService(int port, int backlog)
    }
 
    // Start accepting connections
-   if (listen(sock, backlog)) {
+   if (listen(sock, Backlog)) {
       cerr << "TUnixSystem::UnixUnixService(): listen error" << endl;
       return -1;
    }
@@ -835,23 +999,36 @@ int TUnixSystem::UnixUnixService(int port, int backlog)
    return sock;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::UnixRecv(int sock, void *buffer, int length, int flag)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Receives exactly length bytes into buffer.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	number of bytes received
+//! 				<li>	-1 in case of error
+//! 				<li>	-2 in case of MSG_OOB and errno == EWOULDBLOCK
+//! 				<li>	-3 in case of MSG_OOB and errno == EINVAL
+//! 				<li>	-4 in case of kNoBlock and errno == EWOULDBLOCK.
+//! 				</ul>
+//! \param[in]		Sock 		-- socket id
+//! \param[in]		Buffer 		-- buffer address
+//! \param[in]		Length 		-- number of bytes to receive
+//! \param[in]		Flag
+//! \retval 		NofBytes	-- number of bytes received
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::UnixRecv(Int_t Sock, void * Buffer, Int_t Length, Int_t Flag)
 {
-   // Receive exactly length bytes into buffer. Returns number of bytes
-   // received. Returns -1 in case of error, -2 in case of MSG_OOB
-   // and errno == EWOULDBLOCK, -3 in case of MSG_OOB and errno == EINVAL
-   // and -4 in case of kNoBlock and errno == EWOULDBLOCK.
 
    ResetErrno();
 
-   if (sock < 0) return -1;
+   if (Sock < 0) return -1;
 
-   int n, nrecv = 0;
-   char *buf = (char *)buffer;
+   Int_t n, nrecv = 0;
+   Char_t * buf = (Char_t *) Buffer;
 
-   for (n = 0; n < length; n += nrecv) {
-      if ((nrecv = recv(sock, buf+n, length-n, flag)) <= 0) {
+   for (n = 0; n < Length; n += nrecv) {
+      if ((nrecv = recv(Sock, buf+n, Length-n, Flag)) <= 0) {
          if (nrecv == 0)
             break;        // EOF
          if (flag == MSG_OOB) {
@@ -872,19 +1049,30 @@ int TUnixSystem::UnixRecv(int sock, void *buffer, int length, int flag)
    return n;
 }
 
-//______________________________________________________________________________
-int TUnixSystem::UnixSend(int sock, const void *buffer, int length, int flag)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sends exactly length bytes from buffer.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	 number of bytes sent
+//! 				<li>	-1 in case of error
+//! 				</ul>
+//! \param[in]		Sock 		-- socket id
+//! \param[in]		Buffer 		-- buffer address
+//! \param[in]		Length 		-- number of bytes to receive
+//! \param[in]		Flag
+//! \retval 		NofBytes	-- number of bytes received
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TUnixSystem::UnixSend(Int_t Sock, const void * Buffer, Int_t Length, Int_t Flag)
 {
-   // Send exactly length bytes from buffer. Returns -1 in case of error,
-   // otherwise number of sent bytes.
+   if (Sock < 0) return -1;
 
-   if (sock < 0) return -1;
+   Int_t n, nsent = 0;
+   const Char_t * buf = (const Char_t *) Buffer;
 
-   int n, nsent = 0;
-   const char *buf = (const char *)buffer;
-
-   for (n = 0; n < length; n += nsent) {
-      if ((nsent = send(sock, buf+n, length-n, flag)) <= 0) {
+   for (n = 0; n < Length; n += nsent) {
+      if ((nsent = send(Sock, buf+n, Length-n, Flag)) <= 0) {
          cerr << "TUnixSystem::UnixSend(): send error" << endl;
          return nsent;
       }

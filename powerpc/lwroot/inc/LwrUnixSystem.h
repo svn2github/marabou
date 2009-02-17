@@ -3,14 +3,13 @@
 
 //_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
-//! \file			LwrUnixSystem.h
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: TUnixSystem<br>
 //! 				Class providing an interface to the UNIX Operating System
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-17 08:02:26 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <errno.h>
@@ -22,40 +21,40 @@ class TUnixSystem: public TNamed {
 
 protected:
    // static functions providing semi-low level interface to raw Unix
-   int          UnixTcpConnect(const char *hostname, int port);
-   static int          UnixUnixConnect(int port);
-   int          UnixTcpService(int port, Bool_t reuse, int backlog);
-   static int          UnixUnixService(int port, int backlog);
-   int          UnixRecv(int sock, void *buf, int len, int flag);
-   static int          UnixSend(int sock, const void *buf, int len, int flag);
+   Int_t          UnixTcpConnect(const Char_t *hostname, Int_t port);
+   static Int_t          UnixUnixConnect(Int_t port);
+   Int_t          UnixTcpService(Int_t port, Bool_t reuse, Int_t backlog);
+   static Int_t          UnixUnixService(Int_t port, Int_t backlog);
+   Int_t          UnixRecv(Int_t sock, void *buf, Int_t len, Int_t flag);
+   static Int_t          UnixSend(Int_t sock, const void *buf, Int_t len, Int_t flag);
 
 public:
    TUnixSystem();
    virtual ~TUnixSystem();
 
    //---- Misc -------------------------------------------------
-   const char       *HostName();
+   const Char_t       *HostName();
 
    //---- RPC --------------------------------------------------
 
-   TInetAddress      GetHostByName(const char *server);
-   TInetAddress      GetPeerName(int sock);
-   TInetAddress      GetSockName(int sock);
-   int               GetServiceByName(const char *service);
-   char             *GetServiceByPort(int port);
-   int               ConnectService(const char *server, int port);
-   int               OpenConnection(const char *server, int port);
-   int               AnnounceTcpService(int port, Bool_t reuse, int backlog);
-   int               AnnounceUnixService(int port, int backlog);
-   int               AcceptConnection(int sock);
-   void              CloseConnection(int sock);
-   int               RecvRaw(int sock, void *buffer, int length, int flag);
-   int               SendRaw(int sock, const void *buffer, int length, int flag);
-   int               RecvBuf(int sock, void *buffer, int length);
-   int               SendBuf(int sock, const void *buffer, int length);
-   int               SetSockOpt(int sock, int option, int val);
-   int               GetSockOpt(int sock, int option, int *val);
-   int               GetErrno(){return errno;};
+   TInetAddress      GetHostByName(const Char_t *server);
+   TInetAddress      GetPeerName(Int_t sock);
+   TInetAddress      GetSockName(Int_t sock);
+   Int_t               GetServiceByName(const Char_t *service);
+   Char_t             *GetServiceByPort(Int_t port);
+   Int_t               ConnectService(const Char_t *server, Int_t port);
+   Int_t               OpenConnection(const Char_t *server, Int_t port);
+   Int_t               AnnounceTcpService(Int_t port, Bool_t reuse, Int_t backlog);
+   Int_t               AnnounceUnixService(Int_t port, Int_t backlog);
+   Int_t               AcceptConnection(Int_t sock);
+   void              CloseConnection(Int_t sock);
+   Int_t               RecvRaw(Int_t sock, void *buffer, Int_t length, Int_t flag);
+   Int_t               SendRaw(Int_t sock, const void *buffer, Int_t length, Int_t flag);
+   Int_t               RecvBuf(Int_t sock, void *buffer, Int_t length);
+   Int_t               SendBuf(Int_t sock, const void *buffer, Int_t length);
+   Int_t               SetSockOpt(Int_t sock, Int_t option, Int_t val);
+   Int_t               GetSockOpt(Int_t sock, Int_t option, Int_t *val);
+   Int_t               GetErrno(){return errno;};
    void              ResetErrno(){errno =0;};
 
    inline const Char_t * ClassName() const { return "TUnixSystem"; };

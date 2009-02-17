@@ -10,10 +10,10 @@
 //! 				A server socket waits for requests to come in over the network.<br>
 //! 				It performs some operation based on that request and
 //! 				then possibly returns a result to the requester.
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.6 $     
+//! $Date: 2009-02-17 08:02:26 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"
@@ -29,8 +29,8 @@ private:
 public:
    enum { kDefaultBacklog = 10 };
 
-   TServerSocket(Int_t port, Bool_t reuse = kFALSE, Int_t backlog = kDefaultBacklog);
-   TServerSocket(const char *service, Bool_t reuse = kFALSE, Int_t backlog = kDefaultBacklog);
+   TServerSocket(Int_t Port, Bool_t Reuse = kFALSE, Int_t Backlog = kDefaultBacklog);
+   TServerSocket(const Char_t * Service, Bool_t Reuse = kFALSE, Int_t Backlog = kDefaultBacklog);
    virtual ~TServerSocket() { Close(); }
 
    virtual TSocket      *Accept();

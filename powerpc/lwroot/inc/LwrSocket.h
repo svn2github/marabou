@@ -8,10 +8,10 @@
 //! \details		Class definitions for ROOT under LynxOs: TSocket<br>
 //! 				This class implements client sockets.<br> 
 //! 				A socket is an endpoint for communication between two machines.
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.6 $     
+//! $Date: 2009-02-17 08:02:26 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"
@@ -67,11 +67,11 @@ private:
    void SetDescriptor(Int_t desc) { fSocket = desc; }
 
 public:
-   TSocket(TInetAddress address, const char *service);
-   TSocket(TInetAddress address, Int_t port);
-   TSocket(const char *host, const char *service);
-   TSocket(const char *host, Int_t port);
-   TSocket(Int_t descriptor);
+   TSocket(TInetAddress Address, const Char_t * Service);
+   TSocket(TInetAddress Address, Int_t Port);
+   TSocket(const Char_t * Host, const Char_t * Service);
+   TSocket(const Char_t * Host, Int_t Port);
+   TSocket(Int_t Descriptor);
    TSocket(const TSocket &s);
    virtual ~TSocket() { Close(); }
 

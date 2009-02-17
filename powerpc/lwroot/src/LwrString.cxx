@@ -1,13 +1,14 @@
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TString                                                              //
-//                                                                      //
-// Basic string class.                                                  //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition                                  //
-// O. Schaile                                                           //
-//////////////////////////////////////////////////////////////////////////
+//________________________________________________________[C++ IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrString.cxx
+//! \brief			Light Weight ROOT: TString
+//! \details		Class definitions for ROOT under LynxOs: TString
+//! 				Basic string class
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-17 08:02:26 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
 #include <ctype.h>

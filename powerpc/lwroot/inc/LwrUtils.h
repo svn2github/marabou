@@ -3,13 +3,12 @@
 
 //_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
-//! \file			LwrUtils.h
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: Utilities
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-03 08:29:20 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-17 08:02:26 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"

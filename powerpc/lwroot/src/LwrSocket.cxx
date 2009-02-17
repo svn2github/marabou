@@ -1,14 +1,14 @@
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TSocket                                                              //
-//                                                                      //
-// This class implements client sockets. A socket is an endpoint for    //
-// communication between two machines.                                  //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition                                  //
-// O. Schaile                                                           //
-//////////////////////////////////////////////////////////////////////////
+//________________________________________________________[C++ IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrSocket.cxx
+//! \brief			Light Weight ROOT: TSocket
+//! \details		Class definitions for ROOT under LynxOs: TSocket
+//! 				This class implements client sockets
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-17 08:02:26 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
 #include "iomanip.h"
@@ -22,21 +22,25 @@ UInt_t TSocket::fgBytesRecv = 0;
 
 extern TLynxOsSystem * gSystem;
 
-//______________________________________________________________________________
-TSocket::TSocket(TInetAddress addr, const char *service)
-{
-   // Create a socket. Connect to the named service at address addr.
-   // Returns when connection has been accepted by remote side. Use IsValid()
-   // to check the validity of the socket. Every socket is added to the TROOT
-   // sockets list which will make sure that any open sockets are properly
-   // closed on program termination.
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+//! \class			TSocket	LwrSocket.h
+//! \details		Creates a socket.<br>
+//! 				Connects to the named service at address addr.<br>
+//! 				Returns when connection has been accepted by remote side.
+//! 				Use IsValid() to check the validity of the socket.
+//! \param[in]		Addr		-- host addr
+//! \param[in]		Service		-- service name
+/////////////////////////////////////////////////////////////////////////////
 
+TSocket::TSocket(TInetAddress Addr, const Char_t * Service)
+{
 	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
 		fIsServerSocket = kFALSE;
-		fService = service;
-		fAddress = addr;
-		fAddress.fPort = gSystem->GetServiceByName(service);
+		fService = Service;
+		fAddress = Addr;
+		fAddress.fPort = gSystem->GetServiceByName(Service);
 		fBytesSent = 0;
 		fBytesRecv = 0;
 
@@ -48,21 +52,24 @@ TSocket::TSocket(TInetAddress addr, const char *service)
 	}
 }
 
-//______________________________________________________________________________
-TSocket::TSocket(TInetAddress addr, Int_t port)
-{
-   // Create a socket. Connect to the specified port # at address addr.
-   // Returns when connection has been accepted by remote side. Use IsValid()
-   // to check the validity of the socket. Every socket is added to the TROOT
-   // sockets list which will make sure that any open sockets are properly
-   // closed on program termination.
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a socket.<br>
+//! 				Connects to the named service at address addr.<br>
+//! 				Returns when connection has been accepted by remote side.
+//! 				Use IsValid() to check the validity of the socket.
+//! \param[in]		Addr		-- host addr
+//! \param[in]		Port		-- port number
+/////////////////////////////////////////////////////////////////////////////
 
+TSocket::TSocket(TInetAddress Addr, Int_t Port)
+{
 	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
 		fIsServerSocket = kFALSE;
 		fService = gSystem->GetServiceByPort(port);
-		fAddress = addr;
-		fAddress.fPort = port;
+		fAddress = Addr;
+		fAddress.fPort = Port;
 		fBytesSent = 0;
 		fBytesRecv = 0;
 
@@ -71,21 +78,24 @@ TSocket::TSocket(TInetAddress addr, Int_t port)
 	}
 }
 
-//______________________________________________________________________________
-TSocket::TSocket(const char *host, const char *service)
-{
-   // Create a socket. Connect to named service on the remote host.
-   // Returns when connection has been accepted by remote side. Use IsValid()
-   // to check the validity of the socket. Every socket is added to the TROOT
-   // sockets list which will make sure that any open sockets are properly
-   // closed on program termination.
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a socket.<br>
+//! 				Connects to named service on the remote host.<br>
+//! 				Returns when connection has been accepted by remote side.
+//! 				Use IsValid() to check the validity of the socket.
+//! \param[in]		Host		-- host name
+//! \param[in]		Service		-- service name
+/////////////////////////////////////////////////////////////////////////////
 
+TSocket::TSocket(const Char_t * Host, const Char_t * Service)
+{
 	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
 		fIsServerSocket = kFALSE;
 		fService = service;
-		fAddress = gSystem->GetHostByName(host);
-		fAddress.fPort = gSystem->GetServiceByName(service);
+		fAddress = gSystem->GetHostByName(Host);
+		fAddress.fPort = gSystem->GetServiceByName(Service);
 		fBytesSent = 0;
 		fBytesRecv = 0;
 
@@ -97,21 +107,24 @@ TSocket::TSocket(const char *host, const char *service)
 	}
 }
 
-//______________________________________________________________________________
-TSocket::TSocket(const char *host, Int_t port)
-{
-   // Create a socket. Connect to specified port # on the remote host.
-   // Returns when connection has been accepted by remote side. Use IsValid()
-   // to check the validity of the socket. Every socket is added to the TROOT
-   // sockets list which will make sure that any open sockets are properly
-   // closed on program termination.
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a socket.<br>
+//! 				Connect to specified port # on the remote host.<br>
+//! 				Returns when connection has been accepted by remote side.
+//! 				Use IsValid() to check the validity of the socket.
+//! \param[in]		Host		-- host name
+//! \param[in]		Port		-- port number
+/////////////////////////////////////////////////////////////////////////////
 
+TSocket::TSocket(const Char_t * Host, Int_t Port)
+{
 	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
 		fIsServerSocket = kFALSE;
 		fService = gSystem->GetServiceByPort(port);
-		fAddress = gSystem->GetHostByName(host);
-		fAddress.fPort = port;
+		fAddress = gSystem->GetHostByName(Host);
+		fAddress.fPort = Port;
 		fBytesSent = 0;
 		fBytesRecv = 0;
 
@@ -120,11 +133,15 @@ TSocket::TSocket(const char *host, Int_t port)
 	}
 }
 
-//______________________________________________________________________________
-TSocket::TSocket(Int_t desc)
-{
-   // Create a socket. The socket will use descriptor desc.
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a socket.<br>
+//! 				The socket will use descriptor desc.<br>
+//! \param[in]		Desc		-- socket descriptor
+/////////////////////////////////////////////////////////////////////////////
 
+TSocket::TSocket(Int_t Desc)
+{
 	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
 		fIsServerSocket = kFALSE;
@@ -132,7 +149,7 @@ TSocket::TSocket(Int_t desc)
 		fBytesRecv = 0;
 
 		if (desc >= 0) {
-			fSocket  = desc;
+			fSocket  = Desc;
 			fAddress = gSystem->GetPeerName(fSocket);
 		} else {
 			fSocket = -1;
@@ -140,22 +157,32 @@ TSocket::TSocket(Int_t desc)
 	}
 }
 
-//______________________________________________________________________________
-TSocket::TSocket(const TSocket &s)
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Copy contructor
+//! \param[in]		Sock		-- socket object
+/////////////////////////////////////////////////////////////////////////////
+
+TSocket::TSocket(const TSocket &Sock)
 {
    // TSocket copy ctor.
 
 	fIsServerSocket = kFALSE;
-	fSocket       = s.fSocket;
-	fService      = s.fService;
-	fAddress      = s.fAddress;
-	fLocalAddress = s.fLocalAddress;
-	fBytesSent    = s.fBytesSent;
-	fBytesRecv    = s.fBytesRecv;
+	fSocket       = Sock.fSocket;
+	fService      = Sock.fService;
+	fAddress      = Sock.fAddress;
+	fLocalAddress = Sock.fLocalAddress;
+	fBytesSent    = Sock.fBytesSent;
+	fBytesRecv    = Sock.fBytesRecv;
 }
 
-//______________________________________________________________________________
-void TSocket::Close(Option_t *)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Closes the socket
+//! \param[in]		Opt 		-- option
+/////////////////////////////////////////////////////////////////////////////
+
+void TSocket::Close(Option_t * Opt)
 {
    // Close the socket. Also called via the dtor.
 
@@ -165,11 +192,15 @@ void TSocket::Close(Option_t *)
 	fSocket = -1;
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns internet address of local host
+//! 				to which the socket is bound.<br>
+//! 				In case of error TInetAddress::IsValid() returns kFALSE.
+/////////////////////////////////////////////////////////////////////////////
+
 TInetAddress TSocket::GetLocalInetAddress()
 {
-   // Return internet address of local host to which the socket is bound.
-   // In case of error TInetAddress::IsValid() returns kFALSE.
 
 	if (fSocket != -1) {
 		if (fLocalAddress.GetPort() == -1) fLocalAddress = gSystem->GetSockName(fSocket);
@@ -178,12 +209,15 @@ TInetAddress TSocket::GetLocalInetAddress()
 	return TInetAddress();
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns local port number
+//! 				to which the socket is bound.<br>
+//! \retval 		Port	-- port number
+/////////////////////////////////////////////////////////////////////////////
+
 Int_t TSocket::GetLocalPort()
 {
-   // Return the local port # to which the socket is bound.
-   // In case of error return -1.
-
 	if (fSocket != -1) {
 		if (fLocalAddress.GetPort() == -1) fLocalAddress = GetLocalInetAddress();
 		return fLocalAddress.GetPort();
@@ -191,11 +225,23 @@ Int_t TSocket::GetLocalPort()
 	return -1;
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sends a raw buffer of specified length.<br>
+//! 				Using option kOob one can send OOB data.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	number of bytes sent
+//! 				<li>	-1 in case of error.
+//! 				</ul>
+//! \param[in]		Buffer 		-- buffer addr
+//! \param[in]		Length 		-- length of data
+//! \param[in]		Opt 		-- option
+//! \retval 		NofBytes	-- number of bytes sent
+/////////////////////////////////////////////////////////////////////////////
+
 Int_t TSocket::SendRaw(const void * Buffer, Int_t Length, ESendRecvOptions Opt)
 {
-   // Send a raw buffer of specified length. Using option kOob one can send
-   // OOB data. Returns the number of bytes sent or -1 in case of error.
 
 	if (fSocket == -1) return -1;
 
@@ -209,19 +255,31 @@ Int_t TSocket::SendRaw(const void * Buffer, Int_t Length, ESendRecvOptions Opt)
 	return nsent;
 }
 
-//______________________________________________________________________________
-Int_t TSocket::RecvRaw(void *buffer, Int_t length, ESendRecvOptions opt)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Receives a raw buffer of specified length bytes.<br>
+//! 				Using option kPeek one can peek at incoming data.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	number of bytes received
+//! 				<li>	-1 in case of error
+//! 				<li>	opt == kOob: -2 means EWOULDBLOCK and -3 EINVAL
+//! 				<li>	opt == kNoBlock: -4 means EWOULDBLOCK.
+//! 				</ul>
+//! \param[in]		Buffer 		-- buffer addr
+//! \param[in]		Length 		-- length of data
+//! \param[in]		Opt 		-- option
+//! \retval 		NofBytes	-- number of bytes sent
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TSocket::RecvRaw(void * Buffer, Int_t Length, ESendRecvOptions Opt)
 {
-   // Receive a raw buffer of specified length bytes. Using option kPeek
-   // one can peek at incoming data. Returns -1 in case of error. In case
-   // of opt == kOob: -2 means EWOULDBLOCK and -3 EINVAL. In case of non-blocking
-   // mode (kNoBlock) -4 means EWOULDBLOCK.
 
 	if (fSocket == -1) return -1;
 
 	Int_t n;
 
-	if ((n = gSystem->RecvRaw(fSocket, buffer, length, (int) opt)) <= 0) return n;
+	if ((n = gSystem->RecvRaw(fSocket, Buffer, Length, (int) Opt)) <= 0) return n;
 
 	fBytesRecv  += n;
 	fgBytesRecv += n;
@@ -229,34 +287,43 @@ Int_t TSocket::RecvRaw(void *buffer, Int_t length, ESendRecvOptions opt)
 	return n;
 }
 
-//______________________________________________________________________________
-Int_t TSocket::SetOption(ESockOptions opt, Int_t val)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets socket options
+//! \param[in]		Opt 		-- option name
+//! \param[in]		Val 		-- option value
+//! \return 		0 or -1
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TSocket::SetOption(ESockOptions Opt, Int_t Val)
 {
-   // Set socket options.
-
 	if (fSocket == -1) return -1;
-
-	return gSystem->SetSockOpt(fSocket, opt, val);
+	return gSystem->SetSockOpt(fSocket, Opt, Val);
 }
 
-//______________________________________________________________________________
-Int_t TSocket::GetOption(ESockOptions opt, Int_t &val)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns socket options
+//! \param[in]		Opt 		-- option name
+//! \param[out]		Val 		-- option value
+//! \return 		0 or -1
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TSocket::GetOption(ESockOptions Opt, Int_t & Val)
 {
-   // Get socket options. Returns -1 in case of error.
-
 	if (fSocket == -1) return -1;
-
-	return gSystem->GetSockOpt(fSocket, opt, &val);
+	return gSystem->GetSockOpt(fSocket, Opt, &Val);
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns error code.<br>
+//! 				Meaning depends on context where it is called.
+//! \return 		0 or -1
+/////////////////////////////////////////////////////////////////////////////
+
 Int_t TSocket::GetErrorCode() const
 {
-   // Returns error code. Meaning depends on context where it is called.
-   // If no error condition returns 0 else a value < 0.
-   // For example see TServerSocket ctor.
-
-	if (!IsValid()) return fSocket;
-
+	if (!IsValid()) return -1;
 	return 0;
 }

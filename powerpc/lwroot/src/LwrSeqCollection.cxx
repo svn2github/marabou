@@ -1,127 +1,150 @@
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TSeqCollection                                                       //
-//                                                                      //
-// Sequenceable collection abstract base class. TSeqCollection's have   //
-// an ordering relation, i.e. there is a first and last element.        //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition                                  //
-// R. Lutter, Apr 2008                                                  //
-//////////////////////////////////////////////////////////////////////////
+//________________________________________________________[C++ IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrSeqCollection.cxx
+//! \brief			Light Weight ROOT: TSeqCollection
+//! \details		Class definitions for ROOT under LynxOs: TSeqCollection
+//! 				Sequenceable collection abstract base class.<br>
+//! 				TSeqCollections have an ordering relation,
+//! 				i.e. there is a first and last element.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-17 08:02:26 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrSeqCollection.h"
 #include "LwrCollection.h"
 
-//______________________________________________________________________________
-Int_t TSeqCollection::IndexOf(const TObject *obj) const
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns index of object in collection.<br>
+//! 				Returns -1 when object not found.
+//! 				Uses member IsEqual() to find object.
+//! \param[in] 		Obj		-- object to be searched for
+//! \retval 		Idx		-- index in collection
+/////////////////////////////////////////////////////////////////////////////
+
+Int_t TSeqCollection::IndexOf(const TObject * Obj) const
 {
-   // Return index of object in collection. Returns -1 when object not found.
-   // Uses member IsEqual() to find object.
 
    Int_t   idx = 0;
    TIter   next(this);
    TObject *ob;
 
    while ((ob = next())) {
-      if (ob->IsEqual(obj)) return idx;
+      if (ob->IsEqual(Obj)) return idx;
       idx++;
    }
    return -1;
 }
 
-//______________________________________________________________________________
-Int_t TSeqCollection::ObjCompare(TObject *a, TObject *b)
-{
-   // Compare to objects in the collection. Use member Compare() of object a.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Compares two objects in the collection.<br>
+//! 				Uses member function Compare() of object A.
+//! \param[in] 		ObjA		-- object A to be compared with
+//! \param[in] 		ObjB		-- object B
+//! \retval 		Relation 	-- relation given by Compare()
+/////////////////////////////////////////////////////////////////////////////
 
-   if (a == 0 && b == 0) return 0;
-   if (a == 0) return 1;
-   if (b == 0) return -1;
-   return a->Compare(b);
+Int_t TSeqCollection::ObjCompare(TObject * ObjA, TObject * ObjB)
+{
+
+   if (ObjA == 0 && ObjB == 0) return 0;
+   if (ObjA == 0) return 1;
+   if (ObjB == 0) return -1;
+   return ObjA->Compare(ObjB);
 }
 
-//______________________________________________________________________________
-void TSeqCollection::QSort(TObject **a, Int_t first, Int_t last)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sort array of TObject pointers using a quicksort algorithm.<br>
+//! 				Uses ObjCompare() to compare objects.
+//! \param[in] 		ObjArr		-- array of objects
+//! \param[in]		First		-- first index
+//! \param[in]		Last		-- last index
+/////////////////////////////////////////////////////////////////////////////
+
+void TSeqCollection::QSort(TObject ** ObjArr, Int_t First, Int_t Last)
 {
-   // Sort array of TObject pointers using a quicksort algorithm.
-   // Uses ObjCompare() to compare objects.
 
    static TObject *tmp;
    static int i;           // "static" to save stack space
    int j;
 
-   while (last - first > 1) {
-      i = first;
-      j = last;
+   while (Last - First > 1) {
+      i = First;
+      j = Last;
       for (;;) {
-         while (++i < last && ObjCompare(a[i], a[first]) < 0)
-            ;
-         while (--j > first && ObjCompare(a[j], a[first]) > 0)
-            ;
-         if (i >= j)
-            break;
+         while (++i < Last && ObjCompare(ObjArr[i], ObjArr[First]) < 0);
+         while (--j > First && ObjCompare(ObjArr[j], ObjArr[First]) > 0);
+         if (i >= j) break;
 
-         tmp  = a[i];
-         a[i] = a[j];
-         a[j] = tmp;
+         tmp  = ObjArr[i];
+         ObjArr[i] = ObjArr[j];
+         ObjArr[j] = tmp;
       }
-      if (j == first) {
-         ++first;
+      if (j == First) {
+         ++First;
          continue;
       }
-      tmp = a[first];
-      a[first] = a[j];
-      a[j] = tmp;
-      if (j - first < last - (j + 1)) {
-         QSort(a, first, j);
-         first = j + 1;   // QSort(j + 1, last);
+      tmp = ObjArr[First];
+      ObjArr[First] = ObjArr[j];
+      ObjArr[j] = tmp;
+      if (j - First < Last - (j + 1)) {
+         this->QSort(ObjArr, First, j);
+         First = j + 1;
       } else {
-         QSort(a, j + 1, last);
-         last = j;        // QSort(first, j);
+         this->QSort(ObjArr, j + 1, Last);
+         Last = j;
       }
    }
 }
 
-//______________________________________________________________________________
-void TSeqCollection::QSort(TObject **a, TObject **b, Int_t first, Int_t last)
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sorts array ObjArrA of TObject pointers using a quicksort algorithm.<br>
+//! 				Array ObjArrB will be sorted just like ObjArrA
+//! 				(i.e. ObjArrA determines the sort).<br>
+//! 				Uses ObjCompare() to compare objects.
+//! \param[in] 		ObjArrA		-- array of objects A
+//! \param[in] 		ObjArrB		-- array of objects B
+//! \param[in]		First		-- first index
+//! \param[in]		Last		-- last index
+/////////////////////////////////////////////////////////////////////////////
+
+void TSeqCollection::QSort(TObject ** ObjArrA, TObject ** ObjArrB, Int_t First, Int_t Last)
 {
-   // Sort array a of TObject pointers using a quicksort algorithm.
-   // Array b will be sorted just like a (a determines the sort).
-   // Uses ObjCompare() to compare objects.
 
    static TObject *tmp1, *tmp2;
    static int i;           // "static" to save stack space
    int j;
 
-   while (last - first > 1) {
-      i = first;
-      j = last;
+   while (Last - First > 1) {
+      i = First;
+      j = Last;
       for (;;) {
-         while (++i < last && ObjCompare(a[i], a[first]) < 0)
-            ;
-         while (--j > first && ObjCompare(a[j], a[first]) > 0)
-            ;
-         if (i >= j)
-            break;
+         while (++i < Last && ObjCompare(ObjArrA[i], ObjArrA[First]) < 0);
+         while (--j > First && ObjCompare(ObjArrA[j], ObjArrA[First]) > 0);
+         if (i >= j) break;
 
          tmp1 = a[i]; tmp2 = b[i];
-         a[i] = a[j]; b[i] = b[j];
-         a[j] = tmp1; b[j] = tmp2;
+         ObjArrA[i] = ObjArrA[j]; ObjArrB[i] = ObjArrB[j];
+         ObjArrA[j] = tmp1; ObjArrB[j] = tmp2;
       }
-      if (j == first) {
-         ++first;
+      if (j == First) {
+         ++First;
          continue;
       }
-      tmp1 = a[first]; tmp2 = b[first];
-      a[first] = a[j]; b[first] = b[j];
-      a[j] = tmp1;     b[j] = tmp2;
-      if (j - first < last - (j + 1)) {
-         QSort(a, b, first, j);
-         first = j + 1;   // QSort(j + 1, last);
+      tmp1 = ObjArrA[First]; tmp2 = ObjArrB[First];
+      ObjArrA[First] = ObjArrA[j]; ObjArrB[First] = b[j];
+      ObjArrA[j] = tmp1;     ObjArrB[j] = tmp2;
+      if (j - First < Last - (j + 1)) {
+         this->QSort(ObjArrA, ObjArrB, First, j);
+         First = j + 1;
       } else {
-         QSort(a, b, j + 1, last);
-         last = j;        // QSort(first, j);
+         this->QSort(ObjArrA, ObjArrB, j + 1, Last);
+         Last = j;
       }
    }
 }
