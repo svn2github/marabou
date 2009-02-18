@@ -1,14 +1,13 @@
 //________________________________________________________[C++ IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-//! \file			LwrObjString.cxx
 //! \brief			Light Weight ROOT: TObjString
 //! \details		Class definitions for ROOT under LynxOs: TObjString
 //! 				Collectable string class<br>
 //! 				This is a TObject containing a TString.
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-17 09:27:16 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-18 13:14:45 $
 //////////////////////////////////////////////////////////////////////////////
 
 
@@ -16,11 +15,17 @@
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Compares strings.<br>
-//! 				Return value is < 0, == 0, or > 0
-//! \param[in] 		Obj			-- object (=TObjString) to be compared
-//! \retval 		Relation	-- relation between objects
-/////////////////////////////////////////////////////////////////////////////
+//! \details		Compares two TObjString objects.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	0 when strings are equal
+//! 				<li>	-1 if string pointed to by \b this is smaller
+//! 				<li>	+1 if string pointed to by \b this is bigger
+//! 						than string in \b Obj (like strcmp)
+//! 				</ul>
+//! \param[in]		Obj				-- object to be compared
+//! \retval 		Relation		-- {0, -1, +1}
+//////////////////////////////////////////////////////////////////////////////
 
 Int_t TObjString::Compare(const TObject * Obj) const
 {

@@ -1,36 +1,29 @@
-//__________________________________________________[C++IMPLEMENTATION]
+//________________________________________________________[C++ IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           LwrNamedX.cxx
-// Purpose:        MARaBOU utilities:
-//                 A TNamed having an index and an opt. object assigned
-// Description:    Implements class methods to manage indexed TNamed objects
-// Keywords:
-// Author:         R. Lutter
-// Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: LwrNamedX.cxx,v 1.2 2008-04-24 12:50:13 Rudolf.Lutter Exp $       
-// Date:           
-//////////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition                                      //
-// R. Lutter                                                                //
+//! \file			LwrNamedX.cxx
+//! \brief			Light Weight ROOT: TMrbNamedX
+//! \details		Class definitions for ROOT under LynxOs: TMrbNamedX
+//!                 A TNamed having an index and an opt. object assigned
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-18 13:14:45 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamedX.h"
 
-const Char_t * TMrbNamedX::GetFullName(TString & FullName, Int_t Base, Bool_t IndexFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbNamedX::GetFullName
-// Purpose:        Return full index name
-// Arguments:      TString & FullName  -- resulting string
-//                 Int_t Base          -- numerical base
-//                 Bool_t IndexFlag    -- append index?
-// Results:        Char_t * FullName   -- index name
-// Exceptions:
-// Description:    Returns a string representing the full index name:
-//                      Name[: Title][ (Index)]
-// Keywords:
+//! \details		Returns a string representing the full index name:<br>
+//! 						Name[: Title][ (Index)]
+//! \param[out]		FullName			-- resulting string
+//! \param[in]		Base				-- numerical base
+//! \param[in]		IndexFlag			-- TRUE if to append index
+//! \retval 		FullName			-- resulting string
 //////////////////////////////////////////////////////////////////////////////
 
+const Char_t * TMrbNamedX::GetFullName(TString & FullName, Int_t Base, Bool_t IndexFlag) const
+{
 	FullName = this->GetName();
 	if (this->HasTitle()) {
 		FullName += ": ";
@@ -59,18 +52,22 @@ const Char_t * TMrbNamedX::GetFullName(TString & FullName, Int_t Base, Bool_t In
 	return(FullName.Data());
 }
 
-Int_t TMrbNamedX::Compare(const TObject * Nx) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbNamedX::Compare
-// Purpose:        Compare objects
-// Arguments:      TObject * Nx   -- TMrbNamedX object to be compared
-// Results:        Int_t Restult  -- <0, 0, >0
-// Exceptions:
-// Description:    Compares TMrbNamedX objects.
-// Keywords:
+//! \details		Compares two TMrbNamedX objects.
+//! 				Returns
+//! 				<ul>
+//! 				<li>	0 when equal
+//! 				<li>	-1 if \a this is smaller
+//! 				<li>	+1 if \a this is bigger than \a Nx
+//! 				</ul>
+//! 				(like strcmp)
+//! \param[out]		Nx				-- TMrbNamedX object to be compared
+//! \retval 		Relation		-- {0, -1, +1}
 //////////////////////////////////////////////////////////////////////////////
 
+Int_t TMrbNamedX::Compare(const TMrbNamedX * Nx) const
+{
 	Int_t s;
 	TMrbNamedX * nx = (TMrbNamedX *) Nx;
 	if (this->IsSortedByName()) {
@@ -82,20 +79,16 @@ Int_t TMrbNamedX::Compare(const TObject * Nx) const {
 	return(s);
 }
 
-void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbNamedX::Print
-// Purpose:        Print key data
-// Arguments:      ostream & Out   -- where to send it
-//                 Int_t Base      -- numerical base
-//                 Bool_t CrFlag   -- append <cr> (=endl) if kTRUE
-// Results:        --
-// Exceptions:
-// Description:    Outputs index data to ostream.
-// Keywords:
+//! \details		Outputs TMrbNamedX data
+//! \param[in]		Out 		-- stream where to output
+//! \param[in]		Base		-- numerical base
+//! \param[in]		CrFlag		-- appends \a cr (=endl) if TRUE
 //////////////////////////////////////////////////////////////////////////////
 
+void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag) const
+{
 	TString fullName;
 	Out << this->GetFullName(fullName, Base, kTRUE);
 	if (CrFlag) Out << endl;

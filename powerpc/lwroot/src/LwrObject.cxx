@@ -9,8 +9,8 @@
 //! 				from TObject can be stored in the ROOT collection classes.
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-17 09:27:16 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-18 13:14:45 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
@@ -19,18 +19,18 @@
 
 #include "LwrObject.h"
 
-//________________________________________________________________[C++ METHOD]
+//__________________________________________________________________[C++ ctor]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		TObject constructor. It sets the two data words of TObject to their
-//! 				initial values. The unique ID is set to 0 and the status word is
-//! 				set depending if the object is created on the stack or allocated
-//! 				on the heap. Of the status word the high 8 bits are reserved for
-//! 				system usage and the low 24 bits are user settable.
+//! \details	TObject constructor. It sets the two data words of TObject to their
+//! 			initial values. The unique ID is set to 0 and the status word is
+//! 			set depending if the object is created on the stack or allocated
+//! 			on the heap. Of the status word the high 8 bits are reserved for
+//! 			system usage and the low 24 bits are user settable.
 /////////////////////////////////////////////////////////////////////////////
 
 TObject::TObject() :   fUniqueID(0), fBits(kNotDeleted) {}
 
-//________________________________________________________________[C++ METHOD]
+//__________________________________________________________________[C++ ctor]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		TObject copy constructor
 //! \param[in]		Obj 	-- object to be copied

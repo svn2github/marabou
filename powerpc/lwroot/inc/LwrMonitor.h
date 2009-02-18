@@ -9,15 +9,17 @@
 //! 				This class monitors activity on a number of network sockets.<br>
 //! 				The actual monitoring is done by TSystem::DispatchOneEvent().<br>
 //! 				Typical usage:
-//! 					<li>	create a TMonitor object.
-//! 					<li>	Register a number of TSocket objects and call TMonitor::Select().
-//!
+//! 				<ul>
+//! 				<li>	create a TMonitor object.
+//! 				<li>	register a number of TSocket objects
+//! 				<li>	call TMonitor::Select()
+//! 				</ul>
 //! 				Select() returns the socket object which has data waiting.<br>
 //! 				TSocket objects can be added, removed, (temporary) enabled or disabled.
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-18 13:14:45 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrObject.h"

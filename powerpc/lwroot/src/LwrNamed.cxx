@@ -1,58 +1,61 @@
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TNamed                                                               //
-//                                                                      //
-// The TNamed class is the base class for all named ROOT classes        //
-// A TNamed contains the essential elements (name, title)               //
-// to identify a derived object in containers, directories and files.   //
-// Most member functions defined in this base class are in general      //
-// overridden by the derived classes.                                   //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition                                  //
-// R. Lutter                                                            //
-//////////////////////////////////////////////////////////////////////////
+//________________________________________________________[C++ IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrNamed.cxx
+//! \brief			Light Weight ROOT: TNamed
+//! \details		The TNamed class is the base class for all named ROOT classes.<br>
+//! 				A TNamed contains the essential elements (name, title)
+//! 				to identify a derived object in containers, directories and files.<br>
+//! 				Most member functions defined in this base class are in general
+//! 				overridden by the derived classes.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-18 13:14:45 $
+//////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"
 
-//______________________________________________________________________________
-Int_t TNamed::Compare(const TObject *obj) const
-{
-   // Compare two TNamed objects. Returns 0 when equal, -1 when this is
-   // smaller and +1 when bigger (like strcmp).
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Compares two TNamed objects.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	0 if objects are equal
+//! 				<li>	-1 if name pointed to by \b this is smaller
+//! 				<li>	+1 if name pointed to by \b this is bigger
+//! 						than name of \b Obj (like strcmp).
+//! 				</ul>
+//! \param[in]		Obj				-- TNamed object to be compared
+//! \retval 		Relation		-- {0, -1, +1}
+//////////////////////////////////////////////////////////////////////////////
 
-   if (this == obj) return 0;
-   return fName.CompareTo(obj->GetName());
+Int_t TNamed::Compare(const TObject * Obj) const
+{
+   if (this == Obj) return 0;
+   return fName.CompareTo(Obj->GetName());
 }
 
-//______________________________________________________________________________
-void TNamed::SetName(const char *name)
-{
-   // Change (i.e. set) the name of the TNamed.
-   // WARNING: if the object is a member of a THashTable or THashList container
-   // the container must be Rehash()'ed after SetName(). For example the list
-   // of objects in the current directory is a THashList.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets the name of TNamed object
+//! \param[in]		Name			-- name to be set
+//////////////////////////////////////////////////////////////////////////////
 
-   fName = name;
-}
+void TNamed::SetName(const Char_t * Name) { fName = Name; }
 
-//______________________________________________________________________________
-void TNamed::SetNameTitle(const char *name, const char *title)
-{
-   // Change (i.e. set) all the TNamed parameters (name and title).
-   // WARNING: if the name is changed and the object is a member of a
-   // THashTable or THashList container the container must be Rehash()'ed
-   // after SetName(). For example the list of objects in the current
-   // directory is a THashList.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets name and title of TNamed object
+//! \param[in]		Name			-- name to be set
+//! \param[in]		Title			-- title to be set
+//////////////////////////////////////////////////////////////////////////////
 
-   fName  = name;
-   fTitle = title;
-}
+void TNamed::SetNameTitle(const Char_t * Name, const Char_t * Title) { fName  = Name; fTitle = Title; }
 
-//______________________________________________________________________________
-void TNamed::SetTitle(const char *title)
-{
-   // Change (i.e. set) the title of the TNamed.
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets the title of TNamed object
+//! \param[in]		Title			-- title to be set
+//////////////////////////////////////////////////////////////////////////////
 
-   fTitle = title;
-}
+void TNamed::SetTitle(const Char_t * Title) { fTitle = title; }

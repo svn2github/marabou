@@ -1,18 +1,23 @@
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TMonitor                                                             //
-//                                                                      //
-// This class monitors activity on a number of network sockets.         //
-// The actual monitoring is done by TSystem::DispatchOneEvent().        //
-// Typical usage: create a TMonitor object. Register a number of        //
-// TSocket objects and call TMonitor::Select(). Select() returns the    //
-// socket object which has data waiting. TSocket objects can be added,  //
-// removed, (temporary) enabled or disabled.                            //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition for LynxOs                       //
-// R. Lutter                                                            //
-//////////////////////////////////////////////////////////////////////////
+//________________________________________________________[C++ IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrMonitor.cxx
+//! \brief			Light Weight ROOT: TMonitor
+//! \details		This class monitors activity on a number of network sockets.<br>
+//! 				The actual monitoring is done by TSystem::DispatchOneEvent().<br>
+//! 				Typical usage:
+//! 				<ul>
+//! 				<li>	create a TMonitor object.
+//! 				<li>	register a number of TSocket objects
+//! 				<li>	call TMonitor::Select()
+//! 				</ul>
+//! 				Select() returns the socket object which has data waiting.<br>
+//! 				TSocket objects can be added, removed, (temporary) enabled or disabled.
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.2 $     
+//! $Date: 2009-02-18 13:14:45 $
+//////////////////////////////////////////////////////////////////////////////
+
 
 #include "LwrMonitor.h"
 #include "LwrFileHandler.h"
@@ -24,6 +29,12 @@ extern TLynxOsSystem * gSystem;
 //
 // This utility class is only used by TMonitor.
 //
+
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Socket event handler
+//! 				(only used by TMonitor)
+/////////////////////////////////////////////////////////////////////////////
 
 class TSocketHandler : public TFileHandler {
 
@@ -39,6 +50,15 @@ public:
 	TSocket * GetSocket() const { return fSocket; }
 };
 
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Socket event handler
+//! 				(only used by TMonitor)
+//! \param[in]		Mon 		-- TMonitor object
+//! \param[in]		Sock		-- socket
+//! \param[in]		Interest	-- i/o mode
+/////////////////////////////////////////////////////////////////////////////
+
 TSocketHandler::TSocketHandler(TMonitor * Mon, TSocket * Sock, Int_t Interest)
 										: TFileHandler(Sock->GetDescriptor(), Interest)
 {
@@ -47,51 +67,73 @@ TSocketHandler::TSocketHandler(TMonitor * Mon, TSocket * Sock, Int_t Interest)
 	this->Add();
 }
 
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Notify event
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
 Bool_t TSocketHandler::Notify()
 {
 	fMonitor->SetReady(fSocket);
 	return(kTRUE);
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Create a monitor object
+/////////////////////////////////////////////////////////////////////////////
+
 TMonitor::TMonitor()
 {
-   // Create a monitor object. If mainloop is true the monitoring will be
-   // done in the main event loop.
-
 	fActive   = new TList();
 	fDeactive = new TList();
 	fReady = NULL;
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Cleanup the monitor object.
+//! 				Does not delete socket being monitored.
+/////////////////////////////////////////////////////////////////////////////
+
 TMonitor::~TMonitor()
 {
-   // Cleanup the monitor object. Does not delete socket being monitored.
-
 	fActive->Delete();
 	fDeactive->Delete();
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Adds socket to the monitor's active list.<br>
+//!					<ul>
+//! 				<li>	interest=kRead: we want to monitor the socket for read readiness,<br>
+//! 				<li>	interest=kWrite: we monitor the socket for write readiness,<br>
+//! 				<li>	interest=kRead|kWrite: we monitor both read and write readiness.
+//! 				</ul>
+//! \param[in]		Sock		-- socket
+//! \param[in]		Interest	-- {r, w, rw}
+/////////////////////////////////////////////////////////////////////////////
+
 void TMonitor::Add(TSocket * Sock, Int_t Interest)
 {
-   // Add socket to the monitor's active list. If interest=kRead then we
-   // want to monitor the socket for read readiness, if interest=kWrite
-   // then we monitor the socket for write readiness, if interest=kRead|kWrite
-   // then we monitor both read and write readiness.
-
 	fActive->Add(new TSocketHandler(this, Sock, Interest));
 }
-//______________________________________________________________________________
+
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets interest mask for socket.<br>
+//!					<ul>
+//! 				<li>	interest=kRead: we want to monitor the socket for read readiness,<br>
+//! 				<li>	interest=kWrite: we monitor the socket for write readiness,<br>
+//! 				<li>	interest=kRead|kWrite: we monitor both read and write readiness.
+//! 				</ul>
+//! \param[in]		Sock		-- socket
+//! \param[in]		Interest	-- {r, w, rw}
+/////////////////////////////////////////////////////////////////////////////
+
 void TMonitor::SetInterest(TSocket * Sock, Int_t Interest)
 {
-   // Set interest mask for socket sock to interest. If the socket is not
-   // in the active list move it or add it there.
-   // If interest=kRead then we want to monitor the socket for read readiness,
-   // if interest=kWrite then we monitor the socket for write readiness,
-   // if interest=kRead|kWrite then we monitor both read and write readiness.
-
 	TSocketHandler * s = 0;
 
 	if (!Interest) Interest = kRead;
@@ -120,11 +162,14 @@ void TMonitor::SetInterest(TSocket * Sock, Int_t Interest)
 	fActive->Add(new TSocketHandler(this, Sock, Interest));
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Remove a socket from the monitor.
+//! \param[in]		Sock		-- socket
+/////////////////////////////////////////////////////////////////////////////
+
 void TMonitor::Remove(TSocket * Sock)
 {
-   // Remove a socket from the monitor.
-
 	TIter next(fActive);
 	TSocketHandler * s;
 
@@ -147,16 +192,23 @@ void TMonitor::Remove(TSocket * Sock)
 	}
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Remove all sockets from the monitor.
+/////////////////////////////////////////////////////////////////////////////
+
 void TMonitor::RemoveAll()
 {
-   // Remove all sockets from the monitor.
-
 	fActive->Delete();
 	fDeactive->Delete();
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Activate a de-activated socket
+//! \param[in]		Sock		-- socket
+/////////////////////////////////////////////////////////////////////////////
+
 void TMonitor::Activate(TSocket * Sock)
 {
    // Activate a de-activated socket.
@@ -174,11 +226,13 @@ void TMonitor::Activate(TSocket * Sock)
 	}
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Activate all de-activated sockets
+/////////////////////////////////////////////////////////////////////////////
+
 void TMonitor::ActivateAll()
 {
-	// Activate all de-activated sockets.
-
 	TIter next(fDeactive);
 	TSocketHandler *s;
 
@@ -189,7 +243,12 @@ void TMonitor::ActivateAll()
 	fDeactive->Clear();
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Deactivate a socket
+//! \param[in]		Sock		-- socket
+/////////////////////////////////////////////////////////////////////////////
+
 void TMonitor::Deactivate(TSocket * Sock)
 {
 	// De-activate a socket.
@@ -207,7 +266,11 @@ void TMonitor::Deactivate(TSocket * Sock)
 	}
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Deactivate all sockets
+/////////////////////////////////////////////////////////////////////////////
+
 void TMonitor::DeactivateAll()
 {
    // De-activate all activated sockets.
@@ -222,13 +285,20 @@ void TMonitor::DeactivateAll()
 	fActive->Clear();
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Select socket for which an event is waiting.<br>
+//! 				Waits a maximum of \b timeout milliseconds.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	pointer to socket
+//! 				<li>	NULL after timeout or error
+//! 				</ul>
+//! \param[in]		Timeout		-- timeout in millisecs
+/////////////////////////////////////////////////////////////////////////////
+
 TSocket * TMonitor::Select(Long_t Timeout)
 {
-   // Return pointer to socket for which an event is waiting.
-   // Wait a maximum of timeout milliseconds.
-   // If return is due to timeout it returns (TSocket *)-1.
-   // Return 0 in case of any other error situation.
 
 	TSocketHandler * h;
 	if (gSystem->Select(fActive, Timeout) > 0) {
@@ -241,15 +311,23 @@ TSocket * TMonitor::Select(Long_t Timeout)
 	return(NULL);
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Fills lists with sockets for which events are waiting.<br>
+//! 				Waits a maximum of \b timeout milliseconds.<br>
+//! 				Returns
+//! 				<ul>
+//! 				<li>	number of sockets waiting
+//! 				<li>	lists with sockets waiting for read and/or write
+//! 				<li>	0 after timeout or error
+//! 				</ul>
+//! \param[out]		Rdready		-- list with sockets waiting to be read
+//! \param[out]		Wrready		-- list with sockets ready to write
+//! \param[in]		Timeout		-- timeout in millisecs
+/////////////////////////////////////////////////////////////////////////////
+
 Int_t TMonitor::Select(TList * Rdready, TList * Wrready, Long_t Timeout)
 {
-   // Return numbers of sockets that are ready for reading or writing.
-   // Wait a maximum of timeout milliseconds.
-   // Return 0 if timed-out. Return < 0 in case of error.
-   // If rdready and/or wrready are not 0, the lists of sockets with
-   // something to read and/or write are also returned.
-
 	Int_t nr = -2;
 
 	nr = gSystem->Select(fActive, Timeout);
@@ -269,39 +347,43 @@ Int_t TMonitor::Select(TList * Rdready, TList * Wrready, Long_t Timeout)
 	return nr;
 }
 
-//______________________________________________________________________________
-void TMonitor::SetReady(TSocket * Sock)
-{
-   // Called by TSocketHandler::Notify() to signal which socket is ready
-   // to be read or written. User should not call this routine. The ready
-   // socket will be returned via the Select() user function.
-   // Ready(TSocket *sock) signal is emitted.
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Marks socket being ready
+//! 				Called by TSocketHandler::Notify() to signal which socket
+//! 				is ready to be read or written.
+//! 				User should \b not call this routine.
+//! 				The ready socket will be returned via the Select() user function.
+//! \param[in]		Sock	-- socket
+/////////////////////////////////////////////////////////////////////////////
 
-	fReady = Sock;
-}
+void TMonitor::SetReady(TSocket * Sock) { fReady = Sock; }
 
-//______________________________________________________________________________
-Int_t TMonitor::GetActive() const
-{
-	// Return number of sockets in the active list.
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns number of sockets in the active list
+//! \retval 		NofSockets	-- number of active sockets
+/////////////////////////////////////////////////////////////////////////////
 
-	return fActive->GetSize();
-}
+Int_t TMonitor::GetActive() const { return fActive->GetSize(); }
 
-//______________________________________________________________________________
-Int_t TMonitor::GetDeactive() const
-{
-	// Return number of sockets in the de-active list.
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns number of deactivated sockets
+//! \retval 		NofSockets	-- number of sockets
+/////////////////////////////////////////////////////////////////////////////
 
-	return fDeactive->GetSize();
-}
+Int_t TMonitor::GetDeactive() const { return fDeactive->GetSize(); }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details	 	Checks if socket is active
+//! \param[in]		Sock	-- socket
+//! \return 		TRUE or FALSE
+/////////////////////////////////////////////////////////////////////////////
+
 Bool_t TMonitor::IsActive(TSocket * Sock) const
 {
-   // Check if socket 's' is in the active list. Avoids the duplication
-   // of active list via TMonitor::GetListOfActives().
-
 	TIter next(fActive);
 	while (TSocketHandler *h = (TSocketHandler*) next())
 		if (Sock == h->GetSocket()) return kTRUE;
@@ -310,12 +392,17 @@ Bool_t TMonitor::IsActive(TSocket * Sock) const
 	return kFALSE;
 }
 
-//______________________________________________________________________________
-TList *TMonitor::GetListOfActives() const
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns a list with all active sockets.<br>
+//! 				This list must be deleted by the user.
+//! 				DO NOT call Delete() on this list as it will delete
+//! 				the sockets that are still being used by the monitor!
+//! \retval 		SockList	-- list of active sockets
+/////////////////////////////////////////////////////////////////////////////
+
+TList * TMonitor::GetListOfActives() const
 {
-   // Returns a list with all active sockets. This list must be deleted
-   // by the user. DO NOT call Delete() on this list as it will delete
-   // the sockets that are still being used by the monitor.
 
 	TList * list = new TList();
 
@@ -324,13 +411,17 @@ TList *TMonitor::GetListOfActives() const
 	return list;
 }
 
-//______________________________________________________________________________
-TList *TMonitor::GetListOfDeactives() const
-{
-   // Returns a list with all de-active sockets. This list must be deleted
-   // by the user. DO NOT call Delete() on this list as it will delete
-   // the sockets that are still being used by the monitor.
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns a list with all deactivated sockets.<br>
+//! 				This list must be deleted by the user.
+//! 				DO NOT call Delete() on this list as it will delete
+//! 				the sockets that are still being used by the monitor!
+//! \retval 		SockList	-- list of deactivated sockets
+/////////////////////////////////////////////////////////////////////////////
 
+TList * TMonitor::GetListOfDeactives() const
+{
 	TList * list = new TList();
 
 	TIter next(fDeactive);

@@ -7,10 +7,10 @@
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: TNamed<br>
 //! 				Base class for a named object (name, title)
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-18 13:14:45 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrObject.h"
@@ -24,18 +24,18 @@ protected:
 
 public:
    TNamed(): fName(), fTitle() { }
-   TNamed(const char *name, const char *title) : fName(name), fTitle(title) { }
-   TNamed(const TString &name, const TString &title) : fName(name), fTitle(title) { }
-   TNamed(const TNamed &named);
-   TNamed& operator=(const TNamed& rhs);
+   TNamed(const Char_t * Name, const Char_t * Title) : fName(Name), fTitle(Title) { }
+   TNamed(const TString & Name, const TString & Title) : fName(Name), fTitle(Title) { }
+   TNamed(const TNamed & Named);
+   TNamed& operator=(const TNamed & Rhs);
    virtual ~TNamed() { }
-   virtual const char  *GetName() const { return fName; }
-   virtual const char  *GetTitle() const { return fTitle; }
-   virtual Int_t Compare(const TObject *obj) const;
+   virtual const Char_t * GetName() const { return fName; }
+   virtual const Char_t * GetTitle() const { return fTitle; }
+   virtual Int_t Compare(const TObject * Obj) const;
    virtual Bool_t   IsSortable() const { return kTRUE; }
-   virtual void     SetName(const char *name);
-   virtual void     SetNameTitle(const char *name, const char *title);
-   virtual void     SetTitle(const char *title="");
+   virtual void     SetName(const Char_t * Name);
+   virtual void     SetNameTitle(const Char_t * Name, const Char_t * Title);
+   virtual void     SetTitle(const Char_t * Title="");
 
    inline const Char_t * ClassName() const { return "TNamed"; };
 };
