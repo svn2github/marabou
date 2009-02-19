@@ -917,8 +917,9 @@ void FitHist::handle_mouse()
 	//                        	  << 0.5 * (XupEdge - XlowEdge)<< endl;
                   	}
                	}
-               	hist->Fit(gFitFunc, "RnlQ", "",XlowEdge ,XupEdge );
+               	hist->Fit(gFitFunc, "RnlQ", "",XlowEdge, XupEdge);
                	first_fit = kTRUE;
+               	gFitFunc->SetRange(XlowEdge, XupEdge);
                	gFitFunc->Draw("same");
                	gPad->Update();
                	gPad->GetCanvas()->GetFrame()->SetBit(TBox::kCannotMove);
