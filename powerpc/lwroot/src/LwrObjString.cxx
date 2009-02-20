@@ -4,10 +4,13 @@
 //! \details		Class definitions for ROOT under LynxOs: TObjString
 //! 				Collectable string class<br>
 //! 				This is a TObject containing a TString.
+//!
+//! \author Otto.Schaile
+//!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-18 13:14:45 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-02-20 08:40:11 $
 //////////////////////////////////////////////////////////////////////////////
 
 

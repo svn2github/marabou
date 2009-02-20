@@ -6,10 +6,13 @@
 //! 				Sequenceable collection abstract base class.<br>
 //! 				TSeqCollections have an ordering relation,
 //! 				i.e. there is a first and last element.
+//!
+//! \author Otto.Schaile
+//!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-17 08:02:26 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-20 08:40:11 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrSeqCollection.h"

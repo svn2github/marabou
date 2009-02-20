@@ -15,11 +15,12 @@
 //! Light Weight ROOT<br>
 //! A selection of ROOT objects to be used with LynxOs.
 //!
-//! $Author: Rudolf.Lutter $
+//! \author Otto.Schaile
+//!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-20 08:33:53 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-02-20 08:37:23 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>

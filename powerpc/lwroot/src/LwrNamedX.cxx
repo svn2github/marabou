@@ -4,10 +4,13 @@
 //! \brief			Light Weight ROOT: TMrbNamedX
 //! \details		Class definitions for ROOT under LynxOs: TMrbNamedX
 //!                 A TNamed having an index and an opt. object assigned
+//!
+//! \author Otto.Schaile
+//!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-18 13:14:45 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-20 08:40:11 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamedX.h"

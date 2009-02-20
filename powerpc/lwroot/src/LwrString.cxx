@@ -4,10 +4,13 @@
 //! \brief			Light Weight ROOT: TString
 //! \details		Class definitions for ROOT under LynxOs: TString
 //! 				Basic string class
+//!
+//! \author Otto.Schaile
+//!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-17 08:02:26 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-20 08:40:11 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>

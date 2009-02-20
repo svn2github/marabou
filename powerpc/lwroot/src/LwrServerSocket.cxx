@@ -6,10 +6,13 @@
 //! 				A server socket waits for requests to come in over the network.<br>
 //! 				It performs some operation based on that request
 //! 				and then possibly returns a full duplex socket to the requester.                                                    //
+//!
+//! \author Otto.Schaile
+//!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-17 08:02:26 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-20 08:40:11 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"

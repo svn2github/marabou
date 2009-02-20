@@ -3,10 +3,13 @@
 //! \file			LwrUtils.cxx
 //! \brief			Light Weight ROOT: Utility functions
 //! \details		Class definitions for ROOT under LynxOs: Utility functions
+//!
+//! \author Otto.Schaile
+//!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-17 08:02:26 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-20 08:40:11 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrUtils.h"

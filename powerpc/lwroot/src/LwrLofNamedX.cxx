@@ -4,10 +4,13 @@
 //! \brief			Light Weight ROOT: TMrbLofNamedX
 //! \details		Class definitions for ROOT under LynxOs: TMrbLofNamedX
 //!                 A list of TMrbNamedX objects
+//!
+//! \author Otto.Schaile
+//!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-20 08:33:53 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-02-20 08:40:11 $
 //////////////////////////////////////////////////////////////////////////////
 
 
