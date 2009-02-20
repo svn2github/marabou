@@ -1,17 +1,15 @@
-//__________________________________________________[C++IMPLEMENTATION]
+//________________________________________________________[C++ IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           LwrLofNamedX.cxx
-// Purpose:        MARaBOU utilities: A list of TMrbNamedX objects
-// Description:    Implements class methods to manage a list of TMrbNamedX objects
-// Keywords:
-// Author:         R. Lutter
-// Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: LwrLofNamedX.cxx,v 1.3 2008-08-18 08:18:16 Rudolf.Lutter Exp $       
-// Date:           
+//! \file			LwrLofNamedX.cxx
+//! \brief			Light Weight ROOT: TMrbLofNamedX
+//! \details		Class definitions for ROOT under LynxOs: TMrbLofNamedX
+//!                 A list of TMrbNamedX objects
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-20 08:33:53 $
 //////////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition                                      //
-// R. Lutter                                                              //
-//////////////////////////////////////////////////////////////////////////////
+
 
 #include <cstdlib>
 #include "iostream.h"
@@ -22,70 +20,62 @@
 #include "LwrLogger.h"
 #include "SetColor.h"
 
-TMrbLofNamedX::TMrbLofNamedX(const Char_t * Name, Bool_t PatternMode) {
-//__________________________________________________________________[C++ CTOR]
+//__________________________________________________________________[C++ ctor]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX
-// Purpose:        Define a list of named indices
-// Arguments:      SMrbNamedX * Named       -- list of indices to be stored
-//                 Bool_t PatternMode       -- kTRUE is list contains bit patterns
-// Results:        --
-// Exceptions:
-// Description:    Class constructor
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a TMrbLofNamedX object
+//! \param[in]		Name			-- list name
+//! \param[in]		PatternMode		-- TRUE if TMrbNamedX indices consist
+//! 									of bit patterns
+/////////////////////////////////////////////////////////////////////////////
 
+TMrbLofNamedX::TMrbLofNamedX(const Char_t * Name, Bool_t PatternMode)
+{
 	fName = Name ? Name : this->ClassName();
 	fPatternMode = PatternMode;
 }
 
-TMrbLofNamedX::TMrbLofNamedX(const SMrbNamedX * NamedX, Bool_t PatternMode) {
-//__________________________________________________________________[C++ CTOR]
+//__________________________________________________________________[C++ ctor]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX
-// Purpose:        Define a list of named indices
-// Arguments:      SMrbNamedX * Named       -- list of indices to be stored
-//                 Bool_t PatternMode       -- kTRUE is list contains bit patterns
-// Results:        --
-// Exceptions:
-// Description:    Class constructor
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a TMrbLofNamedX object<br>
+//! 				Will be filled from a list of structs {index,shortName,longName}.<br>
+//! 				List must be terminated by an empty element {0,NULL,NULL}.
+//! \param[in]		NamedX			-- ptr to a list of structs
+//! \param[in]		PatternMode		-- TRUE if TMrbNamedX indices consist
+//! 									of bit patterns
+/////////////////////////////////////////////////////////////////////////////
 
+TMrbLofNamedX::TMrbLofNamedX(const SMrbNamedX * NamedX, Bool_t PatternMode)
+{
 	fPatternMode = PatternMode;
 	this->AddNamedX(NamedX);
 }
 
-TMrbLofNamedX::TMrbLofNamedX(const SMrbNamedXShort * NamedX, Bool_t PatternMode) {
-//__________________________________________________________________[C++ CTOR]
+//__________________________________________________________________[C++ ctor]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX
-// Purpose:        Define a list of named indices
-// Arguments:      SMrbNamedXShort * Named  -- list of indices to be stored (short names only)
-//                 Bool_t PatternMode       -- kTRUE is list contains bit patterns
-// Results:        --
-// Exceptions:
-// Description:    Class constructor
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a TMrbLofNamedX object
+//! 				Will be filled from a list of structs {index,shortName}.<br>
+//! 				List must be terminated by an empty element {0,NULL}.
+//! \param[in]		NamedX			-- ptr to a list of structs
+//! \param[in]		PatternMode		-- TRUE if TMrbNamedX indices consist
+//! 									of bit patterns
+/////////////////////////////////////////////////////////////////////////////
 
+TMrbLofNamedX::TMrbLofNamedX(const SMrbNamedXShort * NamedX, Bool_t PatternMode)
+{
 	fPatternMode = PatternMode;
 	this->AddNamedX(NamedX);
 }
 
-void TMrbLofNamedX::AddNamedX(const SMrbNamedX * NamedX) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::AddNamedX
-// Purpose:        Add one ore more indices to list
-// Arguments:      SMrbNamedX * NamedX     -- list of indices to be added
-// Results:        --
-// Exceptions:
-// Description:    Adds one or more indices to the list.
-//                 Input list must be terminated by element {0, NULL, NULL}.
-// Keywords:
+//! \details		Adds one or more elements to the list.<br>
+//! 				Takes elements from a list of structs {index,shortName,longName}.<br>
+//! 				Input terminates on an empty element {0,NULL,NULL}.
+//! \param[in]		NamedX			-- ptr to a list of structs
 //////////////////////////////////////////////////////////////////////////////
 
+void TMrbLofNamedX::AddNamedX(const SMrbNamedX * NamedX)
+{
 	TMrbNamedX * namedX;
 
 	while (NamedX->ShortName) {
@@ -95,20 +85,16 @@ void TMrbLofNamedX::AddNamedX(const SMrbNamedX * NamedX) {
 	}
 }
 
-void TMrbLofNamedX::AddNamedX(const SMrbNamedXShort * NamedX) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::AddNamedX
-// Purpose:        Add one ore more indices to list
-// Arguments:      SMrbNamedX * NamedX     -- list of indices to be added
-//                                            (short names only)
-// Results:        --
-// Exceptions:
-// Description:    Adds one or more indices to the list.
-//                 Input list must be terminated by element {0, NULL}.
-// Keywords:
+//! \details		Adds one or more elements to the list.<br>
+//! 				Takes elements from a list of structs {index,shortName}.<br>
+//! 				Input terminates on an empty element {0,NULL}.
+//! \param[in]		NamedX			-- ptr to a list of structs
 //////////////////////////////////////////////////////////////////////////////
 
+void TMrbLofNamedX::AddNamedX(const SMrbNamedXShort * NamedX)
+{
 	TMrbNamedX * namedX;
 
 	while (NamedX->ShortName) {
@@ -118,18 +104,14 @@ void TMrbLofNamedX::AddNamedX(const SMrbNamedXShort * NamedX) {
 	}
 }
 
-void TMrbLofNamedX::AddNamedX(TMrbNamedX * NamedX) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::AddNamedX
-// Purpose:        Add a single index
-// Arguments:      TMrbNamedX * NamedX       -- pointer to named index
-// Results:        --
-// Exceptions:
-// Description:    Adds a single index.
-// Keywords:
+//! \details		Adds a single element
+//! \param[in]		NamedX			-- ptr to TMrbNamedX object
 //////////////////////////////////////////////////////////////////////////////
 
+void TMrbLofNamedX::AddNamedX(TMrbNamedX * NamedX)
+{
 	TMrbNamedX * namedX;
 
 	namedX = new TMrbNamedX(	NamedX->GetIndex(),
@@ -139,21 +121,18 @@ void TMrbLofNamedX::AddNamedX(TMrbNamedX * NamedX) {
 	this->Add(namedX);
 }
 
-TMrbNamedX * TMrbLofNamedX::AddNamedX(Int_t Index, const Char_t * Name, const Char_t * Title, TObject * Object) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::AddNamedX
-// Purpose:        Add a single index
-// Arguments:      Int_t Index               -- index
-//                 const Char_t * Name       -- name
-//                 const Char_t * Title      -- title
-//                 TObject * Object          -- object to be assigned
-// Results:        TMrbNamedX * NamedX       -- address of new list entry
-// Exceptions:
-// Description:    Adds a single index.
-// Keywords:
+//! \details		Adds a single element
+//! \param[in]		Index		-- index
+//! \param[in]		Name		-- (short) name
+//! \param[in]		Title		-- title (= long name)
+//! \param[in]		Object		-- ptr to object to be assigned
+//! \retval 		NamedX		-- address of new list element
 //////////////////////////////////////////////////////////////////////////////
 
+TMrbNamedX * TMrbLofNamedX::AddNamedX(Int_t Index, const Char_t * Name, const Char_t * Title, TObject * Object)
+{
 	TMrbNamedX * namedX;
 
 	namedX = new TMrbNamedX(Index, Name, Title, Object);
@@ -161,18 +140,14 @@ TMrbNamedX * TMrbLofNamedX::AddNamedX(Int_t Index, const Char_t * Name, const Ch
 	return(namedX);
 }
 
-void TMrbLofNamedX::AddNamedX(TMrbLofNamedX * LofNamedX) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::AddNamedX
-// Purpose:        Append a list of named indices
-// Arguments:      TMrbLofNamedX * LofNamedX     -- list of indices to be added.
-// Results:        --
-// Exceptions:
-// Description:    Adds an existing index list to the list
-// Keywords:
+//! \details		Merges two lists
+//! \param[in]		LofNamedX		-- list to be appended
 //////////////////////////////////////////////////////////////////////////////
 
+void TMrbLofNamedX::AddNamedX(TMrbLofNamedX * LofNamedX)
+{
 	TMrbNamedX * namedX;
 
 	TIterator * iter = LofNamedX->MakeIterator();
@@ -185,20 +160,16 @@ void TMrbLofNamedX::AddNamedX(TMrbLofNamedX * LofNamedX) {
 	}
 }
 
-void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::Print
-// Purpose:        Print index data
-// Arguments:      ostream & Out   -- where to send it
-//                 Char_t * Prefix -- prefix to be prepended
-//                 UInt_t Mask     -- bit mask
-// Results:        --
-// Exceptions:
-// Description:    Outputs index data to ostream.
-// Keywords:
+//! \details		Outputs list elements to stream
+//! \param[in]		Out			-- output stream
+//! \param[in]		Prefix		-- prefix to be prepended
+//! \param[in]		Mask		-- bit mask to select elements
 //////////////////////////////////////////////////////////////////////////////
 
+void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) const
+{
 	Int_t nbits;
 	TMrbNamedX * same;
 	Int_t index, n;
@@ -272,21 +243,17 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) con
 	}
 }
 
-void TMrbLofNamedX::PrintNames(ostream & Out, const Char_t * Prefix, UInt_t Mask, Bool_t CrFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::PrintNames
-// Purpose:        Print index names
-// Arguments:      ostream & Out   -- where to send it
-//                 Char_t * Prefix -- prefix to be prepended
-//                 UInt_t Mask     -- bit mask
-//                 Bool_t CrFlag   -- kTRUE outputs <crlf>
-// Results:        --
-// Exceptions:
-// Description:    Outputs index names to stream Out.
-// Keywords:
+//! \details		Outputs element names to stream
+//! \param[in]		Out			-- output stream
+//! \param[in]		Prefix		-- prefix to be prepended
+//! \param[in]		Mask		-- bit mask to select elements
+//! \param[in]		CrFlag		-- append \a crlf if TRUE
 //////////////////////////////////////////////////////////////////////////////
 
+void TMrbLofNamedX::PrintNames(ostream & Out, const Char_t * Prefix, UInt_t Mask, Bool_t CrFlag) const
+{
 	TMrbNamedX * xPnt;
 	TIterator * iter = this->MakeIterator();
 	if (fPatternMode) {
@@ -308,19 +275,22 @@ void TMrbLofNamedX::PrintNames(ostream & Out, const Char_t * Prefix, UInt_t Mask
 	}
 }
 
-TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::FindByName
-// Purpose:        Find an index by its name
-// Arguments:      Char_t * ShortName    -- short name
-//                 UInt_t FindMode       -- method how to search
-// Results:        TMrbNamedX * NamedX   -- result
-// Exceptions:
-// Description:    Searches for a given index.
-// Keywords:
+//! \details		Searches for a given element
+//! 				\b FindMode can be
+//! 				<ul>
+//! 				<li>	\a kFindExact		-- needs exact matching of key names
+//! 				<li>	\a kFindUnique		-- names may be abbreviated uniquely
+//! 				<li>	\a kFindIgnoreCase	-- ignore case while comparing names
+//! 				</ul>
+//! \param[in]		ShortName	-- element name
+//! \param[in]		FindMode	-- mode
+//! \retval 		NxElem		-- ptr to element
 //////////////////////////////////////////////////////////////////////////////
 
+TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode) const
+{
 	TString shortName;
 	TString xName;
 	Int_t lng;
@@ -355,19 +325,16 @@ TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode
 	}
 }
 
-TMrbNamedX * TMrbLofNamedX::FindByIndex(Int_t Index, Int_t Mask) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::FindByIndex
-// Purpose:        Find an named index by its index number
-// Arguments:      Int_t Index          -- index
-//                 Int_t Mask           -- mask
-// Results:        TMrbNamedX * NamedX  -- pointer to index data
-// Exceptions:
-// Description:    Searches for a given index.
-// Keywords:
+//! \details		Searches for a given index
+//! \param[in]		Index		-- element index
+//! \param[in]		Mask		-- bit mask
+//! \retval 		NxElem		-- ptr to element
 //////////////////////////////////////////////////////////////////////////////
 
+TMrbNamedX * TMrbLofNamedX::FindByIndex(Int_t Index, Int_t Mask) const
+{
 	TMrbNamedX * xPnt;
 
 	TIterator * iter = this->MakeIterator();
@@ -377,20 +344,25 @@ TMrbNamedX * TMrbLofNamedX::FindByIndex(Int_t Index, Int_t Mask) const {
 	return(NULL);
 }
 
-UInt_t TMrbLofNamedX::FindPattern(const Char_t * IndexString, UInt_t FindMode, const Char_t * Separator) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::FindPattern
-// Purpose:        Find a compound index
-// Arguments:      Char_t * IndexString  -- index string
-//                 UInt_t FindMode       -- method how to search
-//                 Char_t * Separator    -- separating string
-// Results:        UInt_t Pattern        -- pattern containing index bits
-// Exceptions:
-// Description:    Searches for a compound index. Default delimiter is ":".
-// Keywords:
+//! \details		Searches for a compound.<br>
+//! 				A compound is a string containing one or more names,
+//! 				separated by \a Delim. Default separator is ":".<br>
+//! 				\b FindMode can be
+//! 				<ul>
+//! 				<li>	\a kFindExact		-- needs exact matching of key names
+//! 				<li>	\a kFindUnique		-- names may be abbreviated uniquely
+//! 				<li>	\a kFindIgnoreCase	-- ignore case while comparing names
+//! 				</ul>
+//! \param[in]		Compound		-- string containing names
+//! \param[in]		FindMode		-- mode
+//! \param[in]		Delim			-- separator
+//! \retval 		Pattern 		-- bit pattern
 //////////////////////////////////////////////////////////////////////////////
 
+UInt_t TMrbLofNamedX::FindPattern(const Char_t * Compound, UInt_t FindMode, const Char_t * Delim) const
+{
 	register Int_t start, end, lng, sepl;
 	UInt_t pattern;
 	TMrbNamedX * kp;
@@ -400,14 +372,14 @@ UInt_t TMrbLofNamedX::FindPattern(const Char_t * IndexString, UInt_t FindMode, c
 
 	if (!fPatternMode) {
 		if (fName.IsNull()) {
-			cerr << setred << this->ClassName() << "::FindPattern(): Index list not in pattern mode" << setblack << endl;
+			cerr << setred << this->ClassName() << "::FindPattern(): List not in pattern mode" << setblack << endl;
 		} else {
-			cerr << setred << this->ClassName() << "::FindPattern(): Not in pattern mode" << setblack << endl;
+			cerr << setred << this->ClassName() << "::FindPattern(): Not in pattern mode - " << fName << setblack << endl;
 		}
 		return(TMrbLofNamedX::kIllIndexBit);
 	}
 
-	sepStr = Separator;
+	sepStr = Delim;
 	sepl = sepStr.Length();
 	pattern = 0;
 
@@ -442,26 +414,22 @@ UInt_t TMrbLofNamedX::FindPattern(const Char_t * IndexString, UInt_t FindMode, c
 	}
 }
 
-const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString,
-										UInt_t Pattern, const Char_t * Separator) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::Pattern2String
-// Purpose:        Build a string from a bit pattern
-// Arguments:      TString & IndexString  -- resulting index string
-//                 UInt_t Pattern         -- pattern containing index bits
-//                 Char_t * Separator     -- separator between bits
-// Results:        Char_t * IndexString   -- resulting index string
-// Exceptions:
-// Description:    Builds an index string from index bits.
-// Keywords:
+//! \details		Concatenates names according to bit pattern.<br>
+//! \param[out]		Compound		-- string containing names
+//! \param[in]		Pattern 		-- bit pattern
+//! \param[in]		Delim			-- separator
+//! \retval 		Compound 		-- ptr to string
 //////////////////////////////////////////////////////////////////////////////
 
+const Char_t * TMrbLofNamedX::Pattern2String(TString & Compound, UInt_t Pattern, const Char_t * Delim) const
+{
 	if (!fPatternMode) {
 		if (fName.IsNull()) {
-			cerr << setred << this->ClassName() << "::Pattern2String(): Index list not in pattern mode" << setblack << endl;
+			cerr << setred << this->ClassName() << "::Pattern2String(): List not in pattern mode" << setblack << endl;
 		} else {
-			cerr << setred << this->ClassName() << "::Pattern2String(): Not in pattern mode" << setblack << endl;
+			cerr << setred << this->ClassName() << "::Pattern2String(): Not in pattern mode - " << fName << setblack << endl;
 		}
 		return("");
 	}
@@ -477,65 +445,58 @@ const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString,
 	}
 
 	TMrbNamedX * index;
-	IndexString.Resize(0);
+	Compound.Resize(0);
 	TIterator * iter = this->MakeIterator();
 	while (index = (TMrbNamedX *) iter->Next()) {
 		UInt_t ind = index->GetIndex();
 		if ((indexBits & ind) == ind) {
-			if (IndexString.Length() > 0) IndexString += Separator;
-			if (cmpl) IndexString += "~";
-			IndexString += index->GetName();
+			if (Compound.Length() > 0) Compound += Separator;
+			if (cmpl) Compound += "~";
+			Compound += index->GetName();
 		}
 	}
-	return(IndexString.Data());
+	return(Compound.Data());
 }
 
-UInt_t TMrbLofNamedX::CheckPattern(const Char_t * ClassName, const Char_t * Method,
-							const Char_t * IndexString, const SMrbNamedX * NamedX, UInt_t Mode) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::CheckPattern
-// Purpose:        Check a named index
-// Arguments:      Char_t * ClassName        -- class name of caller
-//                 Char_t * Method           -- calling method
-//                 Char_t * IndexString      -- index names given
-//                 SMrbNamedX * NamedX       -- list of legal indices
-//                 UInt_t Mode               -- mode how to search
-// Results:        UInt_t Pattern            -- pattern with index bits
-// Exceptions:
-// Description:    Checks string and returns corresponding bit pattern.
-// Keywords:
+//! \details		Checks compound string and returns corresponding bit pattern.<br>
+//! 				Adds elements in \b NamedX \a before checking
+//! \param[in]		ClassName		-- class name of caller
+//! \param[in]		Method			-- calling method
+//! \param[in]		Compound		-- string to be checked
+//! \param[in]		NamedX			-- struct containing elements to be added
+//! \param[in]		Mode			-- search mode
+//! \retval 		Pattern 		-- bit pattern
 //////////////////////////////////////////////////////////////////////////////
 
+UInt_t TMrbLofNamedX::CheckPattern(const Char_t * ClassName, const Char_t * Method, const Char_t * Compound, const SMrbNamedX * NamedX, UInt_t Mode)
+{
 	UInt_t opt;
 
 	if (NamedX != NULL) this->AddNamedX(NamedX);
 	this->SetPatternMode();
-	opt = this->FindPattern(IndexString, Mode);
+	opt = this->FindPattern(Compound, Mode);
 	if (opt == TMrbLofNamedX::kIllIndexBit) {
-		cerr << setred << this->ClassName() << "::CheckPattern(): Illegal index string - " << IndexString << setblack << endl;
+		cerr << setred << this->ClassName() << "::CheckPattern(): Illegal compound string - " << Compound << setblack << endl;
 		if (this->GetEntries() > 0) {
-			cerr << setred << this->ClassName() << "::CheckPattern(): Legal index names are - " << setblack << endl;
+			cerr << setred << this->ClassName() << "::CheckPattern(): Legal names are - " << setblack << endl;
 			this->Print(cerr, "       -> ");
 		} else {
-			cerr << setred << this->ClassName() << "::CheckPattern(): No legal index names present" << setblack << endl;
+			cerr << setred << this->ClassName() << "::CheckPattern(): No elements in list" << setblack << endl;
 		}
 	}
 	return(opt);
 }
 
-UInt_t TMrbLofNamedX::GetMask() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofNamedX::GetMask
-// Purpose:        Return bit pattern
-// Arguments:      --
-// Results:        UInt_t Mask   -- bit pattern
-// Exceptions:
-// Description:    Returns a pattern of all bits in this list.
-// Keywords:
+//! \details		Returns a pattern of all bits in this list
+//! \retval 		Pattern 		-- bit pattern
 //////////////////////////////////////////////////////////////////////////////
 
+UInt_t TMrbLofNamedX::GetMask() const
+{
 	if (!IsPatternMode()) return(0xffffffff);
 
 	TMrbNamedX * xPnt;

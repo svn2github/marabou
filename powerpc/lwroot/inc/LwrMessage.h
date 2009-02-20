@@ -7,10 +7,10 @@
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: TMessage<br>
 //! 				Base class to provide a message structure
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-20 08:33:52 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrObject.h"
@@ -37,8 +37,10 @@ public:
 	const			Char_t * ReadString(TString & String);
 	const			Char_t * ReadString(Char_t * String, Int_t Max);
 	Int_t			ReadBuf(Char_t * Buffer, Int_t Max = 0);
+	void			WriteBuf(Char_t * Buffer, Int_t Length);
 	Int_t			ReadArray(Int_t * Array);
 	Int_t			ReadFastArray(Int_t * Array, Int_t NofInts);
+	UInt_t			SwapInt32(UInt_t Data);
 
 	//! Return message type
 	inline UInt_t   What() { return fWhat; }

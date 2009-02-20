@@ -1,15 +1,16 @@
-//////////////////////////////////////////////////////////////////////////
-//                                                                      //
-// TMessage                                                             //
-//                                                                      //
-// Message buffer class used for serializing objects and sending them   //
-// over a network. This class inherits from TBuffer the basic I/O       //
-// serializer.                                                          //
-//                                                                      //
-//////////////////////////////////////////////////////////////////////////
-// Special 'Light Weight ROOT' edition                                  //
-// R. Lutter                                                            //
-//////////////////////////////////////////////////////////////////////////
+//________________________________________________________[C++ IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+//! \file			LwrMessage.cxx
+//! \brief			Light Weight ROOT: TMessage
+//! \details		Class definitions for ROOT under LynxOs: TMessage<br>
+//! 				Message buffer class used to send or receive messages.<br>
+//! 				Comprises message types raw, string, and array of ints
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-20 08:33:53 $
+//////////////////////////////////////////////////////////////////////////////
+
 
 #include "iostream.h"
 #include "iomanip.h"
@@ -17,7 +18,12 @@
 #include "LwrTypes.h"
 #include "LwrMessage.h"
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a TMessage object of given type
+//! \param[in]		What		-- message type
+/////////////////////////////////////////////////////////////////////////////
+
 TMessage::TMessage(UInt_t What)
 {
 	fWhat = What;
@@ -26,14 +32,25 @@ TMessage::TMessage(UInt_t What)
 	this->SetWhat();
 }
 
-//______________________________________________________________________________
+//__________________________________________________________________[C++ ctor]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a TMessage object, allocates buffer space
+//! \param[in]		Buffer			-- buffer addr
+//! \param[in]		BufferSize		-- buffer size in bytes
+/////////////////////////////////////////////////////////////////////////////
+
 TMessage::TMessage(void * Buffer, Int_t BufferSize)
 {
 	fBuffer = NULL;
 	this->AllocBuffer(BufferSize);
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Allocates buffer space
+//! \param[in]		BufferSize		-- buffer size in bytes
+//////////////////////////////////////////////////////////////////////////////
+
 void * TMessage::AllocBuffer(Int_t BufferSize)
 {
 	Int_t bsizAligned = ((BufferSize + sizeof(Int_t) - 1) / sizeof(Int_t)) * sizeof(Int_t);
@@ -47,7 +64,13 @@ void * TMessage::AllocBuffer(Int_t BufferSize)
 	this->SetLength(bsizAligned);
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Xfers (raw) message data to (user's) buffer
+//! \param[out]		Buffer			-- buffer addr
+//! \param[in]		Length			-- number of bytes to be read
+//////////////////////////////////////////////////////////////////////////////
+
 Int_t TMessage::ReadBuf(Char_t * Buffer, Int_t Length)
 {
 	if (Length == 0) Length = this->Length();
@@ -56,7 +79,12 @@ Int_t TMessage::ReadBuf(Char_t * Buffer, Int_t Length)
 	return(nofBytes);
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Xfers a string to message buffer
+//! \param[in]		String			-- string to be sent
+//////////////////////////////////////////////////////////////////////////////
+
 void TMessage::WriteString(const Char_t * String)
 {
 	if (String != NULL) {
@@ -66,7 +94,13 @@ void TMessage::WriteString(const Char_t * String)
 	} 
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Xfers (raw) data to message buffer
+//! \param[in]		Buffer			-- buffer addr
+//! \param[in]		Length			-- number of bytes to be written
+//////////////////////////////////////////////////////////////////////////////
+
 void TMessage::WriteBuf(Char_t * Buffer, Int_t Length)
 {
 	this->AllocBuffer(Length);
@@ -74,7 +108,12 @@ void TMessage::WriteBuf(Char_t * Buffer, Int_t Length)
 	this->SetWhat(kM2L_MESS_RAWBUF);
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Xfers message data to string
+//! \param[out]		String			-- where to put message data
+//////////////////////////////////////////////////////////////////////////////
+
 const Char_t * TMessage::ReadString(TString & String)
 {
 	String = (Char_t *) fData;
@@ -82,7 +121,13 @@ const Char_t * TMessage::ReadString(TString & String)
 	return(String.Data());
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Xfers message data to string
+//! \param[out]		String		-- where to put message data
+//! \param[in]		Max			-- max string length
+//////////////////////////////////////////////////////////////////////////////
+
 const Char_t * TMessage::ReadString(Char_t * String, Int_t Max)
 {
 	if (Max > 1) {
@@ -93,7 +138,12 @@ const Char_t * TMessage::ReadString(Char_t * String, Int_t Max)
 	return(String);
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Xfers (integer) message data to array
+//! \param[out]		Array		-- array address
+//////////////////////////////////////////////////////////////////////////////
+
 Int_t TMessage::ReadArray(Int_t * Array)
 {
 	Int_t nofInts = this->Length() / sizeof(Int_t) - 1;
@@ -102,7 +152,13 @@ Int_t TMessage::ReadArray(Int_t * Array)
 	return(nofInts);
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Xfers (integer) message data to array
+//! \param[out]		Array		-- array address
+//! \param[in]		NofInts		-- number of ints to be xferred
+//////////////////////////////////////////////////////////////////////////////
+
 Int_t TMessage::ReadFastArray(Int_t * Array, Int_t NofInts)
 {
 	memset(Array, 0, NofInts * sizeof(Int_t));
@@ -113,7 +169,12 @@ Int_t TMessage::ReadFastArray(Int_t * Array, Int_t NofInts)
 	return(nofInts);
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Resets message, clear buffer
+//! \param[in]		What		-- message type
+//////////////////////////////////////////////////////////////////////////////
+
 void TMessage::Reset(UInt_t What)
 {
 	memset(fBuffer, 0, fBytesAllocated);
@@ -121,21 +182,36 @@ void TMessage::Reset(UInt_t What)
 	this->SetWhat(What);
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets message buffer length
+//! \param[in]		Length		-- buffer length in bytes
+//////////////////////////////////////////////////////////////////////////////
+
 void TMessage::SetLength(Int_t Length)
 {
 	if (Length == -1) Length = fBufferSize; else fBufferSize = Length;
 	if (fHeader) fHeader->fLength = Length;
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets message type
+//! \param[in]		What		-- message type
+//////////////////////////////////////////////////////////////////////////////
+
 void TMessage::SetWhat(UInt_t What)
 {
 	if (What == 0) What = fWhat; else fWhat = What;
 	if (fHeader) fHeader->fWhat = What;
 }
 
-//______________________________________________________________________________
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Swaps data word
+//! \param[in]		Data		-- data word
+//////////////////////////////////////////////////////////////////////////////
+
 UInt_t TMessage::SwapInt32(UInt_t Data)
 {
 

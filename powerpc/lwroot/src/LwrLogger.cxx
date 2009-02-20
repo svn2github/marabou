@@ -1,15 +1,15 @@
-//__________________________________________________[C++IMPLEMENTATION]
+//________________________________________________________[C++ IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           utils/src/TMrbLogger.cxx
-// Purpose:        MARaBOU utilities:
-//             MARaBOU's (error) message logger
-// Description:        Implements class methods to output/store messages
-// Keywords:
-// Author:         R. Lutter
-// Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: LwrLogger.cxx,v 1.2 2008-08-18 08:18:16 Rudolf.Lutter Exp $       
-// Date:           
+//! \file			LwrLogger.cxx
+//! \brief			Light Weight ROOT: TMrbLogger
+//! \details		Class definitions for ROOT under LynxOs: TMrbLogger
+//!                 A message and error logger
+//! $Author: Rudolf.Lutter $
+//! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-20 08:33:53 $
 //////////////////////////////////////////////////////////////////////////////
+
 
 namespace std {} using namespace std;
 
@@ -40,22 +40,20 @@ const SMrbNamedXShort kMrbMsgOpenModes[] =
 
 TMrbLogger * gMrbLog = NULL;			// global access to logging system
 
-TMrbLogMessage::TMrbLogMessage(EMrbMsgType Type, const Char_t * Color,
-									const Char_t * ClassName, const Char_t * Method, const Char_t * Text, Bool_t Indent) {
-//__________________________________________________________________[C++ CTOR]
+//__________________________________________________________________[C++ ctor]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogMessage
-// Purpose:        Store a message
-// Arguments:      EMrbMsgType Type       -- message type
-//                 Char_t * Color         -- color to be used for output
-//                 Char_t * ClassName     -- calling class
-//                 Char_t * Method        -- calling method
-//                 Char_t * Text          -- message text
-//                 Bool_t Indent          -- don't output class/method but indent text	
-// Description:    Message book keeping.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a message object to be stored in TMrbLogger's data base
+//! \param[in]		Type		-- message type
+//! \param[in]		Color		-- color to be used for output
+//! \param[in]		ClassName	-- calling class
+//! \param[in]		Method		-- calling method
+//! \param[in]		Text		-- message text
+//! \param[in]		Indent		-- if TRUE: don't output class/method but indent text
+/////////////////////////////////////////////////////////////////////////////
 
+TMrbLogMessage::TMrbLogMessage(EMrbMsgType Type, const Char_t * Color,
+									const Char_t * ClassName, const Char_t * Method, const Char_t * Text, Bool_t Indent)
+{
 	fType = Type;
 	if (Color == NULL || *Color == '\0') {
 		switch (fType) {
@@ -71,22 +69,18 @@ TMrbLogMessage::TMrbLogMessage(EMrbMsgType Type, const Char_t * Color,
 	fIndent = Indent;
 };
 		
-const Char_t * TMrbLogMessage::Get(TString & FmtMsg,
-						const Char_t * ProgName, Bool_t WithDate, Bool_t WithColors) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogMessage::Get
-// Purpose:        Get message formatted
-// Arguments:      TString FmtMsg          -- where to store the message
-//                 Char_t * ProgName       -- name of program issuing this message
-//                 Bool_t WithDate         -- output date if kTRUE
-//                 Bool_t WithColors       -- add colors if kTRUE
-// Results:        const Char_t * FmtMsg   -- pointer to stored string
-// Exceptions:     
-// Description:    Returns formatted message text.
-// Keywords:
+//! \details		Returns formatted message text
+//! \param[out]		FmtMsg			-- where to store the message
+//! \param[in]		ProgName		-- name of program issuing this message
+//! \param[in]		WithDate		-- output date if TRUE
+//! \param[in]		WithColors		-- add colors if TRUE
+//! \retval 		FmtMsg			-- pointer to string
 //////////////////////////////////////////////////////////////////////////////
 
+const Char_t * TMrbLogMessage::Get(TString & FmtMsg, const Char_t * ProgName, Bool_t WithDate, Bool_t WithColors) const
+{
 	FmtMsg = "";
 
 	if (WithDate) {
@@ -134,16 +128,15 @@ const Char_t * TMrbLogMessage::Get(TString & FmtMsg,
 	return(FmtMsg.Data());
 }
 	
-TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile) {
-//__________________________________________________________________[C++ CTOR]
+//__________________________________________________________________[C++ ctor]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger
-// Purpose:        MARaBOU's message logging
-// Arguments:      Char_t LogFile   -- name of log file
-// Description:    Initializes MARaBOU's message log system.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Creates a message logger object
+//! \param[in]		ProgName	-- program starting the logger
+//! \param[in]		LogFile		-- name of log file
+/////////////////////////////////////////////////////////////////////////////
 
+TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile)
+{
 	fLog = NULL;
 	if (LogFile != NULL && *LogFile != '\0') fLog = new ofstream();
 
@@ -160,34 +153,28 @@ TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile) {
 	this->SetTitle("MARaBOU to Lynx: Error & message logger");
 }
 
-void TMrbLogger::SetProgName(const Char_t * ProgName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::SetProgName
-// Purpose:        Define program name
-// Arguments:      Char_t * ProgName      -- program name
-// Results:        --
-// Exceptions:     
-// Description:    Defines the program name.
-// Keywords:
+//! \details		Defines the program name
+//! \param[in]		ProgName		-- program name
 //////////////////////////////////////////////////////////////////////////////
 
+void TMrbLogger::SetProgName(const Char_t * ProgName)
+{
 	fProgName = ProgName;
 	if (fProgName.Length() > 0) this->SetName(fProgName.Data());
 }
 
-Bool_t TMrbLogger::Open(const Char_t * LogFile, const Char_t * Option) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::Open
-// Purpose:        Open log file
-// Arguments:      Char_t * LogFile      -- name of log file
-// Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    Opens a file to store (error) messages.
-// Keywords:
+//! \details		Opens a file to store (error) messages
+//! \param[in]		LogFile		-- name of log file
+//! \param[in]		Option		-- option: \a new or \a append
+//! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
+Bool_t TMrbLogger::Open(const Char_t * LogFile, const Char_t * Option)
+{
 	TMrbLofNamedX opt;
 	TMrbNamedX * nx;
 		
@@ -213,18 +200,14 @@ Bool_t TMrbLogger::Open(const Char_t * LogFile, const Char_t * Option) {
 	return(kTRUE);	
 }
 
-Bool_t TMrbLogger::Close() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::Close
-// Purpose:        Close log file
-// Arguments:      --
-// Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    Closes current log file.
-// Keywords:
+//! \details		Closes current log file
+//! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
+Bool_t TMrbLogger::Close()
+{
 	TString logRoot;
 
 	if (fLog && fLog->good()) {
@@ -239,22 +222,19 @@ Bool_t TMrbLogger::Close() {
 	} else return(kFALSE);
 }
  
-Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const Char_t * Color, Bool_t Indent) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::Flush
-// Purpose:        Output message(s).
-// Arguments:      Char_t * ClassName    -- calling class
-//                 Char_t * Method       -- calling method
-//                 Char_t * Color        -- text color to be used
-//                 Bool_t Indent         -- don't output class/method but indent text	
-// Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    Outputs contents of out and err strings
-//                 to log file, cout, cerr, resp.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Outputs any data contained in message buffers
+//! 				to log file, cout, and cerr, resp.
+//! \param[in]		ClassName		-- calling class
+//! \param[in]		Method			-- calling method
+//! \param[in]		Color			-- text color to be used
+//! \param[in]		Indent			-- if TRUE: don't output class/method but indent text
+//! \return 		TRUE or FALSE
+/////////////////////////////////////////////////////////////////////////////
 
+Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const Char_t * Color, Bool_t Indent)
+{
 	TString str;
 	TMrbLogMessage * msg;
 		
@@ -294,25 +274,21 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	return(kTRUE);
 }
 
-Bool_t TMrbLogger::OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char_t * Msg,
-						const Char_t * ClassName, const Char_t * Method, const Char_t * Color, Bool_t Indent) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::OutputMessage
-// Purpose:        Output message(s).
-// Arguments:      EMrbMsgType MsgType   -- message type (message, error, warning)
-//                 Char_t * Msg          -- text
-//                 Char_t * ClassName    -- calling class
-//                 Char_t * Method       -- calling method
-//                 Char_t * Color        -- text color to be used	
-//                 Bool_t Indent         -- don't output class/method but indent text	
-// Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    Outputs message directly
-//                 to log file, cout, cerr, resp.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Outputs message to log file, cout, and cerr, resp.
+//! \param[in]		MsgType 		-- message type (message, error, warning)
+//! \param[in]		Msg 			-- message text
+//! \param[in]		ClassName		-- calling class
+//! \param[in]		Method			-- calling method
+//! \param[in]		Color			-- text color to be used
+//! \param[in]		Indent			-- if TRUE: don't output class/method but indent text
+//! \return 		TRUE or FALSE
+/////////////////////////////////////////////////////////////////////////////
 
+Bool_t TMrbLogger::OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char_t * Msg,
+						const Char_t * ClassName, const Char_t * Method, const Char_t * Color, Bool_t Indent)
+{
 	TString str = Msg;
 	if (str(str.Length()) != '\n') str += '\n';
 
@@ -337,18 +313,15 @@ Bool_t TMrbLogger::OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char
 	return(kTRUE);
 }
 
-Int_t TMrbLogger::GetNofEntries(UInt_t Type) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::GetNofEntries
-// Purpose:        Return number of entries of given type
-// Arguments:      UInt_t Type           -- message type
-// Results:        Int_t NofEntries      -- number of entries found
-// Exceptions:     
-// Description:    Returns number of entries
-// Keywords:
-////////////////////////////////////////////////////////////////////////Lof//////
+//! \details		Returns number of entries
+//! \param[in]		Type			-- message type
+//! \retval 		NofEntries		-- number of entries found
+/////////////////////////////////////////////////////////////////////////////
 
+Int_t TMrbLogger::GetNofEntries(UInt_t Type) const
+{
 	Int_t nofEntries = 0;
 	TMrbLogMessage * msg = (TMrbLogMessage *) fLofMessages.At(0);
 	while (msg) {
@@ -358,20 +331,17 @@ Int_t TMrbLogger::GetNofEntries(UInt_t Type) const {
 	return(nofEntries);
 }
 
-Int_t TMrbLogger::GetEntriesByType(TList & MsgArr, Int_t Start, UInt_t Type) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::GetEntriesByType
-// Purpose:        Extract entries of given type
-// Arguments:      TList & MsgArr        -- where to store messages
-//                 Int_t Start           -- entry to start with
-//                 UInt_t Type           -- message type
-// Results:        Int_t NofEntries      -- number of entries found
-// Exceptions:     
-// Description:    Extracts messages of given type.
-// Keywords:
-////////////////////////////////////////////////////////////////////////Lof//////
+//! \details		Extracts messages of given type
+//! \param[out]		MsgArr			-- where to store messages
+//! \param[in]		Start			-- entry to start with
+//! \param[in]		Type			-- message type
+//! \retval 		NofEntries		-- number of entries found
+/////////////////////////////////////////////////////////////////////////////
 
+Int_t TMrbLogger::GetEntriesByType(TList & MsgArr, Int_t Start, UInt_t Type) const
+{
 	MsgArr.Clear();
 	if (Start > fLofMessages.GetEntries() + 1) return(0);
 	if (Start < 0) Start = 0;
@@ -387,19 +357,15 @@ Int_t TMrbLogger::GetEntriesByType(TList & MsgArr, Int_t Start, UInt_t Type) con
 	return(nofEntries);
 }
 
-TMrbLogMessage * TMrbLogger::GetLast(const Char_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::GetLast
-// Purpose:        Return last message
-// Arguments:      const Char_t * Option      -- message type
-// Results:        TMrbLogMessage * LastMsg   -- pointer to last message
-//                                               of requested type
-// Exceptions:     
-// Description:    Returns last message. Mainly to be used by GUI.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns last message
+//! \param[in]		Type			-- message type
+//! \retval 		LastMsg 		-- pointer to last message of requested type
+/////////////////////////////////////////////////////////////////////////////
 
+TMrbLogMessage * TMrbLogger::GetLast(const Char_t * Type) const
+{
 	TMrbLofNamedX opt;
 	TMrbNamedX * nx;
 		
@@ -414,39 +380,30 @@ TMrbLogMessage * TMrbLogger::GetLast(const Char_t * Option) const {
 	}
 }
 
-TMrbLogMessage * TMrbLogger::GetLast(UInt_t Type) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::GetLast
-// Purpose:        Return last message
-// Arguments:      UInt_t Type                -- message type
-// Results:        TMrbLogMessage * LastMsg   -- pointer to last message
-//                                               of requested type
-// Exceptions:     
-// Description:    Returns last message. Mainly to be used by GUI.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Returns last message
+//! \param[in]		Type			-- message type
+//! \retval 		LastMsg 		-- pointer to last message of requested type
+/////////////////////////////////////////////////////////////////////////////
 
-
+TMrbLogMessage * TMrbLogger::GetLast(UInt_t Type) const
+{
 	TMrbLogMessage * msg;
 			
 	msg = (TMrbLogMessage *) fLofMessages.At(fLofMessages.GetEntries() - 1);
 	if (msg->GetType() & Type) return(msg); else return(NULL);
 }
 
-void TMrbLogger::Print(Int_t Tail, const Char_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::Print
-// Purpose:        Print messages
-// Arguments:      Int_t Tail            -- point last 'Tail' messages only
-//                 const Char_t * Option -- message type
-// Results:        --
-// Exceptions:     
-// Description:    Outputs (part of) message table.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Outputs (part of) message table
+//! \param[in]		Tail			-- output last \a Tail messages only
+//! \param[in]		Type			-- message type
+/////////////////////////////////////////////////////////////////////////////
 
+void TMrbLogger::Print(Int_t Tail, const Char_t * Type) const
+{
 	TMrbLofNamedX opt;
 	TMrbNamedX * nx;
 		
@@ -460,19 +417,15 @@ void TMrbLogger::Print(Int_t Tail, const Char_t * Option) const {
 	}
 }
 
-void TMrbLogger::Print(Int_t Tail, UInt_t Type) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::Print
-// Purpose:        Print messages
-// Arguments:      Int_t Tail            -- point last 'Tail' messages only
-//                 UInt_t Type           -- message type
-// Results:        --
-// Exceptions:     
-// Description:    Outputs (part of) message table.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Outputs (part of) message table
+//! \param[in]		Tail			-- output last \a Tail messages only
+//! \param[in]		Type			-- message type
+/////////////////////////////////////////////////////////////////////////////
 
+void TMrbLogger::Print(Int_t Tail, UInt_t Type) const
+{
 	Int_t idx;
 	TMrbLogMessage * msg;
 	TString str;
@@ -487,18 +440,14 @@ void TMrbLogger::Print(Int_t Tail, UInt_t Type) const {
 	}
 }
 
-void TMrbLogger::PrintSinceLastCall(const Char_t * Option) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::PrintSinceLastCall
-// Purpose:        Print new messages since last printout
-// Arguments:      const Char_t * Option -- message type
-// Results:        --
-// Exceptions:     
-// Description:    Outputs recently created messages.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Outputs recently created messages
+//! \param[in]		Type			-- message type
+/////////////////////////////////////////////////////////////////////////////
 
+void TMrbLogger::PrintSinceLastCall(const Char_t * Type)
+{
 	TMrbLofNamedX opt;
 	TMrbNamedX * nx;
 		
@@ -512,18 +461,14 @@ void TMrbLogger::PrintSinceLastCall(const Char_t * Option) {
 	}
 }
 
-void TMrbLogger::PrintSinceLastCall(UInt_t Type) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::PrintSinceLastCall
-// Purpose:        Print new messages since last printout
-// Arguments:      UInt_t Type           -- message type
-// Results:        --
-// Exceptions:     
-// Description:    Outputs recently created messages.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+//! \details		Outputs recently created messages
+//! \param[in]		Type			-- message type
+/////////////////////////////////////////////////////////////////////////////
 
+void TMrbLogger::PrintSinceLastCall(UInt_t Type)
+{
 	TMrbLogMessage * msg;
 	TString str;
 			
@@ -535,19 +480,17 @@ void TMrbLogger::PrintSinceLastCall(UInt_t Type) {
 	fIndexOfLastPrinted = fLofMessages.GetEntries() + 1;
 }
 
-const Char_t * TMrbLogger::Prefix(const Char_t * Identifier, const Char_t * ProgName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger::Prefix
-// Purpose:        Returns line prefix
-// Arguments:      Char_t * Identifier  -- line identifier
-//                 Char_t * ProgName    -- calling program
-// Results:        Char_t * Prefix      -- line prefix
-// Exceptions:     
-// Description:    Formats a line prefix:
-//                    "<Id>-[<Date & Time>]- <ProgName> <> "
-// Keywords:
+//! \details		Formats a line prefix<br>
+//! 				Id-[Date & Time]- ProgName
+//! \param[in]		Identifier			-- line identifier
+//! \param[in]		ProgName			-- calling program
+//! \retval 		Prefix				-- line prefix
 //////////////////////////////////////////////////////////////////////////////
+
+const Char_t * TMrbLogger::Prefix(const Char_t * Identifier, const Char_t * ProgName)
+{
 
 	TDatime dt;
 	fPrefix = Identifier;

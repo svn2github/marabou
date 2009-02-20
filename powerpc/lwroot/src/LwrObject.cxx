@@ -7,10 +7,19 @@
 //! 				The TObject class provides default behaviour and protocol for all
 //! 				objects in the ROOT system. Every object which inherits
 //! 				from TObject can be stored in the ROOT collection classes.
+//////////////////////////////////////////////////////////////////////////////
+
+//__________________________________________________________[DOXYGEN MAINPAGE]
+//////////////////////////////////////////////////////////////////////////////
+//! \mainpage
+//! Light Weight ROOT<br>
+//! A selection of ROOT objects to be used with LynxOs.
+//!
+//! $Author: Rudolf.Lutter $
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-18 13:14:45 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-02-20 08:33:53 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
@@ -21,11 +30,17 @@
 
 //__________________________________________________________________[C++ ctor]
 //////////////////////////////////////////////////////////////////////////////
-//! \details	TObject constructor. It sets the two data words of TObject to their
-//! 			initial values. The unique ID is set to 0 and the status word is
+//! \details	TObject constructor.<br>
+//! 			It sets the two data words of TObject to their
+//! 			initial values.<br>
+//! 			The unique ID is set to 0 and the status word is
 //! 			set depending if the object is created on the stack or allocated
-//! 			on the heap. Of the status word the high 8 bits are reserved for
-//! 			system usage and the low 24 bits are user settable.
+//! 			on the heap.<br>
+//! 			Status word:
+//!				<ul>
+//! 			<li>	bits 31 ... 24	-- reserved for system usage
+//! 			<li>	bits 23 ... 0	-- may be set by user
+//! 			</ul>
 /////////////////////////////////////////////////////////////////////////////
 
 TObject::TObject() :   fUniqueID(0), fBits(kNotDeleted) {}

@@ -14,8 +14,8 @@
 //! 				TSocket objects can be added, removed, (temporary) enabled or disabled.
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-02-18 13:14:45 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-02-20 08:33:53 $
 //////////////////////////////////////////////////////////////////////////////
 
 
@@ -24,11 +24,6 @@
 #include "LwrLynxOsSystem.h"
 
 extern TLynxOsSystem * gSystem;
-
-//---- Socket event handler ----------------------------------------------------
-//
-// This utility class is only used by TMonitor.
-//
 
 //__________________________________________________________________[C++ ctor]
 //////////////////////////////////////////////////////////////////////////////

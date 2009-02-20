@@ -7,10 +7,10 @@
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: TMrbLogger<br>
 //! 				A (error) message logger class.
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-02-20 08:33:52 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -93,14 +93,6 @@ class TMrbLogMessage: public TObject {
 		TString fMethod;		//!< method name
 		TString fText;			//!< message text
 };	
-		
-//______________________________________________________[C++ CLASS DEFINITION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLogger
-// Purpose:        MARaBOU's message/error logger
-// Description:    Methods to output (error) messages to different output channels.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -178,7 +170,7 @@ class TMrbLogger: public TNamed {
 		
 		Int_t GetEntriesByType(TList & MsgArr, Int_t Start = 0, UInt_t Type = TMrbLogMessage::kMrbMsgAny) const;
 	
-		TMrbLogMessage * GetLast(const Char_t * Option = "*") const;
+		TMrbLogMessage * GetLast(const Char_t * Type = "*") const;
 		TMrbLogMessage * GetLast(UInt_t Type) const;
 		
 		//! Enable output of messages of given type
@@ -189,10 +181,10 @@ class TMrbLogger: public TNamed {
 		//! \param[in]	Bits	-- type bits
 		inline UInt_t Disable(UInt_t Bits) { fEnabled &= ~Bits; return(fEnabled); };
 		
-		void Print(Int_t Tail = 0, const Char_t * Option = "*") const;
+		void Print(Int_t Tail = 0, const Char_t * Type = "*") const;
 		void Print(Int_t Tail, UInt_t Type) const;
 		
-		void PrintSinceLastCall(const Char_t * Option = "Error");
+		void PrintSinceLastCall(const Char_t * Type = "Error");
 		void PrintSinceLastCall(UInt_t Type);
 				
 		//! Reset message lists

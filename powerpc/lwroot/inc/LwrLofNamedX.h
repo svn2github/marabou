@@ -7,10 +7,10 @@
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: TMrbLofNamedX<br>
 //! 				A list of TMrbnamedX objects
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-02-20 08:33:52 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
@@ -92,29 +92,29 @@ class TMrbLofNamedX: public TList {
 		TMrbNamedX * FindByName(const Char_t * ShortName, UInt_t FindMode = TMrbLofNamedX::kFindExact) const;
 		TMrbNamedX * FindByIndex(Int_t Index, Int_t Mask = 0xFFFFFFFF) const; 			// find an index
 		
-		UInt_t FindPattern(const Char_t * IndexString,								// find a compound index
+		UInt_t FindPattern(const Char_t * Compound,								// find a compound index
 							UInt_t FindMode = TMrbLofNamedX::kFindExact,
 							const Char_t * Delim = ":") const;
 
-		UInt_t CheckPattern(const Char_t * ClassName, const Char_t * Method, const Char_t * IndexString,
+		UInt_t CheckPattern(const Char_t * ClassName, const Char_t * Method, const Char_t * Compound,
 							const SMrbNamedX * NamedX = NULL,
 							UInt_t Mode = TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase);
 
-		//! Check pattern (a ":"-separated string) against list elements
+		//! Check compound (a ":"-separated string) against list elements
 		//! \param[in]	ClassName	-- calling class
 		//! \param[in]	Method		-- calling method
-		//! \param[in]	IndexString -- string to be checked
+		//! \param[in]	Compound	-- string to be checked
 		//! \param[in]	NamedX		-- [opt] list elements to be added \a before checking
 		//! \param[in]	Mode		-- checking mode
 		inline UInt_t CheckPatternShort(const Char_t * ClassName, const Char_t * Method,
-							const Char_t * IndexString,
+							const Char_t * Compound,
 							const SMrbNamedXShort * NamedX = NULL,
 							UInt_t Mode = TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase) {
 			if (NamedX != NULL) this->AddNamedX(NamedX);
 			return(this->CheckPattern(ClassName, Method, IndexString, NULL, Mode));
 		};
 
-		const Char_t * Pattern2String(TString & IndexString, UInt_t Pattern, const Char_t * Delim = ":") const;
+		const Char_t * Pattern2String(TString & Compound, UInt_t Pattern, const Char_t * Delim = ":") const;
 
 		UInt_t GetMask() const;											// return mask of all bits in list
 
