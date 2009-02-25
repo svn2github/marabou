@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.88 2008-03-05 12:35:46 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.89 2009-02-25 09:25:54 Otto.Schaile Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -496,7 +496,15 @@ Int_t TMrbAnalyze::ProcessFileList() {
 			if (this->OpenRootFile(ioSpec)) {
 				this->ReloadParams(ioSpec);
 				if (this->WriteRootTree(ioSpec)) {
+	            cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
+	            PutPid(TMrbAnalyze::M_RUNNING);
+	            this->SetRunStatus(TMrbAnalyze::M_RUNNING);
 					this->ReplayEvents(ioSpec);
+//
+	            cout << " PutPid(TMrbAnalyze::M_STOPPING)" << endl;
+               PutPid(TMrbAnalyze::M_STOPPING);
+	            this->SetRunStatus(TMrbAnalyze::M_STOPPING);
+//
 					this->CloseRootTree(ioSpec);
 					this->FinishRun(ioSpec);			// finish run (user may overwrite this method)
 					this->SaveHistograms("*", ioSpec);
@@ -522,8 +530,16 @@ Int_t TMrbAnalyze::ProcessFileList() {
 						gMrbLog->Err()	<< "[" << ioSpec->GetInputFile() << "] Start event != 0" << endl;
 						gMrbLog->Flush(this->ClassName(), "ProcessFileList");
 					}
-                	if (this->WriteRootTree(ioSpec)) {
+               if (this->WriteRootTree(ioSpec)) {
+	               cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
+	               PutPid(TMrbAnalyze::M_RUNNING);
+	               this->SetRunStatus(TMrbAnalyze::M_RUNNING);
 						gMrbTransport->ReadEvents(ioSpec->GetStopEvent());
+//
+	               cout << " PutPid(TMrbAnalyze::M_STOPPING)" << endl;
+               	PutPid(TMrbAnalyze::M_STOPPING);
+	               this->SetRunStatus(TMrbAnalyze::M_STOPPING);
+//
 						if (inputMode == TMrbIOSpec::kInputMED) gMrbTransport->CloseMEDFile();
 						else									gMrbTransport->CloseLMDFile();
 						this->CloseRootTree(ioSpec);
@@ -2151,7 +2167,7 @@ void TMrbAnalyze::PrintCalibration(ostream & Out) const {
 	TMrbNamedX * cal;
 	TIterator * iter = fCalibrationList.MakeIterator();
 	Bool_t printHdr = kTRUE;
-	while (cal = (TMrbNamedX *) iter->Next()) {
+	while ( (cal = (TMrbNamedX *) iter->Next()) ) {
 		if (printHdr) {
 			Out << endl << "---------------------------------------------------------------------------------------------------------------" << endl;
 			Out << "Calibration data:" << endl;

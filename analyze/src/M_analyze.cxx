@@ -603,9 +603,9 @@ int main(int argc, char **argv) {
 
 	gSystem->Sleep(1000);       // give the threads some time 
 
-	cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
-	PutPid(TMrbAnalyze::M_RUNNING);
-	u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
+//	cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
+//	PutPid(TMrbAnalyze::M_RUNNING);
+//	u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
    cout << "M_analyze start at: " << flush;
    gSystem->Exec("date");
 //	read a given number of events from MBS (tcp or lmd file)
@@ -657,9 +657,9 @@ int main(int argc, char **argv) {
 		if ( verboseMode ) cout << "M_analyze: End of replay" << endl;
 	}
 
-	cout << "STOPPING" << endl;
-	PutPid(TMrbAnalyze::M_STOPPING);
-	u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
+//	cout << "STOPPING" << endl;
+//	PutPid(TMrbAnalyze::M_STOPPING);
+//	u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
 
 	
 	if ( verboseMode ) cout	<< "M_analyze: Waiting for update_thread to terminate" << endl;
@@ -871,7 +871,7 @@ void * msg_handler(void * dummy) {
       TSocket *sock;
       sock = mon->Select(maxwait);
       if (sock == (TSocket*)-1) {
-		if (u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING) break; else continue;   
+		   if (u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING) break; else continue;   
       }
       if (sock->IsA() == TServerSocket::Class()) {
          Bool_t ok = kFALSE;
@@ -984,13 +984,17 @@ void * msg_handler(void * dummy) {
 
          } else if ( cmd == "gethist" ) {
 			   pthread_mutex_lock(&global_data_mutex);
-            TH1 * hist = (TH1 *)gROOT->GetList()->FindObject(arg.Data());
-            if ( hist && (u_analyze->GetRunStatus() == TMrbAnalyze::M_RUNNING
-                      || u_analyze->GetRunStatus() == TMrbAnalyze::M_PAUSING)) {
+//            cout << "msg_handler(): gethist: " << setcyan << endl;
+            TH1 * hist = NULL;
+//            hist = NULL;
+            if ( (u_analyze->GetRunStatus() == TMrbAnalyze::M_RUNNING
+                      || u_analyze->GetRunStatus() == TMrbAnalyze::M_PAUSING)
+                && (hist = (TH1 *)gROOT->GetList()->FindObject(arg.Data())) ) {
 //            if ( hist && u_analyze->GetEventsProcessed() > 0) {
                TMessage * message = new  TMessage(kMESS_OBJECT);
                message->WriteObject(hist);     // write object in message buffer
 //               hist->Print();
+//               cout << "msg_handler(): sendhist: "<< setblack << endl;
 			      pthread_mutex_unlock(&global_data_mutex);
                sock->Send(*message);          // send message
                delete message;
