@@ -129,21 +129,7 @@ void HprStack::BuildCanvas()
 
 void HprStack::RecursiveRemove(TObject *obj)
 {
-//   cout <<  "HprStack::RecursiveRemove,obj " << obj << " "  << obj->GetName() << endl;
-   if (obj == fCanvas) {
-      TLegend *leg = (TLegend*)fCanvas->GetListOfPrimitives()->FindObject("TPave");
-      if ( leg ) {
-         fLegendX1 = leg->GetX1NDC();
-//         cout << "fLegendX1 " << fLegendX1<< endl;
-         fLegendX2 = leg->GetX2NDC();
-         fLegendY1 = leg->GetY1NDC();
-         fLegendY2 = leg->GetY2NDC();
-      }
-      gROOT->GetList()->Remove(this);
-      gROOT->GetListOfCleanups()->Remove(this);
- //     cout <<  "RecursiveRemove,fWindowXWidth  " << fWindowXWidth << endl;
-      delete this;
-   }
+//   cout <<  "HprStack::RecursiveRemove,obj " << obj << " "  << 
 }
 //________________________________________________________________________
 
