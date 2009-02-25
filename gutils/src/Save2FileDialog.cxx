@@ -133,7 +133,7 @@ void Save2FileDialog::ExecuteSave()
 void Save2FileDialog::SaveDefaults()
 {
 //   cout << "Save2FileDialog::SaveDefaults() " << endl;
-   TEnv env(".hprrc");
+   TEnv env(".rootrc");
 	env.SetValue("Save2FileDialog.FileName", fFileName);
 	env.SetValue("Save2FileDialog.Dir",      fDir);
 	env.SetValue("Save2FileDialog.AsList",   fAsList);
@@ -143,7 +143,7 @@ void Save2FileDialog::SaveDefaults()
 
 void Save2FileDialog::RestoreDefaults()
 {
-   TEnv env(".hprrc");
+   TEnv env(".rootrc");
 	fFileName = env.GetValue("Save2FileDialog.FileName", "workfile.root");
 	fDir = env.GetValue("Save2FileDialog.Dir", "");
    fAsList = env.GetValue("Save2FileDialog.AsList", 0);
