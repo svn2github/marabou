@@ -25,6 +25,9 @@ public:
    static Int_t fMaxListEntries;
    static Int_t fContentLowLimit;
    static Int_t fVertAdjustLimit;
+   static Int_t fStackedReally;
+   static Int_t fStackedNostack;
+   static Int_t fStackedPads;
 
    GeneralAttDialog(TGWindow * win = NULL);
    ~GeneralAttDialog() {};

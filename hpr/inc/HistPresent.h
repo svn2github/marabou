@@ -65,7 +65,7 @@ protected:
    Bool_t fApplyGraphCut;
    Bool_t fApplyExpression;
    TControlBar * fControlBar;
-   TList *fCanvasList;
+//   TList *fCanvasList;
    TList *fAllWindows;
    TList *fAllFunctions;
    TList *fAllCuts;
@@ -149,7 +149,6 @@ protected:
    Int_t      fEditPoXwidth;
    Int_t      fEditPoYwidth;
    Double_t   fEditPoXRange;
-
     Float_t fXXXXX;
 
 public:
@@ -240,7 +239,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void SaveFromSocket(const char*, const char* bp =0);
    TH1*  GetHist(const char*, const char*, const char*);
    FitHist * ShowHist(TH1*, const char* origname=0);
-   TList* GetCanvasList(){return fCanvasList;};
+//   TList* GetCanvasList(){return fCanvasList;};
    TList* GetHistList(){return fHistLists;};
    TList* GetSelectedHist(){return fSelectHist;};
    TList* GetWindowList(){return fAllWindows;};

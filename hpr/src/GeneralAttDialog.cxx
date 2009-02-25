@@ -22,6 +22,9 @@ Int_t GeneralAttDialog::fUseAttributeMacro;
 Int_t GeneralAttDialog::fMaxListEntries;
 Int_t GeneralAttDialog::fContentLowLimit;
 Int_t GeneralAttDialog::fVertAdjustLimit;
+Int_t GeneralAttDialog::fStackedReally;
+Int_t GeneralAttDialog::fStackedNostack;
+Int_t GeneralAttDialog::fStackedPads;
 //_______________________________________________________________________
 
 GeneralAttDialog::GeneralAttDialog(TGWindow * win)
@@ -107,6 +110,15 @@ ____________________________________________________________\n\
 	fRow_lab->Add(new TObjString("PlainIntVal_Fit2Dim Vertical Adjust Limit"));
 	fValp[ind++] = &fVertAdjustLimit;
 
+   fRow_lab->Add(new TObjString("CommentOnly_Display option for stacked hists"));
+   fValp[ind++] = &fStackedReally;
+   fRow_lab->Add(new TObjString("RadioButton_Really stack"));
+   fValp[ind++] = &fStackedReally;
+   fRow_lab->Add(new TObjString("RadioButton+Superimpose"));
+   fValp[ind++] = &fStackedNostack;
+   fRow_lab->Add(new TObjString("RadioButton+One pad for each"));
+   fValp[ind++] = &fStackedPads;
+
    static Int_t ok;
    Int_t itemwidth = 360;
    fDialog =
@@ -149,6 +161,9 @@ void GeneralAttDialog::SaveDefaults()
    env.SetValue("GeneralAttDialog.fMaxListEntries", fMaxListEntries);
    env.SetValue("GeneralAttDialog.fVertAdjustLimit", fVertAdjustLimit);
    env.SetValue("GeneralAttDialog.fContentLowLimit", fContentLowLimit);
+   env.SetValue("GeneralAttDialog.fStackedReally" , fStackedReally );
+   env.SetValue("GeneralAttDialog.fStackedNostack", fStackedNostack);
+   env.SetValue("GeneralAttDialog.fStackedPads"   , fStackedPads   );
    env.SaveLevel(kEnvLocal);
 }
 
@@ -170,6 +185,9 @@ void GeneralAttDialog::RestoreDefaults()
    env.GetValue("GeneralAttDialog.fMaxListEntries", 333);
    fVertAdjustLimit = env.GetValue("GeneralAttDialog.fVertAdjustLimit", 0);
    fContentLowLimit = env.GetValue("GeneralAttDialog.fContentLowLimit", 0);
+   fStackedReally   = env.GetValue("GeneralAttDialog.fStackedReally" , 1);
+   fStackedNostack  = env.GetValue("GeneralAttDialog.fStackedNostack", 0);
+   fStackedPads     = env.GetValue("GeneralAttDialog.fStackedPads"   , 0);
 }
 //______________________________________________________________________
 
@@ -184,7 +202,7 @@ void GeneralAttDialog::CloseDown(Int_t wid)
 
 void GeneralAttDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
-   TCanvas *canvas = (TCanvas *)obj;
+//   TCanvas *canvas = (TCanvas *)obj;
 //  cout << "CRButtonPressed(" << wid<< ", " <<bid;
 //   if (obj) cout  << ", " << canvas->GetName() << ")";
 //   cout << endl;

@@ -119,13 +119,13 @@ void GroupOfHists::BuildCanvas()
    if ( fCanvas  == NULL ) {
       fCanvas =  new HTCanvas(GetName(), "GroupOfHists",
               WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, fWindowXWidth, fWindowYWidth);
-   
+
        fCanvas->SetBit(kMustCleanup);
-   
+
        WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
        WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
 
-       fHistPresent->fCanvasList->Add(fCanvas);
+//       fHistPresent->fCanvasList->Add(fCanvas);
    } else {
       fCanvas->Clear();
       fCanvas->SetLeftMargin(gStyle->GetPadLeftMargin());
@@ -756,7 +756,7 @@ void GroupOfHists::CRButtonPressed(Int_t widgetId, Int_t buttonId, TObject *obj)
    if (fCanvas->GetWindowWidth() != (UInt_t)fWindowXWidth ||
        fCanvas->GetWindowHeight()!= (UInt_t)fWindowYWidth) {
        fCanvas->SetWindowSize(fWindowXWidth,fWindowYWidth);
-   } 
+   }
    if (buttonId == fNoSpaceButton || buttonId == fMagFacButton) {
       BuildCanvas();
    }

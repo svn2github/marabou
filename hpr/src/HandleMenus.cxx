@@ -1152,7 +1152,7 @@ void HandleMenus::BuildMenus()
       }
    }
    if (!fFitHist) {
-
+/*
       pm = fRootsMenuBar->GetPopup("Options");
       if (pm) {
          l = pm->GetListOfEntries();
@@ -1164,7 +1164,7 @@ void HandleMenus::BuildMenus()
             fRootsMenuBar->RemovePopup("Options");
          }
       }
-
+*/
    } else {
 
       pm = fRootsMenuBar->GetPopup("Options");

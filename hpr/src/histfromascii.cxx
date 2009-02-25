@@ -8,7 +8,7 @@
 #include "TString.h"
 #include "TSystem.h"
 #include "TGWindow.h"
-#include "TRegexp.h" 
+#include "TRegexp.h"
 #include "TPaveStats.h"
 #include "HistPresent.h"
 #include "Ascii2GraphDialog.h"
@@ -37,7 +37,7 @@ void HistPresent::GraphFromASCII(TGWindow * win)
 {
    static Int_t winx = 100,  winy = 100;
    GetWindowPosition(&winx, &winy);
-   new Ascii2GraphDialog(win, winx, winy, GetCanvasList());
+   new Ascii2GraphDialog(win, winx, winy);
    return;
 }
 ;
@@ -204,7 +204,7 @@ const char *FitMacroTemplatesG[nFitTemplatesG] = {
 
 TString gFitMacroNameG;
 
-//____________________________________________________________________________________ 
+//____________________________________________________________________________________
 
 void EditFitMacroG(TGWindow * win)
 {
@@ -238,7 +238,7 @@ void EditFitMacroG(TGWindow * win)
          Int_t cend = -1;
          if (cstart >= 0) cend = temp.Index("*/");
          TString mname("NoName");
-         if (cstart >= 0 && cend > cstart) 
+         if (cstart >= 0 && cend > cstart)
             mname = temp(cstart + 2, cend - cstart - 2);
 
          svalues->Add(new TObjString(mname.Data()));
@@ -292,14 +292,14 @@ void ExecFitMacroG(TGraph * graph, TGWindow * win)
    logr.SetOwner(kFALSE);
    TList pads;
    pads.SetOwner(kFALSE);
-   TGraph * gr = NULL;  
+   TGraph * gr = NULL;
    TPad * pad = NULL;
    Int_t ngr = FindGraphs(gPad, &logr, &pads);
    if (ngr == 0) {
       cout << "No graph in current pad" << endl;
       return;
    }
-      
+
    if (ngr > 1) {
       cout << "More than 1 graph in current canvas" << endl;
       TOrdCollection *values  = new TOrdCollection();
@@ -366,7 +366,7 @@ void ExecFitMacroG(TGraph * graph, TGWindow * win)
       while (TGraph* gro = (TGraph*)next()) {
          st = (TPaveStats*)gro->GetListOfFunctions()->FindObject("stats");
          if (st) yoff = st->GetY2NDC() - st->GetY1NDC();
-      } 
+      }
       gROOT->LoadMacro(gFitMacroNameG.Data());
       TString cmd = "fit_user_function";
 //      Int_t p = cmd.Index(".");
@@ -379,7 +379,7 @@ void ExecFitMacroG(TGraph * graph, TGWindow * win)
       gPad->Modified(kTRUE);
       gPad->Update();
       st = (TPaveStats*)gr->GetListOfFunctions()->FindObject("stats");
-      if (st) { 
+      if (st) {
          st->SetLineColor(gr->GetMarkerColor());
          st->AddText(0.1, 0.1, gr->GetName());
          if (yoff > 0) {

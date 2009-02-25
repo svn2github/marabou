@@ -917,9 +917,9 @@ void FitHist::handle_mouse()
 	//                        	  << 0.5 * (XupEdge - XlowEdge)<< endl;
                   	}
                	}
-               	hist->Fit(gFitFunc, "RnlQ", "",XlowEdge, XupEdge);
+               	hist->Fit(gFitFunc, "RNLQ", "",XlowEdge ,XupEdge );
                	first_fit = kTRUE;
-               	gFitFunc->SetRange(XlowEdge, XupEdge);
+                  gFitFunc->SetRange(XlowEdge ,XupEdge);
                	gFitFunc->Draw("same");
                	gPad->Update();
                	gPad->GetCanvas()->GetFrame()->SetBit(TBox::kCannotMove);
@@ -1036,8 +1036,8 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    cHist = new HTCanvas(fCname.Data(), fCtitle.Data(),
                         win_topx, win_topy, win_widx, win_widy, hp, this);
    fCanvasIsAlive = kTRUE;
-   if (hp)
-      hp->GetCanvasList()->Add(cHist);
+//   if (hp)
+//      hp->GetCanvasList()->Add(cHist);
    cHist->ToggleEventStatus();
 
    cHist->SetEditable(kTRUE);

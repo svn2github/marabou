@@ -29,8 +29,8 @@ void ExecGausFitG(TGraph * graph, Int_t type)
 
 ClassImp(Ascii2GraphDialog)
 
-Ascii2GraphDialog::Ascii2GraphDialog(TGWindow * win, Int_t winx,  Int_t winy, TList * wlist)
-              : fWindowList(wlist), fWinx(winx), fWiny(winy)
+Ascii2GraphDialog::Ascii2GraphDialog(TGWindow * win, Int_t winx,  Int_t winy)
+              : fWinx(winx), fWiny(winy)
 {
 
 static const Char_t helpText[] =
@@ -160,7 +160,6 @@ void Ascii2GraphDialog::Draw_The_Graph()
        TCanvas * cg = new TCanvas("Empty", "Empty", fWinx, fWiny,
                      fGraphXsize, fGraphYsize);
 #endif
-      if (fWindowList) fWindowList->Add(cg);
       if (fGraphXdiv > 1 || fGraphYdiv > 1) {
          cg->Divide(fGraphXdiv, fGraphYdiv);
          cg->cd(1);
@@ -343,7 +342,6 @@ void Ascii2GraphDialog::Draw_The_Graph()
          TCanvas * cg = new TCanvas(cname, htitle, fWinx, fWiny,
                          fGraphXsize, fGraphYsize);
 #endif
-         if (fWindowList) fWindowList->Add(cg);
          if (fGraphXdiv > 1 || fGraphYdiv > 1) {
             cg->Divide(fGraphXdiv, fGraphYdiv);
             cg->cd(1);

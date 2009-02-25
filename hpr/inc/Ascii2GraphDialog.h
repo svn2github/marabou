@@ -11,7 +11,6 @@ namespace std {} using namespace std;
 class Ascii2GraphDialog : public TObject {
 
 private:
-   TList * fWindowList;
    Int_t   fWinx;
    Int_t   fWiny;
    TString fCommand;
@@ -25,34 +24,34 @@ private:
    Double_t fYaxisMin;
    Double_t fXaxisMax;
    Double_t fYaxisMax;
-   Int_t   fGraphColSelect; 
-   Int_t   fGraphColSel1; 
-   Int_t   fGraphColSel2; 
-   Int_t   fGraphColSel3; 
-   Int_t   fGraphXsize; 
-   Int_t   fGraphYsize;  
-   Int_t   fGraphXdiv;   
-   Int_t   fGraphYdiv;   
+   Int_t   fGraphColSelect;
+   Int_t   fGraphColSel1;
+   Int_t   fGraphColSel2;
+   Int_t   fGraphColSel3;
+   Int_t   fGraphXsize;
+   Int_t   fGraphYsize;
+   Int_t   fGraphXdiv;
+   Int_t   fGraphYdiv;
    Int_t   fEmptyPad;
    Int_t   fGraph_Simple;
    Int_t   fGraph_Error;
    Int_t   fGraph_AsymError;
    Int_t   fGraphSerialNr;
-   Int_t   fGraphSelPad;  
-   Int_t   fGraphNewPad;  
-   Int_t   fGraphDrawMark;  
-   Int_t   fGraphDrawLine;  
-   Size_t  fGraphMarkerSize;  
-   Style_t fGraphMarkerStyle;  
-   Color_t fGraphMarkerColor;  
-   Style_t fGraphLineStyle;  
-   Color_t fGraphLineColor;  
-   Short_t fGraphLineWidth;  
-   Style_t fGraphFillStyle;  
-   Color_t fGraphFillColor;  
- 
+   Int_t   fGraphSelPad;
+   Int_t   fGraphNewPad;
+   Int_t   fGraphDrawMark;
+   Int_t   fGraphDrawLine;
+   Size_t  fGraphMarkerSize;
+   Style_t fGraphMarkerStyle;
+   Color_t fGraphMarkerColor;
+   Style_t fGraphLineStyle;
+   Color_t fGraphLineColor;
+   Short_t fGraphLineWidth;
+   Style_t fGraphFillStyle;
+   Color_t fGraphFillColor;
+
 public:
-   Ascii2GraphDialog(TGWindow * win = NULL, Int_t winx = 100, Int_t winy = 100, TList * list =NULL);
+   Ascii2GraphDialog(TGWindow * win = NULL, Int_t winx = 100, Int_t winy = 100);
    ~Ascii2GraphDialog();
    void Draw_The_Graph();
    void Show_Head_of_File();
