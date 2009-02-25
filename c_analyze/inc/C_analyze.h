@@ -81,6 +81,7 @@ private:
    TString *fSaveMap;
    Bool_t  fWriteOutput, fAutoSave, fSelectTime, fSelectNumber, fAutoSetup,
            fShowRate, fAttach, fUseMap, fMbsDebug, fForcedStop;
+   Int_t   fM_OldStatus;
    Int_t   fM_Status;
    Int_t   fC_Status;
    Int_t   fWasStarted;
@@ -106,7 +107,7 @@ private:
    TMrbHelpBrowser * fHelpBrowser;
    TStopwatch * fStopwatch;
    TMapFile * fMfile;
-   ULong_t white, red, green, blue, yellow, magenta, cyan, antiquewhite1, grey;
+   ULong_t white, red, green, blue,lightblue, yellow, magenta, cyan, antiquewhite1, grey;
 
    SetWindowAttributes_t wattgreen;
    SetWindowAttributes_t wattred;

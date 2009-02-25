@@ -113,21 +113,21 @@ void WarnBox( const char * message, TGWindow* win = 0){
    new TGMsgBox(gClient->GetRoot(), win,
    "Warning", message,
 //      gClient->GetPicture("/home/rg/schaileo/myroot/xpm/warn.xpm"),
-   kMBIconExclamation, 
+   kMBIconExclamation,
    kMBDismiss, &retval);
 }
 //_____________________________________________________________________________________
 
-Int_t chkquota(const char * file, Int_t hard_hwm, 
+Int_t chkquota(const char * file, Int_t hard_hwm,
                Int_t warn_hwm, Int_t loglev){
 //
-//   check if user has write access and enough disk space 
+//   check if user has write access and enough disk space
 //   and quota are left.
-//   
+//
 //
 //   return: -1 no write access, space  or quota above hard high water mark
 //           -2 space or quota  above warning mark
-//           -3 
+//           -3
 //           -4 could not get all file info, errors from sys calls
 //           -5 no quota active
 //
@@ -139,16 +139,16 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
       dir.Prepend(gSystem->WorkingDirectory());
    }
 //   cout << dir << endl;
-//  check if we have write access 
+//  check if we have write access
    if(gSystem->AccessPathName(dir.Data(), kWritePermission)){
-      cout << setred << "No write permission on: " 
+      cout << setred << "No write permission on: "
            << dir.Data() << setblack << endl;
       return -1;
    } else {
-      cout << setgreen << "Write permission ok on: " 
+      cout << setgreen << "Write permission ok on: "
            << dir.Data() << setblack << endl;
    }
-// make sure it is mounted when quota and mount command is executed 
+// make sure it is mounted when quota and mount command is executed
    TString lscmd = "ls ";
    lscmd += dir.Data();
    lscmd += " > /dev/null";
@@ -204,34 +204,34 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
    for(Int_t i=0; i < filesystems.GetSize(); i++){
 //       cout << "fs " << ((TObjString*)filesystems.At(i))->GetString() << endl;
       if(dir.BeginsWith(((TObjString*)filesystems.At(i))->GetString())){
-         if(mpind < 0 || (mpind >=0 && 
-         ((TObjString*)filesystems.At(i))->GetString().Length() > 
+         if(mpind < 0 || (mpind >=0 &&
+         ((TObjString*)filesystems.At(i))->GetString().Length() >
          ((TObjString*)filesystems.At(mpind))->GetString().Length()))mpind = i;
       }
    }
    if(mpind < 0){
       cout << "Mount point not found for: " << dir << endl;
       return -4;
-   }  
+   }
    wstream.close();
 
-//  check free disc space         
+//  check free disc space
    Int_t error = 0;
    Long_t id=0, bsize=0, blocks=0, bfree=0;
    Double_t tot_size;
    Double_t free_size;
-   const char * fs = 
+   const char * fs =
    ((TObjString*)filesystems.At(mpind))->GetString().Data();
    if(!gSystem->GetFsInfo(fs, &id, &bsize, &blocks, &bfree)){
       tot_size = (Double_t)(blocks) * (Double_t)bsize /(1000*1024);
       free_size = (Double_t)(bfree) * (Double_t)bsize /(1000*1024);
       if(loglev > 0 || free_size < warn_hwm)
-         cout << "Filesysteminfo for: " << fs << endl  
+         cout << "Filesysteminfo for: " << fs << endl
 //               << " retcode " << result
 //               << " bsize " << bsize
-         << "total size: " << tot_size << " Mbytes "<< endl 
-         << "free:       " << free_size<< " Mbytes "<< endl 
-         << "warn limit: " << warn_hwm << " Mbytes "<< endl 
+         << "total size: " << tot_size << " Mbytes "<< endl
+         << "free:       " << free_size<< " Mbytes "<< endl
+         << "warn limit: " << warn_hwm << " Mbytes "<< endl
          << "hard limit: " << hard_hwm << " Mbytes "
          << endl;
          if(free_size < hard_hwm){
@@ -254,10 +254,10 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 		return -4;
 	}
    Int_t used, soft_limit, hard_limit;
-   Int_t f_used = -1, f_soft_limit = -1, grace = -1, 
+   Int_t f_used = -1, f_soft_limit = -1, grace = -1,
          f_hard_limit = -1, f_grace = -1;
 //   char dummy[32];
-   
+
 	Bool_t ok = kFALSE;
    TRegexp ast("\\*");
 	for (;;) {
@@ -276,9 +276,9 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
             exceeded = kTRUE;
             while(wline.Index(ast) >= 0){
                wline(ast) = " ";
-            }   
+            }
          }
-//  check quota 
+//  check quota
       	TMrbString tline(wline);
       	TMrbString value;
       	TRegexp letter("[^0-9]");
@@ -300,7 +300,7 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 	//         cout << value << endl;
          	 value.SplitOffInteger(value, grace, 10);
          	value = ((TObjString *)lof[pos++])->String();
-      	}  
+      	}
       	value.SplitOffInteger(value, f_used, 10);
 
       	value = ((TObjString *)lof[pos++])->String();
@@ -313,7 +313,7 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
          	value.Resize(value.Index(letter));
          	cout << value << endl;
          	value.SplitOffInteger(value, f_grace, 10);
-      	}  
+      	}
 
 	//      line >> used >> soft_limit >> hard_limit;
 
@@ -321,10 +321,10 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
       	free_size = (Double_t)(hard_limit-used) * (Double_t)bsize /(1000*1024);
 
       	if(loglev > 0 || free_size < warn_hwm){
-      	   cout  << "Quota on: " << fs << endl  
+      	   cout  << "Quota on: " << fs << endl
                	<< "hard_limit: " << tot_size << endl
-               	<< "available : " << free_size << endl; 
-         	if(grace > 0) 
+               	<< "available : " << free_size << endl;
+         	if(grace > 0)
          	cout << "grace left: " << setmagenta
                  << ((TObjString *)lof[3])->String() << setblack << endl;
 
@@ -337,9 +337,9 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
          	}
       	}
 	//      if(exceeded)line >> dummy;
-	  //    line >> f_used >> f_soft_limit >> f_hard_limit; 
+	  //    line >> f_used >> f_soft_limit >> f_hard_limit;
       	if(loglev > 0 || f_used >= f_hard_limit){
-         	cout << "Files used: "<< f_used << endl 
+         	cout << "Files used: "<< f_used << endl
             	  << "hard_limit: " << f_hard_limit << endl;
       	}
       	if(f_used >= f_hard_limit){
@@ -359,17 +359,17 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
       }
       if(wline.BeginsWith(((TObjString*)mountpoints.At(mpind))->GetString())){
          ok = kTRUE;
-         cout << "Inspect: " << 
+         cout << "Inspect: " <<
          ((TObjString*)mountpoints.At(mpind))->GetString() << endl;
       }
       else  ok = kFALSE;
-   }   
+   }
 }
-   
+
 //_____________________________________________________________________________________
 //_____________________________________________________________________________________
 
-FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h, 
+FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h,
                          Int_t attachid, Int_t attachsock)
              : TGMainFrame(p, w, h), fYellowTextGC(TGButton::GetDefaultGC())
 {
@@ -385,11 +385,12 @@ FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h,
    fWidgets = new TList();
    fMbsControl = 0;
    fMbsDebug = kFALSE;
-   fMessageServer = 0; 
+   fMessageServer = 0;
    fWasStarted = 0;
    fSetup = NULL;
    fC_Status = M_ABSENT;
    fM_Status = M_ABSENT;
+   fM_OldStatus = M_ABSENT;
    fForcedStop = kFALSE;
    fAutoRestart   = kFALSE;
    fAutoRestartRT = kFALSE;
@@ -401,7 +402,7 @@ FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h,
    if(fM_Status != M_ABSENT){
       Int_t retval = kMBYes;
       new TGMsgBox(gClient->GetRoot(),this,
-         "Question", 
+         "Question",
          "M_analyze already running, \n\
 trying to attach?",
 //         "Do you want to attach MBS",
@@ -435,6 +436,7 @@ trying to attach?",
 
    gClient->GetColorByName("white", white);
    gClient->GetColorByName("blue", blue);
+   gClient->GetColorByName("lightblue", lightblue);
    gClient->GetColorByName("antiquewhite1", antiquewhite1);
    gClient->GetColorByName("grey", grey);
    gClient->GetColorByName("green", green);
@@ -606,13 +608,14 @@ trying to attach?",
    fMenuHelp->Associate(this);
 
    fMenuBar = new TGMenuBar(this, 1, 1, kHorizontalFrame);
+
    fMenuBar->AddPopup("Parameters", fMenuParameters, fMenuBarItemLayout);
    fMenuBar->AddPopup("Mbs Control", fMenuMbs, fMenuBarItemLayout);
    fMenuBar->AddPopup("Histograms", fMenuHist, fMenuBarItemLayout);
    fMenuBar->AddPopup("Event Select", fMenuEvent, fMenuBarItemLayout);
    fMenuBar->AddPopup("Save Setup", fMenuSave, fMenuBarItemLayout);
    fMenuBar->AddPopup("Help", fMenuHelp, fMenuBarHelpLayout);
-   fMenuBar->ChangeBackground(blue);
+   fMenuBar->ChangeBackground(lightblue);
 
    this->AddFrame(fMenuBar, fMenuBarLayout);
 //   fHFr->AddFrame(fMenuBar, fMenuBarItemLayout);
@@ -626,7 +629,7 @@ trying to attach?",
    fLabel      = new TGLabel(fLabelFr, new TGString("RUN:"));
    fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
-//  
+//
    fTeRunNr   = new TGTextEntry(fHFr, fTbRunNr = new TGTextBuffer(100), M_RUNNR);
    fTbRunNr->AddText(0,fRunNr->Data());
    fTeRunNr->Resize(60, fTeRunNr->GetDefaultHeight());
@@ -643,7 +646,7 @@ trying to attach?",
    if(fM_Status == M_RUNNING)fStatus->SetText(new TGString("Running"));
    if(fM_Status == M_RUNNING)fStatus->ChangeBackground(green);
    else                      fStatus->ChangeBackground(white);
-   fLabelFr->AddFrame(fStatus,fLO2); 
+   fLabelFr->AddFrame(fStatus,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
 //  Start time
    fLabelFr = new TGCompositeFrame(fHFr, 60, 20, kHorizontalFrame);
@@ -655,7 +658,7 @@ trying to attach?",
    fStartTime = new TGLabel(fLabelFr, new TGString("0"));
    SetTime();
    fStartTime->ChangeBackground(white);
-   fLabelFr->AddFrame(fStartTime,fLO2); 
+   fLabelFr->AddFrame(fStartTime,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
 //  Socket number
    fLabelFr = new TGCompositeFrame(fHFr, 60, 20, kHorizontalFrame);
@@ -667,7 +670,7 @@ trying to attach?",
    fTbSockNr = new TGLabel(fLabelFr, new TGString("0"));
  //  SetTime();
    fTbSockNr->ChangeBackground(white);
-   fLabelFr->AddFrame(fTbSockNr,fLO2); 
+   fLabelFr->AddFrame(fTbSockNr,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
 
    this->AddFrame(fHFr,fLO1);                // first line
@@ -683,7 +686,7 @@ trying to attach?",
    fNev = new TGLabel(fLabelFr, new TGString("0"));
    fNev->SetTextJustify(kTextRight);
    fNev->ChangeBackground(white);
-   fLabelFr->AddFrame(fNev,fLO2); 
+   fLabelFr->AddFrame(fNev,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
 //  runtime
    fLabelFr = new TGCompositeFrame(fHFr, 60, 20, kHorizontalFrame);
@@ -695,7 +698,7 @@ trying to attach?",
    fRunTime = new TGLabel(fLabelFr, new TGString("0"));
    fRunTime->SetTextJustify(kTextRight);
    fRunTime->ChangeBackground(white);
-   fLabelFr->AddFrame(fRunTime,fLO2); 
+   fLabelFr->AddFrame(fRunTime,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
 //  rate
    fLabelFr = new TGCompositeFrame(fHFr, 60, 20, kHorizontalFrame);
@@ -707,7 +710,7 @@ trying to attach?",
    fRate = new TGLabel(fLabelFr, new TGString("0"));
    fRate->ChangeBackground(white);
    fRate->SetTextJustify(kTextRight);
-   fLabelFr->AddFrame(fRate,fLO2); 
+   fLabelFr->AddFrame(fRate,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
 //  deadtime
    fLabelFr = new TGCompositeFrame(fHFr, 60, 20, kHorizontalFrame);
@@ -719,7 +722,7 @@ trying to attach?",
    fDeadTime = new TGLabel(fLabelFr, new TGString("0"));
    fDeadTime->ChangeBackground(white);
    fDeadTime->SetTextJustify(kTextRight);
-   fLabelFr->AddFrame(fDeadTime,fLO2); 
+   fLabelFr->AddFrame(fDeadTime,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
 
    this->AddFrame(fHFr,fLO1);                // second line
@@ -730,7 +733,7 @@ trying to attach?",
    fLabel      = new TGLabel(fLabelFr, new TGString(
    "Definition of Input Source, Online: TcpIp, Offline: Fake, File or File List"));
    fLabel->ChangeBackground(antiquewhite1);
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
    this->AddFrame(fHFr,fLO1);                // third line
 //  Input: source label: file tcpip
@@ -757,7 +760,7 @@ trying to attach?",
    fRFile->Associate(this);
    if(*fInputSource == "File") fRFile->SetState(kButtonDown);
 
-   fHFr->AddFrame(fHFrHalf,fLO2);  
+   fHFr->AddFrame(fHFrHalf,fLO2);
 //
 
    fTeFile   = new TGTextEntry(fHFr, fTbFile = new TGTextBuffer(100), M_INPUT);
@@ -774,7 +777,7 @@ trying to attach?",
    fLabel      = new TGLabel(fLabelFr, new TGString(
    "Setup of Mbs System on Lynx Processors"));
    fLabel->ChangeBackground(antiquewhite1);
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
    this->AddFrame(fHFr,fLO1);                // third line
 
@@ -782,7 +785,7 @@ trying to attach?",
 //  Master
    fLabelFr = new TGCompositeFrame(fHFr, 150, 20, kHorizontalFrame);
    fLabel      = new TGLabel(fLabelFr, new TGString("Master"));
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
 
    fCbMaster = new TGComboBox(fHFr, C_MASTER);
@@ -810,7 +813,7 @@ trying to attach?",
 //  Readout
    fLabelFr = new TGCompositeFrame(fHFr, 150, 20, kHorizontalFrame);
    fLabel      = new TGLabel(fLabelFr, new TGString("Readout"));
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
 
    fCbReadout = new TGComboBox(fHFr, C_READOUT);
@@ -836,7 +839,7 @@ trying to attach?",
 //  Trigger
    fLabelFr = new TGCompositeFrame(fHFr, 150, 20, kHorizontalFrame);
    fLabel      = new TGLabel(fLabelFr, new TGString("Trigger"));
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
 
    fCbTrigger = new TGComboBox(fHFr, C_TRIGGER);
@@ -848,14 +851,14 @@ trying to attach?",
       if(!strcmp(*fTrigger, triggers[k]))fCbTrigger->Select(k+1);
    }
    fCbTrigger->Resize(150, 20);
- 
+
    this->AddFrame(fHFr,fLO1);                // new line
 
    fHFr            = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
 //  Directory
    fLabelFr = new TGCompositeFrame(fHFr, 200, 20, kHorizontalFrame);
    fLabel      = new TGLabel(fLabelFr, new TGString("Directory"));
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO4);
 
    fTeDir = new TGTextEntry(fHFr, fTbDir = new TGTextBuffer(100), M_DIR);
@@ -872,11 +875,11 @@ trying to attach?",
    fLabel      = new TGLabel(fLabelFr, new TGString(
    "Files for Histgrams, Memory mapped must be local (none: no M mapped file"));
    fLabel->ChangeBackground(antiquewhite1);
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
    this->AddFrame(fHFr,fLO1);                // another  line
 
-//  memory mapped file 
+//  memory mapped file
    fHFr            = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
 /*
@@ -933,9 +936,9 @@ trying to attach?",
    fHFrHalf->AddFrame(fSaveMapButton, fLO1);
    fSaveMapButton->SetState(kButtonDisabled);
 
-   fLabel  = new TGLabel(fLabelFr, 
+   fLabel  = new TGLabel(fLabelFr,
                 new TGString("File for saved histos"));
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFrHalf->AddFrame(fLabelFr,fLO2);
    fHFr->AddFrame(fHFrHalf,fLO2);
 
@@ -953,7 +956,7 @@ trying to attach?",
    fLabel      = new TGLabel(fLabelFr, new TGString(
    "Output file for events (in root format)"));
    fLabel->ChangeBackground(antiquewhite1);
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
    this->AddFrame(fHFr,fLO1);                // third line
    fHFr = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
@@ -961,14 +964,14 @@ trying to attach?",
 
    fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
    fLabel  = new TGLabel(fLabelFr, new TGString("Cur. Size"));
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFrHalf->AddFrame(fLabelFr,fLO2);
    fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
 
    fOutSize = new TGLabel(fLabelFr, new TGString("0"));
    fOutSize->ChangeBackground(white);
    fOutSize->SetTextJustify(kTextRight);
-   fLabelFr->AddFrame(fOutSize,fLO2); 
+   fLabelFr->AddFrame(fOutSize,fLO2);
    fHFrHalf->AddFrame(fLabelFr,fLO2);
 
    fHFrHalf->AddFrame(fRActive =  new TGRadioButton(fHFrHalf, "en/disable", R_ACTIVE), fLO2);
@@ -984,17 +987,17 @@ trying to attach?",
    }
    fRActive->Associate(this);
 
-   fTeRootFile   = new TGTextEntry(fHFr, 
+   fTeRootFile   = new TGTextEntry(fHFr,
                        fTbRootFile = new TGTextBuffer(100), M_ROOTF);
    fTbRootFile->AddText(0,(const char *)*fRootFile);
    fTeRootFile->Resize(300, fTeRootFile->GetDefaultHeight());
    fHFr->AddFrame(fTeRootFile,fLO2);
    this->AddFrame(fHFr,fLO1);                //  output file line
    fTeRootFile->Associate(this);
-//  reload parameter file 
+//  reload parameter file
    fHFr  = new TGCompositeFrame(this, 60, 20, kHorizontalFrame);
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
-   fParButton = new TGTextButton( fHFrHalf, 
+   fParButton = new TGTextButton( fHFrHalf,
                "Reload", M_LOADPAR, fYellowTextGC());
    fParButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fParButton->ChangeBackground(blue);
@@ -1007,18 +1010,18 @@ trying to attach?",
    fHFrHalf->AddFrame(fLabelFr,fLO2);
    fHFr->AddFrame(fHFrHalf, fLO2);
 
-   fTeParFile = new TGTextEntry(fHFr, 
+   fTeParFile = new TGTextEntry(fHFr,
                     fTbParFile = new TGTextBuffer(100), M_PARF);
    fTbParFile->AddText(0,(const char *)*fPar);
    fTeParFile->Resize(300, fTeParFile->GetDefaultHeight());
    fHFr->AddFrame(fTeParFile, fLO2);
-   this->AddFrame(fHFr,fLO1); 
-   fTeParFile->Associate(this);      
+   this->AddFrame(fHFr,fLO1);
+   fTeParFile->Associate(this);
 //  comment
 
    fHFr = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
-   fWhichHistButton = new TGTextButton( fHFrHalf, 
+   fWhichHistButton = new TGTextButton( fHFrHalf,
                "Switch to DeadTime", M_WHICHHIST, fYellowTextGC());
    fWhichHistButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fWhichHistButton->ChangeBackground(blue);
@@ -1027,11 +1030,11 @@ trying to attach?",
 
    fLabelFr = new TGCompositeFrame(fHFrHalf, 200, 20, kHorizontalFrame);
    fLabel  = new TGLabel(fLabelFr, new TGString("Comment"));
-   fLabelFr->AddFrame(fLabel,fLO2); 
+   fLabelFr->AddFrame(fLabel,fLO2);
    fHFrHalf->AddFrame(fLabelFr,fLO4);
    fHFr->AddFrame(fHFrHalf, fLO2);
 
-   fTeComment   = new TGTextEntry(fHFr, 
+   fTeComment   = new TGTextEntry(fHFr,
                        fTbComment = new TGTextBuffer(100));
    fTbComment->AddText(0,(const char *)*fComment);
    fTeComment->Resize(450, fTeComment->GetDefaultHeight());
@@ -1044,7 +1047,7 @@ trying to attach?",
    fHFr    = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
    fRateHist = new TRootEmbeddedCanvas("RateHist", fHFr, 100, 200);
    fHFr->AddFrame(fRateHist, fLO5);
-   this->AddFrame(fHFr,fLO5);         
+   this->AddFrame(fHFr,fLO5);
    fRateHist->GetCanvas()->SetBorderMode(0);
 
 //  action buttons
@@ -1072,9 +1075,9 @@ trying to attach?",
    fHFr->AddFrame(fConfigButton, fLO1);
 
 
-   if(fAttach)fStartStopButton = 
+   if(fAttach)fStartStopButton =
        new TGTextButton( fHFr, "Stop", M_START_STOP, fYellowTextGC());
-   else fStartStopButton = 
+   else fStartStopButton =
        new TGTextButton( fHFr, "Start", M_START_STOP, fYellowTextGC());
    fStartStopButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fStartStopButton->ChangeBackground(blue);
@@ -1083,7 +1086,7 @@ trying to attach?",
 
    if(fM_Status == M_PAUSING) fPauseButton =
        new TGTextButton( fHFr, "Resume", M_PAUSE, fYellowTextGC());
-   else  fPauseButton = 
+   else  fPauseButton =
        new TGTextButton( fHFr, "Pause", M_PAUSE, fYellowTextGC());
    fPauseButton->SetFont("-adobe-helvetica-bold-r-*-*-14-*-*-*-*-*-iso8859-1");
    fPauseButton->ChangeBackground(blue);
@@ -1104,7 +1107,7 @@ trying to attach?",
    fQuitButton->Associate(this);
    fHFr->AddFrame(fQuitButton, fLO1);
 
-   this->AddFrame(fHFr,fLO1);         
+   this->AddFrame(fHFr,fLO1);
 
    if(fM_Status == M_RUNNING || fM_Status == M_PAUSING)
 
@@ -1188,17 +1191,17 @@ Int_t FhMainFrame::MessageToM_analyze(const char * mess) {
     if(!strncmp(str0, "ACK", 3))  // on ACK just exit
     {
       if (fVerbLevel > 0) cout << str0 << endl;
-      delete str0;
+      delete [] str0;
       break;
    }
     if(!strncmp(str0,"ERROR",5))  // on error, print and exit
     {
       if (fVerbLevel > 0) cout << str0 << endl;
-      delete str0;
+      delete [] str0;
       break;
     }
     else retval=atoi(str0);
-    delete str0;    
+    delete [] str0;
   }
   return retval;
 }
@@ -1213,7 +1216,7 @@ void FhMainFrame::StopMessage(){
       wstream.open(logfile, ios::out);
       wstream << "RunNr Start    Stop      Events  Comment" << endl;
       wstream.close();
-   } 
+   }
    wstream.open(logfile, ios:: app);
    if (!wstream.good()) {
 		cerr	<< "C_analyze: "
@@ -1228,7 +1231,7 @@ void FhMainFrame::StopMessage(){
    wstream << fNev->GetText()->GetString()  << "   " ;
    wstream << fTbComment->GetString();
    wstream << endl;
-   wstream.close();  
+   wstream.close();
 //
    fStartStopButton->SetText(new TGHotString("Start"));
    fPauseButton->SetText(new TGHotString("Pause"));
@@ -1262,7 +1265,7 @@ void FhMainFrame::SetTime(){
 //_____________________________________________________________________________________
 //
 // Save histograms from mapped file
-  
+
 void FhMainFrame::SaveMap(Bool_t askforname){
    if(!fUseMap) return;
    Bool_t mfile_was_closed = kFALSE;
@@ -1272,30 +1275,30 @@ void FhMainFrame::SaveMap(Bool_t askforname){
          return;
       }
       fMfile = TMapFile::Create(fTbMap->GetString());  ////
-      if (fMfile->IsZombie()) { 
+      if (fMfile->IsZombie()) {
          fMfile->Close();
          fMfile = NULL;
          fUseMap = kFALSE;
          cout << setred << "Cant open mapfile: " << fTbMap->GetString() << setblack << endl;
       }
-      mfile_was_closed = kTRUE; 
+      mfile_was_closed = kTRUE;
    }
    if(!fMfile){
       WarnBox("MapFile not found: ", this);
 //      gDirectory=gROOT;
       return;
-   } 
+   }
 //  compare size of mapfile with real space used
 
-   ULong_t upper = (ULong_t)fMfile->GetBreakval(); 
+   ULong_t upper = (ULong_t)fMfile->GetBreakval();
    ULong_t lower = (ULong_t)fMfile->GetBaseAddr();
    cout << "used_size " << upper-lower << endl;
    Int_t needed = upper - lower + 2000000;
    needed /= 1000000;
    if(needed < fMapSize){
-      cout << setred << "Warning: Size of memory mapped file is too big: " 
+      cout << setred << "Warning: Size of memory mapped file is too big: "
                      << fMapSize << endl;
-      cout           << "Needed only                           : " 
+      cout           << "Needed only                           : "
                      << needed << endl;
    }
    Int_t retval=kMBYes;
@@ -1305,7 +1308,7 @@ void FhMainFrame::SaveMap(Bool_t askforname){
       TRegexp run("RUN");
       Int_t status = IsAnalyzeRunning(0);
       if(status == M_PAUSING) savem(run) = *fRunNr;
-      else                    savem(run) = *fOldRunNr;     
+      else                    savem(run) = *fOldRunNr;
    }
    if(askforname){
       Bool_t ok;
@@ -1325,7 +1328,7 @@ void FhMainFrame::SaveMap(Bool_t askforname){
       } else {
          TString bckfile = savem.Data();
          bckfile += ".bck";
-         cout << setred << "Move existing: " << savem.Data()  << " to " 
+         cout << setred << "Move existing: " << savem.Data()  << " to "
               <<  bckfile.Data() << setblack <<  endl;
          TString MvCmd = "mv ";
          MvCmd += savem;
@@ -1334,7 +1337,7 @@ void FhMainFrame::SaveMap(Bool_t askforname){
          gSystem->Exec((const char *)MvCmd);
       }
    }
-   if(retval == kMBYes){ 
+   if(retval == kMBYes){
       cout << setgreen << "Start saving histograms " << endl;
       TFile *f = new TFile(savem.Data(),"RECREATE");
       f->cd();
@@ -1350,8 +1353,8 @@ void FhMainFrame::SaveMap(Bool_t askforname){
             if(hist){ hist->Write(); nsaved++;};
             delete hist;
 //            cout << "Writing: " << name << endl;
-//fM_Status == M_RUNNING || fM_Status == M_PAUSING 
-            mr=mr->GetNext();         
+//fM_Status == M_RUNNING || fM_Status == M_PAUSING
+            mr=mr->GetNext();
          }
       }
       if(mfile_was_closed){fMfile->Close(); fMfile = 0;}
@@ -1365,7 +1368,10 @@ void FhMainFrame::SaveMap(Bool_t askforname){
 //   gDirectory=gROOT;
 }
 //_____________________________________________________________________________________
-void FhMainFrame::SetButtonsToDefaults(){
+
+void FhMainFrame::SetButtonsToDefaults()
+{
+//   cout << "SetButtonsToDefaults, fM_Status " << fM_Status<< endl;
    fPauseButton->SetState(kButtonDisabled);
    fStartStopButton->SetText(new TGHotString("Start"));
    fPauseButton->SetText(new TGHotString("Pause"));
@@ -1389,7 +1395,8 @@ void FhMainFrame::SetButtonsToDefaults(){
 }
 //_____________________________________________________________________________________
 //
-void FhMainFrame::SetRadioButtons(Bool_t set){
+void FhMainFrame::SetRadioButtons(Bool_t set)
+{
    if(set){
       fRFile->SetState(kButtonUp);
       fRFileList->SetState(kButtonUp);
@@ -1415,9 +1422,9 @@ void FhMainFrame::CloseWindow()
    EMsgBoxIcon icontype = kMBIconQuestion;
    if(IsAnalyzeRunning(1) != M_ABSENT && IsAnalyzeRunning(1) != M_DIRTY){
       new TGMsgBox(gClient->GetRoot(),this,
-      "Question", 
+      "Question",
       "You might loose control of Mbs, do still want to quit?",
-      icontype, 
+      icontype,
       buttons, &retval);
    } else retval= kMBYes;
    if(retval == kMBYes){
@@ -1445,7 +1452,7 @@ Bool_t FhMainFrame::AskforRemove(const char * fname){
 //   gClient->GetPicture("/home/rg/schaileo/myroot/xpm/warn1.xpm"),
    buttons, &retval);
    if(retval == kMBYes){
-      TString RmCmd = "rm "; 
+      TString RmCmd = "rm ";
       RmCmd += fname;
       gSystem->Exec((const char *)RmCmd);
       return kTRUE;
@@ -1457,7 +1464,7 @@ Bool_t FhMainFrame::CheckHostsUp(){
    Bool_t mok = CheckOneHostUp(masters[fCbMaster->GetSelected()-1]);
    Bool_t sok = CheckOneHostUp(slaves[fCbReadout->GetSelected()-1]);
    return mok && sok;
-}   
+}
 //_____________________________________________________________________________________
 //
 Bool_t FhMainFrame::CheckOneHostUp(const char * nname)
@@ -1521,11 +1528,11 @@ Bool_t FhMainFrame::CheckParams()
          if(!temp.Contains(".list")){
             WarnBox("FileList must end with: .list", this);
             return kFALSE;
-         } 
+         }
       } else if (*fInputSource == "Fake") {
          gSystem->Exec("touch fake.root");
       }
-   } 
+   }
    TString fname;
    TString fname1;
    *fRunNr = fTbRunNr->GetString();
@@ -1544,14 +1551,14 @@ Bool_t FhMainFrame::CheckParams()
    	fname = fTbMap->GetString();
    	if(!gSystem->AccessPathName(fname.Data())){
       	if(!AskforRemove(fname.Data()))
-      	cout << setred << "Continue filling histograms on mapped file" << endl 
-         	  << setred << "Be sure you also have new version of M_analyze (30.5.00)" 
-         	  << setblack << endl; 
+      	cout << setred << "Continue filling histograms on mapped file" << endl
+         	  << setred << "Be sure you also have new version of M_analyze (30.5.00)"
+         	  << setblack << endl;
       	ok = kTRUE;
    	}
    }
    TRegexp run="RUN";
-   if(fRActive->GetState() == kButtonDown){      
+   if(fRActive->GetState() == kButtonDown){
       fname = fTbRootFile->GetString();
 
       Int_t error = chkquota(fname, fHardHWM, fWarnHWM, fVerbLevel);
@@ -1604,20 +1611,20 @@ Bool_t FhMainFrame::MbsStatus(){
    if(!fMbsControl) fMbsControl = new TMbsControl(masters[fCbMaster->GetSelected()-1],
                                                   fMbsVersion->Data(),
                                                   fTbDir->GetString());
-   cout << sepline << endl; 
+   cout << sepline << endl;
    TDatime date;
-   cout << setgreen<< "Mbs Status at: " << date.AsString()<< setblack << endl;  
-   cout << sepline << endl; 
+   cout << setgreen<< "Mbs Status at: " << date.AsString()<< setblack << endl;
+   cout << sepline << endl;
    Int_t nb=fMbsControl->GetNofMbsProcs();
    cout << "c_ana: Number of Mbs processes running: " << nb << endl;
-   cout << sepline << endl; 
-   if(nb <= 0 || nb >= 1000 ) return kFALSE; 
+   cout << sepline << endl;
+   if(nb <= 0 || nb >= 1000 ) return kFALSE;
    TMbsNode * pn = fMbsControl->PrompterNode();
    if(pn){
       cout << "c_ana: Waiting for status from: " << pn->GetName() << endl;
       pn->GetStatus();
       cout << setgreen<< "c_ana: Status on Prompter Node: "<< pn->GetName() << setblack<< endl;
-      cout << sepline << endl; 
+      cout << sepline << endl;
       cout << setw(12)<< setiosflags(ios::left) << "User: "  << pn->fUser << endl;
 //      cout << setw(12)<< setiosflags(ios::left) << "fDaqDate: "  << pn->fDaqDate << endl;
 //      cout << setw(12)<< setiosflags(ios::left) << "fRun: "  << pn->fRun << endl;
@@ -1628,7 +1635,7 @@ Bool_t FhMainFrame::MbsStatus(){
       cout << setw(12)<< setiosflags(ios::left) << "fRemDir: "  << pn->fRemDir << endl;
 //      cout << setw(12)<< setiosflags(ios::left) << "fStr: "  << pn->fStr << endl;
 //      cout << setw(12)<< setiosflags(ios::left) << ": "  << pn-> << endl;
-      cout << sepline << endl; 
+      cout << sepline << endl;
       cout << setw(12)<< setiosflags(ios::left)  << "Trigger: ";
       if( pn->iRun() == 0) cout << setred        << "disabled " ;
       else                 cout << setgreen      << "enabled " ;
@@ -1637,13 +1644,13 @@ Bool_t FhMainFrame::MbsStatus(){
       cout << setw(12)<< setiosflags(ios::left)  << "Buffers: " << pn->laNbuffers()<< endl;
       cout << setw(12)<< setiosflags(ios::left)  << "Streams: " << pn->laNstreams()<< endl;
       cout << setw(12)<< setiosflags(ios::left)  << "Kilobytes: " << pn->laNKbyte()<< endl;
-      cout << sepline << endl; 
+      cout << sepline << endl;
 //      pn->PrintHeader();
-//      cout << sepline << endl; 
+//      cout << sepline << endl;
    } else  cout << setred<< "c_ana: Prompter node not yet known"<< setblack << endl;
-   cout << setgreen<< 
-   "~~~~~~~~~~~~~~Mbs Status done ~~~~~~~~~~~~~~~~" << setblack << endl;    
-   return kTRUE; 
+   cout << setgreen<<
+   "~~~~~~~~~~~~~~Mbs Status done ~~~~~~~~~~~~~~~~" << setblack << endl;
+   return kTRUE;
 }
 //_____________________________________________________________________________________
 Bool_t FhMainFrame::Configure(){
@@ -1682,7 +1689,7 @@ Bool_t FhMainFrame::Configure(){
          cout << setgreen<< "c_ana: Configure, nprocs = " << nb << setblack<< endl;
          Int_t retval = kMBYes;
          new TGMsgBox(gClient->GetRoot(),this,
-         "Question", 
+         "Question",
          buf.Data(),
 //         "Do you want to attach MBS",
          kMBIconQuestion, kMBYes | kMBNo, &retval);
@@ -1703,7 +1710,7 @@ Bool_t FhMainFrame::Configure(){
             } else {
                fM_Status = M_CONFIGURED;
                fStartStopButton->SetText(new TGHotString("Start"));
-               cout << setgreen<< "c_ana: Ok ready to Start" << nb 
+               cout << setgreen<< "c_ana: Ok ready to Start" << nb
                     << setblack<< endl;
             }
             fStartStopButton->SetState(kButtonUp);
@@ -1745,7 +1752,7 @@ Try Clear MBS",this);
             fMessageServer->SetLogLevel(fMbsLogLevel);
             if(fMbsControl->Startup(fMbsDebug)){
                if(fMbsControl->PrompterNode()){
-//                  cout << setgreen << "c_ana: PrompterNode " 
+//                  cout << setgreen << "c_ana: PrompterNode "
 //                       << fMbsControl->PrompterNode()->GetName()<< setblack << endl;
                   TString prnode(fMbsControl->PrompterNode()->GetName());
 //                  prnode.Prepend("^");
@@ -1767,7 +1774,7 @@ Try Clear MBS",this);
                fStartStopButton->SetState(kButtonUp);
                cout << setgreen<< "c_ana: Ok ready to Start" << nb << setblack<< endl;
                return kTRUE;
-           }        
+           }
          } else {
 //            cout << setred << "c_ana: Something went wrong when starting" << setblack<< endl;
             WarnBox("Something went wrong when starting MBS,         \n\
@@ -1778,16 +1785,16 @@ Please watch terminal output", this);
          }
       }
    } else {
-//      WarnBox("Only allowed when ABSENT", this); 
-      return kFALSE;                        
+//      WarnBox("Only allowed when ABSENT", this);
+      return kFALSE;
    }
-   return kFALSE;                        
+   return kFALSE;
 }
 //_____________________________________________________________________________________
 Bool_t FhMainFrame::MbsSetup(){
    fM_Status = IsAnalyzeRunning(1);
    if(fM_Status != M_ABSENT && fM_Status != M_STOPPED && fM_Status != M_DIRTY){
-      if(!confirm("Do you really want to run MbsSetup in this state?", 
+      if(!confirm("Do you really want to run MbsSetup in this state?",
                    this))return kFALSE;
    }
    if(!CheckHostsUp()) return kFALSE;
@@ -1823,14 +1830,14 @@ Bool_t FhMainFrame::MbsSetup(){
    }
 //   Int_t ttype;
    if(fCbTrigger->GetSelected() == 1)
-	    fSetup->ReadoutProc(0)->TriggerModule()->SetType(kTriggerModuleVME);	
-   else 
-	   fSetup->ReadoutProc(0)->TriggerModule()->SetType(kTriggerModuleCAMAC);	
-	fSetup->ReadoutProc(0)->TriggerModule()->SetConversionTime(fGateLength);	
+	    fSetup->ReadoutProc(0)->TriggerModule()->SetType(kTriggerModuleVME);
+   else
+	   fSetup->ReadoutProc(0)->TriggerModule()->SetType(kTriggerModuleCAMAC);
+	fSetup->ReadoutProc(0)->TriggerModule()->SetConversionTime(fGateLength);
    Bool_t ok = fSetup->MakeSetupFiles();		// erfindet alle files
 
    if(fSetup) fSetup->Save();
-   return ok; 
+   return ok;
 
 }
 //_____________________________________________________________________________________
@@ -1898,25 +1905,25 @@ Lynx processors might need reboot", this);
        return kFALSE;
    } else if (nb > 0) {
        fMbsControl->StopMbs();
-       cout << setblue 
-       << "c_ana: Checking if there are still MBS processes alive"<< setblack << endl; 
+       cout << setblue
+       << "c_ana: Checking if there are still MBS processes alive"<< setblack << endl;
        if(fMbsControl->GetNofMbsProcs() > 0){
 //      cout << setred << "c_ana: There are still MBS processes running" << setblack<< endl;
           WarnBox("There are still MBS processes running,\n\
 You can try Clear MBS again,\n\
-but Lynx processors might need reboot", this); 
+but Lynx processors might need reboot", this);
           fM_Status = M_DIRTY;
           return kFALSE;
       } else {
-         cout << setgreen << endl<< "c_ana: Ok, all MBS processes disappeared"<< setblack << endl << endl; 
-      }     
+         cout << setgreen << endl<< "c_ana: Ok, all MBS processes disappeared"<< setblack << endl << endl;
+      }
    } else cout << setgreen << "c_ana: No MBS processes were running"<< setblack  << endl;
 
    fM_Status = M_ABSENT;
    fConfigButton->SetState(kButtonUp);
    SetRadioButtons(kTRUE);
-   return kTRUE; 
-}                    
+   return kTRUE;
+}
 //_____________________________________________________________________________________
 //
 Bool_t FhMainFrame::StartDAQ()
@@ -1960,7 +1967,7 @@ Bool_t FhMainFrame::StartDAQ()
             cout << "Setting # of events to 50 in Fake mode" << endl;
             stopev = 50;
          }
-         startCmd += "0 "; 
+         startCmd += "0 ";
          startCmd += stopev;
          startCmd += " ";
       } else {
@@ -2013,7 +2020,7 @@ Bool_t FhMainFrame::StartDAQ()
       startCmd += fTbMap->GetString();
       startCmd += " ";
       startCmd += fTbMapSize->GetString();
-      startCmd += " "; 
+      startCmd += " ";
 //      cout << "Startdaq, fSockNr " << fSockNr << endl;
 
 //     socket for communication
@@ -2046,11 +2053,14 @@ Bool_t FhMainFrame::StartDAQ()
          cout << setblue << "c_ana: Starting M_analyze"<< setblack << endl;
          cout << "Executing: "<< setmagenta <<  startCmd << setblack<< endl;
       }
+//      cout << setcyan << endl;
+//      cerr << setmagenta << endl;
 //
 //     here M_analyze is launched
-
+      fM_OldStatus = -1;
+      TDatime st;
+      Long_t start_time= (Long_t)st.Convert();
 		gSystem->Exec(startCmd.Data());
-
 
       fTotal_livetime = 0;
       SetTime();
@@ -2063,7 +2073,7 @@ Bool_t FhMainFrame::StartDAQ()
          fM_Status = IsAnalyzeRunning(1);
          if (fM_Status == M_DIED) {
             cout << setred << "c_ana: M_analyze seems to be dead" << endl;
-            cout << "c_ana: Debug and recompile, then try again" 
+            cout << "c_ana: Debug and recompile, then try again"
                  << setblack << endl;
             fM_Status = M_DIRTY;
             fStartStopButton->SetState(kButtonUp);
@@ -2074,9 +2084,9 @@ Bool_t FhMainFrame::StartDAQ()
             fForcedStop = kFALSE;
             if(*fInputSource == "TcpIp")ok = fMbsControl->StartAcquisition();
             if(ok) {
-              fStopwatch->Reset();     
+              fStopwatch->Reset();
               fStopwatch->Start();
-              fTotal_time_no_event = 0; fEvents_before = 0;    
+              fTotal_time_no_event = 0; fEvents_before = 0;
               fStartStopButton->SetText(new TGHotString("Stop"));
               fPauseButton->SetText(new TGHotString("Pause"));
               fStartStopButton->SetState(kButtonUp);
@@ -2100,7 +2110,7 @@ retrysocket:
 		          // Wait till we get the start message
                  char str[32];
       			  Int_t nobs= fComSocket->Recv(str,32);
-                 cout << "StartDaq():" << nobs<< " received: " 
+                 cout << "StartDaq():" << nobs<< " received: "
                       << " mess "<< str << endl;
               }
               return kTRUE;
@@ -2112,6 +2122,29 @@ retrysocket:
                return kFALSE;
             }
          }
+// may be we missed start - stop completely
+// check if marabou.log is younger then start_time and
+// contains end of run signal TUsrEvtXstop
+         if ( i > 4 ) {
+            Long_t  id, size, flags, modtime;
+            gSystem->GetPathInfo("marabou.log", &id, &size, &flags, &modtime);
+            if ( modtime - start_time > 0 && modtime - start_time < 10 ) {
+               TString cmd ("tail -20 marabou.log");
+               TString line;
+               FILE *fp = gSystem->OpenPipe(cmd, "r");
+               while ( ( line.Gets(fp) ) ) {
+						if ( line.Contains("TUsrEvtXstop") ) {
+							cout << setcyan << "Seems M_analyze already stopped" <<
+									setblack << endl;
+							fC_Status = M_ABSENT;
+							fM_Status = M_ABSENT;
+							gSystem->ClosePipe(fp);
+							return kTRUE;
+						}
+               }
+               gSystem->ClosePipe(fp);
+            }
+         }
          gSystem->Sleep(sleeptime);
          sleeptime += 500;
       }
@@ -2119,14 +2152,14 @@ retrysocket:
 //      cout << setred << "c_ana: M_analyze didnt start correctly" << setblack<< endl;
       WarnBox("M_analyze didnt start correctly",this);
       return kFALSE;
-   } else { 
+   } else {
 //      cout << setred << "c_ana: Something is wrong with files, please check input parameters" << setblack<< endl;
       WarnBox("Something is wrong with files,\n\
 Please check input parameters",this);
       fC_Status = M_ABSENT;
       return kFALSE;
-   } 
-} 
+   }
+}
 //_____________________________________________________________________________________
 //
 Bool_t FhMainFrame::StopDAQ(){
@@ -2163,7 +2196,7 @@ Bool_t FhMainFrame::StopDAQ(){
                if(fMfile) fMfile->Close(); fMfile = 0;
                cout << setgreen << "c_ana: Mbs ok" << setblack<< endl;
               return kTRUE;
-            } else {                          
+            } else {
 //               cout << setred << "c_ana: Reinitialize Mbs failed" << setblack<< endl;
                WarnBox("Reinitialize Mbs failed",this);
                fM_Status = M_DIRTY;
@@ -2199,7 +2232,7 @@ Bool_t RemoveBlanks(TGTextEntry * te){
       return kTRUE;
    } else return kFALSE;
 }
-    
+
 //_____________________________________________________________________________________
 
 Bool_t FhMainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
@@ -2215,43 +2248,43 @@ Bool_t FhMainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
             case kTE_TEXTCHANGED:
                switch (parm1) {
                   case M_MAPF:
-                     if(RemoveBlanks(fTeMap)) 
-                      cout << setred << "Removed blanks from: " 
+                     if(RemoveBlanks(fTeMap))
+                      cout << setred << "Removed blanks from: "
                       <<fTeMap->GetText() << setblack << endl;
                      break;
                   case M_MAPS:
-                     if(RemoveBlanks(fTeMapSize)) 
-                      cout << setred << "Removed blanks from: " 
+                     if(RemoveBlanks(fTeMapSize))
+                      cout << setred << "Removed blanks from: "
                       <<fTeMapSize->GetText() << setblack << endl;
                      break;
                   case M_INPUT:
-                     if(RemoveBlanks(fTeFile)) 
-                      cout << setred << "Removed blanks from: " 
+                     if(RemoveBlanks(fTeFile))
+                      cout << setred << "Removed blanks from: "
                       <<fTeFile->GetText() << setblack << endl;
                      break;
                   case M_ROOTF:
-                     if(RemoveBlanks(fTeRootFile)) 
-                      cout << setred << "Removed blanks from: " 
+                     if(RemoveBlanks(fTeRootFile))
+                      cout << setred << "Removed blanks from: "
                       <<fTeRootFile->GetText() << setblack << endl;
                      break;
                   case M_HISTF:
-                     if(RemoveBlanks(fTeHistFile)) 
-                      cout << setred << "Removed blanks from: " 
+                     if(RemoveBlanks(fTeHistFile))
+                      cout << setred << "Removed blanks from: "
                       <<fTeHistFile->GetText() << setblack << endl;
                      break;
                   case M_RUNNR:
-                     if(RemoveBlanks(fTeRunNr)) 
-                      cout << setred << "Removed blanks from: " 
+                     if(RemoveBlanks(fTeRunNr))
+                      cout << setred << "Removed blanks from: "
                       <<fTeRunNr->GetText() << setblack << endl;
                      break;
                   case M_PARF:
-                     if(RemoveBlanks(fTeParFile)) 
-                      cout << setred << "Removed blanks from: " 
+                     if(RemoveBlanks(fTeParFile))
+                      cout << setred << "Removed blanks from: "
                       <<fTeParFile->GetText() << setblack << endl;
                      break;
                   case M_DIR:
-                     if(RemoveBlanks(fTeDir)) 
-                      cout << setred << "Removed blanks from: " 
+                     if(RemoveBlanks(fTeDir))
+                      cout << setred << "Removed blanks from: "
                       <<fTeDir->GetText() << setblack << endl;
                      break;
                }
@@ -2303,14 +2336,14 @@ selected histograms only for a (random)\n\
 subset of events. This feature must be \n\
 implemented in the Analysis code.\n\
 The value is available from \n\
-gMrbAnalyze->GetScaleDown()";                       
+gMrbAnalyze->GetScaleDown()";
                          Int_t bs = GetInteger("Hist Fill Downscale factor",
                          fDownscale, &ok, this, (const char *)0,
                                  (Bool_t*)0, help_DOWNSCALE);
                          if(!ok) break;
                          if(bs <= 0) {WarnBox("Illegal number", this); break;}
                          else        fDownscale = bs;
-                         DownscaleCmd += fDownscale; 
+                         DownscaleCmd += fDownscale;
                          cout << DownscaleCmd << endl;
                          if(fM_Status == M_PAUSING)
                             MessageToM_analyze(DownscaleCmd.Data());
@@ -2352,7 +2385,7 @@ no event arriving until a warning is issued";
                       if(!ok) break;
                       if(bs <= 0) WarnBox("Illegal number", this);
                       else        fMax_time_no_event = bs;
-                      }  
+                      }
                       break;
                   case M_BUFSIZE:
                       {
@@ -2360,7 +2393,7 @@ no event arriving until a warning is issued";
                       if(!ok) break;
                       if(bs <= 0) WarnBox("Illegal number", this);
                       else        fBufSize = bs;
-                      }  
+                      }
                       break;
                   case M_BUFSTREAM:
                       {
@@ -2368,11 +2401,11 @@ no event arriving until a warning is issued";
                       if(!ok) break;
                       if(bs <= 0) WarnBox("Illegal number", this);
                       else        fBuffers = bs;
-                      }  
+                      }
                       break;
                   case M_GATEL:
                       {
-                      const char help_GATEL[] = 
+                      const char help_GATEL[] =
 "Readout starts only after this time to allow\n\
 for conversion times of hardware.\n\
 Note: Unit is 100 ns for historical reasons";
@@ -2382,7 +2415,7 @@ Note: Unit is 100 ns for historical reasons";
                       if(!ok) break;
                       if(bs < 0) WarnBox("Illegal number", this);
                       else        fGateLength = bs;
-                      }  
+                      }
                       break;
                   case M_CODENAME:
                      *fCodeName=GetString("Name of readout code",
@@ -2391,7 +2424,7 @@ Note: Unit is 100 ns for historical reasons";
                  case M_COMPILE:
                      MbsCompile();
                      break;
-                  
+
                   case M_MBSSTATUS:
                      if(*fInputSource == "TcpIp")ok = MbsStatus();
                      else WarnBox("Only possible with TcpIp as Input",this);
@@ -2436,7 +2469,7 @@ Note: Unit is 100 ns for historical reasons";
                       if(!ok) break;
                       if(bs < 0) WarnBox("Illegal number", this);
                       else        fStartEvent = bs;
-                      }  
+                      }
                       break;
                   case M_AVERAGE:
                       {
@@ -2445,37 +2478,37 @@ Note: Unit is 100 ns for historical reasons";
                       if(!ok) break;
                       if(bs < 0) WarnBox("Illegal number", this);
                       else        fAverage = bs;
-                      }  
+                      }
                       break;
                   case M_MBSLOGLEVEL:
                       {
-                      Int_t bs = GetInteger("Mbs Log Level (0,1,2)", 
+                      Int_t bs = GetInteger("Mbs Log Level (0,1,2)",
                                   fMbsLogLevel, &ok, this);
                       if(!ok) break;
                       if(bs < 0) WarnBox("Illegal number", this);
-                      else {     fMbsLogLevel = bs; 
-                                 if(fMessageServer)  
+                      else {     fMbsLogLevel = bs;
+                                 if(fMessageServer)
                                  fMessageServer->SetLogLevel(fMbsLogLevel);
                       }
-                      }  
+                      }
                       break;
                   case M_MAXFILESIZE:
                       {
-                      Int_t bs = GetInteger("Maximum output file size(Mbyte)", 
+                      Int_t bs = GetInteger("Maximum output file size(Mbyte)",
                                   fMaxFileSize, &ok, this);
                       if(!ok) break;
                       if(bs < 0) WarnBox("Illegal number", this);
                       else       fMaxFileSize = bs;
-                      }  
+                      }
                       break;
                   case M_MAXRUNTIME:
                       {
-                      Int_t bs = GetInteger("Maximum Runtime (Seconds)", 
+                      Int_t bs = GetInteger("Maximum Runtime (Seconds)",
                                   fMaxRunTime, &ok, this);
                       if(!ok) break;
                       if(bs < 0) WarnBox("Illegal number", this);
                       else       fMaxRunTime = bs;
-                      }  
+                      }
                       break;
 					   case M_AUTORESTART:
 						    if (fAutoRestart) {
@@ -2497,26 +2530,26 @@ Note: Unit is 100 ns for historical reasons";
 							 break;
                   case M_WARNHWM:
                       {
-                      Int_t bs = GetInteger("Disk space warn limit(Mbyte)", 
+                      Int_t bs = GetInteger("Disk space warn limit(Mbyte)",
                                   fWarnHWM, &ok, this);
                       if(!ok) break;
                       if(bs < 0) WarnBox("Illegal number", this);
                       else       fWarnHWM = bs;
-                      }  
+                      }
                       break;
                   case M_HARDHWM:
                       {
-                      Int_t bs = GetInteger("Disk space warn limit(Mbyte)", 
+                      Int_t bs = GetInteger("Disk space warn limit(Mbyte)",
                                   fHardHWM, &ok, this);
                       if(!ok) break;
                       if(bs < 0) WarnBox("Illegal number", this);
                       else       fHardHWM = bs;
-                      }  
+                      }
                       break;
                    case M_CHKQUOTA:
-                      {      
+                      {
                         chkquota(fTbRootFile->GetString(), fHardHWM, fWarnHWM, fVerbLevel);
-                      }  
+                      }
                       break;
 					   case M_PLAYSOUND:
                       {
@@ -2575,11 +2608,11 @@ Note: Unit is 100 ns for historical reasons";
                      break;
                    case M_VERBLEV:
                       {
-                      Int_t bs = GetInteger("C_analyze verbose level", 
+                      Int_t bs = GetInteger("C_analyze verbose level",
                                   fVerbLevel, &ok, this);
                       if(!ok) break;
                       fVerbLevel = bs;
-                      }  
+                      }
                       break;
                    case M_MADEBUG:
                       {
@@ -2594,13 +2627,13 @@ Note: Unit is 100 ns for historical reasons";
     here more breakpoints may be set, \n\
     normal dialog with gdb possible.\n\
     However no communication with C_analyze possible.";
-    
-                     Int_t bs = GetInteger("M_analyze debug mode", 
+
+                     Int_t bs = GetInteger("M_analyze debug mode",
                                   fDebugMode, &ok, this,
                                   NULL, (Bool_t*)NULL, help_MADEBUG);
                       if(!ok) break;
                       fDebugMode = bs;
-                      }  
+                      }
                       break;
                  case M_STOPEVENT:
                       {
@@ -2608,7 +2641,7 @@ Note: Unit is 100 ns for historical reasons";
                       if(!ok) break;
                       if(bs < 0) WarnBox("Illegal number", this);
                       else        fStopEvent = bs;
-                      }  
+                      }
                       break;
                   case M_FROMTIME:
                       *fFromTime = GetString("Start time", fFromTime->Data(), &ok, this);
@@ -2675,7 +2708,7 @@ Note: Unit is 100 ns for historical reasons";
                      if(*fInputSource == "TcpIp")ok = ClearMbs();
                      else WarnBox("Only possible with TcpIp as Input",this);
                      break;
-                     
+
                   case M_CONFIG:
                      if(*fInputSource == "TcpIp")ok = Configure();
                      else WarnBox("Only possible with TcpIp as Input",this);
@@ -2687,7 +2720,7 @@ Note: Unit is 100 ns for historical reasons";
                          WarnBox("Only allowed when running, please Resume first",this);
                      } else  if ( fM_Status == M_RUNNING ){
                         StopDAQ();
-                     } else if ( *fInputSource == "File" 
+                     } else if ( *fInputSource == "File"
                               ||*fInputSource == "FileList"
                               ||*fInputSource == "Fake"
                              || fM_Status == M_CONFIGURED ){
@@ -2695,7 +2728,7 @@ Note: Unit is 100 ns for historical reasons";
                         StartDAQ();
 
                      } else {
-                        cout << setred << "Operation not allowed" << setblack<< endl; 
+                        cout << setred << "Operation not allowed" << setblack<< endl;
                      }
 //                     break;
 //                  case M_STOP:
@@ -2709,24 +2742,24 @@ Note: Unit is 100 ns for historical reasons";
                         if(fM_Status == M_PAUSING){
                            fM_Status=M_RUNNING;
                            fC_Status=M_RUNNING;
-                           PauseCmd  += "resume";              
+                           PauseCmd  += "resume";
                            MessageToM_analyze(PauseCmd.Data());
                            fPauseButton->SetText(new TGHotString("Pause"));
                         } else {
                            if(fC_Status == M_PAUSING){
                               WarnBox("Obviously no event arrived since pause\n\
 force Resume", this);
-                              
+
                               fM_Status=M_RUNNING;
                               fC_Status=M_RUNNING;
-                              PauseCmd += "resume"; 
+                              PauseCmd += "resume";
                               fPauseButton->SetText(new TGHotString("Pause"));
                            }  else {
                               fM_Status=M_PAUSING;
                               fC_Status=M_PAUSING;
-                              PauseCmd += "pause"; 
+                              PauseCmd += "pause";
                               fPauseButton->SetText(new TGHotString("Resume"));
-                           }             
+                           }
                            MessageToM_analyze(PauseCmd.Data());
                         }
                         break;
@@ -2782,7 +2815,7 @@ force Resume", this);
                       fM_Status = IsAnalyzeRunning(0);
                       if(fM_Status == M_PAUSING){
                          TString LoadCmd = "M_client reload ";
-                         LoadCmd = LoadCmd 
+                         LoadCmd = LoadCmd
                                     + fTbParFile->GetString();
                          cout << setmagenta << LoadCmd << setblack<< endl;
                          MessageToM_analyze(LoadCmd.Data());
@@ -2796,7 +2829,7 @@ force Resume", this);
                         WarnBox((const char *)warn, this);
                      } else {
                      AskforRemove(fTbMap->GetString());
-//                        TString RmCmd = "rm "; 
+//                        TString RmCmd = "rm ";
 //                        RmCmd += fTbMap->GetString();
 //                        gSystem->Exec((const char *)RmCmd);
                      }
@@ -2816,7 +2849,7 @@ force Resume", this);
                       }
                       }
                       break;
-                 } 
+                 }
                break;
 
             case kCM_RADIOBUTTON:
@@ -2825,7 +2858,7 @@ force Resume", this);
 //                     if(fRNet->GetState() == kButtonDown){
                         *fInputSource = "Fake";
                         fRFile->SetState(kButtonUp);
-                        fRNet->SetState(kButtonUp);            
+                        fRNet->SetState(kButtonUp);
                         fRFileList->SetState(kButtonUp);
                         fStartStopButton->SetState(kButtonUp);
                         fClearButton->SetState(kButtonDisabled);
@@ -2837,7 +2870,7 @@ force Resume", this);
 //                     if(fRNet->GetState() == kButtonDown){
                         *fInputSource = "FileList";
                         fRFake->SetState(kButtonUp);
-                        fRNet->SetState(kButtonUp);            
+                        fRNet->SetState(kButtonUp);
                         fRFile->SetState(kButtonUp);
                         fStartStopButton->SetState(kButtonUp);
                         fClearButton->SetState(kButtonDisabled);
@@ -2849,7 +2882,7 @@ force Resume", this);
 //                     if(fRNet->GetState() == kButtonDown){
                         *fInputSource = "File";
                         fRFake->SetState(kButtonUp);
-                        fRNet->SetState(kButtonUp);            
+                        fRNet->SetState(kButtonUp);
                         fRFileList->SetState(kButtonUp);
                         fStartStopButton->SetState(kButtonUp);
                         fClearButton->SetState(kButtonDisabled);
@@ -2872,13 +2905,13 @@ force Resume", this);
 /*
                   case R_AUTO:
                      if(fAutoSave){
-                        fRAuto->SetState(kButtonUp); 
+                        fRAuto->SetState(kButtonUp);
                         fRAuto->ChangeBackground(red);
                         fRAuto->SetToolTipText(
                         "Histograms will not be saved automatically");
                         fAutoSave = kFALSE;
                      } else {
-                        fRAuto->SetState(kButtonDown); 
+                        fRAuto->SetState(kButtonDown);
                         fRAuto->ChangeBackground(green);
                         fRAuto->SetToolTipText(
                         "Histograms will be saved at end of run");
@@ -2892,12 +2925,12 @@ force Resume", this);
 */
                   case R_ACTIVE:
                      if(fWriteOutput){
-                        fRActive->SetState(kButtonUp); 
+                        fRActive->SetState(kButtonUp);
                         fRActive->ChangeBackground(red);
                         fWriteOutput = kFALSE;
                         fRActive->SetToolTipText("Output file not enabled");
                      } else {
-                        fRActive->SetState(kButtonDown); 
+                        fRActive->SetState(kButtonDown);
                         fRActive->ChangeBackground(green);
                         fWriteOutput = kTRUE;
                         fRActive->SetToolTipText("Output file enabled");
@@ -2946,14 +2979,14 @@ Bool_t FhMainFrame::PutDefaults(){
    if(!gSystem->AccessPathName(outfile.Data())){
       TString bckfile = outfile.Data();
       bckfile += ".bck";
-      cout << "Moving: " << outfile.Data()  << " to " 
+      cout << "Moving: " << outfile.Data()  << " to "
            <<  bckfile.Data() << endl;
       TString MvCmd = "mv ";
       MvCmd += outfile;
       MvCmd += " ";
       MvCmd += bckfile;
       gSystem->Exec((const char *)MvCmd);
-   } 
+   }
    wstream.open(outfile, ios::out);
    if (!wstream.good()) {
 		cerr	<< "C_analyze: "
@@ -3003,16 +3036,16 @@ Bool_t FhMainFrame::PutDefaults(){
    wstream << "MBSLOGLEVEL: " <<  fMbsLogLevel         << endl;
    wstream << "HSAVEINTERVALL: " <<  fHsaveIntervall   << endl;
    wstream << "AVERAGE:  "    <<  fAverage             << endl;
-   if(fWriteOutput) wout = "TRUE"; 
+   if(fWriteOutput) wout = "TRUE";
    else             wout = "FALSE";
-   wstream << "WRITEOUTPUT:"  <<  wout        << endl; 
-   if(fSelectTime) wout = "TRUE";  
+   wstream << "WRITEOUTPUT:"  <<  wout        << endl;
+   if(fSelectTime) wout = "TRUE";
    else             wout = "FALSE";
-   wstream << "SELECTTIME:"  <<  wout         << endl; 
-   if(fSelectNumber) wout = "TRUE";  
+   wstream << "SELECTTIME:"  <<  wout         << endl;
+   if(fSelectNumber) wout = "TRUE";
    else             wout = "FALSE";
-   wstream << "SELECTNUMBER:"  <<  wout       << endl; 
-   if(fAutoSetup) wout = "TRUE";  
+   wstream << "SELECTNUMBER:"  <<  wout       << endl;
+   if(fAutoSetup) wout = "TRUE";
    else             wout = "FALSE";
    wstream << "AUTOSETUP:"  <<  wout       << endl;
 
@@ -3031,7 +3064,7 @@ Bool_t FhMainFrame::PutDefaults(){
       fSetup->Save();
    }
 
-  return kTRUE; 
+  return kTRUE;
 }
  //________________________________________________________________________________
 
@@ -3039,7 +3072,7 @@ Bool_t FhMainFrame::GetDefaults(){
 
    Bool_t ok = kTRUE;
    ifstream wstream;
-	TString wline;   
+	TString wline;
    TString infile;
    TString parName;
    TString parValue;
@@ -3058,7 +3091,7 @@ Bool_t FhMainFrame::GetDefaults(){
    Int_t islash;
    while (1) {
       islash = subdir.Index(slash);
-      if(islash < 0) break; 
+      if(islash < 0) break;
       subdir = subdir.Remove(0,islash+1);
    }
    fMap     = new TString("/tmp/M_prod_");
@@ -3084,7 +3117,7 @@ Bool_t FhMainFrame::GetDefaults(){
      cerr	<< setred << "C_analyze: MBS version not defined" << setblack << endl;
      ok = kFALSE;
    }
-   
+
    fDir          = new TString("dualppc");
    fTrigger      = new TString("VME");
    fCodeName        = new TString("");
@@ -3098,7 +3131,7 @@ Bool_t FhMainFrame::GetDefaults(){
    fSelectNumber    = kFALSE;
    fAutoSetup    = kTRUE;
    fMbsLogLevel = 1;
-   fMessageIntervall = 1000;       // 1 second 
+   fMessageIntervall = 1000;       // 1 second
    fAverage          = 60;         // 60 seconds
    void* dirp=gSystem->OpenDirectory(".");
    TRegexp endwithmk("Readout\\.mk$");
@@ -3199,8 +3232,8 @@ Bool_t FhMainFrame::GetDefaults(){
          	if(parName == "STOPEVENT" ) fStopEvent     = atoi(parValue.Data());
          	if(parName == "WARNHWM" )   fWarnHWM       = atoi(parValue.Data());
          	if(parName == "HARDHWM")    fHardHWM       = atoi(parValue.Data());
-         	if(parName == "VERBLEV")    fVerbLevel     = atoi(parValue.Data()); 
-         	if(parName == "DEBUGMODE")  fDebugMode     = atoi(parValue.Data()); 
+         	if(parName == "VERBLEV")    fVerbLevel     = atoi(parValue.Data());
+         	if(parName == "DEBUGMODE")  fDebugMode     = atoi(parValue.Data());
          	if(parName == "FROMTIME")   *fFromTime     = parValue;
          	if(parName == "TOTIME"  )   *fToTime       = parValue;
          	if(parName == "MBSLOGLEVEL"  ) fMbsLogLevel   = atoi(parValue.Data());
@@ -3217,12 +3250,12 @@ Bool_t FhMainFrame::GetDefaults(){
          	if(parName == "AUTOSETUP" && parValue.Index("FALSE") >= 0)
             	 fAutoSetup=kFALSE;
       	}
-      } else {   
+      } else {
 		   cerr	<< setred << "C_analyze: "
 				<< gSystem->GetError() << " - " << infile
 				<< setblack << endl;
          ok = kFALSE;
-	   } 
+	   }
    } else {
       cout << setred << "File for defaults not found" << setblack << endl;
       ok = kFALSE;
@@ -3279,7 +3312,7 @@ Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
       sock1 = MINSOCKET+1;
       sock2 = MAXSOCKET;
    }
-   
+
    for (Int_t sock = sock1; sock <= sock2; sock++) {
       TString cmd("/usr/sbin/lsof -i :");
       cmd += sock;
@@ -3326,22 +3359,22 @@ Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
             EMsgBoxIcon icontype = kMBIconQuestion;
             TString emess("M_analyze with Id ");
             emess += pid;
-            emess += "seems not running, clean lock file?"; 
-            new TGMsgBox(gClient->GetRoot(),this,"Question", 
+            emess += "seems not running, clean lock file?";
+            new TGMsgBox(gClient->GetRoot(),this,"Question",
             emess.Data(),
-            icontype, 
+            icontype,
 //            gClient->GetPicture("/home/rg/schaileo/myroot/xpm/warn1.xpm"),
             buttons, &retval);
             if ( retval == kMBYes ) {
-               TString RmCmd = "rm "; 
+               TString RmCmd = "rm ";
                RmCmd += pidfile;
                gSystem->Exec((const char *)RmCmd);
             } else {
                socknr = 0;
             }
-         }  
+         }
    	}
-//     
+//
 //      if ( socknr == 0 && gSystem->AccessPathName(pidfile.Data()) ) {
 //         cout << socknr << " " << pidfile.Data() << endl;
 //         *fOurPidFile = pidfile;
@@ -3386,38 +3419,38 @@ Int_t FhMainFrame::IsAnalyzeRunning(Int_t ps_check){
              cout << "found " << procs.Data() << endl;
 
          } else {
-             cout << "Didnt find " << procs.Data() 
+             cout << "Didnt find " << procs.Data()
              << " remove " << fOurPidFile->Data() << endl;
 //            int buttons = kMBYes | kMBNo, retval=0;
  //           EMsgBoxIcon icontype = kMBIconQuestion;
- //           new TGMsgBox(gClient->GetRoot(),this,"Question", 
+ //           new TGMsgBox(gClient->GetRoot(),this,"Question",
  //           "M_analyze seems to have died, clean lock file? ",
-//            icontype, 
+//            icontype,
 //            gClient->GetPicture("/home/rg/schaileo/myroot/xpm/warn1.xpm"),
 //            buttons, &retval);
  //           if(retval == kMBYes){
-               TString RmCmd = "rm "; 
+               TString RmCmd = "rm ";
                RmCmd += fOurPidFile->Data();
                gSystem->Exec((const char *)RmCmd);
 //            }
             if (status == M_STARTING || status == M_RUNNING) {
-//               cout << setred   << "M_analyze seems to have died" 
+//               cout << setred   << "M_analyze seems to have died"
 //                    << setblack << endl;
                status = M_DIED;
             } else {
                status = M_ABSENT;
             }
-         }  
+         }
       }
    }
-    else if (fM_Status != M_STARTING && fM_Status != M_DIRTY 
+    else if (fM_Status != M_STARTING && fM_Status != M_DIRTY
           && fM_Status != M_CONFIGURED) status=M_ABSENT;
-   return status; 
+   return status;
 }
 //________________________________________________________________________________
 
 void FhMainFrame::Runloop(){
-   static Int_t Old_Status=M_ABSENT; 
+//   static Int_t fM_OldStatus=M_ABSENT;
    static Bool_t saving_hists=kFALSE;
    Long_t id, flags, modtime;
    Long64_t size;
@@ -3429,34 +3462,35 @@ void FhMainFrame::Runloop(){
    TCanvas *c1 = fRateHist->GetCanvas();
    TString stime;
    TMessage * message;
-   Int_t nobs; 
+   Int_t nobs;
    fM_Status = IsAnalyzeRunning(0);
+//   cout << "fM_Status " << fM_Status<< endl;
    if(fM_Status == M_RUNNING && (!fForcedStop && fWriteOutput && fOutputFile->Length() > 1)){
       Int_t sts = gSystem->GetPathInfo(fOutputFile->Data(), &id, &size, &flags, &modtime);
       if (sts == 0) {
          fOutSize->SetText(new TGString(Form("%d", size)));
          gClient->NeedRedraw(fOutSize);
          if (fMaxFileSize > 0 && size/1000000 > fMaxFileSize) {
-            cout << setred << fOutputFile << ": size of output file = " << size/1000000 
+            cout << setred << fOutputFile << ": size of output file = " << size/1000000
                  << "MB exceeds MaxFileSize = " << fMaxFileSize << " MB" << endl;
             cout << "force StopDAQ" << setblack << endl;
             fForcedStop = kTRUE;
             this->StopDAQ();
             return;
          }
-      } 
+      }
    }
    if(fM_Status == M_RUNNING && (!fForcedStop && fMaxRunTime > 0)){
-      if (fTotal_livetime >= fMaxRunTime) { 
+      if (fTotal_livetime >= fMaxRunTime) {
          cout << endl << setblue << "*******************************************************" << endl;
-         cout << "Runtime (sec) " << fMaxRunTime 
+         cout << "Runtime (sec) " << fMaxRunTime
               << " reached MaxRunTime: " << fMaxRunTime << endl;
          cout << "force StopDAQ" << endl;
          cout << "*******************************************************" << setblack<< endl;
          fForcedStop = kTRUE;
          this->StopDAQ();
          return;
-      } 
+      }
    }
 //   fM_Status = IsAnalyzeRunning(0);
    if(fForcedStop && (fAutoRestart || fAutoRestartRT)){
@@ -3484,7 +3518,7 @@ void FhMainFrame::Runloop(){
       }
       if(fUseMap && !fMfile && !gSystem->AccessPathName(fTbMap->GetString())){
          fMfile = TMapFile::Create(fTbMap->GetString());
-         if (fMfile->IsZombie()) { 
+         if (fMfile->IsZombie()) {
             fMfile->Close();
             fMfile = NULL;
             fUseMap = kFALSE;
@@ -3521,7 +3555,7 @@ void FhMainFrame::Runloop(){
             	  char *str0 = new char[nobs];
             	  message->ReadString(str0, nobs);
                  if (fVerbLevel > 0) cout << "Got string: " << str0 << endl;
-            	  delete str0;
+            	  delete [] str0;
          	  }
       	  } else if ( message->What() == kMESS_OBJECT ) {
 //               if (hrate) delete hrate;
@@ -3560,7 +3594,7 @@ void FhMainFrame::Runloop(){
             titY1 = title->GetY1NDC();
             titH  = title->GetY2NDC() - titY1;
          }
-         gROOT->ForceStyle(); 
+         gROOT->ForceStyle();
          gStyle->SetTitleX(titX1);
          gStyle->SetTitleY(titY1 + titH);
          gStyle->SetTitleH(titH);
@@ -3573,7 +3607,7 @@ void FhMainFrame::Runloop(){
       }
       if(hrate){
          Int_t total = (Int_t)hrate->GetEntries();
-         fNev->SetText(new TGString(Form("%d", total))); 
+         fNev->SetText(new TGString(Form("%d", total)));
          gClient->NeedRedraw(fNev);
 
          c1->cd();
@@ -3581,7 +3615,7 @@ void FhMainFrame::Runloop(){
             hrate->SetFillColor(kRed);
             hrate->SetLabelSize(0.1,"X");
             hrate->SetLabelSize(0.1,"Y");
-            hrate->SetNdivisions(505,"Y"); 
+            hrate->SetNdivisions(505,"Y");
 //               hrate->Draw();
 //               c1->Modified();
             TPaveText *title = (TPaveText*)c1->GetPrimitive("title");
@@ -3595,12 +3629,12 @@ void FhMainFrame::Runloop(){
                titY1 = title->GetY1NDC();
                titH  = title->GetY2NDC() - titY1;
             }
-            gROOT->ForceStyle(); 
+            gROOT->ForceStyle();
             gStyle->SetTitleX(titX1);
             gStyle->SetTitleY(titY1 + titH);
             gStyle->SetTitleH(titH);
             gStyle->SetTitleW(titW);
-//               cout << " titX1 "<< titX1 << " titW " << titW 
+//               cout << " titX1 "<< titX1 << " titW " << titW
 //                    << " titY1 "<< titY1 << " titH " << titH
 //               << endl;
             gStyle->SetOptStat(0);
@@ -3619,7 +3653,7 @@ void FhMainFrame::Runloop(){
 //                  Float_t etime = fStopwatch->RealTime();
             fTotal_livetime += etime;
             Int_t isec = (Int_t)fTotal_livetime;
-            fRunTime->SetText(new TGString(Form("%d",isec))); 
+            fRunTime->SetText(new TGString(Form("%d",isec)));
             gClient->NeedRedraw(fRunTime);
             if(fTotal_livetime > 0){
                Float_t avg_rate = 0;
@@ -3632,10 +3666,10 @@ void FhMainFrame::Runloop(){
                   for(Int_t i = avg_bins - fAverage+1; i <= avg_bins; i++){
                      sum += hrate->GetBinContent(i);
                      if(sum>0) binsum++; // skip trailing 0's
-                  }                        
+                  }
                   if(binsum >0)avg_rate = sum / binsum;
                }
-               fRate->SetText(new TGString(Form("%d",(Int_t)avg_rate))); 
+               fRate->SetText(new TGString(Form("%d",(Int_t)avg_rate)));
                gClient->NeedRedraw(fRate);
 //                same for deadtime if available
                if(hdeadt){
@@ -3647,11 +3681,11 @@ void FhMainFrame::Runloop(){
                   Float_t sum = 0;
 
                   for(Int_t i = startbin; i <= avg_bins; i++){
-                     sum += hdeadt->GetBinContent(i); 
+                     sum += hdeadt->GetBinContent(i);
                      if(sum>0) binsum++; // skip trailing 0's
                   }
                   if(binsum >0)avg_rate = sum /binsum;
-                  fDeadTime->SetText(new TGString(Form("%d",avg_rate))); 
+                  fDeadTime->SetText(new TGString(Form("%d",avg_rate)));
                   gClient->NeedRedraw(fDeadTime);
                }
             }
@@ -3666,8 +3700,8 @@ void FhMainFrame::Runloop(){
                fTotal_time_no_event = 0;
                if(total <= fEvents_before){
 //                        cout << total << " " << fEvents_before << endl;
-                  cout << setred << bell << 
-                  "No events last " << fTotal_time_elapsed << " seconds"<< endl; 
+                  cout << setred << bell <<
+                  "No events last " << fTotal_time_elapsed << " seconds"<< endl;
                   if(!CheckHostsUp() && *fInputSource == "TcpIp")
                      cout << "Seems a Lynx processor died"<< endl;
                   cout << setblack;
@@ -3685,14 +3719,15 @@ void FhMainFrame::Runloop(){
          fWasStarted = 0;
          if(fMfile)fMfile->Close();
          fMfile = 0;
-      }        
+      }
    }
-   if(Old_Status != fM_Status){
-//      cout << "Status : " << fM_Status << " Old_Status: " << Old_Status << endl;
-      if((fM_Status == M_ABSENT || fM_Status == M_CONFIGURED)&&
-         (Old_Status  == M_RUNNING || Old_Status  == M_STOPPING ||
-          Old_Status  == M_STOPPED || Old_Status  == M_PAUSING)){
-        
+   if(fM_OldStatus != fM_Status){
+ //     cout << "Status : " << fM_Status << " fM_OldStatus: " << fM_OldStatus << endl;
+      if ((fM_Status == M_ABSENT || fM_Status == M_CONFIGURED)&&
+         (fM_OldStatus  == M_RUNNING || fM_OldStatus  == M_STOPPING ||
+          fM_OldStatus  == M_STOPPED || fM_OldStatus  == M_PAUSING ||
+          fM_OldStatus  == -1 )){
+
          if(fMfile){
             fMfile->Close();
             fMfile = 0;
@@ -3700,7 +3735,7 @@ void FhMainFrame::Runloop(){
          if(fWriteOutput && *fInputSource == "TcpIp"){
             TString chmodCmd = "chmod -w ";
             chmodCmd += *fOutputFile;
-            cout << setgreen << "For your info: " << chmodCmd.Data() 
+            cout << setgreen << "For your info: " << chmodCmd.Data()
                  << setblack << endl;
             gSystem->Exec(chmodCmd.Data());
          }
@@ -3709,7 +3744,7 @@ void FhMainFrame::Runloop(){
 //            SaveMap(kFALSE);
  //           saving_hists = kFALSE;
              cout << setblue << "Skip saving hists in C_analyze"
-                  << setblack << endl;        
+                  << setblack << endl;
          }
          if(*fInputSource != "TcpIp")StopMessage();
          SetButtonsToDefaults();
@@ -3747,7 +3782,7 @@ void FhMainFrame::Runloop(){
       if(fM_Status == M_STOPPING){
          fStatus->SetText(new TGString("Stopping"));
          fStatus->ChangeBackground(cyan);
-//         TString TermCmd = "M_client terminate";              
+//         TString TermCmd = "M_client terminate";
 //         MessageToM_analyze(TermCmd);
       }
       if(fM_Status == M_STOPPED){
@@ -3757,9 +3792,9 @@ void FhMainFrame::Runloop(){
 
       }
       gClient->NeedRedraw(fStatus);
-      Old_Status=fM_Status;
+      fM_OldStatus=fM_Status;
    }
-   Old_Status=fM_Status;
+   fM_OldStatus=fM_Status;
 };
 //_____________________________________________________________________________________
 //
@@ -3778,15 +3813,15 @@ int main(int argc, char **argv)
    Int_t attachid = 0;
    Int_t attachsock = 0;
    if (argc > 2) {
-      attachid = atoi(argv[1]); 
-      attachsock = atoi(argv[2]); 
+      attachid = atoi(argv[1]);
+      attachsock = atoi(argv[2]);
    }
    mainWindow = new FhMainFrame(gClient->GetRoot(), 400, 220, attachid, attachsock);
    cout << "Root Vers." <<  gROOT->GetVersion() << endl;
    Int_t delay = 1000;
 //   if ( fUseMap ) delay = 1000;
 //   else           delay = 1000;
-   
+
    mt = new MyTimer(delay,kTRUE);
    theApp.Run();
 
@@ -3801,7 +3836,7 @@ int main(int argc, char **argv)
    if (fSocket != -1) {
       cout << "shutdown(fSocket, 2) " << endl;
       shutdown(fSocket, 2);
-      
+
       gSystem->CloseConnection(fSocket);
       gROOT->GetListOfSockets()->Remove(this);
    }
