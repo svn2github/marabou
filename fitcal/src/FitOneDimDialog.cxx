@@ -1593,8 +1593,8 @@ Int_t FitOneDimDialog::GetMarkers()
 //   }
 // find number of peaks to fit
    TAxis * xa = fSelHist->GetXaxis();
-   fFrom = xa->GetBinLowEdge(xa->GetFirst());
-   fTo   = xa->GetBinLowEdge(xa->GetLast());
+//   fFrom = xa->GetBinLowEdge(xa->GetFirst());
+//   fTo   = xa->GetBinLowEdge(xa->GetLast());
 //   fFrom = xa->GetBinUpEdge(xa->GetFirst());
 //   fTo   = xa->GetBinLowEdge(xa->GetLast());
    fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
@@ -1607,6 +1607,10 @@ Int_t FitOneDimDialog::GetMarkers()
       if (fNmarks > 1)
          fTo   = ((FhMarker *) fMarkers->At(fNmarks - 1))->GetX();
    }
+   if ( fFrom < xa->GetBinLowEdge(xa->GetFirst()) )
+     fFrom = xa->GetBinLowEdge(xa->GetFirst());
+   if ( fTo > xa->GetBinLowEdge(xa->GetLast()) )
+     fTo = xa->GetBinLowEdge(xa->GetLast());
 
    if (fNmarks == 2) {
       fNpeaks = 1;
