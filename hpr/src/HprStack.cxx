@@ -83,14 +83,26 @@ void HprStack::BuildCanvas()
 
 //   TString ytitle("");
 //   Int_t nbins = 0, binlx = 0, binux = 0, binly = 0, binuy = 0;
+   fDim = -1;
    fStack = new THStack("hstack","");
 //   cout << "THStack *st = (THStack*)" <<  fStack << endl;
+   fNDrawn = 0;
    TH1 *hist;
    for(Int_t i=0; i<fNhists; i++) {
       hist = (TH1*)fHList->At(i);;
       if (!hist) {
 //         cout << " Hist not found at: " << i << endl;
          continue;
+      }
+      if ( fDim < 0 ) {
+         fDim = hist->GetDimension();
+      } else if ( hist->GetDimension() != fDim ) {
+         cout << " Hist has wrong dimension: " << hist->GetName() << endl;
+         continue;
+      }
+      if ( fDim == 2 ) {
+         hist->SetFillColor(fFillColor[i]);
+		   hist->SetFillStyle(1001);
       }
 //      hist->Print();
       hname = hist->GetName();
@@ -100,11 +112,18 @@ void HprStack::BuildCanvas()
       if (last_us >0) hname.Remove(last_us);
       hist->SetName(hname);
       fStack->Add(hist);
+      fNDrawn ++;
       stitle += hist->GetName();
       if ( i < fNhists - 1 ) stitle += "_";
    }
 //   cout << " fOpt: " << fOpt<< endl;
-   fStack->Draw(fOpt);
+   if ( fDim == 2) {
+      TString opt("lego1");
+      opt += fOpt;
+      fStack->Draw(opt);
+   } else {
+      fStack->Draw(fOpt);
+   }
    SetAttributes();
 /*
    if (fRealStack || hist->GetDimension() == 2) hs->Draw();
@@ -129,7 +148,21 @@ void HprStack::BuildCanvas()
 
 void HprStack::RecursiveRemove(TObject *obj)
 {
-//   cout <<  "HprStack::RecursiveRemove,obj " << obj << " "  << 
+//   cout <<  "HprStack::RecursiveRemove,obj " << obj << " "  << obj->GetName() << endl;
+   if (obj == fCanvas) {
+      TLegend *leg = (TLegend*)fCanvas->GetListOfPrimitives()->FindObject("TPave");
+      if ( leg ) {
+         fLegendX1 = leg->GetX1NDC();
+//         cout << "fLegendX1 " << fLegendX1<< endl;
+         fLegendX2 = leg->GetX2NDC();
+         fLegendY1 = leg->GetY1NDC();
+         fLegendY2 = leg->GetY2NDC();
+      }
+      gROOT->GetList()->Remove(this);
+      gROOT->GetListOfCleanups()->Remove(this);
+ //     cout <<  "RecursiveRemove,fWindowXWidth  " << fWindowXWidth << endl;
+      delete this;
+   }
 }
 //________________________________________________________________________
 
@@ -193,7 +226,7 @@ static const Char_t helptext[] =
    fRow_lab->Add(new TObjString("CheckButton+Draw Markers"));
    fValp[ind++] = &fShowMarkers;
    TString lab;
-   for ( Int_t i = 0; i < fNhists; i++ ) {
+   for ( Int_t i = 0; i < fNDrawn; i++ ) {
       lab = "ColorSelect_FillCol[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
@@ -371,44 +404,54 @@ void HprStack::SetAttributes()
    TObjArray * stack = fStack->GetStack();
    TList * orighist = fStack->GetHists();
 	TString opt;
+
 	if (fShowContour) opt="HIST";
 	if (fShowErrors ) opt+= "E1";
-   for(Int_t i=0; i<fNhists; i++) {
+   for(Int_t i=0; i<fNDrawn; i++) {
       TH1 * hist = (TH1*)stack->At(i);
       TH1 * ohist = (TH1*)orighist->At(i);
-      if ( fFill_1Dim[i] ) {
-         hist->SetFillStyle(fFillStyle[i]);
-         hist->SetFillColor(fFillColor[i]);
-         ohist->SetFillStyle(fFillStyle[i]);
-         ohist->SetFillColor(fFillColor[i]);
-//         cout  << "fFillStyle " << fFillStyle[i]<< " fFillColor " << fFillColor[i] << endl;
+      if ( fDim  == 2 ) {
+         hist->SetFillColor(fFillColor[i]); ohist->SetFillColor(fFillColor[i]);
+		   hist->SetFillStyle(1001);
       } else {
-         hist->SetFillStyle(0);
-         ohist->SetFillStyle(0);
-     }
-      if (hist->GetDimension() == 1) {
-         hist->SetLineColor(fLineColor[i]);
-         hist->SetLineStyle(fLineStyle[i]);
-         hist->SetLineWidth(fLineWidth[i]);
-         ohist->SetLineColor(fLineColor[i]);
-         ohist->SetLineStyle(fLineStyle[i]);
-         ohist->SetLineWidth(fLineWidth[i]);
-      }
-      if ( fShowMarkers ) {
-         hist->SetMarkerStyle(fMarkerStyle[i]);
-         hist->SetMarkerColor(fMarkerColor[i]);
-         hist->SetMarkerSize(fMarkerSize[i]);
-         ohist->SetMarkerStyle(fMarkerStyle[i]);
-         ohist->SetMarkerColor(fMarkerColor[i]);
-         ohist->SetMarkerSize(fMarkerSize[i]);
-      } else {
-         hist->SetMarkerSize(0);
+			if ( fFill_1Dim[i] ) {
+				hist->SetFillStyle(fFillStyle[i]);
+				hist->SetFillColor(fFillColor[i]);
+				ohist->SetFillStyle(fFillStyle[i]);
+				ohist->SetFillColor(fFillColor[i]);
+	//         cout  << "fFillStyle " << fFillStyle[i]<< " fFillColor " << fFillColor[i] << endl;
+			} else {
+				hist->SetFillStyle(0);
+				ohist->SetFillStyle(0);
+		}
+			hist->SetLineColor(fLineColor[i]);
+			hist->SetLineStyle(fLineStyle[i]);
+			hist->SetLineWidth(fLineWidth[i]);
+			ohist->SetLineColor(fLineColor[i]);
+			ohist->SetLineStyle(fLineStyle[i]);
+			ohist->SetLineWidth(fLineWidth[i]);
+			if ( fShowMarkers ) {
+				hist->SetMarkerStyle(fMarkerStyle[i]);
+				hist->SetMarkerColor(fMarkerColor[i]);
+				hist->SetMarkerSize(fMarkerSize[i]);
+				ohist->SetMarkerStyle(fMarkerStyle[i]);
+				ohist->SetMarkerColor(fMarkerColor[i]);
+				ohist->SetMarkerSize(fMarkerSize[i]);
+			} else {
+				hist->SetMarkerSize(0);
+			}
       }
    }
    fCanvas->cd();
-   opt += fOpt;
 //   cout << "DrawOpt: "<< opt << endl;
-   fStack->SetDrawOption(opt);
+   if ( fDim == 2 ) {
+     opt = "lego1";
+     opt += fOpt;
+     fStack->SetDrawOption(opt);
+   } else {
+      opt += fOpt;
+      fStack->SetDrawOption(opt);
+   }
    fCanvas->Modified();
    fCanvas->Update();
 }

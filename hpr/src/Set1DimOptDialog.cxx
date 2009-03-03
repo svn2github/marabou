@@ -19,7 +19,23 @@ namespace std {} using namespace std;
 Set1DimOptDialog::Set1DimOptDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
-"Most of the value in this widget are self explaining\n\
+"\n\
+Error Drawing Modes:\n\
+E	Draw error bars.\n\
+E0	Draw error bars. Markers are drawn for bins with 0 contents.\n\
+E1	Draw error bars with perpendicular lines at the edges.\n\
+   Length is controled by EndErrSize.\n\
+E2	Draw error bars with rectangles.\n\
+E3	Draw a fill area through the end points of the vertical error bars.\n\
+E4	Draw a smoothed filled area through the end points of the error bars.\n\
+E5	Like E3 but ignore the bins with 0 contents.\n\
+E6	Like E4 but ignore the bins with 0 contents.\n\
+\n\
+Options E3-E6: Choose: Contour Off and FillHist On to get area\n\
+               filled between the error lines.\n\
+X ErrorS controls drawing of error bars in X.\n\
+A value of 0.5 draws a line X +- 0.5*BinWidth\n\
+\n\
 If \"Live statbox\" a box is displayed when dragging the\n\
 pressed mouse in the histogram area showing various statistics\n\
 values. Selecting \"Live Gauss fit\" fits a gaussian to the\n\
@@ -33,54 +49,58 @@ be selected.\n\
    fCanvas = rc->Canvas();
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
-   
+
    Int_t ind = 0;
  //  static Int_t dummy;
    static TString stycmd("SetHistAttPermLocal()");
 
    fRow_lab->Add(new TObjString("CheckButton_Contour"));
-   fValp[ind++] = &fShowContour; 
-	fRow_lab->Add(new TObjString("ColorSelect+LineCol"));  
-	fRow_lab->Add(new TObjString("LineSSelect+Style"));  
+   fValp[ind++] = &fShowContour;
+	fRow_lab->Add(new TObjString("ColorSelect+LineCol"));
+	fRow_lab->Add(new TObjString("LineSSelect+Style"));
 	fRow_lab->Add(new TObjString("PlainShtVal+Width"));
 	fValp[ind++] = &fHistLineColor;
 	fValp[ind++] = &fHistLineStyle;
 	fValp[ind++] = &fHistLineWidth;
-   fRow_lab->Add(new TObjString("CheckButton_Show Errors")); 
-   fValp[ind++] = &fShowErrors; 
-	fRow_lab->Add(new TObjString("CheckButton+ErrorX")); 
-	fValp[ind++] = &fErrorX;     
-	fRow_lab->Add(new TObjString("Float_Value+EndErrSize "));  
+   fRow_lab->Add(new TObjString("ComboSelect_Error Mode;none;E;E1;E2;E3;E4;E5;E6"));
+   fValp[ind++] = &fErrorMode;
+//   fRow_lab->Add(new TObjString("CheckButton_Show Errors"));
+//   fValp[ind++] = &fShowErrors;
+//	fRow_lab->Add(new TObjString("CheckButton+ErrorX"));
+//	fValp[ind++] = &fErrorX;
+	fRow_lab->Add(new TObjString("Float_Value+EndErrSize "));
 	fValp[ind++] = &fEndErrorSize;
-   fRow_lab->Add(new TObjString("CheckButton+Xaxis at top")); 
-   fValp[ind++] = &fDrawAxisAtTop; 
-   fRow_lab->Add(new TObjString("CheckButton_Fill hist")); 
-   fValp[ind++] = &fFill1Dim; 
+	fRow_lab->Add(new TObjString("Float_Value+X ErrorS"));
+	fValp[ind++] = &fErrorX;
+//   fRow_lab->Add(new TObjString("CheckButton+Xaxis at top"));
+//   fValp[ind++] = &fDrawAxisAtTop;
+   fRow_lab->Add(new TObjString("CheckButton_Fill hist"));
+   fValp[ind++] = &fFill1Dim;
    fRow_lab->Add(new TObjString("ColorSelect+FillColor"));
    fValp[ind++] = &fHistFillColor;
    fRow_lab->Add(new TObjString("Fill_Select+FillStyle"));
-   fValp[ind++] = &fHistFillStyle; 
+   fValp[ind++] = &fHistFillStyle;
 
    fRow_lab->Add(new TObjString("ColorSelect_MarkerColor"));
    fValp[ind++] = &fMarkerColor;
    fRow_lab->Add(new TObjString("Mark_Select+MarkerStyle"));
-   fValp[ind++] = &fMarkerStyle; 
+   fValp[ind++] = &fMarkerStyle;
    fRow_lab->Add(new TObjString("Float_Value+MarkerSize"));
-   fValp[ind++] = &fMarkerSize; 
+   fValp[ind++] = &fMarkerSize;
 
-   fRow_lab->Add(new TObjString("CheckButton_Live statbox")); 
-   fValp[ind++] = &fLiveStat1Dim; 
-   fRow_lab->Add(new TObjString("CheckButton+Live Gauss fit")); 
-   fValp[ind++] = &fLiveGauss; 
+   fRow_lab->Add(new TObjString("CheckButton_Live statbox"));
+   fValp[ind++] = &fLiveStat1Dim;
+   fRow_lab->Add(new TObjString("CheckButton+Live Gauss fit"));
+   fValp[ind++] = &fLiveGauss;
    fRow_lab->Add(new TObjString("CheckButton+Linear bg in fit"));
-   fValp[ind++] = &fLiveBG;  
+   fValp[ind++] = &fLiveBG;
 
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
 
-   static Int_t ok; 
+   static Int_t ok;
    Int_t itemwidth = 380;
-   fDialog = 
+   fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
@@ -89,9 +109,9 @@ be selected.\n\
 
 void Set1DimOptDialog::RecursiveRemove(TObject * obj)
 {
-   if (obj == fCanvas) { 
+   if (obj == fCanvas) {
  //     cout << "Set1DimOptDialog: CloseDialog "  << endl;
-      CloseDialog(); 
+      CloseDialog();
    }
 }
 //_______________________________________________________________________
@@ -116,12 +136,14 @@ void Set1DimOptDialog::SetHistAttNow(TCanvas *canvas)
 void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
 {
    if (!canvas) return;
+	canvas->cd();
    if (fFill1Dim) {
       if (fHistFillColor == 0) fHistFillColor = 1;
       if (fHistFillStyle == 0) fHistFillStyle = 1001;
-   }   
+   }
    fDrawOpt = "";
-   if (fShowErrors) fDrawOpt += "E1";
+   if (fErrorMode != "none") fDrawOpt += fErrorMode;
+//   if (fShowErrors) fDrawOpt += "E1";
    if (fShowContour) fDrawOpt += "HIST";
    gStyle->SetEndErrorSize (fEndErrorSize );
    gStyle->SetErrorX       (fErrorX       );
@@ -163,7 +185,7 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
 }
 //____________________________________________________________
 
-void Set1DimOptDialog::SetAtt(TH1* hist) 
+void Set1DimOptDialog::SetAtt(TH1* hist)
 {
 //	cout << "Set1DimOptDialog::SetHistAtt:fDrawOpt1Dim " << fDrawOpt
 //			<< " hist: " << hist->GetName()
@@ -204,6 +226,10 @@ void Set1DimOptDialog::SetDefaults()
    gStyle->SetHistLineWidth(env.GetValue("Set1DimOptDialog.fHistLineWidth", 2));
    gStyle->SetEndErrorSize (env.GetValue("Set1DimOptDialog.fEndErrorSize", 0.01));
    gStyle->SetErrorX       (env.GetValue("Set1DimOptDialog.fErrorX", 0));
+   if ( env.GetValue("Set1DimOptDialog.fErrorMode", "") != "none" )
+      gStyle->SetDrawOption      (env.GetValue("Set1DimOptDialog.fErrorMode", ""));
+   else
+      gStyle->SetDrawOption("");
    gStyle->SetMarkerColor     (env.GetValue("Set1DimOptDialog.MarkerColor",       1));
    gStyle->SetMarkerStyle     (env.GetValue("Set1DimOptDialog.MarkerStyle",       7));
    gStyle->SetMarkerSize      (env.GetValue("Set1DimOptDialog.MarkerSize",      1.));
@@ -221,6 +247,10 @@ void Set1DimOptDialog::SetHistAttPerm()
    gStyle->SetHistLineWidth(fHistLineWidth);
    gStyle->SetEndErrorSize (fEndErrorSize );
    gStyle->SetErrorX       (fErrorX       );
+   if (fErrorMode != "none")
+      gStyle->SetDrawOption(fErrorMode);
+   else
+      gStyle->SetDrawOption("");
    gStyle->SetMarkerColor  (fMarkerColor);
    gStyle->SetMarkerStyle  (fMarkerStyle);
    gStyle->SetMarkerSize   (fMarkerSize );
@@ -238,6 +268,7 @@ void Set1DimOptDialog::SaveDefaults()
    env.SetValue("Set1DimOptDialog.fHistLineWidth", fHistLineWidth);
    env.SetValue("Set1DimOptDialog.fEndErrorSize" , fEndErrorSize);
    env.SetValue("Set1DimOptDialog.fErrorX",        fErrorX);
+   env.SetValue("Set1DimOptDialog.fErrorMode",     fErrorMode);
 	env.SetValue("Set1DimOptDialog.MarkerColor",    fMarkerColor     );
 	env.SetValue("Set1DimOptDialog.MarkerStyle",    fMarkerStyle     );
 	env.SetValue("Set1DimOptDialog.MarkerSize",     fMarkerSize      );
@@ -264,7 +295,8 @@ void Set1DimOptDialog::RestoreDefaults()
    fHistLineStyle = env.GetValue("Set1DimOptDialog.fHistLineStyle", 1);
    fHistLineWidth = env.GetValue("Set1DimOptDialog.fHistLineWidth", 2);
    fEndErrorSize  = env.GetValue("Set1DimOptDialog.fEndErrorSize", 0.01);
-   fErrorX        = env.GetValue("Set1DimOptDialog.fErrorX", 0);
+   fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "none");
+   fErrorX        = env.GetValue("Set1DimOptDialog.fErrorX", 0.);
    fMarkerColor   = env.GetValue("Set1DimOptDialog.MarkerColor",       1);
    fMarkerStyle   = env.GetValue("Set1DimOptDialog.MarkerStyle",       7);
    fMarkerSize    = env.GetValue("Set1DimOptDialog.MarkerSize",      1.);

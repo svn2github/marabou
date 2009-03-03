@@ -23,6 +23,8 @@ private:
    TList *fRow_lab;
    TList *fHList;
    Int_t fNhists;
+   Int_t fNDrawn;
+   Int_t fDim;
    THStack *fStack;
    Option_t *fOpt;
    TGMrbValuesAndText *fDialog;

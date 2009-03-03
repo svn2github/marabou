@@ -15,24 +15,25 @@ private:
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
    TString fDrawOpt;
-   Int_t   fFill1Dim;      
+   Int_t   fFill1Dim;
    Color_t fHistFillColor ;
-   Style_t fHistFillStyle; 
-   Color_t fHistLineColor; 
+   Style_t fHistFillStyle;
+   Color_t fHistLineColor;
    Style_t fHistLineStyle;
    Width_t fHistLineWidth;
    Float_t fEndErrorSize;
-   Int_t   fErrorX;      
+   Float_t fErrorX;
    Color_t fMarkerColor;           //Marker color
    Style_t fMarkerStyle;           //Marker style
    Float_t fMarkerSize;           //Marker width
-   Int_t   fLiveStat1Dim;  
-   Int_t   fLiveGauss;     
-   Int_t   fLiveBG;        
-   Int_t   fDrawAxisAtTop; 
-   Int_t   fShowContour;   
-   Int_t   fShowErrors;    
-   
+   Int_t   fLiveStat1Dim;
+   Int_t   fLiveGauss;
+   Int_t   fLiveBG;
+   Int_t   fDrawAxisAtTop;
+   Int_t   fShowContour;
+   Int_t   fShowErrors;
+   TString fErrorMode;
+
 public:
 
    Set1DimOptDialog(TGWindow * win = NULL);

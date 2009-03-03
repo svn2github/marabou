@@ -224,6 +224,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fDrawAxisAtTop = env.GetValue("Set1DimOptDialog.fDrawAxisAtTop", 0);
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
    fShowErrors    = env.GetValue("Set1DimOptDialog.fShowErrors", 0);
+   fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "E");
+   gStyle->SetErrorX(env.GetValue("Set1DimOptDialog.fErrorX", 0.));
    fDrawOpt2Dim   = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
    fShowZScale    = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
    if ( fShowZScale != 0 )fDrawOpt2Dim += "Z";
@@ -566,7 +568,6 @@ void FitHist::handle_mouse()
    static Int_t nrows = 4;
    Int_t px, py;
    if (gROOT->GetEditorMode() != 0) return;
-//   if (!gPad->GetAutoExec()) return;
    Int_t event = gPad->GetEvent();
    if (event ==  kKeyPress) {
 //    cout << "px: "  << (char)gPad->GetEventX() << endl;
@@ -3212,10 +3213,11 @@ void FitHist::Draw1Dim()
    TString drawopt;
    gROOT->ForceStyle();
    gStyle->SetOptTitle(fShowTitle);
+   drawopt = fErrorMode;
    if (fShowContour)
-      drawopt = "hist";
-   if (fShowErrors)
-      drawopt += "e1";
+      drawopt += "hist";
+//   if (fShowErrors)
+//      drawopt += "e1";
    if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
       fSelHist->SetFillStyle(fHistFillStyle);
       fSelHist->SetFillColor(fHistFillColor);
@@ -3434,8 +3436,9 @@ void FitHist::UpdateDrawOptions()
             }
          }
       }
-   	if (fShowErrors)
-      	drawopt += "e1";
+      drawopt += fErrorMode;
+      if (fShowContour)
+         drawopt += "hist";
    	if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
       	fSelHist->SetFillStyle(fHistFillStyle);
       	fSelHist->SetFillColor(fHistFillColor);

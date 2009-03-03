@@ -132,6 +132,7 @@ private:
    Int_t fTitleCenterZ;
    TText * fDateText;
    Save2FileDialog *fDialog;
+   TString fErrorMode;
 
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
