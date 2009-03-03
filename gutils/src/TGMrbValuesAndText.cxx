@@ -1082,7 +1082,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                }
                delete tokens;
             }
-            fComboBox->Select(sel-1);
+            fComboBox->Select(sel);
             fWidgets->Add(fComboBox);
             fEntries->Add(fComboBox);
             fComboBox->Associate(this);
