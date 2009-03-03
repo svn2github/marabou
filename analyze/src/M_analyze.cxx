@@ -567,9 +567,6 @@ int main(int argc, char **argv) {
 	    PutPid(TMrbAnalyze::M_RUNNING);
 	    u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
 		if (!gMrbTransport->Open(data_source, input_type)) exit(1);
-	    cout << " PutPid(TMrbAnalyze::M_STOPPING)" << endl;
-        PutPid(TMrbAnalyze::M_STOPPING);
-	    u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
 
 		if (gMrbTransport->OpenLogFile("M_analyze.log") && verboseMode) {
 			cout << "M_analyze: Appending log data to file M_analyze.log" << endl;
