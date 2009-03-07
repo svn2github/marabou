@@ -24,7 +24,7 @@ Error Drawing Modes:\n\
 E	Draw error bars.\n\
 E0	Draw error bars. Markers are drawn for bins with 0 contents.\n\
 E1	Draw error bars with perpendicular lines at the edges.\n\
-   Length is controled by EndErrSize.\n\
+	Length is controled by EndErrSize.\n\
 E2	Draw error bars with rectangles.\n\
 E3	Draw a fill area through the end points of the vertical error bars.\n\
 E4	Draw a smoothed filled area through the end points of the error bars.\n\
@@ -142,7 +142,11 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
       if (fHistFillStyle == 0) fHistFillStyle = 1001;
    }
    fDrawOpt = "";
-   if (fErrorMode != "none") fDrawOpt += fErrorMode;
+   if (fErrorMode != "none") {
+      fDrawOpt += fErrorMode;
+   } else if ( fMarkerSize > 0 ) {
+      fDrawOpt += "P";
+   }
 //   if (fShowErrors) fDrawOpt += "E1";
    if (fShowContour) fDrawOpt += "HIST";
    gStyle->SetEndErrorSize (fEndErrorSize );
@@ -187,7 +191,7 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
 
 void Set1DimOptDialog::SetAtt(TH1* hist)
 {
-//	cout << "Set1DimOptDialog::SetHistAtt:fDrawOpt1Dim " << fDrawOpt
+//	cout << "Set1DimOptDialog::SetAtt:fDrawOpt1Dim " << fDrawOpt << endl;
 //			<< " hist: " << hist->GetName()
 //			<< " canvas: " << fCanvas->GetName() << endl;
 	if (fFill1Dim) {
@@ -201,9 +205,12 @@ void Set1DimOptDialog::SetAtt(TH1* hist)
 	hist->SetLineWidth(fHistLineWidth);
 	hist->SetMarkerColor(fMarkerColor);
 	hist->SetMarkerStyle(fMarkerStyle);
-	hist->SetMarkerSize(fMarkerSize);
+   if (fErrorMode == "E1" && fMarkerSize == 0) {
+      hist->SetMarkerSize(0.01);
+   } else {
+	   hist->SetMarkerSize(fMarkerSize);
+   }
 	hist->SetDrawOption(fDrawOpt);
-
 }
 //______________________________________________________________________
 

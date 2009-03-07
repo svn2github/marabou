@@ -223,7 +223,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fLiveBG        = env.GetValue("Set1DimOptDialog.fLiveBG", 0);
    fDrawAxisAtTop = env.GetValue("Set1DimOptDialog.fDrawAxisAtTop", 0);
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
-   fShowErrors    = env.GetValue("Set1DimOptDialog.fShowErrors", 0);
+//   fShowErrors    = env.GetValue("Set1DimOptDialog.fShowErrors", 0);
    fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "E");
    gStyle->SetErrorX(env.GetValue("Set1DimOptDialog.fErrorX", 0.));
    fDrawOpt2Dim   = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
@@ -1717,8 +1717,8 @@ void FitHist::WriteOutCanvas()
                   TString drawopt;
                   if (fShowContour)
                      drawopt = "hist";
-                  if (fShowErrors)
-                     drawopt += "e1";
+                     if ( fErrorMode != "none")
+                        drawopt += "e1";
                   hi->SetOption(drawopt.Data());
                   if (fFill1Dim) {
                      if (fHistFillStyle == 0) fHistFillStyle = 1001;
@@ -3213,7 +3213,8 @@ void FitHist::Draw1Dim()
    TString drawopt;
    gROOT->ForceStyle();
    gStyle->SetOptTitle(fShowTitle);
-   drawopt = fErrorMode;
+   if ( fErrorMode != "none")
+       drawopt = fErrorMode;
    if (fShowContour)
       drawopt += "hist";
 //   if (fShowErrors)
@@ -3436,7 +3437,12 @@ void FitHist::UpdateDrawOptions()
             }
          }
       }
-      drawopt += fErrorMode;
+      if ( fErrorMode != "none") {
+         drawopt += fErrorMode;
+         if (fErrorMode == "E1" && gStyle->GetMarkerSize() == 0) {
+            fSelHist->SetMarkerSize(0.01);
+         }
+      }
       if (fShowContour)
          drawopt += "hist";
    	if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
