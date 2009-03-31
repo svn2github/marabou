@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbProfile.cxx,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbProfile.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -49,7 +49,7 @@ const SMrbNamedXShort kGMrbGCTypes[] =
 								{TNGMrbGContext::kGMrbGCButton,			"Button"		},
 								{TNGMrbGContext::kGMrbGCEntry,			"Entry"			},
 								{TNGMrbGContext::kGMrbGCTextEntry,		"TextEntry"		},
-								{TNGMrbGContext::kGMrbGCLBEntry,			"ListBoxEntry"	},
+								{TNGMrbGContext::kGMrbGCLBEntry,		"ListBoxEntry"	},
 								{TNGMrbGContext::kGMrbGCTextButton,		"TextButton"	},
 								{TNGMrbGContext::kGMrbGCRadioButton, 	"RadioButton"	},
 								{TNGMrbGContext::kGMrbGCCheckButton, 	"CheckButton"	},
@@ -98,14 +98,11 @@ TNGMrbGContext::TNGMrbGContext(const Char_t * Font, const Char_t * Foreground, c
 		gClient->GetColorByName("white", bg);
 	}
 
-	fGC = this->CreateGC(font, fg, bg);
-
 	fFontName = fontStr;
-	fForegroundName = Foreground;
-	fBackgroundName = Background;
-
 	fFont = font;
+	fForegroundName = Foreground;
 	fForeground = fg;
+	fBackgroundName = Background;
 	fBackground = bg;
 
 	fOptions = Options;
@@ -137,18 +134,11 @@ TNGMrbGContext::TNGMrbGContext(const Char_t * Font, Pixel_t Foreground, Pixel_t 
 													"-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
 	}
 
-	fGC = this->CreateGC(font, Foreground, Background);
-
 	fFontName = fontStr;
-	TMrbString str = "#";
-	str.AppendInteger(Foreground, 0, ' ', 16);
-	fForegroundName = str;
-	str = "#";
-	str.AppendInteger(Background, 0, ' ', 16);
-	fBackgroundName = str;
-
 	fFont = font;
+	fForegroundName = Form("#%0x", Foreground);
 	fForeground = Foreground;
+	fBackgroundName = Form("#%0x", Background);
 	fBackground = Background;
 
 	fOptions = Options;
@@ -169,19 +159,16 @@ TNGMrbGContext::TNGMrbGContext(TNGMrbGContext::EGMrbGCType Type, UInt_t Options)
 	
 	fFontName = gEnv->GetValue("Gui.NormalFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
 	FontStruct_t font = gClient->GetFontByName(fFontName.Data());
+	fFont = font;
 
 	Pixel_t fg;
 	fForegroundName = "black";
 	gClient->GetColorByName(fForegroundName.Data(), fg);
+	fForeground = fg;
 
 	fBackgroundName = (Type >= TNGMrbGContext::kGMrbGCTextEntry) ? "white" : "gray";
 	Pixel_t bg;
 	gClient->GetColorByName(fBackgroundName.Data(), bg);
-
-	fGC = this->CreateGC(font, fg, bg);
-
-	fFont = font;
-	fForeground = fg;
 	fBackground = bg;
 
 	fOptions = Options;
@@ -210,8 +197,7 @@ Bool_t TNGMrbGContext::SetFont(const Char_t * Font) {
 		return(kFALSE);
 	}
 	fFontName = fontStr; 
-	fFont = font; 
-	fGC = this->CreateGC(font, fForeground, fBackground);
+	fFont = font;
 	return(kTRUE);
 }
 
@@ -237,8 +223,7 @@ Bool_t TNGMrbGContext::SetFG(const Char_t * Foreground) {
 	}
 
 	fForegroundName = Foreground; 
-	fForeground = color; 
-	fGC = this->CreateGC(fFont, fForeground, fBackground);
+	fForeground = color;
 	return(kTRUE);
 }
 
@@ -264,36 +249,43 @@ Bool_t TNGMrbGContext::SetBG(const Char_t * Background) {
 	}
 
 	fBackgroundName = Background; 
-	fBackground = color; 
-	fGC = this->CreateGC(fFont, fForeground, fBackground);
+	fBackground = color;
 	return(kTRUE);
 }
 
-GContext_t TNGMrbGContext::CreateGC(FontStruct_t Font, Pixel_t Foreground, Pixel_t Background) {
+void TNGMrbGContext::Print(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbGContext::CreateGC
-// Purpose:        Create a new GC
-// Arguments:      FontStruct_t Font     -- font
-//                 Pixel_t Foreground    -- foreground
-//                 Pixel_t Background    -- background
-// Results:        GContext_t GC         -- graphics context
+// Name:           TNGMrbGContext::Print
+// Purpose:        Print graphic context
+// Arguments:      ostream & Out        -- output stream
+// Results:        --
 // Exceptions:
-// Description:    Creates a new GC.
+// Description:    Output profile data to ostream.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	GCValues_t gval;
-
-	gval.fMask = kGCForeground | kGCBackground | kGCFont | kGCFillStyle | kGCGraphicsExposures;
-	gval.fFillStyle = kFillSolid;
-	gval.fGraphicsExposures = kFALSE;
-	gval.fForeground = Foreground;
-	gval.fBackground = Background;
-	gval.fFont = gVirtualX->GetFontHandle(Font);
-	return(gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gval));
+	Out << endl << "Graph context:" << endl;
+	Out << Form("Font         : ")
+		<< "#" << setbase(16) << setw(6) << setfill('0') << setiosflags(ios::uppercase)
+		<< this->Font() << resetiosflags(ios::uppercase) << setbase(10)
+		<< " = " << this->GetFontName() << endl;
+	Out << Form("Foreground   : ")
+		<< "#" << setbase(16) << setw(6) << setfill('0') << setiosflags(ios::uppercase)
+		<< this->FG() << resetiosflags(ios::uppercase) << setbase(10)
+		<< " = " << this->GetForegroundName() << endl;
+	Out << Form("Background   : ")
+		<< "#" << setbase(16) << setw(6) << setfill('0') << setiosflags(ios::uppercase)
+		<< this->BG() << resetiosflags(ios::uppercase) << setbase(10)
+		<< " = " << this->GetBackgroundName() << endl;
+	TMrbString opt;
+	opt.Decode(this->GetOptions(), frameOptString.Data());
+	Out << Form("Options      : ")
+		<< setbase(16) << setiosflags(ios::showbase) << this->GetOptions() << resetiosflags(ios::showbase) << setbase(10);
+	if (!opt.IsNull()) Out << " = " << opt;
+	Out << endl;
 }
-
+ 
 TNGMrbProfile::TNGMrbProfile(const Char_t * Name, const Char_t * Title, TEnv * Env) : TNamed(Name, Title) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -322,13 +314,13 @@ TNGMrbProfile::TNGMrbProfile(const Char_t * Name, const Char_t * Title, TEnv * E
 	TMrbNamedX * enx = wtypes.FindByIndex(TNGMrbGContext::kGMrbGCEntry);
 	TNGMrbGContext * egc = this->AddGC(enx, Env);
 
-	TMrbNamedX * nx = (TMrbNamedX *) wtypes.First();
-	while (nx) {
+	TIterator * iter = wtypes.MakeIterator();
+	TMrbNamedX * nx;
+	while (nx = (TMrbNamedX *) iter->Next()) {
 		TNGMrbGContext * dfltGC = NULL;
 		if (nx->GetIndex() & TNGMrbGContext::kGMrbGCButton)		dfltGC = bgc;
 		else if (nx->GetIndex() & TNGMrbGContext::kGMrbGCEntry)	dfltGC = egc;
 		this->AddGC(nx, Env, dfltGC);
-		nx = (TMrbNamedX *) wtypes.After(nx);
 	}
 }
 		
@@ -373,11 +365,13 @@ TNGMrbGContext * TNGMrbProfile::AddGC(TMrbNamedX * GCSpec, TEnv * Env, TNGMrbGCo
 	r = Env->GetValue(rName + ".Background", dflt.Data());
 	if (!r.IsNull()) gc->SetBG(r.Data());
 
+#if 0
 	TMrbString opt = Env->GetValue(rName + ".Options", "");
 	UInt_t optionBits;
 	opt.Encode(optionBits, frameOptString.Data());
 	if (optionBits == 0) optionBits = DefaultGC ? DefaultGC->GetOptions() : 0;
 	gc->SetOptions(optionBits);
+#endif
 
 	fLofGCs.AddNamedX(GCSpec->GetIndex(), GCSpec->GetName(), "", gc);
 
@@ -463,8 +457,16 @@ TNGMrbGContext * TNGMrbProfile::GetGC(TNGMrbGContext::EGMrbGCType Type) {
 
 	TMrbNamedX * nx = (TMrbNamedX *) fLofGCs.FindByIndex(Type);
 	if (nx == NULL) {
-		gMrbLog->Err() << "No such graph cont type - " << Type << endl;
-		gMrbLog->Flush(this->ClassName(), "GetGC");
+		TMrbLofNamedX wtypes;
+		wtypes.AddNamedX(kGMrbGCTypes);
+		nx = wtypes.FindByIndex(Type);
+		if (nx) {
+			gMrbLog->Err() << "No such graph cont type - " << nx->GetName() << "(0x" << setbase(16) << nx->GetIndex() << ")" << setbase(10) << endl;
+			gMrbLog->Flush(this->ClassName(), "GetGC");
+		} else {
+			gMrbLog->Err() << "No such graph cont type - " << "0x" << setbase(16) << Type << setbase(10) << endl;
+			gMrbLog->Flush(this->ClassName(), "GetGC");
+		}
 		return(NULL);
 	}
 	return((TNGMrbGContext *) nx->GetAssignedObject());
@@ -490,7 +492,7 @@ void TNGMrbProfile::SetOptions(TNGMrbGContext::EGMrbGCType Type, UInt_t Options)
 UInt_t  TNGMrbProfile::GetOptions(TNGMrbGContext::EGMrbGCType Type) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbProfile::SetOptions
+// Name:           TNGMrbProfile::GetOptions
 // Purpose:        Get option bits
 // Arguments:      EGMrbGCType Type              -- gc type
 // Results:        UInt_t Options                -- option bits
@@ -502,6 +504,22 @@ UInt_t  TNGMrbProfile::GetOptions(TNGMrbGContext::EGMrbGCType Type) {
 	TNGMrbGContext * gc = this->GetGC(Type);
 	if (gc == NULL) return(0);
 	else			return(gc->GetOptions());
+}
+
+UInt_t TNGMrbProfile::GetFrameOptions() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TNGMrbProfile::GetFrameOptions
+// Purpose:        Get frame options
+// Arguments:      --
+// Results:        UInt_t Options                -- option bits
+// Exceptions:
+// Description:    Returns option bits for a framet.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * gc = fLofGCs.FindByIndex(TNGMrbGContext::kGMrbGCFrame);
+	return(gc ? ((TNGMrbGContext *) gc->GetAssignedObject())->GetOptions() : 0);
 }
 
 void TNGMrbProfile::SetOptions(const Char_t * Type, UInt_t Options) {
@@ -555,8 +573,9 @@ void TNGMrbProfile::Print(ostream & Out, const Char_t * Type) const {
 	TString title = this->GetTitle();
 	if (!title.IsNull()) Out << " (" << title << ")";
 	Out << ":" << endl;
-	TMrbNamedX * nx = (TMrbNamedX *) fLofGCs.First();
-	while (nx) {
+	TIterator * iter = fLofGCs.MakeIterator();
+	TMrbNamedX * nx;
+	while (nx = (TMrbNamedX *) iter->Next()) {
 		Out << Form("%-15s", nx->GetName());
 		TNGMrbGContext * gc = (TNGMrbGContext *) nx->GetAssignedObject();
 		if (gc == NULL) {
@@ -578,7 +597,6 @@ void TNGMrbProfile::Print(ostream & Out, const Char_t * Type) const {
 			if (!opt.IsNull()) Out << " = " << opt;
 			Out << endl;
 		}
-		nx = (TMrbNamedX *) fLofGCs.After(nx);
 	}
 }
  
@@ -623,29 +641,31 @@ TNGMrbLofProfiles::TNGMrbLofProfiles(const Char_t * Name, const Char_t * Title) 
 	} else {
 		fEnv = new TEnv(fRcFile.Data());
 	}
-	TMrbString mstr = fEnv->GetValue(res + ".Members", "");
+	TString mstr = fEnv->GetValue(res + ".Members", "");
 	if (mstr.IsNull()) {
 		gMrbLog->Wrn() << "No graphics profiles defined (resource \"" << res << ".Members\" missing)" << endl;
 		gMrbLog->Flush("TNGMrbLofProfiles");
 	} else {
-		TObjArray members;
-		Int_t n = mstr.Split(members, ":");
+		Int_t from = 0;
+		Int_t n = 0;
+		TString member;
+		while (mstr.Tokenize(member, from, ":")) {
+			member.ToLower();
+			res = member;
+			res(0,1).ToUpper();
+			title = fEnv->GetValue(res + ".Title", "");
+			TNGMrbProfile * gc = new TNGMrbProfile(member.Data(), title.Data(), fEnv);
+			this->AddNamedX(this->GetEntries(), member.Data(), title.Data(), gc);
+		}
 		if (n == 0) {
 			gMrbLog->Wrn() << "No graphics profiles defined (resource \"" << res << ".Members\" is empty)" << endl;
 			gMrbLog->Flush("TNGMrbLofProfiles");
-		} else {
-			for (Int_t i = 0; i < n; i++) {
-				TString mbr = ((TObjString *) members[i])->GetString();
-				mbr.ToLower();
-				res = mbr;
-				res(0,1).ToUpper();
-				title = fEnv->GetValue(res + ".Title", "");
-				TNGMrbProfile * gc = new TNGMrbProfile(mbr.Data(), title.Data(), fEnv);
-				this->AddNamedX(this->GetEntriesFast(), mbr.Data(), title.Data(), gc);
-			}
 		}
 	}
+
 	if (this->FindProfile("standard", kFALSE) == NULL) this->AddProfile("standard", "Standard graphics profile");
+	res = this->GetName();
+	res(0,1).ToUpper();
 	TString defGC = fEnv->GetValue(res + ".Default", "");
 	this->SetDefault(defGC.IsNull() ? "standard" : defGC.Data());
 }
@@ -673,7 +693,7 @@ TNGMrbProfile * TNGMrbLofProfiles::AddProfile(const Char_t * Name, const Char_t 
 		return(gc);
 	}
 	gc = new TNGMrbProfile(name.Data(), Title);
-	this->AddNamedX(this->GetEntriesFast(), name.Data(), Title, gc);
+	this->AddNamedX(this->GetEntries(), name.Data(), Title, gc);
 	return(gc);
 }
 
@@ -747,13 +767,13 @@ void TNGMrbLofProfiles::Print(ostream & Out, const Char_t * Name) const {
 		name = Name;
 		name.ToLower();
 	}
-	TMrbNamedX * nx = (TMrbNamedX *) this->First();
-	while (nx) {
+	TIterator * iter = this->MakeIterator();
+	TMrbNamedX * nx;
+	while (nx = (TMrbNamedX *) iter->Next()) {
 		if (Name == NULL || name.CompareTo(nx->GetName()) == 0) {
 			gc = (TNGMrbProfile *) nx->GetAssignedObject();
 			gc->Print(Out);
 		}
-		nx = (TMrbNamedX *) this->After(nx);
 	}
 
 	Out << endl << "[Default profile is \"" << fDefault->GetName() << "\"]" << endl;

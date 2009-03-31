@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbRadioButton.cxx,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbRadioButton.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:         A list or group of radio buttons
 //Begin_Html
@@ -57,7 +57,10 @@ TNGMrbRadioButtonList::TNGMrbRadioButtonList(const TGWindow * Parent,
 	fFrameClient = fClient;
 	if (Label != NULL && *Label != '\0') {
 		fLabelText = Label;
-		fLabel = new TGLabel(Parent, new TGString(Label), fLabelGC->GC(), fLabelGC->Font(), kChildFrame, fLabelGC->BG());
+		fLabel = new TGLabel(Parent, new TGString(Label));
+		fLabel->SetTextFont(fLabelGC->Font());
+		fLabel->SetForegroundColor(fLabelGC->FG());
+		fLabel->SetBackgroundColor(fLabelGC->BG());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
@@ -97,7 +100,10 @@ TNGMrbRadioButtonList::TNGMrbRadioButtonList(const TGWindow * Parent,
 	fFrameClient = fClient;
 	if (Label != NULL && *Label != '\0') {
 		fLabelText = Label;
-		fLabel = new TGLabel(Parent, new TGString(Label), fLabelGC->GC(), fLabelGC->Font(), kChildFrame, fLabelGC->BG());
+		fLabel = new TGLabel(Parent, new TGString(Label));
+		fLabel->SetTextFont(fLabelGC->Font());
+		fLabel->SetForegroundColor(fLabelGC->FG());
+		fLabel->SetBackgroundColor(fLabelGC->BG());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
@@ -196,7 +202,10 @@ TNGMrbYesNoButtonList::TNGMrbYesNoButtonList(const TGWindow * Parent,
 	fFrameClient = fClient;
 	if (Label != NULL && *Label != '\0') {
 		fLabelText = Label;
-		fLabel = new TGLabel(Parent, new TGString(Label), fLabelGC->GC(), fLabelGC->Font(), kChildFrame, fLabelGC->BG());
+		fLabel = new TGLabel(Parent, new TGString(Label));
+		fLabel->SetTextFont(fLabelGC->Font());
+		fLabel->SetForegroundColor(fLabelGC->FG());
+		fLabel->SetBackgroundColor(fLabelGC->BG());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);

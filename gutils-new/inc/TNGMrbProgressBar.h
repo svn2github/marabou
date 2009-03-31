@@ -9,7 +9,7 @@
 //                                             showing a progress bar
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbProgressBar.h,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbProgressBar.h,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -24,6 +24,7 @@
 #include "TGTextView.h"
 #include "TMrbLogger.h"
 #include "TMrbLofNamedX.h"
+#include "TNGMrbProfile.h"
 #include "TNGMrbTextButton.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
@@ -42,6 +43,7 @@ class TNGMrbProgressBar: public TGTransientFrame {
 
 	public:
 		TNGMrbProgressBar(const TGWindow * Parent, const TGWindow * Main,
+												TNGMrbProfile * Profile,
 												const Char_t * Title,
 												UInt_t Width = kBarWidth,
 												const Char_t * BarColor = "blue",

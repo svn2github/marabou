@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbButtonFrame.cxx,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbButtonFrame.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -46,8 +46,6 @@ TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx;
-
 	fParent = Parent;
 	fType = ButtonType;
 	fLabel = NULL;
@@ -80,11 +78,9 @@ TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 	fLofButtons.Delete();
 
 	if (Buttons != NULL) {
-		nx = (TMrbNamedX *) Buttons->First();
-		while (nx) {
-			fLofButtons.AddNamedX(nx);
-			nx = (TMrbNamedX *) Buttons->After((TObject *) nx);
-		}
+		TIterator * iter = Buttons->MakeIterator();
+		TMrbNamedX * nx;
+		while (nx = (TMrbNamedX *) iter->Next()) fLofButtons.AddNamedX(nx);
 	}
 }
 
@@ -184,7 +180,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 	TGRadioButton * rbtn;
 	TGTextButton * tbtn;
 	TGPictureButton * pbtn;
-	TNGMrbSpecialButton * sbtn1, * sbtn2;
+	TNGMrbSpecialButton * sbtn2;
 	
 	fLofButtonWidths.Set(fLofButtons.GetEntriesFast() + 100);	// max 100 special buttons :-)
 
@@ -193,34 +189,40 @@ void TNGMrbButtonFrame::CreateButtons() {
 
 	fNofButtons = 0;
 	fButtonHeight = 0;
-	TMrbNamedX * nx = (TMrbNamedX *) fLofButtons.First();
-	while (nx) {
+	TMrbNamedX * nx;
+	TIterator * iter = fLofButtons.MakeIterator();
+	while (nx = (TMrbNamedX *) iter->Next()) {
 		switch (fType & (TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbTextButton | TNGMrbGContext::kGMrbPictureButton)) {
 			case TNGMrbGContext::kGMrbCheckButton:
-				cbtn = new TGCheckButton(fFrame,	nx->GetName(),
-													nx->GetIndex(),
-													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
+				cbtn = new TGCheckButton(fFrame, nx->GetName(), nx->GetIndex());
+				cbtn->SetFont(fButtonGC->Font());
+				cbtn->SetForegroundColor(fButtonGC->FG());
+				cbtn->SetBackgroundColor(fButtonGC->BG());
+				cbtn->ChangeOptions(fButtonOptions);
 				TO_HEAP(cbtn);
 				btn = (TGButton *) cbtn;
 				break;
 			case TNGMrbGContext::kGMrbRadioButton:
-				rbtn = new TGRadioButton(fFrame,	nx->GetName(),
-													nx->GetIndex(),
-													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
+				rbtn = new TGRadioButton(fFrame, nx->GetName(), nx->GetIndex());
+				rbtn->SetFont(fButtonGC->Font());
+				rbtn->SetForegroundColor(fButtonGC->FG());
+				rbtn->SetBackgroundColor(fButtonGC->BG());
+				rbtn->ChangeOptions(fButtonOptions);
 				TO_HEAP(rbtn);
 				btn = (TGButton *) rbtn;
 				break;
 			case TNGMrbGContext::kGMrbTextButton:
-				tbtn = new TGTextButton(fFrame,	nx->GetName(),
-													nx->GetIndex(),
-													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
+				tbtn = new TGTextButton(fFrame, nx->GetName(), nx->GetIndex());
+				tbtn->SetFont(fButtonGC->Font());
+				tbtn->SetForegroundColor(fButtonGC->FG());
+				tbtn->SetBackgroundColor(fButtonGC->BG());
+				tbtn->ChangeOptions(fButtonOptions);
 				TO_HEAP(tbtn);
 				btn = (TGButton *) tbtn;
 				break;
 			case TNGMrbGContext::kGMrbPictureButton:
-				pbtn = new TGPictureButton(fFrame, fFrameClient->GetPicture(nx->GetName()),
-													nx->GetIndex(),
-													fButtonGC->GC(), fButtonOptions);
+				pbtn = new TGPictureButton(fFrame, fFrameClient->GetPicture(nx->GetName()), nx->GetIndex());
+				pbtn->ChangeOptions(fButtonOptions);
 				TO_HEAP(pbtn);
 				btn = (TGButton *) pbtn;
 				break;
@@ -236,26 +238,27 @@ void TNGMrbButtonFrame::CreateButtons() {
 		Int_t btnh = btn->GetDefaultHeight();
 		if (btnh > fButtonHeight) fButtonHeight = btnh;
 		fNofButtons++;
-		nx = (TMrbNamedX *) fLofButtons.After(nx);
 	}
 
 	fNofSpecialButtons = 0;
 	if (fType & TNGMrbGContext::kGMrbCheckButton && fLofSpecialButtons) {
-		sbtn1 = (TNGMrbSpecialButton *) fLofSpecialButtons->First();
-		while (sbtn1) {
+		TIterator * iter = fLofSpecialButtons->MakeIterator();
+		TNGMrbSpecialButton * sbtn1;
+		while (sbtn1 = (TNGMrbSpecialButton *) iter->Next()) {
 			sbtn2 = new TNGMrbSpecialButton(	sbtn1->GetIndex(), sbtn1->GetName(), sbtn1->GetTitle(),
 											sbtn1->GetPattern(), sbtn1->GetPicture());
 			fLofButtons.Add(sbtn2);
 			if (sbtn2->GetPicture() == NULL) {
-				cbtn = new TGCheckButton(fFrame,	sbtn2->GetName(),
-													sbtn2->GetIndex(),
-													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
+				cbtn = new TGCheckButton(fFrame, sbtn2->GetName(), sbtn2->GetIndex());
+				cbtn->SetFont(fButtonGC->Font());
+				cbtn->SetForegroundColor(fButtonGC->FG());
+				cbtn->SetBackgroundColor(fButtonGC->BG());
+				cbtn->ChangeOptions(fButtonOptions);
 				TO_HEAP(cbtn);
 				btn = (TGButton *) cbtn;
 			} else {
-				pbtn = new TGPictureButton(fFrame, fFrameClient->GetPicture(sbtn2->GetPicture()),
-													sbtn2->GetIndex(),
-													fButtonGC->GC(), fButtonOptions | kRaisedFrame);
+				pbtn = new TGPictureButton(fFrame, fFrameClient->GetPicture(sbtn2->GetPicture()), sbtn2->GetIndex());
+				pbtn->ChangeOptions(fButtonOptions);
 				TO_HEAP(pbtn);
 				btn = (TGButton *) pbtn;
 			}
@@ -270,7 +273,6 @@ void TNGMrbButtonFrame::CreateButtons() {
 			Int_t btnh = btn->GetDefaultHeight();
 			if (btnh > fButtonHeight) fButtonHeight = btnh;
 			fNofSpecialButtons++;
-			sbtn1 = (TNGMrbSpecialButton *) fLofSpecialButtons->After(sbtn1);
 		}
 	}
 
@@ -325,15 +327,11 @@ void TNGMrbButtonFrame::Associate(const TGWindow * Window) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	TIterator * iter = fLofButtons.MakeIterator();
 	TMrbNamedX * nx;
-	TGButton * button;
-
-
-	nx = (TMrbNamedX *) fLofButtons.First();
-	while (nx) {
-		button = (TGButton *) nx->GetAssignedObject();
+	while (nx = (TMrbNamedX *) iter->Next()) {
+		 TGButton * button = (TGButton *) nx->GetAssignedObject();
 		button->Associate(Window);
-		nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 	}
 }
 
@@ -349,14 +347,11 @@ void TNGMrbButtonFrame::ClearAll() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	TIterator * iter = fLofButtons.MakeIterator();
 	TMrbNamedX * nx;
-	TGButton * button;
-
-	nx = (TMrbNamedX *) fLofButtons.First();
-	while (nx) {
-		button = (TGButton *) nx->GetAssignedObject();
+	while (nx = (TMrbNamedX *) iter->Next()) {
+		TGButton * button = (TGButton *) nx->GetAssignedObject();
 		if (button->GetState() == kButtonEngaged) button->SetState(kButtonUp);
-		nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 	}
 }
 
@@ -373,21 +368,17 @@ void TNGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	TIterator * iter = fLofButtons.MakeIterator();
 	TMrbNamedX * nx;
-	TGButton * button;
-	TNGMrbSpecialButton * sbutton;
-
-	nx = (TMrbNamedX *) fLofButtons.First();
 	if (fType & TNGMrbGContext::kGMrbRadioButton) {
 		if (State == kButtonEngaged || State == kButtonDisabled) {
-			while (nx) {
-				button = (TGButton *) nx->GetAssignedObject();
+			while (nx = (TMrbNamedX *) iter->Next()) {
+				TGButton * button = (TGButton *) nx->GetAssignedObject();
 				if ((nx->GetIndex() & Pattern) == (UInt_t) nx->GetIndex()) button->SetState(State);
-				nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 			}
 		} else {
-			while (nx) {
-				button = (TGButton *) nx->GetAssignedObject();
+			while (nx = (TMrbNamedX *) iter->Next()) {
+				TGButton * button = (TGButton *) nx->GetAssignedObject();
 				if (button->GetState() != kButtonDisabled) {
 					if ((UInt_t) nx->GetIndex() == Pattern) {
 						button->SetState(State);
@@ -395,21 +386,19 @@ void TNGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 						button->SetState(kButtonUp);
 					}
 				}
-				nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 			}
 		}
 	} else if (fType & TNGMrbGContext::kGMrbCheckButton) {
-		sbutton = this->FindSpecialButton(Pattern);
+		TNGMrbSpecialButton * sbutton = this->FindSpecialButton(Pattern);
 		if (sbutton) Pattern = sbutton->GetPattern();
 		if (State == kButtonEngaged || State == kButtonDisabled) {
-			while (nx) {
-				button = (TGButton *) nx->GetAssignedObject();
+			while (nx = (TMrbNamedX *) iter->Next()) {
+				TGButton * button = (TGButton *) nx->GetAssignedObject();
 				if (nx->GetIndex() & Pattern) button->SetState(State);
-				nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 			}
 		} else {
-			while (nx) {
-				button = (TGButton *) nx->GetAssignedObject();
+			while (nx = (TMrbNamedX *) iter->Next()) {
+				TGButton * button = (TGButton *) nx->GetAssignedObject();
 				if (button->GetState() != kButtonDisabled) {
 					if (nx->GetIndex() & Pattern) {
 						button->SetState(State);
@@ -417,16 +406,14 @@ void TNGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 						button->SetState(kButtonUp);
 					}
 				}
-				nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 			}
 		}
 	} else if (fType & TNGMrbGContext::kGMrbTextButton) {
-		while (nx) {
-			button = (TGButton *) nx->GetAssignedObject();
+		while (nx = (TMrbNamedX *) iter->Next()) {
+			TGButton * button = (TGButton *) nx->GetAssignedObject();
 			if ((UInt_t) nx->GetIndex() == Pattern) {
 				button->SetState(State);
 			}
-			nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 		}
 	}
 }
@@ -443,17 +430,16 @@ UInt_t TNGMrbButtonFrame::GetActive() const {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx;
 	TGButton * button;
 	UInt_t pattern;
 
 	pattern = 0;
 
-	nx = (TMrbNamedX *) fLofButtons.First();
-	while (nx) {
+	TIterator * iter = fLofButtons.MakeIterator();
+	TMrbNamedX * nx;
+	while (nx = (TMrbNamedX *) iter->Next()) {
 		button = (TGButton *) nx->GetAssignedObject();
 		if (button->GetState() == kButtonDown) pattern |= nx->GetIndex();
-		nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 	}
 	return(pattern);
 }
@@ -471,24 +457,20 @@ void TNGMrbButtonFrame::FlipState(UInt_t Pattern) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx;
-	TGButton * button;
-	UInt_t idx;
-	EButtonState state;
-
 	if (fType & TNGMrbGContext::kGMrbCheckButton) {
-		nx = (TMrbNamedX *) fLofButtons.First();
-		while (nx) {
-			button = (TGButton *) nx->GetAssignedObject();
+		TIterator * iter = fLofButtons.MakeIterator();
+		TMrbNamedX * nx;
+		while (nx = (TMrbNamedX *) iter->Next()) {
+			TGButton * button = (TGButton *) nx->GetAssignedObject();
+			UInt_t idx;
 			if ((idx = nx->GetIndex()) & Pattern) {
-				state = button->GetState();
+				EButtonState state = button->GetState();
 				if (state == kButtonDown) {
 					button->SetState(kButtonUp);
 				} else if (state == kButtonUp) {
 					button->SetState(kButtonDown);
 				}
 			}
-			nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 		}
 	}
 }
@@ -506,18 +488,14 @@ void TNGMrbButtonFrame::UpdateState(UInt_t Pattern) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx;
-	TGButton * button;
-	TNGMrbSpecialButton * sbutton;
-	UInt_t pat;
-
 	if (fType & TNGMrbGContext::kGMrbCheckButton) {
-		sbutton = this->FindSpecialButton(Pattern);
+		TNGMrbSpecialButton *sbutton = this->FindSpecialButton(Pattern);
 		if (sbutton) {
-			pat = sbutton->GetPattern();
-			nx = (TMrbNamedX *) fLofButtons.First();
-			while (nx) {
-				button = (TGButton *) nx->GetAssignedObject();
+			UInt_t pat = sbutton->GetPattern();
+			TIterator * iter = fLofButtons.MakeIterator();
+			TMrbNamedX * nx;
+			while (nx = (TMrbNamedX *) iter->Next()) {
+				TGButton * button = (TGButton *) nx->GetAssignedObject();
 				if (button->GetState() != kButtonDisabled) {
 					if ((UInt_t) nx->GetIndex() == Pattern) {
 						button->SetState(kButtonDown);
@@ -527,7 +505,6 @@ void TNGMrbButtonFrame::UpdateState(UInt_t Pattern) {
 						button->SetState(kButtonUp);
 					}
 				}
-				nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 			}
 		}
 	}
@@ -582,22 +559,20 @@ void TNGMrbButtonFrame::SetButtonWidth(Int_t Width, Int_t ButtonIndex) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx;
-	TGButton * button;
-
 	if (ButtonIndex != 0) {
+		TMrbNamedX * nx;
 		if ((nx = fLofButtons.FindByIndex(ButtonIndex)) != NULL) {
-			button = (TGButton *) nx->GetAssignedObject();
+			TGButton * button = (TGButton *) nx->GetAssignedObject();
 			button->Resize(Width, button->GetDefaultHeight());
 			button->Layout();
 		}
 	} else {
-		nx = (TMrbNamedX *) fLofButtons.First();
-		while (nx) {
-			button = (TGButton *) nx->GetAssignedObject();
+		TIterator * iter = fLofButtons.MakeIterator();
+		TMrbNamedX * nx;
+		while (nx = (TMrbNamedX *) iter->Next()) {
+			TGButton * button = (TGButton *) nx->GetAssignedObject();
 			button->Resize(Width, button->GetDefaultHeight());
 			button->Layout();
-			nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 		}
 	}
 }
@@ -615,24 +590,21 @@ Int_t TNGMrbButtonFrame::GetButtonWidth(Int_t ButtonIndex)  const {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx;
-	TGButton * button;
 	Int_t width = 0;
-	Int_t wd;
-
 	if (ButtonIndex != 0) {
+		TMrbNamedX * nx;
 		if ((nx = fLofButtons.FindByIndex(ButtonIndex)) != NULL) {
-			button = (TGButton *) nx->GetAssignedObject();
+			TGButton * button = (TGButton *) nx->GetAssignedObject();
 			width = button->GetWidth();
 		}
 	} else {
-		nx = (TMrbNamedX *) fLofButtons.First();
 		width = 0;
-		while (nx) {
-			button = (TGButton *) nx->GetAssignedObject();
-			wd = button->GetWidth();
+		TIterator * iter = fLofButtons.MakeIterator();
+		TMrbNamedX * nx;
+		while (nx = (TMrbNamedX *) iter->Next()) {
+			TGButton * button = (TGButton *) nx->GetAssignedObject();
+			Int_t wd = button->GetWidth();
 			width = (wd > width) ? wd : width;
-			nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 		}
 	}
 	return(width);
@@ -651,22 +623,20 @@ void TNGMrbButtonFrame::ChangeButtonBackground(ULong_t Color, Int_t ButtonIndex)
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx;
-	TGButton * button;
-
 	if (ButtonIndex != 0) {
+		TMrbNamedX * nx;
 		if ((nx = fLofButtons.FindByIndex(ButtonIndex)) != NULL) {
-			button = (TGButton *) nx->GetAssignedObject();
+			TGButton * button = (TGButton *) nx->GetAssignedObject();
 			button->ChangeBackground(Color);
 			button->Layout();
 		}
 	} else {
-		nx = (TMrbNamedX *) fLofButtons.First();
-		while (nx) {
-			button = (TGButton *) nx->GetAssignedObject();
+		TIterator * iter = fLofButtons.MakeIterator();
+		TMrbNamedX * nx;
+		while (nx = (TMrbNamedX *) iter->Next()) {
+			TGButton * button = (TGButton *) nx->GetAssignedObject();
 			button->ChangeBackground(Color);
 			button->Layout();
-			nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 		}
 	}
 }
@@ -684,24 +654,22 @@ void TNGMrbButtonFrame::JustifyButton(ETextJustification Justify, Int_t ButtonIn
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx;
-	TGTextButton * button;
-
 	if ((fType & TNGMrbGContext::kGMrbTextButton) == 0) return;
 
 	if (ButtonIndex != 0) {
+		TMrbNamedX * nx;
 		if ((nx = fLofButtons.FindByIndex(ButtonIndex)) != NULL) {
-			button = (TGTextButton *) nx->GetAssignedObject();
+			TGTextButton * button = (TGTextButton *) nx->GetAssignedObject();
 			button->SetTextJustify(Justify);
 			button->Layout();
 		}
 	} else {
-		nx = (TMrbNamedX *) fLofButtons.First();
-		while (nx) {
-			button = (TGTextButton *) nx->GetAssignedObject();
+		TIterator * iter = fLofButtons.MakeIterator();
+		TMrbNamedX * nx;
+		while (nx = (TMrbNamedX *) iter->Next()) {
+			TGTextButton * button = (TGTextButton *) nx->GetAssignedObject();
 			button->SetTextJustify(Justify);
 			button->Layout();
-			nx = (TMrbNamedX *) fLofButtons.After((TObject *) nx);
 		}
 	}
 }
@@ -741,14 +709,12 @@ TNGMrbSpecialButton * TNGMrbButtonFrame::FindSpecialButton(Int_t Index) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TNGMrbSpecialButton * sbtn;
-	
 	if (fLofSpecialButtons == NULL) return(NULL);
 	
-	sbtn = (TNGMrbSpecialButton *) fLofSpecialButtons->First();
-	while (sbtn) {
+	TIterator * iter = fLofSpecialButtons->MakeIterator();
+	TNGMrbSpecialButton * sbtn;
+	while (sbtn = (TNGMrbSpecialButton *) iter->Next()) {
 		if (sbtn->GetIndex() == Index) return(sbtn);
-		sbtn = (TNGMrbSpecialButton *) fLofSpecialButtons->After(sbtn);
 	}
 	return(NULL);
 }

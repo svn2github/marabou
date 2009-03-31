@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbLabelCombo.cxx,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbLabelCombo.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:         A labelled combo widget with up/down/begin/end buttons
 //Begin_Html
@@ -69,33 +69,36 @@ TNGMrbLabelCombo::TNGMrbLabelCombo(	const TGWindow * Parent,
 	fButtonEnd = NULL;
 
 	if (Label != NULL) {
-		fLabel = new TGLabel(this, new TGString(Label), labelGC->GC(), labelGC->Font(), kChildFrame, labelGC->BG());
+		fLabel = new TGLabel(this, new TGString(Label));
+		fLabel->SetTextFont(labelGC->Font());
+		fLabel->SetForegroundColor(labelGC->FG());
+		fLabel->SetBackgroundColor(labelGC->BG());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
 	}
 
 	if (ComboOptions & kGMrbComboHasUpDownButtons) {
-		fButtonUp = new TGPictureButton(this, fClient->GetPicture("arrow_up.xpm"), kGMrbComboButtonUp, buttonGC->GC());
+		fButtonUp = new TGPictureButton(this, fClient->GetPicture("arrow_right.xpm"), kGMrbComboButtonUp);
 		TO_HEAP(fButtonUp);
 		fButtonUp->ChangeBackground(buttonGC->BG());
 		fButtonUp->SetToolTipText("StepUp", 500);
 		this->AddFrame(fButtonUp);
 		fButtonUp->Associate(this);
-		fButtonDown = new TGPictureButton(this, fClient->GetPicture("arrow_down.xpm"), kGMrbComboButtonDown, buttonGC->GC());
+		fButtonDown = new TGPictureButton(this, fClient->GetPicture("arrow_left.xpm"), kGMrbComboButtonDown);
 		TO_HEAP(fButtonDown);
 		fButtonDown->ChangeBackground(buttonGC->BG());
 		fButtonDown->SetToolTipText("StepDown", 500);
 		this->AddFrame(fButtonDown);
 		fButtonDown->Associate(this);
 		if (ComboOptions & kGMrbComboHasUpDownButtons) {
-			fButtonBegin = new TGPictureButton(this, fClient->GetPicture("arrow_begin.xpm"), kGMrbComboButtonBegin, buttonGC->GC());
+			fButtonBegin = new TGPictureButton(this, fClient->GetPicture("arrow_leftleft.xpm"), kGMrbComboButtonBegin);
 			TO_HEAP(fButtonBegin);
 			fButtonBegin->ChangeBackground(buttonGC->BG());
 			fButtonBegin->SetToolTipText("ToBegin", 500);
 			this->AddFrame(fButtonBegin);
 			fButtonBegin->Associate(this);
-			fButtonEnd = new TGPictureButton(this, fClient->GetPicture("arrow_end.xpm"), kGMrbComboButtonEnd, buttonGC->GC());
+			fButtonEnd = new TGPictureButton(this, fClient->GetPicture("arrow_rightright.xpm"), kGMrbComboButtonEnd);
 			TO_HEAP(fButtonEnd);
 			fButtonEnd->ChangeBackground(buttonGC->BG());
 			fButtonEnd->SetToolTipText("ToEnd", 500);
@@ -132,14 +135,11 @@ void TNGMrbLabelCombo::AddEntry(TMrbLofNamedX * Entries) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * entry;
 	fLofEntries.AddNamedX(Entries);
 	fLofEntries.Sort();
-	entry = (TMrbNamedX *) fLofEntries.First();
-	while (entry) {
-		fCombo->AddEntry(entry->GetName(), entry->GetIndex());
-		entry = (TMrbNamedX *) fLofEntries.After(entry);
-	}
+	TIterator * iter = fLofEntries.MakeIterator();
+	TMrbNamedX * entry;
+	while (entry = (TMrbNamedX *) iter->Next()) fCombo->AddEntry(entry->GetName(), entry->GetIndex());
 }
 
 void TNGMrbLabelCombo::AddEntry(TMrbNamedX * Entry, Bool_t SelectFlag) {

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbFileObject.cxx,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbFileObject.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:         A labelled entry widget with a file button
 //                 together with a combo widget showing objects of selected (root) file
@@ -82,7 +82,10 @@ TNGMrbFileObjectCombo::TNGMrbFileObjectCombo(	const TGWindow * Parent,				// cto
 	fClientWindow = NULL;
 
 	if (Label != NULL) {
-		fLabel = new TGLabel(this, new TGString(Label), labelGC->GC(), labelGC->Font(), kChildFrame, labelGC->BG());
+		fLabel = new TGLabel(this, new TGString(Label));
+		fLabel->SetTextFont(labelGC->Font());
+		fLabel->SetForegroundColor(labelGC->FG());
+		fLabel->SetBackgroundColor(labelGC->BG());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
@@ -93,7 +96,7 @@ TNGMrbFileObjectCombo::TNGMrbFileObjectCombo(	const TGWindow * Parent,				// cto
 	fFileInfo.fFileTypes = (const Char_t **) rootFileTypes;
 	fFileInfo.fIniDir = StrDup(gSystem->WorkingDirectory());
 
-	fBrowse = new TGPictureButton(this, fClient->GetPicture("ofolder_t.xpm"), kGMrbComboButtonBrowse, buttonGC->GC());
+	fBrowse = new TGPictureButton(this, fClient->GetPicture("ofolder_t.xpm"), kGMrbComboButtonBrowse);
 	TO_HEAP(fBrowse);
 	this->AddFrame(fBrowse);
 	fBrowse->ChangeBackground(buttonGC->BG());
@@ -105,26 +108,26 @@ TNGMrbFileObjectCombo::TNGMrbFileObjectCombo(	const TGWindow * Parent,				// cto
 	this->AddFrame(fEntry);
 	
 	if (ComboOptions & kGMrbComboHasUpDownButtons) {
-		fButtonUp = new TGPictureButton(this, fClient->GetPicture("arrow_up.xpm"), kGMrbComboButtonUp, buttonGC->GC());
+		fButtonUp = new TGPictureButton(this, fClient->GetPicture("arrow_right.xpm"), kGMrbComboButtonUp);
 		TO_HEAP(fButtonUp);
 		fButtonUp->ChangeBackground(buttonGC->BG());
 		fButtonUp->SetToolTipText("StepUp", 500);
 		this->AddFrame(fButtonUp);
 		fButtonUp->Associate(this);
-		fButtonDown = new TGPictureButton(this, fClient->GetPicture("arrow_down.xpm"), kGMrbComboButtonDown, buttonGC->GC());
+		fButtonDown = new TGPictureButton(this, fClient->GetPicture("arrow_left.xpm"), kGMrbComboButtonDown);
 		TO_HEAP(fButtonDown);
 		fButtonDown->ChangeBackground(buttonGC->BG());
 		fButtonDown->SetToolTipText("StepDown", 500);
 		this->AddFrame(fButtonDown);
 		fButtonDown->Associate(this);
 		if (ComboOptions & kGMrbComboHasUpDownButtons) {
-			fButtonBegin = new TGPictureButton(this, fClient->GetPicture("arrow_begin.xpm"), kGMrbComboButtonBegin, buttonGC->GC());
+			fButtonBegin = new TGPictureButton(this, fClient->GetPicture("arrow_leftleft.xpm"), kGMrbComboButtonBegin);
 			TO_HEAP(fButtonBegin);
 			fButtonBegin->ChangeBackground(buttonGC->BG());
 			fButtonBegin->SetToolTipText("ToBegin", 500);
 			this->AddFrame(fButtonBegin);
 			fButtonBegin->Associate(this);
-			fButtonEnd = new TGPictureButton(this, fClient->GetPicture("arrow_end.xpm"), kGMrbComboButtonEnd, buttonGC->GC());
+			fButtonEnd = new TGPictureButton(this, fClient->GetPicture("arrow_rightright.xpm"), kGMrbComboButtonEnd);
 			TO_HEAP(fButtonEnd);
 			fButtonEnd->ChangeBackground(buttonGC->BG());
 			fButtonEnd->SetToolTipText("ToEnd", 500);
@@ -251,11 +254,12 @@ Bool_t TNGMrbFileObjectCombo::OpenFile(const Char_t * File) {
 	this->SetFileEntry(File);
 	TList * fileKeys = rootFile->GetListOfKeys();
 	fileKeys->Sort();
-	TKey * key = (TKey *) fileKeys->First();
+	TIterator * iter = fileKeys->MakeIterator();
+	TKey * key;
 	Int_t idx = 0;
 	Int_t nofEntries = fCombo->GetListBox()->GetNumberOfEntries();
 	fCombo->RemoveEntries(0, nofEntries - 1);
-	while (key) {
+	while (key = (TKey *) iter->Next()) {
 		TMrbString keyName = "(";
 		keyName += key->GetClassName();
 		keyName += " *) ";
@@ -276,7 +280,6 @@ Bool_t TNGMrbFileObjectCombo::OpenFile(const Char_t * File) {
 			fLofEntries.AddNamedX(idx, keyName.Data());
 			idx++;
 		}
-		key = (TKey *) fileKeys->After(key);
 	}
 	fCombo->Select(0);
 	return(kTRUE);

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbLabelEntry.cxx,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbLabelEntry.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:         A labelled entry field with up/down/begin/end buttons
 //Begin_Html
@@ -58,7 +58,7 @@ TNGMrbLabelEntry::TNGMrbLabelEntry(	const TGWindow * Parent,
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	TNGMrbGContext * labelGC = Profile->GetGC(TNGMrbGContext::kGMrbGCLabel);
 	TNGMrbGContext * entryGC = Profile->GetGC(TNGMrbGContext::kGMrbGCTextEntry);
 	TNGMrbGContext * buttonGC = Profile->GetGC(TNGMrbGContext::kGMrbGCButton);
@@ -73,17 +73,23 @@ TNGMrbLabelEntry::TNGMrbLabelEntry(	const TGWindow * Parent,
 	fButtonEnd = NULL;
 
 	if (Label != NULL) {
-		fLabel = new TGLabel(this, new TGString(Label), labelGC->GC(), labelGC->Font(), kChildFrame, labelGC->BG());
+		fLabel = new TGLabel(this, new TGString(Label));
+		fLabel->SetTextFont(labelGC->Font());
+		fLabel->SetForegroundColor(labelGC->FG());
+		fLabel->SetBackgroundColor(labelGC->BG());
+		fLabel->ChangeOptions(labelGC->GetOptions());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel, 0);
 		fLabel->SetTextJustify(kTextLeft);
 	}
 
 	if (Action && Action->GetAssignedObject()) {
-		fAction = new TGTextButton(this, Action->GetName(), Action->GetIndex(), buttonGC->GC(), buttonGC->Font());
+		fAction = new TGTextButton(this, Action->GetName(), Action->GetIndex());
 		TO_HEAP(fAction);
+		fAction->SetFont(buttonGC->Font());
 		fAction->SetToolTipText(Action->GetTitle(), 500);
 		fAction->SetBackgroundColor(buttonGC->BG());
+		fAction->ChangeOptions(buttonGC->GetOptions());
 		this->AddFrame(fAction, 0);			
 		fAction->Associate((const TGWindow *) Action->GetAssignedObject());
 	}
@@ -98,14 +104,14 @@ TNGMrbLabelEntry::TNGMrbLabelEntry(	const TGWindow * Parent,
 			fNumberEntry->GetButtonUp()->SetToolTipText("StepUp", 500);
 			fNumberEntry->GetButtonDown()->SetToolTipText("StepDown", 500);
 			if (EntryOptions & kGMrbEntryHasBeginEndButtons) {
-				fButtonEnd = new TGPictureButton(this, fClient->GetPicture("arrow_end.xpm"), kGMrbEntryButtonEnd);
+				fButtonEnd = new TGPictureButton(this, fClient->GetPicture("arrow_rightright.xpm"), kGMrbEntryButtonEnd);
 				TO_HEAP(fButtonEnd);
 				fButtonEnd->ChangeBackground(buttonGC->BG());
 				fButtonEnd->SetToolTipText("ToEnd", 500);
 				fButtonEnd->SetState(kButtonDisabled);
 				fButtonEnd->Associate(this);
 				this->AddFrame(fButtonEnd, 0);
-				fButtonBegin = new TGPictureButton(this, fClient->GetPicture("arrow_begin.xpm"), kGMrbEntryButtonBegin);
+				fButtonBegin = new TGPictureButton(this, fClient->GetPicture("arrow_leftleft.xpm"), kGMrbEntryButtonBegin);
 				TO_HEAP(fButtonBegin);
 				fButtonBegin->ChangeBackground(buttonGC->BG());
 				fButtonBegin->SetToolTipText("ToBegin", 500);
@@ -291,7 +297,7 @@ void TNGMrbLabelEntry::ActionButtonEnable(Bool_t Flag) {
 void TNGMrbLabelEntry::SetFormat(TGNumberEntry::EStyle Style, TGNumberEntry::EAttribute Attr) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbLabelEntry::SetLimits
+// Name:           TNGMrbLabelEntry::SetFormat
 // Purpose:        Set limits
 // Arguments:      EStyle Style     -- style
 //                 EAttribute Attr  -- attribute
@@ -320,6 +326,7 @@ void TNGMrbLabelEntry::SetLimits(TGNumberEntry::ELimit Limits, Double_t Min, Dou
 
 	if (fNumberEntryField) {
 		fNumberEntryField->SetLimits((TGNumberEntry::ELimit) Limits, Min, Max);
+		fNumberEntryField->SetToolTipText(Form("%g ... %g", Min, Max), 500);
 		if (fButtonBegin) {
 			switch (Limits) {
 				case TGNumberEntry::kNELNoLimits:
@@ -631,6 +638,7 @@ void TNGMrbLabelEntryLayout::Layout() {
 		UInt_t entryWidth = fWidget->GetEntryWidth(); 	// width of entry field (entry + buttons)
 
 		UInt_t labelWidth = fWidget->HasLabel() ? fWidget->GetLabel()->GetWidth() : 0;	// label width
+		cout << "@@@ l=" << fWidget->GetLabel()->GetText()->GetString() << " " << labelWidth << endl;
 
 		if (entryWidth == 0) entryWidth = boxWidth - labelWidth;
 

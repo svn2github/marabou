@@ -7,7 +7,7 @@
 // Purpose:        Define utilities to be used with the MARaBOU GUI
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbProfile.h,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbProfile.h,v 1.2 2009-03-31 06:12:05 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -69,8 +69,6 @@ class TNGMrbGContext : public TObject {
 
 		~TNGMrbGContext() {};						// dtor
 
-		inline GContext_t GC() const { return(fGC); };
-
 		Bool_t SetFont(const Char_t * Font);
 		inline void SetFont(FontStruct_t Font) { fFont = Font; };
 		inline FontStruct_t Font() const { return(fFont); };
@@ -89,18 +87,18 @@ class TNGMrbGContext : public TObject {
 		inline void SetOptions(UInt_t Options) { fOptions = Options; };
 		inline UInt_t GetOptions() { return(fOptions); };
 
+		void Print(Option_t * Option) const { TObject::Print(Option); };
+		void Print(ostream & Out);
+		inline void Print() { Print(cout); };
+
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TNGMrbGContext.html&"); };
 
 	protected:
-		GContext_t CreateGC(FontStruct_t Font, Pixel_t Foreground, Pixel_t Background);
-
-	protected:
-		GContext_t fGC;
 		TString fFontName;
-		TString fForegroundName;
-		TString fBackgroundName;
 		FontStruct_t fFont;
+		TString fForegroundName;
 		Pixel_t fForeground;
+		TString fBackgroundName;
 		Pixel_t fBackground;
 		UInt_t fOptions;
 
@@ -136,9 +134,7 @@ class TNGMrbProfile : public TNamed {
 		UInt_t GetOptions(TNGMrbGContext::EGMrbGCType Type);
 		UInt_t GetOptions(const Char_t * Type);
 
-		inline UInt_t GetFrameOptions() {
-				return(((TNGMrbGContext *) ((TMrbNamedX *) fLofGCs[TNGMrbGContext::kGMrbGCFrame])->GetAssignedObject())->GetOptions());
-		};
+		UInt_t GetFrameOptions();
 
 		void Print(Option_t * Option) const { TObject::Print(Option); };
 		void Print(ostream & Out, const Char_t * Type = NULL) const;

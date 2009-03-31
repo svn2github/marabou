@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbProgressBar.cxx,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbProgressBar.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
 // Date:           
 //
 //Begin_Html
@@ -27,6 +27,7 @@ ClassImp(TNGMrbProgressBar)
 
 TNGMrbProgressBar::TNGMrbProgressBar( const TGWindow * Parent,
 										const TGWindow * Main,
+										TNGMrbProfile * Profile,
 										const Char_t * Title,
 										UInt_t Width,
 										const Char_t * BarColor,
@@ -38,6 +39,7 @@ TNGMrbProgressBar::TNGMrbProgressBar( const TGWindow * Parent,
 // Purpose:        Display a progress bar
 // Arguments:      TGWindow * Parent             -- parent window
 //                 TGWindow * Main               -- main window
+//                 TNGMrbProfile * Profile       -- graph profile
 //                 Char_t * Title                -- title
 //                 UInt_t Width                  -- window width
 //                 Char_t * BarColor             -- fill color
@@ -49,22 +51,12 @@ TNGMrbProgressBar::TNGMrbProgressBar( const TGWindow * Parent,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	const Char_t * font;
-	ULong_t black, white, gray, blue;
-
-//	Initialize colors
-	gClient->GetColorByName("black", black);
-	gClient->GetColorByName("lightblue2", blue);
-	gClient->GetColorByName("gray75", gray);
-	gClient->GetColorByName("white", white);
-
 //	Initialize graphic contexts
-	TNGMrbGContext * frameGC = new TNGMrbGContext(font, black, gray);
+	TNGMrbGContext * frameGC = Profile->GetGC(TNGMrbGContext::kGMrbGCFrame);
 	HEAP(frameGC);
-	font = gEnv->GetValue("Gui.BoldFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
-	TNGMrbGContext * buttonGC = new TNGMrbGContext(font, black, gray);
+	TNGMrbGContext * buttonGC = Profile->GetGC(TNGMrbGContext::kGMrbGCButton);
 	HEAP(buttonGC);
-	TNGMrbGContext * labelGC = new TNGMrbGContext(font, black, gray);
+	TNGMrbGContext * labelGC = Profile->GetGC(TNGMrbGContext::kGMrbGCLabel);
 	HEAP(labelGC);
 
 

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbFileEntry.cxx,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbFileEntry.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:         A labelled entry widget with a file button
 //Begin_Html
@@ -65,7 +65,10 @@ TNGMrbFileEntry::TNGMrbFileEntry( const TGWindow * Parent,
 	TNGMrbGContext * browseGC = Profile->GetGC(TNGMrbGContext::kGMrbGCButton);
 
 	if (Label != NULL) {
-		fLabel = new TGLabel(this, new TGString(Label), labelGC->GC(), labelGC->Font(), kChildFrame, labelGC->BG());
+		fLabel = new TGLabel(this, new TGString(Label));
+		fLabel->SetTextFont(labelGC->Font());
+		fLabel->SetForegroundColor(labelGC->FG());
+		fLabel->SetBackgroundColor(labelGC->BG());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
