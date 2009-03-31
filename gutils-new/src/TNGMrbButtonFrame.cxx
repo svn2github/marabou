@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbButtonFrame.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbButtonFrame.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -187,6 +187,8 @@ void TNGMrbButtonFrame::CreateButtons() {
 	if (fWidth == 0) fWidth = fFrame->GetDefaultWidth();
 	if (fHeight == 0) fHeight = fFrame->GetDefaultHeight();
 
+	fFrame->ChangeOptions(fFrameOptions);
+
 	fNofButtons = 0;
 	fButtonHeight = 0;
 	TMrbNamedX * nx;
@@ -194,37 +196,48 @@ void TNGMrbButtonFrame::CreateButtons() {
 	while (nx = (TMrbNamedX *) iter->Next()) {
 		switch (fType & (TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbTextButton | TNGMrbGContext::kGMrbPictureButton)) {
 			case TNGMrbGContext::kGMrbCheckButton:
-				cbtn = new TGCheckButton(fFrame, nx->GetName(), nx->GetIndex());
-				cbtn->SetFont(fButtonGC->Font());
-				cbtn->SetForegroundColor(fButtonGC->FG());
-				cbtn->SetBackgroundColor(fButtonGC->BG());
-				cbtn->ChangeOptions(fButtonOptions);
-				TO_HEAP(cbtn);
-				btn = (TGButton *) cbtn;
+				{
+					cbtn = new TGCheckButton(fFrame, nx->GetName(), nx->GetIndex());
+					cbtn->SetFont(fButtonGC->Font());
+					cbtn->SetForegroundColor(fButtonGC->FG());
+					cbtn->SetBackgroundColor(fButtonGC->BG());
+					cbtn->ChangeOptions(fButtonOptions);
+					TO_HEAP(cbtn);
+					btn = (TGButton *) cbtn;
+				}
 				break;
 			case TNGMrbGContext::kGMrbRadioButton:
-				rbtn = new TGRadioButton(fFrame, nx->GetName(), nx->GetIndex());
-				rbtn->SetFont(fButtonGC->Font());
-				rbtn->SetForegroundColor(fButtonGC->FG());
-				rbtn->SetBackgroundColor(fButtonGC->BG());
-				rbtn->ChangeOptions(fButtonOptions);
-				TO_HEAP(rbtn);
-				btn = (TGButton *) rbtn;
+				{
+					rbtn = new TGRadioButton(fFrame, nx->GetName(), nx->GetIndex());
+					rbtn->SetFont(fButtonGC->Font());
+					rbtn->SetForegroundColor(fButtonGC->FG());
+					rbtn->SetBackgroundColor(fButtonGC->BG());
+					rbtn->ChangeOptions(fButtonOptions);
+					TO_HEAP(rbtn);
+					btn = (TGButton *) rbtn;
+				}
 				break;
 			case TNGMrbGContext::kGMrbTextButton:
-				tbtn = new TGTextButton(fFrame, nx->GetName(), nx->GetIndex());
-				tbtn->SetFont(fButtonGC->Font());
-				tbtn->SetForegroundColor(fButtonGC->FG());
-				tbtn->SetBackgroundColor(fButtonGC->BG());
-				tbtn->ChangeOptions(fButtonOptions);
-				TO_HEAP(tbtn);
-				btn = (TGButton *) tbtn;
+				{
+					tbtn = new TGTextButton(fFrame, nx->GetName(), nx->GetIndex());
+					tbtn->SetFont(fButtonGC->Font());
+					tbtn->SetForegroundColor(fButtonGC->FG());
+					tbtn->SetBackgroundColor(fButtonGC->BG());
+					Int_t opt = fButtonOptions;
+					if ((opt & kSunkenFrame) != 0) opt &= ~kSunkenFrame;	// sunken frame doesn'r make sense
+					if ((opt & kRaisedFrame) == 0) opt |= kRaisedFrame; 	// set raised frame always
+					tbtn->ChangeOptions(opt);
+					TO_HEAP(tbtn);
+					btn = (TGButton *) tbtn;
+				}
 				break;
 			case TNGMrbGContext::kGMrbPictureButton:
-				pbtn = new TGPictureButton(fFrame, fFrameClient->GetPicture(nx->GetName()), nx->GetIndex());
-				pbtn->ChangeOptions(fButtonOptions);
-				TO_HEAP(pbtn);
-				btn = (TGButton *) pbtn;
+				{
+					pbtn = new TGPictureButton(fFrame, fFrameClient->GetPicture(nx->GetName()), nx->GetIndex());
+					pbtn->ChangeOptions(fButtonOptions);
+					TO_HEAP(pbtn);
+					btn = (TGButton *) pbtn;
+				}
 				break;
 		}
 		btn->ChangeBackground(fButtonGC->BG());
@@ -245,7 +258,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 		TIterator * iter = fLofSpecialButtons->MakeIterator();
 		TNGMrbSpecialButton * sbtn1;
 		while (sbtn1 = (TNGMrbSpecialButton *) iter->Next()) {
-			sbtn2 = new TNGMrbSpecialButton(	sbtn1->GetIndex(), sbtn1->GetName(), sbtn1->GetTitle(),
+			sbtn2 = new TNGMrbSpecialButton(sbtn1->GetIndex(), sbtn1->GetName(), sbtn1->GetTitle(),
 											sbtn1->GetPattern(), sbtn1->GetPicture());
 			fLofButtons.Add(sbtn2);
 			if (sbtn2->GetPicture() == NULL) {

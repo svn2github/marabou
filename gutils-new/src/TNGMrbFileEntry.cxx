@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbFileEntry.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbFileEntry.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:         A labelled entry widget with a file button
 //Begin_Html
@@ -62,13 +62,14 @@ TNGMrbFileEntry::TNGMrbFileEntry( const TGWindow * Parent,
 	
 	TNGMrbGContext * labelGC = Profile->GetGC(TNGMrbGContext::kGMrbGCLabel);
 	TNGMrbGContext * entryGC = Profile->GetGC(TNGMrbGContext::kGMrbGCTextEntry);
-	TNGMrbGContext * browseGC = Profile->GetGC(TNGMrbGContext::kGMrbGCButton);
+	TNGMrbGContext * buttonGC = Profile->GetGC(TNGMrbGContext::kGMrbGCButton);
 
 	if (Label != NULL) {
 		fLabel = new TGLabel(this, new TGString(Label));
 		fLabel->SetTextFont(labelGC->Font());
 		fLabel->SetForegroundColor(labelGC->FG());
 		fLabel->SetBackgroundColor(labelGC->BG());
+		fLabel->ChangeOptions(labelGC->GetOptions());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
@@ -81,7 +82,7 @@ TNGMrbFileEntry::TNGMrbFileEntry( const TGWindow * Parent,
 		fFileButton = new TGPictureButton(this, fClient->GetPicture("ofolder_t.xpm"), 0);
 		TO_HEAP(fFileButton);
 		this->AddFrame(fFileButton);
-		fFileButton->ChangeBackground(browseGC->BG());
+		fFileButton->ChangeBackground(buttonGC->BG());
 		fFileButton->SetToolTipText("Browse files", 500);
 		fFileButton->Associate(this);
 	} else {

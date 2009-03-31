@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbLabelCombo.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbLabelCombo.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:         A labelled combo widget with up/down/begin/end buttons
 //Begin_Html
@@ -73,19 +73,20 @@ TNGMrbLabelCombo::TNGMrbLabelCombo(	const TGWindow * Parent,
 		fLabel->SetTextFont(labelGC->Font());
 		fLabel->SetForegroundColor(labelGC->FG());
 		fLabel->SetBackgroundColor(labelGC->BG());
+		fLabel->ChangeOptions(labelGC->GetOptions());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
 	}
 
 	if (ComboOptions & kGMrbComboHasUpDownButtons) {
-		fButtonUp = new TGPictureButton(this, fClient->GetPicture("arrow_right.xpm"), kGMrbComboButtonUp);
+		fButtonUp = new TGPictureButton(this, fClient->GetPicture("arrow_up.xpm"), kGMrbComboButtonUp);
 		TO_HEAP(fButtonUp);
 		fButtonUp->ChangeBackground(buttonGC->BG());
 		fButtonUp->SetToolTipText("StepUp", 500);
 		this->AddFrame(fButtonUp);
 		fButtonUp->Associate(this);
-		fButtonDown = new TGPictureButton(this, fClient->GetPicture("arrow_left.xpm"), kGMrbComboButtonDown);
+		fButtonDown = new TGPictureButton(this, fClient->GetPicture("arrow_down.xpm"), kGMrbComboButtonDown);
 		TO_HEAP(fButtonDown);
 		fButtonDown->ChangeBackground(buttonGC->BG());
 		fButtonDown->SetToolTipText("StepDown", 500);

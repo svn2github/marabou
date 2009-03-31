@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbProfile.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbProfile.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -329,8 +329,8 @@ TNGMrbGContext * TNGMrbProfile::AddGC(TMrbNamedX * GCSpec, TEnv * Env, TNGMrbGCo
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbProfile::AddGC
 // Purpose:        Add a graphics context to list
-// Arguments:      TMrbNamedX * GCSpec        -- graphics context specs
-//                 TEnv * Env                 -- ROOT environment
+// Arguments:      TMrbNamedX * GCSpec         -- graphics context specs
+//                 TEnv * Env                  -- ROOT environment
 //                 TNGMrbGContext * DefaultGC  -- default context
 // Results:        TNGMrbGContext * GC         -- context
 // Exceptions:
@@ -365,13 +365,11 @@ TNGMrbGContext * TNGMrbProfile::AddGC(TMrbNamedX * GCSpec, TEnv * Env, TNGMrbGCo
 	r = Env->GetValue(rName + ".Background", dflt.Data());
 	if (!r.IsNull()) gc->SetBG(r.Data());
 
-#if 0
 	TMrbString opt = Env->GetValue(rName + ".Options", "");
 	UInt_t optionBits;
 	opt.Encode(optionBits, frameOptString.Data());
 	if (optionBits == 0) optionBits = DefaultGC ? DefaultGC->GetOptions() : 0;
 	gc->SetOptions(optionBits);
-#endif
 
 	fLofGCs.AddNamedX(GCSpec->GetIndex(), GCSpec->GetName(), "", gc);
 
@@ -656,8 +654,11 @@ TNGMrbLofProfiles::TNGMrbLofProfiles(const Char_t * Name, const Char_t * Title) 
 			title = fEnv->GetValue(res + ".Title", "");
 			TNGMrbProfile * gc = new TNGMrbProfile(member.Data(), title.Data(), fEnv);
 			this->AddNamedX(this->GetEntries(), member.Data(), title.Data(), gc);
+			n++;
 		}
 		if (n == 0) {
+			res = this->GetName();
+			res(0,1).ToUpper();
 			gMrbLog->Wrn() << "No graphics profiles defined (resource \"" << res << ".Members\" is empty)" << endl;
 			gMrbLog->Flush("TNGMrbLofProfiles");
 		}

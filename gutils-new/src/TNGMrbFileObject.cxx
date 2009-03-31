@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbFileObject.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbFileObject.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:         A labelled entry widget with a file button
 //                 together with a combo widget showing objects of selected (root) file
@@ -86,6 +86,7 @@ TNGMrbFileObjectCombo::TNGMrbFileObjectCombo(	const TGWindow * Parent,				// cto
 		fLabel->SetTextFont(labelGC->Font());
 		fLabel->SetForegroundColor(labelGC->FG());
 		fLabel->SetBackgroundColor(labelGC->BG());
+		fLabel->ChangeOptions(labelGC->GetOptions());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
@@ -108,13 +109,13 @@ TNGMrbFileObjectCombo::TNGMrbFileObjectCombo(	const TGWindow * Parent,				// cto
 	this->AddFrame(fEntry);
 	
 	if (ComboOptions & kGMrbComboHasUpDownButtons) {
-		fButtonUp = new TGPictureButton(this, fClient->GetPicture("arrow_right.xpm"), kGMrbComboButtonUp);
+		fButtonUp = new TGPictureButton(this, fClient->GetPicture("arrow_up.xpm"), kGMrbComboButtonUp);
 		TO_HEAP(fButtonUp);
 		fButtonUp->ChangeBackground(buttonGC->BG());
 		fButtonUp->SetToolTipText("StepUp", 500);
 		this->AddFrame(fButtonUp);
 		fButtonUp->Associate(this);
-		fButtonDown = new TGPictureButton(this, fClient->GetPicture("arrow_left.xpm"), kGMrbComboButtonDown);
+		fButtonDown = new TGPictureButton(this, fClient->GetPicture("arrow_down.xpm"), kGMrbComboButtonDown);
 		TO_HEAP(fButtonDown);
 		fButtonDown->ChangeBackground(buttonGC->BG());
 		fButtonDown->SetToolTipText("StepDown", 500);

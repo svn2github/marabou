@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbTextButton.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbTextButton.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
 // Date:           
 //
 //Begin_Html
@@ -59,6 +59,7 @@ TNGMrbTextButtonList::TNGMrbTextButtonList(const TGWindow * Parent,
 		fLabel->SetTextFont(fLabelGC->Font());
 		fLabel->SetForegroundColor(fLabelGC->FG());
 		fLabel->SetBackgroundColor(fLabelGC->BG());
+		fLabel->ChangeOptions(fLabelGC->GetOptions());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
@@ -102,6 +103,7 @@ TNGMrbTextButtonList::TNGMrbTextButtonList(const TGWindow * Parent,
 		fLabel->SetTextFont(fLabelGC->Font());
 		fLabel->SetForegroundColor(fLabelGC->FG());
 		fLabel->SetBackgroundColor(fLabelGC->BG());
+		fLabel->ChangeOptions(fLabelGC->GetOptions());
 		TO_HEAP(fLabel);
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
