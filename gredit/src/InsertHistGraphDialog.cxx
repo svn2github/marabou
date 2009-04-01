@@ -68,11 +68,11 @@ void InsertHistGraphDialog::ExecuteInsert()
    if ( !pad ) {
 		Int_t retval = 0;
 		new TGMsgBox(gClient->GetRoot(), fWindow, "Warning",
-				"Please create a new Pad in this Canvas",
-				kMBIconExclamation, kMBDismiss, &retval);
+	   "Please create a new Pad in this Canvas",
+		kMBIconExclamation, kMBDismiss, &retval);
 		return;
    }
-
+   cout << "fHistFromFile: "<< fHistFromFile << endl;
 	TObjArray * oa = fHistFromFile.Tokenize("|");
 	Int_t nent = oa->GetEntries();
    if (nent < 3) {

@@ -11,7 +11,7 @@
 #include "TStyle.h"
 #include "TGMrbValuesAndText.h"
 #include "InsertFunctionDialog.h"
-#include <iostream>
+#include <stdlib.h>
 #include <Riostream.h>
 
 using std::cout;
