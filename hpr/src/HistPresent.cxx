@@ -1789,6 +1789,8 @@ void HistPresent::OperateHist(Int_t op)
    TString nameop;
    TString name2;
    TH1* hresult =  (TH1*)hist1->Clone();
+	if ( hresult->GetSumw2()->GetSize() == 0 )
+	   hresult->Sumw2();
    Int_t nbinsx_1 = hist1->GetNbinsX();
    TH1* hist2;
    if (nselect == 2 || (op == 1 && nselect != 1)) {
@@ -1807,6 +1809,8 @@ void HistPresent::OperateHist(Int_t op)
             cout << setblack << endl;
             return;
          }
+			if ( hist2->GetSumw2()->GetSize() == 0 )
+			   hist2->Sumw2();
          name2 = hist2->GetName();
          last_sem = name2.Last(';');    // chop off version
          if (last_sem > 0) name2.Remove(last_sem);

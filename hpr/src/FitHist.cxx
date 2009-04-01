@@ -275,7 +275,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 void FitHist::RecursiveRemove(TObject * obj)
 {
 //   cout << "FitHist::RecursiveRemove: " << obj << endl;
-   fSelHist->GetListOfFunctions()->Remove(obj);
+   if (fSelHist)
+      fSelHist->GetListOfFunctions()->Remove(obj);
    fActiveCuts->Remove(obj);
    fActiveWindows->Remove(obj);
    fActiveFunctions->Remove(obj);
@@ -1125,6 +1126,7 @@ void FitHist::Entire()
 {
 //   fSelHist->GetListOfFunctions()->Print();
 //   fOrigHist->GetListOfFunctions()->Print();
+
    if (expHist) {
       cout << " Entire() expHist->Delete()" <<endl;
       expHist->GetListOfFunctions()->Clear("nodelete");
@@ -1134,6 +1136,8 @@ void FitHist::Entire()
       if (ff) delete ff;
            ff= (TF1*)gROOT->GetListOfFunctions()->FindObject("gausf");
       if (ff) delete ff;
+		if (expHist == fSelHist )
+		   fSelHist = NULL;
       expHist->Delete();
       expHist = NULL;
    }

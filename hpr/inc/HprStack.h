@@ -54,6 +54,7 @@ private:
    Int_t   fShowMarkers;
    Float_t fEndErrorSize;
    Int_t   fErrorX;
+   TString fErrorMode;
 
 public:
    HprStack(TList * hlist, Option_t * opt = 0);

@@ -56,7 +56,11 @@ be selected.\n\
 
    fRow_lab->Add(new TObjString("CheckButton_Contour"));
    fValp[ind++] = &fShowContour;
-	fRow_lab->Add(new TObjString("ColorSelect+LineCol"));
+   fRow_lab->Add(new TObjString("CheckButton+Labels at Top X"));
+   fRow_lab->Add(new TObjString("CheckButton+Labels at Right Y"));
+   fValp[ind++] = &fLabelsTopX;
+   fValp[ind++] = &fLabelsRightY;
+	fRow_lab->Add(new TObjString("ColorSelect_LineCol"));
 	fRow_lab->Add(new TObjString("LineSSelect+Style"));
 	fRow_lab->Add(new TObjString("PlainShtVal+Width"));
 	fValp[ind++] = &fHistLineColor;
@@ -88,18 +92,18 @@ be selected.\n\
    fRow_lab->Add(new TObjString("Float_Value+MarkerSize"));
    fValp[ind++] = &fMarkerSize;
 
-   fRow_lab->Add(new TObjString("CheckButton_Live statbox"));
+   fRow_lab->Add(new TObjString("CheckButton_  Live statbox     "));
    fValp[ind++] = &fLiveStat1Dim;
-   fRow_lab->Add(new TObjString("CheckButton+Live Gauss fit"));
+   fRow_lab->Add(new TObjString("CheckButton+  Live Gauss fit   "));
    fValp[ind++] = &fLiveGauss;
-   fRow_lab->Add(new TObjString("CheckButton+Linear bg in fit"));
+   fRow_lab->Add(new TObjString("CheckButton+  Linear bg in fit "));
    fValp[ind++] = &fLiveBG;
 
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
 
    static Int_t ok;
-   Int_t itemwidth = 380;
+   Int_t itemwidth = 420;
    fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
@@ -149,6 +153,10 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
    }
 //   if (fShowErrors) fDrawOpt += "E1";
    if (fShowContour) fDrawOpt += "HIST";
+   if (gPad->GetTickx() < 2 && fLabelsTopX)
+      fDrawOpt += "X+";
+   if (gPad->GetTicky() < 2 && fLabelsRightY)
+       fDrawOpt += "Y+";
    gStyle->SetEndErrorSize (fEndErrorSize );
    gStyle->SetErrorX       (fErrorX       );
    TEnv env(".hprrc");
@@ -286,6 +294,8 @@ void Set1DimOptDialog::SaveDefaults()
    env.SetValue("Set1DimOptDialog.fDrawAxisAtTop" , fDrawAxisAtTop);
    env.SetValue("Set1DimOptDialog.fShowContour"   , fShowContour);
    env.SetValue("Set1DimOptDialog.fShowErrors"    , fShowErrors);
+   env.SetValue("Set1DimOptDialog.fLabelsTopX"    , fLabelsTopX);
+   env.SetValue("Set1DimOptDialog.fLabelsRightY"  , fLabelsRightY);
 
    env.SaveLevel(kEnvLocal);
 }
@@ -314,6 +324,8 @@ void Set1DimOptDialog::RestoreDefaults()
    fDrawAxisAtTop = env.GetValue("Set1DimOptDialog.fDrawAxisAtTop", 0);
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
    fShowErrors    = env.GetValue("Set1DimOptDialog.fShowErrors", 0);
+   fLabelsTopX    = env.GetValue("Set1DimOptDialog.fLabelsTopX", 0);
+   fLabelsRightY  = env.GetValue("Set1DimOptDialog.fLabelsRightY"  , 0);
 }
 //______________________________________________________________________
 

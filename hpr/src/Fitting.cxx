@@ -579,150 +579,16 @@ const char *FitMacroTemplates[nFitTemplates] = {
 
 Int_t FitHist::FitPolyHist(Int_t degree)
 {
-   if (is2dim(fSelHist))
-      return Fit2dim(0, degree);
-   else
-      return Fit1dim(0, degree);
+   return Fit2dim(0, degree);
 }
 
 //____________________________________________________________________________
 
 Int_t FitHist::FitPolyMarks(Int_t degree)
 {
-   if (is2dim(fSelHist))
-      return Fit2dim(1, degree);
-   else
-      return Fit1dim(1, degree);
+    return Fit2dim(1, degree);
 }
 
-//____________________________________________________________________________
-
-Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
-{
-
-   if (what != 0) {
-      WarnBox("Fit marks not (yet) possible for 1-dim");
-      return -1;
-   }
-   if (!fSelPad || !fOrigHist) {
-      cout << "Cant find pad or hist" << endl;
-      return -1;
-   }
-
-   if (ndim < 0 || ndim > 8) {
-      WarnBox("wrong dim, must be 0-8");
-      return -1;
-   }
-
-   int nval = GetMarks(fSelHist);
-   if (nval < 2) {
-      WarnBox("Not enough marks");
-      return -1;
-   }
-   cout << "Fit1dim ----------------" << endl;
-   fMarkers->Print();
-//   double par[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-//   double fpar[9] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
-
-//   par[0] = mean;
-   const char *funcname;
-   TString sfunc = fHname;
-   Int_t ip = sfunc.Index(";");
-	if (ip > 0)sfunc.Resize(ip);
-   fFuncNumb++;
-   sfunc.Prepend(Form("%d_", fFuncNumb));
-   sfunc.Prepend("f");
-   Bool_t ok;
-   sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
-   if (!ok)
-      return 0;
-   funcname = (const char *) sfunc;
-   TFormula *func;
-   switch (ndim) {
-   case 0:
-      func = new TFormula("func", "[0]");
-      break;
-   case 1:
-      func = new TFormula("func", "[0]+[1]*x");
-      break;
-   case 2:
-      func = new TFormula("func", "[0]+[1]*x+[2]*x^2");
-      break;
-   case 3:
-      func = new TFormula("func", "[0]+[1]*x+[2]*x^2+[3]*x^3");
-      break;
-   case 4:
-      func = new TFormula("func", "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4");
-      break;
-   case 5:
-      func = new TFormula("func",
-                          "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4+[5]*x^5");
-      break;
-   case 6:
-      func = new TFormula("func",
-                          "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4+[5]*x^5+[6]*x^6");
-      break;
-   case 7:
-      func = new TFormula("func",
-                          "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4+[5]*x^5+[6]*x^6+[7]*x^7");
-      break;
-   case 8:
-      func = new TFormula("func",
-                          "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4+[5]*x^5+[6]*x^6+[7]*x^7+[8]*x^8");
-      break;
-   }
-   FhMarker *pfirst = (FhMarker *) fMarkers->First();
-   FhMarker *plast = (FhMarker *) fMarkers->Last();
-   cout <<
-       "-------------------------------------------------------------"
-       << endl;
-
-   cout << "Fitting polynomial of degree " << ndim << " to ";
-   if (what == 0)
-      cout << fSelHist->GetName();
-   if (what == 1)
-      cout << " user supplied marks";
-   cout << " from " << pfirst->GetX() << " to " << plast->GetX() << endl;
-   cout <<
-       "-------------------------------------------------------------"
-       << endl;
-//   Int_t binlx = XBinNumber(fSelHist, pfirst->GetX());
-//   Int_t binux = XBinNumber(fSelHist, plast->GetX());
-   cHist->cd();
-   TF1 *pol =
-       new TF1(funcname, "func", (float) pfirst->GetX(),
-               (float) plast->GetX());
-   TString fitopt = "R";
-   cout << "fitopt.Data() " << fitopt.Data() << endl;
-   fSelHist->Fit(funcname, fitopt.Data());	//  here fitting is done
-   TList *lof = fSelHist->GetListOfFunctions();
-   if (lof->GetSize() > 1) {
-      TObject *last = lof->Last();
-      lof->Remove(last);
-      lof->AddFirst(last);
-   }
-   UpdateDrawOptions();
-   fSelPad->Update();
-   fSelPad->GetFrame()->SetBit(TBox::kCannotMove);
-
-   TString question = "Write function to workfile?";
-   int buttons = kMBYes | kMBNo, retval = 0;
-   EMsgBoxIcon icontype = kMBIconQuestion;
-   new TGMsgBox(gClient->GetRoot(), mycanvas,
-                "Qustion", (const char *) question,
-                icontype, buttons, &retval);
-   if (retval == kMBYes) {
-      if ( fDialog != NULL )
-        fDialog->CloseDialog();
-      fDialog = new Save2FileDialog(pol);
-//      if (OpenWorkFile()) {
-//         pol->Write();
-//         CloseWorkFile();
-//      } else
-//         fFuncNumb--;
-   }
-   return 1;
-}
 
 //____________________________________________________________________________
 
@@ -983,47 +849,6 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
       }
       par[0] = mean;
    }
-
-   TFormula *func;
-   if (ndim < 0) {
-         return 0;
-   } else {
-      cout << "Fitting pol" << ndim << " to ";
-      switch (ndim) {
-      case 0:
-         func = new TFormula("func", "[0]");
-         break;
-      case 1:
-         func = new TFormula("func", "[0]+[1]*x");
-         break;
-      case 2:
-         func = new TFormula("func", "[0]+[1]*x+[2]*x^2");
-         break;
-      case 3:
-         func = new TFormula("func", "[0]+[1]*x+[2]*x^2+[3]*x^3");
-         break;
-      case 4:
-         func = new TFormula("func", "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4");
-         break;
-      case 5:
-         func = new TFormula("func",
-                             "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4+[5]*x^5");
-         break;
-      case 6:
-         func = new TFormula("func",
-                             "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4+[5]*x^5+[6]*x^6");
-         break;
-      case 7:
-         func = new TFormula("func",
-                             "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4+[5]*x^5+[6]*x^6+[7]*x^7");
-         break;
-      case 8:
-         func = new TFormula("func",
-                             "[0]+[1]*x+[2]*x^2+[3]*x^3+[4]*x^4+[5]*x^5+[6]*x^6+[7]*x^7+[8]*x^8");
-         break;
-      }
-   }
-
 //   cout << "Fitting: " << funcname << " (Pol " << ndim << ") to ";
    if (what == 0)
       cout << fSelHist->GetName();
@@ -1033,8 +858,10 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    cout <<
        "-------------------------------------------------------------"
        << endl;
-
-   TF1 *pol = new TF1(funcname, "func", (float) edgelx, (float) edgeux);
+   TString form("pol");
+   form += ndim;
+   TF1 *pol = new TF1(funcname, form.Data(), (float) edgelx, (float) edgeux);
+//   TF1 *pol = new TF1(funcname, "func", (float) edgelx, (float) edgeux);
 //   DisplayHist(fithist);
    pol->SetBit(kMustCleanup);
    pol->SetLineColor(ndim + 1);

@@ -243,7 +243,7 @@ public:
    Bool_t Its2dim(){return fOrigHist->InheritsFrom("TH2");};               //
 //   void FitGBg(Int_t tail, Int_t force_zero_bg =0);  // fit gaus + lin bg max 3 peaks
    void Fit1DimDialog(Int_t type = 1);       // fit gaus + lin bg any number of peaks
-   Int_t Fit1dim(Int_t, Int_t);            // fit polynoms
+//   Int_t Fit1dim(Int_t, Int_t);            // fit polynoms
    Int_t Fit2dim(Int_t, Int_t);            // fit polynoms
    Int_t FitPolyHist(Int_t);               // fit polynoms hist
    Int_t FitPolyMarks(Int_t);              // fit  polynoms to marks

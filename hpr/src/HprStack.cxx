@@ -3,6 +3,7 @@
 #include <TH1.h>
 #include <TLegend.h>
 #include <TString.h>
+#include <TStyle.h>
 #include <TObjString.h>
 #include <TObjArray.h>
 #include <TRegexp.h>
@@ -210,6 +211,22 @@ void HprStack::SetOptions()
 {
 static const Char_t helptext[] =
 "This menu controls the parameters when stacking histograms\n\
+Error Drawing Modes:\n\
+E	Draw error bars.\n\
+E0	Draw error bars. Markers are drawn for bins with 0 contents.\n\
+E1	Draw error bars with perpendicular lines at the edges.\n\
+	Length is controled by EndErrSize.\n\
+E2	Draw error bars with rectangles.\n\
+E3	Draw a fill area through the end points of the vertical error bars.\n\
+E4	Draw a smoothed filled area through the end points of the error bars.\n\
+E5	Like E3 but ignore the bins with 0 contents.\n\
+E6	Like E4 but ignore the bins with 0 contents.\n\
+\n\
+Options E3-E6: Choose: Contour Off and FillHist On to get area\n\
+               filled between the error lines.\n\
+X ErrorS controls drawing of error bars in X.\n\
+A value of 0.5 draws a line X +- 0.5*BinWidth\n\
+\n\
 ";
    fRow_lab = new TList();
 	static void *fValp[50];
@@ -219,19 +236,21 @@ static const Char_t helptext[] =
    fValp[ind++] = &fWindowXWidth;
    fRow_lab->Add(new TObjString("PlainIntVal+Window Y Width"));
    fValp[ind++] = &fWindowYWidth;
+   fRow_lab->Add(new TObjString("ComboSelect_Error Mode;none;E;E1;E2;E3;E4;E5;E6"));
+   fValp[ind++] = &fErrorMode;
+	fRow_lab->Add(new TObjString("Float_Value+EndErrSize "));
+	fValp[ind++] = &fEndErrorSize;
+	fRow_lab->Add(new TObjString("Float_Value+X ErrorS"));
+	fValp[ind++] = &fErrorX;
+//   fRow_lab->Add(new TObjString("CheckButton+Show Errors"));
+//   fValp[ind++] = &fShowErrors;
    fRow_lab->Add(new TObjString("CheckButton_Show Contour"));
    fValp[ind++] = &fShowContour;
-   fRow_lab->Add(new TObjString("CheckButton+Show Errors"));
-   fValp[ind++] = &fShowErrors;
    fRow_lab->Add(new TObjString("CheckButton+Draw Markers"));
    fValp[ind++] = &fShowMarkers;
    TString lab;
    for ( Int_t i = 0; i < fNDrawn; i++ ) {
-      lab = "ColorSelect_FillCol[";
-      lab += i; lab += "]";
-      fRow_lab->Add(new TObjString(lab));
-      fValp[ind++] = &fFillColor[i];
-      lab = "CheckButton+Fill[";
+      lab = "CheckButton_Fill[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fFill_1Dim[i];
@@ -239,12 +258,12 @@ static const Char_t helptext[] =
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fFillStyle[i];
-
-      lab = "ColorSelect_LineCol[";
+      lab = "ColorSelect+FillCol[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
-      fValp[ind++] = &fLineColor[i];
-      lab = "LineSSelect+LineSty[";
+      fValp[ind++] = &fFillColor[i];
+
+      lab = "LineSSelect_LineSty[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fLineStyle[i];
@@ -252,12 +271,12 @@ static const Char_t helptext[] =
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fLineWidth[i];
-
-      lab = "ColorSelect_MarkColor[";
+      lab = "ColorSelect+LineCol[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
-      fValp[ind++] = &fMarkerColor[i];
-      lab = "Mark_Select+MarkStyle[";
+      fValp[ind++] = &fLineColor[i];
+
+      lab = "Mark_Select_MarkStyle[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fMarkerStyle[i];
@@ -265,6 +284,10 @@ static const Char_t helptext[] =
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fMarkerSize[i];
+      lab = "ColorSelect+MarkColor[";
+      lab += i; lab += "]";
+      fRow_lab->Add(new TObjString(lab));
+      fValp[ind++] = &fMarkerColor[i];
    }
    Int_t itemwidth = 420;
    static Int_t ok = 0;
@@ -285,6 +308,13 @@ void HprStack::RestoreDefaults()
    fLegendX2 = env.GetValue("HprStack.fLegendX2", 0.95);
    fLegendY1 = env.GetValue("HprStack.fLegendY1", 0.85);
    fLegendY2 = env.GetValue("HprStack.fLegendY2", 0.95);
+   fEndErrorSize  = env.GetValue("Set1DimOptDialog.fEndErrorSize", 0.01);
+   fErrorX        = env.GetValue("Set1DimOptDialog.fErrorX", 0.);
+   fShowContour   = env.GetValue("HprStack.fShowContour", 0);
+   fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "none");
+//   fShowErrors    = env.GetValue("HprStack.fShowErrors", 0);
+   fShowMarkers   = env.GetValue("HprStack.fShowMarkers", 0);
+
    TString lab;
    for ( Int_t i = 0; i < fNhists; i++ ) {
       lab = "HprStack.fFill_1Dim["; lab+=i; lab+="]";
@@ -326,9 +356,6 @@ void HprStack::RestoreDefaults()
       if (env.Lookup(lab))
          fMarkerSize[i]  = env.GetValue(lab, 0);
    }
-   fShowContour   = env.GetValue("HprStack.fShowContour", 0);
-   fShowErrors    = env.GetValue("HprStack.fShowErrors", 0);
-   fShowMarkers   = env.GetValue("HprStack.fShowMarkers", 0);
 }
 //_______________________________________________________
 
@@ -341,6 +368,12 @@ void HprStack::SaveDefaults()
    env.SetValue("HprStack.fLegendX2", fLegendX2);
    env.SetValue("HprStack.fLegendY1", fLegendY1);
    env.SetValue("HprStack.fLegendY2", fLegendY2);
+   env.SetValue("Set1DimOptDialog.fEndErrorSize" , fEndErrorSize);
+   env.SetValue("Set1DimOptDialog.fErrorX",        fErrorX);
+   env.SetValue("HprStack.fShowContour", fShowContour);
+   env.SetValue("Set1DimOptDialog.fErrorMode",     fErrorMode);
+//   env.SetValue("HprStack.fShowErrors",  fShowErrors );
+   env.SetValue("HprStack.fShowMarkers", fShowMarkers );
 
    TString lab;
    for ( Int_t i = 0; i < fNhists; i++ ) {
@@ -366,9 +399,6 @@ void HprStack::SaveDefaults()
       env.SetValue(lab,fMarkerSize[i]);
   }
 
-   env.SetValue("HprStack.fShowContour", fShowContour);
-   env.SetValue("HprStack.fShowErrors",  fShowErrors );
-   env.SetValue("HprStack.fShowMarkers", fShowMarkers );
    env.SaveLevel(kEnvLocal);
 }
 //_______________________________________________________________________
@@ -406,7 +436,12 @@ void HprStack::SetAttributes()
 	TString opt;
 
 	if (fShowContour) opt="HIST";
-	if (fShowErrors ) opt+= "E1";
+   if (fErrorMode != "none") {
+      opt += fErrorMode;
+   }
+   gStyle->SetEndErrorSize (fEndErrorSize );
+   gStyle->SetErrorX       (fErrorX       );
+//	if (fShowErrors ) opt+= "E1";
    for(Int_t i=0; i<fNDrawn; i++) {
       TH1 * hist = (TH1*)stack->At(i);
       TH1 * ohist = (TH1*)orighist->At(i);

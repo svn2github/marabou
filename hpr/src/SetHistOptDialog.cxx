@@ -109,10 +109,10 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win)
    fValp[ind++] = &fTitleStyle;
 
    fRow_lab->Add(new TObjString("Float_Value_X;0;1"));
-   fRow_lab->Add(new TObjString("Float_Value-Y;0;1"));
+   fRow_lab->Add(new TObjString("Float_Value+Y;0;1"));
 //   fRow_lab->Add(new TObjString("Float_Value_W"));
 //   fRow_lab->Add(new TObjString("Float_Value_H"));
-   fRow_lab->Add(new TObjString("AlignSelect-Align"));
+   fRow_lab->Add(new TObjString("AlignSelect+Align"));
    fValp[ind++] = &fTitleX;
    fValp[ind++] = &fTitleY;
    fValp[ind++] = &fTitleAlign;
@@ -150,8 +150,8 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win)
    fRow_lab->Add(new TObjString("CommentOnly+Prim"));
    fRow_lab->Add(new TObjString("CommentOnly+Sec"));
    fRow_lab->Add(new TObjString("CommentOnly+Tert"));
-   fRow_lab->Add(new TObjString("CommentOnly+Opti"));
-   fRow_lab->Add(new TObjString("CommentOnly+TickS"));
+   fRow_lab->Add(new TObjString("CommentOnly+Optimize"));
+   fRow_lab->Add(new TObjString("CommentOnly+TickSide"));
    fValp[ind++] = &dummy;
    fValp[ind++] = &dummy;
    fValp[ind++] = &dummy;
@@ -206,9 +206,9 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win)
 
    fRow_lab->Add(new TObjString("CommentOnly_Label Attributes"));
    fRow_lab->Add(new TObjString("ColorSelect_Col"));
-   fRow_lab->Add(new TObjString("CfontSelect-Font"));
-   fRow_lab->Add(new TObjString("Float_Value-Size;0;1"));
-   fRow_lab->Add(new TObjString("PlainIntVal-MaxDigs"));
+   fRow_lab->Add(new TObjString("CfontSelect+Font"));
+   fRow_lab->Add(new TObjString("Float_Value+Size;0;1"));
+   fRow_lab->Add(new TObjString("PlainIntVal+MaxDigs"));
    fRow_lab->Add(new TObjString("Float_Value_Offset X"));
    fRow_lab->Add(new TObjString("Float_Value+Offset Y"));
    fRow_lab->Add(new TObjString("Float_Value+Offset Z"));
@@ -229,13 +229,13 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win)
    fValp[ind++] = &fTitleFontA;
    fValp[ind++] = &fTitleSize;
    fRow_lab->Add(new TObjString("Float_Value_Off X"));
-   fRow_lab->Add(new TObjString("Float_Value-Off Y"));
+   fRow_lab->Add(new TObjString("Float_Value+Off Y"));
    if (nh2 > 0)
-      fRow_lab->Add(new TObjString("Float_Value-Offs Z"));
-   fRow_lab->Add(new TObjString("CheckButton-Cent X "));
-   fRow_lab->Add(new TObjString("CheckButton-CenT Y"));
+      fRow_lab->Add(new TObjString("Float_Value+Offs Z"));
+   fRow_lab->Add(new TObjString("CheckButton+Cent X "));
+   fRow_lab->Add(new TObjString("CheckButton+CenT Y"));
    if (nh2 > 0)
-      fRow_lab->Add(new TObjString("CheckButton-Cent Z"));
+      fRow_lab->Add(new TObjString("CheckButton+Cent Z"));
 
    fValp[ind++] = &fTitleOffsetX;
    fValp[ind++] = &fTitleOffsetY;
@@ -250,7 +250,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win)
    fValp[ind++] = &stycmd;
 
    static Int_t ok;
-   Int_t itemwidth = 360;
+   Int_t itemwidth = 420;
    fDialog =
       new TGMrbValuesAndText("Axis Attributes", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,

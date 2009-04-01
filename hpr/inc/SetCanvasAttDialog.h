@@ -38,6 +38,10 @@ private:
 	Int_t       fCanvasDefW;        //default canvas width
 	Int_t       fCanvasDefX;        //default canvas top X position
 	Int_t       fCanvasDefY;        //default canvas top Y position
+	Int_t       fPadLabelX;
+	Int_t       fPadLabelY;
+	Int_t       fCanvasFillStyle; 
+	
    
 public:
 

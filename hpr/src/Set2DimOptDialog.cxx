@@ -57,10 +57,10 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 ";
 
    char *fDrawOpt2[kNdrawopt] =
-   {"SCAT",  "BOX0",  "BOX1",  "COL",   "CONT0",
-    "CONT1", "CONT2", "CONT3", "CONT4", "TRI2",
-    "SURF0", "SURF1", "SURF2", "SURF3", "SURF4",
-    "LEGO",  "LEGO1", "LEGO2", "ARR",   "TEXT"};
+   {"SCAT ", "BOX0 ", "BOX1 ", "COL  ",  "CONT0",
+    "CONT1", "CONT2", "CONT3", "CONT4",  "TRI2 ",
+    "SURF0", "SURF1", "SURF2", "SURF3",  "SURF4",
+    "LEGO ", "LEGO1", "LEGO2", "ARR  ",  "TEXT "};
 
    RestoreDefaults();
    Int_t selected = -1;
@@ -197,10 +197,10 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
    TObject *obj;
    fDrawOpt = fDrawOpt2Dim;
    if ( fShowZScale && (
-        fDrawOpt.Contains("COL")   || fDrawOpt.Contains("CONT0") 
-      ||fDrawOpt.Contains("CONT1") || fDrawOpt.Contains("CONT4") 
-      ||fDrawOpt.Contains("TRI2") || fDrawOpt.Contains("SURF1") 
-      ||fDrawOpt.Contains("SURF2") || fDrawOpt.Contains("SURF3") 
+        fDrawOpt.Contains("COL")   || fDrawOpt.Contains("CONT0")
+      ||fDrawOpt.Contains("CONT1") || fDrawOpt.Contains("CONT4")
+      ||fDrawOpt.Contains("TRI2") || fDrawOpt.Contains("SURF1")
+      ||fDrawOpt.Contains("SURF2") || fDrawOpt.Contains("SURF3")
       ||fDrawOpt.Contains("LEGO2") ) )
       fDrawOpt += "Z";
    if (fHideFrontBox) fDrawOpt += "FB";

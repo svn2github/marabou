@@ -33,6 +33,8 @@ private:
    Int_t   fShowContour;
    Int_t   fShowErrors;
    TString fErrorMode;
+	Int_t   fLabelsTopX;
+	Int_t   fLabelsRightY;
 
 public:
 
