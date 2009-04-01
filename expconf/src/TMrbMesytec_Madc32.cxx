@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.3 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.4 2009-04-01 10:50:35 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -548,6 +548,7 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
 		return(kFALSE);
 	}
+	moduleName(0,1).ToUpper();
 
 	this->SetBlockXfer(madcEnv->GetValue(Form("MADC32.%s.BlockXfer", moduleName.Data()), kFALSE));
 	this->SetAddressSource(madcEnv->GetValue(Form("MADC32.%s.AddressSource", moduleName.Data()), kAddressBoard));
@@ -626,6 +627,9 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 	TMrbLofNamedX tags;
 	tags.AddNamedX(TMrbConfig::kRcModuleSettings, "MODULE_SETTINGS");
 
+	TString moduleUC = this->GetName();
+	moduleUC(0,1).ToUpper();
+
 	TMrbTemplate tmpl;
 	TString line;
 	if (tmpl.Open(tf.Data(), &tags)) {
@@ -640,20 +644,20 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 					case TMrbConfig::kRcModuleSettings:
 					{
 						tmpl.InitializeCode("%Preamble%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$moduleSerial", this->GetSerial());
 						tmpl.Substitute("$moduleFirmware", "n/a");
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%AddressRegisters%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$addrSource", this->GetAddressSource());
 						tmpl.Substitute("$addrReg", this->GetAddressRegister());
 						tmpl.Substitute("$moduleId", this->GetModuleId());
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%FifoHandling%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$dlengthFormat", this->GetDataLengthFormat());
 						tmpl.Substitute("$multiEvent", this->GetMultiEvent());
 						tmpl.Substitute("$markingType", this->GetMarkingType());
@@ -661,7 +665,7 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%OperationMode%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$bankOperation", this->GetBankOperation());
 						tmpl.Substitute("$adcResolution", this->GetAdcResolution());
 						tmpl.Substitute("$outputFormat", this->GetOutputFormat());
@@ -671,7 +675,7 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%GateGenerator%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$holdDelay0", this->GetHoldDelay(0));
 						tmpl.Substitute("$holdDelay1", this->GetHoldDelay(1));
 						tmpl.Substitute("$holdWidth0", this->GetHoldWidth(0));
@@ -680,7 +684,7 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%InputOutput%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$inputRange", this->GetInputRange());
 						tmpl.Substitute("$eclTerm", this->GetEclTerm());
 						tmpl.Substitute("$eclGate1OrOsc", this->GetEclGate1OrOsc());
@@ -691,22 +695,22 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%TestPulser%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$pulserStatus", this->GetTestPulser());
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%Counters%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$tsSource", this->GetTsSource());
 						tmpl.Substitute("$tsDivisor", this->GetTsDivisor());
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%Thresholds%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.WriteCode(settings);
 						for (Int_t i = 0; i < TMrbMesytec_Madc32::kNofChannels; i++) {
 							tmpl.InitializeCode("%ThreshLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$moduleName", moduleUC.Data());
 							tmpl.Substitute("$chn", i);
 							tmpl.Substitute("$threshold", this->GetThreshold(i));
 							tmpl.WriteCode(settings);

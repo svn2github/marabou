@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.13 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.14 2009-04-01 10:50:35 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -349,6 +349,7 @@ Bool_t TMrbSis_3300::UseSettings(const Char_t * SettingsFile) {
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
 		return(kFALSE);
 	}
+	moduleName(0,1).ToUpper();
 
 	this->SetBlockXfer(sisEnv->GetValue(Form("SIS3300.%s.BlockXfer", moduleName.Data()), kFALSE));
 	this->SetAcquisitionMode(sisEnv->GetValue(Form("SIS3300.%s.AcquisitionMode", moduleName.Data()), TMrbSis_3300::kAcqMultiEvent));
@@ -586,6 +587,9 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 	TMrbLofNamedX tags;
 	tags.AddNamedX(TMrbConfig::kRcModuleSettings, "MODULE_SETTINGS");
 
+	TString moduleUC = this->GetName();
+	moduleUC(0,1).ToUpper();
+
 	TMrbTemplate tmpl;
 	TString line;
 	if (tmpl.Open(tf.Data(), &tags)) {
@@ -600,7 +604,7 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 					case TMrbConfig::kRcModuleSettings:
 					{
 						tmpl.InitializeCode("%Preamble%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$moduleSerial", this->GetSerial());
 						tmpl.WriteCode(settings);
 
@@ -608,14 +612,14 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 						for (Int_t i = 0; i < TMrbSis_3300::kNofGroups; i++) {
 							tmpl.InitializeCode("%ReadGroupLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$moduleName", moduleUC.Data());
 							tmpl.Substitute("$grp", i);
 							tmpl.Substitute("$readout", this->GroupToBeRead(i) ? "TRUE" : "FALSE");
 							tmpl.WriteCode(settings);
 						}
 
 						tmpl.InitializeCode("%Settings%");
-						tmpl.Substitute("$moduleName", this->GetName());
+						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$blockXfer", this->BlockXferEnabled() ? "TRUE" : "FALSE");
 						tmpl.Substitute("$acquisitionMode", this->GetAcquisitionMode());
 						tmpl.Substitute("$maxEvents", this->GetMaxEvents());
@@ -639,7 +643,7 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 						for (Int_t i = 0; i < TMrbSis_3300::kNofGroups; i++) {
 							tmpl.InitializeCode("%TriggerOnLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$moduleName", moduleUC.Data());
 							tmpl.Substitute("$grp", i);
 							tmpl.Substitute("$trigOn", this->GetTriggerOn(i));
 							tmpl.WriteCode(settings);
@@ -649,7 +653,7 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 						for (Int_t i = 0; i < TMrbSis_3300::kNofChannels; i++) {
 							tmpl.InitializeCode("%TriggerThreshLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$moduleName", moduleUC.Data());
 							tmpl.Substitute("$chn", i);
 							tmpl.Substitute("$trigThresh", this->GetTriggerThresh(i));
 							tmpl.WriteCode(settings);
@@ -659,7 +663,7 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 						for (Int_t i = 0; i < TMrbSis_3300::kNofChannels; i++) {
 							tmpl.InitializeCode("%TriggerSlopeLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$moduleName", moduleUC.Data());
 							tmpl.Substitute("$chn", i);
 							tmpl.Substitute("$trigSlope", this->GetTriggerSlope(i));
 							tmpl.WriteCode(settings);
@@ -669,7 +673,7 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 						for (Int_t i = 0; i < TMrbSis_3300::kNofGroups; i++) {
 							tmpl.InitializeCode("%PeakTimeLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$moduleName", moduleUC.Data());
 							tmpl.Substitute("$grp", i);
 							tmpl.Substitute("$peakTime", this->GetPeakTime(i));
 							tmpl.WriteCode(settings);
@@ -679,7 +683,7 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 						for (Int_t i = 0; i < TMrbSis_3300::kNofGroups; i++) {
 							tmpl.InitializeCode("%GapTimeLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$moduleName", moduleUC.Data());
 							tmpl.Substitute("$grp", i);
 							tmpl.Substitute("$gapTime", this->GetGapTime(i));
 							tmpl.WriteCode(settings);
@@ -689,7 +693,7 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 						for (Int_t i = 0; i < TMrbSis_3300::kNofGroups; i++) {
 							tmpl.InitializeCode("%PulseModeLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$moduleName", moduleUC.Data());
 							tmpl.Substitute("$grp", i);
 							tmpl.Substitute("$pulseMode", this->PulseModeEnabled(i) ? "TRUE" : "FALSE");
 							tmpl.WriteCode(settings);
@@ -699,7 +703,7 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.WriteCode(settings);
 						for (Int_t i = 0; i < TMrbSis_3300::kNofGroups; i++) {
 							tmpl.InitializeCode("%PulseLengthLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
+							tmpl.Substitute("$moduleName", moduleUC.Data());
 							tmpl.Substitute("$grp", i);
 							tmpl.Substitute("$pulseLength", this->GetPulseLength(i));
 							tmpl.WriteCode(settings);
