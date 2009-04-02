@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.4 2009-04-01 10:50:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.5 2009-04-02 11:15:08 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -86,7 +86,6 @@ const SMrbNamedXShort kMrbAdcResolution[] =
 const SMrbNamedXShort kMrbOutputFormat[] =
 		{
 			{	TMrbMesytec_Madc32::kOutFmtAddr,			"addressed" 	},
-			{	TMrbMesytec_Madc32::kOutFmtCompact,			"compact" 		},
 			{	0,			 								NULL,			}
 		};
 
@@ -271,6 +270,11 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
+	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegBufferLength, "BufferLength");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	0,	0,	0x1 << 14);
+	kp->AssignObject(rp);
+	fLofRegisters.AddNamedX(kp);
+
 	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegDataLengthFormat, "DataLengthFormat");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kDataLngFmt32,
 													TMrbMesytec_Madc32::kDataLngFmt8,
@@ -339,7 +343,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegOutputFormat, "OutputFormat");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kOutFmtAddr,
 													TMrbMesytec_Madc32::kOutFmtAddr,
-													TMrbMesytec_Madc32::kOutFmtCompact);
+													TMrbMesytec_Madc32::kOutFmtAddr);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -554,6 +558,7 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetAddressSource(madcEnv->GetValue(Form("MADC32.%s.AddressSource", moduleName.Data()), kAddressBoard));
 	this->SetAddressRegister(madcEnv->GetValue(Form("MADC32.%s.AddressRegister", moduleName.Data()), 0));
 	this->SetModuleId(madcEnv->GetValue(Form("MADC32.%s.ModuleId", moduleName.Data()), 0xFF));
+	this->SetBufferLength(madcEnv->GetValue(Form("MADC32.%s.BufferLength", moduleName.Data()), 0));
 	this->SetDataLengthFormat(madcEnv->GetValue(Form("MADC32.%s.DataLengthFormat", moduleName.Data()), kDataLngFmt32));
 	this->SetMultiEvent(madcEnv->GetValue(Form("MADC32.%s.MultiEvent", moduleName.Data()), kMultiEvtNo));
 	this->SetMarkingType(madcEnv->GetValue(Form("MADC32.%s.MarkingType", moduleName.Data()), kMarkingTypeEvent));
@@ -658,6 +663,7 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 
 						tmpl.InitializeCode("%FifoHandling%");
 						tmpl.Substitute("$moduleName", moduleUC.Data());
+						tmpl.Substitute("$bufferLength", this->GetBufferLength());
 						tmpl.Substitute("$dlengthFormat", this->GetDataLengthFormat());
 						tmpl.Substitute("$multiEvent", this->GetMultiEvent());
 						tmpl.Substitute("$markingType", this->GetMarkingType());

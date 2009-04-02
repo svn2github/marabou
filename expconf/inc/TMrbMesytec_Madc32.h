@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.1 2008-09-26 11:54:15 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.2 2009-04-02 11:15:08 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -49,6 +49,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		enum EMrbRegisters	{	kRegAddrSource,
 								kRegAddrReg,
 								kRegModuleId,
+								kRegBufferLength,
 								kRegDataLengthFormat,
 								kRegMultiEvent,
 								kRegMarkingType,
@@ -190,6 +191,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 		inline Bool_t SetModuleId(Int_t ModuleId) { return(this->Set(TMrbMesytec_Madc32::kRegModuleId, ModuleId)); };
 		inline Int_t GetModuleId() { return(this->Get(TMrbMesytec_Madc32::kRegModuleId)); };
+
+		inline Bool_t SetBufferLength(Int_t Length) { return(this->Set(TMrbMesytec_Madc32::kRegBufferLength, Length)); };
+		inline Int_t GetBufferLength() { return(this->Get(TMrbMesytec_Madc32::kRegBufferLength)); };
 
 		inline Bool_t SetDataLengthFormat(Int_t Format) { return(this->Set(TMrbMesytec_Madc32::kRegDataLengthFormat, Format)); };
 		inline Bool_t SetDataLengthFormat(Char_t * Format) { return(this->Set(TMrbMesytec_Madc32::kRegDataLengthFormat, Format)); };
