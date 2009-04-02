@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofNamedX.cxx,v 1.10 2007-07-27 11:17:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofNamedX.cxx,v 1.11 2009-04-02 11:55:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -39,6 +39,8 @@ TMrbLofNamedX::TMrbLofNamedX(const Char_t * Name, Bool_t PatternMode) {
 
 	fName = Name ? Name : this->ClassName();
 	fPatternMode = PatternMode;
+	fIsSorted = kFALSE;
+	fIsSortedByName = kFALSE;
 }
 
 TMrbLofNamedX::TMrbLofNamedX(const SMrbNamedX * NamedX, Bool_t PatternMode) {
@@ -56,6 +58,8 @@ TMrbLofNamedX::TMrbLofNamedX(const SMrbNamedX * NamedX, Bool_t PatternMode) {
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	fPatternMode = PatternMode;
+	fIsSorted = kFALSE;
+	fIsSortedByName = kFALSE;
 	this->AddNamedX(NamedX);
 }
 
@@ -74,6 +78,8 @@ TMrbLofNamedX::TMrbLofNamedX(const SMrbNamedXShort * NamedX, Bool_t PatternMode)
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	fPatternMode = PatternMode;
+	fIsSorted = kFALSE;
+	fIsSortedByName = kFALSE;
 	this->AddNamedX(NamedX);
 }
 
@@ -248,6 +254,8 @@ void TMrbLofNamedX::Sort(Bool_t SortFlag) {
 	while (nx = (TMrbNamedX *) iter->Next()) nx->SortByName(SortFlag);
 	TObjArray::UnSort();
 	TObjArray::Sort();
+	fIsSorted = kTRUE;
+	fIsSortedByName = SortFlag;
 }
 
 void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) const {
