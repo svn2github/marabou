@@ -8,7 +8,7 @@
 // Class:          TNGMrbButtonFrame    -- a composite frame containing buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbButtonFrame.h,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbButtonFrame.h,v 1.2 2009-04-06 08:06:21 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -20,6 +20,7 @@
 #include "TGWindow.h"
 #include "TGLabel.h"
 #include "TGButton.h"
+#include "TGTableLayout.h"
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
@@ -149,6 +150,7 @@ class TNGMrbButtonFrame {
 	protected:
 		void CreateButtons();
 		TNGMrbSpecialButton * FindSpecialButton(Int_t Index);
+		TGTableLayout * tabLayout;
 
 	protected:
 		USE_HEAP();

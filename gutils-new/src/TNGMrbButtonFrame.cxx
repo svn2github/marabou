@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbButtonFrame.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbButtonFrame.cxx,v 1.4 2009-04-06 08:06:22 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -19,6 +19,7 @@ namespace std {} using namespace std;
 #include "TGToolTip.h"
 #include "TMrbString.h"
 #include "TNGMrbButtonFrame.h"
+#include "TGTableLayout.h"
 
 ClassImp(TNGMrbButtonFrame)
 ClassImp(TNGMrbSpecialButton)
@@ -175,6 +176,10 @@ void TNGMrbButtonFrame::CreateButtons() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	
+
+
+
 	TGButton * btn = NULL;
 	TGCheckButton * cbtn;
 	TGRadioButton * rbtn;
@@ -241,7 +246,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 				break;
 		}
 		btn->ChangeBackground(fButtonGC->BG());
-		fFrame->AddFrame(btn);
+		//fFrame->AddFrame(btn);
 		btn->Associate(fFrame);
 		nx->AssignObject(btn);
 		if (nx->HasTitle()) btn->SetToolTipText(nx->GetTitle(), 500);
@@ -276,7 +281,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 				btn = (TGButton *) pbtn;
 			}
 			btn->ChangeBackground(fButtonGC->BG());
-			fFrame->AddFrame(btn);
+			//fFrame->AddFrame(btn);
 			btn->Associate(fFrame);
 			sbtn2->AssignObject(btn);
 			if (sbtn2->HasTitle()) btn->SetToolTipText(sbtn2->GetTitle(), 500);
@@ -325,7 +330,49 @@ void TNGMrbButtonFrame::CreateButtons() {
 	if (fWidth == 0) fWidth = fFrame->GetDefaultWidth();
 	if (fHeight == 0) fHeight = fFrame->GetDefaultHeight();
 	fFrame->Resize(fWidth, fHeight);
-	fFrame->SetLayoutManager(new TNGMrbButtonFrameLayout(this));
+	
+	
+	// Mit TGTableLayout 
+	cout<<"/n Anzahl fNofRows: "<<fNofRows<<"Anzahl fNofCols: "<<fNofCols<<endl;
+	
+	
+	tabLayout = new TGTableLayout(fFrame, fNofRows, fNofCols, kTRUE);
+	fFrame->SetLayoutManager(tabLayout);
+	
+	
+	
+	
+	
+	nx = (TMrbNamedX *) this->GetLofButtons()->First();
+	
+	
+	for(Int_t x=0, y=0;nx!=NULL;x++){
+	
+	if (x==fNofCols) {x=0;y++;}
+	cout<<"/nAnfang for schleife, x="<<x<<" ,y="<<y<<endl;
+		
+	TGButton * btn = (TGButton *) nx->GetAssignedObject();
+	Int_t bw = this->GetColWidth()->At(x);
+	
+	
+	fFrame->AddFrame(btn, new TGTableLayoutHints(x,x+1,y,y+1,
+                                    kLHintsExpandX|kLHintsExpandY |
+                                    kLHintsShrinkX|kLHintsShrinkY |
+				    kLHintsCenterX|kLHintsCenterY
+				    
+				    
+                                    |kLHintsFillX|kLHintsFillY
+				     ,1,1,1,1));
+	btn->Resize(fButtonWidth, fButtonHeight);
+	nx = (TMrbNamedX *) this->GetLofButtons()->After(nx);
+	cout<<"Ende for schleife"<<endl;
+	
+	}
+	
+	//fFrame->MapSubwindows();
+	//fFrame->Layout();
+	//fFrame->MapWindow();
+	//fFrame->SetLayoutManager(new TNGMrbButtonFrameLayout(this));
 }
 				
 void TNGMrbButtonFrame::Associate(const TGWindow * Window) {
