@@ -9,12 +9,11 @@
 //! \details		Class definitions for ROOT under LynxOs: TArray<br>
 //! 				Abstract array base class.<br>
 //! 				Used by TArrayC, TArrayS, TArrayI, TArrayL, TArrayF and TArrayD.
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-04-09 13:34:50 $
 //////////////////////////////////////////////////////////////////////////////
-//////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
 #include <string.h>
