@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.2 2009-04-02 11:15:08 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.3 2009-04-09 13:36:01 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -49,9 +49,10 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		enum EMrbRegisters	{	kRegAddrSource,
 								kRegAddrReg,
 								kRegModuleId,
-								kRegBufferLength,
-								kRegDataLengthFormat,
+								kRegFifoLength,
+								kRegDataWidth,
 								kRegMultiEvent,
+								kRegXferData,
 								kRegMarkingType,
 								kRegBankOperation,
 								kRegAdcResolution,
@@ -64,11 +65,11 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 								kRegUseGG,
 								kRegInputRange,
 								kRegEclTerm,
-								kRegEclGate1OrOsc,
-								kRegEclFclOrReset,
+								kRegEclG1OrOsc,
+								kRegEclFclOrRts,
 								kRegEclBusy,
-								kRegNimGate1OrOsc,
-								kRegNimFclOrReset,
+								kRegNimG1OrOsc,
+								kRegNimFclOrRts,
 								kRegNimBusy,
 								kRegPulserStatus,
 								kRegTsSource,
@@ -92,7 +93,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 										};
 
 		enum EMrbMarkingType			{	kMarkingTypeEvent	=	0,
-											kMarkingTypeTimestamp
+											kMarkingTypeTs
 										};
 
 		enum EMrbBankOperation			{	kBankOprConnected	=	0,
@@ -124,32 +125,31 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 										};
 
 		enum EMrbEclTerm	 			{	kEclTermOff 		=	0,
-											kEclTermGate0 		=	BIT(0),
-											kEclTermGate1 		=	BIT(1),
-											kEclTermFastClear 	=	BIT(2),
-											kEclTermBusy		=	BIT(3),
-											kEclTermOn			=	kEclTermGate0 | kEclTermGate1 | kEclTermFastClear | kEclTermBusy,
+											kEclTermG0 			=	BIT(0),
+											kEclTermG1 			=	BIT(1),
+											kEclTermFcl 	 	=	BIT(2),
+											kEclTermOn			=	kEclTermG0 | kEclTermG1 | kEclTermFcl,
 										};
 
-		enum EMrbEclGate1Osc	 		{	kEclGate1			=	0,
-											kEclOscillator
+		enum EMrbEclG1OrOsc 	 		{	kEclG1				=	0,
+											kEclOsc
 										};
 
-		enum EMrbEclFclRes	 			{	kEclFastClear		=	0,
-											kEclReset
+		enum EMrbEclFclOrRes			{	kEclFcl 			=	0,
+											kEclRts
 										};
 
-		enum EMrbNimGate1Osc	 		{	kNimGate1			=	0,
-											kNimOscillator
+		enum EMrbNimG1OrOsc	 			{	kNimG1				=	0,
+											kNimOsc
 										};
 
-		enum EMrbNimFclRes	 			{	kNimFastClear		=	0,
-											kNimReset
+		enum EMrbNimFclOrRts			{	kNimFcl 			=	0,
+											kNimRts
 										};
 
 		enum EMrbNimBusy		 		{	kNimBusy			=	0,
-											kNimGate0Out,
-											kNimGate1Out,
+											kNimG0Out,
+											kNimG1Out,
 											kNimCbusOut
 										};
 
@@ -192,12 +192,15 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline Bool_t SetModuleId(Int_t ModuleId) { return(this->Set(TMrbMesytec_Madc32::kRegModuleId, ModuleId)); };
 		inline Int_t GetModuleId() { return(this->Get(TMrbMesytec_Madc32::kRegModuleId)); };
 
-		inline Bool_t SetBufferLength(Int_t Length) { return(this->Set(TMrbMesytec_Madc32::kRegBufferLength, Length)); };
-		inline Int_t GetBufferLength() { return(this->Get(TMrbMesytec_Madc32::kRegBufferLength)); };
+		inline Bool_t SetFifoLength(Int_t Length) { return(this->Set(TMrbMesytec_Madc32::kRegFifoLength, Length)); };
+		inline Int_t GetFifoLength() { return(this->Get(TMrbMesytec_Madc32::kRegFifoLength)); };
 
-		inline Bool_t SetDataLengthFormat(Int_t Format) { return(this->Set(TMrbMesytec_Madc32::kRegDataLengthFormat, Format)); };
-		inline Bool_t SetDataLengthFormat(Char_t * Format) { return(this->Set(TMrbMesytec_Madc32::kRegDataLengthFormat, Format)); };
-		inline Int_t GetDataLengthFormat() { return(this->Get(TMrbMesytec_Madc32::kRegDataLengthFormat)); };
+		inline Bool_t SetXferData(Int_t Length) { return(this->Set(TMrbMesytec_Madc32::kRegXferData, Length)); };
+		inline Int_t GetXferData() { return(this->Get(TMrbMesytec_Madc32::kRegXferData)); };
+
+		inline Bool_t SetDataWidth(Int_t Format) { return(this->Set(TMrbMesytec_Madc32::kRegDataWidth, Format)); };
+		inline Bool_t SetDataWidth(Char_t * Format) { return(this->Set(TMrbMesytec_Madc32::kRegDataWidth, Format)); };
+		inline Int_t GetDataWidth() { return(this->Get(TMrbMesytec_Madc32::kRegDataWidth)); };
 
 		inline Bool_t SetMultiEvent(Int_t Mode) { return(this->Set(TMrbMesytec_Madc32::kRegMultiEvent, Mode)); };
 		inline Bool_t SetMultiEvent(Char_t * Mode) { return(this->Set(TMrbMesytec_Madc32::kRegMultiEvent, Mode)); };
@@ -247,21 +250,21 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline Bool_t SetEclTerm(Char_t * Term) { return(this->Set(TMrbMesytec_Madc32::kRegEclTerm, Term)); };
 		inline Int_t GetEclTerm() { return(this->Get(TMrbMesytec_Madc32::kRegEclTerm)); };
 
-		inline Bool_t SetEclGate1OrOsc(Int_t GO) { return(this->Set(TMrbMesytec_Madc32::kRegEclGate1OrOsc, GO)); };
-		inline Bool_t SetEclGate1OrOsc(Char_t * GO) { return(this->Set(TMrbMesytec_Madc32::kRegEclGate1OrOsc, GO)); };
-		inline Int_t GetEclGate1OrOsc() { return(this->Get(TMrbMesytec_Madc32::kRegEclGate1OrOsc)); };
+		inline Bool_t SetEclG1OrOsc(Int_t GO) { return(this->Set(TMrbMesytec_Madc32::kRegEclG1OrOsc, GO)); };
+		inline Bool_t SetEclG1OrOsc(Char_t * GO) { return(this->Set(TMrbMesytec_Madc32::kRegEclG1OrOsc, GO)); };
+		inline Int_t GetEclG1OrOsc() { return(this->Get(TMrbMesytec_Madc32::kRegEclG1OrOsc)); };
 
-		inline Bool_t SetEclFclOrReset(Int_t FR) { return(this->Set(TMrbMesytec_Madc32::kRegEclFclOrReset, FR)); };
-		inline Bool_t SetEclFclOrReset(Char_t * FR) { return(this->Set(TMrbMesytec_Madc32::kRegEclFclOrReset, FR)); };
-		inline Int_t GetEclFclOrReset() { return(this->Get(TMrbMesytec_Madc32::kRegEclFclOrReset)); };
+		inline Bool_t SetEclFclOrRts(Int_t FR) { return(this->Set(TMrbMesytec_Madc32::kRegEclFclOrRts, FR)); };
+		inline Bool_t SetEclFclOrRts(Char_t * FR) { return(this->Set(TMrbMesytec_Madc32::kRegEclFclOrRts, FR)); };
+		inline Int_t GetEclFclOrRts() { return(this->Get(TMrbMesytec_Madc32::kRegEclFclOrRts)); };
 
-		inline Bool_t SetNimGate1OrOsc(Int_t GO) { return(this->Set(TMrbMesytec_Madc32::kRegNimGate1OrOsc, GO)); };
-		inline Bool_t SetNimGate1OrOsc(Char_t * GO) { return(this->Set(TMrbMesytec_Madc32::kRegNimGate1OrOsc, GO)); };
-		inline Int_t GetNimGate1OrOsc() { return(this->Get(TMrbMesytec_Madc32::kRegNimGate1OrOsc)); };
+		inline Bool_t SetNimG1OrOsc(Int_t GO) { return(this->Set(TMrbMesytec_Madc32::kRegNimG1OrOsc, GO)); };
+		inline Bool_t SetNimG1OrOsc(Char_t * GO) { return(this->Set(TMrbMesytec_Madc32::kRegNimG1OrOsc, GO)); };
+		inline Int_t GetNimG1OrOsc() { return(this->Get(TMrbMesytec_Madc32::kRegNimG1OrOsc)); };
 
-		inline Bool_t SetNimFclOrReset(Int_t FR) { return(this->Set(TMrbMesytec_Madc32::kRegNimFclOrReset, FR)); };
-		inline Bool_t SetNimFclOrReset(Char_t * FR) { return(this->Set(TMrbMesytec_Madc32::kRegNimFclOrReset, FR)); };
-		inline Int_t GetNimFclOrReset() { return(this->Get(TMrbMesytec_Madc32::kRegNimFclOrReset)); };
+		inline Bool_t SetNimFclOrRts(Int_t FR) { return(this->Set(TMrbMesytec_Madc32::kRegNimFclOrRts, FR)); };
+		inline Bool_t SetNimFclOrRts(Char_t * FR) { return(this->Set(TMrbMesytec_Madc32::kRegNimFclOrRts, FR)); };
+		inline Int_t GetNimFclOrRts() { return(this->Get(TMrbMesytec_Madc32::kRegNimFclOrRts)); };
 
 		inline Bool_t SetNimBusy(Int_t Busy) { return(this->Set(TMrbMesytec_Madc32::kRegNimBusy, Busy)); };
 		inline Bool_t SetNimBusy(Char_t * Busy) { return(this->Set(TMrbMesytec_Madc32::kRegNimBusy, Busy)); };
@@ -275,11 +278,15 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline Bool_t SetTsSource(Char_t * Source) { return(this->Set(TMrbMesytec_Madc32::kRegTsSource, Source)); };
 		inline Int_t GetTsSource() { return(this->Get(TMrbMesytec_Madc32::kRegTsSource)); };
 
-		inline Bool_t SetTsDivisor(Int_t Address) { return(this->Set(TMrbMesytec_Madc32::kRegTsDivisor, Address)); };
+		inline Bool_t SetTsDivisor(Int_t Divisor) { return(this->Set(TMrbMesytec_Madc32::kRegTsDivisor, Divisor)); };
 		inline Int_t GetTsDivisor() { return(this->Get(TMrbMesytec_Madc32::kRegTsDivisor)); };
 
 		Bool_t UseSettings(const Char_t * SettingsFile = NULL);
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
+
+		void PrintSettings(ostream & OutStrm);
+		inline void PrintSettings() { this->PrintSettings(cout); };
+		const Char_t * FormatValue(TString & Value, Int_t Index, Int_t SubIndex = -1, Int_t Base = 10);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

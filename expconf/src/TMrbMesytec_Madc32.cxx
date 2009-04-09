@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.5 2009-04-02 11:15:08 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.6 2009-04-09 13:36:01 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -23,6 +23,7 @@ namespace std {} using namespace std;
 
 #include "TMrbLogger.h"
 #include "TMrbConfig.h"
+#include "TMrbResource.h"
 #include "TMrbVMERegister.h"
 #include "TMrbVMEChannel.h"
 #include "TMrbMesytec_Madc32.h"
@@ -61,7 +62,7 @@ const SMrbNamedXShort kMrbMultiEvent[] =
 const SMrbNamedXShort kMrbMarkingType[] =
 		{
 			{	TMrbMesytec_Madc32::kMarkingTypeEvent,		"eventCounter"	},
-			{	TMrbMesytec_Madc32::kMarkingTypeTimestamp,	"timeStamp" 	},
+			{	TMrbMesytec_Madc32::kMarkingTypeTs, 		"timeStamp" 	},
 			{	0,			 								NULL,			}
 		};
 
@@ -80,6 +81,7 @@ const SMrbNamedXShort kMrbAdcResolution[] =
 			{	TMrbMesytec_Madc32::kAdcRes4kHires,			"4k-Hires"		},
 			{	TMrbMesytec_Madc32::kAdcRes8k,				"8k"			},
 			{	TMrbMesytec_Madc32::kAdcRes8kHires,			"8k-Hires"		},
+			{	TMrbMesytec_Madc32::kAdcDontOverride,		"no"			},
 			{	0,			 								NULL,			}
 		};
 
@@ -91,9 +93,9 @@ const SMrbNamedXShort kMrbOutputFormat[] =
 
 const SMrbNamedXShort kMrbUseGG[] =
 		{
+			{	TMrbMesytec_Madc32::kUseGGnone,				"none"			},
 			{	TMrbMesytec_Madc32::kUseGG0,				"gg0"			},
 			{	TMrbMesytec_Madc32::kUseGG1,				"gg1"			},
-			{	TMrbMesytec_Madc32::kUseGGboth,				"both"			},
 			{	0,			 								NULL,			}
 		};
 
@@ -108,46 +110,45 @@ const SMrbNamedXShort kMrbInputRange[] =
 const SMrbNamedXShort kMrbEclTerm[] =
 		{
 			{	TMrbMesytec_Madc32::kEclTermOff,			"off"			},
-			{	TMrbMesytec_Madc32::kEclTermGate0,			"gate0"			},
-			{	TMrbMesytec_Madc32::kEclTermGate1,			"gate1"			},
-			{	TMrbMesytec_Madc32::kEclTermFastClear,		"fclear"		},
-			{	TMrbMesytec_Madc32::kEclTermBusy,			"busy"			},
+			{	TMrbMesytec_Madc32::kEclTermG0,				"gate0"			},
+			{	TMrbMesytec_Madc32::kEclTermG1,				"gate1"			},
+			{	TMrbMesytec_Madc32::kEclTermFcl,			"fclear"		},
 			{	0,			 								NULL,			}
 		};
 
-const SMrbNamedXShort kMrbEclGate1Osc[] =
+const SMrbNamedXShort kMrbEclG1OrOsc[] =
 		{
-			{	TMrbMesytec_Madc32::kEclGate1,				"gate1" 		},
-			{	TMrbMesytec_Madc32::kEclOscillator,			"oscillator" 	},
+			{	TMrbMesytec_Madc32::kEclG1,					"gate1" 		},
+			{	TMrbMesytec_Madc32::kEclOsc,				"oscillator" 	},
 			{	0,			 								NULL,			}
 		};
 
-const SMrbNamedXShort kMrbEclFclRes[] =
+const SMrbNamedXShort kMrbEclFclOrRts[] =
 		{
-			{	TMrbMesytec_Madc32::kEclFastClear,			"fclear"		},
-			{	TMrbMesytec_Madc32::kEclReset,				"reset"			},
+			{	TMrbMesytec_Madc32::kEclFcl,				"fclear"		},
+			{	TMrbMesytec_Madc32::kEclRts,				"reset ts"		},
 			{	0,			 								NULL,			}
 		};
 
-const SMrbNamedXShort kMrbNimGate1Osc[] =
+const SMrbNamedXShort kMrbNimG1OrOsc[] =
 		{
-			{	TMrbMesytec_Madc32::kNimGate1,				"gate1" 		},
-			{	TMrbMesytec_Madc32::kNimOscillator,			"oscillator" 	},
+			{	TMrbMesytec_Madc32::kNimG1,					"gate1" 		},
+			{	TMrbMesytec_Madc32::kNimOsc,				"oscillator" 	},
 			{	0,			 								NULL,			}
 		};
 
-const SMrbNamedXShort kMrbNimFclRes[] =
+const SMrbNamedXShort kMrbNimFclOrRts[] =
 		{
-			{	TMrbMesytec_Madc32::kNimFastClear,			"fclear"		},
-			{	TMrbMesytec_Madc32::kNimReset,				"reset"			},
+			{	TMrbMesytec_Madc32::kNimFcl,				"fclear"		},
+			{	TMrbMesytec_Madc32::kNimRts,				"reset ts"		},
 			{	0,			 								NULL,			}
 		};
 
 const SMrbNamedXShort kMrbNimBusy[] =
 		{
 			{	TMrbMesytec_Madc32::kNimBusy,				"busy"			},
-			{	TMrbMesytec_Madc32::kNimGate0Out,			"gate0"			},
-			{	TMrbMesytec_Madc32::kNimGate1Out,			"gate1"			},
+			{	TMrbMesytec_Madc32::kNimG0Out,				"gate0"			},
+			{	TMrbMesytec_Madc32::kNimG1Out,				"gate1"			},
 			{	0,			 								NULL,			}
 		};
 
@@ -219,10 +220,10 @@ TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAdd
 				fNofShortsPerDatum = 1;
 				fNofDataBits = 13;
 				fBlockReadout = kTRUE;			// module has block readout
-
 				fBlockXfer = kFALSE;
 
-				gMrbConfig->AddModule(this);				// append to list of modules
+				gMrbConfig->AddModule(this);	// append to list of modules
+				this->SetModuleId(this->GetSerial());
 				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
@@ -270,12 +271,12 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
-	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegBufferLength, "BufferLength");
+	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegFifoLength, "FifoLength");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	0,	0,	0x1 << 14);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
-	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegDataLengthFormat, "DataLengthFormat");
+	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegDataWidth, "DataWidth");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kDataLngFmt32,
 													TMrbMesytec_Madc32::kDataLngFmt8,
 													TMrbMesytec_Madc32::kDataLngFmt64);
@@ -301,10 +302,15 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
+	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegXferData, "XferData");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	0,	0,	0x1 << 10);
+	kp->AssignObject(rp);
+	fLofRegisters.AddNamedX(kp);
+
 	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegMarkingType, "MarkingType");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kMarkingTypeEvent,
 													TMrbMesytec_Madc32::kMarkingTypeEvent,
-													TMrbMesytec_Madc32::kMarkingTypeTimestamp);
+													TMrbMesytec_Madc32::kMarkingTypeTs);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -415,54 +421,54 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kTRUE);
 
-	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegEclGate1OrOsc, "EclGate1OrOsc");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kEclGate1,
-													TMrbMesytec_Madc32::kEclGate1,
-													TMrbMesytec_Madc32::kEclOscillator);
+	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegEclG1OrOsc, "EclG1OrOsc");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kEclG1,
+													TMrbMesytec_Madc32::kEclG1,
+													TMrbMesytec_Madc32::kEclOsc);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
-	bNames->SetName("EclGate1OrOsc");
-	bNames->AddNamedX(kMrbEclGate1Osc);	
+	bNames->SetName("EclG1OrOsc");
+	bNames->AddNamedX(kMrbEclG1OrOsc);	
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegEclFclOrReset, "EclFclOrReset");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kEclFastClear,
-													TMrbMesytec_Madc32::kEclFastClear,
-													TMrbMesytec_Madc32::kEclReset);
+	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegEclFclOrRts, "EclFclOrRts");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kEclFcl,
+													TMrbMesytec_Madc32::kEclFcl,
+													TMrbMesytec_Madc32::kEclRts);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
-	bNames->SetName("EclFclOrReset");
-	bNames->AddNamedX(kMrbEclFclRes);	
+	bNames->SetName("EclFclOrRts");
+	bNames->AddNamedX(kMrbEclFclOrRts);	
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegNimGate1OrOsc, "NimGate1OrOsc");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kNimGate1,
-													TMrbMesytec_Madc32::kNimGate1,
-													TMrbMesytec_Madc32::kNimOscillator);
+	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegNimG1OrOsc, "NimG1OrOsc");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kNimG1,
+													TMrbMesytec_Madc32::kNimG1,
+													TMrbMesytec_Madc32::kNimOsc);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
-	bNames->SetName("NimGate1OrOsc");
-	bNames->AddNamedX(kMrbNimGate1Osc);	
+	bNames->SetName("NimG1OrOsc");
+	bNames->AddNamedX(kMrbNimG1OrOsc);	
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegNimFclOrReset, "NimFclOrReset");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kNimFastClear,
-													TMrbMesytec_Madc32::kNimFastClear,
-													TMrbMesytec_Madc32::kNimReset);
+	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegNimFclOrRts, "NimFclOrRts");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kNimFcl,
+													TMrbMesytec_Madc32::kNimFcl,
+													TMrbMesytec_Madc32::kNimRts);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
-	bNames->SetName("NimFclOrReset");
-	bNames->AddNamedX(kMrbNimFclRes);	
+	bNames->SetName("NimFclOrRts");
+	bNames->AddNamedX(kMrbNimFclOrRts);	
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -544,9 +550,9 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 		return(kFALSE);
 	}
 
-	TEnv * madcEnv = new TEnv(fSettingsFile.Data());
+	TMrbResource * madcEnv = new TMrbResource("MADC32", fSettingsFile.Data());
 
-	TString moduleName = madcEnv->GetValue("MADC32.ModuleName", "unknown");
+	TString moduleName = madcEnv->Get(".ModuleName", "");
 	if (moduleName.CompareTo(this->GetName()) != 0) {
 		gMrbLog->Err() << "Module name different - " << moduleName << " (should be " << this->GetName() << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
@@ -554,35 +560,36 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	}
 	moduleName(0,1).ToUpper();
 
-	this->SetBlockXfer(madcEnv->GetValue(Form("MADC32.%s.BlockXfer", moduleName.Data()), kFALSE));
-	this->SetAddressSource(madcEnv->GetValue(Form("MADC32.%s.AddressSource", moduleName.Data()), kAddressBoard));
-	this->SetAddressRegister(madcEnv->GetValue(Form("MADC32.%s.AddressRegister", moduleName.Data()), 0));
-	this->SetModuleId(madcEnv->GetValue(Form("MADC32.%s.ModuleId", moduleName.Data()), 0xFF));
-	this->SetBufferLength(madcEnv->GetValue(Form("MADC32.%s.BufferLength", moduleName.Data()), 0));
-	this->SetDataLengthFormat(madcEnv->GetValue(Form("MADC32.%s.DataLengthFormat", moduleName.Data()), kDataLngFmt32));
-	this->SetMultiEvent(madcEnv->GetValue(Form("MADC32.%s.MultiEvent", moduleName.Data()), kMultiEvtNo));
-	this->SetMarkingType(madcEnv->GetValue(Form("MADC32.%s.MarkingType", moduleName.Data()), kMarkingTypeEvent));
-	this->SetBankOperation(madcEnv->GetValue(Form("MADC32.%s.BankOperation", moduleName.Data()), kBankOprConnected));
-	this->SetAdcResolution(madcEnv->GetValue(Form("MADC32.%s.AdcResolution", moduleName.Data()), kAdcRes4kHires));
-	this->SetOutputFormat(madcEnv->GetValue(Form("MADC32.%s.OutputFormat", moduleName.Data()), kOutFmtAddr));
-	this->SetAdcOverride(madcEnv->GetValue(Form("MADC32.%s.AdcOverride", moduleName.Data()), kAdcDontOverride));
-	this->SetHoldDelay(madcEnv->GetValue(Form("MADC32.%s.HoldDelay.0", moduleName.Data()), kGGDefaultDelay), 0);
-	this->SetHoldDelay(madcEnv->GetValue(Form("MADC32.%s.HoldDelay.1", moduleName.Data()), kGGDefaultDelay), 1);
-	this->SetHoldWidth(madcEnv->GetValue(Form("MADC32.%s.HoldWidth.0", moduleName.Data()), kGGDefaultWidth), 0);
-	this->SetHoldWidth(madcEnv->GetValue(Form("MADC32.%s.HoldWidth.1", moduleName.Data()), kGGDefaultWidth), 1);
-	this->UseGG(madcEnv->GetValue(Form("MADC32.%s.UseGG", moduleName.Data()), kUseGG0));
-	this->SetInputRange(madcEnv->GetValue(Form("MADC32.%s.InputRange", moduleName.Data()), kInpRng4V));
-	this->SetEclTerm(madcEnv->GetValue(Form("MADC32.%s.EclTerm", moduleName.Data()), kEclTermOn));
-	this->SetEclGate1OrOsc(madcEnv->GetValue(Form("MADC32.%s.EclGate1OrOsc", moduleName.Data()), kEclGate1));
-	this->SetEclFclOrReset(madcEnv->GetValue(Form("MADC32.%s.EclFclOrReset", moduleName.Data()), kEclFastClear));
-	this->SetNimGate1OrOsc(madcEnv->GetValue(Form("MADC32.%s.NimGate1OrOsc", moduleName.Data()), kNimGate1));
-	this->SetNimFclOrReset(madcEnv->GetValue(Form("MADC32.%s.NimFclOrReset", moduleName.Data()), kNimFastClear));
-	this->SetNimBusy(madcEnv->GetValue(Form("MADC32.%s.NimBusy", moduleName.Data()), kNimBusy));
-	this->SetTestPulser(madcEnv->GetValue(Form("MADC32.%s.TsSource", moduleName.Data()), kTstampVME));
-	this->SetTsDivisor(madcEnv->GetValue(Form("MADC32.%s.TsDivisor", moduleName.Data()), 1));
+	this->SetBlockXfer(madcEnv->Get(moduleName.Data(), moduleName.Data(), ".BlockXfer", kFALSE));
+	this->SetAddressSource(madcEnv->Get(moduleName.Data(), ".AddressSource", kAddressBoard));
+	this->SetAddressRegister(madcEnv->Get(moduleName.Data(), ".AddressRegister", 0));
+	this->SetModuleId(madcEnv->Get(moduleName.Data(), ".ModuleId", 0xFF));
+	this->SetFifoLength(madcEnv->Get(moduleName.Data(), ".FifoLength", 0));
+	this->SetDataWidth(madcEnv->Get(moduleName.Data(), ".DataWidth", kDataLngFmt32));
+	this->SetMultiEvent(madcEnv->Get(moduleName.Data(), ".MultiEvent", kMultiEvtNo));
+	this->SetXferData(madcEnv->Get(moduleName.Data(), ".XferData", 0));
+	this->SetMarkingType(madcEnv->Get(moduleName.Data(), ".MarkingType", kMarkingTypeEvent));
+	this->SetBankOperation(madcEnv->Get(moduleName.Data(), ".BankOperation", kBankOprConnected));
+	this->SetAdcResolution(madcEnv->Get(moduleName.Data(), ".AdcResolution", kAdcRes4kHires));
+	this->SetOutputFormat(madcEnv->Get(moduleName.Data(), ".OutputFormat", kOutFmtAddr));
+	this->SetAdcOverride(madcEnv->Get(moduleName.Data(), ".AdcOverride", kAdcDontOverride));
+	this->SetHoldDelay(madcEnv->Get(moduleName.Data(), ".HoldDelay", ".0", kGGDefaultDelay), 0);
+	this->SetHoldDelay(madcEnv->Get(moduleName.Data(), ".HoldDelay", ".1", kGGDefaultDelay), 1);
+	this->SetHoldWidth(madcEnv->Get(moduleName.Data(), ".HoldWidth", ".0", kGGDefaultWidth), 0);
+	this->SetHoldWidth(madcEnv->Get(moduleName.Data(), ".HoldWidth", ".1", kGGDefaultWidth), 1);
+	this->UseGG(madcEnv->Get(moduleName.Data(), ".UseGG", kUseGG0));
+	this->SetInputRange(madcEnv->Get(moduleName.Data(), ".InputRange", kInpRng4V));
+	this->SetEclTerm(madcEnv->Get(moduleName.Data(), ".EclTerm", kEclTermOn));
+	this->SetEclG1OrOsc(madcEnv->Get(moduleName.Data(), ".EclG1OrOsc", kEclG1));
+	this->SetEclFclOrRts(madcEnv->Get(moduleName.Data(), ".EclFclOrRts", kEclFcl));
+	this->SetNimG1OrOsc(madcEnv->Get(moduleName.Data(), ".NimG1OrOsc", kNimG1));
+	this->SetNimFclOrRts(madcEnv->Get(moduleName.Data(), ".NimFclOrRts", kNimFcl));
+	this->SetNimBusy(madcEnv->Get(moduleName.Data(), ".NimBusy", kNimBusy));
+	this->SetTestPulser(madcEnv->Get(moduleName.Data(), ".TsSource", kTstampVME));
+	this->SetTsDivisor(madcEnv->Get(moduleName.Data(), ".TsDivisor", 1));
 
 	for (Int_t i = 0; i < TMrbMesytec_Madc32::kNofChannels; i++) {
-		this->SetThreshold(madcEnv->GetValue(Form("MADC32.%s.Thresh.%d", moduleName.Data(), i), 0), i);
+		this->SetThreshold(madcEnv->Get(moduleName.Data(), ".Thresh", Form(".%d", i), 0), i);
 	}
 	return(kTRUE);
 }
@@ -663,8 +670,8 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 
 						tmpl.InitializeCode("%FifoHandling%");
 						tmpl.Substitute("$moduleName", moduleUC.Data());
-						tmpl.Substitute("$bufferLength", this->GetBufferLength());
-						tmpl.Substitute("$dlengthFormat", this->GetDataLengthFormat());
+						tmpl.Substitute("$fifoLength", this->GetFifoLength());
+						tmpl.Substitute("$dataWidth", this->GetDataWidth());
 						tmpl.Substitute("$multiEvent", this->GetMultiEvent());
 						tmpl.Substitute("$markingType", this->GetMarkingType());
 						tmpl.Substitute("$blockXfer", this->BlockXferEnabled() ? "TRUE" : "FALSE");
@@ -693,10 +700,10 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$moduleName", moduleUC.Data());
 						tmpl.Substitute("$inputRange", this->GetInputRange());
 						tmpl.Substitute("$eclTerm", this->GetEclTerm());
-						tmpl.Substitute("$eclGate1OrOsc", this->GetEclGate1OrOsc());
-						tmpl.Substitute("$eclFclOrReset", this->GetEclFclOrReset());
-						tmpl.Substitute("$nimGate1OrOsc", this->GetNimGate1OrOsc());
-						tmpl.Substitute("$nimFclOrReset", this->GetNimFclOrReset());
+						tmpl.Substitute("$eclG1OrOsc", this->GetEclG1OrOsc());
+						tmpl.Substitute("$eclFclOrRts", this->GetEclFclOrRts());
+						tmpl.Substitute("$nimG1OrOsc", this->GetNimG1OrOsc());
+						tmpl.Substitute("$nimFclOrRts", this->GetNimFclOrRts());
 						tmpl.Substitute("$nimBusy", this->GetNimBusy());
 						tmpl.WriteCode(settings);
 
@@ -891,4 +898,121 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbM
 			break;
 	}
 	return(kTRUE);
+}
+
+void TMrbMesytec_Madc32::PrintSettings(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Madc32::PrintSettings
+// Purpose:        Print settings
+// Arguments:      ostream & Out           -- where to print
+// Results:        --
+// Exceptions:
+// Description:    Prints settings to stream.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString value;
+
+	Out << "=========================================================================" << endl;
+	Out << " Mesytec MADC32 settings" << endl;
+	Out << "-------------------------------------------------------------------------" << endl;
+	Out << " Module              : "	<< this->GetName() << endl;
+	Out << " Serial              : "	<< this->GetSerial() << endl;
+	Out << " Address source      : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAddrSource) << endl;
+	Out << "         register    : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAddrReg, -1, 16) << endl;
+	Out << " Module ID           : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegModuleId) << endl;
+	Out << " Fifo buffer length  : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegFifoLength) << endl;
+	Out << " Data width          : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegDataWidth) << endl;
+	Out << " Single/multi event  : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegMultiEvent) << endl;
+	Out << " Marking type        : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegMarkingType) << endl;
+	Out << " Block tansfer       : "	<< (this->BlockXferEnabled() ? "yes" : "no") << endl;
+	Out << " Bank operation      : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegBankOperation) << endl;
+	Out << " ADC resolution      : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAdcResolution) << endl;
+	Out << " Output format       : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegOutputFormat) << endl;
+	Out << " ADC override        : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAdcOverride) << endl;
+	Out << " Sliding scale       : "	<< (this->SlidingScaleIsOff() ? "off" : "on") << endl;
+	Out << " Skip if out of range: "	<< (this->SkipOutOfRange() ? "yes" : "no") << endl;
+	for (Int_t b = 0; b <= 1; b++) {
+		Int_t hd = this->GetHoldDelay(b);
+		Int_t ns;
+		if (hd == 0) ns = 25; else if (hd == 1) ns = 150; else ns = hd * 50;
+		Int_t hw = this->GetHoldWidth(b);
+		Out << " GG bank " << b << " delay     : "	<< hd << " --> " << ns << " ns" << endl;
+		Out << "           width     : "	<< hw << " --> " << (hw * 50) << " ns" << endl;
+	}
+	Out << " Use GG              : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegUseGG) << endl;
+	Out << " Input range         : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegInputRange) << endl;
+	Out << " ECL termination     : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegEclTerm) << endl;
+	Out << "           input     : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegEclG1OrOsc) << endl;
+	Out << "    fcl or reset     : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegEclFclOrRts) << endl;
+	Out << " NIM       input     : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegNimG1OrOsc) << endl;
+	Out << "    fcl or reset     : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegNimFclOrRts) << endl;
+	Out << "            busy     : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegNimBusy) << endl;
+	Out << " Pulser              : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegPulserStatus) << endl;
+	Out << " Timestamp source    : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegTsSource) << endl;
+	Out << "          divisor    : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegTsDivisor) << endl;
+	TString f = " Threshold memory    : ";
+	for (Int_t ch = 0; ch < 32; ch++) {
+		if ((ch % 8) == 0) {
+			if (ch) Out << endl;
+			Out << f;
+			f = "                     : ";
+		}
+		Out << Form("%6d", this->GetThreshold(ch));
+	}
+	Out << endl;
+	Out << "-------------------------------------------------------------------------" << endl << endl;
+}
+
+const Char_t * TMrbMesytec_Madc32::FormatValue(TString & Value, Int_t Index, Int_t SubIndex, Int_t Base) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Madc32::FormatValue
+// Purpose:        Prepare for printing
+// Arguments:      TString & Value    -- where to put formatted value
+//                 Int_t Index        -- register index
+//                 Int_t SubIndex     -- subregister
+//                 Int_t Base         -- numerical base
+// Results:        Char_t * Value     -- formatted string
+// Exceptions:
+// Description:    Formats a value: number and text
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Value = "";
+
+	TMrbNamedX * kp = fLofRegisters.FindByIndex(Index);
+	if (kp) {
+		TMrbVMERegister * rp = (TMrbVMERegister *) kp->GetAssignedObject();
+		if (rp) {
+			Int_t intVal = (SubIndex == -1) ? rp->Get() : rp->Get(SubIndex);
+			TMrbLofNamedX * lofBitNames = rp->BitNames();
+			if (lofBitNames) {
+				if (lofBitNames->IsPatternMode() && (intVal > 0)) {
+					lofBitNames->Pattern2String(Value, intVal, ":");
+					switch (Base) {
+						case 8: 	Value += Form(" (%#o)", intVal); return(Value.Data());
+						case 10:	Value += Form(" (%d)", intVal); return(Value.Data());
+						case 16:	Value += Form(" (%#x)", intVal); return(Value.Data());
+					}
+				} else {
+					TMrbNamedX * bn = lofBitNames->FindByIndex(intVal);
+					if (bn) {
+						switch (Base) {
+							case 8: 	Value = Form("%s (%#o)", bn->GetName(), bn->GetIndex()); return(Value.Data());
+							case 10:	Value = Form("%s (%d)", bn->GetName(), bn->GetIndex()); return(Value.Data());
+							case 16:	Value = Form("%s (%#x)", bn->GetName(), bn->GetIndex()); return(Value.Data());
+						}
+					}
+				}
+			}
+			switch (Base) {
+				case 8: 	Value = Form("%#o", intVal); return(Value.Data());
+				case 10:	Value = Form("%d", intVal); return(Value.Data());
+				case 16:	Value = Form("%#x", intVal); return(Value.Data());
+			}
+		}
+	}
+	return(Value.Data());
 }
