@@ -726,7 +726,7 @@ void FitHist::handle_mouse()
             fLiveStat1Dim  = env.GetValue("Set1DimOptDialog.fLiveStat1Dim", 0);
          if ( is2dim )
             fLiveStat2Dim  = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
-         if (fLiveStat1Dim && !is2dim || fLiveStat2Dim && is2dim) {
+         if ( (fLiveStat1Dim && !is2dim ) || (fLiveStat2Dim && is2dim) ) {
          	if (!fTofLabels) {
             	TOrdCollection rowlabels;
             	if (is2dim) {
@@ -1870,10 +1870,7 @@ void FitHist::AddMark(TPad * pad, Int_t px, Int_t py)
 //   biny     = fYaxis.FindBin(y);
    FhMarker *m = new FhMarker(x, y, 28);
    m->SetMarkerColor(6);
-//   m->Draw();
-   m->SetMarkerColor(6);
-//   m->Paint();
-//   m->Print();
+   m->SetMarkerSize(1);
    fMarkers->Add(m);
 	PaintMarks();
 

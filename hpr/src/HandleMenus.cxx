@@ -1595,7 +1595,7 @@ void HandleMenus::BuildMenus()
       hbrowser->DisplayMenu(fHelpMenu, "*.html");
       fHelpMenu->Associate((TGWindow*)this);
       fMenuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
-      fRootsMenuBar->AddPopup("&Help",    fHelpMenu,    fMenuBarHelpLayout);
+      fRootsMenuBar->AddPopup("&Help on HistPresent",    fHelpMenu,    fMenuBarHelpLayout);
    }
    fRootCanvas->MapSubwindows();
 //   fRootCanvas->Resize(fRootCanvas->GetDefaultSize());
