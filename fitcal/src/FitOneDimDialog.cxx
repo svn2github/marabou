@@ -614,15 +614,15 @@ the root doc at: http://root.cern.ch\n\
 			valp[ind++] = &dummy;
 			row_lab->Add(new TObjString("DoubleValue_a"));
 			valp[ind++] = &fExpA;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
+			row_lab->Add(new TObjString("CheckButton+Fix"));
 			valp[ind++] = &fExpFixA;
-			row_lab->Add(new TObjString("DoubleValue-b"));
+			row_lab->Add(new TObjString("DoubleValue+b"));
 			valp[ind++] = &fExpB;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
+			row_lab->Add(new TObjString("CheckButton+Fix"));
 			valp[ind++] = &fExpFixB;
 			row_lab->Add(new TObjString("DoubleValue_c"));
 			valp[ind++] = &fExpC;
-			row_lab->Add(new TObjString("CheckButton-Fix"));
+			row_lab->Add(new TObjString("CheckButton+Fix"));
 			valp[ind++] = &fExpFixC;
 	//     row_lab->Add(new TObjString("DoubleValue+d"));
 	//		valp[ind++] = &fExpD;
@@ -643,12 +643,12 @@ the root doc at: http://root.cern.ch\n\
          for ( Int_t i = 0; i < 6; i ++ ) {
             tagname = "DoubleValue";
             if ( i%2 == 0 ) tagname += "_a";
-            else       tagname += "-a";
+            else       tagname += "+a";
             tagname += i;
 			   row_lab->Add(new TObjString(tagname));
 		   	valp[ind++] = &fPolPar[i];
             tagname = "CheckButton";
-            tagname += "-Fix";
+            tagname += "+Fix";
 		    	row_lab->Add(new TObjString(tagname));
 		      valp[ind++] = &fPolFixPar[i];
          }
@@ -661,7 +661,7 @@ the root doc at: http://root.cern.ch\n\
          for ( Int_t i = 0; i < 6; i ++ ) {
             tagname = "DoubleValue";
             if ( i%2 == 0 ) tagname += "_a";
-            else           tagname += "-a";
+            else           tagname += "+a";
             tagname += i;
 			   row_lab->Add(new TObjString(tagname));
 		   	valp[ind++] = &fFormPar[i];
@@ -681,9 +681,9 @@ the root doc at: http://root.cern.ch\n\
 		valp[ind++] = &fAutoClearMarks;
 		row_lab->Add(new TObjString("ColorSelect_LCol"));
 		valp[ind++] = &fColor;
-		row_lab->Add(new TObjString("PlainShtVal-LWid"));
+		row_lab->Add(new TObjString("PlainShtVal+LWid"));
 		valp[ind++] = &fWidth;
-		row_lab->Add(new TObjString("LineSSelect-LSty"));
+		row_lab->Add(new TObjString("LineSSelect+LSty"));
 		valp[ind++] = &fStyle;
 		row_lab->Add(new TObjString("StringValue_FuncName"));
 		valp[ind++] = &fFuncName;
@@ -738,7 +738,7 @@ the root doc at: http://root.cern.ch\n\
 		   valp[ind++] = &gfcmd;
 			row_lab->Add(new TObjString("CommandButt_Fill random"));
 			valp[ind++] = &fhrcmd;
-			row_lab->Add(new TObjString("PlainIntVal-N events"));
+			row_lab->Add(new TObjString("PlainIntVal+N events"));
 			valp[ind++] = &fNevents;
 		}
 		Int_t ok = 0;
@@ -1593,8 +1593,8 @@ Int_t FitOneDimDialog::GetMarkers()
 //   }
 // find number of peaks to fit
    TAxis * xa = fSelHist->GetXaxis();
-//   fFrom = xa->GetBinLowEdge(xa->GetFirst());
-//   fTo   = xa->GetBinLowEdge(xa->GetLast());
+   fFrom = xa->GetBinLowEdge(xa->GetFirst());
+   fTo   = xa->GetBinLowEdge(xa->GetLast());
 //   fFrom = xa->GetBinUpEdge(xa->GetFirst());
 //   fTo   = xa->GetBinLowEdge(xa->GetLast());
    fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
@@ -1904,6 +1904,9 @@ void FitOneDimDialog::CalcStartParExp()
    Int_t binup  = fSelHist->FindBin(xup);
    ylow = fSelHist->GetBinContent(binlow);
    yup  = fSelHist->GetBinContent(binup);
+   if ( TMath::Abs(fExpA) >  yup ) {
+      cout << setred << "Warning: you might want to set Parameter \"a\", see \"Help\"" << setblack << endl;
+   }
    ylow = ylow - fExpA;
    if (ylow < 1) ylow = 1;
    yup = yup - fExpA;

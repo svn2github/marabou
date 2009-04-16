@@ -204,7 +204,7 @@ The procedure to use previously fitted peaks is as follows:\n\
 		valp[ind++] = &dummy;
 		row_lab->Add(new TObjString("CommentOnly+Content"));
 		valp[ind++] = &dummy;
-		row_lab->Add(new TObjString("CommentRigh+Use it "));
+		row_lab->Add(new TObjString("CommentOnly+Use it"));
 		valp[ind++] = &dummy;
 		for (Int_t i = 0; i < fMaxPeaks; i++) {
 			row_lab->Add(new TObjString("DoubleValue_"));
@@ -226,9 +226,9 @@ The procedure to use previously fitted peaks is as follows:\n\
 		valp[ind++] = &fFuncName;
 		row_lab->Add(new TObjString("PlainIntVal_Nbins"));
 		valp[ind++] = &fCalibratedNbinsX;
-		row_lab->Add(new TObjString("DoubleValue-Xlow"));
+		row_lab->Add(new TObjString("DoubleValue+Xlow"));
 		valp[ind++] = &fCalibratedXlow;
-		row_lab->Add(new TObjString("DoubleValue-Xup"));
+		row_lab->Add(new TObjString("DoubleValue+Xup"));
 		valp[ind++] = &fCalibratedXup;
 
 		row_lab->Add(new TObjString("CommentOnly_Cal source"));
@@ -415,7 +415,7 @@ Int_t CalibrationDialog::ReadGaugeFile()
       TString warn("Cant open ");
       warn += fCustomGaugeFile;
 //      WarnBox(warn, fParentWindow);
-      if ( fInteractive ) {      
+      if ( fInteractive ) {
          Int_t retval;
          new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning",warn ,kMBIconExclamation, kMBDismiss, &retval);
       } else {
@@ -704,7 +704,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    }
    Double_t max_cont_ass = 0;
    Int_t nassigned = 0;
-   if (fSelCanvas) 
+   if (fSelCanvas)
       fSelCanvas->cd();
    for (Int_t i = 0; i < fNpeaks; i++) {
       fAssigned[i] = -1;
@@ -1155,7 +1155,7 @@ void CalibrationDialog::FillCalibratedHist()
 			wly = fSelCanvas->GetWindowTopY()+20;
 			wwx = fSelCanvas->GetWindowWidth();
 			wwy = fSelCanvas->GetWindowHeight();
-      }   
+      }
       TCanvas *ch = new TCanvas("ccal", title, wlx, wly, wwx, wwy);
       fCalHist->Draw("E");
       AddMenu(ch);
@@ -1185,9 +1185,9 @@ void CalibrationDialog::AddMenu(TCanvas *canvas)
       filemenu->AddEntry("Save hist to rootfile", M_Save2File, NULL, NULL, en);
       filemenu->Connect("Activated(Int_t)", "CalibrationDialog", this,
                       "HandleMenu(Int_t)");
-   }    
+   }
    menubar->MapSubwindows();
-   menubar->Layout(); 
+   menubar->Layout();
 }
 //________________________________________________________________________
 

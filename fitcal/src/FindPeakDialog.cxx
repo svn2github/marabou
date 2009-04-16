@@ -240,12 +240,16 @@ void FindPeakDialog::ExecuteFindPeak()
       pm = (TPolyMarker *) fSelHist->GetListOfFunctions()->FindObject("TPolyMarker");
       if (!pm) {
          pm = new TPolyMarker();
+			pm->SetMarkerColor(2);
+			pm->SetMarkerSize(2);
+			pm->SetMarkerStyle(23);
          fSelHist->GetListOfFunctions()->Add(pm);
       }
       Double_t * xp = poly.GetX();
       Double_t * yp = poly.GetY();
       Int_t np = pm->Size();
       for (Int_t i = 0; i < poly.GetN(); i++) pm->SetPoint(np + i, *xp++, *yp++);
+		pm->Draw();
 //   }
    gPad->Modified();
    gPad->Update();
