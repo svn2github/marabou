@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofNamedX.cxx,v 1.11 2009-04-02 11:55:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofNamedX.cxx,v 1.12 2009-04-20 07:54:57 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -628,7 +628,7 @@ const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString,
 	TIterator * iter = this->MakeIterator();
 	while (index = (TMrbNamedX *) iter->Next()) {
 		UInt_t ind = index->GetIndex();
-		if ((indexBits & ind) == ind) {
+		if ((ind > 0) && ((indexBits & ind) == ind)) {
 			if (IndexString.Length() > 0) IndexString += Separator;
 			if (cmpl) IndexString += "~";
 			IndexString += index->GetName();
