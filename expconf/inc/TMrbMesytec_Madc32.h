@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.3 2009-04-09 13:36:01 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.4 2009-04-20 13:41:05 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -174,7 +174,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbVMEChannel * Channel, Int_t Value = 0);  	// generate code for given channel
 
-		virtual inline const Char_t * GetMnemonic() const { return("Mesytec_Madc32"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("madc32"); }; 	// module mnemonic
 
 		inline void SetBlockXfer(Bool_t Flag = kTRUE) { fBlockXfer = Flag; };
 		inline Bool_t BlockXferEnabled() { return(fBlockXfer); };

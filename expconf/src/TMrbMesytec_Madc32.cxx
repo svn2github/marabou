@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.6 2009-04-09 13:36:01 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.7 2009-04-20 13:41:05 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -221,6 +221,8 @@ TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAdd
 				fNofDataBits = 13;
 				fBlockReadout = kTRUE;			// module has block readout
 				fBlockXfer = kFALSE;
+
+				fSettingsFile = Form("%sSettings.rc", this->GetName());
 
 				gMrbConfig->AddModule(this);	// append to list of modules
 				this->SetModuleId(this->GetSerial());
