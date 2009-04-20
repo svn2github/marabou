@@ -7,8 +7,8 @@
 	\details		Defines structs to read MBS data streams
 	$Author: Rudolf.Lutter $
 	$Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.19 $       
-	$Date: 2009-01-22 10:59:47 $
+	$Revision: 1.20 $       
+	$Date: 2009-04-20 11:54:41 $
 *******************************************************************************/
 
 #include "typedefs.h"
@@ -81,6 +81,9 @@
 #define MBS_STYPE_DATA_INT			0x0041000a					/*!< subevent [65,10]: universal data container, integer, 4 bytes */
 #define MBS_STYPE_DATA_FLOAT		0x0042000a					/*!< subevent [66,10]: universal data container, float/double */
 #define MBS_STYPE_HITBUF_1			0x0047000a					/*!< subevent [71,10]: hit buffer */
+#define MBS_STYPE_VME_MADC_1		0x0051000a					/*!< subevent [81,10]: vme, mesytec madc32 */
+#define MBS_STYPE_VME_MADC_2		0x0052000a					/*!< subevent [82,10]: vme, mesytec madc32, data stored in hit buffer */
+#define MBS_STYPE_VME_MADC_3		0x0053000a					/*!< subevent [83,10]: vme, mesytec madc32, data stored in hit buffer */
 #define MBS_STYPE_TIME_STAMP		0x00012328					/*!< subevent [1,9000]: time stamp */
 #define MBS_STYPE_DEAD_TIME 		0x00022328					/*!< subevent [2,9000]: dead time */
 #define MBS_STYPE_DUMMY 	 		0x006f006f					/*!< subevent [111,111]: dummy */

@@ -4,8 +4,8 @@
 	\details	Procedures to read MBS data from disk or tcp socket
 	$Author: Rudolf.Lutter $
 	$Mail:		<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.42 $       
-	$Date: 2009-01-22 10:59:47 $
+	$Revision: 1.43 $       
+	$Date: 2009-04-20 11:54:42 $
 *****************************************************************************/
 
 /* include files needed by mbsio */
@@ -243,6 +243,30 @@ static MBSBufferElem sevent_types[] = {
 				},
 				{	MBS_STYPE_HITBUF_1,
 					"Hitbuffer (1)",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
+					(void *) _mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_MADC_1,
+					"Mesytec MADC modules (1)",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
+					(void *) _mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_MADC_2,
+					"Mesytec MADC modules (2)",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
+					(void *) _mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_MADC_3,
+					"Mesytec MADC modules (3)",
 					sizeof(s_veshe),
 					0,
 					(void *) _mbs_unpack_sev_short,
