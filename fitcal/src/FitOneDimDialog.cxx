@@ -2143,6 +2143,10 @@ void FitOneDimDialog::PrintCorrelation()
 {
   if (fFitPrintCovariance) {
 		TVirtualFitter *fitter = TVirtualFitter::GetFitter();
+		if (fitter->GetCovarianceMatrix() == 0) {
+		   cout << "Invalid fit result, cant get covariance matrix" << endl;
+			return;
+		}
       Int_t ntot = fitter->GetNumberTotalParameters();
 		cout << "-- Correlationmatrix (Cov(i,j) / (err i * err j)) -----" << endl;
       printf("%9s", "          ");
