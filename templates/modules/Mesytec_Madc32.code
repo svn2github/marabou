@@ -24,7 +24,6 @@
 
 									/* init module $moduleName at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
-					s_$moduleName = madc32_alloc($baseAddrL, $moduleName, "$moduleName", $moduleSerial); /* allocate data struct */
 					madc32_module_info(s_$moduleName);						/* read module info */
 					madc32_fill_struct(s_$moduleName, "$settingsFile");		/* fill sis struct from environment data */
 					madc32_load_from_db(s_$moduleName); 					/* load module regs from database */
@@ -45,6 +44,7 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
+					evt.out32 += madc32_readTimeB(s_$moduleName, (uint32_t *) evt.out32);	/* read time counter B */
 					evt.out32 += madc32_readout(s_$moduleName, (uint32_t *) evt.out32);	/* read data */
 %%EndOfCode%%
 %%READ_MODULE%%
@@ -85,7 +85,7 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-
+								madc32_startAcq(s_$moduleName); 	/* start module $moduleName */
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -95,7 +95,7 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-
+								madc32_stopAcq(s_$moduleName);  	/* stop module $moduleName */
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 
@@ -115,7 +115,7 @@
 %%DEFINE_PROTOTYPES%%
 
 %%BeginOfCode%%
-static struct s_madc32 * s_$moduleName;
+
 %%EndOfCode%%
 %%DEFINE_GLOBALS%%
 

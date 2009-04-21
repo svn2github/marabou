@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.4 2009-04-20 13:41:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.5 2009-04-21 14:15:57 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -103,9 +103,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 		enum EMrbAdcResolution			{	kAdcRes2k			=	0,
 											kAdcRes4k,
-											kAdcRes4kHires,
+											kAdcRes4kHiRes,
 											kAdcRes8k,
-											kAdcRes8kHires,
+											kAdcRes8kHiRes,
 											kAdcDontOverride
 										};
 
@@ -283,6 +283,8 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 		Bool_t UseSettings(const Char_t * SettingsFile = NULL);
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
+
+		inline Bool_t UseLVME() const { return(kTRUE); };				// connect via LVME interface
 
 		void PrintSettings(ostream & OutStrm);
 		inline void PrintSettings() { this->PrintSettings(cout); };

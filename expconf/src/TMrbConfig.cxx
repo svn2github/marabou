@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.168 2009-01-08 12:16:23 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.169 2009-04-21 14:15:57 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1818,8 +1818,9 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							while (module = (TMrbModule *) modIter->Next()) {
 								if (module->GetMbsBranchNo() != pp->GetB()) continue;
 								if (module->IsVME()) {
-									if (module->GetNofSubDevices() <= 1) {
-										rdoTmpl.InitializeCode("%V%");
+									TMrbVMEModule * vmodule = (TMrbVMEModule *) module;
+									if (vmodule->GetNofSubDevices() <= 1) {
+										rdoTmpl.InitializeCode(vmodule->UseLVME() ? "%LVME%" : "%V%");
 									} else {
 										rdoTmpl.InitializeCode("%VS%");
 										rdoTmpl.Substitute("$subDevice", module->GetSubDevice());

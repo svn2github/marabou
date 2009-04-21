@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.7 2009-04-20 13:41:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.8 2009-04-21 14:15:57 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -78,9 +78,9 @@ const SMrbNamedXShort kMrbAdcResolution[] =
 		{
 			{	TMrbMesytec_Madc32::kAdcRes2k,				"2k"			},
 			{	TMrbMesytec_Madc32::kAdcRes4k,				"4k"			},
-			{	TMrbMesytec_Madc32::kAdcRes4kHires,			"4k-Hires"		},
+			{	TMrbMesytec_Madc32::kAdcRes4kHiRes,			"4k-HiRes"		},
 			{	TMrbMesytec_Madc32::kAdcRes8k,				"8k"			},
-			{	TMrbMesytec_Madc32::kAdcRes8kHires,			"8k-Hires"		},
+			{	TMrbMesytec_Madc32::kAdcRes8kHiRes,			"8k-HiRes"		},
 			{	TMrbMesytec_Madc32::kAdcDontOverride,		"no"			},
 			{	0,			 								NULL,			}
 		};
@@ -225,7 +225,6 @@ TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAdd
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
 
 				gMrbConfig->AddModule(this);	// append to list of modules
-				this->SetModuleId(this->GetSerial());
 				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
@@ -336,9 +335,9 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	rp->SetPatternMode(kFALSE);
 
 	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegAdcResolution, "AdcResolution");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kAdcRes4kHires,
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kAdcRes4kHiRes,
 													TMrbMesytec_Madc32::kAdcRes2k,
-													TMrbMesytec_Madc32::kAdcRes8kHires);
+													TMrbMesytec_Madc32::kAdcRes8kHiRes);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -565,14 +564,16 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	this->SetBlockXfer(madcEnv->Get(moduleName.Data(), moduleName.Data(), ".BlockXfer", kFALSE));
 	this->SetAddressSource(madcEnv->Get(moduleName.Data(), ".AddressSource", kAddressBoard));
 	this->SetAddressRegister(madcEnv->Get(moduleName.Data(), ".AddressRegister", 0));
-	this->SetModuleId(madcEnv->Get(moduleName.Data(), ".ModuleId", 0xFF));
+	Int_t mid = madcEnv->Get(moduleName.Data(), ".ModuleId", 0xFF);
+	if (mid == 0xFF) mid = this->GetSerial();
+	this->SetModuleId(mid);
 	this->SetFifoLength(madcEnv->Get(moduleName.Data(), ".FifoLength", 0));
 	this->SetDataWidth(madcEnv->Get(moduleName.Data(), ".DataWidth", kDataLngFmt32));
 	this->SetMultiEvent(madcEnv->Get(moduleName.Data(), ".MultiEvent", kMultiEvtNo));
 	this->SetXferData(madcEnv->Get(moduleName.Data(), ".XferData", 0));
 	this->SetMarkingType(madcEnv->Get(moduleName.Data(), ".MarkingType", kMarkingTypeEvent));
 	this->SetBankOperation(madcEnv->Get(moduleName.Data(), ".BankOperation", kBankOprConnected));
-	this->SetAdcResolution(madcEnv->Get(moduleName.Data(), ".AdcResolution", kAdcRes4kHires));
+	this->SetAdcResolution(madcEnv->Get(moduleName.Data(), ".AdcResolution", kAdcRes4kHiRes));
 	this->SetOutputFormat(madcEnv->Get(moduleName.Data(), ".OutputFormat", kOutFmtAddr));
 	this->SetAdcOverride(madcEnv->Get(moduleName.Data(), ".AdcOverride", kAdcDontOverride));
 	this->SetHoldDelay(madcEnv->Get(moduleName.Data(), ".HoldDelay", ".0", kGGDefaultDelay), 0);
@@ -621,7 +622,7 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 	}
 
 	TString tmplPath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
-	TString tf = "Module_Mesytec_Madc32.rc.code";
+	TString tf = "Module_Madc32.rc.code";
 	gSystem->ExpandPathName(tmplPath);
 
 	const Char_t * fp = gSystem->Which(tmplPath.Data(), tf.Data());
