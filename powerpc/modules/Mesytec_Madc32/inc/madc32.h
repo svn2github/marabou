@@ -22,8 +22,8 @@
 //! \details		Contains definitions to operate a Mesytec Madc32
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $     
-//! $Date: 2009-04-22 08:30:49 $
+//! $Revision: 1.2 $     
+//! $Date: 2009-04-22 12:17:16 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*____________________________________________________________________________
@@ -228,10 +228,14 @@
 #define NOF_CHANNELS	32
 
 struct s_madc32 {
+	unsigned long vmeAddr;					/* phys addr given by module switches */
+	volatile unsigned char * baseAddr;		/* addr mapped via find_controller() */
+
 	char moduleName[100];
 	int serial; 							/* MARaBOU's serial number */
 
 	bool_t verbose;
+	bool_t dumpRegsOnInit;
 
 	bool_t updSettings;
 	int updInterval;
@@ -266,19 +270,10 @@ struct s_madc32 {
 	uint8_t ctraTsSource;
 	uint16_t ctraTsDivisor;
 
-	LVme * lvme;
-	LBma * lbma;
-
-	uint32_t * bltBuffer;
+	struct s_bma * bma; 					/* block mode access */
 	uint32_t bltBufferSize;
 	uint32_t bltBlockSize;
-	uint32_t vmeBase;
-	uint8_t lvmeAddrMod;
-	uint8_t lbmaAddrMod;
-
-	uint32_t MCSTAddr;
-	int chainPos;
-	int numMembers;
+	uint8_t * bltBuffer;
 };
 
 #endif

@@ -8,23 +8,20 @@
 //! \details		Prototypes for Mesytec Madc32
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $     
-//! $Date: 2009-04-22 08:30:49 $
+//! $Revision: 1.2 $     
+//! $Date: 2009-04-22 12:17:16 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
-struct s_madc32 * madc32_alloc(char * name, unsigned long vmeAddr, int addrMod);
+struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial);
 
-void madc32_module_info(struct s_madc32 * s);
+void madc32_moduleInfo(struct s_madc32 * s);
 
-bool_t madc32_fill_struct(struct s_madc32 * s, char * file);
+bool_t madc32_fillStruct(struct s_madc32 * s, char * file);
 
-void madc32_load_from_db(struct s_madc32 * s);
-
-LVme * madc32_connect(struct s_madc32 * s);
+void madc32_loadFromDb(struct s_madc32 * s);
 
 void madc32_reset(struct s_madc32 * s);
-void madc32_delete(struct s_madc32 * s);
 
 void  madc32_setBltBlockSize(struct s_madc32 * s, uint32_t size);
 void madc32_initDefaults(struct s_madc32 * s);
@@ -45,9 +42,9 @@ void madc32_setBufferLength(struct s_madc32 * s, uint16_t fifoLength);
 void madc32_setBufferLength_db(struct s_madc32 * s);
 uint16_t madc32_getBufferLength(struct s_madc32 * s);
 
-void madc32_setDataFormat(struct s_madc32 * s, uint8_t format);
-void madc32_setDataFormat_db(struct s_madc32 * s);
-uint8_t madc32_getDataFormat(struct s_madc32 * s);
+void madc32_setDataWidth(struct s_madc32 * s, uint8_t format);
+void madc32_setDataWidth_db(struct s_madc32 * s);
+uint8_t madc32_getDataWidth(struct s_madc32 * s);
 
 void madc32_setMultiEvent(struct s_madc32 * s, uint8_t mode);
 void madc32_setMultiEvent_db(struct s_madc32 * s);
@@ -81,8 +78,8 @@ void madc32_setSlidingScaleOff(struct s_madc32 * s, bool_t flag);
 void madc32_setSlidingScaleOff_db(struct s_madc32 * s);
 bool_t madc32_getSlidingScaleOff(struct s_madc32 * s);
 
-void madc32_set_skipOutOfRange(struct s_madc32 * s, bool_t flag);
-void madc32_set_skipOutOfRange_db(struct s_madc32 * s);
+void madc32_setSkipOutOfRange(struct s_madc32 * s, bool_t flag);
+void madc32_setSkipOutOfRange_db(struct s_madc32 * s);
 bool_t madc32_getSkipOutOfRange(struct s_madc32 * s);
 
 void madc32_setHoldDelay(struct s_madc32 * s, uint8_t gg, uint8_t delay);

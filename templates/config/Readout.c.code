@@ -33,8 +33,6 @@
 #include "gd_readout.h"
 #include "gd_tstamp.h"
 #include "ces/vmelib.h"
-#include "lvme.h"
-#include "lbma.h"
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
@@ -85,7 +83,6 @@ static long dt_scaler_contents;	/* contents of dead-time scaler */
 / in functions "f_user_init" and "f_user_readout" have to be of type
 /                      >> static volatile unsigned long * << (CAMAC)
 /                  or  >> static volatile char * <<          (VME)
-/                  or  >> static LVme * <<                   (VME via portable interface)
 /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 %%BeginOfCode%%
@@ -101,8 +98,6 @@ static long dt_scaler_contents;	/* contents of dead-time scaler */
 %CC32%static volatile unsigned long * cam_sreg_C$crateNo; 	/* X/Q enable in crate C$crateNo */
 %CC32%static volatile unsigned long * cam_lam_C$crateNo;  	/* LAM pattern in crate C$crateNo */
 %V%static volatile char * $moduleName;	 				/* VME: $modulePosition: $moduleTitle */
-%LVME%static struct s_$mnemoLC * s_$moduleName; 		/* VME: data struct for module $moduleName */
-%LVME%static LVme * $moduleName;	 					/* VME: $modulePosition: $moduleTitle */
 %VS%											/* VME: $modulePosition: $moduleTitle */
 %VS%static volatile char * $moduleNameBase;	 			/* --   base addr*/
 %VS%static volatile char * $moduleName;	 				/* --   offset for subdevice $subdevice */
@@ -177,9 +172,6 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 %CC32% 	cam_lam_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));		/* LAM pattern in crate C$crateNo */
 %V% 	$moduleNameLC = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* $moduleNameLC: $moduleTitle */
 %V% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (volatile unsigned long *) $moduleNameLC;
-%LVME%	s_$moduleNameLC = $mnemoLC_alloc("$moduleNameLC", $baseAddrL, $addrMod);
-%LVME% 	$moduleNameLC = $mnemoLC_connect(s_$moduleNameLC);	/* $moduleNameLC: $moduleTitle */
-%LVME% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (volatile unsigned long *) $moduleNameLC;
 %VS%																		/* $moduleName: $moduleTitle */
 %VS% 	$moduleNameLCBase = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* -- base addr */
 %VS% 	$moduleNameLC = $mnemoLC_get_subdevice($moduleNameLCBase, $subDevice);								/* -- subdevice $subDevice */

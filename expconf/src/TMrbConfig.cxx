@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.170 2009-04-22 08:29:06 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.171 2009-04-22 12:17:16 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1719,9 +1719,9 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								libString += o->String();
 								libString += " ";
 							}
-							TString rdoLibs = "$(MARABOU)/powerpc/lib/";
+							TString rdoLibs = "-L$(MARABOU)/powerpc/lib/";
 							rdoLibs += this->GetLynxVersion(kTRUE);
-							rdoLibs += "/libUti.a";
+							rdoLibs += " -lUti";
 							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", rdoLibs.Data());
 							gSystem->ExpandPathName(ip);
 							libString += ip;
@@ -1820,7 +1820,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								if (module->IsVME()) {
 									TMrbVMEModule * vmodule = (TMrbVMEModule *) module;
 									if (vmodule->GetNofSubDevices() <= 1) {
-										rdoTmpl.InitializeCode(vmodule->UseLVME() ? "%LVME%" : "%V%");
+										rdoTmpl.InitializeCode("%V%");
 										rdoTmpl.Substitute("$mnemoLC", module->GetMnemonic());
 									} else {
 										rdoTmpl.InitializeCode("%VS%");
