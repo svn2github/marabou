@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.8 2009-04-21 14:15:57 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.9 2009-04-22 08:29:06 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -560,39 +560,43 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 		return(kFALSE);
 	}
 	moduleName(0,1).ToUpper();
+	moduleName.Prepend(".");
 
-	this->SetBlockXfer(madcEnv->Get(moduleName.Data(), moduleName.Data(), ".BlockXfer", kFALSE));
-	this->SetAddressSource(madcEnv->Get(moduleName.Data(), ".AddressSource", kAddressBoard));
-	this->SetAddressRegister(madcEnv->Get(moduleName.Data(), ".AddressRegister", 0));
-	Int_t mid = madcEnv->Get(moduleName.Data(), ".ModuleId", 0xFF);
+	this->UpdateSettings(madcEnv->Get(moduleName.Data(), "UpdateSettings", kFALSE));
+	this->SetUpdateInterval(madcEnv->Get(moduleName.Data(), "UpdateInterval", 0));
+
+	this->SetBlockXfer(madcEnv->Get(moduleName.Data(), "BlockXfer", kFALSE));
+	this->SetAddressSource(madcEnv->Get(moduleName.Data(), "AddressSource", kAddressBoard));
+	this->SetAddressRegister(madcEnv->Get(moduleName.Data(), "AddressRegister", 0));
+	Int_t mid = madcEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
 	if (mid == 0xFF) mid = this->GetSerial();
 	this->SetModuleId(mid);
-	this->SetFifoLength(madcEnv->Get(moduleName.Data(), ".FifoLength", 0));
-	this->SetDataWidth(madcEnv->Get(moduleName.Data(), ".DataWidth", kDataLngFmt32));
-	this->SetMultiEvent(madcEnv->Get(moduleName.Data(), ".MultiEvent", kMultiEvtNo));
-	this->SetXferData(madcEnv->Get(moduleName.Data(), ".XferData", 0));
-	this->SetMarkingType(madcEnv->Get(moduleName.Data(), ".MarkingType", kMarkingTypeEvent));
-	this->SetBankOperation(madcEnv->Get(moduleName.Data(), ".BankOperation", kBankOprConnected));
-	this->SetAdcResolution(madcEnv->Get(moduleName.Data(), ".AdcResolution", kAdcRes4kHiRes));
-	this->SetOutputFormat(madcEnv->Get(moduleName.Data(), ".OutputFormat", kOutFmtAddr));
-	this->SetAdcOverride(madcEnv->Get(moduleName.Data(), ".AdcOverride", kAdcDontOverride));
-	this->SetHoldDelay(madcEnv->Get(moduleName.Data(), ".HoldDelay", ".0", kGGDefaultDelay), 0);
-	this->SetHoldDelay(madcEnv->Get(moduleName.Data(), ".HoldDelay", ".1", kGGDefaultDelay), 1);
-	this->SetHoldWidth(madcEnv->Get(moduleName.Data(), ".HoldWidth", ".0", kGGDefaultWidth), 0);
-	this->SetHoldWidth(madcEnv->Get(moduleName.Data(), ".HoldWidth", ".1", kGGDefaultWidth), 1);
-	this->UseGG(madcEnv->Get(moduleName.Data(), ".UseGG", kUseGG0));
-	this->SetInputRange(madcEnv->Get(moduleName.Data(), ".InputRange", kInpRng4V));
-	this->SetEclTerm(madcEnv->Get(moduleName.Data(), ".EclTerm", kEclTermOn));
-	this->SetEclG1OrOsc(madcEnv->Get(moduleName.Data(), ".EclG1OrOsc", kEclG1));
-	this->SetEclFclOrRts(madcEnv->Get(moduleName.Data(), ".EclFclOrRts", kEclFcl));
-	this->SetNimG1OrOsc(madcEnv->Get(moduleName.Data(), ".NimG1OrOsc", kNimG1));
-	this->SetNimFclOrRts(madcEnv->Get(moduleName.Data(), ".NimFclOrRts", kNimFcl));
-	this->SetNimBusy(madcEnv->Get(moduleName.Data(), ".NimBusy", kNimBusy));
-	this->SetTestPulser(madcEnv->Get(moduleName.Data(), ".TsSource", kTstampVME));
-	this->SetTsDivisor(madcEnv->Get(moduleName.Data(), ".TsDivisor", 1));
+	this->SetFifoLength(madcEnv->Get(moduleName.Data(), "FifoLength", 0));
+	this->SetDataWidth(madcEnv->Get(moduleName.Data(), "DataWidth", kDataLngFmt32));
+	this->SetMultiEvent(madcEnv->Get(moduleName.Data(), "MultiEvent", kMultiEvtNo));
+	this->SetXferData(madcEnv->Get(moduleName.Data(), "XferData", 0));
+	this->SetMarkingType(madcEnv->Get(moduleName.Data(), "MarkingType", kMarkingTypeEvent));
+	this->SetBankOperation(madcEnv->Get(moduleName.Data(), "BankOperation", kBankOprConnected));
+	this->SetAdcResolution(madcEnv->Get(moduleName.Data(), "AdcResolution", kAdcRes4kHiRes));
+	this->SetOutputFormat(madcEnv->Get(moduleName.Data(), "OutputFormat", kOutFmtAddr));
+	this->SetAdcOverride(madcEnv->Get(moduleName.Data(), "AdcOverride", kAdcDontOverride));
+	this->SetHoldDelay(madcEnv->Get(moduleName.Data(), "HoldDelay", "0", kGGDefaultDelay), 0);
+	this->SetHoldDelay(madcEnv->Get(moduleName.Data(), "HoldDelay", "1", kGGDefaultDelay), 1);
+	this->SetHoldWidth(madcEnv->Get(moduleName.Data(), "HoldWidth", "0", kGGDefaultWidth), 0);
+	this->SetHoldWidth(madcEnv->Get(moduleName.Data(), "HoldWidth", "1", kGGDefaultWidth), 1);
+	this->UseGG(madcEnv->Get(moduleName.Data(), "UseGG", kUseGG0));
+	this->SetInputRange(madcEnv->Get(moduleName.Data(), "InputRange", kInpRng4V));
+	this->SetEclTerm(madcEnv->Get(moduleName.Data(), "EclTerm", kEclTermOn));
+	this->SetEclG1OrOsc(madcEnv->Get(moduleName.Data(), "EclG1OrOsc", kEclG1));
+	this->SetEclFclOrRts(madcEnv->Get(moduleName.Data(), "EclFclOrRts", kEclFcl));
+	this->SetNimG1OrOsc(madcEnv->Get(moduleName.Data(), "NimG1OrOsc", kNimG1));
+	this->SetNimFclOrRts(madcEnv->Get(moduleName.Data(), "NimFclOrRts", kNimFcl));
+	this->SetNimBusy(madcEnv->Get(moduleName.Data(), "NimBusy", kNimBusy));
+	this->SetTestPulser(madcEnv->Get(moduleName.Data(), "TsSource", kTstampVME));
+	this->SetTsDivisor(madcEnv->Get(moduleName.Data(), "TsDivisor", 1));
 
 	for (Int_t i = 0; i < TMrbMesytec_Madc32::kNofChannels; i++) {
-		this->SetThreshold(madcEnv->Get(moduleName.Data(), ".Thresh", Form(".%d", i), 0), i);
+		this->SetThreshold(madcEnv->Get(moduleName.Data(), "Thresh", Form("%d", i), 0), i);
 	}
 	return(kTRUE);
 }
@@ -823,6 +827,8 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+			fCodeTemplates.Substitute("$settingsFile", fSettingsFile.Data());
+			fCodeTemplates.Substitute("$updateFile", Form(".%sUpdate", this->GetName()));
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleDefineIncludePaths:
@@ -922,6 +928,11 @@ void TMrbMesytec_Madc32::PrintSettings(ostream & Out) {
 	Out << "-------------------------------------------------------------------------" << endl;
 	Out << " Module              : "	<< this->GetName() << endl;
 	Out << " Serial              : "	<< this->GetSerial() << endl;
+	if (this->SettingsToBeUpdated()) {
+		Out << " Update settings     : every " << this->GetUpdateInterval() << " count(s)" << endl;
+	} else {
+		Out << " Update settings     : never" << endl;
+	}
 	Out << " Address source      : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAddrSource) << endl;
 	Out << "         register    : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAddrReg, -1, 16) << endl;
 	Out << " Module ID           : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegModuleId) << endl;

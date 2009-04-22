@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.169 2009-04-21 14:15:57 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.170 2009-04-22 08:29:06 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1821,6 +1821,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									TMrbVMEModule * vmodule = (TMrbVMEModule *) module;
 									if (vmodule->GetNofSubDevices() <= 1) {
 										rdoTmpl.InitializeCode(vmodule->UseLVME() ? "%LVME%" : "%V%");
+										rdoTmpl.Substitute("$mnemoLC", module->GetMnemonic());
 									} else {
 										rdoTmpl.InitializeCode("%VS%");
 										rdoTmpl.Substitute("$subDevice", module->GetSubDevice());

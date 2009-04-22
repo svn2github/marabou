@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.5 2009-04-21 14:15:57 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.6 2009-04-22 08:29:06 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -286,6 +286,11 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 		inline Bool_t UseLVME() const { return(kTRUE); };				// connect via LVME interface
 
+		inline void UpdateSettings(Bool_t Flag = kTRUE) { fUpdateSettings = Flag; };	// update settings
+		inline Bool_t SettingsToBeUpdated() { return(fUpdateSettings); };
+		inline void SetUpdateInterval(Int_t Interval) { fUpdateInterval = Interval; };
+		inline Int_t GetUpdateInterval() { return(fUpdateInterval); };
+
 		void PrintSettings(ostream & OutStrm);
 		inline void PrintSettings() { this->PrintSettings(cout); };
 		const Char_t * FormatValue(TString & Value, Int_t Index, Int_t SubIndex = -1, Int_t Base = 10);
@@ -298,6 +303,8 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 	protected:
 		TString fSettingsFile;
 
+		Bool_t fUpdateSettings;
+		Int_t fUpdateInterval;
 		Bool_t fBlockXfer;
 		Bool_t fSlidingScaleOff;
 		Bool_t fSkipOutOfRange;
