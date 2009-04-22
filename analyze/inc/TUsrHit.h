@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a hit
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrHit.h,v 1.5 2008-10-27 11:35:42 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHit.h,v 1.6 2009-04-22 12:53:11 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -71,6 +71,9 @@ class TUsrHit : public TObject {
 		enum	{	kHitMuxModNo	=	2	};	// module number for multiplexer
 		enum	{	kHitMuxChannel	=	3	};	// channel number for multiplexer
 
+// alternate layout used by madc32
+		enum	{	kHitMadc32Res	=	2	};	// adc resolution
+
 	public:
 		TUsrHit() { this->Reset(); };
 		TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
@@ -115,6 +118,9 @@ class TUsrHit : public TObject {
 		inline UInt_t GetPatternWord() { return(* (UInt_t *) &fData[kHitPattern]); }; // for c_ptm modules only
 		inline UInt_t GetCounterT1() { return(* (UInt_t *) &fData[kHitCounterT1]); };
 		inline UInt_t GetCounterT2() { return(* (UInt_t *) &fData[kHitCounterT2]); };
+
+		inline Int_t GetMadc32Resolution() const { return((Int_t) fData[kHitMadc32Res]); }; // for mesytec madc32
+		inline void SetMadc32Resolution(Int_t Resolution) { fData[kHitMadc32Res] = (UShort_t) Resolution; };
 
 		virtual inline Bool_t IsSortable() const { return(kTRUE); };	// hit may be sorted by time stamp
 				
