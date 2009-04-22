@@ -7,7 +7,7 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Madc32 {
+class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Madc {
 
 // declare all parent events as friends
 // so user may address subevent data directly from event level
@@ -66,5 +66,5 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Madc32 {
 
 //%%SEVT_USER_DATA%%			user-specific data members may be included here
 		
-	ClassDef(TUsrSevt%%SEVT_NAME_UC%%, 1)			// [Analyze] Store Mesytec MADC32 data in hit buffer
+	ClassDef(TUsrSevt%%SEVT_NAME_UC%%, 1)			// [Analyze] Store MADC32 data in hit buffer
 };

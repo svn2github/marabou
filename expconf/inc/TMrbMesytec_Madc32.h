@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.7 2009-04-22 12:17:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.8 2009-04-22 14:25:35 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -293,6 +293,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		inline void PrintSettings() { this->PrintSettings(cout); };
 		const Char_t * FormatValue(TString & Value, Int_t Index, Int_t SubIndex = -1, Int_t Base = 10);
 
+		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
+		inline const Char_t * GetPrivateCodeFile() const { return("Module_Madc"); };
+		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:

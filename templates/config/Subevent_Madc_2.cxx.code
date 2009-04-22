@@ -102,15 +102,15 @@
 %BP%
 %BP%
 %BP%// add-one to histograms
-%S%	h$prefix$paramNameUC->Fill((Axis_t) $paramNameLC.GetData(TUsrHit::kHitEnergy));
-%X%	for (Int_t i = 0; i < $indexRange; i++) h$prefix$paramNameUC[i]->Fill((Axis_t) $paramNameLC[i].GetData(TUsrHit::kHitEnergy));
-%A%	for (Int_t i = k$firstParam; i <= k$lastParam; i++) ((TH1F *) h$prefix$sevtNameUCArray[i])->Fill((Axis_t) fData[i].GetData(TUsrHit::kHitEnergy));
-%PS%	if ($paramNameLC) h$prefix$paramNameUC->Fill((Axis_t) $paramNameLC.GetData(TUsrHit::kHitEnergy));
+%S%	h$prefix$paramNameUC->Fill((Axis_t) $paramNameLC);
+%X%	for (Int_t i = 0; i < $indexRange; i++) h$prefix$paramNameUC[i]->Fill((Axis_t) $paramNameLC[i]);
+%A%	for (Int_t i = k$firstParam; i <= k$lastParam; i++) ((TH1F *) h$prefix$sevtNameUCArray[i])->Fill((Axis_t) fData[i]);
+%PS%	if ($paramNameLC) h$prefix$paramNameUC->Fill((Axis_t) $paramNameLC);
 %PX%	for (Int_t i = 0; i < $indexRange; i++) {
-%PX%		if ($paramNameLC[i] > 0) h$prefix$paramNameUC[i]->Fill((Axis_t) $paramNameLC[i].GetData(TUsrHit::kHitEnergy));
+%PX%		if ($paramNameLC[i] > 0) h$prefix$paramNameUC[i]->Fill((Axis_t) $paramNameLC[i]);
 %PX%	}
 %PA%	for (Int_t i = k$firstParam; i <= k$lastParam; i++) {
-%PA%		if (fData[i]) ((TH1F *) h$prefix$sevtNameUCArray[i])->Fill((Axis_t) fData[i].GetData(TUsrHit::kHitEnergy));
+%PA%		if (fData[i]) ((TH1F *) h$prefix$sevtNameUCArray[i])->Fill((Axis_t) fData[i]);
 %PA%	}
 %E%
 %E%	gMrbAnalyze->SetUpdateFlag(); 		// activate update handler
@@ -209,7 +209,7 @@ void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 //                 Bool_t DataOnly   -- do not reset hit buffer if kFALSE
 // Results:        --
 // Exceptions:     
-// Description:    Initializes subevent data
+// Description:    Initializes subevent data with given value.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 

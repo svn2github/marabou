@@ -16,54 +16,143 @@
 %B%// Keywords:       
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%C%	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
-%C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
+%B% 	UInt_t header;
+%B% 	UInt_t trailer;
+%B%		Int_t wcs, wc;
+%B%		Int_t moduleNumber;
+%B%		Int_t chn;
+%B% 	Int_t data;
+%B%		Int_t * paramAddr;
+%B%						
+%B% 	static Bool_t checkIfMultiHitAllowed = kTRUE;
+%B% 	static Bool_t allowMultiHit = kFALSE;
+%B%
+%C% 	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
+%C% 	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 %C%
-%C%	recNo++;						// count this record	
-%C% Int_t origSevtWC = SevtWC;				// save original subevent wc
-%C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
-%C%	Int_t wordsProcessed = 0; 			// words processed so far
-%C% 	UShort_t * dataPtr = (UShort_t *) SevtData;
-%C%	while (SevtWC > 0) {									// subevent may contain several modules
-%C%		UShort_t header = *dataPtr++; 							// header word
-%C%		if ((header & kMrbSevt_10_12_B_Header) == 0) {
-%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
-%C%			cerr	<< setred
-%C%					<< this->ClassName() << "::FillSubevent() [sevtWC="
-%C%					<< wordsProcessed
-%C%					<< "] Wrong header - 0x" << setbase(16) << header << setbase(10) << setblack << endl;
-%C%			return(kTRUE);
-%C%		}
-%C%		Int_t wc = *dataPtr++; 							// word count
-%C% 		Int_t wcs = wc;
-%C%		if (wc <= 0) {
-%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, origSevtWC);
-%C%			cerr	<< setred
-%C%					<< this->ClassName() << "::FillSubevent() [sevtWC="
-%C%					<< wordsProcessed << "] Wrong word count - " << wc << setblack << endl;
-%C%			return(kTRUE);
-%C%		}
-%C%		Int_t moduleNumber = header & kMrbSevt_10_12_M_ModuleNumber;	// extract module number
+%C%		recNo++;						// count this record	
+%C%		Int_t origSevtWC = SevtWC;				// save original subevent wc
+%C%		if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
+%C%		Int_t wordsProcessed = 0; 			// words processed so far
+%C%		ULong_t * dataPtr = (ULong_t *) SevtData;
+%C%		Int_t eventsProcessed = 0;
+%C%		while (SevtWC > 0) {									// subevent may contain several CAEN modules
+%C%			dataPtr += 2;										// skip buffer time
+%C%
+%C%			Int_t header = *dataPtr++;
+%C%			if ((header & MADC_M_ID) != MADC_D_HDR) {
+%C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
+%C%				cerr	<< setred
+%C%						<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C%						<< wordsProcessed << "] Wrong header - 0x" << setbase(16) << header << setbase(10)
+%C%						<< setblack << endl;
+%C%				return(kTRUE);
+%C%			}
+%C%
+%C%		Int_t moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;	// extract module id
+%C%		Int_t res = (header >> MADC_SH_RES) & MADC_M_RES;					// extract adc resolution
+%C%
+%C%		Int_t wc = header & MADC_M_WC;		// extract wc
+%C%		Int_t wcs = wc;
+%C%
+%C%		wc--;								// - trailer word
+%C%		wcs++;								// + header word
+%C%
 %C%		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
 %C%		if (mle == NULL) {
 %C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
 %C%			cerr	<< setred
 %C%					<< this->ClassName() << "::FillSubevent() [sevtWC="
-%C%					<< wordsProcessed << "] Wrong module number - " << moduleNumber << setblack << endl;
+%C%					<< wordsProcessed << "] Wrong module number - " << moduleNumber
+%C%					<< setblack << endl;
 %C%			return(kTRUE);
 %C%		}
-%%C%		SevtWC -= wcs;
-%C%		wordsProcessed += wcs;
+%C%
+%C%		mle->IncrEventHits();				// count this event
+%C%
+%C%		UShort_t evtData[2];
+%C%		for (; wc; wc--) {
+%C%			Int_t data = *dataPtr++;
+%C%			if ((data & MADC_M_ID) != MADC_D_DATA) {
+%C%				if ((data & MADC_M_ID) == MADC_D_EOE) {
+%C%					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected EOE", SevtData, origSevtWC);
+%C%					cerr	<< setred
+%C%							<< this->ClassName() << "::FillSubevent(): [Module "
+%C%							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC=" << wordsProcessed
+%C%							<< "] Unexpected EOB - remaining wc=" << wc << " ignored. Continuing with next event."
+%C%							<< setblack << endl;
+%C%					dataPtr--;
+%C%					wcs -= wc;
+%C%					break;
+%C%				} else {
+%C%					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong data", SevtData, origSevtWC);
+%C%					cerr	<< setred
+%C%							<< this->ClassName() << "::FillSubevent(): [Module "
+%C%							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C%							<< wordsProcessed << "] Wrong data - 0x" << setbase(16) << data << setbase(10)
+%C%							<< setblack << endl;
+%C%					return(kTRUE);
+%C%				}
+%C%			}
+%C%			Int_t chn = (data >> MADC_SH_CHN) & MADC_M_CHN;
+%C%			paramAddr = (Int_t*) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
+%C%			if (paramAddr) {
+%C% 			if (*paramAddr != 0) {
+%C% 				if (checkIfMultiHitAllowed) {
+%C% 					allowMultiHit = gEnv->GetValue(Form("%s.AllowMultiHit", this->ClassName()), kFALSE);
+%C% 					checkIfMultiHitAllowed = kFALSE;
+%C% 					if (allowMultiHit) {
+%C% 						cerr	<< setred
+%C% 								<< this->ClassName() << "::FillSubevent(): Multiple hits detected (no further messages)"
+%C% 								<< setblack << endl;
+%C% 					}
+%C% 				}
+%C% 				if (!allowMultiHit) {
+%C% 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Multiple hit", SevtData, origSevtWC);
+%C% 					cerr	<< setred
+%C% 							<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C% 							<< wordsProcessed << "] Multiple hit for channel " << chn << " - prev data =" << *paramAddr
+%C% 							<< setblack << endl;
+%C% 				}
+%C% 			} else {
+%C%					data &= MADC_M_ADCDATA;
+%C%					*paramAddr = (Int_t) (data & MADC_M_ADCDATA);	// assign data value to param
+%C% 			}
+%C%			} else {
+%C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "No such param", SevtData, origSevtWC);
+%C% 			cerr	<< setred
+%C% 					<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C%						<< wordsProcessed << ") : No such param - chn" << chn << ")" << setblack << endl;
+%C%				return(kTRUE);
+%C% 		}
 %C% 	}
-%C% 	return(kTRUE);
+%C% 	Int_t trailer = *dataPtr++; 	 	// inspect trailer word
+%C% 	if ((trailer & MADC_M_ID) != MADC_D_EOE) {
+%C% 		gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
+%C% 		cerr	<< setred
+%C% 				<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 				<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C% 				<< wordsProcessed << "] Wrong EOB - 0x" << setbase(16) << trailer << setbase(10)
+%C% 				<< setblack << endl;
+%C% 		return(kTRUE);
+%C% 	}
+%C%
+%C% 	SevtWC -= wcs;						// remaining subevent data
+%C% 	wordsProcessed += wcs;
+%C% 	eventsProcessed++;
+%C% }
+%C% return(kTRUE);
 %E%}			
 //- dummy prefixes, never used
 %VR%
 %SS%
+%SI%
 %AL%
 %XS%
-%XL%
 %XI%
+%XL%
 %MD%
 %%EndOfCode%%
 %%SEVT_FILL_SUBEVENT%%
@@ -276,7 +365,7 @@ void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 // Name:           TUsrSevt%%SEVT_NAME_UC%%::Reset
 // Purpose:        Reset subevent data
 // Arguments:      Int_t InitValue    -- initialization value
-//                 Bool_t DataOnly    -- reset data only if kTRUE (ignored)
+//                 Bool_t DataOnly  -- reset data only if kTRUE (ignored)
 // Results:        --
 // Exceptions:     
 // Description:    Initializes subevent data with given value.

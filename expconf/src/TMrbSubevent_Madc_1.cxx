@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Madc_1.cxx,v 1.1 2009-04-20 13:41:05 Rudolf.Lutter Exp $       
-// Date:           $Date: 2009-04-20 13:41:05 $
+// Revision:       $Id: TMrbSubevent_Madc_1.cxx,v 1.2 2009-04-22 14:25:35 Rudolf.Lutter Exp $       
+// Date:           $Date: 2009-04-22 14:25:35 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -49,44 +49,23 @@ TMrbSubevent_Madc_1::TMrbSubevent_Madc_1(const Char_t * SevtName, const Char_t *
 // Description:    Create a new subevent of type [10,81]
 //                 used to store MADC32 list-mode data
 //
-//                 Data format as given by the producer (MBS) - same as [10,81]:
-//                 -  several modules per subevent possible
-//                 -  channel data 32 bit, arbitrary format
-//                    has to be decoded by use of module id & serial
-//                 -  2 words module header in front
+//                 Data format as given by the producer (MBS):
+//                 -  several modules per buffer
+//                 -  only 1 event per module
 //
-//                 15               8|7                  0
-//                 |=================|===================|
-//                 |1|   module ID   |   module serial   |
-//                 |-------------------------------------|
-//                 |      word count including header    |
-//                 |-------------------------------------|
-//                 |   1st module, 1st active chn, MSW   |
-//                 |-------------------------------------|
-//                 |         1st active chn, LSW         |
-//                 |-------------------------------------|
-//                 |                ...                  |
-//                 |                ...                  |
-//                 |-------------------------------------|
-//                 |  1st module, last active chn, MSW   |id &
-//                 |-------------------------------------|
-//                 |        last active chn, LSW         |
-//                 |=====================================|
-//                 |1|   module ID   |   module serial   |
-//                 |-------------------------------------|
-//                 |      word count including header    |
-//                 |-------------------------------------|
-//                 |                ...                  |
-//                 |                ...                  |
-//                 |-------------------------------------|
-//                 |  last module, last active chn, MSW  |
-//                 |-------------------------------------|
-//                 |        last active chn, LSW         |
-//                 15====================================0
-//
-//                 Data storage by the consumer (ROOT):
-//                 -  stored in a fixed-length vector, indexed by channel number
-//                 -  empty channels padded with a zero value
+//                 31---------------16|15------8|7---------0
+//                 |         0        |   time(us) 47-32   | buffer time
+//                 |------------------|--------------------|
+//                 |  time(us) 31-16  |   time(us) 15-0    |
+//                 |==================|====================|
+//                 |  0x1    |   id, resolution, wc        | module header
+//                 |==================|====================|
+//                 |  0x0    |       chn#, data            | data
+//                 |------------------|--------------------|
+//                 |  0x0    |       chn#, data            |
+//                 |==================|====================|
+//                 |  0x3    |       time stamp            | trailer
+//                 31======================================0
 //
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

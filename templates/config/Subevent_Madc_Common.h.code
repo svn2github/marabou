@@ -1,17 +1,17 @@
 %%BeginOfCode%%
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Madc32
-// Purpose:        Base class for subevents containing data from MADC32 VME modules
+// Name:           TMrbSubevent_Madc
+// Purpose:        Base class for subevents containing data from CAEN VME modules
 // Description:    
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbSubevent_Madc32 : public TObject {
+class TMrbSubevent_Madc : public TObject {
 
 	public:
-		TMrbSubevent_Madc32() {};			// default ctor
-		~TMrbSubevent_Madc32() {};			// default dtor
+		TMrbSubevent_Madc() {};				// default ctor
+		~TMrbSubevent_Madc() {};			// default dtor
 
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
 
@@ -33,7 +33,9 @@ class TMrbSubevent_Madc32 : public TObject {
 
 		TUsrHitBuffer fHitBuffer; 				// hit buffer to store subevent data
 
-	ClassDef(TMrbSubevent_Madc32, 1)			// [Analyze] Base class for subevents: Mesytec MADC32 data stored in hit buffer
+		Long64_t fBufferTimeUs; 				// 48 bit buffer time in us
+
+	ClassDef(TMrbSubevent_Madc, 1)			// [Analyze] Base class for subevents: MADC32 data stored in hit buffer
 };
 %%EndOfCode%%
 %%SEVT_CLASS_DEFINITION%%

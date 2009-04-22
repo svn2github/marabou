@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Madc_2.cxx,v 1.1 2009-04-20 13:41:06 Rudolf.Lutter Exp $       
-// Date:           $Date: 2009-04-20 13:41:06 $
+// Revision:       $Id: TMrbSubevent_Madc_2.cxx,v 1.2 2009-04-22 14:25:35 Rudolf.Lutter Exp $       
+// Date:           $Date: 2009-04-22 14:25:35 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -56,38 +56,43 @@ TMrbSubevent_Madc_2::TMrbSubevent_Madc_2(const Char_t * SevtName, const Char_t *
 //                    has to be decoded by use of module id & serial
 //                 -  2 words module header in front
 //
-//                 15               8|7                  0
-//                 |=================|===================|
-//                 |1|   module ID   |   module serial   |
-//                 |-------------------------------------|
-//                 |      word count including header    |
-//                 |-------------------------------------|
-//                 |   1st module, 1st active chn, MSW   |
-//                 |-------------------------------------|
-//                 |         1st active chn, LSW         |
-//                 |-------------------------------------|
-//                 |                ...                  |
-//                 |                ...                  |
-//                 |-------------------------------------|
-//                 |  1st module, last active chn, MSW   |id &
-//                 |-------------------------------------|
-//                 |        last active chn, LSW         |
-//                 |=====================================|
-//                 |1|   module ID   |   module serial   |
-//                 |-------------------------------------|
-//                 |      word count including header    |
-//                 |-------------------------------------|
-//                 |                ...                  |
-//                 |                ...                  |
-//                 |-------------------------------------|
-//                 |  last module, last active chn, MSW  |
-//                 |-------------------------------------|
-//                 |        last active chn, LSW         |
-//                 15====================================0
+//                 31---------------16|15------8|7---------0
+//                 |         0        | time in us (47-32) | buffer time
+//                 |------------------|--------------------|
+//                 |          time in us (0..31)           |
+//                 |==================|====================|
+//                 |  0x1    |   id, resolution, wc        | module header
+//                 |==================|====================|
+//                 |  0x0    |       chn#, data            | data
+//                 |------------------|--------------------|
+//                 |  0x0    |       chn#, data            |
+//                 |==================|====================|
+//                 |  0x3    |       time stamp            | trailer
+//                 31======================================0
 //
 //                 Data storage by the consumer (ROOT):
-//                 -  data stored in a TClonesArray, channel by channel
+//                 -  data stored in a TClonesArray/TUsrHit, channel by channel
 //                 -  each channel entry marked with event time
+//
+//                 31--------------------------------------0
+//                 |             buffer number             |
+//                 |---------------------------------------|
+//                 |      event number within buffer       |
+//                 |---------------------------------------|
+//                 |             module number             |
+//                 |---------------------------------------|
+//                 |            channel number             |
+//                 |---------------------------------------|
+//                 |          0        |  time st (32..47) |
+//                 |---------------------------------------|
+//                 |           time stamp (0..31)          |
+//                 |---------------------------------------|
+//                 |             word count (=2)           |
+//                 |---------------------------------------|
+//                 |                    0                  |
+//                 |---------------------------------------|
+//                 |                  data                 |
+//                 |---------------------------------------|
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 

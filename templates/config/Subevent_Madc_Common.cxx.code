@@ -1,16 +1,16 @@
 %%BeginOfCode%%
-Bool_t TMrbSubevent_Madc32::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:		   TMrbSubevent_Sis::FillSubevent
-// Purpose: 	   Decode Mesytec MADC32 data
+// Name:		   TMrbSubevent_Caen::FillSubevent
+// Purpose: 	   Decode CAEN buffer
 // Arguments:	   const UShort_t * SevtData   -- pointer to unpacked subevent data
 //  			   Int_t SevtWC 			   -- word count
 //  			   Int_t TimeStamp  		   -- time since last start
 //  											  in units of 100 microsecs
 // Results: 	   kTRUE/kFALSE
 // Exceptions:     
-// Description:    Decodes data from a MADC32 module
+// Description:    Decodes data from a CAEN Vxxx.
 // Keywords:	   
 //////////////////////////////////////////////////////////////////////////////
 
@@ -20,14 +20,18 @@ Bool_t TMrbSubevent_Madc32::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 	this->GetHitBuffer()->Reset();			// clear hit buffer
 
 	recNo++;						// count this record	
-	Int_t origSevtWC = SevtWC;
+	Int_t origSevtWC = SevtWC;				// save original subevent wc
 	if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
 	Int_t wordsProcessed = 0; 			// words processed so far
-	UShort_t * dataPtr = (UShort_t *) SevtData;
+	ULong_t * dataPtr = (ULong_t *) SevtData;
 	Int_t eventsProcessed = 0;
-	while (SevtWC > 0) {									// subevent may contain several modules
-		UShort_t header = *dataPtr++;							 // header word
-		if ((header & kMrbSevt_10_12_B_Header) == 0) {
+	while (SevtWC > 0) {									// subevent may contain several CAEN modules
+		fBufferTimeUs = 0;									// store buffer time
+		fBufferTimeUs += *dataPtr++ << 32;
+		fBufferTimeUs += *dataPtr++;
+
+		Int_t header = *dataPtr++;
+		if ((header & MADC_M_ID) != MADC_D_HDR) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
 			cerr	<< setred
 					<< this->ClassName() << "::FillSubevent() [sevtWC="
@@ -35,16 +39,33 @@ Bool_t TMrbSubevent_Madc32::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 					<< setblack << endl;
 			return(kTRUE);
 		}
-		Int_t wc = *dataPtr++;							 // word count
+
+		Int_t moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;	// extract module id
+		Int_t res = (header >> MADC_SH_RES) & MADC_M_RES;					// extract adc resolution
+
+		Int_t wc = header & MADC_M_WC;							// extract wc
 		Int_t wcs = wc;
-		if (wc <= 0) {
-			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, origSevtWC);
+
+		Int_t trailer = *(dataPtr + wc); 	// inspect trailer word
+		if ((trailer & MADC_M_ID) != MADC_D_EOE) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
 			cerr	<< setred
-					<< this->ClassName() << "::FillSubevent(): [sevtWC="
-					<< wordsProcessed << "] Wrong word count - " << wc << setblack << endl;
+					<< this->ClassName() << "::FillSubevent(): [Module "
+					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+					<< wordsProcessed << "] Wrong EOB - 0x" << setbase(16) << trailer << setbase(10)
+					<< setblack << endl;
 			return(kTRUE);
 		}
-		Int_t moduleNumber = header & kMrbSevt_10_12_M_ModuleNumber;  // extract module number
+
+		Int_t ts = trailer & MADC_M_TIMESTAMP;		// extract time stamp
+		Int_t timeStamp[3];
+		timeStamp[0] = 0;
+		timeStamp[1] = (ts >> 16) & 0xFFFF;
+		timeStamp[2] = ts & 0xFFFF;
+
+		wc--;								// - trailer word
+		wcs++;								// + header word
+
 		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
 		if (mle == NULL) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
@@ -55,9 +76,46 @@ Bool_t TMrbSubevent_Madc32::FillSubevent(const UShort_t * SevtData, Int_t SevtWC
 			return(kTRUE);
 		}
 
-		Int_t moduleID = (header >> kMrbSevt_10_12_SH_ModuleId) & kMrbSevt_10_12_M_ModuleId;
-		SevtWC -= wcs;
+		mle->IncrEventHits();				// count this event
+
+		UShort_t evtData[2];
+		for (; wc; wc--) {
+			Int_t data = *dataPtr++;
+			if ((data & MADC_M_ID) != MADC_D_DATA) {
+				if ((data & MADC_M_ID) == MADC_D_EOE) {
+					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected EOE", SevtData, origSevtWC);
+					cerr	<< setred
+							<< this->ClassName() << "::FillSubevent(): [Module "
+							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC=" << wordsProcessed
+							<< "] Unexpected EOB - remaining wc=" << wc << " ignored. Continuing with next event."
+							<< setblack << endl;
+					dataPtr--;
+					wcs -= wc;
+					break;
+				} else {
+					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong data", SevtData, origSevtWC);
+					cerr	<< setred
+							<< this->ClassName() << "::FillSubevent(): [Module "
+							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+							<< wordsProcessed << "] Wrong data - 0x" << setbase(16) << data << setbase(10)
+							<< setblack << endl;
+					return(kTRUE);
+				}
+			}
+			Int_t chn = (data >> MADC_SH_CHN) & MADC_M_CHN;
+			mle->IncrChannelHits(chn);			// count this channel
+			evtData[0] = 0;
+			evtData[1] = (UShort_t) (data & MADC_M_ADCDATA);
+			this->GetHitBuffer()->AddHit(	eventsProcessed,
+											moduleNumber,
+											chn,
+											timeStamp,
+											evtData, 2);
+		}
+		*dataPtr++; 		 				// skip trailer word
+		SevtWC -= wcs;						// remaining subevent data
 		wordsProcessed += wcs;
+		eventsProcessed++;
 	}
 	return(kTRUE);
 }

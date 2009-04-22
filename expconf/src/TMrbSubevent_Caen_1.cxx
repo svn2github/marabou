@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Caen_1.cxx,v 1.12 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_1.cxx,v 1.13 2009-04-22 14:25:35 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -47,9 +47,10 @@ TMrbSubevent_Caen_1::TMrbSubevent_Caen_1(const Char_t * SevtName, const Char_t *
 // Description:    Create a new subevent of type [10,41]
 //                 used to store CAEN list-mode data
 //
-//                 Data format as given by the producer (MBS):
-//                 -  several modules per buffer
-//                 -  only 1 event per module
+//                 Data format as given by the producer (MBS) - same as [10,82]:
+//                 -  several modules per subevent possible
+//                 -  channel data 32 bit, arbitrary format
+//                    has to be decoded by use of module id & serial
 //
 //                 31---------------16|15------8|7---------0
 //                 |  0x200  |        |    wc   | modser#  | header
@@ -61,6 +62,8 @@ TMrbSubevent_Caen_1::TMrbSubevent_Caen_1(const Char_t * SevtName, const Char_t *
 //                 |  0x400  |         event count         | trailer
 //                 31======================================0
 //
+//                 Data storage by the consumer (ROOT):
+//                 -  data stored directly in subevent (& histogram)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
