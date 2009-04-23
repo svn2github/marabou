@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbResource.cxx,v 1.3 2009-04-20 07:54:57 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbResource.cxx,v 1.4 2009-04-23 05:53:06 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -567,8 +567,8 @@ const Char_t * TMrbResource::Find(const Char_t * Res1, const Char_t * Res2, cons
 	TString r = "";
 	Bool_t withDot = (Res1 && *Res1 == '.');
 	if (withDot) r += Res1; else if (Res1) r += Form(".%s", Res1);
-	if (Res2 && *Res2 != '\0') r += Form(".%s", Res2);
-	if (Res3 && *Res3 != '\0') r += Form(".%s", Res3);
+	if (Res2 && *Res2 != '\0') { if (*Res2 != '.') r += "."; r += Res2; }
+	if (Res3 && *Res3 != '\0') { if (*Res3 != '.') r += "."; r += Res3; }
 	if (r.IsNull()) return(NULL);
 
 	if (!withDot) {
