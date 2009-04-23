@@ -180,8 +180,9 @@ MADC32.$moduleName.PulserStatus: 		$pulserStatus
 # Counters
 #-----------------------------------------------------------------------------
 
-# timestamp source      0  -->  VME
-#                       1  -->  extern
+# timestamp source      0x0  -->  VME (default)
+#                       0x1  -->  extern
+#                       0x2  -->  extern reset enable
 MADC32.$moduleName.TsSource: 			$tsSource
 
 MADC32.$moduleName.TsDivisor: 			$tsDivisor

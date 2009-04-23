@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.10 2009-04-22 12:17:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.11 2009-04-23 06:33:09 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -503,7 +503,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegTsSource, "TsSource");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kTstampVME,
 													TMrbMesytec_Madc32::kTstampVME,
-													TMrbMesytec_Madc32::kTstampReset);
+													TMrbMesytec_Madc32::kTstampExtern | TMrbMesytec_Madc32::kTstampReset);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
