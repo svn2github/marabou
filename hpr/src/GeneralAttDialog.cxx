@@ -14,6 +14,7 @@ namespace std {} using namespace std;
 
 Int_t GeneralAttDialog::fForceStyle;
 Int_t GeneralAttDialog::fShowPSFile;
+Int_t GeneralAttDialog::fSuppressWarnings;
 Int_t GeneralAttDialog::fUseRegexp;
 Int_t GeneralAttDialog::fShowListsOnly;
 Int_t GeneralAttDialog::fRememberLastSet;
@@ -93,6 +94,8 @@ ____________________________________________________________\n\
    fValp[ind++] = &fForceStyle;
    fRow_lab->Add(new TObjString("CheckButton_Show histlists only"));
    fValp[ind++] = &fShowListsOnly;
+   fRow_lab->Add(new TObjString("CheckButton_Suppress warning messages"));
+   fValp[ind++] = &fSuppressWarnings;
    fRow_lab->Add(new TObjString("CheckButton_Show PS file after creation"));
    fValp[ind++] = &fShowPSFile;
    fRow_lab->Add(new TObjString("CheckButton_Remember Expand settings (Marks)"));
@@ -153,6 +156,7 @@ void GeneralAttDialog::SaveDefaults()
    TEnv env(".hprrc");
    env.SetValue("GeneralAttDialog.fForceStyle", fForceStyle);
    env.SetValue("GeneralAttDialog.fShowPSFile", fShowPSFile);
+   env.SetValue("GeneralAttDialog.fSuppressWarnings", fSuppressWarnings);
    env.SetValue("GeneralAttDialog.fUseRegexp", fUseRegexp);
    env.SetValue("GeneralAttDialog.fShowListsOnly", fShowListsOnly);
    env.SetValue("GeneralAttDialog.fRememberLastSet", fRememberLastSet);
@@ -176,6 +180,9 @@ void GeneralAttDialog::RestoreDefaults()
    if (fForceStyle) gROOT->ForceStyle(kTRUE);
    else             gROOT->ForceStyle(kFALSE);
    fShowPSFile = env.GetValue("GeneralAttDialog.fShowPSFile", 1);
+   fSuppressWarnings = env.GetValue("GeneralAttDialog.fSuppressWarnings", 1);
+   if (fSuppressWarnings) gErrorIgnoreLevel=kError;
+   else                   gErrorIgnoreLevel=kWarning;
    fUseRegexp = env.GetValue("GeneralAttDialog.fUseRegexp", 0);
    fShowListsOnly = env.GetValue("GeneralAttDialog.fShowListsOnly", 0);
    fRememberLastSet = env.GetValue("GeneralAttDialog.fRememberLastSet", 1);
@@ -208,5 +215,7 @@ void GeneralAttDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 //   cout << endl;
    if (fForceStyle) gROOT->ForceStyle(kTRUE);
    else             gROOT->ForceStyle(kFALSE);
+   if (fSuppressWarnings) gErrorIgnoreLevel=kError;
+   else                   gErrorIgnoreLevel=kWarning;
 }
 

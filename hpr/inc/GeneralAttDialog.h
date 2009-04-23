@@ -17,6 +17,7 @@ private:
 public:
    static Int_t fForceStyle;
    static Int_t fShowPSFile;
+   static Int_t fSuppressWarnings;
    static Int_t fUseRegexp;
    static Int_t fShowListsOnly;
    static Int_t fRememberLastSet;

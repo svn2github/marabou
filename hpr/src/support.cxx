@@ -404,11 +404,11 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    HTCanvas *cHCont = new HTCanvas(pname.Data(), pname.Data(),
                                    xpos, ypos, -xw, yw, hpr, 0);
    Int_t item_height = TMath::Min(Int_t(magfac * 24.), 10000/Nentries);
+//	cout << " Nentries " << Nentries << endl;
+	
+   if ( item_height < 24 ) item_height = 24;
    cHCont->SetCanvasSize(xw, item_height * Nentries);
-//   ypos += 50;
-//   if (ypos > 500) ypos = 5;
-//   cout << "usedxw  " <<  cHCont->GetWw() << " usedyw  " <<  cHCont->GetWh() << endl;
-
+ 
    Float_t expandx = xw / (250. * magfac);
    if(expandx < 1.) expandx=1.;
 //   Float_t expandy = (Float_t) Nentries / 25;

@@ -9,6 +9,7 @@
 #include "TPaletteAxis.h"
 
 #include "HistPresent.h"
+#include "GeneralAttDialog.h"
 #include "FitHist.h"
 #include "FhContour.h"
 #include "FitHist_Help.h"
@@ -55,7 +56,7 @@ void AddMathExpressions(TList * var_list)
 
 void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname, const char* bp)
 {
-  static Int_t ycanvas=100;
+  static Int_t ycanvas=180;
 //  const Int_t MAXLEAF=33;
   if (fRootFile) fRootFile->Close();
   fRootFile=new TFile(fname);
@@ -110,8 +111,44 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
       TLeaf *leaf = (TLeaf*)leaves->UncheckedAt(l);
       TBranch *branch = leaf->GetBranch();
       if (branch->IsA() == TBranchObject::Class()) {
+//
       } else {
          len = leaf->GetLen();
+//  apply selection if needed
+         if (fHistSelMask->Length() > 0) {
+            TString tn(leaf->GetName());
+            if        (fHistSelOp == kHsOp_None) {
+               TRegexp re((const char *)*fHistSelMask, !GeneralAttDialog::fUseRegexp);
+               if (tn.Index(re) <0) continue;
+            } else if (GeneralAttDialog::fUseRegexp) {
+               TRegexp re1((const char *)*fHistSelMask_1);
+               TRegexp re2((const char *)*fHistSelMask_2);
+               if (fHistSelOp == kHsOp_And) {
+                  if (tn.Index(re1) < 0 ||
+                     tn.Index(re2) < 0) continue;
+               } else if (fHistSelOp == kHsOp_Or) {
+                  if (tn.Index(re1) < 0 &&
+                     tn.Index(re2) < 0) continue;
+               } else if (fHistSelOp == kHsOp_Not) {
+                  if (( fHistSelMask_1->Length() > 0 &&
+                     tn.Index(re1) < 0) ||
+                    (tn.Index(re2) >=0)) continue;
+               }
+            } else {
+               if (fHistSelOp == kHsOp_And) {
+                  if (!tn.Contains(fHistSelMask_1->Data()) ||
+                     !tn.Contains(fHistSelMask_2->Data())) continue;
+               } else if (fHistSelOp == kHsOp_Or) {
+                  if (!tn.Contains(fHistSelMask_1->Data()) &&
+                     !tn.Contains(fHistSelMask_2->Data())) continue;
+               } else if (fHistSelOp == kHsOp_Not) {
+                  if (( fHistSelMask_1->Length() > 0 &&
+                    !tn.Contains(fHistSelMask_1->Data())) ||
+                     (tn.Contains(fHistSelMask_2->Data()))) continue;
+               }
+            }
+         }
+//
          if (len > 1) {
            for (Int_t ix = 0; ix < len; ix++) {
 

@@ -435,7 +435,7 @@ void HistPresent::ShowMain()
    y-=dy;
 
    cmd="mypres->GetHistSelMask()";
-   tit="Histo Selection mask";
+   tit="Histo/Leaf Select mask";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Define a regular expression for selection of a subset of histograms",hint_delay);
