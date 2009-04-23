@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.11 2009-04-23 06:33:09 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.12 2009-04-23 13:39:27 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -788,6 +788,11 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 	settings += "/";
 	settings += fSettingsFile;
 
+	TString dump = pwd;
+	dump += "/";
+	dump += this->GetName();
+	dump += "Dump.dat";
+
 	switch (TagIndex) {
 		case TMrbConfig::kModuleDefs:
 		case TMrbConfig::kModuleInitCommonCode:
@@ -802,6 +807,7 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 			fCodeTemplates.Substitute("$settingsFile", settings.Data());
+			fCodeTemplates.Substitute("$dumpFile", dump.Data());
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleClearModule:
