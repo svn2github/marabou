@@ -75,7 +75,7 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 //////////////////////////////////////////////////////////////////////////////
 
 #ifdef MARABOUVERS
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+//	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 #endif	
 	fWidgets = new TList;
 	fEntries = new TList;
