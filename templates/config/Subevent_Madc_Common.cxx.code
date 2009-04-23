@@ -42,6 +42,9 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 
 		Int_t moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;	// extract module id
 		Int_t res = (header >> MADC_SH_RES) & MADC_M_RES;					// extract adc resolution
+		UInt_t dmask = 0x7FF;
+		if (res >= kMrbMadcRes4k) dmask = 0xFFF;
+		if (res >= kMrbMadcRes8k) dmask = 0x1FFF;
 
 		Int_t wc = header & MADC_M_WC;							// extract wc
 		Int_t wcs = wc;
@@ -105,7 +108,7 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 			Int_t chn = (data >> MADC_SH_CHN) & MADC_M_CHN;
 			mle->IncrChannelHits(chn);			// count this channel
 			evtData[0] = 0;
-			evtData[1] = (UShort_t) (data & MADC_M_ADCDATA);
+			evtData[1] = (UShort_t) (data & dmask);
 			this->GetHitBuffer()->AddHit(	eventsProcessed,
 											moduleNumber,
 											chn,

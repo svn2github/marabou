@@ -51,6 +51,9 @@
 %C%
 %C%		Int_t moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;	// extract module id
 %C%		Int_t res = (header >> MADC_SH_RES) & MADC_M_RES;					// extract adc resolution
+%C%		UInt_t dmask = 0x7FF;
+%C%		if (res >= kMrbMadcRes4k) dmask = 0xFFF;
+%C%		if (res >= kMrbMadcRes8k) dmask = 0x1FFF;
 %C%
 %C%		Int_t wc = header & MADC_M_WC;		// extract wc
 %C%		Int_t wcs = wc;
@@ -116,8 +119,7 @@
 %C% 							<< setblack << endl;
 %C% 				}
 %C% 			} else {
-%C%					data &= MADC_M_ADCDATA;
-%C%					*paramAddr = (Int_t) (data & MADC_M_ADCDATA);	// assign data value to param
+%C%					*paramAddr = (Int_t) (data & dmask);	// assign data value to param
 %C% 			}
 %C%			} else {
 %C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "No such param", SevtData, origSevtWC);

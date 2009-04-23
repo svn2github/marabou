@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.24 2008-12-12 13:09:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.25 2009-04-23 07:26:59 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -700,6 +700,7 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 			if (!gMrbConfig->ExecUserMacro(&AnaStrm, this, analyzeTag->GetName())) {
 				switch (TagIndex) {
 					case TMrbConfig::kAnaIncludesAndDefs:
+					case TMrbConfig::kAnaModuleSpecialEnum:
 						anaTmpl.InitializeCode();
 						anaTmpl.Substitute("$moduleName", this->GetName());
 						anaTmpl.Substitute("$moduleTitle", this->GetName());
