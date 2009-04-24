@@ -19,8 +19,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-02-20 08:37:23 $
+//! $Revision: 1.6 $     
+//! $Date: 2009-04-24 08:46:41 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
@@ -97,11 +97,11 @@ void TObject::Copy(TObject & Obj) const
       Obj.fBits  = fBits;
       Obj.fBits |= kIsOnHeap;
    } else {
-      obj.fBits  = fBits;
-      obj.fBits &= ~kIsOnHeap;
+      Obj.fBits  = fBits;
+      Obj.fBits &= ~kIsOnHeap;
    }
-   obj.fBits &= ~kIsReferenced;
-   obj.fBits &= ~kCanDelete;
+   Obj.fBits &= ~kIsReferenced;
+   Obj.fBits &= ~kCanDelete;
 }
 
 //________________________________________________________________[C++ METHOD]

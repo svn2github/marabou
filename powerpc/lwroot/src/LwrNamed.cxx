@@ -12,8 +12,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-20 08:40:11 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-04-24 08:48:01 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamed.h"
@@ -61,4 +61,4 @@ void TNamed::SetNameTitle(const Char_t * Name, const Char_t * Title) { fName  = 
 //! \param[in]		Title			-- title to be set
 //////////////////////////////////////////////////////////////////////////////
 
-void TNamed::SetTitle(const Char_t * Title) { fTitle = title; }
+void TNamed::SetTitle(const Char_t * Title) { fTitle = Title; }
