@@ -11,8 +11,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-20 08:40:11 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-04-24 08:54:17 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrSeqCollection.h"
@@ -95,10 +95,10 @@ void TSeqCollection::QSort(TObject ** ObjArr, Int_t First, Int_t Last)
       ObjArr[First] = ObjArr[j];
       ObjArr[j] = tmp;
       if (j - First < Last - (j + 1)) {
-         this->QSort(ObjArr, First, j);
+         QSort(ObjArr, First, j);
          First = j + 1;
       } else {
-         this->QSort(ObjArr, j + 1, Last);
+         QSort(ObjArr, j + 1, Last);
          Last = j;
       }
    }
@@ -131,7 +131,7 @@ void TSeqCollection::QSort(TObject ** ObjArrA, TObject ** ObjArrB, Int_t First, 
          while (--j > First && ObjCompare(ObjArrA[j], ObjArrA[First]) > 0);
          if (i >= j) break;
 
-         tmp1 = a[i]; tmp2 = b[i];
+         tmp1 = ObjArrA[i]; tmp2 = ObjArrB[i];
          ObjArrA[i] = ObjArrA[j]; ObjArrB[i] = ObjArrB[j];
          ObjArrA[j] = tmp1; ObjArrB[j] = tmp2;
       }
