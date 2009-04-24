@@ -9,8 +9,6 @@
 #include <stdint.h>
 
 #include <allParam.h>
-#include <lvme.h>
-#include <lbma.h>
 #include <ces/bmalib.h>
 
 #include "block.h"
@@ -22,8 +20,8 @@
 //! \details		Contains definitions to operate a Mesytec Madc32
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-04-22 12:17:16 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-04-24 10:18:04 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*____________________________________________________________________________
