@@ -201,7 +201,7 @@ Int_t Matches(TList * list, const char * s, Int_t * matchlength)
       obs = (TObjString *)list->At(i);
       TString var = obs->GetString();
       if (var.Index(s, 0) == 0) {
-//        cout << "Input: " << s << " matches: " << var << endl;
+         cout << "Input: " << s << " matches: " << var << endl;
          if (pos >=0) unique = kFALSE;
          pos = i;
          if (var.Length() < lmax) lmax = var.Length();
@@ -769,6 +769,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    fPrompt = Prompt;
    fHelpText = helptext;
    fCancelButton = NULL;
+	fEntries = NULL;
    const TGWindow * main = gClient->GetRoot();
    if(Win != 0) {
       fMyWindow = Win;
@@ -1685,7 +1686,7 @@ void TGMrbValuesAndText::StoreValues(){
 //   cout << "StoreValues()" << endl;
 
 //   if (fFinis != 0) return;
-   if (!fEntries) return;
+   if (fEntries == NULL) return;
 
    TIter nextent(fEntries);
    TIter next(fLabels);
