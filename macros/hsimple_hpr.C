@@ -32,6 +32,7 @@
   TH1F *hpx    = new TH1F("hpx","This is the px distribution",100,-4,4);
   TH1F *hpx2   = new TH1F("hpx2","This is the py distribution * 2",100,-4,4);
   TH1F *hpmany   = new TH1F("hpmany","Some gauss peaks",1000,0,4000);
+  TH1F *hpmany_a   = new TH1F("hpmany_a","Some gauss peaks, diff statistics",1000,0,4000);
   TH2F *hpxpy  = new TH2F("hpxpy","py vs px",100,-4,4,100,-4,4);
   TH2F *hpxpy2  = new TH2F("hpxpy2","py vs px",100,-4,4,100,-4,4);
   TH2F *hpxpz  = new TH2F("hpxpz","2dim, pz=px*px+py*py",100,-4,4,100,-4,4);
@@ -144,12 +145,16 @@
         gRandom->Rannor(px,py);
         px1 = px * sigma[i] + mean[i];
         hpmany->Fill(px1);
+        gRandom->Rannor(px,py);
+        px1 = px * sigma[i] + mean[i];
+        hpmany_a->Fill(px1);
      }
   }
 // add some linear background
   TF1 * lbg = new TF1("lbg", "pol1",0, 4000);
   lbg->SetParameters(400, - 300. / 4000);
   hpmany->FillRandom("lbg", 100000);
+  hpmany_a->FillRandom("lbg", 100000);
   gBenchmark->Show("hsimple");
 
 // Save all objects in this file
