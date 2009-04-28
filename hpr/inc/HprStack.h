@@ -52,7 +52,7 @@ private:
    Int_t   fShowErrors;
    Int_t   fShowMarkers;
    Float_t fEndErrorSize;
-   Int_t   fErrorX;
+   Float_t   fErrorX;
    TString fErrorMode;
 
 public:
