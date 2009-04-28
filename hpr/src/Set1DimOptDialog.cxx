@@ -159,9 +159,12 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
        fDrawOpt += "Y+";
    gStyle->SetEndErrorSize (fEndErrorSize );
    gStyle->SetErrorX       (fErrorX       );
+	if ( fLiveGauss )
+	   fLiveStat1Dim = 1;
    TEnv env(".hprrc");
-   env.SetValue("Set1DimOptDialog.fLiveGauss"     , fLiveGauss);
-   env.SetValue("Set1DimOptDialog.fLiveBG"        , fLiveBG);
+   env.SetValue("Set1DimOptDialog.fLiveStat1Dim" , fLiveStat1Dim);
+   env.SetValue("Set1DimOptDialog.fLiveGauss"    , fLiveGauss);
+   env.SetValue("Set1DimOptDialog.fLiveBG"       , fLiveBG);
    env.SaveLevel(kEnvLocal);
 
    TIter next(canvas->GetListOfPrimitives());
@@ -320,6 +323,8 @@ void Set1DimOptDialog::RestoreDefaults()
 
    fLiveStat1Dim  = env.GetValue("Set1DimOptDialog.fLiveStat1Dim", 0);
    fLiveGauss     = env.GetValue("Set1DimOptDialog.fLiveGauss", 0);
+	if ( fLiveGauss )
+	   fLiveStat1Dim = 1;
    fLiveBG        = env.GetValue("Set1DimOptDialog.fLiveBG", 0);
    fDrawAxisAtTop = env.GetValue("Set1DimOptDialog.fDrawAxisAtTop", 0);
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
@@ -341,9 +346,9 @@ void Set1DimOptDialog::CloseDown(Int_t wid)
 void Set1DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
-//  cout << "CRButtonPressed(" << wid<< ", " <<bid;
-//   if (obj) cout  << ", " << canvas->GetName() << ")";
-//   cout << endl;
+  cout << "CRButtonPressed(" << wid<< ", " <<bid;
+   if (obj) cout  << ", " << canvas->GetName() << ")";
+   cout << endl;
    SetHistAttNow(canvas);
 }
 

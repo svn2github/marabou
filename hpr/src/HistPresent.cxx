@@ -939,7 +939,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       }
    }
    if (not_shown > 0) cout << "Another: " << not_shown << " hists are not shown" << endl;
-   if (fHistSelMask->Length() <=0) {
+//   if (fHistSelMask->Length() <=0) {
 //  windows
       if (lofW1.GetSize() > 0) {
          TIter next(&lofW1);
@@ -1075,7 +1075,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
          }
       }
-   }
+//   }
 //
    if (anything_to_delete > 0) {
    	if (maxkey > 1) {
@@ -3021,12 +3021,7 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
          hl.Add(hist);
       }
    }
-   TString opt;
-   if ( GeneralAttDialog::fStackedNostack )
-      opt = "nostack";
-   else if ( GeneralAttDialog::fStackedPads )
-      opt = "pads";
-   new HprStack(&hl, opt.Data());
+   new HprStack(&hl);
 }
 //_______________________________________________________________________
 

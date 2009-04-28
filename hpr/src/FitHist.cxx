@@ -716,6 +716,8 @@ void FitHist::handle_mouse()
                  if (nrows != 5) {delete fTofLabels; fTofLabels = 0;}
                  nrows = 5;
                }
+					gFitFunc->SetLineColor(2);
+					gFitFunc->SetLineWidth(3);
             } else {
                if (nrows != 4) {delete fTofLabels; fTofLabels = 0;}
                nrows = 4;

@@ -196,8 +196,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void ToggleLeafCut(const char* bp = 0);
    void UseHist(const char* bp =0);
    void ToggleUseHist(const char* bp = 0);
-   void DefineGraphCut(const char* bp =0);
-   void ToggleGraphCut(const char* bp =0);
+//   void DefineGraphCut(const char* bp =0);
+//   void ToggleGraphCut(const char* bp =0);
    void EditExpression(const char* vl =0, const char* bp =0);
    void ToggleExpression(const char* bp =0);
    void ShowFiles(const char* , const char* bp =0);               //

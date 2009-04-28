@@ -83,12 +83,12 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    TString empty;
    TString sel;
    TList * var_list = new TList();
-
+/*
    cmd = "mypres->DefineGraphCut()";
    nam = "Define graphical cut";
    sel = "mypres->ToggleGraphCut()";
    fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
-
+*/
    cmd = "mypres->SetShowTreeOptionsCint()_"; // dont add address of button
    nam = "Set Options";
 //   sel = "mypres->ToggleUseHist()";
@@ -110,6 +110,9 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    for (l=0;l<nleaves;l++) {
       TLeaf *leaf = (TLeaf*)leaves->UncheckedAt(l);
       TBranch *branch = leaf->GetBranch();
+//		cout << branch->GetName() <<  " BranchStatus() ";
+//		if (!tree->GetBranchStatus(branch->GetName())) cout << " not " ;
+// //		cout << " ok"<< endl;
       if (branch->IsA() == TBranchObject::Class()) {
 //
       } else {
@@ -148,11 +151,24 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
                }
             }
          }
-//
+
+//	   	cout << "Branchname: " << branch->GetName();
+//         TLeafObject * leafobj = (TLeafObject*)leaf;
+//	   	cout << " Leaf type/name : " << leafobj->GetTypeName() << " "
+//			     <<leafobj->GetName() << endl;
+/*
+
+		   static Int_t firsttime = 1;
+			TString ltype = leafobj->GetTypeName();
+			if (ltype.BeginsWith("vector")) {
+			   if (firsttime) {
+				   leaf->Dump();
+					firsttime = 0;
+			   }
+		   }
+*/
          if (len > 1) {
            for (Int_t ix = 0; ix < len; ix++) {
-
- //             sprintf(lname,"%s[%d]", branchname,ix);
               cmd = cmd_base + Form("%s[%d]",leaf->GetName(), ix) + "\")";
               sel = sel_base + Form("%s[%d]",leaf->GetName(), ix) + "\")";
               nam = Form("%s[%d]",leaf->GetName(), ix);
@@ -163,6 +179,13 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
             cmd = cmd_base + leaf->GetName() + "\")";
             sel = sel_base + leaf->GetName() + "\")";
             nam = leaf->GetName();
+				TString ltype = ((TLeafObject*)leaf)->GetTypeName();
+				if (ltype.BeginsWith("vector")) {
+               nam += "[]";
+		  		   if (ltype.BeginsWith("vector<vector")) {
+                  nam += "[]";
+               }
+            }
             var_list->Add(new TObjString(leaf->GetName()));
             fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
 
@@ -299,7 +322,7 @@ void HistPresent::ToggleLeafCut(const char* bp)
    }
 }
 //________________________________________________________________________________________
-
+/*
 void HistPresent::ToggleGraphCut(const char* bp)
 {
    if (bp) {
@@ -320,6 +343,7 @@ void HistPresent::ToggleGraphCut(const char* bp)
       }
    }
 }
+*/
 //________________________________________________________________________________________
 
 void HistPresent::EditExpression(const char* vl, const char* bp)
@@ -332,8 +356,10 @@ void HistPresent::EditExpression(const char* vl, const char* bp)
    if (bp) var_list = (TList*)strtoul(vl, 0, 16);
    if (var_list) AddMathExpressions(var_list);
 //   if (var_list)var_list->Print();
-   *fExpression=GetString("Edit expression",(const char *)*fExpression,
-                          &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
+//   *fExpression=GetString("Edit expression",(const char *)*fExpression,
+//                          &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
+   ok = GetStringExt("Edit expression", fExpression,
+                          300, GetMyCanvas(), hf, var_list);
    if (!ok) return;
    if (strlen(*fExpression) > 1) {
       cout << *fExpression<< endl;
@@ -353,8 +379,10 @@ void HistPresent::EditLeafCut(const char* vl, const char* bp)
    TList * var_list = 0;
    if (bp) var_list = (TList*)strtoul(vl, 0, 16);
    if (var_list) AddMathExpressions(var_list);
-   *fLeafCut=GetString("Edit formula cut",(const char *)*fLeafCut,
-                         &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
+//   *fLeafCut=GetString("Edit formula cut",(const char *)*fLeafCut,
+//                         &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
+   ok = GetStringExt("Edit expression", fLeafCut,
+                          300, GetMyCanvas(), hf, var_list);
    if (!ok) return;
     if (strlen(*fLeafCut) > 1) {
 
@@ -364,7 +392,7 @@ void HistPresent::EditLeafCut(const char* vl, const char* bp)
     }
 }
 //________________________________________________________________________________________
-
+/*
 void HistPresent::DefineGraphCut(const char* bp)
 {
    Bool_t ok;
@@ -375,7 +403,8 @@ void HistPresent::DefineGraphCut(const char* bp)
                          0,0,0,0,0, hf);
    if (!ok) return;
    if (strlen(*fGraphCut) > 1) {
-      TCutG* cc=(TCutG*)gROOT->FindObject(fGraphCut->Data());
+//      TCutG* cc=(TCutG*)gROOT->FindObject(fGraphCut->Data());
+      TCutG* cc=(TCutG*)fAllCuts->FindObject(fGraphCut->Data());
       if (!cc) {
          WarnBox("Cut not found in memory");
          return;
@@ -394,6 +423,7 @@ void HistPresent::DefineGraphCut(const char* bp)
 //  svalues->Delete();
 //  delete svalues;
 }
+*/
 //________________________________________________________________________________________
 
 void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tname,
@@ -414,11 +444,13 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    Double_t vmax[4] = {0, 0, 0, 0};
    static Int_t first_event = 0;
    static Int_t nof_events = 0;
-
+   Int_t indbr;
 //   cout << "leafname " << leafname << " " << strlen(leafname)
 //    << " nent " << fSelectLeaf->GetSize() << endl;
    if (strlen(leafname)>0) {
       leaf0=leafname;
+		indbr = leaf0.Index("<");
+		if (indbr > 0) leaf0.Resize(indbr);
       cmd=leaf0;
       nent = 1;
    } else {
@@ -435,23 +467,31 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          TObjString *objs;
          TIter next(fSelectLeaf);
          objs = (TObjString *)next();
-         cmd = objs->String();
-         leaf0 = cmd;
+         leaf0 = objs->String();
+		   indbr = leaf0.Index("<");
+		   if (indbr > 0) leaf0.Resize(indbr);
+         cmd = leaf0;
          if (nent > 1) {
             objs = (TObjString *)next();
             leaf1 = objs->String();
+		      indbr = leaf1.Index("<");
+		      if (indbr > 0) leaf1.Resize(indbr);
             cmd.Prepend(":");
             cmd.Prepend(leaf1.Data());
          }
          if (nent > 2) {
             objs = (TObjString *)next();
             leaf2 = objs->String();
+		      indbr = leaf2.Index("<");
+		      if (indbr > 0) leaf2.Resize(indbr);
             cmd.Prepend(":");
             cmd.Prepend(leaf2.Data());
          }
          if (nent > 3) {
             objs = (TObjString *)next();
             leaf3 = objs->String();
+		      indbr = leaf3.Index("<");
+		      if (indbr > 0) leaf3.Resize(indbr);
 // nota bene 4 dim is special
             cmd.Append(":");
             cmd.Append(leaf3.Data());
@@ -824,6 +864,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       cout << "Execute: " << cmd << " Cut: " << cut << " 1.Ev, NofEv: "
                           << first_event << " " <<nof_events << endl;
       tree->Draw((const char*)cmd, cut.Data(),option.Data(), nof_events, first_event);
+/*		
    } else if (fApplyGraphCut && nent == 2) {
       tree->Draw((const char*)cmd, fGraphCut->Data(),option.Data(),
                   nof_events, first_event);
@@ -832,6 +873,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       cout << "Apply graphical cut: " <<  fGraphCut->Data() <<
       " with X :" << fCutVarX->Data() <<
       " and Y :" << fCutVarX->Data() <<  endl;
+*/
    } else {
       cout << "Execute: " << cmd << " DrawOpt: "<< option  << " 1.Ev, NofEv: "
                           << first_event << " " <<nof_events << endl;
@@ -885,6 +927,7 @@ void HistPresent::MkClass( const char* fname, const char* dir, const char* tname
    clname = GetString("Name of generated class", clname.Data(), &ok);
    if (!ok) return;
    tree->MakeClass(clname.Data());
+   cout << clname.Data()<< ".h and .C have been generated" << endl;
    gDirectory = gROOT;
 }
 //_______________________________________________________________________

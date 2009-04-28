@@ -56,6 +56,7 @@ void HistPresent::RestoreOptions()
    fMarkStyle          = env.GetValue("HistPresent.fMarkStyle", 20);
    fMarkSize           = env.GetValue("HistPresent.fMarkSize", 1);
    fMarkColor          = env.GetValue("HistPresent.fMarkColor", 1);
+   *fHistSelMask       = env.GetValue("HistPresent.fHistSelMask", "");
 
    fRealStack         = env.GetValue("HistPresent.fRealStack", 1);
    fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
@@ -130,6 +131,7 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.fMarkStyle",fMarkStyle);
    env.SetValue("HistPresent.fMarkSize", fMarkSize );
    env.SetValue("HistPresent.fMarkColor",fMarkColor);
+   env.SetValue("HistPresent.fHistSelMask",fHistSelMask->Data());
    env.SetValue("HistPresent.NtupleVersioning", fNtupleVersioning);
    env.SetValue("HistPresent.GraphFile", fGraphFile.Data());
    env.SetValue("HistPresent.HostToConnect", fHostToConnect->Data());
@@ -160,6 +162,7 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.EditPoXRange", fEditPoXRange);
 
    env.SaveLevel(kEnvLocal);
+   GeneralAttDialog::SaveDefaults();
    cout << "env.SaveLevel(kEnvLocal) " << endl;
 }
 

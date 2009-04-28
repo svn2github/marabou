@@ -26,7 +26,6 @@ private:
    Int_t fNDrawn;
    Int_t fDim;
    THStack *fStack;
-   Option_t *fOpt;
    TGMrbValuesAndText *fDialog;
    TCanvas    *fCanvas;
    TList       fHistList;
@@ -57,7 +56,7 @@ private:
    TString fErrorMode;
 
 public:
-   HprStack(TList * hlist, Option_t * opt = 0);
+   HprStack(TList * hlist);
    HprStack(){};
    ~HprStack();
    void   BuildCanvas();
@@ -70,7 +69,7 @@ public:
    void   RestoreDefaults();
    void   CloseDown(Int_t wid);
    void   CRButtonPressed(Int_t wid = 0, Int_t bid = 0, TObject* obj = 0);
-
+   void   ClearSubPads();
 ClassDef(HprStack,0)
 };
 #endif

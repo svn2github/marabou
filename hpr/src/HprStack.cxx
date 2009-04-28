@@ -11,6 +11,7 @@
 #include "SetColor.h"
 #include "TGMrbValuesAndText.h"
 #include "WindowSizeDialog.h"
+#include "GeneralAttDialog.h"
 #include "HprStack.h"
 
 ClassImp (HprStack)
@@ -26,8 +27,8 @@ enum EGoHCommandIds {
 };
 //________________________________________________________________________
 
-HprStack::HprStack(TList * hlist, Option_t *opt)
-            : fHList(hlist), fOpt(opt)
+HprStack::HprStack(TList * hlist)
+            : fHList(hlist)
 {
 //   cout << " ctor HprStack::" << this << endl;
    fCanvas = NULL;
@@ -118,12 +119,16 @@ void HprStack::BuildCanvas()
       if ( i < fNhists - 1 ) stitle += "_";
    }
 //   cout << " fOpt: " << fOpt<< endl;
+   TString opt;
+   if ( GeneralAttDialog::fStackedNostack )
+      opt = "nostack";
+   else if ( GeneralAttDialog::fStackedPads )
+      opt = "pads";
    if ( fDim == 2) {
-      TString opt("lego1");
-      opt += fOpt;
+		opt += "lego1";
       fStack->Draw(opt);
    } else {
-      fStack->Draw(fOpt);
+      fStack->Draw(opt);
    }
    SetAttributes();
 /*
@@ -232,6 +237,12 @@ A value of 0.5 draws a line X +- 0.5*BinWidth\n\
 	static void *fValp[50];
 	Int_t ind = 0;
 //	static Int_t dummy = 0;
+   fRow_lab->Add(new TObjString("RadioButton_Really stack"));
+   fValp[ind++] = &GeneralAttDialog::fStackedReally;
+   fRow_lab->Add(new TObjString("RadioButton+Superimpose"));
+   fValp[ind++] = &GeneralAttDialog::fStackedNostack;
+   fRow_lab->Add(new TObjString("RadioButton+One pad for each"));
+   fValp[ind++] = &GeneralAttDialog::fStackedPads;
    fRow_lab->Add(new TObjString("PlainIntVal_Window X Width"));
    fValp[ind++] = &fWindowXWidth;
    fRow_lab->Add(new TObjString("PlainIntVal+Window Y Width"));
@@ -374,7 +385,7 @@ void HprStack::SaveDefaults()
    env.SetValue("Set1DimOptDialog.fErrorMode",     fErrorMode);
 //   env.SetValue("HprStack.fShowErrors",  fShowErrors );
    env.SetValue("HprStack.fShowMarkers", fShowMarkers );
-
+   
    TString lab;
    for ( Int_t i = 0; i < fNhists; i++ ) {
       lab = "HprStack.fFill_1Dim["; lab+=i; lab+="]";
@@ -398,7 +409,7 @@ void HprStack::SaveDefaults()
       lab = "HprStack.fMarkerSize["; lab+=i; lab+="]";
       env.SetValue(lab,fMarkerSize[i]);
   }
-
+  GeneralAttDialog::SaveDefaults();
    env.SaveLevel(kEnvLocal);
 }
 //_______________________________________________________________________
@@ -434,8 +445,15 @@ void HprStack::SetAttributes()
    TObjArray * stack = fStack->GetStack();
    TList * orighist = fStack->GetHists();
 	TString opt;
-
-	if (fShowContour) opt="HIST";
+   if ( GeneralAttDialog::fStackedNostack ) {	
+      opt = "nostack";
+//	   ClearSubPads();
+   } else if ( GeneralAttDialog::fStackedPads ) {
+      opt = "pads";
+	} else {
+//	   ClearSubPads();
+	}
+	if (fShowContour) opt += "HIST";
    if (fErrorMode != "none") {
       opt += fErrorMode;
    }
@@ -481,12 +499,34 @@ void HprStack::SetAttributes()
 //   cout << "DrawOpt: "<< opt << endl;
    if ( fDim == 2 ) {
      opt = "lego1";
-     opt += fOpt;
      fStack->SetDrawOption(opt);
    } else {
-      opt += fOpt;
       fStack->SetDrawOption(opt);
    }
-   fCanvas->Modified();
+   if ( !GeneralAttDialog::fStackedPads ) 
+	   ClearSubPads();
+	fCanvas->Modified();
    fCanvas->Update();
+}
+//_______________________________________________________
+
+void HprStack::ClearSubPads()
+{
+   fCanvas->cd();
+	TList * pl = fCanvas->GetListOfPrimitives();
+	TList temp;
+	TIter nextpad(pl);
+	TObject * p;
+	while ( (p = nextpad()) ) {
+		if (p->InheritsFrom("TPad")) {
+			temp.Add(p);
+		}
+	}
+   fCanvas->cd();
+	cout << "ClearSubPads " << temp.GetSize()<< endl;
+   if (temp.GetSize() > 0) {
+	   temp.Delete();
+   }
+	fCanvas->Modified();
+	fCanvas->Update();
 }
