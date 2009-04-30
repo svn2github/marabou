@@ -16,7 +16,7 @@ ARFLAG = -rv
 
 LIB_TARGETS = ../../../lib/$(LYNX_VERSION)/libSis_3300.a
 
-libSis_3300.OBJS = sis_3300.o sis_3300_readout.o block.o
+libSis_3300.OBJS = sis_3300_fct.o sis_3300_readout.o block.o
 
 # ------------ Suffix Rules -------------------------------------------
 
@@ -47,4 +47,4 @@ depend:
 
 # ------------ Dependencies --------------------------------------------
 
-sis_3300.o: sis_3300.c ../inc/sis_3300.h ../inc/sis_3300_protos.h
+sis_3300_fct.o: sis_3300_fct.c ../inc/sis_3300.h ../inc/sis_3300_protos.h

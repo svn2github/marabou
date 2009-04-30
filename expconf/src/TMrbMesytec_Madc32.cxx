@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.12 2009-04-23 13:39:27 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.13 2009-04-30 10:46:20 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -172,7 +172,7 @@ const SMrbNamedXShort kMrbTsSource[] =
 
 TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAddr) :
 									TMrbVMEModule(ModuleName, "Mesytec_Madc32", BaseAddr,
-																TMrbMesytec_Madc32::kAddrMod,
+																0,
 																TMrbMesytec_Madc32::kSegSize,
 																1, 32, 1 << 13) {
 //__________________________________________________________________[C++ CTOR]
@@ -269,11 +269,6 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 
 	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegModuleId, "ModuleId");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, 0xFF, 0, 0xFF);
-	kp->AssignObject(rp);
-	fLofRegisters.AddNamedX(kp);
-
-	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegFifoLength, "FifoLength");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	0,	0,	0x1 << 14);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
@@ -571,7 +566,6 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	Int_t mid = madcEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
 	if (mid == 0xFF) mid = this->GetSerial();
 	this->SetModuleId(mid);
-	this->SetFifoLength(madcEnv->Get(moduleName.Data(), "FifoLength", 0));
 	this->SetDataWidth(madcEnv->Get(moduleName.Data(), "DataWidth", kDataLngFmt32));
 	this->SetMultiEvent(madcEnv->Get(moduleName.Data(), "MultiEvent", kMultiEvtNo));
 	this->SetXferData(madcEnv->Get(moduleName.Data(), "XferData", 0));
@@ -677,7 +671,6 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 
 						tmpl.InitializeCode("%FifoHandling%");
 						tmpl.Substitute("$moduleName", moduleUC.Data());
-						tmpl.Substitute("$fifoLength", this->GetFifoLength());
 						tmpl.Substitute("$dataWidth", this->GetDataWidth());
 						tmpl.Substitute("$multiEvent", this->GetMultiEvent());
 						tmpl.Substitute("$markingType", this->GetMarkingType());
@@ -944,7 +937,6 @@ void TMrbMesytec_Madc32::PrintSettings(ostream & Out) {
 	Out << " Address source      : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAddrSource) << endl;
 	Out << "         register    : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegAddrReg, -1, 16) << endl;
 	Out << " Module ID           : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegModuleId) << endl;
-	Out << " Fifo buffer length  : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegFifoLength) << endl;
 	Out << " Data width          : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegDataWidth) << endl;
 	Out << " Single/multi event  : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegMultiEvent) << endl;
 	Out << " Marking type        : "	<< this->FormatValue(value, TMrbMesytec_Madc32::kRegMarkingType) << endl;

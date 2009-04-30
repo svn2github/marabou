@@ -7,7 +7,7 @@
 // Purpose:        Define a MBS setup: Common defs
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetupCommon.h,v 1.15 2006-11-03 07:27:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetupCommon.h,v 1.16 2009-04-30 10:46:41 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -103,6 +103,7 @@ enum EMbsSetupTags			{
 								kStartEvtBuilder,
 								kStartRdoTask,
 								kStartReadout,
+								kIrqOnOff,
 								kStartEsone,
 								kStopEvtBuilder,
 								kStopReadout,
@@ -195,6 +196,7 @@ const SMrbNamedXShort kMbsSetupTags[] =			// list of setup tag words
 								{kStartEvtBuilder,			"START_EVTBUILDER"  		},
 								{kStartRdoTask, 			"START_RDO_TASK"			},
 								{kStartReadout, 			"START_READOUT"				},
+								{kIrqOnOff, 	 			"IRQ_ONOFF" 				},
 								{kStartEsone,	 			"START_ESONE"				},
 								{kStopEvtBuilder,			"STOP_EVTBUILDER"			},
 								{kStopReadout,				"STOP_READOUT"				},

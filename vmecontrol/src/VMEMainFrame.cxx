@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEMainFrame.cxx,v 1.6 2009-01-08 12:16:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: VMEMainFrame.cxx,v 1.7 2009-04-30 10:47:13 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -159,7 +159,7 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 	HEAP(menuBarLayout);
 	AddFrame(fMenuBar, menuBarLayout);
 
-	fMenuBar->ChangeBackground(gVMEControlData->fColorDarkBlue);
+	fMenuBar->ChangeBackground(gVMEControlData->fColorBlue);
 
 //	create main tab object
 	fTabFrame = new TGTab(this, gVMEControlData->GetFrameWidth(), gVMEControlData->GetFrameHeight());

@@ -16,7 +16,7 @@ ARFLAG = -rv
 
 LIB_TARGETS = ../../../lib/$(LYNX_VERSION)/libMadc32.a
 
-libSis_3300.OBJS = madc32.o
+libMadc32.OBJS = madc32fct.o
 
 # ------------ Suffix Rules -------------------------------------------
 
@@ -30,14 +30,17 @@ libSis_3300.OBJS = madc32.o
 
 # ------------ Targets -------------------------------------------------
 
-all: $(LIB_TARGETS)$(CPPFLAGS) 
+all: $(LIB_TARGETS) madc32
 
-$(LIB_TARGETS): $(libSis_3300.OBJS)
+$(LIB_TARGETS): $(libMadc32.OBJS)
 	$(AR) $(ARFLAGS) $@ $^
 	ranlib $@
 
-lib: $(LIB_TARGETS)
-
+madc32:	madc32.o $(LIB_TARGETS)
+		$(CC) -o madc32 madc32.o \
+			-L ../../../lib/$(LYNX_VERSION) \
+			-L /lib/ces \
+			-lMadc32 -lUti -lvme -lnetinet
 
 clean:
 	rm -f *.o core core.* $(LIB_TARGETS)
@@ -47,4 +50,7 @@ depend:
 
 # ------------ Dependencies --------------------------------------------
 
-madc32.o:			madc32.c ../inc/madc32.h ../inc/madc32_protos.h
+madc32fct.o: madc32fct.c ../../../readout/inc/gd_readout.h \
+			../inc/madc32.h ../../../include/block.h ../inc/madc32_protos.h \
+			../../../readout/inc/root_env.h /mbs/v22/inc/err_mask_def.h \
+			/mbs/v22/inc/typedefs.h /mbs/v22/inc/errnum_def.h

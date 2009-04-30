@@ -1,14 +1,17 @@
 #___________________________________________________________________[MBSSETUP]
 #/////////////////////////////////////////////////////////////////////////////
-# Revision:        $Id: startup.scom,v 1.4 2006-11-03 07:30:53 Rudolf.Lutter Exp $
-# Date:            $Date: 2006-11-03 07:30:53 $
+# Revision:        $Id: startup.scom,v 1.5 2009-04-30 10:46:20 Rudolf.Lutter Exp $
+# Date:            $Date: 2009-04-30 10:46:20 $
 #/////////////////////////////////////////////////////////////////////////////
 
 start task m_util
 load setup ./setup.usf
 clear daq counter 
 set trig_mod
-enable irq
+%%BeginOfCode%%
+$irqOnOff
+%%EndOfCode%%
+%%IRQ_ONOFF%%
 start task m_read_meb ./m_read_meb
 start task m_collector
 start task m_transport

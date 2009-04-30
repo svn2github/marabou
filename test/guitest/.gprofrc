@@ -1,6 +1,6 @@
 LofGraphProfiles.Members:	standard
 LofGraphProfiles.Default:	standard
-Standard.Frame.Options: RaisedFrame
-Standard.Label.Font: -adobe-helvetica-bold-r-*-*-16-*-*-*-*-*-iso8859-1
+Standard.Label.Font: -adobe-helvetica-medium-r-*-*-14-*-*-*-*-*-iso8859-1
 Standard.Button.Background: lightblue
-Standard.TextButton.Background: white
+Standard.TextButton.Background: lightgreen
+Standard.ListBoxEntry.Background: white

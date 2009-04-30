@@ -272,7 +272,7 @@ int main(int argc, char *argv[]) {
 	volatile char * caen;
 
 	if (argc <= 1) {
-		fprintf(stderr, "caen: Read status of CAEN modules\nUsage: sis <addr> [<mod=0x39>]\n");
+		fprintf(stderr, "caen: Read status of CAEN modules\nUsage: caen <addr> [<mod=0x39>]\n");
 		exit(1);
 	}
 	physAddr = strtol(argv[1], NULL, 16);

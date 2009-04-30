@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMEModule.cxx,v 1.10 2009-04-22 12:17:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbVMEModule.cxx,v 1.11 2009-04-30 10:46:20 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -18,12 +18,16 @@ namespace std {} using namespace std;
 #include <iomanip>
 #include <fstream>
 
+#include "TEnv.h"
+
 #include "TMrbTemplate.h"
 #include "TMrbConfig.h"
+#include "TMrbLogger.h"
 #include "TMrbVMEModule.h"
 #include "TMrbVMEChannel.h"
 
 extern TMrbConfig * gMrbConfig;
+extern TMrbLogger * gMrbLog;
 
 ClassImp(TMrbVMEModule)
 
@@ -49,10 +53,28 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+	
+	Bool_t verboseMode = gEnv->GetValue("TMrbConfig.VerboseMode", kFALSE);
+
 	if (!this->IsZombie()) {
 		fModuleType.Set(gMrbConfig->GetLofModuleTypes()->FindByIndex(TMrbConfig::kModuleVME)); 	// is vme
 		fBaseAddr = BaseAddr;
 		fAddrModifier = AddrMod;
+		TString am;
+		if (fAddrModifier == 0) {
+			if (BaseAddr & 0xFF000000) {
+				fAddrModifier = 0x9;
+				am = "A32";
+			} else {
+				fAddrModifier = 0x39;
+				am = "A24";
+			}
+			if (verboseMode) {
+				gMrbLog->Out() << ModuleName << ": Using address mode " << am << " at addr 0x" << setbase(16) << BaseAddr << setbase(10) << endl;
+				gMrbLog->Flush(this->ClassName());
+			}
+		}
 		fSegmentSize = SegSize;
 		fSubDevice = SubDevice;
 		fCrate = 0;

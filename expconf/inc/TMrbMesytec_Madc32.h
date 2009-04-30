@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.8 2009-04-22 14:25:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.9 2009-04-30 10:46:20 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 	public:
 		enum				{	kSegSize		=	0x10000L	};
-		enum				{	kAddrMod		=	0x39		};
+		enum				{	kAddrMod		=	0x09		};
 
 		enum				{	kNofChannels	=	32	};
 
@@ -49,7 +49,6 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		enum EMrbRegisters	{	kRegAddrSource,
 								kRegAddrReg,
 								kRegModuleId,
-								kRegFifoLength,
 								kRegDataWidth,
 								kRegMultiEvent,
 								kRegXferData,
@@ -191,9 +190,6 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 		inline Bool_t SetModuleId(Int_t ModuleId) { return(this->Set(TMrbMesytec_Madc32::kRegModuleId, ModuleId)); };
 		inline Int_t GetModuleId() { return(this->Get(TMrbMesytec_Madc32::kRegModuleId)); };
-
-		inline Bool_t SetFifoLength(Int_t Length) { return(this->Set(TMrbMesytec_Madc32::kRegFifoLength, Length)); };
-		inline Int_t GetFifoLength() { return(this->Get(TMrbMesytec_Madc32::kRegFifoLength)); };
 
 		inline Bool_t SetXferData(Int_t Length) { return(this->Set(TMrbMesytec_Madc32::kRegXferData, Length)); };
 		inline Int_t GetXferData() { return(this->Get(TMrbMesytec_Madc32::kRegXferData)); };

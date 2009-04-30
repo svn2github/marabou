@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.65 2008-11-28 12:00:28 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-11-28 12:00:28 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.66 2009-04-30 10:46:41 Rudolf.Lutter Exp $       
+// Date:           $Date: 2009-04-30 10:46:41 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -1213,6 +1213,19 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 					stpTmpl.WriteCode(stp);
 					break;
 
+				case kIrqOnOff:
+					{
+						stpTmpl.InitializeCode();
+						TMrbNamedX * k = this->ReadoutProc(ProcID)->TriggerModule()->GetTriggerMode();
+						if (k->GetIndex() == kTriggerModeLocalInterrupt) {
+							stpTmpl.Substitute("$irqOnOff", "enable irq");
+						} else {
+							stpTmpl.Substitute("$irqOnOff", "disable irq");
+						}
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
 				case kStartEsone:
 					if (cType->GetIndex() != kControllerNoCamac) {
 						stpTmpl.InitializeCode();
@@ -1853,29 +1866,14 @@ Bool_t TMbsSetup::CheckSetup() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * resType;
-	Int_t nofErrors;
-
-	Int_t sevtSize;
-
 	Int_t n;
-	Int_t nofReadouts;
-
-	TString evtBuilder;
-	TString readoutProc;
-
-	TMrbNamedX * setupMode;
-	EMbsSetupMode smode;
 
 	TString fileList;
 	Long_t dmy;
 	Long64_t dmy64;
 	Long_t flags;
 
-	Int_t cvt;
-	Int_t fct;
-
-	nofErrors = 0;
+	Int_t nofErrors = 0;
 
 	TString remoteHome = this->RemoteHomeDir();	// get home dir via remote login
 	if (remoteHome.IsNull()) {
@@ -1937,6 +1935,7 @@ Bool_t TMbsSetup::CheckSetup() {
 // TMbsSetup.EvtBuilder.VSBAddr:
 
 // TMbsSetup.NofReadouts:
+	Int_t nofReadouts;
 	if ((nofReadouts = this->GetNofReadouts()) == 0) {
 		gMrbLog->Err() << fResourceName << " is not set ..." << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckSetup");
@@ -1960,7 +1959,7 @@ Bool_t TMbsSetup::CheckSetup() {
 // TMbsSetup.ReadoutNNN.Crate:
 
 // TMbsSetup.ReadoutNNN.TriggerModule.Type:
-			resType = this->ReadoutProc(n)->TriggerModule()->GetType();
+			TMrbNamedX * resType = this->ReadoutProc(n)->TriggerModule()->GetType();
 			if (resType == NULL) {
 				gMrbLog->Err() << fResourceName << " is not set" << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
@@ -1968,15 +1967,15 @@ Bool_t TMbsSetup::CheckSetup() {
 			} else if (!this->ReadoutProc(n)->TriggerModule()->SetType((EMbsTriggerModuleType) resType->GetIndex())) nofErrors++;
 
 // TMbsSetup.ReadoutNNN.TriggerModule.Mode:
-			resType = this->ReadoutProc(n)->TriggerModule()->GetTriggerMode();
-			if (resType == NULL) {
+			TMrbNamedX * resMode = this->ReadoutProc(n)->TriggerModule()->GetTriggerMode();
+			if (resMode == NULL) {
 				gMrbLog->Err() << fResourceName << " is not set" << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
 				nofErrors++;
-			} else if (!this->ReadoutProc(n)->TriggerModule()->SetTriggerMode((EMbsTriggerMode) resType->GetIndex())) nofErrors++;
+			} else if (!this->ReadoutProc(n)->TriggerModule()->SetTriggerMode((EMbsTriggerMode) resMode->GetIndex())) nofErrors++;
 
 // TMbsSetup.ReadoutNNN.TriggerModule.ConvTime:
-			cvt = this->ReadoutProc(n)->TriggerModule()->GetConversionTime();
+			Int_t cvt = this->ReadoutProc(n)->TriggerModule()->GetConversionTime();
 			if (cvt == 0) {
 				gMrbLog->Err() << fResourceName << " is not set" << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
@@ -1984,7 +1983,7 @@ Bool_t TMbsSetup::CheckSetup() {
 			} else if (!this->ReadoutProc(n)->TriggerModule()->SetConversionTime(cvt)) nofErrors++;
 
 // TMbsSetup.ReadoutNNN.TriggerModule.FastClearTime:
-			fct = this->ReadoutProc(n)->TriggerModule()->GetFastClearTime();
+			Int_t fct = this->ReadoutProc(n)->TriggerModule()->GetFastClearTime();
 			if (fct == 0) {
 				gMrbLog->Err() << fResourceName << " is not set" << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
@@ -2019,7 +2018,7 @@ Bool_t TMbsSetup::CheckSetup() {
 // TMbsSetup.ReadoutNNN.PipeBase:
 
 // TMbsSetup.ReadoutNNN.SevtSize:
-			sevtSize = this->ReadoutProc(n)->GetSevtSize();
+			Int_t sevtSize = this->ReadoutProc(n)->GetSevtSize();
 			if (sevtSize == 0) {
 				gMrbLog->Err() << fResourceName << " is not set" << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
@@ -2029,20 +2028,20 @@ Bool_t TMbsSetup::CheckSetup() {
 	}
 
 	if (nofErrors == 0) {
-		evtBuilder = this->EvtBuilder()->GetProcName();
-		readoutProc = this->ReadoutProc(0)->GetProcName();
+		TString evtBuilder = this->EvtBuilder()->GetProcName();
+		TString readoutProc = this->ReadoutProc(0)->GetProcName();
 		if (nofReadouts == 1 && evtBuilder.CompareTo(readoutProc.Data()) == 0) {
 			this->SetMode(kModeSingleProc);
 		} else {
 			this->SetMode(kModeMultiProc);
 		}
-		setupMode = this->GetMode();
+		TMrbNamedX * setupMode = this->GetMode();
 		if (setupMode != NULL) {
 			cout	<< this->ClassName() << "::CheckSetup(): Setup mode is "
 					<< setupMode->GetName() << "(" << setupMode->GetIndex() << ")"
 					<< endl;
 		}
-		smode = (EMbsSetupMode) setupMode->GetIndex();
+		EMbsSetupMode smode = (EMbsSetupMode) setupMode->GetIndex();
 
 // TMbsSetup.ReadoutNNN.Path:
 		if (smode == kModeMultiProc) {

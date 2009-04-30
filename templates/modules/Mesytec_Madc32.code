@@ -26,11 +26,11 @@
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					s_$moduleName = madc32_alloc($baseAddrL, $moduleName, "$moduleName", $moduleSerial); /* allocate data struct */
 					madc32_moduleInfo(s_$moduleName);						/* read module info */
-					madc32_fillStruct(s_$moduleName, "$settingsFile");		/* fill sis struct from environment data */
-					madc32_loadFromDb(s_$moduleName); 					/* load module regs from database */
-					madc32_dumpRegisters(s_$moduleName, "$dumpFile"); 	/* dump registers to file */
 					madc32_reset(s_$moduleName);	 						/* reset module */
-					madc32_resetReadout(s_$moduleName);	 				/* reset readout regs */
+					madc32_fillStruct(s_$moduleName, "$settingsFile");		/* fill struct from environment data */
+					madc32_loadFromDb(s_$moduleName); 						/* load module regs from database */
+					madc32_dumpRegisters(s_$moduleName, "$dumpFile"); 		/* dump registers to file */
+					madc32_resetReadout(s_$moduleName);	 					/* reset readout regs */
 
 %%EndOfCode%%
 %%INIT_MODULE%%

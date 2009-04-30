@@ -16,6 +16,9 @@ MADC32.Firmware: 						$moduleFirmware
 
 MADC32.VerboseMode:						FALSE
 MADC32.DumpRegisters:					FALSE
+MADC32.UpdateSettings:					FALSE
+MADC32.UpdateInterval:					1000
+
 %%End(Preamble)%%
 
 %%Begin(AddressRegisters)%%
@@ -41,9 +44,6 @@ MADC32.$moduleName.ModuleId: 			$moduleId
 # FIFO handling
 #-----------------------------------------------------------------------------
 
-# buffer/FIFO length (words of length "DataLengthFormat")
-MADC32.$moduleName.FifoLength:			$bufferLength
-
 # data length format    0  -->  8 bit
 #                       1  -->  16 bit
 #                       2  -->  32 bit (default)
@@ -56,7 +56,7 @@ MADC32.$moduleName.DataWidth:			$dataWidth
 MADC32.$moduleName.MultiEvent:			$multiEvent
 
 # max xfer data (if multievent is set to "3", default = 0)
-MADC32.$moduleName.XferData:			xferData
+MADC32.$moduleName.XferData:			$xferData
 
 # marking type          0  -->  event counter (default)
 #                       1  -->  time stamp
@@ -116,7 +116,7 @@ MADC32.$moduleName.HoldWidth.1:			$holdWidth1
 #                       1  -->  use GG0
 #                       2  -->  use GG1
 #                       3  -->  use both
-MADC32.$moduleName.UseGateGenerator:	$useGateGenerator
+MADC32.$moduleName.UseGG:				$useGateGenerator
 %%End(GateGenerator)%%
 
 %%Begin(InputOutput)%%

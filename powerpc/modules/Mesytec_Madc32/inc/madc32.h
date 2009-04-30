@@ -20,8 +20,8 @@
 //! \details		Contains definitions to operate a Mesytec Madc32
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-04-24 10:18:04 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-04-30 10:42:57 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*____________________________________________________________________________
@@ -138,7 +138,7 @@
 #define MADC32_ADC_RESOLUTION_8K		3
 #define MADC32_ADC_RESOLUTION_8K_HIRES	4
 #define MADC32_ADC_RESOLUTION_DEFAULT	MADC32_ADC_RESOLUTION_4K_HIRES
-#define MADC32_ADC_RESOLUTION_MASK		0x3
+#define MADC32_ADC_RESOLUTION_MASK		0x7
 
 #define MADC32_ADC_OVERWRITE_DEFAULT	5
 
@@ -240,32 +240,32 @@ struct s_madc32 {
 	int updCountDown;
 
 	uint16_t threshold[NOF_CHANNELS];
-	uint8_t addrSource;
+	uint16_t addrSource;
 	uint16_t addrReg;
-	uint8_t moduleId;
+	uint16_t moduleId;
 	uint16_t fifoLength;
-	uint8_t dataWidth;
+	uint16_t dataWidth;
 	uint16_t xferData;
-	uint8_t multiEvent;
-	uint8_t markingType;
-	uint8_t bankOperation;
-	uint8_t adcResolution;
-	uint8_t outputFormat;
-	uint8_t adcOverride;
+	uint16_t multiEvent;
+	uint16_t markingType;
+	uint16_t bankOperation;
+	uint16_t adcResolution;
+	uint16_t outputFormat;
+	uint16_t adcOverride;
 	bool_t slidingScaleOff;
 	bool_t skipOutOfRange;
-	uint8_t ggHoldDelay[2];
-	uint8_t ggHoldWidth[2];
-	uint8_t useGG;
-	uint8_t inputRange;
-	uint8_t eclTerm;
-	uint8_t eclG1OrOsc;
-	uint8_t eclFclOrRts;
-	uint8_t nimG1OrOsc;
-	uint8_t nimFclOrRts;
-	uint8_t nimBusy;
-	uint8_t testPulserStatus;
-	uint8_t ctraTsSource;
+	uint16_t ggHoldDelay[2];
+	uint16_t ggHoldWidth[2];
+	uint16_t useGG;
+	uint16_t inputRange;
+	uint16_t eclTerm;
+	uint16_t eclG1OrOsc;
+	uint16_t eclFclOrRts;
+	uint16_t nimG1OrOsc;
+	uint16_t nimFclOrRts;
+	uint16_t nimBusy;
+	uint16_t testPulserStatus;
+	uint16_t ctraTsSource;
 	uint16_t ctraTsDivisor;
 
 	struct s_bma * bma; 					/* block mode access */
