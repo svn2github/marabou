@@ -1,12 +1,12 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// ame:            DGFEditChanCSRAPanel
+// Name:           DGFEditChanCSRAPanel
 // Purpose:        A GUI to control the XIA DGF-4C
 // Description:    Edit Channel CSRA
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditChanCSRAPanel.cxx,v 1.11 2008-12-29 13:48:25 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFEditChanCSRAPanel.cxx,v 1.12 2009-05-04 17:41:28 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       

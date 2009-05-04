@@ -1,6 +1,4 @@
 # Module.mk for dgfcontrol module
-# Copyright (c) 2000 Rene Brun and Fons Rademakers
-#
 # Author: Otto Schaile, 29/2/2000
 
 MODDIR       := dgfcontrol
@@ -45,24 +43,15 @@ ODGFCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbC2Lynx -lTMrbEsone -lEsoneClient \
 
 include/%.h:    $(DGFCDIRI)/%.h
 		cp $< $@
-
-$(DGFCEXE):     $(DGFCSO)$(DGFCO) $(DGFCMAINO) $(MRBLIBS)
-#		@echo "sources: $(DGFCS)"
-		@echo "ODGFCLIBS: $(ODGFCLIBS)"
-		@echo "$(DGFCEXE) linking exe ----------------------------------"
+$(DGFCEXE):     $(DGFCO) $(DGFCMAINO) $(MRBLIBS)
 		$(LD) -g $(LDFLAGS) $(DGFCMAINO) $(DGFCO) $(DGFCDO) $(ODGFCLIBS) $(ROOTGLIBS) -lSpectrum \
             -o $(DGFCEXE)
 
 $(DGFCLIB):     $(DGFCDO) $(DGFCO)
-		@echo "objs in libDGFControl.so: $(DGFCO)"
-#		@echo "objs: $(DGFCO)"
-		@echo "$(DGFCEXE) make shared lib ------------------------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libDGFControl.$(SOEXT) $@ "$(DGFCO) $(DGFCDO)"
 
 $(DGFCDS):     $(DGFCDH) $(DGFCL)
-		@echo "includes: $(DGFCDH)"
-		@echo "Generating dictionary $@..."
 		$(ROOTCINT) -f $@ -c -p -Iinclude $(DGFCDH) $(DGFCL)
 
 $(DGFCDO):     $(DGFCDS)
