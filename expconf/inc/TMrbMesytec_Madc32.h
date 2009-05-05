@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.9 2009-04-30 10:46:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.10 2009-05-05 07:36:59 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -80,10 +80,10 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 											kAddressRegister
 										};
 
-		enum EMrbDataLengthFormat		{	kDataLngFmt8		=	0,
-											kDataLngFmt16,
-											kDataLngFmt32,
-											kDataLngFmt64
+		enum EMrbDataWidth				{	kDataWidth8		=	0,
+											kDataWidth16,
+											kDataWidth32,
+											kDataWidth64
 										};
 
 		enum EMrbMultiEvent				{	kMultiEvtNo			=	0,
@@ -91,8 +91,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 											kMultiEvt1By1
 										};
 
-		enum EMrbMarkingType			{	kMarkingTypeEvent	=	0,
-											kMarkingTypeTs
+		enum EMrbMarkingType			{	kMarkingTypeEvent	=	0x0,
+											kMarkingTypeTs		=	0x1,
+											kMarkingTypeXts 	=	0x3
 										};
 
 		enum EMrbBankOperation			{	kBankOprConnected	=	0,

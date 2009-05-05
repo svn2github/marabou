@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.13 2009-04-30 10:46:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.14 2009-05-05 07:36:59 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -42,12 +42,12 @@ const SMrbNamedXShort kMrbAddressSource[] =
 			{	0,			 								NULL,		}
 		};
 
-const SMrbNamedXShort kMrbDataLengthFormat[] =
+const SMrbNamedXShort kMrbDataWidth[] =
 		{
-			{	TMrbMesytec_Madc32::kDataLngFmt8,			"8bit"		},
-			{	TMrbMesytec_Madc32::kDataLngFmt16,			"16bit"		},
-			{	TMrbMesytec_Madc32::kDataLngFmt32,			"32bit"		},
-			{	TMrbMesytec_Madc32::kDataLngFmt64,			"64bit"		},
+			{	TMrbMesytec_Madc32::kDataWidth8,			"8bit"		},
+			{	TMrbMesytec_Madc32::kDataWidth16,			"16bit"		},
+			{	TMrbMesytec_Madc32::kDataWidth32,			"32bit"		},
+			{	TMrbMesytec_Madc32::kDataWidth64,			"64bit"		},
 			{	0,			 								NULL,		}
 		};
 
@@ -273,14 +273,14 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 
 	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegDataWidth, "DataWidth");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kDataLngFmt32,
-													TMrbMesytec_Madc32::kDataLngFmt8,
-													TMrbMesytec_Madc32::kDataLngFmt64);
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kDataWidth32,
+													TMrbMesytec_Madc32::kDataWidth8,
+													TMrbMesytec_Madc32::kDataWidth64);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
-	bNames->SetName("DataLengthFormat");
-	bNames->AddNamedX(kMrbDataLengthFormat);	
+	bNames->SetName("DataWidth");
+	bNames->AddNamedX(kMrbDataWidth);	
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -306,7 +306,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegMarkingType, "MarkingType");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kMarkingTypeEvent,
 													TMrbMesytec_Madc32::kMarkingTypeEvent,
-													TMrbMesytec_Madc32::kMarkingTypeTs);
+													TMrbMesytec_Madc32::kMarkingTypeXts);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -566,7 +566,7 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	Int_t mid = madcEnv->Get(moduleName.Data(), "ModuleId", 0xFF);
 	if (mid == 0xFF) mid = this->GetSerial();
 	this->SetModuleId(mid);
-	this->SetDataWidth(madcEnv->Get(moduleName.Data(), "DataWidth", kDataLngFmt32));
+	this->SetDataWidth(madcEnv->Get(moduleName.Data(), "DataWidth", kDataWidth32));
 	this->SetMultiEvent(madcEnv->Get(moduleName.Data(), "MultiEvent", kMultiEvtNo));
 	this->SetXferData(madcEnv->Get(moduleName.Data(), "XferData", 0));
 	this->SetMarkingType(madcEnv->Get(moduleName.Data(), "MarkingType", kMarkingTypeEvent));

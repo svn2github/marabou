@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.171 2009-04-22 12:17:16 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.172 2009-05-05 07:36:59 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -591,7 +591,6 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		if (*CfgTitle == '\0') SetTitle("MARaBOU Config");
 
 		fVerboseMode = gEnv->GetValue("TMrbConfig.VerboseMode", kFALSE);
-		
 		fNofEvents = 0;				// init list of events/triggers
 		fLofEvents.Delete();
 
@@ -7223,15 +7222,20 @@ const Char_t * TMrbConfig::GetMailAddr() {
 
 	fUser = gSystem->Getenv("USER");
 	fMailAddr = "";
-	TString cmd = Form("%s/scripts/getFromLDAP.py %s %s 2>/dev/null", gSystem->Getenv("MARABOU"), fUser.Data(), "mail");
-	FILE * ldap = gSystem->OpenPipe(cmd.Data(), "r");
-	if (ldap) {
-		Char_t result[512];
-		fread(result, 1, 512, ldap);
-		fclose(ldap);
-		fMailAddr = result;
-		Int_t x = fMailAddr.Index("\n", 0);
-		if (x > 0) fMailAddr(x) = '\0';
+	TString marabouAtHome = "$MARABOU/data/marabouAtHome";
+	gSystem->ExpandPathName(marabouAtHome);
+	Bool_t atHome = !gSystem->AccessPathName(marabouAtHome.Data());
+	if (atHome) {
+		TString cmd = Form("%s/scripts/getFromLDAP.py %s %s 2>/dev/null", gSystem->Getenv("MARABOU"), fUser.Data(), "mail");
+		FILE * ldap = gSystem->OpenPipe(cmd.Data(), "r");
+		if (ldap) {
+			Char_t result[512];
+			fread(result, 1, 512, ldap);
+			fclose(ldap);
+			fMailAddr = result;
+			Int_t x = fMailAddr.Index("\n", 0);
+			if (x > 0) fMailAddr(x) = '\0';
+		}
 	}
 	return(fMailAddr.Data());
 }
