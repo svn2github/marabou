@@ -4,10 +4,10 @@
 //! \brief			Code for module MADC32
 //! \details		Implements functions to handle modules of type Mesytec MADC32
 //!
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $       
-//! $Date: 2009-04-30 10:42:57 $
+//! $Revision: 1.2 $       
+//! $Date: 2009-05-06 07:23:45 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -310,6 +310,8 @@ void madc32_setEclTerm_db(struct s_madc32 * s) { madc32_setEclTerm(s, s->eclTerm
 
 void madc32_setEclTerm(struct s_madc32 * s, uint16_t term)
 {
+		sprintf(msg, "%s: term=%#x m=%#x", s->moduleName, term, MADC32_ECL_TERMINATORS_MASK);
+		f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
 	SET16(s->baseAddr, MADC32_ECL_TERMINATORS, term & MADC32_ECL_TERMINATORS_MASK);
 }
 
@@ -652,6 +654,29 @@ bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
 	fprintf(f, "Pulser status     : %d\n", madc32_getTestPulser(s));
 	fprintf(f, "Timestamp source  : %#x\n", madc32_getTsSource(s));
 	fprintf(f, "Timestamp divisor : %d\n", madc32_getTsDivisor(s));
+	fclose(f);
+}
+
+bool_t madc32_dumpRaw(struct s_madc32 * s, char * file)
+{
+	int i;
+	FILE * f;
+
+	if (!s->dumpRegsOnInit) return(TRUE);
+
+	f = fopen(file, "w");
+	if (f == NULL) {
+		sprintf(msg, "[dump_regs] %s: Error writing file %s", s->moduleName, file);
+		f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+		return FALSE;
+	}
+
+	sprintf(msg, "[dump_regs] %s: Dumping raw data to file %s", s->moduleName, file);
+	f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+
+	for (i = 0x6000; i < 0x60B0; i += 2) {
+		fprintf(f, "%#lx %#x\n", i, GET16(s->baseAddr, i)); 
+	}
 	fclose(f);
 }
 

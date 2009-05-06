@@ -1,5 +1,5 @@
 TMrbConfig.TemplatePath:				.:config:$MARABOU/templates/config:$MARABOU/templates/modules
-TMrbConfig.VerboseMode: 				TRUE
+TMrbConfig.VerboseMode: 				FALSE
 TMrbConfig.DebugReadout:				FALSE
 TMrbEsone.VerboseMode:				    FALSE 	
 TMrbEsone.ServerType:					MBS
@@ -7,11 +7,10 @@ TMrbEsone.Controller:					CC32
 TMrbEsone.UseBroadCast:					TRUE
 TMrbAnalyze.VerboseMode:			    FALSE	
 TMrbAnalyze.DumpCount:					10
-TMbsSetup.ProcType: 					RIO2
-TMbsSetup.MbsVersion:					v22
-TMbsSetup.LynxVersion:					2.5
-TMbsSetup.DefaultHomeDir:				/home/Rudolf.Lutter/marabou/test/config/madc32
-
+TMbsSetup.ProcType: 					RIO3
+TMbsSetup.MbsVersion:					v45
+TMbsSetup.LynxVersion:					3.1
+TMbsSetup.DefaultHomeDir:				/home/marabou/new
 
 
 

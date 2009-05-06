@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Madc_2.cxx,v 1.2 2009-04-22 14:25:35 Rudolf.Lutter Exp $       
-// Date:           $Date: 2009-04-22 14:25:35 $
+// Revision:       $Id: TMrbSubevent_Madc_2.cxx,v 1.3 2009-05-06 07:23:45 Marabou Exp $       
+// Date:           $Date: 2009-05-06 07:23:45 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -135,7 +135,6 @@ Bool_t TMrbSubevent_Madc_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 
 	switch (TagIndex) {
 		case TMrbConfig::kRdoOnTriggerXX:
-			parentModule = NULL;
 			Template.InitializeCode("%SB%");
 			Template.Substitute("$sevtNameLC", this->GetName());
 			sevtName = this->GetName();
@@ -147,63 +146,22 @@ Bool_t TMrbSubevent_Madc_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 			Template.Substitute("$crateNo", this->GetCrate());
 			Template.WriteCode(RdoStrm);
 
+			parentModule = NULL;
 			param = (TMrbModuleChannel *) fLofParams.First();
 			parNo = 0;
 			while (param) {
 				thisChannel = param->GetAddr();
+
 				if (param->Parent() != parentModule) {
-					if (parentModule != NULL) {
-						Template.InitializeCode("%SME%");
-						Template.Substitute("$moduleNameLC", parentModule->GetName());
-						Template.Substitute("$moduleSerial", parentModule->GetSerial());
-						Template.WriteCode(RdoStrm);
-					}
 					parentModule = (TMrbModule *) param->Parent();
-
-
-					TString mnemoLC = parentModule->GetMnemonic();
-					TString mnemoUC = mnemoLC;
-					mnemoUC(0,1).ToUpper();
-
-					Template.InitializeCode("%SMB%");
-					moduleNameUC = parentModule->GetName();
-					moduleNameUC(0,1).ToUpper();
-					Template.Substitute("$lng", 16);
-					Template.Substitute("$moduleNameLC", parentModule->GetName());
-					Template.Substitute("$moduleNameUC", moduleNameUC);
-					Template.Substitute("$moduleType", mnemoUC);
-					Template.Substitute("$moduleSerial", parentModule->GetSerial());
-					Template.WriteCode(RdoStrm);
-
 					parentModule->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleSetupReadout, param);
 					nextChannel = thisChannel;
 				}
-				if (parentModule->HasRandomReadout() && !parentModule->HasBlockReadout()) {
-					chDiff = (thisChannel - nextChannel);
-					if (chDiff != 0) {
-						gMrbLog->Err()	<< parentModule->GetName() << " (param " << param->GetName()
-										<< "): channels must be contiguous" << endl;
-						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-						return(kFALSE);
-					}
-					((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadChannel, param);
 
-					((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleWriteSubaddr, param);
-					nextChannel = thisChannel + 1;
-					param = (TMrbModuleChannel *) fLofParams.After(param);
-					parNo++;
-				} else {									// module must be read as a whole
-					((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadModule);
-					parNo += parentModule->GetNofChannelsUsed();
-					param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;				
-				}
+				((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadModule);
+				parNo += parentModule->GetNofChannelsUsed();
+				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;				
 			}
-			Template.InitializeCode("%SME%");
-			Template.Substitute("$lng", 16);
-			Template.Substitute("$moduleNameLC", parentModule->GetName());
-			Template.Substitute("$moduleSerial", parentModule->GetSerial());
-			Template.WriteCode(RdoStrm);
-
 			miter = fLofModules.MakeIterator();
 			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleFinishReadout);
 

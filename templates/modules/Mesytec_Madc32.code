@@ -46,7 +46,6 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-					evt.out32 += madc32_readTimeB(s_$moduleName, (uint32_t *) evt.out32);	/* read time counter B */
 					evt.out32 += madc32_readout(s_$moduleName, (uint32_t *) evt.out32);	/* read data */
 					if (s_$moduleName->updSettings) { 				/* update settings? */
 						s_$moduleName->updCountDown--;
@@ -54,9 +53,9 @@
  							sprintf(msg, "Updating settings for module $moduleName after %d count(s)\n", s_$moduleName->updInterval);
  							f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
 							madc32_stopAcq(s_$moduleName);
+							madc32_reset(s_$moduleName);
 							madc32_fillStruct(s_$moduleName, "$settingsFile");
 							madc32_loadFromDb(s_$moduleName);
-							madc32_reset(s_$moduleName);
 							madc32_resetReadout(s_$moduleName);
 							madc32_startAcq(s_$moduleName);
 						}

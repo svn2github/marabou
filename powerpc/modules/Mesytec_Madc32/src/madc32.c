@@ -4,10 +4,10 @@
 //! \brief			test program for Mesytec MADC32
 //! \details		Provides some basic tests for MADC32
 //!
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $       
-//! $Date: 2009-04-30 10:42:57 $
+//! $Revision: 1.2 $       
+//! $Date: 2009-05-06 07:23:45 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -101,6 +101,7 @@ int main(int argc, char *argv[]) {
 					}
 					s_adc->dumpRegsOnInit = TRUE;
 					madc32_dumpRegisters(s_adc, file); 		/* dump registers to file */
+					madc32_dumpRaw(s_adc, "rawDump.dat");
 					break;
 		default:	fprintf(stderr, "madc32: Illegal function - %s\n", argv[2]);
 					exit(1);

@@ -18,10 +18,10 @@
 //! \file			madc32.h
 //! \brief			Definitions for Mesytec Madc32 ADC
 //! \details		Contains definitions to operate a Mesytec Madc32
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-04-30 10:42:57 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-05-06 07:23:45 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*____________________________________________________________________________
@@ -121,10 +121,11 @@
 #define MADC32_MAX_XFER_DATA_DEFAULT	0
 #define MADC32_MAX_XFER_DATA_MASK		0x3FF
 
-#define MADC32_MARKING_TYPE_EVT			0
-#define MADC32_MARKING_TYPE_TS 			1
+#define MADC32_MARKING_TYPE_EVT			0x0
+#define MADC32_MARKING_TYPE_TS 			0x1
+#define MADC32_MARKING_TYPE_XTS 		0x3
 #define MADC32_MARKING_TYPE_DEFAULT 	MADC32_MARKING_TYPE_EVT
-#define MADC32_MARKING_TYPE_MASK 		MADC32_MARKING_TYPE_TS
+#define MADC32_MARKING_TYPE_MASK 		MADC32_MARKING_TYPE_XTS
 
 #define MADC32_BANK_OPERATION_CON		0
 #define MADC32_BANK_OPERATION_INDEP 1
@@ -169,8 +170,9 @@
 
 #define MADC32_ECL_TERMINATORS_G0			0x1
 #define MADC32_ECL_TERMINATORS_G1			0x2
-#define MADC32_ECL_TERMINATORS_FCL			0x4
-#define MADC32_ECL_TERMINATORS_DEFAULT  	(MADC32_ECL_TERMINATORS_G0 | MADC32_ECL_TERMINATORS_G1 | MADC32_ECL_TERMINATORS_FCL)
+#define MADC32_ECL_TERMINATORS_BUSY			0x4
+#define MADC32_ECL_TERMINATORS_FCL			0x8
+#define MADC32_ECL_TERMINATORS_DEFAULT  	(MADC32_ECL_TERMINATORS_G0 | MADC32_ECL_TERMINATORS_G1 | MADC32_ECL_TERMINATORS_BUSY | MADC32_ECL_TERMINATORS_FCL)
 #define MADC32_ECL_TERMINATORS_MASK 		MADC32_ECL_TERMINATORS_DEFAULT
 
 #define MADC32_ECL_INPUT_G1					0

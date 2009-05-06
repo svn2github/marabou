@@ -5,9 +5,9 @@
 // Description:      RootCint macro for experiment "exa"
 //                   (Example)
 //                   Loads any libraries needed for an interactive session.
-// Author:           Rudolf.Lutter
+// Author:           marabou
 // Revision:         
-// Date:             Thu Apr 30 10:09:47 2009
+// Date:             Tue May  5 18:58:32 2009
 // URL:              
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

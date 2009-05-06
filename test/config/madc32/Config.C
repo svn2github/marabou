@@ -7,7 +7,7 @@
 
 	evt = new TMrbEvent_10_1(1, "readout", "readout");
 	data = new TMrbSubevent_Madc_1("data", "subevent data");
-	adc = new TMrbMesytec_Madc32("adc", 0xe0000000);
+	adc = new TMrbMesytec_Madc32("adc", 0x00F30000);
 	adc->UseSettings();
 	data->Use("adc", "e[32]");
    

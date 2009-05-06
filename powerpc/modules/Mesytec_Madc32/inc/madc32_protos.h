@@ -6,10 +6,10 @@
 //! \file			madc32_protos.h
 //! \brief			Definitions for Mesytec Madc32 ADC
 //! \details		Prototypes for Mesytec Madc32
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-04-30 10:42:57 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-05-06 07:23:45 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -24,6 +24,7 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file);
 void madc32_loadFromDb(struct s_madc32 * s);
 
 bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file);
+bool_t madc32_dumpRaw(struct s_madc32 * s, char * file);
 void madc32_printDb(struct s_madc32 * s);
 
 void madc32_reset(struct s_madc32 * s);

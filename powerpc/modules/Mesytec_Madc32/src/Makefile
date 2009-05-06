@@ -49,8 +49,3 @@ depend:
 	gcc -MM $(CFLAGS) $(CPPFLAGS) *.c
 
 # ------------ Dependencies --------------------------------------------
-
-madc32fct.o: madc32fct.c ../../../readout/inc/gd_readout.h \
-			../inc/madc32.h ../../../include/block.h ../inc/madc32_protos.h \
-			../../../readout/inc/root_env.h /mbs/v22/inc/err_mask_def.h \
-			/mbs/v22/inc/typedefs.h /mbs/v22/inc/errnum_def.h

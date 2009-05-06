@@ -8,7 +8,7 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.10 2009-05-05 07:36:59 Marabou Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.11 2009-05-06 07:23:45 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -127,8 +127,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 		enum EMrbEclTerm	 			{	kEclTermOff 		=	0,
 											kEclTermG0 			=	BIT(0),
 											kEclTermG1 			=	BIT(1),
-											kEclTermFcl 	 	=	BIT(2),
-											kEclTermOn			=	kEclTermG0 | kEclTermG1 | kEclTermFcl,
+											kEclTermBusy 	 	=	BIT(2),
+											kEclTermFcl 	 	=	BIT(3),
+											kEclTermOn			=	kEclTermG0 | kEclTermG1 | kEclTermBusy | kEclTermFcl
 										};
 
 		enum EMrbEclG1OrOsc 	 		{	kEclG1				=	0,

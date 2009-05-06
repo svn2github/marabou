@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.14 2009-05-05 07:36:59 Marabou Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.15 2009-05-06 07:23:45 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -112,6 +112,7 @@ const SMrbNamedXShort kMrbEclTerm[] =
 			{	TMrbMesytec_Madc32::kEclTermOff,			"off"			},
 			{	TMrbMesytec_Madc32::kEclTermG0,				"gate0"			},
 			{	TMrbMesytec_Madc32::kEclTermG1,				"gate1"			},
+			{	TMrbMesytec_Madc32::kEclTermBusy,			"busy"			},
 			{	TMrbMesytec_Madc32::kEclTermFcl,			"fclear"		},
 			{	0,			 								NULL,			}
 		};

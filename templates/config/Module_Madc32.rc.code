@@ -58,8 +58,9 @@ MADC32.$moduleName.MultiEvent:			$multiEvent
 # max xfer data (if multievent is set to "3", default = 0)
 MADC32.$moduleName.XferData:			$xferData
 
-# marking type          0  -->  event counter (default)
-#                       1  -->  time stamp
+# marking type          0x1  -->  event counter (default)
+#                       0x1  -->  time stamp (30 bits)
+#                       0x3  -->  extended time stamp (+16bits)
 MADC32.$moduleName.MarkingType: 		$markingType
 
 # block transfer        true/false

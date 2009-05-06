@@ -16,7 +16,6 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 
 	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
-
 	this->GetHitBuffer()->Reset();			// clear hit buffer
 
 	recNo++;						// count this record	
@@ -26,10 +25,6 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 	ULong_t * dataPtr = (ULong_t *) SevtData;
 	Int_t eventsProcessed = 0;
 	while (SevtWC > 0) {									// subevent may contain several CAEN modules
-		fBufferTimeUs = 0;									// store buffer time
-		fBufferTimeUs += *dataPtr++ << 32;
-		fBufferTimeUs += *dataPtr++;
-
 		Int_t header = *dataPtr++;
 		if ((header & MADC_M_ID) != MADC_D_HDR) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
@@ -42,9 +37,9 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 
 		Int_t moduleNumber = (header >> MADC_SH_SERIAL) & MADC_M_SERIAL;	// extract module id
 		Int_t res = (header >> MADC_SH_RES) & MADC_M_RES;					// extract adc resolution
-		UInt_t dmask = 0x7FF;
-		if (res >= kMrbMadcRes4k) dmask = 0xFFF;
-		if (res >= kMrbMadcRes8k) dmask = 0x1FFF;
+		UInt_t dmask = MADC_M_RES2K;
+		if (res >= kMrbMadcRes4k) dmask = MADC_M_RES4K;
+		if (res >= kMrbMadcRes8k) dmask = MADC_M_RES8K;
 
 		Int_t wc = header & MADC_M_WC;							// extract wc
 		Int_t wcs = wc;
@@ -60,11 +55,17 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 			return(kTRUE);
 		}
 
-		Int_t ts = trailer & MADC_M_TIMESTAMP;		// extract time stamp
-		Int_t timeStamp[3];
-		timeStamp[0] = 0;
-		timeStamp[1] = (ts >> 16) & 0xFFFF;
-		timeStamp[2] = ts & 0xFFFF;
+		union ts {					// union to map a longlong to a int array
+			Int_t arr[3];
+			Long64_t ll;
+		}
+		ts.ll = 0;
+
+		Int_t upts = *(dataPtr + wc - 1);			// inspect extended timestamp (bits 30-45)
+		if ((upts & MADC_M_XTS) == MADC_D_XTS) ts.ll = (upts & MADC_M_TSHIGH) << 30;
+
+		Int_t lowts = trailer & MADC_M_TSLOW;	// extract lower bits of time stamp (bits 0-29)
+		ts.ll += lowts;
 
 		wc--;								// - trailer word
 		wcs++;								// + header word
@@ -85,6 +86,7 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 		for (; wc; wc--) {
 			Int_t data = *dataPtr++;
 			if ((data & MADC_M_ID) != MADC_D_DATA) {
+				if ((data & MADC_M_XTS) == MADC_D_XTS) continue;
 				if ((data & MADC_M_ID) == MADC_D_EOE) {
 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected EOE", SevtData, origSevtWC);
 					cerr	<< setred
@@ -112,7 +114,7 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 			this->GetHitBuffer()->AddHit(	eventsProcessed,
 											moduleNumber,
 											chn,
-											timeStamp,
+											ts.arr,
 											evtData, 2);
 		}
 		*dataPtr++; 		 				// skip trailer word
