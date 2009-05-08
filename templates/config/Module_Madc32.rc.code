@@ -182,8 +182,9 @@ MADC32.$moduleName.PulserStatus: 		$pulserStatus
 #-----------------------------------------------------------------------------
 
 # timestamp source      0x0  -->  VME (default)
-#                       0x1  -->  extern
-#                       0x2  -->  extern reset enable
+#                       0x1  -->  external source
+#                       0x2  -->  enable reset
+#                       0x3  -->  external source & reset
 MADC32.$moduleName.TsSource: 			$tsSource
 
 MADC32.$moduleName.TsDivisor: 			$tsDivisor
