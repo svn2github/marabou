@@ -11,6 +11,8 @@
 
 %%BeginOfCode%%
 /* bit definitions for VME ADC CAEN V785 */
+#ifdef __CAEN_BITS_AND_BYTES__
+#define __CAEN_BITS_AND_BYTES__
 #define CAEN_V785_R_OUTPUT						0x0
 #define CAEN_V785_R_FIRMWARE						0x1000
 #define CAEN_V785_785_R_GEOADDR						0x1002
@@ -123,6 +125,7 @@
 #define CAEN_V785_SET_KILL_BIT(module,chn)	*(CAEN_V785_A_THRESH(module) + chn) = CAEN_V785_B_THRESH_KILL_CHANNEL
 
 #define CAEN_V785_READ_BITSET2(module)	*CAEN_V785_A_BITSET2(module)
+#endif
 
 %%EndOfCode%%
 %%MODULE_DEFS%%

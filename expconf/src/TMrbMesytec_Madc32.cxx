@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.15 2009-05-06 07:23:45 Marabou Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.16 2009-05-08 16:24:51 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -551,7 +551,7 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 
 	TString moduleName = madcEnv->Get(".ModuleName", "");
 	if (moduleName.CompareTo(this->GetName()) != 0) {
-		gMrbLog->Err() << "Module name different - " << moduleName << " (should be " << this->GetName() << ")" << endl;
+		gMrbLog->Err() << "Module name different - \"" << moduleName << "\" (should be " << this->GetName() << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
 		return(kFALSE);
 	}
@@ -593,6 +593,18 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	for (Int_t i = 0; i < TMrbMesytec_Madc32::kNofChannels; i++) {
 		this->SetThreshold(madcEnv->Get(moduleName.Data(), "Thresh", Form("%d", i), 0), i);
 	}
+
+	Int_t res = this->GetAdcResolution();		// calc actual histo range
+	switch (res) {
+		case kAdcRes2k: 		fRange = 1 << 11; break;
+		case kAdcRes4k:
+		case kAdcRes4kHiRes: 	fRange = 1 << 12; break;
+		case kAdcRes8k:
+		case kAdcRes8kHiRes: 	fRange = 1 << 13; break;
+	}
+	fXmax = fRange;
+	fBinRange = fRange;
+
 	return(kTRUE);
 }
 
@@ -752,7 +764,7 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString mnemoLC, mnemoUC;
+	TString mnemoLC, mnemoUC, moduleNameLC, moduleNameUC;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "
@@ -760,6 +772,10 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 		return(kFALSE);
 	}
+
+	moduleNameLC = this->GetName();
+	moduleNameUC = moduleNameLC;
+	moduleNameUC(0,1).ToUpper();
 
 	mnemoLC = this->GetMnemonic();
 	mnemoUC = mnemoLC;
@@ -792,7 +808,8 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 		case TMrbConfig::kModuleInitCommonCode:
 		case TMrbConfig::kModuleInitModule:
 			fCodeTemplates.InitializeCode();
-			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$moduleNameLC", moduleNameLC);
+			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC);
 			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
 			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
 			fCodeTemplates.Substitute("$moduleSerial", this->GetSerial());
@@ -801,6 +818,7 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 			fCodeTemplates.Substitute("$settingsFile", settings.Data());
+			fCodeTemplates.Substitute("$serial", this->GetSerial());
 			fCodeTemplates.Substitute("$dumpFile", dump.Data());
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;

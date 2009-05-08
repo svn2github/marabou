@@ -8,8 +8,8 @@
 //! \details		Prototypes for Mesytec Madc32
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-05-06 07:23:45 $
+//! $Revision: 1.6 $     
+//! $Date: 2009-05-08 16:24:51 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -18,6 +18,7 @@ struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial);
 
 void madc32_moduleInfo(struct s_madc32 * s);
+void madc32_setPrefix(struct s_madc32 * s, char * prefix);
 
 bool_t madc32_fillStruct(struct s_madc32 * s, char * file);
 

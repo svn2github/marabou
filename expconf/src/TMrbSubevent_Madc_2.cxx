@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Madc_2.cxx,v 1.3 2009-05-06 07:23:45 Marabou Exp $       
-// Date:           $Date: 2009-05-06 07:23:45 $
+// Revision:       $Id: TMrbSubevent_Madc_2.cxx,v 1.4 2009-05-08 16:24:51 Marabou Exp $       
+// Date:           $Date: 2009-05-08 16:24:51 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -102,7 +102,7 @@ TMrbSubevent_Madc_2::TMrbSubevent_Madc_2(const Char_t * SevtName, const Char_t *
 		fSevtSubtype = 82;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
-		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Madc32");	// we need this base class
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Madc");	// we need this base class
 		gDirectory->Append(this);
 	}
 }

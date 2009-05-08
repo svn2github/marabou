@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.172 2009-05-05 07:36:59 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.173 2009-05-08 16:24:51 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7473,6 +7473,83 @@ void TMrbConfig::MakeGlobal(const Char_t * Name, const Char_t * Str, const Char_
 
 	TString * v = new TString(Str);
 	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobString, Name, Comment, (TObject *) v));
+}
+
+void TMrbConfig::PrintGlobals(const Char_t * File) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::PrintGlobals
+// Purpose:        Print list of globals
+// Arguments:      Char_t * File     -- file name
+// Results:        --
+// Exceptions:
+// Description:    Writes a list of globals to file.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	ofstream f;
+	f.open(File, ios::out);
+	if (f.good()) {
+		this->PrintGlobals(f);
+		f.close();
+	} else {
+		gMrbLog->Err() << "Can't write to file " << File << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintGlobals");
+	}
+}
+
+void TMrbConfig::PrintGlobals(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::PrintGlobals
+// Purpose:        Print list of globals
+// Arguments:      ostream & Out    -- output stream
+// Results:        --
+// Exceptions:
+// Description:    Outputs a list of globals.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * iter = fLofGlobals.MakeIterator();
+	TMrbNamedX * glob;
+	while (glob = (TMrbNamedX *) iter->Next()) {
+		TString cmt = glob->GetTitle();
+		if (!cmt.IsNull()) cmt = Form("(%s)", cmt.Data()); else cmt = "";
+
+		switch (glob->GetIndex()) {
+			case TMrbConfig::kGlobInt:
+				{
+					Int_t * v = (Int_t *) glob->GetAssignedObject();
+					Out << Form("%-30s [int]    %10d %s", glob->GetName(), *v, cmt.Data()) << endl;
+				}
+				break;
+			case TMrbConfig::kGlobFloat:
+				{
+					Float_t * v = (Float_t *) glob->GetAssignedObject();
+					Out << Form("%-20s [float]  %10.2f %s", glob->GetName(), *v, cmt.Data()) << endl;
+				}
+				break;
+			case TMrbConfig::kGlobDouble:
+				{
+					Double_t * v = (Double_t *) glob->GetAssignedObject();
+					Out << Form("%-20s [double] %10.2f %s", glob->GetName(), *v, cmt.Data()) << endl;
+				}
+				break;
+			case TMrbConfig::kGlobBool:
+				{
+					Bool_t * v = (Bool_t *) glob->GetAssignedObject();
+					const char * tf = *v ? "TRUE" : "FALSE";
+					Out << Form("%-20s [bool]   %-10s %s", glob->GetName(), tf, cmt.Data()) << endl;
+				}
+				break;
+			case TMrbConfig::kGlobString:
+				{
+					Char_t * v = (Char_t *) glob->GetAssignedObject();
+					Out << Form("%-20s [double] %-10s %s", glob->GetName(), *v, cmt.Data()) << endl;
+				}
+				break;
+		}
+	}
 }
 
 Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Int_t & IntVar) const {

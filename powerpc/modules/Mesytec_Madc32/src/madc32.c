@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $       
-//! $Date: 2009-05-06 07:23:45 $
+//! $Revision: 1.3 $       
+//! $Date: 2009-05-08 16:24:51 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -78,6 +78,8 @@ int main(int argc, char *argv[]) {
 
 	s_adc = madc32_alloc(physAddr, madc32, "madc32", 0xBB);	/* allocate data struct */
 	if (s_adc == NULL) exit(1);
+
+	madc32_setPrefix(s_adc, "madc32");
 
 	fct = *argv[2];
 

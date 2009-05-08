@@ -31,7 +31,8 @@ typedef struct {
 	int nofParams;
 	int nofParamsUsed;
 	unsigned long paramPattern;
-	volatile unsigned long * addr;
+	void * addr;
+	void * devStruct;
 } ModuleDef;
 
 typedef struct {

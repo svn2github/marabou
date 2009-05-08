@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.87 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.88 2009-05-08 16:24:51 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -839,6 +839,10 @@ class TMrbConfig : public TNamed {
 		Double_t GetGlobD(const Char_t * Name) const;
 		Bool_t GetGlobB(const Char_t * Name) const;
 		const Char_t * GetGlobStr(const Char_t * Name) const;
+
+		void PrintGlobals(const Char_t * File);
+		void PrintGlobals(ostream & Out);
+		inline void PrintGlobals() { this->PrintGlobals(cout); };
 
 		void MakeDefined(const Char_t * Name, Int_t Value, const Char_t * Comment = "");
 		void MakeDefined(const Char_t * Name, Bool_t Defined = kTRUE, const Char_t * Comment = "");

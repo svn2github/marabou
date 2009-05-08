@@ -20,8 +20,8 @@
 //! \details		Contains definitions to operate a Mesytec Madc32
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-05-06 07:23:45 $
+//! $Revision: 1.6 $     
+//! $Date: 2009-05-08 16:24:51 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*____________________________________________________________________________
@@ -232,6 +232,9 @@ struct s_madc32 {
 	volatile unsigned char * baseAddr;		/* addr mapped via find_controller() */
 
 	char moduleName[100];
+	char prefix[100];						/* "m_read_meb" (default) or any other */
+	char mpref[10]; 						/* "madc32: " or "" */
+
 	int serial; 							/* MARaBOU's serial number */
 
 	bool_t verbose;

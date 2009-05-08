@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3300        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3300.h,v 1.7 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3300.h,v 1.8 2009-05-08 16:24:51 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -249,6 +249,8 @@ class TMrbSis_3300 : public TMrbVMEModule {
 
 		Bool_t UseSettings(const Char_t * SettingsFile = NULL);
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
+
+		inline Char_t * GetDeviceStruct() { return(Form("s_%s", this->GetName())); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a hit
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrHit.h,v 1.6 2009-04-22 12:53:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHit.h,v 1.7 2009-05-08 16:24:51 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -88,8 +88,8 @@ class TUsrHit : public TObject {
 		Int_t Compare(Long64_t ChannelTime) const;
 		
 		void Print(Option_t * Option) const { TObject::Print(Option); };
-		void Print(ostream & Out, Bool_t PrintNames = kFALSE) const;		// print hit data
-		inline void Print(Bool_t PrintNames = kFALSE) const { Print(cout, PrintNames); };
+		void Print(ostream & Out, Bool_t PrintNames = kFALSE, Bool_t CrLf = kTRUE) const;		// print hit data
+		inline void Print(Bool_t PrintNames = kFALSE, Bool_t CrLf = kTRUE) const { Print(cout, PrintNames, CrLf); };
 		
 		inline Int_t GetBufferNumber() const { return(fBufferNumber); };		// get data members
 		inline Int_t GetEventNumber() const { return(fEventNumber); };

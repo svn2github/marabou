@@ -22,15 +22,17 @@
 
 %%BeginOfCode%%
 
-									/* init module $moduleName at addr $baseAddr */
-					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
-					s_$moduleName = madc32_alloc($baseAddrL, $moduleName, "$moduleName", $moduleSerial); /* allocate data struct */
-					madc32_moduleInfo(s_$moduleName);						/* read module info */
-					madc32_reset(s_$moduleName);	 						/* reset module */
-					madc32_fillStruct(s_$moduleName, "$settingsFile");		/* fill struct from environment data */
-					madc32_loadFromDb(s_$moduleName); 						/* load module regs from database */
-					madc32_dumpRegisters(s_$moduleName, "$dumpFile"); 		/* dump registers to file */
-					madc32_resetReadout(s_$moduleName);	 					/* reset readout regs */
+									/* init module $moduleNameLC at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					s_$moduleNameLC = madc32_alloc($baseAddrL, $moduleNameLC, "$moduleNameLC", $moduleSerial); /* allocate data struct */
+ 					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
+					madc32_moduleInfo(s_$moduleNameLC);						/* read module info */
+					madc32_reset(s_$moduleNameLC);	 						/* reset module */
+					madc32_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill struct from environment data */
+					madc32_loadFromDb(s_$moduleNameLC); 						/* load module regs from database */
+					madc32_setModuleId(s_$moduleNameLC, $serial); 				/* update module id */
+					madc32_dumpRegisters(s_$moduleNameLC, "$dumpFile"); 		/* dump registers to file */
+					madc32_resetReadout(s_$moduleNameLC);	 					/* reset readout regs */
 
 %%EndOfCode%%
 %%INIT_MODULE%%

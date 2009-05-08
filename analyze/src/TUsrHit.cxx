@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrHit.cxx,v 1.5 2007-10-25 17:24:12 Marabou Exp $       
+// Revision:       $Id: TUsrHit.cxx,v 1.6 2009-05-08 16:24:51 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -167,13 +167,14 @@ Double_t TUsrHit::GetDCorrEnergy(Bool_t Randomize) const {
 	return(dcfact * e);
 }
 
-void TUsrHit::Print(ostream & Out, Bool_t PrintNames) const {
+void TUsrHit::Print(ostream & Out, Bool_t PrintNames, Bool_t CrLf) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit::Print
 // Purpose:        Print data
 // Arguments:      ostream & Out      -- output stream
 //                 Bool_t PrintNames  -- kTRUE -> print module & param names
+//                 Bool_t CrLf        -- print <cr> at end
 // Results:        --
 // Exceptions:
 // Description:    Prints one line of data.
@@ -203,7 +204,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) const {
 			moduleName = fModuleNumber;
 			paramName = fChannel;
 		}
-		Out << Form("      %13d%13s%13d%13s%18lld%13d\n",
+		Out << Form("      %13d%13s%13d%13s%18lld%13d",
 						fBufferNumber,
 						moduleName.Data(),
 						fEventNumber,
@@ -211,7 +212,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) const {
 						fChannelTime,
 						fData[kHitEnergy]);
 	} else {
-		Out << Form("      %13d%13d%13d%13d%18lld%13d\n",
+		Out << Form("      %13d%13d%13d%13d%18lld%13d",
 						fBufferNumber,
 						fModuleNumber,
 						fEventNumber,
@@ -219,6 +220,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) const {
 						fChannelTime,
 						fData[kHitEnergy]);
 	}
+	if (CrLf) Out << endl;
 }
 	
 const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) const {

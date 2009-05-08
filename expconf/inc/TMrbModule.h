@@ -8,7 +8,7 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.20 2008-12-12 13:09:57 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.h,v 1.21 2009-05-08 16:24:51 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -179,6 +179,8 @@ class TMrbModule : public TNamed {
 		}
 		inline Bool_t HistoArrayToBeCreated() { return(fCreateHistoArray); };
 		inline const Char_t * GetHistoArrayName() { return(fHistoArrayName.Data()); };
+
+		virtual inline Char_t * GetDeviceStruct() { return(NULL); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

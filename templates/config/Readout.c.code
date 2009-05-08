@@ -112,15 +112,31 @@ static long dt_scaler_contents;	/* contents of dead-time scaler */
 /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
 %%BeginOfCode%%
-%MTA%/* module table, indexed by module number */
-%MTA%/* struct members: name, index, crate, station, lam, number of params, params used, param pattern, addr */
+%MTA%/*
+%MTA%/* module table, indexed by module number
+%MTA%/* struct members: name
+%MTA%                   index
+%MTA%   			    crate
+%MTA%   			    station
+%MTA%   			    lam
+%MTA%   			    number of params
+%MTA%   			    params used
+%MTA%   			    param pattern
+%MTA%   			    device addr
+%MTA%      			    additional device struct
+%MTA%*/
 %MTA%ModuleDef moduleTable[] = {
-%MT%	{"$moduleNameLC", kMrbModule$moduleNameUC, $crate, $station, $lam, $nofParams, $nofParUsed, $paramPattern, NULL},
+%MT%	{"$moduleNameLC", kMrbModule$moduleNameUC, $crate, $station, $lam, $nofParams, $nofParUsed, $paramPattern, NULL, NULL},
 %MTE%	NULL
 %MTE%};
 
-%STA%/* subevent table, indexed by subevent number */
-%STA%/* struct members: name, index, number of modules, index of first module, lam pattern */
+%STA%/* subevent table, indexed by subevent number
+%STA%/* struct members: name
+%STA%				    index
+%STA%				    number of modules
+%STA%				    index of first module
+%STA%				    lam pattern
+%STA%*/
 %STA%SevtDef sevtTable[] = {
 %ST%	{"$sevtNameLC", kMrbSevt$sevtNameUC, $nofModules, kMrbModule$firstModule, $lam},
 %ST0%	{"$sevtNameLC", kMrbSevt$sevtNameUC, 0, 0, 0x0},
@@ -161,7 +177,7 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 %BV% 	s_param.dum[0] = 0; 					/* forces static mapping! */
 %BV%
 %C% 	$moduleNameLC = CIO_SET_BASE(B(0), C($crateNo), N($station)); 			/* $moduleNameLC: $moduleTitle */
-%C% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = $moduleNameLC;
+%C% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %CBV% 	cam_dwinh_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(30));	/* dataway inhibit in crate C$crateNo */
 %CBV% 	cam_sreg_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));	/* X/Q enable in crate C$crateNo */
 %CC32% 	cam_reset_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(31));	/* reset in crate C$crateNo */
@@ -171,11 +187,11 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 %CC32% 	cam_bcast_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(25));	/* broadcast in crate C$crateNo */
 %CC32% 	cam_lam_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));		/* LAM pattern in crate C$crateNo */
 %V% 	$moduleNameLC = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* $moduleNameLC: $moduleTitle */
-%V% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (volatile unsigned long *) $moduleNameLC;
+%V% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %VS%																		/* $moduleName: $moduleTitle */
 %VS% 	$moduleNameLCBase = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* -- base addr */
 %VS% 	$moduleNameLC = $mnemoLC_get_subdevice($moduleNameLCBase, $subDevice);								/* -- subdevice $subDevice */
-%VS% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (volatile unsigned long *) $moduleNameLC;
+%VS% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (void *) $moduleNameLC;
 %%EndOfCode%%
 %%INIT_POINTERS%%
 

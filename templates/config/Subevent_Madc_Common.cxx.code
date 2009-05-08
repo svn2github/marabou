@@ -1,16 +1,17 @@
 %%BeginOfCode%%
-Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+
+Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:		   TMrbSubevent_Caen::FillSubevent
-// Purpose: 	   Decode CAEN buffer
+// Name:		   TMrbSubevent_Madc::FillSubevent
+// Purpose: 	   Decode MADC32 buffer
 // Arguments:	   const UShort_t * SevtData   -- pointer to unpacked subevent data
 //  			   Int_t SevtWC 			   -- word count
 //  			   Int_t TimeStamp  		   -- time since last start
 //  											  in units of 100 microsecs
 // Results: 	   kTRUE/kFALSE
 // Exceptions:     
-// Description:    Decodes data from a CAEN Vxxx.
+// Description:    Decodes data from a Mesytec MADC32.
 // Keywords:	   
 //////////////////////////////////////////////////////////////////////////////
 
@@ -22,10 +23,11 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 	Int_t origSevtWC = SevtWC;				// save original subevent wc
 	if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
 	Int_t wordsProcessed = 0; 			// words processed so far
-	ULong_t * dataPtr = (ULong_t *) SevtData;
+	UShort_t * dataPtr = (UShort_t *) SevtData;
 	Int_t eventsProcessed = 0;
-	while (SevtWC > 0) {									// subevent may contain several CAEN modules
-		Int_t header = *dataPtr++;
+	while (SevtWC > 0) {									// subevent may contain several madc modules
+		Int_t header = (*dataPtr++ << 16);
+		header |= *dataPtr++;
 		if ((header & MADC_M_ID) != MADC_D_HDR) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
 			cerr	<< setred
@@ -42,9 +44,16 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 		if (res >= kMrbMadcRes8k) dmask = MADC_M_RES8K;
 
 		Int_t wc = header & MADC_M_WC;							// extract wc
-		Int_t wcs = wc;
+		Int_t wcs = (wc + 1) * 2; 								// wc + header
 
-		Int_t trailer = *(dataPtr + wc); 	// inspect trailer word
+		UShort_t * trailPtr = dataPtr + 2 * (wc - 2);
+
+		UInt_t highTimeStamp = (*trailPtr++ << 16);		// possibly extended timestam
+		highTimeStamp |= *trailPtr++;
+
+		Int_t trailer = (*trailPtr++ << 16); 	// inspect trailer word
+		trailer |= *trailPtr++;
+
 		if ((trailer & MADC_M_ID) != MADC_D_EOE) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
 			cerr	<< setred
@@ -54,22 +63,26 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 					<< setblack << endl;
 			return(kTRUE);
 		}
-
-		union ts {					// union to map a longlong to a int array
-			Int_t arr[3];
-			Long64_t ll;
-		}
-		ts.ll = 0;
-
-		Int_t upts = *(dataPtr + wc - 1);			// inspect extended timestamp (bits 30-45)
-		if ((upts & MADC_M_XTS) == MADC_D_XTS) ts.ll = (upts & MADC_M_TSHIGH) << 30;
-
-		Int_t lowts = trailer & MADC_M_TSLOW;	// extract lower bits of time stamp (bits 0-29)
-		ts.ll += lowts;
-
 		wc--;								// - trailer word
-		wcs++;								// + header word
 
+		Bool_t xts = kFALSE;
+		ULong64_t ts64 = 0;
+
+		if ((highTimeStamp & MADC_M_XTS) == MADC_D_XTS) {
+			ts64 = ((Long64_t) (highTimeStamp & MADC_M_TSHIGH)) << 30;
+			wc--;							// - extended ts
+			xts = kTRUE;
+		}
+
+		UInt_t lowTimeStamp = trailer & MADC_M_TSLOW;	// extract lower bits of time stamp (bits 0-29)
+		ts64 |= lowTimeStamp;
+
+		UShort_t tsArr[3];
+		for (Int_t t = 2; t >= 0; t--) {
+			tsArr[t] = ts64 & 0xFFFF;
+			ts64 >>= 16;
+		}
+	
 		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
 		if (mle == NULL) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
@@ -84,7 +97,8 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 
 		UShort_t evtData[2];
 		for (; wc; wc--) {
-			Int_t data = *dataPtr++;
+			Int_t data = (*dataPtr++ << 16);
+			data |= *dataPtr++;
 			if ((data & MADC_M_ID) != MADC_D_DATA) {
 				if ((data & MADC_M_XTS) == MADC_D_XTS) continue;
 				if ((data & MADC_M_ID) == MADC_D_EOE) {
@@ -94,7 +108,7 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC=" << wordsProcessed
 							<< "] Unexpected EOB - remaining wc=" << wc << " ignored. Continuing with next event."
 							<< setblack << endl;
-					dataPtr--;
+					dataPtr -= 2;
 					wcs -= wc;
 					break;
 				} else {
@@ -114,10 +128,13 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 			this->GetHitBuffer()->AddHit(	eventsProcessed,
 											moduleNumber,
 											chn,
-											ts.arr,
+											tsArr,
 											evtData, 2);
 		}
-		*dataPtr++; 		 				// skip trailer word
+
+		if (xts) dataPtr += 2;				// compensate for extended ts
+		dataPtr += 2;						// and for trailer
+
 		SevtWC -= wcs;						// remaining subevent data
 		wordsProcessed += wcs;
 		eventsProcessed++;

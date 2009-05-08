@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMEModule.cxx,v 1.11 2009-04-30 10:46:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbVMEModule.cxx,v 1.12 2009-05-08 16:24:51 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -176,7 +176,7 @@ Bool_t TMrbVMEModule::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadou
 		Template.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 		Template.Substitute("$addrMod", (Int_t) this->GetAddrModifier(), 16);
 		Template.Substitute("$segSize", this->GetSegmentSize(), 16);
+		Template.WriteCode(RdoStrm);
 	}
-	Template.WriteCode(RdoStrm);
 	return(kTRUE);
 }

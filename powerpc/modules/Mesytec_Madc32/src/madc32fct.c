@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $       
-//! $Date: 2009-05-06 07:23:45 $
+//! $Revision: 1.3 $       
+//! $Date: 2009-05-08 16:24:51 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -38,12 +38,14 @@ struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 		s->baseAddr = base;
 		s->vmeAddr = vmeAddr;
 		strcpy(s->moduleName, moduleName);
+		strcpy(s->prefix, "m_read_meb");
+		strcpy(s->mpref, "madc32: ");
 		s->serial = serial;
 		s->verbose = FALSE;
 		s->dumpRegsOnInit = FALSE;
 	} else {
-		sprintf(msg, "[alloc] %s: Can't allocate madc32 struct", s->moduleName);
-		f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+		sprintf(msg, "[%salloc] %s: Can't allocate madc32 struct", s->mpref, s->moduleName);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 	return s;
 }
@@ -310,8 +312,6 @@ void madc32_setEclTerm_db(struct s_madc32 * s) { madc32_setEclTerm(s, s->eclTerm
 
 void madc32_setEclTerm(struct s_madc32 * s, uint16_t term)
 {
-		sprintf(msg, "%s: term=%#x m=%#x", s->moduleName, term, MADC32_ECL_TERMINATORS_MASK);
-		f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
 	SET16(s->baseAddr, MADC32_ECL_TERMINATORS, term & MADC32_ECL_TERMINATORS_MASK);
 }
 
@@ -421,14 +421,21 @@ void madc32_moduleInfo(struct s_madc32 * s)
 {
 	int firmware;
 	firmware = GET16(s->baseAddr, MADC32_FIRMWARE_REV);
-	sprintf(msg, "[module_info] %s: phys addr %#lx, mapped to %#lx, firmware %02x.%02x",
+	sprintf(msg, "[%smodule_info] %s: phys addr %#lx, mapped to %#lx, firmware %02x.%02x",
+									s->mpref,
 									s->moduleName,
 									s->vmeAddr,
 									s->baseAddr,
 									((firmware >> 8) & 0xff), (firmware & 0xff));
-	f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }
  
+void madc32_setPrefix(struct s_madc32 * s, char * prefix)
+{
+	strcpy(s->prefix, prefix);
+	strcpy(s->mpref, "");
+}
+
 bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 {
 	char res[256];
@@ -437,13 +444,13 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 	int i;
 
 	if (root_env_read(file) < 0) {
-		sprintf(msg, "[fill_struct] %s: Error reading file %s", s->moduleName, file);
-		f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+		sprintf(msg, "[%sfill_struct] %s: Error reading file %s", s->mpref, s->moduleName, file);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	}
 
-	sprintf(msg, "[fill_struct] %s: Reading settings from file %s", s->moduleName, file);
-	f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+	sprintf(msg, "[%sfill_struct] %s: Reading settings from file %s", s->mpref, s->moduleName, file);
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	s->verbose = root_env_getval_b("MADC32.VerboseMode", FALSE);
 
@@ -455,8 +462,8 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 
 	sp = root_env_getval_s("MADC32.ModuleName", "");
 	if (strcmp(s->moduleName, "madc32") != 0 && strcmp(sp, s->moduleName) != 0) {
-		sprintf(msg, "[fill_struct] %s: File %s contains wrong module name - %s", s->moduleName, file, sp);
-		f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+		sprintf(msg, "[%sfill_struct] %s: File %s contains wrong module name - %s", s->mpref, s->moduleName, file, sp);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	}
 	strcpy(mnUC, sp);
@@ -474,8 +481,8 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 		sprintf(res, "MADC32.%s.AddrReg", mnUC);
 		s->addrReg = root_env_getval_i(res, 0);
 		if (s->addrReg == 0) {
-			sprintf(msg, "[fill_struct] %s: vme addr missing (addr source = reg)", s->moduleName);
-			f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+			sprintf(msg, "[%sfill_struct] %s: vme addr missing (addr source = reg)", s->mpref, s->moduleName);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 	}
 
@@ -487,8 +494,8 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 
 #if 0
 	if (s->fifoLength == 0) {
-		sprintf(msg, "[fill_struct] %s: fifo length missing", s->moduleName);
-		f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+		sprintf(msg, "[%sfill_struct] %s: fifo length missing", s->mpref, s->moduleName);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 #endif
 
@@ -616,13 +623,13 @@ bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
 
 	f = fopen(file, "w");
 	if (f == NULL) {
-		sprintf(msg, "[dump_regs] %s: Error writing file %s", s->moduleName, file);
-		f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+		sprintf(msg, "[%sdump_regs] %s: Error writing file %s", s->mpref, s->moduleName, file);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	}
 
-	sprintf(msg, "[dump_regs] %s: Dumping settings to file %s", s->moduleName, file);
-	f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+	sprintf(msg, "[%sdump_regs] %s: Dumping settings to file %s", s->mpref, s->moduleName, file);
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	fprintf(f, "Thresholds:\n");
 	for (ch = 0; ch < NOF_CHANNELS; ch++) fprintf(f, "   %2d: %d\n", ch, madc32_getThreshold(s, ch));
@@ -666,13 +673,13 @@ bool_t madc32_dumpRaw(struct s_madc32 * s, char * file)
 
 	f = fopen(file, "w");
 	if (f == NULL) {
-		sprintf(msg, "[dump_regs] %s: Error writing file %s", s->moduleName, file);
-		f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+		sprintf(msg, "[%sdump_regs] %s: Error writing file %s", s->mpref, s->moduleName, file);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	}
 
-	sprintf(msg, "[dump_regs] %s: Dumping raw data to file %s", s->moduleName, file);
-	f_ut_send_msg("__madc32", msg, ERR__MSG_INFO, MASK__PRTT);
+	sprintf(msg, "[%sdump_regs] %s: Dumping raw data to file %s", s->mpref, s->moduleName, file);
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	for (i = 0x6000; i < 0x60B0; i += 2) {
 		fprintf(f, "%#lx %#x\n", i, GET16(s->baseAddr, i)); 

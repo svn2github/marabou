@@ -58,7 +58,7 @@ Bool_t TMrbSubevent_Sis::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 		Int_t moduleID = (header >> kMrbSevt_10_12_SH_ModuleId) & kMrbSevt_10_12_M_ModuleId;
 		Bool_t sis3801 = (moduleID == (kMrbModIdSis_3801 & kMrbSevt_10_12_M_ModuleId));
 		wc -= 2;				 // count for header words
-		UShort_t evtData[2];
+		UShort_t evtData[4];
 		Int_t lastChn = 100000;
 		for (; wc; wc-=2) {		 // 2 words per channel
 			Int_t chn;
