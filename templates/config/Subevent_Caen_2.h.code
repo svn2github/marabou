@@ -56,6 +56,8 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Caen {
 
 		void InitParArr();					// initialize param addresses
 
+		inline Int_t FillData(Int_t Index) { this->FillData(fParArr, Index);	// copy dat from hitbuffer to sevt vector
+
 		inline Int_t GetIndex() const { return(kMrbSevt%%SEVT_NAME_UC%%); };			// subevent index
 		inline UInt_t GetIndexBit() const { return(kMrbSevtBit%%SEVT_NAME_UC%%); };	// subevent index bit
 
