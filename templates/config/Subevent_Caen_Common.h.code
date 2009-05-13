@@ -22,6 +22,8 @@ class TMrbSubevent_Caen : public TObject {
 		};
 		inline TUsrHitBuffer * GetHitBuffer() { return(&fHitBuffer); };
 
+		Int_t FillData(Int_t * ParArr, Int_t Index);
+
 	protected:
 		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };
 

@@ -123,6 +123,35 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 	return(kTRUE);
 }
 
+Int_t TMrbSubevent_Caen::FillData(Int_t * ParArr[], Int_t Index) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:		   TMrbSubevent_Caen::FillData
+// Purpose: 	   Copy one event to subevent vector
+// Arguments:	   Int_t * ParArr[]       -- array containing pointers to params
+//  			   Int_t Index            -- start index in hit buffer
+// Results: 	   Int_t NextIndex        -- index to start over, -1 of end of buffer
+// Exceptions:     
+// Description:    Copies next event from hitbuffer to subevent vector.
+// Keywords:	   
+//////////////////////////////////////////////////////////////////////////////
+
+	TClonesArray * hits = fHitBuffer.GetCA();
+	Int_t nofHist = fHitBuffer.GetNofHits();
+	if (nofHits > 0) {
+		TUsrHit * h = hits->At(Index);
+		Int_t evtNo = h->GetEventNumber();
+		for (Int_t hit = Index; hit < nofHits; hit++) {
+			h = hbx->At(hit);
+			if (evtNo != h->GetEventNumber()) return(hit);
+			evtNo = h->GetEventNumber();
+			Int_t * pa = ParArr[h->GetChannel()];
+			if (pa) *pa = h->GetEnergy();
+		}
+	}
+	return(-1);
+}
+
 %%EndOfCode%%
 %%SEVT_CLASS_METHODS%%
 

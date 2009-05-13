@@ -75,6 +75,28 @@
 %%SEVT_BOOK_PARAMS%%
 
 %%BeginOfCode%%
+%B%Bool_t TUsrSevt$sevtNameUC::InitParArr() {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name: 		  TUsrSevt$sevtNameUC::InitParArr
+%B%// Purpose:  	  Initialize array with param addresses
+%B%// Arguments:	  --
+%B%// Results:  	  --
+%B%// Description:    Fills array 'fParArr' with pointers to params.
+%B%// Keywords: 	  
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%S% 	fParArr[$paramIndex] = &$paramNameLC;
+%XB% 	Int_t parNo = 0;
+%X% 	for (Int_t i = 0; i < $indexRange; i++) fParArr[parNo++] = &$paramNameLC[i];
+%A% 	fParArr[k$paramNameUC] = &fData[k$paramNameUC];
+%E%
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%SEVT_INIT_PARARR%%
+
+%%BeginOfCode%%
 %BN%Bool_t TUsrSevt$sevtNameUC::FillHistograms() {
 %BN%//________________________________________________________________[C++ METHOD]
 %BN%//////////////////////////////////////////////////////////////////////////////
