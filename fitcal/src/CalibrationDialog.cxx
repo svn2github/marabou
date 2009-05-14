@@ -161,12 +161,14 @@ The procedure to use previously fitted peaks is as follows:\n\
    }
 //   fSelPad = gPad;
 //   cout << "fSelPad " <<  fSelPad << endl;
-   if (fSelCanvas == NULL && fInteractive) {
-     cout << "fSelCanvas = 0!!" <<  endl;
-   } else {
-      cout << "TCanvas* ca = (TCanvas*)" << fSelCanvas <<   endl;
-      fParentWindow = (TRootCanvas*)fSelCanvas->GetCanvasImp();
-   }
+   if (fInteractive) {
+		if (fSelCanvas == NULL) {
+     		cout << "fSelCanvas = 0!!" <<  endl;
+		} else {
+			cout << "TCanvas* ca = (TCanvas*)" << fSelCanvas <<   endl;
+			fParentWindow = (TRootCanvas*)fSelCanvas->GetCanvasImp();
+		}
+	}
 
 //  function name
    fFuncName = fSelHist->GetName();
