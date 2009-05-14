@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.51 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.52 2009-05-14 09:49:54 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -1056,7 +1056,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			if (entryType & TGMrbMacroArg::kGMrbMacroEntryBitMulti) {
 
 				macroArg->fEntry = new TGMrbLabelEntry(parentFrame, argTitle.Data(),
-														40, argNo << TGMrbButtonFrame::kFrameIdShift,
+														40, argNo,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														macroArg->fEntryWidth,
@@ -1064,7 +1064,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 														NULL, NULL, checkBtn, NULL, kHorizontalFrame, kSunkenFrame, macroArg->fNofEntryFields);
 			} else {
 				macroArg->fEntry = new TGMrbLabelEntry(parentFrame, argTitle.Data(),
-														40, argNo << TGMrbButtonFrame::kFrameIdShift,
+														40, argNo,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														macroArg->fEntryWidth,
@@ -1186,7 +1186,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fButtons.SetPatternMode();
 			macroArg->fButtons.AddNamedX(kGMrbMacroYesNoButtons);
 			macroArg->fRadio = new TGMrbRadioButtonList(parentFrame, argTitle.Data(),
-														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, 1,
+														&macroArg->fButtons, argNo, 1,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC);
@@ -1242,7 +1242,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 				}
 				if (entryType == TGMrbMacroArg::kGMrbMacroEntryRadio) {
 					macroArg->fRadio = new TGMrbRadioButtonList(parentFrame, argTitle.Data(),
-														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, macroArg->fNofCL,
+														&macroArg->fButtons, argNo, macroArg->fNofCL,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC, macroArg->fOrientation);
@@ -1256,7 +1256,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					((TGMrbButtonFrame *) macroArg->fRadio)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ProcessSignal(Int_t, Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryCheck) {
 					macroArg->fCheck = new TGMrbCheckButtonList(parentFrame, argTitle.Data(),
-														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, macroArg->fNofCL,
+														&macroArg->fButtons, argNo, macroArg->fNofCL,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC,
@@ -1270,7 +1270,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					((TGMrbButtonFrame *) macroArg->fCheck)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ProcessSignal(Int_t, Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryText) {
 					macroArg->fText = new TGMrbTextButtonList(parentFrame, argTitle.Data(),
-														&macroArg->fButtons, argNo << TGMrbButtonFrame::kFrameIdShift, macroArg->fNofCL,
+														&macroArg->fButtons, argNo, macroArg->fNofCL,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC,
@@ -1280,7 +1280,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					((TGMrbButtonFrame *) macroArg->fText)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ProcessSignal(Int_t, Int_t)");
 				} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryCombo) {
 					macroArg->fCombo = new TGMrbLabelCombo(parentFrame, argTitle.Data(), &macroArg->fButtons,
-														argNo << TGMrbButtonFrame::kFrameIdShift, -1,
+														argNo, -1,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														macroArg->fEntryWidth,
@@ -1320,7 +1320,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fFileInfo->fIniDir = (Char_t *) gSystem->WorkingDirectory();
 			macroArg->fFileInfo->fFileTypes = (const Char_t **) macroArg->fPtrFileTypes;
 			macroArg->fFile = new TGMrbFileEntry(parentFrame, argTitle.Data(), 100,
-												argNo << TGMrbButtonFrame::kFrameIdShift,
+												argNo,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
 												macroArg->fEntryWidth,
@@ -1333,7 +1333,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fFile->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "ProcessSignal(Int_t, Int_t)");
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryFObjCombo) {
 			macroArg->fFObjCombo = new TGMrbFileObjectCombo(parentFrame, argTitle.Data(), 100,
-												argNo << TGMrbButtonFrame::kFrameIdShift,
+												argNo,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
 												macroArg->fEntryWidth,
@@ -1352,7 +1352,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			}
 		} else if (entryType == TGMrbMacroArg::kGMrbMacroEntryFObjListBox) {
 			macroArg->fFObjListBox = new TGMrbFileObjectListBox(parentFrame, argTitle.Data(), 100,
-												argNo << TGMrbButtonFrame::kFrameIdShift,
+												argNo,
 												frameWidth - 20,
 												TGMrbMacroFrame::kLineHeight,
 												macroArg->fEntryWidth,

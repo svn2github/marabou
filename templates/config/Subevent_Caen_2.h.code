@@ -19,7 +19,6 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Caen {
 	public:
 		TUsrSevt%%SEVT_NAME_UC%%() {			// default ctor
 			fSevtName = "%%SEVT_NAME_LC%%";
-			this->InitParArr();
 		};
 		~TUsrSevt%%SEVT_NAME_UC%%() {};			// default dtor
 
@@ -54,10 +53,6 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Caen {
 %%EndOfCode%%
 %%SEVT_DEFINE_ADDR%%
 
-		void InitParArr();					// initialize param addresses
-
-		inline Int_t FillData(Int_t Index) { this->FillData(fParArr, Index); };	// copy dat from hitbuffer to sevt vector
-
 		inline Int_t GetIndex() const { return(kMrbSevt%%SEVT_NAME_UC%%); };			// subevent index
 		inline UInt_t GetIndexBit() const { return(kMrbSevtBit%%SEVT_NAME_UC%%); };	// subevent index bit
 
@@ -66,7 +61,6 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Caen {
 
 // define private data members here
 %%BeginOfCode%%	
-%P% 		$dataType * fParArr[$nofParams];
 %S% 		$dataType $paramNameLC; 				// $sevtNameLC.$paramNameLC
 %X% 		$dataType $paramNameLC[$indexRange];			// $sevtNameLC.$paramNameLC
 %A% 		$dataType fData[$nofParams];

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.39 2009-05-13 13:42:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.40 2009-05-14 09:49:54 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -764,11 +764,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 					}
 					break;
 				case TMrbConfig::kAnaSevtPrivateData:
-					anaTmpl.InitializeCode("%P%");
-					anaTmpl.Substitute("$dataType", dataType->GetTitle());
-					anaTmpl.Substitute("$nofParams",this->GetNofParams());
-					anaTmpl.WriteCode(AnaStrm);
-					// ATTENTION: we fall thru here ...
 				case TMrbConfig::kAnaSevtDefineAddr:
 					if (this->IsInArrayMode()) {
 						param = (TMrbModuleChannel *) fLofParams.First();
@@ -968,61 +963,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 						anaTmpl.WriteCode(AnaStrm);
 					}
 					break;
-				case TMrbConfig::kAnaSevtInitParArr:
-					{
-						anaTmpl.InitializeCode("%B%");
-						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-						anaTmpl.WriteCode(AnaStrm);
-						if (this->IsA() != TMrbSubevent_Data_S::Class() && this->IsA() != TMrbSubevent_Data_I::Class()) {
-							pFlag = prependPrefix;
-							pUC = prefixUC;
-							TList onceOnly;
-							TIterator * eiter = fLofEvents.MakeIterator();
-							while (evt = (TMrbEvent *) eiter->Next()) {
-								evtNameLC = evt->GetName();
-								evtNameUC = evtNameLC;
-								evtNameUC(0,1).ToUpper();
-								TIterator * piter = fLofParams.MakeIterator();
-								if (!this->IsInArrayMode() && (paramStatus != TMrbConfig::kChannelSingle)) {
-									anaTmpl.InitializeCode("%XB%");
-									anaTmpl.WriteCode(AnaStrm);
-								}
-								while (param = (TMrbModuleChannel *) piter->Next()) {
-									if (onceOnly.FindObject(param->GetName()) == NULL) {
-										onceOnly.Add(new TNamed(param->GetName(), ""));
-										paramStatus = param->GetStatus();
-										if (paramStatus != TMrbConfig::kChannelArrElem) {
-											module = (TMrbModule *) param->Parent();
-											moduleNameLC = module->GetName();
-											moduleNameUC = moduleNameLC;
-											moduleNameUC(0,1).ToUpper();
-											paramNameLC = param->GetHeadName();
-											paramNameUC = paramNameLC;
-											paramNameUC(0,1).ToUpper();
-											if (this->IsInArrayMode())							anaTmpl.InitializeCode("%A%");
-											else if (paramStatus == TMrbConfig::kChannelSingle) anaTmpl.InitializeCode("%S%");
-											else												anaTmpl.InitializeCode("%X%");
-											if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
-											else		anaTmpl.Substitute("$prefix", "");
-											anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-											anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
-											anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
-											anaTmpl.Substitute("$paramNameLC", paramNameLC);
-											anaTmpl.Substitute("$paramNameUC", paramNameUC);
-											anaTmpl.Substitute("$paramIndex", param->GetAddr());
-											anaTmpl.Substitute("$indexRange", (Int_t) param->GetIndexRange());
-											anaTmpl.WriteCode(AnaStrm);
-										}
-									}
-								}
-							}
-							onceOnly.Delete();
-						}
-						anaTmpl.InitializeCode("%E%");
-						anaTmpl.WriteCode(AnaStrm);
-					}
-					break;
+
 				case TMrbConfig::kAnaSevtBookParams:
 					{
 						anaTmpl.InitializeCode("%B%");
