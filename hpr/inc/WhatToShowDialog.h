@@ -15,6 +15,7 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
+   Int_t fDim;
    Int_t fOpts[kNopts];
    Int_t fOptStat;
    Int_t fShowDateBox;

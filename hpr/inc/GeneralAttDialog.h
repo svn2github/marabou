@@ -13,6 +13,7 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
+	Int_t        fGlobalStyleButton;
 
 public:
    static Int_t fForceStyle;
@@ -29,6 +30,7 @@ public:
    static Int_t fStackedReally;
    static Int_t fStackedNostack;
    static Int_t fStackedPads;
+	static TString fGlobalStyle;
 
    GeneralAttDialog(TGWindow * win = NULL);
    ~GeneralAttDialog() {};

@@ -207,7 +207,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fFitMacroName =
        env.GetValue("HistPresent.FitMacroName", "fit_user_function.C");
 
-   RestoreDefaults();
+   RestoreDefaultRanges();
 //   cout << "FitMacroName " << fFitMacroName.Data()<< endl;
 
    fTemplateMacro = "TwoGaus";
@@ -217,24 +217,33 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fHistLineWidth = env.GetValue("Set1DimOptDialog.fHistLineWidth", 1);
    fHistFillStyle = env.GetValue("Set1DimOptDialog.fHistFillStyle", 3001);
    fLiveStat2Dim  = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
-   f2DimBackgroundColor = env.GetValue("Set2DimOptDialog.f2DimBackgroundColor", 0);
    fLiveStat1Dim  = env.GetValue("Set1DimOptDialog.fLiveStat1Dim", 0);
    fLiveGauss     = env.GetValue("Set1DimOptDialog.fLiveGauss", 0);
    fLiveBG        = env.GetValue("Set1DimOptDialog.fLiveBG", 0);
    fDrawAxisAtTop = env.GetValue("Set1DimOptDialog.fDrawAxisAtTop", 0);
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
-//   fShowErrors    = env.GetValue("Set1DimOptDialog.fShowErrors", 0);
    fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "E");
+   fMarkerSize    = env.GetValue("Set1DimOptDialog.fMarkerSize", 0);
    gStyle->SetErrorX(env.GetValue("Set1DimOptDialog.fErrorX", 0.));
    fDrawOpt2Dim   = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
    fShowZScale    = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
+   f2DimBackgroundColor = env.GetValue("Set2DimOptDialog.f2DimBackgroundColor", 0);
    if ( fShowZScale != 0 )fDrawOpt2Dim += "Z";
-   fOptStat       = env.GetValue("WhatToShowDialog.fOptStat", 11111);
-   fShowDateBox   = env.GetValue("WhatToShowDialog.fShowDateBox", 1);
-   fShowStatBox   = env.GetValue("WhatToShowDialog.fShowStatBox", 1);
-   fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay", 1);
-   fShowTitle  = env.GetValue("WhatToShowDialog.fShowTitle", 1);
-   fShowFitBox = env.GetValue("WhatToShowDialog.fShowFitBox", 1);
+   if ( fSelHist->GetDimension() == 1 ) {
+		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat1Dim", 1);
+		fShowDateBox      = env.GetValue("WhatToShowDialog.fShowDateBox1Dim", 1);
+		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox1Dim", 1);
+		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay1Dim", 1);
+      fShowTitle        = env.GetValue("WhatToShowDialog.fShowTitle1Dim", 1);
+      fShowFitBox       = env.GetValue("WhatToShowDialog.fShowFitBox1Dim",1);
+   } else {
+		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat2Dim", 1);
+		fShowDateBox      = env.GetValue("WhatToShowDialog.fShowDateBox2Dim", 1);
+		fShowStatBox      = env.GetValue("WhatToShowDialog.fShowStatBox2Dim", 1);
+		fUseTimeOfDisplay = env.GetValue("WhatToShowDialog.fUseTimeOfDisplay2Dim", 1);
+      fShowTitle        = env.GetValue("WhatToShowDialog.fShowTitle2Dim", 1);
+      fShowFitBox       = env.GetValue("WhatToShowDialog.fShowFitBox2Dim",1);
+   }
    fTitleCenterX  = env.GetValue("SetHistOptDialog.fTitleCenterX", 0);
    fTitleCenterY  = env.GetValue("SetHistOptDialog.fTitleCenterY", 0);
    fTitleCenterZ  = env.GetValue("SetHistOptDialog.fTitleCenterZ", 0);
@@ -308,7 +317,7 @@ FitHist::~FitHist()
    }
    if (fTofLabels) { delete fTofLabels; fTofLabels=NULL;}
    if (fCalFunc) delete fCalFunc;
-   if (fDateText) delete fDateText;
+//   if (fDateText) delete fDateText;
    if (!cHist || !cHist->TestBit(TObject::kNotDeleted) ||
        cHist->TestBit(0xf0000000)) {
       cout << "~FitHist: " << this << " Canvas : " << cHist << " is deleted" << endl;
@@ -461,10 +470,10 @@ void FitHist::SaveDefaults(Bool_t recalculate)
 }
 //________________________________________________________________
 
-void FitHist::RestoreDefaults()
+void FitHist::RestoreDefaultRanges()
 {
    TEnv * lastset = GetDefaults(fHname);
-//   cout << "RestoreDefaults() " << lastset<< endl;
+//   cout << "RestoreDefaultRanges() " << lastset<< endl;
 	if (!lastset) return;
    fFitMacroName = lastset->GetValue("FitMacroName",fFitMacroName.Data());
    if (hp && (GeneralAttDialog::fRememberLastSet || GeneralAttDialog::fRememberZoom)) {
@@ -628,6 +637,7 @@ void FitHist::handle_mouse()
       }
    }
    if (event == kButton1Down) {
+//      cout << "handle_mouse select " << select->ClassName() << endl;
       if (select->InheritsFrom("TF1")) {
          TF1 *f = (TF1*)select;
          cout  << endl << "------  Function " << f->GetName() << " --------" << endl;
@@ -645,6 +655,13 @@ void FitHist::handle_mouse()
    if ( fDimension == 3 )  return;
 
    TEnv env(".hprrc");
+   if ( (fDimension == 1 && 
+      (Int_t)env.GetValue("Set1DimOptDialog.fLiveStat1Dim",0) == 0 ) )
+      return;
+   if ( (fDimension == 2 && 
+      (Int_t)env.GetValue("Set2DimOptDialog.fLiveStat2Dim",0) == 0) )
+      return;
+   
    if (event == kButton1Down) {
       if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")
          ||  (select->InheritsFrom("TCanvas") && IsInsideFrame(cHist, px, py))) {
@@ -1040,9 +1057,11 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    cHist = new HTCanvas(fCname.Data(), fCtitle.Data(),
                         win_topx, win_topy, win_widx, win_widy, hp, this);
    fCanvasIsAlive = kTRUE;
+   cHist->SetWindowSize(win_widx + (win_widx - cHist->GetWw()),
+                        win_widy + (win_widy - cHist->GetWh()));
 //   if (hp)
 //      hp->GetCanvasList()->Add(cHist);
-   cHist->ToggleEventStatus();
+//    cHist->ToggleEventStatus();
 
    cHist->SetEditable(kTRUE);
 
@@ -1071,13 +1090,12 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
          cHist->SetLogy();
       Draw1Dim();
    }
-   cHist->Update();
    cHist->GetFrame()->SetBit(TBox::kCannotMove);
-   gSystem->ProcessEvents();
+//   gSystem->ProcessEvents();
 //  set the drawing area taking intoa account toolbars and decoration
-   cHist->SetWindowSize(win_widx + (win_widx - cHist->GetWw()),
-                        win_widy + (win_widy - cHist->GetWh()));
 //  look if there exists a calibrated version of this histogram
+   cHist->ToggleEventStatus();
+   cHist->Update();
    gSystem->ProcessEvents();
 };
 
@@ -1725,7 +1743,7 @@ void FitHist::WriteOutCanvas()
                      drawopt = "hist";
                      if ( fErrorMode != "none")
                         drawopt += "e1";
-                  hi->SetOption(drawopt.Data());
+//                  hi->SetOption(drawopt.Data());
                   if (fFill1Dim) {
                      if (fHistFillStyle == 0) fHistFillStyle = 1001;
                      hi->SetFillStyle(fHistFillStyle);
@@ -3214,27 +3232,41 @@ void FitHist::Draw3Dim()
 void FitHist::Draw1Dim()
 {
    TString drawopt;
-   gROOT->ForceStyle();
-   gStyle->SetOptTitle(fShowTitle);
-   if ( fErrorMode != "none")
-       drawopt = fErrorMode;
-   if (fShowContour)
-      drawopt += "hist";
-//   if (fShowErrors)
-//      drawopt += "e1";
-   if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
-      fSelHist->SetFillStyle(fHistFillStyle);
-      fSelHist->SetFillColor(fHistFillColor);
-   } else
-      fSelHist->SetFillStyle(0);
-   fSelHist->SetOption(drawopt.Data());
-//   fSelHist->DrawCopy();
+   
+   if ( gROOT->GetForceStyle() ) {
+		if (fErrorMode != "none") {
+			 drawopt += fErrorMode;
+		} 
+		if ( fMarkerSize > 0 && fShowContour == 0 ) {
+			 drawopt += "P";
+		}
+		if (drawopt.Length() == 0 || fShowContour != 0) drawopt += "HIST";
+
+		gStyle->SetOptTitle(fShowTitle);
+		if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
+			 fSelHist->SetFillStyle(fHistFillStyle);
+			 fSelHist->SetFillColor(fHistFillColor);
+		} else
+			 fSelHist->SetFillStyle(0);
+		fSelHist->SetOption(drawopt.Data());
+	 //   fSelHist->DrawCopy();
+	 //   fSelHist->Draw();
+		if (fTitleCenterX)
+			 fSelHist->GetXaxis()->CenterTitle(kTRUE);
+		if (fTitleCenterY)
+			 fSelHist->GetYaxis()->CenterTitle(kTRUE);
+		cHist->GetFrame()->SetFillStyle(0);
+	 //   Int_t save_optstat = gStyle->GetOptStat();
+		if (fShowStatBox) {
+			 gStyle->SetOptStat(fOptStat);
+			 fSelHist->SetStats(1);
+//			 cout << "fSelHist->SetStats(1); " << fOptStat << endl;
+		} else {
+			 fSelHist->SetStats(0);
+//			 cout << "fSelHist->SetStats(0); " << endl;
+		} 
+   }
    fSelHist->Draw();
-   if (fTitleCenterX)
-      fSelHist->GetXaxis()->CenterTitle(kTRUE);
-   if (fTitleCenterY)
-      fSelHist->GetYaxis()->CenterTitle(kTRUE);
-   cHist->GetFrame()->SetFillStyle(0);
    TList *lof = fOrigHist->GetListOfFunctions();
 
    Double_t ymax  = fSelHist->GetMaximum();
@@ -3263,8 +3295,6 @@ void FitHist::Draw1Dim()
       fSelPad->Modified(kTRUE);
    }
    DrawDate();
-   fSelHist->SetStats(0);
-   if (fShowStatBox) fSelHist->SetStats(1);
 //  add extra axis (channels) at top
    if (fDrawAxisAtTop) {
       TPaveStats * st = (TPaveStats *)cHist->GetPrimitive("stats");
@@ -3282,8 +3312,9 @@ void FitHist::Draw1Dim()
       exec->Draw();
 
    }
-   UpdateDrawOptions();
+//   UpdateDrawOptions();
    cHist->Update();
+//   gStyle->SetOptStat(save_optstat);
 }
 //____________________________________________________________________________
 
@@ -3299,6 +3330,7 @@ void FitHist::DrawDate()
       }
       dtext += dt.AsSQLString();
       fDateText = new TText(gStyle->GetDateX(),gStyle->GetDateY(),dtext);
+      fDateText->SetName("	DateBox");	
       fDateText->SetTextSize( gStyle->GetAttDate()->GetTextSize());
       fDateText->SetTextFont( gStyle->GetAttDate()->GetTextFont());
       fDateText->SetTextColor(gStyle->GetAttDate()->GetTextColor());
@@ -3318,18 +3350,25 @@ void FitHist::Draw2Dim()
 //   gStyle->SetOptTitle(hp->GetShowTitle());
 //   if (->GetShowTitle())
 //      gStyle->SetTitleFont(hp->fTitleFont);
-   cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim << endl;
-   fSelHist->DrawCopy(fDrawOpt2Dim);
+//   cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim << endl;
+//   fSelHist->DrawCopy(fDrawOpt2Dim);
+   fSelHist->Draw(fDrawOpt2Dim);
    fSelHist->SetOption(fDrawOpt2Dim);
    fSelHist->SetDrawOption(fDrawOpt2Dim);
-   fSelHist->SetStats(0);
+   if (fShowStatBox) {
+      gStyle->SetOptStat(fOptStat);
+      fSelHist->SetStats(1);
+//      cout << "fSelHist->SetStats(1); " << fOptStat << endl;
+   } else {
+      fSelHist->SetStats(0);
+//      cout << "fSelHist->SetStats(0); " << endl;
+   } 
    if (fTitleCenterX)
       fSelHist->GetXaxis()->CenterTitle(kTRUE);
    if (fTitleCenterY)
       fSelHist->GetYaxis()->CenterTitle(kTRUE);
    if (fTitleCenterY)
       fSelHist->GetYaxis()->CenterTitle(kTRUE);
-   if (fShowStatBox) fSelHist->SetStats(1);
    if (gROOT->GetForceStyle()) {
       fSelHist->SetLineColor(gStyle->GetHistLineColor());
    }
@@ -3383,11 +3422,6 @@ void FitHist::Draw2Dim()
        if (cHist->GetAutoExec())
           cHist->ToggleAutoExec();
    }
-//   cout << "FitHist::fDrawOpt2Dim: " <<fDrawOpt2Dim << endl;
- //  cout << "FitHist::Draw2Dim() AutoExec: ";
-//   if (cHist->GetAutoExec()) cout << " on ";
-//   else                      cout << "off ";
-//   cout << endl;
    cHist->Update();
 }
 
@@ -3463,8 +3497,8 @@ void FitHist::UpdateDrawOptions()
    if (gROOT->GetForceStyle()) {
       SetHistOptDialog::SetDefaults();
    }
-   gPad->Modified();
-   gPad->Update();
+//   gPad->Modified();
+//   gPad->Update();
 }
 //______________________________________________________________________________________
 

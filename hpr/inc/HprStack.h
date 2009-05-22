@@ -49,7 +49,6 @@ private:
    Style_t *fMarkerStyle;
    Size_t *fMarkerSize;
    Int_t   fShowContour;
-   Int_t   fShowErrors;
    Int_t   fShowMarkers;
    Float_t fEndErrorSize;
    Float_t   fErrorX;

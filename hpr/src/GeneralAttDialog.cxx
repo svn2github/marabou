@@ -5,8 +5,11 @@
 #include "TObjString.h"
 #include "TObject.h"
 #include "TEnv.h"
+#include "TFile.h"
 #include "TH1.h"
+#include "TKey.h"
 #include "TStyle.h"
+#include "TSystem.h"
 #include "GeneralAttDialog.h"
 #include <iostream>
 
@@ -26,6 +29,8 @@ Int_t GeneralAttDialog::fVertAdjustLimit;
 Int_t GeneralAttDialog::fStackedReally;
 Int_t GeneralAttDialog::fStackedNostack;
 Int_t GeneralAttDialog::fStackedPads;
+TString GeneralAttDialog::fGlobalStyle;
+
 //_______________________________________________________________________
 
 GeneralAttDialog::GeneralAttDialog(TGWindow * win)
@@ -37,6 +42,9 @@ Force style, show hist with current style\n\
 -----------------------------------------\n\
 Use graphics option currently in use instead of options\n\
 stored with the histogram on file\n\
+___________________________________________________________\n\
+Global style, activate roots style options\n\
+------------------------------------------\n\
 ___________________________________________________________\n\
 Max Ents in Lists\n\
 -----------------\n\
@@ -88,10 +96,33 @@ ____________________________________________________________\n\
 
    Int_t ind = 0;
 //   static Int_t dummy;
-
+	TObject *obj;
+	if (!gSystem->AccessPathName("hpr_custom_styles.root", kFileExists)) {
+	   TFile *cstyle = new TFile("hpr_custom_styles.root");
+		TIter n1(gDirectory->GetListOfKeys());
+		TKey* key;
+		while( (key = (TKey*)n1()) ){
+		   if(!strncmp(key->GetClassName(),"TStyle",6)) {
+		      TStyle *sty = (TStyle*)cstyle->Get(key->GetName());
+				cout << "key->GetName() " << key->GetName()<< endl;
+				if (!gROOT->GetListOfStyles()->FindObject(key->GetName()))
+			      gROOT->GetListOfStyles()->Add(sty);
+		   }
+		}
+		cstyle->Close();
+	}
+   TString style_menu ("ComboSelect_Set global style");
+   TIter next(gROOT->GetListOfStyles());
+	while ( (obj = next()) ) {
+	   style_menu += ";";
+	   style_menu += ((TStyle*)obj)->GetName();
+	}
    RestoreDefaults();
    fRow_lab->Add(new TObjString("CheckButton_Force style,show hist with current style"));
    fValp[ind++] = &fForceStyle;
+   fRow_lab->Add(new TObjString(style_menu));
+   fGlobalStyleButton = ind;
+   fValp[ind++] = &fGlobalStyle;
    fRow_lab->Add(new TObjString("CheckButton_Show histlists only"));
    fValp[ind++] = &fShowListsOnly;
    fRow_lab->Add(new TObjString("CheckButton_Suppress warning messages"));
@@ -213,6 +244,11 @@ void GeneralAttDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 //  cout << "CRButtonPressed(" << wid<< ", " <<bid;
 //   if (obj) cout  << ", " << canvas->GetName() << ")";
 //   cout << endl;
+   if (bid == fGlobalStyleButton) {
+	   cout << "Set style to: " << fGlobalStyle << endl;
+		gROOT->SetStyle(fGlobalStyle);
+		gStyle->SetPalette(1,NULL);
+   }
    if (fForceStyle) gROOT->ForceStyle(kTRUE);
    else             gROOT->ForceStyle(kFALSE);
    if (fSuppressWarnings) gErrorIgnoreLevel=kError;

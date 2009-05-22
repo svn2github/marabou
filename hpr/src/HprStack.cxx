@@ -253,8 +253,6 @@ A value of 0.5 draws a line X +- 0.5*BinWidth\n\
 	fValp[ind++] = &fEndErrorSize;
 	fRow_lab->Add(new TObjString("Float_Value+X ErrorS"));
 	fValp[ind++] = &fErrorX;
-//   fRow_lab->Add(new TObjString("CheckButton+Show Errors"));
-//   fValp[ind++] = &fShowErrors;
    fRow_lab->Add(new TObjString("CheckButton_Show Contour"));
    fValp[ind++] = &fShowContour;
    fRow_lab->Add(new TObjString("CheckButton+Draw Markers"));
@@ -323,7 +321,6 @@ void HprStack::RestoreDefaults()
    fErrorX        = env.GetValue("Set1DimOptDialog.fErrorX", 0.);
    fShowContour   = env.GetValue("HprStack.fShowContour", 0);
    fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "none");
-//   fShowErrors    = env.GetValue("HprStack.fShowErrors", 0);
    fShowMarkers   = env.GetValue("HprStack.fShowMarkers", 0);
 
    TString lab;
@@ -383,7 +380,6 @@ void HprStack::SaveDefaults()
    env.SetValue("Set1DimOptDialog.fErrorX",        fErrorX);
    env.SetValue("HprStack.fShowContour", fShowContour);
    env.SetValue("Set1DimOptDialog.fErrorMode",     fErrorMode);
-//   env.SetValue("HprStack.fShowErrors",  fShowErrors );
    env.SetValue("HprStack.fShowMarkers", fShowMarkers );
    
    TString lab;
@@ -459,7 +455,6 @@ void HprStack::SetAttributes()
    }
    gStyle->SetEndErrorSize (fEndErrorSize );
    gStyle->SetErrorX       (fErrorX       );
-//	if (fShowErrors ) opt+= "E1";
    for(Int_t i=0; i<fNDrawn; i++) {
       TH1 * hist = (TH1*)stack->At(i);
       TH1 * ohist = (TH1*)orighist->At(i);
@@ -523,7 +518,7 @@ void HprStack::ClearSubPads()
 		}
 	}
    fCanvas->cd();
-	cout << "ClearSubPads " << temp.GetSize()<< endl;
+//	cout << "ClearSubPads " << temp.GetSize()<< endl;
    if (temp.GetSize() > 0) {
 	   temp.Delete();
    }

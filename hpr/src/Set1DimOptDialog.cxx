@@ -6,6 +6,7 @@
 #include "TObjString.h"
 #include "TObject.h"
 #include "TEnv.h"
+#include "TGraph.h"
 #include "TH1.h"
 #include "TStyle.h"
 #include "Set1DimOptDialog.h"
@@ -20,6 +21,10 @@ Set1DimOptDialog::Set1DimOptDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
 "\n\
+A histogram can either been drawn as a line (\"Contour\")\n\
+or with markers. To fill a histogram \"Contour\" must\n\
+be selected\n\
+\n\
 Error Drawing Modes:\n\
 E	Draw error bars.\n\
 E0	Draw error bars. Markers are drawn for bins with 0 contents.\n\
@@ -42,11 +47,27 @@ values. Selecting \"Live Gauss fit\" fits a gaussian to the\n\
 dragged region. Normally \"Linear background in fit\" should also\n\
 be selected.\n\
 ";
-
-   RestoreDefaults();
-
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
+   fHist = NULL;
+   Int_t nh1 = 0, nh2 = 0;
+   TIter next(fCanvas->GetListOfPrimitives());
+	TObject *obj;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TH1")) {
+         fHist = (TH1*)obj;
+         if (obj->InheritsFrom("TGraph")) {
+            fHist = ((TGraph*)obj)->GetHistogram();
+            if (!fHist) continue;
+		   }
+         if (fHist->GetDimension() == 1) nh1++;
+         if (fHist->GetDimension() > 1)  nh2++;
+      }
+   }
+	if ( fHist == NULL ) {
+	   cout << "No Histogram in Canvas" << endl;
+	}
+   RestoreDefaults();
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
 
@@ -54,7 +75,7 @@ be selected.\n\
  //  static Int_t dummy;
    static TString stycmd("SetHistAttPermLocal()");
 
-   fRow_lab->Add(new TObjString("CheckButton_Contour"));
+   fRow_lab->Add(new TObjString("CheckButton_Contour/Histogram"));
    fValp[ind++] = &fShowContour;
    fRow_lab->Add(new TObjString("CheckButton+Labels at Top X"));
    fRow_lab->Add(new TObjString("CheckButton+Labels at Right Y"));
@@ -68,10 +89,6 @@ be selected.\n\
 	fValp[ind++] = &fHistLineWidth;
    fRow_lab->Add(new TObjString("ComboSelect_Error Mode;none;E;E1;E2;E3;E4;E5;E6"));
    fValp[ind++] = &fErrorMode;
-//   fRow_lab->Add(new TObjString("CheckButton_Show Errors"));
-//   fValp[ind++] = &fShowErrors;
-//	fRow_lab->Add(new TObjString("CheckButton+ErrorX"));
-//	fValp[ind++] = &fErrorX;
 	fRow_lab->Add(new TObjString("Float_Value+EndErrSize "));
 	fValp[ind++] = &fEndErrorSize;
 	fRow_lab->Add(new TObjString("Float_Value+X ErrorS"));
@@ -125,8 +142,10 @@ void Set1DimOptDialog::CloseDialog()
 //   cout << "Set1DimOptDialog::CloseDialog() " << endl;
    gROOT->GetListOfCleanups()->Remove(this);
    if (fDialog) fDialog->CloseWindowExt();
-   fRow_lab->Delete();
-   delete fRow_lab;
+   if (fRow_lab) {
+	   fRow_lab->Delete();
+      delete fRow_lab;
+	}
    delete this;
 }
 //_______________________________________________________________________
@@ -148,11 +167,12 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
    fDrawOpt = "";
    if (fErrorMode != "none") {
       fDrawOpt += fErrorMode;
-   } else if ( fMarkerSize > 0 ) {
+   }
+   if ( fMarkerSize > 0 && fShowContour == 0 ) {
       fDrawOpt += "P";
    }
-//   if (fShowErrors) fDrawOpt += "E1";
-   if (fShowContour) fDrawOpt += "HIST";
+   if (fDrawOpt.Length() == 0 || fShowContour != 0) fDrawOpt += "HIST";
+//   if (fShowContour) fDrawOpt += "HIST";
    if (gPad->GetTickx() < 2 && fLabelsTopX)
       fDrawOpt += "X+";
    if (gPad->GetTicky() < 2 && fLabelsRightY)
@@ -186,6 +206,7 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
 	      pad->Update();
       }
    }
+/*
 	if (fLiveStat1Dim) {
 		if (!canvas->GetAutoExec())
 			canvas->ToggleAutoExec();
@@ -193,6 +214,7 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
        if (canvas->GetAutoExec())
           canvas->ToggleAutoExec();
    }
+*/
 	canvas->Pop();
 	canvas->cd();
 	canvas->Modified();
@@ -244,8 +266,9 @@ void Set1DimOptDialog::SetDefaults()
    gStyle->SetHistLineWidth(env.GetValue("Set1DimOptDialog.fHistLineWidth", 2));
    gStyle->SetEndErrorSize (env.GetValue("Set1DimOptDialog.fEndErrorSize", 0.01));
    gStyle->SetErrorX       (env.GetValue("Set1DimOptDialog.fErrorX", 0));
-   if ( env.GetValue("Set1DimOptDialog.fErrorMode", "") != "none" )
-      gStyle->SetDrawOption      (env.GetValue("Set1DimOptDialog.fErrorMode", ""));
+	TString temp =  env.GetValue("Set1DimOptDialog.fErrorMode", "");
+   if (  temp != "none" )
+      gStyle->SetDrawOption(temp);
    else
       gStyle->SetDrawOption("");
    gStyle->SetMarkerColor     (env.GetValue("Set1DimOptDialog.MarkerColor",       1));
@@ -296,7 +319,6 @@ void Set1DimOptDialog::SaveDefaults()
    env.SetValue("Set1DimOptDialog.fLiveBG"        , fLiveBG);
    env.SetValue("Set1DimOptDialog.fDrawAxisAtTop" , fDrawAxisAtTop);
    env.SetValue("Set1DimOptDialog.fShowContour"   , fShowContour);
-   env.SetValue("Set1DimOptDialog.fShowErrors"    , fShowErrors);
    env.SetValue("Set1DimOptDialog.fLabelsTopX"    , fLabelsTopX);
    env.SetValue("Set1DimOptDialog.fLabelsRightY"  , fLabelsRightY);
 
@@ -307,30 +329,53 @@ void Set1DimOptDialog::SaveDefaults()
 
 void Set1DimOptDialog::RestoreDefaults()
 {
+   if ( !fHist ) return;
    TEnv env(".hprrc");
-   fFill1Dim      = env.GetValue("Set1DimOptDialog.fFill1Dim", 0);
-   fHistFillColor = env.GetValue("Set1DimOptDialog.fHistFillColor", 2);
-   fHistLineColor = env.GetValue("Set1DimOptDialog.fHistLineColor", 1);
-   fHistFillStyle = env.GetValue("Set1DimOptDialog.fHistFillStyle", 0);
-   fHistLineStyle = env.GetValue("Set1DimOptDialog.fHistLineStyle", 1);
-   fHistLineWidth = env.GetValue("Set1DimOptDialog.fHistLineWidth", 2);
-   fEndErrorSize  = env.GetValue("Set1DimOptDialog.fEndErrorSize", 0.01);
-   fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "none");
-   fErrorX        = env.GetValue("Set1DimOptDialog.fErrorX", 0.);
-   fMarkerColor   = env.GetValue("Set1DimOptDialog.MarkerColor",       1);
-   fMarkerStyle   = env.GetValue("Set1DimOptDialog.MarkerStyle",       7);
-   fMarkerSize    = env.GetValue("Set1DimOptDialog.MarkerSize",      1.);
-
    fLiveStat1Dim  = env.GetValue("Set1DimOptDialog.fLiveStat1Dim", 0);
    fLiveGauss     = env.GetValue("Set1DimOptDialog.fLiveGauss", 0);
 	if ( fLiveGauss )
 	   fLiveStat1Dim = 1;
    fLiveBG        = env.GetValue("Set1DimOptDialog.fLiveBG", 0);
    fDrawAxisAtTop = env.GetValue("Set1DimOptDialog.fDrawAxisAtTop", 0);
-   fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
-   fShowErrors    = env.GetValue("Set1DimOptDialog.fShowErrors", 0);
-   fLabelsTopX    = env.GetValue("Set1DimOptDialog.fLabelsTopX", 0);
-   fLabelsRightY  = env.GetValue("Set1DimOptDialog.fLabelsRightY"  , 0);
+	
+	fEndErrorSize  = gStyle->GetEndErrorSize();
+	fErrorX        = gStyle->GetErrorX();
+	fFill1Dim      = fHist->GetFillStyle() != 0;
+	fHistFillColor = fHist->GetFillColor();
+	fHistFillStyle = fHist->GetFillStyle();
+	fHistLineColor = fHist->GetLineColor  ();
+	fHistLineStyle = fHist->GetLineStyle  ();
+	fHistLineWidth = fHist->GetLineWidth  ();
+	fMarkerColor   = fHist->GetMarkerColor();
+	fMarkerStyle   = fHist->GetMarkerStyle();
+	fMarkerSize    = fHist->GetMarkerSize();
+	TString drawopt= fHist->GetDrawOption();
+	
+	fFill1Dim      = fHist->GetFillStyle() != 0;
+	if (drawopt.Length() < 1) {
+	   fErrorMode = "none";
+	   fShowContour = 1;
+		fLabelsTopX = 0;
+		fLabelsRightY = 0;
+   } else {
+		if (drawopt.Contains("X+"))  fLabelsTopX = 1;
+		else                         fLabelsTopX = 0;
+		if (drawopt.Contains("Y+"))  fLabelsRightY = 1;
+		else                         fLabelsRightY = 0;
+		if (drawopt.Contains("HIST"))fShowContour = 1;
+		else                         fShowContour = 0;
+		TString em;
+		fErrorMode = "none";
+		if (drawopt.Contains("E")) {
+		   fErrorMode = "E";
+		   for (Int_t i=1; i<=6; i++) {
+				em = "E";
+				em += i;
+				if ( drawopt.Contains(em.Data()) ) 
+				  fErrorMode = em;
+			}
+		}
+	}
 }
 //______________________________________________________________________
 
@@ -346,9 +391,9 @@ void Set1DimOptDialog::CloseDown(Int_t wid)
 void Set1DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
-  cout << "CRButtonPressed(" << wid<< ", " <<bid;
-   if (obj) cout  << ", " << canvas->GetName() << ")";
-   cout << endl;
+//  cout << "CRButtonPressed(" << wid<< ", " <<bid;
+//   if (obj) cout  << ", " << canvas->GetName() << ")";
+//   cout << endl;
    SetHistAttNow(canvas);
 }
 

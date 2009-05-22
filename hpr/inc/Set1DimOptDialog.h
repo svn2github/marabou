@@ -13,7 +13,8 @@ private:
    Int_t fFlags[100];
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
-   TCanvas      *fCanvas;
+   TCanvas *fCanvas;
+	TH1     *fHist;
    TString fDrawOpt;
    Int_t   fFill1Dim;
    Color_t fHistFillColor ;
@@ -31,7 +32,6 @@ private:
    Int_t   fLiveBG;
    Int_t   fDrawAxisAtTop;
    Int_t   fShowContour;
-   Int_t   fShowErrors;
    TString fErrorMode;
 	Int_t   fLabelsTopX;
 	Int_t   fLabelsRightY;

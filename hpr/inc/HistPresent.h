@@ -83,12 +83,6 @@ protected:
    TMrbHelpBrowser * fHelpBrowser;
    Int_t fSeqNumberMany;
    Int_t fPageNumber;
-   Int_t fOptStat;
-   Int_t fShowDateBox;
-   Int_t fShowStatBox;
-   Int_t fUseTimeOfDisplay;
-   Int_t fShowTitle;
-   Int_t fShowFitBox;
    Int_t fLikelyHood;
 
    TString  fGraphFile;
@@ -252,7 +246,6 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
 
    TH1 *  GetCurrentHist(){return fCurrentHist;};
    void   SetCurrentHist(TH1 * hist){fCurrentHist = hist;};
-   Int_t  GetOptStat(){return fOptStat;};
    TMrbHelpBrowser * GetHelpBrowser(){return fHelpBrowser;};
    void WarnBox(const char *);
    void CleanWindowLists(TH1* hist);

@@ -109,13 +109,14 @@ private:
    Int_t fFill1Dim;
    Color_t fHistFillColor;
    Color_t f2DimBackgroundColor;
-   Int_t fHistLineColor;
+   Color_t fHistLineColor;
    Float_t fHistLineWidth;
-   Int_t fHistFillStyle;
+   Float_t fMarkerSize;
+	Int_t fHistFillStyle;
    Int_t fShowContour;
-   Int_t fShowErrors;
    Int_t fShowDateBox;
    Int_t fShowStatBox;
+   Int_t fOptStat;
    Int_t fUseTimeOfDisplay;
    Int_t fShowTitle;
    Int_t fShowFitBox;
@@ -126,7 +127,6 @@ private:
    Int_t fShowZScale;
    Int_t fDrawAxisAtTop;
    TString fDrawOpt2Dim;
-   Int_t fOptStat;
    Int_t fTitleCenterX;
    Int_t fTitleCenterY;
    Int_t fTitleCenterZ;
@@ -140,7 +140,7 @@ public:
            Int_t win_widx = 750, Int_t win_widy = 550);
    ~FitHist();
    void SaveDefaults(Bool_t recalculate = kTRUE);
-   void RestoreDefaults();
+   void RestoreDefaultRanges();
    void DisplayHist(TH1*, Int_t, Int_t, Int_t, Int_t);  // display hists
 //   void DrawHist();                      //
    void Draw1Dim();                      //

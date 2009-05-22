@@ -77,7 +77,7 @@ private:
    Style_t fHistLineStyle;
    Width_t fHistLineWidth;
    Int_t   fShowContour;   
-   Int_t   fShowErrors;    
+   TString fErrorMode;    
    TString fDrawOpt2Dim;
   
 public:

@@ -15,9 +15,10 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
+	TH1          *fHist;
    TString fDrawOpt;
    Int_t fOptRadio[kNdrawopt];
-   char *fDrawOpt2DimArray[kNdrawopt];
+   const char *fDrawOpt2DimArray[kNdrawopt];
    TString fDrawOpt2Dim;
    Int_t fHideFrontBox;
    Int_t fHideBackBox;

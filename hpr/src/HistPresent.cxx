@@ -880,6 +880,18 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
                }
             }
          }
+			TString shn(stent->GetName());
+			if (shn.Contains(" ")) {
+			   cout << setred << "Histogram name: \"" << shn 
+				<< "\" contains spaces!!!" << endl;
+				static Int_t first_time = 1;
+				if (first_time) {
+				   first_time = 0;
+					cout << "We strongly advise against using white space in names." << endl;
+					cout << "You will not be able to use that histogram in selections" << endl;
+			   }
+				cout << setblack << endl;
+			}
          cmd = fname;
          cmd = cmd + "\",\"";
          cmd += dir;
@@ -1367,10 +1379,6 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
          line +=  " ??" ;
          tit += " ?d hist Ent: ??";
       }
-//      if (fShowTitle) {
-//        if (strlen(hist->GetTitle()) > 0)
-//        tit = tit + " Title: " + hist->GetTitle();
-//      }
       fCmdLine->Add(new CmdListEntry(cmd, line, tit, sel));
       if (is_a_file(fname)) {
          if (fRootFile) fRootFile->Close();
@@ -2164,7 +2172,7 @@ void HistPresent::CloseHistLists()
 
 void HistPresent::SelectHist(const char* fname, const char* dir, const char* hname, const char* bp)
 {
-   cout << fname << " " << hname << endl;
+//   cout << fname << " " << hname << endl;
    TString sel = fname;
    sel = sel + " " + hname + " " + dir;
    if (bp) {

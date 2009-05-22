@@ -275,8 +275,6 @@ void SetCanvasAttDialog::SetDefaults()
    gStyle->SetFrameBorderSize (env.GetValue("SetCanvasAttDialog.fFrameBorderSize", 1));
    gStyle->SetFrameBorderMode (env.GetValue("SetCanvasAttDialog.fFrameBorderMode", 1));
    gStyle->SetCanvasColor     (env.GetValue("SetCanvasAttDialog.fCanvasColor", 0));
-//   gStyle->SetCanvasBorderSize(env.GetValue("SetCanvasAttDialog.fCanvasBorderSize", 1));
-//   gStyle->SetCanvasBorderMode(env.GetValue("SetCanvasAttDialog.fCanvasBorderMode", 1));
    gStyle->SetCanvasDefH      (env.GetValue("SetCanvasAttDialog.fCanvasDefH", 500));
    gStyle->SetCanvasDefW      (env.GetValue("SetCanvasAttDialog.fCanvasDefW", 700));
    gStyle->SetCanvasDefX      (env.GetValue("SetCanvasAttDialog.fCanvasDefX", 400));

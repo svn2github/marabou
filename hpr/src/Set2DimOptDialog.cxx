@@ -6,6 +6,7 @@
 #include "TObjString.h"
 #include "TObject.h"
 #include "TEnv.h"
+#include "TGraph.h"
 #include "TH1.h"
 #include "TH2.h"
 #include "TStyle.h"
@@ -56,13 +57,34 @@ ARR   : arrow mode. Shows gradient between adjacent cells\n\
 TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 ";
 
-   char *fDrawOpt2[kNdrawopt] =
-   {"SCAT ", "BOX0 ", "BOX1 ", "COL  ",  "CONT0",
+   const char *fDrawOpt2[kNdrawopt] =
+   {"SCAT", "BOX0", "BOX1 ", "COL",  "CONT0",
     "CONT1", "CONT2", "CONT3", "CONT4",  "TRI2 ",
     "SURF0", "SURF1", "SURF2", "SURF3",  "SURF4",
     "LEGO ", "LEGO1", "LEGO2", "ARR  ",  "TEXT "};
-
+	 
+   TRootCanvas *rc = (TRootCanvas*)win;
+   fCanvas = rc->Canvas();
+   fHist = NULL;
+   Int_t nh1 = 0, nh2 = 0;
+   TIter next(fCanvas->GetListOfPrimitives());
+	TObject *obj;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TH1")) {
+         fHist = (TH1*)obj;
+         if (obj->InheritsFrom("TGraph")) {
+            fHist = ((TGraph*)obj)->GetHistogram();
+            if (!fHist) continue;
+		   }
+         if (fHist->GetDimension() == 1) nh1++;
+         if (fHist->GetDimension() > 1)  nh2++;
+      }
+   }
+	if ( fHist == NULL ) {
+	   cout << "No Histogram in Canvas" << endl;
+	}
    RestoreDefaults();
+	
    Int_t selected = -1;
    for (Int_t i = 0; i < kNdrawopt; i++) {
       fDrawOpt2DimArray[i] = fDrawOpt2[i];
@@ -75,9 +97,13 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
          fOptRadio[i] = 0;
       }
    }
-
-   TRootCanvas *rc = (TRootCanvas*)win;
-   fCanvas = rc->Canvas();
+	if (fDrawOpt2Dim.Contains("Z")) fShowZScale = 1;
+	else                            fShowZScale = 0;
+	if (fDrawOpt2Dim.Contains("BB")) fHideBackBox = 1;
+	else                             fHideBackBox = 0;
+	if (fDrawOpt2Dim.Contains("FB")) fHideFrontBox = 1;
+	else                             fHideFrontBox = 0;
+	
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
 
@@ -277,10 +303,12 @@ void Set2DimOptDialog::SaveDefaults()
 
 void Set2DimOptDialog::RestoreDefaults()
 {
+   if ( !fHist ) return;
+	fDrawOpt2Dim = fHist->GetOption();
    TEnv env(".hprrc");
-   fDrawOpt2Dim  = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
+//   fDrawOpt2Dim  = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
    fLiveStat2Dim = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
-   fShowZScale   = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
+//   fShowZScale   = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
 }
 //______________________________________________________________________
 

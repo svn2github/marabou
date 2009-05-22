@@ -53,7 +53,7 @@ enum EGoHCommandIds {
 GroupOfHists::GroupOfHists(TList * hlist, HistPresent * hpr, const Char_t *title)
             : fHList(hlist), fHistPresent(hpr)
 {
-   cout << " ctor GroupOfHists::" << this << endl;
+//   cout << " ctor GroupOfHists::" << this << endl;
    fCanvas = NULL;
    fTimer = NULL;
    fDialog = NULL;
@@ -213,7 +213,7 @@ void GroupOfHists::BuildCanvas()
          hist->Draw(drawopt.Data());
 //         gStyle->SetOptTitle(fHistPresent->GetShowTitle());
          if (fShowContour) drawopt = "hist";
-         if (fShowErrors)  drawopt += "e1";
+         if (fErrorMode != "none")  drawopt += fErrorMode;
          hist->SetLineColor(fHistLineColor);
          if (fFill1Dim) {
             hist->SetFillStyle(fHistFillStyle);
@@ -323,7 +323,7 @@ void GroupOfHists::UpdateHists()
       } else {
          TString drawopt;
          if(fShowContour)drawopt = "hist";
-         if(fShowErrors)drawopt += "e1";
+         if (fErrorMode != "none")  drawopt += fErrorMode;
 //         if(fFill1Dim){
 //            hist->SetFillStyle(1001);
 //			hist->SetFillColor(44);
@@ -723,7 +723,7 @@ void GroupOfHists::RestoreDefaults()
    fHistLineStyle = env.GetValue("Set1DimOptDialog.fHistLineStyle", 1);
    fHistLineWidth = env.GetValue("Set1DimOptDialog.fHistLineWidth", 2);
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
-   fShowErrors    = env.GetValue("Set1DimOptDialog.fShowErrors", 0);
+   fErrorMode    = env.GetValue("Set1DimOptDialog.fErrorMode", "e");
    fDrawOpt2Dim  = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
 }
 //_______________________________________________________
