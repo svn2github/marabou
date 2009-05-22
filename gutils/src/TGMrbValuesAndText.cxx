@@ -1069,6 +1069,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fComboBox = new TGComboBox(hButtonFrame, i + 1000*kIdComboS);
             TString lab(l);
             Int_t sel = 0;
+				Int_t maxcha = 0;
             if (lab.Length() > 12) {
                lab.Remove(0,12);
 // look for min / max for number entries
@@ -1081,6 +1082,8 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                   for (Int_t iv = 1; iv < nt; iv++) {
 						   TString s = ((TObjString*)tokens->At(iv))->String();
                      fComboBox->AddEntry(s,iv-1);
+							if (s.Length() > maxcha)
+							   maxcha = s.Length();
 //                     cout << " fComboSelect " << *fComboSelect << " " << s << endl;
                      if (s == *fComboSelect)
                         sel = iv-1;
@@ -1092,7 +1095,8 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fWidgets->Add(fComboBox);
             fEntries->Add(fComboBox);
             fComboBox->Associate(this);
-            fComboBox->Resize(win_width / 6, 20);
+            fComboBox->Resize((maxcha+1) * 12, 20);
+//            fComboBox->Resize(win_width / 3, 20);
             hButtonFrame->AddFrame(fComboBox, lor);
             hframe->AddFrame(hButtonFrame, loc);
 
@@ -1185,8 +1189,9 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fFileNameEntry =
                new TGTextEntry(hButtonFrame, tbuf = new TGTextBuffer(100),  i + 1000*kIdFileName);
             fFileNameEntry->GetBuffer()->AddText(0, (const char *)fname);
-//            tentry->Resize(win_width/2, tentry->GetDefaultHeight());
+//            fFileNameEntry->Resize(win_width/3, fFileNameEntry->GetDefaultHeight());
             hButtonFrame->AddFrame(fFileNameEntry, loc);
+//				cout << "FileContReq " << scol << endl;
 //            hframe->AddFrame(hButtonFrame, loc);
 			   fWidgets->Add(fFileNameEntry);
             fFileNameEntry->Associate(this);
@@ -1206,7 +1211,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //
             fListBoxReq = new TGListBox(this,  i + 1000*kIdListBoxReq);
             fListBoxReq->AddEntry(ename.Data(), 0);
-            fListBoxReq->Resize(win_width , 100);
+            fListBoxReq->Resize(win_width , 150);
             fListBoxReq->Layout();
             fListBoxReq->Associate(this);
             fWidgets->AddFirst(fListBoxReq);
