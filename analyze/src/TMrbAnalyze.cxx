@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.89 2009-02-25 09:25:54 Otto.Schaile Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.90 2009-05-22 07:28:50 Otto.Schaile Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -482,7 +482,12 @@ Int_t TMrbAnalyze::ProcessFileList() {
 
 	nofEntries = 0;
 	this->ClearHistograms("*", ioSpec);
-
+//  this was inside the loop on input files, 
+//  therefore filelists didnt work (OS)
+   cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
+   PutPid(TMrbAnalyze::M_RUNNING);
+   this->SetRunStatus(TMrbAnalyze::M_RUNNING);
+	
 	TIterator * iter = fLofIOSpecs.MakeIterator();
 	while ((ioSpec = (TMrbIOSpec *) iter->Next()) && this->TestRunStatus()) {
 		this->SetCurIOSpec(ioSpec);
@@ -496,15 +501,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 			if (this->OpenRootFile(ioSpec)) {
 				this->ReloadParams(ioSpec);
 				if (this->WriteRootTree(ioSpec)) {
-	            cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
-	            PutPid(TMrbAnalyze::M_RUNNING);
-	            this->SetRunStatus(TMrbAnalyze::M_RUNNING);
 					this->ReplayEvents(ioSpec);
-//
-	            cout << " PutPid(TMrbAnalyze::M_STOPPING)" << endl;
-               PutPid(TMrbAnalyze::M_STOPPING);
-	            this->SetRunStatus(TMrbAnalyze::M_STOPPING);
-//
 					this->CloseRootTree(ioSpec);
 					this->FinishRun(ioSpec);			// finish run (user may overwrite this method)
 					this->SaveHistograms("*", ioSpec);
@@ -531,15 +528,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 						gMrbLog->Flush(this->ClassName(), "ProcessFileList");
 					}
                if (this->WriteRootTree(ioSpec)) {
-	               cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
-	               PutPid(TMrbAnalyze::M_RUNNING);
-	               this->SetRunStatus(TMrbAnalyze::M_RUNNING);
 						gMrbTransport->ReadEvents(ioSpec->GetStopEvent());
-//
-	               cout << " PutPid(TMrbAnalyze::M_STOPPING)" << endl;
-               	PutPid(TMrbAnalyze::M_STOPPING);
-	               this->SetRunStatus(TMrbAnalyze::M_STOPPING);
-//
 						if (inputMode == TMrbIOSpec::kInputMED) gMrbTransport->CloseMEDFile();
 						else									gMrbTransport->CloseLMDFile();
 						this->CloseRootTree(ioSpec);
@@ -556,6 +545,10 @@ Int_t TMrbAnalyze::ProcessFileList() {
 			}
 		}
 	}
+	
+   cout << " PutPid(TMrbAnalyze::M_STOPPING)" << endl;
+   PutPid(TMrbAnalyze::M_STOPPING);
+	this->SetRunStatus(TMrbAnalyze::M_STOPPING);
 	return(nofEntries);
 }
 
