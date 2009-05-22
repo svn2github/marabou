@@ -47,11 +47,11 @@ by Phi start / end. (counterclock wise)\n\
 
    fRow_lab->Add(new TObjString("DoubleValue_WaveL"));
    fValp[ind++] = &fWaveLength;
-   fRow_lab->Add(new TObjString("DoubleValue-Amp"));
+   fRow_lab->Add(new TObjString("DoubleValue+Amp"));
    fValp[ind++] = &fAmplitude;
    fRow_lab->Add(new TObjString("ArrowSelect_AShape"));
    fValp[ind++] = &fArrowStyle;
-   fRow_lab->Add(new TObjString("Float_Value-ASize"));
+   fRow_lab->Add(new TObjString("Float_Value+ASize"));
    fValp[ind++] = &fArrowSize;
    fRow_lab->Add(new TObjString("ColorSelect_Color"));
    fValp[ind++] = &fColor;
