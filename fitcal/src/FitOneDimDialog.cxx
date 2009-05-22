@@ -1285,7 +1285,11 @@ Bool_t FitOneDimDialog::FitGausExecute()
       if (fGraph != NULL) {
          fGraph->Fit(fFuncName.Data(), fitopt.Data(), "");	//  here fitting is done
    //     add to ListOfFunctions if requested
-         if (!fFitOptNoDraw) fFitFunc->Draw("same");
+         if (!fFitOptNoDraw) {
+			   fFitFunc->Draw("same");
+// need to reset bit instored histogram
+				fSelHist->GetListOfFunctions()->Last()->ResetBit(TF1::kNotDraw);
+			}
          if (fFitOptAddAll) {
             TList *lof = fGraph->GetListOfFunctions();
             if (lof->GetSize() > 1) {
@@ -1298,7 +1302,10 @@ Bool_t FitOneDimDialog::FitGausExecute()
       } else {
     //  here fitting is done
          fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "");
-         if (!fFitOptNoDraw) fFitFunc->Draw("same");
+         if (!fFitOptNoDraw) {
+			   fFitFunc->Draw("same");
+				fSelHist->GetListOfFunctions()->Last()->ResetBit(TF1::kNotDraw);
+			}
 //         TList * lof = gPad->GetListOfPrimitives();
 //         TH1* hh = (TH1*)lof->FindObject(fSelHist->GetName());
 //         if (hh) hh->GetListOfFunctions()->AddFirst(func);

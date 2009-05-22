@@ -125,6 +125,7 @@ public:
    inline void SetOffMax( Double_t offmax) { fOffMax = offmax; };
    inline void SetOffStep( Double_t offstep) { fOffStep = offstep; };
    inline void SetAccept( Double_t val) { fAccept = val; };
+   inline void SetContThreshold( Double_t val) { fContThresh = val; };
    inline void SetEu152Gauge( Int_t eu152gauge) { fEu152Gauge = eu152gauge; };
    inline void SetCo60Gauge( Int_t co60gauge) { fCo60Gauge = co60gauge; };
    inline void SetY88Gauge( Int_t y88gauge) { fY88Gauge = y88gauge; };
@@ -149,6 +150,7 @@ public:
    inline Double_t GetOffMax()  { return fOffMax; };
    inline Double_t GetOffStep() { return fOffStep; };
    inline Double_t GetAccept()  { return fAccept; };
+   inline Double_t GetContThreshold() { return fContThresh; };
    inline Int_t GetEu152Gauge() { return fEu152Gauge; };
    inline Int_t GetCo60Gauge()  { return fCo60Gauge; };
    inline Int_t GetY88Gauge()   { return fY88Gauge; };
