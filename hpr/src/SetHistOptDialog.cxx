@@ -64,13 +64,12 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win)
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("TH1")) {
          fHist = (TH1*)obj;
-         if (obj->InheritsFrom("TGraph")) {
-            fHist = ((TGraph*)obj)->GetHistogram();
-            if (!fHist) continue;
-		   }
-         if (fHist->GetDimension() == 1) nh1++;
-         if (fHist->GetDimension() > 1)  nh2++;
-      }
+		}
+      if (obj->InheritsFrom("TGraph")) {
+         fHist = ((TGraph*)obj)->GetHistogram();
+		}
+      if (fHist && fHist->GetDimension() == 1) nh1++;
+      if (fHist && fHist->GetDimension()  > 1) nh2++;
    }
 	if ( fHist == NULL ) {
 	   cout << "No Histogram in Canvas" << endl;
@@ -721,7 +720,7 @@ void SetHistOptDialog::RestoreDefaults()
 	TAxis *xa = fHist->GetXaxis();
 	TAxis *ya = fHist->GetYaxis();
 	TAxis *za = NULL;
-	if (fHist->GetDimension() > 1)
+	if (fHist && fHist->GetDimension() > 1)
 		za = fHist->GetZaxis();
 	fAxisColor    = xa->GetAxisColor  ();
 	fLabelColor   = xa->GetLabelColor ();
