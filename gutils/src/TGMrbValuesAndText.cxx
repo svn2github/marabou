@@ -1979,7 +1979,7 @@ TGMrbValuesAndText::~TGMrbValuesAndText()
 // Cleanup dialog.
 //      cout << "enter dtor: TGMrbValuesAndText fFlagButtons " << fFlagButtons<< endl;
       if (fFlagButtons) delete fFlagButtons;
-      fWidgets->Delete();
+      fWidgets->Delete("slow");
       delete fWidgets;
 //      cout << "exit dtor: TGMrbValuesAndText " << endl;
    }
