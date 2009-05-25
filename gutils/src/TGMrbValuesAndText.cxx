@@ -738,6 +738,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 							    TGTransientFrame(gClient->GetRoot(), Win, 10, 10)
 {
    // Create  input dialog.
+   SetCleanup(kDeepCleanup);
 
    Pixel_t red, blue, lblue, brown, grey, lgrey, wheat;
    fClient->GetColorByName("firebrick", brown);
@@ -756,7 +757,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    if (myfont) myGC.SetFont(myfont->GetFontHandle());
    fWidgetId = id;
    fWindowWidth = win_width;
-   fWidgets = new TList;
+//   fWidgets = new TList;
    fFlagButtons = new TList;
 //   fFinis = 0;
    SetBit(kMustCleanup);
@@ -803,12 +804,12 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    TGLayoutHints * locy = new TGLayoutHints( kLHintsCenterY , 2, 2, 2, 2);
    TGLayoutHints * l1 = new TGLayoutHints(kLHintsExpandX|kLHintsLeft | kLHintsCenterY, 2, 2, 2, 2);
    TGLayoutHints * l2 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2);
-   TGLayoutHints * l3 = new TGLayoutHints(kLHintsLeft | kLHintsCenterY | kLHintsExpandX, 2, 2, 2, 2);
-   fWidgets->AddFirst(l3);
-   fWidgets->AddFirst(lor);
-   fWidgets->AddFirst(l1);
-   fWidgets->AddFirst(l2);
-   fWidgets->AddFirst(lo1);
+   TGLayoutHints * l3 = new TGLayoutHints(kLHintsLeft | kLHintsCenterY | kLHintsExpandX, 2, 2, 2, 2);/**//**/
+//   fWidgets->AddFirst(l3);
+//   fWidgets->AddFirst(lor);
+//   fWidgets->AddFirst(l1);
+//   fWidgets->AddFirst(l2);
+//   fWidgets->AddFirst(lo1);
 
 //  table part
 
@@ -825,14 +826,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       fNrows = fLabels->GetSize();
       if (fFlags && Flagslabel) {
          hframe = new TGCompositeFrame(this, win_width, 20, kHorizontalFrame);
-         fWidgets->Add(hframe);
+//         fWidgets->AddFirst(hframe);
          hframe1 = new TGCompositeFrame(hframe, win_width*5/6, 20, kFixedWidth);
-         fWidgets->Add(hframe1);
+//         fWidgets->AddFirst(hframe1);
          hframe->AddFrame(hframe1, l2);
          hframe1 = new TGCompositeFrame(hframe, win_width*1/6, 20, kFixedWidth);
-         fWidgets->Add(hframe1);
+//         fWidgets->AddFirst(hframe1);
          label = new TGLabel(hframe1, new TGString(Flagslabel));
-			fWidgets->Add(label);
+//			fWidgets->AddFirst(label);
          hframe1->AddFrame(label, lor);
          hframe->AddFrame(hframe1, lor);
 
@@ -856,7 +857,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          }
          if (hframe == NULL) {
             hframe = new TGCompositeFrame(this, win_width, 20, kHorizontalFrame);
-            fWidgets->Add(hframe);
+//            fWidgets->AddFirst(hframe);
          }
          Double_t lowlim = 0;
          Double_t  uplim = 0;
@@ -903,12 +904,12 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                if (l.BeginsWith("Comment")) loc = l1;
                if (l.BeginsWith("CommentRigh")) loc = lor;
                hButtonFrame = new TGCompositeFrame(hframe, win_width, 20, kHorizontalFrame);
-               fWidgets->Add(hButtonFrame);
+//               fWidgets->AddFirst(hButtonFrame);
                if ( lab.Length() > 0 ) {
                   label = new TGLabel(hButtonFrame, new TGString((const char *)lab));
                   hButtonFrame->AddFrame(label, loc);
                   label->ChangeBackground(lgrey);
-			         fWidgets->Add(label);
+//			         fWidgets->AddFirst(label);
                   if (l.BeginsWith("Comment")) fEntries->Add(label);
                }
             }
@@ -928,7 +929,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             cbutton->SetBackgroundColor(lblue);
             cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
 //            cbutton->Resize(cbutton->GetDefaultWidth(), 20);
-            fWidgets->Add(cbutton);
+//            fWidgets->AddFirst(cbutton);
             fEntries->Add(cbutton);
             hframe->AddFrame(cbutton, loc);
             has_commands = kTRUE;
@@ -942,7 +943,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             ((TGTextButton*)cbutton)->SetFont("-adobe-courier-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
             cbutton->SetBackgroundColor(lblue);
             cbutton->Resize(win_width / 6, cbutton->GetDefaultHeight());
-            fWidgets->Add(cbutton);
+//            fWidgets->AddFirst(cbutton);
             fEntries->Add(cbutton);
             cbutton->Associate(this);
             hframe->AddFrame(cbutton, lor);
@@ -953,7 +954,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             if (state != 0) cbutton->SetState(kButtonDown);
             else                    cbutton->SetState(kButtonUp);
             cbutton->Resize(win_width / 8, cbutton->GetDefaultHeight());
-            fWidgets->Add(cbutton);
+//            fWidgets->AddFirst(cbutton);
             fEntries->Add(cbutton);
             cbutton->Associate(this);
             hButtonFrame->AddFrame(cbutton, lor);
@@ -967,7 +968,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             else                    cbutton->SetState(kButtonUp);
 //            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
             cbutton->Resize(win_width / 6, cbutton->GetDefaultHeight());
-            fWidgets->Add(cbutton);
+//            fWidgets->AddFirst(cbutton);
             fEntries->Add(cbutton);
             cbutton->Associate(this);
             hButtonFrame->AddFrame(cbutton, lor);
@@ -979,7 +980,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             cbutton = new TGColorSelect(hButtonFrame, col, i + 1000*kIdColorS);
 //            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
 //            cbutton->Resize(win_width / 4, cbutton->GetDefaultHeight());
-            fWidgets->Add(cbutton);
+//            fWidgets->AddFirst(cbutton);
             fEntries->Add(cbutton);
             cbutton->Associate(this);
             hButtonFrame->AddFrame(cbutton, lor);
@@ -989,7 +990,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             Style_t fMarker = *(Style_t*)fValPointers[i];
             fMarkerSelect = new TGedMarkerSelect(hButtonFrame, fMarker, i + 1000*kIdMarkS);
             fMarkerSelect->Associate(this);
-            fWidgets->Add(fMarkerSelect);
+//            fWidgets->AddFirst(fMarkerSelect);
             fEntries->Add(fMarkerSelect);
 //            fMarkerSelect->Resize(win_width / 4, fMarkerSelect->GetDefaultHeight());
             hButtonFrame->AddFrame(fMarkerSelect, lor);
@@ -999,7 +1000,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fPattern = *(Style_t*)fValPointers[i];
             fPatternSelect = new TGedPatternSelect(hButtonFrame, fPattern,i +  1000*kIdFillS);
             fPatternSelect->Associate(this);
-            fWidgets->Add(fPatternSelect);
+//            fWidgets->AddFirst(fPatternSelect);
             fEntries->Add(fPatternSelect);
 //            fPatternSelect->Resize(win_width / 4, fPatternSelect->GetDefaultHeight());
             hButtonFrame->AddFrame(fPatternSelect, lor);
@@ -1009,7 +1010,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fAlign = *(Short_t*)fValPointers[i];
             fAlignSelect = new TGedAlignSelect(hButtonFrame, fAlign, i + 1000*kIdAlignS);
             fAlignSelect->Associate(this);
-            fWidgets->Add(fAlignSelect);
+//            fWidgets->AddFirst(fAlignSelect);
             fEntries->Add(fAlignSelect);
 //            fAlignSelect->Resize(win_width / 4, fAlignSelect->GetDefaultHeight());
             hButtonFrame->AddFrame(fAlignSelect, lor);
@@ -1023,7 +1024,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             if (tf > 12) tf /= 10;
             if (tf < 1 || tf > 13) tf = 6; // helvetica
             fFontComboBox->Select(tf);
-            fWidgets->Add(fFontComboBox);
+//            fWidgets->AddFirst(fFontComboBox);
             fEntries->Add(fFontComboBox);
             fFontComboBox->Associate(this);
             hButtonFrame->AddFrame(fFontComboBox, loc);
@@ -1034,7 +1035,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fLineStyleComboBox = new TGLineStyleComboBox(hButtonFrame, i + 1000*kIdLineS);
             fLineStyleComboBox->Resize(fLineStyleComboBox->GetDefaultWidth(), 20);
             fLineStyleComboBox->Select(fLineStyle);
-            fWidgets->Add(fLineStyleComboBox);
+//            fWidgets->AddFirst(fLineStyleComboBox);
             fEntries->Add(fLineStyleComboBox);
             fLineStyleComboBox->Associate(this);
  //           fLineStyleComboBox->Resize(win_width / 6, 20);
@@ -1057,7 +1058,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fArrowComboBox->Resize(fArrowComboBox->GetDefaultWidth(), 20);
 //            (fArrowComboBox->GetListBox())->Resize(, 136);
             fArrowComboBox->Select(fArrowShape);
-            fWidgets->Add(fArrowComboBox);
+//            fWidgets->AddFirst(fArrowComboBox);
             fEntries->Add(fArrowComboBox);
             fArrowComboBox->Associate(this);
 //            fArrowComboBox->Resize(win_width / 4, 20);
@@ -1092,7 +1093,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                delete tokens;
             }
             fComboBox->Select(sel);
-            fWidgets->Add(fComboBox);
+//            fWidgets->AddFirst(fComboBox);
             fEntries->Add(fComboBox);
             fComboBox->Associate(this);
             fComboBox->Resize((maxcha+1) * 12, 20);
@@ -1107,7 +1108,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hButtonFrame->AddFrame(tnentry, loc);
             hframe->AddFrame(hButtonFrame, loc);
-			   fWidgets->Add(tnentry);
+//			   fWidgets->AddFirst(tnentry);
             tnentry->Associate(this);
             fEntries->Add(tnentry);
          } else if (l.BeginsWith("DoubleValue")) {
@@ -1127,7 +1128,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hButtonFrame->AddFrame(tnentry, loc);
             hframe->AddFrame(hButtonFrame, loc);
-			   fWidgets->Add(tnentry);
+//			   fWidgets->AddFirst(tnentry);
             tnentry->Associate(this);
             fEntries->Add(tnentry);
          } else if (l.BeginsWith("PlainShtVal")) {
@@ -1137,7 +1138,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //            tnentry->Resize(win_width/2, tnentry->GetDefaultHeight());
             hButtonFrame->AddFrame(tnentry, loc);
             hframe->AddFrame(hButtonFrame, loc);
-			   fWidgets->Add(tnentry);
+//			   fWidgets->AddFirst(tnentry);
             tnentry->Associate(this);
             fEntries->Add(tnentry);
 
@@ -1149,7 +1150,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //            tentry->Resize(win_width/2, tentry->GetDefaultHeight());
             hButtonFrame->AddFrame(tentry, loc);
             hframe->AddFrame(hButtonFrame, loc);
-			   fWidgets->Add(tentry);
+//			   fWidgets->AddFirst(tentry);
             tentry->Associate(this);
             fEntries->Add(tentry);
          } else if (l.BeginsWith("FileRequest")) {
@@ -1161,7 +1162,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //            tentry->Resize(win_width/2, tentry->GetDefaultHeight());
             hButtonFrame->AddFrame(tentry, loc);
 //            hframe->AddFrame(hButtonFrame, loc);
-			   fWidgets->Add(tentry);
+//			   fWidgets->AddFirst(tentry);
             tentry->Associate(this);
             fEntries->Add(tentry);
             TGPictureButton * tb = new TGPictureButton(hButtonFrame,
@@ -1171,7 +1172,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
             hButtonFrame->AddFrame(tb, lor);
             hframe->AddFrame(hButtonFrame, loc);
-			   fWidgets->Add(tb);
+//			   fWidgets->AddFirst(tb);
             tb->Associate(this);
 
          } else if (l.BeginsWith("FileContReq")) {
@@ -1193,7 +1194,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             hButtonFrame->AddFrame(fFileNameEntry, loc);
 //				cout << "FileContReq " << scol << endl;
 //            hframe->AddFrame(hButtonFrame, loc);
-			   fWidgets->Add(fFileNameEntry);
+//			   fWidgets->AddFirst(fFileNameEntry);
             fFileNameEntry->Associate(this);
 //            fEntries->Add(fFileNameEntry);
             fFileDialogContTextEntry = fFileNameEntry;
@@ -1206,7 +1207,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             hframe->AddFrame(hButtonFrame, loc);
             this->AddFrame(hframe, lo1);
             hframe = NULL;
-			   fWidgets->Add(tb);
+//			   fWidgets->AddFirst(tb);
             tb->Associate(this);
 //
             fListBoxReq = new TGListBox(this,  i + 1000*kIdListBoxReq);
@@ -1214,19 +1215,19 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fListBoxReq->Resize(win_width , 150);
             fListBoxReq->Layout();
             fListBoxReq->Associate(this);
-            fWidgets->AddFirst(fListBoxReq);
+//            fWidgets->AddFirst(fListBoxReq);
             this->AddFrame(fListBoxReq, l2);
             fEntries->Add(fListBoxReq);
             UpdateRequestBox(fFileNameEntry->GetBuffer()->GetString(),  kTRUE);
          }
          if (fFlags) {
             hframe1 = new TGCompositeFrame(hframe, win_width*1/6, 20, kFixedWidth);
-            fWidgets->Add(hframe1);
+//            fWidgets->AddFirst(hframe1);
             cbutton = new TGCheckButton(hframe1, new TGHotString(""), i + 1000*300);
             fFlagButtons->Add(cbutton);
             if (fFlags->At(i) == 1) cbutton->SetState(kButtonDown);
             else                cbutton->SetState(kButtonUp);
-			   fWidgets->Add(cbutton);
+//			   fWidgets->AddFirst(cbutton);
             hframe1->AddFrame(cbutton, lor);
             hframe->AddFrame(hframe1, lor);
          }
@@ -1241,11 +1242,11 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    if (fText) {
       hframe = new TGCompositeFrame(this, win_width, 20, kHorizontalFrame);
       TGLabel *label = new TGLabel(hframe, Prompt);
-      fWidgets->AddFirst(label);
+//      fWidgets->AddFirst(label);
       hframe->AddFrame(label, lo1);
       if (FileName != NULL) {
          b = new TGTextButton(hframe, "Clear history",  1000*kIdClearHist);
-         fWidgets->AddFirst(b);
+ //        fWidgets->AddFirst(b);
          b->Associate(this);
          hframe->AddFrame(b, lor);
       }
@@ -1257,7 +1258,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       fTE = new TGTextEntry(this, tbuf,  1000*kIdTextValue);
       fTE->Resize(win_width, fTE->GetDefaultHeight());
       fTE->Associate(this);
-      fWidgets->AddFirst(fTE);
+//      fWidgets->AddFirst(fTE);
 
       this->AddFrame(fTE, l2);
 
@@ -1289,7 +1290,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fListBox->Resize(TMath::Max(wid,320), TMath::Min(200, id*20));
             fListBox->Layout();
             fListBox->Associate(this);
-            fWidgets->AddFirst(fListBox);
+//            fWidgets->AddFirst(fListBox);
             this->AddFrame(fListBox, l2);
          }
       }
@@ -1299,7 +1300,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    // create frame and layout hints for Ok and Cancel buttons
 
    TGHorizontalFrame *hf = new TGHorizontalFrame(this, win_width, 20, kFixedWidth);
-   fWidgets->AddFirst(hf);
+//   fWidgets->AddFirst(hf);
    // put hf as last in list to be deleted
 
    // create OK and Cancel buttons in their own frame (hf)
@@ -1316,7 +1317,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //      b = new TGTextButton(hf, "Save-Quit",  1000*kIdOk);
 //      b->SetToolTipText("Save current parameters and close dialog");
 //   }
-		fWidgets->AddFirst(b);
+//		fWidgets->AddFirst(b);
 		b->Associate(this);
 		hf->AddFrame(b, ll);
 		height = b->GetDefaultHeight();
@@ -1333,14 +1334,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 //      fCancelButton->SetEnabled(kTRUE);
 //      if (fCallClose) fCancelButton->Connect("Clicked()", cname, //calling_class, "CloseDown()");
 //   }
-   fWidgets->AddFirst(fCancelButton);
+//   fWidgets->AddFirst(fCancelButton);
    fCancelButton->Associate(this);
    hf->AddFrame(fCancelButton, lc);
    height = fCancelButton->GetDefaultHeight();
    width  = TMath::Max(width, fCancelButton->GetDefaultWidth()); ++nb;
    if(helptext){
       b = new TGTextButton(hf, "Help", 1000 * kIdHelp);
-      fWidgets->AddFirst(b);
+//      fWidgets->AddFirst(b);
       b->Associate(this);
       hf->AddFrame(b, lr);
       height = b->GetDefaultHeight();
@@ -1348,7 +1349,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    }
    // place button frame (hf) at the bottom
    TGLayoutHints *l4 = new TGLayoutHints(kLHintsBottom | kLHintsCenterX, 0, 0, 5, 5);
-   fWidgets->AddFirst(l4);
+//   fWidgets->AddFirst(l4);
 
    this->AddFrame(hf, l4);
 
@@ -1930,7 +1931,7 @@ void TGMrbValuesAndText::SaveList()
    if (fListBox == NULL) {
       fListBox = new TGListBox(this, kIdTextSelect);
       fListBox->AddEntry(fTE->GetBuffer()->GetString(), 0);
-      fWidgets->AddFirst(fListBox);
+//      fWidgets->AddFirst(fListBox);
       gClient->NeedRedraw(this);
    }
    if (!(gSystem->AccessPathName(fFileName.Data()))) {
@@ -1979,8 +1980,8 @@ TGMrbValuesAndText::~TGMrbValuesAndText()
 // Cleanup dialog.
 //      cout << "enter dtor: TGMrbValuesAndText fFlagButtons " << fFlagButtons<< endl;
       if (fFlagButtons) delete fFlagButtons;
-      fWidgets->Delete("slow");
-      delete fWidgets;
+//      fWidgets->Delete("slow");
+//      delete fWidgets;
 //      cout << "exit dtor: TGMrbValuesAndText " << endl;
    }
 //_______________________________________________________________________________________
