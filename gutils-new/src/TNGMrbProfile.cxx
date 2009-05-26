@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbProfile.cxx,v 1.4 2009-05-26 07:14:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbProfile.cxx,v 1.5 2009-05-26 07:42:14 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -49,6 +49,7 @@ const SMrbNamedXShort kGMrbGCTypes[] =
 								{TNGMrbGContext::kGMrbGCButton,			"Button"		},
 								{TNGMrbGContext::kGMrbGCCombo,			"Combo" 		},
 								{TNGMrbGContext::kGMrbGCEntry,			"Entry"			},
+								{TNGMrbGContext::kGMrbGCGroupFrame,		"GroupFrame"	},
 								{TNGMrbGContext::kGMrbGCTextEntry,		"TextEntry"		},
 								{TNGMrbGContext::kGMrbGCLBEntry,		"ListBoxEntry"	},
 								{TNGMrbGContext::kGMrbGCTextButton,		"TextButton"	},
@@ -350,7 +351,6 @@ TNGMrbGContext * TNGMrbProfile::AddGC(TMrbNamedX * GCSpec, TEnv * Env, TNGMrbGCo
 	res.ToLower();
 	this->SetName(res.Data());
 	res(0,1).ToUpper();
-
 	TString rName = res + ".";
 	rName = rName + GCSpec->GetName();
 
