@@ -9,8 +9,8 @@
 //! 				A list of TMrbnamedX objects
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-02-20 08:33:52 $
+//! $Revision: 1.6 $     
+//! $Date: 2009-05-26 13:07:42 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
@@ -111,10 +111,10 @@ class TMrbLofNamedX: public TList {
 							const SMrbNamedXShort * NamedX = NULL,
 							UInt_t Mode = TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase) {
 			if (NamedX != NULL) this->AddNamedX(NamedX);
-			return(this->CheckPattern(ClassName, Method, IndexString, NULL, Mode));
+			return(this->CheckPattern(ClassName, Method, Compound, NULL, Mode));
 		};
 
-		const Char_t * Pattern2String(TString & Compound, UInt_t Pattern, const Char_t * Delim = ":") const;
+		const Char_t * Pattern2String(TString & Compound, UInt_t Pattern, const Char_t * Separator = ":") const;
 
 		UInt_t GetMask() const;											// return mask of all bits in list
 

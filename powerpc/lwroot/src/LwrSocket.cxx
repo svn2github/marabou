@@ -9,8 +9,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-02-20 08:40:11 $
+//! $Revision: 1.6 $     
+//! $Date: 2009-05-26 13:07:42 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -48,7 +48,7 @@ TSocket::TSocket(TInetAddress Addr, const Char_t * Service)
 		fBytesRecv = 0;
 
 		if (fAddress.GetPort() != -1) {
-			fSocket = gSystem->OpenConnection(addr.GetHostName(), fAddress.GetPort());
+			fSocket = gSystem->OpenConnection(Addr.GetHostName(), fAddress.GetPort());
 		} else {
 			fSocket = -1;
 		}
@@ -70,13 +70,13 @@ TSocket::TSocket(TInetAddress Addr, Int_t Port)
 	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
 		fIsServerSocket = kFALSE;
-		fService = gSystem->GetServiceByPort(port);
+		fService = gSystem->GetServiceByPort(Port);
 		fAddress = Addr;
 		fAddress.fPort = Port;
 		fBytesSent = 0;
 		fBytesRecv = 0;
 
-		fSocket = gSystem->OpenConnection(addr.GetHostName(), fAddress.GetPort());
+		fSocket = gSystem->OpenConnection(Addr.GetHostName(), fAddress.GetPort());
 		if (fSocket == -1) fAddress.fPort = -1;
 	}
 }
@@ -96,14 +96,14 @@ TSocket::TSocket(const Char_t * Host, const Char_t * Service)
 	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
 		fIsServerSocket = kFALSE;
-		fService = service;
+		fService = Service;
 		fAddress = gSystem->GetHostByName(Host);
 		fAddress.fPort = gSystem->GetServiceByName(Service);
 		fBytesSent = 0;
 		fBytesRecv = 0;
 
 		if (fAddress.GetPort() != -1) {
-			fSocket = gSystem->OpenConnection(host, fAddress.GetPort());
+			fSocket = gSystem->OpenConnection(Host, fAddress.GetPort());
 		} else {
 			fSocket = -1;
 		}
@@ -125,13 +125,13 @@ TSocket::TSocket(const Char_t * Host, Int_t Port)
 	if(!gSystem) printf("TLynxOsSystem not initialized\n");
 	else {
 		fIsServerSocket = kFALSE;
-		fService = gSystem->GetServiceByPort(port);
+		fService = gSystem->GetServiceByPort(Port);
 		fAddress = gSystem->GetHostByName(Host);
 		fAddress.fPort = Port;
 		fBytesSent = 0;
 		fBytesRecv = 0;
 
-		fSocket = gSystem->OpenConnection(host, fAddress.GetPort());
+		fSocket = gSystem->OpenConnection(Host, fAddress.GetPort());
 		if (fSocket == -1) fAddress.fPort = -1;
 	}
 }
@@ -151,7 +151,7 @@ TSocket::TSocket(Int_t Desc)
 		fBytesSent = 0;
 		fBytesRecv = 0;
 
-		if (desc >= 0) {
+		if (Desc >= 0) {
 			fSocket  = Desc;
 			fAddress = gSystem->GetPeerName(fSocket);
 		} else {

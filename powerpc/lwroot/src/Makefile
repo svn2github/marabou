@@ -1,6 +1,6 @@
 CXX 		=	g++
 
-PPCINC		=	../../inc
+PPCINC		=	../../include
 LWRINC 		=	../inc
 M2LINC		=	../../../c2lynx/inc
 

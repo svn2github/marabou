@@ -9,8 +9,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-02-20 08:40:11 $
+//! $Revision: 1.6 $     
+//! $Date: 2009-05-26 13:07:42 $
 //////////////////////////////////////////////////////////////////////////////
 
 
@@ -377,7 +377,7 @@ UInt_t TMrbLofNamedX::FindPattern(const Char_t * Compound, UInt_t FindMode, cons
 		if (fName.IsNull()) {
 			cerr << setred << this->ClassName() << "::FindPattern(): List not in pattern mode" << setblack << endl;
 		} else {
-			cerr << setred << this->ClassName() << "::FindPattern(): Not in pattern mode - " << fName << setblack << endl;
+			cerr << setred << this->ClassName() << "::FindPattern(): Not in pattern mode - " << fName.Data() << setblack << endl;
 		}
 		return(TMrbLofNamedX::kIllIndexBit);
 	}
@@ -422,17 +422,17 @@ UInt_t TMrbLofNamedX::FindPattern(const Char_t * Compound, UInt_t FindMode, cons
 //! \details		Concatenates names according to bit pattern.<br>
 //! \param[out]		Compound		-- string containing names
 //! \param[in]		Pattern 		-- bit pattern
-//! \param[in]		Delim			-- separator
+//! \param[in]		Separator		-- separator
 //! \retval 		Compound 		-- ptr to string
 //////////////////////////////////////////////////////////////////////////////
 
-const Char_t * TMrbLofNamedX::Pattern2String(TString & Compound, UInt_t Pattern, const Char_t * Delim) const
+const Char_t * TMrbLofNamedX::Pattern2String(TString & Compound, UInt_t Pattern, const Char_t * Separator) const
 {
 	if (!fPatternMode) {
 		if (fName.IsNull()) {
 			cerr << setred << this->ClassName() << "::Pattern2String(): List not in pattern mode" << setblack << endl;
 		} else {
-			cerr << setred << this->ClassName() << "::Pattern2String(): Not in pattern mode - " << fName << setblack << endl;
+			cerr << setred << this->ClassName() << "::Pattern2String(): Not in pattern mode - " << fName.Data() << setblack << endl;
 		}
 		return("");
 	}

@@ -9,8 +9,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-20 08:40:11 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-05-26 13:07:42 $
 //////////////////////////////////////////////////////////////////////////////
 
 
@@ -373,11 +373,11 @@ TMrbLogMessage * TMrbLogger::GetLast(const Char_t * Type) const
 	TMrbNamedX * nx;
 		
 	opt.AddNamedX(kMrbMsgTypes);
-	if ((nx = opt.FindByName(Option)) != NULL) {
+	if ((nx = opt.FindByName(Type)) != NULL) {
 		return(this->GetLast(nx->GetIndex()));
 	} else {
 		cerr	<< setred
-				<< this->ClassName() << "::GetLast(): Illegal message type - " << Option
+				<< this->ClassName() << "::GetLast(): Illegal message type - " << Type
 				<< setblack << endl;
 		return(NULL);
 	}
@@ -411,11 +411,11 @@ void TMrbLogger::Print(Int_t Tail, const Char_t * Type) const
 	TMrbNamedX * nx;
 		
 	opt.AddNamedX(kMrbMsgTypes);
-	if ((nx = opt.FindByName(Option)) != NULL) {
+	if ((nx = opt.FindByName(Type)) != NULL) {
 		this->Print(Tail, nx->GetIndex());
 	} else {
 		cerr	<< setred
-				<< this->ClassName() << "::Print(): Illegal message type - " << Option
+				<< this->ClassName() << "::Print(): Illegal message type - " << Type
 				<< setblack << endl;
 	}
 }
@@ -455,11 +455,11 @@ void TMrbLogger::PrintSinceLastCall(const Char_t * Type)
 	TMrbNamedX * nx;
 		
 	opt.AddNamedX(kMrbMsgTypes);
-	if ((nx = opt.FindByName(Option)) != NULL) {
+	if ((nx = opt.FindByName(Type)) != NULL) {
 		this->PrintSinceLastCall(nx->GetIndex());
 	} else {
 		cerr	<< setred
-				<< this->ClassName() << "::PrintSinceLastCall(): Illegal message type - " << Option
+				<< this->ClassName() << "::PrintSinceLastCall(): Illegal message type - " << Type
 				<< setblack << endl;
 	}
 }

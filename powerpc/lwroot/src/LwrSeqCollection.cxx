@@ -11,8 +11,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-04-24 08:58:02 $
+//! $Revision: 1.6 $     
+//! $Date: 2009-05-26 13:07:42 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrSeqCollection.h"
@@ -131,7 +131,7 @@ void TSeqCollection::QSort(TObject ** ObjArrA, TObject ** ObjArrB, Int_t First, 
          while (--j > First && ObjCompare(ObjArrA[j], ObjArrA[First]) > 0);
          if (i >= j) break;
 
-         tmp1 = a[i]; tmp2 = b[i];
+         tmp1 = ObjArrA[i]; tmp2 = ObjArrB[i];
          ObjArrA[i] = ObjArrA[j]; ObjArrB[i] = ObjArrB[j];
          ObjArrA[j] = tmp1; ObjArrB[j] = tmp2;
       }
@@ -140,7 +140,7 @@ void TSeqCollection::QSort(TObject ** ObjArrA, TObject ** ObjArrB, Int_t First, 
          continue;
       }
       tmp1 = ObjArrA[First]; tmp2 = ObjArrB[First];
-      ObjArrA[First] = ObjArrA[j]; ObjArrB[First] = b[j];
+      ObjArrA[First] = ObjArrA[j]; ObjArrB[First] = ObjArrB[j];
       ObjArrA[j] = tmp1;     ObjArrB[j] = tmp2;
       if (j - First < Last - (j + 1)) {
          this->QSort(ObjArrA, ObjArrB, First, j);
