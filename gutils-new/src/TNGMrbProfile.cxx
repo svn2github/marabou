@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbProfile.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbProfile.cxx,v 1.4 2009-05-26 07:14:20 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -47,6 +47,7 @@ const SMrbNamedXShort kGMrbGCTypes[] =
 								{TNGMrbGContext::kGMrbGCFrame,			"Frame" 		},
 								{TNGMrbGContext::kGMrbGCLabel,			"Label" 		},
 								{TNGMrbGContext::kGMrbGCButton,			"Button"		},
+								{TNGMrbGContext::kGMrbGCCombo,			"Combo" 		},
 								{TNGMrbGContext::kGMrbGCEntry,			"Entry"			},
 								{TNGMrbGContext::kGMrbGCTextEntry,		"TextEntry"		},
 								{TNGMrbGContext::kGMrbGCLBEntry,		"ListBoxEntry"	},

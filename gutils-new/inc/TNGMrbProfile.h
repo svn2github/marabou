@@ -7,7 +7,7 @@
 // Purpose:        Define utilities to be used with the MARaBOU GUI
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbProfile.h,v 1.2 2009-03-31 06:12:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbProfile.h,v 1.3 2009-05-26 07:14:21 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -40,15 +40,16 @@ class TNGMrbGContext : public TObject {
 										kGMrbPictureButton			= BIT(3)
 									};
 
-		enum EGMrbButtonFrameType 	{	kGMrbButtonList 			= BIT(4),
-										kGMrbButtonGroup			= BIT(5),
-										kGMrbButtonExpand			= BIT(6)
+		enum EGMrbFrameType 		{	kGMrbList	 				= BIT(4),
+										kGMrbGroup					= BIT(5)
 									};
 
 		enum EGMrbGCType			{	kGMrbGCFrame				= BIT(7),
 										kGMrbGCLabel				= BIT(8),
 										kGMrbGCButton				= BIT(9),
-										kGMrbGCEntry				= BIT(10),
+										kGMrbGCCombo				= BIT(10),
+										kGMrbGCEntry				= BIT(11),
+										kGMrbGCGroupFrame			= kGMrbGCFrame | kGMrbGroup,
 										kGMrbGCTextButton			= kGMrbGCButton | kGMrbTextButton,
 										kGMrbGCRadioButton			= kGMrbGCButton | kGMrbRadioButton,
 										kGMrbGCCheckButton			= kGMrbGCButton | kGMrbCheckButton,
