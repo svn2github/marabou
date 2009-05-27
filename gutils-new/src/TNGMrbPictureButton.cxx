@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbPictureButton.cxx,v 1.2 2009-03-31 06:12:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbPictureButton.cxx,v 1.3 2009-05-27 07:36:49 Marabou Exp $       
 // Date:           
 // Layout:         A list or group of picture buttons
 //Begin_Html
@@ -25,13 +25,13 @@ ClassImp(TNGMrbPictureButtonGroup)
 
 TNGMrbPictureButtonList::TNGMrbPictureButtonList(const TGWindow * Parent,
 												const Char_t * Label,
-												TMrbLofNamedX * Buttons,
+												TMrbLofNamedX * Buttons, Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t Width, Int_t Height, Int_t ButtonWidth) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
 										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbPictureButton | TNGMrbGContext::kGMrbButtonList,
-												Buttons, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbPictureButtonList
@@ -65,13 +65,13 @@ TNGMrbPictureButtonList::TNGMrbPictureButtonList(const TGWindow * Parent,
 
 TNGMrbPictureButtonList::TNGMrbPictureButtonList(const TGWindow * Parent,
 												const Char_t * Label,
-												const Char_t * Buttons,
+												const Char_t * Buttons,Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t Width, Int_t Height, Int_t ButtonWidth) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
 										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbPictureButton | TNGMrbGContext::kGMrbButtonList,
-												Buttons, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
+												Buttons,FrameId,  Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbPictureButtonList
@@ -105,13 +105,13 @@ TNGMrbPictureButtonList::TNGMrbPictureButtonList(const TGWindow * Parent,
 
 TNGMrbPictureButtonGroup::TNGMrbPictureButtonGroup(const TGWindow * Parent,
 												const Char_t * Label,
-												TMrbLofNamedX * Buttons,
+												TMrbLofNamedX * Buttons,Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t ButtonWidth) :
 							TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
 							TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbPictureButton | TNGMrbGContext::kGMrbButtonGroup,
-												Buttons, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbPictureButtonGroup
@@ -137,13 +137,13 @@ TNGMrbPictureButtonGroup::TNGMrbPictureButtonGroup(const TGWindow * Parent,
 
 TNGMrbPictureButtonGroup::TNGMrbPictureButtonGroup(const TGWindow * Parent,
 												const Char_t * Label,
-												const Char_t * Buttons,
+												const Char_t * Buttons,Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t ButtonWidth) :
 							TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
 							TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbPictureButton | TNGMrbGContext::kGMrbButtonGroup,
-												Buttons, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbPictureButtonGroup

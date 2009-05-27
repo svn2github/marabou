@@ -8,7 +8,7 @@
 // Class:          TNGMrbButtonFrame    -- a composite frame containing buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbButtonFrame.h,v 1.2 2009-04-06 08:06:21 Marabou Exp $       
+// Revision:       $Id: TNGMrbButtonFrame.h,v 1.3 2009-05-27 07:36:48 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -29,6 +29,8 @@
 
 #include "UseHeap.h"
 
+#include "RQ_OBJECT.h"
+
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbSpecialButton
@@ -39,6 +41,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 class TNGMrbSpecialButton: public TMrbNamedX {
+
+	
 
 	public:
 		TNGMrbSpecialButton( Int_t Index, const Char_t * Name, const Char_t * Title,
@@ -73,25 +77,28 @@ class TNGMrbSpecialButton: public TMrbNamedX {
 
 class TNGMrbButtonFrame {
 
+RQ_OBJECT("TNGMrbButtonFrame")
+
 	public:
 		enum EGMrbButtonPad			{	kGMrbButtonPadW  			= 2,
 										kGMrbButtonPadH				= 2
 									};
+		
 
 	public:
 		TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
-											TMrbLofNamedX * Buttons, TNGMrbProfile * Profile, Int_t NofRows, Int_t NofCols,
-											Int_t Width, Int_t Height, Int_t ButtonWidth);
+											TMrbLofNamedX * Buttons,Int_t FrameId, TNGMrbProfile * Profile, Int_t NofRows, 
+											Int_t NofCols, Int_t Width, Int_t Height, Int_t ButtonWidth);
 
 		TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
-											const Char_t * Buttons, TNGMrbProfile * Profile, Int_t NofRows, Int_t NofCols,
-											Int_t Width, Int_t Height, Int_t ButtonWidth);
+											const Char_t * Buttons,Int_t FrameId, TNGMrbProfile * Profile, Int_t NofRows, Int_t 												NofCols, Int_t Width, Int_t Height, Int_t ButtonWidth);
 
 		virtual ~TNGMrbButtonFrame() { CLEAR_HEAP(); };			// dtor
 
 		TNGMrbButtonFrame(const TNGMrbButtonFrame & f) {};	// default copy ctor
 
-		void SetState(UInt_t Pattern, EButtonState State = kButtonDown);	// set button state
+		//void SetState(UInt_t Pattern, EButtonState State = kButtonDown);	// set button state
+		void SetState(UInt_t Pattern, EButtonState State = kButtonDown, Bool_t Emit=kTRUE);
 		UInt_t GetActive() const; 												// return button state
 
 		void FlipState(UInt_t Pattern);					// flip state
@@ -115,7 +122,7 @@ class TNGMrbButtonFrame {
 		Int_t GetButtonWidth(Int_t ButtonIndex = -1) const; 		// get button width
 		void JustifyButton(ETextJustification Justify, Int_t ButtonIndex);	// justify button text
 		TGButton * GetButton(Int_t ButtonIndex) const;		// get button by index
-		void AddButton(TGButton * Button, TMrbNamedX * ButtonSpecs);	// add a button
+		//void AddButton(TGButton * Button, TMrbNamedX * ButtonSpecs);	// add a button
 
 		inline Int_t GetNofButtons() { return(fNofButtons); };
 		inline Int_t GetNofSpecialButtons() { return(fNofSpecialButtons); };
@@ -128,9 +135,9 @@ class TNGMrbButtonFrame {
 
 		void ChangeButtonBackground(ULong_t Color, Int_t Index = 0); 	// set background color
 
-		Bool_t ButtonFrameMessage(Long_t, Long_t);		// process mouse clocks
+		//Bool_t ButtonFrameMessage(Long_t, Long_t);		// process mouse clocks
 
-		void Associate(const TGWindow * Window);		// redirect button events
+		//void Associate(const TGWindow * Window);		// redirect button events
 
 		inline TGCompositeFrame * GetFrame() const { return(fFrame); };
 		inline const TGWindow * GetParent() const { return(fParent); };
@@ -147,10 +154,22 @@ class TNGMrbButtonFrame {
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TNGMrbButtonFrame.html&"); };
 
+		
+		void ButtonPressed(Int_t Button);	// slot methods	
+		void ButtonPressed(Int_t FrameId, Int_t Button); 	//*SIGNAL*
+
+		inline void CheckButtonClicked(Int_t Button) { this->UpdateState((UInt_t) Button); }; //slotmethods
+		inline void RadioButtonClicked(Int_t Button) { this->SetState((UInt_t) Button, kButtonDown, kTRUE); };
+		inline void TextButtonClicked(Int_t Button)  { this->UpdateState((UInt_t) Button); };
+		inline void PictureButtonClicked(Int_t Button) { this->UpdateState((UInt_t) Button); };
+		
+
+		
+
 	protected:
 		void CreateButtons();
 		TNGMrbSpecialButton * FindSpecialButton(Int_t Index);
-		TGTableLayout * tabLayout;
+		
 
 	protected:
 		USE_HEAP();
@@ -172,6 +191,7 @@ class TNGMrbButtonFrame {
 		Int_t fNofCols;								// ... columns
 		Int_t fNofButtons;							// number of (normal) buttons
 		Int_t fNofSpecialButtons;					// ... special buttons
+		Int_t fFrameId;
 		Bool_t fIndivColumnWidth;					// kTRUE if column widhts to be calculated individually
 		Int_t fPadLeft; 							// padding from left (points)
 		Double_t fPadLeftFrac;						// padding left:right (fraction)
@@ -185,6 +205,7 @@ class TNGMrbButtonFrame {
 		TGClient * fFrameClient;
 		
 		TNGMrbProfile * fProfile;					// graphics profile
+		TGTableLayout * tabLayout;
 
 	ClassDef(TNGMrbButtonFrame, 0)					// [GraphUtils] A frame of buttons
 };

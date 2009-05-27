@@ -11,7 +11,7 @@
 //                                             group frame
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbPictureButton.h,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbPictureButton.h,v 1.2 2009-05-27 07:36:49 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -40,22 +40,22 @@ class TNGMrbPictureButtonList: public TGCompositeFrame, public TNGMrbButtonFrame
 
 	public:
 		TNGMrbPictureButtonList(const TGWindow * Parent, const Char_t * Label,
-													TMrbLofNamedX * Buttons,
+													TMrbLofNamedX * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0);
 
 		TNGMrbPictureButtonList(const TGWindow * Parent, const Char_t * Label,
-													const Char_t * Buttons,
+													const Char_t * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0);
 
 		~TNGMrbPictureButtonList() {};				// default dtor
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
+		/*virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
 			return(ButtonFrameMessage(MsgId, Param1));
-		};
+		};*/
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TNGMrbPictureButtonList.html&"); };
 
@@ -75,22 +75,22 @@ class TNGMrbPictureButtonGroup: public TGGroupFrame, public TNGMrbButtonFrame {
 
 	public:
 		TNGMrbPictureButtonGroup(const TGWindow * Parent, const Char_t * Label,
-													TMrbLofNamedX * Buttons,
+													TMrbLofNamedX * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t ButtonWidth = 0);
 
 		TNGMrbPictureButtonGroup(const TGWindow * Parent, const Char_t * Label,
-													const Char_t * Buttons,
+													const Char_t * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t ButtonWidth = 0);
 
 		~TNGMrbPictureButtonGroup() {};				// default dtor
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
+		/*virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
 			return(ButtonFrameMessage(MsgId, Param1));
-		};
+		};*/
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TNGMrbRadioButtonGroup.html&"); };
 

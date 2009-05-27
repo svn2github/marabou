@@ -1,3 +1,4 @@
+
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           gutils/src/TNGMrbButtonFrame.cxx
@@ -6,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbButtonFrame.cxx,v 1.4 2009-04-06 08:06:22 Marabou Exp $       
+// Revision:       $Id: TNGMrbButtonFrame.cxx,v 1.5 2009-05-27 07:36:49 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -25,7 +26,7 @@ ClassImp(TNGMrbButtonFrame)
 ClassImp(TNGMrbSpecialButton)
 
 TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
-											TMrbLofNamedX * Buttons, TNGMrbProfile * Profile,
+											TMrbLofNamedX * Buttons,Int_t FrameId, TNGMrbProfile * Profile,
 											Int_t NofRows, Int_t NofCols,
 											Int_t Width, Int_t Height, Int_t ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
@@ -55,6 +56,7 @@ TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 	fNofCols = NofCols;
 	fWidth = Width;
 	fHeight = Height;
+	fFrameId=FrameId;
 	fButtonWidth = ButtonWidth;
 	fLabelGC = Profile->GetGC(TNGMrbGContext::kGMrbGCLabel);
 	UInt_t bType = fType & (	TNGMrbGContext::kGMrbCheckButton
@@ -86,7 +88,7 @@ TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 }
 
 TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
-											const Char_t * Buttons, TNGMrbProfile * Profile,
+											const Char_t * Buttons,Int_t FrameId, TNGMrbProfile * Profile,
 											Int_t NofRows, Int_t NofCols,
 											Int_t Width, Int_t Height, Int_t ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
@@ -118,6 +120,7 @@ TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 	fNofCols = NofCols;
 	fWidth = Width;
 	fHeight = Height;
+	fFrameId = FrameId;
 	fButtonWidth = ButtonWidth;
 	fLabelGC = Profile->GetGC(TNGMrbGContext::kGMrbGCLabel);
 	UInt_t bType = fType & (	TNGMrbGContext::kGMrbCheckButton
@@ -198,6 +201,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 	fButtonHeight = 0;
 	TMrbNamedX * nx;
 	TIterator * iter = fLofButtons.MakeIterator();
+	
 	while (nx = (TMrbNamedX *) iter->Next()) {
 		switch (fType & (TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbTextButton | TNGMrbGContext::kGMrbPictureButton)) {
 			case TNGMrbGContext::kGMrbCheckButton:
@@ -209,6 +213,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 					cbtn->ChangeOptions(fButtonOptions);
 					TO_HEAP(cbtn);
 					btn = (TGButton *) cbtn;
+					btn->Connect("Clicked()", "TNGMrbButtonFrame", this, Form("CheckButtonClicked(Int_t=%d)", nx->GetIndex()));
 				}
 				break;
 			case TNGMrbGContext::kGMrbRadioButton:
@@ -220,6 +225,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 					rbtn->ChangeOptions(fButtonOptions);
 					TO_HEAP(rbtn);
 					btn = (TGButton *) rbtn;
+					btn->Connect("Clicked()", "TNGMrbButtonFrame", this, Form("RadioButtonClicked(Int_t=%d)", nx->GetIndex()));
 				}
 				break;
 			case TNGMrbGContext::kGMrbTextButton:
@@ -234,6 +240,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 					tbtn->ChangeOptions(opt);
 					TO_HEAP(tbtn);
 					btn = (TGButton *) tbtn;
+					btn->Connect("Clicked()", "TNGMrbButtonFrame", this, Form("TextButtonClicked(Int_t=%d)", nx->GetIndex()));
 				}
 				break;
 			case TNGMrbGContext::kGMrbPictureButton:
@@ -242,12 +249,14 @@ void TNGMrbButtonFrame::CreateButtons() {
 					pbtn->ChangeOptions(fButtonOptions);
 					TO_HEAP(pbtn);
 					btn = (TGButton *) pbtn;
+					btn->Connect("Clicked()", "TNGMrbButtonFrame", this, Form("PictureButtonClicked(Int_t=%d)", nx->GetIndex()));
 				}
 				break;
 		}
 		btn->ChangeBackground(fButtonGC->BG());
 		//fFrame->AddFrame(btn);
-		btn->Associate(fFrame);
+		//btn->Associate(fFrame);
+		
 		nx->AssignObject(btn);
 		if (nx->HasTitle()) btn->SetToolTipText(nx->GetTitle(), 500);
 		Int_t btnw = btn->GetDefaultWidth();
@@ -274,15 +283,17 @@ void TNGMrbButtonFrame::CreateButtons() {
 				cbtn->ChangeOptions(fButtonOptions);
 				TO_HEAP(cbtn);
 				btn = (TGButton *) cbtn;
+				btn->Connect("Clicked()", "TNGMrbButtonFrame", this, Form("CheckButtonClicked(Int_t=%d)", sbtn2->GetIndex()));
 			} else {
 				pbtn = new TGPictureButton(fFrame, fFrameClient->GetPicture(sbtn2->GetPicture()), sbtn2->GetIndex());
 				pbtn->ChangeOptions(fButtonOptions);
 				TO_HEAP(pbtn);
 				btn = (TGButton *) pbtn;
+				btn->Connect("Clicked()", "TNGMrbButtonFrame", this, Form("PictureButtonClicked(Int_t=%d)", sbtn2->GetIndex()));
 			}
 			btn->ChangeBackground(fButtonGC->BG());
 			//fFrame->AddFrame(btn);
-			btn->Associate(fFrame);
+			//btn->Associate(fFrame);
 			sbtn2->AssignObject(btn);
 			if (sbtn2->HasTitle()) btn->SetToolTipText(sbtn2->GetTitle(), 500);
 			Int_t btnw = btn->GetDefaultWidth();
@@ -333,7 +344,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 	
 	
 	// Mit TGTableLayout 
-	cout<<"/n Anzahl fNofRows: "<<fNofRows<<"Anzahl fNofCols: "<<fNofCols<<endl;
+	
 	
 	
 	tabLayout = new TGTableLayout(fFrame, fNofRows, fNofCols, kTRUE);
@@ -348,24 +359,24 @@ void TNGMrbButtonFrame::CreateButtons() {
 	
 	for(Int_t x=0, y=0;nx!=NULL;x++){
 	
-	if (x==fNofCols) {x=0;y++;}
-	cout<<"/nAnfang for schleife, x="<<x<<" ,y="<<y<<endl;
+		if (x==fNofCols) {x=0;y++;}
 		
-	TGButton * btn = (TGButton *) nx->GetAssignedObject();
-	Int_t bw = this->GetColWidth()->At(x);
+			
+		TGButton * btn = (TGButton *) nx->GetAssignedObject();
+		//Int_t bw = this->GetColWidth()->At(x);
+		
+		
+		fFrame->AddFrame(btn, new TGTableLayoutHints(x,x+1,y,y+1,
+        	                            kLHintsExpandX|kLHintsExpandY |
+        	                            kLHintsShrinkX|kLHintsShrinkY |
+					    kLHintsCenterX|kLHintsCenterY
+					    
+					    
+        	                            |kLHintsFillX|kLHintsFillY
+					     ,1,1,1,1));
+		//btn->Resize(fButtonWidth, fButtonHeight);
+		nx = (TMrbNamedX *) this->GetLofButtons()->After(nx);
 	
-	
-	fFrame->AddFrame(btn, new TGTableLayoutHints(x,x+1,y,y+1,
-                                    kLHintsExpandX|kLHintsExpandY |
-                                    kLHintsShrinkX|kLHintsShrinkY |
-				    kLHintsCenterX|kLHintsCenterY
-				    
-				    
-                                    |kLHintsFillX|kLHintsFillY
-				     ,1,1,1,1));
-	btn->Resize(fButtonWidth, fButtonHeight);
-	nx = (TMrbNamedX *) this->GetLofButtons()->After(nx);
-	cout<<"Ende for schleife"<<endl;
 	
 	}
 	
@@ -375,25 +386,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 	//fFrame->SetLayoutManager(new TNGMrbButtonFrameLayout(this));
 }
 				
-void TNGMrbButtonFrame::Associate(const TGWindow * Window) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbButtonFrame::Associate
-// Purpose:        Associate button events with specified window
-// Arguments:      TGWindow * Window    -- window which will care about button events
-// Results:        
-// Exceptions:     
-// Description:    Redirects button events to another window.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
 
-	TIterator * iter = fLofButtons.MakeIterator();
-	TMrbNamedX * nx;
-	while (nx = (TMrbNamedX *) iter->Next()) {
-		 TGButton * button = (TGButton *) nx->GetAssignedObject();
-		button->Associate(Window);
-	}
-}
 
 void TNGMrbButtonFrame::ClearAll() {
 //________________________________________________________________[C++ METHOD]
@@ -415,26 +408,35 @@ void TNGMrbButtonFrame::ClearAll() {
 	}
 }
 
-void TNGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
+
+
+void TNGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State, Bool_t Emit) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbButtonFrame::SetState
+// Name:           TGMrbButtonFrame::SetState
 // Purpose:        Mark button(s) as (in)active
 // Arguments:      UInt_t Pattern       -- pattern describing button(s) to be set
 //                 EButtonState State   -- button up or down
+//                 Bool_t Emit          -- if signal is to be emitted
 // Results:        
 // Exceptions:     
 // Description:    Sets button(s) given by pattern to (in)active.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TIterator * iter = fLofButtons.MakeIterator();
-	TMrbNamedX * nx;
 	if (fType & TNGMrbGContext::kGMrbRadioButton) {
+
+		TIterator * iter = fLofButtons.MakeIterator();
+		TMrbNamedX * nx;
 		if (State == kButtonEngaged || State == kButtonDisabled) {
-			while (nx = (TMrbNamedX *) iter->Next()) {
-				TGButton * button = (TGButton *) nx->GetAssignedObject();
-				if ((nx->GetIndex() & Pattern) == (UInt_t) nx->GetIndex()) button->SetState(State);
+			TMrbNamedX *namedX;
+			TIterator * bIter = fLofButtons.MakeIterator();
+			while (namedX = (TMrbNamedX *) bIter->Next()) {
+				TGButton * button = (TGButton *) namedX->GetAssignedObject();
+				if ((namedX->GetIndex() & Pattern) == (UInt_t) namedX->GetIndex()) {
+					button->SetState(State);
+					if (Emit) {/*cout<<"@@@ In SetState(1)"<<endl;*/this->ButtonPressed(namedX->GetIndex());}
+				}
 			}
 		} else {
 			while (nx = (TMrbNamedX *) iter->Next()) {
@@ -442,6 +444,7 @@ void TNGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 				if (button->GetState() != kButtonDisabled) {
 					if ((UInt_t) nx->GetIndex() == Pattern) {
 						button->SetState(State);
+						if (Emit) {/*cout<<"@@@ In SetState(2)"<<endl;*/this->ButtonPressed(nx->GetIndex());}
 					} else {
 						button->SetState(kButtonUp);
 					}
@@ -452,15 +455,20 @@ void TNGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 		TNGMrbSpecialButton * sbutton = this->FindSpecialButton(Pattern);
 		if (sbutton) Pattern = sbutton->GetPattern();
 		if (State == kButtonEngaged || State == kButtonDisabled) {
-			while (nx = (TMrbNamedX *) iter->Next()) {
-				TGButton * button = (TGButton *) nx->GetAssignedObject();
-				if (nx->GetIndex() & Pattern) button->SetState(State);
+			TMrbNamedX *namedX;
+			TIterator * bIter = fLofButtons.MakeIterator();
+			while (namedX = (TMrbNamedX *) bIter->Next()) {
+				TGButton * button = (TGButton *) namedX->GetAssignedObject();
+				if (namedX->GetIndex() & Pattern) button->SetState(State);
 			}
 		} else {
-			while (nx = (TMrbNamedX *) iter->Next()) {
-				TGButton * button = (TGButton *) nx->GetAssignedObject();
+			TMrbNamedX *namedX;
+			TIterator * bIter = fLofButtons.MakeIterator();
+			EButtonState invState = (State == kButtonUp) ? kButtonDown : kButtonUp;
+			while (namedX = (TMrbNamedX *) bIter->Next()) {
+				TGButton * button = (TGButton *) namedX->GetAssignedObject();
 				if (button->GetState() != kButtonDisabled) {
-					if (nx->GetIndex() & Pattern) {
+					if (namedX->GetIndex() & Pattern) {
 						button->SetState(State);
 					} else if (sbutton) {
 						button->SetState(kButtonUp);
@@ -468,11 +476,15 @@ void TNGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 				}
 			}
 		}
+		if (Emit) this->ButtonPressed(this->GetActive());
 	} else if (fType & TNGMrbGContext::kGMrbTextButton) {
-		while (nx = (TMrbNamedX *) iter->Next()) {
-			TGButton * button = (TGButton *) nx->GetAssignedObject();
-			if ((UInt_t) nx->GetIndex() == Pattern) {
+		TMrbNamedX *namedX;
+		TIterator * bIter = fLofButtons.MakeIterator();
+		while (namedX = (TMrbNamedX *) bIter->Next()) {
+			TGButton * button = (TGButton *) namedX->GetAssignedObject();
+			if ((UInt_t) namedX->GetIndex() == Pattern) {
 				button->SetState(State);
+				if (Emit) this->ButtonPressed(namedX->GetIndex());
 			}
 		}
 	}
@@ -538,7 +550,7 @@ void TNGMrbButtonFrame::FlipState(UInt_t Pattern) {
 void TNGMrbButtonFrame::UpdateState(UInt_t Pattern) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbButtonFrame::UpdateState
+// Name:           TGMrbButtonFrame::UpdateState
 // Purpose:        Update check button state
 // Arguments:      UInt_t Pattern       -- pattern describing check button(s)
 //                                         to be updated
@@ -548,18 +560,20 @@ void TNGMrbButtonFrame::UpdateState(UInt_t Pattern) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fType & TNGMrbGContext::kGMrbCheckButton) {
-		TNGMrbSpecialButton *sbutton = this->FindSpecialButton(Pattern);
+	if (fType & TNGMrbGContext::kGMrbTextButton) {
+		this->ButtonPressed(Pattern);
+	} else if (fType & TNGMrbGContext::kGMrbCheckButton) {
+		TNGMrbSpecialButton * sbutton = this->FindSpecialButton(Pattern);
 		if (sbutton) {
 			UInt_t pat = sbutton->GetPattern();
-			TIterator * iter = fLofButtons.MakeIterator();
-			TMrbNamedX * nx;
-			while (nx = (TMrbNamedX *) iter->Next()) {
-				TGButton * button = (TGButton *) nx->GetAssignedObject();
+			TMrbNamedX *namedX;
+			TIterator * bIter = fLofButtons.MakeIterator();
+			while (namedX = (TMrbNamedX *) bIter->Next()) {
+				TGButton * button = (TGButton *) namedX->GetAssignedObject();
 				if (button->GetState() != kButtonDisabled) {
-					if ((UInt_t) nx->GetIndex() == Pattern) {
+					if ((UInt_t) namedX->GetIndex() == Pattern) {
 						button->SetState(kButtonDown);
-					} else if (nx->GetIndex() & pat) {
+					} else if (namedX->GetIndex() & pat) {
 						button->SetState(kButtonDown);
 					} else {
 						button->SetState(kButtonUp);
@@ -567,26 +581,15 @@ void TNGMrbButtonFrame::UpdateState(UInt_t Pattern) {
 				}
 			}
 		}
+		this->ButtonPressed(this->GetActive());
+	} else if (fType & TNGMrbGContext::kGMrbRadioButton) {
+		this->ButtonPressed(Pattern);
+	} else if (fType & TNGMrbGContext::kGMrbPictureButton) {
+		this->ButtonPressed(Pattern);
 	}
 }
 
-void TNGMrbButtonFrame::AddButton(TGButton * Button, TMrbNamedX * ButtonSpecs) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbButtonFrame::AddButton
-// Purpose:        Add a button to the list
-// Arguments:      TGButton * Button         -- button widget
-//                 TMrbNamedX * ButtonSpecs  -- name and index
-// Results:        
-// Exceptions:     
-// Description:    Adds a button to the list. No window mapping is done.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
 
-	ButtonSpecs->AssignObject((TObject *) Button);
-	Button->Associate((const TGWindow *) this);
-	fLofButtons.AddNamedX(ButtonSpecs);
-}
 
 TGButton * TNGMrbButtonFrame::GetButton(Int_t ButtonIndex) const {
 //________________________________________________________________[C++ METHOD]
@@ -734,28 +737,9 @@ void TNGMrbButtonFrame::JustifyButton(ETextJustification Justify, Int_t ButtonIn
 	}
 }
 
-Bool_t TNGMrbButtonFrame::ButtonFrameMessage(Long_t MsgId, Long_t MsgParm) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbButtonFrame::ProcessMessage
-// Purpose:        Message handler for a list of buttons
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t MsgParmX   -- message parameter   
-// Results:        
-// Exceptions:     
-// Description:    Handle messages sent to the list of buttons.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
 
-	if (GET_MSG(MsgId) == kC_COMMAND) {
-		switch(GET_SUBMSG(MsgId)) {
-			case kCM_RADIOBUTTON:	this->SetState((UInt_t) MsgParm); return(kTRUE);
-			case kCM_CHECKBUTTON:	this->UpdateState((UInt_t) MsgParm); return(kTRUE);
-			case kCM_BUTTON:		this->UpdateState((UInt_t) MsgParm); return(kTRUE);
-		}
-	}
-	return(kTRUE);
-}
+
+
 
 TNGMrbSpecialButton * TNGMrbButtonFrame::FindSpecialButton(Int_t Index) {
 //________________________________________________________________[C++ METHOD]
@@ -832,53 +816,28 @@ Int_t TNGMrbButtonFrame::GetPadLeft(Int_t Points) {
 	return(padLeft);
 }	
 
-void TNGMrbButtonFrameLayout::Layout() {
+
+void TNGMrbButtonFrame::ButtonPressed(Int_t Button){this->ButtonPressed(fFrameId, Button); }
+void TNGMrbButtonFrame::ButtonPressed(Int_t FrameId, Int_t Button) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbButtonFrameLayout::Layout
-// Purpose:        Layout manager
-// Arguments:      --
+// Name:           TGMrbButtonFrame::ButtonPressed
+// Purpose:        Signal handler
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t Button     -- button index
 // Results:        --
 // Exceptions:     
-// Description:    Placement of widget elements
+// Description:    Emits signal on "button pressed" 
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fWidget) {
-		Int_t boxHeight = (Int_t) fWidget->GetHeight();
-		Int_t btnHeight = fWidget->GetButtonHeight();
-		Int_t btnboxHeight = fWidget->GetNofRows() * (btnHeight + TNGMrbButtonFrame::kGMrbButtonPadH) + 2 * TNGMrbButtonFrame::kGMrbButtonPadH;
-		Int_t border = fWidget->GetFrame()->GetBorderWidth();
-		if (btnboxHeight + border > boxHeight) boxHeight = btnboxHeight + border + 4 * TNGMrbButtonFrame::kGMrbButtonPadH;
+	Long_t args[2];
 
-		Int_t labelWidth = fWidget->HasLabel() ? (Int_t) fWidget->GetLabel()->GetWidth() : 0;	// label width
-		Int_t boxWidth = (Int_t) fWidget->GetWidth();
-		Int_t btnboxWidth = 0;
-		for (Int_t i = 0; i < fWidget->GetNofCols(); i++) {
-			btnboxWidth += fWidget->GetColWidth()->At(i)+ TNGMrbButtonFrame::kGMrbButtonPadW;
-		}
-		btnboxWidth += 3 * TNGMrbButtonFrame::kGMrbButtonPadW;
+	args[0] = FrameId;
+	args[1] = Button;
+	//cout<<"Emit(ButtonPressed(Int_t, Int_t)"<<endl;
+	this->Emit("ButtonPressed(Int_t, Int_t)", args);
 	
-		if (labelWidth + btnboxWidth > boxWidth) boxWidth = labelWidth + btnboxWidth;
-		if ((fWidget->GetFrameOptions() & kHorizontalFrame) && fWidget->HasIndivColumnWidth()) boxWidth = labelWidth + btnboxWidth;
-
-		fWidget->GetFrame()->Resize((UInt_t) boxWidth, (UInt_t) boxHeight);
-			
-		Int_t y = fWidget->GetFrame()->GetBorderWidth() + TNGMrbButtonFrame::kGMrbButtonPadH;
-		TMrbNamedX * nx = (TMrbNamedX *) fWidget->GetLofButtons()->First();
-
-		Int_t padLeft = fWidget->GetPadLeft(boxWidth - btnboxWidth);
-		for (Int_t row = 0; row < fWidget->GetNofRows(); row++) {
-			Int_t x = boxWidth - padLeft - btnboxWidth + 2 * TNGMrbButtonFrame::kGMrbButtonPadW;
-			for (Int_t col = 0; col < fWidget->GetNofCols(); col++) {
-				TGButton * btn = (TGButton *) nx->GetAssignedObject();
-				Int_t bw = fWidget->GetColWidth()->At(col);
-				btn->MoveResize(x, y, bw, btnHeight);
-				x += (bw + TNGMrbButtonFrame::kGMrbButtonPadW);
-				nx = (TMrbNamedX *) fWidget->GetLofButtons()->After(nx);
-				if (nx == NULL) return;
-			}
-			y += (btnHeight + TNGMrbButtonFrame::kGMrbButtonPadH);
-		}
-	}
 }
+
+

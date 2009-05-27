@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbLabelEntry.h,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbLabelEntry.h,v 1.2 2009-05-27 07:36:49 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -23,6 +23,8 @@
 #include "TGButton.h"
 #include "TGTextEntry.h"
 #include "TGNumberEntry.h"
+#include "TGTableLayout.h"
+#include "TQObject.h"
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
@@ -41,6 +43,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 class TNGMrbLabelEntry: public TGCompositeFrame {
+//RQ_OBJECT("TNGMrbLabelEntry")
 
 	public:
 		enum EGMrbEntryButton	{	kGMrbEntryButtonUp = 1,
@@ -66,10 +69,12 @@ class TNGMrbLabelEntry: public TGCompositeFrame {
 									kGMrbEntryDate,
 									kGMrbEntryDegree
 								};
+		
 
 	public:
 		TNGMrbLabelEntry(	const TGWindow * Parent,
 							const Char_t * Label,
+							Int_t FrameId,
 							TNGMrbProfile * Profile,
 							Int_t EntryId, Int_t Width, Int_t Height, Int_t EntryWidth = 0,
 							UInt_t EntryOptions = kGMrbEntryIsNumber,
@@ -142,8 +147,6 @@ class TNGMrbLabelEntry: public TGCompositeFrame {
 		inline TGNumberEntryField * GetNumberEntryField() { return(fNumberEntryField); };
 		inline TGTextEntry * GetTextEntry() { return(fTextEntry); };
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
-
 		inline void Associate(const TGWindow * Window) {		// where to go if text field data change
 			this->IsNumberEntry() ?	fNumberEntryField->Associate(Window) : fTextEntry->Associate(Window);
 		};
@@ -155,12 +158,19 @@ class TNGMrbLabelEntry: public TGCompositeFrame {
 		};
 		inline TNGMrbFocusList * GetFocusList() const { return(fFocusList); };
 
+		// SLOT METHODS
+
+		void ButtonPressed(Int_t Button);
+		void LabelButtonPressed(Int_t Id, Int_t Button);	//*SIGNAL*
+		void UpDownButtonPressed(Long_t val);
+
 	protected:
 		Bool_t CheckRange(Int_t Value, Int_t LowerLim, Int_t UpperLim) const;
 		Bool_t CheckStyle(TGNumberEntry::EStyle Style, EGMrbEntryStyle StyleGroup) const;
 
 	protected:
 		USE_HEAP();
+		Int_t fFrameId;
 
 		Int_t fEntryWidth;				// width of numeric entry field (+ button width)
 		TGLabel * fLabel;				//! entry label
@@ -173,27 +183,10 @@ class TNGMrbLabelEntry: public TGCompositeFrame {
 		TGPictureButton * fButtonBegin;	//! begin/end buttons
 		TGPictureButton * fButtonEnd; 	//!
 
+		TGTableLayout * tabLayout;
+
 	ClassDef(TNGMrbLabelEntry, 1)		// [GraphUtils] An entry field with a label
 };
 
-//______________________________________________________[C++ CLASS DEFINITION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbLabelEntryLayout
-// Purpose:        Layout manager for TNGMrbLabelEntry widget
-// Description:    Defines widget layout
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-class TNGMrbLabelEntryLayout : public TGLayoutManager {
-
-	public:
-		TNGMrbLabelEntryLayout(TNGMrbLabelEntry * Widget) { fWidget = Widget; }
-		virtual void Layout();
-		inline TGDimension GetDefaultSize() const { return(fWidget->GetSize()); };
-
-	protected:
-		TNGMrbLabelEntry * fWidget;        // pointer to main widget
-
-};
 
 #endif

@@ -7,7 +7,7 @@
 // Purpose:        Define utilities to be used with the MARaBOU GUI
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbRadioButton.h,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbRadioButton.h,v 1.2 2009-05-27 07:36:49 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -36,22 +36,22 @@ class TNGMrbRadioButtonList: public TGCompositeFrame, public TNGMrbButtonFrame {
 
 	public:
 		TNGMrbRadioButtonList(const TGWindow * Parent, const Char_t * Label,
-													TMrbLofNamedX * Buttons,
+													TMrbLofNamedX * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0);
 
 		TNGMrbRadioButtonList(const TGWindow * Parent, const Char_t * Label,
-													const Char_t * Buttons,
+													const Char_t * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0);
 
 		~TNGMrbRadioButtonList() {};				// default dtor
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {		// process mouse clicks
+		/*virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {		// process mouse clicks
 			return(ButtonFrameMessage(MsgId, Param1));
-		};
+		};*/
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TNGMrbRadioButtonList.html&"); };
 
@@ -71,22 +71,22 @@ class TNGMrbRadioButtonGroup: public TGGroupFrame, public TNGMrbButtonFrame {
 
 	public:
 		TNGMrbRadioButtonGroup(const TGWindow * Parent, const Char_t * Label,
-													TMrbLofNamedX * Buttons,
+													TMrbLofNamedX * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t ButtonWidth = 0);
 
 		TNGMrbRadioButtonGroup(const TGWindow * Parent, const Char_t * Label,
-													const Char_t * Buttons,
+													const Char_t * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t ButtonWidth = 0);
 
 		~TNGMrbRadioButtonGroup() {};				// default dtor
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
+		/*virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
 			return(ButtonFrameMessage(MsgId, Param1));
-		};
+		};*/
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TNGMrbRadioButtonGroup.html&"); };
 
@@ -104,15 +104,16 @@ class TNGMrbRadioButtonGroup: public TGGroupFrame, public TNGMrbButtonFrame {
 class TNGMrbYesNoButtonList: public TGCompositeFrame, public TNGMrbButtonFrame {
 
 	public:
-		TNGMrbYesNoButtonList(const TGWindow * Parent, const Char_t * Label,
+		TNGMrbYesNoButtonList(const TGWindow * Parent, const Char_t * Label,			
+													Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0);
 
 		~TNGMrbYesNoButtonList() {};				// default dtor
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {		// process mouse clicks
+		/*virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {		// process mouse clicks
 			return(ButtonFrameMessage(MsgId, Param1));
-		};
+		};*/
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TNGMrbYesNoButtonList.html&"); };
 
@@ -131,14 +132,15 @@ class TNGMrbYesNoButtonGroup: public TGGroupFrame, public TNGMrbButtonFrame {
 
 	public:
 		TNGMrbYesNoButtonGroup(const TGWindow * Parent, const Char_t * Label,
+													Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t ButtonWidth = 0);
 
 		~TNGMrbYesNoButtonGroup() {};				// default dtor
 
-		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
+		/*virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {			// process mouse clicks
 			return(ButtonFrameMessage(MsgId, Param1));
-		};
+		};*/
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TNGMrbYesNoButtonGroup.html&"); };
 

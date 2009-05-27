@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbTextButton.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbTextButton.cxx,v 1.4 2009-05-27 07:36:49 Marabou Exp $       
 // Date:           
 //
 //Begin_Html
@@ -26,12 +26,13 @@ ClassImp(TNGMrbTextButtonGroup)
 TNGMrbTextButtonList::TNGMrbTextButtonList(const TGWindow * Parent,
 												const Char_t * Label,
 												TMrbLofNamedX * Buttons,
+												Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t Width, Int_t Height, Int_t ButtonWidth) :
 										TGCompositeFrame(Parent, Width, Height, (Int_t) Profile->GetFrameOptions()),
 										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbTextButton | TNGMrbGContext::kGMrbButtonList,
-												Buttons, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbTextButtonList
@@ -70,12 +71,13 @@ TNGMrbTextButtonList::TNGMrbTextButtonList(const TGWindow * Parent,
 TNGMrbTextButtonList::TNGMrbTextButtonList(const TGWindow * Parent,
 												const Char_t * Label,
 												const Char_t * Buttons,
+												Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t Width, Int_t Height, Int_t ButtonWidth) :
 										TGCompositeFrame(Parent, Width, Height, (Int_t) Profile->GetFrameOptions()),
 										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbTextButton | TNGMrbGContext::kGMrbButtonList,
-												Buttons, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbTextButtonList
@@ -114,12 +116,13 @@ TNGMrbTextButtonList::TNGMrbTextButtonList(const TGWindow * Parent,
 TNGMrbTextButtonGroup::TNGMrbTextButtonGroup(const TGWindow * Parent,
 												const Char_t * Label,
 												TMrbLofNamedX * Buttons,
+												Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t ButtonWidth) :
 								TGGroupFrame(Parent, Label, (Int_t) Profile->GetFrameOptions()),
 								TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbTextButton | TNGMrbGContext::kGMrbButtonGroup,
-												Buttons, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
 ///__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbTextButtonGroup
@@ -146,12 +149,13 @@ TNGMrbTextButtonGroup::TNGMrbTextButtonGroup(const TGWindow * Parent,
 TNGMrbTextButtonGroup::TNGMrbTextButtonGroup(const TGWindow * Parent,
 												const Char_t * Label,
 												const Char_t * Buttons,
+												Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t ButtonWidth) :
 								TGGroupFrame(Parent, Label, (Int_t) Profile->GetFrameOptions()),
 								TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbTextButton | TNGMrbGContext::kGMrbButtonGroup,
-												Buttons, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
 ///__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbTextButtonGroup

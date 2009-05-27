@@ -1,3 +1,5 @@
+
+//
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           gutils/src/TNGMrbLabelEntry.cxx
@@ -7,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbLabelEntry.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbLabelEntry.cxx,v 1.4 2009-05-27 07:36:49 Marabou Exp $       
 // Date:           
 // Layout:         A labelled entry field with up/down/begin/end buttons
 //Begin_Html
@@ -24,6 +26,7 @@
 #include "TMrbString.h"
 #include "TMrbLogger.h"
 #include "TNGMrbLabelEntry.h"
+#include "TGTableLayout.h"
 
 #include "SetColor.h"
 
@@ -33,6 +36,7 @@ extern TMrbLogger * gMrbLog;		// access to message logging
 
 TNGMrbLabelEntry::TNGMrbLabelEntry(	const TGWindow * Parent,
 									const Char_t * Label,
+									Int_t FrameId,
 									TNGMrbProfile * Profile,
 									Int_t EntryId, Int_t Width, Int_t Height, Int_t EntryWidth,
 									UInt_t EntryOptions,
@@ -48,7 +52,7 @@ TNGMrbLabelEntry::TNGMrbLabelEntry(	const TGWindow * Parent,
 //                 Int_t EntryId               -- id to be used in ProcessMessage
 //                 Int_t Width                 -- frame width
 //                 Int_t Height                -- frame height
-//                 Int_t EntryWidth            -- width of the entry field
+//                 Int_t EntryWidth            -- width of the entry field 
 //                 UInt_t EntryOptions         -- options to configure the entry
 //                 TMrbNamedX * Action         -- action button
 // Results:        --
@@ -64,6 +68,7 @@ TNGMrbLabelEntry::TNGMrbLabelEntry(	const TGWindow * Parent,
 	TNGMrbGContext * buttonGC = Profile->GetGC(TNGMrbGContext::kGMrbGCButton);
 
 	fEntryWidth = EntryWidth;
+	fFrameId=FrameId;
 	fLabel = NULL;
 	fNumberEntry = NULL;
 	fNumberEntryField = NULL;
@@ -72,169 +77,302 @@ TNGMrbLabelEntry::TNGMrbLabelEntry(	const TGWindow * Parent,
 	fButtonBegin = NULL;
 	fButtonEnd = NULL;
 
-	if (Label != NULL) {
-		fLabel = new TGLabel(this, new TGString(Label));
-		fLabel->SetTextFont(labelGC->Font());
-		fLabel->SetForegroundColor(labelGC->FG());
-		fLabel->SetBackgroundColor(labelGC->BG());
-		fLabel->ChangeOptions(labelGC->GetOptions());
-		TO_HEAP(fLabel);
-		this->AddFrame(fLabel);
-		fLabel->SetTextJustify(kTextLeft);
-	}
 
-	if (Action && Action->GetAssignedObject()) {
-		fAction = new TGTextButton(this, Action->GetName(), Action->GetIndex());
-		TO_HEAP(fAction);
-		fAction->SetFont(buttonGC->Font());
-		fAction->SetToolTipText(Action->GetTitle(), 500);
-		fAction->SetBackgroundColor(buttonGC->BG());
-		this->AddFrame(fAction);			
-		fAction->Associate((const TGWindow *) Action->GetAssignedObject());
-	}
+	
+	tabLayout = new TGTableLayout(this, 2, 5, kFALSE);
+	this->SetLayoutManager(tabLayout);
+											
+
+//			Number Entry
 
 	if (EntryOptions & kGMrbEntryIsNumber) {
 		if (EntryOptions & kGMrbEntryHasUpDownButtons) {
-			fNumberEntry = new TGNumberEntry(this, 0., EntryWidth, EntryId);
+
+			
+			TGNumberEntryField * NumberEntryFieldTemp = new TGNumberEntryField(this, 0., EntryWidth, EntryId);
+			Int_t h = NumberEntryFieldTemp->GetDefaultHeight();
+   			Int_t charw = NumberEntryFieldTemp->GetCharWidth("0123456789");
+			Int_t wdigits = (EntryWidth-8-2*h/3)*10/charw;
+   			
+			delete NumberEntryFieldTemp;
+
+
+
+			fNumberEntry = new TGNumberEntry(this, 0., wdigits, EntryId);
 			TO_HEAP(fNumberEntry);
 			fNumberEntryField = fNumberEntry->GetNumberEntry();
 			fTextEntry = fNumberEntryField;
-			this->AddFrame(fNumberEntry);
+			
+			this->AddFrame(fNumberEntry, new TGTableLayoutHints(1,2,0,2,
+        	                       //     kLHintsExpandX|kLHintsExpandY 
+        	                      //      |kLHintsShrinkX|kLHintsShrinkY |
+					      kLHintsCenterX|kLHintsCenterY
+					//    |kLHintsFillX|kLHintsFillY
+					     ,1,1,1,1));
+
 			fNumberEntry->GetButtonUp()->SetToolTipText("StepUp", 500);
 			fNumberEntry->GetButtonDown()->SetToolTipText("StepDown", 500);
+
+//			EndButton und BeginButton
+
 			if (EntryOptions & kGMrbEntryHasBeginEndButtons) {
 				fButtonEnd = new TGPictureButton(this, fClient->GetPicture("arrow_rightright.xpm"), kGMrbEntryButtonEnd);
 				TO_HEAP(fButtonEnd);
 				fButtonEnd->ChangeBackground(buttonGC->BG());
 				fButtonEnd->SetToolTipText("ToEnd", 500);
 				fButtonEnd->SetState(kButtonDisabled);
-				fButtonEnd->Associate(this);
-				this->AddFrame(fButtonEnd);
+				
+				((TQObject*)fButtonEnd)->Connect("Clicked()", "TNGMrbLabelEntry", this, Form("ButtonPressed(Int_t=%d)", 														kGMrbEntryButtonEnd));
+
+				
+				fButtonEnd->SetHeight(Height/2-2);
+				this->AddFrame(fButtonEnd, new TGTableLayoutHints(2,3,0,1,
+        	                        //  kLHintsExpandX|kLHintsExpandY |
+        	                            kLHintsShrinkX|kLHintsShrinkY |
+					    kLHintsCenterX|kLHintsCenterY
+					  //|kLHintsFillX|kLHintsFillY
+					     ,1,1,1,1));
+
 				fButtonBegin = new TGPictureButton(this, fClient->GetPicture("arrow_leftleft.xpm"), kGMrbEntryButtonBegin);
 				TO_HEAP(fButtonBegin);
 				fButtonBegin->ChangeBackground(buttonGC->BG());
 				fButtonBegin->SetToolTipText("ToBegin", 500);
 				fButtonBegin->SetState(kButtonDisabled);
-				fButtonBegin->Associate(this);
-				this->AddFrame(fButtonBegin);
+				
+				((TQObject*)fButtonBegin)->Connect("Clicked()", "TNGMrbLabelEntry", this, Form("ButtonPressed(Int_t=%d)", 															kGMrbEntryButtonBegin));
+
+				
+				fButtonBegin->SetHeight(Height/2-2);
+				this->AddFrame(fButtonBegin, new TGTableLayoutHints(2,3,1,2,
+        	                       //   kLHintsExpandX|kLHintsExpandY |
+        	                            kLHintsShrinkX|kLHintsShrinkY |
+					    kLHintsCenterX|kLHintsCenterY
+					 // |kLHintsFillX|kLHintsFillY
+					     ,1,1,1,1));
+
 			}
 			this->GetButtonUp()->ChangeBackground(buttonGC->BG());
 			this->GetButtonDown()->ChangeBackground(buttonGC->BG());
-			this->GetButtonUp()->Associate(this);
-			this->GetButtonDown()->Associate(this);
+			
+			((TQObject*)(fNumberEntry))->Connect("ValueSet(Long_t)", "TNGMrbLabelEntry", this, "UpDownButtonPressed(Long_t)");
+			
+			
+// 			Number Entry Field (without UpDownButtos)
 		} else {
 			fNumberEntry = NULL;
 			fNumberEntryField = new TGNumberEntryField(this, EntryId, 0.);
+			fNumberEntryField->SetWidth(EntryWidth);
+
 			TO_HEAP(fNumberEntryField);
 			fTextEntry = fNumberEntryField;
-			this->AddFrame(fNumberEntryField);
+
+			this->AddFrame(fNumberEntryField, new TGTableLayoutHints(1,2,0,2,
+        	                       //    kLHintsExpandX|kLHintsExpandY |
+        	                        //   kLHintsShrinkX|kLHintsShrinkY |
+					     kLHintsCenterX|kLHintsCenterY
+					//   |kLHintsFillX|kLHintsFillY
+					     ,1,1,1,1));
 		}
+//			Text Entry
 	} else {
 		fNumberEntry = NULL;
 		fNumberEntryField = NULL;
 		fTextEntry = new TGTextEntry(this, new TGTextBuffer(), EntryId);
+		fTextEntry->SetWidth(EntryWidth);
+
 		TO_HEAP(fTextEntry);
-		this->AddFrame(fTextEntry);
+	
+		this->AddFrame(fTextEntry, new TGTableLayoutHints(1,2,0,2,
+        	                          //kLHintsExpandX|kLHintsExpandY |
+        	                          //kLHintsShrinkX|kLHintsShrinkY |
+					    kLHintsCenterX|kLHintsCenterY
+					 // |kLHintsFillX|kLHintsFillY
+					     ,1,1,1,1));		
 	}
+//			ActionButton
+	if (Action && Action->GetAssignedObject()) {
+		fAction = new TGTextButton(this, Action->GetName(), Action->GetIndex());
+		TO_HEAP(fAction);
+		fAction->SetFont(buttonGC->Font());
+		fAction->SetToolTipText(Action->GetTitle(), 500);
+		fAction->SetBackgroundColor(buttonGC->BG());
+		
+		
+		this->AddFrame(fAction, new TGTableLayoutHints(3,4,0,2,
+        	                      //     kLHintsExpandX|kLHintsExpandY |
+        	                      //     kLHintsShrinkX|kLHintsShrinkY |
+					     kLHintsCenterX|kLHintsCenterY 
+					//   |kLHintsFillX|kLHintsFillY
+					     ,1,1,1,1));			
+		//fAction->Associate((const TGWindow *) Action->GetAssignedObject());
+		((TQObject*)fAction)->Connect("Clicked()", "TNGMrbLabelEntry", this, Form("ButtonPressed(Int_t=%d)", kGMrbEntryButtonAction));
+	}
+
+//			Label
+	if (Label != NULL) {
+		fLabel = new TGLabel(this, new TGString(Label));
+		fLabel->SetTextFont(labelGC->Font());
+		fLabel->SetForegroundColor(labelGC->FG());
+		fLabel->SetBackgroundColor(labelGC->BG());
+		fLabel->ChangeOptions(labelGC->GetOptions());
+		fLabel->ChangeOptions(fLabel->GetOptions() | kFixedWidth); 
+		TO_HEAP(fLabel);
+
+				
+		this->AddFrame(fLabel, new TGTableLayoutHints(0,1,0,2,
+        	                            kLHintsExpandX|kLHintsExpandY |
+        	                         //   kLHintsShrinkX|kLHintsShrinkY |
+					    kLHintsCenterX|kLHintsCenterY
+					    |kLHintsFillX|kLHintsFillY
+					     ,1,10,1,1));
+
+		fLabel->SetTextJustify(kTextLeft);
+	}
+
 
 	this->SetFont(entryGC->Font());
 	this->SetEntryBackground(entryGC->BG());
-	this->Resize(Width, Height);
-	this->SetLayoutManager(new TNGMrbLabelEntryLayout(this));
+	
+	this->Layout();
+	
+
+	
+	
 }
 
-Bool_t TNGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+void TNGMrbLabelEntry::UpDownButtonPressed(Long_t val){
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbLabelEntry::ProcessMessage
-// Purpose:        Message handler for up/down buttons
-// Arguments:      Long_t MsgId      -- message id
-//                 Long_t ParamX     -- message parameter   
+// Name:           TNGMrbLabelEntry::UpDownButtonPressed
+// Purpose:        To decide weather de Up- or DownButton was pressed
+// Arguments:      Long_t val: Argument of the TGNumberEntry::ValueSet(Long_t) Signal
+//                   
 // Results:        
 // Exceptions:     
-// Description:    Handle messages reveived from up/down buttons
+// Description:    To decide weather de Up- or DownButton was pressed
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	switch (GET_MSG(MsgId)) {
-		case kC_COMMAND:
+if (val/10000==0) ButtonPressed(kGMrbEntryButtonUp);
+else if(val/10000!=0) ButtonPressed(kGMrbEntryButtonDown);
+	
+}
 
-			switch (GET_SUBMSG(MsgId)) {
+void TNGMrbLabelEntry::ButtonPressed(Int_t Button){
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TNGMrbLabelEntry::ButtonPressed
+// Purpose:        Message handler for up/down/begin/end/action buttons
+// Arguments:      Int_t Button    -- Button Type which was pressed
+//                   
+// Results:        
+// Exceptions:     
+// Description:    Handle messages reveived from up/down/begin/end/action buttons
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
 
-				case kCM_BUTTON:
-					switch (Param1) {
-						case kGMrbEntryButtonDown:
-						case kGMrbEntryButtonUp:
-							fNumberEntry->ProcessMessage(MsgId, Param1, Param2);
-							switch(this->GetNumStyle()) {
-								case TGNumberEntry::kNESHex:
-									this->SetHexNumber((Int_t) this->GetNumber());
-									break;
-							}
-							break;
-						case kGMrbEntryButtonBegin:
-							if (this->HasBeginEndButtons()) {
-								UInt_t l = this->GetNumLimits();
-								UInt_t s = this->GetNumStyle();
-								if (l == TGNumberEntry::kNELLimitMin || l == TGNumberEntry::kNELLimitMinMax) {
-									switch (s) {
-										case TGNumberEntry::kNESInteger:
-										case TGNumberEntry::kNESDegree:
-										case TGNumberEntry::kNESMinSec:
-										case TGNumberEntry::kNESHourMin:
-										case TGNumberEntry::kNESHourMinSec:
-										case TGNumberEntry::kNESDayMYear:
-										case TGNumberEntry::kNESMDayYear:
-											this->SetIntNumber((Int_t) this->GetNumMin());
-											break;
-										case TGNumberEntry::kNESHex:
-											this->SetHexNumber((Int_t) this->GetNumMin());
-											break;
-										case TGNumberEntry::kNESRealOne:
-										case TGNumberEntry::kNESRealTwo:
-										case TGNumberEntry::kNESRealThree:
-										case TGNumberEntry::kNESRealFour:
-										case TGNumberEntry::kNESReal:
-											this->SetNumber(this->GetNumMin());
-											break;
-									}
-								}
-							}
-							break;
-						case kGMrbEntryButtonEnd:
-							if (this->HasBeginEndButtons()) {
-								UInt_t l = this->GetNumLimits();
-								UInt_t s = this->GetNumStyle();
-								if (l == TGNumberEntry::kNELLimitMax || l == TGNumberEntry::kNELLimitMinMax) {
-									switch (s) {
-										case TGNumberEntry::kNESInteger:
-										case TGNumberEntry::kNESDegree:
-										case TGNumberEntry::kNESMinSec:
-										case TGNumberEntry::kNESHourMin:
-										case TGNumberEntry::kNESHourMinSec:
-										case TGNumberEntry::kNESDayMYear:
-										case TGNumberEntry::kNESMDayYear:
-											this->SetIntNumber((Int_t) this->GetNumMax());
-											break;
-										case TGNumberEntry::kNESHex:
-											this->SetHexNumber((Int_t) this->GetNumMax());
-											break;
-										case TGNumberEntry::kNESRealOne:
-										case TGNumberEntry::kNESRealTwo:
-										case TGNumberEntry::kNESRealThree:
-										case TGNumberEntry::kNESRealFour:
-										case TGNumberEntry::kNESReal:
-											this->SetNumber(this->GetNumMax());
-											break;
-									}
-								}
-							}
-							break;
-					}
+
+	switch (Button){
+		case kGMrbEntryButtonUp:
+		case kGMrbEntryButtonDown:
+		
+		
+			switch(this->GetNumStyle()) {
+				case TGNumberEntry::kNESHex:
+				this->SetHexNumber((Int_t) this->GetNumber());
+									
 			}
 			break;
+		case kGMrbEntryButtonBegin:
+		
+			if (this->HasBeginEndButtons()) {
+				UInt_t l = this->GetNumLimits();
+				UInt_t s = this->GetNumStyle();
+				if (l == TGNumberEntry::kNELLimitMin || l == TGNumberEntry::kNELLimitMinMax) {
+					switch (s) {
+						case TGNumberEntry::kNESInteger:
+						case TGNumberEntry::kNESDegree:
+						case TGNumberEntry::kNESMinSec:
+						case TGNumberEntry::kNESHourMin:
+						case TGNumberEntry::kNESHourMinSec:
+						case TGNumberEntry::kNESDayMYear:
+						case TGNumberEntry::kNESMDayYear:
+							this->SetIntNumber((Int_t) this->GetNumMin());
+							break;
+						case TGNumberEntry::kNESHex:
+							this->SetHexNumber((Int_t) this->GetNumMin());
+							break;
+						case TGNumberEntry::kNESRealOne:
+						case TGNumberEntry::kNESRealTwo:
+						case TGNumberEntry::kNESRealThree:
+						case TGNumberEntry::kNESRealFour:
+						case TGNumberEntry::kNESReal:
+							this->SetNumber(this->GetNumMin());
+							break;
+					}
+				}
+			}
+			break;
+		case kGMrbEntryButtonEnd:
+		
+			if (this->HasBeginEndButtons()) {
+				UInt_t l = this->GetNumLimits();
+				UInt_t s = this->GetNumStyle();
+				if (l == TGNumberEntry::kNELLimitMax || l == TGNumberEntry::kNELLimitMinMax) {
+					switch (s) {
+						case TGNumberEntry::kNESInteger:
+						case TGNumberEntry::kNESDegree:
+						case TGNumberEntry::kNESMinSec:
+						case TGNumberEntry::kNESHourMin:
+						case TGNumberEntry::kNESHourMinSec:
+						case TGNumberEntry::kNESDayMYear:
+						case TGNumberEntry::kNESMDayYear:
+							this->SetIntNumber((Int_t) this->GetNumMax());
+							break;
+						case TGNumberEntry::kNESHex:
+							this->SetHexNumber((Int_t) this->GetNumMax());
+							break;
+						case TGNumberEntry::kNESRealOne:
+						case TGNumberEntry::kNESRealTwo:
+						case TGNumberEntry::kNESRealThree:
+						case TGNumberEntry::kNESRealFour:
+						case TGNumberEntry::kNESReal:
+							this->SetNumber(this->GetNumMax());
+							break;
+					}
+				}
+			}
+			break;
+		case kGMrbEntryButtonAction:
+		
+		break;
 	}
-	return(kTRUE);
+	
+	LabelButtonPressed(fFrameId, Button);
+	
+}
+
+void TNGMrbLabelEntry::LabelButtonPressed(Int_t Id, Int_t Button){
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TNGMrbLabelEntry::LabelButtonPressed
+// Purpose:        Emit Signal if a Button was pressed
+// Arguments:      Int_t Id	   -- Id of the LabelEntry
+//		   Int_t Button    -- ButtonId of the Button which was pressed
+//                   
+// Results:        
+// Exceptions:     
+// Description:    Emit Signal if a Button was pressed
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Long_t args[2];
+
+	args[0] = Id;
+	args[1] = Button;
+	
+	this->Emit("LabelButtonPressed(Int_t, Int_t)", args);
+	
 }
 
 void TNGMrbLabelEntry::UpDownButtonEnable(Bool_t Flag) {
@@ -619,64 +757,4 @@ Bool_t TNGMrbLabelEntry::CheckStyle(TGNumberEntry::EStyle Style, EGMrbEntryStyle
 	return(kTRUE);
 }
 
-void TNGMrbLabelEntryLayout::Layout() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TNGMrbLabelEntryLayout::Layout
-// Purpose:        Layout manager
-// Arguments:      --
-// Results:        --
-// Exceptions:     
-// Description:    Placement of widget elements
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
 
-	if (fWidget) {
-		UInt_t boxWidth = fWidget->GetWidth();			// width of labelled-entry box (label + entry + buttons)
-		UInt_t boxHeight = fWidget->GetHeight() - 2 * TNGMrbLabelEntry::kGMrbEntryPadH;	// height
-		UInt_t entryWidth = fWidget->GetEntryWidth(); 	// width of entry field (entry + buttons)
-
-		UInt_t labelWidth = fWidget->HasLabel() ? fWidget->GetLabel()->GetWidth() : 0;	// label width
-
-		if (entryWidth == 0) entryWidth = boxWidth - labelWidth;
-
-		if (labelWidth + entryWidth > boxWidth) {
-			boxWidth = labelWidth + entryWidth;
-			fWidget->Resize(boxWidth, fWidget->GetHeight());
-		}
-			
-		UInt_t btnWidth = 2 * boxHeight / 3;				// button width
-		Int_t x = boxWidth;
-		Int_t y = TNGMrbLabelEntry::kGMrbEntryPadH;
-		Int_t delta = 0;
-
-		if (fWidget->HasActionButton()) {
-			UInt_t w = fWidget->GetActionButton()->GetWidth();
-			x -= w; delta += w;
-			fWidget->GetActionButton()->MoveResize(x, y, w, boxHeight);
-		}
-
-		if (fWidget->IsNumberEntry() && fWidget->HasBeginEndButtons()) {
-			x -= btnWidth; delta += btnWidth;
-			fWidget->GetButtonEnd()->MoveResize(x, y, btnWidth, boxHeight/2);
-			fWidget->GetButtonBegin()->MoveResize(x, y + boxHeight/2, btnWidth, boxHeight/2);
-		}
-
-		x = boxWidth - entryWidth;		// entry starts 'entryWidth' from right end
-		entryWidth -= delta;			// compensate for buttons
-
-		if (fWidget->IsNumberEntry()) {
-			if (fWidget->HasUpDownButtons()) {
-				fWidget->GetNumberEntry()->MoveResize(x, y, entryWidth, boxHeight);
-			} else {
-				fWidget->GetNumberEntryField()->MoveResize(x, y, entryWidth, boxHeight);
-			}
-		} else {
-			fWidget->GetTextEntry()->MoveResize(x, y, entryWidth, boxHeight);
-		}
-
-		if (fWidget->HasLabel()) {
-			fWidget->GetLabel()->MoveResize(TNGMrbLabelEntry::kGMrbEntryPadW, y, x - TNGMrbLabelEntry::kGMrbEntryPadW, boxHeight);
-		}
-	}
-}
