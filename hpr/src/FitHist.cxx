@@ -228,6 +228,11 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fDrawOpt2Dim   = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
    fShowZScale    = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
    f2DimBackgroundColor = env.GetValue("Set2DimOptDialog.f2DimBackgroundColor", 0);
+	fHistFillColor2Dim = env.GetValue("Set2DimOptDialog.fHistFillColor2Dim", 1);
+	fHistLineColor2Dim = env.GetValue("Set2DimOptDialog.fHistLineColor2Dim", 1);
+	fMarkerColor2Dim   = env.GetValue("Set2DimOptDialog.fMarkerColor2Dim",   1);
+	fMarkerStyle2Dim   = env.GetValue("Set2DimOptDialog.fMarkerStyle2Dim",   1);
+	fMarkerSize2Dim    = env.GetValue("Set2DimOptDialog.fMarkerSize2Dim",    1);
    if ( fShowZScale != 0 )fDrawOpt2Dim += "Z";
    if ( fSelHist->GetDimension() == 1 ) {
 		fOptStat          = env.GetValue("WhatToShowDialog.fOptStat1Dim", 1);
@@ -3350,7 +3355,8 @@ void FitHist::Draw2Dim()
 //   gStyle->SetOptTitle(hp->GetShowTitle());
 //   if (->GetShowTitle())
 //      gStyle->SetTitleFont(hp->fTitleFont);
-//   cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim << endl;
+//  cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim 
+//	     << " gStyle->GetHistFillColor() :" <<gStyle->GetFillColor() << endl;
 //   fSelHist->DrawCopy(fDrawOpt2Dim);
    fSelHist->Draw(fDrawOpt2Dim);
    fSelHist->SetOption(fDrawOpt2Dim);
@@ -3369,9 +3375,13 @@ void FitHist::Draw2Dim()
       fSelHist->GetYaxis()->CenterTitle(kTRUE);
    if (fTitleCenterY)
       fSelHist->GetYaxis()->CenterTitle(kTRUE);
-   if (gROOT->GetForceStyle()) {
-      fSelHist->SetLineColor(gStyle->GetHistLineColor());
-   }
+		fSelHist->SetFillColor(fHistFillColor2Dim);
+		fSelHist->SetLineColor(fHistLineColor2Dim);
+		fSelHist->SetLineStyle(1);
+		fSelHist->SetLineWidth(1);
+		fSelHist->SetMarkerColor(fMarkerColor2Dim);  
+		fSelHist->SetMarkerStyle(fMarkerStyle2Dim);  
+		fSelHist->SetMarkerSize (fMarkerSize2Dim);   			
    DrawCut();
    TList *lof = fOrigHist->GetListOfFunctions();
    if (lof) {

@@ -53,6 +53,7 @@ HTCanvas::HTCanvas():TCanvas()
    fCurrentPlane      = 50;
    fOrigWw = 0;
    fOrigWh = 0;
+   fButtonsEnabled = kTRUE;
 };
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,

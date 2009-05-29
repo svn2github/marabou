@@ -1,5 +1,6 @@
 #include "TROOT.h"
 #include "TCanvas.h"
+#include "TFrame.h"
 #include "TRootCanvas.h"
 #include "TGraph2D.h"
 #include "TMath.h"
@@ -58,10 +59,10 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 ";
 
    const char *fDrawOpt2[kNdrawopt] =
-   {"SCAT", "BOX0", "BOX1 ", "COL",  "CONT0",
-    "CONT1", "CONT2", "CONT3", "CONT4",  "TRI2 ",
-    "SURF0", "SURF1", "SURF2", "SURF3",  "SURF4",
-    "LEGO ", "LEGO1", "LEGO2", "ARR  ",  "TEXT "};
+   {"SCAT", "BOX0",  "BOX1 ", "COL",  "ARR  ",
+	 "CONT0","CONT1", "CONT2", "CONT3","CONT4",
+    "SURF0","SURF1", "SURF2", "SURF3","SURF4",
+    "LEGO ","LEGO1", "LEGO2", "TRI2 ","TEXT "};
 	 
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
@@ -114,6 +115,10 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 
    fRow_lab->Add(new TObjString("CommentOnly_Scatter, Boxes, Colorplots"));
    fValp[ind++] = &dummy;
+	fBidSCAT = 1;
+	fBidBOX  = 2;
+	fBidBOX1 = 3;
+	fBidARR =  5;
    for (Int_t i = 0; i < 5; i++) {
 //   cout << " indopt  " <<  indopt << endl;
        TString text("RadioButton");
@@ -154,6 +159,21 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
        fRow_lab->Add(new TObjString(text.Data()));
        fValp[ind++] = &fOptRadio[indopt++];
    }
+	fBidTEXT = ind - 1;
+   fRow_lab->Add(new TObjString("ColorSelect_BackgColor"));
+   fValp[ind++] = &f2DimBackgroundColor;
+   fRow_lab->Add(new TObjString("ColorSelect+FillC"));
+   fBidFillColor = ind; fValp[ind++] = &fHistFillColor2Dim;
+   fRow_lab->Add(new TObjString("ColorSelect+LineC"));
+   fBidLineColor = ind; fValp[ind++] = &fHistLineColor2Dim;
+
+   fRow_lab->Add(new TObjString("ColorSelect_MColor"));
+   fBidMarkerColor = ind; fValp[ind++] = &fMarkerColor2Dim;
+   fRow_lab->Add(new TObjString("Mark_Select+MStyle"));
+   fBidMarkerStyle = ind; fValp[ind++] = &fMarkerStyle2Dim;
+   fRow_lab->Add(new TObjString("Float_Value+MSize"));
+   fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize2Dim;
+	
    fRow_lab->Add(new TObjString("CheckButton_Z Scale"));
    fRow_lab->Add(new TObjString("CheckButton+No Fbox"));
    fRow_lab->Add(new TObjString("CheckButton+No Bbox"));
@@ -177,6 +197,24 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+/*
+	if ( fDrawOpt2Dim.Contains("SCAT") ||   fDrawOpt2Dim.Contains("TEXT")) {
+	   fDialog->EnableButton(fBidMarkerColor);
+		fDialog->EnableButton(fBidMarkerStyle);
+		fDialog->EnableButton(fBidMarkerSize);
+   } else {
+	   fDialog->DisableButton(fBidMarkerColor);
+		fDialog->DisableButton(fBidMarkerStyle);
+		fDialog->DisableButton(fBidMarkerSize);
+	}
+	if ( fDrawOpt2Dim.Contains("BOX") || fDrawOpt2Dim.Contains("ARR") ) {
+	   fDialog->EnableButton(fBidFillColor);
+		fDialog->EnableButton(fBidLineColor);
+   } else {
+	   fDialog->DisableButton(fBidFillColor);
+		fDialog->DisableButton(fBidLineColor);
+	}
+*/
 }
 //_______________________________________________________________________
 
@@ -225,7 +263,7 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
    if ( fShowZScale && (
         fDrawOpt.Contains("COL")   || fDrawOpt.Contains("CONT0")
       ||fDrawOpt.Contains("CONT1") || fDrawOpt.Contains("CONT4")
-      ||fDrawOpt.Contains("TRI2") || fDrawOpt.Contains("SURF1")
+      ||fDrawOpt.Contains("TRI2")  || fDrawOpt.Contains("SURF1")
       ||fDrawOpt.Contains("SURF2") || fDrawOpt.Contains("SURF3")
       ||fDrawOpt.Contains("LEGO2") ) )
       fDrawOpt += "Z";
@@ -235,9 +273,17 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("TGraph2D")) {
          ((TGraph2D*)obj)->SetDrawOption(fDrawOpt);
-     } else if (obj->InheritsFrom("TH2")) {
+      } else if (obj->InheritsFrom("TH2")) {
          ((TH2*)obj)->SetDrawOption(fDrawOpt);
          ((TH2*)obj)->SetOption(fDrawOpt);
+			((TH2*)obj)->SetFillColor(fHistFillColor2Dim);
+			((TH2*)obj)->SetLineColor(fHistLineColor2Dim);
+			((TH2*)obj)->SetLineWidth(1);
+			((TH2*)obj)->SetLineStyle(1);
+			((TH2*)obj)->SetFillStyle(0);
+			((TH2*)obj)->SetMarkerColor(fMarkerColor2Dim);  
+			((TH2*)obj)->SetMarkerStyle(fMarkerStyle2Dim);  
+			((TH2*)obj)->SetMarkerSize (fMarkerSize2Dim);   			
       } else if ((obj->InheritsFrom("TPad"))) {
          TPad *pad = (TPad*)obj;
          TIter next1(pad->GetListOfPrimitives());
@@ -264,6 +310,17 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
 				canvas->ToggleAutoExec();
 		}
    }
+   if (f2DimBackgroundColor == 0) {
+      if (gStyle->GetCanvasColor() == 0) {
+         canvas->GetFrame()->SetFillStyle(0);
+      } else {
+      	canvas->GetFrame()->SetFillStyle(1001);
+      	canvas->GetFrame()->SetFillColor(10);
+   	}
+   } else {
+      canvas->GetFrame()->SetFillStyle(1001);
+      canvas->GetFrame()->SetFillColor(f2DimBackgroundColor);
+   }
 	canvas->Pop();
 	canvas->Modified();
 	canvas->Update();
@@ -286,6 +343,12 @@ void Set2DimOptDialog::SetHistAttPerm()
    env.SetValue("Set2DimOptDialog.fDrawOpt2Dim", fDrawOpt2Dim);
    env.SetValue("Set2DimOptDialog.fLiveStat2Dim", fLiveStat2Dim);
    env.SetValue("Set2DimOptDialog.fShowZScale", fShowZScale);
+	env.SetValue("Set2DimOptDialog.f2DimBackgroundColor",f2DimBackgroundColor);
+	env.SetValue("Set2DimOptDialog.fHistFillColor2Dim",fHistFillColor2Dim);
+	env.SetValue("Set2DimOptDialog.fHistLineColor2Dim",fHistLineColor2Dim);
+	env.SetValue("Set2DimOptDialog.fMarkerColor2Dim",  fMarkerColor2Dim  );
+	env.SetValue("Set2DimOptDialog.fMarkerStyle2Dim",  fMarkerStyle2Dim  );
+	env.SetValue("Set2DimOptDialog.fMarkerSize2Dim",   fMarkerSize2Dim   );
    env.SaveLevel(kEnvLocal);
 }
 //______________________________________________________________________
@@ -293,9 +356,15 @@ void Set2DimOptDialog::SetHistAttPerm()
 void Set2DimOptDialog::SaveDefaults()
 {
    TEnv env(".hprrc");
-   env.SetValue("Set2DimOptDialog.fDrawOpt2Dim", fDrawOpt2Dim);
-   env.SetValue("Set2DimOptDialog.fLiveStat2Dim", fLiveStat2Dim);
-   env.SetValue("Set2DimOptDialog.fShowZScale", fShowZScale);
+   env.SetValue("Set2DimOptDialog.fDrawOpt2Dim",      fDrawOpt2Dim);
+   env.SetValue("Set2DimOptDialog.fLiveStat2Dim",     fLiveStat2Dim);
+   env.SetValue("Set2DimOptDialog.fShowZScale",       fShowZScale);
+	env.SetValue("Set2DimOptDialog.f2DimBackgroundColor",f2DimBackgroundColor);
+	env.SetValue("Set2DimOptDialog.fHistFillColor2Dim",fHistFillColor2Dim);
+	env.SetValue("Set2DimOptDialog.fHistLineColor2Dim",fHistLineColor2Dim);
+	env.SetValue("Set2DimOptDialog.fMarkerColor2Dim",  fMarkerColor2Dim  );
+	env.SetValue("Set2DimOptDialog.fMarkerStyle2Dim",  fMarkerStyle2Dim  );
+	env.SetValue("Set2DimOptDialog.fMarkerSize2Dim",   fMarkerSize2Dim   );
    env.SaveLevel(kEnvLocal);
 }
 
@@ -307,8 +376,14 @@ void Set2DimOptDialog::RestoreDefaults()
 	fDrawOpt2Dim = fHist->GetOption();
    TEnv env(".hprrc");
 //   fDrawOpt2Dim  = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
-   fLiveStat2Dim = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
-//   fShowZScale   = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
+   fShowZScale        = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
+   fLiveStat2Dim      = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
+	f2DimBackgroundColor = env.GetValue("Set2DimOptDialog.f2DimBackgroundColor", 0);
+	fHistFillColor2Dim = env.GetValue("Set2DimOptDialog.fHistFillColor2Dim", 1);
+	fHistLineColor2Dim = env.GetValue("Set2DimOptDialog.fHistLineColor2Dim", 1);
+	fMarkerColor2Dim   = env.GetValue("Set2DimOptDialog.fMarkerColor2Dim",   1);
+	fMarkerStyle2Dim   = env.GetValue("Set2DimOptDialog.fMarkerStyle2Dim",   1);
+	fMarkerSize2Dim    = env.GetValue("Set2DimOptDialog.fMarkerSize2Dim",    1);
 }
 //______________________________________________________________________
 
@@ -327,6 +402,26 @@ void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 //   cout << "CRButtonPressed(" << wid<< ", " <<bid;
 //   if (obj) cout  << ", " << canvas->GetName() << ")";
 //   cout << endl;
+/*
+//	if ( fDrawOpt2Dim.Contains("SCAT") ) {
+	if ( bid == fBidSCAT  || bid == fBidTEXT) {
+	   fDialog->EnableButton(fBidMarkerColor);
+		fDialog->EnableButton(fBidMarkerStyle);
+		fDialog->EnableButton(fBidMarkerSize);
+   } else if  (bid <= fBidTEXT ) {
+	   fDialog->DisableButton(fBidMarkerColor);
+		fDialog->DisableButton(fBidMarkerStyle);
+		fDialog->DisableButton(fBidMarkerSize);
+	}
+//	if ( fDrawOpt2Dim.Contains("BOX") ) {
+	if ( bid == fBidBOX || bid == fBidBOX1  || bid == fBidARR) {
+	   fDialog->EnableButton(fBidFillColor);
+		fDialog->EnableButton(fBidLineColor);
+   } else  if  (bid <= fBidTEXT ) {
+	   fDialog->DisableButton(fBidFillColor);
+		fDialog->DisableButton(fBidLineColor);
+	}
+*/
    SetHistAttNow(canvas);
 }
 

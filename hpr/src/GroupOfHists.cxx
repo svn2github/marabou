@@ -324,10 +324,12 @@ void GroupOfHists::UpdateHists()
          TString drawopt;
          if(fShowContour)drawopt = "hist";
          if (fErrorMode != "none")  drawopt += fErrorMode;
-//         if(fFill1Dim){
-//            hist->SetFillStyle(1001);
-//			hist->SetFillColor(44);
-//         } else hist->SetFillStyle(0);
+         if (fFill1Dim) {
+            hist->SetFillStyle(fHistFillStyle);
+            hist->SetFillColor(fHistFillColor);
+         } else {
+            hist->SetFillStyle(0);
+         }
          hist->Draw(drawopt.Data());
          hist->GetXaxis()->SetRange(fx, lx);
       }

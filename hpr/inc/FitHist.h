@@ -108,7 +108,6 @@ private:
 
    Int_t fFill1Dim;
    Color_t fHistFillColor;
-   Color_t f2DimBackgroundColor;
    Color_t fHistLineColor;
    Float_t fHistLineWidth;
    Float_t fMarkerSize;
@@ -132,6 +131,12 @@ private:
    Int_t fTitleCenterZ;
    TText * fDateText;
    Save2FileDialog *fDialog;
+   Color_t fHistFillColor2Dim;
+   Color_t fHistLineColor2Dim;
+   Color_t fMarkerColor2Dim; 
+	Color_t f2DimBackgroundColor;
+   Style_t fMarkerStyle2Dim;  
+   Size_t  fMarkerSize2Dim; 
    TString fErrorMode;
 
 public:

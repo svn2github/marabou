@@ -990,7 +990,10 @@ void Canvas2RootFile(HTCanvas * canvas, TGWindow * win)
 {
    TString hname = canvas->GetName();
    hname += ".canvas";
-   Bool_t toggle = kFALSE;
+	TFile f("xxx.root", "RECREATE");
+	canvas->Write("aaaa");
+	f.Close();
+ //  Bool_t toggle = kFALSE;
 /*
    TObject *obj;
    hname = GetString("Save canvas with name", hname.Data(), &ok, win);
@@ -1004,13 +1007,13 @@ void Canvas2RootFile(HTCanvas * canvas, TGWindow * win)
    }
 */
 //   if (OpenWorkFile(win)) {
-   if (canvas->GetAutoExec()) {
-      canvas->ToggleAutoExec();
-      toggle = kTRUE;
-   }
+//   if (canvas->GetAutoExec()) {
+//      canvas->ToggleAutoExec();
+ //     toggle = kTRUE;
+//   }
    new Save2FileDialog(canvas);
 //      canvas->Write();
-   if (toggle) canvas->ToggleAutoExec();
+//   if (toggle) canvas->ToggleAutoExec();
 //      CloseWorkFile();
 //   }
 }

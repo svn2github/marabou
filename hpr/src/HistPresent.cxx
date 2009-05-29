@@ -270,6 +270,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    RestoreOptions();
    TEnv env(".rootrc");
    TString defdir(gSystem->Getenv("MARABOU"));
+	TString icondir(defdir);
    defdir += "/doc/hpr";
    *fHelpDir =
        env.GetValue("HistPresent.HelpDir",defdir.Data());
@@ -278,7 +279,8 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    else
       fHelpBrowser = NULL;
  //  SetColorPalette();
-
+   icondir += "/icons";
+//   gEnv->SetValue("Gui.IconPath", icondir.Data());
 // look if we are in a NX session
    TString display(gSystem->Getenv("DISPLAY"));
    if (display.BeginsWith("unix")) {
@@ -3195,7 +3197,14 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       Int_t ngr = FindGraphs(gPad, logr);
       if (ngr > 0) {
          c->Draw();
+			c->cd();
+			cout << "c->GetAutoExec() " <<c->GetAutoExec() << endl;
+			c->GetListOfPrimitives()->ls();
          c->BuildHprMenus(this,0, (TGraph*)logr->First());
+         if (!c->GetAutoExec()) {
+            c->ToggleAutoExec();
+				cout << "c->GetAutoExec() " <<c->GetAutoExec() << endl;
+		   } 
          delete logr;
          return;
       }

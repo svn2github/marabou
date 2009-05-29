@@ -26,7 +26,23 @@ private:
    Int_t fLiveStat2Dim;
    Double_t fLogScaleMin;
    Double_t fLogScaleMax;
-   
+   Color_t fHistFillColor2Dim;
+   Color_t fHistLineColor2Dim;
+   Color_t fMarkerColor2Dim; 
+	Color_t f2DimBackgroundColor;
+   Style_t fMarkerStyle2Dim;  
+   Size_t  fMarkerSize2Dim; 
+	Int_t   fBidSCAT;
+	Int_t   fBidBOX;
+	Int_t   fBidBOX1;
+	Int_t   fBidARR;
+	Int_t   fBidTEXT;
+	Int_t   fBidMarkerColor;
+	Int_t   fBidMarkerStyle;
+	Int_t   fBidMarkerSize;
+	Int_t   fBidLineColor;
+	Int_t   fBidFillColor;
+	
 public:
 
    Set2DimOptDialog(TGWindow * win = NULL);
