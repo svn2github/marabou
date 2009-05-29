@@ -7,4 +7,5 @@
 #pragma link C++ class TC2LVMEModule;
 #pragma link C++ class TC2LCaen785;
 #pragma link C++ class TC2LSis3302;
+#pragma link C++ class TC2LVulomTB;
 #endif

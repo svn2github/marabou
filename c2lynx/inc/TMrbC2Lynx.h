@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.11 2008-10-16 08:28:50 Marabou Exp $   
-// Date:           $Date: 2008-10-16 08:28:50 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.12 2009-05-29 14:14:31 Rudolf.Lutter Exp $   
+// Date:           $Date: 2009-05-29 14:14:31 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -119,7 +119,7 @@ class TMrbC2Lynx : public TNamed {
 		TSocket * fSocket;							//! connection to server
 		Int_t fPort;								// port number
 
-		FILE * fPipe;								// stream for pipe output
+		FILE * fPipe;								//! stream for pipe output
 
 		TMrbLofNamedX fLofServerLogs;				// list of server log modes
 		TMrbLofNamedX fLofModules;					// list of vme/camac modules connected

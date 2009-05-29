@@ -50,6 +50,7 @@
 
 	enum EVulomTB	{	kVulomTBNofScalers			= 3,
 						kVulomTBNofChannels 		= 16,
+						kVulomTBAllScalers	 		= -1,
 						kVulomTBAllChannels 		= -1
 					};
 
