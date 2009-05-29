@@ -1,7 +1,7 @@
 #include "TG3DLine.h"
 #include "TGToolBar.h"
 #include "TGDockableFrame.h"
-
+#include "TSystem.h"
 #include "GEdit.h"
 
 #include "TDialogCanvas.h"
@@ -99,13 +99,40 @@ void GEdit::ShowToolBar(Bool_t show)
       fToolBarSep = new TGHorizontal3DLine(fRootCanvas);
       fToolBar = new TGToolBar(fToolDock, 60, 20, kHorizontalFrame);
       fToolDock->AddFrame(fToolBar, fHorizontal1Layout);
-
+		TString roots_icons_dir(gSystem->Getenv("ROOTSYS"));
+#ifdef R__WIN32
+        roots_icons_dir += "\\icons\\";
+#else
+        roots_icons_dir += "/icons/";
+#endif
+		TString marabous_icons_dir(gSystem->Getenv("MARABOU"));
+#ifdef R__WIN32
+        marabous_icons_dir += "\\icons\\";
+#else
+        marabous_icons_dir += "/icons/";
+#endif
       Int_t spacing = 6, i;
       for (i = 0; gHprToolBarData[i].fPixmap; i++) {
          if (strlen(gHprToolBarData[i].fPixmap) == 0) {
             spacing = 6;
             continue;
-         }
+         } 			
+		   TString pm(gHprToolBarData[i].fPixmap);
+		   pm.Prepend(marabous_icons_dir.Data());
+		   if ( !gSystem->AccessPathName(pm) ) {
+				gHprToolBarData[i].fPixmap = pm.Data();
+		   } else {
+				pm = gHprToolBarData[i].fPixmap;
+				pm.Prepend(roots_icons_dir.Data());
+				if ( !gSystem->AccessPathName(pm) ) {
+				   gHprToolBarData[i].fPixmap = pm.Data();
+				} else {
+				   gHprToolBarData[i].fPixmap = "";
+               spacing = 6;
+               continue;
+				}
+		   }
+//		   cout << "Pm: " << gHprToolBarData[i].fPixmap << endl;
          TGButton * button =
          fToolBar->AddButton(fRootCanvas, &gHprToolBarData[i], spacing);
          button->Associate(this);
@@ -124,6 +151,22 @@ void GEdit::ShowToolBar(Bool_t show)
             spacing = 6;
             continue;
          }
+		   TString pm(gHprToolBarData1[i].fPixmap);
+		   pm.Prepend(marabous_icons_dir.Data());
+		   if ( !gSystem->AccessPathName(pm) ) {
+				gHprToolBarData1[i].fPixmap = pm.Data();
+		   } else {
+				pm = gHprToolBarData1[i].fPixmap;
+				pm.Prepend(roots_icons_dir.Data());
+				if ( !gSystem->AccessPathName(pm) ) {
+				   gHprToolBarData1[i].fPixmap = pm.Data();
+				} else {
+				   gHprToolBarData1[i].fPixmap = "";
+               spacing = 6;
+               continue;
+				}
+		   }
+//		   cout << "Pm: " << gHprToolBarData1[i].fPixmap << endl;
          TGButton * button =
          fToolBar->AddButton(fRootCanvas, &gHprToolBarData1[i], spacing);
          button->Associate(this);
