@@ -9,7 +9,7 @@
 // Author:           Rudolf.Lutter
 // Mail:             Rudolf.Lutter@lmu.de
 // URL:              www.bl.physik.uni-muenchen.de/~Rudolf.Lutter
-// Revision:         $Id: Encal.C,v 1.40 2008-08-18 08:20:21 Rudolf.Lutter Exp $
+// Revision:         $Id: Encal.C,v 1.41 2009-05-29 12:17:51 Rudolf.Lutter Exp $
 // Date:             Fri Oct 12 09:43:56 2007
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                Encal.C
@@ -1444,8 +1444,12 @@ Bool_t Calibrate() {
 	TArrayD yerr(fNofPeaks);
 	pIter = fFitList->MakeIterator();
 	fNofPeaksUsed = 0;
+	Double_t xFirst = 0;
+	Double_t xLast;
 	while (p = (FhPeak *) pIter->Next()) {
 		if (p->GetUsed()) {
+			if (xFirst == 0) xFirst = p->GetMean();
+			xLast = p->GetMean();
 			x[fNofPeaksUsed] = p->GetMean();
 			xerr[fNofPeaksUsed] = p->GetMeanError();
 			y[fNofPeaksUsed] = p->GetNominalEnergy();
@@ -1470,9 +1474,10 @@ Bool_t Calibrate() {
 	gr->SetMarkerSize(1);
 	gr->Draw("A*");
 	if (fCalibFct) {
+		fCalibFct->SetRange(xFirst, xLast);
 		fCalibFct->Draw("SAME"); 
-		fCalibFct->SetLineWidth(1);
-		fCalibFct->SetLineColor(7);
+		fCalibFct->SetLineWidth(2);
+		fCalibFct->SetLineColor(4);
 		TString grName = Form("%s Calibration, histo %s: %g + %g * x",
 											fSourceName.Data(), fCurHisto->GetName(),
 											fCalibFct->GetParameter(0), fCalibFct->GetParameter(1));
