@@ -590,6 +590,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
       cout << "Need at least 2 peaks defined" << endl;
       return kFALSE;
    }
+	Double_t max_gauge = 0.;
    for (Int_t i = 0; i < fGaugeNpeaks; i++) {
 	   if (fVerbose)
          cout << "Gauge Peak: " << fGaugeEnergy[i] << endl;
@@ -599,7 +600,13 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
                << fMatchMin << ", " << fMatchMax <<  "]" << endl;
           return kFALSE;
       }
+		if (fGaugeEnergy[i] > max_gauge ) max_gauge = fGaugeEnergy[i];
    }
+	if (fMatchMax > 1.5 * max_gauge) {
+	   cout << setred << "Warning: Testbed histogram seems too big: " << endl
+		<< "Max Gauge Peak:   " << max_gauge << endl
+		<< "Hist Upper Limit: " << fMatchMax << setblack << endl;
+	}
    DisableDialogs();
    static Int_t print_done = 0;
    for (Int_t i = 0; i < MAXPEAKS; i++)
@@ -626,10 +633,11 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
    }
    Int_t ngood = 0;
    for (Int_t i = 0; i < fNpeaks; i++) {
+//	   cout << "i " <<i << " fUse[i] " <<fUse[i] << "  fCont[i] " <<   fCont[i]<< endl;
       if (fUse[i] > 0  && fCont[i] > maxcont * fContThresh) ngood++;
    }
    if (ngood <= 1) {
-      cout << setred << "Only 1 peak left after threshold check: "
+      cout << setred << "Only 1 peak left after threshold check: " << fContThresh
       << endl << "Maximum cont: " << maxcont << " at: " << maxpos
       << setblack << endl;
       return kFALSE;
@@ -768,6 +776,24 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
             printf("\n");
       }
    }
+// remove text and lines of possible previous selection
+   TList temp;
+	TList *lop = fSelCanvas->GetListOfPrimitives();
+	TIter next3(lop);
+	TObject *obj;
+	while ( (obj = next3()) ) {
+	   if (obj->InheritsFrom("TText"))
+		   temp.Add(obj);
+	   if (obj->InheritsFrom("TLine"))
+		   temp.Add(obj);
+	}
+	TIter next2((&temp));
+	while ( (obj = next2()) ) {
+	   lop->Remove(obj);
+//		delete obj;
+	}
+   temp.Delete("slow");
+	Double_t prev_y = 0;
 	for (Int_t i = 0; i < fNpeaks; i++) {
 		best = fAssigned[i];
 		if ( best < 0 ) continue;
@@ -776,7 +802,12 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 		Double_t yr = fSelHist->GetMaximum();
 		Double_t xr = fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetLast())
 						- fSelHist->GetBinCenter(fSelHist->GetXaxis()->GetFirst());
-		TLine * l = new TLine(fX[i] + 0.025 * xr, yv + 0.025*yr, fX[i], yv);
+	   Double_t yn = yv + 0.025*yr;
+		if ( prev_y != 0 && TMath::Abs(yn - prev_y) < 0.02*yr ) {
+		    yn  -= 0.02*yr;
+		}
+	   prev_y = yn;
+		TLine * l = new TLine(fX[i] + 0.025 * xr, yn, fX[i], yv);
 		l->SetLineWidth(2);
 		l->Draw();
 
@@ -791,7 +822,7 @@ Bool_t CalibrationDialog::ExecuteAutoSelect()
 		TLatex latex;
 		latex.SetTextSize(0.02);
 		latex.SetTextColor(kBlue);
-		latex.DrawLatex(fX[i] + 0.025 * xr, yv + 0.025*yr, t);
+		latex.DrawLatex(fX[i] + 0.025 * xr, yn, t);
 		gPad->Modified();
 		gPad->Update();
 	}
@@ -1207,8 +1238,8 @@ void CalibrationDialog::HandleMenu(Int_t id)
 TList * CalibrationDialog::UpdatePeakList()
 {
 //   Int_t npeaks = 0
-   if ( fUpdatePeakListDone > 0 )
-       return &fPeakList;
+//   if ( fUpdatePeakListDone > 0 )
+//       return &fPeakList;
    if ( fVerbose )
       cout << "UpdatePeakList: # of functions: " <<
    fSelHist->GetListOfFunctions()->GetSize() << endl;
