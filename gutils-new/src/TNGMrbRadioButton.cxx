@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbRadioButton.cxx,v 1.3 2009-05-27 07:36:49 Marabou Exp $       
+// Revision:       $Id: TNGMrbRadioButton.cxx,v 1.4 2009-05-29 07:09:18 Marabou Exp $       
 // Date:           
 // Layout:         A list or group of radio buttons
 //Begin_Html
@@ -32,7 +32,7 @@ TNGMrbRadioButtonList::TNGMrbRadioButtonList(const TGWindow * Parent,
 												Int_t NofRows, Int_t NofCols,
 												Int_t Width, Int_t Height, Int_t ButtonWidth) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
-										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbButtonList,
+										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbList,
 												Buttons,FrameId,  Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ TNGMrbRadioButtonList::TNGMrbRadioButtonList(const TGWindow * Parent,
 												Int_t NofRows, Int_t NofCols,
 												Int_t Width, Int_t Height, Int_t ButtonWidth) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
-										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbButtonList,
+										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbList,
 												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -118,7 +118,7 @@ TNGMrbRadioButtonGroup::TNGMrbRadioButtonGroup(const TGWindow * Parent,
 												Int_t NofRows, Int_t NofCols,
 												Int_t ButtonWidth) :
 								TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
-								TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbButtonGroup,
+								TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbGroup,
 												Buttons,FrameId,  Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -150,7 +150,7 @@ TNGMrbRadioButtonGroup::TNGMrbRadioButtonGroup(const TGWindow * Parent,
 												Int_t NofRows, Int_t NofCols,
 												Int_t ButtonWidth) :
 								TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
-								TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbButtonGroup,
+								TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbGroup,
 												Buttons, FrameId,Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -180,7 +180,7 @@ TNGMrbYesNoButtonList::TNGMrbYesNoButtonList(const TGWindow * Parent,
 												TNGMrbProfile * Profile,
 												Int_t Width, Int_t Height, Int_t ButtonWidth) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
-										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbButtonList,
+										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbList,
 												"yes:no",FrameId, Profile, 0, 0, Width, Height, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -218,7 +218,7 @@ TNGMrbYesNoButtonGroup::TNGMrbYesNoButtonGroup(const TGWindow * Parent,
 												TNGMrbProfile * Profile,
 												Int_t ButtonWidth) :
 								TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
-								TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbButtonGroup,
+								TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbGroup,
 												"yes:no",FrameId, Profile, 0, 0, 0, 0, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////

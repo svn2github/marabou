@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbCheckButton.cxx,v 1.4 2009-05-27 07:36:49 Marabou Exp $       
+// Revision:       $Id: TNGMrbCheckButton.cxx,v 1.5 2009-05-29 07:09:18 Marabou Exp $       
 // Date:           
 // Layout:         A list or group of checkbuttons
 //Begin_Html
@@ -31,7 +31,7 @@ TNGMrbCheckButtonList::TNGMrbCheckButtonList(const TGWindow * Parent,
 												Int_t Width, Int_t Height, Int_t ButtonWidth,
 												TObjArray * LofSpecialButtons) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
-										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbButtonList,
+										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbList,
 												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ TNGMrbCheckButtonList::TNGMrbCheckButtonList(const TGWindow * Parent,
 												Int_t Width, Int_t Height, Int_t ButtonWidth,
 												TObjArray * LofSpecialButtons) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
-										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbButtonList,
+										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbList,
 												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ TNGMrbCheckButtonGroup::TNGMrbCheckButtonGroup(const TGWindow * Parent,
 												Int_t ButtonWidth,
 												TObjArray * LofSpecialButtons) :
 							TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
-							TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbButtonGroup,
+							TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbGroup,
 												Buttons, FrameId, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -160,7 +160,7 @@ TNGMrbCheckButtonGroup::TNGMrbCheckButtonGroup(const TGWindow * Parent,
 												Int_t ButtonWidth,
 												TObjArray * LofSpecialButtons) :
 							TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
-							TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbButtonGroup,
+							TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbGroup,
 												Buttons,FrameId, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////

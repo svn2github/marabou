@@ -8,7 +8,7 @@
 // Class:          TNGMrbButtonFrame    -- a composite frame containing buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbButtonFrame.h,v 1.3 2009-05-27 07:36:48 Marabou Exp $       
+// Revision:       $Id: TNGMrbButtonFrame.h,v 1.4 2009-05-29 07:09:17 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -120,7 +120,7 @@ RQ_OBJECT("TNGMrbButtonFrame")
 
 		void SetButtonWidth(Int_t Width, Int_t ButtonIndex = -1);	// set button width
 		Int_t GetButtonWidth(Int_t ButtonIndex = -1) const; 		// get button width
-		void JustifyButton(ETextJustification Justify, Int_t ButtonIndex);	// justify button text
+		void JustifyButton(ETextJustification Justify, Int_t ButtonIndex=0);	// justify button text
 		TGButton * GetButton(Int_t ButtonIndex) const;		// get button by index
 		//void AddButton(TGButton * Button, TMrbNamedX * ButtonSpecs);	// add a button
 
