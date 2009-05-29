@@ -804,7 +804,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    TGLayoutHints * locy = new TGLayoutHints( kLHintsCenterY , 2, 2, 2, 2);
    TGLayoutHints * l1 = new TGLayoutHints(kLHintsExpandX|kLHintsLeft | kLHintsCenterY, 2, 2, 2, 2);
    TGLayoutHints * l2 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 2, 2, 2, 2);
-   TGLayoutHints * l3 = new TGLayoutHints(kLHintsLeft | kLHintsCenterY | kLHintsExpandX, 2, 2, 2, 2);/**//**/
+//   TGLayoutHints * l3 = new TGLayoutHints(kLHintsLeft | kLHintsCenterY | kLHintsExpandX, 2, 2, 2, 2);/**//**/
 //   fWidgets->AddFirst(l3);
 //   fWidgets->AddFirst(lor);
 //   fWidgets->AddFirst(l1);
@@ -1313,16 +1313,15 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       b = new TGTextButton(hf, "Apply",  1000*kIdOk);
       b->SetToolTipText("Apply action and close dialog");
 
-//   } else {
-//      b = new TGTextButton(hf, "Save-Quit",  1000*kIdOk);
-//      b->SetToolTipText("Save current parameters and close dialog");
-//   }
-//		fWidgets->AddFirst(b);
-		b->Associate(this);
-		hf->AddFrame(b, ll);
-		height = b->GetDefaultHeight();
-		width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
+   } else {
+      b = new TGTextButton(hf, "Save-Quit",  1000*kIdOk);
+      b->SetToolTipText("Save current parameters and close dialog");
    }
+//		fWidgets->AddFirst(b);
+	b->Associate(this);
+	hf->AddFrame(b, ll);
+	height = b->GetDefaultHeight();
+	width  = TMath::Max(width, b->GetDefaultWidth()); ++nb;
 	fCancelButton = new TGTextButton(hf, "Cancel",  1000*kIdCancel);
    fCancelButton->SetToolTipText("Close dialog, dont save parameters");
 //      if (calling_class != NULL) {
@@ -2046,12 +2045,15 @@ void TGMrbValuesAndText::EnableButton(Int_t id)
       if (b) {
           b->SetEnabled(kTRUE);
           ReloadValue(b, objs, id);
-      }
+          gClient->NeedRedraw(this);
+			 cout << "EnableButton " << id << endl;
+	   }
    } else if (fEntries->At(id) ->InheritsFrom("TGNumberEntry")) {
       TGNumberEntry *b = (TGNumberEntry *)fEntries->At(id);
       if (b) {
          b->SetState(kTRUE);
          ReloadValue(b, objs, id);
+         gClient->NeedRedraw(this);
       }
    }
 };
@@ -2061,10 +2063,16 @@ void TGMrbValuesAndText::DisableButton(Int_t id)
 {
    if (fEntries->At(id) ->InheritsFrom("TGButton")) {
       TGButton *b = (TGButton *)fEntries->At(id);
-      if (b) b->SetEnabled(kFALSE);
+      if (b) {
+         b->SetEnabled(kFALSE);
+		   gClient->NeedRedraw(this);
+      }
    } else if (fEntries->At(id) ->InheritsFrom("TGNumberEntry")) {
       TGNumberEntry *b = (TGNumberEntry *)fEntries->At(id);
-      if (b) b->SetState(kFALSE);
+      if (b) {
+		   b->SetState(kFALSE);
+		   gClient->NeedRedraw(this);
+      }
    }
 
 };

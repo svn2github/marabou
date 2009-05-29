@@ -4,6 +4,7 @@
 #include "TEnv.h"
 #include "TFile.h"
 #include "TObjArray.h"
+#include "TRegexp.h"
 #include "TObjString.h"
 #include "TVirtualPad.h"
 #include "TRootCanvas.h"
@@ -40,6 +41,10 @@ more than one level of subdirs is allowed";
    } else {
       fList = NULL;
    }
+	cout << fObjName << endl;
+	TRegexp vers(";[0-9]*");
+	fObjName(vers) = "";
+
    TList *row_lab = new TList();
    row_lab->Add(new TObjString("StringValue_Name of Output root file"));
    row_lab->Add(new TObjString("StringValue_Name of dir in root file"));
