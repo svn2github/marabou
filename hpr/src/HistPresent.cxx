@@ -3177,8 +3177,8 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
 {
    cout << "ShowCanvas: " << fname << " " << dir << " " << name << endl;
    TString sname(name);
-   Int_t ip = sname.Index(";");
-   if (ip > 0) sname.Resize(ip);
+//   Int_t ip = sname.Index(";");
+//   if (ip > 0) sname.Resize(ip);
    HTCanvas *c;
    if (strstr(fname,".root")) {
       if (fRootFile) fRootFile->Close();
@@ -3190,25 +3190,41 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
    }
    gDirectory = gROOT;
    if (!c)  return;
+   UInt_t ww;
+	UInt_t wh;
 
    if (!c->TestBit(HTCanvas::kIsAEditorPage)) {
 //      c->Draw();
+		ww = c->GetWindowWidth();
+		wh = c->GetWindowHeight();
       TList * logr = new TList();
+      TList * lohi = new TList();
       Int_t ngr = FindGraphs(gPad, logr);
-      if (ngr > 0) {
-         c->Draw();
-			c->cd();
-			cout << "c->GetAutoExec() " <<c->GetAutoExec() << endl;
-			c->GetListOfPrimitives()->ls();
-         c->BuildHprMenus(this,0, (TGraph*)logr->First());
-         if (!c->GetAutoExec()) {
-            c->ToggleAutoExec();
-				cout << "c->GetAutoExec() " <<c->GetAutoExec() << endl;
-		   } 
-         delete logr;
-         return;
+      if (ngr > 0) 
+		   gStyle->SetOptStat(0);
+		c->GetListOfExecs()->Clear();
+      c->Draw();
+	   c->cd();
+      if (c->GetAutoExec()) 
+         c->ToggleAutoExec();
+      if ( c->InheritsFrom("HTCanvas") ) {
+//	   	c->SetCanvasSize(c->GetOrigWw(), c->GetOrigWh());
+			if (ngr > 0) {
+				c->BuildHprMenus(this,0, (TGraph*)logr->First());
+			} else {
+				Int_t nhi = FindObjs(gPad, logr, NULL, "TH1");
+				if (nhi > 0) {
+					c->BuildHprMenus(this,NULL, NULL);
+				}
+			}
       }
+//		c->SetWindowSize(c->GetOrigWw(), c->GetOrigWh());
+		c->SetWindowSize(ww, wh);
+		c->Modified();
+		c->Update();
       delete logr;
+      delete lohi;
+		return;
    } else {
       cout << "kIsAEditorPage " << endl;
    }
@@ -3255,7 +3271,6 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
    }
    TString tempname(c->GetName());
    c->SetName("abcxyz");
-   UInt_t ww, wh;
    ww = c->GetWw() + 2 * (gStyle->GetCanvasBorderSize() + 1);
    wh =  c->GetWindowHeight();
    wh =  c->GetWh();

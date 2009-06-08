@@ -109,6 +109,7 @@ TH1 * calhist(TH1 * hist, TF1 * calfunc,
 void     PrintGraph(TGraphErrors * gr); 
 Bool_t   IsInsideFrame(TCanvas *c, Int_t px, Int_t py);
 Int_t    FindGraphs(TVirtualPad *ca, TList *logr=NULL, TList *pads=NULL);
+Int_t    FindObjs(TVirtualPad * ca, TList * logr, TList * pads, const char * oname = "TH1");
 Int_t    FindPaveStats(TVirtualPad *ca, TList *lops=NULL, TList *pads=NULL);
 void     DrawColors();
 void     DrawFillStyles();

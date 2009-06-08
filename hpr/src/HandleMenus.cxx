@@ -1223,12 +1223,13 @@ void HandleMenus::BuildMenus()
       fFileMenu->AddEntry("Graph_to_ROOT-File",      kFHGraphToFile);
       if ( graph1d )
          fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
-      fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
    }
+      fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
    if(fHistPresent){
       if (fFitHist) {
          fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
          fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
+			fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
       }
 //      fGraph = FindGraph(fHCanvas);
       if (!edit_menus) {

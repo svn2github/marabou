@@ -28,28 +28,32 @@ class FitHist;
 class HistPresent;
 class HandleMenus;
 class HprElement;
+class GEdit;
 
 class HTCanvas : public TCanvas {
 
 friend class HandleMenus;
 
 private:
-   HistPresent    * fHistPresent;   //! dont stream
-   FitHist        * fFitHist;       //! dont stream
-   TGraph         * fGraph;         //! dont stream
-   TRootCanvas    * fRootCanvas;    //! dont stream
-   HandleMenus    * fHandleMenus;   //! dont stream
-   Bool_t         fHasConnection;    //! dont stream
+   HistPresent    * fHistPresent;     //! dont stream
+   FitHist        * fFitHist;         //! dont stream
+   TGraph         * fGraph;           //! dont stream
+   TRootCanvas    * fRootCanvas;      //! dont stream
+   HandleMenus    * fHandleMenus;     //! dont stream
+   GEdit          * fGEdit;           //! dont stream
+   Bool_t         fHasConnection;     //! dont stream
    Bool_t         fButtonsEnabled;    //! dont stream
+   Bool_t         fEditorIsShown;     //! dont stream
 
-   TList          *fHiddenPrimitives;
+   TList          *fHiddenPrimitives; //
 
-   Double_t       fEditGridX;
-   Double_t       fEditGridY;
-   Int_t          fUseEditGrid;
+   Double_t       fEditGridX;         //
+   Double_t       fEditGridY;         //
+   Int_t          fUseEditGrid;       //
    UInt_t         fOrigWw;
    UInt_t         fOrigWh;
-   Int_t          fCurrentPlane;
+   Int_t          fCurrentPlane;      //
+
    void Build();
 //
 public:
@@ -95,8 +99,14 @@ public:
                          << std::endl; GetListOfPrimitives()->ls();}; // *MENU*
    void     SetEnableButtons(Bool_t enable = kTRUE) {fButtonsEnabled = enable;};
    Bool_t   GetEnableButtons() {return fButtonsEnabled ;};
+	UInt_t   GetOrigWw() { return fOrigWw; };
+	UInt_t   GetOrigWh() { return fOrigWh; };
+   void     SetShowEditor(Bool_t y = kTRUE) { fEditorIsShown = y; };
+   Bool_t   GetShowEditor() { return fEditorIsShown; };
+   GEdit    *GetGEdit() { return fGEdit; };
+   void     *SetGEdit(GEdit *ed) { fGEdit = ed; };
 //   TList   *GetConnectedClasses() { return &fConnectedClasses;};
-   ClassDef(HTCanvas,3)  //Graphics canvas
+   ClassDef(HTCanvas,4)  //Graphics canvas
 };
 
 #endif

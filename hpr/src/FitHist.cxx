@@ -1072,7 +1072,6 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 
    hist->SetDirectory(gROOT);
 //   if ( (is2dim(hist) && fLiveStat2Dim) || (!is2dim(hist) && fLiveStat1Dim) ){
-
       TString cmd("((FitHist*)gROOT->FindObject(\"");
       cmd += GetName();
       cmd += "\"))->handle_mouse()";

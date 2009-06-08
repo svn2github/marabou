@@ -335,16 +335,22 @@ void SetColorModeDialog::SetTransLevelsRGB()
             rgb[1] += 0.5 * (rgb[0] - 1.);
             rgb[2] += 0.5 * (rgb[0] - 1.);
             rgb[0] = 1.;
+         } else {
+            rgb[0] = 0;
          }
          if (rgb[1] > 1.) {
             rgb[0] += 0.5 * (rgb[1] - 1.);
             rgb[2] += 0.5 * (rgb[1] - 1.);
             rgb[1] = 1.;
+         }else {
+            rgb[1] = 0;
          }
          if (rgb[2] > 1.) {
             rgb[0] += 0.5 * (rgb[2] - 1.);
             rgb[1] += 0.5 * (rgb[2] - 1.);
             rgb[2] = 1.;
+         }else {
+            rgb[2] = 0;
          }
       }
       color = new TColor(fStartColorIndex + i, rgb[0], rgb[1], rgb[2],"");

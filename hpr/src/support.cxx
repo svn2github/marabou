@@ -25,9 +25,9 @@
 #include "TList.h"
 #include "TRandom.h"
 #include "TASImage.h"
-
 #include "CmdListEntry.h"
 #include "FitHist.h"
+#include "GEdit.h"
 #include "SetColor.h"
 
 #include "support.h"
@@ -405,10 +405,10 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
                                    xpos, ypos, -xw, yw, hpr, 0);
    Int_t item_height = TMath::Min(Int_t(magfac * 24.), 10000/Nentries);
 //	cout << " Nentries " << Nentries << endl;
-	
+
    if ( item_height < 24 ) item_height = 24;
    cHCont->SetCanvasSize(xw, item_height * Nentries);
- 
+
    Float_t expandx = xw / (250. * magfac);
    if(expandx < 1.) expandx=1.;
 //   Float_t expandy = (Float_t) Nentries / 25;
@@ -988,34 +988,18 @@ a shift value of 10 will only shift by 5 cm";
 //_______________________________________________________________________________________
 void Canvas2RootFile(HTCanvas * canvas, TGWindow * win)
 {
-   TString hname = canvas->GetName();
-   hname += ".canvas";
-	TFile f("xxx.root", "RECREATE");
-	canvas->Write("aaaa");
-	f.Close();
- //  Bool_t toggle = kFALSE;
-/*
-   TObject *obj;
-   hname = GetString("Save canvas with name", hname.Data(), &ok, win);
-   if (!ok)
-      return;
-   if ((obj = gROOT->FindObject(hname.Data()))) {
-      WarnBox("Object with this name already exists", win);
-      cout << setred << "Object with this name already exists: "
-          << obj->ClassName() << setblack << endl;
-      return;
-   }
-*/
-//   if (OpenWorkFile(win)) {
-//   if (canvas->GetAutoExec()) {
-//      canvas->ToggleAutoExec();
- //     toggle = kTRUE;
-//   }
-   new Save2FileDialog(canvas);
-//      canvas->Write();
-//   if (toggle) canvas->ToggleAutoExec();
-//      CloseWorkFile();
-//   }
+	TRootCanvas * trc = (TRootCanvas*)canvas->GetCanvasImp();
+	Bool_t se = canvas->GetShowEditor();
+	if ( se ) {
+	   trc->ShowEditor(kFALSE);
+      canvas->GetGEdit()->ExecuteAdjustSize(-1);
+	}
+ 
+   new Save2FileDialog(canvas, NULL, trc);
+	if ( se ) {
+	   trc->ShowEditor(kTRUE);
+      canvas->GetGEdit()->ExecuteAdjustSize( 1);
+	}
 }
 
 //_________________________________________________________________________________________
@@ -1330,6 +1314,36 @@ Int_t FindGraphs(TVirtualPad * ca, TList * logr, TList * pads)
           TIter next2(p->GetListOfPrimitives());
           while (TObject * obj = next2()) {
              if (obj->InheritsFrom("TGraph")) {
+                ngr++;
+                if (logr) logr->Add(obj);
+                if (pads) pads->Add(p);
+             }
+          }
+      }
+   }
+   return ngr;
+};
+//_______________________________________________________________________________________
+Int_t FindObjs(TVirtualPad * ca, TList * logr, TList * pads, const char * oname)
+{
+   if (!ca) return -1;
+   Int_t ngr = 0;
+   TIter next(ca->GetListOfPrimitives());
+   while (TObject * obj = next()) {
+      if (obj->InheritsFrom(oname)) {
+          ngr++;
+          if (logr) logr->Add(obj);
+          if (pads) pads->Add(ca);
+      }
+   }
+// look for subpads
+   TIter next1(ca->GetListOfPrimitives());
+   while (TObject * obj = next1()) {
+      if (obj->InheritsFrom("TPad")) {
+          TPad * p = (TPad*)obj;
+          TIter next2(p->GetListOfPrimitives());
+          while (TObject * obj = next2()) {
+             if (obj->InheritsFrom(oname)) {
                 ngr++;
                 if (logr) logr->Add(obj);
                 if (pads) pads->Add(p);

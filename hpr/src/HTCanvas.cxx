@@ -21,6 +21,7 @@
 #include "TVirtualPadEditor.h"
 
 #include "FitHist.h"
+#include "GEdit.h"
 #include "HistPresent.h"
 #include "support.h"
 #include "SetColor.h"
@@ -40,20 +41,24 @@ ClassImp(HTCanvas)
 HTCanvas::HTCanvas():TCanvas()
 {
    fHistPresent = NULL;
-   fFitHist = NULL;
-   fGraph = NULL;
-   fRootCanvas = NULL;
+   fFitHist     = NULL;
+   fGraph       = NULL;
+   fRootCanvas  = NULL;
    fHandleMenus = NULL;
+   fGEdit       = NULL;
    fHasConnection = kFALSE;
    fHiddenPrimitives  = NULL;
    fEditGridX = 0;
    fEditGridY = 0;
    fUseEditGrid = 0;
+   fEditorIsShown = kFALSE;
    fHasConnection = kFALSE;
    fCurrentPlane      = 50;
-   fOrigWw = 0;
-   fOrigWh = 0;
+//   fOrigWw = 0;
+//  fOrigWh = 0;
    fButtonsEnabled = kTRUE;
+   fOrigWw = GetWw();
+   fOrigWh = GetWh();
 };
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
@@ -148,6 +153,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fEditGridX = 0;
    fEditGridY = 0;
    fHandleMenus = NULL;
+   fGEdit       = NULL;
    fHiddenPrimitives = new TList();
    fUseEditGrid = 0;
    fHasConnection = kFALSE;
@@ -165,6 +171,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
       }
    }
    fCanvasImp->ShowEditor(kFALSE);
+   fEditorIsShown = kFALSE;
    fCanvasImp->ShowToolBar(kFALSE);
    fCanvasImp->ShowStatusBar(kFALSE);
    fCanvasImp->ShowMenuBar(HasMenuBar());
@@ -752,9 +759,9 @@ void HTCanvas::SetLog(Int_t state)
 
 void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)
 {
-   if (hpr) fHistPresent = hpr;
-   if (fh)  fFitHist = fh;
-   if (gr)  fGraph= gr;
+   fHistPresent = hpr;
+   fFitHist     = fh;
+   fGraph       = gr;
 
    fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
