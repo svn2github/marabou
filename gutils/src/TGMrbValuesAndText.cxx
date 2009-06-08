@@ -782,6 +782,9 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       fCallingCanvas = NULL;
    }
    fCompList = complist;
+   Bool_t mustwait = kFALSE;
+	if (*ok == -2)
+      mustwait = kTRUE;
    fReturn = ok;
    *ok = -1;    // if closed by cancel
    TString CancelCmd;
@@ -1422,7 +1425,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    this->ChangeBackground(brown);
    hf->ChangeBackground(brown);
 //   if (!has_commands)
-   if (calling_class == NULL)
+   if (calling_class == NULL || mustwait)
       gClient->WaitFor(this);
 };
 //________________________________________________________________________________________

@@ -11,6 +11,7 @@
 #include "TSystem.h"
 //#include "TGMrbValuesAndText.h"
 #include "Save2FileDialog.h"
+#include "HTCanvas.h"
 
 ClassImp(Save2FileDialog)
 
@@ -51,8 +52,8 @@ more than one level of subdirs is allowed";
    row_lab->Add(new TObjString("StringValue_Save object with name"));
    if (fList)
       row_lab->Add(new TObjString("CheckButton_Write functions as list"));
-   row_lab->Add(new TObjString("CheckButton_Keep Dialog"));
-   row_lab->Add(new TObjString("CommandButt_Execute Save"));
+//   row_lab->Add(new TObjString("CheckButton_Keep Dialog"));
+//   row_lab->Add(new TObjString("CommandButt_Execute Save"));
    Int_t itemwidth = 320;
 
    valp[ind++] = &fFileName;
@@ -60,7 +61,7 @@ more than one level of subdirs is allowed";
    valp[ind++] = &fObjName;
    if (fList)
       valp[ind++] = &fAsList;
-   valp[ind++] = &fKeepDialog;
+//   valp[ind++] = &fKeepDialog;
    valp[ind++] = &fCommand;
    TRootCanvas* window = win;
    if ( window == NULL)
@@ -68,15 +69,19 @@ more than one level of subdirs is allowed";
    TString text = obj->ClassName();
    text.Prepend ("Save ");
    text.Append(" to rootfile");
-   Int_t dum = 0;
+   Int_t retval = -2;   //wait for answer
    fWidget = new TGMrbValuesAndText(text, NULL,
-                   &dum, itemwidth, window,
+                   &retval, itemwidth, window,
                    NULL, NULL, row_lab, valp,
-                   NULL, NULL, helpText, this, this->ClassName());
-//   if (dum);
-//   ok = GetStringExt("Define parameters", NULL, itemwidth, win,
-//                   NULL, NULL, row_lab, valp,
-//                   NULL, NULL, &helpText[0], this, this->ClassName());
+                   NULL, NULL, helpText);
+   cout << "retval " <<retval << endl;
+   if (retval >= 0) {
+      ExecuteSave();
+      SaveDefaults();
+   } else {
+      cout << "Cancelled " <<retval << endl;
+   }
+   delete this;
 };
 //_________________________________________________________________________
 
@@ -116,22 +121,39 @@ void Save2FileDialog::ExecuteSave()
          fList->Write(fObjName, 1);
       else
          fList->Write();
+      outfile->Close();
    } else {
       TString sname(fObject->GetName());
-      TNamed *tn = (TNamed *)fObject;
-      tn->SetName(fObjName);
-      cout << "Saving " << fObject->GetName() << " to: "
+      cout <<"fObject->GetName() "  << fObject->GetName() << " fObjName " << fObjName <<endl;
+      TNamed *tn = NULL;
+#ifdef MARABOUVERS
+      HTCanvas *htc = NULL;
+      if ( fObject->InheritsFrom("HTCanvas") ) {
+         HTCanvas *htc = (HTCanvas*)fObject;
+         htc->SetName(fObjName);
+      } else {
+         tn = (TNamed *)fObject;
+         tn->SetName(fObjName);
+      }
+#endif
+		cout << "Saving " << fObject->GetName() << " to: "
         << gDirectory->GetPath() <<endl;
-      fObject->Write(fObjName);
-      tn->SetName(sname);
+      fObject->Write();
+//      fObject->Write(fObjName);
+      outfile->Close();
+#ifdef MARABOUVERS
+      if ( htc )
+         htc->SetName(sname);
+#endif
+      if ( tn )
+         tn->SetName(sname);
    }
-   outfile->Close();
-   if (fKeepDialog <= 0) {
-      SaveDefaults();
-      fWidget->CloseWindowExt();
+//   if (fKeepDialog <= 0) {
+//      SaveDefaults();
+//      fWidget->CloseWindowExt();
 //      delete fWidget;
-      delete this;
-   }
+//      delete this;
+//  }
 };
 //_________________________________________________________________________
 
