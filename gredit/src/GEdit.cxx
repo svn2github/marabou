@@ -95,25 +95,19 @@ ClassImp(GEdit)
 
 //____________________________________________________________________________
 
-#ifdef MARABOUVERS
+
 GEdit::GEdit(HTCanvas * parent)
 {
-   fHistPresent = parent->GetHistPresent();
    fParent = parent;
    Constructor();
-}
-#endif
-
-GEdit::GEdit(TCanvas * parent)
-{
-   fParent = parent;
-   Constructor();
+   fParent->SetGEdit(this);
 }
 void GEdit::Constructor()
 {
-//   cout << "ctor GEdit, parent " << fParent << endl;
+   //cout << "ctor GEdit: fParent " << fParent << endl;
    SetName("HprGEdit");
-   fRootCanvas = (TRootCanvas*)fParent->GetCanvas()->GetCanvasImp();
+//   fRootCanvas = (TRootCanvas*)fParent->GetCanvas()->GetCanvasImp();
+   fRootCanvas = (TRootCanvas*)fParent->GetCanvasImp();
    fOrigWw = fParent->GetWw();
    fOrigWh = fParent->GetWh();
    RestoreDefaults();
@@ -144,6 +138,7 @@ void GEdit::Constructor()
    gROOT->GetListOfCleanups()->Add(this);
    gROOT->GetListOfSpecials()->Add(this);
    fParent->cd();
+   fParent->SetShowEditor();
 }
 //______________________________________________________________________________
 
@@ -151,6 +146,7 @@ GEdit::~GEdit()
 {
 //   cout << "~GEdit " << this << endl;
    SaveDefaults();
+   fParent->SetGEdit(NULL);
    gROOT->GetListOfCleanups()->Remove(this);
    gROOT->GetListOfSpecials()->Remove(this);
    if (fEditCommands) delete fEditCommands;
@@ -2110,7 +2106,7 @@ tryagain:
          Bool_t inside = kFALSE;
          if (cut->IsInside(b->GetX1(), b->GetY1()))inside = kTRUE;
 
-         if (!inside && b->GetPhimin() != 0 || b->GetPhimax() != 360) {
+         if ( ( !inside && b->GetPhimin() != 0 ) || ( b->GetPhimax() != 360) ) {
             Double_t ar = b->GetPhimin()*TMath::Pi()/ 180.;
             Double_t x1 = b->GetR1() * TMath::Cos(ar) + b->GetX1();
             Double_t y1 = b->GetR1() * TMath::Sin(ar) + b->GetY1();
@@ -2731,7 +2727,7 @@ void GEdit::DeleteObjects()
          Bool_t inside = kFALSE;
          if (cut->IsInside(b->GetX1(), b->GetY1()))inside = kTRUE;
 
-         if (!inside && b->GetPhimin() != 0 || b->GetPhimax() != 360) {
+         if ( (!inside && b->GetPhimin() != 0) || (b->GetPhimax() != 360) ) {
             Double_t ar = b->GetPhimin()*TMath::Pi()/ 180.;
             Double_t x1 = b->GetR1() * TMath::Cos(ar) + b->GetX1();
             Double_t y1 = b->GetR1() * TMath::Sin(ar) + b->GetY1();

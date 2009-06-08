@@ -1,6 +1,7 @@
 #include "TG3DLine.h"
 #include "TGToolBar.h"
 #include "TGDockableFrame.h"
+#include "TEnv.h"
 #include "TSystem.h"
 #include "GEdit.h"
 
@@ -19,6 +20,7 @@
 #include "FeynmanDiagramDialog.h"
 #include "CurlyLineWithArrowDialog.h"
 #include "MarkerLineDialog.h"
+#include "SetColor.h"
 
 enum ERootCanvasCommands {
    kOptionRefresh,
@@ -89,16 +91,27 @@ static ToolBarData_t gHprToolBarData1[] = {
 void GEdit::ShowToolBar(Bool_t show)
 {
    // Show or hide toolbar.
+//	static Int_t first_time = 1;
+
    fToolDock = fRootCanvas->GetToolDock();
    if ( !fToolDock ) {
       cout << "Cant GetToolDock()" << endl;
       return;
    }
+	TString icons_dir =   gEnv->GetValue("Gui.IconPath","");
+	if ( !icons_dir.Contains("MARABOU") ) {
+	   cout << setred << "Your ICONPATH does not contain $MARABOU/icons" << endl;
+		cout << "Please add: \"Gui.IconPath: $MARABOU/icons:$ROOTSYS/icons\" to your $HOME/.rootrc" << endl << "and restart HistPresent"
+		     << setblack << endl;
+		return;
+	}
    if (show && !fToolBar) {
       TGLayoutHints *fHorizontal1Layout = new TGLayoutHints(kLHintsTop | kLHintsExpandX);
       fToolBarSep = new TGHorizontal3DLine(fRootCanvas);
       fToolBar = new TGToolBar(fToolDock, 60, 20, kHorizontalFrame);
       fToolDock->AddFrame(fToolBar, fHorizontal1Layout);
+/*
+		TString pm;
 		TString roots_icons_dir(gSystem->Getenv("ROOTSYS"));
 #ifdef R__WIN32
         roots_icons_dir += "\\icons\\";
@@ -111,28 +124,34 @@ void GEdit::ShowToolBar(Bool_t show)
 #else
         marabous_icons_dir += "/icons/";
 #endif
+*/
       Int_t spacing = 6, i;
       for (i = 0; gHprToolBarData[i].fPixmap; i++) {
          if (strlen(gHprToolBarData[i].fPixmap) == 0) {
             spacing = 6;
             continue;
-         } 			
-		   TString pm(gHprToolBarData[i].fPixmap);
-		   pm.Prepend(marabous_icons_dir.Data());
-		   if ( !gSystem->AccessPathName(pm) ) {
-				gHprToolBarData[i].fPixmap = pm.Data();
-		   } else {
+         }
+		   /*
+			if (first_time == 1) {
 				pm = gHprToolBarData[i].fPixmap;
-				pm.Prepend(roots_icons_dir.Data());
+				pm.Prepend(marabous_icons_dir.Data());
 				if ( !gSystem->AccessPathName(pm) ) {
-				   gHprToolBarData[i].fPixmap = pm.Data();
+					gHprToolBarData[i].fPixmap = pm.Data();
 				} else {
-				   gHprToolBarData[i].fPixmap = "";
-               spacing = 6;
-               continue;
+					pm = gHprToolBarData[i].fPixmap;
+					pm.Prepend(roots_icons_dir.Data());
+					if ( !gSystem->AccessPathName(pm) ) {
+						gHprToolBarData[i].fPixmap = pm.Data();
+						cout << "Pm0: " << gHprToolBarData[i].fPixmap << endl;
+					} else {
+						gHprToolBarData[i].fPixmap = "";
+						spacing = 6;
+						continue;
+					}
 				}
-		   }
-//		   cout << "Pm: " << gHprToolBarData[i].fPixmap << endl;
+			}
+		   cout << "Pm: " << gHprToolBarData[i].fPixmap << endl;
+			*/
          TGButton * button =
          fToolBar->AddButton(fRootCanvas, &gHprToolBarData[i], spacing);
          button->Associate(this);
@@ -151,22 +170,26 @@ void GEdit::ShowToolBar(Bool_t show)
             spacing = 6;
             continue;
          }
-		   TString pm(gHprToolBarData1[i].fPixmap);
-		   pm.Prepend(marabous_icons_dir.Data());
-		   if ( !gSystem->AccessPathName(pm) ) {
-				gHprToolBarData1[i].fPixmap = pm.Data();
-		   } else {
+			/*
+			if (first_time == 1) {
 				pm = gHprToolBarData1[i].fPixmap;
-				pm.Prepend(roots_icons_dir.Data());
+				pm.Prepend(marabous_icons_dir.Data());
 				if ( !gSystem->AccessPathName(pm) ) {
-				   gHprToolBarData1[i].fPixmap = pm.Data();
+					gHprToolBarData1[i].fPixmap = pm.Data();
 				} else {
-				   gHprToolBarData1[i].fPixmap = "";
-               spacing = 6;
-               continue;
+					pm = gHprToolBarData1[i].fPixmap;
+					pm.Prepend(roots_icons_dir.Data());
+					if ( !gSystem->AccessPathName(pm) ) {
+						gHprToolBarData1[i].fPixmap = pm.Data();
+					} else {
+						gHprToolBarData1[i].fPixmap = "";
+						spacing = 6;
+						continue;
+					}
 				}
-		   }
-//		   cout << "Pm: " << gHprToolBarData1[i].fPixmap << endl;
+			}
+		   cout << "Pm: " << gHprToolBarData1[i].fPixmap << endl;
+			*/
          TGButton * button =
          fToolBar->AddButton(fRootCanvas, &gHprToolBarData1[i], spacing);
          button->Associate(this);
@@ -177,11 +200,12 @@ void GEdit::ShowToolBar(Bool_t show)
       fToolDock->SetWindowName(Form("ToolBar: %s", fRootCanvas->GetWindowName()));
       fToolDock->Connect("Docked()", "GEdit", this, "AdjustSize()");
       fToolDock->Connect("Undocked()", "GEdit", this, "AdjustSize()");
+//		first_time = 0;
    }
 
    if (!fToolBar) return;
 
-   UInt_t h = fRootCanvas->GetHeight();
+   UInt_t h  = fRootCanvas->GetHeight();
    UInt_t sh = fToolBarSep->GetHeight();
    UInt_t dh = fToolBar->GetHeight();
 
@@ -216,23 +240,26 @@ void GEdit::ShowToolBar(Bool_t show)
 void GEdit::AdjustSize()
 {
    // Keep the same canvas size while docking/undocking toolbar.
-   if ( !fHorizontal1 ) return;
-   UInt_t h = fRootCanvas->GetHeight();
-   UInt_t dh = fToolBar->GetHeight();
-   UInt_t sh = fHorizontal1->GetHeight();
 
    if (fToolDock->IsUndocked()) {
-//      if (!fViewMenu->IsEntryChecked(kViewEditor)) {
-//         fRootCanvas->HideFrame(fHorizontal1);
-//         h = h - sh;
-//      }
+      ExecuteAdjustSize(-1);   //smaller
+   } else {
+      ExecuteAdjustSize( 1);   //bigger
+   }
+}
+//______________________________________________________________________________
+void GEdit::ExecuteAdjustSize(Int_t how)
+{
+   // Keep the same canvas size while docking/undocking toolbar.
+   if (how == 0 ) return;
+   UInt_t h  = fRootCanvas->GetHeight();
+   UInt_t dh = fToolBar->GetHeight();
+   UInt_t sh = fToolBarSep->GetHeight();
+
+   if ( how < 0) {
       fRootCanvas->HideFrame(fToolBarSep);
       h = h - dh - sh;
    } else {
-//      if (!fViewMenu->IsEntryChecked(kViewEditor)) {
-//         fRootCanvas->ShowFrame(fHorizontal1);
-//         h = h + sh;
-//      }
       fRootCanvas->ShowFrame(fToolBarSep);
       h = h + dh + sh;
    }

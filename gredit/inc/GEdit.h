@@ -29,7 +29,7 @@ private:
 #ifdef MARABOUVERS
    HistPresent    *fHistPresent;
 #endif
-   TCanvas        *fParent;
+   HTCanvas        *fParent;
    TGPopupMenu     *fEditMenu;
    TRootCanvas     *fRootCanvas;      //! dont stream
    HprEditCommands *fEditCommands;    //! dont stream
@@ -64,10 +64,7 @@ private:
 
 public:
    GEdit() {};
-#ifdef MARABOUVERS
    GEdit(HTCanvas * parent);
-#endif
-   GEdit(TCanvas * parent);
    void Constructor();
    virtual ~GEdit();
    void RecursiveRemove(TObject * obj);
@@ -153,6 +150,7 @@ public:
 
    void     ShowToolBar(Bool_t show = kTRUE);
    void     AdjustSize();
+   void     ExecuteAdjustSize(Int_t how = 0);
    Bool_t   ProcessMessage(Long_t msg, Long_t parm1, Long_t);
 
 //   void    MyClose();
