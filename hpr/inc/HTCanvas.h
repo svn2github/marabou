@@ -104,7 +104,7 @@ public:
    void     SetShowEditor(Bool_t y = kTRUE) { fEditorIsShown = y; };
    Bool_t   GetShowEditor() { return fEditorIsShown; };
    GEdit    *GetGEdit() { return fGEdit; };
-   void     *SetGEdit(GEdit *ed) { fGEdit = ed; };
+   void     SetGEdit(GEdit *ed) { fGEdit = ed; };
 //   TList   *GetConnectedClasses() { return &fConnectedClasses;};
    ClassDef(HTCanvas,4)  //Graphics canvas
 };
