@@ -204,8 +204,6 @@ SIS3300.$moduleName.Group$grp.PulseMode:	 	$pulseMode
 %%Begin(PulseLengthLoop)%%
 SIS3300.$moduleName.Group$grp.PulseLength:	 $pulseLength
 %%End(PulseLengthLoop)%%
-%%EndOfCode%%
-%%MODULE_SETTINGS%%
 
 # Define shaper constants
 
@@ -213,3 +211,6 @@ SIS3300.$moduleName.Shaper.Short.PeakTime:	$shaperShortPeakTime
 SIS3300.$moduleName.Shaper.Short.GapTime:	$shaperShortGapTime
 SIS3300.$moduleName.Shaper.Long.PeakTime:	$shaperLongPeakTime
 SIS3300.$moduleName.Shaper.Long.GapTime:	$shaperLongGapTime
+
+%%EndOfCode%%
+%%MODULE_SETTINGS%%

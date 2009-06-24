@@ -9,8 +9,8 @@
 //                                          dedicated format Mesytec MADC32 modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Madc_1.h,v 1.1 2009-04-20 13:41:05 Rudolf.Lutter Exp $       
-// Date:           $Date: 2009-04-20 13:41:05 $ 
+// Revision:       $Id: TMrbSubevent_Madc_1.h,v 1.2 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
+// Date:           $Date: 2009-06-24 13:59:12 $ 
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -44,7 +44,7 @@ class TMrbSubevent_Madc_1 : public TMrbSubevent {
 	public:
 
 		TMrbSubevent_Madc_1() {}; 				// default ctor
-		TMrbSubevent_Madc_1(const Char_t * SevtName, const Char_t * SevtTitle = "", Int_t Crate = -1);	// create a new DGF subevent
+		TMrbSubevent_Madc_1(const Char_t * SevtName, const Char_t * SevtTitle = "", Int_t Crate = -1);	// create a new Mesytec subevent
 		~TMrbSubevent_Madc_1() {};	 			// remove current subevent from list
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate part of code for this subevent

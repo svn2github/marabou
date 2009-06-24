@@ -127,8 +127,8 @@ MADC32.$moduleName.UseGG:				$useGateGenerator
 #-----------------------------------------------------------------------------
 
 # input range           0  -->  4V (default)
-#                       1  -->  8V
-#                       2  -->  10V
+#                       1  -->  10V
+#                       2  -->  8V
 MADC32.$moduleName.InputRange:			$inputRange
 
 # ECL terminators       0x0  -->  off

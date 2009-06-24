@@ -9,7 +9,7 @@
 //                                        dedicated format for C_PTM modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_CPTM.h,v 1.2 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_CPTM.h,v 1.3 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ class TMrbSubevent_CPTM : public TMrbSubevent {
 	public:
 
 		TMrbSubevent_CPTM() {}; 				// default ctor
-		TMrbSubevent_CPTM(const Char_t * SevtName, const Char_t * SevtTitle = "", Int_t Crate = -1);	// create a new DGF subevent
+		TMrbSubevent_CPTM(const Char_t * SevtName, const Char_t * SevtTitle = "", Int_t Crate = -1);	// create a new CPTM subevent
 		~TMrbSubevent_CPTM() {};	 			// remove current subevent from list
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate part of code for this subevent

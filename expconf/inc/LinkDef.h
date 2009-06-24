@@ -36,6 +36,8 @@
 #pragma link C++ class TMrbSubevent_Caen_Q1;
 #pragma link C++ class TMrbSubevent_Caen_2;
 #pragma link C++ class TMrbSubevent_Caen_3;
+#pragma link C++ class TMrbSubevent_Caen_V1190_1;
+#pragma link C++ class TMrbSubevent_Caen_V1190_3;
 #pragma link C++ class TMrbSubevent_Sis_1;
 #pragma link C++ class TMrbSubevent_Sis_2;
 #pragma link C++ class TMrbSubevent_Sis_3;
@@ -69,6 +71,7 @@
 #pragma link C++ class TMrbCaen_V820;
 #pragma link C++ class TMrbCaen_V879;
 #pragma link C++ class TMrbCaen_V965;
+#pragma link C++ class TMrbCaen_V1190;
 #pragma link C++ class TMrbGanelec_Q1612F;
 #pragma link C++ class TMrbISN_4481;
 #pragma link C++ class TMrbOrtec_413A;

@@ -212,6 +212,7 @@
 #define CAEN_V775_A_ROM(module)				((unsigned short *) (module + CAEN_V775_R_ROM))
 
 #define CAEN_V775_SET_THRESHOLD(module,chn,data) 	*(CAEN_V775_A_THRESH(module) + chn) = data
+#define CAEN_V775_GET_THRESHOLD(module,chn) 		*(CAEN_V775_A_THRESH(module) + chn)
 
 #define CAEN_V775_SET_FULL_SCALE_RANGE(module,data) 	*CAEN_V775_A_FULL_SCALE_RANGE(module) = data
 
@@ -253,6 +254,7 @@
 #include "Version.h"
 
 void caen_module_info(unsigned long physAddr, volatile unsigned char * vmeAddr, unsigned long addrMod);
+void caen_list_thresh(volatile unsigned char * vmeAddr);
 
 static struct pdparam_master s_param; 		/* vme segment params */
 
@@ -290,6 +292,7 @@ int main(int argc, char *argv[]) {
 		exit(1);
 	}
 	caen_module_info(physAddr, caen, addrMod);
+	caen_list_thresh(caen);
 }
 
 void caen_module_info(unsigned long physAddr, volatile unsigned char * vmeAddr, unsigned long addrMod) {
@@ -311,5 +314,19 @@ void caen_module_info(unsigned long physAddr, volatile unsigned char * vmeAddr, 
 	printf("CAEN module info: addr (phys) %#lx, addr (vme) %#lx, mod %#lx, type V%d, serial# %d, revision %d\n", physAddr, vmeAddr, addrMod, boardId, serial, revision);
 	if (boardId != 785 && boardId != 775 && boardId != 965) {
 		printf("CAEN module info: Illegal board ID %d - should be 785\n", boardId);
+	}
+}
+
+void caen_list_thresh(volatile unsigned char * vmeAddr) {
+	int chn;
+	unsigned int thresh;
+	printf("\nThresholds:\n");
+	for (chn = 0; chn < 32; chn++) {
+		thresh = CAEN_V775_GET_THRESHOLD(vmeAddr, chn);
+		if (thresh & CAEN_V785_B_THRESH_KILL_CHANNEL) {
+			printf("%3d: not active\n", chn);
+		} else {
+			printf("%3d: %d\n", chn, thresh);
+		}
 	}
 }

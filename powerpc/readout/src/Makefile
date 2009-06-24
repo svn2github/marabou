@@ -1,7 +1,7 @@
 CC 			=	gcc
 
 UTIINC		=	../inc
-PPCINC		=	../../inc
+PPCINC		=	../../include
 CESINC		=	/usr/include/ces
 
 CFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I$(UTIINC) -I$(PPCINC) -I$(CESINC) 

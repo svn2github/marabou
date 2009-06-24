@@ -6,14 +6,12 @@
 //! \file			madc32_protos.h
 //! \brief			Definitions for Mesytec Madc32 ADC
 //! \details		Prototypes for Mesytec Madc32
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.6 $     
-//! $Date: 2009-05-08 16:24:51 $
+//! $Revision: 1.7 $     
+//! $Date: 2009-06-24 13:59:12 $
 ////////////////////////////////////////////////////////////////////////////*/
 
-
-struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial);
 
 struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial);
 

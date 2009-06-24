@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.175 2009-05-14 09:49:54 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.176 2009-06-24 13:59:12 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -461,6 +461,7 @@ const SMrbNamedXShort kMrbLofModuleIDs[] =
 								{TMrbConfig::kModuleISN4481,				"ISN_4481" 						},
 								{TMrbConfig::kModuleMesytecMux16,			"Mesytec_Mux16" 				},
 								{TMrbConfig::kModuleMesytecMadc32,			"Mesytec_Madc32" 				},
+								{TMrbConfig::kModuleCaenV1190,				"Caen_V1190"	 				},
 								{TMrbConfig::kModuleSoftModule, 	 		"@SoftMod@" 					},
 								{0, 										NULL							}
 							};

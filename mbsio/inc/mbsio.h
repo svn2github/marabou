@@ -7,8 +7,8 @@
 	\details		Defines structs to read MBS data streams
 	$Author: Rudolf.Lutter $
 	$Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.20 $       
-	$Date: 2009-04-20 11:54:41 $
+	$Revision: 1.21 $       
+	$Date: 2009-06-24 14:01:19 $
 *******************************************************************************/
 
 #include "typedefs.h"
@@ -72,6 +72,8 @@
 #define MBS_STYPE_VME_CAEN_2		0x002a000a					/*!< subevent [42,10]: vme, caen v875, v775, data stored in hit buffer */
 #define MBS_STYPE_VME_CAEN_3		0x002b000a					/*!< subevent [43,10]: vme, caen v875, v775, data stored in hit buffer */
 #define MBS_STYPE_VME_CAEN_Q1		0x002c000a					/*!< subevent [44,10]: vme, caen qdc */
+#define MBS_STYPE_VME_CAEN_V1X90_1	0x002d000a					/*!< subevent [45,10]: vme, caen v1190, v1290 */
+#define MBS_STYPE_VME_CAEN_V1X90_2	0x002e000a					/*!< subevent [46,10]: vme, caen v1190, v1290, data stored in hit buffer */
 #define MBS_STYPE_VME_SIS_1			0x0033000a					/*!< subevent [51,10]: vme, struck/sis */
 #define MBS_STYPE_VME_SIS_2			0x0034000a					/*!< subevent [52,10]: vme, struck/sis, data stored in hit buffer */
 #define MBS_STYPE_VME_SIS_3			0x0035000a					/*!< subevent [53,10]: vme, struck/sis, data stored in hit buffer */

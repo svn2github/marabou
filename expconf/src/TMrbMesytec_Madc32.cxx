@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.16 2009-05-08 16:24:51 Marabou Exp $       
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.17 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -653,7 +653,8 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 	TMrbLofNamedX tags;
 	tags.AddNamedX(TMrbConfig::kRcModuleSettings, "MODULE_SETTINGS");
 
-	TString moduleUC = this->GetName();
+	TString moduleLC = this->GetName();
+	TString moduleUC = moduleLC;
 	moduleUC(0,1).ToUpper();
 
 	TMrbTemplate tmpl;
@@ -670,7 +671,7 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 					case TMrbConfig::kRcModuleSettings:
 					{
 						tmpl.InitializeCode("%Preamble%");
-						tmpl.Substitute("$moduleName", moduleUC.Data());
+						tmpl.Substitute("$moduleName", moduleLC.Data());
 						tmpl.Substitute("$moduleSerial", this->GetSerial());
 						tmpl.Substitute("$moduleFirmware", "n/a");
 						tmpl.WriteCode(settings);
@@ -927,6 +928,24 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbM
 			break;
 	}
 	return(kTRUE);
+}
+
+Bool_t TMrbMesytec_Madc32::CheckSubeventType(TMrbSubevent * Subevent) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbMesytec_Madc32::CheckSubeventType
+// Purpose:        Check if calling subevent is applicable
+// Arguments:      
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Makes sure that a subevent of type [10,8x] (CAEN)
+//                 is calling.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Subevent->GetType() != 10) return(kFALSE);
+	if (Subevent->GetSubtype() < 81 || Subevent->GetSubtype() > 83) return(kFALSE);
+	else															return(kTRUE);
 }
 
 void TMrbMesytec_Madc32::PrintSettings(ostream & Out) {

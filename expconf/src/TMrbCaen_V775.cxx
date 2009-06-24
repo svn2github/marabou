@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V775.cxx,v 1.17 2009-01-08 12:16:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V775.cxx,v 1.18 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -440,7 +440,7 @@ Bool_t TMrbCaen_V775::CheckSubeventType(TMrbSubevent * Subevent) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Subevent->GetType() != 10) return(kFALSE);
-	if (Subevent->GetSubtype() < 41 || Subevent->GetSubtype() > 49) return(kFALSE);
+	if (Subevent->GetSubtype() < 41 || Subevent->GetSubtype() > 44) return(kFALSE);
 	else															return(kTRUE);
 }
 
