@@ -59,6 +59,7 @@
 							madc32_fillStruct(s_$moduleName, "$settingsFile");
 							madc32_loadFromDb(s_$moduleName);
 							madc32_resetReadout(s_$moduleName);
+							madc32_resetFifo(s_$moduleName);
 							madc32_startAcq(s_$moduleName);
 						}
 					}
@@ -101,6 +102,7 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
+								madc32_resetFifo(s_$moduleName);  	/* reset fifo */
 								madc32_startAcq(s_$moduleName); 	/* start module $moduleName */
 %%EndOfCode%%
 %%START_ACQUISITION%%
