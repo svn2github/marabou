@@ -1,0 +1,161 @@
+%%BeginOfCode%%
+%%Begin(Preamble)%%
+#___________________________________________________[MODULE PARAM DEFINITION]
+#////////////////////////////////////////////////////////////////////////////
+# Name:           Module_Caen_V1190.rc.code
+# Purpose:        Param defs for CAEN V1190 TDC
+# Description:        
+# Author:         $author
+# Date:           $date  
+#////////////////////////////////////////////////////////////////////////////
+
+CAEN_V1190.ModuleName: 						$moduleName
+
+CAEN_V1190.Firmware: 						$moduleFirmware
+
+CAEN_V1190.VerboseMode:						FALSE
+CAEN_V1190.DumpRegisters:					FALSE
+CAEN_V1190.UpdateSettings:					FALSE
+CAEN_V1190.UpdateInterval:					1000
+
+%%End(Preamble)%%
+
+%%Begin(TriggerSettings)%%
+
+#-----------------------------------------------------------------------------
+# Trigger settings
+#-----------------------------------------------------------------------------
+
+# trigger matching      TRUE  --> trigger matching (default)
+#                       FALSE --> continuous storage
+CAEN_V1190.$moduleName.TriggerMatching:     $trigMatch
+
+# window width          range:    1 ... 4095 clock ticks (25ns)
+#                       default:  20
+CAEN_V1190.$moduleName.WindowWidth:         $width
+
+# window offset         range:    -2048 ... 40 clock ticks (25ns)
+#                       default:  -40
+CAEN_V1190.$moduleName.WindowOffset:        $offset
+
+# reject margin         range:    1 ... 4095 clock ticks (25ns)
+#                       default:  4
+CAEN_V1190.$moduleName.RejectMargin:        $reject
+
+# search margin         range:    0 ... 4095 clock ticks (25ns)
+#                       default:  8
+CAEN_V1190.$moduleName.SearchMargin:        $search
+
+# subtract trigger time TRUE (default) / FALSE
+CAEN_V1190.$moduleName.SubtractTriggerTime: $subTrigTime
+%%End(TriggerSettings)%%
+
+%%Begin(EdgeDetection)%%
+
+#-----------------------------------------------------------------------------
+# Edge detection and resolution
+#-----------------------------------------------------------------------------
+
+# mode                  0  -->  pair
+#                       1  -->  only trailing
+#                       2  -->  only leading (default)
+#                       3  -->  trailing and leading
+CAEN_V1190.$moduleName.EdgeDetection:		$detectMode
+
+# leading/trailing edge mode:
+# resolution            0 --> 800 ps
+#                       1 --> 400 ps
+#                       2 --> 100 ps (default)
+#                       3 --> not used
+CAEN_V1190.$moduleName.EdgeResolution:      $resolution
+
+# pair mode:
+# resolution            0 --> 100 ps (default)
+#                       1 --> 200 ps
+#                       2 --> 400 ps
+#                       3 --> 800 ps
+#                       4 --> 1.6 ns
+#                       5 --> 3.12 ns
+#                       6 --> 6.25 ns
+#                       7 --> 12.5 ns
+CAEN_V1190.$moduleName.PairResolution:       $pairRes
+
+# width                 0 --> 100 ps (default)
+#                       1 --> 200 ps
+#                       2 --> 400 ps
+#                       3 --> 800 ps
+#                       4 --> 1.6 ns
+#                       5 --> 3.12 ns
+#                       6 --> 6.25 ns
+#                       7 --> 12.5 ns
+#                       8 --> 25 ns
+#                       9 --> 50 ns
+#                      10 --> 100 ns
+#                      11 --> 200 ns
+#                      12 --> 400 ns
+#                      13 --> 800 ns
+CAEN_V1190.$moduleName.PairWidth:            $pairWidth
+
+# dead time             0  -->  ~5 ns (default)
+#                       1  -->  ~10 ns
+#                       2  -->  ~30 ns
+#                       3  -->  ~100 ns
+CAEN_V1190.$moduleName.DeadTime:             $deadTime
+%%End(EdgeDetection)%%
+
+%%Begin(EventSettings)%%
+
+#-----------------------------------------------------------------------------
+# Event & buffer settings
+#-----------------------------------------------------------------------------
+
+# event size            0  -->  0 hits per event
+#                       1  -->  1
+#                       2  -->  2
+#                       3  -->  4
+#                       4  -->  8
+#                       5  -->  16
+#                       6  -->  32
+#                       7  -->  64
+#                       8  -->  128
+#                       9  -->  no limits (default)
+CAEN_V1190.$moduleName.EventSize:        $eventSize
+
+# fifo size             0  -->  2 words
+#                       1  -->  4
+#                       2  -->  8
+#                       3  -->  16
+#                       4  -->  32
+#                       5  -->  64
+#                       6  -->  128
+#                       7  -->  256 (default)
+CAEN_V1190.$moduleName.FifoSize:         $fifoSize
+
+# enable header and trailer
+CAEN_V1190.$moduleName.HeaderTrailer:    $headTrail
+
+# write extended trigger time tag
+CAEN_V1190.$moduleName.ExtTriggerTag:    $extTrigTag
+
+# almost full level     range:    1 ... 32735
+#                       default:  64
+CAEN_V1190.$moduleName.AlmostFull:       $almostFull
+%%End(EventSettings)%%
+
+%%Begin(ChannelSettings)%%
+
+#-----------------------------------------------------------------------------
+# Channel settings
+#-----------------------------------------------------------------------------
+
+# channel pattern: 4 x 32 bits   1 --> active (default)
+#                                0 --> inactive
+CAEN_V1190.$moduleName.Ch0:     $chPat0
+CAEN_V1190.$moduleName.Ch32:    $chPat32
+CAEN_V1190.$moduleName.Ch64:    $chPat64
+CAEN_V1190.$moduleName.Ch96:    $chPat96
+%%End(ChannelSettings)%%
+
+%%EndOfCode%%
+%%MODULE_SETTINGS%%
+
