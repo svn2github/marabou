@@ -8,8 +8,8 @@
 //! \details		Prototypes for Caen V1190
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $     
-//! $Date: 2009-07-13 06:22:39 $
+//! $Revision: 1.3 $     
+//! $Date: 2009-07-13 09:46:00 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -114,6 +114,11 @@ void caen_v1190_reset();
 
 void caen_v1190_startAcq(struct s_caen_v1190 * s);
 void caen_v1190_stopAcq(struct s_caen_v1190 * s);
+
+bool_t caen_v1190_waitFifoReady(struct s_caen_v1190 * s);
+bool_t caen_v1190_waitDataReady(struct s_caen_v1190 * s);
+int caen_v1190_getEventWcFromFifo(struct s_caen_v1190 * s);
+
 int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer);
 
 #endif

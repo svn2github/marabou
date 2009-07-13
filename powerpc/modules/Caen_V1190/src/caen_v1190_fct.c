@@ -6,8 +6,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $       
-//! $Date: 2009-07-13 06:22:39 $
+//! $Revision: 1.3 $       
+//! $Date: 2009-07-13 09:46:00 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -655,5 +655,57 @@ uint32_t caen_v1190_read_config_rom(struct s_caen_v1190 * s, uint16_t offset, in
 
 void caen_v1190_startAcq(struct s_caen_v1190 * s) {};
 void caen_v1190_stopAcq(struct s_caen_v1190 * s) {};
-int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer) { return 0; }
+
+bool_t caen_v1190_waitFifoReady(struct s_caen_v1190 * s)
+{
+	int i;
+	uint16_t sts;
+	for (i = 0; i < WAIT_FIFO_READY; i++) {
+		sts = GET_DATA(s, CAEN_V1190_A_EVENTFIFOSTATUS);
+		if (sts & CAEN_V1190_B_FIFO_READY) return TRUE;
+	}
+	return FALSE;
+}
+
+bool_t caen_v1190_waitDataReady(struct s_caen_v1190 * s)
+{
+	int i;
+	uint16_t sts;
+	for (i = 0; i < WAIT_DATA_READY; i++) {
+		sts = GET_DATA(s, CAEN_V1190_A_STATUSREGISTER);
+		if (sts & CAEN_V1190_B_DATA_READY) return TRUE;
+	}
+	return FALSE;
+}
+
+int caen_v1190_getEventWcFromFifo(struct s_caen_v1190 * s)
+{
+	return GET_DATA(s, CAEN_V1190_A_EVENTFIFO);
+}
+
+int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer)
+{
+	int i;
+	int nofWords;
+	uint32_t data;
+	uint32_t * dataStart = pointer;
+
+	if (caen_v1190_waitFifoReady(s)) {
+		nofWords = caen_v1190_getEventWcFromFifo(s);
+		for (i = 0; i < nofWords; i++) {
+			data = GET_DATA(s, CAEN_V1190_A_OUTPUTBUFFER);
+			if (i == 0 && (data & CAEN_V1190_M_TYPE) != CAEN_V1190_B_GLOBAL_HEADER) {
+				sprintf(msg, "[%sreadout] %s: Out of phase - not a global header %#lx", s->mpref, s->moduleName, data);
+				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			}
+			*pointer++ = data;
+		}
+		if ((data & CAEN_V1190_M_TYPE) != CAEN_V1190_B_GLOBAL_TRAILER) {
+			sprintf(msg, "[%sreadout] %s: Out of phase - not a global trailer %#lx", s->mpref, s->moduleName, data);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		}
+	}
+	return (pointer - dataStart);
+}
+
 

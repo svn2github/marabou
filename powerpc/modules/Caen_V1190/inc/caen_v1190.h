@@ -20,8 +20,8 @@
 //! \details		Contains definitions for a CAEN V1190 tdc
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $
-//! $Date: 2009-07-13 06:22:39 $
+//! $Revision: 1.3 $
+//! $Date: 2009-07-13 09:46:00 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #define BIT(n)	(1 << n)
@@ -347,6 +347,12 @@
 #define DATA_ERROR								0xAFFE
 
 #define HANDSHAKE_TIMEOUT						1000000
+
+#define WAIT_FIFO_READY							10
+#define WAIT_DATA_READY 						100
+
+#define CAEN_V1190_B_FIFO_READY					BIT(0)
+#define CAEN_V1190_B_DATA_READY 				BIT(0)
 
 /*! Defaults */
 
