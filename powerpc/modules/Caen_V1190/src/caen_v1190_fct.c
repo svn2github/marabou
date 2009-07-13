@@ -6,21 +6,24 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $       
-//! $Date: 2009-06-30 13:14:53 $
+//! $Revision: 1.2 $       
+//! $Date: 2009-07-13 06:22:39 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <math.h>
 #include <string.h>
 #include <allParam.h>
 #include <ces/bmalib.h>
 #include <errno.h>
 
+#include "vmelib.h"
+
 #include "gd_readout.h"
 
-#include "CAEN_V1190.h"
+#include "caen_v1190.h"
 #include "caen_v1190_protos.h"
 
 #include "root_env.h"
@@ -42,6 +45,7 @@ struct s_caen_v1190 * caen_v1190_alloc(unsigned long vmeAddr, volatile unsigned 
 		strcpy(s->mpref, "caen_v1190: ");
 		s->serial = serial;
 		s->verbose = FALSE;
+		s->verify = FALSE;
 		s->dumpRegsOnInit = FALSE;
 	} else {
 		sprintf(msg, "[%salloc] %s: Can't allocate caen_v1190 struct", s->mpref, s->moduleName);
@@ -50,19 +54,18 @@ struct s_caen_v1190 * caen_v1190_alloc(unsigned long vmeAddr, volatile unsigned 
 	return s;
 }
 
-void caen_v1190_setTriggerMatchingOn_db(struct s_caen_v1190 * s) { caen_v1190_setTriggerMatchingOn90_setAddrReg(s, s->trigMatchingOn); };
+void caen_v1190_setTriggerMatchingOn_db(struct s_caen_v1190 * s) { caen_v1190_setTriggerMatchingOn(s, s->trigMatchingOn); };
 
 void caen_v1190_setTriggerMatchingOn(struct s_caen_v1190 * s, bool_t flag)
 {
-	uint_16 opCode = flag ? CAEN_V1190_OP_TRG_MATCH : CAEN_V1190_OP_CONT_STOR;
-	caen_v1190_writeMicro(s->baseAddr, opCode);
+	uint16_t opCode = flag ? CAEN_V1190_OP_TRG_MATCH : CAEN_V1190_OP_CONT_STOR;
+	caen_v1190_writeMicro(s, opCode, NO_ARG);
 	s->trigMatchingOn = flag;
 }
 
 bool_t caen_v1190_triggerMatchingIsOn(struct s_caen_v1190 * s)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_READ_ACQ_MOD);
-	s->trigMatchingOn = (caen_v1190_readMicro(s->baseAddr) != 0);
+	s->trigMatchingOn = ((caen_v1190_readMicro(s, CAEN_V1190_OP_READ_ACQ_MOD) & CAEN_V1190_B_TRIGGER_MATCHING_ON) != 0);
 	return(s->trigMatchingOn);
 }
 
@@ -70,83 +73,86 @@ void caen_v1190_setWindowWidth_db(struct s_caen_v1190 * s) { caen_v1190_setWindo
 
 void caen_v1190_setWindowWidth(struct s_caen_v1190 * s, uint16_t ticks)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_SET_WIN_WIDTH);
-	caen_v1190_writeMicro(s->baseAddr, ticks);
+	caen_v1190_writeMicro(s, CAEN_V1190_OP_SET_WIN_WIDTH, ticks);
 	s->windowWidth = ticks;
 }
 
 uint16_t caen_v1190_getWindowWidth(struct s_caen_v1190 * s) { return(s->windowWidth); };
 
-void caen_v1190_setWindowOffset_db(struct s_caen_v1190 * s) { caen_v1190_setWindowWidth(s, s->windowOffset); };
+void caen_v1190_setWindowOffset_db(struct s_caen_v1190 * s) { caen_v1190_setWindowOffset(s, s->windowOffset); };
 
 void caen_v1190_setWindowOffset(struct s_caen_v1190 * s, uint16_t ticks)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_SET_WIN_OFFS);
-	caen_v1190_writeMicro(s->baseAddr, ticks);
+	caen_v1190_writeMicro(s, CAEN_V1190_OP_SET_WIN_OFFS, ticks);
 	s->windowOffset = ticks;
 }
 
 uint16_t caen_v1190_getWindowOffset(struct s_caen_v1190 * s) { return(s->windowOffset); };
 
-void caen_v1190_setRejectMargin_db(struct s_caen_v1190 * s) { caen_v1190_setWindowWidth(s, s->rejectMargin); };
+void caen_v1190_setRejectMargin_db(struct s_caen_v1190 * s) { caen_v1190_setRejectMargin(s, s->rejectMargin); };
 
 void caen_v1190_setRejectMargin(struct s_caen_v1190 * s, uint16_t ticks)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_SET_REJ_MARGIN);
-	caen_v1190_writeMicro(s->baseAddr, ticks);
+	caen_v1190_writeMicro(s, CAEN_V1190_OP_SET_REJ_MARGIN, ticks);
 	s->rejectMargin = ticks;
 }
 
 uint16_t caen_v1190_getRejectMargin(struct s_caen_v1190 * s) { return(s->rejectMargin); };
 
-void caen_v1190_setSearchMargin_db(struct s_caen_v1190 * s) { caen_v1190_setWindowWidth(s, s->searchMargin); };
+void caen_v1190_setSearchMargin_db(struct s_caen_v1190 * s) { caen_v1190_setSearchMargin(s, s->searchMargin); };
 
 void caen_v1190_setSearchMargin(struct s_caen_v1190 * s, uint16_t ticks) {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_SET_SW_MARGIN);
-	caen_v1190_writeMicro(s->baseAddr, ticks);
+	caen_v1190_writeMicro(s, CAEN_V1190_OP_SET_SW_MARGIN, ticks);
 	s->searchMargin = ticks;
 }
 
 uint16_t caen_v1190_getSearchMargin(struct s_caen_v1190 * s) { return(s->searchMargin); };
 
-void caen_v1190_enableTriggerTimeSubtraction_db(struct s_caen_v1190 * s) { caen_v1190_setWindowWidth(s, s->enaTrigSubtraction); };
+void caen_v1190_enableTriggerTimeSubtraction_db(struct s_caen_v1190 * s) { caen_v1190_enableTriggerTimeSubtraction(s, s->enaTrigSubtraction); };
 
 void caen_v1190_enableTriggerTimeSubtraction(struct s_caen_v1190 * s, bool_t flag)
 {
-	uint_16 opCode = flag ? CAEN_V1190_OP_EN_SUB_TRG : CAEN_V1190_OP_DIS_SUB_TRG;
-	caen_v1190_writeMicro(s->baseAddr, opCode);
+	uint16_t opCode = flag ? CAEN_V1190_OP_EN_SUB_TRG : CAEN_V1190_OP_DIS_SUB_TRG;
+	caen_v1190_writeMicro(s, opCode, NO_ARG);
 	s->enaTrigSubtraction = flag;
 }
 
 bool_t caen_v1190_triggerTimeSubtractionEnabled(struct s_caen_v1190 * s) { return(s->enaTrigSubtraction); };
 
-void caen_v1190_updateTriggerConf(struct s_caen_v1190 * s) {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_READ_TRG_CONF);
-	s->windowWidth = caen_v1190_readMicro(s->baseAddr);
-	s->windowOffset = caen_v1190_readMicro(s->baseAddr);
-	s->searchMargin = caen_v1190_readMicro(s->baseAddr);
-	s->rejectMargin = caen_v1190_readMicro(s->baseAddr);
-	s->enaTrigSubtraction = (caen_v1190_readMicro(s->baseAddr) != 0)
+void caen_v1190_readTriggerSettings(struct s_caen_v1190 * s) {
+	uint16_t data[5];
+	memset(data, 0, 5 * sizeof(uint16_t));
+	caen_v1190_readMicroBlock(s, CAEN_V1190_OP_READ_TRG_CONF, data, 5);
+	s->windowWidth = data[0];
+	s->windowOffset = data[1];
+	s->searchMargin = data[2];
+	s->rejectMargin = data[3];
+	s->enaTrigSubtraction = ((data[4] & CAEN_V1190_B_TRIGGER_TIME_SUBTR_ON) != 0);
 }
 
-void caen_v1190_setResolution_db(struct s_caen_v1190 * s) { caen_v1190_setResolution(s, s->edgeDetectionMode, s->resolution, s->pairResWidth); };
+void caen_v1190_setResolution_db(struct s_caen_v1190 * s)
+{
+	if (s->edgeDetectionMode == CAEN_V1190_B_EDGE_PAIR) {
+		caen_v1190_setResolution(s, s->edgeDetectionMode, s->pairResolution, s->pairWidth);
+	} else {
+		caen_v1190_setResolution(s, s->edgeDetectionMode, s->edgeResolution, NOT_USED);
+	}
+};
 
 void caen_v1190_setResolution(struct s_caen_v1190 * s, uint16_t mode, uint16_t resolution, uint16_t pairWidth)
 {
 	uint16_t pairRes;
-
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_SET_DETECTION);
-	caen_v1190_writeMicro(s->baseAddr, mode);
+	caen_v1190_writeMicro(s, CAEN_V1190_OP_SET_DETECTION, mode);
 
 	if (mode == CAEN_V1190_B_EDGE_PAIR) {
-		pairRes = (pairWidth & CAEN_V1190_M_EDGE_PAIR_WIDTH) << CAEN_V1190_SH_EDGE_PAIR_WIDTH + (resolution & CAEN_V1190_M_EDGE_RESOLUTION);
-		caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_SET_PAIR_RES);
-		caen_v1190_writeMicro(s->baseAddr, pairRes);
+		resolution &= CAEN_V1190_M_PAIR_RESOLUTION;
+		pairRes = (pairWidth & CAEN_V1190_M_PAIR_WIDTH) << CAEN_V1190_SH_PAIR_WIDTH + resolution;
+		caen_v1190_writeMicro(s, CAEN_V1190_OP_SET_PAIR_RES, pairRes);
 		s->pairResolution = resolution;
 		s->pairWidth = pairWidth;
 	} else {
-		caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_SET_TR_LEAD_LSB);
-		caen_v1190_writeMicro(s->baseAddr, resolution);
+		resolution &= CAEN_V1190_M_EDGE_RESOLUTION;
+		caen_v1190_writeMicro(s, CAEN_V1190_OP_SET_TR_LEAD_LSB, resolution);
 		s->edgeResolution = resolution;
 		s->pairWidth = NOT_USED;
 	}
@@ -161,18 +167,17 @@ uint16_t caen_v1190_getPairResolution(struct s_caen_v1190 * s) { return(s->pairR
 
 uint16_t caen_v1190_getPairWidth(struct s_caen_v1190 * s) { return(s->pairWidth); };
 
-void caen_v1190_updateResolution(struct s_caen_v1190 * s)
+void caen_v1190_readResolutionSettings(struct s_caen_v1190 * s)
 {
 	uint16_t resolution;
 
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_READ_DETECTION);
-	s->edgeDetectionMode = caen_v1190_readMicro(s->baseAddr);
-	resolution = caen_v1190_readMicro(s->baseAddr);
+	s->edgeDetectionMode = caen_v1190_readMicro(s, CAEN_V1190_OP_READ_DETECTION);
+	resolution = caen_v1190_readMicro(s, CAEN_V1190_OP_READ_RES);
 
-	if (mode == CAEN_V1190_B_EDGE_PAIR) {
+	if (s->edgeDetectionMode == CAEN_V1190_B_EDGE_PAIR) {
 		s->edgeResolution = NOT_USED;
 		s->pairResolution = resolution & CAEN_V1190_M_EDGE_RESOLUTION;
-		s->pairWidth = (resolution >> CAEN_V1190_SH_EDGE_PAIR_WIDTH) & CAEN_V1190_M_EDGE_PAIR_WIDTH;
+		s->pairWidth = (resolution >> CAEN_V1190_SH_PAIR_WIDTH) & CAEN_V1190_M_PAIR_WIDTH;
 	} else {
 		s->edgeResolution = resolution;
 		s->pairResolution = NOT_USED;
@@ -180,140 +185,167 @@ void caen_v1190_updateResolution(struct s_caen_v1190 * s)
 	}
 }
 
-void caen_v1190_setDeadTime_db(struct s_caen_v1190 * s) { caen_v1190_setWindowWidth(s, s->deadTime); };
+void caen_v1190_setDeadTime_db(struct s_caen_v1190 * s) { caen_v1190_setDeadTime(s, s->deadTime); };
 
 void caen_v1190_setDeadTime(struct s_caen_v1190 * s, uint16_t ticks)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_SET_DEAD_TIME);
-	caen_v1190_writeMicro(s->baseAddr, ticks);
+	caen_v1190_writeMicro(s, CAEN_V1190_OP_SET_DEAD_TIME, ticks);
 	s->deadTime = ticks;
 }
 
 uint16_t caen_v1190_getDeadTime(struct s_caen_v1190 * s)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_READ_DEAD_TIME);
-	s->deadTime = caen_v1190_readMicro(s->baseAddr);
+	s->deadTime = caen_v1190_readMicro(s, CAEN_V1190_OP_READ_DEAD_TIME);
 	return(s->deadTime);
 }
 
-void caen_v1190_setEventSize_db(struct s_caen_v1190 * s) { caen_v1190_setWindowWidth(s, s->eventSize); };
+void caen_v1190_setEventSize_db(struct s_caen_v1190 * s) { caen_v1190_setEventSize(s, s->eventSize); };
+
 void caen_v1190_setEventSize(struct s_caen_v1190 * s, uint16_t hits)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_SET_EVENT_SIZE);
-	caen_v1190_writeMicro(s->baseAddr, hits);
+	caen_v1190_writeMicro(s, CAEN_V1190_OP_SET_EVENT_SIZE, hits);
 	s->eventSize = hits;
 }
 
 uint16_t caen_v1190_getEventSize(struct s_caen_v1190 * s)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_READ_EVENT_SIZE);
-	s->eventSize = caen_v1190_readMicro(s->baseAddr);
+	s->eventSize = caen_v1190_readMicro(s, CAEN_V1190_OP_READ_EVENT_SIZE);
 	return(s->eventSize);
 }
 
-void caen_v1190_setFifoSize_db(struct s_caen_v1190 * s) { caen_v1190_setWindowWidth(s, s->fifoSize); };
+void caen_v1190_setFifoSize_db(struct s_caen_v1190 * s) { caen_v1190_setFifoSize(s, s->fifoSize); };
 
 void caen_v1190_setFifoSize(struct s_caen_v1190 * s, uint16_t words)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_SET_FIFO_SIZE);
-	caen_v1190_writeMicro(s->baseAddr, words);
+	caen_v1190_writeMicro(s, CAEN_V1190_OP_SET_FIFO_SIZE, words);
 	s->fifoSize = words;
 }
 
 uint16_t caen_v1190_getFifoSize(struct s_caen_v1190 * s)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_READ_FIFO_SIZE);
-	s->fifoSize = caen_v1190_readMicro(s->baseAddr);
+	s->fifoSize = caen_v1190_readMicro(s, CAEN_V1190_OP_READ_FIFO_SIZE);
 	return(s->fifoSize);
 }
 
-void caen_v1190_enableHeaderTrailer_db(struct s_caen_v1190 * s) { caen_v1190_setWindowWidth(s, s->enaHeaderTrailer); };
+void caen_v1190_enableHeaderTrailer_db(struct s_caen_v1190 * s) { caen_v1190_enableHeaderTrailer(s, s->enaHeaderTrailer); };
 
 void caen_v1190_enableHeaderTrailer(struct s_caen_v1190 * s, bool_t flag)
 {
 	uint16_t opCode = flag ? CAEN_V1190_OP_EN_HEADER_TRAILER : CAEN_V1190_OP_DIS_HEADER_TRAILER;
-	caen_v1190_writeMicro(s->baseAddr, opCode);
+	caen_v1190_writeMicro(s, opCode, NO_ARG);
 	s->enaHeaderTrailer = flag;
 }
 
 bool_t caen_v1190_headerTrailerEnabled(struct s_caen_v1190 * s)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_READ_HEADER_TRAILER);
-	s->enaHeaderTrailer = (caen_v1190_readMicro(s->baseAddr) != 0);
+	s->enaHeaderTrailer = (caen_v1190_readMicro(s, CAEN_V1190_OP_READ_HEADER_TRAILER) != 0);
 	return(s->enaHeaderTrailer);
 }
 
 void caen_v1190_enableChannel_db(struct s_caen_v1190 * s)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_WRITE_EN_PATTERN32);
-	for (w = 0; w < NOF_CHANNEL_WORDS; w++) caen_v1190_writeMicro(s->baseAddr, s->channels[w]);
+	caen_v1190_writeMicroBlock(s, CAEN_V1190_OP_WRITE_EN_PATTERN, s->channels, NOF_CHANNEL_WORDS);
 }
 
-void caen_v1190_enableChannel(struct s_caen_v1190 * s, uint16_t * chn)
+void caen_v1190_enableChannel(struct s_caen_v1190 * s, uint16_t * chnPat)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_WRITE_EN_PATTERN32);
-	for (w = 0; w < NOF_CHANNEL_WORDS; w++, chn++) caen_v1190_writeMicro(s->baseAddr, *chn);
+	caen_v1190_writeMicroBlock(s, CAEN_V1190_OP_WRITE_EN_PATTERN, chnPat, NOF_CHANNEL_WORDS);
 }
 
 void caen_v1190_getChannelEnabled(struct s_caen_v1190 * s)
 {
-	caen_v1190_writeMicro(s->baseAddr, CAEN_V1190_OP_READ_EN_PATTERN32);
-	for (w = 0; w < NOF_CHANNEL_WORDS; w++) s->channels[w] = caen_v1190_readMicro(s->baseAddr);
+	caen_v1190_readMicroBlock(s, CAEN_V1190_OP_READ_EN_PATTERN, s->channels, NOF_CHANNEL_WORDS);
 }
 
-void caen_v1190_enableExtendedTriggerTag_db(struct s_caen_v1190 * s) { caen_v1190_setWindowWidth(s, s->extTrigTag); };
+void caen_v1190_enableExtendedTriggerTag_db(struct s_caen_v1190 * s) { caen_v1190_enableExtendedTriggerTag(s, s->enaExtTrigTag); };
 
 void caen_v1190_enableExtendedTriggerTag(struct s_caen_v1190 * s, bool_t flag)
 {
-	uint16_t control = this->caen_v1190_getControl();
+	uint16_t control = caen_v1190_getControl(s);
 	if (flag) {
 		control |= CAEN_V1190_B_CREG_TRIGGER_TAG_ENABLE;
 	} else {
 		control &= ~CAEN_V1190_B_CREG_TRIGGER_TAG_ENABLE;
 	}
-	s->extTrigTag = flag;
+	caen_v1190_setControl(s, control);
+	s->enaExtTrigTag = flag;
 }
 
 bool_t caen_v1190_extendedTriggerTagEnabled(struct s_caen_v1190 * s)
 {
-	s->extTrigTag = ((this->caen_v1190_getControl() & CAEN_V1190_B_CREG_TRIGGER_TAG_ENABLE) != 0);
-	return(s->extTrigTag);
+	s->enaExtTrigTag = ((caen_v1190_getControl(s) & CAEN_V1190_B_CREG_TRIGGER_TAG_ENABLE) != 0);
+	return(s->enaExtTrigTag);
 }
 
 void caen_v1190_setAlmostFullLevel_db(struct s_caen_v1190 * s) { caen_v1190_setAlmostFullLevel(s, s->almostFullLevel); };
 
 void caen_v1190_setAlmostFullLevel(struct s_caen_v1190 * s, uint16_t level)
 {
-	SET16(s->baseAddr, CAEN_V1190_A_ALMOSTFULLLEVEL, level & 0xFFFF);
+	SET_DATA(s, CAEN_V1190_A_ALMOSTFULLLEVEL, level & 0xFFFF);
 	s->almostFullLevel = level & 0xFFFF;
 }
 
 uint16_t caen_v1190_getAlmostFullLevel(struct s_caen_v1190 * s)
 {
-	s->almostFullLevel = GET16(s->baseAddr, CAEN_V1190_A_ALMOSTFULLLEVEL) & 0xFFFF;
+	s->almostFullLevel = GET_DATA(s, CAEN_V1190_A_ALMOSTFULLLEVEL) & 0xFFFF;
 	return(s->almostFullLevel);
 }
 
 void caen_v1190_setControl(struct s_caen_v1190 * s, uint16_t control)
 {
-	SET16(s->baseAddr, CAEN_V1190_A_CONTROLREGISTER, control);
+	SET_DATA(s, CAEN_V1190_A_CONTROLREGISTER, control);
 }
 
-uint16_t caen_v1190_getControl()
+uint16_t caen_v1190_getControl(struct s_caen_v1190 * s)
 {
-	return(GET16(s->baseAddr, CAEN_V1190_A_CONTROLREGISTER));
+	return(GET_DATA(s, CAEN_V1190_A_CONTROLREGISTER));
 }
 
-void caen_v1190_moduleInfo(struct s_caen_v1190 * s)
+uint16_t caen_v1190_getStatus(struct s_caen_v1190 * s)
 {
-	int firmware;
-	firmware = GET16(s->baseAddr, caen_v1190_FIRMWARE_REV);
-	sprintf(msg, "[%smodule_info] %s: phys addr %#lx, mapped to %#lx, firmware %02x.%02x",
+	return(GET_DATA(s, CAEN_V1190_A_STATUSREGISTER));
+}
+
+void caen_v1190_reset(struct s_caen_v1190 * s)
+{
+	SET_DATA(s, CAEN_V1190_A_RESET, 0);
+}
+
+void caen_v1190_softClear(struct s_caen_v1190 * s)
+{
+	SET_DATA(s, CAEN_V1190_A_CLEAR, 0);
+}
+
+bool_t caen_v1190_moduleInfo(struct s_caen_v1190 * s)
+{
+	uint32_t oui, model, serial, revision, type;
+
+	oui = caen_v1190_read_config_rom(s, CAEN_V1190_CPROM_OUI2, 3);
+	if (oui != 0x0040e6) {
+		sprintf(msg, "[%smoduleInfo] %s: Wrong manufacturer code - %#x", s->mpref, s->moduleName, oui);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		return FALSE;
+	}
+	model = caen_v1190_read_config_rom(s, CAEN_V1190_CPROM_MODELNUMBER2, 3);
+	if((model != 1190) && (model != 1290)) {
+		sprintf(msg, "[%smoduleInfo] %s: Wrong model - v%d", s->mpref, s->moduleName, model);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		return FALSE;
+	}
+
+	type = caen_v1190_read_config_rom(s, CAEN_V1190_CPROM_BOARDVERSION, 1);
+	serial = caen_v1190_read_config_rom(s, CAEN_V1190_CPROM_SERIALNUMBER1, 2);
+	revision = caen_v1190_read_config_rom(s, CAEN_V1190_CPROM_REVISION3, 4);
+
+	sprintf(msg, "[%smodule_info] %s: phys addr %#lx, mapped to %#lx, module CAEN v%d%c, serial %d, rev %d",
 									s->mpref,
 									s->moduleName,
 									s->vmeAddr,
 									s->baseAddr,
-									((firmware >> 8) & 0xff), (firmware & 0xff));
+									model,
+									(type == 0 ? 'A' : 'B'),
+									serial,
+									revision);
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }
  
@@ -340,7 +372,7 @@ bool_t caen_v1190_fillStruct(struct s_caen_v1190 * s, char * file)
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	s->verbose = root_env_getval_b("CAEN_V1190.VerboseMode", FALSE);
-
+	s->verify = root_env_getval_b("CAEN_V1190.Verify", FALSE);
 	s->dumpRegsOnInit = root_env_getval_b("CAEN_V1190.DumpRegisters", FALSE);
 
 	s->updSettings = root_env_getval_b("CAEN_V1190.UpdateSettings", FALSE);
@@ -356,26 +388,8 @@ bool_t caen_v1190_fillStruct(struct s_caen_v1190 * s, char * file)
 	strcpy(mnUC, sp);
 	mnUC[0] = toupper(mnUC[0]);
 
-	uint16_t windowWidth;
-	uint16_t windowOffset;
-	uint16_t rejectMargin;
-	uint16_t searchMargin;
-	bool_t enaTrigSubtraction;
-	uint16_t edgeDetectionMode;
-	uint16_t edgeResolution;
-	uint16_t pairResolution;
-	uint16_t pairWidth;
-	uint16_t deadTime;
-	uint16_t eventSize;
-	uint16_t fifoSize;
-	uint16_t almostFullLevel;
-	bool_t enaHeaderTrailer;
-	bool_t enaExtTrigTag;
-
-	uint16_t channels[NOF_CHAN_WORDS];
-
 	sprintf(res, "CAEN_V1190.%s.TriggerMatching", mnUC);
-	s->trigMatchingOn = root_env_getval_i(res, kTRUE);
+	s->trigMatchingOn = root_env_getval_b(res, TRUE);
 
 	sprintf(res, "CAEN_V1190.%s.WindowWidth", mnUC);
 	s->windowWidth = root_env_getval_i(res, CAEN_V1190_WINDOW_WIDTH_DEFAULT);
@@ -387,44 +401,44 @@ bool_t caen_v1190_fillStruct(struct s_caen_v1190 * s, char * file)
 	s->rejectMargin = root_env_getval_i(res, CAEN_V1190_REJECT_MARGIN_DEFAULT);
 
 	sprintf(res, "CAEN_V1190.%s.SearchMargin", mnUC);
-	s->rejectMargin = root_env_getval_i(res, CAEN_V1190_SEARCH_MARGIN_DEFAULT);
+	s->searchMargin = root_env_getval_i(res, CAEN_V1190_SEARCH_MARGIN_DEFAULT);
 
 	sprintf(res, "CAEN_V1190.%s.SubtractTriggerTime", mnUC);
-	s->trigMatchingOn = root_env_getval_i(res, kTRUE);
+	s->enaTrigSubtraction = root_env_getval_b(res, TRUE);
 
 	sprintf(res, "CAEN_V1190.%s.EdgeDetection", mnUC);
-	s->rejectMargin = root_env_getval_i(res, CAEN_V1190_EDGE_DETECTION_DEFAULT);
+	s->edgeDetectionMode = root_env_getval_i(res, CAEN_V1190_EDGE_DETECTION_DEFAULT);
 
 	sprintf(res, "CAEN_V1190.%s.EdgeResolution", mnUC);
-	s->rejectMargin = root_env_getval_i(res, CAEN_V1190_EDGE_RESOLUTION_DEFAULT);
+	s->edgeResolution = root_env_getval_i(res, CAEN_V1190_EDGE_RESOLUTION_DEFAULT);
 
 	sprintf(res, "CAEN_V1190.%s.PairResolution", mnUC);
-	s->rejectMargin = root_env_getval_i(res, CAEN_V1190_PAIR_RESOLUTION_DEFAULT);
+	s->pairResolution = root_env_getval_i(res, CAEN_V1190_PAIR_RESOLUTION_DEFAULT);
 
 	sprintf(res, "CAEN_V1190.%s.PairWidth", mnUC);
-	s->rejectMargin = root_env_getval_i(res, CAEN_V1190_PAIR_WIDTH_DEFAULT);
+	s->pairWidth = root_env_getval_i(res, CAEN_V1190_PAIR_WIDTH_DEFAULT);
 
 	sprintf(res, "CAEN_V1190.%s.DeadTime", mnUC);
-	s->rejectMargin = root_env_getval_i(res, CAEN_V1190_DEAD_TIME_DEFAULT);
+	s->deadTime = root_env_getval_i(res, CAEN_V1190_DEAD_TIME_DEFAULT);
 
 	sprintf(res, "CAEN_V1190.%s.EventSize", mnUC);
-	s->rejectMargin = root_env_getval_i(res, CAEN_V1190_EVENT_SIZE_DEFAULT);
+	s->eventSize = root_env_getval_i(res, CAEN_V1190_EVENT_SIZE_DEFAULT);
 
 	sprintf(res, "CAEN_V1190.%s.FifoSize", mnUC);
-	s->rejectMargin = root_env_getval_i(res, CAEN_V1190_FIFO_SIZE_DEFAULT);
+	s->fifoSize = root_env_getval_i(res, CAEN_V1190_FIFO_SIZE_DEFAULT);
 
 	sprintf(res, "CAEN_V1190.%s.AlmostFull", mnUC);
-	s->rejectMargin = root_env_getval_i(res, CAEN_V1190_ALMOST_FULL_DEFAULT);
+	s->almostFullLevel = root_env_getval_i(res, CAEN_V1190_ALMOST_FULL_DEFAULT);
 
 	sprintf(res, "CAEN_V1190.%s.HeaderTrailer", mnUC);
-	s->trigMatchingOn = root_env_getval_i(res, kTRUE);
+	s->enaHeaderTrailer = root_env_getval_b(res, TRUE);
 
 	sprintf(res, "CAEN_V1190.%s.ExtTriggerTag", mnUC);
-	s->trigMatchingOn = root_env_getval_i(res, kFALSE);
+	s->enaExtTrigTag = root_env_getval_b(res, FALSE);
 
 	for (i = 0; i < NOF_CHANNEL_WORDS; i++) {
-		sprintf(res, "CAEN_V1190.%s.Ch%d", mnUC, i);
-		s->channels[i] = root_env_getval_i(res, 0xFFFFFFFF);
+		sprintf(res, "CAEN_V1190.%s.Ch%03d", mnUC, (i * 16));
+		s->channels[i] = root_env_getval_i(res, DATA_ERROR) & 0xFFFF;
 	}
 
 	return TRUE;
@@ -432,6 +446,8 @@ bool_t caen_v1190_fillStruct(struct s_caen_v1190 * s, char * file)
 
 void caen_v1190_loadFromDb(struct s_caen_v1190 * s)
 {
+	char * sp;
+
 	caen_v1190_setTriggerMatchingOn_db(s);
 	caen_v1190_setWindowWidth_db(s);
 	caen_v1190_setWindowOffset_db(s);
@@ -455,84 +471,77 @@ bool_t caen_v1190_dumpRegisters(struct s_caen_v1190 * s, char * file)
 	int i;
 	if (!s->dumpRegsOnInit) return(TRUE);
 
-	f = fopen(file, "w");
-	if (f == NULL) {
-		sprintf(msg, "[%sdump_regs] %s: Error writing file %s", s->mpref, s->moduleName, file);
+	if (file == NULL) {
+		f = stdout;
+	} else {
+		f = fopen(file, "w");
+		if (f == NULL) {
+			sprintf(msg, "[%sdump_regs] %s: Error writing file %s", s->mpref, s->moduleName, file);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			return FALSE;
+		}
+	}
+
+	if (file != NULL) {
+		sprintf(msg, "[%sdump_regs] %s: Dumping settings to file %s", s->mpref, s->moduleName, file);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-		return FALSE;
 	}
 
-	sprintf(msg, "[%sdump_regs] %s: Dumping settings to file %s", s->mpref, s->moduleName, file);
-	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-
-	fprintf(f, "Thresholds:\n");
-	for (ch = 0; ch < NOF_CHANNELS; ch++) fprintf(f, "   %2d: %d\n", ch, caen_v1190_getThreshold(s, ch));
-
-	fprintf(f, "Addr reg          : %#x\n", caen_v1190_getAddrReg(s));
-	fprintf(f, "Module ID         : %d\n", caen_v1190_getModuleId(s));
-	fprintf(f, "Data width        : %d\n", caen_v1190_getDataWidth(s));
-	fprintf(f, "Multi event       : %d\n", caen_v1190_getMultiEvent(s));
-	fprintf(f, "Max xfer data wc  : %d\n", caen_v1190_getXferData(s));
-	fprintf(f, "Marking type      : %d\n", caen_v1190_getMarkingType(s));
-	fprintf(f, "Bank operation    : %d\n", caen_v1190_getBankOperation(s));
-	fprintf(f, "Adc resolution    : %d\n", caen_v1190_getAdcResolution(s));
-	fprintf(f, "Output format     : %d\n", caen_v1190_getOutputFormat(s));
-	fprintf(f, "Adc override      : %d\n", caen_v1190_getAdcOverride(s));
-	fprintf(f, "Sliding scale off : %d\n", caen_v1190_getSlidingScaleOff(s));
-	fprintf(f, "Skip out of range : %d\n", caen_v1190_getSkipOutOfRange(s));
-	for (gg = 0; gg <= 1; gg++) {
-		fprintf(f, "Hold delay %d      : %d\n", gg, caen_v1190_getHoldDelay(s, gg));
-		fprintf(f, "Hold width %d      : %d\n", gg, caen_v1190_getHoldWidth(s, gg));
+	fprintf(f, "Trigger matching      : %s\n", (caen_v1190_triggerMatchingIsOn(s) ? "On" : "Off"));
+	caen_v1190_readTriggerSettings(s);
+	fprintf(f, "Window width          : %#x\n", caen_v1190_getWindowWidth(s));
+	fprintf(f, "Window offset         : %#x\n", caen_v1190_getWindowOffset(s));
+	fprintf(f, "Search margin         : %#x\n", caen_v1190_getSearchMargin(s));
+	fprintf(f, "Reject margin         : %#x\n", caen_v1190_getRejectMargin(s));
+	fprintf(f, "Subtract trigger time : %s\n", (caen_v1190_triggerTimeSubtractionEnabled(s) ? "Yes" : "No"));
+	caen_v1190_readResolutionSettings(s);
+	fprintf(f, "Edge detection        : %#x\n", caen_v1190_getEdgeDetection(s));
+	if (caen_v1190_getEdgeDetection(s) == CAEN_V1190_B_EDGE_PAIR) {
+		fprintf(f, "Pair resolution       : %#x\n", caen_v1190_getPairResolution(s));
+		fprintf(f, "Pair width            : %#x\n", caen_v1190_getPairWidth(s));
+	} else {
+		fprintf(f, "Edge resolution       : %#x\n", caen_v1190_getEdgeResolution(s));
 	}
-	fprintf(f, "Use GG            : %d\n", caen_v1190_getGGUsed(s));
-	fprintf(f, "Input range       : %d\n", caen_v1190_getInputRange(s));
-	fprintf(f, "Ecl termination   : %#x\n", caen_v1190_getEclTerm(s));
-	fprintf(f, "Ecl gate or osc   : %d\n", caen_v1190_getEclG1OrOsc(s));
-	fprintf(f, "Ecl fcl or reset  : %d\n", caen_v1190_getEclFclOrRts(s));
-	fprintf(f, "Nim gate or osc   : %d\n", caen_v1190_getNimG1OrOsc(s));
-	fprintf(f, "Nim fcl or reset  : %d\n", caen_v1190_getNimFclOrRts(s));
-	fprintf(f, "Nim busy          : %d\n", caen_v1190_getNimBusy(s));
-	fprintf(f, "Pulser status     : %d\n", caen_v1190_getTestPulser(s));
-	fprintf(f, "Timestamp source  : %#x\n", caen_v1190_getTsSource(s));
-	fprintf(f, "Timestamp divisor : %d\n", caen_v1190_getTsDivisor(s));
-	fclose(f);
+	fprintf(f, "Dead time             : %#x\n", caen_v1190_getDeadTime(s));
+	fprintf(f, "Event size            : %#x\n", caen_v1190_getEventSize(s));
+	fprintf(f, "Fifo size             : %#x\n", caen_v1190_getFifoSize(s));
+	fprintf(f, "Write header/trailer  : %s\n", (caen_v1190_headerTrailerEnabled(s) ? "Yes" : "No"));
+	fprintf(f, "Write ext trigger tag : %s\n", (caen_v1190_extendedTriggerTagEnabled(s) ? "Yes" : "No"));
+	fprintf(f, "Almost full level     : %d\n", caen_v1190_getAlmostFullLevel(s));
+	caen_v1190_getChannelEnabled(s);
+	fprintf(f, "Channel pattern       :\n");
+	for (i = 0; i < NOF_CHANNEL_WORDS; i++) {
+		fprintf(f, "         %3d - %3d    : %#x\n", (i * 16), ((i + 1) * 16 - 1), s->channels[i] & 0xFFFF);
+	}
+	if (file != NULL) fclose(f);
 }
 
 void caen_v1190_printDb(struct s_caen_v1190 * s)
 {
-	int ch;
-	int gg;
-
-	printf("Thresholds:\n");
-	for (ch = 0; ch < NOF_CHANNELS; ch++) printf("   %2d: %d\n", ch, s->threshold[ch]);
-
-	printf("Addr reg          : %#x\n", s->addrReg);
-	printf("Module ID         : %d\n", s->moduleId);
-	printf("Data width        : %d\n", s->dataWidth);
-	printf("Multi event       : %d\n", s->multiEvent);
-	printf("Max xfer data wc  : %d\n", s->xferData);
-	printf("Marking type      : %d\n", s->markingType);
-	printf("Bank operation    : %d\n", s->bankOperation);
-	printf("Adc resolution    : %d\n", s->adcResolution);
-	printf("Output format     : %d\n", s->outputFormat);
-	printf("Adc override      : %d\n", s->adcOverride);
-	printf("Sliding scale off : %d\n", s->slidingScaleOff);
-	printf("Skip out of range : %d\n", s->skipOutOfRange);
-	for (gg = 0; gg <= 1; gg++) {
-		printf("Hold delay %d      : %d\n", gg, s->ggHoldDelay[gg]);
-		printf("Hold width %d      : %d\n", gg, s->ggHoldWidth[gg]);
+	int i;
+	printf("Trigger matching      : %s\n", (s->trigMatchingOn ? "On" : "Off"));
+	printf("Window width          : %#x\n", s->windowWidth);
+	printf("Window offset         : %#x\n", s->windowOffset);
+	printf("Search margin         : %#x\n", s->searchMargin);
+	printf("Reject margin         : %#x\n", s->rejectMargin);
+	printf("Subtract trigger time : %s\n", (s->enaTrigSubtraction ? "Yes" : "No"));
+	printf("Edge detection        : %#x\n", s->edgeDetectionMode);
+	if (s->edgeDetectionMode == CAEN_V1190_B_EDGE_PAIR) {
+		printf("Pair resolution       : %#x\n", s->pairResolution);
+		printf("Pair width            : %#x\n", s->pairWidth);
+	} else {
+		printf("Edge resolution       : %#x\n", s->edgeResolution);
 	}
-	printf("Use GG            : %d\n", s->useGG);
-	printf("Input range       : %d\n", s->inputRange);
-	printf("Ecl termination   : %#x\n", s->eclTerm);
-	printf("Ecl gate or osc   : %d\n", s->eclG1OrOsc);
-	printf("Ecl fcl or reset  : %d\n", s->eclFclOrRts);
-	printf("Nim gate or osc   : %d\n", s->nimG1OrOsc);
-	printf("Nim fcl or reset  : %d\n", s->nimFclOrRts);
-	printf("Nim busy          : %d\n", s->nimBusy);
-	printf("Pulser status     : %d\n", s->testPulserStatus);
-	printf("Timestamp source  : %#x\n", s->ctraTsSource);
-	printf("Timestamp divisor : %d\n", s->ctraTsDivisor);
+	printf("Dead time             : %#x\n", s->deadTime);
+	printf("Event size            : %#x\n", s->eventSize);
+	printf("Fifo size             : %#x\n", s->fifoSize);
+	printf("Write header/trailer  : %s\n", s->enaHeaderTrailer ? "Yes" : "No");
+	printf("Write ext trigger tag : %s\n", s->enaExtTrigTag ? "Yes" : "No");
+	printf("Almost full level     : %d\n", s->almostFullLevel);
+	printf("Channel pattern       :\n");
+	for (i = 0; i < NOF_CHANNEL_WORDS; i++) {
+		printf("         %3d - %3d    : %#x\n", (i * 16), ((i + 1) * 16 - 1), s->channels[i] & 0xFFFF);
+	}
 }
 
 bool_t caen_v1190_updateSettings(struct s_caen_v1190 * s, char * updFile)
@@ -547,4 +556,104 @@ bool_t caen_v1190_updateSettings(struct s_caen_v1190 * s, char * updFile)
 	}
 	return FALSE;
 }
+
+bool_t caen_v1190_waitWrite(struct s_caen_v1190 * s, uint16_t opCode)
+{
+	int try;
+
+	for (try = 0; try < HANDSHAKE_TIMEOUT; try++) {
+		if ((MICRO_HSHAKE(s) & CAEN_V1190_B_WRITE_OK) != 0) return TRUE;
+	}
+
+	sprintf(msg, "[%swaitWrite] %s: Handshake timeout on WRITE (opCode = %#x)", s->mpref, s->moduleName, opCode);
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+
+	return FALSE;
+}
+
+bool_t caen_v1190_waitRead(struct s_caen_v1190 * s, uint16_t opCode)
+{
+	int try;
+
+	for (try = 0; try < HANDSHAKE_TIMEOUT; try++) {
+		if ((MICRO_HSHAKE(s) & CAEN_V1190_B_READ_OK) != 0) return TRUE;
+	}
+
+	sprintf(msg, "[%swaitRead] %s: Handshake timeout on READ (opCode = %#x)", s->mpref, s->moduleName, opCode);
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	return FALSE;
+}
+
+bool_t caen_v1190_readPending(struct s_caen_v1190 * s, uint16_t opCode)
+{
+	if ((MICRO_HSHAKE(s) & CAEN_V1190_B_READ_OK) == 0) return FALSE;
+
+	sprintf(msg, "[%sreadPending] %s: READ request pending (opCode = %#x)", s->mpref, s->moduleName, opCode);
+	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	return TRUE;
+}
+
+bool_t caen_v1190_writeMicro(struct s_caen_v1190 * s, uint16_t opCode, uint16_t data)
+{
+	if (caen_v1190_readPending(s, opCode)) return(-1);
+	if (!caen_v1190_waitWrite(s, opCode)) return(FALSE);
+	SET_MICRO_DATA(s, opCode);
+	if (data != NO_ARG) {
+		if (!caen_v1190_waitWrite(s, opCode)) return(FALSE);
+		SET_MICRO_DATA(s, data);
+	}
+	caen_v1190_waitWrite(s, opCode);
+	return TRUE;
+}
+
+uint16_t caen_v1190_writeMicroBlock(struct s_caen_v1190 * s, uint16_t opCode, uint16_t * data, int nofWords)
+{
+	int n = 0;
+	if (caen_v1190_readPending(s, opCode)) return(-1);
+	if (!caen_v1190_waitWrite(s, opCode)) return(-1);
+	SET_MICRO_DATA(s, opCode);
+	for (; nofWords--; n++) {
+		if (!caen_v1190_waitWrite(s, opCode)) return(-1);
+		SET_MICRO_DATA(s, *data++);
+	}
+	caen_v1190_waitWrite(s, opCode);
+	return n;
+}
+
+uint16_t caen_v1190_readMicro(struct s_caen_v1190 * s, uint16_t opCode)
+{
+	if (!caen_v1190_waitWrite(s, opCode)) return(DATA_ERROR);
+	SET_MICRO_DATA(s, opCode);
+	if (!caen_v1190_waitRead(s, opCode)) return(DATA_ERROR);
+	return(GET_MICRO_DATA(s));
+}
+
+uint16_t caen_v1190_readMicroBlock(struct s_caen_v1190 * s, uint16_t opCode, uint16_t * data, int nofWords)
+{
+	int i;
+	int n = 0;
+	if (!caen_v1190_waitWrite(s, opCode)) return(-1);
+	SET_MICRO_DATA(s, opCode);
+	for (i = 0; i < nofWords; i++, n++) {
+		if (!caen_v1190_waitRead(s, opCode)) return(-1);
+		*data++ = GET_MICRO_DATA(s);
+	}
+	return n;
+}
+
+uint32_t caen_v1190_read_config_rom(struct s_caen_v1190 * s, uint16_t offset, int nofWords)
+{
+	uint32_t n = 0;
+
+	offset += CAEN_V1190_A_CONFIGROM;
+	for (;nofWords--; offset += 4) {
+		n <<= 8;
+		n |= GET_DATA(s, offset) & 0xFF;
+	}
+	return n;
+}
+
+void caen_v1190_startAcq(struct s_caen_v1190 * s) {};
+void caen_v1190_stopAcq(struct s_caen_v1190 * s) {};
+int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer) { return 0; }
 

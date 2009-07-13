@@ -20,9 +20,11 @@
 //! \details		Contains definitions for a CAEN V1190 tdc
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $
-//! $Date: 2009-06-30 13:14:53 $
+//! $Revision: 1.2 $
+//! $Date: 2009-07-13 06:22:39 $
 ////////////////////////////////////////////////////////////////////////////*/
+
+#define BIT(n)	(1 << n)
 
 /*____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////
@@ -153,22 +155,6 @@
 
 /*____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////
-//! \brief			output control bits
-//!
-//! The output control register determines which signal is reflected on 
-//! the OUT_PROG ECL output of the module.
-////////////////////////////////////////////////////////////////////////////*/
-
-
-#define CAEN_V1190_B_DATA_READY 				0x0
-#define CAEN_V1190_B_FULL						BIT(0)
-#define CAEN_V1190_B_ALM_FULL					BIT(1)
-#define CAEN_V1190_B_ERROR						BIT(2)
-
-#define CAEN_V1190_M_OUTPUT_CONTROL				(CAEN_V1190_B_FULL | CAEN_V1190_B_ALM_FULL | CAEN_V1190_B_ERROR)
-
-/*____________________________________________________________________________
-//////////////////////////////////////////////////////////////////////////////
 //! \brief			micro handshake
 ////////////////////////////////////////////////////////////////////////////*/
 
@@ -255,15 +241,21 @@
 #define CAEN_V1190_M_WORDCOUNT					0x001fffe0
 #define CAEN_V1190_SH_WORDCOUNT 				5
 
+/*! Trigger matching bit */
+
+#define CAEN_V1190_B_TRIGGER_MATCHING_ON		BIT(0)
+#define CAEN_V1190_B_TRIGGER_TIME_SUBTR_ON		BIT(0)
+
 /*! Edge detection and resolution */
 
 #define CAEN_V1190_B_EDGE_PAIR					0x0
 #define CAEN_V1190_B_EDGE_TRAILING				0x1
 #define CAEN_V1190_B_EDGE_LEADING				0x2
 #define CAEN_V1190_B_EDGE_BOTH					0x3
-#define CAEN_V1190_M_EDGE_RESOLUTION			0x7
-#define CAEN_V1190_M_EDGE_PAIR_WIDTH			0xF
-#define CAEN_V1190_SH_EDGE_PAIR_WIDTH			8
+#define CAEN_V1190_M_EDGE_RESOLUTION			0x3
+#define CAEN_V1190_M_PAIR_RESOLUTION			0x7
+#define CAEN_V1190_M_PAIR_WIDTH					0xF
+#define CAEN_V1190_SH_PAIR_WIDTH				8
 
 /*____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////
@@ -348,9 +340,13 @@
 
 
 #define NOF_CHANNELS							128
-#define NOF_CHANNEL_WORDS						NOF_CHANNELS / 32
+#define NOF_CHANNEL_WORDS						8
 
 #define NOT_USED								0xFFFFFFFF
+#define NO_ARG									0xAFFE
+#define DATA_ERROR								0xAFFE
+
+#define HANDSHAKE_TIMEOUT						1000000
 
 /*! Defaults */
 
@@ -365,19 +361,26 @@
 #define CAEN_V1190_DEAD_TIME_DEFAULT			0x0
 #define CAEN_V1190_EVENT_SIZE_DEFAULT			0x9
 #define CAEN_V1190_FIFO_SIZE_DEFAULT			0x7
-#defineCAEN_V1190_ALMOST_FULL_DEFAULT			64
+#define CAEN_V1190_ALMOST_FULL_DEFAULT			64
+
+#define MICRO_HSHAKE(s_module)					*((volatile unsigned short *) (s_module->baseAddr + CAEN_V1190_A_MICROHANDSHAKE))
+#define GET_MICRO_DATA(s_module)				*((volatile unsigned short *) (s_module->baseAddr + CAEN_V1190_A_MICRODATA))
+#define SET_MICRO_DATA(s_module, value) 		*((volatile unsigned short *) (s_module->baseAddr + CAEN_V1190_A_MICRODATA)) = value
+#define GET_DATA(s_module, offset)				*((volatile unsigned short *) (s_module->baseAddr + offset))
+#define SET_DATA(s_module, offset, value) 		*((volatile unsigned short *) (s_module->baseAddr + offset)) = value
 
 struct s_caen_v1190 {
-	unsigned long vmeAddr;					/* phys addr given by module switches */
-	volatile unsigned char * baseAddr;		/* addr mapped via find_controller() */
+	unsigned long vmeAddr;							/* phys addr given by module switches */
+	volatile unsigned char * baseAddr;				/* addr mapped via find_controller() */
 
 	char moduleName[100];
-	char prefix[100];						/* "m_read_meb" (default) or any other */
-	char mpref[20]; 						/* "caen_v1190: " or "" */
+	char prefix[100];								/* "m_read_meb" (default) or any other */
+	char mpref[20]; 								/* "caen_v1190: " or "" */
 
-	int serial; 							/* MARaBOU's serial number */
+	int serial; 									/* MARaBOU's serial number */
 
 	bool_t verbose;
+	bool_t verify;
 	bool_t dumpRegsOnInit;
 
 	bool_t updSettings;
@@ -401,7 +404,7 @@ struct s_caen_v1190 {
 	bool_t enaHeaderTrailer;
 	bool_t enaExtTrigTag;
 
-	uint16_t channels[NOF_CHAN_WORDS];
+	uint16_t channels[NOF_CHANNEL_WORDS];
 
 	struct s_bma * bma; 					/* block mode access */
 	uint32_t bltBufferSize;

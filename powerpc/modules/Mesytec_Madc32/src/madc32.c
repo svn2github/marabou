@@ -4,10 +4,10 @@
 //! \brief			test program for Mesytec MADC32
 //! \details		Provides some basic tests for MADC32
 //!
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $       
-//! $Date: 2009-05-08 16:24:51 $
+//! $Revision: 1.4 $       
+//! $Date: 2009-07-13 06:22:39 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -28,9 +28,6 @@
 
 static struct pdparam_master s_param; 		/* vme segment params */
 static struct s_madc32 * s_adc;
-
-static volatile unsigned long * addr0;		/* crate#1, N(0).A(0).F(0) */
-static volatile unsigned long * sr; 		/* status register: N(0) */
 
 void f_ut_send_msg(char * prefix, char * msg, int flag);
 

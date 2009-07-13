@@ -1,13 +1,13 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbSubevent_Caen_V1190_3.cxx
-// Purpose:        MARaBOU configuration: subevents of type [10,43] - CAEN data
-// Description:    Implements class methods to handle [10,43] subevents
+// Purpose:        MARaBOU configuration: subevents of type [10,47] - CAEN data
+// Description:    Implements class methods to handle [10,47] subevents
 //                 reflecting data structure of XIA DGF-4C modules
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Caen_V1190_3.cxx,v 1.1 2009-06-24 14:01:19 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_V1190_3.cxx,v 1.2 2009-07-13 06:22:39 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -38,13 +38,13 @@ TMrbSubevent_Caen_V1190_3::TMrbSubevent_Caen_V1190_3(const Char_t * SevtName, co
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Caen_V1190_3
-// Purpose:        Create a subevent type [10,43]
+// Purpose:        Create a subevent type [10,47]
 // Arguments:      Char_t * SevtName       -- subevent name
 //                 Char_t * SevtTitle      -- ... and title
 //                 Int_t Crate             -- crate number
 // Results:        --
 // Exceptions:
-// Description:    Create a new subevent of type [10,43]
+// Description:    Create a new subevent of type [10,47]
 //                 used to store CAEN data in DGF-4C list-mode format
 //
 //
@@ -92,7 +92,7 @@ TMrbSubevent_Caen_V1190_3::TMrbSubevent_Caen_V1190_3(const Char_t * SevtName, co
 	if (!this->IsZombie()) {
 		fSevtDescr = "CAEN V1190 data, multi-module, multi-event, stored in hit buffer";
 		fSevtType = 10; 	 							// set subevent type & subtype
-		fSevtSubtype = 46;
+		fSevtSubtype = 47;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
 		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Caen");	// we need this base class
@@ -106,7 +106,7 @@ Bool_t TMrbSubevent_Caen_V1190_3::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Caen_V1190_3::MakeReadoutCode
-// Purpose:        Write a piece of code for subevent [10,43]
+// Purpose:        Write a piece of code for subevent [10,47]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file
 //                 TMrbTemplate & Template      -- template

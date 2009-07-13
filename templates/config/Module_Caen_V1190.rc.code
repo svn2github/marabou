@@ -13,10 +13,11 @@ CAEN_V1190.ModuleName: 						$moduleName
 
 CAEN_V1190.Firmware: 						$moduleFirmware
 
-CAEN_V1190.VerboseMode:						FALSE
-CAEN_V1190.DumpRegisters:					FALSE
-CAEN_V1190.UpdateSettings:					FALSE
-CAEN_V1190.UpdateInterval:					1000
+CAEN_V1190.VerboseMode:						$verboseMode
+CAEN_V1190.Verify:							$verify
+CAEN_V1190.DumpRegisters:					$dumpRegisters
+CAEN_V1190.UpdateSettings:					$updateSettings
+CAEN_V1190.UpdateInterval:					$updateInterval
 
 %%End(Preamble)%%
 
@@ -67,7 +68,7 @@ CAEN_V1190.$moduleName.EdgeDetection:		$detectMode
 #                       1 --> 400 ps
 #                       2 --> 100 ps (default)
 #                       3 --> not used
-CAEN_V1190.$moduleName.EdgeResolution:      $resolution
+CAEN_V1190.$moduleName.EdgeResolution:      $edgeRes
 
 # pair mode:
 # resolution            0 --> 100 ps (default)
@@ -148,12 +149,16 @@ CAEN_V1190.$moduleName.AlmostFull:       $almostFull
 # Channel settings
 #-----------------------------------------------------------------------------
 
-# channel pattern: 4 x 32 bits   1 --> active (default)
+# channel pattern: 8 x 16 bits   1 --> active (default)
 #                                0 --> inactive
-CAEN_V1190.$moduleName.Ch0:     $chPat0
-CAEN_V1190.$moduleName.Ch32:    $chPat32
-CAEN_V1190.$moduleName.Ch64:    $chPat64
-CAEN_V1190.$moduleName.Ch96:    $chPat96
+CAEN_V1190.$moduleName.Ch0: 			$chPat0
+CAEN_V1190.$moduleName.Ch1: 			$chPat1
+CAEN_V1190.$moduleName.Ch2: 			$chPat2
+CAEN_V1190.$moduleName.Ch3: 			$chPat3
+CAEN_V1190.$moduleName.Ch4: 			$chPat4
+CAEN_V1190.$moduleName.Ch5: 			$chPat5
+CAEN_V1190.$moduleName.Ch6: 			$chPat6
+CAEN_V1190.$moduleName.Ch7: 			$chPat7
 %%End(ChannelSettings)%%
 
 %%EndOfCode%%
