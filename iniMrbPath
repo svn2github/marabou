@@ -44,7 +44,7 @@ then
 	return
 fi
 
-if [ ! -x $ROOTSYS/bin/root -o ! -x $ROOTSYS/bin/cint ]
+if [ ! -x $ROOTSYS/bin/root -o ]
 then
 	echo -e -n $RED >&2
 	echo "iniMrbPath: Directory where ROOTSYS=$ROOTSYS is pointing to doesn't contain a valid ROOT installation" >&2
