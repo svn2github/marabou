@@ -6,8 +6,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $       
-//! $Date: 2009-07-13 09:46:00 $
+//! $Revision: 1.4 $       
+//! $Date: 2009-07-15 11:45:36 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -277,6 +277,46 @@ bool_t caen_v1190_extendedTriggerTagEnabled(struct s_caen_v1190 * s)
 	return(s->enaExtTrigTag);
 }
 
+void caen_v1190_enableEmptyEvent_db(struct s_caen_v1190 * s) { caen_v1190_enableEmptyEvent(s, s->enaEmptyEvent); };
+
+void caen_v1190_enableEmptyEvent(struct s_caen_v1190 * s, bool_t flag)
+{
+	uint16_t control = caen_v1190_getControl(s);
+	if (flag) {
+		control |= CAEN_V1190_B_CREG_EMPTY_EVENT;
+	} else {
+		control &= ~CAEN_V1190_B_CREG_EMPTY_EVENT;
+	}
+	caen_v1190_setControl(s, control);
+	s->enaEmptyEvent = flag;
+}
+
+bool_t caen_v1190_emptyEventEnabled(struct s_caen_v1190 * s)
+{
+	s->enaEmptyEvent = ((caen_v1190_getControl(s) & CAEN_V1190_B_CREG_EMPTY_EVENT) != 0);
+	return(s->enaEmptyEvent);
+}
+
+void caen_v1190_enableEventFifo_db(struct s_caen_v1190 * s) { caen_v1190_enableEventFifo(s, s->enaEventFifo); };
+
+void caen_v1190_enableEventFifo(struct s_caen_v1190 * s, bool_t flag)
+{
+	uint16_t control = caen_v1190_getControl(s);
+	if (flag) {
+		control |= CAEN_V1190_B_CREG_EVENT_FIFO_ENABLE;
+	} else {
+		control &= ~CAEN_V1190_B_CREG_EVENT_FIFO_ENABLE;
+	}
+	caen_v1190_setControl(s, control);
+	s->enaEventFifo = flag;
+}
+
+bool_t caen_v1190_eventFifoEnabled(struct s_caen_v1190 * s)
+{
+	s->enaEventFifo = ((caen_v1190_getControl(s) & CAEN_V1190_B_CREG_EVENT_FIFO_ENABLE) != 0);
+	return(s->enaEventFifo);
+}
+
 void caen_v1190_setAlmostFullLevel_db(struct s_caen_v1190 * s) { caen_v1190_setAlmostFullLevel(s, s->almostFullLevel); };
 
 void caen_v1190_setAlmostFullLevel(struct s_caen_v1190 * s, uint16_t level)
@@ -487,31 +527,33 @@ bool_t caen_v1190_dumpRegisters(struct s_caen_v1190 * s, char * file)
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 
-	fprintf(f, "Trigger matching      : %s\n", (caen_v1190_triggerMatchingIsOn(s) ? "On" : "Off"));
+	fprintf(f, "Trigger matching           : %s\n", (caen_v1190_triggerMatchingIsOn(s) ? "On" : "Off"));
 	caen_v1190_readTriggerSettings(s);
-	fprintf(f, "Window width          : %#x\n", caen_v1190_getWindowWidth(s));
-	fprintf(f, "Window offset         : %#x\n", caen_v1190_getWindowOffset(s));
-	fprintf(f, "Search margin         : %#x\n", caen_v1190_getSearchMargin(s));
-	fprintf(f, "Reject margin         : %#x\n", caen_v1190_getRejectMargin(s));
-	fprintf(f, "Subtract trigger time : %s\n", (caen_v1190_triggerTimeSubtractionEnabled(s) ? "Yes" : "No"));
+	fprintf(f, "Window width               : %#x\n", caen_v1190_getWindowWidth(s));
+	fprintf(f, "Window offset              : %#x\n", caen_v1190_getWindowOffset(s));
+	fprintf(f, "Search margin              : %#x\n", caen_v1190_getSearchMargin(s));
+	fprintf(f, "Reject margin              : %#x\n", caen_v1190_getRejectMargin(s));
+	fprintf(f, "Subtract trigger time      : %s\n", (caen_v1190_triggerTimeSubtractionEnabled(s) ? "Yes" : "No"));
 	caen_v1190_readResolutionSettings(s);
-	fprintf(f, "Edge detection        : %#x\n", caen_v1190_getEdgeDetection(s));
+	fprintf(f, "Edge detection             : %#x\n", caen_v1190_getEdgeDetection(s));
 	if (caen_v1190_getEdgeDetection(s) == CAEN_V1190_B_EDGE_PAIR) {
-		fprintf(f, "Pair resolution       : %#x\n", caen_v1190_getPairResolution(s));
-		fprintf(f, "Pair width            : %#x\n", caen_v1190_getPairWidth(s));
+		fprintf(f, "Pair resolution            : %#x\n", caen_v1190_getPairResolution(s));
+		fprintf(f, "Pair width                 : %#x\n", caen_v1190_getPairWidth(s));
 	} else {
-		fprintf(f, "Edge resolution       : %#x\n", caen_v1190_getEdgeResolution(s));
+		fprintf(f, "Edge resolution            : %#x\n", caen_v1190_getEdgeResolution(s));
 	}
-	fprintf(f, "Dead time             : %#x\n", caen_v1190_getDeadTime(s));
-	fprintf(f, "Event size            : %#x\n", caen_v1190_getEventSize(s));
-	fprintf(f, "Fifo size             : %#x\n", caen_v1190_getFifoSize(s));
-	fprintf(f, "Write header/trailer  : %s\n", (caen_v1190_headerTrailerEnabled(s) ? "Yes" : "No"));
-	fprintf(f, "Write ext trigger tag : %s\n", (caen_v1190_extendedTriggerTagEnabled(s) ? "Yes" : "No"));
-	fprintf(f, "Almost full level     : %d\n", caen_v1190_getAlmostFullLevel(s));
+	fprintf(f, "Dead time                  : %#x\n", caen_v1190_getDeadTime(s));
+	fprintf(f, "Event size                 : %#x\n", caen_v1190_getEventSize(s));
+	fprintf(f, "Fifo size                  : %#x\n", caen_v1190_getFifoSize(s));
+	fprintf(f, "Write header/trailer       : %s\n", (caen_v1190_headerTrailerEnabled(s) ? "Yes" : "No"));
+	fprintf(f, "Write h/t on empty events  : %s\n", (caen_v1190_emptyEventEnabled(s) ? "Yes" : "No"));
+	fprintf(f, "Enable event fifo          : %s\n", (caen_v1190_eventFifoEnabled(s) ? "Yes" : "No"));
+	fprintf(f, "Write ext trigger tag      : %s\n", (caen_v1190_extendedTriggerTagEnabled(s) ? "Yes" : "No"));
+	fprintf(f, "Almost full level          : %d\n", caen_v1190_getAlmostFullLevel(s));
 	caen_v1190_getChannelEnabled(s);
-	fprintf(f, "Channel pattern       :\n");
+	fprintf(f, "Channel pattern            :\n");
 	for (i = 0; i < NOF_CHANNEL_WORDS; i++) {
-		fprintf(f, "         %3d - %3d    : %#x\n", (i * 16), ((i + 1) * 16 - 1), s->channels[i] & 0xFFFF);
+		fprintf(f, "         %3d - %3d         : %#x\n", (i * 16), ((i + 1) * 16 - 1), s->channels[i] & 0xFFFF);
 	}
 	if (file != NULL) fclose(f);
 }
@@ -519,28 +561,30 @@ bool_t caen_v1190_dumpRegisters(struct s_caen_v1190 * s, char * file)
 void caen_v1190_printDb(struct s_caen_v1190 * s)
 {
 	int i;
-	printf("Trigger matching      : %s\n", (s->trigMatchingOn ? "On" : "Off"));
-	printf("Window width          : %#x\n", s->windowWidth);
-	printf("Window offset         : %#x\n", s->windowOffset);
-	printf("Search margin         : %#x\n", s->searchMargin);
-	printf("Reject margin         : %#x\n", s->rejectMargin);
-	printf("Subtract trigger time : %s\n", (s->enaTrigSubtraction ? "Yes" : "No"));
-	printf("Edge detection        : %#x\n", s->edgeDetectionMode);
+	printf("Trigger matching           : %s\n", (s->trigMatchingOn ? "On" : "Off"));
+	printf("Window width               : %#x\n", s->windowWidth);
+	printf("Window offset              : %#x\n", s->windowOffset);
+	printf("Search margin              : %#x\n", s->searchMargin);
+	printf("Reject margin              : %#x\n", s->rejectMargin);
+	printf("Subtract trigger time      : %s\n", (s->enaTrigSubtraction ? "Yes" : "No"));
+	printf("Edge detection             : %#x\n", s->edgeDetectionMode);
 	if (s->edgeDetectionMode == CAEN_V1190_B_EDGE_PAIR) {
-		printf("Pair resolution       : %#x\n", s->pairResolution);
-		printf("Pair width            : %#x\n", s->pairWidth);
+		printf("Pair resolution            : %#x\n", s->pairResolution);
+		printf("Pair width                 : %#x\n", s->pairWidth);
 	} else {
-		printf("Edge resolution       : %#x\n", s->edgeResolution);
+		printf("Edge resolution            : %#x\n", s->edgeResolution);
 	}
-	printf("Dead time             : %#x\n", s->deadTime);
-	printf("Event size            : %#x\n", s->eventSize);
-	printf("Fifo size             : %#x\n", s->fifoSize);
-	printf("Write header/trailer  : %s\n", s->enaHeaderTrailer ? "Yes" : "No");
-	printf("Write ext trigger tag : %s\n", s->enaExtTrigTag ? "Yes" : "No");
-	printf("Almost full level     : %d\n", s->almostFullLevel);
-	printf("Channel pattern       :\n");
+	printf("Dead time                  : %#x\n", s->deadTime);
+	printf("Event size                 : %#x\n", s->eventSize);
+	printf("Fifo size                  : %#x\n", s->fifoSize);
+	printf("Write header/trailer       : %s\n", s->enaHeaderTrailer ? "Yes" : "No");
+	printf("Write h/t on empty events  : %s\n", (caen_v1190_emptyEventEnabled(s) ? "Yes" : "No"));
+	printf("Enable event fifo          : %s\n", (caen_v1190_eventFifoEnabled(s) ? "Yes" : "No"));
+	printf("Write ext trigger tag      : %s\n", s->enaExtTrigTag ? "Yes" : "No");
+	printf("Almost full level          : %d\n", s->almostFullLevel);
+	printf("Channel pattern            :\n");
 	for (i = 0; i < NOF_CHANNEL_WORDS; i++) {
-		printf("         %3d - %3d    : %#x\n", (i * 16), ((i + 1) * 16 - 1), s->channels[i] & 0xFFFF);
+		printf("         %3d - %3d         : %#x\n", (i * 16), ((i + 1) * 16 - 1), s->channels[i] & 0xFFFF);
 	}
 }
 
@@ -705,6 +749,7 @@ int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer)
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 	}
+	caen_v1190_softClear(s);
 	return (pointer - dataStart);
 }
 

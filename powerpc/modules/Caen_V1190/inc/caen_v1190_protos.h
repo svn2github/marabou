@@ -8,8 +8,8 @@
 //! \details		Prototypes for Caen V1190
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-07-13 09:46:00 $
+//! $Revision: 1.4 $     
+//! $Date: 2009-07-15 11:45:36 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -81,6 +81,14 @@ bool_t caen_v1190_headerTrailerEnabled(struct s_caen_v1190 * s);
 void caen_v1190_enableExtendedTriggerTag(struct s_caen_v1190 * s, bool_t flag);
 void caen_v1190_enableExtendedTriggerTag_db(struct s_caen_v1190 * s);
 bool_t caen_v1190_extendedTriggerTagEnabled(struct s_caen_v1190 * s);
+
+void caen_v1190_enableEmptyEvent(struct s_caen_v1190 * s, bool_t flag);
+void caen_v1190_enableEmptyEvent_db(struct s_caen_v1190 * s);
+bool_t caen_v1190_emptyEventEnabled(struct s_caen_v1190 * s);
+
+void caen_v1190_enableEventFifo(struct s_caen_v1190 * s, bool_t flag);
+void caen_v1190_enableEventFifo_db(struct s_caen_v1190 * s);
+bool_t caen_v1190_eventFifoEnabled(struct s_caen_v1190 * s);
 
 void caen_v1190_setAlmostFullLevel(struct s_caen_v1190 * s, uint16_t level);
 void caen_v1190_setAlmostFullLevel_db(struct s_caen_v1190 * s);
