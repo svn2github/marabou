@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V1190.cxx,v 1.3 2009-07-15 11:00:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V1190.cxx,v 1.4 2009-07-15 11:08:50 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -179,6 +179,8 @@ TMrbCaen_V1190::TMrbCaen_V1190(const Char_t * ModuleName, UInt_t BaseAddr) :
 				fSubtractTrigTime = kTRUE;
 				fHeaderTrailer = kTRUE;
 				fExtendedTriggerTag = kTRUE;
+				fEmptyEvent = kTRUE;
+				fEventFifo = kTRUE;
 
 				fSettingsFile = Form("%sSettings.rc", this->GetName());
 
