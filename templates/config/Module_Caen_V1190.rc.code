@@ -135,6 +135,12 @@ CAEN_V1190.$moduleName.FifoSize:         $fifoSize
 # enable header and trailer
 CAEN_V1190.$moduleName.HeaderTrailer:    $headTrail
 
+# enable empty event - write header/trailer in case of empty events
+CAEN_V1190.$moduleName.EmptyEvent:       $emptyEvent
+
+# enable event fifo - *** should always be TRUE ***
+CAEN_V1190.$moduleName.EmptyEvent:       $eventFifo
+
 # write extended trigger time tag
 CAEN_V1190.$moduleName.ExtTriggerTag:    $extTrigTag
 
