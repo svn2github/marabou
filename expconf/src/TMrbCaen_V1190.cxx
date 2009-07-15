@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V1190.cxx,v 1.2 2009-07-13 06:22:39 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V1190.cxx,v 1.3 2009-07-15 11:00:58 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -702,6 +702,8 @@ Bool_t TMrbCaen_V1190::UseSettings(const Char_t * SettingsFile) {
 	this->SetAlmostFullLevel(caenEnv->Get(moduleName.Data(), "AlmostFull", TMrbCaen_V1190::kAlmostFullLevelDefault));
 	this->EnableHeaderTrailer(caenEnv->Get(moduleName.Data(), "HeaderTrailer", kTRUE));
 	this->EnableExtendedTriggerTag(caenEnv->Get(moduleName.Data(), "ExtTriggerTag", kTRUE));
+	this->EnableEmptyEvent(caenEnv->Get(moduleName.Data(), "EmptyEvent", kTRUE));
+	this->EnableEventFifo(caenEnv->Get(moduleName.Data(), "EventFifo", kTRUE));
 
 	return(kTRUE);
 }
@@ -809,6 +811,8 @@ Bool_t TMrbCaen_V1190::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$eventSize", this->GetEventSize()->GetIndex());
 						tmpl.Substitute("$fifoSize", this->GetFifoSize()->GetIndex());
 						tmpl.Substitute("$headTrail", (this->HeaderTrailerEnabled() ? "TRUE" : "FALSE"));
+						tmpl.Substitute("$emptyEvent", (this->EmptyEventEnabled() ? "TRUE" : "FALSE"));
+						tmpl.Substitute("$eventFifo", (this->EventFifoEnabled() ? "TRUE" : "FALSE"));
 						tmpl.Substitute("$extTrigTag", (this->ExtendedTriggerTagEnabled() ? "TRUE" : "FALSE"));
 						tmpl.Substitute("$almostFull", this->GetAlmostFullLevel());
 						tmpl.WriteCode(settings);
