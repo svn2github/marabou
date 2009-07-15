@@ -18,10 +18,10 @@
 //! \file			caen_v1190.h
 //! \brief			Definitions for CAEN V1190 tdc
 //! \details		Contains definitions for a CAEN V1190 tdc
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $
-//! $Date: 2009-07-15 11:45:36 $
+//! $Revision: 1.5 $
+//! $Date: 2009-07-15 14:34:53 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #define BIT(n)	(1 << n)
@@ -374,6 +374,7 @@
 #define SET_MICRO_DATA(s_module, value) 		*((volatile unsigned short *) (s_module->baseAddr + CAEN_V1190_A_MICRODATA)) = value
 #define GET_DATA(s_module, offset)				*((volatile unsigned short *) (s_module->baseAddr + offset))
 #define SET_DATA(s_module, offset, value) 		*((volatile unsigned short *) (s_module->baseAddr + offset)) = value
+#define GET_DATA32(s_module, offset)			*((volatile unsigned long *) (s_module->baseAddr + offset))
 
 struct s_caen_v1190 {
 	unsigned long vmeAddr;							/* phys addr given by module switches */

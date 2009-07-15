@@ -40,6 +40,7 @@ caen_v1190:	caen_v1190.o $(LIB_TARGETS)
 			-L ../../../lib/$(LYNX_VERSION) \
 			-L /lib/ces \
 			-lCaen_v1190 -lUti -lvme -lnetinet
+		cp caen_v1190 ../../../bin/$(LYNX_VERSION)
 
 clean:
 	rm -f *.o core core.* $(LIB_TARGETS)

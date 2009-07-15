@@ -4,10 +4,10 @@
 //! \brief			Code for module caen_v1190
 //! \details		Implements functions to handle modules of type Mesytec caen_v1190
 //!
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $       
-//! $Date: 2009-07-15 11:45:36 $
+//! $Revision: 1.5 $       
+//! $Date: 2009-07-15 14:34:53 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -476,8 +476,14 @@ bool_t caen_v1190_fillStruct(struct s_caen_v1190 * s, char * file)
 	sprintf(res, "CAEN_V1190.%s.ExtTriggerTag", mnUC);
 	s->enaExtTrigTag = root_env_getval_b(res, FALSE);
 
+	sprintf(res, "CAEN_V1190.%s.EmptyEvent", mnUC);
+	s->enaEmptyEvent = root_env_getval_b(res, FALSE);
+
+	sprintf(res, "CAEN_V1190.%s.EventFifo", mnUC);
+	s->enaEventFifo = root_env_getval_b(res, TRUE);
+
 	for (i = 0; i < NOF_CHANNEL_WORDS; i++) {
-		sprintf(res, "CAEN_V1190.%s.Ch%03d", mnUC, (i * 16));
+		sprintf(res, "CAEN_V1190.%s.Ch%d", mnUC, i);
 		s->channels[i] = root_env_getval_i(res, DATA_ERROR) & 0xFFFF;
 	}
 
@@ -500,6 +506,8 @@ void caen_v1190_loadFromDb(struct s_caen_v1190 * s)
 	caen_v1190_setFifoSize_db(s);
 	caen_v1190_enableHeaderTrailer_db(s);
 	caen_v1190_enableExtendedTriggerTag_db(s);
+	caen_v1190_enableEmptyEvent_db(s);
+	caen_v1190_enableEventFifo_db(s);
 	caen_v1190_setAlmostFullLevel_db(s);
 	caen_v1190_enableChannel_db(s);
 }
@@ -652,6 +660,7 @@ bool_t caen_v1190_writeMicro(struct s_caen_v1190 * s, uint16_t opCode, uint16_t 
 
 uint16_t caen_v1190_writeMicroBlock(struct s_caen_v1190 * s, uint16_t opCode, uint16_t * data, int nofWords)
 {
+	uint16_t d;
 	int n = 0;
 	if (caen_v1190_readPending(s, opCode)) return(-1);
 	if (!caen_v1190_waitWrite(s, opCode)) return(-1);
@@ -675,6 +684,7 @@ uint16_t caen_v1190_readMicro(struct s_caen_v1190 * s, uint16_t opCode)
 uint16_t caen_v1190_readMicroBlock(struct s_caen_v1190 * s, uint16_t opCode, uint16_t * data, int nofWords)
 {
 	int i;
+	uint16_t d;
 	int n = 0;
 	if (!caen_v1190_waitWrite(s, opCode)) return(-1);
 	SET_MICRO_DATA(s, opCode);
@@ -724,7 +734,7 @@ bool_t caen_v1190_waitDataReady(struct s_caen_v1190 * s)
 
 int caen_v1190_getEventWcFromFifo(struct s_caen_v1190 * s)
 {
-	return GET_DATA(s, CAEN_V1190_A_EVENTFIFO);
+	return GET_DATA32(s, CAEN_V1190_A_EVENTFIFO);
 }
 
 int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer)
@@ -734,21 +744,45 @@ int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer)
 	uint32_t data;
 	uint32_t * dataStart = pointer;
 
+#if 0
+	if (caen_v1190_waitDataReady(s)) {
+		sprintf(msg, "[%sreadout] %s: data ready", s->mpref, s->moduleName);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		for (;;) {
+			data = GET_DATA32(s, CAEN_V1190_A_OUTPUTBUFFER);
+			sprintf(msg, "[%sreadout] %s: data = %#lx", s->mpref, s->moduleName, data);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			sleep(1);
+			if ((data & CAEN_V1190_M_TYPE) == CAEN_V1190_B_GLOBAL_HEADER) {
+				sprintf(msg, "[%sreadout] %s: got a header %#lx", s->mpref, s->moduleName, data);
+				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			}
+			*pointer++ = data;
+			if ((data & CAEN_V1190_M_TYPE) == CAEN_V1190_B_GLOBAL_TRAILER) {
+				sprintf(msg, "[%sreadout] %s: got a trailer %#lx", s->mpref, s->moduleName, data);
+				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+				break;
+			}
+		}
+	}
+#endif
+
 	if (caen_v1190_waitFifoReady(s)) {
 		nofWords = caen_v1190_getEventWcFromFifo(s);
 		for (i = 0; i < nofWords; i++) {
-			data = GET_DATA(s, CAEN_V1190_A_OUTPUTBUFFER);
+			data = GET_DATA32(s, CAEN_V1190_A_OUTPUTBUFFER);
 			if (i == 0 && (data & CAEN_V1190_M_TYPE) != CAEN_V1190_B_GLOBAL_HEADER) {
-				sprintf(msg, "[%sreadout] %s: Out of phase - not a global header %#lx", s->mpref, s->moduleName, data);
+				sprintf(msg, "[%sreadout] %s: Out of phase - not a global header (%#lx) @ wc=%d", s->mpref, s->moduleName, data, i);
 				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			}
 			*pointer++ = data;
 		}
 		if ((data & CAEN_V1190_M_TYPE) != CAEN_V1190_B_GLOBAL_TRAILER) {
-			sprintf(msg, "[%sreadout] %s: Out of phase - not a global trailer %#lx", s->mpref, s->moduleName, data);
+			sprintf(msg, "[%sreadout] %s: Out of phase - not a global trailer (%#lx) @ wc=%d", s->mpref, s->moduleName, data, i);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 	}
+
 	caen_v1190_softClear(s);
 	return (pointer - dataStart);
 }
