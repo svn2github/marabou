@@ -6,10 +6,10 @@
 //! \file			caen_v1190_protos.h
 //! \brief			Definitions for CAEN V1190 TDC
 //! \details		Prototypes for Caen V1190
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-07-15 11:45:36 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-07-16 14:55:09 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -65,6 +65,10 @@ void caen_v1190_readResolutionSettings(struct s_caen_v1190 * s);
 void caen_v1190_setDeadTime(struct s_caen_v1190 * s, uint16_t ticks);
 void caen_v1190_setDeadTime_db(struct s_caen_v1190 * s);
 uint16_t caen_v1190_getDeadTime(struct s_caen_v1190 * s);
+
+void caen_v1190_enableErrorMark(struct s_caen_v1190 * s, bool_t flag);
+void caen_v1190_enableErrorMark_db(struct s_caen_v1190 * s);
+bool_t caen_v1190_errorMarkEnabled(struct s_caen_v1190 * s);
 
 void caen_v1190_setEventSize(struct s_caen_v1190 * s, uint16_t hits);
 void caen_v1190_setEventSize_db(struct s_caen_v1190 * s);

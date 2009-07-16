@@ -139,7 +139,10 @@ CAEN_V1190.$moduleName.HeaderTrailer:    $headTrail
 CAEN_V1190.$moduleName.EmptyEvent:       $emptyEvent
 
 # enable event fifo - *** should always be TRUE ***
-CAEN_V1190.$moduleName.EmptyEvent:       $eventFifo
+CAEN_V1190.$moduleName.EventFifo:       $eventFifo
+
+# enable tdc error mark
+CAEN_V1190.$moduleName.ErrorMark:       $errorMark
 
 # write extended trigger time tag
 CAEN_V1190.$moduleName.ExtTriggerTag:    $extTrigTag

@@ -20,8 +20,8 @@
 //! \details		Contains definitions for a CAEN V1190 tdc
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $
-//! $Date: 2009-07-15 14:34:53 $
+//! $Revision: 1.6 $
+//! $Date: 2009-07-16 14:55:09 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #define BIT(n)	(1 << n)
@@ -412,6 +412,7 @@ struct s_caen_v1190 {
 	bool_t enaExtTrigTag;
 	bool_t enaEmptyEvent;
 	bool_t enaEventFifo;
+	bool_t enaErrorMark;
 
 	uint16_t channels[NOF_CHANNEL_WORDS];
 

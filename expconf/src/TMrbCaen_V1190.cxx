@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V1190.cxx,v 1.4 2009-07-15 11:08:50 Marabou Exp $       
+// Revision:       $Id: TMrbCaen_V1190.cxx,v 1.5 2009-07-16 14:55:17 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -705,6 +705,7 @@ Bool_t TMrbCaen_V1190::UseSettings(const Char_t * SettingsFile) {
 	this->EnableHeaderTrailer(caenEnv->Get(moduleName.Data(), "HeaderTrailer", kTRUE));
 	this->EnableExtendedTriggerTag(caenEnv->Get(moduleName.Data(), "ExtTriggerTag", kTRUE));
 	this->EnableEmptyEvent(caenEnv->Get(moduleName.Data(), "EmptyEvent", kTRUE));
+	this->EnableErrorMark(caenEnv->Get(moduleName.Data(), "ErrorMark", kFALSE));
 	this->EnableEventFifo(caenEnv->Get(moduleName.Data(), "EventFifo", kTRUE));
 
 	return(kTRUE);
@@ -815,6 +816,7 @@ Bool_t TMrbCaen_V1190::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$headTrail", (this->HeaderTrailerEnabled() ? "TRUE" : "FALSE"));
 						tmpl.Substitute("$emptyEvent", (this->EmptyEventEnabled() ? "TRUE" : "FALSE"));
 						tmpl.Substitute("$eventFifo", (this->EventFifoEnabled() ? "TRUE" : "FALSE"));
+						tmpl.Substitute("$errorMark", (this->ErrorMarkEnabled() ? "TRUE" : "FALSE"));
 						tmpl.Substitute("$extTrigTag", (this->ExtendedTriggerTagEnabled() ? "TRUE" : "FALSE"));
 						tmpl.Substitute("$almostFull", this->GetAlmostFullLevel());
 						tmpl.WriteCode(settings);
@@ -1075,6 +1077,7 @@ void TMrbCaen_V1190::PrintSettings(ostream & Out) {
 	Out << " Hits per event          : "	<< "0x" << setbase(16) << this->GetEventSize()->GetIndex() << setbase(10) << " (" << this->GetEventSize()->GetName() << ")" << endl;
 	Out << " Write header/trailer    : "	<< (this->HeaderTrailerEnabled() ? "Yes" : "No") << endl;
 	Out << " Write ext trigger tag   : "	<< (this->ExtendedTriggerTagEnabled() ? "Yes" : "No") << endl;
+	Out << " Enable TDC error mark   : "	<< (this->ErrorMarkEnabled() ? "Yes" : "No") << endl;
 	Out << " Almost full level       : "	<< this->GetAlmostFullLevel() << endl;
 	Out << " Channel pattern 00 - 15 : "	<< "0x" << setbase(16) << fChannelPattern[0] << setbase(10) << endl;
 	Out << "                16 -  31 : "	<< "0x" << setbase(16) << fChannelPattern[1] << setbase(10) << endl;

@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $       
-//! $Date: 2009-07-15 14:34:53 $
+//! $Revision: 1.6 $       
+//! $Date: 2009-07-16 14:55:09 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -211,6 +211,20 @@ uint16_t caen_v1190_getEventSize(struct s_caen_v1190 * s)
 {
 	s->eventSize = caen_v1190_readMicro(s, CAEN_V1190_OP_READ_EVENT_SIZE);
 	return(s->eventSize);
+}
+
+void caen_v1190_enableErrorMark_db(struct s_caen_v1190 * s) { caen_v1190_enableErrorMark(s, s->enaErrorMark); };
+
+void caen_v1190_enableErrorMark(struct s_caen_v1190 * s, bool_t flag)
+{
+	uint16_t opCode = flag ? CAEN_V1190_OP_EN_ERROR_MARK : CAEN_V1190_OP_DIS_ERROR_MARK;
+	caen_v1190_writeMicro(s, opCode, NO_ARG);
+	s->enaErrorMark = flag;
+}
+
+bool_t caen_v1190_errorMarkEnabled(struct s_caen_v1190 * s)
+{
+	return(s->enaErrorMark);
 }
 
 void caen_v1190_setFifoSize_db(struct s_caen_v1190 * s) { caen_v1190_setFifoSize(s, s->fifoSize); };
@@ -479,6 +493,9 @@ bool_t caen_v1190_fillStruct(struct s_caen_v1190 * s, char * file)
 	sprintf(res, "CAEN_V1190.%s.EmptyEvent", mnUC);
 	s->enaEmptyEvent = root_env_getval_b(res, FALSE);
 
+	sprintf(res, "CAEN_V1190.%s.ErrorMark", mnUC);
+	s->enaErrorMark = root_env_getval_b(res, FALSE);
+
 	sprintf(res, "CAEN_V1190.%s.EventFifo", mnUC);
 	s->enaEventFifo = root_env_getval_b(res, TRUE);
 
@@ -508,6 +525,7 @@ void caen_v1190_loadFromDb(struct s_caen_v1190 * s)
 	caen_v1190_enableExtendedTriggerTag_db(s);
 	caen_v1190_enableEmptyEvent_db(s);
 	caen_v1190_enableEventFifo_db(s);
+	caen_v1190_enableErrorMark_db(s);
 	caen_v1190_setAlmostFullLevel_db(s);
 	caen_v1190_enableChannel_db(s);
 }
@@ -557,6 +575,7 @@ bool_t caen_v1190_dumpRegisters(struct s_caen_v1190 * s, char * file)
 	fprintf(f, "Write h/t on empty events  : %s\n", (caen_v1190_emptyEventEnabled(s) ? "Yes" : "No"));
 	fprintf(f, "Enable event fifo          : %s\n", (caen_v1190_eventFifoEnabled(s) ? "Yes" : "No"));
 	fprintf(f, "Write ext trigger tag      : %s\n", (caen_v1190_extendedTriggerTagEnabled(s) ? "Yes" : "No"));
+	fprintf(f, "Enable tdc error mark      : %s\n", (caen_v1190_errorMarkEnabled(s) ? "Yes" : "No"));
 	fprintf(f, "Almost full level          : %d\n", caen_v1190_getAlmostFullLevel(s));
 	caen_v1190_getChannelEnabled(s);
 	fprintf(f, "Channel pattern            :\n");
@@ -585,10 +604,11 @@ void caen_v1190_printDb(struct s_caen_v1190 * s)
 	printf("Dead time                  : %#x\n", s->deadTime);
 	printf("Event size                 : %#x\n", s->eventSize);
 	printf("Fifo size                  : %#x\n", s->fifoSize);
-	printf("Write header/trailer       : %s\n", s->enaHeaderTrailer ? "Yes" : "No");
+	printf("Write header/trailer       : %s\n", (caen_v1190_headerTrailerEnabled(s) ? "Yes" : "No"));
 	printf("Write h/t on empty events  : %s\n", (caen_v1190_emptyEventEnabled(s) ? "Yes" : "No"));
 	printf("Enable event fifo          : %s\n", (caen_v1190_eventFifoEnabled(s) ? "Yes" : "No"));
-	printf("Write ext trigger tag      : %s\n", s->enaExtTrigTag ? "Yes" : "No");
+	printf("Write ext trigger tag      : %s\n", (caen_v1190_extendedTriggerTagEnabled(s) ? "Yes" : "No"));
+	printf("Enable tdc error mark      : %s\n", (caen_v1190_errorMarkEnabled(s) ? "Yes" : "No"));
 	printf("Almost full level          : %d\n", s->almostFullLevel);
 	printf("Channel pattern            :\n");
 	for (i = 0; i < NOF_CHANNEL_WORDS; i++) {
@@ -707,7 +727,15 @@ uint32_t caen_v1190_read_config_rom(struct s_caen_v1190 * s, uint16_t offset, in
 	return n;
 }
 
-void caen_v1190_startAcq(struct s_caen_v1190 * s) {};
+void caen_v1190_startAcq(struct s_caen_v1190 * s)
+{
+	if (!caen_v1190_eventFifoEnabled(s)) {
+		sprintf(msg, "[%sstartAcq] %s: Event fifo not enabled - readout won't work", s->mpref, s->moduleName);
+		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+	}
+	caen_v1190_softClear(s);
+}
+
 void caen_v1190_stopAcq(struct s_caen_v1190 * s) {};
 
 bool_t caen_v1190_waitFifoReady(struct s_caen_v1190 * s)
@@ -744,36 +772,18 @@ int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer)
 	uint32_t data;
 	uint32_t * dataStart = pointer;
 
-#if 0
-	if (caen_v1190_waitDataReady(s)) {
-		sprintf(msg, "[%sreadout] %s: data ready", s->mpref, s->moduleName);
-		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-		for (;;) {
-			data = GET_DATA32(s, CAEN_V1190_A_OUTPUTBUFFER);
-			sprintf(msg, "[%sreadout] %s: data = %#lx", s->mpref, s->moduleName, data);
-			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			sleep(1);
-			if ((data & CAEN_V1190_M_TYPE) == CAEN_V1190_B_GLOBAL_HEADER) {
-				sprintf(msg, "[%sreadout] %s: got a header %#lx", s->mpref, s->moduleName, data);
-				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			}
-			*pointer++ = data;
-			if ((data & CAEN_V1190_M_TYPE) == CAEN_V1190_B_GLOBAL_TRAILER) {
-				sprintf(msg, "[%sreadout] %s: got a trailer %#lx", s->mpref, s->moduleName, data);
-				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-				break;
-			}
-		}
-	}
-#endif
-
-	if (caen_v1190_waitFifoReady(s)) {
+	while (caen_v1190_waitFifoReady(s)) {
 		nofWords = caen_v1190_getEventWcFromFifo(s);
 		for (i = 0; i < nofWords; i++) {
 			data = GET_DATA32(s, CAEN_V1190_A_OUTPUTBUFFER);
-			if (i == 0 && (data & CAEN_V1190_M_TYPE) != CAEN_V1190_B_GLOBAL_HEADER) {
-				sprintf(msg, "[%sreadout] %s: Out of phase - not a global header (%#lx) @ wc=%d", s->mpref, s->moduleName, data, i);
-				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			if (i == 0) {
+				if ((data & CAEN_V1190_M_TYPE) == CAEN_V1190_B_GLOBAL_HEADER) {
+					data &= ~CAEN_V1190_B_GEO_MASK;
+					data |= s->serial;
+				} else {
+					sprintf(msg, "[%sreadout] %s: Out of phase - not a global header (%#lx) @ wc=%d", s->mpref, s->moduleName, data, i);
+					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+				}
 			}
 			*pointer++ = data;
 		}
@@ -782,8 +792,8 @@ int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer)
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 	}
-
 	caen_v1190_softClear(s);
+
 	return (pointer - dataStart);
 }
 
