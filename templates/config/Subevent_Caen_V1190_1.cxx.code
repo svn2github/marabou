@@ -24,6 +24,16 @@
 %B% static Bool_t checkIfMultiHitAllowed = kTRUE;
 %B% static Bool_t allowMultiHit = kFALSE;
 %B%
+%B% TMrbModuleListEntry * mle;
+%B% Int_t moduleNumber;
+%B% Int_t evtCount;
+%B% Int_t evtId;
+%B% Int_t bunchId;
+%B% Int_t tdcNumber;
+%B% Int_t evtWc;
+%B% Int_t tdcWc;
+%B% Int_t chn;
+%C%
 %C%	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 %C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 %C%
@@ -31,16 +41,7 @@
 %C% Int_t origSevtWC = SevtWC;				// save original subevent wc
 %C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
 %C%	wordsProcessed = 0; 			// words processed so far
-%C% 	dataPtr = (UShort_t *) SevtData;
-%C%
-%C% Int_t moduleNumber;
-%C% Int_t evtCount;
-%C% Int_t evtId;
-%C% Int_t bunchId;
-%C% Int_t tdcNumber;
-%C% Int_t evtWc;
-%C% Int_t tdcWc;
-%C% Int_t chn;
+%C% dataPtr = (UShort_t *) SevtData;
 %C%
 %C% UInt_t expect = CAEN_V1x90_X_GH;			// we expect a global header at beginning
 %C% while (SevtWC > 0) {						// subevent may contain several events/tdcs
@@ -55,7 +56,7 @@
 %C% 	if ((expect & CAEN_V1x90_X_GH) != 0) {
 %C% 		if (hdrBits == CAEN_V1x90_D_GLOBAL_HDR) {
 %C% 			moduleNumber = data & CAEN_V1x90_M_GH_SERIAL;						// extract module number
-%C% 			TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
+%C% 			mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
 %C% 			if (mle == NULL) {
 %C% 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
 %C% 				cerr	<< setred
@@ -133,6 +134,7 @@
 %C% 								<< setblack << endl;
 %C% 					}
 %C% 				} else {
+%C% 					mle->IncrChannelHits(chn);			// count this channel
 %C%						*paramAddr = (Int_t) (data & CAEN_V1x90_M_TDC_DATA);	// assign data value to param
 %C% 				}
 %C% 			} else {
