@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.6 $       
-//! $Date: 2009-07-16 14:55:09 $
+//! $Revision: 1.7 $       
+//! $Date: 2009-07-17 13:30:15 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -762,7 +762,9 @@ bool_t caen_v1190_waitDataReady(struct s_caen_v1190 * s)
 
 int caen_v1190_getEventWcFromFifo(struct s_caen_v1190 * s)
 {
-	return GET_DATA32(s, CAEN_V1190_A_EVENTFIFO);
+	int evtFifo;
+	evtFifo = GET_DATA32(s, CAEN_V1190_A_EVENTFIFO);
+	return evtFifo & 0xFFFF;
 }
 
 int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer)
@@ -792,7 +794,6 @@ int caen_v1190_readout(struct s_caen_v1190 * s, uint32_t * pointer)
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 	}
-	caen_v1190_softClear(s);
 
 	return (pointer - dataStart);
 }

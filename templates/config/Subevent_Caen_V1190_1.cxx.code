@@ -16,13 +16,8 @@
 %B%// Keywords:       
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%B% 	UInt_t header;
-%B% 	UInt_t trailer;
-%B%	Int_t wcs, wc;
-%B%	Int_t moduleNumber;
-%B%	Int_t chn;
 %B%	UShort_t * dataPtr;
-%B% 	Int_t data;
+%B% Int_t data;
 %B%	Int_t * paramAddr;
 %B%	Int_t wordsProcessed;
 %B%						
@@ -37,7 +32,157 @@
 %C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
 %C%	wordsProcessed = 0; 			// words processed so far
 %C% 	dataPtr = (UShort_t *) SevtData;
-%C% 	return(kTRUE);
+%C%
+%C% Int_t moduleNumber;
+%C% Int_t evtCount;
+%C% Int_t evtId;
+%C% Int_t bunchId;
+%C% Int_t tdcNumber;
+%C% Int_t evtWc;
+%C% Int_t tdcWc;
+%C% Int_t chn;
+%C%
+%C% UInt_t expect = CAEN_V1x90_X_GH;			// we expect a global header at beginning
+%C% while (SevtWC > 0) {						// subevent may contain several events/tdcs
+%C%
+%C% 	Int_t data = (*dataPtr++) << 16;		// get next 32 bit word
+%C% 	data |= *dataPtr++;
+%C% 	SevtWC -= 2;
+%C%
+%C% 	UInt_t hdrBits = (data >> CAEN_V1x90_SH_HDR_TRL) & CAEN_V1x90_M_HDR_TRL;
+%C%
+%C% 	// global header
+%C% 	if ((expect & CAEN_V1x90_X_GH) != 0) {
+%C% 		if (hdrBits == CAEN_V1x90_D_GLOBAL_HDR) {
+%C% 			moduleNumber = data & CAEN_V1x90_M_GH_SERIAL;						// extract module number
+%C% 			TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
+%C% 			if (mle == NULL) {
+%C% 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
+%C% 				cerr	<< setred
+%C% 						<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C% 						<< wordsProcessed << "] Wrong module number - " << moduleNumber
+%C% 						<< setblack << endl;
+%C% 				return(kTRUE);
+%C% 			}
+%C% 			evtCount = (data >> CAEN_V1x90_SH_GH_EVTCNT) & CAEN_V1x90_M_GH_EVTCNT;	// event count
+%C% 			evtWc = 1;
+%C% 			expect = CAEN_V1x90_X_TH;			// we expect a tdc header now
+%C% 			continue;							// global header done
+%C% 		} else {
+%C% 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
+%C% 			cerr	<< setred
+%C% 					<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C% 					<< wordsProcessed << "] Not a global header - 0x" << setbase(16) << data << setbase(10)
+%C% 					<< setblack << endl;
+%C% 			return(kTRUE);
+%C% 		}
+%C% 	// tdc header or global trailer
+%C% 	} else if ((expect & (CAEN_V1x90_X_TH | CAEN_V1x90_X_GT)) != 0) {
+%C% 		if (hdrBits == CAEN_V1x90_D_TDC_HDR) {
+%C% 			evtId = (data >> CAEN_V1x90_SH_TDC_EID) & CAEN_V1x90_M_TDC_EID;
+%C% 			bunchId = data & CAEN_V1x90_M_TDC_BID;
+%C% 			tdcNumber = (data >> CAEN_V1x90_SH_TDC_NUM) & CAEN_V1x90_M_TDC_NUM;
+%C% 			expect = CAEN_V1x90_X_TD | CAEN_V1x90_X_TT;			// we expect tdc data or tdc trailer
+%C% 			evtWc++;
+%C% 			tdcWc = 1;
+%C% 			continue;							// global header done
+%C% 		} else if (hdrBits == CAEN_V1x90_D_GLOBAL_TRL) {
+%C% 			evtWc++;
+%C% 			Int_t wc = (data >> CAEN_V1x90_SH_GT_WC) & CAEN_V1x90_M_GT_WC;
+%C% 			if (wc != evtWc) {
+%C% 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong event wc", SevtData, origSevtWC);
+%C% 				cerr	<< setred
+%C% 						<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C% 						<< wordsProcessed << "] Wrong event word count - " << wc << " (sould be " << evtWc << ")"
+%C% 						<< setblack << endl;
+%C% 				return(kTRUE);
+%C% 			}
+%C% 			expect = CAEN_V1x90_X_GH;							// we start over
+%C% 			evtWc = 0;
+%C% 			continue;
+%C% 		} else {
+%C% 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
+%C% 			cerr	<< setred
+%C% 					<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C% 					<< wordsProcessed << "] Neither a tdc header nor a global trailer - 0x" << setbase(16) << data << setbase(10)
+%C% 					<< setblack << endl;
+%C% 			return(kTRUE);
+%C% 		}
+%C% 	// tdc data or tdc trailer
+%C% 	} else if ((expect & (CAEN_V1x90_X_TD | CAEN_V1x90_X_TT)) != 0) {
+%C% 		if (hdrBits == CAEN_V1x90_D_TDC_DATA) {
+%C% 			chn = (data >> CAEN_V1x90_SH_TDC_CHN) & CAEN_V1x90_M_TDC_CHN;
+%C%				paramAddr = (Int_t *) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
+%C%				if (paramAddr) {
+%C% 				if (*paramAddr != 0) {
+%C% 					if (checkIfMultiHitAllowed) {
+%C% 						allowMultiHit = gEnv->GetValue(Form("%s.AllowMultiHit", this->ClassName()), kFALSE);
+%C% 						checkIfMultiHitAllowed = kFALSE;
+%C% 						if (allowMultiHit) {
+%C% 							cerr	<< setred
+%C% 									<< this->ClassName() << "::FillSubevent(): Multiple hits detected (no further messages)"
+%C% 									<< setblack << endl;
+%C% 						}
+%C% 					}
+%C% 					if (!allowMultiHit) {
+%C% 						gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Multiple hit", SevtData, origSevtWC);
+%C% 						cerr	<< setred
+%C% 								<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 								<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C% 								<< wordsProcessed << "] Multiple hit for channel " << chn << " - prev data =" << *paramAddr
+%C% 								<< setblack << endl;
+%C% 					}
+%C% 				} else {
+%C%						*paramAddr = (Int_t) (data & CAEN_V1x90_M_TDC_DATA);	// assign data value to param
+%C% 				}
+%C% 			} else {
+%C% 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong param addr", SevtData, origSevtWC);
+%C% 				cerr	<< setred
+%C% 						<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 						<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+%C% 						<< wordsProcessed << "] Can't find param addr - module=" << moduleNumber << ", chn=" << chn
+%C% 						<< setblack << endl;
+%C% 				return(kTRUE);
+%C% 			}
+%C% 			evtWc++;
+%C% 			tdcWc++;
+%C% 			expect = CAEN_V1x90_X_TD | CAEN_V1x90_X_TT;			// we expect still tdc data or tdc trailer
+%C% 			continue;											// tdc data done
+%C% 		} else if (hdrBits == CAEN_V1x90_D_TDC_TRL) {
+%C% 			Int_t eid = (data >> CAEN_V1x90_SH_TDC_EID) & CAEN_V1x90_M_TDC_EID;
+%C% 			if (eid != evtId) {
+%C% 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong event id", SevtData, origSevtWC);
+%C% 				cerr	<< setred
+%C% 						<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C% 						<< wordsProcessed << "] Wrong event id in tdc trailer - 0x" << setbase(16) << eid << " (sould be " << evtId << ")" << setbase(10)
+%C% 						<< setblack << endl;
+%C% 				return(kTRUE);
+%C% 			}
+%C% 			tdcWc++;
+%C% 			Int_t wc = data & CAEN_V1x90_M_TDC_WC;
+%C% 			if (wc != tdcWc) {
+%C% 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong tdc wc", SevtData, origSevtWC);
+%C% 				cerr	<< setred
+%C% 						<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C% 						<< wordsProcessed << "] Wrong tdc word count - " << wc << " (sould be " << tdcWc << ")"
+%C% 						<< setblack << endl;
+%C% 				return(kTRUE);
+%C% 			}
+%C% 			evtWc++;
+%C% 			tdcWc = 0;
+%C% 			expect = CAEN_V1x90_X_TH | CAEN_V1x90_X_GT;			// we expect a tdc header or a global trailer
+%C% 			continue;											// tdc trailer done
+%C% 		} else {
+%C% 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong data", SevtData, origSevtWC);
+%C% 			cerr	<< setred
+%C% 					<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C% 					<< wordsProcessed << "] Data out of phase - 0x" << setbase(16) << data << " (expecting tdc data or trailer)" << setbase(10)
+%C% 					<< setblack << endl;
+%C% 			return(kTRUE);
+%C% 		}
+%C% 	}
+%C% }
+%C% return(kTRUE);
 %E%}			
 //- dummy prefixes, never used
 %VR%
