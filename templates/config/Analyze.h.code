@@ -34,6 +34,8 @@
 
 #include "%%ANALYZE_NAME_UC%%CommonIndices.h"
 
+#include "RQ_OBJECT.h"
+
 %%BeginOfCode%%
 #include "$xhit.h"
 %%EndOfCode%%
@@ -45,3 +47,4 @@
 
 //%%EVT_CLASS_DEFINITION%%			define user-specific EVENT classes here
 #endif
+

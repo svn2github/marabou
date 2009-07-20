@@ -10,6 +10,8 @@
 class TUsrEvt%%EVT_NAME_UC%% :
 								public %%EVT_BASE_CLASS%% {
 
+	RQ_OBJECT("TUsrEvt%%EVT_NAME_UC%%")
+
 	public:
 		TUsrEvt%%EVT_NAME_UC%%() {			// ctor
 			fType = 10; 					// event type (given by MBS)
