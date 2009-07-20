@@ -12,7 +12,7 @@
 %B%// Exceptions:     
 %B%// Description:    Assigns MBS data to corresponding data members
 %B%//                 of subevent $sevtNameLC.
-%B%//                 Special version for CAEN V1190 TDCs.
+%B%//                 Special version for CAEN V1X90 TDCs.
 %B%// Keywords:       
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%

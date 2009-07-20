@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V820.cxx,v 1.9 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V820.cxx,v 1.10 2009-07-20 14:22:00 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +74,9 @@ TMrbCaen_V820::TMrbCaen_V820(const Char_t * ModuleName, UInt_t BaseAddr) :
 			this->MakeZombie();
 		} else {
 			SetTitle("CAEN V820 Scaler 32 ch @ 32 bit"); 	// store module type
-			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode | TMrbConfig::kModuleScaler;
+			mTypeBits = 	TMrbConfig::kModuleVME
+						|	TMrbConfig::kModuleListMode
+						|	TMrbConfig::kModuleScaler;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
 			fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);

@@ -1,0 +1,159 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           Caen_V1190.code
+// Purpose:        Code for CAEN tdc V1190
+// Description:    Contains template code to operate a V1190 tdc module
+// Author:         R. Lutter
+// Revision:       
+// Date:           
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+#include "caen_v1x90.h"
+#include "caen_v1x90_protos.h"
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleNameLC at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					s_$moduleNameLC = caen_v1x90_alloc($baseAddrL, $moduleNameLC, "$moduleNameLC", $moduleSerial); /* allocate data struct */
+ 					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
+					caen_v1x90_moduleInfo(s_$moduleNameLC);						/* read module info */
+					caen_v1x90_reset(s_$moduleNameLC);	 						/* reset module */
+					caen_v1x90_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill struct from environment data */
+					caen_v1x90_loadFromDb(s_$moduleNameLC); 						/* load module regs from database */
+					caen_v1x90_dumpRegisters(s_$moduleNameLC, "$dumpFile"); 		/* dump registers to file */
+
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					evt.out32 += caen_v1x90_readout(s_$moduleName, (uint32_t *) evt.out32);	/* read data */
+					if (s_$moduleName->updSettings) { 				/* update settings? */
+						s_$moduleName->updCountDown--;
+						if ((s_$moduleName->updCountDown <= 0) && caen_v1x90_updateSettings(s_$moduleName, "$updateFile")) {
+ 							sprintf(msg, "Updating settings for module $moduleName after %d count(s)\n", s_$moduleName->updInterval);
+ 							f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+							caen_v1x90_stopAcq(s_$moduleName);
+							caen_v1x90_reset(s_$moduleName);
+							caen_v1x90_fillStruct(s_$moduleName, "$settingsFile");
+							caen_v1x90_loadFromDb(s_$moduleName);
+							caen_v1x90_startAcq(s_$moduleName);
+						}
+					}
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+								caen_v1x90_startAcq(s_$moduleName); 	/* start module $moduleName */
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+								caen_v1x90_stopAcq(s_$moduleName);  	/* stop module $moduleName */
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+static struct s_caen_v1x90 * s_$moduleName;
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+	-L$marabouPath/powerpc/lib/$lynxVersion -lCaen_v1x90
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+

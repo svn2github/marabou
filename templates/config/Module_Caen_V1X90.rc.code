@@ -2,22 +2,22 @@
 %%Begin(Preamble)%%
 #___________________________________________________[MODULE PARAM DEFINITION]
 #////////////////////////////////////////////////////////////////////////////
-# Name:           Module_Caen_V1190.rc.code
-# Purpose:        Param defs for CAEN V1190 TDC
+# Name:           Module_Caen_V1X90.rc.code
+# Purpose:        Param defs for CAEN V1X90 TDC
 # Description:        
 # Author:         $author
 # Date:           $date  
 #////////////////////////////////////////////////////////////////////////////
 
-CAEN_V1190.ModuleName: 						$moduleName
+CAEN_V1X90.ModuleName: 						$moduleName
 
-CAEN_V1190.Firmware: 						$moduleFirmware
+CAEN_V1X90.Firmware: 						$moduleFirmware
 
-CAEN_V1190.VerboseMode:						$verboseMode
-CAEN_V1190.Verify:							$verify
-CAEN_V1190.DumpRegisters:					$dumpRegisters
-CAEN_V1190.UpdateSettings:					$updateSettings
-CAEN_V1190.UpdateInterval:					$updateInterval
+CAEN_V1X90.VerboseMode:						$verboseMode
+CAEN_V1X90.Verify:							$verify
+CAEN_V1X90.DumpRegisters:					$dumpRegisters
+CAEN_V1X90.UpdateSettings:					$updateSettings
+CAEN_V1X90.UpdateInterval:					$updateInterval
 
 %%End(Preamble)%%
 
@@ -29,26 +29,26 @@ CAEN_V1190.UpdateInterval:					$updateInterval
 
 # trigger matching      TRUE  --> trigger matching (default)
 #                       FALSE --> continuous storage
-CAEN_V1190.$moduleName.TriggerMatching:     $trigMatch
+CAEN_V1X90.$moduleName.TriggerMatching:     $trigMatch
 
 # window width          range:    1 ... 4095 clock ticks (25ns)
 #                       default:  20
-CAEN_V1190.$moduleName.WindowWidth:         $width
+CAEN_V1X90.$moduleName.WindowWidth:         $width
 
 # window offset         range:    -2048 ... 40 clock ticks (25ns)
 #                       default:  -40
-CAEN_V1190.$moduleName.WindowOffset:        $offset
+CAEN_V1X90.$moduleName.WindowOffset:        $offset
 
 # reject margin         range:    1 ... 4095 clock ticks (25ns)
 #                       default:  4
-CAEN_V1190.$moduleName.RejectMargin:        $reject
+CAEN_V1X90.$moduleName.RejectMargin:        $reject
 
 # search margin         range:    0 ... 4095 clock ticks (25ns)
 #                       default:  8
-CAEN_V1190.$moduleName.SearchMargin:        $search
+CAEN_V1X90.$moduleName.SearchMargin:        $search
 
 # subtract trigger time TRUE (default) / FALSE
-CAEN_V1190.$moduleName.SubtractTriggerTime: $subTrigTime
+CAEN_V1X90.$moduleName.SubtractTriggerTime: $subTrigTime
 %%End(TriggerSettings)%%
 
 %%Begin(EdgeDetection)%%
@@ -61,14 +61,14 @@ CAEN_V1190.$moduleName.SubtractTriggerTime: $subTrigTime
 #                       1  -->  only trailing
 #                       2  -->  only leading (default)
 #                       3  -->  trailing and leading
-CAEN_V1190.$moduleName.EdgeDetection:		$detectMode
+CAEN_V1X90.$moduleName.EdgeDetection:		$detectMode
 
 # leading/trailing edge mode:
 # resolution            0 --> 800 ps
 #                       1 --> 400 ps
 #                       2 --> 100 ps (default)
 #                       3 --> not used
-CAEN_V1190.$moduleName.EdgeResolution:      $edgeRes
+CAEN_V1X90.$moduleName.EdgeResolution:      $edgeRes
 
 # pair mode:
 # resolution            0 --> 100 ps (default)
@@ -79,7 +79,7 @@ CAEN_V1190.$moduleName.EdgeResolution:      $edgeRes
 #                       5 --> 3.12 ns
 #                       6 --> 6.25 ns
 #                       7 --> 12.5 ns
-CAEN_V1190.$moduleName.PairResolution:       $pairRes
+CAEN_V1X90.$moduleName.PairResolution:       $pairRes
 
 # width                 0 --> 100 ps (default)
 #                       1 --> 200 ps
@@ -95,13 +95,13 @@ CAEN_V1190.$moduleName.PairResolution:       $pairRes
 #                      11 --> 200 ns
 #                      12 --> 400 ns
 #                      13 --> 800 ns
-CAEN_V1190.$moduleName.PairWidth:            $pairWidth
+CAEN_V1X90.$moduleName.PairWidth:            $pairWidth
 
 # dead time             0  -->  ~5 ns (default)
 #                       1  -->  ~10 ns
 #                       2  -->  ~30 ns
 #                       3  -->  ~100 ns
-CAEN_V1190.$moduleName.DeadTime:             $deadTime
+CAEN_V1X90.$moduleName.DeadTime:             $deadTime
 %%End(EdgeDetection)%%
 
 %%Begin(EventSettings)%%
@@ -120,7 +120,7 @@ CAEN_V1190.$moduleName.DeadTime:             $deadTime
 #                       7  -->  64
 #                       8  -->  128
 #                       9  -->  no limits (default)
-CAEN_V1190.$moduleName.EventSize:        $eventSize
+CAEN_V1X90.$moduleName.EventSize:        $eventSize
 
 # fifo size             0  -->  2 words
 #                       1  -->  4
@@ -130,26 +130,26 @@ CAEN_V1190.$moduleName.EventSize:        $eventSize
 #                       5  -->  64
 #                       6  -->  128
 #                       7  -->  256 (default)
-CAEN_V1190.$moduleName.FifoSize:         $fifoSize
+CAEN_V1X90.$moduleName.FifoSize:         $fifoSize
 
 # enable header and trailer
-CAEN_V1190.$moduleName.HeaderTrailer:    $headTrail
+CAEN_V1X90.$moduleName.HeaderTrailer:    $headTrail
 
 # enable empty event - write header/trailer in case of empty events
-CAEN_V1190.$moduleName.EmptyEvent:       $emptyEvent
+CAEN_V1X90.$moduleName.EmptyEvent:       $emptyEvent
 
 # enable event fifo - *** should always be TRUE ***
-CAEN_V1190.$moduleName.EventFifo:       $eventFifo
+CAEN_V1X90.$moduleName.EventFifo:       $eventFifo
 
 # enable tdc error mark
-CAEN_V1190.$moduleName.ErrorMark:       $errorMark
+CAEN_V1X90.$moduleName.ErrorMark:       $errorMark
 
 # write extended trigger time tag
-CAEN_V1190.$moduleName.ExtTriggerTag:    $extTrigTag
+CAEN_V1X90.$moduleName.ExtTriggerTag:    $extTrigTag
 
 # almost full level     range:    1 ... 32735
 #                       default:  64
-CAEN_V1190.$moduleName.AlmostFull:       $almostFull
+CAEN_V1X90.$moduleName.AlmostFull:       $almostFull
 %%End(EventSettings)%%
 
 %%Begin(ChannelSettings)%%
@@ -160,14 +160,14 @@ CAEN_V1190.$moduleName.AlmostFull:       $almostFull
 
 # channel pattern: 8 x 16 bits   1 --> active (default)
 #                                0 --> inactive
-CAEN_V1190.$moduleName.Ch0: 			$chPat0
-CAEN_V1190.$moduleName.Ch1: 			$chPat1
-CAEN_V1190.$moduleName.Ch2: 			$chPat2
-CAEN_V1190.$moduleName.Ch3: 			$chPat3
-CAEN_V1190.$moduleName.Ch4: 			$chPat4
-CAEN_V1190.$moduleName.Ch5: 			$chPat5
-CAEN_V1190.$moduleName.Ch6: 			$chPat6
-CAEN_V1190.$moduleName.Ch7: 			$chPat7
+CAEN_V1X90.$moduleName.Ch0: 			$chPat0
+CAEN_V1X90.$moduleName.Ch1: 			$chPat1
+CAEN_V1X90.$moduleName.Ch2: 			$chPat2
+CAEN_V1X90.$moduleName.Ch3: 			$chPat3
+CAEN_V1X90.$moduleName.Ch4: 			$chPat4
+CAEN_V1X90.$moduleName.Ch5: 			$chPat5
+CAEN_V1X90.$moduleName.Ch6: 			$chPat6
+CAEN_V1X90.$moduleName.Ch7: 			$chPat7
 %%End(ChannelSettings)%%
 
 %%EndOfCode%%

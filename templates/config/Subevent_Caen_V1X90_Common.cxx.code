@@ -1,8 +1,8 @@
 %%BeginOfCode%%
-Bool_t TMrbSubevent_Caen_V1190::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+Bool_t TMrbSubevent_Caen_V1X90::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:		   TMrbSubevent_Caen_V1190::FillSubevent
+// Name:		   TMrbSubevent_Caen_V1X90::FillSubevent
 // Purpose: 	   Decode CAEN buffer
 // Arguments:	   const UShort_t * SevtData   -- pointer to unpacked subevent data
 //  			   Int_t SevtWC 			   -- word count
@@ -48,19 +48,19 @@ Bool_t TMrbSubevent_Caen_V1190::FillSubevent(const UShort_t * SevtData, Int_t Se
 
 	Int_t eventsProcessed = 0;
 
-	UInt_t expect = CAEN_V1x90_X_GH;			// we expect a global header at beginning
+	UInt_t expect = CAEN_V1X90_X_GH;			// we expect a global header at beginning
 	while (SevtWC > 0) {						// subevent may contain several events/tdcs
 
 		Int_t data = (*dataPtr++) << 16;		// get next 32 bit word
 		data |= *dataPtr++;
 		SevtWC -= 2;
 
-		UInt_t hdrBits = (data >> CAEN_V1x90_SH_HDR_TRL) & CAEN_V1x90_M_HDR_TRL;
+		UInt_t hdrBits = (data >> CAEN_V1X90_SH_HDR_TRL) & CAEN_V1X90_M_HDR_TRL;
 
 		// global header
-		if ((expect & CAEN_V1x90_X_GH) != 0) {
-			if (hdrBits == CAEN_V1x90_D_GLOBAL_HDR) {
-				moduleNumber = data & CAEN_V1x90_M_GH_SERIAL;						// extract module number
+		if ((expect & CAEN_V1X90_X_GH) != 0) {
+			if (hdrBits == CAEN_V1X90_D_GLOBAL_HDR) {
+				moduleNumber = data & CAEN_V1X90_M_GH_SERIAL;						// extract module number
 				mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
 				if (mle == NULL) {
 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
@@ -70,9 +70,9 @@ Bool_t TMrbSubevent_Caen_V1190::FillSubevent(const UShort_t * SevtData, Int_t Se
 							<< setblack << endl;
 					return(kTRUE);
 				}
-				evtCount = (data >> CAEN_V1x90_SH_GH_EVTCNT) & CAEN_V1x90_M_GH_EVTCNT;	// event count
+				evtCount = (data >> CAEN_V1X90_SH_GH_EVTCNT) & CAEN_V1X90_M_GH_EVTCNT;	// event count
 				evtWc = 1;
-				expect = CAEN_V1x90_X_TH;			// we expect a tdc header now
+				expect = CAEN_V1X90_X_TH;			// we expect a tdc header now
 				continue;							// global header done
 			} else {
 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
@@ -83,18 +83,18 @@ Bool_t TMrbSubevent_Caen_V1190::FillSubevent(const UShort_t * SevtData, Int_t Se
 				return(kTRUE);
 			}
 		// tdc header or global trailer
-		} else if ((expect & (CAEN_V1x90_X_TH | CAEN_V1x90_X_GT)) != 0) {
-			if (hdrBits == CAEN_V1x90_D_TDC_HDR) {
-				evtId = (data >> CAEN_V1x90_SH_TDC_EID) & CAEN_V1x90_M_TDC_EID;
-				bunchId = data & CAEN_V1x90_M_TDC_BID;
-				tdcNumber = (data >> CAEN_V1x90_SH_TDC_NUM) & CAEN_V1x90_M_TDC_NUM;
-				expect = CAEN_V1x90_X_TD | CAEN_V1x90_X_TT;			// we expect tdc data or tdc trailer
+		} else if ((expect & (CAEN_V1X90_X_TH | CAEN_V1X90_X_GT)) != 0) {
+			if (hdrBits == CAEN_V1X90_D_TDC_HDR) {
+				evtId = (data >> CAEN_V1X90_SH_TDC_EID) & CAEN_V1X90_M_TDC_EID;
+				bunchId = data & CAEN_V1X90_M_TDC_BID;
+				tdcNumber = (data >> CAEN_V1X90_SH_TDC_NUM) & CAEN_V1X90_M_TDC_NUM;
+				expect = CAEN_V1X90_X_TD | CAEN_V1X90_X_TT;			// we expect tdc data or tdc trailer
 				evtWc++;
 				tdcWc = 1;
 				continue;							// global header done
-			} else if (hdrBits == CAEN_V1x90_D_GLOBAL_TRL) {
+			} else if (hdrBits == CAEN_V1X90_D_GLOBAL_TRL) {
 				evtWc++;
-				Int_t wc = (data >> CAEN_V1x90_SH_GT_WC) & CAEN_V1x90_M_GT_WC;
+				Int_t wc = (data >> CAEN_V1X90_SH_GT_WC) & CAEN_V1X90_M_GT_WC;
 				if (wc != evtWc) {
 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong event wc", SevtData, origSevtWC);
 					cerr	<< setred
@@ -103,7 +103,7 @@ Bool_t TMrbSubevent_Caen_V1190::FillSubevent(const UShort_t * SevtData, Int_t Se
 							<< setblack << endl;
 					return(kTRUE);
 				}
-				expect = CAEN_V1x90_X_GH;							// we start over
+				expect = CAEN_V1X90_X_GH;							// we start over
 				evtWc = 0;
 				continue;
 			} else {
@@ -115,13 +115,13 @@ Bool_t TMrbSubevent_Caen_V1190::FillSubevent(const UShort_t * SevtData, Int_t Se
 				return(kTRUE);
 			}
 		// tdc data or tdc trailer
-		} else if ((expect & (CAEN_V1x90_X_TD | CAEN_V1x90_X_TT)) != 0) {
-			if (hdrBits == CAEN_V1x90_D_TDC_DATA) {
-				chn = (data >> CAEN_V1x90_SH_TDC_CHN) & CAEN_V1x90_M_TDC_CHN;
+		} else if ((expect & (CAEN_V1X90_X_TD | CAEN_V1X90_X_TT)) != 0) {
+			if (hdrBits == CAEN_V1X90_D_TDC_DATA) {
+				chn = (data >> CAEN_V1X90_SH_TDC_CHN) & CAEN_V1X90_M_TDC_CHN;
 				mle->IncrChannelHits(chn);			// count this channel
 				UShort_t evtData[2];
 				evtData[0] = 0;
-				evtData[1] = (UShort_t) (data & CAEN_V1x90_M_TDC_DATA);
+				evtData[1] = (UShort_t) (data & CAEN_V1X90_M_TDC_DATA);
 				this->GetHitBuffer()->AddHit(	eventsProcessed,
 												moduleNumber,
 												chn,
@@ -129,10 +129,10 @@ Bool_t TMrbSubevent_Caen_V1190::FillSubevent(const UShort_t * SevtData, Int_t Se
 												evtData, 2);
 				evtWc++;
 				tdcWc++;
-				expect = CAEN_V1x90_X_TD | CAEN_V1x90_X_TT;			// we expect still tdc data or tdc trailer
+				expect = CAEN_V1X90_X_TD | CAEN_V1X90_X_TT;			// we expect still tdc data or tdc trailer
 				continue;											// tdc data done
-			} else if (hdrBits == CAEN_V1x90_D_TDC_TRL) {
-				Int_t eid = (data >> CAEN_V1x90_SH_TDC_EID) & CAEN_V1x90_M_TDC_EID;
+			} else if (hdrBits == CAEN_V1X90_D_TDC_TRL) {
+				Int_t eid = (data >> CAEN_V1X90_SH_TDC_EID) & CAEN_V1X90_M_TDC_EID;
 				if (eid != evtId) {
 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong event id", SevtData, origSevtWC);
 					cerr	<< setred
@@ -142,7 +142,7 @@ Bool_t TMrbSubevent_Caen_V1190::FillSubevent(const UShort_t * SevtData, Int_t Se
 					return(kTRUE);
 				}
 				tdcWc++;
-				Int_t wc = data & CAEN_V1x90_M_TDC_WC;
+				Int_t wc = data & CAEN_V1X90_M_TDC_WC;
 				if (wc != tdcWc) {
 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong tdc wc", SevtData, origSevtWC);
 					cerr	<< setred
@@ -153,7 +153,7 @@ Bool_t TMrbSubevent_Caen_V1190::FillSubevent(const UShort_t * SevtData, Int_t Se
 				}
 				evtWc++;
 				tdcWc = 0;
-				expect = CAEN_V1x90_X_TH | CAEN_V1x90_X_GT;			// we expect a tdc header or a global trailer
+				expect = CAEN_V1X90_X_TH | CAEN_V1X90_X_GT;			// we expect a tdc header or a global trailer
 				continue;											// tdc trailer done
 			} else {
 				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong data", SevtData, origSevtWC);

@@ -2,7 +2,7 @@
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Caen_V1X90
-// Purpose:        Base class for subevents containing data from CAEN V1190 tdcs
+// Purpose:        Base class for subevents containing data from CAEN V1X90 tdcs
 // Description:    
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -33,7 +33,7 @@ class TMrbSubevent_Caen_V1X90 : public TObject {
 
 		TUsrHitBuffer fHitBuffer; 				// hit buffer to store subevent data
 
-	ClassDef(TMrbSubevent_Caen_V1X90, 1)		// [Analyze] Base class for subevents: CAEN V1190 data stored in hit buffer
+	ClassDef(TMrbSubevent_Caen_V1X90, 1)		// [Analyze] Base class for subevents: CAEN V1X90 data stored in hit buffer
 };
 %%EndOfCode%%
 %%SEVT_CLASS_DEFINITION%%
