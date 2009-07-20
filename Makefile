@@ -124,13 +124,13 @@ ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
 MODULES      += polar
 endif
 
-ifeq ($(shell if [ -d snake-lib ] ; then echo yes; fi), yes)
-MODULES      += snake-lib
-endif
+#ifeq ($(shell if [ -d snake-lib ] ; then echo yes; fi), yes)
+#MODULES      += snake-lib
+#endif
 
-ifeq ($(shell if [ -d snake-pgm ] ; then echo yes; fi), yes)
-MODULES      += snake-pgm
-endif
+#ifeq ($(shell if [ -d snake-pgm ] ; then echo yes; fi), yes)
+#MODULES      += snake-pgm
+#endif
 
 ##### ROOT libraries #####
 

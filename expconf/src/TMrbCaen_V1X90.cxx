@@ -1,12 +1,12 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           expconf/src/TMrbCaen_V1190.cxx
-// Purpose:        MARaBOU configuration: CAEN V1190 TDC
+// Name:           expconf/src/TMrbCaen_V1X90.cxx
+// Purpose:        MARaBOU configuration: CAEN V1X90 TDC
 // Description:    Implements class methods to handle a Mesytec ADC type MADC32
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V1190.cxx,v 1.5 2009-07-16 14:55:17 Marabou Exp $       
+// Revision:       $Id: TMrbCaen_V1X90.cxx,v 1.1 2009-07-20 07:09:44 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -26,116 +26,116 @@ namespace std {} using namespace std;
 #include "TMrbResource.h"
 #include "TMrbVMERegister.h"
 #include "TMrbVMEChannel.h"
-#include "TMrbCaen_V1190.h"
+#include "TMrbCaen_V1X90.h"
 
 #include "SetColor.h"
 
 extern TMrbConfig * gMrbConfig;
 extern TMrbLogger * gMrbLog;
 
-ClassImp(TMrbCaen_V1190)
+ClassImp(TMrbCaen_V1X90)
 
 const SMrbNamedXShort kMrbEdgeDetection[] =
 		{
-			{	TMrbCaen_V1190::kEdgeDetectPair,		"pair" 	},
-			{	TMrbCaen_V1190::kEdgeDetectTrailing,	"trailing" 	},
-			{	TMrbCaen_V1190::kEdgeDetectLeading, 	"leading" 	},
-			{	TMrbCaen_V1190::kEdgeDetectBoth,		"leading & trailing" 	},
+			{	TMrbCaen_V1X90::kEdgeDetectPair,		"pair" 	},
+			{	TMrbCaen_V1X90::kEdgeDetectTrailing,	"trailing" 	},
+			{	TMrbCaen_V1X90::kEdgeDetectLeading, 	"leading" 	},
+			{	TMrbCaen_V1X90::kEdgeDetectBoth,		"leading & trailing" 	},
 			{	0,			 					NULL,		}
 		};
 
 const SMrbNamedXShort kMrbEdgeRes[] =
 		{
-			{	TMrbCaen_V1190::kEdgeRes800,			"800ps" },
-			{	TMrbCaen_V1190::kEdgeRes200,			"200ps" },
-			{	TMrbCaen_V1190::kEdgeRes100,			"100ps" },
-			{	TMrbCaen_V1190::kEdgeResOff,			"not used" },
+			{	TMrbCaen_V1X90::kEdgeRes800,			"800ps" },
+			{	TMrbCaen_V1X90::kEdgeRes200,			"200ps" },
+			{	TMrbCaen_V1X90::kEdgeRes100,			"100ps" },
+			{	TMrbCaen_V1X90::kEdgeResOff,			"not used" },
 			{	0,			 							NULL,		}
 		};
 
 const SMrbNamedXShort kMrbPairResEdge[] =
 		{
-			{	TMrbCaen_V1190::kPairRes100,			"100ps" },
-			{	TMrbCaen_V1190::kPairRes200,			"200ps" },
-			{	TMrbCaen_V1190::kPairRes400,			"400ps" },
-			{	TMrbCaen_V1190::kPairRes800,			"800ps" },
-			{	TMrbCaen_V1190::kPairRes1600,			"1.6ns" },
-			{	TMrbCaen_V1190::kPairRes3125,			"3.12ns"	},
-			{	TMrbCaen_V1190::kPairRes6250,			"6.25ns"	},
-			{	TMrbCaen_V1190::kPairRes12500,			"12.5ns"	},
+			{	TMrbCaen_V1X90::kPairRes100,			"100ps" },
+			{	TMrbCaen_V1X90::kPairRes200,			"200ps" },
+			{	TMrbCaen_V1X90::kPairRes400,			"400ps" },
+			{	TMrbCaen_V1X90::kPairRes800,			"800ps" },
+			{	TMrbCaen_V1X90::kPairRes1600,			"1.6ns" },
+			{	TMrbCaen_V1X90::kPairRes3125,			"3.12ns"	},
+			{	TMrbCaen_V1X90::kPairRes6250,			"6.25ns"	},
+			{	TMrbCaen_V1X90::kPairRes12500,			"12.5ns"	},
 			{	0,			 							NULL,		}
 		};
 
 const SMrbNamedXShort kMrbPairResWidth[] =
 		{
-			{	TMrbCaen_V1190::kPairRes100,			"100ps" },
-			{	TMrbCaen_V1190::kPairRes200,			"200ps" },
-			{	TMrbCaen_V1190::kPairRes400,			"400ps" },
-			{	TMrbCaen_V1190::kPairRes800,			"800ps" },
-			{	TMrbCaen_V1190::kPairRes1600,			"1.6ns" },
-			{	TMrbCaen_V1190::kPairRes3125,			"3.12ns"	},
-			{	TMrbCaen_V1190::kPairRes6250,			"6.25ns"	},
-			{	TMrbCaen_V1190::kPairRes12500,			"12.5ns"	},
-			{	TMrbCaen_V1190::kPairRes25ns,			"25ns"	},
-			{	TMrbCaen_V1190::kPairRes50ns,			"50ns"	},
-			{	TMrbCaen_V1190::kPairRes100ns,			"100ns" },
-			{	TMrbCaen_V1190::kPairRes200ns,			"200ns" },
-			{	TMrbCaen_V1190::kPairRes400ns,			"400ns" },
-			{	TMrbCaen_V1190::kPairRes800ns,			"800ns" },
+			{	TMrbCaen_V1X90::kPairRes100,			"100ps" },
+			{	TMrbCaen_V1X90::kPairRes200,			"200ps" },
+			{	TMrbCaen_V1X90::kPairRes400,			"400ps" },
+			{	TMrbCaen_V1X90::kPairRes800,			"800ps" },
+			{	TMrbCaen_V1X90::kPairRes1600,			"1.6ns" },
+			{	TMrbCaen_V1X90::kPairRes3125,			"3.12ns"	},
+			{	TMrbCaen_V1X90::kPairRes6250,			"6.25ns"	},
+			{	TMrbCaen_V1X90::kPairRes12500,			"12.5ns"	},
+			{	TMrbCaen_V1X90::kPairRes25ns,			"25ns"	},
+			{	TMrbCaen_V1X90::kPairRes50ns,			"50ns"	},
+			{	TMrbCaen_V1X90::kPairRes100ns,			"100ns" },
+			{	TMrbCaen_V1X90::kPairRes200ns,			"200ns" },
+			{	TMrbCaen_V1X90::kPairRes400ns,			"400ns" },
+			{	TMrbCaen_V1X90::kPairRes800ns,			"800ns" },
 			{	0,			 					NULL,		}
 		};
 
 const SMrbNamedXShort kMrbDeadTime[] =
 		{
-			{	TMrbCaen_V1190::kDtime5,		"~5ns"	},
-			{	TMrbCaen_V1190::kDtime10,		"~10ns"	},
-			{	TMrbCaen_V1190::kDtime30,		"~30ns"	},
-			{	TMrbCaen_V1190::kDtime100,		"~100ns"	},
+			{	TMrbCaen_V1X90::kDtime5,		"~5ns"	},
+			{	TMrbCaen_V1X90::kDtime10,		"~10ns"	},
+			{	TMrbCaen_V1X90::kDtime30,		"~30ns"	},
+			{	TMrbCaen_V1X90::kDtime100,		"~100ns"	},
 			{	0,			 					NULL,		}
 		};
 
 const SMrbNamedXShort kMrbEventSize[] =
 		{
-			{	TMrbCaen_V1190::kEvtSiz0,		"none"	},
-			{	TMrbCaen_V1190::kEvtSiz1,		"1 evt" },
-			{	TMrbCaen_V1190::kEvtSiz2,		"2 evts"	},
-			{	TMrbCaen_V1190::kEvtSiz4,		"4 evts"	},
-			{	TMrbCaen_V1190::kEvtSiz8,		"8 evts"	},
-			{	TMrbCaen_V1190::kEvtSiz16,		"16 evts"	},
-			{	TMrbCaen_V1190::kEvtSiz32,		"32 evts"	},
-			{	TMrbCaen_V1190::kEvtSiz64,		"64 evts"	},
-			{	TMrbCaen_V1190::kEvtSiz128,		"128 evts"	},
-			{	TMrbCaen_V1190::kEvtSizNoLim,	"no limit"	},
+			{	TMrbCaen_V1X90::kEvtSiz0,		"none"	},
+			{	TMrbCaen_V1X90::kEvtSiz1,		"1 evt" },
+			{	TMrbCaen_V1X90::kEvtSiz2,		"2 evts"	},
+			{	TMrbCaen_V1X90::kEvtSiz4,		"4 evts"	},
+			{	TMrbCaen_V1X90::kEvtSiz8,		"8 evts"	},
+			{	TMrbCaen_V1X90::kEvtSiz16,		"16 evts"	},
+			{	TMrbCaen_V1X90::kEvtSiz32,		"32 evts"	},
+			{	TMrbCaen_V1X90::kEvtSiz64,		"64 evts"	},
+			{	TMrbCaen_V1X90::kEvtSiz128,		"128 evts"	},
+			{	TMrbCaen_V1X90::kEvtSizNoLim,	"no limit"	},
 			{	0,			 					NULL,		}
 		};
 
 const SMrbNamedXShort kMrbFifoSize[] =
 		{
-			{	TMrbCaen_V1190::kFifoSiz2,		"2 words"	},
-			{	TMrbCaen_V1190::kFifoSiz4,		"4 words"	},
-			{	TMrbCaen_V1190::kFifoSiz8,		"8 words"	},
-			{	TMrbCaen_V1190::kFifoSiz16,		"16 words"	},
-			{	TMrbCaen_V1190::kFifoSiz32,		"32 words"	},
-			{	TMrbCaen_V1190::kFifoSiz64,		"64 words"	},
-			{	TMrbCaen_V1190::kFifoSiz128,	"128 words"	},
-			{	TMrbCaen_V1190::kFifoSiz256,	"256 words"	},
+			{	TMrbCaen_V1X90::kFifoSiz2,		"2 words"	},
+			{	TMrbCaen_V1X90::kFifoSiz4,		"4 words"	},
+			{	TMrbCaen_V1X90::kFifoSiz8,		"8 words"	},
+			{	TMrbCaen_V1X90::kFifoSiz16,		"16 words"	},
+			{	TMrbCaen_V1X90::kFifoSiz32,		"32 words"	},
+			{	TMrbCaen_V1X90::kFifoSiz64,		"64 words"	},
+			{	TMrbCaen_V1X90::kFifoSiz128,	"128 words"	},
+			{	TMrbCaen_V1X90::kFifoSiz256,	"256 words"	},
 			{	0,			 					NULL,		}
 		};
 
-TMrbCaen_V1190::TMrbCaen_V1190(const Char_t * ModuleName, UInt_t BaseAddr) :
-									TMrbVMEModule(ModuleName, "Caen_V1190", BaseAddr,
+TMrbCaen_V1X90::TMrbCaen_V1X90(const Char_t * ModuleName, UInt_t BaseAddr) :
+									TMrbVMEModule(ModuleName, "Caen_V1X90", BaseAddr,
 																0,
-																TMrbCaen_V1190::kSegSize,
+																TMrbCaen_V1X90::kSegSize,
 																1, 128, 1 << 19) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190
-// Purpose:        Create a Caen TDC V1190
+// Name:           TMrbCaen_V1X90
+// Purpose:        Create a Caen TDC V1X90
 // Arguments:      Char_t * ModuleName      -- name of camac module
 //                 UInt_t BaseAddr          -- base addr
 // Results:        --
 // Exceptions:
-// Description:    Creates a vme module of type CAEN V1190.
+// Description:    Creates a vme module of type CAEN V1X90.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -155,7 +155,7 @@ TMrbCaen_V1190::TMrbCaen_V1190(const Char_t * ModuleName, UInt_t BaseAddr) :
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
 		} else {
-			SetTitle("CAEN V1190 multi-hit TDC 128 chn, 19 bit"); 	// store module type
+			SetTitle("CAEN V1X90 multi-hit TDC 128 chn, 19 bit"); 	// store module type
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
@@ -197,10 +197,10 @@ TMrbCaen_V1190::TMrbCaen_V1190(const Char_t * ModuleName, UInt_t BaseAddr) :
 	}
 }
 
-void TMrbCaen_V1190::DefineRegisters() {
+void TMrbCaen_V1X90::DefineRegisters() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::DefineRegisters
+// Name:           TMrbCaen_V1X90::DefineRegisters
 // Purpose:        Define module registers
 // Arguments:      --
 // Results:        --
@@ -213,30 +213,30 @@ void TMrbCaen_V1190::DefineRegisters() {
 	TMrbLofNamedX * bNames;
 	TMrbVMERegister * rp;
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegWindowWidth, "WindowWidth");
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegWindowWidth, "WindowWidth");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, kWindowWidthDefault, 1, 4095); 
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegWindowOffset, "WindowOffset");
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegWindowOffset, "WindowOffset");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, kWindowOffsetDefault, -2048, 40);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegSearchMargin, "SearchMargin");
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegSearchMargin, "SearchMargin");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, kSearchMarginDefault, 0, 4095);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegRejectMargin, "RejectMargin");
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegRejectMargin, "RejectMargin");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, kRejectMarginDefault, 1, 4095);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegEdgeDetection, "EdgeDetection");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1190::kEdgeDetectDefault,
-													TMrbCaen_V1190::kEdgeDetectPair,
-													TMrbCaen_V1190::kEdgeDetectBoth);
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegEdgeDetection, "EdgeDetection");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1X90::kEdgeDetectDefault,
+													TMrbCaen_V1X90::kEdgeDetectPair,
+													TMrbCaen_V1X90::kEdgeDetectBoth);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -246,10 +246,10 @@ void TMrbCaen_V1190::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegEdgeResolution, "EdgeResolution");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1190::kEdgeResDefault,
-													TMrbCaen_V1190::kEdgeRes800,
-													TMrbCaen_V1190::kEdgeResOff);
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegEdgeResolution, "EdgeResolution");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1X90::kEdgeResDefault,
+													TMrbCaen_V1X90::kEdgeRes800,
+													TMrbCaen_V1X90::kEdgeResOff);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -259,10 +259,10 @@ void TMrbCaen_V1190::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegPairResolutionEdge, "PairResolutionEdge");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1190::kPairResDefault,
-													TMrbCaen_V1190::kPairRes100,
-													TMrbCaen_V1190::kPairRes12500);
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegPairResolutionEdge, "PairResolutionEdge");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1X90::kPairResDefault,
+													TMrbCaen_V1X90::kPairRes100,
+													TMrbCaen_V1X90::kPairRes12500);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -272,10 +272,10 @@ void TMrbCaen_V1190::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegPairResolutionWidth, "PairResolutionWidth");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1190::kPairResDefault,
-													TMrbCaen_V1190::kPairRes100,
-													TMrbCaen_V1190::kPairRes800ns);
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegPairResolutionWidth, "PairResolutionWidth");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1X90::kPairResDefault,
+													TMrbCaen_V1X90::kPairRes100,
+													TMrbCaen_V1X90::kPairRes800ns);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -285,10 +285,10 @@ void TMrbCaen_V1190::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegDeadTime, "DeadTime");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1190::kDtimeDefault,
-													TMrbCaen_V1190::kDtime5,
-													TMrbCaen_V1190::kDtime100);
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegDeadTime, "DeadTime");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1X90::kDtimeDefault,
+													TMrbCaen_V1X90::kDtime5,
+													TMrbCaen_V1X90::kDtime100);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -298,10 +298,10 @@ void TMrbCaen_V1190::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegEventSize, "EventSize");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1190::kEvtSizDefault,
-													TMrbCaen_V1190::kEvtSiz0,
-													TMrbCaen_V1190::kEvtSizNoLim);
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegEventSize, "EventSize");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1X90::kEvtSizDefault,
+													TMrbCaen_V1X90::kEvtSiz0,
+													TMrbCaen_V1X90::kEvtSizNoLim);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -311,10 +311,10 @@ void TMrbCaen_V1190::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegFifoSize, "FifoSize");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1190::kFifoSizDefault,
-													TMrbCaen_V1190::kFifoSiz2,
-													TMrbCaen_V1190::kFifoSiz256);
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegFifoSize, "FifoSize");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbCaen_V1X90::kFifoSizDefault,
+													TMrbCaen_V1X90::kFifoSiz2,
+													TMrbCaen_V1X90::kFifoSiz256);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
@@ -324,16 +324,16 @@ void TMrbCaen_V1190::DefineRegisters() {
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
-	kp = new TMrbNamedX(TMrbCaen_V1190::kRegAlmostFullLevel, "AlmostFullLevel");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, TMrbCaen_V1190::kAlmostFullLevelDefault, 1, 32735); 
+	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegAlmostFullLevel, "AlmostFullLevel");
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, TMrbCaen_V1X90::kAlmostFullLevelDefault, 1, 32735); 
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 }
 
-Bool_t TMrbCaen_V1190::SetResolution(Int_t Mode, Int_t Eticks, Int_t Wticks) {
+Bool_t TMrbCaen_V1X90::SetResolution(Int_t Mode, Int_t Eticks, Int_t Wticks) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::SetResolution
+// Name:           TMrbCaen_V1X90::SetResolution
 // Purpose:        Return current settings of edge detection
 // Arguments:      Int_t Mode    -- edge detection mode
 //                 Int_t Eticks  -- resolution
@@ -344,25 +344,25 @@ Bool_t TMrbCaen_V1190::SetResolution(Int_t Mode, Int_t Eticks, Int_t Wticks) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (!this->Set(TMrbCaen_V1190::kRegEdgeDetection, Mode)) return(kFALSE);
-	if (Mode == TMrbCaen_V1190::kEdgeDetectPair) {
-		if (!this->Set(TMrbCaen_V1190::kRegPairResolutionEdge, Eticks)) return(kFALSE);
-		if (!this->Set(TMrbCaen_V1190::kRegPairResolutionWidth, Wticks)) return(kFALSE);
+	if (!this->Set(TMrbCaen_V1X90::kRegEdgeDetection, Mode)) return(kFALSE);
+	if (Mode == TMrbCaen_V1X90::kEdgeDetectPair) {
+		if (!this->Set(TMrbCaen_V1X90::kRegPairResolutionEdge, Eticks)) return(kFALSE);
+		if (!this->Set(TMrbCaen_V1X90::kRegPairResolutionWidth, Wticks)) return(kFALSE);
 	} else {
 		if (Wticks != -1) {
 			gMrbLog->Err() << "Width can't be set in EDGE detection mode" << endl;
 			gMrbLog->Flush(this->ClassName(), "SetResolution");
 			return(kFALSE);
 		}
-		if (!this->Set(TMrbCaen_V1190::kRegEdgeResolution, Eticks)) return(kFALSE);
+		if (!this->Set(TMrbCaen_V1X90::kRegEdgeResolution, Eticks)) return(kFALSE);
 	}
 	return(kTRUE);
 }
 
-TMrbNamedX * TMrbCaen_V1190::GetEdgeDetection() {
+TMrbNamedX * TMrbCaen_V1X90::GetEdgeDetection() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::GetEdgeDetection
+// Name:           TMrbCaen_V1X90::GetEdgeDetection
 // Purpose:        Return current settings of edge detection
 // Arguments:      --
 // Results:        TMrbNamedX * EdgeDetection
@@ -371,17 +371,17 @@ TMrbNamedX * TMrbCaen_V1190::GetEdgeDetection() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t setting = this->Get(TMrbCaen_V1190::kRegEdgeDetection);
-	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1190::kRegEdgeDetection);
+	Int_t setting = this->Get(TMrbCaen_V1X90::kRegEdgeDetection);
+	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1X90::kRegEdgeDetection);
 	TMrbVMERegister * rp = (TMrbVMERegister *) nx->GetAssignedObject();
 	TMrbLofNamedX * bn = rp->BitNames();
 	return(bn->FindByIndex(setting));
 }
 	
-TMrbNamedX * TMrbCaen_V1190::GetEdgeResolution() {
+TMrbNamedX * TMrbCaen_V1X90::GetEdgeResolution() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::GetEdgeResolution
+// Name:           TMrbCaen_V1X90::GetEdgeResolution
 // Purpose:        Return current settings of individual LSB
 // Arguments:      --
 // Results:        TMrbNamedX * Resolution
@@ -391,23 +391,23 @@ TMrbNamedX * TMrbCaen_V1190::GetEdgeResolution() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * mode = this->GetEdgeDetection();
-	if (mode->GetIndex() == TMrbCaen_V1190::kEdgeDetectPair) {
+	if (mode->GetIndex() == TMrbCaen_V1X90::kEdgeDetectPair) {
 		gMrbLog->Err() << "Not in EDGE detect mode" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetEdgeResolution");
 		return(NULL);
 	}
 
-	Int_t setting = this->Get(TMrbCaen_V1190::kRegEdgeResolution);
-	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1190::kRegEdgeResolution);
+	Int_t setting = this->Get(TMrbCaen_V1X90::kRegEdgeResolution);
+	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1X90::kRegEdgeResolution);
 	TMrbVMERegister * rp = (TMrbVMERegister *) nx->GetAssignedObject();
 	TMrbLofNamedX * bn = rp->BitNames();
 	return(bn->FindByIndex(setting));
 }
 	
-TMrbNamedX * TMrbCaen_V1190::GetDeadTime() {
+TMrbNamedX * TMrbCaen_V1X90::GetDeadTime() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::GetDeadTime
+// Name:           TMrbCaen_V1X90::GetDeadTime
 // Purpose:        Return current dead time settings
 // Arguments:      --
 // Results:        TMrbNamedX * DeadTime
@@ -416,8 +416,8 @@ TMrbNamedX * TMrbCaen_V1190::GetDeadTime() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t setting = this->Get(TMrbCaen_V1190::kRegDeadTime);
-	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1190::kRegDeadTime);
+	Int_t setting = this->Get(TMrbCaen_V1X90::kRegDeadTime);
+	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1X90::kRegDeadTime);
 	TMrbVMERegister * rp = (TMrbVMERegister *) nx->GetAssignedObject();
 	TMrbLofNamedX * bn = rp->BitNames();
 	TMrbNamedX * s = bn->FindByIndex(setting);
@@ -428,10 +428,10 @@ TMrbNamedX * TMrbCaen_V1190::GetDeadTime() {
 	return(s);
 }
 	
-TMrbNamedX * TMrbCaen_V1190::GetPairResolution() {
+TMrbNamedX * TMrbCaen_V1X90::GetPairResolution() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::GetPairResEdge
+// Name:           TMrbCaen_V1X90::GetPairResEdge
 // Purpose:        Return current settings of pair resolution (edge)
 // Arguments:      --
 // Results:        TMrbNamedX * Edge
@@ -441,23 +441,23 @@ TMrbNamedX * TMrbCaen_V1190::GetPairResolution() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * mode = this->GetEdgeDetection();
-	if (mode->GetIndex() != TMrbCaen_V1190::kEdgeDetectPair) {
+	if (mode->GetIndex() != TMrbCaen_V1X90::kEdgeDetectPair) {
 		gMrbLog->Err() << "Not in PAIR mode" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetPairResolution");
 		return(NULL);
 	}
 
-	Int_t setting = this->Get(TMrbCaen_V1190::kRegPairResolutionEdge);
-	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1190::kRegPairResolutionEdge);
+	Int_t setting = this->Get(TMrbCaen_V1X90::kRegPairResolutionEdge);
+	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1X90::kRegPairResolutionEdge);
 	TMrbVMERegister * rp = (TMrbVMERegister *) nx->GetAssignedObject();
 	TMrbLofNamedX * bn = rp->BitNames();
 	return(bn->FindByIndex(setting));
 }
 	
-TMrbNamedX * TMrbCaen_V1190::GetPairWidth() {
+TMrbNamedX * TMrbCaen_V1X90::GetPairWidth() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::GetPairResWidth
+// Name:           TMrbCaen_V1X90::GetPairResWidth
 // Purpose:        Return current settings of pair resolution (width)
 // Arguments:      --
 // Results:        TMrbNamedX * Edge
@@ -467,23 +467,23 @@ TMrbNamedX * TMrbCaen_V1190::GetPairWidth() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * mode = this->GetEdgeDetection();
-	if (mode->GetIndex() != TMrbCaen_V1190::kEdgeDetectPair) {
+	if (mode->GetIndex() != TMrbCaen_V1X90::kEdgeDetectPair) {
 		gMrbLog->Err() << "Not in PAIR mode" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetPairWidth");
 		return(NULL);
 	}
 
-	Int_t setting = this->Get(TMrbCaen_V1190::kRegPairResolutionWidth);
-	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1190::kRegPairResolutionWidth);
+	Int_t setting = this->Get(TMrbCaen_V1X90::kRegPairResolutionWidth);
+	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1X90::kRegPairResolutionWidth);
 	TMrbVMERegister * rp = (TMrbVMERegister *) nx->GetAssignedObject();
 	TMrbLofNamedX * bn = rp->BitNames();
 	return(bn->FindByIndex(setting));
 }
 	
-TMrbNamedX * TMrbCaen_V1190::GetEventSize() {
+TMrbNamedX * TMrbCaen_V1X90::GetEventSize() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::GetEventSize
+// Name:           TMrbCaen_V1X90::GetEventSize
 // Purpose:        Return current event size (hits)
 // Arguments:      --
 // Results:        TMrbNamedX * Edge
@@ -492,8 +492,8 @@ TMrbNamedX * TMrbCaen_V1190::GetEventSize() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t setting = this->Get(TMrbCaen_V1190::kRegEventSize);
-	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1190::kRegEventSize);
+	Int_t setting = this->Get(TMrbCaen_V1X90::kRegEventSize);
+	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1X90::kRegEventSize);
 	TMrbVMERegister * rp = (TMrbVMERegister *) nx->GetAssignedObject();
 	TMrbLofNamedX * bn = rp->BitNames();
 	TMrbNamedX * s = bn->FindByIndex(setting);
@@ -504,10 +504,10 @@ TMrbNamedX * TMrbCaen_V1190::GetEventSize() {
 	return(s);
 }
 	
-TMrbNamedX * TMrbCaen_V1190::GetFifoSize() {
+TMrbNamedX * TMrbCaen_V1X90::GetFifoSize() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::GetFifoSize
+// Name:           TMrbCaen_V1X90::GetFifoSize
 // Purpose:        Return current fifo size (words)
 // Arguments:      --
 // Results:        TMrbNamedX * Edge
@@ -516,8 +516,8 @@ TMrbNamedX * TMrbCaen_V1190::GetFifoSize() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t setting = this->Get(TMrbCaen_V1190::kRegFifoSize);
-	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1190::kRegFifoSize);
+	Int_t setting = this->Get(TMrbCaen_V1X90::kRegFifoSize);
+	TMrbNamedX * nx = fLofRegisters.FindByIndex(TMrbCaen_V1X90::kRegFifoSize);
 	TMrbVMERegister * rp = (TMrbVMERegister *) nx->GetAssignedObject();
 	TMrbLofNamedX * bn = rp->BitNames();
 	TMrbNamedX * s = bn->FindByIndex(setting);
@@ -528,10 +528,10 @@ TMrbNamedX * TMrbCaen_V1190::GetFifoSize() {
 	return(s);
 }
 	
-Bool_t TMrbCaen_V1190::EnableChannel(Int_t Channel) {
+Bool_t TMrbCaen_V1X90::EnableChannel(Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::EnableChannel
+// Name:           TMrbCaen_V1X90::EnableChannel
 // Purpose:        Enable a channel
 // Arguments:      Int_t Channel    -- channel number
 // Results:        kTRUE/kFALSE
@@ -540,13 +540,13 @@ Bool_t TMrbCaen_V1190::EnableChannel(Int_t Channel) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (Channel == TMrbCaen_V1190::kAllChannels) {
-		for (Int_t chn = 0; chn < TMrbCaen_V1190::kNofChannels; chn++) this->EnableChannel(chn);
+	if (Channel == TMrbCaen_V1X90::kAllChannels) {
+		for (Int_t chn = 0; chn < TMrbCaen_V1X90::kNofChannels; chn++) this->EnableChannel(chn);
 		return(kTRUE);
 	}
 
-	if (Channel < 0 || Channel >= TMrbCaen_V1190::kNofChannels) {
-		gMrbLog->Err() << "Channel out of range - " << Channel << " (should be in [0," << (TMrbCaen_V1190::kNofChannels - 1) << "])" << endl;
+	if (Channel < 0 || Channel >= TMrbCaen_V1X90::kNofChannels) {
+		gMrbLog->Err() << "Channel out of range - " << Channel << " (should be in [0," << (TMrbCaen_V1X90::kNofChannels - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "EnableChannel");
 		return(kFALSE);
 	}
@@ -558,10 +558,10 @@ Bool_t TMrbCaen_V1190::EnableChannel(Int_t Channel) {
 	return(kTRUE);
 }
 
-Bool_t TMrbCaen_V1190::EnableChannel(Int_t ChannelFrom, Int_t ChannelTo) {
+Bool_t TMrbCaen_V1X90::EnableChannel(Int_t ChannelFrom, Int_t ChannelTo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::EnableChannel
+// Name:           TMrbCaen_V1X90::EnableChannel
 // Purpose:        Enable a tange of channels
 // Arguments:      Int_t ChannelFrom    -- channel number to start with
 //                 Int_t ChannelTo      -- ... to end with
@@ -571,10 +571,10 @@ Bool_t TMrbCaen_V1190::EnableChannel(Int_t ChannelFrom, Int_t ChannelTo) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (ChannelFrom < 0 || ChannelFrom >= TMrbCaen_V1190::kNofChannels
-	||	ChannelTo < 0   || ChannelTo >= TMrbCaen_V1190::kNofChannels
+	if (ChannelFrom < 0 || ChannelFrom >= TMrbCaen_V1X90::kNofChannels
+	||	ChannelTo < 0   || ChannelTo >= TMrbCaen_V1X90::kNofChannels
 	||	ChannelFrom > ChannelTo) {
-		gMrbLog->Err() << "Wrong channel range - " << ChannelFrom << " - " << ChannelTo << " (should be in [0," << (TMrbCaen_V1190::kNofChannels - 1) << "])" << endl;
+		gMrbLog->Err() << "Wrong channel range - " << ChannelFrom << " - " << ChannelTo << " (should be in [0," << (TMrbCaen_V1X90::kNofChannels - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "EnableChannel");
 		return(kFALSE);
 	}
@@ -585,10 +585,10 @@ Bool_t TMrbCaen_V1190::EnableChannel(Int_t ChannelFrom, Int_t ChannelTo) {
 	return(kTRUE);
 }
 
-Bool_t TMrbCaen_V1190::DisableChannel(Int_t Channel) {
+Bool_t TMrbCaen_V1X90::DisableChannel(Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::DisableChannel
+// Name:           TMrbCaen_V1X90::DisableChannel
 // Purpose:        Disable a channel
 // Arguments:      Int_t Channel    -- channel number
 // Results:        kTRUE/kFALSE
@@ -597,13 +597,13 @@ Bool_t TMrbCaen_V1190::DisableChannel(Int_t Channel) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (Channel == TMrbCaen_V1190::kAllChannels) {
-		for (Int_t chn = 0; chn < TMrbCaen_V1190::kNofChannels; chn++) this->DisableChannel(chn);
+	if (Channel == TMrbCaen_V1X90::kAllChannels) {
+		for (Int_t chn = 0; chn < TMrbCaen_V1X90::kNofChannels; chn++) this->DisableChannel(chn);
 		return(kTRUE);
 	}
 
-	if (Channel < 0 || Channel >= TMrbCaen_V1190::kNofChannels) {
-		gMrbLog->Err() << "Channel out of range - " << Channel << " (should be in [0," << (TMrbCaen_V1190::kNofChannels - 1) << "])" << endl;
+	if (Channel < 0 || Channel >= TMrbCaen_V1X90::kNofChannels) {
+		gMrbLog->Err() << "Channel out of range - " << Channel << " (should be in [0," << (TMrbCaen_V1X90::kNofChannels - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "DisableChannel");
 		return(kFALSE);
 	}
@@ -615,10 +615,10 @@ Bool_t TMrbCaen_V1190::DisableChannel(Int_t Channel) {
 	return(kTRUE);
 }
 
-Bool_t TMrbCaen_V1190::DisableChannel(Int_t ChannelFrom, Int_t ChannelTo) {
+Bool_t TMrbCaen_V1X90::DisableChannel(Int_t ChannelFrom, Int_t ChannelTo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::DisableChannel
+// Name:           TMrbCaen_V1X90::DisableChannel
 // Purpose:        Disable a range of channels
 // Arguments:      Int_t ChannelFrom    -- channel number to start with
 //                 Int_t ChannelTo      -- ... to end with
@@ -628,10 +628,10 @@ Bool_t TMrbCaen_V1190::DisableChannel(Int_t ChannelFrom, Int_t ChannelTo) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (ChannelFrom < 0 || ChannelFrom >= TMrbCaen_V1190::kNofChannels
-	||	ChannelTo < 0   || ChannelTo >= TMrbCaen_V1190::kNofChannels
+	if (ChannelFrom < 0 || ChannelFrom >= TMrbCaen_V1X90::kNofChannels
+	||	ChannelTo < 0   || ChannelTo >= TMrbCaen_V1X90::kNofChannels
 	||	ChannelFrom > ChannelTo) {
-		gMrbLog->Err() << "Wrong channel range - " << ChannelFrom << " - " << ChannelTo << " (should be in [0," << (TMrbCaen_V1190::kNofChannels - 1) << "])" << endl;
+		gMrbLog->Err() << "Wrong channel range - " << ChannelFrom << " - " << ChannelTo << " (should be in [0," << (TMrbCaen_V1X90::kNofChannels - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "DisableChannel");
 		return(kFALSE);
 	}
@@ -642,10 +642,10 @@ Bool_t TMrbCaen_V1190::DisableChannel(Int_t ChannelFrom, Int_t ChannelTo) {
 	return(kTRUE);
 }
 
-Bool_t TMrbCaen_V1190::UseSettings(const Char_t * SettingsFile) {
+Bool_t TMrbCaen_V1X90::UseSettings(const Char_t * SettingsFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::UseSettings
+// Name:           TMrbCaen_V1X90::UseSettings
 // Purpose:        Read settings from file
 // Arguments:      Char_t * SettingsFile   -- settings file
 // Results:        kTRUE/kFALSE
@@ -669,7 +669,7 @@ Bool_t TMrbCaen_V1190::UseSettings(const Char_t * SettingsFile) {
 		return(kFALSE);
 	}
 
-	TMrbResource * caenEnv = new TMrbResource("CAEN_V1190", fSettingsFile.Data());
+	TMrbResource * caenEnv = new TMrbResource("CAEN_V1X90", fSettingsFile.Data());
 
 	TString moduleName = caenEnv->Get(".ModuleName", "");
 	if (moduleName.CompareTo(this->GetName()) != 0) {
@@ -685,23 +685,23 @@ Bool_t TMrbCaen_V1190::UseSettings(const Char_t * SettingsFile) {
 
 	this->SetTriggerMatchingOn(caenEnv->Get(moduleName.Data(), "TriggerMatching", kTRUE));
 	this->EnableTriggerTimeSubtraction(caenEnv->Get(moduleName.Data(), "SubtractTriggerTime", kTRUE));
-	this->SetWindowWidthTicks(caenEnv->Get(moduleName.Data(), "WindowWidth", TMrbCaen_V1190::kWindowWidthDefault));
-	this->SetWindowOffsetTicks(caenEnv->Get(moduleName.Data(), "WindowOffset", TMrbCaen_V1190::kWindowOffsetDefault));
-	this->SetSearchMarginTicks(caenEnv->Get(moduleName.Data(), "SearchMargin", TMrbCaen_V1190::kSearchMarginDefault));
-	this->SetRejectMarginTicks(caenEnv->Get(moduleName.Data(), "RejectMargin", TMrbCaen_V1190::kRejectMarginDefault));
-	Int_t mode = caenEnv->Get(moduleName.Data(), "EdgeDetection", TMrbCaen_V1190::kEdgeDetectDefault);
-	Int_t edgeRes = caenEnv->Get(moduleName.Data(), "EdgeResolution", TMrbCaen_V1190::kEdgeResDefault);
-	Int_t pairRes = caenEnv->Get(moduleName.Data(), "PairResolution", TMrbCaen_V1190::kPairResDefault);
-	Int_t pairWidth = caenEnv->Get(moduleName.Data(), "PairWidth", TMrbCaen_V1190::kPairResDefault);
-	if (mode == TMrbCaen_V1190::kEdgeDetectPair) {
+	this->SetWindowWidthTicks(caenEnv->Get(moduleName.Data(), "WindowWidth", TMrbCaen_V1X90::kWindowWidthDefault));
+	this->SetWindowOffsetTicks(caenEnv->Get(moduleName.Data(), "WindowOffset", TMrbCaen_V1X90::kWindowOffsetDefault));
+	this->SetSearchMarginTicks(caenEnv->Get(moduleName.Data(), "SearchMargin", TMrbCaen_V1X90::kSearchMarginDefault));
+	this->SetRejectMarginTicks(caenEnv->Get(moduleName.Data(), "RejectMargin", TMrbCaen_V1X90::kRejectMarginDefault));
+	Int_t mode = caenEnv->Get(moduleName.Data(), "EdgeDetection", TMrbCaen_V1X90::kEdgeDetectDefault);
+	Int_t edgeRes = caenEnv->Get(moduleName.Data(), "EdgeResolution", TMrbCaen_V1X90::kEdgeResDefault);
+	Int_t pairRes = caenEnv->Get(moduleName.Data(), "PairResolution", TMrbCaen_V1X90::kPairResDefault);
+	Int_t pairWidth = caenEnv->Get(moduleName.Data(), "PairWidth", TMrbCaen_V1X90::kPairResDefault);
+	if (mode == TMrbCaen_V1X90::kEdgeDetectPair) {
 		this->SetResolution(mode, pairRes, pairWidth);
 	} else {
 		this->SetResolution(mode, edgeRes);
 	}
-	this->SetDeadTime(caenEnv->Get(moduleName.Data(), "DeadTime", TMrbCaen_V1190::kDtimeDefault));
-	this->SetEventSize(caenEnv->Get(moduleName.Data(), "EventSize", TMrbCaen_V1190::kEvtSizDefault));
-	this->SetFifoSize(caenEnv->Get(moduleName.Data(), "FifoSize", TMrbCaen_V1190::kFifoSizDefault));
-	this->SetAlmostFullLevel(caenEnv->Get(moduleName.Data(), "AlmostFull", TMrbCaen_V1190::kAlmostFullLevelDefault));
+	this->SetDeadTime(caenEnv->Get(moduleName.Data(), "DeadTime", TMrbCaen_V1X90::kDtimeDefault));
+	this->SetEventSize(caenEnv->Get(moduleName.Data(), "EventSize", TMrbCaen_V1X90::kEvtSizDefault));
+	this->SetFifoSize(caenEnv->Get(moduleName.Data(), "FifoSize", TMrbCaen_V1X90::kFifoSizDefault));
+	this->SetAlmostFullLevel(caenEnv->Get(moduleName.Data(), "AlmostFull", TMrbCaen_V1X90::kAlmostFullLevelDefault));
 	this->EnableHeaderTrailer(caenEnv->Get(moduleName.Data(), "HeaderTrailer", kTRUE));
 	this->EnableExtendedTriggerTag(caenEnv->Get(moduleName.Data(), "ExtTriggerTag", kTRUE));
 	this->EnableEmptyEvent(caenEnv->Get(moduleName.Data(), "EmptyEvent", kTRUE));
@@ -711,10 +711,10 @@ Bool_t TMrbCaen_V1190::UseSettings(const Char_t * SettingsFile) {
 	return(kTRUE);
 }
 
-Bool_t TMrbCaen_V1190::SaveSettings(const Char_t * SettingsFile) {
+Bool_t TMrbCaen_V1X90::SaveSettings(const Char_t * SettingsFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::SaveSettings
+// Name:           TMrbCaen_V1X90::SaveSettings
 // Purpose:        Write settings to file
 // Arguments:      Char_t * SettingsFile   -- settings file
 // Results:        kTRUE/kFALSE
@@ -736,7 +736,7 @@ Bool_t TMrbCaen_V1190::SaveSettings(const Char_t * SettingsFile) {
 	}
 
 	TString tmplPath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
-	TString tf = "Module_Caen_V1190.rc.code";
+	TString tf = "Module_Caen_V1X90.rc.code";
 	gSystem->ExpandPathName(tmplPath);
 
 	const Char_t * fp = gSystem->Which(tmplPath.Data(), tf.Data());
@@ -797,7 +797,7 @@ Bool_t TMrbCaen_V1190::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.Substitute("$moduleName", moduleUC.Data());
 						Int_t edge = this->GetEdgeDetection()->GetIndex();
 						tmpl.Substitute("$detectMode", edge);
-						if (edge == TMrbCaen_V1190::kEdgeDetectPair) {
+						if (edge == TMrbCaen_V1X90::kEdgeDetectPair) {
 							tmpl.Substitute("$edgeRes", 0);
 							tmpl.Substitute("$pairRes", this->GetPairResolution()->GetIndex());
 							tmpl.Substitute("$pairWidth", this->GetPairWidth()->GetIndex());
@@ -842,10 +842,10 @@ Bool_t TMrbCaen_V1190::SaveSettings(const Char_t * SettingsFile) {
 	return(kTRUE);
 }
 
-Bool_t TMrbCaen_V1190::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) {
+Bool_t TMrbCaen_V1X90::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::MakeReadoutCode
+// Name:           TMrbCaen_V1X90::MakeReadoutCode
 // Purpose:        Write a piece of code for a Mesytec MADC-32
 // Arguments:      ofstream & RdoStrm         -- file output stream
 //                 EMrbModuleTag TagIndex     -- index of tag word taken from template file
@@ -967,12 +967,12 @@ Bool_t TMrbCaen_V1190::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 }
 
 
-Bool_t TMrbCaen_V1190::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
+Bool_t TMrbCaen_V1X90::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
 															TMrbVMEChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::MakeReadoutCode
+// Name:           TMrbCaen_V1X90::MakeReadoutCode
 // Purpose:        Write a piece of code for a Mesytec MADC-32
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
@@ -1020,7 +1020,7 @@ Bool_t TMrbCaen_V1190::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModul
 	return(kTRUE);
 }
 
-Bool_t TMrbCaen_V1190::CheckSubeventType(TMrbSubevent * Subevent) const {
+Bool_t TMrbCaen_V1X90::CheckSubeventType(TMrbSubevent * Subevent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbMesytec_Madc32::CheckSubeventType
@@ -1038,10 +1038,10 @@ Bool_t TMrbCaen_V1190::CheckSubeventType(TMrbSubevent * Subevent) const {
 	else															return(kTRUE);
 }
 
-void TMrbCaen_V1190::PrintSettings(ostream & Out) {
+void TMrbCaen_V1X90::PrintSettings(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCaen_V1190::PrintSettings
+// Name:           TMrbCaen_V1X90::PrintSettings
 // Purpose:        Print settings
 // Arguments:      ostream & Out           -- where to print
 // Results:        --
@@ -1051,7 +1051,7 @@ void TMrbCaen_V1190::PrintSettings(ostream & Out) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Out << "=========================================================================" << endl;
-	Out << " CAEN V1190 settings" << endl;
+	Out << " CAEN V1X90 settings" << endl;
 	Out << "-------------------------------------------------------------------------" << endl;
 	Out << " Module                  : "	<< this->GetName() << endl;
 	Out << " Serial                  : "	<< this->GetSerial() << endl;
@@ -1067,7 +1067,7 @@ void TMrbCaen_V1190::PrintSettings(ostream & Out) {
 	Out << " Reject margin           : "	<< this->GetRejectMarginTicks() << " (" << this->GetRejectMarginNsec() << "ns)" << endl;
 	Out << " Subtract trigger time   : "	<< (this->TriggerTimeSubtractionEnabled() ? "On" : "Off") << endl;
 	Out << " Edge detection          : "	<< "0x" << setbase(16) << this->GetEdgeDetection()->GetIndex() << setbase(10) << " (" << this->GetEdgeDetection()->GetName() << ")" << endl;
-	if (this->GetEdgeDetection()->GetIndex() == TMrbCaen_V1190::kEdgeDetectPair) {
+	if (this->GetEdgeDetection()->GetIndex() == TMrbCaen_V1X90::kEdgeDetectPair) {
 		Out << " Pair resolution         : "	<< "0x" << setbase(16) << this->GetPairResolution()->GetIndex() << setbase(10) << " (" << this->GetPairResolution()->GetName() << ")" << endl;
 		Out << "      width              : "	<< "0x" << setbase(16) << this->GetPairWidth()->GetIndex() << setbase(10) << " (" << this->GetPairWidth()->GetName() << ")" << endl;
 	} else {

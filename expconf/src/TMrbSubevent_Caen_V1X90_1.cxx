@@ -1,13 +1,13 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           expconf/src/TMrbSubevent_Caen_V1190_2.cxx
-// Purpose:        MARaBOU configuration: subevents of type [10,46] - CAEN data
-// Description:    Implements class methods to handle [10,46] subevents
-//                 reflecting data structure of Caen V1X90 tdc modules.
+// Name:           expconf/src/TMrbSubevent_Caen_V1X90_1.cxx
+// Purpose:        MARaBOU configuration: subevents of type [10,41] - CAEN data
+// Description:    Implements class methods to handle [10,41] subevents
+//                 reflecting data structure of CAEN modules
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Caen_V1190_2.cxx,v 1.1 2009-07-13 10:26:41 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_V1X90_1.cxx,v 1.1 2009-07-20 07:09:44 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -25,32 +25,32 @@ namespace std {} using namespace std;
 #include "TMrbConfig.h"
 #include "TMrbModule.h"
 #include "TMrbModuleChannel.h"
-#include "TMrbSubevent_Caen_V1190_2.h"
+#include "TMrbSubevent_Caen_V1X90_1.h"
 
 #include "SetColor.h"
 
 extern TMrbConfig * gMrbConfig;
 
-ClassImp(TMrbSubevent_Caen_V1190_2)
+ClassImp(TMrbSubevent_Caen_V1X90_1)
 
-TMrbSubevent_Caen_V1190_2::TMrbSubevent_Caen_V1190_2(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
+TMrbSubevent_Caen_V1X90_1::TMrbSubevent_Caen_V1X90_1(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
 																: TMrbSubevent(SevtName, SevtTitle, Crate) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Caen_V1190_2
-// Purpose:        Create a subevent type [10,46]
+// Name:           TMrbSubevent_Caen_V1X90_1
+// Purpose:        Create a subevent type [10,41]
 // Arguments:      Char_t * SevtName       -- subevent name
 //                 Char_t * SevtTitle      -- ... and title
 //                 Int_t Crate             -- crate number
 // Results:        --
 // Exceptions:
-// Description:    Create a new subevent of type [10,46]
-//                 used to store CAEN V1X90 data in DGF-4C list-mode format
+// Description:    Create a new subevent of type [10,41]
+//                 used to store CAEN list-mode data
 //
-//
-//                 Data format as given by the producer (MBS):
-//                 -  up to MAXEVENTS events per module
-//                 -  several modules per buffer
+//                 Data format as given by the producer (MBS) - same as [10,82]:
+//                 -  several modules per subevent possible
+//                 -  channel data 32 bit, arbitrary format
+//                    has to be decoded by use of module id & serial
 //
 //                 31---------------16|15------8|7---------0
 //                 |  0x200  |        |    wc   | modser#  | header
@@ -63,50 +63,27 @@ TMrbSubevent_Caen_V1190_2::TMrbSubevent_Caen_V1190_2(const Char_t * SevtName, co
 //                 31======================================0
 //
 //                 Data storage by the consumer (ROOT):
-//                 -  data stored in a TClonesArray/TUsrHit, channel by channel
-//                 -  each channel entry marked with event time
-//
-//                 31--------------------------------------0
-//                 |             buffer number             |
-//                 |---------------------------------------|
-//                 |      event number within buffer       |
-//                 |---------------------------------------|
-//                 |             module number             |
-//                 |---------------------------------------|
-//                 |            channel number             |
-//                 |---------------------------------------|
-//                 |          0        |  time st (32..47) |
-//                 |---------------------------------------|
-//                 |           time stamp (0..31)          |
-//                 |---------------------------------------|
-//                 |             word count (=2)           |
-//                 |---------------------------------------|
-//                 |                    0                  |
-//                 |---------------------------------------|
-//                 |                  data                 |
-//                 |---------------------------------------|
-//
+//                 -  data stored directly in subevent (& histogram)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->IsZombie()) {
-		fSevtDescr = "CAEN V1190 data, multi-module, multi-event, stored in hit buffer";
-		fSevtType = 10; 	 							// set subevent type & subtype
-		fSevtSubtype = 46;
+		fSevtDescr = "CAEN V1X90 data, multi-module, single-event (MAXEVENTS=1)";
+		fSevtType = 10; 	 						// set subevent type & subtype
+		fSevtSubtype = 45;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
-		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
-		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Caen");	// we need this base class
+		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
 		gDirectory->Append(this);
 	}
 }
 
-Bool_t TMrbSubevent_Caen_V1190_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
+Bool_t TMrbSubevent_Caen_V1X90_1::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
 															TMrbTemplate & Template,
 															const Char_t * Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Caen_V1190_2::MakeReadoutCode
-// Purpose:        Write a piece of code for subevent [10,43]
+// Name:           TMrbSubevent_Caen_V1X90_1::MakeReadoutCode
+// Purpose:        Write a piece of code for subevent [10,41]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file
 //                 TMrbTemplate & Template      -- template
@@ -154,7 +131,7 @@ Bool_t TMrbSubevent_Caen_V1190_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig
 				parNo += parentModule->GetNofChannelsUsed();
 				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;				
 			}
-			miter =  fLofModules.MakeIterator();
+			miter = fLofModules.MakeIterator();
 			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleFinishReadout);
 
 			Template.InitializeCode("%SE%");
@@ -163,9 +140,10 @@ Bool_t TMrbSubevent_Caen_V1190_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig
 			break;
 
 		case TMrbConfig::kRdoIgnoreTriggerXX:
-			miter =  fLofModules.MakeIterator();
+			miter = fLofModules.MakeIterator();
 			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleClearModule);
 			break;
 	}
 	return(kTRUE);
 }
+

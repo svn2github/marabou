@@ -1,13 +1,13 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           expconf/src/TMrbSubevent_Caen_V1190_3.cxx
-// Purpose:        MARaBOU configuration: subevents of type [10,47] - CAEN data
-// Description:    Implements class methods to handle [10,47] subevents
-//                 reflecting data structure of XIA DGF-4C modules
+// Name:           expconf/src/TMrbSubevent_Caen_V1X90_2.cxx
+// Purpose:        MARaBOU configuration: subevents of type [10,46] - CAEN data
+// Description:    Implements class methods to handle [10,46] subevents
+//                 reflecting data structure of Caen V1X90 tdc modules.
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Caen_V1190_3.cxx,v 1.2 2009-07-13 06:22:39 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_V1X90_2.cxx,v 1.1 2009-07-20 07:09:44 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -25,27 +25,27 @@ namespace std {} using namespace std;
 #include "TMrbConfig.h"
 #include "TMrbModule.h"
 #include "TMrbModuleChannel.h"
-#include "TMrbSubevent_Caen_V1190_3.h"
+#include "TMrbSubevent_Caen_V1X90_2.h"
 
 #include "SetColor.h"
 
 extern TMrbConfig * gMrbConfig;
 
-ClassImp(TMrbSubevent_Caen_V1190_3)
+ClassImp(TMrbSubevent_Caen_V1X90_2)
 
-TMrbSubevent_Caen_V1190_3::TMrbSubevent_Caen_V1190_3(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
+TMrbSubevent_Caen_V1X90_2::TMrbSubevent_Caen_V1X90_2(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
 																: TMrbSubevent(SevtName, SevtTitle, Crate) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Caen_V1190_3
-// Purpose:        Create a subevent type [10,47]
+// Name:           TMrbSubevent_Caen_V1X90_2
+// Purpose:        Create a subevent type [10,46]
 // Arguments:      Char_t * SevtName       -- subevent name
 //                 Char_t * SevtTitle      -- ... and title
 //                 Int_t Crate             -- crate number
 // Results:        --
 // Exceptions:
-// Description:    Create a new subevent of type [10,47]
-//                 used to store CAEN data in DGF-4C list-mode format
+// Description:    Create a new subevent of type [10,46]
+//                 used to store CAEN V1X90 data in DGF-4C list-mode format
 //
 //
 //                 Data format as given by the producer (MBS):
@@ -90,9 +90,9 @@ TMrbSubevent_Caen_V1190_3::TMrbSubevent_Caen_V1190_3(const Char_t * SevtName, co
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->IsZombie()) {
-		fSevtDescr = "CAEN V1190 data, multi-module, multi-event, stored in hit buffer";
+		fSevtDescr = "CAEN V1X90 data, multi-module, multi-event, stored in hit buffer";
 		fSevtType = 10; 	 							// set subevent type & subtype
-		fSevtSubtype = 47;
+		fSevtSubtype = 46;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
 		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Caen");	// we need this base class
@@ -100,13 +100,13 @@ TMrbSubevent_Caen_V1190_3::TMrbSubevent_Caen_V1190_3(const Char_t * SevtName, co
 	}
 }
 
-Bool_t TMrbSubevent_Caen_V1190_3::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
+Bool_t TMrbSubevent_Caen_V1X90_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
 															TMrbTemplate & Template,
 															const Char_t * Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Caen_V1190_3::MakeReadoutCode
-// Purpose:        Write a piece of code for subevent [10,47]
+// Name:           TMrbSubevent_Caen_V1X90_2::MakeReadoutCode
+// Purpose:        Write a piece of code for subevent [10,43]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file
 //                 TMrbTemplate & Template      -- template
