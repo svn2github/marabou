@@ -1,0 +1,56 @@
+%%BeginOfCode%%
+#ifndef __CaenDefs__
+#define __CaenDefs__
+// definitions for CAEN V1X90 modules
+// V1190, V1290
+
+#define CAEN_V1X90_SH_HDR_TRL					27
+#define CAEN_V1X90_M_HDR_TRL					0x1F
+
+#define CAEN_V1X90_D_GLOBAL_HDR					0x8
+#define CAEN_V1X90_D_TDC_HDR					0x1
+#define CAEN_V1X90_D_TDC_DATA					0x0
+#define CAEN_V1X90_D_TDC_TRL					0x3
+#define CAEN_V1X90_D_TDC_ERROR					0x4
+#define CAEN_V1X90_D_XTIME_TAG					0x11
+#define CAEN_V1X90_D_GLOBAL_TRL					0x10
+
+#define CAEN_V1X90_SH_GH_EVTCNT					5
+#define CAEN_V1X90_M_GH_EVTCNT					0x3FFFFF
+#define CAEN_V1X90_M_GH_SERIAL					0x1F
+
+#define CAEN_V1X90_SH_TDC_NUM					24
+#define CAEN_V1X90_M_TDC_NUM					0x3
+
+#define CAEN_V1X90_SH_TDC_EID					12
+#define CAEN_V1X90_M_TDC_EID 					0xFFF
+
+#define CAEN_V1X90_M_TDC_BID 					0xFFF
+#define CAEN_V1X90_M_TDC_WC 					0xFFF
+#define CAEN_V1X90_M_XTIME_TAG 					0x3FFFFFF
+
+#define CAEN_V1X90_SH_TDC_CHN					19
+#define CAEN_V1X90_M_TDC_CHN					0x7F
+#define CAEN_V1X90_M_TDC_DATA					0x7FFFF
+#define CAEN_V1X90_M_TDC_ERROR					0x7FFF
+
+#define CAEN_V1X90_SH_TDC_PWIDTH				12
+#define CAEN_V1X90_M_TDC_PWIDTH					0x7F
+#define CAEN_V1X90_M_TDC_PDATA					0xFFFF
+
+#define CAEN_V1X90_SH_GT_STS 					24
+#define CAEN_V1X90_M_GT_STS						0x7
+
+#define CAEN_V1X90_SH_GT_WC 					5
+#define CAEN_V1X90_M_GT_WC						0xFFFF
+
+#define CAEN_V1X90_X_GH 						BIT(0)
+#define CAEN_V1X90_X_TH 						BIT(1)
+#define CAEN_V1X90_X_TD 						BIT(2)
+#define CAEN_V1X90_X_TT 						BIT(3)
+#define CAEN_V1X90_X_GT 						BIT(4)
+
+#endif
+
+%%EndOfCode%%
+%%INCLUDES_AND_DEFS_ANALYZE%%
