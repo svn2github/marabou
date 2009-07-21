@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V775.cxx,v 1.18 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V775.cxx,v 1.19 2009-07-21 14:15:22 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -454,10 +454,8 @@ Int_t TMrbCaen_V775::SetFullScaleRange(Int_t NanoSeconds) {
 // Exceptions:     Returns 0 on error (Nsec value out of range)
 // Description:    Calculates the value of the full scale range register from
 //                 given nanoseconds.
-//                 Full range values from 140 to 1200 nsecs correspond to
-//                 register values from 0xFF to 0x1E with linear interpolation.
-//                 Formula is therefore
-//                      r(t) = 0xFF - (225/1060) * (t - 140)
+//                 Refer to http://www.caen.it/getattach.php?mod=V775&obj=mn&id=984
+//                 for the formula applied.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -468,9 +466,9 @@ Int_t TMrbCaen_V775::SetFullScaleRange(Int_t NanoSeconds) {
 		return(0);
 	}
 
-	Double_t fac = (0xFF - 0x1E) / (1200. - 140.);
-	fFullScaleRange = (Int_t) (0xFF - fac * (NanoSeconds - 140));
+	fFullScaleRange = (Int_t) (9.89 * 4096) / NanoSeconds;
 	if (fFullScaleRange < 0x1E) fFullScaleRange = 0x1E;
+	else if (fFullScaleRange > 0xFF) fFullScaleRange = 0xFF;
 	fFullScaleRangeNsecs = NanoSeconds;
 	return(fFullScaleRange);
 }
