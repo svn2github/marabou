@@ -6,12 +6,12 @@
 // @(#)Author:     R. Lutter
 // @(#)Revision:   SCCS:  %W%
 // @(#)Date:       %G%
-// Keywords:       
+// Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
 %%BeginOfCode%%
 /* bit definitions for VME ADC CAEN V785 */
-#ifdef __CAEN_BITS_AND_BYTES__
+#ifndef __CAEN_BITS_AND_BYTES__
 #define __CAEN_BITS_AND_BYTES__
 #define CAEN_V785_R_OUTPUT						0x0
 #define CAEN_V785_R_FIRMWARE						0x1000
@@ -231,12 +231,12 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%WRITE_SUBADDR%% 
+%%WRITE_SUBADDR%%
 
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%STORE_DATA%% 
+%%STORE_DATA%%
 
 %%BeginOfCode%%
 
@@ -246,7 +246,7 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%SETUP_READOUT%%	
+%%SETUP_READOUT%%
 
 %%BeginOfCode%%
 
@@ -280,7 +280,7 @@ void caen_v785_module_info(volatile unsigned short * firmWare) {
 	unsigned short boardIdMSB, boardIdLSB;
 	int serial, boardId;
 	char str[256];
-	
+
 	boardIdMSB = *(firmWare + 0x3A / sizeof(unsigned short)) & 0xFF;
 	boardIdLSB = *(firmWare + 0x3E / sizeof(unsigned short)) & 0xFF;
 	boardId = (int) (boardIdMSB << 8) + (int) boardIdLSB;
