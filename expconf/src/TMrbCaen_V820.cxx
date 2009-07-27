@@ -2,12 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbCaen_V820.cxx
 // Purpose:        MARaBOU configuration: CAEN modules
-// Description:    Implements class methods to handle a CAEN scaler type V820 
+// Description:    Implements class methods to handle a CAEN scaler type V820
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V820.cxx,v 1.10 2009-07-20 14:22:00 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbCaen_V820.cxx,v 1.11 2009-07-27 08:37:16 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -62,7 +62,7 @@ TMrbCaen_V820::TMrbCaen_V820(const Char_t * ModuleName, UInt_t BaseAddr) :
 	TString mType;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (!this->IsZombie()) {
 		if (gMrbConfig == NULL) {
 			gMrbLog->Err() << "No config defined" << endl;
@@ -89,7 +89,7 @@ TMrbCaen_V820::TMrbCaen_V820(const Char_t * ModuleName, UInt_t BaseAddr) :
 				DefineRegisters();
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gDirectory->Append(this);
-				fBlockReadout = kFALSE;
+				fBlockReadout = kTRUE;
 			} else {
 				this->MakeZombie();
 			}
@@ -105,7 +105,7 @@ void TMrbCaen_V820::DefineRegisters() {
 // Arguments:      --
 // Results:        --
 // Exceptions:
-// Description:    
+// Description:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -113,7 +113,7 @@ void TMrbCaen_V820::DefineRegisters() {
 	TMrbLofNamedX * bNames;
 	TMrbVMERegister * rp;
 
-// control bit set/clear 
+// control bit set/clear
 	kp = new TMrbNamedX(TMrbCaen_V820::kRegControl, "ControlBitSet");
 	rp = new TMrbVMERegister(this, 0, kp,
 								TMrbCaen_V820::kOffsControlBitSet,
@@ -126,7 +126,7 @@ void TMrbCaen_V820::DefineRegisters() {
 
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("ControlBitSet");
-	bNames->AddNamedX(kMrbControlBits);	
+	bNames->AddNamedX(kMrbControlBits);
 	bNames->SetPatternMode();
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode();
@@ -181,8 +181,8 @@ Bool_t TMrbCaen_V820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
-		case TMrbConfig::kModuleClearModule:
 		case TMrbConfig::kModuleReadModule:
+		case TMrbConfig::kModuleClearModule:
 		case TMrbConfig::kModuleFinishReadout:
 		case TMrbConfig::kModuleStartAcquisition:
 		case TMrbConfig::kModuleStopAcquisition:
@@ -207,7 +207,7 @@ Bool_t TMrbCaen_V820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 
 
 Bool_t TMrbCaen_V820::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTag TagIndex,
-															TMrbVMEChannel * Channel,
+															TMrbModuleChannel * Channel,
 															Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -215,7 +215,7 @@ Bool_t TMrbCaen_V820::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 // Purpose:        Write a piece of code for a caen tdc
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
-//                 TMrbVMEChannel * Channel     -- channel
+//                 TMrbModuleChannel * Channel  -- channel
 //                 Int_t Value                  -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:

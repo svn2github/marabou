@@ -6,7 +6,7 @@
 // @(#)Author:     R. Lutter
 // @(#)Revision:   SCCS:  %W%
 // @(#)Date:       %G%
-// Keywords:       
+// Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
 %%BeginOfCode%%
@@ -72,7 +72,7 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-					RDO_BLTI_32($nofParams);		/* $moduleName: read $nofParams scaler data a 32 bits */
+					for (caen_v820_wc = 0; caen_v820_wc < $nofParams; caen_v820_wc++) RDO_C2MI_32();		/* $moduleName: read $nofParams scaler data a 32 bits */
 %%EndOfCode%%
 %%READ_MODULE%%
 
@@ -89,12 +89,12 @@
 %%BeginOfCode%%
 					RDO_2MEM_32($subaddr)		/* store subaddr $chnNo */
 %%EndOfCode%%
-%%WRITE_SUBADDR%% 
+%%WRITE_SUBADDR%%
 
 %%BeginOfCode%%
 					RDO_2MEM_32($data)			/* store data word */
 %%EndOfCode%%
-%%STORE_DATA%% 
+%%STORE_DATA%%
 
 %%BeginOfCode%%
 					CAEN_V820_SOFT_CLEAR($moduleName);		/* clear scaler $moduleName */
@@ -104,7 +104,7 @@
 %%BeginOfCode%%
 					RDO_SETUP_VME($moduleName, CAEN_V820_R_COUNTER0 + $chnNo * sizeof(unsigned long));	/* setup read module $moduleName, start with param $chnName */
 %%EndOfCode%%
-%%SETUP_READOUT%%	
+%%SETUP_READOUT%%
 
 %%BeginOfCode%%
 					CAEN_V820_SOFT_CLEAR($moduleName);		/* clear scaler $moduleName */
@@ -138,7 +138,7 @@ void caen_v820_module_info(volatile unsigned short * firmWare) {
 	unsigned short boardIdMSB, boardIdLSB;
 	int serial, boardId;
 	char str[256];
-	
+
 	boardIdMSB = *(firmWare + 0x3A / sizeof(unsigned short)) & 0xFF;
 	boardIdLSB = *(firmWare + 0x3E / sizeof(unsigned short)) & 0xFF;
 	boardId = (int) (boardIdMSB << 8) + (int) boardIdLSB;

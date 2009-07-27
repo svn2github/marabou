@@ -8,8 +8,8 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.21 2009-05-08 16:24:51 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbModule.h,v 1.22 2009-07-27 08:37:16 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -129,7 +129,7 @@ class TMrbModule : public TNamed {
 		inline Int_t GetTimeOffset() const { return(fTimeOffset); };
 
 		inline Bool_t CheckID(TMrbConfig::EMrbModuleID ModuleID) const { return(fModuleID.GetIndex() == ModuleID); };
-		
+
 		inline Int_t GetNofShortsPerChannel() const { return(fNofShortsPerChannel); };	// 16 bit words per channel
 		inline Int_t GetNofShortsPerDatum() const { return(fNofShortsPerDatum); };		// 16 bit words per datum
 		inline Int_t GetNofDataBits() const { return(fNofDataBits); };					// data bits
@@ -137,7 +137,7 @@ class TMrbModule : public TNamed {
 		inline Int_t GetNofChannels() const { return(fNofChannels); }; 				// max number of channels
 		Int_t GetNofChannelsUsed() const; 											// calculate number of channels in use
 		UInt_t GetPatternOfChannelsUsed() const; 										// pattern of channels actually used
-		Bool_t CheckIfPatternIsContiguous() const;						// check if channels have been assigned contiguously 
+		Bool_t CheckIfPatternIsContiguous() const;						// check if channels have been assigned contiguously
 		inline TObjArray * GetLofChannels() { return(&fChannelSpec); };			// list of channels
 		const Char_t * GetLofChannelsAsString(TString & LofChannels) const;
 
@@ -148,12 +148,12 @@ class TMrbModule : public TNamed {
 		virtual Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
 		virtual Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) { return(kFALSE); };  	// generate code for given channel
-		virtual Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbModuleChannel * Channel, Int_t Value = 0) { return(kFALSE); }; 
+		virtual Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbModuleChannel * Channel, Int_t Value = 0) { return(kFALSE); };
 
 		virtual Bool_t MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, const Char_t * Extension);	// generate part of analyzing code
 
 		virtual Bool_t MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag TagIndex, const Char_t * ResourceName) { return(kFALSE); };
-		
+
 		inline Bool_t IsCamac() const { return((fModuleType.GetIndex() & TMrbConfig::kModuleCamac) != 0); }; // camac or vme?
 		inline Bool_t IsVME() const { return((fModuleType.GetIndex() & TMrbConfig::kModuleVME) != 0); }; 	// ...
 
@@ -172,7 +172,7 @@ class TMrbModule : public TNamed {
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 					// normal code generation
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
 		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
-		
+
 		inline void CreateHistoArray(const Char_t * ArrayName = NULL) {		// create array of histograms and write .histlist file
 			fCreateHistoArray = kTRUE;
 			fHistoArrayName = ArrayName ? ArrayName : this->GetName();
@@ -232,6 +232,6 @@ class TMrbModule : public TNamed {
 		TObjArray fChannelSpec;					// channel specifications (type TMrbModuleChannel *)
 
 	ClassDef(TMrbModule, 1) 	// [Config] Base class describing a module (CAMAC or VME)
-};	
+};
 
 #endif

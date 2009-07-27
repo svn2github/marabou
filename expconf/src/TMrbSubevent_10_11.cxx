@@ -8,8 +8,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_10_11.cxx,v 1.9 2009-07-20 14:22:00 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent_10_11.cxx,v 1.10 2009-07-27 08:37:16 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -129,7 +129,6 @@ Bool_t TMrbSubevent_10_11::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 			while (param) {
 				thisChannel = param->GetAddr();
 
-				cout << "@@@ " << param->Parent()->GetName() << " " << param->GetName() << " " << param->GetOffset() << endl;
 				if (param->Parent() != parentModule) {
 					parentModule = (TMrbModule *) param->Parent();
 					shortsPerParam = parentModule->GetNofShortsPerChannel();
@@ -138,7 +137,6 @@ Bool_t TMrbSubevent_10_11::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 						Template.WriteCode(RdoStrm);
 						shortsSoFar++;
 					}
-					cout << "@@@ setup" << endl;
 					parentModule->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleSetupReadout, param);
 					nextChannel = thisChannel;
 				}
@@ -157,11 +155,10 @@ Bool_t TMrbSubevent_10_11::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 					parNo++;
 					shortsSoFar += shortsPerParam;
 				} else {
-					cout << "@@@ read module" << endl;
 					((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadModule);
 					parNo += parentModule->GetNofChannelsUsed();
 					shortsSoFar += parentModule->GetNofChannelsUsed() * shortsPerParam;
-					param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;				
+					param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;
 				}
 			}
 			miter = fLofModules.MakeIterator();
