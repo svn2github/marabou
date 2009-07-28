@@ -5,9 +5,9 @@
 # Targets:         M_analyze     -- user's analyze program
 #                  clean         -- clean-up
 # Author:          %%AUTHOR%%
-# Revision:         
-# Date:            
-# URL:             
+# Revision:
+# Date:
+# URL:
 #/////////////////////////////////////////////////////////////////////////////
 
 AFILE 		=	%%ANALYZE_FILE%%
@@ -34,10 +34,9 @@ TMRBLIBS	=	-L$(MARABOU)/lib \
 				-lTMrbAnalyze -lTMrbTransport -lTMrbUtils -lMutex
 
 # Header files which %%ANALYZE_FILE%%.cxx depends on
-USER_HDRS	=	\
-%%MAKE_USER_HEADERS%%
-				$(AFILE).h \
-				$(AFILE)Globals.h
+USER_HDRS	=	$(AFILE).h \
+				$(AFILE)Globals.h \
+				%%MAKE_USER_HEADERS%%
 
 %%MAKE_ULIB_HEADERS%%
 
@@ -88,7 +87,7 @@ $userObj:	$(USER_HDRS) $(ULIB_HDRS) $userDir$userCode
 %%MAKE_USER_RULES%%
 
 %%BeginOfCode%%
-$userLib:	
+$userLib:
 			@cd $ulibDir; make $ulibMake
 
 %%EndOfCode%%

@@ -8,10 +8,10 @@
 // Description:    %%ANALYZE_TITLE%%
 //
 // Author:         %%AUTHOR%%
-// Revision:         
+// Revision:
 // Date:           %%CREATION_DATE%%
-// URL:            
-// Keywords:       
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
@@ -26,6 +26,8 @@
 #include "TMrbLogger.h"
 #include "TMrbString.h"
 #include "TMrbNamedArray.h"
+#include "TMrbVar.h"
+#include "TMrbWdw.h"
 
 #include "TMrbAnalyze.h"
 #include "TMrbTransport.h"

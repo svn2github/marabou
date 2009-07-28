@@ -6,10 +6,10 @@
 //
 // Header files:   %%ANALYZE_FILE%%.h     -- class definitions
 // Author:         %%AUTHOR%%
-// Revision:         
+// Revision:
 // Date:           %%CREATION_DATE%%
-// URL:            
-// Keywords:       
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #define _MARABOU_MAIN_
@@ -77,10 +77,10 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 // Purpose:        Instantiate user objects, initialize values
 // Arguments:      TMrbIOSpec * IOSpec  -- i/o specifications
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Instantiates events, histgrams, windows etc. and
 //                 initializes values.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	verboseMode = (Bool_t) gEnv->GetValue("TMrbAnalyze.VerboseMode", kFALSE);
@@ -207,8 +207,8 @@ Bool_t TMrbAnalyze::HandleMessage(const Char_t * Args){
 // Description:    Called by message handler.
 //                 Format of argument string depends on caller's definitions
 //                 and has to be decoded according to his requirements.
-// Exceptions:     
-// Keywords:       
+// Exceptions:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	return(kFALSE);
@@ -225,8 +225,8 @@ Bool_t TMrbAnalyze::ReloadParams(TMrbIOSpec * IOSpec) {
 // Arguments:      TMrbIOSpec * IOSpec   -- i/o specifications
 // Results:        kTRUE/kFALSE
 // Description:    Reloads params (vars, wdws, functions etc.) from root file
-// Exceptions:     
-// Keywords:       
+// Exceptions:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t sts = this->ReloadVarsAndWdws(IOSpec);
@@ -246,8 +246,8 @@ Bool_t TMrbAnalyze::FinishRun(TMrbIOSpec * IOSpec, Bool_t BeforeSH) {
 //                 Bool_t BeforeSH       -- kTRUE if before saving histos
 // Results:        kTRUE/kFALSE
 // Description:    User may overwrite this method by his own
-// Exceptions:     
-// Keywords:       
+// Exceptions:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	return(kTRUE);
@@ -263,8 +263,8 @@ Bool_t TMrbAnalyze::AdjustWindowPointers() {
 // Arguments:      --
 // Results:        kTRUE/kFALSE
 // Description:    Update pointers to windows (2-dim only).
-// Exceptions:     
-// Keywords:       
+// Exceptions:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
@@ -282,9 +282,9 @@ Bool_t TMrbAnalyze::WriteRootTree(TMrbIOSpec * IOSpec) {
 // Purpose:        Open a file to write raw data to tree
 // Arguments:      TMrbIOSpec * IOSpec   -- i/o specifications
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Opens a ROOT file and creates trees.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString rootFile;
@@ -347,10 +347,10 @@ Bool_t TMrbAnalyze::OpenRootFile(TMrbIOSpec * IOSpec) {
 // Purpose:        Open a file to replay tree data
 // Arguments:      TMrbIOSpec * IOSpec    -- i/o specifications
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Opens a ROOT file for input.
 //                 Replay mode only.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString rootFile;
@@ -434,9 +434,9 @@ Bool_t TMrbAnalyze::ReplayEvents(TMrbIOSpec * IOSpec) {
 // Purpose:        Read data from ROOT file
 // Arguments:      TMrbIOSpec * IOSpec  -- i/o specifications
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Replays event data.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t sts;
@@ -473,10 +473,10 @@ void TMrbAnalyze::SetScaleDown(Int_t ScaleDown) {
 // Name:           TMrbAnalyze::SetScaleDown
 // Purpose:        Set a scale-down value common to all events
 // Arguments:      Int_t ScaleDown    -- scale-down factor
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Defines a global scale-down factor valid for all events.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fScaleDown = ScaleDown;
@@ -563,7 +563,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 			return(kFALSE);
 	}
 	return(kTRUE);
-}					
+}
 
 %%BeginOfCode%%
 // dummy methods if user extensions are not activated
