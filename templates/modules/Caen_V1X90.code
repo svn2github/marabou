@@ -4,9 +4,9 @@
 // Purpose:        Code for CAEN tdc V1190
 // Description:    Contains template code to operate a V1190 tdc module
 // Author:         R. Lutter
-// Revision:       
-// Date:           
-// Keywords:       
+// Revision:
+// Date:
+// Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
 %%BeginOfCode%%
@@ -75,12 +75,12 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%WRITE_SUBADDR%% 
+%%WRITE_SUBADDR%%
 
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%STORE_DATA%% 
+%%STORE_DATA%%
 
 %%BeginOfCode%%
 
@@ -90,7 +90,7 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%SETUP_READOUT%%	
+%%SETUP_READOUT%%
 
 %%BeginOfCode%%
 
@@ -103,7 +103,7 @@
 %%START_ACQUISITION%%
 
 %%BeginOfCode%%
-		
+
 %%EndOfCode%%
 %%START_ACQUISITION_GROUP%%
 
@@ -113,7 +113,7 @@
 %%STOP_ACQUISITION%%
 
 %%BeginOfCode%%
-		
+
 %%EndOfCode%%
 %%STOP_ACQUISITION_GROUP%%
 
@@ -153,7 +153,7 @@ static struct s_caen_v1x90 * s_$moduleName;
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L$marabouPath/powerpc/lib/$lynxVersion -lCaen_v1x90
+	-L/nfs/marabou/lib -lCaen_v1x90
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 

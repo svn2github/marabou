@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.177 2009-07-20 07:09:44 Marabou Exp $
-// Date:           
+// Revision:       $Id: TMrbConfig.cxx,v 1.178 2009-07-28 08:15:56 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 #include <cstdlib>
@@ -171,7 +171,7 @@ const SMrbNamedXShort kMrbLofReadoutTags[] =
 								{TMrbConfig::kRdoUserDefinedDefines,		"USER_DEFINED_DEFINES" 	 	},
 								{0, 										NULL						}
 							};
-							
+
 //_________________________________________________________________________________________________________ special camac readout tags
 
 const SMrbNamedXShort kMrbLofModuleTags[] =
@@ -203,7 +203,7 @@ const SMrbNamedXShort kMrbLofModuleTags[] =
 								{TMrbConfig::kModuleDefineLibraries,		"DEFINE_LIBRARIES"	 		},
 								{0, 										NULL						}
 							};
-							
+
 //_________________________________________________________________________________________________________ tag words in MakeAnalyzeCode()
 
 const SMrbNamedXShort kMrbLofAnalyzeTags[] =
@@ -581,7 +581,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	fMessageLogger = gMrbLog;
-		
+
 	if (gMrbConfig != NULL) {
 		gMrbLog->Err() << "Config already defined - " << gMrbConfig->fName << endl;
 		gMrbLog->Flush(this->ClassName());
@@ -617,24 +617,24 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		fLofDataTypes.SetName("Data Types");					// ... data types
 		fLofDataTypes.SetPatternMode();
-		fLofDataTypes.AddNamedX(kMrbLofDataTypes);	
+		fLofDataTypes.AddNamedX(kMrbLofDataTypes);
 
 		fLofCrateTypes.SetName("Crate Types"); 					// ... crate types
-		fLofCrateTypes.AddNamedX(kMrbLofCrateTypes);	
+		fLofCrateTypes.AddNamedX(kMrbLofCrateTypes);
 
 		fLofControllerTypes.SetName("Controller Types"); 		// ... controller types
-		fLofControllerTypes.AddNamedX(kMrbLofControllerTypes);	
+		fLofControllerTypes.AddNamedX(kMrbLofControllerTypes);
 
 		fLofModuleTypes.SetName("Module Types");				// ... module types
 		fLofModuleTypes.SetPatternMode();
-		fLofModuleTypes.AddNamedX(kMrbLofModuleTypes);	
+		fLofModuleTypes.AddNamedX(kMrbLofModuleTypes);
 
 		fLofHistoTypes.SetName("Histogram Types");				// ... histogram types
 		fLofHistoTypes.SetPatternMode();
-		fLofHistoTypes.AddNamedX(kMrbLofHistoTypes);	
+		fLofHistoTypes.AddNamedX(kMrbLofHistoTypes);
 
 		fLofReadoutTags.SetName("Readout Tags");				// ... readout tags
-		fLofReadoutTags.AddNamedX(kMrbLofReadoutTags);	
+		fLofReadoutTags.AddNamedX(kMrbLofReadoutTags);
 
 		fLofAnalyzeTags.SetName("Analyze Tags");				// ... analyze tags
 		fLofAnalyzeTags.AddNamedX(kMrbLofAnalyzeTags);
@@ -685,20 +685,20 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofScalers.SetName("List of scalers");
 		fLofMuxs.SetName("List of multiplexers");
 
-		UpdateTriggerTable();									// initialize trigger table								
+		UpdateTriggerTable();									// initialize trigger table
 
 		fSevtSize = 0;
 
 		fLofUserHistograms.Delete();							// init list of user-defined histograms
 		fLofHistoArrays.Delete();								// init list of histogram arrays
 		fLofHistoConditions.Delete();							// init list of histogram booking conds
-		fLofOnceOnlyTags.Delete();								// init list of once-only code files		
-		fLofXhits.Delete(); 									// init list of special hits		
-		fLofRdoIncludes.Delete(); 								// init list of MBS includes		
-		fLofRdoLibs.Delete(); 									// init list of MBS libs		
+		fLofOnceOnlyTags.Delete();								// init list of once-only code files
+		fLofXhits.Delete(); 									// init list of special hits
+		fLofRdoIncludes.Delete(); 								// init list of MBS includes
+		fLofRdoLibs.Delete(); 									// init list of MBS libs
 
 		fUserMacroToBeCalled = kFALSE;							// don't call user macro per default
-		
+
 		fLofUserIncludes.SetName("User code to be included");
 		fLofUserIncludes.Delete();
 		fLofUserIncludes.SetPatternMode();
@@ -746,7 +746,7 @@ void TMrbConfig::UpdateTriggerTable(Int_t Trigger) {
 // Name:           TMrbConfig::UpdateTriggerTable
 // Purpose:        Update trigger table
 // Arguments:      Int_t Trigger      -- trigger number
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Inserts a new trigger into trigger table, then updates
 //                 table data.
@@ -1385,7 +1385,7 @@ Bool_t TMrbConfig::SetControllerType(const Char_t * Crate, const Char_t * Type) 
 
 	TMrbCNAF cnaf;
 	Int_t crate;
-		
+
 	cnaf.SetBit(TMrbCNAF::kCnafCrate, TMrbCNAF::kCnafCrate);
 	if (cnaf.Ascii2Int(Crate)) {					// decode crate
 		crate = cnaf.Get(TMrbCNAF::kCnafCrate);
@@ -1412,7 +1412,7 @@ Bool_t TMrbConfig::SetControllerType(Int_t Crate, const Char_t * Type) {
 
 	EMrbCrateType cType;
 	TMrbNamedX * cntrl;
-	
+
 	cType = gMrbConfig->GetCrateType(Crate);
 	if (cType == TMrbConfig::kCrateUnused || cType == TMrbConfig::kCrateCamac) {
 		if ((cntrl = fLofControllerTypes.FindByName(Type, TMrbLofNamedX::kFindUnique)) == NULL) {
@@ -1525,7 +1525,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	TString prefix;
 
 	TString pos;
-		
+
 	ofstream rdoStrm;
 
 	TMrbTemplate rdoTmpl;
@@ -1533,7 +1533,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	TObjArray filesToCreate;
 
 	TMrbLofNamedX readoutOptions;
-	
+
 	fReadoutOptions = readoutOptions.CheckPatternShort(this->ClassName(), "MakeReadoutCode", Options, kMrbReadoutOptions);
 	if (fReadoutOptions == TMrbLofNamedX::kIllIndexBit) return(kFALSE);
 
@@ -1546,7 +1546,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 
 	prefix = this->GetName();
 	prefix(0,1).ToUpper();
-	
+
 	if (*CodeFile == '\0') {
 		cfile = prefix;
 		cfile += "Readout";
@@ -1610,7 +1610,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 			continue;
 		}
 		rdoStrm.open(cf, ios::out);
-		if (!rdoStrm.good()) {	
+		if (!rdoStrm.good()) {
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 			continue;
@@ -1683,7 +1683,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									module->MakeReadoutCode(rdoStrm, kModuleDefineIncludePaths);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 							TObjString * o;
 							TString iclPath = "";
@@ -1693,10 +1693,9 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iclPath += " ";
 							}
 							iclPath += "-I";
-							TString ip = gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "$(MARABOU)/powerpc/include");
+							TString ip = gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "/nfs/marabou/include");
 							gSystem->ExpandPathName(ip);
 							iclPath += ip;
-							iclPath.ReplaceAll("/share/cernlib", "/usr/cern");
 							rdoStrm << rdoTmpl.Encode(line, iclPath.Data()) << endl << endl;
 						}
 						break;
@@ -1710,7 +1709,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									module->MakeReadoutCode(rdoStrm, kModuleDefineLibraries);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 							TObjString * o;
 							TString libString = "";
@@ -1719,13 +1718,11 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								libString += o->String();
 								libString += " ";
 							}
-							TString rdoLibs = "-L$(MARABOU)/powerpc/lib/";
-							rdoLibs += this->GetLynxVersion(kTRUE);
+							TString rdoLibs = "-L/nfs/marabou/lib/";
 							rdoLibs += " -lUti";
 							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", rdoLibs.Data());
 							gSystem->ExpandPathName(ip);
 							libString += ip;
-							libString.ReplaceAll("/share/cernlib", "/usr/cern");
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
 						}
 						break;
@@ -1955,7 +1952,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									module->MakeReadoutCode(rdoStrm, kModuleInitCommonCode);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 						}
 						break;
@@ -2093,7 +2090,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							rdoTmpl.InitializeCode("%CE%");
 							rdoTmpl.WriteCode(rdoStrm);
 							crate = this->FindCrate(crate);
-						}   
+						}
 						rdoTmpl.InitializeCode("%E%");
 						rdoTmpl.WriteCode(rdoStrm);
 						break;
@@ -2138,7 +2135,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							rdoTmpl.InitializeCode("%CE%");
 							rdoTmpl.WriteCode(rdoStrm);
 							crate = this->FindCrate(crate);
-						}   
+						}
 						rdoTmpl.InitializeCode("%E%");
 						rdoTmpl.WriteCode(rdoStrm);
 						break;
@@ -2152,7 +2149,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									module->MakeReadoutCode(rdoStrm, kModuleDefineGlobalsOnce);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 						}
 						break;
@@ -2161,7 +2158,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TIterator * modIter = fLofModules.MakeIterator();
 							while (module = (TMrbModule *) modIter->Next()) {
 								if (module->GetMbsBranchNo() == pp->GetB()) module->MakeReadoutCode(rdoStrm, kModuleDefineGlobals);
-							}   
+							}
 						}
 						break;
 					case TMrbConfig::kRdoDefineLocalVarsInit:
@@ -2174,7 +2171,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									module->MakeReadoutCode(rdoStrm, kModuleDefineLocalVarsInit);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 						}
 						break;
@@ -2188,7 +2185,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									module->MakeReadoutCode(rdoStrm, kModuleDefineLocalVarsReadout);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 						}
 						break;
@@ -2202,7 +2199,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									module->MakeReadoutCode(rdoStrm, kModuleDefinePrototypes);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 						}
 						break;
@@ -2216,7 +2213,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									module->MakeReadoutCode(rdoStrm, kModuleUtilities);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 						}
 						break;
@@ -2230,7 +2227,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									module->MakeReadoutCode(rdoStrm, kModuleDefs);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 						}
 						break;
@@ -2258,7 +2255,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 				}
 			}
-		}	
+		}
 		rdoStrm.close();
 		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
 		gMrbLog->Flush("", "", setblue);
@@ -2318,7 +2315,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 	TString anaTemplateFile;
 	TString prefix;
 	TString rcFile;
-		
+
 	TMrbNamedX * icl;
 	TString iclFile, iclPrefix, iclEvt;
 	TString srcPath;
@@ -2330,7 +2327,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 	TObjArray filesToCreate;
 
 	TMrbLofNamedX analyzeOptions;
-	
+
 	fAnalyzeOptions = analyzeOptions.CheckPatternShort(this->ClassName(), "MakeAnalyzeCode", Options, kMrbAnalyzeOptions);
 	if (fAnalyzeOptions == TMrbLofNamedX::kIllIndexBit) return(kFALSE);
 
@@ -2346,10 +2343,10 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 
 	srcPath = gEnv->GetValue("TMrbConfig.SrcPath", gSystem->WorkingDirectory());
 	gSystem->ExpandPathName(srcPath);
-	
+
 	prefix = this->GetName();
 	prefix(0,1).ToUpper();
-	
+
 	if (*CodeFile == '\0') {
 		cfile = prefix;
 		cfile += "Analyze";
@@ -2402,7 +2399,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 			continue;
 		}
 		anaStrm.open(cf, ios::out);
-		if (!anaStrm.good()) {	
+		if (!anaStrm.good()) {
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 			continue;
@@ -2436,7 +2433,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 			gMrbLog->Out()  << "Using template file " << fileSpec << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 		}
-	
+
 		anaTemplateFile = fileSpec;
 
 		if (!anaTmpl.Open(anaTemplateFile, &fLofAnalyzeTags)) {
@@ -2561,7 +2558,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.Substitute("$className", ucl->GetName());
 									anaTmpl.WriteCode(anaStrm);
 								}
-							}   
+							}
 						}
 						break;
 					case TMrbConfig::kAnaReservedEvents:
@@ -2615,7 +2612,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									module->MakeAnalyzeCode(anaStrm, tagIdx, pp->GetX());
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 						}
 						break;
@@ -3015,7 +3012,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kAnaMakeLibNew:
 						anaStrm << anaTmpl.Encode(line, fUseMapFile ? "--new" : "") << endl;
-						break;						
+						break;
 					case TMrbConfig::kAnaEventClassInstance:
 						{
 							Bool_t first = kTRUE;
@@ -3115,7 +3112,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.WriteCode(anaStrm);
 								}
 							}
-						} 
+						}
 						break;
 					case TMrbConfig::kAnaEventSetFakeMode:
 					case TMrbConfig::kAnaEventSetReplayMode:
@@ -3152,7 +3149,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.WriteCode(anaStrm);
 								}
 							}
-						} 
+						}
 						break;
 					case TMrbConfig::kAnaEventIdEnum:
 						{
@@ -3642,7 +3639,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										anaTmpl.WriteCode(anaStrm);
 										parNo++;
 									}
-								}		
+								}
 							}
 							if (header) {
 								anaTmpl.InitializeCode("%E%");
@@ -3665,7 +3662,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaTmpl.WriteCode(anaStrm);
 								}
 								onceOnly.Add(new TNamed(module->ClassName(), ""));
-							}   
+							}
 							onceOnly.Delete();
 						}
 						break;
@@ -3927,9 +3924,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 	TString templatePath;
 
 	TString tf;
-	
+
 	TMrbTemplate anaTmpl;
-	
+
 	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetAnalyzeOptions() & TMrbConfig::kAnaOptVerbose) != 0);
@@ -3966,7 +3963,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 	}
 
 	this->AddToTagList(tf.Data(), TagIndex);
-	
+
  	anaTemplateFile = fileSpec;
 
 	if (!anaTmpl.Open(anaTemplateFile, &gMrbConfig->fLofAnalyzeTags)) {
@@ -4056,7 +4053,7 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 	TString templatePath;
 	TString cfgTemplateFile;
 	TString prefix;
-	
+
 	ofstream cfgStrm;
 
 	TMrbTemplate cfgTmpl;
@@ -4080,7 +4077,7 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 
 	prefix = this->GetName();
 	prefix(0,1).ToUpper();
-	
+
 	if (*CodeFile == '\0') {
 		cfile = prefix;
 		cfile += "Config";
@@ -4104,7 +4101,7 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 			continue;
 		}
 		cfgStrm.open(cf, ios::out);
-		if (!cfgStrm.good()) {	
+		if (!cfgStrm.good()) {
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeConfigCode");
 			continue;
@@ -4398,7 +4395,7 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 	TString expName;
 
 	TString iniTag;
-	
+
 	TMrbEvent * evt;
 	TString evtNameUC;
 	TString evtNameLC;
@@ -4420,7 +4417,7 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 	TString templatePath;
 	TString rcTemplateFile;
 	TString prefix;
-	
+
 	ofstream rcStrm;
 
 	TMrbTemplate rcTmpl;
@@ -4440,7 +4437,7 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 
 	prefix = this->GetName();
 	prefix(0,1).ToUpper();
-	
+
 	cfile = ".";
 	cfile += prefix;
 	cfile += "Config";
@@ -4461,7 +4458,7 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 			continue;
 		}
 		rcStrm.open(cf, ios::out);
-		if (!rcStrm.good()) {	
+		if (!rcStrm.good()) {
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeRcFile");
 			continue;
@@ -4708,7 +4705,7 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 
 	fUserMacro = MacroName;
 	if (fUserMacro.Length() == 0) fUserMacro = "UserMacro.C";
-	
+
 	TString macroPath = gEnv->GetValue("Root.MacroPath", ".:$HOME/rootmacros:$MARABOU/macros");
 	gSystem->ExpandPathName(macroPath);
 	TString fileSpec;
@@ -4763,7 +4760,7 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 							break;
 						}
 					}
-				} else {								// $ROOTSYS or $MARABOU have changed since last call -> recompile UserMacro.C 
+				} else {								// $ROOTSYS or $MARABOU have changed since last call -> recompile UserMacro.C
 					suffix = "++g";
 				}
 			} else {
@@ -4787,7 +4784,7 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 				gMrbLog->Out()  << "Loading user macro \"" << fileSpec << "\" (interpreter mode)"<< endl;
 				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
 			}
-		}	
+		}
 		Int_t errCode;
 		Int_t sts = gROOT->LoadMacro(aclic.Data(), &errCode);
 		if (sts == -1 || errCode != 0) {
@@ -4797,14 +4794,14 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 		} else if (gMrbConfig->IsVerbose()) {
 			gMrbLog->Out()  << "Initializing user macro \"" << fileSpec << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "CallUserMacro");
-		}	
+		}
 		TMrbString cmd = fUserMacroCmd;
 		cmd += "Init()";
 		gROOT->ProcessLine(cmd.Data());
 	}
 	return(fUserMacroToBeCalled);
 }
-	
+
 Bool_t TMrbConfig::CreateUserMacro() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -4825,7 +4822,7 @@ Bool_t TMrbConfig::CreateUserMacro() {
 	if (!fileSpec.IsNull()) {
 		ofstream macroStrm(fUserMacro.Data(), ios::out);
 		TMrbTemplate macroTmpl;
-		if (macroStrm.good() && macroTmpl.Open(fileSpec.Data(), &fLofUserMacroTags)) {			
+		if (macroStrm.good() && macroTmpl.Open(fileSpec.Data(), &fLofUserMacroTags)) {
 			for (;;) {
 				TString line;
 				TMrbNamedX * macroTag = macroTmpl.Next(line);
@@ -4864,7 +4861,7 @@ Bool_t TMrbConfig::CreateUserMacro() {
 			gMrbLog->Out() << "Generating prototype for user macro \"" << fUserMacro << "\" (has to be edited)" << endl;
 			gMrbLog->Flush(this->ClassName(), "CreateUserMacro");
 			return(kTRUE);
-		}	
+		}
 	} else {
 		gMrbLog->Err() << "Can't generate prototype for user macro \"" << fUserMacro << "\" - file \"UserMacro.C.code\" not found" << endl;
 		gMrbLog->Flush(this->ClassName(), "CreateUserMacro");
@@ -4872,7 +4869,7 @@ Bool_t TMrbConfig::CreateUserMacro() {
 	}
 	return(kFALSE);
 }
-	
+
 Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Char_t * TagWord) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -4886,10 +4883,10 @@ Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Cha
 // Description:    Executes user macro given by method "CallUserMacro".
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
-	
+
 	Bool_t result;
 	TMrbString cmd;
-		
+
 	if (fUserMacroToBeCalled) {
 		cmd = fUserMacroCmd;
 		cmd.SetBase(16);
@@ -4911,7 +4908,7 @@ Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Cha
 		return(kFALSE);
 	}
 }
-							
+
 Bool_t TMrbConfig::WriteDeadTime(const Char_t * Scaler, Int_t Interval) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -5258,11 +5255,11 @@ Bool_t TMrbConfig::WriteUtilityProtos() {
 				gMrbLog->Out()  << "Using prototype defs in file " << protoFile << endl;
 				gMrbLog->Flush(this->ClassName(), "WriteUtilityProtos");
 			}
-		}			
+		}
 	}
 	return(kTRUE);
 }
-	
+
 Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib, Bool_t MakeIt) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -5508,7 +5505,7 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 			return(kFALSE);
 		}
 	}
-	
+
 	ptPath = fileSpec;
 	ptPath.ReplaceAll(".cxx", ".h");
 	if (gSystem->AccessPathName(ptPath.Data()) != 0) {
@@ -5624,7 +5621,7 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 			}
 		}
 	}
-	
+
 	if (!classOk) {
 		gMrbLog->Err()  << "Prototype file " << ptPath << " doesn't contain any class definition" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
@@ -5669,7 +5666,7 @@ Bool_t TMrbConfig::CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent,
 	ux.Which(fileSpec, templatePath.Data(), tmplFile.Data());
 	if (!fileSpec.IsNull()) {
 		TMrbTemplate uevtTmpl;
-		if (uevtTmpl.Open(fileSpec.Data(), &fLofUserEventTags)) {			
+		if (uevtTmpl.Open(fileSpec.Data(), &fLofUserEventTags)) {
 			for (;;) {
 				TString line;
 				TMrbNamedX * uevtTag = uevtTmpl.Next(line);
@@ -5716,13 +5713,13 @@ Bool_t TMrbConfig::CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent,
 				}
 			}
 			return(kTRUE);
-		}	
+		}
 	} else {
 		return(kFALSE);
 	}
 	return(kFALSE);
 }
-	
+
 Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -5758,7 +5755,7 @@ Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 	while (pp = (packNames *) ppIter->Next()) {
 		cf = pp->GetF() + pp->GetX();
 		outStrm.open(cf, ios::out);
-		if (!outStrm.good()) {	
+		if (!outStrm.good()) {
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
 			gMrbLog->Flush(this->ClassName(), "CreateXhit");
 			continue;
@@ -5781,7 +5778,7 @@ Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 			gMrbLog->Out()  << "Using template file " << fileSpec << endl;
 			gMrbLog->Flush(this->ClassName(), "CreateXhit");
 		}
-	
+
 		TString xHitTemplateFile = fileSpec;
 
 		if (!xHitTmpl.Open(xHitTemplateFile, &fLofXhitTags)) {
@@ -5845,14 +5842,14 @@ Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 						break;
 				}
 			}
-		}	
+		}
 		outStrm.close();
 		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
 		gMrbLog->Flush("", "", setblue);
 	}
 	return(kTRUE);
 }
-	
+
 void TMrbConfig::AddEvent(TMrbEvent * Evt) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -6105,7 +6102,7 @@ void TMrbConfig::Version() const {
 // Name:           TMrbConfig::Version
 // Purpose:        Output version
 // Arguments:      --
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Welcome to TMrbConfig.
 // Keywords:
@@ -6127,7 +6124,7 @@ void TMrbConfig::Version() const {
 	cout << setw(i1) << " ";
 	cout << vtext;
 	cout << setw(i2) << " ";
-	cout << "|" << endl; 
+	cout << "|" << endl;
 
 	cout << "  |  MARaBOU classes to describe exp configuration  |" << endl;
 	cout << "  |                  (c) R. Lutter                  |" << endl;
@@ -6609,7 +6606,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 //                 Double_t Xup            -- upper edge X
 //                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Books user-defined histograms.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -6664,7 +6661,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 //                 Double_t Xup            -- upper edge X
 //                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Books user-defined histograms.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -6699,7 +6696,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 //                 Double_t Yup            -- upper edge Y
 //                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Books user-defined histograms.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -6761,7 +6758,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 //                 Double_t Yup            -- upper edge Y
 //                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Books user-defined histograms.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -6790,7 +6787,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 //                 Char_t * Args           -- arglist
 //                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Books user-defined histograms.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -6845,7 +6842,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 //                 Char_t * Args           -- arglist
 //                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Books user-defined histograms.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -6875,7 +6872,7 @@ Bool_t TMrbConfig::BookRateHistogram(const Char_t * HistoName, const Char_t * Hi
 //                 Bool_t Loop             -- restart at end of range if kTRUE
 //                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Books rate histograms.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -6929,7 +6926,7 @@ Bool_t TMrbConfig::BookRateHistogram(const Char_t * ArrayName, const Char_t * Hi
 //                 Bool_t Loop             -- restart at end of range if kTRUE
 //                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Books user-defined histograms.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -6953,7 +6950,7 @@ TMrbNamedX * TMrbConfig::AddHistoToArray(const Char_t * ArrayName, const Char_t 
 // Arguments:      Char_t * ArrayName -- name of array
 //                 Char_t * HistoName -- name of histogram
 // Results:        TMrbNamedX * Array -- array specs
-// Exceptions:     
+// Exceptions:
 // Description:    Adds a histogram to given array.
 //                 Creates array if not yet existing.
 //                 Returns array specs.
@@ -6987,8 +6984,8 @@ TMrbNamedX * TMrbConfig::FindHistoArray(const Char_t * HistoName, TMrbNamedX * A
 // Purpose:        Find the array a histogram belongs to
 // Arguments:      Char_t * HistoName -- name of histogram
 //                 TMrbNamedX * After -- array to start with
-// Results:        TMrbNamedX * Array -- array 
-// Exceptions:     
+// Results:        TMrbNamedX * Array -- array
+// Exceptions:
 // Description:    Checks if a histogram is assigned to an array.
 //                 Returns array specs.
 // Keywords:
@@ -7050,7 +7047,7 @@ TMrbConfig * TMrbConfig::ReadFromFile(const Char_t * RootFile,  Option_t * Optio
 	}
 
 	cfgFile = new TFile(RootFile, "READ");
-	if (!cfgFile->IsOpen()) {	
+	if (!cfgFile->IsOpen()) {
 		gMrbLog->Err() << "Can't open root file " << RootFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadFromFile");
 		return(NULL);
@@ -7140,7 +7137,7 @@ Bool_t TMrbConfig::WriteToFile(const Char_t * ConfigFile,  Option_t * Options) {
 	} else {
 		cfgFile = new TFile(ConfigFile, "NEW");
 	}
-	if (!cfgFile->IsOpen()) {	
+	if (!cfgFile->IsOpen()) {
 		gMrbLog->Err() << "Can't write config file " << ConfigFile << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteToFile");
 		return(kFALSE);
@@ -7166,8 +7163,8 @@ void TMrbConfig::SetGlobalAddress() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::SetGlobalAddress
 // Purpose:        Set global address gMrbConfig
-// Arguments:      
-// Results:        
+// Arguments:
+// Results:
 // Exceptions:
 // Description:    Sets global variable gMrbConfig to `this'.
 //                 May be used when reading a config from file.
@@ -7182,8 +7179,8 @@ const Char_t * TMrbConfig::GetAuthor() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetAuthor
 // Purpose:        Get author's name from ldap database
-// Arguments: 
-// Results:        
+// Arguments:
+// Results:
 // Exceptions:
 // Description:    Reads the author's name via python-ldap.
 // Keywords:
@@ -7214,8 +7211,8 @@ const Char_t * TMrbConfig::GetMailAddr() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetMailAddr
 // Purpose:        Get author's mail address from ldap database
-// Arguments:      
-// Results:        
+// Arguments:
+// Results:
 // Exceptions:
 // Description:    Reads the author's name via python-ldap.
 // Keywords:
@@ -7257,7 +7254,7 @@ Bool_t TMrbConfig::NameNotLegal(const Char_t * ObjType, const Char_t * ObjName) 
 
 	const Char_t * cp;
 	Char_t c;
-		
+
 	TString nm = ObjName;
 	cp = nm.Data();
 	for (Int_t i = 0; i < nm.Length(); i++) {
@@ -7381,7 +7378,7 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 		TIterator * evtIter = fLofEvents.MakeIterator();
 		while (evt = (TMrbEvent *) evtIter->Next()) mbsSetup->ReadoutProc(0)->SetSevtSize(evt->GetTrigger(), fSevtSize);
 	}
-		
+
 	mbsSetup->Save();
 	delete mbsSetup;
 	return(kTRUE);
@@ -7562,7 +7559,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Int_t & IntVar) const {
 //                 Int_t & IntVar    -- where to write int value
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Gets value of a global variable 
+// Description:    Gets value of a global variable
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7590,7 +7587,7 @@ Int_t TMrbConfig::GetGlobI(const Char_t * Name) const {
 // Arguments:      Char_t * Name   -- variable name
 // Results:        Int_t IntVal    -- value
 // Exceptions:
-// Description:    Gets value of a global variable 
+// Description:    Gets value of a global variable
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7618,7 +7615,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Float_t & FloatVar) const {
 //                 Float_t & FloatVar  -- where to write float value
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Gets value of a global variable 
+// Description:    Gets value of a global variable
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7646,7 +7643,7 @@ Float_t TMrbConfig::GetGlobF(const Char_t * Name) const {
 // Arguments:      Char_t * Name      -- variable name
 // Results:        Float_t FloatVal   -- value
 // Exceptions:
-// Description:    Gets value of a global variable 
+// Description:    Gets value of a global variable
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7674,7 +7671,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Double_t & DblVar) const {
 //                 Double_t & DblVar    -- where to write double value
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Gets value of a global variable 
+// Description:    Gets value of a global variable
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7702,7 +7699,7 @@ Double_t TMrbConfig::GetGlobD(const Char_t * Name) const {
 // Arguments:      Char_t * Name    -- variable name
 // Results:        Double_t DblVal  -- value
 // Exceptions:
-// Description:    Gets value of a global variable 
+// Description:    Gets value of a global variable
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7730,7 +7727,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Bool_t & BoolVar) const {
 //                 Bool_t & BoolVar   -- where to write boolean value
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Gets value of a global variable 
+// Description:    Gets value of a global variable
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7758,7 +7755,7 @@ Bool_t TMrbConfig::GetGlobB(const Char_t * Name) const {
 // Arguments:      Char_t * Name      -- variable name
 // Results:        Bool_t BoolVal     -- value
 // Exceptions:
-// Description:    Gets value of a global variable 
+// Description:    Gets value of a global variable
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7786,7 +7783,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, TString & Str) const {
 //                 TString & Str     -- where to write string
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Gets value of a global variable 
+// Description:    Gets value of a global variable
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -7815,7 +7812,7 @@ const Char_t * TMrbConfig::GetGlobStr(const Char_t * Name) const {
 // Arguments:      Char_t * Name     -- variable name
 // Results:        Char_t * Value    -- value
 // Exceptions:
-// Description:    Gets value of a global variable 
+// Description:    Gets value of a global variable
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -8322,7 +8319,7 @@ Bool_t TMrbConfig::CreateHistoArrays() {
 						pName(0,1).ToUpper();
 						pName.Prepend("h");
 						this->AddHistoToArray(evt->GetHistoArrayName(), pName.Data());
-					}					
+					}
 				}
 			}
 		}
@@ -8339,7 +8336,7 @@ Bool_t TMrbConfig::CreateHistoArrays() {
 				pName(0,1).ToUpper();
 				pName.Prepend("h");
 				this->AddHistoToArray(sevt->GetHistoArrayName(), pName.Data());
-			}					
+			}
 		}
 	}
 
@@ -8354,7 +8351,7 @@ Bool_t TMrbConfig::CreateHistoArrays() {
 				pName(0,1).ToUpper();
 				pName.Prepend("h");
 				this->AddHistoToArray(module->GetHistoArrayName(), pName.Data());
-			}					
+			}
 		}
 	}
 	return(kTRUE);
@@ -8430,7 +8427,7 @@ Bool_t TMrbConfig::WriteMuxConfig(const Char_t * CfgFile) {
 	mux->SetValue("TMrbConfig.Mux.NofParams", moduleChans);
 	mux->SetValue("TMrbConfig.Mux.ModuleRange", moduleRange);
 	mux->SaveLevel(kEnvLocal);
-	return(kTRUE);	
+	return(kTRUE);
 }
 
 const Char_t * TMrbConfig::GetLofEventsAsString(TString & LofEvents) const {

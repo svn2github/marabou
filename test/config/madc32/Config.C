@@ -7,15 +7,15 @@
 
 	evt = new TMrbEvent_10_1(1, "readout", "readout");
 
-	data1 = new TMrbSubevent_Madc_1("data1", "subevent data");
+	data1 = new TMrbSubevent_Madc_2("data1", "subevent data");
 	adc1 = new TMrbMesytec_Madc32("adc1", 0x00F10000);
-	data2 = new TMrbSubevent_Madc_1("data2", "subevent data");
+	data2 = new TMrbSubevent_Madc_2("data2", "subevent data");
 	adc2 = new TMrbMesytec_Madc32("adc2", 0x00F30000);
-	data3 = new TMrbSubevent_Madc_1("data3", "subevent data");
+	data3 = new TMrbSubevent_Madc_2("data3", "subevent data");
 	adc3 = new TMrbMesytec_Madc32("adc3", 0x00F40000);
-	data4 = new TMrbSubevent_Madc_1("data4", "subevent data");
+	data4 = new TMrbSubevent_Madc_2("data4", "subevent data");
 	adc4 = new TMrbMesytec_Madc32("adc4", 0x00F50000);
-	data5 = new TMrbSubevent_Madc_1("data5", "subevent data");
+	data5 = new TMrbSubevent_Madc_2("data5", "subevent data");
 	adc5 = new TMrbMesytec_Madc32("adc5", 0x00F60000);
 
 	adc1->UseSettings();

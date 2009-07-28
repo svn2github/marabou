@@ -410,32 +410,6 @@ install-expconf:
 		$(INSTALLDIR) $(LIBDIR); \
 		$(INSTALL) lib/libTMrbConfig.so $(LIBDIR)
 
-install-ppc:
-		@echo "Installing ppc headers in $(PPCDIR)/include"; \
-		$(INSTALLDIR) $(PPCDIR)/include; \
-		$(INSTALLDATA) powerpc/inc/* $(PPCDIR)/include; \
-		$(INSTALLDATA) powerpc/*/inc/* $(PPCDIR)/include; \
-		echo "Installing ppc libraries in $(PPCDIR)/lib/*"; \
-		$(INSTALLDATA) powerpc/lib/2.5 $(PPCDIR)/lib; \
-		$(INSTALLDATA) powerpc/lib/2.5/* $(PPCDIR)/lib/2.5; \
-		$(INSTALLDATA) powerpc/lib/3.1 $(PPCDIR)/lib; \
-		$(INSTALLDATA) powerpc/lib/3.1/* $(PPCDIR)/lib/3.1; \
-		echo "Installing ppc binaries in $(PPCDIR)/bin/*"; \
-		$(INSTALLDATA) powerpc/bin/2.5 $(PPCDIR)/bin; \
-		$(INSTALLDATA) powerpc/bin/2.5/* $(PPCDIR)/bin/2.5; \
-		$(INSTALLDATA) powerpc/bin/3.1 $(PPCDIR)/bin; \
-		$(INSTALLDATA) powerpc/bin/3.1/* $(PPCDIR)/bin/3.1; \
-		echo "Installing ppc module headers in $(PPCDIR)/include"; \
-		$(INSTALLDATA) powerpc/modules/*/inc/* $(PPCDIR)/include; \
-		echo "Installing ppc module libraries in $(PPCDIR)/lib/*"; \
-		for FLIST in powerpc/modules/lib/*/*; do \
-			DIR=`dirname $$FLIST`; \
-			SUBDIR=`basename $$DIR`; \
-			if [ -d $$DIR ]; then \
-				$(INSTALLDATA) powerpc/modules/lib/$$SUBDIR/* $(PPCDIR)/lib/$$SUBDIR; \
-			fi; \
-		done; \
-
 showbuild:
 	@echo "MODULES            = $(MODULES)"
 

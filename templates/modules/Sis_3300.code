@@ -4,9 +4,9 @@
 // Purpose:        Code for digitizing adc SIS 3300
 // Description:    Contains template code to operate a SIS 3300 module
 // Author:         R. Lutter
-// Revision:       
-// Date:           
-// Keywords:       
+// Revision:
+// Date:
+// Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
 %%BeginOfCode%%
@@ -56,7 +56,7 @@
 							}
 						}
 					} else {
-            			sis_3300_disarmBank(s_$moduleName, $mnemoLC_activeBank);           /* arm other bank active */ 
+            			sis_3300_disarmBank(s_$moduleName, $mnemoLC_activeBank);           /* arm other bank active */
 						$mnemoLC_activeBank ^= 1;
 						sis_3300_armBank(s_$moduleName, $mnemoLC_activeBank);
 						sis_3300_startSampling(s_$moduleName);
@@ -81,12 +81,12 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%WRITE_SUBADDR%% 
+%%WRITE_SUBADDR%%
 
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%STORE_DATA%% 
+%%STORE_DATA%%
 
 %%BeginOfCode%%
 
@@ -96,7 +96,7 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%SETUP_READOUT%%	
+%%SETUP_READOUT%%
 
 %%BeginOfCode%%
 
@@ -116,7 +116,7 @@
 %%START_ACQUISITION%%
 
 %%BeginOfCode%%
-		
+
 %%EndOfCode%%
 %%START_ACQUISITION_GROUP%%
 
@@ -132,7 +132,7 @@
 %%STOP_ACQUISITION%%
 
 %%BeginOfCode%%
-		
+
 %%EndOfCode%%
 %%STOP_ACQUISITION_GROUP%%
 
@@ -172,7 +172,7 @@ static struct s_sis_3300 * s_$moduleName;
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L$marabouPath/powerpc/lib/$lynxVersion -lSis_3300
+	-L/nfs/marabou/lib -lSis_3300
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 
