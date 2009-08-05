@@ -3,13 +3,13 @@
 // ame:            VMEControlData
 // Purpose:        A GUI to control VME modules
 // Description:    Common Database
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.5 2008-10-18 17:09:14 Marabou Exp $       
-// Date:           $Date: 2008-10-18 17:09:14 $
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMEControlData.cxx,v 1.6 2009-08-05 13:12:03 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-05 13:12:03 $
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TEnv.h"
@@ -24,6 +24,7 @@
 #include "TMrbC2Lynx.h"
 #include "VMEControlData.h"
 #include "TC2LSis3302.h"
+#include "TC2LVulomTB.h"
 
 #include "SetColor.h"
 
@@ -38,14 +39,14 @@ VMEControlData::VMEControlData() {
 // Name:           VMEControlData
 // Purpose:        Common data base
 // Arguments:      --
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 // open ROOT's resource data base
 	fRootrc = new TMrbResource("VMEControl", ".rootrc");
 
@@ -71,19 +72,19 @@ VMEControlData::VMEControlData() {
 		gMrbLog->Err()	<< "No such font - " << fBoldFont << " (normal font used instead)" << endl;
 		gMrbLog->Flush("VMEControlData");
 		fBoldFont = fNormalFont;
-	}		
+	}
 	fSlantedFont = gEnv->GetValue("Gui.SlantedFont", "-adobe-helvetica-medium-o-*-*-12-*-*-*-*-*-iso8859-1");
 	if (gClient->GetFontByName(fSlantedFont.Data()) == 0) {
 		gMrbLog->Err()	<< "No such font - " << fSlantedFont << " (normal font used instead)" << endl;
 		gMrbLog->Flush("VMEControlData");
 		fSlantedFont = fNormalFont;
-	}		
+	}
 	fFixedFont = gEnv->GetValue("Gui.FixedFont", "-adobe-courier-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
 	if (gClient->GetFontByName(fFixedFont.Data()) == 0) {
 		gMrbLog->Err()	<< "No such font - " << fFixedFont << " (normal font used instead)" << endl;
 		gMrbLog->Flush("VMEControlData");
 		fFixedFont = fNormalFont;
-	}		
+	}
 
 // open VMEcontrol's resource data base
 	TString errMsg;
@@ -112,10 +113,10 @@ Bool_t VMEControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, 
 //                 Int_t AccessMode       -- access mode: kVMEAccessXXX
 //                 TString & ErrMsg       -- resulting error message
 //                 Bool_t WarningOnly     -- kTRUE -> warning
-// Results:        kTRUE/kFALSE  
-// Exceptions:     
+// Results:        kTRUE/kFALSE
+// Exceptions:
 // Description:    Checks if file or path exists and is readable/writable
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbSystem ux;
@@ -164,9 +165,9 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 // Arguments:      TMrbLofNamedX & LofModules  -- list of modules
 //                 Char_t * ClassName          -- class name
 // Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    Decodes env file and fills module list 
-// Keywords:       
+// Exceptions:
+// Description:    Decodes env file and fills module list
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	LofModules.Clear(); 	// clear list - don't delete objects!!
@@ -228,6 +229,25 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 				} else if (className.CompareTo("TMrbCaen_V785") == 0) {
 					gMrbLog->Wrn()	<< "[" << moduleName << "] Class " << className << " - not yet implemented" << endl;
 					gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+				} else if (className.CompareTo("TMrbVulomTB") == 0) {
+					TC2LVulomTB * module = NULL;
+					if (gMrbC2Lynx && (module = (TC2LVulomTB *) gMrbC2Lynx->FindModule(moduleName.Data()))) {
+						if (module->GetAddress() != vmeAddr || module->GetNofChannels() != nofChannels) {
+							gMrbLog->Wrn()	<< "[" << moduleName << "] Module already defined - addr="
+											<< setbase(16) << module->GetAddress() << ", chns="
+											<< setbase(10) << module->GetNofChannels() << endl;
+							gMrbLog->Flush(this->ClassName(), "SetupModuleList");
+							errCnt++;
+						}
+					}
+					if (module == NULL) {
+						module = new TC2LVulomTB(moduleName.Data(), vmeAddr, nofChannels, this->IsOffline());
+					}
+					if (module->IsZombie()) {
+						errCnt++;
+					} else {
+						LofModules.AddLast(module);
+					}
 				} else {
 					gMrbLog->Err()	<< "[" << moduleName << "] Unknown class name - " << className << endl;
 					gMrbLog->Flush(this->ClassName(), "SetupModuleList");
@@ -256,9 +276,9 @@ Int_t VMEControlData::MsgBox(TGWindow * Caller, const Char_t * Method, const Cha
 //                 EMsgBoxIcon Icon            -- icon to be displayed
 //                 Int_t Buttons               -- button(s) to be shown
 // Results:        Int_t Retval                -- return value as passed from TGMsgBox
-// Exceptions:     
+// Exceptions:
 // Description:    Shows a message box and outputs message to gMrbLog, too.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t retVal;

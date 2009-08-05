@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LVulomTB.h,v 1.1 2009-05-29 14:14:31 Rudolf.Lutter Exp $   
-// Date:           $Date: 2009-05-29 14:14:31 $
+// Revision:       $Id: TC2LVulomTB.h,v 1.2 2009-08-05 13:11:53 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-05 13:11:53 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -33,7 +33,7 @@ class TC2LVulomTB : public TC2LVMEModule {
 
 	public:
 
-		TC2LVulomTB() {};		// default ctor		
+		TC2LVulomTB() {};		// default ctor
 
 		TC2LVulomTB(const Char_t * ModuleName, UInt_t Address = 0, Int_t NofChannels = 0, Bool_t Offline = kFALSE)
 								: TC2LVMEModule(ModuleName, "VulomTB", Address, NofChannels, Offline) {};
@@ -53,16 +53,17 @@ class TC2LVulomTB : public TC2LVMEModule {
 
 		Bool_t SetScaleDown(Int_t & ScaleDown, Int_t ChannelNo = kVulomTBAllChannels);
 		Bool_t GetScaleDown(Int_t & ScaleDown, Int_t ChannelNo);
+		Bool_t ReadScaleDown(TArrayI & ScaleDown);
 
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 		Bool_t RestoreSettings(const Char_t * SettingsFile = NULL);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
-		
+
 	protected:
 		Bool_t ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & DataRecv, Int_t ChannelNo = kVulomTBAllChannels);
 
-	ClassDef(TC2LVulomTB, 1)		// [Access to LynxOs] Connect to a VulomTB adc
+	ClassDef(TC2LVulomTB, 1)		// [Access to LynxOs] Connect to a Vulom triggerbox
 };
 
 #endif

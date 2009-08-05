@@ -8,10 +8,10 @@
 // Class:          VMEMainFrame
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: VMEMainFrame.h,v 1.5 2009-01-08 12:16:23 Rudolf.Lutter Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMEMainFrame.h,v 1.6 2009-08-05 13:12:03 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TList.h"
@@ -33,13 +33,14 @@
 #include "VMEServerPanel.h"
 #include "VMESis3302Panel.h"
 #include "VMECaen785Panel.h"
+#include "VMEVulomTBPanel.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMEMainFrame
 // Purpose:        Main frame for the VME Control GUI
 // Description:    Defines a main frame for the GUI
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class VMEMainFrame : public TGMainFrame {
@@ -64,6 +65,7 @@ class VMEMainFrame : public TGMainFrame {
 									kVMETabServer = 0,
 									kVMETabSis3302,
 									kVMETabCaen785,
+									kVMETabVulomTB,
 									kVMELastTab				// init of tabs has to be done in same order!!
 								};
 
@@ -74,14 +76,14 @@ class VMEMainFrame : public TGMainFrame {
 
 		virtual void CloseWindow();
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
-		
+
 		void MenuSelect(Int_t Selection);			// slot methods
 		void TabChanged(Int_t Selection);
 		void KeyPressed(Int_t FrameId, Int_t Action);
 
 	protected:
 		void PopupMessageViewer();
-	
+
 	protected:
 		TList fHeap;								//! list of objects created on heap
 
@@ -97,17 +99,19 @@ class VMEMainFrame : public TGMainFrame {
 		TGCompositeFrame * fServerTab;
 		TGCompositeFrame * fSis3302Tab;
 		TGCompositeFrame * fCaen785Tab;
+		TGCompositeFrame * fVulomTBTab;
 
 		VMEServerPanel * fServerPanel;
 		VMESis3302Panel * fSis3302Panel;
 		VMECaen785Panel * fCaen785Panel;
+		VMEVulomTBPanel * fVulomTBPanel;
 
 		TMrbLofMacros * fLofMacros; 				// list of macros
 
 		TGMrbMessageViewer * fMsgViewer;
-		
+
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
-		
+
 	ClassDef(VMEMainFrame, 0) 	// [VMEControl] Main control panel
 };
 

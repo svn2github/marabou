@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LVulomTB.cxx,v 1.1 2009-05-29 14:14:31 Rudolf.Lutter Exp $     
-// Date:           $Date: 2009-05-29 14:14:31 $
+// Revision:       $Id: TC2LVulomTB.cxx,v 1.2 2009-08-05 13:11:53 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-05 13:11:53 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -116,17 +116,17 @@ Bool_t TC2LVulomTB::GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t &
 		return(kFALSE);
 	}
 }
-	
+
 Bool_t TC2LVulomTB::ReadScaler(TArrayI & ScalerValues, Int_t ScalerNo) {
 	TArrayI dataSend(0);
 	return(this->ExecFunction(kM2L_FCT_VULOM_TB_READ_SCALER, dataSend, ScalerValues, ScalerNo));
 }
-	
+
 Bool_t TC2LVulomTB::ReadChannel(TArrayI & ScalerValues, Int_t ChannelNo) {
 	TArrayI dataSend(0);
 	return(this->ExecFunction(kM2L_FCT_VULOM_TB_READ_CHANNEL, dataSend, ScalerValues, ChannelNo));
 }
-	
+
 Bool_t TC2LVulomTB::EnableChannel(Int_t ChannelNo) {
 	TArrayI bits(1); bits[0] = 1;
 	if (!this->ExecFunction(kM2L_FCT_VULOM_TB_ENABLE_CHANNEL, bits, bits, ChannelNo)) return(kFALSE);
@@ -158,6 +158,12 @@ Bool_t TC2LVulomTB::SetScaleDown(Int_t & ScaleDown, Int_t ChannelNo) {
 	TArrayI scaleDown(1); scaleDown[0] = ScaleDown;
 	if (!this->ExecFunction(kM2L_FCT_VULOM_TB_SET_SCALE_DOWN, scaleDown, scaleDown, ChannelNo)) return(kFALSE);
 	ScaleDown = scaleDown[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LVulomTB::ReadScaleDown(TArrayI & ScaleDown) {
+	TArrayI dataSend(0);
+	if (!this->ExecFunction(kM2L_FCT_VULOM_TB_GET_SCALE_DOWN, dataSend, ScaleDown, kVulomTBAllChannels)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -253,9 +259,9 @@ Bool_t TC2LVulomTB::SaveSettings(const Char_t * SettingsFile) {
 		gMrbLog->Flush("SaveSettings");
 		return(kFALSE);
 	}
-	
+
 	tf = fp;
-	
+
 	TMrbLofNamedX tags;
 	tags.AddNamedX(TC2LVulomTB::kRcModuleSettings, "MODULE_SETTINGS");
 

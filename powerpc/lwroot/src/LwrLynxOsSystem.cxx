@@ -44,7 +44,6 @@
 #include <syslog.h>
 #include <sys/stat.h>
 #include <setjmp.h>
-#include <signal.h>
 #include <sys/param.h>
 #include <pwd.h>
 #include <errno.h>

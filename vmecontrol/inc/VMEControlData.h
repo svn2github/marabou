@@ -8,10 +8,10 @@
 // Class:          VMEControlData
 // Description:    A GUI to control VME modules
 // Author:         R. Lutter
-// Revision:       $Id: VMEControlData.h,v 1.7 2008-10-19 17:29:21 Marabou Exp $       
-// Date:           $Date: 2008-10-19 17:29:21 $
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMEControlData.h,v 1.8 2009-08-05 13:12:03 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-05 13:12:03 $
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TNamed.h"
@@ -52,7 +52,7 @@ enum						{	kVMENofPPCs 		= 20					};
 // Name:           VMEControlData
 // Purpose:        Common database to store any DGF data
 // Description:    Common data base for all DGF modules
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class VMEControlData : public TObject {
@@ -65,6 +65,7 @@ class VMEControlData : public TObject {
 	friend class VMESis3302CopyPanel;
 	friend class VMESis3302StartRunPanel;
 	friend class VMECaen785Panel;
+	friend class VMEVulomTBPanel;
 
 	public:
 		// global status bits
@@ -72,7 +73,7 @@ class VMEControlData : public TObject {
 									kVMEDebugMode			= BIT(1),
 									kVMEOfflineMode			= BIT(3),
 								};
-		
+
 		enum EDGFAccessBit		{	kVMEAccessDirectory 	= BIT(0),
 									kVMEAccessRegular	 	= BIT(1),
 									kVMEAccessRead	 		= BIT(2),
@@ -86,13 +87,13 @@ class VMEControlData : public TObject {
 		inline const Char_t * BoldFont() { return(fBoldFont.Data()); };
 		inline const Char_t * SlantedFont() { return(fSlantedFont.Data()); };
 		inline const Char_t * FixedFont() { return(fFixedFont.Data()); };
-		
+
 		Bool_t CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly = kFALSE);
 
 		inline Bool_t IsOffline() { return((fStatus & kVMEOfflineMode) != 0); };
 		inline Bool_t IsVerbose() { return((fStatus & VMEControlData::kVMEVerboseMode) != 0); };
 		inline Bool_t IsDebug() { return((fStatus & VMEControlData::kVMEDebugMode) != 0); };
-		
+
 		inline Int_t GetFrameHeight() { return(fFrameHeight); };
 		inline Int_t GetFrameWidth() { return(fFrameWidth); };
 
@@ -118,7 +119,7 @@ class VMEControlData : public TObject {
 		TString fBoldFont;
 		TString fSlantedFont;
 		TString fFixedFont;
-		
+
 		Int_t fFrameHeight;
 		Int_t fFrameWidth;
 

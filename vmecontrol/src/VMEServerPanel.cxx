@@ -3,13 +3,13 @@
 // Name:           VMEServerPanel
 // Purpose:        A GUI to control vme modules via tcp
 // Description:    Connect to server
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.5 2008-10-18 17:09:14 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMEServerPanel.cxx,v 1.6 2009-08-05 13:12:03 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //Begin_Html
 /*
@@ -67,10 +67,10 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 // Name:           VMEServerPanel
 // Purpose:        Connect to LynxOs server
 // Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGMrbLayout * frameGC;
@@ -85,27 +85,27 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 //	Clear focus list
 	fFocusList.Clear();
 
-	frameGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	frameGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(frameGC);
 
-	groupGC = new TGMrbLayout(	gVMEControlData->SlantedFont(), 
+	groupGC = new TGMrbLayout(	gVMEControlData->SlantedFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(groupGC);
 
-	comboGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	comboGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(comboGC);
 
-	labelGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	labelGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(labelGC);
 
-	buttonGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	buttonGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGray);	HEAP(buttonGC);
 
-	entryGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	entryGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorWhite);	HEAP(entryGC);
 
@@ -216,9 +216,9 @@ Bool_t VMEServerPanel::ActionButton(Int_t FrameId, Int_t ButtonId) {
 // Arguments:      Int_t FrameId      -- framek id
 //                 Int_t ButtonId     -- button id
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Handles action buttons.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (ButtonId) {
@@ -240,9 +240,9 @@ Bool_t VMEServerPanel::Connect() {
 // Purpose:        Connect to lynxOs server
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Reads GUI entries and connects to server.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gVMEControlData->IsOffline()) {
@@ -309,21 +309,25 @@ Bool_t VMEServerPanel::Connect() {
 
 	if (!c2l->Connect(kFALSE)) return(kFALSE);
 
-	TGMrbProgressBar * pgb = new TGMrbProgressBar(gClient->GetRoot(), this,
+	if (!c2l->WaitForConnection()) {
+		TGMrbProgressBar * pgb = new TGMrbProgressBar(gClient->GetRoot(), this,
 								Form("Connecting to LynxOs server @ %s:%d ...", ppc.Data(), portNo), 400, "blue", NULL, kTRUE);
-	pgb->SetRange(0, kVMEServerWaitForConnection);
-	fAbortConnection = kFALSE;
-	for (Int_t wait = 0; wait < kVMEServerWaitForConnection; wait++) {
-		pgb->Increment(1, Form("%d out of %d", wait + 1, kVMEServerWaitForConnection));
-		gSystem->ProcessEvents();
-		if (fAbortConnection) {
-			gVMEControlData->MsgBox(this, "Connect", "Abort", "Pending connection to LynxOs server aborted");
-			break;
+		pgb->SetRange(0, kVMEServerWaitForConnection);
+		fAbortConnection = kFALSE;
+		for (Int_t wait = 0; wait < kVMEServerWaitForConnection; wait++) {
+			pgb->Increment(1, Form("%d out of %d", wait + 1, kVMEServerWaitForConnection));
+			gSystem->ProcessEvents();
+			if (fAbortConnection) {
+				gVMEControlData->MsgBox(this, "Connect", "Abort", "Pending connection to LynxOs server aborted");
+				break;
+			}
+			if (c2l->WaitForConnection()) break;
+			sleep(1);
 		}
-		if (c2l->WaitForConnection()) break;
-		sleep(1);
+		pgb->DeleteWindow();
+		delete pgb;
 	}
-	delete pgb;
+
 	if (!c2l->IsConnected()) {
 		gVMEControlData->MsgBox(this, "Connect", "Abort", Form("Unable to connect to LynxOs server @ %s:%d", ppc.Data(), portNo), kMBIconStop);
 		return(kFALSE);
@@ -356,9 +360,9 @@ void VMEServerPanel::FillTextView() {
 // Purpose:        Fill server messages in text view window
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called by signakl "NewDataArrived()"
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Char_t buf[512];
@@ -386,4 +390,4 @@ void VMEServerPanel::FillTextView() {
 	}
 }
 
-	
+
