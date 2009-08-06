@@ -74,7 +74,7 @@ more than one level of subdirs is allowed";
                    &retval, itemwidth, window,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, helpText);
-   cout << "retval " <<retval << endl;
+//   cout << "retval " <<retval << endl;
    if (retval >= 0) {
       ExecuteSave();
       SaveDefaults();
@@ -124,7 +124,7 @@ void Save2FileDialog::ExecuteSave()
       outfile->Close();
    } else {
       TString sname(fObject->GetName());
-      cout <<"fObject->GetName() "  << fObject->GetName() << " fObjName " << fObjName <<endl;
+//      cout <<"fObject->GetName() "  << fObject->GetName() << " fObjName " << fObjName <<endl;
       TNamed *tn = NULL;
 #ifdef MARABOUVERS
       HTCanvas *htc = NULL;
