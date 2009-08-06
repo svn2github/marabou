@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LVulomTB.cxx,v 1.2 2009-08-05 13:11:53 Rudolf.Lutter Exp $
-// Date:           $Date: 2009-08-05 13:11:53 $
+// Revision:       $Id: TC2LVulomTB.cxx,v 1.3 2009-08-06 08:32:34 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-06 08:32:34 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -172,6 +172,12 @@ Bool_t TC2LVulomTB::GetScaleDown(Int_t & ScaleDown, Int_t ChannelNo) {
 	TArrayI scaleDown;
 	if (!this->ExecFunction(kM2L_FCT_VULOM_TB_GET_SCALE_DOWN, dataSend, scaleDown, ChannelNo)) return(kFALSE);
 	ScaleDown = scaleDown[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LVulomTB::ClearScaler(Int_t ChannelNo) {
+	TArrayI dataSend(0);
+	if (!this->ExecFunction(kM2L_FCT_VULOM_TB_CLEAR_SCALER, dataSend, dataSend, ChannelNo)) return(kFALSE);
 	return(kTRUE);
 }
 

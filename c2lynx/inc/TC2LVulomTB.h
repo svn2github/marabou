@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LVulomTB.h,v 1.2 2009-08-05 13:11:53 Rudolf.Lutter Exp $
-// Date:           $Date: 2009-08-05 13:11:53 $
+// Revision:       $Id: TC2LVulomTB.h,v 1.3 2009-08-06 08:32:34 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-06 08:32:34 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -54,6 +54,8 @@ class TC2LVulomTB : public TC2LVMEModule {
 		Bool_t SetScaleDown(Int_t & ScaleDown, Int_t ChannelNo = kVulomTBAllChannels);
 		Bool_t GetScaleDown(Int_t & ScaleDown, Int_t ChannelNo);
 		Bool_t ReadScaleDown(TArrayI & ScaleDown);
+
+		Bool_t ClearScaler(Int_t ChannelNo = kVulomTBAllChannels);
 
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 		Bool_t RestoreSettings(const Char_t * SettingsFile = NULL);

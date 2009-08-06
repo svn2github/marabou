@@ -114,7 +114,8 @@ enum EM2L_FunctionType {
 	kM2L_FCT_VULOM_TB_SET_ENABLE_MASK,
 	kM2L_FCT_VULOM_TB_GET_ENABLE_MASK,
 	kM2L_FCT_VULOM_TB_SET_SCALE_DOWN,
-	kM2L_FCT_VULOM_TB_GET_SCALE_DOWN
+	kM2L_FCT_VULOM_TB_GET_SCALE_DOWN,
+	kM2L_FCT_VULOM_TB_CLEAR_SCALER
 };
 
 const SMrbNamedXShort kMrbLofFunctionTypes[] =
@@ -193,6 +194,7 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_VULOM_TB_GET_ENABLE_MASK, 			"get enable mask"},
 		{kM2L_FCT_VULOM_TB_SET_SCALE_DOWN,				"set scale down"},
 		{kM2L_FCT_VULOM_TB_GET_SCALE_DOWN,				"get scale down"},
+		{kM2L_FCT_VULOM_TB_CLEAR_SCALER,				"clear scaler"},
 		{0, 											NULL}
 	};
 #endif

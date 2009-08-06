@@ -1,0 +1,161 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       VulomTB.code
+// @(#)Purpose:    VME code for triggerbox VulomTB
+// Description:    Contains pieces of code to operate a VulomTB triggerbox
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* bit definitions for VulomTB (GSI) */
+#define VULOM_TBOX_ENA				0x0
+#define VULOM_TBOX_SCALL			0x4
+#define VULOM_TBOX_SCALH			0x8
+#define VULOM_TBOX_LATCH			0xc
+#define VULOM_TBOX_SCALER1			0x40
+#define VULOM_TBOX_SCALER2			0x80
+#define VULOM_TBOX_SCALER3			0xc0
+
+#define VULOM_TBOX_SCAL_ENA 		0x8
+#define VULOM_TBOX_SCAL_WIDTH		0x0
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					vulom_module_info($moduleName);
+					vulom_reset($moduleName);
+					vulom_enable($moduleName, $channelMask);
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+void vulom_module_info(volatile unsigned char * module) {}
+
+void vulom_reset(volatile unsigned char * module) {}
+
+void vulom_enable(volatile unsigned char * module, unsigned int channelMask) {}
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+void vulom_module_info(volatile unsigned short * firmWare);
+void vulom_reset(volatile unsigned char * module);
+void vulom_enable(volatile unsigned char * module, unsigned short channelMask);
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	unsigned int * vulom_rdoinp;
+	int vulom_wc;
+	int vulom_isTruncated;
+	unsigned int vulom_hdr, vulom_data, vulom_id, vulom_chn;
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+

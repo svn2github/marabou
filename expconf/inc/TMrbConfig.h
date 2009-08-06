@@ -8,8 +8,8 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.92 2009-07-20 07:09:44 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbConfig.h,v 1.93 2009-08-06 08:30:58 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -111,7 +111,7 @@ class TMrbConfig : public TNamed {
 									kRdoUserDefinedDefines,
 									kRdoClearModule
 								};
-						
+
 		enum EMrbAnalyzeTag 	{	kAnaFile			=	1,			// analyze tags
 									kAnaNameLC,
 									kAnaNameUC,
@@ -321,13 +321,13 @@ class TMrbConfig : public TNamed {
 		enum EMrbConfigOptions	{	kCfgOptOverwrite		=	BIT(0),		// config options
 									kCfgOptVerbose			=	BIT(1)
 								};
-		enum					{	kCfgOptDefault			=	0	}; 
+		enum					{	kCfgOptDefault			=	0	};
 
 		enum EMrbRcFileOptions	{	kRcOptOverwrite			=	BIT(0),		// rc file options
 									kRcOptByName			=	BIT(1),
 									kRcOptVerbose			=	BIT(2)
 								};
-		enum					{	kRcOptDefault			=	kRcOptByName	}; 
+		enum					{	kRcOptDefault			=	kRcOptByName	};
 
 		enum EMrbIncludeOptions	{	kIclOptHeaderFile			=	BIT(0),		// include options
 									kIclOptUserMethod			=	BIT(1),
@@ -400,7 +400,7 @@ class TMrbConfig : public TNamed {
 									kModuleDefineLibraries,
 
 								};
-						
+
 		enum EMrbChannelStatus	{
 									kChannelSingle  	=	1,			// camac channel status
 									kChannelArray,
@@ -483,7 +483,8 @@ class TMrbConfig : public TNamed {
 									kManufactSis		=	BIT(24),
 									kManufactCologne	=	BIT(25),
 									kManufactISN		=	BIT(26),
-									kManufactMesytec	=	BIT(27)
+									kManufactMesytec	=	BIT(27),
+									kManufactGSI		=	BIT(28)
 								};
 
 		enum EMrbModuleID		{	kModuleSilena4418V		=   kManufactSilena + 0x1,  // modules ids *** insert new modules at end of list !!! ***
@@ -523,6 +524,7 @@ class TMrbConfig : public TNamed {
 									kModuleSis_3302 		=	kManufactSis + 0x23,
 									kModuleMesytecMadc32	=	kManufactMesytec + 0x24,
 									kModuleCaenV1X90	    =   kManufactCaen + 0x25,
+									kModuleVulomTB		    =   kManufactGSI + 0x26,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};
@@ -573,12 +575,12 @@ class TMrbConfig : public TNamed {
 
 														// generate user-defined readout code
 		Bool_t MakeReadoutCode(const Char_t * CodeFile = "", Option_t * Options = "");
-								
+
  														// generate class defs and methods
 		Bool_t MakeAnalyzeCode(const Char_t * CodeFile = "", Option_t * Options = "Subevents:byName:Histograms");
 		Bool_t MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex,
 											UInt_t VarType, TMrbTemplate & Template, const Char_t * Prefix = NULL);
-		
+
 														// include class specific code
 		Bool_t MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName, const Char_t * CodeFile,
 											TMrbConfig::EMrbAnalyzeTag TagIndex, const Char_t * Extension);
@@ -591,7 +593,7 @@ class TMrbConfig : public TNamed {
 
 		Bool_t CallUserMacro(const Char_t * MacroName = "", Bool_t AclicFlag = kTRUE);				// call user macro
 		Bool_t ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Char_t * TagWord) const;
-				
+
 		Bool_t CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag = kTRUE) const;	// compile readout code
 		Bool_t CompileAnalyzeCode(Bool_t CleanFlag = kTRUE) const;						// compile analysis code
 
@@ -606,7 +608,7 @@ class TMrbConfig : public TNamed {
 		void PrintToFile(Char_t * File) const;
 		Int_t GetNofErrors() const;							// number of errors
 		Int_t PrintErrors(Bool_t ErrorsOnly = kTRUE) const; // print error summary
-		
+
 		void AddEvent(TMrbEvent * Evt);
 
 		inline TMrbEvent * FindEvent(const Char_t * EvtName) const {				// find an event
@@ -632,7 +634,7 @@ class TMrbConfig : public TNamed {
 		TMrbSubevent * FindSubevent(Int_t SevtSerial) const;							// find subevent by its serial number
 
 		inline Int_t AssignSevtSerial() const { return(fNofSubevents + 1); }; 	// get unique serial number for a subevent
-			
+
 		inline void AddModule(TMrbModule * Module) { 							// add a new module
 			fLofModules.Add((TObject *) Module);
 			fNofModules++;
@@ -652,7 +654,7 @@ class TMrbConfig : public TNamed {
 		TMrbModule * FindModuleBySerial(Int_t ModuleSerial) const;						// find module by its unique serial
 
 		inline Int_t AssignModuleSerial() const { return(fNofModules + 1); }; 		// set unique serial number for a module
-			
+
 		Bool_t CheckModuleAddress(TMrbModule * Module, Bool_t WrnOnly = kTRUE) const;	// check if module address or position legal
 
 		inline Bool_t HasCamacModules() const { return(FindModuleByType(TMrbConfig::kModuleCamac) != NULL); };	// camac?
@@ -666,7 +668,7 @@ class TMrbConfig : public TNamed {
 		Bool_t SetMbsBranch(TMrbNamedX & MbsBranch, Int_t MbsBranchNo, const Char_t * MbsBranchName = NULL);	// mbs branch
 		Int_t CheckMbsBranchSettings();
 
-		TMrbModuleChannel * FindParam(const Char_t * ParamName) const;							// find a param 
+		TMrbModuleChannel * FindParam(const Char_t * ParamName) const;							// find a param
 
 		Bool_t HistogramExists(const Char_t * HistoName) const;						// check if histo exists
 
@@ -684,7 +686,7 @@ class TMrbConfig : public TNamed {
 		inline UInt_t GetRcFileOptions() const { return(fRcFileOptions); };	// return MakeRcFile() options
 
 		inline Bool_t IsVerbose() const { return(fVerboseMode); }; 			// verbose mode?
-		
+
 		Bool_t DefineVariables(const Char_t * VarType, const Char_t * VarDefs); 	// define a set of variables
 		Bool_t DefineVariables(const Char_t * VarType, Int_t Value, const Char_t * VarDefs);
 		Bool_t DefineVariables(const Char_t * VarType, Double_t Value, const Char_t * VarDefs);
@@ -730,9 +732,9 @@ class TMrbConfig : public TNamed {
 			if (fLofUserClasses.FindByName(Name) == NULL) fLofUserClasses.AddNamedX((Int_t) Opt, Name, Path);
 		};
 		inline void AddUserClass(const Char_t * Name) { this->AddUserClass((EMrbIncludeOptions) 0, Name); };
-			
+
 		inline TMrbLogger * GetMessageLogger() const { return(fMessageLogger); };
-		
+
 		void Version() const;																// output welcome tex
 
 		TMrbConfig * ReadFromFile(const Char_t * ConfigFile = "", Option_t * Options = ""); // read config from root file
@@ -751,7 +753,7 @@ class TMrbConfig : public TNamed {
 		Int_t FindCrate(Int_t After = -1) const;												// find next crate
 		Int_t GetNofCrates(EMrbCrateType CrateType = kCrateAny) const;															// return number of crates
 		UInt_t GetCratePattern(EMrbCrateType CrateType = kCrateAny) const;														// return crate numbers as bit pattern
-		
+
 		Bool_t SetControllerType(Int_t Crate, const Char_t * Type);
 		Bool_t SetControllerType(const Char_t * Crate, const Char_t * Type);
 		inline void SetControllerType(Int_t Crate, EMrbControllerType Type) { fControllerTable[Crate] = Type; };
@@ -794,7 +796,7 @@ class TMrbConfig : public TNamed {
 
 		inline Int_t GetNofModules() const { return(fNofModules); };
 		Int_t GetNofModules(const Char_t * Pattern) const;
-		
+
 		inline TObjArray * GetLofEvents() { return(&fLofEvents); };		// get address of ...
 		inline TObjArray * GetLofSubevents() { return(&fLofSubevents); };
 		inline TObjArray * GetLofModules() { return(&fLofModules); };
@@ -885,11 +887,11 @@ class TMrbConfig : public TNamed {
 		Bool_t WriteUtilityProtos();
 		Bool_t CheckConfig();
 		Bool_t CreateHistoArrays();
-		
+
 	protected:
 		Bool_t fVerboseMode;				// verbose flag
 		TMrbLogger * fMessageLogger;		//! addr of message logger
-			
+
 		Int_t fNofEvents;					// list of events
 		TObjArray fLofEvents;
 
@@ -942,7 +944,7 @@ class TMrbConfig : public TNamed {
 		Bool_t fUserMacroToBeCalled;		// call user macro
 		TString fUserMacro; 				// macro name
 		TMrbString fUserMacroCmd;				// ... command
-				
+
 		TObjArray fLofOnceOnlyTags; 		// list of tags already processed
 		TObjArray fLofUserHistograms;		// list of user-defined histograms
 		TObjArray fLofHistoArrays;			// list of histogram arrays
@@ -950,7 +952,7 @@ class TMrbConfig : public TNamed {
 		TObjArray fLofXhits;				// list of special hit objects
 		TObjArray fLofRdoIncludes;			// list of inlude paths for MBS
 		TObjArray fLofRdoLibs;				// list of special libraries for MBS
-		
+
 		Bool_t fConfigChecked;				// kTRUE if consistency check done
 		Bool_t fConfigOk;					// kTRUE config consistent
 
@@ -960,6 +962,6 @@ class TMrbConfig : public TNamed {
 		TString fProcType;					// processor type: PPC, RIO2, or RIO3
 
 	ClassDef(TMrbConfig, 1) 	// [Config] Base class to describe an experimental setup in MARaBOU
-};	
+};
 
 #endif

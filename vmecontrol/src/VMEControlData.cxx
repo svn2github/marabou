@@ -6,8 +6,8 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.6 2009-08-05 13:12:03 Rudolf.Lutter Exp $
-// Date:           $Date: 2009-08-05 13:12:03 $
+// Revision:       $Id: VMEControlData.cxx,v 1.7 2009-08-06 08:32:34 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-06 08:32:34 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -92,7 +92,7 @@ VMEControlData::VMEControlData() {
 	gSystem->ExpandPathName(fRcFile);
 	Bool_t ok = this->CheckAccess(fRcFile.Data(), kVMEAccessRead, errMsg, kFALSE);
 	if (ok) {
-		fVctrlrc = new TMrbResource("VMEControl", fRcFile.Data());
+		fVctrlrc = new TMrbResource("VMEControl:TMrbConfig", fRcFile.Data());
 		if (fFrameWidth <= 0) fFrameWidth = fVctrlrc->Get(".FrameWidth", kFrameWidth);
 		if (fFrameHeight <= 0) fFrameHeight = fVctrlrc->Get(".FrameHeight", kFrameHeight);
 	} else {

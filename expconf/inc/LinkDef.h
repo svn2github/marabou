@@ -87,5 +87,6 @@
 #pragma link C++ class TMrbCologne_CPTM;
 #pragma link C++ class TMrbMesytec_Mux16;
 #pragma link C++ class TMrbMesytec_Madc32;
+#pragma link C++ class TMrbVulomTB;
 #pragma link C++ class TMrbModuleRaw;
 #endif
