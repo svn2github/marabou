@@ -42,11 +42,10 @@ static const Int_t kFix = 3;
 Double_t gaus_only(Double_t * x, Double_t * par)
 {
 /*
-  gaus + linear background
+  gaus 
   par[kFix +0]   gauss width
   par[kFix +1]   gauss0 constant
   par[kFix +2]   gauss0 mean
-  par[kFix +3]   gauss1 constant
   ...
 */
    Double_t lBinW = par[0];
@@ -589,21 +588,21 @@ the root doc at: http://root.cern.ch\n\
 			fNmarks = GetMarkers();
 	//		row_lab->Add(new TObjString("PlainIntVal_N Peaks"));
 	//		valp[ind++] = &fNpeaks;
-			row_lab->Add(new TObjString("CheckButton_Low Tail"));
+			row_lab->Add(new TObjString("CheckButton_            Low Tail"));
 			valp[ind++] = &fLowtail;
-			row_lab->Add(new TObjString("CheckButton+High Tail"));
+			row_lab->Add(new TObjString("CheckButton+           High Tail"));
 			valp[ind++] = &fHightail;
-			row_lab->Add(new TObjString("CheckButton_Force Background=0"));
+			row_lab->Add(new TObjString("CheckButton_  Force Background=0"));
 			valp[ind++] = &fBackg0;
-			row_lab->Add(new TObjString("CheckButton+Force BG Slope=0"));
+			row_lab->Add(new TObjString("CheckButton+    Force BG Slope=0"));
 			valp[ind++] = &fSlope0;
-			row_lab->Add(new TObjString("CheckButton_Common Gauss width"));
+			row_lab->Add(new TObjString("CheckButton_  Common Gauss width"));
 			valp[ind++] = &fOnesig;
-			row_lab->Add(new TObjString("CheckButton+Use pre det lin bg"));
+			row_lab->Add(new TObjString("CheckButton+  Use pre det lin bg"));
 			valp[ind++] = &fUsedbg;
 			row_lab->Add(new TObjString("CheckButton_Use pars of prev fit"));
 			valp[ind++] = &fUseoldpars;
-			row_lab->Add(new TObjString("CheckButton+Show components of fit"));
+			row_lab->Add(new TObjString("CheckButton+Show comp'nts of fit"));
 			valp[ind++] = &fShowcof;
 		} else if (type == 2) {
          title = "Exponential";
@@ -612,23 +611,23 @@ the root doc at: http://root.cern.ch\n\
 	//      row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*(x-d))"));
 			row_lab->Add(new TObjString("CommentOnly_Function: a + b*exp(c*x)"));
 			valp[ind++] = &dummy;
-			row_lab->Add(new TObjString("DoubleValue_a"));
+			row_lab->Add(new TObjString("DoubleV+CbF_a"));
 			valp[ind++] = &fExpA;
-			row_lab->Add(new TObjString("CheckButton+Fix"));
+//			row_lab->Add(new TObjString("CheckButton+Fix"));
 			valp[ind++] = &fExpFixA;
-			row_lab->Add(new TObjString("DoubleValue+b"));
+			row_lab->Add(new TObjString("DoubleV+CbF+b"));
 			valp[ind++] = &fExpB;
-			row_lab->Add(new TObjString("CheckButton+Fix"));
+//			row_lab->Add(new TObjString("CheckButton+Fix"));
 			valp[ind++] = &fExpFixB;
-			row_lab->Add(new TObjString("DoubleValue_c"));
+			row_lab->Add(new TObjString("DoubleV+CbF_c"));
 			valp[ind++] = &fExpC;
-			row_lab->Add(new TObjString("CheckButton+Fix"));
+//			row_lab->Add(new TObjString("CheckButton+Fix"));
 			valp[ind++] = &fExpFixC;
 	//     row_lab->Add(new TObjString("DoubleValue+d"));
 	//		valp[ind++] = &fExpD;
 	//		row_lab->Add(new TObjString("CheckButton-Fix"));
 	//		valp[ind++] = &fExpFixD;
-			row_lab->Add(new TObjString("CommentOnly+ --"));
+			row_lab->Add(new TObjString("CommentOnly+ -----"));
 			valp[ind++] = &dummy;
 
 		} else if (type == 3) {
@@ -641,15 +640,15 @@ the root doc at: http://root.cern.ch\n\
 			valp[ind++] = &fPolN;
 
          for ( Int_t i = 0; i < 6; i ++ ) {
-            tagname = "DoubleValue";
+            tagname = "DoubleV+CbF";
             if ( i%2 == 0 ) tagname += "_a";
             else       tagname += "+a";
             tagname += i;
 			   row_lab->Add(new TObjString(tagname));
 		   	valp[ind++] = &fPolPar[i];
-            tagname = "CheckButton";
-            tagname += "+Fix";
-		    	row_lab->Add(new TObjString(tagname));
+//            tagname = "CheckButton";
+//           tagname += "+Fix";
+//		    	row_lab->Add(new TObjString(tagname));
 		      valp[ind++] = &fPolFixPar[i];
          }
 		} else if (type == 4) {
@@ -659,15 +658,15 @@ the root doc at: http://root.cern.ch\n\
 			row_lab->Add(new TObjString("CommentOnly_User defined formula"));
 			valp[ind++] = &dummy;
          for ( Int_t i = 0; i < 6; i ++ ) {
-            tagname = "DoubleValue";
+            tagname = "DoubleV+CbF";
             if ( i%2 == 0 ) tagname += "_a";
             else           tagname += "+a";
             tagname += i;
 			   row_lab->Add(new TObjString(tagname));
 		   	valp[ind++] = &fFormPar[i];
-            tagname = "CheckButton";
-            tagname += "-Fix";
-		    	row_lab->Add(new TObjString(tagname));
+//            tagname = "CheckButton";
+//            tagname += "-Fix";
+//		    	row_lab->Add(new TObjString(tagname));
 		      valp[ind++] = &fFormFixPar[i];
          }
 		}
@@ -675,11 +674,11 @@ the root doc at: http://root.cern.ch\n\
 		valp[ind++] = &fFrom;
 		row_lab->Add(new TObjString("DoubleValue+To"));
 		valp[ind++] = &fTo;
-		row_lab->Add(new TObjString("CheckButton_Add all functions to hist"));
+		row_lab->Add(new TObjString("CheckButton_  Add funcs to hist"));
 		valp[ind++] = &fFitOptAddAll;
-		row_lab->Add(new TObjString("CheckButton+Clear marks after fit"));
+		row_lab->Add(new TObjString("CheckButton+   Auto clear marks"));
 		valp[ind++] = &fAutoClearMarks;
-		row_lab->Add(new TObjString("ColorSelect_LCol"));
+		row_lab->Add(new TObjString("ColorSelect_LineCol"));
 		valp[ind++] = &fColor;
 		row_lab->Add(new TObjString("PlainShtVal+LWid"));
 		valp[ind++] = &fWidth;
@@ -1303,8 +1302,8 @@ Bool_t FitOneDimDialog::FitGausExecute()
     //  here fitting is done
          fSelHist->Fit(fFuncName.Data(), fitopt.Data(), "");
          if (!fFitOptNoDraw) {
-			   fFitFunc->Draw("same");
 				fSelHist->GetListOfFunctions()->Last()->ResetBit(TF1::kNotDraw);
+			   fFitFunc->Draw("same");
 			}
 //         TList * lof = gPad->GetListOfPrimitives();
 //         TH1* hh = (TH1*)lof->FindObject(fSelHist->GetName());
