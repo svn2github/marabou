@@ -94,7 +94,7 @@ void TSplineXDialog::Draw_The_TSplineX()
   TIter next(gPad->GetListOfPrimitives());
   TObject * obj;
   while ( (obj = next()) ) {
-     if (obj->IsA() == TGraph::Class()) {
+     if (obj->InheritsFrom("TGraph") ) {
         TGraph * g = (TGraph*)obj;
         if(!(strncmp(g->GetName(), "Graph", 5))) {
            cout << "Rename existing Graph" << endl;

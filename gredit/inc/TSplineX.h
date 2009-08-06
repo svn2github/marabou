@@ -58,6 +58,7 @@ ClassDef(RailwaySleeper,0)
 
 class ControlGraph : public TGraph
 {
+friend class TSplineX;
 private:
    TSplineX *fParent;                       //
    TArrayF  fShapeFactors;
@@ -69,12 +70,15 @@ private:
    TArrayI fMixerMinval;                    //!
    TArrayI fMixerMaxval;                    //!
    TArrayI fMixerFlags;                     //!
+	
+protected:
+   virtual ~ControlGraph() {std::cout << "dtor ControlGraph(): " << this << std::endl;};
 
 
 public:
    ControlGraph (Int_t npoints = 0, Double_t*  x = NULL, Double_t* y = NULL);
-   virtual ~ControlGraph() {std::cout << "dtor ControlGraph(): " << this << std::endl;};
-   Int_t DistancetoPrimitive(Int_t px, Int_t py);
+   virtual void  Delete(Option_t *option="") { std::cout << " no no " << std::endl; };
+	DistancetoPrimitive(Int_t px, Int_t py);
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void SetParent(TSplineX* parent);
    TSplineX  *GetParent(){return fParent;};
