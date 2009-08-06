@@ -59,10 +59,10 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 ";
 
    const char *fDrawOpt2[kNdrawopt] =
-   {"SCAT", "BOX0",  "BOX1 ", "COL",  "ARR  ",
-	 "CONT0","CONT1", "CONT2", "CONT3","CONT4",
-    "SURF0","SURF1", "SURF2", "SURF3","SURF4",
-    "LEGO ","LEGO1", "LEGO2", "TRI2 ","TEXT "};
+   {" SCAT", " BOX0", " BOX1", "  COL", "  ARR",
+	 "CONT0", "CONT1", "CONT2", "CONT3", "CONT4",
+    "SURF0", "SURF1", "SURF2", "SURF3", "SURF4",
+    " LEGO", "LEGO1", "LEGO2", " TRI2", " TEXT"};
 	 
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
@@ -160,7 +160,7 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
        fValp[ind++] = &fOptRadio[indopt++];
    }
 	fBidTEXT = ind - 1;
-   fRow_lab->Add(new TObjString("ColorSelect_BackgColor"));
+   fRow_lab->Add(new TObjString("ColorSelect_BgColor"));
    fValp[ind++] = &f2DimBackgroundColor;
    fRow_lab->Add(new TObjString("ColorSelect+FillC"));
    fBidFillColor = ind; fValp[ind++] = &fHistFillColor2Dim;

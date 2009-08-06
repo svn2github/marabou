@@ -2016,7 +2016,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
    if (pp <= 0) {cout << "No histogram name in: " << obj->String()<< endl; return NULL;};
    hname.Resize(pp);
    dname.Remove(0,pp+1);
-//   cout << fname << "|" << hname << "|" << dname << "|" << endl;
+   cout << fname << "|" << hname << "|" << dname << "|" << endl;
 
    hname = hname.Strip(TString::kBoth);
    dname = dname.Strip(TString::kBoth);
@@ -2029,7 +2029,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
 		newname += "_";
 		newname += hname.Data();
 	   hist = (TH1*)gROOT->GetList()->FindObject(newname);
-//      cout << "Use hist in memory: " << hname << " Fn: " << fname << " Nn: " << newname << endl;
+      cout << "Use hist in memory: " << hname << " Fn: " << fname << " Nn: " << newname << endl;
 	}
 //   if (hist) hist->Print();
    if (hist && (fname == "Memory" || try_memory)) return hist;
@@ -2037,7 +2037,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
       hist=(TH1*)gROOT->GetList()->FindObject(hname);
 //     gROOT->ls();
       if (hist) {
-//         WarnBox("Deleting existing histogram");
+         WarnBox("Deleting existing histogram");
          hist->Delete();
 //         WarnBox("Using existing histogram");
 //         return hist;
@@ -2075,10 +2075,12 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
    }
    gDirectory=gROOT;
 //  gROOT->ls();
+/*
    TString newname(hname.Data());
    newname += "_",
    newname += pos;
    if (hist) hist->SetName(newname.Data());
+*/
    return hist;
 }
 //________________________________________________________________________________________
@@ -3037,6 +3039,7 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
 
 void HistPresent::ShowSelectedHists(const char *bp)
 {
+   fSelectHist->Print();
    ShowSelectedHists(fSelectHist);
 }
 //_______________________________________________________________________
@@ -3199,12 +3202,12 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
 		wh = c->GetWindowHeight();
       TList * logr = new TList();
       TList * lohi = new TList();
+      c->Draw();
+	   c->cd();
       Int_t ngr = FindGraphs(gPad, logr);
       if (ngr > 0) 
 		   gStyle->SetOptStat(0);
 		c->GetListOfExecs()->Clear();
-      c->Draw();
-	   c->cd();
       if (c->GetAutoExec()) 
          c->ToggleAutoExec();
       if ( c->InheritsFrom("HTCanvas") ) {
@@ -3213,9 +3216,9 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
 				c->BuildHprMenus(this,0, (TGraph*)logr->First());
 			} else {
 				Int_t nhi = FindObjs(gPad, logr, NULL, "TH1");
-				if (nhi > 0) {
+//				if (nhi > 0) {
 					c->BuildHprMenus(this,NULL, NULL);
-				}
+//				}
 			}
       }
 //		c->SetWindowSize(c->GetOrigWw(), c->GetOrigWh());

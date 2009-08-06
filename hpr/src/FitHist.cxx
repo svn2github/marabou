@@ -69,6 +69,7 @@
 #include "TGMrbValuesAndText.h"
 #include "Save2FileDialog.h"
 #include "FitOneDimDialog.h"
+#include "Fit2DimDialog.h"
 #include "SetHistOptDialog.h"
 #include "SetColorModeDialog.h"
 #include "WindowSizeDialog.h"
@@ -120,7 +121,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 //   if(pp) fHname.Remove(0,pp+1);
 //   cout << "ctor: " << GetName() << " hname: " << fHname.Data()<< endl;
    fCutPanel = NULL;
-   fDialog  = NULL;
+//   fDialog  = NULL;
    fSetRange = kFALSE;
    fRangeLowX = 0;
    fRangeUpX = 0;
@@ -140,6 +141,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 
    fSelHist = hist;
    fFit1DimD = 0;
+   fFit2DimD = 0;
    fCalHist = NULL;
    fCalFitHist = NULL;
    fCalFunc = NULL;
@@ -225,6 +227,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "E");
    fMarkerSize    = env.GetValue("Set1DimOptDialog.fMarkerSize", 0);
    gStyle->SetErrorX(env.GetValue("Set1DimOptDialog.fErrorX", 0.));
+   gStyle->SetEndErrorSize(env.GetValue("Set1DimOptDialog.fEndErrorSize", 0.));
    fDrawOpt2Dim   = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
    fShowZScale    = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
    f2DimBackgroundColor = env.GetValue("Set2DimOptDialog.f2DimBackgroundColor", 0);
@@ -295,7 +298,11 @@ void FitHist::RecursiveRemove(TObject * obj)
    fActiveWindows->Remove(obj);
    fActiveFunctions->Remove(obj);
    if (obj == fFit1DimD) fFit1DimD = NULL;
-   if (obj == fDialog) fDialog = NULL;
+   if (obj == fFit2DimD) fFit2DimD = NULL;
+//   if (obj == fDialog) {
+//	   fDialog = NULL;
+//	}
+//   cout << "FitHist::RecursiveRemove fDialog: " << fDialog << endl;	
 }
 
 //------------------------------------------------------
@@ -309,8 +316,9 @@ FitHist::~FitHist()
    if (!expHist && hp && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
    gDirectory->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
-   if ( fDialog != NULL ) fDialog->CloseDialog();
+//   if ( fDialog != NULL ) fDialog->CloseDialog();
    if ( fFit1DimD ) fFit1DimD->CloseDialog();
+   if ( fFit2DimD ) fFit2DimD->CloseDialog();
    WindowSizeDialog::fNwindows -= 1;
    if ( expHist ) {
 //      cout << "expHist " << expHist->GetName() << endl;
@@ -2197,7 +2205,7 @@ void FitHist::Superimpose(Int_t mode)
 		}
 	}
 	cHist->cd();
-   TString drawopt = fSelHist->GetDrawOption();
+   TString drawopt = fSelHist->GetOption();
    if ( hist->GetDimension() == 1 ) {
 	   hdisp->SetLineColor(fColSuperimpose);
 	   if (!drawopt.Contains("E", TString::kIgnoreCase))
@@ -2559,11 +2567,11 @@ void FitHist::FastFT()
    Int_t ind = 0;
    Bool_t ok = kTRUE;
    TList *row_lab = new TList();
-   row_lab->Add(new TObjString("CheckButton_Magnitude"));
-   row_lab->Add(new TObjString("CheckButton_Real Part"));
-   row_lab->Add(new TObjString("CheckButton_Imaginary Part"));
-   row_lab->Add(new TObjString("CheckButton_Phase"));
-   row_lab->Add(new TObjString("RadioButton_TType: Real to Complex"));
+   row_lab->Add(new TObjString("CheckButton_              Magnitude"));
+   row_lab->Add(new TObjString("CheckButton_              Real Part"));
+   row_lab->Add(new TObjString("CheckButton_         Imaginary Part"));
+   row_lab->Add(new TObjString("CheckButton_                  Phase"));
+   row_lab->Add(new TObjString("RadioButton_TType:  Real to Complex"));
    row_lab->Add(new TObjString("RadioButton_TType: Discrete Hartley"));
 //   row_lab->Add(new TObjString("RadioButton_TType: Real to Real"));
 //   row_lab->Add(new TObjString("StringValue_Option for Real to Real"));
@@ -3270,6 +3278,10 @@ void FitHist::Draw1Dim()
 //			 cout << "fSelHist->SetStats(0); " << endl;
 		} 
    }
+   if (fErrorMode == "E1" && fMarkerSize == 0) {
+      fSelHist->SetMarkerSize(0.01);
+   } 
+//	cout << " gStyle->GetEndErrorSize() " <<  gStyle->GetEndErrorSize()<< endl;
    fSelHist->Draw();
    TList *lof = fOrigHist->GetListOfFunctions();
 
@@ -3401,7 +3413,7 @@ void FitHist::Draw2Dim()
              TMrbNamedArrayI * nai = dynamic_cast<TMrbNamedArrayI*>(p);
              TString name(nai->GetName());
              if (name.BeginsWith("Pixel")) {
-                cout << "SetUserPalette" << endl;
+//                cout << "SetUserPalette" << endl;
                 SetUserPalette(1001, nai);
              }
          }
@@ -3531,12 +3543,19 @@ void FitHist::ColorMarked()
 }
 //____________________________________________________________________________________
 
+void FitHist::Fit2DimD(Int_t type)
+{
+   if (fFit2DimD == NULL)
+      fFit2DimD = new Fit2DimDialog((TH2*)fSelHist, type);
+}
+//____________________________________________________________________________________
+
 void FitHist::Fit1DimDialog(Int_t type)
 {
    if (fFit1DimD == NULL)
       fFit1DimD = new FitOneDimDialog(fSelHist, type);
 }
-//__________________________________________________________________
+///__________________________________________________________________
 
 void FitHist::FindPeaks()
 {

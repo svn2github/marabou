@@ -192,6 +192,7 @@ enum ERootCanvasCommands {
 
    kFHFit,
    kFHFitGausLBg,
+   kFHFit2DimGaus,
    kFHFitExp,
    kFHFitPol,
    kFHFitForm,
@@ -870,6 +871,9 @@ again:
                   case kFHTerminate:
                      gApplication->Terminate(0);
                      break;
+                   case kFHFit2DimGaus:
+                     fFitHist->Fit2DimD(1);
+                     break;
                    case kFHFitGausLBg:
                      fFitHist->Fit1DimDialog(1);
                      break;
@@ -1476,6 +1480,7 @@ void HandleMenus::BuildMenus()
 
       fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
       if(is2dim){
+      	fFitMenu->AddEntry("Fit 2 dim Gaussian", kFHFit2DimGaus);
          fFitMenu->AddPopup("FitPolyHist",  fCascadeMenu1);
          fFitMenu->AddPopup("FitPolyMarks", fCascadeMenu2);
       	fFitMenu->AddSeparator();
@@ -1508,7 +1513,7 @@ void HandleMenus::BuildMenus()
       fFitMenu->AddSeparator();
       fFitMenu->AddEntry("Kolmogorov Test",         kFHKolmogorov);
  //     fFitMenu->AddSeparator();
-      fFitMenu->AddEntry("Fast Fourier Transform",  kFHfft);
+ //     fFitMenu->AddEntry("Fast Fourier Transform",  kFHfft);
 
       fCutsMenu->Associate((TGWindow*)this);
 //      fCascadeMenu1->Associate((TGWindow*)this);
@@ -1583,7 +1588,7 @@ void HandleMenus::BuildMenus()
    if (fDisplayMenu) fRootsMenuBar->AddPopup("&Display", fDisplayMenu,  fMenuBarItemLayout, pmi);
    if(fh_menus && nDim < 3){
       fRootsMenuBar->AddPopup("Cuts/Windows",    fCutsMenu,  fMenuBarItemLayout, pmi);
-      fRootsMenuBar->AddPopup("Fit/Calib/FFT", fFitMenu,   fMenuBarItemLayout, pmi);
+      fRootsMenuBar->AddPopup("Fit/Calib", fFitMenu,   fMenuBarItemLayout, pmi);
    }
    if(edit_menus){
          fRootsMenuBar->AddPopup("Hpr-Edit",            fEditMenu,  fMenuBarItemLayout, pmi);

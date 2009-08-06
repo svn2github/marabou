@@ -63,6 +63,7 @@
 #include "TMrbVarWdwCommon.h"
 #include "WindowSizeDialog.h"
 #include "GeneralAttDialog.h"
+#include "Save2FileDialog.h"
 
 extern HistPresent *hp;
 extern TFile *fWorkfile;
@@ -694,10 +695,10 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    funcname = (const char *) sfunc;
    TString temp_hname ("fithist_temp");
    temp_hname +=fFuncNumb;
-   cout << " <<<<<<<<<<<<<<<<<<<<<" << endl;
+//   cout << " <<<<<<<<<<<<<<<<<<<<<" << endl;
 
    TH1D *fithist = new TH1D(temp_hname, funcname, nxbins, edgelx, edgeux);
-   cout << " >>>>>>>>>>>>>>>>>>>>>" <<endl;
+//   cout << " >>>>>>>>>>>>>>>>>>>>>" <<endl;
 // case fit to histogram
 
    if (what == 0) {
@@ -908,24 +909,9 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    fSelPad->cd();
    pol->Draw("same");
    fSelPad->Update();
-/*
-   TString question = "Write function to workfile?";
-   int buttons = kMBYes | kMBNo, retval = 0;
-   EMsgBoxIcon icontype = kMBIconQuestion;
-   new TGMsgBox(gClient->GetRoot(), fith->GetMyCanvas(),
-                "Question", (const char *) question,
-                icontype, buttons, &retval);
-   if (retval == kMBYes) {
-*/
-   if ( fDialog != NULL )
-     fDialog->CloseDialog();
-   fDialog = new Save2FileDialog(pol, NULL, fith->GetMyCanvas());
-//      if (OpenWorkFile()) {
-//         pol->Write();
-//        CloseWorkFile();
-//      } else
-//         fFuncNumb--;
-//   }
+//  if ( fDialog != NULL )
+//     fDialog->CloseDialog();
+   new Save2FileDialog(pol, NULL, fith->GetMyCanvas());
    if (what == 0)
       ClearMarks();
    if (what == 1)

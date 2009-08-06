@@ -111,46 +111,46 @@ ____________________________________________________________\n\
 		}
 		cstyle->Close();
 	}
-   TString style_menu ("ComboSelect_Set global style");
+   TString style_menu ("ComboSelect_         Set global style");
    TIter next(gROOT->GetListOfStyles());
 	while ( (obj = next()) ) {
 	   style_menu += ";";
 	   style_menu += ((TStyle*)obj)->GetName();
 	}
    RestoreDefaults();
-   fRow_lab->Add(new TObjString("CheckButton_Force style,show hist with current style"));
+   fRow_lab->Add(new TObjString("CheckButton_            Force current style"));
    fValp[ind++] = &fForceStyle;
    fRow_lab->Add(new TObjString(style_menu));
    fGlobalStyleButton = ind;
    fValp[ind++] = &fGlobalStyle;
-   fRow_lab->Add(new TObjString("CheckButton_Show histlists only"));
+   fRow_lab->Add(new TObjString("CheckButton_             Show histlists only"));
    fValp[ind++] = &fShowListsOnly;
-   fRow_lab->Add(new TObjString("CheckButton_Suppress warning messages"));
+   fRow_lab->Add(new TObjString("CheckButton_       Suppress warning messages"));
    fValp[ind++] = &fSuppressWarnings;
-   fRow_lab->Add(new TObjString("CheckButton_Show PS file after creation"));
+   fRow_lab->Add(new TObjString("CheckButton_     Show PS file after creation"));
    fValp[ind++] = &fShowPSFile;
    fRow_lab->Add(new TObjString("CheckButton_Remember Expand settings (Marks)"));
    fValp[ind++] = &fRememberLastSet;
    fRow_lab->Add(new TObjString("CheckButton_Remember Zoomings (by left mouse)"));
    fValp[ind++] = &fRememberZoom;
-   fRow_lab->Add(new TObjString("CheckButton_Use Attribute Macro"));
+   fRow_lab->Add(new TObjString("CheckButton_              Use Attribute Macro"));
    fValp[ind++] = &fUseAttributeMacro;
-   fRow_lab->Add(new TObjString("CheckButton_Use Regular expression syntax"));
+   fRow_lab->Add(new TObjString("CheckButton_    Use Regular expression syntax"));
    fValp[ind++] = &fUseRegexp;
-   fRow_lab->Add(new TObjString("PlainIntVal_Max Ents in Lists"));
+   fRow_lab->Add(new TObjString("PlainIntVal_                Max Ents in Lists"));
    fValp[ind++] = &fMaxListEntries;
-	fRow_lab->Add(new TObjString("PlainIntVal_Fit2Dim Content Limit"));
+	fRow_lab->Add(new TObjString("PlainIntVal_            Fit2Dim Content Limit"));
 	fValp[ind++] = &fContentLowLimit;
-	fRow_lab->Add(new TObjString("PlainIntVal_Fit2Dim Vertical Adjust Limit"));
+	fRow_lab->Add(new TObjString("PlainIntVal_    Fit2Dim Vertical Adjust Limit"));
 	fValp[ind++] = &fVertAdjustLimit;
 
    fRow_lab->Add(new TObjString("CommentOnly_Display option for stacked hists"));
    fValp[ind++] = &fStackedReally;
-   fRow_lab->Add(new TObjString("RadioButton_Really stack"));
+   fRow_lab->Add(new TObjString("RadioButton_ Really stack"));
    fValp[ind++] = &fStackedReally;
-   fRow_lab->Add(new TObjString("RadioButton+Superimpose"));
+   fRow_lab->Add(new TObjString("RadioButton+  Superimpose"));
    fValp[ind++] = &fStackedNostack;
-   fRow_lab->Add(new TObjString("RadioButton+One pad for each"));
+   fRow_lab->Add(new TObjString("RadioButton+Separate Pads"));
    fValp[ind++] = &fStackedPads;
 
    static Int_t ok;

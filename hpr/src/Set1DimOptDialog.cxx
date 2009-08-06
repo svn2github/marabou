@@ -75,10 +75,10 @@ be selected.\n\
  //  static Int_t dummy;
    static TString stycmd("SetHistAttPermLocal()");
 
-   fRow_lab->Add(new TObjString("CheckButton_Contour/Histogram"));
+   fRow_lab->Add(new TObjString("CheckButton_Contour/Histo"));
    fValp[ind++] = &fShowContour;
-   fRow_lab->Add(new TObjString("CheckButton+Labels at Top X"));
-   fRow_lab->Add(new TObjString("CheckButton+Labels at Right Y"));
+   fRow_lab->Add(new TObjString("CheckButton+  Labels Top X"));
+   fRow_lab->Add(new TObjString("CheckButton+Labels Right Y"));
    fValp[ind++] = &fLabelsTopX;
    fValp[ind++] = &fLabelsRightY;
 	fRow_lab->Add(new TObjString("ColorSelect_LineCol"));
@@ -109,11 +109,11 @@ be selected.\n\
    fRow_lab->Add(new TObjString("Float_Value+MarkerSize"));
    fValp[ind++] = &fMarkerSize;
 
-   fRow_lab->Add(new TObjString("CheckButton_  Live statbox     "));
+   fRow_lab->Add(new TObjString("CheckButton_Live statbox"));
    fValp[ind++] = &fLiveStat1Dim;
-   fRow_lab->Add(new TObjString("CheckButton+  Live Gauss fit   "));
+   fRow_lab->Add(new TObjString("CheckButton+Live Gauss fit"));
    fValp[ind++] = &fLiveGauss;
-   fRow_lab->Add(new TObjString("CheckButton+  Linear bg in fit "));
+   fRow_lab->Add(new TObjString("CheckButton+Lin bg in fit "));
    fValp[ind++] = &fLiveBG;
 
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
@@ -249,7 +249,7 @@ void Set1DimOptDialog::SetAtt(TH1* hist)
 
 void Set1DimOptDialog::SetHistAttPermLocal()
 {
-//   cout << "Set1DimOptDialog:: SetHistAttPerm()" << endl;
+   cout << "Set1DimOptDialog:: SetHistAttPerm()" << endl;
    SaveDefaults();
    SetHistAttPerm();
 }
@@ -349,10 +349,10 @@ void Set1DimOptDialog::RestoreDefaults()
 	fMarkerColor   = fHist->GetMarkerColor();
 	fMarkerStyle   = fHist->GetMarkerStyle();
 	fMarkerSize    = fHist->GetMarkerSize();
-	TString drawopt= fHist->GetDrawOption();
+	TString drawopt= fHist->GetOption();
 	
 	fFill1Dim      = fHist->GetFillStyle() != 0;
-	if (drawopt.Length() < 1) {
+	if (drawopt.Length() == 0) {
 	   fErrorMode = "none";
 	   fShowContour = 1;
 		fLabelsTopX = 0;
