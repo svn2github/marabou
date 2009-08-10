@@ -38,14 +38,14 @@ static const Char_t helptext[] =" no help yet";
 //   fRow_lab->Add(new TObjString("PlainShtVal+BorderSize"));
 //   fRow_lab->Add(new TObjString("PlainIntVal+BorderMode"));
    fRow_lab->Add(new TObjString("Float_Value_BottomMarg;0;1"));
-   fRow_lab->Add(new TObjString("Float_Value+TopMarg;0;1"));
-   fRow_lab->Add(new TObjString("Float_Value_LeftMarg;0;1"));
-   fRow_lab->Add(new TObjString("Float_Value+RightMarg;0;1"));
-   fRow_lab->Add(new TObjString("CheckButton_GridX"));
-   fRow_lab->Add(new TObjString("CheckButton+GridY"));
-   fRow_lab->Add(new TObjString("CheckButton_Ticks at top X"));
-   fRow_lab->Add(new TObjString("CheckButton+Ticks at right Y"));
-   fRow_lab->Add(new TObjString("CheckButton_Labels at top X"));
+   fRow_lab->Add(new TObjString("Float_Value+   TopMarg;0;1"));
+   fRow_lab->Add(new TObjString("Float_Value_  LeftMarg;0;1"));
+   fRow_lab->Add(new TObjString("Float_Value+ RightMarg;0;1"));
+   fRow_lab->Add(new TObjString("CheckButton_    GridX "));
+   fRow_lab->Add(new TObjString("CheckButton+    GridY "));
+   fRow_lab->Add(new TObjString("CheckButton_   Ticks at top X"));
+   fRow_lab->Add(new TObjString("CheckButton+ Ticks at right Y"));
+   fRow_lab->Add(new TObjString("CheckButton_  Labels at top X"));
    fRow_lab->Add(new TObjString("CheckButton+Labels at right Y"));
 //   fValp[ind++] = &fPadColor;
 //  fValp[ind++] = &fPadBorderSize;
@@ -65,9 +65,9 @@ static const Char_t helptext[] =" no help yet";
    fValp[ind++] = &dummy;
    fRow_lab->Add(new TObjString("ColorSelect_FillColor"));
    fRow_lab->Add(new TObjString("Fill_Select+FillStyle"));
-   fRow_lab->Add(new TObjString("ColorSelect_LineColor"));
-   fRow_lab->Add(new TObjString("LineSSelect+LineStyle"));
-   fRow_lab->Add(new TObjString("PlainShtVal+LineWidth"));
+   fRow_lab->Add(new TObjString("ColorSelect_LineCol"));
+   fRow_lab->Add(new TObjString("LineSSelect+LineSty"));
+   fRow_lab->Add(new TObjString("PlainShtVal+LineWid"));
    fRow_lab->Add(new TObjString("PlainShtVal_BorderSize"));
    fRow_lab->Add(new TObjString("PlainIntVal+BorderMode"));
    fValp[ind++] = &fFrameFillColor;
@@ -85,9 +85,9 @@ static const Char_t helptext[] =" no help yet";
 //   fRow_lab->Add(new TObjString("PlainShtVal+BorderSize"));
 //   fRow_lab->Add(new TObjString("PlainIntVal+BorderMode"));
    fRow_lab->Add(new TObjString("PlainIntVal_DefHeight;20;1200"));
-   fRow_lab->Add(new TObjString("PlainIntVal+DefWidth;20;1600"));
-   fRow_lab->Add(new TObjString("PlainIntVal_DefXpos;0;1600"));
-   fRow_lab->Add(new TObjString("PlainIntVal+DefYpos;0;1200"));
+   fRow_lab->Add(new TObjString("PlainIntVal+ DefWidth;20;1600"));
+   fRow_lab->Add(new TObjString("PlainIntVal_  DefXpos;0;1600"));
+   fRow_lab->Add(new TObjString("PlainIntVal+  DefYpos;0;1200"));
    fValp[ind++] = &fCanvasColor;
    fValp[ind++] = &fCanvasFillStyle;
 //   fValp[ind++] = &fCanvasBorderSize;
@@ -324,7 +324,7 @@ void SetCanvasAttDialog::SetCanvasAttPerm()
 
 void SetCanvasAttDialog::CloseDown(Int_t wid)
 {
-   cout << "CloseDown(" << wid<< ")" <<endl;
+//   cout << "CloseDown(" << wid<< ")" <<endl;
    fDialog = NULL;
    if (wid == -1)
       SaveDefaults();
@@ -334,9 +334,9 @@ void SetCanvasAttDialog::CloseDown(Int_t wid)
 void SetCanvasAttDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
-  cout << "CRButtonPressed(" << wid<< ", " <<bid;
-   if (obj) cout  << ", " << canvas->GetName() << ")";
-   cout << endl;
+//  cout << "CRButtonPressed(" << wid<< ", " <<bid;
+//   if (obj) cout  << ", " << canvas->GetName() << ")";
+//   cout << endl;
    SetCanvasAtt(canvas);
 }
 

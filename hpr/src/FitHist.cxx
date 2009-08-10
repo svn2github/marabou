@@ -2122,6 +2122,9 @@ void FitHist::KolmogorovTest()
 
 void FitHist::Superimpose(Int_t mode)
 {
+   cout << setblue <<
+	"WARNING: This command will no longer be supported in future" << endl
+	<< "Please use \"Stack selected hists instead" << setblack << endl;
    TH1 *hist;
    TPaveLabel *tname;
 //  choose from histo list

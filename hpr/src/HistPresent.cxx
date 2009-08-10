@@ -2016,7 +2016,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
    if (pp <= 0) {cout << "No histogram name in: " << obj->String()<< endl; return NULL;};
    hname.Resize(pp);
    dname.Remove(0,pp+1);
-   cout << fname << "|" << hname << "|" << dname << "|" << endl;
+//   cout << fname << "|" << hname << "|" << dname << "|" << endl;
 
    hname = hname.Strip(TString::kBoth);
    dname = dname.Strip(TString::kBoth);
