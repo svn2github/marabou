@@ -3,13 +3,13 @@
 // Name:           DGFInstrumentPanel
 // Purpose:        A GUI to control the XIA DGF-4C
 // Description:    Instrument Panel
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.38 2008-10-14 18:42:01 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.39 2009-08-19 12:52:49 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //Begin_Html
 /*
@@ -76,10 +76,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 // Name:           DGFInstrumentPanel
 // Purpose:        DGF Viewer: Instrument Panel
 // Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Implements DGF Viewer's Instrument Panel
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGMrbLayout * frameGC;
@@ -94,27 +94,27 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 //	Clear focus list
 	fFocusList.Clear();
 
-	frameGC = new TGMrbLayout(	gDGFControlData->NormalFont(), 
+	frameGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGreen);	HEAP(frameGC);
 
-	groupGC = new TGMrbLayout(	gDGFControlData->SlantedFont(), 
+	groupGC = new TGMrbLayout(	gDGFControlData->SlantedFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGreen);	HEAP(groupGC);
 
-	comboGC = new TGMrbLayout(	gDGFControlData->NormalFont(), 
+	comboGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGreen);	HEAP(comboGC);
 
-	labelGC = new TGMrbLayout(	gDGFControlData->NormalFont(), 
+	labelGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGreen);	HEAP(labelGC);
 
-	buttonGC = new TGMrbLayout(	gDGFControlData->NormalFont(), 
+	buttonGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGray);	HEAP(buttonGC);
 
-	entryGC = new TGMrbLayout(	gDGFControlData->NormalFont(), 
+	entryGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorWhite);	HEAP(entryGC);
 
@@ -191,7 +191,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
 	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame, "Channel", &fLofChannels,
-													kDGFInstrSelectChannel, 1, 
+													kDGFInstrSelectChannel, 1,
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fSelectChannel);
@@ -571,7 +571,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 
 #if 0
 	fTraceUPSAOnOffButton = new TGMrbRadioButtonList(fTraceUPSAFrame, "PSA enable", &fInstrUPSAOnOff,
-													kDGFInstrTraceUPSAOnOffButton, 1, 
+													kDGFInstrTraceUPSAOnOffButton, 1,
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fTraceUPSAOnOffButton);
@@ -749,7 +749,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDRegEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fCFDOnOffButton = new TGMrbRadioButtonList(fCFDDataFrame, "CFD enable", &fInstrCFDOnOff,
-													kDGFInstrCFDOnOffButton, 1, 
+													kDGFInstrCFDOnOffButton, 1,
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fCFDOnOffButton);
@@ -806,7 +806,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDWalkEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fCFDFractionButton = new TGMrbRadioButtonList(fCFDDataFrame, "Fraction", &fInstrCFDFraction,
-													kDGFInstrCFDFractionButton, 1, 
+													kDGFInstrCFDFractionButton, 1,
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fCFDFractionButton);
@@ -1057,10 +1057,10 @@ void DGFInstrumentPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	gDGFControlData->AddToUpdateList(gDGFControlData->GetSelectedModule());
@@ -1076,53 +1076,53 @@ void DGFInstrumentPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 			this->UpdateValue(kDGFInstrDACGainEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-		
-			break;	
+
+			break;
 		case kDGFInstrDACVVEntry:
 			this->UpdateValue(kDGFInstrDACVVEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-		
-			break;	
+
+			break;
 		case kDGFInstrDACOffsetEntry:
 			this->UpdateValue(kDGFInstrDACOffsetEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-		
-			break;	
+
+			break;
 		case kDGFInstrDACVoltEntry:
 			this->UpdateValue(kDGFInstrDACVoltEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-		
-			break;	
+
+			break;
 		case kDGFInstrCFDRegEntry:
 			this->UpdateValue(kDGFInstrCFDRegEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-		
-			break;	
+
+			break;
 		case kDGFInstrCFDDelayBeforeLEEntry:
 			this->UpdateValue(kDGFInstrCFDDelayBeforeLEEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-		
-			break;	
+
+			break;
 		case kDGFInstrCFDDelayBipolarEntry:
 			this->UpdateValue(kDGFInstrCFDDelayBipolarEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-		
-			break;	
+
+			break;
 		case kDGFInstrCFDWalkEntry:
 			this->UpdateValue(kDGFInstrCFDWalkEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
-		
+
 			break;
 	}
 }
-	
+
 void DGFInstrumentPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1130,10 +1130,10 @@ void DGFInstrumentPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: select module
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	gDGFControlData->SetSelectedModuleIndex(Selection);
@@ -1147,10 +1147,10 @@ void DGFInstrumentPanel::EntryChanged(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: update after entry changed
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	this->UpdateValue(Selection,	gDGFControlData->GetSelectedModuleIndex(),
@@ -1166,9 +1166,9 @@ void DGFInstrumentPanel::RadioButtonPressed(Int_t FrameId, Int_t Selection) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Will be called on radio button events.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (FrameId) {
@@ -1191,10 +1191,10 @@ void DGFInstrumentPanel::EditBits(Int_t ButtonId) {
 // Name:           DGFInstrumentPanel::EditBits
 // Purpose:        Slot method: call bit editor
 // Arguments:      Int_t ButtonId    -- button id
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called if action button pressed for TGMrbLabelEntry
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch(ButtonId) {
@@ -1236,9 +1236,9 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 // Purpose:        Setup values in instrument panel
 // Arguments:      Bool_t ReadFromDSP   -- read params from DSP
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Fills entry fields in instr panel.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	DGFModule * dgfModule;
@@ -1262,7 +1262,7 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 			}
 			dgfModule = gDGFControlData->NextModule(dgfModule);
 		}
-		delete pgb;
+		pgb->DeleteWindow();
 	}
 	if (!ok) {
 		gMrbLog->Err()	<< "Can't read param memory from DSP (try to re-connect)" << endl;
@@ -1270,7 +1270,7 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Can't read param memory from DSP (try to re-connect)", kMBIconStop);
 		return(kFALSE);
 	}
-	
+
 	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
 	chn = gDGFControlData->GetSelectedChannel();
 
@@ -1332,7 +1332,7 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 // MCABaselineBinsEntry:
 
 	if (ReadFromDSP) dgf->SetParamsIncoreChanged(kFALSE);
-	
+
 	return(kTRUE);
 }
 
@@ -1344,9 +1344,9 @@ Bool_t DGFInstrumentPanel::ReadDSP(DGFModule * Module, Int_t ChannelId) {
 // Arguments:      DGFModule * Module -- module
 //                 Int_t ChannelId    -- channel id
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Reads param data from DSP.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbDGF * dgf;
@@ -1379,10 +1379,10 @@ Bool_t DGFInstrumentPanel::WriteDSP(DGFModule * Module, Int_t ChannelId) {
 // Arguments:      DGFModule * Module     -- module
 //                 Int_t ChannelId        -- channel id
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Calculates corrections for given module & channel
 //                 and updates DSP.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbDGF * dgf;
@@ -1418,9 +1418,9 @@ Bool_t DGFInstrumentPanel::ShowModuleSettings() {
 // Purpose:        Show module settings
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Calls $EDITOR to show current module settings
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString editor = gSystem->Getenv("EDITOR");
@@ -1439,7 +1439,7 @@ Bool_t DGFInstrumentPanel::ShowModuleSettings() {
 	cmd += tmpFile;
 	gSystem->Exec(cmd.Data());
 	return(kTRUE);
-}	
+}
 
 Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t ChannelId) {
 //________________________________________________________________[C++ METHOD]
@@ -1450,16 +1450,16 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 //                 Int_t ModuleId     -- module id
 //                 Int_t ChannelId    -- channel id
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Update a dgf value whenever entry data change.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbDGF * dgf;
 	Int_t chn;
 	Int_t intVal;
 	Double_t dblVal;
-	
+
 	if (gDGFControlData->IsOffline()) return(kTRUE);
 
 	dgf = gDGFControlData->GetModule(ModuleId)->GetAddr();
@@ -1602,9 +1602,9 @@ Bool_t DGFInstrumentPanel::InitializeCFD(Int_t OnOffFlag, Int_t FractionFlag) {
 // Arguments:      Int_t OnOffFlag     -- on or off
 //                 Int_t FractionFlag  -- fraction
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Fills entry fields for hardware cfd
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gDGFControlData->IsOffline()) return(kTRUE);
@@ -1654,9 +1654,9 @@ Bool_t DGFInstrumentPanel::UpdateCFD(TMrbDGF * Module, Int_t Channel) {
 // Arguments:      TMrbDGF * Module     -- module
 //                 Int_t Channel        -- channel
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Updates hardware cfd
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gDGFControlData->IsOffline()) return(kTRUE);
@@ -1696,9 +1696,9 @@ Bool_t DGFInstrumentPanel::InitializeUPSA() {
 // Purpose:        Setup values for user psa
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Fills entry fields for user psa
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gDGFControlData->IsOffline()) return(kTRUE);
@@ -1710,7 +1710,7 @@ Bool_t DGFInstrumentPanel::InitializeUPSA() {
 	fTraceUPSABaselineEntry->SetText(dgf->GetUserPsaData4(TMrbDGFData::kPsaBaseline03, chn));
 
 	// cutoff 0/1 2/3: 8/8 8/8
-	fTraceUPSAEnergyCutoffEntry->SetText(dgf->GetUserPsaData8(TMrbDGFData::kPsaCutOff01, chn)); 
+	fTraceUPSAEnergyCutoffEntry->SetText(dgf->GetUserPsaData8(TMrbDGFData::kPsaCutOff01, chn));
 
 	// trigger thresh 0/1 2/3: 8/8 8/8
 	fTraceUPSATriggerThreshEntry->SetText(dgf->GetUserPsaData8(TMrbDGFData::kPsaT0Thresh01, chn));
@@ -1738,9 +1738,9 @@ Bool_t DGFInstrumentPanel::UpdateUPSA(TMrbDGF * Module, Int_t Channel) {
 // Arguments:      TMrbDGF * Module     -- module
 //                 Int_t Channel        -- channel
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Updates user psa
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gDGFControlData->IsOffline()) return(kTRUE);
@@ -1749,7 +1749,7 @@ Bool_t DGFInstrumentPanel::UpdateUPSA(TMrbDGF * Module, Int_t Channel) {
 	Int_t chn = gDGFControlData->GetSelectedChannel();
 
 	Int_t intVal = fTraceUPSABaselineEntry->GetText2Int();
-	dgf->SetUserPsaData4(TMrbDGFData::kPsaBaseline03, chn, intVal);			// baseline 0-3: 4/4/4/4 
+	dgf->SetUserPsaData4(TMrbDGFData::kPsaBaseline03, chn, intVal);			// baseline 0-3: 4/4/4/4
 
 	intVal = fTraceUPSAEnergyCutoffEntry->GetText2Int();
 	dgf->SetUserPsaData8(TMrbDGFData::kPsaCutOff01, chn, intVal);			// cutoff 0/1 2/3: 8/8 8/8
@@ -1779,9 +1779,9 @@ void DGFInstrumentPanel::MoveFocus(Int_t EntryId) {
 // Purpose:        Move focus to next entry field
 // Arguments:      Int_t EntryId     -- entry id
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Moves focus to next entry field in ring buffer.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGTextEntry * entry = NULL;

@@ -9,8 +9,8 @@
 //                                             showing a progress bar
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbProgressBar.h,v 1.6 2006-10-09 08:58:59 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TGMrbProgressBar.h,v 1.7 2009-08-19 12:52:49 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -47,32 +47,36 @@ class TGMrbProgressBar: public TGTransientFrame {
 												const Char_t * BarColor = "blue",
 												const Char_t * BarText = NULL,
 												Bool_t WithDetail = kFALSE);
-												
+
 		~TGMrbProgressBar() {};				// default dtor
 
 //		TGMrbProgressBar(const TGMrbProgressBar & f) : TGTransientFrame(f) {};	// default copy ctor
 
-		inline void SetRange(Float_t Min, Float_t Max) { fBar->SetRange(Min, Max); }; 
+		inline void SetRange(Float_t Min, Float_t Max) { fBar->SetRange(Min, Max); };
 		inline void Increment(Float_t Incr, const Char_t * Detail = NULL, Int_t Sleep = 50) {
 			fBar->Increment(Incr);
 			if (Detail && fDetail)  fDetail->SetText(Detail);
 			gSystem->Sleep(Sleep);
-		}; 
-		inline void SetBarColor(const Char_t * Color) { fBar->SetBarColor(Color); }; 
-		inline void SetPosition(Int_t Position) { fBar->SetPosition(Position); }; 
-		inline void Reset() { fBar->Reset(); }; 
+		};
+		inline void SetBarColor(const Char_t * Color) { fBar->SetBarColor(Color); };
+		inline void SetPosition(Int_t Position) { fBar->SetPosition(Position); };
+		inline void Reset() { fBar->Reset(); };
+
+		inline TGHProgressBar * Bar() { return fBar; };
+
+		inline void DeleteWindow() { if (fBar) fBar->DeleteWindow(); TGTransientFrame::DeleteWindow(); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TList fHeap;
-	
+
 		TGHProgressBar * fBar;			//! progress bar
 		TGLabel * fDetail;				//! label to show details
 		TGMrbTextButtonList * fAction;	//! action buttons
-								
+
 		TMrbLofNamedX fLofActions;
-		
+
 	ClassDef(TGMrbProgressBar, 1)		// [GraphUtils] MARaBOU's message viewer
 };
 

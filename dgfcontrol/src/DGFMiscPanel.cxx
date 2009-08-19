@@ -3,13 +3,13 @@
 // ame:            DGFMiscPanel
 // Purpose:        A GUI to control the XIA DGF-4C
 // Description:    Setup
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMiscPanel.cxx,v 1.8 2008-10-14 10:22:29 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: DGFMiscPanel.cxx,v 1.9 2009-08-19 12:52:49 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //Begin_Html
 /*
@@ -62,10 +62,10 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 // Name:           DGFMiscPanel
 // Purpose:        DGF Viewer: Setup Panel
 // Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Implements DGF Viewer's Untrig Trace Panel
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGMrbLayout * frameGC;
@@ -76,12 +76,12 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 
 	TMrbString camacHost;
 	TMrbString intStr;
-			
+
 	TObjArray * lofSpecialButtons;
 	TMrbLofNamedX gSelect[kNofModulesPerCluster];
 	TMrbLofNamedX allSelect;
 	TMrbLofNamedX lofModuleKeys;
-	
+
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
 //	clear focus list
@@ -90,11 +90,11 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 	frameGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGreen);	HEAP(frameGC);
-	
+
 	groupGC = new TGMrbLayout(	gDGFControlData->SlantedFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGreen);	HEAP(groupGC);
-	
+
 	buttonGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGray);	HEAP(buttonGC);
@@ -102,16 +102,16 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 	labelGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGray);	HEAP(labelGC);
-	
+
 	entryGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorWhite);	HEAP(entryGC);
-	
+
 	lofSpecialButtons = new TObjArray();
 	HEAP(lofSpecialButtons);
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
-	
+
 //	create buttons to select/deselct groups of modules
 	Int_t idx = kDGFMiscSelectColumn;
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++, idx += 2) {
@@ -122,8 +122,8 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 	allSelect.Delete();							// (de)select all
 	allSelect.AddNamedX(kDGFMiscSelectAll, "cbutton_all.xpm");
 	allSelect.AddNamedX(kDGFMiscSelectNone, "cbutton_none.xpm");
-	
-	
+
+
 //	Initialize several lists
 	fActions.SetName("Actions");
 	fActions.AddNamedX(kDGFMiscActions);
@@ -139,7 +139,7 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
+							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -147,21 +147,21 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 		fCluster[cl]->SetState(~gDGFControlData->GetPatInUse(cl) & 0xFFFF, kButtonDisabled);
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
-	
+
 	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
-	
+
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -170,7 +170,7 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
 	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
-			
+
 // action buttons
 	TGLayoutHints * aFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, aFrameLayout);
@@ -187,7 +187,7 @@ DGFMiscPanel::DGFMiscPanel(TGCompositeFrame * TabFrame) :
 	fActionFrame = new TGGroupFrame(fHFrame, "Actions", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fActionFrame);
 	fHFrame->AddFrame(fActionFrame, groupGC->LH());
-	
+
 	fActionButtons = new TGMrbTextButtonList(fActionFrame, NULL, &fActions, -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
@@ -216,10 +216,10 @@ void DGFMiscPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: select module(s)
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbPictureButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Selection < kDGFMiscSelectColumn) {
@@ -231,7 +231,7 @@ void DGFMiscPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 			case kDGFMiscSelectNone:
 				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-				break;							
+				break;
 		}
 	} else {
 		Selection -= kDGFMiscSelectColumn;
@@ -254,10 +254,10 @@ void DGFMiscPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
@@ -280,9 +280,9 @@ Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {
 // Purpose:        Set/Clear GFLT
 // Arguments:      Bool_t SetFlag   -- kTRUE if GFLT is to be set
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	DGFModule * dgfModule;
@@ -290,7 +290,7 @@ Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {
 	TMrbDGF * dgf;
 	Bool_t selectFlag;
 	Int_t nofModules;
-					
+
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
 	dgfModule = gDGFControlData->FirstModule();
@@ -323,8 +323,8 @@ Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {
 		gSystem->ProcessEvents();
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
-	}				
-	delete pgb;
+	}
+	pgb->DeleteWindow();
 
 	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
@@ -345,9 +345,9 @@ Bool_t DGFMiscPanel::SetCoincWait() {
 // Purpose:        Set COINCWAIT
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	DGFModule * dgfModule;
@@ -355,7 +355,7 @@ Bool_t DGFMiscPanel::SetCoincWait() {
 	TMrbDGF * dgf;
 	Bool_t selectFlag;
 	Int_t nofModules;
-					
+
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
 	dgfModule = gDGFControlData->FirstModule();
@@ -377,8 +377,8 @@ Bool_t DGFMiscPanel::SetCoincWait() {
 		gSystem->ProcessEvents();
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
-	}				
-	delete pgb;
+	}
+	pgb->DeleteWindow();
 
 	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);

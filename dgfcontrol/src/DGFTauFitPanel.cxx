@@ -3,13 +3,13 @@
 // ame:            DGFTauFitPanel
 // Purpose:        A GUI to control the XIA DGF-4C
 // Description:    Tau fit
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauFitPanel.cxx,v 1.13 2008-10-14 10:22:29 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: DGFTauFitPanel.cxx,v 1.14 2009-08-19 12:52:49 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //Begin_Html
 /*
@@ -65,10 +65,10 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 // Name:           DGFTauFitPanel
 // Purpose:        DGF Viewer: Calculate tau value
 // Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Implements DGF Viewer's TauFit
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGMrbLayout * frameGC;
@@ -83,9 +83,9 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	TMrbLofNamedX gSelect[kNofModulesPerCluster];
 	TMrbLofNamedX allSelect;
 	TMrbLofNamedX lofModuleKeys;
-	
+
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 //	clear focus list
 	fFocusList.Clear();
 
@@ -122,7 +122,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	HEAP(lofSpecialButtons);
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
-	
+
 //	create buttons to select/deselct groups of modules
 	Int_t idx = kDGFTauFitSelectColumn;
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++, idx += 2) {
@@ -133,7 +133,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	allSelect.Delete();							// (de)select all
 	allSelect.AddNamedX(kDGFTauFitSelectAll, "cbutton_all.xpm");
 	allSelect.AddNamedX(kDGFTauFitSelectNone, "cbutton_none.xpm");
-		
+
 //	Initialize several lists
 	fTauFitActions.SetName("Actions");
 	fTauFitActions.AddNamedX(kDGFTauButtons);
@@ -159,7 +159,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
+							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -167,21 +167,21 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 		fCluster[cl]->SetState(~gDGFControlData->GetPatInUse(cl) & 0xFFFF, kButtonDisabled);
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
-	
+
 	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
-	
+
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -190,7 +190,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
 	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
-			
+
 	fHFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fHFrame);
@@ -281,7 +281,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	fRunTimeEntry->AddToFocusList(&fFocusList);
 	fRunTimeEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
-	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fTauFitTimeScaleButtons, -1, 1, 
+	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fTauFitTimeScaleButtons, -1, 1,
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fTimeScale);
@@ -299,7 +299,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 
 //	no accu running
 	fIsRunning = kFALSE;
-	
+
 	this->ResetValues();
 
 	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
@@ -320,10 +320,10 @@ void DGFTauFitPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: select destination module(s)
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbPictureButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Selection < kDGFTauFitSelectColumn) {
@@ -335,7 +335,7 @@ void DGFTauFitPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 			case kDGFTauFitSelectNone:
 				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-				break;							
+				break;
 		}
 	} else {
 		Selection -= kDGFTauFitSelectColumn;
@@ -356,10 +356,10 @@ void DGFTauFitPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: update after entry changed
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	this->Update(Selection);
@@ -372,10 +372,10 @@ void DGFTauFitPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
@@ -402,9 +402,9 @@ Bool_t DGFTauFitPanel::TauFit() {
 // Purpose:        Start tau fit
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Starts accumulation of histograms
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbDGFHistogramBuffer histoBuffer;
@@ -415,7 +415,7 @@ Bool_t DGFTauFitPanel::TauFit() {
 	TMrbString intStr;
 	Int_t accuTime;
 	TString timeScale;
-										
+
 	Bool_t verbose = gDGFControlData->IsVerbose();
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
@@ -491,7 +491,7 @@ Bool_t DGFTauFitPanel::TauFit() {
 			}
 			dgfModule = gDGFControlData->NextModule(dgfModule);
 			nofModules++;
-		}				
+		}
 		if (nofModules == 0) {
 			gMrbLog->Err()	<< "No modules selected" << endl;
 			gMrbLog->Flush(this->ClassName(), "TauFit");
@@ -516,7 +516,7 @@ Bool_t DGFTauFitPanel::TauFit() {
 				gMrbLog->Err() << "Aborted after " << i << " secs. Stopping current run." << endl;
 				gMrbLog->Flush(this->ClassName(), "TauFit");
 				break;
-			}	
+			}
 		}
 		if (abortAccu) break;
 
@@ -561,8 +561,8 @@ Bool_t DGFTauFitPanel::TauFit() {
 			nofModules++;
 		}
 	}
-	delete pgb1;
-	delete pgb2;
+	pgb1->DeleteWindow();
+	pgb2->DeleteWindow();
 
 	nofModules = 0;
 	dgfModule = gDGFControlData->FirstModule();
@@ -599,9 +599,9 @@ Bool_t DGFTauFitPanel::Update(Int_t EntryId) {
 // Purpose:        Update program state on X events
 // Arguments:      Int_t EntryId      -- entry id
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Updates variables on X events and starts action.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString intStr, dblStr;
@@ -618,9 +618,9 @@ Bool_t DGFTauFitPanel::ResetValues() {
 // Purpose:        Clear values in tau display panel
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Clears entry fields in tau display panel.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fRunTimeEntry->SetText(10);
@@ -634,9 +634,9 @@ void DGFTauFitPanel::MoveFocus(Int_t EntryId) {
 // Purpose:        Move focus to next entry field
 // Arguments:      Int_t EntryId     -- entry id
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Moves focus to next entry field in ring buffer.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 }
@@ -648,16 +648,16 @@ void DGFTauFitPanel::SetRunning(Bool_t RunFlag) {
 // Purpose:        Reflect run status
 // Arguments:      Bool_t RunFlag     -- run status
 // Results:        --
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
 	TGTextButton * btn;
-		
+
 	TMrbDGF * dgf;
-		
+
 	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
 
 	nx = fTauFitActions.FindByIndex(kDGFTauFitStartFit);

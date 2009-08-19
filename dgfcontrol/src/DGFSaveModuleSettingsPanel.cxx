@@ -3,13 +3,13 @@
 // ame:            DGFSaveModuleSettingsPanel
 // Purpose:        A GUI to control the XIA DGF-4C
 // Description:    Restore settings
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.18 2008-12-29 13:48:25 Rudolf.Lutter Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.19 2009-08-19 12:52:49 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //Begin_Html
 /*
@@ -66,10 +66,10 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 // Name:           DGFSaveModuleSettingsPanel
 // Purpose:        DGF Viewer: Setup Panel
 // Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGMrbLayout * frameGC;
@@ -80,12 +80,12 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 
 	TMrbString camacHost;
 	TMrbString intStr;
-			
+
 	TObjArray * lofSpecialButtons;
 	TMrbLofNamedX gSelect[kNofModulesPerCluster];
 	TMrbLofNamedX allSelect;
 	TMrbLofNamedX lofModuleKeys;
-	
+
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
 //	clear focus list
@@ -94,11 +94,11 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 	frameGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGreen);	HEAP(frameGC);
-	
+
 	groupGC = new TGMrbLayout(	gDGFControlData->SlantedFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGreen);	HEAP(groupGC);
-	
+
 	buttonGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGray);	HEAP(buttonGC);
@@ -106,16 +106,16 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 	labelGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGray);	HEAP(labelGC);
-	
+
 	entryGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorWhite);	HEAP(entryGC);
-	
+
 	lofSpecialButtons = new TObjArray();
 	HEAP(lofSpecialButtons);
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
-	
+
 //	create buttons to select/deselct groups of modules
 	Int_t idx = kDGFSaveModuleSettingsSelectColumn;
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++, idx += 2) {
@@ -126,8 +126,8 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 	allSelect.Delete();							// (de)select all
 	allSelect.AddNamedX(kDGFSaveModuleSettingsSelectAll, "cbutton_all.xpm");
 	allSelect.AddNamedX(kDGFSaveModuleSettingsSelectNone, "cbutton_none.xpm");
-	
-	
+
+
 //	Initialize several lists
 	fActions.SetName("Actions");
 	fActions.AddNamedX(kDGFSaveModuleSettingsActions);
@@ -143,7 +143,7 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
+							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -151,21 +151,21 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 		fCluster[cl]->SetState(~gDGFControlData->GetPatInUse(cl) & 0xFFFF, kButtonDisabled);
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
-	
+
 	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
-	
+
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -174,7 +174,7 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
 	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
-			
+
 // action buttons
 	TGLayoutHints * aFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, aFrameLayout);
@@ -186,7 +186,7 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 	fActionFrame = new TGGroupFrame(this, "Actions", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fActionFrame);
 	this->AddFrame(fActionFrame, groupGC->LH());
-	
+
 	fActionButtons = new TGMrbTextButtonList(fActionFrame, NULL, &fActions, -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
@@ -215,10 +215,10 @@ void DGFSaveModuleSettingsPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: select module(s)
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbPictureButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Selection < kDGFSaveModuleSettingsSelectColumn) {
@@ -252,10 +252,10 @@ void DGFSaveModuleSettingsPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
@@ -272,11 +272,11 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 // Purpose:        Save DGF settings to file
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Saves DGF settings.
 //                 Each individual module will be saved to <dgfName>.par,
 //                 File "dgfControl.par" will contained some global settings.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGFileInfo fileInfoSave;
@@ -291,7 +291,7 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 	TMrbDGF * dgf;
 	UInt_t modIdx;
 	Int_t cl, modNo;
-			
+
 	Bool_t verbose = gDGFControlData->IsVerbose();
 
 	fileInfoSave.fFileTypes = (const Char_t **) kDGFFileTypesSettings;
@@ -315,7 +315,7 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 	uxSys.GetDirName(dirName, saveDir.Data());			// will be identical
 	uxSys.GetBaseName(baseName2, dirName.Data());		// example: single click returns /a/b/c, double click /a/b/c/c
 	if (baseName1.CompareTo(baseName2.Data()) == 0) saveDir = dirName;	// double click: strip off last part
-	
+
 	if (!uxSys.Exists(saveDir.Data())) {
 		cmd = "mkdir -p ";
 		cmd += saveDir;
@@ -325,7 +325,7 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 			gMrbLog->Flush(this->ClassName(), "SaveDatabase", setblue);
 		}
 	}
-	
+
 	if (!uxSys.IsDirectory(saveDir.Data())) {
 		errMsg = "File \"";
 		errMsg += saveDir.Data();
@@ -360,9 +360,9 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 			gSystem->ProcessEvents();
 			dgfModule = gDGFControlData->NextModule(dgfModule);
 		}
-		delete pgb;
+		pgb->DeleteWindow();
 	}
-	
+
 	if (nerr > 0) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Saving DGF settings failed", kMBIconStop);
 	}

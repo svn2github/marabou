@@ -3,13 +3,13 @@
 // ame:            DGFRestoreModuleSettingsPanel
 // Purpose:        A GUI to control the XIA DGF-4C
 // Description:    Restore settings
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.22 2008-10-14 10:22:29 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.23 2009-08-19 12:52:49 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //Begin_Html
 /*
@@ -67,10 +67,10 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(TGCompositeFrame * 
 // Name:           DGFRestoreModuleSettingsPanel
 // Purpose:        DGF Viewer: Setup Panel
 // Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGMrbLayout * frameGC;
@@ -81,12 +81,12 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(TGCompositeFrame * 
 
 	TMrbString camacHost;
 	TMrbString intStr;
-			
+
 	TObjArray * lofSpecialButtons;
 	TMrbLofNamedX gSelect[kNofModulesPerCluster];
 	TMrbLofNamedX allSelect;
 	TMrbLofNamedX lofModuleKeys;
-	
+
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
 //	clear focus list
@@ -95,11 +95,11 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(TGCompositeFrame * 
 	frameGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGreen);	HEAP(frameGC);
-	
+
 	groupGC = new TGMrbLayout(	gDGFControlData->SlantedFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGreen);	HEAP(groupGC);
-	
+
 	buttonGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGray);	HEAP(buttonGC);
@@ -107,16 +107,16 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(TGCompositeFrame * 
 	labelGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGray);	HEAP(labelGC);
-	
+
 	entryGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorWhite);	HEAP(entryGC);
-	
+
 	lofSpecialButtons = new TObjArray();
 	HEAP(lofSpecialButtons);
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
-	
+
 //	create buttons to select/deselct groups of modules
 	Int_t idx = kDGFRestoreModuleSettingsSelectColumn;
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++, idx += 2) {
@@ -127,8 +127,8 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(TGCompositeFrame * 
 	allSelect.Delete();							// (de)select all
 	allSelect.AddNamedX(kDGFRestoreModuleSettingsSelectAll, "cbutton_all.xpm");
 	allSelect.AddNamedX(kDGFRestoreModuleSettingsSelectNone, "cbutton_none.xpm");
-	
-	
+
+
 //	Initialize several lists
 	fActions.SetName("Actions");
 	fActions.AddNamedX(kDGFRestoreModuleSettingsActions);
@@ -144,7 +144,7 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(TGCompositeFrame * 
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
+							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -152,20 +152,20 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(TGCompositeFrame * 
 		fCluster[cl]->SetState(~gDGFControlData->GetPatInUse(cl) & 0xFFFF, kButtonDisabled);
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
-	
+
 	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
-	
+
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -174,7 +174,7 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(TGCompositeFrame * 
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
 	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
-			
+
 // action buttons
 	TGLayoutHints * aFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, aFrameLayout);
@@ -186,7 +186,7 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(TGCompositeFrame * 
 	fActionFrame = new TGGroupFrame(this, "Actions", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fActionFrame);
 	this->AddFrame(fActionFrame, groupGC->LH());
-	
+
 	fActionButtons = new TGMrbTextButtonList(fActionFrame, NULL, &fActions, -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
@@ -215,10 +215,10 @@ void DGFRestoreModuleSettingsPanel::SelectModule(Int_t FrameId, Int_t Selection)
 // Purpose:        Slot method: select module(s)
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbPictureButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Selection < kDGFRestoreModuleSettingsSelectColumn) {
@@ -230,7 +230,7 @@ void DGFRestoreModuleSettingsPanel::SelectModule(Int_t FrameId, Int_t Selection)
 			case kDGFRestoreModuleSettingsSelectNone:
 				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-				break;							
+				break;
 		}
 	} else {
 		Selection -= kDGFRestoreModuleSettingsSelectColumn;
@@ -253,10 +253,10 @@ void DGFRestoreModuleSettingsPanel::PerformAction(Int_t FrameId, Int_t Selection
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
@@ -276,9 +276,9 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 // Purpose:        Restore DGF settings from file
 // Arguments:      Bool_t LoadPSA     -- load PSA values if kTRUE
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Restores DGF settings.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGFileInfo fileInfoRestore;
@@ -304,7 +304,7 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 	Bool_t verbose;
 	UInt_t modIdx;
 	Int_t cl, modNo;
-				
+
 	fileInfoRestore.fFileTypes = (const Char_t **) kDGFFileTypesSettings;
 	if (!gDGFControlData->CheckAccess(gDGFControlData->fDgfSettingsPath.Data(),
 						(Int_t) DGFControlData::kDGFAccessDirectory | DGFControlData::kDGFAccessRead, errMsg)) {
@@ -326,7 +326,7 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 	uxSys.GetDirName(dirName, loadDir.Data());			// will be identical
 	uxSys.GetBaseName(baseName2, dirName.Data());		// example: single click returns /a/b/c, double click /a/b/c/c
 	if (baseName1.CompareTo(baseName2.Data()) == 0) loadDir = dirName;	// double click: strip off last part
-	
+
 	if (!uxSys.IsDirectory(loadDir.Data())) {
 		errMsg = "No such directory - ";
 		errMsg += loadDir;
@@ -335,9 +335,9 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", errMsg.Data(), kMBIconStop);
 		return(kFALSE);
 	}
-	
+
 	offlineMode = gDGFControlData->IsOffline();
-	
+
 	nerr = 0;
 
 	nofRestored = 0;
@@ -402,7 +402,7 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 			gSystem->ProcessEvents();
 			module = gDGFControlData->NextModule(module);
 		}
-		delete pgb;
+		pgb->DeleteWindow();
 	}
 
 	if (nerr > 0) {

@@ -3,13 +3,13 @@
 // ame:            DGFMcaDisplayPanel
 // Purpose:        A GUI to control the XIA DGF-4C
 // Description:    MCA Display
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.24 2008-10-14 17:27:06 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.25 2009-08-19 12:52:49 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //Begin_Html
 /*
@@ -64,10 +64,10 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 // Name:           DGFMcaDisplayPanel
 // Purpose:        DGF Viewer: Calculate tau value
 // Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Implements DGF Viewer's McaDisplay
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGMrbLayout * frameGC;
@@ -82,9 +82,9 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	TMrbLofNamedX gSelect[kNofModulesPerCluster];
 	TMrbLofNamedX allSelect;
 	TMrbLofNamedX lofModuleKeys;
-	
+
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 //	clear focus list
 	fFocusList.Clear();
 
@@ -121,7 +121,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(lofSpecialButtons);
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
-	
+
 //	create buttons to select/deselct groups of modules
 	Int_t idx = kDGFMcaDisplaySelectColumn;
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++, idx += 2) {
@@ -132,7 +132,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	allSelect.Delete();							// (de)select all
 	allSelect.AddNamedX(kDGFMcaDisplaySelectAll, "cbutton_all.xpm");
 	allSelect.AddNamedX(kDGFMcaDisplaySelectNone, "cbutton_none.xpm");
-		
+
 //	Initialize several lists
 	fMcaActions.SetName("Actions");
 	fMcaActions.AddNamedX(kDGFTauButtons);
@@ -158,7 +158,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
+							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -166,21 +166,21 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 		fCluster[cl]->SetState(~gDGFControlData->GetPatInUse(cl) & 0xFFFF, kButtonDisabled);
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
-	
+
 	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
-	
+
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		((TGMrbButtonFrame *) fGroupSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -189,7 +189,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 																			frameGC->LH()->GetPadTop(),
 																			frameGC->LH()->GetPadBottom()));
 	((TGMrbButtonFrame *) fAllSelect)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
-			
+
 	fHFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fHFrame);
@@ -227,7 +227,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	fRunTimeEntry->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EntryChanged(Int_t, Int_t)");
 
 	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fMcaTimeScaleButtons,
-													-1, 1, 
+													-1, 1,
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fTimeScale);
@@ -279,7 +279,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
 	fDisplayChannel = new TGMrbRadioButtonList(fDisplayFrame, "Channel", &fLofChannels,
-													kDGFMcaDisplaySelectChannel, 1, 
+													kDGFMcaDisplaySelectChannel, 1,
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fDisplayChannel);
@@ -332,10 +332,10 @@ void DGFMcaDisplayPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: select module(s)
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbPictureButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Selection < kDGFMcaDisplaySelectColumn) {
@@ -348,7 +348,7 @@ void DGFMcaDisplayPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 			case kDGFMcaDisplaySelectNone:
 				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 					fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
-					break;							
+					break;
 		}
 	} else {
 		Selection -= kDGFMcaDisplaySelectColumn;
@@ -371,10 +371,10 @@ void DGFMcaDisplayPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
@@ -400,10 +400,10 @@ void DGFMcaDisplayPanel::SelectDisplay(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: select module to be displayed
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fModuleToBeDisplayed = gDGFControlData->GetModule(Selection);
@@ -416,10 +416,10 @@ void DGFMcaDisplayPanel::EntryChanged(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: update after entry changed
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	this->Update(Selection);
@@ -433,9 +433,9 @@ void DGFMcaDisplayPanel::RadioButtonPressed(Int_t FrameId, Int_t Selection) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Will be called on radio button events.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	UInt_t chn = Selection;
@@ -453,9 +453,9 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 // Purpose:        Start accumulation
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Starts accumulation of histograms
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	DGFModule * dgfModule;
@@ -463,7 +463,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	Int_t modNo, cl;
 	Int_t nofModules;
 	TString timeScale;
-										
+
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
 	if (fRunState == kDGFMcaIsRunning) {
@@ -506,7 +506,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
-	}				
+	}
 	if (nofModules == 0) {
 		gMrbLog->Err()	<< "No modules selected" << endl;
 		gMrbLog->Flush(this->ClassName(), "AcquireHistos");
@@ -536,9 +536,9 @@ Bool_t DGFMcaDisplayPanel::HandleTimer(TTimer * Timer) {
 // Purpose:        Handle timer requests
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Method will be called on timer requests.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Timer->GetTimerID() == kDGFAccuTimerID) {
@@ -557,7 +557,7 @@ Bool_t DGFMcaDisplayPanel::HandleTimer(TTimer * Timer) {
 			Timer->Stop();
 			fRunState = kDGFMcaRunStopped;
 			if (fRefreshTimer) fRefreshTimer->Stop();
-			delete fProgressBar;
+			fProgressBar->DeleteWindow();
 			fProgressBar = NULL;
 			this->StoreHistos();
 		} else if (fProgressBar) {
@@ -581,15 +581,15 @@ Bool_t DGFMcaDisplayPanel::StoreHistos() {
 // Purpose:        Store resulting histograms
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Saves histograms to file
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbDGFHistogramBuffer histoBuffer;
 	TMrbString intStr;
 	TString timeScale;
-										
+
 	Bool_t verbose = gDGFControlData->IsVerbose();
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
@@ -657,13 +657,13 @@ Bool_t DGFMcaDisplayPanel::DisplayHisto(Bool_t ClearMCA) {
 // Purpose:        Display selected histogram
 // Arguments:      Bool_t ClearMCA   -- clear mca if kTRUE
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Displays selected histogram.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbDGFHistogramBuffer histoBuffer;
-										
+
 	Bool_t verbose = gDGFControlData->IsVerbose();
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
@@ -756,9 +756,9 @@ Bool_t DGFMcaDisplayPanel::McaPause() {
 // Purpose:        Stop MCA run temporarily
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    If MCA is running it will be stopped.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fRunState == kDGFMcaIsRunning) {
@@ -796,9 +796,9 @@ Bool_t DGFMcaDisplayPanel::McaResume() {
 // Purpose:        Resume MCA run
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    If MCA is running accumulation will continue.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fRunState == kDGFMcaRunPausing) {
@@ -839,9 +839,9 @@ Bool_t DGFMcaDisplayPanel::Update(Int_t EntryId) {
 // Purpose:        Update program state on X events
 // Arguments:      Int_t EntryId      -- entry id
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Updates variables on X events and starts action.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString intStr, dblStr;
@@ -858,9 +858,9 @@ Bool_t DGFMcaDisplayPanel::ResetValues() {
 // Purpose:        Clear values in tau display panel
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Clears entry fields in tau display panel.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fRunTimeEntry->SetText(10);
@@ -879,9 +879,9 @@ void DGFMcaDisplayPanel::MoveFocus(Int_t EntryId) {
 // Purpose:        Move focus to next entry field
 // Arguments:      Int_t EntryId     -- entry id
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Moves focus to next entry field in ring buffer.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 }
