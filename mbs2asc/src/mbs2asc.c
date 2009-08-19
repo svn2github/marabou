@@ -342,7 +342,7 @@ int readMbsData(char * mbsFile, char * rcFile, int maxEvents) {
 //  			   int maxEvents    -- max number of events to be processed
 // Results: 	   kTRUE/kFALSE
 // Description:    Opens mbs data file and reads event by event.
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int i;
@@ -445,7 +445,7 @@ int readSevtDump(char * dmpFile, char * rcFile, char * dumpMode) {
 //  			   char * dumpMode  -- subevent type (dgf or caen)
 // Results: 	   kTRUE/kFALSE
 // Description:    Opens sevt dump file and processes data directly according to dump mode/type.
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	FILE * input;
@@ -499,7 +499,7 @@ int processEvent(MBSDataIO * mbs) {
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   kTRUE/kFALSE
 // Description:    Processes a mbs event depending on trigger number.
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int i;
@@ -551,7 +551,7 @@ int extractSubevents(MBSDataIO * mbs) {
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   kTRUE/kFALSE
 // Description:    Decodes subevent by subevent. Dispatches over subevent type.
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	unsigned int sevtType, sevtSubtype;
@@ -612,7 +612,7 @@ int processSubevent_dgf(MBSDataIO * mbs) {
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   kTRUE/kFALSE
 // Description:    Decodes a dgf-4c buffer.
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int i;
@@ -621,7 +621,7 @@ int processSubevent_dgf(MBSDataIO * mbs) {
 	char moduleName[kStrlen];
 	char lofChannels[kStrlen];
 	char * pChannels[kNofChannels];
- 
+
 	char * dataPtr = (char *) mbs->sevt_data;
 	int sevtWC = mbs->sevt_wc;
 	int origSevtWC = sevtWC;
@@ -723,7 +723,7 @@ int processSubevent_dgf(MBSDataIO * mbs) {
 							hdrwc = nofWordsPerChn;
 							trcwc = 0;
 						}
-								
+
 						DgfEventChannelHeader * chnHdr = (DgfEventChannelHeader *) dataPtr;
 
 						time = calcTime48(bufHdr->startTime[0], evtHdr->eventTime[0],   chnHdr->fastTriggerTime);
@@ -766,7 +766,7 @@ int processSubevent_dgf(MBSDataIO * mbs) {
 			dataPtr += sizeof(short);				 /* word count is odd -> skip over filler */
 			sevtWC--;
 			wordsProcessed++;
-		}  				 
+		}
 	}
 	return(kTRUE);
 }
@@ -779,7 +779,7 @@ int processSubevent_caen(MBSDataIO * mbs) {
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   kTRUE/kFALSE
 // Description:    Decodes a CAEN adc/tdc buffer.
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	char envStr[kStrlen];
@@ -907,7 +907,7 @@ int processSubevent_madc(MBSDataIO * mbs) {
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   kTRUE/kFALSE
 // Description:    Decodes a Mesytec MADC32 buffer.
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int i;
@@ -925,7 +925,7 @@ int processSubevent_madc(MBSDataIO * mbs) {
 	unsigned int trailer;
 	int xts;
 	unsigned long long ts64;
-	unsigned int data;
+	unsigned int data, data16;
 	int chn;
 	char envStr[kStrlen];
 	char modStr[kStrlen];
@@ -1014,8 +1014,8 @@ int processSubevent_madc(MBSDataIO * mbs) {
 			}
 
 			chn = (data >> MADC_SH_CHN) & MADC_M_CHN;
-			data &= 0xFFFF;
-			printf(madcChnFmt, "MADC", "CHN", chn, data);
+			data16 = data & 0xFFFF;
+			printf(madcChnFmt, "MADC", "CHN", chn, data16);
 			if (verboseMode == kTRUE) {
 				printf("%48s # %04x %04x", "", (data >> 16) & 0xFFFF, data & 0xFFFF);
 			}
@@ -1061,7 +1061,7 @@ int processSubevent_sevt_10_1x(MBSDataIO * mbs) {
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   kTRUE/kFALSE
 // Description:    Decodes [10,1] and [10,11] buffers
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int i, j, k, m, n;
@@ -1180,7 +1180,7 @@ int processSubevent_sis(MBSDataIO * mbs) {
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   kTRUE/kFALSE
 // Description:    Decodes data of sis modules (subevent SIS_3 [10,53])
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int wordsProcessed, eventsProcessed;
@@ -1219,7 +1219,7 @@ int processSubevent_sis(MBSDataIO * mbs) {
 			nofErrors++;
 			return(kTRUE);
 		}
-		
+
 		if (hasRcFile == kTRUE) {
 			sprintf(envStr, "*.Module.%d.Name", moduleNumber - 1);
 			strcpy(moduleName, root_env_getval_s(envStr, ""));
@@ -1263,7 +1263,7 @@ int processSubevent_sis_33xx(MBSDataIO * mbs) {
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   kTRUE/kFALSE
 // Description:    Decodes data of sis 33xx modules (subevent SIS_33 [10,54])
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int wordsProcessed, eventsProcessed;
@@ -1304,7 +1304,7 @@ int processSubevent_sis_33xx(MBSDataIO * mbs) {
 			nofErrors++;
 			return(kTRUE);
 		}
-		
+
 		if (hasRcFile == kTRUE) {
 			sprintf(envStr, "*.Module.%d.Name", moduleNumber - 1);
 			strcpy(moduleName, root_env_getval_s(envStr, ""));
@@ -1350,7 +1350,7 @@ void allocRingBuffer(MBSDataIO * mbs) {
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   --
 // Description:    Allocates <nofEvts> buffers each <mbs->bufsiz> size
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int i;
@@ -1383,7 +1383,7 @@ char * nextRB(int * curpos) {
 // Arguments:	   int * curpos    -- current position in ring
 // Results: 	   char * next     -- pointer to next buffer
 // Description:    Steps thru ring buffer
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int pos = *curpos;
@@ -1401,7 +1401,7 @@ char * getRB() {
 // Arguments:	   --
 // Results: 	   char * buf     -- pointer to next buffer
 // Description:    Returns pointer to next buffer
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int pos;
@@ -1425,7 +1425,7 @@ void putRB(MBSDataIO * mbs) {
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   --
 // Description:    Writes data to ring buffer (and overwrites previous ones)
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	char * buf;
@@ -1448,7 +1448,7 @@ void dumpRB() {
 // Arguments:	   --
 // Results: 	   --
 // Description:    Write ring buffer to file(s)
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	char * buf;
@@ -1479,7 +1479,7 @@ void writeHeader(int argc, char * argv[]) {
 // Arguments:	   --
 // Results: 	   --
 // Description:    Outputs some info concerning output formats.
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	int i;
@@ -1555,7 +1555,7 @@ unsigned long long calcTime48(unsigned short t48, unsigned short t32, unsigned s
 //                 unsigned short t16      -- time bits 15-0
 // Results: 	   unsigned long long time -- 48-bit resulting time
 // Description:    Converts 16-bit time slices to 48 bit.
-// Keywords:	   
+// Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
 	unsigned long long t;
@@ -1564,7 +1564,7 @@ unsigned long long calcTime48(unsigned short t48, unsigned short t32, unsigned s
 	t |= (unsigned long long) t32;
 	t <<= 16;
 	t |= (unsigned long long) t16;
-	return(t);	
+	return(t);
 }
 
 void usage() {
