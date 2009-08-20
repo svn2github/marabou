@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.6 2009-08-05 13:12:03 Rudolf.Lutter Exp $
+// Revision:       $Id: VMEServerPanel.cxx,v 1.7 2009-08-20 12:47:20 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -291,20 +291,17 @@ Bool_t VMEServerPanel::Connect() {
 		return(kFALSE);
 	}
 
-	if (ppcNo < 10) {
-		if (cpu.CompareTo("RIO2") != 0 || lynx.CompareTo("2.5") != 0) {
-			gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
-			gMrbLog->Flush(this->ClassName(), "Connect");
-			delete c2l;
-			return(kFALSE);
-		}
-	} else {
-		if (cpu.CompareTo("RIO3") != 0 || lynx.CompareTo("3.1") != 0) {
-			gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
-			gMrbLog->Flush(this->ClassName(), "Connect");
-			delete c2l;
-			return(kFALSE);
-		}
+	if (cpu.CompareTo("RIO2") == 0 && lynx.CompareTo("2.5") != 0) {
+		gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
+		gMrbLog->Flush(this->ClassName(), "Connect");
+		delete c2l;
+		return(kFALSE);
+	}
+	if (cpu.CompareTo("RIO3") == 0 && lynx.CompareTo("3.1") != 0) {
+		gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
+		gMrbLog->Flush(this->ClassName(), "Connect");
+		delete c2l;
+		return(kFALSE);
 	}
 
 	if (!c2l->Connect(kFALSE)) return(kFALSE);
