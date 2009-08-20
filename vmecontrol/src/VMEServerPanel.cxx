@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.7 2009-08-20 12:47:20 Rudolf.Lutter Exp $
+// Revision:       $Id: VMEServerPanel.cxx,v 1.8 2009-08-20 13:00:49 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -179,8 +179,7 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC);
 	HEAP(fServerPathFileEntry);
 	fServerFrame->AddFrame(fServerPathFileEntry, frameGC->LH());
-	if (lynxOs.IsNull()) lynxOs = gVMEControlData->Vctrlrc()->Get(".LynxVersion", "2.5");
-	TString spath = Form("$MARABOU/powerpc/bin/%s/mrbLynxOsSrv", lynxOs.Data());
+	TString spath = "/marabou/bin/mrbLynxOsSrv";
 	gSystem->ExpandPathName(spath);
 	fServerPathFileEntry->SetText(gVMEControlData->Vctrlrc()->Get(".ServerName", spath.Data()));
 
