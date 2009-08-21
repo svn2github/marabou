@@ -8,10 +8,10 @@
 // Class:          VMEServerPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMEServerPanel.h,v 1.4 2008-09-23 10:44:11 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-09-23 10:44:11 $
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMEServerPanel.h,v 1.5 2009-08-21 10:02:32 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-21 10:02:32 $
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TList.h"
@@ -37,9 +37,9 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMEServerPanel
 // Purpose:        Tab frame to connect to LynxOs server
-// Constructors:   
+// Constructors:
 // Description:    A dialog window to connect to server
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class VMEServerPanel : public TGCompositeFrame {
@@ -87,7 +87,7 @@ class VMEServerPanel : public TGCompositeFrame {
 		TGGroupFrame * fServerFrame; 				// server
 		TGMrbLabelCombo * fSelectHost;  			//		host
 		TGMrbLabelEntry * fSelectPort;				//		port
-		TGMrbFileEntry * fServerPathFileEntry;		//		path
+		TGMrbLabelEntry * fServerPathFileEntry;		//		path
 		TGMrbTextButtonGroup * fServerButtonFrame;	// buttons
 		TGGroupFrame * fLogFrame; 					// server log
 		TGTextView * fTextView;

@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.8 2008-09-03 14:23:55 Rudolf.Lutter Exp $     
-// Date:           $Date: 2008-09-03 14:23:55 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.9 2009-08-21 10:02:32 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-21 10:02:32 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -142,7 +142,7 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 	fPipe = NULL;
 
 	TString cpu, lynx;
-	if (!this->CheckVersion(cpu, lynx, fServerPath.Data())) {
+	if (!this->CheckVersion(cpu, lynx, fHost.Data(), fServerPath.Data())) {
 		gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
 		gMrbLog->Flush(this->ClassName(), "Connect");
 		return(kFALSE);
@@ -254,7 +254,7 @@ Bool_t TMrbC2Lynx::WaitForConnection() {
 	delete s;
 	return(kFALSE);
 }
-	
+
 void TMrbC2Lynx::Reset() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -268,7 +268,7 @@ void TMrbC2Lynx::Reset() {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("c2lynx.log");
-	
+
 	fVerboseMode = gEnv->GetValue("TMrbC2Lynx.VerboseMode", kFALSE);
 	fDebugMode = gEnv->GetValue("TMrbC2Lynx.DebugMode", kFALSE);
 
@@ -407,7 +407,7 @@ Bool_t TMrbC2Lynx::Recv(M2L_MsgHdr * Hdr) {
 			gMrbLog->Err()	<< "Requested message length is 0" << endl;
 			gMrbLog->Flush(this->ClassName(), "Recv");
 			return(kFALSE);
-		}	
+		}
 	} else {
 		gMrbLog->Err()	<< "Not connected to server" << endl;
 		gMrbLog->Flush(this->ClassName(), "Recv");
@@ -495,35 +495,86 @@ M2L_MsgHdr * TMrbC2Lynx::AllocMessage(Int_t Length, Int_t Wc, UInt_t What) {
 	return((M2L_MsgHdr *) gMsgBuffer);
 }
 
-Bool_t TMrbC2Lynx::CheckVersion(TString & Cpu, TString & Lynx, const Char_t * ServerPath) {
+Bool_t TMrbC2Lynx::CheckAccessToLynxOs(const Char_t * Host, const Char_t * Path) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbC2Lynx::CheckAccessToLynxOs
+// Purpose:        Check access to file
+// Arguments:      Char_t * Host        -- name of ppc host
+//                 Char_t * Path        -- path to lynxOs server
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks if path can be seen from lynxOs
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString host = Host;
+	TString path = Path;
+
+	TString cmd = Form("rsh %s -e pwd 2>&1", host.Data());
+	FILE * rsh = gSystem->OpenPipe(cmd.Data(), "r");
+	if (!rsh) {
+		gMrbLog->Err()	<< "Can't exec command - \"" << cmd << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckAccessToLynxOs");
+		return(kFALSE);
+	}
+
+	char line[512];
+	fgets(line, 512, rsh);
+	TString str = line;
+	if (str.IsNull() || str.Contains("No route")) {
+		gMrbLog->Err()	<< "Can't access host - " << host << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckAccessToLynxOs");
+		return(kFALSE);
+	}
+
+	cmd = Form("rsh %s -e ls %s 2>&1", host.Data(), path.Data());
+	FILE * ls = gSystem->OpenPipe(cmd.Data(), "r");
+	if (!ls) {
+		gMrbLog->Err()	<< "Can't exec command - \"" << cmd << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckAccessToLynxOs");
+		return(kFALSE);
+	}
+
+	fgets(line, 512, ls);
+	str = line;
+	if (str.Contains("doesn't exist") || !str.Contains(path.Data())) {
+		gMrbLog->Err()	<< "Can't access file from LynxOs host - \"" << host << ":" << path << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckAccessToLynxOs");
+		return(kFALSE);
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbC2Lynx::CheckVersion(TString & Cpu, TString & Lynx, const Char_t * Host, const Char_t * Path) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbC2Lynx::CheckVersion
 // Purpose:        Check server version
-// Arguments:      Char_t * ServerPath  -- path to lynxOs server
-// Results:        TString & Cpu        -- cpu version
+// Arguments:      Char_t * Host        -- name of ppc host
+//                 Char_t * Path        -- path to lynxOs server
+// Results:        kTRUE / kFALSE
+//                 TString & Cpu        -- cpu version
 //                 TString & Lynx       -- lynx version
 // Exceptions:
-// Description:    Checks server for occurrence of "@#@" strings:
+// Description:    Checks file on server machine for occurrence of "@#@" strings:
 //                 @#@CPU=RIOn
 //                 @#@LynxOs=n.n
-//                 Returns a string CPU:LynxOs as a result: "RIO2:2.5" or "RIO3:3.1"
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Cpu = "n.a";
 	Lynx = "n.a";
 
-	TString serverPath = ServerPath;
+	TString host = Host;
+	if (host.IsNull()) host = fHost;
+
+	TString serverPath = Path;
 	if (serverPath.IsNull()) serverPath = fServerPath;
 
-	if (gSystem->AccessPathName(serverPath.Data())) {
-		gMrbLog->Err()	<< "No such file - " << serverPath << endl;
-		gMrbLog->Flush(this->ClassName(), "CheckVersion");
-		return(kFALSE);
-	}
+	if (!this->CheckAccessToLynxOs(host.Data(), serverPath.Data())) return(kFALSE);
 
-	TString cmd = Form("strings %s | grep @#@", serverPath.Data());
+	TString cmd = Form("rsh %s -e strings %s | grep @#@", host.Data(), serverPath.Data());
 	FILE * grep = gSystem->OpenPipe(cmd.Data(), "r");
 	if (!grep) {
 		gMrbLog->Err()	<< "Can't exec grep command - \"" << cmd << "\"" << endl;

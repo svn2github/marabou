@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.8 2009-08-20 13:00:49 Rudolf.Lutter Exp $
+// Revision:       $Id: VMEServerPanel.cxx,v 1.9 2009-08-21 10:02:32 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -153,13 +153,13 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	lofHosts.AddNamedX(hostNames.Data());
 	fSelectHost = new TGMrbLabelCombo(fServerFrame, "VME Host",	&lofHosts,
 																kVMEServerHost, selIdx,
-																frameWidth/5, kLEHeight, frameWidth/5,
+																frameWidth/4, kLEHeight, frameWidth/4,
 																frameGC, labelGC, comboGC, labelGC);
 	fServerFrame->AddFrame(fSelectHost, frameGC->LH());
 
 // TCP port
-	fSelectPort = new TGMrbLabelEntry(fServerFrame, "TCP Port",	10, kVMEServerTcpPort,
-																	frameWidth/5, kLEHeight, frameWidth/5,
+	fSelectPort = new TGMrbLabelEntry(fServerFrame, "TCP Port",	50, kVMEServerTcpPort,
+																	frameWidth/4, kLEHeight, frameWidth/4,
 																	frameGC, labelGC, entryGC, labelGC);
 	fServerFrame->AddFrame(fSelectPort, frameGC->LH());
 	Int_t tcpPort = gVMEControlData->Vctrlrc()->Get(".TcpPort", 9010);
@@ -169,18 +169,13 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	fSelectPort->AddToFocusList(&fFocusList);
 
 // Server path
-	fServerPathFileInfo.fFileTypes = (const Char_t **) kVMEServerFileTypes;
-	fServerPathFileEntry = new TGMrbFileEntry(fServerFrame, "Server Path",
-																200, kVMEServerServerPath,
-																frameWidth/2,
-																kLEHeight,
-																frameWidth/2,
-																&fServerPathFileInfo, kFDOpen,
+	fServerPathFileEntry = new TGMrbLabelEntry(fServerFrame, "Server Path (as seen from LynxOs)",
+																50, kVMEServerServerPath,
+																frameWidth/4, kLEHeight, frameWidth/4,
 																frameGC, labelGC, entryGC);
 	HEAP(fServerPathFileEntry);
 	fServerFrame->AddFrame(fServerPathFileEntry, frameGC->LH());
-	TString spath = "/marabou/bin/mrbLynxOsSrv";
-	gSystem->ExpandPathName(spath);
+	TString spath = "/nfs/marabou/bin/mrbLynxOsSrv";
 	fServerPathFileEntry->SetText(gVMEControlData->Vctrlrc()->Get(".ServerName", spath.Data()));
 
 //	buttons
@@ -267,12 +262,6 @@ Bool_t VMEServerPanel::Connect() {
 	}
 
 	TString srv = fServerPathFileEntry->GetText();
-	if (gSystem->AccessPathName(srv.Data())) {
-		gMrbLog->Err()	<< "No such file - " << srv << endl;
-		gMrbLog->Flush(this->ClassName(), "Connect");
-		return(kFALSE);
-	}
-
 	TString port = fSelectPort->GetText();
 	Int_t portNo = port.Atoi();
 
@@ -281,25 +270,6 @@ Bool_t VMEServerPanel::Connect() {
 	if (c2l->IsZombie()) {
 		gMrbLog->Err()	<< "Unable to start linux <-> lynx connection" << endl;
 		gMrbLog->Flush(this->ClassName(), "Connect");
-		return(kFALSE);
-	}
-	if (!c2l->CheckVersion(cpu, lynx, srv.Data())) {
-		gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
-		gMrbLog->Flush(this->ClassName(), "Connect");
-		delete c2l;
-		return(kFALSE);
-	}
-
-	if (cpu.CompareTo("RIO2") == 0 && lynx.CompareTo("2.5") != 0) {
-		gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
-		gMrbLog->Flush(this->ClassName(), "Connect");
-		delete c2l;
-		return(kFALSE);
-	}
-	if (cpu.CompareTo("RIO3") == 0 && lynx.CompareTo("3.1") != 0) {
-		gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
-		gMrbLog->Flush(this->ClassName(), "Connect");
-		delete c2l;
 		return(kFALSE);
 	}
 

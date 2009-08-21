@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.12 2009-05-29 14:14:31 Rudolf.Lutter Exp $   
-// Date:           $Date: 2009-05-29 14:14:31 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.13 2009-08-21 10:02:32 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-21 10:02:32 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -49,7 +49,7 @@ class TMrbC2Lynx : public TNamed {
 
 	public:
 
-		TMrbC2Lynx() { this->Reset(); };												// default ctor		
+		TMrbC2Lynx() { this->Reset(); };												// default ctor
 
 		TMrbC2Lynx(const Char_t * HostName, const Char_t * Server = NULL, const Char_t * LogFile = NULL, Int_t Port = 9010,
 						const Char_t * ServerLog = "None", Bool_t ConnectFlag = kTRUE);		// ctor: connect to host
@@ -91,13 +91,14 @@ class TMrbC2Lynx : public TNamed {
 
 		inline UInt_t What(M2L_MsgHdr * Hdr) { return(Hdr->fWhat); };
 		inline Int_t Length(M2L_MsgHdr * Hdr) { return(Hdr->fLength); };
- 
+
 		void InitMessage(M2L_MsgHdr * Hdr, Int_t Length, UInt_t What);
 		M2L_MsgHdr * AllocMessage(Int_t Length, Int_t Wc, UInt_t What);
 
 		void Bye();
 
-		Bool_t CheckVersion(TString & Cpu, TString & Lynx, const Char_t * ServerPath = NULL);
+		Bool_t CheckAccessToLynxOs(const Char_t * Host, const Char_t * ServerPath);
+		Bool_t CheckVersion(TString & Cpu, TString & Lynx, const Char_t * Host = NULL, const Char_t * ServerPath = NULL);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
