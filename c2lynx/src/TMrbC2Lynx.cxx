@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.9 2009-08-21 10:02:32 Rudolf.Lutter Exp $
-// Date:           $Date: 2009-08-21 10:02:32 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.10 2009-08-21 11:23:20 Rudolf.Lutter Exp $
+// Date:           $Date: 2009-08-21 11:23:20 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -528,7 +528,7 @@ Bool_t TMrbC2Lynx::CheckAccessToLynxOs(const Char_t * Host, const Char_t * Path)
 		return(kFALSE);
 	}
 
-	cmd = Form("rsh %s -e ls %s 2>&1", host.Data(), path.Data());
+	cmd = Form("rsh %s -e \'echo @X@%cls %s%c@X@\'", host.Data(), '\`', path.Data(), '\`');
 	FILE * ls = gSystem->OpenPipe(cmd.Data(), "r");
 	if (!ls) {
 		gMrbLog->Err()	<< "Can't exec command - \"" << cmd << "\"" << endl;
@@ -538,7 +538,7 @@ Bool_t TMrbC2Lynx::CheckAccessToLynxOs(const Char_t * Host, const Char_t * Path)
 
 	fgets(line, 512, ls);
 	str = line;
-	if (str.Contains("doesn't exist") || !str.Contains(path.Data())) {
+	if (str.Contains("@X@@X@") || !str.Contains(Form("@X@%s", path.Data()))) {
 		gMrbLog->Err()	<< "Can't access file from LynxOs host - \"" << host << ":" << path << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckAccessToLynxOs");
 		return(kFALSE);
