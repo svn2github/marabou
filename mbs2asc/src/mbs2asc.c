@@ -634,7 +634,7 @@ int processSubevent_dgf(MBSDataIO * mbs) {
 
 		if (hasRcFile == kTRUE) {
 			sprintf(envStr, "*.Module.%d.Name", moduleNumber - 1);
-			strcpy(moduleName, root_env_getval_s(envStr, ""));
+			strcpy(moduleName, root_env_getval_s(envStr, "??"));
 			strip(moduleName);
 			moduleName[0] = toupper(moduleName[0]);
 			sprintf(envStr, "*.Module.%s.LofChannels", moduleName);
@@ -656,7 +656,7 @@ int processSubevent_dgf(MBSDataIO * mbs) {
 		}
 		if (hasRcFile == kTRUE) {
 			sprintf(envStr, "*.Module.%d.Name", moduleNumber - 1);
-			strcpy(modStr, root_env_getval_s(envStr, ""));
+			strcpy(modStr, root_env_getval_s(envStr, "??"));
 			printf(" # module \"%s\"", strip(modStr));
 		}
 		printf("\n");
@@ -816,7 +816,7 @@ int processSubevent_caen(MBSDataIO * mbs) {
 
 		if (hasRcFile == kTRUE) {
 			sprintf(envStr, "*.Module.%d.Name", moduleNumber - 1);
-			strcpy(moduleName, root_env_getval_s(envStr, ""));
+			strcpy(moduleName, root_env_getval_s(envStr, "??"));
 			strip(moduleName);
 			moduleName[0] = toupper(moduleName[0]);
 			sprintf(envStr, "*.Module.%s.LofChannels", moduleName);
@@ -826,7 +826,7 @@ int processSubevent_caen(MBSDataIO * mbs) {
 		printf(caenHdrFmt, "CAEN", "HDR", wc, moduleNumber);
 		if (hasRcFile == kTRUE) {
 			sprintf(envStr, "*.Module.%d.Name", moduleNumber - 1);
-			strcpy(modStr, root_env_getval_s(envStr, ""));
+			strcpy(modStr, root_env_getval_s(envStr, "??"));
 		}
 		if (verboseMode == kTRUE) {
 			printf("%48s # %04x %04x", "", (header >> 16) & 0xFFFF, header & 0xFFFF);
@@ -957,7 +957,7 @@ int processSubevent_madc(MBSDataIO * mbs) {
 		printf(madcHdrFmt, "MADC", "HDR", moduleNumber, res, wc);
 		if (hasRcFile == kTRUE) {
 			sprintf(envStr, "*.Module.%d.Name", moduleNumber - 1);
-			strcpy(modStr, root_env_getval_s(envStr, ""));
+			strcpy(modStr, root_env_getval_s(envStr, "??"));
 		}
 		if (verboseMode == kTRUE) {
 			printf("%48s # %04x %04x", "", (header >> 16) & 0xFFFF, header & 0xFFFF);
@@ -1090,7 +1090,7 @@ int processSubevent_sevt_10_1x(MBSDataIO * mbs) {
 	int totChannels = 0;
 	if (hasRcFile == kTRUE) {
 		sprintf(envStr, "*.Subevent.%d.Name", sevtId - 1);
-		strcpy(sevtName, root_env_getval_s(envStr, ""));
+		strcpy(sevtName, root_env_getval_s(envStr, "??"));
 		strip(sevtName);
 		sevtName[0] = toupper(sevtName[0]);
 		sprintf(envStr, "*.Subevent.%s.LofModules", sevtName);
@@ -1234,7 +1234,7 @@ int processSubevent_sis(MBSDataIO * mbs) {
 			printf("%40s # %08x", "", header);
 			if (hasRcFile == kTRUE) printf(" # module \"%s\" id=%d", strip(moduleName), sisID);
 		} else if (hasRcFile == kTRUE) {
-			printf("%40s # module \"%s\" id=%d", strip(moduleName), sisID);
+			printf("%40s # module \"%s\" id=%d", "", strip(moduleName), sisID);
 		}
 		printf("\n");
 
@@ -1307,7 +1307,7 @@ int processSubevent_sis_33xx(MBSDataIO * mbs) {
 
 		if (hasRcFile == kTRUE) {
 			sprintf(envStr, "*.Module.%d.Name", moduleNumber - 1);
-			strcpy(moduleName, root_env_getval_s(envStr, ""));
+			strcpy(moduleName, root_env_getval_s(envStr, "??"));
 		}
 
 		moduleID = (header >> kMrbSevt_Sis_SH_ModuleId) & kMrbSevt_Sis_M_ModuleId;
