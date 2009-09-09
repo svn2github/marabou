@@ -568,7 +568,6 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %%BeginOfCode%%
 // dummy methods if user extensions are not activated
 %I%Bool_t TMrbAnalyze::InitializeUserCode(TMrbIOSpec * IOSpec, Bool_t BeforeHB) { return(kFALSE); };
-%T%Bool_t TMrbAnalyze::HandleTimer() { return(kFALSE); };
 %%EndOfCode%%
 %%INCLUDE_DUMMY_METHODS%%
 

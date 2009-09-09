@@ -14,13 +14,12 @@
 #define VULOM_TBOX_ENA				0x0
 #define VULOM_TBOX_SCALL			0x4
 #define VULOM_TBOX_SCALH			0x8
-#define VULOM_TBOX_LATCH			0xc
+#define VULOM_TBOX_LATCH			0xC
 #define VULOM_TBOX_SCALER1			0x40
 #define VULOM_TBOX_SCALER2			0x80
-#define VULOM_TBOX_SCALER3			0xc0
+#define VULOM_TBOX_SCALER3			0xC0
 
-#define VULOM_TBOX_SCAL_ENA 		0x8
-#define VULOM_TBOX_SCAL_WIDTH		0x0
+#define VULOM_TBOX_VERSION			0x3C
 %%EndOfCode%%
 %%MODULE_DEFS%%
 
@@ -34,6 +33,7 @@
 									/* init module $moduleName at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					vulom_module_info($moduleName);
+					vulom_scaledown($moduleName, $scdLower, $scdUpper);
 					vulom_reset($moduleName);
 					vulom_enable($moduleName, $channelMask);
 %%EndOfCode%%
@@ -51,7 +51,11 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-
+%B%					if (--vulom_rdo_scd <= 0) {		/* read scalers every 'rdo_scd' times only */
+%RDO%						RDO_SETUP($moduleName, $scalerOffset);
+%RDO%						RDO_BLTI_32($nofChannels);
+%E%						vulom_rdo_scd = $rdoScaleDown;
+%E%					}
 %%EndOfCode%%
 %%READ_MODULE%%
 
@@ -76,7 +80,7 @@
 %%STORE_DATA%%
 
 %%BeginOfCode%%
-
+					vulom_clear($moduleName);
 %%EndOfCode%%
 %%CLEAR_MODULE%%
 
@@ -91,7 +95,7 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-
+						vulom_rdo_scd = $rdoScaleDown;		/* reset readout scale down */
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -111,23 +115,42 @@
 %%STOP_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-void vulom_module_info(volatile unsigned char * module) {}
+void vulom_module_info(volatile unsigned char * module) {
+	 char str[256];
+	 unsigend int version;
+	 version = *(module + VULOM_TBOX_VERSION);
+	 sprintf(str, "  VULOM module info: %lx", version);
+	 f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+}
 
-void vulom_reset(volatile unsigned char * module) {}
+void vulom_reset(volatile unsigned char * module) {
+	unsigned int enable;
+	enable = *((unsigned int *)(module + VULOM_TBOX_ENA));
+	*((unsigned int *)(module + VULOM_TBOX_ENA)) = 0;
+	*((unisnged int *)(module + VULOM_TBOX_ENA)) = enable;
+}
 
-void vulom_enable(volatile unsigned char * module, unsigned int channelMask) {}
+void vulom_enable(volatile unsigned char * module, unsigned int channelMask) {
+	*((unsigned int *)(module + VULOM_TBOX_ENA)) = channelMask;
+}
+
+void vulom_scaledown(volatile unsigned char * module, unsigned int scdLower, unsigned int scdUpper) {
+	*((unsigned int *)(module + VULOM_TBOX_SCALL)) = scdLower;
+	*((unsigned int *)(module + VULOM_TBOX_SCALH)) = scdUpper;
+}
 %%EndOfCode%%
 %%UTILITIES%%
 
 %%BeginOfCode%%
-void vulom_module_info(volatile unsigned short * firmWare);
+void vulom_module_info(volatile unsigned char * module);
 void vulom_reset(volatile unsigned char * module);
-void vulom_enable(volatile unsigned char * module, unsigned short channelMask);
+void vulom_enable(volatile unsigned char * module, unsigned int channelMask);
+void vulom_scaledown(volatile unsigned char * module, unsigned int scdLower, unsigned int scdUpper);
 %%EndOfCode%%
 %%DEFINE_PROTOTYPES%%
 
 %%BeginOfCode%%
-
+	int vulom_rdo_scd;		/* scale down for readout of vulom scalers */
 %%EndOfCode%%
 %%DEFINE_GLOBALS%%
 
@@ -143,9 +166,6 @@ void vulom_enable(volatile unsigned char * module, unsigned short channelMask);
 
 %%BeginOfCode%%
 	unsigned int * vulom_rdoinp;
-	int vulom_wc;
-	int vulom_isTruncated;
-	unsigned int vulom_hdr, vulom_data, vulom_id, vulom_chn;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
 
