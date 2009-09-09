@@ -203,6 +203,7 @@ int main(int argc, char * argv[]) {
 	int opt;
 	int sts;
 	int rTrig;
+	int nofRcEntries;
 
 	char * sp;
 
@@ -317,7 +318,16 @@ int main(int argc, char * argv[]) {
 	}
 
 	hasRcFile = (rcFile[0] != '\0');
-	if (hasRcFile == kTRUE) root_env_read(rcFile);		/* read indices  and defs */
+	if (hasRcFile == kTRUE) {
+		nofRcEntries = root_env_read(rcFile);		/* read indices and defs */
+		if (nofRcEntries == -1) {
+			fprintf(stderr, "?RCERR-[%s]- Error reading rc file \"%s\"\n", prgName, rcFile);
+			hasRcFile = kFALSE;
+		} else if (nofRcEntries == 0) {
+			fprintf(stderr, "?NORCE-[%s]- No entries in rc file \"%s\"\n", prgName, rcFile);
+			hasRcFile = kFALSE;
+		}
+	}
 
 	isSevtDump = (dumpMode[0] != '\0');
 
