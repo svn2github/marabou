@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVulomTB.cxx,v 1.5 2009-09-10 06:54:10 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbVulomTB.cxx,v 1.6 2009-09-10 12:52:30 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -125,8 +125,8 @@ Bool_t TMrbVulomTB::SetScaleDown(Int_t ScaleDown, Int_t ChannelNo) {
 // Description:    Defines scale down value for a given channel
 //////////////////////////////////////////////////////////////////////////////
 
-	if (ChannelNo < 0 || ChannelNo > kNofChannels) {
-		gMrbLog->Err() << "[" << this->GetName() << "]: Channel out of range - " << ChannelNo << " (should be in [0," << kNofChannels << "])"<< endl;
+	if (ChannelNo < 0 || ChannelNo > this->GetNofScalerChans()) {
+		gMrbLog->Err() << "[" << this->GetName() << "]: Channel out of range - " << ChannelNo << " (should be in [0," << (this->GetNofScalerChans() - 1) << "])"<< endl;
 		gMrbLog->Flush(this->ClassName(), "SetScaleDown");
 		return(kFALSE);
 	}
@@ -149,8 +149,8 @@ Int_t TMrbVulomTB::GetScaleDown(Int_t ChannelNo) {
 // Description:    Returns scale down value for a given channel
 //////////////////////////////////////////////////////////////////////////////
 
-	if (ChannelNo < 0 || ChannelNo > kNofChannels) {
-		gMrbLog->Err() << "[" << this->GetName() << "]: Channel out of range - " << ChannelNo << " (should be in [0," << kNofChannels << "])"<< endl;
+	if (ChannelNo < 0 || ChannelNo > this->GetNofScalerChans()) {
+		gMrbLog->Err() << "[" << this->GetName() << "]: Channel out of range - " << ChannelNo << " (should be in [0," << (this->GetNofScalerChans() - 1) << "])"<< endl;
 		gMrbLog->Flush(this->ClassName(), "GetScaleDown");
 		return(-1);
 	}
@@ -311,4 +311,24 @@ Bool_t TMrbVulomTB::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleTa
 			break;
 	}
 	return(kTRUE);
+}
+
+Bool_t TMrbVulomTB::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag TagIndex, const Char_t * ResourceName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbVulomTB::MakeRcFile
+// Purpose:        Write a piece of code for a vulom triggerbox
+// Arguments:      ofstream & RcStrm            -- file output stream
+//                 EMrbRcFileTag TagIndex       -- index of tag word taken from template file
+//                 Char_t * ResourceName        -- name of resource (first part of entry)
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Writes special, i.e. non-standard code to rc file.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	  TString moduleLC = this->GetName();
+	  moduleLC(0,1).ToUpper();
+	  RcStrm << Form("%s.Module.%s.NofScalerChannels:\t%d\n", ResourceName, moduleLC.Data(), this->GetNofScalerChans());
+	  return(kTRUE);
 }

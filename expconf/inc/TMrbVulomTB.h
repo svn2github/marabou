@@ -8,7 +8,7 @@
 // Class:          TMrbVulomTB        -- Vulom TriggerBox
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVulomTB.h,v 1.2 2009-09-09 14:36:03 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbVulomTB.h,v 1.3 2009-09-10 12:52:30 Rudolf.Lutter Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -60,6 +60,7 @@ class TMrbVulomTB : public TMrbVMEModule {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TMrbVMEChannel * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag TagIndex, const Char_t * ResourceName);
 
 		inline void SetEnableMask(UInt_t EnableMask) { fEnableMask = EnableMask; };
 		inline UInt_t GetEnableMask() { return(fEnableMask); };
