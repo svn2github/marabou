@@ -9,10 +9,10 @@
 //!
 //! \author Otto.Schaile
 //!
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.6 $     
-//! $Date: 2009-05-26 13:07:42 $
+//! $Revision: 1.7 $     
+//! $Date: 2009-09-10 13:20:10 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrSeqCollection.h"
@@ -95,10 +95,10 @@ void TSeqCollection::QSort(TObject ** ObjArr, Int_t First, Int_t Last)
       ObjArr[First] = ObjArr[j];
       ObjArr[j] = tmp;
       if (j - First < Last - (j + 1)) {
-         QSort(ObjArr, First, j);
+         this->QSort(ObjArr, First, j);
          First = j + 1;
       } else {
-         QSort(ObjArr, j + 1, Last);
+         this->QSort(ObjArr, j + 1, Last);
          Last = j;
       }
    }

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEVulomTBPanel.cxx,v 1.1 2009-08-06 08:32:34 Rudolf.Lutter Exp $
+// Revision:       $Id: VMEVulomTBPanel.cxx,v 1.2 2009-09-10 13:20:10 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -43,6 +43,7 @@ const SMrbNamedX kVMEActions[] =
 				{VMEVulomTBPanel::kVMEVulomTBActionDisableAll,		"Disable all",		"Disable all channels"				},
 				{VMEVulomTBPanel::kVMEVulomTBActionClearScaler,		"Clear scaler",		"Clear scaler contents"				},
 				{VMEVulomTBPanel::kVMEVulomTBActionReset,			"Reset scaledown",	"Reset all scale down values"		},
+				{VMEVulomTBPanel::kVMEVulomTBActionReadOnce,		"Read once",		"Read scaler once"					},
 				{VMEVulomTBPanel::kVMEVulomTBActionStartTimer,		"Start timer",		"Start timer with given interval"	},
 				{VMEVulomTBPanel::kVMEVulomTBActionStopTimer,		"Stop timer",		"Stop timer"						},
 				{0, 												NULL,				NULL								}
@@ -223,6 +224,7 @@ VMEVulomTBPanel::VMEVulomTBPanel(TGCompositeFrame * TabFrame) :
 
 // setup timer
 	TGGroupFrame * gf = new TGGroupFrame(hf, "Timer");
+	gf->SetTextFont(groupGC->Font());
 	gf->ChangeBackground(gVMEControlData->fColorGreen);
 	hf->AddFrame(gf, groupGC->LH());
 
@@ -308,6 +310,8 @@ void VMEVulomTBPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 		  {
 			curModule->ClearScaler();
 		  }
+		  break;
+		case kVMEVulomTBActionReadOnce:
 		  break;
 		case kVMEVulomTBActionReset:
 		  {

@@ -10,10 +10,10 @@
 //! 				Sequenceable collection abstract base class.<br>
 //! 				TSeqCollections have an ordering relation,
 //! 				i.e. there is a first and last element.
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-05-26 13:07:42 $
+//! $Revision: 1.5 $     
+//! $Date: 2009-09-10 13:20:10 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrCollection.h"
@@ -51,9 +51,9 @@ public:
    virtual Bool_t    IsSorted() const { return fSorted; }
    void              UnSort() { fSorted = kFALSE; }
 
-   static Int_t      ObjCompare(TObject *a, TObject *b);
-   void 	      	QSort(TObject **a, Int_t first, Int_t last);
-   void 	      	QSort(TObject **a, TObject **b, Int_t first, Int_t last);
+   Int_t			ObjCompare(TObject *a, TObject *b);
+   void 			QSort(TObject **a, Int_t first, Int_t last);
+   void 			QSort(TObject **a, TObject **b, Int_t first, Int_t last);
 
    inline const Char_t * ClassName() const { return "TSeqCollection"; };
 };

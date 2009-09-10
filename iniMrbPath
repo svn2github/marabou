@@ -24,17 +24,9 @@ SYSMODE=y
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-<<<<<<< iniMrbPath
-ROOTSYS=/software/cernlib/gcc-4.3/root_pro
-=======
-ROOTSYS=/usr/daq/root_new
->>>>>>> 1.11
+ROOTSYS=/usr/daq/root_pro
 MARABOU=`pwd`
-<<<<<<< iniMrbPath
-MARABOU_INSTALL_PATH=/software/cernlib/gcc-4.3/marabou_pro
-=======
-MARABOU_INSTALL_PATH=/usr/daq/marabou_new
->>>>>>> 1.11
+MARABOU_INSTALL_PATH=/usr/daq/marabou_pro
 
 #____________________________[end editable section]___________________________
 

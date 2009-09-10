@@ -8,8 +8,8 @@
 // Class:          VMEVulomTBPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMEVulomTBPanel.h,v 1.1 2009-08-06 08:32:34 Rudolf.Lutter Exp $
-// Date:           $Date: 2009-08-06 08:32:34 $
+// Revision:       $Id: VMEVulomTBPanel.h,v 1.2 2009-09-10 13:20:10 Marabou Exp $
+// Date:           $Date: 2009-09-10 13:20:10 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -53,6 +53,7 @@ class VMEVulomTBPanel : public TGCompositeFrame {
 										kVMEVulomTBActionDisableAll,
 										kVMEVulomTBActionClearScaler,
 										kVMEVulomTBActionReset,
+										kVMEVulomTBActionReadOnce,
 										kVMEVulomTBActionStartTimer,
 										kVMEVulomTBActionStopTimer
 									};
