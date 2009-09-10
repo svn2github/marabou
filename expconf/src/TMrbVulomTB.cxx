@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVulomTB.cxx,v 1.4 2009-09-09 14:36:03 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbVulomTB.cxx,v 1.5 2009-09-10 06:54:10 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -247,12 +247,13 @@ Bool_t TMrbVulomTB::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTa
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleStartAcquisition:
+		case TMrbConfig::kModuleStopAcquisition:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$rdoScaleDown", this->GetRdoScaleDown());
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleFinishReadout:
-		case TMrbConfig::kModuleStopAcquisition:
 		case TMrbConfig::kModuleStartAcquisitionGroup:
 		case TMrbConfig::kModuleStopAcquisitionGroup:
 			break;

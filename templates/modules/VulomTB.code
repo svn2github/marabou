@@ -4,8 +4,8 @@
 // @(#)Purpose:    VME code for triggerbox VulomTB
 // Description:    Contains pieces of code to operate a VulomTB triggerbox
 // @(#)Author:     R. Lutter
-// @(#)Revision:   SCCS:  %W%
-// @(#)Date:       %G%
+// @(#)Revision:   %Id%
+// @(#)Date:       %Date%
 // Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
@@ -33,9 +33,10 @@
 									/* init module $moduleName at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					vulom_module_info($moduleName);
-					vulom_scaledown($moduleName, $scdLower, $scdUpper);
+					useGUI = root_env_getval_b("TMrbVulomTB.UseGUI", 0);
+					if (!useGUI) vulom_scaledown($moduleName, $scdLower, $scdUpper);
 					vulom_reset($moduleName);
-					vulom_enable($moduleName, $channelMask);
+					if (!useGUI) vulom_enable($moduleName, $channelMask);
 %%EndOfCode%%
 %%INIT_MODULE%%
 
@@ -52,7 +53,7 @@
 
 %%BeginOfCode%%
 %B%					if (--vulom_rdo_scd <= 0) {		/* read scalers every 'rdo_scd' times only */
-%RDO%						RDO_SETUP($moduleName, $scalerOffset);
+%RDO%						RDO_SETUP_VME($moduleName, $scalerOffset);
 %RDO%						RDO_BLTI_32($nofChannels);
 %E%						vulom_rdo_scd = $rdoScaleDown;
 %E%					}
@@ -96,6 +97,7 @@
 
 %%BeginOfCode%%
 						vulom_rdo_scd = $rdoScaleDown;		/* reset readout scale down */
+						vulom_reset($moduleName);			/* reset scalers */
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -117,7 +119,7 @@
 %%BeginOfCode%%
 void vulom_module_info(volatile unsigned char * module) {
 	 char str[256];
-	 unsigend int version;
+	 unsigned int version;
 	 version = *(module + VULOM_TBOX_VERSION);
 	 sprintf(str, "  VULOM module info: %lx", version);
 	 f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
@@ -127,7 +129,7 @@ void vulom_reset(volatile unsigned char * module) {
 	unsigned int enable;
 	enable = *((unsigned int *)(module + VULOM_TBOX_ENA));
 	*((unsigned int *)(module + VULOM_TBOX_ENA)) = 0;
-	*((unisnged int *)(module + VULOM_TBOX_ENA)) = enable;
+	*((unsigned int *)(module + VULOM_TBOX_ENA)) = enable;
 }
 
 void vulom_enable(volatile unsigned char * module, unsigned int channelMask) {
@@ -160,7 +162,7 @@ void vulom_scaledown(volatile unsigned char * module, unsigned int scdLower, uns
 %%DEFINE_GLOBALS_ONCE_ONLY%%
 
 %%BeginOfCode%%
-
+	int useGUI;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_INIT%%
 
