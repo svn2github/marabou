@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbGeometry.cxx,v 1.3 2008-08-18 08:20:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbGeometry.cxx,v 1.4 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -74,7 +74,7 @@ TGMrbGeometry::TGMrbGeometry(const Char_t * Application, Double_t ScaleFactor) {
 		fApplication = Application;
 		fParent = NULL;
 
-		gVirtualX->GetWindowSize(gClient->GetRoot()->GetId(), fParentX, fParentX, fParentWidth, fParentHeight);
+		gVirtualX->GetWindowSize(gClient->GetRoot()->GetId(), fParentX, fParentY, fParentWidth, fParentHeight);
 		if (!this->SetScaleFactor(ScaleFactor)) this->MakeZombie();
 		gMrbGeometry = this;
 	}

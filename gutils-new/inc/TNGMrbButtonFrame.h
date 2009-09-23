@@ -8,7 +8,7 @@
 // Class:          TNGMrbButtonFrame    -- a composite frame containing buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbButtonFrame.h,v 1.4 2009-05-29 07:09:17 Marabou Exp $       
+// Revision:       $Id: TNGMrbButtonFrame.h,v 1.5 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -88,10 +88,10 @@ RQ_OBJECT("TNGMrbButtonFrame")
 	public:
 		TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 											TMrbLofNamedX * Buttons,Int_t FrameId, TNGMrbProfile * Profile, Int_t NofRows, 
-											Int_t NofCols, Int_t Width, Int_t Height, Int_t ButtonWidth);
+											Int_t NofCols, Int_t Width, Int_t Height, Int_t ButtonWidth, Bool_t SeparatedActionButtons=kFALSE);
 
 		TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
-											const Char_t * Buttons,Int_t FrameId, TNGMrbProfile * Profile, Int_t NofRows, Int_t 												NofCols, Int_t Width, Int_t Height, Int_t ButtonWidth);
+											const Char_t * Buttons,Int_t FrameId, TNGMrbProfile * Profile, Int_t NofRows, Int_t 												NofCols, Int_t Width, Int_t Height, Int_t ButtonWidth, Bool_t SeparatedActionButtons=kFALSE);
 
 		virtual ~TNGMrbButtonFrame() { CLEAR_HEAP(); };			// dtor
 
@@ -162,6 +162,7 @@ RQ_OBJECT("TNGMrbButtonFrame")
 		inline void RadioButtonClicked(Int_t Button) { this->SetState((UInt_t) Button, kButtonDown, kTRUE); };
 		inline void TextButtonClicked(Int_t Button)  { this->UpdateState((UInt_t) Button); };
 		inline void PictureButtonClicked(Int_t Button) { this->UpdateState((UInt_t) Button); };
+
 		
 
 		
@@ -192,7 +193,8 @@ RQ_OBJECT("TNGMrbButtonFrame")
 		Int_t fNofButtons;							// number of (normal) buttons
 		Int_t fNofSpecialButtons;					// ... special buttons
 		Int_t fFrameId;
-		Bool_t fIndivColumnWidth;					// kTRUE if column widhts to be calculated individually
+		Bool_t fIndivColumnWidth;
+		Bool_t fSepActionButtons;					// kTRUE if column widhts to be calculated individually
 		Int_t fPadLeft; 							// padding from left (points)
 		Double_t fPadLeftFrac;						// padding left:right (fraction)
 
@@ -205,7 +207,7 @@ RQ_OBJECT("TNGMrbButtonFrame")
 		TGClient * fFrameClient;
 		
 		TNGMrbProfile * fProfile;					// graphics profile
-		TGTableLayout * tabLayout;
+
 
 	ClassDef(TNGMrbButtonFrame, 0)					// [GraphUtils] A frame of buttons
 };

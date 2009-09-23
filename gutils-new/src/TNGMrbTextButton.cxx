@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbTextButton.cxx,v 1.5 2009-05-29 07:09:18 Marabou Exp $       
+// Revision:       $Id: TNGMrbTextButton.cxx,v 1.6 2009-09-23 10:42:52 Marabou Exp $       
 // Date:           
 //
 //Begin_Html
@@ -144,6 +144,7 @@ TNGMrbTextButtonGroup::TNGMrbTextButtonGroup(const TGWindow * Parent,
 	fFrameClient = fClient;
 	if (Label != NULL && *Label != '\0') fLabelText = Label;
 	this->CreateButtons();
+	this->ChangeBackground(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
 }
 
 TNGMrbTextButtonGroup::TNGMrbTextButtonGroup(const TGWindow * Parent,
@@ -177,4 +178,5 @@ TNGMrbTextButtonGroup::TNGMrbTextButtonGroup(const TGWindow * Parent,
 	fFrameClient = fClient;
 	if (Label != NULL && *Label != '\0') fLabelText = Label;
 	this->CreateButtons();
+	this->ChangeBackground(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
 }

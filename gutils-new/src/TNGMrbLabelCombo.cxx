@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbLabelCombo.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbLabelCombo.cxx,v 1.4 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 // Layout:         A labelled combo widget with up/down/begin/end buttons
 //Begin_Html
@@ -55,7 +55,9 @@ TNGMrbLabelCombo::TNGMrbLabelCombo(	const TGWindow * Parent,
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
-	TNGMrbGContext * labelGC = Profile->GetGC(TNGMrbGContext::kGMrbGCLabel);
+
+// bei Label wird Combo verwendet, da das Label praktisch die ganze Flaeche des Combos ausmacht, somit ist es eg die Hintergrundfarbe des Combos
+	TNGMrbGContext * labelGC = Profile->GetGC(TNGMrbGContext::kGMrbGCCombo);
 	TNGMrbGContext * buttonGC = Profile->GetGC(TNGMrbGContext::kGMrbGCButton);
 	TNGMrbGContext * comboGC = Profile->GetGC(TNGMrbGContext::kGMrbGCLBEntry);
 
@@ -67,6 +69,10 @@ TNGMrbLabelCombo::TNGMrbLabelCombo(	const TGWindow * Parent,
 	fButtonDown = NULL;
 	fButtonBegin = NULL;
 	fButtonEnd = NULL;
+
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCCombo)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCCombo)->BG());
+
 
 	if (Label != NULL) {
 		fLabel = new TGLabel(this, new TGString(Label));
@@ -85,25 +91,29 @@ TNGMrbLabelCombo::TNGMrbLabelCombo(	const TGWindow * Parent,
 		fButtonUp->ChangeBackground(buttonGC->BG());
 		fButtonUp->SetToolTipText("StepUp", 500);
 		this->AddFrame(fButtonUp);
+
 		fButtonUp->Associate(this);
 		fButtonDown = new TGPictureButton(this, fClient->GetPicture("arrow_down.xpm"), kGMrbComboButtonDown);
 		TO_HEAP(fButtonDown);
 		fButtonDown->ChangeBackground(buttonGC->BG());
 		fButtonDown->SetToolTipText("StepDown", 500);
 		this->AddFrame(fButtonDown);
+
 		fButtonDown->Associate(this);
-		if (ComboOptions & kGMrbComboHasUpDownButtons) {
+		if (ComboOptions & kGMrbComboHasBeginEndButtons) {
 			fButtonBegin = new TGPictureButton(this, fClient->GetPicture("arrow_leftleft.xpm"), kGMrbComboButtonBegin);
 			TO_HEAP(fButtonBegin);
 			fButtonBegin->ChangeBackground(buttonGC->BG());
 			fButtonBegin->SetToolTipText("ToBegin", 500);
 			this->AddFrame(fButtonBegin);
+
 			fButtonBegin->Associate(this);
 			fButtonEnd = new TGPictureButton(this, fClient->GetPicture("arrow_rightright.xpm"), kGMrbComboButtonEnd);
 			TO_HEAP(fButtonEnd);
 			fButtonEnd->ChangeBackground(buttonGC->BG());
 			fButtonEnd->SetToolTipText("ToEnd", 500);
 			this->AddFrame(fButtonEnd);
+
 			fButtonEnd->Associate(this);
 		}
 	}
@@ -112,6 +122,7 @@ TNGMrbLabelCombo::TNGMrbLabelCombo(	const TGWindow * Parent,
 	TO_HEAP(fCombo);
 	this->AddFrame(fCombo);
 
+
 	fLofEntries.Delete();
 	if (Entries && Entries->GetEntriesFast() > 0) {
 		Bool_t byName;
@@ -119,7 +130,9 @@ TNGMrbLabelCombo::TNGMrbLabelCombo(	const TGWindow * Parent,
 		this->AddEntry(Entries);
 		fCombo->Select(((TMrbNamedX *) fLofEntries.First())->GetIndex());
 	}
-	this->SetEntryBackground(comboGC->BG());
+
+	fCombo->Connect("Selected(Int_t, Int_t)", this->ClassName(), this, "SelectionChanged(Int_t, Int_t)");
+
 	this->Resize(Width, Height);
 	this->SetLayoutManager(new TNGMrbLabelComboLayout(this));
 }
@@ -217,7 +230,8 @@ Bool_t TNGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Para
 								} else {
 									nx = (TMrbNamedX *) fLofEntries.At(fLofEntries.IndexOf(nx) - 1);
 								}
-								fCombo->Select(nx->GetIndex());
+								fCombo->Select(nx->GetIndex(),kTRUE);
+								fCombo->GetListBox()->SetTopEntry(nx->GetIndex());
 								if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
 							}
 							break;
@@ -230,18 +244,21 @@ Bool_t TNGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Para
 								} else {
 									nx = (TMrbNamedX *) fLofEntries.At(fLofEntries.IndexOf(nx) + 1);
 								}
-								fCombo->Select(nx->GetIndex());
+								fCombo->Select(nx->GetIndex(),kTRUE);
+								fCombo->GetListBox()->SetTopEntry(nx->GetIndex());
 								if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
 							}
 							break;								
 						case TNGMrbLabelCombo::kGMrbComboButtonBegin:
 							nx = (TMrbNamedX *) fLofEntries.First();
-							fCombo->Select(nx->GetIndex());
+							fCombo->Select(nx->GetIndex(),kTRUE);
+							fCombo->GetListBox()->SetTopEntry(nx->GetIndex());
 							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
 							break;
 						case TNGMrbLabelCombo::kGMrbComboButtonEnd:
 							nx = (TMrbNamedX *) fLofEntries.Last();
-							fCombo->Select(nx->GetIndex());
+							fCombo->Select(nx->GetIndex(),kTRUE);
+							fCombo->GetListBox()->SetTopEntry(nx->GetIndex());
 							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
 							break;
 					}
@@ -360,4 +377,35 @@ void TNGMrbLabelComboLayout::Layout() {
 			fWidget->GetLabel()->MoveResize(TNGMrbLabelCombo::kGMrbComboPadW, y, x - TNGMrbLabelCombo::kGMrbComboPadW, boxHeight);
 		}
 	}
+}
+
+void TNGMrbLabelCombo::SelectionChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TNGMrbLabelCombo::SelectionChanged
+// Purpose:        Signal handler
+// Arguments:      Int_t FrameId    -- frame id
+//                 Int_t Selection  -- selection index
+// Results:        --
+// Exceptions:     
+// Description:    Emits signal on "selection changed" 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fCombo->GetSelectedEntry()->SetBackgroundColor(fBack);
+   Long_t args[2];
+
+   args[0] = FrameId;
+   args[1] = Selection;
+
+   this->Emit("SelectionChanged(Int_t, Int_t)", args);
+}
+void TNGMrbLabelCombo::SetEntryBackground(Pixel_t Back){ 
+// 	fCombo->SetBackgroundColor(Back); 
+// 	fCombo->GetListBox()->SetBackgroundColor(Back);
+//  	fCombo->GetListBox()->GetEntry(id)->SetBackgroundColor(Back);
+// 	fCombo->GetListBox()->GetEntry(id)->Update(fCombo->GetListBox()->GetEntry(id));
+	fCombo->GetSelectedEntry()->SetBackgroundColor(Back);
+	fBack=Back;
+
 }

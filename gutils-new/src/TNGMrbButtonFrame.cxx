@@ -1,3 +1,5 @@
+// Zeile 210
+
 
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
@@ -7,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbButtonFrame.cxx,v 1.5 2009-05-27 07:36:49 Marabou Exp $       
+// Revision:       $Id: TNGMrbButtonFrame.cxx,v 1.6 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -28,7 +30,7 @@ ClassImp(TNGMrbSpecialButton)
 TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 											TMrbLofNamedX * Buttons,Int_t FrameId, TNGMrbProfile * Profile,
 											Int_t NofRows, Int_t NofCols,
-											Int_t Width, Int_t Height, Int_t ButtonWidth) {
+											Int_t Width, Int_t Height, Int_t ButtonWidth, Bool_t SepActionButtons) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbButtonFrame
@@ -58,6 +60,7 @@ TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 	fHeight = Height;
 	fFrameId=FrameId;
 	fButtonWidth = ButtonWidth;
+	fSepActionButtons=SepActionButtons;
 	fLabelGC = Profile->GetGC(TNGMrbGContext::kGMrbGCLabel);
 	UInt_t bType = fType & (	TNGMrbGContext::kGMrbCheckButton
 							|	TNGMrbGContext::kGMrbRadioButton
@@ -85,12 +88,14 @@ TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 		TMrbNamedX * nx;
 		while (nx = (TMrbNamedX *) iter->Next()) fLofButtons.AddNamedX(nx);
 	}
+
+	
 }
 
 TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 											const Char_t * Buttons,Int_t FrameId, TNGMrbProfile * Profile,
 											Int_t NofRows, Int_t NofCols,
-											Int_t Width, Int_t Height, Int_t ButtonWidth) {
+											Int_t Width, Int_t Height, Int_t ButtonWidth, Bool_t SepActionButtons) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbButtonFrame
@@ -122,6 +127,7 @@ TNGMrbButtonFrame::TNGMrbButtonFrame(const TGWindow * Parent, UInt_t ButtonType,
 	fHeight = Height;
 	fFrameId = FrameId;
 	fButtonWidth = ButtonWidth;
+	fSepActionButtons=SepActionButtons;
 	fLabelGC = Profile->GetGC(TNGMrbGContext::kGMrbGCLabel);
 	UInt_t bType = fType & (	TNGMrbGContext::kGMrbCheckButton
 							|	TNGMrbGContext::kGMrbRadioButton
@@ -179,7 +185,32 @@ void TNGMrbButtonFrame::CreateButtons() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	
+	TGCompositeFrame * normalFrame, * actionFrame;
+	TGTableLayout * tabLayout, *tabActionLayout;
+	TGCompositeFrame * parentFrame;
+
+//Backgrounds fuer verschiedene Frames
+
+
+
+	if (fNofRows==0 && fNofCols !=0) {					// fNofRows oder fNofCols ==0 => fFrameOptions anpassen
+	fFrameOptions &= ~kHorizontalFrame;					// ansonsten wie aus Profile geladen lassen
+	fFrameOptions |=kVerticalFrame;
+	}else if(fNofCols==0 && fNofRows!=0){
+	fFrameOptions &= ~kVerticalFrame;
+	fFrameOptions |= kHorizontalFrame;	
+	}
+
+	if (fFrameOptions & kVerticalFrame){
+	normalFrame = new TGVerticalFrame(fFrame);						
+	actionFrame = new TGVerticalFrame(fFrame);
+	} else {
+	normalFrame = new TGHorizontalFrame(fFrame);						
+	actionFrame = new TGHorizontalFrame(fFrame);
+	}
+
+	normalFrame->SetBackgroundColor(fProfile->GetGC(TNGMrbGContext::kGMrbGCFrame)->BG());
+	actionFrame->SetBackgroundColor(fProfile->GetGC(TNGMrbGContext::kGMrbGCFrame)->BG());
 
 
 
@@ -201,13 +232,17 @@ void TNGMrbButtonFrame::CreateButtons() {
 	fButtonHeight = 0;
 	TMrbNamedX * nx;
 	TIterator * iter = fLofButtons.MakeIterator();
-	
+
+//	if(fSepActionButtons==kTRUE || fType & TNGMrbGContext::kGMrbList) parentFrame=normalFrame;			//parent Frame fuer NormaleButtons festlegen
+//	else parentFrame=fFrame;
+
+	parentFrame=normalFrame;
 	while (nx = (TMrbNamedX *) iter->Next()) {
 		switch (fType & (TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbTextButton | TNGMrbGContext::kGMrbPictureButton)) {
 			case TNGMrbGContext::kGMrbCheckButton:
 				{
-					cbtn = new TGCheckButton(fFrame, nx->GetName(), nx->GetIndex());
-					cbtn->SetFont(fButtonGC->Font());
+					cbtn = new TGCheckButton(parentFrame, nx->GetName(), nx->GetIndex());
+// 					cbtn->SetFont(fButtonGC->Font());
 					cbtn->SetForegroundColor(fButtonGC->FG());
 					cbtn->SetBackgroundColor(fButtonGC->BG());
 					cbtn->ChangeOptions(fButtonOptions);
@@ -218,7 +253,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 				break;
 			case TNGMrbGContext::kGMrbRadioButton:
 				{
-					rbtn = new TGRadioButton(fFrame, nx->GetName(), nx->GetIndex());
+					rbtn = new TGRadioButton(parentFrame, nx->GetName(), nx->GetIndex());
 					rbtn->SetFont(fButtonGC->Font());
 					rbtn->SetForegroundColor(fButtonGC->FG());
 					rbtn->SetBackgroundColor(fButtonGC->BG());
@@ -230,7 +265,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 				break;
 			case TNGMrbGContext::kGMrbTextButton:
 				{
-					tbtn = new TGTextButton(fFrame, nx->GetName(), nx->GetIndex());
+					tbtn = new TGTextButton(parentFrame, nx->GetName(), nx->GetIndex());
 					tbtn->SetFont(fButtonGC->Font());
 					tbtn->SetForegroundColor(fButtonGC->FG());
 					tbtn->SetBackgroundColor(fButtonGC->BG());
@@ -245,7 +280,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 				break;
 			case TNGMrbGContext::kGMrbPictureButton:
 				{
-					pbtn = new TGPictureButton(fFrame, fFrameClient->GetPicture(nx->GetName()), nx->GetIndex());
+					pbtn = new TGPictureButton(parentFrame, fFrameClient->GetPicture(nx->GetName()), nx->GetIndex());
 					pbtn->ChangeOptions(fButtonOptions);
 					TO_HEAP(pbtn);
 					btn = (TGButton *) pbtn;
@@ -267,6 +302,11 @@ void TNGMrbButtonFrame::CreateButtons() {
 		fNofButtons++;
 	}
 
+	if (fSepActionButtons==kTRUE) parentFrame=actionFrame;				//parentFrame fuer Special Buttons festlegen
+//	else if (fType & TNGMrbGContext::kGMrbList) parentFrame=normalFrame;
+//	else parentFrame=fFrame;
+	else parentFrame=normalFrame;
+
 	fNofSpecialButtons = 0;
 	if (fType & TNGMrbGContext::kGMrbCheckButton && fLofSpecialButtons) {
 		TIterator * iter = fLofSpecialButtons->MakeIterator();
@@ -276,7 +316,7 @@ void TNGMrbButtonFrame::CreateButtons() {
 											sbtn1->GetPattern(), sbtn1->GetPicture());
 			fLofButtons.Add(sbtn2);
 			if (sbtn2->GetPicture() == NULL) {
-				cbtn = new TGCheckButton(fFrame, sbtn2->GetName(), sbtn2->GetIndex());
+				cbtn = new TGCheckButton(parentFrame, sbtn2->GetName(), sbtn2->GetIndex());
 				cbtn->SetFont(fButtonGC->Font());
 				cbtn->SetForegroundColor(fButtonGC->FG());
 				cbtn->SetBackgroundColor(fButtonGC->BG());
@@ -285,13 +325,13 @@ void TNGMrbButtonFrame::CreateButtons() {
 				btn = (TGButton *) cbtn;
 				btn->Connect("Clicked()", "TNGMrbButtonFrame", this, Form("CheckButtonClicked(Int_t=%d)", sbtn2->GetIndex()));
 			} else {
-				pbtn = new TGPictureButton(fFrame, fFrameClient->GetPicture(sbtn2->GetPicture()), sbtn2->GetIndex());
+				pbtn = new TGPictureButton(parentFrame, fFrameClient->GetPicture(sbtn2->GetPicture()), sbtn2->GetIndex());
 				pbtn->ChangeOptions(fButtonOptions);
 				TO_HEAP(pbtn);
 				btn = (TGButton *) pbtn;
 				btn->Connect("Clicked()", "TNGMrbButtonFrame", this, Form("PictureButtonClicked(Int_t=%d)", sbtn2->GetIndex()));
 			}
-			btn->ChangeBackground(fButtonGC->BG());
+			btn->ChangeBackground(fProfile->GetGC(TNGMrbGContext::kGMrbGCPictureButton)->BG());
 			//fFrame->AddFrame(btn);
 			//btn->Associate(fFrame);
 			sbtn2->AssignObject(btn);
@@ -316,12 +356,10 @@ void TNGMrbButtonFrame::CreateButtons() {
 		}
 	} else if (fNofRows == 0) {
 		fNofRows = (btnNo + fNofCols - 1) / fNofCols;
-		fFrameOptions &= ~kHorizontalFrame;
-		fFrameOptions |= kVerticalFrame;
+
 	} else if (fNofCols == 0) {
 		fNofCols = (btnNo + fNofRows - 1) / fNofRows;
-		fFrameOptions &= ~kVerticalFrame;
-		fFrameOptions |= kHorizontalFrame;
+
 	}
 
 	if (fNofRows * fNofCols < btnNo) {
@@ -342,43 +380,122 @@ void TNGMrbButtonFrame::CreateButtons() {
 	if (fHeight == 0) fHeight = fFrame->GetDefaultHeight();
 	fFrame->Resize(fWidth, fHeight);
 	
-	
+	fFrame->ChangeOptions(fFrameOptions);
 	// Mit TGTableLayout 
 	
 	
+	if (fSepActionButtons==kFALSE){								//ActionButtons sind eingegliedert
+		tabLayout = new TGTableLayout(normalFrame, fNofRows, fNofCols, kTRUE);
+		normalFrame->SetLayoutManager(tabLayout);
 	
-	tabLayout = new TGTableLayout(fFrame, fNofRows, fNofCols, kTRUE);
-	fFrame->SetLayoutManager(tabLayout);
-	
-	
-	
-	
-	
-	nx = (TMrbNamedX *) this->GetLofButtons()->First();
-	
-	
-	for(Int_t x=0, y=0;nx!=NULL;x++){
-	
-		if (x==fNofCols) {x=0;y++;}
+		nx = (TMrbNamedX *) this->GetLofButtons()->First();
 		
-			
-		TGButton * btn = (TGButton *) nx->GetAssignedObject();
-		//Int_t bw = this->GetColWidth()->At(x);
-		
-		
-		fFrame->AddFrame(btn, new TGTableLayoutHints(x,x+1,y,y+1,
-        	                            kLHintsExpandX|kLHintsExpandY |
-        	                            kLHintsShrinkX|kLHintsShrinkY |
+		for(Int_t x=0, y=0, n=0;nx!=NULL;x++, n++){
+			if (x==fNofCols) {x=0;y++;}
+						
+			TGButton * btn = (TGButton *) nx->GetAssignedObject();
+			//Int_t bw = this->GetColWidth()->At(x);
+			normalFrame->AddFrame(btn, new TGTableLayoutHints(x,x+1,y,y+1,
+	       	 	                    kLHintsExpandX|kLHintsExpandY |
+	       	 	                    kLHintsShrinkX|kLHintsShrinkY |
 					    kLHintsCenterX|kLHintsCenterY
-					    
-					    
-        	                            |kLHintsFillX|kLHintsFillY
-					     ,1,1,1,1));
-		//btn->Resize(fButtonWidth, fButtonHeight);
-		nx = (TMrbNamedX *) this->GetLofButtons()->After(nx);
+					    |kLHintsFillX|kLHintsFillY
+						     ,1,1,1,1));
+			
+					
+			nx = (TMrbNamedX *) this->GetLofButtons()->After(nx);
+		}
+		/*TGLayoutHints * LayoutH;
+		if (fType & TNGMrbGContext::kGMrbList) LayoutH = new TGLayoutHints(kLHintsRight,1,1,1,1);
+		else LayoutH = new TGLayoutHints(kLHintsExpandX|kLHintsExpandY, 1,1,1,1);
+		fFrame->AddFrame(normalFrame,LayoutH);*/
+		TGLayoutHints * LayoutH = new TGLayoutHints(kLHintsExpandX|kLHintsExpandY, 1,1,1,1);
+		fFrame->AddFrame(normalFrame,LayoutH);
+	} else {										//ActionButtons sind extra
+		Int_t NofActionRows=0, NofActionCols=0;
+		Int_t NofNormalRows=0, NofNormalCols=0;
+		if (fFrameOptions & kHorizontalFrame){						//Dimensionen festlegen
+			NofActionRows=fNofRows;
+			NofNormalRows=fNofRows;
+			NofActionCols=(fNofSpecialButtons+NofActionRows-1)/NofActionRows;
+			NofNormalCols=(fNofButtons+NofNormalRows-1)/NofNormalRows;
+			
+		} else {
+			NofActionCols=fNofCols;
+			NofNormalCols=fNofCols;
+			NofActionRows=(fNofSpecialButtons+NofActionCols-1)/NofActionCols;
+			NofNormalRows=(fNofButtons+NofNormalCols-1)/NofNormalCols;
+
+		}										
+
+
+		
+		tabLayout=new TGTableLayout(normalFrame, NofNormalRows, NofNormalCols, kTRUE);
+		tabActionLayout=new TGTableLayout(actionFrame, NofActionRows, NofActionCols, kTRUE);
+		normalFrame->SetLayoutManager(tabLayout);
+		actionFrame->SetLayoutManager(tabActionLayout);
+
+
+
+		
+		nx = (TMrbNamedX*) this->GetLofButtons()->First();
 	
+		for (Int_t x=0, y=0, n=0; n<fNofButtons && nx!=NULL; n++, x++){				//Normale Buttons Adden
+			if (x==NofNormalCols) {x=0;y++;}		
+
+			TGButton *btn= (TGButton *) nx->GetAssignedObject();
+			normalFrame->AddFrame(btn, new TGTableLayoutHints(x,x+1, y,y+1,
+	       	 	                    kLHintsExpandX|kLHintsExpandY |
+	       	 	                    kLHintsShrinkX|kLHintsShrinkY |
+					    kLHintsCenterX|kLHintsCenterY
+					    |kLHintsFillX|kLHintsFillY
+						     ,1,1,1,1));
+			nx = (TMrbNamedX *) this->GetLofButtons()->After(nx);
+		}
+
+		for (Int_t x=0, y=0, n=0; n<fNofSpecialButtons && nx!=NULL; n++, x++){			//Special Buttons Adden
+			if (x==NofActionCols) {x=0;y++;}
+
+			TGButton *btn= (TGButton *) nx->GetAssignedObject();
+
+			actionFrame->AddFrame(btn, new TGTableLayoutHints(x,x+1, y,y+1,
+	       	 	                    kLHintsShrinkX|kLHintsShrinkY |
+					    kLHintsCenterX|kLHintsCenterY
+					    ,1,1,1,1));
+
+			nx = (TMrbNamedX *) this->GetLofButtons()->After(nx);
+		}
+		
+		
+
+		
+		TGLayoutHints *expandLayout = new TGLayoutHints(kLHintsExpandX|kLHintsExpandY, 1,1,1,1);
+
+		
+	
+		fFrame->AddFrame(normalFrame,expandLayout);
+		fFrame->AddFrame(actionFrame);
+
+
+		if (fType | TNGMrbGContext::kGMrbGroup){
+			if (normalFrame) normalFrame->ChangeBackground(fProfile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
+			if (actionFrame) actionFrame->ChangeBackground(fProfile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
+			
+		} else {
+			if (normalFrame) normalFrame->ChangeBackground(fProfile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
+			if (actionFrame) actionFrame->ChangeBackground(fProfile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
+			
+
+
+		}
+
+
+		
+
 	
 	}
+		
+
 	
 	//fFrame->MapSubwindows();
 	//fFrame->Layout();
@@ -835,7 +952,6 @@ void TNGMrbButtonFrame::ButtonPressed(Int_t FrameId, Int_t Button) {
 
 	args[0] = FrameId;
 	args[1] = Button;
-	//cout<<"Emit(ButtonPressed(Int_t, Int_t)"<<endl;
 	this->Emit("ButtonPressed(Int_t, Int_t)", args);
 	
 }

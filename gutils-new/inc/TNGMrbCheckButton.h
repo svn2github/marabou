@@ -11,7 +11,7 @@
 //                                           group frame
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbCheckButton.h,v 1.2 2009-05-27 07:36:49 Marabou Exp $       
+// Revision:       $Id: TNGMrbCheckButton.h,v 1.3 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -44,14 +44,14 @@ class TNGMrbCheckButtonList: public TGCompositeFrame, public TNGMrbButtonFrame {
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0,
-													TObjArray * LofSpecialButtons = NULL);
+													TObjArray * LofSpecialButtons = NULL, Bool_t SeparatedActionButtons=kFALSE);
 
 		TNGMrbCheckButtonList(const TGWindow * Parent, const Char_t * Label,
 													const Char_t * Buttons, Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0,
-													TObjArray * LofSpecialButtons = NULL);
+													TObjArray * LofSpecialButtons = NULL,Bool_t SeparatedActionButtons=kFALSE);
 
 		~TNGMrbCheckButtonList() {};				// default dtor
 
@@ -81,14 +81,14 @@ class TNGMrbCheckButtonGroup: public TGGroupFrame, public TNGMrbButtonFrame {
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t ButtonWidth = 0,
-													TObjArray * LofSpecialButtons = NULL);
+													TObjArray * LofSpecialButtons = NULL, Bool_t SeparatedActionButtons=kFALSE);
 
 		TNGMrbCheckButtonGroup(const TGWindow * Parent, const Char_t * Label,
 													const Char_t * Buttons, Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
 													Int_t ButtonWidth = 0,
-													TObjArray * LofSpecialButtons = NULL);
+													TObjArray * LofSpecialButtons = NULL, Bool_t SeparatedActionButtons=kFALSE);
 
 		~TNGMrbCheckButtonGroup() { CLEAR_HEAP(); };				// default dtor
 

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbPictureButton.cxx,v 1.4 2009-05-29 07:09:18 Marabou Exp $       
+// Revision:       $Id: TNGMrbPictureButton.cxx,v 1.5 2009-09-23 10:42:52 Marabou Exp $       
 // Date:           
 // Layout:         A list or group of picture buttons
 //Begin_Html
@@ -60,6 +60,8 @@ TNGMrbPictureButtonList::TNGMrbPictureButtonList(const TGWindow * Parent,
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
 	}
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->BG());
 	this->CreateButtons();
 }
 
@@ -100,6 +102,8 @@ TNGMrbPictureButtonList::TNGMrbPictureButtonList(const TGWindow * Parent,
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
 	}
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->BG());
 	this->CreateButtons();
 }
 
@@ -132,7 +136,10 @@ TNGMrbPictureButtonGroup::TNGMrbPictureButtonGroup(const TGWindow * Parent,
 	fFrame = this;
 	fFrameClient = fClient;
 	if (Label != NULL && *Label != '\0') fLabelText = Label;
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
 	this->CreateButtons();
+
 }
 
 TNGMrbPictureButtonGroup::TNGMrbPictureButtonGroup(const TGWindow * Parent,
@@ -164,5 +171,8 @@ TNGMrbPictureButtonGroup::TNGMrbPictureButtonGroup(const TGWindow * Parent,
 	fFrame = this;
 	fFrameClient = fClient;
 	if (Label != NULL && *Label != '\0') fLabelText = Label;
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
 	this->CreateButtons();
+
 }

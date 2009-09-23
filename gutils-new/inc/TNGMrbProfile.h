@@ -7,7 +7,7 @@
 // Purpose:        Define utilities to be used with the MARaBOU GUI
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbProfile.h,v 1.3 2009-05-26 07:14:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbProfile.h,v 1.4 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -19,6 +19,7 @@
 #include "TSystem.h"
 #include "TObjArray.h"
 #include "TEnv.h"
+#include "TGGC.h"
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
@@ -70,6 +71,9 @@ class TNGMrbGContext : public TObject {
 
 		~TNGMrbGContext() {};						// dtor
 
+		inline TGGC * GCAddr() const { return(fGC); };
+		inline GContext_t GC() const { return(fGC->GetGC()); };
+
 		Bool_t SetFont(const Char_t * Font);
 		inline void SetFont(FontStruct_t Font) { fFont = Font; };
 		inline FontStruct_t Font() const { return(fFont); };
@@ -95,8 +99,10 @@ class TNGMrbGContext : public TObject {
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TNGMrbGContext.html&"); };
 
 	protected:
+		TGGC * fGC;
 		TString fFontName;
 		FontStruct_t fFont;
+		TGFont	* fTGFont;
 		TString fForegroundName;
 		Pixel_t fForeground;
 		TString fBackgroundName;

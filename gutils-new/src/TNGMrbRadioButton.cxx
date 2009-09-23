@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbRadioButton.cxx,v 1.4 2009-05-29 07:09:18 Marabou Exp $       
+// Revision:       $Id: TNGMrbRadioButton.cxx,v 1.5 2009-09-23 10:42:52 Marabou Exp $       
 // Date:           
 // Layout:         A list or group of radio buttons
 //Begin_Html
@@ -30,10 +30,10 @@ TNGMrbRadioButtonList::TNGMrbRadioButtonList(const TGWindow * Parent,
 												TMrbLofNamedX * Buttons, Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
-												Int_t Width, Int_t Height, Int_t ButtonWidth) :
+												Int_t Width, Int_t Height, Int_t ButtonWidth, Bool_t SeparatedActionButtons) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
 										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbList,
-												Buttons,FrameId,  Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
+												Buttons,FrameId,  Profile, NofRows, NofCols, Width, Height, ButtonWidth, SeparatedActionButtons) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbRadioButtonList
@@ -57,14 +57,18 @@ TNGMrbRadioButtonList::TNGMrbRadioButtonList(const TGWindow * Parent,
 	fFrameClient = fClient;
 	if (Label != NULL && *Label != '\0') {
 		fLabelText = Label;
-		fLabel = new TGLabel(Parent, new TGString(Label));
-		fLabel->SetTextFont(fLabelGC->Font());
-		fLabel->SetForegroundColor(fLabelGC->FG());
-		fLabel->SetBackgroundColor(fLabelGC->BG());
+		fLabel = new TGLabel(this, new TGString(Label));
+		fLabel->SetTextFont(Profile->GetGC(TNGMrbGContext::kGMrbGCLabel)->Font()); 
+		fLabel->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCLabel)->FG());
+		fLabel->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCLabel)->BG());
 		TO_HEAP(fLabel);
-		this->AddFrame(fLabel);
+		TGLayoutHints * LayoutH = new TGLayoutHints (kLHintsExpandX|kLHintsExpandY, 1,1,1,1);
+		this->AddFrame(fLabel, LayoutH);
 		fLabel->SetTextJustify(kTextLeft);
 	}
+
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->BG());
 	this->CreateButtons();
 }
 
@@ -73,10 +77,10 @@ TNGMrbRadioButtonList::TNGMrbRadioButtonList(const TGWindow * Parent,
 												const Char_t * Buttons,Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
-												Int_t Width, Int_t Height, Int_t ButtonWidth) :
+												Int_t Width, Int_t Height, Int_t ButtonWidth, Bool_t SeparatedActionButtons) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
 										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbList,
-												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth, SeparatedActionButtons) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbRadioButtonList
@@ -108,6 +112,9 @@ TNGMrbRadioButtonList::TNGMrbRadioButtonList(const TGWindow * Parent,
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
 	}
+
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->BG());
 	this->CreateButtons();
 }
 
@@ -116,10 +123,10 @@ TNGMrbRadioButtonGroup::TNGMrbRadioButtonGroup(const TGWindow * Parent,
 												TMrbLofNamedX * Buttons,Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
-												Int_t ButtonWidth) :
+												Int_t ButtonWidth, Bool_t SeparatedActionButtons) :
 								TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
 								TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbGroup,
-												Buttons,FrameId,  Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
+												Buttons,FrameId,  Profile, NofRows, NofCols, 0, 0, ButtonWidth, SeparatedActionButtons) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbRadioButtonGroup
@@ -140,6 +147,9 @@ TNGMrbRadioButtonGroup::TNGMrbRadioButtonGroup(const TGWindow * Parent,
 	fFrame = this;
 	fFrameClient = fClient;
 	if (Label != NULL && *Label != '\0') fLabelText = Label;
+
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
 	this->CreateButtons();
 }
 
@@ -148,10 +158,10 @@ TNGMrbRadioButtonGroup::TNGMrbRadioButtonGroup(const TGWindow * Parent,
 												const Char_t * Buttons,Int_t FrameId,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
-												Int_t ButtonWidth) :
+												Int_t ButtonWidth, Bool_t SeparatedActionButtons) :
 								TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
 								TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbRadioButton | TNGMrbGContext::kGMrbGroup,
-												Buttons, FrameId,Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
+												Buttons, FrameId,Profile, NofRows, NofCols, 0, 0, ButtonWidth, SeparatedActionButtons) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbRadioButtonGroup
@@ -172,6 +182,8 @@ TNGMrbRadioButtonGroup::TNGMrbRadioButtonGroup(const TGWindow * Parent,
 	fFrame = this;
 	fFrameClient = fClient;
 	if (Label != NULL && *Label != '\0') fLabelText = Label;
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
 	this->CreateButtons();
 }
 

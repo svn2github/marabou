@@ -9,7 +9,7 @@
 //                                           browse files
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbFileEntry.h,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbFileEntry.h,v 1.2 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -56,6 +56,7 @@ class TNGMrbFileEntry: public TGCompositeFrame {
 		inline TGTextEntry * GetEntry() const { return(fEntry); };
 
 		inline Int_t GetEntryWidth() { return(fEntryWidth); };
+		inline const Char_t * GetText() const {return (fEntry->GetText());}
 
 		inline TGLabel * GetLabel() const { return(fLabel); };
 		inline void SetLabelText(const Char_t * Text) { if (fLabel) fLabel->SetText(Text); };

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbCheckButton.cxx,v 1.5 2009-05-29 07:09:18 Marabou Exp $       
+// Revision:       $Id: TNGMrbCheckButton.cxx,v 1.6 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 // Layout:         A list or group of checkbuttons
 //Begin_Html
@@ -29,10 +29,10 @@ TNGMrbCheckButtonList::TNGMrbCheckButtonList(const TGWindow * Parent,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t Width, Int_t Height, Int_t ButtonWidth,
-												TObjArray * LofSpecialButtons) :
+												TObjArray * LofSpecialButtons, Bool_t SeparatedActionButtons) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
 										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbList,
-												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth, SeparatedActionButtons) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbCheckButtonList
@@ -67,6 +67,8 @@ TNGMrbCheckButtonList::TNGMrbCheckButtonList(const TGWindow * Parent,
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
 	}
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->BG());
 	this->CreateButtons();
 }
 
@@ -76,10 +78,10 @@ TNGMrbCheckButtonList::TNGMrbCheckButtonList(const TGWindow * Parent,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t Width, Int_t Height, Int_t ButtonWidth,
-												TObjArray * LofSpecialButtons) :
+												TObjArray * LofSpecialButtons, Bool_t SeparatedActionButtons) :
 										TGCompositeFrame(Parent, Width, Height, Profile->GetFrameOptions()),
 										TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbList,
-												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, Width, Height, ButtonWidth,SeparatedActionButtons) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbCheckButtonList
@@ -114,6 +116,8 @@ TNGMrbCheckButtonList::TNGMrbCheckButtonList(const TGWindow * Parent,
 		this->AddFrame(fLabel);
 		fLabel->SetTextJustify(kTextLeft);
 	}
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->BG());
 	this->CreateButtons();
 }
 
@@ -123,10 +127,11 @@ TNGMrbCheckButtonGroup::TNGMrbCheckButtonGroup(const TGWindow * Parent,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t ButtonWidth,
-												TObjArray * LofSpecialButtons) :
+												TObjArray * LofSpecialButtons,
+												Bool_t SeparatedActionButtons) :
 							TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
 							TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbGroup,
-												Buttons, FrameId, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
+												Buttons, FrameId, Profile, NofRows, NofCols, 0, 0, ButtonWidth,SeparatedActionButtons) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbCheckButtonGroup
@@ -149,7 +154,10 @@ TNGMrbCheckButtonGroup::TNGMrbCheckButtonGroup(const TGWindow * Parent,
 	fFrameClient = fClient;
 	fLofSpecialButtons = LofSpecialButtons;
 	if (Label != NULL && *Label != '\0') fLabelText = Label;
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
 	this->CreateButtons();
+
 }
 
 TNGMrbCheckButtonGroup::TNGMrbCheckButtonGroup(const TGWindow * Parent,
@@ -158,10 +166,11 @@ TNGMrbCheckButtonGroup::TNGMrbCheckButtonGroup(const TGWindow * Parent,
 												TNGMrbProfile * Profile,
 												Int_t NofRows, Int_t NofCols,
 												Int_t ButtonWidth,
-												TObjArray * LofSpecialButtons) :
+												TObjArray * LofSpecialButtons, 
+												Bool_t SeparatedActionButtons) :
 							TGGroupFrame(Parent, Label, Profile->GetFrameOptions()),
 							TNGMrbButtonFrame(Parent, TNGMrbGContext::kGMrbCheckButton | TNGMrbGContext::kGMrbGroup,
-												Buttons,FrameId, Profile, NofRows, NofCols, 0, 0, ButtonWidth) {
+												Buttons,FrameId, Profile, NofRows, NofCols, 0, 0, ButtonWidth, SeparatedActionButtons) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TNGMrbCheckButtonGroup
@@ -184,5 +193,8 @@ TNGMrbCheckButtonGroup::TNGMrbCheckButtonGroup(const TGWindow * Parent,
 	fFrameClient = fClient;
 	fLofSpecialButtons = LofSpecialButtons;
 	if (Label != NULL && *Label != '\0') fLabelText = Label;
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
 	this->CreateButtons();
+
 }

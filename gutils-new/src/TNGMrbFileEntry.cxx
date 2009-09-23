@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbFileEntry.cxx,v 1.3 2009-03-31 14:34:32 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbFileEntry.cxx,v 1.4 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 // Layout:         A labelled entry widget with a file button
 //Begin_Html
@@ -97,6 +97,8 @@ TNGMrbFileEntry::TNGMrbFileEntry( const TGWindow * Parent,
 
 	this->SetFont(entryGC->Font());
 	this->SetEntryBackground(entryGC->BG());
+	this->SetForegroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->FG());
+	this->SetBackgroundColor(Profile->GetGC(TNGMrbGContext::kGMrbGCFrame)->BG());
 	this->Resize(Width, Height);
 	this->SetLayoutManager(new TNGMrbFileEntryLayout(this));
 }

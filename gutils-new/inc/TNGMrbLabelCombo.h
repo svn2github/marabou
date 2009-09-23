@@ -9,7 +9,7 @@
 //                                        a combo box
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbLabelCombo.h,v 1.1 2009-03-27 09:39:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbLabelCombo.h,v 1.2 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@ class TNGMrbLabelCombo: public TGCompositeFrame {
 		inline void SetLabelText(const Char_t * Text) { if (fLabel) fLabel->SetText(Text); };
 		inline const Char_t * GetLabelText() const { return(fLabel ? fLabel->GetText()->GetString() : "???"); };
 
-		inline void SetEntryBackground(Pixel_t Back) { fCombo->SetBackgroundColor(Back); };
+		void SetEntryBackground(Pixel_t Back);
 		inline void SetLabelBackground(Pixel_t Back) { if (fLabel) fLabel->SetBackgroundColor(Back); };
 		void SetButtonBackground(Pixel_t Back);
 
@@ -98,6 +98,9 @@ class TNGMrbLabelCombo: public TGCompositeFrame {
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TNGMrbLabelCombo.html&"); };
 
+
+		void SelectionChanged(Int_t FrameId, Int_t Selection); 		// *SIGNAL*
+
 	protected:
 		USE_HEAP();
 
@@ -106,6 +109,8 @@ class TNGMrbLabelCombo: public TGCompositeFrame {
 		TGComboBox * fCombo;			//!
 		TGLabel * fLabel;				//!
 		TString fText;					//!
+		Pixel_t fBack;
+
 
 		TGWindow * fClientWindow;
 

@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbLabelEntry.h,v 1.2 2009-05-27 07:36:49 Marabou Exp $       
+// Revision:       $Id: TNGMrbLabelEntry.h,v 1.3 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -76,7 +76,7 @@ class TNGMrbLabelEntry: public TGCompositeFrame {
 							const Char_t * Label,
 							Int_t FrameId,
 							TNGMrbProfile * Profile,
-							Int_t EntryId, Int_t Width, Int_t Height, Int_t EntryWidth = 0,
+							Int_t Width, Int_t Height, Int_t EntryWidth = 0,
 							UInt_t EntryOptions = kGMrbEntryIsNumber,
 							TMrbNamedX * Action = NULL);
 
@@ -90,6 +90,7 @@ class TNGMrbLabelEntry: public TGCompositeFrame {
 		inline void SetText(const Char_t * Text) { if (this->IsNumberEntry()) fNumberEntryField->SetText(Text); else fTextEntry->SetText(Text); };
 		inline void SetTextForced(const Char_t * Text) { fTextEntry->SetText(Text); };
 		inline void SetFont(FontStruct_t Font) { if (this->IsNumberEntry()) fNumberEntryField->SetFont(Font); else fTextEntry->SetFont(Font); };
+		inline void SetIncrement(Double_t Increment){fIncrement=Increment;};
 		void SetHexNumber(UInt_t Value);
 		void SetOctNumber();
 		void SetBinNumber();
@@ -127,13 +128,14 @@ class TNGMrbLabelEntry: public TGCompositeFrame {
 		void BeginEndButtonEnable(Bool_t Flag = kTRUE);			// enable/disable begin/end button
 		void ActionButtonEnable(Bool_t Flag = kTRUE);			// enable/disable action button
 
-		inline Bool_t IsNumberEntry() const { return(fNumberEntryField != NULL); };
+		inline Bool_t IsNumberEntry() const { return(!(fNumberEntryField == NULL)); };
 		inline Bool_t HasUpDownButtons() const { return(fNumberEntry != NULL); };
 		inline Bool_t HasBeginEndButtons() const { return(fButtonBegin != NULL); };
 		inline Bool_t HasActionButton() const { return(fAction != NULL); };
 		inline Bool_t HasLabel() const { return(fLabel != NULL); };
 
 		inline TGLabel * GetLabel() const { return(fLabel); };
+		inline TGTextEntry * GetEntry() const {if (this->IsNumberEntry()) return(fNumberEntryField); else return(fTextEntry);}
 		inline void SetLabelText(const Char_t * Text) { if (fLabel) fLabel->SetText(Text); };
 		inline const Char_t * GetLabelText() const { return(fLabel ? fLabel->GetText()->GetString() : "???"); };
 
@@ -158,19 +160,33 @@ class TNGMrbLabelEntry: public TGCompositeFrame {
 		};
 		inline TNGMrbFocusList * GetFocusList() const { return(fFocusList); };
 
+		void ShowToolTip(Bool_t Flag = kTRUE, Bool_t ShowRange = kFALSE);
+
 		// SLOT METHODS
+		inline void EntryChanged(){EntryChanged(fFrameId);};
+		void EntryChanged(Int_t);				//*SIGNAL*
 
 		void ButtonPressed(Int_t Button);
 		void LabelButtonPressed(Int_t Id, Int_t Button);	//*SIGNAL*
+
 		void UpDownButtonPressed(Long_t val);
+//		void FocusLeft();
+//		void ProcessedEvent(Event_t *event); 			//if the Focus leaves by mouse, this function is connected to the ProcessedEvent(Event_t) Method of TGFrame
+
+
+
+
 
 	protected:
 		Bool_t CheckRange(Int_t Value, Int_t LowerLim, Int_t UpperLim) const;
 		Bool_t CheckStyle(TGNumberEntry::EStyle Style, EGMrbEntryStyle StyleGroup) const;
+		void RealiseIncrement(Long_t val);
+
 
 	protected:
 		USE_HEAP();
 		Int_t fFrameId;
+		Double_t fIncrement;
 
 		Int_t fEntryWidth;				// width of numeric entry field (+ button width)
 		TGLabel * fLabel;				//! entry label
@@ -184,6 +200,9 @@ class TNGMrbLabelEntry: public TGCompositeFrame {
 		TGPictureButton * fButtonEnd; 	//!
 
 		TGTableLayout * tabLayout;
+
+		Bool_t fShowToolTip;			// kTRUE if tooltip has to be shown
+		Bool_t fShowRange;				// kTRUE if range has to be shown in tooltip
 
 	ClassDef(TNGMrbLabelEntry, 1)		// [GraphUtils] An entry field with a label
 };

@@ -7,7 +7,7 @@
 // Purpose:        Define utilities to be used with the MARaBOU GUI
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TNGMrbRadioButton.h,v 1.2 2009-05-27 07:36:49 Marabou Exp $       
+// Revision:       $Id: TNGMrbRadioButton.h,v 1.3 2009-09-23 10:42:51 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -39,13 +39,15 @@ class TNGMrbRadioButtonList: public TGCompositeFrame, public TNGMrbButtonFrame {
 													TMrbLofNamedX * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
-													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0);
+													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0,
+													Bool_t SeparatedActionButtons=kFALSE);
 
 		TNGMrbRadioButtonList(const TGWindow * Parent, const Char_t * Label,
 													const Char_t * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
-													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0);
+													Int_t Width = 0, Int_t Height = 0, Int_t ButtonWidth = 0,
+													Bool_t SeparatedActionButtons=kFALSE);
 
 		~TNGMrbRadioButtonList() {};				// default dtor
 
@@ -74,13 +76,15 @@ class TNGMrbRadioButtonGroup: public TGGroupFrame, public TNGMrbButtonFrame {
 													TMrbLofNamedX * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
-													Int_t ButtonWidth = 0);
+													Int_t ButtonWidth = 0,
+													Bool_t SeparatedActionButtons=kFALSE);
 
 		TNGMrbRadioButtonGroup(const TGWindow * Parent, const Char_t * Label,
 													const Char_t * Buttons,Int_t FrameId,
 													TNGMrbProfile * Profile,
 													Int_t NofRows = 0, Int_t NofCols = 0,
-													Int_t ButtonWidth = 0);
+													Int_t ButtonWidth = 0,
+													Bool_t SeparatedActionButtons=kFALSE);
 
 		~TNGMrbRadioButtonGroup() {};				// default dtor
 

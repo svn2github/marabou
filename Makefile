@@ -53,8 +53,8 @@ include config/Makefile.$(ARCH)
 
 -include MyConfig.mk
 
-EXTRA_CFLAGS   += -g -Wno-switch -Wno-parentheses -I$(ROOTSYS)/include
-EXTRA_CXXFLAGS += -g -Wno-switch -Wno-parentheses -I$(ROOTSYS)/include
+EXTRA_CFLAGS   += -g -Wno-switch -Wno-write-strings -Wno-parentheses -I$(ROOTSYS)/include
+EXTRA_CXXFLAGS += -g -Wno-switch -Wno-write-strings -Wno-parentheses -I$(ROOTSYS)/include
 
 ##### Modules to build #####
 
@@ -88,8 +88,8 @@ ifeq ($(shell if [ -d tidy ] ; then echo yes; fi), yes)
 MODULES      += tidy tidylib
 endif
 
-ifeq ($(shell if [ -d gutils_new ] ; then echo yes; fi), yes)
-MODULES      += gutils_new
+ifeq ($(shell if [ -d gutils-new ] ; then echo yes; fi), yes)
+MODULES      += gutils-new
 endif
 
 ifeq ($(shell if [ -d macrobrowser ] ; then echo yes; fi), yes)

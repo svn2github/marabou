@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TNGMrbProfile.cxx,v 1.5 2009-05-26 07:42:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TNGMrbProfile.cxx,v 1.6 2009-09-23 10:42:52 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -75,13 +75,14 @@ TNGMrbGContext::TNGMrbGContext(const Char_t * Font, const Char_t * Foreground, c
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
 	FontStruct_t font;
+	TGFont * tgfont;
 	TString fontStr = (*Font == '-') ? Font : gEnv->GetValue(Font, "");
-	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0) {
+	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data()) ) == 0 || (tgfont=gClient->GetFont(fontStr.Data()))==0) {
 		gMrbLog->Wrn()	<< "No such font - " << fontStr << endl
 						<< "Falling back to \"NormalFont\"" << endl;
 		gMrbLog->Flush("TNGMrbGContext");
-		font = gClient->GetFontByName(gEnv->GetValue("Gui.NormalFont",
-													"-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
+		font = gClient->GetFontByName(gEnv->GetValue("Gui.NormalFont","-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
+		tgfont=gClient->GetFont(gEnv->GetValue("Gui.NormalFont","-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
 	}
 
 	Pixel_t fg;
@@ -102,12 +103,18 @@ TNGMrbGContext::TNGMrbGContext(const Char_t * Font, const Char_t * Foreground, c
 
 	fFontName = fontStr;
 	fFont = font;
+	fTGFont= tgfont;
 	fForegroundName = Foreground;
 	fForeground = fg;
 	fBackgroundName = Background;
 	fBackground = bg;
 
 	fOptions = Options;
+
+	fGC = new TGGC();
+	if (fFont) fGC->SetFont(fTGFont->GetFontHandle());
+	fGC->SetForeground(fForeground);
+	fGC->SetBackground(fBackground);
 }
 
 TNGMrbGContext::TNGMrbGContext(const Char_t * Font, Pixel_t Foreground, Pixel_t Background, UInt_t Options) {
@@ -128,22 +135,30 @@ TNGMrbGContext::TNGMrbGContext(const Char_t * Font, Pixel_t Foreground, Pixel_t 
 	TString fontStr = (*Font == '-') ? Font : gEnv->GetValue(Font, "");
 
 	FontStruct_t font;
-	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0) {
+	TGFont * tgfont;
+	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0 || (tgfont=gClient->GetFont(fontStr.Data()))==0) {
 		gMrbLog->Wrn()	<< "No such font - " << fontStr << endl
 						<< "Falling back to \"NormalFont\"" << endl;
 		gMrbLog->Flush("TNGMrbGContext");
 		font = gClient->GetFontByName(gEnv->GetValue("Gui.NormalFont",
 													"-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
+		tgfont=gClient->GetFont(gEnv->GetValue("Gui.NormalFont","-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
 	}
 
 	fFontName = fontStr;
 	fFont = font;
+	fTGFont= tgfont;
 	fForegroundName = Form("#%0x", Foreground);
 	fForeground = Foreground;
 	fBackgroundName = Form("#%0x", Background);
 	fBackground = Background;
 
 	fOptions = Options;
+
+	fGC = new TGGC();
+	if (fFont) fGC->SetFont(fTGFont->GetFontHandle());
+	fGC->SetForeground(fForeground);
+	fGC->SetBackground(fBackground);
 }
 
 TNGMrbGContext::TNGMrbGContext(TNGMrbGContext::EGMrbGCType Type, UInt_t Options) {
@@ -161,7 +176,10 @@ TNGMrbGContext::TNGMrbGContext(TNGMrbGContext::EGMrbGCType Type, UInt_t Options)
 	
 	fFontName = gEnv->GetValue("Gui.NormalFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
 	FontStruct_t font = gClient->GetFontByName(fFontName.Data());
+	TGFont * tgfont=gClient->GetFont(fFontName.Data());
+	
 	fFont = font;
+	fTGFont= tgfont;
 
 	Pixel_t fg;
 	fForegroundName = "black";
@@ -174,6 +192,11 @@ TNGMrbGContext::TNGMrbGContext(TNGMrbGContext::EGMrbGCType Type, UInt_t Options)
 	fBackground = bg;
 
 	fOptions = Options;
+
+	fGC = new TGGC();
+	if (fFont) fGC->SetFont(fTGFont->GetFontHandle());
+	fGC->SetForeground(fForeground);
+	fGC->SetBackground(fBackground);
 }
 
 Bool_t TNGMrbGContext::SetFont(const Char_t * Font) {
@@ -190,9 +213,11 @@ Bool_t TNGMrbGContext::SetFont(const Char_t * Font) {
 
 	TString fontStr;
 	FontStruct_t font;
+	TGFont * tgfont;
 
 	fontStr = (*Font == '-') ? Font : gEnv->GetValue(Font, "");
-	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0) {
+	
+	if ((fontStr.Length() == 0) || (font = gClient->GetFontByName(fontStr.Data())) == 0 || (tgfont=gClient->GetFont(fontStr.Data()))==0) {
 		gMrbLog->Wrn()	<< "No such font - " << fontStr << endl
 						<< "Falling back to \"NormalFont\"" << endl;
 		gMrbLog->Flush("TNGMrbGContext", "SetFont");
@@ -200,6 +225,8 @@ Bool_t TNGMrbGContext::SetFont(const Char_t * Font) {
 	}
 	fFontName = fontStr; 
 	fFont = font;
+	fTGFont=tgfont;
+	fGC->SetFont(fTGFont->GetFontHandle());
 	return(kTRUE);
 }
 
@@ -226,6 +253,7 @@ Bool_t TNGMrbGContext::SetFG(const Char_t * Foreground) {
 
 	fForegroundName = Foreground; 
 	fForeground = color;
+	fGC->SetForeground(color);
 	return(kTRUE);
 }
 
@@ -252,6 +280,7 @@ Bool_t TNGMrbGContext::SetBG(const Char_t * Background) {
 
 	fBackgroundName = Background; 
 	fBackground = color;
+	fGC->SetBackground(color);
 	return(kTRUE);
 }
 

@@ -6,6 +6,7 @@
 
 #include "TGFrame.h"
 #include "TRint.h"
+#include "TApplication.h"
 #include "TEnv.h"
 
 #include "TGLayout.h"
@@ -22,6 +23,26 @@
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 #include "TMrbLogger.h"
+#include "TGMrbObject.h"
+#include "TQObject.h"
+#include "TCanvas.h"
+#include "RQ_OBJECT.h"
+
+
+
+
+//////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
 
 extern TNGMrbLofProfiles * gMrbLofProfiles;
 
@@ -29,7 +50,8 @@ static TNGMrbProfile * stdProfile;
 static TNGMrbProfile * yellowProfile;
 static TNGMrbProfile * blueProfile;
 
-
+void IrgendeineFunk(Int_t a, Int_t b);
+void IrgendeineFunk();
 void gt(const Char_t * Type, Int_t Width, Int_t Height);
 void testIt(const Char_t * Type, TGMainFrame * Wdw);
 
@@ -39,10 +61,33 @@ const char * fileTypes[] = {	"All files",		"*",
 
 TGFileInfo info;
 
+class gtEventH   {
+RQ_OBJECT("gtEventH")
+public:
+	
+	gtEventH(){};
+	virtual ~gtEventH(){};
+	void myButtonClicked();
+
+	ClassDef(gtEventH, 0)
+};
+
+//ClassImp(gtEventH)
+
+void gtEventH::myButtonClicked(){
+cout<<"JUHUU"<<endl;
+}
+
+gtEventH * gth;
+
 Int_t main(Int_t argc, Char_t * argv[]) {
 	const Char_t * type;
+	gth = new gtEventH();
+	
+
+
 	Int_t width, height;
-	TRint theApp("DGFControl", &argc, argv);
+	TApplication theApp("DGFControl", &argc, argv);
 	switch (argc) {
 		case 1:
 			type = "*";
@@ -69,9 +114,15 @@ Int_t main(Int_t argc, Char_t * argv[]) {
 	gt(type, width, height);
 	theApp.Run();
 }
+TCanvas * canv;TGMainFrame * w;
 
 void gt(const Char_t * Type, Int_t Width, Int_t Height) {
-	TGMainFrame * w = new TGMainFrame(gClient->GetRoot(), Width, Height);
+	
+	
+	//TGMainFrame * w = new TGMainFrame (gClient->GetRoot(), Width, Height);
+	w = new TGMainFrame (gClient->GetRoot(), Width, Height);
+	canv = new TCanvas();
+	
 
 	if (gMrbLofProfiles == NULL) gMrbLofProfiles = new TNGMrbLofProfiles();
 	stdProfile = gMrbLofProfiles->GetDefault();
@@ -79,7 +130,7 @@ void gt(const Char_t * Type, Int_t Width, Int_t Height) {
 	blueProfile = gMrbLofProfiles->FindProfile("blue", kTRUE);
 
 	gMrbLofProfiles->Print();
-
+	IrgendeineFunk(1,2);
 	testIt(Type, w);
 
 	w->SetWindowName("MARaBOU Widgets");
@@ -88,6 +139,8 @@ void gt(const Char_t * Type, Int_t Width, Int_t Height) {
 	w->Resize(Width, Height);
 	w->MapWindow();
 }
+
+
 
 void testIt(const Char_t * Type, TGMainFrame * w) {
 	TGVerticalFrame * ef = new TGVerticalFrame(w);
@@ -203,19 +256,19 @@ void testIt(const Char_t * Type, TGMainFrame * w) {
 	TGHorizontalFrame * tf = new TGHorizontalFrame(w);
 
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "TB") == 0 || strcmp(Type, "TBH") == 0) {
-		TNGMrbTextButtonGroup * e11h = new TNGMrbTextButtonGroup(tf, "text buttons (horizontal layout)", "new:open|open file:close:save:exit",
+		TNGMrbTextButtonGroup * e11h = new TNGMrbTextButtonGroup(tf, "text buttons (horizontal layout)", "new:open|open file:close:save:exit",1,
 												stdProfile, 1, 0);
 		tf->AddFrame(e11h, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
 	}
 
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "TB") == 0 || strcmp(Type, "TBV") == 0) {
-		TNGMrbTextButtonGroup * e11v = new TNGMrbTextButtonGroup(tf, "text buttons (vertical layout)", "new:open:close:save:exit",
+		TNGMrbTextButtonGroup * e11v = new TNGMrbTextButtonGroup(tf, "text buttons (vertical layout)", "new:open:close:save:exit",2,
 												stdProfile, 0, 1);
 		tf->AddFrame(e11v, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
 	}
 
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "TB") == 0 || strcmp(Type, "TBM") == 0) {
-		TNGMrbTextButtonGroup * e11m = new TNGMrbTextButtonGroup(tf, "text buttons (matrix layout)", "new:open:close:save:exit",
+		TNGMrbTextButtonGroup * e11m = new TNGMrbTextButtonGroup(tf, "text buttons (matrix layout)", "new:open:close:save:exit",3,
 												stdProfile, 3, 2);
 		tf->AddFrame(e11m, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
 	}
@@ -224,21 +277,28 @@ void testIt(const Char_t * Type, TGMainFrame * w) {
 
 	TGHorizontalFrame * rf = new TGHorizontalFrame(w);
 
+///////////////////////////////////////////////////////////////////////////////ConnectTest//////////////////////////////////////////////////
+	
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "RB") == 0 || strcmp(Type, "RBH") == 0) {
-		TNGMrbRadioButtonGroup * e12h = new TNGMrbRadioButtonGroup(rf, "radio buttons (horizontal layout)", "Mon:Tue:Wed:Thu:Fri:Sat:Sun",
+		TNGMrbRadioButtonGroup * e12h = new TNGMrbRadioButtonGroup(rf, "radio buttons (horizontal layout)", "Mon:Tue:Wed:Thu:Fri:Sat:Sun",4,
 												stdProfile, 1, 0);
+		
+		
 		rf->AddFrame(e12h, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
+
+		((TNGMrbButtonFrame*)e12h)->Connect("ButtonPressed(Int_t , Int_t )", "gtEventH",gth, "myButtonClicked()");
+		
 	}
 
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "RB") == 0 || strcmp(Type, "RBV") == 0) {
-		TNGMrbRadioButtonGroup * e12v = new TNGMrbRadioButtonGroup(rf, "radio buttons (vertical layout)", "Mon:Tue:Wed:Thu:Fri:Sat:Sun",
+		TNGMrbRadioButtonGroup * e12v = new TNGMrbRadioButtonGroup(rf, "radio buttons (vertical layout)", "Mon:Tue:Wed:Thu:Fri:Sat:Sun",5,
 												stdProfile, 0, 1);
 		e12v->SetPadLeft(10);
 		rf->AddFrame(e12v, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
 	}
 
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "RB") == 0 || strcmp(Type, "RBM") == 0) {
-		TNGMrbRadioButtonGroup * e12m = new TNGMrbRadioButtonGroup(rf, "radio buttons (matrix layout)", "Mon:Tue:Wed:Thu:Fri:Sat:Sun",
+		TNGMrbRadioButtonGroup * e12m = new TNGMrbRadioButtonGroup(rf, "radio buttons (matrix layout)", "Mon:Tue:Wed:Thu:Fri:Sat:Sun",6,
 												stdProfile, 2, 4);
 		rf->AddFrame(e12m, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
 	}
@@ -255,7 +315,7 @@ void testIt(const Char_t * Type, TGMainFrame * w) {
 
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "CB") == 0 || strcmp(Type, "CBH") == 0) {
 		TNGMrbCheckButtonGroup * e13h = new TNGMrbCheckButtonGroup(cfv, "check buttons (horizontal layout)",
-												"Mon:Tue:Wed:Thu:Fri:Sat:Sun",
+												"Mon:Tue:Wed:Thu:Fri:Sat:Sun",7,
 												stdProfile, 1, 0);
 		e13h->SetIndivColumnWidth();
 		cfv->AddFrame(e13h, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
@@ -263,7 +323,7 @@ void testIt(const Char_t * Type, TGMainFrame * w) {
 
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "CB") == 0 || strcmp(Type, "CBS") == 0) {
 		TNGMrbCheckButtonGroup * e13s = new TNGMrbCheckButtonGroup(cfv, "check buttons (+ special buttons)",
-												"Mon:Tue:Wed:Thu:Fri:Sat:Sun",
+												"Mon:Tue:Wed:Thu:Fri:Sat:Sun",8,
 												stdProfile, 1, 0, 0, lsb);
 		e13s->SetIndivColumnWidth();
 		cfv->AddFrame(e13s, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
@@ -275,7 +335,7 @@ void testIt(const Char_t * Type, TGMainFrame * w) {
 
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "CB") == 0 || strcmp(Type, "CBV") == 0) {
 		TNGMrbCheckButtonGroup * e13v = new TNGMrbCheckButtonGroup(cfh, "check buttons (vertical layout)",
-												"Mon:Tue:Wed:Thu:Fri:Sat:Sun",
+												"Mon:Tue:Wed:Thu:Fri:Sat:Sun",9,
 												stdProfile, 0, 1);
 		e13v->SetIndivColumnWidth();
 		cfh->AddFrame(e13v, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
@@ -283,16 +343,20 @@ void testIt(const Char_t * Type, TGMainFrame * w) {
 
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "CB") == 0 || strcmp(Type, "CBM") == 0) {
 		TNGMrbCheckButtonGroup * e13m = new TNGMrbCheckButtonGroup(cfh, "check buttons (matrix)",
-												"Mon:Tue:Wed:Thu:Fri:Sat:Sun",
+												"Mon:Tue:Wed:Thu:Fri:Sat:Sun",10,
 												stdProfile, 3, 3);
 		e13m->SetIndivColumnWidth();
 		cfh->AddFrame(e13m, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
 	}
 
 	if (*Type == '*' || strcmp(Type, "B") == 0 || strcmp(Type, "RB") == 0  || strcmp(Type, "YN") == 0) {
-		TNGMrbYesNoButtonGroup * e14 = new TNGMrbYesNoButtonGroup(cfh, "yes/no", stdProfile);
+		TNGMrbYesNoButtonGroup * e14 = new TNGMrbYesNoButtonGroup(cfh, "yes/no",11, stdProfile);
 		cfh->AddFrame(e14, new TGLayoutHints(kLHintsNormal, 10, 0, 10, 0));
 	}
 
 	w->AddFrame(cfh);
 }
+void IrgendeineFunk(Int_t a, Int_t b){
+cout<<"JUHUU"<<endl;
+}
+void IrgendeineFunk(){cout<<"JUHUUU"<<endl;}
