@@ -21,7 +21,7 @@ ROOTGLIBS	=	$(shell root-config %%MAKE_LIBNEW%% --glibs)
 
 # Linux with egcs
 CXX 		=	g++
-CXXFLAGS	=	-g -c -O -fPIC $(INCLUDE) -I./
+CXXFLAGS	=	-g -c -O -fPIC -Wno-write-strings $(INCLUDE) -I./
 %%MAKE_USER_CXXFLAGS%%
 
 LD			=	g++
