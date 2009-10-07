@@ -522,6 +522,8 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 
 	if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);		// run is stopped (maybe after pausing)
 
+	gMrbAnalyze->ResetEventsPerTrigger();		// clear event count for all modules
+
 	BaseAddr = GetMbsBase();			// fetch base addr
 
 	switch (EventData->i_trigger) {		// dispatch according to trigger number

@@ -9,9 +9,9 @@ Bool_t TMrbSubevent_Caen_V1X90::FillSubevent(const UShort_t * SevtData, Int_t Se
 //  			   Int_t TimeStamp  		   -- time since last start
 //  											  in units of 100 microsecs
 // Results: 	   kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Decodes data from a CAEN Vxxx.
-// Keywords:	   
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
@@ -24,14 +24,11 @@ Bool_t TMrbSubevent_Caen_V1X90::FillSubevent(const UShort_t * SevtData, Int_t Se
 	Int_t data;
 	Int_t * paramAddr;
 	Int_t wordsProcessed;
-					
-	static Bool_t checkIfMultiHitAllowed = kTRUE;
-	static Bool_t allowMultiHit = kFALSE;
 
 	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 
-	recNo++;						// count this record	
+	recNo++;						// count this record
 	Int_t origSevtWC = SevtWC;				// save original subevent wc
 	if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
 	wordsProcessed = 0; 			// words processed so far
@@ -166,11 +163,11 @@ Bool_t TMrbSubevent_Caen_V1X90::FillSubevent(const UShort_t * SevtData, Int_t Se
 		}
 	}
 	return(kTRUE);
-}			
+}
 %%EndOfCode%%
 %%SEVT_CLASS_METHODS%%
 
-		
+
 %%BeginOfCode%%
 
 %%EndOfCode%%

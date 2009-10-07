@@ -2,12 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbCaen_V556.cxx
 // Purpose:        MARaBOU configuration: CAEN modules
-// Description:    Implements class methods to handle a CAEN adc type V556 
+// Description:    Implements class methods to handle a CAEN adc type V556
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V556.cxx,v 1.11 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbCaen_V556.cxx,v 1.12 2009-10-07 08:49:31 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -55,7 +55,7 @@ TMrbCaen_V556::TMrbCaen_V556(const Char_t * ModuleName, UInt_t BaseAddr) :
 	TString mType;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (!this->IsZombie()) {
 		if (gMrbConfig == NULL) {
 			gMrbLog->Err() << "No config defined" << endl;
@@ -205,6 +205,7 @@ Bool_t TMrbCaen_V556::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 		case TMrbConfig::kModuleDefinePrototypes:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$serial", this->GetSerial());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$nofParams", this->GetNofChannelsUsed());

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.179 2009-08-06 08:30:58 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.180 2009-10-07 08:49:31 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -273,6 +273,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaSevtSetName,				"SEVT_SET_NAME" 				},
 								{TMrbConfig::kAnaSevtSerial,				"SEVT_SERIAL"					},
 								{TMrbConfig::kAnaSevtNofParams,				"SEVT_NOF_PARAMS"				},
+ 								{TMrbConfig::kAnaSevtNofModules,			"SEVT_NOF_MODULES"				},
 								{TMrbConfig::kAnaSevtSerialEnum,			"SEVT_SERIAL_ENUM"				},
 								{TMrbConfig::kAnaSevtBitsEnum,				"SEVT_BITS_ENUM" 				},
 								{TMrbConfig::kAnaSevtIndicesEnum,	 		"SEVT_INDICES_ENUM" 			},

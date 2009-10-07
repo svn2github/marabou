@@ -39,6 +39,9 @@
 #pragma link C++ class TMrbSubevent_Caen_V1X90_1;
 #pragma link C++ class TMrbSubevent_Caen_V1X90_2;
 #pragma link C++ class TMrbSubevent_Caen_V1X90_3;
+#pragma link C++ class TMrbSubevent_Caen_V556_1;
+#pragma link C++ class TMrbSubevent_Caen_V556_2;
+#pragma link C++ class TMrbSubevent_Caen_V556_3;
 #pragma link C++ class TMrbSubevent_Sis_1;
 #pragma link C++ class TMrbSubevent_Sis_2;
 #pragma link C++ class TMrbSubevent_Sis_3;

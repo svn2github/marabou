@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.93 2009-08-06 08:30:58 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.h,v 1.94 2009-10-07 08:49:31 Rudolf.Lutter Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -177,6 +177,7 @@ class TMrbConfig : public TNamed {
 									kAnaSevtSetName,
 									kAnaSevtSerial,
 									kAnaSevtNofParams,
+									kAnaSevtNofModules,
 									kAnaSevtSerialEnum,
 									kAnaSevtBitsEnum,
 									kAnaSevtIndicesEnum,

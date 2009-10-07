@@ -4,7 +4,7 @@
 // Name:           TUsrSevt%%SEVT_NAME_UC%%
 // Purpose:        Define a user-specific subevent class
 // Description:    %%SEVT_TITLE%%
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class TUsrSevt%%SEVT_NAME_UC%% : public TObject {
@@ -26,6 +26,7 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TObject {
 		inline Int_t GetSerial() const { return(kMrbSevt%%SEVT_NAME_UC%%); };
 
 		inline Int_t GetNofParams() const { return(%%SEVT_NOF_PARAMS%%); };
+		inline Int_t GetNofModules() const { return(%%SEVT_NOF_MODULES%%); };
 
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
 		Bool_t BookParams();					// book params
@@ -41,7 +42,7 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TObject {
 		Bool_t InitializeBranch(TTree * Tree);		// init branch addresses (replay mode only)
 		inline Int_t GetTimeStamp() const { return(fTimeStamp); };	// return time stamp (100 microsecs since start)
 
-		
+
 //%%SEVT_USER_METHODS%%			user-specific methods may be included here
 
 												// get param addr (method needed to access params from outside, eg. in macros)
@@ -58,7 +59,7 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TObject {
 		inline Int_t GetIndex() const { return(kMrbSevt%%SEVT_NAME_UC%%); };			// subevent index
 		inline UInt_t GetIndexBit() const { return(kMrbSevtBit%%SEVT_NAME_UC%%); };	// subevent index bit
 
-	protected:
+  protected:
 		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };
 
 	protected:
@@ -69,7 +70,7 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TObject {
 		Int_t fTimeStamp;						// time stamp, same as fUniqueID
 
 // define private data members here
-%%BeginOfCode%%	
+%%BeginOfCode%%
 %S% 		$dataType $paramNameLC; 				// $sevtNameLC.$paramNameLC
 %X% 		$dataType $paramNameLC[$indexRange];			// $sevtNameLC.$paramNameLC
 %A% 		$dataType fData[$nofParams];
@@ -77,6 +78,6 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TObject {
 %%SEVT_PRIVATE_DATA%%
 
 //%%SEVT_USER_DATA%%			user-specific data members may be included here
-		
+
 	ClassDef(TUsrSevt%%SEVT_NAME_UC%%, 1)		// [Analyze] Standard methods to store subevent data
 };

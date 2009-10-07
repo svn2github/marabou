@@ -8,8 +8,8 @@
 // Class:          TMrbCaen_V556        -- 8 chn peak sensing ADC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V556.h,v 1.8 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbCaen_V556.h,v 1.9 2009-10-07 08:49:31 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -76,6 +76,9 @@ class TMrbCaen_V556 : public TMrbVMEModule {
 		inline Bool_t IsFFMode() const { return(fFFMode); };
 
 		inline Bool_t HasRandomReadout() const { return(kFALSE); };
+
+		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 				// use private code files
+		virtual inline const Char_t * GetPrivateCodeFile() const { return("Module_Caen_V556"); };
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

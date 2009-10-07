@@ -1,0 +1,31 @@
+%%BeginOfCode%%
+// definitions for CAEN V556 modules
+
+#define CAEN_V556_R_RESET  		0x1cL
+#define CAEN_V556_R_CONTROL		0x1aL
+#define CAEN_V556_R_OUTPUT 		0x18L
+#define CAEN_V556_R_FF			0x16L
+#define CAEN_V556_R_DELAY 		0x14L
+#define CAEN_V556_R_THRH	 	0x12L
+#define CAEN_V556_R_THRL 		0x10L
+#define CAEN_V556_R_MODULETYPE	0xfcL
+#define CAEN_V556_R_VERSION		0xfeL
+
+#define CAEN_V556_B_BUF_HALF	0x1000
+#define CAEN_V556_B_BUF_FULL	0x2000
+#define CAEN_V556_B_BUF_EMPTY	0x4000
+
+#define CAEN_V556_SH_WC			12
+#define CAEN_V556_M_WC			0x7
+#define CAEN_V556_M_DATA		0xFFF
+#define CAEN_V556_SH_CHN		12
+#define CAEN_V556_M_CHN			0x7
+
+#define CAEN_V556_M_SERIAL		0xFFF
+
+#define CAEN_V556_B_HDR			0x8000
+
+#define CAEN_V556_N_CHANS		8
+
+%%EndOfCode%%
+%%INCLUDES_AND_DEFS_ANALYZE%%

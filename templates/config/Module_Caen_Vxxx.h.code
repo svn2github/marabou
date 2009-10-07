@@ -30,6 +30,7 @@
 #define CAEN_Vxxx_B_OVERFLOW	 				(0x1 << 12)
 #define CAEN_Vxxx_B_UNDERTHRESH 				(0x1 << 13)
 
+#define CAEN_Vxxx_N_CHANNELS					32
 #define CAEN_Vxxx_N_MAXEVENTS					32
 
 #endif

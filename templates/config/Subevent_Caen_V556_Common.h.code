@@ -1,18 +1,17 @@
 %%BeginOfCode%%
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_HB
-// Purpose:        Base class for subevents
-//                 with data to be stored in hit buffer
+// Name:           TMrbSubevent_Caen
+// Purpose:        Base class for subevents containing data from CAEN V556 ADCs
 // Description:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbSubevent_HB : public TObject {
+class TMrbSubevent_Caen_V556 : public TObject {
 
 	public:
-		TMrbSubevent_HB() {};				// default ctor
-		~TMrbSubevent_HB() {};			// default dtor
+		TMrbSubevent_Caen_V556() {};				// default ctor
+		~TMrbSubevent_Caen_V556() {};				// default dtor
 
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
 
@@ -34,7 +33,7 @@ class TMrbSubevent_HB : public TObject {
 
 		TUsrHitBuffer fHitBuffer; 				// hit buffer to store subevent data
 
-	ClassDef(TMrbSubevent_HB, 1)			// [Analyze] Base class for subevents: using hit buffer
+	ClassDef(TMrbSubevent_Caen_V556, 1)			// [Analyze] Base class for subevents: CAEN V556 data stored in hit buffer
 };
 %%EndOfCode%%
 %%SEVT_CLASS_DEFINITION%%

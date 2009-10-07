@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.40 2009-05-14 09:49:54 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent.cxx,v 1.41 2009-10-07 08:49:31 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -76,7 +76,7 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (gMrbConfig == NULL) {
 		gMrbLog->Err() << SevtName << ": No config defined" << endl;
 		gMrbLog->Flush(this->ClassName());
@@ -96,7 +96,7 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 			fLofParams.Delete();
 
 			fNofModules = 0;
-			
+
 			fNofShorts = 0; 				// 16 bit words
 
 			fNofEvents = 0; 				// no events assigned
@@ -116,7 +116,7 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 			fConfigOptions = TMrbConfig::kNoOptionSpecified;
 
 			fArrayMode = kFALSE;
-			
+
 			fXhit = "";
 			fHitDataLength = 0;
 
@@ -147,9 +147,9 @@ Bool_t TMrbSubevent::AddParam(TMrbModuleChannel * Param) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbModule * module;
-	
+
 	module = Param->Parent();
-	
+
 	fLofParams.Add(Param);
 	fNofParams++;
 	fNofShorts += module->GetNofShortsPerChannel();
@@ -267,7 +267,7 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment, B
 	TString softModName;
 	Bool_t softModFlag;
 	Int_t nofWords;
-		
+
 	TMrbModuleChannel::EMrbHistoMode histoMode;
 	Char_t histoFlag;
 
@@ -276,7 +276,7 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment, B
 	TString pos;
 
 	softModFlag = kFALSE;
-	
+
 	if (ModuleName != NULL) {
 		if ((module = (TMrbModule *) gMrbConfig->FindModule(ModuleName)) == NULL) {
 			gMrbLog->Err() << fName << ": No such module - " << ModuleName << endl;
@@ -336,7 +336,7 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment, B
 			softModName = this->GetName();
 			softModName += "_SoftModule";
 			if (this->IsA())	nofWords = ((TMrbSubevent_Data_S *) this)->GetNofWords();
-			else				nofWords = ((TMrbSubevent_Data_I *) this)->GetNofWords(); 
+			else				nofWords = ((TMrbSubevent_Data_I *) this)->GetNofWords();
 			fSoftModule = new TMrbModule(softModName.Data(), "@SoftMod@", nofWords, 0);
 			for (Int_t i = 0; i < nofWords; i++) fSoftModule->GetLofChannels()->Add(new TMrbModuleChannel(fSoftModule, nch));
 		}
@@ -348,7 +348,7 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment, B
 		gMrbLog->Flush(this->ClassName(), "Use");
 		return(kFALSE);
 	}
-	
+
 	istringstream assign(Assignment);
 
 	channelNo = 0;							// normally starts with channel 0
@@ -473,7 +473,7 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment, B
 					cp->SetHeadName(arrayHead->GetHeadName());
 				}
 				cp->SetName(Form("%s%d", paramName.Data(), nch));
-			} else {					
+			} else {
 				cp->SetIndexRange(1);
 				cp->MarkIndexed(NULL);
 				cp->SetName(paramName.Data());
@@ -484,7 +484,7 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment, B
 			cp->SetHistoMode(histoMode);
 
 			this->AddParam(cp);
-			
+
 			if (useLongNames) gMrbConfig->UseLongParamNames();
 
 			if (!softModFlag && this->FindModule((const Char_t *) module->GetName()) == NULL) this->AddModule(module);
@@ -551,7 +551,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 
 	TString tf, tf1, tf2, tf3, tf4;
 	const Char_t * pcf;
-	
+
 	TMrbString iniTag;
 
 	TMrbTemplate anaTmpl;
@@ -565,7 +565,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 	sevtNameUC(0,1).ToUpper();
 
 	if (this->PrefixToBePrepended()) {
-		prefixLC = fPrefix; 
+		prefixLC = fPrefix;
 		prefixDotted = fPrefix;
 	} else {
 		prefixLC = sevtNameLC;
@@ -645,7 +645,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 		gMrbLog->Out()  << "[" << sevtNameLC << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 	}
-	
+
 	anaTemplateFile = fileSpec;
 
 	if (!anaTmpl.Open(anaTemplateFile, &gMrbConfig->fLofAnalyzeTags)) return(kFALSE);
@@ -683,6 +683,13 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 						TString nofParams = "";
 						nofParams += fNofParams;
 						AnaStrm << anaTmpl.Encode(line, nofParams) << endl;
+					}
+					break;
+				case TMrbConfig::kAnaSevtNofModules:
+					{
+						TString nofModules = "";
+						nofModules += fNofModules;
+						AnaStrm << anaTmpl.Encode(line, nofModules) << endl;
 					}
 					break;
 				case TMrbConfig::kAnaSevtXhitClass:
@@ -1099,7 +1106,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 													if (module->HistosToBeAllocated() && module->GetRange() > 0) {
 														moduleNameLC = module->GetName();
 														moduleNameUC = moduleNameLC;
-														moduleNameUC(0,1).ToUpper();	
+														moduleNameUC(0,1).ToUpper();
 														paramNameLC = param->GetHeadName();
 														paramNameUC = paramNameLC;
 														paramNameUC(0,1).ToUpper();
@@ -1120,7 +1127,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 														anaTmpl.Substitute("$hUpperLim", (Int_t) module->GetXmax());
 														anaTmpl.Substitute("$indexRange", (Int_t) param->GetIndexRange());
 														anaTmpl.WriteCode(AnaStrm);
-													}	
+													}
 												}
 											}
 										}
@@ -1226,7 +1233,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								anaTmpl.InitializeCode("%E%");
 								anaTmpl.WriteCode(AnaStrm);
 							}
-						}	
+						}
 						if (stdHistosOK) {
 							anaTmpl.InitializeCode("%E%");
 							anaTmpl.WriteCode(AnaStrm);
@@ -1398,7 +1405,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 							iniX = "%XN%";
 						}
 						doIt = kTRUE;
-					} 
+					}
 					if (doIt) {
 						TIterator * piter = fLofParams.MakeIterator();
 						while (param = (TMrbModuleChannel *) piter->Next()) {
@@ -1467,7 +1474,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 						pUC = prefixUC;
 						stdHistosOK = kTRUE;
 						doIt = kTRUE;
-					} 
+					}
 					if (doIt) {
 						if (this->IsInArrayMode()) {
 							Template.InitializeCode("%A%");
@@ -1602,7 +1609,7 @@ void TMrbSubevent::Print(ostream & OutStrm, const Char_t * Prefix) const {
 	TMrbModuleChannel * param;
 	TMrbEvent * evt;
 	Int_t pOffs;
-	
+
 	OutStrm << Prefix << "|\n";
 	OutStrm << Prefix << "+-> Subevent Definition:" << endl;
 	OutStrm << Prefix << "       Name          : " << this->GetName() << endl;

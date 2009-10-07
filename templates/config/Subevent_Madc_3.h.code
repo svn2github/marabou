@@ -4,7 +4,7 @@
 // Name:           TUsrSevt%%SEVT_NAME_UC%%
 // Purpose:        Define a user-specific subevent class
 // Description:    %%SEVT_TITLE%%
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Madc {
@@ -26,6 +26,7 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Madc {
 		inline Int_t GetSerial() const { return(kMrbSevt%%SEVT_NAME_UC%%); };
 
 		inline Int_t GetNofParams() const { return(%%SEVT_NOF_PARAMS%%); };
+		inline Int_t GetNofModules() const { return(%%SEVT_NOF_MODULES%%); };
 
 		Bool_t BookParams();					// book params
 %%BeginOfCode%%
@@ -57,7 +58,7 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Madc {
 		TString fSevtName;						//! subevent name
 
 // define private data members here
-%%BeginOfCode%%	
+%%BeginOfCode%%
 %S% 		TUsrHit $paramNameLC; 				// $sevtNameLC.$paramNameLC
 %X% 		TUsrHit $paramNameLC[$indexRange];	// $sevtNameLC.$paramNameLC
 %A% 		TUsrHit fData[$nofParams];
@@ -65,6 +66,6 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Madc {
 %%SEVT_PRIVATE_DATA%%
 
 //%%SEVT_USER_DATA%%			user-specific data members may be included here
-		
+
 	ClassDef(TUsrSevt%%SEVT_NAME_UC%%, 1)			// [Analyze] Store MADC32 data in hit buffer
 };

@@ -6,7 +6,7 @@
 // @(#)Author:     R. Lutter
 // @(#)Revision:   SCCS:  %W%
 // @(#)Date:       %G%
-// Keywords:       
+// Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
 %%BeginOfCode%%
@@ -20,7 +20,17 @@
 #define $mnemoUC_R_THRL 		0x10L
 #define $mnemoUC_R_MODULETYPE	0xfcL
 #define $mnemoUC_R_VERSION		0xfeL
-#define $mnemoUC_B_HAS_DATA		0x4000L
+
+#define $mnemoUC_B_BUF_HALF		0x1000L
+#define $mnemoUC_B_BUF_FULL		0x2000L
+#define $mnemoUC_B_BUF_EMPTY	0x4000L
+
+#define $mnemoUC_SH_WC			12
+#define $mnemoUC_M_WC			0x7
+#define $mnemoUC_M_DATA			0xFFF
+#define $mnemoUC_SH_CHN			12
+#define $mnemoUC_M_CHN			0x7
+#define $mnemoUC_M_EVT_CNT		0xFFF
 
 %%EndOfCode%%
 %%MODULE_DEFS%%
@@ -55,13 +65,28 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-					if ((*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_CONTROL)) & $mnemoUC_B_HAS_DATA) != 0) { /* data present? */
-						wc = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_OUTPUT));	/* read word count */
-						wc = ((wc >> 12) & 0x7) + 1;
-						for (i = 0; i < wc; i++) {
-							data = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_OUTPUT));	/* read data & incr addr */
-							RDO_2MEM_16((data >> 12) & 0xfff);					/* write addr */
-							RDO_2MEM_16(data & 0xfff);							/* write data */
+					while ((*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_CONTROL)) & $mnemoUC_B_BUF_EMPTY) != 0) { /* data present? */
+						$mnemoLC_hdr = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_OUTPUT));	/* read header word */
+#ifdef DEBUG
+						if (($mnemoLC_hdr & $mnemoUC_B_IS_HDR) == 0) {										/* check if header */
+							sprintf(msg, "$moduleName: Not a header - %#x\n", $mnemoLC_hdr);
+							f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						}
+#endif
+						$mnemoLC_hdr &= ~$mnemoUC_M_EVT_CNT;												/* mask out event count */
+						$mnemoLC_hdr |= $serial;															/* replace it by module id */
+						RDO_2MEM_16($mnemoLC_hdr);															/* write header */
+						$mnemoLC_wc = (($mnemoLC_hdr >> $mnemoUC_SH_WC) & $mnemoUC_M_WC) + 1;				/* extract word count */
+						for (i = 0; i < $mnemoLC_wc; i++) {
+							$mnemoLC_data = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_OUTPUT));	/* read data */
+#ifdef DEBUG
+							if (($mnemoLC_data & $mnemoUC_B_IS_HDR) != 0) {									/* check if data */
+							  sprintf(msg, "$moduleName: Not a data word - %#x\n", $mnemoLC_data);
+							  f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+							}
+#endif
+							RDO_2MEM_16(($mnemoLC_data >> $mnemoUC_SH_CHN) & $mnemoUC_M_CHN);					/* write channel number */
+							RDO_2MEM_16($mnemoLC_data & $mnemoUC_M_DATA);										/* write data */
 						}
 					}
 %%EndOfCode%%
@@ -80,15 +105,15 @@
 %%BeginOfCode%%
 					RDO_2MEM_16($subaddr);
 %%EndOfCode%%
-%%WRITE_SUBADDR%% 
+%%WRITE_SUBADDR%%
 
 %%BeginOfCode%%
 					RDO_2MEM_16($data);
 %%EndOfCode%%
-%%STORE_DATA%% 
+%%STORE_DATA%%
 
 %%BeginOfCode%%
-					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_RESET)) = 1;		/* clear scaler $moduleName */
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_RESET)) = 1;				/* clear scaler $moduleName */
 					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_CONTROL)) = $chnPattern;	/* enable selected chs */
 %%EndOfCode%%
 %%CLEAR_MODULE%%
@@ -96,11 +121,10 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%SETUP_READOUT%%	
+%%SETUP_READOUT%%
 
 %%BeginOfCode%%
-					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_RESET)) = 1;			/* reset module */
-					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_CONTROL)) = $chnPattern;		/* enable selected chns */
+
 %%EndOfCode%%
 %%FINISH_READOUT%%
 
@@ -110,7 +134,7 @@
 %%START_ACQUISITION%%
 
 %%BeginOfCode%%
-		
+
 %%EndOfCode%%
 %%START_ACQUISITION_GROUP%%
 
@@ -120,7 +144,7 @@
 %%STOP_ACQUISITION%%
 
 %%BeginOfCode%%
-		
+
 %%EndOfCode%%
 %%STOP_ACQUISITION_GROUP%%
 
@@ -139,7 +163,6 @@ void $mnemoLC_module_info() {
 	sprintf(str, "                    module type %#x, manufacturer %#x\n", mtype, manufact);
 	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
 }
-
 %%EndOfCode%%
 %%UTILITIES%%
 
@@ -164,7 +187,9 @@ void $mnemoLC_module_info();
 %%DEFINE_LOCAL_VARS_INIT%%
 
 %%BeginOfCode%%
-
+  int $mnemoLC_wc;
+  unsigned short $mnemoLC_hdr;
+  unsigned short $mnemoLC_data;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
 
