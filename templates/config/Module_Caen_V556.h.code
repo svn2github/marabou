@@ -21,7 +21,7 @@
 #define CAEN_V556_SH_CHN		12
 #define CAEN_V556_M_CHN			0x7
 
-#define CAEN_V556_M_SERIAL		0xFFF
+#define CAEN_V556_M_MSERIAL		0xFFF
 
 #define CAEN_V556_B_HDR			0x8000
 
