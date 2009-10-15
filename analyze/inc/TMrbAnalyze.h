@@ -7,10 +7,10 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.53 2007-10-25 17:24:12 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: TMrbAnalyze.h,v 1.54 2009-10-15 08:18:38 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TObject.h"
@@ -43,7 +43,7 @@
 // Name:           TMrbAnalyze
 // Purpose:        Main class to define user's analyze methods
 // Description:    Defines methods to perform user's analysis.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class TMrbAnalyze : public TObject {
@@ -215,7 +215,7 @@ class TMrbAnalyze : public TObject {
 		inline void PrintCalibration(Int_t ModuleIndex, Int_t RelParamIndex) const { this->PrintCalibration(cout, ModuleIndex, RelParamIndex); };
 		inline void PrintCalibration(Int_t AbsParamIndex) const { this->PrintCalibration(cout, AbsParamIndex); };
 		inline void PrintCalibration(const Char_t * CalibrationName) const { this->PrintCalibration(cout, CalibrationName); };
-	
+
 		Int_t ReadDCorrFromFile(const Char_t * DCorrFile);		// read calibration data from file
 		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
 		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t AbsParamIndex);
@@ -243,10 +243,10 @@ class TMrbAnalyze : public TObject {
 		inline Int_t GetDumpCount() const { return(fDumpCount); };
 		Bool_t DumpData(const Char_t * Prefix, Int_t Index, const Char_t * CallingClass, const Char_t * CallingMethod,
 															const Char_t * Msg, const UShort_t * DataPtr, Int_t DataWC);
-		
+
 		Bool_t AddResourcesFromFile(const Char_t * ResourceFile);	// add user's resource defs to gEnv
 		const Char_t * GetResource(const Char_t * Resource);		// make up full resource name
-				
+
 		inline void SetVerboseMode(Bool_t VerboseFlag = kTRUE) { fVerboseMode = VerboseFlag; };
 		inline Bool_t IsVerbose() const { return(fVerboseMode); };
 
@@ -258,7 +258,13 @@ class TMrbAnalyze : public TObject {
 		inline TMrbNamedX * FindHisto(const Char_t * HistoName, Bool_t SingleFlag = kFALSE) const {
 			return(SingleFlag ? fSingleList.FindByName(HistoName) : fHistoList.FindByName(HistoName));
 		};
-		
+
+		inline TMrbLofNamedX * GetListOfParams() { return(&fParamList); };
+		inline TMrbLofNamedX * GetListOfModules() { return(&fModuleList); };
+		inline TMrbLofNamedX * GetListOfHistos() { return(&fHistoList); };
+
+		void ResetEventsPerTrigger();								// clear event coutn for all modules
+
 		void PrintLists(ostream & out = cout) const;				// print modules, params, histos ...
 		void PrintLists(const Char_t * FileName) const;
 
@@ -266,7 +272,7 @@ class TMrbAnalyze : public TObject {
 		void PrintStartStop(UInt_t StartTime, UInt_t StopTime) const;
 
 		inline TMrbLogger * GetMessageLogger() const { return(fMessageLogger); };
-		
+
 		void WaitForLock(const Char_t * LockFile, const Char_t * Msg = NULL);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
@@ -274,7 +280,7 @@ class TMrbAnalyze : public TObject {
 	protected:
 		Bool_t fVerboseMode;		// kTRUE if verbose mode
 		TMrbLogger * fMessageLogger; //! addr of message logger
-			
+
 		Bool_t fWriteRootTree;		// kTRUE if root data are to be written
 		TFile * fRootFileOut;		// root file to store data trees
 		Int_t fFileSize;			// file size in MB
@@ -284,8 +290,8 @@ class TMrbAnalyze : public TObject {
 
 		Bool_t fFakeMode; 			// kTRUE if fake mode
 
-		Int_t fDumpCount;			// number of data records to be dumped: 0 -> never, N -> N times, -1 -> always 
-		
+		Int_t fDumpCount;			// number of data records to be dumped: 0 -> never, N -> N times, -1 -> always
+
 		Int_t fNofModules;			// number of modules
 		Int_t fNofParams;			// number of parameters
 		Int_t fScaleDown;			// global scale-down factor
@@ -305,7 +311,7 @@ class TMrbAnalyze : public TObject {
 
 		TMrbIOSpec * fCurIOSpec;	// current i/o spec
 		TList fLofIOSpecs;			// list of i/o specs
-		
+
 		TString fResourceFile;		// user's resource defs
 		TString fResourceName;
 		TString fResourceString;

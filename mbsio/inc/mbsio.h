@@ -7,8 +7,8 @@
 	\details		Defines structs to read MBS data streams
 	$Author: Rudolf.Lutter $
 	$Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.22 $       
-	$Date: 2009-07-13 06:22:39 $
+	$Revision: 1.23 $
+	$Date: 2009-10-15 08:18:38 $
 *******************************************************************************/
 
 #include "typedefs.h"
@@ -35,7 +35,7 @@
 #define MBS_X_FHEADER			0 							/*!< index: file header */
 
 #define MBS_TY_BUFFER			0x2 						/*!< type: buffer */
-#define MBS_X_BUFFER			1 							/*!< index: buffer */ 
+#define MBS_X_BUFFER			1 							/*!< index: buffer */
 #define MBS_BTYPE_FHEADER		0x000107d0					/*!< file header [1,2000] */
 #define MBS_BTYPE_VME			0x0001000a					/*!< vme event [1,10] */
 #define MBS_BTYPE_EOF			0							/*!< end of file */
@@ -44,7 +44,7 @@
 #define MBS_BTYPE_RAW			0xfffffffd					/*!< raw mode */
 
 #define MBS_TY_EVENT			0x4 						/*!< type: event */
-#define MBS_X_EVENT				2 							/*!< index: event */ 
+#define MBS_X_EVENT				2 							/*!< index: event */
 #define MBS_ETYPE_VME			0x0001000a					/*!< vme event [1,10] */
 #define MBS_ETYPE_EOF			MBS_BTYPE_EOF				/*!< end of file */
 #define MBS_ETYPE_ERROR			MBS_BTYPE_ERROR				/*!< error */
@@ -56,7 +56,7 @@
 #define MBS_ETYPE_STOP			0xfffffffa					/*!< stop event */
 
 #define MBS_TY_SUBEVENT				0x8							/*!< type: subevent */
-#define MBS_X_SUBEVENT				3							/*!< index: subevent */ 
+#define MBS_X_SUBEVENT				3							/*!< index: subevent */
 #define MBS_STYPE_CAMAC_1			0x0001000a					/*!< subevent [1,10]: camac (chn,data) */
 #define MBS_STYPE_CAMAC_WO_ID_1		0x000b000a					/*!< subevent [11,10]: camac w/o chn number */
 #define MBS_STYPE_CAMAC_MULT_MOD	0x000c000a					/*!< subevent [12,10]: camac multi module */
@@ -68,6 +68,9 @@
 #define MBS_STYPE_CAMAC_DGF_3		0x0017000a					/*!< subevent [23,10]: camac, dgf, data stored in hit buffer */
 #define MBS_STYPE_CAMAC_SILENA_1	0x001f000a					/*!< subevent [31,10]: camac, silena 4418 */
 #define MBS_STYPE_CAMAC_SILENA_2	0x0020000a					/*!< subevent [32,10]: camac, silena 4418, data stored in hit buffer */
+#define MBS_STYPE_VME_CAEN_V556_1	0x0021000a					/*!< subevent [33,10]: vme, caen v556 */
+#define MBS_STYPE_VME_CAEN_V556_2	0x0022000a					/*!< subevent [34,10]: vme, caen v556, data stored in hit buffer */
+#define MBS_STYPE_VME_CAEN_V556_3	0x0023000a					/*!< subevent [35,10]: vme, caen v556, data stored in hit buffer */
 #define MBS_STYPE_VME_CAEN_1		0x0029000a					/*!< subevent [41,10]: vme, caen v875, v775 */
 #define MBS_STYPE_VME_CAEN_2		0x002a000a					/*!< subevent [42,10]: vme, caen v875, v775, data stored in hit buffer */
 #define MBS_STYPE_VME_CAEN_3		0x002b000a					/*!< subevent [43,10]: vme, caen v875, v775, data stored in hit buffer */

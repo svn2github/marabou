@@ -7,10 +7,10 @@
 // Purpose:        Class to manage a list of modules
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModuleListEntry.h,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: TMrbModuleListEntry.h,v 1.2 2009-10-15 08:18:38 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TArrayI.h"
@@ -21,7 +21,7 @@
 // Name:           TMrbModuleListEntry
 // Purpose:        An entry in user's module list
 // Description:    Bookkeeping: Connects modules to params & histos
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class TMrbModuleListEntry : public TObject {
@@ -40,6 +40,7 @@ class TMrbModuleListEntry : public TObject {
 										fFirstHisto(FirstHisto),
 										fFirstSingle(FirstSingle) {
 											fNofEventHits = 0;
+											fEventsPerTrigger = 0;
 											fNofChannelHits.Set(NofParams);
 											fNofChannelHits.Reset();
 										};
@@ -69,12 +70,16 @@ class TMrbModuleListEntry : public TObject {
 		void IncrChannelHits(Int_t Channel);
 		inline Int_t GetEventHits() { return(fNofEventHits); };
 		Int_t GetChannelHits(Int_t Channel);
+		inline void IncrEventsPerTrigger() { fEventsPerTrigger++; };
+		inline void ResetEventsPerTrigger() { fEventsPerTrigger = 0; };
+		inline Int_t GetEventsPerTrigger() { return(fEventsPerTrigger); };
 
 	protected:
 		Int_t fNofParams;
 		Int_t fIndexOfFirstParam;
 		Int_t fTimeOffset;
 		Int_t fNofEventHits;
+		Int_t fEventsPerTrigger;
 		TArrayI fNofChannelHits;
 		TMrbNamedX * fFirstParam;
 		TMrbNamedX * fFirstHisto;

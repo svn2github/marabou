@@ -4,8 +4,8 @@
 	\details	Procedures to read MBS data from disk or tcp socket
 	$Author: Rudolf.Lutter $
 	$Mail:		<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.45 $       
-	$Date: 2009-07-13 06:22:39 $
+	$Revision: 1.46 $
+	$Date: 2009-10-15 08:18:38 $
 *****************************************************************************/
 
 /* include files needed by mbsio */
@@ -49,10 +49,10 @@ FILE * log_out = NULL; 				/*!< log file stream */
 
 char med_file[MBS_L_STR]; 			/*!< name of MED file */
 FILE * med_out = NULL; 				/*!< MED file stream */
-		
+
 char lmd_file[MBS_L_STR];			/*!< name of LMD file */
 FILE * lmd_out = NULL; 				/*!< LMD file stream */
-		
+
 int total = 0;
 
 
@@ -171,6 +171,30 @@ static MBSBufferElem sevent_types[] = {
 				},
 				{	MBS_STYPE_CAMAC_SILENA_2,
 					"Silena 4418 (2, zero suppr)",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
+					(void *) _mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_CAEN_V556_1,
+					"Caen VME ADCs V556 (1)",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
+					(void *) _mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_CAEN_V556_2,
+					"Caen VME ADCs V556 (2)",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_short,
+					(void *) _mbs_show_sev_short,
+					(void *) _mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_CAEN_V556_3,
+					"Caen VME ADCs V556 (3)",
 					sizeof(s_veshe),
 					0,
 					(void *) _mbs_unpack_sev_short,
@@ -407,7 +431,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 			}
 		tlist++;
 		}
-	}	
+	}
 
 	cmode = tolower(*connection);
 
@@ -505,7 +529,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	mbs->bufno_mbs = -1;
 	mbs->evtno_mbs = -1;
 	mbs->buf_to_be_dumped = 0;
-	
+
 	if ((ctype & MBS_CTYPE_FILE) == MBS_CTYPE_FILE) {
 		mbs->server_info = NULL;
 	} else {
@@ -554,7 +578,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 /*-------------------------------------------------------------------------------------------*/
 
 boolean mbs_close_file(MBSDataIO *mbs) {
-	
+
 	if (!_mbs_check_active(mbs)) return(FALSE);
 
 	if (mbs->connection & MBS_CTYPE_FILE) {
@@ -584,7 +608,7 @@ boolean mbs_close_file(MBSDataIO *mbs) {
 /*-------------------------------------------------------------------------------------------*/
 
 void mbs_free_dbase(MBSDataIO * mbs) {
-	
+
 	if (mbs != NULL) {
 		free(mbs->hdr_data);
 		free(mbs->evt_data);
@@ -610,7 +634,7 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 	s_bufhe * bh;
 
 	void (*s)();
-	
+
 	if (!_mbs_check_active(mbs)) return(MBS_BTYPE_ABORT);
 
 	bpp = NULL;
@@ -699,7 +723,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 	int bytes_read;
 	unsigned int buffer_type;
 
-			
+
 	if (!_mbs_check_active(mbs)) return(MBS_BTYPE_ABORT);
 
 	bytes = mbs->bufsiz;
@@ -717,7 +741,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 			return(MBS_BTYPE_ABORT);
 		} else {
 			bytes_read = read(mbs->fileno, bpp->data, bytes);
-		}	
+		}
 		mbs->cur_bufno_stream = 1;
 		mbs->bufpt = bpp->data;
 	} else {
@@ -762,7 +786,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 	}
 
 	if (mbs->buf_to_be_dumped > 0 && mbs->nof_buffers % mbs->buf_to_be_dumped == 0) _mbs_dump_buffer(mbs);
-	
+
 	buffer_type = _mbs_convert_data(mbs);
 	if (buffer_type == MBS_BTYPE_ERROR || buffer_type == MBS_BTYPE_ABORT) return(buffer_type);
 
@@ -977,7 +1001,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 		ehs = sizeof(s_vehe);
 		fwrite(eHdr, 1, ehs, med_out);								/* write event header - take unswapped data */
 		fwrite((char *) mbs->evt_data + ehs, 1, mbs->evtsiz - ehs, med_out);	/* write subevent data unswapped */
-	} 
+	}
 
 	return(etype);
 }
@@ -1128,7 +1152,7 @@ unsigned int mbs_next_sheader(MBSDataIO *mbs) {
 		sh = (s_evhe *) mbs->sevtpt;
 		mbs->sevtpt += sh->l_dlen * sizeof(unsigned short) + sizeof(s_evhe);
 	}
-	
+
 	if (mbs->sevtpt >= (mbs->evt_data + mbs->evtsiz)) return(MBS_STYPE_EOE);
 
 	mbs->sevtno++;
@@ -1879,7 +1903,7 @@ unsigned int *_mbs_unpack_sev_10_1(MBSDataIO *mbs) {
 
 	cp = (MBSCamacDataSW *) idp;
 	for (i = 0; i < wc; i++, cp++) {
-		odp = mbs->sevt_data 
+		odp = mbs->sevt_data
 			+ cp->subaddr * sizeof(unsigned short);
 		sdp = (unsigned short *) odp;
 		*sdp = cp->data;
@@ -2343,7 +2367,7 @@ void _mbs_init_hit(MBSBufferElem *tlist) {
 	while (tlist->type != 0) {
 		tlist->hit = 0;
 		tlist++;
-	}	
+	}
 }
 
 /*-------------------------------------------------------------------------------------------*/
@@ -2384,7 +2408,7 @@ MBSBufferElem *_mbs_check_type(unsigned int btype, MBSBufferElem *ltdescr, MBSBu
 		t = tlist->type;
 		if (t == btype) return(tlist);
 		tlist++;
-	}	
+	}
 	return(&buffer_type_error);
 }
 
@@ -2604,9 +2628,9 @@ void _mbs_output_error(MBSDataIO *mbs) {
 // Purpose:        Output error message
 // Arguments:      MBSDataIO * mbs  -- pointer to mbs struct
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Outputs an error message, either to stderr or to rem_errbuf.
-// Keywords:       
+// Keywords:
 /////////////////////////////////////////////////////////////////////////// */
 
 	char datestr[MBS_L_STR];
@@ -2766,7 +2790,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 	} else {
 		info->nof_streams = infoWord;
 	}
-	
+
 	printf("mbsio: ServerInfo >> buffer size: %d, bufs per stream: %d, number of streams: %d\n",
 			info->buf_size,
 			info->buf_p_stream,
@@ -2896,7 +2920,7 @@ MBSBufferPool * _mbs_get_pool_pointer(MBSDataIO * mbs) {
 				bpp->data = calloc(1, mbs->bufsiz);
 				if (bpp->data == NULL)
 				{
-					sprintf(loc_errbuf, 
+					sprintf(loc_errbuf,
 						"?ALLOC-[_mbs_get_pool_pointer]- %s: Can't allocate internal buffer",
 														mbs->device);
 					_mbs_output_error(mbs);
@@ -2906,7 +2930,7 @@ MBSBufferPool * _mbs_get_pool_pointer(MBSDataIO * mbs) {
 			return(bpp);
 		}
 	}
-	sprintf(loc_errbuf, 
+	sprintf(loc_errbuf,
 		"?NOBUF-[_mbs_get_pool_pointer]- %s: Can't find empty slot in buffer pool",
 														mbs->device);
 	_mbs_output_error(mbs);

@@ -9,8 +9,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.90 2009-05-22 07:28:50 Otto.Schaile Exp $       
-// Date:           
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.91 2009-10-15 08:18:38 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TEnv.h"
@@ -76,9 +76,9 @@ TMrbAnalyze::TMrbAnalyze(TMrbIOSpec * IOSpec) {
 // Name:           TMrbAnalyze::TMrbAnalyze
 // Purpose:        Create an object to analyze user data
 // Arguments:      TMrbIOSpec * IOSpec  -- i/o specifications
-// Exceptions:     
+// Exceptions:
 // Description:    Main class to initialize the user's analyzing procedures
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
@@ -125,10 +125,10 @@ TMrbAnalyze::TMrbAnalyze(TMrbIOSpec * IOSpec) {
 		hDTimeHistory = new TH1F("DeadTime", "Dead time history (last 300 seconds)", 300, -300, 0);
 
 		fDumpCount = gEnv->GetValue("TMrbAnalyze.DumpCount", 0);
-		
+
 		fResourceName.Resize(0);		// reset resource name
 		fResourceString.Resize(0);
-		
+
 		gMrbAnalyze = this; 			// save pointer so it can't called twice
 
 		this->Initialize(IOSpec);		// initialize user objects
@@ -143,10 +143,10 @@ Bool_t TMrbAnalyze::OpenRootFile(const Char_t * RootFile) {
 // Purpose:        Open a file to replay tree data
 // Arguments:      Char_t * RootFile   -- file name
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Opens a ROOT file for input.
 //                 Replay mode only.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbIOSpec * ioSpec;
@@ -167,12 +167,12 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 // Arguments:      TString & FileList          -- list of i/o specs
 //                 TMrbIOSpec * DefaultIOSpec  -- default values
 // Results:        Int_t NofEntries            -- number of entries in file, 0 if error
-// Exceptions:     
+// Exceptions:
 // Description:    Reads a set of i/o specs.
 //                 Format is
 //                      inputFile  startEvent  stopEvent  paramFile  histoFile  outputFile
 //
-//                 where       value            meaning       
+//                 where       value            meaning
 //                 ---------------------------------------------------------------------------------
 //                 inputFile                    name of input file
 //                             xyz.root                file contains ROOT trees
@@ -201,8 +201,8 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 //                             none                don't write tree data
 //                             +                   append to current file
 //                             xyz.root            open file for output
-//                                                         
-// Keywords:       
+//
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	ifstream fileList(FileList.Data(), ios::in);
@@ -256,7 +256,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 				gMrbLog->Flush(this->ClassName(), "OpenFileList");
 			}
 		}
-		
+
 // decode line
 // input file
 		TString inputFile = ((TObjString *) splitLine->At(0))->GetString();
@@ -472,9 +472,9 @@ Int_t TMrbAnalyze::ProcessFileList() {
 // Purpose:        Process i/o specs in file list
 // Arguments:      --
 // Results:        Int_t NofEntries           -- number of entries processed
-// Exceptions:     
+// Exceptions:
 // Description:    Processes any entries in fLofIOSpecs.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t nofEntries;
@@ -482,12 +482,12 @@ Int_t TMrbAnalyze::ProcessFileList() {
 
 	nofEntries = 0;
 	this->ClearHistograms("*", ioSpec);
-//  this was inside the loop on input files, 
+//  this was inside the loop on input files,
 //  therefore filelists didnt work (OS)
    cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
    PutPid(TMrbAnalyze::M_RUNNING);
    this->SetRunStatus(TMrbAnalyze::M_RUNNING);
-	
+
 	TIterator * iter = fLofIOSpecs.MakeIterator();
 	while ((ioSpec = (TMrbIOSpec *) iter->Next()) && this->TestRunStatus()) {
 		this->SetCurIOSpec(ioSpec);
@@ -545,7 +545,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 			}
 		}
 	}
-	
+
    cout << " PutPid(TMrbAnalyze::M_STOPPING)" << endl;
    PutPid(TMrbAnalyze::M_STOPPING);
 	this->SetRunStatus(TMrbAnalyze::M_STOPPING);
@@ -559,9 +559,9 @@ Bool_t TMrbAnalyze::WriteRootTree(const Char_t * RootFile) {
 // Purpose:        Open a file to write root data
 // Arguments:      Char_t * RootFile   -- file name
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Opens a ROOT file for output.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbIOSpec * ioSpec;
@@ -581,10 +581,10 @@ Bool_t TMrbAnalyze::CloseRootTree(TMrbIOSpec * IOSpec) {
 // Purpose:        Close root file output
 // Arguments:      TMrbIOSpec * IOSpec    -- i/o spec
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Checks i/o spec for the "close bit" and closes output file.
 //                 Closes anyway of i/o spec is not given.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbIOSpec::EMrbOutputMode outputMode;
@@ -617,20 +617,20 @@ Bool_t TMrbAnalyze::TestRunStatus() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::TestRunStatus
 // Purpose:        Test run status
-// Arguments:      
+// Arguments:
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Tests run status flag. Waits if it's PAUSING.
 //                 Returns kFALSE on STOP.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fRunStatus == TMrbAnalyze::M_STOPPING) {
 		cout << setred << this->ClassName() << "::TestRunStatus(): Termination flag detected" << setblack << endl;
 		return(kFALSE);
-	} else if (fRunStatus == TMrbAnalyze::M_PAUSING) { 
+	} else if (fRunStatus == TMrbAnalyze::M_PAUSING) {
         PutPid(TMrbAnalyze::M_PAUSING);
-        while (fRunStatus == TMrbAnalyze::M_PAUSING) sleep(1);  
+        while (fRunStatus == TMrbAnalyze::M_PAUSING) sleep(1);
 		PutPid(fRunStatus);
 		return(fRunStatus == TMrbAnalyze::M_STOPPING ? kFALSE : kTRUE);
 	} else return(kTRUE);
@@ -641,11 +641,11 @@ TH1F * TMrbAnalyze::UpdateRateHistory() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::UpdateRateHistory
 // Purpose:        Update the histogram showing the rate history
-// Arguments:      
-// Results:        TH1F * rh      -- pointer to rate histogram        
-// Exceptions:     
+// Arguments:
+// Results:        TH1F * rh      -- pointer to rate histogram
+// Exceptions:
 // Description:    Updates the rate history by adding a bin to the histogram.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t elapsed;
@@ -681,11 +681,11 @@ TH1F * TMrbAnalyze::UpdateDTimeHistory() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::UpdateDTimeHistory
 // Purpose:        Update the histogram showing the rate history
-// Arguments:      
-// Results:        TH1F * rh      -- pointer to rate histogram        
-// Exceptions:     
+// Arguments:
+// Results:        TH1F * rh      -- pointer to rate histogram
+// Exceptions:
 // Description:    Updates the rate history by adding a bin to the histogram.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t nofBins;
@@ -704,11 +704,11 @@ void TMrbAnalyze::MarkHistogramsWithTime() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::MarkHistogramsWithTime
 // Purpose:        Write a time stamp to all histograms in memory
-// Arguments:      
-// Results:        
-// Exceptions:     
+// Arguments:
+// Results:
+// Exceptions:
 // Description:    Loops thru the directory and writes time stamps to histograms.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TList * h;
@@ -729,10 +729,10 @@ Bool_t TMrbAnalyze::ReloadParams(const Char_t * ParamFile) {
 // Purpose:        Reload parameters from file
 // Arguments:      Char_t * ParamFile      -- file to be loaded
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Loops thru objects in file ParamFile, searches for
 //                 variables, windows, and cuts.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString pFile;
@@ -766,10 +766,10 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(const Char_t * VarWdwFile) {
 // Purpose:        Reload parameters (var & wdw settings) from file
 // Arguments:      Char_t * VarWdwFile      -- file to be loaded
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Loops thru objects in file ParamFile, searches for
 //                 variables, windows, and cuts.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString vwFile;
@@ -803,10 +803,10 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 // Purpose:        Reload parameters (var & wdw settings) from file
 // Arguments:      TMrbIOSpec * IOSpec    -- i/o specifications
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Loops thru objects in file ParamFile, searches for
 //                 variables, windows, and cuts.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbIOSpec::EMrbParamMode pMode;
@@ -883,7 +883,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 							((TMrbWindowI *) vobj)->Set(((TMrbWindowI *) fobj)->GetLowerLimit(),
 													((TMrbWindowI *) fobj)->GetUpperLimit());
                             cout << "ReloadVarsAndWdws: Reset " << vobj->GetName()  << " to: "
-                                 << ((TMrbWindowI *) fobj)->GetLowerLimit() << " - " 
+                                 << ((TMrbWindowI *) fobj)->GetLowerLimit() << " - "
                                  << ((TMrbWindowI *) fobj)->GetUpperLimit() << endl;
 							break;
 
@@ -934,9 +934,9 @@ Int_t TMrbAnalyze::GetSizeOfMappedObjects(TMapFile * MapFile) const {
 // Purpose:        Determine total size of all objects mapped so far
 // Arguments:      TMapFile * MapFile      -- current map file
 // Results:        Int_t NofBytes          -- number of bytes allocated
-// Exceptions:     
+// Exceptions:
 // Description:    Loops thru objects in mapfile, calculates total size.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMapRec * mr = MapFile->GetFirst();
@@ -958,7 +958,7 @@ Int_t TMrbAnalyze::GetSizeOfMappedObjects(TMapFile * MapFile) const {
 		gMrbLog->Err()	<< "MapFile too small: "<< size << endl;
 		gMrbLog->Flush(this->ClassName(), "GetSizeOfMappedObjects");
         MapFile->Print();
-		return(0);  
+		return(0);
     }
     cout	<< setgreen
 			<< this->ClassName() << "Size used on Mapfile (KBytes): " << size / 1024
@@ -976,7 +976,7 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, const Char_t * HistoFi
 // Results:        Int_t NofHistos    -- number of histos saved
 // Exceptions:     NofHistos = -1 on error
 // Description:    Writes mmap file contents to root file.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbIOSpec * ioSpec;
@@ -999,7 +999,7 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 // Results:        Int_t NofHistos       -- number of histos saved
 // Exceptions:     NofHistos = -1 on error
 // Description:    Writes mmap file contents to root file.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (IOSpec && (IOSpec->GetHistoMode() & TMrbIOSpec::kHistoSave) == 0) return(0);
@@ -1017,7 +1017,7 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 	TString histoFileVersioned = histoFile;
 	histoFileVersioned += ".";
 	histoFileVersioned += fHistFileVersion++;
-	
+
 	if (this->IsVerbose())cout	<< setblue
 			<< this->ClassName() << "::SaveHistograms(): Saving histogram(s) to file "
 			<< histoFileVersioned << " - wait ..." << setblack << endl;
@@ -1052,7 +1052,7 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 					if (obj) obj->Write();
 					if (this->IsVerbose()) cout << "   Writing: " << name << endl;
         		}
-		   	 mr = mr->GetNext();         
+		   	 mr = mr->GetNext();
 			}
 		}
    } else {
@@ -1113,11 +1113,11 @@ Int_t TMrbAnalyze::ClearHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) 
 // Results:        Int_t NofHistos      -- number of histos cleared
 // Exceptions:     NofHistos = -1 on error
 // Description:    Clears shared memory.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString pattern;
-	Int_t count; 
+	Int_t count;
 	TRegexp * rexp;
 	Bool_t hdr;
 
@@ -1148,13 +1148,13 @@ Int_t TMrbAnalyze::ClearHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) 
 			if (rexp == NULL) ok = kTRUE;
 			else {
 				TString shh(hh->GetName());
-				
+
 				if(shh.Index(*rexp) >= 0) ok = kTRUE;
 			}
 			if (ok) {
 				if (this->IsVerbose()) {
-					if (!hdr) cout << this->ClassName() 
-						           << "::ClearHistograms(" << pattern.Data() 
+					if (!hdr) cout << this->ClassName()
+						           << "::ClearHistograms(" << pattern.Data()
 						           << "): Zeroing follwing histograms ..." << endl;
 					hdr = kTRUE;
 					cout << "   " ; hh->Print();
@@ -1195,10 +1195,10 @@ void TMrbAnalyze::PrintStartStop(TUsrEvtStart * StartEvent, TUsrEvtStop * StopEv
 // Arguments:      TUsrEvtStart * StartEvent            -- start event (default gStartEvent)
 //                 TUsrEvtStop * StopEvent              -- stop event (default gStopEvent)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Outputs start/stop records read from root file
 //                 (replay mode only)
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t runTime;
@@ -1243,10 +1243,10 @@ void TMrbAnalyze::PrintStartStop(UInt_t StartTime, UInt_t StopTime) const {
 // Arguments:      UInt_t StartTime            -- start time
 //                 UInt_t StopTime             -- stop time
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Outputs start/stop records read from root file
 //                 (replay mode only)
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t runTime;
@@ -1281,9 +1281,9 @@ void TMrbAnalyze::InitializeLists(Int_t NofModules, Int_t NofParams) {
 // Arguments:      Int_t NofModules    -- number of modules
 //                 Int_t NofParams     -- number of params
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Initializes (clears) lists and resizes them.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fNofModules = NofModules;
@@ -1313,10 +1313,10 @@ const Char_t * TMrbAnalyze::GetModuleName(Int_t ModuleIndex) const {
 // Purpose:        Get module name by its index
 // Arguments:      Int_t ModuleIndex   -- module index
 // Results:        Char_t * ModuleName -- module name
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a module with specified index.
 //                 Returns its name.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1343,10 +1343,10 @@ const Char_t * TMrbAnalyze::GetModuleTitle(Int_t ModuleIndex) const {
 // Purpose:        Get module title by its index
 // Arguments:      Int_t ModuleIndex    -- module index
 // Results:        Char_t * ModuleTitle -- module title
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a module with specified index.
 //                 Returns its title.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1373,10 +1373,10 @@ Int_t TMrbAnalyze::GetModuleIndex(const Char_t * ModuleName) const {
 // Purpose:        Get module index by its name
 // Arguments:      Char_t * ModuleName    -- module name
 // Results:        Int_t ModuleIndex      -- module index
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a module with specified name.
 //                 Returns its index.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1397,10 +1397,10 @@ Int_t TMrbAnalyze::GetModuleIndexByParam(const Char_t * ParamName) const {
 // Purpose:        Get module index by param name
 // Arguments:      Char_t * ParamName      -- param name
 // Results:        Int_t ModuleIndex       -- module index
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a param with specified name
 //                 Returns module index.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1424,10 +1424,10 @@ TMrbModuleListEntry * TMrbAnalyze::GetModuleListEntry(Int_t ModuleIndex) const {
 // Purpose:        Get module list entry by module index
 // Arguments:      Int_t ModuleIndex                 -- module index
 // Results:        TMrbModuleListEntry * ListEntry   -- entry
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a module with specified index.
 //                 Returns entry in module list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1454,10 +1454,10 @@ TMrbModuleListEntry * TMrbAnalyze::GetModuleListEntry(const Char_t * ModuleName)
 // Purpose:        Get module list entry by module name
 // Arguments:      const Char_t * ModuleName         -- module name
 // Results:        TMrbModuleListEntry * ListEntry   -- entry
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a module with specified name.
 //                 Returns entry in module list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1479,9 +1479,9 @@ void TMrbAnalyze::ResetModuleHits(Int_t StartIndex, Int_t StopIndex) {
 // Arguments:      Int_t StartIndex     -- start index
 //                 Int_t StopIndex      -- stop index
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Reset hit counters for modules within given index limits in list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t allModules = (StartIndex == 0 && StopIndex == 0);
@@ -1503,10 +1503,10 @@ const Char_t * TMrbAnalyze::GetParamName(Int_t ModuleIndex, Int_t RelParamIndex)
 // Arguments:      Int_t ModuleIndex      -- module index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        Char_t * ParamName     -- param name
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a param with specified index.
 //                 Returns its name.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1555,10 +1555,10 @@ const Char_t * TMrbAnalyze::GetParamName(Int_t AbsParamIndex) const {
 // Purpose:        Get param name by its absolute index
 // Arguments:      Int_t AbsParamIndex    -- absolute param index
 // Results:        Char_t * ParamName     -- param name
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a param with specified index.
 //                 Returns its name.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1586,10 +1586,10 @@ Int_t TMrbAnalyze::GetParamIndex(const Char_t * ParamName, Bool_t AbsFlag) const
 // Arguments:      Char_t * ParamName     -- param name
 //                 Bool_t AbsFlag         -- abs or rel?
 // Results:        Int_t ParamIndex       -- param index
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a param with specified name
 //                 Returns its index.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1618,9 +1618,9 @@ Int_t TMrbAnalyze::GetParamIndex(Int_t ModuleIndex, Int_t RelParamIndex) const {
 // Arguments:      Int_t ModuleIndex      -- module index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        Int_t AbsParamIndex    -- absolute param index
-// Exceptions:     
+// Exceptions:
 // Description:    Calculates absolute param index.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1645,10 +1645,10 @@ TMrbHistoListEntry * TMrbAnalyze::GetHistoListEntry(const Char_t * HistoName) co
 // Purpose:        Get entry in histogram table
 // Arguments:      Char_t * HistoName               -- histo name
 // Results:        TMrbHistoListEntry * HistoEntry  -- address
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a histo with specified name
 //                 Returns entry address.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1665,10 +1665,10 @@ TH1 * TMrbAnalyze::GetHistoAddr(const Char_t * HistoName) const {
 // Purpose:        Get histo addr by name
 // Arguments:      Char_t * HistoName     -- histo name
 // Results:        TH1 * HistoAddr        -- address
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a histo with specified name
 //                 Returns histogram address.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1691,9 +1691,9 @@ TH1 * TMrbAnalyze::GetHistoAddr(Int_t AbsParamIndex) const {
 // Purpose:        Get histogram address
 // Arguments:      Int_t AbsParamIndex    -- absolute param/histo index
 // Results:        TH1 * HistoAddr      -- histo address
-// Exceptions:     
+// Exceptions:
 // Description:    Returns histo address.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1712,9 +1712,9 @@ TH1 * TMrbAnalyze::GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) const {
 // Arguments:      Int_t ModuleIndex      -- module index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        TH1 * HistoAddr        -- histogram address
-// Exceptions:     
+// Exceptions:
 // Description:    Returns histogram addr given by module and param.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1741,9 +1741,9 @@ TH1 * TMrbAnalyze::GetHistoFromList(TObjArray & HistoList, Int_t ModuleIndex, In
 //                 Int_t ModuleIndex      -- module index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        TH1 * HistoAddr        -- histogram address
-// Exceptions:     
+// Exceptions:
 // Description:    Calculates absolute param index. Returns histo from list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1767,9 +1767,9 @@ TH1 * TMrbAnalyze::GetHistoFromList(TObjArray & HistoList, Int_t AbsParamIndex) 
 // Arguments:      TObjArray HistoList    -- array containing histograms
 //                 Int_t AbsParamIndex    -- absolute param index
 // Results:        TH1 * HistoAddr        -- histogram address
-// Exceptions:     
+// Exceptions:
 // Description:    Calculates absolute param index. Returns histo from list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (AbsParamIndex < 0 || AbsParamIndex > HistoList.GetEntriesFast()) return(NULL);
@@ -1783,10 +1783,10 @@ TF1 * TMrbAnalyze::GetCalibration(const Char_t * CalibrationName) const {
 // Purpose:        Get Calibration by its name
 // Arguments:      Char_t * CalibrationName     -- calibration name
 // Results:        TF1 * CalibAddr              -- address
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a calibrations function with specified name
 //                 Returns address.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1809,9 +1809,9 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex) const {
 // Purpose:        Get calibration address
 // Arguments:      Int_t AbsParamIndex       -- absolute param/calib index
 // Results:        TF1 * CalibrationAddr     -- address
-// Exceptions:     
+// Exceptions:
 // Description:    Returns calibration address.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1832,9 +1832,9 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double
 // Results:        TF1 * CalibrationAddr     -- address
 //                 Double_t & Gain           -- gain
 //                 Double_t & Offset         -- offset
-// Exceptions:     
+// Exceptions:
 // Description:    Returns gain and offset.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TF1 * cal = this->GetCalibration(ModuleIndex, RelParamIndex);
@@ -1864,9 +1864,9 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t
 // Results:        TF1 * CalibrationAddr     -- address
 //                 Double_t Gain             -- gain
 //                 Double_t Offset           -- offset
-// Exceptions:     
+// Exceptions:
 // Description:    Returns gain and offset.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TF1 * cal = this->GetCalibration(AbsParamIndex);
@@ -1896,9 +1896,9 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, TArray
 //                 Int_t RelParamIndex       -- relative param index
 // Results:        TF1 * CalibrationAddr     -- address
 //                 TArrayD & Coeffs          -- calibration coefficients
-// Exceptions:     
+// Exceptions:
 // Description:    Returns calibration coeffs.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Coeffs.Reset(0.);
@@ -1918,9 +1918,9 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex, TArrayD & Coeffs) const {
 // Arguments:      Int_t AbsParamIndex       -- absolute param/calib index
 // Results:        TF1 * CalibrationAddr     -- address
 //                 TArrayD & Coeffs          -- calibration coefficients
-// Exceptions:     
+// Exceptions:
 // Description:    Returns calibration coeffs.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Coeffs.Reset(0.);
@@ -1940,9 +1940,9 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex) const 
 // Arguments:      Int_t ModuleIndex          -- module index
 //                 Int_t RelParamIndex        -- relative param index
 // Results:        TF1 * CalibrationAddr      -- calibration address
-// Exceptions:     
+// Exceptions:
 // Description:    Returns calibration addr given by module and param.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1968,9 +1968,9 @@ TMrbCalibrationListEntry * TMrbAnalyze::GetCalibrationListEntry(Int_t ModuleInde
 // Arguments:      Int_t ModuleIndex                     -- module index
 //                 Int_t RelParamIndex                   -- relative param index
 // Results:        TMrbCalibrationListEntry * ListEntry  -- entry
-// Exceptions:     
+// Exceptions:
 // Description:    Returns calibration list entry.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -1995,9 +1995,9 @@ TMrbCalibrationListEntry * TMrbAnalyze::GetCalibrationListEntry(Int_t AbsParamIn
 // Purpose:        Get calibration entry from list
 // Arguments:      Int_t AbsParamIndex                   -- absolute param/calib index
 // Results:        TMrbCalibrationListEntry * ListEntry  -- entry
-// Exceptions:     
+// Exceptions:
 // Description:    Returns calibration list entry.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2016,9 +2016,9 @@ Double_t CalibPoly(Double_t * Xvalues, Double_t * Params) {
 // Arguments:      Double_t * Xvalues   -- array of x values
 //                 Double_t * Params    -- array of parameters
 // Results:        Double_t CalibResult -- resulting value
-// Exceptions:     
+// Exceptions:
 // Description:    Evaluates CalibResult = polynom(Xvalues[0])
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Double_t xVal = Xvalues[0];
@@ -2038,9 +2038,9 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 // Purpose:        Read calibration data from file
 // Arguments:      Char_t * CalibrationFile   -- file name
 // Results:        Int_t NofEntries           -- number of calibration entries
-// Exceptions:     
+// Exceptions:
 // Description:    Reads calibration data from file.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TArrayD param;
@@ -2152,9 +2152,9 @@ void TMrbAnalyze::PrintCalibration(ostream & Out) const {
 // Purpose:        Print calibration
 // Arguments:      Out           -- output stream
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Preints calibration data
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * cal;
@@ -2187,10 +2187,10 @@ void TMrbAnalyze::PrintCalibration(ostream & Out, const Char_t * CalibrationName
 // Arguments:      Out 		                    -- output
 //                 Char_t * CalibrationName     -- calibration name (=histo name)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a calibration function with specified name
 //                 Prints settings.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2212,9 +2212,9 @@ void TMrbAnalyze::PrintCalibration(ostream & Out, Int_t AbsParamIndex) const {
 // Arguments:      Out 		                 -- output
 //                 Int_t AbsParamIndex       -- absolute param/calib index
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Prints calibration data.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2237,9 +2237,9 @@ void TMrbAnalyze::PrintCalibration(ostream & Out, TMrbNamedX * CalX) const {
 // Arguments:      Out 		                 -- output
 //                 TMrbNameX CalX            -- calibration entry
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Prints calibration data.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbCalibrationListEntry * cle = (TMrbCalibrationListEntry *) CalX->GetAssignedObject();
@@ -2267,9 +2267,9 @@ void TMrbAnalyze::PrintCalibration(ostream & Out, Int_t ModuleIndex, Int_t RelPa
 // Arguments:      Int_t ModuleIndex          -- module index
 //                 Int_t RelParamIndex        -- relative param index
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Prints calibration data.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2309,10 +2309,10 @@ TF1 * TMrbAnalyze::GetDCorr(const Char_t * DCorrName) const {
 // Purpose:        Get doppler correction by its name
 // Arguments:      Char_t * DCorrName     -- dcorr name
 // Results:        TF1 * DCorrAddr        -- address
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a dcorr function with specified name
 //                 Returns address.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2335,9 +2335,9 @@ TF1 * TMrbAnalyze::GetDCorr(Int_t AbsParamIndex) const {
 // Purpose:        Get doppler correction address
 // Arguments:      Int_t AbsParamIndex       -- absolute param/calib index
 // Results:        TF1 * DCorrAddr           -- address
-// Exceptions:     
+// Exceptions:
 // Description:    Returns dcorr address.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2357,9 +2357,9 @@ TF1 * TMrbAnalyze::GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & F
 //                 Int_t RelParamIndex       -- relative param index
 // Results:        TF1 * DCorrAddr           -- address
 //                 Double_t & Factor         -- dcorr factor
-// Exceptions:     
+// Exceptions:
 // Description:    Returns dcorr factor. Valid only for dcorr type 'ConstFactor'.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TF1 * dcorr = this->GetDCorr(ModuleIndex, RelParamIndex);
@@ -2379,9 +2379,9 @@ TF1 * TMrbAnalyze::GetDCorr(Int_t AbsParamIndex, Double_t & Factor) const {
 // Arguments:      Int_t AbsParamIndex       -- absolute param/calib index
 // Results:        TF1 * DCorrAddr           -- address
 //                 Double_t & Factor         -- dcorr factor
-// Exceptions:     
+// Exceptions:
 // Description:    Returns dcorr factor. Valid only for dcorr type 'ConstFactor'.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TF1 * dcorr = this->GetCalibration(AbsParamIndex);
@@ -2404,9 +2404,9 @@ TF1 * TMrbAnalyze::GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & B
 //                 Double_t & Beta           -- velocity
 //                 Double_t & Angle          -- angle
 //                 Bool_t InDegrees          -- angle to be returned in degrees
-// Exceptions:     
+// Exceptions:
 // Description:    Returns dcorr factor. Valid only for dcorr type 'FixedAngle'.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TF1 * dcorr = this->GetDCorr(ModuleIndex, RelParamIndex);
@@ -2429,9 +2429,9 @@ TF1 * TMrbAnalyze::GetDCorr(Int_t AbsParamIndex, Double_t & Beta, Double_t & Ang
 // Results:        TF1 * DCorrAddr           -- address
 //                 Double_t & Beta           -- velocity
 //                 Double_t & Angle          -- angle
-// Exceptions:     
+// Exceptions:
 // Description:    Returns dcorr factor. Valid only for dcorr type 'FixedAngle'.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TF1 * dcorr = this->GetDCorr(AbsParamIndex);
@@ -2453,9 +2453,9 @@ TF1 * TMrbAnalyze::GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex) const {
 // Arguments:      Int_t ModuleIndex          -- module index
 //                 Int_t RelParamIndex        -- relative param index
 // Results:        TF1 * DCorrAddr            -- calibration address
-// Exceptions:     
+// Exceptions:
 // Description:    Returns dcoor addr given by module and param.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2481,9 +2481,9 @@ TMrbDCorrListEntry * TMrbAnalyze::GetDCorrListEntry(Int_t ModuleIndex, Int_t Rel
 // Arguments:      Int_t ModuleIndex                     -- module index
 //                 Int_t RelParamIndex                   -- relative param index
 // Results:        TMrbDCorrListEntry * ListEntry        -- entry
-// Exceptions:     
+// Exceptions:
 // Description:    Returns doppler corr list entry.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2508,9 +2508,9 @@ TMrbDCorrListEntry * TMrbAnalyze::GetDCorrListEntry(Int_t AbsParamIndex) const {
 // Purpose:        Get doppler corr entry from list
 // Arguments:      Int_t AbsParamIndex                   -- absolute param/calib index
 // Results:        TMrbDCorrListEntry * ListEntry        -- entry
-// Exceptions:     
+// Exceptions:
 // Description:    Returns calibration list entry.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2529,9 +2529,9 @@ Double_t DCorrConstFactor(Double_t * Xvalues, Double_t * Params) {
 // Arguments:      Double_t * Xvalues   -- array of x values
 //                 Double_t * Params    -- array of parameters
 // Results:        Double_t EnergyDC    -- resulting energy value
-// Exceptions:     
+// Exceptions:
 // Description:    Returns energy corrected by a const factor
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Double_t energyDC = Params[0] * Xvalues[0];
@@ -2546,10 +2546,10 @@ Double_t DCorrFixedAngle(Double_t * Xvalues, Double_t * Params) {
 // Arguments:      Double_t * Xvalues   -- array of x values
 //                 Double_t * Params    -- array of parameters
 // Results:        Double_t EnergyDC    -- resulting energy value
-// Exceptions:     
+// Exceptions:
 // Description:    Returns energy corrected due to angle and velocity.
 //                 Angle given in radians.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Double_t beta = Params[0];
@@ -2567,9 +2567,9 @@ Int_t TMrbAnalyze::ReadDCorrFromFile(const Char_t * DCorrFile) {
 // Purpose:        Read doppler correction data from file
 // Arguments:      Char_t * ReadDCorrFromFile    -- file name
 // Results:        Int_t NofEntries              -- number of calibration entries
-// Exceptions:     
+// Exceptions:
 // Description:    Reads dcorr data from file.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbLofNamedX dcorrTypes;
@@ -2654,7 +2654,7 @@ Int_t TMrbAnalyze::ReadDCorrFromFile(const Char_t * DCorrFile) {
 				if (dcFct) {
 					this->AddDCorrToList(dcFct, hle->GetParam()->GetIndex());
 					nofDCorrs++;
-				} 			
+				}
 			}
 		}
 		o = dcorr->GetTable()->After(o);
@@ -2671,9 +2671,9 @@ Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t Rel
 //                 Int_t ModuleIndex      -- list index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Creates a new entry in dcorr list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nmx;
@@ -2729,9 +2729,9 @@ Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t AbsParamIndex) {
 // Arguments:      TF1 * DCorrAddr        -- address
 //                 Int_t AbsParamIndex    -- absolute param index
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Creates a new entry in dcorr list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * npx;
@@ -2775,9 +2775,9 @@ TF1 * TMrbAnalyze::AddDCorrToList(	const Char_t * Name, const Char_t * Formula,
 //                 Int_t ModuleIndex      -- list index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Creates a new entry in dcorr list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TF1 * dcorr = new TF1(Name, Formula, Xmin, Xmax);
@@ -2791,10 +2791,10 @@ TObject * TMrbAnalyze::GetParamAddr(const Char_t * ParamName) const {
 // Purpose:        Get param addr by name
 // Arguments:      Char_t * ParamName     -- param name
 // Results:        TObject * ParamAddr    -- address
-// Exceptions:     
+// Exceptions:
 // Description:    Searches for a param with specified name
 //                 Returns param address.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2818,9 +2818,9 @@ TObject * TMrbAnalyze::GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex) cons
 // Arguments:      Int_t ModuleIndex      -- module index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        Int_t * ParamAddr      -- param address
-// Exceptions:     
+// Exceptions:
 // Description:    Returns param address.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2846,9 +2846,9 @@ TObject * TMrbAnalyze::GetParamAddr(Int_t AbsParamIndex) const {
 // Purpose:        Get param address
 // Arguments:      Int_t AbsParamIndex    -- absolute param index
 // Results:        TObject * ParamAddr    -- param address
-// Exceptions:     
+// Exceptions:
 // Description:    Returns param address.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2873,9 +2873,9 @@ Bool_t TMrbAnalyze::AddModuleToList(const Char_t * ModuleName, const Char_t * Mo
 //                 Int_t NofParams        -- number of active params
 //                 Int_t TimeOffset       -- time offset
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Creates a new entry in module list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx;
@@ -2929,9 +2929,9 @@ Bool_t TMrbAnalyze::AddParamToList(const Char_t * ParamName, TObject * ParamAddr
 //                 Int_t ModuleIndex      -- list index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Creates a new entry in param list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nmx;
@@ -2973,9 +2973,9 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 //                 Int_t ModuleIndex      -- list index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Creates a new entry in histo list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nmx;
@@ -3032,9 +3032,9 @@ Int_t TMrbAnalyze::GetHistoIndex(Int_t ModuleIndex, Int_t RelParamIndex) const {
 // Arguments:      Int_t ModuleIndex      -- list index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        Int_t HistoIndex       -- index
-// Exceptions:     
+// Exceptions:
 // Description:    Returns histo index
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nmx;
@@ -3067,9 +3067,9 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleInde
 //                 Int_t ModuleIndex      -- list index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Creates a new entry in calibration list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nmx;
@@ -3125,9 +3125,9 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t AbsParamIn
 // Arguments:      TF1 * CalibrationAddr  -- address
 //                 Int_t AbsParamIndex    -- absolute param index
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Creates a new entry in calibration list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * npx;
@@ -3171,9 +3171,9 @@ TF1 * TMrbAnalyze::AddCalibrationToList(	const Char_t * Name, const Char_t * For
 //                 Int_t ModuleIndex      -- list index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Creates a new entry in calibration list.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TF1 * cal = new TF1(Name, Formula, Xmin, Xmax);
@@ -3187,59 +3187,52 @@ void TMrbAnalyze::PrintLists(ostream & Out) const {
 // Purpose:        Output list contents
 // Arguments:      ostream & Out     -- output stream
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Printout of module, param, histo lists, resp.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i, j;
-	Int_t px, np;
-	Bool_t h;
-	TMrbNamedX * nmx;
-	TMrbNamedX * npx;
-	TMrbNamedX * nhx;
-	TMrbModuleListEntry * mle;
-	TMrbParamListEntry * ple;
-	TMrbHistoListEntry * hle;
-	TString hName;
-
 	Out	<< endl;
-	for (i = 0; i <= fModuleList.GetLast(); i++) {
-		nmx = (TMrbNamedX *) fModuleList[i];
-		if (nmx) {
-			Out	<< "Module " << nmx->GetName() << ", Index = "
-					<< nmx->GetIndex() << " (" << nmx->GetTitle() << ")" << endl;
-			mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
-			np = mle->GetNofParams();
-			px = mle->GetIndexOfFirstParam();
-			h = kFALSE;
-			for (j = 0; j < np; j++) {
-				npx = (TMrbNamedX *) fParamList[px];
-				if (npx) {
-					if (!h) {
-						Out	<< "Param     RelX AbsX           Addr     Histogram                     Addr" << endl
-								<< "-----------------------------------------------------------------------------------" << endl;
-						h = kTRUE;
-					}
-					ple = (TMrbParamListEntry *) npx->GetAssignedObject();
-					nhx = (TMrbNamedX *) fHistoList[px];
-					hle = (TMrbHistoListEntry *) nhx->GetAssignedObject();
-					Out 	<< setiosflags(ios::left) << setw(10) << npx->GetName()
-							<< resetiosflags(ios::left)	<< setw(4) << j
+	TIterator * miter = fModuleList.MakeIterator();
+	TMrbNamedX * nmx;
+	while (nmx = (TMrbNamedX *) miter->Next()) {
+		Out	<< "Module " << nmx->GetName() << ", Index = "
+			<< nmx->GetIndex() << " (" << nmx->GetTitle() << ")" << endl;
+		TMrbModuleListEntry * mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
+		Int_t np = mle->GetNofParams();
+		Int_t px = mle->GetIndexOfFirstParam();
+		Bool_t h = kFALSE;
+		for (Int_t i = 0; i < np; i++) {
+			TMrbNamedX * npx = (TMrbNamedX *) fParamList[px];
+			if (npx) {
+				if (!h) {
+					Out	<< "Param     RelX AbsX           Addr     Histogram                     Addr" << endl
+						<< "-----------------------------------------------------------------------------------" << endl;
+					h = kTRUE;
+				}
+				TMrbParamListEntry * ple = (TMrbParamListEntry *) npx->GetAssignedObject();
+				TMrbNamedX * nhx = (TMrbNamedX *) fHistoList[px];
+				TMrbHistoListEntry * hle;
+				if (nhx) hle = (TMrbHistoListEntry *) nhx->GetAssignedObject();
+				if (ple) {
+					Out		<< setiosflags(ios::left) << setw(10) << npx->GetName()
+							<< resetiosflags(ios::left)	<< setw(4) << i
 							<< setw(5) << npx->GetIndex()
 							<< setw(15) << ple->GetAddress();
-					if (nhx && hle) {
-						hName = nhx->GetName();
+					if (nhx) {
+						TString hName = nhx->GetName();
 						hName += " (";
 						hName += nhx->GetTitle();
 						hName += ")";
 						Out	<< "     "	<< setiosflags(ios::left) << setw(30) << hName
 										<< resetiosflags(ios::left) << hle->GetAddress();
+					} else {
+						Out	<< "     "	<< setiosflags(ios::left) << setw(30) << "(no histo assigned)";
 					}
 				}
-				Out	<< endl;
-				px++;
 			}
+			Out	<< endl;
+			px++;
 		}
 		Out	<< endl;
 	}
@@ -3252,9 +3245,9 @@ void TMrbAnalyze::PrintLists(const Char_t * FileName) const {
 // Purpose:        Output list contents
 // Arguments:      Char_t * FileName    -- output file
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Printout of module, param, histo lists, resp.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	ofstream f(FileName, ios::out);
@@ -3282,35 +3275,35 @@ Bool_t TMrbAnalyze::DumpData(const Char_t * Prefix, Int_t Index,	const Char_t * 
 //                 UShort_t * DataPtr     -- pointer to data array
 //                 Int_t DataWC           -- word count
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Dumps data to file <Prefix>-<Index>.dmp
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString fileName;
 	TString prefix;
-		
+
 	if (fDumpCount == 0) return(kTRUE); 			// dump turned off
 	if (fDumpCount > 0) fDumpCount--;				// count number of dumps
-	
+
 	if (Prefix == NULL) Prefix = "";
 	prefix = Prefix;
 	prefix = prefix.Strip(TString::kBoth);
 	if (prefix.Length() == 0) prefix = "data";
-	
+
 	if (CallingClass == NULL) CallingClass = "";
 	if (CallingMethod == NULL) CallingMethod = "";
-			
+
 	fileName = prefix;
 	if (Index >= 0) {
 		fileName += "-";
 		fileName += Index;
 	}
 	fileName += ".dmp";
-	
+
 	if (*CallingClass != '\0' && *CallingMethod != '\0')	cout << CallingClass << "::" << CallingMethod << "(): ";
 	else													cout << this->ClassName() << "::DumpData(): ";
-	
+
 	cout << this->ClassName() << "::Dumping " << DataWC << " word(s) to file " << fileName;
 	if (Msg != NULL && *Msg != '\0') cout << " (reason: \"" << Msg << "\")";
 	cout << endl;
@@ -3334,11 +3327,11 @@ Bool_t TMrbAnalyze::AddResourcesFromFile(const Char_t * ResourceFile) {
 // Purpose:        Add user's resource defs to gEnv
 // Arguments:      Char_t * ResourceFile        -- resource file
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Opens resource file,
 //                       adds contents to gEnv,
 //                       extracts env variable "TMrbConfig.ResourceName"
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fResourceFile.Length() != 0) {				// already done?
@@ -3363,9 +3356,9 @@ const Char_t * TMrbAnalyze::GetResource(const Char_t * Resource) {
 // Purpose:        Return completed resource string
 // Arguments:      Char_t * Resource         -- resource string
 // Results:        Char_t * Resource         -- (completed) string
-// Exceptions:     
+// Exceptions:
 // Description:    Prepends user's resource name if present.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fResourceName.Length() > 0) {
@@ -3386,10 +3379,10 @@ Bool_t TMrbAnalyze::SetTimeOffset(Int_t ModuleIndex, Int_t Offset) {
 // Arguments:      Int_t ModuleIndex       -- module number
 //                 Int_t Offset            -- time offset
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Defines a time offset. Time offsets are needed to
 //                 build events from hit buffer data.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
@@ -3415,9 +3408,9 @@ Int_t TMrbAnalyze::GetTimeOffset(Int_t ModuleIndex) const {
 // Purpose:        Get time offset from table
 // Arguments:      Int_t ModuleIndex       -- module number
 // Results:        Int_t Offset            -- time offset
-// Exceptions:     
+// Exceptions:
 // Description:    Returns the time offset for given module.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
@@ -3443,9 +3436,9 @@ void TMrbAnalyze::WaitForLock(const Char_t * Lockfile, const Char_t * Msg) {
 // Arguments:      Char_t * Lockfile       -- lock file
 //                 Char_t * Msg            -- message
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Loops on file 'Lockfile'. Tests every second if it has disappeared.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t first = kTRUE;
@@ -3462,3 +3455,22 @@ void TMrbAnalyze::WaitForLock(const Char_t * Lockfile, const Char_t * Msg) {
 	gSystem->Exec(Form("touch %s", Lockfile));
 }
 
+void TMrbAnalyze::ResetEventsPerTrigger() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::ResetEventsPerTrigger
+// Purpose:        Clear events per trigger
+// Arguments:      --
+// Results:        --
+// Exceptions:
+// Description:    Loops thu list of modules and clears event count
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TIterator * iter = fModuleList.MakeIterator();
+	TMrbNamedX * nx;
+	while (nx = (TMrbNamedX *) iter->Next()) {
+		TMrbModuleListEntry * mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
+		mle->ResetEventsPerTrigger();
+	}
+}
