@@ -1,0 +1,196 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Caen_V556.code
+// @(#)Purpose:    VME code for adc CAEN V556
+// Description:    Contains pieces of code to operate an adc CAEN V556
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* bit definitions for VME ADC CAEN V556 */
+#define $mnemoUC_R_RESET  		0x1cL
+#define $mnemoUC_R_CONTROL		0x1aL
+#define $mnemoUC_R_OUTPUT 		0x18L
+#define $mnemoUC_R_FF			0x16L
+#define $mnemoUC_R_DELAY 		0x14L
+#define $mnemoUC_R_THRH	 		0x12L
+#define $mnemoUC_R_THRL 		0x10L
+#define $mnemoUC_R_MODULETYPE	0xfcL
+#define $mnemoUC_R_VERSION		0xfeL
+
+#define $mnemoUC_B_BUF_HALF		0x1000L
+#define $mnemoUC_B_BUF_FULL		0x2000L
+#define $mnemoUC_B_BUF_EMPTY	0x4000L
+
+#define $mnemoUC_SH_WC			12
+#define $mnemoUC_M_WC			0x7
+#define $mnemoUC_M_DATA			0xFFF
+#define $mnemoUC_SH_CHN			12
+#define $mnemoUC_M_CHN			0x7
+#define $mnemoUC_M_EVT_CNT		0xFFF
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_RESET)) = 1;			/* reset module */
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_CONTROL)) = $chnPattern;		/* enable selected chns */
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_THRL)) = $lowerThresh;		/* set thresholds */
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_THRH)) = $upperThresh;
+					$mnemoLC_module_info();
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+					data = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_OUTPUT));	/* read data & incr addr */
+					RDO_2MEM_16((data >> 12) & 0xfff);					/* write addr */
+					RDO_2MEM_16(data & 0xfff);							/* write data */
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					while ((*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_CONTROL)) & $mnemoUC_B_BUF_EMPTY) != 0) { /* data present? */
+						$mnemoLC_hdr = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_OUTPUT));	/* read header word */
+#ifdef DEBUG
+						if (($mnemoLC_hdr & $mnemoUC_B_IS_HDR) == 0) {										/* check if header */
+							sprintf(msg, "$moduleName: Not a header - %#x\n", $mnemoLC_hdr);
+							f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						}
+#endif
+						$mnemoLC_hdr &= ~$mnemoUC_M_EVT_CNT;												/* mask out event count */
+						$mnemoLC_hdr |= $serial;															/* replace it by module id */
+						RDO_2MEM_16($mnemoLC_hdr);															/* write header */
+						$mnemoLC_wc = (($mnemoLC_hdr >> $mnemoUC_SH_WC) & $mnemoUC_M_WC) + 1;					/* extract word count */
+						for (i = 0; i < $mnemoLC_wc; i++) *evt.out16++ = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_OUTPUT));	/* xfer data */
+						if (($mnemoLC_wc & 1) == 0) RDO_2MEM_16(0xffff);	/* align to 32 bit boundaries */
+					}
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+					RDO_2MEM_16($subaddr);
+%%EndOfCode%%
+%%WRITE_SUBADDR%%
+
+%%BeginOfCode%%
+					RDO_2MEM_16($data);
+%%EndOfCode%%
+%%STORE_DATA%%
+
+%%BeginOfCode%%
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_RESET)) = 1;				/* clear scaler $moduleName */
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_R_CONTROL)) = $chnPattern;	/* enable selected chs */
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+void $mnemoLC_module_info() {
+	unsigned short data, version, serial, manufact, mtype;
+	char str[256];
+	data = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_VERSION));
+	serial = data & 0xfff;
+	version = (data >> 12) & 0xf;
+	data = *((unsigned short *) ((char *) $moduleName + $mnemoUC_R_MODULETYPE));
+	mtype = data & 0x3ff;
+	manufact = (data >> 10) & 0x3f;
+	sprintf(str, "  CAEN module info: serial# %d, version %d\n", serial, version);
+	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+	sprintf(str, "                    module type %#x, manufacturer %#x\n", mtype, manufact);
+	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+}
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+void $mnemoLC_module_info();
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+  int $mnemoLC_wc;
+  unsigned short $mnemoLC_hdr;
+  unsigned short $mnemoLC_data;
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+

@@ -82,6 +82,11 @@ Bool_t TMrbSubevent_Caen_V556::FillSubevent(const UShort_t * SevtData, Int_t Sev
 		}
 		SevtWC -= wcs;						// remaining subevent data
 		wordsProcessed += wcs;
+		if (wcs & 1) {						// aligned to 32 bit (even number of shorts)
+			dataPtr += sizeof(Short_t);			// word count is odd -> skip over filler
+			SevtWC--;
+			wordsProcessed++;
+		}  				 
 		eventsProcessed++;
 	}
 	return(kTRUE);

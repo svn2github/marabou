@@ -40,7 +40,7 @@
 %C%						<< setblack << endl;
 %C%				return(kTRUE);
 %C%			}
-%C%			Int_t moduleNumber = header & CAEN_V556_M_SERIAL;			// extract module number
+%C%			Int_t moduleNumber = header & CAEN_V556_M_MSERIAL;			// extract module number
 %C% 		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
 %C% 		if (mle == NULL) {
 %C% 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, origSevtWC);
@@ -108,6 +108,11 @@
 %C%			mle->IncrEventsPerTrigger();				// ... (per trigger)
 %C%			SevtWC -= wcs;
 %C%			wordsProcessed += wcs;
+%C%			if (wcs & 1) {						// aligned to 32 bit (even number of shorts)
+%C%				dataPtr += sizeof(Short_t);			// word count is odd -> skip over filler
+%C%				SevtWC--;
+%C%				wordsProcessed++;
+%C%			}  				 
 %C% 	}
 %C% 	return(kTRUE);
 %E%}
