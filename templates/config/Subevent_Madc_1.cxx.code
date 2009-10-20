@@ -100,7 +100,7 @@
 %C%					}
 %C%				}
 %C%				Int_t chn = (data >> MADC_SH_CHN) & MADC_M_CHN;
-%C%				paramAddr = (Int_t*) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
+%C%				Int_t * paramAddr = (Int_t *) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
 %C%				if (paramAddr) {
 %C%				if (paramAddr) {
 %C% 				if (!allowMultiHit && mle->GetEventsPerTrigger() > 0) {

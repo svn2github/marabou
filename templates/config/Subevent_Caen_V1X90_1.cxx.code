@@ -119,7 +119,7 @@
 %C% 		} else if ((expect & (CAEN_V1x90_X_TD | CAEN_V1x90_X_TT)) != 0) {
 %C% 			if (hdrBits == CAEN_V1x90_D_TDC_DATA) {
 %C% 				chn = (data >> CAEN_V1x90_SH_TDC_CHN) & CAEN_V1x90_M_TDC_CHN;
-%C%					paramAddr = (Int_t *) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
+%C%					Int_t * paramAddr = (Int_t *) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
 %C%					if (paramAddr) {
 %C% 					if (!allowMultiHit && mle->GetEventsPerTrigger() > 0) {
 %C% 						gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Multiple hit", SevtData, origSevtWC);
