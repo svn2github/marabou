@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.8 2007-07-27 11:17:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.9 2009-10-21 07:46:51 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -320,7 +320,7 @@ Bool_t TMrbDGFCluster::SetChannelLayout(const Char_t * LayoutName, Int_t NofChan
 	TString chnLayout = "<";
 	Int_t modNo = 0;
 	for (Int_t chn = 0; chn < nofChannels; chn++) {
-		if ((modNo % kMrbXiaChansPerModule) == 0) {
+		if (modNo && (modNo % kMrbXiaChansPerModule) == 0) {
 			chnLayout += ">";
 			ca->Add(new TObjString(chnLayout.Data()));
 			chnLayout = "<";
@@ -339,8 +339,6 @@ Bool_t TMrbDGFCluster::SetChannelLayout(const Char_t * LayoutName, Int_t NofChan
 	TMrbNamedX * nx = new TMrbNamedX(nofChannels, LayoutName, ChannelNames);
 	nx->AssignObject(ca);
 	fLofChannelLayouts.AddNamedX(nx);
-
-	delete ca;
 
 	return(kTRUE);
 }
@@ -374,7 +372,11 @@ const Char_t * TMrbDGFCluster::GetChannelLayout(Int_t ModuleNumber, const Char_t
 	}
 
 	TObjArray * ca = (TObjArray *) layout->GetAssignedObject();
-	return(((TObjString *) ca->At(layout->GetIndex() + ModuleNumber))->GetString());
+	if (ca) {
+		TObjString * os = (TObjString *) ca->At(layout->GetIndex() + ModuleNumber);
+		if (os) return(os->GetString());
+	}
+	return(NULL);
 }
 
 const Char_t * TMrbDGFCluster::GetChannelName(Int_t Channel, const Char_t * LayoutName) {
