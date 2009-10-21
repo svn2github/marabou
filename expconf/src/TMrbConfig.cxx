@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.180 2009-10-07 08:49:31 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.181 2009-10-21 08:28:01 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3761,9 +3761,10 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 		FILE * grep = gSystem->OpenPipe("grep 'fTreeOut->Fill' *.cxx */*.cxx 2>/dev/null", "r");
 		char tmp[200];
 		if (fread(tmp, 1, 200, grep) == 0) {
-			gMrbLog->Wrn() << "There is NO TREE OUTPUT in your code" << endl;
+			gMrbLog->Wrn() << "There seems to be NO TREE OUTPUT in your code" << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
-			gMrbLog->Wrn()	<< "You should include a statement" << endl
+			gMrbLog->Wrn()	<< "If you want to write your raw data as ROOT OBJECTS to file," << endl
+							<< "                               you should include a statement" << endl
 							<< "                               >>> "
 							<< setblack
 							<< "if (this->TreeToBeWritten()) fTreeOut->Fill();" << setmagenta << " <<<" << endl
