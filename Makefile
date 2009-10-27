@@ -413,7 +413,7 @@ install-expconf:
 install-ppc:
 		@echo "Installing ppc headers in $(PPCDIR)/include"; \
 		$(INSTALLDIR) $(PPCDIR)/include; \
-		$(INSTALLDATA) powerpc/inc/* $(PPCDIR)/include; \
+		$(INSTALLDATA) powerpc/include/* $(PPCDIR)/include; \
 		$(INSTALLDATA) powerpc/*/inc/* $(PPCDIR)/include; \
 		echo "Installing ppc libraries in $(PPCDIR)/lib/*"; \
 		$(INSTALLDATA) powerpc/lib/2.5 $(PPCDIR)/lib; \
