@@ -6,8 +6,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $
-//! $Date: 2009-10-27 13:30:44 $
+//! $Revision: 1.5 $
+//! $Date: 2009-10-27 15:18:48 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -612,7 +612,7 @@ void madc32_loadFromDb(struct s_madc32 * s, uint32_t chnPattern)
 
 	bit = 1;
 	for (ch = 0; ch < NOF_CHANNELS; ch++) {
-		if (chnPattern & bit) madc32_setThreshold_db(s, ch); else madc32_setThreshold(s, ch, MADC32_CHANNEL_INACTIVE);
+		if (chnPattern & bit) madc32_setThreshold_db(s, ch); else madc32_setThreshold(s, ch, MADC32_D_CHAN_INACTIVE);
 		bit <<= 1;
 	}
 }
@@ -628,12 +628,12 @@ bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
 
 	f = fopen(file, "w");
 	if (f == NULL) {
-		sprintf(msg, "[%sdump_regs] %s: Error writing file %s", s->mpref, s->moduleName, file);
+		sprintf(msg, "[%sdumpRegisters] %s: Error writing file %s", s->mpref, s->moduleName, file);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	}
 
-	sprintf(msg, "[%sdump_regs] %s: Dumping settings to file %s", s->mpref, s->moduleName, file);
+	sprintf(msg, "[%sdumpRegisters] %s: Dumping settings to file %s", s->mpref, s->moduleName, file);
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	fprintf(f, "Thresholds:\n");
@@ -678,12 +678,12 @@ bool_t madc32_dumpRaw(struct s_madc32 * s, char * file)
 
 	f = fopen(file, "w");
 	if (f == NULL) {
-		sprintf(msg, "[%sdump_regs] %s: Error writing file %s", s->mpref, s->moduleName, file);
+		sprintf(msg, "[%sdumpRaw] %s: Error writing file %s", s->mpref, s->moduleName, file);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		return FALSE;
 	}
 
-	sprintf(msg, "[%sdump_regs] %s: Dumping raw data to file %s", s->mpref, s->moduleName, file);
+	sprintf(msg, "[%sdumpRaw] %s: Dumping raw data to file %s", s->mpref, s->moduleName, file);
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	for (i = 0x6000; i < 0x60B0; i += 2) {
@@ -732,8 +732,11 @@ void madc32_printDb(struct s_madc32 * s)
 int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 {
 	uint32_t * dataStart = pointer;
+	uint32_t data;
 	uint16_t numData;
 	unsigned int i;
+	bool_t needHeader;
+	int wc;
 
 	if (!madc32_dataReady(s)) {
 		*pointer++ = 0xaffec0c0;
@@ -742,7 +745,30 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 
 	numData = madc32_getFifoLength(s);
 
-	for (i = 0; i < (int) numData; i++) *pointer++ = GET32(s->baseAddr, MADC32_DATA);
+	needHeader = TRUE;
+	wc = 0;
+	for (i = 0; i < (int) numData; i++) {
+		data = GET32(s->baseAddr, MADC32_DATA);
+		if (needHeader) {
+			if ((data & MADC32_M_HEADER) != MADC32_M_HEADER) {
+				sprintf(msg, "[%sreadout] %s: Not a header - %#lx", s->mpref, s->moduleName, data);
+				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			} else {
+				wc = (int) (data & MADC32_M_WC);
+			}
+			needHeader = FALSE;
+		} else {
+			wc--;
+			if (wc == 0) {
+			  if ((data & MADC32_M_TRAILER) != MADC32_M_TRAILER) {
+				  sprintf(msg, "[%sreadout] %s: Not a trailer - %#lx", s->mpref, s->moduleName, data);
+				  f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			  }
+			  needHeader = TRUE;
+			}
+		}
+		*pointer++ = data;
+	}
 
 	madc32_resetReadout(s);
 
