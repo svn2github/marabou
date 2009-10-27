@@ -6,8 +6,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $       
-//! $Date: 2009-07-13 06:22:39 $
+//! $Revision: 1.5 $
+//! $Date: 2009-10-27 13:30:44 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -92,7 +92,7 @@ int main(int argc, char *argv[]) {
 					}
 					madc32_fillStruct(s_adc, file);			/* fill struct from environment data */
 					madc32_printDb(s_adc);
-					madc32_loadFromDb(s_adc); 				/* load module regs from database */
+					madc32_loadFromDb(s_adc, 0xFFFFFFFF); 				/* load module regs from database */
 					break;
 		case 'd':	if (file[0] == '\0') {
 						fprintf(stderr, "madc32: File name missing\n");

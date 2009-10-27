@@ -9,8 +9,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-20 08:40:11 $
+//! $Revision: 1.5 $
+//! $Date: 2009-10-27 13:30:44 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
@@ -639,6 +639,14 @@ Ssiz_t TString::AdjustCapacity(Ssiz_t nc)
    if (nc <= ic) return ic;
    Ssiz_t rs = GetResizeIncrement();
    return (nc - ic + rs - 1) / rs * rs + ic;
+}
+
+//______________________________________________________________________________
+void TString::Clear()
+{
+   // Clear string without changing its capacity.
+
+   Clobber(Capacity());
 }
 
 //______________________________________________________________________________

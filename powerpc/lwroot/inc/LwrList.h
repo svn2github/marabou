@@ -8,10 +8,10 @@
 //! \details		Class definitions for ROOT under LynxOs: TList<br>
 //! 				A doubly linked list.<br>
 //! 				All classes inheriting from TObject can be inserted in a TList.
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.4 $
+//! $Date: 2009-10-27 13:30:44 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrSeqCollection.h"
@@ -178,6 +178,7 @@ public:
    TObject           *Next();
    void               Reset() { fStarted = kFALSE; }
 
+   TObject           *operator*() const { return (fCurCursor ? fCurCursor->GetObject() : NULL); }
 };
 
 #endif

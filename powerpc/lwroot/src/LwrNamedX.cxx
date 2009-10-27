@@ -9,8 +9,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-20 08:40:11 $
+//! $Revision: 1.5 $
+//! $Date: 2009-10-27 13:30:44 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrNamedX.h"
@@ -25,7 +25,7 @@
 //! \retval 		FullName			-- resulting string
 //////////////////////////////////////////////////////////////////////////////
 
-const Char_t * TMrbNamedX::GetFullName(TString & FullName, Int_t Base, Bool_t IndexFlag) const
+const Char_t * TMrbNamedX::GetFullName(TString & FullName, Int_t Base, Bool_t IndexFlag)
 {
 	FullName = this->GetName();
 	if (this->HasTitle()) {
@@ -69,7 +69,7 @@ const Char_t * TMrbNamedX::GetFullName(TString & FullName, Int_t Base, Bool_t In
 //! \retval 		Relation		-- {0, -1, +1}
 //////////////////////////////////////////////////////////////////////////////
 
-Int_t TMrbNamedX::Compare(const TMrbNamedX * Nx) const
+Int_t TMrbNamedX::Compare(const TMrbNamedX * Nx)
 {
 	Int_t s;
 	TMrbNamedX * nx = (TMrbNamedX *) Nx;
@@ -90,7 +90,7 @@ Int_t TMrbNamedX::Compare(const TMrbNamedX * Nx) const
 //! \param[in]		CrFlag		-- appends \a cr (=endl) if TRUE
 //////////////////////////////////////////////////////////////////////////////
 
-void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag) const
+void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag)
 {
 	TString fullName;
 	Out << this->GetFullName(fullName, Base, kTRUE);

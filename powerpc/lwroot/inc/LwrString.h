@@ -7,10 +7,10 @@
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: TString<br>
 //! 				Basic string class
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.4 $
+//! $Date: 2009-10-27 13:30:44 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
@@ -188,6 +188,7 @@ public:
    Ssiz_t       Capacity() const         { return Pref()->Capacity(); }
    Ssiz_t       Capacity(Ssiz_t n);
    TString&     Chop();
+   void			Clear();
    int          CompareTo(const char *cs,    ECaseCompare cmp = kExact) const;
    int          CompareTo(const TString& st, ECaseCompare cmp = kExact) const;
    Bool_t       Contains(const char *pat,    ECaseCompare cmp = kExact) const;

@@ -7,10 +7,10 @@
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: TMrbNamedX<br>
 //! 				A TNamed object together with an index
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.5 $
+//! $Date: 2009-10-27 13:30:44 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -68,7 +68,7 @@ class TMrbNamedX: public TNamed {
 		~TMrbNamedX() {};
 
 																				// return short name + long name (+ index)
-		const Char_t * GetFullName(TString & FullName, Int_t Base = 10, Bool_t IndexFlag = kFALSE) const;
+		const Char_t * GetFullName(TString & FullName, Int_t Base = 10, Bool_t IndexFlag = kFALSE);
 
 		//! Return index
 		inline GetIndex() { return(fIndex); };
@@ -110,14 +110,14 @@ class TMrbNamedX: public TNamed {
 		//! \return TRUE or FALSE
 		inline Bool_t HasTitle() const { return(fHasTitle); };
 
-		void Print(ostream & Out, Int_t Base = 10, Bool_t CrFlag = kTRUE) const;
+		void Print(ostream & Out, Int_t Base = 10, Bool_t CrFlag = kTRUE);
 
 		//! Print data to cout
 		//! \param[in]	Base	-- numerical base to convert index to
-		inline void Print(Int_t Base) const { Print(cout, Base, kTRUE); };
+		inline void Print(Int_t Base) { Print(cout, Base, kTRUE); };
 
 		//! Print data to cout, index decimal
-		inline void Print() const { Print(cout, 10, kTRUE); };
+		inline void Print() { Print(cout, 10, kTRUE); };
 
 		//! Objects are sortable
 		//! \return TRUE
@@ -131,8 +131,8 @@ class TMrbNamedX: public TNamed {
 		//! \return TRUE or FALSE
 		inline Bool_t IsSortedByName() const { return(fSortedByName); };
 
-		Int_t Compare(const TMrbNamedX * Nx) const; 	// ordering relation
-		
+		Int_t Compare(const TMrbNamedX * Nx); 	// ordering relation
+
 	protected:
 		Bool_t fHasTitle;			//!< kTRUE if long name given
 		Int_t fIndex;				//!< index

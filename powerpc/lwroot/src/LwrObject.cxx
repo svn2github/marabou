@@ -1,6 +1,6 @@
 //________________________________________________________[C++ IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-//! \file			LwrObjString.cxx
+//! \file			LwrObject.cxx
 //! \brief			Light Weight ROOT: TObject
 //! \details		Class definitions for ROOT under LynxOs: TObject
 //! 				Mother of all ROOT objects<br>
@@ -19,8 +19,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.6 $     
-//! $Date: 2009-04-24 08:46:41 $
+//! $Revision: 1.7 $
+//! $Date: 2009-10-27 13:30:44 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
@@ -157,7 +157,7 @@ Bool_t TObject::IsFolder() const {  return kFALSE; }
 //! \details		Default equal comparison (objects are equal if they have
 //! 				the same address in memory).<BR>
 //! 				More complicated classes might want to override this function.
-//! \return 		TRUE or FALSE
+//! \retval 		TRUE or FALSE
 /////////////////////////////////////////////////////////////////////////////
 
 Bool_t TObject::IsEqual(const TObject *obj) const { return obj == this; }
@@ -166,7 +166,7 @@ Bool_t TObject::IsEqual(const TObject *obj) const { return obj == this; }
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets or unsets the user status bits as specified
 //! \param[in]		Bits		-- bits to be (un)set
-//! \param[in]		SetFlag 	-- TRUE = set, FALSE = unset	
+//! \param[in]		SetFlag 	-- TRUE = set, FALSE = unset
 /////////////////////////////////////////////////////////////////////////////
 
 void TObject::SetBit(UInt_t Bits, Bool_t SetFlag) { if (SetFlag) SetBit(Bits); else ResetBit(Bits); }
@@ -178,3 +178,11 @@ void TObject::SetBit(UInt_t Bits, Bool_t SetFlag) { if (SetFlag) SetBit(Bits); e
 /////////////////////////////////////////////////////////////////////////////
 
 void TObject::SetUniqueID(UInt_t Uid) { fUniqueID = Uid; }
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Sets id as specified
+//! \retval			hashval		-- hash value
+/////////////////////////////////////////////////////////////////////////////
+
+ULong_t TObject::Hash() const { return (ULong_t) this >> 2; }

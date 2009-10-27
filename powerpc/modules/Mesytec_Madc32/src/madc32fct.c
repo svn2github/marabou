@@ -4,10 +4,10 @@
 //! \brief			Code for module MADC32
 //! \details		Implements functions to handle modules of type Mesytec MADC32
 //!
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $       
-//! $Date: 2009-05-08 16:24:51 $
+//! $Revision: 1.4 $
+//! $Date: 2009-10-27 13:30:44 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -64,7 +64,7 @@ uint16_t madc32_getThreshold(struct s_madc32 * s, uint16_t channel)
 {
 	uint16_t thresh = 0;
 	if (channel < NOF_CHANNELS) thresh = GET16(s->baseAddr, MADC32_THRESHOLD + sizeof(uint16_t) * channel) & MADC32_THRESHOLD_MASK;
-	return thresh; 
+	return thresh;
 }
 
 void madc32_setThreshold_db(struct s_madc32 * s, uint16_t channel)
@@ -91,7 +91,7 @@ void madc32_setAddrReg(struct s_madc32 * s, uint16_t vmeAddr)
 uint16_t madc32_getAddrReg(struct s_madc32 * s)
 {
 	uint16_t source = GET16(s->baseAddr, MADC32_ADDR_SOURCE);
-	if (source & MADC32_ADDR_SOURCE_REG) return GET16(s->baseAddr, MADC32_ADDR_REG); 
+	if (source & MADC32_ADDR_SOURCE_REG) return GET16(s->baseAddr, MADC32_ADDR_REG);
 	else return 0;
 }
 
@@ -429,7 +429,7 @@ void madc32_moduleInfo(struct s_madc32 * s)
 									((firmware >> 8) & 0xff), (firmware & 0xff));
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }
- 
+
 void madc32_setPrefix(struct s_madc32 * s, char * prefix)
 {
 	strcpy(s->prefix, prefix);
@@ -576,10 +576,11 @@ bool_t madc32_fillStruct(struct s_madc32 * s, char * file)
 	return TRUE;
 }
 
-void madc32_loadFromDb(struct s_madc32 * s)
+void madc32_loadFromDb(struct s_madc32 * s, uint32_t chnPattern)
 {
 	int ch;
 	int gg;
+	uint32_t bit;
 
 	madc32_setAddrReg_db(s);
 	madc32_setModuleId_db(s);
@@ -609,7 +610,11 @@ void madc32_loadFromDb(struct s_madc32 * s)
 	madc32_setTsSource_db(s);
 	madc32_setTsDivisor_db(s);
 
-	for (ch = 0; ch < NOF_CHANNELS; ch++) madc32_setThreshold_db(s, ch);
+	bit = 1;
+	for (ch = 0; ch < NOF_CHANNELS; ch++) {
+		if (chnPattern & bit) madc32_setThreshold_db(s, ch); else madc32_setThreshold(s, ch, MADC32_CHANNEL_INACTIVE);
+		bit <<= 1;
+	}
 }
 
 bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
@@ -682,7 +687,7 @@ bool_t madc32_dumpRaw(struct s_madc32 * s, char * file)
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 	for (i = 0x6000; i < 0x60B0; i += 2) {
-		fprintf(f, "%#lx %#x\n", i, GET16(s->baseAddr, i)); 
+		fprintf(f, "%#lx %#x\n", i, GET16(s->baseAddr, i));
 	}
 	fclose(f);
 }
@@ -729,15 +734,15 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	uint32_t * dataStart = pointer;
 	uint16_t numData;
 	unsigned int i;
-  
+
 	if (!madc32_dataReady(s)) {
 		*pointer++ = 0xaffec0c0;
 		return 0;
 	}
-  
+
 	numData = madc32_getFifoLength(s);
-  
-	for (i = 0; i < (int) numData; i++) *pointer++ = GET32(s->baseAddr, MADC32_DATA); 
+
+	for (i = 0; i < (int) numData; i++) *pointer++ = GET32(s->baseAddr, MADC32_DATA);
 
 	madc32_resetReadout(s);
 
@@ -748,9 +753,9 @@ int madc32_readTimeB(struct s_madc32 * s, uint32_t * pointer)
 {
 	uint16_t * p16 = pointer;
 	*p16++ = 0;
-	*p16++ = GET16(s->baseAddr, MADC32_CTRB_TIME_0); 
-	*p16++ = GET16(s->baseAddr, MADC32_CTRB_TIME_1); 
-	*p16++ = GET16(s->baseAddr, MADC32_CTRB_TIME_2); 
+	*p16++ = GET16(s->baseAddr, MADC32_CTRB_TIME_0);
+	*p16++ = GET16(s->baseAddr, MADC32_CTRB_TIME_1);
+	*p16++ = GET16(s->baseAddr, MADC32_CTRB_TIME_2);
 	return 4 * sizeof(uint16_t) / sizeof(uint32_t);
 }
 

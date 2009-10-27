@@ -12,10 +12,10 @@
 //! 				sorting, inspection, printing, drawing, etc.<br>
 //! 				Every object which inherits from TObject can be stored
 //! 				in the ROOT collection classes.
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 13:30:30 $
+//! $Revision: 1.4 $
+//! $Date: 2009-10-27 13:30:44 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <iostream.h>
@@ -76,6 +76,7 @@ public:
    virtual const char *GetName() const;
    virtual Option_t   *GetOption() const { return ""; }
    virtual const char *GetTitle() const;
+   virtual ULong_t     Hash() const;
    virtual Bool_t      IsFolder() const;
    virtual Bool_t      IsEqual(const TObject *obj) const;
    virtual Bool_t      IsSortable() const { return kFALSE; }

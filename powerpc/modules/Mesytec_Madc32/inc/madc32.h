@@ -18,10 +18,10 @@
 //! \file			madc32.h
 //! \brief			Definitions for Mesytec Madc32 ADC
 //! \details		Contains definitions to operate a Mesytec Madc32
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.6 $     
-//! $Date: 2009-05-08 16:24:51 $
+//! $Revision: 1.7 $
+//! $Date: 2009-10-27 13:30:44 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*____________________________________________________________________________
@@ -218,6 +218,8 @@
 
 #define MADC32_CTRA_TS_DIVISOR_DEFAULT 		1
 #define MADC32_CTRA_TS_DIVISOR_MASK 		0xFFFF
+
+#define MADC32_CHANNEL_INACTIVE				0x1FFF
 
 /*____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////

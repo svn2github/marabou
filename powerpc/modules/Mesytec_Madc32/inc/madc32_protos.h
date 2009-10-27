@@ -8,8 +8,8 @@
 //! \details		Prototypes for Mesytec Madc32
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.7 $     
-//! $Date: 2009-06-24 13:59:12 $
+//! $Revision: 1.8 $
+//! $Date: 2009-10-27 13:30:44 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -20,7 +20,7 @@ void madc32_setPrefix(struct s_madc32 * s, char * prefix);
 
 bool_t madc32_fillStruct(struct s_madc32 * s, char * file);
 
-void madc32_loadFromDb(struct s_madc32 * s);
+void madc32_loadFromDb(struct s_madc32 * s, uint32_t chnPattern);
 
 bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file);
 bool_t madc32_dumpRaw(struct s_madc32 * s, char * file);
