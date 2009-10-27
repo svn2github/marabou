@@ -6,8 +6,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.6 $
-//! $Date: 2009-10-27 16:43:39 $
+//! $Revision: 1.7 $
+//! $Date: 2009-10-27 18:18:29 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -29,6 +29,9 @@
 #include "errnum_def.h"
 
 char msg[256];
+
+uint32_t last[200];
+int lastWc;
 
 struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial)
 {
@@ -733,42 +736,47 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 {
 	uint32_t * dataStart = pointer;
 	uint32_t data;
-	uint16_t numData;
-	unsigned int i;
-	bool_t needHeader;
+	int numData;
+	unsigned int i, j;
 	bool_t printData;
-	int wc;
 
 	if (!madc32_dataReady(s)) {
 		*pointer++ = 0xaffec0c0;
 		return 0;
 	}
 
-	numData = madc32_getFifoLength(s);
+	numData = (int) madc32_getFifoLength(s);
 
-	needHeader = TRUE;
+#if 0
 	printData = FALSE;
-	wc = 0;
-	for (i = 0; i < (int) numData; i++) {
+	for (i = 0; i < numData; i++) {
 		data = GET32(s->baseAddr, MADC32_DATA);
-		if (needHeader) {
+		if (i == 0) {
 			if ((data & MADC32_M_HEADER) != MADC32_M_HEADER) {
 				sprintf(msg, "[%sreadout] %s: Not a header - %#lx", s->mpref, s->moduleName, data);
 				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+				f_ut_send_msg(s->prefix, "+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++", ERR__MSG_INFO, MASK__PRTT);
+				sprintf(msg, "[%sreadout] %s: Last event, wc=%d", s->mpref, s->moduleName, lastWc);
+				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 				printData = TRUE;
+				for (j = 0; j < lastWc; j++) {
+					sprintf(msg, "[%sreadout] %d: %#lx", s->mpref, j, last[j]);
+					f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+				}
+				f_ut_send_msg(s->prefix, "----------------------------------------------------------------", ERR__MSG_INFO, MASK__PRTT);
 			}
 		}
-		needHeader = FALSE;
 		if (printData) {
 		  	sprintf(msg, "[%sreadout] %d: %#lx", s->mpref, i, data);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		}
 		*pointer++ = data;
-		if ((data & MADC32_M_TRAILER) == MADC32_M_TRAILER) {
-			needHeader = TRUE;
-			printData = FALSE;
-		}
+		last[i] = data;
 	}
+	lastWc = numData;
+#endif
+
+	for (i = 0; i < numData; i++) *pointer++ = GET32(s->baseAddr, MADC32_DATA);
 
 	madc32_resetReadout(s);
 
