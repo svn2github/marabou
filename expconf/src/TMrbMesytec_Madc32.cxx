@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.17 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.18 2009-10-27 13:29:40 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -193,7 +193,7 @@ TMrbMesytec_Madc32::TMrbMesytec_Madc32(const Char_t * ModuleName, UInt_t BaseAdd
 	TString mType;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (!this->IsZombie()) {
 		if (gMrbConfig == NULL) {
 			gMrbLog->Err() << "No config defined" << endl;
@@ -258,7 +258,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("AddressSource");
-	bNames->AddNamedX(kMrbAddressSource);	
+	bNames->AddNamedX(kMrbAddressSource);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -281,7 +281,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("DataWidth");
-	bNames->AddNamedX(kMrbDataWidth);	
+	bNames->AddNamedX(kMrbDataWidth);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -294,7 +294,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("MultiEvent");
-	bNames->AddNamedX(kMrbMultiEvent);	
+	bNames->AddNamedX(kMrbMultiEvent);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -312,7 +312,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("MarkingType");
-	bNames->AddNamedX(kMrbMarkingType);	
+	bNames->AddNamedX(kMrbMarkingType);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -325,7 +325,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("BankOperation");
-	bNames->AddNamedX(kMrbBankOperation);	
+	bNames->AddNamedX(kMrbBankOperation);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -338,7 +338,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("AdcResolution");
-	bNames->AddNamedX(kMrbAdcResolution);	
+	bNames->AddNamedX(kMrbAdcResolution);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -351,7 +351,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("OutputFormat");
-	bNames->AddNamedX(kMrbOutputFormat);	
+	bNames->AddNamedX(kMrbOutputFormat);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -364,7 +364,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("AdcOverride");
-	bNames->AddNamedX(kMrbAdcResolution);	
+	bNames->AddNamedX(kMrbAdcResolution);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -387,7 +387,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("UseGG");
-	bNames->AddNamedX(kMrbUseGG);	
+	bNames->AddNamedX(kMrbUseGG);
 	bNames->SetPatternMode(kTRUE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kTRUE);
@@ -400,7 +400,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("InputRange");
-	bNames->AddNamedX(kMrbInputRange);	
+	bNames->AddNamedX(kMrbInputRange);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -413,7 +413,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("EclTerm");
-	bNames->AddNamedX(kMrbEclTerm);	
+	bNames->AddNamedX(kMrbEclTerm);
 	bNames->SetPatternMode(kTRUE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kTRUE);
@@ -426,7 +426,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("EclG1OrOsc");
-	bNames->AddNamedX(kMrbEclG1OrOsc);	
+	bNames->AddNamedX(kMrbEclG1OrOsc);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -439,7 +439,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("EclFclOrRts");
-	bNames->AddNamedX(kMrbEclFclOrRts);	
+	bNames->AddNamedX(kMrbEclFclOrRts);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -452,7 +452,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("NimG1OrOsc");
-	bNames->AddNamedX(kMrbNimG1OrOsc);	
+	bNames->AddNamedX(kMrbNimG1OrOsc);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -465,7 +465,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("NimFclOrRts");
-	bNames->AddNamedX(kMrbNimFclOrRts);	
+	bNames->AddNamedX(kMrbNimFclOrRts);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -478,7 +478,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("NimBusy");
-	bNames->AddNamedX(kMrbNimBusy);	
+	bNames->AddNamedX(kMrbNimBusy);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -491,7 +491,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("PulserStatus");
-	bNames->AddNamedX(kMrbPulserStatus);	
+	bNames->AddNamedX(kMrbPulserStatus);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -504,7 +504,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("TsSource");
-	bNames->AddNamedX(kMrbTsSource);	
+	bNames->AddNamedX(kMrbTsSource);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -647,9 +647,9 @@ Bool_t TMrbMesytec_Madc32::SaveSettings(const Char_t * SettingsFile) {
 		gMrbLog->Out()	<< "Using template file " << fp << endl;
 		gMrbLog->Flush("SaveSettings");
 	}
-	
+
 	tf = fp;
-	
+
 	TMrbLofNamedX tags;
 	tags.AddNamedX(TMrbConfig::kRcModuleSettings, "MODULE_SETTINGS");
 
@@ -819,6 +819,7 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 			fCodeTemplates.Substitute("$settingsFile", settings.Data());
+			fCodeTemplates.Substitute("$chnPattern", (Int_t) this->GetPatternOfChannelsUsed(), 16);
 			fCodeTemplates.Substitute("$serial", this->GetSerial());
 			fCodeTemplates.Substitute("$dumpFile", dump.Data());
 			fCodeTemplates.WriteCode(RdoStrm);
@@ -935,7 +936,7 @@ Bool_t TMrbMesytec_Madc32::CheckSubeventType(TMrbSubevent * Subevent) const {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbMesytec_Madc32::CheckSubeventType
 // Purpose:        Check if calling subevent is applicable
-// Arguments:      
+// Arguments:
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Makes sure that a subevent of type [10,8x] (CAEN)
