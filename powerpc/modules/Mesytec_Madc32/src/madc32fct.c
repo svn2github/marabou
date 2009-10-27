@@ -6,8 +6,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $
-//! $Date: 2009-10-27 15:18:48 $
+//! $Revision: 1.6 $
+//! $Date: 2009-10-27 16:43:39 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -736,6 +736,7 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	uint16_t numData;
 	unsigned int i;
 	bool_t needHeader;
+	bool_t printData;
 	int wc;
 
 	if (!madc32_dataReady(s)) {
@@ -746,6 +747,7 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	numData = madc32_getFifoLength(s);
 
 	needHeader = TRUE;
+	printData = FALSE;
 	wc = 0;
 	for (i = 0; i < (int) numData; i++) {
 		data = GET32(s->baseAddr, MADC32_DATA);
@@ -753,21 +755,19 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 			if ((data & MADC32_M_HEADER) != MADC32_M_HEADER) {
 				sprintf(msg, "[%sreadout] %s: Not a header - %#lx", s->mpref, s->moduleName, data);
 				f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			} else {
-				wc = (int) (data & MADC32_M_WC);
-			}
-			needHeader = FALSE;
-		} else {
-			wc--;
-			if (wc == 0) {
-			  if ((data & MADC32_M_TRAILER) != MADC32_M_TRAILER) {
-				  sprintf(msg, "[%sreadout] %s: Not a trailer - %#lx", s->mpref, s->moduleName, data);
-				  f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
-			  }
-			  needHeader = TRUE;
+				printData = TRUE;
 			}
 		}
+		needHeader = FALSE;
+		if (printData) {
+		  	sprintf(msg, "[%sreadout] %d: %#lx", s->mpref, i, data);
+			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+		}
 		*pointer++ = data;
+		if ((data & MADC32_M_TRAILER) == MADC32_M_TRAILER) {
+			needHeader = TRUE;
+			printData = FALSE;
+		}
 	}
 
 	madc32_resetReadout(s);
