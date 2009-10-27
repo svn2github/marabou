@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.18 2009-10-27 13:29:40 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.19 2009-10-27 15:55:33 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -847,6 +847,7 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+			fCodeTemplates.Substitute("$chnPattern", (Int_t) this->GetPatternOfChannelsUsed(), 16);
 			fCodeTemplates.Substitute("$settingsFile", fSettingsFile.Data());
 			fCodeTemplates.Substitute("$updateFile", Form(".%sUpdate", this->GetName()));
 			fCodeTemplates.WriteCode(RdoStrm);

@@ -57,7 +57,7 @@
 							madc32_stopAcq(s_$moduleName);
 							madc32_reset(s_$moduleName);
 							madc32_fillStruct(s_$moduleName, "$settingsFile");
-							madc32_loadFromDb(s_$moduleName);
+							madc32_loadFromDb(s_$moduleName, $chnPattern);
 							madc32_resetReadout(s_$moduleName);
 							madc32_resetFifo(s_$moduleName);
 							madc32_startAcq(s_$moduleName);
