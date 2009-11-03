@@ -6,7 +6,7 @@
 #include <iostream>
 
 class HTPad;
-class HTCanvas;
+class GrCanvas;
 
 class HprElement
 {
@@ -16,7 +16,7 @@ private:
    Int_t fMustAlign;
    TList fMemberships;
    HTPad * fHTPad;             //!   dont stream
-   HTCanvas * fHTCanvas;       //!   dont stream
+   GrCanvas * fGrCanvas;       //!   dont stream
    TObject *  fDaughter;       //!   dont stream
 
 public:

@@ -3,7 +3,7 @@
 #include "TF1.h"
 #include "TH1.h"
 #include "HTPad.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(HTPad)
 
@@ -54,7 +54,7 @@ HTPad::~HTPad()
 ;
 void HTPad::Paint(Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
 
    if (htc && htc->GetUseEditGrid()) {
 		Double_t x1 =  htc->PutOnGridX_NDC(GetXlowNDC());
@@ -74,7 +74,7 @@ void HTPad::Paint(Option_t *opt)
 
 void HTPad::PaintModified()
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
 
    if (htc && htc->GetUseEditGrid()) {
 		Double_t x1 =  htc->PutOnGridX_NDC(GetXlowNDC());

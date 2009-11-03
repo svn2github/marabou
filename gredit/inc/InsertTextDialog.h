@@ -18,9 +18,12 @@ private:
    TString        *fEditTextPointer;
    TString        fEditTextFileName;
    Int_t          fEditTextFromFile;
+   Double_t       fEditTextRadius;
+   Double_t       fEditTextStartAngle;
    Double_t       fEditTextX0;
    Double_t       fEditTextY0;
    Double_t       fEditTextDy;
+   Double_t       fEditTextCharSep;
    Size_t         fEditTextSize;
    Float_t        fEditTextAngle;
    Short_t        fEditTextAlign;
@@ -33,14 +36,15 @@ private:
 public:
    InsertTextDialog(Bool_t from_file = kFALSE, TObject *caller = NULL);
    virtual ~InsertTextDialog();
-   void InsertTextExecute();
+   void InsertTextExecute(Int_t onarc = 0);
+   void InsertTextOnArc();
    TString        *GetTextPointer() { return fEditTextPointer; } ;
    Size_t GetEditTextSize() { return fEditTextSize; };
    Float_t GetEditTextAngle() { return fEditTextAngle; };
    Short_t GetEditTextAlign() { return fEditTextAlign; };
    Color_t GetEditTextColor() { return fEditTextColor; };
    Font_t GetEditTextFont() { return fEditTextFont; };
-   Int_t GetEditTextPrec() { return fEditTextPrec; };
+   Int_t GetEditTextPrec()  { return fEditTextPrec; };
    Double_t GetEditTextX0() { return fEditTextX0; };
    Double_t GetEditTextY0() { return fEditTextY0; };
 

@@ -2,7 +2,7 @@
 #include "Riostream.h"
 #include "TVirtualPS.h"
 #include "THprLatex.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 const Int_t kLatex      = BIT(10);
 
@@ -18,7 +18,7 @@ THprLatex::THprLatex(Double_t x, Double_t y, const Char_t * text)
 
 void THprLatex::Paint(const Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
       SetX(htc->PutOnGridX(GetX()));
       SetY(htc->PutOnGridY(GetY()));

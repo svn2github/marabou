@@ -1,7 +1,7 @@
 #include "TROOT.h"
 #include "Riostream.h"
 #include "THprMarker.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(THprMarker)
 //________________________________________________________________________
@@ -15,7 +15,7 @@ THprMarker::THprMarker(Double_t x, Double_t y, Style_t style)
 
 void THprMarker::Paint(const Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
       SetX(htc->PutOnGridX(GetX()));
       SetY(htc->PutOnGridY(GetY()));

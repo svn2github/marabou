@@ -1,7 +1,7 @@
 #include "TROOT.h"
 #include "Riostream.h"
 #include "THprEllipse.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(THprEllipse)
 
@@ -16,7 +16,7 @@ THprEllipse::THprEllipse(Double_t x1, Double_t y1, Double_t r1, Double_t r2,
 
 void THprEllipse::Paint(const Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
       SetX1(htc->PutOnGridX(GetX1()));
       SetY1(htc->PutOnGridY(GetY1()));

@@ -1,7 +1,7 @@
 #ifndef HPRPLANEMANAGER
 #define HPRPLANEMANAGER
 #include "TGWindow.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 #include "TGMrbValuesAndText.h"
 #include <iostream>
 //_____________________________________________________________________________________
@@ -15,7 +15,7 @@ private:
    TGMrbValuesAndText *fDialog;
    TGWindow    *fWindow;
    TCanvas     *fCanvas;
-   HTCanvas    *fHTCanvas;
+   GrCanvas    *fGrCanvas;
    Int_t       fCurrentActive;
    Int_t       fBidCurrentActive;
    Int_t       fVisibility[100];

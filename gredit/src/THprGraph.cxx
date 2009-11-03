@@ -1,7 +1,7 @@
 #include "TROOT.h"
 #include "Riostream.h"
 #include "THprGraph.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(THprGraph)
 //________________________________________________________________________
@@ -15,7 +15,7 @@ THprGraph::THprGraph(Int_t npoints, Double_t *x, Double_t *y)
 
 void THprGraph::Paint(const Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
       Double_t x, y;
       for (Int_t ip = 0; ip < GetN(); ip++) {

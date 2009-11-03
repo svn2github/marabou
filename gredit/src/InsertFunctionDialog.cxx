@@ -150,7 +150,7 @@ void InsertFunctionDialog::InsertFunctionExecute()
 
 void InsertFunctionDialog::SaveDefaults()
 {
-   cout << "HTCanvas::InsertFunction::SaveDefaults()" << endl;
+   cout << "GrCanvas::InsertFunction::SaveDefaults()" << endl;
    TEnv env(".hprrc");
    env.SetValue("InsertFunctionDialog.fNpar"		  , fNpar);
    env.SetValue("InsertFunctionDialog.fPar0" 	  , fPar[0]);
@@ -177,7 +177,7 @@ void InsertFunctionDialog::SaveDefaults()
 
 void InsertFunctionDialog::RestoreDefaults()
 {
-//   cout << "HTCanvas::InsertFunctionSetDefaults()" << endl;
+//   cout << "GrCanvas::InsertFunctionSetDefaults()" << endl;
    TEnv env(".hprrc");
    fNpar        = env.GetValue("InsertFunctionDialog.fNpar"		  ,           3);
    fPar[0]      = env.GetValue("InsertFunctionDialog.fPar0"		  , (Double_t)1);

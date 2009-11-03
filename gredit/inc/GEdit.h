@@ -2,7 +2,8 @@
 #define ROOT_GEdit
 #include "TList.h"
 //#ifdef MARABOUVERS
-#include "HTCanvas.h"
+//#include "HTCanvas.h"
+#include "GrCanvas.h"
 //#include "HistPresent.h"
 //#else
 //#include "TCanvas.h"
@@ -27,9 +28,10 @@ class GEdit : public TGFrame {
 
 private:
 #ifdef MARABOUVERS
-   HistPresent    *fHistPresent;
+//   HistPresent    *fHistPresent;
 #endif
-   HTCanvas        *fParent;
+//   HTCanvas        *fParent;
+   GrCanvas        *fParent;
    TGPopupMenu     *fEditMenu;
    TRootCanvas     *fRootCanvas;      //! dont stream
    HprEditCommands *fEditCommands;    //! dont stream
@@ -64,7 +66,8 @@ private:
 
 public:
    GEdit() {};
-   GEdit(HTCanvas * parent);
+   GEdit(GrCanvas * parent);
+//   GEdit(HTCanvas * parent);
    void Constructor();
    virtual ~GEdit();
    void RecursiveRemove(TObject * obj);
@@ -114,6 +117,7 @@ public:
    void    DrawTSplineXsParallelGraphs();
    void    DrawControlGraphs();
    void    SetVisibilityOfEnclosingCuts(Bool_t visible);
+   void    PushPictureToBg();
 
    void    InsertArc();
    void    InsertPad();

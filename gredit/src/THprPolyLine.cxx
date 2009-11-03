@@ -1,7 +1,7 @@
 #include "TROOT.h"
 #include "Riostream.h"
 #include "THprPolyLine.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(THprPolyLine)
 
@@ -24,7 +24,7 @@ THprPolyLine::THprPolyLine(Int_t np,
 
 void THprPolyLine::Paint(const Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
 		Double_t *px = GetX();
 		Double_t *py = GetY();

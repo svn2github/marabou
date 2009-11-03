@@ -1,6 +1,6 @@
 #include "HprElement.h"
 #include "HTPad.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(HprElement)
 
@@ -11,17 +11,17 @@ HprElement::HprElement(TObject * daughter) :
    fVisibilityFlag = 1;
    fMustAlign = 0;
    fHTPad = NULL;
-   fHTCanvas = NULL;
-   if (gPad->TestBit(HTCanvas::kIsAEditorPage) || gPad->InheritsFrom("HTPad")) {
+   fGrCanvas = NULL;
+   if (gPad->TestBit(GrCanvas::kIsAEditorPage) || gPad->InheritsFrom("HTPad")) {
 		if (gPad && gPad->GetMother() == gPad) {
-			fHTCanvas = (HTCanvas*)gPad;
-			fPlane = fHTCanvas->GetCurrentPlane();
+			fGrCanvas = (GrCanvas*)gPad;
+			fPlane = fGrCanvas->GetCurrentPlane();
 		} else {
 			fHTPad  = (HTPad*)gPad;
 			fPlane   = fHTPad->GetCurrentPlane();
 		}
    }
-//   std::cout << "HprElement this: " << this  << " fHTCanvas " << fHTCanvas<< " fHTPad " << fHTPad << " fPlane " << fPlane << std::endl;
+//   std::cout << "HprElement this: " << this  << " fGrCanvas " << fGrCanvas<< " fHTPad " << fHTPad << " fPlane " << fPlane << std::endl;
 };
 //____________________________________________________________________________
 HprElement::~HprElement(){};
@@ -30,11 +30,11 @@ void HprElement::SetVisibility(Int_t vis)
 {
    fVisibilityFlag = vis;
 
-   if ( fHTCanvas) {
+   if ( fGrCanvas) {
       if ( vis )
-      fHTCanvas->ViewObject(fDaughter);
+      fGrCanvas->ViewObject(fDaughter);
       else
-      fHTCanvas->HideObject(fDaughter);
+      fGrCanvas->HideObject(fDaughter);
    }
    if ( fHTPad ) {
       if ( vis )

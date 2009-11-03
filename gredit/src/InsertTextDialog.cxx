@@ -13,6 +13,7 @@
 #include "GroupOfGObjects.h"
 #include "TCutG.h"
 #endif
+#include "TextOnArc.h"
 #include "InsertTextDialog.h"
 #include <iostream>
 #include <Riostream.h>
@@ -183,6 +184,12 @@ text is edit in this widget and placed by clicking \n\
 \"ExecuteTextInsert\" and then at the desired position.\n\
 In the file case serveral lines may be arranged as a compound\n\
 which may shifted together\n\
+\"InsertTextOnArc\" allows placing of the text on circle.\n\
+Radius, Start Angle and Align determine the position\n\
+e.g. Angle: 90 Align: Center will place the text centered\n\
+at top of a circle\n\
+\"Char Sep\" allows extra space between characters \n\
+measured in fractions of the length of an \"a\".\n\
 ";
    gROOT->GetListOfCleanups()->Add(this);
    fCanvas = gPad->GetCanvas();
@@ -195,6 +202,7 @@ which may shifted together\n\
    RestoreDefaults();
    fEditTextFromFile = (Int_t)from_file;
 
+   static TString toacmd("InsertTextOnArc()");
    static TString excmd("InsertTextExecute()");
    static TString showcmd("Show_Head_of_File()");
 
@@ -205,21 +213,27 @@ which may shifted together\n\
    } else {
       fEditTextMarkCompound = 0;
    }
-	fRow_lab->Add(new TObjString("DoubleValue_X Pos or Offset"));
+	fRow_lab->Add(new TObjString("DoubleValue_X Pos/Offs"));
 	fValp[ind++] = &fEditTextX0;
-	fRow_lab->Add(new TObjString("DoubleValue+Y Pos or Offset"));
+	fRow_lab->Add(new TObjString("DoubleValue+Y Pos/Offs"));
 	fValp[ind++] = &fEditTextY0;
-   fRow_lab->Add(new TObjString("DoubleValue_Line spacing"));
-   fValp[ind++] = &fEditTextDy;
-   fRow_lab->Add(new TObjString("Float_Value+Size"));
-   fValp[ind++] = &fEditTextSize;
+	fRow_lab->Add(new TObjString("DoubleValue_Radius (TOArc)"));
+	fValp[ind++] = &fEditTextRadius;
+	fRow_lab->Add(new TObjString("DoubleValue+Start Angle"));
+	fValp[ind++] = &fEditTextStartAngle;
    fRow_lab->Add(new TObjString("CfontSelect_Font"));
    fValp[ind++] = &fEditTextFont;
    fRow_lab->Add(new TObjString("PlainIntVal+Precission"));
    fValp[ind++] = &fEditTextPrec;
+   fRow_lab->Add(new TObjString("DoubleValue_LineSpc"));
+   fValp[ind++] = &fEditTextDy;
+   fRow_lab->Add(new TObjString("Float_Value+Size"));
+   fValp[ind++] = &fEditTextSize;
+   fRow_lab->Add(new TObjString("DoubleValue+Char Sep"));
+   fValp[ind++] = &fEditTextCharSep;
    fRow_lab->Add(new TObjString("ColorSelect_Color"));
    fValp[ind++] = &fEditTextColor;
-   fRow_lab->Add(new TObjString("AlignSelect+Alignment"));
+   fRow_lab->Add(new TObjString("AlignSelect+Align"));
    fValp[ind++] = &fEditTextAlign;
    fRow_lab->Add(new TObjString("Float_Value+Angle"));
    fValp[ind++] = &fEditTextAngle;
@@ -229,6 +243,8 @@ which may shifted together\n\
    fValp[ind++] = &fEditTextLatexFilter;
    fRow_lab->Add(new TObjString("CommandButt_InsertTextExecute"));
    fValp[ind++] = &excmd;
+   fRow_lab->Add(new TObjString("CommandButt_InsertTextOnArc"));
+   fValp[ind++] = &toacmd;
    if (fEditTextFromFile) {
       fRow_lab->Add(new TObjString("CommandButt_Show_Head_of_File"));
       fValp[ind++] = &showcmd;
@@ -249,9 +265,7 @@ which may shifted together\n\
       history = hist_file;
 //      if (gROOT->GetVersionInt() < 40000) history = NULL;
    }
-   fEditTextX0 = 0;
-   fEditTextY0 = 0;
-   Int_t itemwidth = 280;
+   Int_t itemwidth = 320;
    static Int_t ok;
    TObject *caller = this;
    if ( fCaller )
@@ -264,8 +278,15 @@ which may shifted together\n\
 };
 //_________________________________________________________________________
 
-void InsertTextDialog::InsertTextExecute()
+void InsertTextDialog::InsertTextOnArc()
 {
+	InsertTextExecute(1);
+}
+//_________________________________________________________________________
+
+void InsertTextDialog::InsertTextExecute(Int_t onarc)
+{
+	Bool_t clear_textposition = kFALSE;
    if (fEditTextX0 == 0 && fEditTextY0 == 0) {
    	cout << "Mark position with left mouse" << endl;
       TMarker * mark  = (TMarker*)gPad->WaitPrimitive("TMarker");
@@ -273,7 +294,7 @@ void InsertTextDialog::InsertTextExecute()
 			cout << "Interrupted Input" << endl;
 			return;
 		}
-
+		clear_textposition = kTRUE;
       fEditTextX0 = mark->GetX();
       fEditTextY0 = mark->GetY();
       delete mark;
@@ -320,23 +341,32 @@ void InsertTextDialog::InsertTextExecute()
 //         cout << fEditTextPointer << " " << cmd.Data() << endl;
          loop = kFALSE;
       }
-      if (fEditTextLatexFilter > 0) converted_line = lat2root(cmd);
-      else             converted_line = cmd;
-      latex = new THprLatex(xt, yt, converted_line.Data());
-      latex->SetTextAlign(fEditTextAlign);
-      latex->SetTextFont(fEditTextFont * 10 + fEditTextPrec);
-      latex->SetTextSize(fEditTextSize);
-      latex->SetTextColor(fEditTextColor);
-      latex->SetTextAngle(fEditTextAngle);
-      latex->Draw();
-//      latex->Inspect();
-      llist.Add(latex);
-      yt -= fEditTextDy;
-      cmd.Resize(0);
-      if (latex->GetXsize() > longestline) longestline = latex->GetXsize();
-      if (th_first <= 0) th_first = latex->GetYsize();
-      th_last = latex->GetYsize();
-      latex->SetTextAngle(fEditTextAngle);
+		if ( onarc == 1 ) {
+		    TextOnArc *tt = new TextOnArc(fEditTextX0, fEditTextY0, fEditTextRadius, 
+								 cmd, fEditTextStartAngle, fEditTextAlign/10);
+				tt->SetTextFont(fEditTextFont * 10 + fEditTextPrec);
+				tt->SetTextSize(fEditTextSize);
+				tt->SetTextColor(fEditTextColor);
+				tt->SetSeperator(fEditTextCharSep);
+				tt->Draw();
+		} else {
+			if (fEditTextLatexFilter > 0) converted_line = lat2root(cmd);
+			else                          converted_line = cmd;
+			latex = new THprLatex(xt, yt, converted_line.Data());
+			latex->SetTextAlign(fEditTextAlign);
+			latex->SetTextFont(fEditTextFont * 10 + fEditTextPrec);
+			latex->SetTextSize(fEditTextSize);
+			latex->SetTextColor(fEditTextColor);
+			latex->SetTextAngle(fEditTextAngle);
+			latex->Draw();
+			llist.Add(latex);
+			yt -= fEditTextDy;
+			cmd.Resize(0);
+			if (latex->GetXsize() > longestline) longestline = latex->GetXsize();
+			if (th_first <= 0) th_first = latex->GetYsize();
+			th_last = latex->GetYsize();
+			latex->SetTextAngle(fEditTextAngle);
+		}
    }
 
    Int_t nlines = llist.GetSize();
@@ -401,8 +431,10 @@ void InsertTextDialog::InsertTextExecute()
    }
    gPad->Modified();
    gPad->Update();
-   fEditTextX0 = 0;
-   fEditTextY0 = 0;
+	if ( clear_textposition ) {
+		fEditTextX0 = 0;
+		fEditTextY0 = 0;
+	}
 };
 //_________________________________________________________________________
 
@@ -410,6 +442,8 @@ void InsertTextDialog::SaveDefaults()
 {
    TEnv env(".hprrc");
 //   cout << "InsertTextDialog SaveDefaults()" << endl;
+   env.SetValue("InsertTextDialog.EditTextX0"  		   , fEditTextX0);
+   env.SetValue("InsertTextDialog.EditTextY0"  		   , fEditTextY0);
    env.SetValue("InsertTextDialog.EditTextFileName"	, fEditTextFileName   );
    env.SetValue("InsertTextDialog.EditTextDy"			, fEditTextDy  		 );
    env.SetValue("InsertTextDialog.EditTextAlign"		, fEditTextAlign  	 );
@@ -417,23 +451,26 @@ void InsertTextDialog::SaveDefaults()
    env.SetValue("InsertTextDialog.EditTextFont" 		, fEditTextFont		 );
    env.SetValue("InsertTextDialog.EditTextPrec" 		, fEditTextPrec		 );
    env.SetValue("InsertTextDialog.EditTextSize" 		, fEditTextSize		 );
+   env.SetValue("InsertTextDialog.EditTextCharSep"		, fEditTextCharSep	 );
    env.SetValue("InsertTextDialog.EditTextAngle"		, fEditTextAngle  	 );
    env.SetValue("InsertTextDialog.EditTextLatexFilter", fEditTextLatexFilter);
+   env.SetValue("InsertTextDialog.EditTextStartAngle" , fEditTextStartAngle);
+   env.SetValue("InsertTextDialog.EditTextRadius"     , fEditTextRadius);
    env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 
 void InsertTextDialog::RestoreDefaults()
 {
-//   cout << "HTCanvas::InsertTextSetDefaults()" << endl;
+//   cout << "GrCanvas::InsertTextSetDefaults()" << endl;
    TEnv env(".hprrc");
    fEditTextFileName = "latex.txt";
    fEditTextFromFile = 0;
-   fEditTextX0 = 0;
-   fEditTextY0 = 0;
    fEditTextMarkCompound = 0;
    fEditTextSeqNr = 0;
 
+   fEditTextX0          = env.GetValue("InsertTextDialog.EditTextX0"  		  , 0);
+   fEditTextY0          = env.GetValue("InsertTextDialog.EditTextY0"  		  , 0);
    fEditTextFileName    = env.GetValue("InsertTextDialog.EditTextFileName"   , "latex.txt");
    fEditTextDy          = env.GetValue("InsertTextDialog.EditTextDy"  		  , 10);
    fEditTextAlign       = env.GetValue("InsertTextDialog.EditTextAlign"  	  , 11);
@@ -441,8 +478,11 @@ void InsertTextDialog::RestoreDefaults()
    fEditTextFont        = env.GetValue("InsertTextDialog.EditTextFont"		  , 6);
    fEditTextPrec        = env.GetValue("InsertTextDialog.EditTextPrec"		  , 2);
    fEditTextSize        = env.GetValue("InsertTextDialog.EditTextSize"		  , 0.02);
+   fEditTextCharSep     = env.GetValue("InsertTextDialog.EditTextCharSep"	  , 0);
    fEditTextAngle       = env.GetValue("InsertTextDialog.EditTextAngle"  	  , 0);
    fEditTextLatexFilter = env.GetValue("InsertTextDialog.EditTextLatexFilter", 1);
+   fEditTextStartAngle  = env.GetValue("InsertTextDialog.EditTextStartAngle" , 90);
+   fEditTextRadius      = env.GetValue("InsertTextDialog.EditTextRadius"     , 30);
 }
 //_________________________________________________________________________
 
@@ -468,7 +508,7 @@ InsertTextDialog::~InsertTextDialog()
 void InsertTextDialog::RecursiveRemove(TObject * obj)
 {
    if (obj == fCanvas || obj == fCaller) {
-      cout << "InsertTextDialog: CloseDialog "  << endl;
+//      cout << "InsertTextDialog: CloseDialog "  << endl;
       CloseDialog();
    }
 }

@@ -1,7 +1,7 @@
 #include "TROOT.h"
 #include "Riostream.h"
 #include "THprCurlyArc.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(THprCurlyArc)
 
@@ -18,7 +18,7 @@ THprCurlyArc::THprCurlyArc(Double_t x1, Double_t y1, Double_t rad,
 
 void THprCurlyArc::Paint(const Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
       SetCenter(htc->PutOnGridX(GetStartX()),
       htc->PutOnGridY(GetStartY()));

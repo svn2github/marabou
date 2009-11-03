@@ -41,26 +41,31 @@ In the latter case the target plane must be empty.\n\
    static Int_t dummy;
    Int_t ind = 0;
    fCurrentActive = 0;
-   fHTCanvas = dynamic_cast<HTCanvas*>(gPad);
-   if (!fHTCanvas) {
-      cout << "Cant get active canvas" << endl;
-      return;
+   fGrCanvas = dynamic_cast<GrCanvas*>(gPad);
+   if (!fGrCanvas) {
+		fGrCanvas = dynamic_cast<GrCanvas*>(gPad->GetMother());
+		if (!fGrCanvas) {
+			cout << "Cant get active canvas" << endl;
+			return;
+		}
    }
-   if (!fHTCanvas->TestBit(HTCanvas::kIsAEditorPage)) {
+   if (!fGrCanvas->TestBit(GrCanvas::kIsAEditorPage)) {
       cout << "Active canvas is not an editor page" << endl;
       return;
    }
 
-   fCurrentActive = fHTCanvas->GetCurrentPlane();
+   fCurrentActive = fGrCanvas->GetCurrentPlane();
    fRow_lab->Add(new TObjString("PlainIntVal_Current active plane"));
    fBidCurrentActive = ind;
    fValp[ind++] = &fCurrentActive;
    TString label;
    Int_t nElements = FillPlaneList();
-   cout << "nElements " <<nElements  << endl;
+//   cout << "nElements " <<nElements  << endl;
 
    if (nElements > 0) {
       for (Int_t i =0; i < 100; i++) {
+			fPlaneIndexMove[i] = 0;
+			fPlaneIndexVis[i] = 0;
          if (fUsedPlanes[i] > 0) {
              label = "CommentOnly_Plane ";
              label += i;
@@ -82,7 +87,7 @@ In the latter case the target plane must be empty.\n\
       }
    }
    static Int_t ok;
-   Int_t itemwidth = 300;
+   Int_t itemwidth = 420;
 //   cout << this->ClassName()<< endl;
    fDialog =
       new TGMrbValuesAndText("PlaneManager", NULL, &ok,itemwidth, fWindow,
@@ -144,38 +149,43 @@ void HprPlaneManager::CloseDown(Int_t wid)
 
 void HprPlaneManager::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
-   cout << "CRButtonPressed(" << wid<< ", " <<bid << endl;
-   if (fHTCanvas) {
+   cout << "CRButtonPressed(" << wid<< ", " <<bid  << " " 
+	<< fBidCurrentActive << " " <<fCurrentActive << endl;
+   if (fGrCanvas) {
       if (bid == fBidCurrentActive) {
          if (fCurrentActive < 1 || fCurrentActive > 100) {
             cout << " Plane must be > 0 , <= 100 " << endl;
             fCurrentActive = 50;
          } else {
-            fHTCanvas->SetCurrentPlane(fCurrentActive);
+            fGrCanvas->SetCurrentPlane(fCurrentActive);
          }
       } else {
+			
         for (Int_t plane =0; plane < 100; plane++) {
+//			 cout << plane << " "<< fPlaneIndexVis[plane] << " " <<
+//			 fVisibility[plane] << endl;
           if (bid == fPlaneIndexVis[plane]) {
              if (fVisibility[plane] == 1) {
-                HprElement::MoveAllObjects(fHTCanvas->GetHiddenPrimitives(),
-                               fHTCanvas->GetListOfPrimitives(),
+                HprElement::MoveAllObjects(fGrCanvas->GetHiddenPrimitives(),
+                               fGrCanvas->GetListOfPrimitives(),
                                plane, 1);
              } else {
-                HprElement::MoveAllObjects(fHTCanvas->GetListOfPrimitives(),
-                               fHTCanvas->GetHiddenPrimitives(),
+                HprElement::MoveAllObjects(fGrCanvas->GetListOfPrimitives(),
+                               fGrCanvas->GetHiddenPrimitives(),
                                plane, 0);
              }
-             fHTCanvas->Modified();
-             fHTCanvas->Update();
+             fGrCanvas->Modified();
+             fGrCanvas->Update();
           } else {
              if (bid == fPlaneIndexMove[plane]) {
                 if (fUsedPlanes[fMoveToPlane[plane]] != 0) {
-                   cout << "Targetplane: " << fMoveToPlane[plane] <<
-                        " not empty" << endl;
+                    cout << "plane: " << plane << " Targetplane: " << fMoveToPlane[plane] <<
+                         " not empty" << endl;
                    } else {
                       MovePlaneNumber(plane, fMoveToPlane[plane]);
                       CloseWidget();
                       OpenWidget();
+							 break;
                    }
                 }
              }
@@ -196,7 +206,7 @@ Int_t HprPlaneManager::FillPlaneList()
    TObject *obj;
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("HprElement")) {
-         cout << obj->ClassName() << endl;
+ //        cout << obj->ClassName() << endl;
          HprElement* hpre = dynamic_cast<HprElement*>(obj);
          Int_t plane = hpre->GetPlane();
          if (plane >=0 && plane < 100) {
@@ -206,7 +216,7 @@ Int_t HprPlaneManager::FillPlaneList()
          }
       }
    }
-   TIter next1(fHTCanvas->GetHiddenPrimitives());
+   TIter next1(fGrCanvas->GetHiddenPrimitives());
    while ( (obj = next1()) ) {
       if (obj->InheritsFrom("HprElement")) {
          HprElement* hpre = dynamic_cast<HprElement*>(obj);
@@ -224,20 +234,21 @@ Int_t HprPlaneManager::FillPlaneList()
 Int_t HprPlaneManager::MovePlaneNumber(Int_t from, Int_t to)
 {
    Int_t nel = 0;
-   TIter next(fHTCanvas->GetListOfPrimitives());
+   TIter next(fGrCanvas->GetListOfPrimitives());
    TObject *obj;
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("HprElement")) {
-         cout << obj->ClassName() << endl;
          HprElement* hpre = dynamic_cast<HprElement*>(obj);
          Int_t plane = hpre->GetPlane();
          if (plane == from) {
+				cout << "Move " << obj->ClassName() << " from " <<
+				from <<  " to " << to << endl;
             hpre->SetPlane(to);
             nel++;
          }
       }
    }
-   TIter next1(fHTCanvas->GetHiddenPrimitives());
+   TIter next1(fGrCanvas->GetHiddenPrimitives());
    while ( (obj = next1()) ) {
       if (obj->InheritsFrom("HprElement")) {
          HprElement* hpre = dynamic_cast<HprElement*>(obj);

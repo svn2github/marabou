@@ -1,7 +1,7 @@
 #include "TROOT.h"
 #include "Riostream.h"
 #include "THprCurlyLineWithArrow.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(THprCurlyLineWithArrow)
 
@@ -18,7 +18,7 @@ THprCurlyLineWithArrow::THprCurlyLineWithArrow(
 
 void THprCurlyLineWithArrow::Paint(const Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
       SetX1(htc->PutOnGridX(GetX1()));
       SetY1(htc->PutOnGridY(GetY1()));

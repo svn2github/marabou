@@ -101,7 +101,6 @@ void ChangeTextDialog::SaveDefaults()
 
 void ChangeTextDialog::RestoreDefaults()
 {
-//   cout << "HTCanvas::ChangeTextSetDefaults()" << endl;
    TEnv env(".hprrc");
 
    fChangeTextAlign       = env.GetValue("ChangeTextDialog.ChangeTextAlign"  , 11);

@@ -7,7 +7,7 @@
 #include "TSplineX.h"
 #include "TextBox.h"
 #ifdef MARABOUVERS
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 #endif
 ClassImp(TextBoxMember)
 ClassImp(TextBox)
@@ -48,7 +48,7 @@ TextBox::TextBox(Double_t x1, Double_t y1, Double_t x2, Double_t y2,const char *
    gROOT->GetListOfCleanups()->Add(this);
 #ifdef MARABOUVERS
    if (gPad) {
-       HTCanvas* hc = (HTCanvas*)gPad;
+       GrCanvas* hc = (GrCanvas*)gPad;
        hc->Add2ConnectedClasses(this);
    }
 #endif

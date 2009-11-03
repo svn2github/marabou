@@ -88,7 +88,8 @@ enum EGeditCommandIds {
    M_DeleteObjects,
    M_ReadGObjects,
    M_ShowGallery,
-   M_ChangeText
+   M_ChangeText,
+   M_PushPicture
 };
 
 ClassImp(GEdit)
@@ -96,7 +97,8 @@ ClassImp(GEdit)
 //____________________________________________________________________________
 
 
-GEdit::GEdit(HTCanvas * parent)
+//GEdit::GEdit(GrCanvas * parent)
+GEdit::GEdit(GrCanvas * parent)
 {
    fParent = parent;
    Constructor();
@@ -183,6 +185,7 @@ void GEdit::BuildMenu()
       delete [] xgrabsc;
    }
    fEditMenu->AddEntry("Plane / Depths Manager", M_PlaneManager);
+   fEditMenu->AddEntry("Push inserted picture to background", M_PushPicture);
    if (has_xgrabsc)
       fEditMenu->AddEntry("Grab image from screen", M_GrabFromScreen);
    fEditMenu->AddEntry("Mark selected objects as compound", M_MarkGObjects);
@@ -242,6 +245,9 @@ void GEdit::HandleMenu(Int_t id)
 
       case M_PlaneManager:
          new HprPlaneManager((TRootCanvas*)fParent->GetCanvasImp());
+         break;
+      case M_PushPicture:
+         PushPictureToBg();
          break;
 
       case M_GrabFromScreen:
@@ -2303,7 +2309,7 @@ void GEdit::InsertGObjects(const char * objname)
       }
    }
    Int_t current_plane = -1;
-   HTCanvas *cc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas *cc = dynamic_cast<GrCanvas*>(gPad);
    if (!cc) {
       cout << "Cant get active canvas" << endl;
    } else {
@@ -2983,8 +2989,8 @@ void  GEdit::SetUseEditGrid(Int_t use)
       }
    }
 #ifdef MARABOUVERS
-   ((HTCanvas*)fParent)->SetEditGrid(fEditGridX, fEditGridY);
-   ((HTCanvas*)fParent)->SetUseEditGrid(use);
+   ((GrCanvas*)fParent)->SetEditGrid(fEditGridX, fEditGridY);
+   ((GrCanvas*)fParent)->SetUseEditGrid(use);
 #endif
    fUseEditGrid = use;
    Int_t temp = 0;
@@ -3024,8 +3030,8 @@ void GEdit::SetEditGrid(Double_t x, Double_t y, Double_t xvis, Double_t yvis)
    }
    SaveDefaults();
 #ifdef MARABOUVERS
-   ((HTCanvas*)fParent)->SetEditGrid(fEditGridX, fEditGridY);
-   ((HTCanvas*)fParent)->SetUseEditGrid(kTRUE);
+   ((GrCanvas*)fParent)->SetEditGrid(fEditGridX, fEditGridY);
+   ((GrCanvas*)fParent)->SetUseEditGrid(kTRUE);
 #endif
    SetUseEditGrid(kTRUE);
    DrawEditGrid(kTRUE);
@@ -3077,6 +3083,28 @@ void GEdit::DrawEditGrid(Bool_t visible)
       x += dx;
       ix += 1;
    }
+   fParent->Modified();
+   fParent->Update();
+}
+//______________________________________________________________________________
+
+void GEdit::PushPictureToBg()
+{
+   fParent->cd();
+	TList * lop = fParent->GetListOfPrimitives();
+   TIter next(lop );
+   TObject * obj;
+   TObject * objsav = NULL;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("HprImage")) {
+			objsav = obj;
+			lop->Remove(obj);
+			break;
+		}
+   }
+	if (objsav != NULL) {
+		lop->AddFirst(objsav);
+	}
    fParent->Modified();
    fParent->Update();
 }

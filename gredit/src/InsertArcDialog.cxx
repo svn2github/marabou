@@ -2,7 +2,7 @@
 #include "THprArc.h"
 #include "THprEllipse.h"
 #include "TCurlyLine.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 #include "TMarker.h"
 #include "TMath.h"
 #include "TEnv.h"
@@ -100,14 +100,16 @@ void InsertArcDialog::ArcByCenterAndRadius()
 {
    TMarker *m1 = NULL;
    TMarker *m2 = NULL;
-   if (fXcenter == 0 && fYcenter == 0) {
-      HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+	Bool_t clear_textposition = kFALSE;
+	if (fXcenter == 0 && fYcenter == 0) {
+      GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    	cout << "Mark center with left mouse" << endl;
    	m1  = (TMarker*)gPad->WaitPrimitive("TMarker");
 		if (m1 == NULL) {
 			cout << "Interrupted Input" << endl;
 			return;
 		}
+		clear_textposition = kTRUE;
    	m1 = (TMarker *)gPad->GetListOfPrimitives()->Last();
       if (!m1) return;
 		if (htc && htc->GetUseEditGrid()) {
@@ -161,7 +163,9 @@ void InsertArcDialog::ArcByCenterAndRadius()
 		el->SetFillStyle(fFillStyle);
 		el->SetNoEdges(!fShowEdges);
    }
-   fXcenter = fYcenter = 0;
+	if ( clear_textposition ) {
+		fXcenter = fYcenter = 0;
+	}
    if (fKeepRadius == 0) fR1 = 0;
    gPad->Modified();
    gPad->Update();
@@ -174,7 +178,8 @@ void InsertArcDialog::ArcByPointsOnCF()
       cout << "Radius must be defined and > 0" << endl;
       return;
    }
-   if (fX1 == 0 && fY1 == 0 && fX2 == 0 && fY2 == 0) {
+	Bool_t clear_textposition = kFALSE;
+	if (fX1 == 0 && fY1 == 0 && fX2 == 0 && fY2 == 0) {
    	cout << "Mark first point with left mouse" << endl;
    	TMarker * m1  = (TMarker*)gPad->WaitPrimitive("TMarker");
    	m1 = (TMarker *)gPad->GetListOfPrimitives()->Last();
@@ -191,8 +196,9 @@ void InsertArcDialog::ArcByPointsOnCF()
    	fY2 = m2->GetY();
    	delete m1;
    	delete m2;
+		clear_textposition = kTRUE;
    }
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
       fX1 = htc->PutOnGridX(fX1);
       fY1 = htc->PutOnGridY(fY1);
@@ -214,9 +220,11 @@ void InsertArcDialog::ArcByPointsOnCF()
 		a->SetFillStyle(fFillStyle);
 		a->SetNoEdges(!fShowEdges);
    }
-   fXcenter = fYcenter = fX1 = fX2 = fY1 = fY2 = 0;
-   fPhi1 = 0;
-   fPhi2 = 360;
+	if ( clear_textposition ) {
+		fXcenter = fYcenter = fX1 = fX2 = fY1 = fY2 = 0;
+		fPhi1 = 0;
+		fPhi2 = 360;
+	}
    gPad->Modified();
    gPad->Update();
 };
@@ -229,12 +237,15 @@ void InsertArcDialog::SaveDefaults()
    env.SetValue("InsertArcDialog.fColor" , fColor);
    env.SetValue("InsertArcDialog.fStyle" , fStyle);
    env.SetValue("InsertArcDialog.fWidth" , fWidth);
-   env.SetValue("InsertArcDialog.fFillColor" , fFillColor);
-   env.SetValue("InsertArcDialog.fFillStyle" , fFillStyle);
+   env.SetValue("InsertArcDialog.fFillColor"  , fFillColor);
+   env.SetValue("InsertArcDialog.fFillStyle"  , fFillStyle);
+   env.SetValue("InsertArcDialog.fXcenter"    , fXcenter );
+   env.SetValue("InsertArcDialog.fYcenter"    , fYcenter );
+   env.SetValue("InsertArcDialog.fR2"         , fR2 );
    env.SetValue("InsertArcDialog.fR1"         , fR1 );
    env.SetValue("InsertArcDialog.fR2"         , fR2 );
-//   env.SetValue("InsertArcDialog.fPhi1"  , fPhi1 );
- //  env.SetValue("InsertArcDialog.fPhi2"  , fPhi2 );
+   env.SetValue("InsertArcDialog.fPhi1"  , fPhi1 );
+   env.SetValue("InsertArcDialog.fPhi2"  , fPhi2 );
    env.SetValue("InsertArcDialog.fSense" , fSense);
    env.SaveLevel(kEnvLocal);
 }
@@ -243,16 +254,18 @@ void InsertArcDialog::SaveDefaults()
 void InsertArcDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
-   fColor = env.GetValue("InsertArcDialog.fColor" , 1);
-   fStyle = env.GetValue("InsertArcDialog.fStyle" , 1);
-   fWidth = env.GetValue("InsertArcDialog.fWidth" , 2);
+   fColor     = env.GetValue("InsertArcDialog.fColor" , 1);
+   fStyle     = env.GetValue("InsertArcDialog.fStyle" , 1);
+   fWidth     = env.GetValue("InsertArcDialog.fWidth" , 2);
    fFillColor = env.GetValue("InsertArcDialog.fFillColor" , 1);
    fFillStyle = env.GetValue("InsertArcDialog.fFillStyle" , 1);
-   fR1  	 = env.GetValue("InsertArcDialog.fR1"  , 30.);
-   fR2  	 = env.GetValue("InsertArcDialog.fR2"  , -1.);
-//   fPhi1	 = env.GetValue("InsertArcDialog.fPhi1"  , 0.);
-//   fPhi2	 = env.GetValue("InsertArcDialog.fPhi2"  , 360.);
-   fSense = env.GetValue("InsertArcDialog.fSense" , 1);
+   fXcenter   = env.GetValue("InsertArcDialog.fXcenter"   , 0);
+   fYcenter   = env.GetValue("InsertArcDialog.fYcenter"   , 0 );
+   fR1			= env.GetValue("InsertArcDialog.fR1"  , 30.);
+   fR2  	     = env.GetValue("InsertArcDialog.fR2"  , -1.);
+   fPhi1			= env.GetValue("InsertArcDialog.fPhi1"  , 0.);
+   fPhi2			= env.GetValue("InsertArcDialog.fPhi2"  , 360.);
+   fSense		= env.GetValue("InsertArcDialog.fSense" , 1);
 }
 //_________________________________________________________________________
 

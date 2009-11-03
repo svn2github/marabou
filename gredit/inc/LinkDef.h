@@ -20,6 +20,7 @@
 #pragma link C++ class ParallelGraphEditor;
 #pragma link C++ class HprEditCommands;
 #pragma link C++ class GEdit;
+#pragma link C++ class GrCanvas;
 #pragma link C++ class InsertFunctionDialog;
 #pragma link C++ class FeynmanDiagramDialog;
 #pragma link C++ class InsertArcDialog;
@@ -57,4 +58,5 @@
 #pragma link C++ class InsertHistGraphDialog;
 #pragma link C++ class InsertAxisDialog;
 #pragma link C++ class XGrabDialog;
+#pragma link C++ class TextOnArc;
 #endif

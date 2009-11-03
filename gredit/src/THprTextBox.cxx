@@ -1,7 +1,7 @@
 #include "TROOT.h"
 #include "Riostream.h"
 #include "THprTextBox.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(THprTextBox)
 
@@ -18,7 +18,7 @@ THprTextBox::THprTextBox(
 
 void THprTextBox::Paint(const Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
       SetX1(htc->PutOnGridX(GetX1()));
       SetX2(htc->PutOnGridX(GetX2()));

@@ -1,7 +1,7 @@
 #include "TROOT.h"
 #include "Riostream.h"
 #include "THprArc.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(THprArc)
 
@@ -17,7 +17,7 @@ THprArc::THprArc(Double_t x1, Double_t y1, Double_t rad,
 
 void THprArc::Paint(const Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (GetMustAlign() && htc && htc->GetUseEditGrid()) {
       SetR1(htc->PutOnGridX(GetR1()));
       SetX1(htc->PutOnGridX(GetX1()));

@@ -2,7 +2,7 @@
 #include "Riostream.h"
 #include "THprSplineX.h"
 #include "HprText.h"
-#include "HTCanvas.h"
+#include "GrCanvas.h"
 
 ClassImp(THprSplineX)
 //________________________________________________________________________
@@ -53,7 +53,7 @@ void THprSplineX::CloseDown(Int_t flag)
 
 void THprSplineX::Paint(const Option_t *opt)
 {
-   HTCanvas * htc = dynamic_cast<HTCanvas*>(gPad);
+   GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    if (htc && htc->GetUseEditGrid()) {
       Double_t x, y;
       Float_t sf;

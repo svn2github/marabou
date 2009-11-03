@@ -231,7 +231,9 @@ void TArcEditor::ConnectSignals2Slots()
    fCenterXEntry->Connect("ValueSet(Long_t)", "TArcEditor", this, "Redraw()");
    (fCenterXEntry->GetNumberEntry())->Connect("ReturnPressed()", "TArcEditor", this, "Redraw()");
    fCenterYEntry->Connect("ValueSet(Long_t)", "TArcEditor", this, "Redraw()");
-   (fCenterYEntry->GetNumberEntry())->Connect("ReturnPressed()", "TArcEditor", this, "DoRedraw");
+//	std::cout << "DoRedraw()" << std::endl;
+//   (fCenterYEntry->GetNumberEntry())->Connect("ReturnPressed()", "TArcEditor", this, "DoRedraw()");
+//	std::cout << "DoRedraw()" << std::endl;
    fRadiusEntry->Connect("ValueSet(Long_t)", "TArcEditor", this, "Redraw()");
    (fRadiusEntry->GetNumberEntry())->Connect("ReturnPressed()", "TArcEditor", this, "Redraw()");
    fPhiminEntry->Connect("ValueSet(Long_t)", "TArcEditor", this, "Redraw()");
@@ -275,7 +277,7 @@ void TArcEditor::SetModel(TObject* obj)
    fArc = (TArc *)obj;
 #endif
    // Pick up the used curly arc attributes.
-   std::cout << "TArcEditor::SetModel() " << std::endl;
+//   std::cout << "TArcEditor::SetModel() " << std::endl;
    Double_t rad = fArc->GetR1();
    fRadiusEntry->SetNumber(rad);
 
