@@ -361,6 +361,7 @@ void Fit2DimDialog::GausExecute(Int_t draw_only)
    cout << fFromX << " "  << " " <<fToX << endl;
  //  Double_t *xv, *par;
 //    fFitFunc = new TF2(fFuncName.Data(), (void*)this,  &Fit2DimGauss,
+
    fFitFunc = new TF2(fFuncName.Data(), &Fit2DimGauss,
                       fFromX, fToX, fFromY, fToY, fNpar);
    Bool_t bound = kFALSE;

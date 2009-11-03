@@ -74,7 +74,7 @@ more than one level of subdirs is allowed";
                    &retval, itemwidth, window,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, helpText);
-//   cout << "retval " <<retval << endl;
+   cout << "retval " <<retval << endl;
    if (retval >= 0) {
       ExecuteSave();
       SaveDefaults();

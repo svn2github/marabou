@@ -110,6 +110,7 @@ private:
    Bool_t            fEmitClose;
    Bool_t            fCallClose;
    Int_t             fLastColorSelect;
+	Int_t             fFromRootFile;
 //   Int_t             fFinis;
 public:
    TGMrbValuesAndText(const char *prompt, TString * text,
