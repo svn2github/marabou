@@ -755,7 +755,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       maxkey = TMath:: Max(GetObjects(lofT, gDirectory, "TNtuple"),      maxkey);
       maxkey = TMath:: Max(GetObjects(lofF, gDirectory, "TF1"),          maxkey);
       maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "TCanvas"),      maxkey);
-      maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "HTCanvas"),      maxkey);
+      maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "GrCanvas"),      maxkey);
       maxkey = TMath:: Max(GetObjects(lofG, gDirectory, "TGraph"),       maxkey);
       maxkey = TMath:: Max(GetObjects(lofUc, gDirectory, "FhContour"),   maxkey);
       maxkey = TMath:: Max(GetObjects(lofW1, gDirectory, "TMrbWindowF"), maxkey);
@@ -2029,7 +2029,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
 		newname += "_";
 		newname += hname.Data();
 	   hist = (TH1*)gROOT->GetList()->FindObject(newname);
-      cout << "Use hist in memory: " << hname << " Fn: " << fname << " Nn: " << newname << endl;
+//      cout << "Use hist in memory: " << hname << " Fn: " << fname << " Nn: " << newname << endl;
 	}
 //   if (hist) hist->Print();
    if (hist && (fname == "Memory" || try_memory)) return hist;
@@ -2037,7 +2037,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
       hist=(TH1*)gROOT->GetList()->FindObject(hname);
 //     gROOT->ls();
       if (hist) {
-         WarnBox("Deleting existing histogram");
+//         WarnBox("Deleting existing histogram");
          hist->Delete();
 //         WarnBox("Using existing histogram");
 //         return hist;
@@ -2075,12 +2075,10 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
    }
    gDirectory=gROOT;
 //  gROOT->ls();
-/*
    TString newname(hname.Data());
    newname += "_",
    newname += pos;
    if (hist) hist->SetName(newname.Data());
-*/
    return hist;
 }
 //________________________________________________________________________________________
@@ -3039,7 +3037,6 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
 
 void HistPresent::ShowSelectedHists(const char *bp)
 {
-   fSelectHist->Print();
    ShowSelectedHists(fSelectHist);
 }
 //_______________________________________________________________________
@@ -3073,7 +3070,7 @@ Int_t NofEditorPages()
 
 void HistPresent::DinA4Page(Int_t form)
 {
-   HTCanvas *c1 = NULL;
+   GrCanvas *c1 = NULL;
    TString name("page_");
    fPageNumber++;
    name += fPageNumber;
@@ -3147,9 +3144,8 @@ void HistPresent::DinA4Page(Int_t form)
       fEditPoXRange = XRange;
    }
 
-   c1= new HTCanvas(name.Data(), name.Data(),
-                  Xlow, Ylow, Xwidth, Ywidth, this, NULL, NULL,
-                  HTCanvas::kIsAEditorPage);
+   c1= new GrCanvas(name.Data(), name.Data(),
+                  Xlow, Ylow, Xwidth, Ywidth);
 
    //compute the pad range to get a fix aspect ratio
    Double_t w = gPad->GetWw()*gPad->GetAbsWNDC();
@@ -3215,7 +3211,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
 			if (ngr > 0) {
 				c->BuildHprMenus(this,0, (TGraph*)logr->First());
 			} else {
-				Int_t nhi = FindObjs(gPad, logr, NULL, "TH1");
+//				Int_t nhi = FindObjs(gPad, logr, NULL, "TH1");
 //				if (nhi > 0) {
 					c->BuildHprMenus(this,NULL, NULL);
 //				}

@@ -78,8 +78,8 @@
 #include "hprbase.h"
 
 //extern HistPresent* hp;
-extern TFile *fWorkfile;
-extern const char *fWorkname;
+//extern TFile *fWorkfile;
+//extern const char *fWorkname;
 extern Int_t nHists;
 //Int_t nPeaks;
 //Double_t gTailSide;             // in fit with tail determines side: 1 left(low), -1 high(right)
@@ -227,7 +227,6 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "E");
    fMarkerSize    = env.GetValue("Set1DimOptDialog.fMarkerSize", 0);
    gStyle->SetErrorX(env.GetValue("Set1DimOptDialog.fErrorX", 0.));
-   gStyle->SetEndErrorSize(env.GetValue("Set1DimOptDialog.fEndErrorSize", 0.));
    fDrawOpt2Dim   = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
    fShowZScale    = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
    f2DimBackgroundColor = env.GetValue("Set2DimOptDialog.f2DimBackgroundColor", 0);
@@ -878,7 +877,7 @@ void FitHist::handle_mouse()
             if (fTofLabels) {
 //            if (fLiveStat2Dim && fTofLabels) {
              	cont = hist->GetBinContent(binX, binY);
-            	sum = hist->Integral(binXlow, binXup, binYlow, binYup);
+            	sum = ((TH2*)hist)->Integral(binXlow, binXup, binYlow, binYup);
             	Int_t totbins = (binYup - binYlow +1) * (binXup - binXlow +1);
             	if (totbins > 0) mean = sum / (Double_t)totbins;
             	else             mean = 0;
@@ -2122,9 +2121,6 @@ void FitHist::KolmogorovTest()
 
 void FitHist::Superimpose(Int_t mode)
 {
-   cout << setblue <<
-	"WARNING: This command will no longer be supported in future" << endl
-	<< "Please use \"Stack selected hists instead" << setblack << endl;
    TH1 *hist;
    TPaveLabel *tname;
 //  choose from histo list
@@ -2208,7 +2204,7 @@ void FitHist::Superimpose(Int_t mode)
 		}
 	}
 	cHist->cd();
-   TString drawopt = fSelHist->GetOption();
+   TString drawopt = fSelHist->GetDrawOption();
    if ( hist->GetDimension() == 1 ) {
 	   hdisp->SetLineColor(fColSuperimpose);
 	   if (!drawopt.Contains("E", TString::kIgnoreCase))
@@ -3117,7 +3113,7 @@ void FitHist::ExpandProject(Int_t what)
          lpx->SetPoint(np, x, y0);
          np++;
          lpx->SetPoint(np, xmin, y0);
-         cout << "np " << np << endl;
+//         cout << "np " << np << endl;
          lpx->Draw("F");
          lpx->SetFillStyle(1001);
          lpx->SetFillColor(38);
@@ -3162,7 +3158,7 @@ void FitHist::ExpandProject(Int_t what)
          lpy->SetPoint(np, x0, y);
          np++;
          lpy->SetPoint(np, x0, ymin);
-         cout << "np " << np << endl;
+//         cout << "np " << np << endl;
          lpy->Draw("F");
          lpy->SetFillStyle(1001);
          lpy->SetFillColor(45);
@@ -3281,10 +3277,6 @@ void FitHist::Draw1Dim()
 //			 cout << "fSelHist->SetStats(0); " << endl;
 		} 
    }
-   if (fErrorMode == "E1" && fMarkerSize == 0) {
-      fSelHist->SetMarkerSize(0.01);
-   } 
-//	cout << " gStyle->GetEndErrorSize() " <<  gStyle->GetEndErrorSize()<< endl;
    fSelHist->Draw();
    TList *lof = fOrigHist->GetListOfFunctions();
 

@@ -13,14 +13,16 @@ namespace std {} using namespace std;
 
 class FitHist;
 class HistPresent;
-class HTCanvas;
+class GrCanvas;
+class GEdit;
 
 class HandleMenus : public TGFrame {
 private:
-   HTCanvas       * fHCanvas;
+   GrCanvas       * fHCanvas;
    HistPresent    * fHistPresent; 
    FitHist        * fFitHist;
    TGraph         * fGraph;
+	GEdit          * fEditor;
 //  from HTRootCanvas
    TRootCanvas        * fRootCanvas;
    TGMenuBar           *fRootsMenuBar;       // menubar
@@ -48,7 +50,7 @@ public:
    Bool_t   ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
    void BuildMenus();
    void SetLog(Int_t state);
-
+   void Canvas2RootFile();
    ClassDef(HandleMenus,0)  
 }; 
  

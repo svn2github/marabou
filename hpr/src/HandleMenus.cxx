@@ -317,7 +317,8 @@ HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph *
    fRootsMenuBar = fRootCanvas->GetMenuBar();
    fMenuBarItemLayout = fRootCanvas->GetMenuBarItemLayout();
    fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
-//   MapWindow();
+   fEditor = NULL;
+	//   MapWindow();
 //   UnMapWindow();
 };
 HandleMenus::~HandleMenus(){};
@@ -543,7 +544,9 @@ again:
                        fRootCanvas->ShowEditor();
 //                       fRootCanvas->ShowToolBar();
 //                       fHCanvas->SetBit(HTCanvas::kIsAEditorPage);
-                       new GEdit(fHCanvas);
+                       if ( !fEditor ) {
+                          fEditor = new GEdit(fHCanvas);
+							  }
 //                     if (!fEditor) CreateEditor();
                      break;
                   case kEditUndo:
@@ -813,7 +816,7 @@ again:
                      break;
                   case kFHCanvasToFile:
 //                      fFitHist->WriteOutCanvas();
-                     Canvas2RootFile(fHCanvas, fRootCanvas);
+                     Canvas2RootFile();
                      break;
                   case kFHHistToASCII:
                      Hpr::WriteHistasASCII(fFitHist->GetSelHist(), fRootCanvas);
@@ -1621,4 +1624,20 @@ void HandleMenus::SetLog(Int_t state)
 }
 //______________________________________________________________________________
 
+//_______________________________________________________________________________________
+void HandleMenus::Canvas2RootFile()
+{
+	TRootCanvas * trc = (TRootCanvas*)fHCanvas->GetCanvasImp();
+	Bool_t se = fHCanvas->GetShowEditor();
+	if ( se && fEditor != NULL) {
+	   trc->ShowEditor(kFALSE);
+      fEditor->ExecuteAdjustSize(-1);
+	}
+ 
+   new Save2FileDialog(fHCanvas, NULL, trc);
+	if ( se  && fEditor != NULL) {
+	   trc->ShowEditor(kTRUE);
+      fEditor->ExecuteAdjustSize( 1);
+	}
+}
 

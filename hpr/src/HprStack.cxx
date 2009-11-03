@@ -108,9 +108,9 @@ void HprStack::BuildCanvas()
       }
 //      hist->Print();
       hname = hist->GetName();
-//      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
-//      if(last_us >0)hname.Remove(last_us);
-      Int_t last_us = hname.Last(';');    // chop off version
+      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
+      if(last_us >0)hname.Remove(last_us);
+      last_us = hname.Last(';');    // chop off version
       if (last_us >0) hname.Remove(last_us);
       hist->SetName(hname);
       fStack->Add(hist);
@@ -122,8 +122,8 @@ void HprStack::BuildCanvas()
    TString opt;
    if ( GeneralAttDialog::fStackedNostack )
       opt = "nostack";
-//   else if ( GeneralAttDialog::fStackedPads )
-//      opt = "pads";
+   else if ( GeneralAttDialog::fStackedPads )
+      opt = "pads";
    if ( fDim == 2) {
 		opt += "lego1";
       fStack->Draw(opt);
@@ -259,41 +259,41 @@ A value of 0.5 draws a line X +- 0.5*BinWidth\n\
    fValp[ind++] = &fShowMarkers;
    TString lab;
    for ( Int_t i = 0; i < fNDrawn; i++ ) {
-      lab = "CheckButton_  Fill[";
+      lab = "CheckButton_Fill[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fFill_1Dim[i];
-      lab = "Fill_Select+FillSt[";
+      lab = "Fill_Select+fFillSt[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fFillStyle[i];
-      lab = "ColorSelect+FillCo[";
+      lab = "ColorSelect+FillCol[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fFillColor[i];
 
-      lab = "LineSSelect_LStyle[";
+      lab = "LineSSelect_LineSty[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fLineStyle[i];
-      lab = "PlainShtVal+LWidth[";
+      lab = "PlainShtVal+LineWid[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fLineWidth[i];
-      lab = "ColorSelect+LColor[";
+      lab = "ColorSelect+LineCol[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fLineColor[i];
 
-      lab = "Mark_Select_MStyle[";
+      lab = "Mark_Select_MarkStyle[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fMarkerStyle[i];
-      lab = "Float_Value+ MSize[";
+      lab = "Float_Value+fMarkSize[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fMarkerSize[i];
-      lab = "ColorSelect+  MCol[";
+      lab = "ColorSelect+MarkColor[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fMarkerColor[i];
@@ -441,6 +441,14 @@ void HprStack::SetAttributes()
    TObjArray * stack = fStack->GetStack();
    TList * orighist = fStack->GetHists();
 	TString opt;
+   if ( GeneralAttDialog::fStackedNostack ) {	
+      opt = "nostack";
+//	   ClearSubPads();
+   } else if ( GeneralAttDialog::fStackedPads ) {
+      opt = "pads";
+	} else {
+//	   ClearSubPads();
+	}
 	if (fShowContour) opt += "HIST";
    if (fErrorMode != "none") {
       opt += fErrorMode;
@@ -453,11 +461,7 @@ void HprStack::SetAttributes()
       if ( fDim  == 2 ) {
          hist->SetFillColor(fFillColor[i]); ohist->SetFillColor(fFillColor[i]);
 		   hist->SetFillStyle(1001);
-         opt="lego1";
-         
       } else {
-         if (opt.Contains("E1") && fMarkerSize[i] <= 0 )
-            fMarkerSize[i] = 0.001;
 			if ( fFill_1Dim[i] ) {
 				hist->SetFillStyle(fFillStyle[i]);
 				hist->SetFillColor(fFillColor[i]);
@@ -485,20 +489,15 @@ void HprStack::SetAttributes()
 				hist->SetMarkerSize(0);
 			}
       }
-//		hist->SetOption(opt);
-		ohist->SetOption(opt);
    }
    fCanvas->cd();
 //   cout << "DrawOpt: "<< opt << endl;
-   if ( GeneralAttDialog::fStackedNostack ) {	
-      opt += "nostack";
-//	   ClearSubPads();
-   } else if ( GeneralAttDialog::fStackedPads ) {
-      opt += "pads";
-	} else {
-//	   ClearSubPads();
-	}
-   fStack->SetDrawOption(opt);
+   if ( fDim == 2 ) {
+     opt = "lego1";
+     fStack->SetDrawOption(opt);
+   } else {
+      fStack->SetDrawOption(opt);
+   }
    if ( !GeneralAttDialog::fStackedPads ) 
 	   ClearSubPads();
 	fCanvas->Modified();

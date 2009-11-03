@@ -985,22 +985,6 @@ a shift value of 10 will only shift by 5 cm";
    env.SaveLevel(kEnvLocal);
 }
 
-//_______________________________________________________________________________________
-void Canvas2RootFile(HTCanvas * canvas, TGWindow * win)
-{
-	TRootCanvas * trc = (TRootCanvas*)canvas->GetCanvasImp();
-	Bool_t se = canvas->GetShowEditor();
-	if ( se ) {
-	   trc->ShowEditor(kFALSE);
-      canvas->GetGEdit()->ExecuteAdjustSize(-1);
-	}
- 
-   new Save2FileDialog(canvas, NULL, trc);
-	if ( se ) {
-	   trc->ShowEditor(kTRUE);
-      canvas->GetGEdit()->ExecuteAdjustSize( 1);
-	}
-}
 
 //_________________________________________________________________________________________
 

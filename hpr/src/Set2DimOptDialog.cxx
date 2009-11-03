@@ -337,7 +337,7 @@ void Set2DimOptDialog::SetHistAttPermLocal()
 
 void Set2DimOptDialog::SetHistAttPerm()
 {
-//   cout << "Set2DimOptDialog:: SetHistAttPerm()" << endl;
+   cout << "Set2DimOptDialog:: SetHistAttPerm()" << endl;
    TEnv env(".hprrc");
    env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim);
    env.SetValue("Set2DimOptDialog.fDrawOpt2Dim", fDrawOpt2Dim);

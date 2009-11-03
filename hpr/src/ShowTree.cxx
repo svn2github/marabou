@@ -581,12 +581,12 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 //      cout << "look for:" << fh_name << endl;
       TObject *fobj = (TObject *)gROOT->FindObject(fh_name.Data());
       if (fobj) {
-         cout << " deleting " << fh_name << endl;
+//         cout << " deleting " << fh_name << endl;
          delete fobj;
       }
       fobj = (TObject *)gROOT->FindObject(hname.Data());
       if (fobj) {
-         cout << " deleting " << hname << endl;
+//         cout << " deleting " << hname << endl;
          delete fobj;
       }
 //   }

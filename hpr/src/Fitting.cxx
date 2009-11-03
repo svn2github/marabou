@@ -66,8 +66,8 @@
 #include "Save2FileDialog.h"
 
 extern HistPresent *hp;
-extern TFile *fWorkfile;
-extern const char *fWorkname;
+//extern TFile *fWorkfile;
+//extern const char *fWorkname;
 extern Int_t nHists;
 //extern Int_t nPeaks;
 //extern Double_t gTailSide;      // in fit with tail determines side: 1 left(low), -1 high(right)
@@ -695,10 +695,10 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    funcname = (const char *) sfunc;
    TString temp_hname ("fithist_temp");
    temp_hname +=fFuncNumb;
-//   cout << " <<<<<<<<<<<<<<<<<<<<<" << endl;
+   cout << " <<<<<<<<<<<<<<<<<<<<<" << endl;
 
    TH1D *fithist = new TH1D(temp_hname, funcname, nxbins, edgelx, edgeux);
-//   cout << " >>>>>>>>>>>>>>>>>>>>>" <<endl;
+   cout << " >>>>>>>>>>>>>>>>>>>>>" <<endl;
 // case fit to histogram
 
    if (what == 0) {

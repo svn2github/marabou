@@ -349,10 +349,10 @@ void Set1DimOptDialog::RestoreDefaults()
 	fMarkerColor   = fHist->GetMarkerColor();
 	fMarkerStyle   = fHist->GetMarkerStyle();
 	fMarkerSize    = fHist->GetMarkerSize();
-	TString drawopt= fHist->GetOption();
+	TString drawopt= fHist->GetDrawOption();
 	
 	fFill1Dim      = fHist->GetFillStyle() != 0;
-	if (drawopt.Length() == 0) {
+	if (drawopt.Length() < 1) {
 	   fErrorMode = "none";
 	   fShowContour = 1;
 		fLabelsTopX = 0;
