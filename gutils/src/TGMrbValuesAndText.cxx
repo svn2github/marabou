@@ -1165,6 +1165,11 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             tb->Associate(this);
 
          } else if (l.BeginsWith("FileContReq")) {
+				if ( l.Contains("rootfile") ) {
+					fFromRootFile = kTRUE;
+				} else {
+					fFromRootFile = kFALSE;
+				}
             TString scol;
             TString fname("none");
             fClassName = "TF1";
@@ -1478,7 +1483,9 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                       TGFileInfo* fi = new TGFileInfo();
  //                     const char * filter[] = {"data files", "*", 0, 0};
                       fi->fFileTypes = filetypes;
-//                      fi->fFileTypeIdx = 2;
+							 if ( fFromRootFile ) {
+                          fi->fFileTypeIdx = 2;
+							 }
    						 new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
   						    if (fi->fFilename) {
                          fn = fi->fFilename;
@@ -1638,6 +1645,8 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname, Bool_t store)
 //        cout << "AddEntry " << fClassName<< " " <<  obj->ClassName()<< endl;
         if (obj->InheritsFrom(fClassName)) {
          TString s(obj->GetName());
+         s += ";";
+			s+= key->GetCycle();
          s += " | ";
          s += obj->GetTitle();
          fListBoxReq->AddEntry(s.Data(), id);
@@ -1789,7 +1798,9 @@ void TGMrbValuesAndText::StoreValues(){
                 *sr = retstr.Data();
              } else {
 //                cout << "TGTextEntry *sr... " << tentry->GetBuffer()->GetString()<< endl;
-                *sr = tentry->GetBuffer()->GetString();
+					 TString temp(tentry->GetBuffer()->GetString());
+					 temp = temp.Strip(TString::kBoth);
+                *sr = temp;
              }
           }
        }
