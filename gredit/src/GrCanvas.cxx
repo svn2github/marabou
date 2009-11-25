@@ -1,4 +1,5 @@
 #include "TROOT.h"
+#include "TSystem.h"
 #include "TWbox.h"
 #include "TGuiFactory.h"
 #include "TStyle.h"
@@ -52,73 +53,22 @@ GrCanvas::GrCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //
 // Edit grid: if activated forces coordinates of mouse clicks on the grid
 //--------------------------------------------------------------------------
-
-
-   if (gThreadXAR) {
-      void *arr[8];
-      arr[1] = this;   arr[2] = (void*)name;   arr[3] = (void*)title;
-      arr[4] = &wtopx; arr[5] = &wtopy; arr[6] = &ww; arr[7] = &wh;
-      if ((*gThreadXAR)("CANV", 8, arr, NULL)) return;
+	if (gDebug > 1) 
+		cout << "enter ctor GrCanvas bits: " 
+		  << hex << TestBits(0xffffffff)<< dec << endl;
+   TObject *old = gROOT->GetListOfCanvases()->FindObject(name);
+	if (old )
+		cout << "old " << old->GetName() << " " << old->ClassName() << endl;
+   if (old && old->InheritsFrom("TCanvas") && old->IsOnHeap()) {
+      Warning("Constructor","Deleting canvas with same name: %s",name);
+      delete old;
    }
-#if ROOTVERSION > 50000
-   SetBit(kShowEventStatus,0);
-   SetBit(kAutoExec  	  ,0);
-   SetBit(kMenuBar		  ,0);
+   SetBit(kMenuBar		  ,1);
    SetBit(kShowToolBar    ,0);
    SetBit(kShowEditor	  ,0);
-   SetBit(kMoveOpaque	  ,0);
-   SetBit(kResizeOpaque   ,0);
-#endif
-   Init();
-#if ROOTVERSION > 50000
-   SetBit(kMenuBar,1);
-   if (ww < 0) {
-      ww       = -ww;
-      SetBit(kMenuBar,0);
-   }
-   if (wtopx < 0) {
-      wtopx  = -wtopx;
-      SetBit(kMenuBar,0);
-   }
-#else
-   fMenuBar = kTRUE;
-   if (wtopx < 0) {
-      wtopx    = -wtopx;
-      fMenuBar = kFALSE;
-   }
-#endif
-
-   fCw           = ww;
-   fCh           = wh;
-   fCanvasID = -1;
-
-//   fShowEditor = kFALSE;
-//   fShowToolBar = kFALSE;
-   GrCanvas *old = (GrCanvas*)gROOT->GetListOfCanvases()->FindObject(name);
-   if (old && old->IsOnHeap()) delete old;
-   if (strlen(name) == 0 || gROOT->IsBatch()) {   //We are in Batch mode
-      fWindowTopX   = fWindowTopY = 0;
-      fWindowWidth  = ww;
-      fWindowHeight = wh;
-      fCw           = ww;
-      fCh           = wh;
-      fCanvasImp    = gBatchGuiFactory->CreateCanvasImp(this, name, fCw, fCh);
-      fBatch        = kTRUE;
-   } else {                   //normal mode with a screen window
-      Float_t cx = gStyle->GetScreenFactor();
-      fCanvasImp = gGuiFactory->CreateCanvasImp(this, name, Int_t(cx*wtopx), Int_t(cx*wtopy), UInt_t(cx*ww), UInt_t(cx*wh));
-//      if (fMenuBar) cout << "GrCanvas: ctor fMenuBar TRUE" << endl;
-//      else          cout << "GrCanvas: ctor fMenuBar FALSE" << endl;
-
-      fCanvasImp->ShowMenuBar(HasMenuBar());
-//      fCanvasImp->ShowMenuBar(HasMenuBar());
-//      fCanvasImp->Show();
-      fBatch = kFALSE;
-   }
-
-   SetName(name);
-   SetTitle(title); // requires fCanvasImp set
-   fEditGridX = 0;
+	TCanvas::Constructor(name, title, wtopx, wtopy, ww, wh);
+	fRootCanvas = (TRootCanvas*)fCanvasImp;
+	fEditGridX = 0;
    fEditGridY = 0;
    fGEdit       = NULL;
    fHiddenPrimitives = new TList();
@@ -126,17 +76,6 @@ GrCanvas::GrCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fHasConnection = kFALSE;
    fCurrentPlane      = 50;
    fButtonsEnabled = kTRUE;
-   fRootCanvas = (TRootCanvas*)fCanvasImp;
-   Build();
-   fCanvasImp->ShowEditor(kFALSE);
-   fEditorIsShown = kFALSE;
-   fCanvasImp->ShowToolBar(kFALSE);
-   fCanvasImp->ShowStatusBar(kFALSE);
-   fCanvasImp->ShowMenuBar(HasMenuBar());
-
-   // Popup canvas
-   fCanvasImp->Show();
-   SetWindowSize(ww , wh );
    if (TestBit(kIsAEditorPage)) {
 //      InitEditCommands();
       fRootCanvas->DontCallClose();
@@ -145,9 +84,11 @@ GrCanvas::GrCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    }
    fOrigWw = GetWw();
    fOrigWh = GetWh();
-
-//   cout << "ctor GrCanvas: " << this << " " << name
-//        << " Id " << fRootCanvas->GetId() << endl;
+	if (gDebug > 1) 
+		cout << "ctor GrCanvas: " << this << " " << name
+       << " fRootCanvas->GetHeight() " << fRootCanvas->GetHeight()
+        << " GetWh " << GetWh()
+		  << endl;
 };
 //______________________________________________________________________________________
 
@@ -199,13 +140,27 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    fPadSave = (TPad*)gPad;
    if (event == kButton1Down) {
-//      cout << "kButton1Down fSelected " << fSelected->ClassName() << " gPad " << gPad
-//        << " fSelectedPad " << fSelectedPad <<  endl;
+		if (gDebug > 1 )
+			cout << "kButton1Down: fSelected "<< fSelected << " "  << fSelected->ClassName() 
+		     << " gPad "  << gPad << " "  << gPad->ClassName()
+           << " fSelectedPad "  << fSelectedPad << " " << fSelectedPad->ClassName()  
+		     <<  endl << flush;
       if (gROOT->GetEditorMode() != 0 && fSelectedPad != gPad) {
-         cout << "Please use selected pad" << endl;
-         gROOT->SetEditorMode();
-         gROOT->SetSelectedPad(NULL);
-         return;
+         if (gDebug > 1 ) cout << "Set gPad to selected pad" << endl;
+			gPad = fSelectedPad;  
+			FeedbackMode(kTRUE);
+
+			fSelected->Pop();           // pop object to foreground
+			fSelectedPad->cd();                  // and make its pad the current pad
+			if (fSelected && fSelected->TestBit(kNotDeleted))
+				prevSelObj = fSelected;
+			if (fSelectedPad && fSelectedPad->TestBit(kNotDeleted))
+				prevSelPad = (TPad*) fSelectedPad;
+				fPadSave = (TPad*)gPad;
+				TIter next(gROOT->GetListOfCanvases());
+				TCanvas *tc;
+				while ((tc = (TCanvas *)next()))
+					tc->Update();
       }
    }
    cd();        // make sure this canvas is the current canvas
@@ -277,6 +232,8 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //      cout << "kButton1Down "  << px << " " << py << " " << fSelected << endl;
      // find pad in which input occured
       pad = Pick(px, py, prevSelObj);
+		if (gDebug > 1 )
+			cout << "kButton1Down: pad " << pad << " prevSelObj " << prevSelObj<< endl;
       if (!pad) return;
 
       gPad = pad;   // don't use cd() because we won't draw in pad
@@ -315,7 +272,6 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
                if(py < 1)py = 1;
                if(py > (Int_t)gPad->GetWh())py = gPad->GetWh()-1;
             }
-//         cout << "x y grid " << x << " " << y << endl;
       }
 
 //OS end
@@ -326,6 +282,8 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          }
          if (GetAutoExec()) RunAutoExec();
       }
+		if (gDebug > 1 )
+			cout << "Exit kButton1Down: pad " << pad << " prevSelObj " << prevSelObj<< endl;
 
       break;
 
@@ -389,8 +347,9 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    case kButton1Up:
       if (fSelected) {
          gPad = fSelectedPad;
-//         cout << "kButton1Up: this " << this
- //             << " fSelected " << fSelected->ClassName() << " gPad " << gPad << endl;
+         if (gDebug > 1 )
+				cout << "kButton1Up: this " << this
+              << " fSelected " << fSelected->ClassName() << " gPad " << gPad << endl;
          if (fSelected->TestBit(kIsBound)) break;
          if (in_image) {
 //            cout << "setting: " << fSelected << endl;
@@ -465,14 +424,6 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          while ((tc = (TCanvas *)next()))
             tc->Update();
       }
-//     Otto
-//      {
-//         if(fFitHist) fFitHist->AddMark((TPad*)gPad,px,py);
-//         else {
-//         }
-//      }
-//      if (gDebug)
-//        printf("Current Pad: %x: %s / %s\n", pad, pad->GetName(), pad->GetTitle());
 
       // loop over all canvases to make sure that only one pad is highlighted
       {
@@ -559,12 +510,9 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       ObjectMoved(px, py, fSelected);
    }
 }
-
 //______________________________________________________________________________
 void GrCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selected)
 {
-//*-*-*-*-*-*-*Report name and title of primitive below the cursor*-*-*-*-*-*
-//*-*          ===================================================
 //
 //    This function is called when the option "Event Status"
 //    in the canvas menu "Options" is selected.
@@ -591,101 +539,6 @@ void GrCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selecte
    fCanvasImp->SetStatusText(selected->GetObjectInfo(px,py),3);
    gPad = savepad;
 }
-//_____________________________________________________________________________
-void GrCanvas::Build()
-{
-   // Build a canvas. Called by all constructors.
-
-   // Get window identifier
-   if (fCanvasID == -1 && fCanvasImp)
-      fCanvasID = fCanvasImp->InitWindow();
-   if (fCanvasID == -1) return;
-
-   if (fCw < fCh) fXsizeReal = fYsizeReal*Float_t(fCw)/Float_t(fCh);
-   else           fYsizeReal = fXsizeReal*Float_t(fCh)/Float_t(fCw);
-
-   // Set Pad parameters
-   gPad            = this;
-   fCanvas         = this;
-   fMother         = (TPad*)gPad;
-
-   if (!IsBatch()) {    //normal mode with a screen window
-      // Set default physical canvas attributes
-      gVirtualX->SelectWindow(fCanvasID);
-      gVirtualX->SetFillColor(1);         //Set color index for fill area
-      gVirtualX->SetLineColor(1);         //Set color index for lines
-      gVirtualX->SetMarkerColor(1);       //Set color index for markers
-      gVirtualX->SetTextColor(1);         //Set color index for text
-
-      // Clear workstation
-      gVirtualX->ClearWindow();
-
-      // Set Double Buffer on by default
-      SetDoubleBuffer(1);
-
-      // Get effective window parameters (with borders and menubar)
-      fCanvasImp->GetWindowGeometry(fWindowTopX, fWindowTopY,
-                                    fWindowWidth, fWindowHeight);
-
-      // Get effective canvas parameters without borders
-      Int_t dum1, dum2;
-      gVirtualX->GetGeometry(fCanvasID, dum1, dum2, fCw, fCh);
-
-      fContextMenu = new TContextMenu("ContextMenu");
-   } else {
-      // Make sure that batch interactive canvas sizes are the same
-      fCw -= 4;
-      fCh -= 28;
-   }
-
-   gROOT->GetListOfCanvases()->Add(this);
-
-   if (!fPrimitives) {
-      fPrimitives     = new TList;
-      SetFillColor(gStyle->GetCanvasColor());
-      SetFillStyle(1001);
-      SetGrid(gStyle->GetPadGridX(),gStyle->GetPadGridY());
-      SetTicks(gStyle->GetPadTickX(),gStyle->GetPadTickY());
-      SetLogx(gStyle->GetOptLogx());
-      SetLogy(gStyle->GetOptLogy());
-      SetLogz(gStyle->GetOptLogz());
-      SetBottomMargin(gStyle->GetPadBottomMargin());
-      SetTopMargin(gStyle->GetPadTopMargin());
-      SetLeftMargin(gStyle->GetPadLeftMargin());
-      SetRightMargin(gStyle->GetPadRightMargin());
-      SetBorderSize(gStyle->GetCanvasBorderSize());
-      SetBorderMode(gStyle->GetCanvasBorderMode());
-      fBorderMode=gStyle->GetCanvasBorderMode(); // do not call SetBorderMode (function redefined in TCanvas)
-      SetPad(0, 0, 1, 1);
-      Range(0, 0, 1, 1);   //pad range is set by default to [0,1] in x and y
-      gVirtualX->SelectPixmap(fPixmapID);    //pixmap must be selected
-      PaintBorder(GetFillColor(), kTRUE);    //paint background
-   }
-
-   // transient canvases have typically no menubar and should not get
-   // by default the event status bar (if set by default)
-
-#if ROOTVERSION > 50000
-   if (TestBit(kMenuBar) && fCanvasImp) {
-      if (TestBit(kShowEventStatus)) fCanvasImp->ShowStatusBar(kTRUE);
-      // ... and toolbar + editor
-      if (TestBit(kShowToolBar))     fCanvasImp->ShowToolBar(kTRUE);
-      if (TestBit(kShowEditor))      fCanvasImp->ShowEditor(kTRUE);
-   }
-#else
-   if (fShowEventStatus && fMenuBar && fCanvasImp)
-      fCanvasImp->ShowStatusBar(fShowEventStatus);
-   // ... and toolbar + editor
-   if (fShowToolBar && fMenuBar && fCanvasImp)
-      fCanvasImp->ShowToolBar(fShowToolBar);
-   if (fShowEditor && fMenuBar && fCanvasImp)
-      fCanvasImp->ShowEditor(fShowEditor);
-#endif
-#if defined(WIN32) && !defined(GDK_WIN32)
-   if (!strcmp(gVirtualX->GetName(), "Win32"))
-      gVirtualX->UpdateWindow(1);
-#endif
-}
 //______________________________________________________________________________
 void GrCanvas::RunAutoExec()
 {
@@ -695,15 +548,10 @@ void GrCanvas::RunAutoExec()
    ((TPad*)gPad)->AutoExec();
 }
 //______________________________________________________________________________
-void GrCanvas::SetLog(Int_t state)
-{
-   // fHandleMenus->SetLog(state);
-
-}
-//______________________________________________________________________________
 
 void GrCanvas::Add2ConnectedClasses(TObject *obj)
 {
+//	cout << "Add2ConnectedClasses " <<obj->ClassName() << " gPad " << gPad << endl;
    this->Connect("ObjectCreated(Int_t, Int_t, TObject*)", obj->ClassName(), obj,
                  "ObjCreated(Int_t, Int_t, TObject*)");
    this->Connect("ObjectMoved(Int_t, Int_t, TObject*)", obj->ClassName(), obj,
@@ -719,7 +567,8 @@ void GrCanvas::ObjectCreated(Int_t px, Int_t py, TObject *obj)
       args[0] = (Long_t)px;
       args[1] = (Long_t)py;
       args[2] = (Long_t)obj;
-      cout << "GrCanvas::Emit(ObjectCreated" << endl;
+      if (gDebug > 1 )
+			cout << "GrCanvas::Emit(ObjectCreated" << endl;
       Emit("ObjectCreated(Int_t, Int_t, TObject*)", args );
    }
 }
@@ -732,7 +581,8 @@ void GrCanvas::ObjectMoved(Int_t px, Int_t py, TObject *obj)
       args[0] = (Long_t)px;
       args[1] = (Long_t)py;
       args[2] = (Long_t)obj;
-      cout << "GrCanvas::Emit(ObjectMoved: " << obj << endl;
+      if (gDebug > 1 )
+			cout << "GrCanvas::Emit(ObjectMoved: " << obj << endl;
       Emit("ObjectMoved(Int_t, Int_t, TObject*)", args );
    }
 }
@@ -781,14 +631,16 @@ Double_t GrCanvas::PutOnGridY_NDC(Double_t y)
 void GrCanvas::HideObject(TObject *obj)
 {
    if (!obj || obj == this || GetListOfPrimitives()->GetEntries()  <= 0 ) return;
-   std::cout << "HideObject obj, gPad " << obj << " " << gPad << endl;
+   if (gDebug > 1 )
+		std::cout << "HideObject obj, gPad " << obj << " " << gPad << endl;
    HprElement::MoveObject(obj, GetListOfPrimitives(), fHiddenPrimitives);
 }
 //______________________________________________________________________________
 
 void GrCanvas::ViewObject(TObject *obj)
 {
-   std::cout << "ViewObject obj, gPad " << obj << " " << gPad << endl;
+   if (gDebug > 1 )
+		std::cout << "ViewObject obj, gPad " << obj << " " << gPad << endl;
    HprElement::MoveObject(obj, fHiddenPrimitives, GetListOfPrimitives());
 }
 
@@ -799,41 +651,36 @@ void GrCanvas::ViewAllObjects()
    if (!fHiddenPrimitives || fHiddenPrimitives->GetEntries() <=0 ) return;
    HprElement::MoveAllObjects(fHiddenPrimitives, GetListOfPrimitives(), 0, 1);
 }
+//_________________________________________________________________________
+
+TObject * GrCanvas::WaitForCreate(const char * what, TPad **pad)
+{
+	*pad = NULL;
+	TString ws(what);
+	if (ws == "TGraph") {
+		gROOT->SetEditorMode("PolyLine");
+	} else {
+		gROOT->SetEditorMode(&what[1]);
+	}
+	for (Int_t i = 0; i < 3000; i++) {
+		gSystem->ProcessEvents();
+		if (*pad != NULL) {
+			gROOT->SetEditorMode();
+			break;
+		}
+		gSystem->Sleep(10);
+	}
+	if (*pad == NULL) {
+		gROOT->SetEditorMode();
+		cout << "Timeout while waiting for create " << what << endl;
+		return NULL;
+	}
+	TObject * obj = gPad->GetListOfPrimitives()->Last();			
+	if ( !obj->InheritsFrom(what) ) {
+		cout << "No " << what << " found in " << gPad << endl;
+		return NULL;
+	}
+	return obj;
+}
 //____________________________________________________________________________
-
-void GrCanvas::RemovePicture()
-{
-	TList * lop = GetListOfPrimitives();
-	TIter next(lop );
-	TObject * obj;
-	while ( (obj = next()) ) {
-		if (obj->InheritsFrom("HprImage")) {
-			lop->Remove(obj);
-			break;
-		}
-	}
-	Modified();
-	Update();
-}
-//______________________________________________________________________________
-
-void GrCanvas::PushPictureToBg()
-{
-	TList * lop = GetListOfPrimitives();
-   TIter next(lop );
-   TObject * obj;
-   TObject * objsav = NULL;
-   while ( (obj = next()) ) {
-      if (obj->InheritsFrom("HprImage")) {
-			objsav = obj;
-			lop->Remove(obj);
-			break;
-		}
-   }
-	if (objsav != NULL) {
-		lop->AddFirst(objsav);
-	}
-   Modified();
-   Update();
-}
 

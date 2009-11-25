@@ -10,6 +10,7 @@ public:
    THprArc(Double_t x1, Double_t y1, Double_t rad,
              Double_t phimin=0, Double_t phimax=360);
    ~THprArc(){};
+   void   ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void Paint(const Option_t *opt);
    Bool_t IsSortable() const {return kTRUE;}
    Int_t Compare( const TObject *obj) const

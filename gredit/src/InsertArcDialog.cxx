@@ -93,6 +93,10 @@ radius is not 0 only the center must be marked  \n\
       new TGMrbValuesAndText("Arc, Circle, Ellipse,", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+	if (fCanvas) {
+       GrCanvas* hc = (GrCanvas*)fCanvas;
+       hc->Add2ConnectedClasses(this);
+   }
 }
 //______________________________________________________________________________
 
@@ -104,14 +108,11 @@ void InsertArcDialog::ArcByCenterAndRadius()
 	if (fXcenter == 0 && fYcenter == 0) {
       GrCanvas * htc = dynamic_cast<GrCanvas*>(gPad);
    	cout << "Mark center with left mouse" << endl;
-   	m1  = (TMarker*)gPad->WaitPrimitive("TMarker");
+   	m1  = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
 		if (m1 == NULL) {
-			cout << "Interrupted Input" << endl;
 			return;
 		}
 		clear_textposition = kTRUE;
-   	m1 = (TMarker *)gPad->GetListOfPrimitives()->Last();
-      if (!m1) return;
 		if (htc && htc->GetUseEditGrid()) {
 			m1->SetX(htc->PutOnGridX(m1->GetX()));
 			m1->SetY(htc->PutOnGridY(m1->GetY()));
@@ -122,13 +123,11 @@ void InsertArcDialog::ArcByCenterAndRadius()
    	m1->Draw();
       if (fR1 <= 0) {
    	   cout << "Mark radius with left mouse" << endl;
-      	m2  = (TMarker*)gPad->WaitPrimitive("TMarker");
+      	m2  = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
 			if (m2 == NULL) {
             if (m1) delete m1;
-				cout << "Interrupted Input" << endl;
 				return;
 			}
-   	   m2 = (TMarker *)gPad->GetListOfPrimitives()->Last();
          if (!m2) {if (m1) delete m1; return;};
 			if (htc && htc->GetUseEditGrid()) {
 				m2->SetX(htc->PutOnGridX(m2->GetX()));
@@ -181,7 +180,7 @@ void InsertArcDialog::ArcByPointsOnCF()
 	Bool_t clear_textposition = kFALSE;
 	if (fX1 == 0 && fY1 == 0 && fX2 == 0 && fY2 == 0) {
    	cout << "Mark first point with left mouse" << endl;
-   	TMarker * m1  = (TMarker*)gPad->WaitPrimitive("TMarker");
+   	TMarker * m1  = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
    	m1 = (TMarker *)gPad->GetListOfPrimitives()->Last();
       if (!m1) return;
    	fX1 = m1->GetX();
@@ -189,7 +188,7 @@ void InsertArcDialog::ArcByPointsOnCF()
    	m1->SetMarkerStyle(4);
    	m1->Draw();
    	cout << "Mark second point with left mouse" << endl;
-   	TMarker * m2  = (TMarker*)gPad->WaitPrimitive("TMarker");
+   	TMarker * m2  = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
       if (!m2) {delete m1; return;};
    	m2 = (TMarker *)gPad->GetListOfPrimitives()->Last();
    	fX2 = m2->GetX();

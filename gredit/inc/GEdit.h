@@ -32,6 +32,7 @@ private:
 #endif
 //   HTCanvas        *fParent;
    GrCanvas        *fParent;
+	TPad            *fPad;
    TGPopupMenu     *fEditMenu;
    TRootCanvas     *fRootCanvas;      //! dont stream
    HprEditCommands *fEditCommands;    //! dont stream
@@ -71,6 +72,8 @@ public:
    void Constructor();
    virtual ~GEdit();
    void RecursiveRemove(TObject * obj);
+	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
+	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
 
    Bool_t   SloppyInside(TCutG * cut, Double_t x, Double_t y);
    Double_t MinElement(Int_t n, Double_t * x);

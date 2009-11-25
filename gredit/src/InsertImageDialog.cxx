@@ -25,8 +25,9 @@ ClassImp(InsertImageDialog)
 InsertImageDialog::InsertImageDialog()
 {
 static const Char_t helptext[] =
-"Insert an manipulate  gif, jpg, png pictures\n\
-Widths, offsets are in units of the inserted picture\n\
+"Insert and manipulate gif, jpg, png pictures\n\
+Widths, offsets are in units (pixels) of the inserted picture\n\
+Use middle mouse button to select a pad\n\
 \n\
 Merge Modes:\n\
 add            - color addition with saturation \n\
@@ -53,7 +54,7 @@ value          - value bottom image same as top image\n\
    Int_t ind = 0;
    RestoreDefaults();
    fRow_lab = new TList();
-
+/*
 // make list of image files
    const char hist_file[] = {"images_hist.txt"};
    ofstream hfile(hist_file);
@@ -77,7 +78,7 @@ value          - value bottom image same as top image\n\
          if (fPname.Length() < 1) fPname = fname;
       }
    }
-
+*/
    fRow_lab->Add(new TObjString("PlainIntVal_Offset X"));
    fValp[ind++] = &fOffset_x;
    fRow_lab->Add(new TObjString("PlainIntVal+Offset Y"));
@@ -90,11 +91,11 @@ value          - value bottom image same as top image\n\
    fValp[ind++] = &fBlur_x;
    fRow_lab->Add(new TObjString("DoubleValue+Blur Y"));
    fValp[ind++] = &fBlur_y;
-   fRow_lab->Add(new TObjString("RadioButton_Preserve pad height"));
+   fRow_lab->Add(new TObjString("RadioButton_Keep pad height"));
    fValp[ind++] = &fFix_h;
-   fRow_lab->Add(new TObjString("RadioButton+Preserve pad width"));
+   fRow_lab->Add(new TObjString("RadioButton+Keep pad width"));
    fValp[ind++] = &fFix_w;
-   fRow_lab->Add(new TObjString("RadioButton_Preserve pad wi/he"));
+   fRow_lab->Add(new TObjString("RadioButton_Keep pad wi/he "));
    fValp[ind++] = &fFix_wh;
    fRow_lab->Add(new TObjString("RadioButton+Use Image size"));
    fValp[ind++] = &fFix_no;
@@ -103,27 +104,29 @@ value          - value bottom image same as top image\n\
    fRow_lab->Add(new TObjString("ComboSelect+Merge Mode;add;allanon;colorize;darken;diff;dissipate;hue;lighten;overlay;saturate;screen;sub;tint;value"));
    fValp[ind++] = &fMergeMode;
    fMergeMode = "allanon";
+   fRow_lab->Add(new TObjString("FileRequest_Imagefile"));
+   fValp[ind++] = &fPname;
 //   TImage *img = TImage::Open(name.Data());
    static TString execute_cmd("ExecuteInsert()");
-   fRow_lab->Add(new TObjString("CommandButt_Insert()"));
+   fRow_lab->Add(new TObjString("CommandButt_Insert into Pad"));
    fValp[ind++] = &execute_cmd;
    static TString merge_cmd("ExecuteMerge()");
-   fRow_lab->Add(new TObjString("CommandButt+Merge()"));
+   fRow_lab->Add(new TObjString("CommandButt+Merge into existing"));
    fValp[ind++] = &merge_cmd;
    static TString crop_cmd("ExecuteCrop()");
-   fRow_lab->Add(new TObjString("CommandButt_Crop()"));
+   fRow_lab->Add(new TObjString("CommandButt_Crop"));
    fValp[ind++] = &crop_cmd;
    static TString blur_cmd("ExecuteBlur()");
-   fRow_lab->Add(new TObjString("CommandButt+Blur()"));
+   fRow_lab->Add(new TObjString("CommandButt+Blur"));
    fValp[ind++] = &blur_cmd;
    static TString imwrite_cmd("ImageToFile()");
-   fRow_lab->Add(new TObjString("CommandButt_Write Image ToFile"));
+   fRow_lab->Add(new TObjString("CommandButt_Write Image to File"));
    fValp[ind++] = &imwrite_cmd;
    Int_t itemwidth = 300;
    static Int_t ok;
    fDialog =
-      new TGMrbValuesAndText("Image file", &fPname, &ok,
-          itemwidth, fWindow, hist_file, NULL,
+      new TGMrbValuesAndText("Select image file", NULL, &ok,
+          itemwidth, fWindow, NULL, NULL,
           fRow_lab, fValp, NULL, NULL,
           helptext, this, this->ClassName());
 }
@@ -326,7 +329,7 @@ void InsertImageDialog::ExecuteCrop()
       printf("No image");
       return;
    }
-   cout << "Crop: " << endl;
+   cout << "Crop: " << fOffset_x<< " " <<  fOffset_y<< " " <<  fWidth_x<< " " <<  fWidth_y << endl;
    fImage->Crop(fOffset_x, fOffset_y, fWidth_x, fWidth_y);
    gPad->Modified();
    gPad->Update();

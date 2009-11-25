@@ -275,6 +275,10 @@ measured in fractions of the length of an \"a\".\n\
       new TGMrbValuesAndText("Insert Text", fEditTextPointer, &ok,itemwidth, win,
                       history, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, caller, caller->ClassName());
+	if (fCanvas) {
+       GrCanvas* hc = (GrCanvas*)fCanvas;
+       hc->Add2ConnectedClasses(this);
+   }
 };
 //_________________________________________________________________________
 
@@ -289,9 +293,8 @@ void InsertTextDialog::InsertTextExecute(Int_t onarc)
 	Bool_t clear_textposition = kFALSE;
    if (fEditTextX0 == 0 && fEditTextY0 == 0) {
    	cout << "Mark position with left mouse" << endl;
-      TMarker * mark  = (TMarker*)gPad->WaitPrimitive("TMarker");
+      TMarker * mark  = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
 		if (mark == NULL) {
-			cout << "Interrupted Input" << endl;
 			return;
 		}
 		clear_textposition = kTRUE;
@@ -508,7 +511,7 @@ InsertTextDialog::~InsertTextDialog()
 void InsertTextDialog::RecursiveRemove(TObject * obj)
 {
    if (obj == fCanvas || obj == fCaller) {
-//      cout << "InsertTextDialog: CloseDialog "  << endl;
+      cout << "InsertTextDialog: CloseDialog "  << endl;
       CloseDialog();
    }
 }

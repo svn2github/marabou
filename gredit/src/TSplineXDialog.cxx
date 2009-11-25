@@ -84,6 +84,10 @@ Railway like filling etc.\n\
       new TGMrbValuesAndText("TSplineXDialog", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+	if (fCanvas) {
+       GrCanvas* hc = (GrCanvas*)fCanvas;
+       hc->Add2ConnectedClasses(this);
+   }
 }
 //______________________________________________________________________
 
@@ -102,7 +106,7 @@ void TSplineXDialog::Draw_The_TSplineX()
         }
      }
   }
-  TGraph * gr = (TGraph*)gPad->WaitPrimitive("Graph", "PolyLine");
+  TGraph * gr = (TGraph*)GrCanvas::WaitForCreate("TGraph", &fPad);
   if (!gr) {
       cout << "No PolyLine found, try again" << endl;
       return;

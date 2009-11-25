@@ -14,7 +14,8 @@ private:
    void *fValp[100];
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
-   TCanvas      *fCanvas;
+   TCanvas  *fCanvas;
+//	TPad     *fPad;
    TString  *fTpointer;
    Double_t fPar[10];
    Int_t 	fNpar;
@@ -31,6 +32,8 @@ public:
    InsertFunctionDialog();
    virtual ~InsertFunctionDialog();
    void InsertFunctionExecute();
+//	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
+//	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
    void SaveDefaults();
    void RestoreDefaults();
    void RecursiveRemove(TObject * obj);

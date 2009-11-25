@@ -57,6 +57,10 @@ static const Char_t helptext[] =
       new TGMrbValuesAndText("Graphics Pad", NULL, &ok,itemwidth, fWindow,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+	if (fCanvas) {
+       GrCanvas* hc = (GrCanvas*)fCanvas;
+       hc->Add2ConnectedClasses(this);
+   }
 }
 //____________________________________________________________________________
 
@@ -160,47 +164,45 @@ void XGrabDialog::ExecuteInsert()
       if (retval == kMBNo) return;
    }
    cout << "Mark position where to put (lower left corner)" << endl;
-   TObject * obj = gPad->WaitPrimitive("TMarker");
+   TMarker * ma = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
+	if (ma == NULL)
+		return;
+	Double_t x1, y1, x2, y2, xr1, yr1, xr2, yr2, dx, dy;
+	x1 = ma->GetX();
+	y1 = ma->GetY();
+	delete ma;
+	gPad->GetRange(xr1, yr1, xr2, yr2);
+	dx = fXwidth / (Double_t)fCanvas->GetWw();
+	dy = fYwidth / (Double_t)fCanvas->GetWh();
+	dx *= (xr2 - xr1);
+	dy *= (yr2 - yr1);
 
-   if (obj && obj->IsA() == TMarker::Class()) {
-      TMarker * ma = (TMarker*)obj;
-      Double_t x1, y1, x2, y2, xr1, yr1, xr2, yr2, dx, dy;
-      x1 = ma->GetX();
-      y1 = ma->GetY();
-      delete ma;
-      gPad->GetRange(xr1, yr1, xr2, yr2);
-      dx = fXwidth / (Double_t)fCanvas->GetWw();
-      dy = fYwidth / (Double_t)fCanvas->GetWh();
-      dx *= (xr2 - xr1);
-      dy *= (yr2 - yr1);
-
-		if (fFixedSize != 0) {
-			if        (fAlign%10 == 3) {
-				y1 -= dy;
-			} else if (fAlign%10 == 2) {
-				y1 -= (dy / 2);
-			}
-			if        (fAlign/10 == 3) {
-				x1 -= dx;
-			} else if (fAlign/10 == 2) {
-				x1 -= ( dx / 2);
-			}
+	if (fFixedSize != 0) {
+		if        (fAlign%10 == 3) {
+			y1 -= dy;
+		} else if (fAlign%10 == 2) {
+			y1 -= (dy / 2);
 		}
+		if        (fAlign/10 == 3) {
+			x1 -= dx;
+		} else if (fAlign/10 == 2) {
+			x1 -= ( dx / 2);
+		}
+	}
 //    back to NDC 
-      x1 = (x1 - xr1) / (xr2 - xr1);
-      y1 = (y1 - yr1) / (yr2 - yr1);
-      x2 = x1 + fXwidth / (Double_t)fCanvas->GetWw();
-      y2 = y1 + fYwidth / (Double_t)fCanvas->GetWh();
+	x1 = (x1 - xr1) / (xr2 - xr1);
+	y1 = (y1 - yr1) / (yr2 - yr1);
+	x2 = x1 + fXwidth / (Double_t)fCanvas->GetWw();
+	y2 = y1 + fYwidth / (Double_t)fCanvas->GetWh();
 
-      HTPad * pad = new HTPad(fPname.Data(), "For HprImage",
-                            x1, y1, x2, y2);
-      pad->Draw();
+	HTPad * pad = new HTPad(fPname.Data(), "For HprImage",
+									x1, y1, x2, y2);
+	pad->Draw();
 //      TImage *hprimg = TImage::Open(fPname.Data());
-      HprImage * hprimg = new HprImage(fPname.Data(), pad);
-      gROOT->SetSelectedPad(pad);
-      pad->cd();
-      hprimg->Draw();
-   }
+	HprImage * hprimg = new HprImage(fPname.Data(), pad);
+	gROOT->SetSelectedPad(pad);
+	pad->cd();
+	hprimg->Draw();
    fCanvas->cd();
    gPad->Modified();
    gPad->Update();

@@ -1,8 +1,7 @@
 #ifndef INSERTPADDIALOG
 #define INSERTPADDIALOG
 #include "TGMrbValuesAndText.h"
-#include "TCanvas.h"
-#include "TObject.h"
+#include "GrCanvas.h"
 //_____________________________________________________________________________________
 
 
@@ -12,7 +11,8 @@ private:
    void *fValp[100];
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
-   TCanvas      *fCanvas;
+   TCanvas    * fCanvas;
+	TPad       * fPad;
    Double_t   fX1;         //
    Double_t   fY1;         //
    Double_t   fDx;         //
@@ -25,7 +25,9 @@ public:
    InsertPadDialog();
    virtual ~InsertPadDialog();
    void    ExecuteInsert();
-   void    SaveDefaults();
+	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
+	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
+	void    SaveDefaults();
    void    RestoreDefaults();
    void    RecursiveRemove(TObject * obj);
    void    CloseDialog();

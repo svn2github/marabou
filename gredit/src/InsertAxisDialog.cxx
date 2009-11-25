@@ -64,6 +64,10 @@ static const Char_t helptext[] =
       new TGMrbValuesAndText("Insert Axis", NULL, &ok,itemwidth, fWindow,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+	if (fCanvas) {
+       GrCanvas* hc = (GrCanvas*)fCanvas;
+       hc->Add2ConnectedClasses(this);
+   }
 }
 //____________________________________________________________________________
 
@@ -76,7 +80,7 @@ void InsertAxisDialog::ExecuteInsert()
 
    if (fX0 == 0 && fY0 == 0 && fX1 == 0 && fY1 == 0) {
    	cout << "Input a TLine defining the axis" << endl;
-      TLine * l = (TLine*)gPad->WaitPrimitive("TLine");
+      TLine * l = (TLine*)GrCanvas::WaitForCreate("TLine", &fPad);
       if (l) {
          fX0 = l->GetX1();
          fY0 = l->GetY1();

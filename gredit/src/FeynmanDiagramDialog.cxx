@@ -81,6 +81,10 @@ by Phi start / end. (counterclock wise)\n\
       new TGMrbValuesAndText("Feynman diagram", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+	if (gPad) {
+       GrCanvas* hc = (GrCanvas*)fCanvas;
+       hc->Add2ConnectedClasses(this);
+   }
 }
 //______________________________________________________________________________
 
@@ -88,12 +92,12 @@ void FeynmanDiagramDialog::FeynmanArrow()
 {
    const char * ArrowOption[] =
       {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
-   TArrow * a = (TArrow*)gPad->WaitPrimitive("TArrow");
-   if (a == NULL) {
-      cout << "Interrupted TArrow" << endl;
-      return;
-   }
-   a = (TArrow *)gPad->GetListOfPrimitives()->Last();
+   TArrow * a = (TArrow*)GrCanvas::WaitForCreate("TArrow", &fPad);
+//   if (a == NULL) {
+//cout << "Interrupted TArrow" << endl;
+//      return;
+//   }
+//   a = (TArrow *)gPad->GetListOfPrimitives()->Last();
    THprArrow * aa = new THprArrow(a->GetX1(), a->GetY1(),
                                   a->GetX2(), a->GetY2());
    delete a;
@@ -120,12 +124,10 @@ void FeynmanDiagramDialog::FeynmanCurlyLine()
 //______________________________________________________________________________
 void FeynmanDiagramDialog::FeynmanCurlyWavyLine(Int_t curly)
 {
-   TCurlyLine * a = (TCurlyLine*)gPad->WaitPrimitive("TCurlyLine");
+   TCurlyLine * a = (TCurlyLine*)GrCanvas::WaitForCreate("TCurlyLine", &fPad);
    if (a == NULL) {
-      cout << "Interrupted TCurlyLine" << endl;
       return;
    }
-   a = (TCurlyLine *)gPad->GetListOfPrimitives()->Last();
    THprCurlyLine * ha =  new THprCurlyLine(a->GetStartX(), a->GetStartY(),
                          a->GetEndX(), a->GetEndY());
    delete a;
@@ -155,10 +157,8 @@ void FeynmanDiagramDialog::FeynmanCurlyArc()
 void FeynmanDiagramDialog::FeynmanCurlyWavyArc(Int_t curly)
 {
 //	TCurlyArc::SetDefaultIsCurly(kTRUE);
-   TCurlyArc * a = (TCurlyArc*)gPad->WaitPrimitive("TCurlyArc");
-   a = (TCurlyArc *)gPad->GetListOfPrimitives()->Last();
+   TCurlyArc * a = (TCurlyArc*)GrCanvas::WaitForCreate("TCurlyArc", &fPad);
    if (a == NULL) {
-      cout << "Interrupted Input" << endl;
       return;
    }
    THprCurlyArc * ha = new THprCurlyArc(a->GetStartX(), a->GetStartY(),
@@ -196,12 +196,10 @@ void FeynmanDiagramDialog::FeynmanLine(Style_t lstyle )
 {
 //   Style_t save = gStyle->GetLineStyle();
 //   gStyle->SetLineStyle(kDashed);
-   TLine * a = (TLine*)gPad->WaitPrimitive("TLine");
+   TLine * a = (TLine*)GrCanvas::WaitForCreate("TLine", &fPad);
    if (a == NULL) {
-      cout << "Interrupted TLine" << endl;
       return;
    }
-   a = (TLine *)gPad->GetListOfPrimitives()->Last();
    THprLine * la = new THprLine(a->GetX1(), a->GetY1(), a->GetX2(), a->GetY2());
    delete a;
    la->Draw();

@@ -61,6 +61,10 @@ arrows at the ends\n\
       new TGMrbValuesAndText("Curly / Wave line with arrow", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+	if (fCanvas) {
+       GrCanvas* hc = (GrCanvas*)fCanvas;
+       hc->Add2ConnectedClasses(this);
+   }
 }
 //______________________________________________________________________________
 
@@ -68,12 +72,10 @@ void CurlyLineWithArrowDialog::ExecuteInsert()
 {
 //   const char * ArrowOption[] =
 //     {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
-   TLine * gr = (TLine*)gPad->WaitPrimitive("TLine");
+   TLine * gr = (TLine*)GrCanvas::WaitForCreate("TLine", &fPad);
 	if (gr == NULL) {
-		cout << "Interrupted Input" << endl;
 		return;
 	}
-   gr = (TLine *)gPad->GetListOfPrimitives()->Last();
    Int_t where = 0;
    if (fArrowAtStart) where += 1;
    if (fArrowAtEnd)   where += 2;

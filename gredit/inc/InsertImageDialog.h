@@ -17,6 +17,7 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
+   TPad       * fPad;
    TRootCanvas *fWindow;
    TImage *fImage;
    Int_t fEntirePad;

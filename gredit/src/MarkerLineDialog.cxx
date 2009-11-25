@@ -82,6 +82,10 @@ end with click at same position or double click\n\
       new TGMrbValuesAndText("Marker / Polyline", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+	if (fCanvas) {
+       GrCanvas* hc = (GrCanvas*)fCanvas;
+       hc->Add2ConnectedClasses(this);
+   }
 }
 //______________________________________________________________________________
 
@@ -89,12 +93,10 @@ void MarkerLineDialog::Arrow()
 {
    const char * ArrowOption[] =
       {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
-   TArrow * a = (TArrow*)gPad->WaitPrimitive("TArrow");
+   TArrow * a = (TArrow*)GrCanvas::WaitForCreate("TArrow", &fPad);
    if (a == NULL) {
-      cout << "Interrupted TArrow" << endl;
       return;
    }
-   a = (TArrow *)gPad->GetListOfPrimitives()->Last();
    THprArrow * aa = new THprArrow(a->GetX1(), a->GetY1(),
                                   a->GetX2(), a->GetY2());
    delete a;
@@ -111,12 +113,10 @@ void MarkerLineDialog::Arrow()
 //______________________________________________________________________________
 void MarkerLineDialog::SimpleLine()
 {
-   TLine * a = (TLine*)gPad->WaitPrimitive("TLine");
+   TLine * a = (TLine*)GrCanvas::WaitForCreate("TLine", &fPad);
    if (a == NULL) {
-      cout << "Interrupted Line" << endl;
       return;
    }
-   a = (TLine *)gPad->GetListOfPrimitives()->Last();
    THprLine * ha =  new THprLine(a->GetX1(), a->GetY1(),
                          a->GetX2(), a->GetY2());
    delete a;
@@ -130,12 +130,10 @@ void MarkerLineDialog::SimpleLine()
 //______________________________________________________________________________
 void MarkerLineDialog::Marker()
 {
-   TMarker * a = (TMarker*)gPad->WaitPrimitive("TMarker");
+   TMarker * a = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
    if (a == NULL) {
-      cout << "Interrupted Marker" << endl;
       return;
    }
-   a = (TMarker *)gPad->GetListOfPrimitives()->Last();
    THprMarker * ha =  new THprMarker(a->GetX(), a->GetY());
    delete a;
    ha->Draw();
@@ -161,19 +159,12 @@ void MarkerLineDialog::PolyLine()
         }
      }
   }
-  TGraph * gr = (TGraph*)gPad->WaitPrimitive("Graph", "PolyLine");
+  TGraph * gr = (TGraph*)GrCanvas::WaitForCreate("TGraph", &fPad);
   if (!gr) {
       cout << "Interrupted TPolyLine" << endl;
       return;
    }
-   gr->SetName("abc");
-//   THprPolyLine * ha =  new THprPolyLine(gr->GetN());
    THprGraph * ha =  new THprGraph(gr->GetN(), gr->GetX(), gr->GetY());
-//   Double_t *px = gr->GetX();
-//   Double_t *py = gr->GetY();
-//   for (Int_t i = 0; i < gr->GetN(); i ++) {
-//     ha->SetPoint(i, px[i], py[i]);
-//   }
    delete gr;
    ha->Draw("L");
    ha->SetLineColor(fLineColor);

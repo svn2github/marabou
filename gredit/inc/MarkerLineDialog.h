@@ -2,7 +2,7 @@
 #define MARKERLINEDIALOG
 #include "TObject.h"
 #include "TGMrbValuesAndText.h"
-#include "TCanvas.h"
+#include "GrCanvas.h"
 //_____________________________________________________________________________________
 
 
@@ -12,7 +12,8 @@ private:
    void *fValp[100];
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
-   TCanvas      *fCanvas;
+   TCanvas *fCanvas;
+	TPad    *fPad;
 	Color_t fMarkerColor;
 	Size_t  fMarkerSize ;
 	Style_t fMarkerStyle;
@@ -26,6 +27,8 @@ private:
 public:
    MarkerLineDialog();
    virtual ~MarkerLineDialog();
+	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
+	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
    void    Arrow();
    void    SimpleLine();
    void    PolyLine();

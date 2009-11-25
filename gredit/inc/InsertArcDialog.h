@@ -2,7 +2,7 @@
 #define INSERTARCDIALOG
 #include "TObject.h"
 #include "TGMrbValuesAndText.h"
-#include "TCanvas.h"
+#include "GrCanvas.h"
 //_____________________________________________________________________________________
 
 
@@ -13,6 +13,7 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
+	TPad       * fPad;
    Double_t   fXcenter;    // center X
    Double_t   fYcenter;    // center Y
    Double_t   fX1;         // 1. point on circumference
@@ -41,6 +42,8 @@ public:
                        Double_t *xcenter, Double_t *ycenter,
                        Double_t *phimin, Double_t *phimax);
    Double_t GetRatioXY();
+	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
+	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
    void    SaveDefaults();
    void    RestoreDefaults();
    void    RecursiveRemove(TObject * obj);

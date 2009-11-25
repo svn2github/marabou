@@ -1,7 +1,7 @@
 
 #include "TROOT.h"
+#include "TSystem.h"
 #include "TBox.h"
-#include "TCanvas.h"
 #include "TEnv.h"
 #include "TMarker.h"
 #include "TPad.h"
@@ -40,6 +40,7 @@ active.\n\
    TRootCanvas* win = NULL;
    if (fCanvas)
       win = (TRootCanvas*)fCanvas->GetCanvasImp();
+	cout << " gPad, fCanvas " << gPad << " " << fCanvas << " " << win << endl;
    Int_t ind = 0;
    RestoreDefaults();
    fRow_lab = new TList();
@@ -69,6 +70,10 @@ active.\n\
       new TGMrbValuesAndText("Graphics Pad", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+	if (gPad) {
+       GrCanvas* hc = (GrCanvas*)fCanvas;
+       hc->Add2ConnectedClasses(this);
+   }
 }
 //____________________________________________________________________________
 
@@ -79,26 +84,18 @@ void InsertPadDialog::ExecuteInsert()
    Double_t X2=0, Y2=0;
    if ((fX1 == 0 && fY1 == 0) || (fDx == 0 || fDy == 0)) {
 		if (fDx == 0 || fDy == 0) {
-			cout << "Define a box " << endl;
-			m1  = (TPave*)gPad->WaitPrimitive("TPave");
-			if (m1 == NULL) {
-				cout << "Interrupted Input" << endl;
+			cout << "Define a box (press left mouse and drag)" << endl;
+			m1 = (TPave *)GrCanvas::WaitForCreate("TPave", &fPad);
+			if (!m1) {
 				return;
 			}
-			m1 = (TPave *)gPad->GetListOfPrimitives()->Last();
-			if (!m1) return;
 			fX1 = m1->GetX1();
 			fY1 = m1->GetY1();
 			X2 = m1->GetX2();
 			Y2 = m1->GetY2();
 		} else {
-			cout << "Define lower left corner" << endl;
-			ma  = (TMarker*)gPad->WaitPrimitive("TMarker");
-			if (ma == NULL) {
-				cout << "Interrupted Input" << endl;
-				return;
-			}
-			ma = (TMarker *)gPad->GetListOfPrimitives()->Last();
+			cout << "Define lower left corner (press left mouse) " << endl;
+			ma = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
 			if (!ma) return;
 			fX1 = ma->GetX();
 			fY1 = ma->GetY();
@@ -135,7 +132,7 @@ void InsertPadDialog::ExecuteInsert()
 
    tb = new HTPad(Form("%s_%d",gPad->GetName(),n+1), "HprPad",
                     xlow, ylow, xup, yup);
-   cout << xlow << " " <<ylow << " " << xup << " " << yup<< endl;
+//   cout << xlow << " " <<ylow << " " << xup << " " << yup<< endl;
 
    tb->Draw();
    tb->SetFillColor(fFillColor);

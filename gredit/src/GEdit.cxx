@@ -106,10 +106,11 @@ GEdit::GEdit(GrCanvas * parent)
 }
 void GEdit::Constructor()
 {
-   //cout << "ctor GEdit: fParent " << fParent << endl;
+//   cout << "ctor GEdit: fParent " << fParent << " gPad " << gPad << endl;
    SetName("HprGEdit");
 //   fRootCanvas = (TRootCanvas*)fParent->GetCanvas()->GetCanvasImp();
    fRootCanvas = (TRootCanvas*)fParent->GetCanvasImp();
+//   cout << "fRootCanvas->GetHeight() " << fRootCanvas->GetHeight() << endl;
    fOrigWw = fParent->GetWw();
    fOrigWh = fParent->GetWh();
    RestoreDefaults();
@@ -141,6 +142,8 @@ void GEdit::Constructor()
    gROOT->GetListOfSpecials()->Add(this);
    fParent->cd();
    fParent->SetShowEditor();
+   GrCanvas* hc = (GrCanvas*)fParent;
+   hc->Add2ConnectedClasses(this);
 }
 //______________________________________________________________________________
 
@@ -1633,25 +1636,15 @@ void GEdit::ModifyGraphs()
 
 void GEdit::DefineBox()
 {
-//   fParent->cd();
-//   cout << "GEdit::DefineBox " << gPad->GetName() << endl;
-   TObject * obj = gPad->WaitPrimitive("TPave");
-	if (obj == NULL) {
-		cout << "Interrupted Input" << endl;
+   TPave* p = (TPave*)GrCanvas::WaitForCreate("TPave", &fPad);
+	if (p == NULL) {
 		return;
 	}
-
-   obj = gPad->GetListOfPrimitives()->Last();
-   if (obj->IsA() == TPave::Class()) {
-      TPave * p = (TPave*)obj;
-      TObject * otcut = gPad->GetListOfPrimitives()->FindObject("HprRaRegion");
-      if (otcut) delete otcut;
-      new HprRaRegion(p->GetX1(),p->GetY1(),p->GetX2(),p->GetY2());
-      delete obj;
-      fParent->Update();
-   } else {
-       cout << "Error getting TPave" << endl;
-   }
+	TObject * otcut = gPad->GetListOfPrimitives()->FindObject("HprRaRegion");
+	if (otcut) delete otcut;
+	new HprRaRegion(p->GetX1(),p->GetY1(),p->GetX2(),p->GetY2());
+	delete p;
+	fParent->Update();
 }
 //______________________________________________________________________________
 
@@ -1660,17 +1653,14 @@ void GEdit::DefinePolygone()
 //   fParent->cd();
    TObject * obj = gPad->GetListOfPrimitives()->FindObject("HprRaRegion");
    if (obj) delete obj;
-   obj = gPad->WaitPrimitive("CUTG", "CutG");
-//   obj = gPad->GetListOfPrimitives()->Last();
-   if (obj && obj->IsA() == TCutG::Class()) {
-       ((TCutG*)obj)->SetLineWidth(1);
-       ((TCutG*)obj)->SetLineStyle(2);
-       ((TCutG*)obj)->SetLineColor(1);
-       ((TCutG*)obj)->SetName("HprRaRegion");
-        fParent->Update();
-   } else {
-       cout << "Error getting TCutG" << endl;
-   }
+	TCutG * cutg = (TCutG*)GrCanvas::WaitForCreate("TCutG", &fPad);
+	if (cutg == NULL)
+		return;
+	cutg->SetLineWidth(1);
+	cutg->SetLineStyle(2);
+	cutg->SetLineColor(1);
+	cutg->SetName("HprRaRegion");
+	fParent->Update();
 }
 //______________________________________________________________________________
 
@@ -1734,8 +1724,6 @@ void GEdit::RemoveParallelGraphs()
    while ( (obj = lop->FindObject("ParallelG")) ){
       lop->Remove(obj);
    }
-//   fParent->Modified();
-//   fParent->Update();
 }
 //______________________________________________________________________________
 
@@ -1753,8 +1741,13 @@ void GEdit::RemoveEditGrid()
 
 void GEdit::WritePrimitives()
 {
-   Bool_t ok;
-//   TString name = "drawing";
+	ShowToolBar(kFALSE);
+//	delete fEditor;
+	fParent->GetCanvasImp()->ShowEditor(kFALSE);
+	fParent->GetCanvasImp()->ForceUpdate();
+	gSystem->ProcessEvents();
+
+	Bool_t ok;
    static TString name(fPictureName);
    name = GetString("Save picture with name", name.Data(), &ok,
                  (TGWindow*)fRootCanvas);
@@ -1770,7 +1763,7 @@ void GEdit::WritePrimitives()
    TObject *obj;
    TList laxis;
    TObjOptLink *lnk = (TObjOptLink*)lop->FirstLink();
-   cout << "GEdit::WritePrimitives: bef Remove TASImage" << endl;
+//   cout << "GEdit::WritePrimitives: bef Remove TASImage" << endl;
    while (lnk) {
       obj = lnk->GetObject();
       if (obj->InheritsFrom("TASImage")) lop->Remove(lnk);
@@ -1805,7 +1798,7 @@ void GEdit::WritePrimitives()
       }
       lnk = (TObjOptLink*)lnk->Next();
    }
-   cout << "GEdit::WritePrimitives: after Remove TASImage" << endl;
+//   cout << "GEdit::WritePrimitives: after Remove TASImage" << endl;
 
    TFile *f = new TFile(fn, "UPDATE");
    RemoveEditGrid();
@@ -1814,7 +1807,7 @@ void GEdit::WritePrimitives()
    f->Close();
 // remove axis
    lnk = (TObjOptLink*)lop->FirstLink();
-   cout << "GEdit::WritePrimitives: bef Remove axis" << endl;
+ //  cout << "GEdit::WritePrimitives: bef Remove axis" << endl;
    while (lnk) {
       obj = lnk->GetObject();
       if (obj->InheritsFrom("HTPad")) {
@@ -1831,6 +1824,11 @@ void GEdit::WritePrimitives()
    fPictureName =  name;
    fRootFileName = fn;
    SaveDefaults();
+	ShowToolBar(kTRUE);
+//	delete fEditor;
+	fParent->GetCanvasImp()->ShowEditor(kTRUE);
+	fParent->GetCanvasImp()->ForceUpdate();
+	gSystem->ProcessEvents();
 }
 //_____________________________________________________________________________
 
@@ -2275,8 +2273,9 @@ void GEdit::InsertGObjects(const char * objname)
    }
    if (x0 == 0 && y0 == 0) {
    	cout << "Mark position with left mouse" << endl;
-      TMarker * mark  = (TMarker*)gPad->WaitPrimitive("TMarker");
-      mark  = (TMarker*)gPad->GetListOfPrimitives()->Last();
+      TMarker * mark  = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
+		if (mark == NULL)
+			return;
       x0 = mark->GetX();
       y0 = mark->GetY();
       delete mark;
@@ -2860,7 +2859,7 @@ tryagain:
 
    if (x0 == 0 && y0 == 0 && x1 == 0 && y1 == 0) {
    	cout << "Input a TLine defining the axis" << endl;
-      TLine * l = (TLine*)fParent->WaitPrimitive("TLine");
+      TLine * l = (TLine*)GrCanvas::WaitForCreate("TLine", &fPad);
       if (l) {
          x0 = l->GetX1();
          y0 = l->GetY1();

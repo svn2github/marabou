@@ -1,7 +1,7 @@
 #ifndef INSERTAxisDIALOG
 #define INSERTTAMPLATEDIALOG
 #include "TGMrbValuesAndText.h"
-#include "TCanvas.h"
+#include "GrCanvas.h"
 #include "TRootCanvas.h"
 #include "TObject.h"
 //_____________________________________________________________________________________
@@ -14,6 +14,7 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
+	TPad       * fPad;
    TRootCanvas  *fWindow;
    Double_t fX0;
    Double_t fY0;
@@ -30,6 +31,8 @@ public:
    InsertAxisDialog();
    virtual ~InsertAxisDialog();
    void    ExecuteInsert();
+	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
+	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
    void    SaveDefaults();
    void    RestoreDefaults();
    void    RecursiveRemove(TObject * obj);

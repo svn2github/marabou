@@ -3,7 +3,7 @@
 #include "TObject.h"
 #include "TString.h"
 #include "TGMrbValuesAndText.h"
-#include "TCanvas.h"
+#include "GrCanvas.h"
 //_____________________________________________________________________________________
 
 
@@ -14,6 +14,7 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas        *fCanvas;
+	TPad           * fPad;
    TObject        *fCaller;
    TString        *fEditTextPointer;
    TString        fEditTextFileName;
@@ -48,6 +49,8 @@ public:
    Double_t GetEditTextX0() { return fEditTextX0; };
    Double_t GetEditTextY0() { return fEditTextY0; };
 
+	void    ObjCreated(Int_t px, Int_t py, TObject *obj) {fPad = (TPad*)obj;};
+	void    ObjMoved(Int_t px, Int_t py, TObject *obj) { };
    void SaveDefaults();
    void RestoreDefaults();
    void Show_Head_of_File();

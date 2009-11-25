@@ -96,7 +96,7 @@ void InsertTextBoxDialog::ExecuteInsert()
    if ((fX1 == 0 && fY1 == 0) || (fDx == 0 || fDy == 0)) {
 		if (fDx == 0 || fDy == 0) {
 			cout << "Define a box " << endl;
-			m1  = (TPave*)gPad->WaitPrimitive("TPave");
+			m1  = (TPave*)GrCanvas::WaitForCreate("TPave", &fPad);
 			if (m1 == NULL) {
 				cout << "Interrupted Input" << endl;
 				return;
@@ -109,7 +109,7 @@ void InsertTextBoxDialog::ExecuteInsert()
 			Y2 = m1->GetY2();
 		} else {
 			cout << "Define lower left corner" << endl;
-			ma  = (TMarker*)gPad->WaitPrimitive("TMarker");
+			ma  = (TMarker*)GrCanvas::WaitForCreate("TMarker", &fPad);
 			if (ma == NULL) {
 				cout << "Interrupted Input" << endl;
 				return;

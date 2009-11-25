@@ -40,7 +40,7 @@ private:
    UInt_t         fOrigWh;
    Int_t          fCurrentPlane;      //
 
-   void Build();
+//   void Build();
 //
 public:
    enum {
@@ -54,7 +54,7 @@ public:
    virtual void HandleInput(EEventType button, Int_t x, Int_t y);
    virtual void DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selected);
    void   RunAutoExec();
-   void   SetLog(Int_t state);
+//   void   SetLog(Int_t state);
    void   MyClose();
 	TRootCanvas * GetRootCanvas() { return fRootCanvas; } 
    Double_t GetEditGridX() {return fEditGridX;};
@@ -65,6 +65,7 @@ public:
    void    Add2ConnectedClasses(TObject *obj);
    void    ObjectCreated(Int_t, Int_t, TObject*);
    void    ObjectMoved(Int_t, Int_t, TObject*);
+   static  TObject * WaitForCreate(const char * what, TPad **pad);
    Double_t PutOnGridX(Double_t);
    Double_t PutOnGridY(Double_t);
    Double_t PutOnGridX_NDC(Double_t);
@@ -78,9 +79,23 @@ public:
    void PrintAddress()  {std::cout << ClassName() << "* aa = "
                          << "(" << ClassName() << "*)" << this
                          << std::endl; GetListOfPrimitives()->ls();}; // *MENU*
+//______________________________________________________________________________
 
-	void RemovePicture();       // *MENU*
-	void		PushPictureToBg(); // *MENU*
+	void RemovePicture()
+	{
+		TList * lop = GetListOfPrimitives();
+		TIter next(lop );
+		TObject * obj;
+		while ( (obj = next()) ) {
+			if (obj->InheritsFrom("HprImage")) {
+				lop->Remove(obj);
+				break;
+			}
+		}
+		Modified();
+		Update();
+	}                // *MENU*
+
    void     SetEnableButtons(Bool_t enable = kTRUE) {fButtonsEnabled = enable;};
    Bool_t   GetEnableButtons() {return fButtonsEnabled ;};
 	UInt_t   GetOrigWw() { return fOrigWw; };
