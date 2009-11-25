@@ -402,7 +402,8 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    TString pname(fname);
 //   pname.Prepend("CWD:");
    HTCanvas *cHCont = new HTCanvas(pname.Data(), pname.Data(),
-                                   xpos, ypos, -xw, yw, hpr, 0);
+                                   -xpos, ypos, xw, yw, hpr, 0);
+//                                   xpos, ypos, -xw, yw, hpr, 0);
    Int_t item_height = TMath::Min(Int_t(magfac * 24.), 10000/Nentries);
 //	cout << " Nentries " << Nentries << endl;
 

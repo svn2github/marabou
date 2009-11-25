@@ -282,8 +282,9 @@ public:
       if(!gStyle->GetOptTitle()){
          if(cHist->GetPrimitive("title"))delete cHist->GetPrimitive("title");
       }
-      gPad = (TVirtualPad*)cHist;
-      cHist->cd(); cHist->Modified(kTRUE); cHist->Update();
+//      gPad = (TVirtualPad*)cHist;
+//      cHist->cd(); 
+//		cHist->Modified(kTRUE); cHist->Update();
 //      cout << " UpdateCanvas() done " << endl;
    };
    void RecursiveRemove(TObject * obj);

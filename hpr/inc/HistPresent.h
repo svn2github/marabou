@@ -42,8 +42,8 @@ protected:
    HTCanvas *fFileList;                 // the main canvas
    TFile       *fRootFile;        // root file
    TH1 * fCurrentHist;
-   TRootCanvas *fMainCanvas;
-   TRootCanvas *lastcanvas;
+   TRootCanvas *fRootCanvas;
+//   TRootCanvas *lastcanvas;
    TGMrbValuesAndText *fDialogShowTree;
    Bool_t fByTitle;
    Int_t fRebin, fRMethod;
@@ -154,8 +154,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    HistPresent(const Text_t *name = "mypres" , const Text_t *title = "mypres");
    ~HistPresent();
    void RecursiveRemove(TObject *);
-   TRootCanvas* GetMyCanvas(){return lastcanvas;};
-   void  SetMyCanvas(TRootCanvas *myc){lastcanvas = myc;};
+   TRootCanvas* GetRootCanvas(){return fRootCanvas;};
+//   void  SetMyCanvas(TRootCanvas *myc){lastcanvas = myc;};
    void SaveOptions();
    void RestoreOptions();
    void EditAttrFile();

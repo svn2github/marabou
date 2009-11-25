@@ -85,13 +85,14 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 	   cout << "No Histogram in Canvas" << endl;
 	}
    RestoreDefaults();
-	
    Int_t selected = -1;
    for (Int_t i = 0; i < kNdrawopt; i++) {
       fDrawOpt2DimArray[i] = fDrawOpt2[i];
-      if (fDrawOpt2Dim.Contains(fDrawOpt2DimArray[i]) ) {
+		TString temp(fDrawOpt2[i]);
+		temp = temp.Strip(TString::kBoth);
+      if (fDrawOpt2Dim.Contains(temp) ) {
          if (selected < 0) {
-            fOptRadio[i] = 1;
+				fOptRadio[i] = 1;
             selected = i;
          }
       } else {

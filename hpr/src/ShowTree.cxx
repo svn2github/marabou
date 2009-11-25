@@ -357,9 +357,9 @@ void HistPresent::EditExpression(const char* vl, const char* bp)
    if (var_list) AddMathExpressions(var_list);
 //   if (var_list)var_list->Print();
 //   *fExpression=GetString("Edit expression",(const char *)*fExpression,
-//                          &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
+//                          &ok, fRootCanvas, 0,0,0,0,0, hf, var_list);
    ok = GetStringExt("Edit expression", fExpression,
-                          300, GetMyCanvas(), hf, var_list);
+                          300, fRootCanvas, hf, var_list);
    if (!ok) return;
    if (strlen(*fExpression) > 1) {
       cout << *fExpression<< endl;
@@ -380,9 +380,9 @@ void HistPresent::EditLeafCut(const char* vl, const char* bp)
    if (bp) var_list = (TList*)strtoul(vl, 0, 16);
    if (var_list) AddMathExpressions(var_list);
 //   *fLeafCut=GetString("Edit formula cut",(const char *)*fLeafCut,
-//                         &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
+//                         &ok, fRootCanvas, 0,0,0,0,0, hf, var_list);
    ok = GetStringExt("Edit expression", fLeafCut,
-                          300, GetMyCanvas(), hf, var_list);
+                          300, fRootCanvas, hf, var_list);
    if (!ok) return;
     if (strlen(*fLeafCut) > 1) {
 
@@ -399,7 +399,7 @@ void HistPresent::DefineGraphCut(const char* bp)
    const char hist_file[] = {"ntupleGraphCuts.txt"};
    const char * hf = hist_file;
    if (gROOT->GetVersionInt() < 40101) hf = NULL;
-   *fGraphCut=GetString("Cut name",(const char *)*fGraphCut, &ok, GetMyCanvas(),
+   *fGraphCut=GetString("Cut name",(const char *)*fGraphCut, &ok, fRootCanvas,
                          0,0,0,0,0, hf);
    if (!ok) return;
    if (strlen(*fGraphCut) > 1) {
@@ -410,10 +410,10 @@ void HistPresent::DefineGraphCut(const char* bp)
          return;
       }
       *fCutVarX = cc->GetVarX();
-      *fCutVarX=GetString("X-value name",fCutVarX->Data(), &ok, GetMyCanvas());
+      *fCutVarX=GetString("X-value name",fCutVarX->Data(), &ok, fRootCanvas);
       cc->SetVarX(fCutVarX->Data());
       *fCutVarY = cc->GetVarY();
-      *fCutVarY=GetString("Y-value name",fCutVarY->Data(), &ok, GetMyCanvas());
+      *fCutVarY=GetString("Y-value name",fCutVarY->Data(), &ok, fRootCanvas);
       cc->SetVarY(fCutVarY->Data());
       if (!fApplyGraphCut) ToggleGraphCut();
       cout << "Enable: " << *fGraphCut << endl;
@@ -581,12 +581,12 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 //      cout << "look for:" << fh_name << endl;
       TObject *fobj = (TObject *)gROOT->FindObject(fh_name.Data());
       if (fobj) {
-//         cout << " deleting " << fh_name << endl;
+         cout << " deleting " << fh_name << endl;
          delete fobj;
       }
       fobj = (TObject *)gROOT->FindObject(hname.Data());
       if (fobj) {
-//         cout << " deleting " << hname << endl;
+         cout << " deleting " << hname << endl;
          delete fobj;
       }
 //   }

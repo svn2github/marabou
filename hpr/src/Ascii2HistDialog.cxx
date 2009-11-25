@@ -61,7 +61,7 @@ for the axis can be calculated if the option\n\
    row_lab->Add(new TObjString("RadioButton_2 Dim, X, Y, Weight"));
    row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z values to be filled"));
    row_lab->Add(new TObjString("RadioButton_3 Dim, X, Y, Z, Weight"));
-   row_lab->Add(new TObjString("FileRequest_Name of Inputfile   "));
+   row_lab->Add(new TObjString("FileRequest_Input datafile"));
    row_lab->Add(new TObjString("StringValue_Name"));
    row_lab->Add(new TObjString("StringValue_Title"));
    row_lab->Add(new TObjString("PlainIntVal_NbX"));

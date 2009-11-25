@@ -52,7 +52,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
            TGraph * graph, Int_t flag)
            : GrCanvas(name, title, wtopx, wtopy, ww,wh),
 			    fHistPresent(hpr), fFitHist(fh),fGraph(graph)
-            {
+{
 
 //*-*-*-*-*-*-*-*-*-*-*-*Canvas constructor*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 //*-*                    ==================
@@ -73,28 +73,31 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //   HTCanvas *old = (HTCanvas*)gROOT->GetListOfCanvases()->FindObject(name);
 //   if (old && old->IsOnHeap()) delete old;
    fHandleMenus = NULL;
-   if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(GetRootCanvas());
+//   if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(GetRootCanvas());
+	
    if (TestBit(kMenuBar)) {
       fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);
       fHandleMenus->BuildMenus();
-		fCanvasImp->ShowEditor(kFALSE);
-		fCanvasImp->ShowToolBar(kFALSE);
+//		fCanvasImp->ShowEditor(kFALSE);
+//		fCanvasImp->ShowToolBar(kFALSE);
 		fCanvasImp->ShowStatusBar(kFALSE);
 		fCanvasImp->ShowMenuBar(HasMenuBar());
       if (flag & HTCanvas::kIsAEditorPage) {
 			cout << "HTCanvas::kIsAEditorPage" << endl;
          SetBit(HTCanvas::kIsAEditorPage);
       }
-		SetWindowSize(ww , wh );
+//   	SetWindowSize(ww , wh );
    }
-//   cout << "ctor HTCanvas: " << this << " " << name
-//        << " Id " << GetRootCanvas()->GetId() << endl;
+	if ( gDebug > 1 )
+		cout << "ctor HTCanvas: " << this << " " << name
+        << " Id " << GetRootCanvas()->GetId() << endl;
 };
 //______________________________________________________________________________________
 
 HTCanvas::~HTCanvas()
 {
-//   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
+	if ( gDebug > 1 )
+		cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
 //   if (fEditCommands) { delete fEditCommands; fEditCommands = NULL;};
    if (fHandleMenus) {
       delete fHandleMenus;
@@ -140,13 +143,8 @@ void HTCanvas::BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr)
    fFitHist     = fh;
    fGraph       = gr;
 
-//   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);
-//   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
-//   fHandleMenus->BuildMenus();
-/*
-   fCanvasImp->ShowEditor(kFALSE);
-   fCanvasImp->ShowToolBar(kFALSE);
-   fCanvasImp->ShowStatusBar(kFALSE);
-   fCanvasImp->ShowMenuBar(HasMenuBar());
-*/
+   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);
+	if ( gDebug  > 1)
+		cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
+   fHandleMenus->BuildMenus();
 }

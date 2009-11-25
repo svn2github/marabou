@@ -72,7 +72,7 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
       row_lab->Add(new TObjString("PlainIntVal_last_binY"));
       valp[ind++] = &last_binY;
    }
-   row_lab->Add(new TObjString("CheckButton_Suppress channels with zero content"));
+   row_lab->Add(new TObjString("CheckButton_Suppress empty channels"));
    valp[ind++] = &suppress_zeros;
 
    Int_t itemwidth=250;

@@ -222,9 +222,8 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    activeHist= NULL;
    fFileList = NULL;
    fControlBar = NULL;
-   fMainCanvas=0;
+   fRootCanvas=0;
    WindowSizeDialog::fMainWidth = 300;
-   lastcanvas=0;
 
    fByTitle=kFALSE;
 
@@ -353,7 +352,7 @@ void HistPresent::ShowMain()
    cHPr = new HTCanvas("cHPr", "HistPresent",5,5, WindowSizeDialog::fMainWidth, mainheight, this, 0);
 //   cHPr = new TCanvas("cHPr", "HistPresent",5,5, WindowSizeDialog::fMainWidth, mainheight);
    cHPr->cd();
-   fMainCanvas = GetMyCanvas();
+   fRootCanvas = (TRootCanvas*)cHPr->GetCanvasImp();
 
    Float_t  dy=0.068, y=1. - 6.5*dy - 0.001, x0=0.01, x1=0.97;
    TButton *b;
@@ -457,7 +456,7 @@ void HistPresent::ShowMain()
 
    cHPr->SetEditable(kFALSE);
    cHPr->Update();
-//   CreateDefaultsDir(fMainCanvas);
+//   CreateDefaultsDir(fRootCanvas);
    if (gSystem->AccessPathName(gSystem->WorkingDirectory(), kWritePermission))
       WarnBox("You have no write permission on current working directory\n\
 you will be unable to save current settings etc.");
@@ -555,7 +554,7 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
    if (fCmdLine->GetSize() <= 0) {
       Int_t buttons= kMBYes | kMBNo, retval=0;
       EMsgBoxIcon icontype = kMBIconQuestion;
-      new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
+      new TGMsgBox(gClient->GetRoot(), fRootCanvas,
        "No files found?",
        "No ROOT files in CWD found \n\
 Should we create a sample file",
@@ -756,6 +755,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       maxkey = TMath:: Max(GetObjects(lofF, gDirectory, "TF1"),          maxkey);
       maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "TCanvas"),      maxkey);
       maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "GrCanvas"),      maxkey);
+      maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "HTCanvas"),      maxkey);
       maxkey = TMath:: Max(GetObjects(lofG, gDirectory, "TGraph"),       maxkey);
       maxkey = TMath:: Max(GetObjects(lofUc, gDirectory, "FhContour"),   maxkey);
       maxkey = TMath:: Max(GetObjects(lofW1, gDirectory, "TMrbWindowF"), maxkey);
@@ -766,10 +766,10 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       if (!fComSocket) {
          if (!fConnectedOnce) {
             *fHostToConnect = GetString("Host to connect", fHostToConnect->Data()
-                        ,&ok,fMainCanvas);
+                        ,&ok,fRootCanvas);
             if (!ok) return;
             fSocketToConnect = GetInteger("Socket to connect",fSocketToConnect
-                        ,&ok,fMainCanvas);
+                        ,&ok,fRootCanvas);
             if (!ok) return;
             fConnectedOnce = kTRUE;
          }
@@ -1156,7 +1156,7 @@ void HistPresent::PurgeEntries(const char * fname, const char * bp)
 {
    TString question(fname);
    question.Prepend("Purge file: ");
-   if (QuestionBox(question.Data(), GetMyCanvas()) == kMBYes) {
+   if (QuestionBox(question.Data(), fRootCanvas) == kMBYes) {
       TFile * f = new TFile(fname, "update");
       f->Purge();
       f->Close();
@@ -1167,12 +1167,12 @@ void HistPresent::PurgeEntries(const char * fname, const char * bp)
 void HistPresent::DeleteSelectedEntries(const char * fname, const char * bp)
 {
    Int_t ndeleted = 0;
-   ndeleted += DeleteOnFile(fname, fSelectCut, GetMyCanvas());
-   ndeleted += DeleteOnFile(fname, fSelectHist, GetMyCanvas());
-   ndeleted += DeleteOnFile(fname, fSelectWindow, GetMyCanvas());
-   ndeleted += DeleteOnFile(fname, fSelectContour, GetMyCanvas());
-   ndeleted += DeleteOnFile(fname, fAllFunctions, GetMyCanvas());
-   ndeleted += DeleteOnFile(fname, fSelectGraph, GetMyCanvas());
+   ndeleted += DeleteOnFile(fname, fSelectCut, fRootCanvas);
+   ndeleted += DeleteOnFile(fname, fSelectHist, fRootCanvas);
+   ndeleted += DeleteOnFile(fname, fSelectWindow, fRootCanvas);
+   ndeleted += DeleteOnFile(fname, fSelectContour, fRootCanvas);
+   ndeleted += DeleteOnFile(fname, fAllFunctions, fRootCanvas);
+   ndeleted += DeleteOnFile(fname, fSelectGraph, fRootCanvas);
    cout << ndeleted << " object";
    if (ndeleted !=1) cout << "s";
    cout << " deleted on " << fname << endl;
@@ -1260,14 +1260,14 @@ void HistPresent::ComposeList(const char* bp)
       listname(rname) = fHlistSuffix;
    }
    Bool_t ok;
-   listname=GetString("Name of list:",listname.Data(), &ok, GetMyCanvas());
+   listname=GetString("Name of list:",listname.Data(), &ok, fRootCanvas);
    if (!ok) return;
 //   listname += fHlistSuffix;
    if (!gSystem->AccessPathName(listname)) {
       TString question=listname;
       question += " exists, Overwrite?";
 
-      if (!QuestionBox(question.Data(), GetMyCanvas())) return;
+      if (!QuestionBox(question.Data(), fRootCanvas)) return;
    }
    ofstream wstream;
    wstream.open(listname.Data(), ios::out);
@@ -1441,7 +1441,7 @@ void HistPresent::GetFileSelMask(const char* bp)
 {
     Bool_t ok;
     *fFileSelMask = GetString(
-    "Edit File Selection Mask",(const char *)*fFileSelMask, &ok, fMainCanvas);
+    "Edit File Selection Mask",(const char *)*fFileSelMask, &ok, fRootCanvas);
 }
 //________________________________________________________________________________________
 
@@ -1453,7 +1453,7 @@ void HistPresent::GetHistSelMask(const char* bp)
     Bool_t ok;
     *fHistSelMask=GetString(
                   "Edit Hist Selection Mask",(const char *)*fHistSelMask, &ok,
-                  fMainCanvas, "Use Regexp syntax", &yesno,
+                  fRootCanvas, "Use Regexp syntax", &yesno,
                   Help_SelectionMask_text);
      if (!ok) return;
      if (yesno) GeneralAttDialog::fUseRegexp = 1;
@@ -1500,12 +1500,12 @@ void HistPresent::SaveMap(const char* mapname, const char* bp)
 
    Bool_t ok;
    const char * foutname=GetString("File Name",(const char *)fname,
-                                   &ok, GetMyCanvas());
+                                   &ok, fRootCanvas);
    if (!ok) return;
    if (!gSystem->AccessPathName((const char *)foutname, kFileExists)) {
       TString question=foutname;
       question += " already exists, overwrite?";
-      if (!QuestionBox(question.Data(), GetMyCanvas())) return;
+      if (!QuestionBox(question.Data(), fRootCanvas)) return;
    }
    TFile *f = new TFile(foutname,"RECREATE");
    const char * name;
@@ -1535,12 +1535,12 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
 
    Bool_t ok;
    const char * foutname=GetString("File Name",(const char *)fname,
-                                   &ok, GetMyCanvas());
+                                   &ok, fRootCanvas);
    if (!ok) return;
    if (!gSystem->AccessPathName((const char *)foutname, kFileExists)) {
       TString question=foutname;
       question += " already exists, overwrite?";
-      if (!QuestionBox(question.Data(), GetMyCanvas())) return;
+      if (!QuestionBox(question.Data(), fRootCanvas)) return;
    }
 
    TMrbStatistics * st = getstat(fComSocket);
@@ -1633,7 +1633,7 @@ void HistPresent::ShowContour(const char* fname, const char* dir, const char* na
       TArrayI colsav(*(co->GetColorArray()));
       TArrayD levsav(*(co->GetLevelArray()));
 
-      Int_t result = co->Edit(GetMyCanvas());
+      Int_t result = co->Edit(fRootCanvas);
 
       if (result >= 0){
          Bool_t changed = kFALSE;
@@ -1651,7 +1651,7 @@ void HistPresent::ShowContour(const char* fname, const char* dir, const char* na
             cout << "Changed" << endl;
             int buttons = kMBOk | kMBDismiss, retval = 0;
             EMsgBoxIcon icontype = kMBIconQuestion;
-            new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
+            new TGMsgBox(gClient->GetRoot(), fRootCanvas,
                    "Question", "Save modified contour?",
                    icontype, buttons, &retval);
              if (retval == kMBOk) {
@@ -1727,7 +1727,7 @@ void HistPresent::SetRebinValue(Int_t val)
 {
    Bool_t ok;
    if (val == 0) {
-      Int_t i = GetInteger("Rebin value", fRebin, &ok, fMainCanvas);
+      Int_t i = GetInteger("Rebin value", fRebin, &ok, fRootCanvas);
       if (!ok || i <= 0) return;
       fRebinOth->SetTitle(Form("%d", i));
       fRebinOth->SetFillColor(3);
@@ -1763,7 +1763,7 @@ void HistPresent::SetRebinMethod()
 void HistPresent::SetOperateVal()
 {
    Bool_t ok;
-   Float_t fac = GetFloat("Factor", fOpfac, &ok, fMainCanvas);
+   Float_t fac = GetFloat("Factor", fOpfac, &ok, fRootCanvas);
    fOpfac = fac;
    fValButton->SetTitle(Form("%lg", fac));
 }
@@ -2293,7 +2293,7 @@ void HistPresent::CutsToASCII(const char* name, const char* bp)
    TString fname = name;
    fname(rname) ="wdw2D";
    Bool_t ok;
-   fname = GetString("Write ASCII-file with name",fname.Data(),  &ok, fMainCanvas,
+   fname = GetString("Write ASCII-file with name",fname.Data(),  &ok, fRootCanvas,
    0, 0, helpText);
    if (!ok) {
       cout << " Canceled " << endl;
@@ -2303,7 +2303,7 @@ void HistPresent::CutsToASCII(const char* name, const char* bp)
 //      cout << fname << " exists" << endl;
       int buttons= kMBOk | kMBDismiss, retval=0;
       EMsgBoxIcon icontype = kMBIconQuestion;
-      new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
+      new TGMsgBox(gClient->GetRoot(), fRootCanvas,
        "Question", "File exists, overwrite?",
        icontype, buttons, &retval);
       if (retval == kMBDismiss) return;
@@ -3050,7 +3050,7 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
 void HistPresent::WarnBox(const char *message)
 {
    int retval = 0;
-   new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
+   new TGMsgBox(gClient->GetRoot(), fRootCanvas,
                 "Warning", message, kMBIconExclamation, kMBDismiss,
                 &retval);
 }
@@ -3119,7 +3119,7 @@ void HistPresent::DinA4Page(Int_t form)
    valp[ind++] = &XRange;
    Bool_t ok;
    Int_t itemwidth = 240;
-   ok = GetStringExt("Canvas parameters", NULL, itemwidth, fMainCanvas,
+   ok = GetStringExt("Canvas parameters", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, row_lab, valp);
    if (!ok) return;
 
@@ -3165,6 +3165,7 @@ void HistPresent::DinA4Page(Int_t form)
    c1->Modified(kTRUE);
    c1->Update();
    c1->SetEditable(kTRUE);
+	c1->SetBit(GrCanvas::kIsAEditorPage);
    c1->GetCanvasImp()->ShowEditor();
 //   c1->GetCanvasImp()->ShowToolBar();
    new GEdit(c1);
@@ -3176,14 +3177,16 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
 {
    cout << "ShowCanvas: " << fname << " " << dir << " " << name << endl;
    TString sname(name);
-//   Int_t ip = sname.Index(";");
-//   if (ip > 0) sname.Resize(ip);
-   HTCanvas *c;
+   HTCanvas *c = NULL;
    if (strstr(fname,".root")) {
       if (fRootFile) fRootFile->Close();
       fRootFile=new TFile(fname);
       if (strlen(dir) > 0) fRootFile->cd(dir);
       c = (HTCanvas*)gDirectory->Get(sname);
+		if ( gROOT->GetListOfCanvases()->FindObject(c->GetName()) != NULL ) {
+			cout << "sname exists already, please close" << endl;
+			return;
+		}
    } else {
       c=(HTCanvas*)gROOT->GetListOfCanvases()->FindObject(sname);
    }
@@ -3192,7 +3195,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
    UInt_t ww;
 	UInt_t wh;
 
-   if (!c->TestBit(HTCanvas::kIsAEditorPage)) {
+   if (!c->TestBit(GrCanvas::kIsAEditorPage)) {
 //      c->Draw();
 		ww = c->GetWindowWidth();
 		wh = c->GetWindowHeight();
@@ -3218,14 +3221,27 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
 			}
       }
 //		c->SetWindowSize(c->GetOrigWw(), c->GetOrigWh());
-		c->SetWindowSize(ww, wh);
+//		c->SetWindowSize(ww, wh);
 		c->Modified();
 		c->Update();
       delete logr;
       delete lohi;
 		return;
    } else {
-      cout << "kIsAEditorPage " << endl;
+//      cout << "kIsAEditorPage " << endl;
+		GrCanvas *gc = (GrCanvas*)c;
+      gc->Draw();
+		gPad = (TVirtualPad*)gc;
+		gc->GetCanvasImp()->ShowEditor();
+//   c1->GetCanvasImp()->ShowToolBar();
+		gc->Update();
+		gc->SetEditable(kTRUE);
+//		if (fRootFile) fRootFile->Close();
+		new GEdit(gc);
+		gc->GetCanvasImp()->ForceUpdate();
+		gSystem->ProcessEvents();
+	   gc->cd();
+		return;
    }
 
    TString new_name(c->GetName());
@@ -3354,7 +3370,7 @@ void HistPresent::SelectFromOtherDir()
    TGFileInfo* fi = new TGFileInfo();
    const char * filter[] = {"Root files", "*.root", 0, 0};
    fi->fFileTypes = filter;
-   new  TGFileDialog(gClient->GetRoot(), GetMyCanvas(), kFDOpen, fi);
+   new  TGFileDialog(gClient->GetRoot(), fRootCanvas, kFDOpen, fi);
    cout << "SelectFromOtherDir() " <<fi->fFilename << endl;
    if (fi->fFilename) ShowContents(fi->fFilename , "", NULL);
    delete fi;

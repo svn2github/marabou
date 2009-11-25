@@ -1606,7 +1606,7 @@ void HandleMenus::BuildMenus()
       fMenuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
       fRootsMenuBar->AddPopup("&Help on HistPresent",    fHelpMenu,    fMenuBarHelpLayout);
    }
-   fRootCanvas->MapSubwindows();
+//   fRootCanvas->MapSubwindows();
 //   fRootCanvas->Resize(fRootCanvas->GetDefaultSize());
    fRootCanvas->MapWindow();
 //   fRootCanvas->ShowToolBar(kFALSE);
@@ -1614,6 +1614,7 @@ void HandleMenus::BuildMenus()
    fRootCanvas->HideFrame((TGFrame*)(fRootCanvas->GetToolDock()));
 #endif
    fRootCanvas->ForceUpdate();
+	gSystem->ProcessEvents();
    return;
 }
 //______________________________________________________________________________
