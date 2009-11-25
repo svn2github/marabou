@@ -550,11 +550,9 @@ static alignDescription_t* GetAlignByNumber(int number)
 }
 
 static const char *filetypes[] = { "All files",     "*",
-                            "ROOT files",    "*.root",
-                            "Data files",    "*.dat",
-                            "Text files",    "*.txt",
-                            "Text files",    "*.asc",
-                            "Text files",    "*.ascii",
+                            "ROOTfile",    "*.root",
+                            "Textfile",    "*.[t|d|a][x|a|s][t|t|c]",
+			    "Imagefiles", "*.[p|j|g][n|p|i][g|g|f]", 
                             0,               0 };
 
 //______________________________________________________________________________
@@ -791,7 +789,6 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    TString CancelCmd;
    Bool_t has_commands = kFALSE;
    fCallClose = kTRUE;
-
    if (calling_class != NULL && win_width > 0) {
       this->Connect("CloseDown(Int_t)",cname, calling_class, "CloseDown(Int_t)");
       this->Connect("CRButtonPressed(Int_t, Int_t, TObject*)", cname, calling_class, "CRButtonPressed(Int_t, Int_t, TObject*)");
@@ -849,8 +846,13 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       }
       fEntries = new TList();
       hframe = NULL;
+		fFileType = new Int_t[1000];
+		fFileDialogContTextEntry = new TGTextEntry*[1000];
 		Int_t i = 0;  // index on ValPointers
+//      cout << "fNrows " << fNrows << endl;
       for (Int_t indrows= 0; indrows < fNrows; indrows++) {
+			fFileType[i] = 0;
+//			cout << "i " << i << " indrows " << indrows << endl;
          fLabels->Add(RowLabels->At(indrows));
          l = ((TObjString *)RowLabels->At(indrows))->String();
 //       in multi column row save space by avoiding expandx
@@ -1147,10 +1149,20 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             tentry->Associate(this);
             fEntries->Add(tentry);
          } else if (l.BeginsWith("FileRequest")) {
+				if ( l.Contains("rootfile", TString::kIgnoreCase) ) {
+					fFileType[i] = 2;
+				} else if ( l.Contains("datafile", TString::kIgnoreCase) ) {
+					fFileType[i] = 4;
+				} else if ( l.Contains("imagefile", TString::kIgnoreCase) ) {
+					fFileType[i] = 6;
+				} else {
+					fFileType[i] = 0;
+				}
+				cout << "FileRequest " << i << endl;
             TString scol;
             scol = *(TString*)fValPointers[i];
             tentry = new TGTextEntry(hButtonFrame, tbuf = new TGTextBuffer(100), i + 1000*kIdText);
-            fFileDialogContTextEntry  = tentry;
+            fFileDialogContTextEntry[i]  = tentry;
             tentry->GetBuffer()->AddText(0, (const char *)scol);
             hButtonFrame->AddFrame(tentry, loc);
             tentry->Associate(this);
@@ -1160,15 +1172,19 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             tb->Resize(20, 20);
             tb->SetToolTipText("Browse");
 
-            hButtonFrame->AddFrame(tb, lor);
+            hButtonFrame->AddFrame(tb, lorne);
             hframe->AddFrame(hButtonFrame, loc);
             tb->Associate(this);
 
          } else if (l.BeginsWith("FileContReq")) {
-				if ( l.Contains("rootfile") ) {
-					fFromRootFile = kTRUE;
+				if ( l.Contains("rootfile", TString::kIgnoreCase) ) {
+					fFileType[i] = 2;
+				} else if ( l.Contains("datafile", TString::kIgnoreCase) ) {
+					fFileType[i] = 4;
+				} else if ( l.Contains("imagefile", TString::kIgnoreCase) ) {
+					fFileType[i] = 6;
 				} else {
-					fFromRootFile = kFALSE;
+					fFileType[i] = 0;
 				}
             TString scol;
             TString fname("none");
@@ -1186,13 +1202,13 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fFileNameEntry->GetBuffer()->AddText(0, (const char *)fname);
             hButtonFrame->AddFrame(fFileNameEntry, loc);
             fFileNameEntry->Associate(this);
-            fFileDialogContTextEntry = fFileNameEntry;
+            fFileDialogContTextEntry[i] = fFileNameEntry;
             TGPictureButton * tb = new TGPictureButton(hButtonFrame,
                          fClient->GetPicture("arrow_down.xpm"), i + 1000 * kIdFileDialogCont);
             tb->Resize(20, 20);
             tb->SetToolTipText("Browse");
 
-            hButtonFrame->AddFrame(tb, lor);
+            hButtonFrame->AddFrame(tb, lorne);
             hframe->AddFrame(hButtonFrame, loc);
             this->AddFrame(hframe, lo1);
             hframe = NULL;
@@ -1483,17 +1499,16 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                       TGFileInfo* fi = new TGFileInfo();
  //                     const char * filter[] = {"data files", "*", 0, 0};
                       fi->fFileTypes = filetypes;
-							 if ( fFromRootFile ) {
-                          fi->fFileTypeIdx = 2;
-							 }
-   						 new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
+                      fi->fFileTypeIdx = fFileType[idButton];
+// 							 cout << "fFileType " << fFileType[idButton]<< endl;
+							 new  TGFileDialog(gClient->GetRoot(), this, kFDOpen, fi);
   						    if (fi->fFilename) {
                          fn = fi->fFilename;
 
                          TString pwd(gSystem->Getenv("PWD"));
                          if (fn.BeginsWith(pwd.Data()))fn.Remove(0,pwd.Length()+1);
 //                         TGTextEntry *te = (TGTextEntry*)fEntries->At(entryNr);
-                         TGTextEntry *te = fFileDialogContTextEntry;
+                         TGTextEntry *te = fFileDialogContTextEntry[idButton];
                          te->SetText(fn.Data());
                          gClient->NeedRedraw(te);
                          gClient->NeedRedraw(this);
@@ -1770,7 +1785,7 @@ void TGMrbValuesAndText::StoreValues(){
        } else if (obj->InheritsFrom("TGTextEntry") || obj->InheritsFrom("TGListBox")) {
           TGTextEntry   * tentry;
           if (obj->InheritsFrom("TGListBox"))
-             tentry = fFileDialogContTextEntry;
+             tentry = fFileDialogContTextEntry[i];
           else
              tentry = (TGTextEntry*)obj;
           TString tmp(objs->String());
@@ -1798,9 +1813,7 @@ void TGMrbValuesAndText::StoreValues(){
                 *sr = retstr.Data();
              } else {
 //                cout << "TGTextEntry *sr... " << tentry->GetBuffer()->GetString()<< endl;
-					 TString temp(tentry->GetBuffer()->GetString());
-					 temp = temp.Strip(TString::kBoth);
-                *sr = temp;
+                *sr = tentry->GetBuffer()->GetString();
              }
           }
        }
@@ -1975,6 +1988,8 @@ TGMrbValuesAndText::~TGMrbValuesAndText()
 // Cleanup dialog.
 //      cout << "enter dtor: TGMrbValuesAndText fFlagButtons " << fFlagButtons<< endl;
       if (fFlagButtons) delete fFlagButtons;
+		if (fFileType) delete [] fFileType;
+		if (fFileDialogContTextEntry) delete [] fFileDialogContTextEntry;
 //      fWidgets->Delete("slow");
 //      delete fWidgets;
 //      cout << "exit dtor: TGMrbValuesAndText " << endl;
