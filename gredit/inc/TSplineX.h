@@ -78,7 +78,7 @@ protected:
 public:
    ControlGraph (Int_t npoints = 0, Double_t*  x = NULL, Double_t* y = NULL);
    virtual void  Delete(Option_t *option="") { std::cout << " no no " << std::endl; };
-	DistancetoPrimitive(Int_t px, Int_t py);
+	int DistancetoPrimitive(Int_t px, Int_t py);
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void SetParent(TSplineX* parent);
    TSplineX  *GetParent(){return fParent;};
