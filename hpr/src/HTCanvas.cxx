@@ -1,39 +1,9 @@
-#include "TROOT.h"
-#include "TApplication.h"
-#include "TWbox.h"
-#include "TButton.h"
-#include "TGClient.h"
-#include "TGuiFactory.h"
-#include "TRootHelpDialog.h"
-#include "TGMenu.h"
-#include "TGWindow.h"
-#include "TStyle.h"
-#include "TString.h"
-#include "TH1.h"
-#include "TList.h"
-#include "TMarker.h"
-#include "TArrow.h"
-#include "TEllipse.h"
-#include "TMath.h"
 #include "HTCanvas.h"
 #include "HandleMenus.h"
-#include "TContextMenu.h"
-#include "TVirtualPadEditor.h"
 
 #include "FitHist.h"
-#include "GEdit.h"
 #include "HistPresent.h"
-#include "support.h"
 #include "SetColor.h"
-#include "TMrbHelpBrowser.h"
-#include "TMrbString.h"
-#include "TGMrbValuesAndText.h"
-#include "EditMarker.h"
-#include "HprEditBits.h"
-#include "HprElement.h"
-#include "GroupOfGObjects.h"
-
-const Size_t kDefaultCanvasSize   = 20;
 
 ClassImp(HTCanvas)
 
@@ -44,7 +14,6 @@ HTCanvas::HTCanvas():GrCanvas()
    fFitHist     = NULL;
    fGraph       = NULL;
    fHandleMenus = NULL;
-   fGEdit       = NULL;
 };
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
@@ -70,23 +39,14 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //            to invoke  functions in classes HistPresent and FitHist
 //--------------------------------------------------------------------------
 
-//   HTCanvas *old = (HTCanvas*)gROOT->GetListOfCanvases()->FindObject(name);
-//   if (old && old->IsOnHeap()) delete old;
    fHandleMenus = NULL;
-//   if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(GetRootCanvas());
 	
    if (TestBit(kMenuBar)) {
-      fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);
-      fHandleMenus->BuildMenus();
-//		fCanvasImp->ShowEditor(kFALSE);
-//		fCanvasImp->ShowToolBar(kFALSE);
-		fCanvasImp->ShowStatusBar(kFALSE);
-		fCanvasImp->ShowMenuBar(HasMenuBar());
-      if (flag & HTCanvas::kIsAEditorPage) {
+      BuildHprMenus(fHistPresent, fFitHist, fGraph);
+      if (flag & GrCanvas::kIsAEditorPage) {
 			cout << "HTCanvas::kIsAEditorPage" << endl;
-         SetBit(HTCanvas::kIsAEditorPage);
+         SetBit(GrCanvas::kIsAEditorPage);
       }
-//   	SetWindowSize(ww , wh );
    }
 	if ( gDebug > 1 )
 		cout << "ctor HTCanvas: " << this << " " << name
@@ -98,13 +58,11 @@ HTCanvas::~HTCanvas()
 {
 	if ( gDebug > 1 )
 		cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
-//   if (fEditCommands) { delete fEditCommands; fEditCommands = NULL;};
    if (fHandleMenus) {
       delete fHandleMenus;
       fHandleMenus = 0;
    }
    if (fHistPresent) fHistPresent->HandleDeleteCanvas(this);
-//   if(fGraph) delete fGraph;
    if(fFitHist) {
       fFitHist->UpdateCut();
       fFitHist->SetCanvasIsDeleted();

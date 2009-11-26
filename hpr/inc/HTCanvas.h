@@ -18,12 +18,9 @@
 
 namespace std {} using namespace std;
 
-
 class FitHist;
 class HistPresent;
 class HandleMenus;
-class HprElement;
-class GEdit;
 class TGraph;
 
 class HTCanvas : public GrCanvas {
@@ -35,7 +32,6 @@ private:
    FitHist        * fFitHist;         //! dont stream
    TGraph         * fGraph;           //! dont stream
    HandleMenus    * fHandleMenus;     //! dont stream
-   GEdit          * fGEdit;           //! dont stream
 //
 public:
    HTCanvas();

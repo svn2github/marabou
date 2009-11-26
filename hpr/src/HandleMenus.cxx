@@ -1,10 +1,10 @@
 #include "TROOT.h"
-#include "TApplication.h"
-#include "TWbox.h"
-#include "TButton.h"
-#include "TGClient.h"
-#include "TGuiFactory.h"
-#include "TRootHelpDialog.h"
+//#include "TApplication.h"
+//#include "TWbox.h"
+//#include "TButton.h"
+//#include "TGClient.h"
+//#include "TGuiFactory.h"
+//#include "TRootHelpDialog.h"
 #include "TGMenu.h"
 #include "TGWindow.h"
 #include "TStyle.h"
@@ -15,9 +15,9 @@
 #include "TMarker.h"
 #include "TMath.h"
 #include "TImage.h"
-#include "TError.h"
+//#include "TError.h"
 #include "TContextMenu.h"
-#include "TVirtualPadEditor.h"
+//#include "TVirtualPadEditor.h"
 
 #include "GEdit.h"
 #include "HTCanvas.h"
@@ -26,8 +26,8 @@
 #include "HistPresent.h"
 #include "support.h"
 #include "SetColor.h"
-#include "TMrbHelpBrowser.h"
-#include "TGMrbTableFrame.h"
+//#include "TMrbHelpBrowser.h"
+//#include "TGMrbTableFrame.h"
 #include "TGMrbInputDialog.h"
 #include "EmptyHistDialog.h"
 #include "SetHistOptDialog.h"
@@ -582,7 +582,7 @@ again:
                   // Handle View menu items...
                   case kViewEventStatus:
                      fHCanvas->ToggleEventStatus();
-                     fRootCanvas->ShowStatusBar(fHCanvas->GetShowEventStatus());
+//                     fRootCanvas->ShowStatusBar(fHCanvas->GetShowEventStatus());
                      break;
                   case kViewColors:
                      DrawColors();
@@ -1608,10 +1608,10 @@ void HandleMenus::BuildMenus()
    }
 //   fRootCanvas->MapSubwindows();
 //   fRootCanvas->Resize(fRootCanvas->GetDefaultSize());
-   fRootCanvas->MapWindow();
+//   fRootCanvas->MapWindow();
 //   fRootCanvas->ShowToolBar(kFALSE);
 #if ROOTVERSION > 50500
-   fRootCanvas->HideFrame((TGFrame*)(fRootCanvas->GetToolDock()));
+//   fRootCanvas->HideFrame((TGFrame*)(fRootCanvas->GetToolDock()));
 #endif
    fRootCanvas->ForceUpdate();
 	gSystem->ProcessEvents();
@@ -1632,13 +1632,14 @@ void HandleMenus::Canvas2RootFile()
 	Bool_t se = fHCanvas->GetShowEditor();
 	if ( se && fEditor != NULL) {
 	   trc->ShowEditor(kFALSE);
+		fEditor->ShowToolBar(kFALSE);
       fEditor->ExecuteAdjustSize(-1);
 	}
- 
    new Save2FileDialog(fHCanvas, NULL, trc);
 	if ( se  && fEditor != NULL) {
 	   trc->ShowEditor(kTRUE);
       fEditor->ExecuteAdjustSize( 1);
+		fEditor->ShowToolBar(kTRUE);
 	}
 }
 
