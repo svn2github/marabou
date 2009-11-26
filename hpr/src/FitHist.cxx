@@ -213,7 +213,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fLiveBG        = env.GetValue("Set1DimOptDialog.fLiveBG", 0);
    fDrawAxisAtTop = env.GetValue("Set1DimOptDialog.fDrawAxisAtTop", 0);
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
-   fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "E");
+   fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "none");
    fMarkerSize    = env.GetValue("Set1DimOptDialog.fMarkerSize", 0);
    gStyle->SetErrorX(env.GetValue("Set1DimOptDialog.fErrorX", 0.));
    fDrawOpt2Dim   = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
