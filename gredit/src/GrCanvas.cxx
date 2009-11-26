@@ -73,6 +73,7 @@ GrCanvas::GrCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fGEdit       = NULL;
    fHiddenPrimitives = new TList();
    fUseEditGrid = 0;
+   fEditorIsShown = kFALSE;
    fHasConnection = kFALSE;
    fCurrentPlane      = 50;
    fButtonsEnabled = kTRUE;
