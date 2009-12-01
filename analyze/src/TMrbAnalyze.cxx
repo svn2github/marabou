@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.91 2009-10-15 08:18:38 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.92 2009-12-01 13:31:10 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1063,9 +1063,21 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 			TString otype;
 			TString shh(obj->GetName());
 			if(shh.Index(*rexp) >= 0) {
-				if(obj->InheritsFrom("TH1")) { writeIt = kTRUE; otype = "histo"; histoCount++; }
-				else if (obj->InheritsFrom("TMrbWindow")) { writeIt = kTRUE; otype = "window"; wdwCount++; }
-				else if (obj->InheritsFrom("TCutG")) { writeIt = kTRUE; otype = "cut"; cutCount++; }
+				if(obj->InheritsFrom("TH1")) {
+				  writeIt = kTRUE;
+				  otype = "histo";
+				  histoCount++;
+				} else if (obj->InheritsFrom("TMrbWindow")) {
+				  writeIt = kTRUE;
+				  otype = "window";
+				  wdwCount++;
+				} else if (obj->InheritsFrom("TCutG")) {
+				  writeIt = kTRUE;
+				  otype = "cut";
+				  cutCount++;
+				  TMrbWindow2D * w = (TMrbWindow2D *) gMrbLofUserVars->Find(((TMrbWindow2D *)obj)->GetName());
+				  if (w) obj = w;
+				}
 				if (writeIt) {
 					obj->Write();
 					if (this->IsVerbose()) cout << "   Writing " << otype << " " << obj->GetName() << endl;
