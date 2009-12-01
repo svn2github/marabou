@@ -23,6 +23,12 @@ GREDITDEP      := $(GREDITO:.o=.d) $(GREDITDO:.o=.d)
 
 GREDITLIB      := $(LPATH)/libGrEdit.$(SOEXT)
 
+CDLMAINO    := $(MODDIRS)/main.o
+CDLO        := $(filter-out $(CDLMAINO),$(GREDITO))
+
+CDLEXE      := bin/CreateCDlabel
+ALLEXECS    += $(CDLEXE)
+
 # used in the main Makefile
 ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(GREDITH))
 ALLLIBS     += $(GREDITLIB)
@@ -30,10 +36,21 @@ ALLLIBS     += $(GREDITLIB)
 # include all dependency files
 INCLUDEFILES += $(GREDITDEP)
 
+MRBUTILSLIB   := $(LPATH)/libTMrbUtils.$(SOEXT)
+MRBGUTILSLIB  := $(LPATH)/libTGMrbUtils.$(SOEXT)
+
+OCDLLIBS      := $(MRBUTILSLIB) $(MRBGUTILSLIB) $(GREDITLIB)
+
 ##### local rules #####
 
 include/%.h:    $(GREDITDIRI)/%.h
 		cp $< $@
+
+$(CDLEXE):      $(CDLMAINO) $(CDLLIB) $(OCDLLIBS)
+		@echo "other libs: $(OCDLLIBS)"
+		@echo "$(CDLEXE) linking exe ----------------------------------"
+		$(LD) -g $(LDFLAGS) $(CDLMAINO) $(OCDLLIBS) $(ROOTGLIBS) \
+            -o $(CDLEXE)
 
 $(GREDITLIB):     $(GREDITDO) $(GREDITO) $(MAINLIBS) $(GREDITLIBDEP)
 			@echo "Making libGrEdit $@..."

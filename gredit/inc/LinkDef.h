@@ -59,4 +59,6 @@
 #pragma link C++ class InsertAxisDialog;
 #pragma link C++ class XGrabDialog;
 #pragma link C++ class TextOnArc;
+#pragma link C++ class CreateCDlabel;
+#pragma link C++ class CDisc;
 #endif
