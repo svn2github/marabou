@@ -80,7 +80,7 @@ private:
    TGListBox        *fListBox;
    TGListBox        *fListBoxReq;
    TGTextEntry      **fFileDialogContTextEntry;
-   TString          fClassName;
+   TString          **fClassName;
    TString          fFileName;
    Int_t            fWidgetId;
    TGTextButton     *fCancelButton;
@@ -123,7 +123,7 @@ public:
    virtual ~TGMrbValuesAndText();
 
    virtual Bool_t  ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
-   void UpdateRequestBox(const char *fname, Bool_t store = kTRUE);
+   void UpdateRequestBox(const char *fname, Bool_t store = kTRUE, Int_t id = 0);
    void StoreValues();
    void ReloadValues();
    void ReloadValue(TObject *obj, TObjString *objs, Int_t ipos);

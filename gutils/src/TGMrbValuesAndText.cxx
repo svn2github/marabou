@@ -724,6 +724,8 @@ enum {
 
 ClassImp(TGMrbValuesAndText)
 
+	const Int_t MAXROWS = 500;
+
 //________________________________________________________________________________________
 
 TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
@@ -846,12 +848,21 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
       }
       fEntries = new TList();
       hframe = NULL;
-		fFileType = new Int_t[1000];
-		fFileDialogContTextEntry = new TGTextEntry*[1000];
+		fClassName = new TString*[MAXROWS];
+		fFileType = new Int_t[MAXROWS];
+		fFileDialogContTextEntry = new TGTextEntry*[MAXROWS];
+		for (Int_t j = 0; j < MAXROWS; j++) {
+			fFileType[j] = 0;
+			fClassName[j] = (TString*)NULL;
+			fFileDialogContTextEntry[j] = NULL;
+		}
 		Int_t i = 0;  // index on ValPointers
 //      cout << "fNrows " << fNrows << endl;
       for (Int_t indrows= 0; indrows < fNrows; indrows++) {
-			fFileType[i] = 0;
+			if ( i >= MAXROWS ) {
+				cout << "Too many entries: " << i << endl;
+				break;
+			}
 //			cout << "i " << i << " indrows " << indrows << endl;
          fLabels->Add(RowLabels->At(indrows));
          l = ((TObjString *)RowLabels->At(indrows))->String();
@@ -1188,14 +1199,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 				}
             TString scol;
             TString fname("none");
-            fClassName = "TF1";
+            fClassName[i] = new TString("TF1");
             TString ename("none");
 
             scol = *(TString*)fValPointers[i];
             TObjArray * oa = scol.Tokenize("|");
             Int_t nent = oa->GetEntries();
             if (nent > 0) fname =((TObjString*)oa->At(0))->String();
-            if (nent > 1) fClassName =((TObjString*)oa->At(1))->String();
+            if (nent > 1) *(fClassName[i]) =((TObjString*)oa->At(1))->String();
             if (nent > 2) ename =((TObjString*)oa->At(2))->String();
             fFileNameEntry =
                new TGTextEntry(hButtonFrame, tbuf = new TGTextBuffer(100),  i + 1000*kIdFileName);
@@ -1221,7 +1232,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fListBoxReq->Associate(this);
             this->AddFrame(fListBoxReq, l2);
             fEntries->Add(fListBoxReq);
-            UpdateRequestBox(fFileNameEntry->GetBuffer()->GetString(),  kTRUE);
+            UpdateRequestBox(fFileNameEntry->GetBuffer()->GetString(),  kTRUE, i);
          }
          if (fFlags) {
             hframe1 = new TGCompositeFrame(hframe, win_width*1/6, 20, kFixedWidth);
@@ -1515,7 +1526,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                       }
    						 delete fi;
                       if (idCmd == kIdFileDialogCont) {
-                         UpdateRequestBox(fn.Data());
+                         UpdateRequestBox(fn.Data(), kTRUE, idButton);
                       }
 
                    }
@@ -1586,7 +1597,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 //                cout << "kTE_ENTER parm1 " << idCmd << " kIdText " << kIdText << " " << fText << endl;
                 if (idCmd == kIdFileName) {
                    TString fn = fFileNameEntry->GetBuffer()->GetString();
-                   UpdateRequestBox(fn);
+                   UpdateRequestBox(fn, kTRUE, idButton);
                 }
 /*
                 if (idCmd != kIdText) break;
@@ -1639,7 +1650,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
 
 //_____________________________________________________________________________
 
-void TGMrbValuesAndText::UpdateRequestBox(const char *fname, Bool_t store)
+void TGMrbValuesAndText::UpdateRequestBox(const char *fname, Bool_t store, Int_t iseq)
 {
    if (gSystem->AccessPathName(fname)) {
       if ( fname )cout << "Cant find: " << fname << endl;
@@ -1657,8 +1668,11 @@ void TGMrbValuesAndText::UpdateRequestBox(const char *fname, Bool_t store)
    Int_t id = 0;
    while( (key = (TKey*)next()) ){
       obj = (TObject*)key->ReadObj();
-//        cout << "AddEntry " << fClassName<< " " <<  obj->ClassName()<< endl;
-        if (obj->InheritsFrom(fClassName)) {
+		if ( !obj )
+			continue;
+//      cout << "AddEntry " << fClassName<< " " <<  obj->ClassName()<< endl;
+		TString tn(obj->ClassName());
+		if ( tn == *(fClassName[iseq]) ) {
          TString s(obj->GetName());
          s += ";";
 			s+= key->GetCycle();
@@ -1797,7 +1811,7 @@ void TGMrbValuesAndText::StoreValues(){
              if (tmp.BeginsWith("FileContReq")) {
                 TString retstr(tentry->GetBuffer()->GetString());
                 retstr += "|";
-                retstr += fClassName.Data();
+                retstr += *(fClassName[i]);
                 retstr += "|";
                 TGLBEntry * tle = fListBoxReq->GetSelectedEntry();
                 if (tle == NULL) {
@@ -1990,6 +2004,11 @@ TGMrbValuesAndText::~TGMrbValuesAndText()
       if (fFlagButtons) delete fFlagButtons;
 		if (fFileType) delete [] fFileType;
 		if (fFileDialogContTextEntry) delete [] fFileDialogContTextEntry;
+		for (Int_t i = 0; i < MAXROWS; i++) {
+			if ( fClassName[i] != NULL) 
+				delete fClassName[i];
+		}
+		delete  [] fClassName;
 //      fWidgets->Delete("slow");
 //      delete fWidgets;
 //      cout << "exit dtor: TGMrbValuesAndText " << endl;
