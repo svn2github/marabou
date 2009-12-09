@@ -1166,6 +1166,7 @@ void HistPresent::PurgeEntries(const char * fname, const char * bp)
 
 void HistPresent::DeleteSelectedEntries(const char * fname, const char * bp)
 {
+	cout << "DeleteSelectedEntries " << fname << endl;
    Int_t ndeleted = 0;
    ndeleted += DeleteOnFile(fname, fSelectCut, fRootCanvas);
    ndeleted += DeleteOnFile(fname, fSelectHist, fRootCanvas);
@@ -2992,7 +2993,8 @@ void HistPresent::CloseAllCanvases()
    Int_t nc = 0;
    while ( (htc =(TCanvas *)next()) ) {
       TString cn(htc->GetName());
-      if ( cn == "cHPr" || cn == "FileList" || cn == "ContentList" ) continue;
+      if ( cn == "cHPr" || cn == "FileList" 
+			|| cn == "ContentList"  || cn == "Windows"|| cn == "Cuts") continue;
       TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
       if (htc->TestBit(HTCanvas::kIsAEditorPage)) {
          cout << "rc->ShowEditor(kFALSE);"<< endl;
@@ -3009,6 +3011,7 @@ void HistPresent::CloseAllCanvases()
    if ( nc != 1 ) cout << "es";
    cout << endl;
    fCloseWindowsButton->SetMethod("mypres->CloseAllCanvases()");
+   fCanvasClosing = kFALSE;
 }
 //_______________________________________________________________________
 

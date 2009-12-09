@@ -224,12 +224,12 @@ public:
    void AddWindow(const char *, const char * bp=NULL);            //
    void AddWindowsToHist();
    void RemoveWindowsFromHist();
-   void EditWindow(const char *);
+   void EditWindow(const char *, const char *);
 
    Int_t Nwindows(){return fActiveWindows->GetSize();};
    Int_t Ncuts(){return fActiveCuts->GetSize();};                  //
    void InitCut();                       //
-   void EditCut(const char *);
+   void EditCut(const char *, const char *);
    void PrintOneCut(TMrbWindow2D *);      //
    void CloseCuts();                       //
    void ListCuts();                       //
