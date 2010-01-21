@@ -97,6 +97,8 @@ void GEdit::ShowToolBar(Bool_t show)
       cout << "Cant GetToolDock()" << endl;
       return;
    }
+	fRootCanvas->ForceUpdate();
+	gSystem->ProcessEvents();
 	TString icons_dir =   gEnv->GetValue("Gui.IconPath","");
 	if ( !icons_dir.Contains("MARABOU") ) {
 	   cout << setred << "Your ICONPATH does not contain $MARABOU/icons" << endl;
@@ -209,6 +211,9 @@ void GEdit::ShowToolBar(Bool_t show)
    UInt_t h  = fRootCanvas->GetHeight();
    UInt_t sh = fToolBarSep->GetHeight();
    UInt_t dh = fToolBar->GetHeight();
+	fRootCanvas->ForceUpdate();
+	gSystem->ProcessEvents();
+
 //	cout << "h, dh, sh " << h<< " " <<dh  << " "  <<sh << endl;
 
    if (show) {
@@ -236,6 +241,8 @@ void GEdit::ShowToolBar(Bool_t show)
 //      fViewMenu->UnCheckEntry(kViewToolbar);
    }
    fRootCanvas->Resize(fRootCanvas->GetWidth(), h);
+	fRootCanvas->ForceUpdate();
+	gSystem->ProcessEvents();
 }
 
 //______________________________________________________________________________

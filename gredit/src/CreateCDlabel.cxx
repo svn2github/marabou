@@ -82,6 +82,7 @@ size it can be inserted directly\n\
    static TString cdlcmd("NewCDlabel()");
    static TString porcmd("NewPortrait()");
    static TString lancmd("NewLandscape()");
+   static TString usecmd("NewUserDef()");
    static TString setcmd("SetName()");
    static TString clscmd("CloseProject()");
    static TString getcmd("ExecuteGetProject()");
@@ -113,15 +114,24 @@ size it can be inserted directly\n\
 	valp[ind++] = &fProjectName;
 	row_lab->Add(new TObjString("CommandButt+Set Name"));
 	valp[ind++] = &setcmd;
-	row_lab->Add(new TObjString("CommandButt_Create a CD Label"));
+	row_lab->Add(new TObjString("CommandButt_CD Label"));
 	valp[ind++] = &cdlcmd;
-	row_lab->Add(new TObjString("CommandButt_Create a A4 portrait"));
+	row_lab->Add(new TObjString("CommandButt+A4 portrait"));
 	valp[ind++] = &porcmd;
-	row_lab->Add(new TObjString("CommandButt_Create a A4 Landscape"));
+	row_lab->Add(new TObjString("CommandButt+A4 Landscape"));
 	valp[ind++] = &lancmd;
-	row_lab->Add(new TObjString("RadioButton_Small Inner Hole"));	
+	row_lab->Add(new TObjString("CommandButt_User def"));
+	valp[ind++] = &usecmd;
+	row_lab->Add(new TObjString("PlainIntVal+WinX"));
+	valp[ind++] = &fUserWindowX;
+	row_lab->Add(new TObjString("PlainIntVal+WinY"));
+	valp[ind++] = &fUserWindowY;
+	row_lab->Add(new TObjString("DoubleValue+RangeX"));
+	valp[ind++] = &fUserRX;
+	
+	row_lab->Add(new TObjString("RadioButton_CD Small Inner Hole  "));	
 	valp[ind++] = &fSmallInnerHole;
-	row_lab->Add(new TObjString("RadioButton+Big Inner Hole"));	
+	row_lab->Add(new TObjString("RadioButton+CD Big Inner Hole    "));	
 	valp[ind++] = &fBigInnerHole;
 	row_lab->Add(new TObjString("FileRequest_Background Imagefile"));
 	fSelectBgIBid = ind;
@@ -171,21 +181,30 @@ void CreateCDlabel::Leave()
 void CreateCDlabel::RecursiveRemove(TObject * obj)
 {
 	if (obj == fCanvas) {
-		//      cout << "InsertArcDialog: CloseDialog "  << endl;
+		cout << " CloseProject"  << endl;
 		fCanvas = NULL;
+		SaveDefaults();
 	}
 }
 //_____________________________________________________________________
 
 void CreateCDlabel::MakePS()
 {
-	cout << "MakePS" << endl;
+//	cout << "MakePS" << endl;
 //  gStyle->SetPaperSize(12, 12);
    gStyle->SetPaperSize(0.1 * fPaperSizeX, 0.1 * fPaperSizeY);
    TString pn;
    pn = fProjectName;
-	pn += ".eps";
+	pn += fPsSuffix;
 	fCanvas->SaveAs(pn);
+// 	
+	TString dcmd("sed  \"1d \" ");
+	TString acmd("sed -i \"1i %!PS-Adobe-2.0 \" ");
+	dcmd += pn;
+	dcmd += " -i";
+	acmd += pn;
+	gSystem->Exec(dcmd);
+	gSystem->Exec(acmd);
 };
 //_____________________________________________________________________
 
@@ -204,6 +223,7 @@ void CreateCDlabel::NewCDlabel()
 	NewProject(604, 628, 120, 120);
 	fPaperSizeX = 122.; 
 	fPaperSizeY = 122.; 
+	fPsSuffix = ".eps";
 }
 //_____________________________________________________________________
 
@@ -212,6 +232,7 @@ void CreateCDlabel::NewPortrait()
 	NewProject(646, 936, 210, 297);
 	fPaperSizeX = 210.; 
 	fPaperSizeY = 297.; 
+	fPsSuffix = ".eps";
 }
 //_____________________________________________________________________
 
@@ -220,6 +241,17 @@ void CreateCDlabel::NewLandscape()
 	NewProject(936, 646, 297, 210);
 	fPaperSizeX = 297; 
 	fPaperSizeY = 210; 
+	fPsSuffix = ".eps";
+}
+//_____________________________________________________________________
+
+void CreateCDlabel::NewUserDef()
+{
+	Double_t userRY = fUserRX * (Double_t)(fUserWindowY) / (Double_t)(fUserWindowX);
+	NewProject(fUserWindowX+4, fUserWindowY+28, fUserRX,  userRY);
+	fPaperSizeX = 297; 
+	fPaperSizeY = 210; 
+	fPsSuffix = ".eps";
 }
 //_____________________________________________________________________
 
@@ -305,6 +337,7 @@ void CreateCDlabel::InsertBackgroundPicture()
 		cout << "Please create or get a project first" << endl;
 		return;
 	}
+	fCanvas->cd();
 //	TPad * pad = (TPad*)fCanvas;
 //   HprImage * hprimg = new HprImage(fBGImage, fCanvas);
    fImage = TImage::Open(fBGImage);
@@ -404,13 +437,15 @@ void CreateCDlabel::ExecuteGetProject()
    }
 	fProjectName = fCanvas->GetName();
    fCanvas->Draw();
-   fCanvas->SetEditable(kTRUE);
-   fCanvas->GetCanvasImp()->ShowEditor();
 	fCanvas->GetCanvasImp()->ForceUpdate();
 	gSystem->ProcessEvents();
+   fCanvas->SetEditable(kTRUE);
 	fCanvas->SetBit(GrCanvas::kIsAEditorPage);
 	//   c1->GetCanvasImp()->ShowToolBar();
    fEditor = new GEdit(fCanvas);
+	fCanvas->GetCanvasImp()->ForceUpdate();
+	gSystem->ProcessEvents();
+   fCanvas->GetCanvasImp()->ShowEditor();
 //	fCanvas->SetCanvasSize(cw, ch);
 //	fCanvas->SetWindowSize(ww,wh);
 	fXRange = fCanvas->GetUxmax();
@@ -420,6 +455,11 @@ void CreateCDlabel::ExecuteGetProject()
 
 void CreateCDlabel::ExecuteStoreProject()
 {
+   if (fCanvas == NULL) {
+      cout << "No canvas found / selected" << endl;
+      return;
+   }
+
 	fEditor->ShowToolBar(kFALSE);
 	fCanvas->GetCanvasImp()->ShowEditor(kFALSE);
 	fCanvas->GetCanvasImp()->ForceUpdate();
@@ -448,7 +488,7 @@ void CreateCDlabel::SetName()
 
 void CreateCDlabel::CRButtonPressed(Int_t wid, Int_t bid, TObject* obj)
 {
-	cout << "Bid " << bid << endl;
+//	cout << "Bid " << bid << endl;
 	if ( bid == fLoadFileBid ) {
 		if (wid) {};
 		if (obj) {};
@@ -469,6 +509,9 @@ void CreateCDlabel::SaveDefaults()
    env.SetValue("CreateCDlabel.fSmallInnerHole", fSmallInnerHole);
    env.SetValue("CreateCDlabel.fProjectName",    fProjectName   );
    env.SetValue("CreateCDlabel.fBGImage",        fBGImage       );
+   env.SetValue("CreateCDlabel.fUserRX",      fUserRX     );
+   env.SetValue("CreateCDlabel.fUserWindowX", fUserWindowX);
+   env.SetValue("CreateCDlabel.fUserWindowY", fUserWindowY);
    env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
@@ -476,9 +519,13 @@ void CreateCDlabel::SaveDefaults()
 void CreateCDlabel::RestoreDefaults()
 {
    TEnv env(".hprrc");
-   fRootFileName       = env.GetValue("CreateCDlabel.fRootFileName", "w5.root");
+   fRootFileName   = env.GetValue("CreateCDlabel.fRootFileName", "w5.root");
    fBigInnerHole   = env.GetValue("CreateCDlabel.fBigInnerHole",   0);
    fSmallInnerHole = env.GetValue("CreateCDlabel.fSmallInnerHole", 1);
    fProjectName    = env.GetValue("CreateCDlabel.fProjectName",    "CDlabel");
    fBGImage        = env.GetValue("CreateCDlabel.fBGImage",        "agv.gif");
+   fUserRX         = env.GetValue("CreateCDlabel.fUserRX",          100);
+   fUserWindowX    = env.GetValue("CreateCDlabel.fUserWindowX",     500);
+   fUserWindowY    = env.GetValue("CreateCDlabel.fUserWindowY",     500);
+	
 }

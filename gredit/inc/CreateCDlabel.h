@@ -40,7 +40,11 @@ private:
 	Double_t fOuterRadius;
 	Int_t    fSmallInnerHole;
 	Int_t    fBigInnerHole;
+	Int_t    fUserWindowX;
+	Int_t    fUserWindowY;
+	Double_t fUserRX;
 	TString  fProjectName;   // 
+	TString	fPsSuffix;
 	TString  fBGImage;       // name of background iomage file (gif, jpg..
 	TString  fRootFileName;
 	TString  fCanvasFromFile;
@@ -60,6 +64,7 @@ public:
 	void NewCDlabel();
 	void NewPortrait();
 	void NewLandscape();
+	void NewUserDef();
 	void SelectBackgroundPicture();
 	void CreateBackgroundPicture();
 	void InsertBackgroundPicture();
