@@ -2111,8 +2111,10 @@ retrysocket:
                  char str[32];
       			  Int_t nobs= fComSocket->Recv(str,32);
                  cout << "StartDaq():" << nobs<< " received: "
-                      << " mess "<< str << endl;
+					  << " mess "<< str << endl;
+					  gSystem->Sleep(100);
               }
+				  
               return kTRUE;
             } else {
 //               cout << setred << "c_ana: MBS readout didnt start correctly" << setblack<< endl;
