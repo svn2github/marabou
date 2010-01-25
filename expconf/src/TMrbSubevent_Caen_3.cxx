@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Caen_3.cxx,v 1.12 2009-07-13 06:22:39 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent_Caen_3.cxx,v 1.13 2010-01-25 15:47:05 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -92,7 +92,7 @@ TMrbSubevent_Caen_3::TMrbSubevent_Caen_3(const Char_t * SevtName, const Char_t *
 	if (!this->IsZombie()) {
 		fSevtDescr = "CAEN data, multi-module, multi-event, stored in hit buffer";
 		fSevtType = 10; 	 							// set subevent type & subtype
-		fSevtSubtype = 47;
+		fSevtSubtype = 43;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
 		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Caen");	// we need this base class
@@ -152,7 +152,7 @@ Bool_t TMrbSubevent_Caen_3::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 
 				((TMrbModule *) parentModule)->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleReadModule);
 				parNo += parentModule->GetNofChannelsUsed();
-				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;				
+				param = (parNo <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(parNo) : NULL;
 			}
 			miter =  fLofModules.MakeIterator();
 			while (module = (TMrbModule *) miter->Next()) module->MakeReadoutCode(RdoStrm, TMrbConfig::kModuleFinishReadout);
