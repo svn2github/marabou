@@ -2112,7 +2112,7 @@ retrysocket:
       			  Int_t nobs= fComSocket->Recv(str,32);
                  cout << "StartDaq():" << nobs<< " received: "
 					  << " mess "<< str << endl;
-					  gSystem->Sleep(100);
+					  gSystem->Sleep(500);
               }
 				  
               return kTRUE;
