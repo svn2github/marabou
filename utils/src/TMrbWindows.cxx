@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbWindows.cxx,v 1.8 2004-11-16 13:30:27 rudi Exp $       
-// Date:           
+// Revision:       $Id: TMrbWindows.cxx,v 1.9 2010-01-28 13:33:40 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -45,7 +45,7 @@ TMrbWindow::TMrbWindow() {
 // Name:           TMrbWindow
 // Purpose:        Default constructor
 // Description:    Creates list of vars/wdws.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
@@ -61,7 +61,7 @@ TMrbWindow::TMrbWindow(Double_t Xlower, Double_t Xupper) : TLine(Xlower, 0.0, Xu
 // Arguments:      Double_t Xlower    -- lower limit
 //                 Double_t Xupper    -- upper limit
 // Description:    Creates list of vars/wdws.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
@@ -76,12 +76,12 @@ TMrbWindow::~TMrbWindow() {
 // Name:           ~TMrbWindow
 // Purpose:        Destructor
 // Description:    Remove window from lists.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	gDirectory->GetList()->Remove(this);
 	gMrbLofUserVars->Remove(this);
-	if (gPad) gPad->GetListOfPrimitives()->Remove(this); 
+	if (gPad) gPad->GetListOfPrimitives()->Remove(this);
 	if (fParent && fParent->InheritsFrom(TH1::Class())) ((TH1*)fParent)->GetListOfFunctions()->Remove(this);
 	fParent = NULL;
 }
@@ -92,7 +92,7 @@ void TMrbWindow::SetName(const Char_t * WdwName) {
 // Name:           TMrbWindow::SetName
 // Purpose:        Set window name
 // Arguments:      Char_t * WdwName  -- window name
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Sets the name as done in TNamed.
 // Keywords:
@@ -108,7 +108,7 @@ void TMrbWindow::SetInitialType(UInt_t WdwType) {
 // Name:           TMrbWindow::SetInitialType
 // Purpose:        Set variable type
 // Arguments:      UInt_t WdwType    -- type bits
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Defines type bits.
 // Keywords:
@@ -127,16 +127,14 @@ Bool_t TMrbWindow::AddToHist(TObject * Histogram) {
 // Name:           TMrbWindow::AddToHist
 // Purpose:        Connect window to Histogram
 // Arguments:      TObject * Histogram   -- object inherited from TH1
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Add a window to the list of function of a histo.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TList * lofFunct;
-	
 	if (Histogram->InheritsFrom("TH1")) {
-		lofFunct = ((TH1 *) Histogram)->GetListOfFunctions();
+		TList * lofFunct = ((TH1 *) Histogram)->GetListOfFunctions();
 		if (lofFunct->FindObject(this) == NULL) lofFunct->Add(this);
 		this->SetLineColor(1);
 		this->SetLineStyle(1);
@@ -161,7 +159,7 @@ void TMrbWindow::Print(Option_t * Option) const {
 // Name:           TMrbWindow::Print
 // Purpose:        Print current value
 // Arguments:      Char_t * Option   -- option
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Outputs current value to cout.
 // Keywords:
@@ -178,8 +176,8 @@ void TMrbWindow::Initialize() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbWindow::Initialize
 // Purpose:        Reset to initial value(s)
-// Arguments:      
-// Results:        
+// Arguments:
+// Results:
 // Exceptions:
 // Description:    Resets to initial value(s).
 // Keywords:
@@ -200,10 +198,10 @@ TMrbWindowI::TMrbWindowI(const Char_t * Name, Int_t Xlower, Int_t Xupper) : TMrb
 // Arguments:      Char_t * Name           -- name of window
 //                 Int_t * Xlower          -- initial lower limit
 //                 Int_t * Xupper          -- initial upper limit
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Creates a window with integer limits.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	UInt_t hasInit;
@@ -221,7 +219,7 @@ void TMrbWindowI::Print(Option_t * Option) const {
 // Name:           TMrbWindowI::Print
 // Purpose:        Print current window limits
 // Arguments:      Char_t * Option  -- option
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Outputs window limits to cout.
 // Keywords:
@@ -262,7 +260,7 @@ void TMrbWindowI::SetLowerLimit(Int_t Xlower) {
 // Name:           TMrbWindowI::SetLowerLimit
 // Purpose:        Set lower limit of this window
 // Arguments:      Int_t Xlower   -- lower limit
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Sets lower limit.
 // Keywords:
@@ -282,7 +280,7 @@ void TMrbWindowI::SetUpperLimit(Int_t Xupper) {
 // Name:           TMrbWindowI::SetUpperLimit
 // Purpose:        Set upper limit of this window
 // Arguments:      Int_t Xupper   -- upper limit
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Sets upper limit.
 // Keywords:
@@ -303,7 +301,7 @@ void TMrbWindowI::Set(Int_t Xlower, Int_t Xupper) {
 // Purpose:        Set both limits of this window
 // Arguments:      Int_t Xlower    -- limit
 //                 Int_t Xupper    -- upper limit
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Sets both limits.
 // Keywords:
@@ -327,10 +325,10 @@ TMrbWindowF::TMrbWindowF(const Char_t * Name, Double_t Xlower, Double_t Xupper) 
 // Arguments:      Char_t * Name           -- name of window
 //                 Double_t * Xlower        -- initial lower limit
 //                 Double_t * Xupper        -- initial upper limit
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Creates a window with float limits.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	UInt_t hasInit;
@@ -348,7 +346,7 @@ void TMrbWindowF::Print(Option_t * Option) const {
 // Name:           TMrbWindowF::Print
 // Purpose:        Print current window limits
 // Arguments:      Char_t * Option  -- option
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Outputs window limits to cout.
 // Keywords:
@@ -383,13 +381,13 @@ void TMrbWindowF::Print(Option_t * Option) const {
 	}
 }
 
-void TMrbWindowF::SetLowerLimit(Double_t Xlower) {							
+void TMrbWindowF::SetLowerLimit(Double_t Xlower) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbWindowF::SetLowerLimit
 // Purpose:        Set lower limit of this window
 // Arguments:      Double_t Xlower   -- lower limit
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Sets lower limit.
 // Keywords:
@@ -403,13 +401,13 @@ void TMrbWindowF::SetLowerLimit(Double_t Xlower) {
 	}
 };                                    // *MENU*
 
-void TMrbWindowF::SetUpperLimit(Double_t Xupper) {							
+void TMrbWindowF::SetUpperLimit(Double_t Xupper) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbWindowF::SetUpperLimit
 // Purpose:        Set upper limit of this window
 // Arguments:      Double_t Xupper   -- upper limit
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Sets upper limit.
 // Keywords:
@@ -430,7 +428,7 @@ void TMrbWindowF::Set(Double_t Xlower, Double_t Xupper) {			// set both limits
 // Purpose:        Set both limits of this window
 // Arguments:      Int_t Xlower    -- limit
 //                 Int_t Xupper    -- upper limit
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Sets both limits.
 // Keywords:
@@ -452,7 +450,7 @@ void TMrbWindow::Draw(Option_t * Option) {
 // Name:           TMrbWindow::Draw
 // Purpose:        Draw a line representing this window
 // Arguments:      Option_t * Option       -- option(s)
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Draws a line with current attr represeinting this window.
 // Keywords:
@@ -473,7 +471,7 @@ void TMrbWindowI::PaintLine(Double_t Xlower, Double_t Ylower, Double_t Xupper, D
 //                 Double_t Ylower      -- (discarded)
 //                 Double_t Xupper      -- upper edge
 //                 Double_t Yupper      -- (discarded)
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Draws window with new coordinates.
 //                 Values Ylower/Yupper will be set to 1/4 pad height.
@@ -491,7 +489,7 @@ void TMrbWindow::Paint(Option_t * Option) {
 // Name:           TMrbWindow::Paint
 // Purpose:        Draw window with current coordinates
 // Arguments:      Option_t * Option   -- option
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Draws window with current coordinates.
 // Keywords:
@@ -510,7 +508,7 @@ void TMrbWindow::Paint(Option_t * Option) {
 	opt.ToLower();
 	TAttLine::Modify();
 	TAttText::Modify();
-	
+
 	y = gPad->GetUymax() - gPad->GetUymin();
 	dy = 0.02 * y;
 	if(fY1 == 0 && fY2 == 0){
@@ -527,7 +525,7 @@ void TMrbWindow::Paint(Option_t * Option) {
 	fY2 = y;
 	gPad->PaintLine(fX1, y, fX2, y);
 	gPad->PaintLine(fX1, y-dy, fX1, y+dy);
-	gPad->PaintLine(fX2, y-dy, fX2, y+dy);    
+	gPad->PaintLine(fX2, y-dy, fX2, y+dy);
 
 	x = gPad->GetUxmax() - gPad->GetUxmin();
 	dx = 0.02 * x;
@@ -535,7 +533,7 @@ void TMrbWindow::Paint(Option_t * Option) {
 	gPad->PaintText(fX2 + dx, fY1 + dy, wdwName.Data());
 }
 
-void TMrbWindowF::PaintLine(Double_t Xlower, Double_t Ylower, 
+void TMrbWindowF::PaintLine(Double_t Xlower, Double_t Ylower,
                             Double_t Xupper, Double_t Yupper) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -545,7 +543,7 @@ void TMrbWindowF::PaintLine(Double_t Xlower, Double_t Ylower,
 //                 Double_t Ylower      -- (discarded)
 //                 Double_t Xupper      -- upper edge
 //                 Double_t Yupper      -- (discarded)
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Draws window with new coordinates.
 //                 Values Ylower/Yupper will be set to 1/4 pad height.
@@ -563,7 +561,7 @@ TMrbWindow2D::TMrbWindow2D() {
 // Name:           TMrbWindow2D
 // Purpose:        Default constructor
 // Description:    Creates list of vars/wdws.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLofUserVars == NULL) gMrbLofUserVars = new TMrbLofUserVars("SystemVars");
@@ -578,7 +576,7 @@ TMrbWindow2D::TMrbWindow2D(const Char_t * WdwName, Int_t N, Double_t * X, Double
 // Name:           TMrbWindow2D
 // Purpose:        Default constructor
 // Description:    Creates list of vars/wdws.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLofUserVars == NULL) gMrbLofUserVars = new TMrbLofUserVars("SystemVars");
@@ -594,7 +592,7 @@ TMrbWindow2D::TMrbWindow2D(TCutG cut) : TCutG(cut) {
 // Name:           TMrbWindow2D
 // Purpose:        Default constructor
 // Description:    Creates list of vars/wdws.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLofUserVars == NULL) gMrbLofUserVars = new TMrbLofUserVars("SystemVars");
@@ -607,13 +605,13 @@ TMrbWindow2D::~TMrbWindow2D() {
 // Name:           ~TMrbWindow2D
 // Purpose:        Destructor
 // Description:    Remove window from lists.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	gROOT->GetListOfSpecials()->Remove(this);
 	gDirectory->GetList()->Remove(this);
 	gMrbLofUserVars->Remove(this);
-	if (gPad) gPad->GetListOfPrimitives()->Remove(this); 
+	if (gPad) gPad->GetListOfPrimitives()->Remove(this);
 	if (fParent && fParent->InheritsFrom(TH1::Class())) ((TH1*)fParent)->GetListOfFunctions()->Remove(this);
 	fParent = NULL;
 }
@@ -624,7 +622,7 @@ void TMrbWindow2D::SetInitialType(UInt_t WdwType) {
 // Name:           TMrbWindow2D::SetInitialType
 // Purpose:        Set variable type
 // Arguments:      UInt_t WdwType    -- type bits
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Defines type bits.
 // Keywords:
@@ -643,7 +641,7 @@ Bool_t TMrbWindow2D::AddToHist(TObject * Histogram) {
 // Name:           TMrbWindow2D::AddToHist
 // Purpose:        Connect window to Histogram
 // Arguments:      TObject * Histogram   -- object inherited from TH2
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Add a window to the list of function of a histo.
 // Keywords:
@@ -675,7 +673,7 @@ void TMrbWindow2D::Draw(Option_t * Option) {
 // Name:           TMrbWindow2D::Draw
 // Purpose:        Draw a polygon representing this window
 // Arguments:      Option_t * Option       -- option(s)
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Draws a polycon with current attr represeinting this window.
 // Keywords:
@@ -705,7 +703,7 @@ void TMrbWindow2D::Print(Option_t * Option) {
 // Name:           TMrbWindow2D::Print
 // Purpose:        Print current window limits
 // Arguments:      Char_t * Option  -- option
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Outputs window limits to cout.
 // Keywords:
@@ -750,12 +748,12 @@ TMbsWindow2d::~TMbsWindow2d() {
 // Name:           ~TMbsWindow2d
 // Purpose:        Destructor
 // Description:    Remove window from lists.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	gDirectory->GetList()->Remove(this);
 //	gMrbLofUserVars->Remove(this);
-	if (gPad) gPad->GetListOfPrimitives()->Remove(this); 
+	if (gPad) gPad->GetListOfPrimitives()->Remove(this);
 	if (fParent && fParent->InheritsFrom(TH1::Class())) ((TH1*)fParent)->GetListOfFunctions()->Remove(this);
 	fParent = NULL;
 }
@@ -766,7 +764,7 @@ void TMbsWindow2d::Draw(Option_t * Option) {
 // Name:           TMbsWindow2d::Draw
 // Purpose:        Draw a polygon representing this window
 // Arguments:      Option_t * Option       -- option(s)
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Draws a polycon with current attr represeinting this window.
 // Keywords:

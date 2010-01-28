@@ -11,8 +11,7 @@
 <meta name="description" content="MARaBOU - MBS and ROOT based Online/Offline Utility.">
 <title>How to install MARaBOU</title>
 </head>
-<body>
-<style type="text/css">
+<body><style type="text/css">
 pre.blue {
    border-width: 0;
    background-color: lightblue;
@@ -46,21 +45,34 @@ div.ind {
 <b>MARaBOU</b> (<b><u>M</u></b>BS <b><u>A</u></b>nd <b><u>R</u></b>OOT <sub>a</sub> <b><u>B</u></b>ased <sup><b><u>O</u></b>nline</sup><sub><b><u>O</u></b>ffline</sub> <b><u>U</u></b>tility)
 is the data acquisition and analysis system used at the Tandem accelerator of the Maier-Leibnitz Laboratory.  <br><br>
 As MARaBOU is based on the <a href="http://root.cern.ch">ROOT</a> object-oriented framework
-a running ROOT system should be installed on your computer (version 3.03/06 or later).<br>
+a running ROOT system should be installed on your computer.<br>
 To use the data acquisition part of MARaBOU you should have GSI's <a href="http://daq.gsi.de">MBS</a>
 (<b>M</b>ulti<b>B</b>ranch<b>S</b>ystem) running, too.<br><br>
 Please visit MARaBOU's <a href="http://www.bl.physik.uni-muenchen.de/marabou/html">HomePage</a> for an overview what the system is capable of.
 
+<h3><u>Downloading MARaBOU from CVS repository</u></h3>
+
+Login to CVS with user name <strong>mbuser</strong> and password <strong>marabou</strong>:<br>
+<div class="ind"><pre class="yellow">
+   cvs -d :pserver:mbuser@cvs.mll-muenchen.de:/home/cvs/marabou login
+</pre></div><br>
+
+Then download sources from the CVS repository:<br>
+<div class="ind"><pre class="yellow">
+   cvs -d :pserver:mbuser@cvs.mll-muenchen.de:/home/cvs/marabou checkout marabou
+</pre></div><br>
 
 <h3><u>Downloading Source Distribution</u></h3>
 
-Login to an (empty) directory where you want to install MARaBOU's sources, <a href="http://www.bl.physik.uni-muenchen.de/marabou/html">download</a> the source distribution from MARaBOU's
-home page,<br>
-then unpack the tar file:<br><br>
+Alternatively (if you don't have a CVS client running on your system) you may <a href="http://www.bl.physik.uni-muenchen.de/marabou/html">download</a> sources from MARaBOU's home page.<br>
+You have then to unpack the tar archive:<br><br>
 <div class="ind"><pre class="yellow">
    tar zxf marabou-4.mm.nn.tgz&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# nn, mm: version numbers
 </pre></div><br>
 
+But be aware that you won't get the newest versions of the distribution doing this way.
+If you repeat this step later on you will overwrite the whole distribution and will have to recompile everything.<br>
+Thus downloading from CVS is highly recommended.
 
 <h3><u>Setting Paths</u></h3>
 
@@ -85,7 +97,8 @@ In addition a check is done<br>
 <li>if your ROOT system is ok</li>
 <li>if MARaBOU's source distribution is complete</li>
 </ul></div> <br>
-Finally your path definitions will be appended to the system vars PATH and LD_LIBRARY_PATH, respectively:<br><br>
+     Finally <strong>iniMrbPath</strong> will append your path definitions to system vars PATH and LD_LIBRARY_PATH, respectively:
+    <br><br>
 <div class="ind"><pre class="blue">
 
    export PATH=$PATH:$ROOTSYS/bin:$MARABOU/bin
@@ -95,8 +108,8 @@ Finally your path definitions will be appended to the system vars PATH and LD_LI
 
 <h3><u>Customizing the Distribution</u></h3>
 
-The MARaBOU distribution as unpacked from tar file is pre-configured for standard Linux architecture.<br>
-Only if you want to change this configuration you have to call<br><br>
+The MARaBOU distribution as unpacked from tar file is <strong>pre-configured</strong> for standard Linux architecture.<br>
+<strong>Only if</strong> you want to change this configuration you have to call<br><br>
 <div class="ind"><pre class="yellow">
    ./configure &lt;arch&gt;
 </pre></div><br>
@@ -104,57 +117,51 @@ See file <b>config/ARCHS</b> for a list of possible architectures &lt;arch&gt;.<
 The main <b>Makefile</b> in the top level directory contains a list of modules to be built:<br><br>
 <div class="ind"><pre class="blue">
 
-   MODULES       = build utils gutils \
-                   expconf analyze \
-                   hpr c_analyze helpbrowser macrobrowser \
-                   camcli esone mbssetup transport mbsio \
-                   xiadgf dgfcontrol snake polar
+	MODULES       = build utils gutils helpbrowser fitcal gredit hpr \
+
+	# modules needed for online data acquisition as well as offline data analysis
+	MODULES      += c_analyze analyze mbssetup mbsio transport
+
+	# MARaBOU's code generator
+	MODULES      += expconf
+
+	# a GUI to execute ROOT macros
+	MODULES      += macrobrowser
+
+	# a client to connect to LynxOs from linux
+	MODULES      += c2lynx
+
+	# CAMAC client software
+	MODULES      += camcli esone
+
+	# control of VME devices
+	MODULES      += vmecontrol
+
+	# special software for XIA DGF-4C modules
+	MODULES      += dgfcomm xiadgf dgfcontrol cptmcontrol
+
+	# modules to control the polarized source
+	MODULES      += polar
+
+	# modules for the SNAKE nanoscope
+	MODULES      += snake-lib snake-pgm
 
 </pre></div><br>
-You may cut down this list to your requirements. See following table for a description of these modules and what they are used for.<br><br>
-<div class="ind">
-<table border=1 width="40%" cellspacing=1>
-<tr align="center"><th colspan="2">Modules which must be included</th></tr>
-<tr><td>build</td><td>Tools needed to build MARaBOU</td></tr>
-<tr><td>utils</td><td>General utilities</td></tr>
-<tr><td>gutils</td><td>Utilities for the graphical user interface</td></tr>
-<tr><td>expconf</td><td>Configuration of the experimental setup</td></tr>
-<tr><td>analyze</td><td>Data analysis: decoding, sorting, filtering</td></tr>
-<tr><td>mbssetup</td><td>Configuration of MBS tasks</td></tr>
-<tr><td>transport</td><td>Client for MBS transport task</td></tr>
-<tr><td>mbsio</td><td>MBS to ROOT data converter</td></tr>
-<tr><td>hpr</td><td>Histogram presenter</td></tr>
-<tr><td>c_analyze</td><td>MARaBOU's Control GUI</td></tr>
-<tr><td>helpbrowser</td><td>Help utility</td></tr>
-<tr><td>macrobrowser</td><td>Tool to execute ROOT macros</td></tr>
-<tr align="center"><th colspan="2">Modules needed for online data acquisiton only</th></tr>
-<tr><td>camcli</td><td>CAMAC client for MBS ESONE server</td></tr>
-<tr><td>esone</td><td>ESONE interface</td></tr>
-<tr align="center"><th colspan="2">Modules to handle special devices</th></tr>
-<tr><td>xiadgf</td><td>Interface to XIA DGF-4C modules</td></tr>
-<tr><td>dgfcontrol</td><td>Control GUI for XIA DGF-4C modules</td></tr>
-<tr><td>snake</td><td>Control GUI for the SNAKE experiment</td></tr>
-<tr><td>polar</td><td>Interface to the Polarized Ion Source</td></tr>
-</table></div>
+
+To turn off some of these modules you simple have to remove or rename the corresponding subdirectories.
+
 <h3><u>Building MARaBOU</u></h3>
 Now it should be easy to compile all modules and to build MARaBOU. Simply type<br><br>
 <div class="ind"><pre class="yellow">
+   make clean
    make
 </pre></div><br>
-Depending on your machine this step may take some time.<br>
-If you have to start over from beginning in case of problems, a <b>make clean</b> should reset things.<br><br>
+Depending on your machine this step may take some time. On a multi-cpu machine you may speed up with <strong>make -jN</strong> (N being the number of cpus)<br>
 As a result of this procedure you will find<br>
 <ul>
 <li>MARaBOU's libraries in <b>$MARABOU/lib</b></li>
 <li>executable programs like HistPresent and C_analyze in <b>$MARABOU/bin</b></li>
 </ul> <br>
-As a final step you should install program <b>xrcm</b> (E<b>x</b>ecute <b>r</b>oot<b>c</b>int <b>m</b>acro).
-It is used to make MARaBOU's config files self-starting, i.e. later on you may call your config file directly by <b>./Config.C</b>
-rather than <b>root Config.C</b> (a "higher order" goody).<br><br>
-<div class="ind"><pre class="yellow">
-   cd tools; make
-</pre></div><br>
-<b>xrcm</b> then has to be copied to <b>/usr/local/bin</b>.<br><br>
 MARaBOU is now ready to run.
 <h3><u>Starting a User Session</u></h3>
 As a MARaBOU user you first have to set some paths like we have done during the installation process.<br>
@@ -180,17 +187,17 @@ To make this path visible to ROOT it has to be included in the <b>.rootrc</b> fi
 To generate and compile your user code type<br><br>
 <div class="ind"><pre class="yellow">
 
-   ./Config.C&nbsp;&nbsp;&nbsp;# or similar
-   make -f <b>XXX</b>Analyze.mk clean all&nbsp;
-   &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# XXX = name of your experiment
+   root Config.C
+   make -f <b>XXX</b>Analyze.mk clean all
 
 </pre></div><br>
+<strong>XXX</strong> being the name of object <strong>TMrbConfig</strong> in your Config.C.<br><br>
 Now use <b>C_analyze</b> to control your data analysis/acquisition and <b>HistPresent</b>
 to inspect the resulting histograms.<br>
 Good luck!
 <hr>
 Author: <a href="mailto:Rudi.Lutter@Physik.Uni-Muenchen.DE">R. Lutter</a><br>
-Modified: Jan  8 13:33:48 CET 2003
+Modified: Nov 2009
 <hr>
 </body>
 </html>

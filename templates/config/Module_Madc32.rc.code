@@ -4,9 +4,9 @@
 #////////////////////////////////////////////////////////////////////////////
 # Name:           Module_Mesytec_Madc32.rc.code
 # Purpose:        Param defs for Mesytec MADC32 ADC
-# Description:        
+# Description:
 # Author:         $author
-# Date:           $date  
+# Date:           $date
 #////////////////////////////////////////////////////////////////////////////
 
 MADC32.ModuleName: 						$moduleName
@@ -58,7 +58,7 @@ MADC32.$moduleName.MultiEvent:			$multiEvent
 # max xfer data (if multievent is set to "3", default = 0)
 MADC32.$moduleName.XferData:			$xferData
 
-# marking type          0x1  -->  event counter (default)
+# marking type          0x0  -->  event counter (default)
 #                       0x1  -->  time stamp (30 bits)
 #                       0x3  -->  extended time stamp (+16bits)
 MADC32.$moduleName.MarkingType: 		$markingType
@@ -88,7 +88,7 @@ MADC32.$moduleName.AdcResolution:		$adcResolution
 # output format         0  -->  addressed (always 0)
 MADC32.$moduleName.OutputFormat:		$outputFormat
 
-# adc override          0  -->  2k 
+# adc override          0  -->  2k
 # (same as adc res)     1  -->  4k
 #                       2  -->  4k high resolution
 #                       3  -->  8k

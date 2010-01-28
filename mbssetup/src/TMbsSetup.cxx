@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.66 2009-04-30 10:46:41 Rudolf.Lutter Exp $       
-// Date:           $Date: 2009-04-30 10:46:41 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.67 2010-01-28 13:33:40 Rudolf.Lutter Exp $       
+// Date:           $Date: 2010-01-28 13:33:40 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -948,32 +948,40 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 			hname += ".";
 			hname += htitle;
 		}
-		TInetAddress * ia = new TInetAddress(gSystem->GetHostByName(hname.Data()));
-		TString hlong = ia->GetHostName();
-		TString haddr = ia->GetHostAddress();
-		if (hlong.CompareTo("UnknownHost") == 0 || hlong.CompareTo("UnNamedHost") == 0 || haddr.CompareTo("0.0.0.0") == 0) {
-			gMrbLog->Err() << "Can't resolve host name - " << hname << " (ignored)" << endl;
-			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
-			continue;
-		}
-		
-		if (!hlong.Contains(".")) {
-			TString dn;
-			ux.GetDomainName(dn);
-			if (!dn.IsNull() && dn.CompareTo("(none)") != 0) {
-				hlong += ".";
-				hlong += dn;
-			} else if (!domain.IsNull()) {
-				hlong += ".";
-				hlong += domain;
+		if (hx->GetIndex() >= 1000) {
+			TInetAddress * ia = new TInetAddress(gSystem->GetHostByName(hname.Data()));
+			TString hlong = ia->GetHostName();
+			TString haddr = ia->GetHostAddress();
+			if (hlong.CompareTo("UnknownHost") == 0 || hlong.CompareTo("UnNamedHost") == 0 || haddr.CompareTo("0.0.0.0") == 0) {
+				gMrbLog->Err() << "Can't resolve host name - " << hname << " (ignored)" << endl;
+				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				continue;
 			}
+		
+			if (!hlong.Contains(".")) {
+				TString dn;
+				ux.GetDomainName(dn);
+				if (!dn.IsNull() && dn.CompareTo("(none)") != 0) {
+					hlong += ".";
+					hlong += dn;
+				} else if (!domain.IsNull()) {
+					hlong += ".";
+					hlong += domain;
+				}
+			}
+			if (this->IsVerbose()) {
+				gMrbLog->Out() << "Resolving host " << hname << " (" << hlong << "): " << haddr << endl;
+				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+			}
+			if (hlong.CompareTo(hname.Data()) != 0) rhosts << hname << " " << userName << endl;
+			rhosts << hlong << " " << userName << endl;
+		} else {
+			if (this->IsVerbose()) {
+				gMrbLog->Out() << "Adding trusted host " << hname << endl;
+				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+			}
+			rhosts << hname << " " << userName << endl;
 		}
-		if (this->IsVerbose()) {
-			gMrbLog->Out() << "Resolving host " << hname << " (" << hlong << "): " << haddr << endl;
-			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
-		}
-		if (hlong.CompareTo(hname.Data()) != 0) rhosts << hname << " " << userName << endl;
-		rhosts << hlong << " " << userName << endl;
 		ok = kTRUE;
 		nofHosts++;
 	}
