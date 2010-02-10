@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.92 2009-12-01 13:31:10 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.93 2010-02-10 08:37:43 Otto.Schaile Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -118,12 +118,10 @@ TMrbAnalyze::TMrbAnalyze(TMrbIOSpec * IOSpec) {
 		fModuleList.SetName("List of modules");		// bookkeeping: modules, params, and histos
 		fParamList.SetName("List of params");
 		fHistoList.SetName("List of histograms");
-
 										// create a histogram to store rate history of last 300 secs
 		hRateHistory = new TH1F("RateHist", "Rate history (last 300 seconds)", 300, -300, 0);
 										// create a histogram to store dead-time history of last 300 secs
 		hDTimeHistory = new TH1F("DeadTime", "Dead time history (last 300 seconds)", 300, -300, 0);
-
 		fDumpCount = gEnv->GetValue("TMrbAnalyze.DumpCount", 0);
 
 		fResourceName.Resize(0);		// reset resource name
@@ -478,13 +476,13 @@ Int_t TMrbAnalyze::ProcessFileList() {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t nofEntries;
-	TMrbIOSpec * ioSpec;
+	TMrbIOSpec * ioSpec = NULL;
 
 	nofEntries = 0;
 	this->ClearHistograms("*", ioSpec);
 //  this was inside the loop on input files,
 //  therefore filelists didnt work (OS)
-   cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
+	cout << " ProcessFileList() PutPid(TMrbAnalyze::M_RUNNING)" << endl;
    PutPid(TMrbAnalyze::M_RUNNING);
    this->SetRunStatus(TMrbAnalyze::M_RUNNING);
 
@@ -498,7 +496,10 @@ Int_t TMrbAnalyze::ProcessFileList() {
 		TMrbIOSpec::EMrbInputMode inputMode = ioSpec->GetInputMode();
 
 		if (inputMode == TMrbIOSpec::kInputRoot) {
-			if (this->OpenRootFile(ioSpec)) {
+			pthread_mutex_lock(&global_data_mutex);  // Otto 29.01.2010
+			Bool_t ok = this->OpenRootFile(ioSpec);
+			pthread_mutex_unlock(&global_data_mutex);
+			if ( ok ) {
 				this->ReloadParams(ioSpec);
 				if (this->WriteRootTree(ioSpec)) {
 					this->ReplayEvents(ioSpec);
@@ -657,7 +658,7 @@ TH1F * TMrbAnalyze::UpdateRateHistory() {
 
 	if (fTimeOfLastUpdate > 0) {
 		elapsed = now - fTimeOfLastUpdate;
-//cout << "elapsed " << elapsed << endl;
+//		cout << "elapsed " << elapsed << " fEventsProcessed " <<fEventsProcessed <<  endl;
 		if (elapsed > 0) {
 			nofBins = hRateHistory->GetNbinsX();
 			rate = (fEventsProcessed - fEventsProcPrev) / elapsed;
@@ -669,6 +670,8 @@ TH1F * TMrbAnalyze::UpdateRateHistory() {
 			}
 			hRateHistory->SetBinContent(nofBins, rate);
 			hRateHistory->SetEntries(fEventsProcessed);
+//			cout << "hRateHistory " << hRateHistory  << " elapsed " << elapsed
+//			     << " fEventsProcessed " <<fEventsProcessed <<  endl;
 		}
 	}
 	fTimeOfLastUpdate = now;
