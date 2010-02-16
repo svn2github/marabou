@@ -53,6 +53,8 @@ namespace std {} using namespace std;
 
 #include "SetColor.h"
 
+#include <execinfo.h>
+
 // global pthread mutex to protect TMapped data
 extern pthread_mutex_t global_data_mutex;
 
@@ -152,7 +154,8 @@ int main(int argc, char **argv) {
 //////////////////////////////////////////////////////////////////////////////
 
 	void exit_from_analyze(int);
-
+	void handle_segviol(int);
+	
 	if(argc <= 1) {
 		cerr	<< setred
 				<<	endl
@@ -197,7 +200,8 @@ int main(int argc, char **argv) {
 
 // install signal handler
 	signal(SIGINT, exit_from_analyze);
-
+	signal(SIGSEGV, handle_segviol);
+	
 // pass unix arguments
 	Int_t argNo = 0;
 // data source
@@ -746,9 +750,8 @@ void * update_handler(void * dummy) {
 	Int_t  measured_update_time;
 	struct tms buf1, buf2;
 	clock_t t1, t2;
-	static ULong_t total_sleep, seconds;
+	static ULong_t total_sleep = 0, seconds = 0;
 	static Int_t sleep_before_update = 0;
-	seconds=0;
 
 	while(1) {
 		struct timespec t = { 1, 0 };
@@ -763,7 +766,9 @@ void * update_handler(void * dummy) {
 		sleep_before_update ++;
 		if (hsave_intervall > 0 && sleep_before_update >= hsave_intervall) {
 		   sleep_before_update = 0;
+			pthread_mutex_lock(&global_data_mutex);
 			u_analyze->SaveHistograms("*", ioSpec);
+			pthread_mutex_unlock(&global_data_mutex);
 		}
 		total_sleep ++;
 		if (total_sleep >= update_time){
@@ -816,8 +821,41 @@ void * update_handler(void * dummy) {
 // Keywords:       
 ///////////////////////////////////////////////////////////////////////////*/
 
-void exit_from_analyze(int n) {
+void handle_segviol(int n) {
 
+	signal(SIGSEGV, SIG_IGN);
+	cout << setred  << "M_analyze: sigviol" << setblack << endl;
+//	gSystem->StackTrace();
+    
+	 void *array[100];
+	 size_t size;
+	 char **strings;
+	 size_t i;
+	 
+	 size = backtrace (array, 100);
+	 strings = backtrace_symbols (array, size);
+	 
+	 printf ("Obtained %zd stack frames.\n", size);
+	 
+	 for (i = 0; i < size; i++)
+		 printf ("%s\n", strings[i]);
+	 
+	 free (strings);
+
+}
+//________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           exit_from_analyze
+// Purpose:        Trap signal ^C
+// Arguments:      Int_t n     -- signal number
+// Results:        
+// Exceptions:     
+// Description:    Traps ^C and sets termination flag
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+void exit_from_analyze(int n) {
+	
 	signal(SIGINT, SIG_IGN);
 	if ( verboseMode ) cout << "M_analyze: ^C seen" << endl;
 	u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
@@ -853,7 +891,9 @@ void exit_from_analyze(int n) {
 
 void * msg_handler(void * dummy) {
    const Int_t kMaxSock = 6;
-   cout << "Enter msg_handler, gComSocket = " << gComSocket<< endl;
+   cout << setyellow<< "Enter msg_handler, gComSocket = " << gComSocket
+	<< " RunStatus: "
+	<<u_analyze->GetRunStatus()<<setblue<< endl;
 //   TServerSocket *ss = new TServerSocket(gComSocket, kTRUE);
    if (!(ss->IsValid())) {
       cout << "Invalid: " << gComSocket << endl;
@@ -982,32 +1022,45 @@ void * msg_handler(void * dummy) {
 
          } else if(cmd == "reload") {
              u_analyze->ReloadParams(arg.Data());
-
+// 
          } else if(cmd == "savehists") {
              u_analyze->SaveHistograms("*", ioSpec);	// save histos
 
          } else if ( cmd == "gethist" ) {
 			   pthread_mutex_lock(&global_data_mutex);
-//            cout << "msg_handler(): gethist: " << setcyan << endl;
-            TH1 * hist = NULL;
-//            hist = NULL;
+//				cout << "msg_handler(): gethist: RunStatus: "
+//				<<u_analyze->GetRunStatus() << endl << flush;
+				TH1 * hist = (TH1 *)gROOT->GetList()->FindObject(arg.Data());
+//				if ( hist && hist->GetEntries() <= 0 ) {
+//					gSystem->StackTrace();
+//					gSystem->Sleep(1);
+//					hist->Dump();
+//				}
+				if (!hist || hist->GetEntries() <= 0 )
+					hist = NULL;
             if ( (u_analyze->GetRunStatus() == TMrbAnalyze::M_RUNNING
                       || u_analyze->GetRunStatus() == TMrbAnalyze::M_PAUSING)
-                && (hist = (TH1 *)gROOT->GetList()->FindObject(arg.Data())) ) {
-//            if ( hist && u_analyze->GetEventsProcessed() > 0) {
-               TMessage * message = new  TMessage(kMESS_OBJECT);
-               message->WriteObject(hist);     // write object in message buffer
-//               hist->Print();
-//               cout << "msg_handler(): sendhist: "<< setblack << endl;
-			      pthread_mutex_unlock(&global_data_mutex);
-               sock->Send(*message);          // send message
-               delete message;
-            } else {
+                && hist != NULL ) {
+//					cout << "msg_handler(): found hist: " << hist 
+//					<< " entries " <<hist->GetEntries()  << endl;
+//					if (hist->GetEntries() > 0) {
+//						cout << "msg_handler(): found hist: " << hist << endl;
+	//            if ( hist && u_analyze->GetEventsProcessed() > 0) {
+						TMessage * message = new  TMessage(kMESS_OBJECT);
+						message->WriteObject(hist);     // write object in message buffer
+	//               hist->Print();
+//						cout << "msg_handler(): sendhist: "<< setblack << endl;
+	//			      pthread_mutex_unlock(&global_data_mutex);
+						sock->Send(*message);          // send message
+						delete message;
+//					}
+					pthread_mutex_unlock(&global_data_mutex);
+				} else {
                TMessage * message = new  TMessage(kMESS_STRING);
                message->WriteString("Histo not found");
-               if (verboseMode)
-                  cout << setred << "Histo not found |" 
-                  <<arg.Data() << "|" << setblack << endl;
+//                if (verboseMode)
+//                  cout << setred << "Histo not found |" 
+//                  <<arg.Data() << "|" << setblack << endl;
 			      pthread_mutex_unlock(&global_data_mutex);
                sock->Send(*message);          // send message
                delete message;
