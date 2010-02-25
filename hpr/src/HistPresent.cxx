@@ -436,7 +436,7 @@ void HistPresent::ShowMain()
    y-=dy;
 
    cmd="mypres->GetHistSelMask()";
-   tit="Histo/Leaf Select mask";
+   tit="Histo/Leaf/Canvas mask";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Define a regular expression for selection of a subset of histograms",hint_delay);
@@ -673,10 +673,10 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    TString hint;
    TString sel;
    Int_t maxkey = 0;
-   if (GeneralAttDialog::fMaxListEntries > 1500) {
-      cout << "Warning: Max number of entries in list of histograms set to: 1500"
+   if (GeneralAttDialog::fMaxListEntries > 1000) {
+      cout << "Warning: Max number of entries in list of histograms set to: 1000"
            << endl;
-      GeneralAttDialog::fMaxListEntries = 1500;
+      GeneralAttDialog::fMaxListEntries = 1000;
    }
 //   TurnButtonGreen(&activeFile);
 
@@ -849,39 +849,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       TMrbStatEntry * stent;
       TIter nextentry(st->GetListOfEntries());
       while ( (stent = (TMrbStatEntry*)nextentry()) ) {
-         if (fHistSelMask->Length() > 0) {
-            TString tn(stent->GetName());
-            if        (fHistSelOp == kHsOp_None) {
-               TRegexp re((const char *)*fHistSelMask, !GeneralAttDialog::fUseRegexp);
-               if (tn.Index(re) <0) continue;
-            } else if (GeneralAttDialog::fUseRegexp) {
-               TRegexp re1((const char *)*fHistSelMask_1);
-               TRegexp re2((const char *)*fHistSelMask_2);
-               if (fHistSelOp == kHsOp_And) {
-                  if (tn.Index(re1) < 0 ||
-                     tn.Index(re2) < 0) continue;
-               } else if (fHistSelOp == kHsOp_Or) {
-                  if (tn.Index(re1) < 0 &&
-                     tn.Index(re2) < 0) continue;
-               } else if (fHistSelOp == kHsOp_Not) {
-                  if (( fHistSelMask_1->Length() > 0 &&
-                     tn.Index(re1) < 0) ||
-                    (tn.Index(re2) >=0)) continue;
-               }
-            } else {
-               if (fHistSelOp == kHsOp_And) {
-                  if (!tn.Contains(fHistSelMask_1->Data()) ||
-                     !tn.Contains(fHistSelMask_2->Data())) continue;
-               } else if (fHistSelOp == kHsOp_Or) {
-                  if (!tn.Contains(fHistSelMask_1->Data()) &&
-                     !tn.Contains(fHistSelMask_2->Data())) continue;
-               } else if (fHistSelOp == kHsOp_Not) {
-                  if (( fHistSelMask_1->Length() > 0 &&
-                    !tn.Contains(fHistSelMask_1->Data())) ||
-                     (tn.Contains(fHistSelMask_2->Data()))) continue;
-               }
-            }
-         }
+			if ( !IsSelected( stent->GetName() ) )
+				continue;
 			TString shn(stent->GetName());
 			if (shn.Contains(" ")) {
 			   cout << setred << "Histogram name: \"" << shn 
@@ -952,7 +921,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
          }
       }
    }
-   if (not_shown > 0) cout << "Another: " << not_shown << " hists are not shown" << endl;
+   if ( not_shown > 0 )
+		cout << "Another: " << not_shown << " hists are not shown" << endl;
 //   if (fHistSelMask->Length() <=0) {
 //  windows
       if (lofW1.GetSize() > 0) {
@@ -1021,8 +991,10 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
          TIter next(&lofC);
          TObjString * objs;
          while ( (objs = (TObjString*)next())) {
-            title = objs->String();
-            cmd = fname;
+				title = objs->String();
+				if ( !IsSelected( title.Data() ) )
+					continue;
+				cmd = fname;
             cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
 //            cmd = cmd + "\",\"" + title.Data() + "\")";
             sel = cmd;
@@ -1031,11 +1003,25 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             title.Prepend("c ");
             hint =  title;
             hint+=" canvas";
-            fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-            anything_to_delete++;
+				if (fCmdLine->GetSize() < GeneralAttDialog::fMaxListEntries) {
+					fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+					anything_to_delete++;
+				} else {
+					if (not_shown <= 0){
+						cout << setred << "Too many entries in list: " << nstat << endl;
+						cout << "this might crash X, please use selection mask"<< endl;
+						cout << "to reduce number of entries below: " <<  GeneralAttDialog::fMaxListEntries  << endl;
+						cout << "On your own risk you may increase value beyond: " << GeneralAttDialog::fMaxListEntries << endl;
+						cout << "WARNING: not all hists will be shown" << setblack << endl;
+					}
+					not_shown++;
+					//            cout << "Not shown: " << stent->GetName() << endl;
+				}
          }
       }
-   //  user contours
+		if ( not_shown > 0 )
+			cout << "Another: " << not_shown << " canvases are not shown" << endl;
+		//  user contours
       if (lofUc.GetSize() > 0) {
          TIter next(&lofUc);
          TObjString * objs;
@@ -1149,6 +1135,46 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    fCmdLine->Delete();
    if (st) delete st;
    gDirectory=gROOT;
+}
+//_______________________________________________________________________
+
+Bool_t HistPresent::IsSelected(const char * name) {
+
+	if (fHistSelMask->Length() <=  0) 
+		return kTRUE;
+	
+	TString tn(name);
+	if        (fHistSelOp == kHsOp_None) {
+		TRegexp re((const char *)*fHistSelMask, !GeneralAttDialog::fUseRegexp);
+		if (tn.Index(re) <0) return kFALSE;
+	} else if (GeneralAttDialog::fUseRegexp) {
+		TRegexp re1((const char *)*fHistSelMask_1);
+		TRegexp re2((const char *)*fHistSelMask_2);
+		if (fHistSelOp == kHsOp_And) {
+			if (tn.Index(re1) < 0 ||
+				tn.Index(re2) < 0)  return kFALSE;
+		} else if (fHistSelOp == kHsOp_Or) {
+			if (tn.Index(re1) < 0 &&
+				tn.Index(re2) < 0)  return kFALSE;
+		} else if (fHistSelOp == kHsOp_Not) {
+			if (( fHistSelMask_1->Length() > 0 &&
+				tn.Index(re1) < 0) ||
+				(tn.Index(re2) >=0))  return kFALSE;
+		}
+	} else {
+		if (fHistSelOp == kHsOp_And) {
+			if (!tn.Contains(fHistSelMask_1->Data()) ||
+				!tn.Contains(fHistSelMask_2->Data()))  return kFALSE;
+		} else if (fHistSelOp == kHsOp_Or) {
+			if (!tn.Contains(fHistSelMask_1->Data()) &&
+				!tn.Contains(fHistSelMask_2->Data()))  return kFALSE;
+		} else if (fHistSelOp == kHsOp_Not) {
+			if (( fHistSelMask_1->Length() > 0 &&
+				!tn.Contains(fHistSelMask_1->Data())) ||
+				(tn.Contains(fHistSelMask_2->Data())))  return kFALSE;
+		}
+	}
+	return kTRUE;
 }
 //________________________________________________________________________________________
 

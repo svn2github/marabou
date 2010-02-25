@@ -178,7 +178,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
 //   void CheckAutoExecFiles();
    void ClearSelect();
    void ShowMain();               //
-
+   Bool_t IsSelected(const char * name);
    void ListMacros(const char* bp =0);               //
    void GetFileSelMask(const char* bp =0);               //
    void GetHistSelMask(const char* bp =0);               //
