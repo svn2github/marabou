@@ -497,6 +497,10 @@ A BreitWigner with constant [0], mean [1] and gamma [2]\n\
 \n\
 For a complete list of implemented functions consult\n\
 the root doc at: http://root.cern.ch\n\
+Nota bene:\n\
+If expression contains a power function with non integer\n\
+exponent, x must not be negative (fFrom >= 0)\n\
+e.g. [0]*TMath::Power(x, 2.3)\n\
 ";
 
    fParentWindow = NULL;
@@ -1037,7 +1041,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
    Int_t bin_from = fSelHist->FindBin(fFrom);
    Int_t bin_to   = fSelHist->FindBin(fTo);
 //   Int_t bin = 0;
-   TF1 * func;
+   TF1 * func = NULL;
    fFuncName = Form("_%d", fFuncNumber);
    fFuncNumber++;
    fFuncName.Prepend("gaus_fun");
@@ -1344,7 +1348,8 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			fSigmaList.Set(fNpeaks);
 			fChi2List.Set(fNpeaks);
       }
-      AddPeaktoList(func);
+      if (func) 
+			AddPeaktoList(func);
       if ( fNpeaksList == 0)
           PrintPeakList();
    }
@@ -1599,8 +1604,10 @@ Int_t FitOneDimDialog::GetMarkers()
 //   }
 // find number of peaks to fit
    TAxis * xa = fSelHist->GetXaxis();
-   fFrom = xa->GetBinLowEdge(xa->GetFirst());
-   fTo   = xa->GetBinLowEdge(xa->GetLast());
+	if ( xa->GetBinLowEdge(xa->GetFirst()) > fFrom )
+		fFrom = xa->GetBinLowEdge(xa->GetFirst());
+	if ( xa->GetBinLowEdge(xa->GetLast()) < fTo )
+		fTo   = xa->GetBinLowEdge(xa->GetLast());
 //   fFrom = xa->GetBinUpEdge(xa->GetFirst());
 //   fTo   = xa->GetBinLowEdge(xa->GetLast());
    fMarkers = (FhMarkerList*)fSelHist->GetListOfFunctions()->FindObject("FhMarkerList");
@@ -2087,11 +2094,13 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
       if (fFormFixPar[i] |= 0) fFitFunc->FixParameter(i, fFormPar[i]);
    }
    fFitFunc->Print();
+	cout << endl<< "Formula " << (const char*)fFormula << endl;
    fFitFunc->SetLineWidth(fWidth);
    fFitFunc->SetLineColor(fColor);
    if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
       fFitFunc->SetNpx(1000);
       fFitFunc->Draw("same");
+//		cout << "Val[2] " << fFitFunc->Eval(2.) << endl;
 //      fFitFunc->Print();
    } else {
       TString fitopt = "R";     // fit in range
