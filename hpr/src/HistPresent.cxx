@@ -3209,7 +3209,8 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       Int_t ngr = FindGraphs(gPad, logr);
       if (ngr > 0) 
 		   gStyle->SetOptStat(0);
-		c->GetListOfExecs()->Clear();
+		if ( c->GetListOfExecs() ) 
+			c->GetListOfExecs()->Clear();
       if (c->GetAutoExec()) 
          c->ToggleAutoExec();
       if ( c->InheritsFrom("HTCanvas") ) {

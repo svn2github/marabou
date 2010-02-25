@@ -36,6 +36,7 @@ public:
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetGraphAtt(TCanvas *ca, Int_t bid);
+   void SetAsDefault();
    void SaveDefaults();
    static void RestoreDefaults();
    void CloseDown(Int_t wid);

@@ -105,6 +105,7 @@ void HistPresent::RestoreOptions()
    WhatToShowDialog::SetDefaults();
    WindowSizeDialog::RestoreDefaults();
    WindowSizeDialog::fNwindows = 0;
+   GraphAttDialog::RestoreDefaults();
    SetColorModeDialog::RestoreDefaults();
    SetColorModeDialog::SetGreyLevels();
    SetColorModeDialog::SetTransLevelsRGB();
