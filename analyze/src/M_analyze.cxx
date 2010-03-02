@@ -766,9 +766,9 @@ void * update_handler(void * dummy) {
 		sleep_before_update ++;
 		if (hsave_intervall > 0 && sleep_before_update >= hsave_intervall) {
 		   sleep_before_update = 0;
-			pthread_mutex_lock(&global_data_mutex);
+//			pthread_mutex_lock(&global_data_mutex);
 			u_analyze->SaveHistograms("*", ioSpec);
-			pthread_mutex_unlock(&global_data_mutex);
+//			pthread_mutex_unlock(&global_data_mutex);
 		}
 		total_sleep ++;
 		if (total_sleep >= update_time){
