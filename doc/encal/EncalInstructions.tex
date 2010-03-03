@@ -1,0 +1,286 @@
+\documentclass[10pt]{article}
+
+\usepackage{hyperref} 
+\usepackage{graphicx} 
+\usepackage{fancybox} 
+\usepackage{rotating} 
+\usepackage{color} 
+\usepackage{DIN_A4} 
+\usepackage{here}
+
+\ifx\MARaBOU\undefined
+\def\MARaBOU{MAR\lower.5ex\hbox{a}BO\kern-.5em\lower.5ex\hbox{O}\kern-.1em U}%
+\fi
+
+\newcommand{\samefootnote}{$^\alph{footnote}$}
+\newcommand{\samempfootnote}{$^\alph{mpfootnote}$}
+
+\definecolor{lightblue}{rgb}{.68,.88,.90}
+\definecolor{lightgray}{rgb}{.85,.85,.85}
+
+\newcommand{\blue}[1]{\colorbox{lightblue}{\texttt{#1}}}
+\newcommand{\gray}[1]{\colorbox{lightgray}{\texttt{#1}}}
+\newcommand{\yellow}[1]{\colorbox{yellow}{\texttt{#1}}}
+\newcommand{\redt}[1]{\textcolor{red}{#1}}
+\newcommand{\redtt}[1]{\textcolor{red}{\texttt{#1}}}
+\newcommand{\greent}[1]{\textcolor{green}{#1}}
+\newcommand{\greentt}[1]{\textcolor{green}{\texttt{#1}}}
+\newcommand{\bluet}[1]{\textcolor{blue}{#1}}
+\newcommand{\bluett}[1]{\textcolor{blue}{\texttt{#1}}}
+\newcommand{\boldt}[1]{\textbf{\texttt{#1}}}
+
+\newenvironment{boxed}
+	{\begin{Sbox}\begin{minipage}[t]}
+	{\end{minipage}\end{Sbox}\fbox{\TheSbox}}
+	
+\newenvironment{yellowboxed}
+	{\begin{Sbox}\begin{minipage}[t]}
+	{\end{minipage}\end{Sbox}\colorbox{yellow}{\TheSbox}}
+	
+\newenvironment{blueboxed}
+	{\begin{Sbox}\begin{minipage}[t]}
+	{\end{minipage}\end{Sbox}\colorbox{lightblue}{\TheSbox}}
+
+\newenvironment{grayboxed}
+	{\begin{Sbox}\begin{minipage}[t]}
+	{\end{minipage}\end{Sbox}\colorbox{lightgray}{\TheSbox}}
+	
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\begin{titlepage}
+\title{Instructions how to perform an energy calibration in the \MARaBOU{} environment}
+\author{R. Lutter}
+\maketitle
+\vfill
+\begin{abstract}
+\setlength{\parindent}{0pt}
+\begin{center}
+This document describes how to perform an energy calibration by use of \MARaBOU{}'s \texttt{MacroBrowser} and the \texttt{ROOT} macro \blue{Encal.C}.
+\end{center}
+\end{abstract}
+\vfill
+\end{titlepage}
+\newpage
+\section{How to perform an energy calibration}\vspace{3mm}
+
+To perform an energy calibration (gamma or particle) call the \texttt{MacroBrowser}:\\
+
+\hspace*{.2\linewidth}\yellow{MacroBrowser}\\
+
+A menu will then pop up showing several \texttt{ROOT} macros. Choose \blue{Encal.C} from this list.\\
+
+You'll get a form (fig. \ref{EncalForm}) to specify parameters needed to start the calibration:\\
+
+\begin{center}
+\begin{itemize}
+\setlength{\rightmargin}{1em}%
+\setlength{\leftmargin}{2em}%
+\setlength{\itemsep}{0pt}%
+\setlength{\parskip}{1mm}%
+\setlength{\partopsep}{0pt}%
+\setlength{\parsep}{0pt}%
+\setlength{\topsep}{0pt}%
+\item	\blue{Histogram file (.root)}\\
+	Click on the folder button and choose the \texttt{ROOT} file containing your calibration spectra.
+	Then select some histograms from the list below either by \textbf{range} (first \dots last) or one by one (\textbf{single}).
+	Press \gray{apply} to accept selection, \gray{clear} to reset list.
+\item	\blue{Calibration source}\\
+	Choose \gray{Co60} or \gray{Eu152} for gammas, \gray{TripleAlpha} for particles
+\item	\blue{Calibration energies}\\
+	Enter file containing calibration energies. Default is \texttt{\$MARABOU/data/encal/energies.dat}.
+	See \ref{EngFileFormat} for a format description.
+\item	\blue{Calibration data}\\
+	Where to write calibration data (extension \texttt{.cal}).\\
+	Calibration data will be formatted according to \texttt{ROOT}'s resource format (ROOT object \texttt{TEnv}, \ref{CalFileFormat});
+\item	\blue{Calibration results}\\
+	Where to write detailed calibration results (extension \texttt{.res}).
+	Same formatting rules as for \texttt{.cal} files apply (\ref{ResFileFormat}).
+\item	\blue{Fit results}\\
+	\texttt{ROOT} file where to store histograms together with fit data as well as liniear regression data (extension \texttt{.root}).
+\item	\blue{Clear output files}\\
+	Click \gray{yes} to remove existing files (\texttt{.cal} and \texttt{.res}) on start.
+	If \gray{no} is chosen new data will be appended to existing files, existing items will be overwritten with new values.
+\item	\blue{Precalibration file}\\
+	To get an \gray{Eu152} calibration you have to preform a \gray{Co60} calibration step first in order to assign gamma energies
+	to peak centers.
+	The name of the \gray{Co60} calibration file from a previous run has to be given here.
+\item	\blue{Lower/Upper limit}\\
+	Limits of the display/fit region (channels)
+\item	\blue{Threshold for peak finder}\\
+	Relative height of peaks taken into account given by percentage of maximum peak
+	\hfill(continued on next page)
+\newpage
+\item	\blue{Sigma}\\
+	\texttt{sigma} value for gaussian fit
+\item	\blue{Fit mode}\\
+	Either \gray{gauss} or \gray{gauss+tail}: how to fit lines in the histogram.
+\item	\blue{Fit grouping}\\
+	You may fit \gray{single} peaks  or an \gray{ensemble} of peaks (may give better results for \gray{Co60}
+	and \gray{TripleAlpha} calibrations).
+\item	\blue{Background}\\
+	You have the choice between a \gray{const} or \gray{linear} background.
+\item	\blue{Range for peak fit}\\
+	Set lower and upper limits for the peak fit region (single peak  or group fitting), given in units of \texttt{sigma}.
+\item	\blue{Display results}\\
+	Check button \gray{step} to stop after each fit, check \gray{2dim} to display a two-dim histogram containing re-calibrated
+	histograms line by line.
+\item	\blue{Verbose}\\
+	Choosing button \gray{yes} will output some diagnostics to \texttt{stdout}.
+\end{itemize}
+\newpage
+\end{center}
+\begin{figure}[H]
+\centerline{\includegraphics[width=.9\linewidth]{EncalForm}}
+\caption{\texttt{Encal.C}: how to perform an energy calibration}
+\label{EncalForm}
+\end{figure}
+\newpage
+Press \blue{Execute} to start the calibration.\vspace{.5cm}
+
+A new window will pop up showing fit results (fig. \ref{FitDisplay}).\vspace{.5cm}
+
+The upper part shows peak centroids (\bluet{blue markers}) as
+returned by the peak finder together with the gaussian fit (\redt{red curve}).
+
+The lower part shows the linear regression results
+when assigning alpha lines 5.157 MeV ($^{239}$Pu), 5.486 MeV ($^{241}$Am), and 5.865 MeV ($^{244}$Cm) to peaks, respectively.
+
+The title bar below the graphs shows the resulting calibration formula \gray{E(x) = a$_0$ + a$_1$ * x}.\vspace{1cm}
+\begin{figure}[H]
+\centerline{\includegraphics[width=\linewidth]{FitDisplay}}
+\caption{\texttt{Encal.C}: fit and calibration results}
+\label{FitDisplay}
+\end{figure}
+
+If you have chosen \gray{step} mode you now have to press one of the buttons at the bottom edge of the display:
+\begin{center}
+\begin{itemize}
+\setlength{\rightmargin}{1em}%
+\setlength{\leftmargin}{2em}%
+\setlength{\itemsep}{0pt}%
+\setlength{\parskip}{1mm}%
+\setlength{\partopsep}{0pt}%
+\setlength{\parsep}{0pt}%
+\setlength{\topsep}{0pt}%
+\item	\gray{accept}
+	add calibration data to output file (\texttt{.cal}) and continue with next histogram.
+\item	\gray{discard}
+	discard calibration and continue with next histogram.
+\item	\gray{stop}
+	leave calibration loop and return to \texttt{MacroBrowser}'s menu (fig. \ref{EncalForm}).
+\item	\gray{quit}
+	close files and exit from \texttt{ROOT}.
+\end{itemize}\vspace{.5cm}
+\end{center}
+\newpage
+If you checked the \gray{2dim} button you will get a two-dimensional histogram showing calibrated
+histograms line by line (fig. \ref{Display2dim}).
+
+From this plot you can see immediately that calibration of histogram \texttt{hRawAs1}
+didn't give satisfactory results. Now try the following:
+\begin{center}
+\begin{itemize}
+\setlength{\rightmargin}{1em}%
+\setlength{\leftmargin}{2em}%
+\setlength{\itemsep}{0pt}%
+\setlength{\parskip}{1mm}%
+\setlength{\partopsep}{0pt}%
+\setlength{\parsep}{0pt}%
+\setlength{\topsep}{0pt}%
+\item	Go back to \texttt{MacroBrowser}'s menu (fig. \ref{EncalForm})
+\item	Reset the histogram list by pressing \gray{clear}
+\item	Select histogram \texttt{hRawAs1} from the list (button \gray{apply})
+\item	Change flag \blue{Clear output files} to \gray{no}
+\item	Change the \blue{sigma} value to \gray{2}
+\item	Press \blue{Execute} to start over
+\end{itemize}\vspace{.5cm}
+\end{center}
+The new fit data for histogram \texttt{hRawAs1} will then overwrite the existing ones without changing other entries. You then end up with
+fig. \ref{Display2dimCorr}.
+\newpage
+\begin{figure}[H]
+\centerline{\includegraphics[width=.9\linewidth]{Display2dim}}
+\caption{\texttt{Encal.C}: 2-dim plot of calibrated histograms, first try}
+\label{Display2dim}
+\end{figure}
+\begin{figure}[H]
+\centerline{\includegraphics[width=.9\linewidth]{Display2dimCorr}}
+\caption{\texttt{Encal.C}: 2-dim plot after re-fitting}
+\label{Display2dimCorr}
+\end{figure}
+\newpage
+\section{File formats}
+\subsection{Calibration data (extension \texttt{.cal})}\label{CalFileFormat}
+A calibration data file (extension \texttt{.cal}) generated by \texttt{Encal.C}
+is formatted according to \texttt{ROOT}'s resource format (see \texttt{ROOT} documentation, object \texttt{TEnv}).
+It consists of a header followed by entries for each histogram.
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Header	&	\texttt{Calib.ROOTFile: <HistoFile>.root}		\\
+	&	\texttt{Calib.Source: Co60 or Eu152 or TripleAlpha}		\\
+	&	\texttt{Calib.Energies: <path to file containing calib energies>}		\\
+	&	\texttt{Calib.NofHistograms: <NH>}		\\
+\hline
+Entry	&	\texttt{Calib.<HistoName>.Xmin:	<lower limit>}	\\
+(1 per histo) &	\texttt{Calib.<HistoName>.Xmax:	<upper limit>}	\\
+	&	\texttt{Calib.<HistoName>.Gain: <gain a$_1$>}	\\
+	&	\texttt{Calib.<HistoName>.Offset: <offset a$_0$>}	\\
+\hline
+\end{tabular}
+\end{center}
+
+This file may be read in directly to the data acquisition program by use of method \texttt{TMrbAnalyze::ReadCalibrationFromFile()}.
+\subsection{Detailed calibration results (extension \texttt{.res})}\label{ResFileFormat}
+In addition to the calibration data file (\ref{CalFileFormat}) detailed fit results will be written toa file with extension \texttt{.res}.
+Its format is similar to that of the \texttt{.cal} file but contains much more information.
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Header	&	\texttt{Calib.ROOTFile: <HistoFile>.root}		\\
+	&	\texttt{Calib.Source: Co60 or Eu152 or TripleAlpha}		\\
+	&	\texttt{Calib.Energies: <path to file containing calib energies>}		\\
+	&	\texttt{Calib.NofHistograms: <NH>}		\\
+	&	\texttt{Calib.Emin: <minimum energy over all histos>}		\\
+	&	\texttt{Calib.Emax: <maximum energy>}		\\
+	&	\texttt{Calib.Xmin: <minimum channel>}		\\
+	&	\texttt{Calib.Xmax: <maximum channel>}		\\
+\hline
+Histo entry	&	\texttt{Calib.<HistoName>.Xmin:	<lower limit>}	\\
+(1 per histo) &	\texttt{Calib.<HistoName>.Xmax:	<upper limit>}	\\
+	&	\texttt{Calib.<HistoName>.NofPeaks: <NP>}	\\
+	&	\texttt{Calib.<HistoName>.Gain: <gain a$_1$>}	\\
+	&	\texttt{Calib.<HistoName>.Offset: <offset a$_0$>}	\\
+	&	\texttt{Calib.<HistoName>.FitOk: TRUE, FALSE, or AUTO}	\\
+\hline
+Peak entry	&	\texttt{Calib.<HistoName>.Peak.<I>.X:	<centroid peak finder>}	\\
+(1 per peak per histo) &	\texttt{Calib.<HistoName>.Peak.<I>.Xfit:	<centroid gaussian fit>}	\\
+	&	\texttt{Calib.<HistoName>.Peak.<I>.Xerr:	<centroid error>}	\\
+	&	\texttt{Calib.<HistoName>.Peak.<I>.Y:	<amplitude peak finder>}	\\
+	&	\texttt{Calib.<HistoName>.Peak.<I>.Yfit:	<amplitude gaussian fit>}	\\
+	&	\texttt{Calib.<HistoName>.Peak.<I>.Yerr:	<amplitude error>}	\\
+	&	\texttt{Calib.<HistoName>.Peak.<I>.Chi2:	<chisquare gaussian fit>}	\\
+\hline
+\end{tabular}
+\end{center}
+\subsection{Calibration energies}\label{EngFileFormat}
+Calibration energies have to be provided as \texttt{ROOT} resources (see \texttt{ROOT} documentation, object \texttt{TEnv}).
+
+\begin{center}
+\begin{tabular}{|l|l|}
+\hline
+Header	&	\texttt{Calib.NofCalibrations: <NC>}		\\
+	&	\texttt{Calib.SourceNames: <Source1>:<Source2>:\dots:<SourceNC>}		\\
+\hline
+Entry	&	\texttt{Calib.<SourceN>.NofLines: <NL>}		\\
+(1 per line per source) &	\texttt{Calib.<SourceN>.Line.<I>.E: <energy>}		\\
+	&	\texttt{Calib.<SourceN>.Line.<I>.Eerr: <error>}		\\
+\hline
+\end{tabular}
+\end{center}
+
+\end{document}

@@ -1,0 +1,269 @@
+\documentclass[10pt]{article}
+
+\setlength{\textwidth}{15cm}
+\setlength{\textheight}{24cm}
+\setlength{\oddsidemargin}{0cm}
+\setlength{\evensidemargin}{16cm}
+\addtolength{\evensidemargin}{-\oddsidemargin}
+\addtolength{\evensidemargin}{-\textwidth}
+\setlength{\topmargin}{-2cm}
+
+\usepackage{hyperref} 
+\usepackage{graphicx} 
+\usepackage{fancybox} 
+\usepackage{rotating} 
+\usepackage{color} 
+
+\ifx\MARaBOU\undefined
+\def\MARaBOU{MAR\lower.5ex\hbox{a}BO\kern-.5em\lower.5ex\hbox{O}\kern-.1em U}%
+\fi
+
+\newcommand{\samefootnote}{$^\alph{footnote}$}
+\newcommand{\samempfootnote}{$^\alph{mpfootnote}$}
+
+\definecolor{lightblue}{rgb}{.68,.88,.90}
+
+\newcommand{\blue}[1]{\colorbox{lightblue}{\texttt{#1}}}
+\newcommand{\yellow}[1]{\colorbox{yellow}{\texttt{#1}}}
+\newcommand{\red}[1]{\colorbox{red}{\texttt{#1}}}
+\newcommand{\green}[1]{\colorbox{green}{\texttt{#1}}}
+\newcommand{\redt}[1]{\textcolor{red}{\texttt{#1}}}
+\newcommand{\greent}[1]{\textcolor{green}{\texttt{#1}}}
+\newcommand{\bluet}[1]{\textcolor{blue}{\texttt{#1}}}
+\newcommand{\boldt}[1]{\textbf{\texttt{#1}}}
+
+\newenvironment{boxed}
+	{\begin{Sbox}\begin{minipage}[t]}
+	{\end{minipage}\end{Sbox}\fbox{\TheSbox}}
+	
+\newenvironment{yellowboxed}
+	{\begin{Sbox}\begin{minipage}[t]}
+	{\end{minipage}\end{Sbox}\colorbox{yellow}{\TheSbox}}
+	
+\newenvironment{blueboxed}
+	{\begin{Sbox}\begin{minipage}[t]}
+	{\end{minipage}\end{Sbox}\colorbox{lightblue}{\TheSbox}}
+	
+
+\setlength{\parindent}{0pt}
+
+\begin{document}
+\begin{titlepage}
+\title{How to set up the PPC}
+\author{R. Lutter}
+\maketitle
+\vfill
+\begin{abstract}
+\setlength{\parindent}{0pt}
+\begin{center}
+This document describes cabling, configuring, and booting the PowerPC\\
+in a \mbox{MINIBALL} experiment.
+\end{center}
+\end{abstract}
+\vfill
+\end{titlepage}
+\newpage
+\tableofcontents
+\newpage
+\section{Introduction}\label{Introduction}
+Normally the PPC should be set up properly, the LynxOs operating system should be working fine, any cabling should be in order. In case of hang-ups simply pressing the \red{RESET} button should solve the problem. Thus \dots
+\begin{center}
+\redt{Don't change anything under normal conditions!\\
+Don't touch a running system!}
+ \end{center}
+
+This manual is intended to give some insights into PPC internals. You may thus check settings in case system got completely stuck.
+
+\section{Cabling}\label{Cabling}
+\begin{minipage}[b]{.6\linewidth}
+Adjoining figure shows the front panel of the PPC.
+\begin{itemize}
+\setlength{\rightmargin}{1em}%
+\setlength{\leftmargin}{2em}%
+\setlength{\itemsep}{0pt}%
+\setlength{\parskip}{1mm}%
+\setlength{\partopsep}{0pt}%
+\setlength{\parsep}{0pt}%
+\setlength{\topsep}{0pt}%
+\item	\red{Reset} button
+\item	\yellow{local ethernet}, 10 Mbits/s,\\
+	on-board,\\
+	system name \texttt{le}
+\item	\blue{serial i/o}
+\item	\green{fast ethernet}, 100 Mbits/s,\\
+	piggy-back position 2\\
+	system name \texttt{e2}
+\end{itemize}
+
+\subsection{Connecting to ethernet}
+As there is now (June 2007) a fast ethernet interface in the PPC port \green{e2} (piggy-back module in position 2) should be connected to port \green{GB1}
+\footnote{Be aware: \texttt{GB1} is assigned to \texttt{eth1} in the daq server internally, while \texttt{GB2} is assigned to \texttt{eth0}!}
+at the rear side of the daq server.
+
+The local ethernet \yellow{le} is still working, but using the fast ethernet will improve the thruput when
+transfering data to the daq computer.
+\subsection{Connecting the serial i/o}
+The \blue{serial i/o} should always be connected to the serial port at the rear side of the daq server.
+It will be used for maintenance only. In case of booting problems it is the only way to inspect and
+configure the PPC's boot section. This can be managed even from remote.
+\end{minipage}
+\begin{minipage}[b]{.3\linewidth}
+\includegraphics[height=.8\textheight]{RIO2.jpg}
+\end{minipage}
+\newpage
+\section{Serial I/O}
+To connect to the PPC via the serial line call program \texttt{minicom} in the daq server \texttt{pcepuis16}.
+Pressing the \red{Reset} button should give an output like this:\\
+
+\verb+PPC Boot Rev 3.60 created Thu Sep 16 13:39:36 1999+\\
+\verb+ +\\
+\verb+  Module Type: 8062WA  rev: C   serial: 1358+\\
+\verb+  Host CPU: PPC604e   ver: 31.02   speed: 300 Mhz+\\
+\verb+  PCI Bridge: IBM27-82660 (Lanai/Kauai) rev: 02+\\
+\verb-  Memory Size: 32+0+0+0+0+0+0+0 = 32 Mbytes-\\
+\verb+               EDO RAM  60 ns   ECC enabled+\\
+\verb+  L2 CACHE:  1 Mbyte SSRAM+\\
+\verb+  FPROM: Two banks of FUJI29F016 installed+\\
+\verb+  Ethernet Address: 00:80:a2:00:8d:5e+\\
+\verb+ +\\
+\verb+Entering boot diagnostics+\\
+\verb+ +\\
+\verb+ 0    Check System Memory (0x00000000 - 0x01effffc)          0  SKIPPED+\\
+\verb+ 1    Check Interrupt Handler                                0  OK+\\
+\verb+ 2    Check PCI Bridge                                       1  OK+\\
+\verb+ 3    Check Cache and MMU                                    1  OK+\\
+\verb+ 4    Check MK48T08 RTC and NVRAM                            1  OK+\\
+\verb+ 5    Check SIC6351 Interrupt Controller                     1  OK+\\
+\verb+ 6    Check PC87312 Super IO                                 0  OK+\\
+\verb+ 7    Check ZCIO8536 Micro Timers                            1  OK+\\
+\verb+ 8    Check FIFO's (0 - 7)                                   1  OK+\\
+\verb+ 9    Check DS1620 Digital Thermometer                       1  OK+\\
+\verb+10    Check PCI devices                                      0  OK+\\
+\verb+11    Check AM79C970 Ethernet Controller  (PCI slot 0)       1  OK+\\
+\verb+12    Check PMC #1 Extension  (PCI slot 2)                   0  OK+\\
+\verb+13    Check PMC #2 Extension  (PCI slot 1)                   0  OK+\\
+\verb+14    Check VME Interface                                    0  OK+\\
+\verb+ +\\
+\verb+enter 'SPACE' to stop auto boot...+\\
+\verb+enter 'b' or '@' to boot OS...+\\
+\verb+2+\\
+\verb+**************************************************+\\
+\verb+*   PPC_Mon RTPC8062 monitor - version 3.6       *+\\
+\verb+*     CES SA Copyright 1995,1996,1997,1998       *+\\
+\verb+**************************************************+\\
+\verb+ +\\
+\verb+PPC_Mon>+\\
+
+Pressing the space bar will stop the boot procedure, otherwise it will boot automatically after 3s.\\
+Entering \blue{boot} will start the boot sequence.\\
+
+You may leave \texttt{minicom} by typing \yellow{CTRL+A Shift+Z Q}.
+\newpage
+\section{Boot settings}
+To inspect boot settings type \blue{show boot} at the \texttt{PPCMon} prompt:\\
+
+\verb+BOOT parameters+\\\label{PPC-Boot}
+\verb+ +\\
+\verb+   boot_flags [afmnN] : a+\\
+\verb+   boot_device [s<1-2>d<0-7><a-d>, le, e<0-2>, tty<0-1>, fp] : e2+\\
+\verb+   boot_file :+\\
+\verb+   boot_rootfs [s<1-2>d<0-7><a-d>, rd] : rd+\\
+\verb+   boot_delay : 3 sec+\\
+\verb+   boot_address : 4000+\\
+\verb+   boot_size : 1e00000+\\
+\verb+   boot_fast [ y n ] : n+\\
+\verb+   boot_filetype [ binary xcoff elf lynx prep srec ] : binary+\\
+\verb+   boot_mode : 50+\\
+
+One may change these parameters by use of command \blue{set boot} - it will step thru the list
+of parameters and ask for a value. \redt{Be careful! Enter exactly the above values!}\\
+
+The only modification may be to switch to the local (slow) ethernet interface by replacing \texttt{boot\_device:\,e2} by \texttt{boot\_device:\,le}.\\
+
+To inspect ethernet settings type \blue{show inet}:\\
+
+\verb+INTERNET parameters+\\\label{PPC-Inet}
+\verb++\\
+\verb+   inet_host [dotted decimal] : 192.168.1.10+\\
+\verb+   inet_server [dotted decimal] : 192.168.1.1+\\
+\verb+   inet_broadcast [dotted decimal] : 0.0.0.0+\\
+\verb+   inet_mask [dotted decimal] : 0.0.0.0+\\
+\verb+   inet_protocol [ arpa bootp ] : bootp+\\
+\verb+   inet_mount :+\\
+
+These parameters will be sent by the daq server via \texttt{DHCP}. Don't modify. The only param
+which has to be checked is \texttt{inet\_protocol:\,bootp}. If it shows \texttt{arpa} you have to change it
+back to \texttt{bootp} via command \blue{set inet\_protocol}.
+
+After having checked everything type \blue{boot} to boot the PPC.\\
+Then leave \texttt{minicom} by typing \yellow{CTRL+A Shift+Z Q}.
+
+\newpage
+\section{DHCP settings}
+The daq computer \texttt{pcepuis16} acts as \texttt{DHCP/BOOTP} server for the PPC.\\
+
+\texttt{DHCP} settings are defined in file \verb+/etc/dhcpd.conf+ on the server:\\
+
+\verb+#+\\
+\verb+# DHCP Server Configuration file.+\\
+\verb+# Miniball config+\\
+\verb+# R. Lutter Apr-2007+\\
+\verb+#+\\
+\verb++\\
+\verb+use-host-decl-names on;+\\
+\verb+ddns-update-style none;+\\
+\verb+deny client-updates;+\\
+\verb++\\
+\verb+authoritative;+\\
+\verb++\\
+\verb+subnet 192.168.1.0 netmask 255.255.255.0 {+\\
+\verb+    option subnet-mask 255.255.255.0;+\\
+\verb+    option routers 192.168.1.1;+\\
+\verb+    option broadcast-address 192.168.1.255;+\\
+\verb+    option domain-name-servers 192.168.1.1;+\\
+\verb+    option ip-forwarding off;+\\
+\verb+    next-server 192.168.1.1;+\\
+\verb+    range 192.168.1.128 192.168.1.200;+\\
+\verb+}+\\
+\verb++\\
+\verb+group rio2 {+\\
+\verb+  next-server 192.168.1.1;+\\
+\verb+  server-name "minidaq";+\\
+\verb++\\
+\verb+  host ppc-0-amd {+\\
+\verb+	hardware ethernet 00:80:A2:00:8D:5E;+\\
+\verb+	fixed-address ppc-0;+\\
+\verb+  filename "lynx/boot.rio2-amd0";+\\
+\verb+  }+\\
+\verb+  host ppc-0-feth {+\\
+\verb+	hardware ethernet 00:80:A2:00:18:A8;+\\
+\verb+	fixed-address ppc-0;+\\
+\verb+  filename "lynx/boot.rio2-feth0";+\\
+\verb+  }+\\
+\verb+}+\\
+
+As one can see there are entries for both interfaces, the local one (\texttt{amd0}) as well as
+the fast ethernet (\texttt{feth0}), both resulting in a PPC named \texttt{ppc-0}. So booting
+will depend on the boot settings in the PPC only (see \ref{PPC-Boot}).
+\newpage
+\section{Mounting file systems}
+Following file systems will be mounted at boot time by the PPC:\\
+
+\begin{tabular}{ll}
+\verb+/dev/rd0+ & root file system \\
+\verb+minidaq:/usr/diskless/lynx/RIO2_2.5 mounted on /nfs+ & LynxOs\\
+\verb+minidaq:/usr/diskless/lynx/RIO2_2.5/mbs mounted on /mbs+ & MBS\\
+\verb+minidaq:/usr/daq mounted on /usr/daq+ & MARaBOU\\
+\verb+minidaq:/home mounted on /home+ & user's home dirs\\
+\verb+minidaq:/mbdata mounted on /mbdata+ & miniball data\\
+\end{tabular}\\
+
+To modify and/or add settings you really have to be an expert!\\
+Changes will apply to files
+\verb+/nfs/net_boot+ in the PPC and \verb+/etc/exports+ in the daq server, respectively.
+
+
+
+
+
+\end{document}
