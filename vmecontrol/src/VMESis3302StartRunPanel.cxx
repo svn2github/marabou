@@ -3,13 +3,13 @@
 // ame:            VMESis3302StartRunPanel
 // Purpose:        A GUI to control a SIS 3302 adc
 // Description:    Save/restore settings
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartRunPanel.cxx,v 1.1 2008-10-27 12:26:07 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMESis3302StartRunPanel.cxx,v 1.2 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -84,27 +84,27 @@ VMESis3302StartRunPanel::VMESis3302StartRunPanel(const TGWindow * Window, TMrbLo
 //	Clear focus list
 	fFocusList.Clear();
 
-	frameGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	frameGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGold);	HEAP(frameGC);
 
-	groupGC = new TGMrbLayout(	gVMEControlData->SlantedFont(), 
+	groupGC = new TGMrbLayout(	gVMEControlData->SlantedFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGold);	HEAP(groupGC);
 
-	comboGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	comboGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGold);	HEAP(comboGC);
 
-	labelGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	labelGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGold);	HEAP(labelGC);
 
-	buttonGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	buttonGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGray);	HEAP(buttonGC);
 
-	entryGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	entryGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorWhite);	HEAP(entryGC);
 
@@ -149,14 +149,14 @@ VMESis3302StartRunPanel::VMESis3302StartRunPanel(const TGWindow * Window, TMrbLo
 	fSelectChannel->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ChannelChanged(Int_t, Int_t)");
 
 // timeout
-	fTimeout = new TGMrbLabelEntry(fSelectFrame, "Timeout",	200, kVMESis3302Timeout,
+	fTimeout = new TGMrbLabelEntry(fSelectFrame, "Timeout [s]",	200, kVMESis3302Timeout,
 																frameWidth/5, kLEHeight, frameWidth/8,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTimeout);
 	fTimeout->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fTimeout->SetText(0);
 	fTimeout->SetRange(0, 1000000);
-	fTimeout->SetIncrement(100);
+	fTimeout->SetIncrement(5);
 	fTimeout->ShowToolTip(kTRUE, kTRUE);
 	fSelectFrame->AddFrame(fTimeout, frameGC->LH());
 	fTimeout->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "TimeoutChanged(Int_t, Int_t)");
@@ -193,9 +193,9 @@ void VMESis3302StartRunPanel::StartGUI() {
 // Purpose:        GUI starters
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Initializes GUI
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (curModule == NULL) {
@@ -220,9 +220,9 @@ void VMESis3302StartRunPanel::ModuleChanged(Int_t FrameId, Int_t Selection) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	curModule = (TC2LSis3302 *) fLofModules->FindByIndex(Selection);
@@ -238,9 +238,9 @@ void VMESis3302StartRunPanel::ChannelChanged(Int_t FrameId, Int_t Selection) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	curChannel = Selection;
@@ -253,10 +253,10 @@ void VMESis3302StartRunPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
@@ -277,9 +277,9 @@ void VMESis3302StartRunPanel::TimeoutChanged(Int_t FrameId, Int_t Selection) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t timeout = fTimeout->GetText2Int();
@@ -293,9 +293,9 @@ void VMESis3302StartRunPanel::StartRun() {
 // Purpose:        Start data acquisition
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Get event(s) from SIS3302 module(s)
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TArrayI evtData;
@@ -316,15 +316,15 @@ void VMESis3302StartRunPanel::StartRun() {
 					+ kSis3302EventMinMax
 					+ kSis3302EventTrailer;
 		evtData.Set(nofWords);
-		for (Int_t i = 0; i < rawDataLength + energyDataLength; i++)
-					evtData[i + kSis3302EventPreHeader + kSis3302EventHeader] = (Int_t) 100 * sin(i * 0.02);
+		for (Int_t i = 0; i < rawDataLength + energyDataLength; i++) evtData[i + kSis3302EventPreHeader + kSis3302EventHeader] = (Int_t) 100 * sin(i * 0.02);
 	} else {
-		cout << "@@@ " << evtData.GetSize() << endl;
-		return;
 		rawDataLength = evtData[0];
 		energyDataLength = evtData[1];
 	}
 
+	cout << "@@@ raw=" << rawDataLength << ", energy=" << energyDataLength << endl;
+
+#if 0
 	TCanvas * c = fHistoCanvas->GetCanvas();
 
 	c->cd(1);
@@ -334,7 +334,10 @@ void VMESis3302StartRunPanel::StartRun() {
 							rawDataLength, 0, rawDataLength);
 	for (Int_t i = 0; i < rawDataLength; i++, k++) fHistoRaw->Fill(i, evtData[k]);
 	fHistoRaw->Draw();
+#endif
+	for (Int_t i = 0; i < rawDataLength; i++, k++) if (evtData[k] != 0) cout << "raw " << i << ": " << evtData[k] << endl;
 
+#if 0
 	c->cd(2);
 	if (fHistoEnergy) delete fHistoEnergy;
 	fHistoEnergy = new TH1F(	Form("Energy-%s-chn%d", curModule->GetName(), curChannel),
@@ -344,6 +347,8 @@ void VMESis3302StartRunPanel::StartRun() {
 	fHistoEnergy->Draw();
 	c->Update();
 	c->cd();
+#endif
+	for (Int_t i = 0; i < energyDataLength; i++, k++) if (evtData[k] != 0) cout << "energy " << i << ": " << evtData[k] << endl;
 }
 
 

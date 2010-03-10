@@ -8,10 +8,10 @@
 // Class:          VMESis3302Panel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302Panel.h,v 1.5 2008-10-19 17:29:21 Marabou Exp $       
-// Date:           $Date: 2008-10-19 17:29:21 $
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMESis3302Panel.h,v 1.6 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-10 12:08:11 $
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TList.h"
@@ -40,9 +40,9 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302Panel
 // Purpose:        Panel to control a Sis3302 adc
-// Constructors:   
-// Description:    
-// Keywords:       
+// Constructors:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class VMESis3302Panel : public TGCompositeFrame {
@@ -52,20 +52,27 @@ class VMESis3302Panel : public TGCompositeFrame {
 										kVMESis3302SelectModule,
 										kVMESis3302SelectChannel,
 										kVMESis3302ClockSource,
-										kVMESis3302CommonTrigMode,
-										kVMESis3302ExtLemo,
+										kVMESis3302LemoInMode,
+										kVMESis3302LemoOutMode,
+										kVMESis3302LemoInEnableMask,
 										kVMESis3302DacOffset,
 										kVMESis3302TrigMode,
+										kVMESis3302GateMode,
+										kVMESis3302NNTrigMode,
+										kVMESis3302NNGateMode,
 										kVMESis3302TrigPeaking,
-										kVMESis3302TrigPol,
 										kVMESis3302TrigGap,
 										kVMESis3302TrigSumG,
+										kVMESis3302TrigIntGate,
+										kVMESis3302TrigIntDelay,
+										kVMESis3302TrigPol,
 										kVMESis3302TrigThresh,
 										kVMESis3302TrigCounts,
 										kVMESis3302TrigOut,
 										kVMESis3302TrigCond,
 										kVMESis3302TrigDelay,
 										kVMESis3302TrigGate,
+										kVMESis3302TrigDecimation,
 										kVMESis3302EnergyPeaking,
 										kVMESis3302EnergyDecimation,
 										kVMESis3302EnergyGap,
@@ -86,24 +93,29 @@ class VMESis3302Panel : public TGCompositeFrame {
 									};
 
 		enum EVMESis3302Clock		{
-										kVMEClockSource100	=	0,
-										kVMEClockSource50	=	1,
-										kVMEClockSource25	=	2,
-										kVMEClockSource10	=	3,
-										kVMEClockSource1	=	4,
-										kVMEClockSourceRes	=	5,
-										kVMEClockSourceExt	=	6,
-										kVMEClockSourceP2	=	7
+										kVMEClockSource100MHzA	=	0,
+										kVMEClockSource50MHz	=	1,
+										kVMEClockSource25MHz	=	2,
+										kVMEClockSource10MHz	=	3,
+										kVMEClockSource1MHz		=	4,
+										kVMEClockSource100kHz	=	5,
+										kVMEClockSourceExt		=	6,
+										kVMEClockSource100MHzB	=	7
 									};
 
 
-		enum EVMESis3302TrigMode	{
-										kVMETrigModeDis 	=	0,
-										kVMETrigModeIntern	=	BIT(0),
-										kVMETrigModeExtern	=	BIT(1),
-										kVMETrigModeBoth	=	kVMETrigModeIntern | kVMETrigModeExtern,
-										kVMETrigModeLemo2	=	BIT(2),
-										kVMETrigModeLemo3	=	BIT(3),
+		enum EVMESis3302TrigGateMode	{
+										kVMETrigGateModeDis 	=	0,
+										kVMETrigGateModeIntern	=	BIT(0),
+										kVMETrigGateModeExtern	=	BIT(1),
+										kVMETrigGateModeBoth	=	kVMETrigGateModeIntern | kVMETrigGateModeExtern,
+									};
+
+		enum EVMESis3302NextNeighborMode	{
+										kVMENextNeighborModeDis 	=	0,
+										kVMENextNeighborModeR		=	BIT(0),
+										kVMENextNeighborModeL		=	BIT(1),
+										kVMENextNeighborModeBoth	=	kVMENextNeighborModeR | kVMENextNeighborModeL,
 									};
 
 		enum EVMESis3302TrigPol		{
@@ -112,10 +124,9 @@ class VMESis3302Panel : public TGCompositeFrame {
 									};
 
 		enum EVMESis3302TrigCond	{
-										kVMETrigCondDis		=	BIT(0),
-										kVMETrigCondGTEna	=	BIT(1),
-										kVMETrigCondGTDis	=	BIT(2),
-										kVMETrigCondEna		=	BIT(3),
+										kVMETrigCondEnaGT	=	BIT(0),
+										kVMETrigCondDis		=	BIT(1),
+										kVMETrigCondEna		=	0,
 									};
 
 		enum EVMESis3302Decim	{
@@ -147,18 +158,26 @@ class VMESis3302Panel : public TGCompositeFrame {
 		void ModuleChanged(Int_t FrameId, Int_t Selection);			// slot methods
 		void ChannelChanged(Int_t FrameId, Int_t Selection);
 		void ClockSourceChanged(Int_t FrameId, Int_t Selection);
-		void CommonTrigModeChanged(Int_t FrameId, Int_t Selection);
+		void LemoInModeChanged(Int_t FrameId, Int_t Selection);
+		void LemoOutModeChanged(Int_t FrameId, Int_t Selection);
+		void LemoInEnableMaskChanged(Int_t FrameId, Int_t Selection);
 		void DacOffsetChanged(Int_t FrameId, Int_t Selection);
 		void TrigModeChanged(Int_t FrameId, Int_t Selection);
+		void GateModeChanged(Int_t FrameId, Int_t Selection);
+		void NextNeighborTrigModeChanged(Int_t FrameId, Int_t Selection);
+		void NextNeighborGateModeChanged(Int_t FrameId, Int_t Selection);
 		void TrigPeakingChanged(Int_t FrameId, Int_t Selection);
 		void TrigGapChanged(Int_t FrameId, Int_t Selection);
+		void TrigInternalGateChanged(Int_t FrameId, Int_t Selection);
+		void TrigInternalDelayChanged(Int_t FrameId, Int_t Selection);
+		void TrigDecimationChanged(Int_t FrameId, Int_t Selection);
 		void TrigPolarChanged(Int_t FrameId, Int_t Selection);
 		void TrigThreshChanged(Int_t FrameId, Int_t Selection);
+		void TrigDelayChanged(Int_t FrameId, Int_t Selection);
 		void TrigOutChanged(Int_t FrameId, Int_t Selection);
 		void TrigCondChanged(Int_t FrameId, Int_t Selection);
-		void TrigDelayChanged(Int_t FrameId, Int_t Selection);
 		void EnergyPeakingChanged(Int_t FrameId, Int_t Selection);
-		void DecimationChanged(Int_t FrameId, Int_t Selection);
+		void EnergyDecimationChanged(Int_t FrameId, Int_t Selection);
 		void EnergyGapChanged(Int_t FrameId, Int_t Selection);
 		void TauFactorChanged(Int_t FrameId, Int_t Selection);
 		void RawDataStartChanged(Int_t FrameId, Int_t Selection);
@@ -185,18 +204,27 @@ class VMESis3302Panel : public TGCompositeFrame {
 		TGGroupFrame * fSelectFrame; 				// select
 		TGMrbLabelCombo * fSelectModule;  			//		module
 		TGMrbLabelCombo * fSelectChannel;  			//		channel
+		TGMrbLabelEntry * fModuleInfo;				// module id
 		TGGroupFrame * fSettingsFrame; 				// settings
-		TGGroupFrame * fClockAndTrig; 				//		clock and trigger
+		TGGroupFrame * fClockLemo; 					//		clock, lemo in & out
 		TGMrbLabelCombo * fClockSource;  			//			clock
-		TGMrbCheckButtonList * fCommonTrigMode; 	//			common trigger mode
+		TGMrbLabelCombo * fLemoInMode; 	  			//			lemo in
+		TGMrbLabelCombo * fLemoOutMode; 	  		//			lemo out
+		TGMrbLabelEntry * fLemoInEnableMask; 	  	//			lemo in enable
 
 		TGGroupFrame * fDacSettings; 		 		//		dac
 		TGMrbLabelEntry * fDacOffset;  				//			offset
 
-		TGGroupFrame * fTriggerFilter; 				//		trigger filter
-		TGMrbLabelCombo * fTrigMode;  				//			mode
+		TGGroupFrame * fTriggerSettings; 				//		trigger filter settings
+		TGMrbLabelCombo * fTrigMode;  				//			trigger mode
+		TGMrbLabelCombo * fGateMode;  				//			gate mode
+		TGMrbLabelCombo * fNextNeighborTrigMode;  	//			next neighbor trigger mode
+		TGMrbLabelCombo * fNextNeighborGateMode;  	//			... gate mode
 		TGMrbLabelEntry * fTrigPeaking;  			//			peaking
 		TGMrbLabelEntry * fTrigGap; 	  			//			gap
+		TGMrbLabelEntry * fTrigInternalGate; 	  	//			internal gate
+		TGMrbLabelEntry * fTrigInternalDelay; 	  	//			... delay
+		TGMrbLabelCombo * fTrigDecimation; 	  		//			decimation
 		TGMrbLabelEntry * fTrigThresh; 	  			//			threshold
 		TGMrbLabelCombo * fTrigPol; 	 			//			polarity
 		TGMrbLabelEntry * fTrigOut; 	  			//			output length
@@ -204,15 +232,15 @@ class VMESis3302Panel : public TGCompositeFrame {
 		TGMrbLabelEntry * fTrigSumG; 	  			//			[derived] sumG
 		TGMrbLabelEntry * fTrigCounts; 	  			//			[derived] adc counts
 
-		TGGroupFrame * fEnergyFilter; 				//		energy filter
+		TGGroupFrame * fEnergySettings; 			//		energy filter settings
 		TGMrbLabelEntry * fEnergyPeaking;  			//			peaking
 		TGMrbLabelCombo * fEnergyDecimation;  		//			decimation
 		TGMrbLabelEntry * fEnergyGap; 	  			//			gap
 		TGMrbLabelEntry * fPreTrigDelay; 	  		//			pretrig delay
 		TGMrbLabelEntry * fEnergyTauFactor; 		//			tau
 		TGMrbLabelEntry * fEnergyDecayTime; 		//			[derived] decay time
-		TGMrbLabelEntry * fEnergyGate; 		  		//			[derived] energy gate
-		TGMrbLabelEntry * fTrigGate; 		  		//			[derived] trigger gate
+		TGMrbLabelEntry * fEnergyGateLength; 		//			[derived] energy gate
+		TGMrbLabelEntry * fTrigGateLength; 		  	//			[derived] trigger gate
 
 		TGGroupFrame * fRawDataSampling; 			//		raw data sampling
 		TGMrbLabelEntry * fRawDataStart;			//			start index
@@ -226,7 +254,7 @@ class VMESis3302Panel : public TGCompositeFrame {
 		TGMrbLabelEntry * fEnergyDataLength;		//			length
 
 		TGMrbTextButtonGroup * fActionButtons;	 	// actions
-		
+
 		TMrbLofNamedX fActions;
 
 		TMrbLofNamedX fLofModules;

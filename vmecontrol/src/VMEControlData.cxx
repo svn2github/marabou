@@ -6,8 +6,8 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.7 2009-08-06 08:32:34 Rudolf.Lutter Exp $
-// Date:           $Date: 2009-08-06 08:32:34 $
+// Revision:       $Id: VMEControlData.cxx,v 1.8 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-10 12:08:11 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -99,9 +99,14 @@ VMEControlData::VMEControlData() {
 		this->MakeZombie();
 	}
 
-	fSettingsPath = fRootrc->Get(".SettingsPath", "../SettingsPath");
+	fSettingsPath = fRootrc->Get(".SettingsPath", ".vmeSettings");
 	gSystem->ExpandPathName(fSettingsPath);
 	this->CheckAccess(fSettingsPath.Data(), kVMEAccessDirectory | kVMEAccessWrite, errMsg, kTRUE);
+
+	fStatus = 0;
+	if (fVctrlrc->Get(".VerboseMode", kFALSE)) fStatus |= kVMEVerboseMode;
+	if (fVctrlrc->Get(".DebugMode", kFALSE)) fStatus |= kVMEDebugMode;
+	if (fVctrlrc->Get(".OfflineMode", kFALSE)) fStatus |= kVMEOfflineMode;
 }
 
 Bool_t VMEControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly) {

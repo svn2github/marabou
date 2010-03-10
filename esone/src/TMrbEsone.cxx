@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEsone.cxx,v 1.17 2008-08-26 06:33:23 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbEsone.cxx,v 1.18 2010-03-10 12:08:10 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -128,29 +128,29 @@ Bool_t TMrbEsone::Reset(Bool_t Offline) {
 	TString esoneServer;
 	TString camacContr;
 	TMrbNamedX * nx;
-		
+
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("esone.log");
-	
+
 	fVerboseMode = gEnv->GetValue("TMrbEsone.VerboseMode", kFALSE);
-	
+
 	fLofCamacActions.SetName("CAMAC Actions");		// camac actions
 	fLofCamacActions.AddNamedX(kMrbLofCamacActions);
-	
+
 	fLofCnafNames.SetName("CAMAC Registers");		// register names
 	fLofCnafNames.AddNamedX(kMrbLofCnafNames);
-	
+
 	fLofCnafTypes.SetName("Cnaf Types");			// cnaf types
 	fLofCnafTypes.AddNamedX(kMrbLofCnafTypes);
-	
+
 	fLofEsoneServers.SetName("ESONE Server");	// controllers
 	fLofEsoneServers.AddNamedX(kMrbLofEsoneServers);
-	
+
 	fLofControllers.SetName("CAMAC Controller");	// controllers
 	fLofControllers.AddNamedX(kMrbLofControllers);
-	
+
 	fLofCamacFunctions.SetName("CAMAC Functions");	// camac functions
 	fLofControllers.AddNamedX(kMrbLofCamacFunctions);
-	
+
 	esoneServer = gEnv->GetValue("TMrbEsone.ServerType", "");
 	if (esoneServer.Length() == 0) {
 		gMrbLog->Err() << "Type of ESONE server undefined (\"TMrbEsone.ServerType\" has to be set)" << endl;
@@ -166,7 +166,7 @@ Bool_t TMrbEsone::Reset(Bool_t Offline) {
 		gMrbLog->Out() << "Using ESONE server \"" << fServerType.GetName() << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "Reset", setblue);
 	}
-		
+
 	camacContr = gEnv->GetValue("TMrbEsone.Controller", "");
 	if (camacContr.Length() == 0) {
 		gMrbLog->Err() << "CAMAC controller undefined (\"TMrbEsone.Controller\" has to be set)" << endl;
@@ -191,21 +191,21 @@ Bool_t TMrbEsone::Reset(Bool_t Offline) {
 		gMrbLog->Out() << "Using CAMAC controller \"" << fController.GetName() << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "Reset", setblue);
 	}
-		
+
 	fSingleStep = gEnv->GetValue("TMrbEsone.SingleStepMode", kFALSE);
 	if (this->IsSingleStep()) {
 		gMrbLog->Out() << "Running in SINGLE STEP mode" << endl;
 		gMrbLog->Flush(this->ClassName(), "Reset", setblue);
 	}
-		
+
 	fHost.Resize(0);								// host name
 	fHostInet.Resize(0);
 	fHostAddr = 0xFFFFFFFF;							// host address
 
 	fOffline = Offline; 							// hardware access?
-	
+
 	fUseBroadCast = gEnv->GetValue("TMrbEsone.UseBroadCast", kTRUE); // use broadcast if applicable
-		
+
 	return(kTRUE);
 }
 
@@ -293,7 +293,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	TString prmOrDsp;
 
 	this->SetOffline(kFALSE);
-	
+
 	fSetupPath = gEnv->GetValue("TMrbEsone.SetupPath", "/nfs/mbssys/esone");
 	TString mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "");
 	if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "v22");
@@ -476,13 +476,13 @@ Bool_t TMrbEsone::StartMarabouServer(const Char_t * HostName) {
 // Purpose:        Connect to MARaBOU server
 // Arguments:      Char_t * HostName      -- server addr
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Establishes a server connection.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	this->SetOffline(kFALSE);
-	
+
 	fHost = HostName;
 	fPort = gEnv->GetValue("TMrbEsone.ServerPort", 9010);
 
@@ -491,7 +491,7 @@ Bool_t TMrbEsone::StartMarabouServer(const Char_t * HostName) {
 	fCC32Base = gEnv->GetValue("TMrbEsone.CC32Base", 0x550000);
 
 	fSocket = NULL;
-	
+
 	fServerPath = gEnv->GetValue("TMrbEsone.ServerPath", "");
 	fServerProg = gSystem->BaseName(fServerPath.Data());
 
@@ -506,17 +506,17 @@ Bool_t TMrbEsone::StartMarabouServer(const Char_t * HostName) {
 
 	fLynxClient = new TMrbC2Lynx(fHost.Data(), fServerPath.Data(), NULL, fPort);
 	fLynxClient->SetNonBlocking(nonBlocking);
-	fLynxClient->SetServerLog(useXterm ? TMrbC2Lynx::kC2LServerLogXterm : TMrbC2Lynx::kC2LServerLogNone);
+	fLynxClient->SetServerLog(useXterm ? TMrbC2Lynx::kC2LServerLogXterm : TMrbC2Lynx::kC2LServerLogCout);
 
 	if ((fSocket = fLynxClient->GetSocket()) == NULL) {
 		gMrbLog->Err()	<< "Can't connect to server/port " << fHost << ":" << fPort << endl;
 		gMrbLog->Flush(this->ClassName(), "StartMarabouServer");
 		return(kFALSE);
 	}
-	
+
 	return(kTRUE);
 }
-							
+
 UInt_t TMrbEsone::ConnectToHost(const Char_t * HostName, Bool_t Reconnect) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -672,7 +672,7 @@ Bool_t TMrbEsone::ExecCnaf(const Char_t * Cnaf, Bool_t D16Flag) {
 // Arguments:      Char_t * Cnaf     -- cnaf (ascii representation)
 //                 Bool_t D16Flag    -- kTRUE if 16 bits only
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    ESONE cfsa / cssa. Control cnafs only.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -693,7 +693,7 @@ Bool_t TMrbEsone::ExecCnaf(const Char_t * Cnaf, Int_t & Data, Bool_t D16Flag) {
 //                 Int_t & Data      -- data
 //                 Bool_t D16Flag    -- kTRUE if 16 bits only
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    ESONE cfsa / cssa.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -718,7 +718,7 @@ Bool_t TMrbEsone::ExecCnaf(Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Func
 //                 Int_t Function    -- function
 //                 Bool_t D16Flag    -- kTRUE if 16 bits only
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    ESONE cfsa / cssa. Control cnafs only.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -746,7 +746,7 @@ Bool_t TMrbEsone::ExecCnaf(Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Func
 //                 Int_t & Data      -- data
 //                 Bool_t D16Flag    -- kTRUE if 16 bits only
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    ESONE cfsa / cssa.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -854,7 +854,7 @@ Int_t TMrbEsone::AddressScan(Int_t Crate, Int_t Start, Int_t Stop, Int_t Functio
 //                 TObjArray & Results       -- where to store resulting data
 //                 Bool_t D16Flag            -- kTRUE if 16 bits only
 // Results:        Int_t NofData             -- resulting number of data words
-// Exceptions:     Returns kEsoneError on error.     
+// Exceptions:     Returns kEsoneError on error.
 // Description:    ESONE cfmad / csmad.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -1475,7 +1475,7 @@ UInt_t TMrbEsone::GetBroadCast(Int_t Crate) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t bcData;
-	
+
 	if (!this->CheckConnection("GetBroadCast")) return((UInt_t) kEsoneError);
 	if (!this->CheckCrate(Crate, "GetBroadCast")) return((UInt_t) kEsoneError);
 
@@ -1502,7 +1502,7 @@ Bool_t TMrbEsone::AddToBroadCast(Int_t Crate, Int_t Station) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t bcData;
-	
+
 	if (!this->CheckConnection("AddToBroadCast")) return(kFALSE);
 	if (!this->CheckCrate(Crate, "AddToBroadCast")) return(kFALSE);
 
@@ -1513,7 +1513,7 @@ Bool_t TMrbEsone::AddToBroadCast(Int_t Crate, Int_t Station) {
 			return(kFALSE);
 		}
 		if (!this->ExecCnaf(Crate, 26, 0, 0, bcData)) return(kFALSE);
-		bcData |= (1 << (Station - 1));			
+		bcData |= (1 << (Station - 1));
 		return(this->ExecCnaf(Crate, 26, 0, 16, bcData));
 	} else {
 		gMrbLog->Err() << "No BroadCasting for CAMAC controller " << fController.GetName() << endl;
@@ -1536,7 +1536,7 @@ Bool_t TMrbEsone::RemoveFromBroadCast(Int_t Crate, Int_t Station) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t bcData;
-	
+
 	if (!this->CheckConnection("RemoveFromBroadCast")) return(kFALSE);
 	if (!this->CheckCrate(Crate, "RemoveFromBroadCast")) return(kFALSE);
 
@@ -1547,7 +1547,7 @@ Bool_t TMrbEsone::RemoveFromBroadCast(Int_t Crate, Int_t Station) {
 			return(kFALSE);
 		}
 		if (!this->ExecCnaf(Crate, 26, 0, 0, bcData)) return(kFALSE);
-		bcData &= ~(1 << (Station - 1));			
+		bcData &= ~(1 << (Station - 1));
 		return(this->ExecCnaf(Crate, 26, 0, 16, bcData));
 	} else {
 		gMrbLog->Err() << "No BroadCasting for CAMAC controller " << fController.GetName() << endl;
@@ -1571,7 +1571,7 @@ Bool_t TMrbEsone::SetAutoRead(Int_t Crate, Bool_t AutoRead) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t sts;
-	
+
 	if (!this->CheckConnection("SetAutoRead")) return(kFALSE);
 	if (!this->CheckCrate(Crate, "SetAutoRead")) return(kFALSE);
 
@@ -1627,7 +1627,7 @@ Bool_t TMrbEsone::EsoneCDREG(UInt_t & Handle, Int_t Crate, Int_t Station, Int_t 
 //                 Int_t Station      -- station N
 //                 Int_t SubAddr      -- subaddr A
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Encodes ESONE-stype camac addr from C,N,A.
 //                 Returns unique identifier (handle).
 //                 Esone call: cdreg()
@@ -1654,7 +1654,7 @@ Bool_t TMrbEsone::EsoneCDREG(UInt_t & Handle, TMrbEsoneCnaf & Cnaf) {
 // Arguments:      Int_t & Handle        -- identifier
 //                 TMrbEsoneCnaf & Cnaf  -- CNAF specs
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Encodes ESONE-stype camac addr from C,N,A.
 //                 Returns unique identifier (handle).
 //                 Esone call: cdreg()
@@ -1679,7 +1679,7 @@ Bool_t TMrbEsone::EsoneCDCTRL() {
 // Purpose:        Define controller
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Defines type of controller to be used (CBV or CC32)
 //                 Esone call: cdctrl()
 //
@@ -1913,7 +1913,7 @@ Bool_t TMrbEsone::EsoneCXSA(TMrbEsoneCnaf & Cnaf, Bool_t D16Flag) {
 // Arguments:      TMrbEsoneCnaf & Cnaf  -- cnaf (+data)
 //                 Bool_t D16Flag        -- 16 bit data if kTRUE
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Executes a single camac cnaf, 16 or 24 bit
 //                 Esone call: cssa(), cfsa()
 //                 >>> protected method <<<
@@ -2212,7 +2212,7 @@ Bool_t TMrbEsone::EsoneSpecial(EMrbEsoneCnafType Type,
 //                 Int_t & Data            -- data i/o
 //                 Bool_t D16Flag          -- 16 bit data if kTRUE
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Executes a special cnaf, 16 or 24 bit
 //                 Esone call: cssa(), cfsa()
 //                 >>> protected method <<<
@@ -2261,7 +2261,7 @@ const Char_t * TMrbEsone::EsoneCERROR(TString & ErrMsg, Int_t ErrorCode, Bool_t 
 //                 Int_t ErrorCode       -- error code
 //                 Bool_t DateFlag       -- include date if kTRUE
 // Results:        Char_t * ErrMsg       -- pointer to error message
-// Exceptions:     
+// Exceptions:
 // Description:    Reports any error recently produced by a esone call
 //                 Esone call: cerror()
 //

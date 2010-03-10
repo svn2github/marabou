@@ -3,13 +3,13 @@
 // Name:           VMESis3302Panel
 // Purpose:        A GUI to control vme modules via tcp
 // Description:    Connect to server
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.6 2008-10-27 12:26:07 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.7 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -38,22 +38,37 @@ ClassImp(VMESis3302Panel)
 
 const SMrbNamedXShort kVMEClockSource[] =
 			{
-				{VMESis3302Panel::kVMEClockSource100,		"100 MHz"		},
-				{VMESis3302Panel::kVMEClockSource50,		"50 MHz"		},
-				{VMESis3302Panel::kVMEClockSource25,		"25 MHz"		},
-				{VMESis3302Panel::kVMEClockSource10,		"10 MHz"		},
-				{VMESis3302Panel::kVMEClockSource1, 		"1 MHz"			},
-				{VMESis3302Panel::kVMEClockSourceExt,		"extern"		},
-				{0, 												NULL			}
+				{VMESis3302Panel::kVMEClockSource100MHzA,		"100 MHz"		},
+				{VMESis3302Panel::kVMEClockSource50MHz,			"50 MHz"		},
+				{VMESis3302Panel::kVMEClockSource25MHz,			"25 MHz"		},
+				{VMESis3302Panel::kVMEClockSource10MHz,			"10 MHz"		},
+				{VMESis3302Panel::kVMEClockSource1MHz,			"1 MHz"			},
+				{VMESis3302Panel::kVMEClockSource100kHz, 		"100 kHz"		},
+				{VMESis3302Panel::kVMEClockSourceExt,			"extern"		},
+				{VMESis3302Panel::kVMEClockSource100MHzB,		"2nd 100 MHz"	},
+				{0, 											NULL			}
 			};
 
-const SMrbNamedX kVMECommonTrigMode[] =
+const SMrbNamedX kVMELemoOutMode[] =
 			{
-				{VMESis3302Panel::kVMETrigModeIntern,		"intern/async", "internal/async trigger: FIR trigger"	},
-				{VMESis3302Panel::kVMETrigModeExtern, 		"extern/sync", "external/sync trigger: via LEMO-3 or VME KEY"	},
-				{VMESis3302Panel::kVMETrigModeLemo2,		"ts clear", "enable timestamp clear via LEMO-2"	},
-				{VMESis3302Panel::kVMETrigModeLemo3, 		"xtrig ena", "enable external trigger via LEMO-3"	},
-				{0, 												NULL			}
+				{0, "0", ""},
+				{1, "1", ""},
+				{2, "2", ""},
+				{3, "3", ""},
+				{0, NULL, NULL}
+			};
+
+const SMrbNamedX kVMELemoInMode[] =
+			{
+				{0, "0", ""},
+				{1, "1", ""},
+				{2, "2", ""},
+				{3, "3", ""},
+				{4, "4", ""},
+				{5, "5", ""},
+				{6, "6", ""},
+				{7, "7", ""},
+				{0, NULL, NULL}
 			};
 
 const SMrbNamedX kVMETrigPolar[] =
@@ -65,29 +80,55 @@ const SMrbNamedX kVMETrigPolar[] =
 
 const SMrbNamedX kVMETrigCond[] =
 			{
-				{VMESis3302Panel::kVMETrigCondDis,			"disabled", "output trigger disabled"	},
-				{VMESis3302Panel::kVMETrigCondGTEna,		"enabled if GT", "output if greater than treshold"	},
-				{VMESis3302Panel::kVMETrigCondGTDis,		"disabled if GT", "no output if greater than treshold"	},
-				{VMESis3302Panel::kVMETrigCondEna,			"enabled", "output trigger enabled"	},
-				{0, 												NULL			}
+				{VMESis3302Panel::kVMETrigCondDis,			"disabled",			"trigger out disabled"	},
+				{VMESis3302Panel::kVMETrigCondEnaGT,		"enabled if GT",	"trigger out if greater than treshold"	},
+				{VMESis3302Panel::kVMETrigCondEna,			"enabled",			"trigger out enabled"	},
+				{0, 										NULL,				NULL			}
 			};
 
 const SMrbNamedX kVMETrigMode[] =
 			{
-				{VMESis3302Panel::kVMETrigModeDis,			"disabled", "no trigger"	},
-				{VMESis3302Panel::kVMETrigModeIntern,		"intern/async", "internal/async trigger: FIR trigger"	},
-				{VMESis3302Panel::kVMETrigModeExtern, 		"extern/sync", "external/sync trigger: via LEMO-3 or VME KEY"	},
-				{VMESis3302Panel::kVMETrigModeBoth, 		"intern+extern", "OR of intern and extern triggers"	},
-				{0, 												NULL			}
+				{VMESis3302Panel::kVMETrigGateModeDis,		"disabled",			"no trigger"	},
+				{VMESis3302Panel::kVMETrigGateModeIntern,	"intern",			"internal/async trigger: FIR trigger"	},
+				{VMESis3302Panel::kVMETrigGateModeExtern, 	"extern",			"external/sync trigger: via LEMO-3 or VME KEY"	},
+				{VMESis3302Panel::kVMETrigGateModeBoth, 	"intern|extern",	"OR of intern or extern triggers"	},
+				{0, 										NULL,				NULL			}
+			};
+
+const SMrbNamedX kVMEGateMode[] =
+			{
+				{VMESis3302Panel::kVMETrigGateModeDis,		"disabled",			"no gate"	},
+				{VMESis3302Panel::kVMETrigGateModeIntern,	"intern",			"internal gate"	},
+				{VMESis3302Panel::kVMETrigGateModeExtern, 	"extern",			"external gate"	},
+				{VMESis3302Panel::kVMETrigGateModeBoth,		"intern|extern",	"gate intern or extern"	},
+				{0, 										NULL,				NULL			}
+			};
+
+const SMrbNamedX kVMENextNeighborTrigMode[] =
+			{
+				{VMESis3302Panel::kVMENextNeighborModeDis,		"disabled",			"no trigger"	},
+				{VMESis3302Panel::kVMENextNeighborModeR,		"neighbor N+1",		"trigger channel N+1"	},
+				{VMESis3302Panel::kVMENextNeighborModeL,	 	"neighbor N-1",		"trigger channel N-1"	},
+				{VMESis3302Panel::kVMENextNeighborModeBoth,		"both neighbors",	"trigger N+1 or N-1"	},
+				{0, 										NULL,				NULL			}
+			};
+
+const SMrbNamedX kVMENextNeighborGateMode[] =
+			{
+				{VMESis3302Panel::kVMENextNeighborModeDis,		"disabled",			"no gate"	},
+				{VMESis3302Panel::kVMENextNeighborModeR,		"neighbor N+1",		"gate channel N+1"	},
+				{VMESis3302Panel::kVMENextNeighborModeL,	 	"neighbor N-1",		"gate channel N-1"	},
+				{VMESis3302Panel::kVMENextNeighborModeBoth,		"both neighbors",	"gate N+1 or N-1"	},
+				{0, 										NULL,				NULL			}
 			};
 
 const SMrbNamedX kVMEDecim[] =
 			{
 				{VMESis3302Panel::kVMEDecimDis,				"disabled", "no decimation"	},
-				{VMESis3302Panel::kVMEDecim2,				"2", "decimation = 2"	},
-				{VMESis3302Panel::kVMEDecim4,				"4", "decimation = 4"	},
-				{VMESis3302Panel::kVMEDecim8,				"8", "decimation = 8"	},
-				{0, 												NULL			}
+				{VMESis3302Panel::kVMEDecim2,				"2",		"decimation = 2"	},
+				{VMESis3302Panel::kVMEDecim4,				"4",		"decimation = 4"	},
+				{VMESis3302Panel::kVMEDecim8,				"8",		"decimation = 8"	},
+				{0, 										NULL,				NULL			}
 			};
 
 const SMrbNamedX kVMESample[] =
@@ -113,6 +154,19 @@ static Int_t curChannel = 0;
 Int_t frameWidth;
 Int_t frameHeight;
 
+TMrbLofNamedX lofChannels;
+TMrbLofNamedX lofDecims;
+TMrbLofNamedX lofClockSources;
+TMrbLofNamedX lofLemoInModes;
+TMrbLofNamedX lofLemoOutModes;
+TMrbLofNamedX lofTrigModes;
+TMrbLofNamedX lofGateModes;
+TMrbLofNamedX lofNextNeighborTrigModes;
+TMrbLofNamedX lofNextNeighborGateModes;
+TMrbLofNamedX lofTrigPols;
+TMrbLofNamedX lofTrigConds;
+TMrbLofNamedX lofSamplingModes;
+
 VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 				TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
@@ -120,47 +174,44 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 // Name:           VMESis3302Panel
 // Purpose:        Connect to LynxOs server
 // Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
-
-	TGMrbLayout * frameGC;
-	TGMrbLayout * groupGC;
-	TGMrbLayout * entryGC;
-	TGMrbLayout * labelGC;
-	TGMrbLayout * buttonGC;
-	TGMrbLayout * comboGC;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
 //	Clear focus list
 	fFocusList.Clear();
 
-	frameGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
-								gVMEControlData->fColorBlack,
-								gVMEControlData->fColorGreen);	HEAP(frameGC);
+	TGMrbLayout * frameGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
+												gVMEControlData->fColorBlack,
+												gVMEControlData->fColorGreen);	HEAP(frameGC);
 
-	groupGC = new TGMrbLayout(	gVMEControlData->SlantedFont(), 
-								gVMEControlData->fColorBlack,
-								gVMEControlData->fColorGreen);	HEAP(groupGC);
+	TGMrbLayout * groupGC = new TGMrbLayout(	gVMEControlData->SlantedFont(),
+												gVMEControlData->fColorBlack,
+												gVMEControlData->fColorGreen);	HEAP(groupGC);
 
-	comboGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
-								gVMEControlData->fColorBlack,
-								gVMEControlData->fColorGreen);	HEAP(comboGC);
+	TGMrbLayout * comboGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
+												gVMEControlData->fColorBlack,
+												gVMEControlData->fColorGreen);	HEAP(comboGC);
 
-	labelGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
-								gVMEControlData->fColorBlack,
-								gVMEControlData->fColorGreen);	HEAP(labelGC);
+	TGMrbLayout * labelGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
+												gVMEControlData->fColorBlack,
+												gVMEControlData->fColorGreen);	HEAP(labelGC);
 
-	buttonGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
-								gVMEControlData->fColorBlack,
-								gVMEControlData->fColorGray);	HEAP(buttonGC);
+	TGMrbLayout * buttonGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
+												gVMEControlData->fColorBlack,
+												gVMEControlData->fColorGray);	HEAP(buttonGC);
 
-	entryGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
-								gVMEControlData->fColorBlack,
-								gVMEControlData->fColorWhite);	HEAP(entryGC);
+	TGMrbLayout * infoGC = new TGMrbLayout(		gVMEControlData->BoldFont(),
+												gVMEControlData->fColorBlack,
+												gVMEControlData->fColorGray);	HEAP(infoGC);
+
+	TGMrbLayout * entryGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
+												gVMEControlData->fColorBlack,
+												gVMEControlData->fColorWhite);	HEAP(entryGC);
 
 	TGLayoutHints * loXpndX = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 10, 10, 1, 1);
 	TGLayoutHints * loXpndX2 = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
@@ -179,11 +230,26 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	frameWidth = this->GetWidth();
 	frameHeight = this->GetHeight();
 
-//	Initialize several lists
+//	initialize several lists
 	fActions.SetName("Actions");
 	fActions.AddNamedX(kVMEActions);
 
-//	module / channel selection
+//	fill lists
+	lofDecims.AddNamedX(kVMEDecim);
+	lofClockSources.AddNamedX(kVMEClockSource);
+	lofLemoOutModes.AddNamedX(kVMELemoOutMode); lofLemoOutModes.SetPatternMode();
+	lofLemoInModes.AddNamedX(kVMELemoInMode); lofLemoInModes.SetPatternMode();
+	lofTrigModes.AddNamedX(kVMETrigMode); lofTrigModes.SetPatternMode();
+	lofGateModes.AddNamedX(kVMEGateMode); lofGateModes.SetPatternMode();
+	lofNextNeighborTrigModes.AddNamedX(kVMENextNeighborTrigMode); lofNextNeighborTrigModes.SetPatternMode();
+	lofNextNeighborGateModes.AddNamedX(kVMENextNeighborGateMode); lofNextNeighborGateModes.SetPatternMode();
+	lofTrigPols.AddNamedX(kVMETrigPolar); lofTrigPols.SetPatternMode();
+	lofTrigConds.AddNamedX(kVMETrigCond); lofTrigConds.SetPatternMode();
+	lofSamplingModes.AddNamedX(kVMESample);
+
+	for (Int_t i = 0; i < VMESis3302Panel::kVMENofSis3302Chans; i++) lofChannels.AddNamedX(i, Form("chn %d", i));
+
+	//	module / channel selection
 	this->SetupModuleList();
 
 	fSelectFrame = new TGGroupFrame(this, "Select module", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -197,8 +263,6 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
 	fSelectModule->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ModuleChanged(Int_t, Int_t)");
 
-	TMrbLofNamedX lofChannels;
-	for (Int_t i = 0; i < VMESis3302Panel::kVMENofSis3302Chans; i++) lofChannels.AddNamedX(i, Form("chn %d", i));
 	fSelectChannel = new TGMrbLabelCombo(fSelectFrame, "Channel",	&lofChannels,
 																kVMESis3302SelectChannel, 1,
 																frameWidth/5, kLEHeight, frameWidth/8,
@@ -206,33 +270,13 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fSelectFrame->AddFrame(fSelectChannel, frameGC->LH());
 	fSelectChannel->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ChannelChanged(Int_t, Int_t)");
 
+	fModuleInfo = new TGMrbLabelEntry(fSelectFrame, "Firmware", 200, -1, frameWidth/5, kLEHeight, frameWidth/30, frameGC, labelGC, infoGC);
+	fSelectFrame->AddFrame(fModuleInfo, frameGC->LH());
+	fModuleInfo->SetState(kFALSE);
+
 	fSettingsFrame = new TGGroupFrame(this, "Module settings", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fSettingsFrame);
 	this->AddFrame(fSettingsFrame, groupGC->LH());
-
-	fClockAndTrig = new TGGroupFrame(fSettingsFrame, "Clock & trigger", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fClockAndTrig);
-	fSettingsFrame->AddFrame(fClockAndTrig, groupGC->LH());
-
-	TMrbLofNamedX lofClockSources;
-	lofClockSources.AddNamedX(kVMEClockSource);
-	fClockSource = new TGMrbLabelCombo(fClockAndTrig, "Clock source",	&lofClockSources,
-																		kVMESis3302ClockSource, 1,
-																		frameWidth/5, kLEHeight, frameWidth/8,
-																		frameGC, labelGC, comboGC, labelGC);
-	fClockAndTrig->AddFrame(fClockSource, frameGC->LH());
-	fClockSource->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ClockSourceChanged(Int_t, Int_t)");
-
-	TMrbLofNamedX lofCommonTrigModes;
-	lofCommonTrigModes.AddNamedX(kVMECommonTrigMode);
-	lofCommonTrigModes.SetPatternMode();
-	fCommonTrigMode = new TGMrbCheckButtonList(fClockAndTrig, "Common trigger mode", &lofCommonTrigModes,
-																		kVMESis3302CommonTrigMode, 1, 
-																		frameWidth/5, kLEHeight, 
-																		frameGC, labelGC, buttonGC);
-	fClockAndTrig->AddFrame(fCommonTrigMode, frameGC->LH());
-	((TGMrbButtonFrame *) fCommonTrigMode)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "CommonTrigModeChanged(Int_t, Int_t)");
-	fCommonTrigMode->ChangeButtonBackground(gVMEControlData->fColorGreen);
 
 	TGLayoutHints * lh = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 0, 0, 0, 0);
 	HEAP(lh);
@@ -242,14 +286,48 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fSettingsFrame->AddFrame(h1, lh);
 	h1->ChangeBackground(gVMEControlData->fColorGreen);
 
+	fClockLemo = new TGGroupFrame(h1, "Clock & LEMO", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fClockLemo);
+	h1->AddFrame(fClockLemo, groupGC->LH());
+
+	fClockSource = new TGMrbLabelCombo(fClockLemo, "Clock",		&lofClockSources,
+																		kVMESis3302ClockSource, 1,
+																		frameWidth/5, kLEHeight, frameWidth/15,
+																		frameGC, labelGC, comboGC);
+	HEAP(fClockSource);
+	fClockLemo->AddFrame(fClockSource, frameGC->LH());
+	fClockSource->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ClockSourceChanged(Int_t, Int_t)");
+
+	fLemoInMode = new TGMrbLabelCombo(fClockLemo, "LemoIn",			&lofLemoInModes,
+																		kVMESis3302LemoInMode, 1,
+																		frameWidth/5, kLEHeight, frameWidth/30,
+																		frameGC, labelGC, comboGC);
+	HEAP(fLemoInMode);
+	fClockLemo->AddFrame(fLemoInMode, frameGC->LH());
+	fLemoInMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "LemoInModeChanged(Int_t, Int_t)");
+
+	fLemoOutMode = new TGMrbLabelCombo(fClockLemo, "LemoOut",			&lofLemoOutModes,
+																		kVMESis3302LemoOutMode, 1,
+																		frameWidth/5, kLEHeight, frameWidth/30,
+																		frameGC, labelGC, comboGC);
+	HEAP(fLemoOutMode);
+	fClockLemo->AddFrame(fLemoOutMode, frameGC->LH());
+	fLemoOutMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "LemoOutModeChanged(Int_t, Int_t)");
+
+	fLemoInEnableMask = new TGMrbLabelEntry(fClockLemo, "Mask",	200, kVMESis3302LemoInEnableMask,
+																		frameWidth/5, kLEHeight, frameWidth/30,
+																		frameGC, labelGC, entryGC);
+	HEAP(fLemoInEnableMask);
+	fLemoInEnableMask->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fLemoInEnableMask->SetText(0);
+	fLemoInEnableMask->SetRange(0, 7);
+	fLemoInEnableMask->ShowToolTip(kTRUE, kTRUE);
+	fClockLemo->AddFrame(fLemoInEnableMask, frameGC->LH());
+	fLemoInEnableMask->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "LemoInEnableMaskChanged(Int_t, Int_t)");
+
 	fDacSettings = new TGGroupFrame(h1, "DAC settings", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fDacSettings);
 	h1->AddFrame(fDacSettings, groupGC->LH());
-
-	TGHorizontalFrame * dmy1 = new TGHorizontalFrame(h1);
-	HEAP(dmy1);
-	h1->AddFrame(dmy1, lh);
-	dmy1->ChangeBackground(gVMEControlData->fColorGreen);
 
 	fDacOffset = new TGMrbLabelEntry(fDacSettings, "Offset",	200, kVMESis3302DacOffset,
 																frameWidth/5, kLEHeight, frameWidth/8,
@@ -268,29 +346,55 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fSettingsFrame->AddFrame(h2, lh);
 	h2->ChangeBackground(gVMEControlData->fColorGreen);
 
-	fTriggerFilter = new TGGroupFrame(h2, "Trigger filter", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fTriggerFilter);
-	h2->AddFrame(fTriggerFilter, groupGC->LH());
+	fTriggerSettings = new TGGroupFrame(h2, "Trigger settings", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fTriggerSettings);
+	h2->AddFrame(fTriggerSettings, groupGC->LH());
 
-	TGVerticalFrame * tvl = new TGVerticalFrame(fTriggerFilter);
+	TGVerticalFrame * tvl = new TGVerticalFrame(fTriggerSettings);
 	HEAP(tvl);
-	fTriggerFilter->AddFrame(tvl, lh);
+	fTriggerSettings->AddFrame(tvl, lh);
 	tvl->ChangeBackground(gVMEControlData->fColorGreen);
 
-	TGVerticalFrame * tvr = new TGVerticalFrame(fTriggerFilter);
+	TGVerticalFrame * tvr = new TGVerticalFrame(fTriggerSettings);
 	HEAP(tvr);
-	fTriggerFilter->AddFrame(tvr, lh);
+	fTriggerSettings->AddFrame(tvr, lh);
 	tvr->ChangeBackground(gVMEControlData->fColorGreen);
 
-	TMrbLofNamedX lofTrigModes;
-	lofTrigModes.AddNamedX(kVMETrigMode);
-	lofTrigModes.SetPatternMode();
-	fTrigMode = new TGMrbLabelCombo(tvl, "Mode", 		&lofTrigModes,
-														kVMESis3302TrigMode, 1,
-														frameWidth/10, kLEHeight, frameWidth/10,
-														frameGC, labelGC, comboGC);
+	fTrigMode = new TGMrbLabelCombo(tvl, "Trigger mode", 	&lofTrigModes,
+															kVMESis3302TrigMode, 1,
+															frameWidth/10, kLEHeight, frameWidth/10,
+															frameGC, labelGC, comboGC);
+	HEAP(fTrigMode);
 	tvl->AddFrame(fTrigMode, groupGC->LH());
 	fTrigMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "TrigModeChanged(Int_t, Int_t)");
+
+	fNextNeighborTrigMode = new TGMrbLabelCombo(tvl, "NN trigger", 	&lofNextNeighborTrigModes,
+															kVMESis3302NNTrigMode, 1,
+															frameWidth/10, kLEHeight, frameWidth/10,
+															frameGC, labelGC, comboGC);
+	HEAP(fNextNeighborTrigMode);
+	tvl->AddFrame(fNextNeighborTrigMode, groupGC->LH());
+	fNextNeighborTrigMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "NextNeighborTrigModeChanged(Int_t, Int_t)");
+
+	fTrigInternalDelay = new TGMrbLabelEntry(tvl, "Internal delay",	200, kVMESis3302TrigIntDelay,
+														frameWidth/5, kLEHeight, frameWidth/10,
+														frameGC, labelGC, entryGC, buttonGC);
+	HEAP(fTrigInternalDelay);
+	fTrigInternalDelay->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTrigInternalDelay->SetText(0);
+	fTrigInternalDelay->SetRange(kSis3302TrigIntDelayMin, kSis3302TrigIntDelayMax);
+	fTrigInternalDelay->SetIncrement(1);
+	fTrigInternalDelay->ShowToolTip(kTRUE, kTRUE);
+	tvl->AddFrame(fTrigInternalDelay, groupGC->LH());
+	fTrigInternalDelay->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "TrigInternalDelayChanged(Int_t, Int_t)");
+
+	fTrigPol = new TGMrbLabelCombo(tvl, "Polarity", 	&lofTrigPols,
+														kVMESis3302TrigPol, 1,
+														frameWidth/10, kLEHeight, frameWidth/10,
+														frameGC, labelGC, comboGC);
+	HEAP(fTrigPol);
+	tvl->AddFrame(fTrigPol, groupGC->LH());
+	fTrigPol->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "TrigPolarChanged(Int_t, Int_t)");
 
 	fTrigPeaking = new TGMrbLabelEntry(tvl, "Peaking",	200, kVMESis3302TrigPeaking,
 														frameWidth/5, kLEHeight, frameWidth/10,
@@ -298,21 +402,11 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fTrigPeaking);
 	fTrigPeaking->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fTrigPeaking->SetText(1);
-	fTrigPeaking->SetRange(1, 16);
+	fTrigPeaking->SetRange(kSis3302TrigPeakMin, kSis3302TrigPeakMax);
 	fTrigPeaking->SetIncrement(1);
 	fTrigPeaking->ShowToolTip(kTRUE, kTRUE);
 	tvl->AddFrame(fTrigPeaking, groupGC->LH());
 	fTrigPeaking->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "TrigPeakingChanged(Int_t, Int_t)");
-
-	TMrbLofNamedX lofTrigPols;
-	lofTrigPols.AddNamedX(kVMETrigPolar);
-	lofTrigPols.SetPatternMode();
-	fTrigPol = new TGMrbLabelCombo(tvr, "Polarity", 	&lofTrigPols,
-														kVMESis3302TrigPol, 1,
-														frameWidth/10, kLEHeight, frameWidth/10,
-														frameGC, labelGC, comboGC);
-	tvr->AddFrame(fTrigPol, groupGC->LH());
-	fTrigPol->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "TrigPolarChanged(Int_t, Int_t)");
 
 	fTrigGap = new TGMrbLabelEntry(tvl, "Gap",			200, kVMESis3302TrigGap,
 														frameWidth/5, kLEHeight, frameWidth/10,
@@ -320,7 +414,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fTrigGap);
 	fTrigGap->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fTrigGap->SetText(1);
-	fTrigGap->SetRange(0, 15);
+	fTrigGap->SetRange(kSis3302TrigGapMin, kSis3302TrigGapMax);
 	fTrigGap->SetIncrement(1);
 	fTrigGap->ShowToolTip(kTRUE, kTRUE);
 	tvl->AddFrame(fTrigGap, groupGC->LH());
@@ -332,30 +426,59 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fTrigThresh);
 	fTrigThresh->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fTrigThresh->SetText(0);
-	fTrigThresh->SetRange(0, 2 << 16 - 1);
+	fTrigThresh->SetRange(kSis3302TrigThreshMin, kSis3302TrigThreshMax);
 	fTrigThresh->SetIncrement(10);
 	fTrigThresh->ShowToolTip(kTRUE, kTRUE);
 	tvl->AddFrame(fTrigThresh, groupGC->LH());
 	fTrigThresh->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "TrigThreshChanged(Int_t, Int_t)");
 
-	fTrigOut = new TGMrbLabelEntry(tvl, "Out length",	200, kVMESis3302TrigOut,
+	fTrigOut = new TGMrbLabelEntry(tvl, "Trigger out",	200, kVMESis3302TrigOut,
 														frameWidth/5, kLEHeight, frameWidth/10,
 														frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTrigOut);
 	fTrigOut->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fTrigOut->SetText(0);
-	fTrigOut->SetRange(0, 255);
+	fTrigOut->SetRange(kSis3302TrigPulseMin, kSis3302TrigPulseMax);
 	fTrigOut->SetIncrement(10);
 	fTrigOut->ShowToolTip(kTRUE, kTRUE);
 	tvl->AddFrame(fTrigOut, groupGC->LH());
 	fTrigOut->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "TrigOutChanged(Int_t, Int_t)");
 
-	TGLayoutHints * lh2 = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 0, 0, kLEHeight + 3, 0);
-	HEAP(lh2);
-	TGHorizontalFrame * dmy2 = new TGHorizontalFrame(tvr);
-	HEAP(dmy2);
-	tvr->AddFrame(dmy2, lh2);
-	dmy2->ChangeBackground(gVMEControlData->fColorGreen);
+	fGateMode = new TGMrbLabelCombo(tvr, "Gate mode", 		&lofGateModes,
+															kVMESis3302GateMode, 1,
+															frameWidth/10, kLEHeight, frameWidth/10,
+															frameGC, labelGC, comboGC);
+	HEAP(fGateMode);
+	tvr->AddFrame(fGateMode, groupGC->LH());
+	fGateMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "GateModeChanged(Int_t, Int_t)");
+
+	fNextNeighborGateMode = new TGMrbLabelCombo(tvr, "NN gate", 		&lofNextNeighborGateModes,
+															kVMESis3302NNGateMode, 1,
+															frameWidth/10, kLEHeight, frameWidth/10,
+															frameGC, labelGC, comboGC);
+	HEAP(fNextNeighborGateMode);
+	tvr->AddFrame(fNextNeighborGateMode, groupGC->LH());
+	fNextNeighborGateMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "NextNeighborGateModeChanged(Int_t, Int_t)");
+
+	fTrigInternalGate = new TGMrbLabelEntry(tvr, "Internal gate",	200, kVMESis3302TrigIntGate,
+														frameWidth/5, kLEHeight, frameWidth/10,
+														frameGC, labelGC, entryGC, buttonGC);
+	HEAP(fTrigInternalGate);
+	fTrigInternalGate->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTrigInternalGate->SetText(0);
+	fTrigInternalGate->SetRange(kSis3302TrigIntGateMin, kSis3302TrigIntGateMax);
+	fTrigInternalGate->SetIncrement(1);
+	fTrigInternalGate->ShowToolTip(kTRUE, kTRUE);
+	tvr->AddFrame(fTrigInternalGate, groupGC->LH());
+	fTrigInternalGate->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "TrigInternalGateChanged(Int_t, Int_t)");
+
+	fTrigDecimation = new TGMrbLabelCombo(tvr, "Decimation", 	&lofDecims,
+																kVMESis3302TrigDecimation, 1,
+																frameWidth/10, kLEHeight, frameWidth/10,
+																frameGC, labelGC, comboGC);
+	HEAP(fTrigDecimation);
+	tvr->AddFrame(fTrigDecimation, groupGC->LH());
+	fTrigDecimation->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "TrigDecimationChanged(Int_t, Int_t)");
 
 	fTrigSumG = new TGMrbLabelEntry(tvr, "SumG",		200, kVMESis3302TrigSumG,
 														frameWidth/5, kLEHeight, frameWidth/10,
@@ -371,9 +494,6 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	tvr->AddFrame(fTrigCounts, groupGC->LH());
 	fTrigCounts->SetState(kFALSE);
 
-	TMrbLofNamedX lofTrigConds;
-	lofTrigConds.AddNamedX(kVMETrigCond);
-	lofTrigConds.SetPatternMode();
 	fTrigCond = new TGMrbLabelCombo(tvr, "Condition", 	&lofTrigConds,
 														kVMESis3302TrigCond, 1,
 														frameWidth/10, kLEHeight, frameWidth/10,
@@ -381,29 +501,19 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	tvr->AddFrame(fTrigCond, groupGC->LH());
 	fTrigCond->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "TrigCondChanged(Int_t, Int_t)");
 
-	fEnergyFilter = new TGGroupFrame(h2, "Energy filter", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fEnergyFilter);
-	h2->AddFrame(fEnergyFilter, groupGC->LH());
+	fEnergySettings = new TGGroupFrame(h2, "Energy filter", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fEnergySettings);
+	h2->AddFrame(fEnergySettings, groupGC->LH());
 
-	TGVerticalFrame * evl = new TGVerticalFrame(fEnergyFilter);
+	TGVerticalFrame * evl = new TGVerticalFrame(fEnergySettings);
 	HEAP(evl);
-	fEnergyFilter->AddFrame(evl, lh);
+	fEnergySettings->AddFrame(evl, lh);
 	evl->ChangeBackground(gVMEControlData->fColorGreen);
 
-	TGVerticalFrame * evr = new TGVerticalFrame(fEnergyFilter);
+	TGVerticalFrame * evr = new TGVerticalFrame(fEnergySettings);
 	HEAP(evr);
-	fEnergyFilter->AddFrame(evr, lh);
+	fEnergySettings->AddFrame(evr, lh);
 	evr->ChangeBackground(gVMEControlData->fColorGreen);
-
-	TMrbLofNamedX lofDecims;
-	lofDecims.AddNamedX(kVMEDecim);
-	lofDecims.SetPatternMode();
-	fEnergyDecimation = new TGMrbLabelCombo(evl, "Decimation", 	&lofDecims,
-																kVMESis3302EnergyDecimation, 1,
-																frameWidth/10, kLEHeight, frameWidth/10,
-																frameGC, labelGC, comboGC);
-	evl->AddFrame(fEnergyDecimation, groupGC->LH());
-	fEnergyDecimation->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "DecimationChanged(Int_t, Int_t)");
 
 	fEnergyPeaking = new TGMrbLabelEntry(evl, "Peaking",	200, kVMESis3302EnergyPeaking,
 															frameWidth/5, kLEHeight, frameWidth/10,
@@ -411,11 +521,18 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fEnergyPeaking);
 	fEnergyPeaking->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fEnergyPeaking->SetText(0);
-	fEnergyPeaking->SetRange(0, 255);
+	fEnergyPeaking->SetRange(kSis3302EnergyPeakMin, kSis3302EnergyPeakMax);
 	fEnergyPeaking->SetIncrement(10);
 	fEnergyPeaking->ShowToolTip(kTRUE, kTRUE);
 	evl->AddFrame(fEnergyPeaking, groupGC->LH());
 	fEnergyPeaking->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EnergyPeakingChanged(Int_t, Int_t)");
+
+	fEnergyDecimation = new TGMrbLabelCombo(evr, "Decimation", 	&lofDecims,
+																kVMESis3302EnergyDecimation, 1,
+																frameWidth/10, kLEHeight, frameWidth/10,
+																frameGC, labelGC, comboGC);
+	evr->AddFrame(fEnergyDecimation, groupGC->LH());
+	fEnergyDecimation->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "EnergyDecimationChanged(Int_t, Int_t)");
 
 	fEnergyGap = new TGMrbLabelEntry(evl, "Gap",			200, kVMESis3302EnergyGap,
 															frameWidth/5, kLEHeight, frameWidth/10,
@@ -423,7 +540,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fEnergyGap);
 	fEnergyGap->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fEnergyGap->SetText(0);
-	fEnergyGap->SetRange(0, 255);
+	fEnergyGap->SetRange(kSis3302EnergyGapMin, kSis3302EnergyGapMax);
 	fEnergyGap->SetIncrement(10);
 	fEnergyGap->ShowToolTip(kTRUE, kTRUE);
 	evl->AddFrame(fEnergyGap, groupGC->LH());
@@ -435,7 +552,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fPreTrigDelay);
 	fPreTrigDelay->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fPreTrigDelay->SetText(0);
-	fPreTrigDelay->SetRange(0, 1023);
+	fPreTrigDelay->SetRange(kSis3302PreTrigDelayMin, kSis3302PreTrigDelayMax);
 	fPreTrigDelay->SetIncrement(10);
 	fPreTrigDelay->ShowToolTip(kTRUE, kTRUE);
 	evl->AddFrame(fPreTrigDelay, groupGC->LH());
@@ -447,18 +564,11 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fEnergyTauFactor);
 	fEnergyTauFactor->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fEnergyTauFactor->SetText(0);
-	fEnergyTauFactor->SetRange(0, 63);
+	fEnergyTauFactor->SetRange(kSis3302EnergyTauMin, kSis3302EnergyTauMax);
 	fEnergyTauFactor->SetIncrement(1);
 	fEnergyTauFactor->ShowToolTip(kTRUE, kTRUE);
 	evl->AddFrame(fEnergyTauFactor, groupGC->LH());
 	fEnergyTauFactor->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "TauFactorChanged(Int_t, Int_t)");
-
-	TGLayoutHints * lh3 = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 0, 0, 2 * kLEHeight + 6, 0);
-	HEAP(lh3);
-	TGHorizontalFrame * dmy3 = new TGHorizontalFrame(evr);
-	HEAP(dmy3);
-	evr->AddFrame(dmy3, lh3);
-	dmy3->ChangeBackground(gVMEControlData->fColorGreen);
 
 	fEnergyDecayTime = new TGMrbLabelEntry(evr, "Decay time",	200, kVMESis3302EnergyDecayTime,
 															frameWidth/5, kLEHeight, frameWidth/10,
@@ -468,23 +578,23 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	evr->AddFrame(fEnergyDecayTime, groupGC->LH());
 	fEnergyDecayTime->SetState(kFALSE);
 
-	fEnergyGate = new TGMrbLabelEntry(evr, "Energy gate",	200, kVMESis3302EnergyGate,
+	fEnergyGateLength = new TGMrbLabelEntry(evr, "Energy gate",	200, kVMESis3302EnergyGate,
 															frameWidth/5, kLEHeight, frameWidth/10,
 															frameGC, labelGC, entryGC);
-	HEAP(fEnergyGate);
-	evr->AddFrame(fEnergyGate, groupGC->LH());
-	fEnergyGate->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fEnergyGate->SetTextAlignment(kTextRight);
-	fEnergyGate->SetState(kFALSE);
+	HEAP(fEnergyGateLength);
+	evr->AddFrame(fEnergyGateLength, groupGC->LH());
+	fEnergyGateLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fEnergyGateLength->SetTextAlignment(kTextRight);
+	fEnergyGateLength->SetState(kFALSE);
 
-	fTrigGate = new TGMrbLabelEntry(evr, "Trig gate",		200, kVMESis3302TrigGate,
+	fTrigGateLength = new TGMrbLabelEntry(evr, "Trig gate",		200, kVMESis3302TrigGate,
 															frameWidth/5, kLEHeight, frameWidth/10,
 															frameGC, labelGC, entryGC);
-	HEAP(fTrigGate);
-	evr->AddFrame(fTrigGate, groupGC->LH());
-	fTrigGate->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fTrigGate->SetTextAlignment(kTextRight);
-	fTrigGate->SetState(kFALSE);
+	HEAP(fTrigGateLength);
+	evr->AddFrame(fTrigGateLength, groupGC->LH());
+	fTrigGateLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTrigGateLength->SetTextAlignment(kTextRight);
+	fTrigGateLength->SetState(kFALSE);
 
 	TGHorizontalFrame * h3 = new TGHorizontalFrame(fSettingsFrame);
 	HEAP(h3);
@@ -543,9 +653,6 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fEnergyDataSampling->AddFrame(edvr, lh);
 	edvr->ChangeBackground(gVMEControlData->fColorGreen);
 
-	TMrbLofNamedX lofSamplingModes;
-	lofSamplingModes.AddNamedX(kVMESample);
-	lofSamplingModes.SetPatternMode();
 	fEnergyDataMode = new TGMrbLabelCombo(edvl, "Mode", 	&lofSamplingModes,
 															kVMESis3302EnergyDataMode, 1,
 															frameWidth/10, kLEHeight, frameWidth/10,
@@ -623,10 +730,10 @@ void VMESis3302Panel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
@@ -652,9 +759,9 @@ void VMESis3302Panel::UpdateGUI() {
 // Purpose:        Update values
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Update GUI.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (curModule == NULL) {
@@ -667,49 +774,86 @@ void VMESis3302Panel::UpdateGUI() {
 	fSelectModule->Select(curModule->GetIndex());
 	fSelectChannel->Select(curChannel);
 
+	Int_t boardId, major, minor;
+	curModule->GetModuleInfo(boardId, major, minor);
+	curModule->SetFirmwareVersion(major, minor);
+	fModuleInfo->SetText(Form("%x", curModule->GetFirmwareVersion()));
+
 	TString moduleName = curModule->GetName();
 	fSettingsFrame->SetTitle(Form("Settings for module %s", moduleName.Data()));
 
 	fDacSettings->SetTitle(Form("DAC settings for module %s, chn %d", moduleName.Data(), curChannel));
-	fTriggerFilter->SetTitle(Form("Trigger settings for module %s, chn %d", moduleName.Data(), curChannel));
-	fEnergyFilter->SetTitle(Form("Energy settings for module %s, chn %d", moduleName.Data(), curChannel));
+	fTriggerSettings->SetTitle(Form("Trigger settings for module %s, chn %d", moduleName.Data(), curChannel));
+	fEnergySettings->SetTitle(Form("Energy settings for module %s, chn %d", moduleName.Data(), curChannel));
 	fRawDataSampling->SetTitle(Form("Raw data sampling for module %s", moduleName.Data()));
 	fEnergyDataSampling->SetTitle(Form("Energy data sampling for module %s", moduleName.Data()));
 
 	Int_t clockSource = 0;
 	if (curModule->GetClockSource(clockSource)) fClockSource->Select(clockSource);
-	Int_t trig = 0;
-	Bool_t trigFlag = kFALSE;
-	if (curModule->GetInternalTrigger(trigFlag)) { if (trigFlag) trig |= kVMETrigModeIntern; }
-	if (curModule->GetExternalTrigger(trigFlag)) { if (trigFlag) trig |= kVMETrigModeExtern; }
-	fCommonTrigMode->SetState(trig);
+
+	Int_t lemo = 0;
+	if (curModule->GetLemoInMode(lemo)) fLemoInMode->Select(lemo);
+	lemo = 0;
+	if (curModule->GetLemoOutMode(lemo)) fLemoOutMode->Select(lemo);
+	lemo = 0;
+	if (curModule->GetLemoInEnableMask(lemo)) fLemoInEnableMask->SetText(lemo);
 
 	TArrayI dacVal(1);
 	if (curModule->ReadDac(dacVal, curChannel)) fDacOffset->SetText(dacVal[0]);
 
-	Int_t p, g;
+	Int_t tmode;
+	curModule->GetTriggerMode(tmode, curChannel);
+	fTrigMode->Select(tmode);
+
+	Int_t gmode;
+	curModule->GetGateMode(gmode, curChannel);
+	fGateMode->Select(gmode);
+
+	curModule->GetNextNeighborTriggerMode(tmode, curChannel);
+	fNextNeighborTrigMode->Select(tmode);
+
+	curModule->GetNextNeighborGateMode(gmode, curChannel);
+	fNextNeighborGateMode->Select(gmode);
+
+	Int_t d, p, g;
+	if (curModule->IsOffline()) {
+		d = fTrigInternalDelay->GetText2Int();
+		g = fTrigInternalGate->GetText2Int();
+	} else {
+		curModule->ReadTrigInternalDelay(d, curChannel);
+		curModule->ReadTrigInternalGate(g, curChannel);
+	}
+	if (d > kSis3302TrigIntDelayMax) d = kSis3302TrigIntDelayMax;
+	if (d < kSis3302TrigIntDelayMin) d = kSis3302TrigIntDelayMin;
+	if (g > kSis3302TrigIntGateMax) g = kSis3302TrigIntGateMax;
+	if (g < kSis3302TrigIntGateMin) g = kSis3302TrigIntGateMin;
+	fTrigInternalDelay->SetText(d);
+	fTrigInternalGate->SetText(g);
+	curModule->WriteTrigInternalDelay(d, curChannel);
+	curModule->WriteTrigInternalGate(g, curChannel);
+
+	Bool_t invTrig;
+	curModule->GetPolarity(invTrig, curChannel);
+	fTrigPol->Select(invTrig ? kVMETrigPolNeg : kVMETrigPolPos);
+
+	Int_t decim;
+	curModule->GetTrigDecimation(decim, curChannel);
+	fTrigDecimation->Select(decim);
+
 	if (curModule->IsOffline()) {
 		p = fTrigPeaking->GetText2Int();
 		g = fTrigGap->GetText2Int();
 	} else {
 		curModule->ReadTrigPeakAndGap(p, g, curChannel);
 	}
-	if (p > 16) p = 16;
-	if (p < 1) p = 1;
-	if (g > 16) g = 16;
-	if (g < 1) g = 1;
+	if (p > kSis3302TrigPeakMax) p = kSis3302TrigPeakMax;
+	if (p < kSis3302TrigPeakMin) p = kSis3302TrigPeakMin;
+	if (g > kSis3302TrigGapMax) g = kSis3302TrigGapMax;
+	if (g < kSis3302TrigGapMin) g = kSis3302TrigGapMin;
 	fTrigPeaking->SetText(p);
 	fTrigGap->SetText(g);
 	curModule->WriteTrigPeakAndGap(p, g, curChannel);
 	this->UpdateAdcCounts();
-
-	Bool_t invTrig;
-	curModule->GetPolarity(invTrig, curChannel);
-	fTrigPol->Select(invTrig ? kVMETrigPolNeg : kVMETrigPolPos);
-
-	Int_t tmode;
-	curModule->GetTriggerMode(tmode, curChannel);
-	fTrigMode->Select(tmode);
 
 	Int_t olen;
 	curModule->ReadTrigPulseLength(olen, curChannel);
@@ -718,26 +862,24 @@ void VMESis3302Panel::UpdateGUI() {
 	curModule->GetTriggerGT(gt, curChannel);
 	curModule->GetTriggerOut(out, curChannel);
 	if (gt) {
-		fTrigCond->Select(out ? kVMETrigCondGTEna : kVMETrigCondGTDis);
+		fTrigCond->Select(out ? kVMETrigCondEnaGT : kVMETrigCondDis);
 	} else {
 		fTrigCond->Select(out ? kVMETrigCondEna : kVMETrigCondDis);
 	}
 
-	Int_t delay;
-	curModule->ReadPreTrigDelay(delay, curChannel);
-	fPreTrigDelay->SetText(delay);
+	curModule->ReadPreTrigDelay(d, curChannel);
+	fPreTrigDelay->SetText(d);
 
 	curModule->ReadEnergyPeakAndGap(p, g, curChannel);
-	if (p > 255) p = 255;
-	if (p < 0) p = 0;
-	if (g > 255) g = 255;
-	if (g < 0) g = 0;
+	if (p > kSis3302EnergyPeakMax) p = kSis3302EnergyPeakMax;
+	if (p < kSis3302EnergyPeakMin) p = kSis3302EnergyPeakMin;
+	if (g > kSis3302EnergyGapMax) g = kSis3302EnergyGapMax;
+	if (g < kSis3302EnergyGapMin) g = kSis3302EnergyGapMin;
 	fEnergyPeaking->SetText(p);
 	fEnergyGap->SetText(g);
 	curModule->WriteEnergyPeakAndGap(p, g, curChannel);
 
-	Int_t decim;
-	curModule->GetDecimation(decim, curChannel);
+	curModule->GetEnergyDecimation(decim, curChannel);
 	fEnergyDecimation->Select(decim);
 
 	Int_t tau;
@@ -768,9 +910,9 @@ void VMESis3302Panel::ModuleChanged(Int_t FrameId, Int_t Selection) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	curModule = (TC2LSis3302 *) fLofModules.FindByIndex(Selection);
@@ -787,9 +929,9 @@ void VMESis3302Panel::ChannelChanged(Int_t FrameId, Int_t Selection) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	curChannel = Selection;
@@ -804,31 +946,65 @@ void VMESis3302Panel::ClockSourceChanged(Int_t FrameId, Int_t Selection) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	curModule->SetClockSource(Selection);
+	Int_t clock = Selection;
+	curModule->SetClockSource(clock);
 	this->UpdateDecayTime();
 }
 
-void VMESis3302Panel::CommonTrigModeChanged(Int_t FrameId, Int_t Selection) {
+void VMESis3302Panel::LemoInModeChanged(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           VMESis3302Panel::CommonTrigModeChanged
-// Purpose:        Slot method: trigger mode changed
+// Name:           VMESis3302Panel::LemoInModeChanged
+// Purpose:        Slot method: lemo in mode
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Exceptions:     
-// Description:    Called on TGMrbButtonFrame::ButtonPressed()
-// Keywords:       
+// Results:        --
+// Exceptions:
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t itrig = (Selection & kVMETrigModeIntern);
-	curModule->SetInternalTrigger(itrig);
-	Bool_t xtrig = (Selection & kVMETrigModeExtern);
-	curModule->SetExternalTrigger(xtrig);
+	Int_t mode = ((TMrbNamedX *) lofLemoInModes[Selection])->GetIndex();
+	curModule->SetLemoInMode(mode);
+}
+
+void VMESis3302Panel::LemoOutModeChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::LemoOutModeChanged
+// Purpose:        Slot method: lemo out mode
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Results:        --
+// Exceptions:
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t mode = ((TMrbNamedX *) lofLemoOutModes[Selection])->GetIndex();
+	curModule->SetLemoOutMode(mode);
+}
+
+void VMESis3302Panel::LemoInEnableMaskChanged(Int_t FrameId, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::LemoInEnableMaskChanged
+// Purpose:        Slot method: lemo in mask
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t EntryNo     -- entry (ignored)
+// Results:        --
+// Exceptions:
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t mask= fLemoInEnableMask->GetText2Int(EntryNo);;
+	curModule->SetLemoInEnableMask(mask);
 }
 
 void VMESis3302Panel::DacOffsetChanged(Int_t FrameId, Int_t EntryNo) {
@@ -839,9 +1015,9 @@ void VMESis3302Panel::DacOffsetChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TArrayI dacVal(1);
@@ -856,12 +1032,95 @@ void VMESis3302Panel::TrigModeChanged(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: trigger mode changed
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	curModule->SetTriggerMode(Selection, curChannel);
+	Int_t bits = ((TMrbNamedX *) lofTrigModes[Selection])->GetIndex();
+	curModule->SetTriggerMode(bits, curChannel);
+}
+
+void VMESis3302Panel::GateModeChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::GateModeChanged
+// Purpose:        Slot method: gate mode changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Exceptions:
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t bits = ((TMrbNamedX *) lofGateModes[Selection])->GetIndex();
+	curModule->SetGateMode(bits, curChannel);
+}
+
+void VMESis3302Panel::NextNeighborTrigModeChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::NextNeighborTrigModeChanged
+// Purpose:        Slot method: trigger mode changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Exceptions:
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t bits = ((TMrbNamedX *) lofNextNeighborTrigModes[Selection])->GetIndex();
+	curModule->SetNextNeighborTriggerMode(bits, curChannel);
+}
+
+void VMESis3302Panel::NextNeighborGateModeChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::NextNeighborGateModeChanged
+// Purpose:        Slot method: gate mode changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Exceptions:
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t bits = ((TMrbNamedX *) lofNextNeighborGateModes[Selection])->GetIndex();
+	curModule->SetNextNeighborGateMode(bits, curChannel);
+}
+
+void VMESis3302Panel::TrigInternalGateChanged(Int_t FrameId, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::TrigInternalGateChanged
+// Purpose:        Slot method: internal gate changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t EntryNo     -- entry (ignored)
+// Results:        --
+// Exceptions:
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	  Int_t gate = fTrigInternalGate->GetText2Int(EntryNo);
+	  curModule->WriteTrigInternalGate(gate, curChannel);
+}
+
+void VMESis3302Panel::TrigInternalDelayChanged(Int_t FrameId, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::TrigInternalDelayChanged
+// Purpose:        Slot method: internal delay changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t EntryNo     -- entry (ignored)
+// Results:        --
+// Exceptions:
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	  Int_t delay = fTrigInternalDelay->GetText2Int(EntryNo);
+	  curModule->WriteTrigInternalDelay(delay, curChannel);
 }
 
 void VMESis3302Panel::TrigPeakingChanged(Int_t FrameId, Int_t EntryNo) {
@@ -872,9 +1131,9 @@ void VMESis3302Panel::TrigPeakingChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t p, psav, g;
@@ -903,9 +1162,9 @@ void VMESis3302Panel::TrigGapChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t p, g, gsav;
@@ -934,9 +1193,9 @@ void VMESis3302Panel::TrigThreshChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t thsav;
@@ -956,9 +1215,9 @@ void VMESis3302Panel::TrigPolarChanged(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: trigger settings changed
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t invTrig = kFALSE;
@@ -976,17 +1235,16 @@ void VMESis3302Panel::TrigCondChanged(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: trigger settings changed
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t gt = kFALSE;
 	Bool_t out = kFALSE;
 	switch (Selection) {
 		case kVMETrigCondDis:	gt = kFALSE; out = kFALSE; break;
-		case kVMETrigCondGTEna:	gt = kTRUE; out = kTRUE; break;
-		case kVMETrigCondGTDis:	gt = kTRUE; out = kFALSE; break;
+		case kVMETrigCondEnaGT:	gt = kTRUE; out = kTRUE; break;
 		case kVMETrigCondEna:	gt = kFALSE; out = kTRUE; break;
 	}
 	curModule->SetTriggerGT(gt, curChannel);
@@ -1001,9 +1259,9 @@ void VMESis3302Panel::TrigOutChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t outsav;
@@ -1022,9 +1280,9 @@ void VMESis3302Panel::TrigDelayChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t delsav;
@@ -1036,6 +1294,21 @@ void VMESis3302Panel::TrigDelayChanged(Int_t FrameId, Int_t EntryNo) {
 	this->UpdateGates();
 }
 
+void VMESis3302Panel::TrigDecimationChanged(Int_t FrameId, Int_t Selection) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::TrigDecimationChanged
+// Purpose:        Slot method: decimation settings changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t Selection   -- selection
+// Exceptions:
+// Description:    Called on TGMrbLabelCombo::SelectionChanged()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	curModule->SetTrigDecimation(Selection, curChannel);
+}
+
 void VMESis3302Panel::EnergyPeakingChanged(Int_t FrameId, Int_t EntryNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1044,9 +1317,9 @@ void VMESis3302Panel::EnergyPeakingChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t p, psav, g;
@@ -1069,9 +1342,9 @@ void VMESis3302Panel::EnergyGapChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t p, g, gsav;
@@ -1086,19 +1359,19 @@ void VMESis3302Panel::EnergyGapChanged(Int_t FrameId, Int_t EntryNo) {
 	this->UpdateGates();
 }
 
-void VMESis3302Panel::DecimationChanged(Int_t FrameId, Int_t Selection) {
+void VMESis3302Panel::EnergyDecimationChanged(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           VMESis3302Panel::DecimationChanged
-// Purpose:        Slot method: trigger settings changed
+// Name:           VMESis3302Panel::EnergyDecimationChanged
+// Purpose:        Slot method: decimation settings changed
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	curModule->SetDecimation(Selection, curChannel);
+	curModule->SetEnergyDecimation(Selection, curChannel);
 	this->UpdateDecayTime();
 	this->UpdateGates();
 }
@@ -1111,9 +1384,9 @@ void VMESis3302Panel::TauFactorChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t tau, tausav;
@@ -1136,9 +1409,9 @@ void VMESis3302Panel::RawDataStartChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t rds, rdssav;
@@ -1164,9 +1437,9 @@ void VMESis3302Panel::RawDataLengthChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t rdl, rdlsav;
@@ -1191,9 +1464,9 @@ void VMESis3302Panel::EnergyDataModeChanged(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: trigger settings changed
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t val;
@@ -1215,9 +1488,9 @@ void VMESis3302Panel::EnergyDataStart1Changed(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	this->EnergyDataStartOrLengthChanged(0, fEnergyDataStart1, EntryNo);
@@ -1231,9 +1504,9 @@ void VMESis3302Panel::EnergyDataStart2Changed(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	this->EnergyDataStartOrLengthChanged(1, fEnergyDataStart2, EntryNo);
@@ -1247,9 +1520,9 @@ void VMESis3302Panel::EnergyDataStart3Changed(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	this->EnergyDataStartOrLengthChanged(2, fEnergyDataStart3, EntryNo);
@@ -1263,9 +1536,9 @@ void VMESis3302Panel::EnergyDataLengthChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	this->EnergyDataStartOrLengthChanged(-1, fEnergyDataLength, EntryNo);
@@ -1279,9 +1552,9 @@ void VMESis3302Panel::EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntr
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t EntryNo     -- entry (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelEntry::EntryChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (IdxNo >= 0) {
@@ -1332,13 +1605,13 @@ void VMESis3302Panel::EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntr
 void VMESis3302Panel::UpdateAdcCounts() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           VMESis3302Panel::TrigGapChanged
+// Name:           VMESis3302Panel::UpdateAdcCounts
 // Purpose:        Calculate adc counts from peak and gap values
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called after peaking, gap or thresh values have changed
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t p, g, th;
@@ -1351,9 +1624,11 @@ void VMESis3302Panel::UpdateAdcCounts() {
 		curModule->ReadTrigPeakAndGap(p, g, curChannel);
 		curModule->ReadTrigThreshold(th, curChannel);
 	}
+	if (p == 0) p = 1;
 	Int_t c = th * 16 / p;
 	fTrigSumG->SetText(p + g);
 	fTrigCounts->SetText(c);
+	fTrigThresh->SetText(th);
 }
 
 void VMESis3302Panel::UpdateDecayTime() {
@@ -1363,9 +1638,9 @@ void VMESis3302Panel::UpdateDecayTime() {
 // Purpose:        Calculate decay time from tau factor
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called after tau factor, clock, or decimation values have changed
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t cs[]	=	{	100000, 50000,	25000,	10000,	1000	};
@@ -1376,7 +1651,7 @@ void VMESis3302Panel::UpdateDecayTime() {
 	} else {
 		curModule->GetClockSource(clockSource);
 	}
-	if (clockSource > kVMEClockSource1) {
+	if (clockSource > kVMEClockSource1MHz) {
 		fEnergyDecayTime->SetText("n/a");
 		return;
 	}
@@ -1385,7 +1660,7 @@ void VMESis3302Panel::UpdateDecayTime() {
 	if (curModule->IsOffline()) {
 		decim = fEnergyDecimation->GetSelectedNx()->GetIndex();
 	} else {
-		curModule->GetDecimation(decim, curChannel);
+		curModule->GetEnergyDecimation(decim, curChannel);
 	}
 	Int_t tau;
 	if (curModule->IsOffline()) {
@@ -1417,9 +1692,9 @@ void VMESis3302Panel::UpdateGates() {
 // Purpose:        Calculate energy windows
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called after peaking, gap or decimation values have changed
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t edl;
@@ -1474,16 +1749,10 @@ void VMESis3302Panel::UpdateGates() {
 	if (curModule->IsOffline()) {
 		decim = fEnergyDecimation->GetSelectedNx()->GetIndex();
 	} else {
-		curModule->GetDecimation(decim, curChannel);
+		curModule->GetEnergyDecimation(decim, curChannel);
 	}
 
-	Int_t delay;
-	switch (decim) {
-		case kVMEDecimDis:	delay = preTrigDel; break;
-		case kVMEDecim2:	delay = preTrigDel / 2; break;
-		case kVMEDecim4:	delay = preTrigDel / 4; break;
-		case kVMEDecim8:	delay = preTrigDel / 8; break;
-	}
+	Int_t delay = preTrigDel / (2 << decim);
 
 	Int_t peak, gap;
 	if (curModule->IsOffline()) {
@@ -1499,7 +1768,7 @@ void VMESis3302Panel::UpdateGates() {
 	} else {
 		egate = delay + 600;
 	}
-	fEnergyGate->SetText(egate);
+	fEnergyGateLength->SetText(egate);
 	curModule->WriteEnergyGateLength(egate, curChannel);
 
 	Int_t rds, rdl;
@@ -1516,7 +1785,7 @@ void VMESis3302Panel::UpdateGates() {
 	tgate2 = rdl + rds;
 	if (tgate2 > tgate) tgate = tgate2;
 	tgate += 16;
-	fTrigGate->SetText(tgate);
+	fTrigGateLength->SetText(tgate);
 	curModule->WriteTrigGateLength(tgate, curChannel);
 }
 
@@ -1527,9 +1796,9 @@ void VMESis3302Panel::ResetModule() {
 // Purpose:        Reset module to power-up settings
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Reset
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	curModule->KeyAddr(kSis3302KeyReset);
@@ -1541,11 +1810,11 @@ Bool_t VMESis3302Panel::SetupModuleList() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302Panel::SetupModuleList
 // Purpose:        Fill list of modules
-// Arguments:      -- 
+// Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gVMEControlData->IsOffline() || gMrbC2Lynx) {

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.9 2009-08-21 10:02:32 Rudolf.Lutter Exp $
+// Revision:       $Id: VMEServerPanel.cxx,v 1.10 2010-03-10 12:08:11 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -22,7 +22,6 @@
 #include "TGMsgBox.h"
 
 #include "TMrbLogger.h"
-#include "TMrbC2Lynx.h"
 
 #include "TGMrbProgressBar.h"
 
@@ -50,6 +49,14 @@ const SMrbNamedXShort kVMEServerColors[] =
 				{0, 										NULL		}
 			};
 
+const SMrbNamedX kVMEServerLogTypes[] =
+			{
+				{VMEServerPanel::kVMEServerLogNone, 	"none",		"No server output at all"	},
+				{VMEServerPanel::kVMEServerLogCout, 	"cout",		"Server output to cout/cerr"	},
+				{VMEServerPanel::kVMEServerLogXterm, 	"xterm",	"Server output to XTERM window"		},
+				{0, 									NULL,			NULL						}
+			};
+
 static Char_t * kVMEServerFileTypes[]	=	{	"All files",			"*",
 												NULL,					NULL
 											};
@@ -61,7 +68,7 @@ extern TMrbLogger * gMrbLog;
 ClassImp(VMEServerPanel)
 
 VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
-				TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
+				TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kHorizontalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMEServerPanel
@@ -119,6 +126,9 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	fServerColors.SetName("Server colors");
 	fServerColors.AddNamedX(kVMEServerColors);
 
+	fServerLogTypes.SetName("Server log types");
+	fServerLogTypes.AddNamedX(kVMEServerLogTypes);
+
 	this->ChangeBackground(gVMEControlData->fColorGreen);
 
 	TGLayoutHints * loXpndX = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
@@ -131,9 +141,22 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	entryGC->SetLH(loXpndX);
 	comboGC->SetLH(loNormal);
 
-	fServerFrame = new TGGroupFrame(this, "LynxOs Server", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	TGLayoutHints * lh = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 0, 0, 0, 0);
+	HEAP(lh);
+
+	TGVerticalFrame * vframe = new TGVerticalFrame(this);
+	HEAP(vframe);
+	this->AddFrame(vframe, lh);
+	vframe->ChangeBackground(gVMEControlData->fColorGreen);
+
+	TGVerticalFrame * vdmy = new TGVerticalFrame(this);
+	HEAP(vdmy);
+	this->AddFrame(vdmy, lh);
+	vdmy->ChangeBackground(gVMEControlData->fColorGreen);
+
+	fServerFrame = new TGGroupFrame(vframe, "LynxOs Server", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fServerFrame);
-	this->AddFrame(fServerFrame, groupGC->LH());
+	vframe->AddFrame(fServerFrame, groupGC->LH());
 
 // VME host
 	TMrbLofNamedX lofHosts;
@@ -153,13 +176,13 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	lofHosts.AddNamedX(hostNames.Data());
 	fSelectHost = new TGMrbLabelCombo(fServerFrame, "VME Host",	&lofHosts,
 																kVMEServerHost, selIdx,
-																frameWidth/4, kLEHeight, frameWidth/4,
+																frameWidth/4, kLEHeight, frameWidth/10,
 																frameGC, labelGC, comboGC, labelGC);
 	fServerFrame->AddFrame(fSelectHost, frameGC->LH());
 
 // TCP port
 	fSelectPort = new TGMrbLabelEntry(fServerFrame, "TCP Port",	50, kVMEServerTcpPort,
-																	frameWidth/4, kLEHeight, frameWidth/4,
+																	frameWidth/4, kLEHeight, frameWidth/10,
 																	frameGC, labelGC, entryGC, labelGC);
 	fServerFrame->AddFrame(fSelectPort, frameGC->LH());
 	Int_t tcpPort = gVMEControlData->Vctrlrc()->Get(".TcpPort", 9010);
@@ -169,30 +192,29 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	fSelectPort->AddToFocusList(&fFocusList);
 
 // Server path
-	fServerPathFileEntry = new TGMrbLabelEntry(fServerFrame, "Server Path (as seen from LynxOs)",
+	fServerPathFileEntry = new TGMrbLabelEntry(fServerFrame, "Server Path",
 																50, kVMEServerServerPath,
-																frameWidth/4, kLEHeight, frameWidth/4,
+																frameWidth/4, kLEHeight, frameWidth/3,
 																frameGC, labelGC, entryGC);
 	HEAP(fServerPathFileEntry);
 	fServerFrame->AddFrame(fServerPathFileEntry, frameGC->LH());
 	TString spath = "/nfs/marabou/bin/mrbLynxOsSrv";
 	fServerPathFileEntry->SetText(gVMEControlData->Vctrlrc()->Get(".ServerName", spath.Data()));
 
+// Server log types
+	fSelectLogType = new TGMrbLabelCombo(fServerFrame, "Server Output",		&fServerLogTypes,
+																		kVMEServerServerTypes, 1,
+																		frameWidth/4, kLEHeight, frameWidth/10,
+																		frameGC, labelGC, comboGC, labelGC);
+	HEAP(fSelectLogType);
+	fServerFrame->AddFrame(fSelectLogType, frameGC->LH());
+	fSelectLogType->Select(kVMEServerLogNone);
+
 //	buttons
-	fServerButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fServerActions, 0, 1, groupGC, buttonGC);
+	fServerButtonFrame = new TGMrbTextButtonGroup(vframe, "Actions", &fServerActions, 0, 1, groupGC, buttonGC);
 	HEAP(fServerButtonFrame);
-	this->AddFrame(fServerButtonFrame, buttonGC->LH());
+	vframe->AddFrame(fServerButtonFrame, buttonGC->LH());
 	((TGMrbButtonFrame *) fServerButtonFrame)->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "ActionButton(Int_t, Int_t)");
-
-//	server log
-	fLogFrame = new TGGroupFrame(this, "Server Log", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fLogFrame);
-	this->AddFrame(fLogFrame, groupGC->LH());
-
-	fTextView = new TGTextView(fLogFrame, frameWidth, 200);
-	HEAP(fTextView);
-	fLogFrame->AddFrame(fTextView, new TGLayoutHints(kLHintsExpandX | kLHintsExpandY, 0, 0, 0, 0));
-	fTextView->SetFont(gClient->GetFont(gVMEControlData->FixedFont())->GetFontStruct());
 
 	TabFrame->AddFrame(this, loXpndX);
 
@@ -265,8 +287,9 @@ Bool_t VMEServerPanel::Connect() {
 	TString port = fSelectPort->GetText();
 	Int_t portNo = port.Atoi();
 
-	TString cpu, lynx;
-	TMrbC2Lynx * c2l = new TMrbC2Lynx(ppc.Data(), srv.Data(), "c2lynx.log", portNo, "Pipe", kFALSE);
+	TString cpu, lynx, slog;
+	slog = ((TMrbNamedX *) fServerLogTypes.FindByIndex(fSelectLogType->GetSelected()))->GetName();
+	TMrbC2Lynx * c2l = new TMrbC2Lynx(ppc.Data(), srv.Data(), "c2lynx.log", portNo, slog, kFALSE);
 	if (c2l->IsZombie()) {
 		gMrbLog->Err()	<< "Unable to start linux <-> lynx connection" << endl;
 		gMrbLog->Flush(this->ClassName(), "Connect");
@@ -291,69 +314,17 @@ Bool_t VMEServerPanel::Connect() {
 			sleep(1);
 		}
 		pgb->DeleteWindow();
-		delete pgb;
 	}
 
-	if (!c2l->IsConnected()) {
+	if (c2l->IsConnected()) {
+		if (c2l->GetServerLog()->GetIndex() == TMrbC2Lynx::kC2LServerLogNone) gVMEControlData->MsgBox(this, "Connect", "Info", Form("Connected to LynxOs server @ %s:%d", ppc.Data(), portNo), kMBIconAsterisk);
+		return(kTRUE);
+	} else {
 		gVMEControlData->MsgBox(this, "Connect", "Abort", Form("Unable to connect to LynxOs server @ %s:%d", ppc.Data(), portNo), kMBIconStop);
 		return(kFALSE);
 	}
 
-	fPipe = c2l->GetPipe();
-	if (fPipe) {
-		fServerLog = new TMrbTail("mrb2lynx", fPipe);
-		if (fServerLog->IsZombie()) {
-			gMrbLog->Wrn()	<< "Connection to server log failed - no output" << endl;
-			gMrbLog->Flush(this->ClassName(), "Connect");
-		} else {
-			fServerLog->SetOutput(this->ClassName(), this, "FillTextView()");
-			fServerLog->Start();
-		}
-	} else {
-		fTextView->AddLine("Connecting to running server - no server log possible");
-		fTextView->AdjustWidth();
-		gMrbLog->Wrn()	<< "Connecting to running server - no server log possible" << endl;
-		gMrbLog->Flush(this->ClassName(), "Connect");
-	}
-
 	return(kTRUE);
-}
-
-void VMEServerPanel::FillTextView() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           VMESystemPanel::FillTextView
-// Purpose:        Fill server messages in text view window
-// Arguments:      --
-// Results:        --
-// Exceptions:
-// Description:    Called by signakl "NewDataArrived()"
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Char_t buf[512];
-	if (fgets(buf, 512, fPipe))	{
-		TString str = buf;
-		str.Resize(str.Length() - 1);
-		TIterator * iter = fServerColors.MakeIterator();
-		TMrbNamedX * nx;
-		Int_t color = 0;
-		Int_t idx;
-		while (nx = (TMrbNamedX *) iter->Next()) {
-			if (color == 0 && str.Contains(nx->GetName()))  color = nx->GetIndex();
-		}
-		idx = 0;
-		while ((idx = str.Index("\033", idx)) >= 0) str.Remove(idx, 5);
-		str = str.Strip(TString::kBoth);
-		str.Prepend("   ");
-		str += "   ";
-		fTextView->SetForegroundColor(color);
-		fTextView->AddLine(str.Data());
-		fTextView->AdjustWidth();
-		fTextView->ShowBottom();
-	} else {
-		cout << endl;
-	}
 }
 
 

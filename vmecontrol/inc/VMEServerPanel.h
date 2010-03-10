@@ -8,8 +8,8 @@
 // Class:          VMEServerPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMEServerPanel.h,v 1.5 2009-08-21 10:02:32 Rudolf.Lutter Exp $
-// Date:           $Date: 2009-08-21 10:02:32 $
+// Revision:       $Id: VMEServerPanel.h,v 1.6 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-10 12:08:11 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -32,6 +32,8 @@
 #include "TGMrbFileEntry.h"
 #include "TGMrbLabelCombo.h"
 #include "TGMrbLofKeyBindings.h"
+
+#include "TMrbC2Lynx.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -60,12 +62,18 @@ class VMEServerPanel : public TGCompositeFrame {
 									kVMEServerHost,
 									kVMEServerTcpPort,
 									kVMEServerServerPath,
+									kVMEServerServerTypes,
 									kVMEServerButtonConnect,
 									kVMEServerButtonAbort,
 									kVMEServerButtonRestart
 								};
 
 		enum					{	kVMEServerWaitForConnection	=	10	};
+
+		enum EVMEServerLog		{	kVMEServerLogNone	=	TMrbC2Lynx::kC2LServerLogNone,
+									kVMEServerLogCout	=	TMrbC2Lynx::kC2LServerLogCout,
+									kVMEServerLogXterm	=	TMrbC2Lynx::kC2LServerLogXterm,
+		};
 
 	public:
 		VMEServerPanel(TGCompositeFrame * TabFrame);
@@ -76,8 +84,6 @@ class VMEServerPanel : public TGCompositeFrame {
 
 		Bool_t Connect();							// connect to lynxos server
 		Bool_t ActionButton(Int_t, Int_t);			// will be called on 'button pressed'
-		void FillTextView();						// fill text view window with server messages
-		inline void UpdateTextView() { fTextView->Update(); };
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
@@ -88,17 +94,17 @@ class VMEServerPanel : public TGCompositeFrame {
 		TGMrbLabelCombo * fSelectHost;  			//		host
 		TGMrbLabelEntry * fSelectPort;				//		port
 		TGMrbLabelEntry * fServerPathFileEntry;		//		path
+		TGMrbLabelCombo * fSelectLogType;  			//		log type
 		TGMrbTextButtonGroup * fServerButtonFrame;	// buttons
 		TGGroupFrame * fLogFrame; 					// server log
-		TGTextView * fTextView;
 
 		TGFileInfo fServerPathFileInfo;
 
 		TMrbTail * fServerLog;						// stream to output server logs
-		FILE * fPipe;
 
 		TMrbLofNamedX fServerActions;
 		TMrbLofNamedX fServerColors;
+		TMrbLofNamedX fServerLogTypes;
 
 		TGMrbFocusList fFocusList;
 

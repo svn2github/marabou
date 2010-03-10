@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.13 2009-08-21 10:02:32 Rudolf.Lutter Exp $
-// Date:           $Date: 2009-08-21 10:02:32 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.14 2010-03-10 12:08:10 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-10 12:08:10 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,10 +41,9 @@
 class TMrbC2Lynx : public TNamed {
 
 	public:
-		enum EC2LServerLog	{	kC2LServerLogNone	=	BIT(0),
-								kC2LServerLogXterm	=	BIT(1),
-								kC2LServerLogPipe	=	BIT(2),
-								kC2LServerLogDebug	=	BIT(3)
+		enum EC2LServerLog	{	kC2LServerLogNone	=	0,
+								kC2LServerLogCout,
+								kC2LServerLogXterm
 		};
 
 	public:
@@ -52,7 +51,7 @@ class TMrbC2Lynx : public TNamed {
 		TMrbC2Lynx() { this->Reset(); };												// default ctor
 
 		TMrbC2Lynx(const Char_t * HostName, const Char_t * Server = NULL, const Char_t * LogFile = NULL, Int_t Port = 9010,
-						const Char_t * ServerLog = "None", Bool_t ConnectFlag = kTRUE);		// ctor: connect to host
+						const Char_t * ServerLog = "cout", Bool_t ConnectFlag = kTRUE);		// ctor: connect to host
 
 		~TMrbC2Lynx() {};							// default dtor
 
@@ -72,10 +71,11 @@ class TMrbC2Lynx : public TNamed {
 		inline Bool_t IsDebug() { return(fDebugMode); };
 
 		inline Bool_t IsNonBlocking() { return(fNonBlocking); };
-		inline Bool_t Log2Xterm() { return(fServerLog->GetIndex() & kC2LServerLogXterm); };
-		inline Bool_t Log2Pipe() { return(fServerLog->GetIndex() & kC2LServerLogPipe); };
+
+		inline Bool_t LogNone() { return(fServerLog->GetIndex() == kC2LServerLogNone); };
+		inline Bool_t LogCout() { return(fServerLog->GetIndex() == kC2LServerLogCout); };
+		inline Bool_t LogXterm() { return(fServerLog->GetIndex() == kC2LServerLogXterm); };
 		inline TMrbNamedX * GetServerLog() { return(fServerLog); };
-		inline FILE * GetPipe() { return(fPipe); };
 
 		inline Bool_t IsConnected() { return(fSocket != NULL); }
 
@@ -119,8 +119,6 @@ class TMrbC2Lynx : public TNamed {
 		TString fLogFile;							// where to write log info
 		TSocket * fSocket;							//! connection to server
 		Int_t fPort;								// port number
-
-		FILE * fPipe;								//! stream for pipe output
 
 		TMrbLofNamedX fLofServerLogs;				// list of server log modes
 		TMrbLofNamedX fLofModules;					// list of vme/camac modules connected

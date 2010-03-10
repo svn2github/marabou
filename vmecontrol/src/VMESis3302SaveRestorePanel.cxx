@@ -3,13 +3,13 @@
 // ame:            VMESis3302SaveRestorePanel
 // Purpose:        A GUI to control a SIS 3302 adc
 // Description:    Save/restore settings
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.4 2008-10-27 12:26:07 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.5 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -80,27 +80,27 @@ VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(const TGWindow * Window, 
 //	Clear focus list
 	fFocusList.Clear();
 
-	frameGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	frameGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(frameGC);
 
-	groupGC = new TGMrbLayout(	gVMEControlData->SlantedFont(), 
+	groupGC = new TGMrbLayout(	gVMEControlData->SlantedFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(groupGC);
 
-	comboGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	comboGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(comboGC);
 
-	labelGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	labelGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(labelGC);
 
-	buttonGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	buttonGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGray);	HEAP(buttonGC);
 
-	entryGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	entryGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorWhite);	HEAP(entryGC);
 
@@ -121,7 +121,7 @@ VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(const TGWindow * Window, 
 	HEAP(lofSpecialButtons);
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
-	
+
 //	Initialize several lists
 	fActions.SetName("Actions");
 	fActions.AddNamedX(kVMESis302SaveRestoreActions);
@@ -139,7 +139,7 @@ VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(const TGWindow * Window, 
 	fLofSelected.SetPatternMode();
 
 	fModules = new TGMrbCheckButtonGroup(this, "Modules", &fLofSelected,
-													kVMESis3302Modules, 1, 
+													kVMESis3302Modules, 1,
 													groupGC, buttonGC, lofSpecialButtons);
 	HEAP(fModules);
 	this->AddFrame(fModules, groupGC->LH());
@@ -166,10 +166,10 @@ void VMESis3302SaveRestorePanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
@@ -192,9 +192,9 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 // Purpose:        Restore settings from file
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Restores settings.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString errMsg;
@@ -207,7 +207,6 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 		gVMEControlData->MsgBox(this, "RestoreSettings", "Error", "No modules selected");
 		return(kFALSE);
 	}
-
 	fileInfoRestore.fFileTypes = (const Char_t **) kVMESis3302FileTypes;
 	if (!gVMEControlData->CheckAccess(gVMEControlData->fSettingsPath.Data(),
 						(Int_t) VMEControlData::kVMEAccessDirectory | VMEControlData::kVMEAccessRead, errMsg)) {
@@ -230,13 +229,13 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 	uxSys.GetDirName(dirName, loadDir.Data());			// will be identical
 	uxSys.GetBaseName(baseName2, dirName.Data());		// example: single click returns /a/b/c, double click /a/b/c/c
 	if (baseName1.CompareTo(baseName2.Data()) == 0) loadDir = dirName;	// double click: strip off last part
-	
+
 	if (!uxSys.IsDirectory(loadDir.Data())) {
 		errMsg = Form("Not a directory - %s, please go one level up", loadDir.Data());
 		gVMEControlData->MsgBox(this, "RestoreSettings", "Error", errMsg);
 		return(kFALSE);
 	}
-	
+
 	Int_t nerr = 0;
 
 	TIterator * iter = fLofSelected.MakeIterator();
@@ -260,7 +259,7 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 		gSystem->ProcessEvents();
 	}
 	delete pgb;
-	
+
 	if (nerr > 0) {
 		gVMEControlData->MsgBox(this, "RestoreSettings", "Error", "Restoring module settings failed");
 	}
@@ -280,14 +279,14 @@ Bool_t VMESis3302SaveRestorePanel::SaveSettings() {
 // Purpose:        Save settings to file
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Save settings.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGFileInfo fileInfoSave;
 	TString errMsg;
-			
+
 	Bool_t verbose = gVMEControlData->IsVerbose();
 
 	UInt_t modSel = fModules->GetActive();
@@ -296,9 +295,15 @@ Bool_t VMESis3302SaveRestorePanel::SaveSettings() {
 		return(kFALSE);
 	}
 
+	TString sPath = gVMEControlData->fSettingsPath;
+
+	if (gSystem->AccessPathName(sPath.Data())) {
+		gSystem->MakeDirectory(sPath.Data());
+		gVMEControlData->MsgBox(this, "SaveSettings", "Warning", Form("Creating directory \"%s\"", sPath.Data()), kMBIconAsterisk);
+	}
+
 	fileInfoSave.fFileTypes = (const Char_t **) kVMESis3302FileTypes;
-	if (!gVMEControlData->CheckAccess(gVMEControlData->fSettingsPath.Data(),
-						(Int_t) VMEControlData::kVMEAccessDirectory | VMEControlData::kVMEAccessWrite, errMsg)) {
+	if (!gVMEControlData->CheckAccess(sPath.Data(), (Int_t) VMEControlData::kVMEAccessDirectory | VMEControlData::kVMEAccessWrite, errMsg)) {
 		fileInfoSave.fIniDir = StrDup(gSystem->WorkingDirectory());
 		errMsg += "\nFalling back to \"";
 		errMsg += gSystem->WorkingDirectory();
@@ -318,7 +323,7 @@ Bool_t VMESis3302SaveRestorePanel::SaveSettings() {
 	uxSys.GetDirName(dirName, saveDir.Data());			// will be identical
 	uxSys.GetBaseName(baseName2, dirName.Data());		// example: single click returns /a/b/c, double click /a/b/c/c
 	if (baseName1.CompareTo(baseName2.Data()) == 0) saveDir = dirName;	// double click: strip off last part
-	
+
 	if (!uxSys.Exists(saveDir.Data())) {
 		TString cmd = "mkdir -p ";
 		cmd += saveDir;
@@ -328,7 +333,7 @@ Bool_t VMESis3302SaveRestorePanel::SaveSettings() {
 			gMrbLog->Flush(this->ClassName(), "SaveSettings", setblue);
 		}
 	}
-	
+
 	if (!uxSys.IsDirectory(saveDir.Data())) {
 		errMsg = "File \"";
 		errMsg += saveDir.Data();
@@ -360,7 +365,7 @@ Bool_t VMESis3302SaveRestorePanel::SaveSettings() {
 		gSystem->ProcessEvents();
 	}
 	delete pgb;
-	
+
 	if (nerr > 0) {
 		gVMEControlData->MsgBox(this, "SaveSettings", "Error", "Saving module settings failed");
 	}

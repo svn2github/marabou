@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.9 2008-10-27 12:26:07 Marabou Exp $     
-// Date:           $Date: 2008-10-27 12:26:07 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.10 2010-03-10 12:08:10 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-10 12:08:10 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -104,6 +104,7 @@ Bool_t TC2LSis3302::GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t &
 	x.fData.fWc = 1;
 	if (gMrbC2Lynx->Send((M2L_MsgHdr *) &x)) {
 		M2L_VME_Return_Module_Info r;
+		r.fHdr.fLength = sizeof(M2L_VME_Return_Module_Info) / sizeof(Int_t);
 		if (gMrbC2Lynx->Recv((M2L_MsgHdr *) &r)) {
 			BoardId = r.fBoardId;
 			MajorVersion = r.fMajorVersion;
@@ -116,7 +117,7 @@ Bool_t TC2LSis3302::GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t &
 		return(kFALSE);
 	}
 }
-	
+
 Bool_t TC2LSis3302::SetTimeout(Int_t & Timeout) {
 	TArrayI timeout(1); timeout[0] = Timeout;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TIMEOUT, timeout, timeout, kSis3302AllAdcs)) return(kFALSE);
@@ -136,11 +137,11 @@ Bool_t TC2LSis3302::ReadDac(TArrayI & DacValues, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_READ_DAC, dataSend, DacValues, AdcNo));
 }
-	
+
 Bool_t TC2LSis3302::WriteDac(TArrayI & DacValues, Int_t AdcNo) {
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_DAC, DacValues, DacValues, AdcNo));
 }
-	
+
 Bool_t TC2LSis3302::KeyAddr(Int_t Key) {
 	TArrayI keyData(1);
 	keyData[0] = Key;
@@ -158,6 +159,21 @@ Bool_t TC2LSis3302::ReadEventConfig(Int_t & Bits, Int_t AdcNo) {
 Bool_t TC2LSis3302::WriteEventConfig(Int_t & Bits, Int_t AdcNo) {
 	TArrayI bits(1); bits[0] = Bits;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_EVENT_CONFIG, bits, bits, AdcNo)) return(kFALSE);
+	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::ReadEventExtendedConfig(Int_t & Bits, Int_t AdcNo) {
+	TArrayI dataSend(0);
+	TArrayI bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_EVENT_EXTENDED_CONFIG, dataSend, bits, AdcNo)) return(kFALSE);
+	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::WriteEventExtendedConfig(Int_t & Bits, Int_t AdcNo) {
+	TArrayI bits(1); bits[0] = Bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_EVENT_EXTENDED_CONFIG, bits, bits, AdcNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
@@ -196,6 +212,51 @@ Bool_t TC2LSis3302::GetTriggerMode(Int_t & Bits, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_MODE, dataSend, bits, AdcNo)) return(kFALSE);
+	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::SetGateMode(Int_t & Bits, Int_t AdcNo) {
+	TArrayI bits(1); bits[0] = Bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_GATE_MODE, bits, bits, AdcNo)) return(kFALSE);
+	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::GetGateMode(Int_t & Bits, Int_t AdcNo) {
+	TArrayI dataSend(0);
+	TArrayI bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_GATE_MODE, dataSend, bits, AdcNo)) return(kFALSE);
+	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::SetNextNeighborTriggerMode(Int_t & Bits, Int_t AdcNo) {
+	TArrayI bits(1); bits[0] = Bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_NNB_TRIGGER_MODE, bits, bits, AdcNo)) return(kFALSE);
+	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::GetNextNeighborTriggerMode(Int_t & Bits, Int_t AdcNo) {
+	TArrayI dataSend(0);
+	TArrayI bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_NNB_TRIGGER_MODE, dataSend, bits, AdcNo)) return(kFALSE);
+	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::SetNextNeighborGateMode(Int_t & Bits, Int_t AdcNo) {
+	TArrayI bits(1); bits[0] = Bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_NNB_GATE_MODE, bits, bits, AdcNo)) return(kFALSE);
+	Bits = bits[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::GetNextNeighborGateMode(Int_t & Bits, Int_t AdcNo) {
+	TArrayI dataSend(0);
+	TArrayI bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_NNB_GATE_MODE, dataSend, bits, AdcNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
@@ -248,14 +309,14 @@ Bool_t TC2LSis3302::WritePreTrigDelay(Int_t & Delay, Int_t AdcNo) {
 Bool_t TC2LSis3302::ReadTrigGateLength(Int_t & Gate, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	TArrayI gate;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIG_GATE_LENGTH, dataSend, gate, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_GATE_LENGTH, dataSend, gate, AdcNo)) return(kFALSE);
 	Gate = gate[0];
 	return(kTRUE);
 }
 
 Bool_t TC2LSis3302::WriteTrigGateLength(Int_t & Gate, Int_t AdcNo) {
 	TArrayI gate(1); gate[0] = Gate;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIG_GATE_LENGTH, gate, gate, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_GATE_LENGTH, gate, gate, AdcNo)) return(kFALSE);
 	Gate = gate[0];
 	return(kTRUE);
 }
@@ -317,7 +378,7 @@ Bool_t TC2LSis3302::ReadActualSample(Int_t & Data, Int_t AdcNo) {
 Bool_t TC2LSis3302::ReadTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	TArrayI peakgap;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIG_PEAK_AND_GAP, dataSend, peakgap, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_PEAK_AND_GAP, dataSend, peakgap, AdcNo)) return(kFALSE);
 	Peak = peakgap[0];
 	Gap = peakgap[1];
 	return(kTRUE);
@@ -325,7 +386,7 @@ Bool_t TC2LSis3302::ReadTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
 
 Bool_t TC2LSis3302::WriteTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
 	TArrayI peakgap(2); peakgap[0] = Peak; peakgap[1] = Gap;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIG_PEAK_AND_GAP, peakgap, peakgap, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_PEAK_AND_GAP, peakgap, peakgap, AdcNo)) return(kFALSE);
 	Peak = peakgap[0];
 	Gap = peakgap[1];
 	return(kTRUE);
@@ -334,29 +395,74 @@ Bool_t TC2LSis3302::WriteTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) 
 Bool_t TC2LSis3302::ReadTrigPulseLength(Int_t & PulseLength, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	TArrayI pulse;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIG_PULSE_LENGTH, dataSend, pulse, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_PULSE_LENGTH, dataSend, pulse, AdcNo)) return(kFALSE);
 	PulseLength = pulse[0];
 	return(kTRUE);
 }
 
 Bool_t TC2LSis3302::WriteTrigPulseLength(Int_t & PulseLength, Int_t AdcNo) {
 	TArrayI pulse(1); pulse[0] = PulseLength;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIG_PULSE_LENGTH, pulse, pulse, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_PULSE_LENGTH, pulse, pulse, AdcNo)) return(kFALSE);
 	PulseLength = pulse[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::ReadTrigInternalGate(Int_t & Gate, Int_t AdcNo) {
+	TArrayI dataSend(0);
+	TArrayI gate;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_INTERNAL_GATE, dataSend, gate, AdcNo)) return(kFALSE);
+	Gate = gate[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::WriteTrigInternalGate(Int_t & Gate, Int_t AdcNo) {
+	TArrayI gate(1); gate[0] = Gate;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_INTERNAL_GATE, gate, gate, AdcNo)) return(kFALSE);
+	Gate = gate[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::ReadTrigInternalDelay(Int_t & Delay, Int_t AdcNo) {
+	TArrayI dataSend(0);
+	TArrayI delay;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_INTERNAL_DELAY, dataSend, delay, AdcNo)) return(kFALSE);
+	Delay = delay[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::WriteTrigInternalDelay(Int_t & Delay, Int_t AdcNo) {
+	TArrayI delay(1); delay[0] = Delay;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_INTERNAL_DELAY, delay, delay, AdcNo)) return(kFALSE);
+	Delay = delay[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::GetTrigDecimation(Int_t & Decimation, Int_t AdcNo) {
+	TArrayI dataSend(0);
+	TArrayI decim;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_DECIMATION, dataSend, decim, AdcNo)) return(kFALSE);
+	Decimation = decim[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::SetTrigDecimation(Int_t & Decimation, Int_t AdcNo) {
+	TArrayI decim(1); decim[0] = Decimation;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TRIGGER_DECIMATION, decim, decim, AdcNo)) return(kFALSE);
+	Decimation = decim[0];
 	return(kTRUE);
 }
 
 Bool_t TC2LSis3302::ReadTrigThreshold(Int_t & Thresh, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	TArrayI thresh;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIG_THRESH, dataSend, thresh, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_THRESH, dataSend, thresh, AdcNo)) return(kFALSE);
 	Thresh = thresh[0];
 	return(kTRUE);
 }
 
 Bool_t TC2LSis3302::WriteTrigThreshold(Int_t & Thresh, Int_t AdcNo) {
 	TArrayI thresh(1); thresh[0] = Thresh;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIG_THRESH, thresh, thresh, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_THRESH, thresh, thresh, AdcNo)) return(kFALSE);
 	Thresh = thresh[0];
 	return(kTRUE);
 }
@@ -408,17 +514,17 @@ Bool_t TC2LSis3302::WriteEnergyPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetDecimation(Int_t & Decimation, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetEnergyDecimation(Int_t & Decimation, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	TArrayI decim;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_DECIMATION, dataSend, decim, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_ENERGY_DECIMATION, dataSend, decim, AdcNo)) return(kFALSE);
 	Decimation = decim[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetDecimation(Int_t & Decimation, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetEnergyDecimation(Int_t & Decimation, Int_t AdcNo) {
 	TArrayI decim(1); decim[0] = Decimation;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_DECIMATION, decim, decim, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_ENERGY_DECIMATION, decim, decim, AdcNo)) return(kFALSE);
 	Decimation = decim[0];
 	return(kTRUE);
 }
@@ -498,48 +604,48 @@ Bool_t TC2LSis3302::WriteTauFactor(Int_t & Tau, Int_t AdcNo) {
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetExternalTrigger(Bool_t & Xtrig) {
+Bool_t TC2LSis3302::GetLemoInMode(Int_t & Bits) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_EXTERNAL_TRIGGER, dataSend, bits, kSis3302AllAdcs)) return(kFALSE);
-	Xtrig = (bits[0] != 0);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_LEMO_IN_MODE, dataSend, bits, kSis3302AllAdcs)) return(kFALSE);
+	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetExternalTrigger(Bool_t & Xtrig) {
-	TArrayI bits(1); bits[0] = Xtrig ? 1 : 0;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_EXTERNAL_TRIGGER, bits, bits, kSis3302AllAdcs)) return(kFALSE);
-	Xtrig = (bits[0] != 0);
+Bool_t TC2LSis3302::SetLemoInMode(Int_t & Bits) {
+	TArrayI bits(1); bits[0] = Bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_LEMO_IN_MODE, bits, bits, kSis3302AllAdcs)) return(kFALSE);
+	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetExternalTimestampClear(Bool_t & TsClear) {
+Bool_t TC2LSis3302::GetLemoOutMode(Int_t & Bits) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_EXTERNAL_TIMESTAMP_CLEAR, dataSend, bits, kSis3302AllAdcs)) return(kFALSE);
-	TsClear = (bits[0] != 0);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_LEMO_OUT_MODE, dataSend, bits, kSis3302AllAdcs)) return(kFALSE);
+	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetExternalTimestampClear(Bool_t & TsClear) {
-	TArrayI bits(1); bits[0] = TsClear ? 1 : 0;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_EXTERNAL_TIMESTAMP_CLEAR, bits, bits, kSis3302AllAdcs)) return(kFALSE);
-	TsClear = (bits[0] != 0);
+Bool_t TC2LSis3302::SetLemoOutMode(Int_t & Bits) {
+	TArrayI bits(1); bits[0] = Bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_LEMO_OUT_MODE, bits, bits, kSis3302AllAdcs)) return(kFALSE);
+	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetInternalTrigger(Bool_t & Itrig) {
+Bool_t TC2LSis3302::GetLemoInEnableMask(Int_t & Bits) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_INTERNAL_TRIGGER, dataSend, bits, kSis3302AllAdcs)) return(kFALSE);
-	Itrig = (bits[0] != 0);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_LEMO_IN_ENABLE_MASK, dataSend, bits, kSis3302AllAdcs)) return(kFALSE);
+	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetInternalTrigger(Bool_t & Itrig) {
-	TArrayI bits(1); bits[0] = Itrig ? 1 : 0;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_INTERNAL_TRIGGER, bits, bits, kSis3302AllAdcs)) return(kFALSE);
-	Itrig = (bits[0] != 0);
+Bool_t TC2LSis3302::SetLemoInEnableMask(Int_t & Bits) {
+	TArrayI bits(1); bits[0] = Bits;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_LEMO_IN_ENABLE_MASK, bits, bits, kSis3302AllAdcs)) return(kFALSE);
+	Bits = bits[0];
 	return(kTRUE);
 }
 
@@ -562,18 +668,18 @@ Bool_t TC2LSis3302::GetSingleEvent(TArrayI & Data, Int_t AdcNo) {
 	TArrayI dataSend(0);
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_SINGLE_EVENT, dataSend, Data, AdcNo));
 }
-	
+
 Bool_t TC2LSis3302::AccuHistogram(TArrayI & Data, Int_t AdcNo, Int_t NofEvents) {
 	TArrayI nofEvents(1); nofEvents[0] = NofEvents;
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_ACCU_HISTOGRAM, nofEvents, Data, AdcNo));
 }
-	
+
 Bool_t TC2LSis3302::StartRun(Int_t AdcNo, Int_t NofEvents) {
 	TArrayI nofEvents(1); nofEvents[0] = NofEvents;
 	TArrayI dmy;
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_START_RUN, nofEvents, dmy, AdcNo));
 }
-	
+
 Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -611,14 +717,12 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	Int_t clockSource = settings->Get(dotMod.Data(), NULL, "ClockSource", 0);
 	this->SetClockSource(clockSource);
 
-	Bool_t itrig = settings->Get(dotMod.Data(), NULL, "InternalTrigger", kFALSE);
-	this->SetInternalTrigger(itrig);
-
-	Bool_t xtrig = settings->Get(dotMod.Data(), NULL, "ExternalTrigger", kFALSE);
-	this->SetInternalTrigger(xtrig);
-
-	Bool_t tsClear = settings->Get(dotMod.Data(), NULL, "ExternalTimestampClear", kFALSE);
-	this->SetExternalTimestampClear(tsClear);
+	Int_t lemo = settings->Get(dotMod.Data(), NULL, "LemoOutMode", 0);
+	this->SetLemoOutMode(lemo);
+	lemo = settings->Get(dotMod.Data(), NULL, "LemoInMode", 0);
+	this->SetLemoInMode(lemo);
+	lemo = settings->Get(dotMod.Data(), NULL, "LemoInEnableMask", 0);
+	this->SetLemoInEnableMask(lemo);
 
 	TArrayI dacValues(kSis3302NofAdcs);
 	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
@@ -636,6 +740,12 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
 		Int_t trigMode = settings->Get(dotMod.Data(), "TriggerMode", Form("%d", i), 0);
 		this->SetTriggerMode(trigMode, i);
+		Int_t gateMode = settings->Get(dotMod.Data(), "GateMode", Form("%d", i), 0);
+		this->SetGateMode(gateMode, i);
+		trigMode = settings->Get(dotMod.Data(), "NextNeighborTrigger", Form("%d", i), 0);
+		this->SetNextNeighborTriggerMode(trigMode, i);
+		gateMode = settings->Get(dotMod.Data(), "NextNeighborGate", Form("%d", i), 0);
+		this->SetNextNeighborGateMode(gateMode, i);
 		Bool_t invert = settings->Get(dotMod.Data(), "InvertSignal", Form("%d", i), kFALSE);
 		this->SetPolarity(invert, i);
 	}
@@ -657,19 +767,25 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	}
 
 	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
-		Int_t peak = settings->Get(dotMod.Data(), "TrigPeakTime", Form("%d", chGrp), 0);
-		Int_t gap = settings->Get(dotMod.Data(), "TrigGapTime", Form("%d", chGrp), 0);
+		Int_t peak = settings->Get(dotMod.Data(), "TrigPeakTime", Form("%d", i), 0);
+		Int_t gap = settings->Get(dotMod.Data(), "TrigGapTime", Form("%d", i), 0);
 		this->WriteTrigPeakAndGap(peak, gap, i);
-		Int_t length = settings->Get(dotMod.Data(), "TrigPulseLength", Form("%d", chGrp), 0);
+		Int_t gate = settings->Get(dotMod.Data(), "TrigInternalGate", Form("%d", i), 0);
+		this->WriteTrigInternalGate(gate, i);
+		Int_t delay = settings->Get(dotMod.Data(), "TrigInternalDelay", Form("%d", i), 0);
+		this->WriteTrigInternalDelay(delay, i);
+		Int_t length = settings->Get(dotMod.Data(), "TrigPulseLength", Form("%d", i), 0);
 		this->WriteTrigPulseLength(length, i);
+		Int_t decim = settings->Get(dotMod.Data(), "TrigDecimation", Form("%d", i), 0);
+		this->SetTrigDecimation(decim, i);
 	}
 
 	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
-		Int_t thresh = settings->Get(dotMod.Data(), "TrigThresh", Form("%d", chGrp), 0);
+		Int_t thresh = settings->Get(dotMod.Data(), "TrigThresh", Form("%d", i), 0);
 		this->WriteTrigThreshold(thresh, i);
-		Bool_t gt = settings->Get(dotMod.Data(), "TrigGT", Form("%d", chGrp), kFALSE);
+		Bool_t gt = settings->Get(dotMod.Data(), "TrigGT", Form("%d", i), kFALSE);
 		this->SetTriggerGT(gt, i);
-		Bool_t out = settings->Get(dotMod.Data(), "TrigOut", Form("%d", chGrp), kFALSE);
+		Bool_t out = settings->Get(dotMod.Data(), "TrigOut", Form("%d", i), kFALSE);
 		this->SetTriggerOut(out, i);
 	}
 
@@ -678,8 +794,8 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 		Int_t peak = settings->Get(dotMod.Data(), "EnergyPeakTime", Form("%d", chGrp), 0);
 		Int_t gap = settings->Get(dotMod.Data(), "EnergyGapTime", Form("%d", chGrp), 0);
 		this->WriteEnergyPeakAndGap(peak, gap, i);
-		Int_t decim = settings->Get(dotMod.Data(), "Decimation", Form("%d", chGrp), 0);
-		this->SetDecimation(decim, i);
+		Int_t decim = settings->Get(dotMod.Data(), "EnergyDecimation", Form("%d", chGrp), 0);
+		this->SetEnergyDecimation(decim, i);
 	}
 
 	chGrp = 12;
@@ -703,7 +819,7 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	}
 
 	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
-		Int_t tau = settings->Get(dotMod.Data(), "EnergyTauFactor", Form("%d", chGrp), 0);
+		Int_t tau = settings->Get(dotMod.Data(), "EnergyTauFactor", Form("%d", i), 0);
 		this->WriteTauFactor(tau, i);
 	}
 
@@ -747,9 +863,9 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 		gMrbLog->Flush("SaveSettings");
 		return(kFALSE);
 	}
-	
+
 	tf = fp;
-	
+
 	TMrbLofNamedX tags;
 	tags.AddNamedX(TC2LSis3302::kRcModuleSettings, "MODULE_SETTINGS");
 
@@ -781,14 +897,16 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 						Int_t clockSource;
 						this->GetClockSource(clockSource);
 						tmpl.Substitute("$clockSource", clockSource);
-						Bool_t xtrig, itrig;
-						this->GetExternalTrigger(xtrig);
-						tmpl.Substitute("$extTrig", xtrig ? "TRUE" : "FALSE");
-						this->GetInternalTrigger(itrig);
-						tmpl.Substitute("$intTrig", itrig ? "TRUE" : "FALSE");
-						Bool_t tsClear;
-						this->GetExternalTimestampClear(tsClear);
-						tmpl.Substitute("$tsClear", tsClear ? "TRUE" : "FALSE");
+
+						tmpl.Substitute("$mcaMode", "FALSE");
+
+						Int_t lemo;
+						this->GetLemoInMode(lemo);
+						tmpl.Substitute("$lemoIn", lemo);
+						this->GetLemoOutMode(lemo);
+						tmpl.Substitute("$lemoOut", lemo);
+						this->GetLemoInEnableMask(lemo);
+						tmpl.Substitute("$lemoEnableMask", lemo, 16);
 						tmpl.WriteCode(settings);
 
 						tmpl.InitializeCode("%DacSettings%");
@@ -816,10 +934,10 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							tmpl.WriteCode(settings);
 						}
 
-						tmpl.InitializeCode("%EventTrigModePol%");
+						tmpl.InitializeCode("%EventTrigGateNextNeighbor%");
 						tmpl.WriteCode(settings);
 						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
-							tmpl.InitializeCode("%EventTrigModeLoop%");
+							tmpl.InitializeCode("%EventTrigGateNNLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
 							tmpl.Substitute("$adcNo", i);
 							Int_t trigMode;
@@ -832,12 +950,32 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 								case 3: tm = "Ext|Int"; break;
 							}
 							tmpl.Substitute("$trigMode", Form("%#x (%s)", trigMode, tm));
-							tmpl.WriteCode(settings);
-						}
-						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
-							tmpl.InitializeCode("%EventTrigPolLoop%");
-							tmpl.Substitute("$moduleName", this->GetName());
-							tmpl.Substitute("$adcNo", i);
+							Int_t gateMode;
+							this->GetGateMode(gateMode, i);
+							Char_t * gm;
+							switch (gateMode) {
+								case 0: gm = "NoGate"; break;
+								case 1: gm = "Int"; break;
+								case 2: gm = "Ext"; break;
+								case 3: gm = "Ext|Int"; break;
+							}
+							tmpl.Substitute("$gateMode", Form("%#x (%s)", gateMode, gm));
+							this->GetNextNeighborTriggerMode(trigMode, i);
+							switch (trigMode) {
+								case 0: tm = "NoTrig"; break;
+								case 1: tm = "N+1"; break;
+								case 2: tm = "N-1"; break;
+								case 3: tm = "N+/-1"; break;
+							}
+							tmpl.Substitute("$nextNeighborTrigger", Form("%#x (%s)", trigMode, tm));
+							this->GetNextNeighborGateMode(gateMode, i);
+							switch (gateMode) {
+								case 0: gm = "NoGate"; break;
+								case 1: gm = "N+1"; break;
+								case 2: gm = "N-1"; break;
+								case 3: gm = "N+/-1"; break;
+							}
+							tmpl.Substitute("$nextNeighborGate", Form("%#x (%s)", gateMode, gm));
 							Bool_t invert;
 							this->GetPolarity(invert, i);
 							tmpl.Substitute("$invert", invert ? "TRUE" : "FALSE");
@@ -886,9 +1024,25 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							this->ReadTrigPeakAndGap(peak, gap, i);
 							tmpl.Substitute("$peakTime", peak);
 							tmpl.Substitute("$gapTime", gap);
-							Int_t length;
-							this->ReadTrigPulseLength(length, i);
-							tmpl.Substitute("$length", length);
+							Int_t gate;
+							this->ReadTrigInternalGate(gate, i);
+							tmpl.Substitute("$gateLength", gate);
+							Int_t delay;
+							this->ReadTrigInternalDelay(delay, i);
+							tmpl.Substitute("$delay", delay);
+							Int_t pulse;
+							this->ReadTrigPulseLength(pulse, i);
+							tmpl.Substitute("$pulseLength", pulse);
+							Int_t decim;
+							this->GetTrigDecimation(decim, i);
+							char * dm;
+							switch (decim) {
+								case 0: dm = "NoDecim"; break;
+								case 1: dm = "2-fold"; break;
+								case 2: dm = "4-fold"; break;
+								case 3: dm = "8-fold"; break;
+							}
+							tmpl.Substitute("$decim", Form("%d (%s)", decim, dm));
 							tmpl.WriteCode(settings);
 						}
 
@@ -921,8 +1075,15 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 							tmpl.Substitute("$peakTime", peak);
 							tmpl.Substitute("$gapTime", gap);
 							Int_t decim;
-							this->GetDecimation(decim, i);
-							tmpl.Substitute("$decim", decim);
+							this->GetEnergyDecimation(decim, i);
+							char * dm;
+							switch (decim) {
+								case 0: dm = "NoDecim"; break;
+								case 1: dm = "2-fold"; break;
+								case 2: dm = "4-fold"; break;
+								case 3: dm = "8-fold"; break;
+							}
+							tmpl.Substitute("$decim", Form("%d (%s)", decim, dm));
 							tmpl.WriteCode(settings);
 						}
 

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEMainFrame.cxx,v 1.8 2009-08-05 13:12:03 Rudolf.Lutter Exp $
+// Revision:       $Id: VMEMainFrame.cxx,v 1.9 2010-03-10 12:08:11 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -103,13 +103,28 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 	fMenuGeneral->AddEntry("&Normal", kVMEGeneralOutputNormal);
 	fMenuGeneral->AddEntry("&Verbose", kVMEGeneralOutputVerbose);
 	fMenuGeneral->AddEntry("&Debug (very verbose)", kVMEGeneralOutputDebug);
+
+	if (gVMEControlData->fStatus & VMEControlData::kVMEVerboseMode) {
+		fMenuGeneral->RCheckEntry(kVMEGeneralOutputVerbose, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+	} else if (gVMEControlData->fStatus & VMEControlData::kVMEDebugMode) {
+		fMenuGeneral->RCheckEntry(kVMEGeneralOutputDebug, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+	} else {
+		fMenuGeneral->RCheckEntry(kVMEGeneralOutputNormal, kVMEGeneralOutputNormal, kVMEGeneralOutputDebug);
+	}
+
 	fMenuGeneral->AddSeparator();
 
 	fMenuGeneral->AddEntry("Offline", kVMEGeneralOffline);
 	fMenuGeneral->AddEntry("Online", kVMEGeneralOnline);
 	fMenuGeneral->Connect("Activated(Int_t)", this->ClassName(), this, "MenuSelect(Int_t)");
 
-//	Macros menu
+	if (gVMEControlData->fStatus & VMEControlData::kVMEOfflineMode) {
+		fMenuGeneral->RCheckEntry(kVMEGeneralOffline, kVMEGeneralOffline, kVMEGeneralOnline);
+	} else {
+		fMenuGeneral->RCheckEntry(kVMEGeneralOnline, kVMEGeneralOffline, kVMEGeneralOnline);
+	}
+
+			//	Macros menu
 	fLofMacros = new TMrbLofMacros();
 	HEAP(fLofMacros);
 	fLofMacros->AddMacro("*.C", "VME");
@@ -323,7 +338,6 @@ void VMEMainFrame::TabChanged(Int_t Selection) {
 	switch (Selection) {
 		case kVMETabServer:
 			if (fServerPanel == NULL) fServerPanel = new VMEServerPanel(fServerTab);
-			fServerPanel->UpdateTextView();
 			break;
 
 		case kVMETabSis3302:

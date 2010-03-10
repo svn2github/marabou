@@ -8,8 +8,8 @@
 // Class:          TMrbResource       -- access to TEnv objects
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbResource.h,v 1.3 2009-04-20 07:54:57 Rudolf.Lutter Exp $       
-// Date:           $Date: 2009-04-20 07:54:57 $
+// Revision:       $Id: TMrbResource.h,v 1.4 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-10 12:08:11 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -91,7 +91,9 @@ class TMrbResource : public TObject {
 		inline const Char_t * GetRcName() { return(fRcName.Data()); };
 		inline TObjArray * LofPrefixes() { return(&fLofPrefixes); };
 
-	protected:
+		inline Bool_t IsVerbose() { return(fVerbose); };
+
+  protected:
 		void SetIntVal(const Char_t * Resource, Int_t IntVal, const Char_t * StrVal, Int_t Base);
 
 	protected:
@@ -100,6 +102,8 @@ class TMrbResource : public TObject {
 		Bool_t ToString(const Char_t * Resource, TString & StrResult);
 
 	protected:
+		Bool_t fVerbose;			// kTRUE if verbose mode
+
 		TEnv * fEnv;				// ROOT's TEnv object
 		TString fRcName;			// name of rc file
 		TObjArray fLofPrefixes; 	// one or more prefixes may be scanned

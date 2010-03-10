@@ -24,23 +24,63 @@
 						kSis3302KeyClearTimestamp,
 						kSis3302KeyArmBank1Sampling,
 						kSis3302KeyArmBank2Sampling,
+						kSis3302KeyResetDDR2Logic,
+						kSis3302KeyMcaScanLNEPulse,
+						kSis3302KeyMcaScanArm,
+						kSis3302KeyMcaScanStart,
+						kSis3302KeyMcaScanDisable,
+						kSis3302KeyMcaMultiscanStartResetPulse,
+						kSis3302KeyMcaMultiscanArmScanArm,
+						kSis3302KeyMcaMultiscanArmScanEnable,
+						kSis3302KeyMcaMultiscanDisable,
 						// header
 						kSis3302HeaderMask	 		= 0x7FFF,
 						// trigger mode
+						kSis3302GateOff				= 0x0,
+						kSis3302GateIntern			= BIT(0),
+						kSis3302GateExtern			= BIT(1),
+						kSis3302GateBoth 			= kSis3302GateIntern | kSis3302GateExtern,
 						kSis3302TriggerOff			= 0x0,
 						kSis3302TriggerIntern		= BIT(0),
-						kSis3302TriggerExtern		= BIT(1),	
+						kSis3302TriggerExtern		= BIT(1),
 						kSis3302TriggerBoth 		= kSis3302TriggerIntern | kSis3302TriggerExtern,
 						// polarity
 						kSis3302PolarityPositive	= 0x0,
 						kSis3302PolarityNegative	= 0x1,
 						// end addr thresh
 						kSis3302EndAddrThreshMax	= 0xFFFFF4,
+						// trigger internal delay and gate lenght
+						kSis3302TrigIntDelayMin		= 0,
+						kSis3302TrigIntDelayMax		= (2 << 5 - 1),
+						kSis3302TrigIntGateMin		= 0,
+						kSis3302TrigIntGateMax		= (2 << 6 - 1),
+						// trigger peaking and gap
+						kSis3302TrigPeakMin 		= 1,
+						kSis3302TrigPeakMax 		= (2 << 10 - 1),
+						kSis3302TrigSumGMin 		= 1,
+						kSis3302TrigSumGMax 		= (2 << 10 - 1),
+						kSis3302TrigGapMin 			= 0,
+						kSis3302TrigGapMax 			= (kSis3302TrigSumGMax - 1),
+						// trigger threshold
+						kSis3302TrigThreshMin		= 0,
+						kSis3302TrigThreshMax		= (2 << 16 - 1),
+						// trigger pulse out
+						kSis3302TrigPulseMin		= 0,
+						kSis3302TrigPulseMax		= (2 << 8 - 1),
 						// pre trigger delay and trigger gate length
 						kSis3302PreTrigDelayMin 	= 0,
-						kSis3302PreTrigDelayMax 	= 1023,
+						kSis3302PreTrigDelayMax 	= (2 << 10 - 1),
 						kSis3302TrigGateLengthMin 	= 1,
-						kSis3302TrigGateLengthMax 	= 1024,
+						kSis3302TrigGateLengthMax 	= (2 << 16),
+						kSis3302RawDataSampleLengthMax 	= (2 << 16 - 4),
+						kSis3302RawDataSampleStartIndexMax 	= (2 << 10 - 1),
+						// energy peaking and gap
+						kSis3302EnergyPeakMin 		= 1,
+						kSis3302EnergyPeakMax 		= (2 << 10 - 1),
+						kSis3302EnergyGapMin 		= 0,
+						kSis3302EnergyGapMax 		= (2 << 8 - 1),
+						kSis3302EnergyTauMin 		= 0,
+						kSis3302EnergyTauMax 		= (2 << 6 - 1),
 					};
 
 	enum			{	kSis3302EventPreHeader 		= 2 };

@@ -285,8 +285,8 @@ int main(int argc, char * argv[]) {
 			case 'f':	dgfFormat = strtol(optarg, NULL, 0);
 						break;
 			case 'd':	strcpy(dumpMode, optarg);
-						if (strcmp(dumpMode, "dgf") != 0 && strcmp(dumpMode, "caen") != 0) {
-							fprintf(stderr, "?ILLMOD-[%s]- Illegal dump mode - %s (should be \"dgf\" or \"caen\")\n", prgName, dumpMode);
+						if (strcmp(dumpMode, "dgf") != 0 && strcmp(dumpMode, "caen") != 0 && strcmp(dumpMode, "madc") != 0) {
+							fprintf(stderr, "?ILLMOD-[%s]- Illegal dump mode - %s (should be \"dgf\", \"caen\", or \"madc\")\n", prgName, dumpMode);
 							exit(1);
 						}
 						break;
@@ -452,7 +452,7 @@ int readSevtDump(char * dmpFile, char * rcFile, char * dumpMode) {
 // Purpose: 	   Read data from subevent dump
 // Arguments:	   char * dmpFile   -- file name (.dmp)
 //  			   char * rcFile 	-- indices and defs (opt.)
-//  			   char * dumpMode  -- subevent type (dgf or caen)
+//  			   char * dumpMode  -- subevent type (dgf, caen, or madc)
 // Results: 	   kTRUE/kFALSE
 // Description:    Opens sevt dump file and processes data directly according to dump mode/type.
 // Keywords:
@@ -463,6 +463,7 @@ int readSevtDump(char * dmpFile, char * rcFile, char * dumpMode) {
 	MBSDataIO * mbs;
 	int fsize;
 	struct stat sbuf;
+	char * p;
 
 	if ((input = fopen(dmpFile, "r")) == NULL) {
 		fprintf(stderr, "?SYSERR-[readSevtDump]- %s: %s (%d)", dmpFile, strerror(errno), errno);
@@ -495,6 +496,8 @@ int readSevtDump(char * dmpFile, char * rcFile, char * dumpMode) {
 		processSubevent_dgf(mbs);
 	} else if (strcmp(dumpMode, "caen") == 0){
 		processSubevent_caen(mbs);
+	} else if (strcmp(dumpMode, "madc") == 0){
+		processSubevent_madc(mbs);
 	} else {
 		fprintf(stderr, "?ILLMOD-[readSevtDump]- %s: Illegal dump mode / subevent type - %s", dmpFile, dumpMode);
 		return(kFALSE);

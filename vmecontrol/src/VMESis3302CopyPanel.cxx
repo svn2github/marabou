@@ -3,13 +3,13 @@
 // Name:           VMESis3302CopyPanel
 // Purpose:        A GUI to control vme modules via tcp
 // Description:    Connect to server
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302CopyPanel.cxx,v 1.3 2008-10-27 12:26:07 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMESis3302CopyPanel.cxx,v 1.4 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -51,10 +51,10 @@ VMESis3302CopyPanel::VMESis3302CopyPanel(const TGWindow * Window, TMrbLofNamedX 
 // Name:           VMESis3302CopyPanel
 // Purpose:        Connect to LynxOs server
 // Arguments:
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TGMrbLayout * frameGC;
@@ -72,27 +72,27 @@ VMESis3302CopyPanel::VMESis3302CopyPanel(const TGWindow * Window, TMrbLofNamedX 
 //	Clear focus list
 	fFocusList.Clear();
 
-	frameGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	frameGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(frameGC);
 
-	groupGC = new TGMrbLayout(	gVMEControlData->SlantedFont(), 
+	groupGC = new TGMrbLayout(	gVMEControlData->SlantedFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(groupGC);
 
-	comboGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	comboGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(comboGC);
 
-	labelGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	labelGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGreen);	HEAP(labelGC);
 
-	buttonGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	buttonGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorGray);	HEAP(buttonGC);
 
-	entryGC = new TGMrbLayout(	gVMEControlData->NormalFont(), 
+	entryGC = new TGMrbLayout(	gVMEControlData->NormalFont(),
 								gVMEControlData->fColorBlack,
 								gVMEControlData->fColorWhite);	HEAP(entryGC);
 
@@ -113,7 +113,7 @@ VMESis3302CopyPanel::VMESis3302CopyPanel(const TGWindow * Window, TMrbLofNamedX 
 	HEAP(lofSpecialButtons);
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
-	
+
 //	Initialize several lists
 	fActions.SetName("Actions");
 	fActions.AddNamedX(kVMEActions);
@@ -200,9 +200,9 @@ void VMESis3302CopyPanel::StartGUI() {
 // Purpose:        GUI starters
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Initializes GUI
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (curModule == NULL) {
@@ -223,10 +223,10 @@ void VMESis3302CopyPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
@@ -247,9 +247,9 @@ void VMESis3302CopyPanel::ModuleFromChanged(Int_t FrameId, Int_t Selection) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	curModule = (TC2LSis3302 *) fLofModules->FindByIndex(Selection);
@@ -265,9 +265,9 @@ void VMESis3302CopyPanel::ChannelFromChanged(Int_t FrameId, Int_t Selection) {
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	curChannel = Selection;
@@ -280,9 +280,9 @@ void VMESis3302CopyPanel::CopySettings() {
 // Purpose:        Copy module settings
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Copies settings from source module to destination(s)
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TIterator * iter = fLofDests.MakeIterator();
@@ -310,17 +310,13 @@ void VMESis3302CopyPanel::CopySettings() {
 					curModule->GetClockSource(clockSource);
 					destModule->SetClockSource(clockSource);
 
-					Bool_t itrig;
-					curModule->GetInternalTrigger(itrig);
-					destModule->SetInternalTrigger(itrig);
-
-					Bool_t xtrig;
-					curModule->GetInternalTrigger(xtrig);
-					destModule->SetInternalTrigger(xtrig);
-
-					Bool_t tsClear;
-					curModule->GetExternalTimestampClear(tsClear);
-					destModule->SetExternalTimestampClear(tsClear);
+					Int_t lemo;
+					curModule->GetLemoInMode(lemo);
+					destModule->SetLemoInMode(lemo);
+					curModule->GetLemoOutMode(lemo);
+					destModule->SetLemoOutMode(lemo);
+					curModule->GetLemoInEnableMask(lemo);
+					destModule->SetLemoInEnableMask(lemo);
 				}
 
 				Int_t hdrBits;
@@ -328,20 +324,24 @@ void VMESis3302CopyPanel::CopySettings() {
 				hdrBits &= 0x7ffc;
 				destModule->SetHeaderBits(hdrBits, chn);
 
-				Int_t trigMode;
-				curModule->GetTriggerMode(trigMode, curChannel);
-				destModule->SetTriggerMode(trigMode, chn);
+				Int_t trigger, gate;
+				curModule->GetTriggerMode(trigger, curChannel);
+				destModule->SetTriggerMode(trigger, chn);
+				curModule->GetGateMode(gate, curChannel);
+				destModule->SetGateMode(gate, chn);
+				curModule->GetNextNeighborTriggerMode(trigger, curChannel);
+				destModule->SetNextNeighborTriggerMode(trigger, chn);
+				curModule->GetNextNeighborGateMode(gate, curChannel);
+				destModule->SetNextNeighborGateMode(gate, chn);
 
 				Bool_t invert;
 				curModule->GetPolarity(invert, curChannel);
 				destModule->SetPolarity(invert, chn);
 
-
 				Int_t delay;
 				curModule->ReadPreTrigDelay(delay, curChannel);
 				destModule->WritePreTrigDelay(delay, chn);
 
-				Int_t gate;
 				curModule->ReadTrigGateLength(gate, curChannel);
 				destModule->WriteTrigGateLength(gate, chn);
 
@@ -358,8 +358,17 @@ void VMESis3302CopyPanel::CopySettings() {
 				curModule->ReadTrigPeakAndGap(peak, gap, curChannel);
 				destModule->WriteTrigPeakAndGap(peak, gap, chn);
 
+				curModule->ReadTrigInternalGate(gate, curChannel);
+				destModule->WriteTrigInternalGate(gate, chn);
+				curModule->ReadTrigInternalDelay(delay, curChannel);
+				destModule->WriteTrigInternalDelay(delay, chn);
+
 				curModule->ReadTrigPulseLength(length, curChannel);
 				destModule->WriteTrigPulseLength(length, chn);
+
+				Int_t decim;
+				curModule->GetTrigDecimation(decim, curChannel);
+				destModule->SetTrigDecimation(decim, chn);
 
 				Int_t thresh;
 				curModule->ReadTrigThreshold(thresh, curChannel);
@@ -376,9 +385,8 @@ void VMESis3302CopyPanel::CopySettings() {
 				curModule->ReadEnergyPeakAndGap(peak, gap, curChannel);
 				destModule->WriteEnergyPeakAndGap(peak, gap, chn);
 
-				Int_t decim ;
-				curModule->GetDecimation(decim, curChannel);
-				destModule->SetDecimation(decim, chn);
+				curModule->GetEnergyDecimation(decim, curChannel);
+				destModule->SetEnergyDecimation(decim, chn);
 
 				curModule->ReadEnergyGateLength(gate, curChannel);
 				destModule->WriteEnergyGateLength(gate, chn);

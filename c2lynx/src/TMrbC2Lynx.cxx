@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.10 2009-08-21 11:23:20 Rudolf.Lutter Exp $
-// Date:           $Date: 2009-08-21 11:23:20 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.11 2010-03-10 12:08:10 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-10 12:08:10 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -45,10 +45,9 @@ ClassImp(TMrbC2Lynx)
 
 const SMrbNamedX kC2LLofServerLogs[] =
 			{
-				{TMrbC2Lynx::kC2LServerLogNone, 	"None",		"No output" 					},
-				{TMrbC2Lynx::kC2LServerLogXterm, 	"Xterm",	"Output to XTERM window"		},
-				{TMrbC2Lynx::kC2LServerLogPipe, 	"Pipe",		"Output to pipe"				},
-				{TMrbC2Lynx::kC2LServerLogDebug, 	"Debug",	"(Debug) output to cout/cerr"	},
+				{TMrbC2Lynx::kC2LServerLogNone,	 	"none",		"No server output at all" 	},
+				{TMrbC2Lynx::kC2LServerLogCout, 	"cout",		"Server output to cout/cerr" 	},
+				{TMrbC2Lynx::kC2LServerLogXterm, 	"xterm",	"Server output to XTERM window"		},
 				{0, 								NULL,			NULL						}
 			};
 
@@ -77,13 +76,11 @@ TMrbC2Lynx::TMrbC2Lynx(const Char_t * HostName, const Char_t * Server, const Cha
 
 		fLofServerLogs.SetName("Server output modes");
 		fLofServerLogs.AddNamedX(kC2LLofServerLogs);
-		fLofServerLogs.SetPatternMode();
 
 		fHost = HostName;
 		fPort = Port;
 
 		fNonBlocking = kFALSE;
-		fPipe = NULL;
 		fSocket = NULL;
 
 		fServerLog = fLofServerLogs.FindByName(ServerLog);
@@ -139,8 +136,6 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 
 	if (this->IsConnected()) return(kTRUE);
 
-	fPipe = NULL;
-
 	TString cpu, lynx;
 	if (!this->CheckVersion(cpu, lynx, fHost.Data(), fServerPath.Data())) {
 		gMrbLog->Err()	<< "Version mismatch - cpu=" << cpu << ", lynx=" << lynx << endl;
@@ -168,8 +163,8 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 		}
 		delete s;
 		TString cmd1, cmd2;
-		if (this->Log2Xterm()) {
-			cmd1 = "xterm -title ";
+		if (this->LogXterm()) {
+			cmd1 = "konsole -title ";
 			cmd1 += fServerName;
 			cmd1 += "@";
 			cmd1 += fHost;
@@ -198,10 +193,9 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 			TMrbNamedX * sl = this->GetServerLog();
 			if (sl) {
 				switch (sl->GetIndex()) {
-					case kC2LServerLogDebug: 	break;
-					case kC2LServerLogNone:
-					case kC2LServerLogXterm:	cmd1 += " 1>/dev/null 2>/dev/null"; break;
-					case kC2LServerLogPipe: 	cmd1 += " 2>&1"; break;
+					case kC2LServerLogNone:		cmd1 += " 1>/dev/null 2>/dev/null"; break;
+					case kC2LServerLogCout:		cmd1 += " 2>/dev/null"; break;
+					case kC2LServerLogXterm:	break;
 				}
 			}
 			cmd1 += " &";
@@ -209,11 +203,7 @@ Bool_t TMrbC2Lynx::Connect(Bool_t WaitFlag) {
 				gMrbLog->Out()	<< "Exec >> " << cmd1 << " <<" << endl;
 				gMrbLog->Flush(this->ClassName());
 			}
-			if (this->Log2Pipe()) {
-				fPipe = gSystem->OpenPipe(cmd1.Data(), "r");
-			} else {
-				gSystem->Exec(cmd1.Data());
-			}
+			gSystem->Exec(cmd1.Data());
 		}
 
 		if (!WaitFlag) return(kTRUE);
@@ -273,7 +263,7 @@ void TMrbC2Lynx::Reset() {
 	fDebugMode = gEnv->GetValue("TMrbC2Lynx.DebugMode", kFALSE);
 
 	fNonBlocking = kFALSE;
-	fServerLog = fLofServerLogs.FindByIndex(kC2LServerLogNone);
+	fServerLog = fLofServerLogs.FindByIndex(kC2LServerLogCout);
 
 	fHost.Resize(0);								// host name
 	fServerPath.Resize(0);
@@ -281,8 +271,6 @@ void TMrbC2Lynx::Reset() {
 
 	fPort = -1;
 	fSocket = NULL;
-
-	fPipe = NULL;
 }
 
 Bool_t TMrbC2Lynx::SetServerLog(const Char_t * Output) {
