@@ -47,6 +47,7 @@ enum EM2L_FunctionType {
 	kM2L_FCT_SIS_3302			=	0x200,					// sis flash adc 3302
 	kM2L_FCT_SIS_3302_SET_TIMEOUT,
 	kM2L_FCT_SIS_3302_GET_TIMEOUT,
+	kM2L_FCT_SIS_3302_SET_USER_LED,
 	kM2L_FCT_SIS_3302_READ_DAC,
 	kM2L_FCT_SIS_3302_WRITE_DAC,
 	kM2L_FCT_SIS_3302_KEY_ADDR,
@@ -144,6 +145,7 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_SIS_3302, 							"exec function (SIS 3302)"},
 		{kM2L_FCT_SIS_3302_SET_TIMEOUT,					"set timeout (cycles)"},
 		{kM2L_FCT_SIS_3302_GET_TIMEOUT,					"get timeout (cycles)"},
+		{kM2L_FCT_SIS_3302_SET_USER_LED,				"turn on/off user led"},
 		{kM2L_FCT_SIS_3302_READ_DAC,					"read dac offsets"},
 		{kM2L_FCT_SIS_3302_WRITE_DAC,					"write dac offsets"},
 		{kM2L_FCT_SIS_3302_KEY_ADDR,					"exec key addr command"},

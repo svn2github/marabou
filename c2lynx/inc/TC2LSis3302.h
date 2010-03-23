@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.7 2010-03-10 12:08:10 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-03-10 12:08:10 $
+// Revision:       $Id: TC2LSis3302.h,v 1.8 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-23 14:07:51 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -45,6 +45,8 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t GetTimeout(Int_t & Timeout);
 		Bool_t SetTimeout(Int_t & Timeout);
 
+		Bool_t SetUserLED(Bool_t & OnFlag);
+
 		Bool_t ReadDac(TArrayI & DacValues, Int_t Adc = -1);
 		Bool_t WriteDac(TArrayI & DacValues, Int_t Adc = -1);
 
@@ -78,10 +80,10 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t ReadTrigGateLength(Int_t & Gate, Int_t AdcNo);
 		Bool_t WriteTrigGateLength(Int_t & Gate, Int_t AdcNo = kSis3302AllAdcs);
 
-		Bool_t ReadRawDataSampleLength(Int_t & Bits, Int_t AdcNo);
-		Bool_t WriteRawDataSampleLength(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadRawDataStartIndex(Int_t & Bits, Int_t AdcNo);
-		Bool_t WriteRawDataStartIndex(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadRawDataSampleLength(Int_t & SampleLength, Int_t AdcNo);
+		Bool_t WriteRawDataSampleLength(Int_t & SampleLength, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadRawDataStartIndex(Int_t & Start, Int_t AdcNo);
+		Bool_t WriteRawDataStartIndex(Int_t & Start, Int_t AdcNo = kSis3302AllAdcs);
 
 		Bool_t ReadNextSampleAddr(Int_t & Addr, Int_t AdcNo);
 		Bool_t ReadPrevBankSampleAddr(Int_t & Addr, Int_t AdcNo);

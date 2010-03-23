@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.11 2010-03-10 12:08:10 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-03-10 12:08:10 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.12 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-23 14:07:51 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;

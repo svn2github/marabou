@@ -6,8 +6,8 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.8 2010-03-10 12:08:11 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-03-10 12:08:11 $
+// Revision:       $Id: VMEControlData.cxx,v 1.9 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-23 14:07:51 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -107,6 +107,8 @@ VMEControlData::VMEControlData() {
 	if (fVctrlrc->Get(".VerboseMode", kFALSE)) fStatus |= kVMEVerboseMode;
 	if (fVctrlrc->Get(".DebugMode", kFALSE)) fStatus |= kVMEDebugMode;
 	if (fVctrlrc->Get(".OfflineMode", kFALSE)) fStatus |= kVMEOfflineMode;
+
+	fLofPanels.Clear();
 }
 
 Bool_t VMEControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly) {

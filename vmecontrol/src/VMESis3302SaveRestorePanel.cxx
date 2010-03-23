@@ -1,12 +1,12 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// ame:            VMESis3302SaveRestorePanel
+// Name:            VMESis3302SaveRestorePanel
 // Purpose:        A GUI to control a SIS 3302 adc
 // Description:    Save/restore settings
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.5 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302SaveRestorePanel.cxx,v 1.6 2010-03-23 14:07:51 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -30,6 +30,7 @@ namespace std {} using namespace std;
 #include "TGMrbProgressBar.h"
 
 #include "TC2LSis3302.h"
+#include "VMESis3302Panel.h"
 #include "VMESis3302SaveRestorePanel.h"
 
 #include "SetColor.h"
@@ -132,9 +133,11 @@ VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(const TGWindow * Window, 
 	TIterator * iter = fLofModules->MakeIterator();
 	TC2LSis3302 * module;
 	Int_t bit = 0x1;
+	Int_t nofModules = 0;
 	while (module = (TC2LSis3302 *) iter->Next()) {
 		fLofSelected.AddNamedX(bit, module->GetName(), "", module);
 		bit <<= 1;
+		nofModules++;
 	}
 	fLofSelected.SetPatternMode();
 
@@ -143,6 +146,7 @@ VMESis3302SaveRestorePanel::VMESis3302SaveRestorePanel(const TGWindow * Window, 
 													groupGC, buttonGC, lofSpecialButtons);
 	HEAP(fModules);
 	this->AddFrame(fModules, groupGC->LH());
+	if (nofModules == 1) fModules->SetState(0xFFFFFFFF);
 
 // action buttons
 	fActionButtons = new TGMrbTextButtonGroup(this, "Actions", &fActions, -1, 1, groupGC, buttonGC);
@@ -258,7 +262,7 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 		}
 		gSystem->ProcessEvents();
 	}
-	delete pgb;
+	pgb->DeleteWindow();
 
 	if (nerr > 0) {
 		gVMEControlData->MsgBox(this, "RestoreSettings", "Error", "Restoring module settings failed");
@@ -269,6 +273,10 @@ Bool_t VMESis3302SaveRestorePanel::RestoreSettings() {
 						<< nerr << " error(s))" << endl;
 		gMrbLog->Flush(this->ClassName(), "RestoreSettings", setblue);
 	}
+
+	VMESis3302Panel * p = (VMESis3302Panel *) gVMEControlData->GetPanel(VMEControlData::kVMETabSis3302);
+	if (p) p->UpdateGUI();
+
 	return(kTRUE);
 }
 

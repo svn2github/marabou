@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEMainFrame.cxx,v 1.9 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Revision:       $Id: VMEMainFrame.cxx,v 1.10 2010-03-23 14:07:51 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -194,8 +194,8 @@ VMEMainFrame::VMEMainFrame(const TGWindow * Window, UInt_t Width, UInt_t Height)
 	fCaen785Tab = fTabFrame->AddTab("Caen V785");
 	fVulomTBTab = fTabFrame->AddTab("Vulom/TB");
 
-	fTabFrame->SetTab(kVMETabServer);
-	this->TabChanged(kVMETabServer);
+	fTabFrame->SetTab(VMEControlData::kVMETabServer);
+	this->TabChanged(VMEControlData::kVMETabServer);
 
 //	create a message viewer window if wanted
 	if (		gEnv->GetValue("VMEControl.ViewMessages", kFALSE)
@@ -330,27 +330,39 @@ void VMEMainFrame::TabChanged(Int_t Selection) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	for (Int_t i = kVMETabServer; i < kVMELastTab; i++) {
+	for (Int_t i = VMEControlData::kVMETabServer; i < VMEControlData::kVMELastTab; i++) {
 		fTabFrame->GetTabTab(i)->ChangeBackground(gVMEControlData->fColorGray);
 	}
 	fTabFrame->GetTabTab(Selection)->ChangeBackground(gVMEControlData->fColorGold);
 
 	switch (Selection) {
-		case kVMETabServer:
-			if (fServerPanel == NULL) fServerPanel = new VMEServerPanel(fServerTab);
+	  case VMEControlData::kVMETabServer:
+			if (fServerPanel == NULL) {
+				fServerPanel = new VMEServerPanel(fServerTab);
+				gVMEControlData->AddToLofPanels(fServerPanel, VMEControlData::kVMETabServer);
+			}
 			break;
 
-		case kVMETabSis3302:
-			if (fSis3302Panel == NULL) fSis3302Panel = new VMESis3302Panel(fSis3302Tab);
+		case VMEControlData::kVMETabSis3302:
+			if (fSis3302Panel == NULL) {
+				fSis3302Panel = new VMESis3302Panel(fSis3302Tab);
+				gVMEControlData->AddToLofPanels(fSis3302Panel, VMEControlData::kVMETabSis3302);
+			}
 			fSis3302Panel->UpdateGUI();
 			break;
 
-		case kVMETabCaen785:
-			if (fCaen785Panel == NULL) fCaen785Panel = new VMECaen785Panel(fCaen785Tab);
+		case VMEControlData::kVMETabCaen785:
+			if (fCaen785Panel == NULL) {
+				fCaen785Panel = new VMECaen785Panel(fCaen785Tab);
+				gVMEControlData->AddToLofPanels(fSis3302Panel, VMEControlData::kVMETabSis3302);
+			}
 			break;
 
-		case kVMETabVulomTB:
-			if (fVulomTBPanel == NULL) fVulomTBPanel = new VMEVulomTBPanel(fVulomTBTab);
+		case VMEControlData::kVMETabVulomTB:
+			if (fVulomTBPanel == NULL) {
+				fVulomTBPanel = new VMEVulomTBPanel(fVulomTBTab);
+				gVMEControlData->AddToLofPanels(fVulomTBPanel, VMEControlData::kVMETabVulomTB);
+			}
 			break;
 	}
 }

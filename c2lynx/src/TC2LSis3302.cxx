@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.10 2010-03-10 12:08:10 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-03-10 12:08:10 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.11 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-23 14:07:51 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -130,6 +130,13 @@ Bool_t TC2LSis3302::GetTimeout(Int_t & Timeout) {
 	TArrayI timeout;
 	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TIMEOUT, dataSend, timeout, kSis3302AllAdcs)) return(kFALSE);
 	Timeout = timeout[0];
+	return(kTRUE);
+}
+
+Bool_t TC2LSis3302::SetUserLED(Bool_t & OnFlag) {
+	TArrayI ledOn(1); ledOn[0] = OnFlag ? 1 : 0;
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_USER_LED, ledOn, ledOn, kSis3302AllAdcs)) return(kFALSE);
+	OnFlag = ledOn[0];
 	return(kTRUE);
 }
 

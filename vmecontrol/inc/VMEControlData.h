@@ -8,8 +8,8 @@
 // Class:          VMEControlData
 // Description:    A GUI to control VME modules
 // Author:         R. Lutter
-// Revision:       $Id: VMEControlData.h,v 1.8 2009-08-05 13:12:03 Rudolf.Lutter Exp $
-// Date:           $Date: 2009-08-05 13:12:03 $
+// Revision:       $Id: VMEControlData.h,v 1.9 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-23 14:07:51 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -18,6 +18,7 @@
 #include "TEnv.h"
 #include "TString.h"
 #include "TList.h"
+#include "TObjArray.h"
 
 #include "TGLayout.h"
 #include "TGClient.h"
@@ -80,6 +81,14 @@ class VMEControlData : public TObject {
 									kVMEAccessWrite 		= BIT(3)
 								};
 
+		enum EVMEMainFrameTabId {
+									kVMETabServer = 0,
+									kVMETabSis3302,
+									kVMETabCaen785,
+									kVMETabVulomTB,
+									kVMELastTab				// init of tabs has to be done in same order!!
+								};
+
 	public:
 		VMEControlData();						// ctor
 
@@ -89,6 +98,9 @@ class VMEControlData : public TObject {
 		inline const Char_t * FixedFont() { return(fFixedFont.Data()); };
 
 		Bool_t CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly = kFALSE);
+
+		inline void AddToLofPanels(TGFrame * Panel, Int_t Index) { fLofPanels.AddAtAndExpand(Panel, Index); };
+		inline TObject * GetPanel(Int_t Index) { return(fLofPanels.At(Index)); };
 
 		inline Bool_t IsOffline() { return((fStatus & kVMEOfflineMode) != 0); };
 		inline Bool_t IsVerbose() { return((fStatus & VMEControlData::kVMEVerboseMode) != 0); };
@@ -134,6 +146,8 @@ class VMEControlData : public TObject {
 		ULong_t fColorRed;
 
 		TString fSettingsPath;
+
+		TObjArray fLofPanels;
 
 	ClassDef(VMEControlData, 0) 		// [VMEControl] Common data base
 };

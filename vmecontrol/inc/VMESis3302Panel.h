@@ -8,8 +8,8 @@
 // Class:          VMESis3302Panel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302Panel.h,v 1.6 2010-03-10 12:08:11 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-03-10 12:08:11 $
+// Revision:       $Id: VMESis3302Panel.h,v 1.7 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-23 14:07:51 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -215,7 +215,7 @@ class VMESis3302Panel : public TGCompositeFrame {
 		TGGroupFrame * fDacSettings; 		 		//		dac
 		TGMrbLabelEntry * fDacOffset;  				//			offset
 
-		TGGroupFrame * fTriggerSettings; 				//		trigger filter settings
+		TGGroupFrame * fTriggerSettings; 			//		trigger filter settings
 		TGMrbLabelCombo * fTrigMode;  				//			trigger mode
 		TGMrbLabelCombo * fGateMode;  				//			gate mode
 		TGMrbLabelCombo * fNextNeighborTrigMode;  	//			next neighbor trigger mode

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.7 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.8 2010-03-23 14:07:51 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -621,7 +621,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fRawDataStart);
 	fRawDataStart->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fRawDataStart->SetText(0);
-	fRawDataStart->SetRange(0, 4095);
+	fRawDataStart->SetRange(kSis3302RawDataStartIndexMin, kSis3302RawDataStartIndexMax);
 	fRawDataStart->SetIncrement(2);
 	fRawDataStart->ShowToolTip(kTRUE, kTRUE);
 	rdvl->AddFrame(fRawDataStart, groupGC->LH());
@@ -633,7 +633,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	HEAP(fRawDataLength);
 	fRawDataLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fRawDataLength->SetText(0);
-	fRawDataLength->SetRange(0, 1024);
+	fRawDataLength->SetRange(kSis3302RawDataSampleLengthMin, kSis3302RawDataSampleLengthMax);
 	fRawDataLength->SetIncrement(128);
 	fRawDataLength->ShowToolTip(kTRUE, kTRUE);
 	rdvl->AddFrame(fRawDataLength, groupGC->LH());
@@ -701,8 +701,8 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 															frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fEnergyDataLength);
 	fEnergyDataLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fEnergyDataLength->SetText(0);
-	fEnergyDataLength->SetRange(0, 512);
+	fEnergyDataLength->SetText(kSis3302EnergySampleLengthMin);
+	fEnergyDataLength->SetRange(0, kSis3302EnergySampleLengthMax);
 	fEnergyDataLength->SetIncrement(32);
 	fEnergyDataLength->ShowToolTip(kTRUE, kTRUE);
 	edvl->AddFrame(fEnergyDataLength, groupGC->LH());
@@ -1143,7 +1143,7 @@ void VMESis3302Panel::TrigPeakingChanged(Int_t FrameId, Int_t EntryNo) {
 	} else {
 		curModule->ReadTrigPeakAndGap(psav, g, curChannel);
 	}
-	fTrigPeaking->SetRange(1, 16 - g);
+	fTrigPeaking->SetRange(1, kSis3302EnergyPeakMax - g);
 
 	p = fTrigPeaking->GetText2Int(EntryNo);
 	if (!fTrigPeaking->CheckRange(p, EntryNo, kTRUE, kTRUE)) {
@@ -1174,7 +1174,7 @@ void VMESis3302Panel::TrigGapChanged(Int_t FrameId, Int_t EntryNo) {
 	} else {
 		curModule->ReadTrigPeakAndGap(p, gsav, curChannel);
 	}
-	fTrigGap->SetRange(0, 16 - p);
+	fTrigGap->SetRange(0, kSis3302EnergyGapMax - p);
 
 	g = fTrigGap->GetText2Int(EntryNo);
 	if (!fTrigGap->CheckRange(g, EntryNo, kTRUE, kTRUE)) {
@@ -1471,12 +1471,12 @@ void VMESis3302Panel::EnergyDataModeChanged(Int_t FrameId, Int_t Selection) {
 
 	Int_t val;
 	switch (Selection) {
-		case kVMESampleFull:	val = 512; break;
+		case kVMESampleFull:	val = kSis3302EnergySampleLengthMax; break;
 		case kVMESampleMinMax:	val = 0; break;
 		default:				val = 0; break;
 	}
 	fEnergyDataLength->SetText(val);
-	curModule->WriteEnergySampleLength(val);
+	curModule->WriteEnergySampleLength(val, curChannel);
 	this->UpdateGates();
 }
 
@@ -1591,9 +1591,9 @@ void VMESis3302Panel::EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntr
 	} else if (edl & 1) {
 		gVMEControlData->MsgBox(this, "EnergyDataStartOrLengthChanged", "Error", Form("Illegal sampling length - %d (has to be even)", edl));
 		fEnergyDataLength->SetText(edlsav, EntryNo);
-	} else if (edl * nofStarts > 512) {
-		gVMEControlData->MsgBox(this, "EnergyDataStartOrLengthChanged", "Error", Form("Wrong sampling length - %d * %d (exceeds 512)", nofStarts, edl));
-		Int_t dl = 512 / nofStarts;
+	} else if (edl * nofStarts > kSis3302EnergySampleLengthMax) {
+		gVMEControlData->MsgBox(this, "EnergyDataStartOrLengthChanged", "Error", Form("Wrong sampling length - %d * %d (exceeds %d)", nofStarts, edl, kSis3302EnergySampleLengthMax));
+		Int_t dl = kSis3302EnergySampleLengthMax / nofStarts;
 		if (dl & 1) dl--;
 		fEnergyDataLength->SetText(dl, EntryNo);
 	} else {
@@ -1703,13 +1703,13 @@ void VMESis3302Panel::UpdateGates() {
 	if (curModule->IsOffline()) {
 		mode = fEnergyDataMode->GetSelectedNx()->GetIndex();
 		switch (mode) {
-			case kVMESampleFull: edl = 512; break;
+			case kVMESampleFull: edl = kSis3302EnergySampleLengthMax; break;
 			case kVMESampleMinMax: edl = 0; break;
 		}
 	} else {
 		curModule->ReadEnergySampleLength(edl, curChannel);
 	}
-	if (edl == 512) {
+	if (edl == kSis3302EnergySampleLengthMax) {
 		mode = kVMESampleFull;
 		fEnergyDataMode->Select(mode);
 		val = 1; fEnergyDataStart1->SetText(val); curModule->WriteStartIndex(val, 0);

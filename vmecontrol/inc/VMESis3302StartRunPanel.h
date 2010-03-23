@@ -8,10 +8,10 @@
 // Class:          VMESis3302StartRunPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartRunPanel.h,v 1.1 2008-10-27 12:26:07 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMESis3302StartRunPanel.h,v 1.2 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Date:
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -47,9 +47,9 @@ namespace std {} using namespace std;
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302StartRunPanel
 // Purpose:        Main frame to save & restore module settings
-// Constructors:   
+// Constructors:
 // Description:    A dialog window to save & restore module settings
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class VMESis3302StartRunPanel : public TGMainFrame {
@@ -62,9 +62,10 @@ class VMESis3302StartRunPanel : public TGMainFrame {
 												kVMESis3302SelectChannel,
 												kVMESis3302Timeout,
 												kVMESis3302Start,
+												kVMESis3302Stop,
 												kVMESis3302Close,
 											};
-				
+
 	public:
 		VMESis3302StartRunPanel(const TGWindow * Parent, TMrbLofNamedX * LofModules,
 							UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
@@ -91,9 +92,9 @@ class VMESis3302StartRunPanel : public TGMainFrame {
 		TRootEmbeddedCanvas * fHistoCanvas;			//		canvas
 
 		TGMrbTextButtonGroup * fActionButtons;	 	// actions
-		
+
 		TMrbLofNamedX fActions;						// text buttons:	actions to be taken
-		
+
 		TGMrbLabelEntry * fTimeout; 				// timeout
 
 		TH1F * fHistoRaw;							// display raw and energy data

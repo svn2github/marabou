@@ -1,15 +1,15 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// ame:            VMEControl
+// Name:            VMEControl
 // Purpose:        A GUI to control VME modules via TCP/IP
 // Description:    Main Program
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControl.cxx,v 1.2 2008-08-28 07:16:48 Rudolf.Lutter Exp $       
-// Date:           $Date: 2008-08-28 07:16:48 $
-// URL:            
-// Keywords:       
+// Revision:       $Id: VMEControl.cxx,v 1.3 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-03-23 14:07:51 $
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "Rtypes.h"
@@ -34,11 +34,11 @@ VoidFuncPtr_t initfuncs[] = { InitGui, 0 };
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMEControl
 // Purpose:        Main Program
-// Arguments:      
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Arguments:
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 TROOT root("GUI", "VMEControl GUI", initfuncs);

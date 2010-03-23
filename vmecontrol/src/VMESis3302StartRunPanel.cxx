@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartRunPanel.cxx,v 1.2 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartRunPanel.cxx,v 1.3 2010-03-23 14:07:51 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -43,6 +43,7 @@ namespace std {} using namespace std;
 const SMrbNamedX kVMESis302StartRunActions[] =
 			{
 				{VMESis3302StartRunPanel::kVMESis3302Start,		"Start",		"Start acquisition"	},
+				{VMESis3302StartRunPanel::kVMESis3302Stop,		"Stop",			"Stop acquisition"	},
 				{VMESis3302StartRunPanel::kVMESis3302Close,		"Close",		"Close window"	},
 				{0, 											NULL,			NULL								}
 			};
@@ -154,7 +155,7 @@ VMESis3302StartRunPanel::VMESis3302StartRunPanel(const TGWindow * Window, TMrbLo
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTimeout);
 	fTimeout->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fTimeout->SetText(0);
+	fTimeout->SetText(10);
 	fTimeout->SetRange(0, 1000000);
 	fTimeout->SetIncrement(5);
 	fTimeout->ShowToolTip(kTRUE, kTRUE);
@@ -208,7 +209,7 @@ void VMESis3302StartRunPanel::StartGUI() {
 	fSelectModule->Select(curModule->GetIndex());
 	fSelectChannel->Select(curChannel);
 
-	Int_t timeout;
+	Int_t timeout = fTimeout->GetText2Int();
 	curModule->SetTimeout(timeout);
 }
 
@@ -259,9 +260,15 @@ void VMESis3302StartRunPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	Int_t n;
+
 	switch (Selection) {
 		case VMESis3302StartRunPanel::kVMESis3302Start:
 			this->StartRun();
+			break;
+		case VMESis3302StartRunPanel::kVMESis3302Stop:
+			n = 0;
+			curModule->SetTimeout(n);
 			break;
 		case VMESis3302StartRunPanel::kVMESis3302Close:
 			this->CloseWindow();
@@ -302,43 +309,79 @@ void VMESis3302StartRunPanel::StartRun() {
 	Int_t rawDataLength;
 	Int_t energyDataLength;
 
+	curModule->ReadRawDataSampleLength(rawDataLength, curChannel);
+	curModule->ReadEnergySampleLength(energyDataLength, curChannel);
+
+ 	Int_t nofWords =	kSis3302EventPreHeader
+					  + kSis3302EventHeader
+					  + kSis3302EventMinMax
+					  + kSis3302EventTrailer
+					  + rawDataLength
+					  + energyDataLength;
+	evtData.Set(nofWords);
+
 	curModule->GetSingleEvent(evtData, curChannel);
+
+	if (curModule->IsOffline()) {
+		for (Int_t i = 0; i < rawDataLength + energyDataLength; i++) evtData[i + kSis3302EventPreHeader + kSis3302EventHeader] = (Int_t) 100 * sin(i * 0.02);
+	} else {
+		Bool_t ledOn = kTRUE;
+		curModule->SetUserLED(ledOn);
+		rawDataLength = evtData[0];
+		energyDataLength = evtData[1];
+		ofstream of("event.dmp", ios::out);
+		if (!of.good()) {
+			gMrbLog->Err()	<< "Can't open file \"event.dmp\" for output" << endl;
+			gMrbLog->Flush(this->ClassName(), "StartRun");
+		} else {
+			for (Int_t i = 0; i < nofWords; i++) of << Form("%5d %10d %0x", i, evtData[i], evtData[i]) << endl;
+			of.close();
+		}
+	}
 
 	Int_t k = kSis3302EventPreHeader + kSis3302EventHeader;
 
-	if (curModule->IsOffline()) {
-		rawDataLength = 1024;
-		energyDataLength = 512;
- 		Int_t nofWords = kSis3302EventPreHeader
-					+ kSis3302EventHeader
-					+ rawDataLength
-					+ energyDataLength
-					+ kSis3302EventMinMax
-					+ kSis3302EventTrailer;
-		evtData.Set(nofWords);
-		for (Int_t i = 0; i < rawDataLength + energyDataLength; i++) evtData[i + kSis3302EventPreHeader + kSis3302EventHeader] = (Int_t) 100 * sin(i * 0.02);
-	} else {
-		rawDataLength = evtData[0];
-		energyDataLength = evtData[1];
+	Int_t ksave = k;
+	Int_t min = 1000000;
+	Int_t max = 0;
+	for (Int_t i = 0; i < rawDataLength; i++, k++) {
+		if (evtData[k] < min) min = evtData[k];
+		if (evtData[k] > max) max = evtData[k];
+	}
+	if (max == 0) {
+		gMrbLog->Err()	<< "Raw data buffer is empty" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartRun");
+		return;
 	}
 
-	cout << "@@@ raw=" << rawDataLength << ", energy=" << energyDataLength << endl;
-
-#if 0
 	TCanvas * c = fHistoCanvas->GetCanvas();
 
 	c->cd(1);
+	k = ksave;
 	if (fHistoRaw) delete fHistoRaw;
 	fHistoRaw = new TH1F(	Form("Raw-%s-chn%d", curModule->GetName(), curChannel),
 							Form("Raw data from module %s, channel %d", curModule->GetName(), curChannel),
 							rawDataLength, 0, rawDataLength);
 	for (Int_t i = 0; i < rawDataLength; i++, k++) fHistoRaw->Fill(i, evtData[k]);
 	fHistoRaw->Draw();
-#endif
-	for (Int_t i = 0; i < rawDataLength; i++, k++) if (evtData[k] != 0) cout << "raw " << i << ": " << evtData[k] << endl;
+	c->Update();
+	c->cd();
 
-#if 0
+	ksave = k;
+	min = 1000000;
+	max = 0;
+	for (Int_t i = 0; i < energyDataLength; i++, k++) {
+		if (evtData[k] < min) min = evtData[k];
+		if (evtData[k] > max) max = evtData[k];
+	}
+	if (max == 0) {
+		gMrbLog->Err()	<< "Event data buffer is empty" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartRun");
+		return;
+	}
+
 	c->cd(2);
+	k = ksave;
 	if (fHistoEnergy) delete fHistoEnergy;
 	fHistoEnergy = new TH1F(	Form("Energy-%s-chn%d", curModule->GetName(), curChannel),
 							Form("Energy data from module %s, channel %d", curModule->GetName(), curChannel),
@@ -347,8 +390,11 @@ void VMESis3302StartRunPanel::StartRun() {
 	fHistoEnergy->Draw();
 	c->Update();
 	c->cd();
-#endif
-	for (Int_t i = 0; i < energyDataLength; i++, k++) if (evtData[k] != 0) cout << "energy " << i << ": " << evtData[k] << endl;
+
+	if (!curModule->IsOffline()) {
+		Bool_t ledOn = kFALSE;
+		curModule->SetUserLED(ledOn);
+	}
 }
 
 
