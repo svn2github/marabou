@@ -48,13 +48,25 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 
 		UShort_t * trailPtr = dataPtr + 2 * (wc - 2);
 
-		UInt_t highTimeStamp = (*trailPtr++ << 16);		// possibly extended timestam
+		UInt_t highTimeStamp = (*trailPtr++ << 16);		// possibly extended timestamp
 		highTimeStamp |= *trailPtr++;
 
 		Int_t trailer = (*trailPtr++ << 16); 	// inspect trailer word
 		trailer |= *trailPtr++;
 
-		if ((trailer & MADC_M_ID) != MADC_D_EOE) {
+		Bool_t hasTrailer = kTRUE;
+
+		if ((trailer & MADC_M_ID) != MADC_D_HDR) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "HDR instead of EOE", SevtData, origSevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): [Module "
+					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
+					<< wordsProcessed << "] Expecting EOE, found HDR instead - 0x" << setbase(16) << trailer << setbase(10)
+					<< setblack << endl;
+			hasTrailer = kFALSE;
+			wc--;				// trailer missing
+			wcs -= 2;
+		} else if ((trailer & MADC_M_ID) != MADC_D_EOE) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOE", SevtData, origSevtWC);
 			cerr	<< setred
 					<< this->ClassName() << "::FillSubevent(): [Module "
@@ -74,7 +86,7 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 			xts = kTRUE;
 		}
 
-		UInt_t lowTimeStamp = trailer & MADC_M_TSLOW;	// extract lower bits of time stamp (bits 0-29)
+		UInt_t lowTimeStamp = hasTrailer ? (trailer & MADC_M_TSLOW) : 0;	// extract lower bits of time stamp (bits 0-29)
 		ts64 |= lowTimeStamp;
 
 		UShort_t tsArr[3];
@@ -133,7 +145,7 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 		}
 
 		if (xts) dataPtr += 2;				// compensate for extended ts
-		dataPtr += 2;						// and for trailer
+		if (hasTrailer) dataPtr += 2;		// and for trailer
 
 		SevtWC -= wcs;						// remaining subevent data
 		wordsProcessed += wcs;
