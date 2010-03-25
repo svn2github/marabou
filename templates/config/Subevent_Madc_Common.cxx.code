@@ -56,9 +56,9 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 
 		Bool_t hasTrailer = kTRUE;
 
-		if ((trailer & MADC_M_ID) != MADC_D_HDR) {
+		if ((trailer & MADC_M_ID) == MADC_D_HDR) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "HDR instead of EOE", SevtData, origSevtWC);
-			cerr	<< setred
+			cerr	<< setmagenta
 					<< this->ClassName() << "::FillSubevent(): [Module "
 					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << "), sevtWC="
 					<< wordsProcessed << "] Expecting EOE, found HDR instead - 0x" << setbase(16) << trailer << setbase(10)
