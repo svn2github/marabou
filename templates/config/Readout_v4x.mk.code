@@ -5,9 +5,9 @@
 # Description:     makes task m_read_meb
 #                  to be used under LynxOs 3.1 and MBS v43
 # Author:          %%AUTHOR%%
-# Revision:        $Id: Readout_v4x.mk.code,v 1.5 2009-04-22 12:17:16 Rudolf.Lutter Exp $
-# Date:            $Date: 2009-04-22 12:17:16 $
-# URL:             
+# Revision:        $Id: Readout_v4x.mk.code,v 1.6 2010-04-01 07:46:20 Rudolf.Lutter Exp $
+# Date:            $Date: 2010-04-01 07:46:20 $
+# URL:
 #/////////////////////////////////////////////////////////////////////////////
 
 LEGALCPU	= PPC
@@ -34,18 +34,18 @@ ifeq ($(GSI_OS_VERSION),2.5)
 POSIX   =  -mthreads
 CFLAGS  = $(POSIX) -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-          $(LIB)/libedit.a -llynx -lnetinet $(CES_LIBS)
+          $(LIB)/libedit.a -llynx -lnetinet
 endif
 
 ifeq ($(GSI_OS_VERSION),3.1)
 POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) 
+CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN)
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-          $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet $(CES_LIBS)
+          $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet
 endif
 
 CFLAGS	+= -I$(RPATH) -I$(INC) $(RDO_INCL)
-LIBS	+= $(RDO_LIBS)
+LIBS	+= $(RDO_LIBS) $(CES_LIBS)
 
 all:	m_read_meb
 
@@ -62,7 +62,7 @@ m_read_meb: if$(LEGALCPU) $(OBJ)/m_read_meb.o \
 
 clean :
 	rm -f core *~ *.bak *.jou m_read_meb mbslog.l
- 
+
 
 if$(LEGALCPU):
 	@if [ $(GSI_LYNX_PROC_FAM) != $(LEGALCPU) ];\
