@@ -32,7 +32,7 @@
 					madc32_loadFromDb(s_$moduleNameLC, $chnPattern); 			/* load module regs from database */
 					madc32_setModuleId(s_$moduleNameLC, $serial); 				/* update module id */
 					madc32_dumpRegisters(s_$moduleNameLC, "$dumpFile"); 		/* dump registers to file */
-					madc32_resetReadout(s_$moduleNameLC);	 					/* reset readout regs */
+					madc32_initialize(s_$moduleNameLC);		 					/* initialize module */
 
 %%EndOfCode%%
 %%INIT_MODULE%%
