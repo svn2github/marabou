@@ -8,8 +8,8 @@
 // Class:          TMrbMesytec_Madc32        -- VME adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.13 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbMesytec_Madc32.h,v 1.14 2010-04-01 07:27:55 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -87,8 +87,9 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 										};
 
 		enum EMrbMultiEvent				{	kMultiEvtNo			=	0,
-											kMultiEvtYes,
-											kMultiEvt1By1
+											kMultiEvtYes		=	1,
+											kMultiEvt1By1		=	3,
+											kMultiEvtNoBerr		=	5
 										};
 
 		enum EMrbMarkingType			{	kMarkingTypeEvent	=	0x0,
@@ -293,7 +294,7 @@ class TMrbMesytec_Madc32 : public TMrbVMEModule {
 
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
 		inline const Char_t * GetPrivateCodeFile() const { return("Module_Madc"); };
-		
+
  		virtual Bool_t CheckSubeventType(TMrbSubevent * Subevent) const;		// check if subevent type is [10,8x]
 
 		inline Char_t * GetDeviceStruct() { return(Form("s_%s", this->GetName())); };

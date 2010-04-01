@@ -50,9 +50,10 @@ MADC32.$moduleName.ModuleId: 			$moduleId
 #                       3  -->  64 bit
 MADC32.$moduleName.DataWidth:			$dataWidth
 
-# multievent            0  -->  no (default)
+# multievent            0  -->  no / single event
 #                       1  -->  yes
 #                       3  -->  xfer event by event
+#						5  -->  same as 1, but BERR turned off
 MADC32.$moduleName.MultiEvent:			$multiEvent
 
 # max xfer data (if multievent is set to "3", default = 0)

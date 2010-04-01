@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.19 2009-10-27 15:55:33 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.20 2010-04-01 07:27:55 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -56,6 +56,7 @@ const SMrbNamedXShort kMrbMultiEvent[] =
 			{	TMrbMesytec_Madc32::kMultiEvtNo,			"singleEvent"	},
 			{	TMrbMesytec_Madc32::kMultiEvtYes,			"multiEvent"	},
 			{	TMrbMesytec_Madc32::kMultiEvt1By1,			"oneByOne"		},
+			{	TMrbMesytec_Madc32::kMultiEvtNoBerr,		"multiNoBerr"	},
 			{	0,			 								NULL,			}
 		};
 
@@ -289,7 +290,7 @@ void TMrbMesytec_Madc32::DefineRegisters() {
 	kp = new TMrbNamedX(TMrbMesytec_Madc32::kRegMultiEvent, "MultiEvent");
 	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0,	TMrbMesytec_Madc32::kMultiEvtNo,
 													TMrbMesytec_Madc32::kMultiEvtNo,
-													TMrbMesytec_Madc32::kMultiEvt1By1);
+													TMrbMesytec_Madc32::kMultiEvtNoBerr);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
