@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.8 2010-03-23 14:07:51 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-03-23 14:07:51 $
+// Revision:       $Id: TC2LSis3302.h,v 1.9 2010-04-01 06:45:21 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-04-01 06:45:21 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 

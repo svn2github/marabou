@@ -8,8 +8,8 @@
 //! \details		Prototypes for Mesytec Madc32
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.8 $
-//! $Date: 2009-10-27 13:30:44 $
+//! $Revision: 1.9 $
+//! $Date: 2010-04-01 06:45:20 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -153,5 +153,8 @@ void madc32_stopAcq(struct s_madc32 * s);
 void madc32_resetFifo(struct s_madc32 * s);
 
 bool_t madc32_updateSettings(struct s_madc32 * s, char * updFile);
+
+void madc32_resetEventBuffer(struct s_madc32 * s);
+uint32_t * madc32_pushEvent(struct s_madc32 * s, uint32_t * pointer);
 
 #endif

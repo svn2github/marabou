@@ -20,8 +20,8 @@
 //! \details		Contains definitions to operate a Mesytec Madc32
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.8 $
-//! $Date: 2009-10-27 15:18:48 $
+//! $Revision: 1.9 $
+//! $Date: 2010-04-01 06:45:20 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*____________________________________________________________________________
@@ -221,9 +221,13 @@
 
 #define MADC32_D_CHAN_INACTIVE				0x1FFF
 
+#define MADC32_M_SIGNATURE					0xC0000000
 #define MADC32_M_HEADER						0x40000000
-#define MADC32_M_WC							0x00000FFF
 #define MADC32_M_TRAILER					0xC0000000
+#define MADC32_M_EOB						0x80000000
+#define MADC32_M_WC							0x00000FFF
+
+#define MADC32_BLT_BUFFER_SIZE              (1026 * sizeof(int))
 
 /*____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////
@@ -283,6 +287,11 @@ struct s_madc32 {
 	uint32_t bltBufferSize;
 	uint32_t bltBlockSize;
 	uint8_t * bltBuffer;
+	int blockTransOn;
+
+	uint32_t evtBuf[NOF_CHANNELS + 3];		/* 1 event = 32 channels + header + extended timestamp + trailer */
+	uint32_t *evtp;
+	bool_t skipData;
 };
 
 #endif

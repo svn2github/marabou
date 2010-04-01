@@ -1,12 +1,12 @@
 /*_________________________________________________________________[PROTOTYPES]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           sis_3300.h
+// Name:           sis_3300_protos.h
 // Purpose:        Prototypes for SIS3300 digitizing ADC
 // Description:    Contains prototypes to be used with SIS 3300
 // Author:         R. Lutter
-// Revision:       
-// Date:           
-// Keywords:       
+// Revision:
+// Date:
+// Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
 struct s_sis_3300 * sis_3300_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * name, int serial);
@@ -49,10 +49,10 @@ void sis_3300_setClockPredivider(struct s_sis_3300 * s, uint8_t predivider);
 uint8_t sis_3300_getClockPredivider(struct s_sis_3300 * s);
 void sis_3300_setNumberOfSamples(struct s_sis_3300 * s, uint8_t value);
 uint8_t sis_3300_getNumberOfSamples(struct s_sis_3300 * s);
-void sis_3300_setTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp, 
+void sis_3300_setTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp,
                                uint8_t value);
 uint8_t sis_3300_getTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp);
-void sis_3300_setTriggerPeakingTime(struct s_sis_3300 * s, uint8_t channelGrp, 
+void sis_3300_setTriggerPeakingTime(struct s_sis_3300 * s, uint8_t channelGrp,
                                    uint8_t value);
 uint8_t sis_3300_getTriggerPeakingTime(struct s_sis_3300 * s, uint8_t channelGrp);
 void sis_3300_setTriggerPulseLength(struct s_sis_3300 * s, uint8_t channelGrp,
@@ -154,4 +154,5 @@ uint32_t sis_3300_getActualSampleValue(struct s_sis_3300 * s, uint8_t channelGrp
 uint32_t sis_3300_getPageSizeVal(struct s_sis_3300 * s);
 float sis_3300_getFrequency(struct s_sis_3300 * s);
 
+void sis_3300_enable_bma(struct s_sis_3300 * s);
 void sis_3300_dumpRegisters(struct s_sis_3300 * s);

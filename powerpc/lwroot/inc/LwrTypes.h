@@ -1,16 +1,16 @@
 #ifndef __LwrTypes_h__
 #define __LwrTypes_h__
 
-//_________________________________________________[C++ CLASS DEFINITION FILE]
+/*__________________________________________________________[TYPE DEFINITIONS]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			LwrTypes.h
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: Type definitions
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $     
-//! $Date: 2009-02-03 08:29:20 $
-//////////////////////////////////////////////////////////////////////////////
+//! $Revision: 1.4 $
+//! $Date: 2010-04-01 06:45:20 $
+////////////////////////////////////////////////////////////////////////////*/
 
 typedef char           Char_t;      //Signed Character 1 byte (char)
 typedef unsigned char  UChar_t;     //Unsigned Character 1 byte (unsigned char)
@@ -48,7 +48,7 @@ typedef float          Size_t;      //Attribute size (float)
 typedef void         (*VoidFuncPtr_t)();  //pointer to void function
 
 
-//---- constants ---------------------------------------------------------------
+/* ---- constants --------------------------------------------------------------- */
 
 #ifndef NULL
 #define NULL 0
@@ -61,7 +61,7 @@ const Ssiz_t    kBitsPerByte = 8;
 const Ssiz_t    kNPOS        = ~(Ssiz_t)0;
 
 
-//--- bit manipulation ---------------------------------------------------------
+/* --- bit manipulation --------------------------------------------------------- */
 
 #define BIT(n)       (1 << (n))
 #define SETBIT(n,i)  ((n) |= BIT(i))

@@ -1,4 +1,4 @@
-CC = gcc 
+CC = gcc
 
 PPCINC 		=	../../../include
 CESINC		=	/usr/include/ces
@@ -16,7 +16,7 @@ ARFLAG = -rv
 
 LIB_TARGETS = ../../../lib/$(LYNX_VERSION)/libMadc32.a
 
-libMadc32.OBJS = madc32fct.o
+libMadc32.OBJS = madc32fct.o block.o
 
 # ------------ Suffix Rules -------------------------------------------
 
@@ -24,9 +24,9 @@ libMadc32.OBJS = madc32fct.o
 
 # ----- C Code ---------
 %.o: %.c
-	$(CC) $< -c $(CFLAGS) -o $@ 
+	$(CC) $< -c $(CFLAGS) -o $@
 
-.SUFFIXES: .o .c 
+.SUFFIXES: .o .c
 
 # ------------ Targets -------------------------------------------------
 
@@ -40,7 +40,7 @@ madc32:	madc32.o $(LIB_TARGETS)
 		$(CC) -o madc32 madc32.o \
 			-L ../../../lib/$(LYNX_VERSION) \
 			-L /lib/ces \
-			-lMadc32 -lUti -lvme -lnetinet
+			-lMadc32 -lUti -lvme -lbma -luio -lnetinet
 
 clean:
 	rm -f *.o core core.* $(LIB_TARGETS)
