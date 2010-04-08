@@ -102,6 +102,7 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
+								madc32_stopAcq(s_$moduleName); 	/* start module $moduleName */
 								madc32_resetFifo(s_$moduleName);  	/* reset fifo */
 								madc32_startAcq(s_$moduleName); 	/* start module $moduleName */
 %%EndOfCode%%
@@ -114,6 +115,7 @@
 
 %%BeginOfCode%%
 								madc32_stopAcq(s_$moduleName);  	/* stop module $moduleName */
+								madc32_resetFifo(s_$moduleName);  	/* reset fifo */
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 
