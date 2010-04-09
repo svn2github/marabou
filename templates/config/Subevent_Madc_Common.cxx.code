@@ -28,6 +28,12 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 	while (SevtWC > 0) {									// subevent may contain several madc modules
 		Int_t header = (*dataPtr++ << 16);
 		header |= *dataPtr++;
+		if (header == 0xaffec0c0) {
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): Data not ready (affec0c0) - restart"
+					<< setblack << endl;
+			return(kTRUE);
+		}
 		if ((header & MADC_M_ID) != MADC_D_HDR) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, origSevtWC);
 			cerr	<< setred
