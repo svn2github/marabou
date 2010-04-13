@@ -6,8 +6,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.8 $
-//! $Date: 2010-04-01 06:45:20 $
+//! $Revision: 1.9 $
+//! $Date: 2010-04-13 08:28:52 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -51,6 +51,14 @@ struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	}
 	return s;
+}
+
+void madc32_initialize(struct s_madc32 * s)
+{
+	signal(SIGBUS, catchBerr);
+	madc32_disableBusError(s);
+	madc32_enable_bma(s);
+	madc32_resetReadout(s);
 }
 
 void madc32_setBltBlockSize(struct s_madc32 * s, uint32_t size)
@@ -621,9 +629,8 @@ void madc32_loadFromDb(struct s_madc32 * s, uint32_t chnPattern)
 		if (chnPattern & bit) madc32_setThreshold_db(s, ch); else madc32_setThreshold(s, ch, MADC32_D_CHAN_INACTIVE);
 		bit <<= 1;
 	}
-
-	if (s->blockTransOn) madc32_enable_bma(s);
 }
+
 
 bool_t madc32_dumpRegisters(struct s_madc32 * s, char * file)
 {
@@ -751,7 +758,7 @@ void madc32_enable_bma(struct s_madc32 * s)
 			return;
 		}
 		s->bltBuffer = (unsigned char *) s->bma->virtBase;
-		sprintf(msg, "[%senable_bma] %s: turning block xfer ON", s->mpref, s->moduleName);
+		sprintf(msg, "[%senable_bma] %s: turning block xfer ON (buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 	} else {
 		s->bma = NULL;
@@ -769,20 +776,21 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 	int numData;
 	unsigned int i;
 
+	dataStart = pointer;
+
 	if (!madc32_dataReady(s)) {
 		*pointer++ = 0xaffec0c0;
-		return 0;
+		madc32_resetFifo(s);
+		madc32_startAcq(s);
+		return (pointer - dataStart);
 	}
-
-	dataStart = pointer;
 
 	numData = (int) madc32_getFifoLength(s);
 
 	if (s->blockTransOn) {
-			sprintf(msg, "[%sreadout] %s: numData=%d", s->mpref, s->moduleName,  numData);
-			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 		if (bmaResetChain(s->bma) < 0) {
-			sprintf(msg, "[%sreadout] %s: resetting block xfer chain failed", s->mpref, s->moduleName);
+			sprintf(msg, "[%sreadout] %s: resetting block xfer chai
+n failed", s->mpref, s->moduleName);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
@@ -804,8 +812,6 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 			f_ut_send_msg("sis_3300", msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
-			sprintf(msg, "[%sreadout] %s: copy numData=%d", s->mpref, s->moduleName,  numData);
-			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 
 		memcpy(pointer, s->bltBuffer, sizeof(uint32_t) * numData);
 		pointer += numData;
@@ -890,20 +896,23 @@ void madc32_disableBusError(struct s_madc32 * s)
 
 void madc32_startAcq(struct s_madc32 * s)
 {
-	signal(SIGBUS, catchBerr);
-	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x1);
+	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x0);
+	madc32_resetFifo(s);
+	madc32_resetReadout(s);
 	madc32_resetEventBuffer(s);
+	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x1);
 }
 
 void madc32_stopAcq(struct s_madc32 * s)
 {
 	SET16(s->baseAddr, MADC32_START_ACQUISITION, 0x0);
+	madc32_resetFifo(s);
+	madc32_resetReadout(s);
 	madc32_resetEventBuffer(s);
 }
 
 void madc32_resetFifo(struct s_madc32 * s)
 {
-	madc32_stopAcq(s);
 	SET16(s->baseAddr, MADC32_FIFO_RESET, 0x1);
 }
 

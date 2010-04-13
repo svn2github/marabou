@@ -4,8 +4,8 @@
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $
-//! $Date: 2010-04-01 06:47:34 $
+//! $Revision: 1.2 $
+//! $Date: 2010-04-13 08:28:52 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>

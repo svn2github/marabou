@@ -20,8 +20,8 @@
 //! \details		Contains definitions to operate a Mesytec Madc32
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.9 $
-//! $Date: 2010-04-01 06:45:20 $
+//! $Revision: 1.10 $
+//! $Date: 2010-04-13 08:28:52 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*____________________________________________________________________________
@@ -113,10 +113,10 @@
 
 #define MADC32_MULTI_EVENT_NO			0
 #define MADC32_MULTI_EVENT_YES			0x1
-#define MADC32_MULTI_EVENT_BERR 	 	0x2
-#define MADC32_MULTI_EVENT_LIM_XFER 	0x3
+#define MADC32_MULTI_EVENT_BERR 	 	0x4
+#define MADC32_MULTI_EVENT_LIM_XFER 	(MADC32_MULTI_EVENT_YES | 0x2)
 #define MADC32_MULTI_EVENT_DEFAULT		MADC32_MULTI_EVENT_NO
-#define MADC32_MULTI_EVENT_MASK			MADC32_MULTI_EVENT_LIM_XFER
+#define MADC32_MULTI_EVENT_MASK			0xF
 
 #define MADC32_MAX_XFER_DATA_DEFAULT	0
 #define MADC32_MAX_XFER_DATA_MASK		0x3FF
