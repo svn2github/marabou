@@ -119,9 +119,9 @@ enum EM2L_FunctionType {
 	kM2L_FCT_SIS_3302_SET_LEMO_OUT_MODE,
 	kM2L_FCT_SIS_3302_GET_LEMO_IN_ENABLE_MASK,
 	kM2L_FCT_SIS_3302_SET_LEMO_IN_ENABLE_MASK,
-	kM2L_FCT_SIS_3302_GET_SINGLE_EVENT,
+	kM2L_FCT_SIS_3302_COLLECT_TRACES,
+	kM2L_FCT_SIS_3302_GET_EVENT,
 	kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,
-	kM2L_FCT_SIS_3302_START_RUN,
 //--------------------------------------------------------------------------------
 	kM2L_FCT_VULOM_TB			=	0x300,					// vulom3 / triggerbox
 	kM2L_FCT_VULOM_TB_READ_SCALER,
@@ -217,9 +217,9 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_SIS_3302_SET_LEMO_IN_ENABLE_MASK,		"set lemo-in enable mask"},
 		{kM2L_FCT_SIS_3302_GET_CLOCK_SOURCE,			"get clock source"},
 		{kM2L_FCT_SIS_3302_SET_CLOCK_SOURCE,			"set clock source"},
-		{kM2L_FCT_SIS_3302_GET_SINGLE_EVENT,			"get single event"},
+		{kM2L_FCT_SIS_3302_COLLECT_TRACES,				"collect traces"},
+		{kM2L_FCT_SIS_3302_GET_EVENT,					"get event"},
 		{kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,				"accu histogram"},
-		{kM2L_FCT_SIS_3302_START_RUN,					"start run"},
 //--------------------------------------------------------------------------------
 		{kM2L_FCT_VULOM_TB, 							"exec function (VULOM / TRIGBOX)"},
 		{kM2L_FCT_VULOM_TB_READ_SCALER, 				"read scaler"},

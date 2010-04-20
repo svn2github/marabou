@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish an
 //                 client/server connection to LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbC2Lynx.h,v 1.16 2010-04-01 06:45:21 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-04-01 06:45:21 $
+// Revision:       $Id: TMrbC2Lynx.h,v 1.17 2010-04-20 10:19:43 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-04-20 10:19:43 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
