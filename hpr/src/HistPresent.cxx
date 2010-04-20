@@ -320,7 +320,7 @@ HistPresent::~HistPresent()
 //________________________________________________________________
 void HistPresent::RecursiveRemove(TObject * obj)
 {
-//   cout << "------> Enter HistPresent::RecursiveRemove for: "
+//   cout << "------> Enter HistPresent::RecursiveRemove for: " << obj << endl;
 //   fCanvasList->Remove(obj);
 //#if ROOTVERSION > 40302
 //   if (fCanvasList->GetEntries() == 0 && fCanvasClosing) {;
@@ -360,8 +360,6 @@ void HistPresent::ShowMain()
    Float_t  dy=0.068, y=1. - 6.5*dy - 0.001, x0=0.01, x1=0.97;
    TButton *b;
    Int_t hint_delay=1000;
-//   SButton("ByTitle","ByName",this,1,1,dy,1, 0.8);
-//   CButton("OpenWorkFile",      "Open WorkFile",this,1,1,dy,0.5);
    b = CButton("CloseHistLists",    "Close HistLists",this,1,1,dy,0.5);
    fCloseWindowsButton
      = CButton("CloseAllCanvases",  "Close Windows",this,2,1,dy,0.5);
@@ -371,8 +369,6 @@ void HistPresent::ShowMain()
    b->SetToolTipText("Edit resource file .rootrc in CWD or HOME",hint_delay);
    b = CButton("EditAttrFile",      "Edit AttrMacro",this,2,3,dy,0.5);
    b->SetToolTipText("Edit a macro used to customize drawing options",hint_delay);
-//   b = CButton("DiffHist",          "Diffte",this,1,3,dy,0.25);
-//   b = CButton("FoldSquareWave",    "Fpeaks",this,2,3,dy,0.25);
    b = CButton("RebinHist",         "Rebin",this,1,4,dy,0.25);
    b->SetToolTipText("Rebin a selected histogram",hint_delay);
    fRebin2 = SButton("SetRebinValue(2);", "2",this,3,4,dy,1,0.125);
