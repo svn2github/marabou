@@ -86,45 +86,51 @@ ClassImp(TMrbHelpBrowser)
 //End_Html
 //Use View Page source to see how it is done.
 
-   TMrbHelpBrowser::~TMrbHelpBrowser(){gROOT->GetList()->Remove(this);}
+TMrbHelpBrowser::~TMrbHelpBrowser()
+{
+	gROOT->GetList()->Remove(this);
+	gROOT->GetListOfCleanups()->Remove(this);
+}
 
-   TMrbHelpBrowser::TMrbHelpBrowser(const char * InputFile)
-              :TNamed("TMrbHelpBrowser", "TMrbHelpBrowser") {
-      UInt_t w, h;
-      Int_t screen_x, screen_y;
-      //  screen size in pixels
-      gVirtualX->GetWindowSize(gClient->GetRoot()->GetId(),
-                 screen_x, screen_y, w, h);
-      fScreen_w = (Int_t)w;
-      fScreen_h = (Int_t)h;
-      fWwX = 720;
-      fX0 = fScreen_w - fWwX  - 150;
-      fY0 = 50;
-      fTextSize = 18;
-      fTextFont = 100;         // courier
+TMrbHelpBrowser::TMrbHelpBrowser(const char * InputFile)
+				:TNamed("TMrbHelpBrowser", "TMrbHelpBrowser")
+{
+	UInt_t w, h;
+	Int_t screen_x, screen_y;
+	//  screen size in pixels
+	gVirtualX->GetWindowSize(gClient->GetRoot()->GetId(),
+					screen_x, screen_y, w, h);
+	fScreen_w = (Int_t)w;
+	fScreen_h = (Int_t)h;
+	fWwX = 720;
+	fX0 = fScreen_w - fWwX  - 150;
+	fY0 = 50;
+	fTextSize = 18;
+	fTextFont = 100;         // courier
 //      fDefaultFont = 100;        // courier bold (+10 italic)
 //      fDefaultFont = 40;         // helvetica
 //      fDefaultFont = 60;         // helvetica bold
-      fMaxLineLength = 75;    // -1: dont wrap lines as default
-      fHelpList = new TList();
-      fCanvasList = new TList();
-      fRootFile = 0;
-	   fGifViewer = "xv";
-      gROOT->Append(this);
-      if(!InputFile){
-         cout << "WARNING: No input file given" << endl;
-      } else {
-         TRegexp endwithroot("\\.root$");   
-         TString infile(InputFile);
+	fMaxLineLength = 75;    // -1: dont wrap lines as default
+	fHelpList = new TList();
+	fCanvasList = new TList();
+	fRootFile = 0;
+	fGifViewer = "xv";
+	gROOT->Append(this);
+	if(!InputFile){
+		cout << "WARNING: No input file given" << endl;
+	} else {
+		TRegexp endwithroot("\\.root$");   
+		TString infile(InputFile);
 
-         if(infile.Index(endwithroot) < 0){
-            AddHtml(InputFile); 
-         } else {
-            fRootFile = new TFile(InputFile);
-         }
-      }
-	  cout << "Init TMrbHelpBrowser from: " << InputFile << endl;
-   }
+		if(infile.Index(endwithroot) < 0){
+			AddHtml(InputFile); 
+		} else {
+			fRootFile = new TFile(InputFile);
+		}
+	}
+	gROOT->GetListOfCleanups()->Add(this);
+	cout << "Init TMrbHelpBrowser from: " << InputFile << endl;
+}
 //________________________________________________________________________________
 
 void TMrbHelpBrowser::SetTextSize(Int_t size){
@@ -390,19 +396,27 @@ void TMrbHelpBrowser::AddCanvas(const char * RootFile){
    }
    rfile->Close();
 }
-//________________________________________________________________________________
+//______________________________________________________________________________
+
+void TMrbHelpBrowser::RecursiveRemove(TObject * obj)
+{
+//	cout << "TMrbHelpBrowser::RecursiveRemove " << obj << endl;
+	if ( fCanvasList->FindObject(obj) ) {
+		fCanvasList->Remove(obj);
+	}
+}
+	//________________________________________________________________________________
 
 void TMrbHelpBrowser::Clear(){
 //
 // remove all help - canvases from screen
-
-  TIter next(fCanvasList);
-  while(TObject * obj = next()){
-     if(obj->TestBit(TObject::kNotDeleted)) delete obj;
-//     else cout << "obj was deleted" << endl;
-     fCanvasList->Remove(obj);
-  }
-  fCanvasList->Clear("nodelete");
+	TIter next(fCanvasList);
+	TCanvas * htc;
+	while ( (htc =(TCanvas *)next()) ) {
+		TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
+		rc->SendCloseMessage();
+	}
+	fCanvasList->Clear("nodelete");
 }
 //________________________________________________________________________________
 

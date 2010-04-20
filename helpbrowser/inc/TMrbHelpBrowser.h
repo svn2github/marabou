@@ -30,7 +30,7 @@ public:
    ~TMrbHelpBrowser();
 
    TMrbHelpBrowser(const char * InputFile = 0);
-
+	void RecursiveRemove(TObject*);
    void SetTextSize(Int_t size);
    
    void SetMaxLineLength(Int_t len);
