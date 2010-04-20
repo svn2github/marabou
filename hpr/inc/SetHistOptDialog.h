@@ -15,6 +15,7 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
+	TCollection  *fHistList;
    TGWindow     *fWindow;
 	TH1          *fHist;
    Int_t        fPdivX;
@@ -85,7 +86,7 @@ private:
    Int_t        fNewStyle;
 public:
 
-   SetHistOptDialog(TGWindow * win = NULL);
+   SetHistOptDialog(TGWindow * win = NULL, TCollection * hlist = NULL);
    ~SetHistOptDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();

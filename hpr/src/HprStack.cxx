@@ -12,6 +12,8 @@
 #include "TGMrbValuesAndText.h"
 #include "WindowSizeDialog.h"
 #include "GeneralAttDialog.h"
+#include "SetHistOptDialog.h"
+#include "SetCanvasAttDialog.h"
 #include "HprStack.h"
 
 ClassImp (HprStack)
@@ -23,7 +25,9 @@ enum EGoHCommandIds {
    M_OptionAxisAtt,
    M_Option1Dim,
    M_Option2Dim,
-   M_Option2DimCol
+   M_Option2DimCol,
+	M_OptionHist,
+	M_OptionPad
 };
 //________________________________________________________________________
 
@@ -54,19 +58,13 @@ HprStack::HprStack(TList * hlist)
    fMarkerStyle = new Style_t[fNhists];
    fMarkerSize = new Size_t[fNhists];
    RestoreDefaults();
-//  make a copy of  hlist, add its pointer to list of histlists fHistListList
-//  pass its pointer to HTCanvas,
-//  destructor of HTCanvas shall delete the list and remove its
-//  pointer from fHistListList
-//   TList * savelist = new TList();
-//   TIter next(hlist);
-//   while ( TObjString * objs = (TObjString*)next()) {
-//      savelist->Add(new TObjString(*objs));
-//   }
    gROOT->GetList()->Add(this);
    gROOT->GetListOfCleanups()->Add(this);
    BuildCanvas();
    BuildMenu();
+//	cout << "THStack *st = (THStack*)" << fStack << ";" << endl;
+//	cout << "TObjArray *oa = (TObjArray*)" << fStack->GetStack() << ";" << endl;
+	
 }
 //________________________________________________________________________
 
@@ -131,20 +129,6 @@ void HprStack::BuildCanvas()
       fStack->Draw(opt);
    }
    SetAttributes();
-/*
-   if (fRealStack || hist->GetDimension() == 2) hs->Draw();
-   else           hs->Draw("nostack");
-
-   if (binlx != 0 && binux != 0) {
-      hs->GetXaxis()->SetRange(binlx, binux);
-      hs->GetHistogram()->GetXaxis()->SetRange(binlx, binux);
-   }
-   if (hist->GetDimension() == 2 && binly != 0 && binuy != 0) {
-      hs->GetYaxis()->SetRange(binly, binuy);
-      hs->GetHistogram()->GetYaxis()->SetRange(binly, binuy);
-   }
-*/
-//   cout << "stitle " << stitle<< endl;
    fStack->SetTitle(stitle);
    fCanvas->BuildLegend(fLegendX1, fLegendY1, fLegendX2, fLegendY2);
    fCanvas->Modified();
@@ -154,23 +138,14 @@ void HprStack::BuildCanvas()
 
 void HprStack::RecursiveRemove(TObject *obj)
 {
-/*
+
 //   cout <<  "HprStack::RecursiveRemove,obj " << obj << " "  << obj->GetName() << endl;
    if (obj == fCanvas) {
-      TLegend *leg = (TLegend*)fCanvas->GetListOfPrimitives()->FindObject("TPave");
-      if ( leg ) {
-         fLegendX1 = leg->GetX1NDC();
-//         cout << "fLegendX1 " << fLegendX1<< endl;
-         fLegendX2 = leg->GetX2NDC();
-         fLegendY1 = leg->GetY1NDC();
-         fLegendY2 = leg->GetY2NDC();
-      }
       gROOT->GetList()->Remove(this);
       gROOT->GetListOfCleanups()->Remove(this);
  //     cout <<  "RecursiveRemove,fWindowXWidth  " << fWindowXWidth << endl;
       delete this;
    }
-*/
 }
 //________________________________________________________________________
 
@@ -191,9 +166,11 @@ void HprStack::BuildMenu()
    TGMenuBar * menubar = fRootCanvas->GetMenuBar();
    TGLayoutHints * layoh_left = new TGLayoutHints(kLHintsTop | kLHintsLeft);
    fMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-   menubar->AddPopup("Display", fMenu, layoh_left, menubar->GetPopup("Help"));
-   fMenu->AddEntry("Set Graphics Attributes", M_SetOptions);
-   fMenu->AddEntry("Store changed Attributes", M_RememberOptions);
+   menubar->AddPopup("Display options", fMenu, layoh_left, menubar->GetPopup("Help"));
+	fMenu->AddEntry("Stacks / Hists Attributes", M_SetOptions);
+	fMenu->AddEntry("Axis / Title / StatBox Attributes", M_OptionHist);
+	fMenu->AddEntry("Canvas, Pad, Frame", M_OptionPad);
+	fMenu->AddEntry("Store changed Attributes", M_RememberOptions);
    fMenu->Connect("Activated(Int_t)", "HprStack", this,
                         "HandleMenu(Int_t)");
    menubar->MapSubwindows();
@@ -205,8 +182,20 @@ void HprStack::HandleMenu(Int_t id)
 {
    switch (id) {
 
+		case M_OptionHist:
+			if ( GeneralAttDialog::fStackedPads ) {
+				new SetHistOptDialog(fRootCanvas, fStack->GetHists());
+			} else {
+				TList *temp = new TList();
+				temp->Add(fStack->GetHistogram());
+				new SetHistOptDialog(fRootCanvas, temp);
+			}
+			break;
+		case M_OptionPad:
+			new SetCanvasAttDialog(fRootCanvas);
+			break;
 		case M_SetOptions:
-            SetOptions();
+			SetOptions();
 			break;
 		case M_RememberOptions:
             CRButtonPressed();
@@ -218,11 +207,20 @@ void HprStack::SetOptions()
 {
 static const Char_t helptext[] =
 "This menu controls the parameters when stacking histograms\n\
+\"Really stack\"\n\
+The first histogram is drawn as it is, subsequent histograms\n\
+in the selection are added up and each new sum is drawn\n\
+\"Superimpose\"\n\
+The selected histograms are drawn in the same picture\n\
+\"One pad for each\"\n\
+The canvas is divided and each histogram is drawn in a\n\
+separate pad.\n\
+\n\
 Error Drawing Modes:\n\
 E	Draw error bars.\n\
 E0	Draw error bars. Markers are drawn for bins with 0 contents.\n\
 E1	Draw error bars with perpendicular lines at the edges.\n\
-	Length is controled by EndErrSize.\n\
+	Length is controled by\" EndErrSize\".\n\
 E2	Draw error bars with rectangles.\n\
 E3	Draw a fill area through the end points of the vertical error bars.\n\
 E4	Draw a smoothed filled area through the end points of the error bars.\n\
@@ -443,23 +441,18 @@ void HprStack::SetAttributes()
    TObjArray * stack = fStack->GetStack();
    TList * orighist = fStack->GetHists();
 	TString opt;
-   if ( GeneralAttDialog::fStackedNostack ) {	
-      opt = "nostack";
-//	   ClearSubPads();
-   } else if ( GeneralAttDialog::fStackedPads ) {
-      opt = "pads";
-	} else {
-//	   ClearSubPads();
-	}
 	if (fShowContour) opt += "HIST";
    if (fErrorMode != "none") {
       opt += fErrorMode;
    }
    gStyle->SetEndErrorSize (fEndErrorSize );
    gStyle->SetErrorX       (fErrorX       );
+//	Int_t idx;
+
    for(Int_t i=0; i<fNDrawn; i++) {
       TH1 * hist = (TH1*)stack->At(i);
       TH1 * ohist = (TH1*)orighist->At(i);
+//		TObjLink *objlnk = orighist->FindLink(ohist, idx);
       if ( fDim  == 2 ) {
          hist->SetFillColor(fFillColor[i]); ohist->SetFillColor(fFillColor[i]);
 		   hist->SetFillStyle(1001);
@@ -473,13 +466,15 @@ void HprStack::SetAttributes()
 			} else {
 				hist->SetFillStyle(0);
 				ohist->SetFillStyle(0);
-		}
+			}
 			hist->SetLineColor(fLineColor[i]);
 			hist->SetLineStyle(fLineStyle[i]);
 			hist->SetLineWidth(fLineWidth[i]);
 			ohist->SetLineColor(fLineColor[i]);
 			ohist->SetLineStyle(fLineStyle[i]);
 			ohist->SetLineWidth(fLineWidth[i]);
+//			cout << "ohist->GetOption() " << ohist->GetOption()<< endl;
+			ohist->SetOption(opt);
 			if ( fShowMarkers ) {
 				hist->SetMarkerStyle(fMarkerStyle[i]);
 				hist->SetMarkerColor(fMarkerColor[i]);
@@ -489,18 +484,30 @@ void HprStack::SetAttributes()
 				ohist->SetMarkerSize(fMarkerSize[i]);
 			} else {
 				hist->SetMarkerSize(0);
+				ohist->SetMarkerSize(0);
+				hist->SetMarkerStyle(1);
+				ohist->SetMarkerStyle(1);
 			}
       }
    }
+	
    fCanvas->cd();
-//   cout << "DrawOpt: "<< opt << endl;
+	if ( GeneralAttDialog::fStackedNostack ) {	
+		opt += "nostack";
+		//	   ClearSubPads();
+	} else if ( GeneralAttDialog::fStackedPads ) {
+		opt += "pads";
+	} else {
+		//	   ClearSubPads();
+	}
+//	cout << "DrawOpt: "<< opt << endl;
    if ( fDim == 2 ) {
      opt = "lego1";
      fStack->SetDrawOption(opt);
    } else {
       fStack->SetDrawOption(opt);
    }
-   if ( !GeneralAttDialog::fStackedPads ) 
+ //  if ( !GeneralAttDialog::fStackedPads ) 
 	   ClearSubPads();
 	fCanvas->Modified();
    fCanvas->Update();

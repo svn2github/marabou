@@ -265,7 +265,10 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fApplyLeafCut = kFALSE;
    fApplyExpression = kFALSE;
    fCanvasClosing = kFALSE;
-
+	fEditor = gSystem->Getenv("EDITOR");
+	if (fEditor.Length() < 2)
+		fEditor = "vi";
+	fEditor.Append(" ");
    RestoreOptions();
    TEnv env(".rootrc");
    TString defdir(gSystem->Getenv("MARABOU"));
@@ -479,7 +482,7 @@ void HistPresent::Editrootrc()
       }
    }
    if (fok) {
-      EditCmd.Prepend("nedit ");
+      EditCmd.Prepend(fEditor.Data());
       gSystem->Exec(EditCmd.Data()); EditCmd += "&";
    }
    else   cout << "Cant find .rootrc" << endl;
@@ -500,7 +503,7 @@ void HistPresent::EditAttrFile()
       attrfile << AttrTemplate;
       attrfile.close();
    }
-   TString EditCmd = "nedit ";
+   TString EditCmd = fEditor.Data();
    EditCmd += attrname; EditCmd += "&";
    gSystem->Exec(EditCmd.Data());
 }
@@ -1256,7 +1259,7 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
       ofstream output(sname.Data());
       st->Print(output);
       output.close();
-      TString EditCmd("nedit ");
+      TString EditCmd(fEditor);
       EditCmd += sname.Data();
       EditCmd += "&";sname.Data();
       gSystem->Exec(EditCmd.Data());

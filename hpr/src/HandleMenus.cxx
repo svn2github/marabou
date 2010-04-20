@@ -1601,8 +1601,11 @@ void HandleMenus::BuildMenus()
    }
    if(hbrowser) {
       fHelpMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-      hbrowser->DisplayMenu(fHelpMenu, "*.html");
-      fHelpMenu->Associate((TGWindow*)this);
+//      hbrowser->DisplayMenu(fHelpMenu, "*.html");
+		hbrowser->DisplayMenu(fHelpMenu, "index.html");
+		hbrowser->DisplayMenu(fHelpMenu, "overview.html");
+		hbrowser->DisplayMenu(fHelpMenu, "showlists.html");
+		fHelpMenu->Associate((TGWindow*)this);
       fMenuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
       fRootsMenuBar->AddPopup("&Help on HistPresent",    fHelpMenu,    fMenuBarHelpLayout);
    }

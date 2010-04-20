@@ -51,17 +51,23 @@ Int_t    SetHistOptDialog::fTitleCenterZ = 0;
 */
 //_______________________________________________________________________
 
-SetHistOptDialog::SetHistOptDialog(TGWindow * win)
+SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 {
    fWindow = win;
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
 // are there 1 dim hists?
-   TIter next(fCanvas->GetListOfPrimitives());
+	fHistList = hlist;
+	TIter *next;
+	if (fHistList == NULL) {
+		next= new TIter(fCanvas->GetListOfPrimitives());
+	} else {
+		next = new TIter(fHistList);
+	}
    TObject *obj;
    fHist = NULL;
    Int_t nh1 = 0, nh2 = 0;
-   while ( (obj = next()) ) {
+   while ( (obj = (*next)()) ) {
       if (obj->InheritsFrom("TH1")) {
          fHist = (TH1*)obj;
 		}
@@ -325,11 +331,17 @@ void SetHistOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 //	}
 	Bool_t mod_statbox =
      gStyle->GetOptStat() && ((bid == 999) || (bid >= fStatCmd1 && bid <= fStatCmd2));
-   TIter next(canvas->GetListOfPrimitives());
+	TIter *next;
+	if (fHistList == NULL) {
+		next= new TIter(fCanvas->GetListOfPrimitives());
+	} else {
+		next = new TIter(fHistList);
+	}
+//   TIter next(canvas->GetListOfPrimitives());
    TObject *obj;
    TH1 *hist;
 
-   while ( (obj = next()) ) {
+   while ( (obj = (*next)()) ) {
       if (obj->InheritsFrom("TH1") || obj->InheritsFrom("TGraph")) {
          if (obj->InheritsFrom("TH1"))
              hist = (TH1*)obj;

@@ -143,6 +143,7 @@ protected:
    Int_t      fEditPoXwidth;
    Int_t      fEditPoYwidth;
    Double_t   fEditPoXRange;
+	TString 		fEditor;
     Float_t fXXXXX;
 
 public:
