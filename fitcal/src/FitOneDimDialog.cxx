@@ -1041,7 +1041,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
    Int_t bin_from = fSelHist->FindBin(fFrom);
    Int_t bin_to   = fSelHist->FindBin(fTo);
 //   Int_t bin = 0;
-   TF1 * func = NULL;
+//   TF1 * func = NULL;
    fFuncName = Form("_%d", fFuncNumber);
    fFuncNumber++;
    fFuncName.Prepend("gaus_fun");
@@ -1348,8 +1348,8 @@ Bool_t FitOneDimDialog::FitGausExecute()
 			fSigmaList.Set(fNpeaks);
 			fChi2List.Set(fNpeaks);
       }
-      if (func) 
-			AddPeaktoList(func);
+      if (fFitFunc) 
+			AddPeaktoList(fFitFunc);
       if ( fNpeaksList == 0)
           PrintPeakList();
    }
@@ -1454,7 +1454,7 @@ Bool_t FitOneDimDialog::FitGausExecute()
 
 void FitOneDimDialog::AddPeaktoList(TF1 *func)
 {
-//   cout << "PrintOneLine " << endl;
+	cout << "AddPeaktoList " << endl;
 	Double_t sigma, mean, cont, chi2;
 	Int_t npar_to_find = 3;
 	Int_t npar = fFitFunc->GetNpar();
