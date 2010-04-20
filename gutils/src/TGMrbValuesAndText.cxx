@@ -2002,6 +2002,7 @@ TGMrbValuesAndText::~TGMrbValuesAndText()
 // Cleanup dialog.
 //      cout << "enter dtor: TGMrbValuesAndText fFlagButtons " << fFlagButtons<< endl;
       if (fFlagButtons) delete fFlagButtons;
+		if ( fLabels->GetSize() <=0 ) return;
 		if (fFileType) delete [] fFileType;
 		if (fFileDialogContTextEntry) delete [] fFileDialogContTextEntry;
 		for (Int_t i = 0; i < MAXROWS; i++) {
@@ -2012,7 +2013,7 @@ TGMrbValuesAndText::~TGMrbValuesAndText()
 //      fWidgets->Delete("slow");
 //      delete fWidgets;
 //      cout << "exit dtor: TGMrbValuesAndText " << endl;
-   }
+}
 //_______________________________________________________________________________________
 
 void TGMrbValuesAndText::CloseWindow()
