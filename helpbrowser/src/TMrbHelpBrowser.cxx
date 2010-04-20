@@ -13,6 +13,7 @@
 #include "TFile.h"
 #include "TH1.h"
 #include "TBox.h"
+#include "TImage.h"
 #include "TVirtualX.h"
 #include "TGClient.h"
 #include "TGWindow.h"
@@ -775,16 +776,18 @@ void TMrbHelpBrowser::DisplayImage(TString & img_name){
          fCanvasList->Add(c1);
       } else {
          if(good_gif){
-//            ostrstream geometry;
-//            geometry << " -geometry +" << fX0 << "+" << fY0 << " &";
+				/*
             TString xv_cmd(img_name);
             xv_cmd += Form(" -geometry +%d+%d &", fX0, fY0);
-//            xv_cmd += geometry.str();
- //           geometry.rdbuf()->freeze(0);
             xv_cmd.Prepend(" ");
             xv_cmd.Prepend(fGifViewer.Data());
-      //      cout << "cmd: " << xv_cmd << endl;
             gSystem->Exec(xv_cmd.Data());
+				*/
+				TImage * img = TImage::Open(img_name);
+				c1 = new TCanvas("helpc", img_name, -fX0, fY0,
+									   img->GetWidth()+4, img->GetHeight() + 30);
+			   fCanvasList->Add(c1);
+				img->Draw("xxx");
             MoveOrigin();
          }
       }
@@ -1104,7 +1107,6 @@ Int_t TMrbHelpBrowser::DisplayMenu(TGPopupMenu * menu, const char * pattern)
 //                  break;
 //               }
 
-
    const Int_t offset = 100000;
    Int_t ind = -1;   
    TRegexp pat(pattern, kTRUE);
@@ -1127,7 +1129,7 @@ Int_t TMrbHelpBrowser::DisplayMenu(TGPopupMenu * menu, const char * pattern)
       htmlfile += "/";
       htmlfile += sname.Data();
      
- //     cout << htmlfile.Data() << endl;
+//      cout << htmlfile.Data() << endl;
       infile = new ifstream(htmlfile.Data());
       if (infile->good()){
          text = new TString();
