@@ -437,7 +437,18 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    TString * leaf[4] = {&leaf0, &leaf1, &leaf2, &leaf3};
 
    TString cmd;
-   TString hname = "hist_";
+   TString hname;
+	if ( fNtuplePrependFN ) {
+		hname += fname;
+		Int_t inddot = hname.Index(".");
+		if (inddot > 0) hname.Resize(inddot); // chop of .root .map etc.
+		hname += "_";	
+	}
+	if ( fNtuplePrependTN ) {
+		hname += tname;
+		hname += "_";	
+	}
+	hname += "hist_";	
    Int_t nent = 1;
    Double_t nbin[4] = {0, 0, 0, 0};
    Double_t vmin[4] = {0, 0, 0, 0};
@@ -566,6 +577,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    TString cmd_orig(cmd);
    cmd += ">>";
       if (fNtupleVersioning) {
+			cout << "fNtupleSeqNr " <<fNtupleSeqNr << endl;
          hname += "_v";
          hname += fNtupleSeqNr;
          fNtupleSeqNr++;
@@ -986,7 +998,11 @@ if they are shown again\n\
    valp[ind++] = &fAlwaysFindLimits;
    row_lab->Add(new TObjString("CheckButton_Keep all hists (add vers# to name)"));
    valp[ind++] = &fNtupleVersioning;
-   row_lab->Add(new TObjString("CheckButton_Show 2dim as graph"));
+	row_lab->Add(new TObjString("CheckButton_Prepend tree name"));
+	valp[ind++] = &fNtuplePrependTN;
+	row_lab->Add(new TObjString("CheckButton_Prepend file name"));
+	valp[ind++] = &fNtuplePrependFN;
+	row_lab->Add(new TObjString("CheckButton_Show 2dim as graph"));
    valp[ind++] = &f2dimAsGraph;
    row_lab->Add(new TObjString("Mark_Select_MarkStyle"));
    valp[ind++] = &fMarkStyle;

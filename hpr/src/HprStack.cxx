@@ -106,9 +106,9 @@ void HprStack::BuildCanvas()
       }
 //      hist->Print();
       hname = hist->GetName();
-      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
-      if(last_us >0)hname.Remove(last_us);
-      last_us = hname.Last(';');    // chop off version
+//      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
+//      if(last_us >0)hname.Remove(last_us);
+      Int_t last_us = hname.Last(';');    // chop off version
       if (last_us >0) hname.Remove(last_us);
       hist->SetName(hname);
       fStack->Add(hist);

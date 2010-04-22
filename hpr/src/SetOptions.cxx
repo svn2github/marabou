@@ -50,7 +50,9 @@ void HistPresent::RestoreOptions()
 
    fRememberTreeHists = env.GetValue("HistPresent.RememberTreeHists", 0);
    fNtupleVersioning  = env.GetValue("HistPresent.NtupleVersioning", 1);
-   fAlwaysRequestLimits = env.GetValue("HistPresent.AlwaysRequestLimits", 1);
+	fNtuplePrependTN   = env.GetValue("HistPresent.fNtuplePrependTN", 0);
+	fNtuplePrependFN   = env.GetValue("HistPresent.fNtuplePrependFN", 0);
+	fAlwaysRequestLimits = env.GetValue("HistPresent.AlwaysRequestLimits", 1);
    fAlwaysFindLimits   = env.GetValue("HistPresent.AlwaysFindLimits", 1);
    f2dimAsGraph        = env.GetValue("HistPresent.f2dimAsGraph", 0);
    fMarkStyle          = env.GetValue("HistPresent.fMarkStyle", 20);
@@ -134,7 +136,9 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.fMarkColor",fMarkColor);
    env.SetValue("HistPresent.fHistSelMask",fHistSelMask->Data());
    env.SetValue("HistPresent.NtupleVersioning", fNtupleVersioning);
-   env.SetValue("HistPresent.GraphFile", fGraphFile.Data());
+	env.SetValue("HistPresent.fNtuplePrependTN", fNtuplePrependTN);
+	env.SetValue("HistPresent.fNtuplePrependFN", fNtuplePrependFN);
+	env.SetValue("HistPresent.GraphFile", fGraphFile.Data());
    env.SetValue("HistPresent.HostToConnect", fHostToConnect->Data());
    env.SetValue("HistPresent.SocketToConnect", fSocketToConnect);
    env.SetValue("HistPresent.LinScaleMin", fLinScaleMin);

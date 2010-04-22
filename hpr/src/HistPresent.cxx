@@ -214,7 +214,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fSeqNumberMany = 0;
    fPageNumber = 0;
    fNtupleSeqNr = 0;
-
+	
    WindowSizeDialog::fNwindows=   0;
    fDialogShowTree = NULL;
    fRootFile = NULL;
@@ -3031,7 +3031,7 @@ void HistPresent::CloseAllCanvases()
    WindowSizeDialog::fNwindows = 0;
    WindowSizeDialog::fWincury = WindowSizeDialog::fWintopy;
    WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
-   fNtupleSeqNr = 0;
+//   fNtupleSeqNr = 0;
    cout << "Closed: " << nc << " canvas" ;
    if ( nc != 1 ) cout << "es";
    cout << endl;

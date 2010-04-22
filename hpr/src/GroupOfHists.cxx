@@ -165,14 +165,15 @@ void GroupOfHists::BuildCanvas()
       TString fname = ((TObjString *)fHList->At(i))->String();
       if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
       hname = hist->GetName();
- //     cout << "Bef: " << hname << endl;
+ //     cout << "Bef chop: " << hname << endl;
 
-      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
-      if(last_us >0)hname.Remove(last_us);
+//      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
+//      if(last_us >0)hname.Remove(last_us);
       TRegexp sem(";");
       hname(sem) ="_";
       hist->SetName(hname);
-      lastset = GetDefaults(hname);
+//		cout << "Aft chop: " << hname << endl;
+		lastset = GetDefaults(hname);
 //      cout << "GetDefaults: "  << hname << " " << lastset << endl;
       if (lastset) {
 //         lastset->Print();
