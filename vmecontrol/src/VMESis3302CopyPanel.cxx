@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302CopyPanel.cxx,v 1.4 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302CopyPanel.cxx,v 1.5 2010-04-22 13:44:41 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -144,7 +144,7 @@ VMESis3302CopyPanel::VMESis3302CopyPanel(const TGWindow * Window, TMrbLofNamedX 
 	fSelectModuleFrom->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ModuleFromChanged(Int_t, Int_t)");
 
 	TMrbLofNamedX lofChannels;
-	for (Int_t i = 0; i < VMESis3302Panel::kVMENofSis3302Chans; i++) lofChannels.AddNamedX(i, Form("chn %d", i));
+	gVMEControlData->GetLofChannels(lofChannels, VMESis3302Panel::kVMENofSis3302Chans);
 
 	fSelectChannelFrom = new TGMrbLabelCombo(fCopyFromFrame, "Channel",	&lofChannels,
 																kVMESis3302SelectChannelFrom, 1,
@@ -159,12 +159,8 @@ VMESis3302CopyPanel::VMESis3302CopyPanel(const TGWindow * Window, TMrbLofNamedX 
 	this->AddFrame(fCopyToFrame, groupGC->LH());
 
 	TMrbLofNamedX lofChannelBits;
+	gVMEControlData->GetLofChannels(lofChannelBits, VMESis3302Panel::kVMENofSis3302Chans, "chn %d", kTRUE);
 	Int_t bit = 0x1;
-	for (Int_t i = 0; i < VMESis3302Panel::kVMENofSis3302Chans; i++) {
-		lofChannelBits.AddNamedX(bit, Form("chn %d", i));
-		bit <<= 1;
-	}
-	lofChannels.SetPatternMode();
 
 	fLofDests.Delete();
 	for (Int_t i = 0; i < nofModules; i++) {

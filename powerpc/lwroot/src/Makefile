@@ -9,7 +9,7 @@ CXXFLAGS	=	-g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_
 ObjSuf		=	o
 SrcSuf		=	cxx
 LibSuf		=	a
-LWRLIB		=	../../lib/$(LYNX_VERSION)/libLwr.$(LibSuf)
+LWRLIB		=	../../lib/$(GSI_OS_VERSION)/libLwr.$(LibSuf)
 
 AR = ar
 ARFLAG = -rv

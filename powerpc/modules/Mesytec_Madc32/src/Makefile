@@ -14,7 +14,7 @@ ARFLAG = -rv
 
 # ------------ Library-Objects ----------------------------------------
 
-LIB_TARGETS = ../../../lib/$(LYNX_VERSION)/libMadc32.a
+LIB_TARGETS = ../../../lib/$(GSI_OS_VERSION)/libMadc32.a
 
 libMadc32.OBJS = madc32fct.o block.o
 
@@ -38,7 +38,7 @@ $(LIB_TARGETS): $(libMadc32.OBJS)
 
 madc32:	madc32.o $(LIB_TARGETS)
 		$(CC) -o madc32 madc32.o \
-			-L ../../../lib/$(LYNX_VERSION) \
+			-L ../../../lib/$(GSI_OS_VERSION) \
 			-L /lib/ces \
 			-lMadc32 -lUti -lvme -lbma -luio -lnetinet
 

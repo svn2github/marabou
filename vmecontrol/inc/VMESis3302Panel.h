@@ -8,13 +8,14 @@
 // Class:          VMESis3302Panel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302Panel.h,v 1.7 2010-03-23 14:07:51 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-03-23 14:07:51 $
+// Revision:       $Id: VMESis3302Panel.h,v 1.8 2010-04-22 13:44:41 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-04-22 13:44:41 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TList.h"
+#include "TArrayI.h"
 
 #include "TGWindow.h"
 #include "TGFrame.h"
@@ -87,9 +88,10 @@ class VMESis3302Panel : public TGCompositeFrame {
 										kVMESis3302EnergyDataStart3,
 										kVMESis3302EnergyDataLength,
 										kVMESis3302ActionReset,
-										kVMESis3302ActionRun,
+										kVMESis3302ActionTrace,
 										kVMESis3302ActionSaveRestore,
 										kVMESis3302ActionCopySettings,
+										kVMESis3302ActionUpdateGUI,
 									};
 
 		enum EVMESis3302Clock		{
@@ -139,6 +141,7 @@ class VMESis3302Panel : public TGCompositeFrame {
 		enum EVMESis3302Sample	{
 										kVMESampleFull		=	0,
 										kVMESampleMinMax,
+										kVMESample3Part,
 										kVMESampleProg,
 									};
 
@@ -197,8 +200,9 @@ class VMESis3302Panel : public TGCompositeFrame {
 		void UpdateGates();
 		void UpdateDecayTime();
 		void EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntry * Entry, Int_t EntryNo);
+		Int_t GetEnergyDataStarts(TArrayI & Start);
 
-	protected:
+  protected:
 		TList fHeap;								//! list of objects created on heap
 
 		TGGroupFrame * fSelectFrame; 				// select

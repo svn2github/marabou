@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.8 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.9 2010-04-22 13:44:41 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -26,7 +26,7 @@
 #include "VMESis3302Panel.h"
 #include "VMESis3302SaveRestorePanel.h"
 #include "VMESis3302CopyPanel.h"
-#include "VMESis3302StartRunPanel.h"
+#include "VMESis3302StartTracePanel.h"
 
 #include "SetColor.h"
 
@@ -133,18 +133,20 @@ const SMrbNamedX kVMEDecim[] =
 
 const SMrbNamedX kVMESample[] =
 			{
-				{VMESis3302Panel::kVMESampleFull,			"full trace", "full trace (510 steps) + min/max"	},
-				{VMESis3302Panel::kVMESampleMinMax,			"min/max", "min/max energy values only (no trace data)"	},
-				{VMESis3302Panel::kVMESampleProg,			"progr trace", "programmable trace (up to 510 steps) + min/max"	},
+				{VMESis3302Panel::kVMESampleFull,			"full trace",		"full trace (510 steps) + min/max"	},
+				{VMESis3302Panel::kVMESampleMinMax,			"min/max",			"min/max energy values only (no trace data)"	},
+				{VMESis3302Panel::kVMESample3Part,			"3-part",			"3 partial traces (170 steps each) + min/max"	},
+				{VMESis3302Panel::kVMESampleProg,			"progr trace",		"programmable trace (up to 510 steps) + min/max"	},
 				{0, 												NULL			}
 			};
 
 const SMrbNamedX kVMEActions[] =
 			{
 				{VMESis3302Panel::kVMESis3302ActionReset,			"Reset module",		"Reset module to power-up settings"	},
-				{VMESis3302Panel::kVMESis3302ActionRun,				"Start run",		"Start data acquisition"	},
+				{VMESis3302Panel::kVMESis3302ActionTrace,			"Start trace",		"Start data acquisition"	},
 				{VMESis3302Panel::kVMESis3302ActionSaveRestore,		"Save/restore",		"Save/restore module settings"	},
 				{VMESis3302Panel::kVMESis3302ActionCopySettings,	"Copy settings",	"Copy settings to other modules/channels"	},
+				{VMESis3302Panel::kVMESis3302ActionUpdateGUI,		"Update GUI",		"Reread GUI settings from SIS module"	},
 				{0, 												NULL,				NULL								}
 			};
 
@@ -247,7 +249,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	lofTrigConds.AddNamedX(kVMETrigCond); lofTrigConds.SetPatternMode();
 	lofSamplingModes.AddNamedX(kVMESample);
 
-	for (Int_t i = 0; i < VMESis3302Panel::kVMENofSis3302Chans; i++) lofChannels.AddNamedX(i, Form("chn %d", i));
+	gVMEControlData->GetLofChannels(lofChannels, VMESis3302Panel::kVMENofSis3302Chans);
 
 	//	module / channel selection
 	this->SetupModuleList();
@@ -740,14 +742,17 @@ void VMESis3302Panel::PerformAction(Int_t FrameId, Int_t Selection) {
 		case VMESis3302Panel::kVMESis3302ActionReset:
 			this->ResetModule();
 			break;
-		case VMESis3302Panel::kVMESis3302ActionRun:
-			new VMESis3302StartRunPanel(fClient->GetRoot(), &fLofModules, frameWidth*2/3, frameHeight);
+		case VMESis3302Panel::kVMESis3302ActionTrace:
+			new VMESis3302StartTracePanel(fClient->GetRoot(), &fLofModules, frameWidth*3/4, frameHeight*5/4);
 			break;
 		case VMESis3302Panel::kVMESis3302ActionSaveRestore:
 			new VMESis3302SaveRestorePanel(fClient->GetRoot(), &fLofModules, frameWidth/4, frameHeight/3);
 			break;
 		case VMESis3302Panel::kVMESis3302ActionCopySettings:
 			new VMESis3302CopyPanel(fClient->GetRoot(), &fLofModules, frameWidth*2/3, frameHeight/3);
+			break;
+		case VMESis3302Panel::kVMESis3302ActionUpdateGUI:
+			this->UpdateGUI();
 			break;
 	}
 }
@@ -898,6 +903,26 @@ void VMESis3302Panel::UpdateGUI() {
 	Int_t edl;
 	curModule->ReadEnergySampleLength(edl, curChannel);
 	fEnergyDataLength->SetText(edl);
+
+	Int_t startIdx1, startIdx2, startIdx3;
+	Int_t nofStarts = 0;
+	curModule->ReadStartIndex(startIdx1, 0, curChannel);
+	if (startIdx1 > 0) nofStarts++;
+	fEnergyDataStart1->SetText(startIdx1);
+	curModule->ReadStartIndex(startIdx2, 1, curChannel);
+	if (startIdx2 > 0) nofStarts++;
+	fEnergyDataStart2->SetText(startIdx2);
+	curModule->ReadStartIndex(startIdx3, 2, curChannel);
+	if (startIdx3 > 0) nofStarts++;
+	fEnergyDataStart3->SetText(startIdx3);
+
+	if (edl == 0) {
+		this->EnergyDataModeChanged(0, kVMESampleMinMax);
+	} else if (nofStarts == 1) {
+		this->EnergyDataModeChanged(0, kVMESampleFull);
+	} else {
+		this->EnergyDataModeChanged(0, kVMESampleProg);
+	}
 
 	this->UpdateGates();
 }
@@ -1469,15 +1494,52 @@ void VMESis3302Panel::EnergyDataModeChanged(Int_t FrameId, Int_t Selection) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t val;
-	switch (Selection) {
-		case kVMESampleFull:	val = kSis3302EnergySampleLengthMax; break;
-		case kVMESampleMinMax:	val = 0; break;
-		default:				val = 0; break;
+	Int_t mode = Selection;
+	fEnergyDataMode->Select(mode);  // if called directly (not by slot mechanism)
+	if (mode == kVMESampleFull) {
+		Int_t sampleLength = kSis3302EnergySampleLengthMax;
+		curModule->WriteEnergySampleLength(sampleLength, curChannel);
+		Int_t startIdx = 1; fEnergyDataStart1->SetText(startIdx); curModule->WriteStartIndex(startIdx, 0);
+		startIdx = 0; fEnergyDataStart2->SetText(startIdx); curModule->WriteStartIndex(startIdx, 1);
+		startIdx = 0; fEnergyDataStart3->SetText(startIdx); curModule->WriteStartIndex(startIdx, 2);
+		fEnergyDataLength->SetText(sampleLength);
+		fEnergyDataStart1->SetState(kTRUE);
+		fEnergyDataStart2->SetState(kFALSE);
+		fEnergyDataStart3->SetState(kFALSE);
+		fEnergyDataLength->SetState(kFALSE);
+	} else if (mode == kVMESampleMinMax) {
+		Int_t sampleLength = 0;
+		curModule->WriteEnergySampleLength(sampleLength, curChannel);
+		fEnergyDataLength->SetText(sampleLength);
+		Int_t startIdx = 1; fEnergyDataStart1->SetText(startIdx); curModule->WriteStartIndex(startIdx, 0);
+		startIdx = 0; fEnergyDataStart2->SetText(startIdx); curModule->WriteStartIndex(startIdx, 1);
+		startIdx = 0; fEnergyDataStart3->SetText(startIdx); curModule->WriteStartIndex(startIdx, 2);
+		fEnergyDataStart1->SetState(kFALSE);
+		fEnergyDataStart2->SetState(kFALSE);
+		fEnergyDataStart3->SetState(kFALSE);
+		fEnergyDataLength->SetState(kFALSE);
+	} else if (mode == kVMESample3Part) {
+		Int_t sampleLength = kSis3302EnergySampleLengthMax / 3;
+		curModule->WriteEnergySampleLength(sampleLength, curChannel);
+		fEnergyDataLength->SetText(sampleLength);
+		Int_t startIdx = 1; fEnergyDataStart1->SetText(startIdx); curModule->WriteStartIndex(startIdx, 0);
+		startIdx = kSis3302EnergySampleLengthMax / 3; fEnergyDataStart2->SetText(startIdx); curModule->WriteStartIndex(startIdx, 1);
+		startIdx = 2 * kSis3302EnergySampleLengthMax / 3; fEnergyDataStart3->SetText(startIdx); curModule->WriteStartIndex(startIdx, 2);
+		fEnergyDataStart1->SetState(kTRUE);
+		fEnergyDataStart2->SetState(kTRUE);
+		fEnergyDataStart3->SetState(kTRUE);
+		fEnergyDataLength->SetState(kTRUE);
+	} else if (mode == kVMESampleProg) {
+		Int_t startIdx = fEnergyDataStart1->GetText2Int(); curModule->WriteStartIndex(startIdx, 0);
+		startIdx = fEnergyDataStart2->GetText2Int(); curModule->WriteStartIndex(startIdx, 1);
+		startIdx = fEnergyDataStart3->GetText2Int(); curModule->WriteStartIndex(startIdx, 2);
+		fEnergyDataStart1->SetState(kTRUE);
+		fEnergyDataStart2->SetState(kTRUE);
+		fEnergyDataStart3->SetState(kTRUE);
+		fEnergyDataLength->SetState(kTRUE);
+	} else {
+		gVMEControlData->MsgBox(this, "EnergyDataModeChanged", "Error", Form("Illegal sampling mode - %d", mode));
 	}
-	fEnergyDataLength->SetText(val);
-	curModule->WriteEnergySampleLength(val, curChannel);
-	this->UpdateGates();
 }
 
 void VMESis3302Panel::EnergyDataStart1Changed(Int_t FrameId, Int_t EntryNo) {
@@ -1565,6 +1627,7 @@ void VMESis3302Panel::EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntr
 		if (!Entry->CheckRange(eds, EntryNo, kTRUE, kTRUE)) {
 			Entry->SetText(edssav, EntryNo);
 		} else {
+			cout << "@@@ EnergyDataStartOrLengthChanged idx=" << IdxNo << " val=" << eds << endl;
 			curModule->WriteStartIndex(eds, IdxNo);
 		}
 	}
@@ -1574,15 +1637,12 @@ void VMESis3302Panel::EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntr
 
 	Int_t nofStarts = 0;
 	if (curModule->IsOffline()) {
-		Int_t start = fEnergyDataStart1->GetText2Int(); if (start > 0) nofStarts++;
-		start = fEnergyDataStart2->GetText2Int(); if (start > 0) nofStarts++;
-		start = fEnergyDataStart3->GetText2Int(); if (start > 0) nofStarts++;
+		Int_t s = fEnergyDataStart1->GetText2Int(); if (s > 0) nofStarts++;
+		s = fEnergyDataStart2->GetText2Int(); if (s > 0) nofStarts++;
+		s = fEnergyDataStart3->GetText2Int(); if (s > 0) nofStarts++;
 	} else {
-		for (Int_t i = 0; i < 3; i++) {
-			Int_t start = 0;
-			curModule->ReadStartIndex(start, i, curChannel);
-			if (start > 0) nofStarts++;
-		}
+		TArrayI start;
+		nofStarts = this->GetEnergyDataStarts(start);
 	}
 
 	edl = fEnergyDataLength->GetText2Int(EntryNo);
@@ -1599,7 +1659,7 @@ void VMESis3302Panel::EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntr
 	} else {
 		curModule->WriteEnergySampleLength(edl);
 	}
-	this->UpdateGates();
+
 }
 
 void VMESis3302Panel::UpdateAdcCounts() {
@@ -1625,7 +1685,11 @@ void VMESis3302Panel::UpdateAdcCounts() {
 		curModule->ReadTrigThreshold(th, curChannel);
 	}
 	if (p == 0) p = 1;
-	Int_t c = th * 16 / p;
+	Int_t fac = 1;
+	for (Int_t i = 16; i <= 1024; i <<= 1) {
+		if (p <= i) { fac = i; break; }
+	}
+	Int_t c = th * fac / p;
 	fTrigSumG->SetText(p + g);
 	fTrigCounts->SetText(c);
 	fTrigThresh->SetText(th);
@@ -1697,47 +1761,6 @@ void VMESis3302Panel::UpdateGates() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t edl;
-	Int_t val;
-	Int_t mode;
-	if (curModule->IsOffline()) {
-		mode = fEnergyDataMode->GetSelectedNx()->GetIndex();
-		switch (mode) {
-			case kVMESampleFull: edl = kSis3302EnergySampleLengthMax; break;
-			case kVMESampleMinMax: edl = 0; break;
-		}
-	} else {
-		curModule->ReadEnergySampleLength(edl, curChannel);
-	}
-	if (edl == kSis3302EnergySampleLengthMax) {
-		mode = kVMESampleFull;
-		fEnergyDataMode->Select(mode);
-		val = 1; fEnergyDataStart1->SetText(val); curModule->WriteStartIndex(val, 0);
-		val = 0; fEnergyDataStart2->SetText(val); curModule->WriteStartIndex(val, 1);
-		val = 0; fEnergyDataStart3->SetText(val); curModule->WriteStartIndex(val, 2);
-		fEnergyDataStart1->SetState(kFALSE);
-		fEnergyDataStart2->SetState(kFALSE);
-		fEnergyDataStart3->SetState(kFALSE);
-		fEnergyDataLength->SetState(kFALSE);
-	} else if (edl == 0) {
-		mode = kVMESampleMinMax;
-		fEnergyDataMode->Select(mode);
-		val = 1; fEnergyDataStart1->SetText(val); curModule->WriteStartIndex(val, 0);
-		val = 0; fEnergyDataStart2->SetText(val); curModule->WriteStartIndex(val, 1);
-		val = 0; fEnergyDataStart3->SetText(val); curModule->WriteStartIndex(val, 2);
-		fEnergyDataStart1->SetState(kFALSE);
-		fEnergyDataStart2->SetState(kFALSE);
-		fEnergyDataStart3->SetState(kFALSE);
-		fEnergyDataLength->SetState(kFALSE);
-	} else {
-		mode = kVMESampleProg;
-		fEnergyDataMode->Select(mode);
-		fEnergyDataStart1->SetState(kTRUE);
-		fEnergyDataStart2->SetState(kTRUE);
-		fEnergyDataStart3->SetState(kTRUE);
-		fEnergyDataLength->SetState(kTRUE);
-	}
-
 	Int_t preTrigDel;
 	if (curModule->IsOffline()) {
 		preTrigDel = fPreTrigDelay->GetText2Int();
@@ -1763,6 +1786,8 @@ void VMESis3302Panel::UpdateGates() {
 	}
 
 	Int_t egate;
+	Int_t mode = fEnergyDataMode->GetSelectedNx()->GetIndex();
+
 	if (mode == kVMESampleMinMax) {
 		egate = delay + 2 * peak + gap + 20;
 	} else {
@@ -1828,4 +1853,28 @@ Bool_t VMESis3302Panel::SetupModuleList() {
 		return(kFALSE);
 	}
 	return(kFALSE);
+}
+
+Int_t VMESis3302Panel::GetEnergyDataStarts(TArrayI & Start) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::GetEnergyDataStarts
+// Purpose:        Read start indices
+// Arguments:      TArrayI & Start    -- sraay to store indices
+// Results:        Int_t NofStarts    -- number of starts
+// Exceptions:
+// Description:
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Start.Set(3);
+	Start.Reset(0);
+	Int_t nofStarts = 0;
+	for (Int_t i = 0; i < 3; i++) {
+		Int_t s;
+		curModule->ReadStartIndex(s, i, curChannel);
+		Start[i] = s;
+		if (s > 0) nofStarts++;
+	}
+	return(nofStarts);
 }

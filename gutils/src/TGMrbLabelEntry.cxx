@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.23 2008-10-14 18:42:02 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.24 2010-04-22 13:44:41 Rudolf.Lutter Exp $
+// Date:
 // Layout: A plain entry
 //Begin_Html
 /*
@@ -81,7 +81,7 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	LabelGC = this->SetupGC(LabelGC, FrameOptions);
 	EntryGC = this->SetupGC(EntryGC, FrameOptions);
 
@@ -131,7 +131,7 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 		fCheckBtns = new TGMrbCheckButtonList(this, NULL, CheckBtns, kGMrbEntryButtonCheck, 1, 0, Height, FrameGC);
 		fHeap.AddFirst((TObject *) fCheckBtns);
 		fCheckBtns->ChangeBackground(LabelGC->BG());
-		this->AddFrame(fCheckBtns, checkLayout);			
+		this->AddFrame(fCheckBtns, checkLayout);
 		entryWidth -= fCheckBtns->GetWidth();
 	}
 
@@ -150,7 +150,7 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 			gMrbLog->Flush(this->ClassName());
 		} else {
 			slot.ReplaceAll("(Int_t)", Form("(Int_t=%d)", Action->GetIndex()));
-			fAction->Connect("Clicked()", assObj->ClassName(), assObj, slot.Data());			
+			fAction->Connect("Clicked()", assObj->ClassName(), assObj, slot.Data());
 		}
 		entryWidth -= fAction->GetWidth();
 	}
@@ -203,7 +203,7 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 		fHeap.AddFirst((TObject *) fEntry[entryNo]);
 		this->AddFrame(fEntry[entryNo], entryLayout);
 		fEntry[entryNo]->Resize(entryWidth, Height);
-		fEntry[entryNo]->Connect("ReturnPressed()", this->ClassName(), this, Form("EntryChanged(Int_t=%d)", entryNo)); 
+		fEntry[entryNo]->Connect("ReturnPressed()", this->ClassName(), this, Form("EntryChanged(Int_t=%d)", entryNo));
 		fEntry[entryNo]->Connect("TabPressed()", this->ClassName(), this, Form("EntryChanged(Int_t=%d)", entryNo));
 	}
 }
@@ -215,9 +215,9 @@ void TGMrbLabelEntry::BeginButtonPressed(Int_t EntryNo) {
 // Purpose:        Slot method
 // Arguments:      Int_t EntryNo    -- entry number
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called upon ButtonPressed() events
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString s = this->GetText(EntryNo);
@@ -251,9 +251,9 @@ void TGMrbLabelEntry::EndButtonPressed(Int_t EntryNo) {
 // Purpose:        Slot method
 // Arguments:      Int_t EntryNo    -- entry number
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called upon ButtonPressed() events
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString s = this->GetText(EntryNo);
@@ -287,9 +287,9 @@ void TGMrbLabelEntry::UpButtonPressed(Int_t EntryNo) {
 // Purpose:        Slot method
 // Arguments:      Int_t EntryNo    -- entry number
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called upon ButtonPressed() events
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString s = this->GetText(EntryNo);
@@ -326,9 +326,9 @@ void TGMrbLabelEntry::DownButtonPressed(Int_t EntryNo) {
 // Purpose:        Slot method
 // Arguments:      Int_t EntryNo    -- entry number
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Called upon ButtonPressed() events
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString s = this->GetText(EntryNo);
@@ -368,9 +368,9 @@ void TGMrbLabelEntry::SetType(EGMrbEntryType EntryType, Int_t Width, Int_t BaseO
 //                 Int_t BaseOrPrec           -- numerical base (int) or precision (double)
 //                 Bool_t PadZero             -- pad with 0 if kTRUE
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Defines entry type.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fType = EntryType;
@@ -401,9 +401,9 @@ void TGMrbLabelEntry::SetText(const Char_t * Text, Int_t EntryNo) {
 // Arguments:      Char_t * Text    -- text to be written
 //                 Int_t EntryNo    -- entry number
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Writes entry text and updates tooltip.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fEntry[EntryNo]->SetText(Text);
@@ -418,9 +418,9 @@ void TGMrbLabelEntry::SetText(Int_t Value, Int_t EntryNo) {
 // Arguments:      Int_t Value    -- integer to be converted to text
 //                 Int_t EntryNo    -- entry number
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Writes entry text and updates tooltip.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString v;
@@ -437,9 +437,9 @@ void TGMrbLabelEntry::SetText(Double_t Value, Int_t EntryNo) {
 // Arguments:      Double_t Value    -- double to be converted to text
 //                 Int_t EntryNo    -- entry number
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Writes entry text and updates tooltip.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString v;
@@ -456,9 +456,9 @@ void TGMrbLabelEntry::SetTextAlignment(ETextJustification Align, Int_t EntryNo) 
 // Arguments:      ETextJustification Align    -- alignment (left, right)
 //                 Int_t EntryNo               -- entry number
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Writes entry text and updates tooltip.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (EntryNo == -1) {
@@ -476,9 +476,9 @@ void TGMrbLabelEntry::SetState(Bool_t State, Int_t EntryNo) {
 // Arguments:      Bool_t State                -- kTRUE/kFALSE
 //                 Int_t EntryNo               -- entry number
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Enables/disables an entry and its buttons
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (EntryNo == -1) {
@@ -499,9 +499,9 @@ TGMrbTextEntry * TGMrbLabelEntry::GetTextEntry(Int_t EntryNo) {
 // Purpose:        Return address of specified text entry
 // Arguments:      Int_t EntryNo            -- entry number
 // Results:        TGMrbTextEntry * Addr    -- entry address
-// Exceptions:     
+// Exceptions:
 // Description:    Reads entry contents and updates tooltip
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	return(fEntry[EntryNo]);
@@ -514,9 +514,9 @@ const Char_t * TGMrbLabelEntry::GetText(Int_t EntryNo) {
 // Purpose:        Read text entry and update tooltip
 // Arguments:      Int_t EntryNo    -- entry number
 // Results:        Char_t * Text    -- text
-// Exceptions:     
+// Exceptions:
 // Description:    Reads entry contents and updates tooltip
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	this->CreateToolTip(EntryNo);
@@ -530,9 +530,9 @@ Int_t TGMrbLabelEntry::GetText2Int(Int_t EntryNo) {
 // Purpose:        Read text entry, convert to integer, update tooltip
 // Arguments:      Int_t EntryNo    -- entry number
 // Results:        Int_t Value   -- integer value
-// Exceptions:     
+// Exceptions:
 // Description:    Reads entry contents and converts to integer
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t intVal = 0;
@@ -562,9 +562,9 @@ Double_t TGMrbLabelEntry::GetText2Double(Int_t EntryNo) {
 // Purpose:        Read text entry, convert to double, update tooltip
 // Arguments:      Int_t EntryNo    -- entry number
 // Results:        Double_t Value   -- double value
-// Exceptions:     
+// Exceptions:
 // Description:    Reads entry contents and converts to double
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Double_t dblVal = 0.0;
@@ -589,9 +589,9 @@ void TGMrbLabelEntry::ShowToolTip(Bool_t ShowFlag, Bool_t ShowRange) {
 // Arguments:      Bool_t ShowFlag    -- kTRUE if tooltips have to be shown
 //                 Bool_t ShowRange   -- kTRUE if range has to be shown
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Shows number as binary, octal, dec, and hex in tooltip.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fShowToolTip = ShowFlag;
@@ -606,14 +606,14 @@ void TGMrbLabelEntry::CreateToolTip(Int_t EntryNo) {
 // Purpose:        Create tooltip showing integer value in different formats
 // Arguments:      Int_t EntryNo    -- entry number
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Shows number as binary, octal, dec, and hex in tooltip.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fShowToolTip) {
 		Bool_t showRange = fShowRange;
-		if (fLowerLimit[EntryNo] >= fUpperLimit[EntryNo] || fIncrement[EntryNo] == 0) showRange = kFALSE;
+		if (fIncrement[EntryNo] == 0) showRange = kFALSE;
 
 		if (fType == kGMrbEntryTypeInt) {
 			TMrbString v = fEntry[EntryNo]->GetText();
@@ -673,9 +673,9 @@ void TGMrbLabelEntry::SetIncrement(Double_t Increment, Int_t EntryNo) {
 // Arguments:      Double_t Increment    -- increment
 //                 Int_t EntryNo         -- entry number (-1 -> all entries)
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Defines an increment value.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (EntryNo == -1) {
@@ -693,9 +693,9 @@ Bool_t TGMrbLabelEntry::SetRange(Double_t LowerLimit, Double_t UpperLimit, Int_t
 //                 Double_t UpperLimit   -- upper limit
 //                 Int_t EntryNo         -- entry number (-1 -> all entries)
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Defines a numerical range.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (EntryNo == -1) {
@@ -727,9 +727,9 @@ Bool_t TGMrbLabelEntry::WithinRange(Int_t EntryNo) const {
 // Purpose:        Check range
 // Arguments:      Int_t EntryNo    -- entry number
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Checks if entry text is a numeric value within range.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t intVal;
@@ -766,9 +766,9 @@ Bool_t TGMrbLabelEntry::CheckRange(Double_t Value, Int_t EntryNo, Bool_t Verbose
 //                 Bool_t Verbose    -- ouput message to stderr
 //                 Bool_t Popup      -- pop up TGMsgBox
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Checks if value is within range.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->RangeToBeChecked()) return(kTRUE);
@@ -790,13 +790,12 @@ Bool_t TGMrbLabelEntry::RangeToBeChecked(Int_t EntryNo) const {
 // Purpose:        Test if range to be checked
 // Arguments:      Int_t EntryNo    -- entry number
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Checks if range has to be checked.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fType == TGMrbLabelEntry::kGMrbEntryTypeChar) return(kFALSE);
-	if (fLowerLimit[EntryNo] == 0 && fUpperLimit[EntryNo] == 0) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -807,9 +806,9 @@ void TGMrbLabelEntry::UpDownButtonEnable(Bool_t Flag) {
 // Purpose:        Enable/disable up/down buttons
 // Arguments:      Bool_t Flag      -- kTRUE/kFALSE
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Enables/disables up/down buttons.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	for (Int_t i = 0; i < fNofEntries; i++) {
@@ -828,9 +827,9 @@ void TGMrbLabelEntry::ActionButtonEnable(Bool_t Flag) {
 // Purpose:        Enable/disable action button
 // Arguments:      Bool_t Flag      -- kTRUE/kFALSE
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Enables/disables action button.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fAction) {
@@ -847,9 +846,9 @@ void TGMrbLabelEntry::EntryChanged(Int_t FrameId, Int_t EntryNo) {
 // Arguments:      Int_t FrameId     -- frame id
 //                 Int_t EntryNo     -- entry number
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Emits signal on "text entry changed"
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
    Long_t args[2];
@@ -867,9 +866,9 @@ Bool_t TGMrbTextEntry::HandleButton(Event_t * Event) {
 // Purpose:        Handle button events
 // Arguments:      Event_t * Event   -- button event
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Adds private actions to button handling.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->IsEnabled()) return(kTRUE);

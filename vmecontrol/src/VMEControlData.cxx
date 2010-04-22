@@ -6,8 +6,8 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.9 2010-03-23 14:07:51 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-03-23 14:07:51 $
+// Revision:       $Id: VMEControlData.cxx,v 1.10 2010-04-22 13:44:41 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-04-22 13:44:41 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -299,3 +299,31 @@ Int_t VMEControlData::MsgBox(TGWindow * Caller, const Char_t * Method, const Cha
 	new TGMsgBox(gClient->GetRoot(), Caller, title.Data(), Msg, Icon, Buttons, &retVal);
 	return (retVal);
 }
+
+void VMEControlData::GetLofChannels(TMrbLofNamedX & LofChannels, Int_t NofChannels, Char_t * Format, Bool_t PatternMode) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMEControlData::GetLofChannels()
+// Purpose:        Create module list
+// Arguments:      Int_t NofChannels            -- number of channels
+//                 Char_t * Format              -- how to format channel names
+//                 Bool_t PatternMode           -- store patterns instead of numbers if kTRUE
+// Results:        TMrbLofNamedX & LofChannels  -- list of channels / channel patterns
+// Exceptions:
+// Description:    Generates a table containing channel numbers or patterns
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	LofChannels.Delete();
+	Int_t bit = 1;
+	if (PatternMode) {
+		for (Int_t i = 0; i < NofChannels; i++) {
+			LofChannels.AddNamedX(bit, Form(Format, i));
+			bit <<= 1;
+		}
+		LofChannels.SetPatternMode();
+	} else {
+		for (Int_t i = 0; i < NofChannels; i++) LofChannels.AddNamedX(i, Form(Format, i));
+	}
+}
+

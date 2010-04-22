@@ -8,8 +8,8 @@
 // Class:          VMEControlData
 // Description:    A GUI to control VME modules
 // Author:         R. Lutter
-// Revision:       $Id: VMEControlData.h,v 1.9 2010-03-23 14:07:51 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-03-23 14:07:51 $
+// Revision:       $Id: VMEControlData.h,v 1.10 2010-04-22 13:44:41 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-04-22 13:44:41 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ class VMEControlData : public TObject {
 	friend class VMESis3302SettingsPanel;
 	friend class VMESis3302SaveRestorePanel;
 	friend class VMESis3302CopyPanel;
-	friend class VMESis3302StartRunPanel;
+	friend class VMESis3302StartTracePanel;
 	friend class VMECaen785Panel;
 	friend class VMEVulomTBPanel;
 
@@ -113,6 +113,8 @@ class VMEControlData : public TObject {
 
 		inline TMrbResource * Rootrc() { return(fRootrc); };
 		inline TMrbResource * Vctrlrc() { return(fVctrlrc); };
+
+		void GetLofChannels(TMrbLofNamedX & LofChannels, Int_t NofChannels, Char_t * Format = "chn %d", Bool_t PatternMode = kFALSE);
 
 		Bool_t SetupModuleList(TMrbLofNamedX & LofModules, const Char_t * ClassName = NULL);
 

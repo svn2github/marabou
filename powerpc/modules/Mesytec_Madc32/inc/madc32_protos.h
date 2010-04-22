@@ -8,8 +8,8 @@
 //! \details		Prototypes for Mesytec Madc32
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.10 $
-//! $Date: 2010-04-13 08:28:52 $
+//! $Revision: 1.11 $
+//! $Date: 2010-04-22 13:44:41 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
