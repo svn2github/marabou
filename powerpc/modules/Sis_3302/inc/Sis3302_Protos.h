@@ -8,8 +8,8 @@
 //! \details		Prototypes for SIS3302 ADC
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $
-//! $Date: 2010-04-22 13:44:41 $
+//! $Revision: 1.4 $
+//! $Date: 2010-04-23 13:38:28 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 

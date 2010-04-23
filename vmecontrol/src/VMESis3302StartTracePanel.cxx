@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.1 2010-04-22 13:44:41 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.2 2010-04-23 13:38:28 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -152,8 +152,8 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 
 	fSelectModule = new TGMrbLabelCombo(fSelectFrame, "Module",	fLofModules,
 																kVMESis3302SelectModule, 1,
-																frameWidth/5, kLEHeight, frameWidth/8,
-																frameGC, labelGC, comboGC, labelGC);
+																frameWidth/5, kLEHeight, frameWidth/5,
+																frameGC, labelGC, comboGC, labelGC, kTRUE);
 	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
 	fSelectModule->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ModuleChanged(Int_t, Int_t)");
 
@@ -218,15 +218,15 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 
 	fSelectChannel = new TGMrbLabelCombo(fDisplayFrame, "Channel",	&lofChannels,
 																kVMESis3302SelectChannel, 1,
-																frameWidth/5, kLEHeight, frameWidth/8,
-																frameGC, labelGC, comboGC, labelGC);
+																frameWidth/5, kLEHeight, frameWidth/5,
+																frameGC, labelGC, comboGC, labelGC, kTRUE);
 	fDisplayFrame->AddFrame(fSelectChannel, frameGC->LH());
 	fSelectChannel->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ChannelChanged(Int_t, Int_t)");
 	fSelectChannel->Select(0);
 
 	fSelectEvent = new TGMrbLabelEntry(fDisplayFrame, "Event",	200, kVMESis3302SelectEvent,
 															frameWidth/5, kLEHeight, frameWidth/8,
-															frameGC, labelGC, entryGC, buttonGC);
+															frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fSelectEvent);
 	fSelectEvent->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fSelectEvent->SetText(0);
@@ -363,6 +363,8 @@ void VMESis3302StartTracePanel::ChannelChanged(Int_t FrameId, Int_t Selection) {
 //////////////////////////////////////////////////////////////////////////////
 
 	curChannel = Selection;
+	TArrayI evtData;
+	this->ReadData(evtData, curEvent, curChannel);
 }
 
 void VMESis3302StartTracePanel::EventNumberChanged(Int_t FrameId, Int_t Selection) {
@@ -379,6 +381,8 @@ void VMESis3302StartTracePanel::EventNumberChanged(Int_t FrameId, Int_t Selectio
 //////////////////////////////////////////////////////////////////////////////
 
 	curEvent = fSelectEvent->GetText2Int();
+	TArrayI evtData;
+	this->ReadData(evtData, curEvent, curChannel);
 }
 
 void VMESis3302StartTracePanel::StartTrace() {
