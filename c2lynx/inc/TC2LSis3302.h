@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.10 2010-04-20 10:19:43 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-04-20 10:19:43 $
+// Revision:       $Id: TC2LSis3302.h,v 1.11 2010-05-17 12:05:51 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-05-17 12:05:51 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -137,10 +137,11 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 		Bool_t RestoreSettings(const Char_t * SettingsFile = NULL);
 
-		Bool_t GetSingleEvent(TArrayI & Data, Int_t AdcNo);
+		Bool_t CollectTraces(Int_t & NofEvents, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t GetEvent(TArrayI & Data, Int_t & EventNo, Int_t AdcNo);
+		Bool_t GetDataLength(TArrayI & Data, Int_t AdcNo);
 
 		Bool_t AccuHistogram(TArrayI & Data, Int_t AdcNo, Int_t NofEvents = -1);
-		Bool_t StartRun(Int_t AdcNo, Int_t NofEvents = -1);
 
 		inline void SetFirmwareVersion(Int_t Major, Int_t Minor) { fMajorVersion = Major; fMinorVersion = Minor; };
 		inline UInt_t GetFirmwareVersion() { return ((fMajorVersion << 8) | fMinorVersion); };

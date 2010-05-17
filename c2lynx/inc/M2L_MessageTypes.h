@@ -45,8 +45,8 @@ enum EM2L_FunctionType {
 	kM2L_FCT_CAEN_875			=	0x100,					// caen adc v875
 //-------------------------------------------------------------------------------
 	kM2L_FCT_SIS_3302			=	0x200,					// sis flash adc 3302
-	kM2L_FCT_SIS_3302_SET_TIMEOUT,
 	kM2L_FCT_SIS_3302_GET_TIMEOUT,
+	kM2L_FCT_SIS_3302_SET_TIMEOUT,
 	kM2L_FCT_SIS_3302_SET_USER_LED,
 	kM2L_FCT_SIS_3302_READ_DAC,
 	kM2L_FCT_SIS_3302_WRITE_DAC,
@@ -143,8 +143,8 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_CAEN_875, 							"exec function (CAEN V785)"},
 //--------------------------------------------------------------------------------
 		{kM2L_FCT_SIS_3302, 							"exec function (SIS 3302)"},
-		{kM2L_FCT_SIS_3302_SET_TIMEOUT,					"set timeout (cycles)"},
-		{kM2L_FCT_SIS_3302_GET_TIMEOUT,					"get timeout (cycles)"},
+		{kM2L_FCT_SIS_3302_GET_TIMEOUT,					"get timeout value"},
+		{kM2L_FCT_SIS_3302_SET_TIMEOUT,					"set timeout value"},
 		{kM2L_FCT_SIS_3302_SET_USER_LED,				"turn on/off user led"},
 		{kM2L_FCT_SIS_3302_READ_DAC,					"read dac offsets"},
 		{kM2L_FCT_SIS_3302_WRITE_DAC,					"write dac offsets"},

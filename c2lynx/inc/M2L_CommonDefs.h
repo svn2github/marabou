@@ -87,7 +87,7 @@
 						kSis3302EnergyTauMax 		= ((1 << 6) - 1),
 					};
 
-	enum			{	kSis3302EventPreHeader 		= 2 };
+	enum			{	kSis3302EventPreHeader 		= 3 };
 	enum			{	kSis3302EventHeader 		= 2 };
 	enum			{	kSis3302EventMinMax 		= 2 };
 	enum			{	kSis3302EventTrailer 		= 2 };

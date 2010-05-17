@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.13 2010-04-20 10:19:43 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-04-20 10:19:43 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.14 2010-05-17 12:06:39 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-05-17 12:06:39 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -116,21 +116,6 @@ Bool_t TC2LSis3302::GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t &
 	} else {
 		return(kFALSE);
 	}
-}
-
-Bool_t TC2LSis3302::SetTimeout(Int_t & Timeout) {
-	TArrayI timeout(1); timeout[0] = Timeout;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TIMEOUT, timeout, timeout, kSis3302AllAdcs)) return(kFALSE);
-	Timeout = timeout[0];
-	return(kTRUE);
-}
-
-Bool_t TC2LSis3302::GetTimeout(Int_t & Timeout) {
-	TArrayI dataSend(0);
-	TArrayI timeout;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TIMEOUT, dataSend, timeout, kSis3302AllAdcs)) return(kFALSE);
-	Timeout = timeout[0];
-	return(kTRUE);
 }
 
 Bool_t TC2LSis3302::SetUserLED(Bool_t & OnFlag) {
@@ -671,9 +656,22 @@ Bool_t TC2LSis3302::SetClockSource(Int_t & ClockSource) {
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetSingleEvent(TArrayI & Data, Int_t AdcNo) {
-	TArrayI dataSend(0);
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_SINGLE_EVENT, dataSend, Data, AdcNo));
+Bool_t TC2LSis3302::CollectTraces(Int_t & NofEvents, Int_t AdcNo) {
+	TArrayI dataSend(1);
+	dataSend[0] = NofEvents;
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_COLLECT_TRACES, dataSend, dataSend, AdcNo));
+}
+
+Bool_t TC2LSis3302::GetDataLength(TArrayI & Data, Int_t AdcNo) {
+	TArrayI dataSend(1);
+	Data.Set(3);
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_DATA_LENGTH, dataSend, Data, AdcNo));
+}
+
+Bool_t TC2LSis3302::GetEvent(TArrayI & Data, Int_t & EventNo, Int_t AdcNo) {
+	TArrayI dataSend(1);
+	dataSend[0] = EventNo;
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_EVENT, dataSend, Data, AdcNo));
 }
 
 Bool_t TC2LSis3302::AccuHistogram(TArrayI & Data, Int_t AdcNo, Int_t NofEvents) {
@@ -681,10 +679,19 @@ Bool_t TC2LSis3302::AccuHistogram(TArrayI & Data, Int_t AdcNo, Int_t NofEvents) 
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_ACCU_HISTOGRAM, nofEvents, Data, AdcNo));
 }
 
-Bool_t TC2LSis3302::StartRun(Int_t AdcNo, Int_t NofEvents) {
-	TArrayI nofEvents(1); nofEvents[0] = NofEvents;
-	TArrayI dmy;
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_START_RUN, nofEvents, dmy, AdcNo));
+Bool_t TC2LSis3302::SetTimeout(Int_t & Timeout) {
+    TArrayI timeout(1); timeout[0] = Timeout;
+    if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TIMEOUT, timeout, timeout, kSis3302AllAdcs)) return(kFALSE);
+    Timeout = timeout[0];
+    return(kTRUE);
+}
+
+Bool_t TC2LSis3302::GetTimeout(Int_t & Timeout) {
+    TArrayI dataSend(0);
+    TArrayI timeout;
+    if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TIMEOUT, dataSend, timeout, kSis3302AllAdcs)) return(kFALSE);
+    Timeout = timeout[0];
+    return(kTRUE);
 }
 
 Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
