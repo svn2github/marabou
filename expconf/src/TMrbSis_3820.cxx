@@ -2,12 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbSis_3820.cxx
 // Purpose:        MARaBOU configuration: SIS modules
-// Description:    Implements class methods to handle a SIS scaler type 3820 
+// Description:    Implements class methods to handle a SIS scaler type 3820
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.14 2008-12-04 14:53:12 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.15 2010-05-18 08:22:52 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -55,7 +55,7 @@ TMrbSis_3820::TMrbSis_3820(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 	TString mType;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (!this->IsZombie()) {
 		if (gMrbConfig == NULL) {
 			gMrbLog->Err() << "No config defined" << endl;
@@ -84,9 +84,10 @@ TMrbSis_3820::TMrbSis_3820(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 				fBlockReadout = kTRUE;			// module has block readout
 				fNonClearingMode = kFALSE;		// clear on copy
 				fDataFormat24 = kFALSE; 		// output 32 bit, no channel ids
+				fExtension48 = kFALSE; 			// ignore 48 bit extension for chns 0 & 16
 				fLNEChannel = 0; 				// LNE channel
-				gMrbConfig->AddModule(this);				// append to list of modules
-				gMrbConfig->AddScaler(this);				// and to list of scalers
+				gMrbConfig->AddModule(this);	// append to list of modules
+				gMrbConfig->AddScaler(this);	// and to list of scalers
 				gDirectory->Append(this);
 			} else {
 				this->MakeZombie();
@@ -200,6 +201,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.Substitute("$rpEnaDis", this->RefPulserIsOn() ? "ENABLE" : "DISABLE");
 				fCodeTemplates.Substitute("$LNEChannel", this->GetLNEChannel());
 				Int_t pat;
+				if (fFifoDepth > 1 & this->Extension48()) {
+					gMrbLog->Err()	<< "Extension to 48 bits allowed only in scaler mode - ignored" << endl;
+					gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+					fExtension48 = kFALSE;
+				}
 				if (this->GetNofChannelsUsed() < 32) {
 					if (this->CheckIfPatternIsContiguous()) {
 						pat = ~(this->GetPatternOfChannelsUsed());
@@ -209,6 +215,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 										<< setbase(16) << this->GetPatternOfChannelsUsed() << setbase(10)
 										<< " (ignored: using 32 chns)" << endl;
 						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+					}
+					if (this->Extension48()) {
+						gMrbLog->Err()	<< "Extension to 48 bits allowed only if full readout of 32 chns - ignored" << endl;
+						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+						fExtension48 = kFALSE;
 					}
 				} else {
 					pat = 0;
@@ -232,6 +243,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 				fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 				Int_t pat;
+				if (fFifoDepth > 1 & this->Extension48()) {
+					gMrbLog->Err()	<< "Extension to 48 bits allowed only in scaler mode - ignored" << endl;
+					gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+					fExtension48 = kFALSE;
+				}
 				if (this->GetNofChannelsUsed() < 32) {
 					if (this->CheckIfPatternIsContiguous()) {
 						pat = ~(this->GetPatternOfChannelsUsed());
@@ -241,6 +257,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 										<< setbase(16) << this->GetPatternOfChannelsUsed() << setbase(10)
 										<< " (ignored: using 32 chns)" << endl;
 						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+					}
+					if (this->Extension48()) {
+						gMrbLog->Err()	<< "Extension to 48 bits allowed only if full readout of 32 chns - ignored" << endl;
+						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+						fExtension48 = kFALSE;
 					}
 				} else {
 					pat = 0;
@@ -268,6 +289,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 		case TMrbConfig::kModuleReadModule:
 			{
 				Int_t nofChannels = this->GetNofChannelsUsed();
+				if (fFifoDepth > 1 & this->Extension48()) {
+					gMrbLog->Err()	<< "Extension to 48 bits allowed only in scaler mode - ignored" << endl;
+					gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+					fExtension48 = kFALSE;
+				}
 				if (nofChannels < 32) {
 					if (!this->CheckIfPatternIsContiguous()) {
 						gMrbLog->Err()	<< "Pattern of channels used is not contiguous - 0x"
@@ -276,9 +302,15 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 						nofChannels = 32;
 					}
+					if (this->Extension48()) {
+						gMrbLog->Err()	<< "Extension to 48 bits allowed only if full readout of 32 chns - ignored" << endl;
+						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+						fExtension48 = kFALSE;
+					}
 				}
 				TString iniTag;
 				iniTag = (fFifoDepth > 1 ? "%MH" : "%SH");
+				if (this->Extension48()) iniTag += "X48";
 				iniTag += (nofChannels < 32) ? "S%" : "%";
 				fCodeTemplates.InitializeCode(iniTag.Data());
 				fCodeTemplates.Substitute("$moduleName", this->GetName());

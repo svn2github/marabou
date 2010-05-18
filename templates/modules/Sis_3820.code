@@ -6,7 +6,7 @@
 // @(#)Author:     R. Lutter
 // @(#)Revision:   SCCS:  %W%
 // @(#)Date:       %G%
-// Keywords:       
+// Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
 %%BeginOfCode%%
@@ -34,6 +34,7 @@
 #define SIS_3820_R_INHIBIT_COUNTING			0x200L
 #define SIS_3820_R_CLEAR					0x204L
 #define SIS_3820_R_CLEAR_OVERFLOW			0x208L
+#define SIS_3820_R_48BIT_EXTENSION			0x210L
 #define SIS_3820_R_KEY_RESET				0x400L
 #define SIS_3820_R_KEY_FIFO_RESET			0x404L
 #define SIS_3820_R_KEY_TEST_PULSE			0x408L
@@ -104,6 +105,7 @@
 #define SIS_3820_A_KEY_OPER_ARM(module) 		((unsigned long *) (module + SIS_3820_R_KEY_OPER_ARM))
 #define SIS_3820_A_KEY_OPER_ENABLE(module)		((unsigned long *) (module + SIS_3820_R_KEY_OPER_ENABLE))
 #define SIS_3820_A_KEY_OPER_DISABLE(module)		((unsigned long *) (module + SIS_3820_R_KEY_OPER_DISABLE))
+#define SIS_3820_A_EXT48(module)				((unsigned long *) (module + SIS_3820_R_48BIT_EXTENSION))
 
 #define SIS_3820_READ_STATUS(module)			*SIS_3820_A_STATUS(module)
 #define SIS_3820_READ_IRQS(module)				*SIS_3820_A_IRQSTATUS(module)
@@ -114,7 +116,7 @@
 #define SIS_3820_WRITE_FIFO_THRESH(module, b)	*SIS_3820_A_FIFO_WC_THRESH(module) = b
 #define SIS_3820_SELECT_LNE_CHANNEL(module, c) 	*SIS_3820_A_LNE_CHAN_SELECT(module) = c
 #define SIS_3820_RESET(module)					*SIS_3820_A_KEY_RESET(module) = 0
-#define SIS_3820_KEY_VME_LNE(module)				*SIS_3820_A_KEY_VME_LNE(module) = 0
+#define SIS_3820_KEY_VME_LNE(module)			*SIS_3820_A_KEY_VME_LNE(module) = 0
 #define SIS_3820_CLEAR_FIFO(module)				*SIS_3820_A_KEY_FIFO_RESET(module) = 0
 #define SIS_3820_OPER_ARM(module)				*SIS_3820_A_KEY_OPER_ARM(module) = 0
 #define SIS_3820_OPER_ENABLE(module)			*SIS_3820_A_KEY_OPER_ENABLE(module) = 0
@@ -122,7 +124,7 @@
 #define SIS_3820_ENABLE_REF_PULSER(module)		*SIS_3820_A_STATUS(module) = SIS_3820_CS_B_REF_PULSER
 #define SIS_3820_DISABLE_REF_PULSER(module)		*SIS_3820_A_STATUS(module) = 0
 #define SIS_3820_COUNTER_CLEAR(module)			*SIS_3820_A_KEY_COUNTER_CLEAR(module) = 0
-
+#define SIS_3820_READ_EXT48(module)				*SIS_3820_A_EXT48(module)
 %%EndOfCode%%
 %%MODULE_DEFS%%
 
@@ -168,8 +170,23 @@
 %%BeginOfCode%%
 %SH%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
 %SH%						RDO_BLTI_32(32);
+%SHX48%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
+%SHX48%						RDO_BLTI_32(31);
+%SHX48%						$mnemoLC_x48 = SIS_3820_READ_EXT48(module);
+%SHX48%						RDO_2MEM_32($mnemoLC_x48);
 %SHS%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);
-%SHS%						RDO_BLT_32($mnemoLC_wc);
+%SHS%						RDO_BLTI_32($mnemoLC_wc);
+%MH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW); 	/* scaler $moduleName runs in multi-hit mode */
+%MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
+%MH%						$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName);
+%MH%						if (($mnemoLC_sts & SIS_3820_FLAG_B_FIFO_THRESH) != 0) RDO_BLTI_32(32);
+%MH%						else break;
+%MH%					}
+%MH%					$mnemoLC_hit = ($fifoDepth - $mnemoLC_hit) * 32;
+%MH%					if ($mnemoLC_hit > 0) {
+%MH%						memset(evt.out32, 0, $mnemoLC_hit * sizeof(unsigned long));
+%MH%						evt.out32 += $mnemoLC_hit;
+%MH%					}
 %MH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW); 	/* scaler $moduleName runs in multi-hit mode */
 %MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
 %MH%						$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName);
@@ -208,12 +225,12 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%WRITE_SUBADDR%% 
+%%WRITE_SUBADDR%%
 
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%STORE_DATA%% 
+%%STORE_DATA%%
 
 %%BeginOfCode%%
 
@@ -223,7 +240,7 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%SETUP_READOUT%%	
+%%SETUP_READOUT%%
 
 %%BeginOfCode%%
 
@@ -241,7 +258,7 @@
 %%START_ACQUISITION%%
 
 %%BeginOfCode%%
-		
+
 %%EndOfCode%%
 %%START_ACQUISITION_GROUP%%
 
@@ -254,7 +271,7 @@
 %%STOP_ACQUISITION%%
 
 %%BeginOfCode%%
-		
+
 %%EndOfCode%%
 %%STOP_ACQUISITION_GROUP%%
 
@@ -300,6 +317,7 @@ void sis_3820_module_info(volatile unsigned char * module);
 	unsigned long $mnemoLC_sts;
 	int $mnemoLC_hit;
 	int $mnemoLC_wc;
+	int $mnemoLC_x48;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
 
