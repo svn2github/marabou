@@ -121,6 +121,7 @@ enum EM2L_FunctionType {
 	kM2L_FCT_SIS_3302_SET_LEMO_IN_ENABLE_MASK,
 	kM2L_FCT_SIS_3302_COLLECT_TRACES,
 	kM2L_FCT_SIS_3302_GET_EVENT,
+	kM2L_FCT_SIS_3302_GET_DATA_LENGTH,
 	kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,
 //--------------------------------------------------------------------------------
 	kM2L_FCT_VULOM_TB			=	0x300,					// vulom3 / triggerbox
@@ -219,6 +220,7 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_SIS_3302_SET_CLOCK_SOURCE,			"set clock source"},
 		{kM2L_FCT_SIS_3302_COLLECT_TRACES,				"collect traces"},
 		{kM2L_FCT_SIS_3302_GET_EVENT,					"get event"},
+		{kM2L_FCT_SIS_3302_GET_DATA_LENGTH,				"get data length"},
 		{kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,				"accu histogram"},
 //--------------------------------------------------------------------------------
 		{kM2L_FCT_VULOM_TB, 							"exec function (VULOM / TRIGBOX)"},
