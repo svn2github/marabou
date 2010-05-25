@@ -728,51 +728,67 @@ void SetHistOptDialog::RestoreDefaults()
    fTitleCenterX  = env.GetValue("SetHistOptDialog.fTitleCenterX", 0);
    fTitleCenterY  = env.GetValue("SetHistOptDialog.fTitleCenterY", 0);
    fTitleCenterZ  = env.GetValue("SetHistOptDialog.fTitleCenterZ", 0);
-	
-	TAxis *xa = fHist->GetXaxis();
-	TAxis *ya = fHist->GetYaxis();
-	TAxis *za = NULL;
-	if (fHist && fHist->GetDimension() > 1)
-		za = fHist->GetZaxis();
-	fAxisColor    = xa->GetAxisColor  ();
-	fLabelColor   = xa->GetLabelColor ();
-	fLabelFont    = xa->GetLabelFont  ();
-	fLabelSize    = xa->GetLabelSize  ();
-	fTickLength   = xa->GetTickLength ();
-	fTitleSize    = xa->GetTitleSize  ();
-	fTitleColorA  = xa->GetTitleColor ();
-	fTitleFontA   = xa->GetTitleFont  ();
+	if ( fHist ) {
+		TAxis *xa = fHist->GetXaxis();
+		TAxis *ya = fHist->GetYaxis();
+		TAxis *za = NULL;
+		if (fHist && fHist->GetDimension() > 1)
+			za = fHist->GetZaxis();
+		fAxisColor    = xa->GetAxisColor  ();
+		fLabelColor   = xa->GetLabelColor ();
+		fLabelFont    = xa->GetLabelFont  ();
+		fLabelSize    = xa->GetLabelSize  ();
+		fTickLength   = xa->GetTickLength ();
+		fTitleSize    = xa->GetTitleSize  ();
+		fTitleColorA  = xa->GetTitleColor ();
+		fTitleFontA   = xa->GetTitleFont  ();
 
-	fNdivisionsX  = xa->GetNdivisions ();
-	fLabelOffsetX = xa->GetLabelOffset();
-	fTickSideX    = xa->GetTicks      ();
-	fTitleOffsetX = xa->GetTitleOffset();
-	fTitleCenterX = xa->GetCenterTitle();
+		fNdivisionsX  = xa->GetNdivisions ();
+		fLabelOffsetX = xa->GetLabelOffset();
+		fTickSideX    = xa->GetTicks      ();
+		fTitleOffsetX = xa->GetTitleOffset();
+		fTitleCenterX = xa->GetCenterTitle();
 
-	fNdivisionsY  = ya->GetNdivisions ();
-	fLabelOffsetY = ya->GetLabelOffset();
-   if ( !ya->TestBit(TAxis::kTickPlus) &&
-        !ya->TestBit(TAxis::kTickMinus) )
-      ya->SetTicks("-");
-	fTickSideY    = ya->GetTicks      ();
-	fTitleOffsetY = ya->GetTitleOffset();
-	fTitleCenterY = ya->GetCenterTitle();
+		fNdivisionsY  = ya->GetNdivisions ();
+		fLabelOffsetY = ya->GetLabelOffset();
+		if ( !ya->TestBit(TAxis::kTickPlus) &&
+			!ya->TestBit(TAxis::kTickMinus) )
+			ya->SetTicks("-");
+		fTickSideY    = ya->GetTicks      ();
+		fTitleOffsetY = ya->GetTitleOffset();
+		fTitleCenterY = ya->GetCenterTitle();
 
-	if (za != NULL) {
-		fNdivisionsZ  = za->GetNdivisions ();
-		fLabelOffsetZ = za->GetLabelOffset();
-		fTickSideZ    = za->GetTicks      ();
-		fTitleOffsetZ = za->GetTitleOffset();
-		fTitleCenterZ = za->GetCenterTitle();
-/*
-		TPaletteAxis *pl = (TPaletteAxis*)fHist->GetListOfFunctions()->FindObject("palette");
-		if ( pl != NULL ) {
-			pl->SetLabelColor( fLabelColor);
-			pl->SetLabelFont(  fLabelFont);
-			pl->SetLabelOffset(fLabelOffsetZ);
-			pl->SetLabelOffset(fLabelSize);
+		if (za != NULL) {
+			fNdivisionsZ  = za->GetNdivisions ();
+			fLabelOffsetZ = za->GetLabelOffset();
+			fTickSideZ    = za->GetTicks      ();
+			fTitleOffsetZ = za->GetTitleOffset();
+			fTitleCenterZ = za->GetCenterTitle();
+	/*
+			TPaletteAxis *pl = (TPaletteAxis*)fHist->GetListOfFunctions()->FindObject("palette");
+			if ( pl != NULL ) {
+				pl->SetLabelColor( fLabelColor);
+				pl->SetLabelFont(  fLabelFont);
+				pl->SetLabelOffset(fLabelOffsetZ);
+				pl->SetLabelOffset(fLabelSize);
+			}
+	*/
 		}
-*/
+		TPavesText *pt = (TPavesText*)fHist->GetListOfFunctions()->FindObject("stats");
+		if (pt) {
+			fStatColor     = pt->GetFillColor();
+			fStatTextColor = pt->GetTextColor();
+			fStatBorderSize= pt->GetBorderSize();
+			fStatFont      = pt->GetTextFont();
+			fStatFontSize  = pt->GetTextSize();
+			fStatStyle     = pt->GetFillStyle();
+			fStatFormat    = gStyle->GetStatFormat();
+			//         fStatFormat   = pt->Get();
+			fStatX         = pt->GetX2NDC();
+			fStatY         = pt->GetY2NDC();
+			fStatW         = gStyle->GetStatW();
+			fStatH         = gStyle->GetStatH();
+		}
 	}
 	fLabelMaxDigits = TGaxis::GetMaxDigits();
    fStatColor=     env.GetValue("SetHistOptDialog.StatColor", 19);
@@ -787,21 +803,6 @@ void SetHistOptDialog::RestoreDefaults()
    fStatW=         env.GetValue("SetHistOptDialog.StatW", 0.2);
    fStatH=         env.GetValue("SetHistOptDialog.StatH", 0.16);
    if (fStatFont < 12 || fStatFont > 123) fStatFont = 62;
-	TPavesText *pt = (TPavesText*)fHist->GetListOfFunctions()->FindObject("stats");
-	if (pt) {
-		fStatColor     = pt->GetFillColor();
-		fStatTextColor = pt->GetTextColor();
-		fStatBorderSize= pt->GetBorderSize();
-		fStatFont      = pt->GetTextFont();
-		fStatFontSize  = pt->GetTextSize();
-		fStatStyle     = pt->GetFillStyle();
-      fStatFormat    = gStyle->GetStatFormat();
-//         fStatFormat   = pt->Get();
-		fStatX         = pt->GetX2NDC();
-		fStatY         = pt->GetY2NDC();
-		fStatW         = gStyle->GetStatW();
-		fStatH         = gStyle->GetStatH();
-	}
    fTitleColor     = env.GetValue("SetHistOptDialog.TitleColor",     0);
    fTitleStyle     = env.GetValue("SetHistOptDialog.TitleStyle",     1001);
    fTitleTextColor = env.GetValue("SetHistOptDialog.TitleTextColor", 1);
@@ -814,7 +815,7 @@ void SetHistOptDialog::RestoreDefaults()
 	fTitleW         = env.GetValue("SetHistOptDialog.TitleW",     0.);
 	fTitleH         = env.GetValue("SetHistOptDialog.TitleH",     0.);
 	fTitleAlign     = env.GetValue("SetHistOptDialog.TitleAlign", 23);
-	fTitleFontSize  = env.GetValue("SetHistOptDialog.TitleFontSize", 23);
+	fTitleFontSize  = env.GetValue("SetHistOptDialog.TitleFontSize", 0);
 	TPaveText *tit = (TPaveText*)fCanvas->GetListOfPrimitives()->FindObject("title");
 	if ( tit ) {
 		fTitleColor =       tit->GetFillColor();
