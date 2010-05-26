@@ -872,13 +872,13 @@ void SetHistOptDialog::SetDefaults()
    gStyle->SetTitleTextColor (env.GetValue("SetHistOptDialog.TitleTextColor", 1));
    gStyle->SetTitleBorderSize(env.GetValue("SetHistOptDialog.TitleBorderSize",1));
    gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.TitleFont",      62), "t");
-   gStyle->SetTitleFontSize  (env.GetValue("SetHistOptDialog.TitleFontSize",  0.02));
+   gStyle->SetTitleFontSize  (env.GetValue("SetHistOptDialog.TitleFontSize",  0));
    gStyle->SetTitleStyle     (env.GetValue("SetHistOptDialog.TitleStyle",     1001));
    gStyle->SetTitleX         (env.GetValue("SetHistOptDialog.TitleX",         0.5));
    gStyle->SetTitleY         (env.GetValue("SetHistOptDialog.TitleY",         .995));
    gStyle->SetTitleW         (env.GetValue("SetHistOptDialog.TitleW",         0.));
    gStyle->SetTitleH         (env.GetValue("SetHistOptDialog.TitleH",         0.));
-   gStyle->SetTitleAlign     (env.GetValue("SetHistOptDialog.TitleAlign",    13));
+   gStyle->SetTitleAlign     (env.GetValue("SetHistOptDialog.TitleAlign",    23));
 
    gStyle->SetStatColor     (env.GetValue("SetHistOptDialog.StatColor", 19));
    gStyle->SetStatTextColor (env.GetValue("SetHistOptDialog.StatTextColor", 1));
