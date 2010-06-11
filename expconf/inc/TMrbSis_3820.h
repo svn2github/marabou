@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3820        -- 32 chn 32 bit VME scaler
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3820.h,v 1.12 2010-05-18 08:22:52 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbSis_3820.h,v 1.13 2010-06-11 08:34:42 Rudolf.Lutter Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -78,6 +78,9 @@ class TMrbSis_3820 : public TMrbVMEScaler {
 		inline void SetExtension48(Bool_t Flag = kTRUE) { fExtension48 = Flag; };
 		inline Bool_t Extension48() { return(fExtension48); };
 
+		inline void XferOverflows(Bool_t Flag = kTRUE) { fXferOverflows = Flag; };
+		inline Bool_t OverflowsToBeXferred() { return(fXferOverflows); };
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
@@ -89,8 +92,8 @@ class TMrbSis_3820 : public TMrbVMEScaler {
 		Bool_t fNonClearingMode;	// kTRUE if non-clearing mode
 		Bool_t fDataFormat24;		// kTRUE data format 24 bit + channel + user
 		Bool_t fEnableRefPulser;	// kTRUE if reference pulser is to be used in ch0
-		Bool_t fExtension48;		// kTRUE if chn0 & chn16 extended to 48 bits
-
+		Bool_t fExtension48;		// kTRUE if chn0 & chn16 extended to 48 bits (data will be stored in chn#31)
+		Bool_t fXferOverflows;		// kTRUE if overflows should be included into data (data will be stored in ch#30)
 	ClassDef(TMrbSis_3820, 1)		// [Config] SIS 3820, 32 x 32 bit VME scaler
 };
 

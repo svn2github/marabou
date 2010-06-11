@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.15 2010-05-18 08:22:52 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.16 2010-06-11 08:34:42 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -85,6 +85,8 @@ TMrbSis_3820::TMrbSis_3820(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 				fNonClearingMode = kFALSE;		// clear on copy
 				fDataFormat24 = kFALSE; 		// output 32 bit, no channel ids
 				fExtension48 = kFALSE; 			// ignore 48 bit extension for chns 0 & 16
+				fEnableRefPulser = kFALSE;		// ref pulser disabled
+				fXferOverflows = kFALSE; 		// don't include overflows into data
 				fLNEChannel = 0; 				// LNE channel
 				gMrbConfig->AddModule(this);	// append to list of modules
 				gMrbConfig->AddScaler(this);	// and to list of scalers
@@ -201,7 +203,7 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.Substitute("$rpEnaDis", this->RefPulserIsOn() ? "ENABLE" : "DISABLE");
 				fCodeTemplates.Substitute("$LNEChannel", this->GetLNEChannel());
 				Int_t pat;
-				if (fFifoDepth > 1 & this->Extension48()) {
+				if (fFifoDepth > 1 && this->Extension48()) {
 					gMrbLog->Err()	<< "Extension to 48 bits allowed only in scaler mode - ignored" << endl;
 					gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 					fExtension48 = kFALSE;
@@ -220,6 +222,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 						gMrbLog->Err()	<< "Extension to 48 bits allowed only if full readout of 32 chns - ignored" << endl;
 						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 						fExtension48 = kFALSE;
+					}
+					if (this->OverflowsToBeXferred()) {
+						gMrbLog->Err()	<< "Overflows allowed only if full readout of 32 chns - ignored" << endl;
+						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+						fXferOverflows = kFALSE;
 					}
 				} else {
 					pat = 0;
@@ -262,6 +269,11 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 						gMrbLog->Err()	<< "Extension to 48 bits allowed only if full readout of 32 chns - ignored" << endl;
 						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 						fExtension48 = kFALSE;
+					}
+					if (this->OverflowsToBeXferred()) {
+						gMrbLog->Err()	<< "Overflows allowed only if full readout of 32 chns - ignored" << endl;
+						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+						fXferOverflows = kFALSE;
 					}
 				} else {
 					pat = 0;
@@ -307,10 +319,16 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 						fExtension48 = kFALSE;
 					}
+					if (this->OverflowsToBeXferred()) {
+						gMrbLog->Err()	<< "Overflows allowed only if full readout of 32 chns - ignored" << endl;
+						gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+						fXferOverflows = kFALSE;
+					}
 				}
 				TString iniTag;
 				iniTag = (fFifoDepth > 1 ? "%MH" : "%SH");
 				if (this->Extension48()) iniTag += "X48";
+				if (this->OverflowsToBeXferred()) iniTag += "OVL";
 				iniTag += (nofChannels < 32) ? "S%" : "%";
 				fCodeTemplates.InitializeCode(iniTag.Data());
 				fCodeTemplates.Substitute("$moduleName", this->GetName());

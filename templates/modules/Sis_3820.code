@@ -33,7 +33,7 @@
 #define SIS_3820_R_PRESET_CHAN_SELECT		0x10CL
 #define SIS_3820_R_INHIBIT_COUNTING			0x200L
 #define SIS_3820_R_CLEAR					0x204L
-#define SIS_3820_R_CLEAR_OVERFLOW			0x208L
+#define SIS_3820_R_OVERFLOW					0x208L
 #define SIS_3820_R_48BIT_EXTENSION			0x210L
 #define SIS_3820_R_KEY_RESET				0x400L
 #define SIS_3820_R_KEY_FIFO_RESET			0x404L
@@ -97,7 +97,7 @@
 #define SIS_3820_A_PRESET_CHAN_SELECT(module)	((unsigned long *) (module + SIS_3820_R_PRESET_CHAN_SELECT))
 #define SIS_3820_A_INHIBIT_COUNTING(module) 	((unsigned long *) (module + SIS_3820_R_INHIBIT_COUNTING))
 #define SIS_3820_A_CLEAR(module) 				((unsigned long *) (module + SIS_3820_R_CLEAR))
-#define SIS_3820_A_CLEAR_OVERFLOW(module) 		((unsigned long *) (module + SIS_3820_R_CLEAR_OVERFLOW))
+#define SIS_3820_A_OVERFLOW(module) 			((unsigned long *) (module + SIS_3820_R_OVERFLOW))
 #define SIS_3820_A_KEY_RESET(module)			((unsigned long *) (module + SIS_3820_R_KEY_RESET))
 #define SIS_3820_A_KEY_FIFO_RESET(module)		((unsigned long *) (module + SIS_3820_R_KEY_FIFO_RESET))
 #define SIS_3820_A_KEY_COUNTER_CLEAR(module)	((unsigned long *) (module + SIS_3820_R_KEY_COUNTER_CLEAR))
@@ -110,11 +110,13 @@
 #define SIS_3820_READ_STATUS(module)			*SIS_3820_A_STATUS(module)
 #define SIS_3820_READ_IRQS(module)				*SIS_3820_A_IRQSTATUS(module)
 #define SIS_3820_READ_FIFO_WC(module)			*SIS_3820_A_FIFO_WC(module)
+#define SIS_3820_READ_OVERFLOWS(module)			*SIS_3820_A_OVERFLOW(module)
 #define SIS_3820_SET_ACQ_OPER_MODE(module, b)	*SIS_3820_A_ACQ_OPER_MODE(module) = b
 #define SIS_3820_DISABLE_COPY(module, b)		*SIS_3820_A_COPY_DISABLE(module) = b
 #define SIS_3820_INHIBIT_COUNTING(module, b) 	*SIS_3820_A_INHIBIT_COUNTING(module) = b
 #define SIS_3820_WRITE_FIFO_THRESH(module, b)	*SIS_3820_A_FIFO_WC_THRESH(module) = b
 #define SIS_3820_SELECT_LNE_CHANNEL(module, c) 	*SIS_3820_A_LNE_CHAN_SELECT(module) = c
+#define SIS_3820_CLEAR_OVERFLOWS(module)		*SIS_3820_A_OVERFLOW(module) = 0
 #define SIS_3820_RESET(module)					*SIS_3820_A_KEY_RESET(module) = 0
 #define SIS_3820_KEY_VME_LNE(module)			*SIS_3820_A_KEY_VME_LNE(module) = 0
 #define SIS_3820_CLEAR_FIFO(module)				*SIS_3820_A_KEY_FIFO_RESET(module) = 0
@@ -170,23 +172,26 @@
 %%BeginOfCode%%
 %SH%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
 %SH%						RDO_BLTI_32(32);
+%SHOVF%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
+%SHOVF%						RDO_BLTI_32(30);									/* use chans 0 - 29 only */
+%SHOVF%						RDO_2MEM_32(0);										/* 48 bit extension (not used) */
+%SHOVF%						$mnemoLC_ofl = SIS_3820_READ_OVERFLOWS(module);		/* overflow bits */
+%SHOVF%						RDO_2MEM_32($mnemoLC_ofl);							/* stored in chan 31 */
+%SHOVF%						SIS_3820_CLEAR_OVERFLOWS(module);					/* clear overflows */
 %SHX48%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
-%SHX48%						RDO_BLTI_32(31);
-%SHX48%						$mnemoLC_x48 = SIS_3820_READ_EXT48(module);
-%SHX48%						RDO_2MEM_32($mnemoLC_x48);
+%SHX48%						RDO_BLTI_32(30);									/* use chans 0 - 29 only */
+%SHX48%						$mnemoLC_x48 = SIS_3820_READ_EXT48(module);			/* 48 bit extension for chans 0 & 16 */
+%SHX48%						RDO_2MEM_32($mnemoLC_x48);							/* stored in chan 30 */
+%SHX48%						RDO_2MEM_32(0);										/* overflow bits in chan 31 (not used)*/
+%SHX48OVF%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
+%SHX48OVF%						RDO_BLTI_32(30);									/* use chans 0 - 29 only */
+%SHX48OVF%						$mnemoLC_x48 = SIS_3820_READ_EXT48(module);			/* 48 bit extension for chans 0 & 16 */
+%SHX48OVF%						RDO_2MEM_32($mnemoLC_x48);							/* stored in chan 30 */
+%SHX48OVF%						$mnemoLC_ofl = SIS_3820_READ_OVERFLOWS(module);		/* overflow bits */
+%SHX48OVF%						RDO_2MEM_32($mnemoLC_ofl);							/* stored in chan 31 */
+%SHX48OVF%						SIS_3820_CLEAR_OVERFLOWS(module);					/* clear overflows */
 %SHS%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);
 %SHS%						RDO_BLTI_32($mnemoLC_wc);
-%MH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW); 	/* scaler $moduleName runs in multi-hit mode */
-%MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
-%MH%						$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName);
-%MH%						if (($mnemoLC_sts & SIS_3820_FLAG_B_FIFO_THRESH) != 0) RDO_BLTI_32(32);
-%MH%						else break;
-%MH%					}
-%MH%					$mnemoLC_hit = ($fifoDepth - $mnemoLC_hit) * 32;
-%MH%					if ($mnemoLC_hit > 0) {
-%MH%						memset(evt.out32, 0, $mnemoLC_hit * sizeof(unsigned long));
-%MH%						evt.out32 += $mnemoLC_hit;
-%MH%					}
 %MH%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW); 	/* scaler $moduleName runs in multi-hit mode */
 %MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
 %MH%						$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName);
@@ -318,6 +323,7 @@ void sis_3820_module_info(volatile unsigned char * module);
 	int $mnemoLC_hit;
 	int $mnemoLC_wc;
 	int $mnemoLC_x48;
+	int $mnemoLC_ovfl;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
 
