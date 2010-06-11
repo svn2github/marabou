@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3820.cxx,v 1.16 2010-06-11 08:34:42 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbSis_3820.cxx,v 1.17 2010-06-11 08:50:27 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -328,7 +328,7 @@ Bool_t TMrbSis_3820::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				TString iniTag;
 				iniTag = (fFifoDepth > 1 ? "%MH" : "%SH");
 				if (this->Extension48()) iniTag += "X48";
-				if (this->OverflowsToBeXferred()) iniTag += "OVL";
+				if (this->OverflowsToBeXferred()) iniTag += "OVF";
 				iniTag += (nofChannels < 32) ? "S%" : "%";
 				fCodeTemplates.InitializeCode(iniTag.Data());
 				fCodeTemplates.Substitute("$moduleName", this->GetName());
