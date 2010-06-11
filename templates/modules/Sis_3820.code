@@ -175,7 +175,7 @@
 %SHOVF%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
 %SHOVF%						RDO_BLTI_32(30);									/* use chans 0 - 29 only */
 %SHOVF%						RDO_2MEM_32(0);										/* 48 bit extension (not used) */
-%SHOVF%						$mnemoLC_ovfl = SIS_3820_READ_OVERFLOWS(module);		/* overflow bits */
+%SHOVF%						$mnemoLC_ovfl = SIS_3820_READ_OVERFLOWS($moduleName);		/* overflow bits */
 %SHOVF%						RDO_2MEM_32($mnemoLC_ovfl);							/* stored in chan 31 */
 %SHOVF%						SIS_3820_CLEAR_OVERFLOWS($moduleName);					/* clear overflows */
 %SHX48%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_SHADOW);	/* read contents of scaler $moduleName */
