@@ -6,8 +6,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.11 $
-//! $Date: 2010-04-23 13:38:28 $
+//! $Revision: 1.12 $
+//! $Date: 2010-06-17 08:16:40 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -789,8 +789,7 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 
 	if (s->blockTransOn) {
 		if (bmaResetChain(s->bma) < 0) {
-			sprintf(msg, "[%sreadout] %s: resetting block xfer chai
-n failed", s->mpref, s->moduleName);
+			sprintf(msg, "[%sreadout] %s: resetting block xfer chain failed", s->mpref, s->moduleName);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
@@ -816,6 +815,12 @@ n failed", s->mpref, s->moduleName);
 		memcpy(pointer, s->bltBuffer, sizeof(uint32_t) * numData);
 		pointer += numData;
 	} else {
+#if 0
+		for (i = 0; i < numData; i++) {
+			data = GET32(s->baseAddr, MADC32_DATA);
+			*pointer++ = data;
+		}
+#endif
 		for (i = 0; i < numData; i++) {
 			data = GET32(s->baseAddr, MADC32_DATA);
 			if (data == 0) {
@@ -844,6 +849,7 @@ n failed", s->mpref, s->moduleName);
 				s->evtp++; *s->evtp = data;
 			}
 		}
+
 	}
 
 	madc32_resetReadout(s);

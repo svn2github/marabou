@@ -19,8 +19,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.7 $
-//! $Date: 2009-10-27 13:30:44 $
+//! $Revision: 1.8 $
+//! $Date: 2010-06-17 08:16:40 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <string.h>
@@ -181,8 +181,18 @@ void TObject::SetUniqueID(UInt_t Uid) { fUniqueID = Uid; }
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Sets id as specified
+//! \details		Calculate hash value
 //! \retval			hashval		-- hash value
 /////////////////////////////////////////////////////////////////////////////
 
 ULong_t TObject::Hash() const { return (ULong_t) this >> 2; }
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Handle requests
+//!                 (dummy method, has to be overwritten)
+//! \retval			TRUE or FALSE
+/////////////////////////////////////////////////////////////////////////////
+
+Bool_t TObject::HandleRequest() { return kFALSE; }
+
