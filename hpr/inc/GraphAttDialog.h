@@ -24,10 +24,12 @@ public:
    static Int_t   fGraphPolyMarker;
    static Int_t   fGraphBarChart;
    static Int_t   fGraphShowAxis;
-   static Style_t fGraphLStyle;
-   static Width_t fGraphLWidth;
-   static Color_t fGraphLColor;
-   static Style_t fGraphMStyle;
+   static Style_t fGraphFStyle;
+   static Color_t fGraphFColor;
+	static Style_t fGraphLStyle;
+	static Width_t fGraphLWidth;
+	static Color_t fGraphLColor;
+	static Style_t fGraphMStyle;
    static Size_t  fGraphMSize;
    static Color_t fGraphMColor;
 
@@ -35,7 +37,7 @@ public:
    ~GraphAttDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
-   void SetGraphAtt(TCanvas *ca, Int_t bid);
+   static void SetGraphAtt(TCanvas *ca, Int_t bid = 0);
    void SetAsDefault();
    void SaveDefaults();
    static void RestoreDefaults();

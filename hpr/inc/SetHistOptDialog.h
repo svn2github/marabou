@@ -1,5 +1,6 @@
 #ifndef SETHISTOPTHISTDIALOG
 #define SETHISTOPTHISTDIALOG
+#include "TH1.h"
 #include "TGWindow.h"
 #include "TStyle.h"
 #include "TRootCanvas.h"
@@ -51,9 +52,6 @@ private:
    Float_t      fTitleSize;
    Color_t      fTitleColorA;
    Style_t      fTitleFontA;
-   Int_t        fTitleCenterX;
-   Int_t        fTitleCenterY;
-   Int_t        fTitleCenterZ;
 
    Color_t      fTitleColor;
    Color_t      fTitleTextColor;
@@ -85,7 +83,10 @@ private:
    TString      fNewStyleName;
    Int_t        fNewStyle;
 public:
-
+	static Int_t fTitleCenterX;
+	static Int_t fTitleCenterY;
+	static Int_t fTitleCenterZ;
+	
    SetHistOptDialog(TGWindow * win = NULL, TCollection * hlist = NULL);
    ~SetHistOptDialog() {};
    void RecursiveRemove(TObject * obj);

@@ -312,7 +312,7 @@ HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph *
 {
    fRootCanvas = (TRootCanvas*)fHCanvas->GetCanvasImp();
 
-//   cout << "fRootCanvas: " << fRootCanvas << endl;
+	cout << "HandleMenus::fRootCanvas: " << fRootCanvas << endl;
 //   cout << "fRootCanvas->Canvas(): " << fRootCanvas->Canvas() << endl;
    fRootsMenuBar = fRootCanvas->GetMenuBar();
    fMenuBarItemLayout = fRootCanvas->GetMenuBarItemLayout();
@@ -832,7 +832,8 @@ again:
                      fHistPresent->GraphFromASCII(fRootCanvas);
                      break;
                   case kFHEmptyHist:
-                     new EmptyHistDialog(fRootCanvas); ;
+							new EmptyHistDialog(fRootCanvas, WindowSizeDialog::fWincurx,
+													  WindowSizeDialog::fWincury); 
                      break;
 
                   case  kFHMarksToCut:
@@ -1060,10 +1061,14 @@ void HandleMenus::BuildMenus()
 */
    TMrbHelpBrowser * hbrowser = NULL;
    Bool_t fh_menus = kFALSE;
-   Bool_t edit_menus = kFALSE;
+//   Bool_t edit_menus = kFALSE;
    Bool_t autops = kFALSE;
    Bool_t graph1d = kFALSE;
    Bool_t graph2d = kFALSE;
+	Bool_t its_start_window = kFALSE;
+	TString cn(fHCanvas->GetName());
+	if ( cn == "cHPr" )
+		its_start_window = kTRUE;
    if ( fGraph ) {
       if ( fGraph->InheritsFrom("TGraph2D") ) {
          graph2d = kTRUE;
@@ -1074,16 +1079,24 @@ void HandleMenus::BuildMenus()
    if(fHistPresent){
       autops = GeneralAttDialog::fShowPSFile;
       hbrowser=fHistPresent->GetHelpBrowser();
-      if (fHCanvas->TestBit(HTCanvas::kIsAEditorPage)) edit_menus = kTRUE;
-   }
+	}
+/*
+	cout << " edit_menus ";
+	if (fHCanvas->TestBit(HTCanvas::kIsAEditorPage)) {
+		edit_menus = kTRUE;
+		cout << " TRUE ";
+   } else {
+		cout << " FALSE ";
+	}
+*/
 //   if (fFitHist != 0 && fFitHist->GetSelHist()->GetDimension() != 3) {
 //     fh_menus = kTRUE;
 //     edit_menus = kTRUE;
 //   }
    Int_t nDim = 0;
    if ( fFitHist ) {
-     fh_menus = kTRUE;
-     nDim = fFitHist->GetSelHist()->GetDimension();
+		fh_menus = kTRUE;
+		nDim = fFitHist->GetSelHist()->GetDimension();
    }
 
    TGPopupMenu * pm;
@@ -1231,31 +1244,35 @@ void HandleMenus::BuildMenus()
       if ( graph1d )
          fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
    }
-      fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
+	if ( !its_start_window )
+		fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
    if(fHistPresent){
       if (fFitHist) {
          fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
          fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
-			fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
+//			fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
       }
+	}
 //      fGraph = FindGraph(fHCanvas);
-      if (!edit_menus) {
-         fFileMenu->AddEntry("Select ROOT file from any dir",  kFHSelAnyDir);
-         fFileMenu->AddSeparator();
+	if ( its_start_window ) {
+		fFileMenu->AddEntry("Select ROOT file from any dir",  kFHSelAnyDir);
+		fFileMenu->AddSeparator();
 
-         fFileMenu->AddEntry("ASCII data from file to Ntuple", kFHNtuple);
-         fFileMenu->AddEntry("ASCII data from file to histogram ",  kFHASCIIToHist);
-         fFileMenu->AddEntry("ASCII data from file to graph",  kFHGraph);
-         fFileMenu->AddEntry("Create empty histogram",  kFHEmptyHist);
-      }
-      fFileMenu->AddSeparator();
-   }
-   fFileMenu->AddEntry("Picture to Printer",  kFHCanvas2LP);
-   fFileMenu->AddEntry("Picture to PS-File",  kFHPictToPS);
-   fFileMenu->AddEntry("Save As....",   kFileSaveAs);
-   fFileMenu->AddEntry("Save As .eps",  kFileSaveAsEPS);
-   fFileMenu->AddEntry("Save As .pdf",  kFileSaveAsPDF);
-   fFileMenu->AddEntry("Save As .gif",  kFileSaveAsGIF);
+		fFileMenu->AddEntry("ASCII data from file to Ntuple", kFHNtuple);
+		fFileMenu->AddEntry("ASCII data from file to histogram ",  kFHASCIIToHist);
+		fFileMenu->AddEntry("ASCII data from file to graph",  kFHGraph);
+		fFileMenu->AddEntry("Create empty histogram",  kFHEmptyHist);
+	} else {
+		fFileMenu->AddSeparator();
+		fFileMenu->AddEntry("Picture to Printer",  kFHCanvas2LP);
+		fFileMenu->AddEntry("Picture to PS-File",  kFHPictToPS);
+		fFileMenu->AddEntry("Save As....",   kFileSaveAs);
+		fFileMenu->AddEntry("Save As .eps",  kFileSaveAsEPS);
+		fFileMenu->AddEntry("Save As .pdf",  kFileSaveAsPDF);
+		fFileMenu->AddEntry("Save As .gif",  kFileSaveAsGIF);
+		fFileMenu->AddEntry("Save As .C",    kFileSaveAsC);
+	}
+	/*
    static Int_t img = 0;
 
    if (!img) {
@@ -1267,8 +1284,8 @@ void HandleMenus::BuildMenus()
    if (img > 0) {
       fFileMenu->AddEntry("Save As .jpg",  kFileSaveAsJPG);
    }
-   fFileMenu->AddEntry("Save As .C",    kFileSaveAsC);
-   if (!edit_menus) {
+	*/
+   if (  its_start_window ) {
 //   if(!fFitHist)fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
 //   if(!fFitHist)fFileMenu->AddEntry("Save As canvas.root", kFileSaveAsRoot);
       fFileMenu->AddSeparator();
@@ -1279,13 +1296,16 @@ void HandleMenus::BuildMenus()
       fFileMenu->AddEntry("Open Edit canvas (A4 portrait)",    kFH_Portrait);
       fFileMenu->AddEntry("Open Edit canvas (A4 landscape)",   kFH_Landscape);
       fFileMenu->AddEntry("Open Edit canvas (user defined)",   kFH_UserEdit);
-   } else {
-      fFileMenu->AddSeparator();
-    	fFileMenu->AddEntry("Write this picture to ROOT file",  kFH_WritePrim);
-   }
-   fFileMenu->AddSeparator();
-   fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
-   fFileMenu->AddEntry("Terminate program",          kFileQuit);
+		fFileMenu->AddSeparator();
+		fFileMenu->AddEntry("Terminate program",          kFileQuit);
+	} else {
+		fFileMenu->AddSeparator();
+		fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
+	}
+//	if ( edit_menus ) {
+//      fFileMenu->AddSeparator();
+//    	fFileMenu->AddEntry("Write this picture to ROOT file",  kFH_WritePrim);
+//   }
 
    fOptionMenu = new TGPopupMenu(fRootCanvas->GetParent());
    if(!fGraph && !fFitHist) {
@@ -1310,7 +1330,8 @@ void HandleMenus::BuildMenus()
    fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
    fAttrMenu->AddEntry("Axis / Title / StatBox Attributes", kOptionHist);
    fAttrMenu->AddEntry("Canvas, Pad, Frame", kOptionPad);
-
+	fAttrMenu->AddEntry("How to display a graph", kOptionGraph);
+	
 //   fAttrMenuDef = new TGPopupMenu(fRootCanvas->GetParent());
 //   fAttrMenuDef->AddEntry("Take and set Stat box defaults", kOptionStatDef);
 //   fOptionMenu->AddPopup(" Take and set defaults",  fAttrMenuDef);
@@ -1325,7 +1346,7 @@ void HandleMenus::BuildMenus()
    }
 
    fViewMenu = new TGPopupMenu(fRootCanvas->GetParent());
-   if (!edit_menus)fViewMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
+   fViewMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
    fViewMenu->AddEntry("Event &Status", kViewEventStatus);
    fViewMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
    fViewMenu->AddSeparator();
@@ -1534,6 +1555,7 @@ void HandleMenus::BuildMenus()
       fFitMenu->AddEntry("Fit User formula", kFHFormFitG);
       fFitMenu->AddSeparator();
    }
+/*
    if(edit_menus){
       fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
 //   	fEditMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
@@ -1570,6 +1592,7 @@ void HandleMenus::BuildMenus()
       fEditMenu->AddSeparator();
       fEditMenu->Associate((TGWindow*)this);
    }
+*/
    if (fFitMenu)   fFitMenu->Associate((TGWindow*)this);
    if (fDisplayMenu) fDisplayMenu->Associate((TGWindow*)this);
    if (fViewMenu) fViewMenu->Associate((TGWindow*)this);
@@ -1583,19 +1606,20 @@ void HandleMenus::BuildMenus()
    else
       fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, pmi);
 
-   if (fHistPresent) {
+   if (fHistPresent) 
       fRootsMenuBar->AddPopup("&Hpr-Options", fOptionMenu,  fMenuBarItemLayout, pmi);
+	if ( fHistPresent || graph1d ) 
       fRootsMenuBar->AddPopup("Graphic_defaults", fAttrMenu,  fMenuBarItemLayout, pmi);
-   }
+   
    if (fViewMenu) fRootsMenuBar->AddPopup("&View", fViewMenu,  fMenuBarItemLayout, pmi);
    if (fDisplayMenu) fRootsMenuBar->AddPopup("&Display", fDisplayMenu,  fMenuBarItemLayout, pmi);
    if(fh_menus && nDim < 3){
       fRootsMenuBar->AddPopup("Cuts/Windows",    fCutsMenu,  fMenuBarItemLayout, pmi);
       fRootsMenuBar->AddPopup("Fit/Calib", fFitMenu,   fMenuBarItemLayout, pmi);
    }
-   if(edit_menus){
-         fRootsMenuBar->AddPopup("Hpr-Edit",            fEditMenu,  fMenuBarItemLayout, pmi);
-   }
+//   if(edit_menus){
+//         fRootsMenuBar->AddPopup("Hpr-Edit",            fEditMenu,  fMenuBarItemLayout, pmi);
+//   }
    if ( graph1d ) {
       fRootsMenuBar->AddPopup("Fit", fFitMenu,   fMenuBarItemLayout, pmi);
    }

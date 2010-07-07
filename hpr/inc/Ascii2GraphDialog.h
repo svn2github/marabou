@@ -39,9 +39,12 @@ private:
    Int_t   fGraphSerialNr;
    Int_t   fGraphSelPad;
    Int_t   fGraphNewPad;
-   Int_t   fGraphDrawMark;
-   Int_t   fGraphDrawLine;
-   Size_t  fGraphMarkerSize;
+   Int_t   fGraphPolyMarker;
+   Int_t   fGraphSimpleLine;
+	Int_t   fGraphSmoothLine;
+	Int_t   fGraphBarChart;
+	Int_t   fGraphFill;
+	Size_t  fGraphMarkerSize;
    Style_t fGraphMarkerStyle;
    Color_t fGraphMarkerColor;
    Style_t fGraphLineStyle;

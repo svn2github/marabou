@@ -26,6 +26,8 @@ Color_t GraphAttDialog::fGraphLColor;
 Style_t GraphAttDialog::fGraphMStyle;
 Size_t  GraphAttDialog::fGraphMSize;
 Color_t GraphAttDialog::fGraphMColor;
+Style_t GraphAttDialog::fGraphFStyle;
+Color_t GraphAttDialog::fGraphFColor;
 
 //_______________________________________________________________________
 
@@ -42,23 +44,29 @@ ____________________________________________________________\n\
    fRow_lab = new TList();
 
    Int_t ind = 0;
-//   static Int_t dummy;
+   static Int_t dummy;
    static TString stycmd("SetAsDefault()");
    RestoreDefaults();
-	fRow_lab->Add(new TObjString("CheckButton_Simple polyline"));
+	fRow_lab->Add(new TObjString("CheckButton_Simple line "));
    fValp[ind++] = &fGraphSimpleLine;
 	fRow_lab->Add(new TObjString("CheckButton+Smooth Curve"));
    fValp[ind++] = &fGraphSmoothLine;
-	fRow_lab->Add(new TObjString("CheckButton_Fill area"));
-   fValp[ind++] = &fGraphFill;
-	fRow_lab->Add(new TObjString("CheckButton+Marker"));
+	fRow_lab->Add(new TObjString("CheckButton+Marker      "));
    fValp[ind++] = &fGraphPolyMarker;
-	fRow_lab->Add(new TObjString("CheckButton_A Bar chart"));
+	fRow_lab->Add(new TObjString("CheckButton_Bar chart   "));
    fValp[ind++] = &fGraphBarChart;
-	fRow_lab->Add(new TObjString("CheckButton+Show Axis "));
+	fRow_lab->Add(new TObjString("CheckButton+Show Axis   "));
    fValp[ind++] = &fGraphShowAxis;
+	fRow_lab->Add(new TObjString("CommentOnly+ "));
+	fValp[ind++] = &dummy;
+	fRow_lab->Add(new TObjString("CheckButton_Fill area"));
+	fValp[ind++] = &fGraphFill;
+	fRow_lab->Add(new TObjString("Fill_Select+F Style"));
+   fValp[ind++] = &fGraphFStyle;
+	fRow_lab->Add(new TObjString("ColorSelect+F Color"));
+	fValp[ind++] = &fGraphFColor;
 	fRow_lab->Add(new TObjString("LineSSelect_L Style"));
-   fValp[ind++] = &fGraphLStyle;
+	fValp[ind++] = &fGraphLStyle;
 	fRow_lab->Add(new TObjString("PlainShtVal+L Width"));
    fValp[ind++] = &fGraphLWidth;
 	fRow_lab->Add(new TObjString("ColorSelect+L Color"));
@@ -128,13 +136,17 @@ void GraphAttDialog::SetGraphAtt(TCanvas *ca, Int_t bid)
                gr->SetLineStyle(fGraphLStyle);
                gr->SetLineWidth(fGraphLWidth);
                gr->SetLineColor(fGraphLColor);
+					if ( fGraphFill ) {
+						gr->SetFillStyle(fGraphFStyle);
+						gr->SetFillColor(fGraphFColor);
+					}
             }
             if (fGraphPolyMarker) {
                gr->SetMarkerStyle(fGraphMStyle);
                gr->SetMarkerSize (fGraphMSize );
                gr->SetMarkerColor(fGraphMColor);
             }
-            cout <<"fDrawOptGraph " << fDrawOptGraph<< endl;
+//            cout <<"fDrawOptGraph " << fDrawOptGraph<< endl;
          }
          ca->Modified();
          ca->Update();
@@ -165,7 +177,9 @@ void GraphAttDialog::SaveDefaults()
    env.SetValue("GraphAttDialog.fGraphMStyle",     fGraphMStyle);
    env.SetValue("GraphAttDialog.fGraphMSize",      fGraphMSize);
    env.SetValue("GraphAttDialog.fGraphMColor",     fGraphMColor);
-   env.SaveLevel(kEnvLocal);
+	env.SetValue("GraphAttDialog.fGraphFStyle",     fGraphFStyle);
+	env.SetValue("GraphAttDialog.fGraphFColor",     fGraphFColor);
+	env.SaveLevel(kEnvLocal);
 }
 
 //______________________________________________________________________
@@ -176,9 +190,9 @@ void GraphAttDialog::RestoreDefaults()
    fDrawOptGraph =
        env.GetValue("GraphAttDialog.DrawOptGraph", "A*");
    fGraphSmoothLine = env.GetValue("GraphAttDialog.fGraphSmoothLine", 0);
-   fGraphSimpleLine = env.GetValue("GraphAttDialog.fGraphSimpleLine", 1);
+   fGraphSimpleLine = env.GetValue("GraphAttDialog.fGraphSimpleLine", 0);
 	fGraphFill       = env.GetValue("GraphAttDialog.fGraphFill", 0);
-   fGraphPolyMarker = env.GetValue("GraphAttDialog.fGraphPolyMarker", 0);
+   fGraphPolyMarker = env.GetValue("GraphAttDialog.fGraphPolyMarker", 1);
    fGraphBarChart   = env.GetValue("GraphAttDialog.fGraphBarChart", 0);
    fGraphShowAxis   = env.GetValue("GraphAttDialog.fGraphShowAxis", 1);
    fGraphLStyle     = env.GetValue("GraphAttDialog.fGraphLStyle", 1);
@@ -186,7 +200,9 @@ void GraphAttDialog::RestoreDefaults()
    fGraphLColor     = env.GetValue("GraphAttDialog.fGraphLColor", 1);
    fGraphMStyle     = env.GetValue("GraphAttDialog.fGraphMStyle", 7);
    fGraphMSize      = env.GetValue("GraphAttDialog.fGraphMSize",  1);
-   fGraphMColor      = env.GetValue("GraphAttDialog.fGraphMColor", 1);
+   fGraphMColor     = env.GetValue("GraphAttDialog.fGraphMColor", 1);
+	fGraphFStyle     = env.GetValue("GraphAttDialog.fGraphFStyle", 0);
+	fGraphFColor     = env.GetValue("GraphAttDialog.fGraphFColor", 1);
 }
 //______________________________________________________________________
 

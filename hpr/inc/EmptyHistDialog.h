@@ -36,7 +36,8 @@ private:
    Int_t   fHistYdiv;   
    Int_t   fHistSelPad;   
    Int_t   fHistNewPad;   
-   TRootCanvas *fRootCanvas;
+	Int_t   fUseForGraph;   
+	TRootCanvas *fRootCanvas;
    TGPopupMenu *fMenu;
    
 public:

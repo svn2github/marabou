@@ -82,7 +82,8 @@ protected:
 
    TMrbHelpBrowser * fHelpBrowser;
    Int_t fSeqNumberMany;
-   Int_t fPageNumber;
+	Int_t fSeqNumberGraph;
+	Int_t fPageNumber;
    Int_t fLikelyHood;
 
    TString  fGraphFile;

@@ -11,6 +11,8 @@
 #else
 #include "TCanvas.h"
 #endif
+#include "GraphAttDialog.h"
+#include "SetHistOptDialog.h"
 #include "Ascii2GraphDialog.h"
 #include "FitOneDimDialog.h"
 #include "TGMrbValuesAndText.h"
@@ -61,38 +63,40 @@ Default is to construct a new canvas\n\
    RestoreDefaults();
    fGraphSelPad = 0;    // start with new canvas as default
    TList *row_lab = new TList();
-   row_lab->Add(new TObjString("RadioButton_Empty pad only"));
-   row_lab->Add(new TObjString("RadioButton_Simple: X, Y no errors"));
-   row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, (Ex), Ey"));
+   row_lab->Add(new TObjString("RadioButton_Empty pad only               "));
+   row_lab->Add(new TObjString("RadioButton_Simple: X, Y no errors       "));
+   row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, (Ex), Ey   "));
    row_lab->Add(new TObjString("RadioButton_Asym Ers: X,Y,Exl,Exu,Eyl,Eyu"));
-   row_lab->Add(new TObjString("RadioButton_Select columns, X, Y"));
-   row_lab->Add(new TObjString("PlainIntVal_Col Sel"));
-   row_lab->Add(new TObjString("PlainIntVal+Col Sel"));
+   row_lab->Add(new TObjString("RadioButton_Select columns, X, Y         "));
+   row_lab->Add(new TObjString("PlainIntVal_Column Sel"));
+   row_lab->Add(new TObjString("PlainIntVal+Column Sel"));
 
    row_lab->Add(new TObjString("FileRequest_Inputfile"));
    row_lab->Add(new TObjString("StringValue_GraphName"));
    row_lab->Add(new TObjString("StringValue_Title X  "));
-   row_lab->Add(new TObjString("StringValue-Title Y  "));
+   row_lab->Add(new TObjString("StringValue+Title Y  "));
    row_lab->Add(new TObjString("DoubleValue_Xaxis min"));
-   row_lab->Add(new TObjString("DoubleValue-Xaxis max"));
+   row_lab->Add(new TObjString("DoubleValue+Xaxis max"));
    row_lab->Add(new TObjString("DoubleValue_Yaxis min"));
-   row_lab->Add(new TObjString("DoubleValue-Yaxis max"));
+   row_lab->Add(new TObjString("DoubleValue+Yaxis max"));
 
    row_lab->Add(new TObjString("CheckButton_Draw/Overlay in a sel pad"));
 //   row_lab->Add(new TObjString("CheckButton_Draw in a new canvas"));
    row_lab->Add(new TObjString("PlainIntVal_Xsize of canvas"));
    row_lab->Add(new TObjString("PlainIntVal-Ysize of canvas"));
    row_lab->Add(new TObjString("PlainIntVal_Div X of canvas"));
-   row_lab->Add(new TObjString("PlainIntVal-Div Y of canvas"));
-   row_lab->Add(new TObjString("CheckButton_Draw marker"));
-   row_lab->Add(new TObjString("CheckButton+Draw line"));
-   row_lab->Add(new TObjString("Mark_Select_MaStyle"));
+   row_lab->Add(new TObjString("PlainIntVal+Div Y of canvas"));
+   row_lab->Add(new TObjString("CheckButton_Marker"));
+   row_lab->Add(new TObjString("CheckButton+Simple line"));
+	row_lab->Add(new TObjString("CheckButton+Smooth line"));
+	row_lab->Add(new TObjString("Mark_Select_MaStyle"));
    row_lab->Add(new TObjString("ColorSelect+MaColor"));
    row_lab->Add(new TObjString("Float_Value+MaSize"));
    row_lab->Add(new TObjString("ColorSelect_LineC"));
    row_lab->Add(new TObjString("PlainShtVal+Width"));
    row_lab->Add(new TObjString("LineSSelect+Style"));
-   row_lab->Add(new TObjString("Fill_Select_Fill Style"));
+	row_lab->Add(new TObjString("CheckButton_Fill area"));
+   row_lab->Add(new TObjString("Fill_Select+Fill Style"));
    row_lab->Add(new TObjString("ColorSelect+Fill color"));
    row_lab->Add(new TObjString("CommandButt_Show_Head_of_File"));
    row_lab->Add(new TObjString("CommandButt+Show_Tail_of_File"));
@@ -121,20 +125,22 @@ Default is to construct a new canvas\n\
    valp[ind++] = &fGraphYsize;
    valp[ind++] = &fGraphXdiv;
    valp[ind++] = &fGraphYdiv;
-   valp[ind++] = &fGraphDrawMark;
-   valp[ind++] = &fGraphDrawLine;
-   valp[ind++] = &fGraphMarkerStyle;
+   valp[ind++] = &fGraphPolyMarker;
+   valp[ind++] = &fGraphSimpleLine;
+	valp[ind++] = &fGraphSmoothLine;
+	valp[ind++] = &fGraphMarkerStyle;
    valp[ind++] = &fGraphMarkerColor;
    valp[ind++] = &fGraphMarkerSize;
    valp[ind++] = &fGraphLineColor;
    valp[ind++] = &fGraphLineWidth;
    valp[ind++] = &fGraphLineStyle;
-   valp[ind++] = &fGraphFillStyle;
-   valp[ind++] = &fGraphFillColor;
+   valp[ind++] = &fGraphFill;
+	valp[ind++] = &fGraphFillStyle;
+	valp[ind++] = &fGraphFillColor;
    valp[ind++] = &fCommandHead;
    valp[ind++] = &fCommandTail;
    valp[ind++] = &fCommand;
-   Int_t itemwidth = 320;
+   Int_t itemwidth = 360;
    ok = GetStringExt("Graphs parameters", NULL, itemwidth, win,
                    NULL, NULL, row_lab, valp,
                    NULL, NULL, &helpText[0], this, this->ClassName());
@@ -301,9 +307,11 @@ void Ascii2GraphDialog::Draw_The_Graph()
 
 //      graph->SetTitle(graph->GetName());
       TString drawopt("A");           // draw axis as default
-      if (fGraphDrawMark) drawopt+= "P";
-      if (fGraphDrawLine) drawopt+= "L";
-      if (fGraphFillStyle)  drawopt+= "F";
+      if (fGraphPolyMarker) drawopt+= "P";
+      if (fGraphSimpleLine) drawopt+= "L";
+		if (fGraphSmoothLine) drawopt+= "C";
+		if (fGraphBarChart)   drawopt+= "B";
+		if (fGraphFill)       drawopt+= "F";
 //         cout << "gPad->GetName() " <<gPad->GetName() << endl;
       if (fGraphSelPad) {
          Int_t ngr = FindGraphs(gPad, NULL, NULL);
@@ -356,13 +364,18 @@ void Ascii2GraphDialog::Draw_The_Graph()
       if (fGraphYtitle.Length() > 0)
          gh->GetYaxis()->SetTitle(fGraphYtitle.Data());
       gh->SetLineWidth(1);
-      gh->SetLineColor(0);
+		gh->SetLineColor(0);
+		if ( SetHistOptDialog::fTitleCenterX )
+			gh->GetXaxis()->CenterTitle(kTRUE);
+		if ( SetHistOptDialog::fTitleCenterY )
+			gh->GetYaxis()->CenterTitle(kTRUE);
+		
       graph->SetMarkerStyle(fGraphMarkerStyle);
       graph->SetMarkerColor(fGraphMarkerColor);
       graph->SetMarkerSize(fGraphMarkerSize);
       graph->SetLineStyle(fGraphLineStyle);
       graph->SetLineColor(fGraphLineColor);
-      graph->SetFillColor(fGraphFillStyle);
+      graph->SetFillStyle(fGraphFillStyle);
       graph->SetFillColor(fGraphFillColor);
       graph->SetLineWidth(fGraphLineWidth);
       if (fXaxisMin != 0 || fXaxisMax) graph->GetXaxis()->SetLimits(fXaxisMin, fXaxisMax);
@@ -435,8 +448,9 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.YaxisMax"  		 , fYaxisMax        );
    env.SetValue("Ascii2GraphDialog.GraphXdiv"		 , fGraphXdiv       );
    env.SetValue("Ascii2GraphDialog.GraphYdiv"		 , fGraphYdiv       );
+/*
    env.SetValue("Ascii2GraphDialog.GraphDrawMark"   , fGraphDrawMark   );
-   env.SetValue("Ascii2GraphDialog.GraphDrawLine"   , fGraphDrawLine   );
+   env.SetValue("Ascii2GraphDialog.GraphDrawLine"   , fGraphSimpleLine   );
    env.SetValue("Ascii2GraphDialog.GraphMarkerStyle", fGraphMarkerStyle);
    env.SetValue("Ascii2GraphDialog.GraphMarkerColor", fGraphMarkerColor);
    env.SetValue("Ascii2GraphDialog.GraphMarkerSize" , fGraphMarkerSize );
@@ -445,6 +459,7 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.GraphFillStyle"  , fGraphFillStyle  );
    env.SetValue("Ascii2GraphDialog.GraphFillColor"  , fGraphFillColor  );
    env.SetValue("Ascii2GraphDialog.GraphLineWidth"  , fGraphLineWidth  );
+*/
    env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
@@ -474,9 +489,23 @@ void Ascii2GraphDialog::RestoreDefaults()
    fXaxisMax         = env.GetValue("Ascii2GraphDialog.XaxisMax"  		, 0);
    fYaxisMax         = env.GetValue("Ascii2GraphDialog.YaxisMax"  		, 0);
    fGraphYdiv        = env.GetValue("Ascii2GraphDialog.GraphYdiv"  		, 1);
-   fGraphDrawMark    = env.GetValue("Ascii2GraphDialog.GraphDrawMark" 	, 1);
-   fGraphDrawLine    = env.GetValue("Ascii2GraphDialog.GraphDrawLine" 	, 0);
-   fGraphMarkerStyle = env.GetValue("Ascii2GraphDialog.GraphMarkerStyle", 20);
+	fGraphSimpleLine  = GraphAttDialog::fGraphSimpleLine;
+	fGraphSmoothLine  = GraphAttDialog::fGraphSmoothLine;
+	fGraphFill        = GraphAttDialog::fGraphFill;
+	fGraphPolyMarker  = GraphAttDialog::fGraphPolyMarker;
+	fGraphBarChart    = GraphAttDialog::fGraphBarChart;
+	
+	fGraphLineStyle   = GraphAttDialog::fGraphLStyle;
+	fGraphLineWidth   = GraphAttDialog::fGraphLWidth;
+	fGraphLineColor   = GraphAttDialog::fGraphLColor;
+	fGraphMarkerStyle = GraphAttDialog::fGraphMStyle;
+	fGraphMarkerSize  = GraphAttDialog::fGraphMSize;
+	fGraphMarkerColor = GraphAttDialog::fGraphMColor;
+	fGraphFillStyle = GraphAttDialog::fGraphFStyle;
+	fGraphFillColor = GraphAttDialog::fGraphFColor;
+	
+/*	
+   fGraphMarkerStyle = env.GetValue("Ascii2GraphDialog.GraphMarkerStyle", 20);	
    fGraphMarkerColor = env.GetValue("Ascii2GraphDialog.GraphMarkerColor", 1);
    fGraphMarkerSize  = env.GetValue("Ascii2GraphDialog.GraphMarkerSize" , 1);
    fGraphLineStyle   = env.GetValue("Ascii2GraphDialog.GraphLineStyle"	, 1);
@@ -484,6 +513,7 @@ void Ascii2GraphDialog::RestoreDefaults()
    fGraphFillStyle   = env.GetValue("Ascii2GraphDialog.GraphFillStyle"	, 0);
    fGraphFillColor   = env.GetValue("Ascii2GraphDialog.GraphFillColor"	, 0);
    fGraphLineWidth   = env.GetValue("Ascii2GraphDialog.GraphLineWidth"  , 2);
+*/
 }
 //_________________________________________________________________________
 

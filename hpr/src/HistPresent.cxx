@@ -212,6 +212,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fRebin = 2;
    fRMethod = 0;
    fSeqNumberMany = 0;
+	fSeqNumberGraph = 0;
    fPageNumber = 0;
    fNtupleSeqNr = 0;
 	
@@ -530,7 +531,7 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
          Long_t  id, flags, modtime;
          Long64_t size;
          gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
-//         cout << fname << " " << modtime << endl;
+//          cout << fname << " " << modtime << endl;
          TString cmd = "mypres->Show";
          if (sname.Index(endwithlist) >= 0) {
             cmd = cmd + "List(\"\",\"" + fname + "\")";
@@ -1720,12 +1721,16 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
    }
 	TString cname = name;
 	cname.Prepend("C_");
+	cname += "_";
+	cname += fSeqNumberGraph++;
+	
 	if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
-		if (WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::fNwindows%2 != 0) {
+//		if (WindowSizeDialog::fWinshiftx != 0 && WindowSizeDialog::fNwindows%2 != 0) {
          WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
-		} else {
-         WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx; WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
-      }
+//		} else {
+//         WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
+			WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
+//      }
 	}
 	WindowSizeDialog::fNwindows++;
 	HTCanvas * cg = NULL;
@@ -1740,11 +1745,47 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
    } else {
       cg = new HTCanvas(cname, cname, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
 								WindowSizeDialog::fWinwidx_1dim, WindowSizeDialog::fWinwidy_1dim, this, 0, graph1d);
+		TH1* hh = (TH1*)gROOT->GetList()->FindObject("hist_for_graph");
+		if (hh) {
+			cout << "Use Predefined Hist " << hh<< endl;
+			TAxis *xa = graph1d->GetHistogram()->GetXaxis();
+			TAxis *ya = graph1d->GetHistogram()->GetYaxis();
+			
+			TString tx;
+			TString ty;
+			
+			if ( xa ) {
+				tx = xa->GetTitle();
+			}
+			if ( ya ) {
+				ty = ya->GetTitle();
+			}
+			hh->SetTitle(graph1d->GetTitle());
+			TString nn(graph1d->GetName());
+			nn += "_hist_for_graph";
+			hh->SetName(nn);
+			graph1d->SetHistogram(hh);
+			if ( xa ) {
+				TAxis * xan = graph1d->GetHistogram()->GetXaxis();
+				xan->SetTitle(tx);
+				if ( xa->TestBit(TAxis::kCenterTitle) )
+					xan->SetBit(TAxis::kCenterTitle);
+			}
+			if ( ya ) {
+				TAxis * yan = graph1d->GetHistogram()->GetYaxis();
+				yan->SetTitle(ty);
+				if ( ya->TestBit(TAxis::kCenterTitle) )
+					yan->SetBit(TAxis::kCenterTitle);
+			}
+		}
       graph1d->Draw(GraphAttDialog::fDrawOptGraph);
       TH1 * hist = graph1d->GetHistogram();
       if ( hist ) hist->SetStats(kFALSE);
    }
    if (fRootFile) fRootFile->Close();
+	GraphAttDialog::SetGraphAtt(cg);
+	gPad->Modified();
+	gPad->Update();
 }
 //________________________________________________________________________________________
 // set rebin val
@@ -3052,7 +3093,8 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
    Int_t nsel = hlist->GetSize();
    for(Int_t i=0; i<nsel; i++) {
       TH1* hist = GetSelHistAt(i, hlist);
-      if (!hist) {
+//		cout << "StackSelectedHists  " << hist->GetName() << endl;
+		if (!hist) {
 //         cout << " Hist not found at: " << i << endl;
          continue;
       } else {
@@ -3194,7 +3236,7 @@ void HistPresent::DinA4Page(Int_t form)
    c1->Update();
    c1->SetEditable(kTRUE);
 	c1->SetBit(GrCanvas::kIsAEditorPage);
-   c1->GetCanvasImp()->ShowEditor();
+//   c1->GetCanvasImp()->ShowEditor();
 //   c1->GetCanvasImp()->ShowToolBar();
    new GEdit(c1);
 }

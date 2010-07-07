@@ -914,7 +914,7 @@ a shift value of 10 will only shift by 5 cm";
       ca->GetFrame()->SetFillStyle(0);
       ca->SetBorderMode(0);
    }
-   cout << "xshift "  << xshift<< " yshift " << yshift << endl;
+//   cout << "xshift "  << xshift<< " yshift " << yshift << endl;
    gStyle->SetPaperSize((Float_t) xpaper, (Float_t) ypaper);
    if (scale != 1 || xshift != 0 || yshift != 0) {
       TString extra_ps;
@@ -930,7 +930,9 @@ a shift value of 10 will only shift by 5 cm";
    }
    TString fname;
    if (to_printer) {
-      fname = "temp_pict.ps";
+		fname = "/tmp/temp_pict_";
+		fname +=gSystem->Getenv("USER");
+      fname += ".ps";
    } else {
       fname = cmd_name;
    }
@@ -938,9 +940,12 @@ a shift value of 10 will only shift by 5 cm";
    if (to_printer) {
       TString prtcmd(cmd_name.Data());
       prtcmd += " ";
-      prtcmd += fname.Data();
+		prtcmd += fname.Data();
+		cout << "Execute: " << prtcmd << endl;
       gSystem->Exec(prtcmd.Data());
-   }
+   } else {
+		cout << "Store files as: " << fname << endl;
+	}
 	if (view_ps) {
       char * gvcmd = gSystem->Which("/usr/bin:/usr/local/bin", "gv");
       if (gvcmd == NULL)gvcmd = gSystem->Which("/usr/bin:/usr/local/bin", "ggv");
