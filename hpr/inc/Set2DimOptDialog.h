@@ -42,6 +42,9 @@ private:
 	Int_t   fBidMarkerSize;
 	Int_t   fBidLineColor;
 	Int_t   fBidFillColor;
+	Int_t   fTwoDimLogX;
+	Int_t   fTwoDimLogY;
+	Int_t   fTwoDimLogZ;
 	
 public:
 

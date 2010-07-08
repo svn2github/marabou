@@ -140,7 +140,12 @@ private:
    Style_t fMarkerStyle2Dim;  
    Size_t  fMarkerSize2Dim; 
    TString fErrorMode;
-
+	Int_t   fOneDimLogX;
+	Int_t   fOneDimLogY;
+	Int_t   fTwoDimLogX;
+	Int_t   fTwoDimLogY;
+	Int_t   fTwoDimLogZ;
+	
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
            const Text_t *hname, Int_t win_topx = 520, Int_t win_topy = 5,

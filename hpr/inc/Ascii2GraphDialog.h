@@ -39,7 +39,8 @@ private:
    Int_t   fGraphSerialNr;
    Int_t   fGraphSelPad;
    Int_t   fGraphNewPad;
-   Int_t   fGraphPolyMarker;
+	Int_t   fGraphShowTitle;
+	Int_t   fGraphPolyMarker;
    Int_t   fGraphSimpleLine;
 	Int_t   fGraphSmoothLine;
 	Int_t   fGraphBarChart;

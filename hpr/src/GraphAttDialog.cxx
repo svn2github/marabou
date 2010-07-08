@@ -20,6 +20,7 @@ Int_t   GraphAttDialog::fGraphFill;
 Int_t   GraphAttDialog::fGraphPolyMarker;
 Int_t   GraphAttDialog::fGraphBarChart;
 Int_t   GraphAttDialog::fGraphShowAxis;
+Int_t   GraphAttDialog::fGraphShowTitle;
 Style_t GraphAttDialog::fGraphLStyle;
 Width_t GraphAttDialog::fGraphLWidth;
 Color_t GraphAttDialog::fGraphLColor;
@@ -57,8 +58,8 @@ ____________________________________________________________\n\
    fValp[ind++] = &fGraphBarChart;
 	fRow_lab->Add(new TObjString("CheckButton+Show Axis   "));
    fValp[ind++] = &fGraphShowAxis;
-	fRow_lab->Add(new TObjString("CommentOnly+ "));
-	fValp[ind++] = &dummy;
+	fRow_lab->Add(new TObjString("CheckButton+Show Title  "));
+	fValp[ind++] = &fGraphShowTitle;
 	fRow_lab->Add(new TObjString("CheckButton_Fill area"));
 	fValp[ind++] = &fGraphFill;
 	fRow_lab->Add(new TObjString("Fill_Select+F Style"));
@@ -121,6 +122,10 @@ void GraphAttDialog::SetGraphAtt(TCanvas *ca, Int_t bid)
    if (fGraphPolyMarker) fDrawOptGraph += "P";
    if (fGraphBarChart)   fDrawOptGraph += "B";
    if (fGraphShowAxis)   fDrawOptGraph += "A";
+	if (fGraphShowTitle) 
+		gStyle->SetOptTitle(kTRUE);
+	else 
+		gStyle->SetOptTitle(kFALSE);
    if (ca) {
       TList logr;
       Int_t ngr = FindGraphs((TPad*)ca, &logr);

@@ -243,7 +243,12 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fTitleCenterX  = env.GetValue("SetHistOptDialog.fTitleCenterX", 0);
    fTitleCenterY  = env.GetValue("SetHistOptDialog.fTitleCenterY", 0);
    fTitleCenterZ  = env.GetValue("SetHistOptDialog.fTitleCenterZ", 0);
-
+	fOneDimLogX = env.GetValue("Set1DimOptDialog.fOneDimLogX", 0);
+	fOneDimLogY = env.GetValue("Set1DimOptDialog.fOneDimLogY", 0);
+	fTwoDimLogX = env.GetValue("Set1DimOptDialog.fTwoDimLogX", 0);
+	fTwoDimLogY = env.GetValue("Set1DimOptDialog.fTwoDimLogY", 0);
+	fTwoDimLogZ = env.GetValue("Set1DimOptDialog.fTwoDimLogZ", 0);
+	
    fSerialPx = 0;
    fSerialPy = 0;
    fSerialPf = 0;
@@ -1065,11 +1070,16 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
       fSelPad->cd();
       Draw3Dim();
    } else if (is2dim(hist)) {
-      fSelPad->cd();
+		cHist->SetLogx(fTwoDimLogX);
+		cHist->SetLogy(fTwoDimLogY);
+		cHist->SetLogz(fTwoDimLogX);
+		fSelPad->cd();
       Draw2Dim();
    } else {
       fSelPad->cd();
-      if (fLogy)
+		cHist->SetLogx(fOneDimLogX);
+		cHist->SetLogy(fOneDimLogY);
+		if (fLogy)
          cHist->SetLogy();
       Draw1Dim();
    }

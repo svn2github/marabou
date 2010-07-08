@@ -80,8 +80,8 @@ Default is to construct a new canvas\n\
    row_lab->Add(new TObjString("DoubleValue_Yaxis min"));
    row_lab->Add(new TObjString("DoubleValue+Yaxis max"));
 
-   row_lab->Add(new TObjString("CheckButton_Draw/Overlay in a sel pad"));
-//   row_lab->Add(new TObjString("CheckButton_Draw in a new canvas"));
+   row_lab->Add(new TObjString("CheckButton_Draw/Overl in sel pad"));
+   row_lab->Add(new TObjString("CheckButton_Show title"));
    row_lab->Add(new TObjString("PlainIntVal_Xsize of canvas"));
    row_lab->Add(new TObjString("PlainIntVal-Ysize of canvas"));
    row_lab->Add(new TObjString("PlainIntVal_Div X of canvas"));
@@ -120,7 +120,7 @@ Default is to construct a new canvas\n\
    valp[ind++] = &fYaxisMin;
    valp[ind++] = &fYaxisMax;
    valp[ind++] = &fGraphSelPad;
-//   valp[ind++] = &fGraphNewPad;
+   valp[ind++] = &fGraphShowTitle;
    valp[ind++] = &fGraphXsize;
    valp[ind++] = &fGraphYsize;
    valp[ind++] = &fGraphXdiv;
@@ -312,6 +312,10 @@ void Ascii2GraphDialog::Draw_The_Graph()
 		if (fGraphSmoothLine) drawopt+= "C";
 		if (fGraphBarChart)   drawopt+= "B";
 		if (fGraphFill)       drawopt+= "F";
+		if ( fGraphShowTitle )
+			gStyle->SetOptTitle(kTRUE);
+		else
+			gStyle->SetOptTitle(kFALSE);
 //         cout << "gPad->GetName() " <<gPad->GetName() << endl;
       if (fGraphSelPad) {
          Int_t ngr = FindGraphs(gPad, NULL, NULL);
@@ -424,7 +428,6 @@ Int_t Ascii2GraphDialog::FindGraphs(TVirtualPad * ca, TList * logr, TList * pads
 
 void Ascii2GraphDialog::SaveDefaults()
 {
-   cout << "Ascii2GraphDialog::SaveDefaults() " << endl;
    TEnv env(".hprrc");
    env.SetValue("Ascii2GraphDialog.fEmptyPad"  	    , fEmptyPad        );
    env.SetValue("Ascii2GraphDialog.Graph_Simple"	 , fGraph_Simple    );
@@ -437,7 +440,8 @@ void Ascii2GraphDialog::SaveDefaults()
    env.SetValue("Ascii2GraphDialog.GraphFileName"   , fGraphFileName   );
    env.SetValue("Ascii2GraphDialog.GraphName"		 , fGraphName       );
    env.SetValue("Ascii2GraphDialog.GraphSelPad" 	 , fGraphSelPad     );
-   env.SetValue("Ascii2GraphDialog.GraphNewPad" 	 , fGraphNewPad     );
+	env.SetValue("Ascii2GraphDialog.fGraphShowTitle" , fGraphShowTitle  );
+	env.SetValue("Ascii2GraphDialog.GraphNewPad" 	 , fGraphNewPad     );
    env.SetValue("Ascii2GraphDialog.GraphXsize"  	 , fGraphXsize      );
    env.SetValue("Ascii2GraphDialog.GraphYsize"  	 , fGraphYsize      );
    env.SetValue("Ascii2GraphDialog.GraphXtitle" 	 , fGraphXtitle     );
@@ -478,7 +482,8 @@ void Ascii2GraphDialog::RestoreDefaults()
    fGraphFileName    = env.GetValue("Ascii2GraphDialog.GraphFileName" 	, "hs.dat");
    fGraphName        = env.GetValue("Ascii2GraphDialog.GraphName"  		, "hs");
    fGraphSelPad      = env.GetValue("Ascii2GraphDialog.GraphSelPad"		, 0);
-   fGraphNewPad      = env.GetValue("Ascii2GraphDialog.GraphNewPad"		, 1);
+	fGraphShowTitle   = env.GetValue("Ascii2GraphDialog.fGraphShowTitle" , 0);
+	fGraphNewPad      = env.GetValue("Ascii2GraphDialog.GraphNewPad"		, 1);
    fGraphXsize       = env.GetValue("Ascii2GraphDialog.GraphXsize" 		, 800);
    fGraphYsize       = env.GetValue("Ascii2GraphDialog.GraphYsize" 		, 800);
    fGraphXtitle      = env.GetValue("Ascii2GraphDialog.GraphXtitle"	   , "Xvalues");
@@ -535,6 +540,6 @@ void Ascii2GraphDialog::Show_Tail_of_File()
 
 void Ascii2GraphDialog::CloseDown(Int_t wid)
 {
-   cout << "Ascii2GraphDialog::CloseDown() " << endl;
+//    cout << "Ascii2GraphDialog::CloseDown() " << endl;
    delete this;
 }

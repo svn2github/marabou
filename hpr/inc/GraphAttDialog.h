@@ -32,7 +32,8 @@ public:
 	static Style_t fGraphMStyle;
    static Size_t  fGraphMSize;
    static Color_t fGraphMColor;
-
+	static Int_t   fGraphShowTitle;
+	
    GraphAttDialog(TGWindow * win = NULL);
    ~GraphAttDialog() {};
    void RecursiveRemove(TObject * obj);

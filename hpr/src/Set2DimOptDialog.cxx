@@ -175,7 +175,13 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
    fRow_lab->Add(new TObjString("Float_Value+MSize"));
    fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize2Dim;
 	
-   fRow_lab->Add(new TObjString("CheckButton_Z Scale"));
+	fRow_lab->Add(new TObjString("CheckButton_Log X"));
+	fRow_lab->Add(new TObjString("CheckButton+Log Y"));
+	fRow_lab->Add(new TObjString("CheckButton+Log Z"));
+	fValp[ind++] = &fTwoDimLogX;
+	fValp[ind++] = &fTwoDimLogY;
+	fValp[ind++] = &fTwoDimLogZ;
+	fRow_lab->Add(new TObjString("CheckButton_Z Scale"));
    fRow_lab->Add(new TObjString("CheckButton+No Fbox"));
    fRow_lab->Add(new TObjString("CheckButton+No Bbox"));
    fRow_lab->Add(new TObjString("CheckButton+Live stat"));
@@ -258,7 +264,10 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
 {
    if (!canvas) return;
 	canvas->cd();
-   TIter next(canvas->GetListOfPrimitives());
+	canvas->SetLogx(fTwoDimLogX);
+	canvas->SetLogy(fTwoDimLogY);
+	canvas->SetLogz(fTwoDimLogZ);
+	TIter next(canvas->GetListOfPrimitives());
    TObject *obj;
    fDrawOpt = fDrawOpt2Dim;
    if ( fShowZScale && (
@@ -350,7 +359,11 @@ void Set2DimOptDialog::SetHistAttPerm()
 	env.SetValue("Set2DimOptDialog.fMarkerColor2Dim",  fMarkerColor2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerStyle2Dim",  fMarkerStyle2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerSize2Dim",   fMarkerSize2Dim   );
-   env.SaveLevel(kEnvLocal);
+	env.SetValue("Set2DimOptDialog.fTwoDimLogX",       fTwoDimLogX       );
+	env.SetValue("Set2DimOptDialog.fTwoDimLogY",       fTwoDimLogY       );
+	env.SetValue("Set2DimOptDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	
+	env.SaveLevel(kEnvLocal);
 }
 //______________________________________________________________________
 
@@ -366,7 +379,10 @@ void Set2DimOptDialog::SaveDefaults()
 	env.SetValue("Set2DimOptDialog.fMarkerColor2Dim",  fMarkerColor2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerStyle2Dim",  fMarkerStyle2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerSize2Dim",   fMarkerSize2Dim   );
-   env.SaveLevel(kEnvLocal);
+	env.SetValue("Set2DimOptDialog.fTwoDimLogX",       fTwoDimLogX       );
+	env.SetValue("Set2DimOptDialog.fTwoDimLogY",       fTwoDimLogY       );
+	env.SetValue("Set2DimOptDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	env.SaveLevel(kEnvLocal);
 }
 
 //______________________________________________________________________
@@ -385,6 +401,9 @@ void Set2DimOptDialog::RestoreDefaults()
 	fMarkerColor2Dim   = env.GetValue("Set2DimOptDialog.fMarkerColor2Dim",   1);
 	fMarkerStyle2Dim   = env.GetValue("Set2DimOptDialog.fMarkerStyle2Dim",   1);
 	fMarkerSize2Dim    = env.GetValue("Set2DimOptDialog.fMarkerSize2Dim",    1);
+	fTwoDimLogX        = env.GetValue("Set2DimOptDialog.fTwoDimLogX",        0);
+	fTwoDimLogY        = env.GetValue("Set2DimOptDialog.fTwoDimLogY",        0);
+	fTwoDimLogZ        = env.GetValue("Set2DimOptDialog.fTwoDimLogZ",        0);
 }
 //______________________________________________________________________
 

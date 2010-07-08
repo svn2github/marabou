@@ -390,7 +390,7 @@ void SetHistOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 				   pl->SetLabelColor( fLabelColor);
 				   pl->SetLabelFont(  fLabelFont);
 				   pl->SetLabelOffset(fLabelOffsetZ);
-				   pl->SetLabelOffset(fLabelSize);
+				   pl->SetLabelSize(fLabelSize);
             }
 				za->SetNdivisions( fNdivisionsZ);
 				za->SetAxisColor(  fAxisColor);

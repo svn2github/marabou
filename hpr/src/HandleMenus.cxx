@@ -312,8 +312,6 @@ HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph *
 {
    fRootCanvas = (TRootCanvas*)fHCanvas->GetCanvasImp();
 
-	cout << "HandleMenus::fRootCanvas: " << fRootCanvas << endl;
-//   cout << "fRootCanvas->Canvas(): " << fRootCanvas->Canvas() << endl;
    fRootsMenuBar = fRootCanvas->GetMenuBar();
    fMenuBarItemLayout = fRootCanvas->GetMenuBarItemLayout();
    fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);

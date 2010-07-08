@@ -35,7 +35,9 @@ private:
    TString fErrorMode;
 	Int_t   fLabelsTopX;
 	Int_t   fLabelsRightY;
-
+	Int_t   fOneDimLogX;
+	Int_t   fOneDimLogY;
+	
 public:
 
    Set1DimOptDialog(TGWindow * win = NULL);

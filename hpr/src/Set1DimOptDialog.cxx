@@ -72,7 +72,7 @@ be selected.\n\
    fRow_lab = new TList();
 
    Int_t ind = 0;
- //  static Int_t dummy;
+   static Int_t dummy;
    static TString stycmd("SetHistAttPermLocal()");
 
    fRow_lab->Add(new TObjString("CheckButton_Contour/Histo"));
@@ -109,13 +109,20 @@ be selected.\n\
    fRow_lab->Add(new TObjString("Float_Value+MarkerSize"));
    fValp[ind++] = &fMarkerSize;
 
-   fRow_lab->Add(new TObjString("CheckButton_Live statbox"));
-   fValp[ind++] = &fLiveStat1Dim;
-   fRow_lab->Add(new TObjString("CheckButton+Live Gauss fit"));
-   fValp[ind++] = &fLiveGauss;
-   fRow_lab->Add(new TObjString("CheckButton+Lin bg in fit "));
-   fValp[ind++] = &fLiveBG;
-
+   fRow_lab->Add(new TObjString("CheckButton_Log X scale"));
+   fValp[ind++] = &fOneDimLogX;
+   fRow_lab->Add(new TObjString("CheckButton+Log Y scale"));
+   fValp[ind++] = &fOneDimLogY;
+   fRow_lab->Add(new TObjString("CommentOnly+ "));
+   fValp[ind++] = &dummy;
+	
+	fRow_lab->Add(new TObjString("CheckButton_Live statbox"));
+	fValp[ind++] = &fLiveStat1Dim;
+	fRow_lab->Add(new TObjString("CheckButton+Live Gauss fit"));
+	fValp[ind++] = &fLiveGauss;
+	fRow_lab->Add(new TObjString("CheckButton+Lin bg in fit "));
+	fValp[ind++] = &fLiveBG;
+	
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
 
@@ -194,6 +201,9 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
          SetAtt((TH1*)obj);
       } else if ((obj->InheritsFrom("TPad"))) {
          TPad *pad = (TPad*)obj;
+			pad->SetLogx(fOneDimLogX);
+			pad->SetLogy(fOneDimLogY);
+			
          TIter next1(pad->GetListOfPrimitives());
          TObject *obj1;
          pad->cd();
@@ -206,7 +216,9 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
 	      pad->Update();
       }
    }
-/*
+	canvas->SetLogx(fOneDimLogX);
+	canvas->SetLogy(fOneDimLogY);
+	/*
 	if (fLiveStat1Dim) {
 		if (!canvas->GetAutoExec())
 			canvas->ToggleAutoExec();
@@ -274,6 +286,8 @@ void Set1DimOptDialog::SetDefaults()
    gStyle->SetMarkerColor     (env.GetValue("Set1DimOptDialog.MarkerColor",       1));
    gStyle->SetMarkerStyle     (env.GetValue("Set1DimOptDialog.MarkerStyle",       7));
    gStyle->SetMarkerSize      (env.GetValue("Set1DimOptDialog.MarkerSize",      1.));
+	gStyle->SetOptLogx         (env.GetValue("Set1DimOptDialog.fOneDimLogX",     0));
+	gStyle->SetOptLogy         (env.GetValue("Set1DimOptDialog.fOneDimLogY",     0));
 }
 //______________________________________________________________________
 
@@ -295,6 +309,8 @@ void Set1DimOptDialog::SetHistAttPerm()
    gStyle->SetMarkerColor  (fMarkerColor);
    gStyle->SetMarkerStyle  (fMarkerStyle);
    gStyle->SetMarkerSize   (fMarkerSize );
+	gStyle->SetOptLogx      (fOneDimLogX);
+	gStyle->SetOptLogy      (fOneDimLogY);
 }
 //______________________________________________________________________
 
@@ -321,7 +337,9 @@ void Set1DimOptDialog::SaveDefaults()
    env.SetValue("Set1DimOptDialog.fShowContour"   , fShowContour);
    env.SetValue("Set1DimOptDialog.fLabelsTopX"    , fLabelsTopX);
    env.SetValue("Set1DimOptDialog.fLabelsRightY"  , fLabelsRightY);
-
+	env.SetValue("Set1DimOptDialog.fOneDimLogX"    , fOneDimLogX);
+	env.SetValue("Set1DimOptDialog.fOneDimLogY"    , fOneDimLogY);
+	
    env.SaveLevel(kEnvLocal);
 }
 
@@ -337,6 +355,8 @@ void Set1DimOptDialog::RestoreDefaults()
 	   fLiveStat1Dim = 1;
    fLiveBG        = env.GetValue("Set1DimOptDialog.fLiveBG", 0);
    fDrawAxisAtTop = env.GetValue("Set1DimOptDialog.fDrawAxisAtTop", 0);
+	fOneDimLogX    = env.GetValue("Set1DimOptDialog.fOneDimLogX"   , 0);
+	fOneDimLogY    = env.GetValue("Set1DimOptDialog.fOneDimLogY"   , 0);
 	
 	fEndErrorSize  = gStyle->GetEndErrorSize();
 	fErrorX        = gStyle->GetErrorX();
