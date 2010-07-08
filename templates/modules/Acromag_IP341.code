@@ -6,7 +6,7 @@
 // @(#)Author:     R. Lutter
 // @(#)Revision:   SCCS:  %W%
 // @(#)Date:       %G%
-// Keywords:       
+// Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
 %%BeginOfCode%%
@@ -18,12 +18,12 @@
 #define $mnemoUC_CCSR			0x0 	/* channel control/status reg */
 #define $mnemoUC_CCSR_SCONV	(0x1 << 0)		/* single conversion */
 #define $mnemoUC_CCSR_CCONV	(0x1 << 1)		/* continuous conversion */
-#define $mnemoUC_CCSR_XTINP	(0x1 << 4)		/* external trigger input */	
-#define $mnemoUC_CCSR_XTOUT	(0x1 << 5)		/* external trigger output */	
-#define $mnemoUC_CCSR_INTR	(0x1 << 6)		/* interrupt enable */	
-#define $mnemoUC_CCSR_FNE		(0x1 << 8)		/* fifo not empty */	
-#define $mnemoUC_CCSR_FTHR	(0x1 << 9)		/* fifo threshold reached */	
-#define $mnemoUC_CCSR_RESET	(0x1 << 15)		/* soft reset */	
+#define $mnemoUC_CCSR_XTINP	(0x1 << 4)		/* external trigger input */
+#define $mnemoUC_CCSR_XTOUT	(0x1 << 5)		/* external trigger output */
+#define $mnemoUC_CCSR_INTR	(0x1 << 6)		/* interrupt enable */
+#define $mnemoUC_CCSR_FNE		(0x1 << 8)		/* fifo not empty */
+#define $mnemoUC_CCSR_FTHR	(0x1 << 9)		/* fifo threshold reached */
+#define $mnemoUC_CCSR_RESET	(0x1 << 15)		/* soft reset */
 #define $mnemoUC_CHENC		0x2 	/* channel enable control */
 #define $mnemoUC_CTIM_LOW		0x4 	/* conversion timer 0-15 */
 #define $mnemoUC_CTIM_HGH		0x7		/* ... 16-23 */
@@ -74,7 +74,7 @@
 					$moduleNameStart = $mnemoUC_ADDR_START($moduleName);
 					$moduleNameFifoData = $mnemoUC_ADDR_DATA($moduleName);
 					$moduleNameFifoTag = $mnemoUC_ADDR_TAG($moduleName);
-					
+
 					*$moduleNameControl = $mnemoUC_CCSR_RESET; 	/* reset $moduleName */
 					*$moduleNameControl = $mnemoUC_CCSR_SCONV | $mnemoUC_CCSR_XTINP; 	/* single conversion, external trigger */
 					*$moduleNameChannelEnable = $chnMask;		/* enable channels in use */
@@ -110,8 +110,10 @@
 						$moduleNameWC++;										/* count this item */
 						$moduleNameLastTag = $moduleNameTag;					/* store channel number */
 					}
-					*$moduleNameHeader = ((long) HB_D_HDR) | ($moduleNameWC << HB_SH_WC) | $moduleSerial; /* update last header */
-					RDO_2MEM_32((long) HB_D_EOB);									/* write trailer (EOB) */
+					if ($moduleNameLastTag != 1000) {
+						*$moduleNameHeader = ((long) HB_D_HDR) | ($moduleNameWC << HB_SH_WC) | $moduleSerial; /* update last header */
+						RDO_2MEM_32((long) HB_D_EOB);								/* write trailer (EOB) */
+					}
 %%EndOfCode%%
 %%READ_MODULE%%
 
@@ -128,12 +130,12 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%WRITE_SUBADDR%% 
+%%WRITE_SUBADDR%%
 
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%STORE_DATA%% 
+%%STORE_DATA%%
 
 %%BeginOfCode%%
 
@@ -143,7 +145,7 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%SETUP_READOUT%%	
+%%SETUP_READOUT%%
 
 %%BeginOfCode%%
 

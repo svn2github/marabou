@@ -12,6 +12,7 @@
 
 	enum ESis3302	{	kSis3302NofAdcs				= 8,
 						kSis3302AllAdcs 			= -1,
+						kSis3302MaxEvents 			= -1,
 						// DAC register
 						kSis3302DacCmdLoadShiftReg	= 0x1,
 						kSis3302DacCmdLoad 			= 0x2,
@@ -87,10 +88,12 @@
 						kSis3302EnergyTauMax 		= ((1 << 6) - 1),
 					};
 
-	enum			{	kSis3302EventPreHeader 		= 3 };
+	enum			{	kSis3302EventPreHeader 		= 4 };
 	enum			{	kSis3302EventHeader 		= 2 };
 	enum			{	kSis3302EventMinMax 		= 2 };
 	enum			{	kSis3302EventTrailer 		= 2 };
+
+	enum			{	kSis3302StatusCollectingTraces	=	0x1 };
 
 	enum EVulomTB	{	kVulomTBNofScalers			= 3,
 						kVulomTBNofChannels 		= 16,

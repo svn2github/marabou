@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.11 2010-05-17 12:05:51 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-05-17 12:05:51 $
+// Revision:       $Id: TC2LSis3302.h,v 1.12 2010-07-08 13:23:39 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-07-08 13:23:39 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,9 +41,6 @@ class TC2LSis3302 : public TC2LVMEModule {
 		~TC2LSis3302() {};							// default dtor
 
 		Bool_t GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t & MinorVersion);
-
-		Bool_t GetTimeout(Int_t & Timeout);
-		Bool_t SetTimeout(Int_t & Timeout);
 
 		Bool_t SetUserLED(Bool_t & OnFlag);
 
@@ -137,11 +134,12 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 		Bool_t RestoreSettings(const Char_t * SettingsFile = NULL);
 
-		Bool_t CollectTraces(Int_t & NofEvents, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetEvent(TArrayI & Data, Int_t & EventNo, Int_t AdcNo);
-		Bool_t GetDataLength(TArrayI & Data, Int_t AdcNo);
-
-		Bool_t AccuHistogram(TArrayI & Data, Int_t AdcNo, Int_t NofEvents = -1);
+		Bool_t StartTraceCollection(Int_t & NofEvents, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ContinueTraceCollection();
+		Bool_t StopTraceCollection();
+		Bool_t GetTraceData(TArrayI & Data, Int_t & EventNo, Int_t AdcNo);
+		Bool_t GetTraceLength(TArrayI & Data, Int_t AdcNo);
+		Bool_t DumpTrace();
 
 		inline void SetFirmwareVersion(Int_t Major, Int_t Minor) { fMajorVersion = Major; fMinorVersion = Minor; };
 		inline UInt_t GetFirmwareVersion() { return ((fMajorVersion << 8) | fMinorVersion); };
