@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.9 2010-04-22 13:44:41 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.10 2010-07-12 12:32:51 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -27,6 +27,7 @@
 #include "VMESis3302SaveRestorePanel.h"
 #include "VMESis3302CopyPanel.h"
 #include "VMESis3302StartTracePanel.h"
+#include "VMESis3302StartHistoPanel.h"
 
 #include "SetColor.h"
 
@@ -143,7 +144,8 @@ const SMrbNamedX kVMESample[] =
 const SMrbNamedX kVMEActions[] =
 			{
 				{VMESis3302Panel::kVMESis3302ActionReset,			"Reset module",		"Reset module to power-up settings"	},
-				{VMESis3302Panel::kVMESis3302ActionTrace,			"Start trace",		"Start data acquisition"	},
+				{VMESis3302Panel::kVMESis3302ActionTrace,			"Collect trace",	"Start trace collection"	},
+				{VMESis3302Panel::kVMESis3302ActionHisto,			"Accu histo",		"Accumulate histogram"	},
 				{VMESis3302Panel::kVMESis3302ActionSaveRestore,		"Save/restore",		"Save/restore module settings"	},
 				{VMESis3302Panel::kVMESis3302ActionCopySettings,	"Copy settings",	"Copy settings to other modules/channels"	},
 				{VMESis3302Panel::kVMESis3302ActionUpdateGUI,		"Update GUI",		"Reread GUI settings from SIS module"	},
@@ -744,6 +746,9 @@ void VMESis3302Panel::PerformAction(Int_t FrameId, Int_t Selection) {
 			break;
 		case VMESis3302Panel::kVMESis3302ActionTrace:
 			new VMESis3302StartTracePanel(fClient->GetRoot(), &fLofModules, frameWidth*3/4, frameHeight*5/4);
+			break;
+		case VMESis3302Panel::kVMESis3302ActionHisto:
+			new VMESis3302StartHistoPanel(fClient->GetRoot(), &fLofModules, frameWidth*3/4, frameHeight*5/4);
 			break;
 		case VMESis3302Panel::kVMESis3302ActionSaveRestore:
 			new VMESis3302SaveRestorePanel(fClient->GetRoot(), &fLofModules, frameWidth/4, frameHeight/3);

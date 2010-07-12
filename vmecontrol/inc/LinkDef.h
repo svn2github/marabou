@@ -10,6 +10,7 @@
 #pragma link C++ class VMESis3302SaveRestorePanel;
 #pragma link C++ class VMESis3302CopyPanel;
 #pragma link C++ class VMESis3302StartTracePanel;
+#pragma link C++ class VMESis3302StartHistoPanel;
 #pragma link C++ class VMECaen785Panel;
 #pragma link C++ class VMEVulomTBPanel;
 #endif

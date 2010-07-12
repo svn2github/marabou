@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartTracePanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.1 2010-04-22 13:44:41 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.2 2010-07-12 12:32:51 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -40,7 +40,6 @@ namespace std {} using namespace std;
 #include "TGMrbLabelCombo.h"
 #include "TGMrbLofKeyBindings.h"
 
-
 #include "M2L_CommonDefs.h"
 #include "VMEControlData.h"
 
@@ -61,12 +60,12 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		enum EVMESis3302StartTraceId 			{
 												kVMESis3302SelectModule,
 												kVMESis3302SelectChanPatt,
-												kVMESis3302SelectMode,
-												kVMESis3302NofEvents,
-												kVMESis3302Timeout,
-												kVMESis3302Start,
+												kVMESis3302SelectTrigMode,
+												kVMESis3302StartStop,
+												kVMESis3302DumpTrace,
 												kVMESis3302SelectChannel,
-												kVMESis3302SelectEvent,
+												kVMESis3302TimeStamp,
+												kVMESis3302TracesPerSecond,
 											};
 
 		enum EVMESis3302TraceModes			{	kVMESis3302ModeMAWD		= 0,
@@ -84,15 +83,14 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		void ModuleChanged(Int_t FrameId, Int_t Selection);			// slot methods
 		void ChannelChanged(Int_t FrameId, Int_t Selection);
 		void TraceModeChanged(Int_t FrameId, Int_t Selection);
-		void NofEventsChanged(Int_t FrameId, Int_t Selection);
-		void EventNumberChanged(Int_t FrameId, Int_t Selection);
 		void PerformAction(Int_t FrameId, Int_t Selection);
 		void KeyPressed(Int_t FrameId, Int_t Action);
 
 	protected:
 		void StartGUI();
 		void StartTrace();
-		Bool_t ReadData(TArrayI & Data, Int_t EventNo, Int_t Channel);
+		void StopTrace();
+		Int_t ReadData(TArrayI & Data, Int_t EventNo, Int_t Channel, Int_t TraceNumber);
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
@@ -105,16 +103,17 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		TRootEmbeddedCanvas * fHistoCanvas;			//		canvas
 
 		TGGroupFrame * fTraceFrame;					// traces
-		TGMrbLabelCombo * fSelectMode;  			// trigger mode
-		TGMrbLabelEntry * fNofEvents; 				// number of events
-		TGTextButton * fStartButton;				// start trace
+		TGMrbLabelCombo * fSelectTrigMode;  		// trigger mode
+		TGTextButton * fStartStopButton;			// start/stop trace
+		TGTextButton * fDumpTraceButton;			// dump trace
 
 		TH1F * fHistoRaw;							// histos for raw and energy data
 		TH1F * fHistoEnergy;
 
 		TGGroupFrame * fDisplayFrame;				// display
 		TGMrbLabelCombo * fSelectChannel;  			//		channel
-		TGMrbLabelEntry * fSelectEvent; 			//		event
+		TGMrbLabelEntry * fTimeStamp;				// timestamp
+		TGMrbLabelEntry * fTracesPerSec;			// traces per second
 
 		TMrbLofNamedX * fLofModules;
 		TMrbLofNamedX fLofSelected;
@@ -123,6 +122,8 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		TGMrbFocusList fFocusList;
 
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
+
+		Bool_t fTraceCollection;				// kTRUE if started
 
 	ClassDef(VMESis3302StartTracePanel, 0)		// [VMEControl] Panel to save/reswtore Sis3302 settings
 };

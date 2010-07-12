@@ -8,8 +8,8 @@
 // Class:          VMESis3302Panel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302Panel.h,v 1.8 2010-04-22 13:44:41 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-04-22 13:44:41 $
+// Revision:       $Id: VMESis3302Panel.h,v 1.9 2010-07-12 12:32:51 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-07-12 12:32:51 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -89,6 +89,7 @@ class VMESis3302Panel : public TGCompositeFrame {
 										kVMESis3302EnergyDataLength,
 										kVMESis3302ActionReset,
 										kVMESis3302ActionTrace,
+										kVMESis3302ActionHisto,
 										kVMESis3302ActionSaveRestore,
 										kVMESis3302ActionCopySettings,
 										kVMESis3302ActionUpdateGUI,

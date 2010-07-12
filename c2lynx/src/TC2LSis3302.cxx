@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.15 2010-07-08 13:23:39 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-07-08 13:23:39 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.16 2010-07-12 12:31:01 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-07-12 12:31:01 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -676,7 +676,7 @@ Bool_t TC2LSis3302::StopTraceCollection() {
 
 Bool_t TC2LSis3302::GetTraceLength(TArrayI & Data, Int_t AdcNo) {
 	TArrayI dataSend(1);
-	Data.Set(3);
+	Data.Set(kSis3302EventPreHeader);
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_LENGTH, dataSend, Data, AdcNo));
 }
 

@@ -2,11 +2,11 @@
 //////////////////////////////////////////////////////////////////////////////
 // ame:            VMESis3302StartTracePanel
 // Purpose:        A GUI to control a SIS 3302 adc
-// Description:    Save/restore settings
+// Description:    Collect traces
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.2 2010-04-23 13:38:28 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.3 2010-07-12 12:32:51 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -41,16 +41,10 @@ namespace std {} using namespace std;
 #include <iostream>
 #include <fstream>
 
-const SMrbNamedX kVMESis302StartTraceActions[] =
-			{
-				{VMESis3302StartTracePanel::kVMESis3302Start,		"Start",		"Start trace collection"	},
-				{0, 											NULL,			NULL			}
-			};
-
 const SMrbNamedXShort kVMESis302StartTraceModes[] =
 			{
 				{VMESis3302StartTracePanel::kVMESis3302ModeMAWD,		"MAWD - decay corrected moving average window"	},
-				{VMESis3302StartTracePanel::kVMESis3302ModeMAW,		"MAW - moving average window"	},
+				{VMESis3302StartTracePanel::kVMESis3302ModeMAW,			"MAW - moving average window"	},
 				{VMESis3302StartTracePanel::kVMESis3302ModeMAWFT,		"MAWFT - FIR trigger moving average window"	},
 				{0, 												NULL	}
 			};
@@ -60,9 +54,7 @@ extern TMrbLogger * gMrbLog;
 
 static TC2LSis3302 * curModule = NULL;
 static Int_t curChannel = 0;
-static Int_t curEvent = 0;
 static Int_t traceMode = 0;
-static Int_t nofEvents = 1;
 
 ClassImp(VMESis3302StartTracePanel)
 
@@ -180,33 +172,26 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	HEAP(fTraceFrame);
 	this->AddFrame(fTraceFrame, groupGC->LH());
 
-	fStartButton = new TGTextButton(fTraceFrame, "Start", kVMESis3302Start);
-	HEAP(fStartButton);
-	fTraceFrame->AddFrame(fStartButton, groupGC->LH());
-	fStartButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302Start));
+	fStartStopButton = new TGTextButton(fTraceFrame, "Start", kVMESis3302StartStop);
+	HEAP(fStartStopButton);
+	fTraceFrame->AddFrame(fStartStopButton, groupGC->LH());
+	fStartStopButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302StartStop));
+
+	fDumpTraceButton = new TGTextButton(fTraceFrame, "Dump trace", kVMESis3302DumpTrace);
+	HEAP(fDumpTraceButton);
+	fTraceFrame->AddFrame(fDumpTraceButton, groupGC->LH());
+	fDumpTraceButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302DumpTrace));
 
 // mode & number of events
 	fLofTraceModes.AddNamedX(kVMESis302StartTraceModes);
-	fSelectMode = new TGMrbLabelCombo(fTraceFrame, "Mode",	&fLofTraceModes,
-															kVMESis3302SelectMode, 1,
+	fSelectTrigMode = new TGMrbLabelCombo(fTraceFrame, "TriggerMode",	&fLofTraceModes,
+															kVMESis3302SelectTrigMode, 1,
 															frameWidth/5, kLEHeight, frameWidth/3 + 100,
 															frameGC, labelGC, comboGC, labelGC);
-	fTraceFrame->AddFrame(fSelectMode, frameGC->LH());
-	fSelectMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "TraceModeChanged(Int_t, Int_t)");
-	fSelectMode->Select(0);
-	HEAP(fSelectMode);
-
-	fNofEvents = new TGMrbLabelEntry(fTraceFrame, "Events",	200, kVMESis3302NofEvents,
-															frameWidth/5, kLEHeight, frameWidth/8,
-															frameGC, labelGC, entryGC, buttonGC);
-	HEAP(fNofEvents);
-	fNofEvents->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fNofEvents->SetText(nofEvents);
-	fNofEvents->SetRange(0, 1000000);
-	fNofEvents->SetIncrement(10);
-	fNofEvents->ShowToolTip(kTRUE, kTRUE);
-	fTraceFrame->AddFrame(fNofEvents, frameGC->LH());
-	fNofEvents->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "NofEventsChanged(Int_t, Int_t)");
+	fTraceFrame->AddFrame(fSelectTrigMode, frameGC->LH());
+	fSelectTrigMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "TraceModeChanged(Int_t, Int_t)");
+	fSelectTrigMode->Select(0);
+	HEAP(fSelectTrigMode);
 
 //	display
 	fDisplayFrame = new TGGroupFrame(this, "Display", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -224,17 +209,21 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fSelectChannel->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ChannelChanged(Int_t, Int_t)");
 	fSelectChannel->Select(0);
 
-	fSelectEvent = new TGMrbLabelEntry(fDisplayFrame, "Event",	200, kVMESis3302SelectEvent,
-															frameWidth/5, kLEHeight, frameWidth/8,
-															frameGC, labelGC, entryGC, buttonGC, kTRUE);
-	HEAP(fSelectEvent);
-	fSelectEvent->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fSelectEvent->SetText(0);
-	fSelectEvent->SetRange(0, nofEvents - 1);
-	fSelectEvent->SetIncrement(1);
-	fSelectEvent->ShowToolTip(kTRUE, kTRUE);
-	fDisplayFrame->AddFrame(fSelectEvent, frameGC->LH());
-	fSelectEvent->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EventNumberChanged(Int_t, Int_t)");
+	fTimeStamp = new TGMrbLabelEntry(fDisplayFrame, "TimeStamp",	200, kVMESis3302TimeStamp,
+															frameWidth/5, kLEHeight, frameWidth/4,
+															frameGC, labelGC);
+	HEAP(fTimeStamp);
+	fTimeStamp->SetText("??");
+	fTimeStamp->GetTextEntry()->SetEnabled(kFALSE);
+	fDisplayFrame->AddFrame(fTimeStamp, frameGC->LH());
+
+	fTracesPerSec = new TGMrbLabelEntry(fDisplayFrame, "Traces/s",	200, kVMESis3302TracesPerSecond,
+															frameWidth/5, kLEHeight, frameWidth/12,
+															frameGC, labelGC);
+	HEAP(fTracesPerSec);
+	fTracesPerSec->SetText("0.0");
+	fTracesPerSec->GetTextEntry()->SetEnabled(kFALSE);
+	fDisplayFrame->AddFrame(fTracesPerSec, frameGC->LH());
 
 	this->ChangeBackground(gVMEControlData->fColorGold);
 
@@ -271,9 +260,7 @@ void VMESis3302StartTracePanel::StartGUI() {
 	}
 
 	fSelectModule->Select(curModule->GetIndex());
-
-	Int_t timeout = gVMEControlData->Vctrlrc()->Get(".Timeout", 10);
-	curModule->SetTimeout(timeout);
+	fTraceCollection = kFALSE;
 }
 
 void VMESis3302StartTracePanel::ModuleChanged(Int_t FrameId, Int_t Selection) {
@@ -308,8 +295,11 @@ void VMESis3302StartTracePanel::PerformAction(Int_t FrameId, Int_t Selection) {
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
-		case VMESis3302StartTracePanel::kVMESis3302Start:
-			this->StartTrace();
+		case VMESis3302StartTracePanel::kVMESis3302StartStop:
+			if (fTraceCollection) this->StopTrace(); else this->StartTrace();
+			break;
+		case VMESis3302StartTracePanel::kVMESis3302DumpTrace:
+			curModule->DumpTrace();
 			break;
 	}
 }
@@ -330,25 +320,6 @@ void VMESis3302StartTracePanel::TraceModeChanged(Int_t FrameId, Int_t Selection)
 	traceMode = ((TMrbNamedX *) fLofTraceModes[Selection])->GetIndex();
 }
 
-void VMESis3302StartTracePanel::NofEventsChanged(Int_t FrameId, Int_t Selection) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           VMESis3302Panel::NofEventsChanged
-// Purpose:        Slot method: number of events changed
-// Arguments:      Int_t FrameId     -- frame id (ignored)
-//                 Int_t Selection   -- selection
-// Results:        --
-// Exceptions:
-// Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	nofEvents = fNofEvents->GetText2Int();
-	fSelectEvent->SetRange(0, nofEvents - 1);
-	if (curEvent > nofEvents - 1) curEvent = nofEvents - 1;
-	fSelectEvent->SetText(curEvent);
-}
-
 void VMESis3302StartTracePanel::ChannelChanged(Int_t FrameId, Int_t Selection) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -363,26 +334,6 @@ void VMESis3302StartTracePanel::ChannelChanged(Int_t FrameId, Int_t Selection) {
 //////////////////////////////////////////////////////////////////////////////
 
 	curChannel = Selection;
-	TArrayI evtData;
-	this->ReadData(evtData, curEvent, curChannel);
-}
-
-void VMESis3302StartTracePanel::EventNumberChanged(Int_t FrameId, Int_t Selection) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           VMESis3302Panel::EventNumberChanged
-// Purpose:        Slot method: event number changed
-// Arguments:      Int_t FrameId     -- frame id (ignored)
-//                 Int_t Selection   -- selection
-// Results:        --
-// Exceptions:
-// Description:    Called on TGMrbLabelCombo::SelectionChanged()
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	curEvent = fSelectEvent->GetText2Int();
-	TArrayI evtData;
-	this->ReadData(evtData, curEvent, curChannel);
 }
 
 void VMESis3302StartTracePanel::StartTrace() {
@@ -400,16 +351,69 @@ void VMESis3302StartTracePanel::StartTrace() {
     Int_t chnPatt = fSelectChanPatt->GetActive();
 	curModule->SetTestBits(traceMode);
 
-	if (!curModule->CollectTraces(nofEvents, chnPatt)) {
+	Int_t nofEvents = 1;
+	if (!curModule->StartTraceCollection(nofEvents, chnPatt)) {
 		gVMEControlData->MsgBox(this, "StartTrace", "Error", "Couldn't get traces");
 		return;
 	}
 
+	fTraceCollection = kTRUE;
+	fStartStopButton->SetText("STOP");
+	fStartStopButton->SetBackgroundColor(gVMEControlData->fColorRed);
+	fStartStopButton->SetForegroundColor(gVMEControlData->fColorWhite);
+	fStartStopButton->Layout();
+
+	TArrayI traceLength(kSis3302EventPreHeader);
+	if (curModule->GetTraceLength(traceLength, curChannel)) {
+		if (traceLength[0] == 0) {
+		  gMrbLog->Wrn()	<< "No RAW DATA will be collected" << endl;
+		  gMrbLog->Flush("StartTrace");
+		}
+		if (traceLength[1] == 0) {
+		  gMrbLog->Wrn()	<< "No ENERGY DATA will be collected" << endl;
+		  gMrbLog->Flush("StartTrace");
+		}
+	}
+
 	TArrayI evtData;
-	this->ReadData(evtData, curEvent, curChannel);
+	Int_t traceNo = 0;
+	for (;;) {
+		gSystem->ProcessEvents();
+		if (!fTraceCollection) {
+			curModule->StopTraceCollection();
+			break;
+		}
+		Int_t curEvent = 0;
+		Int_t wpt = 0;
+		traceNo++;
+		while (fTraceCollection && wpt == 0) {
+			wpt = this->ReadData(evtData, curEvent, curChannel, traceNo);
+			gSystem->ProcessEvents();
+		}
+		curModule->ContinueTraceCollection();
+	}
 }
 
-Bool_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_t Channel) {
+void VMESis3302StartTracePanel::StopTrace() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302StartTracePanel::StopTrace
+// Purpose:        Stop data acquisition
+// Arguments:      --
+// Results:        --
+// Exceptions:
+// Description:    Stops run and collect traces
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fTraceCollection = kFALSE;
+	fStartStopButton->SetText("Start");
+	fStartStopButton->SetBackgroundColor(gVMEControlData->fColorGreen);
+	fStartStopButton->SetForegroundColor(gVMEControlData->fColorWhite);
+	fStartStopButton->Layout();
+}
+
+Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_t Channel, Int_t TraceNumber) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302StartTracePanel::ReadData
@@ -417,29 +421,49 @@ Bool_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int
 // Arguments:      TArrayI EvtData       -- where to store event data
 //                 Int_t EventNo         -- event number
 //                 Int_t Channel         -- channel number
-// Results:        kTRUE/kFALSE
+//                 Int_t TraceNumber     -- trace number
+// Results:        NofData               -- word count
 // Exceptions:
-// Description:    Get event(s) from SIS3302 module(s)
+// Description:    Get event data from SIS3302 module(s)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TArrayI lengthArr(3);
-	if (!curModule->GetDataLength(lengthArr, Channel)) {
+	TArrayI traceLength(kSis3302EventPreHeader);
+	if (!curModule->GetTraceLength(traceLength, Channel)) {
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data length");
-		return(kFALSE);
+		return(-1);
 	}
 
-	Int_t rdl = lengthArr[0];
-	Int_t edl = lengthArr[1];
-	Int_t wpe = lengthArr[2];
-	EvtData.Set(wpe + kSis3302EventPreHeader);
+	Int_t rdl = traceLength[0];
+	Int_t edl = traceLength[1];
+	Int_t wpt = traceLength[2];
+	Int_t ect = traceLength[3];
 
- 	if (!curModule->GetEvent(EvtData, EventNo, Channel)) {
+	if (wpt == 0) return(0);
+
+	EvtData.Set(wpt + kSis3302EventPreHeader);
+
+ 	if (!curModule->GetTraceData(EvtData, EventNo, Channel)) {
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data");
-		return(kFALSE);
+		return(-1);
 	}
 
-	Int_t k = kSis3302EventPreHeader + kSis3302EventHeader;
+	Int_t k = kSis3302EventPreHeader;
+
+	ULong64_t ts = (UInt_t) EvtData[k + 1];
+	UInt_t ts48 = ((UInt_t) EvtData[k] >> 16) & 0xFFFF;
+	ts += ts48 * 0x100000000LL;
+	fTimeStamp->GetTextEntry()->SetEnabled(kTRUE);
+	fTimeStamp->SetText(Form("%lld", ts));
+	fTimeStamp->GetTextEntry()->SetEnabled(kFALSE);
+
+	Double_t secs = ts / 100000000.;
+	Double_t tracesPerSec = TraceNumber / secs;
+	fTracesPerSec->GetTextEntry()->SetEnabled(kTRUE);
+	fTracesPerSec->SetText(Form("%6.2f", tracesPerSec));
+	fTracesPerSec->GetTextEntry()->SetEnabled(kFALSE);
+
+	k = kSis3302EventPreHeader + kSis3302EventHeader;
 
 	Int_t ksave = k;
 	Int_t min = 1000000;
@@ -448,11 +472,7 @@ Bool_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int
 		if (EvtData[k] < min) min = EvtData[k];
 		if (EvtData[k] > max) max = EvtData[k];
 	}
-	if (max == 0) {
-		gMrbLog->Err()	<< "Raw data buffer is empty" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadData");
-		return(kFALSE);
-	}
+	if (max == 0) return(-1);
 
 	TCanvas * c = fHistoCanvas->GetCanvas();
 
@@ -474,11 +494,7 @@ Bool_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int
 		if (EvtData[k] < min) min = EvtData[k];
 		if (EvtData[k] > max) max = EvtData[k];
 	}
-	if (max == 0) {
-		gMrbLog->Err()	<< "Event data buffer is empty" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadData");
-		return(kFALSE);
-	}
+	if (max == 0) return(-1);
 
 	c->cd(2);
 	k = ksave;
@@ -490,7 +506,7 @@ Bool_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int
 	fHistoEnergy->Draw();
 	c->Update();
 	c->cd();
-	return(kTRUE);
+	return(wpt);
 }
 
 void VMESis3302StartTracePanel::KeyPressed(Int_t FrameId, Int_t Key) {
