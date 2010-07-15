@@ -994,14 +994,14 @@ a shift value of 10 will only shift by 5 cm";
 
 //_________________________________________________________________________________________
 
-TEnv *GetDefaults(TString & hname, Bool_t mustexist)
+TEnv *GetDefaults(TString & hname, Bool_t mustexist, Bool_t renew)
 {
-   return GetDefaults(hname.Data(), mustexist);
+	return GetDefaults(hname.Data(), mustexist,renew);
 }
 
 //_________________________________________________________________________________________
 
-TEnv *GetDefaults(const char * hname, Bool_t mustexist)
+TEnv *GetDefaults(const char * hname, Bool_t mustexist, Bool_t renew)
 {
    TEnv *lastset = 0;
    TString defname("default/Last");
@@ -1017,8 +1017,14 @@ TEnv *GetDefaults(const char * hname, Bool_t mustexist)
 //      cout << "Look for : " << defname.Data() << endl;
       if (mustexist && gSystem->AccessPathName(defname.Data()))
          return 0;
+		if (renew && ! gSystem->AccessPathName(defname.Data())) {
+			TString cmd(defname.Data());
+			cmd.Prepend("rm ");
+			gSystem->Exec(cmd.Data());
+//			cout << "Removing: " << cmd.Data() << endl;
+		}
 //      cout << "Looked for : " << defname.Data() << endl;
-      lastset = new TEnv(defname.Data());	// inspect ROOT's environment
+      lastset = new TEnv(defname.Data());
    }
    return lastset;
 }

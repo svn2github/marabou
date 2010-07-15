@@ -33,6 +33,9 @@ public:
    static Size_t  fGraphMSize;
    static Color_t fGraphMColor;
 	static Int_t   fGraphShowTitle;
+	static Int_t   fGraphLogX;
+	static Int_t   fGraphLogY;
+	static Int_t   fGraphLogZ;
 	
    GraphAttDialog(TGWindow * win = NULL);
    ~GraphAttDialog() {};

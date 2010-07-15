@@ -29,6 +29,11 @@ Size_t  GraphAttDialog::fGraphMSize;
 Color_t GraphAttDialog::fGraphMColor;
 Style_t GraphAttDialog::fGraphFStyle;
 Color_t GraphAttDialog::fGraphFColor;
+Int_t   GraphAttDialog::fGraphLogX = 0;
+Int_t   GraphAttDialog::fGraphLogY = 0;
+Int_t   GraphAttDialog::fGraphLogZ = 0;
+
+
 
 //_______________________________________________________________________
 
@@ -78,7 +83,14 @@ ____________________________________________________________\n\
    fValp[ind++] = &fGraphMSize;
 	fRow_lab->Add(new TObjString("ColorSelect+M Color"));
    fValp[ind++] = &fGraphMColor;
-   fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
+	fRow_lab->Add(new TObjString("CheckButton_Log X scale"));
+	fValp[ind++] = &fGraphLogX;
+	fRow_lab->Add(new TObjString("CheckButton+Log Y scale"));
+	fValp[ind++] = &fGraphLogY;
+	Int_t logz = ind;
+	fRow_lab->Add(new TObjString("CheckButton+Log Z scale"));
+	fValp[ind++] = &fGraphLogZ;
+	fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
 
 //	fRow_lab->Add(new TObjString("CheckButton_ylow=rwymin"};
@@ -90,6 +102,7 @@ ____________________________________________________________\n\
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+	fDialog->DisableButton(logz);
 }
 //_______________________________________________________________________
 
@@ -127,7 +140,15 @@ void GraphAttDialog::SetGraphAtt(TCanvas *ca, Int_t bid)
 	else 
 		gStyle->SetOptTitle(kFALSE);
    if (ca) {
-      TList logr;
+		if ( fGraphLogX )
+			ca->SetLogx();
+		else
+			ca->SetLogx(kFALSE);
+		if ( fGraphLogY )
+			ca->SetLogy();
+		else
+			ca->SetLogy(kFALSE);
+		TList logr;
       Int_t ngr = FindGraphs((TPad*)ca, &logr);
       if (ngr > 0) {
          TIter next(&logr);
@@ -184,6 +205,9 @@ void GraphAttDialog::SaveDefaults()
    env.SetValue("GraphAttDialog.fGraphMColor",     fGraphMColor);
 	env.SetValue("GraphAttDialog.fGraphFStyle",     fGraphFStyle);
 	env.SetValue("GraphAttDialog.fGraphFColor",     fGraphFColor);
+	env.SetValue("GraphAttDialog.fGraphLogX",       fGraphLogX);
+	env.SetValue("GraphAttDialog.fGraphLogY",       fGraphLogY);
+	env.SetValue("GraphAttDialog.fGraphLogZ",       fGraphLogZ);
 	env.SaveLevel(kEnvLocal);
 }
 
@@ -192,8 +216,7 @@ void GraphAttDialog::SaveDefaults()
 void GraphAttDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
-   fDrawOptGraph =
-       env.GetValue("GraphAttDialog.DrawOptGraph", "A*");
+   fDrawOptGraph    = env.GetValue("GraphAttDialog.DrawOptGraph", "A*");
    fGraphSmoothLine = env.GetValue("GraphAttDialog.fGraphSmoothLine", 0);
    fGraphSimpleLine = env.GetValue("GraphAttDialog.fGraphSimpleLine", 0);
 	fGraphFill       = env.GetValue("GraphAttDialog.fGraphFill", 0);
@@ -208,6 +231,11 @@ void GraphAttDialog::RestoreDefaults()
    fGraphMColor     = env.GetValue("GraphAttDialog.fGraphMColor", 1);
 	fGraphFStyle     = env.GetValue("GraphAttDialog.fGraphFStyle", 0);
 	fGraphFColor     = env.GetValue("GraphAttDialog.fGraphFColor", 1);
+	fGraphLogX       = env.GetValue("GraphAttDialog.fGraphLogX", 0);
+	fGraphLogY       = env.GetValue("GraphAttDialog.fGraphLogY", 0);
+	fGraphLogZ       = env.GetValue("GraphAttDialog.fGraphLogZ", 0);
+//	gStyle->SetOptLogx      (fGraphLogX);
+//	gStyle->SetOptLogy      (fGraphLogY);
 }
 //______________________________________________________________________
 

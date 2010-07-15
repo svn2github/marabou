@@ -301,7 +301,7 @@ void GroupOfHists::UpdateHists()
       TH1 * hold  = GetTheHist(gPad);
       fx =  hold->GetXaxis()->GetFirst();
       lx =  hold->GetXaxis()->GetLast();
-      TH1 * hist = fHistPresent->GetSelHistAt(i,&fHistList);
+      TH1 * hist = fHistPresent->GetSelHistAt(i,&fHistList, kFALSE, "_updated");
       if (!hist) {
          cout << setred << "Cant get histogram, M_analyze stopped? " << endl;
          if(fTimer){
@@ -484,7 +484,16 @@ void GroupOfHists::auto_exec()
       TVirtualPad *pad = (TVirtualPad*)select;
       TH1 * hist = GetTheHist(pad);
       if (hist && hist->GetDimension() == 1 && event == kButton1Down) {
-         if (fHistPresent) fHistPresent->ShowHist(hist);
+         if (fHistPresent) {
+				TH1* hclone =  (TH1*)hist->Clone();
+				TString na(hclone->GetName());
+				Int_t indupd = na.Index("_updated");
+				if ( indupd > 0 ) {
+					na.Resize(indupd);
+					hclone->SetName(na);
+				}
+				fHistPresent->ShowHist(hclone);
+			}
       }
       return;
    }

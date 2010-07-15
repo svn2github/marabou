@@ -23,8 +23,9 @@ private:
    Int_t   fWiny;
    TString fCommand;
    TString fHistName;
-   TString fHistXtitle;
-   TString fHistYtitle;
+   TString fHistTitle;
+	TString fHistXtitle;
+	TString fHistYtitle;
    Double_t fXaxisMin;
    Double_t fYaxisMin;
    Double_t fXaxisMax;
@@ -39,7 +40,8 @@ private:
 	Int_t   fUseForGraph;   
 	TRootCanvas *fRootCanvas;
    TGPopupMenu *fMenu;
-   
+	TGPopupMenu *fAttrMenu;
+	
 public:
    EmptyHistDialog(TGWindow * win = NULL, Int_t winx = 100, Int_t winy = 100);
    ~EmptyHistDialog();

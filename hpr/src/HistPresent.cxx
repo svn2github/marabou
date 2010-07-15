@@ -366,8 +366,8 @@ void HistPresent::ShowMain()
      = CButton("CloseAllCanvases",  "Close Windows",this,2,1,dy,0.5);
    b = CButton("ListSelect",        "List Hists,Cuts",this,1,2,dy,0.5);
    b = CButton("ClearSelect",       "Clear Select",this,2,2,dy,0.5);
-   b = CButton("Editrootrc",        "Edit .rootrc",this,1,3,dy,0.5);
-   b->SetToolTipText("Edit resource file .rootrc in CWD or HOME",hint_delay);
+   b = CButton("Editrootrc",        "Edit .hprrc",this,1,3,dy,0.5);
+   b->SetToolTipText("Edit resource file .hprrc in CWD",hint_delay);
    b = CButton("EditAttrFile",      "Edit AttrMacro",this,2,3,dy,0.5);
    b->SetToolTipText("Edit a macro used to customize drawing options",hint_delay);
    b = CButton("RebinHist",         "Rebin",this,1,4,dy,0.25);
@@ -465,12 +465,14 @@ you will be unable to save current settings etc.");
 
 void HistPresent::Editrootrc()
 {
-   TString EditCmd = ".rootrc";
+   TString EditCmd = ".hprrc";
    Bool_t fok = kFALSE;
    if (!gSystem->AccessPathName(EditCmd.Data())) {
-      cout << "Using .rootrc in cwd" << endl;
+      cout << "Using .hprrc in cwd" << endl;
       fok = kTRUE;
-   } else {
+   }
+/*
+	else {
       EditCmd.Prepend("/");
       EditCmd.Prepend(gSystem->HomeDirectory());
       if (!gSystem->AccessPathName(EditCmd.Data())) {
@@ -478,11 +480,12 @@ void HistPresent::Editrootrc()
          fok = kTRUE;
       }
    }
+*/
    if (fok) {
       EditCmd.Prepend(fEditor.Data());
       gSystem->Exec(EditCmd.Data()); EditCmd += "&";
    }
-   else   cout << "Cant find .rootrc" << endl;
+   else   cout << "Cant find .hprrc" << endl;
 
    cout << setred << "Warning: values might be overwritten by current settings"
         << setblack << endl;
@@ -2053,7 +2056,8 @@ void HistPresent::RebinHist()
 //________________________________________________________________________________________
 //
 
-TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
+TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
+										 const char * hsuffix)
 {
    TList * hlist;
    if (hl) hlist = hl;
@@ -2101,10 +2105,13 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
 //   if (hist) hist->Print();
    if (hist && (fname == "Memory" || try_memory)) return hist;
    if (!(fname == "Memory")) {
-      hist=(TH1*)gROOT->GetList()->FindObject(hname);
+		TString hn(hname);
+		if ( hsuffix != NULL )
+			hn += hsuffix;
+      hist=(TH1*)gROOT->GetList()->FindObject(hn);
 //     gROOT->ls();
       if (hist) {
-//         WarnBox("Deleting existing histogram");
+//         cout << "Deleting existing histogram " << hname << endl;
          hist->Delete();
 //         WarnBox("Using existing histogram");
 //         return hist;
@@ -2117,10 +2124,16 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
       }
       hist = gethist(hname.Data(), fComSocket);
       if (!hist){
-         cout << setred << "Cant get hist, Connection lost?" << setblack << endl;
+         cout << setred << "Cant get hist " << hname <<  " Connection lost?" << setblack << endl;
          fComSocket->Close("force");
          fComSocket = NULL;
-      }
+		} else {
+			if ( hsuffix != NULL ) {
+				TString hn(hist->GetName());
+				hn += hsuffix;
+				hist->SetName(hn);
+			}
+		}
       return hist;
    }
 // watch out: is it .map or .root or in memory

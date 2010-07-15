@@ -198,7 +198,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fFitMacroName =
        env.GetValue("HistPresent.FitMacroName", "fit_user_function.C");
 
-   RestoreDefaultRanges();
+//   RestoreDefaultRanges();
 //   cout << "FitMacroName " << fFitMacroName.Data()<< endl;
 
    fTemplateMacro = "TwoGaus";
@@ -245,9 +245,9 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fTitleCenterZ  = env.GetValue("SetHistOptDialog.fTitleCenterZ", 0);
 	fOneDimLogX = env.GetValue("Set1DimOptDialog.fOneDimLogX", 0);
 	fOneDimLogY = env.GetValue("Set1DimOptDialog.fOneDimLogY", 0);
-	fTwoDimLogX = env.GetValue("Set1DimOptDialog.fTwoDimLogX", 0);
-	fTwoDimLogY = env.GetValue("Set1DimOptDialog.fTwoDimLogY", 0);
-	fTwoDimLogZ = env.GetValue("Set1DimOptDialog.fTwoDimLogZ", 0);
+	fTwoDimLogX = env.GetValue("Set2DimOptDialog.fTwoDimLogX", 0);
+	fTwoDimLogY = env.GetValue("Set2DimOptDialog.fTwoDimLogY", 0);
+	fTwoDimLogZ = env.GetValue("Set2DimOptDialog.fTwoDimLogZ", 0);
 	
    fSerialPx = 0;
    fSerialPy = 0;
@@ -268,14 +268,23 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    if (fDimension == 2) {
       fYmin = hist->GetYaxis()->GetXmin();
       fYmax = hist->GetYaxis()->GetXmax();
-   }
-   TObject * obj = fSelHist->GetListOfFunctions()->FindObject("palette");
+		fLogx = fTwoDimLogX;
+		fLogy = fTwoDimLogY;
+		fLogz = fTwoDimLogZ;
+	}
+	if (fDimension == 1) {
+		fLogx = fOneDimLogX;
+		fLogy = fOneDimLogY;
+	}
+	TObject * obj = fSelHist->GetListOfFunctions()->FindObject("palette");
    if (obj) {
       cout << " Removing obj TPaletteAxis" << endl;
       fSelHist->GetListOfFunctions()->Remove(obj);
    }
-   DisplayHist(hist, win_topx, win_topy, win_widx, win_widy);
-   fLogx = cHist->GetLogx();
+   RestoreDefaultRanges();
+	DisplayHist(hist, win_topx, win_topy, win_widx, win_widy);
+//	RestoreDefaultRanges();
+	fLogx = cHist->GetLogx();
    fLogy = cHist->GetLogy();
    fLogz = cHist->GetLogz();
 };
@@ -360,31 +369,34 @@ void FitHist::SaveDefaults(Bool_t recalculate)
 {
    if (!hp) return;      // not called from  Histpresenter
 
-   if (!GeneralAttDialog::fRememberLastSet &&  !GeneralAttDialog::fRememberZoom) return;
+//   if (!GeneralAttDialog::fRememberLastSet &&  !GeneralAttDialog::fRememberZoom) return;
 //   cout << "Enter SaveDefaults " << endl;
 
    Bool_t checkonly = kFALSE;
    if ( (!CreateDefaultsDir(mycanvas, checkonly)) ) return;
 
-   TEnv * env = GetDefaults(fHname, kFALSE);
+   TEnv * env = GetDefaults(fHname, kFALSE, kTRUE); // fresh values
 	if (!env) return;
-
-   if (fDeleteCalFlag && !gSystem->AccessPathName(env->GetRcName())) {
-      TString cmd(env->GetRcName());
-      cmd.Prepend("rm ");
-      gSystem->Exec(cmd.Data());
-      cout << "Removing: " << cmd.Data() << endl;
-      delete env;
-      return;
-   }
-
+	if (!GeneralAttDialog::fRememberLastSet &&  !GeneralAttDialog::fRememberZoom) return;
+	
    env->SetValue("FitMacroName", fFitMacroName);
    if (TCanvas * ca =
        (TCanvas *) gROOT->FindObject(GetCanvasName())) {
-      env->SetValue("LogX", ca->GetLogx());
-      env->SetValue("LogY", ca->GetLogy());
-      env->SetValue("LogZ", ca->GetLogz());
-   } else {
+		if (fDimension == 1) {
+			if ( ca->GetLogx() != fOneDimLogX )
+				env->SetValue("LogX", ca->GetLogx());
+			if ( ca->GetLogy() != fOneDimLogY )
+				env->SetValue("LogY", ca->GetLogy());
+		}
+		if (fDimension == 2) {
+			if ( ca->GetLogx() != fTwoDimLogX )
+				env->SetValue("LogX", ca->GetLogx());
+			if ( ca->GetLogy() != fTwoDimLogY )
+				env->SetValue("LogY", ca->GetLogy());
+			if ( ca->GetLogz() != fTwoDimLogY )
+				env->SetValue("LogZ", ca->GetLogz());
+		}
+	} else {
       cerr << "Canvas deleted, cant find lin/log state" << endl;
    }
    if (recalculate && fSelHist->TestBit(TObject::kNotDeleted)) {
@@ -472,8 +484,9 @@ void FitHist::RestoreDefaultRanges()
 	if (!lastset) return;
    fFitMacroName = lastset->GetValue("FitMacroName",fFitMacroName.Data());
    if (hp && (GeneralAttDialog::fRememberLastSet || GeneralAttDialog::fRememberZoom)) {
-      fLogy = lastset->GetValue("LogY", fLogy);
-      fRangeLowX = fSelHist->GetXaxis()->GetXmin();
+		fLogx = lastset->GetValue("LogX", fOneDimLogX);
+		fLogy = lastset->GetValue("LogY", fOneDimLogY);
+		fRangeLowX = fSelHist->GetXaxis()->GetXmin();
       fRangeUpX = fSelHist->GetXaxis()->GetXmax();
       if (lastset->Lookup("fRangeLowX")) {
          fRangeLowX = lastset->GetValue("fRangeLowX", fRangeLowX);
@@ -496,8 +509,10 @@ void FitHist::RestoreDefaultRanges()
          fSelHist->GetYaxis()->SetTitle(lastset->GetValue("fYtitle", ""));
 
       if (is2dim(fSelHist)) {
-         fLogz = lastset->GetValue("LogZ", fLogz);
-         fRangeLowY = fSelHist->GetYaxis()->GetXmin();
+			fLogx = lastset->GetValue("LogX", fTwoDimLogX);
+			fLogy = lastset->GetValue("LogY", fTwoDimLogY);
+			fLogz = lastset->GetValue("LogZ", fTwoDimLogZ);
+			fRangeLowY = fSelHist->GetYaxis()->GetXmin();
          fRangeUpY = fSelHist->GetYaxis()->GetXmax();
          if (lastset->Lookup("fRangeLowY")) {
             fRangeLowY = lastset->GetValue("fRangeLowY", fRangeLowY);
@@ -1070,17 +1085,17 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
       fSelPad->cd();
       Draw3Dim();
    } else if (is2dim(hist)) {
-		cHist->SetLogx(fTwoDimLogX);
-		cHist->SetLogy(fTwoDimLogY);
-		cHist->SetLogz(fTwoDimLogX);
+		cHist->SetLogx(fLogx);
+		cHist->SetLogy(fLogy);
+		SetLogz(fLogz);
 		fSelPad->cd();
       Draw2Dim();
    } else {
       fSelPad->cd();
-		cHist->SetLogx(fOneDimLogX);
-		cHist->SetLogy(fOneDimLogY);
-		if (fLogy)
-         cHist->SetLogy();
+		cHist->SetLogx(fLogx);
+		cHist->SetLogy(fLogy);
+//		if (fLogy)
+//         cHist->SetLogy();
       Draw1Dim();
    }
    cHist->GetFrame()->SetBit(TBox::kCannotMove);

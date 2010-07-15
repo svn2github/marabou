@@ -22,10 +22,20 @@ namespace std {} using namespace std;
 Set2DimOptDialog::Set2DimOptDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
-"Most of the value in this widget are self explaining\n\
+"Note: Changeing options only influence the current histogram\n\
+       To make them active for subsequently displayed histograms\n\
+		 press: \"Set as global default\"\n\
+\n\
+Most of the value in this widget are self explaining\n\
 If \"Live statbox\" a box is displayed when dragging the\n\
 pressed mouse in the histogram area showing various statistics\n\
 values.\n\
+\n\
+X, Y and Z scales can be set by default to logarithmic or linear.\n\
+This can still be reset for individual histograms.\n\
+In detail: If a canvas is closed and its lin-log state differs\n\
+from the global default its state is stored and restored when\n\
+the histogram is shown again.\n\
 \n\
 SCAT  : Draw a scatter-plot (default)\n\
 BOX   : a box is drawn for each cell with surface proportional to the\n\

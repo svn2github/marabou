@@ -53,7 +53,10 @@ private:
    Short_t fGraphLineWidth;
    Style_t fGraphFillStyle;
    Color_t fGraphFillColor;
-
+	Int_t   fGraphLogX;
+	Int_t   fGraphLogY;
+	Int_t   fGraphLogZ;
+	
 public:
    Ascii2GraphDialog(TGWindow * win = NULL, Int_t winx = 100, Int_t winy = 100);
    ~Ascii2GraphDialog();

@@ -20,7 +20,10 @@ namespace std {} using namespace std;
 Set1DimOptDialog::Set1DimOptDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
-"\n\
+"Note: Changeing options only influence the current histogram\n\
+To make them active for subsequently displayed histograms\n\
+press: \"Set as global default\"\n\
+\n\
 A histogram can either been drawn as a line (\"Contour\")\n\
 or with markers. To fill a histogram \"Contour\" must\n\
 be selected\n\
@@ -41,6 +44,11 @@ Options E3-E6: Choose: Contour Off and FillHist On to get area\n\
 X ErrorS controls drawing of error bars in X.\n\
 A value of 0.5 draws a line X +- 0.5*BinWidth\n\
 \n\
+X and Y scales can be set by default to logarithmic or linear.\n\
+This can still be reset for individual histograms.\n\
+In detail: If a canvas is closed and its lin-log state differs\n\
+from the global default its state is stored and restored when\n\
+the histogram is shown again.\n\
 If \"Live statbox\" a box is displayed when dragging the\n\
 pressed mouse in the histogram area showing various statistics\n\
 values. Selecting \"Live Gauss fit\" fits a gaussian to the\n\

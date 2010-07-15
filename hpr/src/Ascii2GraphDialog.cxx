@@ -63,11 +63,11 @@ Default is to construct a new canvas\n\
    RestoreDefaults();
    fGraphSelPad = 0;    // start with new canvas as default
    TList *row_lab = new TList();
-   row_lab->Add(new TObjString("RadioButton_Empty pad only               "));
-   row_lab->Add(new TObjString("RadioButton_Simple: X, Y no errors       "));
-   row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, (Ex), Ey   "));
-   row_lab->Add(new TObjString("RadioButton_Asym Ers: X,Y,Exl,Exu,Eyl,Eyu"));
-   row_lab->Add(new TObjString("RadioButton_Select columns, X, Y         "));
+   row_lab->Add(new TObjString("RadioButton_Empty pad only                 "));
+   row_lab->Add(new TObjString("RadioButton_Simple: X, Y no errors         "));
+   row_lab->Add(new TObjString("RadioButton_Sym Errors: X, Y, (Ex), Ey     "));
+   row_lab->Add(new TObjString("RadioButton_Asym Ers: X,Y,Exl,Exu,Eyl,Eyu  "));
+   row_lab->Add(new TObjString("RadioButton_Select columns, X, Y           "));
    row_lab->Add(new TObjString("PlainIntVal_Column Sel"));
    row_lab->Add(new TObjString("PlainIntVal+Column Sel"));
 
@@ -81,23 +81,23 @@ Default is to construct a new canvas\n\
    row_lab->Add(new TObjString("DoubleValue+Yaxis max"));
 
    row_lab->Add(new TObjString("CheckButton_Draw/Overl in sel pad"));
-   row_lab->Add(new TObjString("CheckButton_Show title"));
-   row_lab->Add(new TObjString("PlainIntVal_Xsize of canvas"));
-   row_lab->Add(new TObjString("PlainIntVal-Ysize of canvas"));
-   row_lab->Add(new TObjString("PlainIntVal_Div X of canvas"));
-   row_lab->Add(new TObjString("PlainIntVal+Div Y of canvas"));
-   row_lab->Add(new TObjString("CheckButton_Marker"));
-   row_lab->Add(new TObjString("CheckButton+Simple line"));
-	row_lab->Add(new TObjString("CheckButton+Smooth line"));
-	row_lab->Add(new TObjString("Mark_Select_MaStyle"));
-   row_lab->Add(new TObjString("ColorSelect+MaColor"));
-   row_lab->Add(new TObjString("Float_Value+MaSize"));
-   row_lab->Add(new TObjString("ColorSelect_LineC"));
-   row_lab->Add(new TObjString("PlainShtVal+Width"));
-   row_lab->Add(new TObjString("LineSSelect+Style"));
-	row_lab->Add(new TObjString("CheckButton_Fill area"));
-   row_lab->Add(new TObjString("Fill_Select+Fill Style"));
-   row_lab->Add(new TObjString("ColorSelect+Fill color"));
+   row_lab->Add(new TObjString("CheckButton+Show name as title   "));
+   row_lab->Add(new TObjString("PlainIntVal_Xsize canvas"));
+   row_lab->Add(new TObjString("PlainIntVal+Ysize canvas"));
+   row_lab->Add(new TObjString("PlainIntVal_Div X canvas"));
+   row_lab->Add(new TObjString("PlainIntVal+Div Y canvas"));
+   row_lab->Add(new TObjString("CheckButton_Marker      "));
+   row_lab->Add(new TObjString("CheckButton+Simple line "));
+	row_lab->Add(new TObjString("CheckButton+Smooth line "));
+	row_lab->Add(new TObjString("Float_Value_MarkSize "));
+	row_lab->Add(new TObjString("Mark_Select+MarkStyle"));
+   row_lab->Add(new TObjString("ColorSelect+MarkColor"));
+   row_lab->Add(new TObjString("PlainShtVal_LineWidth"));
+	row_lab->Add(new TObjString("LineSSelect+LStyle"));
+	row_lab->Add(new TObjString("ColorSelect+LineColor"));
+	row_lab->Add(new TObjString("CheckButton_Fill area   "));
+   row_lab->Add(new TObjString("Fill_Select+FillStyle"));
+   row_lab->Add(new TObjString("ColorSelect+FillColor"));
    row_lab->Add(new TObjString("CommandButt_Show_Head_of_File"));
    row_lab->Add(new TObjString("CommandButt+Show_Tail_of_File"));
    row_lab->Add(new TObjString("CommandButt_Draw_the_Graph"));
@@ -128,13 +128,13 @@ Default is to construct a new canvas\n\
    valp[ind++] = &fGraphPolyMarker;
    valp[ind++] = &fGraphSimpleLine;
 	valp[ind++] = &fGraphSmoothLine;
+	valp[ind++] = &fGraphMarkerSize;
 	valp[ind++] = &fGraphMarkerStyle;
    valp[ind++] = &fGraphMarkerColor;
-   valp[ind++] = &fGraphMarkerSize;
-   valp[ind++] = &fGraphLineColor;
    valp[ind++] = &fGraphLineWidth;
    valp[ind++] = &fGraphLineStyle;
-   valp[ind++] = &fGraphFill;
+	valp[ind++] = &fGraphLineColor;
+	valp[ind++] = &fGraphFill;
 	valp[ind++] = &fGraphFillStyle;
 	valp[ind++] = &fGraphFillColor;
    valp[ind++] = &fCommandHead;
@@ -155,17 +155,38 @@ Ascii2GraphDialog::~Ascii2GraphDialog()
 
 void Ascii2GraphDialog::Draw_The_Graph()
 {
-   if (fEmptyPad != 0) {
-      cout << "Empty pad only" << endl;
-      TGraph *graph = new TGraph();
+	TEnv env(".hprrc");
+	fGraphLogX        = env.GetValue("GraphAttDialog.fGraphLogX", 0);
+	fGraphLogY        = env.GetValue("GraphAttDialog.fGraphLogY", 0);
+	fGraphLogZ        = env.GetValue("GraphAttDialog.fGraphLogZ", 0);
+	
+	if (fEmptyPad != 0) {
+		cout << "Empty pad only" << endl;
+		TGraph *graph = new TGraph();
 #ifdef MARABOUVERS
-      HTCanvas * cg = new HTCanvas("Empty", "Empty", fWinx, fWiny,
-                      fGraphXsize, fGraphYsize, NULL, NULL, graph);
-//                         fGraphXsize, fGraphYsize, fHistPresent, 0, graph);
+		HTCanvas * cg = new HTCanvas("Empty", "Empty", fWinx, fWiny,
+							fGraphXsize, fGraphYsize, NULL, NULL, graph);
+		if ( fGraphLogX )
+			 cg->SetLogx();
+		else
+			cg->SetLogx(kFALSE);
+		if ( fGraphLogY )
+			cg->SetLogy();
+		else
+			cg->SetLogy(kFALSE);
+		//                         fGraphXsize, fGraphYsize, fHistPresent, 0, graph);
 #else
-       TCanvas * cg = new TCanvas("Empty", "Empty", fWinx, fWiny,
-                     fGraphXsize, fGraphYsize);
-#endif
+		TCanvas * cg = new TCanvas("Empty", "Empty", fWinx, fWiny,
+							fGraphXsize, fGraphYsize);
+		if ( fGraphLogX )
+			cg->SetLogx();
+		else
+			cg->SetLogx(kFALSE);
+		if ( fGraphLogY )
+			cg->SetLogy();
+		else
+			cg->SetLogy(kFALSE);
+		#endif
       if (fGraphXdiv > 1 || fGraphYdiv > 1) {
          cg->Divide(fGraphXdiv, fGraphYdiv);
          cg->cd(1);
@@ -347,14 +368,29 @@ void Ascii2GraphDialog::Draw_The_Graph()
             cname += fGraphSerialNr ++;
          }
 #ifdef MARABOUVERS
-         HTCanvas * cg = new HTCanvas(cname, htitle, fWinx, fWiny,
-                         fGraphXsize, fGraphYsize, NULL, NULL, graph);
-//                         fGraphXsize, fGraphYsize, fHistPresent, 0, graph);
+			HTCanvas * cg = new HTCanvas(cname, htitle, fWinx, fWiny,
+								fGraphXsize, fGraphYsize, NULL, NULL, graph);
+			if ( fGraphLogX )
+				cg->SetLogx();
+			else
+				cg->SetLogx(kFALSE);
+			if ( fGraphLogY ) 
+				cg->SetLogy();
+			else
+				cg->SetLogy(kFALSE);
 #else
-         TCanvas * cg = new TCanvas(cname, htitle, fWinx, fWiny,
-                         fGraphXsize, fGraphYsize);
+			TCanvas * cg = new TCanvas(cname, htitle, fWinx, fWiny,
+							fGraphXsize, fGraphYsize);
+			if ( fGraphLogX )
+				cg->SetLogx();
+			else
+				cg->SetLogx(kFALSE);
+			if ( fGraphLogY )
+				cg->SetLogy();
+			else
+				cg->SetLogy(kFALSE);
 #endif
-         if (fGraphXdiv > 1 || fGraphYdiv > 1) {
+			if (fGraphXdiv > 1 || fGraphYdiv > 1) {
             cg->Divide(fGraphXdiv, fGraphYdiv);
             cg->cd(1);
          }
@@ -362,7 +398,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 //            gPad->Modified();
 //            gPad->Update();
       }
-      TH1 * gh = graph->GetHistogram();
+		TH1 * gh = graph->GetHistogram();
       if (fGraphXtitle.Length() > 0)
          gh->GetXaxis()->SetTitle(fGraphXtitle.Data());
       if (fGraphYtitle.Length() > 0)
@@ -506,8 +542,11 @@ void Ascii2GraphDialog::RestoreDefaults()
 	fGraphMarkerStyle = GraphAttDialog::fGraphMStyle;
 	fGraphMarkerSize  = GraphAttDialog::fGraphMSize;
 	fGraphMarkerColor = GraphAttDialog::fGraphMColor;
-	fGraphFillStyle = GraphAttDialog::fGraphFStyle;
-	fGraphFillColor = GraphAttDialog::fGraphFColor;
+	fGraphFillStyle   = GraphAttDialog::fGraphFStyle;
+	fGraphFillColor   = GraphAttDialog::fGraphFColor;
+	fGraphLogX        = env.GetValue("GraphAttDialog.fGraphLogX", 0);
+	fGraphLogY        = env.GetValue("GraphAttDialog.fGraphLogY", 0);
+	fGraphLogZ        = env.GetValue("GraphAttDialog.fGraphLogZ", 0);
 	
 /*	
    fGraphMarkerStyle = env.GetValue("Ascii2GraphDialog.GraphMarkerStyle", 20);	

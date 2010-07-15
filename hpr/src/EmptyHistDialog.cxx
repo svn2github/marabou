@@ -13,12 +13,15 @@
 #endif
 #include "TGMrbValuesAndText.h"
 #include "EmptyHistDialog.h"
+#include "SetCanvasAttDialog.h"
+#include "SetHistOptDialog.h"
 #include <fstream>
 //______________________________________________________________________________
 
 ClassImp(EmptyHistDialog)
 
-enum Ecmds {M_FitFormula = 1001, M_Save2File = 1002};
+enum Ecmds {M_FitFormula = 1001, M_Save2File = 1002, M_OptionHist = 1003,
+				M_OptionPad = 1004};
 
 EmptyHistDialog::EmptyHistDialog(TGWindow * win, Int_t winx,  Int_t winy)
               : fWinx(winx), fWiny(winy) 
@@ -42,8 +45,9 @@ divided into pads to allow for more than one histogram\n\
    RestoreDefaults();
    TList *row_lab = new TList(); 
 
-   row_lab->Add(new TObjString("StringValue_HistName"));
-   row_lab->Add(new TObjString("StringValue_Title X  "));
+   row_lab->Add(new TObjString("StringValue_Name"));
+	row_lab->Add(new TObjString("StringValue_Title"));
+	row_lab->Add(new TObjString("StringValue_Title X  "));
    row_lab->Add(new TObjString("StringValue+Title Y  "));
    row_lab->Add(new TObjString("PlainIntVal_Nbins"));
    row_lab->Add(new TObjString("DoubleValue+Xmin"));
@@ -63,7 +67,8 @@ divided into pads to allow for more than one histogram\n\
 //      Int_t nrows = row_lab->GetSize();
 
    valp[ind++] = &fHistName;
-   valp[ind++] = &fHistXtitle;
+	valp[ind++] = &fHistTitle;
+	valp[ind++] = &fHistXtitle;
    valp[ind++] = &fHistYtitle;
    valp[ind++] = &fNbins;
    valp[ind++] = &fXaxisMin;
@@ -141,7 +146,7 @@ void EmptyHistDialog::Draw_The_Hist()
 		ymax = fYaxisMax;
 	}
 	gStyle->SetOptStat(0);
-	fHist = new TH1D(fHistName, fHistName, fNbins, xmin, xmax);
+	fHist = new TH1D(fHistName, fHistTitle, fNbins, xmin, xmax);
 	fHist->Draw();
 //	fHist->SetMinimum(ymin);
 	fHist->SetMaximum(ymax);
@@ -161,8 +166,13 @@ void EmptyHistDialog::BuildMenu()
    TGMenuBar * menubar = fRootCanvas->GetMenuBar();
    TGLayoutHints * layoh_right = new TGLayoutHints(kLHintsTop | kLHintsLeft);
    
-   fMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-   menubar->AddPopup("Draw_Fill", fMenu, layoh_right, menubar->GetPopup("Inspect"));
+	fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
+	menubar->AddPopup("Graphic_defaults", fAttrMenu, layoh_right);
+	fAttrMenu->AddEntry("Axis / Title / StatBox Attributes", M_OptionHist);
+	fAttrMenu->AddEntry("Canvas, Pad, Frame", M_OptionPad);
+	
+	fMenu     = new TGPopupMenu(fRootCanvas->GetParent());	
+	menubar->AddPopup("Draw_Fill", fMenu, layoh_right, menubar->GetPopup("Inspect"));
    fMenu->AddEntry("Draw / fill with user defined function", M_FitFormula);
    TGPopupMenu * filemenu = menubar->GetPopup("File");
    if (filemenu) {
@@ -174,9 +184,11 @@ void EmptyHistDialog::BuildMenu()
    }    
    fMenu->AddEntry("Save hist to rootfile", M_Save2File);
 
-   fMenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
+   fAttrMenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
                       "HandleMenu(Int_t)");
-   
+	fMenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
+							 "HandleMenu(Int_t)");
+							 
    menubar->MapSubwindows();
    menubar->Layout(); 
 }
@@ -187,6 +199,7 @@ void EmptyHistDialog::SaveDefaults()
    cout << "EmptyHistDialog::SaveDefaults() " << endl;
    TEnv env(".hprrc");
    env.SetValue("EmptyHistDialog.HistName"		 , fHistName       );
+	env.SetValue("EmptyHistDialog.HistTitle"		 , fHistName       );
 	env.SetValue("EmptyHistDialog.fUseForGraph"	 , fUseForGraph    );
 	env.SetValue("EmptyHistDialog.HistSelPad" 	 , fHistSelPad     );
    env.SetValue("EmptyHistDialog.HistNewPad" 	 , fHistNewPad     );
@@ -215,7 +228,17 @@ void EmptyHistDialog::HandleMenu(Int_t id)
       case M_Save2File:
          new Save2FileDialog(fHist);
          break;
-   }
+		case M_OptionPad:
+		{
+			new SetCanvasAttDialog(fRootCanvas);
+		}
+		break;
+		case M_OptionHist:
+		{
+			new SetHistOptDialog(fRootCanvas);
+		}
+		break;
+	}
 }
 //_________________________________________________________________________
             
@@ -223,7 +246,8 @@ void EmptyHistDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
    fHistName        = env.GetValue("EmptyHistDialog.HistName"  		, "empty");
-   fUseForGraph      = env.GetValue("EmptyHistDialog.fUseForGraph"	, 0);
+	fHistName        = env.GetValue("EmptyHistDialog.HistTitle"  		, "empty");
+	fUseForGraph     = env.GetValue("EmptyHistDialog.fUseForGraph"	, 0);
 	fHistSelPad      = env.GetValue("EmptyHistDialog.HistSelPad"		, 0);
 	fHistNewPad      = env.GetValue("EmptyHistDialog.HistNewPad"		, 1);
    fHistXsize       = env.GetValue("EmptyHistDialog.HistXsize" 		, 800);
