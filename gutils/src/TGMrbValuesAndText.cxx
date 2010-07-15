@@ -886,8 +886,10 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
          Double_t  uplim = 0;
          Bool_t has_lowlim = kFALSE;
          Bool_t has_uplim = kFALSE;
-         TGNumberFormat::ELimit limsw = TGNumberFormat::kNELNoLimits;
-
+         TGNumberFormat::ELimit     limsw = TGNumberFormat::kNELNoLimits;
+			TGNumberFormat::EAttribute attr  = TGNumberFormat::kNEAAnyNumber;
+			TGNumberFormat::EStyle     style = TGNumberFormat::kNESReal;
+			
          if (!l.BeginsWith("CommandButt") && !l.BeginsWith("Exec_Button")) {
 // label
             TString lab(l);
@@ -902,13 +904,13 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                   lab.Resize(ft);
                   if (!l.BeginsWith("ComboSelect")) {
 							TString s = ((TObjString*)tokens->At(1))->String();
-							if (s.Length() > 1) {
+							if (s.Length() > 0) {
 								lowlim = s.Atof();
 								has_lowlim = kTRUE;
 							}
 							if (nt > 2) {
 								s = ((TObjString*)tokens->At(2))->String();
-								if (s.Length() > 1) {
+								if (s.Length() > 0) {
 									uplim = s.Atof();
 									has_uplim = kTRUE;
 								}
@@ -918,8 +920,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                delete tokens;
 					if ( has_lowlim && has_uplim ) {
 						limsw = TGNumberFormat::kNELLimitMinMax;
+						if ( uplim - lowlim <= 10 )
+							style = TGNumberFormat::kNESRealOne;
+						if ( uplim - lowlim <= 2 )
+							style = TGNumberFormat::kNESRealTwo;
 					} else if ( has_lowlim ) {
 						limsw = TGNumberFormat::kNELLimitMin;
+						if ( lowlim >= 0 )
+							attr = TGNumberFormat::kNEANonNegative;
 					} else if  ( has_uplim ) {
 						limsw = TGNumberFormat::kNELLimitMax;
 					}
@@ -1095,14 +1103,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
          } else if (l.BeginsWith("Float_Value")) {
             Double_t neval = *(Float_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hButtonFrame,neval, 5, i + 1000, TGNumberFormat::kNESReal, TGNumberFormat::kNEAAnyNumber, limsw, lowlim, uplim);
+            tnentry = new TGNumberEntry(hButtonFrame,neval, 5, i + 1000, style, attr, limsw, lowlim, uplim);
             hButtonFrame->AddFrame(tnentry, loc);
             hframe->AddFrame(hButtonFrame, loc);
             tnentry->Associate(this);
             fEntries->Add(tnentry);
          } else if (l.BeginsWith("DoubleValue")) {
             Double_t neval = *(Double_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hButtonFrame,neval, 5,  i + 1000, TGNumberFormat::kNESReal, TGNumberFormat::kNEAAnyNumber, limsw, lowlim, uplim);
+				tnentry = new TGNumberEntry(hButtonFrame,neval, 5, i + 1000, style, attr, limsw, lowlim, uplim);
             hButtonFrame->AddFrame(tnentry, loc);
             hframe->AddFrame(hButtonFrame, loc);
             tnentry->Associate(this);
@@ -1110,7 +1118,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
          } else if (l.BeginsWith("DoubleV+Cb")) {
             Double_t neval = *(Double_t*)fValPointers[i];
-            tnentry = new TGNumberEntry(hButtonFrame,neval, 5,  i + 1000, TGNumberFormat::kNESReal, TGNumberFormat::kNEAAnyNumber, limsw, lowlim, uplim);
+            tnentry = new TGNumberEntry(hButtonFrame,neval, 5, i + 1000, style, attr, limsw, lowlim, uplim);
             tnentry->Associate(this);
             fEntries->Add(tnentry);
             hButtonFrame->AddFrame(tnentry, l1);
@@ -1169,7 +1177,6 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 				} else {
 					fFileType[i] = 0;
 				}
-				cout << "FileRequest " << i << endl;
             TString scol;
             scol = *(TString*)fValPointers[i];
             tentry = new TGTextEntry(hButtonFrame, tbuf = new TGTextBuffer(100), i + 1000*kIdText);
@@ -1710,7 +1717,7 @@ void TGMrbValuesAndText::StoreValues(){
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-//   cout << "StoreValues()" << endl;
+ //  cout << "StoreValues()" << endl;
 
 //   if (fFinis != 0) return;
    if (fEntries == NULL) return;
@@ -1755,7 +1762,9 @@ void TGMrbValuesAndText::StoreValues(){
           } else if (((TGComboBox*)obj)->WidgetId() / 1000 == kIdFontS) {
              sel = ((TGComboBox*)obj)->GetSelected();
              Font_t tf = *(Short_t*)fValPointers[i];
-             if (tf >= 12) sel = sel * 10 + 2;
+				 Int_t prec = tf % 10;
+				 if ( prec > 3 ) prec = 2;
+				 sel = sel * 10 + prec;
              *(Short_t*)fValPointers[i] = sel;
 
           } else if (((TGComboBox*)obj)->WidgetId()  / 1000== kIdLineS) {
