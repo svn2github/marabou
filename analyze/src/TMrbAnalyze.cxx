@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.94 2010-02-15 09:45:21 Otto.Schaile Exp $
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.95 2010-07-21 12:42:37 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -572,7 +572,7 @@ Bool_t TMrbAnalyze::WriteRootTree(const Char_t * RootFile) {
 	ioSpec->SetOutputFile(RootFile, TMrbIOSpec::kOutputOpen);
 	pthread_mutex_lock(&global_data_mutex);
 	sts = this->WriteRootTree(ioSpec);
-	pthread_mutex_lock(&global_data_mutex);
+	pthread_mutex_unlock(&global_data_mutex);
 	delete ioSpec;
 	return(sts);
 }
