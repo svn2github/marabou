@@ -30,7 +30,6 @@ private:
    Bool_t         fHasConnection;     //! dont stream
    Bool_t         fButtonsEnabled;    //! dont stream
    Bool_t         fEditorIsShown;     //! dont stream
-
    TList          *fHiddenPrimitives; //
 
    Double_t       fEditGridX;         //
