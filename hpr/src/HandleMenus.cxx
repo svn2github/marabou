@@ -135,7 +135,8 @@ enum ERootCanvasCommands {
    kFHSuperimpose,
    kFHTh3Dialog,
    kFHSuperimposeGraph,
-   kFHSetAxisGraph,
+	kFHSetAxisGraphX,
+   kFHSetAxisGraphY,
    kFHKolmogorov,
    kFHfft,
    kFHSuperimposeScale,
@@ -732,8 +733,11 @@ again:
                   case kFHSuperimposeGraph:
                      fHistPresent->SuperimposeGraph((TCanvas*)fHCanvas);
                      break;
-                  case kFHSetAxisGraph:
-                     SetAxisGraph((TCanvas*)fHCanvas, fGraph);
+						case kFHSetAxisGraphX:
+                     SetAxisGraphX((TCanvas*)fHCanvas, fGraph);
+                     break;
+                  case kFHSetAxisGraphY:
+                     SetAxisGraphY((TCanvas*)fHCanvas, fGraph);
                      break;
                   case kFHKolmogorov:
                      fFitHist->KolmogorovTest();
@@ -1357,7 +1361,8 @@ void HandleMenus::BuildMenus()
    if ( graph1d ) {
    	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
       fDisplayMenu->AddEntry("Superimpose selected graph", kFHSuperimposeGraph);
-      fDisplayMenu->AddEntry("Set range of X-axis", kFHSetAxisGraph);
+		fDisplayMenu->AddEntry("Set range of X-axis", kFHSetAxisGraphX);
+		fDisplayMenu->AddEntry("Set range of Y-axis", kFHSetAxisGraphY);
    }
    if (fh_menus) {
    	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());

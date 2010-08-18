@@ -20,8 +20,8 @@
 
 ClassImp(EmptyHistDialog)
 
-enum Ecmds {M_FitFormula = 1001, M_Save2File = 1002, M_OptionHist = 1003,
-				M_OptionPad = 1004};
+enum Ecmds {M_FitFormula, M_Save2File, M_Graph2File, M_OptionHist,
+				M_OptionPad};
 
 EmptyHistDialog::EmptyHistDialog(TGWindow * win, Int_t winx,  Int_t winy)
               : fWinx(winx), fWiny(winy) 
@@ -183,6 +183,7 @@ void EmptyHistDialog::BuildMenu()
                       "HandleMenu(Int_t)");
    }    
    fMenu->AddEntry("Save hist to rootfile", M_Save2File);
+   fMenu->AddEntry("Save graph to rootfile", M_Graph2File);
 
    fAttrMenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
                       "HandleMenu(Int_t)");
@@ -227,6 +228,26 @@ void EmptyHistDialog::HandleMenu(Int_t id)
          break;
       case M_Save2File:
          new Save2FileDialog(fHist);
+         break;
+      case M_Graph2File:
+			{
+			TGraph * gr;
+			Int_t ngr = 0;
+			TIter next(fCanvas->GetListOfPrimitives());
+			while (TObject * obj = next()) {
+				if (obj->InheritsFrom("TGraph")) {
+					gr = (TGraph*)obj;
+					ngr++;
+				}
+			}
+			if (ngr <= 0) {
+				cout << "No graph found" <<endl;
+			} else if (ngr > 1) {
+				cout << "More then 1 graph found: " << ngr <<endl;
+			} else {
+				new Save2FileDialog(gr);
+			}
+			}
          break;
 		case M_OptionPad:
 		{

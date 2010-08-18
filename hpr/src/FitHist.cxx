@@ -586,7 +586,8 @@ void FitHist::handle_mouse()
    static TLine * upedge = 0;
    static TBox * box = 0;
    static Int_t nrows = 4;
-   Int_t px, py;
+	static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi());
+	Int_t px, py;
    if (gROOT->GetEditorMode() != 0) return;
    Int_t event = gPad->GetEvent();
    if (event ==  kKeyPress) {
@@ -725,7 +726,7 @@ void FitHist::handle_mouse()
             bwidth = hist->GetBinWidth(startbinX);
             esigma = hist->GetBinWidth(startbinX) * TMath::Sqrt(12.);
             cont = hist->GetBinContent(startbinX);
-            gconst = cont * bwidth / TMath::Sqrt(2*TMath::Pi() * esigma);
+            gconst = cont * bwidth / sqrt2pi * esigma;
             center = hist->GetBinCenter(startbinX);
 				fLiveGauss     = env.GetValue("Set1DimOptDialog.fLiveGauss", 0);
 				fLiveBG        = env.GetValue("Set1DimOptDialog.fLiveBG", 0);
@@ -801,10 +802,10 @@ void FitHist::handle_mouse()
                	values.Add(new TObjString(Form("%lg", cont)));
                	 if (fLiveGauss) {
                   	 if (fLiveBG) {
-                     	 rowlabels.Add(new TObjString("Background: const, slope"));
+                     	 rowlabels.Add(new TObjString("Backgd: content, const, slope"));
                      	 values.Add(new TObjString("no fit done yet"));
                   	 }
-                  	 rowlabels.Add(new TObjString("Gaus: Cont, Mean, Sigma"));
+                  	 rowlabels.Add(new TObjString("Gaus: Content, Mean, Sigma"));
                   	 values.Add(new TObjString("no fit done yet"));
                	}
             	}
@@ -955,18 +956,19 @@ void FitHist::handle_mouse()
                	gPad->Update();
                	gPad->GetCanvas()->GetFrame()->SetBit(TBox::kCannotMove);
                	if (fLiveBG) {
+							Double_t a = gFitFunc->GetParameter(0);
+							Double_t b = gFitFunc->GetParameter(1);
+							Double_t bcont = (a + 0.5 * b 
+							   * (XupEdge+XlowEdge))*(XupEdge-XlowEdge) / bwidth;
                   	sigma = gFitFunc->GetParameter(4);
-                  	gconst = gFitFunc->GetParameter(2) *
-                              	TMath::Sqrt(2*TMath::Pi() * sigma) / bwidth;
+                  	gconst = gFitFunc->GetParameter(2) * sqrt2pi * sigma / bwidth;
                   	center = gFitFunc->GetParameter(3);
-                  	fTofLabels->SetLabelText(0,4,Form("%lg,  %lg",
-                     	gFitFunc->GetParameter(0), gFitFunc->GetParameter(1)));
+							fTofLabels->SetLabelText(0,4,Form("%lg,  %lg,  %lg", bcont, a, b));
                   	fTofLabels ->SetLabelText(0,5, Form("%lg,  %lg,  %lg",
                               	 gconst, center, sigma));
                	} else {
                   	sigma = gFitFunc->GetParameter(2);
-                  	gconst = gFitFunc->GetParameter(0) *
-                              	TMath::Sqrt(2*TMath::Pi() * sigma) / bwidth;
+                  	gconst = gFitFunc->GetParameter(0) * sqrt2pi * sigma / bwidth;
                   	center = gFitFunc->GetParameter(1);
                   	fTofLabels ->SetLabelText(0, 4, Form("%lg,  %lg,  %lg",
                               	 gconst, center, sigma));
@@ -1774,19 +1776,19 @@ void AddAsString(Double_t x, TAxis * a, Int_t  prec, TOrdCollection *entries)
 
 void FitHist::SetXaxisRange()
 {
-   SetAxisHist(cHist, fSelHist->GetXaxis());
+   SetAxisHistX(cHist, fSelHist->GetXaxis());
 }
 //_______________________________________________________________________________________
 
 void FitHist::SetYaxisRange()
 {
-   SetAxisHist(cHist, fSelHist->GetYaxis());
+   SetAxisHistX(cHist, fSelHist->GetYaxis());
 }
 //_______________________________________________________________________________________
 
 void FitHist::SetZaxisRange()
 {
-   SetAxisHist(cHist, fSelHist->GetZaxis());
+   SetAxisHistX(cHist, fSelHist->GetZaxis());
 }
 //_______________________________________________________________________________________
 
@@ -2076,8 +2078,22 @@ void FitHist::KolmogorovTest()
 
 void FitHist::Superimpose(Int_t mode)
 {
-   TH1 *hist;
-   TPaveLabel *tname;
+	static const char helptext[] =
+	"\n\
+	A selected hist is drawn in the same pad\n\
+	The hist can be scaled either automatically\n\
+	The scale is adjusted such that the maximum value\n\
+	is 10% below the maximum of the pad. Any value may be\n\
+	selected manually.\n\
+	An extra axis may be drawn on the right side:\n\
+	The AxOffs determines its position, 0 is on top\n\
+	of the right edge of the frame, negative is left\n\
+	of it in the pad, positive at the right side\n\
+	The color of the extra axis an the graph are the same.\n\
+	\n\
+	";
+	TH1 *hist;
+//   TPaveLabel *tname;
 //  choose from histo list
 //   Int_t nh = hp->GetSelectedHist()->GetSize();
    if (hp->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
@@ -2097,6 +2113,7 @@ void FitHist::Superimpose(Int_t mode)
 		Hpr::WarnBox("Dimensions of histograms differ");
 		return;
 	}
+/*
    if ( hist->GetDimension() == 3 ) {
       if ( hist->GetMarkerColor() <= 1 ) {
       	fColSuperimpose += 1;
@@ -2111,63 +2128,173 @@ void FitHist::Superimpose(Int_t mode)
 		      fColSuperimpose = 2;
       }
    }
+*/
+//	Double_t rightmax = 1.1*ymax;
+	static Int_t        do_scale;
+	do_scale = mode;
+	static Int_t      auto_scale = mode;
+	static Double_t  axis_offset = 0.;
+	static Double_t label_offset = 0.01;
+	static Color_t    axis_color = 2;
+	TEnv env(".hprrc");
+	static Style_t lLStyle   = env.GetValue("Set1DimOptDialog.fHistLineStyle", 1);
+	static Size_t lLWidth    = env.GetValue("Set1DimOptDialog.fHistLineWidth", 1);
+	static Style_t lMStyle   = env.GetValue("Set1DimOptDialog.MarkerStyle", 7);
+	static Size_t lMSize     = env.GetValue("Set1DimOptDialog.MarkerSize",  1);
+	static Color_t lLColor   = axis_color; 
+	static Color_t lMColor   = axis_color; 
+	static Int_t   lLegend   = 1;
+	
+	if ( lMSize <= 0 ) lMSize = 1;
+	static Double_t new_scale = 1;   
+	static TString axis_title;
+	axis_title= hist->GetYaxis()->GetTitle();
+	Int_t new_axis = kTRUE;                    
+	static void *valp[50];                    
+	Int_t ind = 0;                            
+	TList *row_lab = new TList();
+	TRootCanvas * win = (TRootCanvas*)cHist->GetCanvasImp();
+	Bool_t ok = kTRUE;
+	row_lab->Add(new TObjString("CheckButton_New scale  "));
+	valp[ind++] = &do_scale;
+	row_lab->Add(new TObjString("CheckButton+Auto scale  "));
+	valp[ind++] = &auto_scale;
+	row_lab->Add(new TObjString("DoubleValue+Factor"));
+	valp[ind++] = &new_scale;
+	row_lab->Add(new TObjString("CheckButton_Extra axis "));
+	valp[ind++] = &new_axis;
+	row_lab->Add(new TObjString("DoubleValue+AxOffs "));
+	valp[ind++] = &axis_offset;
+	row_lab->Add(new TObjString("DoubleValue+LabOffs"));
+	valp[ind++] = &label_offset;
+	row_lab->Add(new TObjString("ColorSelect_AxisColor"));
+	valp[ind++] = &axis_color;
+	row_lab->Add(new TObjString("StringValue+AxTitle"));
+	valp[ind++] = &axis_title;
+	row_lab->Add(new TObjString("CheckButton+Legend  "));
+	valp[ind++] = &lLegend;
+	row_lab->Add(new TObjString("ColorSelect_MarkColor"));
+	valp[ind++] = &lMColor;
+	row_lab->Add(new TObjString("Mark_Select+MarkStyle"));
+	valp[ind++] = &lMStyle;
+	row_lab->Add(new TObjString("Float_Value+MSize"));
+	valp[ind++] = &lMSize;
+	row_lab->Add(new TObjString("ColorSelect_LineColor"));
+	valp[ind++] = &lLColor;
+	row_lab->Add(new TObjString("PlainShtVal+LineWidth"));
+	valp[ind++] = &lLWidth;
+	row_lab->Add(new TObjString("LineSSelect+LStyle"));
+	valp[ind++] = &lLStyle;
+	
+	Int_t itemwidth = 380;
+	ok = GetStringExt("Superimpose Histogram", NULL, itemwidth, win,
+							NULL, NULL, row_lab, valp,
+							NULL, NULL, helptext);
+	if (!ok )
+		return;
+	if ( do_scale != 0 && auto_scale != 0 ) {
+//		new_scale = hymax / rightmax;
+		cout << "Scale will be auto adjusted " << endl;
+	}
+							
+//	TGaxis *naxis = 0;
+	TH1 *hdisp = (TH1 *) hist->Clone();
+	if (do_scale && !is2dim(fSelHist)) {	// scale
+//		cout << "!!!!!!!!!!!!!!!!" << endl;
+		if ( auto_scale ) {
+			Stat_t maxy = 0;
+			if (fSelHist->GetXaxis()->GetNbins() != hist->GetXaxis()->GetNbins()) {
+	//  case expanded histogram
+				Axis_t x, xmin, xmax;
+				xmin = fSelHist->GetXaxis()->GetXmin();
+				xmax = fSelHist->GetXaxis()->GetXmax();
+				for (Int_t i = 1; i <= hist->GetXaxis()->GetNbins(); i++) {
+					x = hist->GetBinCenter(i);
+					if (x >= xmin && x < xmax && hist->GetBinContent(i) > maxy)
+						maxy = hist->GetBinContent(i);
+				}
+			} else {
+	//  case zoomed histogram
+				for (Int_t i = fSelHist->GetXaxis()->GetFirst();
+						i <= fSelHist->GetXaxis()->GetLast();
+						i++) {
+					if (hist->GetBinContent(i) > maxy)
+						maxy = hist->GetBinContent(i);
+				}
 
-	TGaxis *naxis = 0;
-	TH1 *hdisp = hist;
-	if (mode == 1 && !is2dim(fSelHist)) {	// scale
-		cout << "!!!!!!!!!!!!!!!!" << endl;
-		Stat_t maxy = 0;
-		if (fSelHist->GetXaxis()->GetNbins() != hist->GetXaxis()->GetNbins()) {
-//  case expanded histogram
-			Axis_t x, xmin, xmax;
-			xmin = fSelHist->GetXaxis()->GetXmin();
-			xmax = fSelHist->GetXaxis()->GetXmax();
-			for (Int_t i = 1; i <= hist->GetXaxis()->GetNbins(); i++) {
-				x = hist->GetBinCenter(i);
-				if (x >= xmin && x < xmax && hist->GetBinContent(i) > maxy)
-					maxy = hist->GetBinContent(i);
 			}
-		} else {
-//  case zoomed histogram
-			for (Int_t i = fSelHist->GetXaxis()->GetFirst();
-					i <= fSelHist->GetXaxis()->GetLast();
-					i++) {
-				if (hist->GetBinContent(i) > maxy)
-					maxy = hist->GetBinContent(i);
+			if ( maxy == 0 ) {
+				cout << "Max = 0 " << endl;
+				return;
 			}
-
+			new_scale = fSelHist->GetMaximum() / maxy;
 		}
-		if (fSelHist->GetMaximum() > 0 && maxy > 0) {
-			hdisp = (TH1 *) hist->Clone();
-			TString name = hdisp->GetName();
-			name += "_scaled";
-			hdisp->SetName(name.Data());
-			Float_t sf = fSelHist->GetMaximum() / maxy;
-			cout << "Scale " << hdisp->GetName() << " by " << sf << endl;
-			hdisp->Scale(sf);
-			for (Int_t i = 1; i <= hist->GetNbinsX(); i++) {
-				hdisp->SetBinError(i, sf * hist->GetBinError(i));
-			}
-			cout << "Superimpose: Scale errors linearly" << endl;
-			naxis = new TGaxis(fSelHist->GetXaxis()->GetXmax(),
-									fSelHist->GetYaxis()->GetXmin(),
-									fSelHist->GetXaxis()->GetXmax(),
-									fSelHist->GetMaximum(),
-									hist->GetYaxis()->GetXmin(), maxy, 510,
-									"+");
-			naxis->SetLabelOffset(0.05);
+		TString name = hdisp->GetName();
+		name += "_scaled";
+		hdisp->SetName(name.Data());
+		cout << "Scale " << hdisp->GetName() << " by " << new_scale << endl;
+		hdisp->Scale(new_scale);
+		for (Int_t i = 1; i <= hist->GetNbinsX(); i++) {
+			hdisp->SetBinError(i, new_scale * hist->GetBinError(i));
 		}
+		cout << "Superimpose: Scale errors linearly" << endl;
+		/*
+		naxis = new TGaxis(fSelHist->GetXaxis()->GetXmax(),
+								fSelHist->GetYaxis()->GetXmin(),
+								fSelHist->GetXaxis()->GetXmax(),
+								fSelHist->GetMaximum(),
+								hist->GetYaxis()->GetXmin(), maxy, 510,
+								"+");
+		naxis->SetLabelOffset(0.05);
+		*/
 	}
 	cHist->cd();
    TString drawopt = fSelHist->GetDrawOption();
    if ( hist->GetDimension() == 1 ) {
-	   hdisp->SetLineColor(fColSuperimpose);
-	   if (!drawopt.Contains("E", TString::kIgnoreCase))
+	   hdisp->SetLineColor(lLColor);
+		hdisp->SetMarkerColor(lMColor);
+		hdisp->SetMarkerStyle(lMStyle);
+		hdisp->SetMarkerSize(lMSize);
+		if (!drawopt.Contains("E", TString::kIgnoreCase))
 		   drawopt += "hist";
    }
 	drawopt += "SAME";
 //   cout << "drawopt " << drawopt << endl;
 	hdisp->DrawCopy(drawopt.Data());
+	if ( do_scale != 0 &&  new_axis != 0 ) {
+		TString opt("+SL");
+		TGaxis *axis = new TGaxis(
+		gPad->GetUxmax()+axis_offset*(gPad->GetUxmax()-gPad->GetUxmin()), gPad->GetUymin(), 
+		gPad->GetUxmax()+axis_offset*(gPad->GetUxmax()-gPad->GetUxmin()), gPad->GetUymax(),
+		gPad->GetUymin() / new_scale ,gPad->GetUymax() / new_scale ,510, opt);
+		TString ax_name("axis_");
+		ax_name += hdisp->GetTitle();
+		axis->SetName(ax_name);
+		axis->SetLineColor(axis_color);
+		axis->SetLabelColor(axis_color);
+		axis->SetTickSize   (env.GetValue("SetHistOptDialog.fTickLength", 0.01));
+		axis->SetLabelFont  (env.GetValue("SetHistOptDialog.fLabelFont", 62));
+		axis->SetLabelOffset(label_offset);
+		axis->SetLabelOffset(env.GetValue("SetHistOptDialog.fLabelOffsetY", 0.01));
+		axis->SetLabelSize  (env.GetValue("SetHistOptDialog.fLabelSize", 0.03));
+		axis->SetMaxDigits  (env.GetValue("SetHistOptDialog.fLabelMaxDigits", 4));
+		if (axis_title.Length() > 0) {
+			axis->SetTitle(axis_title);
+			axis->SetTitleColor(axis_color);
+			axis->SetTitleFont( env.GetValue("SetHistOptDialog.fTitleFont", 62));
+			axis->SetTitleSize( env.GetValue("SetHistOptDialog.fTitleSize",0.03));
+			axis->SetTitleOffset( env.GetValue("SetHistOptDialog.fTitleOffsetY",0.03));
+			if ( env.GetValue("SetHistOptDialog.fTitleCenterY", 0) == 1 ) 
+			axis->CenterTitle();
+		}
+		axis->Draw();
+		cout << "axis->Draw() " << axis->GetName() << endl;
+	}
+	if ( lLegend != 0 ) {
+		cHist->BuildLegend(0.11, 0.8, 0.3, 0.95);
+	}
+	
+/*	
 	Float_t x1 = 0.2;
 	Float_t x2 = 0.3;
 	Float_t y1 = 1 - 0.05 * fColSuperimpose;
@@ -2175,13 +2302,23 @@ void FitHist::Superimpose(Int_t mode)
 
 	tname = new TPaveLabel(x1, y1, x2, y2, hdisp->GetName(), "NDC");
 	tname->SetFillColor(0);
-	tname->SetTextColor(fColSuperimpose);
+	tname->SetTextColor(axis_color);
 	tname->Draw();
-
-	if (naxis) {
-		naxis->Draw();
-		naxis->SetLineColor(fColSuperimpose);
-		naxis->SetTextColor(fColSuperimpose);
+*/
+// remove "How to display a 1-dim histogram"
+	TGMenuBar * menubar = win->GetMenuBar();
+	TGPopupMenu *pu = menubar->GetPopup("Hpr-Options");
+	if  (pu ) {
+		TGMenuEntry* ment;
+		TString mname;
+		TIter next(pu->GetListOfEntries());
+		while ( ment = (TGMenuEntry*)next() ) {
+			mname = ment->GetName();
+			if ( mname.BeginsWith("How to display") ) {
+				pu->DeleteEntry(ment->GetEntryId());
+				break;
+			}
+		}
 	}
 	cHist->Update();
 }

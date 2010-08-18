@@ -29,15 +29,17 @@ or with markers. To fill a histogram \"Contour\" must\n\
 be selected\n\
 \n\
 Error Drawing Modes:\n\
-E	Draw error bars.\n\
-E0	Draw error bars. Markers are drawn for bins with 0 contents.\n\
-E1	Draw error bars with perpendicular lines at the edges.\n\
-	Length is controled by EndErrSize.\n\
-E2	Draw error bars with rectangles.\n\
-E3	Draw a fill area through the end points of the vertical error bars.\n\
-E4	Draw a smoothed filled area through the end points of the error bars.\n\
-E5	Like E3 but ignore the bins with 0 contents.\n\
-E6	Like E4 but ignore the bins with 0 contents.\n\
+E  Draw error bars.\n\
+E0 Draw error bars. Markers are drawn for bins with 0 contents.\n\
+E1 Draw error bars with perpendicular lines at the edges.\n\
+   Length is controled by EndErrSize.\n\
+E2 Draw error bars with rectangles.\n\
+E3 Draw a fill area through the end points of the\n\
+   vertical error bars.\n\
+E4 Draw a smoothed filled area through the end points\n\
+   of the error bars.\n\
+E5 Like E3 but ignore the bins with 0 contents.\n\
+E6 Like E4 but ignore the bins with 0 contents.\n\
 \n\
 Options E3-E6: Choose: Contour Off and FillHist On to get area\n\
                filled between the error lines.\n\
@@ -49,7 +51,7 @@ This can still be reset for individual histograms.\n\
 In detail: If a canvas is closed and its lin-log state differs\n\
 from the global default its state is stored and restored when\n\
 the histogram is shown again.\n\
-If \"Live statbox\" a box is displayed when dragging the\n\
+If \"Live statbox\" is activ a box is displayed when dragging the\n\
 pressed mouse in the histogram area showing various statistics\n\
 values. Selecting \"Live Gauss fit\" fits a gaussian to the\n\
 dragged region. Normally \"Linear background in fit\" should also\n\

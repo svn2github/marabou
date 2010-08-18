@@ -39,6 +39,8 @@
 #include "TMessage.h"
 #include "TGraphErrors.h"
 #include "TGraph2D.h"
+#include "TGaxis.h"
+
 #include "CmdListEntry.h"
 #include "HistPresent.h"
 #include "FitHist.h"
@@ -1783,7 +1785,14 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 		}
       graph1d->Draw(GraphAttDialog::fDrawOptGraph);
       TH1 * hist = graph1d->GetHistogram();
-      if ( hist ) hist->SetStats(kFALSE);
+      if ( hist ) {
+			hist->SetStats(kFALSE);
+			TEnv env(".hprrc");
+			if ( env.GetValue("SetHistOptDialog.fTitleCenterY", 0) == 1 )
+				graph1d->GetHistogram()->GetYaxis()->SetBit(TAxis::kCenterTitle);
+			if ( env.GetValue("SetHistOptDialog.fTitleCenterX", 0) == 1 )
+				graph1d->GetHistogram()->GetXaxis()->SetBit(TAxis::kCenterTitle);
+		}
    }
    if (fRootFile) fRootFile->Close();
 	GraphAttDialog::SetGraphAtt(cg);
@@ -2179,7 +2188,7 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
    TObjString * obj = (TObjString *)hlist->At(pos);
 
    TString fname = obj->String();
-	cout << "GetSelGraphAt |" << fname << "|" << endl;
+//	cout << "GetSelGraphAt |" << fname << "|" << endl;
    Int_t pp = fname.Index(" ");
    if (pp <= 0) {cout << "No file name in: " << obj->String() << endl; return NULL;};
    fname.Resize(pp);
@@ -3584,22 +3593,200 @@ void HistPresent::HandleDeleteCanvas( HTCanvas *htc)
 
 void HistPresent::SuperimposeGraph(TCanvas * current)
 {
-   if (!HasGraphs(gPad)) {
-      if (current) {
-         if ( !HasGraphs(current) ) {
-            cout << "No graph in active pad" << endl;
-            return;
-         } else {
-            current->cd();
-         }
+	static const char helptext[] =
+	"\n\
+	A selected graph is drawn in the same pad\n\
+	The graph can be scaled either automatically\n\
+	The scale is adjusted such that the maximum value\n\
+	is 10% below the maximum of the pad. Any value may be\n\
+	selected manually.\n\
+	An extra axis may be drawn on the right side:\n\
+	The AxOffs determines its position, 0 is on top\n\
+	of the right edge of the frame, negative is left\n\
+	of it in the pad, positive at the right side\n\
+	The color of the extra axis an the graph are the same.\n\
+	\n\
+	";
+//	Color_t scale_color[kMaxColors] = {kRed, kGreen, kYellow, kBlue, kMagenta};
+	TH1 * hist = NULL;
+	hist = GetHistOfGraph(gPad);
+	if ( !hist && current ) {
+		hist = GetHistOfGraph(current);
+		if ( !hist ) {
+			cout << "No graph in active pad" << endl;
+			return;
+		} else {
+			current->cd();
       }
    }
-   if (fSelectGraph->GetSize() != 1) {
-      cout << "Plaese select exactly  one graph" << endl;
+   if (fSelectGraph == NULL || fSelectGraph->GetSize() != 1) {
+      cout << "Please select exactly  one graph" << endl;
       return;
    }
    TGraph * gr = GetSelGraphAt(0);
-   if (gr) gr->Draw();
-   gPad->Modified();
-   gPad->Update();
+	if ( !gr ) return;
+	TEnv env(".hprrc");
+	Double_t xmin, xmax, ymin, ymax;
+	Double_t hxmin, hxmax, hymin, hymax;
+	gr->ComputeRange(xmin, ymin, xmax, ymax);
+	hxmin = gPad->GetUxmin();
+	hxmax = gPad->GetUxmax();
+	hymin = gPad->GetUymin();
+	hymax = gPad->GetUymax(); 
+	if ( ymin < hymin || ymax > hymax ) {
+		cout << "Warning: Graph does not fit in Yrange" << endl;
+	}
+	if ( xmin < hxmin || xmax > hxmax ) {
+		cout << "Warning: Graph does not fit in Xrange" << endl;
+	}
+	// 
+	Double_t rightmax = 1.1*ymax;
+	static Int_t        do_scale = 0;
+	static Int_t      auto_scale = 0;
+	static Double_t  axis_offset = 0.;
+	static Double_t label_offset = 0.01;
+	static Color_t    axis_color = 2;
+	static Int_t lSmoothLine = env.GetValue("GraphAttDialog.fGraphSmoothLine", 0);
+	static Int_t lSimpleLine = env.GetValue("GraphAttDialog.fGraphSimpleLine", 0);
+	static Int_t lPolyMarker = env.GetValue("GraphAttDialog.fGraphPolyMarker", 1);
+	static Style_t lLStyle   = env.GetValue("GraphAttDialog.fGraphLStyle", 1);
+	static Size_t lLWidth    = env.GetValue("GraphAttDialog.fGraphLWidth", 1);
+	static Style_t lMStyle   = env.GetValue("GraphAttDialog.fGraphMStyle", 7);
+	static Size_t lMSize     = env.GetValue("GraphAttDialog.fGraphMSize",  1);
+	static Color_t lLColor   = axis_color; 
+	static Color_t lMColor   = axis_color; 
+	static Int_t lLegend     = 1;   
+	
+	static Double_t new_scale = 1;   
+	static TString axis_title;
+	axis_title= gr->GetTitle();
+	Int_t new_axis = kTRUE;                    
+	static void *valp[50];                    
+	Int_t ind = 0;                            
+	TList *row_lab = new TList();
+	TRootCanvas * win = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
+	Bool_t ok = kTRUE;
+	row_lab->Add(new TObjString("CheckButton_New scale  "));
+	valp[ind++] = &do_scale;
+	row_lab->Add(new TObjString("CheckButton+Auto scale  "));
+	valp[ind++] = &auto_scale;
+	row_lab->Add(new TObjString("DoubleValue+Factor"));
+	valp[ind++] = &new_scale;
+	row_lab->Add(new TObjString("CheckButton_Extra axis "));
+	valp[ind++] = &new_axis;
+	row_lab->Add(new TObjString("DoubleValue+AxOffs "));
+	valp[ind++] = &axis_offset;
+	row_lab->Add(new TObjString("DoubleValue+LabOffs"));
+	valp[ind++] = &label_offset;
+	row_lab->Add(new TObjString("ColorSelect_AxisColor"));
+	valp[ind++] = &axis_color;
+	row_lab->Add(new TObjString("StringValue+AxTitle"));
+	valp[ind++] = &axis_title;
+	row_lab->Add(new TObjString("CheckButton+Legend  "));
+	valp[ind++] = &lLegend;
+	row_lab->Add(new TObjString("CheckButton_Draw Marker"));
+	valp[ind++] = &lPolyMarker;
+	row_lab->Add(new TObjString("CheckButton+Simple line "));
+	valp[ind++] = &lSimpleLine;
+	row_lab->Add(new TObjString("CheckButton+Smooth line "));
+	valp[ind++] = &lSmoothLine;
+	row_lab->Add(new TObjString("ColorSelect_MarkColor"));
+	valp[ind++] = &lMColor;
+	row_lab->Add(new TObjString("Mark_Select+MarkStyle"));
+	valp[ind++] = &lMStyle;
+	row_lab->Add(new TObjString("Float_Value+MSize"));
+	valp[ind++] = &lMSize;
+	row_lab->Add(new TObjString("ColorSelect_LineColor"));
+	valp[ind++] = &axis_color;
+	row_lab->Add(new TObjString("PlainShtVal+LineWidth"));
+	valp[ind++] = &lLWidth;
+	row_lab->Add(new TObjString("LineSSelect+LStyle"));
+	valp[ind++] = &lLStyle;
+	
+	Int_t itemwidth = 380;
+	ok = GetStringExt("Superimpose Graph", NULL, itemwidth, win,
+					NULL, NULL, row_lab, valp,
+					NULL, NULL, helptext);
+	if (!ok )
+		return;
+	if ( do_scale != 0 && auto_scale != 0 ) {
+		new_scale = hymax / rightmax;
+		cout << "Scale will be auto adjusted " << new_scale << endl;
+	}
+	Double_t *x = gr->GetX();
+	Double_t *y = gr->GetY();
+	if ( do_scale != 0 ) {
+		if ( TMath::Abs(new_scale) < 1.E-20 ) {
+			cout << "Scale = 0! " << new_scale << endl;
+			return;
+		}
+		for (Int_t i = 0; i < gr->GetN(); i++) {
+			gr->SetPoint(i, x[i], new_scale * y[i]);
+		}
+	}
+	gr->SetLineColor(axis_color);
+	gr->SetMarkerColor(axis_color);
+	TString DrawOptGraph;
+	if (lSimpleLine) DrawOptGraph += "L";
+	if (lSmoothLine) DrawOptGraph += "C";
+	if (lPolyMarker) DrawOptGraph += "P";
+	gr->Draw(DrawOptGraph);
+	gr->SetLineColor(lLColor);
+	gr->SetLineStyle(lLStyle);
+	gr->SetLineWidth(lLWidth);
+	
+	gr->SetMarkerColor(lMColor);
+	gr->SetMarkerStyle(lMStyle);
+	gr->SetMarkerSize (lMSize );
+	//draw an axis on the right side
+	if ( do_scale != 0 ) {
+		TString opt("+SL");
+		TGaxis *axis = new TGaxis(
+		gPad->GetUxmax()+axis_offset*(gPad->GetUxmax()-gPad->GetUxmin()), gPad->GetUymin(), 
+		gPad->GetUxmax()+axis_offset*(gPad->GetUxmax()-gPad->GetUxmin()), gPad->GetUymax(),
+		gPad->GetUymin() / new_scale ,gPad->GetUymax() / new_scale ,510, opt);
+		TString ax_name("axis_");
+		ax_name += gr->GetTitle();
+		axis->SetName(ax_name);
+		axis->SetLineColor(axis_color);
+		axis->SetLabelColor(axis_color);
+		axis->SetTickSize   (env.GetValue("SetHistOptDialog.fTickLength", 0.01));
+		axis->SetLabelFont  (env.GetValue("SetHistOptDialog.fLabelFont", 62));
+		axis->SetLabelOffset(label_offset);
+		axis->SetLabelOffset(env.GetValue("SetHistOptDialog.fLabelOffsetY", 0.01));
+		axis->SetLabelSize  (env.GetValue("SetHistOptDialog.fLabelSize", 0.03));
+		axis->SetMaxDigits  (env.GetValue("SetHistOptDialog.fLabelMaxDigits", 4));
+		if (axis_title.Length() > 0) {
+			axis->SetTitle(axis_title);
+			axis->SetTitleColor(axis_color);
+			axis->SetTitleFont( env.GetValue("SetHistOptDialog.fTitleFont", 62));
+			axis->SetTitleSize( env.GetValue("SetHistOptDialog.fTitleSize",0.03));
+			axis->SetTitleOffset( env.GetValue("SetHistOptDialog.fTitleOffsetY",0.03));
+			if ( env.GetValue("SetHistOptDialog.fTitleCenterY", 0) == 1 ) 
+				axis->CenterTitle();
+		}
+		axis->Draw();
+	}
+	if ( lLegend != 0 ) {
+		current->BuildLegend(0.11, 0.8, 0.3, 0.95);
+	}
+	// remove "How to display a 1-dim histogram"
+	TGMenuBar * menubar = win->GetMenuBar();
+	TGPopupMenu *pu = menubar->GetPopup("Hpr-Options");
+	if  (pu ) {
+		TGMenuEntry* ment;
+		TString mname;
+		TIter next(pu->GetListOfEntries());
+		while ( ment = (TGMenuEntry*)next() ) {
+			mname = ment->GetName();
+			if ( mname.BeginsWith("How to display") ) {
+				pu->DeleteEntry(ment->GetEntryId());
+				break;
+			}
+		}
+	}
+	//		gr->Scale(scale);
+	//	cout << "DrawOptGraph " << DrawOptGraph<< endl;
+	gPad->Modified();
+	gPad->Update();
 }

@@ -41,7 +41,18 @@ GraphAttDialog::GraphAttDialog(TGWindow * win)
 {
 static const char helptext[] =
 "\n\
-no help yet\n\
+The root doc reads:\n\
+When a graph is painted with the option \"C\" or \"L\",\n\
+it is possible to draw a filled area on one side of the line.\n\
+This is useful to show exclusion zones. This drawing mode is\n\
+activated when the absolute value of the graph line width\n\
+(set thanks to SetLineWidth) is greater than 99.\n\
+In that case the line width number is interpreted as 100*ff+ll = ffll.\n\
+The two-digit numbers \"ll\" represent the normal line width\n\
+whereas \"ff\" is the filled area width. The sign of \"ffll\" allows\n\
+flipping the filled area from one side of the line to the other.\n\
+The current fill area attributes are used to draw the hatched zone.\n\
+\n\
 ____________________________________________________________\n\
 ";
    TRootCanvas *rc = (TRootCanvas*)win;
@@ -131,7 +142,7 @@ void GraphAttDialog::SetGraphAtt(TCanvas *ca, Int_t bid)
    fDrawOptGraph  = "";
    if (fGraphSimpleLine) fDrawOptGraph += "L";
    if (fGraphSmoothLine) fDrawOptGraph += "C";
-   if (fGraphFill)       fDrawOptGraph += "F";
+   if (fGraphFill && TMath::Abs(fGraphLWidth)<100) fDrawOptGraph += "F";
    if (fGraphPolyMarker) fDrawOptGraph += "P";
    if (fGraphBarChart)   fDrawOptGraph += "B";
    if (fGraphShowAxis)   fDrawOptGraph += "A";

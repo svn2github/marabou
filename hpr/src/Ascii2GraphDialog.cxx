@@ -159,13 +159,13 @@ void Ascii2GraphDialog::Draw_The_Graph()
 	fGraphLogX        = env.GetValue("GraphAttDialog.fGraphLogX", 0);
 	fGraphLogY        = env.GetValue("GraphAttDialog.fGraphLogY", 0);
 	fGraphLogZ        = env.GetValue("GraphAttDialog.fGraphLogZ", 0);
-	
+	HistPresent *hpr = (HistPresent*)gROOT->GetList()->FindObject("mypres");
 	if (fEmptyPad != 0) {
 		cout << "Empty pad only" << endl;
 		TGraph *graph = new TGraph();
 #ifdef MARABOUVERS
 		HTCanvas * cg = new HTCanvas("Empty", "Empty", fWinx, fWiny,
-							fGraphXsize, fGraphYsize, NULL, NULL, graph);
+							fGraphXsize, fGraphYsize, hpr, NULL, graph);
 		if ( fGraphLogX )
 			 cg->SetLogx();
 		else
@@ -186,7 +186,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
 			cg->SetLogy();
 		else
 			cg->SetLogy(kFALSE);
-		#endif
+#endif
       if (fGraphXdiv > 1 || fGraphYdiv > 1) {
          cg->Divide(fGraphXdiv, fGraphYdiv);
          cg->cd(1);
@@ -201,6 +201,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
          ymin = fYaxisMin;
          ymax = fYaxisMax;
       }
+      
       gStyle->SetOptStat(0);
       TH1D * gh = new TH1D(fGraphName, fGraphName, 100, xmin, xmax);
       gh->Draw();
@@ -230,6 +231,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
    TString line;
    TString del(" ,\t");
    TObjArray * oa;
+	Double_t xmin_val = 1e20, xmax_val = -1e20;
 	while ( 1 ) {
 		line.ReadLine(infile);
 		if (infile.eof()) break;
@@ -255,6 +257,8 @@ void Ascii2GraphDialog::Draw_The_Graph()
             break;
          }
          xval.AddAt(x[fGraphColSel1-1], n);
+			if (x[fGraphColSel1-1] < xmin_val) xmin_val = x[0];
+			if (x[fGraphColSel1-1] > xmax_val) xmax_val = x[0];
          yval.AddAt(x[fGraphColSel2-1], n);
          n++;
       	if (n >= xval.GetSize()){
@@ -263,6 +267,8 @@ void Ascii2GraphDialog::Draw_The_Graph()
          }
       } else {
          xval.AddAt(x[0], n);
+			if (x[0] < xmin_val) xmin_val = x[0];
+			if (x[0] > xmax_val) xmax_val = x[0];
          yval.AddAt(x[1], n);
 //       if only 3 values  assume x, y, ye
          if (nent == 3) {
@@ -290,10 +296,16 @@ void Ascii2GraphDialog::Draw_The_Graph()
    }
    infile.close();
 
-   cout << "entries " << n << endl;
+//   cout << "entries " << n << endl;
    if (n < 1) return;
 
-
+   Double_t dx_low = TMath::Abs(xval[n-1] - xval[n-2]);
+   Double_t dx_up  = TMath::Abs(xval[n-1] - xval[n-2]);
+   if (fXaxisMax == 0 && fXaxisMin == 0) {
+		fXaxisMax = xmax_val + 0.5 * dx_up;
+		fXaxisMin = xmin_val - 0.5 * dx_low;
+	}
+   cout << "entries " << n << " fXaxisMin " <<fXaxisMin << " fXaxisMax " <<fXaxisMax <<   endl;
    TString hname = fGraphFileName;
    hname = gSystem->BaseName(hname);
    Int_t ip = hname.Index(".");
@@ -332,7 +344,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
       if (fGraphSimpleLine) drawopt+= "L";
 		if (fGraphSmoothLine) drawopt+= "C";
 		if (fGraphBarChart)   drawopt+= "B";
-		if (fGraphFill)       drawopt+= "F";
+		if (fGraphFill && TMath::Abs(fGraphLineWidth) < 100) drawopt+= "F";
 		if ( fGraphShowTitle )
 			gStyle->SetOptTitle(kTRUE);
 		else
@@ -369,7 +381,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
          }
 #ifdef MARABOUVERS
 			HTCanvas * cg = new HTCanvas(cname, htitle, fWinx, fWiny,
-								fGraphXsize, fGraphYsize, NULL, NULL, graph);
+								fGraphXsize, fGraphYsize, hpr, NULL, graph);
 			if ( fGraphLogX )
 				cg->SetLogx();
 			else
@@ -418,7 +430,7 @@ void Ascii2GraphDialog::Draw_The_Graph()
       graph->SetFillStyle(fGraphFillStyle);
       graph->SetFillColor(fGraphFillColor);
       graph->SetLineWidth(fGraphLineWidth);
-      if (fXaxisMin != 0 || fXaxisMax) graph->GetXaxis()->SetLimits(fXaxisMin, fXaxisMax);
+      if (fXaxisMin != 0 || fXaxisMax != 0) graph->GetXaxis()->SetLimits(fXaxisMin, fXaxisMax);
       if (fYaxisMin != 0) graph->SetMinimum(fYaxisMin);
       if (fYaxisMax != 0) graph->SetMaximum(fYaxisMin);
       gPad->Modified();

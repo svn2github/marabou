@@ -1,6 +1,7 @@
 #include "TObject.h"
 #include "TButton.h"
 #include "TCanvas.h"
+#include "TGaxis.h"
 #include "HTCanvas.h"
 #include "TFrame.h"
 #include "TLatex.h"
@@ -142,14 +143,20 @@ Bool_t HasFunctions(TH1 * hist)
    return kFALSE;
 };
 //-----------------------------------------------------------------------
-Bool_t HasGraphs(TVirtualPad * pad)
+
+TH1 * GetHistOfGraph(TVirtualPad * pad)
 {
    TIter next(pad->GetListOfPrimitives());
    TObject *obj;
+	TH1 * hist = NULL;
    while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TGraph")) return kTRUE;
+      if (obj->InheritsFrom("TGraph")) {
+			hist = ((TGraph*)obj)->GetHistogram();
+			if ( hist ) 
+				return hist;
+		}
    }
-   return kFALSE;
+   return NULL;
 };
 
 //-----------------------------------------------------------------------
@@ -2054,18 +2061,66 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
 
 //__________________________________________________________
 
-void SetAxisGraph(TCanvas *c, TGraph *gr)
+void SetAxisGraphY(TCanvas *c, TGraph *gr)
 {
    TH1 *hist = gr->GetHistogram();
    if (!hist) {
       cout << "Graph must be drawn to set axis range" << endl;
    } else {
-      SetAxisHist(c, hist->GetXaxis());
+      SetAxisHistY(c, hist);
    }
 }
 //__________________________________________________________
 
-void SetAxisHist(TCanvas *c, TAxis * xa)
+void SetAxisHistY(TCanvas *c, TH1* hist)
+{
+   static void *valp[50];
+   Int_t ind = 0;
+   static Double_t xl, xu;
+   TList *row_lab = new TList();
+   TRootCanvas * win = (TRootCanvas*)gPad->GetCanvas()->GetCanvasImp();
+   Bool_t ok = kTRUE;
+	xl = ((TVirtualPad*)c)->GetUymin();
+	xu = ((TVirtualPad*)c)->GetUymax();	
+	row_lab->Add(new TObjString("DoubleValue_Yaxis min"));
+	row_lab->Add(new TObjString("DoubleValue_Yaxis max"));
+	valp[ind++] = &xl;
+	valp[ind++] = &xu;
+	
+   Int_t itemwidth = 320;
+   ok = GetStringExt("Xmin, Xmax", NULL, itemwidth, win,
+                   NULL, NULL, row_lab, valp,
+                   NULL, NULL);
+   if (ok) {
+		TGaxis *a = (TGaxis*)gPad->GetListOfPrimitives()->FindObject("taxis_scaled");
+		if ( a ) {
+			Double_t scale = gPad->GetUymax() / a->GetWmax(); 
+			cout<< "scale " << scale << " " <<gPad->GetUymin() / a->GetWmin() << endl; 
+			a->SetY1(xl);
+			a->SetY2(xu);
+			a->SetWmin(xl/scale);
+			a->SetWmax(xu/scale);
+		}
+		hist->SetMinimum(xl);
+		hist->SetMaximum(xu);
+		gPad->Modified();
+		gPad->Update();
+	}
+}
+//__________________________________________________________
+
+void SetAxisGraphX(TCanvas *c, TGraph *gr)
+{
+   TH1 *hist = gr->GetHistogram();
+   if (!hist) {
+      cout << "Graph must be drawn to set axis range" << endl;
+   } else {
+      SetAxisHistX(c, hist->GetXaxis());
+   }
+}
+//__________________________________________________________
+
+void SetAxisHistX(TCanvas *c, TAxis * xa)
 {
    static void *valp[50];
    Int_t ind = 0;

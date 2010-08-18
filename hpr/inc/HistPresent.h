@@ -20,6 +20,7 @@
 #include "FitHist.h"
 #include "TMrbHelpBrowser.h"
 #include "TGMrbValuesAndText.h"
+#include <list>
 
 namespace std {} using namespace std;
 
@@ -121,7 +122,6 @@ protected:
    Bool_t  fAnyFromSocket;
    TGWindow * fLastWindow;
    TGWindow * fcHprWindow;
-//  Graphics attributes
 
    Int_t         fLabelMaxDigits;
 
