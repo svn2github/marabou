@@ -2,12 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbCaen_V965.cxx
 // Purpose:        MARaBOU configuration: CAEN modules
-// Description:    Implements class methods to handle a CAEN qdc type V965 
+// Description:    Implements class methods to handle a CAEN qdc type V965
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V965.cxx,v 1.8 2008-12-04 14:53:11 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbCaen_V965.cxx,v 1.9 2010-08-27 12:49:38 Rudolf.Lutter Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -62,7 +62,7 @@ TMrbCaen_V965::TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 									TMrbVMEModule(ModuleName, "Caen_V965", BaseAddr,
 																TMrbCaen_V965::kAddrMod,
 																TMrbCaen_V965::kSegSize,
-																0, NofChannels, 1 << 15) {
+																0, NofChannels * 2, 1 << 15) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCaen_V965
@@ -80,7 +80,7 @@ TMrbCaen_V965::TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 	TString mType;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (!this->IsZombie()) {
 		if (gMrbConfig == NULL) {
 			gMrbLog->Err() << "No config defined" << endl;
@@ -103,6 +103,15 @@ TMrbCaen_V965::TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			fFineThresh = kTRUE;
 			fZeroSuppression = kTRUE;
 			fOverRangeCheck = kTRUE;
+
+			if (NofChannels == 8) fTypeA = kTRUE; else if (NofChannels == 16) fTypeA = kFALSE;
+			else {
+				gMrbLog->Err() << "Illegal number of channels - " << NofChannels << " (should be 8 (V965A) or 16 (V965))"<< endl;
+				gMrbLog->Flush(this->ClassName());
+				this->MakeZombie();
+			}
+		}
+		if (!this->IsZombie()) {
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
@@ -125,7 +134,7 @@ void TMrbCaen_V965::DefineRegisters() {
 // Arguments:      --
 // Results:        --
 // Exceptions:
-// Description:    
+// Description:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -146,7 +155,7 @@ void TMrbCaen_V965::DefineRegisters() {
 
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("BitSet1");
-	bNames->AddNamedX(kMrbBitSet1Bits);	
+	bNames->AddNamedX(kMrbBitSet1Bits);
 	bNames->SetPatternMode();
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode();
@@ -164,7 +173,7 @@ void TMrbCaen_V965::DefineRegisters() {
 
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("Control1");
-	bNames->AddNamedX(kMrbControl1Bits);	
+	bNames->AddNamedX(kMrbControl1Bits);
 	bNames->SetPatternMode();
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode();
@@ -215,7 +224,7 @@ void TMrbCaen_V965::DefineRegisters() {
 
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("BitSet2");
-	bNames->AddNamedX(kMrbBitSet2Bits);	
+	bNames->AddNamedX(kMrbBitSet2Bits);
 	bNames->SetPatternMode();
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode();
@@ -389,6 +398,7 @@ Bool_t TMrbCaen_V965::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModule
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$chnName", Channel->GetName());
 			fCodeTemplates.Substitute("$chnNo", Channel->GetAddr());
+			fCodeTemplates.Substitute("$m8", this->IsTypeA() ? 1 : 0);
 			fCodeTemplates.Substitute("$lowerThresh", Channel->Get(TMrbCaen_V965::kRegThresh));
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
@@ -418,7 +428,7 @@ Bool_t TMrbCaen_V965::CheckSubeventType(TMrbSubevent * Subevent) const {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCaen_V965::CheckSubeventType
 // Purpose:        Check if calling subevent is applicable
-// Arguments:      
+// Arguments:
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Makes sure that a subevent of type [10,4x] (CAEN)

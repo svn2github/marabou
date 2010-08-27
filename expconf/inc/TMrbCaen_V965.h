@@ -8,8 +8,8 @@
 // Class:          TMrbCaen_V965        -- 32 chn QDC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V965.h,v 1.3 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbCaen_V965.h,v 1.4 2010-08-27 12:49:38 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -100,7 +100,7 @@ class TMrbCaen_V965 : public TMrbVMEModule {
 								kBitSet2EmptyProgEna				=	BIT(12),
 								kBitSet2AllTrigEna					=	BIT(14)
 							};
-		
+
 	public:
 
 		TMrbCaen_V965() {};  												// default ctor
@@ -124,19 +124,23 @@ class TMrbCaen_V965 : public TMrbVMEModule {
 
 		inline void SetZeroSuppression(Bool_t ZsFlag = kTRUE) { fZeroSuppression = ZsFlag; };	// zero compression on/off
 		inline Bool_t HasZeroSuppression() const { return(fZeroSuppression); };
-		
+
 		inline void SetOverRangeCheck(Bool_t OrFlag = kTRUE) { fOverRangeCheck = OrFlag; }; 	// range check on/off
 		inline Bool_t HasOverRangeCheck() const { return(fOverRangeCheck); };
-		
+
 		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
 		virtual inline const Char_t * GetPrivateCodeFile() const { return("Module_Caen_Vxxx"); };
-		
+
+		virtual inline Bool_t IsTypeA() { return(fTypeA); };
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers
 
 	protected:
+		Bool_t fTypeA;			// V965: 16 inputs, 32 data words / V965A: 8 inputs, 16 data words
+
 		Bool_t fFFMode;
 		Bool_t fFineThresh;
 

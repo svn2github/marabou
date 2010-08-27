@@ -6,7 +6,7 @@
 // @(#)Author:     R. Lutter
 // @(#)Revision:   SCCS:  %W%
 // @(#)Date:       %G%
-// Keywords:       
+// Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
 %%BeginOfCode%%
@@ -97,7 +97,7 @@
 #define CAEN_V965_A_THRESH(module)			((unsigned short *) (module + CAEN_V965_R_THRESH))
 #define CAEN_V965_A_ROM(module)				((unsigned short *) (module + CAEN_V965_R_ROM))
 
-#define CAEN_V965_SET_THRESHOLD(module,chn,data) 	*(CAEN_V965_A_THRESH(module) + chn) = data
+#define CAEN_V965_SET_THRESHOLD(module,m8,chn,data) 	*(CAEN_V965_A_THRESH(module) + 2*(m8+1)*chn) = data
 
 #define CAEN_V965_AUTO_INCR_ON(module)	*CAEN_V965_A_BITSET2(module) = CAEN_V965_B_BITSET2_AUTO_INCR_ENA
 #define CAEN_V965_AUTO_INCR_OFF(module)	*CAEN_V965_A_BITCLEAR2(module) = CAEN_V965_B_BITSET2_AUTO_INCR_ENA
@@ -128,7 +128,7 @@
 #define CAEN_V965_SET_IPED(module, iped)	*CAEN_V965_A_IPED(module) = iped & 0xFF
 #define CAEN_V965_GET_IPED(module)	*CAEN_V965_A_IPED(module)
 
-#define CAEN_V965_SET_KILL_BIT(module,chn)	*(CAEN_V965_A_THRESH(module) + chn) = CAEN_V965_B_THRESH_KILL_CHANNEL
+#define CAEN_V965_SET_KILL_BIT(module,m8,chn)	*(CAEN_V965_A_THRESH(module) + 2*(m8+1)*chn) = CAEN_V965_B_THRESH_KILL_CHANNEL
 
 #define CAEN_V965_READ_BITSET2(module)	*CAEN_V965_A_BITSET2(module)
 
@@ -160,8 +160,8 @@
 %%INIT_MODULE%%
 
 %%BeginOfCode%%
-%U%					CAEN_V965_SET_THRESHOLD($moduleName, $chnNo, $lowerThreshL);	/* lower limit $chnName:$chnNo */
-%N%					CAEN_V965_SET_KILL_BIT($moduleName, $chnNo);	/* de-activate $chnName:$chnNo */
+%U%					CAEN_V965_SET_THRESHOLD($moduleName, $m8, $chnNo, $lowerThreshL);	/* lower limit $chnName:$chnNo */
+%N%					CAEN_V965_SET_KILL_BIT($moduleName, $m8, $chnNo);	/* de-activate $chnName:$chnNo */
 %F% 				caen_v965_set_thresh($moduleName, "$threshFile");
 %%EndOfCode%%
 %%INIT_CHANNEL%%
@@ -237,12 +237,12 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%WRITE_SUBADDR%% 
+%%WRITE_SUBADDR%%
 
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%STORE_DATA%% 
+%%STORE_DATA%%
 
 %%BeginOfCode%%
 
@@ -252,7 +252,7 @@
 %%BeginOfCode%%
 
 %%EndOfCode%%
-%%SETUP_READOUT%%	
+%%SETUP_READOUT%%
 
 %%BeginOfCode%%
 
@@ -286,7 +286,7 @@ void caen_v965_module_info(volatile unsigned short * firmWare) {
 	unsigned short boardIdMSB, boardIdLSB;
 	int serial, boardId;
 	char str[256];
-	
+
 	boardIdMSB = *(firmWare + 0x3A / sizeof(unsigned short)) & 0xFF;
 	boardIdLSB = *(firmWare + 0x3E / sizeof(unsigned short)) & 0xFF;
 	boardId = (int) (boardIdMSB << 8) + (int) boardIdLSB;
