@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V965.cxx,v 1.9 2010-08-27 12:49:38 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbCaen_V965.cxx,v 1.10 2010-08-30 14:09:45 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -62,7 +62,7 @@ TMrbCaen_V965::TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 									TMrbVMEModule(ModuleName, "Caen_V965", BaseAddr,
 																TMrbCaen_V965::kAddrMod,
 																TMrbCaen_V965::kSegSize,
-																0, NofChannels * 2, 1 << 15) {
+																0, NofChannels, 1 << 15) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCaen_V965
@@ -91,7 +91,7 @@ TMrbCaen_V965::TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
 		} else {
-			SetTitle("CAEN V965 QDC 8/16 x 12 (15) bit, dual range"); 	// store module type
+			SetTitle("CAEN V965 QDC 8/16 x 12 (15) bit, dual range -> 16/32 data words"); 	// store module type
 			mTypeBits = TMrbConfig::kModuleVME | TMrbConfig::kModuleListMode | TMrbConfig::kModuleQdc;
 			gMrbConfig->GetLofModuleTypes()->Pattern2String(mType, mTypeBits);
 			fModuleType.Set(mTypeBits, mType.Data());
@@ -104,9 +104,9 @@ TMrbCaen_V965::TMrbCaen_V965(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			fZeroSuppression = kTRUE;
 			fOverRangeCheck = kTRUE;
 
-			if (NofChannels == 8) fTypeA = kTRUE; else if (NofChannels == 16) fTypeA = kFALSE;
+			if (NofChannels == 16) fTypeA = kTRUE; else if (NofChannels == 32) fTypeA = kFALSE;
 			else {
-				gMrbLog->Err() << "Illegal number of channels - " << NofChannels << " (should be 8 (V965A) or 16 (V965))"<< endl;
+				gMrbLog->Err() << "Illegal number of channels - " << NofChannels << " (should be 16 (V965A) or 32 (V965))"<< endl;
 				gMrbLog->Flush(this->ClassName());
 				this->MakeZombie();
 			}
