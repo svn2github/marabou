@@ -8,8 +8,8 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.21 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent.h,v 1.22 2010-08-30 08:01:40 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -177,9 +177,9 @@ class TMrbSubevent : public TNamed {
 		inline void SetArrayMode(Bool_t ArrayMode = kTRUE) { fArrayMode = ArrayMode; };	// single array to be used?
 		inline Bool_t IsInArrayMode() const { return(fArrayMode); };
 		inline Bool_t HasIndexedParams() const { return(fHasIndexedParams); };
-				
+
 		Bool_t UseXhit(const Char_t * HitName, Int_t DataLength = -1);			// define a special hit object to be used
-		inline Bool_t UseXhit(Int_t DataLength) { return(this->UseXhit("Xhit", DataLength)); }; 	
+		inline Bool_t UseXhit(Int_t DataLength) { return(this->UseXhit("Xhit", DataLength)); };
 		inline const Char_t * GetNameOfXhit() { return(fXhit.Data()); };
 		inline Int_t GetHitDataLength() { return(fHitDataLength); };
 		inline Bool_t HasXhit() { return(fHitDataLength > 0); };
@@ -192,7 +192,7 @@ class TMrbSubevent : public TNamed {
 		virtual inline Bool_t SingleModuleOnly() const { return(kFALSE); }; 		// only module per subevent only
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
 		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
-		
+
 		inline TObjArray * GetLofEvents() { return(&fLofEvents); };			// get address of ...
 		inline TObjArray * GetLofModules() { return(&fLofModules); };
 		const Char_t * GetLofModulesAsString(TString & LofModules) const;
@@ -240,7 +240,7 @@ class TMrbSubevent : public TNamed {
 
 		Bool_t fHasIndexedParams;			// if there are TArrayX params
 		Bool_t fArrayMode;					// kTRUE if subevent data are stored in an array
-		
+
 		Bool_t fPrependPrefix;				// kTRUE if subevents has its own prefix
 		TString fPrefix;					// prefix to be prepended to params & histos
 
@@ -251,8 +251,8 @@ class TMrbSubevent : public TNamed {
 		TString fHistoArrayName;			// name of histo array / .histlist file
 
 		TMrbModule * fSoftModule;			// internal module name, simulated by software
-				
+
 	ClassDef(TMrbSubevent, 1)		// [Config] Base class describing a MBS subevent
-};	
+};
 
 #endif
