@@ -110,8 +110,8 @@
 %C%						} else {
 %C%							data &= CAEN_Vxxx_M_ADCDATA;
 %C% 					}
-%C%						*paramAddr = (Int_t) (data & CAEN_Vxxx_M_ADCDATA);	// assign data value to param
-%C% 					mle->IncrChannelHits(chn);							// count this channel
+%C%						*paramAddr = (Int_t) data;				// assign data value to param
+%C% 					mle->IncrChannelHits(chn);				// count this channel
 %C% 				}
 %C%				} else {
 %C%					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "No such param", SevtData, origSevtWC);
