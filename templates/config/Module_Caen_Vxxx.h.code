@@ -8,9 +8,6 @@
 #define CAEN_Vxxx_SH_WC							8
 #define CAEN_Vxxx_SH_CHN						16
 
-#define CAEN_V965A_SH_CHN						17
-#define CAEN_V965A_SH_HIGH_RANGE				3
-
 #define CAEN_Vxxx_D_HDR							0x02000000
 #define CAEN_Vxxx_D_DATA						0x00000000
 #define CAEN_Vxxx_D_EOB							0x04000000
@@ -23,9 +20,6 @@
 #define CAEN_Vxxx_M_HDR							0x07FFFFFF
 #define CAEN_Vxxx_M_DATA 						0x07FFFFFF
 #define CAEN_Vxxx_M_ADCDATA	 					0x00000FFF
-
-#define CAEN_V965A_M_CHN						0x1F
-#define CAEN_V965A_M_RANGE		 				(0x1 << 17)
 
 #define CAEN_Vxxx_B_OVERFLOW	 				(0x1 << 12)
 #define CAEN_Vxxx_B_UNDERTHRESH 				(0x1 << 13)
