@@ -7,8 +7,8 @@
 	\details		Defines structs to read MBS data streams
 	$Author: Rudolf.Lutter $
 	$Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.23 $
-	$Date: 2009-10-15 08:18:38 $
+	$Revision: 1.24 $
+	$Date: 2010-08-31 09:54:08 $
 *******************************************************************************/
 
 #include "typedefs.h"
@@ -74,7 +74,6 @@
 #define MBS_STYPE_VME_CAEN_1		0x0029000a					/*!< subevent [41,10]: vme, caen v875, v775 */
 #define MBS_STYPE_VME_CAEN_2		0x002a000a					/*!< subevent [42,10]: vme, caen v875, v775, data stored in hit buffer */
 #define MBS_STYPE_VME_CAEN_3		0x002b000a					/*!< subevent [43,10]: vme, caen v875, v775, data stored in hit buffer */
-#define MBS_STYPE_VME_CAEN_Q1		0x002c000a					/*!< subevent [44,10]: vme, caen qdc */
 #define MBS_STYPE_VME_CAEN_V1X90_1	0x002d000a					/*!< subevent [45,10]: vme, caen v1190, v1290 */
 #define MBS_STYPE_VME_CAEN_V1X90_2	0x002e000a					/*!< subevent [46,10]: vme, caen v1190, v1290, data stored in hit buffer */
 #define MBS_STYPE_VME_CAEN_V1X90_3	0x002f000a					/*!< subevent [47,10]: vme, caen v1190, v1290, data stored in hit buffer */
@@ -90,6 +89,9 @@
 #define MBS_STYPE_VME_MADC_1		0x0051000a					/*!< subevent [81,10]: vme, mesytec madc32 */
 #define MBS_STYPE_VME_MADC_2		0x0052000a					/*!< subevent [82,10]: vme, mesytec madc32, data stored in hit buffer */
 #define MBS_STYPE_VME_MADC_3		0x0053000a					/*!< subevent [83,10]: vme, mesytec madc32, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3820_1	0x005b000a					/*!< subevent [91,10]: vme, sis 3820 scaler */
+#define MBS_STYPE_VME_SIS_3820_2	0x005c000a					/*!< subevent [92,10]: vme, sis 3820 scaler, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3820_3	0x005d000a					/*!< subevent [93,10]:vme, sis 3820 scaler, data stored in hit buffer */
 #define MBS_STYPE_TIME_STAMP		0x00012328					/*!< subevent [1,9000]: time stamp */
 #define MBS_STYPE_DEAD_TIME 		0x00022328					/*!< subevent [2,9000]: dead time */
 #define MBS_STYPE_DUMMY 	 		0x006f006f					/*!< subevent [111,111]: dummy */
