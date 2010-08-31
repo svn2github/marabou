@@ -4,8 +4,8 @@
 	\details	Procedures to read MBS data from disk or tcp socket
 	$Author: Rudolf.Lutter $
 	$Mail:		<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.46 $
-	$Date: 2009-10-15 08:18:38 $
+	$Revision: 1.47 $
+	$Date: 2010-08-31 13:10:23 $
 *****************************************************************************/
 
 /* include files needed by mbsio */
@@ -219,14 +219,6 @@ static MBSBufferElem sevent_types[] = {
 				},
 				{	MBS_STYPE_VME_CAEN_3,
 					"Caen VME ADCs/TDCs (3)",
-					sizeof(s_veshe),
-					0,
-					(void *) _mbs_unpack_sev_short,
-					(void *) _mbs_show_sev_short,
-					(void *) _mbs_convert_sheader
-				},
-				{	MBS_STYPE_VME_CAEN_Q1,
-					"Caen VME QDCs (1)",
 					sizeof(s_veshe),
 					0,
 					(void *) _mbs_unpack_sev_short,
