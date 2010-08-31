@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.41 2009-10-07 08:49:31 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbSubevent.cxx,v 1.42 2010-08-31 09:32:09 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -598,7 +598,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 				tf += ".code";
 				tf2 = tf;
 				ux.Which(fileSpec, templatePath.Data(), tf.Data());
-			if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
+				if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 			}
 			if (fileSpec.IsNull()) {
 				tf = this->ClassName();

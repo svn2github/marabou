@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V965.cxx,v 1.10 2010-08-30 14:09:45 Marabou Exp $
+// Revision:       $Id: TMrbCaen_V965.cxx,v 1.11 2010-08-31 09:32:09 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -352,6 +352,7 @@ Bool_t TMrbCaen_V965::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$nofParams", this->GetNofChannelsUsed());
 			fCodeTemplates.Substitute("$moduleSerial", this->GetSerial());
+			fCodeTemplates.Substitute("$v965a", this->IsTypeA() ? "" : "//");
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 	}

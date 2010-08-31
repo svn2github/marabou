@@ -9,8 +9,8 @@
 //                                          dedicated format CAEN modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Caen_Q1.h,v 1.3 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent_Caen_Q1.h,v 1.4 2010-08-31 09:32:09 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -56,10 +56,14 @@ class TMrbSubevent_Caen_Q1 : public TMrbSubevent {
 		inline Bool_t CheckModuleID(TMrbModule * Module) const {					// needs modules of type CAEN V965
 			return(Module->CheckID(TMrbConfig::kModuleCaenV965));
 		};
-		
+
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
-		
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
+
+	protected:
+
+		TString fPrivateCode;
 
 	ClassDef(TMrbSubevent_Caen_Q1, 1) 	// [Config] Subevent type [10,44]: a format dedicated to CAEN QDC modules
 };
