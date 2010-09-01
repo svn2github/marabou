@@ -112,7 +112,7 @@
 %C%				dataPtr += sizeof(Short_t);			// word count is odd -> skip over filler
 %C%				SevtWC--;
 %C%				wordsProcessed++;
-%C%			}  				 
+%C%			}
 %C% 	}
 %C% 	return(kTRUE);
 %E%}
@@ -168,6 +168,17 @@
 %X% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 		}
 %X% 	}
+%XNB%	Char_t * pn[] = { $pnList };
+%XN%	for (Int_t i = 0; i < $indexRange; i++) {
+%XN% 		if (h$prefix$paramNameUC[i] == NULL) {
+%XN%			TString pnUC = pn[i];
+%XN%			pnUC(0,1).ToUpper();
+%XN% 			TString hName = Form("h$prefix%s", pnUC.Data());
+%XN% 			TString hTitle = Form("$sevtNameLC.$paramNameLC[%d] - %s", i, pn[i]);
+%XN% 			h$prefix$paramNameUC[i] = new TH1F(hName.Data(), hTitle.Data(), $hBinSize, $hLowerLim.0, $hUpperLim.0);
+%XN% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
+%XN% 		}
+%XN% 	}
 %A%	if (h$prefix$paramNameUC == NULL) {
 %A% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, $hLowerLim.0, $hUpperLim.0);
 %A% 			h$prefix$sevtNameUCArray.AddAt(h$prefix$paramNameUC, k$paramNameUC);

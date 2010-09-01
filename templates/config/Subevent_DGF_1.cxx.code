@@ -9,10 +9,10 @@
 %B%//  			   Int_t TimeStamp  		   -- time since last start
 %B%//  											  in units of 100 microsecs
 %B%// Results: 	   kTRUE/kFALSE
-%B%// Exceptions:     
+%B%// Exceptions:
 %B%// Description:    Assigns MBS data to corresponding data members.
 %B%//  			   Special version to be used for data from XIA DGF-4C modules.
-%B%// Keywords:	   
+%B%// Keywords:
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
 %B%	DgfEventBufferHeader * bufHdr;
@@ -27,7 +27,7 @@
 %B%	Int_t chn;
 %B%	Int_t * paramAddr;
 %B%	Int_t origSevtWC, wordsProcessed;
-%B%						
+%B%
 %C%	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 %C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 %C%
@@ -36,7 +36,7 @@
 %C%	dataPtr = (Char_t *) SevtData;
 %C%	recNo++;						// count this record
 %C%	origSevtWC = SevtWC;			// save original subevent wc
-%C%		
+%C%
 %C%	wordsProcessed = 0; 			// words processed so far
 %C%	while (SevtWC) {									// subevent may contain several dgf buffers
 %C%		bufHdr = (DgfEventBufferHeader *) dataPtr;		// points to start of buffer
@@ -62,7 +62,7 @@
 %C% 		return(kTRUE);
 %C% 	}  				 // unable to decode data
 %C% 	runTask &= 0x3; 							// 0x100, 0x101, 0x200, 0x201 --> variable channel size
-%C% 	if (runTask == 2) nofWordsPerChn = 4;		// 0x102, 0x202 --> 4 words per chn	
+%C% 	if (runTask == 2) nofWordsPerChn = 4;		// 0x102, 0x202 --> 4 words per chn
 %C% 	else if (runTask == 3) nofWordsPerChn = 2;	// 0x103, 0x203 --> 2 words per chn
 %C%		wc = bufWC;
 %C%		if (bufWC <= 0) {
@@ -132,7 +132,7 @@
 %C%			dataPtr += sizeof(Short_t); 				// word count is odd -> skip over filler
 %C%			SevtWC--;
 %C%			wordsProcessed++;
-%C%		}					
+%C%		}
 %C%	}
 %C%	return(kTRUE);
 %E%}
@@ -153,12 +153,12 @@
 %BN%//////////////////////////////////////////////////////////////////////////////
 %BN%// Name:           TUsrSevt$sevtNameUC::BookHistograms
 %BN%// Purpose:        Define histograms for subevent $sevtNameLC
-%BN%// Arguments:      
+%BN%// Arguments:
 %BN%// Results:        kTRUE/kFALSE
-%BN%// Exceptions:     
+%BN%// Exceptions:
 %BN%// Description:    Instantiates histograms for subevent $sevtNameLC.
 %BN%//                 Each histogram will be booked only once.
-%BN%// Keywords:       
+%BN%// Keywords:
 %BN%//////////////////////////////////////////////////////////////////////////////
 %BN%
 %BP%Bool_t TUsrSevt$sevtNameUC::Book$evtNameUCHistograms() {
@@ -166,13 +166,13 @@
 %BP%//////////////////////////////////////////////////////////////////////////////
 %BP%// Name:           TUsrSevt$sevtNameUC::Book$evtNameUCHistograms
 %BP%// Purpose:        Define private histograms for event $evtNameLC
-%BP%// Arguments:      
+%BP%// Arguments:
 %BP%// Results:        kTRUE/kFALSE
-%BP%// Exceptions:     
+%BP%// Exceptions:
 %BP%// Description:    Instantiates private histograms for subevent $sevtNameLC
 %BP%//                 when used within event $evtNameLC.
 %BP%//                 Each histogram will be booked only once.
-%BP%// Keywords:       
+%BP%// Keywords:
 %BP%//////////////////////////////////////////////////////////////////////////////
 %BP%
 %S%	if (h$prefix$paramNameUC == NULL) {
@@ -187,6 +187,17 @@
 %X% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 		}
 %X% 	}
+%XNB%	Char_t * pn[] = { $pnList };
+%XN%	for (Int_t i = 0; i < $indexRange; i++) {
+%XN% 		if (h$prefix$paramNameUC[i] == NULL) {
+%XN%			TString pnUC = pn[i];
+%XN%			pnUC(0,1).ToUpper();
+%XN% 			TString hName = Form("h$prefix%s", pnUC.Data());
+%XN% 			TString hTitle = Form("$sevtNameLC.$paramNameLC[%d] - %s", i, pn[i]);
+%XN% 			h$prefix$paramNameUC[i] = new TH1F(hName.Data(), hTitle.Data(), $hBinSize, $hLowerLim.0, $hUpperLim.0);
+%XN% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
+%XN% 		}
+%XN% 	}
 %A%	if (h$prefix$paramNameUC == NULL) {
 %A% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, $hLowerLim.0, $hUpperLim.0);
 %A% 			h$prefix$sevtNameUCArray.AddAt(h$prefix$paramNameUC, k$paramNameUC);
@@ -204,11 +215,11 @@
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%// Name: 		  TUsrSevt$sevtNameUC::BookParams
 %B%// Purpose:  	  Fill param list for subevent $sevtNameLC
-%B%// Arguments:	  
+%B%// Arguments:
 %B%// Results:  	  kTRUE/kFALSE
-%B%// Exceptions:	  
+%B%// Exceptions:
 %B%// Description:    Generates entries in the list of params.
-%B%// Keywords: 	  
+%B%// Keywords:
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
 %S% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &$paramNameLC, kMrbModule$moduleNameUC, $paramIndex);
@@ -229,11 +240,11 @@
 %BN%//////////////////////////////////////////////////////////////////////////////
 %BN%// Name:           TUsrSevt$sevtNameUC::FillHistograms
 %BN%// Purpose:        Accumulate histograms for subevent $sevtNameLC
-%BN%// Arguments:      
+%BN%// Arguments:
 %BN%// Results:        kTRUE/kFALSE
-%BN%// Exceptions:     
+%BN%// Exceptions:
 %BN%// Description:    Performs add-one to histograms.
-%BN%// Keywords:       
+%BN%// Keywords:
 %BN%//////////////////////////////////////////////////////////////////////////////
 %BN%
 %BN%// add-one to histograms
@@ -242,11 +253,11 @@
 %BP%//////////////////////////////////////////////////////////////////////////////
 %BP%// Name:           TUsrSevt$sevtNameUC::Fill$evtNameUCHistograms
 %BP%// Purpose:        Accumulate private histograms for event $evtNameLC
-%BP%// Arguments:      
+%BP%// Arguments:
 %BP%// Results:        kTRUE/kFALSE
-%BP%// Exceptions:     
+%BP%// Exceptions:
 %BP%// Description:    Performs add-one to histograms.
-%BP%// Keywords:       
+%BP%// Keywords:
 %BP%//////////////////////////////////////////////////////////////////////////////
 %BP%
 %BP%
@@ -275,9 +286,9 @@ Bool_t TUsrSevt%%SEVT_NAME_UC%%::AddBranch(TTree * Tree) {
 // Purpose:        Create a branch for subevent %%SEVT_NAME_LC%%
 // Arguments:      TTree * Tree      -- pointer to parent's tree struct
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Calls method TTree::Branch for this subevent.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t bufSize;
@@ -310,11 +321,11 @@ Bool_t TUsrSevt%%SEVT_NAME_UC%%::AddBranch(TTree * Tree) {
 %LVB%// Purpose:        Initialize branch addresses for subevent $sevtNameLC
 %LVB%// Arguments:      TTree * Tree      -- pointer to parent's tree struct
 %LVB%// Results:        kTRUE/kFALSE
-%LVB%// Exceptions:     
+%LVB%// Exceptions:
 %LVB%// Description:    Set branch addresses for ALL data members (leaves)
 %LVB%//                 of subevent $sevtNameLC.
 %LVB%//                 >> Replay mode only <<
-%LVB%// Keywords:       
+%LVB%// Keywords:
 %LVB%//////////////////////////////////////////////////////////////////////////////
 %LVB%
 %LVB%	Tree->GetEntry(0);						// dummy statement to activate branches (?)
@@ -333,11 +344,11 @@ Bool_t TUsrSevt%%SEVT_NAME_UC%%::AddBranch(TTree * Tree) {
 %BR%// Purpose:        Initialize branch addresses for subevent $sevtNameLC
 %BR%// Arguments:      TTree * Tree      -- pointer to parent's tree struct
 %BR%// Results:        kTRUE/kFALSE
-%BR%// Exceptions:     
+%BR%// Exceptions:
 %BR%// Description:    Set branch address for subevent $sevtNameLC.
 %BR%//                 Subevent will be fetched from tree AS A WHOLE.
 %BR%//                 >> Replay mode only <<
-%BR%// Keywords:       
+%BR%// Keywords:
 %BR%//////////////////////////////////////////////////////////////////////////////
 %BR%
 %BR%	fBranch = Tree->GetBranch("$sevtNameLC");
@@ -357,9 +368,9 @@ void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 // Arguments:      Int_t InitValue   -- initialization value
 //                 Bool_t DataOnly  -- reset data only if kTRUE (ignored)
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Initializes subevent data with given value.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
