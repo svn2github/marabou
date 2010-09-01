@@ -9,8 +9,8 @@
 //                                         dedicated format for CAEN modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Caen_3.h,v 1.7 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent_Caen_3.h,v 1.8 2010-09-01 09:43:28 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -56,14 +56,15 @@ class TMrbSubevent_Caen_3 : public TMrbSubevent {
 		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type CAEN
 			return( Module->CheckID(TMrbConfig::kModuleCaenV775)
 				||	Module->CheckID(TMrbConfig::kModuleCaenV785)
-				||	Module->CheckID(TMrbConfig::kModuleCaenV879));
+				||	Module->CheckID(TMrbConfig::kModuleCaenV879)
+				||	Module->CheckID(TMrbConfig::kModuleCaenV965));
 		};
-		
+
 		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };  					// allocate hit buffer
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Caen_Common"); };
-		
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_Caen_3, 1) 	// [Config] Subevent type [10,43]: a format dedicated to CAEN modules
