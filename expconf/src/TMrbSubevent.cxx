@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.42 2010-08-31 09:32:09 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbSubevent.cxx,v 1.43 2010-09-01 08:52:50 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -128,6 +128,7 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 			fCrate = Crate; 								// store crate number
 
 			fCreateHistoArray = kFALSE;
+			fExplicitParamNames = kFALSE;
 
 			gMrbConfig->AddSubevent(this); 	// insert subevent in list
 		}
@@ -492,6 +493,31 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment, B
 	}
 	return(kTRUE);
 }
+
+Bool_t TMrbSubevent::SetParamName(Int_t ParamNo, Char_t * ParamName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent::SetParamName
+// Purpose:        Set param name explicitly
+// Arguments:      Int_t ParamNo        -- param number
+//                 Char_t * ParamName   -- name to be assigned
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Overwrites param names explicitly
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (ParamNo < 0 || ParamNo > fNofParams) {
+		gMrbLog->Err()	<< fName << ": Param number out of range - " << ParamNo << " (should be in [0," << fNofParams << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetParamName");
+		return(kFALSE);
+	}
+
+	TMrbModuleChannel * ch = (TMrbModuleChannel *) fLofParams[ParamNo];
+	ch->SetName(ParamName);
+	return(kTRUE);
+}
+
 
 Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, const Char_t * Extension) {
 //________________________________________________________________[C++ METHOD]
@@ -1095,6 +1121,14 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 											}
 										}
 									} else {
+										if (this->ExplicitParamNamesToBeUsed()) {
+											TString pnList = "";
+											TIterator * piter = fLofParams.MakeIterator();
+											while (param = (TMrbModuleChannel *) piter->Next()) { pnList += Form(" \"%s\",", param->GetName()); }
+											anaTmpl.InitializeCode("%XNB%");
+											anaTmpl.Substitute("$pnList", pnList.Data());
+											anaTmpl.WriteCode(AnaStrm);
+										}
 										TIterator * piter = fLofParams.MakeIterator();
 										while (param = (TMrbModuleChannel *) piter->Next()) {
 											histoMode = param->GetHistoMode();
@@ -1112,6 +1146,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 														paramNameUC(0,1).ToUpper();
 														if (this->IsInArrayMode())							anaTmpl.InitializeCode("%A%");
 														else if (paramStatus == TMrbConfig::kChannelSingle)	anaTmpl.InitializeCode("%S%");
+														else if (this->ExplicitParamNamesToBeUsed())		anaTmpl.InitializeCode("%XN%");
 														else												anaTmpl.InitializeCode("%X%");
 														if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
 														else		anaTmpl.Substitute("$prefix", "");

@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.22 2010-08-30 08:01:40 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbSubevent.h,v 1.23 2010-09-01 08:52:50 Rudolf.Lutter Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -144,6 +144,10 @@ class TMrbSubevent : public TNamed {
 		UInt_t GetAnalyzeOptions(TMrbEvent * Parent = NULL) const; 			// return MakeAnalyzeCode() options
 		UInt_t GetConfigOptions(TMrbEvent * Parent = NULL) const;			// return MakeConfigCode() options
 
+		Bool_t SetParamName(Int_t ParamNo, Char_t * ParamName);						// set param name explicitly
+		inline void UseExplicitParamNames(Bool_t Flag = kTRUE) { fExplicitParamNames = Flag; };
+		inline Bool_t ExplicitParamNamesToBeUsed() { return(fExplicitParamNames); };
+
 		inline const Char_t * GetPrefix() const { return(fPrefix.Data()); };
 		inline Bool_t PrefixToBePrepended() const { return(fPrependPrefix); };	// prepend an individual prefix?
 		void PrependPrefix(const Char_t * Prefix) {
@@ -223,6 +227,8 @@ class TMrbSubevent : public TNamed {
 		Bool_t fHistosToBeFilledIfTrueHit;	// fill histograms if is it true hit
 
 		TMrbNamedX fMbsBranch;				// branch within MBS
+
+		Bool_t fExplicitParamNames;			// kTRUE if explicit param names to be used
 
 		Int_t fNofEvents;					// list of parent events
 		TObjArray fLofEvents;

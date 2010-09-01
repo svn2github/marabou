@@ -8,8 +8,8 @@
 // Class:          TMrbModuleChannel    -- base class to describe a single channel
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModuleChannel.h,v 1.8 2008-12-12 13:09:57 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbModuleChannel.h,v 1.9 2010-09-01 08:52:50 Rudolf.Lutter Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -123,6 +123,6 @@ class TMrbModuleChannel : public TNamed {
 		TObjArray fRegSpec; 					// internal registers
 
 	ClassDef(TMrbModuleChannel, 1)		// [Config] Base class describing a single module channel
-};	
+};
 
 #endif
