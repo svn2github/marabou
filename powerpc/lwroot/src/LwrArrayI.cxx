@@ -11,6 +11,11 @@
 
 #include "LwrArrayI.h"
 
+#include <cstdlib>
+#include "iostream.h"
+#include "iomanip.h"
+
+
 
 //______________________________________________________________________________
 TArrayI::TArrayI()
@@ -128,5 +133,6 @@ void TArrayI::Set(Int_t n, const Int_t *array)
    if (fN == 0) return;
    if (array == 0) return;
    if (!fArray) fArray = new Int_t[fN];
+   cout << "@@@ " << n << endl;
    memcpy(fArray,array, n*sizeof(Int_t));
 }

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.1 2010-07-12 12:50:23 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.2 2010-09-06 06:57:02 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -77,9 +77,6 @@ VMESis3302StartHistoPanel::VMESis3302StartHistoPanel(const TGWindow * Window, TM
 	TGMrbLayout * comboGC;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-
-	fHistoRaw = NULL;
-	fHistoEnergy = NULL;
 
 // geometry
 	Int_t frameWidth = this->GetWidth();
@@ -158,6 +155,7 @@ VMESis3302StartHistoPanel::VMESis3302StartHistoPanel(const TGWindow * Window, TM
 																frameGC, labelGC, chkbtnGC, lofSpecialButtons);
 	fSelectFrame->AddFrame(fSelectChanPatt, frameGC->LH());
 	fSelectChanPatt->ChangeBackground(gVMEControlData->fColorGold);
+	fSelectChanPatt->SetState(0x1);
 
 // canvas
 	fHistoFrame = new TGGroupFrame(this, "Histograms", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -176,12 +174,16 @@ VMESis3302StartHistoPanel::VMESis3302StartHistoPanel(const TGWindow * Window, TM
 	fTraceFrame->AddFrame(fStartStopButton, groupGC->LH());
 	fStartStopButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302StartStop));
 
+	fMultiEvent = new TGCheckButton(fTraceFrame, "MultiEvent", kVMESis3302MultiEvent);
+	fTraceFrame->AddFrame(fMultiEvent, frameGC->LH());
+	fMultiEvent->SetState(kButtonDown);
+
 	fDumpTraceButton = new TGTextButton(fTraceFrame, "Dump trace", kVMESis3302DumpTrace);
 	HEAP(fDumpTraceButton);
 	fTraceFrame->AddFrame(fDumpTraceButton, groupGC->LH());
 	fDumpTraceButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302DumpTrace));
 
-// mode & number of events
+// mode
 	fLofTraceModes.AddNamedX(kVMESis302StartHistoModes);
 	fSelectTrigMode = new TGMrbLabelCombo(fTraceFrame, "TriggerMode",	&fLofTraceModes,
 															kVMESis3302SelectTrigMode, 1,
@@ -208,21 +210,27 @@ VMESis3302StartHistoPanel::VMESis3302StartHistoPanel(const TGWindow * Window, TM
 	fSelectChannel->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ChannelChanged(Int_t, Int_t)");
 	fSelectChannel->Select(0);
 
-	fTimeStamp = new TGMrbLabelEntry(fDisplayFrame, "TimeStamp",	200, kVMESis3302TimeStamp,
-															frameWidth/5, kLEHeight, frameWidth/4,
-															frameGC, labelGC);
-	HEAP(fTimeStamp);
-	fTimeStamp->SetText("??");
-	fTimeStamp->GetTextEntry()->SetEnabled(kFALSE);
-	fDisplayFrame->AddFrame(fTimeStamp, frameGC->LH());
+	fMaxEnergy = new TGMrbLabelEntry(fDisplayFrame, "E-max",	200, kVMESis3302EnergyMax,
+																frameWidth/5, kLEHeight, frameWidth/10,
+																frameGC, labelGC);
+	HEAP(fMaxEnergy);
+	fMaxEnergy->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fMaxEnergy->GetTextEntry()->SetEnabled(kFALSE);
+	fDisplayFrame->AddFrame(fMaxEnergy, frameGC->LH());
 
-	fTracesPerSec = new TGMrbLabelEntry(fDisplayFrame, "Traces/s",	200, kVMESis3302TracesPerSecond,
-															frameWidth/5, kLEHeight, frameWidth/12,
-															frameGC, labelGC);
-	HEAP(fTracesPerSec);
-	fTracesPerSec->SetText("0.0");
-	fTracesPerSec->GetTextEntry()->SetEnabled(kFALSE);
-	fDisplayFrame->AddFrame(fTracesPerSec, frameGC->LH());
+	fHistoSize = new TGMrbLabelEntry(fDisplayFrame, "H-size",	200, kVMESis3302HistoSize,
+																frameWidth/5, kLEHeight, frameWidth/15,
+																frameGC, labelGC);
+	HEAP(fHistoSize);
+	fHistoSize->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fDisplayFrame->AddFrame(fHistoSize, frameGC->LH());
+
+	fEnergyFactor = new TGMrbLabelEntry(fDisplayFrame, "E-fac",	200, kVMESis3302EnergyFactor,
+																frameWidth/5, kLEHeight, frameWidth/15,
+																frameGC, labelGC);
+	HEAP(fEnergyFactor);
+	fEnergyFactor->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fDisplayFrame->AddFrame(fEnergyFactor, frameGC->LH());
 
 	this->ChangeBackground(gVMEControlData->fColorGold);
 
@@ -260,6 +268,15 @@ void VMESis3302StartHistoPanel::StartGUI() {
 
 	fSelectModule->Select(curModule->GetIndex());
 	fTraceCollection = kFALSE;
+	fHisto = NULL;
+	fEmax = 0;
+	fMaxEnergy->GetTextEntry()->SetEnabled(kTRUE);
+	fMaxEnergy->SetText(fEmax);
+	fMaxEnergy->GetTextEntry()->SetEnabled(kFALSE);
+	fHsize = 16;
+	fHistoSize->SetText(fHsize);
+	fEfac = 1.0;
+	fEnergyFactor->SetText(fEfac);
 }
 
 void VMESis3302StartHistoPanel::ModuleChanged(Int_t FrameId, Int_t Selection) {
@@ -351,9 +368,16 @@ void VMESis3302StartHistoPanel::StartHisto() {
 	curModule->SetTestBits(traceMode);
 
 	Int_t nofEvents = kSis3302MaxEvents;		// collect as many events as possible
-	if (!curModule->StartTraceCollection(nofEvents, chnPatt)) {
+	Bool_t multiEvent = (fMultiEvent->GetState() == kButtonDown);
+
+	if (!curModule->StartTraceCollection(nofEvents, multiEvent, chnPatt)) {
 		gVMEControlData->MsgBox(this, "StartHisto", "Error", "Couldn't get traces");
 		return;
+	}
+
+	if (fHisto != NULL)  {
+		fHisto->Delete();
+		fHisto = NULL;
 	}
 
 	fTraceCollection = kTRUE;
@@ -361,6 +385,12 @@ void VMESis3302StartHistoPanel::StartHisto() {
 	fStartStopButton->SetBackgroundColor(gVMEControlData->fColorRed);
 	fStartStopButton->SetForegroundColor(gVMEControlData->fColorWhite);
 	fStartStopButton->Layout();
+
+	fEfac = fEnergyFactor->GetText2Double();
+	fEnergyFactor->GetTextEntry()->SetEnabled(kFALSE);
+
+	fHsize = fHistoSize->GetText2Int();
+	fHistoSize->GetTextEntry()->SetEnabled(kFALSE);
 
 	TArrayI evtData;
 	Int_t traceNo = 0;
@@ -370,14 +400,14 @@ void VMESis3302StartHistoPanel::StartHisto() {
 			curModule->StopTraceCollection();
 			break;
 		}
-		Int_t curEvent = 0;
+		Int_t curEvent = kSis3302MaxEvents;
 		Int_t wpt = 0;
 		traceNo++;
 		while (fTraceCollection && wpt == 0) {
 			wpt = this->ReadData(evtData, curEvent, curChannel, traceNo);
 			gSystem->ProcessEvents();
 		}
-		curModule->ContinueTraceCollection();
+		if (!multiEvent) curModule->ContinueTraceCollection();
 	}
 }
 
@@ -398,6 +428,8 @@ void VMESis3302StartHistoPanel::StopHisto() {
 	fStartStopButton->SetBackgroundColor(gVMEControlData->fColorGreen);
 	fStartStopButton->SetForegroundColor(gVMEControlData->fColorWhite);
 	fStartStopButton->Layout();
+	fHistoSize->GetTextEntry()->SetEnabled(kTRUE);
+	fEnergyFactor->GetTextEntry()->SetEnabled(kTRUE);
 }
 
 Int_t VMESis3302StartHistoPanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_t Channel, Int_t TraceNumber) {
@@ -428,73 +460,53 @@ Int_t VMESis3302StartHistoPanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 
 	if (wpt == 0) return(0);
 
-	EvtData.Set(wpt + kSis3302EventPreHeader);
+ 	EventNo = kSis3302MaxEvents;
+	EvtData.Set(wpt * ect + kSis3302EventPreHeader);
 
  	if (!curModule->GetTraceData(EvtData, EventNo, Channel)) {
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data");
 		return(-1);
 	}
 
-	return(1);		// @@@@@@
-
 	Int_t k = kSis3302EventPreHeader;
-
-	ULong64_t ts = (UInt_t) EvtData[k + 1];
-	UInt_t ts48 = ((UInt_t) EvtData[k] >> 16) & 0xFFFF;
-	ts += ts48 * 0x100000000LL;
-	fTimeStamp->GetTextEntry()->SetEnabled(kTRUE);
-	fTimeStamp->SetText(Form("%lld", ts));
-	fTimeStamp->GetTextEntry()->SetEnabled(kFALSE);
-
-	Double_t secs = ts / 100000000.;
-	Double_t tracesPerSec = TraceNumber / secs;
-	fTracesPerSec->GetTextEntry()->SetEnabled(kTRUE);
-	fTracesPerSec->SetText(Form("%6.2f", tracesPerSec));
-	fTracesPerSec->GetTextEntry()->SetEnabled(kFALSE);
-
-	k = kSis3302EventPreHeader + kSis3302EventHeader;
-
-	Int_t ksave = k;
-	Int_t min = 1000000;
-	Int_t max = 0;
-	for (Int_t i = 0; i < rdl; i++, k++) {
-		if (EvtData[k] < min) min = EvtData[k];
-		if (EvtData[k] > max) max = EvtData[k];
+	Int_t offset = kSis3302EventHeader + rdl + edl;
+	for (Int_t evtNo = 0; evtNo < ect; evtNo++) {
+		 k += offset;
+		 Int_t deltaX = EvtData[k] - EvtData[k + 1];
+		if (deltaX > fEmax) {
+			fEmax = deltaX;
+			fMaxEnergy->GetTextEntry()->SetEnabled(kTRUE);
+			fMaxEnergy->SetText(fEmax);
+			fMaxEnergy->GetTextEntry()->SetEnabled(kFALSE);
+		}
+		UInt_t trailer = EvtData[k + 3];
+		if (trailer != 0xdeadbeef) {
+			gMrbLog->Err() << "Wrong trailer - 0x" << setbase(16) << trailer << " (should be 0xdeadbeef). Giving up." << endl;
+			gMrbLog->Flush(this->ClassName(), "ReadData");
+			break;
+		}
+		k += 4;
 	}
-	if (max == 0) return(-1);
+
+	Int_t hs = fHsize * 1024;
+	Int_t xchans = (fEmax + 1023) / 1024 * 1024;
+	Double_t fac = hs / (Double_t) xchans;
 
 	TCanvas * c = fHistoCanvas->GetCanvas();
-
-	c->cd(1);
-	k = ksave;
-	if (fHistoRaw) fHistoRaw->Delete();
-	fHistoRaw = new TH1F(	Form("Raw-%s-chn%d-%d", curModule->GetName(), Channel, EventNo),
-							Form("Raw data from module %s, channel %d, evt #%d", curModule->GetName(), Channel, EventNo),
-							rdl, 0, rdl);
-	for (Int_t i = 0; i < rdl; i++, k++) fHistoRaw->Fill(i, EvtData[k]);
-	fHistoRaw->Draw();
-	c->Update();
-	c->cd();
-
-	ksave = k;
-	min = 1000000;
-	max = 0;
-	for (Int_t i = 0; i < edl; i++, k++) {
-		if (EvtData[k] < min) min = EvtData[k];
-		if (EvtData[k] > max) max = EvtData[k];
+	if (fHisto == NULL) {
+		fHisto = new TH1F(	Form("Hist-%s-chn%d", curModule->GetName(), Channel),
+							Form("Histogram from module %s, channel %d", curModule->GetName(), Channel), hs, 0., (Axis_t) hs);
 	}
-	if (max == 0) return(-1);
 
-	c->cd(2);
-	k = ksave;
-	if (fHistoEnergy) fHistoEnergy->Delete();
-	fHistoEnergy = new TH1F(	Form("Energy-%s-chn%d-%d", curModule->GetName(), Channel, EventNo),
-							Form("Energy data from module %s, channel %d, evt #%d", curModule->GetName(), Channel, EventNo),
-							edl, 0, edl);
-	for (Int_t i = 0; i < edl; i++, k++) fHistoEnergy->Fill(i, EvtData[k]);
-	fHistoEnergy->Draw();
+	k = kSis3302EventPreHeader;
+	for (Int_t evtNo = 0; evtNo < ect; evtNo++) {
+		k += offset;
+		Double_t x = (EvtData[k] - EvtData[k + 1]) * fac * fEfac;
+		fHisto->Fill(x);
+		k += 4;
+	}
+	fHisto->Draw();
 	c->Update();
-	c->cd();
 	return(wpt);
 }
 

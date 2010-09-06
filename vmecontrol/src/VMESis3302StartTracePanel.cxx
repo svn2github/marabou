@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.3 2010-07-12 12:32:51 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.4 2010-09-06 06:57:02 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -77,9 +77,6 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	TGMrbLayout * comboGC;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-
-	fHistoRaw = NULL;
-	fHistoEnergy = NULL;
 
 // geometry
 	Int_t frameWidth = this->GetWidth();
@@ -158,6 +155,7 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 																frameGC, labelGC, chkbtnGC, lofSpecialButtons);
 	fSelectFrame->AddFrame(fSelectChanPatt, frameGC->LH());
 	fSelectChanPatt->ChangeBackground(gVMEControlData->fColorGold);
+	fSelectChanPatt->SetState(0x1);
 
 // canvas
 	fHistoFrame = new TGGroupFrame(this, "Histograms", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -177,12 +175,16 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fTraceFrame->AddFrame(fStartStopButton, groupGC->LH());
 	fStartStopButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302StartStop));
 
+	fMultiEvent = new TGCheckButton(fTraceFrame, "MultiEvent", kVMESis3302MultiEvent);
+	fTraceFrame->AddFrame(fMultiEvent, frameGC->LH());
+	fMultiEvent->SetState(kButtonDown);
+
 	fDumpTraceButton = new TGTextButton(fTraceFrame, "Dump trace", kVMESis3302DumpTrace);
 	HEAP(fDumpTraceButton);
 	fTraceFrame->AddFrame(fDumpTraceButton, groupGC->LH());
 	fDumpTraceButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302DumpTrace));
 
-// mode & number of events
+// mode
 	fLofTraceModes.AddNamedX(kVMESis302StartTraceModes);
 	fSelectTrigMode = new TGMrbLabelCombo(fTraceFrame, "TriggerMode",	&fLofTraceModes,
 															kVMESis3302SelectTrigMode, 1,
@@ -213,7 +215,8 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 															frameWidth/5, kLEHeight, frameWidth/4,
 															frameGC, labelGC);
 	HEAP(fTimeStamp);
-	fTimeStamp->SetText("??");
+	fTimeStamp->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTimeStamp->SetText(0);
 	fTimeStamp->GetTextEntry()->SetEnabled(kFALSE);
 	fDisplayFrame->AddFrame(fTimeStamp, frameGC->LH());
 
@@ -221,7 +224,8 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 															frameWidth/5, kLEHeight, frameWidth/12,
 															frameGC, labelGC);
 	HEAP(fTracesPerSec);
-	fTracesPerSec->SetText("0.0");
+	fTracesPerSec->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTracesPerSec->SetText(0.0);
 	fTracesPerSec->GetTextEntry()->SetEnabled(kFALSE);
 	fDisplayFrame->AddFrame(fTracesPerSec, frameGC->LH());
 
@@ -261,6 +265,8 @@ void VMESis3302StartTracePanel::StartGUI() {
 
 	fSelectModule->Select(curModule->GetIndex());
 	fTraceCollection = kFALSE;
+	fHistoRaw = NULL;
+	fHistoEnergy = NULL;
 }
 
 void VMESis3302StartTracePanel::ModuleChanged(Int_t FrameId, Int_t Selection) {
@@ -352,7 +358,9 @@ void VMESis3302StartTracePanel::StartTrace() {
 	curModule->SetTestBits(traceMode);
 
 	Int_t nofEvents = 1;
-	if (!curModule->StartTraceCollection(nofEvents, chnPatt)) {
+	Bool_t multiEvent = (fMultiEvent->GetState() == kButtonDown);
+
+	if (!curModule->StartTraceCollection(nofEvents, multiEvent, chnPatt)) {
 		gVMEControlData->MsgBox(this, "StartTrace", "Error", "Couldn't get traces");
 		return;
 	}
@@ -362,18 +370,6 @@ void VMESis3302StartTracePanel::StartTrace() {
 	fStartStopButton->SetBackgroundColor(gVMEControlData->fColorRed);
 	fStartStopButton->SetForegroundColor(gVMEControlData->fColorWhite);
 	fStartStopButton->Layout();
-
-	TArrayI traceLength(kSis3302EventPreHeader);
-	if (curModule->GetTraceLength(traceLength, curChannel)) {
-		if (traceLength[0] == 0) {
-		  gMrbLog->Wrn()	<< "No RAW DATA will be collected" << endl;
-		  gMrbLog->Flush("StartTrace");
-		}
-		if (traceLength[1] == 0) {
-		  gMrbLog->Wrn()	<< "No ENERGY DATA will be collected" << endl;
-		  gMrbLog->Flush("StartTrace");
-		}
-	}
 
 	TArrayI evtData;
 	Int_t traceNo = 0;
@@ -390,7 +386,7 @@ void VMESis3302StartTracePanel::StartTrace() {
 			wpt = this->ReadData(evtData, curEvent, curChannel, traceNo);
 			gSystem->ProcessEvents();
 		}
-		curModule->ContinueTraceCollection();
+		if (!multiEvent) curModule->ContinueTraceCollection();
 	}
 }
 
@@ -460,7 +456,7 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 	Double_t secs = ts / 100000000.;
 	Double_t tracesPerSec = TraceNumber / secs;
 	fTracesPerSec->GetTextEntry()->SetEnabled(kTRUE);
-	fTracesPerSec->SetText(Form("%6.2f", tracesPerSec));
+	fTracesPerSec->SetText(tracesPerSec);
 	fTracesPerSec->GetTextEntry()->SetEnabled(kFALSE);
 
 	k = kSis3302EventPreHeader + kSis3302EventHeader;
@@ -478,10 +474,12 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 
 	c->cd(1);
 	k = ksave;
-	if (fHistoRaw) fHistoRaw->Delete();
-	fHistoRaw = new TH1F(	Form("Raw-%s-chn%d-%d", curModule->GetName(), Channel, EventNo),
-							Form("Raw data from module %s, channel %d, evt #%d", curModule->GetName(), Channel, EventNo),
-							rdl, 0, rdl);
+	if (fHistoRaw == NULL) {
+		fHistoRaw = new TH1F(	Form("Raw-%s-chn%d-%d", curModule->GetName(), Channel, EventNo),
+								Form("Raw data from module %s, channel %d, evt #%d", curModule->GetName(), Channel, EventNo),
+								rdl, 0, rdl);
+	}
+	fHistoRaw->Reset("ICE");
 	for (Int_t i = 0; i < rdl; i++, k++) fHistoRaw->Fill(i, EvtData[k]);
 	fHistoRaw->Draw();
 	c->Update();
@@ -498,10 +496,12 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 
 	c->cd(2);
 	k = ksave;
-	if (fHistoEnergy) fHistoEnergy->Delete();
-	fHistoEnergy = new TH1F(	Form("Energy-%s-chn%d-%d", curModule->GetName(), Channel, EventNo),
-							Form("Energy data from module %s, channel %d, evt #%d", curModule->GetName(), Channel, EventNo),
-							edl, 0, edl);
+	if (fHistoEnergy == NULL) {
+		fHistoEnergy = new TH1F(	Form("Energy-%s-chn%d-%d", curModule->GetName(), Channel, EventNo),
+								Form("Energy data from module %s, channel %d, evt #%d", curModule->GetName(), Channel, EventNo),
+								edl, 0, edl);
+	}
+	fHistoEnergy->Reset("ICE");
 	for (Int_t i = 0; i < edl; i++, k++) fHistoEnergy->Fill(i, EvtData[k]);
 	fHistoEnergy->Draw();
 	c->Update();

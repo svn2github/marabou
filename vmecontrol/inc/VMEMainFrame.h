@@ -8,7 +8,7 @@
 // Class:          VMEMainFrame
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: VMEMainFrame.h,v 1.7 2010-03-23 14:07:51 Rudolf.Lutter Exp $
+// Revision:       $Id: VMEMainFrame.h,v 1.8 2010-09-06 06:57:02 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -47,7 +47,7 @@ class VMEMainFrame : public TGMainFrame {
 
 	public:
 		// cmd ids to dispatch over X events in main frame
-		enum EVMEMainFrameCmdId {		kVMEFileExit,					// pulldown menu "File"
+		enum EVMEMainFrameCmdId {	kVMEFileExit,					// pulldown menu "File"
 
 									kVMEViewErrors, 				// pulldown menu "View"
 

@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.12 2010-07-08 13:23:39 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-07-08 13:23:39 $
+// Revision:       $Id: TC2LSis3302.h,v 1.13 2010-09-06 06:56:50 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-09-06 06:56:50 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -134,7 +134,7 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 		Bool_t RestoreSettings(const Char_t * SettingsFile = NULL);
 
-		Bool_t StartTraceCollection(Int_t & NofEvents, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t StartTraceCollection(Int_t & NofEvents, Bool_t & MultiEvent, Int_t AdcNo = kSis3302AllAdcs);
 		Bool_t ContinueTraceCollection();
 		Bool_t StopTraceCollection();
 		Bool_t GetTraceData(TArrayI & Data, Int_t & EventNo, Int_t AdcNo);

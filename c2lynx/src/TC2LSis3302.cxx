@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.16 2010-07-12 12:31:01 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-07-12 12:31:01 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.17 2010-09-06 06:56:50 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-09-06 06:56:50 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -656,9 +656,10 @@ Bool_t TC2LSis3302::SetClockSource(Int_t & ClockSource) {
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::StartTraceCollection(Int_t & NofEvents, Int_t AdcNo) {
-	TArrayI dataSend(1);
+Bool_t TC2LSis3302::StartTraceCollection(Int_t & NofEvents, Bool_t & MultiEvent, Int_t AdcNo) {
+	TArrayI dataSend(2);
 	dataSend[0] = NofEvents;
+	dataSend[1] = MultiEvent ? 1 : 0;
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_START_TRACE_COLLECTION, dataSend, dataSend, AdcNo));
 }
 
@@ -671,7 +672,7 @@ Bool_t TC2LSis3302::ContinueTraceCollection() {
 Bool_t TC2LSis3302::StopTraceCollection() {
 	TArrayI dataSend(1);
 	dataSend[0] = 0;
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_START_TRACE_COLLECTION, dataSend, dataSend, kSis3302AllAdcs));
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_STOP_TRACE_COLLECTION, dataSend, dataSend, kSis3302AllAdcs));
 }
 
 Bool_t TC2LSis3302::GetTraceLength(TArrayI & Data, Int_t AdcNo) {
@@ -688,7 +689,6 @@ Bool_t TC2LSis3302::GetTraceData(TArrayI & Data, Int_t & EventNo, Int_t AdcNo) {
 
 Bool_t TC2LSis3302::DumpTrace() {
 	TArrayI dataSend(1);
-	TDatime now;
 	dataSend[0] = 0;
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_DUMP_TRACE, dataSend, dataSend, kSis3302AllAdcs));
 }

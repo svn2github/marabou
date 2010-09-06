@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartHistoPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.1 2010-07-12 12:50:22 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.2 2010-09-06 06:57:02 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -64,9 +64,11 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 												kVMESis3302SelectTrigMode,
 												kVMESis3302StartStop,
 												kVMESis3302DumpTrace,
+												kVMESis3302MultiEvent,
 												kVMESis3302SelectChannel,
-												kVMESis3302TimeStamp,
-												kVMESis3302TracesPerSecond,
+												kVMESis3302EnergyMax,
+												kVMESis3302HistoSize,
+												kVMESis3302EnergyFactor
 											};
 
 		enum EVMESis3302TraceModes			{	kVMESis3302ModeMAWD		= 0,
@@ -108,13 +110,18 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 		TGTextButton * fStartStopButton;			// start/stop trace
 		TGTextButton * fDumpTraceButton;			// dump trace
 
-		TH1F * fHistoRaw;							// histos for raw and energy data
-		TH1F * fHistoEnergy;
+		TH1F * fHisto;								// histogram
 
 		TGGroupFrame * fDisplayFrame;				// display
 		TGMrbLabelCombo * fSelectChannel;  			//		channel
-		TGMrbLabelEntry * fTimeStamp;				// timestamp
-		TGMrbLabelEntry * fTracesPerSec;			// traces per second
+		TGCheckButton * fMultiEvent;	  			//		singe/multi event mode
+		TGMrbLabelEntry * fMaxEnergy;				// max energy
+		TGMrbLabelEntry * fHistoSize;				// size of histogram in kChannels
+		TGMrbLabelEntry * fEnergyFactor;			// energy scale factor
+
+		Int_t fEmax;
+		Int_t fHsize;
+		Double_t fEfac;
 
 		TMrbLofNamedX * fLofModules;
 		TMrbLofNamedX fLofSelected;

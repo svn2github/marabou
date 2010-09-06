@@ -8,8 +8,8 @@
 // Class:          VMEControlData
 // Description:    A GUI to control VME modules
 // Author:         R. Lutter
-// Revision:       $Id: VMEControlData.h,v 1.11 2010-07-12 12:32:51 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-07-12 12:32:51 $
+// Revision:       $Id: VMEControlData.h,v 1.12 2010-09-06 06:57:02 Rudolf.Lutter Exp $
+// Date:           $Date: 2010-09-06 06:57:02 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ enum						{	kAutoWidth			= 1 		};
 enum						{	kAutoHeight			= 1 		};
 
 // geometry settings
-enum						{	kFrameWidth 		= 1200		};
+enum						{	kFrameWidth 		= 1300		};
 enum						{	kFrameHeight 		= 800		};
 enum						{	kTabWidth 			= kFrameWidth		};
 enum						{	kTabHeight 			= kFrameHeight		};
