@@ -2,10 +2,10 @@
 /*!	\file		mbsio.c
 	\brief		MBS raw data input
 	\details	Procedures to read MBS data from disk or tcp socket
-	$Author: Rudolf.Lutter $
+	$Author: Marabou $
 	$Mail:		<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.1 $       
-	$Date: 2009-05-13 06:59:40 $
+	$Revision: 1.2 $       
+	$Date: 2010-09-10 13:43:43 $
 *****************************************************************************/
 
 /* include files needed by mbsio */
@@ -792,7 +792,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	s_evhe *eh;
 	s_vehe *vh;
 	unsigned int bo;
-	unsigned int btype, etype;
+	unsigned int btype, etype, error;
 	int evl, evlsv;
 	int frag1, frag2;
 	int sc;
@@ -863,13 +863,13 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	bto_get_int32((int *) &etype, (char *) &eh->i_subtype, 1, bo);
 
 	mbs->evttype = _mbs_check_type(etype, mbs->evttype, event_types);
-	etype = (mbs->evttype)->type;
-	if (etype == MBS_ETYPE_ERROR || etype == MBS_ETYPE_ABORT) {
+	error = (mbs->evttype)->type;
+	if (error == MBS_ETYPE_ERROR || error == MBS_ETYPE_ABORT) {
 		sprintf(loc_errbuf,
 		"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt %d): Not a legal event type - %#x",
 					mbs->device, mbs->cur_bufno, mbs->evtno, etype);
 		_mbs_output_error(mbs);
-		return(etype);
+		return(error);
 	}
 
 	memcpy(eHdr, mbs->evt_data, sizeof(s_vehe)); 	/* save header ###unswapped### */
@@ -972,7 +972,7 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	s_evhe *eh;
 	s_vehe *vh;
 	unsigned int bo;
-	unsigned int etype;
+	unsigned int etype, error;
 	int evl;
 	int sc;
 	unsigned int (*s)();
@@ -1037,13 +1037,12 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	mbs->evttype = _mbs_check_type(etype, mbs->evttype, event_types);
 
-	etype = (mbs->evttype)->type;
-	if (etype == MBS_ETYPE_ERROR || etype == MBS_ETYPE_ABORT) {
+	error = (mbs->evttype)->type;
+	if (error == MBS_ETYPE_ERROR || error == MBS_ETYPE_ABORT) {
 		sprintf(loc_errbuf,
-		"?EVTERR-[_mbs_next_med_event]- %s (evt %d): Not a legal event type - %#x",
-														mbs->device, mbs->evtno, etype);
+		"?EVTERR-[_mbs_next_med_event]- %s (evt %d): Not a legal event type - %#x", mbs->device, mbs->evtno, etype);
 		_mbs_output_error(mbs);
-		return(etype);
+		return(error);
 	}
 
 	s = (void *) (mbs->evttype)->convert;
@@ -2243,7 +2242,7 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 
 	unsigned int bo_tag;
 	unsigned int byte_order;
-	unsigned int btype;
+	unsigned int btype, error;
 	s_bufhe *bh;
 
 	unsigned int (*s)();
@@ -2288,8 +2287,8 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 
 	bto_get_int32((int *) &btype, (char *) &bh->i_subtype, 1, byte_order);
 	mbs->buftype = _mbs_check_type(btype, mbs->buftype, buffer_types);
-	btype = (mbs->buftype)->type;
-	if (btype == MBS_BTYPE_ERROR || btype == MBS_BTYPE_ABORT) {
+	error = (mbs->buftype)->type;
+	if (error == MBS_BTYPE_ERROR || error == MBS_BTYPE_ABORT) {
 		sprintf(loc_errbuf,
 		"?ILLFMT-[_mbs_convert_data]- %s (buf %d): Not a legal buffer type - %#x",
 										mbs->device, mbs->nof_buffers, btype);
@@ -2354,6 +2353,7 @@ void _mbs_init_triggers() {
 MBSBufferElem *_mbs_check_type(unsigned int btype, MBSBufferElem *ltdescr, MBSBufferElem *tlist) {
 
 	unsigned int t;
+	
 	if (ltdescr != NULL && (btype == ltdescr->type)) return(ltdescr);
 
 	while (tlist->type != 0) {
@@ -2606,8 +2606,7 @@ void _mbs_output_error(MBSDataIO *mbs) {
 		strftime(datestr, MBS_L_STR, "%e-%b-%Y %H:%M:%S", localtime(&now));
 		fprintf(log_out, "%-18s: %s\n", datestr, loc_errbuf);
 	}
-	if (mbs && mbs->buf_to_be_dumped != 0)_mbs_dump_buffer(mbs);
-}
+} 
 
 /*-------------------------------------------------------------------------------------------*/
 /*!	\brief		[internal] Output message to logfile

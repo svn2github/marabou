@@ -2,6 +2,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include "mbsio.h"
+#include "byte_order.h"
 #include <errno.h>
 
 #define CAEN_V7X5_SH_WC							8
@@ -567,11 +568,17 @@ int extractSubevents(MBSDataIO * mbs) {
 // Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
+	int i;
 	unsigned int sevtType, sevtSubtype;
 	int sevtSerial;
 	char envStr[kStrlen];
 	char sevtStr[kStrlen];
 	int indent;
+	char dfile[64];
+	FILE * df;
+	char * dp;
+	char * arrow;
+	unsigned int data;
 
 	for (;;) {
 		sevtType = mbs_next_sheader(mbs);
@@ -591,7 +598,22 @@ int extractSubevents(MBSDataIO * mbs) {
 		printf("\n");
 
 		sevtType = mbs_next_sdata(mbs); 					/* next subevent */
-		if (sevtType == MBS_STYPE_ERROR) return(kFALSE);	/* error */
+		if (sevtType == MBS_STYPE_ERROR) {
+			if (bufferDump) {
+				sprintf(dfile, "evt%d-sevt%d.dmp", mbs->evtno, mbs->sevtno);
+				fprintf(stderr, "[Dumping data to file \"%s\" - addr [0, %d], error at %d]\n",
+									dfile, mbs->sevtpt + 128 - mbs->evt_data, mbs->sevtpt + 4 - mbs->evt_data);
+				df = fopen(dfile, "w");
+				dp = mbs->evt_data;
+				while (dp < mbs->sevtpt + 128) {
+					dp = bto_get_int32(&data, dp, 1, BYTE_ORDER_LSW);
+					arrow = (dp == mbs->sevtpt + 4) ? "<<<<<<<<<<<<<<<<<<<<<<<" : "";
+					fprintf(df, "%5d %#0lx %s\n", dp - mbs->evt_data, data, arrow);
+				}
+				fclose(df);
+			}
+			return(kFALSE);	/* error */
+		}
 
 		if (sevtType == MBS_STYPE_CAMAC_DGF_1
 		||  sevtType == MBS_STYPE_CAMAC_DGF_2
