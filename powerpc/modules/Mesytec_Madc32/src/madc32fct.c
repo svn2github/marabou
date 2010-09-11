@@ -4,10 +4,10 @@
 //! \brief			Code for module MADC32
 //! \details		Implements functions to handle modules of type Mesytec MADC32
 //!
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.12 $
-//! $Date: 2010-06-17 08:16:40 $
+//! $Revision: 1.13 $
+//! $Date: 2010-09-11 20:39:03 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 #include <allParam.h>
 #include <ces/bmalib.h>
 #include <errno.h>
-#include <sigcodes.h>
+#include <signal.h>
 
 #include "gd_readout.h"
 
@@ -769,6 +769,8 @@ void madc32_enable_bma(struct s_madc32 * s)
 	}
 }
 
+#if 0
+
 int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 {
 	uint32_t * dataStart;
@@ -863,6 +865,27 @@ uint32_t * madc32_pushEvent(struct s_madc32 * s, uint32_t * pointer) {
 	uint32_t * p = s->evtBuf;
 	for (i = 0; i < wc; i++) *pointer++ = *p++;
 	return (pointer);
+}
+#endif
+
+int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
+{
+	uint32_t * dataStart = pointer;
+	uint16_t numData;
+	unsigned int i;
+  
+	if (!madc32_dataReady(s)) {
+		*pointer++ = 0xaffec0c0;
+		return 0;
+	}
+  
+	numData = madc32_getFifoLength(s);
+  
+	for (i = 0; i < (int) numData; i++) *pointer++ = GET32(s->baseAddr, MADC32_DATA); 
+
+	madc32_resetReadout(s);
+
+	return (pointer - dataStart);
 }
 
 int madc32_readTimeB(struct s_madc32 * s, uint32_t * pointer)

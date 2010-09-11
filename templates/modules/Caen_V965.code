@@ -209,7 +209,7 @@
 #endif
 								}
 							}
-$v965a						caen_v965_chn = (caen_v965_data & 0xFFFF0000) >> 1;					// V965A: we have to shift chn numbers one right!
+$v965a						caen_v965_chn = (caen_v965_data & 0x001E0000) >> 1;					// V965A: we have to shift chn numbers one right!
 $v965a						caen_v965_data = (caen_v965_data & 0x0000FFFF) |  caen_v965_chn;	// thus data may be treated as commen CAEN data (eg V875)
 							RDO_2MEM_32(caen_v965_data & CAEN_V965_M_DATA);	/* write data */
 						}

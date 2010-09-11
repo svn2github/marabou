@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.14 2009-04-01 10:50:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.15 2010-09-11 20:39:03 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -335,9 +335,12 @@ Bool_t TMrbSis_3300::UseSettings(const Char_t * SettingsFile) {
 	} else {
 		gMrbLog->Err() << "Settings file not found - " << SettingsFile << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
-		gMrbLog->Out() << "Creating default settings file - " << fSettingsFile << endl;
+		TString sf = Form("%sSettings.default", this->GetName());
+		gMrbLog->Err()	<< "Creating DEFAULT settings file - " << sf << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
-		this->SaveSettings(fSettingsFile.Data());
+		gMrbLog->Err()	<< "Please edit this file and then rename it to \"" << SettingsFile << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "UseSettings");
+		this->SaveSettings(sf.Data());
 		return(kFALSE);
 	}
 

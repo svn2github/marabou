@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.20 2010-04-01 07:27:55 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.21 2010-09-11 20:39:03 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -542,9 +542,12 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 	} else {
 		gMrbLog->Err() << "Settings file not found - " << SettingsFile << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
-		gMrbLog->Out() << "Creating default settings file - " << fSettingsFile << endl;
+		TString sf = Form("%sSettings.default", this->GetName());
+		gMrbLog->Err()	<< "Creating DEFAULT settings file - " << sf << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");
-		this->SaveSettings(fSettingsFile.Data());
+		gMrbLog->Err()	<< "Please edit this file and then rename it to \"" << SettingsFile << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "UseSettings");
+		this->SaveSettings(sf.Data());
 		return(kFALSE);
 	}
 
