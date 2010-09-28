@@ -4,8 +4,8 @@
 	\details	Procedures to read MBS data from disk or tcp socket
 	$Author: Rudolf.Lutter $
 	$Mail:		<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.47 $
-	$Date: 2010-08-31 13:10:23 $
+	$Revision: 1.48 $
+	$Date: 2010-09-28 07:50:30 $
 *****************************************************************************/
 
 /* include files needed by mbsio */
@@ -1031,16 +1031,16 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	bytes_read = read(mbs->fileno, eHdr, sizeof(s_evhe));
 
-	if (bytes_read != sizeof(s_evhe)) {
-		lseek(mbs->fileno, mbs->filepos, SEEK_SET);
-		return(MBS_ETYPE_WAIT);
-	} else if (bytes_read == 0) {
+	if (bytes_read == 0) {
 		return(MBS_ETYPE_EOF);
 	} else if (bytes_read == -1) {
 		sprintf(loc_errbuf, "?INPERR-[_mbs_next_med_event]- %s (evt %d): %s (%d)",
 													mbs->device, mbs->evtno, strerror(errno), errno);
 		_mbs_output_error(mbs);
 		return(MBS_ETYPE_ABORT);
+	} else if (bytes_read != sizeof(s_evhe)) {
+		lseek(mbs->fileno, mbs->filepos, SEEK_SET);
+		return(MBS_ETYPE_WAIT);
 	}
 
 	total += bytes_read;
