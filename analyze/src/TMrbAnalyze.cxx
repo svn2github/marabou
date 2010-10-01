@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.95 2010-07-21 12:42:37 Marabou Exp $
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.96 2010-10-01 10:01:53 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -124,7 +124,8 @@ TMrbAnalyze::TMrbAnalyze(TMrbIOSpec * IOSpec) {
 		hDTimeHistory = new TH1F("DeadTime", "Dead time history (last 300 seconds)", 300, -300, 0);
 		fDumpCount = gEnv->GetValue("TMrbAnalyze.DumpCount", 0);
 
-		fResourceName.Resize(0);		// reset resource name
+		fResourceFile.Resize(0);		// reset resource name
+		fResourceName.Resize(0);
 		fResourceString.Resize(0);
 
 		gMrbAnalyze = this; 			// save pointer so it can't called twice
@@ -599,14 +600,14 @@ Bool_t TMrbAnalyze::CloseRootTree(TMrbIOSpec * IOSpec) {
 		if (outputMode & TMrbIOSpec::kOutputClose) {
 			if (this->IsVerbose()) {
 				cout	<< setblue
-						<< this->ClassName() << "::Close(): Closing tree - " << fEventsProcessed << " event(s) written"
+						<< this->ClassName() << "::CloseRootTree(): Closing tree - " << fEventsProcessed << " event(s) written"
 						<< setblack << endl;
 			}
 			fRootFileOut->Write();
 			fRootFileOut->Close();
 			if (this->IsVerbose()) {
 				cout	<< setblue
-						<< this->ClassName() << "::Close(): ROOT file \"" << fRootFileOut->GetName() << "\" closed"
+						<< this->ClassName() << "::CloseRootTree(): ROOT file \"" << fRootFileOut->GetName() << "\" closed"
 						<< setblack << endl;
 			}
 			fWriteRootTree = kFALSE;

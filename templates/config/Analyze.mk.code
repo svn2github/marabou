@@ -10,6 +10,7 @@
 # URL:
 #/////////////////////////////////////////////////////////////////////////////
 
+PREFIX		=	%%ANALYZE_NAME_UC%%
 AFILE 		=	%%ANALYZE_FILE%%
 
 INCLUDE 	=	-I$(MARABOU)/include
@@ -66,6 +67,13 @@ M_analyze:	$(OBJPATH)/M_analyze.o lib$(AFILE).so
 					$(USER_LIBS) \
 					$(TMRBLIBS) \
 					$(GLIBS) -lpthread
+
+$(PREFIX)Fake:	$(PREFIX)Fake.o lib$(AFILE).so
+			$(LD) $(LFLAGS) -o $(PREFIX)Fake $(PREFIX)Fake.o \
+					-L. -l$(AFILE) \
+					$(USER_LIBS) \
+					$(TMRBLIBS) \
+					$(GLIBS)
 
 lib$(AFILE).so: $(USER_OBJS) $(AFILE).o $(AFILE)Dict.o
 			$(CXX) $(LDFLAGS) -shared $(AFILE).o $(AFILE)Dict.o $(USER_OBJS) -o lib$(AFILE).so

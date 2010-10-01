@@ -7,7 +7,7 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.54 2009-10-15 08:18:38 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbAnalyze.h,v 1.55 2010-10-01 10:01:53 Rudolf.Lutter Exp $
 // Date:
 // URL:
 // Keywords:
@@ -125,6 +125,7 @@ class TMrbAnalyze : public TObject {
 		};
 		inline Bool_t IsModScaleDown() const { return((fEventsProcessed % fScaleDown) == 0); };
 
+		inline Bool_t SetWriteTreeFlag(Bool_t Flag = kTRUE) { fWriteRootTree = Flag; };
 		inline Bool_t TreeToBeWritten() const { return(fWriteRootTree); };		// root data to be written?
 
 		void MarkHistogramsWithTime();								// write a time stamp to all histograms
