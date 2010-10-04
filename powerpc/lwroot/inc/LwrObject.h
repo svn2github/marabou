@@ -14,8 +14,8 @@
 //! 				in the ROOT collection classes.
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $
-//! $Date: 2010-06-17 08:16:40 $
+//! $Revision: 1.6 $
+//! $Date: 2010-10-04 10:09:00 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <iostream.h>
@@ -83,8 +83,6 @@ public:
            Bool_t      IsOnHeap() const { return TestBit(kIsOnHeap); }
            Bool_t      IsZombie() const { return TestBit(kZombie); }
    virtual void        SetUniqueID(UInt_t uid);
-
-   virtual Bool_t      HandleRequest();
 
    //----- bit manipulation
    void     SetBit(UInt_t f, Bool_t set);

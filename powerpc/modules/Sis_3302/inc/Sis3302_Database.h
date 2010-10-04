@@ -10,8 +10,8 @@
 //! \details		Structures describing a SIS3302 ADC
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $
-//! $Date: 2010-09-06 06:56:34 $
+//! $Revision: 1.6 $
+//! $Date: 2010-10-04 10:09:01 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -47,27 +47,28 @@ struct s_sis_3302 {
 	Int_t updInterval;
 	Int_t updCountDown;
 
-	Int_t dacValues[NOF_CHANNELS];
+	Int_t clockSource;
+	Bool_t mcaMode;
+	Int_t lemoOutMode;
+	Int_t lemoInMode;
+	Int_t lemoInEnableMask;
 
-	UInt_t controlStatus;
-	UInt_t evtConf[NOF_GROUPS];
-	UInt_t xEvtConf[NOF_GROUPS];
-	UInt_t headerBits[NOF_GROUPS];
-	UInt_t triggerMode[NOF_CHANNELS];
-	UInt_t gateMode[NOF_CHANNELS];
-	UInt_t nextNeighborTrigger[NOF_CHANNELS];
-	UInt_t nextNeighborGate[NOF_CHANNELS];
+	Int_t dacValues[NOF_CHANNELS];
+	Int_t headerBits[NOF_GROUPS];
+	Int_t triggerMode[NOF_CHANNELS];
+	Int_t gateMode[NOF_CHANNELS];
+	Int_t nextNeighborTrigger[NOF_CHANNELS];
+	Int_t nextNeighborGate[NOF_CHANNELS];
 	Bool_t invertSignal[NOF_CHANNELS];
-	Int_t endAddrThresh[NOF_GROUPS];
 	Int_t pretrigDelay[NOF_GROUPS];
 	Int_t trigGateLength[NOF_GROUPS];
 	Int_t rawDataSampleLength[NOF_GROUPS];
 	Int_t rawDataSampleStart[NOF_GROUPS];
 	Int_t trigPeakTime[NOF_CHANNELS];
 	Int_t trigGapTime[NOF_CHANNELS];
-	Int_t trigPulseLength[NOF_CHANNELS];
 	Int_t trigInternalGate[NOF_CHANNELS];
 	Int_t trigInternalDelay[NOF_CHANNELS];
+	Int_t trigPulseLength[NOF_CHANNELS];
 	Int_t trigDecimation[NOF_CHANNELS];
 	Int_t trigThresh[NOF_CHANNELS];
 	Int_t trigGT[NOF_CHANNELS];
@@ -76,13 +77,6 @@ struct s_sis_3302 {
 	Int_t energyGapTime[NOF_GROUPS];
 	Int_t energyDecimation[NOF_GROUPS];
 	Int_t energyGateLength[NOF_GROUPS];
-
-	Int_t clockSource;
-	Bool_t mcaMode;
-	Int_t lemoOutMode;
-	Int_t lemoInMode;
-	Int_t lemoInEnableMask;
-
 	Int_t energyTestBits[NOF_GROUPS];
 	Int_t energySampleLength[NOF_GROUPS];
 	Int_t energySampleStart[3][NOF_GROUPS];

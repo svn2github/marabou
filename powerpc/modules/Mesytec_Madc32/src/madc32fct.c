@@ -6,8 +6,8 @@
 //!
 //! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.14 $
-//! $Date: 2010-10-04 06:56:35 $
+//! $Revision: 1.15 $
+//! $Date: 2010-10-04 10:09:01 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 #include <allParam.h>
 #include <ces/bmalib.h>
 #include <errno.h>
-#include <signal.h>
+#include <sigcodes.h>
 
 #include "gd_readout.h"
 
@@ -32,9 +32,6 @@
 void catchBerr();
 
 char msg[256];
-
-bool_t berrFlag = FALSE;
-uint32_t berrAddr = 0L;
 
 struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial)
 {
@@ -772,8 +769,6 @@ void madc32_enable_bma(struct s_madc32 * s)
 	}
 }
 
-#if 0
-
 int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 {
 	uint32_t * dataStart;
@@ -794,7 +789,8 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 
 	if (s->blockTransOn) {
 		if (bmaResetChain(s->bma) < 0) {
-			sprintf(msg, "[%sreadout] %s: resetting block xfer chain failed", s->mpref, s->moduleName);
+			sprintf(msg, "[%sreadout] %s: resetting block xfer chai
+n failed", s->mpref, s->moduleName);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
@@ -820,19 +816,8 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 		memcpy(pointer, s->bltBuffer, sizeof(uint32_t) * numData);
 		pointer += numData;
 	} else {
-#if 0
 		for (i = 0; i < numData; i++) {
 			data = GET32(s->baseAddr, MADC32_DATA);
-			*pointer++ = data;
-		}
-#endif
-		for (i = 0; i < numData; i++) {
-			berrFlag = FALSE;
-			data = GET32(s->baseAddr, MADC32_DATA);
-			if (berrFlag) {
-				sprintf(msg, "[%sreadout] %s: Bus error at %#lx + %#lx, index=%d", s->mpref, s->moduleName, s->baseAddr, MADC32_DATA, i);
-				f_ut_send_msg("sis_3300", msg, ERR__MSG_INFO, MASK__PRTT);
-			}
 			if (data == 0) {
 				s->evtp++; *s->evtp = (MADC32_M_TRAILER | 0x00525252);
 				pointer = madc32_pushEvent(s, pointer);
@@ -859,7 +844,6 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 				s->evtp++; *s->evtp = data;
 			}
 		}
-
 	}
 
 	madc32_resetReadout(s);
@@ -873,27 +857,6 @@ uint32_t * madc32_pushEvent(struct s_madc32 * s, uint32_t * pointer) {
 	uint32_t * p = s->evtBuf;
 	for (i = 0; i < wc; i++) *pointer++ = *p++;
 	return (pointer);
-}
-#endif
-
-int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
-{
-	uint32_t * dataStart = pointer;
-	uint16_t numData;
-	unsigned int i;
-  
-	if (!madc32_dataReady(s)) {
-		*pointer++ = 0xaffec0c0;
-		return 0;
-	}
-  
-	numData = madc32_getFifoLength(s);
-  
-	for (i = 0; i < (int) numData; i++) *pointer++ = GET32(s->baseAddr, MADC32_DATA); 
-
-	madc32_resetReadout(s);
-
-	return (pointer - dataStart);
 }
 
 int madc32_readTimeB(struct s_madc32 * s, uint32_t * pointer)
@@ -972,4 +935,4 @@ void madc32_resetEventBuffer(struct s_madc32 * s) {
 	s->skipData = FALSE;
 }
 
-void catchBerr(int signal) { berrFlag = TRUE; }
+void catchBerr() {}

@@ -8,8 +8,8 @@
 //! \details		Class definitions for ROOT under LynxOs: Type definitions
 //! $Author: Rudolf.Lutter $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.7 $
-//! $Date: 2010-04-23 13:38:27 $
+//! $Revision: 1.8 $
+//! $Date: 2010-10-04 10:09:01 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 typedef char           Char_t;      //Signed Character 1 byte (char)
