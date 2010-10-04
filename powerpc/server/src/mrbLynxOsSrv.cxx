@@ -37,7 +37,7 @@ TMrbLofNamedX * gLofVMEProtos;		// list of vme prototypes
 TMrbLofNamedX * gLofVMEModules;		// list of modules
 TMrbLogger * gMrbLog;				// message logger
 
-extern SrvSocket * gSrvSocket; 		// server socket
+SrvSocket * gSrvSocket; 		// server socket
 
 Int_t main(Int_t argc, Char_t *argv[]) {
 //__________________________________________________________________[C++ MAIN]
