@@ -1,0 +1,158 @@
+//__________________________________________________[C++ CLASS IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%ANALYZE_NAME_UC%%Fake.cxx
+// Purpose:        Generate FAKE data to test user's application
+// Description:    %%ANALYZE_TITLE%%
+//
+// Author:         %%AUTHOR%%
+// Date:           %%CREATION_DATE%%
+//////////////////////////////////////////////////////////////////////////////
+
+#include <iostream>
+#include <iomanip>
+#include <unistd.h>
+#include <getopt.h>
+
+#include "TEnv.h"
+#include "TRandom.h"
+
+#include "TMrbLogger.h"
+#include "TMrbVar.h"
+#include "TMrbWdw.h"
+
+#include "TMrbAnalyze.h"
+#include "TMrbIOSpec.h"
+
+#include "SetColor.h"
+
+// class definitions
+#include "%%ANALYZE_FILE%%.h"
+
+// common index declarations for analysis and readout
+#include "%%ANALYZE_NAME_UC%%CommonIndices.h"
+
+%%BeginOfCode%%
+%B%// global defs supplied by user
+%I%#include "$iclFile"
+%%EndOfCode%%
+%%INCLUDE_USER_GLOBALS%%
+
+// global objects
+#include "%%ANALYZE_FILE%%Globals.h"
+
+%%INCLUDE_EVT_SEVT_MOD_GLOBALS%%
+
+%%BeginOfCode%%
+%B%// namespaces used by user
+%NS%using namespace $nameSpace;
+%%EndOfCode%%
+%%USING_NAMESPACE%%
+
+extern TMrbLogger * gMrbLog;					// MARaBOU's logging mechanism
+extern TMrbAnalyze * gMrbAnalyze;				// base class for user's analysis
+
+extern char *optarg;
+extern int optind, opterr, optopt;
+
+// user's readout event(s)
+%%DEFINE_USER_EVENTS%%
+
+static Bool_t verboseMode;						// verbosity flag
+
+void fake(TMrbAnalyze * UA, Int_t MaxPeaks, Double_t MaxSigma);
+
+Int_t main(Int_t argc, Char_t * argv[]) {
+
+	TMrbAnalyze * ua;
+	TMrbIOSpec * ios;
+
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("fake.log");
+
+	verboseMode = gEnv->GetValue("TMrbAnalyze.VerboseMode". kFALSE);
+
+	TEnv e(".fakerc");
+	TString rootFile = e.GetValue("Fake.RootFile", "fakedata.root");
+	Int_t nofEvents = e.GetValue("Fake.NofEvents", 100000);
+	Double_t maxSigma = e.GetValue("Fake.MaxSigma", 200.0);
+	Int_t maxPeaks = e.GetValue("Fake.MaxPeaks", 5);
+
+	if (argc == 1) {}
+	else if (argc == 2) { rootFile = argv[1]; }
+	else if (argc == 3) { rootFile = argv[1]; nofEvents = atoi(argv[2]); }
+	else if (argc == 4) { rootFile = argv[1]; nofEvents = atoi(argv[2]); maxPeaks = atoi(argv[3]); }
+	else if (argc == 5) { rootFile = argv[1]; nofEvents = atoi(argv[2]); maxPeaks = atoi(argv[3]); maxSigma = atof(argv[4]); }
+	else {
+		gMrbLog->Err()	<< "Wrong number of arguments -" << endl;
+		gMrbLog->Flush("%%ANALYZE_NAME_UC%%Fake");
+		gMrbLog->Err()	<< "Usage: ./%%ANALYZE_NAME_UC%%fake <rootFile> <nofEVents> <maxPeaks> <maxSigma>" << endl;
+		gMrbLog->Flush("%%ANALYZE_NAME_UC%%Fake");
+		exit(1);
+	}
+
+	cout << setblue << "[%%ANALYZE_NAME_UC%%Fake: Generating " << nofEvents << " events, output to " << rootFile << ", max peaks = " << maxPeaks << ", max sigma = " << maxSigma << "]" << setblack << endl;
+
+	ios = new TMrbIOSpec();
+	if (!ios->SetStartStop(kFALSE, 0, nofEvents)) exit(1);
+	ios->SetOutputFile(rootFile.Data(), TMrbIOSpec::kOutputOpen);
+
+	ua = new TMrbAnalyze(ios);
+	ua->AddIOSpec(ios);
+
+	fake(ua, maxPeaks, maxSigma);
+}
+
+void fake(TMrbAnalyze * Ua, Int_t MaxPeaks, Double_t MaxSigma) {
+
+	TMrbIOSpec * ios = Ua->GetNextIOSpec(NULL);
+	Ua->WriteRootTree(ios);
+
+	gRandom->SetSeed();
+
+	Int_t nofEvents = ios->GetStopEvent();
+
+%%BeginOfCode%%
+	TUsrSevt$sevtNameUC * sevt = g$evtNameUC->GetAddr$sevtNameUC();
+	genSevtData($mode, $nofParams, $llim, $ulim, maxPeaks, maxSigma);
+%%EndOfCode%%
+%%GENERATE_FAKE_DATA%%
+
+
+	const Int_t maxPeaks = 5;
+	Int_t npeaks[32];
+	memset(npeaks, 0, 32 * sizeof(Int_t));
+	Double_t mean[32][maxPeaks];
+	memset(mean, 0, 32 * maxPeaks * sizeof(Double_t));
+	Double_t sigma[32][maxPeaks];
+	memset(sigma, 0, 32 * maxPeaks * sizeof(Double_t));
+	Int_t content[32][maxPeaks];
+	memset(content, 0, 32 * maxPeaks * sizeof(Int_t));
+	for (Int_t i = 0; i < 32; i++) {
+		Int_t np = 0; while (np <= 0 || np > maxPeaks) { np = (Int_t) ((gRandom->Rndm() + .5) * maxPeaks); }
+		npeaks[i] = np;
+		for (Int_t j = 0; j < np; j++) {
+			Double_t m = 0; while (m <= 100 || m > 4000) { m = gRandom->Rndm() * 4096; }
+			Double_t s = 0; while (s <= 0 || s > 200) { s = gRandom->Rndm() * 200; }
+			Int_t c = 0; while (c <= 0 || c > 5) { c = (Int_t) ((gRandom->Rndm() + .5) * 5); }
+			mean[i][j] = m;
+			sigma[i][j] = s;
+			content[i][j] = c;
+		}
+	}
+	for (Int_t nevt = 0; nevt < nofEvents; nevt++) {
+		gReadout->Reset();
+		Int_t * dp = rawAdc0;
+		for (Int_t ch = 0; ch < 32; ch++, dp++) {
+			Double_t bgp = gRandom->Rndm() - .5;
+			if (bgp < 0) {
+				Int_t x = -1; while (x < 0 || x >= npeaks[ch]) { x = (Int_t) ((gRandom->Rndm() + .5) * npeaks[ch]); }
+				Double_t px, py;
+				gRandom->Rannor(px,py);
+				*dp = (Int_t) (px * sigma[ch][x] + mean[ch][x]);
+			} else {
+				*dp = (Int_t) (gRandom->Rndm() * 4000);
+			}
+		}
+		gReadout->GetTreeOut()->Fill();
+    }
+	Ua->CloseRootTree();
+}
