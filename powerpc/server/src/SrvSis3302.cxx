@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $
-//! $Date: 2010-10-04 10:43:26 $
+//! $Revision: 1.2 $
+//! $Date: 2010-10-04 11:15:45 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -15,7 +15,7 @@
 
 #include "SrvUtils.h"
 #include "SrvSis3302.h"
-#include "SrvSis3302_Layout.h"
+#include "Sis3302_Layout.h"
 #include "LwrLogger.h"
 #include "SetColor.h"
 
@@ -29,6 +29,7 @@ extern Bool_t gSignalTrap;
 TArrayI rawDataLength(kSis3302NofAdcs);
 TArrayI energyDataLength(kSis3302NofAdcs);
 TArrayI wordsPerEvent(kSis3302NofAdcs);
+TArrayI nofEventsPerBuffer(kSis3302NofAdcs);
 
 SrvSis3302::SrvSis3302() : SrvVMEModule(	"Sis3302",							//!< type
 											"Digitizing ADC, 8ch 13(16)bit", 	//!< description
@@ -64,6 +65,13 @@ Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 		gMrbLog->Flush(this->ClassName(), "TryAccess");
 		return(kFALSE);
 	}
+
+	fTraceCollection = kFALSE;
+	fMultiEvent = kTRUE;
+	fSampling = kSis3302KeyArmBank1Sampling;
+	fTraceNo = 0;
+	fDumpTrace = kFALSE;
+
 	return(kTRUE);
 }
 
@@ -97,17 +105,6 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 				m->fMajorVersion = swapIt(MajorVersion);
 				m->fMinorVersion = swapIt(MinorVersion);
 				return((M2L_MsgHdr *) m);
-			}
-		case kM2L_FCT_SIS_3302_GET_TIMEOUT:
-			{
-				data.Set(1);
-				data[0] = fTimeout;
-				break;
-			}
-		case kM2L_FCT_SIS_3302_SET_TIMEOUT:
-			{
-				fTimeout = data[0];
-				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_USER_LED:
 			{
@@ -292,8 +289,10 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 		case kM2L_FCT_SIS_3302_WRITE_RAW_DATA_SAMPLE_LENGTH:
 			{
 				d = data[0];
+				Bool_t traceFlag = this->PauseTraceCollection(Module);
 				if (!this->WriteRawDataSampleLength(Module, d, adcNo)) return(NULL);
 				data.Set(1); data[0] = d;
+				if (traceFlag) this->ContinueTraceCollection(Module);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_RAW_DATA_START_INDEX:
@@ -336,10 +335,12 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			}
 		case kM2L_FCT_SIS_3302_WRITE_TRIGGER_PEAK_AND_GAP:
 			{
+				Bool_t traceFlag = this->PauseTraceCollection(Module);
 				Int_t p, g;
 				p = data[0]; g = data[1];
 				if (!this->WriteTriggerPeakAndGap(Module, p, g, adcNo)) return(NULL);
 				data.Set(2); data[0] = p; data[1] = g;
+				if (traceFlag) this->ContinueTraceCollection(Module);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_TRIGGER_PULSE_LENGTH:
@@ -437,17 +438,21 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			}
 		case kM2L_FCT_SIS_3302_READ_ENERGY_PEAK_AND_GAP:
 			{
+				Bool_t traceFlag = this->PauseTraceCollection(Module);
 				Int_t p, g;
 				if (!this->ReadEnergyPeakAndGap(Module, p, g, adcNo)) return(NULL);
 				data.Set(2); data[0] = p; data[1] = g;
+				if (traceFlag) this->ContinueTraceCollection(Module);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_ENERGY_PEAK_AND_GAP:
 			{
+				Bool_t traceFlag = this->PauseTraceCollection(Module);
 				Int_t p, g;
 				p = data[0]; g = data[1];
 				if (!this->WriteEnergyPeakAndGap(Module, p, g, adcNo)) return(NULL);
 				data.Set(2); data[0] = p; data[1] = g;
+				if (traceFlag) this->ContinueTraceCollection(Module);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_ENERGY_DECIMATION:
@@ -497,9 +502,11 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			}
 		case kM2L_FCT_SIS_3302_WRITE_ENERGY_SAMPLE_LENGTH:
 			{
+				Bool_t traceFlag = this->PauseTraceCollection(Module);
 				d = data[0];
 				if (!this->WriteEnergySampleLength(Module, d, adcNo)) return(NULL);
 				data.Set(1); data[0] = d;
+				if (traceFlag) this->ContinueTraceCollection(Module);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_START_INDEX:
@@ -582,22 +589,37 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 				data.Set(1); data[0] = d;
 				break;
 			}
-		case kM2L_FCT_SIS_3302_COLLECT_TRACES:
+		case kM2L_FCT_SIS_3302_START_TRACE_COLLECTION:
 			{
 				Int_t nofEvents = data[0];
-				if (!this->CollectTraces(Module, nofEvents, adcNo)) return(NULL);
+				if (!this->StartTraceCollection(Module, nofEvents, adcNo)) return(NULL);
 				break;
 			}
-		case kM2L_FCT_SIS_3302_GET_EVENT:
+		case kM2L_FCT_SIS_3302_CONT_TRACE_COLLECTION:
+			{
+				if (!this->ContinueTraceCollection(Module)) return(NULL);
+				break;
+			}
+		case kM2L_FCT_SIS_3302_STOP_TRACE_COLLECTION:
+			{
+				if (!this->StopTraceCollection(Module)) return(NULL);
+				break;
+			}
+		case kM2L_FCT_SIS_3302_GET_TRACE_DATA:
 			{
 				Int_t evtNo = data[0];
-				if (!this->GetEvent(Module, data, evtNo, adcNo)) return(NULL);
+				if (!this->GetTraceData(Module, data, evtNo, adcNo)) return(NULL);
 				break;
 			}
-		case kM2L_FCT_SIS_3302_GET_DATA_LENGTH:
+		case kM2L_FCT_SIS_3302_GET_TRACE_LENGTH:
 			{
-				data.Set(3);
-				if (!this->GetDataLength(Module, data, adcNo)) return(NULL);
+				data.Set(kSis3302EventPreHeader);
+				if (!this->GetTraceLength(Module, data, adcNo)) return(NULL);
+				break;
+			}
+		case kM2L_FCT_SIS_3302_DUMP_TRACE:
+			{
+				fDumpTrace = kTRUE;
 				break;
 			}
 		default:
@@ -1910,6 +1932,12 @@ Bool_t SrvSis3302::ReadRawDataSampleLength(SrvVMEModule * Module, Int_t & Sample
 
 Bool_t SrvSis3302::WriteRawDataSampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t AdcNo) {
 
+	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't write raw data sample length - trace collection in progress ..." << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteRawDataSampleLength");
+		return(kFALSE);
+	}
+
 	if (SampleLength < kSis3302RawDataSampleLengthMin || SampleLength > kSis3302RawDataSampleLengthMax) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Sample length out of range - "
 						<< SampleLength << " (should be in [0," << kSis3302RawDataSampleLengthMax << "])" << endl;
@@ -2327,6 +2355,12 @@ Bool_t SrvSis3302::WriteTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, I
 //! \param[in]		Gap 		-- gap time
 //! \param[in]		AdcNo 		-- adc number
 //////////////////////////////////////////////////////////////////////////////
+
+	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't set trigger peak or gap - trace collection in progress ..." << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteTriggerPeakAndGap");
+		return(kFALSE);
+	}
 
 	Int_t sumG = Peak + Gap;
 	if (sumG > kSis3302TrigSumGMax || Peak < kSis3302TrigPeakMin || Peak > kSis3302TrigPeakMax || Gap < kSis3302TrigGapMin || Gap > kSis3302TrigGapMax) {
@@ -2919,6 +2953,12 @@ Bool_t SrvSis3302::ReadEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int
 
 Bool_t SrvSis3302::WriteEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
 
+	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't set energy peak or gap - trace collection in progress ..." << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteEnergyPeakAndGap");
+		return(kFALSE);
+	}
+
 	if (Peak < kSis3302EnergyPeakMin || Peak > kSis3302EnergyPeakMax) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Energy peak time mismatch - "
 						<< Peak << " (should be in [0," << kSis3302EnergyPeakMax << "])" << endl;
@@ -3240,6 +3280,12 @@ Bool_t SrvSis3302::ReadEnergySampleLength(SrvVMEModule * Module, Int_t & SampleL
 //////////////////////////////////////////////////////////////////////////////
 
 Bool_t SrvSis3302::WriteEnergySampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t AdcNo) {
+
+	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't write energy sample length - trace collection in progress ..." << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteEnergySampleLength");
+		return(kFALSE);
+	}
 
 	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
@@ -3732,16 +3778,16 @@ Bool_t SrvSis3302::SetLemoInEnableMask(SrvVMEModule * Module, Int_t & Bits) {
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Collects a given number of traces
+//! \details		Starts collection of a given number of traces
 //! \param[in]		Module			-- module address
-//! \param[in]		NofEvents		-- number of events
+//! \param[in]		NofEvents		-- number of events/traces
 //! \param[in]		AdcPatt			-- adc pattern
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::CollectTraces(SrvVMEModule * Module, Int_t & NofEvents, Int_t AdcPatt) {
+Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents, Int_t AdcPatt) {
 
-	Int_t maxThresh = 0;
+	Int_t maxWords = 0;
 	Int_t bit = 1;
 	Bool_t foundAdc = kFALSE;
 	for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++, bit <<= 1) {
@@ -3749,65 +3795,126 @@ Bool_t SrvSis3302::CollectTraces(SrvVMEModule * Module, Int_t & NofEvents, Int_t
 		foundAdc = kTRUE;
 		Int_t rdl;
 		if (!this->ReadRawDataSampleLength(Module, rdl, adc)) return(kFALSE);
-		rawDataLength[adc] = rdl;
+		rawDataLength[adc] = rdl;		// 16bit, quad aligned
 		Int_t edl;
 		if (!this->ReadEnergySampleLength(Module, edl, adc)) return(kFALSE);
-		energyDataLength[adc] = edl;
+		energyDataLength[adc] = edl;	// 32bit
 		wordsPerEvent[adc] = kSis3302EventHeader
-							+ rdl
+							+ rdl/2		// raw data are 16bit on input
 							+ edl
 							+ kSis3302EventMinMax
 							+ kSis3302EventTrailer;
+
+		if (NofEvents == kSis3302MaxEvents) NofEvents = SIS3302_NEXT_ADC_OFFSET / (wordsPerEvent[adc] * sizeof(Int_t));	// max number of events
 		Int_t nofWords = NofEvents * wordsPerEvent[adc];
-		if (nofWords > maxThresh) maxThresh = nofWords;
+
+		wordsPerEvent[adc] += rdl/2;	// raw data are 32bit on output!
 
 		if (nofWords > (SIS3302_NEXT_ADC_OFFSET / sizeof(Int_t))) {
 			gMrbLog->Wrn()	<< "[" << Module->GetName() << "]: Too many events - "
-							<< NofEvents << " (event length is " << wordsPerEvent[adc] << " words, buffer size is " << SIS3302_NEXT_ADC_OFFSET << " bytes)" << endl;
-			gMrbLog->Flush(this->ClassName(), "CollectTraces");
+							<< NofEvents << " (event length is " << wordsPerEvent[adc] << "|0x" << setbase(16) <<  wordsPerEvent[adc] << " words, buffer size is " << SIS3302_NEXT_ADC_OFFSET << setbase(10) << " bytes)" << endl;
+			gMrbLog->Flush(this->ClassName(), "StartTraceCollection");
 			nofWords = SIS3302_NEXT_ADC_OFFSET - 1;
 		}
+
+		nofEventsPerBuffer[adc] = nofWords / wordsPerEvent[adc];
+
+		if (nofWords > maxWords) maxWords = nofWords;
 	}
 
 	if (!foundAdc) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: At least 1 channel required" << endl;
-		gMrbLog->Flush(this->ClassName(), "CollectTraces");
+		gMrbLog->Flush(this->ClassName(), "StartTraceCollection");
 		return(kFALSE);
 	}
 
+	Int_t maxThresh = maxWords * 2;		// thresh has to be 16bit
 	this->WriteEndAddrThresh(Module, maxThresh);
+	this->KeyResetSample(Module);
+	this->KeyClearTimestamp(Module);
+	fSampling = kSis3302KeyArmBank1Sampling;
+	this->ContinueTraceCollection(Module);
 
-	this->KeyAddr(Module, kSis3302KeyResetSample);
-
-	this->KeyAddr(Module, kSis3302KeyArmBank1Sampling);
-
-	Int_t timeout = fTimeout;
-	while (!this->DataReady(Module) && !this->Timeout(Module, timeout));
-
-	this->KeyAddr(Module, kSis3302KeyDisarmSample);
+	this->SetStatus(kSis3302StatusCollectingTraces);
 
 	return(kTRUE);
 }
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Get data length
+//! \details		Stops trace collection
+//! \param[in]		Module			-- module address
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::StopTraceCollection(SrvVMEModule * Module) {
+
+	this->KeyDisarmSample(Module);
+	fTraceCollection = kFALSE;
+	this->ClearStatus(kSis3302StatusCollectingTraces);
+	return(kTRUE);
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Continues trace collection
+//! \param[in]		Module			-- module address
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::ContinueTraceCollection(SrvVMEModule * Module) {
+
+	this->KeyAddr(Module, fSampling);
+	fTraceCollection = kTRUE;
+	fNofTry = 0;
+	this->SetStatus(kSis3302StatusCollectingTraces);
+	return(kTRUE);
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Stops tracing temporarily
+//! \param[in]		Module			-- module address
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::PauseTraceCollection(SrvVMEModule * Module) {
+	Bool_t traceFlag = kFALSE;
+	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
+		traceFlag = kTRUE;
+		this->StopTraceCollection(Module);
+	}
+	return traceFlag;
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Get trace length
 //! \param[in]		Module		-- module address
 //! \param[out]		Data		-- where to store length values
 //! \param[in]		AdcNo		-- adc number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetDataLength(SrvVMEModule * Module, TArrayI & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t AdcNo) {
+
+	fNofTry++;
 	Data[0] = rawDataLength[AdcNo];
 	Data[1] = energyDataLength[AdcNo];
-	Data[2] = wordsPerEvent[AdcNo];
+	Data[3] = nofEventsPerBuffer[AdcNo];
+	if (!fTraceCollection || !this->DataReady(Module)) {
+		Data[2] = 0;
+	} else {
+		if (fMultiEvent) this->SwitchSampling(Module);
+		Data[2] = wordsPerEvent[AdcNo];
+		fTraceNo++;
+	}
 	return(kTRUE);
 }
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Get event data from adc buffer
+//! \details		Get trace data from adc buffer
 //! \param[in]		Module		-- module address
 //! \param[out]		Data		-- where to store event data
 //! \param[in]		EventNo		-- event number
@@ -3815,32 +3922,51 @@ Bool_t SrvSis3302::GetDataLength(SrvVMEModule * Module, TArrayI & Data, Int_t Ad
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetEvent(SrvVMEModule * Module, TArrayI & Data, Int_t & EventNo, Int_t AdcNo) {
+Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & EventNo, Int_t AdcNo) {
 
 	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
 						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetEvent");
+		gMrbLog->Flush(this->ClassName(), "GetTraceData");
 		return(kFALSE);
 	}
 
 	Int_t rdl = rawDataLength[AdcNo];
 	Int_t edl = energyDataLength[AdcNo];
-	Int_t wpe = wordsPerEvent[AdcNo];
-	Int_t wpe2 = wpe - rdl/2;
-
-	Int_t evtStart = EventNo * wpe2 * sizeof(Int_t);
+	Int_t wpt = wordsPerEvent[AdcNo];
+	Int_t wpt2 = wpt - rdl/2;
 
 	Int_t nextSample;
 	if (!this->ReadNextSampleAddr(Module, nextSample, AdcNo)) return(kFALSE);
 	nextSample &= 0x3FFFFC;
 	nextSample >>= 1;
 
-	if (nextSample == 0 || (evtStart + wpe - 1) > nextSample) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Not enough data - "
-						<< (nextSample / wpe) << " (requested event is #" << EventNo << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetEvent");
-		return(kFALSE);
+	Int_t evtStart;
+	Int_t evtFirst, evtLast;
+
+	if (EventNo == kSis3302MaxEvents) {
+		evtStart = 0;
+		evtFirst = 0;
+		evtLast = (nextSample / (wpt - rdl/2)) - 1;
+		Data.Set(nextSample + kSis3302EventPreHeader);
+		Data[0] = rdl;
+		Data[1] = edl;
+		Data[2] = wpt;
+		Data[3] = evtLast + 1;
+	} else {
+		evtStart = EventNo * wpt2 * sizeof(Int_t);
+		evtFirst = EventNo;
+		evtLast = EventNo;
+		if (nextSample == 0 || (evtStart + wpt2 - 1) > nextSample) {
+			gMrbLog->Err()	<< "[" << Module->GetName() << "]: Not enough trace data - can't get event #" << EventNo << endl;
+			gMrbLog->Flush(this->ClassName(), "GetTraceData");
+			return(kFALSE);
+		}
+		Data.Set(wpt + kSis3302EventPreHeader);
+		Data[0] = rdl;
+		Data[1] = edl;
+		Data[2] = wpt;
+		Data[3] = 1;
 	}
 
 	Int_t startAddr = SIS3302_ADC1_OFFSET + AdcNo * SIS3302_NEXT_ADC_OFFSET + evtStart;
@@ -3850,43 +3976,102 @@ Bool_t SrvSis3302::GetEvent(SrvVMEModule * Module, TArrayI & Data, Int_t & Event
 
 	gSignalTrap = kFALSE;
 
-	Int_t addrSav = mappedAddr;
-	ofstream f;
-	f.open("raw.dmp", ios::out);
-	for (Int_t i = 0; i < 2*wpe; i++) f << Form("%4d  %0lx", i, *mappedAddr++) << endl;
-	f.close();
-	mappedAddr = addrSav;
-
-	Data.Set(wpe + kSis3302EventPreHeader);
-
-	Data[0] = rdl;
-	Data[1] = edl;
-	Data[2] = wpe;
 	Int_t k = kSis3302EventPreHeader;
 
-	for (Int_t i = 0; i < kSis3302EventHeader; i++, k++) Data[k] = *mappedAddr++;		// event header: 32bit words
+	Bool_t start = kTRUE;
+	ofstream dump;
 
-	for (Int_t i = 0; i < rdl / 2; i++, k += 2) {			// raw data: fetch 32bit words, store as 2x 16bits
-		Int_t d = *mappedAddr++;
-		Data[k] = d & 0xFFFF;
-		Data[k + 1] = (d >> 16) & 0xFFFF;
+	for (Int_t evtNo = evtFirst; evtNo <= evtLast; evtNo++) {
+
+		for (Int_t i = 0; i < kSis3302EventHeader; i++, k++) Data[k] = *mappedAddr++;								// event header: 32bit words
+
+		for (Int_t i = 0; i < rdl / 2; i++, k += 2) {			// raw data: fetch 2 samples packed in 32bit, store each in a single 32bit word
+			Int_t d = *mappedAddr++;
+			Data[k] = (d >> 16) & 0xFFFF;
+			Data[k + 1] = d & 0xFFFF;
+		}
+
+		for (Int_t i = 0; i < edl; i++, k++) Data[k] = *mappedAddr++;			// event data: 32bit words
+
+		Data[k] = *mappedAddr++;		// max energy
+		Data[k + 1] = *mappedAddr++;	// min energy
+		Data[k + 2] = *mappedAddr++;	// pile-up & trigger
+		UInt_t trailer = (UInt_t) *mappedAddr;
+
+		if (fDumpTrace | (trailer != 0xdeadbeef)) {
+			if (start) {
+				TString traceFile = Form("trace-%d.dmp", fTraceNo);
+				char path[100];
+				getcwd(path, 100);
+				dump.open(traceFile.Data(), ios::out);
+				if (!dump.good()) {
+					gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't open file " << traceFile.Data() << " - dump cancelled" << endl;
+					gMrbLog->Flush(this->ClassName(), "GetTraceData");
+					fDumpTrace = kFALSE;
+				} else {
+					fDumpTrace = kTRUE;
+					gMrbLog->Out()	<< "[" << Module->GetName() << "]: Dumping trace data to file " << path << "/" << traceFile.Data() << endl;
+					gMrbLog->Flush(this->ClassName(), "GetTraceData");
+
+					dump << "----------------------------------------------------[start of trace data]" << endl;
+					dump << "Raw data length   : " << rdl << endl;
+					dump << "Energy data lenght: " << edl << endl;
+					dump << "Words per trace   : " << wpt << endl;
+					Int_t thresh;
+					this->ReadEndAddrThresh(Module, thresh, AdcNo);
+					dump << "Start address     : 0x" << setbase(16) << startAddr << setbase(10) << endl;
+					dump << "End thresh        : " << thresh << " 0x" << setbase(16) << thresh << setbase(10) << endl;
+					dump << "Next sample       : " << nextSample << " 0x" << setbase(16) << nextSample << setbase(10) << endl;
+				}
+			}
+			start = kFALSE;
+
+			if (fDumpTrace)	{
+				dump << "---------------------------------------------------------[header section]" << endl;
+				dump << "Event number      : " << evtNo << endl;
+				k = kSis3302EventPreHeader;
+				TArrayI hdr(2);
+				for (Int_t i = 0; i < kSis3302EventHeader; i++, k++) {
+					hdr[i] = Data[k];
+					dump << "Header[" << i << "]         : " << Form("%10u %#lx", Data[k], Data[k]) << endl;
+				}
+				unsigned long long ts = (UInt_t) hdr[1];
+				UInt_t ts48 = ((UInt_t) hdr[0] >> 16) & 0xFFFF;
+				ts += ts48 * 0x100000000LL;
+				dump << "Time stamp        : " << ts << endl;
+
+				if (rdl > 0) {
+					dump << "----------------------------------------------[start of raw data section]" << endl;
+					for (Int_t i = 0; i < rdl; i++, k ++) dump << Form("%5d: %10d %#lx", i, Data[k], Data[k]) << endl;
+				}
+
+				if (edl > 0) {
+					dump << "----------------------------------------------[start of energy data section]" << endl;
+					for (Int_t i = 0; i < edl; i++, k++) dump << Form("%5d: %10d %#lx", i, Data[k], Data[k]) << endl;
+				}
+
+				dump << "--------------------------------------------------------[trailer section]" << endl;
+				dump << "Max energy       : " << Data[k] << endl;
+				dump << "Min energy       : " << Data[k + 1] << endl;
+				dump << "PileUp & trigger : 0x" << setbase(16) << Data[k + 2] << setbase(10) << endl;
+				dump << "Trailer          : 0x" << setbase(16) << trailer << setbase(10) << endl;
+				dump << "------------------------------------------------------[end of trace data]" << endl;
+			}
+
+			if (trailer != 0xdeadbeef) {
+				gMrbLog->Err()	<< "[" << Module->GetName() << "]: Out of phase - trailer="
+								<< setbase(16) << trailer << " (should be 0xdeadbeef)" << endl;
+				gMrbLog->Flush(this->ClassName(), "GetTraceData");
+				trailer = 0xdeadbeef;
+			}
+		}
+		Data[k + 3] = trailer;	// trailer
 	}
 
-	for (Int_t i = 0; i < edl; i++, k++) Data[k] = *mappedAddr++;			// event data: 32bit words
+	if (fDumpTrace) dump.close();
+	fDumpTrace = kFALSE;
 
-	Data[k] = *mappedAddr++;		// max energy
-	Data[k + 1] = *mappedAddr++;	// min energy
-	Data[k + 2] = *mappedAddr++;	// pile-up & trigger
-	UInt_t trailer = (UInt_t) *mappedAddr;
-	if (trailer != 0xdeadbeef) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Out of phase - trailer="
-						<< setbase(16) << trailer << " (should be 0xdeadbeef)" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadData");
-		trailer = 0xdeadbeef;
-	}
-	Data[k + 3] = trailer;	// trailer
-
-	return(!this->CheckBusTrap(Module, startAddr, "ReadData"));
+	return(!this->CheckBusTrap(Module, startAddr, "GetTraceData"));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3904,20 +4089,213 @@ Bool_t SrvSis3302::DataReady(SrvVMEModule * Module) {
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Check if timeout
+//! \details		Switch sampling
 //! \param[in]		Module		-- module address
-//! \param[out]		Timeout		-- timeout counter
+//////////////////////////////////////////////////////////////////////////////
+
+void SrvSis3302::SwitchSampling(SrvVMEModule * Module) {
+	if (!fTraceCollection || !fMultiEvent) return(0);
+	Int_t pageNo;
+	if (fSampling == kSis3302KeyArmBank1Sampling) {
+		fSampling = kSis3302KeyArmBank2Sampling;
+		pageNo = 0;
+	} else {
+		fSampling = kSis3302KeyArmBank1Sampling;
+		pageNo = 4;
+	}
+	this->ContinueTraceCollection(Module);
+	this->SetPageRegister(Module, pageNo);
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Set page register
+//! \param[in]		Module		-- module address
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::Timeout(SrvVMEModule * Module, Int_t & Timeout) {
-	if (fTimeout == 0) return(kFALSE);
-	if (Timeout == 0) {
-	  	gMrbLog->Err()	<< "[" << Module->GetName() << "]: Timeout after " << fTimeout << " s" << endl;
-		gMrbLog->Flush(this->ClassName(), "Timeout");
-		return(kTRUE);
+Bool_t SrvSis3302::SetPageRegister(SrvVMEModule * Module, Int_t PageNumber) {
+	Int_t offset = SIS3302_ADC_MEMORY_PAGE_REGISTER;
+	volatile Int_t * pageReg = (volatile Int_t *) Module->MapAddress(offset);
+	if (pageReg == NULL) return(kFALSE);
+
+	gSignalTrap = kFALSE;
+	*pageReg = PageNumber;
+	return (!this->CheckBusTrap(Module, offset, "SetPageRegister"));
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Reads irq configuration
+//! \param[in]		Module		-- module address
+//! \param[out] 	Vector		-- interrupt vector
+//! \param[out] 	Level		-- interrupt level
+//! \param[out] 	EnableFlag	-- interrupt enable
+//! \param[out] 	RoakFlag	-- ROAK flag
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::ReadIRQConfiguration(SrvVMEModule * Module, Int_t & Vector, Int_t & Level, Bool_t & EnableFlag, Bool_t & RoakFlag) {
+
+	Int_t offset = SIS3302_IRQ_CONFIG;
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	if (irq == NULL) return(kFALSE);
+
+	gSignalTrap = kFALSE;
+	UInt_t irqBits = *irq;
+	Vector = irqBits & 0xFF;
+	irqBits >>= 8;
+	Level = irqBits & 0x7;
+	EnableFlag = ((irqBits & 0x8) != 0);
+	RoakFlag = ((irqBits & 0x10) != 0);
+	return (!this->CheckBusTrap(Module, offset, "ReadIRQConfiguration"));
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Writes acquisition control data
+//! \param[in]		Module		-- module address
+//! \param[in]	 	Vector		-- interrupt vector
+//! \param[in]	 	Level		-- interrupt level
+//! \param[in]	 	RoakFlag	-- ROAK flag
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::WriteIRWConfiguration(SrvVMEModule * Module, Int_t Vector, Int_t Level = 0, Bool_t RoakMode = kFALSE) {
+
+	Int_t offset = SIS3302_IRQ_CONFIG;
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	if (irq == NULL) return(kFALSE);
+
+	UInt_t irqBits = Level & 0x7;
+	if (RoakMode) irqBits |= 0x10;
+	irqBits <<= 8;
+	irqBits |= Vector & 0xFF;
+	gSignalTrap = kFALSE;
+	*irq = irqBits;
+	return (!this->CheckBusTrap(Module, offset, "WriteIRWConfiguration"));
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Enable IRQ source
+//! \param[in]		Module		-- module address
+//! \param[in] 		IrqSource	-- interrupt source
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::EnableIRQSource(SrvVMEModule * Module, UInt_t IrqSource) {
+
+	if (IrqSource < 0 || IrqSource > 7) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong IRQ source - "
+						<< IrqSource << " (should be in [0,7])" << endl;
+		gMrbLog->Flush(this->ClassName(), "EnableIRQSource");
+		return(kFALSE);
 	}
-	sleep(1);
-	Timeout--;
-	return(kFALSE);
+
+	Int_t offset = SIS3302_IRQ_CONTROL;
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	if (irq == NULL) return(kFALSE);
+	gSignalTrap = kFALSE;
+	UInt_t irqBits = *irq;
+	*irq = irqBits | (1 << IrqSource);
+	return (!this->CheckBusTrap(Module, offset, "EnableIRQSource"));
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Enable interrupt
+//! \param[in]		Module		-- module address
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::EnableIRQ(SrvVMEModule * Module) {
+
+	Int_t offset = SIS3302_IRQ_CONFIG;
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	if (irq == NULL) return(kFALSE);
+	gSignalTrap = kFALSE;
+	UInt_t irqBits = *irq;
+	*irq = irqBits | 0x800;
+	return (!this->CheckBusTrap(Module, offset, "EnableIRQ"));
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Disable IRQ source
+//! \param[in]		Module		-- module address
+//! \param[in] 		IrqSource	-- interrupt source
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::DisableIRQSource(SrvVMEModule * Module, UInt_t IrqSource) {
+
+	if (IrqSource < 0 || IrqSource > 7) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong IRQ source - "
+						<< IrqSource << " (should be in [0,7])" << endl;
+		gMrbLog->Flush(this->ClassName(), "DisableIRQSource");
+		return(kFALSE);
+	}
+
+	Int_t offset = SIS3302_IRQ_CONTROL;
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	if (irq == NULL) return(kFALSE);
+	gSignalTrap = kFALSE;
+	UInt_t irqBits = *irq;
+	*irq = irqBits & ~(0x10000 << IrqSource);
+	return (!this->CheckBusTrap(Module, offset, "DisableIRQSource"));
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Disable interrupt
+//! \param[in]		Module		-- module address
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::DisableIRQ(SrvVMEModule * Module) {
+
+	Int_t offset = SIS3302_IRQ_CONFIG;
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	if (irq == NULL) return(kFALSE);
+	gSignalTrap = kFALSE;
+	UInt_t irqBits = *irq;
+	*irq = irqBits & ~0x800;
+	return (!this->CheckBusTrap(Module, offset, "DisableIRQSource"));
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Read irq status
+//! \param[in]		Module		-- module address
+//! \param[out		IrqStatus	-- interrupt status bits
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::ReadIRQSourceStatus(SrvVMEModule * Module, UInt_t & IrqStatus) {
+
+	Int_t offset = SIS3302_IRQ_CONTROL;
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	if (irq == NULL) return(kFALSE);
+	gSignalTrap = kFALSE;
+	IrqStatus = (*irq >> 24) & 0xFF;
+	return (this->CheckBusTrap(Module, offset, "ReadIRQSourceStatus"));
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Read irq enable status
+//! \param[in]		Module		-- module address
+//! \param[out		IrqStatus	-- interrupt enable bits
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::ReadIRQEnableStatus(SrvVMEModule * Module, UInt_t & IrqStatus) {
+
+	Int_t offset = SIS3302_IRQ_CONTROL;
+	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);
+	if (irq == NULL) return(kFALSE);
+	gSignalTrap = kFALSE;
+	IrqStatus = *irq & 0xFF;
+	return (this->CheckBusTrap(Module, offset, "ReadIRQEnableStatus"));
 }
