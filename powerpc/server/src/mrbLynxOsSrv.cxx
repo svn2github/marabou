@@ -37,7 +37,7 @@ TMrbLofNamedX * gLofVMEProtos;		// list of vme prototypes
 TMrbLofNamedX * gLofVMEModules;		// list of modules
 TMrbLogger * gMrbLog;				// message logger
 
-SrvSocket * gSrvSocket; 			// server socket
+extern SrvSocket * gSrvSocket; 		// server socket
 
 Int_t main(Int_t argc, Char_t *argv[]) {
 //__________________________________________________________________[C++ MAIN]
@@ -108,7 +108,9 @@ Int_t main(Int_t argc, Char_t *argv[]) {
 
 	gMrbLog->Out() << "Now listening to tcp socket  ..." << endl;
 	gMrbLog->Flush(serverName.Data(), "", setblue);
+
 	gSrvSocket->Listen();
+
 	gMrbLog->Out() << "Shutting down ..." << endl;
 	gMrbLog->Flush(serverName.Data(), "", setblue);
 	sleep(SRV_SLEEP);
