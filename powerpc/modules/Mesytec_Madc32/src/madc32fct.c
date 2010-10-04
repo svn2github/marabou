@@ -4,10 +4,10 @@
 //! \brief			Code for module MADC32
 //! \details		Implements functions to handle modules of type Mesytec MADC32
 //!
-//! $Author: Marabou $
+//! $Author: Rudolf.Lutter $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.13 $
-//! $Date: 2010-09-11 20:39:03 $
+//! $Revision: 1.14 $
+//! $Date: 2010-10-04 06:56:35 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -32,6 +32,9 @@
 void catchBerr();
 
 char msg[256];
+
+bool_t berrFlag = FALSE;
+uint32_t berrAddr = 0L;
 
 struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial)
 {
@@ -824,7 +827,12 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 		}
 #endif
 		for (i = 0; i < numData; i++) {
+			berrFlag = FALSE;
 			data = GET32(s->baseAddr, MADC32_DATA);
+			if (berrFlag) {
+				sprintf(msg, "[%sreadout] %s: Bus error at %#lx + %#lx, index=%d", s->mpref, s->moduleName, s->baseAddr, MADC32_DATA, i);
+				f_ut_send_msg("sis_3300", msg, ERR__MSG_INFO, MASK__PRTT);
+			}
 			if (data == 0) {
 				s->evtp++; *s->evtp = (MADC32_M_TRAILER | 0x00525252);
 				pointer = madc32_pushEvent(s, pointer);
@@ -964,4 +972,4 @@ void madc32_resetEventBuffer(struct s_madc32 * s) {
 	s->skipData = FALSE;
 }
 
-void catchBerr() {}
+void catchBerr(int signal) { berrFlag = TRUE; }

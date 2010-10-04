@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.181 2009-10-21 08:28:01 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.182 2010-10-04 06:56:34 Rudolf.Lutter Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3616,7 +3616,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								sevtNameLC = sevt->GetName();
 								sevtNameUC = sevtNameLC;
 								sevtNameUC(0,1).ToUpper();
-								if (sevt->IsInArrayMode()) {
+								if (sevt->IsInArrayMode() || sevt->ExplicitParamNamesToBeUsed()) {
 									Int_t parNo = 0;
 									first = kTRUE;
 									if (!header) {
