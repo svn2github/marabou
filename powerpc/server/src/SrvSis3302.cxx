@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $
-//! $Date: 2010-10-04 11:15:45 $
+//! $Revision: 1.3 $
+//! $Date: 2010-10-04 11:17:17 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -15,7 +15,7 @@
 
 #include "SrvUtils.h"
 #include "SrvSis3302.h"
-#include "Sis3302_Layout.h"
+#include "SrvSis3302_Layout.h"
 #include "LwrLogger.h"
 #include "SetColor.h"
 
