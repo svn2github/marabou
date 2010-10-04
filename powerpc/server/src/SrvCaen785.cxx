@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: SrvCaen785.cxx,v 1.1 2010-10-04 10:43:26 Marabou Exp $
+// Revision:       $Id: SrvCaen785.cxx,v 1.2 2010-10-04 11:23:30 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -14,7 +14,7 @@
 #include "iomanip.h"
 
 #include "SrvCaen785.h"
-#include "Caen785_Layout.h"
+#include "SrvCaen785_Layout.h"
 #include "SrvUtils.h"
 #include "LwrLogger.h"
 #include "SetColor.h"

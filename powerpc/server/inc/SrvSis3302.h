@@ -8,7 +8,7 @@
 // Class:          Sis3302        -- flash adc SIS3302
 // Description:    Class definitions for M2L server
 // Author:         R. Lutter
-// Revision:       $Id: SrvSis3302.h,v 1.1 2010-10-04 10:43:26 Marabou Exp $
+// Revision:       $Id: SrvSis3302.h,v 1.2 2010-10-04 11:18:07 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -71,6 +71,9 @@ class SrvSis3302 : public SrvVMEModule {
 		//! Exec KEY command: arm sampling for bank 2
 		//! \param[in]	Module	-- module address
 		inline Bool_t KeyArmBank2Sampling(SrvVMEModule * Module) { return(this->KeyAddr(Module, kSis3302KeyArmBank2Sampling)); };
+		//! Exec KEY command: disarm sample
+		//! \param[in]	Module	-- module address
+		inline Bool_t KeyDisarmSample(SrvVMEModule * Module) { return(this->KeyAddr(Module, kSis3302KeyDisarmSample)); };
 
 		//! control and status
 		Bool_t ReadControlStatus(SrvVMEModule * Module, Int_t & Bits);
@@ -177,11 +180,6 @@ class SrvSis3302 : public SrvVMEModule {
 		Bool_t GetLemoInEnableMask(SrvVMEModule * Module, Int_t & Bits);
 		Bool_t SetLemoInEnableMask(SrvVMEModule * Module, Int_t & Bits);
 
-		//! start trace, get events
-		Bool_t CollectTraces(SrvVMEModule * Module, Int_t & NofEvents, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetEvent(SrvVMEModule * Module, TArrayI & Data, Int_t & EventNo, Int_t AdcNo);
-		Bool_t GetDataLength(SrvVMEModule * Module, TArrayI & Data, Int_t AdcNo);
-
 	protected:
 		void SetupFunction(M2L_MsgData * Data, TArrayI & Array, Int_t & AdcNo);
 		M2L_MsgHdr * FinishFunction(TArrayI & Array);
@@ -204,14 +202,44 @@ class SrvSis3302 : public SrvVMEModule {
 		Bool_t WriteAcquisitionControl(SrvVMEModule * Module, Int_t & Data);
 
 		Bool_t DataReady(SrvVMEModule * Module);
-		Bool_t Timeout(SrvVMEModule * Module, Int_t & Timeout);
 		Bool_t ReadData(SrvVMEModule * Module, TArrayI & Data, Int_t NofWords, Int_t AdcNo);
+
+		Bool_t ReadIRQConfiguration(SrvVMEModule * Module, Int_t & Vector, Int_t & Level, Bool_t & EnableFlag, Bool_t & RoakFlag);
+		Bool_t WriteIRWConfiguration(SrvVMEModule * Module, Int_t Vector, Int_t Level = 0, Bool_t RoakMode = kFALSE);
+		Bool_t EnableIRQ(SrvVMEModule * Module);
+		Bool_t DisableIRQ(SrvVMEModule * Module);
+		Bool_t EnableIRQSource(SrvVMEModule * Module, UInt_t IrqSource);
+		Bool_t DisableIRQSource(SrvVMEModule * Module, UInt_t IrqSource);
+		Bool_t ReadIRQSourceStatus(SrvVMEModule * Module, UInt_t & IrqStatus);
+		Bool_t ReadIRQEnableStatus(SrvVMEModule * Module, UInt_t & IrqStatus);
+
+		inline void SetStatus(UInt_t Bits) { fStatus |= Bits; };
+		inline void ClearStatus(UInt_t Bits) { fStatus &= ~Bits; };
+		inline UInt_t GetStatus() { return fStatus; };
+		inline Bool_t IsStatus(UInt_t Bits) { return ((fStatus & Bits) != 0); };
+
+		//! start trace collection, get trace data
+		Bool_t StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents, Int_t AdcNo);
+		Bool_t ContinueTraceCollection(SrvVMEModule * Module);
+		Bool_t PauseTraceCollection(SrvVMEModule * Module);
+		Bool_t StopTraceCollection(SrvVMEModule * Module);
+		Bool_t GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & EventNo, Int_t AdcNo);
+		Bool_t GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t AdcNo);
+
+		void SwitchSampling(SrvVMEModule * Module);
+		Bool_t SetPageRegister(SrvVMEModule * Module, Int_t PageNumber);
 
 	public:
 		inline const Char_t * ClassName() const { return "SrvSis3302"; };
 
 	protected:
-		Int_t fTimeout;
+		UInt_t fStatus;
+		Int_t fTraceNo;
+		Bool_t fTraceCollection;
+		Bool_t fDumpTrace;
+		Int_t fNofTry;
+		UInt_t fSampling;
+		Bool_t fMultiEvent;
 
 };
 

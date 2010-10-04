@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $
-//! $Date: 2010-10-04 11:17:17 $
+//! $Revision: 1.4 $
+//! $Date: 2010-10-04 11:21:39 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -4161,7 +4161,7 @@ Bool_t SrvSis3302::ReadIRQConfiguration(SrvVMEModule * Module, Int_t & Vector, I
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteIRWConfiguration(SrvVMEModule * Module, Int_t Vector, Int_t Level = 0, Bool_t RoakMode = kFALSE) {
+Bool_t SrvSis3302::WriteIRWConfiguration(SrvVMEModule * Module, Int_t Vector, Int_t Level, Bool_t RoakMode) {
 
 	Int_t offset = SIS3302_IRQ_CONFIG;
 	volatile Int_t * irq = (volatile Int_t *) Module->MapAddress(offset);

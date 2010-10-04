@@ -1,10 +1,12 @@
-//_______________________________________________________[C++ BIT DEFINITIONS]
+#ifndef __CAEN_785_LAYOUT_H__
+#define __CAEN_785_LAYOUT_H__
+/*___________________________________________________________[BIT DEFINITIONS]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           SrvCaen785
+// Name:           Caen785_Layout.h
 // Purpose:        Register Layout
 // Description:    Definitions for CAEN V785
 // Keywords:
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 #define CAEN_V785_R_OUTPUT						0x0
 #define CAEN_V785_R_FIRMWARE						0x1000
@@ -238,3 +240,4 @@
 
 #define CAEN_V775_READ_BITSET2(module)	*CAEN_V775_A_BITSET2(module)
 
+#endif

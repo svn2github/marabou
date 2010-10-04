@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $
-//! $Date: 2010-10-04 10:43:26 $
+//! $Revision: 1.2 $
+//! $Date: 2010-10-04 11:24:38 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -15,7 +15,7 @@
 
 #include "SrvUtils.h"
 #include "SrvVulomTB.h"
-#include "Vulom_Layout.h"
+#include "SrvVulom_Layout.h"
 #include "LwrLogger.h"
 #include "SetColor.h"
 
