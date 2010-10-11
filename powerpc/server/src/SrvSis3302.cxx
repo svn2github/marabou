@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $
-//! $Date: 2010-10-04 11:21:39 $
+//! $Revision: 1.5 $
+//! $Date: 2010-10-11 12:44:06 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -34,7 +34,7 @@ TArrayI nofEventsPerBuffer(kSis3302NofAdcs);
 SrvSis3302::SrvSis3302() : SrvVMEModule(	"Sis3302",							//!< type
 											"Digitizing ADC, 8ch 13(16)bit", 	//!< description
 											0x09,								//!< address modifier: A32
-											0x01000000,  						//!< segment size
+											0x08000000,  						//!< segment size
 											kSis3302NofAdcs,					//!< 8 channels/adcs
 											  1 << 13) {						//!< range
 //__________________________________________________________________[C++ CTOR]
@@ -3837,6 +3837,8 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 
 	this->SetStatus(kSis3302StatusCollectingTraces);
 
+	fTraceNo = 0;
+
 	return(kTRUE);
 }
 
@@ -3949,25 +3951,17 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 		evtFirst = 0;
 		evtLast = (nextSample / (wpt - rdl/2)) - 1;
 		Data.Set(nextSample + kSis3302EventPreHeader);
-		Data[0] = rdl;
-		Data[1] = edl;
-		Data[2] = wpt;
 		Data[3] = evtLast + 1;
 	} else {
 		evtStart = EventNo * wpt2 * sizeof(Int_t);
 		evtFirst = EventNo;
 		evtLast = EventNo;
-		if (nextSample == 0 || (evtStart + wpt2 - 1) > nextSample) {
-			gMrbLog->Err()	<< "[" << Module->GetName() << "]: Not enough trace data - can't get event #" << EventNo << endl;
-			gMrbLog->Flush(this->ClassName(), "GetTraceData");
-			return(kFALSE);
-		}
 		Data.Set(wpt + kSis3302EventPreHeader);
-		Data[0] = rdl;
-		Data[1] = edl;
-		Data[2] = wpt;
 		Data[3] = 1;
 	}
+	Data[0] = rdl;
+	Data[1] = edl;
+	Data[2] = wpt;
 
 	Int_t startAddr = SIS3302_ADC1_OFFSET + AdcNo * SIS3302_NEXT_ADC_OFFSET + evtStart;
 

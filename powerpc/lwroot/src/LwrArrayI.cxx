@@ -12,6 +12,9 @@
 #include "LwrArrayI.h"
 
 
+#include <iostream>
+#include <iomanip>
+
 //______________________________________________________________________________
 TArrayI::TArrayI()
 {
