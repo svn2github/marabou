@@ -12,8 +12,8 @@
 #include "LwrArrayI.h"
 
 
-#include <iostream>
-#include <iomanip>
+#include "iostream.h"
+#include "iomanip.h"
 
 //______________________________________________________________________________
 TArrayI::TArrayI()

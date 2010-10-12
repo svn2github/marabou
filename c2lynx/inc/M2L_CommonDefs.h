@@ -93,6 +93,13 @@
 	enum			{	kSis3302EventMinMax 		= 2 };
 	enum			{	kSis3302EventTrailer 		= 2 };
 
+#ifdef	CPU_TYPE_RIO2
+	enum			{	kSis3302SegSize		 		= 0x1000000 };
+#endif
+#ifdef	CPU_TYPE_RIO3
+	enum			{	kSis3302SegSize		 		= 0x8000000 };
+#endif
+
 	enum			{	kSis3302StatusCollectingTraces	=	0x1 };
 
 	enum EVulomTB	{	kVulomTBNofScalers			= 3,

@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $
-//! $Date: 2010-10-11 12:44:06 $
+//! $Revision: 1.6 $
+//! $Date: 2010-10-12 13:22:12 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -34,7 +34,7 @@ TArrayI nofEventsPerBuffer(kSis3302NofAdcs);
 SrvSis3302::SrvSis3302() : SrvVMEModule(	"Sis3302",							//!< type
 											"Digitizing ADC, 8ch 13(16)bit", 	//!< description
 											0x09,								//!< address modifier: A32
-											0x08000000,  						//!< segment size
+											kSis3302SegSize,  					//!< segment size
 											kSis3302NofAdcs,					//!< 8 channels/adcs
 											  1 << 13) {						//!< range
 //__________________________________________________________________[C++ CTOR]
