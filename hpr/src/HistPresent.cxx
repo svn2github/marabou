@@ -725,13 +725,17 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    Int_t anything_to_delete = 0;
    if (strstr(fname,".root")) {
       TFile * rfile = NULL;
-      rfile = new TFile(fname);
+      rfile = TFile::Open(fname);
+		if ( rfile == NULL ) {
+			cout << "No such file: " << fname << endl;
+			return;
+		}
       if (GeneralAttDialog::fShowListsOnly > 0) {
          st = NULL;
          nstat = 0;
          cout << "Skip hists in file, show hist lists only" << endl;
       } else {
-         if (strlen(dir) > 0) rfile->cd(dir);
+         if (dir && strlen(dir) > 0) rfile->cd(dir);
 //         gDirectory->ls();
       	st = (TMrbStatistics*)gDirectory->Get("TMrbStatistics");
       	if (!st) {
@@ -808,8 +812,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       	st = getstat(fComSocket);
       	if (!st) {
          	cout << setred << "Cant get stat, Connection lost?" << setblack << endl;
-         	fComSocket->Close("force");
-         	fComSocket = NULL;
+//         	fComSocket->Close("force");
+//         	fComSocket = NULL;
          	return;
       	} else {
          	nstat = st->GetListOfEntries()->GetSize();
@@ -1129,7 +1133,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       }
          ycanvas = 5 + 50 * fHistLists->GetSize();
          TString cmd_title(fname);
-         if (strlen(dir) > 0) cmd_title = cmd_title + "_" + dir;
+         if (dir && strlen(dir) > 0) cmd_title = cmd_title + "_" + dir;
          HTCanvas *ccont = CommandPanel(cmd_title.Data(), fCmdLine,
                            WindowSizeDialog::fMainWidth + 10, ycanvas, this, WindowSizeDialog::fWinwidx_hlist);
          ccont->SetName("ContentList");
@@ -1225,8 +1229,8 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
       if (!st) {
          WarnBox(" cant get stat(fComSocket)");
          cout << setred << "Cant get stat, Connection lost?" << setblack << endl;
-         fComSocket->Close("force");
-         fComSocket = NULL;
+//         fComSocket->Close("force");
+//         fComSocket = NULL;
          return;
       }
    } else if (sname.Index(rname) > 0) {
@@ -1388,7 +1392,7 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
       if (is_a_file(fname)) {
 //      cout << "fn: " << fname  << " dn: " << dname  << " hn: " << hname << endl;
          if (fRootFile) fRootFile->Close();
-         fRootFile=new TFile(fname);
+         fRootFile = TFile::Open(fname);
 			if (dname.Length() > 0)gDirectory->cd(dname);
          hist = (TH1*)gDirectory->Get(hname);
       } else if  (strstr(fname, ".map")) {
@@ -1578,8 +1582,8 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
    TMrbStatistics * st = getstat(fComSocket);
    if (!st) {
        cout << " cant get stat(fComSocket)" << endl;
-       fComSocket->Close("force");
-       fComSocket = NULL;
+//       fComSocket->Close("force");
+//       fComSocket = NULL;
        return;
    } else {
 //         st->Print();
@@ -1593,8 +1597,8 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
       hist = (TH1 *) gethist(stent->GetName(), fComSocket);
       if (!hist){
          cout << setred << "Cant get hist, Connection lost?" << setblack << endl;
-         fComSocket->Close("force");
-         fComSocket = NULL;
+//         fComSocket->Close("force");
+//         fComSocket = NULL;
          break;
       }
       f->cd();
@@ -2134,8 +2138,8 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
       hist = gethist(hname.Data(), fComSocket);
       if (!hist){
          cout << setred << "Cant get hist " << hname <<  " Connection lost?" << setblack << endl;
-         fComSocket->Close("force");
-         fComSocket = NULL;
+//         fComSocket->Close("force");
+//         fComSocket = NULL;
 		} else {
 			if ( hsuffix != NULL ) {
 				TString hn(hist->GetName());
@@ -2884,8 +2888,8 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       hist = gethist(hname, fComSocket);
       if (!hist){
          cout << setred << "Cant get hist, connection lost?" << setblack << endl;
-         fComSocket->Close("force");
-         fComSocket = NULL;
+//         fComSocket->Close("force");
+//         fComSocket = NULL;
       } else {
          hist->SetUniqueID(0);
       }
@@ -3455,6 +3459,70 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
    c1->Update();
    GEdit::RestoreAxisAtts(c1);
    cout << "gPad " << gPad << endl;
+}
+//________________________________________________________________
+
+void HistPresent::SelectdCache()
+{
+	TGFileInfo* fi = new TGFileInfo();
+	const char * filter[] = {"dCache FileList", "*", 0, 0};
+	fi->fFileTypes = filter;
+	new  TGFileDialog(gClient->GetRoot(), fRootCanvas, kFDOpen, fi);
+//	cout << "SelectdCache file list() " <<fi->fFilename << endl;
+	ifstream infile;
+	infile.open(fi->fFilename, ios::in);
+	if (!infile.good()) {
+		cerr	<< "SelectdCache: "
+		<< gSystem->GetError() << " - " << infile
+		<< endl;
+		return;
+	}
+	TString fname;
+	while ( 1 ) {
+		fname.ReadLine(infile);
+		if (infile.eof()) break;
+// assume lines with no " to be plain filenames
+// extract filenames from lines like: aaa->Add("fname.root.1")
+
+		Int_t ind_dq = fname.Index("\"");
+		if ( ind_dq >= 0 ) {
+			Int_t ind_Add = fname.Index("Add(");
+			if ( ind_Add < 0 || ind_Add > ind_dq ) 
+				continue;
+			fname = fname(ind_dq + 1, fname.Length());
+			ind_dq = fname.Index("\"");
+			if ( ind_dq < 0 )
+				continue;
+			fname = fname(0, ind_dq);
+		}
+		TString cmd = "mypres->Show";
+		cmd = cmd + "Contents(\"" + fname + "\", \"\" )";
+		
+		TString nam=fname;
+		TString tit;
+		TString sel;
+		fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel));
+//		cout << cmd << endl;
+	}
+	if ( fCmdLine->GetSize() <= 0 )
+		return;
+	TObject *obj =  fHistLists->FindObject(fname);
+	if (obj) {
+		//         cout << "Delete canvas: " << fname << endl;
+		fHistLists->Remove(obj);
+		delete obj;
+	}
+	Int_t yoff = (Int_t)(WindowSizeDialog::fMainWidth * 1.6 + 30);
+	TString cmd_title(fi->fFilename);
+//	if (dir && strlen(dir) > 0) cmd_title = cmd_title + "_" + dir;
+	HTCanvas *ccont = CommandPanel(cmd_title.Data(), fCmdLine,
+		5, yoff, this, WindowSizeDialog::fWinwidx_hlist);
+		ccont->SetName("dCFileList");
+//         cout << "HistPresent: CommandPanel: " <<ccont->GetName() << " " << ccont->GetTitle() << endl;
+											 
+	if (fHistLists)fHistLists->Add(ccont);
+	fCmdLine->Delete();
+	delete fi;
 }
 //________________________________________________________________
 

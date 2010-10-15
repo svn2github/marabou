@@ -480,7 +480,6 @@ void FitHist::SaveDefaults(Bool_t recalculate)
 void FitHist::RestoreDefaultRanges()
 {
    TEnv * lastset = GetDefaults(fHname);
-//   cout << "RestoreDefaultRanges() " << lastset<< endl;
 	if (!lastset) return;
    fFitMacroName = lastset->GetValue("FitMacroName",fFitMacroName.Data());
    if (hp && (GeneralAttDialog::fRememberLastSet || GeneralAttDialog::fRememberZoom)) {
@@ -562,6 +561,7 @@ void FitHist::RestoreDefaultRanges()
    }
    if (lastset)
       delete lastset;
+//	cout << "RestoreDefaultRanges() fLogz " << fLogz<< endl;
 }
 //______________________________________________________________________________________
 
@@ -2399,7 +2399,7 @@ void FitHist::GetLimits()
 //____________________________________________________________________________________
 //
 
-void FitHist::OutputStat()
+void FitHist::OutputStat(Int_t fill_hist)
 {
 //   enum dowhat {expand, projectx, projecty, statonly};
 
@@ -2416,6 +2416,11 @@ void FitHist::OutputStat()
       cout << "No marks, no windows" << endl;
       return;
    }
+	TH1F* h_bincont = NULL;
+	Double_t h_min = 1E20;
+	Double_t h_max = -1E20;
+	
+	
 //  1-dim case
    if (!is2dim(fSelHist)) {
       Double_t x = 0, cont = 0;
@@ -2448,11 +2453,29 @@ void FitHist::OutputStat()
          x = fSelHist->GetBinCenter(i);
          if (x >= xlow && x < xup) {
             cont = fSelHist->GetBinContent(i);
+				if (cont < h_min) h_min = cont;
+				if (cont > h_max) h_max = cont;
             sum += cont;
             sumx += x * cont;
             sumx2 += x * x * cont;
          }
-      }
+		}
+		if ( fill_hist == 1 ) {
+			TString pname(fOrigHist->GetName());
+			pname += "_BinCont_";
+			pname += fSerialPx;
+			h_max += 1;
+			Int_t nbins = (Int_t)(h_max - h_min);
+			h_bincont = new TH1F(pname, fOrigHist->GetTitle(), nbins, h_min, h_max);
+			fSerialPx++;
+			for (Int_t i = 1; i <= fSelHist->GetNbinsX(); i++) {
+				x = fSelHist->GetBinCenter(i);
+				if (x >= xlow && x < xup) {
+					cont = fSelHist->GetBinContent(i);
+					h_bincont->Fill(cont);
+				}
+			}
+		}
       if (sum > 0.) {
          mean = sumx / sum;
          sigma = sqrt(sumx2 / sum - mean * mean);
@@ -2469,7 +2492,7 @@ void FitHist::OutputStat()
       cout <<
           "-------------------------------------------------------------"
           << endl;
-
+/*
       TOrdCollection *row_lab = new TOrdCollection();
       row_lab->Add(new TObjString("Content"));
       row_lab->Add(new TObjString("Mean"));
@@ -2499,7 +2522,7 @@ void FitHist::OutputStat()
          delete col_lab;
       if (row_lab)
          delete row_lab;
-      return;
+*/
    } else {
       GetLimits();
       double sum = 0;
@@ -2510,17 +2533,38 @@ void FitHist::OutputStat()
       TAxis *yaxis = fSelHist->GetYaxis();
       for (int i = 1; i <= fSelHist->GetNbinsX(); i++) {
          Axis_t xcent = xaxis->GetBinCenter(i);
-//         if (xcent >= fX_1 && xcent < fX_2) {
-            for (int j = 1; j <= fSelHist->GetNbinsY(); j++) {
-               Axis_t ycent = yaxis->GetBinCenter(j);
-//               if (ycent >= fY_1 && ycent < fY_2) {
-                  if (nc <= 0 ||
-                      (nc > 0 && InsideCut((float) xcent, (float) ycent)))
-                     sum += fSelHist->GetCellContent(i, j);
-//               }
-            }
-//         }
+			for (int j = 1; j <= fSelHist->GetNbinsY(); j++) {
+				Axis_t ycent = yaxis->GetBinCenter(j);
+				if (nc <= 0 ||(nc > 0 && InsideCut((float) xcent, (float) ycent))) {
+					Double_t cont = fSelHist->GetCellContent(i, j);
+					sum += cont;
+					if (cont < h_min) h_min = cont;
+					if (cont > h_max) h_max = cont;
+				}
+			}
       }
+		if ( fill_hist == 1 ) {
+			TString pname(fOrigHist->GetName());
+			pname += "_BinCont_";
+			pname += fSerialPx;
+			h_max += 1;
+			Int_t nbins = (Int_t)(h_max - h_min);
+			h_bincont = new TH1F(pname, fOrigHist->GetTitle(), nbins, h_min, h_max);
+			fSerialPx++;
+			for (int i = 1; i <= fSelHist->GetNbinsX(); i++) {
+				Axis_t xcent = xaxis->GetBinCenter(i);
+				for (int j = 1; j <= fSelHist->GetNbinsY(); j++) {
+					Axis_t ycent = yaxis->GetBinCenter(j);
+					if (nc <= 0 ||(nc > 0 && InsideCut((float) xcent, (float) ycent))) {
+						sum += fSelHist->GetCellContent(i, j);
+						if ( fill_hist == 1 ) {
+							h_bincont->Fill(fSelHist->GetCellContent(i, j));
+						}
+					}
+				}
+			}
+		}
+		
       cout << "Statistics for 2 dim Histogram:" << fSelHist->
           GetName() << endl;
 
@@ -2548,6 +2592,9 @@ void FitHist::OutputStat()
           "-------------------------------------------------------------"
           << endl;
    }
+	if ( h_bincont != NULL ) {
+		hp->ShowHist(h_bincont);
+	}
 }
 
 //____________________________________________________________________________________

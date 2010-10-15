@@ -267,7 +267,7 @@ public:
    void  ProjectF();                   // project along a function
    void  Transpose();
    void  Rotate(Int_t sense);
-   void OutputStat();
+   void OutputStat(Int_t fill_hist);
 //   void ListFunctions();
    void WriteFunctions();
 //   void WriteFunctionList();

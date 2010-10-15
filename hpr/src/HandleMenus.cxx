@@ -164,11 +164,13 @@ enum ERootCanvasCommands {
    kFHUserContUse,
 //   kFHProjectY,
    kFHOutputStat,
+	kFHContHist,
    kFHHistToFile,
    kFHGraphToFile,
    kFHGraphToASCII,
    kFHSelAnyDir,
-   kFHCanvasToFile,
+	kFHSeldCache,
+	kFHCanvasToFile,
    kFHHistToASCII,
    kFHPictToPS,
    kFHPictToLP,
@@ -802,9 +804,12 @@ again:
                      fFitHist->ProjectBoth();
                      break;
                   case kFHOutputStat:
-                     fFitHist->OutputStat();
+                     fFitHist->OutputStat(0);
                      break;
-                  case kFHHistToFile:
+						case kFHContHist:
+							fFitHist->OutputStat(1);
+							break;
+						case kFHHistToFile:
                       fFitHist->WriteOutHist();
                      break;
                   case kFHGraphToFile:
@@ -813,7 +818,10 @@ again:
                   case kFHSelAnyDir:
                      fHistPresent->SelectFromOtherDir();
                      break;
-                  case kFHGraphToASCII:
+						case kFHSeldCache:
+							fHistPresent->SelectdCache();
+							break;
+						case kFHGraphToASCII:
                      WriteGraphasASCII(fGraph, fRootCanvas);
                      break;
                   case kFHCanvasToFile:
@@ -1258,6 +1266,7 @@ void HandleMenus::BuildMenus()
 //      fGraph = FindGraph(fHCanvas);
 	if ( its_start_window ) {
 		fFileMenu->AddEntry("Select ROOT file from any dir",  kFHSelAnyDir);
+		fFileMenu->AddEntry("dCache File-List",  kFHSeldCache);
 		fFileMenu->AddSeparator();
 
 		fFileMenu->AddEntry("ASCII data from file to Ntuple", kFHNtuple);
@@ -1416,6 +1425,7 @@ void HandleMenus::BuildMenus()
          if ( nDim < 3 ) {
 				fDisplayMenu->AddSeparator();
 				fDisplayMenu->AddEntry("Show Statistics only",  kFHOutputStat );
+				fDisplayMenu->AddEntry("Histogram bin content",  kFHContHist );
 				fDisplayMenu->AddEntry("SelectInside",  kFHSelectInside);
 				if(fFitHist->InsideState()) fDisplayMenu->CheckEntry(kFHSelectInside);
 				else                        fDisplayMenu->UnCheckEntry(kFHSelectInside);

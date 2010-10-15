@@ -59,8 +59,9 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
   static Int_t ycanvas=180;
 //  const Int_t MAXLEAF=33;
   if (fRootFile) fRootFile->Close();
-  fRootFile=new TFile(fname);
-  if ( gDebug > 1 )
+//  fRootFile=new TFile(fname);
+  fRootFile=TFile::Open(fname);
+  if ( fRootFile && gDebug > 1 )
      fRootFile->ls();
   if (strlen(dir) > 0) fRootFile->cd(dir);
   TTree *tree = (TTree*)gDirectory->Get(tname);
@@ -68,6 +69,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    Int_t nleaves = leaves->GetEntriesFast();
    if (nleaves <=0) {
        cout << "No leaves" << endl;
+		 gDirectory = gROOT;
        return;
    }
 
@@ -608,8 +610,9 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 //   if (nent==3) new TCanvas("ctemp","ctemp",800,800);
 
    if (fRootFile) fRootFile->Close();
-   fRootFile=new TFile(fname);
-   if (strlen(dir) > 0) fRootFile->cd(dir);
+//   fRootFile=new TFile(fname);
+	fRootFile=TFile::Open(fname);
+	if (strlen(dir) > 0) fRootFile->cd(dir);
    TTree *tree = (TTree*)gDirectory->Get(tname);
 
    gDirectory = gROOT;

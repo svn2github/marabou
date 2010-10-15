@@ -200,7 +200,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void ToggleExpression(const char* bp =0);
    void ShowFiles(const char* , const char* bp =0);               //
    void SelectFromOtherDir();
-   void ShowContents(const char* fname, const char* dir = 0,const char* bp =0);    //
+	void SelectdCache();
+	void ShowContents(const char* fname, const char* dir = 0,const char* bp =0);    //
    void ShowFunction(const char*, const char*, const char*, const char* bp =0);
    void LoadFunction(const char*, const char*, const char*, const char* bp =0);
    void ShowCanvas(const char* , const char*, const char*, const char* bp =0);

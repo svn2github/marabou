@@ -172,16 +172,18 @@ void EmptyHistDialog::BuildMenu()
 	fAttrMenu->AddEntry("Canvas, Pad, Frame", M_OptionPad);
 	
 	fMenu     = new TGPopupMenu(fRootCanvas->GetParent());	
-	menubar->AddPopup("Draw_Fill", fMenu, layoh_right, menubar->GetPopup("Inspect"));
+	menubar->AddPopup("Draw_Fill_Save", fMenu, layoh_right, menubar->GetPopup("Inspect"));
    fMenu->AddEntry("Draw / fill with user defined function", M_FitFormula);
+/*
    TGPopupMenu * filemenu = menubar->GetPopup("File");
    if (filemenu) {
       const TList * el = filemenu->GetListOfEntries();
       TGMenuEntry *en = (TGMenuEntry*)el->First();
       filemenu->AddEntry("Save hist to rootfile", M_Save2File, NULL, NULL, en);
-      filemenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
-                      "HandleMenu(Int_t)");
-   }    
+//      filemenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
+//                      "HandleMenu(Int_t)");
+   } 
+*/
    fMenu->AddEntry("Save hist to rootfile", M_Save2File);
    fMenu->AddEntry("Save graph to rootfile", M_Graph2File);
 

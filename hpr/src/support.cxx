@@ -404,7 +404,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    if (Nentries < 25)
       yw = (Int_t)(magfac * 24.) * (Nentries + 2);
 //      yw = 40 * (Nentries + 1);
-//   cout << "xwid " << xwid << " xw 2 " << xw << " maxlen_nam " << maxlen_nam << endl;
+//	cout << fname << " xpos " << xpos << " ypos " << ypos << " xw " << xw << " yw " << yw << endl;
 
    TString pname(fname);
 //   pname.Prepend("CWD:");
@@ -428,7 +428,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    x1 = 0.99;
    dy = .999 / (Float_t) (Nentries);
 
-//   cout << "Nentries, dy " << Nentries << " " <<  dy << endl;
+//    cout << "Nentries, dy " << Nentries << " " <<  dy << endl;
    y0 = 1.;
    y = y0 - dy;
    TString sel;
@@ -436,7 +436,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    for (Int_t i = 0; i < Nentries; i++) {
       Float_t xcmd = xcmd_no_sel;
       CmdListEntry *cle = (CmdListEntry *) fcmdline->At(i);
- //     cout << "new: " << cle->fCmd << endl;
+//      cout << "new: " << cle->fCmd << endl;
       if (anysel) {
          sel = cle->fSel;
          if (sel != "NoOp" && sel.Length() > 0) {
