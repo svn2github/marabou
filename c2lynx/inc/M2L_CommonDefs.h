@@ -88,7 +88,7 @@
 						kSis3302EnergyTauMax 		= ((1 << 6) - 1),
 					};
 
-	enum			{	kSis3302EventPreHeader 		= 4 };
+	enum			{	kSis3302EventPreHeader 		= 5 };
 	enum			{	kSis3302EventHeader 		= 2 };
 	enum			{	kSis3302EventMinMax 		= 2 };
 	enum			{	kSis3302EventTrailer 		= 2 };
@@ -101,6 +101,7 @@
 #endif
 
 	enum			{	kSis3302StatusCollectingTraces	=	0x1 };
+	enum			{	kSis3302MaxBufSize		=	0x8000	};
 
 	enum EVulomTB	{	kVulomTBNofScalers			= 3,
 						kVulomTBNofChannels 		= 16,

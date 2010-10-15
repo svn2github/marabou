@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.2 2010-09-06 06:57:02 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.3 2010-10-15 10:30:08 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -375,6 +375,7 @@ void VMESis3302StartHistoPanel::StartHisto() {
 		return;
 	}
 
+
 	if (fHisto != NULL)  {
 		fHisto->Delete();
 		fHisto = NULL;
@@ -457,16 +458,20 @@ Int_t VMESis3302StartHistoPanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 	Int_t edl = traceLength[1];
 	Int_t wpt = traceLength[2];
 	Int_t ect = traceLength[3];
+	Int_t nxs = traceLength[4];
 
-	if (wpt == 0) return(0);
+	if (nxs == 0) return(0);
 
  	EventNo = kSis3302MaxEvents;
 	EvtData.Set(wpt * ect + kSis3302EventPreHeader);
+	cout << "@@@1 ReadData: nxs=" << nxs << " ect=" << ect << " " << wpt << " " << EvtData.GetSize() << endl;
 
  	if (!curModule->GetTraceData(EvtData, EventNo, Channel)) {
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data");
 		return(-1);
 	}
+	cout << "@@@2 ReadData: " << EvtData.GetSize() << endl;
+	return(wpt);
 
 	Int_t k = kSis3302EventPreHeader;
 	Int_t offset = kSis3302EventHeader + rdl + edl;

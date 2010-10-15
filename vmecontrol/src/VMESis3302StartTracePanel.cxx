@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.4 2010-09-06 06:57:02 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.5 2010-10-15 10:30:08 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -212,13 +212,22 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fSelectChannel->Select(0);
 
 	fTimeStamp = new TGMrbLabelEntry(fDisplayFrame, "TimeStamp",	200, kVMESis3302TimeStamp,
-															frameWidth/5, kLEHeight, frameWidth/4,
+															frameWidth/5, kLEHeight, frameWidth/5,
 															frameGC, labelGC);
 	HEAP(fTimeStamp);
 	fTimeStamp->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fTimeStamp->SetText(0);
 	fTimeStamp->GetTextEntry()->SetEnabled(kFALSE);
 	fDisplayFrame->AddFrame(fTimeStamp, frameGC->LH());
+
+	fTracesNo = new TGMrbLabelEntry(fDisplayFrame, "Trace#",	200, kVMESis3302TracesNo,
+															frameWidth/5, kLEHeight, frameWidth/12,
+															frameGC, labelGC);
+	HEAP(fTracesNo);
+	fTracesNo->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTracesNo->SetText(0);
+	fTracesNo->GetTextEntry()->SetEnabled(kFALSE);
+	fDisplayFrame->AddFrame(fTracesNo, frameGC->LH());
 
 	fTracesPerSec = new TGMrbLabelEntry(fDisplayFrame, "Traces/s",	200, kVMESis3302TracesPerSecond,
 															frameWidth/5, kLEHeight, frameWidth/12,
@@ -434,8 +443,9 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 	Int_t edl = traceLength[1];
 	Int_t wpt = traceLength[2];
 	Int_t ect = traceLength[3];
+	Int_t nxs = traceLength[4];
 
-	if (wpt == 0) return(0);
+	if (nxs == 0) return(0);
 
 	EvtData.Set(wpt + kSis3302EventPreHeader);
 
@@ -452,6 +462,10 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 	fTimeStamp->GetTextEntry()->SetEnabled(kTRUE);
 	fTimeStamp->SetText(Form("%lld", ts));
 	fTimeStamp->GetTextEntry()->SetEnabled(kFALSE);
+
+	fTracesNo->GetTextEntry()->SetEnabled(kTRUE);
+	fTracesNo->SetText(TraceNumber);
+	fTracesNo->GetTextEntry()->SetEnabled(kFALSE);
 
 	Double_t secs = ts / 100000000.;
 	Double_t tracesPerSec = TraceNumber / secs;

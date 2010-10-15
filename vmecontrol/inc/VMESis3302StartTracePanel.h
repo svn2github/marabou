@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartTracePanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.3 2010-09-06 06:57:02 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.4 2010-10-15 10:30:08 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -66,6 +66,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 												kVMESis3302SelectChannel,
 												kVMESis3302MultiEvent,
 												kVMESis3302TimeStamp,
+												kVMESis3302TracesNo,
 												kVMESis3302TracesPerSecond,
 											};
 
@@ -115,6 +116,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		TGMrbLabelCombo * fSelectChannel;  			//		channel
 		TGCheckButton * fMultiEvent;	  			//		singe/multi event mode
 		TGMrbLabelEntry * fTimeStamp;				// timestamp
+		TGMrbLabelEntry * fTracesNo;				// traces number
 		TGMrbLabelEntry * fTracesPerSec;			// traces per second
 
 		TMrbLofNamedX * fLofModules;
