@@ -8,7 +8,7 @@
 // Class:          Sis3302        -- flash adc SIS3302
 // Description:    Class definitions for M2L server
 // Author:         R. Lutter
-// Revision:       $Id: SrvSis3302.h,v 1.2 2010-10-04 11:18:07 Marabou Exp $
+// Revision:       $Id: SrvSis3302.h,v 1.3 2010-10-21 11:54:06 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -239,7 +239,6 @@ class SrvSis3302 : public SrvVMEModule {
 		Bool_t fDumpTrace;
 		Int_t fNofTry;
 		UInt_t fSampling;
-		Bool_t fMultiEvent;
 
 };
 

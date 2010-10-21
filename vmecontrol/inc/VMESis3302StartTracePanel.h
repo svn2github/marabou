@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartTracePanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.4 2010-10-15 10:30:08 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.5 2010-10-21 11:54:06 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -63,8 +63,9 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 												kVMESis3302SelectTrigMode,
 												kVMESis3302StartStop,
 												kVMESis3302DumpTrace,
+												kVMESis3302WriteTrace,
+												kVMESis3302MaxTraces,
 												kVMESis3302SelectChannel,
-												kVMESis3302MultiEvent,
 												kVMESis3302TimeStamp,
 												kVMESis3302TracesNo,
 												kVMESis3302TracesPerSecond,
@@ -92,6 +93,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		void StartGUI();
 		void StartTrace();
 		void StopTrace();
+		void WriteTrace();
 		Int_t ReadData(TArrayI & Data, Int_t EventNo, Int_t Channel, Int_t TraceNumber);
 
 	protected:
@@ -99,25 +101,26 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 
 		TGGroupFrame * fSelectFrame; 				// select
 		TGMrbLabelCombo * fSelectModule;  			//		module
-		TGMrbCheckButtonList * fSelectChanPatt;  	//		channel
+		TGMrbCheckButtonList * fSelectChanPatt;  		//		channel
 
 		TGGroupFrame * fHistoFrame; 				// show histos
 		TRootEmbeddedCanvas * fHistoCanvas;			//		canvas
 
-		TGGroupFrame * fTraceFrame;					// traces
-		TGMrbLabelCombo * fSelectTrigMode;  		// trigger mode
+		TGGroupFrame * fTraceFrame;				// traces
+		TGMrbLabelCombo * fSelectTrigMode;  			// trigger mode
 		TGTextButton * fStartStopButton;			// start/stop trace
 		TGTextButton * fDumpTraceButton;			// dump trace
+		TGTextButton * fWriteTraceButton;			// write trace
 
-		TH1F * fHistoRaw;							// histos for raw and energy data
+		TH1F * fHistoRaw;					// histos for raw and energy data
 		TH1F * fHistoEnergy;
 
 		TGGroupFrame * fDisplayFrame;				// display
 		TGMrbLabelCombo * fSelectChannel;  			//		channel
-		TGCheckButton * fMultiEvent;	  			//		singe/multi event mode
 		TGMrbLabelEntry * fTimeStamp;				// timestamp
 		TGMrbLabelEntry * fTracesNo;				// traces number
 		TGMrbLabelEntry * fTracesPerSec;			// traces per second
+		TGMrbLabelEntry * fMaxTraces;				// number of traces
 
 		TMrbLofNamedX * fLofModules;
 		TMrbLofNamedX fLofSelected;
@@ -125,9 +128,10 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 
 		TGMrbFocusList fFocusList;
 
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
+		TGMrbLofKeyBindings fKeyBindings; 			// key bindings
 
 		Bool_t fTraceCollection;				// kTRUE if started
+		TFile * fTraceFile;					// root file to store traces
 
 	ClassDef(VMESis3302StartTracePanel, 0)		// [VMEControl] Panel to save/reswtore Sis3302 settings
 };

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.5 2010-10-15 10:30:08 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.6 2010-10-21 11:54:06 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -22,6 +22,7 @@ namespace std {} using namespace std;
 #include "TObjString.h"
 #include "TCanvas.h"
 #include "TApplication.h"
+#include "TFile.h"
 
 #include "TGFileDialog.h"
 #include "TGMsgBox.h"
@@ -43,10 +44,10 @@ namespace std {} using namespace std;
 
 const SMrbNamedXShort kVMESis302StartTraceModes[] =
 			{
-				{VMESis3302StartTracePanel::kVMESis3302ModeMAWD,		"MAWD - decay corrected moving average window"	},
-				{VMESis3302StartTracePanel::kVMESis3302ModeMAW,			"MAW - moving average window"	},
-				{VMESis3302StartTracePanel::kVMESis3302ModeMAWFT,		"MAWFT - FIR trigger moving average window"	},
-				{0, 												NULL	}
+				{VMESis3302StartTracePanel::kVMESis3302ModeMAWD,		"MAWD"	},
+				{VMESis3302StartTracePanel::kVMESis3302ModeMAW,			"MAW"	},
+				{VMESis3302StartTracePanel::kVMESis3302ModeMAWFT,		"MAWFT"	},
+				{0, 								NULL	}
 			};
 
 extern VMEControlData * gVMEControlData;
@@ -175,20 +176,29 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fTraceFrame->AddFrame(fStartStopButton, groupGC->LH());
 	fStartStopButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302StartStop));
 
-	fMultiEvent = new TGCheckButton(fTraceFrame, "MultiEvent", kVMESis3302MultiEvent);
-	fTraceFrame->AddFrame(fMultiEvent, frameGC->LH());
-	fMultiEvent->SetState(kButtonDown);
-
 	fDumpTraceButton = new TGTextButton(fTraceFrame, "Dump trace", kVMESis3302DumpTrace);
 	HEAP(fDumpTraceButton);
 	fTraceFrame->AddFrame(fDumpTraceButton, groupGC->LH());
 	fDumpTraceButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302DumpTrace));
 
+	fWriteTraceButton = new TGTextButton(fTraceFrame, "Write traces", kVMESis3302WriteTrace);
+	HEAP(fWriteTraceButton);
+	fTraceFrame->AddFrame(fWriteTraceButton, groupGC->LH());
+	fWriteTraceButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302WriteTrace));
+
+	fMaxTraces = new TGMrbLabelEntry(fTraceFrame, "# traces",	200, kVMESis3302MaxTraces,
+																frameWidth/5, kLEHeight, frameWidth/10,
+																frameGC, labelGC);
+	HEAP(fMaxTraces);
+	fMaxTraces->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fMaxTraces->SetText(0);
+	fTraceFrame->AddFrame(fMaxTraces, frameGC->LH());
+
 // mode
 	fLofTraceModes.AddNamedX(kVMESis302StartTraceModes);
 	fSelectTrigMode = new TGMrbLabelCombo(fTraceFrame, "TriggerMode",	&fLofTraceModes,
 															kVMESis3302SelectTrigMode, 1,
-															frameWidth/5, kLEHeight, frameWidth/3 + 100,
+															frameWidth/5, kLEHeight, frameWidth/6,
 															frameGC, labelGC, comboGC, labelGC);
 	fTraceFrame->AddFrame(fSelectTrigMode, frameGC->LH());
 	fSelectTrigMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "TraceModeChanged(Int_t, Int_t)");
@@ -276,6 +286,7 @@ void VMESis3302StartTracePanel::StartGUI() {
 	fTraceCollection = kFALSE;
 	fHistoRaw = NULL;
 	fHistoEnergy = NULL;
+	fTraceFile = NULL;
 }
 
 void VMESis3302StartTracePanel::ModuleChanged(Int_t FrameId, Int_t Selection) {
@@ -315,6 +326,9 @@ void VMESis3302StartTracePanel::PerformAction(Int_t FrameId, Int_t Selection) {
 			break;
 		case VMESis3302StartTracePanel::kVMESis3302DumpTrace:
 			curModule->DumpTrace();
+			break;
+		case VMESis3302StartTracePanel::kVMESis3302WriteTrace:
+			this->WriteTrace();
 			break;
 	}
 }
@@ -367,9 +381,8 @@ void VMESis3302StartTracePanel::StartTrace() {
 	curModule->SetTestBits(traceMode);
 
 	Int_t nofEvents = 1;
-	Bool_t multiEvent = (fMultiEvent->GetState() == kButtonDown);
 
-	if (!curModule->StartTraceCollection(nofEvents, multiEvent, chnPatt)) {
+	if (!curModule->StartTraceCollection(nofEvents, chnPatt)) {
 		gVMEControlData->MsgBox(this, "StartTrace", "Error", "Couldn't get traces");
 		return;
 	}
@@ -382,10 +395,16 @@ void VMESis3302StartTracePanel::StartTrace() {
 
 	TArrayI evtData;
 	Int_t traceNo = 0;
+	Int_t maxTraces = fMaxTraces->GetText2Int();
 	for (;;) {
 		gSystem->ProcessEvents();
 		if (!fTraceCollection) {
 			curModule->StopTraceCollection();
+			break;
+		}
+		if (maxTraces > 0 && traceNo >= maxTraces) {
+			this->StopTrace();
+			if (fTraceFile != NULL) this->WriteTrace();
 			break;
 		}
 		Int_t curEvent = 0;
@@ -394,8 +413,8 @@ void VMESis3302StartTracePanel::StartTrace() {
 		while (fTraceCollection && wpt == 0) {
 			wpt = this->ReadData(evtData, curEvent, curChannel, traceNo);
 			gSystem->ProcessEvents();
+			if (wpt == 0) sleep(1);
 		}
-		if (!multiEvent) curModule->ContinueTraceCollection();
 	}
 }
 
@@ -488,14 +507,14 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 
 	c->cd(1);
 	k = ksave;
-	if (fHistoRaw == NULL) {
-		fHistoRaw = new TH1F(	Form("Raw-%s-chn%d-%d", curModule->GetName(), Channel, EventNo),
-								Form("Raw data from module %s, channel %d, evt #%d", curModule->GetName(), Channel, EventNo),
-								rdl, 0, rdl);
-	}
+	if (fHistoRaw == NULL) fHistoRaw = new TH1F("Raw", "Raw data", rdl, 0, rdl);
+	fHistoRaw->SetName(Form("Raw-%s-chn%d-%d", curModule->GetName(), Channel, TraceNumber));
+	fHistoRaw->SetTitle(Form("Raw data from module %s, channel %d, trace %d", curModule->GetName(), Channel, TraceNumber));
 	fHistoRaw->Reset("ICE");
+	fHistoRaw->ResetStats();
 	for (Int_t i = 0; i < rdl; i++, k++) fHistoRaw->Fill(i, EvtData[k]);
 	fHistoRaw->Draw();
+	if (fTraceFile) fHistoRaw->Write();
 	c->Update();
 	c->cd();
 
@@ -511,16 +530,44 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 	c->cd(2);
 	k = ksave;
 	if (fHistoEnergy == NULL) {
-		fHistoEnergy = new TH1F(	Form("Energy-%s-chn%d-%d", curModule->GetName(), Channel, EventNo),
-								Form("Energy data from module %s, channel %d, evt #%d", curModule->GetName(), Channel, EventNo),
-								edl, 0, edl);
+		fHistoEnergy = new TH1F("Energy", "Energy data", edl, 0, edl);
 	}
+	fHistoEnergy->SetName(Form("Energy-%s-chn%d-%d", curModule->GetName(), Channel, TraceNumber));
+	fHistoEnergy->SetTitle(Form("Energy data from module %s, channel %d, trace %d", curModule->GetName(), Channel, TraceNumber));
 	fHistoEnergy->Reset("ICE");
+	fHistoEnergy->ResetStats();
 	for (Int_t i = 0; i < edl; i++, k++) fHistoEnergy->Fill(i, EvtData[k]);
 	fHistoEnergy->Draw();
+	if (fTraceFile) fHistoEnergy->Write();
 	c->Update();
 	c->cd();
 	return(wpt);
+}
+
+void VMESis3302StartTracePanel::WriteTrace() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302StartTracePanel::WriteTrace
+// Purpose:        Write traces to file
+// Arguments:      
+// Results:        
+// Exceptions:
+// Description:    Open root file and write traces
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+	if (fTraceCollection) {
+		gVMEControlData->MsgBox(this, "WriteTrace", "Error", "Stop trace collection first");
+		return;
+	} else if (fTraceFile == NULL) {
+		fTraceFile = new TFile("trace.root", "RECREATE");
+		fWriteTraceButton->SetText("Close trace file");
+	} else {
+		fTraceFile->Close();
+		delete fTraceFile;
+		fTraceFile = NULL;
+		fWriteTraceButton->SetText("Write traces");
+	}
+	
 }
 
 void VMESis3302StartTracePanel::KeyPressed(Int_t FrameId, Int_t Key) {

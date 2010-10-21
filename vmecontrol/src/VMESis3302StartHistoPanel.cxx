@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.3 2010-10-15 10:30:08 Marabou Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.4 2010-10-21 11:54:06 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -21,6 +21,7 @@ namespace std {} using namespace std;
 #include "TObjArray.h"
 #include "TObjString.h"
 #include "TCanvas.h"
+#include "TFile.h"
 #include "TApplication.h"
 
 #include "TGFileDialog.h"
@@ -43,9 +44,9 @@ namespace std {} using namespace std;
 
 const SMrbNamedXShort kVMESis302StartHistoModes[] =
 			{
-				{VMESis3302StartHistoPanel::kVMESis3302ModeMAWD,		"MAWD - decay corrected moving average window"	},
-				{VMESis3302StartHistoPanel::kVMESis3302ModeMAW,			"MAW - moving average window"	},
-				{VMESis3302StartHistoPanel::kVMESis3302ModeMAWFT,		"MAWFT - FIR trigger moving average window"	},
+				{VMESis3302StartHistoPanel::kVMESis3302ModeMAWD,		"MAWD"	},
+				{VMESis3302StartHistoPanel::kVMESis3302ModeMAW,			"MAW"	},
+				{VMESis3302StartHistoPanel::kVMESis3302ModeMAWFT,		"MAWFT"	},
 				{0, 												NULL	}
 			};
 
@@ -174,20 +175,29 @@ VMESis3302StartHistoPanel::VMESis3302StartHistoPanel(const TGWindow * Window, TM
 	fTraceFrame->AddFrame(fStartStopButton, groupGC->LH());
 	fStartStopButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302StartStop));
 
-	fMultiEvent = new TGCheckButton(fTraceFrame, "MultiEvent", kVMESis3302MultiEvent);
-	fTraceFrame->AddFrame(fMultiEvent, frameGC->LH());
-	fMultiEvent->SetState(kButtonDown);
-
 	fDumpTraceButton = new TGTextButton(fTraceFrame, "Dump trace", kVMESis3302DumpTrace);
 	HEAP(fDumpTraceButton);
 	fTraceFrame->AddFrame(fDumpTraceButton, groupGC->LH());
 	fDumpTraceButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302DumpTrace));
 
+	fWriteHistoButton = new TGTextButton(fTraceFrame, "Write histo", kVMESis3302WriteHisto);
+	HEAP(fWriteHistoButton);
+	fTraceFrame->AddFrame(fWriteHistoButton, groupGC->LH());
+	fWriteHistoButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302WriteHisto));
+
+	fNofEvtsBuf = new TGMrbLabelEntry(fTraceFrame, "Evts/buffer",	200, kVMESis3302NofEvtsBuf,
+																frameWidth/5, kLEHeight, frameWidth/10,
+																frameGC, labelGC);
+	HEAP(fNofEvtsBuf);
+	fNofEvtsBuf->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fNofEvtsBuf->SetText(0);
+	fTraceFrame->AddFrame(fNofEvtsBuf, frameGC->LH());
+
 // mode
 	fLofTraceModes.AddNamedX(kVMESis302StartHistoModes);
 	fSelectTrigMode = new TGMrbLabelCombo(fTraceFrame, "TriggerMode",	&fLofTraceModes,
 															kVMESis3302SelectTrigMode, 1,
-															frameWidth/5, kLEHeight, frameWidth/3 + 100,
+															frameWidth/5, kLEHeight, frameWidth/6,
 															frameGC, labelGC, comboGC, labelGC);
 	fTraceFrame->AddFrame(fSelectTrigMode, frameGC->LH());
 	fSelectTrigMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "TraceModeChanged(Int_t, Int_t)");
@@ -268,6 +278,7 @@ void VMESis3302StartHistoPanel::StartGUI() {
 
 	fSelectModule->Select(curModule->GetIndex());
 	fTraceCollection = kFALSE;
+	fHistoFile = NULL;
 	fHisto = NULL;
 	fEmax = 0;
 	fMaxEnergy->GetTextEntry()->SetEnabled(kTRUE);
@@ -316,6 +327,9 @@ void VMESis3302StartHistoPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 			break;
 		case VMESis3302StartHistoPanel::kVMESis3302DumpTrace:
 			curModule->DumpTrace();
+			break;
+		case VMESis3302StartHistoPanel::kVMESis3302WriteHisto:
+			this->WriteHisto();
 			break;
 	}
 }
@@ -367,14 +381,13 @@ void VMESis3302StartHistoPanel::StartHisto() {
     Int_t chnPatt = fSelectChanPatt->GetActive();
 	curModule->SetTestBits(traceMode);
 
-	Int_t nofEvents = kSis3302MaxEvents;		// collect as many events as possible
-	Bool_t multiEvent = (fMultiEvent->GetState() == kButtonDown);
+	Int_t nofEvents = fNofEvtsBuf->GetText2Int();
+	if (nofEvents <= 0) nofEvents = kSis3302MaxEvents;
 
-	if (!curModule->StartTraceCollection(nofEvents, multiEvent, chnPatt)) {
+	if (!curModule->StartTraceCollection(nofEvents, chnPatt)) {
 		gVMEControlData->MsgBox(this, "StartHisto", "Error", "Couldn't get traces");
 		return;
 	}
-
 
 	if (fHisto != NULL)  {
 		fHisto->Delete();
@@ -407,8 +420,8 @@ void VMESis3302StartHistoPanel::StartHisto() {
 		while (fTraceCollection && wpt == 0) {
 			wpt = this->ReadData(evtData, curEvent, curChannel, traceNo);
 			gSystem->ProcessEvents();
+			if (wpt == 0) sleep(1);
 		}
-		if (!multiEvent) curModule->ContinueTraceCollection();
 	}
 }
 
@@ -462,16 +475,15 @@ Int_t VMESis3302StartHistoPanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 
 	if (nxs == 0) return(0);
 
- 	EventNo = kSis3302MaxEvents;
-	EvtData.Set(wpt * ect + kSis3302EventPreHeader);
-	cout << "@@@1 ReadData: nxs=" << nxs << " ect=" << ect << " " << wpt << " " << EvtData.GetSize() << endl;
+	EventNo = kSis3302MaxEvents;
+ 	Int_t n = wpt * ect;
+	if (n < nxs) n = nxs;
+	EvtData.Set(n + kSis3302EventPreHeader);
 
  	if (!curModule->GetTraceData(EvtData, EventNo, Channel)) {
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data");
 		return(-1);
 	}
-	cout << "@@@2 ReadData: " << EvtData.GetSize() << endl;
-	return(wpt);
 
 	Int_t k = kSis3302EventPreHeader;
 	Int_t offset = kSis3302EventHeader + rdl + edl;
@@ -513,6 +525,31 @@ Int_t VMESis3302StartHistoPanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 	fHisto->Draw();
 	c->Update();
 	return(wpt);
+}
+
+void VMESis3302StartHistoPanel::WriteHisto() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302StartHistoPanel::WriteHisto
+// Purpose:        Write histo to file
+// Arguments:
+// Results:
+// Exceptions:
+// Description:    (Re)opens root file and writes histo
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fHisto == NULL) {
+		gVMEControlData->MsgBox(this, "WriteHisto", "Error", "No histo allocated yet");
+		return;
+	}
+	const Char_t * mode = (fHistoFile == NULL) ? "RECREATE" : "UPDATE";
+	fHistoFile = new TFile("histos.root", mode);
+	fHisto->Write();
+	gMrbLog->Out() << "Histo written to file histos.root" << endl;
+	gMrbLog->Flush(this->ClassName(), "WriteHisto", setblue);
+	fHistoFile->Close();
+	delete fHistoFile;
 }
 
 void VMESis3302StartHistoPanel::KeyPressed(Int_t FrameId, Int_t Key) {

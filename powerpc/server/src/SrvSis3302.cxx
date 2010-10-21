@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.7 $
-//! $Date: 2010-10-15 10:30:08 $
+//! $Revision: 1.8 $
+//! $Date: 2010-10-21 11:54:06 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -70,7 +70,6 @@ Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 	}
 
 	fTraceCollection = kFALSE;
-	fMultiEvent = kTRUE;
 	fSampling = kSis3302KeyArmBank1Sampling;
 	fTraceNo = 0;
 	fDumpTrace = kFALSE;
@@ -3822,7 +3821,6 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 		}
 
 		nofEventsPerBuffer[adc] = nofWords / wordsPerEvent[adc];
-		cout << "@@@ adc=" << adc << " wpt=" << wordsPerEvent[adc] << " ect=" << nofEventsPerBuffer[adc] << " wc=" << nofWords << endl;
 
 		if (nofWords > maxWords) maxWords = nofWords;
 	}
@@ -3834,7 +3832,6 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 	}
 
 	Int_t maxThresh = maxWords * 2;		// thresh has to be 16bit
-	cout << "@@@ thresh=" << maxThresh << endl;
 	this->WriteEndAddrThresh(Module, maxThresh);
 	this->KeyResetSample(Module);
 	this->KeyClearTimestamp(Module);
@@ -3913,10 +3910,10 @@ Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t A
 	Data[3] = nofEventsPerBuffer[AdcNo];
 	Int_t n = 0;
 	if (fTraceCollection && this->DataReady(Module)) {
-		if (!this->ReadNextSampleAddr(Module, n, AdcNo)) return(kFALSE);
+		this->SwitchSampling(Module);
+		if (!this->ReadPrevBankSampleAddr(Module, n, AdcNo)) return(kFALSE);
 		n &= 0x3FFFFC;
 		n >>= 1;
-		if (fMultiEvent) this->SwitchSampling(Module);
 		fTraceNo++;
 	}
 	nextSample[AdcNo] = n;
@@ -3966,8 +3963,6 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 	}
 	Data.Set(nofEvents * wpt + kSis3302EventPreHeader);
 
-	cout << "@@@ next=" << nxs << " evts=" << nofEvents << " wpt=" << wpt << " size=" << Data.GetSize() << endl;
-
 	Data[0] = rdl;
 	Data[1] = edl;
 	Data[2] = wpt;
@@ -3981,17 +3976,17 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 
 	gSignalTrap = kFALSE;
 
-	Int_t k = kSis3302EventPreHeader;
 
 	UInt_t trailer;
 	Bool_t start = kTRUE;
 
+	Int_t k = kSis3302EventPreHeader;
 	for (Int_t evtNo = evtFirst; evtNo <= evtLast; evtNo++) {
 
 		for (Int_t i = 0; i < kSis3302EventHeader; i++, k++) Data[k] = *mappedAddr++;								// event header: 32bit words
 
 		for (Int_t i = 0; i < rdl / 2; i++, k += 2) {			// raw data: fetch 2 samples packed in 32bit, store each in a single 32bit word
-			Int_t d = *mappedAddr++;
+			UInt_t d = *mappedAddr++;
 			Data[k] = (d >> 16) & 0xFFFF;
 			Data[k + 1] = d & 0xFFFF;
 		}
@@ -4001,9 +3996,9 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 		Data[k] = *mappedAddr++;		// max energy
 		Data[k + 1] = *mappedAddr++;	// min energy
 		Data[k + 2] = *mappedAddr++;	// pile-up & trigger
-		trailer = (UInt_t) *mappedAddr;
+		trailer = (UInt_t) *mappedAddr++;
 
-		if (fDumpTrace | (trailer != 0xdeadbeef)) {
+		if (fDumpTrace || (trailer != 0xdeadbeef)) {
 			if (start) {
 				TString traceFile = Form("trace-%d.dmp", fTraceNo);
 				char path[100];
@@ -4035,7 +4030,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 				dump << "---------------------------------------------------------[header section]" << endl;
 				dump << "Event number      : " << evtNo << endl;
 				k = kSis3302EventPreHeader;
-				TArrayI hdr(2);
+				TArrayI hdr(kSis3302EventHeader);
 				for (Int_t i = 0; i < kSis3302EventHeader; i++, k++) {
 					hdr[i] = Data[k];
 					dump << "Header[" << i << "]         : " << Form("%10u %#lx", Data[k], Data[k]) << endl;
@@ -4047,7 +4042,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 
 				if (rdl > 0) {
 					dump << "----------------------------------------------[start of raw data section]" << endl;
-					for (Int_t i = 0; i < rdl; i++, k ++) dump << Form("%5d: %10d %#lx", i, Data[k], Data[k]) << endl;
+					for (Int_t i = 0; i < rdl; i++, k++) dump << Form("%5d: %10d %#lx", i, Data[k], Data[k]) << endl;
 				}
 
 				if (edl > 0) {
@@ -4071,6 +4066,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 			}
 		}
 		Data[k + 3] = trailer;	// trailer
+		k += 4;
 	}
 
 	if (fDumpTrace) dump.close();
@@ -4099,17 +4095,18 @@ Bool_t SrvSis3302::DataReady(SrvVMEModule * Module) {
 //////////////////////////////////////////////////////////////////////////////
 
 void SrvSis3302::SwitchSampling(SrvVMEModule * Module) {
-	if (!fTraceCollection || !fMultiEvent) return(0);
-	Int_t pageNo;
-	if (fSampling == kSis3302KeyArmBank1Sampling) {
-		fSampling = kSis3302KeyArmBank2Sampling;
-		pageNo = 0;
-	} else {
-		fSampling = kSis3302KeyArmBank1Sampling;
-		pageNo = 4;
+	if (fTraceCollection) {
+		Int_t pageNo;
+		if (fSampling == kSis3302KeyArmBank1Sampling) {
+			fSampling = kSis3302KeyArmBank2Sampling;
+			pageNo = 0;
+		} else {
+			fSampling = kSis3302KeyArmBank1Sampling;
+			pageNo = 4;
+		}
+		this->ContinueTraceCollection(Module);
+		this->SetPageRegister(Module, pageNo);
 	}
-	this->ContinueTraceCollection(Module);
-	this->SetPageRegister(Module, pageNo);
 }
 
 //________________________________________________________________[C++ METHOD]

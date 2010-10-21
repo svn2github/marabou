@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.18 2010-10-15 10:30:08 Marabou Exp $
-// Date:           $Date: 2010-10-15 10:30:08 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.19 2010-10-21 11:54:06 Marabou Exp $
+// Date:           $Date: 2010-10-21 11:54:06 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -70,7 +70,6 @@ Bool_t TC2LSis3302::ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & Data
 	}
 
 	Int_t wc = DataSend.GetSize() + 1;
-	if (Fcode == kM2L_FCT_SIS_3302_GET_TRACE_DATA) cout << "@@@ ExecFunction send=" << wc << endl;
 	M2L_VME_Exec_Function * x = (M2L_VME_Exec_Function *) gMrbC2Lynx->AllocMessage(sizeof(M2L_VME_Exec_Function), wc, kM2L_MESS_VME_EXEC_FUNCTION);
 	x->fData.fData[0] = AdcNo;
 	Int_t * dp = &x->fData.fData[1];
@@ -80,11 +79,9 @@ Bool_t TC2LSis3302::ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & Data
 	x->fData.fWc = wc;
 	if (gMrbC2Lynx->Send((M2L_MsgHdr *) x)) {
 		wc = DataRecv.GetSize();
-		if (Fcode == kM2L_FCT_SIS_3302_GET_TRACE_DATA) cout << "@@@1 ExecFunction receive=" << wc << endl;
 		M2L_VME_Return_Results * r = (M2L_VME_Return_Results *) gMrbC2Lynx->AllocMessage(sizeof(M2L_VME_Return_Results), wc, kM2L_MESS_VME_EXEC_FUNCTION);
 		if (gMrbC2Lynx->Recv((M2L_MsgHdr *) r)) {
 			wc = r->fData.fWc;
-			if (Fcode == kM2L_FCT_SIS_3302_GET_TRACE_DATA) cout << "@@@2 ExecFunction receive=" << wc << endl;
 			DataRecv.Set(wc);
 			Int_t * dp = r->fData.fData;
 			for (Int_t i = 0; i < wc; i++, dp++) DataRecv[i] = *dp;
@@ -659,10 +656,9 @@ Bool_t TC2LSis3302::SetClockSource(Int_t & ClockSource) {
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::StartTraceCollection(Int_t & NofEvents, Bool_t & MultiEvent, Int_t AdcNo) {
+Bool_t TC2LSis3302::StartTraceCollection(Int_t & NofEvents, Int_t AdcNo) {
 	TArrayI dataSend(2);
 	dataSend[0] = NofEvents;
-	dataSend[1] = MultiEvent ? 1 : 0;
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_START_TRACE_COLLECTION, dataSend, dataSend, AdcNo));
 }
 

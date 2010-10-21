@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.10 2010-07-12 12:32:51 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.11 2010-10-21 11:54:06 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -1632,7 +1632,6 @@ void VMESis3302Panel::EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntr
 		if (!Entry->CheckRange(eds, EntryNo, kTRUE, kTRUE)) {
 			Entry->SetText(edssav, EntryNo);
 		} else {
-			cout << "@@@ EnergyDataStartOrLengthChanged idx=" << IdxNo << " val=" << eds << endl;
 			curModule->WriteStartIndex(eds, IdxNo);
 		}
 	}

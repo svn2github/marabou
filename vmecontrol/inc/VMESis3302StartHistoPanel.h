@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartHistoPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.2 2010-09-06 06:57:02 Rudolf.Lutter Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.3 2010-10-21 11:54:06 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -64,16 +64,17 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 												kVMESis3302SelectTrigMode,
 												kVMESis3302StartStop,
 												kVMESis3302DumpTrace,
-												kVMESis3302MultiEvent,
+												kVMESis3302WriteHisto,
+												kVMESis3302NofEvtsBuf,
 												kVMESis3302SelectChannel,
 												kVMESis3302EnergyMax,
 												kVMESis3302HistoSize,
 												kVMESis3302EnergyFactor
 											};
 
-		enum EVMESis3302TraceModes			{	kVMESis3302ModeMAWD		= 0,
+		enum EVMESis3302TraceModes			{				kVMESis3302ModeMAWD		= 0,
 												kVMESis3302ModeMAW		= BIT(0),
-												kVMESis3302ModeMAWFT	= BIT(1)
+												kVMESis3302ModeMAWFT		= BIT(1)
 											};
 
 	public:
@@ -93,6 +94,7 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 		void StartGUI();
 		void StartHisto();
 		void StopHisto();
+		void WriteHisto();
 		Int_t ReadData(TArrayI & Data, Int_t EventNo, Int_t Channel, Int_t TraceNumber);
 
 	protected:
@@ -100,24 +102,25 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 
 		TGGroupFrame * fSelectFrame; 				// select
 		TGMrbLabelCombo * fSelectModule;  			//		module
-		TGMrbCheckButtonList * fSelectChanPatt;  	//		channel
+		TGMrbCheckButtonList * fSelectChanPatt;  		//		channel
 
 		TGGroupFrame * fHistoFrame; 				// show histos
 		TRootEmbeddedCanvas * fHistoCanvas;			//		canvas
 
 		TGGroupFrame * fTraceFrame;					// traces
-		TGMrbLabelCombo * fSelectTrigMode;  		// trigger mode
+		TGMrbLabelCombo * fSelectTrigMode;  			// trigger mode
 		TGTextButton * fStartStopButton;			// start/stop trace
 		TGTextButton * fDumpTraceButton;			// dump trace
+		TGTextButton * fWriteHistoButton;			// write histogram
 
-		TH1F * fHisto;								// histogram
+		TH1F * fHisto;						// histogram
 
 		TGGroupFrame * fDisplayFrame;				// display
 		TGMrbLabelCombo * fSelectChannel;  			//		channel
-		TGCheckButton * fMultiEvent;	  			//		singe/multi event mode
 		TGMrbLabelEntry * fMaxEnergy;				// max energy
 		TGMrbLabelEntry * fHistoSize;				// size of histogram in kChannels
 		TGMrbLabelEntry * fEnergyFactor;			// energy scale factor
+		TGMrbLabelEntry * fNofEvtsBuf;				// events per buffer
 
 		Int_t fEmax;
 		Int_t fHsize;
@@ -132,6 +135,7 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
 
 		Bool_t fTraceCollection;				// kTRUE if started
+		TFile * fHistoFile;
 
 	ClassDef(VMESis3302StartHistoPanel, 0)		// [VMEControl] Panel to save/reswtore Sis3302 settings
 };
