@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.5 2010-10-27 11:02:31 Marabou Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.6 2010-10-27 12:17:47 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -438,7 +438,7 @@ void VMESis3302StartHistoPanel::StartHisto() {
 		Int_t curEvent = kSis3302MaxEvents;
 		Int_t wpt = 0;
 		traceNo++;
-		Bool_t writeFlag = ((traceNo % nofBufsWrite) == 0);
+		Bool_t writeFlag = (nofBufsWrite > 0 && (traceNo % nofBufsWrite) == 0);
 		while (fTraceCollection && wpt == 0) {
 			while (fPausePressed) gSystem->ProcessEvents();
 			wpt = this->ReadData(evtData, curEvent, curChannel, traceNo);

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.7 2010-10-27 11:02:31 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.8 2010-10-27 12:17:47 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -186,8 +186,8 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fTraceFrame->AddFrame(fWriteTraceButton, groupGC->LH());
 	fWriteTraceButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302WriteTrace));
 
-	fMaxTraces = new TGMrbLabelEntry(fTraceFrame, "# traces",	200, kVMESis3302MaxTraces,
-																frameWidth/5, kLEHeight, frameWidth/10,
+	fMaxTraces = new TGMrbLabelEntry(fTraceFrame, "#traces",	200, kVMESis3302MaxTraces,
+																frameWidth/5, kLEHeight, frameWidth/15,
 																frameGC, labelGC);
 	HEAP(fMaxTraces);
 	fMaxTraces->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
@@ -196,13 +196,14 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 
 // mode
 	fLofTraceModes.AddNamedX(kVMESis302StartTraceModes);
-	fSelectTrigMode = new TGMrbLabelCombo(fTraceFrame, "TriggerMode",	&fLofTraceModes,
+	fSelectTrigMode = new TGMrbLabelCombo(fTraceFrame, "Trigger",	&fLofTraceModes,
 															kVMESis3302SelectTrigMode, 1,
-															frameWidth/5, kLEHeight, frameWidth/6,
+															frameWidth/5, kLEHeight, frameWidth/8,
 															frameGC, labelGC, comboGC, labelGC);
 	fTraceFrame->AddFrame(fSelectTrigMode, frameGC->LH());
 	fSelectTrigMode->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "TraceModeChanged(Int_t, Int_t)");
-	fSelectTrigMode->Select(0);
+	fSelectTrigMode->Select(kVMESis3302ModeMAWFT);
+	this->TraceModeChanged(0, kVMESis3302ModeMAWFT);
 	HEAP(fSelectTrigMode);
 
 //	display
