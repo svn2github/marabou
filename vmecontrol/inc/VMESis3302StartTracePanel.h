@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartTracePanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.5 2010-10-21 11:54:06 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.6 2010-10-27 11:02:31 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -132,6 +132,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 
 		Bool_t fTraceCollection;				// kTRUE if started
 		TFile * fTraceFile;					// root file to store traces
+		Int_t fNofTracesWritten;
 
 	ClassDef(VMESis3302StartTracePanel, 0)		// [VMEControl] Panel to save/reswtore Sis3302 settings
 };

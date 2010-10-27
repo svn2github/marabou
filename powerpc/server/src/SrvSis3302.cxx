@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.8 $
-//! $Date: 2010-10-21 11:54:06 $
+//! $Revision: 1.9 $
+//! $Date: 2010-10-27 11:02:31 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -3821,7 +3821,6 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 		}
 
 		nofEventsPerBuffer[adc] = nofWords / wordsPerEvent[adc];
-
 		if (nofWords > maxWords) maxWords = nofWords;
 	}
 
@@ -3955,12 +3954,18 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 		evtFirst = 0;
 		evtLast = nxs / wpt2 - 1;
 		nofEvents = evtLast + 1;
+		Int_t size = nofEvents * wpt;
+		if (size > kSis3302MaxBufSize) {
+			nofEvents = kSis3302MaxBufSize / wpt;
+			evtLast = nofEvents - 1;
+		}
 	} else {
 		evtStart = EventNo * wpt2 * sizeof(Int_t);
 		evtFirst = EventNo;
 		evtLast = EventNo;
 		nofEvents = 1;
 	}
+
 	Data.Set(nofEvents * wpt + kSis3302EventPreHeader);
 
 	Data[0] = rdl;

@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartHistoPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.3 2010-10-21 11:54:06 Marabou Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.4 2010-10-27 11:02:31 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -63,8 +63,10 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 												kVMESis3302SelectChanPatt,
 												kVMESis3302SelectTrigMode,
 												kVMESis3302StartStop,
+												kVMESis3302Pause,
 												kVMESis3302DumpTrace,
 												kVMESis3302WriteHisto,
+												kVMESis3302NofBufsWrite,
 												kVMESis3302NofEvtsBuf,
 												kVMESis3302SelectChannel,
 												kVMESis3302EnergyMax,
@@ -94,6 +96,7 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 		void StartGUI();
 		void StartHisto();
 		void StopHisto();
+		void PauseHisto();
 		void WriteHisto();
 		Int_t ReadData(TArrayI & Data, Int_t EventNo, Int_t Channel, Int_t TraceNumber);
 
@@ -110,6 +113,7 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 		TGGroupFrame * fTraceFrame;					// traces
 		TGMrbLabelCombo * fSelectTrigMode;  			// trigger mode
 		TGTextButton * fStartStopButton;			// start/stop trace
+		TGTextButton * fPauseButton;				// pause
 		TGTextButton * fDumpTraceButton;			// dump trace
 		TGTextButton * fWriteHistoButton;			// write histogram
 
@@ -120,6 +124,7 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 		TGMrbLabelEntry * fMaxEnergy;				// max energy
 		TGMrbLabelEntry * fHistoSize;				// size of histogram in kChannels
 		TGMrbLabelEntry * fEnergyFactor;			// energy scale factor
+		TGMrbLabelEntry * fNofBufsWrite;			// buffers per write
 		TGMrbLabelEntry * fNofEvtsBuf;				// events per buffer
 
 		Int_t fEmax;
@@ -134,8 +139,10 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
 
-		Bool_t fTraceCollection;				// kTRUE if started
+		Bool_t fTraceCollection;			// kTRUE if started
+		Bool_t fPausePressed;				// pause button
 		TFile * fHistoFile;
+		Int_t fNofHistosWritten;
 
 	ClassDef(VMESis3302StartHistoPanel, 0)		// [VMEControl] Panel to save/reswtore Sis3302 settings
 };

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.6 2010-10-21 11:54:06 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.7 2010-10-27 11:02:31 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -512,9 +512,13 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 	fHistoRaw->SetTitle(Form("Raw data from module %s, channel %d, trace %d", curModule->GetName(), Channel, TraceNumber));
 	fHistoRaw->Reset("ICE");
 	fHistoRaw->ResetStats();
+	fHistoRaw->SetEntries(0);
 	for (Int_t i = 0; i < rdl; i++, k++) fHistoRaw->Fill(i, EvtData[k]);
 	fHistoRaw->Draw();
-	if (fTraceFile) fHistoRaw->Write();
+	if (fTraceFile) {
+		fHistoRaw->Write();
+		fNofTracesWritten++;
+	}
 	c->Update();
 	c->cd();
 
@@ -529,13 +533,12 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 
 	c->cd(2);
 	k = ksave;
-	if (fHistoEnergy == NULL) {
-		fHistoEnergy = new TH1F("Energy", "Energy data", edl, 0, edl);
-	}
+	if (fHistoEnergy == NULL) fHistoEnergy = new TH1F("Energy", "Energy data", edl, 0, edl);
 	fHistoEnergy->SetName(Form("Energy-%s-chn%d-%d", curModule->GetName(), Channel, TraceNumber));
 	fHistoEnergy->SetTitle(Form("Energy data from module %s, channel %d, trace %d", curModule->GetName(), Channel, TraceNumber));
 	fHistoEnergy->Reset("ICE");
 	fHistoEnergy->ResetStats();
+	fHistoEnergy->SetEntries(0);
 	for (Int_t i = 0; i < edl; i++, k++) fHistoEnergy->Fill(i, EvtData[k]);
 	fHistoEnergy->Draw();
 	if (fTraceFile) fHistoEnergy->Write();
@@ -559,14 +562,22 @@ void VMESis3302StartTracePanel::WriteTrace() {
 		gVMEControlData->MsgBox(this, "WriteTrace", "Error", "Stop trace collection first");
 		return;
 	} else if (fTraceFile == NULL) {
-		fTraceFile = new TFile("trace.root", "RECREATE");
+		fTraceFile = new TFile("traces.root", "RECREATE");
+		fNofTracesWritten = 0;
 		fWriteTraceButton->SetText("Close trace file");
+		fWriteTraceButton->SetBackgroundColor(gVMEControlData->fColorRed);
+		fWriteTraceButton->SetForegroundColor(gVMEControlData->fColorWhite);
 	} else {
 		fTraceFile->Close();
+		gMrbLog->Out() << fNofTracesWritten << " trace(s) written to file traces.root" << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteTrace", setblue);
 		delete fTraceFile;
 		fTraceFile = NULL;
 		fWriteTraceButton->SetText("Write traces");
+		fWriteTraceButton->SetBackgroundColor(gVMEControlData->fColorGray);
+		fWriteTraceButton->SetForegroundColor(gVMEControlData->fColorBlack);
 	}
+	fWriteTraceButton->Layout();
 	
 }
 
