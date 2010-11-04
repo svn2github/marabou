@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.9 $
-//! $Date: 2010-10-27 11:02:31 $
+//! $Revision: 1.10 $
+//! $Date: 2010-11-04 14:13:27 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -615,7 +615,7 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			}
 		case kM2L_FCT_SIS_3302_GET_TRACE_LENGTH:
 			{
-				data.Set(kSis3302EventPreHeader);
+				data.Set(kSis3302NofAdcs * kSis3302EventPreHeader);
 				if (!this->GetTraceLength(Module, data, adcNo)) return(NULL);
 				break;
 			}
@@ -3815,7 +3815,9 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 
 		if (nofWords > (kSis3302MaxBufSize / sizeof(Int_t))) {
 			gMrbLog->Wrn()	<< "[" << Module->GetName() << "]: Too many events - "
-							<< NofEvents << " (event length is " << wordsPerEvent[adc] << "|0x" << setbase(16) <<  wordsPerEvent[adc] << " words, buffer size is " << kSis3302MaxBufSize << setbase(10) << " bytes)" << endl;
+							<< NofEvents << " (event length is " << wordsPerEvent[adc] << "|0x"
+							<< setbase(16) <<  wordsPerEvent[adc] << " words, buffer size is 0x" << kSis3302MaxBufSize
+							<< setbase(10) << " bytes)" << endl;
 			gMrbLog->Flush(this->ClassName(), "StartTraceCollection");
 			nofWords = SIS3302_NEXT_ADC_OFFSET - 1;
 		}
@@ -3870,7 +3872,6 @@ Bool_t SrvSis3302::ContinueTraceCollection(SrvVMEModule * Module) {
 
 	this->KeyAddr(Module, fSampling);
 	fTraceCollection = kTRUE;
-	fNofTry = 0;
 	this->SetStatus(kSis3302StatusCollectingTraces);
 	return(kTRUE);
 }
@@ -3896,28 +3897,34 @@ Bool_t SrvSis3302::PauseTraceCollection(SrvVMEModule * Module) {
 //! \details		Get trace length
 //! \param[in]		Module		-- module address
 //! \param[out]		Data		-- where to store length values
-//! \param[in]		AdcNo		-- adc number
+//! \param[in]		AdcPatt		-- adc pattern
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t AdcPatt) {
 
-	fNofTry++;
-	Data[0] = rawDataLength[AdcNo];
-	Data[1] = energyDataLength[AdcNo];
-	Data[2] = wordsPerEvent[AdcNo];
-	Data[3] = nofEventsPerBuffer[AdcNo];
-	Int_t n = 0;
-	if (fTraceCollection && this->DataReady(Module)) {
-		this->SwitchSampling(Module);
-		if (!this->ReadPrevBankSampleAddr(Module, n, AdcNo)) return(kFALSE);
-		n &= 0x3FFFFC;
-		n >>= 1;
-		fTraceNo++;
+	Data.Reset(0);
+	if (!fTraceCollection ||  !this->DataReady(Module)) return(kTRUE);
+
+	this->SwitchSampling(Module);
+	Int_t k = 0;
+	Bool_t traceDataOk = kFALSE;
+	for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++, AdcPatt >>= 1, k += kSis3302EventPreHeader) {
+		Data[k + 0] = rawDataLength[adc];
+		Data[k + 1] = energyDataLength[adc];
+		Data[k + 2] = wordsPerEvent[adc];
+		Data[k + 3] = nofEventsPerBuffer[adc];
+		Int_t n = 0;
+		if (AdcPatt & 1 && this->ReadPrevBankSampleAddr(Module, n, adc)) {
+			n &= 0x3FFFFC;
+			n >>= 1;
+			traceDataOk = kTRUE;
+		}
+		nextSample[adc] = n;
+		Data[k + 4] = n;
 	}
-	nextSample[AdcNo] = n;
-	Data[4] = n;
-	return(kTRUE);
+	fTraceNo++;
+	return(traceDataOk);
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3998,7 +4005,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 
 		for (Int_t i = 0; i < edl; i++, k++) Data[k] = *mappedAddr++;			// event data: 32bit words
 
-		Data[k] = *mappedAddr++;		// max energy
+		Data[k] = *mappedAddr++;	// max energy
 		Data[k + 1] = *mappedAddr++;	// min energy
 		Data[k + 2] = *mappedAddr++;	// pile-up & trigger
 		trailer = (UInt_t) *mappedAddr++;

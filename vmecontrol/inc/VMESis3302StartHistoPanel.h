@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartHistoPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.4 2010-10-27 11:02:31 Marabou Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.5 2010-11-04 14:13:27 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -66,9 +66,9 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 												kVMESis3302Pause,
 												kVMESis3302DumpTrace,
 												kVMESis3302WriteHisto,
+												kVMESis3302DeleteClones,
 												kVMESis3302NofBufsWrite,
 												kVMESis3302NofEvtsBuf,
-												kVMESis3302SelectChannel,
 												kVMESis3302EnergyMax,
 												kVMESis3302HistoSize,
 												kVMESis3302EnergyFactor
@@ -84,21 +84,25 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 							UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~VMESis3302StartHistoPanel() { fHeap.Delete(); };
 
+		inline void CloseWindow() { TGMainFrame::CloseWindow(); };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 
 		void ModuleChanged(Int_t FrameId, Int_t Selection);			// slot methods
-		void ChannelChanged(Int_t FrameId, Int_t Selection);
 		void TraceModeChanged(Int_t FrameId, Int_t Selection);
 		void PerformAction(Int_t FrameId, Int_t Selection);
 		void KeyPressed(Int_t FrameId, Int_t Action);
+
+		void CloneHisto(TMrbNamedX * HistoDef);
+		inline void DeleteClones() { fLofClones.Delete(); };
 
 	protected:
 		void StartGUI();
 		void StartHisto();
 		void StopHisto();
 		void PauseHisto();
-		void WriteHisto();
-		Int_t ReadData(TArrayI & Data, Int_t EventNo, Int_t Channel, Int_t TraceNumber);
+		Int_t InitializeHistos(UInt_t ChnPatt = kSis3302AdcPattern);
+		void WriteHisto(TMrbNamedX * HistoDef = NULL);
+		Int_t ReadData(TArrayI & Data, TMrbNamedX * HistoDef, Int_t TraceData[], Int_t TraceNumber);
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
@@ -116,8 +120,7 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 		TGTextButton * fPauseButton;				// pause
 		TGTextButton * fDumpTraceButton;			// dump trace
 		TGTextButton * fWriteHistoButton;			// write histogram
-
-		TH1F * fHisto;						// histogram
+		TGTextButton * fWriteDeleteClonesButton;		// delete clones
 
 		TGGroupFrame * fDisplayFrame;				// display
 		TGMrbLabelCombo * fSelectChannel;  			//		channel
@@ -143,6 +146,10 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 		Bool_t fPausePressed;				// pause button
 		TFile * fHistoFile;
 		Int_t fNofHistosWritten;
+
+		TMrbLofNamedX fLofHistos;			// list of histograms
+
+		TObjArray fLofClones;				// list of canvas clones
 
 	ClassDef(VMESis3302StartHistoPanel, 0)		// [VMEControl] Panel to save/reswtore Sis3302 settings
 };

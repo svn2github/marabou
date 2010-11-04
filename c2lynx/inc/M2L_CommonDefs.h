@@ -10,11 +10,8 @@
 // R. Lutter, Apr 2007                                                  //
 //////////////////////////////////////////////////////////////////////////
 
-	enum ESis3302	{	kSis3302NofAdcs				= 8,
-						kSis3302AllAdcs 			= -1,
-						kSis3302MaxEvents 			= -1,
-						// DAC register
-						kSis3302DacCmdLoadShiftReg	= 0x1,
+	enum ESis3302	{			// DAC register
+						kSis3302DacCmdLoadShiftReg		= 0x1,
 						kSis3302DacCmdLoad 			= 0x2,
 						kSis3302DacBusy				= 0x8000,
 						// KEY commands
@@ -88,6 +85,10 @@
 						kSis3302EnergyTauMax 		= ((1 << 6) - 1),
 					};
 
+	enum			{	kSis3302NofAdcs			= 8 };
+	enum			{	kSis3302AllAdcs 		= -1 };
+	enum			{	kSis3302AdcPattern 		= 0xFF };
+	enum			{	kSis3302MaxEvents 		= -1 };
 	enum			{	kSis3302EventPreHeader 		= 5 };
 	enum			{	kSis3302EventHeader 		= 2 };
 	enum			{	kSis3302EventMinMax 		= 2 };

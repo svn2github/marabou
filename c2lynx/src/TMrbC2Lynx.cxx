@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbC2Lynx.cxx,v 1.14 2010-04-20 10:19:43 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-04-20 10:19:43 $
+// Revision:       $Id: TMrbC2Lynx.cxx,v 1.15 2010-11-04 14:13:27 Marabou Exp $
+// Date:           $Date: 2010-11-04 14:13:27 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -467,14 +467,7 @@ M2L_MsgHdr * TMrbC2Lynx::AllocMessage(Int_t Length, Int_t Wc, UInt_t What) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t lengthNeeded = Length + (Wc - 1) * sizeof(Int_t);
-	if (gMsgBuffer) {
-		if (gBytesAllocated < lengthNeeded) {
-			free(gMsgBuffer);
-			gMsgBuffer = NULL;
-			gBytesAllocated = 0;
-		}
-	}
-	if (gMsgBuffer == NULL) {
+	if (gBytesAllocated < lengthNeeded) {
 		gMsgBuffer = (Char_t *) calloc(1, lengthNeeded);
 		gBytesAllocated = lengthNeeded;
 	}

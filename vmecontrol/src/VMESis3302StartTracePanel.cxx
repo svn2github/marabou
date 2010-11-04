@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.8 2010-10-27 12:17:47 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.9 2010-11-04 14:13:27 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -186,6 +186,11 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fTraceFrame->AddFrame(fWriteTraceButton, groupGC->LH());
 	fWriteTraceButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302WriteTrace));
 
+	fWriteDeleteClonesButton = new TGTextButton(fTraceFrame, "Del clones", kVMESis3302DeleteClones);
+	HEAP(fWriteDeleteClonesButton);
+	fTraceFrame->AddFrame(fWriteDeleteClonesButton, groupGC->LH());
+	fWriteDeleteClonesButton->Connect("Clicked()", this->ClassName(), this, Form("PerformAction(Int_t=0, Int_t=%d)", kVMESis3302DeleteClones));
+
 	fMaxTraces = new TGMrbLabelEntry(fTraceFrame, "#traces",	200, kVMESis3302MaxTraces,
 																frameWidth/5, kLEHeight, frameWidth/15,
 																frameGC, labelGC);
@@ -210,17 +215,6 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 	fDisplayFrame = new TGGroupFrame(this, "Display", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fDisplayFrame);
 	this->AddFrame(fDisplayFrame, groupGC->LH());
-
-	TMrbLofNamedX lofChannels;
-	gVMEControlData->GetLofChannels(lofChannels, VMESis3302Panel::kVMENofSis3302Chans, "chn %d");
-
-	fSelectChannel = new TGMrbLabelCombo(fDisplayFrame, "Channel",	&lofChannels,
-																kVMESis3302SelectChannel, 1,
-																frameWidth/5, kLEHeight, frameWidth/5,
-																frameGC, labelGC, comboGC, labelGC, kTRUE);
-	fDisplayFrame->AddFrame(fSelectChannel, frameGC->LH());
-	fSelectChannel->Connect("SelectionChanged(Int_t, Int_t)", this->ClassName(), this, "ChannelChanged(Int_t, Int_t)");
-	fSelectChannel->Select(0);
 
 	fTimeStamp = new TGMrbLabelEntry(fDisplayFrame, "TimeStamp",	200, kVMESis3302TimeStamp,
 															frameWidth/5, kLEHeight, frameWidth/5,
@@ -254,6 +248,7 @@ VMESis3302StartTracePanel::VMESis3302StartTracePanel(const TGWindow * Window, TM
 //	key bindings
 	fKeyBindings.SetParent(this);
 	fKeyBindings.BindKey("Ctrl-q", TGMrbLofKeyBindings::kGMrbKeyActionExit);
+	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
 	fKeyBindings.Connect("KeyPressed(Int_t, Int_t)", this->ClassName(), this, "KeyPressed(Int_t, Int_t)");
 
 	MapSubwindows();
@@ -285,9 +280,10 @@ void VMESis3302StartTracePanel::StartGUI() {
 
 	fSelectModule->Select(curModule->GetIndex());
 	fTraceCollection = kFALSE;
-	fHistoRaw = NULL;
-	fHistoEnergy = NULL;
 	fTraceFile = NULL;
+	fLofRhistos.Delete();
+	fLofEhistos.Delete();
+	fLofClones.Delete();
 }
 
 void VMESis3302StartTracePanel::ModuleChanged(Int_t FrameId, Int_t Selection) {
@@ -330,6 +326,9 @@ void VMESis3302StartTracePanel::PerformAction(Int_t FrameId, Int_t Selection) {
 			break;
 		case VMESis3302StartTracePanel::kVMESis3302WriteTrace:
 			this->WriteTrace();
+			break;
+		case VMESis3302StartTracePanel::kVMESis3302DeleteClones:
+			this->DeleteClones();
 			break;
 	}
 }
@@ -378,7 +377,7 @@ void VMESis3302StartTracePanel::StartTrace() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-    Int_t chnPatt = fSelectChanPatt->GetActive();
+    	Int_t chnPatt = fSelectChanPatt->GetActive();
 	curModule->SetTestBits(traceMode);
 
 	Int_t nofEvents = 1;
@@ -387,6 +386,8 @@ void VMESis3302StartTracePanel::StartTrace() {
 		gVMEControlData->MsgBox(this, "StartTrace", "Error", "Couldn't get traces");
 		return;
 	}
+
+	this->InitializeHistos(chnPatt);
 
 	fTraceCollection = kTRUE;
 	fStartStopButton->SetText("STOP");
@@ -408,13 +409,23 @@ void VMESis3302StartTracePanel::StartTrace() {
 			if (fTraceFile != NULL) this->WriteTrace();
 			break;
 		}
-		Int_t curEvent = 0;
-		Int_t wpt = 0;
+
+		TArrayI traceData(kSis3302NofAdcs * kSis3302EventPreHeader);
 		traceNo++;
-		while (fTraceCollection && wpt == 0) {
-			wpt = this->ReadData(evtData, curEvent, curChannel, traceNo);
+		traceData.Reset(0);
+		if (!curModule->GetTraceLength(traceData, chnPatt)) {
+			gVMEControlData->MsgBox(this, "StartTrace", "Error", "Couldn't get trace data");
+			return;
+		}
+		TIterator * rIter = fLofRhistos.MakeIterator();
+		TIterator * eIter = fLofEhistos.MakeIterator();
+		TMrbNamedX * rnx;
+		TMrbNamedX * enx;
+		while (rnx = (TMrbNamedX *) rIter->Next()) {
+			enx = (TMrbNamedX *) eIter->Next();
+			Int_t chn = rnx->GetIndex() & 0xF;
+			this->ReadData(evtData, rnx, enx, &traceData[chn * kSis3302EventPreHeader], traceNo);
 			gSystem->ProcessEvents();
-			if (wpt == 0) sleep(1);
 		}
 	}
 }
@@ -438,38 +449,38 @@ void VMESis3302StartTracePanel::StopTrace() {
 	fStartStopButton->Layout();
 }
 
-Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_t Channel, Int_t TraceNumber) {
+Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, TMrbNamedX * RhistoDef, TMrbNamedX * EhistoDef, Int_t TraceData[], Int_t TraceNumber) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302StartTracePanel::ReadData
 // Purpose:        Read data from SIS3302
-// Arguments:      TArrayI EvtData       -- where to store event data
-//                 Int_t EventNo         -- event number
-//                 Int_t Channel         -- channel number
-//                 Int_t TraceNumber     -- trace number
-// Results:        NofData               -- word count
+// Arguments:      TArrayI EvtData        -- where to store event data
+//                 Int_t EventNo          -- event number
+//                 TMrbNamedX * RhistoDef -- raw data: channel number, pad position, histo addr
+//                 TMrbNamedX * EhistoDef -- energy data: ...
+// Results:        NofData                -- word count
 // Exceptions:
 // Description:    Get event data from SIS3302 module(s)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TArrayI traceLength(kSis3302EventPreHeader);
-	if (!curModule->GetTraceLength(traceLength, Channel)) {
-		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data length");
-		return(-1);
-	}
+	Int_t chn = RhistoDef->GetIndex() & 0xF;
 
-	Int_t rdl = traceLength[0];
-	Int_t edl = traceLength[1];
-	Int_t wpt = traceLength[2];
-	Int_t ect = traceLength[3];
-	Int_t nxs = traceLength[4];
+	Int_t rdl = TraceData[0];
+	Int_t edl = TraceData[1];
+	Int_t wpt = TraceData[2];
+	Int_t ect = TraceData[3];
+	Int_t nxs = TraceData[4];
 
-	if (nxs == 0) return(0);
+	Int_t wpt2 = wpt - rdl/2;
+	if (nxs == 0 || wpt == 0 || wpt2 > nxs) return(0);
 
+	Int_t nofEvents = nxs / wpt;
+	if (nofEvents > ect) nofEvents = ect;
+
+	Int_t e = 0;
 	EvtData.Set(wpt + kSis3302EventPreHeader);
-
- 	if (!curModule->GetTraceData(EvtData, EventNo, Channel)) {
+	if (!curModule->GetTraceData(EvtData, e, chn)) {
 		gVMEControlData->MsgBox(this, "ReadData", "Error", "Couldn't get data");
 		return(-1);
 	}
@@ -506,22 +517,22 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 
 	TCanvas * c = fHistoCanvas->GetCanvas();
 
-	c->cd(1);
+	Int_t subPad = (RhistoDef->GetIndex() >> 4) & 0xF;
+	c->cd(subPad);
+	TH1F * h = (TH1F *) RhistoDef->GetAssignedObject();
+
 	k = ksave;
-	if (fHistoRaw == NULL) fHistoRaw = new TH1F("Raw", "Raw data", rdl, 0, rdl);
-	fHistoRaw->SetName(Form("Raw-%s-chn%d-%d", curModule->GetName(), Channel, TraceNumber));
-	fHistoRaw->SetTitle(Form("Raw data from module %s, channel %d, trace %d", curModule->GetName(), Channel, TraceNumber));
-	fHistoRaw->Reset("ICE");
-	fHistoRaw->ResetStats();
-	fHistoRaw->SetEntries(0);
-	for (Int_t i = 0; i < rdl; i++, k++) fHistoRaw->Fill(i, EvtData[k]);
-	fHistoRaw->Draw();
+	h->SetName(Form("%s-%d", RhistoDef->GetName(), TraceNumber));
+	h->SetTitle(Form("%s, trace %d", RhistoDef->GetTitle(), TraceNumber));
+	h->Reset("ICE");
+	h->ResetStats();
+	h->SetEntries(0);
+	for (Int_t i = 0; i < rdl; i++, k++) h->Fill(i, EvtData[k]);
+	h->Draw();
 	if (fTraceFile) {
-		fHistoRaw->Write();
+		h->Write();
 		fNofTracesWritten++;
 	}
-	c->Update();
-	c->cd();
 
 	ksave = k;
 	min = 1000000;
@@ -532,20 +543,124 @@ Int_t VMESis3302StartTracePanel::ReadData(TArrayI & EvtData, Int_t EventNo, Int_
 	}
 	if (max == 0) return(-1);
 
-	c->cd(2);
+	subPad = (EhistoDef->GetIndex() >> 4) & 0xF;
+	c->cd(subPad);
+	h = (TH1F *) EhistoDef->GetAssignedObject();
+
 	k = ksave;
-	if (fHistoEnergy == NULL) fHistoEnergy = new TH1F("Energy", "Energy data", edl, 0, edl);
-	fHistoEnergy->SetName(Form("Energy-%s-chn%d-%d", curModule->GetName(), Channel, TraceNumber));
-	fHistoEnergy->SetTitle(Form("Energy data from module %s, channel %d, trace %d", curModule->GetName(), Channel, TraceNumber));
-	fHistoEnergy->Reset("ICE");
-	fHistoEnergy->ResetStats();
-	fHistoEnergy->SetEntries(0);
-	for (Int_t i = 0; i < edl; i++, k++) fHistoEnergy->Fill(i, EvtData[k]);
-	fHistoEnergy->Draw();
-	if (fTraceFile) fHistoEnergy->Write();
+	h->SetName(Form("%s-%d", EhistoDef->GetName(), TraceNumber));
+	h->SetTitle(Form("%s, trace %d", EhistoDef->GetTitle(), TraceNumber));
+	h->Reset("ICE");
+	h->ResetStats();
+	h->SetEntries(0);
+	for (Int_t i = 0; i < edl; i++, k++) h->Fill(i, EvtData[k]);
+	h->Draw();
+	if (fTraceFile) h->Write();
+
 	c->Update();
 	c->cd();
+
 	return(wpt);
+}
+
+Int_t VMESis3302StartTracePanel::InitializeHistos(UInt_t ChannelPattern) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302StartHistoPanel::InitializeTraces
+// Purpose:        Initialize traces
+// Arguments:      UInt_t ChannelPattern   -- channel pattern
+// Results:
+// Exceptions:
+// Description:    Fills histo database
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	const Int_t padX[] =		{ 1, 1, 1, 2, 2, 2, 3, 3 };
+	const Int_t padY[] =		{ 2, 4, 6, 4, 6, 6, 6, 6 };
+
+	TIterator * rIter = fLofRhistos.MakeIterator();
+	TMrbNamedX * rnx;
+	while (rnx = (TMrbNamedX *) rIter->Next()) {
+		TH1F * h = (TH1F *) rnx->GetAssignedObject();
+		if (h) delete h;
+	}
+	fLofRhistos.Delete();
+
+	TIterator * eIter = fLofEhistos.MakeIterator();
+	TMrbNamedX * enx;
+	while (enx = (TMrbNamedX *) eIter->Next()) {
+		TH1F * h = (TH1F *) enx->GetAssignedObject();
+		if (h) delete h;
+	}
+	fLofEhistos.Delete();
+
+	Int_t nofChannels = 0;
+	UInt_t cp = ChannelPattern;
+	for (Int_t chn = 0; chn < kSis3302NofAdcs; chn++, cp >>= 1) { if (cp & 1) nofChannels++; }
+
+	TCanvas * c = fHistoCanvas->GetCanvas();
+	c->Clear();
+	c->Divide(padX[nofChannels - 1], padY[nofChannels - 1]);
+
+	cp = ChannelPattern;
+	Int_t padPos = 0;
+	for (Int_t chn = 0; chn < kSis3302NofAdcs; chn++, cp >>= 1) {
+		if (cp & 1) {
+			Int_t rdl;
+			curModule->ReadRawDataSampleLength(rdl, chn);
+			TString hName = Form("Raw-%s-chn%d", curModule->GetName(), chn);
+			TString hTitle = Form("Raw data from module %s, channel %d", curModule->GetName(), chn);
+			TH1F * h = new TH1F(hName.Data(), hTitle.Data(), rdl, 0., (Axis_t) rdl);
+			Int_t px = padX[nofChannels - 1];
+			Int_t subPad = padPos + 1 + px * (padPos/px);
+			Int_t index = (subPad << 4) | chn;
+			TMrbNamedX * rnx = fLofRhistos.AddNamedX(index, hName.Data(), hTitle.Data(), h);
+			c->cd(subPad);
+			TPad * p = (TPad *) gPad;
+			p->AddExec("clone", Form("((VMESis3302StartTracePanel*)%#lx)->CloneHisto((TMrbNamedX *)%#lx)", this, rnx));
+
+			Int_t edl;
+			curModule->ReadEnergySampleLength(edl, chn);
+			hName = Form("Energy-%s-chn%d", curModule->GetName(), chn);
+			hTitle = Form("Energy data from module %s, channel %d", curModule->GetName(), chn);
+			h = new TH1F(hName.Data(), hTitle.Data(), edl, 0., (Axis_t) edl);
+			subPad += px;
+			index = (subPad << 4) | chn;
+			TMrbNamedX * enx = fLofEhistos.AddNamedX(index, hName.Data(), hTitle.Data(), h);
+			c->cd(subPad);
+			p = (TPad *) gPad;
+			p->AddExec("clone", Form("((VMESis3302StartTracePanel*)%#lx)->CloneHisto((TMrbNamedX *)%#lx)", this, enx));
+			padPos++;
+			if (nofChannels == 1) break;
+		}
+	}
+
+	return(nofChannels);
+}
+
+
+void VMESis3302StartTracePanel::CloneHisto(TMrbNamedX * HistoDef) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302StartTracePanel::CloneHisto
+// Purpose:        Show histogram as clone
+// Arguments:      TMrbNameX * HistoDef  -- histogram defs
+// Results:        --
+// Exceptions:
+// Description:
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t event = gPad->GetEvent();
+	if (event != kButton1Down) return;
+
+	TH1F * h = (TH1F *) HistoDef->GetAssignedObject();
+	TH1F * hclone = (TH1F *) h->Clone();
+	TString hName = h->GetName();
+	hclone->SetName(Form("%s_clone", hName.Data()));
+	TCanvas * c = new TCanvas();
+	fLofClones.Add(c);
+	hclone->Draw();
 }
 
 void VMESis3302StartTracePanel::WriteTrace() {
@@ -553,12 +668,13 @@ void VMESis3302StartTracePanel::WriteTrace() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302StartTracePanel::WriteTrace
 // Purpose:        Write traces to file
-// Arguments:      
-// Results:        
+// Arguments:
+// Results:
 // Exceptions:
 // Description:    Open root file and write traces
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
+
 	if (fTraceCollection) {
 		gVMEControlData->MsgBox(this, "WriteTrace", "Error", "Stop trace collection first");
 		return;
@@ -598,6 +714,9 @@ void VMESis3302StartTracePanel::KeyPressed(Int_t FrameId, Int_t Key) {
 	switch (Key) {
 		case TGMrbLofKeyBindings::kGMrbKeyActionExit:
 			gApplication->Terminate(0);
+			break;
+		case TGMrbLofKeyBindings::kGMrbKeyActionClose:
+			this->CloseWindow();
 			break;
 	}
 }

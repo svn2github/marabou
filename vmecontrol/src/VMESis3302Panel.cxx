@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.11 2010-10-21 11:54:06 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.12 2010-11-04 14:13:27 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -748,7 +748,7 @@ void VMESis3302Panel::PerformAction(Int_t FrameId, Int_t Selection) {
 			new VMESis3302StartTracePanel(fClient->GetRoot(), &fLofModules, frameWidth*3/4, frameHeight*5/4);
 			break;
 		case VMESis3302Panel::kVMESis3302ActionHisto:
-			new VMESis3302StartHistoPanel(fClient->GetRoot(), &fLofModules, frameWidth*3/4, frameHeight*5/4);
+			new VMESis3302StartHistoPanel(fClient->GetRoot(), &fLofModules, frameWidth, frameHeight*5/4);
 			break;
 		case VMESis3302Panel::kVMESis3302ActionSaveRestore:
 			new VMESis3302SaveRestorePanel(fClient->GetRoot(), &fLofModules, frameWidth/4, frameHeight/3);

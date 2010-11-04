@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartTracePanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.6 2010-10-27 11:02:31 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.7 2010-11-04 14:13:27 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -64,8 +64,8 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 												kVMESis3302StartStop,
 												kVMESis3302DumpTrace,
 												kVMESis3302WriteTrace,
+												kVMESis3302DeleteClones,
 												kVMESis3302MaxTraces,
-												kVMESis3302SelectChannel,
 												kVMESis3302TimeStamp,
 												kVMESis3302TracesNo,
 												kVMESis3302TracesPerSecond,
@@ -81,6 +81,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 							UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~VMESis3302StartTracePanel() { fHeap.Delete(); };
 
+		inline void CloseWindow() { TGMainFrame::CloseWindow(); };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 
 		void ModuleChanged(Int_t FrameId, Int_t Selection);			// slot methods
@@ -89,12 +90,16 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		void PerformAction(Int_t FrameId, Int_t Selection);
 		void KeyPressed(Int_t FrameId, Int_t Action);
 
+		void CloneHisto(TMrbNamedX * HistoDef);
+		inline void DeleteClones() { fLofClones.Delete(); };
+
 	protected:
 		void StartGUI();
 		void StartTrace();
 		void StopTrace();
+		Int_t InitializeHistos(UInt_t ChnPatt = kSis3302AdcPattern);
 		void WriteTrace();
-		Int_t ReadData(TArrayI & Data, Int_t EventNo, Int_t Channel, Int_t TraceNumber);
+		Int_t ReadData(TArrayI & Data, TMrbNamedX * RhistoDef, TMrbNamedX * EhistoDef, Int_t TraceData[], Int_t TraceNumber);
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
@@ -111,12 +116,9 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		TGTextButton * fStartStopButton;			// start/stop trace
 		TGTextButton * fDumpTraceButton;			// dump trace
 		TGTextButton * fWriteTraceButton;			// write trace
-
-		TH1F * fHistoRaw;					// histos for raw and energy data
-		TH1F * fHistoEnergy;
+		TGTextButton * fWriteDeleteClonesButton;		// delete clones
 
 		TGGroupFrame * fDisplayFrame;				// display
-		TGMrbLabelCombo * fSelectChannel;  			//		channel
 		TGMrbLabelEntry * fTimeStamp;				// timestamp
 		TGMrbLabelEntry * fTracesNo;				// traces number
 		TGMrbLabelEntry * fTracesPerSec;			// traces per second
@@ -133,6 +135,11 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		Bool_t fTraceCollection;				// kTRUE if started
 		TFile * fTraceFile;					// root file to store traces
 		Int_t fNofTracesWritten;
+
+		TMrbLofNamedX fLofRhistos;				// list of histograms
+		TMrbLofNamedX fLofEhistos;
+
+		TObjArray fLofClones;					// list of canvas clones
 
 	ClassDef(VMESis3302StartTracePanel, 0)		// [VMEControl] Panel to save/reswtore Sis3302 settings
 };
