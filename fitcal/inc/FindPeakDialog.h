@@ -20,7 +20,8 @@ private:
    TVirtualPad *fSelPad;
    TH1     *fSelHist;
    TString fName;
-   FhMarkerList * fMarkers;
+	TString fPeakListName;
+	FhMarkerList * fMarkers;
    Double_t fFrom;               // Used range, lower value
    Double_t fTo;                 // Used range, upper value
    Double_t fThreshold;          // Minimum peaks size used, unit: fraction compared to highest peak in range
@@ -52,7 +53,9 @@ public:
    void RecursiveRemove(TObject * obj);
    void ExecuteFindPeak();
    void ClearList();
-   Int_t FindPeakDone() { return fFindPeakDone; };
+	void PrintList();
+	void ReadList();
+	Int_t FindPeakDone() { return fFindPeakDone; };
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDialog();

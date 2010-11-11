@@ -1318,7 +1318,7 @@ TList * CalibrationDialog::UpdatePeakList()
       if (fVerbose) {
          if (fNpeaks == 0)
             p->PrintHeadLine();
-         p->Print("");
+         p->Print(" ");
       }
 	   fX [fNpeaks] = p->GetMean();
     	fXE[fNpeaks] = p->GetWidth();

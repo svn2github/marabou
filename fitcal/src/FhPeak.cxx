@@ -19,17 +19,21 @@ FhPeak::FhPeak(Double_t pos) : fEstimate(pos), fMean(pos){
    fRelEfficiency = 0;
    fUsed = kFALSE;
 };
-void FhPeak::Print(Option_t * Option) const {
-   printf("%10.2f %10.2f %10.2f %10.2f %10.2f", 
-          fContent, fMean, fMeanError, fWidth, fChi2oNdf);
-//    cout << setw(12)<< fContent << setw(12)<< fMean 
-//         << setw(12)<< fMeanError << setw(12)<< fChi2oNdf;
-    if (fUsed) cout << "  in use";
-    cout << endl;
+void FhPeak::PrintPeak(ostream & ostr) const {
+	ostr << fMean << " " << fWidth << " " << fContent << " " 
+	     << fMeanError << " " << fChi2oNdf << endl;
+};
+void FhPeak::Print(Option_t * opt) const {
+	printf("%10.2f %10.2f %10.2f %10.2f %10.2f", 
+			 fContent, fMean, fMeanError, fWidth, fChi2oNdf);
+	//    cout << setw(12)<< fContent << setw(12)<< fMean 
+	//         << setw(12)<< fMeanError << setw(12)<< fChi2oNdf;
+	if (fUsed) cout << "  in use";
+ 	cout << endl;
 };
 void FhPeak::PrintHeadLine(){
-   cout << "   Content" << "       Mean" 
-        << "  MeanError" << "      Sigma" << " Chi2 / Ndf";
+   cout << "       Mean" 
+	     << "      Sigma" << "   Content" << "  MeanError" <<  " Chi2 / Ndf";
    if (0) {
        cout << " Used";
    }
@@ -39,7 +43,7 @@ void FhPeak::PrintHeadLine(){
 Int_t FhPeak::Compare(const TObject *obj) const { 
 //   Double_t mthis = GetMean();
 //   Double_t mobj  = (( FhPeak*)obj)->GetMean();
-//   cout << " mthis,  mobj" <<  mthis " " <<  mobj << endl;
+//   cout << " mthis << " " <<  mobj" <<  mthis " " <<  mobj << endl;
    if(GetMean() == ((FhPeak *)obj)->GetMean()) return  0; 
    if(GetMean() <  ((FhPeak *)obj)->GetMean()) return -1;
    else                                       return +1;

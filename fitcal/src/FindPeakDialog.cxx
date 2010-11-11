@@ -1,5 +1,6 @@
 #include "TROOT.h"
 #include "TStyle.h"
+#include "TSystem.h"
 #include "TSpectrum.h"
 #include "TCanvas.h"
 #include "TEnv.h"
@@ -11,6 +12,8 @@
 #include "FhPeak.h"
 #include "PeakFinder.h"
 #include "FindPeakDialog.h"
+#include "support.h"
+#include <fstream>
 
 using std::cout;
 using std::endl;
@@ -24,7 +27,7 @@ or a simple method based on a shifting a square wave across\n\
 the histogram and calculating the convolution integral.\n\
 Peaks are added to list associated with the histogram for later\n\
 use in fitting procedures.\n\
-If peak heights vary strongly use several different ranges\n\
+If peak heights vary strongly several different ranges may be used\n\
 Parameters:\n\
   - fInteractive: = 0 (unchecked): dont present dialog\n\
   - From, To  : range for peaks to be stored for later fit\n\
@@ -41,6 +44,11 @@ Parameters for square wave convolution:\n\
                     peak (Sigma) above background\n\
   - PeakMWidth:     Should be about the full width of the peak\n\
                     e.g. 2 Sigma correspond to 68 % of the content.\n\
+\n\
+\"Print / Read Peak List\" allows to write to and read a peaklist\n\
+from an ASCII- file containing 1 line / peak:\n\
+Mean Width Content MeanError Chi2oNdf\n\
+Only Mean is obligatory the others are optional\n\
  \n\
 ";
    fInteractive = interactive;
@@ -80,7 +88,9 @@ Parameters for square wave convolution:\n\
 		static Int_t dummy = 0;
 		static TString exgcmd("ExecuteFindPeak()");
 		static TString clfcmd("ClearList()");
-	
+		static TString expcmd("PrintList()");
+		static TString exrcmd("ReadList()");
+		
 		row_lab->Add(new TObjString("DoubleValue_From"));
 		valp[ind++] = &fFrom;
 		row_lab->Add(new TObjString("DoubleValue+To"));
@@ -121,6 +131,12 @@ Parameters for square wave convolution:\n\
 		valp[ind++] = &exgcmd;
 		row_lab->Add(new TObjString("CommandButt+Clear List"));
 		valp[ind++] = &clfcmd;
+		row_lab->Add(new TObjString("CommandButt_Print Peak List"));
+		valp[ind++] = &expcmd;
+		row_lab->Add(new TObjString("CommandButt+Read Peak List"));
+		valp[ind++] = &exrcmd;
+		row_lab->Add(new TObjString("FileRequest_Filename"));
+		valp[ind++] = &fPeakListName;
 		Int_t itemwidth = 320;
 	//   TRootCanvas* fParentWindow = (TRootCanvas*)fSelPad->GetCanvas()->GetCanvasImp();
 	//   cout << "fParentWindow " << fParentWindow << endl;
@@ -170,6 +186,142 @@ void FindPeakDialog::ClearList()
       gPad->Modified();
       gPad->Update();
    }
+}
+//__________________________________________________________________________
+
+void FindPeakDialog::PrintList()
+{
+	cout << " FindPeakDialog::PrintList()" << endl;
+	TList * pl
+	= (TList*)fSelHist->GetListOfFunctions()->FindObject("spectrum_peaklist");
+	if (pl) {
+		TIter next(pl);
+		FhPeak *p;
+		ofstream wstream;
+		Bool_t tofile=kFALSE;
+		if ( fPeakListName.Length() > 0 ) {
+			if (!gSystem->AccessPathName((const char *)fPeakListName , kFileExists)) {
+				TString question = fPeakListName;
+				question += " exists, Overwrite?";
+				if (!QuestionBox(question.Data(), fParentWindow)) return;
+			}
+			wstream.open(fPeakListName, ios::out);
+			if (!wstream.good()) {
+				cout	<< "Error in open file: "
+				<< gSystem->GetError() << " - " << fPeakListName<< endl;
+				return;
+			}
+			tofile = kTRUE;
+		}
+		while ( p = (FhPeak *)next() ) {
+			if ( tofile )
+				p->PrintPeak(wstream);
+			else
+				p->PrintPeak(cout);
+		}
+	}
+}
+//__________________________________________________________________________
+
+void FindPeakDialog::ReadList()
+{
+	cout << " FindPeakDialog::ReadList()" << endl;
+	TList * p
+	= (TList*)fSelHist->GetListOfFunctions()->FindObject("spectrum_peaklist");
+	if ( p && p->GetSize()  > 0 ) {
+		if (!QuestionBox("Peak list exists, add anyway?", fParentWindow)) return;
+	}
+	ifstream infile;
+	if ( fPeakListName.Length() > 0 ) {
+		if (gSystem->AccessPathName((const char *)fPeakListName , kFileExists)) {
+			TString question = fPeakListName;
+			question += " not found";
+			WarnBox(question, fParentWindow);
+			return;
+		}
+		infile.open(fPeakListName, ios::in);
+		if (!infile.good()) {
+			cout	<< "Error in open file: "
+			<< gSystem->GetError() << " - " << fPeakListName<< endl;
+			return;
+		}
+	}
+   if (!p) {
+      p = new TList();
+      p->SetName("spectrum_peaklist");
+      fSelHist->GetListOfFunctions()->Add(p);
+   }
+   TPolyMarker * pm = (TPolyMarker *) fSelHist->GetListOfFunctions()->FindObject("TPolyMarker");
+	if (!pm) {
+		pm = new TPolyMarker(100);
+		pm->SetMarkerColor(6);
+		pm->SetMarkerSize(1);
+		pm->SetMarkerStyle(23);
+		fSelHist->GetListOfFunctions()->Add(pm);
+	}
+   TString line;
+   TString del(" ,\t");
+   TObjArray * oa;
+	TString val; 
+	Int_t n = 0;
+	while ( 1 ) {
+		line.ReadLine(infile);
+		if (infile.eof()) break;
+		oa = line.Tokenize(del);
+		Int_t nent = oa->GetEntries();
+      if (nent < 1) {
+         cout << "Not enough entries at: " << n+1 << endl;
+         break;
+      }
+      for (Int_t i = 0; i < nent; i++) {
+			val = ((TObjString*)oa->At(i))->String();
+			if (!val.IsFloat()) {
+				cout << "Illegal double: " << val << " at line: " << n+1 << endl;
+				return;
+			}
+		}
+	   val = ((TObjString*)oa->At(0))->String();
+		Double_t x = val.Atof();
+		Int_t bin = fSelHist->GetBin(x);
+		Double_t maxy = fSelHist->GetMaximum();
+		if (bin < 1 || bin >fSelHist->GetNbinsX() ) {
+			cout << "Value: " << x << " outside histogram" << endl;
+		} else {
+			Double_t y = fSelHist->GetBinContent(bin);
+			if (fSelHist->GetBinContent(bin-1) > y )
+				y = fSelHist->GetBinContent(bin-1);
+			if (fSelHist->GetBinContent(bin+1) > y )
+				y = fSelHist->GetBinContent(bin+1);
+			pm->SetPoint(n, x, y + 0.005 * maxy);
+			cout << " pm " << n << " " << x << " " <<  y + 0.005 * maxy<< endl;
+		}
+		if ( n >= pm->Size() -1 )
+			pm->SetPolyMarker(pm->Size() + 10);
+		FhPeak *pe = new FhPeak(x);
+		
+		if (nent >= 1) {
+			val = ((TObjString*)oa->At(1))->String();
+			pe->SetWidth(val.Atof());
+		}
+		if (nent >= 2) {
+			val = ((TObjString*)oa->At(2))->String();
+			pe->SetContent(val.Atof());
+		}
+		if (nent >= 3) {
+			val = ((TObjString*)oa->At(3))->String();
+			pe->SetMeanError(val.Atof());
+		}
+		if (nent >= 4) {
+			val = ((TObjString*)oa->At(4))->String();
+			pe->SetChi2oNdf(val.Atof());
+		}
+		p->Add(pe);
+		n++;
+	}
+	pm->SetPolyMarker(n);
+	pm->Draw();
+	gPad->Modified();
+	gPad->Update();
 }
 //__________________________________________________________________________
 

@@ -70,8 +70,8 @@ public:
    Bool_t IsSortable() const {return kTRUE;};
 
    Int_t Compare(const TObject *obj) const;
-   void Print(Option_t * Option) const ;
-//   void Print(Option_t * Option) const { TObject::Print(Option); }
+	void PrintPeak(ostream & ostr = cout) const ;
+   void Print(Option_t * Option) const;
 //   void Print();
    void PrintHeadLine();
 ClassDef(FhPeak,1)

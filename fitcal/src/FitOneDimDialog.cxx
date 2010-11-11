@@ -18,9 +18,11 @@
 #include "TGMrbTableFrame.h"
 #include "FitOneDimDialog.h"
 #include "Save2FileDialog.h"
+#include "GraphAttDialog.h"
 #include "FhPeak.h"
 #include "TF1Range.h"
 #include "SetColor.h"
+#include "hprbase.h"
 #include <iostream>
 //#ifdef MARABOUVERS
 //#include "FitHist.h"
@@ -52,7 +54,8 @@ Double_t gaus_only(Double_t * x, Double_t * par)
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
 
-   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
+	static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi()),
+						 sqrt2   = TMath::Sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
    Double_t sigma   = par[kFix +0];
@@ -80,7 +83,7 @@ Double_t gaus_only_vsig(Double_t * x, Double_t * par)
    Double_t lBinW = par[0];
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
-   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi()), sqrt2 = TMath::Sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
    Double_t sigma   = par[kFix +0];
@@ -110,7 +113,7 @@ Double_t gaus_cbg(Double_t * x, Double_t * par)
    Double_t lBinW = par[0];
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
-   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi()), sqrt2 = TMath::Sqrt(2.);
 
    Double_t arg;
    Double_t fitval  = 0;
@@ -141,7 +144,7 @@ Double_t gaus_cbg_vsig(Double_t * x, Double_t * par)
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
 
-  static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
+  static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi()), sqrt2 = TMath::Sqrt(2.);
    Double_t arg;
    Double_t fitval;
    Double_t sigma ;
@@ -173,7 +176,7 @@ Double_t gaus_lbg(Double_t * x, Double_t * par)
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
 
-   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi()), sqrt2 = TMath::Sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
    Double_t bgconst = par[kFix +0];
@@ -204,7 +207,7 @@ Double_t gaus_lbg_vsig(Double_t * x, Double_t * par)
    Double_t lBinW = par[0];
    Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
-   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi()), sqrt2 = TMath::Sqrt(2.);
    Double_t arg;
    Double_t fitval  = 0;
    Double_t bgconst = par[kFix +0];
@@ -241,7 +244,7 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
    Int_t lNpeaks = (Int_t)par[1];
    Double_t lTailSide = par[2];
 
-   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi()), sqrt2 = TMath::Sqrt(2.);
    Double_t xij;
    Double_t arg;
    Double_t tail;
@@ -323,7 +326,7 @@ Double_t gausf(Double_t * x, Double_t * par)
    Double_t lBinW = par[0];
 //   Int_t lNpeaks = (Int_t)par[1];
 //   Double_t lTailSide = par[2];
-   static Double_t sqrt2pi = sqrt(2 * TMath::Pi()), sqrt2 = sqrt(2.);
+   static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi()), sqrt2 = TMath::Sqrt(2.);
    if (par[kFix +2] == 0)
       par[kFix +2] = 1;
 
@@ -440,6 +443,10 @@ The command \"FitPeakList\" can be used to fit gaussians\n\
 (optionally with tails) to many peaks automatically\n\
 The estimated positions of the peaks must previously\n\
 be defined with \"FindPeakDialog\"\n\
+\"FindPeakDialog\" allows to write to and read a peaklist\n\
+from an ASCII- file containing 1 line / peak:\n\
+Mean Width Content MeanError Chi2oNdf\n\
+Only Mean is obligatory the others are optional\n\
 \"Half Window\" determines the width of the fit window\n\
 The value \"fPeakSep\" (\"Peak Separation\")determines\n\
 when close peaks should be treated by a common fit.\n\
@@ -528,9 +535,14 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
    fFitFunc = NULL;
    fReqNmarks= 0;
    fDialog = NULL;
-   TAxis *xaxis = fSelHist->GetXaxis();
-   fFrom = xaxis->GetXmin();
-   fTo   = xaxis->GetXmax() ;
+	if ( fSelHist ) {
+		TAxis *xaxis = fSelHist->GetXaxis();
+		fFrom = xaxis->GetXmin();
+		fTo   = xaxis->GetXmax() ;
+	} else {
+		fFrom = 0;
+		fTo   = 100;
+	}
    gROOT->GetListOfCleanups()->Add(this);
 
    TIter next(gROOT->GetListOfCanvases());
@@ -562,6 +574,7 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 		static TString exdpolcmd("DrawPolExecute()");
 		static TString exformcmd("FitFormExecute()");
 		static TString exdformcmd("DrawFormExecute()");
+		static TString exgformcmd("GraphFormExecute()");
 	//   static TString accmd("AddToCalibration()");
 		static TString lbgcmd("DetLinearBackground()");
 		static TString clmcmd("ClearMarkers()");
@@ -690,6 +703,10 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 		valp[ind++] = &fStyle;
 		row_lab->Add(new TObjString("StringValue_FuncName"));
 		valp[ind++] = &fFuncName;
+		if (type == 4) {
+			row_lab->Add(new TObjString("PlainIntVal+N Segs Graph"));
+			valp[ind++] = &fNsegsGraph;
+		}
 		row_lab->Add(new TObjString("CommandButt_Exe Fit"));
 		if (type == 1) {
 			valp[ind++] = &exgcmd;
@@ -711,6 +728,8 @@ e.g. [0]*TMath::Power(x, 2.3)\n\
 			valp[ind++] = &exformcmd;
 			row_lab->Add(new TObjString("CommandButt+Draw only"));
 			valp[ind++] = &exdformcmd;
+			row_lab->Add(new TObjString("CommandButt+Draw as Graph"));
+			valp[ind++] = &exgformcmd;
 			history = hist_file;
 			text = &fFormula;
 		}
@@ -763,10 +782,10 @@ FitOneDimDialog::~FitOneDimDialog()
 void FitOneDimDialog::RecursiveRemove(TObject * obj)
 {
 //   cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "
+//        << obj << " fSelHist " <<  fSelHist <<  " fSelPad " <<  fSelPad << endl;
+   if ((fSelPad && obj == fSelPad) || obj == fSelHist) {
+//       cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "
 //        << obj << " fSelHist " <<  fSelHist <<  endl;
-   if ((fGraph && obj == fGraph) || obj == fSelHist) {
- //      cout << "FitOneDimDialog::RecursiveRemove: this " << this << " obj "
- //       << obj << " fSelHist " <<  fSelHist <<  endl;
       if (fInteractive > 0) CloseDialog();
    }
 }
@@ -806,6 +825,7 @@ void FitOneDimDialog::ClearFunctionList()
       gPad->Modified();
       gPad->Update();
    }
+	fFitFunc = NULL;
 }
 //__________________________________________________________________________
 
@@ -842,9 +862,30 @@ Bool_t FitOneDimDialog::FitPeakList()
       fSelHist->GetListOfFunctions()->Add(fMarkers);
    }
    ClearMarkers();
+	FhPeak *peak;
+// expand picture to make all peaks visible
+	peak = (FhPeak*)p->At(0);
+	xp = peak->GetMean();
+	Double_t low = TMath::Max(xmin, xp - fFitWindow * peak->GetWidth());
+	peak = (FhPeak*)p->At(fNpeaksList - 1);
+	xp = peak->GetMean();
+	Double_t upl = TMath::Min(xmax, xp + fFitWindow * peak->GetWidth());
+	Int_t lbin = fSelHist->FindBin(low);
+	Int_t ubin = fSelHist->FindBin(upl);
+	TAxis *xa = fSelHist->GetXaxis();
+	Int_t lbin_save = -1, ubin_save = -1;
+	if (  lbin < xa->GetFirst()
+		|| ubin > xa->GetLast() ) {
+		lbin_save = xa->GetFirst();
+		ubin_save = xa->GetLast();
+		lbin = TMath::Min(lbin, xa->GetFirst());
+		ubin = TMath::Max(ubin, xa->GetLast());
+		xa->SetRange(lbin, ubin);
+	}
+	
    Bool_t close_peak = kFALSE;
    while (i < fNpeaksList) {
-      FhPeak *peak = (FhPeak*)p->At(i);
+      peak = (FhPeak*)p->At(i);
       xp = peak->GetMean();
       fMarkers->Add(new FhMarker(xp));
       Float_t mark;
@@ -897,6 +938,12 @@ Bool_t FitOneDimDialog::FitPeakList()
    if ( fFitOptOneLine ) {
       PrintPeakList();
    }
+	if (lbin_save >= 0) {
+		cout << "xa->SetRange(lbin_save, ubin_save) " <<lbin_save << " " <<ubin_save << endl;
+		xa->SetRange(lbin_save, ubin_save);
+		gPad->Modified();
+		gPad->Update();
+	}
    fFitOptAddAll = addall_save;
    fShowcof = showcof_save;
    fConfirmStartValues = confirm;
@@ -2055,25 +2102,46 @@ void FitOneDimDialog::DrawFormExecute()
 }
 //________________________________________________________________________
 
+void FitOneDimDialog::GraphFormExecute()
+{
+   FormExecute(fNsegsGraph);    // draw only
+}
+//________________________________________________________________________
+
 void FitOneDimDialog::FormExecute(Int_t draw_only)
 {
    Int_t retval = 0;
-   cout << "fSelHist: " << fSelHist << endl;
-   if (draw_only == 0 && fSelHist == 0 && (fGraph != NULL && fGraph->GetN()) == 0) {
-      fSelHist = FindHistInPad();
-      if (fSelHist == 0) {
-         new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
-                "Warning",
-                "No histogram nore graph defined\n Use Draw only" ,
-                kMBIconExclamation, kMBDismiss, &retval);
-         return;
-
+	cout << "FormExecute  fSelHist: " << fSelHist ;
+	if ( fSelHist )
+		cout << " fSelHist->GetEntries() " << fSelHist->GetEntries();
+	cout << " draw_only " << draw_only<< endl;
+   if (draw_only == 0 && (fSelHist == 0 || fSelHist->GetEntries() < 1)
+		  && (fGraph == NULL || fGraph->GetN() == 0)) {
+		fSelHist = Hpr::FindHistInPad(fSelPad);
+	    cout << "FindHistInPad: fSelHist: " << fSelHist ;
+		if ( fSelHist )
+			cout << " fSelHist->GetEntries() " << fSelHist->GetEntries();
+		cout << endl;
+	
+		if (fSelHist == 0 || fSelHist->GetEntries() < 1 ) {
+			fGraph = Hpr::FindGraphInPad(fSelPad);
+			if ( fGraph == NULL ) {
+				new TGMsgBox(gClient->GetRoot(), (TGWindow*)fParentWindow,
+						"Warning",
+						"No histogram nore graph defined\n Use Draw only" ,
+						kMBIconExclamation, kMBDismiss, &retval);
+				return;
+			} else {
+				fSelHist = NULL;
+			}
       } else {
          fGraph = NULL;
       }
    }
-   GetMarkers();
-   cout << "Fitting interval: " << fFrom << " : " << fTo << endl;
+	if ( fSelHist )
+		GetMarkers();
+   cout << "Fitting interval: " << fFrom << " : " << fTo 
+   << " fSelHist " << fSelHist << " fGraph: " << fGraph<< endl;
 
    TString fn;
    TString pn;
@@ -2098,8 +2166,24 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
    fFitFunc->SetLineWidth(fWidth);
    fFitFunc->SetLineColor(fColor);
    if (draw_only != 0 || (fGraph == NULL && fSelHist == NULL)) {
-      fFitFunc->SetNpx(1000);
-      fFitFunc->Draw("same");
+		if ( draw_only == 1 ) { 
+			fFitFunc->SetNpx(1000);
+			fFitFunc->Draw("same");
+		} else {
+			Int_t np = draw_only;
+			if ( np < 0 )
+				np = -np;
+			np++;
+			TGraph *gr = new TGraph(np);
+			Double_t dx = (fTo - fFrom) / np;
+			Double_t x = fFrom;
+			for (Int_t i=0; i<np; i++) {
+				gr->SetPoint(i,x, fFitFunc->Eval(x));
+				x += dx;
+			}
+			gr->Draw(GraphAttDialog::fDrawOptGraph);
+			GraphAttDialog::SetGraphAtt(fSelPad);
+		}
 //		cout << "Val[2] " << fFitFunc->Eval(2.) << endl;
 //      fFitFunc->Print();
    } else {
@@ -2283,6 +2367,7 @@ void FitOneDimDialog::RestoreDefaults()
    fExpFixC          = env.GetValue("FitOneDimDialog.fExpFixC", 0);
 //   fExpFixD          = env.GetValue("FitOneDimDialog.fExpFixD", 1);
    fPolN             = env.GetValue("FitOneDimDialog.fPolN", 1);
+   fNsegsGraph       = env.GetValue("FitOneDimDialog.fNsegsGraph", 100);
    TString tagname;
    for ( Int_t i = 0; i < 6; i++ ) {
       tagname = "FitOneDimDialog.fPolPar";
@@ -2345,6 +2430,7 @@ void FitOneDimDialog::SaveDefaults()
    env.SetValue("FitOneDimDialog.fExpFixC",fExpFixC );
 //   env.SetValue("FitOneDimDialog.fExpFixD",fExpFixD );
    env.SetValue("FitOneDimDialog.fPolN",   fPolN    );
+   env.SetValue("FitOneDimDialog.fNsegsGraph", fNsegsGraph);
    TString tagname;
    for ( Int_t i = 0; i < 6; i++ ) {
       tagname = "FitOneDimDialog.fPolPar";

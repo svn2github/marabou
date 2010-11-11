@@ -63,6 +63,7 @@ private:
    Int_t fReqNmarks;
    Int_t fNmarks;
    Int_t fNevents;
+   Int_t fNsegsGraph;        // Number of segments (np - 1) of a graph
    Int_t fFitOptAddAll;      // Add all fitted functions to histogram
    Bool_t fFitPeakListDone;
    Int_t fAutoClearMarks;    // Clear marks after fit
@@ -114,6 +115,7 @@ public:
    void PrintPeakList();
    void FitFormExecute();
    void DrawFormExecute();
+   void GraphFormExecute();
    void FormExecute(Int_t draw_only = 0);
    void FillHistRandom();
    TH1  *FindHistInPad();
