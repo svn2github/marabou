@@ -6,11 +6,8 @@
 #include "TStyle.h"
 #include "TObjString.h"
 #include "TString.h"
-#ifdef MARABOUVERS
 #include "HTCanvas.h"
-#else 
-#include "TCanvas.h"
-#endif
+#include "HandleMenus.h"
 #include "TGMrbValuesAndText.h"
 #include "EmptyHistDialog.h"
 #include "SetCanvasAttDialog.h"
@@ -93,6 +90,9 @@ divided into pads to allow for more than one histogram\n\
 EmptyHistDialog::~EmptyHistDialog() 
 {
    SaveDefaults();
+//	if ( fCanvas ) {
+//		delete fCanvas;
+//	}
    gROOT->GetListOfCleanups()->Remove(this);
 };
 //__________________________________________________________________________
@@ -122,15 +122,10 @@ void EmptyHistDialog::Draw_The_Hist()
          return;
       }
    } else {
-#ifdef MARABOUVERS
 	   fCanvas = new HTCanvas("Empty", "Empty", fWinx, fWiny,
 						fHistXsize, fHistYsize);
-#else
-	   fCanvas = new TCanvas("Empty", "Empty", fWinx, fWiny,
-						fHistXsize, fHistYsize);
-#endif
    }
-   BuildMenu();
+//   BuildMenu();
 	if (fHistXdiv > 1 || fHistYdiv > 1) {
 		fCanvas->Divide(fHistXdiv, fHistYdiv);
 		fCanvas->cd(1);
@@ -147,6 +142,7 @@ void EmptyHistDialog::Draw_The_Hist()
 	}
 	gStyle->SetOptStat(0);
 	fHist = new TH1D(fHistName, fHistTitle, fNbins, xmin, xmax);
+	fCanvas->GetHandleMenus()->SetHist(fHist);
 	fHist->Draw();
 //	fHist->SetMinimum(ymin);
 	fHist->SetMaximum(ymax);
@@ -157,44 +153,6 @@ void EmptyHistDialog::Draw_The_Hist()
 //	graph->SetHistogram(gh);
 	gPad->Update();
 };
-//________________________________________________________________________
-
-void EmptyHistDialog::BuildMenu()
-{
-//   cout << "EmptyHistDialog::BuildMenu() " <<this << endl;
-   fRootCanvas = (TRootCanvas*)fCanvas->GetCanvas()->GetCanvasImp();
-   TGMenuBar * menubar = fRootCanvas->GetMenuBar();
-   TGLayoutHints * layoh_right = new TGLayoutHints(kLHintsTop | kLHintsLeft);
-   
-	fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
-	menubar->AddPopup("Graphic_defaults", fAttrMenu, layoh_right);
-	fAttrMenu->AddEntry("Axis / Title / StatBox Attributes", M_OptionHist);
-	fAttrMenu->AddEntry("Canvas, Pad, Frame", M_OptionPad);
-	
-	fMenu     = new TGPopupMenu(fRootCanvas->GetParent());	
-	menubar->AddPopup("Draw_Fill_Save", fMenu, layoh_right, menubar->GetPopup("Inspect"));
-   fMenu->AddEntry("Draw / fill with user defined function", M_FitFormula);
-/*
-   TGPopupMenu * filemenu = menubar->GetPopup("File");
-   if (filemenu) {
-      const TList * el = filemenu->GetListOfEntries();
-      TGMenuEntry *en = (TGMenuEntry*)el->First();
-      filemenu->AddEntry("Save hist to rootfile", M_Save2File, NULL, NULL, en);
-//      filemenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
-//                      "HandleMenu(Int_t)");
-   } 
-*/
-   fMenu->AddEntry("Save hist to rootfile", M_Save2File);
-   fMenu->AddEntry("Save graph to rootfile", M_Graph2File);
-
-   fAttrMenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
-                      "HandleMenu(Int_t)");
-	fMenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
-							 "HandleMenu(Int_t)");
-							 
-   menubar->MapSubwindows();
-   menubar->Layout(); 
-}
 //_________________________________________________________________________
             
 void EmptyHistDialog::SaveDefaults()
@@ -219,6 +177,71 @@ void EmptyHistDialog::SaveDefaults()
    env.SetValue("EmptyHistDialog.HistYdiv"		 , fHistYdiv       );
    env.SaveLevel(kEnvLocal);
 }
+//_________________________________________________________________________
+
+void EmptyHistDialog::RestoreDefaults()
+{
+	TEnv env(".hprrc");
+	fHistName        = env.GetValue("EmptyHistDialog.HistName"  		, "empty");
+	fHistName        = env.GetValue("EmptyHistDialog.HistTitle"  		, "empty");
+	fUseForGraph     = env.GetValue("EmptyHistDialog.fUseForGraph"	, 0);
+	fHistSelPad      = env.GetValue("EmptyHistDialog.HistSelPad"		, 0);
+	fHistNewPad      = env.GetValue("EmptyHistDialog.HistNewPad"		, 1);
+	fHistXsize       = env.GetValue("EmptyHistDialog.HistXsize" 		, 800);
+	fHistYsize       = env.GetValue("EmptyHistDialog.HistYsize" 		, 600);
+	fHistXtitle      = env.GetValue("EmptyHistDialog.HistXtitle"	   , "Xvalues");
+	fHistYtitle      = env.GetValue("EmptyHistDialog.HistYtitle"		, "Yvalues");
+	fHistXdiv        = env.GetValue("EmptyHistDialog.HistXdiv"  		, 1);
+	fNbins           = env.GetValue("EmptyHistDialog.Nbins"  		   , 100);
+	fXaxisMin        = env.GetValue("EmptyHistDialog.XaxisMin"  		, 0);
+	fYaxisMin        = env.GetValue("EmptyHistDialog.YaxisMin"  		, 0);
+	fXaxisMax        = env.GetValue("EmptyHistDialog.XaxisMax"  		, 100);
+	fYaxisMax        = env.GetValue("EmptyHistDialog.YaxisMax"  		, 10);
+	fHistYdiv        = env.GetValue("EmptyHistDialog.HistYdiv"  		, 1);
+}
+//_________________________________________________________________________
+
+void EmptyHistDialog::CloseDown(Int_t wid)
+{
+	//   cout << "EmptyHistDialog::CloseDown() " << endl;
+	//   if (fCanvas) delete fCanvas;
+	delete this;
+}
+/*
+//________________________________________________________________________
+
+void EmptyHistDialog::BuildMenu()
+{
+	//   cout << "EmptyHistDialog::BuildMenu() " <<this << endl;
+	fRootCanvas = (TRootCanvas*)fCanvas->GetCanvas()->GetCanvasImp();
+	TGMenuBar * menubar = fRootCanvas->GetMenuBar();
+	TGLayoutHints * layoh_right = new TGLayoutHints(kLHintsTop | kLHintsLeft);
+	fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
+	menubar->AddPopup("Graphic_defaults", fAttrMenu, layoh_right);
+	fAttrMenu->AddEntry("Axis / Title / StatBox Attributes", M_OptionHist);
+	fAttrMenu->AddEntry("Canvas, Pad, Frame", M_OptionPad);
+	fMenu     = new TGPopupMenu(fRootCanvas->GetParent());	
+	//	menubar->AddPopup("Draw_Fill_Save", fMenu, layoh_right, menubar->GetPopup("Inspect"));
+	//   fMenu->AddEntry("Draw / fill with user defined function", M_FitFormula);
+	TGPopupMenu * filemenu = menubar->GetPopup("File");
+	if (filemenu) {
+  const TList * el = filemenu->GetListOfEntries();
+  TGMenuEntry *en = (TGMenuEntry*)el->First();
+  filemenu->AddEntry("Save hist to rootfile", M_Save2File, NULL, NULL, en);
+  //      filemenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
+  //                      "HandleMenu(Int_t)");
+} 
+	//   fMenu->AddEntry("Save hist to rootfile", M_Save2File);
+	fMenu->AddEntry("Save graph to rootfile", M_Graph2File);
+	
+	//   fAttrMenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
+	//                      "HandleMenu(Int_t)");
+	fMenu->Connect("Activated(Int_t)", "EmptyHistDialog", this,
+						"HandleMenu(Int_t)");
+						
+						menubar->MapSubwindows();
+						menubar->Layout(); 
+}
 //________________________________________________________________________
 
 void EmptyHistDialog::HandleMenu(Int_t id)
@@ -228,9 +251,9 @@ void EmptyHistDialog::HandleMenu(Int_t id)
       case M_FitFormula:
          new FitOneDimDialog(fHist, 4);
          break;
-      case M_Save2File:
-         new Save2FileDialog(fHist);
-         break;
+//      case M_Save2File:
+//         new Save2FileDialog(fHist);
+//         break;
       case M_Graph2File:
 			{
 			TGraph * gr;
@@ -263,33 +286,4 @@ void EmptyHistDialog::HandleMenu(Int_t id)
 		break;
 	}
 }
-//_________________________________________________________________________
-            
-void EmptyHistDialog::RestoreDefaults()
-{
-   TEnv env(".hprrc");
-   fHistName        = env.GetValue("EmptyHistDialog.HistName"  		, "empty");
-	fHistName        = env.GetValue("EmptyHistDialog.HistTitle"  		, "empty");
-	fUseForGraph     = env.GetValue("EmptyHistDialog.fUseForGraph"	, 0);
-	fHistSelPad      = env.GetValue("EmptyHistDialog.HistSelPad"		, 0);
-	fHistNewPad      = env.GetValue("EmptyHistDialog.HistNewPad"		, 1);
-   fHistXsize       = env.GetValue("EmptyHistDialog.HistXsize" 		, 800);
-   fHistYsize       = env.GetValue("EmptyHistDialog.HistYsize" 		, 600);
-   fHistXtitle      = env.GetValue("EmptyHistDialog.HistXtitle"	   , "Xvalues");
-   fHistYtitle      = env.GetValue("EmptyHistDialog.HistYtitle"		, "Yvalues");
-   fHistXdiv        = env.GetValue("EmptyHistDialog.HistXdiv"  		, 1);
-   fNbins           = env.GetValue("EmptyHistDialog.Nbins"  		   , 100);
-   fXaxisMin        = env.GetValue("EmptyHistDialog.XaxisMin"  		, 0);
-   fYaxisMin        = env.GetValue("EmptyHistDialog.YaxisMin"  		, 0);
-   fXaxisMax        = env.GetValue("EmptyHistDialog.XaxisMax"  		, 100);
-   fYaxisMax        = env.GetValue("EmptyHistDialog.YaxisMax"  		, 10);
-   fHistYdiv        = env.GetValue("EmptyHistDialog.HistYdiv"  		, 1);
-}
-//_________________________________________________________________________
-            
-void EmptyHistDialog::CloseDown(Int_t wid)
-{
-//   cout << "EmptyHistDialog::CloseDown() " << endl;
-//   if (fCanvas) delete fCanvas;
-   delete this;
-}
+*/

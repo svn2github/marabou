@@ -23,6 +23,8 @@ private:
    FitHist        * fFitHist;
    TGraph         * fGraph;
 	GEdit          * fEditor;
+	TH1            * fHistInPad;
+	TH1				* fSelHist;
 //  from HTRootCanvas
    TRootCanvas        * fRootCanvas;
    TGMenuBar           *fRootsMenuBar;       // menubar
@@ -51,6 +53,8 @@ public:
    void BuildMenus();
    void SetLog(Int_t state);
    void Canvas2RootFile();
+	void SetHist(TH1 *hist) { fSelHist = hist; };
+	TH1 *GetHist() { return fSelHist; };
    ClassDef(HandleMenus,0)  
 }; 
  

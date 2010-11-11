@@ -44,7 +44,8 @@ public:
    FitHist      *GetFitHist() {return fFitHist;};
    void          SetHistPresent(HistPresent* hpr) {fHistPresent = hpr;};
    void          SetFitHist(FitHist* fh) {fFitHist = fh;};
-   void   BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr);
+   void          BuildHprMenus(HistPresent *hpr, FitHist *fh, TGraph *gr);
+	HandleMenus   *GetHandleMenus() { return fHandleMenus;};
    ClassDef(HTCanvas,5)  //Graphics canvas
 };
 

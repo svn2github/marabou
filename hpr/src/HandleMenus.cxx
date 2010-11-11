@@ -322,6 +322,8 @@ HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph *
 	//   MapWindow();
 //   UnMapWindow();
 };
+
+//______________________________________________________________________________
 HandleMenus::~HandleMenus(){};
 
 //______________________________________________________________________________
@@ -810,7 +812,19 @@ again:
 							fFitHist->OutputStat(1);
 							break;
 						case kFHHistToFile:
-                      fFitHist->WriteOutHist();
+							fHistInPad = Hpr::FindHistInPad(fHCanvas);
+							if ( fHistInPad )
+								if ( fHistInPad->GetEntries() < 1 ) {
+									TGraph *gr =  Hpr::FindGraphInPad(fHCanvas);
+									if ( gr ) {
+										new Save2FileDialog(gr, NULL, fRootCanvas);
+									}
+								} else {
+									new Save2FileDialog(fHistInPad, NULL, fRootCanvas);
+								}
+							else
+								cout << "No hist in pad" << endl;
+//                      fFitHist->WriteOutHist();
                      break;
                   case kFHGraphToFile:
                      WriteOutGraph(fGraph, fRootCanvas);
@@ -829,8 +843,13 @@ again:
                      Canvas2RootFile();
                      break;
                   case kFHHistToASCII:
-                     Hpr::WriteHistasASCII(fFitHist->GetSelHist(), fRootCanvas);
-                     break;
+							fHistInPad = Hpr::FindHistInPad(fHCanvas);
+							if ( fHistInPad )
+								Hpr::WriteHistasASCII(fHistInPad, fRootCanvas);
+//							Hpr::WriteHistasASCII(fFitHist->GetSelHist(), fRootCanvas);
+							else
+								cout << "No hist in pad" << endl;
+							break;
 
                   case kFHASCIIToHist:
                      fHistPresent->HistFromASCII(fRootCanvas);
@@ -889,16 +908,20 @@ again:
                      fFitHist->Fit2DimD(1);
                      break;
                    case kFHFitGausLBg:
-                     fFitHist->Fit1DimDialog(1);
+							 new FitOneDimDialog(fSelHist, 1);
+//                     fFitHist->Fit1DimDialog(1);
                      break;
                    case kFHFitExp:
-                     fFitHist->Fit1DimDialog(2);
+							 new FitOneDimDialog(fSelHist, 2);
+//							 fFitHist->Fit1DimDialog(2);
                      break;
                    case kFHFitPol:
-                     fFitHist->Fit1DimDialog(3);
+							 new FitOneDimDialog(fSelHist, 3);
+//							 fFitHist->Fit1DimDialog(3);
                      break;
                    case kFHFitForm:
-                     fFitHist->Fit1DimDialog(4);
+							 new FitOneDimDialog(fSelHist, 4);
+//							 fFitHist->Fit1DimDialog(4);
                      break;
                   case kFHFitUserG:
                      ExecFitMacroG(fGraph, fRootCanvas);   // global function !!
@@ -1107,7 +1130,10 @@ void HandleMenus::BuildMenus()
    if ( fFitHist ) {
 		fh_menus = kTRUE;
 		nDim = fFitHist->GetSelHist()->GetDimension();
-   }
+		fSelHist = fFitHist->GetSelHist();
+   } else {
+		fSelHist = NULL;
+	}
 
    TGPopupMenu * pm;
    const TList * l;
@@ -1229,7 +1255,8 @@ void HandleMenus::BuildMenus()
       }
    }
    fCascadeMenu1 = NULL;
-   fCutsMenu     = NULL;
+	fCascadeMenu2 = NULL;
+	fCutsMenu     = NULL;
    fViewMenu     = NULL;
    fDisplayMenu  = NULL;
    fFitMenu      = NULL;
@@ -1254,26 +1281,18 @@ void HandleMenus::BuildMenus()
       if ( graph1d )
          fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
    }
-	if ( !its_start_window )
-		fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
-   if(fHistPresent){
-      if (fFitHist) {
-         fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
-         fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
-//			fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
-      }
-	}
-//      fGraph = FindGraph(fHCanvas);
 	if ( its_start_window ) {
 		fFileMenu->AddEntry("Select ROOT file from any dir",  kFHSelAnyDir);
 		fFileMenu->AddEntry("dCache File-List",  kFHSeldCache);
 		fFileMenu->AddSeparator();
-
 		fFileMenu->AddEntry("ASCII data from file to Ntuple", kFHNtuple);
 		fFileMenu->AddEntry("ASCII data from file to histogram ",  kFHASCIIToHist);
 		fFileMenu->AddEntry("ASCII data from file to graph",  kFHGraph);
 		fFileMenu->AddEntry("Create empty histogram",  kFHEmptyHist);
 	} else {
+		fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
+		fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
+		fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
 		fFileMenu->AddSeparator();
 		fFileMenu->AddEntry("Picture to Printer",  kFHCanvas2LP);
 		fFileMenu->AddEntry("Picture to PS-File",  kFHPictToPS);
@@ -1459,62 +1478,63 @@ void HandleMenus::BuildMenus()
          }
    	}
    }
-   if(fh_menus && nDim < 3){
-      fCutsMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-      if(is2dim){
-         fCutsMenu->AddEntry("Init Cut",      kFHInitCut    );
-         fCutsMenu->AddEntry("Marks To Cut",   kFHMarksToCut);
-         fCutsMenu->AddEntry("Clear Active Cuts",kFHClearCut   );
-         fCutsMenu->AddEntry("Remove All Cuts",kFHRemoveAllCuts   );
-         fCutsMenu->AddEntry("List Cuts",     kFHListCuts    );
-         fCutsMenu->AddEntry("Draw Cuts",      kFHDrawCut    );
-         fCutsMenu->AddEntry("DrawCutName",  kFHDrawCutName    );
-         fCutsMenu->AddEntry("Add Cuts to Hist",   kFHCutsToHist   );
-         fCutsMenu->AddEntry("Remove Cuts from Hist",   kFHCutsFromHist   );
-         fCutsMenu->AddEntry("Write out Cuts", kFHWriteOutCut);
-      } else {
-         fCutsMenu->AddEntry("Marks to Window",   kFHMarksToWindow   );
-         fCutsMenu->AddEntry("List Windows",     kFHListWindows     );
-         fCutsMenu->AddEntry("Draw Windows",     kFHDrawWindows     );
-         fCutsMenu->AddEntry("Set Windows inactive",    kFHClearWindows    );
-         fCutsMenu->AddEntry("Add Windows to Hist",   kFHWindowsToHist   );
-         fCutsMenu->AddEntry("Remove Windows from Hist",   kFHWindowsFromHist);
-         fCutsMenu->AddEntry("Writeout Windows", kFHWriteOutWindows);
-      }
-      fCutsMenu->AddSeparator();
-      fCutsMenu->AddEntry("ClearMarks",   kFHClearMarks);
-      fCutsMenu->AddEntry("PrintMarks",   kFHPrintMarks);
-      fCutsMenu->AddEntry("Set2Marks",    kFHSet2Marks);
-      fCutsMenu->AddSeparator();
-      fCutsMenu->AddEntry("Clear (rectangular) Region",    kFHClearRegion);
-      if(hbrowser)hbrowser->DisplayMenu(fCutsMenu, "cuts.html");
-//      fCutsMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
-//      fCutsMenu->AddEntry("Help On Cuts/Windows",  kFH_Help_Cuts);
+	if ( ! its_start_window && nDim < 3) {
+		if(fh_menus && nDim < 3){
+			fCutsMenu     = new TGPopupMenu(fRootCanvas->GetParent());
+			if(is2dim){
+				fCutsMenu->AddEntry("Init Cut",      kFHInitCut    );
+				fCutsMenu->AddEntry("Marks To Cut",   kFHMarksToCut);
+				fCutsMenu->AddEntry("Clear Active Cuts",kFHClearCut   );
+				fCutsMenu->AddEntry("Remove All Cuts",kFHRemoveAllCuts   );
+				fCutsMenu->AddEntry("List Cuts",     kFHListCuts    );
+				fCutsMenu->AddEntry("Draw Cuts",      kFHDrawCut    );
+				fCutsMenu->AddEntry("DrawCutName",  kFHDrawCutName    );
+				fCutsMenu->AddEntry("Add Cuts to Hist",   kFHCutsToHist   );
+				fCutsMenu->AddEntry("Remove Cuts from Hist",   kFHCutsFromHist   );
+				fCutsMenu->AddEntry("Write out Cuts", kFHWriteOutCut);
+			} else {
+				fCutsMenu->AddEntry("Marks to Window",   kFHMarksToWindow   );
+				fCutsMenu->AddEntry("List Windows",     kFHListWindows     );
+				fCutsMenu->AddEntry("Draw Windows",     kFHDrawWindows     );
+				fCutsMenu->AddEntry("Set Windows inactive",    kFHClearWindows    );
+				fCutsMenu->AddEntry("Add Windows to Hist",   kFHWindowsToHist   );
+				fCutsMenu->AddEntry("Remove Windows from Hist",   kFHWindowsFromHist);
+				fCutsMenu->AddEntry("Writeout Windows", kFHWriteOutWindows);
+			}
+			fCutsMenu->AddSeparator();
+			fCutsMenu->AddEntry("ClearMarks",   kFHClearMarks);
+			fCutsMenu->AddEntry("PrintMarks",   kFHPrintMarks);
+			fCutsMenu->AddEntry("Set2Marks",    kFHSet2Marks);
+			fCutsMenu->AddSeparator();
+			fCutsMenu->AddEntry("Clear (rectangular) Region",    kFHClearRegion);
+			if(hbrowser)hbrowser->DisplayMenu(fCutsMenu, "cuts.html");
+	//      fCutsMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
+	//      fCutsMenu->AddEntry("Help On Cuts/Windows",  kFH_Help_Cuts);
 
-      fCascadeMenu1 = new TGPopupMenu(fRootCanvas->GetParent());
-      fCascadeMenu1->AddEntry("Pol 0", kFH_CASCADE1_0);
-      fCascadeMenu1->AddEntry("Pol 1", kFH_CASCADE1_1);
-      fCascadeMenu1->AddEntry("Pol 2", kFH_CASCADE1_2);
-      fCascadeMenu1->AddEntry("Pol 3", kFH_CASCADE1_3);
-      fCascadeMenu1->AddEntry("Pol 4", kFH_CASCADE1_4);
-      fCascadeMenu1->AddEntry("Pol 5", kFH_CASCADE1_5);
-      fCascadeMenu1->AddEntry("Pol 6", kFH_CASCADE1_6);
-      fCascadeMenu1->AddEntry("Pol 7", kFH_CASCADE1_7);
-      fCascadeMenu1->AddEntry("Pol 8", kFH_CASCADE1_8);
-      fCascadeMenu1->AddEntry("User Formula", kFH_CASCADE1_U);
+			fCascadeMenu1 = new TGPopupMenu(fRootCanvas->GetParent());
+			fCascadeMenu1->AddEntry("Pol 0", kFH_CASCADE1_0);
+			fCascadeMenu1->AddEntry("Pol 1", kFH_CASCADE1_1);
+			fCascadeMenu1->AddEntry("Pol 2", kFH_CASCADE1_2);
+			fCascadeMenu1->AddEntry("Pol 3", kFH_CASCADE1_3);
+			fCascadeMenu1->AddEntry("Pol 4", kFH_CASCADE1_4);
+			fCascadeMenu1->AddEntry("Pol 5", kFH_CASCADE1_5);
+			fCascadeMenu1->AddEntry("Pol 6", kFH_CASCADE1_6);
+			fCascadeMenu1->AddEntry("Pol 7", kFH_CASCADE1_7);
+			fCascadeMenu1->AddEntry("Pol 8", kFH_CASCADE1_8);
+			fCascadeMenu1->AddEntry("User Formula", kFH_CASCADE1_U);
 
-      fCascadeMenu2 = new TGPopupMenu(fRootCanvas->GetParent());
-      fCascadeMenu2->AddEntry("Pol 0", kFH_CASCADE2_0);
-      fCascadeMenu2->AddEntry("Pol 1", kFH_CASCADE2_1);
-      fCascadeMenu2->AddEntry("Pol 2", kFH_CASCADE2_2);
-      fCascadeMenu2->AddEntry("Pol 3", kFH_CASCADE2_3);
-      fCascadeMenu2->AddEntry("Pol 4", kFH_CASCADE2_4);
-      fCascadeMenu2->AddEntry("Pol 5", kFH_CASCADE2_5);
-      fCascadeMenu2->AddEntry("Pol 6", kFH_CASCADE2_6);
-      fCascadeMenu2->AddEntry("Pol 7", kFH_CASCADE2_7);
-      fCascadeMenu2->AddEntry("Pol 8", kFH_CASCADE2_8);
-      fCascadeMenu2->AddEntry("User Formula", kFH_CASCADE2_U);
-
+			fCascadeMenu2 = new TGPopupMenu(fRootCanvas->GetParent());
+			fCascadeMenu2->AddEntry("Pol 0", kFH_CASCADE2_0);
+			fCascadeMenu2->AddEntry("Pol 1", kFH_CASCADE2_1);
+			fCascadeMenu2->AddEntry("Pol 2", kFH_CASCADE2_2);
+			fCascadeMenu2->AddEntry("Pol 3", kFH_CASCADE2_3);
+			fCascadeMenu2->AddEntry("Pol 4", kFH_CASCADE2_4);
+			fCascadeMenu2->AddEntry("Pol 5", kFH_CASCADE2_5);
+			fCascadeMenu2->AddEntry("Pol 6", kFH_CASCADE2_6);
+			fCascadeMenu2->AddEntry("Pol 7", kFH_CASCADE2_7);
+			fCascadeMenu2->AddEntry("Pol 8", kFH_CASCADE2_8);
+			fCascadeMenu2->AddEntry("User Formula", kFH_CASCADE2_U);
+		}
       fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
       if(is2dim){
       	fFitMenu->AddEntry("Fit 2 dim Gaussian", kFHFit2DimGaus);
@@ -1525,36 +1545,33 @@ void HandleMenus::BuildMenus()
       	fFitMenu->AddEntry("Execute User FitSlices Y Macro", kFHFitSlicesYUser);
       	fFitMenu->AddSeparator();
       } else {
-         fFitMenu->AddEntry("Fit Gaussians (with tail)",   kFHFitGausLBg);
-         fFitMenu->AddEntry("Fit Exponential",     kFHFitExp);
-         fFitMenu->AddEntry("Fit Polynomial",      kFHFitPol);
-         fFitMenu->AddEntry("Fit User formula",    kFHFitForm);
+			if ( fFitHist )
+				fFitMenu->AddEntry("Gaussians (with tail)",   kFHFitGausLBg);
+         fFitMenu->AddEntry("Exponential",     kFHFitExp);
+         fFitMenu->AddEntry("Polynomial",      kFHFitPol);
+         fFitMenu->AddEntry("User formula",    kFHFitForm);
       }
-      fFitMenu->AddSeparator();
-      fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUser);
-      fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUser);
-      fFitMenu->AddSeparator();
+		if ( fFitHist ) {
+			fFitMenu->AddSeparator();
+			fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUser);
+			fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUser);
+			fFitMenu->AddSeparator();
 
-      fFitMenu->AddEntry("Add Functions to Hist", kFHFuncsToHist);
-      fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
-      fFitMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
-      fFitMenu->AddSeparator();
-
-
-//      if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "fitting.html");
-
-      if( nDim == 1 ){
-         fFitMenu->AddEntry("Calibration Dialog",            kFHCalibrate);
-         fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
-      }
-      fFitMenu->AddSeparator();
-      fFitMenu->AddEntry("Kolmogorov Test",         kFHKolmogorov);
- //     fFitMenu->AddSeparator();
- //     fFitMenu->AddEntry("Fast Fourier Transform",  kFHfft);
-
-      fCutsMenu->Associate((TGWindow*)this);
+			fFitMenu->AddEntry("Add Functions to Hist", kFHFuncsToHist);
+			fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
+			fFitMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
+			fFitMenu->AddSeparator();
+			if( nDim == 1 ){
+				fFitMenu->AddEntry("Calibration Dialog",            kFHCalibrate);
+				fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
+			}
+			fFitMenu->AddSeparator();
+			fFitMenu->AddEntry("Kolmogorov Test",         kFHKolmogorov);
+			fFitMenu->AddEntry("Fast Fourier Transform",         kFHfft);
+		}
 //      fCascadeMenu1->Associate((TGWindow*)this);
-      fCascadeMenu2->Associate((TGWindow*)this);
+      if ( fCascadeMenu2 )
+			fCascadeMenu2->Associate((TGWindow*)this);
 //      fCascadeMenu1->Associate(this);
    }
 
@@ -1568,45 +1585,7 @@ void HandleMenus::BuildMenus()
       fFitMenu->AddEntry("Fit User formula", kFHFormFitG);
       fFitMenu->AddSeparator();
    }
-/*
-   if(edit_menus){
-      fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-//   	fEditMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
-   	fEditMenu->AddEntry("Write this picture to root file",  kFH_WritePrim);
-      fEditMenu->AddSeparator();
 
-   	fEditMenu->AddEntry("Write macro objects to file",  kFH_WriteGObjects);
-   	fEditMenu->AddEntry("Read macro objects from file",  kFH_ReadGObjects);
-   	fEditMenu->AddEntry("Display list of macro objects",  kFH_ShowGallery);
-      fEditMenu->AddSeparator();
-   	fEditMenu->AddEntry("Mark selected objects as compound",  kFH_MarkGObjects);
-   	fEditMenu->AddEntry("Extract selected objects as compound",  kFH_ExtractGObjects);
-   	fEditMenu->AddEntry("Delete selected objects",  kFH_DeleteObjects);
-
-//   	fEditMenu->AddEntry("Clear Pad",              kEditClearPad);
-//   	fEditMenu->AddEntry("Clear Canvas",           kEditClearCanvas);
-//      fEditMenu->AddEntry("Refresh",                kOptionRefresh);
-
-      fEditMenu->AddSeparator();
-   	fEditMenu->AddEntry("Set Edit Grid",           kFH_SetGrid);
-   	fEditMenu->AddEntry("Use Edit Grid",           kFH_UseGrid);
-   	fEditMenu->AddEntry("Align objects at grid",     kFH_PutObjectsOnGrid);
-      if (fHCanvas->GetUseEditGrid()) fEditMenu->CheckEntry(kFH_UseGrid);
-      else                            fEditMenu->UnCheckEntry(kFH_UseGrid);
-//      fEditMenu->AddEntry("Edit User Fit Macro",     kFHEditUser);
-   	fEditMenu->AddEntry("Draw visible grid",        kFH_DrawGridVis);
-   	fEditMenu->AddEntry("Draw real grid",           kFH_DrawGrid  );
-   	fEditMenu->AddEntry("Remove Edit Grid",         kFH_RemoveGrid);
-   	fEditMenu->AddEntry("Remove Control Graphs",    kFH_RemoveCGraph);
-   	fEditMenu->AddEntry("Draw Control Graphs",      kFH_DrawCGraph);
-   	fEditMenu->AddEntry("Make EnclosingCut visible", kFH_SetVisEnclosingCut);
-      fEditMenu->CheckEntry(kFH_SetVisEnclosingCut);
-      fEditMenu->AddSeparator();
-      fEditMenu->AddSeparator();
-      fEditMenu->Associate((TGWindow*)this);
-   }
-*/
-   if (fFitMenu)   fFitMenu->Associate((TGWindow*)this);
    if (fDisplayMenu) fDisplayMenu->Associate((TGWindow*)this);
    if (fViewMenu) fViewMenu->Associate((TGWindow*)this);
 // this main frame will process the menu commands
@@ -1621,15 +1600,19 @@ void HandleMenus::BuildMenus()
 
    if (fHistPresent) 
       fRootsMenuBar->AddPopup("&Hpr-Options", fOptionMenu,  fMenuBarItemLayout, pmi);
-	if ( fHistPresent || graph1d ) 
+//	if ( fHistPresent || graph1d ) 
       fRootsMenuBar->AddPopup("Graphic_defaults", fAttrMenu,  fMenuBarItemLayout, pmi);
    
    if (fViewMenu) fRootsMenuBar->AddPopup("&View", fViewMenu,  fMenuBarItemLayout, pmi);
    if (fDisplayMenu) fRootsMenuBar->AddPopup("&Display", fDisplayMenu,  fMenuBarItemLayout, pmi);
-   if(fh_menus && nDim < 3){
+	if( fCutsMenu ){
       fRootsMenuBar->AddPopup("Cuts/Windows",    fCutsMenu,  fMenuBarItemLayout, pmi);
-      fRootsMenuBar->AddPopup("Fit/Calib", fFitMenu,   fMenuBarItemLayout, pmi);
-   }
+		fCutsMenu->Associate((TGWindow*)this);
+	}
+	if ( fFitMenu ) {
+		fRootsMenuBar->AddPopup("Draw/Fit/Calib", fFitMenu,   fMenuBarItemLayout, pmi);
+		fFitMenu->Associate((TGWindow*)this);
+	}
 //   if(edit_menus){
 //         fRootsMenuBar->AddPopup("Hpr-Edit",            fEditMenu,  fMenuBarItemLayout, pmi);
 //   }
@@ -1646,13 +1629,6 @@ void HandleMenus::BuildMenus()
       fMenuBarHelpLayout = new TGLayoutHints(kLHintsTop | kLHintsRight);
       fRootsMenuBar->AddPopup("&Help on HistPresent",    fHelpMenu,    fMenuBarHelpLayout);
    }
-//   fRootCanvas->MapSubwindows();
-//   fRootCanvas->Resize(fRootCanvas->GetDefaultSize());
-//   fRootCanvas->MapWindow();
-//   fRootCanvas->ShowToolBar(kFALSE);
-#if ROOTVERSION > 50500
-//   fRootCanvas->HideFrame((TGFrame*)(fRootCanvas->GetToolDock()));
-#endif
    fRootCanvas->ForceUpdate();
 	gSystem->ProcessEvents();
    return;

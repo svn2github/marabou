@@ -3281,6 +3281,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       c = (HTCanvas*)gDirectory->Get(sname);
 		if ( gROOT->GetListOfCanvases()->FindObject(c->GetName()) != NULL ) {
 			cout << "sname exists already, please close" << endl;
+			gDirectory = gROOT;
 			return;
 		}
    } else {

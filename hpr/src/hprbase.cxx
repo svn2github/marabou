@@ -183,5 +183,31 @@ TH1 * FindHistOfTF1(TVirtualPad * ca, const char * fname, Int_t push_pop)
    }
    return NULL;
 };
+//_______________________________________________________________________________________
+
+TH1 * FindHistInPad(TVirtualPad * ca)
+{
+	if (!ca) return NULL;
+	TIter next(ca->GetListOfPrimitives());
+	while (TObject * obj = next()) {
+		if (obj->InheritsFrom("TH1")) {
+			return (TH1*)obj;
+		}
+	}
+	return NULL;
+};
+//_______________________________________________________________________________________
+
+TGraph * FindGraphInPad(TVirtualPad * ca)
+{
+	if (!ca) return NULL;
+	TIter next(ca->GetListOfPrimitives());
+	while (TObject * obj = next()) {
+		if (obj->InheritsFrom("TGraph")) {
+			return (TGraph*)obj;
+		}
+	}
+	return NULL;
+};
 
 }   // end namespace Hpr

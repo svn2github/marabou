@@ -12,10 +12,11 @@
 
 namespace std {} using namespace std;
 
+class HTCanvas;
 class EmptyHistDialog : public TObject {
 
 private:
-   TCanvas *fCanvas;
+   HTCanvas *fCanvas;
 //   FitOneDimDialog * fDialog;
  //  Save2FileDialog * fSave2FileDialog;
    TH1D    *fHist;
@@ -47,8 +48,8 @@ public:
    ~EmptyHistDialog();
    void RecursiveRemove(TObject*);
    void Draw_The_Hist();
-   void BuildMenu();
-   void HandleMenu(Int_t id);
+//   void BuildMenu();
+//   void HandleMenu(Int_t id);
    void SaveDefaults();
    void RestoreDefaults();
    void CloseDown(Int_t wid);
