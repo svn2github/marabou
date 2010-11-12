@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.97 2010-11-12 09:15:05 Marabou Exp $
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.98 2010-11-12 15:12:51 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -345,6 +345,8 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 				paramFile = lastIOSpec->GetParamFile();
 				if (lastpMode == TMrbIOSpec::kParamReload)	paramMode = TMrbIOSpec::kParamLoaded;
 				else										paramMode = lastpMode;
+			} else if (paramFile.Index(":", 0) > 0) {
+				paramMode = TMrbIOSpec::kParamReloadMultiple;
 			} else if (paramFile.Index(".root", 0) > 0) {
 				paramMode = TMrbIOSpec::kParamReload;
 			} else if (paramFile.Index(".par", 0) > 0) {
