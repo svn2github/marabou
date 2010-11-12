@@ -7,7 +7,7 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.55 2010-10-01 10:01:53 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbAnalyze.h,v 1.56 2010-11-12 09:15:05 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -137,6 +137,7 @@ class TMrbAnalyze : public TObject {
 		Bool_t ReloadParams(TMrbIOSpec * IOSpec);
 		Bool_t ReloadVarsAndWdws(const Char_t * ParamFile); 		// reload vars and wdws
 		Bool_t ReloadVarsAndWdws(TMrbIOSpec * IOSpec);
+		Bool_t ReloadMultipleFiles(TString & ParamFileString);
 
 		Bool_t FinishRun(TMrbIOSpec * IOSpec, Bool_t BeforeSH = kTRUE);	// do some work at end of run
 

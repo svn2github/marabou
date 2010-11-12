@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.96 2010-10-01 10:01:53 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.97 2010-11-12 09:15:05 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -747,7 +747,9 @@ Bool_t TMrbAnalyze::ReloadParams(const Char_t * ParamFile) {
 	Bool_t sts;
 
 	pFile = ParamFile;
-	if (pFile.Index(".root", 0) > 0) {
+	if (pFile.Index(":", 0) > 0) {
+		pMode = TMrbIOSpec::kParamReloadMultiple;
+	} else if (pFile.Index(".root", 0) > 0) {
 		pMode = TMrbIOSpec::kParamReload;
 	} else if (pFile.Index(".par", 0) > 0) {
 		pMode = TMrbIOSpec::kParamReloadAscii;
@@ -778,13 +780,12 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(const Char_t * VarWdwFile) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString vwFile;
 	TMrbIOSpec::EMrbParamMode pMode;
-	TMrbIOSpec * ioSpec;
-	Bool_t sts;
 
-	vwFile = VarWdwFile;
-	if (vwFile.Index(".root", 0) > 0) {
+	TString vwFile = VarWdwFile;
+	if (vwFile.Index(":", 0) > 0) {
+		pMode = TMrbIOSpec::kParamReloadMultiple;
+	} else if (vwFile.Index(".root", 0) > 0) {
 		pMode = TMrbIOSpec::kParamReload;
 	} else if (vwFile.Index(".par", 0) > 0) {
 		pMode = TMrbIOSpec::kParamReloadAscii;
@@ -795,9 +796,9 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(const Char_t * VarWdwFile) {
 		return(kFALSE);
 	}
 
-	ioSpec = new TMrbIOSpec();
+	TMrbIOSpec * ioSpec = new TMrbIOSpec();
 	ioSpec->SetParamFile(vwFile.Data(), pMode);
-	sts = this->ReloadVarsAndWdws(ioSpec);
+	Bool_t sts = this->ReloadVarsAndWdws(ioSpec);
 	delete ioSpec;
 	return(sts);
 }
@@ -815,8 +816,6 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbIOSpec::EMrbParamMode pMode;
-	TString pfName;
 	TFile * parFile;
 	TObject * vobj;
 	TObject * fobj;
@@ -828,10 +827,16 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 		return(kFALSE);
 	}
 
-	pMode = IOSpec->GetParamMode();
+	TMrbIOSpec::EMrbParamMode pMode = IOSpec->GetParamMode();
 	if ((pMode & TMrbIOSpec::kParamReload) == 0) return(kFALSE);
-	pfName = IOSpec->GetParamFile();
-	if (pMode == TMrbIOSpec::kParamReloadAscii) return(gMrbLofUserVars->ReadFromFile(pfName.Data()));
+
+	TString pfName = IOSpec->GetParamFile();
+
+	if (pMode == TMrbIOSpec::kParamReloadAscii) {
+		return(gMrbLofUserVars->ReadFromFile(pfName.Data()));
+	} else if (pMode == TMrbIOSpec::kParamReloadMultiple) {
+		return(this->ReloadMultipleFiles(pfName));
+	}
 
 	gDirSave = gDirectory;						// save dir
 
@@ -930,6 +935,38 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 
 	gDirectory = gDirSave;
 
+	return(kTRUE);
+}
+
+Bool_t TMrbAnalyze::ReloadMultipleFiles(TString & ParamFileString) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::ReloadMultipleFiles
+// Purpose:        Reload parameters (var & wdw settings) from several files
+// Arguments:      TString & ParamFileString  -- string containing ;-separated file names
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Decodes the parfile string and calls 'reload params' for each file.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString pf;
+	Int_t from = 0;
+	while (ParamFileString.Tokenize(pf, from, ":")) {
+		if (pf.Index(".root", 0) > 0) {
+			TMrbIOSpec * ioSpec = new TMrbIOSpec();
+			ioSpec->SetParamFile(pf.Data(), TMrbIOSpec::kParamReload);
+			this->ReloadVarsAndWdws(ioSpec);
+			delete ioSpec;
+		} else if (pf.Index(".par", 0) > 0) {
+			gMrbLofUserVars->ReadFromFile(pf.Data());
+		} else {
+			gMrbLog->Err()	<< "Illegal extension - " << pf
+							<< " (should be .root (standard ROOT) or .par (ASCII))" << endl;
+			gMrbLog->Flush(this->ClassName(), "ReloadMultipleFiles");
+			continue;
+		}
+	}
 	return(kTRUE);
 }
 

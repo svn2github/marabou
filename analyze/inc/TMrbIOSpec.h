@@ -7,10 +7,10 @@
 // Purpose:        Class to specify the i/o in an experiment
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbIOSpec.h,v 1.2 2006-11-02 12:09:30 Rudolf.Lutter Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: TMrbIOSpec.h,v 1.3 2010-11-12 09:15:05 Marabou Exp $
+// Date:
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -25,44 +25,45 @@ namespace std {} using namespace std;
 // Name:           TMrbIOSpec
 // Purpose:        Specify i/o data
 // Description:    Describes how to process input data.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class TMrbIOSpec : public TObject {
 
 	public:
 		enum EMrbInputMode		{	kInputNone			=	0,
-											kInputMBS			=	0x1,
-											kInputFile			=	0x2,
-											kInputTCP			=	kInputMBS | 0x4,
-											kInputRoot			=	kInputFile | 0x8,
-											kInputLMD			=	kInputMBS | kInputFile | 0x10,
-											kInputMED			=	kInputMBS | kInputFile | 0x20,
-											kInputList			=	kInputRoot | 0x40,
-											kInputSync			=	kInputTCP | 0x80,
-											kInputAsync 		=	kInputTCP | 0x100
-										};
+									kInputMBS			=	0x1,
+									kInputFile			=	0x2,
+									kInputTCP			=	kInputMBS | 0x4,
+									kInputRoot			=	kInputFile | 0x8,
+									kInputLMD			=	kInputMBS | kInputFile | 0x10,
+									kInputMED			=	kInputMBS | kInputFile | 0x20,
+									kInputList			=	kInputRoot | 0x40,
+									kInputSync			=	kInputTCP | 0x80,
+									kInputAsync 		=	kInputTCP | 0x100
+								};
 
 		enum EMrbOutputMode 	{	kOutputNone 				=	0,
-											kOutputMBS					=	0x1,
-											kOutputOpen 				=	0x2,
-											kOutputWriteRootTree		=	0x4,
-											kOutputClose				=	0x8,
-											kOutputWriteLMDFormat	=	kOutputMBS | 0x10,
-											kOutputWriteMEDFormat	=	kOutputMBS | 0x20
-										};
+									kOutputMBS					=	0x1,
+									kOutputOpen 				=	0x2,
+									kOutputWriteRootTree		=	0x4,
+									kOutputClose				=	0x8,
+									kOutputWriteLMDFormat	=	kOutputMBS | 0x10,
+									kOutputWriteMEDFormat	=	kOutputMBS | 0x20
+								};
 
 		enum EMrbHistoMode	 	{	kHistoNone			=	0,
-											kHistoAdd			=	0x1,
-											kHistoSave			=	0x2,
-											kHistoClear			=	0x4,
-										};
+									kHistoAdd			=	0x1,
+									kHistoSave			=	0x2,
+									kHistoClear			=	0x4,
+								};
 
-		enum EMrbParamMode		{	kParamNone			=	0,
-											kParamReload		=	0x1,
-											kParamReloadAscii	=	kParamReload | 0x2,
-											kParamLoaded		=	0x4
-										};
+		enum EMrbParamMode		{	kParamNone				=	0,
+									kParamReload			=	0x1,
+									kParamReloadAscii		=	kParamReload | 0x2,
+									kParamReloadMultiple	=	kParamReload | 0x4,
+									kParamLoaded			=	0x8
+								};
 
 	public:
 		TMrbIOSpec() {								// default ctor

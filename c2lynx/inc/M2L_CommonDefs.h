@@ -95,7 +95,7 @@
 	enum			{	kSis3302EventTrailer 		= 2 };
 
 #ifdef	CPU_TYPE_RIO2
-	enum			{	kSis3302SegSize		 		= 0x1000000 };
+	enum			{	kSis3302SegSize		 		= 0x4000000 };
 #endif
 #ifdef	CPU_TYPE_RIO3
 	enum			{	kSis3302SegSize		 		= 0x8000000 };
