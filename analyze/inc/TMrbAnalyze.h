@@ -7,7 +7,7 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.56 2010-11-12 09:15:05 Marabou Exp $
+// Revision:       $Id: TMrbAnalyze.h,v 1.57 2010-11-15 13:46:06 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -83,6 +83,7 @@ class TMrbAnalyze : public TObject {
 		Bool_t Initialize(TMrbIOSpec * IOSpec);					// init objects here
 		Bool_t InitializeUserCode(TMrbIOSpec * IOSpec, Bool_t BeforeHB = kFALSE);	// user may init additional objects here
 		Bool_t AdjustWindowPointers();							// adjust wdw pointers after reload
+		Bool_t AdjustFunctionPointers();						// adjust fct pointers after reload
 
 		Bool_t HandleMessage(const Char_t * ArgList); 			// handle messages to M_analyze
 

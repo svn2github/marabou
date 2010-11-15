@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.94 2009-10-07 08:49:31 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.h,v 1.95 2010-11-15 13:46:06 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -215,6 +215,9 @@ class TMrbConfig : public TNamed {
 									kAnaWdwDefinePointers,
 									kAnaWdwClassInstance,
 									kAnaWdwAdjustPointers,
+									kAnaFctClassInstance,
+									kAnaFctDefinePointers,
+									kAnaFctAdjustPointers,
 									kAnaUserInitializeBeforeHB,
 									kAnaUserInitializeAfterHB,
 									kAnaUserReloadParams,
@@ -260,6 +263,7 @@ class TMrbConfig : public TNamed {
 									kCfgWriteDeadTime,
 									kCfgDefineVariables,
 									kCfgDefineWindows,
+									kCfgDefineFunctions,
 									kCfgDefineScalers,
 									kCfgMakeCode
 								};
@@ -697,6 +701,8 @@ class TMrbConfig : public TNamed {
 		Bool_t DefineWindows(const Char_t * WdwType, Int_t Xlower, Int_t Xupper, const Char_t * WdwDefs);
 		Bool_t DefineWindows(const Char_t * WdwType, Double_t Xlower, Double_t Xupper, const Char_t * WdwDefs);
 		Bool_t DefineWindows(const Char_t * WdwType, Int_t Npoints, Double_t * X, Double_t * Y, const Char_t * WdwDefs);
+
+		Bool_t DefineFunctions(const Char_t * FctType, const Char_t * FctDefs);			// define functions
 
 		inline Bool_t LongParamNamesToBeUsed() const { return(fLongParamNames); };	// long names to guarantee uniqueness?
 		inline void UseLongParamNames(Bool_t Flag = kTRUE) { fLongParamNames = Flag; };

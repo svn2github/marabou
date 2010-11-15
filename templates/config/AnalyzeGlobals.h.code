@@ -10,9 +10,9 @@
 //                 such as pointers to events, histograms, windows etc.
 //
 // Author:         %%AUTHOR%%
-// Revision:         
+// Revision:
 // Date:           %%CREATION_DATE%%
-// URL:            
+// URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -58,6 +58,18 @@ GLOBAL($className,$varName,$varName("$varName", $varSize, $varInit));
 %2D%GLOBAL($className *,$varName,$varName = NULL);
 %%EndOfCode%%
 %%WDW_DEFINE_POINTERS%%
+
+//_______________________________________________________________[GLOBAL DEFS]
+//////////////////////////////////////////////////////////////////////////////
+// Purpose:        Define global instances of user's functions
+// Comment:        TF1 and TF2 objects are defined by pointers to the heap.
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+%1D%GLOBAL($className *,$fctName,$fctName = NULL);
+%2D%GLOBAL($className *,$fctName,$fctName = NULL);
+%%EndOfCode%%
+%%FCT_DEFINE_POINTERS%%
 
 //_______________________________________________________________[GLOBAL DEFS]
 //////////////////////////////////////////////////////////////////////////////

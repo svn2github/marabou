@@ -162,6 +162,15 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%EndOfCode%%
 %%WDW_CLASS_INSTANCE%%
 
+%%BeginOfCode%%
+// instantiate functions
+%1D%	if ($fctName == NULL) $fctName = new $className("$fctName", "[0]*x");
+%1D%	gMrbLofUserVars->SetInitialFctType($fctName, kFunction1D);
+%2D%	if ($fctName == NULL) $fctName = new $className("$fctName", "[0]*x + [1]*y");
+%2D%	gMrbLofUserVars->SetInitialFctType($fctName, kFunction2D);
+%%EndOfCode%%
+%%FCT_CLASS_INSTANCE%%
+
 %%INITIALIZE_EVT_SEVT_MODS%%
 
 %%BeginOfCode%%
@@ -231,6 +240,7 @@ Bool_t TMrbAnalyze::ReloadParams(TMrbIOSpec * IOSpec) {
 
 	Bool_t sts = this->ReloadVarsAndWdws(IOSpec);
 	this->AdjustWindowPointers();
+	this->AdjustFunctionPointers();
 	return(sts);
 };
 %%EndOfCode%%
@@ -280,6 +290,34 @@ Bool_t TMrbAnalyze::AdjustWindowPointers() {
 %2D%	}
 %%EndOfCode%%
 %%WDW_ADJUST_POINTERS%%
+	return(kTRUE);
+};
+
+Bool_t TMrbAnalyze::AdjustFunctionPointers() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::AdjustFunctionPointers
+// Purpose:        Adjust pointers to functions after reload
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    Update pointers to functions (TF1 and TF2).
+// Exceptions:
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+%1D%	$fctName = ($className *) gMrbLofUserVars->Find("$fctName");
+%1D%	if ($fctName == NULL) {
+%1D%		gMrbLog->Err()	<< "Not in list of functions - $fctName" << endl;
+%1D%		gMrbLog->Flush(this->ClassName(), "AdjustFunctionPointers");
+%1D%	}
+%2D%	$fctName = ($className *) gMrbLofUserVars->Find("$fctName");
+%2D%	if ($fctName == NULL) {
+%2D%		gMrbLog->Err()	<< "Not in list of functions - $fctName" << endl;
+%2D%		gMrbLog->Flush(this->ClassName(), "AdjustFunctionPointers");
+%2D%	}
+%%EndOfCode%%
+%%FCT_ADJUST_POINTERS%%
 	return(kTRUE);
 };
 

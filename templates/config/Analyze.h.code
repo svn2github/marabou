@@ -28,6 +28,8 @@
 #include "TMrbNamedArray.h"
 #include "TMrbVar.h"
 #include "TMrbWdw.h"
+#include "TF1.h"
+#include "TF2.h"
 
 #include "TMrbAnalyze.h"
 #include "TMrbTransport.h"

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.182 2010-10-04 06:56:34 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.183 2010-11-15 13:46:06 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -23,6 +23,9 @@
 #include "TKey.h"
 #include "TFile.h"
 #include "TEnv.h"
+
+#include "TF1.h"
+#include "TF2.h"
 
 #include "TMrbSystem.h"
 #include "TMrbNamedX.h"
@@ -311,6 +314,9 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaWdwDefinePointers, 		"WDW_DEFINE_POINTERS"			},
 								{TMrbConfig::kAnaWdwClassInstance,			"WDW_CLASS_INSTANCE"			},
 								{TMrbConfig::kAnaWdwAdjustPointers, 		"WDW_ADJUST_POINTERS"			},
+								{TMrbConfig::kAnaFctClassInstance,			"FCT_CLASS_INSTANCE"			},
+								{TMrbConfig::kAnaFctDefinePointers, 		"FCT_DEFINE_POINTERS"			},
+								{TMrbConfig::kAnaFctAdjustPointers, 		"FCT_ADJUST_POINTERS"			},
 								{TMrbConfig::kAnaUserInitializeBeforeHB,	"INCLUDE_USER_INITIALIZE_BEFORE_HB"	},
 								{TMrbConfig::kAnaUserInitializeAfterHB, 	"INCLUDE_USER_INITIALIZE_AFTER_HB"	},
 								{TMrbConfig::kAnaUserBookParams,			"INCLUDE_USER_BOOK_PARAMS"		},
@@ -359,6 +365,7 @@ const SMrbNamedXShort kMrbLofConfigTags[] =
 								{TMrbConfig::kCfgWriteTimeStamp,			"WRITE_TIME_STAMP"				},
 								{TMrbConfig::kCfgDefineVariables,			"DEFINE_VARIABLES"				},
 								{TMrbConfig::kCfgDefineWindows, 			"DEFINE_WINDOWS"				},
+								{TMrbConfig::kCfgDefineFunctions, 			"DEFINE_FUNCTIONS"				},
 								{TMrbConfig::kCfgDefineScalers, 			"DEFINE_SCALERS"				},
 								{TMrbConfig::kCfgMakeCode,					"MAKE_CODE" 					},
 								{0, 										NULL							}
@@ -553,6 +560,13 @@ const SMrbNamedXShort kMrbWindowTypes[] =
 								{kWindowF,					"FLOAT" 						},
 								{kWindow2D,					"CUT" 							},
 								{0, 						NULL							}
+							};
+
+const SMrbNamedXShort kMrbFunctionTypes[] =
+							{
+								{kFunction1D,				"TF1"						},
+								{kFunction2D,				"TF2" 						},
+								{0, 						NULL						}
 							};
 
 //__________________________________________________________________________________________________________________________________________
@@ -2738,6 +2752,11 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaWdwAdjustPointers:
 						if (gMrbLofUserVars != NULL) this->MakeAnalyzeCode(anaStrm, tagIdx, kIsWindow, anaTmpl);
 						break;
+					case TMrbConfig::kAnaFctDefinePointers:
+					case TMrbConfig::kAnaFctClassInstance:
+					case TMrbConfig::kAnaFctAdjustPointers:
+						if (gMrbLofUserVars != NULL) this->MakeAnalyzeCode(anaStrm, tagIdx, kIsFunction, anaTmpl);
+						break;
 					case TMrbConfig::kAnaFindVars:
 						if (gMrbLofUserVars != NULL) this->MakeAnalyzeCode(anaStrm, tagIdx, kVarOrWindow, anaTmpl);
 						break;
@@ -3787,7 +3806,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 // Purpose:        Generate user-defined code for variables/windows
 // Arguments:      ofstream & AnaStrm            -- where to output code
 //                 EMrbAnalyzeTag TagIndex       -- tag word index
-//                 UInt_t VarType                -- variable type
+//                 UInt_t VarType                -- variable/window/function type
 //                 TMrbTemplate * Template       -- template
 //                 Char_t * Prefix               -- prefix to select template code
 // Results:        kTRUE/kFALSE
@@ -3796,25 +3815,30 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObject * obj;
 	TMrbVariable * varp;
 	TMrbWindow * wdwp;
+	TFormula * fctp;
 	UInt_t id, type;
 
 	TString varName;
+	TString fctName;
 	TString className;
 
 	if (gMrbLofUserVars == NULL) return(kFALSE);
 
 	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
-	obj = gMrbLofUserVars->First();
-	while (obj) {
+
+	TIterator * iter = gMrbLofUserVars->GetArray()->MakeIterator();
+	TObject * obj;
+	while (obj = iter->Next()) {
 		id = obj->GetUniqueID();
 		if (id & VarType) {
 			type = id & kIsWindow;
 			if ( (type = (id & kIsWindow)) ) {
 				Template.InitializeCode((type == kWindow2D) ? "%2D%" : "%1D%");
+			} else if ( (type = (id & kIsFunction)) ) {
+				Template.InitializeCode((type == kFunction2D) ? "%2D%" : "%1D%");
 			} else {
 				Template.InitializeCode();
 			}
@@ -3867,6 +3891,11 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 					case kWindow2D:
 						break;
 				}
+			} else if ( (type = (id & kIsFunction)) ) {
+				fctp = (TFormula *) obj;
+				fctName = fctp->GetName();
+				fctName(0,1).ToLower();
+				Template.Substitute("$fctName", fctName);
 			}
 
 			switch (TagIndex) {
@@ -3882,6 +3911,11 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 				case TMrbConfig::kAnaWdwClassInstance:
 					if (id & kIsWindow) Template.WriteCode(AnaStrm);
 					break;
+				case TMrbConfig::kAnaFctDefinePointers:
+				case TMrbConfig::kAnaFctAdjustPointers:
+				case TMrbConfig::kAnaFctClassInstance:
+					if (id & kIsFunction) Template.WriteCode(AnaStrm);
+					break;
 				case TMrbConfig::kAnaWdwAdjustPointers:
 					if (id == kWindow2D) Template.WriteCode(AnaStrm);
 					break;
@@ -3890,7 +3924,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 					break;
 			}
 		}
-		obj = gMrbLofUserVars->After(obj);
 	}
 	return(kTRUE);
 }
@@ -4230,6 +4263,7 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 							var = (TMrbVariable *) gMrbLofUserVars->First(kIsVariable);
 							lvar = var;
 							lofVars = "";
+							vType = "";
 							while (var) {
 								if (lofVars.Length() > 65 || var->GetType() != lvar->GetType()) {
 									lofVars = lofVars.Strip(TString::kBoth);
@@ -4277,6 +4311,7 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 							wdw = (TMrbWindow *) gMrbLofUserVars->First(kIsWindow);
 							lwdw = wdw;
 							lofWdws = "";
+							wType = "";
 							while (wdw) {
 								if (lofWdws.Length() > 65 || wdw->GetType() != lwdw->GetType()) {
 									lofWdws = lofWdws.Strip(TString:: kBoth);
@@ -4308,6 +4343,45 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 								cfgTmpl.Substitute("$cfgNameLC", this->GetName());
 								cfgTmpl.Substitute("$lofWdws", lofWdws);
 								cfgTmpl.Substitute("$wdwType", wType);
+								cfgTmpl.WriteCode(cfgStrm);
+							}
+						}
+						break;
+					case TMrbConfig::kCfgDefineFunctions:
+						if (gMrbLofUserVars != NULL) {
+							TFormula * fct = (TFormula *) gMrbLofUserVars->First(kIsFunction);
+							TFormula * lfct = fct;
+							TString lofFcts = "";
+							TString fType = "";
+							while (fct) {
+								if (lfct != NULL && (lofFcts.Length() > 65 || fct->GetNdim() != lfct->GetNdim())) {
+									lofFcts = lofFcts.Strip(TString:: kBoth);
+									if (lofFcts.Length() > 0) {
+										cfgTmpl.InitializeCode();
+										cfgTmpl.Substitute("$cfgNameLC", this->GetName());
+										cfgTmpl.Substitute("$lofFcts", lofFcts);
+										cfgTmpl.Substitute("$fctType", fType.Data());
+										cfgTmpl.WriteCode(cfgStrm);
+									}
+									lofFcts = "";
+									lfct = fct;
+								}
+								if (fct->GetNdim() == lfct->GetNdim()) {
+									switch (lfct->GetNdim()) {
+										case 1:	fType = "TF1"; break;
+										case 2:	fType = "TF2"; break;
+									}
+									lofFcts += fct->GetName();
+									lofFcts += " ";
+									lfct = fct;
+								}
+							}
+							lofFcts = lofFcts.Strip(TString::kBoth);
+							if (lofFcts.Length() > 0) {
+								cfgTmpl.InitializeCode();
+								cfgTmpl.Substitute("$cfgNameLC", this->GetName());
+								cfgTmpl.Substitute("$lofFcts", lofFcts);
+								cfgTmpl.Substitute("$fctType", fType);
 								cfgTmpl.WriteCode(cfgStrm);
 							}
 						}
@@ -6511,8 +6585,6 @@ Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, cons
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Real var/wdw definitions take place here.
-//                 Instantiate = kTRUE for variables as they will be allocated directly.
-//                 It may be kFALSE for windows, esp. for 2-dim ones.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -6593,6 +6665,56 @@ Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, cons
 	}
 	return(kTRUE);
 }
+
+Bool_t TMrbConfig::DefineFunctions(const Char_t * FctType, const Char_t * FctDefs) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::DefineFunctions
+// Purpose:        Defines a set of functions (1- or 2-dim)
+// Arguments:      Char_t * FctType     -- type: TF1 or TF2
+//                 Char_t * FctDefs     -- definition string
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Defines a set of functions (1- or 2-dim).
+//                 FctDefs may be a single function name or a set of names,
+//                 separated by blanks.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbLofNamedX fctTypes;
+	TMrbNamedX * fType;
+
+	fctTypes.AddNamedX(kMrbFunctionTypes);
+	fctTypes.SetPatternMode();
+	fType = fctTypes.FindByName(FctType, TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase);
+	if (fType == NULL) {
+		gMrbLog->Err() << "Illegal function type - " << FctType << endl;
+		gMrbLog->Flush(this->ClassName(), "DefineFunctions");
+		return(kFALSE);
+	}
+
+	istringstream fline(FctDefs);
+	TString fctName;
+	Int_t n1, n2;
+
+	for (;;) {
+		fline >> fctName;
+		if (fctName.Length() <= 0) break;
+		n1 = fctName.Index("[");
+		n2 = fctName.Index("]");
+		if (n1 >= 0 || n2 >= 0) {
+				gMrbLog->Err() << "Functions may NOT be indexed - " << fctName << endl;
+				gMrbLog->Flush(this->ClassName(), "DefineFunctions");
+				continue;
+		}
+		switch (fType->GetIndex()) {
+			case kFunction1D: gMrbLofUserVars->SetInitialFctType(new TF1(fctName.Data(), "[0]*x"), kFunction1D); break;
+			case kFunction2D: gMrbLofUserVars->SetInitialFctType(new TF2(fctName.Data(), "[0]*x + [1]*y"), kFunction2D); break;
+		}
+	}
+	return(kTRUE);
+}
+
 
 Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 																Int_t Xbin, Double_t Xlow, Double_t Xup,

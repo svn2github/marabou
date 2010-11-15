@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofUserVars.cxx,v 1.9 2004-11-16 13:30:27 rudi Exp $       
-// Date:           
+// Revision:       $Id: TMrbLofUserVars.cxx,v 1.10 2010-11-15 13:46:06 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -20,6 +20,9 @@ namespace std {} using namespace std;
 
 #include "TROOT.h"
 #include "TRegexp.h"
+#include "TFormula.h"
+#include "TF1.h"
+#include "TF2.h"
 #include "TMrbLofUserVars.h"
 #include "TMrbLogger.h"
 #include "TMrbString.h"
@@ -37,11 +40,11 @@ TMrbLofUserVars::TMrbLofUserVars(const Char_t * Name) {
 // Name:           TMrbLofUserVars
 // Purpose:        Establish a list of user-defined variables/windows
 // Arguments:      Char_t * Name           -- name of list
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Instantiates a list to hold variables/windows defined
 //                 by the user.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	SetName(Name);
@@ -51,48 +54,35 @@ TMrbLofUserVars::TMrbLofUserVars(const Char_t * Name) {
 	if (gROOT != NULL) gROOT->Append(this); 	// must be gROOT not gDirectory !!!
 };
 
-Bool_t TMrbLofUserVars::Append(TObject * varObj) {
+Bool_t TMrbLofUserVars::Append(TObject * VarObj) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofUserVars::Append
 // Purpose:        Add a variable or window to the list
-// Arguments:      TObject * varObj         -- address of var/wdw object
+// Arguments:      TObject * VarObj         -- address of var/wdw/fct object
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Adds a now var/wdw object to the list.
+// Description:    Adds a now var/wdw/fct object to the list.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	UInt_t id;
-	TMrbVariable * varp;
-	TMrbWindow * wdwp;
-	TMrbWindow2D * w2dp;
-
 	TString varName;
 
-	id = varObj->GetUniqueID();
-
-	varp = NULL;
-	wdwp = NULL;
-
-	if (id & kIsVariable) {
-		varp = (TMrbVariable *) varObj;
-		varName = varp->GetName();
-	} else if (id & kIsWindow2D) {
-		w2dp = (TMrbWindow2D *) varObj;
-		varName = w2dp->GetName();
-	} else if (id & kIsWindow1D) {
-		wdwp = (TMrbWindow *) varObj;
-		varName = wdwp->GetName();
-	} else return(kFALSE); 
-
 	if (fLofVars.FindObject(varName) != NULL) {
-		gMrbLog->Err() << "Variable/window already defined - " << varName << endl;
+		gMrbLog->Err() << "Variable/window/function already defined - " << varName << endl;
 		gMrbLog->Flush(this->ClassName(), "Append");
 		return(kFALSE);
 	}
 
-	fLofVars.Add(varObj);
+	UInt_t id = VarObj->GetUniqueID();
+
+	if (id & kIsVariable)			varName = ((TMrbVariable *) VarObj)->GetName();
+	else if (id & kIsWindow2D)		varName = ((TMrbWindow2D *) VarObj)->GetName();
+	else if (id & kIsWindow1D)		varName = ((TMrbWindow *) VarObj)->GetName();
+	else if (id & kIsFunction)		varName = ((TFormula *) VarObj)->GetName();
+	else return(kFALSE);
+
+	fLofVars.Add(VarObj);
 	fNofVars++;
 	return(kTRUE);
 }
@@ -103,30 +93,27 @@ Bool_t TMrbLofUserVars::Initialize(Char_t * Option) {
 // Name:           TMrbLofUserVars::Initialize
 // Purpose:        Reset all variables/windows to initial values
 // Arguments:      Char_t * Option    -- option string: V(ariables), W(indows), or D(efault)
-// Results:        
+// Results:
 // Exceptions:
-// Description:    Reset to initial values.
+// Description:    Reset to initial values. For vars and wdws only.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
-
-	TObject * varp;
-	UInt_t vOpt;
 
 	TMrbLofNamedX varOption;
 
 	varOption.SetPatternMode();
 	varOption.AddNamedX(kMrbVarWdwOptions);
-	vOpt = varOption.FindPattern(Option, TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase);
+	UInt_t vOpt = varOption.FindPattern(Option, TMrbLofNamedX::kFindUnique | TMrbLofNamedX::kFindIgnoreCase);
 	if (vOpt == TMrbLofNamedX::kIllIndexBit) {
 		gMrbLog->Err() << this->GetName() << ": Illegal option(s) - " << Option << endl;
 		gMrbLog->Flush(this->ClassName(), "Initialize");
 		return(kFALSE);
 	}
 
-	varp = this->First(vOpt);
+	TObject * varp = this->First(vOpt);
 	while (varp) {
-		if (varp->GetUniqueID() & kIsVariable) ((TMrbVariable *) varp)->Initialize();
-		else ((TMrbWindow *) varp)->Initialize();
+		if (varp->GetUniqueID() & kIsVariable)		((TMrbVariable *) varp)->Initialize();
+		else if (varp->GetUniqueID() & kIsWindow)	((TMrbWindow *) varp)->Initialize();
 		varp = this->After(varp, vOpt);
 	}
 	return(kTRUE);
@@ -138,15 +125,13 @@ void TMrbLofUserVars::Draw(const Char_t * Option) {
 // Name:           TMrbLofUserVars::Draw
 // Purpose:        Draw all windows in this list
 // Arguments:      Char_t * Option (--ignored--)
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Calls mehtod "Draw" for any window in the list.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObject * varp;
-
-	varp = this->First(kIsWindow);
+	TObject * varp = this->First(kIsWindow);
 	while (varp) {
 		((TMrbWindow *) varp)->Draw();
 		varp = this->After(varp, kIsWindow);
@@ -165,9 +150,7 @@ TObject * TMrbLofUserVars::First(UInt_t VarType) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObject * varp;
-
-	varp = fLofVars.First();
+	TObject * varp = fLofVars.First();
 	while (varp) {
 		if (varp->GetUniqueID() & VarType) return(varp);
 		varp = fLofVars.After(varp);
@@ -188,9 +171,7 @@ TObject * TMrbLofUserVars::After(TObject * VarPtr, UInt_t VarType) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObject * varp;
-
-	varp = fLofVars.After(VarPtr);
+	TObject * varp = fLofVars.After(VarPtr);
 	while (varp) {
 		if (varp->GetUniqueID() & VarType) return(varp);
 		varp = fLofVars.After(varp);
@@ -211,13 +192,13 @@ TObject * TMrbLofUserVars::Find(const Char_t * VarName, UInt_t VarType) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObject * varp;
 	TString varName;
 
-	varp = this->First(VarType);
+	TObject * varp = this->First(VarType);
 	while (varp) {
-		if (varp->GetUniqueID() & kIsVariable) varName = ((TMrbVariable *) varp)->GetName();
-		else varName = ((TMrbWindow *) varp)->GetName();
+		if (varp->GetUniqueID() & kIsVariable)		varName = ((TMrbVariable *) varp)->GetName();
+		else if (varp->GetUniqueID() & kIsWindow)	varName = ((TMrbWindow *) varp)->GetName();
+		else if (varp->GetUniqueID() & kIsFunction)	varName = ((TFormula *) varp)->GetName();
 		if (varName.CompareTo(VarName) == 0) return(varp);
 		varp = this->After(varp, VarType);
 	}
@@ -231,7 +212,7 @@ void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) const {
 // Purpose:        Print a list of variables/windows to cout
 // Arguments:      ostream & OutStrm    -- output stream
 //                 Char_t * Option      -- option string: V(ariables), W(indows), or D(efault)
-// Results:        
+// Results:
 // Exceptions:
 // Description:    Outputs contents of the whole list to OutStrm (default cout).
 // Keywords:
@@ -311,6 +292,26 @@ void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) const {
 		}
 	}
 
+	found = kFALSE;
+	if ((vOpt2 = vOpt & (kFunction1D | kFunction2D))) {
+		varp = this->First(vOpt2);
+		while (varp) {
+			if (!found) {
+				OutStrm	<< endl << GetName() << "::FUNCTIONS:" << endl;
+				OutStrm	<< "   " << setiosflags(ios::left)
+						<< setw(20) << "NAME"
+						<< setw(15) << "TYPE"
+						<< endl;
+			}
+			OutStrm	<< "   " << setiosflags(ios::left)
+					<< setw(20) << ((TFormula *) varp)->GetName()
+					<< setw(15) << Form("TF%d", ((TFormula *) varp)->GetNdim())
+					<< endl;
+			found = kTRUE;
+			varp = this->After(varp, vOpt2);
+		}
+	}
+
 	OutStrm << endl;
 }
 
@@ -323,6 +324,8 @@ Bool_t TMrbLofUserVars::ReadFromFile(const Char_t * VarFile) {
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Reads variable and window defs from given file.
+//                 For vars and 1-dim windows only.
+//                 Array mode for vars only.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -472,7 +475,7 @@ Bool_t TMrbLofUserVars::ReadFromFile(const Char_t * VarFile) {
 					continue;
 				}
 			}
- 
+
 			vline1 += " 1"; 				// append a known value to the string - so we may detect format errors
 			vline2 += " 1";
 
@@ -527,7 +530,7 @@ Bool_t TMrbLofUserVars::ReadFromFile(const Char_t * VarFile) {
 						}
 					}
 				}
-			}	
+			}
 
 			Bool_t ok = kFALSE;
 			if (varType != vtype) {
@@ -571,7 +574,7 @@ Bool_t TMrbLofUserVars::ReadFromFile(const Char_t * VarFile) {
 					gMrbLog->Flush(this->ClassName(), "ReadFromFile");
 					continue;
 				}
-			}	
+			}
 
 			if (isArray) {
 				switch (vtype) {
@@ -618,8 +621,8 @@ void TMrbLofUserVars::SetGlobalAddress() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofUserVars::SetGlobalAddress
 // Purpose:        Set global address gMrbLofUserVars
-// Arguments:      
-// Results:        
+// Arguments:
+// Results:
 // Exceptions:
 // Description:    Sets global variable gMrbLofUserVars to `this'.
 //                 May be used when reading a config from file.
@@ -628,3 +631,24 @@ void TMrbLofUserVars::SetGlobalAddress() {
 
 	gMrbLofUserVars = this;
 };
+
+void TMrbLofUserVars::SetInitialFctType(TObject * Fct, UInt_t FctType) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbLofUserVars::SetInitialFctType
+// Purpose:        Set function type
+// Arguments:      TObject * Fct     -- ptr to function
+//                 UInt_t VarType    -- type bits
+// Results:
+// Exceptions:
+// Description:    Defines type bits.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Fct->GetUniqueID() != 0) return;
+
+	Fct->SetUniqueID(FctType);
+	gMrbLofUserVars->Append(Fct);
+	if (gDirectory != NULL) gDirectory->Append(Fct);
+}
+

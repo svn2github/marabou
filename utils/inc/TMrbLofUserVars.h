@@ -8,8 +8,8 @@
 // Class:          TMrbLofUserVars -- a list of user-defined variables and windows
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofUserVars.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbLofUserVars.h,v 1.7 2010-11-15 13:46:06 Marabou Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -17,6 +17,7 @@
 #include "TNamed.h"
 #include "TDirectory.h"
 #include "TObjArray.h"
+#include "TIterator.h"
 #include "TSystem.h"
 
 #include "TMrbNamedX.h"
@@ -32,7 +33,7 @@
 // Description:    Defines a list of user variables.
 //                 This class is mainly used to keep track of all vars and
 //                 windows defined in the application (global gMrbLofUserVars).
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 class TMrbLofUserVars: public TNamed {
@@ -64,10 +65,14 @@ class TMrbLofUserVars: public TNamed {
 		TObject * First(UInt_t  VarType = kVarOrWindow) const;							// get first entry
 		TObject * After(TObject * VarPtr, UInt_t VarType = kVarOrWindow) const; 		// get next entry
 
+		void SetInitialFctType(TObject * Fct, UInt_t FctType);
+
 		inline UInt_t GetEntries() const { return(fLofVars.GetLast() + 1); };		// get number of entries
 		inline TObject * Get(UInt_t Index) const { return(fLofVars[Index]); };	// get object at position index
 		inline UInt_t IndexOf(TObject * VarObj) const { return(fLofVars.IndexOf(VarObj)); };	// get index
 		inline void Replace(TObject * OldVar, TObject * NewVar) { fLofVars.AddAt(NewVar, IndexOf(OldVar)); };
+
+		inline TObjArray * GetArray() { return(&fLofVars); };
 
 		void Draw(Option_t * Option);					// draw windows
 
@@ -77,7 +82,8 @@ class TMrbLofUserVars: public TNamed {
 
 	protected:
 		Int_t fNofVars;					// total number of vars/windows
-		TObjArray fLofVars; 				// list of variables
+		TObjArray fLofVars; 			// list of variables
+		TIterator * fIter;				// iterator
 
 	ClassDef(TMrbLofUserVars, 1)	// [Utils] A list of user-defined variables/windows
 };

@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.98 2010-11-12 15:12:51 Marabou Exp $
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.99 2010-11-15 13:46:06 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -19,6 +19,8 @@
 #include "TObjString.h"
 #include "THashList.h"
 #include "TMath.h"
+#include "TF1.h"
+#include "TF2.h"
 
 #include "TMrbAnalyze.h"
 #include "TUsrEvtStart.h"
@@ -824,7 +826,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 	TDirectory * gDirSave;
 
 	if (gMrbLofUserVars == NULL) {
-		gMrbLog->Err()	<< "No vars or wdws defined" << endl;
+		gMrbLog->Err()	<< "No vars, wdws, or fcts defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReloadVarsAndWdws");
 		return(kFALSE);
 	}
@@ -878,18 +880,6 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 							break;
 					}
 				} else {
-#if 0
-					gMrbLofUserVars->Replace(vobj, fobj);
-					gROOT->GetList()->Remove(vobj);
-					if (vobj) delete vobj;
-					vobj = fobj;
-                    if(fMapFile){
-                        TObject* wold = (TObject*)fMapFile->Get(fobj->GetName());
-                        if(wold)wold = (TObject*)fMapFile->Remove(fobj->GetName());
-                        fMapFile->Add(fobj);
-                        fMapFile->Update(fobj);
-					}
-#endif
 					switch (((TMrbWindow *) fobj)->GetType()) {
 						case kWindowI:
                             ((TMrbWindowI *) vobj)->Print();
@@ -906,17 +896,6 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 							break;
 						case kWindow2D:
 							gMrbLofUserVars->Replace(vobj, fobj);
-#if 0
-							gROOT->GetList()->Remove(vobj);
-							if (vobj) delete vobj;
-							vobj = fobj;
-                            if(fMapFile){
-                                TMrbWindow2D* w2dold = (TMrbWindow2D*)fMapFile->Get(fobj->GetName());
-                                if(w2dold)w2dold = (TMrbWindow2D*)fMapFile->Remove(fobj->GetName());
-                                fMapFile->Add(fobj);
-                                fMapFile->Update(fobj);
-					        }
-#endif
 							break;
 					}
 				}
@@ -925,6 +904,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 					if (fobj->InheritsFrom("TMrbVariable")) ((TMrbVariable *) vobj)->Print("Short");
 					else if (fobj->InheritsFrom("TMrbWindow")) ((TMrbWindow *) vobj)->Print("Short");
 					else if (fobj->InheritsFrom("TMrbWindow2D")) cout << ((TMrbWindow2D *) vobj)->GetName() << endl;
+					else if (fobj->InheritsFrom("TFormula")) cout << ((TFormula *) vobj)->GetName() << endl;
 				}
 			} else delete fobj;
 		}

@@ -5,12 +5,12 @@
 // Purpose:          Example configuration for a MARaBOU session
 // Description:      Config file to to define the experimental setup.
 //                   Generates a C readout function to be used with MBS
-//                   as well as C++ class definitions and methods for the 
+//                   as well as C++ class definitions and methods for the
 //                   data analysis with ROOT.
 // Experiment:       %%CONFIG_NAME_UC%%
 //                   %%CONFIG_TITLE%%
 // Author:           %%AUTHOR%%
-// Revision:         
+// Revision:
 // Date:             %%CREATION_DATE%%
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@
 
 // assign module params to subevents
 %%BeginOfCode%%
-	$sevtNameLC->Use("$moduleNameLC", "$lofParams");		
+	$sevtNameLC->Use("$moduleNameLC", "$lofParams");
 %%EndOfCode%%
 %%ASSIGN_PARAMS%%
 
@@ -67,6 +67,12 @@
 	$cfgNameLC->DefineWindows("$wdwType", "$lofWdws");
 %%EndOfCode%%
 %%DEFINE_WINDOWS%%
+
+// define functions
+%%BeginOfCode%%
+	$cfgNameLC->DefineFunctions("$fctType", "$lofFcts");
+%%EndOfCode%%
+%%DEFINE_FUNCTIONS%%
 
 // define scalers
 %%BeginOfCode%%
