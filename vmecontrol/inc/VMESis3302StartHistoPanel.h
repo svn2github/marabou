@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartHistoPanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.5 2010-11-04 14:13:27 Marabou Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.h,v 1.6 2010-11-17 12:25:11 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -100,7 +100,7 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 		void StartHisto();
 		void StopHisto();
 		void PauseHisto();
-		Int_t InitializeHistos(UInt_t ChnPatt = kSis3302AdcPattern);
+		Int_t InitializeHistos(UInt_t ChnPatt = kSis3302ChanPattern);
 		void WriteHisto(TMrbNamedX * HistoDef = NULL);
 		Int_t ReadData(TArrayI & Data, TMrbNamedX * HistoDef, Int_t TraceData[], Int_t TraceNumber);
 
@@ -151,7 +151,7 @@ class VMESis3302StartHistoPanel : public TGMainFrame {
 
 		TObjArray fLofClones;				// list of canvas clones
 
-	ClassDef(VMESis3302StartHistoPanel, 0)		// [VMEControl] Panel to save/reswtore Sis3302 settings
+	ClassDef(VMESis3302StartHistoPanel, 0)		// [VMEControl] Panel to start histogramming for a SIS3302 module
 };
 
 #endif

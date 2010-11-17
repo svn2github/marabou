@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.7 2010-11-04 14:13:27 Marabou Exp $
+// Revision:       $Id: VMESis3302StartHistoPanel.cxx,v 1.8 2010-11-17 12:25:11 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -416,7 +416,7 @@ void VMESis3302StartHistoPanel::StartHisto() {
 			break;
 		}
 
-		TArrayI traceData(kSis3302NofAdcs * kSis3302EventPreHeader);
+		TArrayI traceData(kSis3302NofChans * kSis3302EventPreHeader);
 		traceNo++;
 		Bool_t writeFlag = (nofBufsWrite > 0 && (traceNo % nofBufsWrite) == 0);
 		while (fTraceCollection) {
@@ -599,7 +599,7 @@ Int_t VMESis3302StartHistoPanel::InitializeHistos(UInt_t ChannelPattern) {
 
 	Int_t nofChannels = 0;
 	UInt_t cp = ChannelPattern;
-	for (Int_t chn = 0; chn < kSis3302NofAdcs; chn++, cp >>= 1) { if (cp & 1) nofChannels++; }
+	for (Int_t chn = 0; chn < kSis3302NofChans; chn++, cp >>= 1) { if (cp & 1) nofChannels++; }
 
 	TCanvas * c = fHistoCanvas->GetCanvas();
 	c->Clear();
@@ -608,7 +608,7 @@ Int_t VMESis3302StartHistoPanel::InitializeHistos(UInt_t ChannelPattern) {
 	cp = ChannelPattern;
 	Int_t hs = fHsize * 1024;
 	Int_t subPad = (nofChannels == 1) ? 0 : 1;
-	for (Int_t chn = 0; chn < kSis3302NofAdcs; chn++, cp >>= 1) {
+	for (Int_t chn = 0; chn < kSis3302NofChans; chn++, cp >>= 1) {
 		if (cp & 1) {
 			TString hName = Form("Hist-%s-chn%d", curModule->GetName(), chn);
 			TString hTitle = Form("Histogram from module %s, channel %d", curModule->GetName(), chn);
@@ -667,7 +667,7 @@ void VMESis3302StartHistoPanel::WriteHisto(TMrbNamedX * HistoDef) {
 
 	if (HistoDef == NULL) {
 		start = 0;
-		end = kSis3302NofAdcs - 1;
+		end = kSis3302NofChans - 1;
 	} else {
 		start = HistoDef->GetIndex() & 0xF;
 		end = start;

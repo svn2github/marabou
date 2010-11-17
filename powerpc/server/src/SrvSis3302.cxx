@@ -2,12 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////
 //! \file			SrvSis3302.cxx
 //! \brief			MARaBOU to Lynx: VME modules - SIS3302
-//! \details		Implements class methods for SIS3302 adc
+//! \details		Implements class methods for SIS3302 chan
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.10 $
-//! $Date: 2010-11-04 14:13:27 $
+//! $Revision: 1.11 $
+//! $Date: 2010-11-17 12:25:11 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -26,19 +26,19 @@ extern TMrbLogger * gMrbLog;				//!< message logger
 
 extern Bool_t gSignalTrap;
 
-TArrayI rawDataLength(kSis3302NofAdcs);
-TArrayI energyDataLength(kSis3302NofAdcs);
-TArrayI wordsPerEvent(kSis3302NofAdcs);
-TArrayI nofEventsPerBuffer(kSis3302NofAdcs);
-TArrayI nextSample(kSis3302NofAdcs);
+TArrayI rawDataLength(kSis3302NofChans);
+TArrayI energyDataLength(kSis3302NofChans);
+TArrayI wordsPerEvent(kSis3302NofChans);
+TArrayI nofEventsPerBuffer(kSis3302NofChans);
+TArrayI nextSample(kSis3302NofChans);
 
 ofstream dump;
 
 SrvSis3302::SrvSis3302() : SrvVMEModule(	"Sis3302",							//!< type
-											"Digitizing ADC, 8ch 13(16)bit", 	//!< description
+											"Digitizing chan, 8ch 13(16)bit", 	//!< description
 											0x09,								//!< address modifier: A32
 											kSis3302SegSize,  					//!< segment size
-											kSis3302NofAdcs,					//!< 8 channels/adcs
+											kSis3302NofChans,					//!< 8 channels/chans
 											  1 << 13) {						//!< range
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -88,11 +88,11 @@ Bool_t SrvSis3302::TryAccess(SrvVMEModule * Module) {
 
 M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, M2L_MsgData * Data) {
 
-	Int_t adcNo;
+	Int_t chanNo;
 	TArrayI data;
 	Int_t d;
 
-	this->SetupFunction(Data, data, adcNo);
+	this->SetupFunction(Data, data, chanNo);
 
 	switch (Function->GetIndex()) {
 		case kM2L_FCT_GET_MODULE_INFO:
@@ -117,12 +117,12 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			}
 		case kM2L_FCT_SIS_3302_READ_DAC:
 			{
-				if (!this->ReadDac(Module, data, adcNo)) return(NULL);
+				if (!this->ReadDac(Module, data, chanNo)) return(NULL);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_DAC:
 			{
-				if (!this->WriteDac(Module, data, adcNo)) return(NULL);
+				if (!this->WriteDac(Module, data, chanNo)) return(NULL);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_KEY_ADDR:
@@ -134,157 +134,157 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			}
 		case kM2L_FCT_SIS_3302_READ_EVENT_CONFIG:
 			{
-				if (!this->ReadEventConfig(Module, d, adcNo)) return(NULL);
+				if (!this->ReadEventConfig(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_EVENT_CONFIG:
 			{
 				d = data[0];
-				if (!this->WriteEventConfig(Module, d, adcNo)) return(NULL);
+				if (!this->WriteEventConfig(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_EVENT_EXTENDED_CONFIG:
 			{
-				if (!this->ReadEventExtendedConfig(Module, d, adcNo)) return(NULL);
+				if (!this->ReadEventExtendedConfig(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_EVENT_EXTENDED_CONFIG:
 			{
 				d = data[0];
-				if (!this->WriteEventExtendedConfig(Module, d, adcNo)) return(NULL);
+				if (!this->WriteEventExtendedConfig(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_HEADER_BITS:
 			{
-				if (!this->GetHeaderBits(Module, d, adcNo)) return(NULL);
+				if (!this->GetHeaderBits(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_HEADER_BITS:
 			{
 				d = data[0];
-				if (!this->SetHeaderBits(Module, d, adcNo)) return(NULL);
+				if (!this->SetHeaderBits(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_GROUP_ID:
 			{
-				if (!this->GetGroupId(Module, d, adcNo)) return(NULL);
+				if (!this->GetGroupId(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_TRIGGER_MODE:
 			{
-				if (!this->GetTriggerMode(Module, d, adcNo)) return(NULL);
+				if (!this->GetTriggerMode(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_TRIGGER_MODE:
 			{
 				d = data[0];
-				if (!this->SetTriggerMode(Module, d, adcNo)) return(NULL);
+				if (!this->SetTriggerMode(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_GATE_MODE:
 			{
-				if (!this->GetGateMode(Module, d, adcNo)) return(NULL);
+				if (!this->GetGateMode(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_GATE_MODE:
 			{
 				d = data[0];
-				if (!this->SetGateMode(Module, d, adcNo)) return(NULL);
+				if (!this->SetGateMode(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_NNB_TRIGGER_MODE:
 			{
-				if (!this->GetNextNeighborTriggerMode(Module, d, adcNo)) return(NULL);
+				if (!this->GetNextNeighborTriggerMode(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_NNB_TRIGGER_MODE:
 			{
 				d = data[0];
-				if (!this->SetNextNeighborTriggerMode(Module, d, adcNo)) return(NULL);
+				if (!this->SetNextNeighborTriggerMode(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_NNB_GATE_MODE:
 			{
-				if (!this->GetNextNeighborGateMode(Module, d, adcNo)) return(NULL);
+				if (!this->GetNextNeighborGateMode(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_NNB_GATE_MODE:
 			{
 				d = data[0];
-				if (!this->SetNextNeighborGateMode(Module, d, adcNo)) return(NULL);
+				if (!this->SetNextNeighborGateMode(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_POLARITY:
 			{
 				Bool_t ifl;
-				if (!this->GetPolarity(Module, ifl, adcNo)) return(NULL);
+				if (!this->GetPolarity(Module, ifl, chanNo)) return(NULL);
 				data.Set(1); data[0] = ifl ? 1 : 0;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_POLARITY:
 			{
 				Bool_t ifl = (data[0] != 0);
-				if (!this->SetPolarity(Module, ifl, adcNo)) return(NULL);
+				if (!this->SetPolarity(Module, ifl, chanNo)) return(NULL);
 				data.Set(1); data[0] = ifl ? 1 : 0;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_END_ADDR_THRESH:
 			{
-				if (!this->ReadEndAddrThresh(Module, d, adcNo)) return(NULL);
+				if (!this->ReadEndAddrThresh(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_END_ADDR_THRESH:
 			{
 				d = data[0];
-				if (!this->WriteEndAddrThresh(Module, d, adcNo)) return(NULL);
+				if (!this->WriteEndAddrThresh(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_PRETRIG_DELAY:
 			{
-				if (!this->ReadPreTrigDelay(Module, d, adcNo)) return(NULL);
+				if (!this->ReadPreTrigDelay(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_PRETRIG_DELAY:
 			{
 				d = data[0];
-				if (!this->WritePreTrigDelay(Module, d, adcNo)) return(NULL);
+				if (!this->WritePreTrigDelay(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_TRIGGER_GATE_LENGTH:
 			{
-				if (!this->ReadTrigGateLength(Module, d, adcNo)) return(NULL);
+				if (!this->ReadTrigGateLength(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_TRIGGER_GATE_LENGTH:
 			{
 				d = data[0];
-				if (!this->WriteTrigGateLength(Module, d, adcNo)) return(NULL);
+				if (!this->WriteTrigGateLength(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_RAW_DATA_SAMPLE_LENGTH:
 			{
-				if (!this->ReadRawDataSampleLength(Module, d, adcNo)) return(NULL);
+				if (!this->ReadRawDataSampleLength(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
@@ -292,46 +292,46 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			{
 				d = data[0];
 				Bool_t traceFlag = this->PauseTraceCollection(Module);
-				if (!this->WriteRawDataSampleLength(Module, d, adcNo)) return(NULL);
+				if (!this->WriteRawDataSampleLength(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				if (traceFlag) this->ContinueTraceCollection(Module);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_RAW_DATA_START_INDEX:
 			{
-				if (!this->ReadRawDataStartIndex(Module, d, adcNo)) return(NULL);
+				if (!this->ReadRawDataStartIndex(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_RAW_DATA_START_INDEX:
 			{
 				d = data[0];
-				if (!this->WriteRawDataStartIndex(Module, d, adcNo)) return(NULL);
+				if (!this->WriteRawDataStartIndex(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_NEXT_SAMPLE_ADDR:
 			{
-				if (!this->ReadNextSampleAddr(Module, d, adcNo)) return(NULL);
+				if (!this->ReadNextSampleAddr(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_PREV_BANK_SAMPLE_ADDR:
 			{
-				if (!this->ReadPrevBankSampleAddr(Module, d, adcNo)) return(NULL);
+				if (!this->ReadPrevBankSampleAddr(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_ACTUAL_SAMPLE:
 			{
-				if (!this->ReadActualSample(Module, d, adcNo)) return(NULL);
+				if (!this->ReadActualSample(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_TRIGGER_PEAK_AND_GAP:
 			{
 				Int_t p, g;
-				if (!this->ReadTriggerPeakAndGap(Module, p, g, adcNo)) return(NULL);
+				if (!this->ReadTriggerPeakAndGap(Module, p, g, chanNo)) return(NULL);
 				data.Set(2); data[0] = p; data[1] = g;
 				break;
 			}
@@ -340,101 +340,101 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 				Bool_t traceFlag = this->PauseTraceCollection(Module);
 				Int_t p, g;
 				p = data[0]; g = data[1];
-				if (!this->WriteTriggerPeakAndGap(Module, p, g, adcNo)) return(NULL);
+				if (!this->WriteTriggerPeakAndGap(Module, p, g, chanNo)) return(NULL);
 				data.Set(2); data[0] = p; data[1] = g;
 				if (traceFlag) this->ContinueTraceCollection(Module);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_TRIGGER_PULSE_LENGTH:
 			{
-				if (!this->ReadTriggerPulseLength(Module, d, adcNo)) return(NULL);
+				if (!this->ReadTriggerPulseLength(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_TRIGGER_PULSE_LENGTH:
 			{
 				d = data[0];
-				if (!this->WriteTriggerPulseLength(Module, d, adcNo)) return(NULL);
+				if (!this->WriteTriggerPulseLength(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_TRIGGER_INTERNAL_GATE:
 			{
-				if (!this->ReadTriggerInternalGate(Module, d, adcNo)) return(NULL);
+				if (!this->ReadTriggerInternalGate(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_TRIGGER_INTERNAL_GATE:
 			{
 				d = data[0];
-				if (!this->WriteTriggerInternalGate(Module, d, adcNo)) return(NULL);
+				if (!this->WriteTriggerInternalGate(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_TRIGGER_INTERNAL_DELAY:
 			{
-				if (!this->ReadTriggerInternalDelay(Module, d, adcNo)) return(NULL);
+				if (!this->ReadTriggerInternalDelay(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_TRIGGER_INTERNAL_DELAY:
 			{
 				d = data[0];
-				if (!this->WriteTriggerInternalDelay(Module, d, adcNo)) return(NULL);
+				if (!this->WriteTriggerInternalDelay(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_TRIGGER_DECIMATION:
 			{
-				if (!this->GetTriggerDecimation(Module, d, adcNo)) return(NULL);
+				if (!this->GetTriggerDecimation(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_TRIGGER_DECIMATION:
 			{
 				d = data[0];
-				if (!this->SetTriggerDecimation(Module, d, adcNo)) return(NULL);
+				if (!this->SetTriggerDecimation(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_TRIGGER_THRESH:
 			{
-				if (!this->ReadTriggerThreshold(Module, d, adcNo)) return(NULL);
+				if (!this->ReadTriggerThreshold(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_TRIGGER_THRESH:
 			{
 				d = data[0];
-				if (!this->WriteTriggerThreshold(Module, d, adcNo)) return(NULL);
+				if (!this->WriteTriggerThreshold(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_TRIGGER_GT:
 			{
 				Bool_t gt;
-				if (!this->GetTriggerGT(Module, gt, adcNo)) return(NULL);
+				if (!this->GetTriggerGT(Module, gt, chanNo)) return(NULL);
 				data.Set(1); data[0] = gt ? 1 : 0;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_TRIGGER_GT:
 			{
 				Bool_t gt = (data[0] != 0);
-				if (!this->SetTriggerGT(Module, gt, adcNo)) return(NULL);
+				if (!this->SetTriggerGT(Module, gt, chanNo)) return(NULL);
 				data.Set(1); data[0] = gt ? 1 : 0;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_TRIGGER_OUT:
 			{
 				Bool_t ofl;
-				if (!this->GetTriggerOut(Module, ofl, adcNo)) return(NULL);
+				if (!this->GetTriggerOut(Module, ofl, chanNo)) return(NULL);
 				data.Set(1); data[0] = ofl ? 1 : 0;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_TRIGGER_OUT:
 			{
 				Bool_t ofl = (data[0] != 0);
-				if (!this->SetTriggerOut(Module, ofl, adcNo)) return(NULL);
+				if (!this->SetTriggerOut(Module, ofl, chanNo)) return(NULL);
 				data.Set(1); data[0] = ofl ? 1 : 0;
 				break;
 			}
@@ -442,7 +442,7 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			{
 				Bool_t traceFlag = this->PauseTraceCollection(Module);
 				Int_t p, g;
-				if (!this->ReadEnergyPeakAndGap(Module, p, g, adcNo)) return(NULL);
+				if (!this->ReadEnergyPeakAndGap(Module, p, g, chanNo)) return(NULL);
 				data.Set(2); data[0] = p; data[1] = g;
 				if (traceFlag) this->ContinueTraceCollection(Module);
 				break;
@@ -452,53 +452,53 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 				Bool_t traceFlag = this->PauseTraceCollection(Module);
 				Int_t p, g;
 				p = data[0]; g = data[1];
-				if (!this->WriteEnergyPeakAndGap(Module, p, g, adcNo)) return(NULL);
+				if (!this->WriteEnergyPeakAndGap(Module, p, g, chanNo)) return(NULL);
 				data.Set(2); data[0] = p; data[1] = g;
 				if (traceFlag) this->ContinueTraceCollection(Module);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_ENERGY_DECIMATION:
 			{
-				if (!this->GetEnergyDecimation(Module, d, adcNo)) return(NULL);
+				if (!this->GetEnergyDecimation(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_ENERGY_DECIMATION:
 			{
 				d = data[0];
-				if (!this->SetEnergyDecimation(Module, d, adcNo)) return(NULL);
+				if (!this->SetEnergyDecimation(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_ENERGY_GATE_LENGTH:
 			{
-				if (!this->ReadEnergyGateLength(Module, d, adcNo)) return(NULL);
+				if (!this->ReadEnergyGateLength(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_ENERGY_GATE_LENGTH:
 			{
 				d = data[0];
-				if (!this->WriteEnergyGateLength(Module, d, adcNo)) return(NULL);
+				if (!this->WriteEnergyGateLength(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_TEST_BITS:
 			{
-				if (!this->GetTestBits(Module, d, adcNo)) return(NULL);
+				if (!this->GetTestBits(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_SET_TEST_BITS:
 			{
 				d = data[0];
-				if (!this->SetTestBits(Module, d, adcNo)) return(NULL);
+				if (!this->SetTestBits(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_ENERGY_SAMPLE_LENGTH:
 			{
-				if (!this->ReadEnergySampleLength(Module, d, adcNo)) return(NULL);
+				if (!this->ReadEnergySampleLength(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
@@ -506,7 +506,7 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			{
 				Bool_t traceFlag = this->PauseTraceCollection(Module);
 				d = data[0];
-				if (!this->WriteEnergySampleLength(Module, d, adcNo)) return(NULL);
+				if (!this->WriteEnergySampleLength(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				if (traceFlag) this->ContinueTraceCollection(Module);
 				break;
@@ -514,7 +514,7 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 		case kM2L_FCT_SIS_3302_READ_START_INDEX:
 			{
 				Int_t x = data[0];
-				if (!this->ReadStartIndex(Module, d, x, adcNo)) return(NULL);
+				if (!this->ReadStartIndex(Module, d, x, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
@@ -522,20 +522,20 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 			{
 				Int_t x = data[0];
 				d = data[1];
-				if (!this->WriteStartIndex(Module, d, x, adcNo)) return(NULL);
+				if (!this->WriteStartIndex(Module, d, x, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_READ_TAU_FACTOR:
 			{
-				if (!this->ReadTauFactor(Module, d, adcNo)) return(NULL);
+				if (!this->ReadTauFactor(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
 		case kM2L_FCT_SIS_3302_WRITE_TAU_FACTOR:
 			{
 				d = data[0];
-				if (!this->WriteTauFactor(Module, d, adcNo)) return(NULL);
+				if (!this->WriteTauFactor(Module, d, chanNo)) return(NULL);
 				data.Set(1); data[0] = d;
 				break;
 			}
@@ -594,7 +594,8 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 		case kM2L_FCT_SIS_3302_START_TRACE_COLLECTION:
 			{
 				Int_t nofEvents = data[0];
-				if (!this->StartTraceCollection(Module, nofEvents, adcNo)) return(NULL);
+				Int_t chanPatt = data[1];
+				if (!this->StartTraceCollection(Module, nofEvents, chanPatt)) return(NULL);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_CONT_TRACE_COLLECTION:
@@ -610,18 +611,23 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 		case kM2L_FCT_SIS_3302_GET_TRACE_DATA:
 			{
 				Int_t evtNo = data[0];
-				if (!this->GetTraceData(Module, data, evtNo, adcNo)) return(NULL);
+				if (!this->GetTraceData(Module, data, evtNo, chanNo)) return(NULL);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_GET_TRACE_LENGTH:
 			{
-				data.Set(kSis3302NofAdcs * kSis3302EventPreHeader);
-				if (!this->GetTraceLength(Module, data, adcNo)) return(NULL);
+				data.Set(kSis3302NofChans * kSis3302EventPreHeader);
+				if (!this->GetTraceLength(Module, data, chanNo)) return(NULL);
 				break;
 			}
 		case kM2L_FCT_SIS_3302_DUMP_TRACE:
 			{
 				fDumpTrace = kTRUE;
+				break;
+			}
+		case kM2L_FCT_SIS_3302_RAMP_DAC:
+			{
+				if (!this->RampDac(Module, data, chanNo)) return(NULL);
 				break;
 			}
 		default:
@@ -642,12 +648,12 @@ M2L_MsgHdr * SrvSis3302::Dispatch(SrvVMEModule * Module, TMrbNamedX * Function, 
 //! \details		Prepares a 'exec function' call
 //! \param[in]		Data		-- incoming data
 //! \param[in,out]	Array		-- array to hold data
-//! \param[in]		AdcNo		-- adc/channel
+//! \param[in]		ChanNo		-- chan/channel
 //////////////////////////////////////////////////////////////////////////////
 
-void SrvSis3302::SetupFunction(M2L_MsgData * Data, TArrayI & Array, Int_t & AdcNo) {
+void SrvSis3302::SetupFunction(M2L_MsgData * Data, TArrayI & Array, Int_t & ChanNo) {
 
-	AdcNo = swapIt(Data->fData[0]);
+	ChanNo = swapIt(Data->fData[0]);
 	Int_t wc = swapIt(Data->fWc) - 1;
 	Int_t * dp = &Data->fData[1];
 	Array.Reset();
@@ -714,7 +720,7 @@ Bool_t SrvSis3302::GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t &
 //! \details		Turns user LED on/off
 //! \param[in]		Module			-- module address
 //! \param[in]		OnFlag			-- kTRUE if to be turned on
-//! \param[in]		AdcNo 			-- adc number (ignored))
+//! \param[in]		ChanNo 			-- chan number (ignored))
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
@@ -732,29 +738,29 @@ Bool_t SrvSis3302::SetUserLED(SrvVMEModule * Module, Bool_t & OnFlag) {
 //! \details		Reads dacs
 //! \param[in]		Module		-- module address
 //! \param[out]		DacValues	-- where to store dac values
-//! \param[in]		AdcNo		-- adc number
+//! \param[in]		ChanNo		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadDac");
 		return(kFALSE);
 	}
 
-	Int_t firstAdc;
-	Int_t lastAdc;
-	if (AdcNo == kSis3302AllAdcs) {
-		firstAdc = 0;
-		lastAdc = kSis3302NofAdcs - 1;
+	Int_t firstchan;
+	Int_t lastchan;
+	if (ChanNo == kSis3302AllChans) {
+		firstchan = 0;
+		lastchan = kSis3302NofChans - 1;
 	} else {
-		firstAdc = AdcNo;
-		lastAdc = AdcNo;
+		firstchan = ChanNo;
+		lastchan = ChanNo;
 	}
-	Int_t wc = lastAdc - firstAdc + 1;
+	Int_t wc = lastchan - firstchan + 1;
 
 	volatile Int_t * dacStatus = (volatile Int_t *) Module->MapAddress(SIS3302_DAC_CONTROL_STATUS);
 	if (dacStatus == NULL) return(kFALSE);
@@ -765,8 +771,8 @@ Bool_t SrvSis3302::ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t Adc
 	gSignalTrap = kFALSE;
 	DacValues.Set(wc);
 	Int_t idx = 0;
-	for (Int_t adc = firstAdc; adc <= lastAdc; adc++, idx++) {
-		*dacStatus = kSis3302DacCmdLoadShiftReg + (adc << 4);
+	for (Int_t chan = firstchan; chan <= lastchan; chan++, idx++) {
+		*dacStatus = kSis3302DacCmdLoadShiftReg + (chan << 4);
 		if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "ReadDac")) return(kFALSE);
 		Int_t timeout = 0 ;
 		Int_t data;
@@ -785,32 +791,76 @@ Bool_t SrvSis3302::ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t Adc
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Writes dac values
+//! \details		Writes dac value
 //! \param[in]		Module		-- module address
-//! \param[in]		DacValues	-- dac values to be written
-//! \param[in]		AdcNo		-- adc number
+//! \param[in]		DacValue	-- dac value to be written
+//! \param[in]		ChanNo		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteDac(SrvVMEModule * Module, Int_t & DacValue, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	volatile Int_t * dacStatus = (volatile Int_t *) Module->MapAddress(SIS3302_DAC_CONTROL_STATUS);
+	if (dacStatus == NULL) return(kFALSE);
+	volatile Int_t * dacData = (volatile Int_t *) Module->MapAddress(SIS3302_DAC_DATA);
+	if (dacData == NULL) return(kFALSE);
+
+	Int_t maxTimeout = 5000;
+	gSignalTrap = kFALSE;
+	*dacData = DacValue;
+	if (this->CheckBusTrap(Module, SIS3302_DAC_DATA, "WriteDac")) return(kFALSE);
+
+	*dacStatus = kSis3302DacCmdLoadShiftReg + (ChanNo << 4);
+	if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
+	Int_t timeout = 0 ;
+	Int_t data;
+	do {
+		data = *dacStatus;
+		if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
+		timeout++;
+	} while (((data & kSis3302DacBusy) == kSis3302DacBusy) && (timeout <  maxTimeout));
+	if (timeout >=  maxTimeout) return(kFALSE);
+
+	*dacStatus = kSis3302DacCmdLoad + (ChanNo << 4);
+	if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
+	timeout = 0 ;
+	do {
+		data = *dacStatus;
+		if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
+		timeout++;
+	} while (((data & kSis3302DacBusy) == kSis3302DacBusy) && (timeout <  maxTimeout));
+	if (timeout >=  maxTimeout) return(kFALSE);
+	return(kTRUE);
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Writes dac values
+//! \param[in]		Module		-- module address
+//! \param[in]		DacValues	-- dac values to be written
+//! \param[in]		ChanNo		-- chan number
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::WriteDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t ChanNo) {
+
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteDac");
 		return(kFALSE);
 	}
 
-	Int_t firstAdc;
-	Int_t lastAdc;
-	if (AdcNo == kSis3302AllAdcs) {
-		firstAdc = 0;
-		lastAdc = kSis3302NofAdcs - 1;
+	Int_t firstchan;
+	Int_t lastchan;
+	if (ChanNo == kSis3302AllChans) {
+		firstchan = 0;
+		lastchan = kSis3302NofChans - 1;
 	} else {
-		firstAdc = AdcNo;
-		lastAdc = AdcNo;
+		firstchan = ChanNo;
+		lastchan = ChanNo;
 	}
-	Int_t wc = lastAdc - firstAdc + 1;
+	Int_t wc = lastchan - firstchan + 1;
 	if (wc > DacValues.GetSize()) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]:Wrong size of data array - "
 						<< DacValues.GetSize() << " (should be at least " << wc << ")" << endl;
@@ -823,34 +873,8 @@ Bool_t SrvSis3302::WriteDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t Ad
 	volatile Int_t * dacData = (volatile Int_t *) Module->MapAddress(SIS3302_DAC_DATA);
 	if (dacData == NULL) return(kFALSE);
 
-	Int_t maxTimeout = 5000;
 	Int_t idx = 0;
-	gSignalTrap = kFALSE;
-	for (Int_t adc = firstAdc; adc <= lastAdc; adc++, idx++) {
-		*dacData = DacValues[idx];
-		if (this->CheckBusTrap(Module, SIS3302_DAC_DATA, "WriteDac")) return(kFALSE);
-
-		*dacStatus = kSis3302DacCmdLoadShiftReg + (adc << 4);
-		if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
-		Int_t timeout = 0 ;
-		Int_t data;
-		do {
-			data = *dacStatus;
-			if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
-			timeout++;
-		} while (((data & kSis3302DacBusy) == kSis3302DacBusy) && (timeout <  maxTimeout));
-		if (timeout >=  maxTimeout) return(kFALSE);
-
-		*dacStatus = kSis3302DacCmdLoad + (adc << 4);
-		if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
-		timeout = 0 ;
-		do {
-			data = *dacStatus;
-			if (this->CheckBusTrap(Module, SIS3302_DAC_CONTROL_STATUS, "WriteDac")) return(kFALSE);
-			timeout++;
-		} while (((data & kSis3302DacBusy) == kSis3302DacBusy) && (timeout <  maxTimeout));
-		if (timeout >=  maxTimeout) return(kFALSE);
-	}
+	for (Int_t chan = firstchan; chan <= lastchan; chan++, idx++) this->WriteDac(Module, DacValues[idx], chan);
 	return(kTRUE);
 }
 
@@ -944,21 +968,21 @@ Bool_t SrvSis3302::WriteControlStatus(SrvVMEModule * Module, Int_t & Bits) {
 //! \details		Reads event config register
 //! \param[in]		Module			-- module address
 //! \param[out]		Bits			-- configuration
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadEventConfig");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0:
 		case 1: 	offset = SIS3302_EVENT_CONFIG_ADC12; break;
 		case 2:
@@ -982,22 +1006,22 @@ Bool_t SrvSis3302::ReadEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t Ad
 //! \details		Writes event config register
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- configuration
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteEventConfig");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
-		case kSis3302AllAdcs:
+	switch (ChanNo) {
+		case kSis3302AllChans:
 					offset = SIS3302_EVENT_CONFIG_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_EVENT_CONFIG_ADC12; break;
@@ -1015,7 +1039,7 @@ Bool_t SrvSis3302::WriteEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t A
 	gSignalTrap = kFALSE;
 	*evtConf = Bits;
 	if (this->CheckBusTrap(Module, offset, "WriteEventConfig")) return(kFALSE);
-	return(this->ReadEventConfig(Module, Bits, AdcNo == kSis3302AllAdcs ? 1 : AdcNo));
+	return(this->ReadEventConfig(Module, Bits, ChanNo == kSis3302AllChans ? 1 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1023,21 +1047,21 @@ Bool_t SrvSis3302::WriteEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t A
 //! \details		Reads EXTENDED event config register
 //! \param[in]		Module			-- module address
 //! \param[out]		Bits			-- configuration
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadEventExtendedConfig");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0:
 		case 1: 	offset = SIS3302_EVENT_EXTENDED_CONFIG_ADC12; break;
 		case 2:
@@ -1061,22 +1085,22 @@ Bool_t SrvSis3302::ReadEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, 
 //! \details		Writes EXTENDED event config register
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- configuration
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteEventExtendedConfig");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
-		case kSis3302AllAdcs:
+	switch (ChanNo) {
+		case kSis3302AllChans:
 					offset = SIS3302_EVENT_EXTENDED_CONFIG_ALL; break;
 		case 0:
 		case 1: 	offset = SIS3302_EVENT_EXTENDED_CONFIG_ADC12; break;
@@ -1094,7 +1118,7 @@ Bool_t SrvSis3302::WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits,
 	gSignalTrap = kFALSE;
 	*evtConf = Bits;
 	if (this->CheckBusTrap(Module, offset, "WriteEventExtendedConfig")) return(kFALSE);
-	return(this->ReadEventConfig(Module, Bits, AdcNo == kSis3302AllAdcs ? 1 : AdcNo));
+	return(this->ReadEventConfig(Module, Bits, ChanNo == kSis3302AllChans ? 1 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1102,21 +1126,21 @@ Bool_t SrvSis3302::WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits,
 //! \details		Returns header data
 //! \param[in]		Module		-- module address
 //! \param[out]		Bits		-- bits
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::GetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetHeaderBits");
 		return(kFALSE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventConfig(Module, bits, AdcNo)) return(kFALSE);
+	if (!this->ReadEventConfig(Module, bits, ChanNo)) return(kFALSE);
 	bits >>= 17;		// header bit #1 -> event config bit #17
 	Bits = bits & kSis3302HeaderMask;
 	return(kTRUE);
@@ -1127,11 +1151,11 @@ Bool_t SrvSis3302::GetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcN
 //! \details		Defines header data
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::SetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < 0 || Bits > kSis3302HeaderMask) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal header data - " << setbase(16) << Bits
@@ -1149,22 +1173,22 @@ Bool_t SrvSis3302::SetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcN
 
 	Bits >>= 2;			// bits 1 & 2 are read-only
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t b;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			b = Bits;
-			if (!this->SetHeaderBits(Module, b, adc)) return(kFALSE);
+			if (!this->SetHeaderBits(Module, b, chan)) return(kFALSE);
 		}
 		Bits = b;
 		return(kTRUE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventConfig(Module, bits, AdcNo)) return(kFALSE);
+	if (!this->ReadEventConfig(Module, bits, ChanNo)) return(kFALSE);
 	bits &= 0xFFFF;
 	bits |=	(Bits << 19);		// header bit #1 -> event config bit #17, bits 1 & 2 read-only
-	if (!this->WriteEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	return(this->ReadEventConfig(Module, Bits, AdcNo == kSis3302AllAdcs ? 0 : AdcNo));
+	if (!this->WriteEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	return(this->ReadEventConfig(Module, Bits, ChanNo == kSis3302AllChans ? 0 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1172,21 +1196,21 @@ Bool_t SrvSis3302::SetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcN
 //! \details		Returns group id (read-only)
 //! \param[in]		Module		-- module address
 //! \param[out]		GroupId 	-- group id
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetGroupId(SrvVMEModule * Module, Int_t & GroupId, Int_t AdcNo) {
+Bool_t SrvSis3302::GetGroupId(SrvVMEModule * Module, Int_t & GroupId, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGroupId");
 		return(kFALSE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventConfig(Module, bits, AdcNo)) return(kFALSE);
+	if (!this->ReadEventConfig(Module, bits, ChanNo)) return(kFALSE);
 	bits >>= 17;
 	GroupId = bits & 0x3;
 	return(kTRUE);
@@ -1197,22 +1221,22 @@ Bool_t SrvSis3302::GetGroupId(SrvVMEModule * Module, Int_t & GroupId, Int_t AdcN
 //! \details		Returns trigger mode
 //! \param[in]		Module		-- module address
 //! \param[out]		Bits		-- bits (0,1,2,3)
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::GetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetTriggerMode");
 		return(kFALSE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	if (AdcNo & 1) {
+	if (!this->ReadEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	if (ChanNo & 1) {
 		bits >>= 10;
 	} else {
 		bits >>= 2;
@@ -1226,11 +1250,11 @@ Bool_t SrvSis3302::GetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t Adc
 //! \details		Defines trigger mode
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits (0,1,2,3)
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::SetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < kSis3302TriggerOff || Bits > kSis3302TriggerBoth) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal trigger mode - " << setbase(16) << Bits
@@ -1239,27 +1263,27 @@ Bool_t SrvSis3302::SetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t Adc
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t b;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			b = Bits;
-			if (!this->SetTriggerMode(Module, b, adc)) return(kFALSE);
+			if (!this->SetTriggerMode(Module, b, chan)) return(kFALSE);
 		}
 		Bits = b;
 		return(kTRUE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	if (AdcNo & 1) {
+	if (!this->ReadEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	if (ChanNo & 1) {
 		bits &= ~(kSis3302TriggerBoth << 10);
 		bits |=	(Bits << 10);
 	} else {
 		bits &= ~(kSis3302TriggerBoth << 2);
 		bits |=	(Bits << 2);
 	}
-	if (!this->WriteEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	return(this->ReadEventConfig(Module, Bits, AdcNo == kSis3302AllAdcs ? 0 : AdcNo));
+	if (!this->WriteEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	return(this->ReadEventConfig(Module, Bits, ChanNo == kSis3302AllChans ? 0 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1267,22 +1291,22 @@ Bool_t SrvSis3302::SetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t Adc
 //! \details		Returns gate mode
 //! \param[in]		Module		-- module address
 //! \param[out]		Bits		-- bits (0,1,2,3)
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::GetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGateMode");
 		return(kFALSE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	if (AdcNo & 1) {
+	if (!this->ReadEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	if (ChanNo & 1) {
 		bits >>= 12;
 	} else {
 		bits >>= 4;
@@ -1296,11 +1320,11 @@ Bool_t SrvSis3302::GetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo)
 //! \details		Defines gate mode
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits (0,1,2,3)
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::SetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < kSis3302GateOff || Bits > kSis3302GateBoth) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal gate mode - " << setbase(16) << Bits
@@ -1309,27 +1333,27 @@ Bool_t SrvSis3302::SetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo)
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t b;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			b = Bits;
-			if (!this->SetGateMode(Module, b, adc)) return(kFALSE);
+			if (!this->SetGateMode(Module, b, chan)) return(kFALSE);
 		}
 		Bits = b;
 		return(kTRUE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	if (AdcNo & 1) {
+	if (!this->ReadEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	if (ChanNo & 1) {
 		bits &= ~(kSis3302GateBoth << 12);
 		bits |=	(Bits << 12);
 	} else {
 		bits &= ~(kSis3302GateBoth << 4);
 		bits |=	(Bits << 4);
 	}
-	if (!this->WriteEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	return(this->ReadEventConfig(Module, Bits, AdcNo == kSis3302AllAdcs ? 0 : AdcNo));
+	if (!this->WriteEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	return(this->ReadEventConfig(Module, Bits, ChanNo == kSis3302AllChans ? 0 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1337,22 +1361,22 @@ Bool_t SrvSis3302::SetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo)
 //! \details		Returns next-neighbor trigger mode
 //! \param[in]		Module		-- module address
 //! \param[out]		Bits		-- bits (0,1,2,3)
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::GetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetNextNeighborTriggerMode");
 		return(kFALSE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventExtendedConfig(Module, bits, AdcNo)) return(kFALSE);
-	if (AdcNo & 1) {
+	if (!this->ReadEventExtendedConfig(Module, bits, ChanNo)) return(kFALSE);
+	if (ChanNo & 1) {
 		bits >>= 14;
 	} else {
 		bits >>= 6;
@@ -1366,11 +1390,11 @@ Bool_t SrvSis3302::GetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bit
 //! \details		Defines next-neighbor trigger mode
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits (0,1,2,3)
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::SetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < kSis3302TriggerOff || Bits > kSis3302TriggerBoth) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal next-neighbor trigger mode - " << setbase(16) << Bits
@@ -1379,27 +1403,27 @@ Bool_t SrvSis3302::SetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bit
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t b;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			b = Bits;
-			if (!this->SetNextNeighborTriggerMode(Module, b, adc)) return(kFALSE);
+			if (!this->SetNextNeighborTriggerMode(Module, b, chan)) return(kFALSE);
 		}
 		Bits = b;
 		return(kTRUE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventExtendedConfig(Module, bits, AdcNo)) return(kFALSE);
-	if (AdcNo & 1) {
+	if (!this->ReadEventExtendedConfig(Module, bits, ChanNo)) return(kFALSE);
+	if (ChanNo & 1) {
 		bits &= ~(kSis3302TriggerBoth << 10);
 		bits |=	(Bits << 14);
 	} else {
 		bits &= ~(kSis3302TriggerBoth << 2);
 		bits |=	(Bits << 6);
 	}
-	if (!this->WriteEventExtendedConfig(Module, bits, AdcNo)) return(kFALSE);
-	return(this->ReadEventExtendedConfig(Module, Bits, AdcNo == kSis3302AllAdcs ? 0 : AdcNo));
+	if (!this->WriteEventExtendedConfig(Module, bits, ChanNo)) return(kFALSE);
+	return(this->ReadEventExtendedConfig(Module, Bits, ChanNo == kSis3302AllChans ? 0 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1407,22 +1431,22 @@ Bool_t SrvSis3302::SetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bit
 //! \details		Returns next-neighbor gate mode
 //! \param[in]		Module		-- module address
 //! \param[out]		Bits		-- bits (0,1,2,3)
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::GetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetNextNeighborGateMode");
 		return(kFALSE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	if (AdcNo & 1) {
+	if (!this->ReadEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	if (ChanNo & 1) {
 		bits >>= 14;
 	} else {
 		bits >>= 6;
@@ -1436,11 +1460,11 @@ Bool_t SrvSis3302::GetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, 
 //! \details		Defines next-neighbor gate mode
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits (0,1,2,3)
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::SetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < kSis3302GateOff || Bits > kSis3302GateBoth) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal next-neighbor gate mode - " << setbase(16) << Bits
@@ -1449,27 +1473,27 @@ Bool_t SrvSis3302::SetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, 
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t b;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			b = Bits;
-			if (!this->SetNextNeighborGateMode(Module, b, adc)) return(kFALSE);
+			if (!this->SetNextNeighborGateMode(Module, b, chan)) return(kFALSE);
 		}
 		Bits = b;
 		return(kTRUE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	if (AdcNo & 1) {
+	if (!this->ReadEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	if (ChanNo & 1) {
 		bits &= ~(kSis3302GateBoth << 14);
 		bits |=	(Bits << 14);
 	} else {
 		bits &= ~(kSis3302GateBoth << 6);
 		bits |=	(Bits << 6);
 	}
-	if (!this->WriteEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	return(this->ReadEventConfig(Module, Bits, AdcNo == kSis3302AllAdcs ? 0 : AdcNo));
+	if (!this->WriteEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	return(this->ReadEventConfig(Module, Bits, ChanNo == kSis3302AllChans ? 0 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1477,22 +1501,22 @@ Bool_t SrvSis3302::SetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, 
 //! \details		Returns trigger polarity
 //! \param[in]		Module		-- module address
 //! \param[out]		InvertFlag	-- kTRUE if trigger is inverted
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t AdcNo) {
+Bool_t SrvSis3302::GetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetPolarity");
 		return(kFALSE);
 	}
 
 	Int_t bits;
-	if (!this->ReadEventConfig(Module, bits, AdcNo)) return(kFALSE);
-	if (AdcNo & 1) bits >>= 8;
+	if (!this->ReadEventConfig(Module, bits, ChanNo)) return(kFALSE);
+	if (ChanNo & 1) bits >>= 8;
 	InvertFlag = ((bits & kSis3302PolarityNegative) > 0);
 	return(kTRUE);
 }
@@ -1502,31 +1526,31 @@ Bool_t SrvSis3302::GetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t
 //! \details		Defines trigger polarity
 //! \param[in]		Module			-- module address
 //! \param[in]		InvertFlag		-- kTRUE if neg polarity
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t AdcNo) {
+Bool_t SrvSis3302::SetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Bool_t ifl;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			ifl = InvertFlag;
-			if (!this->SetPolarity(Module, ifl, adc)) return(kFALSE);
+			if (!this->SetPolarity(Module, ifl, chan)) return(kFALSE);
 		}
 		InvertFlag = ifl;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadEventConfig(Module, data, AdcNo)) return(kFALSE);
-	if (AdcNo & 1) {
+	if (!this->ReadEventConfig(Module, data, ChanNo)) return(kFALSE);
+	if (ChanNo & 1) {
 		if (InvertFlag) data |= (kSis3302PolarityNegative << 8); else data &= ~(kSis3302PolarityNegative << 8);
 	} else {
 		data &= ~1;
 		if (InvertFlag) data |= kSis3302PolarityNegative; else data &= ~kSis3302PolarityNegative;
 	}
-	if (!this->WriteEventConfig(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteEventConfig(Module, data, ChanNo)) return(kFALSE);
 
 	return(kTRUE);
 }
@@ -1536,21 +1560,21 @@ Bool_t SrvSis3302::SetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t
 //! \details		Reads end addr threshold register
 //! \param[in]		Module		-- module address
 //! \param[out]		Thresh		-- threshold
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadEndAddrThresh");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0:
 		case 1: 	offset = SIS3302_END_ADDRESS_THRESHOLD_ADC12; break;
 		case 2:
@@ -1574,15 +1598,15 @@ Bool_t SrvSis3302::ReadEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_
 //! \details		Writes end addr threshold register
 //! \param[in]		Module		-- module address
 //! \param[in]		Thresh		-- threshold
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteEndAddrThresh");
 		return(kFALSE);
 	}
@@ -1595,8 +1619,8 @@ Bool_t SrvSis3302::WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
-		case kSis3302AllAdcs:	offset = SIS3302_END_ADDRESS_THRESHOLD_ALL_ADC; break;
+	switch (ChanNo) {
+		case kSis3302AllChans:	offset = SIS3302_END_ADDRESS_THRESHOLD_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_END_ADDRESS_THRESHOLD_ADC12; break;
 		case 2:
@@ -1613,7 +1637,7 @@ Bool_t SrvSis3302::WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int
 	gSignalTrap = kFALSE;
 	*endAddr = Thresh;
 	if (this->CheckBusTrap(Module, offset, "WriteEndAddrThresh")) return(kFALSE);
-	return(this->ReadEndAddrThresh(Module, Thresh, AdcNo == kSis3302AllAdcs ? 0 : AdcNo));
+	return(this->ReadEndAddrThresh(Module, Thresh, ChanNo == kSis3302AllChans ? 0 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1621,21 +1645,21 @@ Bool_t SrvSis3302::WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int
 //! \details		Reads trigger register
 //! \param[in]		Module		-- module address
 //! \param[out]		Bits		-- bits
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadPreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadPreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadPreTrigDelayAndGateLength");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0:
 		case 1: 	offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ADC12; break;
 		case 2:
@@ -1659,22 +1683,22 @@ Bool_t SrvSis3302::ReadPreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & 
 //! \details		Writes trigger register
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WritePreTrigDelayAndGateLength");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
-		case kSis3302AllAdcs:	offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ALL_ADC; break;
+	switch (ChanNo) {
+		case kSis3302AllChans:	offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_PRETRIGGER_DELAY_TRIGGERGATE_LENGTH_ADC12; break;
 		case 2:
@@ -1691,7 +1715,7 @@ Bool_t SrvSis3302::WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t &
 	gSignalTrap = kFALSE;
 	*trigReg = Bits;
 	if (this->CheckBusTrap(Module, offset, "WritePreTrigDelayAndGateLength")) return(kFALSE);
-	return(this->ReadPreTrigDelayAndGateLength(Module, Bits, AdcNo == kSis3302AllAdcs ? 1 : AdcNo));
+	return(this->ReadPreTrigDelayAndGateLength(Module, Bits, ChanNo == kSis3302AllChans ? 1 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1699,20 +1723,20 @@ Bool_t SrvSis3302::WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t &
 //! \details		Reads pretrigger delay
 //! \param[in]		Module		-- module address
 //! \param[out]		Delay		-- delay
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadPreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadPreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadPreTrigDelay");
 		return(kFALSE);
 	}
 
-	if (!this->ReadPreTrigDelayAndGateLength(Module, Delay, AdcNo)) return(kFALSE);
+	if (!this->ReadPreTrigDelayAndGateLength(Module, Delay, ChanNo)) return(kFALSE);
 	Delay >>= 16;
 	Delay -= 2;
 	if (Delay < 0) Delay += 1024;
@@ -1725,31 +1749,31 @@ Bool_t SrvSis3302::ReadPreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t 
 //! \details		Writes pretrigger delay
 //! \param[in]		Module		-- module address
 //! \param[in]		Delay		-- delay
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WritePreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t AdcNo) {
+Bool_t SrvSis3302::WritePreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t ChanNo) {
 
 	if (Delay < kSis3302PreTrigDelayMin || Delay > kSis3302PreTrigDelayMax) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Pretrigger delay out of range - "
-						<< AdcNo << " (should be in [" << kSis3302PreTrigDelayMin << ","
+						<< ChanNo << " (should be in [" << kSis3302PreTrigDelayMin << ","
 						<< kSis3302PreTrigDelayMax << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WritePreTrigDelay");
 		return(kFALSE);
 	}
 
 	Int_t delay;
-	if (AdcNo == kSis3302AllAdcs) {
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+	if (ChanNo == kSis3302AllChans) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			delay = Delay;
-			if (!this->WritePreTrigDelay(Module, delay, adc)) return(kFALSE);
+			if (!this->WritePreTrigDelay(Module, delay, chan)) return(kFALSE);
 		}
 		Delay = delay;
 		return(kTRUE);
 	}
 
-	if (!this->ReadPreTrigDelayAndGateLength(Module, delay, AdcNo)) return(kFALSE);
+	if (!this->ReadPreTrigDelayAndGateLength(Module, delay, ChanNo)) return(kFALSE);
 
 	Delay += 2;
 	if (Delay >= 1024) Delay -= 1024;
@@ -1757,7 +1781,7 @@ Bool_t SrvSis3302::WritePreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t
 	delay &= 0xFFFF;
 	delay |= Delay << 16;
 	Delay = delay;
-	if (!this->WritePreTrigDelayAndGateLength(Module, Delay, AdcNo)) return(kFALSE);
+	if (!this->WritePreTrigDelayAndGateLength(Module, Delay, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -1766,20 +1790,20 @@ Bool_t SrvSis3302::WritePreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t
 //! \details		Reads trigger gate length
 //! \param[in]		Module		-- module address
 //! \param[out]		Gate		-- gate
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadTrigGateLength");
 		return(kFALSE);
 	}
 
-	if (!this->ReadPreTrigDelayAndGateLength(Module, Gate, AdcNo)) return(kFALSE);
+	if (!this->ReadPreTrigDelayAndGateLength(Module, Gate, ChanNo)) return(kFALSE);
 	Gate &= 0xFFFF;
 	Gate += 1;
 	return(kTRUE);
@@ -1790,11 +1814,11 @@ Bool_t SrvSis3302::ReadTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t
 //! \details		Writes trigger gate length
 //! \param[in]		Module		-- module address
 //! \param[in]		Gate		-- gate
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t ChanNo) {
 
 	if (Gate < kSis3302TrigGateLengthMin || Gate > kSis3302TrigGateLengthMax) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Trigger gate length out of range - "
@@ -1805,20 +1829,20 @@ Bool_t SrvSis3302::WriteTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_
 	}
 
 	Int_t gate;
-	if (AdcNo == kSis3302AllAdcs) {
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+	if (ChanNo == kSis3302AllChans) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			gate = Gate;
-			if (!this->WriteTrigGateLength(Module, gate, adc)) return(kFALSE);
+			if (!this->WriteTrigGateLength(Module, gate, chan)) return(kFALSE);
 		}
 		Gate = gate;
 		return(kTRUE);
 	}
 
-	if (!this->ReadPreTrigDelayAndGateLength(Module, gate, AdcNo)) return(kFALSE);
+	if (!this->ReadPreTrigDelayAndGateLength(Module, gate, ChanNo)) return(kFALSE);
 	gate &= 0xFFFF0000;
 	gate |= Gate - 1;
 	Gate = gate;
-	return(this->WritePreTrigDelayAndGateLength(Module, Gate, AdcNo));
+	return(this->WritePreTrigDelayAndGateLength(Module, Gate, ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1826,21 +1850,21 @@ Bool_t SrvSis3302::WriteTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_
 //! \details		Reads raw data buffer register
 //! \param[in]		Module		-- module address
 //! \param[out]		Bits		-- bits
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadRawDataBufConfig");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0:
 		case 1: 	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ADC12; break;
 		case 2:
@@ -1864,22 +1888,22 @@ Bool_t SrvSis3302::ReadRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int
 //! \details		Writes raw data buffer register
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteRawDataBufConfig");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
-		case kSis3302AllAdcs:	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ALL_ADC; break;
+	switch (ChanNo) {
+		case kSis3302AllChans:	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_RAW_DATA_BUFFER_CONFIG_ADC12; break;
 		case 2:
@@ -1896,7 +1920,7 @@ Bool_t SrvSis3302::WriteRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, In
 	gSignalTrap = kFALSE;
 	*rawData = Bits;
 	if (this->CheckBusTrap(Module, offset, "WriteRawDataBufConfig")) return(kFALSE);
-	return(this->ReadRawDataBufConfig(Module, Bits, AdcNo == kSis3302AllAdcs ? 1 : AdcNo));
+	return(this->ReadRawDataBufConfig(Module, Bits, ChanNo == kSis3302AllChans ? 1 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1904,21 +1928,21 @@ Bool_t SrvSis3302::WriteRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, In
 //! \details		Reads raw data sample length
 //! \param[in]		Module			-- module address
 //! \param[out]		SampleLength	-- length
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadRawDataSampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadRawDataSampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadRawDataSampleLength");
 		return(kFALSE);
 	}
 
 	Int_t bits;
-	if (!this->ReadRawDataBufConfig(Module, bits, AdcNo)) return(kFALSE);
+	if (!this->ReadRawDataBufConfig(Module, bits, ChanNo)) return(kFALSE);
 	SampleLength = (bits >> 16) & 0xFFFF;
 	return(kTRUE);
 }
@@ -1928,11 +1952,11 @@ Bool_t SrvSis3302::ReadRawDataSampleLength(SrvVMEModule * Module, Int_t & Sample
 //! \details		Writes raw data sample length
 //! \param[in]		Module			-- module address
 //! \param[in]		SampleLength	-- length
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteRawDataSampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteRawDataSampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t ChanNo) {
 
 	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't write raw data sample length - trace collection in progress ..." << endl;
@@ -1955,20 +1979,20 @@ Bool_t SrvSis3302::WriteRawDataSampleLength(SrvVMEModule * Module, Int_t & Sampl
 	}
 
 	Int_t sl;
-	if (AdcNo == kSis3302AllAdcs) {
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+	if (ChanNo == kSis3302AllChans) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			sl = SampleLength;
-			if (!this->WriteRawDataSampleLength(Module, sl, adc)) return(kFALSE);
+			if (!this->WriteRawDataSampleLength(Module, sl, chan)) return(kFALSE);
 		}
 		SampleLength = sl;
 		return(kTRUE);
 	}
 
-	if (!this->ReadRawDataBufConfig(Module, sl, AdcNo)) return(kFALSE);
+	if (!this->ReadRawDataBufConfig(Module, sl, ChanNo)) return(kFALSE);
 	sl &= 0x0000FFFF;
 	sl |= (SampleLength << 16);
 	SampleLength = sl;
-	return(this->WriteRawDataBufConfig(Module, SampleLength, AdcNo));
+	return(this->WriteRawDataBufConfig(Module, SampleLength, ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -1976,21 +2000,21 @@ Bool_t SrvSis3302::WriteRawDataSampleLength(SrvVMEModule * Module, Int_t & Sampl
 //! \details		Reads raw data start index
 //! \param[in]		Module			-- module address
 //! \param[out]		StartIndex		-- start
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadRawDataStartIndex(SrvVMEModule * Module, Int_t & StartIndex, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadRawDataStartIndex(SrvVMEModule * Module, Int_t & StartIndex, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadRawDataStartIndex");
 		return(kFALSE);
 	}
 
 	Int_t bits;
-	if (!this->ReadRawDataBufConfig(Module, bits, AdcNo)) return(kFALSE);
+	if (!this->ReadRawDataBufConfig(Module, bits, ChanNo)) return(kFALSE);
 	StartIndex = bits & 0xFFFF;
 	return(kTRUE);
 }
@@ -2000,11 +2024,11 @@ Bool_t SrvSis3302::ReadRawDataStartIndex(SrvVMEModule * Module, Int_t & StartInd
 //! \details		Writes raw data start index
 //! \param[in]		Module			-- module address
 //! \param[in]		StartIndex		-- start
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteRawDataStartIndex(SrvVMEModule * Module, Int_t & StartIndex, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteRawDataStartIndex(SrvVMEModule * Module, Int_t & StartIndex, Int_t ChanNo) {
 
 	if (StartIndex < kSis3302RawDataStartIndexMin || StartIndex > kSis3302RawDataStartIndexMax) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Start index out of range - "
@@ -2021,20 +2045,20 @@ Bool_t SrvSis3302::WriteRawDataStartIndex(SrvVMEModule * Module, Int_t & StartIn
 	}
 
 	Int_t sx;
-	if (AdcNo == kSis3302AllAdcs) {
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+	if (ChanNo == kSis3302AllChans) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			sx = StartIndex;
-			if (!this->WriteRawDataStartIndex(Module, sx, adc)) return(kFALSE);
+			if (!this->WriteRawDataStartIndex(Module, sx, chan)) return(kFALSE);
 		}
 		StartIndex = sx;
 		return(kTRUE);
 	}
 
-	if (!this->ReadRawDataBufConfig(Module, sx, AdcNo)) return(kFALSE);
+	if (!this->ReadRawDataBufConfig(Module, sx, ChanNo)) return(kFALSE);
 	sx &= 0xFFFF0000;
 	sx |= StartIndex;
 	StartIndex = sx;
-	return(this->WriteRawDataBufConfig(Module, StartIndex, AdcNo));
+	return(this->WriteRawDataBufConfig(Module, StartIndex, ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2042,21 +2066,21 @@ Bool_t SrvSis3302::WriteRawDataStartIndex(SrvVMEModule * Module, Int_t & StartIn
 //! \details		Reads next sample addr register
 //! \param[in]		Module		-- module address
 //! \param[out]		Addr		-- address
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadNextSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadNextSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadNextSampleAddr");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0: 	offset = SIS3302_ACTUAL_SAMPLE_ADDRESS_ADC1; break;
 		case 1: 	offset = SIS3302_ACTUAL_SAMPLE_ADDRESS_ADC2; break;
 		case 2: 	offset = SIS3302_ACTUAL_SAMPLE_ADDRESS_ADC3; break;
@@ -2079,21 +2103,21 @@ Bool_t SrvSis3302::ReadNextSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t
 //! \details		Reads previous sample addr register
 //! \param[in]		Module		-- module address
 //! \param[in]		Addr		-- address
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadPrevBankSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadPrevBankSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadPrevBankSampleAddr");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0: 	offset = SIS3302_PREVIOUS_BANK_SAMPLE_ADDRESS_ADC1; break;
 		case 1: 	offset = SIS3302_PREVIOUS_BANK_SAMPLE_ADDRESS_ADC2; break;
 		case 2: 	offset = SIS3302_PREVIOUS_BANK_SAMPLE_ADDRESS_ADC3; break;
@@ -2117,21 +2141,21 @@ Bool_t SrvSis3302::ReadPrevBankSampleAddr(SrvVMEModule * Module, Int_t & Addr, I
 //! \details		Reads actual sample register
 //! \param[in]		Module		-- module address
 //! \param[out]		Data		-- sample data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadActualSample(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadActualSample(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadActualSample");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0:
 		case 1: 	offset = SIS3302_ACTUAL_SAMPLE_VALUE_ADC12; break;
 		case 2:
@@ -2147,7 +2171,7 @@ Bool_t SrvSis3302::ReadActualSample(SrvVMEModule * Module, Int_t & Data, Int_t A
 
 	gSignalTrap = kFALSE;
 	Data = *actSample;
-	if ((AdcNo & 1) == 0) Data >>= 16;
+	if ((ChanNo & 1) == 0) Data >>= 16;
 	return(!this->CheckBusTrap(Module, offset, "ReadActualSample"));
 }
 
@@ -2156,21 +2180,21 @@ Bool_t SrvSis3302::ReadActualSample(SrvVMEModule * Module, Int_t & Data, Int_t A
 //! \details		Reads trigger setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadTriggerSetup");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0: 	offset = SIS3302_TRIGGER_SETUP_ADC1; break;
 		case 1: 	offset = SIS3302_TRIGGER_SETUP_ADC2; break;
 		case 2: 	offset = SIS3302_TRIGGER_SETUP_ADC3; break;
@@ -2194,31 +2218,31 @@ Bool_t SrvSis3302::ReadTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t A
 //! \details		Writes trigger setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteTriggerSetup");
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t data;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			data = Data;
-			if (!this->WriteTriggerSetup(Module, data, adc)) return(kFALSE);
+			if (!this->WriteTriggerSetup(Module, data, chan)) return(kFALSE);
 		}
 		Data = data;
 		return(kTRUE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0: 	offset = SIS3302_TRIGGER_SETUP_ADC1; break;
 		case 1: 	offset = SIS3302_TRIGGER_SETUP_ADC2; break;
 		case 2: 	offset = SIS3302_TRIGGER_SETUP_ADC3; break;
@@ -2235,7 +2259,7 @@ Bool_t SrvSis3302::WriteTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t 
 	gSignalTrap = kFALSE;
 	*trigSetup = Data;
 	if (this->CheckBusTrap(Module, offset, "WriteTriggerSetup")) return(kFALSE);
-	return(this->ReadTriggerSetup(Module, Data, AdcNo));
+	return(this->ReadTriggerSetup(Module, Data, ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2243,21 +2267,21 @@ Bool_t SrvSis3302::WriteTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t 
 //! \details		Reads EXTENDED trigger setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadTriggerExtendedSetup");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0: 	offset = SIS3302_TRIGGER_SETUP_EXTENDED_ADC1; break;
 		case 1: 	offset = SIS3302_TRIGGER_SETUP_EXTENDED_ADC2; break;
 		case 2: 	offset = SIS3302_TRIGGER_SETUP_EXTENDED_ADC3; break;
@@ -2281,31 +2305,31 @@ Bool_t SrvSis3302::ReadTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data,
 //! \details		Writes EXTENDED trigger setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteTriggerExtendedSetup");
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t data;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			data = Data;
-			if (!this->WriteTriggerExtendedSetup(Module, data, adc)) return(kFALSE);
+			if (!this->WriteTriggerExtendedSetup(Module, data, chan)) return(kFALSE);
 		}
 		Data = data;
 		return(kTRUE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0: 	offset = SIS3302_TRIGGER_SETUP_EXTENDED_ADC1; break;
 		case 1: 	offset = SIS3302_TRIGGER_SETUP_EXTENDED_ADC2; break;
 		case 2: 	offset = SIS3302_TRIGGER_SETUP_EXTENDED_ADC3; break;
@@ -2322,7 +2346,7 @@ Bool_t SrvSis3302::WriteTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data
 	gSignalTrap = kFALSE;
 	*trigSetup = Data;
 	if (this->CheckBusTrap(Module, offset, "WriteTriggerExtendedSetup")) return(kFALSE);
-	return(this->ReadTriggerExtendedSetup(Module, Data, AdcNo));
+	return(this->ReadTriggerExtendedSetup(Module, Data, ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2331,15 +2355,15 @@ Bool_t SrvSis3302::WriteTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data
 //! \param[in]		Module		-- module address
 //! \param[out]		Peak		-- peaking time
 //! \param[out]		Gap 		-- gap time
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t ChanNo) {
 
 	Int_t data, xdata;
-	if (!this->ReadTriggerSetup(Module, data, AdcNo)) return(kFALSE);
-	if (!this->ReadTriggerExtendedSetup(Module, xdata, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerSetup(Module, data, ChanNo)) return(kFALSE);
+	if (!this->ReadTriggerExtendedSetup(Module, xdata, ChanNo)) return(kFALSE);
 	Peak = data & 0xFF;
 	Peak |= (xdata & 0x3) >> 8;
 	Int_t sumG = (data >> 8) & 0xFF;
@@ -2348,14 +2372,14 @@ Bool_t SrvSis3302::ReadTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, In
 	return(kTRUE);
 }
 
-Bool_t SrvSis3302::WriteTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t ChanNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets trigger peaking and gap times
 //! \param[in]		Module		-- module address
 //! \param[in]		Peak		-- peaking time
 //! \param[in]		Gap 		-- gap time
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //////////////////////////////////////////////////////////////////////////////
 
 	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
@@ -2373,27 +2397,27 @@ Bool_t SrvSis3302::WriteTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, I
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t g, p;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			g = Gap; p = Peak;
-			if (!this->WriteTriggerPeakAndGap(Module, p, g, adc)) return(kFALSE);
+			if (!this->WriteTriggerPeakAndGap(Module, p, g, chan)) return(kFALSE);
 		}
 		Peak = p; Gap = g;
 		return(kTRUE);
 	}
 
 	Int_t data, xdata;
-	if (!this->ReadTriggerSetup(Module, data, AdcNo)) return(kFALSE);
-	if (!this->ReadTriggerExtendedSetup(Module, xdata, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerSetup(Module, data, ChanNo)) return(kFALSE);
+	if (!this->ReadTriggerExtendedSetup(Module, xdata, ChanNo)) return(kFALSE);
 	data &= 0xFFFF0000;
 	data |= (sumG & 0xFF) << 8;
 	data |= Peak & 0xFF;
 	xdata &= 0xFFFF0000;
 	xdata |= sumG & 0x300;
 	xdata |= (Peak & 0x300) >> 8;
-	if (!this->WriteTriggerSetup(Module, data, AdcNo)) return(kFALSE);
-	if (!this->WriteTriggerExtendedSetup(Module, xdata, AdcNo)) return(kFALSE);
+	if (!this->WriteTriggerSetup(Module, data, ChanNo)) return(kFALSE);
+	if (!this->WriteTriggerExtendedSetup(Module, xdata, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -2402,14 +2426,14 @@ Bool_t SrvSis3302::WriteTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, I
 //! \details		Reads trigger pulse length
 //! \param[in]		Module			-- module address
 //! \param[out]		PulseLength 	-- pulse length
-//! \param[in]		AdcNo			-- adc number
+//! \param[in]		ChanNo			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadTriggerSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerSetup(Module, data, ChanNo)) return(kFALSE);
 	PulseLength = (data >> 16) & 0xFF;
 	return(kTRUE);
 }
@@ -2419,11 +2443,11 @@ Bool_t SrvSis3302::ReadTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLe
 //! \details		Sets trigger pulse length
 //! \param[in]		Module			-- module address
 //! \param[in]		PulseLength 	-- pulse length
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t ChanNo) {
 
 	if (PulseLength < 0 || PulseLength > 0xFF) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong trigger pulse length - "
@@ -2432,21 +2456,21 @@ Bool_t SrvSis3302::WriteTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseL
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t pl;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			pl = PulseLength;
-			if (!this->WriteTriggerPulseLength(Module, pl, adc)) return(kFALSE);
+			if (!this->WriteTriggerPulseLength(Module, pl, chan)) return(kFALSE);
 		}
 		PulseLength = pl;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadTriggerSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerSetup(Module, data, ChanNo)) return(kFALSE);
 	data &= 0xFF00FFFF;
 	data |= ((PulseLength & 0xFF) << 16);
-	if (!this->WriteTriggerSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteTriggerSetup(Module, data, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -2455,14 +2479,14 @@ Bool_t SrvSis3302::WriteTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseL
 //! \details		Reads trigger internal gate length
 //! \param[in]		Module			-- module address
 //! \param[out]		Gate			-- gate length
-//! \param[in]		AdcNo			-- adc number
+//! \param[in]		ChanNo			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadTriggerInternalGate(SrvVMEModule * Module, Int_t & Gate, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadTriggerInternalGate(SrvVMEModule * Module, Int_t & Gate, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadTriggerSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerSetup(Module, data, ChanNo)) return(kFALSE);
 	Gate = (data >> 24) & 0x3F;
 	return(kTRUE);
 }
@@ -2472,11 +2496,11 @@ Bool_t SrvSis3302::ReadTriggerInternalGate(SrvVMEModule * Module, Int_t & Gate, 
 //! \details		Sets trigger internal gate length
 //! \param[in]		Module			-- module address
 //! \param[in]		GateLength	 	-- gate length
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteTriggerInternalGate(SrvVMEModule * Module, Int_t & Gate, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteTriggerInternalGate(SrvVMEModule * Module, Int_t & Gate, Int_t ChanNo) {
 
 	if (Gate < 0 || Gate > 0x3F) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong internal trigger gate - "
@@ -2485,21 +2509,21 @@ Bool_t SrvSis3302::WriteTriggerInternalGate(SrvVMEModule * Module, Int_t & Gate,
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t gl;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			gl = Gate;
-			if (!this->WriteTriggerInternalGate(Module,gl, adc)) return(kFALSE);
+			if (!this->WriteTriggerInternalGate(Module,gl, chan)) return(kFALSE);
 		}
 		Gate = gl;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadTriggerSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerSetup(Module, data, ChanNo)) return(kFALSE);
 	data &= 0xFFFFFF;
 	data |= (Gate << 24);
-	if (!this->WriteTriggerSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteTriggerSetup(Module, data, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -2508,14 +2532,14 @@ Bool_t SrvSis3302::WriteTriggerInternalGate(SrvVMEModule * Module, Int_t & Gate,
 //! \details		Reads trigger internal delay
 //! \param[in]		Module			-- module address
 //! \param[out]		Delay			-- delay length
-//! \param[in]		AdcNo			-- adc number
+//! \param[in]		ChanNo			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadTriggerInternalDelay(SrvVMEModule * Module, Int_t & Delay, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadTriggerInternalDelay(SrvVMEModule * Module, Int_t & Delay, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadTriggerExtendedSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerExtendedSetup(Module, data, ChanNo)) return(kFALSE);
 	Delay = (data >> 24) & 0x3F;
 	return(kTRUE);
 }
@@ -2525,11 +2549,11 @@ Bool_t SrvSis3302::ReadTriggerInternalDelay(SrvVMEModule * Module, Int_t & Delay
 //! \details		Sets trigger internal delay
 //! \param[in]		Module			-- module address
 //! \param[in]		Delay		 	-- delay length
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteTriggerInternalDelay(SrvVMEModule * Module, Int_t & Delay, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteTriggerInternalDelay(SrvVMEModule * Module, Int_t & Delay, Int_t ChanNo) {
 
 	if (Delay < 0 || Delay > 0x3F) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong internal trigger delay - "
@@ -2538,21 +2562,21 @@ Bool_t SrvSis3302::WriteTriggerInternalDelay(SrvVMEModule * Module, Int_t & Dela
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t dl;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			dl = Delay;
-			if (!this->WriteTriggerInternalDelay(Module, dl, adc)) return(kFALSE);
+			if (!this->WriteTriggerInternalDelay(Module, dl, chan)) return(kFALSE);
 		}
 		Delay = dl;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadTriggerExtendedSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerExtendedSetup(Module, data, ChanNo)) return(kFALSE);
 	data &= 0xFFFFFF;
 	data |= (Delay << 24);
-	if (!this->WriteTriggerExtendedSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteTriggerExtendedSetup(Module, data, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -2561,14 +2585,14 @@ Bool_t SrvSis3302::WriteTriggerInternalDelay(SrvVMEModule * Module, Int_t & Dela
 //! \details		Reads trigger decimation
 //! \param[in]		Module			-- module address
 //! \param[out]		Decimation		-- decimation
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t AdcNo) {
+Bool_t SrvSis3302::GetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadTriggerExtendedSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerExtendedSetup(Module, data, ChanNo)) return(kFALSE);
 	Decimation = (data >> 16) & 0x3;
 	return(kTRUE);
 }
@@ -2578,11 +2602,11 @@ Bool_t SrvSis3302::GetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimatio
 //! \details		Sets trigger decimation
 //! \param[in]		Module			-- module address
 //! \param[in]		Decimation		-- decimation
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t AdcNo) {
+Bool_t SrvSis3302::SetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t ChanNo) {
 
 	if (Decimation < 0 || Decimation > 3) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong trigger decimation - " << Decimation
@@ -2591,21 +2615,21 @@ Bool_t SrvSis3302::SetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimatio
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t dc;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			dc = Decimation;
-			if (!this->SetTriggerDecimation(Module, dc, adc)) return(kFALSE);
+			if (!this->SetTriggerDecimation(Module, dc, chan)) return(kFALSE);
 		}
 		Decimation = dc;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadTriggerExtendedSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerExtendedSetup(Module, data, ChanNo)) return(kFALSE);
 	data &= ~(0x3 << 16);
 	data |= (Decimation << 16);
-	if (!this->WriteTriggerExtendedSetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteTriggerExtendedSetup(Module, data, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -2614,21 +2638,21 @@ Bool_t SrvSis3302::SetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimatio
 //! \details		Reads trigger threshold register
 //! \param[in]		Module		-- module address
 //! \param[out]		Data		-- data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadTriggerThreshReg");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0: 	offset = SIS3302_TRIGGER_THRESHOLD_ADC1; break;
 		case 1: 	offset = SIS3302_TRIGGER_THRESHOLD_ADC2; break;
 		case 2: 	offset = SIS3302_TRIGGER_THRESHOLD_ADC3; break;
@@ -2652,31 +2676,31 @@ Bool_t SrvSis3302::ReadTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int
 //! \details		Writes trigger threshold register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteTriggerThreshReg");
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t data;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			data = Data;
-			if (!this->WriteTriggerThreshReg(Module, data, adc)) return(kFALSE);
+			if (!this->WriteTriggerThreshReg(Module, data, chan)) return(kFALSE);
 		}
 		Data = data;
 		return(kTRUE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0: 	offset = SIS3302_TRIGGER_THRESHOLD_ADC1; break;
 		case 1: 	offset = SIS3302_TRIGGER_THRESHOLD_ADC2; break;
 		case 2: 	offset = SIS3302_TRIGGER_THRESHOLD_ADC3; break;
@@ -2693,7 +2717,7 @@ Bool_t SrvSis3302::WriteTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, In
 	gSignalTrap = kFALSE;
 	*trigThresh = Data;
 	if (this->CheckBusTrap(Module, offset, "WriteTriggerThreshReg")) return(kFALSE);
-	return(this->ReadTriggerThreshReg(Module, Data, AdcNo));
+	return(this->ReadTriggerThreshReg(Module, Data, ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2701,14 +2725,14 @@ Bool_t SrvSis3302::WriteTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, In
 //! \details		Reads trigger threshold
 //! \param[in]		Module		-- module address
 //! \param[out]		Thresh		-- threshold
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadTriggerThreshReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerThreshReg(Module, data, ChanNo)) return(kFALSE);
 	Thresh = data & 0xFFFF;
 	return(kTRUE);
 }
@@ -2718,11 +2742,11 @@ Bool_t SrvSis3302::ReadTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, I
 //! \details		Writes trigger threshold
 //! \param[in]		Module		-- module address
 //! \param[in]		Thresh		-- threshold
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo) {
 
 	if (Thresh < 0 || Thresh > 0xFFFF) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong trigger threshold - "
@@ -2731,21 +2755,21 @@ Bool_t SrvSis3302::WriteTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, 
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t th;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			th = Thresh;
-			if (!this->WriteTriggerThreshold(Module, th, adc)) return(kFALSE);
+			if (!this->WriteTriggerThreshold(Module, th, chan)) return(kFALSE);
 		}
 		Thresh = th;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadTriggerThreshReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerThreshReg(Module, data, ChanNo)) return(kFALSE);
 	data &= 0xFFFE0000;
 	data |= (Thresh | 0x10000);
-	if (!this->WriteTriggerThreshReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteTriggerThreshReg(Module, data, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -2754,14 +2778,14 @@ Bool_t SrvSis3302::WriteTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, 
 //! \details		Reads trigger GT bit
 //! \param[in]		Module		-- module address
 //! \param[out]		Flag		-- GT
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetTriggerGT(SrvVMEModule * Module, Bool_t & Flag, Int_t AdcNo) {
+Bool_t SrvSis3302::GetTriggerGT(SrvVMEModule * Module, Bool_t & Flag, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadTriggerThreshReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerThreshReg(Module, data, ChanNo)) return(kFALSE);
 	Flag = ((data & (0x1 << 25)) > 0);
 	return(kTRUE);
 }
@@ -2771,27 +2795,27 @@ Bool_t SrvSis3302::GetTriggerGT(SrvVMEModule * Module, Bool_t & Flag, Int_t AdcN
 //! \details		Turns trigger GT bit on or off
 //! \param[in]		Module		-- module address
 //! \param[in]		Flag		-- GT
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetTriggerGT(SrvVMEModule * Module, Bool_t & Flag, Int_t AdcNo) {
+Bool_t SrvSis3302::SetTriggerGT(SrvVMEModule * Module, Bool_t & Flag, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Bool_t fl;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			fl = Flag;
-			if (!this->SetTriggerGT(Module, fl, adc)) return(kFALSE);
+			if (!this->SetTriggerGT(Module, fl, chan)) return(kFALSE);
 		}
 		Flag = fl;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadTriggerThreshReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerThreshReg(Module, data, ChanNo)) return(kFALSE);
 	data &= ~(0x1 << 25);
 	if (Flag) data |= (0x1 << 25);
-	if (!this->WriteTriggerThreshReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteTriggerThreshReg(Module, data, ChanNo)) return(kFALSE);
 	Flag = ((data & (0x1 << 25)) > 0);
 	return(kTRUE);
 }
@@ -2801,14 +2825,14 @@ Bool_t SrvSis3302::SetTriggerGT(SrvVMEModule * Module, Bool_t & Flag, Int_t AdcN
 //! \details		Reads trigger OUT bit
 //! \param[in]		Module		-- module address
 //! \param[out]		Flag		-- OUT
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetTriggerOut(SrvVMEModule * Module, Bool_t & Flag, Int_t AdcNo) {
+Bool_t SrvSis3302::GetTriggerOut(SrvVMEModule * Module, Bool_t & Flag, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadTriggerThreshReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerThreshReg(Module, data, ChanNo)) return(kFALSE);
 	Flag = ((data & (0x1 << 26)) > 0);
 	return(kTRUE);
 }
@@ -2818,27 +2842,27 @@ Bool_t SrvSis3302::GetTriggerOut(SrvVMEModule * Module, Bool_t & Flag, Int_t Adc
 //! \details		Turns trigger OUT bit on or off
 //! \param[in]		Module		-- module address
 //! \param[in]		Flag		-- OUT
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetTriggerOut(SrvVMEModule * Module, Bool_t & Flag, Int_t AdcNo) {
+Bool_t SrvSis3302::SetTriggerOut(SrvVMEModule * Module, Bool_t & Flag, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Bool_t fl;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			fl = Flag;
-			if (!this->SetTriggerOut(Module, fl, adc)) return(kFALSE);
+			if (!this->SetTriggerOut(Module, fl, chan)) return(kFALSE);
 		}
 		Flag = fl;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadTriggerThreshReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadTriggerThreshReg(Module, data, ChanNo)) return(kFALSE);
 	data &= ~(0x1 << 26);
 	if (Flag) data |= (0x1 << 26);
-	if (!this->WriteTriggerThreshReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteTriggerThreshReg(Module, data, ChanNo)) return(kFALSE);
 	Flag = ((data & (0x1 << 26)) > 0);
 	return(kTRUE);
 }
@@ -2848,21 +2872,21 @@ Bool_t SrvSis3302::SetTriggerOut(SrvVMEModule * Module, Bool_t & Flag, Int_t Adc
 //! \details		Reads energy setup register
 //! \param[in]		Module		-- module address
 //! \param[out]		Data		-- data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadEnergySetup");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0:
 		case 1: 	offset = SIS3302_ENERGY_SETUP_GP_ADC12; break;
 		case 2:
@@ -2886,22 +2910,22 @@ Bool_t SrvSis3302::ReadEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t Ad
 //! \details		Writes energy setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteEnergySetup");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
-		case kSis3302AllAdcs:
+	switch (ChanNo) {
+		case kSis3302AllChans:
 					offset = SIS3302_ENERGY_SETUP_GP_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_ENERGY_SETUP_GP_ADC12; break;
@@ -2919,7 +2943,7 @@ Bool_t SrvSis3302::WriteEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t A
 	gSignalTrap = kFALSE;
 	*setup = Data;
 	if (this->CheckBusTrap(Module, offset, "WriteEnergySetup")) return(kFALSE);
-	return(this->ReadEnergySetup(Module, Data, (AdcNo == kSis3302AllAdcs) ? 1 : AdcNo));
+	return(this->ReadEnergySetup(Module, Data, (ChanNo == kSis3302AllChans) ? 1 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -2928,14 +2952,14 @@ Bool_t SrvSis3302::WriteEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t A
 //! \param[in]		Module		-- module address
 //! \param[out]		Peak		-- peaking time
 //! \param[out]		Gap 		-- gap time
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadEnergySetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadEnergySetup(Module, data, ChanNo)) return(kFALSE);
 	Int_t p1 = data & 0xFF;
 	Int_t p2 = (data >> 16) & 0x3;
 	Peak = (p2 << 8) | p1;
@@ -2949,11 +2973,11 @@ Bool_t SrvSis3302::ReadEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int
 //! \param[in]		Module		-- module address
 //! \param[in]		Peak		-- peaking time
 //! \param[in]		Gap 		-- gap time
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t ChanNo) {
 
 	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't set energy peak or gap - trace collection in progress ..." << endl;
@@ -2974,25 +2998,25 @@ Bool_t SrvSis3302::WriteEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, In
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t p, g;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			p = Peak; g = Gap;
-			if (!this->WriteEnergyPeakAndGap(Module, p, g, adc)) return(kFALSE);
+			if (!this->WriteEnergyPeakAndGap(Module, p, g, chan)) return(kFALSE);
 		}
 		Peak = p; Gap = g;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadEnergySetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadEnergySetup(Module, data, ChanNo)) return(kFALSE);
 	data &= 0xFFFC0000;
 	data |= (Gap << 8);
 	Int_t p = Peak & 0xFF;
 	data |= Peak;
 	p = (Peak >> 8) & 0x3;
 	data |= (p << 16);
-	if (!this->WriteEnergySetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteEnergySetup(Module, data, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -3001,14 +3025,14 @@ Bool_t SrvSis3302::WriteEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, In
 //! \details		Reads energy decimation
 //! \param[in]		Module			-- module address
 //! \param[out]		Decimation		-- decimation
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t AdcNo) {
+Bool_t SrvSis3302::GetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadEnergySetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadEnergySetup(Module, data, ChanNo)) return(kFALSE);
 	Decimation = (data >> 28) & 0x3;
 	return(kTRUE);
 }
@@ -3018,11 +3042,11 @@ Bool_t SrvSis3302::GetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation
 //! \details		Sets energy decimation
 //! \param[in]		Module			-- module address
 //! \param[in]		Decimation		-- decimation
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t AdcNo) {
+Bool_t SrvSis3302::SetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t ChanNo) {
 
 	if (Decimation < 0 || Decimation > 3) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong energy decimation - " << Decimation
@@ -3031,21 +3055,21 @@ Bool_t SrvSis3302::SetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t dc;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			dc = Decimation;
-			if (!this->SetEnergyDecimation(Module, dc, adc)) return(kFALSE);
+			if (!this->SetEnergyDecimation(Module, dc, chan)) return(kFALSE);
 		}
 		Decimation = dc;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadEnergySetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadEnergySetup(Module, data, ChanNo)) return(kFALSE);
 	data &= ~(0x3 << 28);
 	data |= (Decimation << 28);
-	if (!this->WriteEnergySetup(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteEnergySetup(Module, data, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -3054,21 +3078,21 @@ Bool_t SrvSis3302::SetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation
 //! \details		Reads energy gate register
 //! \param[in]		Module		-- module address
 //! \param[out]		Data		-- data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadEnergyGateReg");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0:
 		case 1: 	offset = SIS3302_ENERGY_GATE_LENGTH_ADC12; break;
 		case 2:
@@ -3092,22 +3116,22 @@ Bool_t SrvSis3302::ReadEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t 
 //! \details		Sets energy gate register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteEnergyGateReg");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
-		case kSis3302AllAdcs:
+	switch (ChanNo) {
+		case kSis3302AllChans:
 					offset = SIS3302_ENERGY_GATE_LENGTH_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_ENERGY_GATE_LENGTH_ADC12; break;
@@ -3125,7 +3149,7 @@ Bool_t SrvSis3302::WriteEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t
 	gSignalTrap = kFALSE;
 	*gateReg = Data;
 	if (this->CheckBusTrap(Module, offset, "WriteEnergyGateReg")) return(kFALSE);
-	return(this->ReadEnergyGateReg(Module, Data, (AdcNo == kSis3302AllAdcs) ? 1 : AdcNo));
+	return(this->ReadEnergyGateReg(Module, Data, (ChanNo == kSis3302AllChans) ? 1 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3133,14 +3157,14 @@ Bool_t SrvSis3302::WriteEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t
 //! \details		Reads energy gate length
 //! \param[in]		Module  -- module address
 //! \param[out]		GateLength     -- gate length
-//! \param[in]		AdcNo              -- adc number
+//! \param[in]		ChanNo              -- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadEnergyGateLength(SrvVMEModule * Module, Int_t & GateLength, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadEnergyGateLength(SrvVMEModule * Module, Int_t & GateLength, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadEnergyGateReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadEnergyGateReg(Module, data, ChanNo)) return(kFALSE);
 	GateLength = data & 0x1FF;
 	return(kTRUE);
 }
@@ -3150,11 +3174,11 @@ Bool_t SrvSis3302::ReadEnergyGateLength(SrvVMEModule * Module, Int_t & GateLengt
 //! \details		Sets energy gate length
 //! \param[in]		Module			-- module address
 //! \param[in]		GateLength		-- gate length
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteEnergyGateLength(SrvVMEModule * Module, Int_t & GateLength, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteEnergyGateLength(SrvVMEModule * Module, Int_t & GateLength, Int_t ChanNo) {
 
 	if (GateLength < 0 || GateLength > 0x1FFFF) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong energy gate length - " << GateLength
@@ -3163,21 +3187,21 @@ Bool_t SrvSis3302::WriteEnergyGateLength(SrvVMEModule * Module, Int_t & GateLeng
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t gl;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			gl = GateLength;
-			if (!this->WriteEnergyGateLength(Module, gl, adc)) return(kFALSE);
+			if (!this->WriteEnergyGateLength(Module, gl, chan)) return(kFALSE);
 		}
 		GateLength = gl;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadEnergyGateReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadEnergyGateReg(Module, data, ChanNo)) return(kFALSE);
 	data &= 0xFFFE0000;
 	data |= GateLength;
-	if (!this->WriteEnergyGateReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteEnergyGateReg(Module, data, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -3186,14 +3210,14 @@ Bool_t SrvSis3302::WriteEnergyGateLength(SrvVMEModule * Module, Int_t & GateLeng
 //! \details		Reads test bits
 //! \param[in]		Module		-- module address
 //! \param[out]		Bits		-- bits
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::GetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	Int_t data;
-	if (!this->ReadEnergyGateReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadEnergyGateReg(Module, data, ChanNo)) return(kFALSE);
 	Bits = (data >> 28) & 0x3;
 	return(kTRUE);
 }
@@ -3203,11 +3227,11 @@ Bool_t SrvSis3302::GetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo)
 //! \details		Writes test bits
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::SetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo) {
+Bool_t SrvSis3302::SetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo) {
 
 	if (Bits < 0 || Bits > 0x3) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Wrong test bits - " << Bits
@@ -3216,21 +3240,21 @@ Bool_t SrvSis3302::SetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo)
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t b;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			b = Bits;
-			if (!this->SetTestBits(Module, b, adc)) return(kFALSE);
+			if (!this->SetTestBits(Module, b, chan)) return(kFALSE);
 		}
 		Bits = b;
 		return(kTRUE);
 	}
 
 	Int_t data;
-	if (!this->ReadEnergyGateReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->ReadEnergyGateReg(Module, data, ChanNo)) return(kFALSE);
 	data &= 0xFFFFFFF;
 	data |= (Bits << 28);
-	if (!this->WriteEnergyGateReg(Module, data, AdcNo)) return(kFALSE);
+	if (!this->WriteEnergyGateReg(Module, data, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
 
@@ -3239,21 +3263,21 @@ Bool_t SrvSis3302::SetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo)
 //! \details		Reads energy sample length
 //! \param[in]		Module			-- module address
 //! \param[out]		SampleLength	-- length
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadEnergySampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadEnergySampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadEnergySampleLength");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0:
 		case 1: 	offset = SIS3302_ENERGY_SAMPLE_LENGTH_ADC12; break;
 		case 2:
@@ -3277,11 +3301,11 @@ Bool_t SrvSis3302::ReadEnergySampleLength(SrvVMEModule * Module, Int_t & SampleL
 //! \details		Writes energy sample length
 //! \param[in]		Module			-- module address
 //! \param[in]		SampleLength	-- length
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteEnergySampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteEnergySampleLength(SrvVMEModule * Module, Int_t & SampleLength, Int_t ChanNo) {
 
 	if (this->IsStatus(kSis3302StatusCollectingTraces)) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Can't write energy sample length - trace collection in progress ..." << endl;
@@ -3289,16 +3313,16 @@ Bool_t SrvSis3302::WriteEnergySampleLength(SrvVMEModule * Module, Int_t & Sample
 		return(kFALSE);
 	}
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteEnergySampleLength");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
-		case kSis3302AllAdcs:
+	switch (ChanNo) {
+		case kSis3302AllChans:
 					offset = SIS3302_ENERGY_SAMPLE_LENGTH_ALL_ADC; break;
 		case 0:
 		case 1: 	offset = SIS3302_ENERGY_SAMPLE_LENGTH_ADC12; break;
@@ -3315,7 +3339,7 @@ Bool_t SrvSis3302::WriteEnergySampleLength(SrvVMEModule * Module, Int_t & Sample
 	gSignalTrap = kFALSE;
 	*sample = SampleLength;
 	if (this->CheckBusTrap(Module, offset, "WriteEnergySampleLength")) return(kFALSE);
-	return(this->ReadEnergySampleLength(Module, SampleLength, (AdcNo == kSis3302AllAdcs) ? 1 : AdcNo));
+	return(this->ReadEnergySampleLength(Module, SampleLength, (ChanNo == kSis3302AllChans) ? 1 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3323,21 +3347,21 @@ Bool_t SrvSis3302::WriteEnergySampleLength(SrvVMEModule * Module, Int_t & Sample
 //! \details		Reads tau value
 //! \param[in]		Module		-- module address
 //! \param[out]		Tau 		-- tau value
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadTauFactor");
 		return(kFALSE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0: 	offset = SIS3302_ENERGY_TAU_FACTOR_ADC1; break;
 		case 1: 	offset = SIS3302_ENERGY_TAU_FACTOR_ADC2; break;
 		case 2: 	offset = SIS3302_ENERGY_TAU_FACTOR_ADC3; break;
@@ -3361,15 +3385,15 @@ Bool_t SrvSis3302::ReadTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t AdcNo
 //! \details		Writes tau value
 //! \param[in]		Module		-- module address
 //! \param[in]		Tau 		-- tau value
-//! \param[in]		AdcNo 		-- adc number
+//! \param[in]		ChanNo 		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteTauFactor");
 		return(kFALSE);
 	}
@@ -3381,18 +3405,18 @@ Bool_t SrvSis3302::WriteTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t AdcN
 		return(kFALSE);
 	}
 
-	if (AdcNo == kSis3302AllAdcs) {
+	if (ChanNo == kSis3302AllChans) {
 		Int_t t;
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			t = Tau;
-			if (!this->WriteTauFactor(Module, t, adc)) return(kFALSE);
+			if (!this->WriteTauFactor(Module, t, chan)) return(kFALSE);
 		}
 		Tau = t;
 		return(kTRUE);
 	}
 
 	Int_t offset;
-	switch (AdcNo) {
+	switch (ChanNo) {
 		case 0: 	offset = SIS3302_ENERGY_TAU_FACTOR_ADC1; break;
 		case 1: 	offset = SIS3302_ENERGY_TAU_FACTOR_ADC2; break;
 		case 2: 	offset = SIS3302_ENERGY_TAU_FACTOR_ADC3; break;
@@ -3409,7 +3433,7 @@ Bool_t SrvSis3302::WriteTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t AdcN
 	gSignalTrap = kFALSE;
 	*tauFactor = Tau;
 	if (this->CheckBusTrap(Module, offset, "WriteTauFactor")) return(kFALSE);
-	return(this->ReadTauFactor(Module, Tau, (AdcNo == kSis3302AllAdcs) ? 1 : AdcNo));
+	return(this->ReadTauFactor(Module, Tau, (ChanNo == kSis3302AllChans) ? 1 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3418,15 +3442,15 @@ Bool_t SrvSis3302::WriteTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t AdcN
 //! \param[in]		Module			-- module address
 //! \param[out]		IndexValue		-- value
 //! \param[in]		Index			-- index
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::ReadStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int_t Index, Int_t AdcNo) {
+Bool_t SrvSis3302::ReadStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int_t Index, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadStartIndex");
 		return(kFALSE);
 	}
@@ -3435,7 +3459,7 @@ Bool_t SrvSis3302::ReadStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int
 	switch (Index) {
 		case 0:
 			{
-				switch (AdcNo) {
+				switch (ChanNo) {
 					case 0:
 					case 1: 	offset = SIS3302_ENERGY_SAMPLE_START_INDEX1_ADC12; break;
 					case 2:
@@ -3449,7 +3473,7 @@ Bool_t SrvSis3302::ReadStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int
 			break;
 		case 1:
 			{
-				switch (AdcNo) {
+				switch (ChanNo) {
 					case 0:
 					case 1: 	offset = SIS3302_ENERGY_SAMPLE_START_INDEX2_ADC12; break;
 					case 2:
@@ -3463,7 +3487,7 @@ Bool_t SrvSis3302::ReadStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int
 			break;
 		case 2:
 			{
-				switch (AdcNo) {
+				switch (ChanNo) {
 					case 0:
 					case 1: 	offset = SIS3302_ENERGY_SAMPLE_START_INDEX3_ADC12; break;
 					case 2:
@@ -3498,15 +3522,15 @@ Bool_t SrvSis3302::ReadStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int
 //! \param[in]		Module			-- module address
 //! \param[in]		IndexValue		-- value
 //! \param[in]		Index			-- index
-//! \param[in]		AdcNo 			-- adc number
+//! \param[in]		ChanNo 			-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int_t Index, Int_t AdcNo) {
+Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, Int_t Index, Int_t ChanNo) {
 
-	if (AdcNo != kSis3302AllAdcs && (AdcNo < 0 || AdcNo >= kSis3302NofAdcs)) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteStartIndex");
 		return(kFALSE);
 	}
@@ -3526,10 +3550,10 @@ Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, In
 	}
 
 	Int_t iv;
-	if (AdcNo == kSis3302AllAdcs) {
-		for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++) {
+	if (ChanNo == kSis3302AllChans) {
+		for (Int_t chan = 0; chan < kSis3302NofChans; chan++) {
 			iv = IndexValue;
-			if (!this->WriteStartIndex(Module, iv, Index, adc)) return(kFALSE);
+			if (!this->WriteStartIndex(Module, iv, Index, chan)) return(kFALSE);
 		}
 		IndexValue = iv;
 		return(kTRUE);
@@ -3539,8 +3563,8 @@ Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, In
 	switch (Index) {
 		case 0:
 			{
-				switch (AdcNo) {
-					case kSis3302AllAdcs:
+				switch (ChanNo) {
+					case kSis3302AllChans:
 								offset = SIS3302_ENERGY_SAMPLE_START_INDEX1_ALL_ADC; break;
 					case 0:
 					case 1: 	offset = SIS3302_ENERGY_SAMPLE_START_INDEX1_ADC12; break;
@@ -3555,8 +3579,8 @@ Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, In
 			break;
 		case 1:
 			{
-				switch (AdcNo) {
-					case kSis3302AllAdcs:
+				switch (ChanNo) {
+					case kSis3302AllChans:
 								offset = SIS3302_ENERGY_SAMPLE_START_INDEX2_ALL_ADC; break;
 					case 0:
 					case 1: 	offset = SIS3302_ENERGY_SAMPLE_START_INDEX2_ADC12; break;
@@ -3571,8 +3595,8 @@ Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, In
 			break;
 		case 2:
 			{
-				switch (AdcNo) {
-					case kSis3302AllAdcs:
+				switch (ChanNo) {
+					case kSis3302AllChans:
 								offset = SIS3302_ENERGY_SAMPLE_START_INDEX3_ALL_ADC; break;
 					case 0:
 					case 1: 	offset = SIS3302_ENERGY_SAMPLE_START_INDEX3_ADC12; break;
@@ -3593,7 +3617,7 @@ Bool_t SrvSis3302::WriteStartIndex(SrvVMEModule * Module, Int_t & IndexValue, In
 	gSignalTrap = kFALSE;
 	*sampleIndex = IndexValue;
 	if (this->CheckBusTrap(Module, offset, "WriteStartIndex")) return(kFALSE);
-	return(this->ReadStartIndex(Module, IndexValue, Index, (AdcNo == kSis3302AllAdcs) ? 1 : AdcNo));
+	return(this->ReadStartIndex(Module, IndexValue, Index, (ChanNo == kSis3302AllChans) ? 1 : ChanNo));
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -3783,50 +3807,50 @@ Bool_t SrvSis3302::SetLemoInEnableMask(SrvVMEModule * Module, Int_t & Bits) {
 //! \details		Starts collection of a given number of traces
 //! \param[in]		Module			-- module address
 //! \param[in]		NofEvents		-- number of events/traces
-//! \param[in]		AdcPatt			-- adc pattern
+//! \param[in]		ChanPatt		-- channel pattern
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents, Int_t AdcPatt) {
+Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents, Int_t & ChanPatt) {
 
 	Int_t maxWords = 0;
 	Int_t bit = 1;
-	Bool_t foundAdc = kFALSE;
-	for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++, bit <<= 1) {
-		if ((AdcPatt & bit) == 0) continue;
-		foundAdc = kTRUE;
+	Bool_t foundchan = kFALSE;
+	for (Int_t chan = 0; chan < kSis3302NofChans; chan++, bit <<= 1) {
+		if ((ChanPatt & bit) == 0) continue;
+		foundchan = kTRUE;
 		Int_t rdl;
-		if (!this->ReadRawDataSampleLength(Module, rdl, adc)) return(kFALSE);
-		rawDataLength[adc] = rdl;		// 16bit, quad aligned
+		if (!this->ReadRawDataSampleLength(Module, rdl, chan)) return(kFALSE);
+		rawDataLength[chan] = rdl;		// 16bit, quad aligned
 		Int_t edl;
-		if (!this->ReadEnergySampleLength(Module, edl, adc)) return(kFALSE);
-		energyDataLength[adc] = edl;	// 32bit
-		wordsPerEvent[adc] = kSis3302EventHeader
+		if (!this->ReadEnergySampleLength(Module, edl, chan)) return(kFALSE);
+		energyDataLength[chan] = edl;	// 32bit
+		wordsPerEvent[chan] = kSis3302EventHeader
 							+ rdl/2		// raw data are 16bit on input
 							+ edl
 							+ kSis3302EventMinMax
 							+ kSis3302EventTrailer;
 
 		Int_t nofEvents = NofEvents;
-		if (nofEvents == kSis3302MaxEvents) nofEvents = kSis3302MaxBufSize / (wordsPerEvent[adc] * sizeof(Int_t));	// max number of events
-		Int_t nofWords = nofEvents * wordsPerEvent[adc];
+		if (nofEvents == kSis3302MaxEvents) nofEvents = kSis3302MaxBufSize / (wordsPerEvent[chan] * sizeof(Int_t));	// max number of events
+		Int_t nofWords = nofEvents * wordsPerEvent[chan];
 
-		wordsPerEvent[adc] += rdl/2;	// raw data are 32bit on output!
+		wordsPerEvent[chan] += rdl/2;	// raw data are 32bit on output!
 
 		if (nofWords > (kSis3302MaxBufSize / sizeof(Int_t))) {
 			gMrbLog->Wrn()	<< "[" << Module->GetName() << "]: Too many events - "
-							<< NofEvents << " (event length is " << wordsPerEvent[adc] << "|0x"
-							<< setbase(16) <<  wordsPerEvent[adc] << " words, buffer size is 0x" << kSis3302MaxBufSize
+							<< NofEvents << " (event length is " << wordsPerEvent[chan] << "|0x"
+							<< setbase(16) <<  wordsPerEvent[chan] << " words, buffer size is 0x" << kSis3302MaxBufSize
 							<< setbase(10) << " bytes)" << endl;
 			gMrbLog->Flush(this->ClassName(), "StartTraceCollection");
 			nofWords = SIS3302_NEXT_ADC_OFFSET - 1;
 		}
 
-		nofEventsPerBuffer[adc] = nofWords / wordsPerEvent[adc];
+		nofEventsPerBuffer[chan] = nofWords / wordsPerEvent[chan];
 		if (nofWords > maxWords) maxWords = nofWords;
 	}
 
-	if (!foundAdc) {
+	if (!foundchan) {
 		gMrbLog->Err()	<< "[" << Module->GetName() << "]: At least 1 channel required" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartTraceCollection");
 		return(kFALSE);
@@ -3897,11 +3921,11 @@ Bool_t SrvSis3302::PauseTraceCollection(SrvVMEModule * Module) {
 //! \details		Get trace length
 //! \param[in]		Module		-- module address
 //! \param[out]		Data		-- where to store length values
-//! \param[in]		AdcPatt		-- adc pattern
+//! \param[in]		ChanPatt		-- chan pattern
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t AdcPatt) {
+Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t ChanPatt) {
 
 	Data.Reset(0);
 	if (!fTraceCollection ||  !this->DataReady(Module)) return(kTRUE);
@@ -3909,18 +3933,18 @@ Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t A
 	this->SwitchSampling(Module);
 	Int_t k = 0;
 	Bool_t traceDataOk = kFALSE;
-	for (Int_t adc = 0; adc < kSis3302NofAdcs; adc++, AdcPatt >>= 1, k += kSis3302EventPreHeader) {
-		Data[k + 0] = rawDataLength[adc];
-		Data[k + 1] = energyDataLength[adc];
-		Data[k + 2] = wordsPerEvent[adc];
-		Data[k + 3] = nofEventsPerBuffer[adc];
+	for (Int_t chan = 0; chan < kSis3302NofChans; chan++, ChanPatt >>= 1, k += kSis3302EventPreHeader) {
+		Data[k + 0] = rawDataLength[chan];
+		Data[k + 1] = energyDataLength[chan];
+		Data[k + 2] = wordsPerEvent[chan];
+		Data[k + 3] = nofEventsPerBuffer[chan];
 		Int_t n = 0;
-		if (AdcPatt & 1 && this->ReadPrevBankSampleAddr(Module, n, adc)) {
+		if (ChanPatt & 1 && this->ReadPrevBankSampleAddr(Module, n, chan)) {
 			n &= 0x3FFFFC;
 			n >>= 1;
 			traceDataOk = kTRUE;
 		}
-		nextSample[adc] = n;
+		nextSample[chan] = n;
 		Data[k + 4] = n;
 	}
 	fTraceNo++;
@@ -3929,28 +3953,28 @@ Bool_t SrvSis3302::GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t A
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Get trace data from adc buffer
+//! \details		Get trace data from chan buffer
 //! \param[in]		Module		-- module address
 //! \param[out]		Data		-- where to store event data
 //! \param[in]		EventNo		-- event number
-//! \param[in]		AdcNo		-- adc number
+//! \param[in]		ChanNo		-- chan number
 //! \return 		TRUE or FALSE
 //////////////////////////////////////////////////////////////////////////////
 
-Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & EventNo, Int_t AdcNo) {
+Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & EventNo, Int_t ChanNo) {
 
-	if (AdcNo == kSis3302AllAdcs || AdcNo < 0 || AdcNo >= kSis3302NofAdcs) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: ADC number out of range - "
-						<< AdcNo << " (should be in [0," << (kSis3302NofAdcs - 1) << "])" << endl;
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetTraceData");
 		return(kFALSE);
 	}
 
-	Int_t rdl = rawDataLength[AdcNo];
-	Int_t edl = energyDataLength[AdcNo];
-	Int_t wpt = wordsPerEvent[AdcNo];
+	Int_t rdl = rawDataLength[ChanNo];
+	Int_t edl = energyDataLength[ChanNo];
+	Int_t wpt = wordsPerEvent[ChanNo];
 	Int_t wpt2 = wpt - rdl/2;
-	Int_t nxs = nextSample[AdcNo];
+	Int_t nxs = nextSample[ChanNo];
 
 	Int_t evtStart;
 	Int_t evtFirst, evtLast;
@@ -3981,7 +4005,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 	Data[3] = nofEvents;
 	Data[4] = nxs;
 
-	Int_t startAddr = SIS3302_ADC1_OFFSET + AdcNo * SIS3302_NEXT_ADC_OFFSET + evtStart;
+	Int_t startAddr = SIS3302_ADC1_OFFSET + ChanNo * SIS3302_NEXT_ADC_OFFSET + evtStart;
 
 	volatile Int_t * mappedAddr = (Int_t *) Module->MapAddress(startAddr);
 	if (mappedAddr == NULL) return(kFALSE);
@@ -4030,7 +4054,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 					dump << "Energy data lenght: " << edl << endl;
 					dump << "Words per trace   : " << wpt << endl;
 					Int_t thresh;
-					this->ReadEndAddrThresh(Module, thresh, AdcNo);
+					this->ReadEndAddrThresh(Module, thresh, ChanNo);
 					dump << "Start address     : 0x" << setbase(16) << startAddr << setbase(10) << endl;
 					dump << "End thresh        : " << thresh << " 0x" << setbase(16) << thresh << setbase(10) << endl;
 					dump << "Next sample       : " << nxs << " 0x" << setbase(16) << nxs << setbase(10) << endl;
@@ -4137,6 +4161,46 @@ Bool_t SrvSis3302::SetPageRegister(SrvVMEModule * Module, Int_t PageNumber) {
 	*pageReg = PageNumber;
 	return (!this->CheckBusTrap(Module, offset, "SetPageRegister"));
 }
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Ramp DACs
+//! \param[in]		Module		-- module address
+//! \param[out]		Data		-- where to store event data
+//! \param[in]		ChanNo		-- chan number
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t SrvSis3302::RampDac(SrvVMEModule * Module, TArrayI & Data, Int_t ChanNo) {
+
+	if (ChanNo == kSis3302AllChans || ChanNo < 0 || ChanNo >= kSis3302NofChans) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: chan number out of range - "
+						<< ChanNo << " (should be in [0," << (kSis3302NofChans - 1) << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "RampDac");
+		return(kFALSE);
+	}
+
+	Data.Set(0x8000);
+	Data.Reset(0);
+	Int_t idx = 0;
+	TArrayI dacSaved(kSis3302NofChans);
+	this->ReadDac(Module, dacSaved, kSis3302AllChans);
+	for (Int_t dacVal = 0; dacVal < 0x10000; dacVal++) {
+		Int_t sample = dacVal;
+		this->WriteDac(Module, sample, ChanNo);
+		Int_t result;
+		this->ReadActualSample(Module, result, ChanNo);
+		if (dacVal & 1) Data[idx++] |= (result & 0xFFFF); else Data[idx] = ((result & 0xFFFF) << 16);
+	}
+	this->WriteDac(Module, dacSaved, kSis3302AllChans);
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Check if data ready
+//! \param[in]		Module		-- module address
+//! \return 		TRUE or FALSE
+//////////////////////////////////////////////////////////////////////////////
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

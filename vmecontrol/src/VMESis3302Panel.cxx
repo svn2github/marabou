@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.12 2010-11-04 14:13:27 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.13 2010-11-17 12:25:11 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -28,6 +28,7 @@
 #include "VMESis3302CopyPanel.h"
 #include "VMESis3302StartTracePanel.h"
 #include "VMESis3302StartHistoPanel.h"
+#include "VMESis3302StartRampPanel.h"
 
 #include "SetColor.h"
 
@@ -143,13 +144,14 @@ const SMrbNamedX kVMESample[] =
 
 const SMrbNamedX kVMEActions[] =
 			{
-				{VMESis3302Panel::kVMESis3302ActionReset,			"Reset module",		"Reset module to power-up settings"	},
-				{VMESis3302Panel::kVMESis3302ActionTrace,			"Collect trace",	"Start trace collection"	},
-				{VMESis3302Panel::kVMESis3302ActionHisto,			"Accu histo",		"Accumulate histogram"	},
+				{VMESis3302Panel::kVMESis3302ActionReset,		"Reset module",		"Reset module to power-up settings"	},
+				{VMESis3302Panel::kVMESis3302ActionTrace,		"Collect trace",	"Start trace collection"	},
+				{VMESis3302Panel::kVMESis3302ActionHisto,		"Accu histo",		"Accumulate histogram"	},
+				{VMESis3302Panel::kVMESis3302ActionRamp,		"Start ramp",		"Calibrate DACs"	},
 				{VMESis3302Panel::kVMESis3302ActionSaveRestore,		"Save/restore",		"Save/restore module settings"	},
 				{VMESis3302Panel::kVMESis3302ActionCopySettings,	"Copy settings",	"Copy settings to other modules/channels"	},
 				{VMESis3302Panel::kVMESis3302ActionUpdateGUI,		"Update GUI",		"Reread GUI settings from SIS module"	},
-				{0, 												NULL,				NULL								}
+				{0, 							NULL,				NULL				}
 			};
 
 static TC2LSis3302 * curModule = NULL;
@@ -749,6 +751,9 @@ void VMESis3302Panel::PerformAction(Int_t FrameId, Int_t Selection) {
 			break;
 		case VMESis3302Panel::kVMESis3302ActionHisto:
 			new VMESis3302StartHistoPanel(fClient->GetRoot(), &fLofModules, frameWidth, frameHeight*5/4);
+			break;
+		case VMESis3302Panel::kVMESis3302ActionRamp:
+			new VMESis3302StartRampPanel(fClient->GetRoot(), &fLofModules, frameWidth, frameHeight*5/4);
 			break;
 		case VMESis3302Panel::kVMESis3302ActionSaveRestore:
 			new VMESis3302SaveRestorePanel(fClient->GetRoot(), &fLofModules, frameWidth/4, frameHeight/3);

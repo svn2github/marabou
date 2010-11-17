@@ -124,6 +124,7 @@ enum EM2L_FunctionType {
 	kM2L_FCT_SIS_3302_GET_TRACE_LENGTH,
 	kM2L_FCT_SIS_3302_DUMP_TRACE,
 	kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,
+	kM2L_FCT_SIS_3302_RAMP_DAC,
 //--------------------------------------------------------------------------------
 	kM2L_FCT_VULOM_TB			=	0x300,					// vulom3 / triggerbox
 	kM2L_FCT_VULOM_TB_READ_SCALER,
@@ -224,6 +225,7 @@ const SMrbNamedXShort kMrbLofFunctionTypes[] =
 		{kM2L_FCT_SIS_3302_GET_TRACE_LENGTH,			"get trace length"},
 		{kM2L_FCT_SIS_3302_DUMP_TRACE,					"dump trace data"},
 		{kM2L_FCT_SIS_3302_ACCU_HISTOGRAM,				"accu histogram"},
+		{kM2L_FCT_SIS_3302_RAMP_DAC,				"ramp dac"},
 //--------------------------------------------------------------------------------
 		{kM2L_FCT_VULOM_TB, 							"exec function (VULOM / TRIGBOX)"},
 		{kM2L_FCT_VULOM_TB_READ_SCALER, 				"read scaler"},

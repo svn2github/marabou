@@ -8,7 +8,7 @@
 // Class:          Sis3302        -- flash adc SIS3302
 // Description:    Class definitions for M2L server
 // Author:         R. Lutter
-// Revision:       $Id: SrvSis3302.h,v 1.3 2010-10-21 11:54:06 Marabou Exp $
+// Revision:       $Id: SrvSis3302.h,v 1.4 2010-11-17 12:25:11 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -44,9 +44,10 @@ class SrvSis3302 : public SrvVMEModule {
 		Bool_t GetModuleInfo(SrvVMEModule * Module, Int_t & BoardId, Int_t & MajorVersion, Int_t & MinorVersion, Bool_t PrintFlag = kTRUE);
 
 		//! Read dac values
-		Bool_t ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t AdcNo);
+		Bool_t ReadDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t ChanNo);
 		//! Write dac values
-		Bool_t WriteDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t WriteDac(SrvVMEModule * Module, Int_t & DacValue, Int_t ChanNo);
+		Bool_t WriteDac(SrvVMEModule * Module, TArrayI & DacValues, Int_t ChanNo = kSis3302AllChans);
 
 		//! Switch user LED on/off
 		Bool_t SetUserLED(SrvVMEModule * Module, Bool_t & OnFlag);
@@ -79,94 +80,94 @@ class SrvSis3302 : public SrvVMEModule {
 		Bool_t ReadControlStatus(SrvVMEModule * Module, Int_t & Bits);
 		Bool_t WriteControlStatus(SrvVMEModule * Module, Int_t & Bits);
 		//! event configuration
-		Bool_t ReadEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
-		Bool_t WriteEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
-		Bool_t WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
+		Bool_t WriteEventConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
+		Bool_t WriteEventExtendedConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
 		//! event header & group id
-		Bool_t SetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
-		Bool_t GetGroupId(SrvVMEModule * Module, Int_t & GroupId, Int_t AdcNo);
+		Bool_t SetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
+		Bool_t GetGroupId(SrvVMEModule * Module, Int_t & GroupId, Int_t ChanNo);
 		//! trigger mode
-		Bool_t SetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
+		Bool_t SetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
 		//! gate mode
-		Bool_t SetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
+		Bool_t SetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
 		//! next neighbors, trigger & gate
-		Bool_t SetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
-		Bool_t SetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
+		Bool_t SetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
+		Bool_t SetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetNextNeighborGateMode(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
 		//! trigger polarity
-		Bool_t SetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t AdcNo);
+		Bool_t SetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t ChanNo);
 
 		//! end address threshold
-		Bool_t ReadEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_t AdcNo);
-		Bool_t WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo);
+		Bool_t WriteEndAddrThresh(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo = kSis3302AllChans);
 
 		//! pre-trigger delay and gate length
-		Bool_t ReadPreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t AdcNo);
-		Bool_t WritePreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t AdcNo);
-		Bool_t WriteTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadPreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t ChanNo);
+		Bool_t WritePreTrigDelay(SrvVMEModule * Module, Int_t & Delay, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t ChanNo);
+		Bool_t WriteTrigGateLength(SrvVMEModule * Module, Int_t & Gate, Int_t ChanNo = kSis3302AllChans);
 
 		//! raw data sample length & start
-		Bool_t ReadRawDataSampleLength(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
-		Bool_t WriteRawDataSampleLength(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadRawDataStartIndex(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
-		Bool_t WriteRawDataStartIndex(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadRawDataSampleLength(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
+		Bool_t WriteRawDataSampleLength(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadRawDataStartIndex(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
+		Bool_t WriteRawDataStartIndex(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
 
-		Bool_t ReadNextSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t AdcNo);
-		Bool_t ReadPrevBankSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t AdcNo);
-		Bool_t ReadActualSample(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
+		Bool_t ReadNextSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t ChanNo);
+		Bool_t ReadPrevBankSampleAddr(SrvVMEModule * Module, Int_t & Addr, Int_t ChanNo);
+		Bool_t ReadActualSample(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
 
 		//! trigger peak & gap
-		Bool_t ReadTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t AdcNo);
-		Bool_t WriteTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t ChanNo);
+		Bool_t WriteTriggerPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t ChanNo = kSis3302AllChans);
 		//! trigger out pulse length
-		Bool_t ReadTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t AdcNo);
-		Bool_t WriteTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t ChanNo);
+		Bool_t WriteTriggerPulseLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t ChanNo = kSis3302AllChans);
 		//! trigger internal gate & delay
-		Bool_t ReadTriggerInternalGate(SrvVMEModule * Module, Int_t & GateLength, Int_t AdcNo);
-		Bool_t WriteTriggerInternalGate(SrvVMEModule * Module, Int_t & GateLength, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadTriggerInternalDelay(SrvVMEModule * Module, Int_t & DelayLength, Int_t AdcNo);
-		Bool_t WriteTriggerInternalDelay(SrvVMEModule * Module, Int_t & DelayLength, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadTriggerInternalGate(SrvVMEModule * Module, Int_t & GateLength, Int_t ChanNo);
+		Bool_t WriteTriggerInternalGate(SrvVMEModule * Module, Int_t & GateLength, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadTriggerInternalDelay(SrvVMEModule * Module, Int_t & DelayLength, Int_t ChanNo);
+		Bool_t WriteTriggerInternalDelay(SrvVMEModule * Module, Int_t & DelayLength, Int_t ChanNo = kSis3302AllChans);
 		//! trigger decimation
-		Bool_t GetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t AdcNo);
-		Bool_t SetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t GetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t ChanNo);
+		Bool_t SetTriggerDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t ChanNo = kSis3302AllChans);
 
 		//! trigger threshold
-		Bool_t ReadTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, Int_t AdcNo);
-		Bool_t WriteTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetTriggerGT(SrvVMEModule * Module, Bool_t & GTFlag, Int_t AdcNo);
-		Bool_t SetTriggerGT(SrvVMEModule * Module, Bool_t & GTFlag, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetTriggerOut(SrvVMEModule * Module, Bool_t & TrigOutFlag, Int_t AdcNo);
-		Bool_t SetTriggerOut(SrvVMEModule * Module, Bool_t & TrigOutFlag, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo);
+		Bool_t WriteTriggerThreshold(SrvVMEModule * Module, Int_t & Thresh, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetTriggerGT(SrvVMEModule * Module, Bool_t & GTFlag, Int_t ChanNo);
+		Bool_t SetTriggerGT(SrvVMEModule * Module, Bool_t & GTFlag, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetTriggerOut(SrvVMEModule * Module, Bool_t & TrigOutFlag, Int_t ChanNo);
+		Bool_t SetTriggerOut(SrvVMEModule * Module, Bool_t & TrigOutFlag, Int_t ChanNo = kSis3302AllChans);
 
 		//! energy peak & gap
-		Bool_t ReadEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t AdcNo);
-		Bool_t WriteEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t ChanNo);
+		Bool_t WriteEnergyPeakAndGap(SrvVMEModule * Module, Int_t & Peak, Int_t & Gap, Int_t ChanNo = kSis3302AllChans);
 		//! energy decimation
-		Bool_t GetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t AdcNo);
-		Bool_t SetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t GetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t ChanNo);
+		Bool_t SetEnergyDecimation(SrvVMEModule * Module, Int_t & Decimation, Int_t ChanNo = kSis3302AllChans);
 		//! energy gate length
-		Bool_t ReadEnergyGateLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t AdcNo);
-		Bool_t WriteEnergyGateLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadEnergyGateLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t ChanNo);
+		Bool_t WriteEnergyGateLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t ChanNo = kSis3302AllChans);
 		//! energy sample length & start
-		Bool_t ReadEnergySampleLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t AdcNo);
-		Bool_t WriteEnergySampleLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadStartIndex(SrvVMEModule * Module, Int_t & IdxVal, Int_t IdxNo, Int_t AdcNo);
-		Bool_t WriteStartIndex(SrvVMEModule * Module, Int_t & IdxVal, Int_t IdxNo, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadEnergySampleLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t ChanNo);
+		Bool_t WriteEnergySampleLength(SrvVMEModule * Module, Int_t & PulseLength, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadStartIndex(SrvVMEModule * Module, Int_t & IdxVal, Int_t IdxNo, Int_t ChanNo);
+		Bool_t WriteStartIndex(SrvVMEModule * Module, Int_t & IdxVal, Int_t IdxNo, Int_t ChanNo = kSis3302AllChans);
 		//! test bits
-		Bool_t GetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
-		Bool_t SetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t GetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
+		Bool_t SetTestBits(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
 
 
 		//! energy tau factor
-		Bool_t ReadTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t AdcNo);
-		Bool_t WriteTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t ChanNo);
+		Bool_t WriteTauFactor(SrvVMEModule * Module, Int_t & Tau, Int_t ChanNo = kSis3302AllChans);
 
 		//! clock source
 		Bool_t GetClockSource(SrvVMEModule * Module, Int_t & ClockSource);
@@ -180,29 +181,40 @@ class SrvSis3302 : public SrvVMEModule {
 		Bool_t GetLemoInEnableMask(SrvVMEModule * Module, Int_t & Bits);
 		Bool_t SetLemoInEnableMask(SrvVMEModule * Module, Int_t & Bits);
 
+		//! start trace collection, get trace data
+		Bool_t StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents, Int_t & ChanPatt);
+		Bool_t ContinueTraceCollection(SrvVMEModule * Module);
+		Bool_t PauseTraceCollection(SrvVMEModule * Module);
+		Bool_t StopTraceCollection(SrvVMEModule * Module);
+		Bool_t GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & EventNo, Int_t ChanNo);
+		Bool_t GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t ChanNo);
+
+		//! ramp dacs
+		Bool_t RampDac(SrvVMEModule * Module, TArrayI & Data, Int_t ChanNo);
+
 	protected:
-		void SetupFunction(M2L_MsgData * Data, TArrayI & Array, Int_t & AdcNo);
+		void SetupFunction(M2L_MsgData * Data, TArrayI & Array, Int_t & ChanNo);
 		M2L_MsgHdr * FinishFunction(TArrayI & Array);
 
-		Bool_t ReadPreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
-		Bool_t WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo);
-		Bool_t WriteRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
-		Bool_t WriteTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
-		Bool_t ReadTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
-		Bool_t WriteTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
-		Bool_t ReadTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
-		Bool_t WriteTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
-		Bool_t ReadEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
-		Bool_t WriteEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
-		Bool_t ReadEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
-		Bool_t WriteEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t AdcNo);
+		Bool_t ReadPreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
+		Bool_t WritePreTrigDelayAndGateLength(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo);
+		Bool_t WriteRawDataBufConfig(SrvVMEModule * Module, Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
+		Bool_t WriteTriggerSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
+		Bool_t ReadTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
+		Bool_t WriteTriggerExtendedSetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
+		Bool_t ReadTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
+		Bool_t WriteTriggerThreshReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
+		Bool_t ReadEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
+		Bool_t WriteEnergySetup(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
+		Bool_t ReadEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
+		Bool_t WriteEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t ChanNo);
 		Bool_t ReadAcquisitionControl(SrvVMEModule * Module, Int_t & Data);
 		Bool_t WriteAcquisitionControl(SrvVMEModule * Module, Int_t & Data);
 
 		Bool_t DataReady(SrvVMEModule * Module);
-		Bool_t ReadData(SrvVMEModule * Module, TArrayI & Data, Int_t NofWords, Int_t AdcNo);
+		Bool_t ReadData(SrvVMEModule * Module, TArrayI & Data, Int_t NofWords, Int_t ChanNo);
 
 		Bool_t ReadIRQConfiguration(SrvVMEModule * Module, Int_t & Vector, Int_t & Level, Bool_t & EnableFlag, Bool_t & RoakFlag);
 		Bool_t WriteIRWConfiguration(SrvVMEModule * Module, Int_t Vector, Int_t Level = 0, Bool_t RoakMode = kFALSE);
@@ -217,14 +229,6 @@ class SrvSis3302 : public SrvVMEModule {
 		inline void ClearStatus(UInt_t Bits) { fStatus &= ~Bits; };
 		inline UInt_t GetStatus() { return fStatus; };
 		inline Bool_t IsStatus(UInt_t Bits) { return ((fStatus & Bits) != 0); };
-
-		//! start trace collection, get trace data
-		Bool_t StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents, Int_t AdcNo);
-		Bool_t ContinueTraceCollection(SrvVMEModule * Module);
-		Bool_t PauseTraceCollection(SrvVMEModule * Module);
-		Bool_t StopTraceCollection(SrvVMEModule * Module);
-		Bool_t GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & EventNo, Int_t AdcNo);
-		Bool_t GetTraceLength(SrvVMEModule * Module, TArrayI & Data, Int_t AdcNo);
 
 		void SwitchSampling(SrvVMEModule * Module);
 		Bool_t SetPageRegister(SrvVMEModule * Module, Int_t PageNumber);

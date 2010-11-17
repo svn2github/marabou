@@ -9,8 +9,8 @@
 // Description:    Class definitions to establish a connection to a VME
 //                 module running under LynxOs.
 // Author:         R. Lutter
-// Revision:       $Id: TC2LSis3302.h,v 1.14 2010-10-21 11:54:06 Marabou Exp $
-// Date:           $Date: 2010-10-21 11:54:06 $
+// Revision:       $Id: TC2LSis3302.h,v 1.15 2010-11-17 12:25:11 Marabou Exp $
+// Date:           $Date: 2010-11-17 12:25:11 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -35,8 +35,8 @@ class TC2LSis3302 : public TC2LVMEModule {
 
 		TC2LSis3302() {};		// default ctor
 
-		TC2LSis3302(const Char_t * ModuleName, UInt_t Address = 0, Int_t NofChannels = 0, Bool_t Offline = kFALSE)
-								: TC2LVMEModule(ModuleName, "Sis3302", Address, NofChannels, Offline) {};
+		TC2LSis3302(const Char_t * ModuleName, UInt_t Address = 0, Int_t NofChans = 0, Bool_t Offline = kFALSE)
+								: TC2LVMEModule(ModuleName, "Sis3302", Address, NofChans, Offline) {};
 
 		~TC2LSis3302() {};							// default dtor
 
@@ -44,82 +44,82 @@ class TC2LSis3302 : public TC2LVMEModule {
 
 		Bool_t SetUserLED(Bool_t & OnFlag);
 
-		Bool_t ReadDac(TArrayI & DacValues, Int_t Adc = -1);
-		Bool_t WriteDac(TArrayI & DacValues, Int_t Adc = -1);
+		Bool_t ReadDac(TArrayI & DacValues, Int_t Chan = -1);
+		Bool_t WriteDac(TArrayI & DacValues, Int_t Chan = -1);
 
 		Bool_t KeyAddr(Int_t Key);
 		inline Bool_t KeyReset() { return(this->KeyAddr(kSis3302KeyReset)); };
 
-		Bool_t ReadEventConfig(Int_t & Bits, Int_t AdcNo);
-		Bool_t WriteEventConfig(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadEventExtendedConfig(Int_t & Bits, Int_t AdcNo);
-		Bool_t WriteEventExtendedConfig(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetPolarity(Bool_t & InvertFlag, Int_t AdcNo);
-		Bool_t SetPolarity(Bool_t & InvertFlag, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetTriggerMode(Int_t & Bits, Int_t AdcNo);
-		Bool_t SetTriggerMode(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetGateMode(Int_t & Bits, Int_t AdcNo);
-		Bool_t SetGateMode(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetNextNeighborTriggerMode(Int_t & Bits, Int_t AdcNo);
-		Bool_t SetNextNeighborTriggerMode(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetNextNeighborGateMode(Int_t & Bits, Int_t AdcNo);
-		Bool_t SetNextNeighborGateMode(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadEventConfig(Int_t & Bits, Int_t ChanNo);
+		Bool_t WriteEventConfig(Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadEventExtendedConfig(Int_t & Bits, Int_t ChanNo);
+		Bool_t WriteEventExtendedConfig(Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetPolarity(Bool_t & InvertFlag, Int_t ChanNo);
+		Bool_t SetPolarity(Bool_t & InvertFlag, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetTriggerMode(Int_t & Bits, Int_t ChanNo);
+		Bool_t SetTriggerMode(Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetGateMode(Int_t & Bits, Int_t ChanNo);
+		Bool_t SetGateMode(Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetNextNeighborTriggerMode(Int_t & Bits, Int_t ChanNo);
+		Bool_t SetNextNeighborTriggerMode(Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetNextNeighborGateMode(Int_t & Bits, Int_t ChanNo);
+		Bool_t SetNextNeighborGateMode(Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
 
-		Bool_t GetHeaderBits(Int_t & Bits, Int_t AdcNo);
-		Bool_t SetHeaderBits(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetGroupId(Int_t & GroupId, Int_t AdcNo);
+		Bool_t GetHeaderBits(Int_t & Bits, Int_t ChanNo);
+		Bool_t SetHeaderBits(Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetGroupId(Int_t & GroupId, Int_t ChanNo);
 
-		Bool_t ReadEndAddrThresh(Int_t & Thresh, Int_t AdcNo);
-		Bool_t WriteEndAddrThresh(Int_t & Thresh, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadEndAddrThresh(Int_t & Thresh, Int_t ChanNo);
+		Bool_t WriteEndAddrThresh(Int_t & Thresh, Int_t ChanNo = kSis3302AllChans);
 
-		Bool_t ReadPreTrigDelay(Int_t & Delay, Int_t AdcNo);
-		Bool_t WritePreTrigDelay(Int_t & Delay, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadTrigGateLength(Int_t & Gate, Int_t AdcNo);
-		Bool_t WriteTrigGateLength(Int_t & Gate, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadPreTrigDelay(Int_t & Delay, Int_t ChanNo);
+		Bool_t WritePreTrigDelay(Int_t & Delay, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadTrigGateLength(Int_t & Gate, Int_t ChanNo);
+		Bool_t WriteTrigGateLength(Int_t & Gate, Int_t ChanNo = kSis3302AllChans);
 
-		Bool_t ReadRawDataSampleLength(Int_t & SampleLength, Int_t AdcNo);
-		Bool_t WriteRawDataSampleLength(Int_t & SampleLength, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadRawDataStartIndex(Int_t & Start, Int_t AdcNo);
-		Bool_t WriteRawDataStartIndex(Int_t & Start, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadRawDataSampleLength(Int_t & SampleLength, Int_t ChanNo);
+		Bool_t WriteRawDataSampleLength(Int_t & SampleLength, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadRawDataStartIndex(Int_t & Start, Int_t ChanNo);
+		Bool_t WriteRawDataStartIndex(Int_t & Start, Int_t ChanNo = kSis3302AllChans);
 
-		Bool_t ReadNextSampleAddr(Int_t & Addr, Int_t AdcNo);
-		Bool_t ReadPrevBankSampleAddr(Int_t & Addr, Int_t AdcNo);
-		Bool_t ReadActualSample(Int_t & Data, Int_t AdcNo);
+		Bool_t ReadNextSampleAddr(Int_t & Addr, Int_t ChanNo);
+		Bool_t ReadPrevBankSampleAddr(Int_t & Addr, Int_t ChanNo);
+		Bool_t ReadActualSample(Int_t & Data, Int_t ChanNo);
 
-		Bool_t ReadTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo);
-		Bool_t WriteTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo);
-		Bool_t ReadTrigPulseLength(Int_t & PulseLength, Int_t AdcNo);
-		Bool_t WriteTrigPulseLength(Int_t & PulseLength, Int_t AdcNo);
-		Bool_t ReadTrigInternalGate(Int_t & Gate, Int_t AdcNo);
-		Bool_t WriteTrigInternalGate(Int_t & Gate, Int_t AdcNo);
-		Bool_t ReadTrigInternalDelay(Int_t & Delay, Int_t AdcNo);
-		Bool_t WriteTrigInternalDelay(Int_t & Delay, Int_t AdcNo);
-		Bool_t GetTrigDecimation(Int_t & Decimation, Int_t AdcNo);
-		Bool_t SetTrigDecimation(Int_t & Decimation, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t ChanNo);
+		Bool_t WriteTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t ChanNo);
+		Bool_t ReadTrigPulseLength(Int_t & PulseLength, Int_t ChanNo);
+		Bool_t WriteTrigPulseLength(Int_t & PulseLength, Int_t ChanNo);
+		Bool_t ReadTrigInternalGate(Int_t & Gate, Int_t ChanNo);
+		Bool_t WriteTrigInternalGate(Int_t & Gate, Int_t ChanNo);
+		Bool_t ReadTrigInternalDelay(Int_t & Delay, Int_t ChanNo);
+		Bool_t WriteTrigInternalDelay(Int_t & Delay, Int_t ChanNo);
+		Bool_t GetTrigDecimation(Int_t & Decimation, Int_t ChanNo);
+		Bool_t SetTrigDecimation(Int_t & Decimation, Int_t ChanNo = kSis3302AllChans);
 
-		Bool_t ReadTrigThreshold(Int_t & Thresh, Int_t AdcNo);
-		Bool_t WriteTrigThreshold(Int_t & Thresh, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetTriggerGT(Bool_t & GTFlag, Int_t AdcNo);
-		Bool_t SetTriggerGT(Bool_t & GTFlag, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetTriggerOut(Bool_t & TrigOutFlag, Int_t AdcNo);
-		Bool_t SetTriggerOut(Bool_t & TrigOutFlag, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadTrigThreshold(Int_t & Thresh, Int_t ChanNo);
+		Bool_t WriteTrigThreshold(Int_t & Thresh, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetTriggerGT(Bool_t & GTFlag, Int_t ChanNo);
+		Bool_t SetTriggerGT(Bool_t & GTFlag, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetTriggerOut(Bool_t & TrigOutFlag, Int_t ChanNo);
+		Bool_t SetTriggerOut(Bool_t & TrigOutFlag, Int_t ChanNo = kSis3302AllChans);
 
-		Bool_t ReadEnergyPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo);
-		Bool_t WriteEnergyPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetEnergyDecimation(Int_t & Decimation, Int_t AdcNo);
-		Bool_t SetEnergyDecimation(Int_t & Decimation, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadEnergyGateLength(Int_t & GateLength, Int_t AdcNo);
-		Bool_t WriteEnergyGateLength(Int_t & GateLength, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t GetTestBits(Int_t & Bits, Int_t AdcNo);
-		Bool_t SetTestBits(Int_t & Bits, Int_t AdcNo = kSis3302AllAdcs);
-		Bool_t ReadEnergySampleLength(Int_t & SampleLength, Int_t AdcNo);
-		Bool_t WriteEnergySampleLength(Int_t & SampleLength, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadEnergyPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t ChanNo);
+		Bool_t WriteEnergyPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetEnergyDecimation(Int_t & Decimation, Int_t ChanNo);
+		Bool_t SetEnergyDecimation(Int_t & Decimation, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadEnergyGateLength(Int_t & GateLength, Int_t ChanNo);
+		Bool_t WriteEnergyGateLength(Int_t & GateLength, Int_t ChanNo = kSis3302AllChans);
+		Bool_t GetTestBits(Int_t & Bits, Int_t ChanNo);
+		Bool_t SetTestBits(Int_t & Bits, Int_t ChanNo = kSis3302AllChans);
+		Bool_t ReadEnergySampleLength(Int_t & SampleLength, Int_t ChanNo);
+		Bool_t WriteEnergySampleLength(Int_t & SampleLength, Int_t ChanNo = kSis3302AllChans);
 
-		Bool_t ReadStartIndex(Int_t & IdxVal, Int_t IdxNo, Int_t AdcNo);
-		Bool_t WriteStartIndex(Int_t & IdxVal, Int_t IdxNo, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadStartIndex(Int_t & IdxVal, Int_t IdxNo, Int_t ChanNo);
+		Bool_t WriteStartIndex(Int_t & IdxVal, Int_t IdxNo, Int_t ChanNo = kSis3302AllChans);
 
-		Bool_t ReadTauFactor(Int_t & Tau, Int_t AdcNo);
-		Bool_t WriteTauFactor(Int_t & Tau, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t ReadTauFactor(Int_t & Tau, Int_t ChanNo);
+		Bool_t WriteTauFactor(Int_t & Tau, Int_t ChanNo = kSis3302AllChans);
 
 		Bool_t GetLemoInMode(Int_t & Bits);
 		Bool_t SetLemoInMode(Int_t & Bits);
@@ -134,12 +134,14 @@ class TC2LSis3302 : public TC2LVMEModule {
 		Bool_t SaveSettings(const Char_t * SettingsFile = NULL);
 		Bool_t RestoreSettings(const Char_t * SettingsFile = NULL);
 
-		Bool_t StartTraceCollection(Int_t & NofEvents, Int_t AdcNo = kSis3302AllAdcs);
+		Bool_t StartTraceCollection(Int_t & NofEvents, Int_t & ChanPattern);
 		Bool_t ContinueTraceCollection();
 		Bool_t StopTraceCollection();
-		Bool_t GetTraceData(TArrayI & Data, Int_t & EventNo, Int_t AdcNo);
-		Bool_t GetTraceLength(TArrayI & Data, Int_t AdcNo);
+		Bool_t GetTraceData(TArrayI & Data, Int_t & EventNo, Int_t ChanNo);
+		Bool_t GetTraceLength(TArrayI & Data, Int_t ChanNo);
 		Bool_t DumpTrace();
+
+		Bool_t RampDac(TArrayI & Data, Int_t ChanNo);
 
 		inline void SetFirmwareVersion(Int_t Major, Int_t Minor) { fMajorVersion = Major; fMinorVersion = Minor; };
 		inline UInt_t GetFirmwareVersion() { return ((fMajorVersion << 8) | fMinorVersion); };
@@ -149,7 +151,7 @@ class TC2LSis3302 : public TC2LVMEModule {
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
-		Bool_t ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & DataRecv, Int_t Adc = kSis3302AllAdcs);
+		Bool_t ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & DataRecv, Int_t Chan = kSis3302AllChans);
 
 	protected:
 		Int_t fMajorVersion;				// firmware version

@@ -85,9 +85,9 @@
 						kSis3302EnergyTauMax 		= ((1 << 6) - 1),
 					};
 
-	enum			{	kSis3302NofAdcs			= 8 };
-	enum			{	kSis3302AllAdcs 		= -1 };
-	enum			{	kSis3302AdcPattern 		= 0xFF };
+	enum			{	kSis3302NofChans		= 8 };
+	enum			{	kSis3302AllChans 		= -1 };
+	enum			{	kSis3302ChanPattern 		= 0xFF };
 	enum			{	kSis3302MaxEvents 		= -1 };
 	enum			{	kSis3302EventPreHeader 		= 5 };
 	enum			{	kSis3302EventHeader 		= 2 };

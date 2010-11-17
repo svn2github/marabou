@@ -8,7 +8,7 @@
 // Class:          VMESis3302StartTracePanel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.7 2010-11-04 14:13:27 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.h,v 1.8 2010-11-17 12:25:11 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -97,7 +97,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 		void StartGUI();
 		void StartTrace();
 		void StopTrace();
-		Int_t InitializeHistos(UInt_t ChnPatt = kSis3302AdcPattern);
+		Int_t InitializeHistos(UInt_t ChnPatt = kSis3302ChanPattern);
 		void WriteTrace();
 		Int_t ReadData(TArrayI & Data, TMrbNamedX * RhistoDef, TMrbNamedX * EhistoDef, Int_t TraceData[], Int_t TraceNumber);
 
@@ -141,7 +141,7 @@ class VMESis3302StartTracePanel : public TGMainFrame {
 
 		TObjArray fLofClones;					// list of canvas clones
 
-	ClassDef(VMESis3302StartTracePanel, 0)		// [VMEControl] Panel to save/reswtore Sis3302 settings
+	ClassDef(VMESis3302StartTracePanel, 0)		// [VMEControl] Panel to collect traces for a SIS3302 module
 };
 
 #endif

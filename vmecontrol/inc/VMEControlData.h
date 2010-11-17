@@ -8,8 +8,8 @@
 // Class:          VMEControlData
 // Description:    A GUI to control VME modules
 // Author:         R. Lutter
-// Revision:       $Id: VMEControlData.h,v 1.12 2010-09-06 06:57:02 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-09-06 06:57:02 $
+// Revision:       $Id: VMEControlData.h,v 1.13 2010-11-17 12:25:11 Marabou Exp $
+// Date:           $Date: 2010-11-17 12:25:11 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -66,6 +66,7 @@ class VMEControlData : public TObject {
 	friend class VMESis3302CopyPanel;
 	friend class VMESis3302StartTracePanel;
 	friend class VMESis3302StartHistoPanel;
+	friend class VMESis3302StartRampPanel;
 	friend class VMECaen785Panel;
 	friend class VMEVulomTBPanel;
 

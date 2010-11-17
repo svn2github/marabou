@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.9 2010-11-04 14:13:27 Marabou Exp $
+// Revision:       $Id: VMESis3302StartTracePanel.cxx,v 1.10 2010-11-17 12:25:11 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -410,7 +410,7 @@ void VMESis3302StartTracePanel::StartTrace() {
 			break;
 		}
 
-		TArrayI traceData(kSis3302NofAdcs * kSis3302EventPreHeader);
+		TArrayI traceData(kSis3302NofChans * kSis3302EventPreHeader);
 		traceNo++;
 		traceData.Reset(0);
 		if (!curModule->GetTraceLength(traceData, chnPatt)) {
@@ -596,7 +596,7 @@ Int_t VMESis3302StartTracePanel::InitializeHistos(UInt_t ChannelPattern) {
 
 	Int_t nofChannels = 0;
 	UInt_t cp = ChannelPattern;
-	for (Int_t chn = 0; chn < kSis3302NofAdcs; chn++, cp >>= 1) { if (cp & 1) nofChannels++; }
+	for (Int_t chn = 0; chn < kSis3302NofChans; chn++, cp >>= 1) { if (cp & 1) nofChannels++; }
 
 	TCanvas * c = fHistoCanvas->GetCanvas();
 	c->Clear();
@@ -604,7 +604,7 @@ Int_t VMESis3302StartTracePanel::InitializeHistos(UInt_t ChannelPattern) {
 
 	cp = ChannelPattern;
 	Int_t padPos = 0;
-	for (Int_t chn = 0; chn < kSis3302NofAdcs; chn++, cp >>= 1) {
+	for (Int_t chn = 0; chn < kSis3302NofChans; chn++, cp >>= 1) {
 		if (cp & 1) {
 			Int_t rdl;
 			curModule->ReadRawDataSampleLength(rdl, chn);

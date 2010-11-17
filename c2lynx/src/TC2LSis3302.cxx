@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.19 2010-10-21 11:54:06 Marabou Exp $
-// Date:           $Date: 2010-10-21 11:54:06 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.20 2010-11-17 12:25:11 Marabou Exp $
+// Date:           $Date: 2010-11-17 12:25:11 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -36,7 +36,7 @@ extern TMrbC2Lynx * gMrbC2Lynx;
 
 ClassImp(TC2LSis3302)
 
-Bool_t TC2LSis3302::ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & DataRecv, Int_t AdcNo) {
+Bool_t TC2LSis3302::ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & DataRecv, Int_t ChanNo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TC2LSis3302::ExecFunction()
@@ -44,7 +44,7 @@ Bool_t TC2LSis3302::ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & Data
 // Arguments:      Int_t Fcode            -- function code
 //                 TArrayI & DataSend     -- data (send)
 //                 TArrayI & DataRecv     -- data (receive)
-//                 Int_t AdcNo            -- channel/adc
+//                 Int_t ChanNo            -- channel
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Executes function.
@@ -54,7 +54,7 @@ Bool_t TC2LSis3302::ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & Data
 	if (this->IsVerbose() || this->IsOffline()) {
 		TMrbNamedX * f = this->FindFunction(Fcode);
 		TString fn = f ? f->GetName() : "???";
-		TString an = (AdcNo == kSis3302AllAdcs) ? "all" : Form("chn%d", AdcNo);
+		TString an = (ChanNo == kSis3302AllChans) ? "all" : Form("chn%d", ChanNo);
 		cout << "[" << this->GetName() << ", " << an << "] Exec function - \""
 					<< fn << "\" (0x" << setbase(16) << Fcode << setbase(10) << ")";
 		for (Int_t i = 0; i < DataSend.GetSize(); i++) {
@@ -71,7 +71,7 @@ Bool_t TC2LSis3302::ExecFunction(Int_t Fcode, TArrayI & DataSend, TArrayI & Data
 
 	Int_t wc = DataSend.GetSize() + 1;
 	M2L_VME_Exec_Function * x = (M2L_VME_Exec_Function *) gMrbC2Lynx->AllocMessage(sizeof(M2L_VME_Exec_Function), wc, kM2L_MESS_VME_EXEC_FUNCTION);
-	x->fData.fData[0] = AdcNo;
+	x->fData.fData[0] = ChanNo;
 	Int_t * dp = &x->fData.fData[1];
 	for (Int_t i = 0; i < DataSend.GetSize(); i++, dp++) *dp = DataSend[i];
 	x->fXhdr.fHandle = this->GetHandle();
@@ -98,7 +98,7 @@ Bool_t TC2LSis3302::GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t &
 	if (this->IsOffline()) return(kTRUE);
 	M2L_VME_Exec_Function x;
 	gMrbC2Lynx->InitMessage((M2L_MsgHdr *) &x, sizeof(M2L_VME_Exec_Function), kM2L_MESS_VME_EXEC_FUNCTION);
-	x.fData.fData[0] = kSis3302AllAdcs;
+	x.fData.fData[0] = kSis3302AllChans;
 	x.fXhdr.fHandle = this->GetHandle();
 	x.fXhdr.fCode = kM2L_FCT_GET_MODULE_INFO;
 	x.fData.fWc = 1;
@@ -120,18 +120,18 @@ Bool_t TC2LSis3302::GetModuleInfo(Int_t & BoardId, Int_t & MajorVersion, Int_t &
 
 Bool_t TC2LSis3302::SetUserLED(Bool_t & OnFlag) {
 	TArrayI ledOn(1); ledOn[0] = OnFlag ? 1 : 0;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_USER_LED, ledOn, ledOn, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_USER_LED, ledOn, ledOn, kSis3302AllChans)) return(kFALSE);
 	OnFlag = ledOn[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadDac(TArrayI & DacValues, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadDac(TArrayI & DacValues, Int_t ChanNo) {
 	TArrayI dataSend(0);
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_READ_DAC, dataSend, DacValues, AdcNo));
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_READ_DAC, dataSend, DacValues, ChanNo));
 }
 
-Bool_t TC2LSis3302::WriteDac(TArrayI & DacValues, Int_t AdcNo) {
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_DAC, DacValues, DacValues, AdcNo));
+Bool_t TC2LSis3302::WriteDac(TArrayI & DacValues, Int_t ChanNo) {
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_DAC, DacValues, DacValues, ChanNo));
 }
 
 Bool_t TC2LSis3302::KeyAddr(Int_t Key) {
@@ -140,458 +140,458 @@ Bool_t TC2LSis3302::KeyAddr(Int_t Key) {
 	return(this->ExecFunction(kM2L_FCT_SIS_3302_KEY_ADDR, keyData, keyData));
 }
 
-Bool_t TC2LSis3302::ReadEventConfig(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadEventConfig(Int_t & Bits, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_EVENT_CONFIG, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_EVENT_CONFIG, dataSend, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteEventConfig(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteEventConfig(Int_t & Bits, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_EVENT_CONFIG, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_EVENT_CONFIG, bits, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadEventExtendedConfig(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadEventExtendedConfig(Int_t & Bits, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_EVENT_EXTENDED_CONFIG, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_EVENT_EXTENDED_CONFIG, dataSend, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteEventExtendedConfig(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteEventExtendedConfig(Int_t & Bits, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_EVENT_EXTENDED_CONFIG, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_EVENT_EXTENDED_CONFIG, bits, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetHeaderBits(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetHeaderBits(Int_t & Bits, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_HEADER_BITS, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_HEADER_BITS, bits, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetHeaderBits(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetHeaderBits(Int_t & Bits, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_HEADER_BITS, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_HEADER_BITS, dataSend, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetGroupId(Int_t & GroupId, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetGroupId(Int_t & GroupId, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_GROUP_ID, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_GROUP_ID, dataSend, bits, ChanNo)) return(kFALSE);
 	GroupId = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetTriggerMode(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetTriggerMode(Int_t & Bits, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TRIGGER_MODE, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TRIGGER_MODE, bits, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetTriggerMode(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetTriggerMode(Int_t & Bits, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_MODE, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_MODE, dataSend, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetGateMode(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetGateMode(Int_t & Bits, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_GATE_MODE, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_GATE_MODE, bits, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetGateMode(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetGateMode(Int_t & Bits, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_GATE_MODE, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_GATE_MODE, dataSend, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetNextNeighborTriggerMode(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetNextNeighborTriggerMode(Int_t & Bits, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_NNB_TRIGGER_MODE, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_NNB_TRIGGER_MODE, bits, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetNextNeighborTriggerMode(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetNextNeighborTriggerMode(Int_t & Bits, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_NNB_TRIGGER_MODE, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_NNB_TRIGGER_MODE, dataSend, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetNextNeighborGateMode(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetNextNeighborGateMode(Int_t & Bits, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_NNB_GATE_MODE, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_NNB_GATE_MODE, bits, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetNextNeighborGateMode(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetNextNeighborGateMode(Int_t & Bits, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_NNB_GATE_MODE, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_NNB_GATE_MODE, dataSend, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetPolarity(Bool_t & InvertFlag, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetPolarity(Bool_t & InvertFlag, Int_t ChanNo) {
 	TArrayI flag(1); flag[0] = InvertFlag ? 1 : 0;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_POLARITY, flag, flag, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_POLARITY, flag, flag, ChanNo)) return(kFALSE);
 	InvertFlag = flag[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetPolarity(Bool_t & InvertFlag, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetPolarity(Bool_t & InvertFlag, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_POLARITY, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_POLARITY, dataSend, bits, ChanNo)) return(kFALSE);
 	InvertFlag = (bits[0] != 0);
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadEndAddrThresh(Int_t & Thresh, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadEndAddrThresh(Int_t & Thresh, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI thresh;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_END_ADDR_THRESH, dataSend, thresh, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_END_ADDR_THRESH, dataSend, thresh, ChanNo)) return(kFALSE);
 	Thresh = thresh[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteEndAddrThresh(Int_t & Thresh, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteEndAddrThresh(Int_t & Thresh, Int_t ChanNo) {
 	TArrayI thresh(1); thresh[0] = Thresh;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_END_ADDR_THRESH, thresh, thresh, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_END_ADDR_THRESH, thresh, thresh, ChanNo)) return(kFALSE);
 	Thresh = thresh[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadPreTrigDelay(Int_t & Delay, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadPreTrigDelay(Int_t & Delay, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI delay;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_PRETRIG_DELAY, dataSend, delay, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_PRETRIG_DELAY, dataSend, delay, ChanNo)) return(kFALSE);
 	Delay = delay[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WritePreTrigDelay(Int_t & Delay, Int_t AdcNo) {
+Bool_t TC2LSis3302::WritePreTrigDelay(Int_t & Delay, Int_t ChanNo) {
 	TArrayI delay(1); delay[0] = Delay;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_PRETRIG_DELAY, delay, delay, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_PRETRIG_DELAY, delay, delay, ChanNo)) return(kFALSE);
 	Delay = delay[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadTrigGateLength(Int_t & Gate, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadTrigGateLength(Int_t & Gate, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI gate;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_GATE_LENGTH, dataSend, gate, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_GATE_LENGTH, dataSend, gate, ChanNo)) return(kFALSE);
 	Gate = gate[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteTrigGateLength(Int_t & Gate, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteTrigGateLength(Int_t & Gate, Int_t ChanNo) {
 	TArrayI gate(1); gate[0] = Gate;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_GATE_LENGTH, gate, gate, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_GATE_LENGTH, gate, gate, ChanNo)) return(kFALSE);
 	Gate = gate[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadRawDataSampleLength(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadRawDataSampleLength(Int_t & Bits, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_RAW_DATA_SAMPLE_LENGTH, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_RAW_DATA_SAMPLE_LENGTH, dataSend, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteRawDataSampleLength(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteRawDataSampleLength(Int_t & Bits, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_RAW_DATA_SAMPLE_LENGTH, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_RAW_DATA_SAMPLE_LENGTH, bits, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadRawDataStartIndex(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadRawDataStartIndex(Int_t & Bits, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_RAW_DATA_START_INDEX, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_RAW_DATA_START_INDEX, dataSend, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteRawDataStartIndex(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteRawDataStartIndex(Int_t & Bits, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_RAW_DATA_START_INDEX, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_RAW_DATA_START_INDEX, bits, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadNextSampleAddr(Int_t & Addr, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadNextSampleAddr(Int_t & Addr, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI addr;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_NEXT_SAMPLE_ADDR, dataSend, addr, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_NEXT_SAMPLE_ADDR, dataSend, addr, ChanNo)) return(kFALSE);
 	Addr = addr[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadPrevBankSampleAddr(Int_t & Addr, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadPrevBankSampleAddr(Int_t & Addr, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI addr;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_PREV_BANK_SAMPLE_ADDR, dataSend, addr, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_PREV_BANK_SAMPLE_ADDR, dataSend, addr, ChanNo)) return(kFALSE);
 	Addr = addr[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadActualSample(Int_t & Data, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadActualSample(Int_t & Data, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI data;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_ACTUAL_SAMPLE, dataSend, data, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_ACTUAL_SAMPLE, dataSend, data, ChanNo)) return(kFALSE);
 	Data = data[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI peakgap;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_PEAK_AND_GAP, dataSend, peakgap, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_PEAK_AND_GAP, dataSend, peakgap, ChanNo)) return(kFALSE);
 	Peak = peakgap[0];
 	Gap = peakgap[1];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteTrigPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t ChanNo) {
 	TArrayI peakgap(2); peakgap[0] = Peak; peakgap[1] = Gap;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_PEAK_AND_GAP, peakgap, peakgap, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_PEAK_AND_GAP, peakgap, peakgap, ChanNo)) return(kFALSE);
 	Peak = peakgap[0];
 	Gap = peakgap[1];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadTrigPulseLength(Int_t & PulseLength, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadTrigPulseLength(Int_t & PulseLength, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI pulse;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_PULSE_LENGTH, dataSend, pulse, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_PULSE_LENGTH, dataSend, pulse, ChanNo)) return(kFALSE);
 	PulseLength = pulse[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteTrigPulseLength(Int_t & PulseLength, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteTrigPulseLength(Int_t & PulseLength, Int_t ChanNo) {
 	TArrayI pulse(1); pulse[0] = PulseLength;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_PULSE_LENGTH, pulse, pulse, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_PULSE_LENGTH, pulse, pulse, ChanNo)) return(kFALSE);
 	PulseLength = pulse[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadTrigInternalGate(Int_t & Gate, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadTrigInternalGate(Int_t & Gate, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI gate;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_INTERNAL_GATE, dataSend, gate, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_INTERNAL_GATE, dataSend, gate, ChanNo)) return(kFALSE);
 	Gate = gate[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteTrigInternalGate(Int_t & Gate, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteTrigInternalGate(Int_t & Gate, Int_t ChanNo) {
 	TArrayI gate(1); gate[0] = Gate;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_INTERNAL_GATE, gate, gate, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_INTERNAL_GATE, gate, gate, ChanNo)) return(kFALSE);
 	Gate = gate[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadTrigInternalDelay(Int_t & Delay, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadTrigInternalDelay(Int_t & Delay, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI delay;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_INTERNAL_DELAY, dataSend, delay, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_INTERNAL_DELAY, dataSend, delay, ChanNo)) return(kFALSE);
 	Delay = delay[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteTrigInternalDelay(Int_t & Delay, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteTrigInternalDelay(Int_t & Delay, Int_t ChanNo) {
 	TArrayI delay(1); delay[0] = Delay;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_INTERNAL_DELAY, delay, delay, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_INTERNAL_DELAY, delay, delay, ChanNo)) return(kFALSE);
 	Delay = delay[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetTrigDecimation(Int_t & Decimation, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetTrigDecimation(Int_t & Decimation, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI decim;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_DECIMATION, dataSend, decim, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_DECIMATION, dataSend, decim, ChanNo)) return(kFALSE);
 	Decimation = decim[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetTrigDecimation(Int_t & Decimation, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetTrigDecimation(Int_t & Decimation, Int_t ChanNo) {
 	TArrayI decim(1); decim[0] = Decimation;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TRIGGER_DECIMATION, decim, decim, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TRIGGER_DECIMATION, decim, decim, ChanNo)) return(kFALSE);
 	Decimation = decim[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadTrigThreshold(Int_t & Thresh, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadTrigThreshold(Int_t & Thresh, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI thresh;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_THRESH, dataSend, thresh, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TRIGGER_THRESH, dataSend, thresh, ChanNo)) return(kFALSE);
 	Thresh = thresh[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteTrigThreshold(Int_t & Thresh, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteTrigThreshold(Int_t & Thresh, Int_t ChanNo) {
 	TArrayI thresh(1); thresh[0] = Thresh;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_THRESH, thresh, thresh, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TRIGGER_THRESH, thresh, thresh, ChanNo)) return(kFALSE);
 	Thresh = thresh[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetTriggerGT(Bool_t & GTFlag, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetTriggerGT(Bool_t & GTFlag, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_GT, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_GT, dataSend, bits, ChanNo)) return(kFALSE);
 	GTFlag = (bits[0] != 0);
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetTriggerGT(Bool_t & GTFlag, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetTriggerGT(Bool_t & GTFlag, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = GTFlag ? 1 : 0;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TRIGGER_GT, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TRIGGER_GT, bits, bits, ChanNo)) return(kFALSE);
 	GTFlag = (bits[0] != 0);
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetTriggerOut(Bool_t & OutFlag, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetTriggerOut(Bool_t & OutFlag, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_OUT, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRIGGER_OUT, dataSend, bits, ChanNo)) return(kFALSE);
 	OutFlag = (bits[0] != 0);
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetTriggerOut(Bool_t & OutFlag, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetTriggerOut(Bool_t & OutFlag, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = OutFlag ? 1 : 0;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TRIGGER_OUT, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TRIGGER_OUT, bits, bits, ChanNo)) return(kFALSE);
 	OutFlag = (bits[0] != 0);
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadEnergyPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadEnergyPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI peakgap;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_ENERGY_PEAK_AND_GAP, dataSend, peakgap, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_ENERGY_PEAK_AND_GAP, dataSend, peakgap, ChanNo)) return(kFALSE);
 	Peak = peakgap[0];
 	Gap = peakgap[1];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteEnergyPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteEnergyPeakAndGap(Int_t & Peak, Int_t & Gap, Int_t ChanNo) {
 	TArrayI peakgap(2); peakgap[0] = Peak; peakgap[1] = Gap;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_ENERGY_PEAK_AND_GAP, peakgap, peakgap, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_ENERGY_PEAK_AND_GAP, peakgap, peakgap, ChanNo)) return(kFALSE);
 	Peak = peakgap[0];
 	Gap = peakgap[1];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetEnergyDecimation(Int_t & Decimation, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetEnergyDecimation(Int_t & Decimation, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI decim;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_ENERGY_DECIMATION, dataSend, decim, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_ENERGY_DECIMATION, dataSend, decim, ChanNo)) return(kFALSE);
 	Decimation = decim[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetEnergyDecimation(Int_t & Decimation, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetEnergyDecimation(Int_t & Decimation, Int_t ChanNo) {
 	TArrayI decim(1); decim[0] = Decimation;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_ENERGY_DECIMATION, decim, decim, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_ENERGY_DECIMATION, decim, decim, ChanNo)) return(kFALSE);
 	Decimation = decim[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadEnergyGateLength(Int_t & GateLength, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadEnergyGateLength(Int_t & GateLength, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI gate;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_ENERGY_GATE_LENGTH, dataSend, gate, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_ENERGY_GATE_LENGTH, dataSend, gate, ChanNo)) return(kFALSE);
 	GateLength = gate[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteEnergyGateLength(Int_t & GateLength, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteEnergyGateLength(Int_t & GateLength, Int_t ChanNo) {
 	TArrayI gate(1); gate[0] = GateLength;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_ENERGY_GATE_LENGTH, gate, gate, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_ENERGY_GATE_LENGTH, gate, gate, ChanNo)) return(kFALSE);
 	GateLength = gate[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::GetTestBits(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetTestBits(Int_t & Bits, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TEST_BITS, dataSend, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_TEST_BITS, dataSend, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::SetTestBits(Int_t & Bits, Int_t AdcNo) {
+Bool_t TC2LSis3302::SetTestBits(Int_t & Bits, Int_t ChanNo) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TEST_BITS, bits, bits, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_TEST_BITS, bits, bits, ChanNo)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadEnergySampleLength(Int_t & SampleLength, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadEnergySampleLength(Int_t & SampleLength, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI sample;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_ENERGY_SAMPLE_LENGTH, dataSend, sample, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_ENERGY_SAMPLE_LENGTH, dataSend, sample, ChanNo)) return(kFALSE);
 	SampleLength = sample[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteEnergySampleLength(Int_t & SampleLength, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteEnergySampleLength(Int_t & SampleLength, Int_t ChanNo) {
 	TArrayI sample(1); sample[0] = SampleLength;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_ENERGY_SAMPLE_LENGTH, sample, sample, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_ENERGY_SAMPLE_LENGTH, sample, sample, ChanNo)) return(kFALSE);
 	SampleLength = sample[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadStartIndex(Int_t & IdxVal, Int_t IdxNo, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadStartIndex(Int_t & IdxVal, Int_t IdxNo, Int_t ChanNo) {
 	TArrayI dataSend(1); dataSend[0] = IdxNo;
 	TArrayI idxVal;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_START_INDEX, dataSend, idxVal, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_START_INDEX, dataSend, idxVal, ChanNo)) return(kFALSE);
 	IdxVal = idxVal[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteStartIndex(Int_t & IdxVal, Int_t IdxNo, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteStartIndex(Int_t & IdxVal, Int_t IdxNo, Int_t ChanNo) {
 	TArrayI idxVal(2); idxVal[0] = IdxNo;  idxVal[1] = IdxVal;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_START_INDEX, idxVal, idxVal, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_START_INDEX, idxVal, idxVal, ChanNo)) return(kFALSE);
 	IdxVal = idxVal[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::ReadTauFactor(Int_t & Tau, Int_t AdcNo) {
+Bool_t TC2LSis3302::ReadTauFactor(Int_t & Tau, Int_t ChanNo) {
 	TArrayI dataSend(0);
 	TArrayI tauFact;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TAU_FACTOR, dataSend, tauFact, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_READ_TAU_FACTOR, dataSend, tauFact, ChanNo)) return(kFALSE);
 	Tau = tauFact[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::WriteTauFactor(Int_t & Tau, Int_t AdcNo) {
+Bool_t TC2LSis3302::WriteTauFactor(Int_t & Tau, Int_t ChanNo) {
 	TArrayI tauFact(1); tauFact[0] = Tau;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TAU_FACTOR, tauFact, tauFact, AdcNo)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_WRITE_TAU_FACTOR, tauFact, tauFact, ChanNo)) return(kFALSE);
 	Tau = tauFact[0];
 	return(kTRUE);
 }
@@ -599,14 +599,14 @@ Bool_t TC2LSis3302::WriteTauFactor(Int_t & Tau, Int_t AdcNo) {
 Bool_t TC2LSis3302::GetLemoInMode(Int_t & Bits) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_LEMO_IN_MODE, dataSend, bits, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_LEMO_IN_MODE, dataSend, bits, kSis3302AllChans)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
 Bool_t TC2LSis3302::SetLemoInMode(Int_t & Bits) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_LEMO_IN_MODE, bits, bits, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_LEMO_IN_MODE, bits, bits, kSis3302AllChans)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
@@ -614,14 +614,14 @@ Bool_t TC2LSis3302::SetLemoInMode(Int_t & Bits) {
 Bool_t TC2LSis3302::GetLemoOutMode(Int_t & Bits) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_LEMO_OUT_MODE, dataSend, bits, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_LEMO_OUT_MODE, dataSend, bits, kSis3302AllChans)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
 Bool_t TC2LSis3302::SetLemoOutMode(Int_t & Bits) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_LEMO_OUT_MODE, bits, bits, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_LEMO_OUT_MODE, bits, bits, kSis3302AllChans)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
@@ -629,14 +629,14 @@ Bool_t TC2LSis3302::SetLemoOutMode(Int_t & Bits) {
 Bool_t TC2LSis3302::GetLemoInEnableMask(Int_t & Bits) {
 	TArrayI dataSend(0);
 	TArrayI bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_LEMO_IN_ENABLE_MASK, dataSend, bits, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_LEMO_IN_ENABLE_MASK, dataSend, bits, kSis3302AllChans)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
 
 Bool_t TC2LSis3302::SetLemoInEnableMask(Int_t & Bits) {
 	TArrayI bits(1); bits[0] = Bits;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_LEMO_IN_ENABLE_MASK, bits, bits, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_LEMO_IN_ENABLE_MASK, bits, bits, kSis3302AllChans)) return(kFALSE);
 	Bits = bits[0];
 	return(kTRUE);
 }
@@ -644,52 +644,58 @@ Bool_t TC2LSis3302::SetLemoInEnableMask(Int_t & Bits) {
 Bool_t TC2LSis3302::GetClockSource(Int_t & ClockSource) {
 	TArrayI dataSend(0);
 	TArrayI clk;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_CLOCK_SOURCE, dataSend, clk, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_GET_CLOCK_SOURCE, dataSend, clk, kSis3302AllChans)) return(kFALSE);
 	ClockSource = clk[0];
 	return(kTRUE);
 }
 
 Bool_t TC2LSis3302::SetClockSource(Int_t & ClockSource) {
 	TArrayI clk(1); clk[0] = ClockSource;
-	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_CLOCK_SOURCE, clk, clk, kSis3302AllAdcs)) return(kFALSE);
+	if (!this->ExecFunction(kM2L_FCT_SIS_3302_SET_CLOCK_SOURCE, clk, clk, kSis3302AllChans)) return(kFALSE);
 	ClockSource = clk[0];
 	return(kTRUE);
 }
 
-Bool_t TC2LSis3302::StartTraceCollection(Int_t & NofEvents, Int_t AdcNo) {
+Bool_t TC2LSis3302::StartTraceCollection(Int_t & NofEvents, Int_t & ChanPattern) {
 	TArrayI dataSend(2);
 	dataSend[0] = NofEvents;
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_START_TRACE_COLLECTION, dataSend, dataSend, AdcNo));
+	dataSend[1] = ChanPattern;
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_START_TRACE_COLLECTION, dataSend, dataSend, kSis3302AllChans));
 }
 
 Bool_t TC2LSis3302::ContinueTraceCollection() {
 	TArrayI dataSend(1);
 	dataSend[0] = 0;
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_CONT_TRACE_COLLECTION, dataSend, dataSend, kSis3302AllAdcs));
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_CONT_TRACE_COLLECTION, dataSend, dataSend, kSis3302AllChans));
 }
 
 Bool_t TC2LSis3302::StopTraceCollection() {
 	TArrayI dataSend(1);
 	dataSend[0] = 0;
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_STOP_TRACE_COLLECTION, dataSend, dataSend, kSis3302AllAdcs));
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_STOP_TRACE_COLLECTION, dataSend, dataSend, kSis3302AllChans));
 }
 
-Bool_t TC2LSis3302::GetTraceLength(TArrayI & Data, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetTraceLength(TArrayI & Data, Int_t ChanNo) {
 	TArrayI dataSend(1);
 	Data.Set(kSis3302EventPreHeader);
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_LENGTH, dataSend, Data, AdcNo));
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_LENGTH, dataSend, Data, ChanNo));
 }
 
-Bool_t TC2LSis3302::GetTraceData(TArrayI & Data, Int_t & EventNo, Int_t AdcNo) {
+Bool_t TC2LSis3302::GetTraceData(TArrayI & Data, Int_t & EventNo, Int_t ChanNo) {
 	TArrayI dataSend(1);
 	dataSend[0] = EventNo;
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_DATA, dataSend, Data, AdcNo));
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_GET_TRACE_DATA, dataSend, Data, ChanNo));
 }
 
 Bool_t TC2LSis3302::DumpTrace() {
 	TArrayI dataSend(1);
 	dataSend[0] = 0;
-	return(this->ExecFunction(kM2L_FCT_SIS_3302_DUMP_TRACE, dataSend, dataSend, kSis3302AllAdcs));
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_DUMP_TRACE, dataSend, dataSend, kSis3302AllChans));
+}
+
+Bool_t TC2LSis3302::RampDac(TArrayI & Data, Int_t ChanNo) {
+	TArrayI dataSend(1);
+	return(this->ExecFunction(kM2L_FCT_SIS_3302_RAMP_DAC, dataSend, Data, ChanNo));
 }
 
 Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
@@ -736,20 +742,20 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	lemo = settings->Get(dotMod.Data(), NULL, "LemoInEnableMask", 0);
 	this->SetLemoInEnableMask(lemo);
 
-	TArrayI dacValues(kSis3302NofAdcs);
-	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+	TArrayI dacValues(kSis3302NofChans);
+	for (Int_t i = 0; i < kSis3302NofChans; i++) {
 		dacValues[i] = settings->Get(dotMod.Data(), "DacValue", Form("%d", i), 0);
 	}
-	this->WriteDac(dacValues, kSis3302AllAdcs);
+	this->WriteDac(dacValues, kSis3302AllChans);
 
 	Int_t chGrp = 12;
-	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+	for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 		Int_t hdrBits = settings->Get(dotMod.Data(), "HeaderBits", Form("%d", chGrp), 0);
 		hdrBits &= 0x7ffc;
 		this->SetHeaderBits(hdrBits, i);
 	}
 
-	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+	for (Int_t i = 0; i < kSis3302NofChans; i++) {
 		Int_t trigMode = settings->Get(dotMod.Data(), "TriggerMode", Form("%d", i), 0);
 		this->SetTriggerMode(trigMode, i);
 		Int_t gateMode = settings->Get(dotMod.Data(), "GateMode", Form("%d", i), 0);
@@ -763,7 +769,7 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	}
 
 	chGrp = 12;
-	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+	for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 		Int_t delay = settings->Get(dotMod.Data(), "PretrigDelay", Form("%d", chGrp), 0);
 		this->WritePreTrigDelay(delay, i);
 		Int_t gate = settings->Get(dotMod.Data(), "TrigGateLength", Form("%d", chGrp), 0);
@@ -771,14 +777,14 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	}
 
 	chGrp = 12;
-	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+	for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 		Int_t length = settings->Get(dotMod.Data(), "RawDataSampleLength", Form("%d", chGrp), 0);
 		this->WriteRawDataSampleLength(length, i);
 		Int_t start = settings->Get(dotMod.Data(), "RawDataSampleStart", Form("%d", chGrp), 0);
 		this->WriteRawDataStartIndex(start, i);
 	}
 
-	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+	for (Int_t i = 0; i < kSis3302NofChans; i++) {
 		Int_t peak = settings->Get(dotMod.Data(), "TrigPeakTime", Form("%d", i), 0);
 		Int_t gap = settings->Get(dotMod.Data(), "TrigGapTime", Form("%d", i), 0);
 		this->WriteTrigPeakAndGap(peak, gap, i);
@@ -792,7 +798,7 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 		this->SetTrigDecimation(decim, i);
 	}
 
-	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+	for (Int_t i = 0; i < kSis3302NofChans; i++) {
 		Int_t thresh = settings->Get(dotMod.Data(), "TrigThresh", Form("%d", i), 0);
 		this->WriteTrigThreshold(thresh, i);
 		Bool_t gt = settings->Get(dotMod.Data(), "TrigGT", Form("%d", i), kFALSE);
@@ -802,7 +808,7 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	}
 
 	chGrp = 12;
-	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+	for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 		Int_t peak = settings->Get(dotMod.Data(), "EnergyPeakTime", Form("%d", chGrp), 0);
 		Int_t gap = settings->Get(dotMod.Data(), "EnergyGapTime", Form("%d", chGrp), 0);
 		this->WriteEnergyPeakAndGap(peak, gap, i);
@@ -811,7 +817,7 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	}
 
 	chGrp = 12;
-	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+	for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 		Int_t gate = settings->Get(dotMod.Data(), "EnergyGateLength", Form("%d", chGrp), 0);
 		this->WriteEnergyGateLength(gate, i);
 		Int_t test = settings->Get(dotMod.Data(), "EnergyTestBits", Form("%d", chGrp), 0);
@@ -819,7 +825,7 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	}
 
 	chGrp = 12;
-	for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+	for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 		Int_t length = settings->Get(dotMod.Data(), "EnergySampleLength", Form("%d", chGrp), 0);
 		this->WriteEnergySampleLength(length, i);
 		Int_t start = settings->Get(dotMod.Data(), "EnergySampleStart1", Form("%d", chGrp), 0);
@@ -830,7 +836,7 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 		this->WriteStartIndex(start, 2, i);
 	}
 
-	for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+	for (Int_t i = 0; i < kSis3302NofChans; i++) {
 		Int_t tau = settings->Get(dotMod.Data(), "EnergyTauFactor", Form("%d", i), 0);
 		this->WriteTauFactor(tau, i);
 	}
@@ -923,12 +929,12 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 
 						tmpl.InitializeCode("%DacSettings%");
 						tmpl.WriteCode(settings);
-						TArrayI dacValues(kSis3302NofAdcs);
-						this->ReadDac(dacValues, kSis3302AllAdcs);
-						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+						TArrayI dacValues(kSis3302NofChans);
+						this->ReadDac(dacValues, kSis3302AllChans);
+						for (Int_t i = 0; i < kSis3302NofChans; i++) {
 							tmpl.InitializeCode("%DacSettingsLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
-							tmpl.Substitute("$adcNo", i);
+							tmpl.Substitute("$chanNo", i);
 							tmpl.Substitute("$dacValue", dacValues[i]);
 							tmpl.WriteCode(settings);
 						}
@@ -936,7 +942,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.InitializeCode("%EventHeader%");
 						tmpl.WriteCode(settings);
 						Int_t chGrp = 12;
-						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+						for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 							tmpl.InitializeCode("%EventHeaderLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
 							tmpl.Substitute("$chGrp", chGrp);
@@ -948,10 +954,10 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 
 						tmpl.InitializeCode("%EventTrigGateNextNeighbor%");
 						tmpl.WriteCode(settings);
-						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+						for (Int_t i = 0; i < kSis3302NofChans; i++) {
 							tmpl.InitializeCode("%EventTrigGateNNLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
-							tmpl.Substitute("$adcNo", i);
+							tmpl.Substitute("$chanNo", i);
 							Int_t trigMode;
 							this->GetTriggerMode(trigMode, i);
 							Char_t * tm;
@@ -997,7 +1003,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.InitializeCode("%TrigDelayGate%");
 						tmpl.WriteCode(settings);
 						chGrp = 12;
-						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+						for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 							tmpl.InitializeCode("%TrigDelayGateLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
 							tmpl.Substitute("$chGrp", chGrp);
@@ -1013,7 +1019,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.InitializeCode("%RawDataSample%");
 						tmpl.WriteCode(settings);
 						chGrp = 12;
-						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+						for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 							tmpl.InitializeCode("%RawDataSampleLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
 							tmpl.Substitute("$chGrp", chGrp);
@@ -1028,10 +1034,10 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 
 						tmpl.InitializeCode("%TriggerSetup%");
 						tmpl.WriteCode(settings);
-						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+						for (Int_t i = 0; i < kSis3302NofChans; i++) {
 							tmpl.InitializeCode("%TriggerSetupLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
-							tmpl.Substitute("$adc", i);
+							tmpl.Substitute("$chanNo", i);
 							Int_t peak, gap;
 							this->ReadTrigPeakAndGap(peak, gap, i);
 							tmpl.Substitute("$peakTime", peak);
@@ -1060,10 +1066,10 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 
 						tmpl.InitializeCode("%TriggerThresh%");
 						tmpl.WriteCode(settings);
-						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+						for (Int_t i = 0; i < kSis3302NofChans; i++) {
 							tmpl.InitializeCode("%TriggerThreshLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
-							tmpl.Substitute("$adc", i);
+							tmpl.Substitute("$chanNo", i);
 							Int_t thresh;
 							this->ReadTrigThreshold(thresh, i);
 							tmpl.Substitute("$thresh", thresh);
@@ -1078,7 +1084,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.InitializeCode("%EnergySetup%");
 						tmpl.WriteCode(settings);
 						chGrp = 12;
-						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+						for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 							tmpl.InitializeCode("%EnergySetupLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
 							tmpl.Substitute("$chGrp", chGrp);
@@ -1102,7 +1108,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.InitializeCode("%EnergyGate%");
 						tmpl.WriteCode(settings);
 						chGrp = 12;
-						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+						for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 							tmpl.InitializeCode("%EnergyGateLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
 							tmpl.Substitute("$chGrp", chGrp);
@@ -1118,7 +1124,7 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 						tmpl.InitializeCode("%EnergySample%");
 						tmpl.WriteCode(settings);
 						chGrp = 12;
-						for (Int_t i = 0; i < kSis3302NofAdcs; i += 2, chGrp += 22) {
+						for (Int_t i = 0; i < kSis3302NofChans; i += 2, chGrp += 22) {
 							tmpl.InitializeCode("%EnergySampleLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
 							tmpl.Substitute("$chGrp", chGrp);
@@ -1137,10 +1143,10 @@ Bool_t TC2LSis3302::SaveSettings(const Char_t * SettingsFile) {
 
 						tmpl.InitializeCode("%TauFactor%");
 						tmpl.WriteCode(settings);
-						for (Int_t i = 0; i < kSis3302NofAdcs; i++) {
+						for (Int_t i = 0; i < kSis3302NofChans; i++) {
 							tmpl.InitializeCode("%TauFactorLoop%");
 							tmpl.Substitute("$moduleName", this->GetName());
-							tmpl.Substitute("$adc", i);
+							tmpl.Substitute("$chanNo", i);
 							Int_t tau;
 							this->ReadTauFactor(tau, i);
 							tmpl.Substitute("$tau", tau);
