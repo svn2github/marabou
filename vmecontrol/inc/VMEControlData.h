@@ -8,8 +8,8 @@
 // Class:          VMEControlData
 // Description:    A GUI to control VME modules
 // Author:         R. Lutter
-// Revision:       $Id: VMEControlData.h,v 1.13 2010-11-17 12:25:11 Marabou Exp $
-// Date:           $Date: 2010-11-17 12:25:11 $
+// Revision:       $Id: VMEControlData.h,v 1.14 2010-11-17 14:13:58 Marabou Exp $
+// Date:           $Date: 2010-11-17 14:13:58 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -19,6 +19,7 @@
 #include "TString.h"
 #include "TList.h"
 #include "TObjArray.h"
+#include "TTimer.h"
 
 #include "TGLayout.h"
 #include "TGClient.h"

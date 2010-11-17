@@ -85,11 +85,11 @@ SIS3302.$moduleName.LemoInEnableMask:		$lemoEnableMask
 %%Begin(DacSettings)%%
 
 #-----------------------------------------------------------------------------
-# DAC settings (per adc/channel)
+# DAC settings (per channel)
 #-----------------------------------------------------------------------------
 %%End(DacSettings)%%
 %%Begin(DacSettingsLoop)%%
-SIS3302.$moduleName.DacValue.$adcNo:		$dacValue
+SIS3302.$moduleName.DacValue.$chanNo:		$dacValue
 %%End(DacSettingsLoop)%%
 
 %%Begin(EventHeader)%%
@@ -123,11 +123,11 @@ SIS3302.$moduleName.HeaderBits.$chGrp:	 	$hdrBits
 #                       3  --> both
 %%End(EventTrigGateNextNeighbor)%%
 %%Begin(EventTrigGateNNLoop)%%
-SIS3302.$moduleName.TriggerMode.$adcNo: 			$trigMode
-SIS3302.$moduleName.GateMode.$adcNo: 				$gateMode
-SIS3302.$moduleName.NextNeighborTrigger.$adcNo: 	$nextNeighborTrigger
-SIS3302.$moduleName.NextNeighborGate.$adcNo: 		$nextNeighborGate
-SIS3302.$moduleName.InvertSignal.$adcNo:			$invert
+SIS3302.$moduleName.TriggerMode.$chanNo: 			$trigMode
+SIS3302.$moduleName.GateMode.$chanNo: 				$gateMode
+SIS3302.$moduleName.NextNeighborTrigger.$chanNo: 	$nextNeighborTrigger
+SIS3302.$moduleName.NextNeighborGate.$chanNo: 		$nextNeighborGate
+SIS3302.$moduleName.InvertSignal.$chanNo:			$invert
 
 %%End(EventTrigGateNNLoop)%%
 
@@ -158,31 +158,31 @@ SIS3302.$moduleName.RawDataSampleStart.$chGrp:	$start
 %%Begin(TriggerSetup)%%
 
 #-----------------------------------------------------------------------------
-# Trigger (fast) setup (per adc/channel)
+# Trigger (fast) setup (per channel)
 #-----------------------------------------------------------------------------
 %%End(TriggerSetup)%%
 %%Begin(TriggerSetupLoop)%%
-# adc/channel $adc:
-SIS3302.$moduleName.TrigPeakTime.$adc:			$peakTime
-SIS3302.$moduleName.TrigGapTime.$adc:			$gapTime
-SIS3302.$moduleName.TrigInternalGate.$adc:		$gateLength
-SIS3302.$moduleName.TrigInternalDelay.$adc:		$delay
-SIS3302.$moduleName.TrigPulseLength.$adc:		$pulseLength
-SIS3302.$moduleName.TrigDecimation.$adc:		$decim
+# channel $chanNo:
+SIS3302.$moduleName.TrigPeakTime.$chanNo:		$peakTime
+SIS3302.$moduleName.TrigGapTime.$chanNo:		$gapTime
+SIS3302.$moduleName.TrigInternalGate.$chanNo:		$gateLength
+SIS3302.$moduleName.TrigInternalDelay.$chanNo:		$delay
+SIS3302.$moduleName.TrigPulseLength.$chanNo:		$pulseLength
+SIS3302.$moduleName.TrigDecimation.$chanNo:		$decim
 
 %%End(TriggerSetupLoop)%%
 
 %%Begin(TriggerThresh)%%
 
 #-----------------------------------------------------------------------------
-# Trigger threshold (per adc/channel)
+# Trigger threshold (per channel)
 #-----------------------------------------------------------------------------
 %%End(TriggerThresh)%%
 %%Begin(TriggerThreshLoop)%%
-# adc/channel $adc:
-SIS3302.$moduleName.TrigThresh.$adc:			$thresh
-SIS3302.$moduleName.TrigGT.$adc:				$gt
-SIS3302.$moduleName.TrigOut.$adc:				$out
+# channel $chanNo:
+SIS3302.$moduleName.TrigThresh.$chanNo:			$thresh
+SIS3302.$moduleName.TrigGT.$chanNo:				$gt
+SIS3302.$moduleName.TrigOut.$chanNo:				$out
 %%End(TriggerThreshLoop)%%
 
 %%Begin(EnergySetup)%%
@@ -227,11 +227,11 @@ SIS3302.$moduleName.EnergySampleStart3.$chGrp:		$start3
 %%Begin(TauFactor)%%
 
 #-----------------------------------------------------------------------------
-# Energy tau factor (per adc/channel)
+# Energy tau factor (per channel)
 #-----------------------------------------------------------------------------
 %%End(TauFactor)%%
 %%Begin(TauFactorLoop)%%
-SIS3302.$moduleName.EnergyTauFactor.$adc:		$tau
+SIS3302.$moduleName.EnergyTauFactor.$chanNo:		$tau
 %%End(TauFactorLoop)%%
 
 %%EndOfCode%%

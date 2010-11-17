@@ -24,9 +24,9 @@ SYSMODE=y
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-ROOTSYS=/usr/daq/root_new
+ROOTSYS=/usr/local/opt/root/524-00
 MARABOU=`pwd`
-MARABOU_INSTALL_PATH=/usr/daq/marabou_new
+MARABOU_INSTALL_PATH=nothing_to_install
 
 #____________________________[end editable section]___________________________
 
@@ -44,7 +44,7 @@ then
 	return
 fi
 
-if [ ! -x $ROOTSYS/bin/root -o ]
+if [ ! -x $ROOTSYS/bin/root ]
 then
 	echo -e -n $RED >&2
 	echo "iniMrbPath: Directory where ROOTSYS=$ROOTSYS is pointing to doesn't contain a valid ROOT installation" >&2
@@ -195,7 +195,7 @@ export ROOTSYS
 export MARABOU
 export MARABOU_INSTALL_PATH
 export INSTDIR=
-export LD_LIBRARY_PATH=$ROOTSYS/lib:$MARABOU/lib:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=$ROOTSYS/lib:$MARABOU/lib:$LD_LIBRARY_PATH:.
 export PATH=$ROOTSYS/bin:$MARABOU/bin:$PATH
 
 echo -e -n $BLU >&2
