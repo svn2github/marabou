@@ -6,8 +6,8 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.11 2010-11-17 14:13:58 Marabou Exp $
-// Date:           $Date: 2010-11-17 14:13:58 $
+// Revision:       $Id: VMEControlData.cxx,v 1.12 2010-11-18 13:29:34 Marabou Exp $
+// Date:           $Date: 2010-11-18 13:29:34 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -296,7 +296,7 @@ Int_t VMEControlData::MsgBox(TGWindow * Caller, const Char_t * Method, const Cha
 		gMrbLog->Err()	<< Msg << endl;
 		gMrbLog->Flush(Caller->ClassName(), Method);
 	}
-	TGMsgBox * fMsgBox = new TGMsgBox(gClient->GetRoot(), Caller, title.Data(), Msg, Icon, Buttons, &retVal);
+	new TGMsgBox(gClient->GetRoot(), Caller, title.Data(), Msg, Icon, Buttons, &retVal);
 	return (retVal);
 }
 

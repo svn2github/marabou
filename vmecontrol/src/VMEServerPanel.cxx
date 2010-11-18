@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.11 2010-11-17 14:13:58 Marabou Exp $
+// Revision:       $Id: VMEServerPanel.cxx,v 1.12 2010-11-18 13:29:34 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -318,7 +318,7 @@ Bool_t VMEServerPanel::Connect() {
 
 	if (c2l->IsConnected()) {
 		if (c2l->GetServerLog()->GetIndex() == TMrbC2Lynx::kC2LServerLogNone)
-					gVMEControlData->MsgBox(this, "Connect", "Info", Form("Connected to LynxOs server @ %s:%d", ppc.Data(), portNo), kMBIconAsterisk);
+					gVMEControlData->MsgBox(this, "Connect", "Info", Form("Connected to LynxOs server @ %s:%d", ppc.Data(), portNo), kMBIconAsterisk, kMBDismiss);
 		return(kTRUE);
 	} else {
 		gVMEControlData->MsgBox(this, "Connect", "Abort", Form("Unable to connect to LynxOs server @ %s:%d", ppc.Data(), portNo), kMBIconStop);

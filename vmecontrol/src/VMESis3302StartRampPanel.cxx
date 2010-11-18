@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302StartRampPanel.cxx,v 1.1 2010-11-17 14:18:14 Marabou Exp $
+// Revision:       $Id: VMESis3302StartRampPanel.cxx,v 1.2 2010-11-18 13:29:34 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -289,6 +289,11 @@ void VMESis3302StartRampPanel::StartRamp() {
 	fRampingInProgress = kTRUE;
 
 	Int_t offset = fOffset->GetText2Int();
+	if (offset <= 0) {
+		gMrbLog->Wrn() << "Ramping offset not set - DACs won't be set" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartRamp");
+	}
+
 	TArrayI dacOffset(kSis3302NofChans);
 	dacOffset.Reset(-1);
 
@@ -312,25 +317,29 @@ void VMESis3302StartRampPanel::StartRamp() {
 		c->cd(subPad);
 		TH1F * h = (TH1F *) nx->GetAssignedObject();
 		Int_t dacVal = 0;
+		Int_t last = 0x10000;
 		for (Int_t idx = 0; idx < 0x8000; idx++) {
 			UInt_t data = (UInt_t) rampData[idx];
-			Double_t w1 = (Double_t) ((data >> 16) & 0xFFFF);
-			h->Fill(dacVal++, w1);	
-			Double_t w2 = (Double_t) (data & 0xFFFF);
-			h->Fill(dacVal++, w2);
-			if (w1 < offset && w2 >= offset) {
-				if (dacOffset[chn] == -1 || polarity[chn] == 1) dacOffset[chn] = dacVal;
-			}
+			Int_t d = (data >> 16) & 0xFFFF;
+			if (last < offset && d >= offset) dacOffset[chn] = dacVal;
+			last = d;
+			h->Fill(dacVal++, (Double_t) d);	
+			d = data & 0xFFFF;
+			if (last < offset && d >= offset) dacOffset[chn] = dacVal;
+			last = d;
+			h->Fill(dacVal++, (Double_t) d);	
 		}
 		h->Draw();
 		c->Update();
 		gSystem->ProcessEvents();
 	}
 	this->StopRamp();
-	for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
-		if (dacOffset[chn] == -1) dacOffset[chn] = dacSaved[chn];
+	if (offset > 0) {
+		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
+			if (dacOffset[chn] == -1) dacOffset[chn] = dacSaved[chn];
+		}
+		curModule->WriteDac(dacOffset);
 	}
-	curModule->WriteDac(dacOffset);
 	VMESis3302Panel * panel = (VMESis3302Panel *) gVMEControlData->GetPanel(VMEControlData::kVMETabSis3302);
 	panel->UpdateGUI();
 }
