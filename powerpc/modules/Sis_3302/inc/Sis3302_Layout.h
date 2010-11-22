@@ -314,4 +314,7 @@
 /* end thresh bit in acq control */
 #define SIS3302_STATUS_END_THRESH					0x00080000
 
+/* max number of samples */
+#define SIS3302_MAX_NUMBER_SAMPLES					0x3ffffc
+
 #endif
