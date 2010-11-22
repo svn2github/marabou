@@ -9,13 +9,14 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.99 2010-11-15 13:46:06 Marabou Exp $
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.100 2010-11-22 11:41:07 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TEnv.h"
 #include "TOrdCollection.h"
 #include "TRegexp.h"
+#include "TObjArray.h"
 #include "TObjString.h"
 #include "THashList.h"
 #include "TMath.h"
@@ -879,7 +880,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 							}
 							break;
 					}
-				} else {
+				} else if (fobj->InheritsFrom("TMrbWindow")) {
 					switch (((TMrbWindow *) fobj)->GetType()) {
 						case kWindowI:
                             ((TMrbWindowI *) vobj)->Print();
@@ -894,10 +895,13 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 							((TMrbWindowF *) vobj)->Set(((TMrbWindowF *) fobj)->GetLowerLimit(),
 													((TMrbWindowF *) fobj)->GetUpperLimit());
 							break;
-						case kWindow2D:
-							gMrbLofUserVars->Replace(vobj, fobj);
-							break;
 					}
+				} else if (fobj->InheritsFrom("TCutG")) {
+					gMrbLofUserVars->Replace(vobj, fobj);
+				} else if (fobj->InheritsFrom("TFormula")) {
+					gMrbLofUserVars->Replace((TFormula *) vobj, (TFormula *) fobj);
+					gROOT->Append(fobj);
+					fobj->SetUniqueID(kIsFunction);
 				}
 				if (this->IsVerbose()) {
 					cout	<< this->ClassName() << "::ReloadParams(): Updated ";
@@ -910,7 +914,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 		}
 	}
 
-//	parFile->Close();
+	parFile->Close();
 	this->SetUpdateFlag();
 
 	delete parFile;

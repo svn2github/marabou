@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofUserVars.cxx,v 1.10 2010-11-15 13:46:06 Marabou Exp $
+// Revision:       $Id: TMrbLofUserVars.cxx,v 1.11 2010-11-22 11:41:07 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -234,7 +234,7 @@ void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) const {
 	}
 
 	found = kFALSE;
-	if ((vOpt2 = vOpt & (kVarI | kVarF | kVarS | kVarB))) {
+	if (vOpt2 = vOpt & (kVarI | kVarF | kVarS | kVarB)) {
 		varp = this->First(vOpt2);
 		while (varp) {
 			if (!found) {
@@ -254,7 +254,7 @@ void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) const {
 	}
 
 	found = kFALSE;
-	if ((vOpt2 = vOpt & (kWindowI | kWindowF))) {
+	if (vOpt2 = vOpt & (kWindowI | kWindowF)) {
 		varp = this->First(vOpt2);
 		while (varp) {
 			if (!found) {
@@ -274,7 +274,7 @@ void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) const {
 	}
 
 	found = kFALSE;
-	if ((vOpt2 = vOpt & kWindow2D)) {
+	if (vOpt2 = vOpt & kWindow2D) {
 		varp = this->First(vOpt2);
 		while (varp) {
 			if (!found) {
@@ -293,7 +293,7 @@ void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) const {
 	}
 
 	found = kFALSE;
-	if ((vOpt2 = vOpt & (kFunction1D | kFunction2D))) {
+	if (vOpt2 = vOpt & (kFunction1D | kFunction2D)) {
 		varp = this->First(vOpt2);
 		while (varp) {
 			if (!found) {
@@ -303,11 +303,13 @@ void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) const {
 						<< setw(15) << "TYPE"
 						<< endl;
 			}
+			Int_t ndim = ((TFormula *) varp)->GetNdim();
 			OutStrm	<< "   " << setiosflags(ios::left)
 					<< setw(20) << ((TFormula *) varp)->GetName()
-					<< setw(15) << Form("TF%d", ((TFormula *) varp)->GetNdim())
+					<< setw(15) << Form("TF%d", ndim)
 					<< endl;
 			found = kTRUE;
+			if (ndim == 1) ((TF1 *) varp)->Print(); else ((TF2 *) varp)->Print();
 			varp = this->After(varp, vOpt2);
 		}
 	}

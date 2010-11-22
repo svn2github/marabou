@@ -7,7 +7,7 @@
 // Purpose:        Common defs for variables and windows
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVarWdwCommon.h,v 1.5 2010-11-15 13:46:06 Marabou Exp $
+// Revision:       $Id: TMrbVarWdwCommon.h,v 1.6 2010-11-22 11:41:07 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -31,7 +31,8 @@ enum EMrbVarWdwType		{	kVarI			=   0x1,		// var of type int
 							kIsWindow		=   kIsWindow1D | kIsWindow2D,
 							kIsFunction		=   kFunction1D | kFunction2D,
 							kVarOrWindow	=   kIsVariable | kIsWindow,
-							kStatus 		=   kVarIsArray | kIsRangeChecked
+							kStatus 		=   kVarIsArray | kIsRangeChecked,
+							kVarOrWindowOrFunction	=   kIsVariable | kIsWindow | kIsFunction
 						};
 
 enum EMrbVarWdwOutput	{	kOutputNormal	=   0x1,
@@ -40,10 +41,11 @@ enum EMrbVarWdwOutput	{	kOutputNormal	=   0x1,
 
 const SMrbNamedXShort kMrbVarWdwOptions[] =
 						{
-							{kIsVariable,		"VARIABLES" },
-							{kIsWindow1D,		"WINDOWS"   },
-							{kVarOrWindow,		"DEFAULT"   },
-							{0, 				NULL		}
+							{kIsVariable,				"VARIABLES" },
+							{kIsWindow1D,				"WINDOWS"   },
+							{kIsFunction,				"FUNCTIONS"   },
+							{kVarOrWindowOrFunction,	"DEFAULT"   },
+							{0, 						NULL		}
 						};
 
 const SMrbNamedXShort kMrbVarWdwOutput[] =

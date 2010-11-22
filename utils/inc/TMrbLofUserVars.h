@@ -8,17 +8,19 @@
 // Class:          TMrbLofUserVars -- a list of user-defined variables and windows
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofUserVars.h,v 1.7 2010-11-15 13:46:06 Marabou Exp $
+// Revision:       $Id: TMrbLofUserVars.h,v 1.8 2010-11-22 11:41:07 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+#include "TROOT.h"
 #include "TObject.h"
 #include "TNamed.h"
 #include "TDirectory.h"
 #include "TObjArray.h"
 #include "TIterator.h"
 #include "TSystem.h"
+#include "TFormula.h"
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
@@ -61,8 +63,8 @@ class TMrbLofUserVars: public TNamed {
 		virtual void Print(ostream & OutStrm, Option_t * Option = "Default") const;	// output settings to cout
 		virtual void Print(Option_t * Option = "Default") const { this->Print(cout, Option); };
 
-		TObject * Find(const Char_t * VarName, UInt_t VarType = kVarOrWindow) const;	// find variable
-		TObject * First(UInt_t  VarType = kVarOrWindow) const;							// get first entry
+		TObject * Find(const Char_t * VarName, UInt_t VarType = kVarOrWindowOrFunction) const;	// find variable
+		TObject * First(UInt_t  VarType = kVarOrWindowOrFunction) const;							// get first entry
 		TObject * After(TObject * VarPtr, UInt_t VarType = kVarOrWindow) const; 		// get next entry
 
 		void SetInitialFctType(TObject * Fct, UInt_t FctType);
