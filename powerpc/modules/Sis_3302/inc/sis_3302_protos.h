@@ -8,8 +8,8 @@
 //! \details		Prototypes for SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.8 $
-//! $Date: 2010-11-24 11:26:50 $
+//! $Revision: 1.1 $
+//! $Date: 2010-11-24 11:54:30 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*! Alloc database for SIS3302 module */
