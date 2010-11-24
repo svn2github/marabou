@@ -10,8 +10,8 @@
 //! \details		Structures describing a SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.7 $
-//! $Date: 2010-11-22 14:19:20 $
+//! $Revision: 1.8 $
+//! $Date: 2010-11-24 11:26:50 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -46,6 +46,9 @@ struct s_sis_3302 {
 	Bool_t updSettings;
 	Int_t updInterval;
 	Int_t updCountDown;
+
+	Bool_t autoBankSwitch;
+	Int_t currentBank;
 
 	Int_t dacValues[NOF_CHANNELS];
 
@@ -87,5 +90,5 @@ struct s_sis_3302 {
 	Int_t energySampleLength[NOF_GROUPS];
 	Int_t energySampleStart[3][NOF_GROUPS];
 	Int_t energyTauFactor[NOF_CHANNELS];
-
+}
 #endif
