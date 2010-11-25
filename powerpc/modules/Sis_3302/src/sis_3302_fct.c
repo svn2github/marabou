@@ -1,12 +1,12 @@
-//__________________________________________________________[C IMPLEMENTATION]
+/*__________________________________________________________[C IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			Sis3302_Functions.c
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $
-//! $Date: 2010-11-24 11:51:17 $
-//////////////////////////////////////////////////////////////////////////////
+//! $Revision: 1.2 $
+//! $Date: 2010-11-25 09:47:57 $
+////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -18,9 +18,9 @@
 
 #include "LwrTypes.h"
 
-#include "Sis3302_Protos.h"
-#include "Sis3302_Layout.h"
-#include "Sis3302_Database.h"
+#include "sis_3302_protos.h"
+#include "sis_3302_layout.h"
+#include "sis_3302_database.h"
 
 
 #include "root_env.h"
@@ -30,7 +30,7 @@
 
 char msg[256];
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Allocate database
 //! \param[in]		VmeAddr			-- vme address (mapped)
@@ -38,13 +38,13 @@ char msg[256];
 //! \param[in]		Name			-- module name
 //! \param[in]		Serial			-- MARaBOU's serial number
 //! \return 		Module			-- Pointer to struct s_sis_3302
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 struct s_sis_3302 * sis_3302_alloc(ULong_t VmeAddr, volatile unsigned char * BaseAddr, char * Name, Int_t Serial)
 {
-	struct s_sis_3302 * s;
-	s = (struct s_sis_3302 *) calloc(1, sizeof(struct s_sis_3302));
-	if (s != NULL) {
+	struct s_sis_3302 * Module;
+	Module = (struct s_sis_3302 *) calloc(1, sizeof(struct s_sis_3302));
+	if (Module != NULL) {
 		Module->baseAddr = BaseAddr;
 		Module->vmeAddr = VmeAddr;
 		strcpy(Module->moduleName, Name);
@@ -59,16 +59,16 @@ struct s_sis_3302 * sis_3302_alloc(ULong_t VmeAddr, volatile unsigned char * Bas
 		sprintf(msg, "[alloc] Can't allocate sis_3302 struct");
 		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 	}
-	return(s);
+	return(Module);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Maps address to vme memory
 //! \param[in]		Module			-- module database
 //! \param[out]		Offset	 		-- register offset
 //! \retval 		MappedAddr		--
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 volatile char * sis3302_MapAddr(struct s_sis_3302 * Module, Int_t Offset) {
 
@@ -110,7 +110,7 @@ volatile char * sis3302_MapAddr(struct s_sis_3302 * Module, Int_t Offset) {
 }
 
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads (and outputs) module info
 //! \param[in]		Module			-- module address
@@ -119,7 +119,7 @@ volatile char * sis3302_MapAddr(struct s_sis_3302 * Module, Int_t Offset) {
 //! \param[out]		MinorVersion	-- firmware version (minor)
 //! \param[in]		PrintFlag		-- output to gMrbLog if kTRUE
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_moduleInfo(struct s_sis_3302 * Module, Int_t * BoardId, Int_t * MajorVersion, Int_t * MinorVersion, Bool_t PrintFlag) {
 
@@ -143,14 +143,14 @@ Bool_t sis3302_moduleInfo(struct s_sis_3302 * Module, Int_t * BoardId, Int_t * M
 	return(kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Turns user LED on/off
 //! \param[in]		Module			-- module address
 //! \param[in]		OnFlag			-- kTRUE if to be turned on
 //! \param[in]		ChanNo 			-- channel numer (ignored))
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setUserLED(struct s_sis_3302 * Module, Bool_t OnFlag) {
 
@@ -160,14 +160,14 @@ Bool_t sis3302_setUserLED(struct s_sis_3302 * Module, Bool_t OnFlag) {
 	return(kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads dacs
 //! \param[in]		Module		-- module address
 //! \param[out]		DacValues	-- where to store dac values
 //! \param[in]		ChanNo		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_readDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t ChanNo) {
 
@@ -214,14 +214,14 @@ Bool_t sis3302_readDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Chan
 	return(kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes dac values
 //! \param[in]		Module		-- module address
 //! \param[in]		DacValues	-- dac values to be written
 //! \param[in]		ChanNo		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t ChanNo) {
 
@@ -276,13 +276,13 @@ Bool_t sis3302_writeDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Cha
 
 Bool_t sis3302_writeDac_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeDac(Module, Module->dacValues[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Executes KEY ADDR command
 //! \param[in]		Module		-- module address
 //! \param[in]		Key 		-- key
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_keyAddr(struct s_sis_3302 * Module, Int_t Key) {
 
@@ -336,12 +336,12 @@ Bool_t sis3302_keyArmBank2Sampling(struct s_sis_3302 * Module) { return(sis3302_
 //! Exec KEY command: disarm sample
 Bool_t sis3302_keyDisarmSample(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyDisarmSample)); };
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads control and status register
 //! \param[in]		Module			-- module address
 //! \return 		Bits			-- data
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readControlStatus(struct s_sis_3302 * Module) {
 
@@ -356,13 +356,13 @@ UInt_t sis3302_readControlStatus(struct s_sis_3302 * Module) {
 	return (*ctrlStat);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes control and status register
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- data
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeControlStatus(struct s_sis_3302 * Module, UInt_t Bits) {
 
@@ -380,13 +380,13 @@ Bool_t sis3302_writeControlStatus(struct s_sis_3302 * Module, UInt_t Bits) {
 
 Bool_t sis3302_writeControlStatus_db(struct s_sis_3302 * Module) { return(sis3302_writeControlStatus(Module, Module->controlStatus)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads event config register
 //! \param[in]		Module			-- module address
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		Bits			-- configuration
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readEventConfig(struct s_sis_3302 * Module, Int_t ChanNo);
 
@@ -412,14 +412,14 @@ UInt_t sis3302_readEventConfig(struct s_sis_3302 * Module, Int_t ChanNo);
 	return (*evtConf);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes event config register
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- configuration
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeEventConfig(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
@@ -450,13 +450,13 @@ Bool_t sis3302_writeEventConfig(struct s_sis_3302 * Module, UInt_t Bits, Int_t C
 
 Bool_t sis3302_writeEventConfig_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEventConfig(Module, Module->evtConfig[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads EXTENDED event config register
 //! \param[in]		Module			-- module address
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		Bits			-- configuration
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readEventExtendedConfig(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -482,14 +482,14 @@ UInt_t sis3302_readEventExtendedConfig(struct s_sis_3302 * Module, Int_t ChanNo)
 	return (*evtConf);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes EXTENDED event config register
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- configuration
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeEventExtendedConfig(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
@@ -520,13 +520,13 @@ Bool_t sis3302_writeEventExtendedConfig(struct s_sis_3302 * Module, UInt_t Bits,
 
 Bool_t sis3302_writeEventExtendedConfig_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEventConfig(Module, Module->xEvtConfig[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Returns header data
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Bits		-- header data
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_getHeaderBits(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -540,14 +540,14 @@ UInt_t sis3302_getHeaderBits(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return(bits);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Defines header data
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setHeaderBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
@@ -586,13 +586,13 @@ Bool_t sis3302_setHeaderBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t Chan
 
 Bool_t sis3302_setHeaderBits_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_setHeaderBits(Module, Module->headerBits[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Returns group id (read-only)
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		GroupId 	-- group id
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_getGroupId(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -606,13 +606,13 @@ UInt_t sis3302_getGroupId(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return(bits);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Returns trigger mode
+//! \details		Returns trigger mo*/
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Bits		-- trigger mode
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_getTriggerMode(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -630,14 +630,14 @@ UInt_t sis3302_getTriggerMode(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return(bits);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Defines trigger mode
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- trigger mode
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setTriggerMode(struct s_sis_3302 * Module, Unt_t Bits, Int_t ChanNo);
 
@@ -672,14 +672,14 @@ Bool_t sis3302_setTriggerMode(struct s_sis_3302 * Module, Unt_t Bits, Int_t Chan
 
 Bool_t sis3302_setTriggerMode_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_setTriggerMode(Module, Module->triggerMode[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Returns gate mode
 //! \param[in]		Module		-- module address
 //! \param[out]		Bits		-- bits (0,1,2,3)
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Bits		-- gate mode
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_getGateMode(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -697,14 +697,14 @@ UInt_t sis3302_getGateMode(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return(bits);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Defines gate mode
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- gate mode
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setGateMode(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
@@ -739,13 +739,13 @@ Bool_t sis3302_setGateMode(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo
 
 Bool_t sis3302_setGateMode_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_setGateMode(Module, Module->gateMode[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Returns next-neighbor trigger mode
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Bits		-- trigger mode
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_getNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -764,14 +764,14 @@ UInt_t sis3302_getNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Chan
 	return(bits);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Defines next-neighbor trigger mode
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits (0,1,2,3)
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Bits, Int_t ChanNo) {
 
@@ -806,13 +806,13 @@ Bool_t sis3302_setNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Bits
 
 Bool_t sis3302_setNextNeighborTriggerMode_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_setNextNeighborTriggerMode(Module, Module->nextNeighborTrigger[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Returns next-neighbor gate mode
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Bits		-- gate mode
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_getNextNeighborGateMode(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -830,14 +830,14 @@ UInt_t sis3302_getNextNeighborGateMode(struct s_sis_3302 * Module, Int_t ChanNo)
 	return(bits);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Defines next-neighbor gate mode
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits (0,1,2,3)
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setNextNeighborGateMode(struct s_sis_3302 * Module, Int_t Bits, Int_t ChanNo) {
 
@@ -872,13 +872,13 @@ Bool_t sis3302_setNextNeighborGateMode(struct s_sis_3302 * Module, Int_t Bits, I
 
 Bool_t sis3302_setNextNeighborGateMode_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_setNextNeighborGateMode(Module, Module->nextNeighborGate[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Returns trigger polarity
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		InvertFlag	-- kTRUE if trigger is inverted
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_polarityIsInverted(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -893,14 +893,14 @@ Bool_t sis3302_polarityIsInverted(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return(invertFlag);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Defines trigger polarity
 //! \param[in]		Module			-- module address
 //! \param[in]		InvertFlag		-- kTRUE if neg polarity
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setPolarity(struct s_sis_3302 * Module, Bool_t InvertFlag, Int_t ChanNo) {
 
@@ -929,13 +929,13 @@ Bool_t sis3302_setPolarity(struct s_sis_3302 * Module, Bool_t InvertFlag, Int_t 
 
 Bool_t sis3302_setPolarity_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_setPolarity(Module, Module->invertSignal[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads end addr threshold register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Thresh		-- threshold
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readEndAddrThresh(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -961,14 +961,14 @@ Int_t sis3302_readEndAddrThresh(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return (*endAddr);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes end addr threshold register
 //! \param[in]		Module		-- module address
 //! \param[in]		Thresh		-- threshold
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeEndAddrThresh(struct s_sis_3302 * Module, Int_t Thresh, Int_t ChanNo) {
 
@@ -1004,13 +1004,13 @@ Bool_t sis3302_writeEndAddrThresh(struct s_sis_3302 * Module, Int_t Thresh, Int_
 
 Bool_t sis3302_writeEndAddrThresh_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEndAddrThresh(Module, Module->endAddrThresh[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Bits		-- trigger register
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readPreTrigDelayAndGateLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1036,14 +1036,14 @@ UInt_t sis3302_readPreTrigDelayAndGateLength(struct s_sis_3302 * Module, Int_t C
 	return (*trigReg);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes trigger register
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- trigger register
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writePreTrigDelayAndGateLength(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
@@ -1071,13 +1071,13 @@ Bool_t sis3302_writePreTrigDelayAndGateLength(struct s_sis_3302 * Module, UInt_t
 	return(TRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads pretrigger delay
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Delay		-- delay
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readPreTrigDelay(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1093,14 +1093,14 @@ Int_t sis3302_readPreTrigDelay(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return((Int_t) delay);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes pretrigger delay
 //! \param[in]		Module		-- module address
 //! \param[in]		Delay		-- delay
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writePreTrigDelay(struct s_sis_3302 * Module, Int_t Delay, Int_t ChanNo) {
 
@@ -1127,13 +1127,13 @@ Bool_t sis3302_writePreTrigDelay(struct s_sis_3302 * Module, Int_t Delay, Int_t 
 
 Bool_t sis3302_writePreTrigDelay_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writePreTrigDelay(Module, Module->pretrigDelay[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger gate length
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Gate		-- gate
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readTrigGateLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1147,14 +1147,14 @@ Int_t sis3302_readTrigGateLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return((Int_t) gate);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes trigger gate length
 //! \param[in]		Module		-- module address
 //! \param[in]		Gate		-- gate
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeTrigGateLength(struct s_sis_3302 * Module, Int_t Gate, Int_t ChanNo) {
 
@@ -1178,13 +1178,13 @@ Bool_t sis3302_writeTrigGateLength(struct s_sis_3302 * Module, Int_t Gate, Int_t
 
 Bool_t sis3302_writeTrigGateLength_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTrigGateLength(Module, Module->trigGateLength[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads raw data buffer register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Bits		-- bits
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readRawDataBufConfig(struct s_sis_3302 * Module, Int_t ChanNo);
 
@@ -1210,14 +1210,14 @@ UInt_t sis3302_readRawDataBufConfig(struct s_sis_3302 * Module, Int_t ChanNo);
 	return (*rawData);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes raw data buffer register
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeRawDataBufConfig(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
@@ -1245,13 +1245,13 @@ Bool_t sis3302_writeRawDataBufConfig(struct s_sis_3302 * Module, UInt_t Bits, In
 	return(kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads raw data sample length
 //! \param[in]		Module			-- module address
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		SampleLength	-- length
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readRawDataSampleLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1262,14 +1262,14 @@ Int_t sis3302_readRawDataSampleLength(struct s_sis_3302 * Module, Int_t ChanNo) 
 	return((Int_t) bits);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes raw data sample length
 //! \param[in]		Module			-- module address
 //! \param[in]		Sample			-- length
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeRawDataSampleLength(struct s_sis_3302 * Module, Int_t Sample, Int_t ChanNo) {
 
@@ -1308,13 +1308,13 @@ Bool_t sis3302_writeRawDataSampleLength(struct s_sis_3302 * Module, Int_t Sample
 
 Bool_t sis3302_writeRawDataSampleLength_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeRawDataSampleLength(Module, Module->rawDataSampleLength[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads raw data start index
 //! \param[in]		Module			-- module address
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		StartIndex		-- start
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readRawDataStartIndex(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1327,14 +1327,14 @@ Int_t sis3302_readRawDataStartIndex(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return((Int_t) sx);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes raw data start index
 //! \param[in]		Module			-- module address
 //! \param[in]		Index			-- start
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeRawDataStartIndex(struct s_sis_3302 * Module, Int_t Index, Int_t ChanNo);
 
@@ -1370,13 +1370,13 @@ Bool_t sis3302_writeRawDataStartIndex(struct s_sis_3302 * Module, Int_t Index, I
 
 Bool_t sis3302_writeRawDataStartIndex_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeRawDataSampleLength(Module, Module->rawDataSampleStart[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads next sample addr register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Addr		-- address
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readNextSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1401,13 +1401,13 @@ Int_t sis3302_readNextSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return (*samplAddr);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads previous sample addr register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Addr		-- address
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readPrevBankSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1432,13 +1432,13 @@ Int_t sis3302_readPrevBankSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return (*samplAddr);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads actual sample register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Data		-- sample data
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readActualSample(struct s_sis_3302 * Module, Int_t ChanNo);
 
@@ -1467,13 +1467,13 @@ UInt_t sis3302_readActualSample(struct s_sis_3302 * Module, Int_t ChanNo);
 	return (data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Data		-- data
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readTriggerSetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1499,14 +1499,14 @@ UInt_t sis3302_readTriggerSetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return (*trigSetup);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes trigger setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeTriggerSetup(struct s_sis_3302 * Module, UInt_t Data, Int_t ChanNo) {
 
@@ -1541,13 +1541,13 @@ Bool_t sis3302_writeTriggerSetup(struct s_sis_3302 * Module, UInt_t Data, Int_t 
 	return(kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads EXTENDED trigger setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Data		-- data
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readTriggerExtendedSetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1573,14 +1573,14 @@ UInt_t sis3302_readTriggerExtendedSetup(struct s_sis_3302 * Module, Int_t ChanNo
 	return (*trigSetup);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes EXTENDED trigger setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeTriggerExtendedSetup(struct s_sis_3302 * Module, UInt_t Data, Int_t ChanNo) {
 
@@ -1615,14 +1615,14 @@ Bool_t sis3302_writeTriggerExtendedSetup(struct s_sis_3302 * Module, UInt_t Data
 	return(kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger peaking and gap times
 //! \param[in]		Module		-- module address
 //! \param[out]		PeakGap 	-- peak & gap time
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_readTriggerPeakAndGap(struct s_sis_3302 * Module, Int_t PeakGap[], Int_t ChanNo) {
 
@@ -1644,13 +1644,13 @@ Bool_t sis3302_readTriggerPeakAndGap(struct s_sis_3302 * Module, Int_t PeakGap[]
 	return(kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets trigger peaking and gap times
 //! \param[in]		Module		-- module address
 //! \param[in]		PeakGap 	-- peak & gap time
 //! \param[in]		ChanNo 		-- channel numer
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeTriggerPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, Int Gap, Int_t ChanNo) {
 
@@ -1695,13 +1695,13 @@ Bool_t sis3302_writeTriggerPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, In
 Bool_t sis3302_writeTriggerPeakAndGap_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerPeakAndGap(Module, trigPeakTime[ChanNo], trigGapTime[ChanNo], ChanNo); }
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger pulse length
 //! \param[in]		Module			-- module address
 //! \param[in]		ChanNo			-- channel numer
 //! \return 		PulseLength 	-- pulse length
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readTriggerPulseLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1711,14 +1711,14 @@ Int_t sis3302_readTriggerPulseLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return((Int_t) data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets trigger pulse length
 //! \param[in]		Module			-- module address
 //! \param[in]		PulseLength 	-- pulse length
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeTriggerPulseLength(struct s_sis_3302 * Module, Int_t PulseLength, Int_t ChanNo) {
 
@@ -1748,13 +1748,13 @@ Bool_t sis3302_writeTriggerPulseLength(struct s_sis_3302 * Module, Int_t PulseLe
 
 Bool_t sis3302_writeTriggerPulseLength_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerPulseLength(Module, Module->trigPulseLength[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger internal gate length
 //! \param[in]		Module			-- module address
 //! \param[in]		ChanNo			-- channel numer
 //! \return 		Gate			-- gate length
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readTriggerInternalGate(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1764,14 +1764,14 @@ Int_t sis3302_readTriggerInternalGate(struct s_sis_3302 * Module, Int_t ChanNo) 
 	return((Int_t) data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets trigger internal gate length
 //! \param[in]		Module			-- module address
 //! \param[in]		GateLength	 	-- gate length
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeTriggerInternalGate(struct s_sis_3302 * Module, Int_t GateLength, Int_t ChanNo) {
 
@@ -1801,13 +1801,13 @@ Bool_t sis3302_writeTriggerInternalGate(struct s_sis_3302 * Module, Int_t GateLe
 
 Bool_t sis3302_writeTriggerInternalGate_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerPulseLength(Module, Module->trigInternalGate[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger internal delay
 //! \param[in]		Module			-- module address
 //! \param[in]		ChanNo			-- channel numer
 //! \return 		Delay			-- delay length
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readTriggerInternalDelay(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1817,14 +1817,14 @@ Int_t sis3302_readTriggerInternalDelay(struct s_sis_3302 * Module, Int_t ChanNo)
 	return((Int_t) data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets trigger internal delay
 //! \param[in]		Module			-- module address
 //! \param[in]		Delay		 	-- delay length
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeTriggerInternalDelay(struct s_sis_3302 * Module, Int_t DelayLength, Int_t ChanNo) {
 
@@ -1854,13 +1854,13 @@ Bool_t sis3302_writeTriggerInternalDelay(struct s_sis_3302 * Module, Int_t Delay
 
 Bool_t sis3302_writeTriggerInternalDelay_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerInternalDelay(Module, Module->trigInternalDelay[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger decimation
 //! \param[in]		Module			-- module address
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		Decimation		-- decimation
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_getTriggerDecimation(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1870,14 +1870,14 @@ Int_t sis3302_getTriggerDecimation(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return((Int_t) datas);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets trigger decimation
 //! \param[in]		Module			-- module address
 //! \param[in]		Decimation		-- decimation
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setTriggerDecimation(struct s_sis_3302 * Module, Int_t Decimation, Int_t ChanNo) {
 
@@ -1907,13 +1907,13 @@ Bool_t sis3302_setTriggerDecimation(struct s_sis_3302 * Module, Int_t Decimation
 
 Bool_t sis3302_setTriggerDecimation_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerThreshold(Module, Module->trigDecimation[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger threshold register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Data		-- data
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readTriggerThreshReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -1939,14 +1939,14 @@ UInt_t sis3302_readTriggerThreshReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return (*trigThresh);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes trigger threshold register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeTriggerThreshReg(struct s_sis_3302 * Module, UInt_t Data, Int_t ChanNo);
 
@@ -1982,13 +1982,13 @@ Bool_t sis3302_writeTriggerThreshReg(struct s_sis_3302 * Module, UInt_t Data, In
 	return(kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger threshold
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Thresh		-- threshold
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readTriggerThreshold(struct s_sis_3302 * Module, Int_t ChanNo);
 
@@ -1998,14 +1998,14 @@ Int_t sis3302_readTriggerThreshold(struct s_sis_3302 * Module, Int_t ChanNo);
 	return((Int_t) data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes trigger threshold
 //! \param[in]		Module		-- module address
 //! \param[in]		Thresh		-- threshold
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeTriggerThreshold(struct s_sis_3302 * Module, Int_t Thresh, Int_t ChanNo) {
 
@@ -2036,13 +2036,13 @@ Bool_t sis3302_writeTriggerThreshold(struct s_sis_3302 * Module, Int_t Thresh, I
 
 Bool_t sis3302_writeTriggerThreshold_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerThreshold(Module, Module->trigThresh[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger GT bit
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_getTriggerGT(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -2052,14 +2052,14 @@ Bool_t sis3302_getTriggerGT(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return((data & (0x1 << 25)) != 0);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Turns trigger GT bit on or off
 //! \param[in]		Module		-- module address
 //! \param[in]		GTFlag		-- GT
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setTriggerGT(struct s_sis_3302 * Module, Bool_t GTFlag, Int_t ChanNo) {
 
@@ -2083,13 +2083,13 @@ Bool_t sis3302_setTriggerGT(struct s_sis_3302 * Module, Bool_t GTFlag, Int_t Cha
 
 Bool_t sis3302_setTriggerGT_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_setTriggerGT(Module, Module->trigGT[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads trigger OUT bit
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_getTriggerOut(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -2099,14 +2099,14 @@ Bool_t sis3302_getTriggerOut(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return((data & (0x1 << 26)) > 0);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Turns trigger OUT bit on or off
 //! \param[in]		Module		-- module address
 //! \param[in]		TrigOutFlag	-- OUT
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setTriggerOut(struct s_sis_3302 * Module, Bool_t TrigOutFlag, Int_t ChanNo);
 
@@ -2129,13 +2129,13 @@ Bool_t sis3302_setTriggerOut(struct s_sis_3302 * Module, Bool_t TrigOutFlag, Int
 
 Bool_t sis3302_setTriggerOut_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_setTriggerOut(Module, Module->trigOut[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads energy setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Data		-- data
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readEnergySetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -2161,14 +2161,14 @@ UInt_t sis3302_readEnergySetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return (*setup);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes energy setup register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeEnergySetup(struct s_sis_3302 * Module, UInt_t Data, Int_t ChanNo) {
 
@@ -2197,14 +2197,14 @@ Bool_t sis3302_writeEnergySetup(struct s_sis_3302 * Module, UInt_t Data, Int_t C
 	return(kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads energy peaking and gap
 //! \param[in]		Module		-- module address
 //! \param[out]		PeakGap		-- peaking and gap time
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_readEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t PeakGap[], Int_t ChanNo) {
 
@@ -2221,14 +2221,14 @@ Bool_t sis3302_readEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t PeakGap[],
 	return(kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets energy peaking and gap
 //! \param[in]		Module		-- module address
 //! \param[in]		PeakGap		-- peaking and gap time
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, Int_t Gap, Int_t ChanNo) {
 
@@ -2271,13 +2271,13 @@ Bool_t sis3302_writeEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, Int
 
 Bool_t sis3302_writeEnergyPeakAndGap_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerPeakAndGap(Module, Module->energyPeakTime[ChanNo/2], energyGapTime[ChanNo/2], ChanNo); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads energy decimation
 //! \param[in]		Module			-- module address
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		Decimation		-- decimation
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_getEnergyDecimation(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -2287,14 +2287,14 @@ Int_t sis3302_getEnergyDecimation(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return(data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets energy decimation
 //! \param[in]		Module			-- module address
 //! \param[in]		Decimation		-- decimation
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setEnergyDecimation(struct s_sis_3302 * Module, Int_t Decimation, Int_t ChanNo) {
 
@@ -2324,13 +2324,13 @@ Bool_t sis3302_setEnergyDecimation(struct s_sis_3302 * Module, Int_t Decimation,
 
 Bool_t sis3302_setEnergyDecimation_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_setEnergyDecimation(Module, Module->energyDecimation[ChanNo/2], ChanNo)); };
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads energy gate register
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Data		-- data
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readEnergyGateReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -2356,14 +2356,14 @@ UInt_t sis3302_readEnergyGateReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return (*gateReg);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets energy gate register
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeEnergyGateReg(struct s_sis_3302 * Module, UInt_t Data, Int_t ChanNo) {
 
@@ -2391,13 +2391,13 @@ Bool_t sis3302_writeEnergyGateReg(struct s_sis_3302 * Module, UInt_t Data, Int_t
 	*gateReg = Data;
 	return(kTRUE);
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads energy gate length
 //! \param[in]		Module  -- module address
 //! \param[in]		ChanNo              -- channel numer
 //! \return 		GateLength     -- gate length
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readEnergyGateLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -2407,14 +2407,14 @@ Int_t sis3302_readEnergyGateLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return((Int_t) data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets energy gate length
 //! \param[in]		Module			-- module address
 //! \param[in]		GateLength		-- gate length
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeEnergyGateLength(struct s_sis_3302 * Module, Int_t GateLength, Int_t ChanNo) {
 
@@ -2444,13 +2444,13 @@ Bool_t sis3302_writeEnergyGateLength(struct s_sis_3302 * Module, Int_t GateLengt
 
 Bool_t sis3302_writeEnergyGateLength_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEnergyGateLength(Module, Module->energyGateLength[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads test bits
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Bits		-- bits
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_getTestBits(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -2460,14 +2460,14 @@ UInt_t sis3302_getTestBits(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return(data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes test bits
 //! \param[in]		Module		-- module address
 //! \param[in]		Bits		-- bits
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setTestBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
@@ -2498,13 +2498,13 @@ Bool_t sis3302_setTestBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo
 
 Bool_t sis3302_setTestBits_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_setTestBits(Module, Module->energyTestBits[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads energy sample length
 //! \param[in]		Module			-- module address
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		SampleLength	-- length
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readEnergySampleLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -2530,14 +2530,14 @@ Int_t sis3302_readEnergySampleLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return(*sample);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes energy sample length
 //! \param[in]		Module			-- module address
 //! \param[in]		SampleLength	-- length
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeEnergySampleLength(struct s_sis_3302 * Module, Int_t SampleLength, Int_t ChanNo) {
 
@@ -2568,13 +2568,13 @@ Bool_t sis3302_writeEnergySampleLength(struct s_sis_3302 * Module, Int_t SampleL
 
 Bool_t sis3302_writeEnergySampleLength_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEnergySampleLength(Module, Module->energySampleLength[ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads tau value
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Tau 		-- tau value
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readTauFactor(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -2600,14 +2600,14 @@ Int_t sis3302_readTauFactor(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return (*tauFactor);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes tau value
 //! \param[in]		Module		-- module address
 //! \param[in]		Tau 		-- tau value
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeTauFactor(struct s_sis_3302 * Module, Int_t Tau, Int_t ChanNo) {
 
@@ -2649,14 +2649,14 @@ Bool_t sis3302_writeTauFactor(struct s_sis_3302 * Module, Int_t Tau, Int_t ChanN
 
 Bool_t sis3302_writeTauFactor_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTauFactor(Module, Module->energyTauFactor[ChanNo], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads sample start index
 //! \param[in]		Module			-- module address
 //! \param[in]		IdxNo			-- index
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		IdxVal			-- start index value
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t ChanNo) {}
 
@@ -2722,7 +2722,7 @@ Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t Chan
 	return(*sampleIndex);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes sample start index
 //! \param[in]		Module			-- module address
@@ -2730,7 +2730,7 @@ Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t Chan
 //! \param[in]		IdxNo			-- index
 //! \param[in]		ChanNo 			-- channel numer
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeStartIndex(struct s_sis_3302 * Module, Int_t IdxVal, Int_t IdxNo, Int_t ChanNo) {
 
@@ -2818,12 +2818,12 @@ Bool_t sis3302_writeStartIndex(struct s_sis_3302 * Module, Int_t IdxVal, Int_t I
 
 Bool_t sis3302_writeStartIndex_db(struct s_sis_3302 * Module, Int_t IdxNo, Int_t ChanNo) { return(sis3302_writeStartIndex(Module, Module->energySampleStart[IdxNo][ChanNo/2], ChanNo)); }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads acquisition control data
 //! \param[in]		Module		-- module address
 //! \return 		Data		-- data
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 UInt_t sis3302_readAcquisitionControl(struct s_sis_3302 * Module) {
 
@@ -2837,13 +2837,13 @@ UInt_t sis3302_readAcquisitionControl(struct s_sis_3302 * Module) {
 	return (*ctrl);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Writes acquisition control data
 //! \param[in]		Module		-- module address
 //! \param[in]		Data		-- data
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_writeAcquisitionControl(struct s_sis_3302 * Module, UInt_t Data) {
 
@@ -2858,12 +2858,12 @@ Bool_t sis3302_writeAcquisitionControl(struct s_sis_3302 * Module, UInt_t Data) 
 	return (kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads clock source
 //! \param[in]		Module			-- module address
 //! \return 		ClockSource		-- clock source
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_getClockSource(struct s_sis_3302 * Module) {
 	Int_t data;
@@ -2872,13 +2872,13 @@ Int_t sis3302_getClockSource(struct s_sis_3302 * Module) {
 	return(data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets clock source
 //! \param[in]		Module			-- module address
 //! \param[in]		ClockSource		-- clock source
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setClockSource(struct s_sis_3302 * Module, Int_t ClockSource);
 
@@ -2897,12 +2897,12 @@ Bool_t sis3302_setClockSource(struct s_sis_3302 * Module, Int_t ClockSource);
 
 Bool_t sis3302_setClockSource_db(struct s_sis_3302 * Module) { return(sis3302_setClockSource(Module. Module->clockSource)); };
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads lemo-in mode
 //! \param[in]		Module			-- module address
 //! \return 		Bits			-- mode bits
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_getLemoInMode(struct s_sis_3302 * Module) {
 	Int_t data;
@@ -2911,13 +2911,13 @@ Int_t sis3302_getLemoInMode(struct s_sis_3302 * Module) {
 	return(data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets lemo-in mode
 //! \param[in]		Module			-- module address
 //! \param[in]		Bits			-- mode bits
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setLemoInMode(struct s_sis_3302 * Module, Int_t Bits) {
 	Int_t data;
@@ -2934,12 +2934,12 @@ Bool_t sis3302_setLemoInMode(struct s_sis_3302 * Module, Int_t Bits) {
 
 Bool_t sis3302_setLemoInMode_db(struct s_sis_3302 * Module) { return(sis3302_setLemoInMode(Module, Module->lemoInMode); };
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads lemo-out mode
 //! \param[in]		Module			-- module address
 //! \return 		Bits			-- mode bits
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_getLemoOutMode(struct s_sis_3302 * Module) {
 	Int_t data;
@@ -2948,13 +2948,13 @@ Bool_t sis3302_getLemoOutMode(struct s_sis_3302 * Module) {
 	return(data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets lemo-out mode
 //! \param[in]		Module			-- module address
 //! \param[in]		Bits			-- mode bits
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setLemoOutMode(struct s_sis_3302 * Module, Int_t Bits) {
 	Int_t data;
@@ -2971,12 +2971,12 @@ Bool_t sis3302_setLemoOutMode(struct s_sis_3302 * Module, Int_t Bits) {
 
 Bool_t sis3302_setLemoOutMode_db(struct s_sis_3302 * Module) { return(sis3302_setLemoOutMode(Module, Module->lemoOutMode); };
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads lemo-in enable mask
 //! \param[in]		Module			-- module address
 //! \return 		Bits			-- bits
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_getLemoInEnableMask(struct s_sis_3302 * Module);
 	Int_t data;
@@ -2985,13 +2985,13 @@ Int_t sis3302_getLemoInEnableMask(struct s_sis_3302 * Module);
 	return(data);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Sets lemo-in enable mask
 //! \param[in]		Module			-- module address
 //! \param[in]		Bits			-- bits
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setLemoInEnableMask(struct s_sis_3302 * Module, Int_t Bits) {
 	Int_t data;
@@ -3008,12 +3008,12 @@ Bool_t sis3302_setLemoInEnableMask(struct s_sis_3302 * Module, Int_t Bits) {
 
 Bool_t sis3302_setLemoInEnableMask_db(struct s_sis_3302 * Module) { return(sis3302_setLemoOutMode(Module, Module->lemoInEnableMask); };
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Check if data ready
 //! \param[in]		Module		-- module address
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_dataReady(struct s_sis_3302 * Module) {
 	Int_t data;
@@ -3022,13 +3022,13 @@ Bool_t sis3302_dataReady(struct s_sis_3302 * Module) {
 	return((data & SIS3302_STATUS_END_THRESH) != 0);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Switch sampling
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo		-- channel number
 //! \return			NextSample	-- next sampling address
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_switchSampling(struct s_sis_3302 * Module, Int_t ChanNo) {
 
@@ -3058,12 +3058,12 @@ Int_t sis3302_switchSampling(struct s_sis_3302 * Module, Int_t ChanNo) {
 	return(nextSample);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Set page register
 //! \param[in]		Module		-- module address
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_setPageRegister(struct s_sis_3302 * Module, Int_t PageNumber) {
 
@@ -3078,12 +3078,12 @@ Bool_t sis3302_setPageRegister(struct s_sis_3302 * Module, Int_t PageNumber) {
 	return (kTRUE);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Read page register
 //! \param[in]		Module		-- module address
 //! \return 		PageNumber	-- current page number
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Int_t sis3302_getPageRegister(struct s_sis_3302 * Module) {
 
@@ -3097,14 +3097,14 @@ Int_t sis3302_getPageRegister(struct s_sis_3302 * Module) {
 	return (*pageReg);
 }
 
-//________________________________________________________________[C FUNCTION]
+/*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Check if adc/channel number ok
 //! \param[in]		Module		-- module address
 //! \param[in]		Caller		-- calling function
 //! \param[in]		ChanNo		-- channel number
 //! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////*/
 
 Bool_t sis3302_checkChannelNo(struct s_sis_3302 * Module, Char_t * Caller, Int_t ChanNo) {
 	if (ChanNo != kSis3302AllChans && (ChanNo < 0 || ChanNo >= kSis3302NofChans)) {

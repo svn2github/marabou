@@ -8,8 +8,8 @@
 //! \details		Prototypes for SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $
-//! $Date: 2010-11-24 11:54:30 $
+//! $Revision: 1.2 $
+//! $Date: 2010-11-25 09:47:57 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*! Alloc database for SIS3302 module */
@@ -71,7 +71,7 @@ Bool_t sis3302_keyArmBank2Sampling(struct s_sis_3302 * Module);
 
 /*! control and status */
 UInt_t sis3302_readControlStatus(struct s_sis_3302 * Module);
-Bool_t sis3302_writeControlStatus(struct s_sis_3302 * Module, unsigned Int_t Bits);
+Bool_t sis3302_writeControlStatus(struct s_sis_3302 * Module, UInt_t Bits);
 Bool_t sis3302_writeControlStatus_db(struct s_sis_3302 * Module);
 
 /*! event configuration */
@@ -131,7 +131,7 @@ Bool_t sis3302_writeRawDataSampleLength(struct s_sis_3302 * Module, Int_t Sample
 Bool_t sis3302_writeRawDataSampleLength_db(struct s_sis_3302 * Module, Int_t ChanNo);
 Int_t sis3302_readRawDataStartIndex(struct s_sis_3302 * Module, Int_t ChanNo);
 Bool_t sis3302_writeRawDataStartIndex(struct s_sis_3302 * Module, Int_t Index, Int_t ChanNo);
-Bool_t sis3302_writeRawDataStartIndex(struct s_sis_3302 * Module, Int_t ChanNo);
+Bool_t sis3302_writeRawDataStartIndex_db(struct s_sis_3302 * Module, Int_t ChanNo);
 
 /*! sample address */
 Int_t sis3302_readNextSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo);
