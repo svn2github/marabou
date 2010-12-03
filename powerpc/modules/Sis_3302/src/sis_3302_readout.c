@@ -55,7 +55,9 @@ int sis_3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	  Int_t i;
 	  UInt_t d;
 
-	  pointerBegin = pointer;
+	  pointerBegin = pointer;			/* save pointer to beginning */
+
+	  *pointer++ = 0;					/* lh: wc=0, rh=serial, will be updated later */
 
 	  channelPattern = Module->activeChannels;
 	  for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
@@ -74,6 +76,7 @@ int sis_3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 			  if (mappedAddr == NULL) continue;
 			  for (evtNo = 0; evtNo <= nofEvents; evtNo++) {
 				  for (i = 0; i < kSis3302EventHeader; i++) *pointer++ = *mappedAddr++;		/* event header: 32bit words */
+				  *pointer++ = (rdl << 16) | edl;											/* extra word: lh=raw data length, rh=energy data length */
 				  for (i = 0; i < rdl; i++) {												/* raw data: fetch 2 samples packed in 32bit, store each in a single 32bit word */
 					  d = *mappedAddr++;
 					  *pointer++ = (d >> 16) & 0xFFFF;
@@ -84,6 +87,9 @@ int sis_3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 			  }
 		  }
 	  }
-	  return ((Int_t) (pointer - pointerBegin));
+
+	  wc = (Int_t) (pointer - pointerBegin);
+	  *pointerBegin = (wc << 16) | Module->serial;		/* lh: wc=0, rh=serial, will */
+	  return (wc);
 }
 

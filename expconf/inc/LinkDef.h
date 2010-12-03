@@ -83,6 +83,7 @@
 #pragma link C++ class TMrbKinetics_3655;
 #pragma link C++ class TMrbMpiHD_IOReg;
 #pragma link C++ class TMrbSis_3300;
+#pragma link C++ class TMrbSis_3302;
 #pragma link C++ class TMrbSis_3600;
 #pragma link C++ class TMrbSis_3801;
 #pragma link C++ class TMrbSis_3820;

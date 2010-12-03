@@ -10,8 +10,8 @@
 //! \details		Prototypes for SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $
-//! $Date: 2010-12-03 08:18:17 $
+//! $Revision: 1.4 $
+//! $Date: 2010-12-03 13:25:24 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*! Alloc database for SIS3302 module */
@@ -31,7 +31,7 @@ void sis3302_setActiveChannels(struct s_sis_3302 * Module, UInt_t ChnPattern);
 void sis3302_loadFromDb(struct s_sis_3302 * Module);
 
 /*! Debugging tools: dump settings, print_t database contents */
-Bool_t sis3302_dumpRegisters(struct s_sis_3302 * Module, char * File);
+Bool_t sis3302_dumpRegisters(struct s_sis_3302 * Module, Char_t * File);
 
 /*! Read dac values */
 Bool_t sis3302_readDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t ChanNo);
