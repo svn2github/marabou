@@ -8,8 +8,11 @@
 //! \details		Class definitions for ROOT under LynxOs: Type definitions
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.9 $
-//! $Date: 2010-11-25 09:47:57 $
+//! $Revision: 1.10 $
+//! $Date: 2010-12-03 08:18:17 $
+//
+// !!!! This header file will be used for C++ *AND* C as well
+// !!!! Please use C style /*... comments only
 ////////////////////////////////////////////////////////////////////////////*/
 
 typedef char           Char_t;      /* Signed Character 1 byte (char) */
@@ -45,7 +48,7 @@ typedef double         Coord_t;     /* Pad world coordinates (double) */
 typedef float          Angle_t;     /* Graphics angle (float) */
 typedef float          Size_t;      /* Attribute size (float) */
 
-typedef void         (*VoidFuncPtr_t)();  /* pointer to void function */
+/*typedef void         (*VoidFuncPtr_t)();  /* pointer to void function */
 
 
 /* ---- constants --------------------------------------------------------------- */

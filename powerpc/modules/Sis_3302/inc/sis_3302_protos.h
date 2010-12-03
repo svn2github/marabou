@@ -1,6 +1,8 @@
 #ifndef __SIS3302_PROTOS_H__
 #define __SIS3302_PROTOS_H__
 
+#include "LwrTypes.h"
+
 /*_______________________________________________________________[HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 //! \file			Sis3302_Protos.h
@@ -8,8 +10,8 @@
 //! \details		Prototypes for SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $
-//! $Date: 2010-11-25 09:47:57 $
+//! $Revision: 1.3 $
+//! $Date: 2010-12-03 08:18:17 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*! Alloc database for SIS3302 module */
@@ -19,25 +21,17 @@ struct s_sis_3302 * sis3302_alloc(unsigned long VmeAddr, volatile unsigned char 
 volatile char * sis3302_MapAddr(struct s_sis_3302 * Module, Int_t Offset);
 
 /*! Get module info */
-Bool_t sis3302_moduleInfo(struct s_sis_3302 * Module, Int_t * BoardId, Int_t * MajorVersion, Int_t * MinorVersion, Bool_t PrintFlag);
-void sis3302_setPrefix(struct s_sis_3302 * Module, char * Prefix);
+void sis3302_moduleInfo(struct s_sis_3302 * Module);
 
 /*! Fill SIS3302 database from file */
-Bool_t sis3302_fillStruct(struct s_sis_3302 * Module, char * File);
+Bool_t sis3302_fillStruct(struct s_sis_3302 * Module, Char_t * SettingsFile);
 
 /*! Load settings from database */
-void sis3302_loadFromDb(struct s_sis_3302 * Module, UInt_t ChnPattern);
+void sis3302_setActiveChannels(struct s_sis_3302 * Module, UInt_t ChnPattern);
+void sis3302_loadFromDb(struct s_sis_3302 * Module);
 
-/*! Debugging tools: dump settings, prInt_t database contents */
+/*! Debugging tools: dump settings, print_t database contents */
 Bool_t sis3302_dumpRegisters(struct s_sis_3302 * Module, char * File);
-Bool_t sis3302_dumpRaw(struct s_sis_3302 * Module, char * File);
-void sis3302_printDb(struct s_sis_3302 * Module);
-
-/*! Reset module */
-void sis3302_reset(struct s_sis_3302 * Module);
-
-/*! Initialize settings with derfault values */
-void sis3302_initDefaults(struct s_sis_3302 * Module);
 
 /*! Read dac values */
 Bool_t sis3302_readDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t ChanNo);
@@ -52,22 +46,30 @@ Bool_t sis3302_setUserLED(struct s_sis_3302 * Module, Bool_t OnFlag);
 Bool_t sis3302_keyAddr(struct s_sis_3302 * Module, Int_t Key);
 
 /*! Exec KEY command: reset */
-Bool_t sis3302_keyReset(struct s_sis_3302 * Module);
+Bool_t sis3302_reset(struct s_sis_3302 * Module);
 
 /*! Exec KEY command: reset sample */
-Bool_t sis3302_keyResetSample(struct s_sis_3302 * Module);
+Bool_t sis3302_resetSampling(struct s_sis_3302 * Module);
 
 /*! Exec KEY command: generate trigger */
-Bool_t sis3302_keyTrigger(struct s_sis_3302 * Module);
+Bool_t sis3302_fireTrigger(struct s_sis_3302 * Module);
 
 /*! Exec KEY command: clear time stamp */
-Bool_t sis3302_keyClearTimestamp(struct s_sis_3302 * Module);
+Bool_t sis3302_clearTimestamp(struct s_sis_3302 * Module);
 
-/*! Exec KEY command: arm sampling for bank 1 */
-Bool_t sis3302_keyArmBank1Sampling(struct s_sis_3302 * Module);
+/*! Exec KEY command: arm sampling */
+Bool_t sis3302_armSampling(struct s_sis_3302 * Module, Int_t Sampling);
 
-/*! Exec KEY command: arm sampling for bank 2 */
-Bool_t sis3302_keyArmBank2Sampling(struct s_sis_3302 * Module);
+/*! Exec KEY command: disarm sampling */
+Bool_t sis3302_disarmSampling(struct s_sis_3302 * Module);
+
+/*! set/restore trace length */
+void sis3302_setTracingMode(struct s_sis_3302 * Module, Bool_t OnFlag);
+void sis3302_adjustTraceLength(struct s_sis_3302 * Module);
+void sis3302_restoreTraceLengthFromDb(struct s_sis_3302 * Module);
+
+/*! set fifo limit */
+void sis3302_setEndAddress(struct s_sis_3302 * Module, Int_t NofEvents);
 
 /*! control and status */
 UInt_t sis3302_readControlStatus(struct s_sis_3302 * Module);
@@ -173,7 +175,7 @@ Bool_t sis3302_setTriggerOut(struct s_sis_3302 * Module, Bool_t TrigOutFlag, Int
 Bool_t sis3302_setTriggerOut_db(struct s_sis_3302 * Module, Int_t ChanNo);
 
 /*! energy peak & gap */
-Int_t sis3302_readEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t PeakGap[], Int_t ChanNo);
+Bool_t sis3302_readEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t PeakGap[], Int_t ChanNo);
 Bool_t sis3302_writeEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, Int_t Gap, Int_t ChanNo);
 Bool_t sis3302_writeEnergyPeakAndGap_db(struct s_sis_3302 * Module, Int_t ChanNo);
 
@@ -248,7 +250,7 @@ Bool_t sis3302_writeAcquisitionControl(struct s_sis_3302 * Module, UInt_t Data);
 
 Bool_t sis3302_dataReady(struct s_sis_3302 * Module);
 
-Int_t sis3302_switchSampling(struct s_sis_3302 * Module, Int_t ChanNo);
+void sis3302_switchSampling(struct s_sis_3302 * Module);
 Bool_t sis3302_setPageReg(struct s_sis_3302 * Module, Int_t PageNo);
 Int_t sis3302_getPageReg(struct s_sis_3302 * Module);
 

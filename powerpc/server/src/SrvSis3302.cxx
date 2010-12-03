@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.11 $
-//! $Date: 2010-11-17 12:25:11 $
+//! $Revision: 1.12 $
+//! $Date: 2010-12-03 08:18:17 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -891,8 +891,8 @@ Bool_t SrvSis3302::KeyAddr(SrvVMEModule * Module, Int_t Key) {
 	Int_t offset = 0;
 	switch (Key) {
 		case kSis3302KeyReset:							offset = SIS3302_KEY_RESET; break;
-		case kSis3302KeyResetSample:					offset = SIS3302_KEY_SAMPLE_LOGIC_RESET_404; break;
-		case kSis3302KeyDisarmSample:					offset = SIS3302_KEY_DISARM; break;
+		case kSis3302KeyResetSampling:					offset = SIS3302_KEY_SAMPLE_LOGIC_RESET_404; break;
+		case kSis3302KeyDisarmSampling:					offset = SIS3302_KEY_DISARM; break;
 		case kSis3302KeyTrigger:						offset = SIS3302_KEY_TRIGGER; break;
 		case kSis3302KeyClearTimestamp: 				offset = SIS3302_KEY_TIMESTAMP_CLEAR; break;
 		case kSis3302KeyArmBank1Sampling:				offset = SIS3302_KEY_DISARM_AND_ARM_BANK1; break;
@@ -917,7 +917,7 @@ Bool_t SrvSis3302::KeyAddr(SrvVMEModule * Module, Int_t Key) {
 
 	gSignalTrap = kFALSE;
 	*keyAddr = 0;
-	if (Key == kSis3302KeyReset || Key == kSis3302KeyResetSample) sleep(1);
+	if (Key == kSis3302KeyReset || Key == kSis3302KeyResetSampling) sleep(1);
 	if (this->CheckBusTrap(Module, offset, "KeyAddr")) return(kFALSE);
 	return (kTRUE);
 }
@@ -3858,7 +3858,7 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 
 	Int_t maxThresh = maxWords * 2;		// thresh has to be 16bit
 	this->WriteEndAddrThresh(Module, maxThresh);
-	this->KeyResetSample(Module);
+	this->KeyResetSampling(Module);
 	this->KeyClearTimestamp(Module);
 	fSampling = kSis3302KeyArmBank1Sampling;
 	this->ContinueTraceCollection(Module);
@@ -3879,7 +3879,7 @@ Bool_t SrvSis3302::StartTraceCollection(SrvVMEModule * Module, Int_t & NofEvents
 
 Bool_t SrvSis3302::StopTraceCollection(SrvVMEModule * Module) {
 
-	this->KeyDisarmSample(Module);
+	this->KeyDisarmSampling(Module);
 	fTraceCollection = kFALSE;
 	this->ClearStatus(kSis3302StatusCollectingTraces);
 	return(kTRUE);

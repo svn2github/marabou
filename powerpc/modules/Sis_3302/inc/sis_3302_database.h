@@ -10,8 +10,8 @@
 //! \details		Structures describing a SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $
-//! $Date: 2010-11-24 11:54:29 $
+//! $Revision: 1.2 $
+//! $Date: 2010-12-03 08:18:17 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -43,12 +43,17 @@ struct s_sis_3302 {
 	Bool_t verbose;
 	Bool_t dumpRegsOnInit;
 
+	UInt_t status;
+
 	Bool_t updSettings;
 	Int_t updInterval;
 	Int_t updCountDown;
 
-	Bool_t autoBankSwitch;
-	Int_t currentBank;
+	Int_t currentSampling;					/* sampling: bank 1 or 2 */
+
+	Bool_t tracingMode;						/* ON:  keep raw and energy tracing length values */
+											/* OFF: save length values, set to zero, restore on stop */
+	UInt_t activeChannels;					/* pattern of active channels */
 
 	Int_t dacValues[NOF_CHANNELS];
 
@@ -90,5 +95,5 @@ struct s_sis_3302 {
 	Int_t energySampleLength[NOF_GROUPS];
 	Int_t energySampleStart[3][NOF_GROUPS];
 	Int_t energyTauFactor[NOF_CHANNELS];
-}
+};
 #endif

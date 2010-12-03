@@ -4,8 +4,8 @@
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $
-//! $Date: 2010-11-25 09:47:57 $
+//! $Revision: 1.3 $
+//! $Date: 2010-12-03 08:18:17 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -13,15 +13,17 @@
 #include <math.h>
 #include <string.h>
 #include <allParam.h>
+#include <ces/vmelib.h>
 #include <ces/bmalib.h>
 #include <errno.h>
 
+
 #include "LwrTypes.h"
+#include "M2L_CommonDefs.h"
 
 #include "sis_3302_protos.h"
 #include "sis_3302_layout.h"
 #include "sis_3302_database.h"
-
 
 #include "root_env.h"
 
@@ -40,7 +42,7 @@ char msg[256];
 //! \return 		Module			-- Pointer to struct s_sis_3302
 ////////////////////////////////////////////////////////////////////////////*/
 
-struct s_sis_3302 * sis_3302_alloc(ULong_t VmeAddr, volatile unsigned char * BaseAddr, char * Name, Int_t Serial)
+struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * BaseAddr, char * Name, Int_t Serial)
 {
 	struct s_sis_3302 * Module;
 	Module = (struct s_sis_3302 *) calloc(1, sizeof(struct s_sis_3302));
@@ -55,6 +57,13 @@ struct s_sis_3302 * sis_3302_alloc(ULong_t VmeAddr, volatile unsigned char * Bas
 		Module->upperBound = 0;
 		Module->mappedAddr = 0;
 		Module->addrMod = 0x9;
+
+		Module->verbose = kFALSE;
+		Module->dumpRegsOnInit = kFALSE;
+		Module->updSettings = kFALSE;
+		Module->tracingMode = kFALSE;
+		Module->activeChannels = kSis3302AllChans;
+		Module->currentSampling = kSis3302KeyArmBank1Sampling;
 	} else {
 		sprintf(msg, "[alloc] Can't allocate sis_3302 struct");
 		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
@@ -70,20 +79,21 @@ struct s_sis_3302 * sis_3302_alloc(ULong_t VmeAddr, volatile unsigned char * Bas
 //! \retval 		MappedAddr		--
 ////////////////////////////////////////////////////////////////////////////*/
 
-volatile char * sis3302_MapAddr(struct s_sis_3302 * Module, Int_t Offset) {
+volatile char * sis3302_mapAddress(struct s_sis_3302 * Module, Int_t Offset) {
 
-	struct pdparam_master s_param; 			// vme segment params
+	struct pdparam_master s_param;
 	UInt_t addr, low;
+	Bool_t mapIt;
 
 	s_param.iack = 1;
  	s_param.rdpref = 0;
  	s_param.wrpost = 0;
  	s_param.swap = SINGLE_AUTO_SWAP;
- 	s_param.dum[0] = 0; 					// forces static mapping!
+ 	s_param.dum[0] = 0;
 
-	Bool_t mapIt = false;
+	mapIt = kFALSE;
 	if (Module->upperBound == 0) {
-		mapIt = true;						// never done
+		mapIt = kTRUE;
 	} else if (Offset < Module->lowerBound || Offset > Module->upperBound) {
 		addr = return_controller(Module->mappedAddr, Module->segSize);
 		if (addr == 0xFFFFFFFF) {
@@ -91,7 +101,7 @@ volatile char * sis3302_MapAddr(struct s_sis_3302 * Module, Int_t Offset) {
 			f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 			return(NULL);
 		}
-		mapIt = true;
+		mapIt = kTRUE;
 	}
 
 	if (mapIt) {
@@ -114,18 +124,18 @@ volatile char * sis3302_MapAddr(struct s_sis_3302 * Module, Int_t Offset) {
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Reads (and outputs) module info
 //! \param[in]		Module			-- module address
-//! \param[out]		BoardId 		-- board id
-//! \param[out]		MajorVersion	-- firmware version (major)
-//! \param[out]		MinorVersion	-- firmware version (minor)
-//! \param[in]		PrintFlag		-- output to gMrbLog if kTRUE
-//! \return 		TRUE or FALSE
+//! \return 		--
 ////////////////////////////////////////////////////////////////////////////*/
 
-Bool_t sis3302_moduleInfo(struct s_sis_3302 * Module, Int_t * BoardId, Int_t * MajorVersion, Int_t * MinorVersion, Bool_t PrintFlag) {
+void sis3302_moduleInfo(struct s_sis_3302 * Module) {
 
 	volatile ULong_t * firmWare;
 	ULong_t ident;
 	Int_t b;
+	Int_t boardId;
+	Int_t majorVersion;
+	Int_t minorVersion;
+
 
 	firmWare = (volatile ULong_t *) sis3302_mapAddress(Module, SIS3302_MODID);
 	if (firmWare == NULL) return(kFALSE);
@@ -133,14 +143,420 @@ Bool_t sis3302_moduleInfo(struct s_sis_3302 * Module, Int_t * BoardId, Int_t * M
 	ident = *firmWare;
 
 	b = (ident >> 16) & 0xFFFF;
-	BoardId = (b &0xF) + 10 * ((b >> 4) & 0xF) + 100 * ((b >> 8) & 0xF) + 1000 * ((b >> 12) & 0xF);
-	MajorVersion = (ident >> 8) & 0xFF;
-	MinorVersion = ident & 0xFF;
-	if (PrintFlag) {
-		sprintf(msg, "[moduleInfo] SIS module info: addr (phys) %#lx (log) %#lx mod %#x type %d version %x%02x", Module->baseAddr(), Module->mappedAddr(), Module->addrMod, BoardId, MajorVersion, MinorVersion);
-		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
-	}
+	boardId = (b &0xF) + 10 * ((b >> 4) & 0xF) + 100 * ((b >> 8) & 0xF) + 1000 * ((b >> 12) & 0xF);
+	majorVersion = (ident >> 8) & 0xFF;
+	minorVersion = ident & 0xFF;
+	sprintf(msg, "[moduleInfo] [%s]: addr (phys) %#lx (log) %#lx mod %#x type %d version %x%02x", Module->moduleName, Module->baseAddr, Module->mappedAddr, Module->addrMod, boardId, majorVersion, minorVersion);
+	f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 	return(kTRUE);
+}
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Fills module structure from file
+//! \param[in]		Module			-- module address
+//! \param[in]		SettingsFile	-- file name
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+Bool_t sis3302_fill_struct(struct s_sis_3302 * Module, Char_t * SettingsFile) {
+
+	Char_t res[256];
+	const Char_t * sp;
+	Int_t chn;
+	Int_t grp, g;
+
+	if (root_env_read(SettingsFile) < 0) {
+		sprintf(msg, "[fill_struct] Error reading file %s", SettingsFile);
+		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
+		return(kFALSE);
+	}
+
+	sp = root_env_getval_s("SIS3302.ModuleName", "");
+	if (strcmp(sp, Module->moduleName) != 0) {
+		sprintf(msg, "[fill_struct] %s: Wrong module %s - should be %s", SettingsFile, sp, Module->moduleName);
+		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
+		return(kFALSE);
+	}
+	strcpy(Module->moduleName, sp);
+
+	Module->verbose = root_env_getval_b("SIS3302.VerboseMode", 0);
+	Module->dumpRegsOnInit = root_env_getval_b("SIS3302.DumpRegisters", 0);
+
+	Module->updSettings = root_env_getval_b("SIS3302.UpdateSettings", FALSE);
+	Module->updInterval = root_env_getval_i("SIS3302.UpdateInterval", 0);
+	Module->updCountDown = 0;
+
+	sprintf(res, "SIS3302.%s.ClockSource", Module->moduleName);
+	Module->clockSource = root_env_getval_i(res, 7);
+
+	sprintf(res, "SIS3302.%s.LemoOutMode", Module->moduleName);
+	Module->lemoOutMode = root_env_getval_i(res, 0);
+
+	sprintf(res, "SIS3302.%s.LemoOutMode", Module->moduleName);
+	Module->lemoOutMode = root_env_getval_i(res, 0);
+
+	sprintf(res, "SIS3302.%s.LemoInMode", Module->moduleName);
+	Module->lemoInMode = root_env_getval_i(res, 0);
+
+	sprintf(res, "SIS3302.%s.LemoInEnableMask", Module->moduleName);
+	Module->lemoInEnableMask = root_env_getval_i(res, 0);
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		sprintf(res, "SIS3302.%s.DacValue.%d", Module->moduleName, chn);
+		Module->dacValues[chn] = root_env_getval_i(res, 0);
+	}
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		sprintf(res, "SIS3302.%s.HeaderBits.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->headerBits[g] = root_env_getval_i(res, 0);
+	}
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		sprintf(res, "SIS3302.%s.TriggerMode.%d", Module->moduleName, chn);
+		Module->triggerMode[chn] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.GateMode.%d", Module->moduleName, chn);
+		Module->gateMode[chn] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.NextNeighborTrigger.%d", Module->moduleName, chn);
+		Module->nextNeighborTrigger[chn] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.NextNeighborGate.%d", Module->moduleName, chn);
+		Module->nextNeighborGate[chn] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.InvertSignal.%d", Module->moduleName, chn);
+		Module->invertSignal[chn] = root_env_getval_b(res, kFALSE);
+	}
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		sprintf(res, "SIS3302.%s.PretrigDelay.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->pretrigDelay[g] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.TrigGateLength.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->trigGateLength[g] = root_env_getval_i(res, 0);
+	}
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		sprintf(res, "SIS3302.%s.RawDataSampleLength.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->rawDataSampleLength[g] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.RawDataSampleStart.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->rawDataSampleStart[g] = root_env_getval_i(res, 0);
+	}
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		sprintf(res, "SIS3302.%s.TrigPeakTime.%d", Module->moduleName, chn);
+		Module->trigPeakTime[chn] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.TrigGapTime.%d", Module->moduleName, chn);
+		Module->trigGapTime[chn] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.TrigInternalGate.%d", Module->moduleName, chn);
+		Module->trigInternalGate[chn] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.TrigInternalDelay.%d", Module->moduleName, chn);
+		Module->trigInternalDelay[chn] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.TrigPulseLength.%d", Module->moduleName, chn);
+		Module->trigPulseLength[chn] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.TrigDecimation.%d", Module->moduleName, chn);
+		Module->trigDecimation[chn] = root_env_getval_i(res, 0);
+	}
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		sprintf(res, "SIS3302.%s.TrigThresh.%d", Module->moduleName, chn);
+		Module->trigThresh[chn] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.TrigGT.%d", Module->moduleName, chn);
+		Module->trigGT[chn] = root_env_getval_b(res, kFALSE);
+		sprintf(res, "SIS3302.%s.TrigOut.%d", Module->moduleName, chn);
+		Module->trigOut[chn] = root_env_getval_b(res, kFALSE);
+	}
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		sprintf(res, "SIS3302.%s.EnergyPeakTime.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->energyPeakTime[g] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.EnergyGapTime.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->energyGapTime[g] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.EnergyDecimation.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->energyDecimation[g] = root_env_getval_i(res, 0);
+	}
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		sprintf(res, "SIS3302.%s.EnergyGateLength.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->energyGateLength[g] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.EnergyTestBits.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->energyTestBits[g] = root_env_getval_i(res, 0);
+	}
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		sprintf(res, "SIS3302.%s.EnergySampleLength.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->energySampleLength[g] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.EnergySampleStart1.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->energySampleStart[0][g] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.EnergySampleStart2.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->energySampleStart[1][g] = root_env_getval_i(res, 0);
+		sprintf(res, "SIS3302.%s.EnergySampleStart3.%d%d", Module->moduleName, grp+1, grp+2);
+		Module->energySampleStart[2][g] = root_env_getval_i(res, 0);
+	}
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		sprintf(res, "SIS3302.%s.EnergyTauFactor.%d", Module->moduleName, chn);
+		Module->energyTauFactor[chn] = root_env_getval_i(res, 0);
+	}
+
+	return(kTRUE);
+}
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Load settings from database to module registers
+//! \param[in]		Module			-- module address
+//! \param[in]		ChnPattern		-- pattern of channels to be loaded
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis3302_loadFromDb(struct s_sis_3302 * Module) {
+
+	Int_t chn;
+
+	sis3302_writeControlStatus_db(Module);
+	sis3302_setClockSource_db(Module);
+	sis3302_setLemoInMode_db(Module);
+	sis3302_setLemoOutMode_db(Module);
+	sis3302_setLemoInEnableMask_db(Module);
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		sis3302_writeEventConfig_db(Module, chn);
+		sis3302_setHeaderBits_db(Module, chn);
+		sis3302_setTriggerMode_db(Module, chn);
+		sis3302_setGateMode_db(Module, chn);
+		sis3302_setNextNeighborTriggerMode_db(Module, chn);
+		sis3302_setNextNeighborGateMode_db(Module, chn);
+		sis3302_setPolarity_db(Module, chn);
+		sis3302_writeEndAddrThresh_db(Module, chn);
+		sis3302_writePreTrigDelay_db(Module, chn);
+		sis3302_writeTrigGateLength_db(Module, chn);
+		sis3302_writeRawDataSampleLength_db(Module, chn);
+		sis3302_writeRawDataStartIndex_db(Module, chn);
+		sis3302_writeTriggerPeakAndGap_db(Module, chn);
+		sis3302_writeTriggerPulseLength_db(Module, chn);
+		sis3302_writeTriggerInternalGate_db(Module, chn);
+		sis3302_writeTriggerInternalDelay_db(Module, chn);
+		sis3302_setTriggerDecimation_db(Module, chn);
+		sis3302_writeTriggerThreshold_db(Module, chn);
+		sis3302_setTriggerGT_db(Module, chn);
+		sis3302_setTriggerOut_db(Module, chn);
+		sis3302_writeEnergyPeakAndGap_db(Module, chn);
+		sis3302_setEnergyDecimation_db(Module, chn);
+		sis3302_writeEnergyGateLength_db(Module, chn);
+		sis3302_writeEnergySampleLength_db(Module, chn);
+		sis3302_writeStartIndex_db(Module, 0, chn);
+		sis3302_writeStartIndex_db(Module, 1, chn);
+		sis3302_writeStartIndex_db(Module, 2, chn);
+		sis3302_setTestBits_db(Module, chn);
+		sis3302_writeTauFactor_db(Module, chn);
+	}
+}
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Reset and initialize module
+//! \param[in]		Module			-- module address
+//! \param[in]		DumpFile		-- where to dump settings
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+Bool_t sis3302_dumpRegisters(struct s_sis_3302 * Module, Char_t * DumpFile)
+{
+	FILE * dmp;
+	Int_t i;
+	Int_t grp, g;
+	Int_t chn;
+	Int_t dacValues[kSis3302NofChans];
+	Int_t peakAndGap[2];
+
+	if (!Module->dumpRegsOnInit) return(TRUE);
+
+	dmp = fopen(DumpFile, "w");
+	if (dmp == NULL) {
+		sprintf(msg, "[dumpRegisters] [%s]: Error writing file %s", Module->moduleName, DumpFile);
+		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
+		return FALSE;
+	}
+
+	sprintf(msg, "[dumpRegisters] [%s]: Dumping settings to file %s", Module->moduleName, DumpFile);
+	f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
+
+	fprintf(dmp, "Clock source                    : %d\n", sis3302_getClockSource(Module));
+	fprintf(dmp, "Lemo OUT mode                   : %d\n", sis3302_getLemoOutMode(Module));
+	fprintf(dmp, "Lemo IN mode                    : %d\n", sis3302_getLemoInMode(Module));
+	fprintf(dmp, "Lemo IN ENABLE mask             : %d\n", sis3302_getLemoInEnableMask(Module));
+	fprintf(dmp, "\n");
+
+	sis3302_readDac(Module, dacValues, kSis3302AllChans);
+	for (chn = 0; chn < kSis3302NofChans; chn++) fprintf(dmp, "DAC value %d                    :", chn, dacValues[i]);
+	fprintf(dmp, "\n");
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) fprintf(dmp, "Header bits %d (%d%d)           : %#x\n", g, grp, grp+1, sis3302_getHeaderBits(Module, grp));
+	fprintf(dmp, "\n");
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		fprintf(dmp, "Trigger mode %d                 : %#x\n", chn, sis3302_getTriggerMode(Module, chn));
+		fprintf(dmp, "Gate mode    %d                 : %#x\n", chn, sis3302_getGateMode(Module, chn));
+		fprintf(dmp, "Next neighbor trigger %d        : %#x\n", chn, sis3302_getNextNeighborTriggerMode(Module, chn));
+		fprintf(dmp, "Next neighbor gate    %d        : %#x\n", chn, sis3302_getNextNeighborGateMode(Module, chn));
+		fprintf(dmp, "Invert signal         %d        : %#x\n", chn, sis3302_polarityIsInverted(Module, chn));
+	}
+	fprintf(dmp, "\n");
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		fprintf(dmp, "Pretrigger delay    %d (%d%d)   : %d\n", g, grp, grp+1, sis3302_readPreTrigDelay(Module, grp));
+		fprintf(dmp, "Trigger gate length %d (%d%d)   : %d\n", g, grp, grp+1, sis3302_readTrigGateLength(Module, grp));
+	}
+	fprintf(dmp, "\n");
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		fprintf(dmp, "Raw data sample length %d (%d%d): %d\n", g, grp, grp+1, sis3302_readRawDataSampleLength(Module, grp));
+		fprintf(dmp, "Raw data sample start  %d (%d%d): %d\n", g, grp, grp+1, sis3302_readRawDataStartIndex(Module, grp));
+	}
+	fprintf(dmp, "\n");
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		sis3302_readTriggerPeakAndGap(Module, peakAndGap, chn);
+		fprintf(dmp, "Trigger peak time        %d     : %d\n", chn, peakAndGap[0]);
+		fprintf(dmp, "Trigger gap time         %d     : %d\n", chn, peakAndGap[1]);
+		fprintf(dmp, "Internal trigger gate    %d     : %d\n", chn, sis3302_readTriggerInternalGate(Module, chn));
+		fprintf(dmp, "Internal trigger delay   %d     : %d\n", chn, sis3302_readTriggerInternalDelay(Module, chn));
+		fprintf(dmp, "Trigger pulse length     %d     : %d\n", chn, sis3302_readTriggerPulseLength(Module, chn));
+		fprintf(dmp, "Trigger decimation       %d     : %d\n", chn, sis3302_getTriggerDecimation(Module, chn));
+	}
+	fprintf(dmp, "\n");
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		fprintf(dmp, "Trigger threshold        %d     : %d\n", chn, sis3302_readTriggerThreshold(Module, chn));
+		fprintf(dmp, "Trigger GT               %d     : %d\n", chn, sis3302_getTriggerGT(Module, chn));
+		fprintf(dmp, "Trigger OUT              %d     : %d\n", chn, sis3302_getTriggerOut(Module, chn));
+	}
+	fprintf(dmp, "\n");
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		sis3302_readEnergyPeakAndGap(Module, peakAndGap, grp);
+		fprintf(dmp, "Energy peak time       %d (%d%d): %d\n", g, grp, grp+1, peakAndGap[0]);
+		fprintf(dmp, "Energy gap time        %d (%d%d): %d\n", g, grp, grp+1, peakAndGap[1]);
+		fprintf(dmp, "Energy decimation      %d (%d%d): %d\n", g, grp, grp+1, sis3302_getEnergyDecimation(Module, grp));
+	}
+	fprintf(dmp, "\n");
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		fprintf(dmp, "Energy gate length     %d (%d%d): %d\n", g, grp, grp+1, sis3302_readEnergyGateLength(Module, grp));
+		fprintf(dmp, "Energy test bits       %d (%d%d): %#x\n", g, grp, grp+1, sis3302_getTestBits(Module, grp));
+	}
+	fprintf(dmp, "\n");
+
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		fprintf(dmp, "Energy sample length   %d (%d%d): %d\n", g, grp, grp+1, sis3302_readEnergySampleLength(Module, grp));
+		fprintf(dmp, "Energy sample start #1 %d (%d%d): %d\n", g, grp, grp+1, sis3302_readStartIndex(Module, 0, grp));
+		fprintf(dmp, "                    #2 %d (%d%d): %d\n", g, grp, grp+1, sis3302_readStartIndex(Module, 1, grp));
+		fprintf(dmp, "                    #3 %d (%d%d): %d\n", g, grp, grp+1, sis3302_readStartIndex(Module, 2, grp));
+	}
+	fprintf(dmp, "\n");
+
+	for (chn = 0; chn < kSis3302NofChans; chn++) fprintf(dmp, "Energy tau factor      %d      : %d\n", chn, sis3302_readTauFactor(Module, chn));
+	fprintf(dmp, "\n");
+
+	fclose(dmp);
+	return(kTRUE);
+}
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Define active channels
+//! \param[in]		Module			-- module address
+//! \param[in]		ChannelPattern	-- bit pattern of active chans
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis3302_setActiveChannels(struct s_sis_3302 * Module, UInt_t ChannelPattern) { Module->activeChannels = ChannelPattern; }
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Turn tracing mode on/off
+//! \param[in]		Module			-- module address
+//! \param[in]		OnFlag			-- kTRUE if to be turned on
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis3302_setTracingMode(struct s_sis_3302 * Module, Bool_t OnFlag) { Module->tracingMode = OnFlag; }
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Adjust trace length
+//! \param[in]		Module			-- module address
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis3302_adjustTraceLength(struct s_sis_3302 * Module) {
+
+	Int_t grp, g;
+	if (Module->tracingMode) {							/* set length values to 0 if tracing is OFF */
+		grp = 0;
+		for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+			sis3302_writeRawDataSampleLength(Module, 0, grp);
+			sis3302_writeEnergySampleLength(Module, 0, grp);
+		}
+	} else {
+		sis3302_restoreTraceLengthFromDb(Module);
+	}
+}
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Restore trace length
+//! \param[in]		Module			-- module address
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis3302_restoreTraceLengthFromDb(struct s_sis_3302 * Module) {
+
+	Int_t g, grp;
+	grp = 0;
+	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		sis3302_writeRawDataSampleLength_db(Module, grp);
+		sis3302_writeEnergySampleLength_db(Module, grp);
+	}
+}
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Define end address
+//! \param[in]		Module			-- module address
+//! \param[in]		NofEvents		-- number of events
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis3302_setEndAddress(struct s_sis_3302 * Module, Int_t NofEvents) {
+
+	Int_t chn;
+	Int_t grp;
+	Int_t rdl;
+	Int_t edl;
+	Int_t wc;
+	UInt_t chnPattern;
+
+	chnPattern = Module->activeChannels;
+	for (chn = 0; chn < kSis3302NofChans; chn++, chnPattern >>= 1) {
+		if (chnPattern & 1) {
+			grp = chn / 2;
+			rdl = Module->rawDataSampleLength[grp] / 2;
+			edl = Module->energySampleLength[grp];
+			wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl;
+			wc *= NofEvents;
+			if (wc > kSis3302MaxBufSize) wc = kSis3302MaxBufSize;
+			sis3302_writeEndAddrThresh(Module, wc, chn);
+		}
+	}
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -171,26 +587,27 @@ Bool_t sis3302_setUserLED(struct s_sis_3302 * Module, Bool_t OnFlag) {
 
 Bool_t sis3302_readDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t ChanNo) {
 
-	Int_t firstAdc;
-	Int_t lastAdc;
+	Int_t firstChan;
+	Int_t lastChan;
 	Int_t wc;
 	volatile Int_t * dacStatus;
 	volatile Int_t * dacData;
 	Int_t maxTimeout;
 	Int_t timeout;
 	Int_t data;
-	Int_t adc;
+	Int_t chn;
+	Int_t idx;
 
 	if (!sis3302_checkChannelNo(Module, "readDac", ChanNo)) return (kFALSE);
 
 	if (ChanNo == kSis3302AllChans) {
-		firstAdc = 0;
-		lastAdc = kSis3302NofChans - 1;
+		firstChan = 0;
+		lastChan = kSis3302NofChans - 1;
 	} else {
-		firstAdc = ChanNo;
-		lastAdc = ChanNo;
+		firstChan = ChanNo;
+		lastChan = ChanNo;
 	}
-	wc = lastAdc - firstAdc + 1;
+	wc = lastChan - firstChan + 1;
 
 	dacStatus = (volatile Int_t *) sis3302_mapAddress(Module, SIS3302_DAC_CONTROL_STATUS);
 	if (dacStatus == NULL) return(kFALSE);
@@ -198,9 +615,8 @@ Bool_t sis3302_readDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Chan
 	if (dacData == NULL) return(kFALSE);
 
 	maxTimeout = 5000;
-	DacValues.Set(wc);
-	Int_t idx = 0;
-	for (adc = firstAdc; chn <= lastAdc; chn++, idx++) {
+	idx = 0;
+	for (chn = firstChan; chn <= lastChan; chn++, idx++) {
 		*dacStatus = kSis3302DacCmdLoadShiftReg + (chn << 4);
 		timeout = 0 ;
 		do {
@@ -225,26 +641,27 @@ Bool_t sis3302_readDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Chan
 
 Bool_t sis3302_writeDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t ChanNo) {
 
-	Int_t firstAdc;
-	Int_t lastAdc;
+	Int_t firstChan;
+	Int_t lastChan;
 	Int_t wc;
 	volatile Int_t * dacStatus;
 	volatile Int_t * dacData;
 	Int_t maxTimeout;
+	Int_t timeout;
 	Int_t idx;
 	Int_t data;
-	Int_t adc;
+	Int_t chn;
 
 	if (!sis3302_checkChannelNo(Module, "writeDac", ChanNo)) return (kFALSE);
 
 	if (ChanNo == kSis3302AllChans) {
-		firstAdc = 0;
-		lastAdc = kSis3302NofChans - 1;
+		firstChan = 0;
+		lastChan = kSis3302NofChans - 1;
 	} else {
-		firstAdc = ChanNo;
-		lastAdc = ChanNo;
+		firstChan = ChanNo;
+		lastChan = ChanNo;
 	}
-	wc = lastAdc - firstAdc + 1;
+	wc = lastChan - firstChan + 1;
 
 	dacStatus = (volatile Int_t *) sis3302_mapAddress(Module, SIS3302_DAC_CONTROL_STATUS);
 	if (dacStatus == NULL) return(kFALSE);
@@ -253,7 +670,7 @@ Bool_t sis3302_writeDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Cha
 
 	maxTimeout = 5000;
 	idx = 0;
-	for (adc = firstAdc; chn <= lastAdc; chn++, idx++) {
+	for (chn = firstChan; chn <= lastChan; chn++, idx++) {
 		*dacData = DacValues[idx];
 		*dacStatus = kSis3302DacCmdLoadShiftReg + (chn << 4);
 		timeout = 0 ;
@@ -274,7 +691,7 @@ Bool_t sis3302_writeDac(struct s_sis_3302 * Module, Int_t DacValues[], Int_t Cha
 	return(kTRUE);
 }
 
-Bool_t sis3302_writeDac_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeDac(Module, Module->dacValues[ChanNo], ChanNo)); }
+Bool_t sis3302_writeDac_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeDac(Module, &Module->dacValues[ChanNo], ChanNo)); }
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -292,8 +709,8 @@ Bool_t sis3302_keyAddr(struct s_sis_3302 * Module, Int_t Key) {
 	offset = 0;
 	switch (Key) {
 		case kSis3302KeyReset:							offset = SIS3302_KEY_RESET; break;
-		case kSis3302KeyResetSample:					offset = SIS3302_KEY_SAMPLE_LOGIC_RESET_404; break;
-		case kSis3302KeyDisarmSample:					offset = SIS3302_KEY_DISARM; break;
+		case kSis3302KeyResetSampling:					offset = SIS3302_KEY_SAMPLE_LOGIC_RESET_404; break;
+		case kSis3302KeyDisarmSampling:					offset = SIS3302_KEY_DISARM; break;
 		case kSis3302KeyTrigger:						offset = SIS3302_KEY_TRIGGER; break;
 		case kSis3302KeyClearTimestamp: 				offset = SIS3302_KEY_TIMESTAMP_CLEAR; break;
 		case kSis3302KeyArmBank1Sampling:				offset = SIS3302_KEY_DISARM_AND_ARM_BANK1; break;
@@ -317,24 +734,22 @@ Bool_t sis3302_keyAddr(struct s_sis_3302 * Module, Int_t Key) {
 	if (keyAddr == NULL) return(kFALSE);
 
 	*keyAddr = 0;
-	if (Key == kSis3302KeyReset || Key == kSis3302KeyResetSample) sleep(1);
+	if (Key == kSis3302KeyReset || Key == kSis3302KeyResetSampling) sleep(1);
 	return (kTRUE);
 }
 
-//! Exec KEY command: reset
-Bool_t sis3302_keyReset(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyReset); }
-//! Exec KEY command: reset sample
-Bool_t sis3302_keyResetSample(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyResetSample)); };
-//! Exec KEY command: generate trigger
-Bool_t sis3302_keyTrigger(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyTrigger)); };
-//! Exec KEY command: clear time stamp
-Bool_t sis3302_keyClearTimestamp(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyClearTimestamp)); };
-//! Exec KEY command: arm sampling for bank 1
-Bool_t sis3302_keyArmBank1Sampling(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyArmBank1Sampling)); };
-//! Exec KEY command: arm sampling for bank 2
-Bool_t sis3302_keyArmBank2Sampling(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyArmBank2Sampling)); };
-//! Exec KEY command: disarm sample
-Bool_t sis3302_keyDisarmSample(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyDisarmSample)); };
+
+Bool_t sis3302_reset(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyReset)); };
+
+Bool_t sis3302_resetSampling(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyResetSampling)); };
+
+Bool_t sis3302_fireTrigger(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyTrigger)); };
+
+Bool_t sis3302_clearTimestamp(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyClearTimestamp)); };
+
+Bool_t sis3302_armSampling(struct s_sis_3302 * Module, Int_t Sampling) { return(sis3302_keyAddr(Module, Sampling)); };
+
+Bool_t sis3302_disarmSampling(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyDisarmSampling)); };
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -388,7 +803,7 @@ Bool_t sis3302_writeControlStatus_db(struct s_sis_3302 * Module) { return(sis330
 //! \return 		Bits			-- configuration
 ////////////////////////////////////////////////////////////////////////////*/
 
-UInt_t sis3302_readEventConfig(struct s_sis_3302 * Module, Int_t ChanNo);
+UInt_t sis3302_readEventConfig(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	volatile UInt_t * evtConf;
 	Int_t offset;
@@ -448,7 +863,7 @@ Bool_t sis3302_writeEventConfig(struct s_sis_3302 * Module, UInt_t Bits, Int_t C
 	return(kTRUE);
 }
 
-Bool_t sis3302_writeEventConfig_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEventConfig(Module, Module->evtConfig[ChanNo/2], ChanNo)); }
+Bool_t sis3302_writeEventConfig_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEventConfig(Module, Module->evtConf[ChanNo/2], ChanNo)); }
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -474,7 +889,7 @@ UInt_t sis3302_readEventExtendedConfig(struct s_sis_3302 * Module, Int_t ChanNo)
 		case 5: 	offset = SIS3302_EVENT_EXTENDED_CONFIG_ADC56; break;
 		case 6:
 		case 7: 	offset = SIS3302_EVENT_EXTENDED_CONFIG_ADC78; break;
-	}sis3302_writeEventConfig
+	}
 
 	evtConf = (volatile Int_t *) sis3302_mapAddress(Module, offset);
 	if (evtConf == NULL) return(0xaffec0c0);
@@ -518,7 +933,7 @@ Bool_t sis3302_writeEventExtendedConfig(struct s_sis_3302 * Module, UInt_t Bits,
 	return(kTRUE);
 }
 
-Bool_t sis3302_writeEventExtendedConfig_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEventConfig(Module, Module->xEvtConfig[ChanNo/2], ChanNo)); }
+Bool_t sis3302_writeEventExtendedConfig_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeEventConfig(Module, Module->xEvtConf[ChanNo/2], ChanNo)); }
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -532,9 +947,9 @@ UInt_t sis3302_getHeaderBits(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	UInt_t bits;
 
-	bits = sis3302_readEventConfig(Module, ChanNo));
+	bits = sis3302_readEventConfig(Module, ChanNo);
 	if (bits != 0xaffec0c0) {
-		bits >>= 17;		// header bit #1 -> event config bit #17
+		bits >>= 17;
 		bits &= kSis3302HeaderMask;
 	}
 	return(bits);
@@ -552,7 +967,7 @@ UInt_t sis3302_getHeaderBits(struct s_sis_3302 * Module, Int_t ChanNo) {
 Bool_t sis3302_setHeaderBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
 	UInt_t bits;
-	Int_t adc;
+	Int_t chn;
 
 	if (Bits & ~kSis3302HeaderMask) {
 		sprintf(msg, "[setHeaderBits] [%s]: Illegal header data - %#lx (should be in %#lx)", Module->moduleName,  Bits, kSis3302HeaderMask);
@@ -566,7 +981,7 @@ Bool_t sis3302_setHeaderBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t Chan
 		return(kFALSE);
 	}
 
-	Bits >>= 2;			// bits 1 & 2 are read-only
+	Bits >>= 2;
 
 	if (ChanNo == kSis3302AllChans) {
 		for (chn = 0; chn < kSis3302NofChans; chn++) {
@@ -575,11 +990,11 @@ Bool_t sis3302_setHeaderBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t Chan
 		return(kTRUE);
 	}
 
-	bits = sis3302_readEventConfig(Module, ChanNo));
+	bits = sis3302_readEventConfig(Module, ChanNo);
 	if (bits == 0xaffec0c0) return(kFALSE);
 
 	bits &= 0xFFFF;
-	bits |=	(Bits << 19);		// header bit #1 -> event config bit #17, bits 1 & 2 read-only
+	bits |=	(Bits << 19);
 	if (!sis3302_writeEventConfig(Module, bits, ChanNo)) return(kFALSE);
 	return(kTRUE);
 }
@@ -598,7 +1013,7 @@ UInt_t sis3302_getGroupId(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	UInt_t bits;
 
-	bits = sis3302_readEventConfig(Module, ChanNo));
+	bits = sis3302_readEventConfig(Module, ChanNo);
 	if (bits != 0xaffec0c0) {
 		bits >>= 17;
 		bits &= 0x3;
@@ -608,7 +1023,7 @@ UInt_t sis3302_getGroupId(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-//! \details		Returns trigger mo*/
+//! \details		Returns trigger mode
 //! \param[in]		Module		-- module address
 //! \param[in]		ChanNo 		-- channel numer
 //! \return 		Bits		-- trigger mode
@@ -618,7 +1033,7 @@ UInt_t sis3302_getTriggerMode(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	UInt_t bits;
 
-	bits = sis3302_readEventConfig(Module, ChanNo));
+	bits = sis3302_readEventConfig(Module, ChanNo);
 	if (bits != 0xaffec0c0) {
 		if (ChanNo & 1) {
 			bits >>= 10;
@@ -639,10 +1054,10 @@ UInt_t sis3302_getTriggerMode(struct s_sis_3302 * Module, Int_t ChanNo) {
 //! \return 		TRUE or FALSE
 ////////////////////////////////////////////////////////////////////////////*/
 
-Bool_t sis3302_setTriggerMode(struct s_sis_3302 * Module, Unt_t Bits, Int_t ChanNo);
+Bool_t sis3302_setTriggerMode(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
 	UInt_t bits;
-	Int_t adc;
+	Int_t chn;
 
 	if (Bits < kSis3302TriggerOff || Bits > kSis3302TriggerBoth) {
 		sprintf(msg, "[setTriggerMode] [%s]: Illegal trigger mode - %#lx (should be in [%d,%d])", Module->moduleName,  Bits, kSis3302TriggerOff, kSis3302TriggerBoth);
@@ -657,7 +1072,7 @@ Bool_t sis3302_setTriggerMode(struct s_sis_3302 * Module, Unt_t Bits, Int_t Chan
 		return(kTRUE);
 	}
 
-	bits = sis3302_readEventConfig(Module, ChanNo));
+	bits = sis3302_readEventConfig(Module, ChanNo);
 	if (bits == 0xaffec0c0) return(kFALSE);
 
 	if (ChanNo & 1) {
@@ -685,7 +1100,7 @@ UInt_t sis3302_getGateMode(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	UInt_t bits;
 
-	bits = sis3302_readEventConfig(Module, ChanNo));
+	bits = sis3302_readEventConfig(Module, ChanNo);
 	if (bits != 0xaffec0c0) {
 		if (ChanNo & 1) {
 			bits >>= 12;
@@ -709,7 +1124,7 @@ UInt_t sis3302_getGateMode(struct s_sis_3302 * Module, Int_t ChanNo) {
 Bool_t sis3302_setGateMode(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
 	UInt_t bits;
-	Int_t adc;
+	Int_t chn;
 
 	if (Bits < kSis3302GateOff || Bits > kSis3302GateBoth) {
 		sprintf(msg, "[setGateMode] [%s]: Illegal gate mode - %#lx (should be in [%d,%d])", Module->moduleName,  Bits, kSis3302GateOff, kSis3302GateBoth);
@@ -724,8 +1139,8 @@ Bool_t sis3302_setGateMode(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo
 		return(kTRUE);
 	}
 
-	bits = sis3302_readEventConfig(Module, ChanNo));
-	if (bits == 0xaffec0c0) return(kFALSE;
+	bits = sis3302_readEventConfig(Module, ChanNo);
+	if (bits == 0xaffec0c0) return(kFALSE);
 
 	if (ChanNo & 1) {
 		bits &= ~(kSis3302GateBoth << 12);
@@ -751,7 +1166,7 @@ UInt_t sis3302_getNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Chan
 
 	UInt_t bits;
 
-	bits = sis3302_readEventExtendedConfig(Module, ChanNo));
+	bits = sis3302_readEventExtendedConfig(Module, ChanNo);
 	if (bits != 0xaffec0c0) {
 		if (ChanNo & 1) {
 		bits >>= 14;
@@ -776,7 +1191,7 @@ UInt_t sis3302_getNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Chan
 Bool_t sis3302_setNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Bits, Int_t ChanNo) {
 
 	UInt_t bits;
-	Int_t adc;
+	Int_t chn;
 
 	if (Bits < kSis3302TriggerOff || Bits > kSis3302TriggerBoth) {
 		sprintf(msg, "[setNextNeighborTriggerMode] [%s]: Illegal next-neighbor trigger mode - %#lx (should be in [%d,%d])", Module->moduleName,  Bits, kSis3302TriggerOff, kSis3302TriggerBoth);
@@ -791,7 +1206,7 @@ Bool_t sis3302_setNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Bits
 		return(kTRUE);
 	}
 
-	bits = sis3302_readEventExtendedConfig(Module, ChanNo));
+	bits = sis3302_readEventExtendedConfig(Module, ChanNo);
 	if (bits == 0xaffec0c0) return(kFALSE);
 
 	if (ChanNo & 1) {
@@ -818,7 +1233,7 @@ UInt_t sis3302_getNextNeighborGateMode(struct s_sis_3302 * Module, Int_t ChanNo)
 
 	UInt_t bits;
 
-	bits = sis3302_readEventExtendedConfig(Module, ChanNo));
+	bits = sis3302_readEventExtendedConfig(Module, ChanNo);
 	if (bits != 0xaffec0c0) {
 		if (ChanNo & 1) {
 			bits >>= 14;
@@ -842,7 +1257,7 @@ UInt_t sis3302_getNextNeighborGateMode(struct s_sis_3302 * Module, Int_t ChanNo)
 Bool_t sis3302_setNextNeighborGateMode(struct s_sis_3302 * Module, Int_t Bits, Int_t ChanNo) {
 
 	UInt_t bits;
-	Int_t adc;
+	Int_t chn;
 
 	if (Bits < kSis3302GateOff || Bits > kSis3302GateBoth) {
 		sprintf(msg, "[setNextNeighborTriggerMode] [%s]: Illegal next-neighbor gate mode - %#lx (should be in [%d,%d])", Module->moduleName,  Bits, kSis3302GateOff, kSis3302GateBoth);
@@ -857,7 +1272,7 @@ Bool_t sis3302_setNextNeighborGateMode(struct s_sis_3302 * Module, Int_t Bits, I
 		return(kTRUE);
 	}
 
-	bits = sis3302_readEventExtendedConfig(Module, ChanNo));
+	bits = sis3302_readEventExtendedConfig(Module, ChanNo);
 	if (bits == 0xaffec0c0) return(kFALSE);
 
 	if (ChanNo & 1) {
@@ -885,7 +1300,7 @@ Bool_t sis3302_polarityIsInverted(struct s_sis_3302 * Module, Int_t ChanNo) {
 	UInt_t bits;
 	Bool_t invertFlag;
 
-	bits = sis3302_readEventConfig(Module, ChanNo));
+	bits = sis3302_readEventConfig(Module, ChanNo);
 	if (bits == 0xaffec0c0) return(kFALSE);
 
 	if (ChanNo & 1) bits >>= 8;
@@ -904,7 +1319,7 @@ Bool_t sis3302_polarityIsInverted(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 Bool_t sis3302_setPolarity(struct s_sis_3302 * Module, Bool_t InvertFlag, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t bits;
 
 	if (ChanNo == kSis3302AllChans) {
@@ -915,13 +1330,13 @@ Bool_t sis3302_setPolarity(struct s_sis_3302 * Module, Bool_t InvertFlag, Int_t 
 		return(kTRUE);
 	}
 
-	bits = sis3302_readEventConfig(Module, ChanNo));
+	bits = sis3302_readEventConfig(Module, ChanNo);
 	if (bits == 0xaffec0c0) return(kFALSE);
 
 	if (ChanNo & 1) {
 		if (InvertFlag) bits |= (kSis3302PolarityNegative << 8); else bits &= ~(kSis3302PolarityNegative << 8);
 	} else {
-		data &= ~1;
+		bits &= ~1;
 		if (InvertFlag) bits |= kSis3302PolarityNegative; else bits &= ~kSis3302PolarityNegative;
 	}
 	return(sis3302_writeEventConfig(Module, bits, ChanNo));
@@ -1015,7 +1430,7 @@ Bool_t sis3302_writeEndAddrThresh_db(struct s_sis_3302 * Module, Int_t ChanNo) {
 UInt_t sis3302_readPreTrigDelayAndGateLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
-	volatile Unt_t * trigReg;
+	volatile UInt_t * trigReg;
 
 	if (!sis3302_checkChannelNo(Module, "readPreTrigDelayAndGateLength", ChanNo)) return (0xaffec0c0);
 
@@ -1048,7 +1463,7 @@ UInt_t sis3302_readPreTrigDelayAndGateLength(struct s_sis_3302 * Module, Int_t C
 Bool_t sis3302_writePreTrigDelayAndGateLength(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo) {
 
 	Int_t offset;
-	volatile Unt_t * trigReg;
+	volatile UInt_t * trigReg;
 
 	if (!sis3302_checkChannelNo(Module, "writePreTrigDelayAndGateLength", ChanNo)) return (kFALSE);
 
@@ -1105,7 +1520,7 @@ Int_t sis3302_readPreTrigDelay(struct s_sis_3302 * Module, Int_t ChanNo) {
 Bool_t sis3302_writePreTrigDelay(struct s_sis_3302 * Module, Int_t Delay, Int_t ChanNo) {
 
 	UInt_t delay;
-	Int_t adc;
+	Int_t chn;
 
 	if (ChanNo == kSis3302AllChans) {
 		for (chn = 0; chn < kSis3302NofChans; chn++) {
@@ -1159,7 +1574,7 @@ Int_t sis3302_readTrigGateLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 Bool_t sis3302_writeTrigGateLength(struct s_sis_3302 * Module, Int_t Gate, Int_t ChanNo) {
 
 	UInt_t gate;
-	Int_t adc;
+	Int_t chn;
 
 	if (ChanNo == kSis3302AllChans) {
 		for (chn = 0; chn < kSis3302NofChans; chn++) {
@@ -1186,7 +1601,7 @@ Bool_t sis3302_writeTrigGateLength_db(struct s_sis_3302 * Module, Int_t ChanNo) 
 //! \return 		Bits		-- bits
 ////////////////////////////////////////////////////////////////////////////*/
 
-UInt_t sis3302_readRawDataBufConfig(struct s_sis_3302 * Module, Int_t ChanNo);
+UInt_t sis3302_readRawDataBufConfig(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile UInt_t * rawData;
@@ -1273,12 +1688,12 @@ Int_t sis3302_readRawDataSampleLength(struct s_sis_3302 * Module, Int_t ChanNo) 
 
 Bool_t sis3302_writeRawDataSampleLength(struct s_sis_3302 * Module, Int_t Sample, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t sl;
 
-	if (sis_3302_checkTraceCollectionInProgress(Module, "writeRawDataSampleLength")) return(kFALSE);
+	if (sis3302_checkTraceCollectionInProgress(Module, "writeRawDataSampleLength")) return(kFALSE);
 
-	if (Sample < kSis3302RawDataSampleLengthMin || SampleLength > kSis3302RawDataSampleLengthMax) {
+	if (Sample < kSis3302RawDataSampleLengthMin || Sample > kSis3302RawDataSampleLengthMax) {
 		sprintf(msg, "[writeRawDataSampleLength] [%s]: Sample length out of range - %d (should be in [0,%d])", Module->moduleName, Sample, kSis3302RawDataSampleLengthMax);
 		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
@@ -1301,7 +1716,7 @@ Bool_t sis3302_writeRawDataSampleLength(struct s_sis_3302 * Module, Int_t Sample
 	if (sl != 0xaffec0c0) return(kFALSE);
 
 	sl &= 0x0000FFFF;
-	sl |= (SampleLength << 16);
+	sl |= (Sample << 16);
 
 	return(sis3302_writeRawDataBufConfig(Module, sl, ChanNo));
 }
@@ -1336,9 +1751,10 @@ Int_t sis3302_readRawDataStartIndex(struct s_sis_3302 * Module, Int_t ChanNo) {
 //! \return 		TRUE or FALSE
 ////////////////////////////////////////////////////////////////////////////*/
 
-Bool_t sis3302_writeRawDataStartIndex(struct s_sis_3302 * Module, Int_t Index, Int_t ChanNo);
+Bool_t sis3302_writeRawDataStartIndex(struct s_sis_3302 * Module, Int_t Index, Int_t ChanNo) {
 
 	UInt_t sx;
+	Int_t chn;
 
 	if (Index < kSis3302RawDataStartIndexMin || Index > kSis3302RawDataStartIndexMax) {
 		sprintf(msg, "[writeRawDataStartIndex] [%s]: Start index out of range - %d (should be in [0,%d])", Module->moduleName, Index, kSis3302RawDataStartIndexMax);
@@ -1353,7 +1769,7 @@ Bool_t sis3302_writeRawDataStartIndex(struct s_sis_3302 * Module, Int_t Index, I
 	}
 
 	if (ChanNo == kSis3302AllChans) {
-		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
+		for (chn = 0; chn < kSis3302NofChans; chn++) {
 			if (!sis3302_writeRawDataStartIndex(Module, Index, chn)) return(kFALSE);
 		}
 		return(kTRUE);
@@ -1440,7 +1856,7 @@ Int_t sis3302_readPrevBankSampleAddr(struct s_sis_3302 * Module, Int_t ChanNo) {
 //! \return 		Data		-- sample data
 ////////////////////////////////////////////////////////////////////////////*/
 
-UInt_t sis3302_readActualSample(struct s_sis_3302 * Module, Int_t ChanNo);
+UInt_t sis3302_readActualSample(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile Int_t * actSample;
@@ -1478,7 +1894,7 @@ UInt_t sis3302_readActualSample(struct s_sis_3302 * Module, Int_t ChanNo);
 UInt_t sis3302_readTriggerSetup(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	Int_t offset;
-	volatile Unt_t * trigSetup;
+	volatile UInt_t * trigSetup;
 
 	if (!sis3302_checkChannelNo(Module, "readTriggerSetup", ChanNo)) return (0xaffec0c0);
 
@@ -1512,7 +1928,7 @@ Bool_t sis3302_writeTriggerSetup(struct s_sis_3302 * Module, UInt_t Data, Int_t 
 
 	Int_t offset;
 	volatile UInt_t * trigSetup;
-	Int_t adc;
+	Int_t chn;
 
 	if (!sis3302_checkChannelNo(Module, "writeTriggerSetup", ChanNo)) return (kFALSE);
 
@@ -1586,7 +2002,7 @@ Bool_t sis3302_writeTriggerExtendedSetup(struct s_sis_3302 * Module, UInt_t Data
 
 	Int_t offset;
 	volatile UInt_t * trigSetup;
-	Int_t adc;
+	Int_t chn;
 
 	if (!sis3302_checkChannelNo(Module, "writeTriggerSetup", ChanNo)) return (kFALSE);
 
@@ -1652,13 +2068,13 @@ Bool_t sis3302_readTriggerPeakAndGap(struct s_sis_3302 * Module, Int_t PeakGap[]
 //! \param[in]		ChanNo 		-- channel numer
 ////////////////////////////////////////////////////////////////////////////*/
 
-Bool_t sis3302_writeTriggerPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, Int Gap, Int_t ChanNo) {
+Bool_t sis3302_writeTriggerPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, Int_t Gap, Int_t ChanNo) {
 
 	Int_t sumG;
-	Int_t adc;
+	Int_t chn;
 	UInt_t data, xdata;
 
-	if (sis_3302_checkTraceCollectionInProgress(Module, "writeTriggerPeakAndGap")) return(kFALSE);
+	if (sis3302_checkTraceCollectionInProgress(Module, "writeTriggerPeakAndGap")) return(kFALSE);
 
 	sumG = Peak + Gap;
 
@@ -1692,8 +2108,7 @@ Bool_t sis3302_writeTriggerPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, In
 	return(kTRUE);
 }
 
-Bool_t sis3302_writeTriggerPeakAndGap_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerPeakAndGap(Module, trigPeakTime[ChanNo], trigGapTime[ChanNo], ChanNo); }
-}
+Bool_t sis3302_writeTriggerPeakAndGap_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerPeakAndGap(Module, Module->trigPeakTime[ChanNo], Module->trigGapTime[ChanNo], ChanNo)); }
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -1706,7 +2121,7 @@ Bool_t sis3302_writeTriggerPeakAndGap_db(struct s_sis_3302 * Module, Int_t ChanN
 Int_t sis3302_readTriggerPulseLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	UInt_t data;
-	data = sis3302_readTriggerSetup(Module, data, ChanNo);
+	data = sis3302_readTriggerSetup(Module, ChanNo);
 	if (data != 0xaffec0c0) data = (data >> 16) & 0xFF;
 	return((Int_t) data);
 }
@@ -1722,7 +2137,7 @@ Int_t sis3302_readTriggerPulseLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 Bool_t sis3302_writeTriggerPulseLength(struct s_sis_3302 * Module, Int_t PulseLength, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t data;
 
 	if (PulseLength < 0 || PulseLength > 0xFF) {
@@ -1732,7 +2147,7 @@ Bool_t sis3302_writeTriggerPulseLength(struct s_sis_3302 * Module, Int_t PulseLe
 	}
 
 	if (ChanNo == kSis3302AllChans) {
-		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
+		for (chn = 0; chn < kSis3302NofChans; chn++) {
 			if (!sis3302_writeTriggerPulseLength(Module, PulseLength, chn)) return(kFALSE);
 		}
 		return(kTRUE);
@@ -1775,7 +2190,7 @@ Int_t sis3302_readTriggerInternalGate(struct s_sis_3302 * Module, Int_t ChanNo) 
 
 Bool_t sis3302_writeTriggerInternalGate(struct s_sis_3302 * Module, Int_t GateLength, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t data;
 
 	if (GateLength < 0 || GateLength > 0x3F) {
@@ -1786,7 +2201,7 @@ Bool_t sis3302_writeTriggerInternalGate(struct s_sis_3302 * Module, Int_t GateLe
 
 	if (ChanNo == kSis3302AllChans) {
 		for (chn = 0; chn < kSis3302NofChans; chn++) {
-			if (!this->WriteTriggerInternalGate(Module, GateLength, chn)) return(kFALSE);
+			if (!sis3302_writeTriggerInternalGate(Module, GateLength, chn)) return(kFALSE);
 		}
 		return(kTRUE);
 	}
@@ -1828,7 +2243,7 @@ Int_t sis3302_readTriggerInternalDelay(struct s_sis_3302 * Module, Int_t ChanNo)
 
 Bool_t sis3302_writeTriggerInternalDelay(struct s_sis_3302 * Module, Int_t DelayLength, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t data;
 
 	if (DelayLength < 0 || DelayLength > 0x3F) {
@@ -1839,7 +2254,7 @@ Bool_t sis3302_writeTriggerInternalDelay(struct s_sis_3302 * Module, Int_t Delay
 
 	if (ChanNo == kSis3302AllChans) {
 		for (chn = 0; chn < kSis3302NofChans; chn++) {
-			if (!this->sis3302_writeTriggerInternalDelay(Module, DelayLength, chn)) return(kFALSE);
+			if (!sis3302_writeTriggerInternalDelay(Module, DelayLength, chn)) return(kFALSE);
 		}
 		return(kTRUE);
 	}
@@ -1848,7 +2263,7 @@ Bool_t sis3302_writeTriggerInternalDelay(struct s_sis_3302 * Module, Int_t Delay
 	if (data == 0xaffec0c0) return(kFALSE);
 
 	data &= 0xFFFFFF;
-	data |= (Delay << 24);
+	data |= (DelayLength << 24);
 	return(sis3302_writeTriggerExtendedSetup(Module, data, ChanNo));
 }
 
@@ -1867,7 +2282,7 @@ Int_t sis3302_getTriggerDecimation(struct s_sis_3302 * Module, Int_t ChanNo) {
 	UInt_t data;
 	data = sis3302_readTriggerExtendedSetup(Module, ChanNo);
 	if (data != 0xaffec0c0) data = (data >> 16) & 0x3;
-	return((Int_t) datas);
+	return((Int_t) data);
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -1881,18 +2296,18 @@ Int_t sis3302_getTriggerDecimation(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 Bool_t sis3302_setTriggerDecimation(struct s_sis_3302 * Module, Int_t Decimation, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t data;
 
 	if (Decimation < 0 || Decimation > 3) {
-		sprintf(msg, "[setTriggerDecimation] [%s]:  Wrong trigger decimation - %d (should be in [0,3])", Module->moduleName, DelayLength);
+		sprintf(msg, "[setTriggerDecimation] [%s]:  Wrong trigger decimation - %d (should be in [0,3])", Module->moduleName, Decimation);
 		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
 	if (ChanNo == kSis3302AllChans) {
 		for (chn = 0; chn < kSis3302NofChans; chn++) {
-			if (!this->SetTriggerDecimation(Module, Decimation, chn)) return(kFALSE);
+			if (!sis3302_setTriggerDecimation(Module, Decimation, chn)) return(kFALSE);
 		}
 		return(kTRUE);
 	}
@@ -1948,10 +2363,10 @@ UInt_t sis3302_readTriggerThreshReg(struct s_sis_3302 * Module, Int_t ChanNo) {
 //! \return 		TRUE or FALSE
 ////////////////////////////////////////////////////////////////////////////*/
 
-Bool_t sis3302_writeTriggerThreshReg(struct s_sis_3302 * Module, UInt_t Data, Int_t ChanNo);
+Bool_t sis3302_writeTriggerThreshReg(struct s_sis_3302 * Module, UInt_t Data, Int_t ChanNo) {
 
 	UInt_t data;
-	Int_t adc;
+	Int_t chn;
 	Int_t offset;
 	volatile UInt_t * trigThresh;
 
@@ -1959,7 +2374,7 @@ Bool_t sis3302_writeTriggerThreshReg(struct s_sis_3302 * Module, UInt_t Data, In
 
 	if (ChanNo == kSis3302AllChans) {
 		for (chn = 0; chn < kSis3302NofChans; chn++) {
-			if (!sis3302_writeTriggerThreshReg((Module, Data, chn)) return(kFALSE);
+			if (!sis3302_writeTriggerThreshReg(Module, Data, chn)) return(kFALSE);
 		}
 		return(kTRUE);
 	}
@@ -1990,7 +2405,7 @@ Bool_t sis3302_writeTriggerThreshReg(struct s_sis_3302 * Module, UInt_t Data, In
 //! \return 		Thresh		-- threshold
 ////////////////////////////////////////////////////////////////////////////*/
 
-Int_t sis3302_readTriggerThreshold(struct s_sis_3302 * Module, Int_t ChanNo);
+Int_t sis3302_readTriggerThreshold(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	UInt_t data;
 	data = sis3302_readTriggerThreshReg(Module, ChanNo);
@@ -2010,11 +2425,11 @@ Int_t sis3302_readTriggerThreshold(struct s_sis_3302 * Module, Int_t ChanNo);
 Bool_t sis3302_writeTriggerThreshold(struct s_sis_3302 * Module, Int_t Thresh, Int_t ChanNo) {
 
 	Int_t th;
-	Int_t adc;
+	Int_t chn;
 	UInt_t data;
 
 	if (Thresh < 0 || Thresh > 0xFFFF) {
-		sprintf(msg, "[setTriggerDecimation] [%s]:  Wrong trigger threshold - %d (should be in [0,%d])", Module->moduleName, Thres, 0xFFFF);
+		sprintf(msg, "[setTriggerDecimation] [%s]:  Wrong trigger threshold - %d (should be in [0,%d])", Module->moduleName, Thresh, 0xFFFF);
 		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
@@ -2063,7 +2478,7 @@ Bool_t sis3302_getTriggerGT(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 Bool_t sis3302_setTriggerGT(struct s_sis_3302 * Module, Bool_t GTFlag, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t data;
 
 	if (ChanNo == kSis3302AllChans) {
@@ -2108,9 +2523,9 @@ Bool_t sis3302_getTriggerOut(struct s_sis_3302 * Module, Int_t ChanNo) {
 //! \return 		TRUE or FALSE
 ////////////////////////////////////////////////////////////////////////////*/
 
-Bool_t sis3302_setTriggerOut(struct s_sis_3302 * Module, Bool_t TrigOutFlag, Int_t ChanNo);
+Bool_t sis3302_setTriggerOut(struct s_sis_3302 * Module, Bool_t TrigOutFlag, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t data;
 
 	if (ChanNo == kSis3302AllChans) {
@@ -2232,11 +2647,11 @@ Bool_t sis3302_readEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t PeakGap[],
 
 Bool_t sis3302_writeEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, Int_t Gap, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t data;
 	Int_t p;
 
-	if (sis_3302_checkTraceCollectionInProgress(Module, "writeriteEnergyPeakAndGap")) return(kFALSE);
+	if (sis3302_checkTraceCollectionInProgress(Module, "writeriteEnergyPeakAndGap")) return(kFALSE);
 
 	if (Peak < kSis3302EnergyPeakMin || Peak > kSis3302EnergyPeakMax) {
 		sprintf(msg, "[writeEnergyPeakAndGap] [%s]:  Energy peak time mismatch - %d (should be in [%d,%d])", Module->moduleName, Peak, kSis3302EnergyPeakMin, kSis3302EnergyPeakMax);
@@ -2251,9 +2666,8 @@ Bool_t sis3302_writeEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, Int
 
 	if (ChanNo == kSis3302AllChans) {
 		for (chn = 0; chn < kSis3302NofChans; chn++) {
-			if (!this->WriteEnergyPeakAndGap(Module, Peak, Gap, chn)) return(kFALSE);
+			if (!sis3302_writeEnergyPeakAndGap(Module, Peak, Gap, chn)) return(kFALSE);
 		}
-		Peak = p; Gap = g;
 		return(kTRUE);
 	}
 
@@ -2266,10 +2680,10 @@ Bool_t sis3302_writeEnergyPeakAndGap(struct s_sis_3302 * Module, Int_t Peak, Int
 	data |= Peak;
 	p = (Peak >> 8) & 0x3;
 	data |= (p << 16);
-	return (sis3302_writeEnergySetup(Module, data, ChanNo);
+	return (sis3302_writeEnergySetup(Module, data, ChanNo));
 }
 
-Bool_t sis3302_writeEnergyPeakAndGap_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerPeakAndGap(Module, Module->energyPeakTime[ChanNo/2], energyGapTime[ChanNo/2], ChanNo); }
+Bool_t sis3302_writeEnergyPeakAndGap_db(struct s_sis_3302 * Module, Int_t ChanNo) { return(sis3302_writeTriggerPeakAndGap(Module, Module->energyPeakTime[ChanNo/2], Module->energyGapTime[ChanNo/2], ChanNo)); }
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -2282,7 +2696,7 @@ Bool_t sis3302_writeEnergyPeakAndGap_db(struct s_sis_3302 * Module, Int_t ChanNo
 Int_t sis3302_getEnergyDecimation(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 	UInt_t data;
-	datga = sis3302_readEnergySetup(Module, ChanNo);
+	data = sis3302_readEnergySetup(Module, ChanNo);
 	if (data != 0xaffec0c0) data = (data >> 28) & 0x3;
 	return(data);
 }
@@ -2298,7 +2712,7 @@ Int_t sis3302_getEnergyDecimation(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 Bool_t sis3302_setEnergyDecimation(struct s_sis_3302 * Module, Int_t Decimation, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t data;
 
 	if (Decimation < 0 || Decimation > 3) {
@@ -2390,6 +2804,7 @@ Bool_t sis3302_writeEnergyGateReg(struct s_sis_3302 * Module, UInt_t Data, Int_t
 
 	*gateReg = Data;
 	return(kTRUE);
+}
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -2418,7 +2833,7 @@ Int_t sis3302_readEnergyGateLength(struct s_sis_3302 * Module, Int_t ChanNo) {
 
 Bool_t sis3302_writeEnergyGateLength(struct s_sis_3302 * Module, Int_t GateLength, Int_t ChanNo) {
 
-	Int_t adc;
+	Int_t chn;
 	UInt_t data;
 
 	if (GateLength < 0 || GateLength > 0x1FFFF) {
@@ -2473,6 +2888,7 @@ Bool_t sis3302_setTestBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo
 
 	Int_t b;
 	UInt_t data;
+	Int_t chn;
 
 	if (Bits < 0 || Bits > 0x3) {
 		sprintf(msg, "[setTestBits] [%s]:  Wrong test bits - %#x (should be in [0, 0x3])", Module->moduleName, Bits);
@@ -2481,15 +2897,15 @@ Bool_t sis3302_setTestBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo
 	}
 
 	if (ChanNo == kSis3302AllChans) {
-		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
+		for (chn = 0; chn < kSis3302NofChans; chn++) {
 			b = Bits;
-			if (!this->SetTestBits(Module, b, chn)) return(kFALSE);
+			if (!sis3302_setTestBits(Module, b, chn)) return(kFALSE);
 		}
 		Bits = b;
 		return(kTRUE);
 	}
 
-	Data = sis3302_readEnergyGateReg(Module, ChanNo);
+	data = sis3302_readEnergyGateReg(Module, ChanNo);
 	if (data == 0xaffec0c0) return(kFALSE);
 	data &= 0xFFFFFFF;
 	data |= (Bits << 28);
@@ -2544,7 +2960,7 @@ Bool_t sis3302_writeEnergySampleLength(struct s_sis_3302 * Module, Int_t SampleL
 	Int_t offset;
 	volatile Int_t * sample;
 
-	if (sis_3302_checkTraceCollectionInProgress(Module, "writeEnergySampleLength")) return(kFALSE);
+	if (sis3302_checkTraceCollectionInProgress(Module, "writeEnergySampleLength")) return(kFALSE);
 	if (!sis3302_checkChannelNo(Module, "writeEnergySampleLength", ChanNo)) return (kFALSE);
 
 	switch (ChanNo) {
@@ -2613,17 +3029,18 @@ Bool_t sis3302_writeTauFactor(struct s_sis_3302 * Module, Int_t Tau, Int_t ChanN
 
 	Int_t offset;
 	volatile Int_t * tauFactor;
+	Int_t chn;
 
 	if (!sis3302_checkChannelNo(Module, "writeTauFactor", ChanNo)) return (kFALSE);
 
 	if (Tau < kSis3302EnergyTauMin || Tau > kSis3302EnergyTauMax) {
-		sprintf(msg, "[writeTauFactor] [%s]:  Wrong tau factor - %d (should be in [0, " << kSis3302EnergyTauMax << "])", Module->moduleName, Tau);
+		sprintf(msg, "[writeTauFactor] [%s]:  Wrong tau factor - %d (should be in [0, %d]", Module->moduleName, Tau, kSis3302EnergyTauMax);
 		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
 
 	if (ChanNo == kSis3302AllChans) {
-		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
+		for (chn = 0; chn < kSis3302NofChans; chn++) {
 			if (!sis3302_writeTauFactor(Module, Tau, chn)) return(kFALSE);
 		}
 		return(kTRUE);
@@ -2658,14 +3075,14 @@ Bool_t sis3302_writeTauFactor_db(struct s_sis_3302 * Module, Int_t ChanNo) { ret
 //! \return 		IdxVal			-- start index value
 ////////////////////////////////////////////////////////////////////////////*/
 
-Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t ChanNo) {}
+Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t ChanNo) {
 
 	Int_t offset;
 	volatile Int_t * sampleIndex;
 
 	if (!sis3302_checkChannelNo(Module, "readStartIndex", ChanNo)) return (0xaffec0c0);
 
-	switch (Index) {
+	switch (IdxNo) {
 		case 0:
 			{
 				switch (ChanNo) {
@@ -2710,7 +3127,7 @@ Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t Chan
 			break;
 		default:
 			{
-				sprintf(msg, "[readStartIndex] [%s]:  Start index out of range - %d (should be in [0,2])", Module->moduleName, Index);
+				sprintf(msg, "[readStartIndex] [%s]:  Start index out of range - %d (should be in [0,2])", Module->moduleName, IdxNo);
 				f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 				return(0xaffec0c0);
 			}
@@ -2735,7 +3152,8 @@ Int_t sis3302_readStartIndex(struct s_sis_3302 * Module, Int_t IdxNo, Int_t Chan
 Bool_t sis3302_writeStartIndex(struct s_sis_3302 * Module, Int_t IdxVal, Int_t IdxNo, Int_t ChanNo) {
 
 	Int_t offset;
-  volatile Int_t * sampleIndex;
+	Int_t chn;
+	volatile Int_t * sampleIndex;
 
 	if (!sis3302_checkChannelNo(Module, "writeStartIndex", ChanNo)) return (kFALSE);
 
@@ -2752,13 +3170,13 @@ Bool_t sis3302_writeStartIndex(struct s_sis_3302 * Module, Int_t IdxVal, Int_t I
 	}
 
 	if (ChanNo == kSis3302AllChans) {
-		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) {
+		for (chn = 0; chn < kSis3302NofChans; chn++) {
 			if (!sis3302_writeStartIndex(Module, IdxVal, IdxNo, chn)) return(kFALSE);
 		}
 		return(kTRUE);
 	}
 
-	switch (Index) {
+	switch (IdxNo) {
 		case 0:
 			{
 				switch (ChanNo) {
@@ -2816,7 +3234,7 @@ Bool_t sis3302_writeStartIndex(struct s_sis_3302 * Module, Int_t IdxVal, Int_t I
 	return(kTRUE);
 }
 
-Bool_t sis3302_writeStartIndex_db(struct s_sis_3302 * Module, Int_t IdxNo, Int_t ChanNo) { return(sis3302_writeStartIndex(Module, Module->energySampleStart[IdxNo][ChanNo/2], ChanNo)); }
+Bool_t sis3302_writeStartIndex_db(struct s_sis_3302 * Module, Int_t IdxNo, Int_t ChanNo) { return(sis3302_writeStartIndex(Module, Module->energySampleStart[IdxNo][ChanNo/2], IdxNo, ChanNo)); }
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -2880,7 +3298,7 @@ Int_t sis3302_getClockSource(struct s_sis_3302 * Module) {
 //! \return 		TRUE or FALSE
 ////////////////////////////////////////////////////////////////////////////*/
 
-Bool_t sis3302_setClockSource(struct s_sis_3302 * Module, Int_t ClockSource);
+Bool_t sis3302_setClockSource(struct s_sis_3302 * Module, Int_t ClockSource) {
 
 	UInt_t data;
 
@@ -2889,13 +3307,13 @@ Bool_t sis3302_setClockSource(struct s_sis_3302 * Module, Int_t ClockSource);
 		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
-	data = (0x7 << 28);			// clear all bits
+	data = (0x7 << 28);
 	if (!sis3302_writeAcquisitionControl(Module, data)) return(kFALSE);
-	data = (ClockSource & 0x7) << 12;	// set bits
+	data = (ClockSource & 0x7) << 12;
 	return(sis3302_writeAcquisitionControl(Module, data));
 }
 
-Bool_t sis3302_setClockSource_db(struct s_sis_3302 * Module) { return(sis3302_setClockSource(Module. Module->clockSource)); };
+Bool_t sis3302_setClockSource_db(struct s_sis_3302 * Module) { return(sis3302_setClockSource(Module, Module->clockSource)); };
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -2922,17 +3340,17 @@ Int_t sis3302_getLemoInMode(struct s_sis_3302 * Module) {
 Bool_t sis3302_setLemoInMode(struct s_sis_3302 * Module, Int_t Bits) {
 	Int_t data;
 	if (Bits < 0 || Bits > 7) {
-		sprintf(msg, "[setLemoInMode] [%s]:  LEMO IN mode out of range - %d (should be in [0,7])", Module->moduleName, ClockSource);
+		sprintf(msg, "[setLemoInMode] [%s]:  LEMO IN mode out of range - %d (should be in [0,7])", Module->moduleName, Bits);
 		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
-	data = (0x7 << 16);			// clear all bits
+	data = (0x7 << 16);
 	if (!sis3302_writeAcquisitionControl(Module, data)) return(kFALSE);
-	data = Bits & 0x7;					// set bits
+	data = Bits & 0x7;
 	return(sis3302_writeAcquisitionControl(Module, data));
 }
 
-Bool_t sis3302_setLemoInMode_db(struct s_sis_3302 * Module) { return(sis3302_setLemoInMode(Module, Module->lemoInMode); };
+Bool_t sis3302_setLemoInMode_db(struct s_sis_3302 * Module) { return(sis3302_setLemoInMode(Module, Module->lemoInMode)); };
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -2941,7 +3359,7 @@ Bool_t sis3302_setLemoInMode_db(struct s_sis_3302 * Module) { return(sis3302_set
 //! \return 		Bits			-- mode bits
 ////////////////////////////////////////////////////////////////////////////*/
 
-Bool_t sis3302_getLemoOutMode(struct s_sis_3302 * Module) {
+Int_t sis3302_getLemoOutMode(struct s_sis_3302 * Module) {
 	Int_t data;
 	data = sis3302_readAcquisitionControl(Module);
 	if (data != 0xaffec0c0) data = (data >> 4) & 0x3;
@@ -2959,17 +3377,17 @@ Bool_t sis3302_getLemoOutMode(struct s_sis_3302 * Module) {
 Bool_t sis3302_setLemoOutMode(struct s_sis_3302 * Module, Int_t Bits) {
 	Int_t data;
 	if (Bits < 0 || Bits > 3) {
-		sprintf(msg, "[setLemoOutMode] [%s]:  LEMO OUT mode out of range - %d (should be in [0,3])", Module->moduleName, ClockSource);
+		sprintf(msg, "[setLemoOutMode] [%s]:  LEMO OUT mode out of range - %d (should be in [0,3])", Module->moduleName, Bits);
 		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
-	data = (0x3 << 20);			// clear all bits
+	data = (0x3 << 20);
 	if (!sis3302_writeAcquisitionControl(Module, data)) return(kFALSE);
-	data = (Bits & 0x3) << 4;			// set bits
+	data = (Bits & 0x3) << 4;
 	return(sis3302_writeAcquisitionControl(Module, data));
 }
 
-Bool_t sis3302_setLemoOutMode_db(struct s_sis_3302 * Module) { return(sis3302_setLemoOutMode(Module, Module->lemoOutMode); };
+Bool_t sis3302_setLemoOutMode_db(struct s_sis_3302 * Module) { return(sis3302_setLemoOutMode(Module, Module->lemoOutMode)); };
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -2978,7 +3396,7 @@ Bool_t sis3302_setLemoOutMode_db(struct s_sis_3302 * Module) { return(sis3302_se
 //! \return 		Bits			-- bits
 ////////////////////////////////////////////////////////////////////////////*/
 
-Int_t sis3302_getLemoInEnableMask(struct s_sis_3302 * Module);
+Int_t sis3302_getLemoInEnableMask(struct s_sis_3302 * Module) {
 	Int_t data;
 	data = sis3302_readAcquisitionControl(Module);
 	if (data != 0xaffec0c0) data = (data >> 8) & 0x7;
@@ -3000,13 +3418,13 @@ Bool_t sis3302_setLemoInEnableMask(struct s_sis_3302 * Module, Int_t Bits) {
 		f_ut_send_msg("__sis_3302", msg, ERR__MSG_INFO, MASK__PRTT);
 		return(kFALSE);
 	}
-	data = (0x7 << 24);			// clear all bits
+	data = (0x7 << 24);
 	if (!sis3302_writeAcquisitionControl(Module, data)) return(kFALSE);
-	data = (Bits & 0x7) << 8;			// set bits
+	data = (Bits & 0x7) << 8;
 	return(sis3302_writeAcquisitionControl(Module, data));
 }
 
-Bool_t sis3302_setLemoInEnableMask_db(struct s_sis_3302 * Module) { return(sis3302_setLemoOutMode(Module, Module->lemoInEnableMask); };
+Bool_t sis3302_setLemoInEnableMask_db(struct s_sis_3302 * Module) { return(sis3302_setLemoOutMode(Module, Module->lemoInEnableMask)); };
 
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -3030,32 +3448,21 @@ Bool_t sis3302_dataReady(struct s_sis_3302 * Module) {
 //! \return			NextSample	-- next sampling address
 ////////////////////////////////////////////////////////////////////////////*/
 
-Int_t sis3302_switchSampling(struct s_sis_3302 * Module, Int_t ChanNo) {
+void sis3302_switchSampling(struct s_sis_3302 * Module) {
 
-	Int_t nextSample;
-	Int_t currentPage;
-
-	if (Module->autoBankSwitch) {
-		if (Module->currentBank == kSis3302KeyArmBank1Sampling) {
-			Module->currentBank = kSis3302KeyArmBank2Sampling;
-			currentPage = 0;
-		} else {
-			Module->currentBank = kSis3302KeyArmBank1Sampling;
-			currentPage = 4;
-		}
-		sis3302_setPageRegister(Module, currentPage);
-		nextSample = sis3302_readPrevBankSampleAddr(Module, ChanNo);
+	Int_t pageNo;
+	Int_t sampling;
+	sampling = Module->currentSampling;
+	if (sampling == kSis3302KeyArmBank1Sampling) {
+		sampling = kSis3302KeyArmBank2Sampling;
+		pageNo = 0;
 	} else {
-		sis3302_setPageRegister(Module, 0);
-		sis3302_keyDisarmSample(Module);
-		nextSmaple = sis3302_readNextSampleAddr(Module, ChanNo);
-		Module->currentBank = kSis3302KeyArmBank1Sampling;
+		sampling = kSis3302KeyArmBank1Sampling;
+		pageNo = 4;
 	}
-	if (nextSample != 0xaffec0c0) {
-		nextSample &= 0x3FFFFC;
-		nextSample >>= 1;
-	}
-	return(nextSample);
+	sis3302_setPageReg(Module, pageNo);
+	sis3302_armSampling(Module, sampling);
+	Module->currentSampling = sampling;
 }
 
 /*________________________________________________________________[C FUNCTION]
@@ -3092,7 +3499,7 @@ Int_t sis3302_getPageRegister(struct s_sis_3302 * Module) {
 
 	offset = SIS3302_ADC_MEMORY_PAGE_REGISTER;
 	pageReg = (volatile Int_t *) sis3302_mapAddress(Module, offset);
-	if (pageReg == NULL) return(affec0c0);
+	if (pageReg == NULL) return(0xaffec0c0);
 
 	return (*pageReg);
 }

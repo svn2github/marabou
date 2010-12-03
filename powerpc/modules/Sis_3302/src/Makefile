@@ -1,12 +1,12 @@
-CC = gcc 
+CC = gcc
 
 PPCINC 		=	../../../include
 CESINC		=	/usr/include/ces
 RDOINC		=	../../../readout/inc
-LWRINC		=	../../../lwroot/inc
+C2LINC		=	../../../../c2lynx/inc
 MBSINC		=	$(MBSROOT)/inc
 
-CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I../inc -I$(LWRINC) -I$(RDOINC) -I$(PPCINC) -I$(MBSINC) -I$(CESINC)
+CFLAGS	=	-pipe -O3 -ansi -g -w -DR__LYNXOS -DCPU_TYPE_$(GSI_CPU_PLATFORM) -DLYNX_VERSION_$(LV_CPP) -I../inc -I$(RDOINC) -I$(PPCINC) -I$(MBSINC) -I$(CESINC) -I$(C2LINC)
 
 # ------------ Libaries ------------------------------------------------
 
@@ -25,13 +25,13 @@ libSis_3302.OBJS = sis_3302_fct.o sis_3302_readout.o block.o
 
 # ----- C Code ---------
 %.o: %.c
-	$(CC) $< -c $(CFLAGS) -o $@ 
+	$(CC) $< -c $(CFLAGS) -o $@
 
-.SUFFIXES: .o .c 
+.SUFFIXES: .o .c
 
 # ------------ Targets -------------------------------------------------
 
-all: $(LIB_TARGETS)$(CPPFLAGS) 
+all: $(LIB_TARGETS)$(CPPFLAGS)
 
 $(LIB_TARGETS): $(libSis_3302.OBJS)
 	$(AR) $(ARFLAGS) $@ $^

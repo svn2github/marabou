@@ -8,7 +8,7 @@
 // Class:          Sis3302        -- flash adc SIS3302
 // Description:    Class definitions for M2L server
 // Author:         R. Lutter
-// Revision:       $Id: SrvSis3302.h,v 1.4 2010-11-17 12:25:11 Marabou Exp $
+// Revision:       $Id: SrvSis3302.h,v 1.5 2010-12-03 08:18:17 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ class SrvSis3302 : public SrvVMEModule {
 		inline Bool_t KeyReset(SrvVMEModule * Module) { return(this->KeyAddr(Module, kSis3302KeyReset)); };
 		//! Exec KEY command: reset sample
 		//! \param[in]	Module	-- module address
-		inline Bool_t KeyResetSample(SrvVMEModule * Module) { return(this->KeyAddr(Module, kSis3302KeyResetSample)); };
+		inline Bool_t KeyResetSampling(SrvVMEModule * Module) { return(this->KeyAddr(Module, kSis3302KeyResetSampling)); };
 		//! Exec KEY command: generate trigger
 		//! \param[in]	Module	-- module address
 		inline Bool_t KeyTrigger(SrvVMEModule * Module) { return(this->KeyAddr(Module, kSis3302KeyTrigger)); };
@@ -74,7 +74,7 @@ class SrvSis3302 : public SrvVMEModule {
 		inline Bool_t KeyArmBank2Sampling(SrvVMEModule * Module) { return(this->KeyAddr(Module, kSis3302KeyArmBank2Sampling)); };
 		//! Exec KEY command: disarm sample
 		//! \param[in]	Module	-- module address
-		inline Bool_t KeyDisarmSample(SrvVMEModule * Module) { return(this->KeyAddr(Module, kSis3302KeyDisarmSample)); };
+		inline Bool_t KeyDisarmSampling(SrvVMEModule * Module) { return(this->KeyAddr(Module, kSis3302KeyDisarmSampling)); };
 
 		//! control and status
 		Bool_t ReadControlStatus(SrvVMEModule * Module, Int_t & Bits);

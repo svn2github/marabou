@@ -4,9 +4,9 @@
 // Purpose:        Code for module SIS3300
 // Description:    Supplies functions for SIS3300 digitizing ADC
 // Author:         R. Lutter (adopted from code written by L. Maier)
-// Revision:       
-// Date:           
-// Keywords:       
+// Revision:
+// Date:
+// Keywords:
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -305,16 +305,16 @@ void sis_3300_enable_bma(struct s_sis_3300 * s)
 {
 /* use blocktransfer */
 /* buffersize (in 32bit words) : Memory     = 131072 * 4    */
-/*                               TimeStamps = 1024 * 4          */ 
-/*                               TriggerReg = 1024 * 4          */ 
-	if (s->blockTransOn == 1) {  
+/*                               TimeStamps = 1024 * 4          */
+/*                               TriggerReg = 1024 * 4          */
+	if (s->blockTransOn == 1) {
 		s->bltBufferSize = BLT_BUFFER_SIZE;
 		if ((s->bma = bmaAlloc(s->bltBufferSize)) == NULL) {
  			sprintf(msg, "[enable_bma] %s, turning BlockXfer OFF", sys_errlist[errno]);
 			f_ut_send_msg("__sis_3300", msg, ERR__MSG_INFO, MASK__PRTT);
 			s->blockTransOn = 0;
 			return;
-		} 
+		}
 
 /* get bltBuffer */
 		s->bltBuffer = (unsigned char *) s->bma->virtBase;
@@ -327,7 +327,7 @@ void sis_3300_enable_bma(struct s_sis_3300 * s)
 
 void sis_3300_reset(struct s_sis_3300 * s)
 {
-	SET32(s->baseAddr, SIS_3300_KEY_RESET, 0x1);	
+	SET32(s->baseAddr, SIS_3300_KEY_RESET, 0x1);
 }
 
 void sis_3300_setStartDelay(struct s_sis_3300 * s, uint16_t delay)
@@ -403,13 +403,13 @@ uint32_t sis_3300_getEventTimeStamp(struct s_sis_3300 * s, uint8_t bank, uint16_
 		case 0:
 			return GET32(s->baseAddr, SIS_3300_BANK1_TIME_DIR + event * 4) & 0xffffff;
 			break;
-			
+
 		case 1:
 			return GET32(s->baseAddr, SIS_3300_BANK2_TIME_DIR + event * 4) & 0xffffff;
 			break;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -479,7 +479,7 @@ void sis_3300_setThreshold(struct s_sis_3300 * s, uint8_t channel, uint16_t valu
 {
 	uint32_t bits;
 	bits = value;
-	
+
 	switch (channel) {
 	case 0:
 			bits = bits << 16;
@@ -599,9 +599,9 @@ uint16_t sis_3300_getTriggerClearCounter(struct s_sis_3300 * s, uint8_t channelG
 	default:
 		counter = 0;
 	}
-	
+
 	return counter;
-} 
+}
 
 /* ------------- Clock Predivider Register ------------------------------ */
 
@@ -633,7 +633,7 @@ void sis_3300_setTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp, uint8
 {
 	uint32_t bits;
 	bits = ((uint32_t)value) << 8;
-	
+
 	switch (channelGrp) {
 	case 0:
 		bits |= (GET32(s->baseAddr, SIS_3300_TRIGGER_SETUP_ADC12) & 0xffff00ff);
@@ -659,7 +659,7 @@ void sis_3300_setTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp, uint8
 uint8_t sis_3300_getTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp)
 {
 	uint8_t gaptime;
-	
+
 	switch (channelGrp) {
 	case 0:
 		gaptime = (GET32(s->baseAddr, SIS_3300_TRIGGER_SETUP_ADC12) & 0xff00) >> 8;
@@ -677,7 +677,7 @@ uint8_t sis_3300_getTriggerGapTime(struct s_sis_3300 * s, uint8_t channelGrp)
 		gaptime = 0;
 		break;
 	}
-	
+
 	return gaptime;
 }
 
@@ -738,7 +738,7 @@ uint8_t sis_3300_getTriggerPeakingTime(struct s_sis_3300 * s, uint8_t channelGrp
 void sis_3300_setTriggerPulseLength(struct s_sis_3300 * s, uint8_t channelGrp, uint8_t value)
 {
 	uint32_t bits;
-	
+
 	bits = ((uint32_t)(value & 0x0f)) << 16;
 	switch (channelGrp) {
 	case 0:
@@ -763,29 +763,29 @@ void sis_3300_setTriggerPulseLength(struct s_sis_3300 * s, uint8_t channelGrp, u
 uint8_t sis_3300_getTriggerPulseLength(struct s_sis_3300 * s, uint8_t channelGrp)
 {
 	uint8_t pulselength;
-	
+
 	switch (channelGrp) {
 	case 0:
-		pulselength = 
+		pulselength =
 			(GET32(s->baseAddr, SIS_3300_TRIGGER_SETUP_ADC12) >> 16) & 0x0f;
 		break;
 	case 1:
-		pulselength = 
+		pulselength =
 			(GET32(s->baseAddr, SIS_3300_TRIGGER_SETUP_ADC34) >> 16) & 0x0f;
 		break;
 	case 2:
-		pulselength = 
+		pulselength =
 			(GET32(s->baseAddr, SIS_3300_TRIGGER_SETUP_ADC56) >> 16) & 0x0f;
 		break;
 	case 3:
-		pulselength = 
+		pulselength =
 			(GET32(s->baseAddr, SIS_3300_TRIGGER_SETUP_ADC78) >> 16) & 0x0f;
 		break;
 	default:
 		pulselength = 0;
 		break;
 	}
-	
+
 	return pulselength;
 }
 
@@ -808,7 +808,7 @@ void sis_3300_enableFIRTestEven(struct s_sis_3300 * s, uint8_t channelGrp)
 		break;
 	default:
 		break;
-	} 
+	}
 }
 
 void sis_3300_disableFIRTestEven(struct s_sis_3300 * s, uint8_t channelGrp)
@@ -828,13 +828,13 @@ void sis_3300_disableFIRTestEven(struct s_sis_3300 * s, uint8_t channelGrp)
 		break;
 	default:
 		break;
-	 } 
+	 }
 }
 
 uint8_t sis_3300_FIRTestEvenEnabled(struct s_sis_3300 * s, uint8_t channelGrp)
 {
 	uint8_t ret;
-	
+
 	switch (channelGrp) {
 	case 0:
 		ret = TSTB32(s->baseAddr,SIS_3300_TRIGGER_SETUP_ADC12, 20);
@@ -898,7 +898,7 @@ void sis_3300_disableFIRTestMode(struct s_sis_3300 * s, uint8_t channelGrp)
 uint8_t sis_3300_FIRTestModeEnabled(struct s_sis_3300 * s, uint8_t channelGrp)
 {
 	uint8_t ret;
-	
+
 	switch (channelGrp) {
 	case 0:
 		ret = TSTB32(s->baseAddr,SIS_3300_TRIGGER_SETUP_ADC12, 21);
@@ -920,20 +920,20 @@ uint8_t sis_3300_FIRTestModeEnabled(struct s_sis_3300 * s, uint8_t channelGrp)
 }
 
 void sis_3300_setTriggerMode(struct s_sis_3300 * s, uint8_t channel, uint8_t mode)
-{ 
+{
 	/* mode == 0: none, mode == 1: less, mode == 2 greater, mode == 3 both */
-	
+
 	uint8_t shift;
 	uint32_t bits;
 	uint32_t mask;
-		
+
 	bits = mode & 0x03;
 	mask = 0x03;
 	shift = ((channel % 2) == 0) ? 24 : 26;
-	
+
 	mask = ~(mask << shift);
 	bits = bits << shift;
- 
+
 	switch (channel) {
 	case 0:
 	case 1:
@@ -960,15 +960,15 @@ void sis_3300_setTriggerMode(struct s_sis_3300 * s, uint8_t channel, uint8_t mod
 
 uint8_t sis_3300_getTriggerMode(struct s_sis_3300 * s, uint8_t channel)
 { /* mode = 0: none, mode == 1: less, mode == 2 greater, mode == 3 both */
-	
+
 	uint8_t ret;
 	uint8_t shift;
 	uint32_t mask;
-	
+
 	mask = 0x03;
 	shift = ((channel % 2) == 0) ? 24 : 26;
 	mask = mask << shift;
-	
+
 	switch (channel) {
 	case 0:
 	case 1:
@@ -986,11 +986,11 @@ uint8_t sis_3300_getTriggerMode(struct s_sis_3300 * s, uint8_t channel)
 	case 7:
 		ret = (GET32(s->baseAddr, SIS_3300_TRIGGER_SETUP_ADC78) & mask) >> shift;
 		break;
-	default: 
+	default:
 		ret = 0;
 		break;
 	}
-	
+
 	return ret;
 }
 
@@ -1037,7 +1037,7 @@ void sis_3300_disablePulseMode(struct s_sis_3300 * s, uint8_t channel)
 uint8_t sis_3300_pulseModeEnabled(struct s_sis_3300 * s, uint8_t channel)
 {
 	uint8_t ret;
-	
+
 	switch (channel) {
 	case 0:
 		ret = TSTB32(s->baseAddr,SIS_3300_TRIGGER_SETUP_ADC12, 28);
@@ -1051,7 +1051,7 @@ uint8_t sis_3300_pulseModeEnabled(struct s_sis_3300 * s, uint8_t channel)
 	case 3:
 		ret = TSTB32(s->baseAddr,SIS_3300_TRIGGER_SETUP_ADC78, 28);
 		break;
-		
+
 	default:
 		ret = 0;
 		break;
@@ -1102,7 +1102,7 @@ void sis_3300_disableFIRTrigger(struct s_sis_3300 * s, uint8_t channelGrp)
 uint8_t sis_3300_FIRTriggerEnabled(struct s_sis_3300 * s, uint8_t channel)
 {
 	uint8_t ret;
-	
+
 	switch (channel) {
 	case 0:
 		ret = TSTB32(s->baseAddr,SIS_3300_TRIGGER_SETUP_ADC12, 31);
@@ -1120,7 +1120,7 @@ uint8_t sis_3300_FIRTriggerEnabled(struct s_sis_3300 * s, uint8_t channel)
 		ret = 0;
 		break;
 	}
-	
+
 	return (ret != 0 ? 1 : 0);
 }
 
@@ -1142,7 +1142,7 @@ uint32_t sis_3300_getTriggerSetupRegister(struct s_sis_3300 * s, uint8_t channel
 	default:
 		break;
 	}
-	
+
 	return 0;
 }
 
@@ -1191,7 +1191,7 @@ void sis_3300_disarmBank(struct s_sis_3300 * s, uint8_t bank)
 uint8_t sis_3300_bankArmed(struct s_sis_3300 * s, uint8_t bank)
 {
 	uint8_t armed;
-	
+
 	switch (bank) {
 	case 0:
 		armed =
@@ -1205,7 +1205,7 @@ uint8_t sis_3300_bankArmed(struct s_sis_3300 * s, uint8_t bank)
 		armed = 0;
 		break;
 	}
-	
+
 	return (armed != 0 ? 1 : 0);
 }
 
@@ -1349,7 +1349,7 @@ void sis_3300_setClockSource(struct s_sis_3300 * s, uint8_t mode)
 	if (mode <= 7) {
 		/* first you have to clear all clock sources */
 		SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_CLEAR_CLKSRC);
-		
+
 		switch (mode) {
 		case 0:
 			SET32(s->baseAddr, SIS_3300_ACQ_CONTROL, SIS_3300_ACQ_CLKSRC0);
@@ -1391,7 +1391,7 @@ uint8_t sis_3300_getADC_BUSY(struct s_sis_3300 * s)
 
 uint8_t sis_3300_getBankSwitchBusy(struct s_sis_3300 * s)
 {
-	return ((GET32(s->baseAddr, SIS_3300_ACQ_CONTROL) & 0x40000) != 0 ? 1 : 0); 
+	return ((GET32(s->baseAddr, SIS_3300_ACQ_CONTROL) & 0x40000) != 0 ? 1 : 0);
 }
 
 uint8_t sis_3300_getBankBusy(struct s_sis_3300 * s, uint8_t bank)
@@ -1405,7 +1405,7 @@ uint8_t sis_3300_getBankBusy(struct s_sis_3300 * s, uint8_t bank)
 	default:
 		break;
 	}
-	
+
 	return 0;
 }
 
@@ -1421,7 +1421,7 @@ uint8_t sis_3300_getBankFull(struct s_sis_3300 * s, uint8_t bank)
 	default:
 		break;
 	}
-	
+
 	return 0;
 }
 
@@ -1551,14 +1551,14 @@ uint8_t sis_3300_getP2_SAMPLE_IN(struct s_sis_3300 * s)
 
 /* -------- IRQ Config Register ----------------------------------------- */
 
-void	sis_3300_enableVMEIRQ(struct s_sis_3300 * s) 
+void	sis_3300_enableVMEIRQ(struct s_sis_3300 * s)
 {
- SET32(s->baseAddr, SIS_3300_IRQ_CONFIG, SIS_3300_IRQ_ENABLE); 
+ SET32(s->baseAddr, SIS_3300_IRQ_CONFIG, SIS_3300_IRQ_ENABLE);
 }
 
-void	sis_3300_enableROAKIRQ(struct s_sis_3300 * s) 
+void	sis_3300_enableROAKIRQ(struct s_sis_3300 * s)
 {
- SET32(s->baseAddr, SIS_3300_IRQ_CONFIG, SIS_3300_IRQ_ROAK); 
+ SET32(s->baseAddr, SIS_3300_IRQ_CONFIG, SIS_3300_IRQ_ROAK);
 }
 
 
@@ -1574,7 +1574,7 @@ void sis_3300_enableIRQ(struct s_sis_3300 * s, uint8_t source)
 		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_ENABLE1);
 		break;
 	case 2:
-		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_ENABLE2);	
+		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_ENABLE2);
 		break;
 	case 3:
 		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_ENABLE3);
@@ -1592,7 +1592,7 @@ void sis_3300_disableIRQ(struct s_sis_3300 * s, uint8_t source)
 		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_DISABLE1);
 		break;
 	case 2:
-		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_DISABLE2);	
+		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_DISABLE2);
 		break;
 	case 3:
 		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_DISABLE3);
@@ -1603,7 +1603,7 @@ void sis_3300_disableIRQ(struct s_sis_3300 * s, uint8_t source)
 uint8_t sis_3300_IRQEnabled(struct s_sis_3300 * s, uint8_t source)
 {
 	uint8_t ret = 0;
-	
+
 	switch (source) {
 	case 0:
 		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_ENABLE0;
@@ -1612,13 +1612,13 @@ uint8_t sis_3300_IRQEnabled(struct s_sis_3300 * s, uint8_t source)
 		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_ENABLE1;
 		break;
 	case 2:
-		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_ENABLE2;	
+		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_ENABLE2;
 		break;
 	case 3:
 		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_ENABLE3;
 		break;
 	}
-	
+
 	return (ret != 0) ? 1 : 0;
 }
 
@@ -1632,7 +1632,7 @@ void sis_3300_clearIRQ(struct s_sis_3300 * s, uint8_t source)
 		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_DISABLE1 << 4);
 		break;
 	case 2:
-		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_DISABLE2 << 4);	
+		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_DISABLE2 << 4);
 		break;
 	case 3:
 		SET32(s->baseAddr, SIS_3300_IRQ_CONTROL, SIS_3300_IRQ_DISABLE3 << 4);
@@ -1643,26 +1643,26 @@ void sis_3300_clearIRQ(struct s_sis_3300 * s, uint8_t source)
 uint8_t sis_3300_getIRQStatusFlag(struct s_sis_3300 * s, uint8_t source)
 {
 	uint8_t ret = 0;
-	
+
 	switch (source) {
 	case 0:
-		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & 
+		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) &
 			(SIS_3300_IRQ_DISABLE0 << 4);
 		break;
 	case 1:
-		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & 
+		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) &
 			(SIS_3300_IRQ_DISABLE0 << 4);
 		break;
 	case 2:
-		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & 
-			(SIS_3300_IRQ_DISABLE0 << 4);	
+		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) &
+			(SIS_3300_IRQ_DISABLE0 << 4);
 		break;
 	case 3:
-		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & 
+		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) &
 			(SIS_3300_IRQ_DISABLE0 << 4);
 		break;
 	}
-	
+
 	return (ret != 0) ? 1 : 0;
 }
 
@@ -1670,7 +1670,7 @@ uint8_t sis_3300_getIRQStatusFlag(struct s_sis_3300 * s, uint8_t source)
 uint8_t sis_3300_getIRQStatus(struct s_sis_3300 * s, uint8_t source)
 {
 	uint8_t ret = 0;
-	
+
 	switch (source) {
 	case 0:
 		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_SOURCE0_STAT;
@@ -1679,14 +1679,14 @@ uint8_t sis_3300_getIRQStatus(struct s_sis_3300 * s, uint8_t source)
 		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_SOURCE1_STAT;
 		break;
 	case 2:
-		ret = GET32(s->baseAddr, 
-										SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_SOURCE2_STAT;	
+		ret = GET32(s->baseAddr,
+										SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_SOURCE2_STAT;
 		break;
 	case 3:
 		ret = GET32(s->baseAddr, SIS_3300_IRQ_CONTROL) & SIS_3300_IRQ_SOURCE3_STAT;
 		break;
 	}
-	
+
 	return (ret != 0) ? 1 : 0;
 }
 
@@ -1708,11 +1708,11 @@ uint32_t sis_3300_getTriggerEventDirectory(struct s_sis_3300 * s, uint8_t bank,
 	if (event < 1024) {
 		switch (bank) {
 		case 0:
-			return 
+			return
 				GET32(s->baseAddr, SIS_3300_EVENT_DIRECTORY_BANK1_ALL_ADC + event * 4);
 			break;
 		case 1:
-			return	
+			return
 				GET32(s->baseAddr, SIS_3300_EVENT_DIRECTORY_BANK2_ALL_ADC + event * 4);
 			break;
 		}
@@ -1722,13 +1722,13 @@ uint32_t sis_3300_getTriggerEventDirectory(struct s_sis_3300 * s, uint8_t bank,
 
 uint8_t sis_3300_getEventWrap(struct s_sis_3300 * s, uint8_t bank, uint16_t event)
 {
-	return (sis_3300_getTriggerEventDirectory(s, bank, event) & 0x80000) >> 19; 
+	return (sis_3300_getTriggerEventDirectory(s, bank, event) & 0x80000) >> 19;
 }
 
 
 uint32_t sis_3300_getPageBegin(struct s_sis_3300 * s, uint8_t bank, uint8_t channelGrp, uint16_t event)
 {
-	
+
 	uint32_t offset = event * sis_3300_getPageSizeVal(s) * 4;
 	switch (bank) {
 	case 0:
@@ -1744,7 +1744,7 @@ uint32_t sis_3300_getPageBegin(struct s_sis_3300 * s, uint8_t bank, uint8_t chan
 		default:
 			return 0;
 		}
-		
+
 	case 1:
 		switch (channelGrp) {
 		case 0:
@@ -1759,7 +1759,7 @@ uint32_t sis_3300_getPageBegin(struct s_sis_3300 * s, uint8_t bank, uint8_t chan
 			return 0;
 		}
 	}
-	
+
 	return 0;
 }
 
@@ -1770,8 +1770,8 @@ uint32_t sis_3300_getPageEnd(struct s_sis_3300 * s, uint8_t bank, uint8_t channe
 
 
 uint32_t sis_3300_getEventEnd(struct s_sis_3300 * s, uint8_t bank, uint8_t channelGrp, uint16_t event)
-{															 
-	return	sis_3300_getPageBegin(s, bank, channelGrp, 0) + 
+{
+	return	sis_3300_getPageBegin(s, bank, channelGrp, 0) +
 		4 * ((sis_3300_getTriggerEventDirectory(s, bank, event) & 0x01ffff));
 }
 
@@ -1779,17 +1779,17 @@ uint32_t sis_3300_getAddressCounter(struct s_sis_3300 * s, uint8_t bank)
 {
 	switch (bank) {
 	case 0:
-		return 
-			GET32(s->baseAddr, SIS_3300_BANK1_GROUP1_ADR_COUNTER) & 0x01ffff;			
+		return
+			GET32(s->baseAddr, SIS_3300_BANK1_GROUP1_ADR_COUNTER) & 0x01ffff;
 		break;
 	case 1:
-		return 
+		return
 			GET32(s->baseAddr, SIS_3300_BANK2_GROUP1_ADR_COUNTER) & 0x01ffff;
 		break;
 	default:
 		break;
 	}
-	
+
 	return 0;
 }
 
@@ -1800,7 +1800,7 @@ uint16_t sis_3300_getEventCounter(struct s_sis_3300 * s, uint8_t bank)
 	switch (bank) {
 	case 0:
 		/* all groups contain same no. of events */
-		evtCnt = GET32(s->baseAddr, SIS_3300_BANK1_GROUP1_EVT_COUNTER) & 0x0fff; 
+		evtCnt = GET32(s->baseAddr, SIS_3300_BANK1_GROUP1_EVT_COUNTER) & 0x0fff;
 		break;
 	case 1:
 		evtCnt = GET32(s->baseAddr, SIS_3300_BANK2_GROUP1_EVT_COUNTER) & 0x0fff;
@@ -1808,7 +1808,7 @@ uint16_t sis_3300_getEventCounter(struct s_sis_3300 * s, uint8_t bank)
 	default:
 		break;
 	}
-	
+
 	return (evtCnt > 0) ? evtCnt - 1 : 0;
 }
 
@@ -1816,21 +1816,21 @@ uint32_t sis_3300_getActualSampleValue(struct s_sis_3300 * s, uint8_t channelGrp
 {
 	switch (channelGrp) {
 	case 0:
-		return	GET32(s->baseAddr, SIS_3300_ACTUAL_SAMPLE_VALUE_ADC12); 
+		return	GET32(s->baseAddr, SIS_3300_ACTUAL_SAMPLE_VALUE_ADC12);
 		break;
 	case 1:
-		return	GET32(s->baseAddr, SIS_3300_ACTUAL_SAMPLE_VALUE_ADC34); 
+		return	GET32(s->baseAddr, SIS_3300_ACTUAL_SAMPLE_VALUE_ADC34);
 		break;
 	case 2:
-		return	GET32(s->baseAddr, SIS_3300_ACTUAL_SAMPLE_VALUE_ADC56); 
+		return	GET32(s->baseAddr, SIS_3300_ACTUAL_SAMPLE_VALUE_ADC56);
 		break;
 	case 3:
-		return	GET32(s->baseAddr, SIS_3300_ACTUAL_SAMPLE_VALUE_ADC78); 
+		return	GET32(s->baseAddr, SIS_3300_ACTUAL_SAMPLE_VALUE_ADC78);
 		break;
 	default:
 		break;
 	}
-	
+
 	return 0;
 }
 
@@ -1839,7 +1839,7 @@ uint32_t sis_3300_getActualSampleValue(struct s_sis_3300 * s, uint8_t channelGrp
 float sis_3300_getFrequency(struct s_sis_3300 * s)
 {
 	float freq;
-	
+
 	switch (sis_3300_getClockSource(s)) {
 	case 0x0:
 		freq = 100;
@@ -1898,7 +1898,7 @@ uint32_t sis_3300_getPageSizeVal(struct s_sis_3300 * s)
 		pagesize = 0x20000;
 		break;
 	}
-	
+
 	return pagesize;
 }
 
@@ -1907,7 +1907,7 @@ uint32_t sis_3300_getPageSizeVal(struct s_sis_3300 * s)
 int sis_3300_initialize(struct s_sis_3300 * s)
 {
 	uint16_t ch;
-	
+
 	sis_3300_reset(s);
 
 	switch (s->acqMode) {
@@ -1917,13 +1917,13 @@ int sis_3300_initialize(struct s_sis_3300 * s)
 		sis_3300_setPageSize(s, s->pageSize);
 		s->maxNumEvts = 0;
 		break;
-		
+
 	case SIS_3300_MULTI_EVT:
 		sis_3300_enableMultiEventMode(s);
 		sis_3300_disableGateChaining(s);
 		sis_3300_setPageSize(s, s->pageSize);
 		break;
-		
+
 	case SIS_3300_GATE_CHAINING:
 		sis_3300_enableMultiEventMode(s);
 		sis_3300_enableFrontPanelGateMode(s);
@@ -1933,17 +1933,17 @@ int sis_3300_initialize(struct s_sis_3300 * s)
 		s->wrapAround = 0;
 		s->triggerRouting = 0;
 		break;
-		
+
 	default:
 		break;
 	}
-		
+
 	sis_3300_setClockSource(s, s->clockSource);
-	
+
 	if (s->maxNumEvts != 0) {
 		sis_3300_setMaxNumberOfEvents(s, s->maxNumEvts);
 	}
-	if (s->startDelay != 0) { 
+	if (s->startDelay != 0) {
 		sis_3300_setStartDelay(s, s->startDelay);
 		sis_3300_enableStartDelay(s);
 	}
@@ -1962,7 +1962,7 @@ int sis_3300_initialize(struct s_sis_3300 * s)
 	}
 	if (s->autoStart) {
 		sis_3300_enableAutostart(s);
-	}	
+	}
 	if (s->wrapAround) {
 		sis_3300_enableWrapAroundMode(s);
 	}
@@ -1978,7 +1978,7 @@ int sis_3300_initialize(struct s_sis_3300 * s)
 	if (s->triggerRouting) {
 		sis_3300_enableTriggerRouting(s);
 	}
-	
+
 	for (ch = 0; ch < 8; ch++) {
 		uint8_t chGrp = ch / 2;
 		if (s->triggerOn[chGrp] > 0) {
@@ -1986,13 +1986,13 @@ int sis_3300_initialize(struct s_sis_3300 * s)
 			sis_3300_setTriggerGapTime(s, chGrp, s->gapTime[chGrp]);
 			sis_3300_setThreshold(s, ch, s->threshold[ch]);
 			sis_3300_setTriggerMode(s, ch, s->triggerMode[ch]);
-			
+
 			if ((ch % 2) == 1) {
 				if (s->triggerOn[chGrp] == 2) {
 					sis_3300_enableFIRTestEven(s, chGrp);
 					sis_3300_enableFIRTestMode(s, chGrp);
 				} else if (s->triggerOn[chGrp] == 3) {
-					sis_3300_disableFIRTestEven(s, chGrp);	
+					sis_3300_disableFIRTestEven(s, chGrp);
 					sis_3300_enableFIRTestMode(s, chGrp);
 				}
 				if (s->pulsMode[chGrp] != 0) {
@@ -2002,7 +2002,7 @@ int sis_3300_initialize(struct s_sis_3300 * s)
 				sis_3300_enableFIRTrigger(s, chGrp);
 			}
 		}
-	}		
+	}
 
 	if (s->blockTransOn == 1) sis_3300_enable_bma(s);
 
@@ -2014,7 +2014,7 @@ int sis_3300_initialize(struct s_sis_3300 * s)
 
 static char * showBits(uint32_t val)
 {
-	static char buffer[64]; 
+	static char buffer[64];
 	unsigned int c;
 	int i;
 
@@ -2024,7 +2024,7 @@ static char * showBits(uint32_t val)
 		}
 		buffer[c++] = (val >> i) & 0x01 ? '1' : '0';
 	}
-	
+
 	buffer[c++] = '\0';
 
 	return buffer;
@@ -2044,22 +2044,22 @@ void sis_3300_dumpRegisters(struct s_sis_3300 * s)
 
 	sprintf(fileName, "%s_dump.dat", s->moduleName);
 	f = fopen(fileName,	"w");
-	fprintf(f, "ModuleId: 0x%04x	Revision: 0x%04x\n", 
+	fprintf(f, "ModuleId: 0x%04x	Revision: 0x%04x\n",
 					sis_3300_getRevision(s) >> 16 & 0xffff,
-					sis_3300_getRevision(s) & 0xffff); 
-	fprintf(f, "Control Register:\n0x%08x\t%s\n", 
+					sis_3300_getRevision(s) & 0xffff);
+	fprintf(f, "Control Register:\n0x%08x\t%s\n",
 					GET32(s->baseAddr, SIS_3300_CONTROL),
 					showBits(GET32(s->baseAddr, SIS_3300_CONTROL))
 					);
-	
-	fprintf(f, "Acquisition Control Register:\n0x%08x\t%s\n", 
+
+	fprintf(f, "Acquisition Control Register:\n0x%08x\t%s\n",
 					GET32(s->baseAddr, SIS_3300_ACQ_STATUS),
 					showBits(GET32(s->baseAddr, SIS_3300_ACQ_STATUS))
 					);
 
-	fprintf(f, "Bank0 armed: %d\n", 
+	fprintf(f, "Bank0 armed: %d\n",
 					sis_3300_bankArmed(s, 0));
-	fprintf(f, "Bank1 armed: %d\n", 
+	fprintf(f, "Bank1 armed: %d\n",
 					sis_3300_bankArmed(s, 1));
 	fprintf(f, "Maximum number Events: %d (%d)\n",
 					sis_3300_getMaxNumberOfEvents(s), s->maxNumEvts);
@@ -2081,20 +2081,20 @@ void sis_3300_dumpRegisters(struct s_sis_3300 * s)
 					sis_3300_inverseTriggerOutEnabled(s));
 	fprintf(f, "BankFullLemoOut: %d\n",
 					sis_3300_bankFullLemoEnabled(s));
-	fprintf(f, "Clock Source: %d ( ^= %f Hz)\n", 
+	fprintf(f, "Clock Source: %d ( ^= %f Hz)\n",
 					sis_3300_getClockSource(s),
 					sis_3300_getFrequency(s));
 	fprintf(f, "Start Delay: %d\n", sis_3300_getStartDelay(s));
 	fprintf(f, "Stop Delay: %d\n", sis_3300_getStopDelay(s));
 	fprintf(f, "Time Stamp Predivider: %d\n",
 					sis_3300_getTimeStampPredivider(s));
-	fprintf(f, "Page Size: %d (^= %d samples)\n", 
+	fprintf(f, "Page Size: %d (^= %d samples)\n",
 					sis_3300_getPageSize(s),
-					sis_3300_getPageSizeVal(s)); 
+					sis_3300_getPageSizeVal(s));
 	fprintf(f, "Event Configuration Register: \n0x%08x\t%s\n",
 					GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG),
 					showBits(GET32(s->baseAddr, SIS_3300_GROUP1_EVT_CONFIG))
-					); 
+					);
 	for (i = 0; i < NOF_CHANNELS; i++) {
 		fprintf(f, "Threshold channel %d: %d\t"
 						"Trigger Mode: 0x%02x\n", i,
@@ -2104,22 +2104,22 @@ void sis_3300_dumpRegisters(struct s_sis_3300 * s)
 	}
 	fprintf(f, "Clock Predivider Register: %d\n",
 					sis_3300_getClockPredivider(s));
-	
+
 	fprintf(f, "Number of Samples Register: %d\n\n",
 					sis_3300_getNumberOfSamples(s));
 	for (i = 0; i < NOF_GROUPS; i++) {
 		fprintf(f, "Trigger Setup Register channelGrp: %d\n", i);
-		fprintf(f, "0x%08x\t%s\n", 
+		fprintf(f, "0x%08x\t%s\n",
 						sis_3300_getTriggerSetupRegister(s, i),
 						showBits(sis_3300_getTriggerSetupRegister(s, i)));
-		fprintf(f, "TriggerPulseLength: %d\n", 
+		fprintf(f, "TriggerPulseLength: %d\n",
 						sis_3300_getTriggerPulseLength(s, i));
-		fprintf(f, "TriggerGapTime: %d\n", 
+		fprintf(f, "TriggerGapTime: %d\n",
 						sis_3300_getTriggerGapTime(s, i));
-		fprintf(f, "TriggerPeakingTime: %d\n", 
+		fprintf(f, "TriggerPeakingTime: %d\n",
 						sis_3300_getTriggerPeakingTime(s, i));
 		fprintf(f, "TestEven: %d	FIRTestMode: %d	PulseMode: %d	"
-						"FIRTrigger: %d\n", 
+						"FIRTrigger: %d\n",
 						sis_3300_FIRTestEvenEnabled(s, i),
 						sis_3300_FIRTestModeEnabled(s, i),
 						sis_3300_pulseModeEnabled(s, i),
