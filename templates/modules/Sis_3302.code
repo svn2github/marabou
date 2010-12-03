@@ -1,0 +1,159 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           Sis_3302.code
+// Purpose:        Code for digitizing adc SIS 3302
+// Description:    Contains template code to operate a SIS 3302 module
+// Author:         R. Lutter
+// Revision:
+// Date:
+// Keywords:
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+#include "sis_3302.h"
+#include "sis_3302_protos.h"
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					s_$moduleName = sis3302_alloc($baseAddrL, $moduleName, "$moduleName", $moduleSerial); /* allocate data struct */
+ 					moduleTable[kMrbModule$moduleName - 1].devStruct = (void *) s_$moduleNameLC;
+					sis3302_module_info(s_$moduleName);						/* read module info */
+					sis3302_fill_struct(s_$moduleName, "$settingsFile");		/* fill sis struct from environment data */
+					sis3302_setActiveChannels(s_$moduleNameLC, $chnPattern); 	/* define active channels */
+					sis3302_loadFromDb(s_$moduleNameLC);			 			/* load module regs from database */
+					sis3302_reset(s_$moduleName);								/* reset module */
+					sis3302_setTracingMode(s_$moduleName, $tracingMode);		/* set tracing $onoff */
+					sis3302_resetSampling(s_$moduleName);						/* reset sampling */
+					sis3302_clearTimestamp(s_$moduleName);						/* reset time stamp */
+					sis3302_dumpRegisters(s_$moduleName);						/* dump registers */
+
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					if (sis3302_dataReady(s_$moduleName)) {
+						sis3302_switchSampling(s_$moduleName);
+						evt.out32 += sis3302_readout(s_$moduleName, (uint32_t *) evt.out32);
+					}
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+					sis3302_saveTraceLength(s_$moduleName);
+					sis3302_setEndAddress(s_$moduleName, $nofEvents);
+					sis3302_clearTimestamp(s_$moduleName);
+					sis3302_armSampling(s_$moduleName, kSis3302KeyArmBank1Sampling);
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+					sis3302_disarmSampling(s_$moduleName);
+					sis3302_restoreTraceLength(s_$moduleName);
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+static struct s_sis_3302 * s_$moduleName;
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_INCLUDE_PATHS%%
+
+%%BeginOfCode%%
+	-L/nfs/marabou/lib -lSis_3302
+%%EndOfCode%%
+%%DEFINE_LIBRARIES%%
+
