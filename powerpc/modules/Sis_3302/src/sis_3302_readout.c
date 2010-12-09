@@ -37,7 +37,7 @@
 //! \return 		Length			-- length of data xferred (32 bit words))
 ////////////////////////////////////////////////////////////////////////////*/
 
-int sis_3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
+Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 {
 	  UInt_t * pointer;
 	  UInt_t * pointerBegin;

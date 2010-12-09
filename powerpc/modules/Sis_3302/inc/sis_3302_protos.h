@@ -10,8 +10,8 @@
 //! \details		Prototypes for SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $
-//! $Date: 2010-12-03 13:25:24 $
+//! $Revision: 1.5 $
+//! $Date: 2010-12-09 11:43:39 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*! Alloc database for SIS3302 module */
@@ -66,7 +66,7 @@ Bool_t sis3302_disarmSampling(struct s_sis_3302 * Module);
 /*! set/restore trace length */
 void sis3302_setTracingMode(struct s_sis_3302 * Module, Bool_t OnFlag);
 void sis3302_adjustTraceLength(struct s_sis_3302 * Module);
-void sis3302_restoreTraceLengthFromDb(struct s_sis_3302 * Module);
+void sis3302_restoreTraceLength(struct s_sis_3302 * Module);
 
 /*! set fifo limit */
 void sis3302_setEndAddress(struct s_sis_3302 * Module, Int_t NofEvents);
@@ -79,10 +79,8 @@ Bool_t sis3302_writeControlStatus_db(struct s_sis_3302 * Module);
 /*! event configuration */
 UInt_t sis3302_readEventConfig(struct s_sis_3302 * Module, Int_t ChanNo);
 Bool_t sis3302_writeEventConfig(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo);
-Bool_t sis3302_writeEventConfig_db(struct s_sis_3302 * Module, Int_t ChanNo);
 UInt_t sis3302_readEventExtendedConfig(struct s_sis_3302 * Module, Int_t ChanNo);
 Bool_t sis3302_writeEventExtendedConfig(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo);
-Bool_t sis3302_writeEventExtendedConfig_db(struct s_sis_3302 * Module, Int_t ChanNo);
 
 /*! event header & group id */
 Bool_t sis3302_setHeaderBits(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo);
@@ -223,6 +221,9 @@ Int_t sis3302_getLemoInEnableMask(struct s_sis_3302 * Module);
 Bool_t sis3302_setLemoInEnableMask(struct s_sis_3302 * Module, Int_t Bits);
 Bool_t sis3302_setLemoInEnableMask_db(struct s_sis_3302 * Module);
 
+/*! read traces and/or energy data */
+Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer);
+
 /*! internal functions */
 UInt_t sis3302_readPreTrigDelayAndGateLength(struct s_sis_3302 * Module, Int_t ChanNo);
 Bool_t sis3302_writePreTrigDelayAndGateLength(struct s_sis_3302 * Module, UInt_t Bits, Int_t ChanNo);
@@ -255,7 +256,6 @@ Bool_t sis3302_setPageReg(struct s_sis_3302 * Module, Int_t PageNo);
 Int_t sis3302_getPageReg(struct s_sis_3302 * Module);
 
 Bool_t sis3302_checkChannelNo(struct s_sis_3302 * Module, Char_t * Caller, Int_t ChanNo);
-Bool_t sis3302_checkTraceCollectionInProgress(struct s_sis_3302 * Module, Char_t * Caller);
 
 void sis3302_setStatus(struct s_sis_3302 * Module, UInt_t Bits);
 void sis3302_clearStatus(struct s_sis_3302 * Module, UInt_t Bits);

@@ -10,7 +10,7 @@
 // R. Lutter, Apr 2007                                                  //
 //                                                                      //
 // !!!! This header file will be used for C++ *AND* C as well           //
-// !!!! Please use  C style /*... comments only                         //
+// !!!! Please use C style comments only                                //
 ////////////////////////////////////////////////////////////////////////*/
 
 	enum ESis3302	{			/* DAC register */

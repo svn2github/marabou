@@ -10,8 +10,8 @@
 //! \details		Structures describing a SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.2 $
-//! $Date: 2010-12-03 08:18:17 $
+//! $Revision: 1.3 $
+//! $Date: 2010-12-09 11:43:39 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -58,8 +58,6 @@ struct s_sis_3302 {
 	Int_t dacValues[NOF_CHANNELS];
 
 	UInt_t controlStatus;
-	UInt_t evtConf[NOF_GROUPS];
-	UInt_t xEvtConf[NOF_GROUPS];
 	UInt_t headerBits[NOF_GROUPS];
 	UInt_t triggerMode[NOF_CHANNELS];
 	UInt_t gateMode[NOF_CHANNELS];

@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.12 $
-//! $Date: 2010-12-03 08:18:17 $
+//! $Revision: 1.13 $
+//! $Date: 2010-12-09 11:43:39 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -1164,14 +1164,7 @@ Bool_t SrvSis3302::SetHeaderBits(SrvVMEModule * Module, Int_t & Bits, Int_t Chan
 		return(kFALSE);
 	}
 
-	if (Bits & 0x3) {
-		gMrbLog->Err()	<< "[" << Module->GetName() << "]: Illegal header data - " << setbase(16) << Bits
-						<< " (group id bits 0 & 1 are READ ONLY)" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetHeaderBits");
-		return(kFALSE);
-	}
-
-	Bits >>= 2;			// bits 1 & 2 are read-only
+	Bits &= ~0x3;			// bits 1 & 2 are read-only
 
 	if (ChanNo == kSis3302AllChans) {
 		Int_t b;
@@ -1544,12 +1537,10 @@ Bool_t SrvSis3302::SetPolarity(SrvVMEModule * Module, Bool_t & InvertFlag, Int_t
 
 	Int_t data;
 	if (!this->ReadEventConfig(Module, data, ChanNo)) return(kFALSE);
-	if (ChanNo & 1) {
-		if (InvertFlag) data |= (kSis3302PolarityNegative << 8); else data &= ~(kSis3302PolarityNegative << 8);
-	} else {
-		data &= ~1;
-		if (InvertFlag) data |= kSis3302PolarityNegative; else data &= ~kSis3302PolarityNegative;
-	}
+
+	UInt_t mask = (ChanNo & 1) ? (kSis3302PolarityNegative << 8) : kSis3302PolarityNegative;
+	if (InvertFlag) data |= mask; else data &= ~mask;
+
 	if (!this->WriteEventConfig(Module, data, ChanNo)) return(kFALSE);
 
 	return(kTRUE);
@@ -4194,13 +4185,6 @@ Bool_t SrvSis3302::RampDac(SrvVMEModule * Module, TArrayI & Data, Int_t ChanNo) 
 	}
 	this->WriteDac(Module, dacSaved, kSis3302AllChans);
 }
-
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-//! \details		Check if data ready
-//! \param[in]		Module		-- module address
-//! \return 		TRUE or FALSE
-//////////////////////////////////////////////////////////////////////////////
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
