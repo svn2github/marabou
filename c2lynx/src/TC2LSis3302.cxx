@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TC2LSis3302.cxx,v 1.20 2010-11-17 12:25:11 Marabou Exp $
-// Date:           $Date: 2010-11-17 12:25:11 $
+// Revision:       $Id: TC2LSis3302.cxx,v 1.21 2010-12-10 15:25:19 Marabou Exp $
+// Date:           $Date: 2010-12-10 15:25:19 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -723,7 +723,8 @@ Bool_t TC2LSis3302::RestoreSettings(const Char_t * SettingsFile) {
 	}
 
 	TMrbResource * settings = new TMrbResource("SIS3302", settingsFile.Data());
-	TString moduleName = settings->Get(".ModuleName", "");
+	TString moduleName;
+	settings->Get(moduleName, ".ModuleName", "");
 	if (moduleName.IsNull()) {
 		gMrbLog->Err()	<< "[" << settingsFile << "] Wrong format - module name missing" << endl;
 		gMrbLog->Flush("RestoreSettings");

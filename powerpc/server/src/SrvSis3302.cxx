@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.13 $
-//! $Date: 2010-12-09 11:43:39 $
+//! $Revision: 1.14 $
+//! $Date: 2010-12-10 15:25:19 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -3998,7 +3998,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 
 	Int_t startAddr = SIS3302_ADC1_OFFSET + ChanNo * SIS3302_NEXT_ADC_OFFSET + evtStart;
 
-	volatile Int_t * mappedAddr = (Int_t *) Module->MapAddress(startAddr);
+	volatile Int_t * mappedAddr = (volatile Int_t *) Module->MapAddress(startAddr);
 	if (mappedAddr == NULL) return(kFALSE);
 
 	gSignalTrap = kFALSE;
@@ -4010,7 +4010,7 @@ Bool_t SrvSis3302::GetTraceData(SrvVMEModule * Module, TArrayI & Data, Int_t & E
 	Int_t k = kSis3302EventPreHeader;
 	for (Int_t evtNo = evtFirst; evtNo <= evtLast; evtNo++) {
 
-		for (Int_t i = 0; i < kSis3302EventHeader; i++, k++) Data[k] = *mappedAddr++;								// event header: 32bit words
+		for (Int_t i = 0; i < kSis3302EventHeader; i++, k++) Data[k] = *mappedAddr++;			// event header: 32bit words
 
 		for (Int_t i = 0; i < rdl / 2; i++, k += 2) {			// raw data: fetch 2 samples packed in 32bit, store each in a single 32bit word
 			UInt_t d = *mappedAddr++;

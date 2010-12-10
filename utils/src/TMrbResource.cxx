@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbResource.cxx,v 1.5 2010-03-10 12:08:11 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbResource.cxx,v 1.6 2010-12-10 15:25:19 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -97,12 +97,13 @@ void TMrbResource::AddPrefix(const Char_t * Prefix) {
 	while (prefStr.Tokenize(prefix, from, ":")) fLofPrefixes.Add(new TObjString(prefix.Data()));
 }
 
-const Char_t * TMrbResource::Get(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, const Char_t * Default) {
+const Char_t * TMrbResource::Get(TString & Result, const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, const Char_t * Default) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbResource::Get()
 // Purpose:        Get a value from environment
-// Arguments:      Char_t * Res1      -- resource 1
+// Arguments:      TString & Result   -- result
+//                 Char_t * Res1      -- resource 1
 //                 Char_t * Res2      -- [opt] resource 2
 //                 Char_t * Res3      -- [opt] resource 3
 //                 Char_t * Default   -- default value
@@ -116,28 +117,28 @@ const Char_t * TMrbResource::Get(const Char_t * Res1, const Char_t * Res2, const
 //////////////////////////////////////////////////////////////////////////////
 
 	const Char_t * r = this->Find(Res1, Res2, Res3);
-	TString s = Default;
-	if (r) this->ToString(r, s); else r = Form("%s.%s.%s", (Res1 ? Res1 : "?"), (Res2 ? Res2 : "?"), (Res3 ? Res3 : "?"));
-	if (this->IsVerbose()) cout << "[" << this->ClassName() << "::Get(): " << r << "=" << s << "]" << endl;
-	return(s.Data());
+	Result = Default;
+	if (r) this->ToString(r, Result); else r = Form("%s.%s.%s", (Res1 ? Res1 : "?"), (Res2 ? Res2 : "?"), (Res3 ? Res3 : "?"));
+	if (this->IsVerbose()) cout << "[" << this->ClassName() << "::Get(): " << r << "=" << Result << "]" << endl;
+	return(Result.Data());
 }
 
-const Char_t * TMrbResource::Get(const Char_t * Res1, const Char_t * Res2, const Char_t * Default) {
+const Char_t * TMrbResource::Get(TString & Result, const Char_t * Res1, const Char_t * Res2, const Char_t * Default) {
 
 	const Char_t * r = this->Find(Res1, Res2);
-	TString s = Default;
-	if (r) this->ToString(r, s); else r = Form("%s.%s", (Res1 ? Res1 : "?"), (Res2 ? Res2 : "?"));
-	if (this->IsVerbose()) cout << "[" << this->ClassName() << "::Get(): " << r << "=" << s << "]" << endl;
-	return(s.Data());
+	Result = Default;
+	if (r) this->ToString(r, Result); else r = Form("%s.%s", (Res1 ? Res1 : "?"), (Res2 ? Res2 : "?"));
+	if (this->IsVerbose()) cout << "[" << this->ClassName() << "::Get(): " << r << "=" << Result << "]" << endl;
+	return(Result.Data());
 }
 
-const Char_t * TMrbResource::Get(const Char_t * Res, const Char_t * Default) {
+const Char_t * TMrbResource::Get(TString & Result, const Char_t * Res, const Char_t * Default) {
 
 	const Char_t * r = this->Find(Res);
-	TString s = Default;
-	if (r) this->ToString(r, s); else r = (Res ? Res : "?");
-	if (this->IsVerbose()) cout << "[" << this->ClassName() << "::Get(): " << r << "=" << s << "]" << endl;
-	return(s.Data());
+	Result = Default;
+	if (r) this->ToString(r, Result); else r = (Res ? Res : "?");
+	if (this->IsVerbose()) cout << "[" << this->ClassName() << "::Get(): " << r << "=" << Result << "]" << endl;
+	return(Result.Data());
 }
 
 Int_t TMrbResource::Get(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, Int_t Default) {

@@ -8,8 +8,8 @@
 // Class:          TMrbResource       -- access to TEnv objects
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbResource.h,v 1.4 2010-03-10 12:08:11 Rudolf.Lutter Exp $
-// Date:           $Date: 2010-03-10 12:08:11 $
+// Revision:       $Id: TMrbResource.h,v 1.5 2010-12-10 15:25:19 Marabou Exp $
+// Date:           $Date: 2010-12-10 15:25:19 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -39,17 +39,17 @@ class TMrbResource : public TObject {
 		~TMrbResource() {}; 							// default dtor
 		TMrbResource(const TMrbResource &) {};			// default copy ctor
 
-		const Char_t * Get(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, const Char_t * Default);
+		const Char_t * Get(TString & Result, const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, const Char_t * Default);
 		Int_t Get(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, Int_t Default);
 		Bool_t Get(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, Bool_t Default);
 		Double_t Get(const Char_t * Res1, const Char_t * Res2, const Char_t * Res3, Double_t Default);
 
-		const Char_t * Get(const Char_t * Res1, const Char_t * Res2, const Char_t * Default);
+		const Char_t * Get(TString & Result, const Char_t * Res1, const Char_t * Res2, const Char_t * Default);
 		Int_t Get(const Char_t * Res1, const Char_t * Res2, Int_t Default);
 		Bool_t Get(const Char_t * Res1, const Char_t * Res2, Bool_t Default);
 		Double_t Get(const Char_t * Res1, const Char_t * Res2, Double_t Default);
 
-		const Char_t * Get(const Char_t * Res, const Char_t * Default);
+		const Char_t * Get(TString & Result, const Char_t * Res, const Char_t * Default);
 		Int_t Get(const Char_t * Res, Int_t Default);
 		Bool_t Get(const Char_t * Res, Bool_t Default);
 		Double_t Get(const Char_t * Res, Double_t Default);
@@ -106,13 +106,13 @@ class TMrbResource : public TObject {
 
 		TEnv * fEnv;				// ROOT's TEnv object
 		TString fRcName;			// name of rc file
-		TObjArray fLofPrefixes; 	// one or more prefixes may be scanned
-		TString fLastPrefix;		// last prefix used
+		TObjArray fLofPrefixes; 		// one or more prefixes may be scanned
+		TString fLastPrefix;			// last prefix used
 
 		TString fResource;			// temp storage
 		TString fResult;			// ...
 
-	ClassDef(TMrbResource, 1)		// [Utils] Access to ROOT environment
+	ClassDef(TMrbResource, 1)			// [Utils] Access to ROOT environment
 };
 
 #endif
