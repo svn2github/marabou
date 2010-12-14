@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3302        -- VME digitizer adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3302.h,v 1.1 2010-12-03 13:25:24 Marabou Exp $
+// Revision:       $Id: TMrbSis_3302.h,v 1.2 2010-12-14 11:13:39 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ namespace std {} using namespace std;
 class TMrbSis_3302 : public TMrbVMEModule {
 
 	public:
-		enum				{	kSegSize		=	0x1000000L	};
+		enum				{	kSegSize		=	0x4000000L	};
 		enum				{	kAddrMod		=	0x09	};
 
 		enum				{	kNofGroups		=	4	};

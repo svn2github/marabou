@@ -10,8 +10,8 @@
 //! \details		Prototypes for SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $
-//! $Date: 2010-12-09 11:43:39 $
+//! $Revision: 1.6 $
+//! $Date: 2010-12-14 11:13:40 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*! Alloc database for SIS3302 module */
@@ -70,6 +70,10 @@ void sis3302_restoreTraceLength(struct s_sis_3302 * Module);
 
 /*! set fifo limit */
 void sis3302_setEndAddress(struct s_sis_3302 * Module, Int_t NofEvents);
+
+/*! start/stop acquisition */
+void sis3302_startAcquisition(struct s_sis_3302 * Module, Int_t NofEvents);
+void sis3302_stopAcquisition(struct s_sis_3302 * Module);
 
 /*! control and status */
 UInt_t sis3302_readControlStatus(struct s_sis_3302 * Module);

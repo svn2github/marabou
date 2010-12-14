@@ -1,13 +1,13 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           expconf/src/TMrbSubevent_Sis_33.cxx
+// Name:           expconf/src/TMrbSubevent_Sis_3300.cxx
 // Purpose:        MARaBOU configuration: subevents of type [10,54] - SIS data
 // Description:    Implements class methods to handle [10,54] subevents
 //                 reflecting data structure of XIA DGF-4C modules
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_33.cxx,v 1.9 2008-12-10 11:07:18 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_3300.cxx,v 1.1 2010-12-14 11:13:39 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -27,20 +27,20 @@ namespace std {} using namespace std;
 #include "TMrbModule.h"
 #include "TMrbModuleChannel.h"
 #include "TMrbSis_3300.h"
-#include "TMrbSubevent_Sis_33.h"
+#include "TMrbSubevent_Sis_3300.h"
 
 #include "SetColor.h"
 
 extern TMrbConfig * gMrbConfig;
 extern TMrbLogger * gMrbLog;
 
-ClassImp(TMrbSubevent_Sis_33)
+ClassImp(TMrbSubevent_Sis_3300)
 
-TMrbSubevent_Sis_33::TMrbSubevent_Sis_33(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
+TMrbSubevent_Sis_3300::TMrbSubevent_Sis_3300(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
 																: TMrbSubevent(SevtName, SevtTitle, Crate) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis_33
+// Name:           TMrbSubevent_Sis_3300
 // Purpose:        Create a subevent type [10,54]
 // Arguments:      Char_t * SevtName       -- subevent name
 //                 Char_t * SevtTitle      -- ... and title
@@ -59,7 +59,7 @@ TMrbSubevent_Sis_33::TMrbSubevent_Sis_33(const Char_t * SevtName, const Char_t *
 //                 |-------------------------------------|
 //                 |           acquisition mode          |
 //                 |-------------------------------------|
-//                 |           number of eventes         |
+//                 |           number of events         |
 //                 |-------------------------------------|
 //                 |               page size             |
 //                 |-------------------------------------|
@@ -102,17 +102,16 @@ TMrbSubevent_Sis_33::TMrbSubevent_Sis_33(const Char_t * SevtName, const Char_t *
 		fSevtSubtype = 54;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
-		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Sis33xx");	// we need this base class
 		gDirectory->Append(this);
 	}
 }
 
-Bool_t TMrbSubevent_Sis_33::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
+Bool_t TMrbSubevent_Sis_3300::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
 															TMrbTemplate & Template,
 															const Char_t * Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis_33::MakeReadoutCode
+// Name:           TMrbSubevent_Sis_3300::MakeReadoutCode
 // Purpose:        Write a piece of code for subevent [10,54]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file
@@ -181,7 +180,7 @@ Bool_t TMrbSubevent_Sis_33::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 	return(kTRUE);
 }
 
-Bool_t TMrbSubevent_Sis_33::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, TMrbTemplate & AnaTmpl) {
+Bool_t TMrbSubevent_Sis_3300::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, TMrbTemplate & AnaTmpl) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::MakeSpecialAnalyzeCode

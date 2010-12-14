@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V1X90.cxx,v 1.1 2009-07-20 07:09:44 Marabou Exp $       
+// Revision:       $Id: TMrbCaen_V1X90.cxx,v 1.2 2010-12-14 11:13:39 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -671,7 +671,7 @@ Bool_t TMrbCaen_V1X90::UseSettings(const Char_t * SettingsFile) {
 
 	TMrbResource * caenEnv = new TMrbResource("CAEN_V1X90", fSettingsFile.Data());
 
-	TString moduleName = caenEnv->Get(".ModuleName", "");
+	TString moduleName; caenEnv->Get(moduleName, ".ModuleName", "");
 	if (moduleName.CompareTo(this->GetName()) != 0) {
 		gMrbLog->Err() << "Module name different - \"" << moduleName << "\" (should be " << this->GetName() << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");

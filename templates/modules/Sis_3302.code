@@ -93,10 +93,7 @@
 %%FINISH_READOUT%%
 
 %%BeginOfCode%%
-					sis3302_setEndAddress(s_$moduleNameLC, $nofEvents);
-					sis3302_clearTimestamp(s_$moduleNameLC);
-					sis3302_armSampling(s_$moduleNameLC, 0);
-
+					sis3302_startAcquisition(s_$moduleNameLC, $nofEvents);
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
@@ -106,8 +103,7 @@
 %%START_ACQUISITION_GROUP%%
 
 %%BeginOfCode%%
-					sis3302_disarmSampling(s_$moduleNameLC);
-					sis3302_restoreTraceLength(s_$moduleNameLC);
+					sis3302_stopAcquisition(s_$moduleNameLC);
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 

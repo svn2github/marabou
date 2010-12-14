@@ -4,8 +4,8 @@
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.4 $
-//! $Date: 2010-12-09 11:43:39 $
+//! $Revision: 1.5 $
+//! $Date: 2010-12-14 11:13:40 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -555,8 +555,8 @@ void sis3302_setEndAddress(struct s_sis_3302 * Module, Int_t NofEvents) {
 			grp = chn / 2;
 			rdl = Module->rawDataSampleLength[grp] / 2;
 			edl = Module->energySampleLength[grp];
-			wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl;
-			wc *= NofEvents;
+			wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl;	/* 32 bit words */
+			wc *= NofEvents * 2;		/* 16 bit words */
 			if (wc > kSis3302MaxBufSize) wc = kSis3302MaxBufSize;
 			sis3302_writeEndAddrThresh(Module, wc, chn);
 		}
@@ -751,10 +751,7 @@ Bool_t sis3302_fireTrigger(struct s_sis_3302 * Module) { return(sis3302_keyAddr(
 
 Bool_t sis3302_clearTimestamp(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyClearTimestamp)); };
 
-Bool_t sis3302_armSampling(struct s_sis_3302 * Module, Int_t Sampling) {
-	if (Sampling == 0) Sampling = kSis3302KeyArmBank1Sampling;
-	return(sis3302_keyAddr(Module, Sampling));
-};
+Bool_t sis3302_armSampling(struct s_sis_3302 * Module, Int_t Sampling) { return(sis3302_keyAddr(Module, Sampling)); };
 
 Bool_t sis3302_disarmSampling(struct s_sis_3302 * Module) { return(sis3302_keyAddr(Module, kSis3302KeyDisarmSampling)); };
 
@@ -3445,8 +3442,8 @@ void sis3302_switchSampling(struct s_sis_3302 * Module) {
 		sampling = kSis3302KeyArmBank1Sampling;
 		pageNo = 4;
 	}
-	sis3302_setPageReg(Module, pageNo);
 	sis3302_armSampling(Module, sampling);
+	sis3302_setPageReg(Module, pageNo);
 	Module->currentSampling = sampling;
 }
 
@@ -3487,6 +3484,32 @@ Int_t sis3302_getPageRegister(struct s_sis_3302 * Module) {
 	if (pageReg == NULL) return(0xaffec0c0);
 
 	return (*pageReg);
+}
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Start acquisiton
+//! \param[in]		Module		-- module address
+//! \param[in]		NofEvents	-- number of events
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis3302_startAcquisition(struct s_sis_3302 * Module, Int_t NofEvents) {
+	sis3302_setEndAddress(Module, NofEvents);
+	sis3302_clearTimestamp(Module);
+	sis3302_armSampling(Module, kSis3302KeyArmBank1Sampling);
+}
+
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Stop acquisiton
+//! \param[in]		Module		-- module address
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis3302_stopAcquisition(struct s_sis_3302 * Module) {
+	sis3302_disarmSampling(Module);
+	sis3302_restoreTraceLength(Module);
 }
 
 /*________________________________________________________________[C FUNCTION]

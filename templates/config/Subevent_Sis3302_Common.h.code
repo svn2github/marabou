@@ -1,0 +1,93 @@
+%%BeginOfCode%%
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_Sis33xx
+// Purpose:        Base class for subevents containing data from SIS 33xx VME modules
+// Description:    
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbSubevent_Sis33xx : public TObject {
+
+	public:
+
+		enum	{	kNofChannels	=	8	};
+		enum	{	kNofGroups		=	4	};
+
+		enum	{	kShapeShort,
+					kShapeLong,
+					kShapeBoth
+				};
+
+	public:
+		TMrbSubevent_Sis33xx() {}			// default ctor
+		~TMrbSubevent_Sis33xx() {};			// default dtor
+
+		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
+ 		void Reset(Int_t InitValue = 0, Bool_t DataOnly = kFALSE);		// reset param data
+
+		inline void SetTriggered(Int_t Channel, Bool_t Flag = kTRUE) { fChanTriggered[Channel] = Flag; };
+		inline Bool_t IsTriggered(Int_t Channel) { return(fChanTriggered[Channel]); };
+		inline void SetOverflow(Int_t Channel, Bool_t Flag = kTRUE) { fChanOverflow[Channel] = Flag; };
+		inline Bool_t HasOverflow(Int_t Channel) { return(fChanOverflow[Channel]); };
+		inline void SetDataSize(Int_t Channel, Int_t Size) { fDataSize[Channel] = Size; };
+		inline Bool_t GetDataSize(Int_t Channel) { return(fDataSize[Channel]); };
+		inline void SetPageSize(Int_t Channel, Int_t PageSize) { fPageSize[Channel] = PageSize; };
+		inline Int_t GetPageSize(Int_t Channel) { return(fPageSize[Channel]); };
+
+		inline void SetEmpty(Bool_t EmptyFlag = kTRUE) { fIsEmpty = EmptyFlag; };
+		inline Bool_t IsEmpty() { return(fIsEmpty); };
+
+		inline Bool_t IsVerbose() { return(fVerboseMode); };
+		inline Bool_t ShaperIsVerbose() { return(fShaperVerbose); };
+
+		Bool_t InitializeShaper(const Char_t * SettingsFile = NULL, const Char_t * Module = NULL, Int_t NofChannels = -1);
+		Bool_t Shaper(Int_t Channel, Int_t ShapeIdx);
+		Bool_t TauCorrection(Int_t Channel);
+
+		inline Int_t * GetChanData(Int_t Channel) {
+				return(((TMrbNamedArrayI *) fChanData[Channel])->GetArray());
+		};
+
+		inline Double_t * GetShapedData(Int_t Channel, Int_t ShapeIdx) {
+				return(((TMrbNamedArrayD *) fShapedData[kNofChannels * ShapeIdx + Channel])->GetArray());
+		};
+		inline Double_t GetShapeMin(Int_t Channel, Int_t ShapeIdx) { return(fShapeMin[kNofChannels * ShapeIdx + Channel]); };
+		inline Double_t GetShapeMax(Int_t Channel, Int_t ShapeIdx) { return(fShapeMax[kNofChannels * ShapeIdx + Channel]); };
+		inline Double_t GetPeakTime(Int_t Channel, Int_t ShapeIdx) { return(fPeakTime[kNofChannels * ShapeIdx + Channel]); };
+		inline Double_t GetGapTime(Int_t Channel, Int_t ShapeIdx) { return(fGapTime[kNofChannels * ShapeIdx + Channel]); };
+
+	protected:
+		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };
+		Double_t Trapezoid(Double_t X, Double_t Offset, Double_t PeakTime, Double_t GapTime);
+
+	protected:
+		TObject * fMyAddr;						//! ptr to subevent to be used in TTree::Branch() (online)
+		TBranch * fBranch;						//! branch address (replay only)
+
+		Bool_t fVerboseMode;					// verbose mode
+		Bool_t fShaperVerbose;					// ... show shaper data
+
+		Int_t fTimeStamp;						// time stamp, same as fUniqueID
+
+		TObjArray fChanData;						// *pointer* (!!) to samples data
+		TObjArray fShapedData;					 	// *pointer* (!!) to shaped data
+		Bool_t fChanTriggered[kNofChannels];		// kTRUE if channel triggered
+		Bool_t fChanOverflow[kNofChannels]; 		// channel has overflow
+		Int_t fDataSize[kNofChannels];				// size of data
+		Int_t fPageSize[kNofChannels];				// max channel size
+
+		Double_t fShapeMin[2 * kNofChannels];		// min/max
+		Double_t fShapeMax[2 * kNofChannels];
+		Double_t fPeakTime[2 * kNofChannels];
+		Double_t fGapTime[2 * kNofChannels];
+
+		Int_t fTauWindow;							// tau corr: window
+		Double_t fTauValue;							// tau corr: tau value
+
+		Bool_t fIsEmpty;							// kTRUE if empty event
+
+	ClassDef(TMrbSubevent_Sis33xx, 1)			// [Analyze] Store SIS 33xx data
+};
+%%EndOfCode%%
+%%SEVT_CLASS_DEFINITION%%

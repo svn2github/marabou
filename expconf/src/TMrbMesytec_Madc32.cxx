@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.21 2010-09-11 20:39:03 Marabou Exp $
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.22 2010-12-14 11:13:39 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -553,7 +553,7 @@ Bool_t TMrbMesytec_Madc32::UseSettings(const Char_t * SettingsFile) {
 
 	TMrbResource * madcEnv = new TMrbResource("MADC32", fSettingsFile.Data());
 
-	TString moduleName = madcEnv->Get(".ModuleName", "");
+	TString moduleName; madcEnv->Get(moduleName, ".ModuleName", "");
 	if (moduleName.CompareTo(this->GetName()) != 0) {
 		gMrbLog->Err() << "Module name different - \"" << moduleName << "\" (should be " << this->GetName() << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSettings");

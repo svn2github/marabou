@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3302.cxx,v 1.1 2010-12-03 13:25:24 Marabou Exp $
+// Revision:       $Id: TMrbSis_3302.cxx,v 1.2 2010-12-14 11:13:39 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -162,7 +162,7 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString mnemoLC, mnemoUC;
+	TString mnemoLC, mnemoUC, moduleNameLC, moduleNameUC;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "
@@ -171,9 +171,13 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 		return(kFALSE);
 	}
 
+	moduleNameLC = this->GetName();
+	moduleNameUC = moduleNameLC;
+	moduleNameUC(0,1).ToUpper();
+
 	mnemoLC = this->GetMnemonic();
 	mnemoUC = mnemoLC;
-	mnemoUC.ToUpper();
+	mnemoUC(0,1).ToUpper();
 
 	Int_t subType = 0;
 	TIterator * siter = gMrbConfig->GetLofSubevents()->MakeIterator();
@@ -200,7 +204,8 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 		case TMrbConfig::kModuleInitCommonCode:
 		case TMrbConfig::kModuleInitModule:
 			fCodeTemplates.InitializeCode();
-			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$moduleNameLC", moduleNameLC);
+			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC);
 			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
 			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
 			fCodeTemplates.Substitute("$moduleSerial", this->GetSerial());
@@ -208,7 +213,7 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
-			fCodeTemplates.Substitute("$chnPattern", (Int_t) this->GetPatternOfChannelsUsed());
+			fCodeTemplates.Substitute("$chnPattern", (Int_t) this->GetPatternOfChannelsUsed(), 16);
 			fCodeTemplates.Substitute("$tracingMode", this->TracingEnabled() ? "kTRUE" : "kFALSE");
 			fCodeTemplates.Substitute("$onoff", this->TracingEnabled() ? "on" : "off");
 			fCodeTemplates.Substitute("$settingsFile", settings.Data());
@@ -227,7 +232,8 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 		case TMrbConfig::kModuleDefineLocalVarsReadout:
 		case TMrbConfig::kModuleDefinePrototypes:
 			fCodeTemplates.InitializeCode();
-			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$moduleNameLC", moduleNameLC);
+			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC);
 			fCodeTemplates.Substitute("$nofParams", this->GetNofChannelsUsed());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
@@ -236,7 +242,8 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			break;
 		case TMrbConfig::kModuleReadModule:
 			fCodeTemplates.InitializeCode();
-			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$moduleNameLC", moduleNameLC);
+			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC);
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.WriteCode(RdoStrm);
@@ -283,7 +290,7 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleT
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString mnemoLC, mnemoUC;
+	TString mnemoLC, mnemoUC, moduleNameLC, moduleNameUC;
 
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "
@@ -292,9 +299,13 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleT
 		return(kFALSE);
 	}
 
+	moduleNameLC = this->GetName();
+	moduleNameUC = moduleNameLC;
+	moduleNameUC(0,1).ToUpper();
+
 	mnemoLC = this->GetMnemonic();
 	mnemoUC = mnemoLC;
-	mnemoUC.ToUpper();
+	mnemoUC(0,1).ToUpper();
 
 	switch (TagIndex) {
 		case TMrbConfig::kModuleInitChannel:
@@ -307,7 +318,8 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModuleT
 		case TMrbConfig::kModuleSkipChannels:
 		case TMrbConfig::kModuleStoreData:
 			fCodeTemplates.InitializeCode();
-			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$moduleNameLC", moduleNameLC);
+			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC);
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$chnName", Channel->GetName());

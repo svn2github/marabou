@@ -9,7 +9,7 @@
 //                                          dedicated format CAEN modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Sis_1.h,v 1.5 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_1.h,v 1.6 2010-12-14 11:13:39 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ namespace std {} using namespace std;
 //                                         dedicated format for Sis modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Sis_1.h,v 1.5 2009-06-24 13:59:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_1.h,v 1.6 2010-12-14 11:13:39 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ class TMrbSubevent_Sis_1 : public TMrbSubevent {
 		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
 		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
-		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type Sis
+		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type SIS3600 or SIS3801
 			return(Module->CheckID(TMrbConfig::kModuleSis_3600) || Module->CheckID(TMrbConfig::kModuleSis_3801));
 		};
 				
