@@ -143,11 +143,11 @@ static struct s_sis_3302 * s_$moduleNameLC;
 %%DEFINE_LOCAL_VARS_READOUT%%
 
 %%BeginOfCode%%
-	-I/home/agata/marabou-05.24r/powerpc/include
+	-I@{.PPCIncludePath:/nfs/marabou/include}
 %%EndOfCode%%
 %%DEFINE_INCLUDE_PATHS%%
 %%BeginOfCode%%
-	-L/home/agata/marabou-05.24r/powerpc/lib/3.1 -lSis_3302
+	-L@{.PPCLibraryPath:/nfs/marabou/lib} -lSis_3302
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 

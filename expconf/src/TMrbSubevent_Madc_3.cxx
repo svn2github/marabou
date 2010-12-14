@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Madc_3.cxx,v 1.4 2009-05-08 16:24:51 Marabou Exp $       
-// Date:           $Date: 2009-05-08 16:24:51 $
+// Revision:       $Id: TMrbSubevent_Madc_3.cxx,v 1.5 2010-12-14 14:18:04 Marabou Exp $       
+// Date:           $Date: 2010-12-14 14:18:04 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -128,7 +128,7 @@ Bool_t TMrbSubevent_Madc_3::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 	TMrbModule * parentModule, * module;
 	Int_t parNo;
 	Int_t nextChannel = 0;
-	Int_t thisChannel, chDiff;
+	Int_t thisChannel;
 	TString sevtName;
 	TString moduleNameUC;
 	TIterator * miter;

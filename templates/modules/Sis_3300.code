@@ -167,12 +167,12 @@ static struct s_sis_3300 * s_$moduleName;
 %%DEFINE_LOCAL_VARS_READOUT%%
 
 %%BeginOfCode%%
-
+	-I@{.PPCIncludePath:/nfs/marabou/include}
 %%EndOfCode%%
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L/nfs/marabou/lib -lSis_3300
+	-L/@{.PPCLibraryPath:/nfs/marabou/lib} -lSis_3300
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 

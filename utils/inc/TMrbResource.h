@@ -8,8 +8,8 @@
 // Class:          TMrbResource       -- access to TEnv objects
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbResource.h,v 1.5 2010-12-10 15:25:19 Marabou Exp $
-// Date:           $Date: 2010-12-10 15:25:19 $
+// Revision:       $Id: TMrbResource.h,v 1.6 2010-12-14 14:18:04 Marabou Exp $
+// Date:           $Date: 2010-12-14 14:18:04 $
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -84,8 +84,9 @@ class TMrbResource : public TObject {
 		void AddPrefix(const Char_t * Prefix);
 
 		const Char_t * Find(const Char_t * Res1, const Char_t * Res2 = NULL, const Char_t * Res3 = NULL);
-		inline const Char_t * Find(const Char_t * Res1, Int_t Index, const Char_t * Res3)
-														{ return(this->Find(Res1, Form("%d", Index), Res3)); };
+		inline const Char_t * Find(const Char_t * Res1, Int_t Index, const Char_t * Res3) { return(this->Find(Res1, Form("%d", Index), Res3)); };
+
+		const Char_t * Replace(TString & String);
 
 		inline TEnv * Env() { return(fEnv); };
 		inline const Char_t * GetRcName() { return(fRcName.Data()); };

@@ -1,15 +1,15 @@
-#ifndef __TMrbSubevent_Sis_3300_h__
-#define __TMrbSubevent_Sis_3300_h__
+#ifndef __TMrbSubevent_Sis_3302_h__
+#define __TMrbSubevent_Sis_3302_h__
 
 //_________________________________________________[C++ CLASS DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           expconf/inc/TMrbSubevent_Sis_3300.h
+// Name:           expconf/inc/TMrbSubevent_Sis_3302.h
 // Purpose:        Define experimental configuration for MARaBOU
-// Class:          TMrbSubevent_Sis_3300   -- MBS subevent type [10,54]
+// Class:          TMrbSubevent_Sis_3302   -- MBS subevent type [10,54]
 //                                            dedicated format for Sis modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Sis_3302.h,v 1.1 2010-12-14 11:13:39 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_3302.h,v 1.2 2010-12-14 14:18:04 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -30,7 +30,7 @@ namespace std {} using namespace std;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis_3300
+// Name:           TMrbSubevent_Sis_3302
 // Purpose:        Define MBS subevents of type [10,54]
 // Methods:        MakeReadoutCode  -- output readout code for subevent [10,54]
 // Description:    Defines a MBS subevent of type [10,54] - a special format
@@ -39,32 +39,30 @@ namespace std {} using namespace std;
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbSubevent_Sis_3300 : public TMrbSubevent {
+class TMrbSubevent_Sis_3302 : public TMrbSubevent {
 
 	public:
 
-		TMrbSubevent_Sis_3300() {}; 				// default ctor
-		TMrbSubevent_Sis_3300(const Char_t * SevtName, const Char_t * SevtTitle = "", Int_t Crate = -1);	// create a new SIS subevent
-		~TMrbSubevent_Sis_3300() {};	 			// remove current subevent from list
+		TMrbSubevent_Sis_3302() {}; 				// default ctor
+		TMrbSubevent_Sis_3302(const Char_t * SevtName, const Char_t * SevtTitle = "", Int_t Crate = -1);	// create a new SIS subevent
+		~TMrbSubevent_Sis_3302() {};	 			// remove current subevent from list
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate part of code for this subevent
 											TMrbTemplate & Template, const Char_t * Prefix = NULL);
-
-		virtual Bool_t MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, TMrbTemplate & Template);  // generate part of code
 
 		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
 		inline Bool_t AllowsMultipleModules() const { return(kFALSE); };			// one module only
 
 		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type Sis
-			return(Module->CheckID(TMrbConfig::kModuleSis_3300));
+			return(Module->CheckID(TMrbConfig::kModuleSis_3302));
 		};
 				
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
-		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Sis3300_Common"); };
+		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Sis3302_Common"); };
 		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
-	ClassDef(TMrbSubevent_Sis_3300, 1) 	// [Config] Subevent type [10,54]: a format dedicated to SIS modules
+	ClassDef(TMrbSubevent_Sis_3302, 1) 	// [Config] Subevent type [10,55]: a format dedicated to SIS3302 modules
 };
 
 #endif

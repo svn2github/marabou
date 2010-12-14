@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbResource.cxx,v 1.6 2010-12-10 15:25:19 Marabou Exp $
+// Revision:       $Id: TMrbResource.cxx,v 1.7 2010-12-14 14:18:04 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -742,3 +742,46 @@ Bool_t TMrbResource::ToString(const Char_t * Resource, TString & StrResult) {
 	StrResult = s;
 	return(kTRUE);
 }
+
+const Char_t * TMrbResource::Replace(TString & String) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbResource::Replace
+// Purpose:        Replace environment references
+// Arguments:      TString String  -- string containing @{...}
+// Results:        Char_t * String -- resulting string
+// Exceptions:
+// Description:    Expands @{<envname>:<default>}
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString replacement = "";
+	Int_t idx1 = 0;
+	Int_t idx2 = 0;
+	while ((idx1 = String.Index("@{", idx2)) >= 0) {
+		if (idx1 > idx2) replacement += String(idx2, idx1-idx2);
+		idx2 = String.Index("}", idx1);
+		if (idx2 == -1) {
+			gMrbLog->Err() << "Syntax error in @{} - missing closing brace" << endl;
+			gMrbLog->Flush(this->ClassName(), "Replace");
+			return(NULL);
+		}
+		TString env = String(idx1+2, idx2-idx1-2);
+		Int_t semi = env.Index(":", 0);
+		if (semi == -1) {
+			gMrbLog->Err() << "Syntax error in @{} - missing semicolon" << endl;
+			gMrbLog->Flush(this->ClassName(), "Replace");
+			return(NULL);
+		}
+		TString defval = env(semi+1,env.Length()-semi);
+		env = env(0, semi);
+		this->Get(env, env.Data(), defval.Data());
+		replacement += env;
+		idx2++;
+		idx1 = idx2;
+	}
+	replacement += String(idx2, String.Length()-idx2);
+	String = replacement;
+	return(String.Data());
+}
+

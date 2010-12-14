@@ -9,7 +9,7 @@
 //                                            dedicated format for Sis modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Sis_3300.h,v 1.1 2010-12-14 11:13:39 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_3300.h,v 1.2 2010-12-14 14:18:04 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ class TMrbSubevent_Sis_3300 : public TMrbSubevent {
 		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
-	ClassDef(TMrbSubevent_Sis_3300, 1) 	// [Config] Subevent type [10,54]: a format dedicated to SIS modules
+	ClassDef(TMrbSubevent_Sis_3300, 1) 	// [Config] Subevent type [10,54]: a format dedicated to SIS3300 modules
 };
 
 #endif

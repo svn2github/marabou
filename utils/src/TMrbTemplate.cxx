@@ -10,7 +10,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTemplate.cxx,v 1.13 2007-08-20 11:19:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTemplate.cxx,v 1.14 2010-12-14 14:18:04 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -326,7 +326,7 @@ Bool_t TMrbTemplate::Substitute(const Char_t * ArgName, Double_t ArgValue) {
 Bool_t TMrbTemplate::ExpandPathName() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbTemplate::Expand
+// Name:           TMrbTemplate::ExpandPathName
 // Purpose:        Expand evironment variables provided by shell
 // Arguments:      --
 // Results:        kTRUE/kFALSE
@@ -341,7 +341,7 @@ Bool_t TMrbTemplate::ExpandPathName() {
 
 	if (!HasCode()) {
 		gMrbLog->Err() << "%%" << fTag.GetName() << "%%: Code buffer is empty" << endl;
-		gMrbLog->Flush(this->ClassName(), "Expand");
+		gMrbLog->Flush(this->ClassName(), "ExpandPathName");
 		return(kFALSE);
 	}
 
