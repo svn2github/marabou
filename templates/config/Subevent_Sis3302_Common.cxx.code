@@ -1,9 +1,9 @@
 %%BeginOfCode%%
-Bool_t  TMrbSubevent_Sis33xx::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+Bool_t  TMrbSubevent_Sis3302::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis33xx::FillSubevent
-// Purpose:        Unpack SIS33xx flash adc data
+// Name:           TMrbSubevent_Sis3302::FillSubevent
+// Purpose:        Unpack SIS3302 flash adc data
 // Arguments:      const UShort_t * SevtData   -- pointer to subevent data
 //                 Int_t SevtWC                -- word count
 //                 Int_t TimeStamp             -- time since last start
@@ -11,7 +11,7 @@ Bool_t  TMrbSubevent_Sis33xx::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 // Results:        kTRUE/kFALSE
 // Exceptions:   
 // Description:    Assigns MBS data to corresponding subevent data members
-//                 Special version for SIS 33xx modules.
+//                 Special version for SIS 3302 modules.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
@@ -197,10 +197,10 @@ Bool_t  TMrbSubevent_Sis33xx::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 	return(kTRUE);
 }
 
-Bool_t  TMrbSubevent_Sis33xx::InitializeShaper(const Char_t * SettingsFile, const Char_t * Module, Int_t NofChannels) {
+Bool_t  TMrbSubevent_Sis3302::InitializeShaper(const Char_t * SettingsFile, const Char_t * Module, Int_t NofChannels) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis33xx::InitializeShaper
+// Name:           TMrbSubevent_Sis3302::InitializeShaper
 // Purpose:        Initialize shaping constants
 // Arguments:      Char_t * SettingsFile   -- where to read values from
 //                 Char_t * Module         -- module name
@@ -287,10 +287,10 @@ Bool_t  TMrbSubevent_Sis33xx::InitializeShaper(const Char_t * SettingsFile, cons
 	return(kTRUE);
 }
 			
-Bool_t  TMrbSubevent_Sis33xx::TauCorrection(Int_t Channel) {
+Bool_t  TMrbSubevent_Sis3302::TauCorrection(Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis33xx::TauCorrection
+// Name:           TMrbSubevent_Sis3302::TauCorrection
 // Purpose:        Tau correction
 // Arguments:      Int_t Channel      -- channel
 // Results:        kTRUE/kFALSE
@@ -320,10 +320,10 @@ Bool_t  TMrbSubevent_Sis33xx::TauCorrection(Int_t Channel) {
 	return(kTRUE);
 }
 
-Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
+Bool_t  TMrbSubevent_Sis3302::Shaper(Int_t Channel, Int_t ShaperIdx) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis33xx::Shaper
+// Name:           TMrbSubevent_Sis3302::Shaper
 // Purpose:        Perform shaping
 // Arguments:      Int_t Channel      -- channel
 //                 Int_t ShaperIdx    -- shaper index (short/long)
@@ -396,10 +396,10 @@ Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
 	return(kTRUE);
 }
 
-Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
+Bool_t  TMrbSubevent_Sis3302::Shaper(Int_t Channel, Int_t ShaperIdx) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis33xx::Shaper
+// Name:           TMrbSubevent_Sis3302::Shaper
 // Purpose:        Perform shaping
 // Arguments:      Int_t Channel      -- channel
 //                 Int_t ShaperIdx    -- shaper index (short/long)
@@ -487,10 +487,10 @@ Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
 
 #if 0
 // *********************************** old version, no longer used ******************************
-Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
+Bool_t  TMrbSubevent_Sis3302::Shaper(Int_t Channel, Int_t ShaperIdx) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis33xx::Shaper
+// Name:           TMrbSubevent_Sis3302::Shaper
 // Purpose:        Perform shaping
 // Arguments:      Int_t Channel      -- channel
 //                 Int_t ShaperIdx    -- shaper index (short/long)
@@ -542,10 +542,10 @@ Bool_t  TMrbSubevent_Sis33xx::Shaper(Int_t Channel, Int_t ShaperIdx) {
 }
 #endif
 
-Double_t  TMrbSubevent_Sis33xx::Trapezoid(Double_t X, Double_t Offset, Double_t PeakTime, Double_t GapTime) {
+Double_t  TMrbSubevent_Sis3302::Trapezoid(Double_t X, Double_t Offset, Double_t PeakTime, Double_t GapTime) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis33xx::Trapezoid
+// Name:           TMrbSubevent_Sis3302::Trapezoid
 // Purpose:        Perform trapezoidal shaping
 // Arguments:      Double_t X        -- channel
 //                 Double_t Offset   -- offset 
@@ -573,10 +573,10 @@ Double_t  TMrbSubevent_Sis33xx::Trapezoid(Double_t X, Double_t Offset, Double_t 
 	return(0.);
 }
 
-void TMrbSubevent_Sis33xx::Reset(Int_t InitValue, Bool_t DataOnly) {
+void TMrbSubevent_Sis3302::Reset(Int_t InitValue, Bool_t DataOnly) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis33xx::Reset
+// Name:           TMrbSubevent_Sis3302::Reset
 // Purpose:        Reset subevent data
 // Arguments:      Int_t InitValue   -- initialization value
 //                 Bool_t DataOnly   -- reset data only if kTRUE (ignored)

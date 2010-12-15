@@ -1,14 +1,14 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           expconf/src/TMrbSubevent_Sis_3302.cxx
-// Purpose:        MARaBOU configuration: subevents of type [10,51] - SIS data
-// Description:    Implements class methods to handle [10,51] subevents
+// Name:           expconf/src/TMrbSubevent_Sis_3302_2.cxx
+// Purpose:        MARaBOU configuration: subevents of type [10,56] - SIS data
+// Description:    Implements class methods to handle [10,56] subevents
 //                 reflecting data structure of SIS 3XXX modules
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_3302.cxx,v 1.2 2010-12-14 14:18:04 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbSubevent_Sis_3302_2.cxx,v 1.1 2010-12-15 09:07:47 Marabou Exp $
+// Date:           $Date: 2010-12-15 09:07:47 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -26,27 +26,27 @@ namespace std {} using namespace std;
 #include "TMrbConfig.h"
 #include "TMrbModule.h"
 #include "TMrbModuleChannel.h"
-#include "TMrbSubevent_Sis_3302.h"
+#include "TMrbSubevent_Sis_3302_2.h"
 
 #include "SetColor.h"
 
 extern TMrbConfig * gMrbConfig;
 extern TMrbLogger * gMrbLog;
 
-ClassImp(TMrbSubevent_Sis_3302)
+ClassImp(TMrbSubevent_Sis_3302_2)
 
-TMrbSubevent_Sis_3302::TMrbSubevent_Sis_3302(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
+TMrbSubevent_Sis_3302_2::TMrbSubevent_Sis_3302_2(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
 																: TMrbSubevent(SevtName, SevtTitle, Crate) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis_3302
-// Purpose:        Create a subevent type [10,55]
+// Name:           TMrbSubevent_Sis_3302_2
+// Purpose:        Create a subevent type [10,56]
 // Arguments:      Char_t * SevtName       -- subevent name
 //                 Char_t * SevtTitle      -- ... and title
 //                 Int_t Crate             -- crate number
 // Results:        --
 // Exceptions:
-// Description:    Create a new subevent of type [10,55]
+// Description:    Create a new subevent of type [10,56]
 //                 used to store SIS list-mode data
 //
 //                 Data format as given by the producer (MBS) - same as [10,55]:
@@ -84,8 +84,28 @@ TMrbSubevent_Sis_3302::TMrbSubevent_Sis_3302(const Char_t * SevtName, const Char
 //                 32====================================0
 //
 //                 Data storage by the consumer (ROOT):
-//                 -  max energy stored in a fixed-length vector, indexed by channel number
-//                 -  empty channels padded with a zero value
+//                 -  data stored in a TClonesArray/TUsrHit, channel by channel
+//                 -  each channel entry marked with event time
+//
+//                 31--------------------------------------0
+//                 |             buffer number             |
+//                 |---------------------------------------|
+//                 |      event number within buffer       |
+//                 |---------------------------------------|
+//                 |             module number             |
+//                 |---------------------------------------|
+//                 |            channel number             |
+//                 |---------------------------------------|
+//                 |          0        |  time st (32..47) |
+//                 |---------------------------------------|
+//                 |           time stamp (0..31)          |
+//                 |---------------------------------------|
+//                 |             word count (=2)           |
+//                 |---------------------------------------|
+//                 |                    0                  |
+//                 |---------------------------------------|
+//                 |              max energy               |
+//                 |---------------------------------------|
 //
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -93,19 +113,20 @@ TMrbSubevent_Sis_3302::TMrbSubevent_Sis_3302(const Char_t * SevtName, const Char
 	if (!this->IsZombie()) {
 		fSevtDescr = "SIS3302 data, multi-channel, multi-event";
 		fSevtType = 10; 	 						// set subevent type & subtype
-		fSevtSubtype = 55;
+		fSevtSubtype = 56;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataULong;
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Sis3302");	// we need this base class
 		gDirectory->Append(this);
 	}
 }
 
-Bool_t TMrbSubevent_Sis_3302::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
+Bool_t TMrbSubevent_Sis_3302_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
 															TMrbTemplate & Template,
 															const Char_t * Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis_3302::MakeReadoutCode
+// Name:           TMrbSubevent_Sis_3302_2::MakeReadoutCode
 // Purpose:        Write a piece of code for subevent [10,55]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file

@@ -6,8 +6,8 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEControlData.cxx,v 1.12 2010-11-18 13:29:34 Marabou Exp $
-// Date:           $Date: 2010-11-18 13:29:34 $
+// Revision:       $Id: VMEControlData.cxx,v 1.13 2010-12-15 09:07:47 Marabou Exp $
+// Date:           $Date: 2010-12-15 09:07:47 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ VMEControlData::VMEControlData() {
 
 // open VMEcontrol's resource data base
 	TString errMsg;
-	fRcFile = fRootrc->Get(".RcFile", ".VMEControl.rc");
+	fRootrc->Get(fRcFile, ".RcFile", ".VMEControl.rc");
 	gSystem->ExpandPathName(fRcFile);
 	Bool_t ok = this->CheckAccess(fRcFile.Data(), kVMEAccessRead, errMsg, kFALSE);
 	if (ok) {
@@ -98,8 +98,7 @@ VMEControlData::VMEControlData() {
 	} else {
 		this->MakeZombie();
 	}
-
-	fSettingsPath = fRootrc->Get(".SettingsPath", ".vmeSettings");
+	fRootrc->Get(fSettingsPath, ".SettingsPath", ".vmeSettings");
 	gSystem->ExpandPathName(fSettingsPath);
 	this->CheckAccess(fSettingsPath.Data(), kVMEAccessDirectory | kVMEAccessWrite, errMsg, kTRUE);
 
@@ -179,7 +178,8 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 
 	LofModules.Clear(); 	// clear list - don't delete objects!!
 
-	TString lm = fVctrlrc->Get(".LofModules", "");
+	TString lm;
+	fVctrlrc->Get(lm, ".LofModules", "");
 	if (lm.IsNull()) {
 		gMrbLog->Err()	<< "No (VME) modules defined in file " << fRcFile << endl;
 		gMrbLog->Flush(this->ClassName(), "SetupModuleList");
@@ -192,9 +192,11 @@ Bool_t VMEControlData::SetupModuleList(TMrbLofNamedX & LofModules, const Char_t 
 	while (lm.Tokenize(moduleName, from, ":")) {
 		TString mnuc = moduleName;
 		mnuc(0,1).ToUpper();
-		TString interface = fVctrlrc->Get(".Module", mnuc.Data(), "Interface", "");
+		TString interface;
+		fVctrlrc->Get(interface, ".Module", mnuc.Data(), "Interface", "");
 		if (interface.CompareTo("VME") == 0) {
-			TString className = fVctrlrc->Get(".Module", mnuc.Data(), "ClassName", "");
+			TString className;
+			fVctrlrc->Get(className, ".Module", mnuc.Data(), "ClassName", "");
 			if (className.IsNull()) {
 				gMrbLog->Err()	<< "[" << moduleName << "] Class name missing" << endl;
 				gMrbLog->Flush(this->ClassName(), "SetupModuleList");

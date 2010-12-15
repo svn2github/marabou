@@ -179,7 +179,7 @@ const char * s10xxData16Fmt = "%-6s%-6s%8d%8d";
 const char * s10xxData32Fmt = "%-6s%-6s%8d%16d";
 const char * sisHdrFmt = "%-6s%-6s%8d%8d%8d";
 const char * sisDataFmt = "%-6s%-6s%8d%8d";
-const char * sis33xxInfoFmt = "%-6s%-6s%8d%8d%8d%8x%8x";
+const char * sis3300InfoFmt = "%-6s%-6s%8d%8d%8d%8x%8x";
 const char * madcHdrFmt = "%-6s%-6s%4d%4d%8d";
 const char * madcChnFmt = "%-6s%-6s%8d%8d";
 const char * madcXtsFmt = "%-6s%-6s%16u";
@@ -629,8 +629,8 @@ int extractSubevents(MBSDataIO * mbs) {
 			processSubevent_sevt_10_1x(mbs);
 		} else if (sevtType == MBS_STYPE_VME_SIS_3) {
 			processSubevent_sis(mbs);
-		} else if (sevtType == MBS_STYPE_VME_SIS_33) {
-			processSubevent_sis_33xx(mbs);
+		} else if (sevtType == MBS_STYPE_VME_SIS_3300) {
+			processSubevent_sis_3300(mbs);
 		} else if (sevtType == MBS_STYPE_VME_MADC_1
 		||  sevtType == MBS_STYPE_VME_MADC_2
 		||  sevtType == MBS_STYPE_VME_MADC_3) {
@@ -1290,14 +1290,14 @@ int processSubevent_sis(MBSDataIO * mbs) {
 	return(kTRUE);
 }
 
-int processSubevent_sis_33xx(MBSDataIO * mbs) {
+int processSubevent_sis_3300(MBSDataIO * mbs) {
 /*_________________________________________________________________________________________[C Function]
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
-// Name:		   processSubevent_sis_33xx
+// Name:		   processSubevent_sis_3300
 // Purpose: 	   Process sis data
 // Arguments:	   MBSDataIO * mbs  -- ptr to mbs data structure
 // Results: 	   kTRUE/kFALSE
-// Description:    Decodes data of sis 33xx modules (subevent SIS_33 [10,54])
+// Description:    Decodes data of sis 3300 modules (subevent SIS_3300 [10,54])
 // Keywords:
 /////////////////////////////////////////////////////////////////////////////////////////////////////*/
 
@@ -1323,19 +1323,19 @@ int processSubevent_sis_33xx(MBSDataIO * mbs) {
 		dataPsav = dataPtr;
 		header = *dataPtr++;
 		if ((header & kMrbSevt_Sis_B_Header) == 0) {
-			printf("?-WRGHDR-[processSubevent_sis_33xx]- Wrong header - 0x%x\n", header);
+			printf("?-WRGHDR-[processSubevent_sis_3300]- Wrong header - 0x%x\n", header);
 			nofErrors++;
 			return(kTRUE);
 		}
 		wc = *dataPtr++;
 		if (wc <= 0) {
-			printf("?-WRGWCT-[processSubevent_sis_33xx]- Wrong word count - %d\n", wc);
+			printf("?-WRGWCT-[processSubevent_sis_3300]- Wrong word count - %d\n", wc);
 			nofErrors++;
 			return(kTRUE);
 		}
 		moduleNumber = header & kMrbSevt_Sis_M_ModuleNumber;
 		if (moduleNumber <= 0) {
-			printf("?-WRGWCT-[processSubevent_sis_33xx]- Wrong module number - %d\n", moduleNumber);
+			printf("?-WRGWCT-[processSubevent_sis_3300]- Wrong module number - %d\n", moduleNumber);
 			nofErrors++;
 			return(kTRUE);
 		}
@@ -1369,7 +1369,7 @@ int processSubevent_sis_33xx(MBSDataIO * mbs) {
 			modStatus = *dataPtr++;
 			acqStatus = *dataPtr++;
 
-			printf(sis33xxInfoFmt, "SIS", "INFO", acqMode, evtCount, pageSize, modStatus, acqStatus);
+			printf(sis3300InfoFmt, "SIS", "INFO", acqMode, evtCount, pageSize, modStatus, acqStatus);
 			printf("\n");
 		}
 		sevtWC -= wc * (sizeof(unsigned int) / sizeof(unsigned short));	/* sevtWC counts in 16 bit words while wc is 32 bits */
@@ -1568,8 +1568,8 @@ void writeHeader(int argc, char * argv[]) {
 	printf("#                              printf(\"%s # %%s\\n\", ...);\n", caenEoeFmt);
 	printf("#            [Sis:Header]      SIS   HDR <id> <wc> <module> # <comments>\n");
 	printf("#            [Sis:Data]        SIS  DATA <chn> <data> # <comments>\n");
-	printf("#            [Sis33xx:Info]    SIS  INFO <acqMode> <evtCount> <pageSize> <status> <acqStatus> # <comments>\n");
-	printf("#                              printf(\"%s # %%s\\n\", ...);\n", sis33xxInfoFmt);
+	printf("#            [Sis3300:Info]    SIS  INFO <acqMode> <evtCount> <pageSize> <status> <acqStatus> # <comments>\n");
+	printf("#                              printf(\"%s # %%s\\n\", ...);\n", sis3300InfoFmt);
 	printf("#            [Madc32:Header]   MADC  HDR <module> <ofmt> <res> <wc> # <comments>\n");
 	printf("#                              printf(\"%s # %%s\\n\", ...);\n", madcHdrFmt);
 	printf("#            [Madc32:Channel]  MADC  CHN <chn> <data> # <comments>\n");

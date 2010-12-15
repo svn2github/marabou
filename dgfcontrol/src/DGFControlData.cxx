@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.19 2008-10-14 17:27:05 Marabou Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.20 2010-12-15 09:07:46 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -92,7 +92,7 @@ DGFControlData::DGFControlData() {
 	TString errMsg;
 
 // open DGF specific resource data base
-	TString rcFile = fRootrc->Get(".RcFile", ".DGFControl.rc");
+	TString rcFile; fRootrc->Get(rcFile, ".RcFile", ".DGFControl.rc");
 	gSystem->ExpandPathName(rcFile);
 	Bool_t ok = this->CheckAccess(rcFile.Data(), kDGFAccessRead, errMsg, kFALSE);
 	if (ok) {
@@ -103,56 +103,54 @@ DGFControlData::DGFControlData() {
 		fIndivSwitchBusTerm = fRootrc->Get(".TerminateSwitchBusIndividually", kFALSE);
 		fUserPSA = fRootrc->Get(".ActivateUserPSACode", kFALSE);
 
-		fDataPath = fRootrc->Get(".DataPath", gSystem->WorkingDirectory());
+		fRootrc->Get(fDataPath, ".DataPath", gSystem->WorkingDirectory());
 		gSystem->ExpandPathName(fDataPath);
 		this->CheckAccess(fDataPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
 
+		TString rdf;
 		fRunDataFile = fDataPath;
 		fRunDataFile += "/";
-		fRunDataFile += fRootrc->Get(".RunDataFile", "DGFRunData.%T-%R.root");
+		fRunDataFile += fRootrc->Get(rdf, ".RunDataFile", "DGFRunData.%T-%R.root");
 		gSystem->ExpandPathName(fRunDataFile);
 
-		fLoadPath = fRootrc->Get(".LoadPath", "$MARABOU/data/xiadgf/v2.80");
+		fRootrc->Get(fLoadPath, ".LoadPath", "$MARABOU/data/xiadgf/v2.80");
 		gSystem->ExpandPathName(fLoadPath);
 		this->CheckAccess(fLoadPath.Data(), kDGFAccessDirectory, errMsg, kTRUE);
 
 		fDSPCodeFile = fLoadPath;
 		fDSPCodeFile += "/";
 
-		TString path = fRootrc->Get(".DSPCode", "dsp/DGFcodeE.bin");
-		fDSPCodeFile += path;
+		TString path;
+		fDSPCodeFile += fRootrc->Get(path, ".DSPCode", "dsp/DGFcodeE.bin");
 		gSystem->ExpandPathName(fDSPCodeFile);
 		this->CheckAccess(fDSPCodeFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
 		fDSPParamsFile = fLoadPath;
 		fDSPParamsFile += "/";
 
-		path = fRootrc->Get(".ParamNames", "dsp/dfgcodeE.var");
-		fDSPParamsFile += path;
+		fDSPParamsFile += fRootrc->Get(path, ".ParamNames", "dsp/dfgcodeE.var");
 		gSystem->ExpandPathName(fDSPParamsFile);
 		this->CheckAccess(fDSPParamsFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
 		fUPSAParamsFile = fLoadPath;
 		fUPSAParamsFile += "/";
 
-		path = fRootrc->Get(".UPSAParams", "dsp/upsaParams.var");
-		fUPSAParamsFile += path;
+		fUPSAParamsFile += fRootrc->Get(path, ".UPSAParams", "dsp/upsaParams.var");
 		gSystem->ExpandPathName(fUPSAParamsFile);
 		this->CheckAccess(fUPSAParamsFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
 		fSystemFPGAConfigFile = fLoadPath;
 		fSystemFPGAConfigFile += "/";
 
-		path = fRootrc->Get(".SystemFPGACode", "Firmware/dgf4c.bin");
-		fSystemFPGAConfigFile += path;
+		fSystemFPGAConfigFile += fRootrc->Get(path, ".SystemFPGACode", "Firmware/dgf4c.bin");
 		gSystem->ExpandPathName(fSystemFPGAConfigFile);
 		this->CheckAccess(fSystemFPGAConfigFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
 		fFippiFPGAConfigFile[TMrbDGFData::kRevD] = fLoadPath;
 		fFippiFPGAConfigFile[TMrbDGFData::kRevD] += "/";
 
-		path = fRootrc->Get(".FippiFPGACode.RevD", "");
-		if (path.Length() == 0) path = fRootrc->Get(".FippiFPGACode", "Firmware/fdgf4c4D.bin");
+		fRootrc->Get(path, ".FippiFPGACode.RevD", "");
+		if (path.IsNull()) fRootrc->Get(path, ".FippiFPGACode", "Firmware/fdgf4c4D.bin");
 		fFippiFPGAConfigFile[TMrbDGFData::kRevD] += path;
 		gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevD]);
 		this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevD].Data(), kDGFAccessRead, errMsg, kTRUE);
@@ -160,24 +158,24 @@ DGFControlData::DGFControlData() {
 		fFippiFPGAConfigFile[TMrbDGFData::kRevE] = fLoadPath;
 		fFippiFPGAConfigFile[TMrbDGFData::kRevE] += "/";
 
-		path = fRootrc->Get(".FippiFPGACode.RevE", "");
-		if (path.Length() == 0) path = fRootrc->Get(".FippiFPGACode", "Firmware/fdgf4c4E.bin");
+		fRootrc->Get(path, ".FippiFPGACode.RevE", "");
+		if (path.IsNull()) fRootrc->Get(path, ".FippiFPGACode", "Firmware/fdgf4c4E.bin");
 		fFippiFPGAConfigFile[TMrbDGFData::kRevE] += path;
 		gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevE]);
 		this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevE].Data(), kDGFAccessRead, errMsg, kTRUE);
 
-		fDgfSettingsPath = fRootrc->Get(".SettingsPath", "../dgfSettings");
+		fDgfSettingsPath = fRootrc->Get(path, ".SettingsPath", "../dgfSettings");
 		gSystem->ExpandPathName(fDgfSettingsPath);
 		this->CheckAccess(fDgfSettingsPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
 
-		path = fRootrc->Get(".CptmCodeFile", "");
-		if (path.Length() == 0) path = fRootrc->Get("TMrbCPTM.CodeFile", "cptm.rbf");
+		fRootrc->Get(path, ".CptmCodeFile", "");
+		if (path.IsNull()) fRootrc->Get(path, "TMrbCPTM.CodeFile", "cptm.rbf");
 		fCptmCodeFile = path;
 		gSystem->ExpandPathName(fCptmCodeFile);
 		this->CheckAccess(fCptmCodeFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
-		path = fRootrc->Get(".CptmSettingsPath", "");
-		if (path.Length() == 0) path = fRootrc->Get("TMrbCPTM.SettingsPath", "../cptmSettings");
+		fRootrc->Get(path, ".CptmSettingsPath", "");
+		if (path.IsNull()) fRootrc->Get(path, "TMrbCPTM.SettingsPath", "../cptmSettings");
 		fCptmSettingsPath = path;
 		gSystem->ExpandPathName(fCptmSettingsPath);
 		this->CheckAccess(fCptmSettingsPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
@@ -261,18 +259,19 @@ Int_t DGFControlData::SetupModuleList() {
 
 	Int_t nofSevts = fDgfrc->Get(".NofSubevents", 0);
 	for (Int_t i = 0; i < nofSevts; i++) {
-		TString sevtName = fDgfrc->Get(".Subevent", Form("%d", i), "Name", "");
+		TString sevtName; fDgfrc->Get(sevtName, ".Subevent", Form("%d", i), "Name", "");
 		if (!sevtName.IsNull()) {
 			TString sn = sevtName;
 			sn(0,1).ToUpper();
 			TString sevtNuna = Form("%d:%s", i, sn.Data());
-			TString sevtClass = fDgfrc->Get(".Subevent", sevtNuna.Data(), "ClassName", "");
+			TString sevtClass; fDgfrc->Get(sevtClass, ".Subevent", sevtNuna.Data(), "ClassName", "");
 			if (sevtClass.Index("TMrbSubevent_DGF", 0) == 0) {
 				fNofClusters++;
+				TString cstmp;
 				TString sevtTitle = "CLU";
-				sevtTitle += fDgfrc->Get(".Subevent", sevtNuna.Data(), "ClusterSerial", 0);
+				sevtTitle += fDgfrc->Get(cstmp, ".Subevent", sevtNuna.Data(), "ClusterSerial", 0);
 				sevtTitle += " ";
-				sevtTitle += fDgfrc->Get(".Subevent", sevtNuna.Data(), "ClusterColor", "");
+				sevtTitle += fDgfrc->Get(cstmp, ".Subevent", sevtNuna.Data(), "ClusterColor", "");
 				fLofModuleKeys[cl].SetName(sevtTitle.Data());
 				fLofModuleKeys[cl].SetPatternMode();
 				fLofClusters.AddNamedX(cl + 1, sevtName.Data(), sevtTitle.Data());
@@ -280,7 +279,7 @@ Int_t DGFControlData::SetupModuleList() {
 				fPatInUse[cl] = 0;
 				Int_t nofModules = fDgfrc->Get(".Subevent", sevtNuna.Data(), "NofModules", 0);
 				if (nofModules > 0) {
-					TString sevtLofModules = fDgfrc->Get(".Subevent", sevtNuna.Data(), "LofModules", "");
+					TString sevtLofModules; fDgfrc->Get(sevtLofModules, ".Subevent", sevtNuna.Data(), "LofModules", "");
 					Int_t modNo = 0;
 					TString dgfName;
 					Int_t crate;
@@ -302,11 +301,11 @@ Int_t DGFControlData::SetupModuleList() {
 							}
 							Int_t serial = fDgfrc->Get(".Module", dgfNuna.Data(), "ClusterSerial", 0);
 							Int_t dgfHex = fDgfrc->Get(".Module", dgfNuna.Data(), "ClusterHexNum", 0);
-							TString dgfColor = fDgfrc->Get(".Module", dgfNuna.Data(), "ClusterColor", "");
-							TString dgfSegment = fDgfrc->Get(".Module", dgfNuna.Data(), "ClusterSegments", "");
+							TString dgfColor; fDgfrc->Get(dgfColor, ".Module", dgfNuna.Data(), "ClusterColor", "");
+							TString dgfSegment; fDgfrc->Get(dgfSegment, ".Module", dgfNuna.Data(), "ClusterSegments", "");
 
 							TString dgfTitle = Form("CLU%d %d (%#x) %s %s", serial, dgfHex, dgfHex, dgfColor.Data(), dgfSegment.Data());
-							dgfName += Form(" (%s)", fDgfrc->Get(".Module", dgfNuna.Data(), "Address", ""));
+							dgfName += Form(" (%s)", fDgfrc->Get(cstmp, ".Module", dgfNuna.Data(), "Address", ""));
 							dgfModule->SetClusterID(serial, dgfColor, dgfSegment, dgfHex);
 							fLofModules.Add(dgfModule);
 							fLofModuleKeys[cl].AddNamedX(this->ModuleIndex(cl, modNo), dgfName.Data(), dgfTitle.Data(), dgfModule);

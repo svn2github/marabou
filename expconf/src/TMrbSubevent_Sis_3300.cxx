@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_3300.cxx,v 1.1 2010-12-14 11:13:39 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_3300.cxx,v 1.2 2010-12-15 09:07:47 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -102,6 +102,7 @@ TMrbSubevent_Sis_3300::TMrbSubevent_Sis_3300(const Char_t * SevtName, const Char
 		fSevtSubtype = 54;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Sis3300");	// we need this base class
 		gDirectory->Append(this);
 	}
 }

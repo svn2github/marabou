@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.12 2010-11-18 13:29:34 Marabou Exp $
+// Revision:       $Id: VMEServerPanel.cxx,v 1.13 2010-12-15 09:07:47 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -163,7 +163,9 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	TString hostNames;
 	Int_t selIdx = -1;
 	TString lynxOs = "";
-	TString vmeHost = gVMEControlData->Vctrlrc()->Get(".HostName", "ppc-0");
+	TString vmeHost;
+	gVMEControlData->Vctrlrc()->Get(vmeHost, ".HostName", "");
+	if (vmeHost.IsNull()) gVMEControlData->Rootrc()->Get(vmeHost, ".HostName", "ppc-0");
 	for (Int_t i = 0; i < kVMENofPPCs; i++) {
 		if (i > 0) hostNames += ":";
 		TString ppc = Form("ppc-%d", i);
@@ -185,7 +187,8 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 																	frameWidth/4, kLEHeight, frameWidth/10,
 																	frameGC, labelGC, entryGC, labelGC);
 	fServerFrame->AddFrame(fSelectPort, frameGC->LH());
-	Int_t tcpPort = gVMEControlData->Vctrlrc()->Get(".TcpPort", 9010);
+	Int_t tcpPort = gVMEControlData->Vctrlrc()->Get(".TcpPort", -1);
+	if (tcpPort == -1) tcpPort = gVMEControlData->Rootrc()->Get(".TcpPort", 9010);
 	fSelectPort->SetText(tcpPort);
 	fSelectPort->SetType(TGMrbLabelEntry::kGMrbEntryTypeCharInt);
 	fSelectPort->SetRange(9000, 9020);
@@ -198,8 +201,10 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC);
 	HEAP(fServerPathFileEntry);
 	fServerFrame->AddFrame(fServerPathFileEntry, frameGC->LH());
-	TString spath = "/nfs/marabou/bin/mrbLynxOsSrv";
-	fServerPathFileEntry->SetText(gVMEControlData->Vctrlrc()->Get(".ServerName", spath.Data()));
+	TString spath;
+	gVMEControlData->Vctrlrc()->Get(spath, ".ServerName", "");
+	if (spath.IsNull()) gVMEControlData->Rootrc()->Get(spath, ".ServerName", "/nfs/marabou/bin/mrbLynxOsSrv");
+	fServerPathFileEntry->SetText(spath.Data());
 
 // Server log types
 	fSelectLogType = new TGMrbLabelCombo(fServerFrame, "Server Output",		&fServerLogTypes,

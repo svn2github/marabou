@@ -5,10 +5,10 @@
 /*! \file			mbsio.h
 	\brief			Structs for MBS I/O
 	\details		Defines structs to read MBS data streams
-	$Author: Rudolf.Lutter $
+	$Author: Marabou $
 	$Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.1 $       
-	$Date: 2009-05-13 06:59:40 $
+	$Revision: 1.2 $
+	$Date: 2010-12-15 09:07:47 $
 *******************************************************************************/
 
 #include "typedefs.h"
@@ -35,7 +35,7 @@
 #define MBS_X_FHEADER			0 							/*!< index: file header */
 
 #define MBS_TY_BUFFER			0x2 						/*!< type: buffer */
-#define MBS_X_BUFFER			1 							/*!< index: buffer */ 
+#define MBS_X_BUFFER			1 							/*!< index: buffer */
 #define MBS_BTYPE_FHEADER		0x000107d0					/*!< file header [1,2000] */
 #define MBS_BTYPE_VME			0x0001000a					/*!< vme event [1,10] */
 #define MBS_BTYPE_EOF			0							/*!< end of file */
@@ -44,7 +44,7 @@
 #define MBS_BTYPE_RAW			0xfffffffd					/*!< raw mode */
 
 #define MBS_TY_EVENT			0x4 						/*!< type: event */
-#define MBS_X_EVENT				2 							/*!< index: event */ 
+#define MBS_X_EVENT				2 							/*!< index: event */
 #define MBS_ETYPE_VME			0x0001000a					/*!< vme event [1,10] */
 #define MBS_ETYPE_EOF			MBS_BTYPE_EOF				/*!< end of file */
 #define MBS_ETYPE_ERROR			MBS_BTYPE_ERROR				/*!< error */
@@ -56,7 +56,7 @@
 #define MBS_ETYPE_STOP			0xfffffffa					/*!< stop event */
 
 #define MBS_TY_SUBEVENT				0x8							/*!< type: subevent */
-#define MBS_X_SUBEVENT				3							/*!< index: subevent */ 
+#define MBS_X_SUBEVENT				3							/*!< index: subevent */
 #define MBS_STYPE_CAMAC_1			0x0001000a					/*!< subevent [1,10]: camac (chn,data) */
 #define MBS_STYPE_CAMAC_WO_ID_1		0x000b000a					/*!< subevent [11,10]: camac w/o chn number */
 #define MBS_STYPE_CAMAC_MULT_MOD	0x000c000a					/*!< subevent [12,10]: camac multi module */
@@ -68,14 +68,22 @@
 #define MBS_STYPE_CAMAC_DGF_3		0x0017000a					/*!< subevent [23,10]: camac, dgf, data stored in hit buffer */
 #define MBS_STYPE_CAMAC_SILENA_1	0x001f000a					/*!< subevent [31,10]: camac, silena 4418 */
 #define MBS_STYPE_CAMAC_SILENA_2	0x0020000a					/*!< subevent [32,10]: camac, silena 4418, data stored in hit buffer */
+#define MBS_STYPE_VME_CAEN_V556_1	0x0021000a					/*!< subevent [33,10]: vme, caen v556 */
+#define MBS_STYPE_VME_CAEN_V556_2	0x0022000a					/*!< subevent [34,10]: vme, caen v556, data stored in hit buffer */
+#define MBS_STYPE_VME_CAEN_V556_3	0x0023000a					/*!< subevent [35,10]: vme, caen v556, data stored in hit buffer */
 #define MBS_STYPE_VME_CAEN_1		0x0029000a					/*!< subevent [41,10]: vme, caen v875, v775 */
 #define MBS_STYPE_VME_CAEN_2		0x002a000a					/*!< subevent [42,10]: vme, caen v875, v775, data stored in hit buffer */
 #define MBS_STYPE_VME_CAEN_3		0x002b000a					/*!< subevent [43,10]: vme, caen v875, v775, data stored in hit buffer */
-#define MBS_STYPE_VME_CAEN_Q1		0x002c000a					/*!< subevent [44,10]: vme, caen qdc */
+#define MBS_STYPE_VME_CAEN_V1X90_1	0x002d000a					/*!< subevent [45,10]: vme, caen v1190, v1290 */
+#define MBS_STYPE_VME_CAEN_V1X90_2	0x002e000a					/*!< subevent [46,10]: vme, caen v1190, v1290, data stored in hit buffer */
+#define MBS_STYPE_VME_CAEN_V1X90_3	0x002f000a					/*!< subevent [47,10]: vme, caen v1190, v1290, data stored in hit buffer */
 #define MBS_STYPE_VME_SIS_1			0x0033000a					/*!< subevent [51,10]: vme, struck/sis */
 #define MBS_STYPE_VME_SIS_2			0x0034000a					/*!< subevent [52,10]: vme, struck/sis, data stored in hit buffer */
 #define MBS_STYPE_VME_SIS_3			0x0035000a					/*!< subevent [53,10]: vme, struck/sis, data stored in hit buffer */
-#define MBS_STYPE_VME_SIS_33		0x0036000a					/*!< subevent [54,10]: vme, struck/sis 33xx, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3300		0x0036000a					/*!< subevent [54,10]: vme, struck/sis 3300, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3302_1	0x0038000a					/*!< subevent [55,10]: vme, struck/sis 3302 */
+#define MBS_STYPE_VME_SIS_3302_2	0x0038000a					/*!< subevent [56,10]: vme, struck/sis 3302, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3302_3	0x0039000a					/*!< subevent [57,10]: vme, struck/sis 3302, data stored in hit buffer */
 #define MBS_STYPE_CAMAC_CPTM		0x003d000a					/*!< subevent [61,10]: camac, cptm Cologne */
 #define MBS_STYPE_DATA_SHORT		0x0040000a					/*!< subevent [64,10]: universal data container, short integer, 2 bytes */
 #define MBS_STYPE_DATA_INT			0x0041000a					/*!< subevent [65,10]: universal data container, integer, 4 bytes */
@@ -84,6 +92,9 @@
 #define MBS_STYPE_VME_MADC_1		0x0051000a					/*!< subevent [81,10]: vme, mesytec madc32 */
 #define MBS_STYPE_VME_MADC_2		0x0052000a					/*!< subevent [82,10]: vme, mesytec madc32, data stored in hit buffer */
 #define MBS_STYPE_VME_MADC_3		0x0053000a					/*!< subevent [83,10]: vme, mesytec madc32, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3820_1	0x005b000a					/*!< subevent [91,10]: vme, sis 3820 scaler */
+#define MBS_STYPE_VME_SIS_3820_2	0x005c000a					/*!< subevent [92,10]: vme, sis 3820 scaler, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3820_3	0x005d000a					/*!< subevent [93,10]:vme, sis 3820 scaler, data stored in hit buffer */
 #define MBS_STYPE_TIME_STAMP		0x00012328					/*!< subevent [1,9000]: time stamp */
 #define MBS_STYPE_DEAD_TIME 		0x00022328					/*!< subevent [2,9000]: dead time */
 #define MBS_STYPE_DUMMY 	 		0x006f006f					/*!< subevent [111,111]: dummy */

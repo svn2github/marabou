@@ -1,13 +1,13 @@
 %%BeginOfCode%%
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_Sis33xx
-// Purpose:        Base class for subevents containing data from SIS 33xx VME modules
+// Name:           TMrbSubevent_Sis3300
+// Purpose:        Base class for subevents containing data from SIS 3300 VME modules
 // Description:    
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbSubevent_Sis33xx : public TObject {
+class TMrbSubevent_Sis3300 : public TObject {
 
 	public:
 
@@ -20,8 +20,8 @@ class TMrbSubevent_Sis33xx : public TObject {
 				};
 
 	public:
-		TMrbSubevent_Sis33xx() {}			// default ctor
-		~TMrbSubevent_Sis33xx() {};			// default dtor
+		TMrbSubevent_Sis3300() {}			// default ctor
+		~TMrbSubevent_Sis3300() {};			// default dtor
 
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
  		void Reset(Int_t InitValue = 0, Bool_t DataOnly = kFALSE);		// reset param data
@@ -87,7 +87,7 @@ class TMrbSubevent_Sis33xx : public TObject {
 
 		Bool_t fIsEmpty;							// kTRUE if empty event
 
-	ClassDef(TMrbSubevent_Sis33xx, 1)			// [Analyze] Store SIS 33xx data
+	ClassDef(TMrbSubevent_Sis3300, 1)			// [Analyze] Store SIS3300 data
 };
 %%EndOfCode%%
 %%SEVT_CLASS_DEFINITION%%

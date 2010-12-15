@@ -2,10 +2,10 @@
 /*!	\file		mbsio.c
 	\brief		MBS raw data input
 	\details	Procedures to read MBS data from disk or tcp socket
-	$Author: Rudolf.Lutter $
+	$Author: Marabou $
 	$Mail:		<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.48 $
-	$Date: 2010-09-28 07:50:30 $
+	$Revision: 1.49 $
+	$Date: 2010-12-15 09:07:47 $
 *****************************************************************************/
 
 /* include files needed by mbsio */
@@ -273,8 +273,32 @@ static MBSBufferElem sevent_types[] = {
 					(void *) _mbs_show_sev_short,
 					(void *) _mbs_convert_sheader
 				},
-				{	MBS_STYPE_VME_SIS_33,
-					"SIS 33xx VME modules",
+				{	MBS_STYPE_VME_SIS_3300,
+					"SIS 3300 VME modules",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_long,
+					(void *) _mbs_show_sev_long,
+					(void *) _mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_SIS_3302_1,
+					"SIS 3302 VME modules (1)",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_long,
+					(void *) _mbs_show_sev_long,
+					(void *) _mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_SIS_3302_2,
+					"SIS 3302 VME modules (2)",
+					sizeof(s_veshe),
+					0,
+					(void *) _mbs_unpack_sev_long,
+					(void *) _mbs_show_sev_long,
+					(void *) _mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_SIS_3302_3,
+					"SIS 3302 VME modules (3)",
 					sizeof(s_veshe),
 					0,
 					(void *) _mbs_unpack_sev_long,

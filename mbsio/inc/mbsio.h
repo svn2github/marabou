@@ -5,10 +5,10 @@
 /*! \file			mbsio.h
 	\brief			Structs for MBS I/O
 	\details		Defines structs to read MBS data streams
-	$Author: Rudolf.Lutter $
+	$Author: Marabou $
 	$Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-	$Revision: 1.24 $
-	$Date: 2010-08-31 09:54:08 $
+	$Revision: 1.25 $
+	$Date: 2010-12-15 09:07:47 $
 *******************************************************************************/
 
 #include "typedefs.h"
@@ -80,7 +80,10 @@
 #define MBS_STYPE_VME_SIS_1			0x0033000a					/*!< subevent [51,10]: vme, struck/sis */
 #define MBS_STYPE_VME_SIS_2			0x0034000a					/*!< subevent [52,10]: vme, struck/sis, data stored in hit buffer */
 #define MBS_STYPE_VME_SIS_3			0x0035000a					/*!< subevent [53,10]: vme, struck/sis, data stored in hit buffer */
-#define MBS_STYPE_VME_SIS_33		0x0036000a					/*!< subevent [54,10]: vme, struck/sis 33xx, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3300		0x0036000a					/*!< subevent [54,10]: vme, struck/sis 3300, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3302_1	0x0038000a					/*!< subevent [55,10]: vme, struck/sis 3302 */
+#define MBS_STYPE_VME_SIS_3302_2	0x0038000a					/*!< subevent [56,10]: vme, struck/sis 3302, data stored in hit buffer */
+#define MBS_STYPE_VME_SIS_3302_3	0x0039000a					/*!< subevent [57,10]: vme, struck/sis 3302, data stored in hit buffer */
 #define MBS_STYPE_CAMAC_CPTM		0x003d000a					/*!< subevent [61,10]: camac, cptm Cologne */
 #define MBS_STYPE_DATA_SHORT		0x0040000a					/*!< subevent [64,10]: universal data container, short integer, 2 bytes */
 #define MBS_STYPE_DATA_INT			0x0041000a					/*!< subevent [65,10]: universal data container, integer, 4 bytes */
