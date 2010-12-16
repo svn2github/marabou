@@ -29,6 +29,7 @@ class TMrbWindow2D;
 class TMrbWindow;
 class FitOneDimDialog;
 class Fit2DimDialog;
+class HprGaxis;
 //______________________________ globals ____________________________________
 
 static const char attrname[]="FH_setdefaults.C";
@@ -36,7 +37,7 @@ static const char fitmacroname[]="fit_user_function.C";
 
 //______________________________________________________________________
 
-class FitHist : public TNamed {
+class FitHist : public TNamed, public TQObject {
 private:
    Int_t   fBinX_1, fBinX_2, fBinY_1, fBinY_2;  // lower, upper bin selected
    Int_t   fBinlx, fBinux, fBinly, fBinuy;     // lower, upper bin in expanded
@@ -55,7 +56,7 @@ private:
    FitOneDimDialog *fFit1DimD;
    Fit2DimDialog *fFit2DimD;
    HistPresent* hp;
-   HTCanvas *cHist;
+   HTCanvas *fCanvas;
    TH1     *expHist, *projHist, *projHistX, *projHistY,*projHistF;
    TString fHname;
    TString fCname;
@@ -113,6 +114,7 @@ private:
    Color_t fHistLineColor;
    Float_t fHistLineWidth;
    Float_t fMarkerSize;
+	Int_t fDrawMarker;
 	Int_t fHistFillStyle;
    Int_t fShowContour;
    Int_t fShowDateBox;
@@ -145,6 +147,13 @@ private:
 	Int_t   fTwoDimLogX;
 	Int_t   fTwoDimLogY;
 	Int_t   fTwoDimLogZ;
+   TString fDrawOpt3Dim;
+   Color_t fHistFillColor3Dim;
+   Color_t fHistLineColor3Dim;
+   Color_t fMarkerColor3Dim; 
+	Color_t f3DimBackgroundColor;
+   Style_t fMarkerStyle3Dim;  
+   Size_t  fMarkerSize3Dim; 
 	
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
@@ -160,7 +169,7 @@ public:
    void Draw3Dim();                      //
    const Char_t * GetCanvasName(){return fCname.Data();};             //
    TRootCanvas* GetMyCanvas(){return mycanvas;};
-   HTCanvas* GetCanvas(){return cHist;};
+   HTCanvas* GetCanvas(){return fCanvas;};
    void  SetMyCanvas(TRootCanvas *myc){mycanvas = myc;};
    TH1* GetSelHist(){return fSelHist;};
    TH1* SetHist(TH1* newhist){
@@ -188,7 +197,11 @@ public:
    void SetFitSliceYMacroName(const char *name){fFitSliceYMacroName = name;};                  //
    void RedefineAxis();                  //
    void AddAxis(Int_t where);           //
-   void Magnify();                 //
+	HprGaxis * DoAddAxis(Int_t where, Double_t ledge, Double_t uedge, Double_t offset=0);
+   void ReDoAxis(); 
+	void ObjMoved(Int_t px, Int_t py, TObject *obj);
+	void ObjCreated(Int_t px, Int_t py, TObject *obj){};
+	void Magnify();                 //
    void GetLimits();               //
    void GetRange();                // get range from another hist
    void AddMark(TPad *, Int_t, Int_t);
@@ -202,8 +215,8 @@ public:
    Bool_t GetCallMinos() {return fCallMinos;};
    void SetInside(Bool_t inside){fSelInside=inside;};
 
-   void SetLogx(Int_t state) {fLogx = state; cHist->SetLogx(state);};
-   void SetLogy(Int_t state) {fLogy = state; cHist->SetLogy(state);};
+   void SetLogx(Int_t state);
+   void SetLogy(Int_t state);
    void SetLogz(Int_t state);
    void SaveUserContours();               //
    void SetUserContours();               //
@@ -279,17 +292,17 @@ public:
    void Superimpose(Int_t);
    void KolmogorovTest();
    void SetCanvasIsDeleted(){fCanvasIsAlive = kFALSE;};
-   void SetSelectedPad(){cHist->cd();};
+   void SetSelectedPad(){fCanvas->cd();};
    void UpdateCanvas(){
       if(!gStyle->GetOptStat()){
-         if(cHist->GetPrimitive("stats"))delete cHist->GetPrimitive("stats");
+         if(fCanvas->GetPrimitive("stats"))delete fCanvas->GetPrimitive("stats");
       }
       if(!gStyle->GetOptTitle()){
-         if(cHist->GetPrimitive("title"))delete cHist->GetPrimitive("title");
+         if(fCanvas->GetPrimitive("title"))delete fCanvas->GetPrimitive("title");
       }
-//      gPad = (TVirtualPad*)cHist;
-//      cHist->cd(); 
-//		cHist->Modified(kTRUE); cHist->Update();
+//      gPad = (TVirtualPad*)fCanvas;
+//      fCanvas->cd(); 
+//		fCanvas->Modified(kTRUE); fCanvas->Update();
 //      cout << " UpdateCanvas() done " << endl;
    };
    void RecursiveRemove(TObject * obj);
@@ -306,7 +319,8 @@ public:
    void Calibrate();
 
    void FastFT();
-
+	void HandleLinLogChanged(TObject *obj);
+	
 ClassDef(FitHist,0)      // A histogram presenter
 };
 #endif

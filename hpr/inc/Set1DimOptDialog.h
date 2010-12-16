@@ -6,7 +6,7 @@
 #include <iostream>
 //_____________________________________________________________________________________
 
-class Set1DimOptDialog : public TObject {
+class Set1DimOptDialog : public TObject , public TQObject{
 
 private:
    void *fValp[100];
@@ -27,6 +27,7 @@ private:
    Color_t fMarkerColor;           //Marker color
    Style_t fMarkerStyle;           //Marker style
    Float_t fMarkerSize;           //Marker width
+   Int_t   fDrawMarker;
    Int_t   fLiveStat1Dim;
    Int_t   fLiveGauss;
    Int_t   fLiveBG;
@@ -41,8 +42,10 @@ private:
 public:
 
    Set1DimOptDialog(TGWindow * win = NULL);
-   ~Set1DimOptDialog() {};
-   void RecursiveRemove(TObject * obj);
+	~Set1DimOptDialog() {};
+//	void Add2ConnectedClasses(TObject *obj);
+	void LinLogChanged(TObject* o);
+	void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetHistAttNow(TCanvas *canvas);
    void SetHistAtt(TCanvas *canvas);

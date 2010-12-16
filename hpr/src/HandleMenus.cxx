@@ -33,6 +33,7 @@
 #include "SetHistOptDialog.h"
 #include "Set1DimOptDialog.h"
 #include "Set2DimOptDialog.h"
+#include "Set3DimOptDialog.h"
 #include "SetColorModeDialog.h"
 #include "SetCanvasAttDialog.h"
 #include "WhatToShowDialog.h"
@@ -109,6 +110,7 @@ enum ERootCanvasCommands {
    kOptionDisp,
    kOption1Dim,
    kOption2Dim,
+   kOption3Dim,
    kOption2DimCol,
    kOptionGraph,
    kOptionHpr,
@@ -227,6 +229,7 @@ enum ERootCanvasCommands {
    kFHRedefineAxis,
    kFHAddAxisX,
    kFHAddAxisY,
+	kFHReDoAxis,
    kFHMarksToWindow,
    kFHDrawWindows,
    kFHDrawFunctions,
@@ -621,6 +624,11 @@ again:
                   case kOption2Dim:
                      {
                      new Set2DimOptDialog(fRootCanvas);
+                     }
+                     break;
+                  case kOption3Dim:
+                     {
+                     new Set3DimOptDialog(fRootCanvas);
                      }
                      break;
                   case kOption2DimCol:
@@ -1069,6 +1077,9 @@ again:
                   case kFHAddAxisY:
                      fFitHist->AddAxis(2);
                      break;
+                  case kFHReDoAxis:
+                     fFitHist->ReDoAxis();
+                     break;
 // Otto end
                }
             default:
@@ -1098,6 +1109,7 @@ void HandleMenus::BuildMenus()
    Bool_t autops = kFALSE;
    Bool_t graph1d = kFALSE;
    Bool_t graph2d = kFALSE;
+   Bool_t graph3d = kFALSE;
 	Bool_t its_start_window = kFALSE;
 	TString cn(fHCanvas->GetName());
 	if ( cn == "cHPr" )
@@ -1105,6 +1117,8 @@ void HandleMenus::BuildMenus()
    if ( fGraph ) {
       if ( fGraph->InheritsFrom("TGraph2D") ) {
          graph2d = kTRUE;
+      } else if ( fGraph->InheritsFrom("TGraph3D") ) {
+         graph3d = kTRUE;
       } else {
          graph1d = kTRUE;
       }
@@ -1344,11 +1358,14 @@ void HandleMenus::BuildMenus()
 
    }
    if (!fGraph && fFitHist) fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
-   if (fFitHist && !(fFitHist->Its2dim()))
+   if ( nDim == 1)
       fOptionMenu->AddEntry("How to display a 1-dim histogram", kOption1Dim);
    if ( graph2d || (fFitHist && fFitHist->Its2dim())) {
       fOptionMenu->AddEntry("How to display a 2-dim histogram ", kOption2Dim);
       fOptionMenu->AddEntry("Color mode of 2-dim histogram", kOption2DimCol);
+   }
+   if ( graph3d || nDim == 3) {
+      fOptionMenu->AddEntry("How to display a 3-dim histogram ", kOption3Dim);
    }
    if ( graph1d ) {
 		fOptionMenu->AddEntry("How to display a graph", kOptionGraph);
@@ -1453,6 +1470,7 @@ void HandleMenus::BuildMenus()
 				fDisplayMenu->AddEntry("Redefine Axis",     kFHRedefineAxis);
 				fDisplayMenu->AddEntry("Add new X axis",     kFHAddAxisX);
 				fDisplayMenu->AddEntry("Add new Y axis",     kFHAddAxisY);
+				fDisplayMenu->AddEntry("Repaint extra axis", kFHReDoAxis);
 
 				if (fFitHist->GetSelHist()->GetDimension() == 1) {
 					fDisplayMenu->AddEntry("Log Y scale",  kFHLogY);

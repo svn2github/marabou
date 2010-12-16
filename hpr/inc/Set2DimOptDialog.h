@@ -45,6 +45,8 @@ private:
 	Int_t   fTwoDimLogX;
 	Int_t   fTwoDimLogY;
 	Int_t   fTwoDimLogZ;
+	Int_t   fUseGL;
+	Int_t   fContourLevels;
 	
 public:
 

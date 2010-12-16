@@ -9,6 +9,7 @@
 #include "TGraph.h"
 #include "TH1.h"
 #include "TStyle.h"
+#include "TRegexp.h"
 #include "Set1DimOptDialog.h"
 #include <iostream>
 
@@ -123,8 +124,8 @@ be selected.\n\
    fValp[ind++] = &fOneDimLogX;
    fRow_lab->Add(new TObjString("CheckButton+Log Y scale"));
    fValp[ind++] = &fOneDimLogY;
-   fRow_lab->Add(new TObjString("CommentOnly+ "));
-   fValp[ind++] = &dummy;
+	fRow_lab->Add(new TObjString("CheckButton+Draw Marker"));
+   fValp[ind++] = &fDrawMarker;
 	
 	fRow_lab->Add(new TObjString("CheckButton_Live statbox"));
 	fValp[ind++] = &fLiveStat1Dim;
@@ -143,6 +144,16 @@ be selected.\n\
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
 }
+//_______________________________________________________________________
+/*
+void Set1DimOptDialog::Add2ConnectedClasses(TObject *obj)
+{
+	//	cout << "Add2ConnectedClasses " <<obj->ClassName() << " gPad " << gPad << endl;
+	this->Connect("LinLogChanged(TObject*)", obj->ClassName(), obj,
+					  "LinLogChanged(TObject*)");
+					  fHasConnection = kTRUE;
+}
+*/
 //_______________________________________________________________________
 
 void Set1DimOptDialog::RecursiveRemove(TObject * obj)
@@ -226,21 +237,31 @@ void Set1DimOptDialog::SetHistAtt(TCanvas *canvas)
 	      pad->Update();
       }
    }
-	canvas->SetLogx(fOneDimLogX);
-	canvas->SetLogy(fOneDimLogY);
-	/*
-	if (fLiveStat1Dim) {
-		if (!canvas->GetAutoExec())
-			canvas->ToggleAutoExec();
-   } else {
-       if (canvas->GetAutoExec())
-          canvas->ToggleAutoExec();
-   }
-*/
+   Bool_t changed = kFALSE;
+	if (canvas->GetLogx() != fOneDimLogX) {
+		canvas->SetLogx(fOneDimLogX);
+		changed = kTRUE;
+	}
+	if (canvas->GetLogy() != fOneDimLogY) {
+		canvas->SetLogy(fOneDimLogY);
+		changed = kTRUE;
+	}
 	canvas->Pop();
 	canvas->cd();
 	canvas->Modified();
 	canvas->Update();
+	if (changed) 
+		LinLogChanged(canvas);
+}
+//____________________________________________________________
+void Set1DimOptDialog::LinLogChanged(TObject* o)
+{
+	Long_t args[1];
+	args[0] = (Long_t)o;
+	if (gDebug > 1 )
+		cout << "Set1DimOptDialog::Emit(LinLogChanged(TObject*)" << endl;
+	
+	Emit("LinLogChanged(TObject*)", args );
 }
 //____________________________________________________________
 
@@ -265,7 +286,18 @@ void Set1DimOptDialog::SetAtt(TH1* hist)
    } else {
 	   hist->SetMarkerSize(fMarkerSize);
    }
+	TRegexp dm("P");
+	if (fDrawMarker |= 0) {
+		if (!fDrawOpt.Contains("P")) {
+			fDrawOpt += "P";
+		}
+	} else if (fDrawOpt.Contains("P")) {
+		fDrawOpt(dm) = "";
+		hist->SetMarkerSize(0.01);
+	}
+// 	cout << "Set1DimOptDialog::SetAtt " << fDrawOpt << endl;
 	hist->SetDrawOption(fDrawOpt);
+	hist->SetOption(fDrawOpt);
 }
 //______________________________________________________________________
 
@@ -296,6 +328,11 @@ void Set1DimOptDialog::SetDefaults()
    gStyle->SetMarkerColor     (env.GetValue("Set1DimOptDialog.MarkerColor",       1));
    gStyle->SetMarkerStyle     (env.GetValue("Set1DimOptDialog.MarkerStyle",       7));
    gStyle->SetMarkerSize      (env.GetValue("Set1DimOptDialog.MarkerSize",      1.));
+//	if (fDrawMarker |= 0) {
+//		temp = gStyle->GetDrawOption();
+//		temp+= "P";
+//		gStyle->SetDrawOption(temp);
+//	}
 	gStyle->SetOptLogx         (env.GetValue("Set1DimOptDialog.fOneDimLogX",     0));
 	gStyle->SetOptLogy         (env.GetValue("Set1DimOptDialog.fOneDimLogY",     0));
 }
@@ -316,7 +353,12 @@ void Set1DimOptDialog::SetHistAttPerm()
       gStyle->SetDrawOption(fErrorMode);
    else
       gStyle->SetDrawOption("");
-   gStyle->SetMarkerColor  (fMarkerColor);
+	if (fDrawMarker |= 0) {
+		TString temp = gStyle->GetDrawOption();
+		temp+= "P";
+		gStyle->SetDrawOption(temp);
+	}
+	gStyle->SetMarkerColor  (fMarkerColor);
    gStyle->SetMarkerStyle  (fMarkerStyle);
    gStyle->SetMarkerSize   (fMarkerSize );
 	gStyle->SetOptLogx      (fOneDimLogX);
@@ -339,7 +381,8 @@ void Set1DimOptDialog::SaveDefaults()
 	env.SetValue("Set1DimOptDialog.MarkerColor",    fMarkerColor     );
 	env.SetValue("Set1DimOptDialog.MarkerStyle",    fMarkerStyle     );
 	env.SetValue("Set1DimOptDialog.MarkerSize",     fMarkerSize      );
-
+	env.SetValue("Set1DimOptDialog.fDrawMarker",    fDrawMarker      );
+	
    env.SetValue("Set1DimOptDialog.fLiveStat1Dim"  , fLiveStat1Dim);
    env.SetValue("Set1DimOptDialog.fLiveGauss"     , fLiveGauss);
    env.SetValue("Set1DimOptDialog.fLiveBG"        , fLiveBG);
@@ -379,8 +422,8 @@ void Set1DimOptDialog::RestoreDefaults()
 	fMarkerColor   = fHist->GetMarkerColor();
 	fMarkerStyle   = fHist->GetMarkerStyle();
 	fMarkerSize    = fHist->GetMarkerSize();
-	TString drawopt= fHist->GetDrawOption();
-	
+	TString drawopt= fHist->GetOption();
+	cout << "Set1DimOptDialog::RestoreDefaults() drawopt" <<drawopt << endl;
 	fFill1Dim      = fHist->GetFillStyle() != 0;
 	if (drawopt.Length() < 1) {
 	   fErrorMode = "none";
@@ -392,8 +435,10 @@ void Set1DimOptDialog::RestoreDefaults()
 		else                         fLabelsTopX = 0;
 		if (drawopt.Contains("Y+"))  fLabelsRightY = 1;
 		else                         fLabelsRightY = 0;
-		if (drawopt.Contains("HIST"))fShowContour = 1;
+		if (drawopt.Contains("HIST",TString::kIgnoreCase))fShowContour = 1;
 		else                         fShowContour = 0;
+		if (drawopt.Contains("P"))   fDrawMarker  = 1;
+		else                         fDrawMarker  = 0;
 		TString em;
 		fErrorMode = "none";
 		if (drawopt.Contains("E")) {

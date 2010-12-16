@@ -728,8 +728,8 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 			      cout << "Adjust point " << i << " from " << x << " to " << xmax << endl;
 				}
 			}
-         cHist->Modified();
-         cHist->Update();
+         fCanvas->Modified();
+         fCanvas->Update();
       }
 //      Double_t cont = 0;
       double *sum = new double[nxbins];
@@ -927,7 +927,7 @@ void FitHist::DrawSelectedFunctions()
 	TIter next(hp->fAllFunctions);
 	TObjString * tobjs;
 	TFile * f;
-	cHist->cd();
+	fCanvas->cd();
 	while ( (tobjs = (TObjString *)next()) ) {
 	   TString ent = tobjs->GetString();
 		TString filename(ent);
@@ -943,8 +943,8 @@ void FitHist::DrawSelectedFunctions()
 	   }
 		f->Close();
    }
-	cHist->Modified();
-	cHist->Update();
+	fCanvas->Modified();
+	fCanvas->Update();
 }
 //____________________________________________________________________________________
 
@@ -1049,12 +1049,12 @@ void FitHist::ExecFitMacro()
 //      cmd.Remove(p,2);
       cmd = cmd + "(\"" + fSelHist->GetName() + "\")";
       cout << cmd << endl;
-      cHist->cd();
+      fCanvas->cd();
       gROOT->ProcessLine((const char *) cmd);
 //      fSelPad->Modified(kTRUE);
 //      fSelPad->Update();
-      cHist->Modified(kTRUE);
-      cHist->Update();
+      fCanvas->Modified(kTRUE);
+      fCanvas->Update();
    } else
       WarnBox("Macro not found");
 }
@@ -1160,7 +1160,7 @@ void FitHist::ExecFitSliceYMacro()
                   + Form("%d",binXup)  + ")";
 //                  "\", 0, 0, 0, 0)";
       cout << cmd << endl;
-      cHist->cd();
+      fCanvas->cd();
       gROOT->ProcessLine((const char *) cmd);
       if (hp) {
          hp->ClearSelect();
@@ -1198,8 +1198,8 @@ void FitHist::ExecFitSliceYMacro()
 
 //      fSelPad->Modified(kTRUE);
 //      fSelPad->Update();
-//      cHist->Modified(kTRUE);
-//      cHist->Update();
+//      fCanvas->Modified(kTRUE);
+//      fCanvas->Update();
    } else
       WarnBox("Macro not found");
 }

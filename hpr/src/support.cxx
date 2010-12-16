@@ -365,7 +365,21 @@ void SelectButton(TString & cmd,
    }
    button->Draw();
 }
-
+//______________________________________________________________________________________
+void SetSelected(TButton *b, Bool_t sel) 
+{
+	if ( b ) {
+		if ( sel ) {
+			b->SetBit(kSelected);
+			b->SetFillColor(3);
+		} else {
+			b->ResetBit(kSelected);
+			b->SetFillColor(19);
+		}
+		b->Modified(kTRUE);
+		b->Update();
+	}
+}
 //______________________________________________________________________________________
 
 HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
@@ -1193,54 +1207,6 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
    	}
    }
    return ndeleted;
-}
-//___________________________________________________________________________
-
-TH1 * calhist(TH1 * hist, TF1 * calfunc,
-              Int_t  nbin_cal, Axis_t low_cal, Axis_t up_cal,
-              const char * origname)
-{
-   TString hname_cal;
-   if (origname) hname_cal = origname;
-   else          hname_cal = hist->GetName();
-   hname_cal += "_cal";
-   TString title_cal(hist->GetTitle());
-   title_cal += "_calibrated";
-   title_cal += ";Energy[KeV];Events[";
-   title_cal += Form("%4.2f", (up_cal-low_cal)/(Double_t)nbin_cal);
-   title_cal += " KeV]";
-   TH1 * hist_cal;
-   if      (!strcmp(hist->ClassName(), "TH1F"))
-   	hist_cal = new TH1F(hname_cal, title_cal,nbin_cal,
-                     low_cal, low_cal + up_cal);
-   else if (!strcmp(hist->ClassName(), "TH1D"))
-   	hist_cal = new TH1D(hname_cal, title_cal,nbin_cal,
-                     low_cal, low_cal + up_cal);
-   else if (!strcmp(hist->ClassName(), "TH1S"))
-   	hist_cal = new TH1S(hname_cal, title_cal,nbin_cal,
-                     low_cal, low_cal + up_cal);
-   else
-   	hist_cal = new TH1C(hname_cal, title_cal,nbin_cal,
-                     low_cal, low_cal + up_cal);
-
-//   under - overflows of origin hist are taken as they are
-   hist_cal->SetBinContent(0, hist->GetBinContent(0));
-   hist_cal->SetBinContent(hist_cal->GetNbinsX()+1,
-                           hist->GetBinContent(hist->GetNbinsX()+1));
-//  update number of entries
-   hist_cal->SetEntries(hist->GetBinContent(0) +
-                        hist->GetBinContent(hist->GetNbinsX()+1));
-// shuffle bins
-   for (Int_t bin = 1; bin <= hist->GetNbinsX(); bin++) {
-      Axis_t binw = hist->GetBinWidth(bin);
-      Axis_t bcent = hist->GetBinCenter(bin);
-      for (Int_t cnt = 0; cnt < hist->GetBinContent(bin); cnt++) {
-         Axis_t bcent_r = bcent + binw  * (gRandom->Rndm() - 0.5);
-         Axis_t bcent_cal = calfunc->Eval(bcent_r);
-         hist_cal->Fill(bcent_cal);
-      }
-   }
-   return hist_cal;
 }
 //_______________________________________________________________________________________
 

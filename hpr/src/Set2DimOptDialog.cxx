@@ -66,6 +66,53 @@ SURF5 : Same as SURF3 but only the colored contour is drawn. Used with\n\
           or polar coordinates, option SURF3 is used.\n\
 ARR   : arrow mode. Shows gradient between adjacent cells\n\
 TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
+\n\
+Option GL:\n\
+Use OpenGL to display histogram together with the LEGO or SURF options\n\
+\n\
+Interaction with the OpenGL plots \n\
+Selectable parts\n\
+Different parts of the plot can be selected:\n\
+\n\
+    * xoz, yoz, xoy back planes: When such a plane selected, it's highlighted\n\
+	 * in green if the dynamic slicing by this plane is supported, and it's highlighted in red,\n\
+	 * if the dynamic slicing is not supported.\n\
+    * The plot itself: On surfaces, the selected surface is outlined in red.\n\
+	 * (TF3 and ISO are not outlined).\n\
+	 * On lego plots, the selected bin is highlighted.\n\
+	 * The bin number and content are displayed in pad's status bar.\n\
+	 * In box plots, the box or sphere is highlighted and the bin info is displayed\n\
+	 * in pad's status bar.\n\
+\n\
+Rotation and zooming\n\
+\n\
+    * Rotation: When the plot is selected, it can be rotated by pressing and holding\n\
+	 * the left mouse button and move the cursor.\n\
+    * Zoom/Unzoom: Mouse wheel or 'j', 'J', 'k', 'K' keys. \n\
+\n\
+Panning\n\
+The selected plot can be moved in a pad's area by pressing and holding the left mouse button\n\
+and the shift key.\n\
+\n\
+Box cut\n\
+Surface, iso, box, TF3 and parametric painters support box cut by pressing the 'c' or 'C' key\n\
+when the mouse cursor is in a plot's area. That will display a transparent box, \n\
+cutting away part of the surface (or boxes) in order to show internal part of plot. \n\
+This box can be moved inside the plot's area (the full size of the box is equal to the\n\
+plot's surrounding box) by selecting one of the box cut axes and pressing the left mouse\n\
+button to move it.\n\
+\n\
+Plot specific interactions (dynamic slicing etc.)\n\
+Currently, all gl-plots support some form of slicing. When back plane is selected \n\
+(and if it's highlighted in green) you can press and hold left mouse button and shift key \n\
+and move this back plane inside plot's area, creating the slice. During this \"slicing\" \n\
+plot becomes semi-transparent. To remove all slices (and projected curves for surfaces)\n\
+double click with left mouse button in a plot's area.\n\
+\n\
+Surface with option \"GLSURF\"\n\
+The surface profile is displayed on the slicing plane. The profile projection is drawn\n\
+on the back plane by pressing 'p' or 'P' key.\n\
+For further details contact ROOTs documentation.\n\
 ";
 
    const char *fDrawOpt2[kNdrawopt] =
@@ -115,6 +162,8 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
 	else                             fHideBackBox = 0;
 	if (fDrawOpt2Dim.Contains("FB")) fHideFrontBox = 1;
 	else                             fHideFrontBox = 0;
+//	if (fDrawOpt2Dim.Contains("GL")) fUseGL = 1;
+//	else                             fUseGL = 0;
 	
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
@@ -185,21 +234,25 @@ TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
    fRow_lab->Add(new TObjString("Float_Value+MSize"));
    fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize2Dim;
 	
-	fRow_lab->Add(new TObjString("CheckButton_Log X"));
-	fRow_lab->Add(new TObjString("CheckButton+Log Y"));
-	fRow_lab->Add(new TObjString("CheckButton+Log Z"));
+	fRow_lab->Add(new TObjString("CheckButton_   Log X "));
+	fRow_lab->Add(new TObjString("CheckButton+   Log Y "));
+	fRow_lab->Add(new TObjString("CheckButton+   Log Z "));
 	fValp[ind++] = &fTwoDimLogX;
 	fValp[ind++] = &fTwoDimLogY;
 	fValp[ind++] = &fTwoDimLogZ;
+	fRow_lab->Add(new TObjString("CheckButton_Use GL (3D)"));
+   fRow_lab->Add(new TObjString("CheckButton+    No Fbox"));
+   fRow_lab->Add(new TObjString("CheckButton+    No Bbox"));
+	fValp[ind++] = &fUseGL;
+	fValp[ind++] = &fHideFrontBox;
+	fValp[ind++] = &fHideBackBox;
 	fRow_lab->Add(new TObjString("CheckButton_Z Scale"));
-   fRow_lab->Add(new TObjString("CheckButton+No Fbox"));
-   fRow_lab->Add(new TObjString("CheckButton+No Bbox"));
    fRow_lab->Add(new TObjString("CheckButton+Live stat"));
+	fRow_lab->Add(new TObjString("PlainIntVal+Cont Levs"));
    fValp[ind++] = &fShowZScale;
-   fValp[ind++] = &fHideFrontBox;
-   fValp[ind++] = &fHideBackBox;
    fValp[ind++] = &fLiveStat2Dim;
-//   fRow_lab->Add(new TObjString("DoubleValue_LogScaleMin"));
+	fValp[ind++] = &fContourLevels;
+	//   fRow_lab->Add(new TObjString("DoubleValue_LogScaleMin"));
 //   fRow_lab->Add(new TObjString("DoubleValue+LogScaleMax"));
 //   fValp[ind++] = &fLogScaleMin;
 //   fValp[ind++] = &fLogScaleMax;
@@ -261,7 +314,7 @@ void Set2DimOptDialog::SetHistAttNow(TCanvas *canvas)
       if (fOptRadio[i] == 1) {
 //         cout << "fDrawOpt2DimArray[" << i << "]" << endl;
          fDrawOpt2Dim = fDrawOpt2DimArray[i];
-//         if (fShowZScale)   fDrawOpt2Dim += "Z";
+        if (fUseGL)   fDrawOpt2Dim.Prepend("GL");
 
       }
    }
@@ -285,10 +338,18 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
       ||fDrawOpt.Contains("CONT1") || fDrawOpt.Contains("CONT4")
       ||fDrawOpt.Contains("TRI2")  || fDrawOpt.Contains("SURF1")
       ||fDrawOpt.Contains("SURF2") || fDrawOpt.Contains("SURF3")
-      ||fDrawOpt.Contains("LEGO2") ) )
+      ||fDrawOpt.Contains("LEGO2") ) && fUseGL == 0 )
       fDrawOpt += "Z";
    if (fHideFrontBox) fDrawOpt += "FB";
    if (fHideBackBox)  fDrawOpt += "BB";
+	if (fUseGL && ( fDrawOpt.Contains("LEGO") ||fDrawOpt.Contains("SURF"))) {
+		fDrawOpt.Prepend("GL");
+		gStyle->SetCanvasPreferGL(kTRUE);
+
+	} else {
+		gStyle->SetCanvasPreferGL(kFALSE);
+	}
+		
 
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("TGraph2D")) {
@@ -304,7 +365,10 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
 			((TH2*)obj)->SetMarkerColor(fMarkerColor2Dim);  
 			((TH2*)obj)->SetMarkerStyle(fMarkerStyle2Dim);  
 			((TH2*)obj)->SetMarkerSize (fMarkerSize2Dim);   			
-      } else if ((obj->InheritsFrom("TPad"))) {
+			if (((TH2*)obj)->GetContour() != fContourLevels) {
+				((TH2*)obj)->SetContour(fContourLevels);
+			}
+		} else if ((obj->InheritsFrom("TPad"))) {
          TPad *pad = (TPad*)obj;
          TIter next1(pad->GetListOfPrimitives());
          TObject *obj1;
@@ -313,6 +377,9 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
 				if (obj1->InheritsFrom("TH1")) {
                ((TH2*)obj1)->SetDrawOption(fDrawOpt);
                ((TH2*)obj1)->SetOption(fDrawOpt);
+					if (((TH2*)obj1)->GetContour() != fContourLevels) {
+						((TH2*)obj1)->SetContour(fContourLevels);
+					}
             }
          }
 	      pad->Modified();
@@ -357,7 +424,7 @@ void Set2DimOptDialog::SetHistAttPermLocal()
 
 void Set2DimOptDialog::SetHistAttPerm()
 {
-   cout << "Set2DimOptDialog:: SetHistAttPerm()" << endl;
+//    cout << "Set2DimOptDialog:: SetHistAttPerm()" << endl;
    TEnv env(".hprrc");
    env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim);
    env.SetValue("Set2DimOptDialog.fDrawOpt2Dim", fDrawOpt2Dim);
@@ -372,6 +439,7 @@ void Set2DimOptDialog::SetHistAttPerm()
 	env.SetValue("Set2DimOptDialog.fTwoDimLogX",       fTwoDimLogX       );
 	env.SetValue("Set2DimOptDialog.fTwoDimLogY",       fTwoDimLogY       );
 	env.SetValue("Set2DimOptDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	env.SetValue("Set2DimOptDialog.fUseGL",            fUseGL            );
 	
 	env.SaveLevel(kEnvLocal);
 }
@@ -392,6 +460,8 @@ void Set2DimOptDialog::SaveDefaults()
 	env.SetValue("Set2DimOptDialog.fTwoDimLogX",       fTwoDimLogX       );
 	env.SetValue("Set2DimOptDialog.fTwoDimLogY",       fTwoDimLogY       );
 	env.SetValue("Set2DimOptDialog.fTwoDimLogZ",       fTwoDimLogZ       );
+	env.SetValue("Set2DimOptDialog.fUseGL",            fUseGL            );
+	env.SetValue("Set2DimOptDialog.fContourLevels",    fContourLevels    );
 	env.SaveLevel(kEnvLocal);
 }
 
@@ -414,6 +484,8 @@ void Set2DimOptDialog::RestoreDefaults()
 	fTwoDimLogX        = env.GetValue("Set2DimOptDialog.fTwoDimLogX",        0);
 	fTwoDimLogY        = env.GetValue("Set2DimOptDialog.fTwoDimLogY",        0);
 	fTwoDimLogZ        = env.GetValue("Set2DimOptDialog.fTwoDimLogZ",        0);
+	fUseGL             = env.GetValue("Set2DimOptDialog.fUseGL",             0);
+	fContourLevels     = env.GetValue("Set2DimOptDialog.fContourLevels",    20);
 }
 //______________________________________________________________________
 

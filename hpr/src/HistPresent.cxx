@@ -262,6 +262,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fComSocket       = 0;
    fSocketToConnect = 9090;
    fConnectedOnce = kFALSE;
+	fHfromM_aButton = NULL;
    fHelpBrowser = NULL;
    fUseHist = kFALSE;
    fApplyGraphCut = kFALSE;
@@ -662,7 +663,7 @@ void HistPresent::TurnButtonGreen(TVirtualPad ** pad)
 
 void HistPresent::ShowContents(const char *fname, const char * dir, const char* bp)
 {
-   static Int_t ycanvas=5;
+	static Int_t ycanvas=5;
    TMrbStatistics * st = NULL;
    TList lofF;
    TList lofW1;
@@ -684,17 +685,6 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
       GeneralAttDialog::fMaxListEntries = 1000;
    }
 //   TurnButtonGreen(&activeFile);
-
-   if (bp) {
-      TButton * b;
-      b = (TButton *)strtoul(bp, 0, 16);
-//      cout << "bp " << b << endl;
-      if (b) {
-        b->SetBit(kSelected);
-        b->SetFillColor(3);
-        b->Modified(kTRUE);b->Update();
-      }
-   }
    void* dirp=gSystem->OpenDirectory(".");
    const char * fn;
    TString suffix(fHlistSuffix);
@@ -780,7 +770,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             fSocketToConnect = GetInteger("Socket to connect",fSocketToConnect
                         ,&ok,fRootCanvas);
             if (!ok) return;
-            fConnectedOnce = kTRUE;
+//            fConnectedOnce = kTRUE;
          }
          fComSocket = new TSocket(*fHostToConnect, fSocketToConnect);
          if (!fComSocket->IsValid()) {
@@ -801,19 +791,39 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
                	cerr << "Connection not accepted, message: "
 			      	<< setred << smess << setblack << endl;
                	fComSocket->Close();
-               	fComSocket = 0;
+               	fComSocket = NULL;
                	if (mess) delete mess;
                	return;
             	}
             }
-         }
+            fConnectedOnce = kTRUE;
+			}
+			if ( fComSocket ) {
+				if (bp) {
+					TButton * b;
+					b = (TButton *)strtoul(bp, 0, 16);
+					//      cout << "bp " << b << endl;
+					if (b) {
+						fHfromM_aButton = b;
+						SetSelected(fHfromM_aButton, kTRUE);
+					} else {
+						fHfromM_aButton = NULL;
+					}
+				}
+			}
       }
       if (GeneralAttDialog::fShowListsOnly <= 0) {
       	st = getstat(fComSocket);
       	if (!st) {
-         	cout << setred << "Cant get stat, Connection lost?" << setblack << endl;
-//         	fComSocket->Close("force");
-//         	fComSocket = NULL;
+				if ( !fComSocket->IsValid() ) {
+					cout << setred << "Connection lost, M_analyze dead??" << setblack << endl;
+					fComSocket->Close("force");
+					fComSocket = NULL;
+					if ( fHfromM_aButton )
+						SetSelected(fHfromM_aButton, kFALSE);
+				} else {
+					cout << setred << "Cant get stat, connection seems alive" << setblack << endl;
+				}	
          	return;
       	} else {
          	nstat = st->GetListOfEntries()->GetSize();
@@ -1227,10 +1237,15 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char
       if (!fComSocket) return;
       st = getstat(fComSocket);
       if (!st) {
-         WarnBox(" cant get stat(fComSocket)");
-         cout << setred << "Cant get stat, Connection lost?" << setblack << endl;
-//         fComSocket->Close("force");
-//         fComSocket = NULL;
+			if ( !fComSocket->IsValid() ) {
+				cout << setred << "Connection lost, M_analyze dead??" << setblack << endl;
+				fComSocket->Close("force");
+				fComSocket = NULL;
+				if ( fHfromM_aButton )
+					SetSelected(fHfromM_aButton, kFALSE);
+			} else {
+				cout << setred << "Cant get stat, connection seems alive" << setblack << endl;
+			}	
          return;
       }
    } else if (sname.Index(rname) > 0) {
@@ -1581,9 +1596,15 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
 
    TMrbStatistics * st = getstat(fComSocket);
    if (!st) {
-       cout << " cant get stat(fComSocket)" << endl;
-//       fComSocket->Close("force");
-//       fComSocket = NULL;
+		if ( !fComSocket->IsValid() ) {
+			cout << setred << "Connection lost, M_analyze dead??" << setblack << endl;
+			fComSocket->Close("force");
+			fComSocket = NULL;
+			if ( fHfromM_aButton )
+				SetSelected(fHfromM_aButton, kFALSE);
+		} else {
+			cout << setred << "Cant get stat, connection seems alive" << setblack << endl;
+		}	
        return;
    } else {
 //         st->Print();
@@ -1596,9 +1617,15 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
    while ( (stent = (TMrbStatEntry*)nextentry()) ) {
       hist = (TH1 *) gethist(stent->GetName(), fComSocket);
       if (!hist){
-         cout << setred << "Cant get hist, Connection lost?" << setblack << endl;
-//         fComSocket->Close("force");
-//         fComSocket = NULL;
+			if ( !fComSocket->IsValid() ) {
+				cout << setred << "Connection lost, M_analyze dead??" << setblack << endl;
+				fComSocket->Close("force");
+				fComSocket = NULL;
+				if ( fHfromM_aButton )
+					SetSelected(fHfromM_aButton, kFALSE);
+			} else {
+				cout << setred << "Cant get histogram, connection seems alive" << setblack << endl;
+			}	
          break;
       }
       f->cd();
@@ -2137,9 +2164,15 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
       }
       hist = gethist(hname.Data(), fComSocket);
       if (!hist){
-         cout << setred << "Cant get hist " << hname <<  " Connection lost?" << setblack << endl;
-//         fComSocket->Close("force");
-//         fComSocket = NULL;
+			if ( !fComSocket->IsValid() ) {
+				cout << setred << "Connection lost, M_analyze dead??" << setblack << endl;
+				fComSocket->Close("force");
+				fComSocket = NULL;
+				if ( fHfromM_aButton )
+					SetSelected(fHfromM_aButton, kFALSE);
+			} else {
+				cout << setred << "Cant get histogram, connection seems alive" << setblack << endl;
+			}	
 		} else {
 			if ( hsuffix != NULL ) {
 				TString hn(hist->GetName());
@@ -2887,9 +2920,15 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
 //      Bool_t ok;
       hist = gethist(hname, fComSocket);
       if (!hist){
-         cout << setred << "Cant get hist, connection lost?" << setblack << endl;
-//         fComSocket->Close("force");
-//         fComSocket = NULL;
+			if ( !fComSocket->IsValid() ) {
+				cout << setred << "Connection lost, M_analyze dead??" << setblack << endl;
+				fComSocket->Close("force");
+				fComSocket = NULL;
+				if ( fHfromM_aButton )
+					SetSelected(fHfromM_aButton, kFALSE);
+			} else {
+				cout << setred << "Cant get histogram, connection seems alive" << setblack << endl;
+			}	
       } else {
          hist->SetUniqueID(0);
       }

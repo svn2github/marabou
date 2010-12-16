@@ -103,9 +103,6 @@ TColor * GetColorByInd(Int_t index);
 void     SetUserPalette(Int_t startindex, TArrayI * pixels); 
 void     AdjustMaximum(TH1 * h2, TArrayD * xyvals);
 Int_t    DeleteOnFile(const char * fname, TList * list, TGWindow * win =0);
-TH1 * calhist(TH1 * hist, TF1 * calfunc,
-              Int_t  nbin_cal, Axis_t low_cal, Axis_t binw_cal,
-              const char * origname =0);
 void     PrintGraph(TGraphErrors * gr); 
 Bool_t   IsInsideFrame(TCanvas *c, Int_t px, Int_t py);
 Int_t    FindGraphs(TVirtualPad *ca, TList *logr=NULL, TList *pads=NULL);
@@ -136,6 +133,7 @@ void SetAxisGraphY(TCanvas *c, TGraph *gr);
 void SetAxisHistY(TCanvas *c, TH1 *);
 void ConvertTimeToString(time_t t, TAxis * a, TString * string);
 Double_t ConvertToTimeOrDouble(const char * string, TAxis * a);
+void SetSelected(TButton *b, Bool_t sel = kTRUE);
 
 inline void nothing();
 #endif

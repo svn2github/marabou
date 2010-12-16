@@ -122,7 +122,7 @@ protected:
    Bool_t  fAnyFromSocket;
    TGWindow * fLastWindow;
    TGWindow * fcHprWindow;
-
+	TButton * fHfromM_aButton;
    Int_t         fLabelMaxDigits;
 
    Color_t       fFuncColor;

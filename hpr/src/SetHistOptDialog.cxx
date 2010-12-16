@@ -87,6 +87,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 	   cout << "No Histogram in Canvas" << endl;
 	}
    RestoreDefaults();
+	cout << "SetHistOptDialog, nh1, nh2 " << nh1 << " " << nh2 << endl;
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
    static void *fValp[100];
@@ -282,7 +283,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
       new TGMrbValuesAndText("Axis Attributes", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
-	if (nh2 <= 2) {
+	if (nh2 == 0) {
 		fDialog->DisableButton(offz);
 		fDialog->DisableButton(centz);
 	}

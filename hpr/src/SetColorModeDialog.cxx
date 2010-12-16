@@ -10,6 +10,7 @@
 #include "TH1.h"
 #include "TStyle.h"
 #include "SetColorModeDialog.h"
+#include "hprbase.h"
 #include <iostream>
 
 namespace std {} using namespace std;
@@ -131,10 +132,11 @@ void SetColorModeDialog::SetColorMode()
 //         if (fPalette) cout << " " <<  fPalette[0]  << " "
 //         <<  fPalette[1]  << " "   <<  fPalette[2];
 //    cout   << endl;
-   if ( fMrbow )
+   if ( fMrbow ) {
       gStyle->SetPalette(1, NULL);
-   else
+	} else {
       gStyle->SetPalette(fNofColorLevels, fPalette);
+	}
 }
 //__________________________________________________________________
 
@@ -492,6 +494,12 @@ void SetColorModeDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 //  cout << " SetColorModeDialog::CRButtonPressed(" << wid<< ", " <<bid;
 //   if (obj) cout  << ", " << canvas->GetName() << ")";
 //   cout << endl;
+   if ( fMrbow ) {
+		TH1* hh = Hpr::FindHistInPad((TVirtualPad *)fCanvas);
+		if (hh->GetDimension() == 2) {
+			hh->SetContour(fNofTransLevels);
+		}
+	}
    SetColorMode();
    UpdateCanvas();
 }

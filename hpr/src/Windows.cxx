@@ -67,7 +67,7 @@ already exists, delete it? ", mycanvas)) {
          }
          TMrbWindowF * wdw = new TMrbWindowF(cname.Data(), x1, x2);
          wdw->Draw();
-         cHist->Update();
+         fCanvas->Update();
          fActiveWindows->Add(wdw);
          fAllWindows->Add(wdw);
       }
@@ -179,7 +179,7 @@ void FitHist::ClearWindows(){
 void FitHist::DrawWindows(){
    Int_t nval = CheckList(fActiveWindows);
    if(nval>0){
-      cHist->cd();
+      fCanvas->cd();
       cout << "-- Current active Windows " << nval << " -----------" << endl;
       cout <<setw(9)<<setw(9)<< "Name"<<setw(9)<< "xlow" <<setw(9)<< "xup"
          <<setw(9)<< "Sum" <<setw(9)<< "Mean" <<setw(9)<< "Sigma" << endl;
@@ -202,7 +202,7 @@ void FitHist::DrawWindows(){
          wdw->SetLineColor(1);
          wdw->SetLineWidth(3);
          wdw->Draw();
-         cHist->Update();
+         fCanvas->Update();
       }
    } else {
      WarnBox("No Windows set");
@@ -233,8 +233,8 @@ void FitHist::ListWindows(){
    if(CheckList(fAllWindows) < 0){WarnBox("No windows active");return;}
    CheckList(fActiveWindows);
    Int_t xp, yp;
-   xp =  cHist->GetWindowTopX() +  ((Int_t)(cHist->GetWw()) / 2);
-   yp =  cHist->GetWindowTopY() +  ((Int_t)(cHist->GetWh()) / 2);
+   xp =  fCanvas->GetWindowTopX() +  ((Int_t)(fCanvas->GetWw()) / 2);
+   yp =  fCanvas->GetWindowTopY() +  ((Int_t)(fCanvas->GetWh()) / 2);
    TIter next(fAllWindows);
    TMrbWindow* wdw;
    while( (wdw=(TMrbWindow*)next()) ){
@@ -368,7 +368,7 @@ void FitHist::AddCutsToHist(){
       TIter next(fActiveCuts);
       while( (wdw = (TMrbWindow2D*)next()) ){
          TMrbWindow2D * wdwcp= new TMrbWindow2D(*wdw);
-         TIter nextobj(cHist->GetListOfPrimitives());
+         TIter nextobj(fCanvas->GetListOfPrimitives());
          TObject *obj;
          while( (obj=nextobj()) ){
 //            cout << obj->GetName() << endl;
@@ -388,7 +388,7 @@ void FitHist::AddCutsToHist(){
 //______________________________________________________________________________________
 
 void FitHist::InitCut(){
-   cHist->cd();
+   fCanvas->cd();
    UpdateCut();
 //   CheckList(fActiveCuts);
    TString cname = fHname;
@@ -442,13 +442,13 @@ void FitHist::DrawCutName(){
    TMrbWindow2D * wdw;
    TIter next(fActiveCuts);
    while( (wdw= (TMrbWindow2D*)next()) ){
-      TIter nextobj(cHist->GetListOfPrimitives());
+      TIter nextobj(fCanvas->GetListOfPrimitives());
       TObject *obj;
       while( (obj=nextobj()) ){
 //         cout << obj->GetName() << endl;
          if(obj->InheritsFrom(TText::Class()) &&
             !strcmp(obj->GetName(), wdw->GetName())){
-            cHist->GetListOfPrimitives()->Remove(obj);
+            fCanvas->GetListOfPrimitives()->Remove(obj);
             delete obj;
          }
       }
@@ -457,10 +457,10 @@ void FitHist::DrawCutName(){
       wdw->GetName());
       t->SetName(wdw->GetName());
       t->SetTextSize(0.02);
-      cHist->cd();
+      fCanvas->cd();
       t->Draw();
    }
-   cHist->Update();
+   fCanvas->Update();
 }
 //_____________________________________________________________________________________
 
@@ -472,8 +472,8 @@ void FitHist::RemoveAllCuts(){
    fAllCuts->Clear();
    if (hp) 
      hp->HandleRemoveAllCuts();
-   cHist->Modified();
-   cHist->Update();
+   fCanvas->Modified();
+   fCanvas->Update();
    
 //   gObjectTable->Print();
 }
@@ -501,8 +501,8 @@ void FitHist::CloseCuts(){
 
 void FitHist::ListCuts(){
    Int_t xp, yp;
-   xp =  cHist->GetWindowTopX() +  (Int_t)(cHist->GetWw() >> 1);
-   yp =  cHist->GetWindowTopY() +  (Int_t)(cHist->GetWh() >> 1);
+   xp =  fCanvas->GetWindowTopX() +  (Int_t)(fCanvas->GetWw() >> 1);
+   yp =  fCanvas->GetWindowTopY() +  (Int_t)(fCanvas->GetWh() >> 1);
    UpdateCut();
 //   CheckList(fActiveCuts);
    TIter next(fAllCuts);
@@ -611,7 +611,7 @@ Float_t FitHist::DrawCut(){
    }
    if(!is2dim(fSelHist)) return 0;
    cout << "--- Entries inside cut(s) -----------" << endl;
-   cHist->cd();
+   fCanvas->cd();
    TMrbWindow2D *cut;
    TIter next(fActiveCuts);
    TAxis* xaxis = fSelHist->GetXaxis();
@@ -631,8 +631,8 @@ Float_t FitHist::DrawCut(){
       }
       cout << cut->GetName() << ": Content:" << ent << endl;
    }
-   cHist->Modified(kTRUE);
-   cHist->Update();
+   fCanvas->Modified(kTRUE);
+   fCanvas->Update();
    return ent;
 
 }
@@ -686,7 +686,7 @@ void FitHist::MarksToCut(){
    }
    TMrbWindow2D * wdw = new TMrbWindow2D(cname.Data(), nval, &x[0], &y[0]);
    wdw->Draw();
-   cHist->Update();
+   fCanvas->Update();
    fActiveCuts->Add(wdw);
    fAllCuts->Add(wdw);
    ClearMarks();

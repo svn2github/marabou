@@ -20,6 +20,7 @@
 #pragma link C++ class SetHistOptDialog;
 #pragma link C++ class Set1DimOptDialog;
 #pragma link C++ class Set2DimOptDialog;
+#pragma link C++ class Set3DimOptDialog;
 #pragma link C++ class SetColorModeDialog;
 #pragma link C++ class SetCanvasAttDialog;
 #pragma link C++ class WhatToShowDialog;
@@ -29,6 +30,7 @@
 #pragma link C++ class WindowSizeDialog;
 #pragma link C++ class AddFitMenus;
 #pragma link C++ class HprStack;
+#pragma link C++ class HprGaxis;
 #endif
 
 

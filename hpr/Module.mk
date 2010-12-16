@@ -38,6 +38,7 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
  					$(HPRDIRI)/SetHistOptDialog.h \
  					$(HPRDIRI)/Set1DimOptDialog.h \
  					$(HPRDIRI)/Set2DimOptDialog.h \
+ 					$(HPRDIRI)/Set3DimOptDialog.h \
  					$(HPRDIRI)/SetColorModeDialog.h \
  					$(HPRDIRI)/SetCanvasAttDialog.h \
  					$(HPRDIRI)/WhatToShowDialog.h \
@@ -46,6 +47,7 @@ HPRDH			:= $(HPRDIRI)/defineMarabou.h \
 					$(HPRDIRI)/WindowSizeDialog.h \
  					$(HPRDIRI)/AddFitMenus.h \
  					$(HPRDIRI)/HprStack.h \
+ 					$(HPRDIRI)/HprGaxis.h \
   					$(HPRDIRI)/LinkDef.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)
