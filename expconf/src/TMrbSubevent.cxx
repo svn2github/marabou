@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.43 2010-09-01 08:52:50 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbSubevent.cxx,v 1.44 2010-12-16 13:12:43 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1273,6 +1273,14 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							anaTmpl.InitializeCode("%E%");
 							anaTmpl.WriteCode(AnaStrm);
 						}
+					}
+					break;
+				case TMrbConfig::kAnaSevtFillHistogramsHB:
+					{
+						anaTmpl.InitializeCode();
+						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+						anaTmpl.WriteCode(AnaStrm);
 					}
 					break;
 				case TMrbConfig::kAnaSevtResetData:

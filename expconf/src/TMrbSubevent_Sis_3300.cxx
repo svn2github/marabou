@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_3300.cxx,v 1.2 2010-12-15 09:07:47 Marabou Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_3300.cxx,v 1.3 2010-12-16 13:12:43 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -184,7 +184,7 @@ Bool_t TMrbSubevent_Sis_3300::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EM
 Bool_t TMrbSubevent_Sis_3300::MakeSpecialAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, TMrbTemplate & AnaTmpl) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent::MakeSpecialAnalyzeCode
+// Name:           TMrbSubevent_Sis_3300::MakeSpecialAnalyzeCode
 // Purpose:        Write a piece of code for data analysis
 // Arguments:      ofstream & AnaStrm           -- file output stream
 //                 EMrbAnalyzeTag TagIndex      -- index of tag word from template file

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.25 2009-04-23 07:26:59 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.26 2010-12-16 13:12:43 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -95,7 +95,7 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 			fCrate = -1;	 								// crate number
 			fNofChannels = NofChannels; 	 				// number of channels available
 			fRange = Range; 								// range
-			fPointsPerBin = 1;								// bin size defaults to 1
+			fChansPerBin = 1;								// bin size defaults to 1
 			fXmin = 0;										// X limits
 			fXmax = Range;
 			fBinRange = Range;								// number of channels

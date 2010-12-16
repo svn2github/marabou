@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3302.cxx,v 1.3 2010-12-14 14:18:04 Marabou Exp $
+// Revision:       $Id: TMrbSis_3302.cxx,v 1.4 2010-12-16 13:12:43 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -40,7 +40,7 @@ TMrbSis_3302::TMrbSis_3302(const Char_t * ModuleName, UInt_t BaseAddr) :
 									TMrbVMEModule(ModuleName, "Sis_3302", BaseAddr,
 																TMrbSis_3302::kAddrMod,
 																TMrbSis_3302::kSegSize,
-																1, 8, 1 << 16) {
+																1, 8, 1 << 30) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSis_3302

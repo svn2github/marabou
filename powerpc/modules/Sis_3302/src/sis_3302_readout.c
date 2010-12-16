@@ -55,6 +55,8 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	  Int_t i;
 	  UInt_t d;
 
+	  Char_t msg[256];
+
 	  pointer = Pointer;
 	  pointerBegin = pointer;			/* save pointer to beginning */
 
@@ -78,6 +80,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 			  for (evtNo = 0; evtNo < nofEvents; evtNo++) {
 				  for (i = 0; i < kSis3302EventHeader; i++) {
 					d = *mappedAddr++;		/* event header: 32bit words */
+					if (i == 0) d = (d & 0xFFFF0000) | chn;
 					*pointer++ = d;
 				  }
 				  *pointer++ = (rdl << 16) | edl;		/* extra word: lh=raw data length, rh=energy data length */

@@ -7,8 +7,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_3302_2.cxx,v 1.1 2010-12-15 09:07:47 Marabou Exp $
-// Date:           $Date: 2010-12-15 09:07:47 $
+// Revision:       $Id: TMrbSubevent_Sis_3302_2.cxx,v 1.2 2010-12-16 13:12:43 Marabou Exp $
+// Date:           $Date: 2010-12-16 13:12:43 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -191,3 +191,4 @@ Bool_t TMrbSubevent_Sis_3302_2::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::
 	}
 	return(kTRUE);
 }
+
