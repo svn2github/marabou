@@ -3,6 +3,7 @@
 #include "TWbox.h"
 #include "TGuiFactory.h"
 #include "TStyle.h"
+#include "TAxis.h"
 #include "TLatex.h"
 #include "TMath.h"
 #include "GrCanvas.h"
@@ -116,6 +117,7 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //  if (event > 0) return;
 //OS start
    static Int_t pxB1down, pyB1down;
+	static Bool_t logxState = 0, logyState = 0;
    static Bool_t in_edit = kFALSE;
    static Bool_t obj_moved = kFALSE;
 
@@ -129,8 +131,14 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    TObject      *prevSelObj = 0;
    TPad         *prevSelPad = 0;
 
-   if ( !fButtonsEnabled ) return;
-
+   if ( !fButtonsEnabled ) {
+		if (gDebug > 1 ) {
+			cout << "fButtonsEnabled	false, return" << endl;
+		}
+		return;
+	}
+	if (gDebug > 1)
+		cout << " Event: " << event << endl;
    if (gROOT->GetEditorMode() != 0) {
       in_edit = kTRUE;
    }
@@ -288,13 +296,75 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
       break;
 
-//   case kMouseMotion:
    case kButton1Motion:
+   case kButton1ShiftMotion: //8 == kButton1Motion + shift modifier
+      if (fSelected) {
+         gPad = fSelectedPad;
+
+         fSelected->ExecuteEvent(event, px, py);
+         gVirtualX->Update();
+
+         if (!fSelected->InheritsFrom(TAxis::Class())) {
+            Bool_t resize = kFALSE;
+            if (fSelected->InheritsFrom(TBox::Class()))
+               resize = ((TBox*)fSelected)->IsBeingResized();
+            if (fSelected->InheritsFrom(TVirtualPad::Class()))
+               resize = ((TVirtualPad*)fSelected)->IsBeingResized();
+
+            if ((!resize && TestBit(kMoveOpaque)) || (resize && TestBit(kResizeOpaque))) {
+               gPad = fPadSave;
+               Update();
+               FeedbackMode(kTRUE);
+            }
+         }
+//OS start
+			if (fSelected->TestBit(kIsBound)) {
+				if (gDebug > 1 )
+				cout << "fSelected->TestBit(kIsBound), break " << endl;
+				break;
+			}
+         if (in_image) {
+            fSelected = pad_of_image;
+//            fSelected = gPad;
+         }
+//         if(fUseEditGrid && !(fSelected->IsA() == TPad::Class())){
+         if(fUseEditGrid && fSelectedPad == this &&
+          !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
+           ){
+            if(fEditGridX !=0){
+               x = gPad->AbsPixeltoX(px);
+               n = (Int_t)((x + TMath::Sign(0.5*fEditGridX, x)) / fEditGridX);
+               x = n * fEditGridX;
+               px =  gPad->XtoAbsPixel(x);
+               if(px < 1)px = 1;
+               if(px > (Int_t)gPad->GetWw())px = gPad->GetWw()-1;
+            }
+            if(fEditGridY !=0){
+               y = gPad->AbsPixeltoY(py);
+               n = (Int_t)((y + TMath::Sign(0.5*fEditGridY, y)) / fEditGridY);
+               y = n * fEditGridY;
+               py =  gPad->YtoAbsPixel(y);
+               if(py < 1)py = 1;
+               if(py > (Int_t)gPad->GetWh())py = gPad->GetWh()-1;
+            }
+         }
+
+//OS end
+
+         RunAutoExec();
+      }
+/*
+//      break;
+//   case kMouseMotion:
 
       if (fSelected) {
          gPad = fSelectedPad;
 //OS start
-      if (fSelected->TestBit(kIsBound)) break;
+			if (fSelected->TestBit(kIsBound)) {
+				if (gDebug > 1 )
+				cout << "fSelected->TestBit(kIsBound), break " << endl;
+				break;
+			}
          if (in_image) {
             fSelected = pad_of_image;
 //            fSelected = gPad;
@@ -342,7 +412,7 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
           if (GetAutoExec()) RunAutoExec();
 //         if (GetShowEventStatus()) DrawEventStatus(event, px, py, fSelected);
       }
-
+*/
       break;
 
    case kButton1Up:
@@ -361,7 +431,11 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //         cout << "name, px, py, bef " << fSelected->ClassName() << " " << pxB1down << " " << pyB1down
 //                 << " "  << px << " " << py << endl;
 
-         if (px != pxB1down || py != pyB1down) obj_moved = kTRUE;
+         if (px != pxB1down || py != pyB1down) {
+				obj_moved = kTRUE;
+				if (gDebug > 1 )
+					cout << "kButton1Up:  obj_moved = kTRUE" << endl;
+			}
          if (fUseEditGrid && fSelectedPad == this &&
           !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
            ){
@@ -454,12 +528,29 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       pad = Pick(px, py, prevSelObj);
       if (!pad) return;
       if (!fDoubleBuffer) FeedbackMode(kFALSE);
-
+		logxState = pad->GetLogx();
+		logyState = pad->GetLogy();
+		if (gDebug > 1) {
+			cout << "kButton3Down fSelected " << fSelected;
+			if (logxState)
+				cout <<  " logx ";
+			if (logyState)
+				cout << " logy ";
+			cout << endl;
+		}
       if (fContextMenu && !fSelected->TestBit(kNoContextMenu) &&
           !pad->TestBit(kNoContextMenu) && !TestBit(kNoContextMenu)) {
  //         fSelected->ExecuteEvent(event, px, py);
           fContextMenu->Popup(px, py, fSelected, this, pad);
       }
+		if (gDebug > 1) {
+			cout << "kButton3Down gPad " << gPad;
+			if (gPad->GetLogx())
+				cout << " logx ";
+			if (gPad->GetLogy() )
+				cout << " logy ";
+			cout << endl;
+		}
 
       break;
    }
@@ -468,13 +559,59 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    case kButton3Up:
       if (!fDoubleBuffer) FeedbackMode(kTRUE);
-//      if (fSelected) fSelected->ExecuteEvent(event, px, py);
- //     if (GetAutoExec())        RunAutoExec();
+		if (gDebug > 1) {
+			cout << "kButton3Up gPad " << gPad;
+			if (gPad->GetLogx())
+				cout << " logx ";
+			if (gPad->GetLogy() )
+				cout << " logy ";
+			cout << endl;
+		}
+      if ( gPad && (gPad->GetLogx() != logxState ||
+			 gPad->GetLogy() != logyState ) )
+			obj_moved = kTRUE;
+		
       break;
 
    case kButton3Double:
       break;
+   case kKeyPress:
+      if (!fSelectedPad || !fSelected) return;
+      gPad = fSelectedPad;   // don't use cd() because we won't draw in pad
+                    // we will only use its coordinate system
+      fSelected->ExecuteEvent(event, px, py);
 
+      RunAutoExec();
+
+      break;
+   case kButton1Shift:
+      // Try to select
+      pad = Pick(px, py, prevSelObj);
+
+      if (!pad) return;
+
+      EnterLeave(prevSelPad, prevSelObj);
+
+      gPad = pad;   // don't use cd() we will use the current
+                    // canvas via the GetCanvas member and not via
+                    // gPad->GetCanvas
+      if (gDebug) {
+         printf("Current Pad: %s / %s \n", pad->GetName(), pad->GetTitle());
+         cout << "1Shift fSelected: " << fSelected->GetName() << " pad " << pad << endl;
+      }
+      fSelected->ExecuteEvent(event, px, py);
+      RunAutoExec();
+
+      break;
+   case kWheelUp:
+   case kWheelDown:
+      pad = Pick(px, py, prevSelObj);
+      if (!pad) return;
+
+      gPad = pad;
+      fSelected->ExecuteEvent(event, px, py);
+		break;
+/*
    case kKeyPress:
 
       // find pad in which input occured
@@ -490,7 +627,7 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (GetAutoExec())        RunAutoExec();
 
       break;
-
+*/
    default:
       break;
    }
@@ -507,6 +644,12 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       ObjectCreated(px, py, fSelected);
       in_edit = kFALSE;
    }
+   if (gDebug > 1 && obj_moved) {
+		cout << "fSelected, this " << fSelected << " " << this;
+		if (obj_moved)
+			cout << " obj_moved ";
+		cout << endl;
+	}
    if (obj_moved && fSelected && fSelected != this) {
       ObjectMoved(px, py, fSelected);
    }
