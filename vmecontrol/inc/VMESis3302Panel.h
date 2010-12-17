@@ -8,8 +8,8 @@
 // Class:          VMESis3302Panel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302Panel.h,v 1.10 2010-11-17 12:25:11 Marabou Exp $
-// Date:           $Date: 2010-11-17 12:25:11 $
+// Revision:       $Id: VMESis3302Panel.h,v 1.11 2010-12-17 13:19:04 Marabou Exp $
+// Date:           $Date: 2010-12-17 13:19:04 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -33,6 +33,8 @@
 #include "TGMrbFileEntry.h"
 #include "TGMrbLabelCombo.h"
 #include "TGMrbLofKeyBindings.h"
+
+#include "TC2LSis3302.h"
 
 #include "M2L_CommonDefs.h"
 #include "VMEControlData.h"
@@ -156,7 +158,7 @@ class VMESis3302Panel : public TGCompositeFrame {
 			fHeap.Delete();
 		};
 
-		void UpdateGUI();
+		void UpdateGUI(TC2LSis3302 * Module = NULL, Int_t Channel = kSis3302AllChans);
 
 		inline Int_t GetNofModules() { return(fLofModules.GetEntries()); };
 
@@ -198,9 +200,9 @@ class VMESis3302Panel : public TGCompositeFrame {
 
 	protected:
 		Bool_t SetupModuleList();
-		void UpdateAdcCounts();
-		void UpdateGates();
-		void UpdateDecayTime();
+		void UpdateAdcCounts(TC2LSis3302 * Module = NULL, Int_t Channel = kSis3302AllChans);
+		void UpdateGates(TC2LSis3302 * Module = NULL, Int_t Channel = kSis3302AllChans);
+		void UpdateDecayTime(TC2LSis3302 * Module = NULL, Int_t Channel = kSis3302AllChans);
 		void EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntry * Entry, Int_t EntryNo);
 		Int_t GetEnergyDataStarts(TArrayI & Start);
 

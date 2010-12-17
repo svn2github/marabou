@@ -4,8 +4,8 @@
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.6 $
-//! $Date: 2010-12-16 13:12:43 $
+//! $Revision: 1.7 $
+//! $Date: 2010-12-17 13:19:04 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -505,13 +505,13 @@ void sis3302_adjustTraceLength(struct s_sis_3302 * Module) {
 
 	Int_t grp, g;
 	if (Module->tracingMode) {							/* set length values to 0 if tracing is OFF */
+		sis3302_restoreTraceLength(Module);
+	} else {
 		grp = 0;
 		for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
 			sis3302_writeRawDataSampleLength(Module, 0, grp);
 			sis3302_writeEnergySampleLength(Module, 0, grp);
 		}
-	} else {
-		sis3302_restoreTraceLength(Module);
 	}
 }
 
@@ -527,6 +527,7 @@ void sis3302_restoreTraceLength(struct s_sis_3302 * Module) {
 	Int_t g, grp;
 	grp = 0;
 	for (g = 0; g < kSis3302NofGroups; g++, grp += 2) {
+		printf("@@@ restore grp=%d chn=%d raw=%d\n", g, grp, Module->rawDataSampleLength[g]);
 		sis3302_writeRawDataSampleLength_db(Module, grp);
 		sis3302_writeEnergySampleLength_db(Module, grp);
 	}
@@ -1521,7 +1522,7 @@ Bool_t sis3302_writePreTrigDelay(struct s_sis_3302 * Module, Int_t Delay, Int_t 
 	}
 
 	delay = sis3302_readPreTrigDelayAndGateLength(Module, ChanNo);
-	if (delay == 0xaffec0c0) return(delay);
+	if (delay == 0xaffec0c0) return(0xaffec0c0);
 
 	Delay += 2;
 	if (Delay >= 1024) Delay -= 1024;
@@ -1575,7 +1576,7 @@ Bool_t sis3302_writeTrigGateLength(struct s_sis_3302 * Module, Int_t Gate, Int_t
 	}
 
 	gate = sis3302_readPreTrigDelayAndGateLength(Module, ChanNo);
-	if (gate == 0xaffec0c0) return(gate);
+	if (gate == 0xaffec0c0) return(0xaffec0c0);
 
 	gate &= 0xFFFF0000;
 	gate |= Gate - 1;
@@ -1702,7 +1703,7 @@ Bool_t sis3302_writeRawDataSampleLength(struct s_sis_3302 * Module, Int_t Sample
 	}
 
 	sl = sis3302_readRawDataBufConfig(Module, ChanNo);
-	if (sl != 0xaffec0c0) return(kFALSE);
+	if (sl == 0xaffec0c0) return(kFALSE);
 
 	sl &= 0x0000FFFF;
 	sl |= (Sample << 16);
@@ -1765,7 +1766,7 @@ Bool_t sis3302_writeRawDataStartIndex(struct s_sis_3302 * Module, Int_t Index, I
 	}
 
 	sx = sis3302_readRawDataBufConfig(Module, ChanNo);
-	if (sx != 0xaffec0c0) return(kFALSE);
+	if (sx == 0xaffec0c0) return(kFALSE);
 
 	sx &= 0xFFFF0000;
 	sx |= Index;
@@ -3496,6 +3497,7 @@ Int_t sis3302_getPageRegister(struct s_sis_3302 * Module) {
 
 void sis3302_startAcquisition(struct s_sis_3302 * Module, Int_t NofEvents) {
 	sis3302_setEndAddress(Module, NofEvents);
+	sis3302_adjustTraceLength(Module);
 	sis3302_clearTimestamp(Module);
 	sis3302_armSampling(Module, kSis3302KeyArmBank1Sampling);
 }

@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.13 2010-11-17 12:25:11 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.14 2010-12-17 13:19:04 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -767,76 +767,93 @@ void VMESis3302Panel::PerformAction(Int_t FrameId, Int_t Selection) {
 	}
 }
 
-void VMESis3302Panel::UpdateGUI() {
+void VMESis3302Panel::UpdateGUI(TC2LSis3302 * Module, Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302Panel::UpdateGUI
 // Purpose:        Update values
-// Arguments:      --
+// Arguments:      TC2LSis3302 * Module   -- module (NULL -> all modules)
+//                 Int_t Channel          -- channel number (kSis3302AllChans (-1) -> all channels)
 // Results:        --
 // Exceptions:
 // Description:    Update GUI.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (curModule == NULL) {
-		curModule = (TC2LSis3302 *) fLofModules.At(0);
-		if (curModule == NULL) return;
-		curModule->SetVerbose(gVMEControlData->IsVerbose());
-		curModule->SetOffline(gVMEControlData->IsOffline());
+	if (Module == NULL) {
+		if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
+		TC2LSis3302 * cms = curModule;
+		TIterator * iter = fLofModules.MakeIterator();
+		TC2LSis3302 * m;
+		while (m = (TC2LSis3302 *) iter->Next()) this->UpdateGUI(m, Channel);
+		curModule = cms;
+		fSelectModule->Select(curModule->GetIndex());
+		return;
 	}
 
-	fSelectModule->Select(curModule->GetIndex());
-	fSelectChannel->Select(curChannel);
+	if (Channel == kSis3302AllChans) {
+		Int_t ccs = curChannel;
+		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) this->UpdateGUI(Module, chn);
+		curChannel = ccs;
+		fSelectChannel->Select(curChannel);
+		return;
+	}
+
+	Module->SetVerbose(gVMEControlData->IsVerbose());
+	Module->SetOffline(gVMEControlData->IsOffline());
+
+
+	fSelectModule->Select(Module->GetIndex());
+	fSelectChannel->Select(Channel);
 
 	Int_t boardId, major, minor;
-	curModule->GetModuleInfo(boardId, major, minor);
-	curModule->SetFirmwareVersion(major, minor);
-	fModuleInfo->SetText(Form("%x", curModule->GetFirmwareVersion()));
+	Module->GetModuleInfo(boardId, major, minor);
+	Module->SetFirmwareVersion(major, minor);
+	fModuleInfo->SetText(Form("%x", Module->GetFirmwareVersion()));
 
-	TString moduleName = curModule->GetName();
+	TString moduleName = Module->GetName();
 	fSettingsFrame->SetTitle(Form("Settings for module %s", moduleName.Data()));
 
-	fDacSettings->SetTitle(Form("DAC settings for module %s, chn %d", moduleName.Data(), curChannel));
-	fTriggerSettings->SetTitle(Form("Trigger settings for module %s, chn %d", moduleName.Data(), curChannel));
-	fEnergySettings->SetTitle(Form("Energy settings for module %s, chn %d", moduleName.Data(), curChannel));
+	fDacSettings->SetTitle(Form("DAC settings for module %s, chn %d", moduleName.Data(), Channel));
+	fTriggerSettings->SetTitle(Form("Trigger settings for module %s, chn %d", moduleName.Data(), Channel));
+	fEnergySettings->SetTitle(Form("Energy settings for module %s, chn %d", moduleName.Data(), Channel));
 	fRawDataSampling->SetTitle(Form("Raw data sampling for module %s", moduleName.Data()));
 	fEnergyDataSampling->SetTitle(Form("Energy data sampling for module %s", moduleName.Data()));
 
 	Int_t clockSource = 0;
-	if (curModule->GetClockSource(clockSource)) fClockSource->Select(clockSource);
+	if (Module->GetClockSource(clockSource)) fClockSource->Select(clockSource);
 
 	Int_t lemo = 0;
-	if (curModule->GetLemoInMode(lemo)) fLemoInMode->Select(lemo);
+	if (Module->GetLemoInMode(lemo)) fLemoInMode->Select(lemo);
 	lemo = 0;
-	if (curModule->GetLemoOutMode(lemo)) fLemoOutMode->Select(lemo);
+	if (Module->GetLemoOutMode(lemo)) fLemoOutMode->Select(lemo);
 	lemo = 0;
-	if (curModule->GetLemoInEnableMask(lemo)) fLemoInEnableMask->SetText(lemo);
+	if (Module->GetLemoInEnableMask(lemo)) fLemoInEnableMask->SetText(lemo);
 
 	TArrayI dacVal(1);
-	if (curModule->ReadDac(dacVal, curChannel)) fDacOffset->SetText(dacVal[0]);
+	if (Module->ReadDac(dacVal, Channel)) fDacOffset->SetText(dacVal[0]);
 
 	Int_t tmode;
-	curModule->GetTriggerMode(tmode, curChannel);
+	Module->GetTriggerMode(tmode, Channel);
 	fTrigMode->Select(tmode);
 
 	Int_t gmode;
-	curModule->GetGateMode(gmode, curChannel);
+	Module->GetGateMode(gmode, Channel);
 	fGateMode->Select(gmode);
 
-	curModule->GetNextNeighborTriggerMode(tmode, curChannel);
+	Module->GetNextNeighborTriggerMode(tmode, Channel);
 	fNextNeighborTrigMode->Select(tmode);
 
-	curModule->GetNextNeighborGateMode(gmode, curChannel);
+	Module->GetNextNeighborGateMode(gmode, Channel);
 	fNextNeighborGateMode->Select(gmode);
 
 	Int_t d, p, g;
-	if (curModule->IsOffline()) {
+	if (Module->IsOffline()) {
 		d = fTrigInternalDelay->GetText2Int();
 		g = fTrigInternalGate->GetText2Int();
 	} else {
-		curModule->ReadTrigInternalDelay(d, curChannel);
-		curModule->ReadTrigInternalGate(g, curChannel);
+		Module->ReadTrigInternalDelay(d, Channel);
+		Module->ReadTrigInternalGate(g, Channel);
 	}
 	if (d > kSis3302TrigIntDelayMax) d = kSis3302TrigIntDelayMax;
 	if (d < kSis3302TrigIntDelayMin) d = kSis3302TrigIntDelayMin;
@@ -844,22 +861,22 @@ void VMESis3302Panel::UpdateGUI() {
 	if (g < kSis3302TrigIntGateMin) g = kSis3302TrigIntGateMin;
 	fTrigInternalDelay->SetText(d);
 	fTrigInternalGate->SetText(g);
-	curModule->WriteTrigInternalDelay(d, curChannel);
-	curModule->WriteTrigInternalGate(g, curChannel);
+	Module->WriteTrigInternalDelay(d, Channel);
+	Module->WriteTrigInternalGate(g, Channel);
 
 	Bool_t invTrig;
-	curModule->GetPolarity(invTrig, curChannel);
+	Module->GetPolarity(invTrig, Channel);
 	fTrigPol->Select(invTrig ? kVMETrigPolNeg : kVMETrigPolPos);
 
 	Int_t decim;
-	curModule->GetTrigDecimation(decim, curChannel);
+	Module->GetTrigDecimation(decim, Channel);
 	fTrigDecimation->Select(decim);
 
-	if (curModule->IsOffline()) {
+	if (Module->IsOffline()) {
 		p = fTrigPeaking->GetText2Int();
 		g = fTrigGap->GetText2Int();
 	} else {
-		curModule->ReadTrigPeakAndGap(p, g, curChannel);
+		Module->ReadTrigPeakAndGap(p, g, Channel);
 	}
 	if (p > kSis3302TrigPeakMax) p = kSis3302TrigPeakMax;
 	if (p < kSis3302TrigPeakMin) p = kSis3302TrigPeakMin;
@@ -867,65 +884,69 @@ void VMESis3302Panel::UpdateGUI() {
 	if (g < kSis3302TrigGapMin) g = kSis3302TrigGapMin;
 	fTrigPeaking->SetText(p);
 	fTrigGap->SetText(g);
-	curModule->WriteTrigPeakAndGap(p, g, curChannel);
-	this->UpdateAdcCounts();
+	Module->WriteTrigPeakAndGap(p, g, Channel);
+	this->UpdateAdcCounts(Module, Channel);
 
 	Int_t olen;
-	curModule->ReadTrigPulseLength(olen, curChannel);
+	Module->ReadTrigPulseLength(olen, Channel);
 	fTrigOut->SetText(olen);
 	Bool_t gt, out;
-	curModule->GetTriggerGT(gt, curChannel);
-	curModule->GetTriggerOut(out, curChannel);
+	Module->GetTriggerGT(gt, Channel);
+	Module->GetTriggerOut(out, Channel);
 	if (gt) {
 		fTrigCond->Select(out ? kVMETrigCondEnaGT : kVMETrigCondDis);
 	} else {
 		fTrigCond->Select(out ? kVMETrigCondEna : kVMETrigCondDis);
 	}
 
-	curModule->ReadPreTrigDelay(d, curChannel);
+	Module->ReadPreTrigDelay(d, Channel);
 	fPreTrigDelay->SetText(d);
 
-	curModule->ReadEnergyPeakAndGap(p, g, curChannel);
+	Module->ReadEnergyPeakAndGap(p, g, Channel);
 	if (p > kSis3302EnergyPeakMax) p = kSis3302EnergyPeakMax;
 	if (p < kSis3302EnergyPeakMin) p = kSis3302EnergyPeakMin;
 	if (g > kSis3302EnergyGapMax) g = kSis3302EnergyGapMax;
 	if (g < kSis3302EnergyGapMin) g = kSis3302EnergyGapMin;
 	fEnergyPeaking->SetText(p);
 	fEnergyGap->SetText(g);
-	curModule->WriteEnergyPeakAndGap(p, g, curChannel);
+	Module->WriteEnergyPeakAndGap(p, g, Channel);
 
-	curModule->GetEnergyDecimation(decim, curChannel);
+	Module->GetEnergyDecimation(decim, Channel);
 	fEnergyDecimation->Select(decim);
 
 	Int_t tau;
-	curModule->ReadTauFactor(tau, curChannel);
+	Module->ReadTauFactor(tau, Channel);
 	fEnergyTauFactor->SetText(tau);
 
-	this->UpdateDecayTime();
+	this->UpdateDecayTime(Module, Channel);
 
 	Int_t rds;
-	curModule->ReadRawDataStartIndex(rds, curChannel);
+	Module->ReadRawDataStartIndex(rds, Channel);
 	fRawDataStart->SetText(rds);
 	Int_t rdl;
-	curModule->ReadRawDataSampleLength(rdl, curChannel);
+	Module->ReadRawDataSampleLength(rdl, Channel);
 	fRawDataLength->SetText(rdl);
 
 	Int_t edl;
-	curModule->ReadEnergySampleLength(edl, curChannel);
+	Module->ReadEnergySampleLength(edl, Channel);
 	fEnergyDataLength->SetText(edl);
 
 	Int_t startIdx1, startIdx2, startIdx3;
 	Int_t nofStarts = 0;
-	curModule->ReadStartIndex(startIdx1, 0, curChannel);
+	Module->ReadStartIndex(startIdx1, 0, Channel);
 	if (startIdx1 > 0) nofStarts++;
 	fEnergyDataStart1->SetText(startIdx1);
-	curModule->ReadStartIndex(startIdx2, 1, curChannel);
+	Module->ReadStartIndex(startIdx2, 1, Channel);
 	if (startIdx2 > 0) nofStarts++;
 	fEnergyDataStart2->SetText(startIdx2);
-	curModule->ReadStartIndex(startIdx3, 2, curChannel);
+	Module->ReadStartIndex(startIdx3, 2, Channel);
 	if (startIdx3 > 0) nofStarts++;
 	fEnergyDataStart3->SetText(startIdx3);
 
+	TC2LSis3302 * cms = curModule;
+	Int_t ccs = curChannel;
+	curModule = Module;
+	curChannel = Channel;
 	if (edl == 0) {
 		this->EnergyDataModeChanged(0, kVMESampleMinMax);
 	} else if (nofStarts == 1) {
@@ -933,8 +954,10 @@ void VMESis3302Panel::UpdateGUI() {
 	} else {
 		this->EnergyDataModeChanged(0, kVMESampleProg);
 	}
+	curModule = cms;
+	curChannel = ccs;
 
-	this->UpdateGates();
+	this->UpdateGates(Module, Channel);
 }
 
 void VMESis3302Panel::ModuleChanged(Int_t FrameId, Int_t Selection) {
@@ -953,7 +976,7 @@ void VMESis3302Panel::ModuleChanged(Int_t FrameId, Int_t Selection) {
 	curModule = (TC2LSis3302 *) fLofModules.FindByIndex(Selection);
 	curModule->SetVerbose(gVMEControlData->IsVerbose());
 	curModule->SetOffline(gVMEControlData->IsOffline());
-	this->UpdateGUI();
+	this->UpdateGUI(curModule);
 }
 
 void VMESis3302Panel::ChannelChanged(Int_t FrameId, Int_t Selection) {
@@ -969,8 +992,9 @@ void VMESis3302Panel::ChannelChanged(Int_t FrameId, Int_t Selection) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
 	curChannel = Selection;
-	this->UpdateGUI();
+	this->UpdateGUI(curModule, curChannel);
 }
 
 void VMESis3302Panel::ClockSourceChanged(Int_t FrameId, Int_t Selection) {
@@ -987,8 +1011,9 @@ void VMESis3302Panel::ClockSourceChanged(Int_t FrameId, Int_t Selection) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t clock = Selection;
+	if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
 	curModule->SetClockSource(clock);
-	this->UpdateDecayTime();
+	this->UpdateDecayTime(curModule, curChannel);
 }
 
 void VMESis3302Panel::LemoInModeChanged(Int_t FrameId, Int_t Selection) {
@@ -1185,7 +1210,7 @@ void VMESis3302Panel::TrigPeakingChanged(Int_t FrameId, Int_t EntryNo) {
 		fTrigPeaking->SetText(psav, EntryNo);
 	} else {
 		curModule->WriteTrigPeakAndGap(p, g, curChannel);
-		this->UpdateAdcCounts();
+		this->UpdateAdcCounts(curModule, curChannel);
 	}
 }
 
@@ -1216,7 +1241,7 @@ void VMESis3302Panel::TrigGapChanged(Int_t FrameId, Int_t EntryNo) {
 		fTrigGap->SetText(gsav, EntryNo);
 	} else {
 		curModule->WriteTrigPeakAndGap(p, g, curChannel);
-		this->UpdateAdcCounts();
+		this->UpdateAdcCounts(curModule, curChannel);
 	}
 }
 
@@ -1240,7 +1265,7 @@ void VMESis3302Panel::TrigThreshChanged(Int_t FrameId, Int_t EntryNo) {
 	if (fTrigThresh->CheckRange(th, EntryNo, kTRUE, kTRUE)) curModule->WriteTrigThreshold(th, curChannel);
 	else													fTrigThresh->SetText(thsav, EntryNo);
 
-	this->UpdateAdcCounts();
+	this->UpdateAdcCounts(curModule, curChannel);
 }
 
 void VMESis3302Panel::TrigPolarChanged(Int_t FrameId, Int_t Selection) {
@@ -1326,7 +1351,7 @@ void VMESis3302Panel::TrigDelayChanged(Int_t FrameId, Int_t EntryNo) {
 
 	if (fPreTrigDelay->CheckRange(delay, EntryNo, kTRUE, kTRUE))	curModule->WritePreTrigDelay(delay, curChannel);
 	else															fPreTrigDelay->SetText(delsav, EntryNo);
-	this->UpdateGates();
+	this->UpdateGates(curModule, curChannel);
 }
 
 void VMESis3302Panel::TrigDecimationChanged(Int_t FrameId, Int_t Selection) {
@@ -1366,7 +1391,7 @@ void VMESis3302Panel::EnergyPeakingChanged(Int_t FrameId, Int_t EntryNo) {
 	} else {
 		curModule->WriteEnergyPeakAndGap(p, g, curChannel);
 	}
-	this->UpdateGates();
+	this->UpdateGates(curModule, curChannel);
 }
 
 void VMESis3302Panel::EnergyGapChanged(Int_t FrameId, Int_t EntryNo) {
@@ -1391,7 +1416,7 @@ void VMESis3302Panel::EnergyGapChanged(Int_t FrameId, Int_t EntryNo) {
 	} else {
 		curModule->WriteEnergyPeakAndGap(p, g, curChannel);
 	}
-	this->UpdateGates();
+	this->UpdateGates(curModule, curChannel);
 }
 
 void VMESis3302Panel::EnergyDecimationChanged(Int_t FrameId, Int_t Selection) {
@@ -1407,8 +1432,8 @@ void VMESis3302Panel::EnergyDecimationChanged(Int_t FrameId, Int_t Selection) {
 //////////////////////////////////////////////////////////////////////////////
 
 	curModule->SetEnergyDecimation(Selection, curChannel);
-	this->UpdateDecayTime();
-	this->UpdateGates();
+	this->UpdateDecayTime(curModule, curChannel);
+	this->UpdateGates(curModule, curChannel);
 }
 
 void VMESis3302Panel::TauFactorChanged(Int_t FrameId, Int_t EntryNo) {
@@ -1433,7 +1458,7 @@ void VMESis3302Panel::TauFactorChanged(Int_t FrameId, Int_t EntryNo) {
 	} else {
 		curModule->WriteTauFactor(tau, curChannel);
 	}
-	this->UpdateDecayTime();
+	this->UpdateDecayTime(curModule, curChannel);
 }
 
 void VMESis3302Panel::RawDataStartChanged(Int_t FrameId, Int_t EntryNo) {
@@ -1461,7 +1486,7 @@ void VMESis3302Panel::RawDataStartChanged(Int_t FrameId, Int_t EntryNo) {
 	} else {
 		curModule->WriteRawDataStartIndex(rds);
 	}
-	this->UpdateGates();
+	this->UpdateGates(curModule, curChannel);
 }
 
 void VMESis3302Panel::RawDataLengthChanged(Int_t FrameId, Int_t EntryNo) {
@@ -1489,7 +1514,7 @@ void VMESis3302Panel::RawDataLengthChanged(Int_t FrameId, Int_t EntryNo) {
 	} else {
 		curModule->WriteRawDataSampleLength(rdl);
 	}
-	this->UpdateGates();
+	this->UpdateGates(curModule, curChannel);
 }
 
 void VMESis3302Panel::EnergyDataModeChanged(Int_t FrameId, Int_t Selection) {
@@ -1671,27 +1696,47 @@ void VMESis3302Panel::EnergyDataStartOrLengthChanged(Int_t IdxNo, TGMrbLabelEntr
 
 }
 
-void VMESis3302Panel::UpdateAdcCounts() {
+void VMESis3302Panel::UpdateAdcCounts(TC2LSis3302 * Module, Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302Panel::UpdateAdcCounts
 // Purpose:        Calculate adc counts from peak and gap values
-// Arguments:      --
+// Arguments:      TC2LSis3302 * Module   -- module (NULL -> all modules)
+//                 Int_t Channel          -- channel number (kSis3302AllChans (-1) -> all channels)
 // Results:        --
 // Exceptions:
 // Description:    Called after peaking, gap or thresh values have changed
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (Module == NULL) {
+		if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
+		TC2LSis3302 * cms = curModule;
+		TIterator * iter = fLofModules.MakeIterator();
+		TC2LSis3302 * m;
+		while (m = (TC2LSis3302 *) iter->Next()) this->UpdateAdcCounts(m, Channel);
+		curModule = cms;
+		fSelectModule->Select(curModule->GetIndex());
+		return;
+	}
+
+	if (Channel == kSis3302AllChans) {
+		Int_t ccs = curChannel;
+		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) this->UpdateAdcCounts(Module, chn);
+		curChannel = ccs;
+		fSelectChannel->Select(Channel);
+		return;
+	}
+
 	Int_t p, g, th;
 
-	if (curModule->IsOffline()) {
+	if (Module->IsOffline()) {
 		p = fTrigPeaking->GetText2Int();
 		g = fTrigGap->GetText2Int();
 		th = fTrigThresh->GetText2Int();
 	} else {
-		curModule->ReadTrigPeakAndGap(p, g, curChannel);
-		curModule->ReadTrigThreshold(th, curChannel);
+		Module->ReadTrigPeakAndGap(p, g, Channel);
+		Module->ReadTrigThreshold(th, Channel);
 	}
 	if (p == 0) p = 1;
 	Int_t fac = 1;
@@ -1704,12 +1749,13 @@ void VMESis3302Panel::UpdateAdcCounts() {
 	fTrigThresh->SetText(th);
 }
 
-void VMESis3302Panel::UpdateDecayTime() {
+void VMESis3302Panel::UpdateDecayTime(TC2LSis3302 * Module, Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302Panel::UpdateDecayTime
 // Purpose:        Calculate decay time from tau factor
-// Arguments:      --
+// Arguments:      TC2LSis3302 * Module   -- module (NULL -> all modules)
+//                 Int_t Channel          -- channel number (kSis3302AllChans (-1) -> all channels)
 // Results:        --
 // Exceptions:
 // Description:    Called after tau factor, clock, or decimation values have changed
@@ -1718,11 +1764,30 @@ void VMESis3302Panel::UpdateDecayTime() {
 
 	Int_t cs[]	=	{	100000, 50000,	25000,	10000,	1000	};
 
+	if (Module == NULL) {
+		if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
+		TC2LSis3302 * cms = curModule;
+		TIterator * iter = fLofModules.MakeIterator();
+		TC2LSis3302 * m;
+		while (m = (TC2LSis3302 *) iter->Next()) this->UpdateDecayTime(m, Channel);
+		curModule = cms;
+		fSelectModule->Select(curModule->GetIndex());
+		return;
+	}
+
+	if (Channel == kSis3302AllChans) {
+		Int_t ccs = curChannel;
+		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) this->UpdateDecayTime(Module, chn);
+		curChannel = ccs;
+		fSelectChannel->Select(Channel);
+		return;
+	}
+
 	Int_t clockSource = 0;
-	if (curModule->IsOffline()) {
+	if (Module->IsOffline()) {
 		clockSource = fClockSource->GetSelectedNx()->GetIndex();
 	} else {
-		curModule->GetClockSource(clockSource);
+		Module->GetClockSource(clockSource);
 	}
 	if (clockSource > kVMEClockSource1MHz) {
 		fEnergyDecayTime->SetText("n/a");
@@ -1730,16 +1795,16 @@ void VMESis3302Panel::UpdateDecayTime() {
 	}
 
 	Int_t decim;
-	if (curModule->IsOffline()) {
+	if (Module->IsOffline()) {
 		decim = fEnergyDecimation->GetSelectedNx()->GetIndex();
 	} else {
-		curModule->GetEnergyDecimation(decim, curChannel);
+		Module->GetEnergyDecimation(decim, Channel);
 	}
 	Int_t tau;
-	if (curModule->IsOffline()) {
+	if (Module->IsOffline()) {
 		tau = fEnergyTauFactor->GetText2Int();
 	} else {
-		curModule->ReadTauFactor(tau, curChannel);
+		Module->ReadTauFactor(tau, Channel);
 	}
 
 	Double_t sampling;
@@ -1758,40 +1823,60 @@ void VMESis3302Panel::UpdateDecayTime() {
 	fEnergyDecayTime->SetText(decayTime);
 }
 
-void VMESis3302Panel::UpdateGates() {
+void VMESis3302Panel::UpdateGates(TC2LSis3302 * Module, Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           VMESis3302Panel::UpdateEnergyWindows
 // Purpose:        Calculate energy windows
-// Arguments:      --
+// Arguments:      TC2LSis3302 * Module   -- module (NULL -> all modules)
+//                 Int_t Channel          -- channel number (kSis3302AllChans (-1) -> all channels)
 // Results:        --
 // Exceptions:
 // Description:    Called after peaking, gap or decimation values have changed
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (Module == NULL) {
+		if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
+		TC2LSis3302 * cms = curModule;
+		TIterator * iter = fLofModules.MakeIterator();
+		TC2LSis3302 * m;
+		while (m = (TC2LSis3302 *) iter->Next()) this->UpdateGates(m, Channel);
+		curModule = cms;
+		fSelectModule->Select(curModule->GetIndex());
+		return;
+	}
+
+	if (Channel == kSis3302AllChans) {
+		Int_t ccs = curChannel;
+		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) this->UpdateGates(Module, chn);
+		curChannel = ccs;
+		fSelectChannel->Select(Channel);
+		return;
+	}
+
 	Int_t preTrigDel;
-	if (curModule->IsOffline()) {
+	if (Module->IsOffline()) {
 		preTrigDel = fPreTrigDelay->GetText2Int();
 	} else {
-		curModule->ReadPreTrigDelay(preTrigDel, curChannel);
+		Module->ReadPreTrigDelay(preTrigDel, Channel);
 	}
 
 	Int_t decim;
-	if (curModule->IsOffline()) {
+	if (Module->IsOffline()) {
 		decim = fEnergyDecimation->GetSelectedNx()->GetIndex();
 	} else {
-		curModule->GetEnergyDecimation(decim, curChannel);
+		Module->GetEnergyDecimation(decim, Channel);
 	}
 
 	Int_t delay = preTrigDel / (2 << decim);
 
 	Int_t peak, gap;
-	if (curModule->IsOffline()) {
+	if (Module->IsOffline()) {
 		peak = fEnergyPeaking->GetText2Int();
 		gap = fEnergyGap->GetText2Int();
 	} else {
-		curModule->ReadEnergyPeakAndGap(peak, gap, curChannel);
+		Module->ReadEnergyPeakAndGap(peak, gap, Channel);
 	}
 
 	Int_t egate;
@@ -1803,15 +1888,15 @@ void VMESis3302Panel::UpdateGates() {
 		egate = delay + 600;
 	}
 	fEnergyGateLength->SetText(egate);
-	curModule->WriteEnergyGateLength(egate, curChannel);
+	Module->WriteEnergyGateLength(egate, Channel);
 
 	Int_t rds, rdl;
-	if (curModule->IsOffline()) {
+	if (Module->IsOffline()) {
 		rds = fRawDataStart->GetText2Int();
 		rdl = fRawDataLength->GetText2Int();
 	} else {
-		curModule->ReadRawDataStartIndex(rds, curChannel);
-		curModule->ReadRawDataSampleLength(rdl, curChannel);
+		Module->ReadRawDataStartIndex(rds, Channel);
+		Module->ReadRawDataSampleLength(rdl, Channel);
 	}
 
 	Int_t tgate, tgate2;
@@ -1820,7 +1905,7 @@ void VMESis3302Panel::UpdateGates() {
 	if (tgate2 > tgate) tgate = tgate2;
 	tgate += 16;
 	fTrigGateLength->SetText(tgate);
-	curModule->WriteTrigGateLength(tgate, curChannel);
+	Module->WriteTrigGateLength(tgate, Channel);
 }
 
 void VMESis3302Panel::ResetModule() {
@@ -1835,6 +1920,7 @@ void VMESis3302Panel::ResetModule() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (curModule == NULL) curModule = (TC2LSis3302 *) fLofModules[0];
 	curModule->KeyAddr(kSis3302KeyReset);
 	this->UpdateGUI();
 }
