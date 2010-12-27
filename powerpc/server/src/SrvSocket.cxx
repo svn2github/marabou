@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $
-//! $Date: 2010-10-04 10:43:26 $
+//! $Revision: 1.2 $
+//! $Date: 2010-12-27 09:02:14 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -97,7 +97,7 @@ void SrvSocket::Listen() {
 			if (hdr->fWhat == kM2L_MESS_VME_CONNECT) {
 				errCnt = 0;
 				M2L_VME_Connect * connect = (M2L_VME_Connect *) buffer;
-				swapData(&connect->fBaseAddr);
+				swapData((Int_t *) &connect->fBaseAddr);
 				swapData(&connect->fNofChannels);
 				SrvVMEModule * vmeModule = new SrvVMEModule(	connect->fModuleName, connect->fModuleType,
 																connect->fBaseAddr, connect->fNofChannels);
@@ -138,8 +138,8 @@ void SrvSocket::Listen() {
 			} else if (hdr->fWhat == kM2L_MESS_VME_EXEC_FUNCTION) {
 				errCnt = 0;
 				M2L_VME_Exec_Function * exec = (M2L_VME_Exec_Function *) buffer;
-				swapData(&exec->fXhdr.fHandle);
-				swapData(&exec->fXhdr.fCode);
+				swapData((Int_t *) &exec->fXhdr.fHandle);
+				swapData((Int_t *) &exec->fXhdr.fCode);
 				TMrbNamedX * ftype = fFctTypes.FindByIndex(exec->fXhdr.fCode);
 				if (ftype) {
 					SrvVMEModule * vmeModule = (SrvVMEModule *) exec->fXhdr.fHandle;

@@ -7,10 +7,10 @@
 //!
 //! \author Otto.Schaile
 //!
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-05-26 13:07:42 $
+//! $Revision: 1.6 $     
+//! $Date: 2010-12-27 09:02:14 $
 //////////////////////////////////////////////////////////////////////////////
 
 
@@ -198,7 +198,7 @@ Bool_t TMrbLogger::Open(const Char_t * LogFile, const Char_t * Option)
 		return(kFALSE);
 	}
 	cout	<< setblue
-			<< this->ClassName() << "::Open(): Writing (error) messages to log file " << basename(fLogFile.Data())
+			<< this->ClassName() << "::Open(): Writing (error) messages to log file " << basename((Char_t *) fLogFile.Data())
 			<< setblack << endl;
 	return(kTRUE);	
 }

@@ -43,7 +43,7 @@ $(SRVPRG):		mrbLynxOsSrv.o $(SRVLIB) $(LWRLIB)
 				$(CXX) -o mrbLynxOsSrv mrbLynxOsSrv.o \
 				-L ../../lib/$(GSI_OS_VERSION) \
 				-L /lib/ces \
-				-lSrv -lLwr -lvme -lnetinet
+				-lSrv -lLwr -lvme -llynx -lnetinet
 				mv mrbLynxOsSrv ../../bin/$(GSI_OS_VERSION)
 
 

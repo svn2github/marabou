@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $       
-//! $Date: 2010-10-04 10:43:26 $
+//! $Revision: 1.2 $       
+//! $Date: 2010-12-27 09:02:14 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -55,7 +55,7 @@ M2L_MsgHdr * allocMessage(Int_t Length, Int_t Wc, UInt_t What) {
 		}
 	}
 	if (gMsgBuffer == NULL) {
-		gMsgBuffer = calloc(1, lengthNeeded);
+		gMsgBuffer = (Char_t *) calloc(1, lengthNeeded);
 		gBytesAllocated = lengthNeeded;
 	}
 	memset(gMsgBuffer, 0, gBytesAllocated);

@@ -9,8 +9,8 @@
 //! 				Module Vulom3 (GSI), mode "trigger box"
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $     
-//! $Date: 2010-10-04 10:43:26 $
+//! $Revision: 1.2 $     
+//! $Date: 2010-12-27 09:02:14 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "LwrTypes.h"
@@ -109,7 +109,7 @@ class SrvVMEModule : public TNamed {
 
 		//! Get module id
 		//! \retval 	Id	 	-- module id
-		inline GetID() { return(fID); };
+		inline Int_t GetID() { return(fID); };
 
 		//! Check if prototype or real module
 		//! \return 	TRUE or FALSE

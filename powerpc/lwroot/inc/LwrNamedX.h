@@ -7,10 +7,10 @@
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: TMrbNamedX<br>
 //! 				A TNamed object together with an index
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $
-//! $Date: 2009-10-27 13:30:44 $
+//! $Revision: 1.6 $
+//! $Date: 2010-12-27 09:02:14 $
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -71,7 +71,7 @@ class TMrbNamedX: public TNamed {
 		const Char_t * GetFullName(TString & FullName, Int_t Base = 10, Bool_t IndexFlag = kFALSE);
 
 		//! Return index
-		inline GetIndex() { return(fIndex); };
+		inline Int_t GetIndex() { return(fIndex); };
 
 		//! Change index
 		//! \param[in]	Index	-- new index

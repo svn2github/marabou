@@ -12,7 +12,7 @@
 #include "LwrFileHandler.h"
 #include "LwrLynxOsSystem.h"
 
-TLynxOsSystem * gSystem;
+extern TLynxOsSystem * gSystem;
 
 //______________________________________________________________________________
 TFileHandler::TFileHandler(int fd, int mask)

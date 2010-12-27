@@ -14,6 +14,7 @@
 
 #include "iostream.h"
 #include "iomanip.h"
+#include <unistd.h>
 
 #include "LwrTypes.h"
 #include "LwrLynxOsSystem.h"
@@ -31,11 +32,12 @@
 
 #include "Version.h"
 
-TLynxOsSystem * gSystem;
+extern TLynxOsSystem * gSystem;
 
-TMrbLofNamedX * gLofVMEProtos;		// list of vme prototypes
-TMrbLofNamedX * gLofVMEModules;		// list of modules
-TMrbLogger * gMrbLog;				// message logger
+extern TMrbLofNamedX * gLofVMEProtos;		// list of vme prototypes
+extern TMrbLofNamedX * gLofVMEModules;		// list of modules
+
+extern TMrbLogger * gMrbLog;		// message logger
 
 SrvSocket * gSrvSocket; 		// server socket
 

@@ -8,8 +8,8 @@
 //! \details		Class definitions for ROOT under LynxOs: Type definitions
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.10 $
-//! $Date: 2010-12-03 08:18:17 $
+//! $Revision: 1.11 $
+//! $Date: 2010-12-27 09:02:14 $
 //
 // !!!! This header file will be used for C++ *AND* C as well
 // !!!! Please use C style /*... comments only
@@ -57,11 +57,11 @@ typedef float          Size_t;      /* Attribute size (float) */
 #define NULL 0
 #endif
 
-const Bool_t kTRUE   = 1;
-const Bool_t kFALSE  = 0;
+#define kTRUE   1
+#define kFALSE	0
 
-const Ssiz_t    kBitsPerByte = 8;
-const Ssiz_t    kNPOS        = ~(Ssiz_t)0;
+#define	kBitsPerByte	8
+#define	kNPOS		~(Ssiz_t)0
 
 
 /* --- bit manipulation --------------------------------------------------------- */

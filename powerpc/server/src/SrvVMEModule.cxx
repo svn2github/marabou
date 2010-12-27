@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.1 $
-//! $Date: 2010-10-04 10:43:26 $
+//! $Revision: 1.2 $
+//! $Date: 2010-12-27 09:02:14 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -23,11 +23,13 @@ typedef int intptr_t;
 #include "signal.h"
 #include "vmelib.h"
 
+#include "vmecontrol.h"
+
 #define PRINT_MAPPING	1
 
-extern TMrbLofNamedX * gLofVMEProtos;		// list of prototypes
-extern TMrbLofNamedX * gLofVMEModules;		// list of actual modules
-extern TMrbLogger * gMrbLog;				// message logger
+TMrbLofNamedX * gLofVMEProtos;		// list of prototypes
+TMrbLofNamedX * gLofVMEModules;		// list of actual modules
+extern TMrbLogger * gMrbLog;		// message logger
 
 extern Bool_t gSignalTrap;
 

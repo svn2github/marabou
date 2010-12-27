@@ -7,14 +7,17 @@
 //!
 //! \author Otto.Schaile
 //!
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $
-//! $Date: 2009-10-27 13:30:44 $
+//! $Revision: 1.6 $
+//! $Date: 2010-12-27 09:02:14 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include <stdlib.h>
 #include <ctype.h>
+
+#include <stdarg.h>
+#include <stdio.h>
 
 #include "LwrTypes.h"
 #include "LwrString.h"

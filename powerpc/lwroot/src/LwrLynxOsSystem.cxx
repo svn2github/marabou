@@ -202,6 +202,7 @@ const char *kProtocolName   = "tcp";
 const Int_t kNFDBITS = (sizeof(Long_t) * 8);  // 8 bits per byte
 const Int_t kFDSETSIZE = 256;                 // upto 256 file descriptors
 
+TLynxOsSystem * gSystem = NULL;
 
 class TFdSet {
 private:
@@ -323,7 +324,7 @@ TInetAddress TLynxOsSystem::GetSockName(int sock)
    int len = sizeof(addr);
 #endif
 
-   if (getsockname(sock, (struct sockaddr *)&addr, &len) == -1) {
+   if (getsockname(sock, (struct sockaddr *)&addr, (socklen_t *) &len) == -1) {
       cerr << "TLynxOsSystem::GetSockName(): error" << endl;
       return TInetAddress();
    }
@@ -361,7 +362,7 @@ TInetAddress TLynxOsSystem::GetPeerName(int sock)
    int len = sizeof(addr);
 #endif
 
-   if (getpeername(sock, (struct sockaddr *)&addr, &len) == -1) {
+   if (getpeername(sock, (struct sockaddr *)&addr, (socklen_t *) &len) == -1) {
       cerr << "TLynxOsSystem::GetPeerName(): error" << endl;
       return TInetAddress();
    }
@@ -688,37 +689,37 @@ int TLynxOsSystem::GetSockOpt(int sock, int opt, int *val)
 
    switch (opt) {
    case kSendBuffer:
-      if (getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*)val, &optlen) == -1) {
+      if (getsockopt(sock, SOL_SOCKET, SO_SNDBUF, (char*)val, (socklen_t *) &optlen) == -1) {
          cerr << "TLynxOsSystem::GetSockOpt(): getsockopt(SO_SNDBUF)" << endl;
          return -1;
       }
       break;
    case kRecvBuffer:
-      if (getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*)val, &optlen) == -1) {
+      if (getsockopt(sock, SOL_SOCKET, SO_RCVBUF, (char*)val, (socklen_t *) &optlen) == -1) {
          cerr << "TLynxOsSystem::GetSockOpt(): getsockopt(SO_RCVBUF)" << endl;
          return -1;
       }
       break;
    case kOobInline:
-      if (getsockopt(sock, SOL_SOCKET, SO_OOBINLINE, (char*)val, &optlen) == -1) {
+      if (getsockopt(sock, SOL_SOCKET, SO_OOBINLINE, (char*)val, (socklen_t *) &optlen) == -1) {
          cerr << "TLynxOsSystem::GetSockOpt(): getsockopt(SO_OOBINLINE)" << endl;
          return -1;
       }
       break;
    case kKeepAlive:
-      if (getsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)val, &optlen) == -1) {
+      if (getsockopt(sock, SOL_SOCKET, SO_KEEPALIVE, (char*)val, (socklen_t *) &optlen) == -1) {
          cerr << "TLynxOsSystem::GetSockOpt(): getsockopt(SO_KEEPALIVE)" << endl;
          return -1;
       }
       break;
    case kReuseAddr:
-      if (getsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)val, &optlen) == -1) {
+      if (getsockopt(sock, SOL_SOCKET, SO_REUSEADDR, (char*)val, (socklen_t *) &optlen) == -1) {
          cerr << "TLynxOsSystem::GetSockOpt(): getsockopt(SO_REUSEADDR)" << endl;
          return -1;
       }
       break;
    case kNoDelay:
-      if (getsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)val, &optlen) == -1) {
+      if (getsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)val, (socklen_t *) &optlen) == -1) {
          cerr << "TLynxOsSystem::GetSockOpt(): getsockopt(TCP_NODELAY)" << endl;
          return -1;
       }

@@ -7,10 +7,10 @@
 //! \brief			Light Weight ROOT
 //! \details		Class definitions for ROOT under LynxOs: TMrbLogger<br>
 //! 				A (error) message logger class.
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.5 $     
-//! $Date: 2009-02-20 08:33:52 $
+//! $Revision: 1.6 $     
+//! $Date: 2010-12-27 09:02:14 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -23,8 +23,6 @@
 #include "LwrLynxOsSystem.h"
 #include "LwrDatime.h"
 #include "LwrList.h"
-
-extern TLynxOsSystem * gSystem;
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
