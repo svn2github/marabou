@@ -29,8 +29,9 @@
   TFile *hfile = new TFile("hsimple_hpr.root","RECREATE","Demo ROOT file with histograms");
 
 // Create some histograms, a profile histogram and an ntuple
-  TH1F *hpx    = new TH1F("hpx","This is the px distribution",100,-4,4);
-  TH1F *hpx2   = new TH1F("hpx2","This is the py distribution * 2",100,-4,4);
+  TH1F *hpx1   = new TH1F("hpx1","px distribution",100,-4,4);
+  TH1F *hpx2   = new TH1F("hpx2","px * 2 distribution",100,-4,4);
+  TH1F *hpx3   = new TH1F("hpx3","px * 3 distribution",100,-4,4);
   TH1F *hpmany   = new TH1F("hpmany","Some gauss peaks",1000,0,4000);
   TH1F *hpmany_a   = new TH1F("hpmany_a","Some gauss peaks, diff statistics",1000,0,4000);
   TH2F *hpxpy  = new TH2F("hpxpy","py vs px",100,-4,4,100,-4,4);
@@ -62,7 +63,7 @@
   hp33->SetMarkerSize(0.05);
 
 //  Set canvas/frame attributes (save old attributes)
-  hpx->SetFillColor(48);
+  hpx1->SetFillColor(48);
 
   gBenchmark->Start("hsimple");
 
@@ -71,15 +72,16 @@
   Float_t px, py, pz, pu;
   Float_t px1, py1, pz1;
   const Int_t kUPDATE = 1000;
-  for (Int_t i = 0; i < 25000; i++) {
+  for (Int_t i = 0; i < 50000; i++) {
      gRandom->Rannor(px,py);
      gRandom->Rannor(px1,py1);
      pz1 = px;
      pz = px*px + py*py;
      Float_t random = gRandom->Rndm(1);
-     hpx->Fill(px);
+     hpx1->Fill(px);
      hpx2->Fill(2 * py);
-     hpxpy->Fill(0.3 * px + 1, 0.7 * py+0.5);
+	  hpx3->Fill(3 * px1);
+	  hpxpy->Fill(0.3 * px + 1, 0.7 * py+0.5);
      hpxpy->Fill(0.5 * px - 1, 0.5 * py-0.5);
 
      hpxpy2->Fill(px, px * 0.5 + 0.5 * py);
@@ -158,9 +160,9 @@
   gBenchmark->Show("hsimple");
 
 // Save all objects in this file
-  hpx->SetFillColor(0);
+  hpx1->SetFillColor(0);
   hfile->Write();
-  hpx->SetFillColor(48);
+  hpx1->SetFillColor(48);
   c1->Modified();
   gDirectory = gROOT;
 

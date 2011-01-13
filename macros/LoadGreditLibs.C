@@ -5,7 +5,7 @@
 // Description:      Loads utility libraries via LD_LIBRARY_PATH
 // Author:           R. Lutter
 // Mailto:           <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:         $Id: LoadGreditLibs.C,v 1.1 2009-11-03 08:26:13 Otto.Schaile Exp $       
+// Revision:         $Id: LoadGreditLibs.C,v 1.2 2011-01-13 11:20:51 Otto.Schaile Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
