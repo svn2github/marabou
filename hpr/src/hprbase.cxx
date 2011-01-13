@@ -209,5 +209,43 @@ TGraph * FindGraphInPad(TVirtualPad * ca)
 	}
 	return NULL;
 };
+//_______________________________________________________________________________________
+
+Bool_t HistLimitsMatch(TH1* h1, TH1* h2)
+{
+//	cout << " HistLimitsMatch : " << h1->GetName() 
+//		<< " " << h2->GetName()<< endl;
+	if (h1->GetDimension() != h2->GetDimension() ) 
+		return kFALSE;
+	TAxis * a1 = h1->GetXaxis();
+	TAxis * a2 = h2->GetXaxis();
+	if ( a1->GetNbins() != a2->GetNbins() )
+		return kFALSE;
+	if ( a1->GetXmin() != a2->GetXmin() )
+		return kFALSE;
+	if ( a1->GetXmax() != a2->GetXmax() )
+		return kFALSE;
+	if (h1->GetDimension() > 1 && h2->GetDimension() > 1 ) {
+		a1 = h1->GetYaxis();
+		a2 = h2->GetYaxis();
+		if ( a1->GetNbins() != a2->GetNbins() )
+			return kFALSE;
+		if ( a1->GetXmin() != a2->GetXmin() )
+			return kFALSE;
+		if ( a1->GetXmax() != a2->GetXmax() )
+			return kFALSE;
+	}
+	if (h1->GetDimension() > 2 && h2->GetDimension() > 2 ) {
+		a1 = h1->GetZaxis();
+		a2 = h2->GetZaxis();
+		if ( a1->GetNbins() != a2->GetNbins() )
+			return kFALSE;
+		if ( a1->GetXmin() != a2->GetXmin() )
+			return kFALSE;
+		if ( a1->GetXmax() != a2->GetXmax() )
+			return kFALSE;
+	}
+	return kTRUE;
+}
 
 }   // end namespace Hpr

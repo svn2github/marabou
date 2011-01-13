@@ -259,7 +259,7 @@ A value of 0.5 draws a line X +- 0.5*BinWidth\n\
    fValp[ind++] = &fShowMarkers;
    TString lab;
    for ( Int_t i = 0; i < fNDrawn; i++ ) {
-      lab = "CheckButton_Fill[";
+      lab = "CheckButton_DoFill [";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fFill_1Dim[i];
@@ -285,15 +285,15 @@ A value of 0.5 draws a line X +- 0.5*BinWidth\n\
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fLineColor[i];
 
-      lab = "Mark_Select_MarkStyle[";
+      lab = "Mark_Select_MarkSty[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fMarkerStyle[i];
-      lab = "Float_Value+fMarkSize[";
+      lab = "Float_Value+fMarkSi[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fMarkerSize[i];
-      lab = "ColorSelect+MarkColor[";
+      lab = "ColorSelect+MarkCol[";
       lab += i; lab += "]";
       fRow_lab->Add(new TObjString(lab));
       fValp[ind++] = &fMarkerColor[i];

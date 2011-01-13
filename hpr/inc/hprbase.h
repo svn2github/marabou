@@ -12,5 +12,6 @@ namespace Hpr
    TH1 * FindHistOfTF1(TVirtualPad * ca, const char * fname, Int_t pop_push);
 	TH1 * FindHistInPad(TVirtualPad * ca);
 	TGraph * FindGraphInPad(TVirtualPad * ca);
+	Bool_t HistLimitsMatch(TH1* h1, TH1* h2);
 }
 #endif

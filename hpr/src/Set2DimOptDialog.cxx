@@ -387,15 +387,18 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
       }
    }
    if (gPad == gPad->GetMother()) {
-		if (fLiveStat2Dim) {
+//		if (fLiveStat2Dim) {
 //			cout << "SetAutoExec() true" << endl;
-			if (!canvas->GetAutoExec())
+			TEnv env(".hprrc");
+			env.SetValue("Set2DimOptDialog.fLiveStat2Dim", 
+							 fLiveStat2Dim);
+/*			if (!canvas->GetAutoExec())
 				canvas->ToggleAutoExec();
 		} else {
-//			cout << "SetAutoExec() false" << endl;
 			if (canvas->GetAutoExec())
 				canvas->ToggleAutoExec();
 		}
+*/
    }
    if (f2DimBackgroundColor == 0) {
       if (gStyle->GetCanvasColor() == 0) {

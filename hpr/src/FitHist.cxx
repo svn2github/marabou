@@ -85,8 +85,10 @@ enum dowhat { expand, projectx, projecty, statonly, projectf,
        projectboth , profilex, profiley};
 
 ClassImp(FitHist)
+
 //_______________________________________________________________________________
 // constructor
+
 FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
                const Text_t * hname, Int_t win_topx, Int_t win_topy,
                Int_t win_widx, Int_t win_widy)
@@ -266,6 +268,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fSerialPf = 0;
    fFuncNumb = 0;
    fCutNumber = 0;
+	fProjectedBoth = 0;
    wdw_numb = 0;
    if (env.GetValue("HistPresent.FitOptMinos", 0) != 0) fCallMinos = kTRUE;
    else                                                 fCallMinos = kFALSE;
@@ -592,6 +595,7 @@ void FitHist::handle_mouse()
    static Bool_t is2dim = kFALSE;
    static Bool_t first_fit = kFALSE;
    static Bool_t skip_after_TCUTG = kFALSE;
+	static Bool_t TCUTG_moved = kFALSE;
    static TH1 * hist = 0;
    static Int_t npar = 0;
    static TLine * lowedge = 0;
@@ -600,10 +604,11 @@ void FitHist::handle_mouse()
    static Int_t nrows = 4;
 	static Double_t sqrt2pi = TMath::Sqrt(2 * TMath::Pi());
 	Int_t px, py;
+	
    if (gROOT->GetEditorMode() != 0) return;
 	if (gStyle->GetCanvasPreferGL()) return;
-//	cout << "px: "  << (char)gPad->GetEventX() << endl;
    Int_t event = gPad->GetEvent();
+//	cout << "px: "  << (char)gPad->GetEventX() << endl;
    if (event ==  kKeyPress) {
 //    cout << "px: "  << (char)gPad->GetEventX() << endl;
       char ch = (char)gPad->GetEventX();
@@ -616,8 +621,15 @@ void FitHist::handle_mouse()
          return;
       }
    }
+   if ( TCUTG_moved && event == kButton1Up ) {
+		if ( gDebug > 0 )
+			cout << " ProjectBoth " << endl;
+		ProjectBoth();
+		TCUTG_moved = kFALSE;
+	}
    TObject *select = gPad->GetSelected();
    if (!select) return;
+//	cout << select->ClassName() << " event " << event << endl;
    if (event == kButton1Up && skip_after_TCUTG) {
       skip_after_TCUTG = kFALSE;
       return;
@@ -631,6 +643,13 @@ void FitHist::handle_mouse()
       }
    }
    if (select->InheritsFrom("TPave")) return;
+	if (event == 21 && select->InheritsFrom("TCutG") && fProjectedBoth == 1) {
+		TCUTG_moved = kTRUE;
+		if ( gDebug > 0 )
+			cout << select->ClassName() << " event " << event << endl;
+		return;
+	}
+			
    px = gPad->GetEventX();
    py = gPad->GetEventY();
 //  check if lin / log scale changed
@@ -766,10 +785,11 @@ void FitHist::handle_mouse()
             }
          }
 //         if ( kTRUE ) {
-         if ( !is2dim )
+/*         if ( !is2dim )
             fLiveStat1Dim  = env.GetValue("Set1DimOptDialog.fLiveStat1Dim", 0);
          if ( is2dim )
             fLiveStat2Dim  = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
+*/
          if ( (fLiveStat1Dim && !is2dim ) || (fLiveStat2Dim && is2dim) ) {
          	if (!fTofLabels) {
             	TOrdCollection rowlabels;
@@ -1082,8 +1102,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    fCtitle = fSelHist->GetName();
    fCtitle += ": ";
    fCtitle += fSelHist->GetTitle();
-	if ( (fSelHist->GetDimension() == 2 && fDrawOpt2Dim.BeginsWith("GL") )
-		||(fSelHist->GetDimension() == 3 &&  fDrawOpt3Dim.BeginsWith("GL") ) ) {
+	if (fDrawOpt2Dim.BeginsWith("GL")) {
 		gStyle->SetCanvasPreferGL(kTRUE);
 	} else {
 		gStyle->SetCanvasPreferGL(kFALSE);
@@ -1412,7 +1431,7 @@ HprGaxis * FitHist::DoAddAxis(Int_t where, Double_t ledge, Double_t uedge,
 // it might not even exist (yet), so use static method
 	TQObject::Connect("Set1DimOptDialog", "LinLogChanged(TObject*)",
 						   "FitHist", this, "HandleLinLogChanged(TObject*)");
-// 	cout << "DoAddAxis " << ledge << " " << uedge << endl;
+//	cout << "DoAddAxis " << ledge << " " << uedge << endl;
 	Axis_t x1=0, y1=0, x2=1, y2=1;
 	TIter next(fCanvas->GetListOfPrimitives());
 //	fCanvas->GetListOfPrimitives()->ls();
@@ -2084,6 +2103,10 @@ void FitHist::Superimpose(Int_t mode)
 	of the right edge of the frame, negative is left\n\
 	of it in the pad, positive at the right side\n\
 	The color of the extra axis and the graph are the same.\n\
+	With option \"Incr Colors\" Line-, Mark- FillColors are\n\
+	automatically incremented (red->green->blue etc.)\n\
+	With \"Skip Dialog\" this widget is only shown once\n\
+	for the first histogram\n\
 	\n\
 	";
 	TH1 *hist;
@@ -2107,85 +2130,110 @@ void FitHist::Superimpose(Int_t mode)
 		Hpr::WarnBox("Dimensions of histograms differ");
 		return;
 	}
-/*
-   if ( hist->GetDimension() == 3 ) {
-      if ( hist->GetMarkerColor() <= 1 ) {
-      	fColSuperimpose += 1;
-       	if ( fColSuperimpose > 7 )
-		      fColSuperimpose = 2;
-         hist->SetMarkerColor(fColSuperimpose);
-      }
-   } else if ( hist->GetDimension() == 1 ) {
-      if ( hist->GetLineColor() <= 1 ) {
-      	fColSuperimpose += 1;
-       	if (fColSuperimpose > 7)
-		      fColSuperimpose = 2;
-      }
-   }
-*/
 //	Double_t rightmax = 1.1*ymax;
+	TRootCanvas * win = (TRootCanvas*)fCanvas->GetCanvasImp();
+	TIter next(fCanvas->GetListOfPrimitives());
+	Int_t nhists = 0 ;
+	TObject *obj;
+	while ( obj  = next() ) {
+		if ( obj->InheritsFrom("TH1") ) {
+			TH1* hs = (TH1*)obj;
+			TString oname(obj->GetName());
+			TString hname(hist->GetName());
+//			if ( obj == fSelHist ) {
+//				oname = fHname;
+//			}
+//			cout << "oname, hname " << oname << " " << hname << endl;
+//			if ( oname == hname ) {
+//				if ( !QuestionBox("Hist already in canvas, really draw again?",win) )
+//					return;
+//			}
+			if ( !Hpr::HistLimitsMatch(hs, hist) ) {
+				if ( !QuestionBox("Hist limits or bins differ, really superimpose?",win) )
+					return;
+			}
+			nhists++;
+		}
+	}
 	static Int_t        do_scale;
 	do_scale = mode;
-	static Int_t      auto_scale = mode;
-	static Double_t  axis_offset = 0.;
+	static Int_t    auto_scale = mode;
+	static Double_t axis_offset;
 	static Double_t label_offset = 0.01;
-	static Color_t    axis_color = 2;
+	static Color_t  axis_color;
+	static Color_t lLColor   = axis_color; 
+	static Color_t lMColor   = axis_color;
+	static Color_t lFillColor= axis_color; 
+	if ( nhists < 2 ) {
+		axis_color = 2;
+		lLColor   = axis_color;
+		lMColor   = axis_color;
+		lFillColor  = axis_color;
+		axis_offset = 0.;
+	}
 	TEnv env(".hprrc");
 	static Style_t lLStyle   = env.GetValue("Set1DimOptDialog.fHistLineStyle", 1);
 	static Size_t lLWidth    = env.GetValue("Set1DimOptDialog.fHistLineWidth", 1);
 	static Style_t lMStyle   = env.GetValue("Set1DimOptDialog.MarkerStyle", 7);
 	static Size_t lMSize     = env.GetValue("Set1DimOptDialog.MarkerSize",  1);
-	static Color_t lLColor   = axis_color; 
-	static Color_t lMColor   = axis_color; 
-	static Int_t   lLegend   = 1;
+	static Int_t   lLegend     = 1;
+	static Int_t   lIncrColors =  env.GetValue("Set1DimOptDialog.AutoIncrColors", 0);
+	static Int_t   lSkipDialog =  env.GetValue("Set1DimOptDialog.SkipDialog", 0);
 	
 	if ( lMSize <= 0 ) lMSize = 1;
-	Double_t new_scale = 1;   
+	static Double_t new_scale = 1;   
 	static TString axis_title;
 	axis_title= hist->GetYaxis()->GetTitle();
-	Int_t new_axis = kTRUE;                    
-	static void *valp[50];                    
-	Int_t ind = 0;                            
-	TList *row_lab = new TList();
-	TRootCanvas * win = (TRootCanvas*)fCanvas->GetCanvasImp();
-	Bool_t ok = kTRUE;
-	row_lab->Add(new TObjString("CheckButton_New scale  "));
-	valp[ind++] = &do_scale;
-	row_lab->Add(new TObjString("CheckButton+Auto scale "));
-	valp[ind++] = &auto_scale;
-	row_lab->Add(new TObjString("DoubleValue+Factor"));
-	valp[ind++] = &new_scale;
-	row_lab->Add(new TObjString("CheckButton_Extra axis "));
-	valp[ind++] = &new_axis;
-	row_lab->Add(new TObjString("DoubleValue+AxOffs;-1;1 "));
-	valp[ind++] = &axis_offset;
-	row_lab->Add(new TObjString("DoubleValue+LabOffs"));
-	valp[ind++] = &label_offset;
-	row_lab->Add(new TObjString("ColorSelect_AxisColor"));
-	valp[ind++] = &axis_color;
-	row_lab->Add(new TObjString("StringValue+AxTitle"));
-	valp[ind++] = &axis_title;
-	row_lab->Add(new TObjString("CheckButton+Legend  "));
-	valp[ind++] = &lLegend;
-	row_lab->Add(new TObjString("ColorSelect_MarkColor"));
-	valp[ind++] = &lMColor;
-	row_lab->Add(new TObjString("Mark_Select+MarkStyle"));
-	valp[ind++] = &lMStyle;
-	row_lab->Add(new TObjString("Float_Value+MSize"));
-	valp[ind++] = &lMSize;
-	row_lab->Add(new TObjString("ColorSelect_LineColor"));
-	valp[ind++] = &lLColor;
-	row_lab->Add(new TObjString("PlainShtVal+LineWidth"));
-	valp[ind++] = &lLWidth;
-	row_lab->Add(new TObjString("LineSSelect+LStyle"));
-	valp[ind++] = &lLStyle;
-	
-	Int_t itemwidth = 380;
-	ok = GetStringExt("Superimpose Histogram", NULL, itemwidth, win,
-							NULL, NULL, row_lab, valp,
-							NULL, NULL, helptext);
-	if (!ok )
-		return;
+	static Int_t new_axis = kTRUE;
+	if ( lSkipDialog == 0 || nhists < 2 ) {
+		static void *valp[50];                    
+		Int_t ind = 0;                            
+		TList *row_lab = new TList();
+		Bool_t ok = kTRUE;
+		row_lab->Add(new TObjString("CheckButton_New scale  "));
+		valp[ind++] = &do_scale;
+		row_lab->Add(new TObjString("CheckButton+Auto scale "));
+		valp[ind++] = &auto_scale;
+		row_lab->Add(new TObjString("DoubleValue+Factor"));
+		valp[ind++] = &new_scale;
+		row_lab->Add(new TObjString("CheckButton_Extra axis "));
+		valp[ind++] = &new_axis;
+		row_lab->Add(new TObjString("DoubleValue+AxOffs;-1;1 "));
+		valp[ind++] = &axis_offset;
+		row_lab->Add(new TObjString("DoubleValue+LabOffs"));
+		valp[ind++] = &label_offset;
+		row_lab->Add(new TObjString("ColorSelect_AxisColor"));
+		valp[ind++] = &axis_color;
+		row_lab->Add(new TObjString("StringValue+AxTitle"));
+		valp[ind++] = &axis_title;
+		row_lab->Add(new TObjString("CheckButton+Legend  "));
+		valp[ind++] = &lLegend;
+		row_lab->Add(new TObjString("ColorSelect_MarkColor"));
+		valp[ind++] = &lMColor;
+		row_lab->Add(new TObjString("Mark_Select+MarkStyle"));
+		valp[ind++] = &lMStyle;
+		row_lab->Add(new TObjString("Float_Value+MSize"));
+		valp[ind++] = &lMSize;
+		row_lab->Add(new TObjString("ColorSelect_LineColor"));
+		valp[ind++] = &lLColor;
+		row_lab->Add(new TObjString("PlainShtVal+LineWidth"));
+		valp[ind++] = &lLWidth;
+		row_lab->Add(new TObjString("LineSSelect+LStyle"));
+		valp[ind++] = &lLStyle;
+		row_lab->Add(new TObjString("ColorSelect_FillColor"));
+		valp[ind++] = &lFillColor;
+		row_lab->Add(new TObjString("CheckButton+Incr Colors "));
+		valp[ind++] = &lIncrColors;
+		row_lab->Add(new TObjString("CheckButton+Skip Dialog"));
+		valp[ind++] = &lSkipDialog;
+		
+		Int_t itemwidth = 380;
+		ok = GetStringExt("Superimpose Histogram", NULL, itemwidth, win,
+								NULL, NULL, row_lab, valp,
+								NULL, NULL, helptext);
+		if (!ok )
+			return;
+	}
 	if ( do_scale != 0 && auto_scale != 0 ) {
 //		new_scale = hymax / rightmax;
 		cout << "Scale will be auto adjusted " << endl;
@@ -2237,19 +2285,34 @@ void FitHist::Superimpose(Int_t mode)
 	}
 	fCanvas->cd();
    TString drawopt = fSelHist->GetDrawOption();
-   if ( hist->GetDimension() == 1 ) {
-	   hdisp->SetLineColor(lLColor);
-		hdisp->SetMarkerColor(lMColor);
-		hdisp->SetMarkerStyle(lMStyle);
-		hdisp->SetMarkerSize(lMSize);
-		if (!drawopt.Contains("E", TString::kIgnoreCase))
-		   drawopt += "hist";
+//   if ( hist->GetDimension() == 1 ) {
+	hdisp->SetLineColor(lLColor);
+	hdisp->SetMarkerColor(lMColor);
+	hdisp->SetMarkerStyle(lMStyle);
+	hdisp->SetMarkerSize(lMSize);
+	if ( hist->GetDimension() == 1 ) {
+			if (!drawopt.Contains("E", TString::kIgnoreCase)) {
+				if (!drawopt.Contains("hist",TString::kIgnoreCase)) {
+					drawopt += "hist";
+			}
+		}
    }
+   if ( env.GetValue("Set1DimOptDialog.fFill1Dim", 0 ) > 0 ){ 
+		hdisp->SetFillColor(lFillColor);
+		drawopt += "F";
+		axis_color = lFillColor;
+	} else {
+		hdisp->SetFillColor(0);
+		if (drawopt.Contains("hist",TString::kIgnoreCase)) {
+			axis_color = lLColor;
+		} else {
+			axis_color = lMColor;
+		}
+	}
 	drawopt += "SAME";
-	if ( gDebug > 0 )
-		cout << "drawopt " << drawopt << endl;
+//   cout << "drawopt " << drawopt << endl;
 	hdisp->DrawCopy(drawopt.Data());
-	if ( new_axis != 0 ) {
+	if ( new_axis != 0 && hist->GetDimension() == 1 ) {
 //		TString opt("+SL");->GetFrame()->GetX1()
 		Double_t ledge = gPad->GetFrame()->GetY1();
 		Double_t uedge = gPad->GetFrame()->GetY2();
@@ -2326,6 +2389,16 @@ void FitHist::Superimpose(Int_t mode)
 		}
 	}
 	fCanvas->Update();
+	if (lIncrColors > 0) {
+		lLColor++;
+		lMColor++;
+		axis_color++;
+		lFillColor++;
+		axis_offset += 0.05;
+	}
+	env.SetValue("Set1DimOptDialog.AutoIncrColors", lIncrColors);
+	env.SetValue("Set1DimOptDialog.SkipDialog", lSkipDialog);
+	env.SaveLevel(kEnvLocal);
 }
 
 //____________________________________________________________________________________
@@ -2627,6 +2700,7 @@ void FitHist::ProjectBoth()
 		return;
 	}
    ExpandProject(projectboth);
+	fProjectedBoth = 1;
 }
 
 //____________________________________________________________________________________
@@ -3223,6 +3297,21 @@ void FitHist::ExpandProject(Int_t what)
       ClearMarks();
       fSelPad->cd();
       if (what == projectboth) {
+			TList temp;
+			TList * lof = fSelPad->GetListOfPrimitives();
+			TIter next( lof );
+			TObject * o;
+			while ( o = next() ) {
+				if ( o->IsA() == TPolyLine::Class() ||
+					o->IsA() == TGaxis::Class() ) {
+					temp.Add(o);
+				}
+			}
+			TIter next1(&temp);
+			while ( o = next1() ) {
+				lof->Remove(o);
+//				delete o;
+			}
          Double_t bothratio = WindowSizeDialog::fProjectBothRatio;
 
          if (bothratio > 1 || bothratio <= 0)
@@ -3263,7 +3352,7 @@ void FitHist::ExpandProject(Int_t what)
          lpx->SetPoint(np, x, y0);
          np++;
          lpx->SetPoint(np, xmin, y0);
-         cout << "np " << np << endl;
+ //        cout << "np " << np << endl;
          lpx->Draw("F");
          lpx->SetFillStyle(1001);
          lpx->SetFillColor(38);
@@ -3308,7 +3397,7 @@ void FitHist::ExpandProject(Int_t what)
          lpy->SetPoint(np, x0, y);
          np++;
          lpy->SetPoint(np, x0, ymin);
-         cout << "np " << np << endl;
+ //        cout << "np " << np << endl;
          lpy->Draw("F");
          lpy->SetFillStyle(1001);
          lpy->SetFillColor(45);
@@ -3377,8 +3466,7 @@ void FitHist::ExecDefMacro()
 void FitHist::Draw3Dim()
 {
 //   TString drawopt("iso");
-	if ( gDebug > 0) 
-		cout << "fDrawOpt3Dim " << fDrawOpt3Dim << endl;
+	cout << "fDrawOpt3Dim " << fDrawOpt3Dim << endl;
    fSelHist->SetDrawOption(fDrawOpt3Dim);
    fSelHist->SetOption(fDrawOpt3Dim);
    fSelHist->Draw(fDrawOpt3Dim);
@@ -3429,9 +3517,8 @@ void FitHist::Draw1Dim()
 //			 cout << "fSelHist->SetStats(0); " << endl;
 		} 
    }
-   if ( gDebug > 0)
-		cout << "Draw1Dim() " << drawopt << " fSelHist->GetDrawOption()|" 
-		<<fSelHist->GetDrawOption() << "|" <<  endl;
+   if ( gDebug > 0 )
+		cout << "Draw1Dim() " << drawopt << " fSelHist->Draw() " <<fSelHist->GetDrawOption() <<  endl;
 	if (fDrawMarker == 0)
 		fSelHist->SetMarkerSize(0.01);
    fSelHist->Draw(drawopt);
@@ -3590,13 +3677,13 @@ void FitHist::Draw2Dim()
       fCanvas->GetFrame()->SetFillColor(f2DimBackgroundColor);
    }
    DrawDate();
-   if (fLiveStat2Dim) {
+ //  if (fLiveStat2Dim) {
        if (!fCanvas->GetAutoExec())
           fCanvas->ToggleAutoExec();
-   } else  {
-       if (fCanvas->GetAutoExec())
-          fCanvas->ToggleAutoExec();
-   }
+//   } else  {
+//       if (fCanvas->GetAutoExec())
+ //         fCanvas->ToggleAutoExec();
+//   }
    fCanvas->Update();
 }
 

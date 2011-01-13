@@ -83,6 +83,7 @@ private:
    Int_t fSerialRot;
    Int_t fFuncNumb;
    Int_t fCutNumber;
+	Int_t fProjectedBoth;
    Int_t wdw_numb;
    Int_t fColSuperimpose;
    void ExpandProject(Int_t);

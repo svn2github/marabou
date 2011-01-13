@@ -3101,9 +3101,9 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
       wwidx = WindowSizeDialog::fWinwidx_2dim;
       wwidy = WindowSizeDialog::fWinwidy_2dim;
    }
-//   cout << "FHname " << FHname << endl;
-//   cout << "hist->GetName() " << hist->GetName() << endl;
-//   cout << "origname " << origname << endl;
+//    cout << "FHname " << FHname << endl;
+//    cout << "hist->GetName() " << hist->GetName() << endl;
+//    cout << "origname " << origname << endl;
    fh=new FitHist((const char*)FHname,"A FitHist object",hist, origname.Data(),
           WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, wwidx, wwidy);
    fLastWindow = fh->GetMyCanvas();

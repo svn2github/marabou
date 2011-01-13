@@ -373,6 +373,8 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
                   case kFileSaveAs:
                      {
+								TString CurDir;
+								CurDir = gSystem->pwd();
                         static TString dir(".");
                         static Int_t typeidx = 0;
                         TGFileInfo fi;
@@ -413,6 +415,8 @@ again:
                            }
                            Warning("ProcessMessage", "file %s cannot be saved with this extension", fi.fFilename);
                         }
+                        gSystem->cd(CurDir);
+								cout << "Restore dir: " << CurDir << endl;
                      }
                      break;
                   case kFileSaveAsRoot:
