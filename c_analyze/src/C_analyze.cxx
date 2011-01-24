@@ -63,6 +63,9 @@
 //Bool_t kUseMap = kTRUE;
 // #include "/usr/local/include/uti/psinfo.h"
 
+TObjArray * masters;
+TObjArray * slaves;
+
 static const char sepline[] =
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
 //_____________________________________________________________________________________
@@ -202,7 +205,6 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 //  find mount point for input directory, look for longest match
    Int_t mpind = -1;
    for(Int_t i=0; i < filesystems.GetSize(); i++){
-//       cout << "fs " << ((TObjString*)filesystems.At(i))->GetString() << endl;
       if(dir.BeginsWith(((TObjString*)filesystems.At(i))->GetString())){
          if(mpind < 0 || (mpind >=0 &&
          ((TObjString*)filesystems.At(i))->GetString().Length() >
@@ -782,6 +784,21 @@ trying to attach?",
    this->AddFrame(fHFr,fLO1);                // third line
 
    fHFr     = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
+
+// user may define his own ppc names
+
+   TString ppcNames = gEnv->GetValue("TMrbAnalyze.PPCNames", "");
+   if (ppcNames.IsNull()) {
+	 TString s = defaultMasters;
+	 masters = s.Tokenize(":");
+	 s = defaultSlaves;
+	 slaves = s.Tokenize(":");
+   } else {
+	 masters = ppcNames.Tokenize(":");
+	 slaves = ppcNames.Tokenize(":");
+   }
+   Int_t nofPPCs = masters->GetEntriesFast();
+
 //  Master
    fLabelFr = new TGCompositeFrame(fHFr, 150, 20, kHorizontalFrame);
    fLabel      = new TGLabel(fLabelFr, new TGString("Master"));
@@ -790,23 +807,21 @@ trying to attach?",
 
    fCbMaster = new TGComboBox(fHFr, C_MASTER);
    fHFr->AddFrame(fCbMaster,fLO2);
-   for(Int_t k=0; k<NPPC; k++){
-      fCbMaster->AddEntry(masters[k], k+1);
-//      cout << masters[k] << endl;
+   for(Int_t k=0; k<nofPPCs; k++){
+      fCbMaster->AddEntry(((TObjString *) masters->At(k))->GetString(), k+1);
    }
    Bool_t gotit = kFALSE;
    *fMaster = fMaster->Strip(TString::kBoth);
    if (fMaster->Length() == 0) *fMaster = "ppc-0";
-   for(Int_t k=0; k<NPPC; k++){
-     if (!strcmp(fMaster->Data(), masters[k])) {
+   for(Int_t k=0; k<nofPPCs; k++){
+     if (!strcmp(fMaster->Data(), ((TObjString *) masters->At(k))->GetString())) {
          fCbMaster->Select(k+1);
          gotit = kTRUE;
       }
    }
    if (!gotit) {
-      fCbMaster->AddEntry(fMaster->Data(), NPPC+1);
-      fCbMaster->Select(NPPC+1);
-//      cout << " select: " <<NPPC+1 << " "  << fMaster->Data() << endl;
+      fCbMaster->AddEntry(fMaster->Data(), nofPPCs+1);
+      fCbMaster->Select(nofPPCs+1);
     }
    fCbMaster->Resize(150, 20);
    fCbMaster->Associate(this);
@@ -818,21 +833,21 @@ trying to attach?",
 
    fCbReadout = new TGComboBox(fHFr, C_READOUT);
    fHFr->AddFrame(fCbReadout,fLO2);
-   for(Int_t k=0; k<NPPC; k++){
-      fCbReadout->AddEntry(slaves[k], k+1);
+   for(Int_t k=0; k<nofPPCs; k++){
+      fCbReadout->AddEntry(((TObjString *) slaves->At(k))->GetString(), k+1);
    }
    gotit = kFALSE;
    *fReadout = fReadout->Strip(TString::kBoth);
    if (fReadout->Length() == 0) *fReadout = *fMaster;
-   for (Int_t k=0; k<NPPC; k++) {
-      if (!strcmp(*fReadout, slaves[k])) {
+   for (Int_t k=0; k<nofPPCs; k++) {
+      if (!strcmp(*fReadout, ((TObjString *) slaves->At(k))->GetString())) {
          fCbReadout->Select(k+1);
          gotit = kTRUE;
       }
    }
    if (!gotit) {
-      fCbReadout->AddEntry(fReadout->Data(), NPPC+1);
-      fCbReadout->Select(NPPC+1);
+      fCbReadout->AddEntry(fReadout->Data(), nofPPCs+1);
+      fCbReadout->Select(nofPPCs+1);
   }
    fCbReadout->Resize(150, 20);
 
@@ -1461,8 +1476,8 @@ Bool_t FhMainFrame::AskforRemove(const char * fname){
 //_____________________________________________________________________________________
 //
 Bool_t FhMainFrame::CheckHostsUp(){
-   Bool_t mok = CheckOneHostUp(masters[fCbMaster->GetSelected()-1]);
-   Bool_t sok = CheckOneHostUp(slaves[fCbReadout->GetSelected()-1]);
+   Bool_t mok = CheckOneHostUp(((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString());
+   Bool_t sok = CheckOneHostUp(((TObjString *) slaves->At(fCbReadout->GetSelected()-1))->GetString());
    return mok && sok;
 }
 //_____________________________________________________________________________________
@@ -1608,7 +1623,7 @@ last event < first event", this);
 }
 //_____________________________________________________________________________________
 Bool_t FhMainFrame::MbsStatus(){
-   if(!fMbsControl) fMbsControl = new TMbsControl(masters[fCbMaster->GetSelected()-1],
+   if(!fMbsControl) fMbsControl = new TMbsControl(((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString(),
                                                   fMbsVersion->Data(),
                                                   fTbDir->GetString());
    cout << sepline << endl;
@@ -1669,7 +1684,7 @@ Bool_t FhMainFrame::Configure(){
       gSystem->ProcessEvents();
       fC_Status = M_CONFIGURING;
 
-      TString mproc =  masters[fCbMaster->GetSelected()-1];
+      TString mproc =  ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
       if (mproc.IsNull()) {
       	WarnBox("No master proc given", this);
         return(kTRUE);
@@ -1742,7 +1757,7 @@ Try Clear MBS",this);
       } else {
          if(fMbsControl->StartMbs()){
 //    start Message server
-         TString mproc =  masters[fCbMaster->GetSelected()-1];
+         TString mproc =  ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
          if (mproc.IsNull()) {
       	   WarnBox("No master proc given", this);
            return(kTRUE);
@@ -1757,7 +1772,7 @@ Try Clear MBS",this);
                   TString prnode(fMbsControl->PrompterNode()->GetName());
 //                  prnode.Prepend("^");
 //                 TRegexp rprnode(prnode);
-                  *fMaster = masters[fCbMaster->GetSelected()-1];
+                  *fMaster = ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
                   if(fMaster->Index(prnode, 0, TString::kIgnoreCase) != 0){
                      cout << sepline << endl;
                      cout << setred << "c_ana: Mbs Master node   " <<  fMaster->Data() << endl;
@@ -1810,8 +1825,8 @@ Bool_t FhMainFrame::MbsSetup(){
 		   fSetup = new TMbsSetup();
 	   }
     }
-	const char * mproc = masters[fCbMaster->GetSelected()-1];
-   const char * sproc = slaves[fCbReadout->GetSelected()-1];
+	const char * mproc = ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
+   const char * sproc = ((TObjString *) slaves->At(fCbReadout->GetSelected()-1))->GetString();
    cout << "mproc " << mproc << " sproc " << sproc;
 
   	fSetup->EvtBuilder()->SetProcName(mproc); // Char_t *, name des master ppcs
@@ -1877,7 +1892,7 @@ Bool_t FhMainFrame::ClearMbs(){
       if(!confirm("Really Clear MBS in this state?",this))return kFALSE;
    }
    if(!CheckHostsUp())return kFALSE;
-   if(!fMbsControl) fMbsControl = new TMbsControl( masters[fCbMaster->GetSelected()-1],
+   if(!fMbsControl) fMbsControl = new TMbsControl( ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString(),
                                                  fMbsVersion->Data(),
                                                   fTbDir->GetString());
    fM_Status = M_ABSENT;
@@ -1957,7 +1972,7 @@ Bool_t FhMainFrame::StartDAQ()
       } else if (*fInputSource == "Fake") {
          startCmd += "fake.root F ";
       } else {
-         startCmd += masters[fCbMaster->GetSelected()-1];
+         startCmd += ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
          startCmd +=  " S ";
       }
 //     Start event, Stop Event | Start time , Stop time
@@ -2112,9 +2127,9 @@ retrysocket:
       			  Int_t nobs= fComSocket->Recv(str,32);
                  cout << "StartDaq():" << nobs<< " received: "
 					  << " mess "<< str << endl;
-//					  gSystem->Sleep(500);   <<<<< sleeping 
+//					  gSystem->Sleep(500);   <<<<< sleeping
               }
-				  
+
               return kTRUE;
             } else {
 //               cout << setred << "c_ana: MBS readout didnt start correctly" << setblack<< endl;
@@ -3011,8 +3026,8 @@ Bool_t FhMainFrame::PutDefaults(){
    wstream << "OUTPUTFILE: "  <<  fTbRootFile->GetString()  << endl;
    wstream << "PARFILE: "     <<  fTbParFile->GetString()  << endl;
    wstream << "COMMENT: "     <<  fTbComment->GetString()  << endl;
-   wstream << "MASTER:  "     <<  masters[fCbMaster->GetSelected()-1] << endl;
-   wstream << "READOUT:  "    <<  slaves[fCbReadout->GetSelected()-1] << endl;
+   wstream << "MASTER:  "     <<  ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString() << endl;
+   wstream << "READOUT:  "    <<  ((TObjString *) slaves->At(fCbReadout->GetSelected()-1))->GetString() << endl;
    wstream << "DIR: "         <<  fTbDir->GetString()      << endl;
    if(fCbTrigger->GetSelected() == 1)*fTrigger = "VME";
    else                              *fTrigger = "CAMAC";
@@ -3059,9 +3074,9 @@ Bool_t FhMainFrame::PutDefaults(){
 		    fSetup = new TMbsSetup();
 	    }
       }
-      TString mproc = masters[fCbMaster->GetSelected()-1];
+      TString mproc = ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString();
       if (!mproc.IsNull()) fSetup->EvtBuilder()->SetProcName(mproc.Data());
-      TString sproc = slaves[fCbReadout->GetSelected()-1];
+      TString sproc = ((TObjString *) slaves->At(fCbReadout->GetSelected()-1))->GetString();
       if (!sproc.IsNull()) fSetup->ReadoutProc(0)->SetProcName(sproc.Data());
       fSetup->Save();
    }

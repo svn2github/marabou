@@ -31,10 +31,18 @@
 					sis3302_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill sis struct from file */
 					sis3302_setActiveChannels(s_$moduleNameLC, $chnPattern); 	/* define active channels */
 					sis3302_loadFromDb(s_$moduleNameLC);			 			/* load module regs from database */
+<<<<<<< Sis_3302.code
+					sis3302_reset(s_$moduleName);								/* reset module */
+					sis3302_setTracingMode(s_$moduleName, $tracingMode);		/* set tracing $onoff */
+					sis3302_resetSampling(s_$moduleName);						/* reset sampling */
+					sis3302_clearTimestamp(s_$moduleName);						/* reset time stamp */
+					sis3302_dumpRegisters(s_$moduleName, "$dumpFile");			/* dump registers */
+=======
 					sis3302_setTracingMode(s_$moduleNameLC, $tracingMode);		/* turn tracing $onoff */
 					sis3302_resetSampling(s_$moduleNameLC);						/* reset sampling */
 					sis3302_clearTimestamp(s_$moduleNameLC);						/* reset time stamp */
 					sis3302_dumpRegisters(s_$moduleNameLC, "$dumpFile");		/* dump registers */
+>>>>>>> 1.2
 
 %%EndOfCode%%
 %%INIT_MODULE%%

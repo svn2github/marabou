@@ -1,12 +1,10 @@
 #___________________________________________________________________[MAKEFILE]
 #/////////////////////////////////////////////////////////////////////////////
-# Makefile:        MbranchReadoutBranch0.mk
-# Purpose:         Build MBS readout task for RIO3 cpus
-# Description:     makes task m_read_meb
-#                  to be used under LynxOs 3.1 and MBS v43
+# Makefile:        %%READOUT_FILE%%.mk
+# Purpose:         Build MBS readout task for RIO2/3/4 cpus
 # Author:          %%AUTHOR%%
-# Revision:        $Id: Readout.mk.code,v 1.14 2010-04-01 07:16:03 Rudolf.Lutter Exp $
-# Date:            $Date: 2010-04-01 07:16:03 $
+# Revision:        $Id: Readout.mk.code,v 1.15 2011-01-24 13:11:41 Marabou Exp $
+# Date:            %%CREATION_DATE%%
 # URL:
 #/////////////////////////////////////////////////////////////////////////////
 
@@ -18,6 +16,9 @@ RFILE		= %%READOUT_FILE%%
 SRC	= $(MBSROOT)/src
 INC = $(MBSROOT)/inc
 
+OBJ = $(MBSROOT)/obj_$(GSI_CPU_PLATFORM)
+LIB = $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
+
 RDO_INCL	= %%READOUT_INCLUDE%%
 RDO_LIBS	= %%READOUT_LIBS%%
 
@@ -27,23 +28,38 @@ C_CTRL	= %%CAMAC_CONTROLLER%%
 
 CC	= gcc
 
+SMILIBS      = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(LIB)/lib_smi.a
+
 SHMQ    = -DLYNX__SMEM
+
 ifeq ($(GSI_OS_VERSION),2.5)
-OBJ = $(MBSROOT)/obj_$(GSI_LYNX_PROC_FAM)
-LIB = $(MBSROOT)/lib_$(GSI_LYNX_PROC_FAM)
-POSIX   	=  -mposix4d9 -mthreads
-CFLAGS  	= $(POSIX) -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
-LIBS    	= $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-				$(LIB)/libedit.a -llynx -lnetinet
+POSIX   =  -mthreads
+CFLAGS  = $(POSIX) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
+          $(LIB)/libedit.a -llynx -lnetinet
+endif
+
+ifeq ($(GSI_OS_VERSION),3.0)
+POSIX   =  -mthreads
+CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
+          $(LIB)/libedit.a -llynx  -lnetinet
 endif
 
 ifeq ($(GSI_OS_VERSION),3.1)
-OBJ = $(MBSROOT)/obj_$(GSI_CPU_PLATFORM)
-LIB = $(MBSROOT)/lib_$(GSI_CPU_PLATFORM)
-POSIX   	=  -mthreads
-CFLAGS  	= $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN)
-LIBS    	= $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
-				$(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet
+POSIX   =  -mthreads
+CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
+          $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet
+endif
+
+ifeq ($(GSI_OS_VERSION),4.0)
+POSIX   =  -mthreads
+CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
+          $(LIB)/libedit.a -llynx -lposix-pre1c
+SMILIBS = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(LIB)/lib_smi.a \
+          $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet
 endif
 
 CFLAGS	+= -I$(RPATH) -I$(INC) $(RDO_INCL)

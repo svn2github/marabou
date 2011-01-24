@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.184 2010-12-16 13:12:43 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.185 2011-01-24 13:11:41 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1104,7 +1104,8 @@ const Char_t * TMrbConfig::GetProcType(Bool_t Verbose) {
 		} else {
 			if (	procType.CompareTo("PPC") != 0
 			&&		procType.CompareTo("RIO2") != 0
-			&&		procType.CompareTo("RIO3") != 0) {
+			&&		procType.CompareTo("RIO3") != 0
+			&&		procType.CompareTo("RIO4") != 0) {
 				if (Verbose) {
 					gMrbLog->Err() << "Wrong processor type - " << procType << ", set TMbsSetup.ProcType in .rootrc properly" << endl;
 					gMrbLog->Flush(this->ClassName(), "GetProcType");
@@ -1580,8 +1581,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	TString procType = this->GetProcType(kTRUE);
 	if (procType.IsNull()) return(kFALSE);
 
-	TString mbsv = Form("v%cx", mbsVersion(0));			// make file depends on major mbs version: v22 -> v2x, v42 & v43 -> v4x
-	TString mkFile = Form("Readout_%s.mk.code", mbsv.Data());
+	TString mkFile = "Readout.mk.code";
 
 	Int_t nofMbsBranches = fLofMbsBranches.GetEntriesFast();
 	if (nofMbsBranches == 0) {
@@ -1709,8 +1709,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iclPath += o->String();
 								iclPath += " ";
 							}
-							iclPath += "-I";
-							TString ip = gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "/nfs/marabou/include");
+							TString ip = "-I";
+							ip += gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "/nfs/marabou/include");
 							gSystem->ExpandPathName(ip);
 							iclPath += ip;
 							rdoStrm << rdoTmpl.Encode(line, iclPath.Data()) << endl << endl;
@@ -1735,11 +1735,11 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								libString += o->String();
 								libString += " ";
 							}
-							TString rdoLibs = "-L/nfs/marabou/lib/";
-							rdoLibs += " -lUti";
-							TString ip = gEnv->GetValue("TMrbConfig.ReadoutLibs", rdoLibs.Data());
-							gSystem->ExpandPathName(ip);
-							libString += ip;
+							TString lp = gEnv->GetValue("TMrbConfig.ReadoutLibPath", "/nfs/marabou/lib");
+							gSystem->ExpandPathName(lp);
+							libString += "-L";
+							libString += lp;
+							libString += " -lUti";
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
 						}
 						break;
@@ -8120,6 +8120,8 @@ Bool_t TMrbConfig::CheckConfig() {
 	TString procType = this->GetProcType(kTRUE);
 	if (procType.IsNull()) return(kFALSE);
 
+	cout << "@@@ " << mbsVersion << endl;
+
 	TString lv = "";
 	if (fMbsVersion.CompareTo("2.2") == 0) {
 		lv = "2.5";
@@ -8129,13 +8131,15 @@ Bool_t TMrbConfig::CheckConfig() {
 		lv = "3.1";
 	} else if (fMbsVersion.CompareTo("4.5") == 0) {
 		lv = "3.1";
+	} else if (fMbsVersion.CompareTo("5.0") == 0) {
+		lv = "4.0";
 	} else {
 		gMrbLog->Err() << "Wrong MBS version - " << fMbsVersion << "; set TMbsSetup.MbsVersion in .rootrc properly" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckConfig");
 		nofErrors++;
 	}
 
-	if (fLynxVersion.CompareTo("2.5") != 0 && fLynxVersion.CompareTo("3.1") != 0) {
+	if (fLynxVersion.CompareTo("2.5") != 0 && fLynxVersion.CompareTo("3.1") != 0 && fLynxVersion.CompareTo("4.0") != 0) {
 		gMrbLog->Err() << "Wrong Lynx version - " << fLynxVersion << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckConfig");
 		fLynxVersion = "";

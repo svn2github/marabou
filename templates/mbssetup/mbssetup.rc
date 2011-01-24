@@ -3,18 +3,18 @@
 # Name             mbssetup.rc
 # Purpose:         Different addr/length settings depending on MBS, CPU etc.
 # Author:          MARaBOU
-# Revision:        $Id: mbssetup.rc,v 1.6 2009-09-29 10:43:34 Rudolf.Lutter Exp $
-# Date:            $Date: 2009-09-29 10:43:34 $
+# Revision:        $Id: mbssetup.rc,v 1.7 2011-01-24 13:11:41 Marabou Exp $
+# Date:            $Date: 2011-01-24 13:11:41 $
 # URL:
 #/////////////////////////////////////////////////////////////////////////////
 
 # Format:
 # <LynxVersion>-<MbsVersion>-<Mode>-<CpuType>-<ContrType>.<Resource>:	<Value>
 #
-# LynxVersion:    2.5, 3.1 ...
-# MbsVersion:     2.2, 4.2, 4.3 ...
+# LynxVersion:    2.5, 3.1, 4.0 ...
+# MbsVersion:     2.2, 4.2, 4.3, 4.5, 5.0 ...
 # Mode:           SP, MP, MB (single proc, multi proc, multi branch)
-# CpuType:        RIO2, RIO3
+# CpuType:        RIO2, RIO3, RIO4
 # ContrType:      CBV, CC32 (camac)
 #                 CAMAC, VME (trigger module)
 #                 EVB, RDO (event builder / readout)

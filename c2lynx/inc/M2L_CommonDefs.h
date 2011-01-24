@@ -10,7 +10,11 @@
 // R. Lutter, Apr 2007                                                  //
 //                                                                      //
 // !!!! This header file will be used for C++ *AND* C as well           //
+<<<<<<< M2L_CommonDefs.h
+// !!!! Please use  C style comments only                               //
+=======
 // !!!! Please use C style comments only                                //
+>>>>>>> 1.17
 ////////////////////////////////////////////////////////////////////////*/
 
 	enum ESis3302	{			/* DAC register */
