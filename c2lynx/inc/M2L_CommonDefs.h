@@ -104,6 +104,9 @@
 #ifdef	CPU_TYPE_RIO3
 	enum			{	kSis3302SegSize		 		= 0x8000000 };
 #endif
+#ifdef	CPU_TYPE_RIO4
+	enum			{	kSis3302SegSize		 		= 0x8000000 };
+#endif
 
 	enum			{	kSis3302StatusCollectingTraces	=	0x1 };
 	enum			{	kSis3302MaxBufSize		=	0x20000	};
