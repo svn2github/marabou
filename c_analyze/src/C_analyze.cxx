@@ -3135,7 +3135,7 @@ Bool_t FhMainFrame::GetDefaults(){
      ok = kFALSE;
    }
 
-   fDir          = new TString("dualppc");
+   fDir          = new TString("ppc");
    fTrigger      = new TString("VME");
    fCodeName        = new TString("");
    fFromTime        = new TString(":000");
