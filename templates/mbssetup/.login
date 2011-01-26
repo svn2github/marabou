@@ -1,4 +1,5 @@
 %%BeginOfCode%%
+setenv LYNX_VERSION "$lynxVersion"
 setenv MBS_VERSION "$mbsVersion"
 setenv MARABOU_PATH "$marabouPath"
 set path = ( /bin /bin/ces /usr/bin /usr/local/bin /etc /usr/etc . ~/tools $MARABOU_PATH/powerpc/bin/$LYNX_VERSION )
