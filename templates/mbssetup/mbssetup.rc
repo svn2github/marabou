@@ -3,8 +3,8 @@
 # Name             mbssetup.rc
 # Purpose:         Different addr/length settings depending on MBS, CPU etc.
 # Author:          MARaBOU
-# Revision:        $Id: mbssetup.rc,v 1.7 2011-01-24 13:11:41 Marabou Exp $
-# Date:            $Date: 2011-01-24 13:11:41 $
+# Revision:        $Id: mbssetup.rc,v 1.8 2011-01-26 13:47:39 Marabou Exp $
+# Date:            $Date: 2011-01-26 13:47:39 $
 # URL:
 #/////////////////////////////////////////////////////////////////////////////
 
@@ -50,14 +50,17 @@
 *-*-*-*-CBV.LocalMemoryBase: 			0xe2000000
 *-*-*-RIO2-CC32.LocalMemoryBase: 		0xee550000
 *-*-*-RIO3-CC32.LocalMemoryBase: 		0xe2000000
+*-*-SP-RIO4-*.LocalMemoryBase:	 		0x52000000
 
 *-*-*-*-*.LocalMemoryLength:			0x00001000
 
+*-*-SP-RIO4-*.LocalPipeBase:	 		0x08000000
 *-*-MP-*-*.LocalPipeBase:	 			0xe5000000
 *-*-SP-*-*.LocalPipeBase:	 			0x01e00000
 
 *-*-*-*-*.LocalPipeOffset:	 			0x0
 
+*-*-SP-RIO4-*.LocalPipeSegmentLength:	0x08000000
 *-*-SP-*-*.LocalPipeSegmentLength:	 	0x00100000
 *-*-MP-*-*.LocalPipeSegmentLength:		0x00200000
 
@@ -65,6 +68,7 @@
 
 *-*-*-RIO2-VME.TriggerModuleBase:		0xe2000000
 *-*-*-RIO3-VME.TriggerModuleBase:		0x42000000
+*-*-*-RIO4-VME.TriggerModuleBase:		0x52000000
 
 *-*-*-*-EVB.VSBAddr:					0xf5000000
 *-*-*-*-RDO.VSBAddr:					0xf0000000
