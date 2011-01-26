@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.68 2011-01-25 12:59:39 Marabou Exp $
-// Date:           $Date: 2011-01-25 12:59:39 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.69 2011-01-26 08:20:06 Marabou Exp $
+// Date:           $Date: 2011-01-26 08:20:06 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -1226,10 +1226,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						stpTmpl.InitializeCode();
 						TMrbNamedX * k = this->ReadoutProc(ProcID)->TriggerModule()->GetTriggerMode();
 						if (k->GetIndex() == kTriggerModeLocalInterrupt) {
-							stpTmpl.Substitute("$vmeconfig", "xsh 'vmeconfig -a irqon'");
+							stpTmpl.Substitute("$vmeconfig", "xsh \"vmeconfig -a irqon\"");
 							stpTmpl.Substitute("$irqOnOff", "enable irq");
 						} else {
-							stpTmpl.Substitute("$vmeconfig", "xsh 'vmeconfig -c'");
+							stpTmpl.Substitute("$vmeconfig", "xsh \"vmeconfig -c\"");
 							stpTmpl.Substitute("$irqOnOff", "disable irq");
 						}
 						stpTmpl.WriteCode(stp);
