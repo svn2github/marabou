@@ -7,8 +7,8 @@
 // Purpose:        Define a MBS setup: Common defs
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetupCommon.h,v 1.16 2009-04-30 10:46:41 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMbsSetupCommon.h,v 1.17 2011-01-26 08:48:59 Marabou Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -32,7 +32,8 @@ enum EMbsProcType			{ 	kProcUndefined			=	0,				// processor types
 								kProcE7 				=	3,
 								kProcPPC				=	8,
 								kProcRIO2				=	8,
-								kProcRIO3				=	10
+								kProcRIO3				=	10,
+								kProcRIO4				=	12
 							};
 
 enum EMbsControllerType		{ 	kControllerUndefined	=	0,				// crate controllers
@@ -45,6 +46,7 @@ enum EMbsControllerType		{ 	kControllerUndefined	=	0,				// crate controllers
 								kControllerCAV			=	7,
 								kControllerRIO2			=	kProcRIO2,
 								kControllerRIO3			=	kProcRIO3,
+								kControllerRIO4			=	kProcRIO4,
 								kControllerCC32 		=   11,
 								kControllerNoCamac		=	99
 							};
@@ -124,6 +126,7 @@ const SMrbNamedXShort kMbsLofProcs[] =				// list of legal processors
 								{kProcPPC,			"PPC"			},
 								{kProcRIO2,			"RIO2"			},
 								{kProcRIO3,			"RIO3"			},
+								{kProcRIO4,			"RIO4"			},
 								{0, 				NULL			}
 							};
 
