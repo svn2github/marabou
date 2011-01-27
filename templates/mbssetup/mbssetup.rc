@@ -3,8 +3,8 @@
 # Name             mbssetup.rc
 # Purpose:         Different addr/length settings depending on MBS, CPU etc.
 # Author:          MARaBOU
-# Revision:        $Id: mbssetup.rc,v 1.8 2011-01-26 13:47:39 Marabou Exp $
-# Date:            $Date: 2011-01-26 13:47:39 $
+# Revision:        $Id: mbssetup.rc,v 1.9 2011-01-27 12:49:09 Marabou Exp $
+# Date:            $Date: 2011-01-27 12:49:09 $
 # URL:
 #/////////////////////////////////////////////////////////////////////////////
 
@@ -69,6 +69,10 @@
 *-*-*-RIO2-VME.TriggerModuleBase:		0xe2000000
 *-*-*-RIO3-VME.TriggerModuleBase:		0x42000000
 *-*-*-RIO4-VME.TriggerModuleBase:		0x52000000
+
+*-*-*-RIO2-*.SubeventLength:			2048
+*-*-*-RIO3-*.SubeventLength:			8096
+*-*-*-RIO4-*.SubeventLength:			10144
 
 *-*-*-*-EVB.VSBAddr:					0xf5000000
 *-*-*-*-RDO.VSBAddr:					0xf0000000
