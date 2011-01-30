@@ -27,8 +27,11 @@ private:
    Double_t fLogScaleMin;
    Double_t fLogScaleMax;
    Color_t fHistFillColor2Dim;
-   Color_t fHistLineColor2Dim;
-   Color_t fMarkerColor2Dim; 
+	Style_t fHistFillStyle2Dim;
+	Color_t fHistLineColor2Dim;
+	Style_t fHistLineStyle2Dim;
+	Int_t   fHistLineWidth2Dim;
+	Color_t fMarkerColor2Dim; 
 	Color_t f2DimBackgroundColor;
    Style_t fMarkerStyle2Dim;  
    Size_t  fMarkerSize2Dim; 

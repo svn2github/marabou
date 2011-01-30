@@ -57,6 +57,8 @@ HprStack::HprStack(TList * hlist)
    fMarkerColor = new Color_t[fNhists];
    fMarkerStyle = new Style_t[fNhists];
    fMarkerSize = new Size_t[fNhists];
+	fMinScale   = new Double_t[fNhists];
+	fMaxScale   = new Double_t[fNhists];
    RestoreDefaults();
    gROOT->GetList()->Add(this);
    gROOT->GetListOfCleanups()->Add(this);
@@ -73,7 +75,9 @@ void HprStack::BuildCanvas()
    TString buf("cstack_");
    buf += gSeqNumberStack++;
    const char * tit = buf.Data();
-   fCanvas = new TCanvas(buf.Data(), tit, WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury, fWindowXWidth, fWindowYWidth);
+   fCanvas = new TCanvas(buf.Data(), tit, 
+		WindowSizeDialog::fWincurx, WindowSizeDialog::fWincury,
+		fWindowXWidth, fWindowYWidth);
    WindowSizeDialog::fWincurx = WindowSizeDialog::fWintopx;
    WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
 //   cout << "TCanvas *ca = (TCanvas*)" <<  fCanvas << endl;
@@ -105,6 +109,8 @@ void HprStack::BuildCanvas()
 		   hist->SetFillStyle(1001);
       }
 //      hist->Print();
+      fMinScale[i] = hist->GetMinimum();
+		fMaxScale[i] = hist->GetMaximum();
       hname = hist->GetName();
 //      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
 //      if(last_us >0)hname.Remove(last_us);
@@ -139,9 +145,12 @@ void HprStack::BuildCanvas()
 void HprStack::RecursiveRemove(TObject *obj)
 {
 
-//   cout <<  "HprStack::RecursiveRemove,obj " << obj << " "  << obj->GetName() << endl;
    if (obj == fCanvas) {
-      gROOT->GetList()->Remove(this);
+//      cout <<  "HprStack::RecursiveRemove,this: " << this << " obj: "  << obj << " "  
+//		     << obj->GetName() << endl;
+      fWindowXWidth = fCanvas->GetWindowWidth();
+      fWindowYWidth = fCanvas->GetWindowHeight();
+		gROOT->GetList()->Remove(this);
       gROOT->GetListOfCleanups()->Remove(this);
  //     cout <<  "RecursiveRemove,fWindowXWidth  " << fWindowXWidth << endl;
       delete this;
@@ -156,6 +165,17 @@ HprStack::~HprStack()
    gROOT->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
    SaveDefaults();
+	delete [] fFill_1Dim;
+	delete [] fFillColor;
+	delete [] fFillStyle;
+	delete [] fLineColor;
+	delete [] fLineStyle;
+	delete [] fLineWidth;
+	delete [] fMarkerColor;
+	delete [] fMarkerStyle;
+	delete [] fMarkerSize;
+	delete [] fMinScale;
+	delete [] fMaxScale;
 }
 //________________________________________________________________________
 
@@ -232,6 +252,9 @@ Options E3-E6: Choose: Contour Off and FillHist On to get area\n\
 X ErrorS controls drawing of error bars in X.\n\
 A value of 0.5 draws a line X +- 0.5*BinWidth\n\
 \n\
+Option \"Same scale\" forces same range of Y-scale in case\n\
+of \"One pad for each\"\n\
+\n\
 ";
    fRow_lab = new TList();
 	static void *fValp[50];
@@ -257,6 +280,8 @@ A value of 0.5 draws a line X +- 0.5*BinWidth\n\
    fValp[ind++] = &fShowContour;
    fRow_lab->Add(new TObjString("CheckButton+Draw Markers"));
    fValp[ind++] = &fShowMarkers;
+   fRow_lab->Add(new TObjString("CheckButton+Same scale"));
+   fValp[ind++] = &fSameScale;
    TString lab;
    for ( Int_t i = 0; i < fNDrawn; i++ ) {
       lab = "CheckButton_DoFill [";
@@ -322,6 +347,7 @@ void HprStack::RestoreDefaults()
    fShowContour   = env.GetValue("HprStack.fShowContour", 0);
    fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "none");
    fShowMarkers   = env.GetValue("HprStack.fShowMarkers", 0);
+   fSameScale     = env.GetValue("HprStack.fSameScale", 0);
 
    TString lab;
    for ( Int_t i = 0; i < fNhists; i++ ) {
@@ -381,6 +407,7 @@ void HprStack::SaveDefaults()
    env.SetValue("HprStack.fShowContour", fShowContour);
    env.SetValue("Set1DimOptDialog.fErrorMode",     fErrorMode);
    env.SetValue("HprStack.fShowMarkers", fShowMarkers );
+   env.SetValue("HprStack.fSameScale",   fSameScale );
    
    TString lab;
    for ( Int_t i = 0; i < fNhists; i++ ) {
@@ -448,11 +475,16 @@ void HprStack::SetAttributes()
    gStyle->SetEndErrorSize (fEndErrorSize );
    gStyle->SetErrorX       (fErrorX       );
 //	Int_t idx;
-
+	Double_t min = 1.E20, max = -1.E20;
    for(Int_t i=0; i<fNDrawn; i++) {
       TH1 * hist = (TH1*)stack->At(i);
       TH1 * ohist = (TH1*)orighist->At(i);
 //		TObjLink *objlnk = orighist->FindLink(ohist, idx);
+		if ( fMinScale[i] < min)
+			min = fMinScale[i];
+		if (fMaxScale[i] > max)
+			max = fMaxScale[i];
+		
       if ( fDim  == 2 ) {
          hist->SetFillColor(fFillColor[i]); ohist->SetFillColor(fFillColor[i]);
 		   hist->SetFillStyle(1001);
@@ -490,7 +522,20 @@ void HprStack::SetAttributes()
 			}
       }
    }
-	
+   if ( GeneralAttDialog::fStackedPads) {
+//		max *= 1.05;
+//		cout << min << " " << max << endl;
+		for(Int_t i=0; i<fNDrawn; i++) {
+			TH1 * hist = (TH1*)orighist->At(i);
+			if ( fSameScale ) {
+				hist->SetMinimum(min);
+				hist->SetMaximum(1.05 * max);
+			} else {
+				hist->SetMinimum(fMinScale[i]);
+				hist->SetMaximum(1.05 * fMaxScale[i]);
+			}
+		}
+	}
    fCanvas->cd();
 	if ( GeneralAttDialog::fStackedNostack ) {	
 		opt += "nostack";

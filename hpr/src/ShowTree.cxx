@@ -27,15 +27,15 @@
 
 #include <iostream>
 #include <iomanip>
-#include <sstream>
 #include <fstream>
-#include <cstdlib>
+#include <sstream>
+//#include <cstdlib>
 
 //________________________________________________________________________________________
 
 void AddMathExpressions(TList * var_list)
 {
-   if (!var_list) return;
+	if (!var_list) return;
    var_list->Add(new TObjString("TMath::Sqrt("));
    var_list->Add(new TObjString("TMath::Sin("));
    var_list->Add(new TObjString("TMath::Cos("));
@@ -56,7 +56,7 @@ void AddMathExpressions(TList * var_list)
 
 void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname, const char* bp)
 {
-  static Int_t ycanvas=180;
+	static Int_t ycanvas=180;
 //  const Int_t MAXLEAF=33;
   if (fRootFile) fRootFile->Close();
 //  fRootFile=new TFile(fname);
@@ -195,15 +195,21 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
       }
    }
    cmd = "mypres->EditLeafCut(\"";
-   cmd += Form("0x%x",var_list);
-   cmd += "\")";
+	ostringstream buf;
+	buf << var_list;
+	cmd += buf.str();
+//	cmd += Form("0x%x",var_list);
+	cmd += "\")";
    nam = "Edit formula cut";
    sel = "mypres->ToggleLeafCut()";
    fCmdLine->AddFirst(new CmdListEntry(cmd, nam, empty, sel));
 
    cmd = "mypres->EditExpression(\"";
-   cmd += Form("0x%x",var_list);
-   cmd += "\")";
+	ostringstream buf1;
+	buf1 << var_list;
+	cmd += buf1.str();
+//	cmd += Form("0x%x",var_list);
+	cmd += "\")";
    nam = "Edit expression";
    sel = "mypres->ToggleExpression()";
    fCmdLine->AddFirst(new CmdListEntry(cmd, nam, empty, sel));

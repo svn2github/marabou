@@ -39,21 +39,23 @@ private:
    Double_t    fLegendY1;
    Double_t    fLegendY2;
    TString fDrawOpt;
-   Int_t   *fFill_1Dim;
-   Color_t *fFillColor;
-   Style_t *fFillStyle;
-   Color_t *fLineColor;
-   Style_t *fLineStyle;
-   Width_t *fLineWidth;
-   Color_t *fMarkerColor;
-   Style_t *fMarkerStyle;
-   Size_t *fMarkerSize;
+   Int_t    *fFill_1Dim;
+   Color_t  *fFillColor;
+   Style_t  *fFillStyle;
+   Color_t  *fLineColor;
+   Style_t  *fLineStyle;
+   Width_t  *fLineWidth;
+   Color_t  *fMarkerColor;
+   Style_t  *fMarkerStyle;
+   Size_t   *fMarkerSize;
+	Double_t *fMinScale;
+	Double_t *fMaxScale;
    Int_t   fShowContour;
    Int_t   fShowMarkers;
    Float_t fEndErrorSize;
    Float_t   fErrorX;
    TString fErrorMode;
-
+	Int_t   fSameScale;
 public:
    HprStack(TList * hlist);
    HprStack(){};

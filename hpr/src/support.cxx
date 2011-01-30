@@ -40,8 +40,8 @@
 #include "WindowSizeDialog.h"
 
 #include <iostream>
-#include <sstream>
 #include <fstream>
+#include <sstream>
 
 TSocket * gSocket = 0;
 //-----------------------------------------------------------------------
@@ -279,16 +279,16 @@ TButton *CommandButton(TString & cmd, TString & tit,
    TButton *button = new TButton((const char *) tit, "", x0, y, x1, y1);
    TRegexp brace(")");
    TString newcmd(cmd);
-   TString buf;
-   if (cmd.Contains("\""))
-      buf = ",";
+	ostringstream  buf;
+	if (cmd.Contains("\""))
+      buf << ",";
    if (newcmd.EndsWith("_")) {
       newcmd = newcmd.Chop();
-      buf += Form("\"%x\")", gPad);
+		buf << "\"" << gPad << "\")";
    } else {
-      buf += Form("\"%x\")", button);
+		buf << "\"" << button << "\")";
    }
-   newcmd(brace) = buf.Data();
+	newcmd(brace) = buf.str();
 //   cout << "CommandButton: " << newcmd << endl;
    button->SetBit(kCommand);
    if (selected) {
@@ -347,11 +347,12 @@ void SelectButton(TString & cmd,
    TRegexp brace(")");
    TString newcmd(cmd);
 
-   TString buf;
+	ostringstream buf;
    if (cmd.Contains("\""))
-      buf = ",";
-   buf += Form("\"%x\")", button);
-   newcmd(brace) = buf.Data();
+      buf << ",";
+//	buf += Form("\"%x\")", button);
+	buf << "\"" << button << "\")";
+	newcmd(brace) = buf.str();
 
    button->SetMethod((char *) newcmd.Data());
    button->SetBit(kSelection);

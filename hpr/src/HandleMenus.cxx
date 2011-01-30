@@ -340,7 +340,40 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
    if(fHistPresent){
       hbrowser=fHistPresent->GetHelpBrowser();
    }
-
+/*   Bool_t changed = kFALSE;
+	if ( fFitHist ) { 
+		if (is2dim(fFitHist->GetSelHist())) {
+			if (fHCanvas->GetLogz()) {
+				if ( !fDisplayMenu->IsEntryChecked(kFHLogY) ) {
+					fDisplayMenu->CheckEntry(kFHLogY);
+					changed = kTRUE;
+				}
+			} else {
+				if ( fDisplayMenu->IsEntryChecked(kFHLogY) ) {
+					fDisplayMenu->UnCheckEntry(kFHLogY);
+					changed = kTRUE;
+				}
+			}
+		} else {
+			if (fHCanvas->GetLogy()) {
+				if ( !fDisplayMenu->IsEntryChecked(kFHLogY) ) {
+					fDisplayMenu->CheckEntry(kFHLogY);
+					changed = kTRUE;
+				}
+			} else {
+				if ( fDisplayMenu->IsEntryChecked(kFHLogY) ) {
+					fDisplayMenu->UnCheckEntry(kFHLogY);
+					changed = kTRUE;
+				}
+			}
+		}
+		
+		if ( changed ) {
+			fRootCanvas->ForceUpdate();
+	//		cout << " log state changed" << endl<< flush;
+			gSystem->ProcessEvents();
+		}
+	}*/
    switch (GET_MSG(msg)) {
 
       case kC_COMMAND:
@@ -746,7 +779,10 @@ again:
                   case kFHSuperimpose:
                      fFitHist->Superimpose(0);
                      break;
-                  case kFHSuperimposeGraph:
+						case kFHSuperimposeScale:
+							fFitHist->Superimpose(1);
+							break;
+						case kFHSuperimposeGraph:
                      fHistPresent->SuperimposeGraph((TCanvas*)fHCanvas);
                      break;
 						case kFHSetAxisGraphX:
@@ -761,15 +797,12 @@ again:
                   case kFHfft:
                      fFitHist->FastFT();
                      break;
-                  case kFHSuperimposeScale:
-                     fFitHist->Superimpose(1);
-                     break;
                   case kFHGetRange:
                      fFitHist->GetRange();
                      break;
                   case kFHLogY:
                      if (is2dim(fFitHist->GetSelHist())) {
-                     	if (fFitHist->GetLogz()) {
+                     	if (fHCanvas->GetLogz()) {
                         	 fFitHist->SetLogz(0);
                         	 fDisplayMenu->UnCheckEntry(kFHLogY);
                      	} else {
@@ -777,7 +810,7 @@ again:
                         	 fDisplayMenu->CheckEntry(kFHLogY);
                      	}
                      } else {
-                     	if (fFitHist->GetLogy()) {
+                     	if (fHCanvas->GetLogy()) {
                         	 fFitHist->SetLogy(0);
                         	 fDisplayMenu->UnCheckEntry(kFHLogY);
                      	} else {
@@ -1478,11 +1511,11 @@ void HandleMenus::BuildMenus()
 
 				if (fFitHist->GetSelHist()->GetDimension() == 1) {
 					fDisplayMenu->AddEntry("Log Y scale",  kFHLogY);
-					if (fFitHist->GetLogy()) fDisplayMenu->CheckEntry(kFHLogY);
+					if (fHCanvas->GetLogy()) fDisplayMenu->CheckEntry(kFHLogY);
 					else                   fDisplayMenu->UnCheckEntry(kFHLogY);
 				} else if (fFitHist->GetSelHist()->GetDimension() == 2) {
 					fDisplayMenu->AddEntry("Log Z scale",  kFHLogY);
-					if (fFitHist->GetLogz()) fDisplayMenu->CheckEntry(kFHLogY);
+					if (fHCanvas->GetLogz()) fDisplayMenu->CheckEntry(kFHLogY);
 					else                   fDisplayMenu->UnCheckEntry(kFHLogY);
 				}
 
@@ -1660,6 +1693,7 @@ void HandleMenus::SetLog(Int_t state)
 {
     if(state > 0) fDisplayMenu->CheckEntry(kFHLogY);
     else          fDisplayMenu->UnCheckEntry(kFHLogY);
+//	 cout << " HandleMenus::SetLog " << state << endl;
 }
 //______________________________________________________________________________
 

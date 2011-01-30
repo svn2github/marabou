@@ -48,7 +48,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
          SetBit(GrCanvas::kIsAEditorPage);
       }
    }
-	if ( gDebug > 1 )
+	if ( gDebug > 0 )
 		cout << "ctor HTCanvas: " << this << " " << name
         << " Id " << GetRootCanvas()->GetId() << endl;
 };
@@ -56,9 +56,10 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 
 HTCanvas::~HTCanvas()
 {
-	if ( gDebug > 1 )
+	if ( gDebug > 0 )
 		cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
-   if (fHandleMenus) {
+   Disconnect("TPad", "Modified()");
+	if (fHandleMenus) {
       delete fHandleMenus;
       fHandleMenus = 0;
    }
@@ -82,7 +83,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    TPad         *pad;
    TObject      *prevSelObj = 0;
    if ( event == kButton2Down ) {
-      // find pad in which input occured
+       // find pad in which input occured
       pad = Pick(px, py, prevSelObj);
       if (!pad) return;
       gPad = pad;   // don't use cd() because we won't draw in pad

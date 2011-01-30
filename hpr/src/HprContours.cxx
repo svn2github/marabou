@@ -13,7 +13,7 @@
 
 void FitHist::SaveUserContours()
 {
-   TString hname = fHname;
+	TString hname = fHname;
    Bool_t ok;
 	Int_t ip = hname.Index(";");
 	if (ip > 0) hname.Resize(ip);
@@ -39,6 +39,38 @@ void FitHist::SaveUserContours()
 	*(contour->GetColorArray()) = *colors;
    contour->Print();
    new Save2FileDialog(contour, NULL, GetMyCanvas());
+	
+	if ( (!CreateDefaultsDir(mycanvas,kFALSE )) ) return;
+	
+	TEnv * env = GetDefaults(fHname, kFALSE, kTRUE); // fresh values
+	if (!env) return;
+	//     save user contour
+//	TMrbNamedArrayI * colors = (TMrbNamedArrayI *)fSelHist->
+//	GetListOfFunctions()->FindObject("Pixel");
+	if (colors && colors->GetSize() > 0) {
+		Int_t ncol = colors->GetSize();
+		Int_t ncont = fSelHist->GetContour();
+		Double_t * uc = 0;
+		if (ncont == ncol) {
+			uc = new Double_t[ncont];
+			fSelHist->GetContour(uc);
+		}
+		Int_t pixval;
+		Double_t cval;
+		env->SetValue("Contours", ncol);
+		for (Int_t i = 0; i < ncol; i++) {
+			if (colors) pixval = (*colors)[i];
+			else        pixval = 0;
+			if (uc)     cval = uc[i];
+			else        cval = 0;
+			TString s;
+			s = "Cont"; s += i;
+			env->SetValue(s.Data(), cval);
+			s = "Pix"; s += i;
+			env->SetValue(s.Data(), pixval);
+		}
+		if (uc) delete [] uc;
+	}
 }
 //_______________________________________________________________________________________
 

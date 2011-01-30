@@ -222,16 +222,22 @@ For further details contact ROOTs documentation.\n\
 	fBidTEXT = ind - 1;
    fRow_lab->Add(new TObjString("ColorSelect_BgColor"));
    fValp[ind++] = &f2DimBackgroundColor;
-   fRow_lab->Add(new TObjString("ColorSelect+FillC"));
+   fRow_lab->Add(new TObjString("ColorSelect+FillCol"));
    fBidFillColor = ind; fValp[ind++] = &fHistFillColor2Dim;
-   fRow_lab->Add(new TObjString("ColorSelect+LineC"));
-   fBidLineColor = ind; fValp[ind++] = &fHistLineColor2Dim;
-
-   fRow_lab->Add(new TObjString("ColorSelect_MColor"));
+	fRow_lab->Add(new TObjString("Fill_Select+FillSty"));
+	fValp[ind++] = &fHistFillStyle2Dim;
+	fRow_lab->Add(new TObjString("ColorSelect_LineCol"));
+   fValp[ind++] = &fHistLineColor2Dim;
+	fRow_lab->Add(new TObjString("ColorSelect+LStyle "));
+	fValp[ind++] = &fHistLineStyle2Dim;
+	fRow_lab->Add(new TObjString("PlainShtVal+LineWid"));
+	fValp[ind++] = &fHistLineWidth2Dim;
+	
+   fRow_lab->Add(new TObjString("ColorSelect_MColor "));
    fBidMarkerColor = ind; fValp[ind++] = &fMarkerColor2Dim;
-   fRow_lab->Add(new TObjString("Mark_Select+MStyle"));
+   fRow_lab->Add(new TObjString("Mark_Select+MStyle "));
    fBidMarkerStyle = ind; fValp[ind++] = &fMarkerStyle2Dim;
-   fRow_lab->Add(new TObjString("Float_Value+MSize"));
+   fRow_lab->Add(new TObjString("Float_Value+MSize  "));
    fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize2Dim;
 	
 	fRow_lab->Add(new TObjString("CheckButton_   Log X "));
@@ -359,9 +365,9 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
          ((TH2*)obj)->SetOption(fDrawOpt);
 			((TH2*)obj)->SetFillColor(fHistFillColor2Dim);
 			((TH2*)obj)->SetLineColor(fHistLineColor2Dim);
-			((TH2*)obj)->SetLineWidth(1);
-			((TH2*)obj)->SetLineStyle(1);
-			((TH2*)obj)->SetFillStyle(0);
+			((TH2*)obj)->SetLineWidth(fHistLineWidth2Dim);
+			((TH2*)obj)->SetLineStyle(fHistLineStyle2Dim);
+			((TH2*)obj)->SetFillStyle(fHistFillStyle2Dim);
 			((TH2*)obj)->SetMarkerColor(fMarkerColor2Dim);  
 			((TH2*)obj)->SetMarkerStyle(fMarkerStyle2Dim);  
 			((TH2*)obj)->SetMarkerSize (fMarkerSize2Dim);   			
@@ -435,7 +441,10 @@ void Set2DimOptDialog::SetHistAttPerm()
    env.SetValue("Set2DimOptDialog.fShowZScale", fShowZScale);
 	env.SetValue("Set2DimOptDialog.f2DimBackgroundColor",f2DimBackgroundColor);
 	env.SetValue("Set2DimOptDialog.fHistFillColor2Dim",fHistFillColor2Dim);
+	env.SetValue("Set2DimOptDialog.fHistFillStyle2Dim",fHistFillStyle2Dim);
 	env.SetValue("Set2DimOptDialog.fHistLineColor2Dim",fHistLineColor2Dim);
+	env.SetValue("Set2DimOptDialog.fHistLineStyle2Dim",fHistLineStyle2Dim);
+	env.SetValue("Set2DimOptDialog.fHistLineWidth2Dim",fHistLineWidth2Dim);
 	env.SetValue("Set2DimOptDialog.fMarkerColor2Dim",  fMarkerColor2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerStyle2Dim",  fMarkerStyle2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerSize2Dim",   fMarkerSize2Dim   );
@@ -456,7 +465,10 @@ void Set2DimOptDialog::SaveDefaults()
    env.SetValue("Set2DimOptDialog.fShowZScale",       fShowZScale);
 	env.SetValue("Set2DimOptDialog.f2DimBackgroundColor",f2DimBackgroundColor);
 	env.SetValue("Set2DimOptDialog.fHistFillColor2Dim",fHistFillColor2Dim);
+	env.SetValue("Set2DimOptDialog.fHistFillStyle2Dim",fHistFillStyle2Dim);
 	env.SetValue("Set2DimOptDialog.fHistLineColor2Dim",fHistLineColor2Dim);
+	env.SetValue("Set2DimOptDialog.fHistLineStyle2Dim",fHistLineStyle2Dim);
+	env.SetValue("Set2DimOptDialog.fHistLineWidth2Dim",fHistLineWidth2Dim);
 	env.SetValue("Set2DimOptDialog.fMarkerColor2Dim",  fMarkerColor2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerStyle2Dim",  fMarkerStyle2Dim  );
 	env.SetValue("Set2DimOptDialog.fMarkerSize2Dim",   fMarkerSize2Dim   );
@@ -480,7 +492,10 @@ void Set2DimOptDialog::RestoreDefaults()
    fLiveStat2Dim      = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
 	f2DimBackgroundColor = env.GetValue("Set2DimOptDialog.f2DimBackgroundColor", 0);
 	fHistFillColor2Dim = env.GetValue("Set2DimOptDialog.fHistFillColor2Dim", 1);
+	fHistFillStyle2Dim = env.GetValue("Set2DimOptDialog.fHistFillStyle2Dim", 0);
 	fHistLineColor2Dim = env.GetValue("Set2DimOptDialog.fHistLineColor2Dim", 1);
+	fHistLineStyle2Dim = env.GetValue("Set2DimOptDialog.fHistLineStyle2Dim", 1);
+	fHistLineWidth2Dim = env.GetValue("Set2DimOptDialog.fHistLineWidth2Dim", 1);
 	fMarkerColor2Dim   = env.GetValue("Set2DimOptDialog.fMarkerColor2Dim",   1);
 	fMarkerStyle2Dim   = env.GetValue("Set2DimOptDialog.fMarkerStyle2Dim",   1);
 	fMarkerSize2Dim    = env.GetValue("Set2DimOptDialog.fMarkerSize2Dim",    1);

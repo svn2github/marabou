@@ -3077,9 +3077,9 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
    }
 //   gROOT->Reset();
    nHists++;
-//    cout << "FHname, save " << FHname << " " <<FHnameSave << endl;
+//	cout << "ShowHist: fNwindows, FHname, save " << WindowSizeDialog::fNwindows<< " " << FHname << " " <<FHnameSave << endl;
    if (FHnameSave != FHname) {
-      if (WindowSizeDialog::fNwindows>0) {       // not the 1. time
+      if (WindowSizeDialog::fNwindows > 0) {       // not the 1. time
          WindowSizeDialog::fWincurx += WindowSizeDialog::fWinshiftx;
          WindowSizeDialog::fWincury += WindowSizeDialog::fWinshifty;
       }
@@ -3123,9 +3123,11 @@ void HistPresent::CloseAllCanvases()
    TCanvas * htc;
    Int_t nc = 0;
    while ( (htc =(TCanvas *)next()) ) {
+		
       TString cn(htc->GetName());
       if ( cn == "cHPr" || cn == "FileList" 
 			|| cn == "ContentList"  || cn == "Windows"|| cn == "Cuts") continue;
+		htc->Disconnect("TPad", "Modified()");
       TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
       if (htc->TestBit(HTCanvas::kIsAEditorPage)) {
          cout << "rc->ShowEditor(kFALSE);"<< endl;

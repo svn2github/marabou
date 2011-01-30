@@ -45,6 +45,7 @@ private:
    Axis_t  fX_1,   fX_2,   fY_1,   fY_2;     // lower, upper lim selected
    Axis_t  fRangeLowX, fRangeUpX, fRangeLowY, fRangeUpY;
    Axis_t  fOrigLowX, fOrigUpX, fOrigLowY, fOrigUpY;
+	Double_t fFrameX1, fFrameX2,fFrameY1,fFrameY2;
    Bool_t fSetRange;
    Bool_t fKeepParameters;
    Bool_t fCallMinos;
@@ -57,7 +58,7 @@ private:
    Fit2DimDialog *fFit2DimD;
    HistPresent* hp;
    HTCanvas *fCanvas;
-   TH1     *expHist, *projHist, *projHistX, *projHistY,*projHistF;
+   TH1     *fExpHist, *fProjHistX, *fProjHistY;
    TString fHname;
    TString fCname;
    TString fCtitle;
@@ -94,6 +95,7 @@ private:
    Int_t fUserContourLevels;
    Bool_t fSetLevels;
    Bool_t fSetColors;
+   Bool_t fHasExtraAxis;
 
    Float_t fMax, fMin, fXmax, fXmin, fYmax, fYmin;
    TRootCanvas *mycanvas;
@@ -102,7 +104,8 @@ private:
    Bool_t fCanvasIsAlive;
    TString fXtitle;
    TString fYtitle;
-   TString fFitMacroName;
+	TString fZtitle;
+	TString fFitMacroName;
    TString fTemplateMacro;
    TString fFitSliceYMacroName;
    Int_t fFirstUse;
@@ -137,8 +140,11 @@ private:
    TText * fDateText;
    Save2FileDialog *fDialog;
    Color_t fHistFillColor2Dim;
-   Color_t fHistLineColor2Dim;
-   Color_t fMarkerColor2Dim; 
+	Color_t fHistFillStyle2Dim;
+	Color_t fHistLineColor2Dim;
+	Color_t fHistLineStyle2Dim;
+	Color_t fHistLineWidth2Dim;
+	Color_t fMarkerColor2Dim; 
 	Color_t f2DimBackgroundColor;
    Style_t fMarkerStyle2Dim;  
    Size_t  fMarkerSize2Dim; 
@@ -198,8 +204,8 @@ public:
    void SetFitSliceYMacroName(const char *name){fFitSliceYMacroName = name;};                  //
    void RedefineAxis();                  //
    void AddAxis(Int_t where);           //
-	HprGaxis * DoAddAxis(Int_t where, Double_t ledge, Double_t uedge, Double_t offset=0);
-   void ReDoAxis(); 
+	HprGaxis * DoAddAxis(Int_t where, Double_t ledge, Double_t uedge, Double_t offset=0, Color_t col = 0);
+   void ReDoAxis(Int_t force = 0); 
 	void ObjMoved(Int_t px, Int_t py, TObject *obj);
 	void ObjCreated(Int_t px, Int_t py, TObject *obj){};
 	void Magnify();                 //
@@ -321,6 +327,7 @@ public:
 
    void FastFT();
 	void HandleLinLogChanged(TObject *obj);
+	void HandlePadModified();
 	
 ClassDef(FitHist,0)      // A histogram presenter
 };
