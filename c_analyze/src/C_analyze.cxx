@@ -787,7 +787,8 @@ trying to attach?",
 
 // user may define his own ppc names
 
-   TString ppcNames = gEnv->GetValue("TMrbAnalyze.PPCNames", "");
+   TString ppcNames = gEnv->GetValue("TMbsSetup.EventBuilder.Name", "");
+   if (ppcNames.IsNull()) ppcNames = gEnv->GetValue("TMrbAnalyze.PPCNames", "");
    if (ppcNames.IsNull()) {
 	 TString s = defaultMasters;
 	 masters = s.Tokenize(":");
