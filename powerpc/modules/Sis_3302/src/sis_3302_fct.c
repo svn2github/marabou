@@ -4,8 +4,8 @@
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.7 $
-//! $Date: 2010-12-17 13:19:04 $
+//! $Revision: 1.8 $
+//! $Date: 2011-02-02 11:47:31 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -1163,13 +1163,13 @@ UInt_t sis3302_getNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Chan
 	bits = sis3302_readEventExtendedConfig(Module, ChanNo);
 	if (bits != 0xaffec0c0) {
 		if (ChanNo & 1) {
-		bits >>= 14;
 			bits >>= 14;
 		} else {
 			bits >>= 6;
 		}
 		bits &= kSis3302TriggerBoth;
 	}
+	printf("@@@ sis3302_getNextNeighborTriggerMode: %x %d\n", bits, ChanNo);
 	return(bits);
 }
 
@@ -1199,6 +1199,8 @@ Bool_t sis3302_setNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Bits
 		}
 		return(kTRUE);
 	}
+
+	printf("@@@ sis3302_setNextNeighborTriggerMode: %x %d\n", Bits, ChanNo);
 
 	bits = sis3302_readEventExtendedConfig(Module, ChanNo);
 	if (bits == 0xaffec0c0) return(kFALSE);
@@ -1236,6 +1238,7 @@ UInt_t sis3302_getNextNeighborGateMode(struct s_sis_3302 * Module, Int_t ChanNo)
 		}
 		bits &= kSis3302GateBoth;
 	}
+	printf("@@@ sis3302_getNextNeighborGateMode: %x %d\n", bits, ChanNo);
 	return(bits);
 }
 
@@ -1265,6 +1268,8 @@ Bool_t sis3302_setNextNeighborGateMode(struct s_sis_3302 * Module, Int_t Bits, I
 		}
 		return(kTRUE);
 	}
+
+	printf("@@@ sis3302_setNextNeighborGateMode: %x %d\n", Bits, ChanNo);
 
 	bits = sis3302_readEventExtendedConfig(Module, ChanNo);
 	if (bits == 0xaffec0c0) return(kFALSE);
