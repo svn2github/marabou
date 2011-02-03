@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.14 2010-12-17 13:19:04 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.15 2011-02-03 09:37:59 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -785,9 +785,11 @@ void VMESis3302Panel::UpdateGUI(TC2LSis3302 * Module, Int_t Channel) {
 		TC2LSis3302 * cms = curModule;
 		TIterator * iter = fLofModules.MakeIterator();
 		TC2LSis3302 * m;
-		while (m = (TC2LSis3302 *) iter->Next()) this->UpdateGUI(m, Channel);
+		while (m = (TC2LSis3302 *) iter->Next()) {
+			if (Channel == kSis3302AllChans) this->UpdateGUI(m); else this->UpdateGUI(m, Channel);
+		}
 		curModule = cms;
-		fSelectModule->Select(curModule->GetIndex());
+		this->UpdateGUI(curModule);
 		return;
 	}
 
@@ -795,7 +797,7 @@ void VMESis3302Panel::UpdateGUI(TC2LSis3302 * Module, Int_t Channel) {
 		Int_t ccs = curChannel;
 		for (Int_t chn = 0; chn < kSis3302NofChans; chn++) this->UpdateGUI(Module, chn);
 		curChannel = ccs;
-		fSelectChannel->Select(curChannel);
+		this->UpdateGUI(curModule, curChannel);
 		return;
 	}
 

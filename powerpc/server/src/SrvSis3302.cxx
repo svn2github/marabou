@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.15 $
-//! $Date: 2010-12-27 09:02:14 $
+//! $Revision: 1.16 $
+//! $Date: 2011-02-03 09:38:14 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -1416,6 +1416,7 @@ Bool_t SrvSis3302::SetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bit
 		bits &= ~(kSis3302TriggerBoth << 2);
 		bits |=	(Bits << 6);
 	}
+
 	if (!this->WriteEventExtendedConfig(Module, bits, ChanNo)) return(kFALSE);
 	return(this->ReadEventExtendedConfig(Module, Bits, ChanNo == kSis3302AllChans ? 0 : ChanNo));
 }
