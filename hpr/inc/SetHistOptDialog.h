@@ -53,8 +53,9 @@ private:
    Color_t      fTitleColorA;
    Style_t      fTitleFontA;
 
-   Color_t      fTitleColor;
-   Color_t      fTitleTextColor;
+   Color_t      fTitleLineColor;
+	Color_t      fTitleFillColor;
+	Color_t      fTitleTextColor;
    Width_t      fTitleBorderSize;
    Style_t      fTitleFont;
    Float_t      fTitleFontSize;
@@ -66,8 +67,9 @@ private:
    Short_t      fTitleAlign;        //Text alignment
    Int_t        fTitleCmd1;
    Int_t        fTitleCmd2;
-   Color_t      fStatColor;
-   Color_t      fStatTextColor;
+   Color_t      fStatLineColor;
+	Color_t      fStatFillColor;
+	Color_t      fStatTextColor;
    Width_t      fStatBorderSize;
    Style_t      fStatFont;
    TString      fStatFormat;
@@ -80,13 +82,15 @@ private:
    Int_t        fStatCmd1;
    Int_t        fStatCmd2;
    TString      fCustomStyleName;
-   TString      fNewStyleName;
    Int_t        fNewStyle;
+	
 public:
 	static Int_t fTitleCenterX;
 	static Int_t fTitleCenterY;
 	static Int_t fTitleCenterZ;
 	
+public:
+		
    SetHistOptDialog(TGWindow * win = NULL, TCollection * hlist = NULL);
    ~SetHistOptDialog() {};
    void RecursiveRemove(TObject * obj);
@@ -99,7 +103,7 @@ public:
    void SetTitleBoxAttr(TStyle * style = NULL);
    void SetCustomStyle();
    void SaveDefaults();
-   void RestoreDefaults();
+   void RestoreDefaults(Int_t resetall = 0);
    static void SetDefaults();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);

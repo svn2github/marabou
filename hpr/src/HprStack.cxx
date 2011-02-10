@@ -342,7 +342,7 @@ void HprStack::RestoreDefaults()
    fLegendX2 = env.GetValue("HprStack.fLegendX2", 0.95);
    fLegendY1 = env.GetValue("HprStack.fLegendY1", 0.85);
    fLegendY2 = env.GetValue("HprStack.fLegendY2", 0.95);
-   fEndErrorSize  = env.GetValue("Set1DimOptDialog.fEndErrorSize", 0.01);
+   fEndErrorSize  = env.GetValue("Set1DimOptDialog.fEndErrorSize", 1.);
    fErrorX        = env.GetValue("Set1DimOptDialog.fErrorX", 0.);
    fShowContour   = env.GetValue("HprStack.fShowContour", 0);
    fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "none");

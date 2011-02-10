@@ -15,36 +15,41 @@ private:
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
    TCanvas      *fCanvas;
+	TList fGraphList;
+	Int_t fNGraphs;
 
 public:
-   static TString fDrawOptGraph;
-   static Int_t   fGraphSimpleLine;
-   static Int_t   fGraphSmoothLine;
-   static Int_t   fGraphFill;
-   static Int_t   fGraphPolyMarker;
-   static Int_t   fGraphBarChart;
-   static Int_t   fGraphShowAxis;
-   static Style_t fGraphFStyle;
-   static Color_t fGraphFColor;
-	static Style_t fGraphLStyle;
-	static Width_t fGraphLWidth;
-	static Color_t fGraphLColor;
-	static Style_t fGraphMStyle;
-   static Size_t  fGraphMSize;
-   static Color_t fGraphMColor;
-	static Int_t   fGraphShowTitle;
-	static Int_t   fGraphLogX;
-	static Int_t   fGraphLogY;
-	static Int_t   fGraphLogZ;
+    TString * fDrawOpt;
+    Style_t * fFillStyle;
+    Color_t * fFillColor;
+	 Style_t * fLineStyle;
+	 Width_t * fLineWidth;
+	 Color_t * fLineColor;
+	 Style_t * fMarkerStyle;
+    Size_t  * fMarkerSize;
+    Color_t * fMarkerColor;
+	 
+    TString * fLineMode;
+	 TString * fErrorMode;
+	 Float_t fEndErrorSize;
+    Float_t fErrorX;
+    Int_t   * fShowMarkers;
+    Int_t   * fBarChart;
+    Int_t   * fFill;
+    Int_t   fShowAxis;
+	 Int_t   fShowTitle;
+	 Int_t   fLogX;
+	 Int_t   fLogY;
+	 Int_t   fLogZ;
 	
    GraphAttDialog(TGWindow * win = NULL);
    ~GraphAttDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
-   static void SetGraphAtt(TCanvas *ca, Int_t bid = 0);
+   void SetGraphAtt(TCanvas *ca, Int_t bid = 0);
    void SetAsDefault();
    void SaveDefaults();
-   static void RestoreDefaults();
+   void RestoreDefaults();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
 

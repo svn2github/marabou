@@ -204,8 +204,6 @@ public:
    void SetFitSliceYMacroName(const char *name){fFitSliceYMacroName = name;};                  //
    void RedefineAxis();                  //
    void AddAxis(Int_t where);           //
-	HprGaxis * DoAddAxis(Int_t where, Double_t ledge, Double_t uedge, Double_t offset=0, Color_t col = 0);
-   void ReDoAxis(Int_t force = 0); 
 	void ObjMoved(Int_t px, Int_t py, TObject *obj);
 	void ObjCreated(Int_t px, Int_t py, TObject *obj){};
 	void Magnify();                 //

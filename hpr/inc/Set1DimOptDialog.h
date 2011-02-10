@@ -22,6 +22,7 @@ private:
    Color_t fHistLineColor;
    Style_t fHistLineStyle;
    Width_t fHistLineWidth;
+   TString fErrorMode;
    Float_t fEndErrorSize;
    Float_t fErrorX;
    Color_t fMarkerColor;           //Marker color
@@ -33,7 +34,6 @@ private:
    Int_t   fLiveBG;
    Int_t   fDrawAxisAtTop;
    Int_t   fShowContour;
-   TString fErrorMode;
 	Int_t   fLabelsTopX;
 	Int_t   fLabelsRightY;
 	Int_t   fOneDimLogX;

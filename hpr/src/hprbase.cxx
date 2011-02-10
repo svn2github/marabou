@@ -1,3 +1,4 @@
+#include "TFrame.h"
 #include "TString.h"
 #include "TObjString.h"
 #include "TSystem.h"
@@ -247,5 +248,116 @@ Bool_t HistLimitsMatch(TH1* h1, TH1* h2)
 	}
 	return kTRUE;
 }
+//__________________________________________________________________
+
+HprGaxis * DoAddAxis(TCanvas * canvas, TH1 *hist, Int_t where, 
+			Double_t ledge, Double_t uedge, Double_t axis_offset, Color_t col)
+{	
+	canvas->cd();
+//	GrCanvas* hc = (GrCanvas*)canvas;
+//   canvas->Add2ConnectedClasses(this);
+// we dont have a pointer to Set1DimOptDialog,
+// it might not even exist (yet), so use static method
+//	TQObject::Connect("Set1DimOptDialog", "LinLogChanged(TObject*)",
+//						   "FitHist", this, "HandleLinLogChanged(TObject*)");
+//	cout << "DoAddAxis " << ledge << " " << uedge << endl;
+	Axis_t x1=0, y1=0, x2=1, y2=1;
+	TIter next(canvas->GetListOfPrimitives());
+//	canvas->GetListOfPrimitives()->ls();
+	
+	TString side("S");
+	TAxis *orig_axis = NULL;
+	HprGaxis *naxis;
+	Double_t offset = 0, ratio = 1;
+	if (where == 1) {
+		if (canvas->GetLogx()) 
+			side += "G";
+		side += "-";
+		x1 = canvas->GetFrame()->GetX1();
+		x2 = canvas->GetFrame()->GetX2();
+		y1 = canvas->GetFrame()->GetY2();
+		// axis offset in X
+		y1 = y1 + (y1 - canvas->GetFrame()->GetY1()) * axis_offset;
+		y2 = y1;
+		orig_axis = hist->GetXaxis();
+		if ( canvas->GetLogx() ) {
+			x1 = TMath::Power(10, x1);
+			x2 = TMath::Power(10, x2);
+		}
+		offset = ledge - x1;
+		ratio  = (uedge - ledge) / (x2 - x1);
+	} else {
+		if (canvas->GetLogy()) 
+			side += "G";
+		side += "+L";
+		x1 = canvas->GetFrame()->GetX2();
+		// axis offset in X
+		x1 = x1 + (x1 - canvas->GetFrame()->GetX1()) * axis_offset;
+		x2 = x1;
+		y1 = canvas->GetFrame()->GetY1();
+		y2 = canvas->GetFrame()->GetY2();
+		orig_axis = hist->GetYaxis();
+		if ( canvas->GetLogy() ) {
+			y1 = TMath::Power(10, y1);
+			y2 = TMath::Power(10, y2);
+		}
+		offset = ledge - y1;
+		ratio  = (uedge - ledge) / (y2 - y1);
+	}
+	if ( where == 2 && canvas->GetLogx() ) {
+		x1 = TMath::Power(10, x1);
+		x2 = TMath::Power(10, x2);
+	}
+	if ( where == 1 &&  canvas->GetLogy() ) {
+		y1 = TMath::Power(10, y1);
+		y2 = TMath::Power(10, y2);
+	}
+	
+	Int_t nd   ;
+	Size_t ls  ;
+	Color_t lc ;
+	Font_t  lf ;
+	Double_t lo;
+	Double_t tl;
+	if( orig_axis ) {
+		// a TAxis
+		nd = orig_axis->GetNdivisions();
+		ls = orig_axis->GetLabelSize();
+		lc = orig_axis->GetLabelColor();
+		lf = orig_axis->GetLabelFont();
+		lo = orig_axis->GetLabelOffset();
+		tl = orig_axis->GetTickLength();
+	}
+	if ( col > 0 ) {
+		lc = col;
+	}	
+	
+	if (gDebug > 0)
+	 cout   << "DoAddAxis: x1"
+			  << x1 << " y1 " << y1 << " x2 " << x2 << " y2 " << y2 << " ledge " 
+			  << ledge << " uedge " << uedge << " ratio " << ratio << " offset " << offset
+			  << " axis_offset " << axis_offset << endl;
+	
+// 	naxis = new HprGaxis(x1, y1, x2, y2, ledge, uedge, 510, side.Data());
+	naxis = new HprGaxis(canvas, x1, y1, x2, y2, ledge, uedge, nd, side.Data());
+	naxis->SetWhere(where);
+	naxis->SetOffset(offset);
+	naxis->SetAxisOffset(axis_offset);
+	naxis->SetRatio(ratio);
+	
+	naxis->SetLabelSize(ls);
+	naxis->SetLineColor(lc);
+	naxis->SetLabelColor(lc);
+	naxis->SetLabelFont(lf);
+	naxis->SetLabelOffset(lo);
+	naxis->SetTickSize(tl);
+	naxis->Draw();
+	canvas->Modified(kTRUE);
+	canvas->Update();
+	TQObject::Connect("TPad", "Modified()",
+						   "HprGaxis", naxis, "HandlePadModified()");
+
+	return naxis;
+};
 
 }   // end namespace Hpr

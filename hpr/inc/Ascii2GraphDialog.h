@@ -40,6 +40,10 @@ private:
    Int_t   fGraphSelPad;
    Int_t   fGraphNewPad;
 	Int_t   fGraphShowTitle;
+	TString fDrawOpt;
+	TString fErrorMode;
+	Float_t fEndErrorSize;
+	Float_t fErrorX;
 	Int_t   fGraphPolyMarker;
    Int_t   fGraphSimpleLine;
 	Int_t   fGraphSmoothLine;

@@ -137,6 +137,7 @@ enum ERootCanvasCommands {
    kFHSuperimpose,
    kFHTh3Dialog,
    kFHSuperimposeGraph,
+   kFHSuperimposeGraphScale,
 	kFHSetAxisGraphX,
    kFHSetAxisGraphY,
    kFHKolmogorov,
@@ -783,7 +784,10 @@ again:
 							fFitHist->Superimpose(1);
 							break;
 						case kFHSuperimposeGraph:
-                     fHistPresent->SuperimposeGraph((TCanvas*)fHCanvas);
+                     fHistPresent->SuperimposeGraph((TCanvas*)fHCanvas, 0);
+                     break;
+						case kFHSuperimposeGraphScale:
+                     fHistPresent->SuperimposeGraph((TCanvas*)fHCanvas, 1);
                      break;
 						case kFHSetAxisGraphX:
                      SetAxisGraphX((TCanvas*)fHCanvas, fGraph);
@@ -875,7 +879,11 @@ again:
                      WriteOutGraph(fGraph, fRootCanvas);
                      break;
                   case kFHSelAnyDir:
-                     fHistPresent->SelectFromOtherDir();
+							{
+							TString CurDir = gSystem->pwd();
+							fHistPresent->SelectFromOtherDir();
+							gSystem->cd(CurDir);
+							}
                      break;
 						case kFHSeldCache:
 							fHistPresent->SelectdCache();
@@ -1114,9 +1122,9 @@ again:
                   case kFHAddAxisY:
                      fFitHist->AddAxis(2);
                      break;
-                  case kFHReDoAxis:
-                     fFitHist->ReDoAxis();
-                     break;
+//                  case kFHReDoAxis:
+//                     fFitHist->ReDoAxis();
+//                     break;
 // Otto end
                }
             default:
@@ -1443,6 +1451,7 @@ void HandleMenus::BuildMenus()
    if ( graph1d ) {
    	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
       fDisplayMenu->AddEntry("Superimpose selected graph", kFHSuperimposeGraph);
+      fDisplayMenu->AddEntry("Superimpose graph scaled", kFHSuperimposeGraphScale);
 		fDisplayMenu->AddEntry("Set range of X-axis", kFHSetAxisGraphX);
 		fDisplayMenu->AddEntry("Set range of Y-axis", kFHSetAxisGraphY);
    }

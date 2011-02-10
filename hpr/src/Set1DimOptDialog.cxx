@@ -83,7 +83,7 @@ be selected.\n\
    fRow_lab = new TList();
 
    Int_t ind = 0;
-   static Int_t dummy;
+//   static Int_t dummy;
    static TString stycmd("SetHistAttPermLocal()");
 
    fRow_lab->Add(new TObjString("CheckButton_Contour/Histo"));

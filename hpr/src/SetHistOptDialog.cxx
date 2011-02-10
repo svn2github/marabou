@@ -14,10 +14,13 @@
 #include "TSystem.h"
 #include "TPaletteAxis.h"
 #include "TPavesText.h"
+#include "TLegend.h"
 #include "SetHistOptDialog.h"
 #include <iostream>
 
 namespace std {} using namespace std;
+
+ClassImp(SetHistOptDialog)
 /*
 Int_t   SetHistOptDialog::fFill1Dim      = 0;
 Color_t SetHistOptDialog::fHistFillColor = 0;
@@ -55,7 +58,7 @@ Int_t    SetHistOptDialog::fTitleCenterZ = 1;
 SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 {
 	static const Char_t helptext[] =
-	"Note: Changeing options only influence the current histogram\n\
+	"Note: Changeing options only influences the current histogram\n\
 	To make them active for subsequently displayed histograms\n\
 	press: \"Set as global default\"\n\
 	";
@@ -72,6 +75,8 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 	}
    TObject *obj;
    fHist = NULL;
+	fCustomStyleName = "";  // ???
+//	fNewStyleName    = "";
    Int_t nh1 = 0, nh2 = 0;
    while ( (obj = (*next)()) ) {
       if (obj->InheritsFrom("TH1")) {
@@ -119,43 +124,50 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
    fTitleCmd1 = ind;
    fRow_lab->Add(new TObjString("CommentOnly_Histogram Title Attributes"));
    fValp[ind++] = &dummy;
-   fRow_lab->Add(new TObjString("ColorSelect_BgColor"));
-   fRow_lab->Add(new TObjString("Fill_Select+FillStyle"));
-   fRow_lab->Add(new TObjString("PlainShtVal+BorderSize"));
-   fValp[ind++] = &fTitleColor;
-   fValp[ind++] = &fTitleStyle;
+   fRow_lab->Add(new TObjString("ColorSelect_LineCol"));
+	fRow_lab->Add(new TObjString("ColorSelect+FillCol"));
+	fRow_lab->Add(new TObjString("Fill_Select+FillSty"));
+   fRow_lab->Add(new TObjString("PlainShtVal+BordSiz"));
+	fValp[ind++] = &fTitleLineColor;
+	fValp[ind++] = &fTitleFillColor;
+	fValp[ind++] = &fTitleStyle;
    fValp[ind++] = &fTitleBorderSize;
 
-   fRow_lab->Add(new TObjString("CfontSelect_TextFont"));
-   fRow_lab->Add(new TObjString("ColorSelect+TextColor"));
-   fRow_lab->Add(new TObjString("Float_Value+FontSize;0;0.1"));
-   fValp[ind++] = &fTitleFont;
+   fRow_lab->Add(new TObjString("CfontSelect_TFont"));
+   fRow_lab->Add(new TObjString("ColorSelect+TextCol"));
+   fRow_lab->Add(new TObjString("Float_Value+TextSiz;0.01;0.1"));
+	fRow_lab->Add(new TObjString("AlignSelect+Align"));
+	fValp[ind++] = &fTitleFont;
    fValp[ind++] = &fTitleTextColor;
    fValp[ind++] = &fTitleFontSize;
-
+	fValp[ind++] = &fTitleAlign;
+	
    fRow_lab->Add(new TObjString("Float_Value_X;0;1"));
    fRow_lab->Add(new TObjString("Float_Value+Y;0;1"));
-   fRow_lab->Add(new TObjString("AlignSelect+Align"));
-//   fRow_lab->Add(new TObjString("Float_Value_H"));
+	fRow_lab->Add(new TObjString("Float_Value+Wid;0.1;0.9"));
+	fRow_lab->Add(new TObjString("Float_Value+Hei;0.01;0.2"));
+	//   fRow_lab->Add(new TObjString("Float_Value_H"));
 //   fRow_lab->Add(new TObjString("AlignSelect+Align"));
    fValp[ind++] = &fTitleX;
    fValp[ind++] = &fTitleY;
-   fValp[ind++] = &fTitleAlign;
-//   fValp[ind++] = &fTitleH;
+	fValp[ind++] = &fTitleW;
+	fValp[ind++] = &fTitleH;
+	//   fValp[ind++] = &fTitleH;
    fTitleCmd2 = ind - 1;
    fStatCmd1 = ind;
-   fRow_lab->Add(new TObjString("CommentOnly_Statistic Box Attributes"));
+   fRow_lab->Add(new TObjString("CommentOnly_Statistics / Legend Box "));
    fValp[ind++] = &dummy;
 //   fRow_lab->Add(new TObjString("Float_Value_X (upright);0;1"));
 //   fRow_lab->Add(new TObjString("Float_Value+Y (upright);0;1"));
    fRow_lab->Add(new TObjString("Float_Value_Width ;0;1        "));
    fRow_lab->Add(new TObjString("Float_Value+Height ;0;1        "));
    fRow_lab->Add(new TObjString("PlainShtVal+BorderSz"));
-   fRow_lab->Add(new TObjString("ColorSelect_BGCol"));
-   fRow_lab->Add(new TObjString("ColorSelect+TextCol "));
-   fRow_lab->Add(new TObjString("Fill_Select+Style (0 transp)"));
-   fRow_lab->Add(new TObjString("CfontSelect_Font      "));
-   fRow_lab->Add(new TObjString("Float_Value+FontSize;0;1  "));
+   fRow_lab->Add(new TObjString("ColorSelect_LineCol"));
+	fRow_lab->Add(new TObjString("ColorSelect+TextCol "));
+	fRow_lab->Add(new TObjString("ColorSelect+FillCol"));
+	fRow_lab->Add(new TObjString("Fill_Select+FillSty"));
+   fRow_lab->Add(new TObjString("CfontSelect_TFont"));
+   fRow_lab->Add(new TObjString("Float_Value+TSize;0;1  "));
    fRow_lab->Add(new TObjString("StringValue+Format"));
 
 //    fValp[ind++] = &fStatX;
@@ -163,9 +175,10 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
    fValp[ind++] = &fStatW;
    fValp[ind++] = &fStatH;
    fValp[ind++] = &fStatBorderSize;
-   fValp[ind++] = &fStatColor;
-   fValp[ind++] = &fStatTextColor;
-   fValp[ind++] = &fStatStyle;
+   fValp[ind++] = &fStatLineColor;
+	fValp[ind++] = &fStatTextColor;
+	fValp[ind++] = &fStatFillColor;
+	fValp[ind++] = &fStatStyle;
 //   fStatFont /= 10;
    fValp[ind++] = &fStatFont;
    fValp[ind++] = &fStatFontSize;
@@ -287,6 +300,7 @@ SetHistOptDialog::SetHistOptDialog(TGWindow * win, TCollection * hlist)
 		fDialog->DisableButton(offz);
 		fDialog->DisableButton(centz);
 	}
+
 }
 //_______________________________________________________________________
 
@@ -294,6 +308,7 @@ void SetHistOptDialog::RecursiveRemove(TObject * obj)
 {
    if (obj == fCanvas) {
 //      cout << "SetHistOptDialog: CloseDialog "  << endl;
+//		Dump();
       CloseDialog();
    }
 }
@@ -349,7 +364,7 @@ void SetHistOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
 //   TIter next(canvas->GetListOfPrimitives());
    TObject *obj;
    TH1 *hist;
-
+	TList temp;
    while ( (obj = (*next)()) ) {
       if (obj->InheritsFrom("TH1") || obj->InheritsFrom("TGraph")) {
          if (obj->InheritsFrom("TH1"))
@@ -426,21 +441,31 @@ void SetHistOptDialog::SetHistAtt(TCanvas *canvas, Int_t bid)
          else
             ya->CenterTitle(kFALSE);
 			SetStatBoxAttr(gStyle);
+			SetTitleBoxAttr(gStyle);
+			
 			TPaveText *pt = (TPaveText*)fCanvas->GetListOfPrimitives()->FindObject("title");
 			if (pt) {
 			   SetTitleBoxAttr(gStyle);
-				pt->Delete();
+				if ( !temp.FindObject(pt) )
+					temp.Add(pt);
+				
+//				pt->Delete();
          }
          if (mod_statbox) {
 		      TObject *sto = hist->GetListOfFunctions()->FindObject("stats");
 	   	   if (sto) {
 //			      cout << "Delete statbox: " << obj << endl;
-			      sto->Delete();
+					if ( !temp.FindObject(sto) )
+						temp.Add(sto);
+//			      sto->Delete();
 		      }
          }
       }
    }
-
+	if (temp.GetSize() > 0) {
+//		temp.ls();
+		temp.Delete("slow");
+	}
    canvas->Modified();
 	canvas->Update();
 }
@@ -452,13 +477,14 @@ void SetHistOptDialog::SetTitleBoxAttr(TStyle *sty)
 		return;
 	TPaveText *pt = (TPaveText*)fCanvas->GetListOfPrimitives()->FindObject("title");
 	if (pt) {
-		if (fTitleW < 0.01) fTitleW = 0;
-		if (fTitleH < 0.01) fTitleH = 0;
-		if (fTitleFontSize < 0.001) fTitleFontSize = 0;
+		if (fTitleW < 0.01) fTitleW = 0.3;
+		if (fTitleH < 0.01) fTitleH = 0.06;
+		if (fTitleFontSize < 0.001) fTitleFontSize = 0.04;
 		if (fTitleFontSize > 0.1) fTitleFontSize = 0.04;
 		if (fTitleW > 0.9) fTitleW = 0.5;
-		if (fTitleH > 0.4) fTitleH = 0;
-		sty->SetTitleFillColor (fTitleColor     );
+		if (fTitleH > 0.4) fTitleH = 0.06;
+		sty->SetTitleFillColor (fTitleFillColor );
+		sty->SetLineColor      (fTitleLineColor );
 		sty->SetTitleTextColor (fTitleTextColor );
 		sty->SetTitleBorderSize(fTitleBorderSize);
 		sty->SetTitleFont      (fTitleFont ,"t" );
@@ -469,33 +495,70 @@ void SetHistOptDialog::SetTitleBoxAttr(TStyle *sty)
 		sty->SetTitleY         (fTitleY         );
 		sty->SetTitleW         (fTitleW         );
 		sty->SetTitleH         (fTitleH         );
+//		cout << "SetHistOptDialog::SetTitleBoxAttr " << fTitleFillColor<< endl;
+/*		pt->SetFillColor (fTitleFillColor  );
+		pt->SetLineColor (fTitleLineColor  );
+		pt->SetTextColor (fTitleTextColor  );
+		pt->SetBorderSize(fTitleBorderSize );
+		pt->SetTextFont  (fTitleFont       );
+		pt->SetTextSize  (fTitleFontSize   );
+		pt->SetFillStyle (fTitleStyle      );
+		pt->SetTextAlign (fTitleAlign      );
+		pt->SetX1NDC     (fTitleX          );
+		pt->SetY1NDC     (fTitleY          );
+		pt->SetX2NDC     (fTitleX + fTitleW);
+		pt->SetY2NDC     (fTitleY + fTitleH);*/
 	}
 }
 //______________________________________________________________________
 
 void SetHistOptDialog::SetStatBoxAttr(TStyle *sty)
 {
-	if ( fHist == NULL )
-		return;
-	TPavesText *pt = (TPavesText*)fHist->GetListOfFunctions()->FindObject("stats");
-  if (pt) {
-	 sty->SetStatColor     (fStatColor     );
-	 sty->SetStatTextColor (fStatTextColor );
-	 sty->SetStatBorderSize(fStatBorderSize);
-	 sty->SetStatFont      (fStatFont      );
-	 sty->SetStatFontSize  (fStatFontSize  );
-	 sty->SetStatStyle     (fStatStyle     );
-	 sty->SetStatFormat    (fStatFormat    );
-	 fStatX         = pt->GetX2NDC();
-	 fStatY         = pt->GetY2NDC();
-//	 fStatW         = pt->GetX2NDC() - pt->GetX1NDC();
-//	 fStatH         = pt->GetY2NDC() - pt->GetY1NDC();
-//	 cout << "pt->GetY2NDC() " <<pt->GetY2NDC() << " pt->GetY1NDC() " << pt->GetY1NDC()<< endl;
-	 sty->SetStatX         (fStatX         );
-	 sty->SetStatY         (fStatY         );
-	 sty->SetStatW         (fStatW);
-	 sty->SetStatH         (fStatH);
-  }
+	TEnv env(".hprrc");
+	if ( fCanvas ) {
+		TIter next=fCanvas->GetListOfPrimitives();
+		TObject *obj;
+		while (obj = next()) {
+			if (obj->InheritsFrom("TLegend")) {
+				sty->SetLegendBorderSize(fStatBorderSize);
+				((TLegend*)obj)->SetBorderSize(fStatBorderSize);
+				((TLegend*)obj)->SetFillColor     (fStatFillColor);
+				((TLegend*)obj)->SetLineColor     (fStatLineColor);
+				((TLegend*)obj)->SetTextColor     (fStatTextColor);
+				((TLegend*)obj)->SetFillStyle     (fStatStyle    );
+				env.SetValue("HprLegend.fFillColor", fStatFillColor);
+				env.SetValue("HprLegend.fFillStyle", fStatStyle);
+				env.SetValue("HprLegend.fLineColor", fStatLineColor);
+				env.SetValue("HprLegend.fBorderSize",fStatBorderSize);
+				env.SetValue("HprLegend.fTextColor", fStatTextColor);
+				env.SetValue("HprLegend.fTextFont",  fStatFont);
+			}
+		}
+	}
+	if ( fHist ) {
+		TPavesText *pt = (TPavesText*)fHist->GetListOfFunctions()->FindObject("stats");
+		if (pt) {
+			sty->SetStatColor     (fStatFillColor );
+			sty->SetLineColor     (fStatLineColor );
+			sty->SetFillColor     (fStatFillColor );
+			sty->SetStatTextColor (fStatTextColor );
+			sty->SetStatBorderSize(fStatBorderSize);
+			sty->SetStatFont      (fStatFont      );
+			sty->SetStatFontSize  (fStatFontSize  );
+			sty->SetStatStyle     (fStatStyle     );
+			sty->SetStatFormat    (fStatFormat    );
+			fStatX         = pt->GetX2NDC();
+			fStatY         = pt->GetY2NDC();
+		//	 fStatW         = pt->GetX2NDC() - pt->GetX1NDC();
+		//	 fStatH         = pt->GetY2NDC() - pt->GetY1NDC();
+		//	 cout << "pt->GetY2NDC() " <<pt->GetY2NDC() << " pt->GetY1NDC() " << pt->GetY1NDC()<< endl;
+			sty->SetStatX         (fStatX);
+			sty->SetStatY         (fStatY);
+			sty->SetStatW         (fStatW);
+			sty->SetStatH         (fStatH);
+		}
+	}
+	env.SaveLevel(kEnvLocal);
 }
 //______________________________________________________________________
 
@@ -507,13 +570,15 @@ void SetHistOptDialog::SetCustomStyle()
    TList *row_lab = new TList();
    static void *valp[25];
    Int_t ind = 0;
+	TString nsn;
 	fCustomStyleName = ("hpr_custom_styles.root|TStyle|noselection");
 
    row_lab->Add(new TObjString("FileContReq_File name"));
    valp[ind++] = &fCustomStyleName;
    row_lab->Add(new TObjString("StringValue_Style name"));
-   valp[ind++] = &fNewStyleName;
-   row_lab->Add(new TObjString("CheckButton_Create a new Style"));
+   valp[ind++] = &nsn;
+//	valp[ind++] = &fNewStyleName;
+	row_lab->Add(new TObjString("CheckButton_Create a new Style"));
    valp[ind++] = &fNewStyle;
    Int_t itemwidth = 400;
    ok = GetStringExt("Create / Update Custom Style", NULL, itemwidth, fWindow,
@@ -534,7 +599,8 @@ void SetHistOptDialog::SetCustomStyle()
 	oname =((TObjString*)oa->At(2))->String();
    cout << "fCustomStyleName (2) " << oname << endl;
 	if ( oname == "noselection" || fNewStyle) {
-	   oname = fNewStyleName;
+	   oname =nsn;
+//		oname = fNewStyleName;
 	}
 	TStyle *style = NULL;
 	TFile *sf  = NULL;
@@ -677,17 +743,18 @@ void SetHistOptDialog::SaveDefaults()
    env.SetValue("SetHistOptDialog.fTickSideX",      fTickSideX);
    env.SetValue("SetHistOptDialog.fTickSideY",      fTickSideY);
    env.SetValue("SetHistOptDialog.fTickSideZ",      fTickSideZ);
-   env.SetValue("SetHistOptDialog.fTitleOffsetX",  fTitleOffsetX);
-   env.SetValue("SetHistOptDialog.fTitleOffsetY",  fTitleOffsetY);
-   env.SetValue("SetHistOptDialog.fTitleOffsetZ",  fTitleOffsetZ);
-   env.SetValue("SetHistOptDialog.fTitleSize",     fTitleSize);
+   env.SetValue("SetHistOptDialog.fTitleOffsetX",   fTitleOffsetX);
+   env.SetValue("SetHistOptDialog.fTitleOffsetY",   fTitleOffsetY);
+   env.SetValue("SetHistOptDialog.fTitleOffsetZ",   fTitleOffsetZ);
+   env.SetValue("SetHistOptDialog.fTitleSize",      fTitleSize);
    env.SetValue("SetHistOptDialog.fTitleColorA",    fTitleColorA);
    env.SetValue("SetHistOptDialog.fTitleFontA",     fTitleFontA);
-   env.SetValue("SetHistOptDialog.fTitleCenterX",  fTitleCenterX);
-   env.SetValue("SetHistOptDialog.fTitleCenterY",  fTitleCenterY);
-   env.SetValue("SetHistOptDialog.fTitleCenterZ",  fTitleCenterZ);
-   env.SetValue("SetHistOptDialog.TitleColor",      fTitleColor     );
-   env.SetValue("SetHistOptDialog.TitleTextColor",  fTitleTextColor );
+   env.SetValue("SetHistOptDialog.fTitleCenterX",   fTitleCenterX);
+   env.SetValue("SetHistOptDialog.fTitleCenterY",   fTitleCenterY);
+   env.SetValue("SetHistOptDialog.fTitleCenterZ",   fTitleCenterZ);
+   env.SetValue("SetHistOptDialog.TitleColor",      fTitleFillColor );
+	env.SetValue("SetHistOptDialog.TitleLineColor",  fTitleLineColor );
+	env.SetValue("SetHistOptDialog.TitleTextColor",  fTitleTextColor );
    env.SetValue("SetHistOptDialog.TitleBorderSize", fTitleBorderSize);
    env.SetValue("SetHistOptDialog.TitleFont",       fTitleFont      );
    env.SetValue("SetHistOptDialog.TitleFontSize",   fTitleFontSize  );
@@ -697,9 +764,10 @@ void SetHistOptDialog::SaveDefaults()
    env.SetValue("SetHistOptDialog.TitleW",          fTitleW         );
    env.SetValue("SetHistOptDialog.TitleH",          fTitleH         );
    env.SetValue("SetHistOptDialog.TitleAlign",      fTitleAlign     );
-   env.SetValue("SetHistOptDialog.StatColor",       fStatColor      );
-   env.SetValue("SetHistOptDialog.StatTextColor",   fStatTextColor  );
-   env.SetValue("SetHistOptDialog.StatBorderSize",  fStatBorderSize );
+   env.SetValue("SetHistOptDialog.StatColor",       fStatFillColor  );
+   env.SetValue("SetHistOptDialog.StatLineColor",   fStatLineColor  );
+	env.SetValue("SetHistOptDialog.StatTextColor",   fStatTextColor  );
+	env.SetValue("SetHistOptDialog.StatBorderSize",  fStatBorderSize );
    env.SetValue("SetHistOptDialog.StatFont",        fStatFont       );
    env.SetValue("SetHistOptDialog.fStatFormat",     fStatFormat     );
    env.SetValue("SetHistOptDialog.StatFontSize",    fStatFontSize   );
@@ -713,34 +781,34 @@ void SetHistOptDialog::SaveDefaults()
 
 //______________________________________________________________________
 
-void SetHistOptDialog::RestoreDefaults()
+void SetHistOptDialog::RestoreDefaults(Int_t resetall)
 {
    TEnv env(".hprrc");
-   fNdivisionsX   = env.GetValue("SetHistOptDialog.fNdivisionsX", 510);
-   fNdivisionsY   = env.GetValue("SetHistOptDialog.fNdivisionsY", 510);
-   fNdivisionsZ   = env.GetValue("SetHistOptDialog.fNdivisionsZ", 510);
-   fAxisColor     = env.GetValue("SetHistOptDialog.fAxisColor", 1);
-   fLabelColor    = env.GetValue("SetHistOptDialog.fLabelColor", 1);
-   fLabelFont     = env.GetValue("SetHistOptDialog.fLabelFont", 62);
+   fNdivisionsX   = env.GetValue("SetHistOptDialog.fNdivisionsX",   510);
+   fNdivisionsY   = env.GetValue("SetHistOptDialog.fNdivisionsY",   510);
+   fNdivisionsZ   = env.GetValue("SetHistOptDialog.fNdivisionsZ"  , 510);
+   fAxisColor     = env.GetValue("SetHistOptDialog.fAxisColor",       1);
+   fLabelColor    = env.GetValue("SetHistOptDialog.fLabelColor",      1);
+   fLabelFont     = env.GetValue("SetHistOptDialog.fLabelFont",      62);
    fLabelOffsetX  = env.GetValue("SetHistOptDialog.fLabelOffsetX", 0.01);
    fLabelOffsetY  = env.GetValue("SetHistOptDialog.fLabelOffsetY", 0.01);
    fLabelOffsetZ  = env.GetValue("SetHistOptDialog.fLabelOffsetZ", 0.01);
-   fLabelSize     = env.GetValue("SetHistOptDialog.fLabelSize", 0.02);
-   fLabelMaxDigits= env.GetValue("SetHistOptDialog.fLabelMaxDigits", 4);
-   fTickLength    = env.GetValue("SetHistOptDialog.fTickLength", 0.01);
-   fTickSideX     = env.GetValue("SetHistOptDialog.fTickSideX", "+");
-   fTickSideY     = env.GetValue("SetHistOptDialog.fTickSideY", "-");
-   fTickSideZ     = env.GetValue("SetHistOptDialog.fTickSideZ", "+");
-   fTitleOffsetX  = env.GetValue("SetHistOptDialog.fTitleOffsetX", 1.);
-   fTitleOffsetY  = env.GetValue("SetHistOptDialog.fTitleOffsetY", 1.);
-   fTitleOffsetZ  = env.GetValue("SetHistOptDialog.fTitleOffsetZ", 1.);
-   fTitleSize     = env.GetValue("SetHistOptDialog.fTitleSize", 0.03);
-	fTitleFontSize = env.GetValue("SetHistOptDialog.fTitleFontSize", 0.03);
-	fTitleColorA   = env.GetValue("SetHistOptDialog.fTitleColorA", 1);
-   fTitleFontA    = env.GetValue("SetHistOptDialog.fTitleFontA", 62);
-   fTitleCenterX  = env.GetValue("SetHistOptDialog.fTitleCenterX", 1);
-   fTitleCenterY  = env.GetValue("SetHistOptDialog.fTitleCenterY", 1);
-   fTitleCenterZ  = env.GetValue("SetHistOptDialog.fTitleCenterZ", 1);
+   fLabelSize     = env.GetValue("SetHistOptDialog.fLabelSize",    0.02);
+   fLabelMaxDigits= env.GetValue("SetHistOptDialog.fLabelMaxDigits",  4);
+   fTickLength    = env.GetValue("SetHistOptDialog.fTickLength",   0.01);
+   fTickSideX     = env.GetValue("SetHistOptDialog.fTickSideX",     "+");
+   fTickSideY     = env.GetValue("SetHistOptDialog.fTickSideY",     "-");
+   fTickSideZ     = env.GetValue("SetHistOptDialog.fTickSideZ",     "+");
+   fTitleOffsetX  = env.GetValue("SetHistOptDialog.fTitleOffsetX",   1.);
+   fTitleOffsetY  = env.GetValue("SetHistOptDialog.fTitleOffsetY",   1.);
+   fTitleOffsetZ  = env.GetValue("SetHistOptDialog.fTitleOffsetZ",   1.);
+   fTitleSize     = env.GetValue("SetHistOptDialog.fTitleSize",    0.03);
+	fTitleFontSize = env.GetValue("SetHistOptDialog.fTitleFontSize",0.03);
+	fTitleColorA   = env.GetValue("SetHistOptDialog.fTitleColorA",     1);
+   fTitleFontA    = env.GetValue("SetHistOptDialog.fTitleFontA",     62);
+   fTitleCenterX  = env.GetValue("SetHistOptDialog.fTitleCenterX",    1);
+   fTitleCenterY  = env.GetValue("SetHistOptDialog.fTitleCenterY",    1);
+   fTitleCenterZ  = env.GetValue("SetHistOptDialog.fTitleCenterZ",    1);
 	if ( fHist ) {
 		TAxis *xa = fHist->GetXaxis();
 		TAxis *ya = fHist->GetYaxis();
@@ -789,7 +857,7 @@ void SetHistOptDialog::RestoreDefaults()
 		}
 		TPavesText *pt = (TPavesText*)fHist->GetListOfFunctions()->FindObject("stats");
 		if (pt) {
-			fStatColor     = pt->GetFillColor();
+			fStatFillColor     = pt->GetFillColor();
 			fStatTextColor = pt->GetTextColor();
 			fStatBorderSize= pt->GetBorderSize();
 			fStatFont      = pt->GetTextFont();
@@ -804,34 +872,36 @@ void SetHistOptDialog::RestoreDefaults()
 		}
 	}
 	fLabelMaxDigits = TGaxis::GetMaxDigits();
-   fStatColor=     env.GetValue("SetHistOptDialog.StatColor", 19);
-   fStatTextColor= env.GetValue("SetHistOptDialog.StatTextColor", 1);
-   fStatBorderSize=env.GetValue("SetHistOptDialog.StatBorderSize", 1);
-   fStatFont=      env.GetValue("SetHistOptDialog.StatFont", 62);
-   fStatFormat=    env.GetValue("SetHistOptDialog.fStatFormat", "6.2g");
-   fStatFontSize=  env.GetValue("SetHistOptDialog.StatFontSize", 0.02);
-   fStatStyle=     env.GetValue("SetHistOptDialog.StatStyle", 1001);
-   fStatX=         env.GetValue("SetHistOptDialog.StatX", 0.98);
-   fStatY=         env.GetValue("SetHistOptDialog.StatY", 0.995);
-   fStatW=         env.GetValue("SetHistOptDialog.StatW", 0.2);
-   fStatH=         env.GetValue("SetHistOptDialog.StatH", 0.16);
-   if (fStatFont < 12 || fStatFont > 123) fStatFont = 62;
-   fTitleColor     = env.GetValue("SetHistOptDialog.TitleColor",     0);
-   fTitleStyle     = env.GetValue("SetHistOptDialog.TitleStyle",     1001);
-   fTitleTextColor = env.GetValue("SetHistOptDialog.TitleTextColor", 1);
-   fTitleBorderSize= env.GetValue("SetHistOptDialog.TitleBorderSize",1);
+   fStatFillColor= env.GetValue("SetHistOptDialog.StatColor",        19);
+   fStatTextColor= env.GetValue("SetHistOptDialog.StatTextColor",     1);
+	fStatLineColor= env.GetValue("SetHistOptDialog.StatLineColor",     1);
+	fStatBorderSize=env.GetValue("SetHistOptDialog.StatBorderSize",    1);
+   fStatFont=      env.GetValue("SetHistOptDialog.StatFont"     ,    62);
+	if (fStatFont < 12 || fStatFont > 123) fStatFont = 62;
+	fStatFormat=    env.GetValue("SetHistOptDialog.fStatFormat",  "6.2g");
+   fStatFontSize=  env.GetValue("SetHistOptDialog.StatFontSize",   0.02);
+   fStatStyle=     env.GetValue("SetHistOptDialog.StatStyle",      1001);
+   fStatX=         env.GetValue("SetHistOptDialog.StatX",          0.98);
+   fStatY=         env.GetValue("SetHistOptDialog.StatY",         0.995);
+   fStatW=         env.GetValue("SetHistOptDialog.StatW",           0.2);
+   fStatH=         env.GetValue("SetHistOptDialog.StatH",          0.16);
+   fTitleFillColor = env.GetValue("SetHistOptDialog.TitleColor",      0);
+	fTitleLineColor = env.GetValue("SetHistOptDialog.TitleLineColor",  1);
+	fTitleStyle     = env.GetValue("SetHistOptDialog.TitleStyle",   1001);
+   fTitleTextColor = env.GetValue("SetHistOptDialog.TitleTextColor",  1);
+   fTitleBorderSize= env.GetValue("SetHistOptDialog.TitleBorderSize", 1);
    fTitleFont      = env.GetValue("SetHistOptDialog.TitleFont",      62);
    if (fTitleFont < 12 || fTitleFont > 123) fTitleFont = 62;
-   fTitleFontA     = env.GetValue("SetHistOptDialog.TitleFontA",    62);
-	fTitleX         = env.GetValue("SetHistOptDialog.TitleX",    0.5);
-	fTitleY         = env.GetValue("SetHistOptDialog.TitleY",   .995);
-	fTitleW         = env.GetValue("SetHistOptDialog.TitleW",     0.);
-	fTitleH         = env.GetValue("SetHistOptDialog.TitleH",     0.);
-	fTitleAlign     = env.GetValue("SetHistOptDialog.TitleAlign", 23);
-	fTitleFontSize  = env.GetValue("SetHistOptDialog.TitleFontSize", 0.03);
+   fTitleFontA     = env.GetValue("SetHistOptDialog.TitleFontA",     62);
+	fTitleX         = env.GetValue("SetHistOptDialog.TitleX",        0.5);
+	fTitleY         = env.GetValue("SetHistOptDialog.TitleY",       .995);
+	fTitleW         = env.GetValue("SetHistOptDialog.TitleW",         0.);
+	fTitleH         = env.GetValue("SetHistOptDialog.TitleH",         0.);
+	fTitleAlign     = env.GetValue("SetHistOptDialog.TitleAlign",     23);
+	fTitleFontSize  = env.GetValue("SetHistOptDialog.TitleFontSize",0.03);
 	TPaveText *tit = (TPaveText*)fCanvas->GetListOfPrimitives()->FindObject("title");
 	if ( tit ) {
-		fTitleColor =       tit->GetFillColor();
+		fTitleFillColor =   tit->GetFillColor();
 		fTitleStyle =       tit->GetFillStyle();
 		fTitleTextColor =   tit->GetTextColor();
 		fTitleBorderSize =  tit->GetBorderSize();
@@ -847,69 +917,69 @@ void SetHistOptDialog::SetDefaults()
 {
 //   cout << "SetHistOptDialog:: SetHistAttPerm" << endl;
    TEnv env(".hprrc");
-   gStyle->SetNdivisions   (env.GetValue("SetHistOptDialog.fNdivisionsX", 510));
-   gStyle->SetAxisColor    (env.GetValue("SetHistOptDialog.fAxisColor", 1));
-   gStyle->SetLabelColor   (env.GetValue("SetHistOptDialog.fLabelColor", 1));
-   gStyle->SetLabelFont    (env.GetValue("SetHistOptDialog.fLabelFont", 62));
-   gStyle->SetLabelOffset  (env.GetValue("SetHistOptDialog.fLabelOffsetX", 0.01));
-   gStyle->SetLabelSize    (env.GetValue("SetHistOptDialog.fLabelSize", 0.03));
-   gStyle->SetTickLength   (env.GetValue("SetHistOptDialog.fTickLength", 0.01));
-   gStyle->SetTitleOffset  (env.GetValue("SetHistOptDialog.fTitleOffsetX", 1.1));
-   gStyle->SetTitleSize    (env.GetValue("SetHistOptDialog.fTitleSize", 0.03));
-	gStyle->SetTitleSize    (env.GetValue("SetHistOptDialog.fTitleFontSize", 0.03));
-	gStyle->SetTitleColor   (env.GetValue("SetHistOptDialog.fTitleColorA", 1));
-   gStyle->SetTitleFont    (env.GetValue("SetHistOptDialog.fTitleFontA", 62));
-
-   gStyle->SetNdivisions   (env.GetValue("SetHistOptDialog.fNdivisionsY", 510), "Y");
-   gStyle->SetAxisColor    (env.GetValue("SetHistOptDialog.fAxisColor", 1), "Y");
-   gStyle->SetLabelColor   (env.GetValue("SetHistOptDialog.fLabelColor", 1), "Y");
-   gStyle->SetLabelFont    (env.GetValue("SetHistOptDialog.fLabelFont", 62),   "Y");
-   gStyle->SetLabelOffset  (env.GetValue("SetHistOptDialog.fLabelOffsetY", 0.01),"Y");
-   gStyle->SetLabelSize    (env.GetValue("SetHistOptDialog.fLabelSize", 0.03),   "Y");
-   gStyle->SetTickLength   (env.GetValue("SetHistOptDialog.fTickLength", 0.01),  "Y");
-   gStyle->SetTitleOffset  (env.GetValue("SetHistOptDialog.fTitleOffsetY", 1.5),"Y");
-   gStyle->SetTitleSize    (env.GetValue("SetHistOptDialog.fTitleSize", 0.03),   "Y");
-   gStyle->SetTitleColor   (env.GetValue("SetHistOptDialog.fTitleColorA", 1),  "Y");
-   gStyle->SetTitleFont    (env.GetValue("SetHistOptDialog.fTitleFontA", 62),   "Y");
-
-   gStyle->SetNdivisions   (env.GetValue("SetHistOptDialog.fNdivisionsZ", 510), "Z");
-   gStyle->SetAxisColor    (env.GetValue("SetHistOptDialog.fAxisColor", 1),   "Z");
-   gStyle->SetLabelColor   (env.GetValue("SetHistOptDialog.fLabelColor", 1),  "Z");
-   gStyle->SetLabelFont    (env.GetValue("SetHistOptDialog.fLabelFont", 62),   "Z");
-   gStyle->SetLabelOffset  (env.GetValue("SetHistOptDialog.fLabelOffsetZ", 0.01),"Z");
-   gStyle->SetLabelSize    (env.GetValue("SetHistOptDialog.fLabelSize", 0.03),   "Z");
-   gStyle->SetTickLength   (env.GetValue("SetHistOptDialog.fTickLength", 0.01),  "Z");
-   gStyle->SetTitleOffset  (env.GetValue("SetHistOptDialog.fTitleOffsetZ", 0.01),"Z");
-   gStyle->SetTitleSize    (env.GetValue("SetHistOptDialog.fTitleSize", 0.03),   "Z");
-   gStyle->SetTitleColor   (env.GetValue("SetHistOptDialog.fTitleColorA", 1),  "Z");
-   gStyle->SetTitleFont    (env.GetValue("SetHistOptDialog.fTitleFontA", 62),   "Z");
-   TGaxis::SetMaxDigits    (env.GetValue("SetHistOptDialog.fLabelMaxDigits", 4));
-
-   gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.TitleColor",     0), "t");
-   gStyle->SetTitleTextColor (env.GetValue("SetHistOptDialog.TitleTextColor", 1));
-   gStyle->SetTitleBorderSize(env.GetValue("SetHistOptDialog.TitleBorderSize",1));
-   gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.TitleFont",      62), "t");
+	gStyle->SetNdivisions     (env.GetValue("SetHistOptDialog.fNdivisionsX",   510));
+	gStyle->SetAxisColor      (env.GetValue("SetHistOptDialog.fAxisColor",       1));
+	gStyle->SetLabelColor     (env.GetValue("SetHistOptDialog.fLabelColor",      1));
+	gStyle->SetLabelFont      (env.GetValue("SetHistOptDialog.fLabelFont",      62));
+	gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetX", 0.01));
+	gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize",    0.03));
+	gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength",   0.01));
+	gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetX",  1.1));
+	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fTitleSize",    0.03));
+	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fTitleFontSize",0.03));
+	gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.fTitleColorA",     1));
+	gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.fTitleFontA",     62));
+	
+	gStyle->SetNdivisions     (env.GetValue("SetHistOptDialog.fNdivisionsY",    510), "Y");
+	gStyle->SetAxisColor      (env.GetValue("SetHistOptDialog.fAxisColor",        1), "Y");
+	gStyle->SetLabelColor     (env.GetValue("SetHistOptDialog.fLabelColor",       1), "Y");
+	gStyle->SetLabelFont      (env.GetValue("SetHistOptDialog.fLabelFont",       62), "Y");
+	gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetY",  0.01), "Y");
+	gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize",     0.03), "Y");
+	gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength",    0.01), "Y");
+	gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetY",   1.5), "Y");
+	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fTitleSize",     0.03), "Y");
+	gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.fTitleColorA",      1), "Y");
+	gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.fTitleFontA",      62), "Y");
+	
+	gStyle->SetNdivisions     (env.GetValue("SetHistOptDialog.fNdivisionsZ",    510), "Z");
+	gStyle->SetAxisColor      (env.GetValue("SetHistOptDialog.fAxisColor",        1), "Z");
+	gStyle->SetLabelColor     (env.GetValue("SetHistOptDialog.fLabelColor",       1), "Z");
+	gStyle->SetLabelFont      (env.GetValue("SetHistOptDialog.fLabelFont",       62), "Z");
+	gStyle->SetLabelOffset    (env.GetValue("SetHistOptDialog.fLabelOffsetZ",  0.01), "Z");
+	gStyle->SetLabelSize      (env.GetValue("SetHistOptDialog.fLabelSize",     0.03), "Z");
+	gStyle->SetTickLength     (env.GetValue("SetHistOptDialog.fTickLength",    0.01), "Z");
+	gStyle->SetTitleOffset    (env.GetValue("SetHistOptDialog.fTitleOffsetZ",  0.01), "Z");
+	gStyle->SetTitleSize      (env.GetValue("SetHistOptDialog.fTitleSize",     0.03), "Z");
+	gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.fTitleColorA",      1), "Z");
+	gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.fTitleFontA",      62), "Z");
+	TGaxis::SetMaxDigits      (env.GetValue("SetHistOptDialog.fLabelMaxDigits",  4));
+	
+   gStyle->SetTitleColor     (env.GetValue("SetHistOptDialog.TitleColor",        0), "t");
+   gStyle->SetTitleTextColor (env.GetValue("SetHistOptDialog.TitleTextColor",    1));
+   gStyle->SetTitleBorderSize(env.GetValue("SetHistOptDialog.TitleBorderSize"   ,1));
+   gStyle->SetTitleFont      (env.GetValue("SetHistOptDialog.TitleFont",        62), "t");
    gStyle->SetTitleFontSize  (env.GetValue("SetHistOptDialog.TitleFontSize",  0.03));
    gStyle->SetTitleStyle     (env.GetValue("SetHistOptDialog.TitleStyle",     1001));
-   gStyle->SetTitleX         (env.GetValue("SetHistOptDialog.TitleX",         0.5));
+   gStyle->SetTitleX         (env.GetValue("SetHistOptDialog.TitleX",          0.5));
    gStyle->SetTitleY         (env.GetValue("SetHistOptDialog.TitleY",         .995));
-   gStyle->SetTitleW         (env.GetValue("SetHistOptDialog.TitleW",         0.));
-   gStyle->SetTitleH         (env.GetValue("SetHistOptDialog.TitleH",         0.));
-   gStyle->SetTitleAlign     (env.GetValue("SetHistOptDialog.TitleAlign",    23));
+   gStyle->SetTitleW         (env.GetValue("SetHistOptDialog.TitleW",           0.));
+   gStyle->SetTitleH         (env.GetValue("SetHistOptDialog.TitleH",           0.));
+   gStyle->SetTitleAlign     (env.GetValue("SetHistOptDialog.TitleAlign",       23));
 
-   gStyle->SetStatColor     (env.GetValue("SetHistOptDialog.StatColor", 19));
-   gStyle->SetStatTextColor (env.GetValue("SetHistOptDialog.StatTextColor", 1));
-   gStyle->SetStatBorderSize(env.GetValue("SetHistOptDialog.StatBorderSize", 1));
-   gStyle->SetStatFont      (env.GetValue("SetHistOptDialog.StatFont", 62));
-   gStyle->SetStatFontSize  (env.GetValue("SetHistOptDialog.StatFontSize", 0.02));
-   gStyle->SetStatStyle     (env.GetValue("SetHistOptDialog.StatStyle", 1001));
-   gStyle->SetStatX         (env.GetValue("SetHistOptDialog.StatX", 0.98));
-   gStyle->SetStatY         (env.GetValue("SetHistOptDialog.StatY", 0.995));
-   gStyle->SetStatW         (env.GetValue("SetHistOptDialog.StatW", 0.2));
-   gStyle->SetStatH         (env.GetValue("SetHistOptDialog.StatH", 0.16));
-	fTitleCenterX  = env.GetValue("SetHistOptDialog.fTitleCenterX", 1);
-	fTitleCenterY  = env.GetValue("SetHistOptDialog.fTitleCenterY", 1);
-	fTitleCenterZ  = env.GetValue("SetHistOptDialog.fTitleCenterZ", 1);
+   gStyle->SetStatColor      (env.GetValue("SetHistOptDialog.StatColor",        19));
+   gStyle->SetStatTextColor  (env.GetValue("SetHistOptDialog.StatTextColor",     1));
+   gStyle->SetStatBorderSize (env.GetValue("SetHistOptDialog.StatBorderSize",    1));
+   gStyle->SetStatFont       (env.GetValue("SetHistOptDialog.StatFont",         62));
+   gStyle->SetStatFontSize   (env.GetValue("SetHistOptDialog.StatFontSize",   0.02));
+   gStyle->SetStatStyle      (env.GetValue("SetHistOptDialog.StatStyle",      1001));
+   gStyle->SetStatX          (env.GetValue("SetHistOptDialog.StatX",          0.98));
+   gStyle->SetStatY          (env.GetValue("SetHistOptDialog.StatY",         0.995));
+   gStyle->SetStatW          (env.GetValue("SetHistOptDialog.StatW",           0.2));
+   gStyle->SetStatH          (env.GetValue("SetHistOptDialog.StatH",          0.16));
+	fTitleCenterX  =           env.GetValue("SetHistOptDialog.fTitleCenterX",      1);
+	fTitleCenterY  =           env.GetValue("SetHistOptDialog.fTitleCenterY",      1);
+	fTitleCenterZ  =           env.GetValue("SetHistOptDialog.fTitleCenterZ",      1);
 }
 //______________________________________________________________________
 

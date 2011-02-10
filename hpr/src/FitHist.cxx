@@ -324,12 +324,20 @@ void FitHist::HandlePadModified()
 		cout << "x1, x2, y1, y2: "<<fCanvas->GetFrame()->GetX1()<<" "
 		<<fCanvas->GetFrame()->GetX2()<< " " <<fCanvas->GetFrame()->GetY1()<<" "
 		<<fCanvas->GetFrame()->GetY2()<<endl;
-		fCanvas->Dump();
+//		fCanvas->Dump();
 	}
 //	gSystem->Sleep(1000);
 	if (gPad == fCanvas) {
-		if ( fHasExtraAxis ) 
-			TTimer::SingleShot(200, "FitHist", this, "ReDoAxis()");
+/*		if ( fHasExtraAxis ) {
+			if ( fFrameX1 != fCanvas->GetFrame()->GetX1() || fFrameX2 != fCanvas->GetFrame()->GetX2()
+			||fFrameY1 != fCanvas->GetFrame()->GetY1() || fFrameY2 != fCanvas->GetFrame()->GetY2() ) {
+				TTimer::SingleShot(200, "HprGaxis", this, "ReDoAxis()");
+				fFrameX1 = fCanvas->GetFrame()->GetX1();
+				fFrameX2 = fCanvas->GetFrame()->GetX2();
+				fFrameY1 = fCanvas->GetFrame()->GetY1();
+				fFrameY2 = fCanvas->GetFrame()->GetY2();
+			} 
+		}*/
 		if ( fLogy != fSelPad->GetLogy() ){
 			fLogy = fSelPad->GetLogy();
 			if ( fSelHist->GetDimension() == 1 ) {
@@ -1404,208 +1412,14 @@ void FitHist::AddAxis(Int_t where)
    TGMrbTableOfDoubles(mycanvas, &ret, "Define axis limits", itemwidth,
                        ncols, nrows, xyvals, precission, NULL, row_lab);
 	
-   if (ret >= 0) 
-		DoAddAxis(where, xyvals[0],xyvals[1]);
+   if (ret >= 0) {
+		Hpr::DoAddAxis(fCanvas, fSelHist, where, xyvals[0],xyvals[1]);
+		fHasExtraAxis = kTRUE;
+	}
    if (row_lab) {
       row_lab->Delete();
       delete row_lab;
    }
-}
-//__________________________________________________________________
-
-HprGaxis * FitHist::DoAddAxis(Int_t where, Double_t ledge, Double_t uedge,
-										Double_t axis_offset, Color_t col)
-{	
-	fCanvas->cd();
-//	GrCanvas* hc = (GrCanvas*)fCanvas;
-//   fCanvas->Add2ConnectedClasses(this);
-// we dont have a pointer to Set1DimOptDialog,
-// it might not even exist (yet), so use static method
-//	TQObject::Connect("Set1DimOptDialog", "LinLogChanged(TObject*)",
-//						   "FitHist", this, "HandleLinLogChanged(TObject*)");
-//	cout << "DoAddAxis " << ledge << " " << uedge << endl;
-	Axis_t x1=0, y1=0, x2=1, y2=1;
-	TIter next(fCanvas->GetListOfPrimitives());
-//	fCanvas->GetListOfPrimitives()->ls();
-	
-	TString side("S");
-	TAxis *orig_axis = NULL;
-	HprGaxis *naxis;
-	Double_t offset = 0, ratio = 1;
-	if (where == 1) {
-		if (fCanvas->GetLogx()) 
-			side += "G";
-		side += "-";
-		x1 = fCanvas->GetFrame()->GetX1();
-		x2 = fCanvas->GetFrame()->GetX2();
-		y1 = fCanvas->GetFrame()->GetY2();
-		// axis offset in X
-		y1 = y1 + (y1 - fCanvas->GetFrame()->GetY1()) * axis_offset;
-		y2 = y1;
-		orig_axis = fSelHist->GetXaxis();
-		if ( fCanvas->GetLogx() ) {
-			x1 = TMath::Power(10, x1);
-			x2 = TMath::Power(10, x2);
-		}
-		offset = ledge - x1;
-		ratio  = (uedge - ledge) / (x2 - x1);
-	} else {
-		if (fCanvas->GetLogy()) 
-			side += "G";
-		side += "+L";
-		x1 = fCanvas->GetFrame()->GetX2();
-		// axis offset in X
-		x1 = x1 + (x1 - fCanvas->GetFrame()->GetX1()) * axis_offset;
-		x2 = x1;
-		y1 = fCanvas->GetFrame()->GetY1();
-		y2 = fCanvas->GetFrame()->GetY2();
-		orig_axis = fSelHist->GetYaxis();
-		if ( fCanvas->GetLogy() ) {
-			y1 = TMath::Power(10, y1);
-			y2 = TMath::Power(10, y2);
-		}
-		offset = ledge - y1;
-		ratio  = (uedge - ledge) / (y2 - y1);
-	}
-	if ( where == 2 && fCanvas->GetLogx() ) {
-		x1 = TMath::Power(10, x1);
-		x2 = TMath::Power(10, x2);
-	}
-	if ( where == 1 &&  fCanvas->GetLogy() ) {
-		y1 = TMath::Power(10, y1);
-		y2 = TMath::Power(10, y2);
-	}
-	
-	Int_t nd   ;
-	Size_t ls  ;
-	Color_t lc ;
-	Font_t  lf ;
-	Double_t lo;
-	Double_t tl;
-	if( orig_axis ) {
-		// a TAxis
-		nd = orig_axis->GetNdivisions();
-		ls = orig_axis->GetLabelSize();
-		lc = orig_axis->GetLabelColor();
-		lf = orig_axis->GetLabelFont();
-		lo = orig_axis->GetLabelOffset();
-		tl = orig_axis->GetTickLength();
-	}
-	if ( col > 0 ) {
-		lc = col;
-	}	
-	
-	if (gDebug > 0)
-	 cout   << "DoAddAxis: x1"
-			  << x1 << " y1 " << y1 << " x2 " << x2 << " y2 " << y2 << " ledge " 
-			  << ledge << " uedge " << uedge << " ratio " << ratio << " offset " << offset
-			  << " axis_offset " << axis_offset << endl;
-	
-// 	naxis = new HprGaxis(x1, y1, x2, y2, ledge, uedge, 510, side.Data());
-	naxis = new HprGaxis(x1, y1, x2, y2, ledge, uedge, nd, side.Data());
-	naxis->SetWhere(where);
-	naxis->SetOffset(offset);
-	naxis->SetAxisOffset(axis_offset);
-	naxis->SetRatio(ratio);
-	
-	naxis->SetLabelSize(ls);
-	naxis->SetLineColor(lc);
-	naxis->SetLabelColor(lc);
-	naxis->SetLabelFont(lf);
-	naxis->SetLabelOffset(lo);
-	naxis->SetTickSize(tl);
-	naxis->Draw();
-	fCanvas->Modified(kTRUE);
-	fCanvas->Update();
-	fHasExtraAxis = kTRUE;
-	return naxis;
-};
-//__________________________________________________________________
-
-void FitHist::ReDoAxis(Int_t force)
-{	
-	if ( fFrameX1 != fCanvas->GetFrame()->GetX1() || fFrameX2 != fCanvas->GetFrame()->GetX2()
-		||fFrameY1 != fCanvas->GetFrame()->GetY1() || fFrameY2 != fCanvas->GetFrame()->GetY2() ) {
-		fFrameX1 = fCanvas->GetFrame()->GetX1();
-		fFrameX2 = fCanvas->GetFrame()->GetX2();
-		fFrameY1 = fCanvas->GetFrame()->GetY1();
-		fFrameY2 = fCanvas->GetFrame()->GetY2();
-	} else {
-		if ( force == 0 )
-			return;
-	}
-	TIter next(fCanvas->GetListOfPrimitives());
-	TObject *obj;
-	Double_t ledge = 0, uedge = 0;
-	Double_t x, y, x1=0, y1=0, x2=1, y2=1;
-	TRegexp loG("G");
-//	fCanvas->GetListOfPrimitives()->ls();
-	while ( obj = next() ) {
-		if ( obj->IsA() == HprGaxis::Class() ) {
-			HprGaxis * a = (HprGaxis*)obj;
-			x1 = fCanvas->GetFrame()->GetX1();
-			x2 = fCanvas->GetFrame()->GetX2();
-			y1 = fCanvas->GetFrame()->GetY1();
-			y2 = fCanvas->GetFrame()->GetY2();
-//			cout << "x1... "<<x1<<" "<<x2<<" "<<y1<<" " << y2<<endl;
-			Bool_t log_axis = kFALSE;
-			if ( a->GetWhere() == 1 ) {
-				if ( fCanvas->GetLogx() ) {
-					x1 = TMath::Power(10, x1);
-					x2 = TMath::Power(10, x2);
-					log_axis = kTRUE;
-				}
-				ledge = a->GetOffset() + x1 * a->GetRatio();
-				uedge = ledge + (x2 - x1) * a->GetRatio();
-				y = y2 + (y2 - y1) * a->GetAxisOffset();
-				if (fCanvas->GetLogy() ) {
-					y = TMath::Power(10, y);
-				}
-				y1 = y2 = y;
-			} else if ( a->GetWhere() == 2 ) {
-				if ( fCanvas->GetLogy() ) {
-					y1 = TMath::Power(10, y1);
-					y2 = TMath::Power(10, y2);
-					log_axis = kTRUE;
-				}
-				ledge = a->GetOffset() + y1 * a->GetRatio();
-				uedge = ledge + (y2 - y1) * a->GetRatio();
-				x = x2 + (x2 - x1) * a->GetAxisOffset();
-				if ( fCanvas->GetLogx() ) {
-					x = TMath::Power(10, x);
-				}
-				x1 = x2 = x;
-			}
-			TString opt(a->GetOption());
-			if ( log_axis ) {
-				if ( !opt.Contains("G") ) {
-					opt += "G";
-					a->SetOption(opt);
-				}
-			} else {
-				if ( opt.Contains("G") ) {
-					opt(loG) =  "";
-					a->SetOption(opt);
-				}
-			}
-			a->SetX1(x1);
-			a->SetX2(x2);
-			a->SetY1(y1);
-			a->SetY2(y2);
-			a->SetWmin(ledge);
-			a->SetWmax(uedge);
-			if ( gDebug > 0 ) {
-				cout << "ReDoAxis: " <<  a->GetWhere();
-				if (log_axis ) 
-					cout << " log_axis ";
-				cout << " opt " << opt <<" "<<x1<<" "<<x2<<" "<<y1<<" " << y2<<" "<<
-						ledge<<" " << uedge 
-				<< endl;
-			}
-		}
-	}
-	fCanvas->Modified();
-	fCanvas->Update();
 }
 //_______________________________________________________________________________________
 
@@ -1614,8 +1428,6 @@ void FitHist::ObjMoved(Int_t px, Int_t py, TObject *obj)
 	if ( gDebug > 0 )
 		cout << "ObjMoved: " << obj->ClassName() <<endl;
 	if (obj->IsA() == TAxis::Class()) {
-//		if ( fHasExtraAxis )
-//			ReDoAxis();
 	}
 }
 //_______________________________________________________________________________________
@@ -1624,11 +1436,9 @@ void FitHist::ObjMoved(Int_t px, Int_t py, TObject *obj)
 
 void FitHist::HandleLinLogChanged(TObject *obj)
 {
-	if ( gDebug > 0 )
+	if ( gDebug > 0 ) {
 		cout << "FitHist::HandleLinLogChanged: " << obj 
 				<< " fCanvas: " << fCanvas <<endl;
-	if (obj == fCanvas) {
-//		ReDoAxis();
 	}
 }
 //_______________________________________________________________________________________
@@ -2146,10 +1956,10 @@ void FitHist::Superimpose(Int_t mode)
       return;
    }
    TEnv env(".hprrc");
-	static Int_t   lLegend      = env.GetValue("Set1DimOptDialog.DrawLegend", 1);
-	static Int_t   lIncrColors  = env.GetValue("Set1DimOptDialog.AutoIncrColors", 0);
-	static Int_t   lSkipDialog  = env.GetValue("Set1DimOptDialog.SkipDialog", 0);
-	static Int_t   lWarnDiffBin = env.GetValue("Set1DimOptDialog.WarnDiffBin", 1);
+	static Int_t   lLegend      = env.GetValue("SuperImposeHist.DrawLegend", 1);
+	static Int_t   lIncrColors  = env.GetValue("SuperImposeHist.AutoIncrColors", 0);
+	static Int_t   lSkipDialog  = env.GetValue("SuperImposeHist.SkipDialog", 0);
+	static Int_t   lWarnDiffBin = env.GetValue("SuperImposeHist.WarnDiffBin", 1);
 	
 	if (hist->GetDimension() != fSelHist->GetDimension()) {
 		Hpr::WarnBox("Dimensions of histograms differ");
@@ -2371,7 +2181,7 @@ void FitHist::Superimpose(Int_t mode)
 		}
 		ledge /= new_scale;
 		uedge /= new_scale;
-		HprGaxis *axis = DoAddAxis(2, ledge, uedge, axis_offset, axis_color);
+		HprGaxis *axis = Hpr::DoAddAxis(fCanvas, hdisp, 2, ledge, uedge, axis_offset, axis_color);
 		
 		TString ax_name("axis_");
 		ax_name += hdisp->GetTitle();
@@ -2389,7 +2199,7 @@ void FitHist::Superimpose(Int_t mode)
 			axis->SetTitleColor(axis_color);
 			axis->SetTitleFont( env.GetValue("SetHistOptDialog.fTitleFont", 62));
 			axis->SetTitleSize( env.GetValue("SetHistOptDialog.fTitleSize",0.03));
-			axis->SetTitleOffset( env.GetValue("SetHistOptDialog.fTitleOffsetY",0.03));
+			axis->SetTitleOffset( 1. );
 			if ( env.GetValue("SetHistOptDialog.fTitleCenterY", 0) == 1 ) 
 			axis->CenterTitle();
 		}
@@ -2407,7 +2217,13 @@ void FitHist::Superimpose(Int_t mode)
 		}
 		if ( leg )
 			delete leg;
-		leg = fCanvas->BuildLegend(0.11, 0.8, 0.3, 0.95);
+		TEnv env(".hprrc");
+		Double_t x1 = env.GetValue("SuperImposeHist.fLegendX1", 0.11);
+		Double_t x2 = env.GetValue("SuperImposeHist.fLegendX2", 0.3);
+		Double_t y1 = env.GetValue("SuperImposeHist.fLegendY1", 0.8);
+		Double_t y2 = env.GetValue("SuperImposeHist.fLegendY2", 0.95);
+		leg = fCanvas->BuildLegend(x1, y1, x2,y2);
+		leg->SetName("Legend_SuperImposeHist");
 		TIter next( leg->GetListOfPrimitives() );
 		TList * tmp = new TList();
 		TLegendEntry *le;
@@ -2445,10 +2261,10 @@ void FitHist::Superimpose(Int_t mode)
 		lFillColor++;
 		axis_offset += 0.05;
 	}
-	env.SetValue("Set1DimOptDialog.DrawLegend", lLegend);
-	env.SetValue("Set1DimOptDialog.AutoIncrColors", lIncrColors);
-	env.SetValue("Set1DimOptDialog.SkipDialog", lSkipDialog);
-	env.SetValue("Set1DimOptDialog.WarnDiffBin", lWarnDiffBin);
+	env.SetValue("SuperImposeHist.DrawLegend", lLegend);
+	env.SetValue("SuperImposeHist.AutoIncrColors", lIncrColors);
+	env.SetValue("SuperImposeHist.SkipDialog", lSkipDialog);
+	env.SetValue("SuperImposeHist.WarnDiffBin", lWarnDiffBin);
 	env.SaveLevel(kEnvLocal);
 }
 
@@ -3868,7 +3684,6 @@ void FitHist::SetLogx(Int_t state)
 	fCanvas->SetLogx(state);
 	fCanvas->Modified();
 	fCanvas->Update();
-//	ReDoAxis();
 };
 //__________________________________________________________________
 
@@ -3878,5 +3693,4 @@ void FitHist::SetLogy(Int_t state)
 	fCanvas->SetLogy(state);
 	fCanvas->Modified();
 	fCanvas->Update();
-//	ReDoAxis();
 };

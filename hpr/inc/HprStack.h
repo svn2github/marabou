@@ -53,7 +53,7 @@ private:
    Int_t   fShowContour;
    Int_t   fShowMarkers;
    Float_t fEndErrorSize;
-   Float_t   fErrorX;
+   Float_t fErrorX;
    TString fErrorMode;
 	Int_t   fSameScale;
 public:

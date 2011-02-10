@@ -13,28 +13,6 @@
 #include <iostream>
 
 namespace std {} using namespace std;
-TString GraphAttDialog::fDrawOptGraph("AL");
-Int_t   GraphAttDialog::fGraphSimpleLine;
-Int_t   GraphAttDialog::fGraphSmoothLine;
-Int_t   GraphAttDialog::fGraphFill;
-Int_t   GraphAttDialog::fGraphPolyMarker;
-Int_t   GraphAttDialog::fGraphBarChart;
-Int_t   GraphAttDialog::fGraphShowAxis;
-Int_t   GraphAttDialog::fGraphShowTitle;
-Style_t GraphAttDialog::fGraphLStyle;
-Width_t GraphAttDialog::fGraphLWidth;
-Color_t GraphAttDialog::fGraphLColor;
-Style_t GraphAttDialog::fGraphMStyle;
-Size_t  GraphAttDialog::fGraphMSize;
-Color_t GraphAttDialog::fGraphMColor;
-Style_t GraphAttDialog::fGraphFStyle;
-Color_t GraphAttDialog::fGraphFColor;
-Int_t   GraphAttDialog::fGraphLogX = 0;
-Int_t   GraphAttDialog::fGraphLogY = 0;
-Int_t   GraphAttDialog::fGraphLogZ = 0;
-
-
-
 //_______________________________________________________________________
 
 GraphAttDialog::GraphAttDialog(TGWindow * win)
@@ -53,67 +31,160 @@ whereas \"ff\" is the filled area width. The sign of \"ffll\" allows\n\
 flipping the filled area from one side of the line to the other.\n\
 The current fill area attributes are used to draw the hatched zone.\n\
 \n\
-____________________________________________________________\n\
+\"X\"	By default the error bars are drawn. If option \"X\" is specified, the errors\n\
+      are not drawn. The graph with errors in drawn like a normal graph.\n\
+\"Z\"	By default horizonthal and vertical small lines are drawn at the end \n\
+      of the error bars. If option \"z\" or \"Z\" is specified, these lines are \n\
+      not drawn.\n\
+\">\"	An arrow is drawn at the end of the error bars. The size of the arrow is\n\
+      set to 2/3 of the marker size.\n\
+\"|>\"A filled arrow is drawn at the end of the error bars. The size of the\n\
+      arrow is set to 2/3 of the marker size.\n\
+\"||\"	Only the end vertical/horizonthal lines of the error bars are drawn.\n\
+      This option is interesting to superimpose systematic errors on top\n\
+      of a graph with statistical errors.\n\
+\"[]\"Does the same as option \"||\" except that it draws additionnal\n\
+      tick marks at the end of the vertical/horizonthal lines.\n\
+      This makes less ambiguous plots in case several graphs are drawn on\n\
+      the same picture.\n\
+\"2\"	Error rectangles are drawn.\n\
+\"3\"	A filled area is drawn through the end points of the vertical error bars.\n\
+\"4\"	A smoothed filled area is drawn through the end points of the\n\
+      vertical error bars.\n\
+\n\
+_________________________________________________________________________\n\
 ";
-   TRootCanvas *rc = (TRootCanvas*)win;
-   fCanvas = rc->Canvas();
-   gROOT->GetListOfCleanups()->Add(this);
-   fRow_lab = new TList();
-
+	TRootCanvas *rc = (TRootCanvas*)win;
+	fCanvas = rc->Canvas();
+	fNGraphs = FindGraphs((TPad*)fCanvas, &fGraphList);
+	if (fNGraphs <= 0) {
+		cout << " No graph found " <<endl;
+		return;
+	} 
+	gROOT->GetListOfCleanups()->Add(this);
+	RestoreDefaults();
+	
+	fDrawOpt   = new TString[fNGraphs];
+	fFill      = new Int_t[fNGraphs];
+	fFillColor = new Color_t[fNGraphs];
+   fFillStyle = new Style_t[fNGraphs];
+   fLineColor = new Color_t[fNGraphs];
+   fLineStyle = new Style_t[fNGraphs];
+   fLineWidth = new Width_t[fNGraphs];
+   fMarkerColor = new Color_t[fNGraphs];
+   fMarkerStyle = new Style_t[fNGraphs];
+   fMarkerSize  = new Size_t[fNGraphs];
+   fShowMarkers = new Int_t[fNGraphs];
+	fLineMode    = new TString[fNGraphs];
+	fErrorMode   = new TString[fNGraphs];
+	for ( Int_t i =0; i < fNGraphs; i++ ) {
+		TGraph *gr =(TGraph*)fGraphList.At(i);
+		fDrawOpt[i]   = gr->GetDrawOption();
+		fFillColor[i] = gr->GetFillColor(); 
+		fFillStyle[i] = gr->GetFillStyle(); 
+		fLineColor[i] = gr->GetLineColor(); 
+		fLineStyle[i] = gr->GetLineStyle(); 
+		fLineWidth[i] = gr->GetLineWidth(); 
+		fMarkerColor[i] =  gr->GetMarkerColor(); 
+		fMarkerStyle[i] =  gr->GetMarkerStyle(); 
+		fMarkerSize[i]  =  gr->GetMarkerSize(); 
+		if (     fDrawOpt[i].Contains("|>"))
+			fErrorMode[i] = "|>";
+		else if (fDrawOpt[i].Contains(">"))
+			fErrorMode[i] = ">";
+		else if (fDrawOpt[i].Contains("||"))
+			fErrorMode[i] = "||";
+		else if (fDrawOpt[i].Contains("Z", TString::kIgnoreCase))
+			fErrorMode[i] = "Z";
+		else if (fDrawOpt[i].Contains("X", TString::kIgnoreCase))
+			fErrorMode[i] = "X";
+		else if (fDrawOpt[i].Contains("2"))
+			fErrorMode[i] = "2";
+		else if (fDrawOpt[i].Contains("3"))
+			fErrorMode[i] = "3";
+		else if (fDrawOpt[i].Contains("4"))
+			fErrorMode[i] = "4";
+		if (     fDrawOpt[i].Contains("C", TString::kIgnoreCase))
+			fLineMode[i] = "C(smooth))";
+		else if (fDrawOpt[i].Contains("L", TString::kIgnoreCase))
+			fLineMode[i] = "L(simple))";
+		else
+			fLineMode[i] = "(noline))";
+		if (     fDrawOpt[i].Contains("P", TString::kIgnoreCase))
+			fShowMarkers[i] = 1;
+		else
+			fShowMarkers[i] = 0;
+		if (     fDrawOpt[i].Contains("F", TString::kIgnoreCase))
+			fFill[i] = 1;
+		else
+			fFill[i] = 0;
+	}
+//	fEndErrorSize = gStyle->GetEndErrorSize();
+//	fErrorX       = gStyle->GetErrorX();
+	fShowAxis     = 1;
+	fShowTitle    = 1;
+	fRow_lab = new TList();
+//	cout << "fDrawOpt " << fDrawOpt<< endl;
    Int_t ind = 0;
-   static Int_t dummy;
-   static TString stycmd("SetAsDefault()");
-   RestoreDefaults();
-	fRow_lab->Add(new TObjString("CheckButton_Simple line "));
-   fValp[ind++] = &fGraphSimpleLine;
-	fRow_lab->Add(new TObjString("CheckButton+Smooth Curve"));
-   fValp[ind++] = &fGraphSmoothLine;
-	fRow_lab->Add(new TObjString("CheckButton+Marker      "));
-   fValp[ind++] = &fGraphPolyMarker;
-	fRow_lab->Add(new TObjString("CheckButton_Bar chart   "));
-   fValp[ind++] = &fGraphBarChart;
-	fRow_lab->Add(new TObjString("CheckButton+Show Axis   "));
-   fValp[ind++] = &fGraphShowAxis;
+//   static Int_t dummy;
+//   static TString stycmd("SetAsDefault()");
+//   RestoreDefaults();
+	fRow_lab->Add(new TObjString("CheckButton_Show Axis   "));
+	fValp[ind++] = &fShowAxis;
 	fRow_lab->Add(new TObjString("CheckButton+Show Title  "));
-	fValp[ind++] = &fGraphShowTitle;
-	fRow_lab->Add(new TObjString("CheckButton_Fill area"));
-	fValp[ind++] = &fGraphFill;
-	fRow_lab->Add(new TObjString("Fill_Select+F Style"));
-   fValp[ind++] = &fGraphFStyle;
-	fRow_lab->Add(new TObjString("ColorSelect+F Color"));
-	fValp[ind++] = &fGraphFColor;
-	fRow_lab->Add(new TObjString("LineSSelect_L Style"));
-	fValp[ind++] = &fGraphLStyle;
-	fRow_lab->Add(new TObjString("PlainShtVal+L Width"));
-   fValp[ind++] = &fGraphLWidth;
-	fRow_lab->Add(new TObjString("ColorSelect+L Color"));
-   fValp[ind++] = &fGraphLColor;
-	fRow_lab->Add(new TObjString("Mark_Select_M Style"));
-   fValp[ind++] = &fGraphMStyle;
-	fRow_lab->Add(new TObjString("Float_Value+M Size"));
-   fValp[ind++] = &fGraphMSize;
-	fRow_lab->Add(new TObjString("ColorSelect+M Color"));
-   fValp[ind++] = &fGraphMColor;
-	fRow_lab->Add(new TObjString("CheckButton_Log X scale"));
-	fValp[ind++] = &fGraphLogX;
+	fValp[ind++] = &fShowTitle;
+	fRow_lab->Add(new TObjString("Float_Value+EndErrS "));
+	fValp[ind++] = &fEndErrorSize;
+	fRow_lab->Add(new TObjString("Float_Value+X ErrS"));
+	fValp[ind++] = &fErrorX;
+	
+	for ( Int_t i =0; i < fNGraphs; i++ ) {
+		fRow_lab->Add(new TObjString("ComboSelect_ErrMo;(default);X(no Err);Z(no XErr);>;|>;||(only end);2;3;4"));
+		fValp[ind++] = &fErrorMode[i];
+		fRow_lab->Add(new TObjString("CheckButton+DoFill"));
+		fValp[ind++] = &fFill[i];
+		fRow_lab->Add(new TObjString("Fill_Select+FStyle"));
+		fValp[ind++] = &fFillStyle[i];
+		fRow_lab->Add(new TObjString("ColorSelect+FColor"));
+		fValp[ind++] = &fFillColor[i];
+		
+		fRow_lab->Add(new TObjString("ComboSelect_LineM;(noline);L(simple);C(smooth)"));
+		fValp[ind++] = &fLineMode[i];
+		fRow_lab->Add(new TObjString("LineSSelect+LStyle"));
+		fValp[ind++] = &fLineStyle[i];
+		fRow_lab->Add(new TObjString("PlainShtVal+LWidth"));
+		fValp[ind++] = &fLineWidth[i];
+		fRow_lab->Add(new TObjString("ColorSelect+LColor"));
+		fValp[ind++] = &fLineColor[i];
+		fRow_lab->Add(new TObjString("CheckButton_ShowMark"));
+		fValp[ind++] = &fShowMarkers[i];
+		fRow_lab->Add(new TObjString("Mark_Select+MStyle"));
+		fValp[ind++] = &fMarkerStyle[i];
+		fRow_lab->Add(new TObjString("Float_Value+MSize ;0;10"));
+		fValp[ind++] = &fMarkerSize[i];
+		fRow_lab->Add(new TObjString("ColorSelect+MColor"));
+		fValp[ind++] = &fMarkerColor[i];
+	}
+/*	fRow_lab->Add(new TObjString("CheckButton_Log X scale"));
+	fValp[ind++] = &fLogX;
 	fRow_lab->Add(new TObjString("CheckButton+Log Y scale"));
-	fValp[ind++] = &fGraphLogY;
+	fValp[ind++] = &fLogY;
 	Int_t logz = ind;
 	fRow_lab->Add(new TObjString("CheckButton+Log Z scale"));
-	fValp[ind++] = &fGraphLogZ;
-	fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
-   fValp[ind++] = &stycmd;
+	fValp[ind++] = &fLogZ;*/
+//	fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
+//   fValp[ind++] = &stycmd;
 
 //	fRow_lab->Add(new TObjString("CheckButton_ylow=rwymin"};
  //  fValp[ind++] = &;
 
    static Int_t ok;
-   Int_t itemwidth = 360;
+   Int_t itemwidth = 480;
    fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
-	fDialog->DisableButton(logz);
+//	fDialog->DisableButton(logz);
 }
 //_______________________________________________________________________
 
@@ -139,56 +210,53 @@ void GraphAttDialog::CloseDialog()
 
 void GraphAttDialog::SetGraphAtt(TCanvas *ca, Int_t bid)
 {
-   fDrawOptGraph  = "";
-   if (fGraphSimpleLine) fDrawOptGraph += "L";
-   if (fGraphSmoothLine) fDrawOptGraph += "C";
-   if (fGraphFill && TMath::Abs(fGraphLWidth)<100) fDrawOptGraph += "F";
-   if (fGraphPolyMarker) fDrawOptGraph += "P";
-   if (fGraphBarChart)   fDrawOptGraph += "B";
-   if (fGraphShowAxis)   fDrawOptGraph += "A";
-	if (fGraphShowTitle) 
+	gStyle->SetEndErrorSize(fEndErrorSize);
+	gStyle->SetErrorX(fErrorX);
+	if (fShowTitle) 
 		gStyle->SetOptTitle(kTRUE);
 	else 
 		gStyle->SetOptTitle(kFALSE);
-   if (ca) {
-		if ( fGraphLogX )
-			ca->SetLogx();
-		else
-			ca->SetLogx(kFALSE);
-		if ( fGraphLogY )
-			ca->SetLogy();
-		else
-			ca->SetLogy(kFALSE);
-		TList logr;
-      Int_t ngr = FindGraphs((TPad*)ca, &logr);
-      if (ngr > 0) {
-         TIter next(&logr);
-         TObject * obj;
-         while ( (obj = next()) ) {
-            TGraph *gr =(TGraph*)obj;
-//            gr->Paint(fDrawOptGraph);
-            ca->cd();
-            gr->SetDrawOption(fDrawOptGraph);
-            if (fGraphSimpleLine || fGraphSmoothLine) {
-               gr->SetLineStyle(fGraphLStyle);
-               gr->SetLineWidth(fGraphLWidth);
-               gr->SetLineColor(fGraphLColor);
-					if ( fGraphFill ) {
-						gr->SetFillStyle(fGraphFStyle);
-						gr->SetFillColor(fGraphFColor);
-					}
-            }
-            if (fGraphPolyMarker) {
-               gr->SetMarkerStyle(fGraphMStyle);
-               gr->SetMarkerSize (fGraphMSize );
-               gr->SetMarkerColor(fGraphMColor);
-            }
-//            cout <<"fDrawOptGraph " << fDrawOptGraph<< endl;
-         }
-         ca->Modified();
-         ca->Update();
-      }
-   }
+	ca->cd();
+	TString drawopt;
+	TString errmod;
+	for ( Int_t i =0; i < fNGraphs; i++ ) {
+		TGraph *gr =(TGraph*)fGraphList.At(i);
+		drawopt = fLineMode[i];
+		if (drawopt.Index("(") >= 0)
+			drawopt.Resize(drawopt.Index("("));
+		errmod = fErrorMode[i];
+		if (errmod.Index("(") >= 0)
+			errmod.Resize(errmod.Index("("));
+		if ( i == 0 && fShowAxis )
+			drawopt += "A";
+		if (fFill[i] && TMath::Abs(fLineWidth[i])<100) {
+			drawopt += "F";
+			if ( fFillStyle[i] == 0 )
+				fFillStyle[i] = 3001;
+		} 
+		drawopt += errmod;
+		drawopt += "P";
+		if (fShowMarkers[i] == 0){
+			gr->SetMarkerStyle(0);
+		}	
+//		cout << "drawopt |" << drawopt<< "| " << endl;
+		gr->SetDrawOption(drawopt);
+		gr->SetLineStyle(fLineStyle[i]);
+		gr->SetLineWidth(fLineWidth[i]);
+		gr->SetLineColor(fLineColor[i]);
+		gr->SetFillStyle(fFillStyle[i]);
+		if (fFill[i] ) 
+			gr->SetFillColor(fFillColor[i]);
+		else 
+			gr->SetFillColor(0);
+		if (fShowMarkers[i]) {
+			gr->SetMarkerStyle(fMarkerStyle[i]);
+			gr->SetMarkerSize (fMarkerSize[i] );
+			gr->SetMarkerColor(fMarkerColor[i]);
+		}
+	}
+	ca->Modified();
+	ca->Update();
 }
 //_______________________________________________________________________
 
@@ -201,24 +269,25 @@ void GraphAttDialog::SetAsDefault()
 void GraphAttDialog::SaveDefaults()
 {
    TEnv env(".hprrc");  
-   env.SetValue("GraphAttDialog.DrawOptGraph",     fDrawOptGraph.Data());
-   env.SetValue("GraphAttDialog.fGraphSmoothLine", fGraphSmoothLine);
-   env.SetValue("GraphAttDialog.fGraphSimpleLine", fGraphSimpleLine);
-   env.SetValue("GraphAttDialog.fGraphFill",       fGraphFill);
-   env.SetValue("GraphAttDialog.fGraphPolyMarker", fGraphPolyMarker);
-   env.SetValue("GraphAttDialog.fGraphBarChart",   fGraphBarChart);
-   env.SetValue("GraphAttDialog.fGraphShowAxis",   fGraphShowAxis);
-   env.SetValue("GraphAttDialog.fGraphLStyle",     fGraphLStyle);
-   env.SetValue("GraphAttDialog.fGraphLWidth",     fGraphLWidth);
-   env.SetValue("GraphAttDialog.fGraphLColor",     fGraphLColor);
-   env.SetValue("GraphAttDialog.fGraphMStyle",     fGraphMStyle);
-   env.SetValue("GraphAttDialog.fGraphMSize",      fGraphMSize);
-   env.SetValue("GraphAttDialog.fGraphMColor",     fGraphMColor);
-	env.SetValue("GraphAttDialog.fGraphFStyle",     fGraphFStyle);
-	env.SetValue("GraphAttDialog.fGraphFColor",     fGraphFColor);
-	env.SetValue("GraphAttDialog.fGraphLogX",       fGraphLogX);
-	env.SetValue("GraphAttDialog.fGraphLogY",       fGraphLogY);
-	env.SetValue("GraphAttDialog.fGraphLogZ",       fGraphLogZ);
+   env.SetValue("GraphAttDialog.fDrawOpt",    fDrawOpt[0]);
+	env.SetValue("GraphAttDialog.fFill",       fFill[0]);
+	env.SetValue("GraphAttDialog.fShowMarkers",fShowMarkers[0]);
+	env.SetValue("GraphAttDialog.fShowTitle",  fShowTitle);
+	env.SetValue("GraphAttDialog.fShowAxis",   fShowAxis);
+	env.SetValue("GraphAttDialog.fLineStyle",  fLineStyle[0]);
+	env.SetValue("GraphAttDialog.fLineWidth",  fLineWidth[0]);
+	env.SetValue("GraphAttDialog.fLineColor",  fLineColor[0]);
+	env.SetValue("GraphAttDialog.fMarkerStyle",fMarkerStyle[0]);
+	env.SetValue("GraphAttDialog.fMarkerSize", fMarkerSize[0]);
+	env.SetValue("GraphAttDialog.fMarkerColor",fMarkerColor[0]);
+	env.SetValue("GraphAttDialog.fFillStyle",  fFillStyle[0]);
+	env.SetValue("GraphAttDialog.fFillColor",  fFillColor[0]);
+/*	env.SetValue("GraphAttDialog.fLogX",       fLogX);
+	env.SetValue("GraphAttDialog.fLogY",       fLogY);
+	env.SetValue("GraphAttDialog.fLogZ",       fLogZ);*/
+// 	env.SetValue("GraphAttDialog.fErrorMode",  fErrorMode[0]);
+	env.SetValue("GraphAttDialog.fEndErrorSize",fEndErrorSize);
+	env.SetValue("GraphAttDialog.fErrorX",      fErrorX);
 	env.SaveLevel(kEnvLocal);
 }
 
@@ -227,26 +296,35 @@ void GraphAttDialog::SaveDefaults()
 void GraphAttDialog::RestoreDefaults()
 {
    TEnv env(".hprrc");
-   fDrawOptGraph    = env.GetValue("GraphAttDialog.DrawOptGraph", "A*");
-   fGraphSmoothLine = env.GetValue("GraphAttDialog.fGraphSmoothLine", 0);
-   fGraphSimpleLine = env.GetValue("GraphAttDialog.fGraphSimpleLine", 0);
-	fGraphFill       = env.GetValue("GraphAttDialog.fGraphFill", 0);
-   fGraphPolyMarker = env.GetValue("GraphAttDialog.fGraphPolyMarker", 1);
-   fGraphBarChart   = env.GetValue("GraphAttDialog.fGraphBarChart", 0);
-   fGraphShowAxis   = env.GetValue("GraphAttDialog.fGraphShowAxis", 1);
-   fGraphLStyle     = env.GetValue("GraphAttDialog.fGraphLStyle", 1);
-   fGraphLWidth     = env.GetValue("GraphAttDialog.fGraphLWidth", 1);
-   fGraphLColor     = env.GetValue("GraphAttDialog.fGraphLColor", 1);
-   fGraphMStyle     = env.GetValue("GraphAttDialog.fGraphMStyle", 7);
-   fGraphMSize      = env.GetValue("GraphAttDialog.fGraphMSize",  1);
-   fGraphMColor     = env.GetValue("GraphAttDialog.fGraphMColor", 1);
-	fGraphFStyle     = env.GetValue("GraphAttDialog.fGraphFStyle", 0);
-	fGraphFColor     = env.GetValue("GraphAttDialog.fGraphFColor", 1);
-	fGraphLogX       = env.GetValue("GraphAttDialog.fGraphLogX", 0);
-	fGraphLogY       = env.GetValue("GraphAttDialog.fGraphLogY", 0);
-	fGraphLogZ       = env.GetValue("GraphAttDialog.fGraphLogZ", 0);
-//	gStyle->SetOptLogx      (fGraphLogX);
-//	gStyle->SetOptLogy      (fGraphLogY);
+	
+	fShowTitle    = env.GetValue("GraphAttDialog.fShowTitle",   1);
+	fEndErrorSize = env.GetValue("GraphAttDialog.fEndErrorSize", 1);
+	fErrorX       = env.GetValue("GraphAttDialog.fErrorX",       1);
+	/*
+	fDrawOpt    = env.GetValue("GraphAttDialog.fDrawOpt", "A*");
+   fLineStyle     = env.GetValue("GraphAttDialog.fLineStyle", 1);
+   fLineWidth     = env.GetValue("GraphAttDialog.fLineWidth", 1);
+   fLineColor     = env.GetValue("GraphAttDialog.fLineColor", 1);
+   fMarkerStyle   = env.GetValue("GraphAttDialog.fMarkerStyle", 7);
+   fMarkerSize    = env.GetValue("GraphAttDialog.fMarkerSize",  1);
+   fMarkerColor   = env.GetValue("GraphAttDialog.fMarkerColor", 1);
+	fFillStyle     = env.GetValue("GraphAttDialog.fFillStyle", 0);
+	fFillColor     = env.GetValue("GraphAttDialog.fFillColor", 1);
+	
+   fSmoothLine = env.GetValue("GraphAttDialog.fSmoothLine", 0);
+   fSimpleLine = env.GetValue("GraphAttDialog.fSimpleLine", 0);
+	fFill       = env.GetValue("GraphAttDialog.fFill", 0);
+   fShowMarkers = env.GetValue("GraphAttDialog.fShowMarkers", 1);
+   fBarChart    = env.GetValue("GraphAttDialog.fBarChart", 0);
+   fShowAxis   = env.GetValue("GraphAttDialog.fShowAxis", 1);
+	fLogX       = env.GetValue("GraphAttDialog.fLogX", 0);
+	fLogY       = env.GetValue("GraphAttDialog.fLogY", 0);
+	fLogZ       = env.GetValue("GraphAttDialog.fLogZ", 0);
+	fErrorMode       = env.GetValue("GraphAttDialog.fErrorMode",    "");
+	fEndErrorSize    = env.GetValue("GraphAttDialog.fEndErrorSize",  1);
+	fErrorX          = env.GetValue("GraphAttDialog.fErrorX",        1);
+//	gStyle->SetOptLogx      (fLogX);
+//	gStyle->SetOptLogy      (fLogY);*/
 }
 //______________________________________________________________________
 
