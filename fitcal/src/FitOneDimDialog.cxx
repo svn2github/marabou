@@ -2181,8 +2181,9 @@ void FitOneDimDialog::FormExecute(Int_t draw_only)
 				gr->SetPoint(i,x, fFitFunc->Eval(x));
 				x += dx;
 			}
-			gr->Draw(GraphAttDialog::fDrawOptGraph);
-			GraphAttDialog::SetGraphAtt(fSelPad);
+			TEnv env(".hprrc");
+			gr->Draw(env.GetValue("GraphAttDialog.fDrawOpt","PA"));
+//			GraphAttDialog::SetGraphAtt(fSelPad);
 		}
 //		cout << "Val[2] " << fFitFunc->Eval(2.) << endl;
 //      fFitFunc->Print();
