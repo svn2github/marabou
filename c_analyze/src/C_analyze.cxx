@@ -1151,7 +1151,7 @@ trying to attach?",
    SetWindowName("Control Window for Mbs and M_analyze");
    MapSubwindows();
 //   Resize(GetDefaultSize());
-   Resize(650, 650);
+   Resize(700,700);
 
    MapWindow();
 //   fTeComment->SetFocus();
