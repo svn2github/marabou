@@ -813,7 +813,11 @@ trying to attach?",
    }
    Bool_t gotit = kFALSE;
    *fMaster = fMaster->Strip(TString::kBoth);
-   if (fMaster->Length() == 0) *fMaster = "ppc-0";
+#ifdef PPC_NEW_ADDRESS
+	if (fMaster->Length() == 0) *fMaster = "gar-ex-ppc01";
+#else
+	if (fMaster->Length() == 0) *fMaster = "ppc-0";
+#endif
    for(Int_t k=0; k<nofPPCs; k++){
      if (!strcmp(fMaster->Data(), ((TObjString *) masters->At(k))->GetString())) {
          fCbMaster->Select(k+1);
@@ -824,7 +828,7 @@ trying to attach?",
       fCbMaster->AddEntry(fMaster->Data(), nofPPCs+1);
       fCbMaster->Select(nofPPCs+1);
     }
-   fCbMaster->Resize(150, 20);
+   fCbMaster->Resize(300, 20);
    fCbMaster->Associate(this);
 //  Readout
    fLabelFr = new TGCompositeFrame(fHFr, 150, 20, kHorizontalFrame);
@@ -850,7 +854,7 @@ trying to attach?",
       fCbReadout->AddEntry(fReadout->Data(), nofPPCs+1);
       fCbReadout->Select(nofPPCs+1);
   }
-   fCbReadout->Resize(150, 20);
+   fCbReadout->Resize(300, 20);
 
 //  Trigger
    fLabelFr = new TGCompositeFrame(fHFr, 150, 20, kHorizontalFrame);
@@ -1147,7 +1151,7 @@ trying to attach?",
    SetWindowName("Control Window for Mbs and M_analyze");
    MapSubwindows();
 //   Resize(GetDefaultSize());
-   Resize(500, 650);
+   Resize(650, 650);
 
    MapWindow();
 //   fTeComment->SetFocus();
@@ -3121,8 +3125,13 @@ Bool_t FhMainFrame::GetDefaults(){
    fPar         = new TString("none");
    fSaveMap     = new TString("M_prod_");
    *fSaveMap = *fSaveMap + gSystem->Getenv("USER") + "_RUN.root";
+#ifdef PPC_NEW_ADDRESS
+   fMaster       = new TString("gar-ex-ppc02");
+   fReadout      = new TString("gar-ex-ppc01");
+#else
    fMaster       = new TString("ppc-1");
    fReadout      = new TString("ppc-0");
+#endif
    fMbsVersion   = new TString(gEnv->GetValue("TMbsSetup.MbsVersion", ""));
 	if (fMbsVersion->Contains(".")) {
 		fMbsVersion->ReplaceAll(".", "");

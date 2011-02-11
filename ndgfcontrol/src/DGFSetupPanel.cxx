@@ -3,13 +3,13 @@
 // ame:            DGFSetupPanel
 // Purpose:        A GUI to control the XIA DGF-4C
 // Description:    Setup
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.1 2009-09-23 10:46:24 Marabou Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.2 2011-02-11 08:06:08 Marabou Exp $
+// Date:
+// URL:
+// Keywords:
 // Layout:
 //Begin_Html
 /*
@@ -84,10 +84,10 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 // Name:           DGFSetupPanel
 // Purpose:        DGF Viewer: Setup Panel
 // Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Implements DGF Viewer's Setup Panel
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	/*TGMrbLayout * frameGC;
@@ -111,12 +111,12 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 
 	TMrbString camacHost;
 	TMrbString intStr;
-			
+
 	TObjArray * lofSpecialButtons;
 	TMrbLofNamedX colSelect[kNofModulesPerCluster];
 	TMrbLofNamedX allSelect;
 	TMrbLofNamedX lofModuleKeys;
-	
+
 	TMrbEnv env;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
@@ -128,11 +128,11 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	/*frameGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorBlue);	HEAP(frameGC);
-	
+
 	groupGC = new TGMrbLayout(	gDGFControlData->SlantedFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorBlue);	HEAP(groupGC);
-	
+
 	buttonGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGray);	HEAP(buttonGC);
@@ -140,11 +140,11 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	labelGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGray);	HEAP(labelGC);
-	
+
 	entryGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorWhite);	HEAP(entryGC);
-	
+
 	TGLayoutHints * cnFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, cnFrameLayout);
 	HEAP(cnFrameLayout);
@@ -156,7 +156,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	HEAP(lofSpecialButtons);
 	lofSpecialButtons->Add(new TNGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
 	lofSpecialButtons->Add(new TNGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
-	
+
 //	create buttons to select/deselect groups of modules
 	Int_t idx = kDGFSetupModuleSelectColumn;
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++, idx += 2) {
@@ -167,7 +167,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	allSelect.Delete();							// (de)select all
 	allSelect.AddNamedX(kDGFSetupModuleSelectAll, "cbutton_all.xpm");
 	allSelect.AddNamedX(kDGFSetupModuleSelectNone, "cbutton_none.xpm");
-		
+
 //	Initialize several lists
 	fSetupDGFModes.SetName("DGF Modes");				// checkbutton list:	DGF modes
 	fSetupDGFModes.AddNamedX(kDGFSetupDGFModes);
@@ -224,8 +224,12 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 																);
 
 	camacHost = gDGFControlData->fCAMACHost.Data();
+#ifdef PPC_NEW_ADDRESS
+	if (camacHost.Length() == 0) env.Find(camacHost, "DGFControl:TMrbDGF:TMrbEsone", "HostName", "gar-ex-ppc01");
+#else
 	if (camacHost.Length() == 0) env.Find(camacHost, "DGFControl:TMrbDGF:TMrbEsone", "HostName", "ppc-0");
-	
+#endif
+
 	Int_t numberLetters;
 	for (numberLetters=0; ((TString)camacHost[numberLetters]).IsAlpha() && numberLetters<camacHost.Length();numberLetters++);
 	fCAMACHostEntryStrings = new TMrbLofNamedX();
@@ -237,8 +241,8 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 		//fCAMACHostEntry->AddEntry(fCAMACHostEntryStrings->FindByIndex(id)->GetName(),id);
 
 	}
-	fCAMACHostEntry->AddEntry(fCAMACHostEntryStrings);	
-	fCAMACHostEntry->GetComboBox()->Select(camacHost(numberLetters,camacHost.Length()).String().Atoi(),kFALSE);				
+	fCAMACHostEntry->AddEntry(fCAMACHostEntryStrings);
+	fCAMACHostEntry->GetComboBox()->Select(camacHost(numberLetters,camacHost.Length()).String().Atoi(),kFALSE);
 
 	//fCAMACHostEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeCharInt);
 	//fCAMACHostEntry->SetRange(0, DGFSetupPanel::kNofPPCs - 1);
@@ -254,7 +258,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fCodeFrame);
 	this->AddFrame(fCodeFrame,expandXLayout);
 	//this->AddFrame(fCodeFrame/*, groupGC->LH()*/);
-	
+
 	fCodes = new TNGMrbCheckButtonList(fCodeFrame, NULL, &fSetupDGFCodes, -1,stdProfile,1, 0,
 											TabFrame->GetWidth(), kLEHeight,0, lofSpecialButtons, kTRUE);
 	HEAP(fCodes);
@@ -262,7 +266,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	//fCodeFrame->AddFrame(fCodes/*, groupGC->LH()*/);
 	fCodes->SetState(0xffffffff, kButtonDown);
 
-	
+
 // modules
 	fModules = new TGGroupFrame(this, "Modules", kVerticalFrame,  stdProfile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->GC(),  stdProfile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->Font(),  stdProfile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
 	HEAP(fModules);
@@ -271,7 +275,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TNGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1,stdProfile,1, 0, 
+							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1,stdProfile,1, 0,
 							TabFrame->GetWidth(), kLEHeight,
 							0, lofSpecialButtons, kTRUE);
 		HEAP(fCluster[cl]);
@@ -281,21 +285,21 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 		fCluster[cl]->SetState(gDGFControlData->GetPatEnabled(cl), kButtonDown);
 	}
 
-	
+
 	fSelectFrame = new TGHorizontalFrame(fModules, TabFrame->GetWidth(), TabFrame->GetHeight(), kChildFrame, stdProfile->GetGC(TNGMrbGContext::kGMrbGCGroupFrame)->BG());
 	HEAP(fSelectFrame);
 	fModules->AddFrame(fSelectFrame, expandXLayout);
 	//fModules->AddFrame(fSelectFrame/*, frameGC->LH()*/);
-	
+
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fColSelect[i] = new TNGMrbPictureButtonList(fSelectFrame,  NULL, &colSelect[i], -1,stdProfile,1, 0, 
+		fColSelect[i] = new TNGMrbPictureButtonList(fSelectFrame,  NULL, &colSelect[i], -1,stdProfile,1, 0,
 							TabFrame->GetWidth(), kLEHeight);
 		HEAP(fColSelect[i]);
 		fSelectFrame->AddFrame(fColSelect[i],expandXLayout);
 		//fSelectFrame->AddFrame(fColSelect[i]/*, frameGC->LH()*/);
 		((TNGMrbButtonFrame *) fColSelect[i])->Connect("ButtonPressed(Int_t, Int_t)", this->ClassName(), this, "SelectModule(Int_t, Int_t)");
 	}
-	fAllSelect = new TNGMrbPictureButtonList(fSelectFrame,  NULL, &allSelect, -1,stdProfile,1, 0, 
+	fAllSelect = new TNGMrbPictureButtonList(fSelectFrame,  NULL, &allSelect, -1,stdProfile,1, 0,
 							TabFrame->GetWidth(), kLEHeight);
 	HEAP(fAllSelect);
 	fSelectFrame->AddFrame(fAllSelect, new TGLayoutHints(kLHintsCenterY, 	hFrameLayout->GetPadLeft(),
@@ -336,10 +340,10 @@ void DGFSetupPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: select module(s)
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbPictureButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	//cout<<"@@@In SelectModule: FrameID="<<FrameId<<", Selection="<<Selection<<endl;
@@ -355,7 +359,7 @@ void DGFSetupPanel::SelectModule(Int_t FrameId, Int_t Selection) {
 				for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 					fCluster[cl]->SetState(gDGFControlData->GetPatEnabled(cl), kButtonUp);
 				}
-				break;							
+				break;
 		}
 	} else {
 		Selection -= kDGFSetupModuleSelectColumn;
@@ -379,10 +383,10 @@ void DGFSetupPanel::PerformAction(Int_t FrameId, Int_t Selection) {
 // Purpose:        Slot method: perform action
 // Arguments:      Int_t FrameId     -- frame id (ignored)
 //                 Int_t Selection   -- selection
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Called on TGMrbTextButton::ButtonPressed()
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (Selection) {
@@ -421,16 +425,16 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 // Purpose:        Connect modules to esone server
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Connects to esone server
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TObjArray errLog;
 	TMrbLofDGFs lofDGFs[kNofCrates];
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
-	
+
 	Int_t errCnt = gMrbLog->GetErrors(errLog);
 
 	if (this->DaqIsRunning()) {
@@ -458,13 +462,13 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 			return(kFALSE);
 		}
 	}
-	
+
 	TString camacHost = fCAMACHostEntryStrings->FindByIndex(fCAMACHostEntry->GetComboBox()->GetSelected())->GetName();
 	gDGFControlData->fCAMACHost = camacHost;
 
 	esoneCold->SetVerboseMode(gDGFControlData->IsDebug());
 	esoneCold->SetSingleStep(gDGFControlData->IsSingleStep());
-		
+
 	DGFModule * dgfModule = gDGFControlData->FirstModule();
 	while (dgfModule) {
 		TMrbDGF * dgf = dgfModule->GetAddr();
@@ -567,16 +571,16 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 // Purpose:        Reload DGF code
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Downloads code file to fpgas and dsp.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TObjArray errLog;
 	TMrbLofDGFs lofDGFs[kNofCrates];
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
-	
+
 	Int_t errCnt = gMrbLog->GetErrors(errLog);
 
 	if (this->DaqIsRunning()) {
@@ -604,7 +608,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 			return(kFALSE);
 		}
 	}
-	
+
 	TString camacHost = fCAMACHostEntryStrings->FindByIndex(fCAMACHostEntry->GetComboBox()->GetSelected())->GetName();
 	gDGFControlData->fCAMACHost = camacHost;
 
@@ -795,9 +799,9 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 // Purpose:        Initialize DGF modules
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Force DGFs to return from infinite busy-sync loop
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	DGFModule * dgfModule;
@@ -805,9 +809,9 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 	Int_t nerr;
 	Bool_t offlineMode;
 	Bool_t isAborted;
-						
+
 	offlineMode = gDGFControlData->IsOffline();
-	
+
 	if (this->DaqIsRunning()) {
 		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
 		gMrbLog->Flush(this->ClassName(), "AbortDGFs");
@@ -869,13 +873,13 @@ Bool_t DGFSetupPanel::RestartEsone() {
 // Purpose:        Restart esone server
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Restarts esone server
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
-	
+
 	if (this->DaqIsRunning()) {
 		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
 		gMrbLog->Flush(this->ClassName(), "RestartEsone");
@@ -892,7 +896,7 @@ Bool_t DGFSetupPanel::RestartEsone() {
 		esoneCold = NULL;
 		return(kFALSE);
 	}
-	
+
 	TString camacHost = fCAMACHostEntryStrings->FindByIndex(fCAMACHostEntry->GetComboBox()->GetSelected())->GetName();
 	gDGFControlData->fCAMACHost = camacHost;
 
@@ -922,13 +926,13 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 // Purpose:        Turn user PSA on/off
 // Arguments:      Bool_t ActivateFlag   -- kTRUE if user PSA code is to be activated
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Controls the PSA feature.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
-	
+
 	if (this->DaqIsRunning()) {
 		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
 		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff");
@@ -989,13 +993,13 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(DGFModule * Module, Bool_t ActivateFlag) 
 // Arguments:      DGFModule * Module    -- module
 //                 Bool_t ActivateFlag   -- kTRUE if user PSA code is to be activated
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Turns PSA mode on/off for specified module.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
-	
+
 	TString trueFalse = ActivateFlag ? "TRUE" : "FALSE";
 	TMrbDGF * dgf = Module->GetAddr();
 	if (dgf && !offlineMode) dgf->ActivateUserPSACode(ActivateFlag);
@@ -1010,14 +1014,14 @@ Bool_t DGFSetupPanel::SetSwitchBus(Bool_t IndivFlag) {
 // Purpose:        Set switchbus register
 // Arguments:      Bool_t IndivFlag   -- kTRUE if user PSA code is to be activated
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Sets switchbus register.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 // Arguments:      DGFModule * Module    -- module
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
-	
+
 	if (this->DaqIsRunning()) {
 		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetSwitchBus");
@@ -1080,13 +1084,13 @@ Bool_t DGFSetupPanel::SetSynchWait(Bool_t SyncFlag) {
 // Purpose:        Turn busy/sync loop on/off
 // Arguments:      Bool_t SyncFlag   -- kTRUE busy/sync loop
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    (De)activates the busy/sync loop
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
-	
+
 	if (this->DaqIsRunning()) {
 		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetSynchWait");
@@ -1147,13 +1151,13 @@ Bool_t DGFSetupPanel::SetSynchWait(DGFModule * Module, Bool_t SyncFlag) {
 // Arguments:      DGFModule * Module    -- module
 //                 Bool_t SyncFlag   -- kTRUE busy/sync loop
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    (De)activates the busy/sync loop
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
-	
+
 	Int_t onoff = SyncFlag ? 1 : 0;
 	TMrbDGF * dgf = Module->GetAddr();
 	if (dgf && !offlineMode) dgf->SetSynchWait(SyncFlag, kTRUE);
@@ -1168,13 +1172,13 @@ Bool_t DGFSetupPanel::SetInSynch(Bool_t SyncFlag) {
 // Purpose:        Synchronize clock with run
 // Arguments:      Bool_t SyncFlag   -- kTRUE if to be synchronized
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Synchronizes clock with run
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
-	
+
 	if (this->DaqIsRunning()) {
 		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetInSynch");
@@ -1235,13 +1239,13 @@ Bool_t DGFSetupPanel::SetInSynch(DGFModule * Module, Bool_t SyncFlag) {
 // Arguments:      DGFModule * Module    -- module
 //                 Bool_t SyncFlag       -- kTRUE if to be synchronized
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Synchronizes clock with run
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
-	
+
 	Int_t onoff = SyncFlag ? 0 : 1;
 	TMrbDGF * dgf = Module->GetAddr();
 	if (dgf && !offlineMode) dgf->SetSynchWait(onoff, kTRUE);
@@ -1256,9 +1260,9 @@ Bool_t DGFSetupPanel::DaqIsRunning() {
 // Purpose:        Check if a DAQ is running
 // Arguments:      --
 // Results:        kTRUE/kFALSE
-// Exceptions:     
+// Exceptions:
 // Description:    Checks for a running daq.
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gDGFControlData->IsOffline()) return(kFALSE);		// don't worry about if offline
@@ -1266,7 +1270,7 @@ Bool_t DGFSetupPanel::DaqIsRunning() {
 	TString pidFile = "/tmp/M_analyze_";
 	pidFile += gSystem->Getenv("USER");
 	pidFile += ".9090";
-	if (gSystem->AccessPathName(pidFile.Data())) return(kFALSE);	// no pid file, therefore no active daq	
+	if (gSystem->AccessPathName(pidFile.Data())) return(kFALSE);	// no pid file, therefore no active daq
 
 	ifstream p;
 	p.open(pidFile.Data(), ios::in);
@@ -1286,9 +1290,9 @@ void DGFSetupPanel::SetupGeneral() {
 // Purpose:        Set global options
 // Arguments:      --
 // Results:        --
-// Exceptions:     
+// Exceptions:
 // Description:    Reads checkbuttons and performs actions
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t bits = fDGFFrame->GetActive();

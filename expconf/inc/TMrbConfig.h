@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.96 2010-12-16 13:12:42 Marabou Exp $
+// Revision:       $Id: TMrbConfig.h,v 1.97 2011-02-11 08:06:08 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -791,8 +791,6 @@ class TMrbConfig : public TNamed {
 
 		Bool_t BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 									const Char_t * Args, const Char_t * Condition);
-
-		Bool_t BookHistograms(const Char_t * Event, const Char_t * Subevent, const Char_t * Condition = NULL);
 
 		Bool_t BookRateHistogram(const Char_t * HistoName, const Char_t * HistoTitle,
 									Int_t Scale, Int_t Range, Bool_t Loop = kFALSE, const Char_t * Condition = NULL);

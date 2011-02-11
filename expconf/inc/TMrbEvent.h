@@ -8,8 +8,8 @@
 // Class:          TMrbEvent            -- event connected to a trigger
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEvent.h,v 1.13 2008-01-14 09:48:51 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbEvent.h,v 1.14 2011-02-11 08:06:08 Marabou Exp $
+// Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -42,7 +42,7 @@ class TMrbSubevent;
 
 class TMrbEvent : public TNamed {
 
-	public:		
+	public:
 		enum					{	kNofHitBufferEntries		= 1000	};
 
 	public:
@@ -98,6 +98,11 @@ class TMrbEvent : public TNamed {
 		inline void AllocPrivateHistograms(Bool_t Flag) { fPrivateHistograms = fPrefix.IsNull() ? kFALSE : Flag; };
 		inline Bool_t HasPrivateHistograms() const { return(fPrivateHistograms); };
 
+		Bool_t Assign2dimHisto(const Char_t * HistoName, const Char_t * SevtX, const Char_t * ParamX, const Char_t * SevtY, const Char_t * ParamY);
+		Bool_t Assign2dimHisto(const Char_t * HistoName, const Char_t * SevtX, Int_t ParamX, const Char_t * SevtY, Int_t ParamY);
+		inline Bool_t Assign2dimHisto(const Char_t * HistoName, const Char_t * SevtName, const Char_t * ParamX, const Char_t * ParamY) { return(this->Assign2dimHisto(HistoName, SevtName, ParamX, SevtName, ParamY)); };
+		inline Bool_t Assign2dimHisto(const Char_t * HistoName, const Char_t * SevtName, Int_t ParamX, Int_t ParamY) { return(this->Assign2dimHisto(HistoName, SevtName, ParamX, SevtName, ParamY)); };
+
 		inline void SetSizeOfHitBuffer(Int_t NofEntries, Int_t HighWater = 0) {
 			fSizeOfHitBuffer = NofEntries;
 			fHBHighWaterLimit = HighWater;
@@ -108,7 +113,7 @@ class TMrbEvent : public TNamed {
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 				// normal code generation
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
 		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
-		
+
 		Bool_t SetMbsBranch(Int_t MbsBranchNo, const Char_t * MbsBranchName = NULL);	// mbs branch
 		inline Bool_t SetMbsBranch(TMrbNamedX * MbsBranch) { return(this->SetMbsBranch(MbsBranch->GetIndex(), MbsBranch->GetName())); };
 		inline TMrbNamedX * GetMbsBranch() { return(&fMbsBranch); };
@@ -125,7 +130,7 @@ class TMrbEvent : public TNamed {
 
 		inline void SetAutoSave(Int_t AutoSave = TMrbConfig::kAutoSave) { fAutoSave = AutoSave; }; 	// auto save mechanism
 		inline Int_t GetAutoSave() const { return(fAutoSave); };
-			
+
 		inline Bool_t IsStartEvent() { return(fTrigger == TMrbConfig::kTriggerStartAcq); };
 		inline Bool_t IsStopEvent() { return(fTrigger == TMrbConfig::kTriggerStopAcq); };
 		inline Bool_t IsReservedEvent() { return(this->IsStartEvent() || this->IsStopEvent()); };	// start or stop event?
@@ -152,6 +157,8 @@ class TMrbEvent : public TNamed {
 
 		Int_t fNofSubevents;				// list of subevents
 		TMrbLofNamedX fLofSubevents;
+
+		TMrbLofNamedX fLof2dimHistos;		// 2-dim histos to be accumulated
 
 		TString fBaseClass; 				// name of base class
 		TString fPointerName;				// name of ptr to event

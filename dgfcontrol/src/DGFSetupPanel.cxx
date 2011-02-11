@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.41 2009-08-19 12:52:49 Rudolf.Lutter Exp $
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.42 2011-02-11 08:06:08 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -200,7 +200,11 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, labelGC);
 	fCAMACFrame->AddFrame(fCAMACHostEntry, frameGC->LH());
 	camacHost = gDGFControlData->fCAMACHost.Data();
+#ifdef PPC_NEW_ADDRESS
+	if (camacHost.Length() == 0) env.Find(camacHost, "DGFControl:TMrbDGF:TMrbEsone", "HostName", "gar-ex-ppc01");
+#else
 	if (camacHost.Length() == 0) env.Find(camacHost, "DGFControl:TMrbDGF:TMrbEsone", "HostName", "ppc-0");
+#endif
 	fCAMACHostEntry->SetText(camacHost.Data());
 	fCAMACHostEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeCharInt);
 	fCAMACHostEntry->SetRange(0, DGFSetupPanel::kNofPPCs - 1);

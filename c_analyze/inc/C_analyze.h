@@ -27,8 +27,13 @@ const Int_t MAXTIMEOUT = 50;
 
 static const Int_t MBSV = 2, TRIGS = 2;
 
+#ifdef PPC_NEW_ADDRESS
+Char_t * defaultMasters = "gar-ex-ppc01:gar-ex-ppc02:gar-ex-ppc03:gar-ex-ppc04:gar-ex-ppc05:gar-ex-ppc06:gar-ex-ppc07:gar-ex-ppc08:gar-ex-ppc09:gar-ex-ppc02:gar-ex-ppc04:gar-ex-ppc06:gar-ex-ppc08:gar-ex-ppc11:gar-ex-ppc12:gar-ex-ppc13:gar-ex-ppc14:gar-ex-ppc15:gar-ex-ppc16:gar-ex-ppc17:gar-ex-ppc18:gar-ex-ppc19:gar-ex-ppc20:gar-ex-ppc21:gar-ex-ppc31";
+Char_t * defaultSlaves  = "gar-ex-ppc01:gar-ex-ppc01:gar-ex-ppc03:gar-ex-ppc03:gar-ex-ppc05:gar-ex-ppc05:gar-ex-ppc07:gar-ex-ppc07:gar-ex-ppc09:gar-ex-ppc02:gar-ex-ppc04:gar-ex-ppc06:gar-ex-ppc08:gar-ex-ppc11:gar-ex-ppc12:gar-ex-ppc13:gar-ex-ppc14:gar-ex-ppc15:gar-ex-ppc16:gar-ex-ppc17:gar-ex-ppc18:gar-ex-ppc19:gar-ex-ppc20:gar-ex-ppc21:gar-ex-ppc31";
+#else
 Char_t * defaultMasters = "ppc-0:ppc-1:ppc-2:ppc-3:ppc-4:ppc-5:ppc-6:ppc-7:ppc-8:ppc-1:ppc-3:ppc-5:ppc-7:ppc-10:ppc-11:ppc-12:ppc-13:ppc-14:ppc-15:ppc-16:ppc-17:ppc-18:ppc-19:ppc-20:ppc-30";
 Char_t * defaultSlaves  = "ppc-0:ppc-0:ppc-2:ppc-2:ppc-4:ppc-4:ppc-6:ppc-6:ppc-8:ppc-1:ppc-3:ppc-5:ppc-7:ppc-10:ppc-11:ppc-12:ppc-13:ppc-14:ppc-15:ppc-16:ppc-17:ppc-18:ppc-19:ppc-20:ppc-30";
+#endif
 
 static const Char_t * triggers[]  = {"VME", "CAMAC"};
 

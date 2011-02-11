@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.28 2008-12-10 12:13:49 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TMrbEvent.cxx,v 1.29 2011-02-11 08:06:08 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -75,7 +75,7 @@ TMrbEvent::TMrbEvent(Int_t Trigger, const Char_t * EvtName, const Char_t * EvtTi
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (gMrbConfig == NULL) {
 		gMrbLog->Err() << "No config defined" << endl;
 		gMrbLog->Flush(this->ClassName());
@@ -170,7 +170,7 @@ TMrbEvent::TMrbEvent(Int_t Trigger, const Char_t * EvtName, const Char_t * EvtTi
 	if (!this->IsZombie()) {
 		fLofSubevents.SetObject("Subevents", "List of subevents");
 		fNofSubevents = 0;
-		
+
 		gMrbConfig->UpdateTriggerTable(Trigger);
 
 		fTrigger = Trigger;
@@ -181,7 +181,7 @@ TMrbEvent::TMrbEvent(Int_t Trigger, const Char_t * EvtName, const Char_t * EvtTi
 		fConfigOptions = TMrbConfig::kNoOptionSpecified;
 
 		fAutoSave = TMrbConfig::kAutoSave;
-		
+
 		fSizeOfHitBuffer = 1000;
 		fHBHighWaterLimit = 0;
 
@@ -273,6 +273,131 @@ Bool_t TMrbEvent::ShareSubevents(TMrbEvent * DestEvent) {
 	while (sevt = (TMrbSubevent *) siter->Next()) {
 		if (DestEvent->FindSubevent(sevt->GetName()) == NULL) DestEvent->HasSubevent(sevt->GetName());
 	}
+	return(kTRUE);
+}
+
+Bool_t TMrbEvent::Assign2dimHisto(const Char_t * HistoName, const Char_t * SevtX, const Char_t * ParamX, const Char_t * SevtY, const Char_t * ParamY) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::Assign2dimHisto
+// Purpose:        Assign 2-dim histo to be accumulated
+// Arguments:      Char_t * HistoName        -- hostgram name
+//                 Char_t * SevtX            -- subevent containing param X
+//                 Char_t * ParamX           -- name of param X
+//                 Char_t * SevtY            -- subevent containing param Y
+//                 Char_t * ParamY           -- name of param Y
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Adds histo to list of 2-dim histos.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjArray * lofHistos = gMrbConfig->GetLofUserHistograms();
+	TMrbNamedX * hx = NULL;
+	if (lofHistos) TMrbNamedX * hx = (TMrbNamedX *) lofHistos->FindObject(HistoName);
+	if (hx == NULL) {
+		gMrbLog->Err() << "Histogram not booked - " << HistoName << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+	if ((hx->GetIndex() & TMrbConfig::kHistoTH2) == 0) {
+		gMrbLog->Err() << "Not a 2-dim histogram - " << HistoName << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+	TMrbNamedX * sx = (TMrbNamedX *) fLofSubevents.FindObject(SevtX);
+	if (sx == NULL) {
+		gMrbLog->Err() << "[Event " << this->GetName() << "]: Subevent not found - " << SevtX << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+
+	TObjArray * lofParams = ((TMrbSubevent *) sx->GetAssignedObject())->GetLofParams();
+	TMrbModuleChannel * px = NULL;
+	if (sx) px = (TMrbModuleChannel *) lofParams->FindObject(ParamX);
+	if (px == NULL) {
+		gMrbLog->Err() << "[Subevent " << SevtX << "]: Param not found - " << ParamX << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+
+	TMrbNamedX * sy = (TMrbNamedX *) fLofSubevents.FindObject(SevtY);
+	if (sy == NULL) {
+		gMrbLog->Err() << "[Event " << this->GetName() << "]: Subevent not found - " << SevtY << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+	lofParams = ((TMrbSubevent *) sy->GetAssignedObject())->GetLofParams();
+	TMrbModuleChannel * py = NULL;
+	if (sy) py = (TMrbModuleChannel *) lofParams->FindObject(ParamX);
+	if (py == NULL) {
+		gMrbLog->Err() << "[Subevent " << SevtY << "]: Param not found - " << ParamX << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+
+	return(kTRUE);
+}
+
+Bool_t TMrbEvent::Assign2dimHisto(const Char_t * HistoName, const Char_t * SevtX, Int_t ParamX, const Char_t * SevtY, Int_t ParamY) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::Assign2dimHisto
+// Purpose:        Assign 2-dim histo to be accumulated
+// Arguments:      Char_t * HistoName        -- hostgram name
+//                 Char_t * SevtX            -- subevent containing param X
+//                 Int_t ParamX              -- name of param X
+//                 Char_t * SevtY            -- subevent containing param Y
+//                 Int_t ParamY              -- name of param Y
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Adds histo to list of 2-dim histos.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjArray * lofHistos = gMrbConfig->GetLofUserHistograms();
+	TMrbNamedX * hx = NULL;
+	if (lofHistos) TMrbNamedX * hx = (TMrbNamedX *) lofHistos->FindObject(HistoName);
+	if (hx == NULL) {
+		gMrbLog->Err() << "Histogram not booked - " << HistoName << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+	if ((hx->GetIndex() & TMrbConfig::kHistoTH2) == 0) {
+		gMrbLog->Err() << "Not a 2-dim histogram - " << HistoName << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+	TMrbNamedX * sx = (TMrbNamedX *) fLofSubevents.FindObject(SevtX);
+	if (sx == NULL) {
+		gMrbLog->Err() << "[Event " << this->GetName() << "]: Subevent not found - " << SevtX << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+
+	TObjArray * lofParams = ((TMrbSubevent *) sx->GetAssignedObject())->GetLofParams();
+	if (ParamX >= lofParams->GetEntriesFast()) {
+		gMrbLog->Err() << "[Subevent " << SevtX << "]: Param out of range - " << ParamX << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+	TMrbModuleChannel * px = (TMrbModuleChannel *) lofParams->At(ParamX);
+
+	TMrbNamedX * sy = (TMrbNamedX *) fLofSubevents.FindObject(SevtY);
+	if (sy == NULL) {
+		gMrbLog->Err() << "[Event " << this->GetName() << "]: Subevent not found - " << SevtY << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+
+	lofParams = ((TMrbSubevent *) sy->GetAssignedObject())->GetLofParams();
+	if (ParamY >= lofParams->GetEntriesFast()) {
+		gMrbLog->Err() << "[Subevent " << SevtY << "]: Param out of range - " << ParamY << endl;
+		gMrbLog->Flush(this->ClassName(), "Assign2dimHisto");
+		return(kFALSE);
+	}
+	TMrbModuleChannel * py = (TMrbModuleChannel *) lofParams->At(ParamY);
+
 	return(kTRUE);
 }
 
@@ -395,7 +520,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 	TString sevtNameLC;
 	TString sevtNameUC;
 	TString evtAutoSave;
-	
+
 	TMrbNamedX * analyzeTag;
 	TMrbConfig::EMrbAnalyzeTag tagIdx;
 
@@ -409,7 +534,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 	Bool_t foundSevt;
 
 	TMrbTemplate anaTmpl;
-	
+
 	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetAnalyzeOptions() & TMrbConfig::kAnaOptVerbose) != 0);
 
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
@@ -417,7 +542,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 
 	srcPath = gEnv->GetValue("TMrbConfig.SrcPath", gSystem->WorkingDirectory());
 	gSystem->ExpandPathName(srcPath);
-	
+
 	evtNameLC = this->GetName();
 	evtNameUC = evtNameLC;
 	evtNameUC(0,1).ToUpper();
@@ -491,7 +616,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 		gMrbLog->Out()  << "[" << evtNameLC << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 	}
-	
+
  	anaTemplateFile = fileSpec;
 
 	if (!anaTmpl.Open(anaTemplateFile, &gMrbConfig->fLofAnalyzeTags)) return(kFALSE);
@@ -931,7 +1056,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 //////////////////////////////////////////////////////////////////////////////
 
 	TString treeName;
-	
+
 	TMrbSubevent * sevt;
 
 	treeName = this->GetName();
@@ -1114,7 +1239,7 @@ void TMrbEvent::Print(ostream & OutStrm, const Char_t * Prefix) const {
 
 	TMrbSubevent * sevt;
 	TString prefix;
-		
+
 	OutStrm << Prefix << "|\n";
 	OutStrm << Prefix << "+-> Event Definition:" << endl;
 	OutStrm << Prefix << "       Name          : " << this->GetName() << endl;

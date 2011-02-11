@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.13 2010-12-15 09:07:47 Marabou Exp $
+// Revision:       $Id: VMEServerPanel.cxx,v 1.14 2011-02-11 08:06:08 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -165,10 +165,18 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	TString lynxOs = "";
 	TString vmeHost;
 	gVMEControlData->Vctrlrc()->Get(vmeHost, ".HostName", "");
+#ifdef PPC_NEW_ADDRESS
+	if (vmeHost.IsNull()) gVMEControlData->Rootrc()->Get(vmeHost, ".HostName", "gar-ex-ppc01");
+#else
 	if (vmeHost.IsNull()) gVMEControlData->Rootrc()->Get(vmeHost, ".HostName", "ppc-0");
+#endif
 	for (Int_t i = 0; i < kVMENofPPCs; i++) {
 		if (i > 0) hostNames += ":";
+#ifdef PPC_NEW_ADDRESS
+		TString ppc = Form("gar-ex-ppc%02d", i + 1);
+#else
 		TString ppc = Form("ppc-%d", i);
+#endif
 		if (ppc.CompareTo(vmeHost.Data()) == 0) {
 			selIdx = i + 1;
 			lynxOs = (i >= 10) ? "3.1" : "2.5";
@@ -279,9 +287,15 @@ Bool_t VMEServerPanel::Connect() {
 
 	TString ppc = fSelectHost->GetText();
 	Int_t ppcNo = -1;
+#ifdef PPC_NEW_ADDRESS
+	if (ppc.Contains("gar-ex-ppc")) {
+		TString pn = ppc(10, 2);
+		ppcNo = pn.Atoi();
+#else
 	if (ppc.Contains("ppc-")) {
 		TString pn = ppc(4, 2);
 		ppcNo = pn.Atoi();
+#endif
 	} else {
 		gMrbLog->Err()	<< "Illegal host name - " << ppc << endl;
 		gMrbLog->Flush(this->ClassName(), "Connect");

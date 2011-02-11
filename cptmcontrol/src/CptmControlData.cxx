@@ -3,13 +3,13 @@
 // ame:            CptmControlData
 // Purpose:        A GUI to control a CPTM module
 // Description:    Common Database
-// Modules:        
+// Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: CptmControlData.cxx,v 1.2 2008-08-18 08:19:51 Rudolf.Lutter Exp $       
-// Date:           
-// URL:            
-// Keywords:       
+// Revision:       $Id: CptmControlData.cxx,v 1.3 2011-02-11 08:06:08 Marabou Exp $
+// Date:
+// URL:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TEnv.h"
@@ -34,17 +34,17 @@ CptmControlData::CptmControlData() : TNamed("CptmControlData", "CptmControlData"
 // Name:           CptmControlData
 // Purpose:        Common data base
 // Arguments:      --
-// Results:        
-// Exceptions:     
-// Description:    
-// Keywords:       
+// Results:
+// Exceptions:
+// Description:
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	fCAMACHost = "";
 	fDefaultCrate = -1;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 // open ROOT's resource data base
 	fRootrc = new TMrbResource("CptmControl", ".rootrc");
 
@@ -66,13 +66,13 @@ CptmControlData::CptmControlData() : TNamed("CptmControlData", "CptmControlData"
 		gMrbLog->Err()	<< "No such font - " << fBoldFont << " (normal font used instead)" << endl;
 		gMrbLog->Flush("CptmControlData");
 		fBoldFont = fNormalFont;
-	}		
+	}
 	fSlantedFont = gEnv->GetValue("Gui.SlantedFont", "-adobe-helvetica-medium-o-*-*-12-*-*-*-*-*-iso8859-1");
 	if (gClient->GetFontByName(fSlantedFont.Data()) == 0) {
 		gMrbLog->Err()	<< "No such font - " << fSlantedFont << " (normal font used instead)" << endl;
 		gMrbLog->Flush("CptmControlData");
 		fSlantedFont = fNormalFont;
-	}		
+	}
 
 // global switches
 	if (gEnv->GetValue("CptmControl.DebugMode", kFALSE))		fStatus |= CptmControlData::kDGFDebugMode;
@@ -88,7 +88,11 @@ CptmControlData::CptmControlData() : TNamed("CptmControlData", "CptmControlData"
 	TString errMsg;
 	Bool_t panic = kFALSE;
 
+#ifdef PPC_NEW_ADDRESS
+	fCAMACHost = fRootrc->Get(".HostName", "gar-ex-ppc01");
+#else
 	fCAMACHost = fRootrc->Get(".HostName", "ppc-0");
+#endif
 
 	TString path = fRootrc->Get(".CptmCodeFile", "");
 	if (path.Length() == 0) path = fRootrc->Get("TMrbCPTM.CodeFile", "cptm.rbf");
@@ -119,10 +123,10 @@ Bool_t CptmControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode,
 //                 Int_t AccessMode       -- access mode: kDGFAccessXXX
 //                 TString & ErrMsg       -- resulting error message
 //                 Bool_t WarningOnly     -- kTRUE -> warning
-// Results:        kTRUE/kFALSE  
-// Exceptions:     
+// Results:        kTRUE/kFALSE
+// Exceptions:
 // Description:    Checks if file or path exists and is readable/writable
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbSystem ux;

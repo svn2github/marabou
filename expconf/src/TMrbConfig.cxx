@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.185 2011-01-24 13:11:41 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.186 2011-02-11 08:06:08 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -5495,6 +5495,7 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 					gMrbLog->Out()  << "[" << UserLib << "] Using makefile " << mkFile2 << endl;
 					gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 				}
+				mkf = new TObjString("Makefile");
 			} else {
 				TString mkFile3 = Form("%s/makefile", userPath.Data());
 				if (ux.IsRegular(mkFile3.Data())) {
@@ -5502,6 +5503,7 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 						gMrbLog->Out()  << "[" << UserLib << "] Using makefile " << mkFile3 << endl;
 						gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 					}
+					mkf = new TObjString("makefile");
 				} else {
 					gMrbLog->Err()	<< "[" << UserLib << "] No makefile found - neither \"" << mkFile1
 									<< "\" nor \"" << mkFile2 << "\" nor \"" << mkFile3 << "\"" << endl;
