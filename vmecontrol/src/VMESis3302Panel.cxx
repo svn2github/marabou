@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.15 2011-02-03 09:37:59 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.16 2011-02-14 07:43:23 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -591,7 +591,6 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	evr->AddFrame(fEnergyGateLength, groupGC->LH());
 	fEnergyGateLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fEnergyGateLength->SetTextAlignment(kTextRight);
-	fEnergyGateLength->SetState(kFALSE);
 
 	fTrigGateLength = new TGMrbLabelEntry(evr, "Trig gate",		200, kVMESis3302TrigGate,
 															frameWidth/5, kLEHeight, frameWidth/10,
