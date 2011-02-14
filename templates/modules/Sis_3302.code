@@ -29,8 +29,8 @@
  					moduleTable[kMrbModule$moduleNameUC - 1].devStruct = (void *) s_$moduleNameLC;
 					sis3302_moduleInfo(s_$moduleNameLC);						/* read module info */
 					sis3302_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill sis struct from file */
-					sis3302_setActiveChannels(s_$moduleNameLC, $chnPattern); 	/* define active channels */
 					sis3302_loadFromDb(s_$moduleNameLC);			 			/* load module regs from database */
+					sis3302_setActiveChannelsFromDb(s_$moduleNameLC);	 	/* define active channels (according to trigger mode) */
 					sis3302_setTracingMode(s_$moduleNameLC, $tracingMode);		/* turn tracing $onoff */
 					sis3302_resetSampling(s_$moduleNameLC);						/* reset sampling */
 					sis3302_clearTimestamp(s_$moduleNameLC);						/* reset time stamp */

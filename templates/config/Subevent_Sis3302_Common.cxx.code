@@ -49,6 +49,8 @@ Bool_t  TMrbSubevent_Sis3302::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 
+	this->GetHitBuffer()->Reset();			// clear hit buffer
+
 	recNo++;								// count this record	
 	Int_t origSevtWC = SevtWC;				// save original subevent wc
 	if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, origSevtWC);
