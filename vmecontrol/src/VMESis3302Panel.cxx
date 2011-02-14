@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.16 2011-02-14 07:43:23 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.17 2011-02-14 13:32:30 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -586,7 +586,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 
 	fEnergyGateLength = new TGMrbLabelEntry(evr, "Energy gate",	200, kVMESis3302EnergyGate,
 															frameWidth/5, kLEHeight, frameWidth/10,
-															frameGC, labelGC, entryGC);
+															frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fEnergyGateLength);
 	evr->AddFrame(fEnergyGateLength, groupGC->LH());
 	fEnergyGateLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
@@ -594,12 +594,11 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 
 	fTrigGateLength = new TGMrbLabelEntry(evr, "Trig gate",		200, kVMESis3302TrigGate,
 															frameWidth/5, kLEHeight, frameWidth/10,
-															frameGC, labelGC, entryGC);
+															frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTrigGateLength);
 	evr->AddFrame(fTrigGateLength, groupGC->LH());
 	fTrigGateLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fTrigGateLength->SetTextAlignment(kTextRight);
-	fTrigGateLength->SetState(kFALSE);
 
 	TGHorizontalFrame * h3 = new TGHorizontalFrame(fSettingsFrame);
 	HEAP(h3);
@@ -1870,7 +1869,7 @@ void VMESis3302Panel::UpdateGates(TC2LSis3302 * Module, Int_t Channel) {
 		Module->GetEnergyDecimation(decim, Channel);
 	}
 
-	Int_t delay = preTrigDel / (2 << decim);
+	Int_t delay = preTrigDel / (1 << decim);
 
 	Int_t peak, gap;
 	if (Module->IsOffline()) {

@@ -83,7 +83,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 					if (i == 0) d = (d & 0xFFFF0000) | chn;
 					*pointer++ = d;
 				  }
-				  *pointer++ = (rdl << 16) | edl;		/* extra word: lh=raw data length, rh=energy data length */
+				  *pointer++ = (rdl << 16) | edl;	/* extra word: lh=raw data length, rh=energy data length */
 				  for (i = 0; i < rdl; i++) {		/* raw data: fetch 2 samples packed in 32bit, store each in a single 32bit word */
 					  d = *mappedAddr++;
 					  *pointer++ = (d >> 16) & 0xFFFF;

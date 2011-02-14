@@ -4,8 +4,8 @@
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.10 $
-//! $Date: 2011-02-03 15:03:20 $
+//! $Revision: 1.11 $
+//! $Date: 2011-02-14 13:32:30 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -484,6 +484,24 @@ Bool_t sis3302_dumpRegisters(struct s_sis_3302 * Module, Char_t * DumpFile)
 
 void sis3302_setActiveChannels(struct s_sis_3302 * Module, UInt_t ChannelPattern) { Module->activeChannels = ChannelPattern; }
 
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Define active channels from trigger mode bits
+//! \param[in]		Module			-- module address
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis3302_setActiveChannelsFromDb(struct s_sis_3302 * Module) {
+	Int_t chn;
+	UInt_t chnBit;
+	Module->activeChannels = 0;
+	chnBit = 1;
+	for (chn = 0; chn < kSis3302NofChans; chn++) {
+		if (Module->triggerMode[chn] != kSis3302TriggerOff) Module->activeChannels |= chnBit;
+		chnBit <<= 1;
+	}
+}
+	
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Turn tracing mode on/off
@@ -1202,10 +1220,10 @@ Bool_t sis3302_setNextNeighborTriggerMode(struct s_sis_3302 * Module, Int_t Bits
 	if (bits == 0xaffec0c0) return(kFALSE);
 
 	if (ChanNo & 1) {
-		bits &= ~(kSis3302TriggerBoth << 10);
+		bits &= ~(kSis3302TriggerBoth << 14);
 		bits |=	(Bits << 14);
 	} else {
-		bits &= ~(kSis3302TriggerBoth << 2);
+		bits &= ~(kSis3302TriggerBoth << 6);
 		bits |=	(Bits << 6);
 	}
 	return(sis3302_writeEventExtendedConfig(Module, bits, ChanNo));

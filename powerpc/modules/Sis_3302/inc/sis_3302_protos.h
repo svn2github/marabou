@@ -10,8 +10,8 @@
 //! \details		Prototypes for SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.6 $
-//! $Date: 2010-12-14 11:13:40 $
+//! $Revision: 1.7 $
+//! $Date: 2011-02-14 13:32:30 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*! Alloc database for SIS3302 module */
@@ -27,8 +27,13 @@ void sis3302_moduleInfo(struct s_sis_3302 * Module);
 Bool_t sis3302_fillStruct(struct s_sis_3302 * Module, Char_t * SettingsFile);
 
 /*! Load settings from database */
-void sis3302_setActiveChannels(struct s_sis_3302 * Module, UInt_t ChnPattern);
 void sis3302_loadFromDb(struct s_sis_3302 * Module);
+
+/*! Set pattern of active channels */
+/*! ...FromDb: generate pattern from trigger mode bits */
+
+void sis3302_setActiveChannels(struct s_sis_3302 * Module, UInt_t ChnPattern);
+void sis3302_setActiveChannelsFromDb(struct s_sis_3302 * Module);
 
 /*! Debugging tools: dump settings, print_t database contents */
 Bool_t sis3302_dumpRegisters(struct s_sis_3302 * Module, Char_t * File);

@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.16 $
-//! $Date: 2011-02-03 09:38:14 $
+//! $Revision: 1.17 $
+//! $Date: 2011-02-14 13:32:30 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -1370,12 +1370,14 @@ Bool_t SrvSis3302::GetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bit
 
 	Int_t bits;
 	if (!this->ReadEventExtendedConfig(Module, bits, ChanNo)) return(kFALSE);
+	cout << "@@@ GetNextNeighborTriggerMode: get chn=" << ChanNo << " bits=" << setbase(16) << bits << endl;
 	if (ChanNo & 1) {
 		bits >>= 14;
 	} else {
 		bits >>= 6;
 	}
 	Bits = bits & kSis3302TriggerBoth;
+	cout << "@@@ GetNextNeighborTriggerMode: get chn=" << ChanNo << " bits shifted=" << setbase(16) << Bits << endl;
 	return(kTRUE);
 }
 
@@ -1407,17 +1409,23 @@ Bool_t SrvSis3302::SetNextNeighborTriggerMode(SrvVMEModule * Module, Int_t & Bit
 		return(kTRUE);
 	}
 
+	cout << "@@@ SetNextNeighborTriggerMode: set chn=" << ChanNo << " bits=" << setbase(16) << Bits << endl;
+
 	Int_t bits;
 	if (!this->ReadEventExtendedConfig(Module, bits, ChanNo)) return(kFALSE);
 	if (ChanNo & 1) {
-		bits &= ~(kSis3302TriggerBoth << 10);
+		bits &= ~(kSis3302TriggerBoth << 14);
 		bits |=	(Bits << 14);
 	} else {
-		bits &= ~(kSis3302TriggerBoth << 2);
+		bits &= ~(kSis3302TriggerBoth << 6);
 		bits |=	(Bits << 6);
 	}
 
 	if (!this->WriteEventExtendedConfig(Module, bits, ChanNo)) return(kFALSE);
+
+	this->GetNextNeighborTriggerMode(Module, bits, ChanNo);
+	cout << "@@@ SetNextNeighborTriggerMode: check chn=" << ChanNo << " bits=" << setbase(16) << bits << endl;
+
 	return(this->ReadEventExtendedConfig(Module, Bits, ChanNo == kSis3302AllChans ? 0 : ChanNo));
 }
 
