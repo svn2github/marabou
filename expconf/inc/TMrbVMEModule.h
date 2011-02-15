@@ -8,7 +8,7 @@
 // Class:          TMrbVMEModule        -- base class for vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVMEModule.h,v 1.10 2009-04-21 14:15:57 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbVMEModule.h,v 1.11 2011-02-15 09:12:08 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -52,9 +52,14 @@ class TMrbVMEModule : public TMrbModule {
 
 		~TMrbVMEModule() {};									// default dtor
 
-		inline UInt_t GetBaseAddr() const { return(fBaseAddr); };				// get base addr
-		inline Int_t GetSegmentSize() const { return(fSegmentSize); };			// segment size
-		inline Int_t GetAddrModifier() const { return(fAddrModifier); };		// addr modifier
+		inline void SetBaseAddr(UInt_t Base) { fBaseAddr = Base; };			// base address
+		inline UInt_t GetBaseAddr() const { return(fBaseAddr); };
+
+		inline void SetSegmentSize(Int_t SegSize) { fSegmentSize = SegSize; };		// segment size
+		inline Int_t GetSegmentSize() const { return(fSegmentSize); };
+
+		inline void SetAddrModifier(Int_t AddrMod) { fAddrModifier = AddrMod; };	// addr modifier
+		inline Int_t GetAddrModifier() const { return(fAddrModifier); };
 
 		virtual inline Bool_t UseLVME() const { return(kFALSE); };				// connect via LVME interface
 

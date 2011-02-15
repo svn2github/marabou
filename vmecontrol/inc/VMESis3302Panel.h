@@ -8,8 +8,8 @@
 // Class:          VMESis3302Panel
 // Description:    A GUI to control vme modules via tcp
 // Author:         R. Lutter
-// Revision:       $Id: VMESis3302Panel.h,v 1.11 2010-12-17 13:19:04 Marabou Exp $
-// Date:           $Date: 2010-12-17 13:19:04 $
+// Revision:       $Id: VMESis3302Panel.h,v 1.12 2011-02-15 09:12:08 Marabou Exp $
+// Date:           $Date: 2011-02-15 09:12:08 $
 // URL:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -183,9 +183,11 @@ class VMESis3302Panel : public TGCompositeFrame {
 		void TrigDelayChanged(Int_t FrameId, Int_t Selection);
 		void TrigOutChanged(Int_t FrameId, Int_t Selection);
 		void TrigCondChanged(Int_t FrameId, Int_t Selection);
+		void TrigGateLengthChanged(Int_t FrameId, Int_t Selection);
 		void EnergyPeakingChanged(Int_t FrameId, Int_t Selection);
 		void EnergyDecimationChanged(Int_t FrameId, Int_t Selection);
 		void EnergyGapChanged(Int_t FrameId, Int_t Selection);
+		void EnergyGateLengthChanged(Int_t FrameId, Int_t Selection);
 		void TauFactorChanged(Int_t FrameId, Int_t Selection);
 		void RawDataStartChanged(Int_t FrameId, Int_t Selection);
 		void RawDataLengthChanged(Int_t FrameId, Int_t Selection);

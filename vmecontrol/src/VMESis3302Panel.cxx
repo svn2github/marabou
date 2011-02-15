@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.18 2011-02-15 08:24:14 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.19 2011-02-15 09:12:08 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -588,21 +588,23 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 															frameWidth/5, kLEHeight, frameWidth/10,
 															frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fEnergyGateLength);
-	evr->AddFrame(fEnergyGateLength, groupGC->LH());
 	fEnergyGateLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fEnergyGateLength->SetTextAlignment(kTextRight);
 	fEnergyGateLength->SetRange(kSis3302EnergyGateLengthMin, kSis3302EnergyGateLengthMax);
 	fEnergyGateLength->SetIncrement(1);
+	evr->AddFrame(fEnergyGateLength, groupGC->LH());
+	fEnergyGateLength->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EnergyGateLengthChanged(Int_t, Int_t)");
 
 	fTrigGateLength = new TGMrbLabelEntry(evr, "Trig gate",		200, kVMESis3302TrigGate,
 															frameWidth/5, kLEHeight, frameWidth/10,
 															frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTrigGateLength);
-	evr->AddFrame(fTrigGateLength, groupGC->LH());
 	fTrigGateLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fTrigGateLength->SetTextAlignment(kTextRight);
 	fTrigGateLength->SetRange(kSis3302TrigGateLengthMin, kSis3302TrigGateLengthMax);
 	fTrigGateLength->SetIncrement(1);
+	evr->AddFrame(fTrigGateLength, groupGC->LH());
+	fTrigGateLength->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "TrigGateLengthChanged(Int_t, Int_t)");
 
 	TGHorizontalFrame * h3 = new TGHorizontalFrame(fSettingsFrame);
 	HEAP(h3);
@@ -1437,6 +1439,50 @@ void VMESis3302Panel::EnergyDecimationChanged(Int_t FrameId, Int_t Selection) {
 
 	curModule->SetEnergyDecimation(Selection, curChannel);
 	this->UpdateDecayTime(curModule, curChannel);
+	this->UpdateGates(curModule, curChannel);
+}
+
+void VMESis3302Panel::EnergyGateLengthChanged(Int_t FrameId, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::EnergyGateLengthChanged
+// Purpose:        Slot method: energy gate changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t EntryNo     -- entry (ignored)
+// Results:        --
+// Exceptions:
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t gs;
+	curModule->ReadEnergyGateLength(gs, curChannel);
+	Int_t gl = fEnergyGateLength->GetText2Int(EntryNo);
+
+	if (fEnergyGateLength->CheckRange(gl, EntryNo, kTRUE, kTRUE))	curModule->WriteEnergyGateLength(gl, curChannel);
+	else								fEnergyGateLength->SetText(gs, EntryNo);
+	this->UpdateGates(curModule, curChannel);
+}
+
+void VMESis3302Panel::TrigGateLengthChanged(Int_t FrameId, Int_t EntryNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           VMESis3302Panel::TrigGateLengthChanged
+// Purpose:        Slot method: trigger gate changed
+// Arguments:      Int_t FrameId     -- frame id (ignored)
+//                 Int_t EntryNo     -- entry (ignored)
+// Results:        --
+// Exceptions:
+// Description:    Called on TGMrbLabelEntry::EntryChanged()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t gs;
+	curModule->ReadTrigGateLength(gs, curChannel);
+	Int_t gl = fTrigGateLength->GetText2Int(EntryNo);
+
+	if (fTrigGateLength->CheckRange(gl, EntryNo, kTRUE, kTRUE))	curModule->WriteTrigGateLength(gl, curChannel);
+	else								fTrigGateLength->SetText(gs, EntryNo);
 	this->UpdateGates(curModule, curChannel);
 }
 

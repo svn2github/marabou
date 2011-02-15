@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3302.cxx,v 1.4 2010-12-16 13:12:43 Marabou Exp $
+// Revision:       $Id: TMrbSis_3302.cxx,v 1.5 2011-02-15 09:12:08 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +39,7 @@ ClassImp(TMrbSis_3302)
 TMrbSis_3302::TMrbSis_3302(const Char_t * ModuleName, UInt_t BaseAddr) :
 									TMrbVMEModule(ModuleName, "Sis_3302", BaseAddr,
 																TMrbSis_3302::kAddrMod,
-																TMrbSis_3302::kSegSize,
+																0,
 																1, 8, 1 << 30) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -69,6 +69,10 @@ TMrbSis_3302::TMrbSis_3302(const Char_t * ModuleName, UInt_t BaseAddr) :
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
 		} else {
+			TString ppc = gEnv->GetValue("TMbsSetup.ProcType", "RIO2");
+			Int_t segSize = kSegSize3;
+			if (ppc.CompareTo("RIO2") == 0 || ppc.CompareTo("PPC") == 0) segSize = kSegSize2;
+			this->SetSegmentSize(segSize);
 			SetTitle("SIS 3302 digitizing adc 8 chn 16 bit 100 MHz"); 	// store module type
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
