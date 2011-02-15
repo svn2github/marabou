@@ -143,11 +143,18 @@ Bool_t TMrbSubevent_Madc::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 			mle->IncrChannelHits(chn);			// count this channel
 			evtData[0] = 0;
 			evtData[1] = (UShort_t) (data & dmask);
-			this->GetHitBuffer()->AddHit(	eventsProcessed,
+			TUsrHit * hit = this->GetHitBuffer()->AddHit(	eventsProcessed,
 											moduleNumber,
 											chn,
 											tsArr,
 											evtData, 2);
+			if (hit == NULL) {
+				cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Error while filling hitbuffer - giving up"
+					<< setblack << endl;
+				return(kTRUE);
+			}
 		}
 
 		if (xts) dataPtr += 2;				// compensate for extended ts

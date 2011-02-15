@@ -87,11 +87,18 @@ Bool_t TMrbSubevent_HB::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, In
 			mle->IncrChannelHits(chn);			// count this channel
 			evtData[0] = 0;
 			evtData[1] = (UShort_t) (data & HB_M_ADCDATA);
-			this->GetHitBuffer()->AddHit(	eventsProcessed,
+			TUsrHit * hit = this->GetHitBuffer()->AddHit(	eventsProcessed,
 											moduleNumber,
 											chn,
 											NULL,
 											evtData, 2);
+			if (hit == NULL) {
+				cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Error while filling hitbuffer - giving up"
+					<< setblack << endl;
+				return(kTRUE);
+			}
 		}
 		Int_t trailer = (*dataPtr++) << 16; 					// trailer word (MSB)
 		trailer |= *dataPtr++; 									// trailer word (LSB)

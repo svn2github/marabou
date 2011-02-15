@@ -79,11 +79,18 @@ Bool_t TMrbSubevent_Sis::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 			UInt_t * dp = (UInt_t *) &evtData[TUsrHit::kHitEnergyLong];
 			*dp = data; 									// data (24 / 32 bit)
 
-			this->GetHitBuffer()->AddHit(	eventsProcessed,
+			TUsrHit * hit = this->GetHitBuffer()->AddHit(	eventsProcessed,
 													moduleNumber,
 													chn,
 													NULL,
 													evtData, 4);
+			if (hit == NULL) {
+				cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Error while filling hitbuffer - giving up"
+					<< setblack << endl;
+				return(kTRUE);
+			}
 			eventsProcessed++;
 		}
 		SevtWC -= wcs;

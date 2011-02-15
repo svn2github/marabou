@@ -119,11 +119,18 @@ Bool_t TMrbSubevent_Caen_V1X90::FillSubevent(const UShort_t * SevtData, Int_t Se
 				UShort_t evtData[2];
 				evtData[0] = 0;
 				evtData[1] = (UShort_t) (data & CAEN_V1X90_M_TDC_DATA);
-				this->GetHitBuffer()->AddHit(	eventsProcessed,
+				TUsrHit * hit = this->GetHitBuffer()->AddHit(	eventsProcessed,
 												moduleNumber,
 												chn,
 												NULL,
 												evtData, 2);
+				if (hit == NULL) {
+					cerr	<< setred
+						<< this->ClassName() << "::FillSubevent() [sevtWC="
+						<< wordsProcessed << "] Error while filling hitbuffer - giving up"
+						<< setblack << endl;
+					return(kTRUE);
+				}
 				evtWc++;
 				tdcWc++;
 				expect = CAEN_V1X90_X_TD | CAEN_V1X90_X_TT;			// we expect still tdc data or tdc trailer

@@ -84,8 +84,6 @@ Bool_t  TMrbSubevent_Sis3302::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 			return(kTRUE);
 		}
 
-		this->GetHitBuffer()->Reset();
-
 		while (wc > 0) {
 			UInt_t tsHigh = *dataPtr++;			// time stamp high, channel
 			UInt_t tsLow = *dataPtr++;			// time stamp low
@@ -128,6 +126,13 @@ Bool_t  TMrbSubevent_Sis3302::FillSubevent(const UShort_t * SevtData, Int_t Sevt
 							chn,
 							tsArr,
 							NULL, 0);
+			if (hit == NULL) {
+				cerr	<< setred
+					<< this->ClassName() << "::FillSubevent() [sevtWC="
+					<< wordsProcessed << "] Error while filling hitbuffer - giving up"
+					<< setblack << endl;
+				return(kTRUE);
+			}
 			hit->SetDataLong(maxEnergy);	// insert energy value
 			wc -= 7;
 		}

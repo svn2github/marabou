@@ -75,6 +75,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 			  wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl;
 			  nofEvents = nxs / wc;
 			  startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
+			  if (Module->verbose) printf("chn=%d size=%d rdl=%d edl=%d wc=%d evt=%d start=%#lx\n", chn, nxs, rdl, edl, wc, nofEvents, startAddr);		
 			  mappedAddr = (volatile Int_t *) sis3302_mapAddress(Module, startAddr);
 			  if (mappedAddr == NULL) continue;
 			  for (evtNo = 0; evtNo < nofEvents; evtNo++) {

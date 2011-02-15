@@ -104,7 +104,7 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 						}
 						mle->IncrChannelHits(chn);			// count this channel
 						DgfEventChannelHeader * chnHdr = (DgfEventChannelHeader *) dataPtr;
-						this->GetHitBuffer()->AddHit(	eventsProcessed,
+						TUsrHit * hit = this->GetHitBuffer()->AddHit(	eventsProcessed,
 																moduleNumber,
 																chn,
 																bufHdr->startTime[0],
@@ -112,6 +112,13 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 																chnHdr->fastTriggerTime,
 																&chnHdr->fastTriggerTime,
 																nofWordsPerChn);
+						if (hit == NULL) {
+							cerr	<< setred
+								<< this->ClassName() << "::FillSubevent() [sevtWC="
+								<< wordsProcessed << "] Error while filling hitbuffer - giving up"
+								<< setblack << endl;
+							return(kTRUE);
+						}
 						dataPtr += nofWordsPerChn * sizeof(Short_t);
 						wc -= nofWordsPerChn;		 // continue with next channel
 					}

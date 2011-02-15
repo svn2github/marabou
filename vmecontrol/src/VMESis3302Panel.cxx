@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.17 2011-02-14 13:32:30 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.18 2011-02-15 08:24:14 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -591,6 +591,8 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	evr->AddFrame(fEnergyGateLength, groupGC->LH());
 	fEnergyGateLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fEnergyGateLength->SetTextAlignment(kTextRight);
+	fEnergyGateLength->SetRange(kSis3302EnergyGateLengthMin, kSis3302EnergyGateLengthMax);
+	fEnergyGateLength->SetIncrement(1);
 
 	fTrigGateLength = new TGMrbLabelEntry(evr, "Trig gate",		200, kVMESis3302TrigGate,
 															frameWidth/5, kLEHeight, frameWidth/10,
@@ -599,6 +601,8 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	evr->AddFrame(fTrigGateLength, groupGC->LH());
 	fTrigGateLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fTrigGateLength->SetTextAlignment(kTextRight);
+	fTrigGateLength->SetRange(kSis3302TrigGateLengthMin, kSis3302TrigGateLengthMax);
+	fTrigGateLength->SetIncrement(1);
 
 	TGHorizontalFrame * h3 = new TGHorizontalFrame(fSettingsFrame);
 	HEAP(h3);
@@ -1855,12 +1859,16 @@ void VMESis3302Panel::UpdateGates(TC2LSis3302 * Module, Int_t Channel) {
 		return;
 	}
 
+// pretrigger delay
+
 	Int_t preTrigDel;
 	if (Module->IsOffline()) {
 		preTrigDel = fPreTrigDelay->GetText2Int();
 	} else {
 		Module->ReadPreTrigDelay(preTrigDel, Channel);
 	}
+
+// decimation
 
 	Int_t decim;
 	if (Module->IsOffline()) {
@@ -1871,6 +1879,8 @@ void VMESis3302Panel::UpdateGates(TC2LSis3302 * Module, Int_t Channel) {
 
 	Int_t delay = preTrigDel / (1 << decim);
 
+// peak and gap
+
 	Int_t peak, gap;
 	if (Module->IsOffline()) {
 		peak = fEnergyPeaking->GetText2Int();
@@ -1879,16 +1889,28 @@ void VMESis3302Panel::UpdateGates(TC2LSis3302 * Module, Int_t Channel) {
 		Module->ReadEnergyPeakAndGap(peak, gap, Channel);
 	}
 
-	Int_t egate;
-	Int_t mode = fEnergyDataMode->GetSelectedNx()->GetIndex();
+// energy gate
 
-	if (mode == kVMESampleMinMax) {
-		egate = delay + 2 * peak + gap + 20;
+	Int_t egate1, egate2;
+	if (Module->IsOffline()) {
+		egate2 = fEnergyGateLength->GetText2Int();
 	} else {
-		egate = delay + 600;
+		Module->ReadEnergyGateLength(egate2, Channel);
 	}
-	fEnergyGateLength->SetText(egate);
-	Module->WriteEnergyGateLength(egate, Channel);
+
+	Int_t mode = fEnergyDataMode->GetSelectedNx()->GetIndex();
+	if (mode == kVMESampleMinMax) {
+		egate1 = delay + 2 * peak + gap + 20;
+	} else {
+		egate1 = delay + 600;
+	}
+
+	if (egate2 < egate1) egate2 = egate1;
+
+	fEnergyGateLength->SetText(egate2);
+	Module->WriteEnergyGateLength(egate2, Channel);
+
+// raw data start & length
 
 	Int_t rds, rdl;
 	if (Module->IsOffline()) {
@@ -1899,13 +1921,23 @@ void VMESis3302Panel::UpdateGates(TC2LSis3302 * Module, Int_t Channel) {
 		Module->ReadRawDataSampleLength(rdl, Channel);
 	}
 
-	Int_t tgate, tgate2;
-	tgate = delay + 2 * peak + gap;
-	tgate2 = rdl + rds;
-	if (tgate2 > tgate) tgate = tgate2;
-	tgate += 16;
-	fTrigGateLength->SetText(tgate);
-	Module->WriteTrigGateLength(tgate, Channel);
+// trigger gate length
+
+	Int_t tgate1a, tgate1b, tgate2;
+	if (Module->IsOffline()) {
+		tgate2 = fTrigGateLength->GetText2Int();
+	} else {
+		Module->ReadTrigGateLength(tgate2, Channel);
+	}
+	tgate1a = delay + 2 * peak + gap;
+	tgate1b = rdl + rds;
+	if (tgate1b > tgate1a) tgate1a = tgate1b;
+	tgate1a += 16;
+
+	if (tgate2 < tgate1a) tgate2 = tgate1a;
+
+	fTrigGateLength->SetText(tgate2);
+	Module->WriteTrigGateLength(tgate2, Channel);
 }
 
 void VMESis3302Panel::ResetModule() {

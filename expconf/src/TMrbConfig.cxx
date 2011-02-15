@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.186 2011-02-11 08:06:08 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.187 2011-02-15 08:25:09 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -8121,8 +8121,6 @@ Bool_t TMrbConfig::CheckConfig() {
 	if (lynxVersion.IsNull()) return(kFALSE);
 	TString procType = this->GetProcType(kTRUE);
 	if (procType.IsNull()) return(kFALSE);
-
-	cout << "@@@ " << mbsVersion << endl;
 
 	TString lv = "";
 	if (fMbsVersion.CompareTo("2.2") == 0) {

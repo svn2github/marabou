@@ -67,7 +67,7 @@
 %C% 			evtData[TUsrHit::kHitPattern + 1] = *dataPtr++;
 %C% 			if (evtData[TUsrHit::kHitPattern + 1] & 0x0F00) timeStamp[2] = tsAux;
 %C% 			mle->IncrChannelHits(0);			// count this channel
-%C% 			this->GetHitBuffer()->AddHit(	eventsProcessed,
+%C% 			TUsrHit * hit = this->GetHitBuffer()->AddHit(	eventsProcessed,
 %C% 											moduleNumber,
 %C% 											0,
 %C% 											timeStamp[0],
@@ -75,6 +75,13 @@
 %C% 											timeStamp[2],
 %C% 											evtData,
 %C% 											6);
+%C%			if (hit == NULL) {
+%C%				cerr	<< setred
+%C%					<< this->ClassName() << "::FillSubevent() [sevtWC="
+%C%					<< wordsProcessed << "] Error while filling hitbuffer - giving up"
+%C%					<< setblack << endl;
+%C%				return(kTRUE);
+%C%			}
 %C% 		}
 %C% 		SevtWC -= 10;						// remaining subevent data
 %C% 		wordsProcessed += 10;
