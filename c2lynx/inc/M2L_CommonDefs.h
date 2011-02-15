@@ -77,6 +77,8 @@
 						kSis3302PreTrigDelayMax 	= ((1 << 10) - 1),
 						kSis3302TrigGateLengthMin 	= 1,
 						kSis3302TrigGateLengthMax 	= (1 << 16),
+						kSis3302EnergyGateLengthMin 	= 1,
+						kSis3302EnergyGateLengthMax 	= ((1 << 17) - 1),
 						kSis3302RawDataStartIndexMin 	= 0,
 						kSis3302RawDataStartIndexMax 	= ((1 << 16) - 2),
 						kSis3302RawDataSampleLengthMin 	= 0,
