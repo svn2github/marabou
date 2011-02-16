@@ -892,16 +892,15 @@ trying to attach?",
 //  Label Memory mapped File
    fHFr     = new TGCompositeFrame(this, 100, 10, kHorizontalFrame);
    fLabelFr = new TGCompositeFrame(fHFr, 150, 10, kHorizontalFrame);
-   fLabel      = new TGLabel(fLabelFr, new TGString(
-   "Files for Histgrams, Memory mapped must be local (none: no M mapped file"));
+   fLabel      = new TGLabel(fLabelFr, new TGString("File for Histgrams"));
    fLabel->ChangeBackground(antiquewhite1);
    fLabelFr->AddFrame(fLabel,fLO2);
    fHFr->AddFrame(fLabelFr,fLO2);
    this->AddFrame(fHFr,fLO1);                // another  line
 
 //  memory mapped file
-   fHFr            = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
-   fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
+//   fHFr            = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
+//   fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
 /*
    fSaveMapButton = new TGTextButton(fHFrHalf, "Save", M_SAVEMAP, fYellowTextGC );
    fSaveMapButton->ChangeBackground(blue);
@@ -921,29 +920,29 @@ trying to attach?",
       fRAuto->SetToolTipText("Histograms will not be saved automatically");
    }
 */
-   fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
-   fLabel  = new TGLabel(fLabelFr, new TGString("Mapped Size"));
-   fLabelFr->AddFrame(fLabel,fLO2);
-   fHFrHalf->AddFrame(fLabelFr,fLO2);
+//   fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
+//   fLabel  = new TGLabel(fLabelFr, new TGString("Mapped Size"));
+//   fLabelFr->AddFrame(fLabel,fLO2);
+//   fHFrHalf->AddFrame(fLabelFr,fLO2);
 
-   fTeMapSize = new TGTextEntry(fHFrHalf, fTbMapSize = new TGTextBuffer(100), M_MAPS);
-   fTbMapSize->AddText(0,Form("%d",fMapSize));
-   fTeMapSize->Resize(60, fTeMapSize->GetDefaultHeight());
-   fHFrHalf->AddFrame(fTeMapSize,fLO4);
-   fTeMapSize->Associate(this);
+//   fTeMapSize = new TGTextEntry(fHFrHalf, fTbMapSize = new TGTextBuffer(100), M_MAPS);
+//   fTbMapSize->AddText(0,Form("%d",fMapSize));
+//   fTeMapSize->Resize(60, fTeMapSize->GetDefaultHeight());
+//   fHFrHalf->AddFrame(fTeMapSize,fLO4);
+//   fTeMapSize->Associate(this);
 
-   fHFr->AddFrame(fHFrHalf,fLO2);
+//   fHFr->AddFrame(fHFrHalf,fLO2);
 
-   fTeMap = new TGTextEntry(fHFr, fTbMap = new TGTextBuffer(100), M_MAPF);
-   fTbMap->AddText(0,(const char *)*fMap);
-   fHFr->AddFrame(fTeMap,fLO2);
+//   fTeMap = new TGTextEntry(fHFr, fTbMap = new TGTextBuffer(100), M_MAPF);
+//   fTbMap->AddText(0,(const char *)*fMap);
+//   fHFr->AddFrame(fTeMap,fLO2);
 
-   fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
-   fLabel  = new TGLabel(fLabelFr, new TGString("Mapped Name"));
-   fLabelFr->AddFrame(fLabel,fLO2);
-   fHFrHalf->AddFrame(fLabelFr,fLO2);
-   this->AddFrame(fHFr,fLO1);                // mapped file line
-   fTeMap->Associate(this);
+//   fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
+//   fLabel  = new TGLabel(fLabelFr, new TGString("Mapped Name"));
+//   fLabelFr->AddFrame(fLabel,fLO2);
+//   fHFrHalf->AddFrame(fLabelFr,fLO2);
+//   this->AddFrame(fHFr,fLO1);                // mapped file line
+//   fTeMap->Associate(this);
 
 //   root file for histos
    fHFr     = new TGCompositeFrame(this, 100, 10, kHorizontalFrame);
@@ -1287,7 +1286,11 @@ void FhMainFrame::SetTime(){
 // Save histograms from mapped file
 
 void FhMainFrame::SaveMap(Bool_t askforname){
-   if(!fUseMap) return;
+//   if(!fUseMap) return;
+
+	return;
+
+
    Bool_t mfile_was_closed = kFALSE;
    if(!fMfile){
       if(gSystem->AccessPathName(fTbMap->GetString(), kFileExists)){
@@ -1556,27 +1559,28 @@ Bool_t FhMainFrame::CheckParams()
    TString fname;
    TString fname1;
    *fRunNr = fTbRunNr->GetString();
+   fUseMap = kFALSE;
 //  is mapped file local?
-   fname = fTbMap->GetString();
-   if (fname.CompareTo("none") == 0){
-      cout << setblue << "No MapFile given " << setblack << endl;
-      fUseMap = kFALSE;
-   } else {
-   	if(fname.Index("tmp") < 0 && fname.Index("scratch") < 0){
-      	fname += " seems on NFS (not /tmp or /scratch)";
-      	WarnBox((const char *)fname, this);
-   	}
-      fUseMap = kTRUE;
+//   fname = fTbMap->GetString();
+//   if (fname.CompareTo("none") == 0){
+//      cout << setblue << "No MapFile given " << setblack << endl;
+//      fUseMap = kFALSE;
+//   } else {
+//   	if(fname.Index("tmp") < 0 && fname.Index("scratch") < 0){
+//      	fname += " seems on NFS (not /tmp or /scratch)";
+//      	WarnBox((const char *)fname, this);
+//   	}
+//      fUseMap = kTRUE;
 //  is mapped file already existing?
-   	fname = fTbMap->GetString();
-   	if(!gSystem->AccessPathName(fname.Data())){
-      	if(!AskforRemove(fname.Data()))
-      	cout << setred << "Continue filling histograms on mapped file" << endl
-         	  << setred << "Be sure you also have new version of M_analyze (30.5.00)"
-         	  << setblack << endl;
-      	ok = kTRUE;
-   	}
-   }
+//   	fname = fTbMap->GetString();
+//   	if(!gSystem->AccessPathName(fname.Data())){
+//      	if(!AskforRemove(fname.Data()))
+//      	cout << setred << "Continue filling histograms on mapped file" << endl
+//         	  << setred << "Be sure you also have new version of M_analyze (30.5.00)"
+//         	  << setblack << endl;
+//      	ok = kTRUE;
+//   	}
+//   }
    TRegexp run="RUN";
    if(fRActive->GetState() == kButtonDown){
       fname = fTbRootFile->GetString();
@@ -3019,8 +3023,8 @@ Bool_t FhMainFrame::PutDefaults(){
    TString wout = "FALSE";
    wstream << "INPUTFILE:  "  <<  fTbFile->GetString()    << endl;
    wstream << "INPUTSOURCE:"  <<  *fInputSource           << endl;
-   wstream << "MMAPFILE:   "  <<  fTbMap->GetString()     << endl;
-   wstream << "MMAPSIZE:   "  <<  fTbMapSize->GetString() << endl;
+//   wstream << "MMAPFILE:   "  <<  fTbMap->GetString()     << endl;
+//   wstream << "MMAPSIZE:   "  <<  fTbMapSize->GetString() << endl;
    if(fAutoSave) wout = "TRUE";
    else          wout = "FALSE";
    wstream << "AUTOSAVE:   "  <<  wout                  << endl;
