@@ -3,7 +3,7 @@
 # Makefile:        %%READOUT_FILE%%.mk
 # Purpose:         Build MBS readout task for RIO2/3/4 cpus
 # Author:          %%AUTHOR%%
-# Revision:        $Id: Readout.mk.code,v 1.15 2011-01-24 13:11:41 Marabou Exp $
+# Revision:        $Id: Readout.mk.code,v 1.16 2011-02-16 12:35:47 Marabou Exp $
 # Date:            %%CREATION_DATE%%
 # URL:
 #/////////////////////////////////////////////////////////////////////////////
@@ -34,28 +34,28 @@ SHMQ    = -DLYNX__SMEM
 
 ifeq ($(GSI_OS_VERSION),2.5)
 POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+CFLAGS  = $(POSIX) -DLynx -DGSI_MBS -D$(C_CTRL) -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
           $(LIB)/libedit.a -llynx -lnetinet
 endif
 
 ifeq ($(GSI_OS_VERSION),3.0)
 POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
           $(LIB)/libedit.a -llynx  -lnetinet
 endif
 
 ifeq ($(GSI_OS_VERSION),3.1)
 POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
           $(LIB)/libedit.a -llynx -lposix-pre1c -lnetinet
 endif
 
 ifeq ($(GSI_OS_VERSION),4.0)
 POSIX   =  -mthreads
-CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
+CFLAGS  = $(POSIX) -D_THREADS_POSIX4ad4 -D$(C_CTRL) -DLynx -DGSI_MBS -D$(GSI_CPU_ENDIAN) -D$(GSI_CPU_PLATFORM)
 LIBS    = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
           $(LIB)/libedit.a -llynx -lposix-pre1c
 SMILIBS = $(LIB)/lib_mbs.a $(LIB)/lib_tools.a $(LIB)/lib_mbs.a $(LIB)/lib_smi.a \
