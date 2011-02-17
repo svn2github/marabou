@@ -7,7 +7,7 @@
 // Purpose:        Class to store hits in a buffer
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrHitBuffer.h,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHitBuffer.h,v 1.2 2011-02-17 12:43:35 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -74,8 +74,8 @@ class TUsrHitBuffer : public TObject {
 		inline TClonesArray * GetCA() const { return(fHits); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); };
-		void Print(ostream & Out, Int_t Begin = 0, Int_t End = -1) const;						// print data
-		inline void Print(Int_t Begin = 0, Int_t End = -1) const { Print(cout, Begin, End); };
+		void Print(ostream & Out, Int_t Begin = 0, Int_t End = -1, Bool_t EnergyLongFlag = kFALSE) const;	// print data
+		inline void Print(Int_t Begin = 0, Int_t End = -1, Bool_t EnergyLongFlag = kFALSE) const { Print(cout, Begin, End, EnergyLongFlag); };
 		
 	protected:
 		TString fBufName;						// buffer name

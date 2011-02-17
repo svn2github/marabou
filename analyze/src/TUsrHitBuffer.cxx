@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrHitBuffer.cxx,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHitBuffer.cxx,v 1.2 2011-02-17 12:43:35 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -231,14 +231,15 @@ Bool_t TUsrHitBuffer::IsHighWater(Bool_t Verbose) const {
 	return(kFALSE);
 }
 
-void TUsrHitBuffer::Print(ostream & Out, Int_t Begin, Int_t End) const {
+void TUsrHitBuffer::Print(ostream & Out, Int_t Begin, Int_t End, Bool_t EnergyLongFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHitBuffer::Print
 // Purpose:        Print data
-// Arguments:      ostream & Out      -- output stream
-//                 Int_t Begin        -- entry to start with
-//                 Int_t End          -- entry to end with
+// Arguments:      ostream & Out          -- output stream
+//                 Int_t Begin            -- entry to start with
+//                 Int_t End              -- entry to end with
+//                 Bool_t EnergyLongFlag  -- kTRUE -> energy data is 32bit
 // Results:        --
 // Exceptions:
 // Description:    Prints entry data.
@@ -276,7 +277,7 @@ void TUsrHitBuffer::Print(ostream & Out, Int_t Begin, Int_t End) const {
 	for (Int_t i = Begin; i <= End; i++) {
 		hit = (TUsrHit *) fHits->At(i);
 		Out << Form("  %5d", i);
-		if (hit) hit->Print(Out, kTRUE); else Out << " ... [empty slot]" << endl;
+		if (hit) hit->Print(Out, kTRUE, kTRUE, kTRUE); else Out << " ... [empty slot]" << endl;
 	}
 }
 

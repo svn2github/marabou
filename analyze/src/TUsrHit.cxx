@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrHit.cxx,v 1.7 2011-02-17 12:16:28 Marabou Exp $
+// Revision:       $Id: TUsrHit.cxx,v 1.8 2011-02-17 12:43:35 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -205,14 +205,15 @@ Double_t TUsrHit::GetDCorrEnergy(Bool_t Randomize) const {
 	return(dcfact * e);
 }
 
-void TUsrHit::Print(ostream & Out, Bool_t PrintNames, Bool_t CrLf) const {
+void TUsrHit::Print(ostream & Out, Bool_t PrintNames, Bool_t CrLf, Bool_t EnergyLongFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit::Print
 // Purpose:        Print data
-// Arguments:      ostream & Out      -- output stream
-//                 Bool_t PrintNames  -- kTRUE -> print module & param names
-//                 Bool_t CrLf        -- print <cr> at end
+// Arguments:      ostream & Out           -- output stream
+//                 Bool_t PrintNames       -- kTRUE -> print module & param names
+//                 Bool_t CrLf             -- print <cr> at end
+//                 Bool_t EnergyLongFlag   -- kTRUE -> energy data is 32bit
 // Results:        --
 // Exceptions:
 // Description:    Prints one line of data.
@@ -221,6 +222,8 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames, Bool_t CrLf) const {
 
 	const Char_t * sp;
 	TMrbString moduleName, paramName;
+	
+	UInt_t energy = EnergyLongFlag ? *((UInt_t *) &fData[kHitEnergyLong]) : (UInt_t) fData[kHitEnergy];
 
 	if (PrintNames) {
 		sp = gMrbAnalyze->GetModuleName(fModuleNumber);
@@ -248,7 +251,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames, Bool_t CrLf) const {
 						fEventNumber,
 						paramName.Data(),
 						fChannelTime,
-						fData[kHitEnergy]);
+						energy);
 	} else {
 		Out << Form("      %13d%13d%13d%13d%18lld%13d",
 						fBufferNumber,
@@ -256,7 +259,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames, Bool_t CrLf) const {
 						fEventNumber,
 						fChannel,
 						fChannelTime,
-						fData[kHitEnergy]);
+						energy);
 	}
 	if (CrLf) Out << endl;
 }
