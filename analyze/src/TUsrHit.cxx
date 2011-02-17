@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrHit.cxx,v 1.6 2009-05-08 16:24:51 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TUsrHit.cxx,v 1.7 2011-02-17 12:16:28 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TRandom.h"
@@ -84,6 +84,44 @@ TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_
 	if (Data) this->CopyData(Data, NofData);
 }
 
+Bool_t TUsrHit::WriteToParam(Int_t Index) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHit::WriteToParam
+// Purpose:        Write data to param
+// Arguments:      Int_t Index    -- index within hit data
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Writes data referred to by index to param given by
+//                 module and hit number, resp.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+      Int_t * paramAddr = (Int_t *) gMrbAnalyze->GetParamAddr(this->GetModuleNumber(), this->GetChannel());
+      if (paramAddr == NULL) return(kFALSE);
+	  *paramAddr = this->GetData(Index);
+	  return(kTRUE);
+}
+
+Bool_t TUsrHit::FillHistogram(Int_t Index) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHit::FillHistogram
+// Purpose:        Write data to histogram
+// Arguments:      Int_t Index    -- index within hit data
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Writes data referred to by index to histogram given by
+//                 module and hit number, resp.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+      TH1F * h = (TH1F *) gMrbAnalyze->GetHistoAddr(this->GetModuleNumber(), this->GetChannel());
+      if (h == NULL) return(kFALSE);
+	  h->Fill(this->GetData(Index));
+	  return(kTRUE);
+}
+
 Int_t TUsrHit::Compare(const TObject * Hit) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -129,7 +167,7 @@ Double_t TUsrHit::GetCalEnergy(Bool_t Randomize, Bool_t WithinLimits) const {
 // Arguments:      Bool_t Randomize  -- add random number if kTRUE
 // Results:        Double_t energy   -- calibrated energy value
 // Exceptions:
-// Description:    
+// Description:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -151,7 +189,7 @@ Double_t TUsrHit::GetDCorrEnergy(Bool_t Randomize) const {
 // Arguments:      Bool_t Randomize  -- add random number if kTRUE
 // Results:        Double_t energy   -- calibrated energy value
 // Exceptions:
-// Description:    
+// Description:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -183,7 +221,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames, Bool_t CrLf) const {
 
 	const Char_t * sp;
 	TMrbString moduleName, paramName;
-	
+
 	if (PrintNames) {
 		sp = gMrbAnalyze->GetModuleName(fModuleNumber);
 		if (sp) {
@@ -222,7 +260,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames, Bool_t CrLf) const {
 	}
 	if (CrLf) Out << endl;
 }
-	
+
 const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
