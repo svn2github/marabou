@@ -100,11 +100,7 @@ Bool_t TUsrSevt$sevtNameUC::FillHistograms() {
 
 	for (Int_t i = 0; i < fHitBuffer.GetNofHits(); i++) {
 		TUsrHit * hit = fHitBuffer.GetHitAt(i);
-		TH1F * h = (TH1F *) gMrbAnalyze->GetHistoAddr(hit->GetModuleNumber(), hit->GetChannel());
-		if (h) {
-			UInt_t data = hit->GetEnergyLong();
-			h->Fill((Axis_t) ((Int_t) data));
-		}
+		hit->FillHistogram(TUsrHit::kHitEnergyLong);
 	}
 	gMrbAnalyze->SetUpdateFlag();
 	return(kTRUE);

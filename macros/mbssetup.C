@@ -2,7 +2,7 @@
 	gROOT->Macro("LoadUtilityLibs.C");
 	gROOT->Macro("LoadConfigLibs.C");
 	setup = new TMbsSetup(".mbssetup");
-	TString evtBuilder = gEnv->GetValue("TMbsSetup.EventBuilder.Name", "iram-cg-004018");
+	TString evtBuilder = gEnv->GetValue("TMbsSetup.EventBuilder.Name", "gar-ex-ppc01");
 	setup->EvtBuilder()->SetProcName(evtBuilder.Data());
 	TString remoteHome = setup->RemoteHomeDir();
 	setup->SetNofReadouts(1);
