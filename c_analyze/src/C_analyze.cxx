@@ -2041,9 +2041,9 @@ Bool_t FhMainFrame::StartDAQ()
       startCmd += fHistFile->Data();
       startCmd += " ";
 
-      startCmd += fTbMap->GetString();
+      startCmd += "none";
       startCmd += " ";
-      startCmd += fTbMapSize->GetString();
+      startCmd += "0";
       startCmd += " ";
 //      cout << "Startdaq, fSockNr " << fSockNr << endl;
 
@@ -2751,7 +2751,7 @@ Note: Unit is 100 ns for historical reasons";
                               ||*fInputSource == "Fake"
                              || fM_Status == M_CONFIGURED ){
 
-                        StartDAQ();
+                        this->StartDAQ();
 
                      } else {
                         cout << setred << "Operation not allowed" << setblack<< endl;
@@ -3035,8 +3035,12 @@ Bool_t FhMainFrame::PutDefaults(){
    wstream << "OUTPUTFILE: "  <<  fTbRootFile->GetString()  << endl;
    wstream << "PARFILE: "     <<  fTbParFile->GetString()  << endl;
    wstream << "COMMENT: "     <<  fTbComment->GetString()  << endl;
-   wstream << "MASTER:  "     <<  ((TObjString *) masters->At(fCbMaster->GetSelected()-1))->GetString() << endl;
-   wstream << "READOUT:  "    <<  ((TObjString *) slaves->At(fCbReadout->GetSelected()-1))->GetString() << endl;
+   Int_t ppcSelected = fCbMaster->GetSelected();
+   if (ppcSelected > masters->GetEntriesFast()) ppcSelected = 1;
+   wstream << "MASTER:  "     <<  ((TObjString *) masters->At(ppcSelected-1))->GetString() << endl;
+   ppcSelected = fCbReadout->GetSelected();
+   if (ppcSelected > slaves->GetEntriesFast()) ppcSelected = 1;
+   wstream << "READOUT:  "    <<  ((TObjString *) slaves->At(ppcSelected-1))->GetString() << endl;
    wstream << "DIR: "         <<  fTbDir->GetString()      << endl;
    if(fCbTrigger->GetSelected() == 1)*fTrigger = "VME";
    else                              *fTrigger = "CAMAC";
@@ -3499,7 +3503,7 @@ void FhMainFrame::Runloop(){
    if(fM_Status == M_RUNNING && (!fForcedStop && fWriteOutput && fOutputFile->Length() > 1)){
       Int_t sts = gSystem->GetPathInfo(fOutputFile->Data(), &id, &size, &flags, &modtime);
       if (sts == 0) {
-         fOutSize->SetText(new TGString(Form("%d", size)));
+         fOutSize->SetText(new TGString(Form("%lld", size)));
          gClient->NeedRedraw(fOutSize);
          if (fMaxFileSize > 0 && size/1000000 > fMaxFileSize) {
             cout << setred << fOutputFile << ": size of output file = " << size/1000000
@@ -3716,7 +3720,7 @@ void FhMainFrame::Runloop(){
                      if(sum>0) binsum++; // skip trailing 0's
                   }
                   if(binsum >0)avg_rate = sum /binsum;
-                  fDeadTime->SetText(new TGString(Form("%d",avg_rate)));
+                  fDeadTime->SetText(new TGString(Form("%d",(Int_t) avg_rate)));
                   gClient->NeedRedraw(fDeadTime);
                }
             }
