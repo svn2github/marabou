@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.97 2011-02-11 08:06:08 Marabou Exp $
+// Revision:       $Id: TMrbConfig.h,v 1.98 2011-02-22 08:36:01 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -613,7 +613,7 @@ class TMrbConfig : public TNamed {
 		inline virtual void Print() const { Print(cout, ""); };
 		void PrintToFile(Char_t * File) const;
 		Int_t GetNofErrors() const;							// number of errors
-		Int_t PrintErrors(Bool_t ErrorsOnly = kTRUE) const; // print error summary
+		Int_t PrintErrors(Bool_t ErrorsOnly = kFALSE) const; // print error summary
 
 		void AddEvent(TMrbEvent * Evt);
 

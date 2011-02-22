@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.187 2011-02-15 08:25:09 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.188 2011-02-22 08:36:01 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2978,7 +2978,8 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							while (ulib = (TMrbNamedX *) libIter->Next()) {
 								if (!first) anaStrm << " \\" << endl;
 								first = kFALSE;
-								anaStrm << "\t\t\t\tlib" << ulib->GetName() << ".so";
+								Int_t makeIt = ulib->GetIndex();
+								if (makeIt == 1) anaStrm << "\t\t\t\tlib" << ulib->GetName() << ".so";
 								found = kTRUE;
 							}
 						}
@@ -2991,8 +2992,10 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TIterator * libIter = fLofUserLibs.MakeIterator();
 							while (ulib = (TMrbNamedX *) libIter->Next()) {
 								TObjString * mkf = (TObjString *) ulib->GetAssignedObject();
-								TString mkFile = mkf ? Form("-f %s", mkf->GetString().Data()) : "";
-								anaStrm << "\t\t\t@cd " << ulib->GetTitle() << "; make " << mkFile << " clean" << endl;
+								if (mkf) {
+									TString mkFile = Form("-f %s", mkf->GetString().Data());
+									anaStrm << "\t\t\t@cd " << ulib->GetTitle() << "; make " << mkFile << " clean" << endl;
+								}
 							}
 						}
 						break;
@@ -3006,9 +3009,11 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								anaTmpl.Substitute("$userLib", Form("lib%s.so", ulib->GetName()));
 								anaTmpl.Substitute("$ulibDir", ulib->GetTitle());
 								TObjString * mkf = (TObjString *) ulib->GetAssignedObject();
-								TString mkFile = mkf ? Form("-f %s", mkf->GetString().Data()) : "";
-								anaTmpl.Substitute("$ulibMake", mkFile);
-								anaTmpl.WriteCode(anaStrm);
+								if (mkf) {
+								  TString mkFile = Form("-f %s", mkf->GetString().Data());
+								  anaTmpl.Substitute("$ulibMake", mkFile);
+								  anaTmpl.WriteCode(anaStrm);
+								}
 							}
 						}
 						anaStrm << endl << endl;
@@ -5406,11 +5411,11 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 		libSoPath += "/";
 		libSoPath = userLib;
 		if (MakeIt) {
-			gMrbLog->Wrn()	<< "User library not found - lib" << libSoPath << ".so" << endl
-							<< "                              Has to be provided at load time" << endl;
-		} else {
 			gMrbLog->Wrn()	<< "User library not found - " << libSoPath << endl
 							<< "                              Will be built during make step" << endl;
+		} else {
+			gMrbLog->Wrn()	<< "User library not found - lib" << libSoPath << ".so" << endl
+							<< "                              Has to be provided at load time" << endl;
 		}
 		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 	} else {
