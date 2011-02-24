@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvent.cxx,v 1.9 2011-02-24 12:23:39 Marabou Exp $
+// Revision:       $Id: TUsrEvent.cxx,v 1.10 2011-02-24 12:32:26 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -196,8 +196,8 @@ Int_t TUsrEvent::CalcTimeRS() {
 Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto, Int_t Didx) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrEvent::FillFromHB
-// Purpose:        Fill event from hitbuffer
+// Name:           TUsrEvent::FillSevtFromHB
+// Purpose:        Fill subevent from hitbuffer
 // Arguments:      TUsrHBX * HBX     -- pointer to hit buffer
 //                 Int_t Hidx        -- current index in hit buffer
 //                 Bool_t FillHisto  -- kTRUE -> write hit data to histogram
@@ -228,7 +228,7 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto, Int
 Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t Didx) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrEvent::FillFromHB
+// Name:           TUsrEvent::FillEventFromHB
 // Purpose:        Fill event from hitbuffer
 // Arguments:      TArrayI & LofIndices   -- array of hitbuffer indices,
 //                                           has to have size=0 on start
