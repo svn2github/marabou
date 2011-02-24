@@ -50,7 +50,7 @@ $(CptmCEXE):     $(CptmCSO)$(CptmCO) $(CptmCMAINO) $(MRBLIBS)
 #		@echo "sources: $(CptmCS)"
 		@echo "OCptmCLIBS: $(OCptmCLIBS)"
 		@echo "$(CptmCEXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(CptmCMAINO) $(CptmCO) $(CptmCDO) $(OCptmCLIBS) $(ROOTGLIBS) -lSpectrum \
+		$(LD) -g $(LDFLAGS) $(CptmCMAINO) $(CptmCO) $(CptmCDO) $(OCptmCLIBS) $(ROOTGLIBS)  -lProof -lSpectrum \
             -o $(CptmCEXE)
 
 $(CptmCLIB):     $(CptmCDO) $(CptmCO)
