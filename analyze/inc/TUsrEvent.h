@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a user-defined event
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrEvent.h,v 1.5 2011-02-24 10:44:42 Marabou Exp $
+// Revision:       $Id: TUsrEvent.h,v 1.6 2011-02-24 12:23:39 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -86,6 +86,7 @@ class TUsrEvent : public TObject {
 		inline TUsrHBX * GetHBX(Int_t SevtSerial) { return((TUsrHBX *) fLofHBXs.At(SevtSerial)); }; // get it from list
 
 		Int_t FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto = kTRUE, Int_t Didx = TUsrHit::kHitEnergy);
+		Bool_t FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto = kTRUE, Int_t Didx = TUsrHit::kHitEnergy);
 
 		void Print(const Char_t * Text, UInt_t TimeStamp = 0);
 

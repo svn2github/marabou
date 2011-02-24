@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvent.cxx,v 1.8 2011-02-24 10:44:42 Marabou Exp $
+// Revision:       $Id: TUsrEvent.cxx,v 1.9 2011-02-24 12:23:39 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -212,17 +212,52 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto, Int
 	if (nofHits > 0 && Hidx < nofHits) {
 		TUsrHit * h = HBX->At(Hidx);
 		Int_t evtNo = h->GetEventNumber();
+		Bool_t foundHit = kFALSE;
 		for (Int_t hidx = Hidx; hidx < nofHits; hidx++) {
 			h = HBX->At(hidx);
-			if (h->GetEventNumber() != evtNo) return(hidx);
+			if (h->GetEventNumber() != evtNo) return(foundHit ? hidx : -1);
 			h->WriteToSevtData(Didx);
 			if (FillHisto) h->FillHistogram(Didx);
+			foundHit = kTRUE;
 		}
-		return(0);
+		return(foundHit ? nofHits : -1);
 	}
 	return(-1);
 }
 
+Bool_t TUsrEvent::FillEventFromHB(TArrayI & LofIndices, Bool_t FillHisto, Int_t Didx) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent::FillFromHB
+// Purpose:        Fill event from hitbuffer
+// Arguments:      TArrayI & LofIndices   -- array of hitbuffer indices,
+//                                           has to have size=0 on start
+//                 Bool_t FillHisto       -- kTRUE -> write hit data to histogram
+//                 Int_t Didx             -- data index within hit
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:   Loops thru hitbuffers and fills subvent storage event by event.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofHbx = fLofHBXs.GetEntriesFast();
+
+	if (LofIndices.GetSize() == 0) {
+		LofIndices.Set(nofHbx);
+		LofIndices.Reset(0);
+	}
+	Bool_t foundHbx = kFALSE;
+	for (Int_t hbx = 0; hbx < nofHbx; hbx++) {
+		TUsrHBX * h = this->GetHBX(hbx);
+		Int_t hidx = LofIndices[hbx];
+		if (h && hidx != -1) {
+			hidx = this->FillSevtFromHB(h, hidx, FillHisto, Didx);
+			LofIndices[hbx] = hidx;
+			foundHbx = kTRUE;
+		}
+	}
+	return(foundHbx);
+}
 
 void TUsrEvent::Print(const Char_t * Text, UInt_t TimeStamp) {
 //________________________________________________________________[C++ METHOD]
