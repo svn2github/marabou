@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvent.cxx,v 1.6 2008-04-29 12:26:22 Rudolf.Lutter Exp $       
-// Date:           
+// Revision:       $Id: TUsrEvent.cxx,v 1.7 2011-02-24 08:40:16 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TMrbAnalyze.h"
@@ -165,7 +165,7 @@ Int_t TUsrEvent::CalcTimeRS() {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvent::CalcTimeRS
 // Purpose:        Calculate time in ROOT format
-// Arguments:      
+// Arguments:
 // Results:        Int_t TimeRS           -- time in ROOT format
 // Exceptions:
 // Description:    Calculates time from internal values and converts it to
@@ -176,7 +176,7 @@ Int_t TUsrEvent::CalcTimeRS() {
 	struct tm * et;
 	Int_t timeRS = 0;
 	TDatime * trs;
-	
+
 	time_t cls = fClockSecs;
 	et = localtime((time_t *) &cls);					// convert to time struct
 	trs = new TDatime();						// date/time in ROOT style
@@ -193,6 +193,34 @@ Int_t TUsrEvent::CalcTimeRS() {
 	return(timeRS);
 }
 
+Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Int_t Didx) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent::FillFromHB
+// Purpose:        Fill event from hitbuffer
+// Arguments:      TUsrHBX * HBX     -- pointer to hit buffer
+//                 Int_t Hidx        -- current index in hit buffer
+//                 Int_t Didx        -- data index within hit
+// Results:        Int_t NextIndex   -- index to be used in next call, -1 at end
+// Exceptions:
+// Description:    Writes hit data to subevent storage. Stops at end of an event.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofHits = HBX->GetNofHits();
+	if (nofHits > 0 && Hidx < nofHits) {
+		TUsrHit * h = HBX->At(Hidx);
+		Int_t evtNo = h->GetEventNumber();
+		for (Int_t hidx = Hidx; hidx < nofHits; hidx++) {
+			h = HBX->At(hidx);
+			if (h->GetEventNumber() != evtNo) return(hidx);
+			h->WriteToSevtData(Didx);
+		}
+	}
+	return(-1);
+}
+
+
 void TUsrEvent::Print(const Char_t * Text, UInt_t TimeStamp) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -200,10 +228,10 @@ void TUsrEvent::Print(const Char_t * Text, UInt_t TimeStamp) {
 // Purpose:        Output time stamp
 // Arguments:      Char_t * Text     -- text to be printed
 //                 UInt_t TimeStamp  -- time stamp
-// Results:        
-// Exceptions:     
+// Results:
+// Exceptions:
 // Description:    Outputs a time stamp message
-// Keywords:       
+// Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (TimeStamp == 0) TimeStamp = fClockSecs;

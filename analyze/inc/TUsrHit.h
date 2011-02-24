@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a hit
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrHit.h,v 1.9 2011-02-17 12:43:35 Marabou Exp $
+// Revision:       $Id: TUsrHit.h,v 1.10 2011-02-24 08:40:16 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -90,7 +90,7 @@ class TUsrHit : public TObject {
 		void Print(Option_t * Option) const { TObject::Print(Option); };
 		void Print(ostream & Out, Bool_t PrintNames = kFALSE, Bool_t CrLf = kTRUE, Bool_t EnergyLongFlag = kFALSE) const;		// print hit data
 		inline void Print(Bool_t PrintNames = kFALSE, Bool_t CrLf = kTRUE, Bool_t EnergyLongFlag = kFALSE) const { Print(cout, PrintNames, CrLf, EnergyLongFlag); };
-		
+
 		inline Int_t GetBufferNumber() const { return(fBufferNumber); };		// get data members
 		inline Int_t GetEventNumber() const { return(fEventNumber); };
 		inline Int_t GetModuleNumber() const { return(fModuleNumber); };
@@ -156,8 +156,8 @@ class TUsrHit : public TObject {
 
 		inline virtual Int_t GetNofData() { return(fNofData); };
 
-		Bool_t WriteToParam(Int_t Index = TUsrHit::kHitEnergy);			// write data to param
-		Bool_t FillHistogram(Int_t Index = TUsrHit::kHitEnergy);		// fill histogram with data
+		Bool_t WriteToSevtData(Int_t Index = TUsrHit::kHitEnergy);				// write data to subevent
+		Bool_t FillHistogram(Int_t Index = TUsrHit::kHitEnergy);				// fill histogram with data
 
 		inline virtual void Reset() {
 			fBufferNumber = -1;

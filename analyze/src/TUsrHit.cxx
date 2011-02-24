@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrHit.cxx,v 1.8 2011-02-17 12:43:35 Marabou Exp $
+// Revision:       $Id: TUsrHit.cxx,v 1.9 2011-02-24 08:40:16 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -84,15 +84,15 @@ TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_
 	if (Data) this->CopyData(Data, NofData);
 }
 
-Bool_t TUsrHit::WriteToParam(Int_t Index) {
+Bool_t TUsrHit::WriteToSevtData(Int_t Index) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHit::WriteToParam
-// Purpose:        Write data to param
+// Name:           TUsrHit::WriteToSevtData
+// Purpose:        Write data to subevent
 // Arguments:      Int_t Index    -- index within hit data
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Writes data referred to by index to param given by
+// Description:    Writes data referred to by index to data field given by
 //                 module and hit number, resp.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -222,7 +222,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames, Bool_t CrLf, Bool_t Energy
 
 	const Char_t * sp;
 	TMrbString moduleName, paramName;
-	
+
 	UInt_t energy = EnergyLongFlag ? *((UInt_t *) &fData[kHitEnergyLong]) : (UInt_t) fData[kHitEnergy];
 
 	if (PrintNames) {
