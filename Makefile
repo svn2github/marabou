@@ -44,6 +44,7 @@ ifneq ($(findstring map, $(MAKECMDGOALS)),)
 include config/Makefile.depend
 endif
 
+include config/Makefile.config
 
 ##### include machine dependent macros #####
 
@@ -201,6 +202,8 @@ ALLEXECS     :=
 INCLUDEFILES :=
 ALLOBJ       :=
 
+INSTALLFILES	=	build/unix/installfiles.sh
+
 ##### RULES #####
 
 .SUFFIXES: .cxx .d
@@ -351,6 +354,9 @@ install:
 		echo "Installing sounds in   $(SOUNDPATH)"; \
 		$(INSTALLDIR) $(SOUNDPATH); \
 		$(INSTALLDATA) sounds/* $(SOUNDPATH); \
+		echo "Installing HistPresents doc in  $(DOCHPRDIR)"; \
+		$(INSTALLDIR) $(DOCHPRDIR); \
+		$(INSTALLDATA) doc/hpr/* $(DOCHPRDIR); \
 	fi)
 
 install-others:
@@ -369,6 +375,9 @@ install-others:
 		echo "Installing sounds in   $(SOUNDPATH)"; \
 		$(INSTALLDIR) $(SOUNDPATH); \
 		$(INSTALLDATA) sounds/* $(SOUNDPATH); \
+		echo "Installing HistPresents doc in  $(DOCHPRDIR)"; \
+		$(INSTALLDIR) $(DOCHPRDIR); \
+		$(INSTALLDATA) doc/hpr/* $(DOCHPRDIR); \
 
 install-html:
 		@echo "Installing html files in $(HTMLURL)"; \
@@ -380,14 +389,16 @@ install-html:
 						html/snake \
 						html/examples; \
 		$(INSTALLDATA) gutils/doc/*.gif html/gutils; \
-		$(INSTALLDATA) hpr/doc/*.html html/hpr; \
-		$(INSTALLDATA) hpr/doc/*.gif html/hpr; \
+		$(INSTALLDATA) doc/hpr/*.html html/hpr; \
+		$(INSTALLDATA) doc/hpr/*.gif html/hpr; \
 		$(INSTALLDATA) c_analyze/doc/*.html html/c_analyze; \
 		$(INSTALLDATA) c_analyze/doc/*.gif html/c_analyze; \
 		$(INSTALLDATA) snake/doc/*.gif html/snake; \
 		$(INSTALLDATA) dgfcontrol/doc/*.gif html/dgfcontrol; \
-		echo "[Enter (normal) root password]"; \
-		$(UPLOADHTML)
+		if [ -z "$(MARABOU_ADMIN)" ]; then echo "MARABOU_ADMIN has to be set first!"; else \
+		echo "[Enter password for $(MARABOU_ADMIN)]"; \
+		$(UPLOADHTML); \
+		fi
 
 install-dist:
 		@echo "Installing distribution files in $(DISTURL)"; \
