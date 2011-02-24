@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvent.cxx,v 1.7 2011-02-24 08:40:16 Marabou Exp $
+// Revision:       $Id: TUsrEvent.cxx,v 1.8 2011-02-24 10:44:42 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -193,13 +193,14 @@ Int_t TUsrEvent::CalcTimeRS() {
 	return(timeRS);
 }
 
-Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Int_t Didx) {
+Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Bool_t FillHisto, Int_t Didx) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvent::FillFromHB
 // Purpose:        Fill event from hitbuffer
 // Arguments:      TUsrHBX * HBX     -- pointer to hit buffer
 //                 Int_t Hidx        -- current index in hit buffer
+//                 Bool_t FillHisto  -- kTRUE -> write hit data to histogram
 //                 Int_t Didx        -- data index within hit
 // Results:        Int_t NextIndex   -- index to be used in next call, -1 at end
 // Exceptions:
@@ -215,7 +216,9 @@ Int_t TUsrEvent::FillSevtFromHB(TUsrHBX * HBX, Int_t Hidx, Int_t Didx) {
 			h = HBX->At(hidx);
 			if (h->GetEventNumber() != evtNo) return(hidx);
 			h->WriteToSevtData(Didx);
+			if (FillHisto) h->FillHistogram(Didx);
 		}
+		return(0);
 	}
 	return(-1);
 }
