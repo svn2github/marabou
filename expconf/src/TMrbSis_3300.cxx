@@ -2,12 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbSis_3300.cxx
 // Purpose:        MARaBOU configuration: SIS modules
-// Description:    Implements class methods to handle a SIS digitizing adc type 3300 
+// Description:    Implements class methods to handle a SIS digitizing adc type 3300
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3300.cxx,v 1.16 2010-12-14 14:18:04 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbSis_3300.cxx,v 1.17 2011-02-28 08:51:49 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -118,7 +118,7 @@ TMrbSis_3300::TMrbSis_3300(const Char_t * ModuleName, UInt_t BaseAddr) :
 	TString mType;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (!this->IsZombie()) {
 		if (gMrbConfig == NULL) {
 			gMrbLog->Err() << "No config defined" << endl;
@@ -212,7 +212,7 @@ void TMrbSis_3300::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("AcquisitionMode");
-	bNames->AddNamedX(kMrbAcquisitionMode);	
+	bNames->AddNamedX(kMrbAcquisitionMode);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -229,7 +229,7 @@ void TMrbSis_3300::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("PageSize");
-	bNames->AddNamedX(kMrbPageSize);	
+	bNames->AddNamedX(kMrbPageSize);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -240,7 +240,7 @@ void TMrbSis_3300::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("ClockSource");
-	bNames->AddNamedX(kMrbClockSource);	
+	bNames->AddNamedX(kMrbClockSource);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -261,7 +261,7 @@ void TMrbSis_3300::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("BankFull");
-	bNames->AddNamedX(kMrbBankFull);	
+	bNames->AddNamedX(kMrbBankFull);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -272,7 +272,7 @@ void TMrbSis_3300::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("TrigOn");
-	bNames->AddNamedX(kMrbTrigOn);	
+	bNames->AddNamedX(kMrbTrigOn);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -288,7 +288,7 @@ void TMrbSis_3300::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("TrigSlope");
-	bNames->AddNamedX(kMrbTrigSlope);	
+	bNames->AddNamedX(kMrbTrigSlope);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -585,9 +585,9 @@ Bool_t TMrbSis_3300::SaveSettings(const Char_t * SettingsFile) {
 		gMrbLog->Out()	<< "Using template file " << fp << endl;
 		gMrbLog->Flush("SaveSettings");
 	}
-	
+
 	tf = fp;
-	
+
 	TMrbLofNamedX tags;
 	tags.AddNamedX(TMrbConfig::kRcModuleSettings, "MODULE_SETTINGS");
 
@@ -814,7 +814,7 @@ Bool_t TMrbSis_3300::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
 				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
-				fCodeTemplates.CopyCode(codeString, " \\\n\t\t\t\t");
+				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);
 				gSystem->ExpandPathName(codeString);
 				gMrbConfig->GetLofRdoIncludes()->Add(new TObjString(codeString.Data()));
@@ -826,7 +826,7 @@ Bool_t TMrbSis_3300::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 				fCodeTemplates.InitializeCode();
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
 				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
-				fCodeTemplates.CopyCode(codeString, " \\\n\t\t\t\t");
+				fCodeTemplates.CopyCode(codeString);
 				env->Replace(codeString);
 				gSystem->ExpandPathName(codeString);
 				gMrbConfig->GetLofRdoLibs()->Add(new TObjString(codeString.Data()));

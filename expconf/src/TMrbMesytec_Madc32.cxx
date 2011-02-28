@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.22 2010-12-14 11:13:39 Marabou Exp $
+// Revision:       $Id: TMrbMesytec_Madc32.cxx,v 1.23 2011-02-28 08:51:49 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -797,6 +797,8 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 		}
 	}
 
+	TMrbResource * env = new TMrbResource("TMrbConfig", ".rootrc");
+
 	TString pwd = gSystem->Getenv("PWD");
 	if (pwd.Length() == 0) pwd = gSystem->WorkingDirectory();
 	TString settings = pwd;
@@ -863,7 +865,9 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
 				fCodeTemplates.Substitute("$mbsVersion", gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
 				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
-				fCodeTemplates.CopyCode(codeString, " \\\n\t\t\t\t");
+				fCodeTemplates.CopyCode(codeString);
+				env->Replace(codeString);
+				gSystem->ExpandPathName(codeString);
 				gMrbConfig->GetLofRdoIncludes()->Add(new TObjString(codeString.Data()));
 			}
 			break;
@@ -874,7 +878,9 @@ Bool_t TMrbMesytec_Madc32::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
 				fCodeTemplates.Substitute("$mbsVersion", gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
 				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
-				fCodeTemplates.CopyCode(codeString, " \\\n\t\t\t\t");
+				fCodeTemplates.CopyCode(codeString);
+				env->Replace(codeString);
+				gSystem->ExpandPathName(codeString);
 				gMrbConfig->GetLofRdoLibs()->Add(new TObjString(codeString.Data()));
 			}
 			break;

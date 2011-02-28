@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V1X90.cxx,v 1.2 2010-12-14 11:13:39 Marabou Exp $       
-// Date:           
+// Revision:       $Id: TMrbCaen_V1X90.cxx,v 1.3 2011-02-28 08:51:48 Marabou Exp $
+// Date:
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -144,7 +144,7 @@ TMrbCaen_V1X90::TMrbCaen_V1X90(const Char_t * ModuleName, UInt_t BaseAddr) :
 	TString mType;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
+
 	if (!this->IsZombie()) {
 		if (gMrbConfig == NULL) {
 			gMrbLog->Err() << "No config defined" << endl;
@@ -214,7 +214,7 @@ void TMrbCaen_V1X90::DefineRegisters() {
 	TMrbVMERegister * rp;
 
 	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegWindowWidth, "WindowWidth");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, kWindowWidthDefault, 1, 4095); 
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, kWindowWidthDefault, 1, 4095);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 
@@ -241,7 +241,7 @@ void TMrbCaen_V1X90::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("EdgeDetection");
-	bNames->AddNamedX(kMrbEdgeDetection);	
+	bNames->AddNamedX(kMrbEdgeDetection);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -254,7 +254,7 @@ void TMrbCaen_V1X90::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("EdgeResolution");
-	bNames->AddNamedX(kMrbEdgeRes);	
+	bNames->AddNamedX(kMrbEdgeRes);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -267,7 +267,7 @@ void TMrbCaen_V1X90::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("PairResolutionEdge");
-	bNames->AddNamedX(kMrbPairResEdge);	
+	bNames->AddNamedX(kMrbPairResEdge);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -280,7 +280,7 @@ void TMrbCaen_V1X90::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("PairResolutionWidth");
-	bNames->AddNamedX(kMrbPairResWidth);	
+	bNames->AddNamedX(kMrbPairResWidth);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -293,7 +293,7 @@ void TMrbCaen_V1X90::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("DeadTime");
-	bNames->AddNamedX(kMrbDeadTime);	
+	bNames->AddNamedX(kMrbDeadTime);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -306,7 +306,7 @@ void TMrbCaen_V1X90::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("EventSize");
-	bNames->AddNamedX(kMrbEventSize);	
+	bNames->AddNamedX(kMrbEventSize);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
@@ -319,13 +319,13 @@ void TMrbCaen_V1X90::DefineRegisters() {
 	fLofRegisters.AddNamedX(kp);
 	bNames = new TMrbLofNamedX();
 	bNames->SetName("FifoSize");
-	bNames->AddNamedX(kMrbFifoSize);	
+	bNames->AddNamedX(kMrbFifoSize);
 	bNames->SetPatternMode(kFALSE);
 	rp->SetLofBitNames(bNames);
 	rp->SetPatternMode(kFALSE);
 
 	kp = new TMrbNamedX(TMrbCaen_V1X90::kRegAlmostFullLevel, "AlmostFullLevel");
-	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, TMrbCaen_V1X90::kAlmostFullLevelDefault, 1, 32735); 
+	rp = new TMrbVMERegister(this, 0, kp, 0, 0, 0, TMrbCaen_V1X90::kAlmostFullLevelDefault, 1, 32735);
 	kp->AssignObject(rp);
 	fLofRegisters.AddNamedX(kp);
 }
@@ -377,7 +377,7 @@ TMrbNamedX * TMrbCaen_V1X90::GetEdgeDetection() {
 	TMrbLofNamedX * bn = rp->BitNames();
 	return(bn->FindByIndex(setting));
 }
-	
+
 TMrbNamedX * TMrbCaen_V1X90::GetEdgeResolution() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -403,7 +403,7 @@ TMrbNamedX * TMrbCaen_V1X90::GetEdgeResolution() {
 	TMrbLofNamedX * bn = rp->BitNames();
 	return(bn->FindByIndex(setting));
 }
-	
+
 TMrbNamedX * TMrbCaen_V1X90::GetDeadTime() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -427,7 +427,7 @@ TMrbNamedX * TMrbCaen_V1X90::GetDeadTime() {
 	}
 	return(s);
 }
-	
+
 TMrbNamedX * TMrbCaen_V1X90::GetPairResolution() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -453,7 +453,7 @@ TMrbNamedX * TMrbCaen_V1X90::GetPairResolution() {
 	TMrbLofNamedX * bn = rp->BitNames();
 	return(bn->FindByIndex(setting));
 }
-	
+
 TMrbNamedX * TMrbCaen_V1X90::GetPairWidth() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -479,7 +479,7 @@ TMrbNamedX * TMrbCaen_V1X90::GetPairWidth() {
 	TMrbLofNamedX * bn = rp->BitNames();
 	return(bn->FindByIndex(setting));
 }
-	
+
 TMrbNamedX * TMrbCaen_V1X90::GetEventSize() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -503,7 +503,7 @@ TMrbNamedX * TMrbCaen_V1X90::GetEventSize() {
 	}
 	return(s);
 }
-	
+
 TMrbNamedX * TMrbCaen_V1X90::GetFifoSize() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -527,7 +527,7 @@ TMrbNamedX * TMrbCaen_V1X90::GetFifoSize() {
 	}
 	return(s);
 }
-	
+
 Bool_t TMrbCaen_V1X90::EnableChannel(Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -750,9 +750,9 @@ Bool_t TMrbCaen_V1X90::SaveSettings(const Char_t * SettingsFile) {
 		gMrbLog->Out()	<< "Using template file " << fp << endl;
 		gMrbLog->Flush("SaveSettings");
 	}
-	
+
 	tf = fp;
-	
+
 	TMrbLofNamedX tags;
 	tags.AddNamedX(TMrbConfig::kRcModuleSettings, "MODULE_SETTINGS");
 
@@ -947,7 +947,7 @@ Bool_t TMrbCaen_V1X90::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
 				fCodeTemplates.Substitute("$mbsVersion", gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
 				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
-				fCodeTemplates.CopyCode(codeString, " \\\n\t\t\t\t");
+				fCodeTemplates.CopyCode(codeString);
 				gMrbConfig->GetLofRdoIncludes()->Add(new TObjString(codeString.Data()));
 			}
 			break;
@@ -958,7 +958,7 @@ Bool_t TMrbCaen_V1X90::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 				fCodeTemplates.Substitute("$marabouPath", gSystem->Getenv("MARABOU"));
 				fCodeTemplates.Substitute("$mbsVersion", gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
 				fCodeTemplates.Substitute("$lynxVersion", gEnv->GetValue("TMbsSetup.LynxVersion", "2.5"));
-				fCodeTemplates.CopyCode(codeString, " \\\n\t\t\t\t");
+				fCodeTemplates.CopyCode(codeString);
 				gMrbConfig->GetLofRdoLibs()->Add(new TObjString(codeString.Data()));
 			}
 			break;
@@ -1025,7 +1025,7 @@ Bool_t TMrbCaen_V1X90::CheckSubeventType(TMrbSubevent * Subevent) const {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbMesytec_Madc32::CheckSubeventType
 // Purpose:        Check if calling subevent is applicable
-// Arguments:      
+// Arguments:
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Makes sure that a subevent of type [10,4x] (CAEN)

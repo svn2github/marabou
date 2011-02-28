@@ -4,10 +4,10 @@
 //! \brief			Code for module MADC32
 //! \details		Implements functions to handle modules of type Mesytec MADC32
 //!
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.15 $
-//! $Date: 2010-10-04 10:09:01 $
+//! $Revision: 1.16 $
+//! $Date: 2011-02-28 08:51:49 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 #include <allParam.h>
 #include <ces/bmalib.h>
 #include <errno.h>
-#include <sigcodes.h>
+/* #include <sigcodes.h> */
 
 #include "gd_readout.h"
 
@@ -55,7 +55,7 @@ struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 
 void madc32_initialize(struct s_madc32 * s)
 {
-	signal(SIGBUS, catchBerr);
+/*	signal(SIGBUS, catchBerr); */
 	madc32_disableBusError(s);
 	madc32_enable_bma(s);
 	madc32_resetReadout(s);

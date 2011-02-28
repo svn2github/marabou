@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.188 2011-02-22 08:36:01 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.189 2011-02-28 08:51:49 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1705,14 +1705,19 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TObjString * o;
 							TString iclPath = "";
 							TIterator * objIter = fLofRdoIncludes.MakeIterator();
+							Bool_t first = kTRUE;
 							while (o = (TObjString *) objIter->Next()) {
+								if (!first) iclPath += " \\\n\t\t\t\t";
 								iclPath += o->String();
-								iclPath += " ";
+								first = kFALSE;
 							}
 							TString ip = "-I";
-							ip += gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "/nfs/marabou/include");
+							ip += gEnv->GetValue("TMrbConfig.PPCIncludePath", "/nfs/marabou/include");
 							gSystem->ExpandPathName(ip);
-							iclPath += ip;
+							if (!iclPath.Contains(ip)) {
+								if (!first) iclPath += " \\\n\t\t\t\t";
+								iclPath += ip;
+							}
 							rdoStrm << rdoTmpl.Encode(line, iclPath.Data()) << endl << endl;
 						}
 						break;
@@ -1731,14 +1736,19 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							TObjString * o;
 							TString libString = "";
 							TIterator * objIter = fLofRdoLibs.MakeIterator();
+							Bool_t first = kTRUE;
 							while (o = (TObjString *) objIter->Next()) {
+								if (!first) libString += " \\\n\t\t\t\t";
 								libString += o->String();
-								libString += " ";
+								first = kFALSE;
 							}
-							TString lp = gEnv->GetValue("TMrbConfig.ReadoutLibPath", "/nfs/marabou/lib");
+							TString lp = gEnv->GetValue("TMrbConfig.PPCLibraryPath", "/nfs/marabou/lib");
 							gSystem->ExpandPathName(lp);
-							libString += "-L";
-							libString += lp;
+							if (!libString.Contains(lp)) {
+								if (!first) libString += " \\\n\t\t\t\t";
+								libString += "-L";
+								libString += lp;
+							}
 							libString += " -lUti";
 							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl << endl;
 						}
