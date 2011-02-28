@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMEServerPanel.cxx,v 1.14 2011-02-11 08:06:08 Marabou Exp $
+// Revision:       $Id: VMEServerPanel.cxx,v 1.15 2011-02-28 11:52:12 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -186,13 +186,13 @@ VMEServerPanel::VMEServerPanel(TGCompositeFrame * TabFrame) :
 	lofHosts.AddNamedX(hostNames.Data());
 	fSelectHost = new TGMrbLabelCombo(fServerFrame, "VME Host",	&lofHosts,
 																kVMEServerHost, selIdx,
-																frameWidth/4, kLEHeight, frameWidth/10,
+																frameWidth/3, kLEHeight, frameWidth/8,
 																frameGC, labelGC, comboGC, labelGC);
 	fServerFrame->AddFrame(fSelectHost, frameGC->LH());
 
 // TCP port
 	fSelectPort = new TGMrbLabelEntry(fServerFrame, "TCP Port",	50, kVMEServerTcpPort,
-																	frameWidth/4, kLEHeight, frameWidth/10,
+																	frameWidth/3, kLEHeight, frameWidth/8,
 																	frameGC, labelGC, entryGC, labelGC);
 	fServerFrame->AddFrame(fSelectPort, frameGC->LH());
 	Int_t tcpPort = gVMEControlData->Vctrlrc()->Get(".TcpPort", -1);

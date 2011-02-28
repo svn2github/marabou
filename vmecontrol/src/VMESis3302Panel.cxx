@@ -6,7 +6,7 @@
 // Modules:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: VMESis3302Panel.cxx,v 1.19 2011-02-15 09:12:08 Marabou Exp $
+// Revision:       $Id: VMESis3302Panel.cxx,v 1.20 2011-02-28 11:52:12 Marabou Exp $
 // Date:
 // URL:
 // Keywords:
@@ -592,6 +592,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fEnergyGateLength->SetTextAlignment(kTextRight);
 	fEnergyGateLength->SetRange(kSis3302EnergyGateLengthMin, kSis3302EnergyGateLengthMax);
 	fEnergyGateLength->SetIncrement(1);
+	fEnergyGateLength->ShowToolTip(kTRUE, kTRUE);
 	evr->AddFrame(fEnergyGateLength, groupGC->LH());
 	fEnergyGateLength->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "EnergyGateLengthChanged(Int_t, Int_t)");
 
@@ -603,6 +604,7 @@ VMESis3302Panel::VMESis3302Panel(TGCompositeFrame * TabFrame) :
 	fTrigGateLength->SetTextAlignment(kTextRight);
 	fTrigGateLength->SetRange(kSis3302TrigGateLengthMin, kSis3302TrigGateLengthMax);
 	fTrigGateLength->SetIncrement(1);
+	fTrigGateLength->ShowToolTip(kTRUE, kTRUE);
 	evr->AddFrame(fTrigGateLength, groupGC->LH());
 	fTrigGateLength->Connect("EntryChanged(Int_t, Int_t)", this->ClassName(), this, "TrigGateLengthChanged(Int_t, Int_t)");
 
@@ -1460,7 +1462,7 @@ void VMESis3302Panel::EnergyGateLengthChanged(Int_t FrameId, Int_t EntryNo) {
 	Int_t gl = fEnergyGateLength->GetText2Int(EntryNo);
 
 	if (fEnergyGateLength->CheckRange(gl, EntryNo, kTRUE, kTRUE))	curModule->WriteEnergyGateLength(gl, curChannel);
-	else								fEnergyGateLength->SetText(gs, EntryNo);
+	else															fEnergyGateLength->SetText(gs, EntryNo);
 	this->UpdateGates(curModule, curChannel);
 }
 

@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.17 $
-//! $Date: 2011-02-14 13:32:30 $
+//! $Revision: 1.18 $
+//! $Date: 2011-02-28 11:52:12 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "iostream.h"
@@ -3129,6 +3129,12 @@ Bool_t SrvSis3302::WriteEnergyGateReg(SrvVMEModule * Module, Int_t & Data, Int_t
 		gMrbLog->Flush(this->ClassName(), "WriteEnergyGateReg");
 		return(kFALSE);
 	}
+	if (Data < kSis3302EnergyGateLengthMin || Data > kSis3302EnergyGateLengthMax) {
+		gMrbLog->Err()	<< "[" << Module->GetName() << "]: energy gate out of range - "
+						<< ChanNo << " (should be in [" << kSis3302EnergyGateLengthMin << ", " << kSis3302EnergyGateLengthMax << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteEnergyGateReg");
+		return(kFALSE);
+	}
 
 	Int_t offset;
 	switch (ChanNo) {
@@ -3166,7 +3172,7 @@ Bool_t SrvSis3302::ReadEnergyGateLength(SrvVMEModule * Module, Int_t & GateLengt
 
 	Int_t data;
 	if (!this->ReadEnergyGateReg(Module, data, ChanNo)) return(kFALSE);
-	GateLength = data & 0x1FF;
+	GateLength = data & 0x1FFFF;
 	return(kTRUE);
 }
 
