@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrHBX.cxx,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHBX.cxx,v 1.2 2011-03-03 12:59:47 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -81,11 +81,11 @@ TUsrHit * TUsrHBX::FindHit(Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHBX::FindHit
-// Purpose:        Search for next with given channel number
+// Purpose:        Search for next hit with given channel number
 // Arguments:      Int_t Channel       -- channel
 // Results:        TUsrHit * Hit       -- next hit matching channel number
 // Exceptions:
-// Description:    Searches for next entry with given channel number.
+// Description:    Searches for next hit with given channel number.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -101,29 +101,82 @@ TUsrHit * TUsrHBX::FindHit(Int_t Channel) {
 	return(NULL);
 }
 
-TUsrHit * TUsrHBX::FindHit(Int_t ModuleIndex, Int_t Channel) {
+Int_t TUsrHBX::FindHitIndex(Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHBX::FindHit
-// Purpose:        Search for next with given channel number
-// Arguments:      Int_t ModuleIndex   -- module index
-//                 Int_t Channel       -- channel
-// Results:        TUsrHit * Hit       -- next hit matching channel number
+// Name:           TUsrHBX::FindHitIndex
+// Purpose:        Search for next hit with given channel number
+// Arguments:      Int_t Channel       -- channel
+// Results:        Int_t HitIndex      -- index of next hit matching channel number
 // Exceptions:
-// Description:    Searches for next entry with given module/channel number.
+// Description:    Searches for next hit with given channel number.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t curIndex = fResetDone ? -1 : fCurIndex;
 	while (++curIndex < this->GetNofHits()) {
 		TUsrHit * hit = (TUsrHit *) fHits->At(curIndex);
-		if (hit->GetModuleNumber() == ModuleIndex && hit->GetChannel() == Channel) {
+		if (hit->GetChannel() == Channel) {
 			fCurIndex = curIndex;
 			fResetDone = kFALSE;
-			return(hit);
+			return(curIndex);
+		}
+	}
+	return(-1);
+}
+
+TUsrHit * TUsrHBX::FindHit(Int_t ModuleIndex, Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX::FindHit
+// Purpose:        Search for next hit with given module/channel number
+// Arguments:      Int_t ModuleIndex   -- module index
+//                 Int_t Channel       -- channel (= -1 -> don't care)
+// Results:        TUsrHit * Hit       -- next hit matching module/channel number
+// Exceptions:
+// Description:    Searches for next hit with given module/channel number.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t curIndex = fResetDone ? -1 : fCurIndex;
+	while (++curIndex < this->GetNofHits()) {
+		TUsrHit * hit = (TUsrHit *) fHits->At(curIndex);
+		if (hit->GetModuleNumber() == ModuleIndex) {
+			if (Channel == -1 || hit->GetChannel() == Channel) {
+				fCurIndex = curIndex;
+				fResetDone = kFALSE;
+				return(hit);
+			}
 		}
 	}
 	return(NULL);
+}
+
+Int_t TUsrHBX::FindHitIndex(Int_t ModuleIndex, Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX::FindHitIndex
+// Purpose:        Search for next with given channel number
+// Arguments:      Int_t ModuleIndex   -- module index
+//                 Int_t Channel       -- channel (= -1 --> don't care)
+// Results:        Int_t HitIndex      -- index of next hit matching module/channel number
+// Exceptions:
+// Description:    Searches for next hit with given module/channel number.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t curIndex = fResetDone ? -1 : fCurIndex;
+	while (++curIndex < this->GetNofHits()) {
+		TUsrHit * hit = (TUsrHit *) fHits->At(curIndex);
+		if (hit->GetModuleNumber() == ModuleIndex) {
+			if (Channel == -1 || hit->GetChannel() == Channel) {
+				fCurIndex = curIndex;
+				fResetDone = kFALSE;
+				return(curIndex);
+			}
+		}
+	}
+	return(-1);
 }
 
 TUsrHit * TUsrHBX::FindEvent(Int_t EventNumber) {

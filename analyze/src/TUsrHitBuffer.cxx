@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrHitBuffer.cxx,v 1.2 2011-02-17 12:43:35 Marabou Exp $       
+// Revision:       $Id: TUsrHitBuffer.cxx,v 1.3 2011-03-03 12:59:48 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -277,7 +277,7 @@ void TUsrHitBuffer::Print(ostream & Out, Int_t Begin, Int_t End, Bool_t EnergyLo
 	for (Int_t i = Begin; i <= End; i++) {
 		hit = (TUsrHit *) fHits->At(i);
 		Out << Form("  %5d", i);
-		if (hit) hit->Print(Out, kTRUE, kTRUE, kTRUE); else Out << " ... [empty slot]" << endl;
+		if (hit) hit->Print(Out, kTRUE, kTRUE, EnergyLongFlag); else Out << " ... [empty slot]" << endl;
 	}
 }
 

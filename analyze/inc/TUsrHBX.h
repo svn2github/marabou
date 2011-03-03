@@ -7,7 +7,7 @@
 // Purpose:        Class to implement an index for a hit buffer
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrHBX.h,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHBX.h,v 1.2 2011-03-03 12:59:47 Marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -44,9 +44,11 @@ class TUsrHBX : public TObject {
 		inline Int_t GetIndex() const { return(fCurIndex); };
 		inline void ResetIndex() { fCurIndex = 0; fResetDone = kTRUE; };
 
-		TUsrHit * FindHit(TUsrHit & HitProfile) ;								// search for next hit with given profile
-		TUsrHit * FindHit(Int_t Channel);										// ... with given channel
+		TUsrHit * FindHit(TUsrHit & HitProfile) ;						// search for next hit with given profile
+		TUsrHit * FindHit(Int_t Channel);							// ... with given channel
 		TUsrHit * FindHit(Int_t ModuleIndex, Int_t Channel);					// ... with given module/channel
+		Int_t FindHitIndex(Int_t Channel);							// ... return index rather than pointer
+		Int_t FindHitIndex(Int_t ModuleIndex, Int_t Channel);					// ...
 
 		TUsrHit * At(Int_t Index) const { return ((TUsrHit *) fHits->At(Index)); }; 	// return hit at given index
 		
