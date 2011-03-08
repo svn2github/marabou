@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.98 2011-02-22 08:36:01 Marabou Exp $
+// Revision:       $Id: TMrbConfig.h,v 1.99 2011-03-08 08:25:13 Marabou Exp $
 // Date:
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -553,6 +553,11 @@ class TMrbConfig : public TNamed {
 
 		enum					{	kRdoHeaderBit		=	BIT(31)	};
 
+		enum					{	kMbsSevtSize		=	0x1000 };
+		enum					{	kMbsPipeSegLength	=	0x100000 };
+		enum					{	kMbsPipeLengthMax	=	1000 };
+		enum					{	kMbsPipeLengthMin	=	100 };
+
 	public:
 
 		TMrbConfig() {};										// default ctor
@@ -603,7 +608,9 @@ class TMrbConfig : public TNamed {
 		Bool_t CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag = kTRUE) const;	// compile readout code
 		Bool_t CompileAnalyzeCode(Bool_t CleanFlag = kTRUE) const;						// compile analysis code
 
-		inline void SetSevtSize(Int_t Size) { fSevtSize = Size; }; 	// set max size of subevent (for all events/triggers)
+		inline void SetSevtSize(Int_t Size, Int_t PipeSegLength = kMbsPipeSegLength) { fSevtSize = Size; fPipeSegLength = PipeSegLength; }; 	// set size of subevent (for all events/triggers)
+		inline Int_t GetSevtSize() { return(fSevtSize); }
+;
 		Bool_t UpdateMbsSetup();									// update .mbssetup database if online mode
 
 		Bool_t ExecRootMacro(const Char_t * Macro);
@@ -946,6 +953,7 @@ class TMrbConfig : public TNamed {
 		TArrayI fTriggersToBeHandled;		// trigger patterns to be handled
 
 		Int_t fSevtSize;					// subevent size to be used in .mbssetup
+		Int_t fPipeSegLength;					// length of subevent pipe
 
 		Bool_t fUserMacroToBeCalled;		// call user macro
 		TString fUserMacro; 				// macro name

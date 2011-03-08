@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.189 2011-02-28 08:51:49 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.190 2011-03-08 08:25:13 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -704,7 +704,8 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		UpdateTriggerTable();									// initialize trigger table
 
-		fSevtSize = 0;
+		fSevtSize = kMbsSevtSize;
+		fPipeSegLength = kMbsPipeSegLength;
 
 		fLofUserHistograms.Delete();							// init list of user-defined histograms
 		fLofHistoArrays.Delete();								// init list of histogram arrays
@@ -7517,6 +7518,21 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	mbsSetup->ReadoutProc(0)->SetCratesToBeRead(c[0], c[1], c[2], c[3], c[4]);
 
 	if (fSevtSize > 0) {
+		if (fPipeSegLength > kMbsPipeSegLength) {
+			gMrbLog->Wrn() << "Pipe segment length may be too large - 0x" << setbase(16) << fPipeSegLength << " (max 0x" << kMbsPipeSegLength << setbase(10) << " is recommended)" << endl;
+			gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
+		}
+		Int_t pipeLength = (fPipeSegLength - 2 * fSevtSize) / 20 - 1;
+		if (pipeLength > kMbsPipeLengthMax)  pipeLength = kMbsPipeLengthMax;
+		if (pipeLength < kMbsPipeLengthMin) {
+			fSevtSize = (fPipeSegLength - (kMbsPipeLengthMin + 1) * 20) / 2;
+			gMrbLog->Err()	<< "Pipe length (= number of subevents in pipe) too small - " << pipeLength
+					<< ", set to " << kMbsPipeLengthMin << ", therefore subevent size = " << fSevtSize << endl;
+			gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
+			pipeLength = kMbsPipeLengthMin;
+		}
+		mbsSetup->ReadoutProc(0)->SetPipeSegLength(fPipeSegLength);
+		mbsSetup->ReadoutProc(0)->SetPipeLength(pipeLength);
 		TMrbEvent * evt = (TMrbEvent *) fLofEvents.First();
 		TIterator * evtIter = fLofEvents.MakeIterator();
 		while (evt = (TMrbEvent *) evtIter->Next()) mbsSetup->ReadoutProc(0)->SetSevtSize(evt->GetTrigger(), fSevtSize);

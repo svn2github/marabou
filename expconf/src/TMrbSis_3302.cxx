@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSis_3302.cxx,v 1.6 2011-02-28 08:51:49 Marabou Exp $
+// Revision:       $Id: TMrbSis_3302.cxx,v 1.7 2011-03-08 08:25:13 Marabou Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -221,6 +221,7 @@ Bool_t TMrbSis_3302::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 			fCodeTemplates.Substitute("$chnPattern", (Int_t) this->GetPatternOfChannelsUsed(), 16);
+			fCodeTemplates.Substitute("$bufferSize", gMrbConfig->GetSevtSize(), 16);
 			fCodeTemplates.Substitute("$tracingMode", this->TracingEnabled() ? "kTRUE" : "kFALSE");
 			fCodeTemplates.Substitute("$onoff", this->TracingEnabled() ? "on" : "off");
 			fCodeTemplates.Substitute("$settingsFile", settings.Data());

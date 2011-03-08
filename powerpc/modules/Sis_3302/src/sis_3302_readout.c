@@ -49,36 +49,83 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	  Int_t rdl;
 	  Int_t edl;
 	  Int_t evtNo;
-	  Int_t nofEvents;
 	  Int_t startAddr;
 	  volatile Int_t * mappedAddr;
 	  Int_t i;
 	  UInt_t d;
 
 	  Char_t msg[256];
+	  Char_t * mp;
 
-	  pointer = Pointer;
-	  pointerBegin = pointer;			/* save pointer to beginning */
+	  Int_t nofEvents[kSis3302NofChans];
+	  Int_t totalSize;
 
-	  *pointer++ = 0;				/* lh: wc=0, rh=serial, will be updated later */
+	  memset(nofEvents, 0, kSis3302NofChans * sizeof(Int_t));
 
-	  channelPattern = Module->activeChannels;
-	  for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
-		  if (channelPattern & 1) {
+	  pointerBegin = Pointer;		/* save pointer to beginning */
+	  pointer = Pointer;			/* where to start */
+	  *pointer++ = 0;			/* lh: wc=0, rh=serial, will be updated later */
+
+	totalSize = 0;
+	channelPattern = Module->activeChannels;
+	for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
+		if (channelPattern & 1) {
 			  nxs = sis3302_readPrevBankSampleAddr(Module, chn);
+			  if (nxs == 0xaffec0c0) continue;
 			  nxs &= 0x3FFFFC;
+			  if (nxs == 0) continue;
 			  nxs >>= 1;
-			  if (nxs == 0 || nxs == 0xaffec0c0) continue;
 			  grp = chn / 2;
 			  rdl = Module->rawDataSampleLength[grp] / 2;
 			  edl = Module->energySampleLength[grp];
 			  wc = kSis3302EventHeader + kSis3302EventMinMax + kSis3302EventTrailer + edl + rdl;
-			  nofEvents = nxs / wc;
+			  nofEvents[chn] = nxs / wc;
+			  totalSize += nofEvents[chn] * (wc + 1) * sizeof(Int_t);
+		}
+	}
+
+	if (totalSize > Module->bufferSize) {
+		Float_t x = ((Float_t) Module->bufferSize) / totalSize;
+		if (Module->verbose) {
+			f_ut_send_msg("m_read_meb", "--------------------------------------------------------------------------------------------", ERR__MSG_INFO, MASK__PRTT);
+			sprintf(msg, "[readout] module %s:", Module->moduleName);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+			sprintf(msg, "[readout] total=%d, buffer=%d, fac=%6.2f ... ", totalSize, Module->bufferSize, x);
+			mp = &msg[strlen(msg)];
+			for (chn = 0; chn < kSis3302NofChans; chn++) {
+				if (nofEvents[chn] > 0) {
+					sprintf(mp, "%d:%d ", chn, nofEvents[chn]);
+					mp = &msg[strlen(msg)];
+				}
+			}
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);			
+		}
+		totalSize = 0;
+		for (chn = 0; chn < kSis3302NofChans; chn++) {
+			nofEvents[chn] = (Int_t) (nofEvents[chn] * x);
+			totalSize += nofEvents[chn] * (wc + 1) * sizeof(Int_t);
+		}
+		if (Module->verbose) {
+			sprintf(msg, "[readout] total=%d, buffer=%d,            ... ", totalSize, Module->bufferSize);
+			mp = &msg[strlen(msg)];
+			for (chn = 0; chn < kSis3302NofChans; chn++) {
+				if (nofEvents[chn] > 0) {
+					sprintf(mp, "%d:%d ", chn, nofEvents[chn]);
+					mp = &msg[strlen(msg)];
+				}
+			}
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);			
+			f_ut_send_msg("m_read_meb", "--------------------------------------------------------------------------------------------", ERR__MSG_INFO, MASK__PRTT);
+		}
+	}
+	
+	channelPattern = Module->activeChannels;
+	for (chn = 0; chn < kSis3302NofChans; chn++, channelPattern >>= 1) {
+		if (channelPattern & 1) {
 			  startAddr = SIS3302_ADC1_OFFSET + chn * SIS3302_NEXT_ADC_OFFSET;
-			  if (Module->verbose) printf("chn=%d size=%d rdl=%d edl=%d wc=%d evt=%d start=%#lx\n", chn, nxs, rdl, edl, wc, nofEvents, startAddr);		
 			  mappedAddr = (volatile Int_t *) sis3302_mapAddress(Module, startAddr);
 			  if (mappedAddr == NULL) continue;
-			  for (evtNo = 0; evtNo < nofEvents; evtNo++) {
+			  for (evtNo = 0; evtNo < nofEvents[chn]; evtNo++) {
 				  for (i = 0; i < kSis3302EventHeader; i++) {
 					d = *mappedAddr++;		/* event header: 32bit words */
 					if (i == 0) d = (d & 0xFFFF0000) | chn;
@@ -90,7 +137,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 					  *pointer++ = (d >> 16) & 0xFFFF;
 					  *pointer++ = d & 0xFFFF;
 				  }
-				  for (i = 0; i < edl; i++) *pointer++ = *mappedAddr++;						/* event data: 32bit words */
+				  for (i = 0; i < edl; i++) *pointer++ = *mappedAddr++;			/* event data: 32bit words */
 				  for (i = 0; i < kSis3302EventMinMax; i++) {
 					d = *mappedAddr++;	/* max energy, min energy */
 					*pointer++ = d;
@@ -104,7 +151,7 @@ Int_t sis3302_readout(struct s_sis_3302 * Module, UInt_t * Pointer)
 	  }
 
 	  wc = (Int_t) (pointer - pointerBegin);
-	  *pointerBegin = (wc << 16) | Module->serial;		/* update 1st word: lh: wc=0, rh=serial, will */
+	  *pointerBegin = (wc << 16) | Module->serial;		/* update 1st word: lh: wc=0, rh=serial */
 	  return (wc);
 }
 

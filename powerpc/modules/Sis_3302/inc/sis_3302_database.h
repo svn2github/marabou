@@ -10,8 +10,8 @@
 //! \details		Structures describing a SIS3302 ADC
 //! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.3 $
-//! $Date: 2010-12-09 11:43:39 $
+//! $Revision: 1.4 $
+//! $Date: 2011-03-08 08:25:13 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 
@@ -54,6 +54,8 @@ struct s_sis_3302 {
 	Bool_t tracingMode;						/* ON:  keep raw and energy tracing length values */
 											/* OFF: save length values, set to zero, restore on stop */
 	UInt_t activeChannels;					/* pattern of active channels */
+
+	Int_t bufferSize;					/* max buffer size */
 
 	Int_t dacValues[NOF_CHANNELS];
 

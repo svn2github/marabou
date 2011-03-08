@@ -31,6 +31,7 @@
 					sis3302_fillStruct(s_$moduleNameLC, "$settingsFile");		/* fill sis struct from file */
 					sis3302_loadFromDb(s_$moduleNameLC);			 			/* load module regs from database */
 					sis3302_setActiveChannelsFromDb(s_$moduleNameLC);	 	/* define active channels (according to trigger mode) */
+					sis3302_setBufferSize(s_$moduleNameLC, $bufferSize);		/* set max buffer size */
 					sis3302_setTracingMode(s_$moduleNameLC, $tracingMode);		/* turn tracing $onoff */
 					sis3302_resetSampling(s_$moduleNameLC);						/* reset sampling */
 					sis3302_clearTimestamp(s_$moduleNameLC);						/* reset time stamp */

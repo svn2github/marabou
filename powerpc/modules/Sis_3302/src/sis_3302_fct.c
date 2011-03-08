@@ -4,8 +4,8 @@
 //! \brief			Interface for SIS3302 ADCs
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.11 $
-//! $Date: 2011-02-14 13:32:30 $
+//! $Revision: 1.12 $
+//! $Date: 2011-03-08 08:25:13 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -63,6 +63,7 @@ struct s_sis_3302 * sis3302_alloc(ULong_t VmeAddr, volatile unsigned char * Base
 		Module->updSettings = kFALSE;
 		Module->tracingMode = kFALSE;
 		Module->activeChannels = kSis3302AllChans;
+		Module->bufferSize = 0;
 		Module->currentSampling = kSis3302KeyArmBank1Sampling;
 	} else {
 		sprintf(msg, "[alloc] Can't allocate sis_3302 struct");
@@ -502,6 +503,16 @@ void sis3302_setActiveChannelsFromDb(struct s_sis_3302 * Module) {
 	}
 }
 	
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+//! \details		Define active channels
+//! \param[in]		Module			-- module address
+//! \param[in]		ChannelPattern	-- bit pattern of active chans
+//! \return 		--
+////////////////////////////////////////////////////////////////////////////*/
+
+void sis3302_setBufferSize(struct s_sis_3302 * Module, Int_t BufferSize) { Module->bufferSize = BufferSize; }
+
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 //! \details		Turn tracing mode on/off
