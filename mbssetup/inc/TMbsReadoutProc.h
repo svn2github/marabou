@@ -8,7 +8,7 @@
 // Class:          TMbsReadoutProc      -- readout proc
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsReadoutProc.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsReadoutProc.h,v 1.7 2011-03-08 10:31:22 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -67,6 +67,10 @@ class TMbsReadoutProc : public TObject {
 		UInt_t GetVSBAddr() const;
 		Bool_t SetPipeBase(UInt_t Addr); 		// pipe base addr
 		UInt_t GetPipeBase() const;
+		Bool_t SetPipeSegLength(Int_t Length); 	// pipe seg length
+		Int_t GetPipeSegLength() const;
+		Bool_t SetPipeLength(Int_t NofSevts);	 	// pipe length (= max number of subevents in pipe)
+		Int_t GetPipeLength() const;
 		Bool_t SetSevtSize(Int_t Trigger, Int_t SevtSize); 	// subevent size
 		Int_t GetSevtSize(Int_t Trigger = 0) const;
 

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.23 2007-12-17 14:36:50 Marabou Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.24 2011-03-08 10:31:22 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -652,9 +652,9 @@ Bool_t TMbsReadoutProc::SetPipeBase(UInt_t Addr) {
 // Name:           TMbsReadoutProc::SetPipeBase
 // Purpose:        Define pipe address
 // Arguments:      UInt_t Addr    -- address
-// Results:        --
+// Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Sets resource "TMbsSetup.ReadoutNNN.PipeBase".
+// Description:    Sets resource "TMbsSetup.ReadoutNNN.LocalPipeBase".
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -671,12 +671,78 @@ UInt_t TMbsReadoutProc::GetPipeBase() const {
 // Arguments:      --
 // Results:        UInt_t Addr  -- address
 // Exceptions:
-// Description:    Reads resource "TMbsSetup.ReadoutNNN.PipeBase".
+// Description:    Reads resource "TMbsSetup.ReadoutNNN.LocalPipeBase".
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "RdPipeBaseAddr"), 0));
+	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "LocalPipeBase"), 0));
+}
+
+Bool_t TMbsReadoutProc::SetPipeSegLength(Int_t Length) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMbsReadoutProc::SetPipeSegLength
+// Purpose:        Define pipe segement length
+// Arguments:      Int_t Length     -- length in bytes
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets resource "TMbsSetup.ReadoutNNN.LocalPipeSegmentLength".
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString r;
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "LocalPipeSegmentLength"), Length, 16);
+	return(kTRUE);
+}
+
+Int_t TMbsReadoutProc::GetPipeSegLength() const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMbsReadoutProc::GetPipeSegLength
+// Purpose:        Return pipe segment length
+// Arguments:      --
+// Results:        Int_t Length     -- length in bytes
+// Exceptions:
+// Description:    Reads resource "TMbsSetup.ReadoutNNN.LocalPipeSegmentLength".
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString r;
+	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "LocalPipeSegmentLength"), 0));
+}
+
+Bool_t TMbsReadoutProc::SetPipeLength(Int_t NofSevts) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMbsReadoutProc::SetPipeLength
+// Purpose:        Define number of subevents in pipe
+// Arguments:      Int_t NofSevts     -- number of subevents
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets resource "TMbsSetup.ReadoutNNN.LocalPipeLength".
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString r;
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId, "LocalPipeLength"), NofSevts);
+	return(kTRUE);
+}
+
+Int_t TMbsReadoutProc::GetPipeLength() const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMbsReadoutProc::GetPipeSegLength
+// Purpose:        Return number of subevents in pipe
+// Arguments:      --
+// Results:        Int_t NofSevts     -- number of subevents
+// Exceptions:
+// Description:    Reads resource "TMbsSetup.ReadoutNNN.LocalPipeLength".
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString r;
+	return(gMbsSetup->Get(gMbsSetup->Resource(r, "Readout", fId, "LocalPipeLength"), 0));
 }
 
 Bool_t TMbsReadoutProc::SetSevtSize(Int_t Trigger, Int_t SevtSize) {

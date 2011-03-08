@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.69 2011-01-26 08:20:06 Marabou Exp $
-// Date:           $Date: 2011-01-26 08:20:06 $
+// Revision:       $Id: TMbsSetup.cxx,v 1.70 2011-03-08 10:31:22 Marabou Exp $
+// Date:           $Date: 2011-03-08 10:31:22 $
 //
 // Class TMbsSetup refers to a resource file in user's working directory
 // named ".mbssetup" (if not defined otherwise).
@@ -1570,7 +1570,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Src
 						}
 						arrayData[0] = pipeLength;
 						stpTmpl.InitializeCode();
-						stpTmpl.Substitute("$rdoLocPipeLength", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.Substitute("$rdoLocPipeLength", this->EncodeArray(arrayData, kNofCrates));
 						stpTmpl.WriteCode(stp);
 					}
 					break;
