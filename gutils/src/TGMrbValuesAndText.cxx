@@ -2117,6 +2117,19 @@ void TGMrbValuesAndText::DisableButton(Int_t id)
 };
 //______________________________________________________________________________
 
+void TGMrbValuesAndText::SetCheckButton(Int_t id, Int_t state)
+{
+	if (fEntries->At(id) ->InheritsFrom("TGCheckButton")) {
+		TGCheckButton *b = (TGCheckButton *)fEntries->At(id);
+		if (b) {
+			if ( state )
+				b->SetState(kButtonDown);
+			else
+				b->SetState(kButtonUp);
+		}
+	}
+}
+
 Bool_t GetStringExt(const char *Prompt, TString  *text ,
                         Int_t win_width, TGWindow *Win,
                         const char *FileName, TList * Complist,
