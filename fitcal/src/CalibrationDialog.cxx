@@ -57,6 +57,13 @@ CalibrationDialog::CalibrationDialog(TH1 * hist, Int_t interactive)
 
 static const Char_t helptext[] =
 "This widget is used to calibrate a 1-dim histogram \n\
+\n\
+Calibration can be done by filling in data fields \"Mean\" , \"Nom Val\"\n\
+and optionally \"Error\" and mark as \"Use it\".\n\
+\"Mean\" is the channel value in the (measured) spectrum, \"Nom Val\"\n\
+the Energy it corresponds to. Pressing \"Calculate Function\" fits \n\
+the \"Calibration functions\" to these values.\n\
+\n\
 The procedure to use previously fitted peaks is as follows:\n\
   - Use the \"Fit Gaussian (with tail)\" dialog to perform \n\
     the required fits. The Option \"Add all functions\"\n\
@@ -954,20 +961,52 @@ TF1 * CalibrationDialog::CalculateFunction()
      p->SetNominalEnergy(fY[n]);
      p->SetNominalEnergyError(fYE[n]);
      n++;
-//     cout << "n " << fUse[n] << " p->GetUsed() " << p->GetUsed()<< endl;
-     if (p->GetUsed()) nuse++;
+     cout << "n " << fUse[n] << " p->GetUsed() " << p->GetUsed()<< endl;
+//     if (p->GetUsed()) nuse++;
    }
+   for (Int_t i = 0; i < fMaxPeaks; i++ ) {
+     if (fUse[i] > 0) 
+		  nuse++;
+	}
+		
    if (nuse < 2) {
 //      WarnBox("Need at least 2 data points", fParentWindow);
       Int_t retval;
-      new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning","Need at least 2 data points",kMBIconExclamation, kMBDismiss, &retval);
+      new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning",
+			"Need at least 2 data points",kMBIconExclamation, kMBDismiss, &retval);
+      delete fCalFunc; fCalFunc = NULL;
+      return NULL;
+   }
+   if ( nuse < fCalFunc->GetNpar() ) {
+//      WarnBox("Need at least 2 data points", fParentWindow);
+      Int_t retval;
+      new TGMsgBox(gClient->GetRoot(), fParentWindow,"Warning",
+			"CalFunction has too many parameters",kMBIconExclamation, kMBDismiss, &retval);
       delete fCalFunc; fCalFunc = NULL;
       return NULL;
    }
 
    TGraphErrors *gr = new TGraphErrors(nuse);
-   pIter = fPeakList.MakeIterator();
+//   pIter = fPeakList.MakeIterator();
    Int_t np = 0;
+   for (Int_t i = 0; i < fMaxPeaks; i++ ) {
+     if (fUse[i] > 0) {
+        cout << " " << i << " " << fX[i] << " " << fY[i] << endl;
+        gr->SetPoint(np, fX[i], fY[i]);
+		  // make sure error is not zero
+		  if ( fXE[i] <= 0 ) 
+			  fXE[i] =  TMath::Abs(0.01 * fX[i]);
+		  if ( fXE[i] <= 0 )
+			  fXE[i] = 0.1;
+		  if ( fYE[i] <= 0 ) 
+			  fYE[i] =  TMath::Abs(0.01 * fY[i]);
+		  if ( fYE[i] <= 0 )
+			  fYE[i] = 0.1;
+		  gr->SetPointError(i, fXE[i], fYE[i]);
+        np++;
+     }
+   }
+/*
    while ( (p = (FhPeak *) pIter->Next()) ) {
      if (p->GetUsed()) {
         cout << " " << n << " " << p->GetMean() << " " << p->GetNominalEnergy() << endl;
@@ -976,6 +1015,7 @@ TF1 * CalibrationDialog::CalculateFunction()
         np++;
      }
    }
+*/
    gr->SetMarkerStyle(4);
    gr->SetMarkerSize(2);
    if (fCalFunc->GetNpar() > 2) {
