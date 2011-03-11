@@ -105,7 +105,7 @@ void ChangeTextDialog::RestoreDefaults()
 
    fChangeTextAlign       = env.GetValue("ChangeTextDialog.ChangeTextAlign"  , 11);
    fChangeTextColor       = env.GetValue("ChangeTextDialog.ChangeTextColor"  , 1);
-   fChangeTextFont        = env.GetValue("ChangeTextDialog.ChangeTextFont"   , 6);
+   fChangeTextFont        = env.GetValue("ChangeTextDialog.ChangeTextFont"   , 62);
    fChangeTextPrec        = env.GetValue("ChangeTextDialog.ChangeTextPrec"	  , 2);
    fChangeTextSize        = env.GetValue("ChangeTextDialog.ChangeTextSize"   , 0.02);
    fChangeTextSizeMin     = env.GetValue("ChangeTextDialog.ChangeTextSizeMin"   , 0.0);
@@ -139,7 +139,7 @@ void ChangeTextDialog::ChangeTextExecute()
          if (fDoChangeTextAlign)
             t->SetTextAlign(fChangeTextAlign);
          if (fDoChangeTextFont)
-            t->SetTextFont(10 * fChangeTextFont + fChangeTextPrec);
+            t->SetTextFont(10 * (fChangeTextFont/10) + fChangeTextPrec);
       }
       if (obj->InheritsFrom("TPaveText")) {
          TPaveText *t = (TPaveText*)obj;
@@ -158,7 +158,7 @@ void ChangeTextDialog::ChangeTextExecute()
          if (fDoChangeTextAlign)
             t->SetTextAlign(fChangeTextAlign);
          if (fDoChangeTextFont)
-            t->SetTextFont(10 * fChangeTextFont + fChangeTextPrec);
+            t->SetTextFont(10 * (fChangeTextFont/10) + fChangeTextPrec);
       }
    }
    gPad->Modified();

@@ -32,22 +32,8 @@ void THprArc::Paint(const Option_t *opt)
 
 void   THprArc::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 {
-/*
-	Double_t r1_save = GetR1();
-	Double_t r2_save = GetR2();
-	Double_t eps = 0.001;
-	TArc::ExecuteEvent(event, px, py);
-	if ( TMath::Abs(GetR1() - r1_save) < eps &&  TMath::Abs(GetR2() - r2_save) > eps ) {
-		SetR1(GetR2());
-		return;
-	}
-//	cout << GetR1() << " " << r1_save << " " << GetR2() << " " << r2_save << endl;
-	if ( TMath::Abs(GetR1() - r1_save) > eps &&  TMath::Abs(GetR2() - r2_save) < eps ) {
-		SetR2(GetR1());
-	}
-*/
    Int_t kMaxDiff = 10;
-   const Int_t kMinSize = 25;
+//   const Int_t kMinSize = 25;
    const Int_t np = 40;
    static Int_t x[np+2], y[np+2];
    static Int_t px1,py1,npe,r1,r2,sav1,sav2;

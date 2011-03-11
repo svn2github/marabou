@@ -344,10 +344,11 @@ void InsertTextDialog::InsertTextExecute(Int_t onarc)
 //         cout << fEditTextPointer << " " << cmd.Data() << endl;
          loop = kFALSE;
       }
+      cout << fEditTextFont << " " << fEditTextFont<< endl;
 		if ( onarc == 1 ) {
 		    TextOnArc *tt = new TextOnArc(fEditTextX0, fEditTextY0, fEditTextRadius, 
 								 cmd, fEditTextStartAngle, fEditTextAlign/10);
-				tt->SetTextFont(fEditTextFont * 10 + fEditTextPrec);
+				tt->SetTextFont(10 * (fEditTextFont/10) + fEditTextPrec);
 				tt->SetTextSize(fEditTextSize);
 				tt->SetTextColor(fEditTextColor);
 				tt->SetSeperator(fEditTextCharSep);
@@ -357,7 +358,7 @@ void InsertTextDialog::InsertTextExecute(Int_t onarc)
 			else                          converted_line = cmd;
 			latex = new THprLatex(xt, yt, converted_line.Data());
 			latex->SetTextAlign(fEditTextAlign);
-			latex->SetTextFont(fEditTextFont * 10 + fEditTextPrec);
+			latex->SetTextFont(10 * (fEditTextFont/10) + fEditTextPrec);
 			latex->SetTextSize(fEditTextSize);
 			latex->SetTextColor(fEditTextColor);
 			latex->SetTextAngle(fEditTextAngle);
@@ -478,7 +479,11 @@ void InsertTextDialog::RestoreDefaults()
    fEditTextDy          = env.GetValue("InsertTextDialog.EditTextDy"  		  , 10);
    fEditTextAlign       = env.GetValue("InsertTextDialog.EditTextAlign"  	  , 11);
    fEditTextColor       = env.GetValue("InsertTextDialog.EditTextColor"  	  , 1);
-   fEditTextFont        = env.GetValue("InsertTextDialog.EditTextFont"		  , 6);
+   fEditTextFont        = env.GetValue("InsertTextDialog.EditTextFont"		  , 62);
+	if ( fEditTextFont < 10 )
+		fEditTextFont *= 10;
+	if ( fEditTextFont > 150 )
+		fEditTextFont /= 10;
    fEditTextPrec        = env.GetValue("InsertTextDialog.EditTextPrec"		  , 2);
    fEditTextSize        = env.GetValue("InsertTextDialog.EditTextSize"		  , 0.02);
    fEditTextCharSep     = env.GetValue("InsertTextDialog.EditTextCharSep"	  , 0);
@@ -486,6 +491,7 @@ void InsertTextDialog::RestoreDefaults()
    fEditTextLatexFilter = env.GetValue("InsertTextDialog.EditTextLatexFilter", 1);
    fEditTextStartAngle  = env.GetValue("InsertTextDialog.EditTextStartAngle" , 90);
    fEditTextRadius      = env.GetValue("InsertTextDialog.EditTextRadius"     , 30);
+	
 }
 //_________________________________________________________________________
 
