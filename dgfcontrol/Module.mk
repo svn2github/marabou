@@ -37,7 +37,7 @@ INCLUDEFILES += $(DGFCDEP)
 
 ##### extra libs needed #####
 ODGFCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbC2Lynx -lTMrbEsone -lEsoneClient \
-                 -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser -lGrEdit -lFitCal
+                 -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser -lGrEdit -lFitCal -lProof
 
 ##### local rules #####
 
