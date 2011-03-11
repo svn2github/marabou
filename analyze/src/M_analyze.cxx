@@ -65,20 +65,13 @@ TMrbAnalyze * u_analyze;
 extern TMrbTransport * gMrbTransport;
 TMrbIOSpec * ioSpec;
 
-TServerSocket *ss = 0;
+TServerSocket *gServerSocket = 0;
 // if Offline (replay) dont use TMapFile
 extern Bool_t kUseMap;
 Int_t  gComSocket;
 Int_t hsave_intervall;
 static Bool_t verboseMode = kFALSE;
-
-static unsigned int update_time = TMrbAnalyze::kUpdateTime;
-
 static TString our_pid_file = "/tmp/M_analyze_";
-
-// global mapped file pointer
-TMapFile * M_prod = 0;
-
 TMrbStatistics * gStat;
 // global PTHREAD handles
 pthread_t msg_thread, update_thread;
@@ -185,8 +178,8 @@ int main(int argc, char **argv) {
 				<<	"       file_size      0                approx. size of output file in MB" << endl
 				<<	"       parm_file      \"none\"             name of parameter file (.root / .par) to be loaded at startup" << endl
 				<<	"       histo_file     \"Histos_...\"       name / prefix if histogram file" << endl
-				<<	"       mmap_file      \"none\"  name of mmap file, if not \"none\": must be local e.g. \"/tmp/M_prod.map\"" << endl
-				<<	"       mmap_size      0               size of file in MBs" << endl
+				<<	"       mmap_file      \"none\"        dummy argument for backward compatibility" << endl
+				<<	"       mmap_size      0               dummy argument for backward compatibility" << endl
 				<<	"       gComSocket     0                socket for communication with C_analyze" << endl
 				<< "       hsave_intervall 0               frequency for autosaving histos [sec]" << endl
  				<< setblack <<	endl << endl;
@@ -379,16 +372,14 @@ int main(int argc, char **argv) {
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Histo file:  " << histo_file << endl;
 
 // mmap file & size
-	TString mmap_name;
+	TString mmap_name = "none";
 	argNo++;
-	if(argc > argNo)	mmap_name = argv[argNo];
-	else				mmap_name = "none";
-   if (mmap_name.CompareTo("none") == 0) kUseMap = kFALSE;
+
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] TMap name:   " << mmap_name << endl;
-	Int_t mmap_size;
+	Int_t mmap_size = 0;
 	argNo++;
-	if(argc > argNo)	mmap_size = TMrbAnalyze::kMB * atoi(argv[argNo]);
-	else				mmap_size = 0;
+//	if(argc > argNo)	mmap_size = TMrbAnalyze::kMB * atoi(argv[argNo]);
+//	else				mmap_size = 0;
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] TMap size:   " << mmap_size << endl;
 
 	gComSocket = 0;
@@ -406,56 +397,8 @@ int main(int argc, char **argv) {
 
 	PutPid(TMrbAnalyze::M_STARTING);
 
-   if ( gComSocket > 0 ) ss = new TServerSocket(gComSocket, kTRUE);
+   if ( gComSocket > 0 ) gServerSocket = new TServerSocket(gComSocket, kTRUE);
 
-   TString  * new_name = NULL;
-   TFile * save_map = NULL;
-   const char * hname = NULL;
-
-   if(kUseMap){
-		if( !(gSystem->AccessPathName((const Text_t *)mmap_name, kFileExists)) ) {
-	//   if mapped file exists,  save histos to temp file for later restore
-      	new_name = new TString(mmap_name);
-      	new_name->Append("_save.root");
-      	if (verboseMode) cout	<< setgreen
-								<< "M_analyze: M_prod being opened as READ" << endl
-         						<< "           Saving histograms to " << new_name->Data() << endl;
-	   	M_prod = TMapFile::Create((const Text_t *)mmap_name,"READ");
-         if (M_prod->IsZombie()) {
-     		   M_prod->Close();
-            cout << setred << "Cant open mapfile for READ: " << mmap_name << setblack << endl;
-         } else {
-      	   save_map = new TFile(new_name->Data(),"RECREATE");
-      	   TMapRec *mr = M_prod->GetFirst();
-      	   if(mr){
-         	   while (M_prod->OrgAddress(mr)) {
-            	   if(!mr) break;
-            	   hname=mr->GetName();
-            	   TH1 *hist=0;
-            	   hist    = (TH1 *) M_prod->Get(hname, hist);
-            	   if(hist){ hist->Write(); delete hist; hist = NULL;}
-	   //            cout << "Writing: " << hname << endl;
-            	   mr=mr->GetNext();
-         	   }
-      	   }
-    		   M_prod->Close();
-      	   TString RmCmd = "rm ";
-      	   RmCmd += (const Text_t *)mmap_name;
-      	   gSystem->Exec((const char *)RmCmd);
-         }
-		}
-   	if (verboseMode) cout	<< setgreen
-							<< "M_analyze: M_prod being opened as NEW"
-						<< setblack << endl;
-		TMapFile::SetMapAddress(0x46000000);		// alloc map file in hi mem
-		M_prod = TMapFile::Create((const Text_t *)mmap_name,"RECREATE",
-										mmap_size, "M memory mapped file");
-      if (M_prod->IsZombie()) {
-         M_prod->Close();
-         kUseMap = kFALSE;
-         cout << setred << "Cant open mapfile for READ: " << mmap_name << setblack << endl;
-      }
-   }
 // pass unix args to i/o spec
 	ioSpec = new TMrbIOSpec();
 	if (!ioSpec->SetStartStop(start_event, stop_event)) exit(1);
@@ -472,82 +415,6 @@ int main(int argc, char **argv) {
 
 	u_analyze->AddIOSpec(ioSpec);
 //	PutPid(TMrbAnalyze::M_STARTING);
-//	cout << "SizeOfMappedObjects before Update "
-//        <<  u_analyze->GetSizeOfMappedObjects(M_prod) << endl;
-//---
-   if(kUseMap){
-   	if(save_map){
-	//     get histos back from temp file
-      	cout << setgreen << "Restoring histograms from previous run" << setblack << endl;
-      	TMapRec *mr = M_prod->GetFirst();
-      	if(mr){
-         	while (M_prod->OrgAddress(mr)) {
-            	if(!mr) break;
-            	hname=mr->GetName();
-            	TH1 * hist=0;
-            	TH1 * histint=0;
-            	hist    = (TH1 *) save_map->Get(hname);
-            	if(hist){
-               	histint = (TH1*)gROOT->FindObject(hname);
-               	if(histint){
-                  	if(   hist->GetDimension() != histint->GetDimension()
-                     	|| hist->GetNbinsX()    + hist->GetNbinsY()    + hist->GetNbinsZ() !=
-                        	histint->GetNbinsX() + histint->GetNbinsY() + histint->GetNbinsZ()
-                     	|| hist->Sizeof()       != histint->Sizeof()){
-                     	cout << "Histogram: " << hname << " changed size, wont restore" << endl;
-                  	} else {
-                  	  hist->SetDirectory(gROOT);
-                  	  histint->Add(hist,1);
-                  	  histint->Print();
-                  	}
-               	}
-            	}
-            	mr=mr->GetNext();
-         	}
-      	}
-      	save_map->Close();
-   	}
-	//---
-		M_prod->Update();								// update all objects in shared memory
-
-//     add pointers to hist to directory in memory
-
-      TMapRec * mr = M_prod->GetFirst();
-      while (mr){
-         TH1 * hm = (TH1 *)mr->GetObject();
-         if(hm && hm->InheritsFrom(TH1::Class()))gROOT->Append(hm);
-//         hm->Print();
-         mr = mr->GetNext();
-      }
-//
-	// check if map file size greater than size of mapped objects
-		Int_t mobj_size = u_analyze->GetSizeOfMappedObjects(M_prod);
-		mobj_size += TMrbAnalyze::kMB;			// quick hack: seems to be calculated too small by TMapfile!
-		if (mobj_size > mmap_size) {
-			Float_t xmb = ((Float_t) mobj_size) / TMrbAnalyze::kMB + .5;
-			cerr	<< setred
-					<< "M_analyze: Size of mapped objects ("
-					<< setiosflags(ios::fixed) << setprecision(1) << xmb << " MB) > size of map file ("
-					<< (mmap_size / TMrbAnalyze::kMB) << " MB)"
-					<< endl;
-			cerr	<< "M_analyze: Sorry, can't run ... Start over with MMapFile Size = "
-					<< (Int_t) (xmb + .99) << ""
-					<< setblack << endl;
-			exit_from_analyze(1);
-			PutPid(TMrbAnalyze::M_ABSENT);
-			sleep(2);
-			if(!gSystem->AccessPathName(our_pid_file.Data(), kFileExists)){
-				TString RmCmd = "rm  ";
-				RmCmd += our_pid_file;
-				gSystem->Exec((const char *)RmCmd);
-				if ( verboseMode ) cout << "M_analyze: removing " << our_pid_file << endl;
-			}
-			cerr << setred << "M_analyze: terminated" << setblack << endl;
-			exit(1);
-		}
-		u_analyze->SetMapFile(M_prod, mmap_size);
-   }
-
 //
    gStat = new TMrbStatistics("M_analyze");
 //   gStat->Init();
@@ -608,7 +475,7 @@ int main(int argc, char **argv) {
 //	gSystem->Sleep(1000);       // give main  some time
 
    if (gComSocket > 0) pthread_create(&msg_thread, NULL, &msg_handler, NULL);
-   if (gComSocket > 0 || kUseMap) pthread_create(&update_thread, NULL, &update_handler, NULL);
+   if (gComSocket > 0 ) pthread_create(&update_thread, NULL, &update_handler, NULL);
 
 	gSystem->Sleep(1000);       // give the threads some time
 
@@ -672,9 +539,9 @@ int main(int argc, char **argv) {
 
 
 	if ( verboseMode ) cout	<< "M_analyze: Waiting for update_thread to terminate" << endl;
-   if (gComSocket > 0 || kUseMap) {
-	void *r;
-	pthread_join(update_thread, &r);
+   if (gComSocket > 0 ) {
+		void *r;
+		pthread_join(update_thread, &r);
 	}
    if ( verboseMode ) cout	<< "M_analyze: update_thread terminated" << endl;
 	u_analyze->CloseRootTree();		// close user's output file(s)
@@ -748,21 +615,14 @@ void * update_handler(void * dummy) {
 
 //	update time in micro seconds
 
-	Int_t  measured_update_time;
-	struct tms buf1, buf2;
-	clock_t t1, t2;
-	static ULong_t total_sleep = 0, seconds = 0;
 	static Int_t sleep_before_update = 0;
 
 	while(1) {
 		struct timespec t = { 1, 0 };
 		nanosleep(&t, NULL);         // sleep 1 second
 		pthread_mutex_lock(&global_data_mutex);
-		seconds ++;
-		TH1F * rh = u_analyze->UpdateRateHistory();
-		if ( M_prod ) M_prod->Update(rh);
-		TH1F * dth = u_analyze->UpdateDTimeHistory();
-		if ( M_prod ) M_prod->Update(dth);
+		u_analyze->UpdateRateHistory();
+		u_analyze->UpdateDTimeHistory();
 		pthread_mutex_unlock(&global_data_mutex);
 		sleep_before_update ++;
 		if (hsave_intervall > 0 && sleep_before_update >= hsave_intervall) {
@@ -771,40 +631,7 @@ void * update_handler(void * dummy) {
 			u_analyze->SaveHistograms("*", ioSpec);
 //			pthread_mutex_unlock(&global_data_mutex);
 		}
-		total_sleep ++;
-		if (total_sleep >= update_time){
-			total_sleep = 0;
-//	protect update with same mutex as fills
-			pthread_mutex_lock(&global_data_mutex);
-			if(u_analyze->IsToBeUpdated() > 0)
-			{
-
-// following could be done only once but maybe later will have dynamic changes in the
-// contents of the TMapped file
-
-// time the update
-				t1=times(&buf1);
-				if ( M_prod ) M_prod->Update();  // updates all objects in shared memory
-				t2=times(&buf2);
-// convert to seconds
-				measured_update_time= (t2-t1)/CLOCKS_PER_SEC;
-// guarantee that update takes no more than 10% of available time
-				if((9*measured_update_time) > TMrbAnalyze::kUpdateTime){
-					update_time= 9*measured_update_time;
-					if ( verboseMode ) {
-						cout	<< "M_analyze: changing update_time to "
-								<< update_time
-								<< endl;
-         			}
-				}
-			}
-			pthread_mutex_unlock(&global_data_mutex);
-		}
 		if(u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING){
-			pthread_mutex_lock(&global_data_mutex);
-			if ( M_prod ) M_prod->Update();  // updates all objects in shared memory
-			pthread_mutex_unlock(&global_data_mutex);
-
 			if ( verboseMode ) cout	<< "M_analyze: Terminating update thread" << endl;
 			pthread_exit(0);
 		}
@@ -862,8 +689,6 @@ void exit_from_analyze(int n) {
 	u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
 	u_analyze->SetUpdateFlag();
 	u_analyze->CloseRootTree();		// close user's file(s)
-	if ( verboseMode ) cout << "M_analyze: Will close Mapfile" << endl;
-	if ( M_prod ) M_prod->Close();
 	PutPid(TMrbAnalyze::M_STOPPING);
 }
 
@@ -887,6 +712,8 @@ void exit_from_analyze(int n) {
 //                           e.g. zero, delete spectra
 //                 16 Feb/99 OS
 //                           simplify
+//                 21 Feb/11 OS
+//                           remove Mapfile stuff
 //
 /////////////////////////////////////////////////////////////////////////////
 
@@ -895,22 +722,18 @@ void * msg_handler(void * dummy) {
    cout << setyellow<< "Enter msg_handler, gComSocket = " << gComSocket
 	<< " RunStatus: "
 	<<u_analyze->GetRunStatus()<<setblue<< endl;
-//   TServerSocket *ss = new TServerSocket(gComSocket, kTRUE);
-   if (!(ss->IsValid())) {
+	if (!(gServerSocket->IsValid())) {
       cout << "Invalid: " << gComSocket << endl;
       return dummy;
    }
 
    TMonitor *mon = new TMonitor();
-   mon->Add(ss);
+	mon->Add(gServerSocket);
    mon->Print();
 
-//   TSocket *s0 = 0, *s1 = 0, *s_reject = 0;
    TSocket * s[kMaxSock] = {0};
    TMessage *mess =0;
    Int_t maxwait = 1000;
-//     TSocket  *sock = ss->Accept();
-//     sock->Send("go 0");
 
    while (1) {
       TSocket *sock;
@@ -930,25 +753,6 @@ void * msg_handler(void * dummy) {
                break;
             }
          }
-/*
-         if (!s0) {
-            s0 = ((TServerSocket *)sock)->Accept();
-            s0->Send("accept");
-            mon->Add(s0);
-            cout << "Added socket s0" << endl;
-         } else if (!s1) {
-            s1 = ((TServerSocket *)sock)->Accept();
-            s1->Send("accept");
-            mon->Add(s1);
-            cout << "Added socket s1" << endl;
-         } else {
-            cout << "only accept two client connections" << endl;
-            s_reject = ((TServerSocket *)sock)->Accept();
-            s_reject->Send("reject");
-            s_reject->Close();
-            s_reject = NULL;
-         }
-*/
          if (!ok) {
             cout << "only accept " << kMaxSock - 1 << " client connections" << endl;
             s[kMaxSock - 1] = ((TServerSocket *)sock)->Accept();
@@ -956,15 +760,8 @@ void * msg_handler(void * dummy) {
             s[kMaxSock - 1]->Close();
             s[kMaxSock - 1] = NULL;
          }
-//         if (s0 && s1) {
- //           mon->Remove(ss);
-//            ss->Close();
-//            ss = NULL;
-//         }
          continue;
       }
-
-//      cout << "msg_handler(): socket: " << sock << endl;
 
       sock->Recv(mess);
       if (mess == 0) {
@@ -974,8 +771,6 @@ void * msg_handler(void * dummy) {
          for (Int_t i = 0; i < kMaxSock - 1; i++) {
             if (sock == s[i]) s[i] = NULL;
          }
-//         if (sock == s0) s0 = 0;
-//         if (sock == s1) s1 = 0;
          continue;
       }
 //      if ( verboseMode ) cout << "M_analyze::msg_handler(): Message type " << mess->What() << endl;
@@ -1029,29 +824,14 @@ void * msg_handler(void * dummy) {
 
          } else if ( cmd == "gethist" ) {
 			   pthread_mutex_lock(&global_data_mutex);
-//				cout << "msg_handler(): gethist: RunStatus: "
-//				<<u_analyze->GetRunStatus() << endl << flush;
 				TH1 * hist = (TH1 *)gROOT->GetList()->FindObject(arg.Data());
-//				if ( hist && hist->GetEntries() <= 0 ) {
-//					gSystem->StackTrace();
-//					gSystem->Sleep(1);
-//					hist->Dump();
-//				}
 				if (!hist || hist->GetEntries() <= 0 )
 					hist = NULL;
             if ( (u_analyze->GetRunStatus() == TMrbAnalyze::M_RUNNING
                       || u_analyze->GetRunStatus() == TMrbAnalyze::M_PAUSING)
                 && hist != NULL ) {
-//					cout << "msg_handler(): found hist: " << hist
-//					<< " entries " <<hist->GetEntries()  << endl;
-//					if (hist->GetEntries() > 0) {
-//						cout << "msg_handler(): found hist: " << hist << endl;
-	//            if ( hist && u_analyze->GetEventsProcessed() > 0) {
 						TMessage * message = new  TMessage(kMESS_OBJECT);
 						message->WriteObject(hist);     // write object in message buffer
-	//               hist->Print();
-//						cout << "msg_handler(): sendhist: "<< setblack << endl;
-	//			      pthread_mutex_unlock(&global_data_mutex);
 						sock->Send(*message);          // send message
 						delete message;
 //					}
@@ -1105,8 +885,6 @@ void * msg_handler(void * dummy) {
          	for (Int_t i = 0; i < kMaxSock - 1; i++) {
             	if (sock == s[i]) s[i] = NULL;
          	}
-//         	if (sock == s0) s0 = 0;
-//         	if (sock == s1) s1 = 0;
          	continue;
          } else {
             cerr << setred
@@ -1115,8 +893,6 @@ void * msg_handler(void * dummy) {
             sock->Send("FAILED");
             send_ack = kFALSE;
         }
-//        cout << "mon->Remove(sock) " << endl;
-//        mon->Remove(sock);
         if(send_ack)sock->Send("ACK");
         if (u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING) {
            break;
@@ -1130,13 +906,6 @@ void * msg_handler(void * dummy) {
       }
       if (mess) { delete mess; mess = 0;};
    }
-
-//	for (Int_t i = 0; i < kMaxSock; i++) {
-//   	if (s[i]) s[i]->Close() ;
-//	}
-//   if (s0) s0->Close();
-//   if (s1) s1->Close();
-//   if (ss) ss->Close();
 
    if (mess) delete mess;
    cout << "exit msg_handler" << endl;

@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.101 2010-12-15 09:07:46 Marabou Exp $
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.102 2011-03-11 10:14:50 Otto.Schaile Exp $
 // Date:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -34,13 +34,11 @@
 
 #include "SetColor.h"
 
-// global pthread mutex to protect TMapped data
+// global pthread mutex to protect data during histogram saving
 extern pthread_mutex_t global_data_mutex;
 
 extern void PutPid(TMrbAnalyze::EMrbRunStatus);	// run-status control
 
-// if Offline (replay) dont use TMapFile
-Bool_t kUseMap = kTRUE;
 
 static TH1F * hRateHistory = NULL;				// where the rate history is stored
 static TH1F * hDTimeHistory = NULL;				// where the dead-time history is stored
@@ -956,45 +954,6 @@ Bool_t TMrbAnalyze::ReloadMultipleFiles(TString & ParamFileString) {
 	return(kTRUE);
 }
 
-Int_t TMrbAnalyze::GetSizeOfMappedObjects(TMapFile * MapFile) const {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbAnalyze::GetSizeOfMappedObjects
-// Purpose:        Determine total size of all objects mapped so far
-// Arguments:      TMapFile * MapFile      -- current map file
-// Results:        Int_t NofBytes          -- number of bytes allocated
-// Exceptions:
-// Description:    Loops thru objects in mapfile, calculates total size.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TMapRec * mr = MapFile->GetFirst();
-	if(!mr){
-		gMrbLog->Err()	<< "No records" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetSizeOfMappedObjects");
-		return(0);
-	}
-	Int_t size = 0;
-    Bool_t ok = kTRUE;
-	while (MapFile->OrgAddress(mr)) {
-		if(!mr) break;
-        Int_t s =  mr->GetBufSize();
-        if(s <= 0)ok = kFALSE;
-		size += s;
-		mr = mr->GetNext();
-	}
-    if(!ok){
-		gMrbLog->Err()	<< "MapFile too small: "<< size << endl;
-		gMrbLog->Flush(this->ClassName(), "GetSizeOfMappedObjects");
-        MapFile->Print();
-		return(0);
-    }
-    cout	<< setgreen
-			<< this->ClassName() << "Size used on Mapfile (KBytes): " << size / 1024
-			<< setblack << endl;
-	return(size);
-}
-
 Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, const Char_t * HistoFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1060,58 +1019,32 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 	}
 	hf->cd();
 
-   if(kUseMap){
-		fMapFile->Update();		// force update
-
-		const char * name;
-		TMapRec * mr = fMapFile->GetFirst();
-		if (mr) {
-			while (fMapFile->OrgAddress(mr)) {
-				if(!mr) break;
-				name = mr->GetName();
-				Bool_t ok = kFALSE;
-				if (rexp == NULL) ok = kTRUE;
-				else {
-					TString shh(name);
-					if(shh.Index(*rexp) >= 0) ok = kTRUE;
-				}
-				if (ok) {
-					TObject * obj = NULL;
-					obj = fMapFile->Get(name, obj);
-					if (obj) obj->Write();
-					if (this->IsVerbose()) cout << "   Writing: " << name << endl;
-        		}
-		   	 mr = mr->GetNext();
+	TIter next(gROOT->GetList());
+	TObject * obj;
+	while( (obj = (TObject*)next()) ){
+		Bool_t writeIt = kFALSE;
+		TString otype;
+		TString shh(obj->GetName());
+		if(shh.Index(*rexp) >= 0) {
+			if(obj->InheritsFrom("TH1")) {
+				writeIt = kTRUE;
+				otype = "histo";
+				histoCount++;
+			} else if (obj->InheritsFrom("TMrbWindow")) {
+				writeIt = kTRUE;
+				otype = "window";
+				wdwCount++;
+			} else if (obj->InheritsFrom("TCutG")) {
+				writeIt = kTRUE;
+				otype = "cut";
+				cutCount++;
+				TMrbWindow2D * w = (TMrbWindow2D *) gMrbLofUserVars->Find(((TMrbWindow2D *)obj)->GetName());
+				if (w) obj = w;
 			}
-		}
-   } else {
-		TIter next(gROOT->GetList());
-		TObject * obj;
-		while( (obj = (TObject*)next()) ){
-			Bool_t writeIt = kFALSE;
-			TString otype;
-			TString shh(obj->GetName());
-			if(shh.Index(*rexp) >= 0) {
-				if(obj->InheritsFrom("TH1")) {
-				  writeIt = kTRUE;
-				  otype = "histo";
-				  histoCount++;
-				} else if (obj->InheritsFrom("TMrbWindow")) {
-				  writeIt = kTRUE;
-				  otype = "window";
-				  wdwCount++;
-				} else if (obj->InheritsFrom("TCutG")) {
-				  writeIt = kTRUE;
-				  otype = "cut";
-				  cutCount++;
-				  TMrbWindow2D * w = (TMrbWindow2D *) gMrbLofUserVars->Find(((TMrbWindow2D *)obj)->GetName());
-				  if (w) obj = w;
+			if (writeIt) {
+				obj->Write();
+				if (this->IsVerbose()) cout << "   Writing " << otype << " " << obj->GetName() << endl;
 				}
-				if (writeIt) {
-					obj->Write();
-					if (this->IsVerbose()) cout << "   Writing " << otype << " " << obj->GetName() << endl;
-            	}
-			}
 		}
 	}
 	if (histoCount) {
@@ -1172,10 +1105,8 @@ Int_t TMrbAnalyze::ClearHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) 
 	if (pattern.CompareTo("*") != 0) rexp = new TRegexp(pattern.Data(), kTRUE);
 
 	TH1 * hh;
-
-    TIter * next_obj;
-    if(kUseMap)next_obj = new TIter(fMapFile->GetDirectory()->GetList());
-    else       next_obj = new TIter(gROOT->GetList());
+	TIter * next_obj;
+	next_obj = new TIter(gROOT->GetList());
 
 	TObject * obj;
 
@@ -1220,7 +1151,6 @@ Int_t TMrbAnalyze::ClearHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) 
 			}
 		}
 	}
-	if(kUseMap)fMapFile->Update(); 	// clear map file
 	pthread_mutex_unlock(&global_data_mutex);
 	gMrbLog->Out()	<< count << " histogram(s) zeroed" << endl;
 	gMrbLog->Flush(this->ClassName(), "ClearHistograms", setblue);

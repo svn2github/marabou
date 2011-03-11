@@ -7,7 +7,7 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.58 2010-12-15 09:07:46 Marabou Exp $
+// Revision:       $Id: TMrbAnalyze.h,v 1.59 2011-03-11 10:14:50 Otto.Schaile Exp $
 // Date:
 // URL:
 // Keywords:
@@ -17,7 +17,6 @@
 #include "TH1.h"
 #include "TList.h"
 #include "TString.h"
-#include "TMapFile.h"
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 #include "TMrbLogger.h"
@@ -157,13 +156,6 @@ class TMrbAnalyze : public TObject {
 		inline TMrbIOSpec * GetCurIOSpec() { return(fCurIOSpec); };
 		inline TList * GetLofIOSpecs() { return(&fLofIOSpecs); };
 
-		inline void SetMapFile(TMapFile * MapFile, Int_t Size) { 		// store mmap addr & size
-			fMapFile = MapFile;
-			fMapFileSize = Size;
-		};
-		Int_t GetSizeOfMappedObjects(TMapFile * MapFile) const;			// check size of objects in map file
-
-																	// bookkeeping: manage lists of modules, params, and histos
 		void InitializeLists(Int_t NofModules, Int_t NofParams);	// init lists
 		const Char_t * GetModuleName(Int_t ModuleIndex) const;			// get module name by index
 		const Char_t * GetModuleTitle(Int_t ModuleIndex) const;			// get module title by index
@@ -308,9 +300,6 @@ class TMrbAnalyze : public TObject {
 		Int_t fTimeOfLastUpdate;	// update time is stored here
 		Int_t fEventsProcPrev; 		// event count of last update
 		Int_t fHistFileVersion;    // version number of (autosaved) hist file
-
-		TMapFile * fMapFile;		// shared memory mmap file
-		Int_t fMapFileSize;			// ... size
 
 		TMrbIOSpec * fCurIOSpec;	// current i/o spec
 		TList fLofIOSpecs;			// list of i/o specs

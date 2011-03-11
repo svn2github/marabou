@@ -6,8 +6,8 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrMux.cxx,v 1.1 2007-10-27 16:26:30 Marabou Exp $       
-// Date:           $Date: 2007-10-27 16:26:30 $
+// Revision:       $Id: TUsrMux.cxx,v 1.2 2011-03-11 10:14:50 Otto.Schaile Exp $       
+// Date:           $Date: 2011-03-11 10:14:50 $
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TROOT.h"
@@ -438,7 +438,7 @@ void TUsrMux::PrintLofMuxHits() {
 
 	cout << endl << "Hit list --------------------------------------------------------------" << endl;
 	TIterator * mIter = fLofMuxHits.MakeIterator();
-	TUsrHit * hit;
+	TUsrHit * hit = NULL;
 	while (hit == (TUsrHit *) mIter->Next()) {
 		TH1F * h = (TH1F *) gMrbAnalyze->GetHistoAddr(hit->GetMuxChannel());
 		cout << (h ? h->GetName() : "undef") << " ";
