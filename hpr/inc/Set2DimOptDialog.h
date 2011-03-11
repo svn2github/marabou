@@ -6,7 +6,7 @@
 #include <iostream>
 //_____________________________________________________________________________________
 
-const Int_t kNdrawopt = 20;
+const Int_t kNdrawopt = 24;
 
 class Set2DimOptDialog : public TObject {
 
@@ -50,10 +50,13 @@ private:
 	Int_t   fTwoDimLogZ;
 	Int_t   fUseGL;
 	Int_t   fContourLevels;
+	Int_t   fHistNo;
+	Int_t   fBidHistNo;
 	
 public:
 
    Set2DimOptDialog(TGWindow * win = NULL);
+	Set2DimOptDialog(Int_t batch);
    ~Set2DimOptDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
@@ -62,7 +65,9 @@ public:
    void SetHistAttPermLocal();
    void SetHistAttPerm();
    void SaveDefaults();
-   void RestoreDefaults();
+   void SetAllToDefault();
+   void RestoreDefaults(Int_t resetall = 0);
+	void GetValuesFromHist();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
 

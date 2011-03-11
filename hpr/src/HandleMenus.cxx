@@ -114,6 +114,7 @@ enum ERootCanvasCommands {
    kOption2DimCol,
    kOptionGraph,
    kOptionHpr,
+	kOptionResetAll,
    kOptionWin,
    kFHMarks,
    kFHMarkon,
@@ -687,6 +688,20 @@ again:
                   case kOptionWin:
                      {
                      new WindowSizeDialog(fRootCanvas);
+                     }
+                     break;
+                  case kOptionResetAll:
+                     {
+                     SetHistOptDialog * shod = new SetHistOptDialog(1);
+							shod->RestoreDefaults(1);  // force defaults
+							shod->SaveDefaults();
+							shod->SetDefaults();
+							delete shod;
+                     SetCanvasAttDialog * scad = new SetCanvasAttDialog(1);
+							scad->RestoreDefaults(1);  // force defaults
+							scad->SaveDefaults();
+							scad->SetDefaults();
+							delete scad;
                      }
                      break;
                   case kOptionPad:
@@ -1400,6 +1415,7 @@ void HandleMenus::BuildMenus()
    if(!fGraph && !fFitHist) {
       fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
 		fOptionMenu->AddEntry("Default window sizes", kOptionWin);
+      fOptionMenu->AddEntry("Reset options/values to factory defaults", kOptionResetAll);
 
    }
    if (!fGraph && fFitHist) fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
@@ -1417,6 +1433,7 @@ void HandleMenus::BuildMenus()
       if (!fGraph) {
 		   fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
 		   fOptionMenu->AddEntry("Default window sizes", kOptionWin);
+			fOptionMenu->AddEntry("Reset options/values to factory defaults", kOptionResetAll);
       }
    }
    fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());

@@ -39,6 +39,7 @@ private:
 public:
 
    Set3DimOptDialog(TGWindow * win = NULL);
+	Set3DimOptDialog(Int_t batch);
    ~Set3DimOptDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
@@ -47,7 +48,9 @@ public:
    void SetHistAttPermLocal();
    void SetHistAttPerm();
    void SaveDefaults();
-   void RestoreDefaults();
+   void SetAllToDefault();
+   void RestoreDefaults(Int_t resetall = 0);
+	void GetValuesFromHist();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
 

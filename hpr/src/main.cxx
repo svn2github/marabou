@@ -3,7 +3,6 @@
 #include "TEnv.h"
 #include <iostream>
 #include "HistPresent.h"
-static HistPresent *mypres = NULL;
 
 int main(int argc, char **argv)
 {
@@ -21,7 +20,7 @@ int main(int argc, char **argv)
       gROOT->LoadMacro(attrname);
 //loop:
    theApp->Run(kTRUE);
-   delete hp;
+//   delete gHpr;
    return 0;
 }
 

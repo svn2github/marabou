@@ -20,6 +20,7 @@
 #include <iostream>
 #include <sstream>
 
+extern HistPresent *gHpr;
 //______________________________________________________________________________________
 
 void FitHist::MarksToWindow(){
@@ -470,8 +471,8 @@ void FitHist::RemoveAllCuts(){
    fActiveCuts->Clear();
    fAllCuts->SetOwner();
    fAllCuts->Clear();
-   if (hp) 
-     hp->HandleRemoveAllCuts();
+   if (gHpr) 
+     gHpr->HandleRemoveAllCuts();
    fCanvas->Modified();
    fCanvas->Update();
    

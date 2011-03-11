@@ -9,6 +9,8 @@
 #include "support.h"
 #include "TGMrbInputDialog.h"
 
+extern HistPresent *gHpr;
+
 //_______________________________________________________________________________________
 
 void FitHist::SaveUserContours()
@@ -76,15 +78,15 @@ void FitHist::SaveUserContours()
 
 void FitHist::UseSelectedContour()
 {
-   if (!hp) return;
-   if(hp->fSelectContour->GetSize() <= 0) {
+   if (!gHpr) return;
+   if(gHpr->fSelectContour->GetSize() <= 0) {
       Hpr::WarnBox("No contour selected");
       return;
-   } else if (hp->fSelectContour->GetSize() > 1) {
+   } else if (gHpr->fSelectContour->GetSize() > 1) {
       Hpr::WarnBox("More then one selected\n\
 Take first");
    }
-   TObjString * objs = (TObjString *)hp->fSelectContour->At(0);
+   TObjString * objs = (TObjString *)gHpr->fSelectContour->At(0);
    TString fname = objs->GetString();
    Int_t pp = fname.Index(" ");
    if (pp <= 0) {cout << "pp<=0 in " << fname << endl; return;};
@@ -188,7 +190,7 @@ void FitHist::SetUserContours()
       Int_t ival = (Int_t)(i * fSelHist->GetMaximum() / ncont);
       (*xyvals)[i] = (Double_t) ival;
 //    assume colorindeces 51 - 100 ( rainbow colors)
-         if (hp) {
+         if (gHpr) {
            startIndex = SetColorModeDialog::GetStartColorIndex();
            nofLevels  = SetColorModeDialog::GetNofColorLevels();
          }

@@ -31,6 +31,7 @@
 #pragma link C++ class AddFitMenus;
 #pragma link C++ class HprStack;
 #pragma link C++ class HprGaxis;
+#pragma link C++ global gHpr;
 #endif
 
 

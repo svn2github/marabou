@@ -11,12 +11,21 @@
 #include "TH1.h"
 #include "TH3.h"
 #include "TStyle.h"
+#include "TSystem.h"
 #include "Set3DimOptDialog.h"
 #include <iostream>
 
 namespace std {} using namespace std;
 
 //TString Set3DimOptDialog::fDrawOpt3Dim = "COLZ";
+//_______________________________________________________________________
+
+Set3DimOptDialog::Set3DimOptDialog(Int_t batch)
+{
+	if (batch);
+	cout << "ctor Set2DimOptDialog, non interactive" <<endl;
+	fDialog = NULL;
+}
 //_______________________________________________________________________
 
 Set3DimOptDialog::Set3DimOptDialog(TGWindow * win)
@@ -111,6 +120,7 @@ For further details contact ROOTs documentation.\n\
 	   cout << "No Histogram in Canvas" << endl;
 	}
    RestoreDefaults();
+	GetValuesFromHist();
    Int_t selected = -1;
    for (Int_t i = 0; i < 4; i++) {
       fDrawOpt3DimArray[i] = fDrawOpt3[i];
@@ -133,6 +143,7 @@ For further details contact ROOTs documentation.\n\
    Int_t indopt = 0;
 //    static Int_t dummy;
    static TString stycmd("SetHistAttPermLocal()");
+   static TString sadcmd("SetAllToDefault()");
 
 	fBidSCAT = 1;
 	fBidBOX  = 2;
@@ -167,6 +178,8 @@ For further details contact ROOTs documentation.\n\
 
    fRow_lab->Add(new TObjString("CommandButt+Set as global default"));
    fValp[ind++] = &stycmd;
+   fRow_lab->Add(new TObjString("CommandButt+Reset all to default"));
+   fValp[ind++] = &sadcmd;
 
    static Int_t ok;
    Int_t itemwidth = 360;
@@ -314,11 +327,31 @@ void Set3DimOptDialog::SaveDefaults()
 
 //______________________________________________________________________
 
-void Set3DimOptDialog::RestoreDefaults()
+void Set3DimOptDialog::SetAllToDefault()
+{
+	RestoreDefaults(1);
+}
+//______________________________________________________________________
+
+void Set3DimOptDialog::GetValuesFromHist()
 {
    if ( !fHist ) return;
+
 	fDrawOpt3Dim = fHist->GetOption();
-   TEnv env(".hprrc");
+}
+//______________________________________________________________________
+
+void Set3DimOptDialog::RestoreDefaults(Int_t resetall)
+{
+   cout << "Set2DimOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
+	TString envname;
+	if (resetall == 0 ) {
+		envname = ".hprrc";
+	} else {
+		// force use of default values by giving an empty resource file
+		gSystem->TempFileName(envname);
+	}
+   TEnv env(envname);
 	f3DimBackgroundColor = env.GetValue("Set3DimOptDialog.f3DimBackgroundColor", 0);
 	fHistFillColor3Dim = env.GetValue("Set3DimOptDialog.fHistFillColor3Dim", 1);
 	fHistLineColor3Dim = env.GetValue("Set3DimOptDialog.fHistLineColor3Dim", 1);

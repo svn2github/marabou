@@ -56,7 +56,7 @@ private:
    TF1      *fCalFunc;
    FitOneDimDialog *fFit1DimD;
    Fit2DimDialog *fFit2DimD;
-   HistPresent* hp;
+//   HistPresent* hp;
    HTCanvas *fCanvas;
    TH1     *fExpHist, *fProjHistX, *fProjHistY;
    TString fHname;
@@ -114,12 +114,12 @@ private:
    TableOfLabels * fTofLabels;
 
    Int_t fFill1Dim;
-   Color_t fHistFillColor;
-   Color_t fHistLineColor;
-   Float_t fHistLineWidth;
+   Color_t fFillColor;
+   Color_t fLineColor;
+   Float_t fLineWidth;
    Float_t fMarkerSize;
 	Int_t fDrawMarker;
-	Int_t fHistFillStyle;
+	Int_t fFillStyle;
    Int_t fShowContour;
    Int_t fShowDateBox;
    Int_t fShowStatBox;
@@ -131,6 +131,14 @@ private:
    Int_t fLiveStat2Dim;
    Int_t fLiveGauss;
    Int_t fLiveBG;
+	Int_t   fSmoothLine;
+	Int_t   fSimpleLine;
+	Int_t   fBarChart;
+	Int_t   fBarChart3D;
+	Int_t   fBarChartH;
+	Int_t   fPieChart;
+	Int_t   fText;
+	Int_t   fTextAngle;
    Int_t fShowZScale;
    Int_t fDrawAxisAtTop;
    TString fDrawOpt2Dim;
@@ -154,7 +162,9 @@ private:
 	Int_t   fTwoDimLogX;
 	Int_t   fTwoDimLogY;
 	Int_t   fTwoDimLogZ;
-   TString fDrawOpt3Dim;
+	Int_t   fLabelsTopX;
+	Int_t   fLabelsRightY;
+	TString fDrawOpt3Dim;
    Color_t fHistFillColor3Dim;
    Color_t fHistLineColor3Dim;
    Color_t fMarkerColor3Dim; 

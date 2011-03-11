@@ -80,6 +80,7 @@
 
 #include "hprbase.h"
 
+extern HistPresent *gHpr;
 extern Int_t nHists;
 
 enum dowhat { expand, projectx, projecty, statonly, projectf,
@@ -111,8 +112,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 //      AppendDirectory();
       gDirectory->Append(this);
    }
-   hp = (HistPresent *) gROOT->FindObject("mypres");
-   if (!hp)
+//   hp = (HistPresent *) gROOT->FindObject("mypres");
+   if (!gHpr)
       cout << "running without HistPresent" << endl;
    fHname = hname;
 //   Int_t pp = fHname.Index(".");
@@ -160,10 +161,10 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fCmdLine = new TList();
    gROOT->GetListOfCleanups()->Add(this);
 
-   if (hp) {
-      fAllFunctions = hp->GetFunctionList();
-      fAllWindows = hp->GetWindowList();
-      fAllCuts = hp->GetCutList();
+   if (gHpr) {
+      fAllFunctions = gHpr->GetFunctionList();
+      fAllWindows = gHpr->GetWindowList();
+      fAllCuts = gHpr->GetCutList();
    }
 //   fMarkers = new FhMarkerList(0);
    peaks = new TObjArray(0);
@@ -209,10 +210,10 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 
    fTemplateMacro = "TwoGaus";
    fFill1Dim      = env.GetValue("Set1DimOptDialog.fFill1Dim",      0);
-   fHistFillColor = env.GetValue("Set1DimOptDialog.fHistFillColor", 1);
-   fHistLineColor = env.GetValue("Set1DimOptDialog.fHistLineColor", 1);
-   fHistLineWidth = env.GetValue("Set1DimOptDialog.fHistLineWidth", 1);
-   fHistFillStyle = env.GetValue("Set1DimOptDialog.fHistFillStyle", 3001);
+   fFillColor     = env.GetValue("Set1DimOptDialog.fFillColor", 1);
+   fLineColor     = env.GetValue("Set1DimOptDialog.fLineColor", 1);
+   fLineWidth     = env.GetValue("Set1DimOptDialog.fLineWidth", 1);
+   fFillStyle     = env.GetValue("Set1DimOptDialog.fFillStyle", 3001);
    fLiveStat2Dim  = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
    fLiveStat1Dim  = env.GetValue("Set1DimOptDialog.fLiveStat1Dim", 0);
    fLiveGauss     = env.GetValue("Set1DimOptDialog.fLiveGauss", 0);
@@ -220,9 +221,20 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fDrawAxisAtTop = env.GetValue("Set1DimOptDialog.fDrawAxisAtTop", 0);
    fShowContour   = env.GetValue("Set1DimOptDialog.fShowContour", 0);
    fErrorMode     = env.GetValue("Set1DimOptDialog.fErrorMode", "none");
-   fMarkerSize    = env.GetValue("Set1DimOptDialog.fMarkerSize", 0);
+   fMarkerSize    = env.GetValue("Set1DimOptDialog.fMarkerSize", 1);
 	fDrawMarker    = env.GetValue("Set1DimOptDialog.fDrawMarker", 0);
 	gStyle->SetErrorX(env.GetValue("Set1DimOptDialog.fErrorX", 0.));
+	fSmoothLine  = env.GetValue("Set1DimOptDialog.fSmoothLine",    0);
+	fSimpleLine  = env.GetValue("Set1DimOptDialog.fSimpleLine",    0);
+	fBarChart    = env.GetValue("Set1DimOptDialog.fBarChart",      0);
+	fBarChart3D  = env.GetValue("Set1DimOptDialog.fBarChart3D",    0);
+	fBarChartH   = env.GetValue("Set1DimOptDialog.fBarChartH",     0);
+	fPieChart    = env.GetValue("Set1DimOptDialog.fPieChart",      0);
+	fText        = env.GetValue("Set1DimOptDialog.fText",          0);
+	fTextAngle   = env.GetValue("Set1DimOptDialog.fTextAngle",     0);
+	fLabelsTopX  = env.GetValue("Set1DimOptDialog.fLabelsTopX",    0);
+	fLabelsRightY= env.GetValue("Set1DimOptDialog.fLabelsRightY",  0);
+
    fDrawOpt2Dim   = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
    f2DimBackgroundColor = env.GetValue("Set2DimOptDialog.f2DimBackgroundColor", 0);
 	fHistFillColor2Dim = env.GetValue("Set2DimOptDialog.fHistFillColor2Dim", 1);
@@ -308,7 +320,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fLogy = fCanvas->GetLogy();
    fLogz = fCanvas->GetLogz();
 	fHasExtraAxis = kFALSE;
-	TQObject::Connect("TPad", "Modified()",
+	if ( !gStyle->GetCanvasPreferGL() )
+		TQObject::Connect("TPad", "Modified()",
 						   "FitHist", this, "HandlePadModified()");
 	
 };
@@ -328,25 +341,9 @@ void FitHist::HandlePadModified()
 	}
 //	gSystem->Sleep(1000);
 	if (gPad == fCanvas) {
-/*		if ( fHasExtraAxis ) {
-			if ( fFrameX1 != fCanvas->GetFrame()->GetX1() || fFrameX2 != fCanvas->GetFrame()->GetX2()
-			||fFrameY1 != fCanvas->GetFrame()->GetY1() || fFrameY2 != fCanvas->GetFrame()->GetY2() ) {
-				TTimer::SingleShot(200, "HprGaxis", this, "ReDoAxis()");
-				fFrameX1 = fCanvas->GetFrame()->GetX1();
-				fFrameX2 = fCanvas->GetFrame()->GetX2();
-				fFrameY1 = fCanvas->GetFrame()->GetY1();
-				fFrameY2 = fCanvas->GetFrame()->GetY2();
-			} 
-		}*/
 		if ( fLogy != fSelPad->GetLogy() ){
 			fLogy = fSelPad->GetLogy();
 			if ( fSelHist->GetDimension() == 1 ) {
-//				fCanvas->Update();
-//				gSystem->ProcessEvents();
-//				gSystem->Sleep(2000);
-//				gSystem->ProcessEvents();
-//				if ( fHasExtraAxis ) 
-//					TTimer::SingleShot(200, "FitHist", this, "ReDoAxis()");
 				fCanvas->GetHandleMenus()->SetLog(fLogy);
 			}
 			return;
@@ -354,8 +351,6 @@ void FitHist::HandlePadModified()
 		if ( fLogx != fSelPad->GetLogx() ){
 			fLogx = fSelPad->GetLogx();
 			if ( fSelHist->GetDimension() == 1 ) {
-//				if ( fHasExtraAxis ) 
-//					TTimer::SingleShot(200, "FitHist", this, "ReDoAxis()");
 			}
 			return;
 		}
@@ -399,10 +394,6 @@ void FitHist::RecursiveRemove(TObject * obj)
    fActiveFunctions->Remove(obj);
    if (obj == fFit1DimD) fFit1DimD = NULL;
    if (obj == fFit2DimD) fFit2DimD = NULL;
-//   if (obj == fDialog) {
-//	   fDialog = NULL;
-//	}
-//   cout << "FitHist::RecursiveRemove fDialog: " << fDialog << endl;	
 }
 
 //------------------------------------------------------
@@ -411,9 +402,7 @@ FitHist::~FitHist()
 {
 //    cout << " ~FitHist(): " << this << endl;
 //   cout<< "enter FitHist  dtor "<< GetName()<<endl;
-//   if(fMyTimer)fMyTimer->Delete();
-//   fMyTimer=NULL;
-   if (!fExpHist && hp && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
+   if (!fExpHist && gHpr && GeneralAttDialog::fRememberZoom) SaveDefaults(kTRUE);
    gDirectory->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
 	TQObject::Disconnect("TPad", "Modified()");
@@ -467,7 +456,7 @@ FitHist::~FitHist()
 
 void FitHist::SaveDefaults(Bool_t recalculate)
 {
-   if (!hp) return;      // not called from  Histpresenter
+   if (!gHpr) return;      // not called from  Histpresenter
 	if (!GeneralAttDialog::fRememberLastSet &&  !GeneralAttDialog::fRememberZoom) return;
 		
 //   if (!GeneralAttDialog::fRememberLastSet &&  !GeneralAttDialog::fRememberZoom) return;
@@ -518,7 +507,7 @@ void FitHist::RestoreDefaultRanges()
    TEnv * lastset = GetDefaults(fHname);
 	if (!lastset) return;
    fFitMacroName = lastset->GetValue("FitMacroName",fFitMacroName.Data());
-   if (hp && (GeneralAttDialog::fRememberLastSet || GeneralAttDialog::fRememberZoom)) {
+   if (gHpr && (GeneralAttDialog::fRememberLastSet || GeneralAttDialog::fRememberZoom)) {
 		fLogx = lastset->GetValue("LogX", fOneDimLogX);
 		fLogy = lastset->GetValue("LogY", fOneDimLogY);
 		fRangeLowX = fSelHist->GetXaxis()->GetXmin();
@@ -1110,7 +1099,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		}
 	}
    fCanvas = new HTCanvas(fCname.Data(), fCtitle.Data(),
-                        win_topx, win_topy, win_widx, win_widy, hp, this);
+                        win_topx, win_topy, win_widx, win_widy, gHpr, this);
    fCanvasIsAlive = kTRUE;
 
    fCanvas->SetEditable(kTRUE);
@@ -1147,7 +1136,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 		fCanvas->GetHandleMenus()->SetLog(fLogy);
       Draw1Dim();
    }
-   fCanvas->Update();
+//   fCanvas->Update();
 	fFrameX1 = fCanvas->GetFrame()->GetX1();
 	fFrameX2 = fCanvas->GetFrame()->GetX2();
 	fFrameY1 = fCanvas->GetFrame()->GetY1();
@@ -1320,7 +1309,7 @@ void FitHist::RebinOne()
    }
    if (newhist) {
       newhist->SetTitle(title);
-      if (hp) hp->ShowHist(newhist);
+      if (gHpr) gHpr->ShowHist(newhist);
       else    newhist->Draw();
    }
 }
@@ -1555,9 +1544,9 @@ void FitHist::WriteOutCanvas()
                         drawopt += "e1";
 //                  hi->SetOption(drawopt.Data());
                   if (fFill1Dim) {
-                     if (fHistFillStyle == 0) fHistFillStyle = 1001;
-                     hi->SetFillStyle(fHistFillStyle);
-                     hi->SetFillColor(fHistFillColor);
+                     if (fFillStyle == 0) fFillStyle = 1001;
+                     hi->SetFillStyle(fFillStyle);
+                     hi->SetFillColor(fFillColor);
                   } else
                      hi->SetFillStyle(0);
                }
@@ -1904,12 +1893,12 @@ void FitHist::GetRange()
 void FitHist::KolmogorovTest()
 {
    TH1 *hist;
-   if (hp->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
-      if (hp->GetSelectedHist()->GetSize() > 1) {
+   if (gHpr->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
+      if (gHpr->GetSelectedHist()->GetSize() > 1) {
          Hpr::WarnBox("More than 1 selection");
          return;
       }
-      hist = hp->GetSelHistAt(0);
+      hist = gHpr->GetSelHistAt(0);
    } else
       hist = GetOneHist();      // look in memory
    if (hist) {
@@ -1941,13 +1930,13 @@ void FitHist::Superimpose(Int_t mode)
 	TH1 *hist;
 //   TPaveLabel *tname;
 //  choose from histo list
-//   Int_t nh = hp->GetSelectedHist()->GetSize();
-   if (hp->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
-      if (hp->GetSelectedHist()->GetSize() > 1) {
+//   Int_t nh = gHpr->GetSelectedHist()->GetSize();
+   if (gHpr->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
+      if (gHpr->GetSelectedHist()->GetSize() > 1) {
          Hpr::WarnBox("More than 1 selection,\n please choose only one");
          return;
       }
-      hist = hp->GetSelHistAt(0);
+      hist = gHpr->GetSelHistAt(0);
    } else {
       hist = GetOneHist();      // look in memory
    }
@@ -1966,13 +1955,15 @@ void FitHist::Superimpose(Int_t mode)
 		return;
 	}
 //	Double_t rightmax = 1.1*ymax;
+//	fCanvas->cd();
 	TRootCanvas * win = (TRootCanvas*)fCanvas->GetCanvasImp();
 	TIter next(fCanvas->GetListOfPrimitives());
 	Int_t nhists = 0 ;
 	TObject *obj;
+	TH1* horig = NULL;
 	while ( obj  = next() ) {
 		if ( obj->InheritsFrom("TH1") ) {
-			TH1* hs = (TH1*)obj;
+			horig = (TH1*)obj;
 			TString oname(obj->GetName());
 			TString hname(hist->GetName());
 //			if ( obj == fSelHist ) {
@@ -1983,7 +1974,7 @@ void FitHist::Superimpose(Int_t mode)
 //				if ( !QuestionBox("Hist already in canvas, really draw again?",win) )
 //					return;
 //			}
-			if ( lWarnDiffBin && !Hpr::HistLimitsMatch(hs, hist) ) {
+			if ( lWarnDiffBin && !Hpr::HistLimitsMatch(horig, hist) ) {
 				if ( !QuestionBox("Hist limits or bins differ, really superimpose?",win) )
 					return;
 			}
@@ -2012,11 +2003,11 @@ void FitHist::Superimpose(Int_t mode)
 	static Width_t lLWidth;
 	static Style_t lMStyle;
 	static Size_t  lMSize;
-	static Int_t   dummy;
+// 	static Int_t   dummy;
 	if (hist->GetDimension() == 1 ) {
-		lFStyle     = env.GetValue("Set1DimOptDialog.fHistFillStyle", 0);
-		lLStyle     = env.GetValue("Set1DimOptDialog.fHistLineStyle", 1);
-		lLWidth     = env.GetValue("Set1DimOptDialog.fHistLineWidth", 1);
+		lFStyle     = env.GetValue("Set1DimOptDialog.fFillStyle", 0);
+		lLStyle     = env.GetValue("Set1DimOptDialog.fLineStyle", 1);
+		lLWidth     = env.GetValue("Set1DimOptDialog.fLineWidth", 1);
 		lMStyle     = env.GetValue("Set1DimOptDialog.MarkerStyle", 7);
 		lMSize      = env.GetValue("Set1DimOptDialog.MarkerSize",  1);
 	} else {
@@ -2032,7 +2023,12 @@ void FitHist::Superimpose(Int_t mode)
 	static TString axis_title;
 	axis_title= hist->GetYaxis()->GetTitle();
 	static Int_t new_axis = kTRUE;
+	fCanvas->cd();
+	TString drawopt = horig->GetDrawOption();
+	if ( gDebug  > 0 )
+		cout << "hist " << hist << " drawopt  " << drawopt<< endl;
 	if ( lSkipDialog == 0 || nhists < 2 ) {
+		// Error modes 
 		static void *valp[50];                    
 		Int_t ind = 0;                            
 		TList *row_lab = new TList();
@@ -2071,8 +2067,10 @@ void FitHist::Superimpose(Int_t mode)
 		valp[ind++] = &lFillColor;
 		row_lab->Add(new TObjString("Fill_Select+FillStyle"));
 		valp[ind++] = &lFStyle;
-		row_lab->Add(new TObjString("CommentOnly+-"));
-		valp[ind++] = &dummy;
+// 		row_lab->Add(new TObjString("CommentOnly+-"));
+// 		valp[ind++] = &dummy;
+		row_lab->Add(new TObjString("StringValue+DrawOpt"));
+		valp[ind++] = &drawopt;
 		row_lab->Add(new TObjString("CheckButton_Incr Colors "));
 		valp[ind++] = &lIncrColors;
 		row_lab->Add(new TObjString("CheckButton+Skip Dialog"));
@@ -2137,7 +2135,7 @@ void FitHist::Superimpose(Int_t mode)
 		cout << "Superimpose: Scale errors linearly" << endl;
 	}
 	fCanvas->cd();
-   TString drawopt = fSelHist->GetDrawOption();
+//   TString drawopt = fSelHist->GetDrawOption();
 //   if ( hist->GetDimension() == 1 ) {
 	hdisp->SetLineColor(lLColor);
 	hdisp->SetLineStyle(lLStyle);
@@ -2239,7 +2237,7 @@ void FitHist::Superimpose(Int_t mode)
 	}
 	
 // remove "How to display a 1-dim histogram"
-	TGMenuBar * menubar = win->GetMenuBar();
+/*	TGMenuBar * menubar = win->GetMenuBar();
 	TGPopupMenu *pu = menubar->GetPopup("Hpr-Options");
 	if  (pu ) {
 		TGMenuEntry* ment;
@@ -2252,7 +2250,7 @@ void FitHist::Superimpose(Int_t mode)
 				break;
 			}
 		}
-	}
+	}*/
 	fCanvas->Update();
 	if (lIncrColors > 0) {
 		lLColor++;
@@ -2538,7 +2536,7 @@ void FitHist::OutputStat(Int_t fill_hist)
           << endl;
    }
 	if ( h_bincont != NULL ) {
-		hp->ShowHist(h_bincont);
+		gHpr->ShowHist(h_bincont);
 	}
 }
 
@@ -2700,7 +2698,7 @@ void FitHist::FastFT()
       hresult->SetName(name);
       hresult->SetTitle(title);
       hresult->SetStats(kFALSE);
-      if  (hp) hp->ShowHist(hresult);
+      if  (gHpr) gHpr->ShowHist(hresult);
    }
    if (re != 0) {
       TH1 * hresult = NULL;
@@ -2714,7 +2712,7 @@ void FitHist::FastFT()
       hresult->SetName(name);
       hresult->SetTitle(title);
       hresult->SetStats(kFALSE);
-      if  (hp) hp->ShowHist(hresult);
+      if  (gHpr) gHpr->ShowHist(hresult);
    }
    if (img != 0) {
       TH1 * hresult = NULL;
@@ -2728,7 +2726,7 @@ void FitHist::FastFT()
       hresult->SetName(name);
       hresult->SetTitle(title);
       hresult->SetStats(kFALSE);
-      if  (hp) hp->ShowHist(hresult);
+      if  (gHpr) gHpr->ShowHist(hresult);
    }
    if (ph != 0) {
       TH1 * hresult = NULL;
@@ -2742,7 +2740,7 @@ void FitHist::FastFT()
       hresult->SetName(name);
       hresult->SetTitle(title);
       hresult->SetStats(kFALSE);
-      if  (hp) hp->ShowHist(hresult);
+      if  (gHpr) gHpr->ShowHist(hresult);
    }
 #endif
 }
@@ -2791,7 +2789,7 @@ void FitHist::Rotate(Int_t sense)
    TH2 * hrot = rotate_hist((TH2*)fSelHist, alpha_deg, fSerialRot);
    fSerialRot++;
    fCanvas->cd();
-   if  (hp) hp->ShowHist(hrot);
+   if  (gHpr) gHpr->ShowHist(hrot);
 //   Draw2Dim();
 }
 //____________________________________________________________________________________
@@ -2825,7 +2823,7 @@ void FitHist::Transpose()
    h2_transp->GetYaxis()->SetTitle(h2->GetXaxis()->GetTitle());
 //   fSelHist = h2_transp;
    fCanvas->cd();
-   if  (hp) hp->ShowHist(h2_transp);
+   if  (gHpr) gHpr->ShowHist(h2_transp);
 //   Draw2Dim();
 }
 //____________________________________________________________________________________
@@ -2880,7 +2878,7 @@ void FitHist::ProfileX()
    }
    h_prof->SetEntries(h2->GetEntries());
    fCanvas->cd();
-   if  (hp) hp->ShowHist(h_prof);
+   if  (gHpr) gHpr->ShowHist(h_prof);
 }
 //____________________________________________________________________________________
 
@@ -2934,7 +2932,7 @@ void FitHist::ProfileY()
    }
    h_prof->SetEntries(h2->GetEntries());
    fCanvas->cd();
-   if  (hp) hp->ShowHist(h_prof);
+   if  (gHpr) gHpr->ShowHist(h_prof);
 }
 //____________________________________________________________________________________
 
@@ -3276,10 +3274,10 @@ void FitHist::ExpandProject(Int_t what)
          fCanvas->Update();
          return;
       } else if (what == projectx) {
-         hp->ShowHist(fProjHistX);
+         gHpr->ShowHist(fProjHistX);
          return;
       } else if (what == projecty || what == projectf) {
-         hp->ShowHist(fProjHistY);
+         gHpr->ShowHist(fProjHistY);
          return;
       } else {
          fSelHist->SetEntries(sum);
@@ -3322,7 +3320,7 @@ void FitHist::ExecDefMacro()
           cmd + "(\"" + fCname.Data() + "\",\"" + fSelHist->GetName() +
           "\")";
 //      cout << cmd << endl;
-      hp->SetCurrentHist(fSelHist);
+      gHpr->SetCurrentHist(fSelHist);
       gROOT->ProcessLine((const char *) cmd);
    }
 }
@@ -3349,7 +3347,8 @@ void FitHist::Draw3Dim()
 void FitHist::Draw1Dim()
 {
    TString drawopt;
-   
+	fCanvas->cd();
+   fSelHist->Draw();
    if ( gROOT->GetForceStyle() ) {
 		if (fErrorMode != "none") {
 			 drawopt += fErrorMode;
@@ -3361,11 +3360,33 @@ void FitHist::Draw1Dim()
 		if (fDrawMarker != 0) drawopt += "P";
 		gStyle->SetOptTitle(fShowTitle);
 		if (fFill1Dim && fSelHist->GetNbinsX() < 50000) {
-			 fSelHist->SetFillStyle(fHistFillStyle);
-			 fSelHist->SetFillColor(fHistFillColor);
+			 fSelHist->SetFillStyle(fFillStyle);
+			 fSelHist->SetFillColor(fFillColor);
 		} else
 			 fSelHist->SetFillStyle(0);
-		fSelHist->SetOption(drawopt.Data());
+		if (fSimpleLine)
+			drawopt += "L";
+		else if (fSmoothLine)
+			drawopt += "C";
+		else if (fBarChart)
+			drawopt += "B";
+		else if (fBarChartH)
+			drawopt += "BARH";
+		else if (fBarChart3D)
+			drawopt += "BAR";
+		else if (fPieChart)
+			drawopt += "PIE";
+		else if (fText) {
+			drawopt +="TEXT";
+			if (fTextAngle > 0){
+				drawopt += fTextAngle;
+			}
+		}
+		if (gPad->GetTickx() < 2 && fLabelsTopX)
+			drawopt += "X+";
+		if (gPad->GetTicky() < 2 && fLabelsRightY)
+			drawopt += "Y+";
+		fSelHist->SetDrawOption(drawopt.Data());
 	 //   fSelHist->DrawCopy();
 	 //   fSelHist->Draw();
 		if (fTitleCenterX)
@@ -3385,9 +3406,9 @@ void FitHist::Draw1Dim()
    }
    if ( gDebug > 0 )
 		cout << "Draw1Dim() " << drawopt << " fSelHist->Draw() " <<fSelHist->GetDrawOption() <<  endl;
-	if (fDrawMarker == 0)
+	if (fDrawMarker == 0 && fText == 0)
 		fSelHist->SetMarkerSize(0.01);
-   fSelHist->Draw(drawopt);
+//   fSelHist->Draw(drawopt);
    TList *lof = fOrigHist->GetListOfFunctions();
 
    Double_t ymax  = fSelHist->GetMaximum();
@@ -3435,6 +3456,8 @@ void FitHist::Draw1Dim()
    }
    UpdateDrawOptions();
    fCanvas->Update();
+	if (gDebug > 0)
+		cout << "exit Draw1Dim() " <<fSelHist->GetDrawOption() <<  endl;
 //   gStyle->SetOptStat(save_optstat);
 }
 //____________________________________________________________________________
@@ -3468,9 +3491,9 @@ void FitHist::Draw2Dim()
    fCanvas->cd();
 //   SetLogz(fCanvas->GetLogz());
    SetLogz(fLogz);
-//   gStyle->SetOptTitle(hp->GetShowTitle());
+//   gStyle->SetOptTitle(gHpr->GetShowTitle());
 //   if (->GetShowTitle())
-//      gStyle->SetTitleFont(hp->fTitleFont);
+//      gStyle->SetTitleFont(gHpr->fTitleFont);
 	if ( gDebug > 0 ) {
 		cout << "FitHist::DrawOpt2Dim: " <<fDrawOpt2Dim 
 		<< " gStyle->GetHistFillColor() :" <<gStyle->GetFillColor() << endl;
@@ -3578,11 +3601,11 @@ void FitHist::AddFunctionsToHist()
 void FitHist::SetLogz(Int_t state)
 {
    fLogz = state;
-   if (hp && hp->fLogScaleMin > 0){
+   if (gHpr && gHpr->fLogScaleMin > 0){
       if(state > 0)
-         fSelHist->SetMinimum(hp->fLogScaleMin);
+         fSelHist->SetMinimum(gHpr->fLogScaleMin);
       else
-         fSelHist->SetMinimum(hp->fLinScaleMin);
+         fSelHist->SetMinimum(gHpr->fLinScaleMin);
    }
    fCanvas->SetLogz(state);
 //   SaveDefaults();
@@ -3591,11 +3614,12 @@ void FitHist::SetLogz(Int_t state)
 
 void FitHist::UpdateDrawOptions()
 {
-//   if (!hp) return;
-   SetSelectedPad();
+//   if (!gHpr) return;
+//   SetSelectedPad();
+	fSelPad->cd();
    TString drawopt;
    if (fDimension == 1) {
-   	if (fShowContour) {
+/*   	if (fShowContour) {
       	drawopt = "";
          if (!HasFunctions(fSelHist)) {
             if (fSelHist->GetSumw2N()) {
@@ -3616,9 +3640,9 @@ void FitHist::UpdateDrawOptions()
       	fSelHist->SetFillColor(fHistFillColor);
    	} else
       	fSelHist->SetFillStyle(0);
-//      cout << "UpdateDrawOptions() " << drawopt.Data() << endl;
-      fSelHist->SetOption(drawopt.Data());
-      fSelHist->SetDrawOption(drawopt.Data());
+      cout << "UpdateDrawOptions() " << drawopt.Data() << endl;
+//      fSelHist->SetOption(drawopt.Data());
+      fSelHist->SetDrawOption(drawopt.Data());*/
    } else if (fDimension  == 2) {
       fSelHist->SetOption(fDrawOpt2Dim);
       fSelHist->SetDrawOption(fDrawOpt2Dim);

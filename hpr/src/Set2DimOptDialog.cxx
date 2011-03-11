@@ -11,6 +11,7 @@
 #include "TH1.h"
 #include "TH2.h"
 #include "TStyle.h"
+#include "TSystem.h"
 #include "Set2DimOptDialog.h"
 #include <iostream>
 
@@ -19,12 +20,23 @@ namespace std {} using namespace std;
 //TString Set2DimOptDialog::fDrawOpt2Dim = "COLZ";
 //_______________________________________________________________________
 
+Set2DimOptDialog::Set2DimOptDialog(Int_t batch)
+{
+	if (batch);
+	cout << "ctor Set2DimOptDialog, non interactive" <<endl;
+	fDialog = NULL;
+}
+//_______________________________________________________________________
+
 Set2DimOptDialog::Set2DimOptDialog(TGWindow * win)
 {
 static const Char_t helptext[] =
 "Note: Changeing options only influence the current histogram\n\
        To make them active for subsequently displayed histograms\n\
 		 press: \"Set as global default\"\n\
+\n\
+\"Reset all to default\" sets \"factory \" defaults\n\
+To make these permanent also needs \"Set as global def\"\n\
 \n\
 Most of the value in this widget are self explaining\n\
 If \"Live statbox\" a box is displayed when dragging the\n\
@@ -66,6 +78,14 @@ SURF5 : Same as SURF3 but only the colored contour is drawn. Used with\n\
           or polar coordinates, option SURF3 is used.\n\
 ARR   : arrow mode. Shows gradient between adjacent cells\n\
 TEXT  : Draw bin contents as text (format set via gStyle->SetPaintTextFormat)\n\
+\n\
+CYL	: Use Cylindrical coordinates. The X coordinate is mapped on the angle\n\
+        and the Y coordinate on the cylinder length.\n\
+POL	: Use Polar coordinates. The X coordinate is mapped on the angle and\n\
+        the Y coordinate on the radius.\n\
+SPH	: Use Spherical coordinates. The X coordinate is mapped on the latitude\n\
+        and the Y coordinate on the longitude.\n\
+PSR	: Use PseudoRapidity/Phi coordinates. The X coordinate is mapped on Phi.\n\
 \n\
 Option GL:\n\
 Use OpenGL to display histogram together with the LEGO or SURF options\n\
@@ -116,11 +136,12 @@ For further details contact ROOTs documentation.\n\
 ";
 
    const char *fDrawOpt2[kNdrawopt] =
-   {" SCAT", " BOX0", " BOX1", "  COL", "  ARR",
-	 "CONT0", "CONT1", "CONT2", "CONT3", "CONT4",
-    "SURF0", "SURF1", "SURF2", "SURF3", "SURF4",
-    " LEGO", "LEGO1", "LEGO2", " TRI2", " TEXT"};
-	 
+   {"SCAT", "BOX",    "BOX1",  "COL",   "ARR",   "TEXT",
+   "CONT0", "CONT1" , "CONT2", "CONT3", "CONT4", "SURF0",
+	"SURF1", "SURF2",  "SURF3", "SURF4", "SURF5", "LEGO",
+	"LEGO1", "LEGO2",  "POL",   "CYL",    "SPH",  "PSR"};
+	fBidTEXT = 5;
+	
    TRootCanvas *rc = (TRootCanvas*)win;
    fCanvas = rc->Canvas();
    fHist = NULL;
@@ -136,16 +157,18 @@ For further details contact ROOTs documentation.\n\
 		   }
          if (fHist->GetDimension() == 1) nh1++;
          if (fHist->GetDimension() > 1)  nh2++;
+			break;
       }
    }
 	if ( fHist == NULL ) {
 	   cout << "No Histogram in Canvas" << endl;
 	}
    RestoreDefaults();
-   Int_t selected = -1;
+//   Int_t selected = -1;
    for (Int_t i = 0; i < kNdrawopt; i++) {
       fDrawOpt2DimArray[i] = fDrawOpt2[i];
-		TString temp(fDrawOpt2[i]);
+	}
+/*		TString temp(fDrawOpt2[i]);
 		temp = temp.Strip(TString::kBoth);
       if (fDrawOpt2Dim.Contains(temp) ) {
          if (selected < 0) {
@@ -155,7 +178,8 @@ For further details contact ROOTs documentation.\n\
       } else {
          fOptRadio[i] = 0;
       }
-   }
+   }*/
+   GetValuesFromHist();
 	if (fDrawOpt2Dim.Contains("Z")) fShowZScale = 1;
 	else                            fShowZScale = 0;
 	if (fDrawOpt2Dim.Contains("BB")) fHideBackBox = 1;
@@ -164,68 +188,88 @@ For further details contact ROOTs documentation.\n\
 	else                             fHideFrontBox = 0;
 //	if (fDrawOpt2Dim.Contains("GL")) fUseGL = 1;
 //	else                             fUseGL = 0;
-	
+	fHistNo = 0;
    gROOT->GetListOfCleanups()->Add(this);
    fRow_lab = new TList();
 
    Int_t ind = 0;
    Int_t indopt = 0;
-   static Int_t dummy;
+//   static Int_t dummy;
    static TString stycmd("SetHistAttPermLocal()");
+   static TString sadcmd("SetAllToDefault()");
 
-   fRow_lab->Add(new TObjString("CommentOnly_Scatter, Boxes, Colorplots"));
-   fValp[ind++] = &dummy;
+//   fRow_lab->Add(new TObjString("CommentOnly_Scatter, Boxes, Colorplots"));
+//	fRow_lab->Add(new TObjString("CommentOnly_Scatter, Boxes, Colorplots"));
+//	fValp[ind++] = &dummy;
 	fBidSCAT = 1;
 	fBidBOX  = 2;
 	fBidBOX1 = 3;
 	fBidARR =  5;
-   for (Int_t i = 0; i < 5; i++) {
+	
+	for (Int_t i = 0; i < kNdrawopt; i++) {
 //   cout << " indopt  " <<  indopt << endl;
-       TString text("RadioButton");
-       if (i == 0)text += "_";
+       TString text("CheckButton");
+       if ( i%6 == 0 )text += "_";
        else       text += "+";
-       text += fDrawOpt2DimArray[indopt];
+       if (strlen(fDrawOpt2DimArray[indopt]) < 5)
+			 text += " ";
+		 if (strlen(fDrawOpt2DimArray[indopt]) < 4)
+			 text += " ";
+		 text += fDrawOpt2DimArray[indopt];
        fRow_lab->Add(new TObjString(text.Data()));
        fValp[ind++] = &fOptRadio[indopt++];
    }
 //   cout << " indopt  " <<  indopt << endl;
+/*
    fRow_lab->Add(new TObjString("CommentOnly_Contour options"));
    fValp[ind++] = &dummy;
    for (Int_t i = 0; i < 5; i++) {
-       TString text("RadioButton");
+       TString text("CheckButton");
        if (i == 0)text += "_";
        else       text += "+";
-       text += fDrawOpt2DimArray[indopt];
+       if (strlen(fDrawOpt2DimArray[indopt]) < 5)
+			 text += " ";
+		 if (strlen(fDrawOpt2DimArray[indopt]) < 4)
+			 text += " ";
+		 text += fDrawOpt2DimArray[indopt];
        fRow_lab->Add(new TObjString(text.Data()));
        fValp[ind++] = &fOptRadio[indopt++];
    }
    fRow_lab->Add(new TObjString("CommentOnly_Surface options"));
    fValp[ind++] = &dummy;
    for (Int_t i = 0; i < 5; i++) {
-       TString text("RadioButton");
+       TString text("CheckButton");
        if (i == 0)text += "_";
        else       text += "+";
-       text += fDrawOpt2DimArray[indopt];
+       if (strlen(fDrawOpt2DimArray[indopt]) < 5)
+			 text += " ";
+		 if (strlen(fDrawOpt2DimArray[indopt]) < 4)
+			 text += " ";
+		 text += fDrawOpt2DimArray[indopt];
        fRow_lab->Add(new TObjString(text.Data()));
        fValp[ind++] = &fOptRadio[indopt++];
    }
    fRow_lab->Add(new TObjString("CommentOnly_LEGO, Arrows, Text"));
    fValp[ind++] = &dummy;
    for (Int_t i = 0; i < 5; i++) {
-       TString text("RadioButton");
+       TString text("CheckButton");
        if (i == 0)text += "_";
        else       text += "+";
-       text += fDrawOpt2DimArray[indopt];
+       if (strlen(fDrawOpt2DimArray[indopt]) < 5)
+			 text += " ";
+		 if (strlen(fDrawOpt2DimArray[indopt]) < 4)
+			 text += " ";
+		 text += fDrawOpt2DimArray[indopt];
        fRow_lab->Add(new TObjString(text.Data()));
        fValp[ind++] = &fOptRadio[indopt++];
    }
-	fBidTEXT = ind - 1;
-   fRow_lab->Add(new TObjString("ColorSelect_BgColor"));
-   fValp[ind++] = &f2DimBackgroundColor;
-   fRow_lab->Add(new TObjString("ColorSelect+FillCol"));
+*/
+   fRow_lab->Add(new TObjString("ColorSelect_FillCol"));
    fBidFillColor = ind; fValp[ind++] = &fHistFillColor2Dim;
 	fRow_lab->Add(new TObjString("Fill_Select+FillSty"));
 	fValp[ind++] = &fHistFillStyle2Dim;
+	fRow_lab->Add(new TObjString("ColorSelect+BgColor"));
+	fValp[ind++] = &f2DimBackgroundColor;
 	fRow_lab->Add(new TObjString("ColorSelect_LineCol"));
    fValp[ind++] = &fHistLineColor2Dim;
 	fRow_lab->Add(new TObjString("ColorSelect+LStyle "));
@@ -240,12 +284,6 @@ For further details contact ROOTs documentation.\n\
    fRow_lab->Add(new TObjString("Float_Value+MSize  "));
    fBidMarkerSize = ind; fValp[ind++] = &fMarkerSize2Dim;
 	
-	fRow_lab->Add(new TObjString("CheckButton_   Log X "));
-	fRow_lab->Add(new TObjString("CheckButton+   Log Y "));
-	fRow_lab->Add(new TObjString("CheckButton+   Log Z "));
-	fValp[ind++] = &fTwoDimLogX;
-	fValp[ind++] = &fTwoDimLogY;
-	fValp[ind++] = &fTwoDimLogZ;
 	fRow_lab->Add(new TObjString("CheckButton_Use GL (3D)"));
    fRow_lab->Add(new TObjString("CheckButton+    No Fbox"));
    fRow_lab->Add(new TObjString("CheckButton+    No Bbox"));
@@ -262,13 +300,24 @@ For further details contact ROOTs documentation.\n\
 //   fRow_lab->Add(new TObjString("DoubleValue+LogScaleMax"));
 //   fValp[ind++] = &fLogScaleMin;
 //   fValp[ind++] = &fLogScaleMax;
+	fRow_lab->Add(new TObjString("CheckButton_Log X"));
+	fRow_lab->Add(new TObjString("CheckButton+Log Y"));
+	fRow_lab->Add(new TObjString("CheckButton+Log Z"));
+	fValp[ind++] = &fTwoDimLogX;
+	fValp[ind++] = &fTwoDimLogY;
+	fValp[ind++] = &fTwoDimLogZ;
+	fRow_lab->Add(new TObjString("PlainIntVal-Hist No"));
+	fBidHistNo = ind;
+	fValp[ind++] = &fHistNo;
 
 
    fRow_lab->Add(new TObjString("CommandButt_Set as global default"));
    fValp[ind++] = &stycmd;
+   fRow_lab->Add(new TObjString("CommandButt+Reset all to default"));
+   fValp[ind++] = &sadcmd;
 
    static Int_t ok;
-   Int_t itemwidth = 360;
+   Int_t itemwidth = 380;
    fDialog =
       new TGMrbValuesAndText(fCanvas->GetName(), NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
@@ -316,11 +365,13 @@ void Set2DimOptDialog::CloseDialog()
 
 void Set2DimOptDialog::SetHistAttNow(TCanvas *canvas)
 {
+	fDrawOpt2Dim = "";
    for (Int_t i = 0; i < kNdrawopt; i++) {
       if (fOptRadio[i] == 1) {
 //         cout << "fDrawOpt2DimArray[" << i << "]" << endl;
-         fDrawOpt2Dim = fDrawOpt2DimArray[i];
-        if (fUseGL)   fDrawOpt2Dim.Prepend("GL");
+         fDrawOpt2Dim += fDrawOpt2DimArray[i];
+        if (fUseGL && !fDrawOpt2Dim.Contains("GL"))
+			  fDrawOpt2Dim.Prepend("GL");
 
       }
    }
@@ -336,16 +387,18 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
 	canvas->SetLogx(fTwoDimLogX);
 	canvas->SetLogy(fTwoDimLogY);
 	canvas->SetLogz(fTwoDimLogZ);
-	TIter next(canvas->GetListOfPrimitives());
-   TObject *obj;
    fDrawOpt = fDrawOpt2Dim;
    if ( fShowZScale && (
         fDrawOpt.Contains("COL")   || fDrawOpt.Contains("CONT0")
       ||fDrawOpt.Contains("CONT1") || fDrawOpt.Contains("CONT4")
       ||fDrawOpt.Contains("TRI2")  || fDrawOpt.Contains("SURF1")
       ||fDrawOpt.Contains("SURF2") || fDrawOpt.Contains("SURF3")
-      ||fDrawOpt.Contains("LEGO2") ) && fUseGL == 0 )
+      ||fDrawOpt.Contains("LEGO2") ) && fUseGL == 0 ) {
       fDrawOpt += "Z";
+	}
+	if ( fDrawOpt.Contains("TEXT") && fMarkerSize2Dim < 0.01 ) {
+		fMarkerSize2Dim = 1;
+	}
    if (fHideFrontBox) fDrawOpt += "FB";
    if (fHideBackBox)  fDrawOpt += "BB";
 	if (fUseGL && ( fDrawOpt.Contains("LEGO") ||fDrawOpt.Contains("SURF"))) {
@@ -356,12 +409,29 @@ void Set2DimOptDialog::SetHistAtt(TCanvas *canvas)
 		gStyle->SetCanvasPreferGL(kFALSE);
 	}
 		
-
+	Int_t nhists = 0, histno = 0;
+	TIter next1(canvas->GetListOfPrimitives());
+   TObject *obj;
+   while ( (obj = next1()) ) {
+      if (obj->InheritsFrom("TH2")) {
+			nhists++;
+		}
+	}
+	if ( gDebug > 0 )
+		cout << "fHistNo " << fHistNo<< " nhists " << nhists<< endl;
+	TIter next(canvas->GetListOfPrimitives());
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("TGraph2D")) {
          ((TGraph2D*)obj)->SetDrawOption(fDrawOpt);
       } else if (obj->InheritsFrom("TH2")) {
-         ((TH2*)obj)->SetDrawOption(fDrawOpt);
+			if ( nhists > 1 && histno != fHistNo ) {
+				histno++;
+				continue;
+			}
+			if ( gDebug > 0 )
+				cout << "histno " << histno << " " << fDrawOpt << endl;
+			histno++;
+			((TH2*)obj)->SetDrawOption(fDrawOpt);
          ((TH2*)obj)->SetOption(fDrawOpt);
 			((TH2*)obj)->SetFillColor(fHistFillColor2Dim);
 			((TH2*)obj)->SetLineColor(fHistLineColor2Dim);
@@ -479,14 +549,47 @@ void Set2DimOptDialog::SaveDefaults()
 	env.SetValue("Set2DimOptDialog.fContourLevels",    fContourLevels    );
 	env.SaveLevel(kEnvLocal);
 }
-
 //______________________________________________________________________
 
-void Set2DimOptDialog::RestoreDefaults()
+void Set2DimOptDialog::SetAllToDefault()
+{
+	RestoreDefaults(1);
+}
+//______________________________________________________________________
+
+void Set2DimOptDialog::GetValuesFromHist()
 {
    if ( !fHist ) return;
-	fDrawOpt2Dim = fHist->GetOption();
-   TEnv env(".hprrc");
+	fCanvas->cd();
+	fDrawOpt2Dim = fHist->GetDrawOption();
+	if ( gDebug > 0 )
+		cout << "fDrawOpt2Dim " << fDrawOpt2Dim << endl;
+	
+	for (Int_t i = kNdrawopt-1; i >= 0; i--) {
+		Int_t ind = fDrawOpt2Dim.Index(fDrawOpt2DimArray[i]);
+		if ( ind >= 0 ) {
+			Int_t len = strlen(fDrawOpt2DimArray[i]);
+			fDrawOpt2Dim = fDrawOpt2Dim.Replace(ind, len, "");
+			fOptRadio[i] = 1;
+		} else {
+			fOptRadio[i] = 0;
+		}
+	}
+}
+//______________________________________________________________________
+
+void Set2DimOptDialog::RestoreDefaults(Int_t resetall)
+{
+	if ( gDebug > 0 )
+		cout << "Set2DimOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
+	TString envname;
+	if (resetall == 0 ) {
+		envname = ".hprrc";
+	} else {
+		// force use of default values by giving an empty resource file
+		gSystem->TempFileName(envname);
+	}
+   TEnv env(envname);
 //   fDrawOpt2Dim  = env.GetValue("Set2DimOptDialog.fDrawOpt2Dim", "COLZ");
    fShowZScale        = env.GetValue("Set2DimOptDialog.fShowZScale", 1);
    fLiveStat2Dim      = env.GetValue("Set2DimOptDialog.fLiveStat2Dim", 0);
@@ -519,29 +622,43 @@ void Set2DimOptDialog::CloseDown(Int_t wid)
 void Set2DimOptDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 {
    TCanvas *canvas = (TCanvas *)obj;
-//   cout << "CRButtonPressed(" << wid<< ", " <<bid;
-//   if (obj) cout  << ", " << canvas->GetName() << ")";
-//   cout << endl;
+	if ( gDebug > 0 )
+		cout << "CRButtonPressed:" << wid<< ", " <<bid << " fBidHistNo "  <<fBidHistNo << endl;
+	if ( bid == fBidHistNo ) 
+		return;
 /*
-//	if ( fDrawOpt2Dim.Contains("SCAT") ) {
-	if ( bid == fBidSCAT  || bid == fBidTEXT) {
-	   fDialog->EnableButton(fBidMarkerColor);
-		fDialog->EnableButton(fBidMarkerStyle);
-		fDialog->EnableButton(fBidMarkerSize);
-   } else if  (bid <= fBidTEXT ) {
-	   fDialog->DisableButton(fBidMarkerColor);
-		fDialog->DisableButton(fBidMarkerStyle);
-		fDialog->DisableButton(fBidMarkerSize);
-	}
-//	if ( fDrawOpt2Dim.Contains("BOX") ) {
-	if ( bid == fBidBOX || bid == fBidBOX1  || bid == fBidARR) {
-	   fDialog->EnableButton(fBidFillColor);
-		fDialog->EnableButton(fBidLineColor);
-   } else  if  (bid <= fBidTEXT ) {
-	   fDialog->DisableButton(fBidFillColor);
-		fDialog->DisableButton(fBidLineColor);
-	}
+	const char *fDrawOpt2[kNdrawopt] =
+	{"SCAT", "BOX",    "BOX1",  "COL",   "ARR",   "TEXT",
+	"CONT0", "CONT1" , "CONT2", "CONT3", "CONT4", "SURF0",
+	"SURF1", "SURF2",  "SURF3", "SURF4", "SURF5", "LEGO",
+	"LEGO1", "LEGO2",  "POL",   "CYL",    "SPH",  "PSR"};
 */
+	// 2-dim options exclude 3-dim
+	if ( bid >= 0 && bid <= 10) {
+		for ( Int_t i = 11; i <= 23; i++ ) {
+			fOptRadio[i] = 0;
+			fDialog->SetCheckButton(i, 0);
+		}
+	}
+	// 3-dim options are mutually exclusive
+	if ( bid >= 11 && bid <= 19) {
+		for ( Int_t i = 0; i <= 19; i++ ) {
+			fOptRadio[i] = 0;
+			fDialog->SetCheckButton(i, 0);
+		}
+		fOptRadio[bid] = 1;
+		fDialog->SetCheckButton(bid, 1);
+	}
+	// non cartesian options are mutually  exclusive
+	if ( bid >= 20 && bid <= 23) {
+		for ( Int_t i = 20; i <= 23; i++ ) {
+			fOptRadio[i] = 0;
+			fDialog->SetCheckButton(i, 0);
+		}
+		fOptRadio[bid] = 1;
+		fDialog->SetCheckButton(bid, 1);
+	}
+	
    SetHistAttNow(canvas);
 }
 

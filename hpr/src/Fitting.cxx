@@ -65,13 +65,7 @@
 #include "GeneralAttDialog.h"
 #include "Save2FileDialog.h"
 
-extern HistPresent *hp;
-//extern TFile *fWorkfile;
-//extern const char *fWorkname;
-extern Int_t nHists;
-//extern Int_t nPeaks;
-//extern Double_t gTailSide;      // in fit with tail determines side: 1 left(low), -1 high(right)
-//extern Float_t gBinW;
+extern HistPresent *gHpr;
 
 enum dowhat { expand, projectx, projecty, statonly, projectf,
        projectboth };
@@ -923,8 +917,8 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 
 void FitHist::DrawSelectedFunctions()
 {
-   if (!hp) return;
-	TIter next(hp->fAllFunctions);
+   if (!gHpr) return;
+	TIter next(gHpr->fAllFunctions);
 	TObjString * tobjs;
 	TFile * f;
 	fCanvas->cd();
@@ -1162,8 +1156,8 @@ void FitHist::ExecFitSliceYMacro()
       cout << cmd << endl;
       fCanvas->cd();
       gROOT->ProcessLine((const char *) cmd);
-      if (hp) {
-         hp->ClearSelect();
+      if (gHpr) {
+         gHpr->ClearSelect();
          hname = fSelHist->GetName();
          hname += "_chi2";
 
@@ -1171,7 +1165,7 @@ void FitHist::ExecFitSliceYMacro()
          if (chi2hist){
             hname += " ";
             hname.Prepend("Memory ");
-            hp->fSelectHist->Add(new TObjString((const char *)hname));
+            gHpr->fSelectHist->Add(new TObjString((const char *)hname));
          }
          for (Int_t ipar = 0; ipar < 100; ipar++) {
             hname = fSelHist->GetName();
@@ -1181,7 +1175,7 @@ void FitHist::ExecFitSliceYMacro()
             if (parhist){
                hname.Prepend("Memory ");
                hname += " ";
-               hp->fSelectHist->Add(new TObjString((const char *)hname));
+               gHpr->fSelectHist->Add(new TObjString((const char *)hname));
                if (chi2hist) {
                   for (Int_t bin = 1; bin <= chi2hist->GetNbinsX(); bin++) {
                      if (chi2hist->GetBinContent(bin) > 10) {
@@ -1193,7 +1187,7 @@ void FitHist::ExecFitSliceYMacro()
             }
             else break;
          }
-         hp->ShowSelectedHists(hp->fSelectHist, "Fitted values");
+         gHpr->ShowSelectedHists(gHpr->fSelectHist, "Fitted values");
       }
 
 //      fSelPad->Modified(kTRUE);

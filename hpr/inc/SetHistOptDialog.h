@@ -83,7 +83,8 @@ private:
    Int_t        fStatCmd2;
    TString      fCustomStyleName;
    Int_t        fNewStyle;
-	
+	Int_t			 fDummy;
+	Int_t        fOk;
 public:
 	static Int_t fTitleCenterX;
 	static Int_t fTitleCenterY;
@@ -92,6 +93,7 @@ public:
 public:
 		
    SetHistOptDialog(TGWindow * win = NULL, TCollection * hlist = NULL);
+	SetHistOptDialog(Int_t batch);
    ~SetHistOptDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
@@ -103,7 +105,9 @@ public:
    void SetTitleBoxAttr(TStyle * style = NULL);
    void SetCustomStyle();
    void SaveDefaults();
+   void SetAllToDefault();
    void RestoreDefaults(Int_t resetall = 0);
+	void GetValuesFromHist();
    static void SetDefaults();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);

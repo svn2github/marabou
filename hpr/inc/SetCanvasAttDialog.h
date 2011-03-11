@@ -41,11 +41,13 @@ private:
 	Int_t       fPadLabelX;
 	Int_t       fPadLabelY;
 	Int_t       fCanvasFillStyle; 
+	Int_t       fOk;
+	Int_t       fDummy;
 	
-   
 public:
 
    SetCanvasAttDialog(TGWindow * win = NULL);
+	SetCanvasAttDialog(Int_t batch);
    ~SetCanvasAttDialog() {};
    void RecursiveRemove(TObject * obj);
    void CloseDialog();
@@ -53,7 +55,8 @@ public:
    void SetPadAtt(TPad *pad);
    void SetCanvasAttPerm();
    void SaveDefaults();
-   void RestoreDefaults();
+   void RestoreDefaults(Int_t resetall=0);
+   void SetAllToDefault();
    static void SetDefaults();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);

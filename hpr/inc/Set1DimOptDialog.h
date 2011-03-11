@@ -13,48 +13,67 @@ private:
    Int_t fFlags[100];
    TList *fRow_lab;
    TGMrbValuesAndText *fDialog;
-   TCanvas *fCanvas;
-	TH1     *fHist;
-   TString fDrawOpt;
-   Int_t   fFill1Dim;
-   Color_t fHistFillColor ;
-   Style_t fHistFillStyle;
-   Color_t fHistLineColor;
-   Style_t fHistLineStyle;
-   Width_t fHistLineWidth;
-   TString fErrorMode;
+	TList fHistList;
+	Int_t fNHists;
+
+	TCanvas *fCanvas;
+	Int_t   fOk;
+	
+   TString *fDrawOpt;
+   Int_t   *fShowContour;
+   Int_t   *fFill;
+   Color_t *fFillColor ;
+   Style_t *fFillStyle;
+   Color_t *fLineColor;
+   Style_t *fLineStyle;
+   Width_t *fLineWidth;
+   TString *fErrorMode;
+   Color_t *fMarkerColor;
+   Style_t *fMarkerStyle;
+   Float_t *fMarkerSize; 
+   Int_t   *fShowMarkers;
+   Int_t   *fSame;
+	
    Float_t fEndErrorSize;
    Float_t fErrorX;
-   Color_t fMarkerColor;           //Marker color
-   Style_t fMarkerStyle;           //Marker style
-   Float_t fMarkerSize;           //Marker width
-   Int_t   fDrawMarker;
+	Int_t   fSmoothLine;
+	Int_t   fSimpleLine;
+	Int_t   fBarChart  ;
+	Int_t   fBarChart3D;
+	Int_t   fBarChartH ;
+	Int_t   fPieChart  ;
+	Int_t   fText      ;
+	Int_t   fTextAngle ;
    Int_t   fLiveStat1Dim;
    Int_t   fLiveGauss;
    Int_t   fLiveBG;
+	
    Int_t   fDrawAxisAtTop;
-   Int_t   fShowContour;
 	Int_t   fLabelsTopX;
 	Int_t   fLabelsRightY;
 	Int_t   fOneDimLogX;
 	Int_t   fOneDimLogY;
+	Int_t   fAdvanced1Dim;
 	
 public:
 
    Set1DimOptDialog(TGWindow * win = NULL);
 	~Set1DimOptDialog() {};
+	Set1DimOptDialog(Int_t batch);
 //	void Add2ConnectedClasses(TObject *obj);
 	void LinLogChanged(TObject* o);
 	void RecursiveRemove(TObject * obj);
    void CloseDialog();
    void SetHistAttNow(TCanvas *canvas);
-   void SetHistAtt(TCanvas *canvas);
+   void SetHistAtt();
    void SetAtt(TH1* hist);
    void SetHistAttPermLocal();
    void SetHistAttPerm();
    static void SetDefaults();
    void SaveDefaults();
-   void RestoreDefaults();
+   void SetAllToDefault();
+   void RestoreDefaults(Int_t resetall = 0);
+	void GetValuesFromHist();
    void CloseDown(Int_t wid);
    void CRButtonPressed(Int_t wid, Int_t bid, TObject *obj);
 ClassDef(Set1DimOptDialog,0)

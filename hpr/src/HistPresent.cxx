@@ -44,6 +44,7 @@
 #include "TLegend.h"
 #include "TLegendEntry.h"
 #include "TQObject.h"
+#include "TProof.h"
 
 #include "CmdListEntry.h"
 #include "HistPresent.h"
@@ -77,6 +78,7 @@
 #include <fstream>
 #include <cstdlib>
 
+HistPresent *gHpr;
 static const char  *fHlistSuffix=".histlist";
 Int_t nHists;
 extern TH1 * gHpHist;
@@ -94,22 +96,22 @@ const char AttrTemplate[]=
 // please read the documentation (http://root.cern.ch) for all methods\n\
 // defined for histograms and canvases and styles\n\
 \n\
-// Methods of HistPresent itself may be used via the pointer mypres.\n\
+// Methods of HistPresent itself may be used via the pointer gHpr.\n\
 // This can be used to get a histograms from any file  and overlay it\n\
 // See line with GetHist()\n\
 \n\
 //  gROOT->Reset();\n\
 // find pointer to HistPresent object\n\
   class HistPresent;\n\
-  HistPresent * mypres = (HistPresent*)gROOT->GetList()->FindObject(\"mypres\");\n\
-  if (!mypres) { \n\
+//  HistPresent * gHpr = (HistPresent*)gROOT->GetList()->FindObject(\"gHpr\");\n\
+  if (!gHpr) { \n\
      cout << \"histogram presenter object not found\" << endl;\n\
      return 0;\n\
   }\n\
   TCanvas* canvas = (TCanvas*)gROOT->GetListOfCanvases()->FindObject(cname);\n\
   TH1* hist = 0;\n\
   if (gROOT->GetVersionInt() >= 22306) \n\
-     TH1* hist = mypres->GetCurrentHist();   // assure backward comp\n\
+     TH1* hist = gHpr->GetCurrentHist();   // assure backward comp\n\
   else    hist = (TH1*)gROOT->GetList()->FindObject(hname);\n\
 \n\
   if (!hist || !canvas) {\n\
@@ -187,7 +189,7 @@ const char AttrTemplate[]=
 \n\
 //      if (name == \"hsimple_hpx\") {\n\
 //     get histogam named hpx1 from file hsimple.root\n\
-//         TH1 * hs = mypres->GetHist(\"hsimple.root\",\"hpx1\");\n\
+//         TH1 * hs = gHpr->GetHist(\"hsimple.root\",\"hpx1\");\n\
 //         if (hs) {\n\
 //            draw and set line color to blue\n\
 //            hs->Draw(\"same\");\n\
@@ -216,6 +218,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 //   cout<< "enter HistPresent ctor "  <<endl;
 //   TDirectory *fDirectory;
 //   TList *fFunctions;
+	gHpr = this;
    fOpfac= 1.;
    fRebin = 2;
    fRMethod = 0;
@@ -334,7 +337,7 @@ void HistPresent::RecursiveRemove(TObject * obj)
 //	cout << "HistPresent::RecursiveRemove for: " << obj ;
 	
    fCanvasClosing = kFALSE;
-//      fCloseWindowsButton->SetMethod("mypres->CloseAllCanvases();");
+//      fCloseWindowsButton->SetMethod("gHpr->CloseAllCanvases();");
 //      cout << "------> HistPresent: all canvases closed" << endl;
 //   }
    fAllCuts->Remove(obj);
@@ -371,8 +374,9 @@ void HistPresent::ShowMain()
      = CButton("CloseAllCanvases",  "Close Windows",this,2,1,dy,0.5);
    b = CButton("ListSelect",        "List Hists,Cuts",this,1,2,dy,0.5);
    b = CButton("ClearSelect",       "Clear Select",this,2,2,dy,0.5);
-   b = CButton("Editrootrc",        "Edit .hprrc",this,1,3,dy,0.5);
-   b->SetToolTipText("Edit resource file .hprrc in CWD",hint_delay);
+//   b = CButton("Editrootrc",        "Edit .hprrc",this,1,3,dy,0.5);
+	b = CButton("ListMacros",        "List Macros",this,1,3,dy,0.5);
+	b->SetToolTipText("Edit resource file .hprrc in CWD",hint_delay);
    b = CButton("EditAttrFile",      "Edit AttrMacro",this,2,3,dy,0.5);
    b->SetToolTipText("Edit a macro used to customize drawing options",hint_delay);
    b = CButton("RebinHist",         "Rebin",this,1,4,dy,0.25);
@@ -398,62 +402,69 @@ void HistPresent::ShowMain()
    fValButton = CButton("SetOperateVal",     "1.",this,3,5,dy,0.25);
    fValButton->SetToolTipText("Factor used in operations (e.g. h1 + fac*h2)",hint_delay);
 
-   TString cmd("mypres->ShowFiles(\"A\")");
+   TString cmd("gHpr->ShowFiles(\"A\")");
    TString tit("Show FileList (alphab)");
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Show files ending .root, .map or .histlist in CWD in alphabetical order",hint_delay);
    y-=dy;
-
-   cmd="mypres->ShowFiles(\"R\")";
+/*
+   cmd="gHpr->ShowFiles(\"R\")";
    tit="Show FileList (reverse)";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Show files ending .root, .map or .histlist in CWD in reverse alphabetical order",hint_delay);
-
    y-=dy;
-   cmd="mypres->ShowFiles(\"D\")";
+*/
+   cmd="gHpr->ShowFiles(\"D\")";
    tit="Show FileList (bydate)";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Show files ending .root, .map or .histlist in CWD ordered by date",hint_delay);
    y-=dy;
 
-   cmd="mypres->ShowContents(\"Memory\",\"\")";
+   cmd="gHpr->ShowContents(\"Memory\",\"\")";
    tit="List Objects in Memory";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Show objects (hists, windows, functions currently in memory",hint_delay);
    y-=dy;
+	
+   cmd="gHpr->HistsFromProof()";
+   tit="Histos from Proof";
+   b = CommandButton(cmd,tit,x0,y,x1,y+dy);
+   b->SetToolTipText(
+   "Get histograms from proof output list",hint_delay);
+   y-=dy;
 
-   cmd="mypres->ShowContents(\"Socket\",\"\")";
+   cmd="gHpr->ShowContents(\"Socket\",\"\")";
    tit="Hists from M_analyze";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Get hists from running M_analyze via TcpIp",hint_delay);
    y-=dy;
 
-   cmd="mypres->GetFileSelMask()";
+   cmd="gHpr->GetFileSelMask()";
    tit="File Selection mask";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Define a regular expression used file selection criterion",hint_delay);
    y-=dy;
 
-   cmd="mypres->GetHistSelMask()";
+   cmd="gHpr->GetHistSelMask()";
    tit="Histo/Leaf/Canvas mask";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Define a regular expression for selection of a subset of histograms",hint_delay);
    y-=dy;
-   cmd = "mypres->StackSelectedHists()";
+   cmd = "gHpr->StackSelectedHists()";
    tit = "Stack selected hists";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Stackselected histograms",hint_delay);
    y-=dy;
 
-   cmd = "mypres->ShowSelectedHists()";
+   cmd = "gHpr->ShowSelectedHists()";
    tit = "Show selected hists";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
@@ -540,7 +551,7 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
          Long64_t size;
          gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
 //          cout << fname << " " << modtime << endl;
-         TString cmd = "mypres->Show";
+         TString cmd = "gHpr->Show";
          if (sname.Index(endwithlist) >= 0) {
             cmd = cmd + "List(\"\",\"" + fname + "\")";
          } else {
@@ -640,7 +651,7 @@ void HistPresent::ListMacros(const char *bp)
       fControlBar->Show();
       gROOT->SaveContext();
    } else
-      cout << " No macro containing a hint found " << endl;
+      cout << "A macro must contain a line like: //Hint: a hint what is does " << endl;
 };
 //________________________________________________________________________________________
 
@@ -660,6 +671,37 @@ void HistPresent::TurnButtonGreen(TVirtualPad ** pad)
    gPad->SetFillColor(3);
 //   cout << " Green" << setbase(16) << gPad << endl;
    *pad=gPad;
+}
+//________________________________________________________________________________________
+
+void HistPresent::HistsFromProof(const char* bp)
+{
+	if (      gROOT->GetListOfProofs()->GetSize() == 0 ) {
+		cout << "No proof session found" << endl;
+		return;
+	} else if ( gROOT->GetListOfProofs()->GetSize()  > 1 ) {
+		cout << "Warning: more than one proof session found" << endl;
+	}
+	TProof * proof = (TProof*)gROOT->GetListOfProofs()->At(0);
+	TList * hlist = proof->GetOutputList();
+	if ( hlist->GetSize() == 0 ) {
+		cout << "No output objects found" << endl;
+		return;
+	}
+	TIter next(hlist);
+	TObject *obj = NULL;
+	Int_t nh = 0;
+	while ( obj = next() ) {
+		if ( obj->InheritsFrom("TH1") ) {
+			((TH1*)obj)->SetDirectory(gROOT);
+			nh++;
+		}
+	}
+	if ( nh == 0 ) {
+		cout << "No histograms found" << endl;
+		return;
+	}
+	ShowContents("Memory","",bp);
 }
 //________________________________________________________________________________________
 
@@ -703,7 +745,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 				}
 			}
          hint(rsuf) = "";
-         cmd = "mypres->ShowList(\"";
+         cmd = "gHpr->ShowList(\"";
          cmd = cmd + fname + "\",\"" + hint + "\")";
          title = "ShowList "; title += hint;
          sel.Resize(0);
@@ -739,7 +781,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    		TKey* key;
    		while( (key = (TKey*)next()) ){
       		if(!strncmp(key->GetClassName(),"TDirectory",10)){
-            	cmd = "mypres->ShowContents(\"";
+            	cmd = "gHpr->ShowContents(\"";
             	cmd = cmd + fname + "\",\"";
                if (strlen(dir) > 0) cmd = cmd + "/" + dir;
                cmd = cmd + key->GetName()+ "/" + "\")";
@@ -853,7 +895,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 
 
      if (nstat > 0) {
-         cmd = "mypres->SaveMap(\"";
+         cmd = "gHpr->SaveMap(\"";
          cmd = cmd + fname + "\")";
          hint = "Save as ROOT file ";
          title = "Save";
@@ -874,15 +916,17 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 				continue;
 			TString shn(stent->GetName());
 			if (shn.Contains(" ")) {
-			   cout << setred << "Histogram name: \"" << shn 
-				<< "\" contains spaces!!!" << endl;
+//			   cout << setred << "Histogram name: \"" << shn 
+//				<< "\" contains spaces!!!" << endl;
 				static Int_t first_time = 1;
 				if (first_time) {
-				   first_time = 0;
+					cout << setred << "Histogram name: \"" << shn 
+					<< "\" contains spaces!!!" << endl;
+					first_time = 0;
 					cout << "We strongly advise against using white space in names." << endl;
-					cout << "You will not be able to use that histogram in selections" << endl;
-			   }
-				cout << setblack << endl;
+//					cout << "You will not be able to use these histograms in selections" << endl;
+					cout << setblack << endl;
+				}
 			}
          cmd = fname;
          cmd = cmd + "\",\"";
@@ -894,8 +938,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
          }
          cmd += "\")";
          sel = cmd;
-         cmd.Prepend("mypres->ShowHist(\"");
-         sel.Prepend("mypres->SelectHist(\"");
+         cmd.Prepend("gHpr->ShowHist(\"");
+         sel.Prepend("gHpr->SelectHist(\"");
 
 //         cout << cmd << endl;
 
@@ -906,15 +950,15 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
          }
          hint = title;
          if     ( stent->GetDimension() == 1  )title.Prepend("1d ");
-         else if (stent->GetDimension() == 2 )title.Prepend("2d ");
-         else                               title.Prepend("3d ");
+         else if (stent->GetDimension() == 2 ) title.Prepend("2d ");
+         else                                  title.Prepend("3d ");
          title +=  " " ;
          title +=  (Int_t)stent->GetEntries();
 
          hint = stent->GetName();
-         if (stent->GetDimension() == 1)     hint += " 1d hist Ent: ";
+         if (stent->GetDimension() == 1)      hint += " 1d hist Ent: ";
          else if (stent->GetDimension() == 2 )hint += " 2d hist Ent: ";
-         else                               hint += " 3d hist Ent: ";
+         else                                 hint += " 3d hist Ent: ";
          hint += " ";
          hint += (Int_t)stent->GetEntries();
          hint += " Title: ";
@@ -955,8 +999,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             cmd = fname;
             cmd = cmd + "\",\"" + name.Data() + "\")";
             sel = cmd;
-            cmd.Prepend("mypres->PrintWindow(\"");
-            sel.Prepend("mypres->LoadWindow(\"");
+            cmd.Prepend("gHpr->PrintWindow(\"");
+            sel.Prepend("gHpr->LoadWindow(\"");
             title.Prepend("w1 ");
             hint =  title;
             hint+=" 1-dim window";
@@ -973,8 +1017,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             cmd = fname;
             cmd = cmd + "\",\"" + name.Data() + "\")";
             sel = cmd;
-            cmd.Prepend("mypres->PrintWindow(\"");
-            sel.Prepend("mypres->LoadWindow(\"");
+            cmd.Prepend("gHpr->PrintWindow(\"");
+            sel.Prepend("gHpr->LoadWindow(\"");
             title.Prepend("w2 ");
             hint =  title;
             hint+=" 2-dim window";
@@ -982,7 +1026,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
          }
          title = "2D Cuts to ASCII";
          hint = "Write " + title;
-         cmd = "mypres->CutsToASCII(\"";
+         cmd = "gHpr->CutsToASCII(\"";
          cmd = cmd + fname + "\")";
          sel = "";
          fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
@@ -997,8 +1041,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             cmd = fname;
             cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
             sel = cmd;
-            cmd.Prepend("mypres->ShowFunction(\"");
-            sel.Prepend("mypres->LoadFunction(\"");
+            cmd.Prepend("gHpr->ShowFunction(\"");
+            sel.Prepend("gHpr->LoadFunction(\"");
    //         sel.Resize(0);
             title.Prepend("f ");
             hint =  title;
@@ -1019,7 +1063,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
 //            cmd = cmd + "\",\"" + title.Data() + "\")";
             sel = cmd;
-            cmd.Prepend("mypres->ShowCanvas(\"");
+            cmd.Prepend("gHpr->ShowCanvas(\"");
             sel.Resize(0);
             title.Prepend("c ");
             hint =  title;
@@ -1052,8 +1096,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
             cmd = cmd + "\",\"" + title.Data() + "\")";
             sel = cmd;
-            cmd.Prepend("mypres->ShowContour(\"");
-            sel.Prepend("mypres->SelectContour(\"");
+            cmd.Prepend("gHpr->ShowContour(\"");
+            sel.Prepend("gHpr->SelectContour(\"");
 //            sel.Resize(0);
             title.Prepend("U_C ");
             hint =  title;
@@ -1070,8 +1114,8 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             cmd = fname;
             cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
             sel = cmd;
-            cmd.Prepend("mypres->ShowGraph(\"");
-            sel.Prepend("mypres->SelectGraph(\"");
+            cmd.Prepend("gHpr->ShowGraph(\"");
+            sel.Prepend("gHpr->SelectGraph(\"");
 //            sel.Resize(0);
             title.Prepend("Graph ");
             hint =  title;
@@ -1089,7 +1133,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
             cmd = fname;
             cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
             sel = cmd;
-            cmd.Prepend("mypres->ShowTree(\"");
+            cmd.Prepend("gHpr->ShowTree(\"");
             sel.Resize(0);;
             hint =  title;
             title.Prepend("Tree: ");
@@ -1100,28 +1144,28 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 //
    if (anything_to_delete > 0) {
    	if (maxkey > 1) {
-   		cmd = "mypres->PurgeEntries(\"";
+   		cmd = "gHpr->PurgeEntries(\"";
    		cmd = cmd + fname +  "\")";
    		title = "Purge Entries";
    		hint = "Purge: delete entries, keep last cycl";
    		sel.Resize(0);
    		fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
    	}
-   	cmd = "mypres->DeleteSelectedEntries(\"";
+   	cmd = "gHpr->DeleteSelectedEntries(\"";
    	cmd = cmd + fname +  "\")";
    	title = "Delete Sel Entries";
    	hint = "Delete selected entries";
    	sel.Resize(0);
    	fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
    }
-   cmd = "mypres->ShowStatOfAll(\"";
+   cmd = "gHpr->ShowStatOfAll(\"";
    cmd = cmd + fname + "\",\"" + dir + "\")";
    title = "Show Stats of all";
    hint = "Show statistics of all histograms and save to file";
    sel.Resize(0);
    fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
    if (strstr(fname,"Socket")) {
-      cmd = "mypres->SaveFromSocket(\"";
+      cmd = "gHpr->SaveFromSocket(\"";
       cmd = cmd + fname + "\")";
       hint = "Save all hists to a local ROOT file ";
       title = "Save to local ROOT file";
@@ -1130,7 +1174,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
 //
    if (fCmdLine->GetSize() > 0) {
       if (fCmdLine->GetSize() > 3) {
-         cmd = "mypres->ComposeList()";
+         cmd = "gHpr->ComposeList()";
          title = "Compose list";
          hint = "Select histograms to be added to list first";
          sel.Resize(0);
@@ -1383,7 +1427,7 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
          line.Remove(0,pp+1);
       }
 
-      cmd = "mypres->ShowHist(\"";
+      cmd = "gHpr->ShowHist(\"";
 //      if (is_a_file(fname))cmd += "ShowHist(\"";
 //      else                cmd += "ShowMap(\"";
       cmd += fname;
@@ -1397,7 +1441,7 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
 		}
 		cmd = cmd + "\",\"" + dname + "\",\"";
 //      cmd +=  "\",\"\",\"";
-      sel = "mypres->SelectHist";
+      sel = "gHpr->SelectHist";
 //      sel = sel + "(\"" + fname + "\",\"\",\"";
       sel = sel + "(\"" + fname + "\",\"" + dname + "\",\"";
 
@@ -1445,12 +1489,12 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
    if (fCmdLine->GetSize() <= 0) {
       cout << "No Hists found" << endl;
    } else {
-      cmd = "mypres->ShowInOneCanvas()";
+      cmd = "gHpr->ShowInOneCanvas()";
       tit = "ShowAllInOneCanvas";
       TString hint = "Show all hists in list in one Canvas";
       sel.Resize(0);
       fCmdLine->AddFirst(new CmdListEntry(cmd, tit, hint, sel));
-      cmd = "mypres->StackInOneCanvas()";
+      cmd = "gHpr->StackInOneCanvas()";
       tit = "StackAll";
       hint = "Stack all hists in list in one Canvas";
       sel.Resize(0);
@@ -2017,14 +2061,14 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
 
    TString fname = obj->String();
 //	cout << "GetSelHistAt |" << fname << "|" << endl;
-   Int_t pp = fname.Index(" ");
+   Int_t pp = fname.Index(",");
    if (pp <= 0) {cout << "No file name in: " << obj->String() << endl; return NULL;};
    fname.Resize(pp);
 
    TString hname = obj->String();
    hname.Remove(0,pp+1);
    TString dname = hname.Data();
-   pp = hname.Index(" ");
+   pp = hname.Index(",");
    if (pp <= 0) {cout << "No histogram name in: " << obj->String()<< endl; return NULL;};
    hname.Resize(pp);
    dname.Remove(0,pp+1);
@@ -2194,7 +2238,7 @@ void HistPresent::SelectCut(const char* fname, const char* cname, const char* bp
 void HistPresent::CloseHistLists()
 {
    ClearSelect();
-   fHistLists->ls();
+//   fHistLists->ls();
 	fHistLists->Delete();
 }
 //________________________________________________________________________________________
@@ -2204,7 +2248,7 @@ void HistPresent::SelectHist(const char* fname, const char* dir, const char* hna
 {
 //   cout << fname << " " << hname << endl;
    TString sel = fname;
-   sel = sel + " " + hname + " " + dir;
+   sel = sel + "," + hname + "," + dir;
    if (bp) {
       TButton * b;
       b = (TButton *)strtoul(bp, 0, 16);
@@ -2783,12 +2827,12 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       }
 
       if (!hist) {
-//         gROOT->ProcessLine("mypres->WarnBox(\"aaaaaaa\")");
+//         gROOT->ProcessLine("gHpr->WarnBox(\"aaaaaaa\")");
       	fRootFile=new TFile(fname);
          if (strlen(dir) > 0) fRootFile->cd(dir);
 //	      cout << "GetHist: |" << shname.Data()<< "|"<< dir << "|" << endl;
-//         gROOT->ProcessLine("mypres->WarnBox(\"aaaaaaa\")");
-//         gROOT->ProcessLine("mypres->NofEditorPages()");
+//         gROOT->ProcessLine("gHpr->WarnBox(\"aaaaaaa\")");
+//         gROOT->ProcessLine("gHpr->NofEditorPages()");
 //         gSystem->Sleep(1000);
          Int_t kn = 9999;
          Int_t is = shname.Index(";");
@@ -3049,7 +3093,7 @@ void HistPresent::CloseAllCanvases()
    cout << "Closed: " << nc << " canvas" ;
    if ( nc != 1 ) cout << "es";
    cout << endl;
-   fCloseWindowsButton->SetMethod("mypres->CloseAllCanvases()");
+   fCloseWindowsButton->SetMethod("gHpr->CloseAllCanvases()");
    fCanvasClosing = kFALSE;
 }
 //_______________________________________________________________________
@@ -3064,11 +3108,12 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
 {
    TList hl;
    Int_t nsel = hlist->GetSize();
-   for(Int_t i=0; i<nsel; i++) {
+	cout << "StackSelectedHists  " << nsel << endl;
+	for(Int_t i=0; i<nsel; i++) {
       TH1* hist = GetSelHistAt(i, hlist);
-//		cout << "StackSelectedHists  " << hist->GetName() << endl;
+		cout << "StackSelectedHists  " << hist->GetName() << endl;
 		if (!hist) {
-//         cout << " Hist not found at: " << i << endl;
+         cout << " Hist not found at: " << i << endl;
          continue;
       } else {
          hl.Add(hist);
@@ -3443,7 +3488,7 @@ void HistPresent::SelectdCache()
 				continue;
 			fname = fname(0, ind_dq);
 		}
-		TString cmd = "mypres->Show";
+		TString cmd = "gHpr->Show";
 		cmd = cmd + "Contents(\"" + fname + "\", \"\" )";
 		
 		TString nam=fname;

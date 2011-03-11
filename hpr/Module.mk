@@ -82,12 +82,12 @@ include/%.h:    $(HPRDIRI)/%.h
 $(HPREXE):      $(HPRMAINO) $(HPRLIB) $(OHPRLIBS)
 		@echo "other libs: $(OHPRLIBS)"
 		@echo "$(HPREXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(OHPRLIBS) $(ROOTGLIBS) -lSpectrum \
+		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(OHPRLIBS) $(ROOTGLIBS) -lSpectrum -lProof \
             -o $(HPREXE)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)
 #		@echo "objs: $(HPRO)"
-		@echo "$(HPREXE) make shared lib ------------------------------------"
+		@echo "$(HPRLIB) make shared lib ------------------------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libHpr.$(SOEXT) $@ "$(HPRO) $(HPRDO)"
 
