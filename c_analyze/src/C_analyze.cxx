@@ -34,7 +34,6 @@
 #include "TInetAddress.h"
 #include "TH1.h"
 #include "TFile.h"
-#include "TMapFile.h"
 #include "TGWindow.h"
 #include "TDatime.h"
 #include <TEnv.h>
@@ -427,8 +426,6 @@ trying to attach?",
    fTotal_time_elapsed = 0;
    fTotal_livetime = 0;
 	fWaitedForStop = 0;
-   fMfile = 0;
-   fUseMap = kFALSE;
 	if(fSetup != NULL) delete fSetup;
 	if (!gSystem->AccessPathName(".mbssetup")) {
 		fSetup = new TMbsSetup(".mbssetup");
@@ -447,61 +444,6 @@ trying to attach?",
    gClient->GetColorByName("cyan", cyan);
    gClient->GetColorByName("yellow", yellow);
 
-//   TGFont *myfont = fClient->GetFont("-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
-//   FontStruct_t labelfont(myfont->GetFontStruct());
-//   labelfont = gClient->GetFontByName(gEnv->GetValue("Gui.BoldFont",
-//                "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1"));
-
-//   TGGC myGC = *fClient->GetResourcePool()->GetFrameGC();
-//   TGFont *myfont = fClient->GetFont("-adobe-helvetica-bold-r-*-*-12-*-*-*-*-*-iso8859-1");
-//   if (myfont) myGC.SetFont(myfont->GetFontHandle());
-/*
-   TGGC fRedTextGC(TGButton::GetDefaultGC());
-   Pixel_t red;
-   fClient->GetColorByName("red", red);
-   fRedTextGC.SetForeground(red);
-//   GCValues_t   gvalred;
-//   gvalred.fMask = kGCForeground | kGCFont;
-//   gvalred.fFont = gVirtualX->GetFontHandle(labelfont);
-//   gClient->GetColorByName("red",   gvalred.fForeground);
- //  fRedTextGC   = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalred);
-
-   TGGC fBlueTextGC(TGButton::GetDefaultGC());
-   Pixel_t blue;
-   fClient->GetColorByName("blue", blue);
-   fBlueTextGC.SetForeground(blue);
-//   GCValues_t   gvalblue;
-//   gvalblue.fMask = kGCForeground | kGCFont;
-//   gvalblue.fFont = gVirtualX->GetFontHandle(labelfont);
-//   gClient->GetColorByName("blue",  gvalblue.fForeground);
-//   fBlueTextGC  = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalblue);
-
-   TGGC fBrownTextGC(TGButton::GetDefaultGC());
-   Pixel_t brown;
-   fClient->GetColorByName("brown", brown);
-   fBrownTextGC.SetForeground(brown);
-
-//   GCValues_t   gvalbrown;
-//   gvalbrown.fMask = kGCForeground | kGCFont;
-//   gvalbrown.fFont = gVirtualX->GetFontHandle(labelfont);
-//   gClient->GetColorByName("brown", gvalbrown.fForeground);
-//   fBrownTextGC = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalbrown);
-
- //  GCValues_t   gvalyellow;
-//   gvalyellow.fMask = kGCForeground | kGCFont;
- //  gvalyellow.fFont = gVirtualX->GetFontHandle(labelfont);
-//   gClient->GetColorByName("yellow", gvalyellow.fForeground);
-//   fYellowTextGC = gVirtualX->CreateGC(gClient->GetRoot()->GetId(),&gvalyellow);
-   TGGC fGreenTextGC(TGButton::GetDefaultGC());
-   Pixel_t green;
-   fClient->GetColorByName("green", green);
-   fGreenTextGC.SetForeground(green);
-//   GCValues_t   gvalgreen;
- //  gvalgreen.fMask = kGCBackground;
-//   gClient->GetColorByName("green", gvalgreen.fBackground);
-//   fGreenTextGC = gVirtualX->CreateGC(gClient->GetRoot()->GetId(), &gvalgreen);
-*/
-//   TGGC fYellowTextGC(TGButton::GetDefaultGC());
 
    Pixel_t yellowp;
    fClient->GetColorByName("yellow", yellowp);
@@ -898,58 +840,13 @@ trying to attach?",
    fHFr->AddFrame(fLabelFr,fLO2);
    this->AddFrame(fHFr,fLO1);                // another  line
 
-//  memory mapped file
-//   fHFr            = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
-//   fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
-/*
-   fSaveMapButton = new TGTextButton(fHFrHalf, "Save", M_SAVEMAP, fYellowTextGC );
-   fSaveMapButton->ChangeBackground(blue);
-   fSaveMapButton->Associate(this);
-   fHFrHalf->AddFrame(fSaveMapButton, fLO1);
-   fSaveMapButton->SetState(kButtonDisabled);
-
-   fHFrHalf->AddFrame(fRAuto = new TGRadioButton(fHFrHalf, "Autom", R_AUTO), fLO2);
-   fRAuto->Associate(this);
-   if(fAutoSave) {
-      fRAuto->ChangeBackground(green);
-      fRAuto->SetState(kButtonDown);
-      fRAuto->SetToolTipText("Histograms will be saved at end of run");
-   } else {
-      fRAuto->ChangeBackground(red);
-      fRAuto->SetState(kButtonUp);
-      fRAuto->SetToolTipText("Histograms will not be saved automatically");
-   }
-*/
-//   fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
-//   fLabel  = new TGLabel(fLabelFr, new TGString("Mapped Size"));
-//   fLabelFr->AddFrame(fLabel,fLO2);
-//   fHFrHalf->AddFrame(fLabelFr,fLO2);
-
-//   fTeMapSize = new TGTextEntry(fHFrHalf, fTbMapSize = new TGTextBuffer(100), M_MAPS);
-//   fTbMapSize->AddText(0,Form("%d",fMapSize));
-//   fTeMapSize->Resize(60, fTeMapSize->GetDefaultHeight());
-//   fHFrHalf->AddFrame(fTeMapSize,fLO4);
-//   fTeMapSize->Associate(this);
-
-//   fHFr->AddFrame(fHFrHalf,fLO2);
-
-//   fTeMap = new TGTextEntry(fHFr, fTbMap = new TGTextBuffer(100), M_MAPF);
-//   fTbMap->AddText(0,(const char *)*fMap);
-//   fHFr->AddFrame(fTeMap,fLO2);
-
-//   fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
-//   fLabel  = new TGLabel(fLabelFr, new TGString("Mapped Name"));
-//   fLabelFr->AddFrame(fLabel,fLO2);
-//   fHFrHalf->AddFrame(fLabelFr,fLO2);
-//   this->AddFrame(fHFr,fLO1);                // mapped file line
-//   fTeMap->Associate(this);
 
 //   root file for histos
    fHFr     = new TGCompositeFrame(this, 100, 10, kHorizontalFrame);
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
    fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
 
-   fSaveMapButton = new TGTextButton(fHFrHalf, "Save", M_SAVEMAP, fYellowTextGC() );
+   fSaveMapButton = new TGTextButton(fHFrHalf, "Save", M_SAVEHISTS, fYellowTextGC() );
    fSaveMapButton->ChangeBackground(blue);
    fSaveMapButton->Associate(this);
    fHFrHalf->AddFrame(fSaveMapButton, fLO1);
@@ -1282,115 +1179,6 @@ void FhMainFrame::SetTime(){
    delete datime;
 }
 //_____________________________________________________________________________________
-//
-// Save histograms from mapped file
-
-void FhMainFrame::SaveMap(Bool_t askforname){
-//   if(!fUseMap) return;
-
-	return;
-
-
-   Bool_t mfile_was_closed = kFALSE;
-   if(!fMfile){
-      if(gSystem->AccessPathName(fTbMap->GetString(), kFileExists)){
-         WarnBox("MapFile not found: ", this);
-         return;
-      }
-      fMfile = TMapFile::Create(fTbMap->GetString());  ////
-      if (fMfile->IsZombie()) {
-         fMfile->Close();
-         fMfile = NULL;
-         fUseMap = kFALSE;
-         cout << setred << "Cant open mapfile: " << fTbMap->GetString() << setblack << endl;
-      }
-      mfile_was_closed = kTRUE;
-   }
-   if(!fMfile){
-      WarnBox("MapFile not found: ", this);
-//      gDirectory=gROOT;
-      return;
-   }
-//  compare size of mapfile with real space used
-
-   ULong_t upper = (ULong_t)fMfile->GetBreakval();
-   ULong_t lower = (ULong_t)fMfile->GetBaseAddr();
-   cout << "used_size " << upper-lower << endl;
-   Int_t needed = upper - lower + 2000000;
-   needed /= 1000000;
-   if(needed < fMapSize){
-      cout << setred << "Warning: Size of memory mapped file is too big: "
-                     << fMapSize << endl;
-      cout           << "Needed only                           : "
-                     << needed << endl;
-   }
-   Int_t retval=kMBYes;
-
-   TString savem(*fHistFile);
-   if(savem.Contains("RUN")){
-      TRegexp run("RUN");
-      Int_t status = IsAnalyzeRunning(0);
-      if(status == M_PAUSING) savem(run) = *fRunNr;
-      else                    savem(run) = *fOldRunNr;
-   }
-   if(askforname){
-      Bool_t ok;
-      const char * name = GetString("Save with name:",savem.Data(), &ok, this);
-      if(!ok) return;
-      savem = name;
-   }
-   if(!gSystem->AccessPathName(savem.Data(), kFileExists)){
-      if(askforname){
-      TString question=savem;
-         question += " already exists, overwrite?";
-         int buttons= kMBYes | kMBNo;
-         new TGMsgBox(gClient->GetRoot(), this,
-          "Question",(const char *)question,
-          kMBIconExclamation,
-          buttons, &retval);
-      } else {
-         TString bckfile = savem.Data();
-         bckfile += ".bck";
-         cout << setred << "Move existing: " << savem.Data()  << " to "
-              <<  bckfile.Data() << setblack <<  endl;
-         TString MvCmd = "mv ";
-         MvCmd += savem;
-         MvCmd += " ";
-         MvCmd += bckfile;
-         gSystem->Exec((const char *)MvCmd);
-      }
-   }
-   if(retval == kMBYes){
-      cout << setgreen << "Start saving histograms " << endl;
-      TFile *f = new TFile(savem.Data(),"RECREATE");
-      f->cd();
-      const char * name;
-      Int_t nsaved = 0;
-      TMapRec *mr = fMfile->GetFirst();
-      if(mr){
-         while (fMfile->OrgAddress(mr)) {
-            if(!mr) break;
-            name=mr->GetName();
-            TH1 *hist=0;
-            hist    = (TH1 *) fMfile->Get(name, hist);
-            if(hist){ hist->Write(); nsaved++;};
-            delete hist;
-//            cout << "Writing: " << name << endl;
-//fM_Status == M_RUNNING || fM_Status == M_PAUSING
-            mr=mr->GetNext();
-         }
-      }
-      if(mfile_was_closed){fMfile->Close(); fMfile = 0;}
-      cout << nsaved << " histograms saved to " << savem.Data() << setblack;
-//      if(mfile_was_closed) cout << " mfile_was_closed";
-      cout << endl;
-      f->Close();
-//      fMfile->Close();
-//      fMfile = 0;
-   }
-//   gDirectory=gROOT;
-}
-//_____________________________________________________________________________________
 
 void FhMainFrame::SetButtonsToDefaults()
 {
@@ -1453,7 +1241,6 @@ void FhMainFrame::CloseWindow()
    if(retval == kMBYes){
       shutdown(6006, 2);
       if(fMbsControl)fMbsControl->DisConnectPrompter();
-      if(fMfile) fMfile->Close(); fMfile = 0;
       PutDefaults();
 //      CloseWindow();
       TGMainFrame::CloseWindow();
@@ -1559,28 +1346,6 @@ Bool_t FhMainFrame::CheckParams()
    TString fname;
    TString fname1;
    *fRunNr = fTbRunNr->GetString();
-   fUseMap = kFALSE;
-//  is mapped file local?
-//   fname = fTbMap->GetString();
-//   if (fname.CompareTo("none") == 0){
-//      cout << setblue << "No MapFile given " << setblack << endl;
-//      fUseMap = kFALSE;
-//   } else {
-//   	if(fname.Index("tmp") < 0 && fname.Index("scratch") < 0){
-//      	fname += " seems on NFS (not /tmp or /scratch)";
-//      	WarnBox((const char *)fname, this);
-//   	}
-//      fUseMap = kTRUE;
-//  is mapped file already existing?
-//   	fname = fTbMap->GetString();
-//   	if(!gSystem->AccessPathName(fname.Data())){
-//      	if(!AskforRemove(fname.Data()))
-//      	cout << setred << "Continue filling histograms on mapped file" << endl
-//         	  << setred << "Be sure you also have new version of M_analyze (30.5.00)"
-//         	  << setblack << endl;
-//      	ok = kTRUE;
-//   	}
-//   }
    TRegexp run="RUN";
    if(fRActive->GetState() == kButtonDown){
       fname = fTbRootFile->GetString();
@@ -1677,7 +1442,9 @@ Bool_t FhMainFrame::MbsStatus(){
    return kTRUE;
 }
 //_____________________________________________________________________________________
-Bool_t FhMainFrame::Configure(){
+
+Bool_t FhMainFrame::Configure()
+{
    fM_Status = IsAnalyzeRunning(1);
    if(fM_Status == M_ABSENT || fAttach){
       if(!CheckHostsUp())return kFALSE;
@@ -1815,7 +1582,9 @@ Please watch terminal output", this);
    return kFALSE;
 }
 //_____________________________________________________________________________________
-Bool_t FhMainFrame::MbsSetup(){
+
+Bool_t FhMainFrame::MbsSetup()
+{
    fM_Status = IsAnalyzeRunning(1);
    if(fM_Status != M_ABSENT && fM_Status != M_STOPPED && fM_Status != M_DIRTY){
       if(!confirm("Do you really want to run MbsSetup in this state?",
@@ -1865,7 +1634,9 @@ Bool_t FhMainFrame::MbsSetup(){
 
 }
 //_____________________________________________________________________________________
-Bool_t FhMainFrame::MbsCompile(){
+
+Bool_t FhMainFrame::MbsCompile()
+{
    if(!confirm("Do you really want recompile?", this))return kFALSE;
 	if(fSetup == NULL) {
 	   if (!gSystem->AccessPathName(".mbssetup")) {
@@ -1895,7 +1666,9 @@ Bool_t FhMainFrame::MbsCompile(){
    return kTRUE;
 }
 //_____________________________________________________________________________________
-Bool_t FhMainFrame::ClearMbs(){
+
+Bool_t FhMainFrame::ClearMbs()
+{
    fM_Status = IsAnalyzeRunning(1);
    if(fM_Status != M_ABSENT && fM_Status != M_STOPPED && fM_Status != M_DIRTY){
       if(!confirm("Really Clear MBS in this state?",this))return kFALSE;
@@ -2039,14 +1812,8 @@ Bool_t FhMainFrame::StartDAQ()
       (*fHistFile)(run) = fRunNr->Data();
       *fHistFile = fHistFile->Strip(TString::kBoth);
       startCmd += fHistFile->Data();
-      startCmd += " ";
-
-      startCmd += "none";
-      startCmd += " ";
-      startCmd += "0";
-      startCmd += " ";
-//      cout << "Startdaq, fSockNr " << fSockNr << endl;
-
+//		was memory mapped file
+      startCmd += " none 0 ";
 //     socket for communication
       startCmd += " ";
       startCmd += fSockNr;
@@ -2088,8 +1855,6 @@ Bool_t FhMainFrame::StartDAQ()
 
       fTotal_livetime = 0;
       SetTime();
-//      fStartStopButton->SetText(new TGHotString("Stop"));
-//      fPauseButton->SetText(new TGHotString("Pause"));
       Int_t sleeptime = 500;
       for(Int_t i=0; i <= MAXTIMEOUT; i++){
          cout << setblue << "c_ana: Waiting for M_analyze to start"<< setblack << endl;
@@ -2126,8 +1891,8 @@ retrysocket:
                  if (fComSocket && fComSocket->IsValid())
                     cout << "wait for: " << fSockNr << endl;
                  else {
-                    cout << "Invalid: " << fSockNr << endl;
-                    fComSocket->Close();
+						  cout << setred << "Invalid: " << fSockNr << " M_analyze already running??? " << setblack<< endl;
+						  fComSocket->Close();
                     gSystem->Sleep(1000);
                     goto retrysocket;
                  }
@@ -2219,7 +1984,6 @@ Bool_t FhMainFrame::StopDAQ(){
                fStartStopButton->SetText(new TGHotString("Start"));
                fC_Status = M_ABSENT;
                StopMessage();
-               if(fMfile) fMfile->Close(); fMfile = 0;
                cout << setgreen << "c_ana: Mbs ok" << setblack<< endl;
               return kTRUE;
             } else {
@@ -2273,16 +2037,6 @@ Bool_t FhMainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
          switch (GET_SUBMSG(msg)) {
             case kTE_TEXTCHANGED:
                switch (parm1) {
-                  case M_MAPF:
-                     if(RemoveBlanks(fTeMap))
-                      cout << setred << "Removed blanks from: "
-                      <<fTeMap->GetText() << setblack << endl;
-                     break;
-                  case M_MAPS:
-                     if(RemoveBlanks(fTeMapSize))
-                      cout << setred << "Removed blanks from: "
-                      <<fTeMapSize->GetText() << setblack << endl;
-                     break;
                   case M_INPUT:
                      if(RemoveBlanks(fTeFile))
                       cout << setred << "Removed blanks from: "
@@ -2817,21 +2571,20 @@ force Resume", this);
                      }
                      break;
 
-                  case M_SAVEMAP:
+                  case M_SAVEHISTS:
                       fM_Status = IsAnalyzeRunning(0);
                       if (fM_Status == M_STOPPED || fM_Status == M_ABSENT
                          || fM_Status == M_PAUSING || fM_Status == M_CONFIGURED) {
-                           if (fUseMap)  SaveMap();
-                           else          MessageToM_analyze("M_client savehists");
+								 MessageToM_analyze("M_client savehists");
                       } else {
 //                         WarnBox("Wait until absent, paused or configured", this);
                          Bool_t was_running = kFALSE;
                          if(fM_Status == M_RUNNING){
                             was_running = kTRUE;
                             MessageToM_analyze("M_client pause");
-                         }
-                         if (fUseMap)  SaveMap();
-                         else          MessageToM_analyze("M_client savehists");
+                         } else {
+									 MessageToM_analyze("M_client savehists");
+								 }
                          if(was_running){
                             MessageToM_analyze("M_client resume");
                          }
@@ -2848,18 +2601,6 @@ force Resume", this);
 
                       } else WarnBox("Only allowed when Pausing", this);
                       break;
-                  case M_DELETEMAP:
-                     if(gSystem->AccessPathName(fTbMap->GetString(), kFileExists)){
-                        TString warn = fTbMap->GetString();
-                        warn += " not found";
-                        WarnBox((const char *)warn, this);
-                     } else {
-                     AskforRemove(fTbMap->GetString());
-//                        TString RmCmd = "rm ";
-//                        RmCmd += fTbMap->GetString();
-//                        gSystem->Exec((const char *)RmCmd);
-                     }
-                     break;
                   case M_HELP:
                      new TGMrbHelpWindow(this, "Help on C_analyze...",
                                           Help_text, 550, 600);
@@ -2928,27 +2669,6 @@ force Resume", this);
 //                        fMbsSetupButton->SetState(kButtonUp);
 //                     }
                      break;
-/*
-                  case R_AUTO:
-                     if(fAutoSave){
-                        fRAuto->SetState(kButtonUp);
-                        fRAuto->ChangeBackground(red);
-                        fRAuto->SetToolTipText(
-                        "Histograms will not be saved automatically");
-                        fAutoSave = kFALSE;
-                     } else {
-                        fRAuto->SetState(kButtonDown);
-                        fRAuto->ChangeBackground(green);
-                        fRAuto->SetToolTipText(
-                        "Histograms will be saved at end of run");
-                        fAutoSave = kTRUE;
-                        fTeHistFile->SetFocus();
-                        TString temp = fTeHistFile->GetText();
-                        fTeHistFile->SetText(temp.Data());
-                     }
-                     gClient->NeedRedraw(fRAuto);
-                     break;
-*/
                   case R_ACTIVE:
                      if(fWriteOutput){
                         fRActive->SetState(kButtonUp);
@@ -3023,8 +2743,6 @@ Bool_t FhMainFrame::PutDefaults(){
    TString wout = "FALSE";
    wstream << "INPUTFILE:  "  <<  fTbFile->GetString()    << endl;
    wstream << "INPUTSOURCE:"  <<  *fInputSource           << endl;
-//   wstream << "MMAPFILE:   "  <<  fTbMap->GetString()     << endl;
-//   wstream << "MMAPSIZE:   "  <<  fTbMapSize->GetString() << endl;
    if(fAutoSave) wout = "TRUE";
    else          wout = "FALSE";
    wstream << "AUTOSAVE:   "  <<  wout                  << endl;
@@ -3124,15 +2842,10 @@ Bool_t FhMainFrame::GetDefaults(){
       if(islash < 0) break;
       subdir = subdir.Remove(0,islash+1);
    }
-   fMap     = new TString("/tmp/M_prod_");
-   *fMap    = *fMap + gSystem->Getenv("USER") + "_" + subdir.Data() + ".map";
-   fMapSize     = 12;
    fRunNr       = new TString("001");
    fOldRunNr    = new TString("001");
    fComment     = new TString("Short description of run");
    fPar         = new TString("none");
-   fSaveMap     = new TString("M_prod_");
-   *fSaveMap = *fSaveMap + gSystem->Getenv("USER") + "_RUN.root";
 #ifdef PPC_NEW_ADDRESS
    fMaster       = new TString("gar-ex-ppc02");
    fReadout      = new TString("gar-ex-ppc01");
@@ -3239,9 +2952,6 @@ Bool_t FhMainFrame::GetDefaults(){
 	//         cout << parValue << endl;
          	if(parName == "INPUTFILE")  *fInputFile   = parValue;
          	if(parName == "INPUTSOURCE")*fInputSource = parValue;
-         	if(parName == "MMAPFILE")   *fMap     = parValue;
-         	if(parName == "MSAVEFILE")  *fSaveMap = parValue;
-         	if(parName == "MMAPSIZE")   fMapSize      = atoi(parValue.Data());
          	if(parName == "RUNNR")      *fRunNr       = parValue;
          	if(parName == "OUTPUTFILE") *fRootFile    = parValue;
          	if(parName == "HISTFILE")  *fHistFile    = parValue;
@@ -3349,8 +3059,14 @@ Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
    }
 
    for (Int_t sock = sock1; sock <= sock2; sock++) {
-      TString cmd("/usr/sbin/lsof -i :");
-      cmd += sock;
+//      TString cmd("/usr/sbin/lsof -i :");
+		TString cmd("/lsof -i :");
+		if ( !gSystem->AccessPathName("/usr/sbin/lsof") ) {
+			cmd.Prepend("/usr/sbin");
+		} else {
+			cmd.Prepend("/usr/bin");
+		}
+		cmd += sock;
       cmd += " | grep LISTEN";
 //      cout << cmd << endl;
       FILE *fp = gSystem->OpenPipe(cmd, "r");
@@ -3456,14 +3172,6 @@ Int_t FhMainFrame::IsAnalyzeRunning(Int_t ps_check){
          } else {
              cout << "Didnt find " << procs.Data()
              << " remove " << fOurPidFile->Data() << endl;
-//            int buttons = kMBYes | kMBNo, retval=0;
- //           EMsgBoxIcon icontype = kMBIconQuestion;
- //           new TGMsgBox(gClient->GetRoot(),this,"Question",
- //           "M_analyze seems to have died, clean lock file? ",
-//            icontype,
-//            gClient->GetPicture("/home/rg/schaileo/myroot/xpm/warn1.xpm"),
-//            buttons, &retval);
- //           if(retval == kMBYes){
                TString RmCmd = "rm ";
                RmCmd += fOurPidFile->Data();
                gSystem->Exec((const char *)RmCmd);
@@ -3551,23 +3259,7 @@ void FhMainFrame::Runloop(){
       if ( fWasStarted && fM_Status != M_RUNNING && fM_Status != M_PAUSING ) {
          gSystem->Sleep(1000);
       }
-      if(fUseMap && !fMfile && !gSystem->AccessPathName(fTbMap->GetString())){
-         fMfile = TMapFile::Create(fTbMap->GetString());
-         if (fMfile->IsZombie()) {
-            fMfile->Close();
-            fMfile = NULL;
-            fUseMap = kFALSE;
-            cout << setred << "Cant open mapfile: " << fTbMap->GetString() << setblack << endl;
-         } else {
-            cout << "Attach to MMapped file " << fMfile << endl;
-         }
-      }
-//     first look if memory mapped file is active
-      if(fMfile){
-         hrate =  (TH1 *) fMfile->Get("RateHist", hrate);
-         hdeadt = (TH1 *) fMfile->Get("DeadTime", hdeadt);
-
-      } else if ( fComSocket ) {
+		if ( fComSocket ) {
 //so        TSocket * sock = new TSocket("localhost", fComSocket);
         TSocket * sock = fComSocket;
         if ( !sock || !sock->IsValid() ) {
@@ -3720,7 +3412,7 @@ void FhMainFrame::Runloop(){
                      if(sum>0) binsum++; // skip trailing 0's
                   }
                   if(binsum >0)avg_rate = sum /binsum;
-                  fDeadTime->SetText(new TGString(Form("%d",(Int_t) avg_rate)));
+                  fDeadTime->SetText(new TGString(Form("%d",(Int_t)avg_rate)));
                   gClient->NeedRedraw(fDeadTime);
                }
             }
@@ -3752,8 +3444,6 @@ void FhMainFrame::Runloop(){
       if(fWasStarted && fM_Status != M_RUNNING && fM_Status != M_PAUSING){
          cout << "fWasStarted = 0; " << endl;
          fWasStarted = 0;
-         if(fMfile)fMfile->Close();
-         fMfile = 0;
       }
    }
    if(fM_OldStatus != fM_Status){
@@ -3762,11 +3452,6 @@ void FhMainFrame::Runloop(){
          (fM_OldStatus  == M_RUNNING || fM_OldStatus  == M_STOPPING ||
           fM_OldStatus  == M_STOPPED || fM_OldStatus  == M_PAUSING ||
           fM_OldStatus  == -1 )){
-
-         if(fMfile){
-            fMfile->Close();
-            fMfile = 0;
-         }
          if(fWriteOutput && *fInputSource == "TcpIp"){
             TString chmodCmd = "chmod -w ";
             chmodCmd += *fOutputFile;
@@ -3832,17 +3517,9 @@ void FhMainFrame::Runloop(){
    fM_OldStatus=fM_Status;
 };
 //_____________________________________________________________________________________
-//
-
-// extern void InitGui();
-// VoidFuncPtr_t initfuncs[] = { InitGui, 0 };
-
-// TROOT root("C_analyze", "Control window for M_analyze", initfuncs);
-
 
 int main(int argc, char **argv)
 {
-//   TRint *theApp = new TRint("App", &argc, argv, NULL, 0);
    TApplication theApp("App", &argc, argv);
 //   gROOT->Reset();
    Int_t attachid = 0;
@@ -3854,27 +3531,9 @@ int main(int argc, char **argv)
    mainWindow = new FhMainFrame(gClient->GetRoot(), 400, 220, attachid, attachsock);
    cout << "Root Vers." <<  gROOT->GetVersion() << endl;
    Int_t delay = 1000;
-//   if ( fUseMap ) delay = 1000;
-//   else           delay = 1000;
 
    mt = new MyTimer(delay,kTRUE);
    theApp.Run();
 
    return 0;
 }
-//________________________________________________________________________________
-/*
- void TSocket::Close(Option_t *)
-{
-   // Close the socket. Also called via the dtor.
-
-   if (fSocket != -1) {
-      cout << "shutdown(fSocket, 2) " << endl;
-      shutdown(fSocket, 2);
-
-      gSystem->CloseConnection(fSocket);
-      gROOT->GetListOfSockets()->Remove(this);
-   }
-   fSocket = -1;
-}
-*/

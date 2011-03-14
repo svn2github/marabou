@@ -7,7 +7,7 @@
 namespace std {} using namespace std;
 
 enum CAnalyzeCommandIdentifiers {
-   M_CLEAR, M_START_STOP, M_PAUSE, M_CONFIG, M_RESET, M_SAVEMAP, M_DELETEMAP,
+   M_CLEAR, M_START_STOP, M_PAUSE, M_CONFIG, M_RESET, M_SAVEHISTS,
    M_INTERVAL_COMBO, M_DOWNSCALE, M_HELP,M_LOADPAR, C_TRIGGER,C_MASTER,C_READOUT,
    C_MBSVERSION, R_FAKE, R_FILE, R_FILELIST, R_NET, R_ACTIVE, R_AUTO, R_PASSIVE,
    M_MBSSTATUS, M_BUFSIZE, M_BUFSTREAM, M_NOEVENT,
@@ -15,7 +15,7 @@ enum CAnalyzeCommandIdentifiers {
    M_COMMENT, M_RESETALL, M_RESETSEL, M_STARTEVENT, M_STOPEVENT, M_FROMTIME
    , M_TOTIME, M_GATEL, M_MBSSETUP, M_CODENAME, M_COMPILE
    , M_MAXFILESIZE, M_MAXRUNTIME, M_MBSLOGLEVEL, M_SELECTTIME, M_SELECTNUMBER
-   ,M_RUNNR, M_INPUT, M_DIR, M_MAPF, M_MAPS, M_HISTF, M_ROOTF, M_PARF
+   ,M_RUNNR, M_INPUT, M_DIR, M_HISTF, M_ROOTF, M_PARF
    ,M_QUIT, M_AVERAGE, M_SAVESETUP, M_AUTOSETUP, M_WHICHHIST, M_RESETLIST
    ,M_PAUSE_RESET, M_WARNHWM, M_HARDHWM, M_VERBLEV, M_CHKQUOTA, M_RELOAD
    ,M_DEBUG,M_MADEBUG, M_AUTORESTART, M_AUTORESTART_RUNTIME, M_HSAVEINTERVALL
@@ -56,11 +56,11 @@ private:
    TGLabel            *fLabel, *fOutSize, *fRunTime, *fTotalEvents, *fRate,
                       *fStartTime, *fDeadTime, *fStatus, *fNev, *fTbSockNr;
 
-   TGTextEntry        *fTeMap, *fTeMapSize, *fTeFile,
+   TGTextEntry        *fTeFile,
                       *fTeRootFile, *fTeHistFile,*fTeRunNr,
                       *fTeComment, *fTeParFile,
                       *fTeDir;
-   TGTextBuffer       *fTbMap, *fTbMapSize, *fTbFile,
+   TGTextBuffer       *fTbFile,
                       *fTbRootFile, *fTbHistFile, *fTbRunNr,
                       *fTbComment, *fTbParFile,
                       *fTbFileList,
@@ -76,7 +76,7 @@ private:
                       , *fMenuMbs, *fMenuSave;
    TGLayoutHints      *fMenuBarLayout, *fMenuBarItemLayout, *fMenuBarHelpLayout;
 
-   TString *fInputFile, *fOutputFile, *fMap,
+   TString *fInputFile, *fOutputFile,
            *fHistList, *fRootFile, *fHistFile, *fDefFile, *fInputSource,
            *fRunNr, *fOldRunNr, *fComment, *fPar,
            *fMbsVersion, *fDir, *fMaster, *fReadout,
@@ -86,14 +86,14 @@ private:
 
    TString *fSaveMap;
    Bool_t  fWriteOutput, fAutoSave, fSelectTime, fSelectNumber, fAutoSetup,
-           fShowRate, fAttach, fUseMap, fMbsDebug, fForcedStop;
+           fShowRate, fAttach, fMbsDebug, fForcedStop;
    Int_t   fM_OldStatus;
    Int_t   fM_Status;
    Int_t   fC_Status;
    Int_t   fWasStarted;
    Int_t   fEvents_before;
    Int_t   fBufSize, fBuffers, fGateLength, fDownscale,
-           fStartEvent, fStopEvent, fMapSize, fMaxFileSize, fMaxRunTime,
+           fStartEvent, fStopEvent, fMaxFileSize, fMaxRunTime,
            fVerbLevel, fHardHWM, fWarnHWM, fAutoRestart, fAutoRestartRT,
 			  fWaitedForStop, fHsaveIntervall, fPlaySound;
    Float_t fMax_time_no_event;
@@ -112,7 +112,6 @@ private:
    MessageServer * fMessageServer;
    TMrbHelpBrowser * fHelpBrowser;
    TStopwatch * fStopwatch;
-   TMapFile * fMfile;
    ULong_t white, red, green, blue,lightblue, yellow, magenta, cyan, antiquewhite1, grey;
 
    SetWindowAttributes_t wattgreen;
@@ -136,7 +135,6 @@ public:
    virtual Bool_t ProcessMessage(Long_t msg, Long_t parm1, Long_t);
    void Runloop();
    void SetTime();
-   void SaveMap(Bool_t askforname = kTRUE);
    void StopMessage();
    void SetButtonsToDefaults();
    Bool_t AskforRemove(const char *);
