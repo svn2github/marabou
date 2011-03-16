@@ -349,7 +349,8 @@ void HistPresent::RecursiveRemove(TObject * obj)
    fSelectCut->Remove(obj);
    fSelectWindow->Remove(obj);
    fSelectLeaf->Remove(obj);
-   if (obj == cHPr) {
+	if (obj == cHPr) {
+		SaveOptions();
       cHPr = NULL;
       cout << "Thats the end of HistPresent" <<endl;
  //     CloseAllCanvases();
@@ -3194,11 +3195,11 @@ void HistPresent::DinA4Page(Int_t form)
    }
    TMrbString temp;
    row_lab->Add(new TObjString("StringValue_Name of page"));
-   row_lab->Add(new TObjString("PlainIntVal_X Position"));
-   row_lab->Add(new TObjString("PlainIntVal_Y Position"));
-   row_lab->Add(new TObjString("PlainIntVal_X Width"));
-   row_lab->Add(new TObjString("PlainIntVal_Y Width"));
-   row_lab->Add(new TObjString("DoubleValue_X Range"));
+   row_lab->Add(new TObjString("PlainIntVal_  X Position"));
+   row_lab->Add(new TObjString("PlainIntVal_  Y Position"));
+   row_lab->Add(new TObjString("PlainIntVal_  X Width   "));
+   row_lab->Add(new TObjString("PlainIntVal_  Y Width   "));
+   row_lab->Add(new TObjString("DoubleValue_  X Range   "));
    valp[ind++] = &name;
    valp[ind++] = &Xlow;
    valp[ind++] = &Ylow;
@@ -3256,7 +3257,9 @@ void HistPresent::DinA4Page(Int_t form)
 	c1->SetBit(GrCanvas::kIsAEditorPage);
 //   c1->GetCanvasImp()->ShowEditor();
 //   c1->GetCanvasImp()->ShowToolBar();
-   new GEdit(c1);
+//   new GEdit(c1);
+	new GEdit(c1);
+	c1->GetCanvasImp()->ShowEditor();
 }
 //________________________________________________________________________________________
 // Show Canvas
@@ -3318,8 +3321,12 @@ void HistPresent::ShowCanvas(const char* fname, const char* dir, const char* nam
       delete lohi;
 		return;
    } else {
-//      cout << "kIsAEditorPage " << endl;
+      cout << "kIsAEditorPage " << endl;
 		GrCanvas *gc = (GrCanvas*)c;
+		gc->SetRightMargin(0);
+		gc->SetLeftMargin(0);
+		gc->SetBottomMargin(0);
+		gc->SetTopMargin(0);
       gc->Draw();
 		gPad = (TVirtualPad*)gc;
 		gc->GetCanvasImp()->ShowEditor();

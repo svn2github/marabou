@@ -78,26 +78,26 @@ void HistPresent::RestoreOptions()
    fEditUsYlow   = env.GetValue("HistPresent.EditUsYlow",    5  );
    fEditUsXwidth = env.GetValue("HistPresent.EditUsXwidth",  500);
    fEditUsYwidth = env.GetValue("HistPresent.EditUsYwidth",  524);
-   fEditUsXRange = env.GetValue("HistPresent.EditUsXRange",  100);
+   fEditUsXRange = env.GetValue("HistPresent.EditUsXRange",  100.);
 //  numbers below are for 1600 x 1200 screens
-   Int_t  screen_x, screen_y;
-   UInt_t wwu, whu;
-   gVirtualX->GetWindowSize(gClient->GetRoot()->GetId(),
-            	  screen_x, screen_y, wwu, whu);
-   Float_t fac = (Float_t)wwu / 1600.;
-
-   fEditLsXlow   = env.GetValue("HistPresent.EditLsXlow",   (Int_t)(fac * 350.));
+//   Int_t  screen_x, screen_y;
+//   UInt_t wwu, whu;
+//   gVirtualX->GetWindowSize(gClient->GetRoot()->GetId(),
+//            	  screen_x, screen_y, wwu, whu);
+//   Float_t fac = (Float_t)wwu / 1600.;
+	
+   fEditLsXlow   = env.GetValue("HistPresent.EditLsXlow",   550);
    fEditLsYlow   = env.GetValue("HistPresent.EditLsYlow",   5   );
-   fEditLsXwidth = env.GetValue("HistPresent.EditLsXwidth", (Int_t)(fac * 1004.));
-   fEditLsYwidth = env.GetValue("HistPresent.EditLsYwidth", (Int_t)(fac * 745.) + 24);
-   fEditLsXRange = env.GetValue("HistPresent.EditLsXRange", 262 );
+	fEditLsXwidth = env.GetValue("HistPresent.EditLsXwidth", 936);
+	fEditLsYwidth = env.GetValue("HistPresent.EditLsYwidth", 646);
+   fEditLsXRange = env.GetValue("HistPresent.EditLsXRange", 297. );
 
-   fEditPoXlow   = env.GetValue("HistPresent.EditPoXlow",   (Int_t)(fac * 550.));
-   fEditPoYlow   = env.GetValue("HistPresent.EditPoYlow",   5   );
-   fEditPoXwidth = env.GetValue("HistPresent.EditPoXwidth", (Int_t)(fac * 690.));
-   fEditPoYwidth = env.GetValue("HistPresent.EditPoYwidth", (Int_t)(fac * 1028.) + 24);
-   fEditPoXRange = env.GetValue("HistPresent.EditPoXRange", 175 );
-
+   fEditPoXlow   = env.GetValue("HistPresent.EditPoXlow",   550);
+   fEditPoYlow   = env.GetValue("HistPresent.EditPoYlow",   5  );
+	fEditPoXwidth = env.GetValue("HistPresent.EditPoXwidth", 646);
+	fEditPoYwidth = env.GetValue("HistPresent.EditPoYwidth", 936);
+   fEditPoXRange = env.GetValue("HistPresent.EditPoXRange", 210.);
+	
 //   CheckAutoExecFiles();
 //
 
@@ -118,7 +118,6 @@ void HistPresent::RestoreOptions()
    else                 gROOT->ForceStyle(kFALSE);
 
    gEnv->SetValue("Root.Stacktrace", 0);
-//   cout << "RestoreOptions, fDrawOpt2Dim " <<  *fDrawOpt2Dim << endl;
 }
 
 //_______________________________________________________________________
