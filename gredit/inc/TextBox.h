@@ -65,7 +65,7 @@ private:
    Int_t    fAlignType;    // 0 no align, 1 on edges only, 2 center
 public:
    TextBox(Double_t x1, Double_t y1, Double_t x2, Double_t y2,const char *name = NULL);
-   TextBox(){};
+   TextBox();
    ~TextBox();
    void RecursiveRemove(TObject * obj);
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);

@@ -739,6 +739,11 @@ Int_t TSplineX::DistancetoPrimitive(Int_t px, Int_t py)
       	pyp = gPad->YtoAbsPixel(gPad->YtoPad(fY[i]));
       	d   = TMath::Abs(pxp-px) + TMath::Abs(pyp-py);
       	if (d < distance) distance = d;
+			// is at end points prefer ControlGraph
+			if (i == 0 || i == (fNpoints-1) ) {
+				if (d < kMaxDiff) 
+					return big;
+			}
    	}
 		if (gDebug > 2) {
 			cout << "TSplineX::DistancetoPrimitive  " << distance << endl;
@@ -1891,7 +1896,8 @@ Int_t ControlGraph::DistancetoPrimitive(Int_t px, Int_t py)
 
    // Somewhere on the graph points?
    const Int_t big = 9999;
-   const Int_t kMaxDiff = 5;
+	const Int_t small = 1;
+	const Int_t kMaxDiff = 3;
 
    // check if point is near one of the graph points
    Int_t i, pxp, pyp, d;
@@ -1903,21 +1909,23 @@ Int_t ControlGraph::DistancetoPrimitive(Int_t px, Int_t py)
       d   = TMath::Abs(pxp-px) + TMath::Abs(pyp-py);
       if (d < distance) distance = d;
    }
-   if (gDebug > 2) {
-      cout << "ControlGraph::DistancetoPrimitive  " << distance << endl;
+   if (gDebug == 3) {
+      cout << "ControlGraph::DistancetoPrimitive  "<< px << " " << py << " "  << distance << endl;
       cout << "fParent::DistancetoPrimitive  " << fParent->DistancetoPrimitive(px, py) << endl;
    }
-   if (distance < kMaxDiff) return distance;
-// Take care that the smooth curve or the area between rails
+//   if (distance < kMaxDiff) return distance;
+   if (distance < kMaxDiff) return small;
+   // Take care that the smooth curve or the area between rails
 // of the spline takes preference
 //
-   if (fParent->DistancetoPrimitive(px, py) <= kMaxDiff)  return big;
+//   if (fParent->DistancetoPrimitive(px, py) <= kMaxDiff)  return big;
 //   else                     return big;
-   for (i=0;i<fNpoints-1;i++) {
-      d = DistancetoLine(px, py, gPad->XtoPad(fX[i]), gPad->YtoPad(fY[i]), gPad->XtoPad(fX[i+1]), gPad->YtoPad(fY[i+1]));
-      if (d < distance) distance = d;
-   }
-   return distance;
+//   for (i=0;i<fNpoints-1;i++) {
+//      d = DistancetoLine(px, py, gPad->XtoPad(fX[i]), gPad->YtoPad(fY[i]), gPad->XtoPad(fX[i+1]), gPad->YtoPad(fY[i+1]));
+//      if (d < distance) distance = d;
+//   }
+//   return distance;
+	return big;
 }
 //_____________________________________________________________________________________
 
@@ -1945,11 +1953,11 @@ void TSplineX::Pop()
 
 void ControlGraph::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 //
-
+	Double_t d;
    if (event == kButton3Down) {
 //      cout << "kButton3Down " << endl;
        for (Int_t i=0; i < fNpoints; i++) {
-          Double_t d = TMath::Sqrt(TMath::Power(px -  gPad->XtoAbsPixel(fX[i]), 2)
+          d = TMath::Sqrt(TMath::Power(px -  gPad->XtoAbsPixel(fX[i]), 2)
                      + TMath::Power(py - gPad->YtoAbsPixel(fY[i]), 2));
 //         cout << d << endl;
          if (d < 10) {
@@ -1964,7 +1972,29 @@ void ControlGraph::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
       cout << "kButton3Up " << endl;
 
    } else {
-      TGraph::ExecuteEvent(event, px, py);
+		Int_t pxc = px;
+		Int_t pyc = py;
+/*		if (event == kButton1Down) {
+			Int_t iclosest = 0;
+			Double_t closest = 1e20;
+			
+			for (Int_t i=0; i < fNpoints; i++) {
+				d = TMath::Sqrt(TMath::Power(px -  gPad->XtoAbsPixel(fX[i]), 2)
+								+ TMath::Power(py - gPad->YtoAbsPixel(fY[i]), 2));
+				if (d < closest) {
+					closest = d;
+					iclosest = i;
+				}
+			}
+			pxc = gPad->XtoAbsPixel(fX[iclosest]);
+			pyc = gPad->YtoAbsPixel(fY[iclosest]);
+			if ( gDebug == 1 ) {
+				cout << "ControlGraph::ExecuteEvent " 
+						<< px << " " << py << " pxc, pyc "
+						<< pxc << " " << pyc <<endl;
+			}
+		}*/
+		TGraph::ExecuteEvent(event, pxc, pyc);
    }
    if (event == kButton1Up && fParent) fParent->ComputeSpline();
  //  cout <<  "exit ExecuteEvent " << fParent->GetFillColor() << endl;

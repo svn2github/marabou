@@ -137,8 +137,8 @@ void GrCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 		}
 		return;
 	}
-	if (gDebug > 1)
-		cout << " Event: " << event << endl;
+	if (gDebug > 3)
+		cout << "GrCanvas::HandleInput Event: " << event << endl;
    if (gROOT->GetEditorMode() != 0) {
       in_edit = kTRUE;
    }
@@ -695,12 +695,26 @@ void GrCanvas::RunAutoExec()
 
 void GrCanvas::Add2ConnectedClasses(TObject *obj)
 {
-//	cout << "Add2ConnectedClasses " <<obj->ClassName() << " gPad " << gPad << endl;
+	if ( gDebug > 1 )
+		cout << "Add2ConnectedClasses " <<obj->ClassName() << " gPad " << gPad << endl;
    this->Connect("ObjectCreated(Int_t, Int_t, TObject*)", obj->ClassName(), obj,
                  "ObjCreated(Int_t, Int_t, TObject*)");
    this->Connect("ObjectMoved(Int_t, Int_t, TObject*)", obj->ClassName(), obj,
                  "ObjMoved(Int_t, Int_t, TObject*)");
    fHasConnection = kTRUE;
+}
+//______________________________________________________________________________
+
+void GrCanvas::RemoveFromConnectedClasses(TObject *obj)
+{
+	if ( gDebug > 1 )
+		cout << "RemoveFromConnectedClasses " <<obj->ClassName() << " gPad " << gPad << endl;
+	this->Disconnect("ObjectCreated(Int_t, Int_t, TObject*)", obj,
+					  "ObjCreated(Int_t, Int_t, TObject*)");
+	this->Disconnect("ObjectMoved(Int_t, Int_t, TObject*)", obj,
+					  "ObjMoved(Int_t, Int_t, TObject*)");
+	if ( this->NumberOfConnections() == 0 )
+		fHasConnection = kFALSE;
 }
 //______________________________________________________________________________
 
@@ -712,7 +726,7 @@ void GrCanvas::ObjectCreated(Int_t px, Int_t py, TObject *obj)
       args[1] = (Long_t)py;
       args[2] = (Long_t)obj;
       if (gDebug > 1 )
-			cout << "GrCanvas::Emit(ObjectCreated" << endl;
+			cout << "GrCanvas::Emit(ObjectCreated: " << obj << endl;
       Emit("ObjectCreated(Int_t, Int_t, TObject*)", args );
    }
 }
@@ -804,12 +818,15 @@ TObject * GrCanvas::WaitForCreate(const char * what, TPad **pad)
 	if (ws == "TGraph") {
 		gROOT->SetEditorMode("PolyLine");
 	} else {
+		if (gDebug > 1)
+			cout << "GrCanvas::WaitForCreate: " << &what[1]<< endl;
 		gROOT->SetEditorMode(&what[1]);
 	}
 	for (Int_t i = 0; i < 3000; i++) {
 		gSystem->ProcessEvents();
 		if (*pad != NULL) {
 			gROOT->SetEditorMode();
+			cout << "exit GrCanvas::WaitForCreate: " << *pad << endl;
 			break;
 		}
 		gSystem->Sleep(10);

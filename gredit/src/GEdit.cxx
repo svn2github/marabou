@@ -154,7 +154,11 @@ GEdit::~GEdit()
    fParent->SetGEdit(NULL);
    gROOT->GetListOfCleanups()->Remove(this);
    gROOT->GetListOfSpecials()->Remove(this);
-   if (fEditCommands) delete fEditCommands;
+	if (fParent) {
+		GrCanvas* hc = (GrCanvas*)fParent;
+		hc->RemoveFromConnectedClasses(this);
+	}
+	if (fEditCommands) delete fEditCommands;
 }
 
 //______________________________________________________________________________

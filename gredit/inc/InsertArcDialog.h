@@ -20,7 +20,6 @@ private:
    Double_t   fY1;         //
    Double_t   fX2;         // 2. point on circumference
    Double_t   fY2;         //
-   Int_t      fSense;      // + counter clock wise, -1 clock wise
    Double_t   fR1;          // radius
    Double_t   fR2;          // radius2 / radius1 of ellipse
    Color_t    fColor;   	// line color
@@ -30,7 +29,8 @@ private:
    Style_t    fFillStyle;  // fill style
    Double_t   fPhi1; 		// Phi1 angle
    Double_t   fPhi2; 		// Phi2 angle
-   Bool_t     fShowEdges;  // for none full circles, show edges or not
+   Int_t      fSense;      // + counter clock wise, -1 clock wise
+   Int_t      fShowEdges;  // for none full circles, show edges or not
    Int_t      fKeepRadius; //
 public:
    InsertArcDialog();

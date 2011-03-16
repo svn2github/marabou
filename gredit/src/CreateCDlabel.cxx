@@ -269,6 +269,10 @@ void CreateCDlabel::NewProject(Int_t ww, Int_t wh, Double_t xr, Double_t yr)
 	
    fCanvas = new GrCanvas(fProjectName, fProjectName, 420, 500, ww, wh);
 	fCanvas->Range(0,0,fXRange,fYRange);
+	fCanvas->SetRightMargin(0);
+	fCanvas->SetLeftMargin(0);
+	fCanvas->SetBottomMargin(0);
+	fCanvas->SetTopMargin(0);
 	fCanvas->SetEditable(kTRUE);
    fCanvas->SetBit(GrCanvas::kIsAEditorPage);
 	fEditor = new GEdit(fCanvas);

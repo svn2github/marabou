@@ -219,7 +219,11 @@ void MarkerLineDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 MarkerLineDialog::~MarkerLineDialog()
 {
    gROOT->GetListOfCleanups()->Remove(this);
-   fRow_lab->Delete();
+	if (fCanvas) {
+		GrCanvas* hc = (GrCanvas*)fCanvas;
+		hc->RemoveFromConnectedClasses(this);
+	}
+	fRow_lab->Delete();
    delete fRow_lab;
 };
 //_______________________________________________________________________

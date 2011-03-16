@@ -156,7 +156,11 @@ void InsertAxisDialog::RestoreDefaults()
 InsertAxisDialog::~InsertAxisDialog()
 {
    gROOT->GetListOfCleanups()->Remove(this);
-   fRow_lab->Delete();
+	if (fCanvas) {
+		GrCanvas* hc = (GrCanvas*)fCanvas;
+		hc->RemoveFromConnectedClasses(this);
+	}
+	fRow_lab->Delete();
    delete fRow_lab;
 };
 //_______________________________________________________________________

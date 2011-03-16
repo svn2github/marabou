@@ -62,7 +62,8 @@ public:
    void    SetUseEditGrid(Int_t use = 1) {fUseEditGrid = use;};
    Int_t   GetUseEditGrid() {return fUseEditGrid;};
    void    Add2ConnectedClasses(TObject *obj);
-   void    ObjectCreated(Int_t, Int_t, TObject*);
+	void    RemoveFromConnectedClasses(TObject *obj);
+	void    ObjectCreated(Int_t, Int_t, TObject*);
    void    ObjectMoved(Int_t, Int_t, TObject*);
    static  TObject * WaitForCreate(const char * what, TPad **pad);
    Double_t PutOnGridX(Double_t);

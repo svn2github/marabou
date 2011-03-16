@@ -44,6 +44,9 @@ TextBox::TextBox(Double_t x1, Double_t y1, Double_t x2, Double_t y2,const char *
    fTextMargin = 0.25;
    fSmall = 0.001 *(x2-x1);
    fPrimitives = 0;
+	fOwnMembers = kFALSE;
+	fTextMargin = 0.;
+	fAlignType = 0;
    SetBit(kMustCleanup);
    gROOT->GetListOfCleanups()->Add(this);
 #ifdef MARABOUVERS
@@ -56,11 +59,32 @@ TextBox::TextBox(Double_t x1, Double_t y1, Double_t x2, Double_t y2,const char *
 };
 //_________________________________________________________________________
 
-TextBox::~TextBox()
+TextBox::TextBox()
 {
-   cout << "dtor TextBox" << endl;
-   gROOT->GetListOfCleanups()->Remove(this);
-   delete fTimer;
+//   cout << "def ctor TextBox" << endl;
+	#ifdef MARABOUVERS
+	if (gPad) {
+		GrCanvas* hc = (GrCanvas*)gPad;
+		hc->Add2ConnectedClasses(this);
+	}
+	#endif
+	fPrimitives = 0;
+	fTimer = new TbTimer(100, kTRUE, this);
+};
+
+//_________________________________________________________________________
+
+TextBox::~TextBox()
+	{
+//		cout << "dtor TextBox" << endl;
+		gROOT->GetListOfCleanups()->Remove(this);
+	#ifdef MARABOUVERS
+	if (gPad) {
+		GrCanvas* hc = (GrCanvas*)gPad;
+		hc->RemoveFromConnectedClasses(this);
+	}
+	#endif
+	delete fTimer;
 };
 //_________________________________________________________________________
 
@@ -98,7 +122,8 @@ void TextBox::ObjMoved(Int_t px, Int_t py, TObject *obj)
 
 void TextBox::AdoptAll()
 {
-   cout << "TextBox::AdoptAll()" << endl;
+	if ( gDebug > 0)
+		cout << "TextBox::AdoptAll()" << endl;
    TIter next(gPad->GetListOfPrimitives());
    TObject *obj;
    while( (obj = next()) ) {
@@ -112,13 +137,14 @@ void TextBox::AdoptAll()
 
 void TextBox::AdoptMember(TObject * obj)
 {
-   cout << "TextBox::AdoptMember()" << endl;
+//   cout << "TextBox::AdoptMember() " << endl;
 	TText  *t = NULL;
 	TGraph *g = NULL;
 	TPave  *p = NULL;
 	TArrow  *a = NULL;
    Bool_t mod      = kFALSE;
-	cout << "try AdoptMember() " << obj << " " <<  obj->ClassName() << endl;
+	if ( gDebug > 0 )
+		cout << "TextBox::try AdoptMember() " << obj << " " <<  obj->ClassName() << endl;
 	if (obj->InheritsFrom("TSplineX")) {
 		g = ((TSplineX*)obj)->GetControlGraph();
 	} else if (obj->InheritsFrom("TText")) {
@@ -162,7 +188,9 @@ void TextBox::AdoptMember(TObject * obj)
 void TextBox::AddMember(TObject* obj, Double_t xi, Double_t yi)
 {
 //   if (xi < GetX1() || xi > GetX2() || yi < GetY1() || yi > GetY2()) return;
-   Double_t x = xi;
+	if ( gDebug > 0 )
+		cout << "TextBox::try AddMember() " << obj << " " <<  obj->ClassName() << endl;
+	Double_t x = xi;
    Double_t y = yi;
    TText  *t = NULL;
    TGraph *g = NULL;
@@ -173,31 +201,31 @@ void TextBox::AddMember(TObject* obj, Double_t xi, Double_t yi)
    Short_t align = 0;
    if (obj->InheritsFrom("TText")) {
       t =(TText*)obj;
-      cout << "TText: ";
+//      cout << "TText: ";
    } else if (obj->InheritsFrom("TGraph")) {
       g =(TGraph*)obj;
       its_line = kTRUE;
-      cout << "TGraph: ";
+//      cout << "TGraph: ";
    } else if (obj->InheritsFrom("TPave")) {
       p =(TPave*)obj;
-       cout << "TPave: ";
+//       cout << "TPave: ";
    } else if (obj->InheritsFrom("TSplineX")){
       s = (TSplineX*)obj;
       g = ((TSplineX*)obj)->GetControlGraph();
       its_line = kTRUE;
-      cout << "TSplineX: ";
+//      cout << "TSplineX: ";
    } else if (obj->InheritsFrom("TArrow")) {
       a =(TArrow*)obj;
-       cout << "TArrow: ";
+//       cout << "TArrow: ";
    }
    align = GetAlignbyXY(xi, yi, its_line);
-   cout << " enter align: " << align << " ";
+//   cout << " enter align: " << align << " ";
    TextBoxMember * tb = FindMember(obj);
    if (tb == NULL) {
       tb = new TextBoxMember(obj, align, fAlignType);
       fMembers.Add(tb);
       obj->SetBit(kMustCleanup);
-      cout << " new ";
+//      cout << " new ";
    }
    if (align > 0 && align <= 33) {
       Double_t ts2 = 0;     // allow for some margin if text
@@ -226,7 +254,7 @@ void TextBox::AddMember(TObject* obj, Double_t xi, Double_t yi)
 			x = xi;
 			y = yi;
       }
-      cout << " SetAlign " << tb->GetAlign() << endl;
+//      cout << " SetAlign " << tb->GetAlign() << endl;
    }
    if (t) {
       t->SetX(x);
@@ -291,11 +319,13 @@ void TextBox::AddMember(TObject* obj, Double_t xi, Double_t yi)
          a->SetY2(y);
       }
    }
+   /*
    if (p && fAlignType != 0) {
       if (align > 0 && align <= 33) {
          TransformPave(p, align);
       }
    }
+   */
    if (s) {
       s->NeedReCompute();
       s->Paint();
@@ -340,11 +370,12 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
          &&  TMath::Abs(dX2) < fSmall && TMath::Abs(dY2) < fSmall) continue;
       Double_t dX = 0;
       Double_t dY = 0;
-      cout << dX1 << " " <<dY1 << " " <<dX2 << " " <<dY2 << " " << align << endl;
+		if ( gDebug > 0 ) 
+			cout <<  "TextBox::AlignEntries dX1 ... " << dX1 << " " <<dY1 << " " <<dX2 << " " <<dY2 << " " << align << endl;
       Int_t halign = align / 10;
       Int_t valign = align%10;
       Bool_t shiftonly = kFALSE;
-      cout << halign << " va " << valign << endl;
+//      cout << "TextBox::AlignEntries, ha " << halign << " va " << valign << endl;
       if (   TMath::Abs(dX1 - dX2) < fSmall
           && TMath::Abs(dY1 - dY2) < fSmall) {
          // pure shift
@@ -362,7 +393,7 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
          else if (valign == 3) dY = dY2;
 
       }
-      cout << halign << " " << valign << " " << dX << " " <<dY << endl;
+//      cout << halign << " " << valign << " " << dX << " " <<dY << endl;
 		if (t) {
 			t->SetX(t->GetX() + dX);
 			t->SetY(t->GetY() + dY);
@@ -453,7 +484,8 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
          SetPaveNDC(p);
 		}
 	}
-   gPad->Update();
+   gPad->Modified();
+	gPad->Update();
 }
 //_____________________________________________________________________________
 

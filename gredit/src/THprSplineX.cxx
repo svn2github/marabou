@@ -12,6 +12,7 @@ THprSplineX::THprSplineX(Int_t npoints, Double_t *x, Double_t *y,
            : TSplineX(npoints, x, y, sf, prec, closed)
 {
    SetDaughter(this);
+	fTextDialog = NULL;
 }
 //_____________________________________________________________________________________
 

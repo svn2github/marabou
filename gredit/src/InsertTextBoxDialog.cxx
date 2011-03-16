@@ -41,9 +41,9 @@ This has not the features of auto-align and adopt.\n\
    fRow_lab = new TList();
     static TString execute_cmd("ExecuteInsert()");
    fX1 = fY1 = 0;
-   fRow_lab->Add(new TObjString("DoubleValue_X0"));
+   fRow_lab->Add(new TObjString("DoubleValue_  X0"));
    fValp[ind++] = &fX1;
-   fRow_lab->Add(new TObjString("DoubleValue+Y0"));
+   fRow_lab->Add(new TObjString("DoubleValue+  Y0"));
    fValp[ind++] = &fY1;
    fRow_lab->Add(new TObjString("DoubleValue_X Width"));
    fValp[ind++] = &fDx;
@@ -55,9 +55,9 @@ This has not the features of auto-align and adopt.\n\
    fValp[ind++] = &fBorderSize;
    fRow_lab->Add(new TObjString("AlignSelect+ShPos"));
    fValp[ind++] = &fShadowPosition;
-   fRow_lab->Add(new TObjString("CheckButton_Round Cors"));
+   fRow_lab->Add(new TObjString("CheckButton_Round Corns"));
    fValp[ind++] = &fRoundCorners;
-   fRow_lab->Add(new TObjString("DoubleValue+Co Radius"));
+   fRow_lab->Add(new TObjString("DoubleValue+CornRad;0.0;0.5"));
    fValp[ind++] = &fCornerRadius;
    fRow_lab->Add(new TObjString("PlainIntVal+Npaves"));
    fValp[ind++] = &fNpaves;
@@ -65,7 +65,7 @@ This has not the features of auto-align and adopt.\n\
    fValp[ind++] = &fColor;
    fRow_lab->Add(new TObjString("LineSSelect+Style"));
    fValp[ind++] = &fStyle;
-   fRow_lab->Add(new TObjString("PlainShtVal+Width"));
+   fRow_lab->Add(new TObjString("PlainShtVal+ Width"));
    fValp[ind++] = &fWidth;
    fRow_lab->Add(new TObjString("ColorSelect_FillColor"));
    fValp[ind++] = &fFillColor;
@@ -79,12 +79,16 @@ This has not the features of auto-align and adopt.\n\
    fValp[ind++] = &fStrongAlign;
    fRow_lab->Add(new TObjString("CommandButt_Execute Insert()"));
    fValp[ind++] = &execute_cmd;
-   Int_t itemwidth = 320;
+   Int_t itemwidth = 360;
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("Text Box", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
                       NULL, NULL, helptext, this, this->ClassName());
+	if (fCanvas) {
+		GrCanvas* hc = (GrCanvas*)fCanvas;
+		hc->Add2ConnectedClasses(this);
+	}
 }
 //____________________________________________________________________________
 
@@ -94,6 +98,7 @@ void InsertTextBoxDialog::ExecuteInsert()
    TMarker *ma = NULL;
    Double_t X2=0, Y2=0;
    if ((fX1 == 0 && fY1 == 0) || (fDx == 0 || fDy == 0)) {
+		fPad = NULL;
 		if (fDx == 0 || fDy == 0) {
 			cout << "Define a box " << endl;
 			m1  = (TPave*)GrCanvas::WaitForCreate("TPave", &fPad);
@@ -220,7 +225,11 @@ void InsertTextBoxDialog::RestoreDefaults()
 InsertTextBoxDialog::~InsertTextBoxDialog()
 {
    gROOT->GetListOfCleanups()->Remove(this);
-   fRow_lab->Delete();
+	if (fCanvas) {
+		GrCanvas* hc = (GrCanvas*)fCanvas;
+		hc->RemoveFromConnectedClasses(this);
+	}
+	fRow_lab->Delete();
    delete fRow_lab;
 };
 //_______________________________________________________________________

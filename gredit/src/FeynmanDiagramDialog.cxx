@@ -254,7 +254,11 @@ void FeynmanDiagramDialog::CRButtonPressed(Int_t wid, Int_t bid, TObject *obj)
 FeynmanDiagramDialog::~FeynmanDiagramDialog()
 {
    gROOT->GetListOfCleanups()->Remove(this);
-   fRow_lab->Delete();
+	if (fCanvas) {
+		GrCanvas* hc = (GrCanvas*)fCanvas;
+		hc->RemoveFromConnectedClasses(this);
+	}
+	fRow_lab->Delete();
    delete fRow_lab;
 };
 //_______________________________________________________________________

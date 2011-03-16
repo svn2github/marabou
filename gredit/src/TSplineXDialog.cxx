@@ -37,9 +37,9 @@ Railway like filling etc.\n\
 
    fRow_lab->Add(new TObjString("CheckButton_Closed curve"));
    fValp[ind++] = &fClosed;
-   fRow_lab->Add(new TObjString("CheckButton+Approximate"));
+   fRow_lab->Add(new TObjString("CheckButton+Approx"));
    fValp[ind++] = &fApprox;
-   fRow_lab->Add(new TObjString("CheckButton+Fix endpoints"));
+   fRow_lab->Add(new TObjString("CheckButton+Fix endpts"));
    fValp[ind++] = &fFixends;
    fRow_lab->Add(new TObjString("DoubleValue_Precision"));
    fValp[ind++] = &fPrec;
@@ -65,7 +65,7 @@ Railway like filling etc.\n\
    fValp[ind++] = &fArrow_indent_angle;
 //   fRow_lab->Add(new TObjString("CheckButton_Railway (double line)"));
 //   fValp[ind++] = &railway;
-   fRow_lab->Add(new TObjString("DoubleValue_Rail Gage"));
+   fRow_lab->Add(new TObjString("DoubleValue_RailGage"));
    fValp[ind++] = &fGage;
    fRow_lab->Add(new TObjString("DoubleValue+SleeperL"));
    fValp[ind++] = &fFilled;
@@ -78,7 +78,7 @@ Railway like filling etc.\n\
    fRow_lab->Add(new TObjString("CommandButt_Draw_the_TSplineX"));
    fValp[ind++] = &fCommand;
 
-   Int_t itemwidth = 320;
+   Int_t itemwidth = 360;
    static Int_t ok;
    fDialog =
       new TGMrbValuesAndText("TSplineXDialog", NULL, &ok,itemwidth, win,
@@ -217,7 +217,11 @@ TSplineXDialog::~TSplineXDialog()
 {
 //   cout << "dtor:~TSplineXDialog()"<<endl;
    gROOT->GetListOfCleanups()->Remove(this);
-   fRow_lab->Delete();
+	if (fCanvas) {
+		GrCanvas* hc = (GrCanvas*)fCanvas;
+		hc->RemoveFromConnectedClasses(this);
+	}
+	fRow_lab->Delete();
    delete fRow_lab;
 }
 //_______________________________________________________________________

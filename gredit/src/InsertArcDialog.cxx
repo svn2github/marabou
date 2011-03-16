@@ -88,7 +88,7 @@ radius is not 0 only the center must be marked  \n\
    fRow_lab->Add(new TObjString("CommandButt_ArcByPointsOnCircumference()"));
    fValp[ind++] = &byponcf;
    static Int_t ok;
-   Int_t itemwidth = 320;
+   Int_t itemwidth = 360;
    fDialog =
       new TGMrbValuesAndText("Arc, Circle, Ellipse,", NULL, &ok,itemwidth, win,
                       NULL, NULL, fRow_lab, fValp,
@@ -246,7 +246,9 @@ void InsertArcDialog::SaveDefaults()
    env.SetValue("InsertArcDialog.fPhi1"  , fPhi1 );
    env.SetValue("InsertArcDialog.fPhi2"  , fPhi2 );
    env.SetValue("InsertArcDialog.fSense" , fSense);
-   env.SaveLevel(kEnvLocal);
+	env.SetValue("InsertArcDialog.fShowEdges" , fShowEdges);
+	env.SetValue("InsertArcDialog.fKeepRadius" , fKeepRadius);
+	env.SaveLevel(kEnvLocal);
 }
 //_________________________________________________________________________
 
@@ -260,11 +262,13 @@ void InsertArcDialog::RestoreDefaults()
    fFillStyle = env.GetValue("InsertArcDialog.fFillStyle" , 1);
    fXcenter   = env.GetValue("InsertArcDialog.fXcenter"   , 0);
    fYcenter   = env.GetValue("InsertArcDialog.fYcenter"   , 0 );
-   fR1			= env.GetValue("InsertArcDialog.fR1"  , 30.);
-   fR2  	     = env.GetValue("InsertArcDialog.fR2"  , -1.);
+   fR1		  = env.GetValue("InsertArcDialog.fR1"  , 30.);
+   fR2  	      = env.GetValue("InsertArcDialog.fR2"  , -1.);
    fPhi1			= env.GetValue("InsertArcDialog.fPhi1"  , 0.);
    fPhi2			= env.GetValue("InsertArcDialog.fPhi2"  , 360.);
    fSense		= env.GetValue("InsertArcDialog.fSense" , 1);
+	fShowEdges	= env.GetValue("InsertArcDialog.fShowEdges", 0);
+	fKeepRadius = env.GetValue("InsertArcDialog.fKeepRadius" , 1);
 }
 //_________________________________________________________________________
 
@@ -355,7 +359,11 @@ Double_t InsertArcDialog::GetRatioXY()
 InsertArcDialog::~InsertArcDialog()
 {
    gROOT->GetListOfCleanups()->Remove(this);
-   fRow_lab->Delete();
+	if (fCanvas) {
+		GrCanvas* hc = (GrCanvas*)fCanvas;
+		hc->RemoveFromConnectedClasses(this);
+	}
+	fRow_lab->Delete();
    delete fRow_lab;
 };
 //_______________________________________________________________________
