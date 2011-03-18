@@ -172,7 +172,7 @@ static struct s_sis_3300 * s_$moduleName;
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L/@{.PPCLibraryPath:/nfs/marabou/lib} -lSis_3300
+	-L/@{.PPCLibraryPath:/nfs/marabou/lib}  -lSis_3300
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 

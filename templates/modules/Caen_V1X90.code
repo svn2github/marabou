@@ -148,12 +148,12 @@ static struct s_caen_v1x90 * s_$moduleName;
 %%DEFINE_LOCAL_VARS_READOUT%%
 
 %%BeginOfCode%%
-
+	-I@{.PPCIncludePath:/nfs/marabou/include}
 %%EndOfCode%%
 %%DEFINE_INCLUDE_PATHS%%
 
 %%BeginOfCode%%
-	-L/nfs/marabou/lib -lCaen_v1x90
+	-L@{.PPCLibraryPath:/nfs/marabou/lib} -lCaen_v1x90
 %%EndOfCode%%
 %%DEFINE_LIBRARIES%%
 
