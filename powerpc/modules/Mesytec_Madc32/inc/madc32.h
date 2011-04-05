@@ -18,10 +18,10 @@
 //! \file			madc32.h
 //! \brief			Definitions for Mesytec Madc32 ADC
 //! \details		Contains definitions to operate a Mesytec Madc32
-//! $Author: Rudolf.Lutter $
+//! $Author: Marabou $
 //! $Mail:			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.13 $
-//! $Date: 2010-10-04 10:09:01 $
+//! $Revision: 1.14 $
+//! $Date: 2011-04-05 07:09:28 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 /*____________________________________________________________________________
@@ -227,7 +227,6 @@
 #define MADC32_M_EOB						0x80000000
 #define MADC32_M_WC							0x00000FFF
 
-#define MADC32_BLT_BUFFER_SIZE              (1026 * sizeof(int))
 
 /*____________________________________________________________________________
 //////////////////////////////////////////////////////////////////////////////
@@ -282,6 +281,8 @@ struct s_madc32 {
 	uint16_t testPulserStatus;
 	uint16_t ctraTsSource;
 	uint16_t ctraTsDivisor;
+
+	int memorySize;
 
 	struct s_bma * bma; 					/* block mode access */
 	uint32_t bltBufferSize;

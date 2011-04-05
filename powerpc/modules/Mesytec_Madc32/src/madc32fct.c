@@ -6,8 +6,8 @@
 //!
 //! $Author: Marabou $
 //! $Mail			<a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>$
-//! $Revision: 1.16 $
-//! $Date: 2011-02-28 08:51:49 $
+//! $Revision: 1.17 $
+//! $Date: 2011-04-05 07:09:28 $
 ////////////////////////////////////////////////////////////////////////////*/
 
 #include <stdlib.h>
@@ -17,7 +17,7 @@
 #include <allParam.h>
 #include <ces/bmalib.h>
 #include <errno.h>
-/* #include <sigcodes.h> */
+#include <sigcodes.h>
 
 #include "gd_readout.h"
 
@@ -36,6 +36,8 @@ char msg[256];
 struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * base, char * moduleName, int serial)
 {
 	struct s_madc32 * s;
+	int firmware, mainRev;
+
 	s = (struct s_madc32 *) calloc(1, sizeof(struct s_madc32));
 	if (s != NULL) {
 		s->baseAddr = base;
@@ -46,6 +48,10 @@ struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 		s->serial = serial;
 		s->verbose = FALSE;
 		s->dumpRegsOnInit = FALSE;
+
+		firmware = GET16(s->baseAddr, MADC32_FIRMWARE_REV);
+		mainRev = (firmware >> 8) & 0xff;
+		s->memorySize = (mainRev >= 2) ? (8*1024 + 2) : (1024 + 2);
 	} else {
 		sprintf(msg, "[%salloc] %s: Can't allocate madc32 struct", s->mpref, s->moduleName);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
@@ -55,7 +61,7 @@ struct s_madc32 * madc32_alloc(unsigned long vmeAddr, volatile unsigned char * b
 
 void madc32_initialize(struct s_madc32 * s)
 {
-/*	signal(SIGBUS, catchBerr); */
+	signal(SIGBUS, catchBerr);
 	madc32_disableBusError(s);
 	madc32_enable_bma(s);
 	madc32_resetReadout(s);
@@ -430,14 +436,16 @@ uint16_t madc32_getTsDivisor(struct s_madc32 * s)
 
 void madc32_moduleInfo(struct s_madc32 * s)
 {
-	int firmware;
+	int firmware, mainRev, subRev;
 	firmware = GET16(s->baseAddr, MADC32_FIRMWARE_REV);
-	sprintf(msg, "[%smodule_info] %s: phys addr %#lx, mapped to %#lx, firmware %02x.%02x",
+	mainRev = (firmware >> 8) & 0xff;
+	subRev = firmware & 0xff;
+	sprintf(msg, "[%smodule_info] %s: phys addr %#lx, mapped to %#lx, firmware %02x.%02x (%dk memory)",
 									s->mpref,
 									s->moduleName,
 									s->vmeAddr,
 									s->baseAddr,
-									((firmware >> 8) & 0xff), (firmware & 0xff));
+									mainRev, subRev, (mainRev >= 2) ? 8 : 1);
 	f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 }
 
@@ -750,16 +758,18 @@ void madc32_enable_bma(struct s_madc32 * s)
 /* buffersize (in 32bit words) : Memory     = 1026 * 4    */
 
 	if (s->blockTransOn) {
-		s->bltBufferSize = MADC32_BLT_BUFFER_SIZE;
+		s->bltBufferSize = s->memorySize;
 		if ((s->bma = bmaAlloc(s->bltBufferSize)) == NULL) {
 			sprintf(msg, "[%senable_bma] %s: %s, turning BlockXfer OFF", s->mpref, s->moduleName,  sys_errlist[errno]);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			s->blockTransOn = FALSE;
+			getchar();
 			return;
 		}
 		s->bltBuffer = (unsigned char *) s->bma->virtBase;
 		sprintf(msg, "[%senable_bma] %s: turning block xfer ON (buffer=%#lx, size=%d)", s->mpref, s->moduleName, s->bltBuffer, s->bltBufferSize);
 		f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
+			getchar();
 	} else {
 		s->bma = NULL;
 		s->bltBufferSize = 0;
@@ -789,8 +799,7 @@ int madc32_readout(struct s_madc32 * s, uint32_t * pointer)
 
 	if (s->blockTransOn) {
 		if (bmaResetChain(s->bma) < 0) {
-			sprintf(msg, "[%sreadout] %s: resetting block xfer chai
-n failed", s->mpref, s->moduleName);
+			sprintf(msg, "[%sreadout] %s: resetting block xfer chain failed", s->mpref, s->moduleName);
 			f_ut_send_msg(s->prefix, msg, ERR__MSG_INFO, MASK__PRTT);
 			return(0);
 		}
@@ -819,6 +828,7 @@ n failed", s->mpref, s->moduleName);
 		for (i = 0; i < numData; i++) {
 			data = GET32(s->baseAddr, MADC32_DATA);
 			if (data == 0) {
+				printf("data=0!\n");
 				s->evtp++; *s->evtp = (MADC32_M_TRAILER | 0x00525252);
 				pointer = madc32_pushEvent(s, pointer);
 				madc32_resetEventBuffer(s);
@@ -935,4 +945,6 @@ void madc32_resetEventBuffer(struct s_madc32 * s) {
 	s->skipData = FALSE;
 }
 
-void catchBerr() {}
+void catchBerr() {
+	printf("BUS ERROR\n");
+}
