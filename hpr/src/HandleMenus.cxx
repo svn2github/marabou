@@ -176,6 +176,7 @@ enum ERootCanvasCommands {
 	kFHSeldCache,
 	kFHCanvasToFile,
    kFHHistToASCII,
+   kFHHistToGraph,
    kFHPictToPS,
    kFHPictToLP,
 
@@ -913,7 +914,15 @@ again:
                   case kFHHistToASCII:
 							fHistInPad = Hpr::FindHistInPad(fHCanvas);
 							if ( fHistInPad )
-								Hpr::WriteHistasASCII(fHistInPad, fRootCanvas);
+								Hpr::WriteHistasASCII(fHistInPad, fRootCanvas, 0);
+//							Hpr::WriteHistasASCII(fFitHist->GetSelHist(), fRootCanvas);
+							else
+								cout << "No hist in pad" << endl;
+							break;
+                  case kFHHistToGraph:
+							fHistInPad = Hpr::FindHistInPad(fHCanvas);
+							if ( fHistInPad )
+								Hpr::WriteHistasASCII(fHistInPad, fRootCanvas, 1);
 //							Hpr::WriteHistasASCII(fFitHist->GetSelHist(), fRootCanvas);
 							else
 								cout << "No hist in pad" << endl;
@@ -1367,6 +1376,7 @@ void HandleMenus::BuildMenus()
 		fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
 		fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
 		fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
+		fFileMenu->AddEntry("Hist_as_Graph_to_ROOT-File", kFHHistToGraph);
 		fFileMenu->AddSeparator();
 		fFileMenu->AddEntry("Picture to Printer",  kFHCanvas2LP);
 		fFileMenu->AddEntry("Picture to PS-File",  kFHPictToPS);

@@ -793,7 +793,8 @@ void SetHistOptDialog::SetAllToDefault()
 
 void SetHistOptDialog::RestoreDefaults(Int_t resetall)
 {
-   cout << "SetHistOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
+	if ( gDebug > 0) 
+		cout << "SetHistOptDialog:: RestoreDefaults(resetall) " << resetall<< endl;
 	TString envname;
 	if (resetall == 0 ) {
 		envname = ".hprrc";

@@ -1,3 +1,5 @@
+#include "TFile.h"
+#include "TGraphErrors.h"
 #include "TFrame.h"
 #include "TString.h"
 #include "TObjString.h"
@@ -17,81 +19,116 @@ using std::endl;
 namespace Hpr 
 {
 
-void WriteHistasASCII(TH1 *hist, TGWindow *window)
+void WriteHistasASCII(TH1 *hist, TGWindow *window, Int_t ascii_graph)
 {
 // *INDENT-OFF*
-  const char helpText[] =
-"As default only the channel contents is written\n\
-to the file.|n\
-\"Binwidth/2\" and \"Errors\" is useful if file should be used\n\
-as input to Ascii2Graph: X, Y, ErrX, ErrY";
+  const char helpTextASCII[] =
+"As default only the channel contents are written\n\
+to the file.\n\
+\"Errors X\" and \"Errors Cont(Y)\" are useful if file\n\
+should be used as input to Ascii2Graph: X, Y, ErrX, ErrY\n\
+If First_binX and Last_binX are 0 all channels arr written";
+  const char helpTextGraph[] =
+"Store BinCenters, BinContents in a TGraphErrors object\n\
+and write the Graph to a ROOT file\n\
+If \"First_binX\" and \"Last_binX\" are 0 all channels arr written";
 // *INDENT-ON*
-
+	
    if ( hist->GetDimension() == 3 ) {
-      WarnBox(" WriteHistasASCII: 3 dim not yet supported ", window);
+      WarnBox(" WriteHistasASCII: 3-dim not yet supported ", window);
+      return;
+   }
+   if ( hist->GetDimension() != 1 && ascii_graph == 1) {
+      WarnBox(" WriteHistasGraph: only 1-dim supported", window);
       return;
    }
    static Int_t channels   = 0;
    static Int_t bincenters = 1;
    static Int_t binw2      = 0;
-   static Int_t errors     = 0;
+   static Int_t errors     = 1;
    static Int_t first_binX  = 0;
    static Int_t last_binX   = 0;
    static Int_t first_binY  = 0;
    static Int_t last_binY   = 0;
+	Int_t transX             = 0;
+	Double_t offsetX = 0;
+	Double_t slope = 1;
+//	Int_t dummy;
    static Int_t suppress_zeros = 1;
-
-   static TString fname;
-   fname = hist->GetName();
- //  fname = fHname;
-   fname += ".ascii";
+	TFile *rfile = NULL;
+	TGraphErrors *graph = NULL;
+   TString fname;
+   TString gname;
+   TString gtitle;
+	const char *helpText = NULL;
+	if ( ascii_graph == 0 ) {
+		fname = hist->GetName();
+		fname += ".ascii";
+		helpText =  &helpTextASCII[0];
+	} else {
+		gname  = hist->GetName();
+		gtitle = hist->GetTitle();
+		fname = "workfile.root";
+		helpText =  &helpTextGraph[0];
+	}
 
    TList *row_lab = new TList();
    static void *valp[50];
    Int_t ind = 0;
    Bool_t ok = kTRUE;
-;
-   row_lab->Add(new TObjString("StringValue_File name"));
-   valp[ind++] = &fname;
+
+	if ( ascii_graph == 0 ) {
+		row_lab->Add(new TObjString("StringValue_File name"));
+		valp[ind++] = &fname;
+	} else {
+		row_lab->Add(new TObjString("StringValue_  Rootfile"));
+		valp[ind++] = &fname;
+		row_lab->Add(new TObjString("StringValue_Graph name"));
+		valp[ind++] = &gname;
+		row_lab->Add(new TObjString("StringValue_ Graph tit"));
+		valp[ind++] = &gtitle;
+	}
    if (hist->GetDimension() == 1) {
-      row_lab->Add(new TObjString("CheckButton_Channel Numbers"));
-      valp[ind++] = &channels;
-      row_lab->Add(new TObjString("CheckButton_Bin Centers"));
-      valp[ind++] = &bincenters;
-      row_lab->Add(new TObjString("CheckButton_Bwidth/Sqrt(12) Errors X"));
-      valp[ind++] = &binw2;
+		if (  ascii_graph == 0 ) {
+			row_lab->Add(new TObjString("CheckButton_ChannelNumbs"));
+			valp[ind++] = &channels;
+			row_lab->Add(new TObjString("CheckButton+   Bin Centers"));
+			valp[ind++] = &bincenters;
+		}
    }
-   row_lab->Add(new TObjString("CheckButton_Errors Content (Y)"));
+	row_lab->Add(new TObjString("CheckButton_    Errors X"));
+	valp[ind++] = &binw2;
+   row_lab->Add(new TObjString("CheckButton+Errors Cont(Y)"));
    valp[ind++] = &errors;
-   row_lab->Add(new TObjString("PlainIntVal_first_binX"));
+   row_lab->Add(new TObjString("PlainIntVal_First_binX"));
    valp[ind++] = &first_binX;
-   row_lab->Add(new TObjString("PlainIntVal_last_binX"));
+   row_lab->Add(new TObjString("PlainIntVal+Last_binX"));
    valp[ind++] = &last_binX;
-   if (hist->GetDimension() == 2) {
-      row_lab->Add(new TObjString("PlainIntVal_first_binY"));
+   if (hist->GetDimension() == 2 && ascii_graph == 0) {
+      row_lab->Add(new TObjString("PlainIntVal_First_binY"));
       valp[ind++] = &first_binY;
-      row_lab->Add(new TObjString("PlainIntVal_last_binY"));
+      row_lab->Add(new TObjString("PlainIntVal_Last_binY"));
       valp[ind++] = &last_binY;
    }
-   row_lab->Add(new TObjString("CheckButton_Suppress empty channels"));
+   row_lab->Add(new TObjString("CheckButton_     Suppress empty channels"));
    valp[ind++] = &suppress_zeros;
+	row_lab->Add(new TObjString("CheckButton_Apply linear trans to Xscale"));
+	valp[ind++] = &transX;
+   row_lab->Add(new TObjString("DoubleValue_OffsetX"));
+   valp[ind++] = &offsetX;
+   row_lab->Add(new TObjString("DoubleValue+Slope"));
+   valp[ind++] = &slope;
 
-   Int_t itemwidth=250;
-   ok = GetStringExt("Write hist as ASCII-file", NULL, itemwidth, window,
-                   NULL, NULL, row_lab, valp, NULL, NULL, &helpText[0]);
+   Int_t itemwidth=280;
+	TString tit;
+	if (  ascii_graph == 0 ) {
+		tit = "Hist to ASCII-file";
+	} else {
+		tit = "Hist to Graph";
+	}
+   ok = GetStringExt(tit, NULL, itemwidth, window,
+                   NULL, NULL, row_lab, valp, NULL, NULL, helpText);
    if (!ok) {
-      return;
-   }
-
-
-   if (!gSystem->AccessPathName((const char *) fname, kFileExists)) {
-//      cout << fname << " exists" << endl;
-      if ( !QuestionBox("File exists, overwrite?",window) ) 
-         return;
-   }
-   ofstream outfile((const char *) fname);
-   if (outfile.fail()) {
-      cout << "Opening: " << fname << " failed" << endl;
       return;
    }
    Int_t nl = 0;
@@ -99,21 +136,58 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
    Int_t nbx2 = hist->GetNbinsX();
    if (first_binX > 0) nbx1 = first_binX;
    if (last_binX > 0)  nbx2 = last_binX;
-
-   if ( hist->GetDimension() != 2 ) {
+	Int_t ntot = 0;
+   if ( hist->GetDimension() == 1 ) {
       for (Int_t i = nbx1; i <= nbx2; i++) {
+         if ( hist->GetBinContent(i) == 0 && suppress_zeros )
+				continue;
+			ntot++;
+		}
+	}
+	ofstream *outfile;
+	if ( ascii_graph == 0 ) {
+		if (!gSystem->AccessPathName((const char *) fname, kFileExists)) {
+	//      cout << fname << " exists" << endl;
+			if ( !QuestionBox("File exists, overwrite?",window) ) 
+				return;
+		}
+		outfile= new ofstream((const char *) fname);
+		if (outfile->fail()) {
+			cout << "Opening: " << fname << " failed" << endl;
+			return;
+		}
+	} else {
+		rfile = new TFile(fname, "UPDATE");
+		graph = new TGraphErrors(ntot);
+		graph->SetName(gname);
+		graph->SetTitle(gtitle);
+	}
+   if ( hist->GetDimension() == 1 ) {
+      for (Int_t i = nbx1; i <= nbx2; i++) {
+			Double_t xerr = hist->GetBinWidth(i) / TMath::Sqrt(12);
+			Double_t x = hist->GetBinCenter(i);
+			if ( transX )
+				x = offsetX + slope * x;
+			if ( ascii_graph == 0 && binw2 == 0) 
+				xerr = 0;
          if (bincenters && suppress_zeros &&
              hist->GetBinContent(i)  == 0) continue;
-         if (channels)
-            outfile << i << "\t";
-         if (bincenters)
-            outfile << hist->GetBinCenter(i) << "\t";
-         outfile << hist->GetBinContent(i);
-         if (binw2)
-            outfile << "\t" <<  hist->GetBinWidth(i) / TMath::Sqrt(12);
-         if (errors)
-            outfile << "\t" << hist->GetBinError(i);
-         outfile << std::endl;
+			if ( ascii_graph == 0 ) {
+				if (channels)
+					*outfile << i << "\t";
+				if (bincenters)
+					*outfile << x << "\t";
+				*outfile << hist->GetBinContent(i);
+				if (binw2)
+					*outfile << "\t" <<  xerr;
+				if (errors)
+					*outfile << "\t" << hist->GetBinError(i);
+				*outfile << std::endl;
+			} else {
+				graph->SetPoint(nl, x, hist->GetBinContent(i)); 
+				if (errors)
+					graph->SetPointError(nl,xerr,hist->GetBinError(i)); 
+			}
          nl++;
       }
 
@@ -127,19 +201,25 @@ as input to Ascii2Graph: X, Y, ErrX, ErrY";
       for (Int_t i = nbx1; i <= nbx2; i++) {
          for (Int_t k = nby1; k <= nby2; k++) {
             if (suppress_zeros && hist->GetCellContent(i, k)  == 0) continue;
-            outfile << xa->GetBinCenter(i) << "\t";
-            outfile << ya->GetBinCenter(k) << "\t";
+            *outfile << xa->GetBinCenter(i) << "\t";
+            *outfile << ya->GetBinCenter(k) << "\t";
 
-            outfile << hist->GetCellContent(i,k);
+            *outfile << hist->GetCellContent(i,k);
             if (errors)
-            outfile << "\t" << hist->GetCellError(i,k);
-            outfile << std::endl;
+            *outfile << "\t" << hist->GetCellError(i,k);
+            *outfile << std::endl;
             nl++;
          }
       }
    }
-   cout << nl << " lines written to: " << (const char *) fname << endl;
-   outfile.close();
+   if ( ascii_graph == 0 ) {
+		cout << nl << " lines written to: " << (const char *) fname << endl;
+		outfile->close();
+	} else {
+		graph->Write();
+		rfile->Close();
+		cout << "Graph with " << nl << " points written to: " << fname << endl;
+	}
 };
 //___________________________________________________________________________
 
