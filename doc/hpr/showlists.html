@@ -8,13 +8,13 @@
 
 <H3>HistPresent start window</H3>
 <ul>
-<li><a href=#Help_on_rootrc>Edit .rootrc</a></li> 
 <li><a href=attrmacro.html>Edit AttrMacro</a></li> 
 <li><a href=#Help_on_OperRebin>Rebin selected histogram</a></li> 
 <li><a href=#Help_on_operators>Operations on histograms</a></li> 
 <li><a href=#Help_on_ShowFileList>Show Filelist</a></li> 
 <li><a href=#Help_on_ListObjectsInMemory>List Objects in Memory</a></li> 
 <li><a href=#Help_on_HistsFromM_analyze>Hists from M_analyze</a></li> 
+<li><a href=#Help_on_HistsFromProof>Hists from Proof</a></li> 
 <li><a href=#Help_on_SelectionMask>File/Histo Selection Mask</a></li> 
 <li><a href=#Help_on_StackSelected>Stack selected hists</a></li> 
 <li><a href=#Help_on_ShowSelected>Show selected hists</a></li> 
@@ -137,6 +137,19 @@ the command <a href=#Help_on_ShowSelected>Show selected hists</a>.
 Caveat: Since histograms are gathered one by one the number
 of entries will in general not reflect the same number of
 events collected.
+
+<a NAME=Help_on_HistsFromProof></a> 
+<H3>Histos from Proof</H3> 
+Histograms may be fetched from a Proof session started from
+the commandline of HistPresent:
+Since HistPresent runs a standard interactive ROOT session
+e.g. a Proof-Lite session may be started:
+
+TProof *proof = TProof::Open("");
+...
+proof->Process("...
+<b>Histos from Proof</b> will find the Proof session,
+issue a GetOutputList() and present the found objects.
 
 <a NAME=Help_on_SelectionMask></a> 
 <H3>File/Histo Selection Mask</H3>
