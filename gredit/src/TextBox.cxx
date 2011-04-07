@@ -17,7 +17,7 @@ ClassImp(TbTimer)
 TbTimer::TbTimer(Long_t ms, Bool_t synch,  TextBox *textbox):TTimer(ms,synch)
 {
    fTextBox = textbox;
-    cout << "init TbTimer " << ms << endl;
+ //   cout << "init TbTimer " << ms << endl;
    gSystem->AddTimer(this);
 };
 //_____________________________________________________________________________
@@ -106,6 +106,7 @@ void TextBox::RecursiveRemove(TObject * obj)
 
 void TextBox::ObjCreated(Int_t px, Int_t py, TObject *obj)
 {
+	if (gDebug > 1)
    cout << "TextBox::ObjCreated() obj, px, py " << obj->ClassName() << " " << px << " " << py << endl;
 //   AdoptMember();
 }
@@ -114,7 +115,9 @@ void TextBox::ObjCreated(Int_t px, Int_t py, TObject *obj)
 void TextBox::ObjMoved(Int_t px, Int_t py, TObject *obj)
 {
    if (!FindMember(obj)) return;
-   cout << "TextBox::Moved() obj, px, py " << obj->ClassName() << " " << px << " " << py << endl;
+   if (gDebug > 1)
+		cout << "TextBox::Moved() obj, px, py " << obj->ClassName()
+		<< " " << px << " " << py << " AdoptMember " << endl;
    AdoptMember(obj);
 }
 
@@ -434,7 +437,8 @@ void TextBox::AlignEntries(Double_t dX1, Double_t dY1, Double_t dX2, Double_t dY
          if (obj->InheritsFrom("TSplineX")) {
 				((TSplineX*)obj)->NeedReCompute();
 				((TSplineX*)obj)->Paint();
-				cout << "((TSplineX*)obj)->Paint()" << endl;
+				if (gDebug > 1)
+					cout << "((TSplineX*)obj)->Paint()" << endl;
 			}
 		}
 		if (a) {

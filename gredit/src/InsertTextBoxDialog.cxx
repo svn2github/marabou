@@ -160,7 +160,7 @@ void InsertTextBoxDialog::ExecuteInsert()
 		opt += "arc";
 	}
    tp->SetDrawOption(opt);
-   cout <<"Draw(opt)  " << opt << endl;
+//   cout <<"Draw(opt)  " << opt << endl;
    tp->SetLineColor(fColor);
    tp->SetLineStyle(fStyle);
    tp->SetLineWidth(fWidth);

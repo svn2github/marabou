@@ -521,7 +521,7 @@ InsertTextDialog::~InsertTextDialog()
 void InsertTextDialog::RecursiveRemove(TObject * obj)
 {
    if (obj == fCanvas || obj == fCaller) {
-      cout << "InsertTextDialog: CloseDialog "  << endl;
+//      cout << "InsertTextDialog: CloseDialog "  << endl;
       CloseDialog();
    }
 }

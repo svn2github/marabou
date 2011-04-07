@@ -826,7 +826,8 @@ TObject * GrCanvas::WaitForCreate(const char * what, TPad **pad)
 		gSystem->ProcessEvents();
 		if (*pad != NULL) {
 			gROOT->SetEditorMode();
-			cout << "exit GrCanvas::WaitForCreate: " << *pad << endl;
+			if (gDebug > 1 )
+				cout << "exit GrCanvas::WaitForCreate: " << *pad << endl;
 			break;
 		}
 		gSystem->Sleep(10);
