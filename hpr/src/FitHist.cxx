@@ -1912,15 +1912,19 @@ void FitHist::Superimpose(Int_t mode)
 	static const char helptext[] =
 	"\n\
 	A selected hist is drawn in the same pad\n\
-	The hist can be scaled either automatically\n\
+	The histogram may be scaled automatically: \n\
 	The scale is adjusted such that the maximum value\n\
-	is 10% below the maximum of the pad. Any value may be\n\
-	selected manually.\n\
+	of the superimposed histogram is equal to the maximum\n\
+	of the original histogram in the displayed range.\n\
+	So a certain peak can used as reference by zooming in\n\
+	on this peak. Any value may be selected manually.\n\
+	\n\
 	An extra axis may be drawn on the right side:\n\
 	The AxOffs determines its position, 0 is on top\n\
 	of the right edge of the frame, negative is left\n\
 	of it in the pad, positive at the right side\n\
-	The color of the extra axis and the graph are the same.\n\
+	This is useful if more than one histogram is superimposed\n\
+	The color of the extra axis equals the color of the hist.\n\
 	With option \"Incr Colors\" Line-, Mark- FillColors are\n\
 	automatically incremented (red->green->blue etc.)\n\
 	With \"Skip Dialog\" this widget is only shown once\n\
@@ -1944,6 +1948,8 @@ void FitHist::Superimpose(Int_t mode)
       Hpr::WarnBox("No hist selected");
       return;
    }
+//    cout << "hist->GetName() " << hist->GetName() << endl;
+   
    TEnv env(".hprrc");
 	static Int_t   lLegend      = env.GetValue("SuperImposeHist.DrawLegend", 1);
 	static Int_t   lIncrColors  = env.GetValue("SuperImposeHist.AutoIncrColors", 0);
@@ -2122,7 +2128,7 @@ void FitHist::Superimpose(Int_t mode)
 			}
 			new_scale = fSelHist->GetMaximum() / maxy;
 		} else {
-			new_scale = 1;
+//			new_scale = 1;
 		}
 		TString name = hdisp->GetName();
 		name += "_scaled";
