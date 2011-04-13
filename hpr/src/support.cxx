@@ -1991,12 +1991,32 @@ void SetAxisHistY(TCanvas *c, TH1* hist)
 
 void SetAxisGraphX(TCanvas *c, TGraph *gr)
 {
-   TH1 *hist = gr->GetHistogram();
+	static void *valp[50];
+	Int_t ind = 0;
+	Bool_t ok = kTRUE;
+	static Double_t xl;
+	static Double_t xu;
+	TList *row_lab = new TList();
+	TH1 *hist = gr->GetHistogram();
    if (!hist) {
       cout << "Graph must be drawn to set axis range" << endl;
    } else {
-      SetAxisHistX(c, hist->GetXaxis());
+		TRootCanvas * win = (TRootCanvas*)c->GetCanvasImp();
+		row_lab->Add(new TObjString("DoubleValue_Xaxis min"));
+		row_lab->Add(new TObjString("DoubleValue_Xaxis max"));
+		valp[ind++] = &xl;
+		valp[ind++] = &xu;
+		Int_t itemwidth = 320;
+		ok = GetStringExt("Xmin, Xmax", NULL, itemwidth, win,
+							NULL, NULL, row_lab, valp,
+							NULL, NULL);
+		if (ok) {
+			hist->GetXaxis()->Set(hist->GetNbinsX(),xl, xu );
+			c->Modified();
+			c->Update();
+		}
    }
+   delete row_lab;
 }
 //__________________________________________________________
 
@@ -2077,10 +2097,10 @@ void SetAxisHistX(TCanvas *c, TAxis * xa)
 //         xa->SetLimits(xl, xu);
          xa->SetTimeDisplay(kTRUE);
       } else {
-         Int_t bin1 = xa->FindBin(xl);
-         Int_t bin2 = xa->FindBin(xu);
+			Int_t bin1 = xa->FindBin(xl);
+			Int_t bin2 = xa->FindBin(xu);
          xa->SetRange(bin1, bin2);
-//         xa->SetLimits(xl, xu);
+//        xa->SetLimits(xl, xu);
       }
    }
    c->cd();

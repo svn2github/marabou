@@ -15,6 +15,7 @@
 
 namespace std {} using namespace std;
 
+Int_t GeneralAttDialog::fPrependFilename;
 Int_t GeneralAttDialog::fForceStyle;
 Int_t GeneralAttDialog::fShowPSFile;
 Int_t GeneralAttDialog::fSuppressWarnings;
@@ -38,6 +39,12 @@ GeneralAttDialog::GeneralAttDialog(TGWindow * win)
 static const char helptext[] =
 "\n\
 ___________________________________________________________\n\
+Prepend filename to histo titles\n\
+--------------------------------\n\
+This is useful when superimposing, stacking or showing histograms\n\
+in one canvas with same titles from files e.g. from different runs\n\
+since the title is used in legends.\n\
+___________________________________________________________\n\
 Force style, show hist with current style\n\
 -----------------------------------------\n\
 Use graphics option currently in use instead of options\n\
@@ -46,9 +53,9 @@ ___________________________________________________________\n\
 Global style, activate roots style options\n\
 ------------------------------------------\n\
 ___________________________________________________________\n\
-Max Ents in Lists\n\
------------------\n\
-Too many entries in histlist (e.g. > 1000) make build up\n\
+Max Entries in Lists\n\
+--------------------\n\
+Too many entries in histlists (e.g. > 1000) make build up\n\
 of lists slow and may even crash X on some older systems\n\
 With this option one can limit this number\n\
 ___________________________________________________________\n\
@@ -123,13 +130,15 @@ ____________________________________________________________\n\
    fRow_lab->Add(new TObjString(style_menu));
    fGlobalStyleButton = ind;
    fValp[ind++] = &fGlobalStyle;
-   fRow_lab->Add(new TObjString("CheckButton_             Show histlists only"));
-   fValp[ind++] = &fShowListsOnly;
-   fRow_lab->Add(new TObjString("CheckButton_       Suppress warning messages"));
+   fRow_lab->Add(new TObjString("CheckButton_ Prepend filename to histo titles"));
+   fValp[ind++] = &fPrependFilename;
+	fRow_lab->Add(new TObjString("CheckButton_              Show histlists only"));
+	fValp[ind++] = &fShowListsOnly;
+	fRow_lab->Add(new TObjString("CheckButton_        Suppress warning messages"));
    fValp[ind++] = &fSuppressWarnings;
-   fRow_lab->Add(new TObjString("CheckButton_     Show PS file after creation"));
+   fRow_lab->Add(new TObjString("CheckButton_      Show PS file after creation"));
    fValp[ind++] = &fShowPSFile;
-   fRow_lab->Add(new TObjString("CheckButton_Remember Expand settings (Marks)"));
+   fRow_lab->Add(new TObjString("CheckButton_ Remember Expand settings (Marks)"));
    fValp[ind++] = &fRememberLastSet;
    fRow_lab->Add(new TObjString("CheckButton_Remember Zoomings (by left mouse)"));
    fValp[ind++] = &fRememberZoom;
@@ -137,7 +146,7 @@ ____________________________________________________________\n\
    fValp[ind++] = &fUseAttributeMacro;
    fRow_lab->Add(new TObjString("CheckButton_    Use Regular expression syntax"));
    fValp[ind++] = &fUseRegexp;
-   fRow_lab->Add(new TObjString("PlainIntVal_                Max Ents in Lists"));
+   fRow_lab->Add(new TObjString("PlainIntVal_            Max Entriess in Lists"));
    fValp[ind++] = &fMaxListEntries;
 	fRow_lab->Add(new TObjString("PlainIntVal_            Fit2Dim Content Limit"));
 	fValp[ind++] = &fContentLowLimit;
@@ -199,7 +208,8 @@ void GeneralAttDialog::SaveDefaults()
    env.SetValue("GeneralAttDialog.fStackedReally" , fStackedReally );
    env.SetValue("GeneralAttDialog.fStackedNostack", fStackedNostack);
    env.SetValue("GeneralAttDialog.fStackedPads"   , fStackedPads   );
-   env.SaveLevel(kEnvLocal);
+	env.SetValue("GeneralAttDialog.fPrependFilename", fPrependFilename);
+	env.SaveLevel(kEnvLocal);
 }
 
 //______________________________________________________________________
@@ -226,6 +236,7 @@ void GeneralAttDialog::RestoreDefaults()
    fStackedReally   = env.GetValue("GeneralAttDialog.fStackedReally" , 1);
    fStackedNostack  = env.GetValue("GeneralAttDialog.fStackedNostack", 0);
    fStackedPads     = env.GetValue("GeneralAttDialog.fStackedPads"   , 0);
+	fPrependFilename = env.GetValue("GeneralAttDialog.fPrependFilename"   , 0);
 }
 //______________________________________________________________________
 

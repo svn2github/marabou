@@ -2150,6 +2150,14 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory,
    TString newname(hname.Data());
    newname += "_",
    newname += pos;
+	if ( GeneralAttDialog::fPrependFilename != 0 ) {
+		TString title = hist->GetTitle();
+		pp = fname.Index(".");
+		fname.Resize(pp);
+		title.Prepend("_");
+		title.Prepend(fname);
+		hist->SetTitle(title);
+	}
    if (hist) hist->SetName(newname.Data());
    return hist;
 }
@@ -2215,7 +2223,15 @@ TGraph* HistPresent::GetSelGraphAt(Int_t pos)
    TString newname(hname.Data());
    newname += "_",
    newname += pos;
-   if (hist) hist->SetName(newname.Data());
+	if ( GeneralAttDialog::fPrependFilename != 0 ) {
+		TString title = hist->GetTitle();
+		pp = fname.Index(".");
+		fname.Resize(pp);
+		title.Prepend("_");
+		title.Prepend(fname);
+		hist->SetTitle(title);
+	}
+	if (hist) hist->SetName(newname.Data());
    return hist;
 }
 //________________________________________________________________________________________
@@ -2970,6 +2986,16 @@ void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname
 			b->Update();
 		}
 //      TurnButtonGreen(&activeHist);
+		if ( GeneralAttDialog::fPrependFilename != 0 ) {
+			TString title = hist->GetTitle();
+			TString fn(fname);
+			Int_t pp = fn.Index(".");
+			fn.Resize(pp);
+			title.Prepend("_");
+			title.Prepend(fn);
+			hist->SetTitle(title);
+		}
+
       ShowHist(hist, hname);
    } else     WarnBox("Histogram not found");
 //   kSemaphore = 0;
@@ -3674,6 +3700,8 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 	} else {
 		obj = gROOT->GetList()->FindObject(name);
 	}
+	if (!obj)
+		return;
 	if ( obj->InheritsFrom("TGraph2D") ) {
 		graph2d = (TGraph2D*)obj;
 		graph2d->SetDirectory(gROOT);
@@ -3682,6 +3710,15 @@ void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name
 	} else {
 		cout << "Graph not found" << endl;
 		return;
+	}
+	if ( GeneralAttDialog::fPrependFilename != 0 ) {
+		TString title = ((TNamed*)obj)->GetTitle();
+		TString fn(fname);
+		Int_t pp = fn.Index(".");
+		fn.Resize(pp);
+		title.Prepend("_");
+		title.Prepend(fn);
+		((TNamed*)obj)->SetTitle(title);
 	}
 	TString cname = name;
 	if (cname.Index(";") > 1)cname.Resize(cname.Index(";"));
@@ -3848,7 +3885,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	}
 	Double_t  axis_offset = 0.;
 	Double_t label_offset = 0.01;
-	Color_t    axis_color = 2; 
+	static Color_t    axis_color = 2; 
 	TString lLineMode;
 	TString drawopt     = env.GetValue("GraphAttDialog.fDrawOpt", "PA");
 	if ( drawopt.Contains("C") ) {
@@ -3868,9 +3905,9 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	Size_t  lLWidth   = env.GetValue("GraphAttDialog.fLineWidth", 1);
 	Style_t lMStyle   = env.GetValue("GraphAttDialog.fMarkerStyle", 7);
 	Size_t  lMSize    = env.GetValue("GraphAttDialog.fMarkerSize",  1);
-	Color_t lFColor   = axis_color; 
-	Color_t lLColor   = axis_color; 
-	Color_t lMColor   = axis_color; 
+	static Color_t lFColor   = axis_color; 
+	static Color_t lLColor   = axis_color; 
+	static Color_t lMColor   = axis_color; 
 	
 	Double_t new_scale = 1;   
 	TString axis_title;
@@ -3896,10 +3933,12 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	valp[ind++] = &axis_offset;
 	row_lab->Add(new TObjString("DoubleValue+LabOffs"));
 	valp[ind++] = &label_offset;
-	row_lab->Add(new TObjString("StringValue_AxTitle"));
+	row_lab->Add(new TObjString("StringValue_AxTit"));
 	valp[ind++] = &axis_title;
-	row_lab->Add(new TObjString("ColorSelect+AxisColor"));
+	row_lab->Add(new TObjString("ColorSelect+AxCol"));
 	valp[ind++] = &axis_color;
+	row_lab->Add(new TObjString("CheckButton_Incr Col"));
+	valp[ind++] = &lIncrColors;
 	row_lab->Add(new TObjString("ComboSelect_LineM;(noline);L(simple);C(smooth)"));
 	valp[ind++] = &lLineMode;
 	row_lab->Add(new TObjString("CheckButton+Draw Marker"));
@@ -3924,7 +3963,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	row_lab->Add(new TObjString("Fill_Select+FStyle"));
 	valp[ind++] = &lLStyle;
 	row_lab->Add(new TObjString("ColorSelect+FillColor"));
-	valp[ind++] = &lLColor;
+	valp[ind++] = &lFColor;
 	
 	Int_t itemwidth = 380;
 	ok = GetStringExt("Superimpose Graph", NULL, itemwidth, win,
@@ -4062,6 +4101,13 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	}
 	gPad->Modified();
 	gPad->Update();
+	if (lIncrColors > 0) {
+		lLColor++;
+		lMColor++;
+		axis_color++;
+		lFColor++;
+		axis_offset += 0.05;
+	}
 	env.SetValue("SuperImposeGraph.DrawLegend", lLegend);
 	env.SetValue("SuperImposeGraph.AutoIncrColors", lIncrColors);
 	env.SetValue("SuperImposeGraph.SkipDialog", lSkipDialog);

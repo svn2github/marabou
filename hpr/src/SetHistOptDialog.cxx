@@ -568,7 +568,7 @@ void SetHistOptDialog::SetStatBoxAttr(TStyle *sty)
 
 void SetHistOptDialog::SetCustomStyle()
 {
-   cout << "SetHistOptDialog:: SetHistAttPerm()" << endl;
+	cout << "SetHistOptDialog:: SetCustomStyle" << endl;
    Bool_t ok;
 	fNewStyle = 1;
    TList *row_lab = new TList();
