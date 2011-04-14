@@ -3834,14 +3834,15 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	The scale is adjusted such that the maximum value\n\
 	is 10% below the maximum of the pad. Any value may be\n\
 	selected manually.\n\
-	An extra axis may be drawn on the right side:\n\
-	The AxOffs determines its position, 0 is on top\n\
-	of the right edge of the frame, negative is left\n\
-	of it in the pad, positive at the right side\n\
-	The color of the extra axis an the graph are the same.\n\
+	An extra axis may be drawn on the right side.\n\
+	The AxOffs determines its position, 0 is at\n\
+	the right edge of the frame, negative is left\n\
+	of it inside the frame, positive is outside on the right\n\
 	\n\
 	";
 //	Color_t scale_color[kMaxColors] = {kRed, kGreen, kYellow, kBlue, kMagenta};
+
+	current->cd();
 	TH1 * hist = NULL;
 	hist = GetHistOfGraph(gPad);
 	if ( !hist && current ) {
@@ -3886,6 +3887,15 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	Double_t  axis_offset = 0.;
 	Double_t label_offset = 0.01;
 	static Color_t    axis_color = 2; 
+	static Color_t lFColor   = axis_color; 
+	static Color_t lLColor   = axis_color; 
+	static Color_t lMColor   = axis_color; 
+	if ( GetNofGraphs(current)  == 1 ) {
+		axis_color = 2; 
+		lFColor   = axis_color; 
+		lLColor   = axis_color; 
+		lMColor   = axis_color; 
+	}
 	TString lLineMode;
 	TString drawopt     = env.GetValue("GraphAttDialog.fDrawOpt", "PA");
 	if ( drawopt.Contains("C") ) {
@@ -3905,14 +3915,11 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	Size_t  lLWidth   = env.GetValue("GraphAttDialog.fLineWidth", 1);
 	Style_t lMStyle   = env.GetValue("GraphAttDialog.fMarkerStyle", 7);
 	Size_t  lMSize    = env.GetValue("GraphAttDialog.fMarkerSize",  1);
-	static Color_t lFColor   = axis_color; 
-	static Color_t lLColor   = axis_color; 
-	static Color_t lMColor   = axis_color; 
 	
 	Double_t new_scale = 1;   
 	TString axis_title;
 	Int_t   lLegend      = env.GetValue("SuperImposeGraph.DrawLegend", 1);
-	Int_t   lIncrColors  = env.GetValue("SuperImposeGraph.AutoIncrColors", 0);
+	Int_t   lIncrColors  = env.GetValue("SuperImposeGraph.AutoIncrColors", 1);
 	Int_t   lSkipDialog  = env.GetValue("SuperImposeGraph.SkipDialog", 0);
 
 	axis_title= gr->GetTitle();
@@ -3937,7 +3944,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	valp[ind++] = &axis_title;
 	row_lab->Add(new TObjString("ColorSelect+AxCol"));
 	valp[ind++] = &axis_color;
-	row_lab->Add(new TObjString("CheckButton_Incr Col"));
+	row_lab->Add(new TObjString("CheckButton+Incr Col"));
 	valp[ind++] = &lIncrColors;
 	row_lab->Add(new TObjString("ComboSelect_LineM;(noline);L(simple);C(smooth)"));
 	valp[ind++] = &lLineMode;
@@ -4071,6 +4078,18 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 		}
 	}
 	if ( lLegend != 0 ) {
+		// remove possible TLegend
+		TIter next2( fCanvas->GetListOfPrimitives() );
+		TObject *obj;
+		TLegend * leg = NULL;
+		while ( obj = next2() ) {
+			if ( obj->InheritsFrom("TLegend") ) {
+				leg = (TLegend*)obj;
+				break;
+			}
+		}
+		if ( leg )
+			delete leg;
 		TEnv env(".hprrc");
 		Double_t x1 = env.GetValue("SuperImposeGraph.fLegendX1", 0.11);
 		Double_t x2 = env.GetValue("SuperImposeGraph.fLegendX2", 0.3);

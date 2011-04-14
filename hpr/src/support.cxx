@@ -158,6 +158,20 @@ TH1 * GetHistOfGraph(TVirtualPad * pad)
    }
    return NULL;
 };
+//-----------------------------------------------------------------------
+
+Int_t GetNofGraphs(TVirtualPad * pad)
+{
+	TIter next(pad->GetListOfPrimitives());
+	TObject *obj;
+	Int_t ng = 0;
+	while ( (obj = next()) ) {
+		if (obj->InheritsFrom("TGraph")) {
+			ng++;
+		}
+	}
+	return ng;
+};
 
 //-----------------------------------------------------------------------
 Bool_t is2dim(TH1 * hist)

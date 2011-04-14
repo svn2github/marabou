@@ -63,7 +63,7 @@ extern Bool_t is_a_cut(TObject *);
 extern Bool_t is_a_tree(TObject *);
 extern Bool_t is_a_window(TObject *);
 extern Bool_t HasFunctions(TH1 *);
-extern TH1*   GetHistOfGraph(TVirtualPad *);
+TH1*  GetHistOfGraph(TVirtualPad *);
 extern Bool_t is2dim(TH1 *);
 extern Bool_t is3dim(TH1 *);
 extern Bool_t is_a_file(const char *);
@@ -133,6 +133,6 @@ void SetAxisHistY(TCanvas *c, TH1 *);
 void ConvertTimeToString(time_t t, TAxis * a, TString * string);
 Double_t ConvertToTimeOrDouble(const char * string, TAxis * a);
 void SetSelected(TButton *b, Bool_t sel = kTRUE);
-
+Int_t GetNofGraphs(TVirtualPad * pad);
 inline void nothing();
 #endif
