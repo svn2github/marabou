@@ -4079,7 +4079,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	}
 	if ( lLegend != 0 ) {
 		// remove possible TLegend
-// 		TIter next2( current->GetListOfPrimitives() );
+ 		TIter next2( current->GetListOfPrimitives() );
 		TObject *obj;
 		TLegend * leg = NULL;
 		while ( obj = next2() ) {
