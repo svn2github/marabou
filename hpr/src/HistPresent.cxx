@@ -4079,7 +4079,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 	}
 	if ( lLegend != 0 ) {
 		// remove possible TLegend
-		TIter next2( fCanvas->GetListOfPrimitives() );
+// 		TIter next2( current->GetListOfPrimitives() );
 		TObject *obj;
 		TLegend * leg = NULL;
 		while ( obj = next2() ) {
@@ -4096,7 +4096,7 @@ void HistPresent::SuperimposeGraph(TCanvas * current, Int_t mode)
 		Double_t y1 = env.GetValue("SuperImposeGraph.fLegendY1", 0.8);
 		Double_t y2 = env.GetValue("SuperImposeGraph.fLegendY2", 0.95);
 		
-		TLegend * leg = current->BuildLegend(x1, y1, x2,y2);
+		leg = current->BuildLegend(x1, y1, x2,y2);
 		leg->SetName("Legend_SuperImposeGraph");
 		leg->SetFillColor (env.GetValue("HprLegend.fFillColor", 0));
 		leg->SetFillStyle (env.GetValue("HprLegend.fFillStyle", 0));
